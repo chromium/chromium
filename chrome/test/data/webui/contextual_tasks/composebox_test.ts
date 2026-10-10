@@ -1543,7 +1543,10 @@ suite('ContextualTasksComposeboxForkBasicInputTest', () => {
     const inputElement =
         innerComposebox.getInputElement().shadowRoot.querySelector<HTMLElement>(
             '#input')!;
-    const cancelIcon = innerComposebox.getInputElement().$.cancelIcon;
+    const cancelIcon =
+        innerComposebox.getInputElement().shadowRoot.querySelector<HTMLElement>(
+            '#cancelIcon');
+    assertTrue(!!cancelIcon);
 
     // Type text so the composebox has content; with content present,
     // cancel clears the input instead of closing the composebox.

@@ -1508,7 +1508,9 @@ suite('ContextualTasksComposeboxForkAutoTabTest', () => {
       await settle();
       assertTrue(innerComposebox.getHasAutomaticActiveTabChipToken());
 
-      const cancelIcon = innerComposebox.getInputElement().$.cancelIcon;
+      const cancelIcon =
+          innerComposebox.getInputElement()
+              .shadowRoot.querySelector<HTMLElement>('#cancelIcon');
       assertTrue(!!cancelIcon);
       cancelIcon.click();
       await settle();

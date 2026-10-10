@@ -205,7 +205,9 @@ suite('Composebox', () => {
         composebox.shadowRoot.querySelector<HTMLElement>('#submitContainer');
     const submitButton =
         composebox.shadowRoot.querySelector<HTMLElement>('#submitIcon');
-    const cancelButton = composebox.getInputElement().$.cancelIcon;
+    const cancelButton =
+        composebox.getInputElement().shadowRoot.querySelector<HTMLElement>(
+            '#cancelIcon');
     assertTrue(!!submitContainer);
     assertTrue(!!submitButton);
     assertTrue(!!cancelButton);
@@ -429,7 +431,9 @@ suite('Composebox', () => {
         composebox.shadowRoot.querySelector<HTMLElement>('#submitContainer');
     const submitButton =
         composebox.shadowRoot.querySelector<HTMLElement>('#submitIcon');
-    const cancelButton = composebox.getInputElement().$.cancelIcon;
+    const cancelButton =
+        composebox.getInputElement().shadowRoot.querySelector<HTMLElement>(
+            '#cancelIcon');
     assertTrue(!!submitContainer);
     assertTrue(!!submitButton);
     assertTrue(!!cancelButton);
@@ -496,7 +500,9 @@ suite('Composebox', () => {
     assertTrue(!!input);
     const submitButton =
         composebox.shadowRoot.querySelector<HTMLElement>('#submitIcon');
-    const cancelButton = composebox.getInputElement().$.cancelIcon;
+    const cancelButton =
+        composebox.getInputElement().shadowRoot.querySelector<HTMLElement>(
+            '#cancelIcon');
     assertTrue(!!submitButton);
     assertTrue(!!cancelButton);
 

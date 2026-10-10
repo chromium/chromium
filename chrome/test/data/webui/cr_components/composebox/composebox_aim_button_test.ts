@@ -4,26 +4,20 @@
 
 import 'chrome://resources/cr_components/composebox/composebox_aim_button.js';
 
-import type {AimButtonClickEventDetail, ComposeboxAimButtonElement} from 'chrome://resources/cr_components/composebox/composebox_aim_button.js';
+import type {ComposeboxAimButtonElement} from 'chrome://resources/cr_components/composebox/composebox_aim_button.js';
 import {AimButtonMode} from 'chrome://resources/cr_components/composebox/composebox_aim_button.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertNear, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNear, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {$$, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 const FOCUS_OUTLINE_CLASS = 'focus-outline-visible';
 
-interface RecordedClick {
-  type: string;
-  detail: AimButtonClickEventDetail;
+function assertModifiers(
+    e: KeyboardEvent|MouseEvent, expected: EventModifierInit = {}) {
+  assertEquals(expected.altKey ?? false, e.altKey);
+  assertEquals(expected.ctrlKey ?? false, e.ctrlKey);
+  assertEquals(expected.metaKey ?? false, e.metaKey);
+  assertEquals(expected.shiftKey ?? false, e.shiftKey);
 }
-
-const DEFAULT_KEYBOARD_DETAIL: AimButtonClickEventDetail = {
-  button: 0,
-  altKey: false,
-  ctrlKey: false,
-  metaKey: false,
-  shiftKey: false,
-  viaKeyboard: true,
-};
 
 async function createButton(): Promise<ComposeboxAimButtonElement> {
   document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -37,16 +31,12 @@ async function createButton(): Promise<ComposeboxAimButtonElement> {
   return element;
 }
 
-// Records every exit-click/send-click so tests can assert both firing and
-// non-firing.
-function recordClicks(element: ComposeboxAimButtonElement): RecordedClick[] {
-  const events: RecordedClick[] = [];
-  for (const type of ['exit-click', 'send-click']) {
-    element.addEventListener(type, e => {
-      events.push(
-          {type, detail: (e as CustomEvent<AimButtonClickEventDetail>).detail});
-    });
-  }
+function recordClicks(element: ComposeboxAimButtonElement):
+    Array<KeyboardEvent|MouseEvent> {
+  const events: Array<KeyboardEvent|MouseEvent> = [];
+  element.addEventListener('aim-button-click', e => {
+    events.push((e as CustomEvent<KeyboardEvent|MouseEvent>).detail);
+  });
   return events;
 }
 
@@ -72,7 +62,7 @@ suite('ComposeboxAimButtonTest', () => {
     element = await createButton();
   });
 
-  test('ClickDispatchesByModeAndTitleFollowsMode', async () => {
+  test('ClickFiresActivationAndTitleFollowsMode', async () => {
     const button = element.$.button;
     const events = recordClicks(element);
 
@@ -84,16 +74,13 @@ suite('ComposeboxAimButtonTest', () => {
     assertEquals('AI Mode', label.textContent);
     button.click();
     assertEquals(1, events.length);
-    assertEquals('exit-click', events[0]!.type);
 
-    // Exit mode with X: the icon has no title of its own and also exits.
     await setState(element, AimButtonMode.EXIT, true);
     const trailingIcon = $$(element, '#trailingIcon');
     assertTrue(!!trailingIcon);
     assertFalse(trailingIcon.hasAttribute('title'));
     trailingIcon.click();
     assertEquals(2, events.length);
-    assertEquals('exit-click', events[1]!.type);
 
     // Send mode.
     await setState(element, AimButtonMode.SEND, false);
@@ -101,7 +88,6 @@ suite('ComposeboxAimButtonTest', () => {
     assertEquals('Send', button.getAttribute('aria-label'));
     button.click();
     assertEquals(3, events.length);
-    assertEquals('send-click', events[2]!.type);
 
     // Titles track the properties.
     element.sendTitle = 'Send now';
@@ -144,10 +130,8 @@ suite('ComposeboxAimButtonTest', () => {
     dispatchKey(button, 'keydown', 'Enter', {shiftKey: true, altKey: true});
     dispatchKey(button, 'keyup', 'Enter', {shiftKey: true, altKey: true});
     assertEquals(1, events.length);
-    assertEquals('exit-click', events[0]!.type);
-    assertDeepEquals(
-        {...DEFAULT_KEYBOARD_DETAIL, shiftKey: true, altKey: true},
-        events[0]!.detail);
+    assertTrue(events[0] instanceof KeyboardEvent);
+    assertModifiers(events[0], {shiftKey: true, altKey: true});
 
     // Space activates on keyup.
     await setState(element, AimButtonMode.SEND, false);
@@ -155,10 +139,8 @@ suite('ComposeboxAimButtonTest', () => {
     assertEquals(1, events.length);
     dispatchKey(button, 'keyup', ' ', {ctrlKey: true, metaKey: true});
     assertEquals(2, events.length);
-    assertEquals('send-click', events[1]!.type);
-    assertDeepEquals(
-        {...DEFAULT_KEYBOARD_DETAIL, ctrlKey: true, metaKey: true},
-        events[1]!.detail);
+    assertTrue(events[1] instanceof KeyboardEvent);
+    assertModifiers(events[1], {ctrlKey: true, metaKey: true});
 
     // A held-down Enter repeat does not activate, and its modifiers must not
     // leak into a later click.
@@ -166,14 +148,16 @@ suite('ComposeboxAimButtonTest', () => {
     assertEquals(2, events.length);
     button.click();
     assertEquals(3, events.length);
-    assertDeepEquals(DEFAULT_KEYBOARD_DETAIL, events[2]!.detail);
+    assertTrue(events[2] instanceof MouseEvent);
+    assertModifiers(events[2]);
 
     // Same for an unpaired Space keyup.
     dispatchKey(button, 'keyup', ' ', {altKey: true});
     assertEquals(3, events.length);
     button.click();
     assertEquals(4, events.length);
-    assertDeepEquals(DEFAULT_KEYBOARD_DETAIL, events[3]!.detail);
+    assertTrue(events[3] instanceof MouseEvent);
+    assertModifiers(events[3]);
 
     // A mouse click on the trailing icon uses the mouse event's own modifiers,
     // even with a stale keyboard event around.
@@ -189,10 +173,8 @@ suite('ComposeboxAimButtonTest', () => {
       shiftKey: true,
     }));
     assertEquals(5, events.length);
-    assertEquals('send-click', events[4]!.type);
-    assertDeepEquals(
-        {...DEFAULT_KEYBOARD_DETAIL, shiftKey: true, viaKeyboard: false},
-        events[4]!.detail);
+    assertTrue(events[4] instanceof MouseEvent);
+    assertModifiers(events[4], {shiftKey: true});
   });
 
   test('IconsAndLayoutPerState', async () => {
@@ -205,7 +187,7 @@ suite('ComposeboxAimButtonTest', () => {
       assertEquals(inlineEnd, style.paddingInlineEnd);
       assertEquals(block, style.paddingBlockStart);
       assertEquals(block, style.paddingBlockEnd);
-      assertNear(32, parseFloat(style.height), 0.5);
+      assertNear(36, parseFloat(style.height), 0.5);
     }
 
     function assertTrailingIcon(className: string): HTMLElement {

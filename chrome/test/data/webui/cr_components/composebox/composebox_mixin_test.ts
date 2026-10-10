@@ -17,8 +17,8 @@ import {createAutocompleteResultForTesting} from 'chrome://resources/cr_componen
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {InputSource, QueryActionOverride, SearchboxOverride, SuggestInventory} from 'chrome://resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
 import type {FuseboxAction} from 'chrome://resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
-import {DriveDisclaimerStatus, DriveUploadError, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, TabAttachmentSource} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import type {AutocompleteResult, PageRemote as SearchboxPageRemote, SelectedFileInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {DriveDisclaimerStatus, DriveUploadError, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SuggestStyle, TabAttachmentSource} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {AutocompleteMatch, AutocompleteResult, PageRemote as SearchboxPageRemote, SelectedFileInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {ContextUploadErrorType, ContextUploadStatus, InputType, ModelMode, ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {InputState} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
@@ -67,6 +67,7 @@ function createInputSourceRequest(inputSource: InputSource) {
 
 suite('ComposeboxMixinTest', () => {
   let element: TestComposeboxMixinElement;
+  let handler: PageHandlerRemote&TestMock<PageHandlerRemote>;
   let searchboxHandler: SearchboxPageHandlerRemote&
       TestMock<SearchboxPageHandlerRemote>;
   let searchboxCallbackRouterRemote: SearchboxPageRemote;
@@ -79,7 +80,7 @@ suite('ComposeboxMixinTest', () => {
     const callbackRouter = new SearchboxPageCallbackRouter();
     searchboxCallbackRouterRemote = callbackRouter.$.bindNewPipeAndPassRemote();
 
-    installMock(
+    handler = installMock(
         PageHandlerRemote,
         mock => ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
             mock, new SearchboxPageHandlerRemote(), callbackRouter)));
@@ -2820,5 +2821,209 @@ suite('ComposeboxMixinTest', () => {
 
         assertTrue(element.errorMessage.length > 0);
         assertFalse(element.attachedContext.has(attachedFile.uuid));
+      });
+
+  // ===========================================================================
+  // AIM button EXIT/SEND adapters
+  // ===========================================================================
+
+  // Attaches a single non-tab file with `status` and waits for the derived
+  // `fileUploadsComplete` / `canSubmitFilesAndInput` flags to settle.
+  async function attachFileWithStatus(
+      status: ContextUploadStatus, options?: Partial<ComposeboxFile>) {
+    const file = ComposeboxFile.createFromFile(
+        'aim-file-token', {name: 'file.pdf', type: 'application/pdf'}, status,
+        options);
+    element.attachedContext = new Map([[file.uuid, file]]);
+    await microtasksFinished();
+    return file;
+  }
+
+  // Shows a single match for `input` and selects it through the dropdown so
+  // `selectedMatchIndex` / `selectedMatch` are populated like in production.
+  async function showAndSelectMatch(
+      input: string, match: Partial<AutocompleteMatch> = {}) {
+    element.result = createAutocompleteResultForTesting({
+      input,
+      matches: [createAutocompleteMatch({fillIntoEdit: input, ...match})],
+    });
+    await microtasksFinished();
+    element.getDropdownElement().selectIndex(0);
+    await microtasksFinished();
+    assertEquals(0, element.selectedMatchIndex);
+  }
+
+  function createClickEvent(detail: KeyboardEvent|MouseEvent):
+      CustomEvent<KeyboardEvent|MouseEvent> {
+    return new CustomEvent('aim-button-click', {detail});
+  }
+
+  test(
+      'submitEnabled is true for a selected suggestion without text or files',
+      async () => {
+        // Empty state.
+        assertFalse(element.submitEnabled);
+
+        // Only a tool selected.
+        element.onInputStateChanged(
+            new MockInputState({activeTool: ToolMode.kDeepSearch}));
+        await element.updateComplete;
+        assertFalse(element.submitEnabled);
+        element.onInputStateChanged(
+            new MockInputState({activeTool: ToolMode.kUnspecified}));
+        await element.updateComplete;
+
+        // No text and no attachments, but a suggestion is selected.
+        element.richImageSuggestionsEnabled = true;
+        await showAndSelectMatch('', {
+          fillIntoEdit: 'image prompt',
+          suggestStyle: SuggestStyle.kRichImage,
+        });
+        assertEquals('', element.input);
+        assertFalse(element.hasFiles());
+        assertTrue(element.submitEnabled);
+      });
+
+  test(
+      'isAimButtonDisabled only gates SEND on submission validation',
+      async () => {
+        // EXIT mode is never disabled, even though nothing can be submitted.
+        assertFalse(element.submitEnabled);
+        assertFalse(element.canSubmitFilesAndInput);
+        assertFalse(element.isAimButtonDisabled());
+
+        // SEND mode with an attachment still uploading.
+        await attachFileWithStatus(
+            ContextUploadStatus.kNotUploaded, {supportsUnimodal: true});
+        assertTrue(element.submitEnabled);
+        assertFalse(element.fileUploadsComplete);
+        assertTrue(element.isAimButtonDisabled());
+
+        // The upload reaches a terminal status and the query is valid.
+        await attachFileWithStatus(
+            ContextUploadStatus.kUploadSuccessful, {supportsUnimodal: true});
+        assertTrue(element.fileUploadsComplete);
+        assertTrue(element.canSubmitFilesAndInput);
+        assertFalse(element.isAimButtonDisabled());
+
+        await attachFileWithStatus(ContextUploadStatus.kUploadSuccessful);
+        assertTrue(element.submitEnabled);
+        assertFalse(element.canSubmitFilesAndInput);
+        assertTrue(element.isAimButtonDisabled());
+      });
+
+  test('onAimButtonClick closes the composebox in EXIT mode', async () => {
+    let closeCount = 0;
+    element.addEventListener('close-composebox', () => ++closeCount);
+
+    // EXIT mode with only a tool active and no error: closes.
+    element.onInputStateChanged(
+        new MockInputState({activeTool: ToolMode.kDeepSearch}));
+    await element.updateComplete;
+    assertFalse(element.submitEnabled);
+    element.onAimButtonClick(createClickEvent(new MouseEvent('click')));
+    assertEquals(1, closeCount);
+    assertEquals(0, searchboxHandler.getCallCount('submitQuery'));
+    assertEquals(0, searchboxHandler.getCallCount('openAutocompleteMatch'));
+    assertEquals(
+        0, handler.getCallCount('notifyComposeboxQuerySubmittedWithContext'));
+  });
+
+  test(
+      'onAimButtonClick opens the selected match with activation details',
+      async () => {
+        await simulateUserTextInput(element.getInputElement(), 'hello');
+        await showAndSelectMatch('hello');
+        assertTrue(element.canSubmitFilesAndInput);
+
+        element.onAimButtonClick(createClickEvent(new KeyboardEvent(
+            'keydown', {key: 'Enter', altKey: true, metaKey: true})));
+
+        assertEquals(1, searchboxHandler.getCallCount('openAutocompleteMatch'));
+        const args = searchboxHandler.getArgs('openAutocompleteMatch')[0];
+        assertEquals(0, args[1]);
+        assertEquals(0, args[4]);
+        assertDeepEquals(
+            {altKey: true, ctrlKey: false, metaKey: true, shiftKey: false},
+            args[5]);
+        assertTrue(args[6]);
+        // No files and no tool: the context notification is not sent.
+        assertEquals(
+            0,
+            handler.getCallCount('notifyComposeboxQuerySubmittedWithContext'));
+        assertEquals(0, searchboxHandler.getCallCount('submitQuery'));
+      });
+
+  test(
+      'onAimButtonClick submits with context notification for files',
+      async () => {
+        await simulateUserTextInput(element.getInputElement(), 'hello');
+        await attachFileWithStatus(ContextUploadStatus.kUploadSuccessful);
+        assertTrue(element.canSubmitFilesAndInput);
+
+        element.onAimButtonClick(createClickEvent(new MouseEvent(
+            'click', {button: 1, ctrlKey: true, shiftKey: true})));
+
+        assertEquals(
+            1,
+            handler.getCallCount('notifyComposeboxQuerySubmittedWithContext'));
+        assertEquals(1, searchboxHandler.getCallCount('submitQuery'));
+        assertDeepEquals(
+            ['hello', 1, false, true, false, true, false],
+            searchboxHandler.getArgs('submitQuery')[0]);
+      });
+
+  test('onAimButtonClick notifies context for an active tool', async () => {
+    await simulateUserTextInput(element.getInputElement(), 'hello');
+    element.onInputStateChanged(
+        new MockInputState({activeTool: ToolMode.kDeepSearch}));
+    await element.updateComplete;
+    assertTrue(element.canSubmitFilesAndInput);
+
+    element.onAimButtonClick(createClickEvent(new MouseEvent('click')));
+
+    assertEquals(
+        1, handler.getCallCount('notifyComposeboxQuerySubmittedWithContext'));
+    assertEquals(1, searchboxHandler.getCallCount('submitQuery'));
+  });
+
+  test(
+      'onAimButtonFocusin selects the first match only in SEND mode',
+      async () => {
+        // Matches are showing but only whitespace is typed: EXIT mode, no-op.
+        await simulateUserTextInput(element.getInputElement(), ' ');
+        element.result = {
+          input: '',
+          matches: [createAutocompleteMatch({fillIntoEdit: 'suggestion'})],
+        } as AutocompleteResult;
+        await microtasksFinished();
+        assertFalse(element.submitEnabled);
+        element.onAimButtonFocusin();
+        await microtasksFinished();
+        assertEquals(-1, element.selectedMatchIndex);
+
+        // SEND mode with text and no selection: selects the first match.
+        await simulateUserTextInput(element.getInputElement(), 'hello');
+        assertTrue(element.submitEnabled);
+        element.onAimButtonFocusin();
+        await microtasksFinished();
+        assertEquals(0, element.selectedMatchIndex);
+
+        // A match is already selected: the selection is left alone.
+        element.getDropdownElement().selectIndex(-1);
+        await microtasksFinished();
+        element.result = {
+          input: 'hello',
+          matches: [
+            createAutocompleteMatch({fillIntoEdit: 'hello'}),
+            createAutocompleteMatch({fillIntoEdit: 'hello world'}),
+          ],
+        } as AutocompleteResult;
+        await microtasksFinished();
+        element.getDropdownElement().selectIndex(1);
+        await microtasksFinished();
+        element.onAimButtonFocusin();
+        await microtasksFinished();
+        assertEquals(1, element.selectedMatchIndex);
       });
 });

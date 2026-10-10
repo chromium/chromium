@@ -25,15 +25,6 @@ enum TrailingIcon {
   EXIT = 'icon-clear',
 }
 
-export interface AimButtonClickEventDetail {
-  button: number;
-  altKey: boolean;
-  ctrlKey: boolean;
-  metaKey: boolean;
-  shiftKey: boolean;
-  viaKeyboard?: boolean;
-}
-
 export interface ComposeboxAimButtonElement {
   $: {
     button: CrButtonElement,
@@ -82,7 +73,7 @@ export class ComposeboxAimButtonElement extends CrLitElement {
 
     // cr-button calls click() on Enter/Space, and the synthesized click
     // carries no modifier keys. Capture the keyboard event so
-    // `getClickEventDetail_()` can recover the modifiers.
+    // `getActivationEvent_()` can forward it instead.
     const onKeyboardActivation = this.onKeyboardActivation_.bind(this);
     this.addEventListener('keydown', onKeyboardActivation, {capture: true});
     this.addEventListener('keyup', onKeyboardActivation, {capture: true});
@@ -132,19 +123,8 @@ export class ComposeboxAimButtonElement extends CrLitElement {
       return;
     }
 
-    // The label (text) and X (exit icon) share this single click entry point;
-    // dispatch by mode.
-    const detail = this.getClickEventDetail_(e);
-    switch (this.mode) {
-      case AimButtonMode.EXIT:
-        this.fire('exit-click', detail);
-        break;
-      case AimButtonMode.SEND:
-        this.fire('send-click', detail);
-        break;
-      default:
-        assertNotReachedCase(this.mode);
-    }
+    // The label (text) and X (exit icon) share this single click entry point.
+    this.fire('aim-button-click', this.getActivationEvent_(e));
   }
 
   private onKeyboardActivation_(e: KeyboardEvent) {
@@ -165,26 +145,19 @@ export class ComposeboxAimButtonElement extends CrLitElement {
     }
   }
 
-  private getClickEventDetail_(e: MouseEvent): AimButtonClickEventDetail {
+  private getActivationEvent_(e: MouseEvent): KeyboardEvent|MouseEvent {
     const keyboardEvent = this.keyboardActivationEvent_;
     this.keyboardActivationEvent_ = null;
-    // Use the keyboard event's modifiers only when the click was synthesized
-    // from the keyboard (detail === 0) and the cached event is still being
-    // dispatched on the same button. Otherwise the cache is stale, so use the
-    // click's own values.
-    const modifiers = e.detail === 0 && keyboardEvent &&
-            keyboardEvent.eventPhase === Event.AT_TARGET &&
-            keyboardEvent.currentTarget === e.currentTarget ?
-        keyboardEvent :
-        e;
-    return {
-      button: e.button,
-      altKey: modifiers.altKey,
-      ctrlKey: modifiers.ctrlKey,
-      metaKey: modifiers.metaKey,
-      shiftKey: modifiers.shiftKey,
-      viaKeyboard: e.detail === 0,
-    };
+    // Use the keyboard event only when the click was synthesized from the
+    // keyboard (detail === 0) and the cached event is still being dispatched
+    // on the same button. Otherwise the cache is stale, so use the click
+    // event itself.
+    if (e.detail === 0 && keyboardEvent &&
+        keyboardEvent.eventPhase === Event.AT_TARGET &&
+        keyboardEvent.currentTarget === e.currentTarget) {
+      return keyboardEvent;
+    }
+    return e;
   }
 }
 

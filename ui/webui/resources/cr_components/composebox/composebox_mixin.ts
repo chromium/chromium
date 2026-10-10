@@ -2061,14 +2061,14 @@ export const ComposeboxEmbedderMixin =
           }
         }
 
-        onSubmitFocusin(_e: FocusEvent) {
+        onSubmitFocusin() {
           // Matches should always be greater than 0 due to verbatim match.
           if (this.input && !this.selectedMatch) {
             this.selectFirstMatch();
           }
         }
 
-        onSubmitClick(e: MouseEvent) {
+        onSubmitClick(e: MouseEvent|KeyboardEvent) {
           if (this.hasPendingDelayedTabContext_()) {
             return;
           }
@@ -2077,6 +2077,29 @@ export const ComposeboxEmbedderMixin =
             this.getPageHandler().notifyComposeboxQuerySubmittedWithContext();
           }
           this.submitQuery(e);
+        }
+
+        // Only SEND depends on whether the query can be submitted, so EXIT
+        // is never disabled by an empty or invalid query.
+        isAimButtonDisabled(): boolean {
+          return this.submitEnabled && !this.canSubmitFilesAndInput;
+        }
+
+        onAimButtonFocusin() {
+          if (this.submitEnabled) {
+            this.onSubmitFocusin();
+          }
+        }
+
+        onAimButtonClick(e: CustomEvent<KeyboardEvent|MouseEvent>) {
+          if (!this.submitEnabled) {
+            // Closes the composebox directly. `onCancelClick()` is not reused
+            // because with an active tool it clears the inputs instead of
+            // closing.
+            this.closeComposebox();
+            return;
+          }
+          this.onSubmitClick(e.detail);
         }
 
         // =====================================================================
@@ -3560,8 +3583,11 @@ export interface ComposeboxEmbedderMixinInterface extends I18nMixinLitInterface,
   onFileChange(e: CustomEvent<{files: FileList}>): void;
   onPaste(event: ClipboardEvent): void;
   onCancelClick(): void;
-  onSubmitFocusin(e: FocusEvent): void;
-  onSubmitClick(e: MouseEvent): void;
+  onSubmitFocusin(): void;
+  onSubmitClick(e: MouseEvent|KeyboardEvent): void;
+  isAimButtonDisabled(): boolean;
+  onAimButtonFocusin(): void;
+  onAimButtonClick(e: CustomEvent<KeyboardEvent|MouseEvent>): void;
   onDeleteFile(
       e: CustomEvent<{uuid: UnguessableToken, fromUserAction?: boolean}>): void;
 

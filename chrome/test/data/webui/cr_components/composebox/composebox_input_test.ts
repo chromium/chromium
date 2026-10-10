@@ -80,6 +80,21 @@ suite('ComposeboxInputTest', () => {
         assertEquals('auto', window.getComputedStyle(cancelIcon).pointerEvents);
       });
 
+  test('hideCancel removes the cancel container', async () => {
+    assertFalse(inputElement.hideCancel);
+    assertTrue(!!inputElement.shadowRoot.querySelector('#cancelContainer'));
+
+    inputElement.hideCancel = true;
+    await inputElement.updateComplete;
+    assertEquals(
+        null, inputElement.shadowRoot.querySelector('#cancelContainer'));
+    assertEquals(null, inputElement.shadowRoot.querySelector('#cancelIcon'));
+
+    inputElement.hideCancel = false;
+    await inputElement.updateComplete;
+    assertTrue(!!inputElement.shadowRoot.querySelector('#cancelContainer'));
+  });
+
   test('Events are forwarded from input', () => {
     const textArea =
         inputElement.shadowRoot.querySelector<HTMLTextAreaElement>('#input')!;

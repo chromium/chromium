@@ -4,7 +4,6 @@
 
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
-import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
@@ -73,12 +72,6 @@ export interface ComposeboxChip {
   iconUrl?: string;
 }
 
-export interface ComposeboxInputElement {
-  $: {
-    cancelIcon: CrIconButtonElement,
-  };
-}
-
 export class ComposeboxInputElement extends I18nMixinLit
 (CrLitElement) {
   static get is() {
@@ -106,6 +99,7 @@ export class ComposeboxInputElement extends I18nMixinLit
       submitEnabled: {type: Boolean, reflect: true},
       entrypointName: {type: String, reflect: true},
       cancelButtonTitle: {type: String},
+      hideCancel: {type: Boolean},
       isBackspacing_: {type: Boolean},
     };
   }
@@ -121,6 +115,7 @@ export class ComposeboxInputElement extends I18nMixinLit
   accessor submitEnabled: boolean = false;
   accessor entrypointName: string = '';
   accessor cancelButtonTitle: string = '';
+  accessor hideCancel: boolean = false;
   accessor isBackspacing_: boolean = false;
 
   private resizeObserver_: ResizeObserver|null = null;
