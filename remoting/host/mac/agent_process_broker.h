@@ -6,8 +6,10 @@
 #define REMOTING_HOST_MAC_AGENT_PROCESS_BROKER_H_
 
 #include <mach/message.h>
+#include <sys/types.h>
 
 #include <memory>
+#include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
@@ -47,9 +49,9 @@ class AgentProcessBroker final : public mojom::AgentProcessBroker {
     AgentProcess(
         size_t reference_id,
         base::ProcessId pid,
+        uid_t uid,
         mojo::Remote<mojom::AgentProcess> agent_process_remote,
         mojo::Remote<mojom::RemotingHostControl> remoting_host_control_remote,
-        bool is_root,
         bool is_active);
     AgentProcess(AgentProcess&&);
     ~AgentProcess();
@@ -60,26 +62,28 @@ class AgentProcessBroker final : public mojom::AgentProcessBroker {
     void SuspendProcess();
     void TerminateProcess();
 
+    bool is_root() const { return uid == 0; }
+
     std::string GetAgentProcessLogString(std::string_view state) const;
 
     size_t reference_id;  // For reverse lookup in `agent_processes_`.
     base::ProcessId pid;  // For logging only. Not for book keeping.
+    uid_t uid;            // Real UID of the agent process.
     mojo::Remote<mojom::AgentProcess> agent_process_remote;
     mojo::Remote<mojom::RemotingHostControl> remoting_host_control_remote;
-    bool is_root;
     bool is_active;
   };
 
   using Validator = base::RepeatingCallback<bool(
       const named_mojo_ipc_server::ConnectionInfo&)>;
 
-  // Interface to allow tests to fake the root-ness/non-root-ness of a process,
-  // since tests can't launch process as root.
-  using IsRootProcessGetter = base::RepeatingCallback<bool(audit_token_t)>;
+  // Interface to allow tests to fake the real UID of a process, since tests
+  // can't launch processes as root or as other users.
+  using ProcessUidGetter = base::RepeatingCallback<uid_t(audit_token_t)>;
 
   AgentProcessBroker(const mojo::NamedPlatformChannel::ServerName& server_name,
                      Validator validator,
-                     IsRootProcessGetter is_root_process);
+                     ProcessUidGetter process_uid_getter);
 
   void BindChromotingHostServices(
       mojo::PendingReceiver<mojom::ChromotingHostServices> receiver,
@@ -103,7 +107,7 @@ class AgentProcessBroker final : public mojom::AgentProcessBroker {
   named_mojo_ipc_server::NamedMojoIpcServer<mojom::AgentProcessBroker> server_;
   std::unique_ptr<ChromotingHostServicesServer>
       chromoting_host_services_server_;
-  IsRootProcessGetter is_root_process_;
+  ProcessUidGetter process_uid_getter_;
   base::flat_map<size_t /* reference_id */, AgentProcess> agent_processes_;
   // We use our own reference ID for book keeping. While unlikely, the OS is
   // free to immediately reuse the PID after a process has exited. This might

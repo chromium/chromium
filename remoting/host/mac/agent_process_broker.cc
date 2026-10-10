@@ -35,8 +35,8 @@ namespace remoting {
 
 namespace {
 
-bool IsRootProcess(audit_token_t audit_token) {
-  return audit_token_to_ruid(audit_token) == 0;
+uid_t GetProcessUid(audit_token_t audit_token) {
+  return audit_token_to_ruid(audit_token);
 }
 
 }  // namespace
@@ -44,15 +44,15 @@ bool IsRootProcess(audit_token_t audit_token) {
 AgentProcessBroker::AgentProcess::AgentProcess(
     size_t reference_id,
     base::ProcessId pid,
+    uid_t uid,
     mojo::Remote<mojom::AgentProcess> agent_process_remote,
     mojo::Remote<mojom::RemotingHostControl> remoting_host_control_remote,
-    bool is_root,
     bool is_active)
     : reference_id(reference_id),
       pid(pid),
+      uid(uid),
       agent_process_remote(std::move(agent_process_remote)),
       remoting_host_control_remote(std::move(remoting_host_control_remote)),
-      is_root(is_root),
       is_active(is_active) {}
 AgentProcessBroker::AgentProcess::AgentProcess(AgentProcess&&) = default;
 AgentProcessBroker::AgentProcess::~AgentProcess() = default;
@@ -86,19 +86,20 @@ void AgentProcessBroker::AgentProcess::TerminateProcess() {
 
 std::string AgentProcessBroker::AgentProcess::GetAgentProcessLogString(
     std::string_view state) const {
-  return base::StringPrintf("Agent process %d (PID: %d, %s) %s", reference_id,
-                            pid, is_root ? "root" : "user", state.data());
+  return base::StringPrintf("Agent process %zu (PID: %d, UID: %u, %s) %s",
+                            reference_id, pid, uid, is_root() ? "root" : "user",
+                            state);
 }
 
 AgentProcessBroker::AgentProcessBroker()
     : AgentProcessBroker(GetAgentProcessBrokerServerName(),
                          base::BindRepeating(IsTrustedMojoEndpoint),
-                         base::BindRepeating(IsRootProcess)) {}
+                         base::BindRepeating(GetProcessUid)) {}
 
 AgentProcessBroker::AgentProcessBroker(
     const mojo::NamedPlatformChannel::ServerName& server_name,
     Validator validator,
-    IsRootProcessGetter is_root_process)
+    ProcessUidGetter process_uid_getter)
     : server_(named_mojo_ipc_server::EndpointOptions(
                   server_name,
                   kAgentProcessBrokerMessagePipeId),
@@ -107,7 +108,7 @@ AgentProcessBroker::AgentProcessBroker(
                     return is_valid ? interface : nullptr;
                   },
                   this))),
-      is_root_process_(std::move(is_root_process)) {
+      process_uid_getter_(std::move(process_uid_getter)) {
   chromoting_host_services_server_ =
       std::make_unique<ChromotingHostServicesServer>(
           base::BindRepeating(&AgentProcessBroker::BindChromotingHostServices,
@@ -129,7 +130,7 @@ void AgentProcessBroker::OnAgentProcessLaunched(
     mojo::PendingRemote<mojom::AgentProcess> pending_agent_process) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto& connection_info = server_.current_connection_info();
-  bool is_root = is_root_process_.Run(connection_info.audit_token);
+  uid_t uid = process_uid_getter_.Run(connection_info.audit_token);
   mojo::Remote<mojom::AgentProcess> process_remote{
       std::move(pending_agent_process)};
   process_remote.set_disconnect_handler(
@@ -139,11 +140,10 @@ void AgentProcessBroker::OnAgentProcessLaunched(
   process_remote->BindRemotingHostControl(
       remoting_host_control_remote.BindNewPipeAndPassReceiver());
   auto result = agent_processes_.emplace(
-      next_reference_id_,
-      AgentProcess{next_reference_id_, connection_info.pid,
-                   std::move(process_remote),
-                   std::move(remoting_host_control_remote), is_root,
-                   /* is_active= */ false});
+      next_reference_id_, AgentProcess{next_reference_id_, connection_info.pid,
+                                       uid, std::move(process_remote),
+                                       std::move(remoting_host_control_remote),
+                                       /* is_active= */ false});
   DCHECK(result.second);  // Assert success.
   HOST_LOG << result.first->second.GetAgentProcessLogString("launched");
   next_reference_id_++;
@@ -166,6 +166,17 @@ void AgentProcessBroker::BindChromotingHostServices(
     return;
   }
   AgentProcess& process = active_iter->second;
+  // The Mach service is reachable by processes of all users, and the caller
+  // validator only checks the code signature, so make sure the caller runs as
+  // the same user as the agent process before forwarding the receiver.
+  uid_t caller_uid = process_uid_getter_.Run(connection_info->audit_token);
+  if (caller_uid != process.uid) {
+    LOG(WARNING) << process.GetAgentProcessLogString(base::StringPrintf(
+        "rejected ChromotingHostServices binding for peer PID %d, since the "
+        "peer's UID (%u) does not match the agent process' UID",
+        connection_info->pid, caller_uid));
+    return;
+  }
   process.remoting_host_control_remote->BindChromotingHostServices(
       std::move(receiver));
   HOST_LOG << process.GetAgentProcessLogString(base::StringPrintf(
@@ -192,7 +203,7 @@ void AgentProcessBroker::BrokerAgentProcesses() {
   std::vector<AgentProcess*> root_processes;
   std::vector<AgentProcess*> user_processes;
   for (auto& pair : agent_processes_) {
-    if (pair.second.is_root) {
+    if (pair.second.is_root()) {
       root_processes.push_back(&pair.second);
     } else {
       user_processes.push_back(&pair.second);

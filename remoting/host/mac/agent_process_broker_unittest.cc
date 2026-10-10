@@ -5,6 +5,7 @@
 #include "remoting/host/mac/agent_process_broker.h"
 
 #include <inttypes.h>
+#include <sys/types.h>
 
 #include <algorithm>
 #include <memory>
@@ -22,6 +23,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/process/process.h"
+#include "base/process/process_handle.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -33,10 +35,12 @@
 #include "base/time/time.h"
 #include "components/named_mojo_ipc_server/connection_info.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "remoting/host/chromoting_host_services_client.h"
 #include "remoting/host/mac/agent_process_broker_client.h"
 #include "remoting/host/mojom/agent_process_broker.mojom.h"
+#include "remoting/host/mojom/chromoting_host_services.mojom.h"
 #include "remoting/host/mojom/remoting_host.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -65,6 +69,10 @@ static constexpr char kAgentStateChromotingHostServicesBound[] =
 
 static constexpr int kAgentExitCodeTerminatedByBroker = 1;
 static constexpr int kAgentExitCodeBrokerDisconnected = 2;
+
+static constexpr uid_t kRootUid = 0;
+static constexpr uid_t kTestUserUid = 501;
+static constexpr uid_t kOtherTestUserUid = 502;
 
 // A struct that holds both the real process object and the path of the agent
 // state file.
@@ -144,8 +152,15 @@ class AgentProcessBrokerTest : public testing::Test {
   // Returns false if the process has exited.
   bool WaitForTestAgentState(const Process& process, std::string_view state);
 
-  base::MockCallback<AgentProcessBroker::IsRootProcessGetter>
-      is_root_process_getter_;
+  // Asks the broker to bind ChromotingHostServices on behalf of a caller whose
+  // real UID is `caller_uid`.
+  void BindChromotingHostServicesAsCaller(uid_t caller_uid);
+
+  // Waits until all messages previously sent by the broker to the active agent
+  // process have been processed by the agent process.
+  void FlushActiveAgentProcess();
+
+  base::MockCallback<AgentProcessBroker::ProcessUidGetter> process_uid_getter_;
   std::unique_ptr<AgentProcessBroker> agent_process_broker_;
   mojo::NamedPlatformChannel::ServerName chromoting_host_services_server_name_;
 
@@ -154,6 +169,8 @@ class AgentProcessBrokerTest : public testing::Test {
       base::test::TaskEnvironment::MainThreadType::IO};
   mojo::NamedPlatformChannel::ServerName server_name_;
   base::ScopedTempDir temp_dir_;
+  std::vector<mojo::Remote<mojom::ChromotingHostServices>>
+      chromoting_host_services_remotes_;
 };
 
 AgentProcessBrokerTest::AgentProcessBrokerTest() {
@@ -168,7 +185,7 @@ AgentProcessBrokerTest::AgentProcessBrokerTest() {
       server_name_,
       base::BindRepeating(
           [](const named_mojo_ipc_server::ConnectionInfo&) { return true; }),
-      is_root_process_getter_.Get()));
+      process_uid_getter_.Get()));
   agent_process_broker_->chromoting_host_services_server_ =
       std::make_unique<ChromotingHostServicesServer>(
           chromoting_host_services_server_name_,
@@ -187,7 +204,9 @@ Process AgentProcessBrokerTest::LaunchTestAgentProcess(bool is_root) {
   base::FilePath agent_state_file_path;
   EXPECT_TRUE(base::CreateTemporaryFileInDir(temp_dir_.GetPath(),
                                              &agent_state_file_path));
-  EXPECT_CALL(is_root_process_getter_, Run(_)).WillOnce(Return(is_root));
+  EXPECT_CALL(process_uid_getter_, Run(_))
+      .WillOnce(Return(is_root ? kRootUid : kTestUserUid))
+      .RetiresOnSaturation();
   base::CommandLine cmd_line = base::GetMultiProcessTestChildBaseCommandLine();
   cmd_line.AppendSwitchNative(kServerNameSwitch, server_name_);
   cmd_line.AppendSwitchPath(kAgentStateFilePathSwitch, agent_state_file_path);
@@ -201,6 +220,31 @@ Process AgentProcessBrokerTest::LaunchTestAgentProcess(bool is_root) {
       .process = std::move(process),
       .agent_state_file_path = agent_state_file_path,
   };
+}
+
+void AgentProcessBrokerTest::BindChromotingHostServicesAsCaller(
+    uid_t caller_uid) {
+  EXPECT_CALL(process_uid_getter_, Run(_))
+      .WillOnce(Return(caller_uid))
+      .RetiresOnSaturation();
+  auto connection_info =
+      std::make_unique<named_mojo_ipc_server::ConnectionInfo>();
+  connection_info->pid = base::GetCurrentProcId();
+  mojo::Remote<mojom::ChromotingHostServices> remote;
+  agent_process_broker_->BindChromotingHostServices(
+      remote.BindNewPipeAndPassReceiver(), std::move(connection_info));
+  chromoting_host_services_remotes_.push_back(std::move(remote));
+}
+
+void AgentProcessBrokerTest::FlushActiveAgentProcess() {
+  for (auto& [reference_id, process] :
+       agent_process_broker_->agent_processes_) {
+    if (process.is_active) {
+      process.remoting_host_control_remote.FlushForTesting();
+      return;
+    }
+  }
+  ADD_FAILURE() << "No active agent process.";
 }
 
 std::optional<std::string> AgentProcessBrokerTest::GetTestAgentState(
@@ -340,6 +384,10 @@ TEST_F(AgentProcessBrokerTest, BindChromotingHostServices) {
   auto user_process = LaunchTestAgentProcess(/* is_root= */ false);
   ASSERT_TRUE(WaitForTestAgentState(user_process, kAgentStateResumed));
 
+  // The services client process runs as the same user as the agent process.
+  EXPECT_CALL(process_uid_getter_, Run(_))
+      .WillOnce(Return(kTestUserUid))
+      .RetiresOnSaturation();
   base::CommandLine services_client_cmd_line =
       base::GetMultiProcessTestChildBaseCommandLine();
   services_client_cmd_line.AppendSwitchNative(
@@ -351,6 +399,61 @@ TEST_F(AgentProcessBrokerTest, BindChromotingHostServices) {
 
   ASSERT_TRUE(WaitForTestAgentState(user_process,
                                     kAgentStateChromotingHostServicesBound));
+}
+
+TEST_F(AgentProcessBrokerTest,
+       BindChromotingHostServices_UserAgentActive_SameUserCallerAllowed) {
+  auto user_process = LaunchTestAgentProcess(/* is_root= */ false);
+  ASSERT_TRUE(WaitForTestAgentState(user_process, kAgentStateResumed));
+
+  BindChromotingHostServicesAsCaller(kTestUserUid);
+
+  ASSERT_TRUE(WaitForTestAgentState(user_process,
+                                    kAgentStateChromotingHostServicesBound));
+}
+
+TEST_F(AgentProcessBrokerTest,
+       BindChromotingHostServices_UserAgentActive_OtherUserCallerRejected) {
+  auto user_process = LaunchTestAgentProcess(/* is_root= */ false);
+  ASSERT_TRUE(WaitForTestAgentState(user_process, kAgentStateResumed));
+
+  BindChromotingHostServicesAsCaller(kOtherTestUserUid);
+  FlushActiveAgentProcess();
+
+  ASSERT_EQ(GetTestAgentState(user_process), kAgentStateResumed);
+}
+
+TEST_F(AgentProcessBrokerTest,
+       BindChromotingHostServices_UserAgentActive_RootCallerRejected) {
+  auto user_process = LaunchTestAgentProcess(/* is_root= */ false);
+  ASSERT_TRUE(WaitForTestAgentState(user_process, kAgentStateResumed));
+
+  BindChromotingHostServicesAsCaller(kRootUid);
+  FlushActiveAgentProcess();
+
+  ASSERT_EQ(GetTestAgentState(user_process), kAgentStateResumed);
+}
+
+TEST_F(AgentProcessBrokerTest,
+       BindChromotingHostServices_RootAgentActive_RootCallerAllowed) {
+  auto root_process = LaunchTestAgentProcess(/* is_root= */ true);
+  ASSERT_TRUE(WaitForTestAgentState(root_process, kAgentStateResumed));
+
+  BindChromotingHostServicesAsCaller(kRootUid);
+
+  ASSERT_TRUE(WaitForTestAgentState(root_process,
+                                    kAgentStateChromotingHostServicesBound));
+}
+
+TEST_F(AgentProcessBrokerTest,
+       BindChromotingHostServices_RootAgentActive_UserCallerRejected) {
+  auto root_process = LaunchTestAgentProcess(/* is_root= */ true);
+  ASSERT_TRUE(WaitForTestAgentState(root_process, kAgentStateResumed));
+
+  BindChromotingHostServicesAsCaller(kTestUserUid);
+  FlushActiveAgentProcess();
+
+  ASSERT_EQ(GetTestAgentState(root_process), kAgentStateResumed);
 }
 
 MULTIPROCESS_TEST_MAIN(RemotingTestAgentProcess) {
