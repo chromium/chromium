@@ -1813,6 +1813,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/payments/handler/PaymentHandlerMediatorUnitTest.java",
       "src/org/chromium/chrome/browser/pdf/PdfFragmentViewTrackerImplUnitTest.java",
       "src/org/chromium/chrome/browser/pdf/PdfPageIphControllerUnitTest.java",
+      "src/org/chromium/chrome/browser/printing/WebContentsPrinterUnitTest.java",
       "src/org/chromium/chrome/browser/privacy/settings/PrivacyPreferencesManagerImplTest.java",
       "src/org/chromium/chrome/browser/privacy/settings/PrivacySettingsUnitTest.java",
       "src/org/chromium/chrome/browser/quickactionsearchwidget/QuickActionSearchWidgetProviderTest.java",

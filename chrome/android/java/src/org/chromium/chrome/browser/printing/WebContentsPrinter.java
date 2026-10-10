@@ -27,6 +27,9 @@ public class WebContentsPrinter implements Printable {
     private final String mDefaultTitle;
     private final String mErrorMessage;
 
+    private int mRenderProcessId = -1;
+    private int mRenderFrameId = -1;
+
     /**
      * Creates a {@link WebContentsPrinter} for the given web contents.
      *
@@ -52,23 +55,38 @@ public class WebContentsPrinter implements Printable {
 
     @Override
     public boolean initiatePrint(int renderProcessId, int renderFrameId) {
+        mRenderProcessId = -1;
+        mRenderFrameId = -1;
         if (!canPrint()) return false;
-        return WebContentsPrinterJni.get()
-                .initiatePrint(mWebContents, renderProcessId, renderFrameId, mPrintSelectionOnly);
+        long targetFrame =
+                WebContentsPrinterJni.get()
+                        .initiatePrint(
+                                mWebContents, renderProcessId, renderFrameId, mPrintSelectionOnly);
+        if (targetFrame == -1) return false;
+        mRenderProcessId = (int) (targetFrame >> 32);
+        mRenderFrameId = (int) targetFrame;
+        return true;
     }
 
     @Override
     public boolean print(int renderProcessId, int renderFrameId) {
         if (!canPrint()) return false;
+        boolean hasExplicitTarget = renderProcessId >= 0 && renderFrameId >= 0;
+        int processId = hasExplicitTarget ? renderProcessId : mRenderProcessId;
+        int frameId = hasExplicitTarget ? renderFrameId : mRenderFrameId;
         return WebContentsPrinterJni.get()
-                .print(mWebContents, renderProcessId, renderFrameId, mPrintSelectionOnly);
+                .print(mWebContents, processId, frameId, mPrintSelectionOnly);
     }
 
     @Override
     public void finishPrint(int renderProcessId, int renderFrameId) {
+        boolean hasExplicitTarget = renderProcessId >= 0 && renderFrameId >= 0;
+        int processId = hasExplicitTarget ? renderProcessId : mRenderProcessId;
+        int frameId = hasExplicitTarget ? renderFrameId : mRenderFrameId;
+        mRenderProcessId = -1;
+        mRenderFrameId = -1;
         if (mWebContents.isDestroyed()) return;
-        WebContentsPrinterJni.get()
-                .finishPrint(mWebContents, renderProcessId, renderFrameId, mPrintSelectionOnly);
+        WebContentsPrinterJni.get().finishPrint(mWebContents, processId, frameId);
     }
 
     @Override
@@ -101,7 +119,7 @@ public class WebContentsPrinter implements Printable {
 
     @NativeMethods
     interface Natives {
-        boolean initiatePrint(
+        long initiatePrint(
                 @Nullable WebContents webContents,
                 int renderProcessId,
                 int renderFrameId,
@@ -113,10 +131,6 @@ public class WebContentsPrinter implements Printable {
                 int renderFrameId,
                 boolean printSelectionOnly);
 
-        void finishPrint(
-                @Nullable WebContents webContents,
-                int renderProcessId,
-                int renderFrameId,
-                boolean printSelectionOnly);
+        void finishPrint(@Nullable WebContents webContents, int renderProcessId, int renderFrameId);
     }
 }

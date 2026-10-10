@@ -9,6 +9,7 @@
 #include "chrome/browser/printing/print_view_manager_common.h"
 #include "chrome/browser/printing/printing_init.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 
@@ -25,30 +26,31 @@ content::RenderFrameHost* GetTargetFrame(content::WebContents* web_contents,
                                          int32_t render_process_id,
                                          int32_t render_frame_id,
                                          bool print_selection_only) {
-  content::RenderFrameHost* rfh =
-      content::RenderFrameHost::FromID(render_process_id, render_frame_id);
-  if (rfh) {
-    // The caller is expected to pass IDs belonging to `web_contents`; a
-    // mismatch means the browser-side bookkeeping is inconsistent.
-    CHECK_EQ(content::WebContents::FromRenderFrameHost(rfh), web_contents);
-  }
-  // If the target frame is invalid, inactive, or no longer live:
-  // - For selection printing, fail safely to avoid printing the whole page.
-  // - For normal printing, fall back to the primary main frame instead of
-  //   GetFrameToPrint(), which targets a focused subframe when it has a
-  //   selection (e.g. hidden text-input iframes in web editors).
-  if (!rfh || !rfh->IsActive() || !rfh->IsRenderFrameLive()) {
-    if (print_selection_only) {
+  if (render_process_id >= 0 && render_frame_id >= 0) {
+    // A frame was named, so this job targets that specific document. Falling
+    // back to another frame would print content the user did not request. The
+    // frame may legitimately be gone or belong to a different WebContents if
+    // the Tab swapped WebContents while a job was outstanding.
+    content::RenderFrameHost* rfh =
+        content::RenderFrameHost::FromID(render_process_id, render_frame_id);
+    if (!rfh ||
+        content::WebContents::FromRenderFrameHost(rfh) != web_contents) {
       return nullptr;
     }
-    if (base::FeatureList::IsEnabled(
-            chrome::android::kPrintFallbackToPrimaryMainFrame)) {
-      rfh = web_contents->GetPrimaryMainFrame();
-    } else {
-      rfh = GetFrameToPrint(web_contents);
-    }
+    return rfh->IsActive() && rfh->IsRenderFrameLive() ? rfh : nullptr;
   }
 
+  if (print_selection_only) {
+    return nullptr;
+  }
+
+  content::RenderFrameHost* rfh = nullptr;
+  if (base::FeatureList::IsEnabled(
+          chrome::android::kPrintFallbackToPrimaryMainFrame)) {
+    rfh = web_contents->GetPrimaryMainFrame();
+  } else {
+    rfh = GetFrameToPrint(web_contents);
+  }
   if (!rfh || !rfh->IsActive() || !rfh->IsRenderFrameLive()) {
     return nullptr;
   }
@@ -57,7 +59,7 @@ content::RenderFrameHost* GetTargetFrame(content::WebContents* web_contents,
 
 }  // namespace
 
-static bool JNI_WebContentsPrinter_InitiatePrint(
+static int64_t JNI_WebContentsPrinter_InitiatePrint(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jweb_contents,
     int32_t render_process_id,
@@ -68,13 +70,13 @@ static bool JNI_WebContentsPrinter_InitiatePrint(
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
   if (!web_contents) {
-    return false;
+    return -1;
   }
 
   content::RenderFrameHost* rfh = GetTargetFrame(
       web_contents, render_process_id, render_frame_id, print_selection_only);
   if (!rfh) {
-    return false;
+    return -1;
   }
 
   PrintViewManagerBasic* print_view_manager =
@@ -83,7 +85,13 @@ static bool JNI_WebContentsPrinter_InitiatePrint(
     InitializePrintingForWebContents(web_contents);
     print_view_manager = PrintViewManagerBasic::FromWebContents(web_contents);
   }
-  return print_view_manager && print_view_manager->InitiatePrint(rfh);
+  if (!print_view_manager || !print_view_manager->InitiatePrint(rfh)) {
+    return -1;
+  }
+
+  content::GlobalRenderFrameHostId global_id = rfh->GetGlobalId();
+  return (static_cast<int64_t>(global_id.child_id.GetUnsafeValue()) << 32) |
+         (static_cast<uint64_t>(global_id.frame_routing_id) & 0xFFFFFFFFULL);
 }
 
 static bool JNI_WebContentsPrinter_Print(
@@ -120,8 +128,7 @@ static void JNI_WebContentsPrinter_FinishPrint(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jweb_contents,
     int32_t render_process_id,
-    int32_t render_frame_id,
-    bool print_selection_only) {
+    int32_t render_frame_id) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   content::WebContents* web_contents =
@@ -130,10 +137,17 @@ static void JNI_WebContentsPrinter_FinishPrint(
     return;
   }
 
-  content::RenderFrameHost* rfh = GetTargetFrame(
-      web_contents, render_process_id, render_frame_id, print_selection_only);
-  if (!rfh) {
-    return;
+  // Teardown must reach the frame the job was started for even if it is no
+  // longer active (e.g. moved into BackForwardCache); otherwise the renderer
+  // retains `print_in_progress_` permanently. Never substitute the current
+  // main frame of a newly navigated page.
+  const bool has_target_frame = render_process_id >= 0 && render_frame_id >= 0;
+  content::RenderFrameHost* rfh =
+      has_target_frame
+          ? content::RenderFrameHost::FromID(render_process_id, render_frame_id)
+          : nullptr;
+  if (rfh && content::WebContents::FromRenderFrameHost(rfh) != web_contents) {
+    rfh = nullptr;
   }
 
   PrintViewManagerBasic* print_view_manager =
