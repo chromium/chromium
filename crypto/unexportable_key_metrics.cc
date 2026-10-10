@@ -11,8 +11,6 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
 #include "base/timer/elapsed_timer.h"
 #include "crypto/keypair.h"
 #include "crypto/sign.h"
@@ -408,11 +406,7 @@ std::string AlgorithmToString(sign::SignatureKind algorithm) {
 }
 
 void MaybeMeasureTpmOperations(UnexportableKeyProvider::Config config) {
-  base::ThreadPool::PostTask(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&MeasureTpmOperationsInternal, std::move(config)));
+  MeasureTpmOperationsInternal(std::move(config));
 }
 
 }  // namespace crypto

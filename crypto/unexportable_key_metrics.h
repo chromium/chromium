@@ -56,7 +56,8 @@ CRYPTO_EXPORT std::string OperationToString(TPMOperation operation);
 CRYPTO_EXPORT std::string AlgorithmToString(sign::SignatureKind algorithm);
 
 // Records UMA metrics of TPM availability, latency and successful usage.
-// Does the work on a new background task.
+// Runs slow, blocking TPM operations on the calling sequence, which must allow
+// blocking.
 CRYPTO_EXPORT void MaybeMeasureTpmOperations(
     UnexportableKeyProvider::Config config);
 
