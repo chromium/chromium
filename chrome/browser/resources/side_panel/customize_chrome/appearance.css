@@ -22,8 +22,8 @@
 #editButtonsContainer {
   display: flex;
   gap: 8px;
-  margin: 0 16px 16px;
-  width: calc(100% - 32px);
+  margin: 0 var(--sp-card-inline-padding) 16px;
+  width: calc(100% - 2 * var(--sp-card-inline-padding));
 }
 
 #thirdPartyManageLinkButton {
@@ -78,19 +78,22 @@ managed-dialog {
 
 customize-color-scheme-mode,
 .sp-hr {
-  width: calc(100% - 32px);
+  width: calc(100% - 2 * var(--sp-card-inline-padding));
 }
 
 .sp-hr {
-  margin: 0 16px;
+  margin: 0 var(--sp-card-inline-padding);
 }
 
 customize-color-scheme-mode {
   display: block;
-  margin: 16px;
+  margin: 16px var(--sp-card-inline-padding);
 }
 
 cr-theme-color-picker {
+  --cr-theme-color-padding: var(--customize-chrome-grid-gap);
+  --cr-theme-color-picker-grid-gap: var(--customize-chrome-grid-gap);
+  --cr-theme-color-picker-grid-padding: 0 var(--sp-card-inline-padding);
   display: block;
   margin-bottom: 16px;
 }
@@ -100,7 +103,7 @@ cr-theme-color-picker {
 }
 
 .theme-button:not([hidden]) ~ #editButtonsContainer {
-  margin: 20px 16px;
+  margin: 20px var(--sp-card-inline-padding);
 }
 
 .link-out-button {

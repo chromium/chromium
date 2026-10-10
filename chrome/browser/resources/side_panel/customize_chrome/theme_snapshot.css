@@ -16,7 +16,7 @@
 
 .snapshot-container {
   box-sizing: border-box;
-  padding: 0 16px 8px;
+  padding: 0 var(--sp-card-inline-padding) 8px;
   text-align: center;
   width: 100%;
 }
@@ -56,7 +56,7 @@
   margin-bottom: 12px;
   position: relative;
   width: unset;
-  padding: 16px;
+  padding: 16px var(--sp-card-inline-padding);
 }
 
 img,

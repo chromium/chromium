@@ -10,6 +10,30 @@
  * #include=cr-icons-lit sp-shared-style
  * #css_wrapper_metadata_end */
 
+:host {
+  /* Content stops growing (and remains start-aligned) beyond this width. */
+<if expr="is_android">
+   /* The widest Android side panel's content width. */
+  --customize-chrome-max-width: 400px;
+</if>
+<if expr="not is_android">
+   /* The default (and minimum) width on W/M/L. */
+  --customize-chrome-max-width: 360px;
+</if>
+  /* Inline padding is 16px when the side panel is at least 360px wide (the
+   * default desktop width), and scales down linearly to 8px at 200px wide
+   * (the narrowest Android side panel). */
+  --sp-card-inline-padding: clamp(8px, 5vw - 2px, 16px);
+  /* sp_shared_vars.css declares this on the html element, where var() has
+   * already resolved to the default 16px; re-declare it so it picks up the
+   * override above. */
+  --sp-card-padding:
+      var(--sp-card-block-padding) var(--sp-card-inline-padding);
+  /* Gap between grid tiles; always half the inline padding (8px at >= 360px,
+   * 4px at 200px). */
+  --customize-chrome-grid-gap: calc(var(--sp-card-inline-padding) / 2);
+}
+
 #container {
   box-sizing: border-box;
   color: var(--cr-primary-text-color);
@@ -24,14 +48,15 @@
 }
 
 sp-heading {
-  margin: 8px 16px;
+  margin: 8px var(--sp-card-inline-padding);
 }
 
 .sp-card {
   font-size: 12px;
   font-weight: 500;
   line-height: 16px;
-  max-width: calc(360px - 2 * var(--sp-body-padding));
+  max-width: calc(
+      var(--customize-chrome-max-width) - 2 * var(--sp-body-padding));
 }
 
 #toolbarButton {
@@ -40,7 +65,7 @@ sp-heading {
   display: flex;
   height: 52px;
   justify-content: space-between;
-  padding: 8px 16px;
+  padding: 8px var(--sp-card-inline-padding);
 }
 
 #toolbar-customization-heading {
@@ -61,7 +86,7 @@ customize-chrome-themes,
 customize-chrome-wallpaper-search,
 customize-chrome-toolbar {
   display: block;
-  max-width: 360px;
+  max-width: var(--customize-chrome-max-width);
   width: 100%;
 }
 
@@ -72,7 +97,7 @@ customize-chrome-appearance {
 #extensions .description {
   color: var(--cr-secondary-text-color);
   font-weight: 400;
-  padding: 0 16px 4px;
+  padding: 0 var(--sp-card-inline-padding) 4px;
 }
 
 .description a {
@@ -83,7 +108,7 @@ customize-chrome-appearance {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  padding: 8px 16px;
+  padding: 8px var(--sp-card-inline-padding);
 }
 
 #couponsButton .cr-icon {

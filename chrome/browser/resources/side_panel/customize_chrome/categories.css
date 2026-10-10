@@ -17,7 +17,7 @@ sp-heading {
 
 cr-grid {
   --cr-column-width: 1fr;
-  --cr-grid-gap: 8px;
+  --cr-grid-gap: var(--customize-chrome-grid-gap);
   display: block;
   padding: 0 var(--sp-card-inline-padding) 16px;
 }
@@ -84,6 +84,7 @@ cr-grid {
   color: var(--cr-primary-text-color);
   font-size: 11px;
   font-weight: 400;
+  hyphens: auto;
   line-height: 16px;
   text-align: center;
   overflow-wrap: break-word;
@@ -96,8 +97,8 @@ cr-grid {
   padding-block-end: 10px;
   /* To result in an extra 8px vertical gap between first 4 tiles. */
   padding-block-start: 4px;
-  /* To result in an extra 8px horizontal gap between first 4 tiles. */
-  padding-inline-end: 4px;
+  /* To result in an extra grid gap horizontally between first 4 tiles. */
+  padding-inline-end: calc(var(--customize-chrome-grid-gap) / 2);
 }
 
 .tile:nth-of-type(-n+2) {
@@ -108,8 +109,8 @@ cr-grid {
 
 .tile:nth-of-type(-n+4):nth-of-type(even) {
   padding-inline-end: 0;
-  /* To result in an extra 8px horizontal gap between first 4 tiles. */
-  padding-inline-start: 4px;
+  /* To result in an extra grid gap horizontally between first 4 tiles. */
+  padding-inline-start: calc(var(--customize-chrome-grid-gap) / 2);
 }
 
 .tile:nth-of-type(-n+4) .image-container {

@@ -22,10 +22,10 @@ sp-heading {
 
 cr-grid {
   --cr-column-width: 1fr;
-  --cr-grid-gap: 8px;
+  --cr-grid-gap: var(--customize-chrome-grid-gap);
   --cr-grid-width: 100%;
   display: block;
-  padding: var(--sp-card-inline-padding);
+  padding: 16px var(--sp-card-inline-padding);
 }
 
 .tile {

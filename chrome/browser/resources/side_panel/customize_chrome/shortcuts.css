@@ -32,11 +32,11 @@ cr-radio-group {
   align-items: flex-start;
   gap: 16px;
   padding: var(--sp-card-padding);
-  padding-inline-start: 32px;
+  padding-inline-start: calc(2 * var(--sp-card-inline-padding));
 }
 
 .sub-options .option {
-  padding-inline-start: 48px;
+  padding-inline-start: calc(3 * var(--sp-card-inline-padding));
 }
 
 .option:hover {

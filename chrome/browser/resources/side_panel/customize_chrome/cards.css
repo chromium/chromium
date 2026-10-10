@@ -22,7 +22,7 @@
 .card {
   margin: 0;
   padding: var(--sp-card-padding);
-  padding-inline-start: 32px;
+  padding-inline-start: calc(2 * var(--sp-card-inline-padding));
 }
 
 .card:hover {

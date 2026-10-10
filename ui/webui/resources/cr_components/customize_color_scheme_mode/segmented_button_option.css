@@ -13,6 +13,7 @@
   box-sizing: border-box;
   color: var(--color-segmented-button-foreground-unchecked,
       var(--cr-fallback-color-on-surface-subtle));
+  container-type: inline-size;
   cursor: pointer;
   height: 100%;
   overflow: hidden;
@@ -95,4 +96,15 @@ cr-ripple {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* Drop the icons when there is not enough room to show them alongside the
+ * label (e.g. in narrow side panels). Below a 64px content box, the 16px icon
+ * and its 8px margin would leave less than 40px for the label, which is
+ * roughly the width of the longest English label ("Device") at 12px. */
+@container (max-width: 64px) {
+  :host([checked]) #checkmark,
+  #prefixIcon {
+    display: none;
+  }
 }
