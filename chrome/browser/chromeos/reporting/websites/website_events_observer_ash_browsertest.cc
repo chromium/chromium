@@ -10,12 +10,13 @@
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_test_helper.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/reporting/metric_reporting_prefs.h"
 #include "chrome/browser/policy/dm_token_utils.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/dbus/missive/missive_client_test_observer.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/policy/core/common/cloud/dm_token.h"
@@ -92,8 +93,9 @@ class WebsiteEventsObserverBrowserTest
   }
 
   Profile* profile() {
-    return ::ash::ProfileHelper::Get()->GetProfileByAccountId(
-        affiliation_mixin_.account_id());
+    return Profile::FromBrowserContext(
+        ::ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+            affiliation_mixin_.account_id()));
   }
 
   ::policy::DevicePolicyCrosTestHelper test_helper_;
