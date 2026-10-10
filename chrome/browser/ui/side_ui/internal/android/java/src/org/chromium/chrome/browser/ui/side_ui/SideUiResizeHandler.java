@@ -233,6 +233,11 @@ import java.util.Arrays;
     // View.OnTouchListener implementation:
     @Override
     public boolean onTouch(View view, MotionEvent event) {
+        if (mSideUiCoordinator.areSideUiUpdatesPaused(mContainer.getSideUiId())) {
+            clearDragState();
+            return false;
+        }
+
         switch (event.getActionMasked()) {
             case MotionEvent.ACTION_DOWN:
                 // A stale drag means the previous gesture never delivered its ACTION_UP or

@@ -1756,4 +1756,404 @@ public class SideUiCoordinatorImplTest {
 
         assertNull(mCoordinator.getResizeHandleViewForTesting(AnchorSide.RIGHT));
     }
+
+    @Test
+    public void testPauseSideUiUpdates_WindowTooNarrow_KeepsPausedSizeUntilResumed() {
+        // Arrange: Show a container and pause its UI updates.
+        var sideUiContainer =
+                new TestSideUiContainer(
+                        mCoordinator,
+                        mSideUiContainerView,
+                        SideUiId.VERTICAL_TABS,
+                        AnchorSide.LEFT);
+        sideUiContainer.mMinWidthDp = 200;
+        mCoordinator.registerSideUiContainer(sideUiContainer);
+        requestUiUpdate(sideUiContainer, /* suppressAnimations= */ true);
+        @Px int pausedWidth = ViewUtils.dpToPx(mTestActivity, sideUiContainer.mMaxWidthDp);
+        assertEquals(pausedWidth, mSideUiContainerView.getWidth());
+
+        mCoordinator.pauseSideUiUpdates(SideUiId.VERTICAL_TABS);
+        assertTrue(mCoordinator.areSideUiUpdatesPaused(SideUiId.VERTICAL_TABS));
+
+        mCoordinator.addObserver(mSideUiObserver);
+        clearInvocations(mSideUiObserver);
+        int numUpdatesStarting = sideUiContainer.mNumOnUiUpdateStartingReceived;
+        int numUpdatesCompleted = sideUiContainer.mNumOnUiUpdateCompletedReceived;
+
+        // Act: Make the window too narrow for the container.
+        setWindowWidthDp(MIN_WEB_CONTENTS_WIDTH_DP + sideUiContainer.mMinWidthDp - 1);
+
+        // Assert: The container keeps reserving its paused width.
+        verify(mSideUiObserver, never()).onSideUiSpecsChanged(any(), any());
+        assertEquals(
+                pausedWidth,
+                mCoordinator.getCurrentSideUiSpecs().getReservedWidth(AnchorSide.LEFT));
+        assertTrue(mCoordinator.isSideUiShowing(SideUiId.VERTICAL_TABS));
+        assertTrue(mCoordinator.canShowSideUi(SideUiId.VERTICAL_TABS));
+
+        // Assert: The container's View keeps its paused size, and the container isn't notified.
+        assertEquals(mLeftAnchorContainer, mSideUiContainerView.getParent());
+        assertEquals(View.VISIBLE, mLeftAnchorContainer.getVisibility());
+        assertEquals(pausedWidth, mSideUiContainerView.getWidth());
+        assertEquals(0, sideUiContainer.mNumOnWillAutoCloseReceived);
+        assertEquals(numUpdatesStarting, sideUiContainer.mNumOnUiUpdateStartingReceived);
+        assertEquals(numUpdatesCompleted, sideUiContainer.mNumOnUiUpdateCompletedReceived);
+
+        // Act: Resume UI updates.
+        mCoordinator.resumeSideUiUpdates(SideUiId.VERTICAL_TABS);
+
+        // Assert: The deferred auto-close is applied.
+        assertFalse(mCoordinator.areSideUiUpdatesPaused(SideUiId.VERTICAL_TABS));
+        verify(mSideUiObserver).onSideUiSpecsChanged(eq(new SideUiSpecs(0, 0)), any());
+        assertFalse(mCoordinator.isSideUiShowing(SideUiId.VERTICAL_TABS));
+        assertNull(mSideUiContainerView.getParent());
+        assertEquals(View.GONE, mLeftAnchorContainer.getVisibility());
+        assertEquals(1, sideUiContainer.mNumOnWillAutoCloseReceived);
+        assertEquals(false, sideUiContainer.mLastIsShowableOnWillAutoClose);
+        assertEquals(numUpdatesCompleted + 1, sideUiContainer.mNumOnUiUpdateCompletedReceived);
+        assertEquals(
+                Integer.valueOf(pausedWidth),
+                sideUiContainer.mLastOldReservedWidthOnUpdateCompleted);
+        assertEquals(Integer.valueOf(0), sideUiContainer.mLastNewReservedWidthOnUpdateCompleted);
+    }
+
+    @Test
+    public void testPauseSideUiUpdates_DoesNotQueryPausedContainerForShowableSize() {
+        // Arrange: Show a container and pause its UI updates.
+        var sideUiContainer =
+                new TestSideUiContainer(
+                        mCoordinator,
+                        mSideUiContainerView,
+                        SideUiId.VERTICAL_TABS,
+                        AnchorSide.LEFT);
+        mCoordinator.registerSideUiContainer(sideUiContainer);
+        requestUiUpdate(sideUiContainer, /* suppressAnimations= */ true);
+        @Px int pausedWidth = ViewUtils.dpToPx(mTestActivity, sideUiContainer.mMaxWidthDp);
+        mCoordinator.pauseSideUiUpdates(SideUiId.VERTICAL_TABS);
+        sideUiContainer.mLastAvailableWidth = null;
+        sideUiContainer.mNumHasContentToShowCalls = 0;
+
+        // Act: Run UI updates, and query the showability and the expected specs.
+        setWindowWidthDp(MIN_WEB_CONTENTS_WIDTH_DP + sideUiContainer.mMaxWidthDp + 100);
+        requestUiUpdate(sideUiContainer, /* suppressAnimations= */ true);
+        mCoordinator.canShowSideUi(SideUiId.VERTICAL_TABS);
+        SideUiSpecs expectedSpecs = mCoordinator.getExpectedSideUiSpecsForTab(mTab);
+
+        // Assert: The paused container isn't asked for its showable size or whether it has content
+        // to show, and the expected specs have its paused size.
+        assertNull(sideUiContainer.mLastAvailableWidth);
+        assertEquals(0, sideUiContainer.mNumHasContentToShowCalls);
+        assertEquals(pausedWidth, expectedSpecs.getReservedWidth(AnchorSide.LEFT));
+        assertEquals(pausedWidth, expectedSpecs.getRenderedWidth(AnchorSide.LEFT));
+        assertEquals(HeightType.TOOLBAR, expectedSpecs.getHeightType(AnchorSide.LEFT));
+
+        // Act: Resume UI updates.
+        mCoordinator.resumeSideUiUpdates(SideUiId.VERTICAL_TABS);
+
+        // Assert: The resumed container is asked for its showable size again.
+        assertNotNull(sideUiContainer.mLastAvailableWidth);
+    }
+
+    @Test
+    public void testPauseSideUiUpdates_OtherContainersLayOutAroundPausedSize() {
+        // Arrange: Show the left container and pause its UI updates.
+        var leftContainer =
+                new TestSideUiContainer(
+                        mCoordinator,
+                        mSideUiContainerView,
+                        SideUiId.VERTICAL_TABS,
+                        AnchorSide.LEFT);
+        View rightView = new FrameLayout(mTestActivity);
+        var rightContainer =
+                new TestSideUiContainer(
+                        mCoordinator, rightView, SideUiId.SIDE_PANEL, AnchorSide.RIGHT);
+        rightContainer.mHasContentForTabMap.put(mTab, false);
+        mCoordinator.registerSideUiContainer(leftContainer);
+        mCoordinator.registerSideUiContainer(rightContainer);
+        requestUiUpdate(leftContainer, /* suppressAnimations= */ true);
+        @Px int pausedWidth = ViewUtils.dpToPx(mTestActivity, leftContainer.mMaxWidthDp);
+
+        mCoordinator.pauseSideUiUpdates(SideUiId.VERTICAL_TABS);
+        int numLeftUpdatesCompleted = leftContainer.mNumOnUiUpdateCompletedReceived;
+
+        // Act: Shrink the left container, and show the right container.
+        leftContainer.mMaxWidthDp = 300;
+        @Px int newLeftWidth = ViewUtils.dpToPx(mTestActivity, leftContainer.mMaxWidthDp);
+        rightContainer.mHasContentForTabMap.put(mTab, true);
+        requestUiUpdate(rightContainer, /* suppressAnimations= */ true);
+
+        // Assert: The right container is laid out around the left container's paused width.
+        @Px int minWebContentsWidth = ViewUtils.dpToPx(mTestActivity, MIN_WEB_CONTENTS_WIDTH_DP);
+        assertEquals(
+                Integer.valueOf(WINDOW_SIZE_PX.getWidth() - minWebContentsWidth - pausedWidth),
+                rightContainer.mLastAvailableWidth);
+        assertEquals(mRightAnchorContainer, rightView.getParent());
+        assertEquals(
+                ViewUtils.dpToPx(mTestActivity, rightContainer.mMaxWidthDp), rightView.getWidth());
+
+        // Assert: The left container keeps its paused size.
+        assertEquals(
+                pausedWidth,
+                mCoordinator.getCurrentSideUiSpecs().getReservedWidth(AnchorSide.LEFT));
+        assertEquals(pausedWidth, mSideUiContainerView.getWidth());
+        assertEquals(numLeftUpdatesCompleted, leftContainer.mNumOnUiUpdateCompletedReceived);
+
+        // Act: Resume UI updates.
+        mCoordinator.resumeSideUiUpdates(SideUiId.VERTICAL_TABS);
+
+        // Assert: The left container is brought to the latest state, and the right container is
+        // laid out around it.
+        assertEquals(
+                newLeftWidth,
+                mCoordinator.getCurrentSideUiSpecs().getReservedWidth(AnchorSide.LEFT));
+        assertEquals(newLeftWidth, mSideUiContainerView.getWidth());
+        assertEquals(numLeftUpdatesCompleted + 1, leftContainer.mNumOnUiUpdateCompletedReceived);
+        assertEquals(
+                Integer.valueOf(pausedWidth), leftContainer.mLastOldReservedWidthOnUpdateCompleted);
+        assertEquals(
+                Integer.valueOf(newLeftWidth),
+                leftContainer.mLastNewReservedWidthOnUpdateCompleted);
+        assertEquals(
+                Integer.valueOf(WINDOW_SIZE_PX.getWidth() - minWebContentsWidth - newLeftWidth),
+                rightContainer.mLastAvailableWidth);
+    }
+
+    @Test
+    public void testPauseSideUiUpdates_DuringTransition_FreezesAtTransitionEndState() {
+        var sideUiContainer =
+                new TestSideUiContainer(
+                        mCoordinator,
+                        mSideUiContainerView,
+                        SideUiId.VERTICAL_TABS,
+                        AnchorSide.LEFT);
+        mCoordinator.registerSideUiContainer(sideUiContainer);
+
+        // Arrange: Start an animated open transition and leave it in progress.
+        requestUiUpdate(sideUiContainer, /* suppressAnimations= */ false);
+        assertEquals(0, mCoordinator.getCurrentSideUiSpecs().getReservedWidth(AnchorSide.LEFT));
+
+        // Act: Pause UI updates while the transition is in progress.
+        mCoordinator.pauseSideUiUpdates(SideUiId.VERTICAL_TABS);
+
+        // Assert: The transition was ended before the container was paused.
+        @Px int expectedWidth = ViewUtils.dpToPx(mTestActivity, sideUiContainer.mMaxWidthDp);
+        assertEquals(
+                expectedWidth,
+                mCoordinator.getCurrentSideUiSpecs().getReservedWidth(AnchorSide.LEFT));
+        assertEquals(expectedWidth, mSideUiContainerView.getWidth());
+        assertEquals(1, sideUiContainer.mNumOnUiUpdateCompletedReceived);
+
+        // Assert: Resuming without any change doesn't update the container again.
+        mCoordinator.resumeSideUiUpdates(SideUiId.VERTICAL_TABS);
+        assertEquals(expectedWidth, mSideUiContainerView.getWidth());
+        assertEquals(1, sideUiContainer.mNumOnUiUpdateCompletedReceived);
+    }
+
+    @Test
+    public void testPauseSideUiUpdates_NotRegistered_NoOp() {
+        mCoordinator.addObserver(mSideUiObserver);
+        clearInvocations(mSideUiObserver);
+
+        mCoordinator.pauseSideUiUpdates(SideUiId.VERTICAL_TABS);
+        assertFalse(mCoordinator.areSideUiUpdatesPaused(SideUiId.VERTICAL_TABS));
+
+        // Resuming a container that isn't paused doesn't run a UI update.
+        mCoordinator.resumeSideUiUpdates(SideUiId.VERTICAL_TABS);
+        verify(mSideUiObserver, never()).onShowableSideUisUpdated(any());
+    }
+
+    @Test
+    public void testUnregisterSideUiContainer_ResumesPausedContainer() {
+        // Arrange: Show a container, pause its UI updates, and hide it while it's paused.
+        var sideUiContainer =
+                new TestSideUiContainer(
+                        mCoordinator,
+                        mSideUiContainerView,
+                        SideUiId.VERTICAL_TABS,
+                        AnchorSide.LEFT);
+        mCoordinator.registerSideUiContainer(sideUiContainer);
+        requestUiUpdate(sideUiContainer, /* suppressAnimations= */ true);
+        mCoordinator.pauseSideUiUpdates(SideUiId.VERTICAL_TABS);
+        sideUiContainer.mHasContentForTabMap.put(mTab, false);
+        requestUiUpdate(sideUiContainer, /* suppressAnimations= */ true);
+        assertEquals(mLeftAnchorContainer, mSideUiContainerView.getParent());
+
+        // Act: Unregister the container while it's paused.
+        mCoordinator.unregisterSideUiContainer(sideUiContainer);
+
+        // Assert: The container's UI updates were resumed, bringing it to the latest state before
+        // it was unregistered.
+        assertFalse(mCoordinator.areSideUiUpdatesPaused(SideUiId.VERTICAL_TABS));
+        assertEquals(1, sideUiContainer.mNumOnWillAutoCloseReceived);
+        assertNull(mSideUiContainerView.getParent());
+        assertEquals(0, mCoordinator.getCurrentSideUiSpecs().getReservedWidth(AnchorSide.LEFT));
+        assertNull(mCoordinator.getSideUiContainerById(SideUiId.VERTICAL_TABS));
+    }
+
+    @Test
+    public void testPauseSideUiUpdates_HigherPriorityContainerLaysOutAroundPausedContainer() {
+        // Arrange: Show the lower-priority right container, and pause its UI updates.
+        var leftContainer =
+                new TestSideUiContainer(
+                        mCoordinator,
+                        mSideUiContainerView,
+                        SideUiId.VERTICAL_TABS,
+                        AnchorSide.LEFT);
+        leftContainer.mMinWidthDp = 200;
+        leftContainer.mHasContentForTabMap.put(mTab, false);
+        View rightView = new FrameLayout(mTestActivity);
+        var rightContainer =
+                new TestSideUiContainer(
+                        mCoordinator, rightView, SideUiId.SIDE_PANEL, AnchorSide.RIGHT);
+        mCoordinator.registerSideUiContainer(leftContainer);
+        mCoordinator.registerSideUiContainer(rightContainer);
+        requestUiUpdate(rightContainer, /* suppressAnimations= */ true);
+        @Px int pausedWidth = ViewUtils.dpToPx(mTestActivity, rightContainer.mMaxWidthDp);
+        mCoordinator.pauseSideUiUpdates(SideUiId.SIDE_PANEL);
+
+        // Act: Show the higher-priority left container.
+        leftContainer.mHasContentForTabMap.put(mTab, true);
+        requestUiUpdate(leftContainer, /* suppressAnimations= */ true);
+
+        // Assert: The left container is laid out around the right container's paused width.
+        @Px int minWebContentsWidth = ViewUtils.dpToPx(mTestActivity, MIN_WEB_CONTENTS_WIDTH_DP);
+        assertEquals(
+                Integer.valueOf(WINDOW_SIZE_PX.getWidth() - minWebContentsWidth - pausedWidth),
+                leftContainer.mLastAvailableWidth);
+        assertEquals(mLeftAnchorContainer, mSideUiContainerView.getParent());
+
+        // Act: Make the window too narrow for the left container beside the paused right container.
+        setWindowWidthDp(
+                MIN_WEB_CONTENTS_WIDTH_DP
+                        + rightContainer.mMaxWidthDp
+                        + leftContainer.mMinWidthDp
+                        - 1);
+
+        // Assert: The left container is auto-closed rather than overlapping the right container,
+        // which keeps its paused size.
+        assertEquals(1, leftContainer.mNumOnWillAutoCloseReceived);
+        assertEquals(false, leftContainer.mLastIsShowableOnWillAutoClose);
+        assertFalse(mCoordinator.canShowSideUi(SideUiId.VERTICAL_TABS));
+        assertNull(mSideUiContainerView.getParent());
+        assertEquals(
+                pausedWidth,
+                mCoordinator.getCurrentSideUiSpecs().getReservedWidth(AnchorSide.RIGHT));
+        assertEquals(mRightAnchorContainer, rightView.getParent());
+        assertEquals(pausedWidth, rightView.getWidth());
+        assertEquals(0, rightContainer.mNumOnWillAutoCloseReceived);
+    }
+
+    @Test
+    public void testPauseSideUiUpdates_UnchangedShowability_DoesNotNotifyObservers() {
+        // Arrange: Show both containers.
+        var leftContainer =
+                new TestSideUiContainer(
+                        mCoordinator,
+                        mSideUiContainerView,
+                        SideUiId.VERTICAL_TABS,
+                        AnchorSide.LEFT);
+        View rightView = new FrameLayout(mTestActivity);
+        var rightContainer =
+                new TestSideUiContainer(
+                        mCoordinator, rightView, SideUiId.SIDE_PANEL, AnchorSide.RIGHT);
+        mCoordinator.registerSideUiContainer(leftContainer);
+        mCoordinator.registerSideUiContainer(rightContainer);
+        requestUiUpdate(leftContainer, /* suppressAnimations= */ true);
+        mCoordinator.addObserver(mSideUiObserver);
+        clearInvocations(mSideUiObserver);
+
+        // Act: Pause the lower-priority right container, which is laid out first while paused, run
+        // a UI update, then resume it.
+        mCoordinator.pauseSideUiUpdates(SideUiId.SIDE_PANEL);
+        requestUiUpdate(leftContainer, /* suppressAnimations= */ true);
+        mCoordinator.resumeSideUiUpdates(SideUiId.SIDE_PANEL);
+
+        // Assert: Both containers stayed showable, so observers aren't notified.
+        verify(mSideUiObserver, never()).onShowableSideUisUpdated(any());
+    }
+
+    @Test
+    public void testPauseSideUiUpdates_KeepsTopControlsLockedUntilResumed() {
+        var sideUiContainer =
+                new TestSideUiContainer(
+                        mCoordinator,
+                        mSideUiContainerView,
+                        SideUiId.VERTICAL_TABS,
+                        AnchorSide.LEFT);
+        mCoordinator.registerSideUiContainer(sideUiContainer);
+        requestUiUpdate(sideUiContainer, /* suppressAnimations= */ true);
+        assertEquals(1, mBrowserControlsVisibilityDelegate.mShowCount);
+
+        // Act: Hide the container while it's paused.
+        mCoordinator.pauseSideUiUpdates(SideUiId.VERTICAL_TABS);
+        sideUiContainer.mHasContentForTabMap.put(mTab, false);
+        requestUiUpdate(sideUiContainer, /* suppressAnimations= */ true);
+
+        // Assert: The container is still showing, so top controls stay locked.
+        assertTrue(mCoordinator.isSideUiShowing(SideUiId.VERTICAL_TABS));
+        assertEquals(mLeftAnchorContainer, mSideUiContainerView.getParent());
+        assertEquals(0, mBrowserControlsVisibilityDelegate.mReleaseCount);
+        assertEquals(BrowserControlsState.SHOWN, (int) mBrowserControlsVisibilityDelegate.get());
+        assertEquals(0, sideUiContainer.mNumOnWillAutoCloseReceived);
+
+        // Act: Resume UI updates.
+        mCoordinator.resumeSideUiUpdates(SideUiId.VERTICAL_TABS);
+
+        // Assert: The container is hidden and top controls are unlocked. The resume update isn't
+        // requested by the container, so it's notified of the auto-close.
+        assertNull(mSideUiContainerView.getParent());
+        assertEquals(1, mBrowserControlsVisibilityDelegate.mReleaseCount);
+        assertEquals(BrowserControlsState.BOTH, (int) mBrowserControlsVisibilityDelegate.get());
+        assertEquals(1, sideUiContainer.mNumOnWillAutoCloseReceived);
+    }
+
+    @Test
+    public void testResumeSideUiUpdates_AppliesDeferredAutoRestore() {
+        // Arrange: Auto-close a container by making the window too narrow, then pause it.
+        var sideUiContainer =
+                new TestSideUiContainer(
+                        mCoordinator,
+                        mSideUiContainerView,
+                        SideUiId.VERTICAL_TABS,
+                        AnchorSide.LEFT);
+        sideUiContainer.mMinWidthDp = 200;
+        mCoordinator.registerSideUiContainer(sideUiContainer);
+        requestUiUpdate(sideUiContainer, /* suppressAnimations= */ true);
+        setWindowWidthDp(MIN_WEB_CONTENTS_WIDTH_DP + sideUiContainer.mMinWidthDp - 1);
+        assertEquals(1, sideUiContainer.mNumOnWillAutoCloseReceived);
+        assertNull(mSideUiContainerView.getParent());
+
+        mCoordinator.pauseSideUiUpdates(SideUiId.VERTICAL_TABS);
+
+        // Act: Make the window wide enough for the container again.
+        setWindowWidthDp(MIN_WEB_CONTENTS_WIDTH_DP + sideUiContainer.mMaxWidthDp + 100);
+
+        // Assert: The container stays hidden, and the auto-restore is deferred.
+        assertEquals(0, mCoordinator.getCurrentSideUiSpecs().getReservedWidth(AnchorSide.LEFT));
+        assertFalse(mCoordinator.canShowSideUi(SideUiId.VERTICAL_TABS));
+        assertEquals(0, sideUiContainer.mNumOnWillAutoRestoreReceived);
+        assertNull(mSideUiContainerView.getParent());
+
+        // Act: Resume UI updates.
+        mCoordinator.resumeSideUiUpdates(SideUiId.VERTICAL_TABS);
+
+        // Assert: The deferred auto-restore is applied.
+        @Px int expectedWidth = ViewUtils.dpToPx(mTestActivity, sideUiContainer.mMaxWidthDp);
+        assertEquals(1, sideUiContainer.mNumOnWillAutoRestoreReceived);
+        assertEquals(mLeftAnchorContainer, mSideUiContainerView.getParent());
+        assertEquals(expectedWidth, mSideUiContainerView.getWidth());
+    }
+
+    private void requestUiUpdate(SideUiContainer sideUiContainer, boolean suppressAnimations) {
+        mCoordinator.updateUi(
+                new UiUpdateRequest(
+                        sideUiContainer.getSideUiId(),
+                        suppressAnimations,
+                        UpdateReason.SIDE_UI_REQUEST));
+    }
+
+    private void setWindowWidthDp(int windowWidthDp) {
+        RuntimeEnvironment.setQualifiers("w" + windowWidthDp + "dp-h1080dp-mdpi");
+        mCoordinator.onConfigurationChanged(new Configuration());
+    }
 }

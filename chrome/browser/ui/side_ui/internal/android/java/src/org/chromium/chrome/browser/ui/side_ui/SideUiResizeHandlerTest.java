@@ -8,10 +8,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.ui.side_ui.SideUiResizeHandler.TOUCH_STATE_HISTOGRAM;
@@ -372,9 +373,10 @@ public class SideUiResizeHandlerTest {
                                 UpdateReason.RESIZE_COMMITTED));
 
         // The drag is over, so any trailing event is ignored.
+        clearInvocations(mSideUiCoordinator);
         dispatch(handler, MotionEvent.ACTION_MOVE, 170f);
         verify(mSideUiContainer, never()).onResizeLive(CONTAINER_WIDTH_PX + 70);
-        verifyNoMoreInteractions(mSideUiCoordinator);
+        verify(mSideUiCoordinator, never()).updateUi(any());
         histogramWatcher.assertExpected();
     }
 
@@ -422,9 +424,10 @@ public class SideUiResizeHandlerTest {
                                 UpdateReason.RESIZE_COMMITTED));
 
         // The drag is over, so any trailing event is ignored.
+        clearInvocations(mSideUiCoordinator);
         dispatch(handler, MotionEvent.ACTION_MOVE, 170f);
         verify(mSideUiContainer, never()).onResizeLive(CONTAINER_WIDTH_PX + 70);
-        verifyNoMoreInteractions(mSideUiCoordinator);
+        verify(mSideUiCoordinator, never()).updateUi(any());
         histogramWatcher.assertExpected();
     }
 
@@ -484,7 +487,7 @@ public class SideUiResizeHandlerTest {
 
         verify(mSideUiContainer, never()).onResizeLive(anyInt());
         verify(mSideUiContainer, never()).onResizeCommitted(anyInt());
-        verifyNoMoreInteractions(mSideUiCoordinator);
+        verify(mSideUiCoordinator, never()).updateUi(any());
         assertNull(mAnchorContainerParent.getPointerIcon());
         histogramWatcher.assertExpected();
     }
@@ -540,7 +543,25 @@ public class SideUiResizeHandlerTest {
 
         verify(mSideUiContainer, never()).onResizeLive(anyInt());
         verify(mSideUiContainer, never()).onResizeCommitted(anyInt());
-        verifyNoMoreInteractions(mSideUiCoordinator);
+        verify(mSideUiCoordinator, never()).updateUi(any());
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testEventsWhileUpdatesPausedAreIgnored() {
+        SideUiResizeHandler handler = createHandler(AnchorSide.LEFT);
+        when(mSideUiCoordinator.areSideUiUpdatesPaused(SideUiId.VERTICAL_TABS)).thenReturn(true);
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder().expectNoRecords(TOUCH_STATE_HISTOGRAM).build();
+
+        dispatch(handler, MotionEvent.ACTION_DOWN, 100f);
+        dispatch(handler, MotionEvent.ACTION_MOVE, 150f);
+        dispatch(handler, MotionEvent.ACTION_UP, 160f);
+
+        assertNull(mAnchorContainerParent.getPointerIcon());
+        verify(mSideUiContainer, never()).onResizeLive(anyInt());
+        verify(mSideUiContainer, never()).onResizeCommitted(anyInt());
+        verify(mSideUiCoordinator, never()).updateUi(any());
         histogramWatcher.assertExpected();
     }
 

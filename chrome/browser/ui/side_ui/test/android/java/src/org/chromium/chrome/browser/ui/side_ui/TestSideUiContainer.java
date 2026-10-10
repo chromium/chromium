@@ -38,6 +38,9 @@ public final class TestSideUiContainer implements SideUiContainer {
     /** Map of {@link Tab} to whether this container has content to show for that tab. */
     public final Map<Tab, Boolean> mHasContentForTabMap = new ArrayMap<>();
 
+    /** Number of times {@link #hasContentToShow} is called. */
+    public int mNumHasContentToShowCalls;
+
     /**
      * Whether browser top controls should remain locked when this container is showing.
      *
@@ -189,6 +192,7 @@ public final class TestSideUiContainer implements SideUiContainer {
 
     @Override
     public boolean hasContentToShow(Tab tab) {
+        mNumHasContentToShowCalls++;
         return mHasContentForTabMap.getOrDefault(tab, true);
     }
 

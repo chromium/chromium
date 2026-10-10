@@ -140,7 +140,8 @@ public interface SideUiCoordinator extends SideUiStateProvider {
             UpdateReason.FULL_SCREEN_MODE_ENTERED,
             UpdateReason.FULL_SCREEN_MODE_EXITED,
             UpdateReason.RESIZE_LIVE,
-            UpdateReason.RESIZE_COMMITTED
+            UpdateReason.RESIZE_COMMITTED,
+            UpdateReason.UPDATES_RESUMED
         })
         @Target(ElementType.TYPE_USE)
         public @interface UpdateReason {
@@ -175,7 +176,13 @@ public interface SideUiCoordinator extends SideUiStateProvider {
             /** The final update committing a manual resize. */
             int RESIZE_COMMITTED = 6;
 
-            int NUM_ENTRIES = 7;
+            /**
+             * UI updates were resumed for a {@link SideUiContainer} paused by {@link
+             * SideUiCoordinator#pauseSideUiUpdates}.
+             */
+            int UPDATES_RESUMED = 7;
+
+            int NUM_ENTRIES = 8;
         }
 
         /**
@@ -308,6 +315,7 @@ public interface SideUiCoordinator extends SideUiStateProvider {
                 case UpdateReason.FULL_SCREEN_MODE_EXITED -> "FULL_SCREEN_MODE_EXITED";
                 case UpdateReason.RESIZE_LIVE -> "RESIZE_LIVE";
                 case UpdateReason.RESIZE_COMMITTED -> "RESIZE_COMMITTED";
+                case UpdateReason.UPDATES_RESUMED -> "UPDATES_RESUMED";
                 default -> "UNKNOWN(" + reason + ")";
             };
         }
@@ -435,6 +443,15 @@ public interface SideUiCoordinator extends SideUiStateProvider {
         }
 
         /**
+         * Returns the {@link SideUiSize} of the container on {@code side}, or an empty {@link
+         * SideUiSize} if there's no spec for {@code side}.
+         */
+        public SideUiSize getSideUiSize(@AnchorSide int side) {
+            SideUiSize sideUiSize = mSideUiSpecs.get(side);
+            return sideUiSize != null ? sideUiSize : new SideUiSize(0, HeightType.NOT_APPLICABLE);
+        }
+
+        /**
          * Returns all the entries in the SideUiSpecs. Each entry has a mapping from {@link
          * AnchorSide} to {@link SideUiSize}.
          */
@@ -512,6 +529,10 @@ public interface SideUiCoordinator extends SideUiStateProvider {
      * Unregisters a {@link SideUiContainer} such that it will no longer be maintained by this
      * coordinator.
      *
+     * <p>If the container's UI updates are paused, they're resumed first, as if by {@link
+     * #resumeSideUiUpdates}, so that the container is brought to the latest state before it's
+     * unregistered.
+     *
      * @param sideUiContainer The {@link SideUiContainer} to unregister.
      */
     void unregisterSideUiContainer(SideUiContainer sideUiContainer);
@@ -526,6 +547,55 @@ public interface SideUiCoordinator extends SideUiStateProvider {
      * @param request The {@link UiUpdateRequest} for the update.
      */
     void updateUi(UiUpdateRequest request);
+
+    /**
+     * Pauses UI updates for the {@link SideUiContainer} with the given {@link SideUiId}, i.e.
+     * "freezes" that container.
+     *
+     * <p>While paused, the container keeps the {@link SideUiSpecs.SideUiSize} it had when it was
+     * paused, though its top margin still follows the top controls. It isn't asked for its showable
+     * size or whether it has content to show, and is reported showable iff it's showing. Manual
+     * resizing of the container is also disabled. Everything else keeps updating around it as if it
+     * had the highest priority: other containers may be auto-closed to make room for it, and the
+     * web contents may get narrower than their minimum width.
+     *
+     * <p>Since its size doesn't change, it receives no {@link SideUiContainer#onUiUpdateStarting},
+     * {@link SideUiContainer#onUiUpdateCompleted}, {@link SideUiContainer#onWillAutoClose} or
+     * {@link SideUiContainer#onWillAutoRestore} calls. Changes made while it's paused are applied
+     * along with these calls by {@link #resumeSideUiUpdates}.
+     *
+     * <p>Any in-progress animation is ended first, so the container is frozen at a settled state.
+     * Pausing isn't ref-counted: this is a no-op if the container is already paused. Only a
+     * registered container can be paused.
+     *
+     * <p>Must not be called during a UI update, including from {@link SideUiContainer} or {@link
+     * SideUiObserver} callbacks.
+     *
+     * @param sideUiId The ID of the {@link SideUiContainer} to pause UI updates for.
+     */
+    void pauseSideUiUpdates(@SideUiId int sideUiId);
+
+    /**
+     * Resumes UI updates for a {@link SideUiContainer} paused by {@link #pauseSideUiUpdates}, and
+     * immediately runs a UI update without animations to bring it to the latest state.
+     *
+     * <p>This update has {@link UpdateReason#UPDATES_RESUMED} and no requesting {@link SideUiId},
+     * so the resumed container may get {@link SideUiContainer#onWillAutoClose} or {@link
+     * SideUiContainer#onWillAutoRestore} for changes it requested itself while paused. If the
+     * resumed container's size changes, other containers may also be auto-closed or auto-restored.
+     *
+     * <p>No-op if the container's UI updates aren't paused. Must not be called during a UI update,
+     * including from {@link SideUiContainer} or {@link SideUiObserver} callbacks.
+     *
+     * @param sideUiId The ID of the {@link SideUiContainer} to resume UI updates for.
+     */
+    void resumeSideUiUpdates(@SideUiId int sideUiId);
+
+    /**
+     * Returns whether UI updates are paused for the {@link SideUiContainer} with the given {@link
+     * SideUiId}. See {@link #pauseSideUiUpdates}.
+     */
+    boolean areSideUiUpdatesPaused(@SideUiId int sideUiId);
 
     /** Immediately ends all ongoing animations. */
     void endAnimations();
