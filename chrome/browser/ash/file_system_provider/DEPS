@@ -10,7 +10,6 @@ include_rules = [
   "+chrome/browser/ash/file_manager",
   "+chrome/browser/ash/guest_os",
   "+chrome/browser/ash/login/users",
-  "+chrome/browser/ash/profiles",
   "+chrome/browser/browser_process.h",
   "+chrome/browser/extensions/chrome_app_icon_loader.h",
   "+chrome/browser/extensions/chrome_extension_system_factory.h",

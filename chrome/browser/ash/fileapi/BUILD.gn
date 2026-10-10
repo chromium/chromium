@@ -151,6 +151,7 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//chrome/test/base:browser_with_test_window_test",
     "//chrome/test/base:testing_browser_process",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus/cros_disks",
     "//chromeos/ash/experiences/arc:arc_test_support",
     "//chromeos/ash/experiences/arc:notification_test_support",

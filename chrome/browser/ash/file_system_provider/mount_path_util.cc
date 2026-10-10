@@ -15,10 +15,11 @@
 #include "chrome/browser/ash/file_system_provider/provided_file_system.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_thread.h"
@@ -54,7 +55,7 @@ base::FilePath GetMountPath(Profile* profile,
                             const std::string& file_system_id) {
   const user_manager::User* const user =
       user_manager::UserManager::IsInitialized()
-          ? ProfileHelper::Get()->GetUserByProfile(
+          ? BrowserContextHelper::Get()->GetUserByBrowserContext(
                 profile->GetOriginalProfile())
           : nullptr;
   const std::string safe_file_system_id = EscapeFileSystemId(file_system_id);
@@ -122,7 +123,7 @@ bool FileSystemURLParser::Parse() {
     Profile* original_profile = profile->GetOriginalProfile();
 
     if (original_profile != profile ||
-        !ProfileHelper::IsUserProfile(original_profile)) {
+        !IsUserBrowserContext(original_profile)) {
       continue;
     }
 

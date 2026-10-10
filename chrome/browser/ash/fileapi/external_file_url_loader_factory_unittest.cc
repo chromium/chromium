@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/child_process_security_policy.h"
@@ -58,9 +59,11 @@ class ExternalFileURLLoaderFactoryTest : public testing::Test {
     ASSERT_TRUE(profile_manager_->SetUp());
     Profile* const profile =
         profile_manager_->CreateTestingProfile("test-user");
+    const AccountId account_id = AccountId::FromUserEmailGaiaId(
+        profile->GetProfileUserName(), GaiaId("12345"));
     user_manager_.Reset(std::make_unique<FakeChromeUserManager>());
-    user_manager_->AddUser(AccountId::FromUserEmailGaiaId(
-        profile->GetProfileUserName(), GaiaId("12345")));
+    user_manager_->AddUser(account_id);
+    AnnotatedAccountId::Set(profile, account_id);
     render_process_host_ =
         std::make_unique<content::MockRenderProcessHost>(profile);
 
