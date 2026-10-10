@@ -197,7 +197,6 @@ crbug.com/567174858 PageInfoTestCase/testOpeningURLFromLastVisitedDismissesPageI
 
 # Gardening suppression 2026-09-29
 crbug.com/565749273 [ iPad ] GeminiAppSwitchingTestCase/testAppSwitchingAISummarizationIncognitoToNormalMode [ Pass Failure ]
-crbug.com/565749273 [ iPad ] GeminiAppSwitchingTestCase/testAppSwitchingAISummarizationMismatchedAccountSnackbar [ Pass Failure ]
 crbug.com/565749273 [ iPad ] GeminiAppSwitchingTestCase/testAppSwitchingAISummarizationPageLoadingSnackbar [ Pass Failure ]
 crbug.com/567546565 [ Device ] WindowOpenByDOMTestCase/testLinkWithBlankTargetMultipleTimes [ Pass Failure ]
 
@@ -209,7 +208,6 @@ crbug.com/568359121 [ iPhone Simulator ] AccountMenuTestCase/testSwitch [ Pass F
 crbug.com/568359962 [ iPhone Simulator ] AdaptiveToolbarBottomOmniboxTestCase/testTapLocationBarAboveTheKeyboardForVoiceOver [ Pass Failure ]
 crbug.com/568360510 [ iPad Simulator ] ContentSuggestionsTestCase/testMagicStackCompactedSetUpListCompleteAllItems [ Pass Failure ]
 crbug.com/568360452 [ iPad Simulator ] PasswordManagerDetailsTestCase/testShowHidePassword [ Pass Failure ]
-crbug.com/568360194 [ iPhone Simulator ] GeminiAppSwitchingTestCase/testAppSwitchingAISummarizationMismatchedAccountSnackbar [ Pass Failure ]
 
 # Gardening suppression 2026-10-02
 crbug.com/568722028 ComposeboxEligiblityTestCase/testComposeboxCreateImageEligible [ Pass Failure ]
