@@ -527,9 +527,6 @@ BASE_FEATURE(kDisplayAlignAssist, base::FEATURE_DISABLED_BY_DEFAULT);
 // If enabled, DriveFS will be used for Drive sync.
 BASE_FEATURE(kDriveFs, "DriveFS", base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables DriveFS' experimental local files mirroring functionality.
-BASE_FEATURE(kDriveFsMirroring, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Carries DriveFS' bulk-pinning experimental parameters.
 BASE_FEATURE(kDriveFsBulkPinningExperiment, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -2235,10 +2232,6 @@ bool IsDisplayAlignmentAssistanceEnabled() {
 
 bool IsDoNotDisturbShortcutEnabled() {
   return base::FeatureList::IsEnabled(kDoNotDisturbShortcut);
-}
-
-bool IsDriveFsMirroringEnabled() {
-  return base::FeatureList::IsEnabled(kDriveFsMirroring);
 }
 
 int GetDriveFsBulkPinningQueueSize() {

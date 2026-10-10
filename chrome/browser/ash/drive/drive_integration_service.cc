@@ -1476,11 +1476,6 @@ void DriveIntegrationService::RegisterProfilePrefs(
   registry->RegisterStringPref(prefs::kDriveFsProfileSalt, "");
   registry->RegisterBooleanPref(prefs::kDriveFsPinnedMigrated, false);
   registry->RegisterBooleanPref(prefs::kDriveFsEnableVerboseLogging, false);
-  // Do not sync prefs::kDriveFsEnableMirrorSync and
-  // prefs::kDriveFsMirrorSyncMachineId because we're syncing local files
-  // and users may wish to turn this off on a per device basis.
-  registry->RegisterBooleanPref(prefs::kDriveFsEnableMirrorSync, false);
-  registry->RegisterStringPref(prefs::kDriveFsMirrorSyncMachineRootId, "");
   // Do not sync kDriveFsBulkPinningEnabled as this maintains files that are
   // locally pinned to this device and should not sync the state across multiple
   // devices.

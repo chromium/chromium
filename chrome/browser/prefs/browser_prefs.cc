@@ -1138,6 +1138,9 @@ inline constexpr char kHatsOsSettingsSearchSurveyCycleEndTs[] =
     "hats_os_settings_search_cycle_end_timestamp";
 inline constexpr char kHatsOsSettingsSearchSurveyIsSelected[] =
     "hats_os_settings_search_is_selected";
+inline constexpr char kDriveFsEnableMirrorSync[] = "drivefs.enable_mirror_sync";
+inline constexpr char kDriveFsMirrorSyncMachineRootId[] =
+    "drivefs.mirror_sync_machine_root_id";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Deprecated 10/2026.
@@ -1622,6 +1625,8 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kHatsPhotosExperienceIsSelected, false);
   registry->RegisterInt64Pref(kHatsOsSettingsSearchSurveyCycleEndTs, 0);
   registry->RegisterBooleanPref(kHatsOsSettingsSearchSurveyIsSelected, false);
+  registry->RegisterBooleanPref(kDriveFsEnableMirrorSync, false);
+  registry->RegisterStringPref(kDriveFsMirrorSyncMachineRootId, "");
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Deprecated 10/2026.
@@ -3054,6 +3059,8 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kHatsPhotosExperienceIsSelected);
   profile_prefs->ClearPref(kHatsOsSettingsSearchSurveyCycleEndTs);
   profile_prefs->ClearPref(kHatsOsSettingsSearchSurveyIsSelected);
+  profile_prefs->ClearPref(kDriveFsEnableMirrorSync);
+  profile_prefs->ClearPref(kDriveFsMirrorSyncMachineRootId);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Added 10/2026.

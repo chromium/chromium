@@ -951,7 +951,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".lock-reauth"/>
   <variant name=".mako"/>
   <variant name=".mall"/>
-  <variant name=".manage-mirrorsync"/>
   <variant name=".managed-user-profile-notice"/>
   <variant name=".management"/>
   <variant name=".media-app"/>

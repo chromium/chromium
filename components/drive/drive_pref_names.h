@@ -32,14 +32,6 @@ inline constexpr char kDriveFsPinnedMigrated[] = "drivefs.pinned_migrated";
 inline constexpr char kDriveFsWasLaunchedAtLeastOnce[] =
     "drivefs.was_launched_at_least_once";
 
-// A boolean pref toggling MirrorSync functionality.
-inline constexpr char kDriveFsEnableMirrorSync[] = "drivefs.enable_mirror_sync";
-
-// A string pref containing the machine ID that, when set, ensures existing
-// MirrorSync Computers roots are reassociated to the current device.
-inline constexpr char kDriveFsMirrorSyncMachineRootId[] =
-    "drivefs.mirror_sync_machine_root_id";
-
 // A boolean pref indicating whether the DriveFS bulk-pinning feature is visible
 // in Files App and Settings page. If the bulk-pinning feature is visible, then
 // it can be enabled by the user.

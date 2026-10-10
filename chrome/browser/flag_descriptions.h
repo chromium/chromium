@@ -7713,13 +7713,6 @@ inline constexpr char kEnableExternalDisplayHdr10Name[] =
 inline constexpr char kEnableExternalDisplayHdr10Description[] =
     "Allows using HDR10 mode on any external monitor that supports it";
 
-inline constexpr char kDriveFsMirroringName[] =
-    "Enable local to Drive mirror sync";
-
-inline constexpr char kDriveFsShowCSEFilesDescription[] =
-    "Enable listing of CSE files in DriveFS, which will result in these files "
-    "being visible in the Files App's Google Drive item.";
-
 inline constexpr char kEnableDisplayPerformanceModeName[] =
     "Enable Display Performance Mode";
 inline constexpr char kEnableDisplayPerformanceModeDescription[] =

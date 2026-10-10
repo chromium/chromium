@@ -9905,9 +9905,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(IS_CHROMEOS)
-    {"drive-fs-mirroring", flag_descriptions::kDriveFsMirroringName,
-     flag_descriptions::kDriveFsShowCSEFilesDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kDriveFsMirroring)},
     {"cros-labs-continuous-overview-animation",
      flag_descriptions::kContinuousOverviewScrollAnimationName,
      flag_descriptions::kContinuousOverviewScrollAnimationDescription, kOsCrOS,
