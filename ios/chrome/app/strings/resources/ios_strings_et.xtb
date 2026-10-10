@@ -518,7 +518,7 @@
 <translation id="2551153019974022505">Konto viga</translation>
 <translation id="2559785333866467778">Gemini soovitused</translation>
 <translation id="2559843230610279254">Vahelehegrupp <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> vahelehte.</translation>
-<translation id="2568950541173263955">„Geminile küsimuse esitamine“ on lõpule viidud!</translation>
+<translation id="2568950541173263955">„Küsige Geminilt küsimus“ on lõpule viidud!</translation>
 <translation id="257088987046510401">Teemad</translation>
 <translation id="2573117291489209663">Valmis</translation>
 <translation id="2577522251608256362">Naabruskond</translation>
@@ -827,7 +827,7 @@
 <translation id="3581564640715911333">Paku muudes keeltes olevate lehtede tõlkimist</translation>
 <translation id="3585482760087850407">Juurdepääs kaamerale selle saidi jaoks</translation>
 <translation id="3587482841069643663">Kõik</translation>
-<translation id="3587558433833997099">Tuvastage, ostke või tõlkige seda, mida näete oma kaamera või pildiga.</translation>
+<translation id="3587558433833997099">Tuvastage, ostke või tõlkige seda, mida näete oma kaameraga või pildil.</translation>
 <translation id="3587885837929752825">Teie organisatsioon piirab, mida saate oma Google'i kontole salvestada.</translation>
 <translation id="3588820906588687999">Ava kujutis uuel vahelehel</translation>
 <translation id="3595252146048399851">Jaotises <ph name="BEGIN_LINK" />Seaded<ph name="END_LINK" /> saate igal ajal valida, mida sünkroonida. Google võib Otsingut ja muid teenuseid teie ajaloo alusel isikupärastada.</translation>
@@ -1066,7 +1066,7 @@
 <translation id="4389019817280890563">Puudutage keele muutmiseks.</translation>
 <translation id="4390649422783033958">Sisse logitud kasutajana <ph name="USER_NAME" />. <ph name="USER_EMAIL" />, Google'i liikmesus. Avage kontomenüü.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{1 päeva pärast}other{{COUNT} päeva pärast}}</translation>
-<translation id="4398257142135160064">Geminile küsimuse esitamine</translation>
+<translation id="4398257142135160064">Küsige Geminilt küsimus</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 vaheleht}other{# vahelehte}}</translation>
 <translation id="4404790787924017676">Jälgitavate toodete hinnalanguse märguanded</translation>
 <translation id="4405320213589929829">Kohaliku teabe ja juhiste saamiseks kasutage veebilehtedel olevaid aadresse.</translation>

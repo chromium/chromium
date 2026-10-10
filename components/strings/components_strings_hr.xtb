@@ -1283,7 +1283,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="3162559335345991374">Za Wi-Fi koji upotrebljavate možda ćete morati posjetiti stranicu za prijavu.</translation>
 <translation id="316542773973815724">Navigacija</translation>
 <translation id="316638481603975524">Mogu tražiti dopuštenje za instaliranje web-aplikacija</translation>
-<translation id="3166688462674378969">Gumb Zatvori izolirane prozore, aktivirajte ga da biste zatvorili sve izolirane prozore koji su trenutačno otvoreni</translation>
+<translation id="3166688462674378969">Gumb Zatvori izolirane prozore – aktivirajte ga da biste zatvorili sve izolirane prozore koji su trenutačno otvoreni</translation>
 <translation id="3166788340998560642">Chrome će vam ponuditi da ih spremite u <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> prilikom sljedeće upotrebe</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3176929007561373547">Provjerite postavke proxyja ili se obratite mrežnom administratoru da
@@ -1716,7 +1716,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="3865339060090354361">Ovdje pogledajte uvjete za karticu <ph name="CREDIT_CARD_NAME" /></translation>
 <translation id="3869939189466884821">Vaše lokalne datoteke izbrisat će se za <ph name="MINUTES" /> min</translation>
 <translation id="3875783148670536197">Pokaži mi kako</translation>
-<translation id="3877021395754842994">Zatvorite sve izolirane prozore koji su trenutačno otvoreni</translation>
+<translation id="3877021395754842994">Zatvori sve izolirane prozore koji su trenutačno otvoreni</translation>
 <translation id="3877603629930976930">Ne dijeli</translation>
 <translation id="3878445208930547646">Kopiranje s ove web-lokacije nije dopušteno</translation>
 <translation id="3879674895057686427">Odaberite jezik prijevoda</translation>
@@ -2335,7 +2335,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="4887435305021446590">Otvori Gmail</translation>
 <translation id="4887785555357166111">Spremi kadar videozapisa</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da biste izbrisali povijest pregledavanja, kolačiće, predmemoriju i još mnogo toga u postavkama Chromea</translation>
-<translation id="4892391379033030113">Gumb Otvori izolirani prozor, aktivirajte ga da biste otvorili novi izolirani prozor za privatno pregledavanje</translation>
+<translation id="4892391379033030113">Gumb Otvori izolirani prozor – aktivirajte ga da biste otvorili novi izolirani prozor za privatno pregledavanje</translation>
 <translation id="4892518386797173871">Stražnji</translation>
 <translation id="4894390983254799375">Na primjer, ID uređaja, naziv, verzija OS-a i korisničko ime za OS</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>

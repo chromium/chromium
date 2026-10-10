@@ -999,7 +999,7 @@
 <translation id="4164514562270305824">Downloads automatisch löschen</translation>
 <translation id="4165986682804962316">Website-Einstellungen</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> mit den Endziffern <ph name="LAST_FOUR_DIGITS" /></translation>
-<translation id="4169535189173047238">Nicht zulassen</translation>
+<translation id="4169535189173047238">Nicht erlauben</translation>
 <translation id="417138788035229076">Gruppe verwalten</translation>
 <translation id="4172051516777682613">Immer anzeigen</translation>
 <translation id="417273154673973994">{count,plural, =1{1 Tabgruppe geschlossen und gespeichert}other{{count} Tabgruppen geschlossen und gespeichert}}</translation>

@@ -2435,7 +2435,7 @@
 <translation id="2854453262159518435">既存のタブグループを置き換える</translation>
 <translation id="2855243985454069333">同期しているすべてのデバイスから履歴を削除します</translation>
 <translation id="2855812646048059450"><ph name="CREDENTIAL_PROVIDER" /> でログイン</translation>
-<translation id="2857047802954430547">ログインすると、すべてのデバイスで同じパスワード、ブックマーク、その他の設定を使用できます</translation>
+<translation id="2857047802954430547">ログインすると、パスワード、ブックマーク、その他の設定を、すべてのデバイスで同期して使用できます</translation>
 <translation id="2857195263461649321">Gemini の作業を続きから再開</translation>
 <translation id="2859741939921354763"><ph name="BRAND" /> にパスワードをインポートします</translation>
 <translation id="2860284453253554297">エンタープライズ ポリシー</translation>
@@ -7824,7 +7824,7 @@
 <translation id="6985607387932385770">プリンタ</translation>
 <translation id="6986887242592019603">スペースを広げるには、タブバーを閉じてみてください</translation>
 <translation id="6988403677482707277">タブをタブバーの左端に移動しました</translation>
-<translation id="6988572888918530647">Google アカウントを管理する</translation>
+<translation id="6988572888918530647">Google アカウントを管理</translation>
 <translation id="6989274756151920076">このまま続行</translation>
 <translation id="6991665348624301627">送信先の選択</translation>
 <translation id="6992078676798011826">権限を削除できませんでした。しばらくしてからもう一度お試しください。</translation>
@@ -9557,7 +9557,7 @@
 <translation id="8306885873692337975">最新の機能を入手しセキュリティを強化しましょう。</translation>
 <translation id="8308024039615003152">草地</translation>
 <translation id="8308179586020895837"><ph name="HOST" /> がカメラへのアクセスを必要としているときは確認画面を表示する</translation>
-<translation id="830868413617744215">Beta</translation>
+<translation id="830868413617744215">ベータ版</translation>
 <translation id="8310409247509201074"><ph name="NUM" /> 個のタブ</translation>
 <translation id="831207808878314375">定義</translation>
 <translation id="8312841338723044391">ライブ</translation>

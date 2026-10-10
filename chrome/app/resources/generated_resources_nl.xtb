@@ -2806,7 +2806,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3127862849166875294">Schijfgrootte aanpassen voor Linux</translation>
 <translation id="3129150892373332590">Hiermee zet je het persistent delen van USB-apparaten met gasten uit. Hierdoor wordt ook alle persistentie gereset. Weet je het zeker?</translation>
 <translation id="3129173833825111527">Marge links</translation>
-<translation id="3130863904455712965">Geschiedenis en meer</translation>
+<translation id="3130863904455712965">Geschiedenis en andere gegevens</translation>
 <translation id="313205617302240621">Wachtwoord vergeten?</translation>
 <translation id="3132277757485842847">We kunnen de verbinding met je telefoon niet in stand houden. Zorg dat je telefoon in de buurt en ontgrendeld is en dat bluetooth en wifi aanstaan.</translation>
 <translation id="3132896062549112541">Regel</translation>
@@ -4519,7 +4519,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="44137799675104237">Naar de tekst luisteren met een natuurlijke stem</translation>
 <translation id="4414051792721275732">Als je een gebaar uitvoert om te klikken, wordt de muissnelheid verlaagd om meer controle te bieden. Voer het gebaar nog een keer uit om de klik af te ronden.</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
-<translation id="4415276339145661267">Je Google-account beheren</translation>
+<translation id="4415276339145661267">Google-account beheren</translation>
 <translation id="4415815425191869676">Deze sites altijd actief houden</translation>
 <translation id="4416582610654027550">Voer een geldige URL in</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{Dit tabblad onderbreken}other{Deze tabbladen onderbreken}}</translation>
@@ -7823,7 +7823,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6985607387932385770">Printers</translation>
 <translation id="6986887242592019603">Probeer de tabbladstrook samen te vouwen om meer ruimte te krijgen</translation>
 <translation id="6988403677482707277">Tabblad verplaatst naar begin van tabbladstrook</translation>
-<translation id="6988572888918530647">Je Google-account beheren</translation>
+<translation id="6988572888918530647">Google-account beheren</translation>
 <translation id="6989274756151920076">Hier blijven</translation>
 <translation id="6991665348624301627">Een bestemming selecteren</translation>
 <translation id="6992078676798011826">Kan het recht niet verwijderen. Probeer het later opnieuw.</translation>

@@ -2436,7 +2436,7 @@
 <translation id="2854453262159518435">替换现有标签页分组</translation>
 <translation id="2855243985454069333">从所有已同步的设备中删除历史记录</translation>
 <translation id="2855812646048059450">通过 <ph name="CREDENTIAL_PROVIDER" /> 登录</translation>
-<translation id="2857047802954430547">登录即可在所有设备上获取密码、书签等信息</translation>
+<translation id="2857047802954430547">在您的各个设备上登录账号即可使用密码、书签等信息</translation>
 <translation id="2857195263461649321">继续上次的 Gemini 对话</translation>
 <translation id="2859741939921354763">将密码导入 <ph name="BRAND" /></translation>
 <translation id="2860284453253554297">企业政策</translation>
@@ -5797,7 +5797,7 @@
 <translation id="5420438158931847627">确定文字和图片的清晰度</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) 将立即失去对标签页分组“<ph name="GROUP_NAME" />”的访问权限</translation>
 <translation id="5421048291985386320">重新登录(&amp;S)</translation>
-<translation id="542237158771780634">当设置处于开启状态时，数据会保存在您的 Google 账号中，并且可供您在所有设备上使用。当设置处于关闭状态时，数据只会保存到此设备上。</translation>
+<translation id="542237158771780634">如果开启以下设置，相关数据将保存在您的 Google 账号中，可在您的所有设备上使用。如果关闭以下设置，数据将仅保存在此设备上。</translation>
 <translation id="5423505005476604112">Crostini</translation>
 <translation id="5423600335480706727">您下次访问时，<ph name="SITE" /> 将使用默认权限</translation>
 <translation id="5423829801105537712">基本拼写检查</translation>
@@ -8400,7 +8400,7 @@
 <translation id="7424818322350938336">已添加网络</translation>
 <translation id="7425037327577270384">帮我写</translation>
 <translation id="7427348830195639090">后台网页：<ph name="BACKGROUND_PAGE_URL" /></translation>
-<translation id="7427729970025360383">此资料受管理</translation>
+<translation id="7427729970025360383">此个人资料受管理</translation>
 <translation id="7427798576651127129">通过<ph name="DEVICE_NAME" />拨打电话</translation>
 <translation id="7429415133937917139">在屏幕顶部的 ChromeVox 面板中
 模拟可刷新式盲文显示屏的输出结果</translation>
@@ -9217,7 +9217,7 @@
 <translation id="8045923671629973368">输入应用 ID 或网上应用店网址</translation>
 <translation id="804786196054284061">最终用户许可协议</translation>
 <translation id="8048596485169033655">正在下载主要节点标注文件…，进度为 <ph name="PERCENT" />%</translation>
-<translation id="8048728378294435881">备份您的资料，在任何设备上使用</translation>
+<translation id="8048728378294435881">备份数据，在您的任何设备上使用</translation>
 <translation id="8048977114738515028">在设备上创建桌面快捷方式，以便直接访问此个人资料</translation>
 <translation id="8049122382261047457">使用 Google 智能镜头搜索任意图片</translation>
 <translation id="8049948037269924837">触控板反向滚动</translation>
@@ -9557,7 +9557,7 @@
 <translation id="8306885873692337975">获取最新的功能和安全性方面的改进。</translation>
 <translation id="8308024039615003152">草地</translation>
 <translation id="8308179586020895837">当 <ph name="HOST" /> 想要使用摄像头时询问我</translation>
-<translation id="830868413617744215">测试版</translation>
+<translation id="830868413617744215">Beta 版</translation>
 <translation id="8310409247509201074"><ph name="NUM" /> 个标签页</translation>
 <translation id="831207808878314375">定义</translation>
 <translation id="8312841338723044391">实时</translation>

@@ -354,7 +354,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1574714699824202614">Mënyra e pagesës po verifikohet</translation>
 <translation id="1576277203042721907">Statistikat për blerjet</translation>
 <translation id="1579189948231786790">Ky sajt është bllokuar nga organizata jote</translation>
-<translation id="1579940597679293608">Mbyll të gjitha dritaret e izoluara</translation>
+<translation id="1579940597679293608">Mbyll të gjitha "Dritaret e izoluara"</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Shkoi diçka keq kur po shfaqej faqja e uebit.</translation>
 <translation id="1585306568496579337">Shtesa "<ph name="EXTENSION_NAME" />" dëshiron të hapë lidhjet<ph name="PROTOCOL" /> nëpërmjet <ph name="HANDLER_HOSTNAME" /></translation>
@@ -1283,7 +1283,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="3162559335345991374">Lidhja Wi-Fi që po përdor mund të të kërkojë që të vizitosh faqen e saj të identifikimit.</translation>
 <translation id="316542773973815724">Lundrimi</translation>
 <translation id="316638481603975524">Mund të kërkojë të instalojë aplikacione uebi</translation>
-<translation id="3166688462674378969">Butoni "Mbyll dritaret e izoluara". Aktivizoje për të mbyllur të gjitha dritaret e izoluara që janë aktualisht të hapura</translation>
+<translation id="3166688462674378969">Butoni "Mbyll 'Dritaret e izoluara'". Aktivizoje për të mbyllur të gjitha "Dritaret e izoluara" që janë aktualisht të hapura</translation>
 <translation id="3166788340998560642">Chrome do të ofrojë që ta ruajë atë te "<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />" herën tjetër kur ta përdorësh.</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3176929007561373547">Kontrollo cilësimet e përfaqësuesit ose kontakto me administratorin e rrjetit
@@ -1717,7 +1717,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="3865339060090354361">Shiko kushtet këtu për <ph name="CREDIT_CARD_NAME" /></translation>
 <translation id="3869939189466884821">Skedarët e tu lokalë do të fshihen pas <ph name="MINUTES" /> minutash</translation>
 <translation id="3875783148670536197">Më trego mënyrën</translation>
-<translation id="3877021395754842994">Mbyll të gjitha dritaret e izoluara që janë aktualisht të hapura</translation>
+<translation id="3877021395754842994">Mbyll të gjitha "Dritaret e izoluara" që janë aktualisht të hapura</translation>
 <translation id="3877603629930976930">Mos e ndaj</translation>
 <translation id="3878445208930547646">Kopjimi nga ky sajt nuk lejohet</translation>
 <translation id="3879674895057686427">Zgjidh gjuhën në të cilën do të përkthehet</translation>
@@ -2062,7 +2062,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="4409271659088619928">Motori yt i kërkimit është <ph name="DSE" />. Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimit, nëse është e vlefshme.</translation>
 <translation id="4409556632583862731">Bashkëbisedim i ri</translation>
 <translation id="4410614037742891410">Përditëso kartën e identitetit në mënyrë të sigurt te "Portofoli i Google"</translation>
-<translation id="441152911646545600"><ph name="CLOSE_ISOLATED_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp Tab dhe më pas Enter për të mbyllur të gjitha dritaret e izoluara që janë hapur aktualisht</translation>
+<translation id="441152911646545600"><ph name="CLOSE_ISOLATED_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp Tab dhe më pas Enter për të mbyllur të gjitha "Dritaret e izoluara" që janë aktualisht të hapura</translation>
 <translation id="4412074349188076601">Ky konfigurim është shënuar si i instalueshëm, por për këtë arkitekturë nuk ofrohet asnjë imazh, prandaj ai nuk mund të instalohet.</translation>
 <translation id="4412377069090572315">Çfarë po thonë njerëzit</translation>
 <translation id="4414515549596849729">kukit dhe të dhënat e faqes</translation>
@@ -2336,7 +2336,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="4887435305021446590">Hap Gmail</translation>
 <translation id="4887785555357166111">Ruaj kuadrin e videos</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp "Tab" dhe më pas "Enter" për të fshirë historikun e shfletimit, kukit, memorien specifike etj. te cilësimet e Chrome</translation>
-<translation id="4892391379033030113">Butoni "Hap dritaren e izoluar". Aktivizoje për të hapur një dritare të re të izoluar për të shfletuar në mënyrë private</translation>
+<translation id="4892391379033030113">Butoni "Hap 'Dritaren e izoluar'". Aktivizoje për të hapur një "Dritare të re të izoluar" për të shfletuar në mënyrë private</translation>
 <translation id="4892518386797173871">Prapa</translation>
 <translation id="4894390983254799375">Si p.sh. ID-ja e pajisjes, emri, versioni i sistemit operativ dhe emri i përdoruesit të sistemit operativ</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -3014,7 +3014,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (sinkronizuar)</translation>
 <translation id="6025471531651464742">Shto skedarë</translation>
 <translation id="6028591542479806248">Menaxho njoftimet e email-it dhe pajisjes celulare</translation>
-<translation id="6029805223627823735"><ph name="LAUNCH_ISOLATED_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp tastin Tab dhe më pas tastin Enter për të hapur një dritare të re të izoluar për të shfletuar në mënyrë private</translation>
+<translation id="6029805223627823735"><ph name="LAUNCH_ISOLATED_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp tastin Tab dhe më pas tastin Enter për të hapur një "Dritare të izoluar" të re për të shfletuar në mënyrë private</translation>
 <translation id="603068602130820122">Dy kapje me tel djathtas</translation>
 <translation id="6031824805267965302">Të përdorë sensorët e lëvizjes</translation>
 <translation id="6032524144326295339">Kutia postare 2</translation>
@@ -3771,7 +3771,7 @@ Detaje shtesë:
 <translation id="7316521168101843192">Skedari po ruhet te Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Ndihma e lidhjes</translation>
-<translation id="7328315434053660512">Hap dritaren e izoluar</translation>
+<translation id="7328315434053660512">Hap "Dritaren e izoluar"</translation>
 <translation id="733354035281974745">Anulimi i llogarisë lokale të pajisjes</translation>
 <translation id="7334320624316649418">&amp;Ribëj renditjen</translation>
 <translation id="7335157162773372339">Mund të kërkojë të përdorë kamerën tënde</translation>
@@ -4040,7 +4040,7 @@ Detaje shtesë:
 <translation id="7718626066800460799">Skanimi nuk mund të ruhet</translation>
 <translation id="772128550427553158">Numri CVC ndodhet në pjesën e përparme të kartës sate.</translation>
 <translation id="7724603315864178912">Prite</translation>
-<translation id="7726402116075326231">Hap një dritare të re të izoluar për të shfletuar në mënyrë private</translation>
+<translation id="7726402116075326231">Hap një "Dritare të izoluar" të re për të shfletuar në mënyrë private</translation>
 <translation id="7730057435797792985">Rendit</translation>
 <translation id="7734285854693414638">Krijo shpejt një formular të ri te "Formulari i Google"</translation>
 <translation id="773466115871691567">Përkthe gjithmonë faqet që janë në <ph name="SOURCE_LANGUAGE" /></translation>
