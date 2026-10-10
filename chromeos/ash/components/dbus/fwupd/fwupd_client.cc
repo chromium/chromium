@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -385,9 +386,8 @@ class FwupdClientImpl : public FwupdClient {
       can_parse = false;
     }
 
-    const bool needs_trusted_report =
-        !features::IsFlexFirmwareUpdateEnabled() &&
-        !features::IsFwupdDeveloperModeEnabled();
+    const bool needs_trusted_report = !switches::IsRevenBranding() &&
+                                      !features::IsFwupdDeveloperModeEnabled();
 
     FwupdUpdateList updates;
     while (can_parse && array_reader.HasMoreData()) {
@@ -481,7 +481,6 @@ class FwupdClientImpl : public FwupdClient {
       FIRMWARE_LOG(ERROR) << "Failed to parse string from DBus Signal";
       return;
     }
-    bool is_flex_enabled = features::IsFlexFirmwareUpdateEnabled();
     // Default to true when device is not managed.
     bool allowed_by_management = true;
     bool is_managed = InstallAttributes::Get()->IsEnterpriseManaged();
@@ -491,7 +490,7 @@ class FwupdClientImpl : public FwupdClient {
             &allowed_by_management)) {
       allowed_by_management = false;
     }
-    bool allow_internal = is_flex_enabled && allowed_by_management;
+    bool allow_internal = switches::IsRevenBranding() && allowed_by_management;
 
     FwupdDeviceList devices;
     while (array_reader.HasMoreData()) {

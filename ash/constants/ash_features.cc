@@ -728,9 +728,6 @@ BASE_FEATURE(kFjordOobeImageSwitch, base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables or disables the Flex Auto-Enrollment feature on ChromeOS
 BASE_FEATURE(kFlexAutoEnrollment, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables firmware updates from LVFS for ChromeOS Flex.
-BASE_FEATURE(kFlexFirmwareUpdate, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls Floating SSO feature which can move cookies between ChromeOS
 // enterprise devices. The feature is also guarded by an enterprise policy. This
 // flag controls if we are allowed to launch the service observing the policy
@@ -2343,11 +2340,6 @@ bool IsFjordOobeImageSwitchEnabled() {
 bool IsFlexAutoEnrollmentEnabled() {
   return switches::IsRevenBranding() &&
          base::FeatureList::IsEnabled(kFlexAutoEnrollment);
-}
-
-bool IsFlexFirmwareUpdateEnabled() {
-  return switches::IsRevenBranding() &&
-         base::FeatureList::IsEnabled(kFlexFirmwareUpdate);
 }
 
 bool IsFloatingSsoAllowed() {

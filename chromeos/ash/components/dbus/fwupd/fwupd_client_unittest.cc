@@ -494,7 +494,6 @@ TEST_F(FwupdClientTest, RequestDevicesFlexEnabled) {
   // Enable reven firmware updates.
   base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
   command_line.AppendSwitch(switches::kRevenBranding);
-  EnableFeatureFlag(features::kFlexFirmwareUpdate);
 
   fwupd_client_->RequestDevices();
 
@@ -518,7 +517,6 @@ TEST_F(FwupdClientTest, RequestDevicesEnrolledFlexEnabled) {
   // Enable reven firmware updates.
   base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
   command_line.AppendSwitch(switches::kRevenBranding);
-  EnableFeatureFlag(features::kFlexFirmwareUpdate);
 
   // Set enrolled.
   test_install_attributes_.Get()->SetCloudManaged("test-domain",
@@ -547,7 +545,6 @@ TEST_F(FwupdClientTestPolicyEnabled,
   // Enable reven firmware updates.
   base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
   command_line.AppendSwitch(switches::kRevenBranding);
-  EnableFeatureFlag(features::kFlexFirmwareUpdate);
 
   // Set enrolled.
   test_install_attributes_.Get()->SetCloudManaged("test-domain",
@@ -780,7 +777,6 @@ TEST_F(FwupdClientTest, NoTrustedReportsFlexEnabled) {
   // Enable reven firmware updates.
   base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
   command_line.AppendSwitch(switches::kRevenBranding);
-  EnableFeatureFlag(features::kFlexFirmwareUpdate);
 
   SetExpectedDescription(kFakeUpdateDescriptionForTesting);
   SetExpectedChecksum(kFakeSha256ForTesting);

@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/webui/common/trusted_types_util.h"
 #include "ash/webui/firmware_update_ui/mojom/firmware_update.mojom.h"
 #include "ash/webui/firmware_update_ui/url_constants.h"
@@ -38,14 +38,13 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
   source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);
   source->AddResourcePath("test_loader_util.js",
                           IDR_WEBUI_JS_TEST_LOADER_UTIL_JS);
-  source->AddBoolean("IsFlexFirmwareUpdateEnabled",
-                     ash::features::IsFlexFirmwareUpdateEnabled());
 }
 
 void AddFirmwareUpdateAppStrings(content::WebUIDataSource* source) {
+  source->AddLocalizedString("appTitle", ash::switches::IsRevenBranding()
+                                             ? IDS_FLEX_FIRMWARE_TITLE_TEXT
+                                             : IDS_FIRMWARE_TITLE_TEXT);
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"appTitle", IDS_FIRMWARE_TITLE_TEXT},
-      {"appTitleOnFlex", IDS_FLEX_FIRMWARE_TITLE_TEXT},
       {"confirmationTitle", IDS_CONFIRMATION_TITLE_TEXT},
       {"criticalUpdate", IDS_FIRMWARE_CRITICAL_UPDATE_TEXT},
       {"prepareDevice", IDS_FIRMWARE_PREPARE_DEVICE_TEXT},

@@ -9,7 +9,7 @@
 #include <string_view>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/fwupd_download_client.h"
 #include "ash/webui/firmware_update_ui/mojom/firmware_update.mojom.h"
 #include "base/base_paths.h"
@@ -196,8 +196,7 @@ firmware_update::mojom::FirmwareUpdatePtr CreateUpdate(
   auto update = firmware_update::mojom::FirmwareUpdate::New();
   update->device_id = device.id;
   update->device_name = base::UTF8ToUTF16(device.device_name);
-  update->needs_reboot =
-      device.needs_reboot && features::IsFlexFirmwareUpdateEnabled();
+  update->needs_reboot = device.needs_reboot && switches::IsRevenBranding();
   update->device_version = update_details.version;
   update->device_description = base::UTF8ToUTF16(update_details.description);
   update->priority =
@@ -886,7 +885,7 @@ void FirmwareUpdateManager::OnUpdateListResponse(const std::string& device_id,
   if (!updates->empty()) {
     auto device_name = devices_pending_update_[device_id].device_name;
     auto needs_reboot = devices_pending_update_[device_id].needs_reboot &&
-                        features::IsFlexFirmwareUpdateEnabled();
+                        switches::IsRevenBranding();
     // Create a complete FirmwareUpdate and add to updates_.
     updates_.push_back(CreateUpdate(
         updates->front(), FwupdDevice(device_id, device_name, needs_reboot)));

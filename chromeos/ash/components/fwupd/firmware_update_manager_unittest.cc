@@ -11,7 +11,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/system/firmware_update/firmware_update_notification_controller.h"
 #include "ash/webui/firmware_update_ui/mojom/firmware_update.mojom.h"
@@ -25,7 +24,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -321,10 +319,6 @@ class FirmwareUpdateManagerTest : public testing::Test {
         FROM_HERE, base::BindOnce(&RunResponseCallback, std::move(callback),
                                   std::move(response)));
     dbus_responses_.pop_front();
-  }
-
-  void EnableFeatureFlag(const base::Feature& feature) {
-    scoped_feature_list_.InitAndEnableFeature(feature);
   }
 
  protected:
@@ -813,7 +807,6 @@ class FirmwareUpdateManagerTest : public testing::Test {
   // Fake responses.
   std::deque<std::unique_ptr<dbus::Response>> dbus_responses_;
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   ash::ScopedStubInstallAttributes test_install_attributes_;
 };
 
@@ -873,7 +866,6 @@ TEST_F(FirmwareUpdateManagerTest, RequestFlexDeviceWithReboot) {
   // Enable Flex firmware updates.
   base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
   command_line.AppendSwitch(switches::kRevenBranding);
-  EnableFeatureFlag(features::kFlexFirmwareUpdate);
 
   dbus_responses_.push_back(CreateInternalDeviceResponse(true));
   dbus_responses_.push_back(CreateOneUpdateResponse());

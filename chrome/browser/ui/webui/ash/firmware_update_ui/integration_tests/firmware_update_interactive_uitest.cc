@@ -2,10 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/webui/firmware_update_ui/url_constants.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chromeos/ash/components/dbus/fwupd/fake_fwupd_client.h"
@@ -70,7 +68,6 @@ class FirmwareUpdateInteractiveUiTest : public InteractiveAshTest {
 
  protected:
   ui::ElementIdentifier webcontents_id_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
@@ -167,7 +164,6 @@ class FirmwareUpdateInteractiveUiTestWithReboot
 
     base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
     command_line.AppendSwitch(switches::kRevenBranding);
-    feature_list_.InitAndEnableFeature(features::kFlexFirmwareUpdate);
   }
 
   auto SetUpdateToRequireReboot() {

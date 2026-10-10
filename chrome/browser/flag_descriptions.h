@@ -2966,11 +2966,6 @@ inline constexpr char kChromeDarkNeutrals26Name[] = "Chrome Dark Neutrals 26";
 inline constexpr char kChromeDarkNeutrals26Description[] =
     "When enabled, updates the neutral palette for dark mode default theme";
 
-inline constexpr char kFlexFirmwareUpdateName[] =
-    "ChromeOS Flex Firmware Updates";
-inline constexpr char kFlexFirmwareUpdateDescription[] =
-    "Allow firmware updates from LVFS to be installed on ChromeOS Flex.";
-
 inline constexpr char kGpuRasterizationName[] = "GPU rasterization";
 inline constexpr char kGpuRasterizationDescription[] =
     "Use GPU to rasterize web content.";

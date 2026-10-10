@@ -9968,10 +9968,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-    {"flex-firmware-update", flag_descriptions::kFlexFirmwareUpdateName,
-     flag_descriptions::kFlexFirmwareUpdateDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kFlexFirmwareUpdate)},
-
     {"ipp-first-setup-for-usb-printers",
      flag_descriptions::kIppFirstSetupForUsbPrintersName,
      flag_descriptions::kIppFirstSetupForUsbPrintersDescription, kOsCrOS,

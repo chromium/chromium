@@ -5288,11 +5288,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "flex-firmware-update",
-    "owners": [ "nicholasbishop@google.com", "chromeos-flex-eng@google.com" ],
-    "expiry_milestone": 143
-  },
-  {
     "name": "fluid-resize",
     "owners": [ "lungc@google.com" ],
     "expiry_milestone": 150
