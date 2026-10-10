@@ -7,6 +7,13 @@ package org.chromium.chrome.browser.modaldialog;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
@@ -39,6 +46,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.function.Supplier;
@@ -57,6 +65,7 @@ public class ChromeTabModalPresenterUnitTest {
     @Mock private FullscreenManager mFullscreenManager;
     @Mock private TabObscuringHandler mTabObscuringHandler;
     @Mock private ToolbarManager mToolbarManager;
+    @Mock private WebContents mWebContents;
 
     private final MonotonicObservableSupplier<ScrimManager> mScrimManagerSupplier =
             ObservableSuppliers.alwaysNull();
@@ -93,6 +102,11 @@ public class ChromeTabModalPresenterUnitTest {
         public void setBrowserControlsAccess(boolean restricted) {
             super.setBrowserControlsAccess(restricted);
         }
+
+        // Calls are verified on the spy; the real method needs a SelectionPopupController.
+        @Override
+        protected void saveOrRestoreTextSelection(
+                WebContents webContents, boolean save, boolean restoreFocus) {}
 
         private ViewGroup mTestDialogContainer;
 
@@ -136,6 +150,7 @@ public class ChromeTabModalPresenterUnitTest {
                         mTabModelSelector,
                         mScrimManagerSupplier,
                         mEdgeToEdgeControllerSupplier);
+        mPresenter = spy(mPresenter);
     }
 
     @Test
@@ -178,6 +193,48 @@ public class ChromeTabModalPresenterUnitTest {
 
         // Simulate dismissing the dialog. This should not crash even though the tab is destroyed.
         mPresenter.setBrowserControlsAccess(false);
+    }
+
+    /**
+     * Simulates a dialog shown over {@link #mTab} being hidden, by calling
+     * setBrowserControlsAccess(false) with the given tab state.
+     */
+    private void simulateDialogHidden(boolean tabInteractable, Tab currentTab) {
+        mPresenter.setActiveTabForTesting(mTab);
+        when(mTab.getWebContents()).thenReturn(mWebContents);
+        when(mTab.isUserInteractable()).thenReturn(tabInteractable);
+        when(mTabModelSelector.getCurrentTab()).thenReturn(currentTab);
+        mPresenter.setBrowserControlsAccess(false);
+    }
+
+    @Test
+    public void testSetBrowserControlsAccess_TabInteractableAndSelected_RestoresFocus() {
+        simulateDialogHidden(/* tabInteractable= */ true, mTab);
+        verify(mPresenter)
+                .saveOrRestoreTextSelection(
+                        mWebContents, /* save= */ false, /* restoreFocus= */ true);
+    }
+
+    @Test
+    public void testSetBrowserControlsAccess_TabNotInteractable_DoesNotRestoreFocus() {
+        // E.g. the dialog is suspended because the tab switcher is showing.
+        simulateDialogHidden(/* tabInteractable= */ false, mTab);
+        verify(mPresenter)
+                .saveOrRestoreTextSelection(
+                        mWebContents, /* save= */ false, /* restoreFocus= */ false);
+        verify(mPresenter, never())
+                .saveOrRestoreTextSelection(any(), anyBoolean(), eq(/* restoreFocus= */ true));
+    }
+
+    @Test
+    public void testSetBrowserControlsAccess_TabNotSelected_DoesNotRestoreFocus() {
+        // E.g. another tab was selected while the dialog was showing.
+        simulateDialogHidden(/* tabInteractable= */ true, mock(Tab.class));
+        verify(mPresenter)
+                .saveOrRestoreTextSelection(
+                        mWebContents, /* save= */ false, /* restoreFocus= */ false);
+        verify(mPresenter, never())
+                .saveOrRestoreTextSelection(any(), anyBoolean(), eq(/* restoreFocus= */ true));
     }
 
     @Test
