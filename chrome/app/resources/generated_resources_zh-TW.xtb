@@ -5688,7 +5688,7 @@
 <translation id="5341793073192892252">已封鎖下列 Cookie (所有第三方 Cookie 都會遭到封鎖)</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (右側)</translation>
 <translation id="534449933710420173">未命名的資料夾</translation>
-<translation id="5345916423802287046">當你登入時啟動應用程式</translation>
+<translation id="5345916423802287046">登入時啟動應用程式</translation>
 <translation id="5350116201946341974">怪誕</translation>
 <translation id="535123479159372765">從其他裝置複製的文字</translation>
 <translation id="5352257124367865087">管理網站權限</translation>
@@ -5926,7 +5926,7 @@
 <translation id="5529693968082667490">顯示「分頁搜尋」按鈕</translation>
 <translation id="5530977410273748884">如要將密碼儲存到 Google 密碼管理工具，請按一下這個按鍵</translation>
 <translation id="5532223876348815659">通用</translation>
-<translation id="5533001281916885985"><ph name="SITE_NAME" /> 要求下列權限</translation>
+<translation id="5533001281916885985">「<ph name="SITE_NAME" />」要求下列權限</translation>
 <translation id="5533343601674003130">PDF 服務</translation>
 <translation id="5535769176698670170">與上方畫面交換</translation>
 <translation id="5537725057119320332">投放</translation>
@@ -6384,7 +6384,7 @@
 <translation id="5906655207909574370">即將更新為最新版本！重新啟動您的裝置即可完成更新程序。</translation>
 <translation id="5906732635754427568">與這個應用程式相關聯的資料會從這個裝置上移除。</translation>
 <translation id="5906974869830879618">請輸入 PIN 碼</translation>
-<translation id="5908474332780919512">當你登入時啟動應用程式</translation>
+<translation id="5908474332780919512">登入時啟動應用程式</translation>
 <translation id="5910363049092958439">另存圖片(&amp;V)...</translation>
 <translation id="5911030830365207728">Google 翻譯</translation>
 <translation id="5911497236110691522">如要切換到下一個輸入法，請按下 <ph name="KEY_CODES" /></translation>
@@ -8162,7 +8162,7 @@
 <translation id="7285008278689343502">大提頓國家公園</translation>
 <translation id="7286867818472074330">選取密碼金鑰</translation>
 <translation id="7287411021188441799">還原預設背景</translation>
-<translation id="7287949630503871403">儲存在應用程式中的資料量：</translation>
+<translation id="7287949630503871403">儲存在應用程式中的資料量</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
 <translation id="7288761372977133974">最近的<ph name="SUBJECT" /> AI 主題 <ph name="INDEX" /></translation>
 <translation id="7289049772085228972">目前採用 Chrome 最強大的安全防護機制</translation>

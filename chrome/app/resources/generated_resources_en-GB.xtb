@@ -1031,7 +1031,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1782101999402987960">Updates are blocked by your administrator</translation>
 <translation id="1784707308176068866">Run in the background when requested by a cooperating native application</translation>
 <translation id="1784849162047402014">Device is low on disk space</translation>
-<translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{Uninstalling ‘<ph name="APP_NAME" />’ will also uninstall this app:}other{Uninstalling ‘<ph name="APP_NAME" />’ will also uninstall these apps:}}</translation>
+<translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{Uninstalling <ph name="APP_NAME" /> will also uninstall this app:}other{Uninstalling <ph name="APP_NAME" /> will also uninstall these apps:}}</translation>
 <translation id="1785698972112179866">Sign in to get your bookmarks and more from <ph name="DEVICE" /></translation>
 <translation id="1786290960428378411">Requesting to read and change</translation>
 <translation id="1789543093145556097">Always hide</translation>
@@ -2027,7 +2027,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2541706104884128042">New bedtime set</translation>
 <translation id="2542050502251273923">Sets the debugging level of the network connection manager and other services using ff_debug.</translation>
 <translation id="254274314549093389">Update outcome: <ph name="OUTCOMES" /></translation>
-<translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{Permissions that you allow for "<ph name="APP_NAME" />' will also be allowed for this app. <ph name="MANAGE_LINK" />}other{Permissions that you allow for ‘<ph name="APP_NAME" />' will also be allowed for these apps. <ph name="MANAGE_LINK" />}}</translation>
+<translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{Permissions that you allow for <ph name="APP_NAME" /> will also be allowed for this app. <ph name="MANAGE_LINK" />}other{Permissions that you allow for <ph name="APP_NAME" /> will also be allowed for these apps. <ph name="MANAGE_LINK" />}}</translation>
 <translation id="2544352060595557290">This tab</translation>
 <translation id="2546302722632337735">Don't allow sites to use identifiers to play protected content</translation>
 <translation id="2546991196809436099">Zoom in to make items on the screen bigger. Use Search + Ctrl + M to turn the magnifier on and off.</translation>
@@ -5599,7 +5599,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5249818097095743806">Use your security key</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> uses your location to give you local content. You can change this in <ph name="SETTINGS_LINK" />.</translation>
 <translation id="5254233580564156835">Memory usage: <ph name="MEMORY_USAGE" /></translation>
-<translation id="5254678337198156877">This app data will be shared between '<ph name="APP_NAME" />' and its installed apps.</translation>
+<translation id="5254678337198156877">This app data will be shared between <ph name="APP_NAME" /> and its installed apps.</translation>
 <translation id="5255726914791076208">When you edit your passkey, your <ph name="RP_ID" /> account won't change</translation>
 <translation id="5256174546894739043">Ask when a site wants to track your hands</translation>
 <translation id="52566111838498928">Loading fonts…</translation>
@@ -7161,7 +7161,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="650457560773015827">Left button</translation>
 <translation id="6504601948739128893">Not allowed to use fonts installed on your device</translation>
 <translation id="6504611359718185067">Connect to the Internet to add a printer</translation>
-<translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" would like to install the following app on this device:}other{"<ph name="APP_NAME" />" would like to install the following apps on this device:}}</translation>
+<translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{<ph name="APP_NAME" /> would like to install the following app on this device:}other{<ph name="APP_NAME" /> would like to install the following apps on this device:}}</translation>
 <translation id="6508248480704296122">Related to <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">App: <ph name="APP_NAME" /></translation>
 <translation id="6511827214781912955">Consider deleting <ph name="FILENAME" />, so that others who use this device can't see your passwords</translation>
