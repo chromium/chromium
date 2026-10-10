@@ -1288,7 +1288,7 @@ void BrowserActions::InitializeChromeMenuActions() {
               },
               bwi))
           .SetActionId(kActionTabGroupsMenu)
-          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+          .SetText(BrowserActions::GetMnemonicTitleText(
               l10n_util::GetStringUTF16(IDS_SAVED_TAB_GROUPS_MENU)))
           .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
               l10n_util::GetStringUTF16(IDS_SAVED_TAB_GROUPS_MENU)))
@@ -1773,7 +1773,7 @@ void BrowserActions::InitializeChromeMenuActions() {
               },
               bwi))
           .SetActionId(kActionWebAppMenuAppInfo)
-          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+          .SetText(BrowserActions::GetMnemonicTitleText(
               l10n_util::GetStringUTF16(IDS_APP_CONTEXT_MENU_SHOW_INFO)))
           .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
               l10n_util::GetStringUTF16(IDS_APP_CONTEXT_MENU_SHOW_INFO)))
@@ -1916,7 +1916,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               tab_strip_model))
           .SetActionId(kActionShowIntentPicker)
-          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+          .SetText(BrowserActions::GetMnemonicTitleText(
               l10n_util::GetStringUTF16(IDS_TOOLTIP_INTENT_PICKER_ICON)))
           .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
               l10n_util::GetStringUTF16(IDS_TOOLTIP_INTENT_PICKER_ICON)))
@@ -1939,8 +1939,8 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               tab_strip_model))
           .SetActionId(kActionShowFileSystemAccess)
-          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
-              l10n_util::GetStringUTF16(
+          .SetText(
+              BrowserActions::GetMnemonicTitleText(l10n_util::GetStringUTF16(
                   IDS_FILE_SYSTEM_ACCESS_WRITE_USAGE_TOOLTIP)))
           .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
               l10n_util::GetStringUTF16(
@@ -2187,8 +2187,8 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           .SetImage(ui::ImageModel::FromVectorIcon(
               features::IsRoundedIconsEnabled() ? kKeepIcon : kKeepOldIcon,
               ui::kColorIcon))
-          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
-              l10n_util::GetStringUTF16(
+          .SetText(
+              BrowserActions::GetMnemonicTitleText(l10n_util::GetStringUTF16(
                   IDS_SIDE_PANEL_TOOLBAR_BUTTON_CXMENU_PIN)))
           .Build());
 
@@ -2212,8 +2212,8 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               features::IsRoundedIconsEnabled() ? kKeepOffIcon
                                                 : kKeepOffOldIcon,
               ui::kColorIcon))
-          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
-              l10n_util::GetStringUTF16(
+          .SetText(
+              BrowserActions::GetMnemonicTitleText(l10n_util::GetStringUTF16(
                   IDS_SIDE_PANEL_TOOLBAR_BUTTON_CXMENU_UNPIN)))
           .Build());
 
@@ -2233,7 +2233,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               features::IsRoundedIconsEnabled() ? kSettingsIcon
                                                 : kSettingsMenuOldIcon,
               ui::kColorIcon))
-          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+          .SetText(BrowserActions::GetMnemonicTitleText(
               l10n_util::GetStringUTF16(IDS_SHOW_CUSTOMIZE_CHROME_TOOLBAR)))
           .Build());
 
@@ -4512,12 +4512,11 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
 
   auto* app_controller = web_app::AppBrowserController::From(bwi);
   const std::u16string uninstall_text =
-      app_controller ? BrowserActions::GetCleanTitleAndTooltipText(
-                           l10n_util::GetStringFUTF16(
-                               IDS_UNINSTALL_FROM_OS_LAUNCH_SURFACE,
-                               ui::EscapeMenuLabelAmpersands(
-                                   app_controller->GetAppShortName())))
-                     : std::u16string();
+      app_controller
+          ? l10n_util::GetStringFUTF16(IDS_UNINSTALL_FROM_OS_LAUNCH_SURFACE,
+                                       ui::EscapeMenuLabelAmpersands(
+                                           app_controller->GetAppShortName()))
+          : std::u16string();
   root_action_item_->AddChild(
       actions::ActionItem::Builder(
           base::BindRepeating(
@@ -4531,8 +4530,9 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               bwi))
           .SetActionId(kActionUninstallWebApp)
-          .SetText(uninstall_text)
-          .SetTooltipText(uninstall_text)
+          .SetText(BrowserActions::GetMnemonicTitleText(uninstall_text))
+          .SetTooltipText(
+              BrowserActions::GetCleanTitleAndTooltipText(uninstall_text))
           .SetImage(ui::ImageModel::FromVectorIcon(
               features::IsRoundedIconsEnabled() ? kDeleteIcon
                                                 : kTrashCanRefreshOldIcon,
@@ -4681,7 +4681,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               bwi))
           .SetActionId(kActionShowHistory)
-          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+          .SetText(BrowserActions::GetMnemonicTitleText(
               l10n_util::GetStringUTF16(IDS_HISTORY_MENU)))
           .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
               l10n_util::GetStringUTF16(IDS_HISTORY_MENU)))
@@ -4777,7 +4777,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               bwi))
           .SetActionId(kActionManageExtensions)
-          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+          .SetText(BrowserActions::GetMnemonicTitleText(
               l10n_util::GetStringUTF16(IDS_MANAGE_EXTENSIONS)))
           .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
               l10n_util::GetStringUTF16(IDS_MANAGE_EXTENSIONS)))

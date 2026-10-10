@@ -209,6 +209,27 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsBrowserTest, MenuActionsKeepMnemonicText) {
   EXPECT_EQ(new_tab->GetTextWithMnemonic(), new_tab_title);
   EXPECT_EQ(new_tab->GetText(),
             BrowserActions::GetCleanTitleAndTooltipText(new_tab_title));
+
+  actions::ActionItem* show_history =
+      action_manager.FindAction(kActionShowHistory);
+  ASSERT_TRUE(show_history);
+  const std::u16string history_title =
+      l10n_util::GetStringUTF16(IDS_HISTORY_MENU);
+  EXPECT_EQ(show_history->GetTextWithMnemonic(),
+            BrowserActions::GetMnemonicTitleText(history_title));
+  EXPECT_EQ(show_history->GetText(),
+            BrowserActions::GetCleanTitleAndTooltipText(history_title));
+
+  actions::ActionItem* manage_extensions =
+      action_manager.FindAction(kActionManageExtensions);
+  ASSERT_TRUE(manage_extensions);
+  const std::u16string manage_extensions_title =
+      l10n_util::GetStringUTF16(IDS_MANAGE_EXTENSIONS);
+  EXPECT_EQ(manage_extensions->GetTextWithMnemonic(),
+            BrowserActions::GetMnemonicTitleText(manage_extensions_title));
+  EXPECT_EQ(
+      manage_extensions->GetText(),
+      BrowserActions::GetCleanTitleAndTooltipText(manage_extensions_title));
 }
 
 }  // namespace chrome
