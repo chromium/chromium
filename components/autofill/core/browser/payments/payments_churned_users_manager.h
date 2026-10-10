@@ -11,6 +11,8 @@
 #include "components/autofill/core/browser/strike_databases/payments/payments_churned_users_strike_database.h"
 #include "components/autofill/core/browser/ui/payments/payments_ui_closed_reasons.h"
 
+class AccountInfo;
+
 namespace autofill::payments {
 
 // Owned by PaymentsAutofillClient. There is one instance of this class per
@@ -37,6 +39,8 @@ class PaymentsChurnedUsersManager : public AutofillManager::Observer {
 
  private:
   void OnUiClosed(PaymentsUiClosedReason closed_reason);
+
+  AccountInfo GetAccountInfo() const;
 
   // The associated AutofillClient.
   const raw_ref<AutofillClient> client_;

@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/ui/payments/payments_churned_users_ui_delegate.h"
 #include "components/messages/android/message_enums.h"
+#include "components/signin/public/identity_manager/account_info.h"
 
 namespace autofill {
 
@@ -39,6 +40,7 @@ class PaymentsChurnedUsersUiDelegateAndroid
 
   // PaymentsChurnedUsersUiDelegate:
   void ShowPaymentsChurnedUsersUI(
+      AccountInfo account_info,
       base::OnceCallback<void(PaymentsUiClosedReason)> closed_callback)
       override;
 

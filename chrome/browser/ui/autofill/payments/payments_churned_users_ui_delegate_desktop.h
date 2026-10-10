@@ -8,6 +8,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/ui/payments/payments_churned_users_ui_delegate.h"
+#include "components/signin/public/identity_manager/account_info.h"
 
 namespace autofill {
 
@@ -32,6 +33,7 @@ class PaymentsChurnedUsersUiDelegateDesktop
 
   // PaymentsChurnedUsersUiDelegate:
   void ShowPaymentsChurnedUsersUI(
+      AccountInfo account_info,
       base::OnceCallback<void(PaymentsUiClosedReason)> closed_callback)
       override;
 

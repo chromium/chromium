@@ -35,6 +35,7 @@
 #include "components/autofill/core/browser/ui/payments/payments_churned_users_ui_delegate.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -64,22 +65,20 @@ class PaymentsChurnedUsersBubbleViewsBrowserTest
   void ShowUi(const std::string& name) override { ShowBubble(); }
 
   void ShowBubble(base::OnceCallback<void(PaymentsUiClosedReason)>
-                      closed_callback = base::DoNothing(),
-                  bool sign_in = true) {
+                      closed_callback = base::DoNothing()) {
     EXPECT_TRUE(
         ui_test_utils::NavigateToURL(browser(), GURL("chrome://new-tab-page")));
-    if (sign_in) {
-      signin::MakePrimaryAccountAvailable(
-          IdentityManagerFactory::GetForProfile(browser()->GetProfile()),
-          "user@example.com", signin::ConsentLevel::kSignin);
-    }
+    AccountInfo account_info = signin::MakePrimaryAccountAvailable(
+        IdentityManagerFactory::GetForProfile(browser()->GetProfile()),
+        "user@example.com", signin::ConsentLevel::kSignin);
     autofill::ChromeAutofillClient* autofill_client =
         autofill::ChromeAutofillClient::FromWebContentsForTesting(
             browser()->GetTabStripModel()->GetActiveWebContents());
     ASSERT_TRUE(autofill_client);
     autofill_client->GetPaymentsAutofillClient()
         ->GetPaymentsChurnedUsersUiDelegate()
-        ->ShowPaymentsChurnedUsersUI(std::move(closed_callback));
+        ->ShowPaymentsChurnedUsersUI(std::move(account_info),
+                                     std::move(closed_callback));
   }
 
   bool IsIconVisible() {
@@ -254,19 +253,6 @@ IN_PROC_BROWSER_TEST_P(PaymentsChurnedUsersBubbleViewsBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "Autofill.PaymentsChurnedUsersUi.ShowResult",
       autofill_metrics::PaymentsChurnedUsersUiShowResult::kShown, 1);
-}
-
-IN_PROC_BROWSER_TEST_P(PaymentsChurnedUsersBubbleViewsBrowserTest,
-                       LogsShowResult_NoAccountInfoPresent) {
-  base::HistogramTester histogram_tester;
-
-  ShowBubble(/*closed_callback=*/base::DoNothing(), /*sign_in=*/false);
-  EXPECT_FALSE(IsBubbleShowing());
-
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.PaymentsChurnedUsersUi.ShowResult",
-      autofill_metrics::PaymentsChurnedUsersUiShowResult::kNoAccountInfoPresent,
-      1);
 }
 
 INSTANTIATE_TEST_SUITE_P(,

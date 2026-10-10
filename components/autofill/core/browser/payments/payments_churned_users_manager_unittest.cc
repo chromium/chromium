@@ -8,6 +8,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/autofill/core/browser/data_manager/payments/test_payments_data_manager.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
@@ -26,6 +27,8 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_test_util.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/strike_database/strike_database.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -41,7 +44,7 @@ class MockPaymentsChurnedUsersUiDelegate
 
   MOCK_METHOD(void,
               ShowPaymentsChurnedUsersUI,
-              (base::OnceCallback<void(PaymentsUiClosedReason)>),
+              (AccountInfo, base::OnceCallback<void(PaymentsUiClosedReason)>),
               (override));
 };
 
@@ -66,6 +69,14 @@ class PaymentsChurnedUsersManagerTest
   void SetUp() override {
     InitAutofillClient();
     CreateAutofillDriver();
+    AccountInfo account_info =
+        autofill_client()
+            .identity_test_environment()
+            .MakePrimaryAccountAvailable("test@example.com",
+                                         signin::ConsentLevel::kSignin);
+    static_cast<TestPaymentsDataManager&>(
+        payments_client()->GetPaymentsDataManager())
+        .SetAccountInfoForPayments(account_info.GetCoreAccountInfo());
   }
 
   TestPaymentsAutofillClient* payments_client() {
@@ -118,7 +129,10 @@ TEST_F(PaymentsChurnedUsersManagerTest, ShowUiTriggered) {
   autofill_client().GetPrefs()->SetBoolean(prefs::kAutofillCreditCardEnabled,
                                            false);
 
-  EXPECT_CALL(ui_delegate(), ShowPaymentsChurnedUsersUI);
+  EXPECT_CALL(ui_delegate(),
+              ShowPaymentsChurnedUsersUI(
+                  testing::Property(&AccountInfo::GetEmail, "test@example.com"),
+                  testing::_));
   SimulateOnFieldTypesDetermined(/*is_credit_card_form=*/true);
 }
 
@@ -134,7 +148,8 @@ TEST_F(PaymentsChurnedUsersManagerTest, AcceptCallbackTurnsOnPref) {
 
   base::OnceCallback<void(PaymentsUiClosedReason)> closed_callback;
   EXPECT_CALL(ui_delegate(), ShowPaymentsChurnedUsersUI)
-      .WillOnce([&](base::OnceCallback<void(PaymentsUiClosedReason)> callback) {
+      .WillOnce([&](AccountInfo,
+                    base::OnceCallback<void(PaymentsUiClosedReason)> callback) {
         closed_callback = std::move(callback);
       });
   SimulateOnFieldTypesDetermined(/*is_credit_card_form=*/true);
@@ -284,7 +299,8 @@ TEST_F(PaymentsChurnedUsersManagerTest, CancelCallbackAddsStrikes) {
 
   base::OnceCallback<void(PaymentsUiClosedReason)> closed_callback;
   EXPECT_CALL(ui_delegate(), ShowPaymentsChurnedUsersUI)
-      .WillOnce([&](base::OnceCallback<void(PaymentsUiClosedReason)> callback) {
+      .WillOnce([&](AccountInfo,
+                    base::OnceCallback<void(PaymentsUiClosedReason)> callback) {
         closed_callback = std::move(callback);
       });
   SimulateOnFieldTypesDetermined(/*is_credit_card_form=*/true);
@@ -310,7 +326,8 @@ TEST_F(PaymentsChurnedUsersManagerTest, ClosedCallbackAddsStrike) {
 
   base::OnceCallback<void(PaymentsUiClosedReason)> closed_callback;
   EXPECT_CALL(ui_delegate(), ShowPaymentsChurnedUsersUI)
-      .WillOnce([&](base::OnceCallback<void(PaymentsUiClosedReason)> callback) {
+      .WillOnce([&](AccountInfo,
+                    base::OnceCallback<void(PaymentsUiClosedReason)> callback) {
         closed_callback = std::move(callback);
       });
   SimulateOnFieldTypesDetermined(/*is_credit_card_form=*/true);
@@ -336,7 +353,8 @@ TEST_F(PaymentsChurnedUsersManagerTest, UnknownCallbackAddsNoStrikes) {
 
   base::OnceCallback<void(PaymentsUiClosedReason)> closed_callback;
   EXPECT_CALL(ui_delegate(), ShowPaymentsChurnedUsersUI)
-      .WillOnce([&](base::OnceCallback<void(PaymentsUiClosedReason)> callback) {
+      .WillOnce([&](AccountInfo,
+                    base::OnceCallback<void(PaymentsUiClosedReason)> callback) {
         closed_callback = std::move(callback);
       });
   SimulateOnFieldTypesDetermined(/*is_credit_card_form=*/true);
@@ -362,7 +380,8 @@ TEST_F(PaymentsChurnedUsersManagerTest, NotInteractedCallbackAddsStrike) {
 
   base::OnceCallback<void(PaymentsUiClosedReason)> closed_callback;
   EXPECT_CALL(ui_delegate(), ShowPaymentsChurnedUsersUI)
-      .WillOnce([&](base::OnceCallback<void(PaymentsUiClosedReason)> callback) {
+      .WillOnce([&](AccountInfo,
+                    base::OnceCallback<void(PaymentsUiClosedReason)> callback) {
         closed_callback = std::move(callback);
       });
   SimulateOnFieldTypesDetermined(/*is_credit_card_form=*/true);
@@ -388,7 +407,8 @@ TEST_F(PaymentsChurnedUsersManagerTest, LostFocusCallbackAddsStrike) {
 
   base::OnceCallback<void(PaymentsUiClosedReason)> closed_callback;
   EXPECT_CALL(ui_delegate(), ShowPaymentsChurnedUsersUI)
-      .WillOnce([&](base::OnceCallback<void(PaymentsUiClosedReason)> callback) {
+      .WillOnce([&](AccountInfo,
+                    base::OnceCallback<void(PaymentsUiClosedReason)> callback) {
         closed_callback = std::move(callback);
       });
   SimulateOnFieldTypesDetermined(/*is_credit_card_form=*/true);
@@ -416,7 +436,8 @@ TEST_F(PaymentsChurnedUsersManagerTest, AcceptCallbackAddsMaxStrikes) {
       autofill_client().GetStrikeDatabase());
   base::OnceCallback<void(PaymentsUiClosedReason)> closed_callback;
   EXPECT_CALL(ui_delegate(), ShowPaymentsChurnedUsersUI)
-      .WillOnce([&](base::OnceCallback<void(PaymentsUiClosedReason)> callback) {
+      .WillOnce([&](AccountInfo,
+                    base::OnceCallback<void(PaymentsUiClosedReason)> callback) {
         closed_callback = std::move(callback);
       });
   SimulateOnFieldTypesDetermined(/*is_credit_card_form=*/true);
@@ -569,6 +590,31 @@ TEST_F(PaymentsChurnedUsersManagerTest,
       /*sample=*/
       autofill_metrics::PaymentsChurnedUsersUiShowResult::
           kPrefNotUserControlled,
+      /*expected_bucket_count=*/1);
+}
+
+// Tests that the NotShownReason metric is logged correctly when no account info
+// is present.
+TEST_F(PaymentsChurnedUsersManagerTest,
+       Metrics_NotShownReason_NoAccountInfoPresent) {
+  feature_list_.InitAndEnableFeature(
+      features::kAutofillEnableResurrectingPaymentsUsers);
+  manager_ = std::make_unique<PaymentsChurnedUsersManager>(&autofill_client());
+
+  autofill_client().GetPrefs()->SetBoolean(prefs::kAutofillCreditCardEnabled,
+                                           false);
+  static_cast<TestPaymentsDataManager&>(
+      payments_client()->GetPaymentsDataManager())
+      .SetAccountInfoForPayments(CoreAccountInfo());
+
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(ui_delegate(), ShowPaymentsChurnedUsersUI).Times(0);
+  SimulateOnFieldTypesDetermined(/*is_credit_card_form=*/true);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.PaymentsChurnedUsersUi.ShowResult",
+      /*sample=*/
+      autofill_metrics::PaymentsChurnedUsersUiShowResult::kNoAccountInfoPresent,
       /*expected_bucket_count=*/1);
 }
 

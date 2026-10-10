@@ -8,6 +8,7 @@
 
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
@@ -18,6 +19,8 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strike_database/strike_database.h"
 
 namespace autofill::payments {
@@ -105,11 +108,20 @@ void PaymentsChurnedUsersManager::OnFieldTypesDetermined(
 
     if (base::FeatureList::IsEnabled(
             features::kAutofillEnableResurrectingPaymentsUsers)) {
+      AccountInfo account_info = GetAccountInfo();
+      if (account_info.IsEmpty()) {
+        autofill_metrics::LogPaymentsChurnedUsersUiShowResult(
+            autofill_metrics::PaymentsChurnedUsersUiShowResult::
+                kNoAccountInfoPresent);
+        return;
+      }
+
       if (payments::PaymentsAutofillClient* payments_client =
               client_->GetPaymentsAutofillClient()) {
         if (PaymentsChurnedUsersUiDelegate* ui_delegate =
                 payments_client->GetPaymentsChurnedUsersUiDelegate()) {
           ui_delegate->ShowPaymentsChurnedUsersUI(
+              std::move(account_info),
               base::BindOnce(&PaymentsChurnedUsersManager::OnUiClosed,
                              weak_factory_.GetWeakPtr()));
         }
@@ -142,6 +154,23 @@ void PaymentsChurnedUsersManager::OnUiClosed(
       // kUnknown results in 0 strikes.
       break;
   }
+}
+
+AccountInfo PaymentsChurnedUsersManager::GetAccountInfo() const {
+  signin::IdentityManager* identity_manager = client_->GetIdentityManager();
+  if (!identity_manager) {
+    return AccountInfo();
+  }
+
+  payments::PaymentsAutofillClient* payments_client =
+      client_->GetPaymentsAutofillClient();
+  if (!payments_client) {
+    return AccountInfo();
+  }
+
+  return identity_manager->FindExtendedAccountInfo(
+      payments_client->GetPaymentsDataManager()
+          .GetAccountInfoForPaymentsServer());
 }
 
 }  // namespace autofill::payments

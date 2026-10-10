@@ -19,6 +19,7 @@
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_churned_users_metrics.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/web_contents.h"
 
 namespace autofill::payments {
@@ -31,6 +32,7 @@ PaymentsChurnedUsersUiDelegateAndroid::
     ~PaymentsChurnedUsersUiDelegateAndroid() = default;
 
 void PaymentsChurnedUsersUiDelegateAndroid::ShowPaymentsChurnedUsersUI(
+    AccountInfo /*account_info*/,
     base::OnceCallback<void(PaymentsUiClosedReason)> closed_callback) {
   if (is_showing_opt_in_ui_) {
     if (closed_callback) {
