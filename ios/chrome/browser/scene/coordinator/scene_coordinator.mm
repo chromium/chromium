@@ -1354,6 +1354,21 @@ inline LayoutStateScenePassKey PassKey() {
                         completion:nil];
 }
 
+- (void)showGeminiContextualCueSettings {
+  if (_settingsNavigationController) {
+    [_settingsNavigationController showGeminiContextualCueSettings];
+    return;
+  }
+
+  _settingsNavigationController = [SettingsNavigationController
+      BWGContextualCueControllerForBrowser:_regularBrowser.get()
+                                  delegate:self];
+
+  [self.activeViewController presentViewController:_settingsNavigationController
+                                          animated:YES
+                                        completion:nil];
+}
+
 - (void)showSuggestionsFromGemini {
   CHECK(!self.sceneState.signinInProgress, base::NotFatalUntil::M160);
 

@@ -97,6 +97,15 @@ extern NSString* const kSettingsDoneButtonId;
     BWGControllerForBrowser:(Browser*)browser
                    delegate:(id<SettingsNavigationControllerDelegate>)delegate;
 
+// Creates a new `SettingsNavigationController` that displays the Gemini
+// contextual cue settings. `browser` is the browser where settings are being
+// displayed and should not be nil. `delegate` may be nil.
++ (instancetype)
+    BWGContextualCueControllerForBrowser:(Browser*)browser
+                                delegate:
+                                    (id<SettingsNavigationControllerDelegate>)
+                                        delegate;
+
 // Creates a new SettingsNavigationController that displays the Suggestions from
 // Gemini settings. `browser` is the browser where settings are being displayed
 // and should not be nil. `delegate` may be nil.
