@@ -5,7 +5,7 @@
 [Exposed=Window, RuntimeEnabled=CanvasDrawElement]
 interface ElementGeometryUpdateEvent : Event {
     constructor(DOMString type, optional ElementGeometryUpdateEventInit eventInitDict = {});
-    [SameObject] readonly attribute FrozenArray<Element> elements;
+    [SameObject, SaveSameObject] readonly attribute FrozenArray<Element> elements;
 };
 
 dictionary ElementGeometryUpdateEventInit : EventInit {

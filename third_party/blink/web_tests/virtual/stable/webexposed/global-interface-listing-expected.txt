@@ -1086,6 +1086,10 @@ interface CanvasGradient
     attribute @@toStringTag
     method addColorStop
     method constructor
+interface CanvasPaintEvent : Event
+    attribute @@toStringTag
+    getter changedElements
+    method constructor
 interface CanvasPattern
     attribute @@toStringTag
     method constructor

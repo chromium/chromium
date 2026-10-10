@@ -1209,6 +1209,10 @@ interface CanvasGradient
     setter colorInterpolationMethod
     setter hueInterpolationMethod
     setter premultipliedAlpha
+interface CanvasPaintEvent : Event
+    attribute @@toStringTag
+    getter changedElements
+    method constructor
 interface CanvasPattern
     attribute @@toStringTag
     method constructor
