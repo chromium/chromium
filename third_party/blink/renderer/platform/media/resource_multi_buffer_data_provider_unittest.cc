@@ -353,6 +353,20 @@ TEST_F(ResourceMultiBufferDataProviderTest, InvalidPartialResponse) {
   loader_->DidReceiveResponse(response);
 }
 
+TEST_F(ResourceMultiBufferDataProviderTest, OpaqueRangeNotSatisfiableFails) {
+  Initialize(kHttpUrl, 0);
+  Start();
+
+  EXPECT_CALL(*this, RedirectCallback(scoped_refptr<UrlData>(nullptr)));
+
+  WebURLResponse response(url_);
+  response.SetHttpStatusCode(416);
+  response.SetType(network::mojom::FetchResponseType::kOpaque);
+  loader_->DidReceiveResponse(response);
+  EXPECT_TRUE(url_data_->is_cors_cross_origin());
+  EXPECT_TRUE(url_data_->multibuffer()->map().empty());
+}
+
 TEST_F(ResourceMultiBufferDataProviderTest, TestRedirects) {
   // Test redirect.
   Initialize(kHttpUrl, 0);
