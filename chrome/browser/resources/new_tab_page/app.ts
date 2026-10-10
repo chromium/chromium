@@ -133,6 +133,7 @@ const VOICE_MANUAL_SUBMIT_IDLE_TIMEOUT_MS = 10000;
 const COMPOSEBOX_INERT_ALLOWLIST = [
   '#logo',
   '#searchboxContainer',
+  '#voiceSearchDialog',
 ];
 
 export const CUSTOMIZE_CHROME_BUTTON_ELEMENT_ID =

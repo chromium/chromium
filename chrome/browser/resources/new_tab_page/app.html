@@ -190,54 +190,55 @@ import {SubmitButtonIconType} from '//resources/cr_components/composebox/compose
       ` : ''}
     ` : ''}
     <div id="contentBottomSpacer"></div>
+    ${this.voiceSearchCoherenceAnySearchboxExperimentEnabled_ &&
+        this.showVoiceSearchOverlay_ ? html`
+      <dialog id="voiceSearchDialog" tabindex="-1" autofocus
+          @close="${this.onVoiceSearchOverlayClose}"
+          @click="${this.onVoiceSearchDialogClick_}">
+        <div id="voiceSearchCardContainer">
+          ${this.showVoiceSearchGlow_() ? html`
+            <search-animated-glow id="voiceSearchGlow"
+                .coloredTicTacVoiceAnimationEnabled="${true}"
+                .isListening="${this.voiceSearchListening_}"
+                .requiresVoice="${true}"
+                .transcript="${this.voiceSearchTranscript_}"
+                .receivedSpeech="${this.voiceSearchReceivedSpeech_}">
+            </search-animated-glow>
+          ` : ''}
+          <!-- Pass metricSource synchronously to avoid microtask race in unit tests. -->
+          <cr-composebox-voice-search id="voiceSearch"
+              in-voice-search-mode
+              .audioWaveEnabled="${
+                this.voiceSearchCoherenceRealboxHelperTextEnabled_}"
+              @voice-permission-changed="${this.onVoicePermissionChanged_}"
+              @voice-search-cancel="${this.onVoiceSearchCancel_}"
+              @voice-search-final-result="${this.onVoiceSearchFinalResult_}"
+              @voice-search-error="${this.onVoiceSearchError}"
+              @voice-search-restart="${this.onVoiceSearchRestart_}"
+              @transcript-update="${this.onVoiceSearchTranscriptUpdate_}"
+              @speech-received="${this.onVoiceSearchSpeechReceived_}"
+              @recording-stopped="${this.onVoiceSearchRecordingStopped_}"
+              .hasErrorTimer="${true}"
+              .pageCallbackRouter="${this.searchboxCallbackRouter_}"
+              .autosubmitEnabled="${
+                this.voiceSearchCoherenceRealboxAutoEndpointEnabled_}"
+              .dynamicTimeoutEnabled="${false}"
+              .queryLengthLimit="${this.voiceQueryLengthLimit_}"
+              .idleTimeout="${this.voiceAutoSubmitIdleTimeoutMs_}"
+              .manualSubmitIdleTimeout="${this.voiceManualSubmitIdleTimeoutMs_}"
+              .liveTranscriptEnabled="${
+                this.voiceSearchCoherenceSearchboxWithLiveTranscriptionEnabled_}"
+              .helperTextEnabled="${
+                this.voiceSearchCoherenceRealboxHelperTextEnabled_}"
+              .submitStopButtonsEnabled="${true}"
+              .metricSource="${'NTP_REALBOX'}">
+          </cr-composebox-voice-search>
+        </div>
+      </dialog>
+    ` : ''}
   </div>
 </div>
-${this.voiceSearchCoherenceAnySearchboxExperimentEnabled_ &&
-    this.showVoiceSearchOverlay_ ? html`
-  <dialog id="voiceSearchDialog" tabindex="-1" autofocus
-      @close="${this.onVoiceSearchOverlayClose}"
-      @click="${this.onVoiceSearchDialogClick_}">
-    <div id="voiceSearchCardContainer">
-      ${this.showVoiceSearchGlow_() ? html`
-        <search-animated-glow id="voiceSearchGlow"
-            .coloredTicTacVoiceAnimationEnabled="${true}"
-            .isListening="${this.voiceSearchListening_}"
-            .requiresVoice="${true}"
-            .transcript="${this.voiceSearchTranscript_}"
-            .receivedSpeech="${this.voiceSearchReceivedSpeech_}">
-        </search-animated-glow>
-      ` : ''}
-      <!-- Pass metricSource synchronously to avoid microtask race in unit tests. -->
-      <cr-composebox-voice-search id="voiceSearch"
-          in-voice-search-mode
-          .audioWaveEnabled="${
-            this.voiceSearchCoherenceRealboxHelperTextEnabled_}"
-          @voice-permission-changed="${this.onVoicePermissionChanged_}"
-          @voice-search-cancel="${this.onVoiceSearchCancel_}"
-          @voice-search-final-result="${this.onVoiceSearchFinalResult_}"
-          @voice-search-error="${this.onVoiceSearchError}"
-          @voice-search-restart="${this.onVoiceSearchRestart_}"
-          @transcript-update="${this.onVoiceSearchTranscriptUpdate_}"
-          @speech-received="${this.onVoiceSearchSpeechReceived_}"
-          @recording-stopped="${this.onVoiceSearchRecordingStopped_}"
-          .hasErrorTimer="${true}"
-          .pageCallbackRouter="${this.searchboxCallbackRouter_}"
-          .autosubmitEnabled="${
-            this.voiceSearchCoherenceRealboxAutoEndpointEnabled_}"
-          .dynamicTimeoutEnabled="${false}"
-          .queryLengthLimit="${this.voiceQueryLengthLimit_}"
-          .idleTimeout="${this.voiceAutoSubmitIdleTimeoutMs_}"
-          .manualSubmitIdleTimeout="${this.voiceManualSubmitIdleTimeoutMs_}"
-          .liveTranscriptEnabled="${
-            this.voiceSearchCoherenceSearchboxWithLiveTranscriptionEnabled_}"
-          .helperTextEnabled="${
-            this.voiceSearchCoherenceRealboxHelperTextEnabled_}"
-          .submitStopButtonsEnabled="${true}"
-          .metricSource="${'NTP_REALBOX'}">
-      </cr-composebox-voice-search>
-    </div>
-  </dialog>
-` : ''}
+
 ${this.showVoiceSearchOverlay_ &&
     !this.voiceSearchCoherenceAnySearchboxExperimentEnabled_ ? html`
   <ntp-voice-search-overlay @close="${this.onVoiceSearchOverlayClose}">
