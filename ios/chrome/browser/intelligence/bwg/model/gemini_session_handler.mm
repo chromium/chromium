@@ -479,6 +479,13 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
   [self.geminiViewStateDelegate didTapResponseReadyViewButton];
 }
 
+- (void)didFinishLoadingConversationWithID:(NSString*)conversationID
+                                     error:(NSError*)error {
+  [self.geminiViewStateDelegate
+      didFinishLoadingConversationWithID:conversationID
+                                   error:error];
+}
+
 - (void)handleChatMessageRequest:(GeminiChatMessageRequest*)request
                       completion:(void (^)(GeminiChatMessageResponse* response))
                                      completion {

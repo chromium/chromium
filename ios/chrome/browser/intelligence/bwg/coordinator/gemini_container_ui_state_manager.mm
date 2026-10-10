@@ -229,6 +229,17 @@ GeminiContainerUIState::WorklogDisplayMode() const {
   [self updateUIState:GeminiContainerUIState::ExpandedResponse()];
 }
 
+- (void)didFinishLoadingConversationWithID:(NSString*)conversationID
+                                     error:(NSError*)error {
+  if (!IsIOSGeminiBottomSheetMigrationEnabled()) {
+    return;
+  }
+
+  if (error) {
+    [self resetToZeroStateWithDetent:_currentUIState.detent];
+  }
+}
+
 - (void)updateDetent:(AssistantContainerDetent)detent {
   _currentUIState.detent = detent;
 }

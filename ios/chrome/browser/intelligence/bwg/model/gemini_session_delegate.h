@@ -197,6 +197,10 @@ typedef NS_ENUM(NSInteger, GeminiCancelType) {
 // state.
 - (void)didTapResponseReadyViewButton;
 
+// Called when loading a previous conversation finishes.
+- (void)didFinishLoadingConversationWithID:(NSString*)conversationID
+                                     error:(NSError*)error;
+
 #pragma mark - Chat Message Interception
 
 // Called on the main thread when the user submits a chat message, before it is

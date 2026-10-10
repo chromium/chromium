@@ -579,6 +579,11 @@ class GeminiContainerMediatorTabHelperObserver
       animateAssistantContainerToDetent:AssistantContainerDetent::kMedium];
 }
 
+- (void)didFinishLoadingConversationWithID:(NSString*)conversationID
+                                     error:(NSError*)error {
+  [_stateManager didFinishLoadingConversationWithID:conversationID error:error];
+}
+
 - (void)setActuationActive:(BOOL)actuationActive {
   if (_stateManager.currentUIState.actuating == actuationActive) {
     return;

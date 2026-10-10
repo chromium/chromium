@@ -653,3 +653,28 @@ TEST_F(GeminiContainerUIStateManagerTest, TestRespondingAfterActuationExpands) {
 
   EXPECT_EQ(AssistantContainerDetent::kMedium, delegate_.lastUIState.detent);
 }
+
+// Tests that `didFinishLoadingConversationWithID:error:` switches to zero state
+// when an error occurs, and does nothing when `error` is nil.
+TEST_F(GeminiContainerUIStateManagerTest,
+       TestDidFinishLoadingConversationWithErrorSwitchesToZeroState) {
+  [state_manager_ setupInitialUIStateWithConversation:YES];
+  EXPECT_TRUE(state_manager_.hasConversation);
+  EXPECT_FALSE(state_manager_.currentUIState.zeroStateVisible);
+
+  // Finishing without error keeps the current conversation state.
+  [delegate_ reset];
+  [state_manager_ didFinishLoadingConversationWithID:@"conv_123" error:nil];
+  EXPECT_EQ(0, delegate_.changeCount);
+  EXPECT_TRUE(state_manager_.hasConversation);
+  EXPECT_FALSE(state_manager_.currentUIState.zeroStateVisible);
+
+  // Finishing with an error resets to zero state.
+  NSError* error = [NSError errorWithDomain:@"TestDomain" code:1 userInfo:nil];
+  [state_manager_ didFinishLoadingConversationWithID:@"conv_123" error:error];
+  EXPECT_EQ(1, delegate_.changeCount);
+  EXPECT_EQ(AssistantContainerDetent::kMedium, delegate_.lastUIState.detent);
+  EXPECT_TRUE(delegate_.lastUIState.hasGrabber);
+  EXPECT_TRUE(delegate_.lastUIState.zeroStateVisible);
+  EXPECT_FALSE(state_manager_.hasConversation);
+}

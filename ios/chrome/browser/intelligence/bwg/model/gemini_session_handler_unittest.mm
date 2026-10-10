@@ -917,3 +917,19 @@ TEST_F(GeminiSessionHandlerTest,
   EXPECT_FALSE(received_response.shouldConsume);
   EXPECT_OCMOCK_VERIFY(mock_handler);
 }
+
+// Tests that `didFinishLoadingConversationWithID:error:` forwards the call to
+// `geminiViewStateDelegate`.
+TEST_F(GeminiSessionHandlerTest,
+       TestDidFinishLoadingConversationNotifiesViewStateDelegate) {
+  id mock_delegate = OCMProtocolMock(@protocol(GeminiViewStateDelegate));
+  session_handler_.geminiViewStateDelegate = mock_delegate;
+  NSError* error = [NSError errorWithDomain:@"TestDomain" code:1 userInfo:nil];
+
+  OCMExpect([mock_delegate didFinishLoadingConversationWithID:@"conv_123"
+                                                        error:error]);
+
+  [session_handler_ didFinishLoadingConversationWithID:@"conv_123" error:error];
+
+  [mock_delegate verify];
+}

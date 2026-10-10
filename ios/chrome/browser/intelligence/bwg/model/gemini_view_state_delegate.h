@@ -55,6 +55,10 @@ typedef NS_ENUM(NSInteger, GeminiCancelType);
 // state.
 - (void)didTapResponseReadyViewButton;
 
+// Called when loading a previous conversation finishes.
+- (void)didFinishLoadingConversationWithID:(NSString*)conversationID
+                                     error:(NSError*)error;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_VIEW_STATE_DELEGATE_H_

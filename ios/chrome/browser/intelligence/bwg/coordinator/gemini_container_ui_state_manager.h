@@ -89,6 +89,10 @@ struct GeminiContainerUIState {
 // state if cancelled via the stop button.
 - (void)handleResponseCancellationWithReason:(GeminiCancelType)reason;
 
+// Handles completion of loading a previous conversation.
+- (void)didFinishLoadingConversationWithID:(NSString*)conversationID
+                                     error:(NSError*)error;
+
 // Updates the detent on the current state (e.g., when the user drags
 // the sheet).
 - (void)updateDetent:(AssistantContainerDetent)detent;

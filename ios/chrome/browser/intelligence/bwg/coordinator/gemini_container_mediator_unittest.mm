@@ -1817,4 +1817,34 @@ TEST_F(GeminiContainerMediatorTest,
   EXPECT_OCMOCK_VERIFY(mock_container_handler_);
 }
 
+// Tests that `didFinishLoadingConversationWithID:error:` switches the container
+// to zero state when an error is passed, and keeps it out of zero state when
+// error is nil.
+TEST_F(GeminiContainerMediatorTest,
+       TestDidFinishLoadingConversationWithErrorSwitchesToZeroState) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kAssistantContainer, kIOSGeminiBottomSheetMigration}, {});
+
+  AppendActiveWebState();
+  gemini::CreateOrUpdateConversationIdPrefs(
+      "conversation_123", "https://example.com", profile_->GetPrefs());
+
+  FakeGeminiContainerConsumer* consumer =
+      [[FakeGeminiContainerConsumer alloc] init];
+  mediator_.consumer = consumer;
+  [mediator_ connect];
+  EXPECT_FALSE(consumer.isZeroState);
+
+  // Finishing without error does not switch to zero state.
+  [mediator_ didFinishLoadingConversationWithID:@"conversation_123" error:nil];
+  EXPECT_FALSE(consumer.isZeroState);
+
+  // Finishing with an error switches to zero state.
+  NSError* error = [NSError errorWithDomain:@"TestDomain" code:1 userInfo:nil];
+  [mediator_ didFinishLoadingConversationWithID:@"conversation_123"
+                                          error:error];
+  EXPECT_TRUE(consumer.isZeroState);
+}
+
 }  // namespace
