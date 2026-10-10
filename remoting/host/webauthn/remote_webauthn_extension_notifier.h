@@ -27,9 +27,6 @@ namespace remoting {
 class RemoteWebAuthnExtensionNotifier final
     : public RemoteWebAuthnStateChangeNotifier {
  public:
-  static const std::vector<base::FilePath::StringType>&
-  GetRemoteWebAuthnExtensionIds();
-
   RemoteWebAuthnExtensionNotifier();
   RemoteWebAuthnExtensionNotifier(const RemoteWebAuthnExtensionNotifier&) =
       delete;

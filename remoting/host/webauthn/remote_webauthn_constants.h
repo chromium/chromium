@@ -5,6 +5,9 @@
 #ifndef REMOTING_HOST_WEBAUTHN_REMOTE_WEBAUTHN_CONSTANTS_H_
 #define REMOTING_HOST_WEBAUTHN_REMOTE_WEBAUTHN_CONSTANTS_H_
 
+#include "base/containers/span.h"
+#include "base/files/file_path.h"
+
 namespace remoting {
 
 extern const char kRemoteWebAuthnDataChannelName[];
@@ -29,6 +32,12 @@ extern const char kGetResponseDataKey[];
 extern const char kWebAuthnErrorKey[];
 extern const char kWebAuthnErrorNameKey[];
 extern const char kWebAuthnErrorMessageKey[];
+
+// Returns the IDs of the extensions that are allowed to use the remote WebAuthn
+// native messaging host. Used both to validate the calling extension and to
+// name the remote state change wakeup files.
+base::span<const base::FilePath::StringViewType>
+GetRemoteWebAuthnExtensionIds();
 
 }  // namespace remoting
 

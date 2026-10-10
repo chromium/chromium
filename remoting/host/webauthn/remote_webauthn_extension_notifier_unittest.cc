@@ -19,6 +19,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "remoting/host/webauthn/remote_webauthn_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace remoting {
@@ -26,22 +27,19 @@ namespace remoting {
 namespace {
 
 void AssertExtensionIdWakeupFilesExist(const base::FilePath& path_prefix) {
-  for (const auto& id :
-       RemoteWebAuthnExtensionNotifier::GetRemoteWebAuthnExtensionIds()) {
+  for (const auto& id : GetRemoteWebAuthnExtensionIds()) {
     ASSERT_TRUE(base::PathExists(path_prefix.Append(id)));
   }
 }
 
 void AssertExtensionIdWakeupFilesNotExist(const base::FilePath& path_prefix) {
-  for (const auto& id :
-       RemoteWebAuthnExtensionNotifier::GetRemoteWebAuthnExtensionIds()) {
+  for (const auto& id : GetRemoteWebAuthnExtensionIds()) {
     ASSERT_FALSE(base::PathExists(path_prefix.Append(id)));
   }
 }
 
 void DeleteExtensionIdWakeupFiles(const base::FilePath& path_prefix) {
-  for (const auto& id :
-       RemoteWebAuthnExtensionNotifier::GetRemoteWebAuthnExtensionIds()) {
+  for (const auto& id : GetRemoteWebAuthnExtensionIds()) {
     base::FilePath file_path = path_prefix.Append(id);
     base::DeleteFile(file_path);
   }
@@ -67,8 +65,7 @@ class RemoteWebAuthnExtensionNotifierTest : public testing::Test {
 };
 
 RemoteWebAuthnExtensionNotifierTest::RemoteWebAuthnExtensionNotifierTest() {
-  EXPECT_FALSE(
-      RemoteWebAuthnExtensionNotifier::GetRemoteWebAuthnExtensionIds().empty());
+  EXPECT_FALSE(GetRemoteWebAuthnExtensionIds().empty());
   EXPECT_TRUE(scoped_temp_dir_1_.CreateUniqueTempDir());
   EXPECT_TRUE(scoped_temp_dir_2_.CreateUniqueTempDir());
   io_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
@@ -154,8 +151,7 @@ TEST_F(RemoteWebAuthnExtensionNotifierTest,
 
   WaitForNextIoTask();
   WaitForNextIoTask();
-  for (const auto& id :
-       RemoteWebAuthnExtensionNotifier::GetRemoteWebAuthnExtensionIds()) {
+  for (const auto& id : GetRemoteWebAuthnExtensionIds()) {
     ASSERT_FALSE(base::PathExists(wakeup_file_prefix.Append(id)));
   }
 }

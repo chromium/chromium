@@ -62,6 +62,11 @@ int RemoteWebAuthnMain(int argc, char** argv) {
     return kNoPermissionExitCode;
   }
 
+  if (!IsLaunchedByTrustedExtension(*base::CommandLine::ForCurrentProcess())) {
+    LOG(ERROR) << "Current process is not launched by a trusted extension.";
+    return kNoPermissionExitCode;
+  }
+
   mojo::core::Init();
   mojo::core::ScopedIPCSupport ipc_support(
       task_runner, mojo::core::ScopedIPCSupport::ShutdownPolicy::FAST);

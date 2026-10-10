@@ -4,21 +4,24 @@
 
 #include "remoting/host/webauthn/remote_webauthn_caller_security_utils.h"
 
+#include <algorithm>
 #include <optional>
 
 #include "base/base_paths.h"
+#include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/notimplemented.h"
 #include "base/path_service.h"
 #include "base/process/process_handle.h"
 #include "build/build_config.h"
+#include "remoting/host/webauthn/remote_webauthn_constants.h"
 
 #if BUILDFLAG(IS_LINUX)
 #include "base/containers/fixed_flat_set.h"
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-#include "base/files/file_path.h"
 #include "remoting/host/base/process_util.h"
 #endif
 
@@ -126,6 +129,33 @@ bool IsLaunchedByTrustedProcess() {
   NOTIMPLEMENTED();
   return true;
 #endif
+}
+
+bool IsLaunchedByTrustedExtension(const base::CommandLine& command_line) {
+  const base::CommandLine::StringVector& args = command_line.GetArgs();
+  if (args.empty()) {
+    LOG(ERROR) << "Caller origin argument is missing.";
+    return false;
+  }
+  // Chrome passes the caller origin as GURL::spec(), i.e.
+  // "chrome-extension://<id>/". The trailing slash is optional here since the
+  // public native messaging documentation omits it.
+  constexpr base::CommandLine::StringViewType kExtensionOriginPrefix =
+      FILE_PATH_LITERAL("chrome-extension://");
+  base::CommandLine::StringViewType origin = args[0];
+  bool is_allowed = false;
+  if (origin.starts_with(kExtensionOriginPrefix)) {
+    base::CommandLine::StringViewType id =
+        origin.substr(kExtensionOriginPrefix.size());
+    if (id.ends_with(FILE_PATH_LITERAL('/'))) {
+      id.remove_suffix(1);
+    }
+    is_allowed = std::ranges::contains(GetRemoteWebAuthnExtensionIds(), id);
+  }
+  if (!is_allowed) {
+    LOG(ERROR) << "Caller origin is not allowed: " << args[0];
+  }
+  return is_allowed;
 }
 
 }  // namespace remoting
