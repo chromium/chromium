@@ -1,5 +1,18 @@
 <!DOCTYPE html>
 <html>
+<head>
+  <!--
+    This page is intentionally kept as fast as possible to establish a lower
+    bound on browser-side Glic open latency without client-side work mixed in.
+    Preload the two-file module graph so both scripts are fetched in a single
+    round trip instead of discovering api_boot.js only after parsing
+    minimal_client.js. All glic_api imports in these files are type-only, so
+    glic_api*.js / geic_api.js are not fetched at runtime (the production
+    client bundles its own API types and never fetches them either).
+  -->
+  <link rel="modulepreload" href="./minimal_client.js">
+  <link rel="modulepreload" href="../api_boot.js">
+</head>
 <body>
   <script type="module" src="./minimal_client.js"></script>
 </body>

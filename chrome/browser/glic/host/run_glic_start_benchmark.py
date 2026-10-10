@@ -47,7 +47,13 @@ def run_command(cmd: List[str], verbose: bool = False) -> str:
       f"Error: Command failed with code {proc.returncode}: {' '.join(cmd)}",
       file=sys.stderr,
     )
-  return "".join(lines)
+  full_output = "".join(lines)
+  for m in re.finditer(r"Logcat saved to file://(\S+)", full_output):
+    logcat_path = m.group(1)
+    if os.path.exists(logcat_path):
+      with open(logcat_path, "r", errors="replace") as f:
+        full_output += "\n" + f.read()
+  return full_output
 
 
 def parse_results(output: str, mode: str) -> Dict:
@@ -97,6 +103,21 @@ def parse_results(output: str, mode: str) -> Dict:
     )
 
   result["iterations"] = len(result["iteration_times"])
+  if result["iteration_times"]:
+    init_vals = [it["init_ms"] for it in result["iteration_times"]]
+    sorted_vals = sorted(init_vals)
+    n = len(sorted_vals)
+    result["cold_ms"] = init_vals[0]
+    result["warm_mean_ms"] = (
+      sum(init_vals[1:]) / (n - 1) if n > 1 else init_vals[0]
+    )
+    result["median_ms"] = (
+      sorted_vals[n // 2]
+      if n % 2 == 1
+      else 0.5 * (sorted_vals[n // 2 - 1] + sorted_vals[n // 2])
+    )
+    result["min_ms"] = sorted_vals[0]
+    result["max_ms"] = sorted_vals[-1]
 
   # Parse final RESULTS block
   mean_m = re.search(
@@ -169,6 +190,120 @@ def parse_results(output: str, mode: str) -> Dict:
   return result
 
 
+def print_summary_tables(results: List[Dict]) -> None:
+  """Prints summary and sequential phase breakdown tables."""
+  baseline_mean = None
+  for r in results:
+    if r["mode"] == "Webview" and r["mean_ms"] is not None:
+      baseline_mean = r["mean_ms"]
+      break
+
+  # Table 1: Overall, Cold, and Warm Initialization Latency
+  width = 123
+  print("\n" + "=" * width)
+  print(f"{'END-TO-END INITIALIZATION LATENCY (total_init)':^{width}}")
+  print("=" * width)
+  header = (
+    f"| {'Configuration':<16} | {'Mean (ms)':<10} | {'Median':<9} |"
+    f" {'Cold (Iter 1)':<13} | {'Warm Mean':<10} | {'StdDev':<8} |"
+    f" {'Min / Max (ms)':<18} | {'Delta vs Baseline':<18} |"
+  )
+  separator = (
+    f"|:{'-' * 16}-|-{'-' * 10}:|-{'-' * 9}:|-{'-' * 13}:"
+    f"|-{'-' * 10}:|-{'-' * 8}:|-{'-' * 18}:|-{'-' * 18}:|"
+  )
+  print(header)
+  print(separator)
+
+  for r in results:
+    mode = r["mode"]
+    mean_str = f"{r['mean_ms']:.1f}" if r.get("mean_ms") is not None else "N/A"
+    med_str = (
+      f"{r['median_ms']:.1f}" if r.get("median_ms") is not None else "N/A"
+    )
+    cold_str = f"{r['cold_ms']:.1f}" if r.get("cold_ms") is not None else "N/A"
+    warm_str = (
+      f"{r['warm_mean_ms']:.1f}" if r.get("warm_mean_ms") is not None else "N/A"
+    )
+    stddev_str = (
+      f"{r['stddev_ms']:.1f}" if r.get("stddev_ms") is not None else "N/A"
+    )
+    minmax_str = (
+      f"{r['min_ms']:.1f} / {r['max_ms']:.1f}"
+      if r.get("min_ms") is not None
+      else "N/A"
+    )
+
+    delta_str = "-"
+    if baseline_mean is not None and r.get("mean_ms") is not None:
+      delta = r["mean_ms"] - baseline_mean
+      pct = (delta / baseline_mean) * 100
+      if abs(delta) < 0.01:
+        delta_str = "Baseline"
+      elif delta < 0:
+        delta_str = f"{delta:.1f} ms ({pct:.1f}%)"
+      else:
+        delta_str = f"+{delta:.1f} ms (+{pct:.1f}%)"
+
+    print(
+      f"| {mode:<16} | {mean_str:>10} | {med_str:>9} |"
+      f" {cold_str:>13} | {warm_str:>10} | {stddev_str:>8} |"
+      f" {minmax_str:>18} | {delta_str:>18} |"
+    )
+
+  print("=" * width)
+
+  # Table 2: Sequential Phase Breakdown (additive intervals summing to Mean)
+  has_client_marks = any(r.get("script_start_ms") for r in results)
+  if has_client_marks:
+    p_width = 123
+    print("\n" + "=" * p_width)
+    print(
+      f"{'SEQUENTIAL PHASE BREAKDOWN (additive intervals -> Total Init)':^{p_width}}"
+    )
+    print("=" * p_width)
+    m_header = (
+      f"| {'Configuration':<16} | {'1. Host/Setup':<14} |"
+      f" {'2. Guest Load':<14} | {'3. Bootstrap':<14} |"
+      f" {'4. Client Init':<14} | {'5. Panel Open':<14} |"
+      f" {'= Total Init':<14} |"
+    )
+    m_sub = (
+      f"| {'':<16} | {'(pre/post nav)':>14} |"
+      f" {'(nav->script)':>14} | {'(script->boot)':>14} |"
+      f" {'(boot->init)':>14} | {'(init->open)':>14} |"
+      f" {'(sum)':>14} |"
+    )
+    m_sep = (
+      f"|:{'-' * 16}-|-{'-' * 14}:|-{'-' * 14}:|-{'-' * 14}:"
+      f"|-{'-' * 14}:|-{'-' * 14}:|-{'-' * 14}:|"
+    )
+    print(m_header)
+    print(m_sub)
+    print(m_sep)
+    for r in results:
+      mode = r["mode"]
+      tot = r.get("mean_ms") or 0.0
+      ss = r.get("script_start_ms") or 0.0
+      br = r.get("bootstrap_received_ms") or 0.0
+      ci = r.get("client_init_ms") or 0.0
+      po = r.get("panel_opened_ms") or 0.0
+
+      host_overhead = max(0.0, tot - po) if (tot > 0 and po > 0) else 0.0
+      guest_load = ss
+      bootstrap = max(0.0, br - ss) if (br > 0 and ss > 0) else 0.0
+      client_init = max(0.0, ci - br) if (ci > 0 and br > 0) else 0.0
+      panel_open = max(0.0, po - ci) if (po > 0 and ci > 0) else 0.0
+
+      print(
+        f"| {mode:<16} | {f'{host_overhead:.1f} ms':>14} |"
+        f" {f'{guest_load:.1f} ms':>14} | {f'{bootstrap:.1f} ms':>14} |"
+        f" {f'{client_init:.1f} ms':>14} | {f'{panel_open:.1f} ms':>14} |"
+        f" {f'{tot:.1f} ms':>14} |"
+      )
+    print("=" * p_width + "\n")
+
+
 def main():
   parser = argparse.ArgumentParser(
     description=(
@@ -181,6 +316,12 @@ def main():
     type=int,
     default=25,
     help="Number of iterations per mode (default: 25)",
+  )
+  parser.add_argument(
+    "-C",
+    "--outdir",
+    default="out/Default",
+    help="Build output directory for tools/autotest.py (default: out/Default)",
   )
   parser.add_argument(
     "-v",
@@ -199,11 +340,13 @@ def main():
   for mode in ALL_MODES:
     print(f"\n[{mode}] Running {args.iterations} iterations...", flush=True)
     cmd = [
-      "cr",
-      "test",
+      "tools/autotest.py",
+      "--quiet",
+      "-C",
+      args.outdir,
       TEST_FILE,
-      "-f",
-      f"*{mode}*",
+      "--gtest_filter="
+      f"All/GlicInitializationBenchmark.MeasureInitializationTime/{mode}",
       "--test-launcher-print-test-stdio=always",
       f"--glic-benchmark-iterations={args.iterations}",
     ]
@@ -225,101 +368,7 @@ def main():
     else:
       print(f"  Warning: Could not parse results for {mode}")
 
-  # Find baseline (Webview) if present
-  baseline_mean = None
-  for r in results:
-    if r["mode"] == "Webview" and r["mean_ms"] is not None:
-      baseline_mean = r["mean_ms"]
-      break
-
-  # Print Markdown / ASCII Comparison Table
-  print("\n" + "=" * 104)
-  print(f"{'BENCHMARK RESULTS':^104}")
-  print("=" * 104)
-  header = (
-    f"| {'Configuration':<25} | {'Mean (ms)':<10} | {'StdDev':<8} |"
-    f" {'Min / Max (ms)':<18} | {'Decompress':<11} |"
-    f" {'Delta vs Baseline':<18} |"
-  )
-  separator = (
-    f"|:{'-' * 25}-|-{'-' * 10}:|-{'-' * 8}:|-{'-' * 18}:"
-    f"|-{'-' * 11}:|-{'-' * 18}:|"
-  )
-  print(header)
-  print(separator)
-
-  for r in results:
-    mode = r["mode"]
-    mean_str = f"{r['mean_ms']:.2f}" if r["mean_ms"] is not None else "N/A"
-    stddev_str = (
-      f"{r['stddev_ms']:.2f}" if r["stddev_ms"] is not None else "N/A"
-    )
-    minmax_str = (
-      f"{r['min_ms']:.1f} / {r['max_ms']:.1f}"
-      if r["min_ms"] is not None
-      else "N/A"
-    )
-    decomp_str = (
-      f"{r['decompress_ms']:.2f} ms" if r.get("decompress_ms") else "N/A"
-    )
-
-    delta_str = "-"
-    if baseline_mean is not None and r["mean_ms"] is not None:
-      delta = r["mean_ms"] - baseline_mean
-      pct = (delta / baseline_mean) * 100
-      if abs(delta) < 0.01:
-        delta_str = "Baseline"
-      elif delta < 0:
-        delta_str = f"{delta:.1f} ms ({pct:.1f}%)"
-      else:
-        delta_str = f"+{delta:.1f} ms (+{pct:.1f}%)"
-
-    print(
-      f"| {mode:<25} | {mean_str:>10} | {stddev_str:>8} |"
-      f" {minmax_str:>18} | {decomp_str:>11} | {delta_str:>18} |"
-    )
-
-  print("=" * 104)
-
-  # Check if any client lifecycle marks exist
-  has_client_marks = any(r.get("script_start_ms") for r in results)
-  if has_client_marks:
-    print("\n" + "=" * 115)
-    print(f"{'CLIENT LIFECYCLE MILESTONES (performance.mark)':^125}")
-    print("=" * 125)
-    m_header = (
-      f"| {'Configuration':<24} | {'Script Start':<12} | {'Boot Recv':<12} |"
-      f" {'Client Init':<12} | {'Script->Boot':<12} | {'Boot->Init':<12} |"
-      f" {'Total Client':<14} |"
-    )
-    m_sep = (
-      f"|:{'-' * 24}-|-{'-' * 12}:|-{'-' * 12}:|-{'-' * 12}:"
-      f"|-{'-' * 12}:|-{'-' * 12}:|-{'-' * 14}:|"
-    )
-    print(m_header)
-    print(m_sep)
-    for r in results:
-      mode = r["mode"]
-      ss = r.get("script_start_ms") or 0.0
-      br = r.get("bootstrap_received_ms") or 0.0
-      ci = r.get("client_init_ms") or 0.0
-      po = r.get("panel_opened_ms") or 0.0
-      ss_str = f"{ss:.1f} ms" if ss > 0 else "N/A"
-      br_str = f"{br:.1f} ms" if br > 0 else "N/A"
-      ci_str = f"{ci:.1f} ms" if ci > 0 else "N/A"
-      s_to_b = f"{(br - ss):.1f} ms" if (br > 0 and ss > 0) else "N/A"
-      b_to_i = f"{(ci - br):.1f} ms" if (ci > 0 and br > 0) else "N/A"
-      if po > 0 and ss > 0:
-        tot_client = f"{(po - ss):.1f} ms"
-      elif ci > 0 and ss > 0:
-        tot_client = f"{(ci - ss):.1f} ms"
-      else:
-        tot_client = "N/A"
-      print(
-        f"| {mode:<24} | {ss_str:>12} | {br_str:>12} | {ci_str:>12} |"
-        f" {s_to_b:>12} | {b_to_i:>12} | {tot_client:>14} |"
-      )
-    print("=" * 125 + "\n")
+  print_summary_tables(results)
 
 
 if __name__ == "__main__":

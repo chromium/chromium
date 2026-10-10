@@ -4,12 +4,16 @@
 
 #include <algorithm>
 #include <cmath>
+#include <memory>
 #include <numeric>
+#include <tuple>
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/glic/public/features.h"
@@ -17,17 +21,51 @@
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/spare_render_process_host_manager.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/http/http_status_code.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_connection.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace glic {
 
+// Owns the HTTP/2 server used to host the guest. Kept in a base class that is
+// declared before GlicBrowserTestMixin so it outlives the mixin's
+// GlicTestEnvironment, whose EmbeddedTestServerHandle shuts the server down.
+class GlicBenchmarkH2ServerHolder {
+ protected:
+  net::test_server::EmbeddedTestServer h2_server_{
+      net::test_server::EmbeddedTestServer::TYPE_HTTPS,
+      net::test_server::HttpConnection::Protocol::kHttp2};
+
+  // A second HTTPS server, on its own port, used only to warm the network
+  // service before the first timed open. It must be a different origin from
+  // the guest so the guest's first navigation still pays DNS/TCP/TLS: the TLS
+  // session cache is keyed by host:port, and HTTP/1 connections cannot be
+  // pooled with the guest's HTTP/2 session.
+  net::test_server::EmbeddedTestServer warmup_server_{
+      net::test_server::EmbeddedTestServer::TYPE_HTTPS};
+};
+
 class GlicInitializationBenchmark
-    : public GlicBrowserTestMixin<PlatformBrowserTest>,
+    : public GlicBenchmarkH2ServerHolder,
+      public GlicBrowserTestMixin<PlatformBrowserTest>,
       public testing::WithParamInterface<bool> {
  public:
   GlicInitializationBenchmark() {
+    // Serve the guest over HTTP/2. The default HTTP/1 EmbeddedTestServer
+    // closes the connection after every response, so each script fetch pays a
+    // full TCP+TLS handshake serialized on the test server's single IO thread
+    // (which lives inside the browser process). Production
+    // (gemini.google.com/glic, gemini.gstatic.com) serves the client over one
+    // multiplexed H2 connection, so that cost is a harness artifact.
+    set_glic_https_test_server(&h2_server_);
+
     std::vector<base::test::FeatureRef> enabled;
     std::vector<base::test::FeatureRef> disabled;
 
@@ -72,9 +110,49 @@ IN_PROC_BROWSER_TEST_P(GlicInitializationBenchmark, MeasureInitializationTime) {
   LOG(INFO) << "=== Starting Glic Initialization Benchmark (" << mode_str
             << ", " << iterations << " iterations) ===";
 
+  // Warm the network service (disk cache backend, cookie store, cert verifier,
+  // first HttpNetworkSession) before the first timed open. Real users open
+  // Glic in a browser that has already been talking to the network, so those
+  // one-time costs are a harness artifact. The warm-up deliberately uses a
+  // different origin from the guest: Chrome does not preconnect for Glic, so
+  // the "cold" number must include the guest's own DNS/TCP/TLS setup.
+  {
+    warmup_server_.RegisterRequestHandler(base::BindRepeating(
+        [](const net::test_server::HttpRequest& request)
+            -> std::unique_ptr<net::test_server::HttpResponse> {
+          auto response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          response->set_code(net::HTTP_OK);
+          response->set_content_type("text/html");
+          response->set_content("<!doctype html>warmup");
+          return response;
+        }));
+    ASSERT_TRUE(warmup_server_.Start());
+    ASSERT_NE(warmup_server_.port(), GetGuestURL().EffectiveIntPort());
+    // A top-level navigation (not a browser-process fetch) so it exercises the
+    // same renderer-initiated loader path as the guest.
+    tabs::TabInterface* warmup_tab =
+        GetTabListInterface()->OpenTab(warmup_server_.GetURL("/warmup"), -1);
+    ASSERT_TRUE(warmup_tab);
+    std::ignore = content::WaitForLoadStop(warmup_tab->GetContents());
+    // Don't leave an extra renderer alive for the rest of the run.
+    GetTabListInterface()->CloseTab(warmup_tab->GetHandle());
+  }
+
   for (int i = 0; i < iterations; ++i) {
     tabs::TabInterface* tab = CreateAndActivateTab(GURL("about:blank"));
     ASSERT_TRUE(tab);
+
+    // Navigating the new tab consumes the existing spare renderer and triggers
+    // background creation of a replacement spare. Wait for that normal steady-
+    // state spare renderer to finish launching before opening Glic.
+    ASSERT_TRUE(base::test::RunUntil([]() {
+      return std::ranges::any_of(
+          content::SpareRenderProcessHostManager::Get().GetSpares(),
+          [](content::RenderProcessHost* spare) {
+            return spare && spare->IsReady();
+          });
+    }));
 
     base::ElapsedTimer timer;
     auto open_result = OpenGlicForActiveTab();
@@ -113,6 +191,33 @@ IN_PROC_BROWSER_TEST_P(GlicInitializationBenchmark, MeasureInitializationTime) {
       if (client_init_ms > 0.0 && panel_opened_ms > 0.0) {
         init_to_open_ms = panel_opened_ms - client_init_ms;
       }
+
+      // Dump navigation + resource timing so the renderer-side gap between
+      // commit and script start can be attributed (fetch vs. parse/compile).
+      content::EvalJsResult timing = content::EvalJs(guest_contents, R"js(
+        (() => {
+          const n = performance.getEntriesByType('navigation')[0];
+          const nav = n ? {
+            fetchStart: n.fetchStart, connectStart: n.connectStart,
+            secureConnectionStart: n.secureConnectionStart,
+            connectEnd: n.connectEnd, requestStart: n.requestStart,
+            responseStart: n.responseStart, responseEnd: n.responseEnd,
+            domInteractive: n.domInteractive,
+            domContentLoaded: n.domContentLoadedEventEnd,
+            loadEventEnd: n.loadEventEnd } : null;
+          const res = performance.getEntriesByType('resource').map(e => ({
+            name: e.name.split('/').pop().split('?')[0],
+            type: e.initiatorType, start: Math.round(e.startTime),
+            reqStart: Math.round(e.requestStart),
+            respStart: Math.round(e.responseStart),
+            end: Math.round(e.responseEnd), size: e.transferSize }));
+          const marks = performance.getEntriesByType('mark').map(
+            m => [m.name, Math.round(m.startTime)]);
+          return JSON.stringify({nav, res, marks});
+        })()
+      )js");
+      LOG(INFO) << "[" << mode_str << "] Guest timing iteration " << (i + 1)
+                << ": " << timing;
     }
     script_start_times_ms.push_back(script_start_ms);
     bootstrap_received_times_ms.push_back(bootstrap_received_ms);

@@ -311,14 +311,28 @@ class GlicBrowserTestMixin : public T {
   }
   ~GlicBrowserTestMixin() override = default;
 
+  // Overrides the HTTPS server that hosts the Glic guest page (default:
+  // `T::embedded_https_test_server()`). Call from the fixture constructor,
+  // before `SetUpCommandLine()`. The server must outlive the fixture's
+  // `GlicTestEnvironment` (e.g. own it in a base class declared before this
+  // mixin).
+  void set_glic_https_test_server(
+      net::test_server::EmbeddedTestServer* server) {
+    glic_https_test_server_ = server;
+  }
+  net::test_server::EmbeddedTestServer* GetGlicHttpsTestServer() {
+    return glic_https_test_server_ ? glic_https_test_server_.get()
+                                   : &T::embedded_https_test_server();
+  }
+
   // PlatformBrowserTest:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     T::SetUpCommandLine(command_line);
-    // Binds `embedded_https_test_server()` so the guest URL is known here.
-    // Fixtures that configure its certificate (e.g. `SetCertHostnames()`)
-    // must do so before this, e.g. in their constructor or `SetUp()`.
+    // Binds the Glic HTTPS server so the guest URL is known here. Fixtures
+    // that configure its certificate (e.g. `SetCertHostnames()`) must do so
+    // before this, e.g. in their constructor or `SetUp()`.
     CHECK(glic_test_environment_.InitializeEmbeddedTestServers(
-        &T::embedded_https_test_server()));
+        GetGlicHttpsTestServer()));
     // TODO(crbug.com/516793173): Remove this switch once C++ browser tests
     // automatically inherit --force-desktop-android just like Java.
 #if BUILDFLAG(IS_DESKTOP_ANDROID)
@@ -376,7 +390,7 @@ class GlicBrowserTestMixin : public T {
     }
 
     CHECK(glic_test_environment_.SetupEmbeddedTestServers(
-        T::embedded_test_server(), &T::embedded_https_test_server()));
+        T::embedded_test_server(), GetGlicHttpsTestServer()));
     T::GetTabListInterface()
         ->GetActiveTab()
         ->GetBrowserWindowInterface()
@@ -1303,6 +1317,10 @@ class GlicBrowserTestMixin : public T {
   using T::OpenURLOffTheRecord;
 #endif
   GlicTestEnvironment glic_test_environment_;
+  // Optional override for the HTTPS server hosting the guest; see
+  // set_glic_https_test_server(). Not owned.
+  raw_ptr<net::test_server::EmbeddedTestServer> glic_https_test_server_ =
+      nullptr;
   base::test::ScopedFeatureList scoped_feature_list_;
   feature_engagement::test::ScopedIphFeatureList scoped_iph_feature_list_;
 #if defined(USE_MOCK_ACTIVATION_CONTROLLER)
