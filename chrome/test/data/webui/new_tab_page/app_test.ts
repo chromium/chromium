@@ -344,7 +344,7 @@ suite('NewTabPageAppTest', () => {
       spacer.style.width = '100%';
       spacer.style.height = '10000px';
       spacer.style.flexShrink = '0';
-      $$(app, '#content')!.append(spacer);
+      $$(app, '#rhsContent')!.append(spacer);
 
       // Simulates a vertical scroll.
       const scrollY = async (y: number) => {
@@ -785,7 +785,7 @@ suite('NewTabPageAppTest', () => {
     });
 
     ([
-      ['#content', NtpElement.BACKGROUND],
+      ['#rhsContent', NtpElement.BACKGROUND],
       ['ntp-logo', NtpElement.LOGO],
       ['ntp-searchbox', NtpElement.REALBOX],
       ['cr-most-visited', NtpElement.MOST_VISITED],
@@ -1366,7 +1366,7 @@ suite('NewTabPageAppTest', () => {
       await callbackRouterRemote.$.flushForTesting();
 
       const blockedElements = app.shadowRoot.querySelectorAll<HTMLElement>(
-          '#content > :not(#logo):not(#searchboxContainer)');
+          '#rhsContent > :not(#logo):not(#searchboxContainer)');
       assertTrue(blockedElements.length > 0);
       blockedElements.forEach(el => {
         assertFalse(el.hasAttribute('inert'));
@@ -3748,7 +3748,7 @@ suite('NewTabPageAppTest', () => {
 
       const leftHandSide = $$(app, 'cr-left-hand-side');
       assertTrue(!!leftHandSide);
-      assertEquals('forced-lhs', leftHandSide.id);
+      assertEquals('forcedLhs', leftHandSide.id);
     });
   });
 

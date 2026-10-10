@@ -160,18 +160,13 @@ cr-most-visited {
 }
 
 #content {
-  align-items: center;
   display: flex;
-  flex-direction: column;
-  height: calc(100vh - var(--ntp-one-google-bar-height));
-  min-width: fit-content; /* Prevents OneGoogleBar cutoff at 500% zoom. */
-  padding-top: var(--ntp-one-google-bar-height);
-  position: relative;
-  z-index: 1;
+  flex-direction: row;
+  height: 100vh;
 }
 
-:host([show-composebox_]) #content,
-:host([show-voice-search-scrim_]) #content {
+:host([show-composebox_]) #rhsContent,
+:host([show-voice-search-scrim_]) #rhsContent {
   z-index: unset;
 }
 
@@ -549,8 +544,20 @@ ntp-lens-upload-dialog {
   }
 }
 
-#forced-lhs {
+#forcedLhs {
   height: 100%;
   inset-inline-start: 0;
   position: fixed;
+}
+
+#rhsContent {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - var(--ntp-one-google-bar-height));
+  min-width: fit-content; /* Prevents OneGoogleBar cutoff at 500% zoom. */
+  padding-top: var(--ntp-one-google-bar-height);
+  position: relative;
+  z-index: 1;
+  flex-grow: 1;
 }
