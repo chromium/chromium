@@ -51,6 +51,7 @@ public class ActorMetricsTest {
     @Mock private Profile mOriginalProfile;
     @Mock private ActorKeyedService mActorService;
     @Mock private NotificationManagerProxy mNotificationManagerProxy;
+    @Mock private ActorForegroundServiceController mServiceController;
 
     private ActorMetrics mActorMetrics;
 
@@ -62,6 +63,7 @@ public class ActorMetricsTest {
         ActorKeyedServiceFactory.setForTesting(mActorService);
         BaseNotificationManagerProxyFactory.setInstanceForTesting(mNotificationManagerProxy);
         NotificationProxyUtils.setNotificationEnabledForTest(true);
+        ActorForegroundServiceController.setInstanceForTesting(mServiceController);
         ActorMetrics.resetForTesting();
         mActorMetrics = ActorMetrics.getInstance();
     }
@@ -676,6 +678,93 @@ public class ActorMetricsTest {
 
         ActorMetrics.recordTimeBetweenWorklogUpdates(1500);
 
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testOnTaskStopped_StoppedReasonByMode_Foreground() {
+        int taskId = 601;
+        when(mServiceController.hasBackgroundSessionForTask(taskId)).thenReturn(false);
+
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                ActorMetrics.ACTOR_TASK_STOPPED_REASON_FOREGROUND,
+                                StoppedReason.TASK_COMPLETE)
+                        .expectNoRecords(ActorMetrics.ACTOR_TASK_STOPPED_REASON_PIP)
+                        .expectNoRecords(
+                                ActorMetrics.ACTOR_TASK_STOPPED_REASON_BACKGROUND_ACTUATION)
+                        .build();
+
+        mActorMetrics.onTaskStoppedForTesting(taskId, StoppedReason.TASK_COMPLETE);
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testOnTaskStopped_StoppedReasonByMode_Pip() {
+        int taskId = 602;
+        when(mServiceController.hasBackgroundSessionForTask(taskId)).thenReturn(false);
+        mActorMetrics.setIsInPip(true);
+
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                ActorMetrics.ACTOR_TASK_STOPPED_REASON_PIP,
+                                StoppedReason.STOPPED_BY_USER)
+                        .expectNoRecords(ActorMetrics.ACTOR_TASK_STOPPED_REASON_FOREGROUND)
+                        .expectNoRecords(
+                                ActorMetrics.ACTOR_TASK_STOPPED_REASON_BACKGROUND_ACTUATION)
+                        .build();
+
+        mActorMetrics.onTaskStoppedForTesting(taskId, StoppedReason.STOPPED_BY_USER);
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testOnTaskStopped_StoppedReasonByMode_BackgroundActuation() {
+        int taskId = 603;
+        when(mServiceController.hasBackgroundSessionForTask(taskId)).thenReturn(true);
+
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                ActorMetrics.ACTOR_TASK_STOPPED_REASON_BACKGROUND_ACTUATION,
+                                StoppedReason.TIMEOUT)
+                        .expectNoRecords(ActorMetrics.ACTOR_TASK_STOPPED_REASON_FOREGROUND)
+                        .expectNoRecords(ActorMetrics.ACTOR_TASK_STOPPED_REASON_PIP)
+                        .build();
+
+        mActorMetrics.onTaskStoppedForTesting(taskId, StoppedReason.TIMEOUT);
+        watcher.assertExpected();
+
+        // Duplicate call for the same task ID must not emit a second sample.
+        var duplicateWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(
+                                ActorMetrics.ACTOR_TASK_STOPPED_REASON_BACKGROUND_ACTUATION)
+                        .expectNoRecords(ActorMetrics.ACTOR_TASK_STOPPED_REASON_FOREGROUND)
+                        .expectNoRecords(ActorMetrics.ACTOR_TASK_STOPPED_REASON_PIP)
+                        .build();
+        mActorMetrics.onTaskStoppedForTesting(taskId, StoppedReason.TIMEOUT);
+        duplicateWatcher.assertExpected();
+    }
+
+    @Test
+    public void testOnTaskStopped_StoppedReasonByMode_BackgroundActuationPrecedenceOverPip() {
+        int taskId = 604;
+        when(mServiceController.hasBackgroundSessionForTask(taskId)).thenReturn(true);
+        mActorMetrics.setIsInPip(true);
+
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                ActorMetrics.ACTOR_TASK_STOPPED_REASON_BACKGROUND_ACTUATION,
+                                StoppedReason.TASK_COMPLETE)
+                        .expectNoRecords(ActorMetrics.ACTOR_TASK_STOPPED_REASON_PIP)
+                        .expectNoRecords(ActorMetrics.ACTOR_TASK_STOPPED_REASON_FOREGROUND)
+                        .build();
+
+        mActorMetrics.onTaskStoppedForTesting(taskId, StoppedReason.TASK_COMPLETE);
         watcher.assertExpected();
     }
 }

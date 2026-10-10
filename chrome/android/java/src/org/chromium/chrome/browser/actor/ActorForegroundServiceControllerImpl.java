@@ -274,6 +274,12 @@ public class ActorForegroundServiceControllerImpl implements ActorForegroundServ
         }
     }
 
+    @Override
+    public boolean hasBackgroundSessionForTask(int taskId) {
+        return mBackgroundActuationManager != null
+                && mBackgroundActuationManager.hasBackgroundSessionForTask(taskId);
+    }
+
     public @Nullable ActorBackgroundActuationManager getBackgroundActuationManager() {
         return mBackgroundActuationManager;
     }

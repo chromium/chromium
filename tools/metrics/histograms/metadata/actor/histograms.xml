@@ -1088,6 +1088,22 @@ chromium-metrics-reviews@google.com.
   <summary>The reason the task was stopped.</summary>
 </histogram>
 
+<histogram name="Actor.Task.StoppedReason.{Mode}" enum="StoppedReasonEnum"
+    expires_after="2027-09-30">
+  <owner>bbetini@google.com</owner>
+  <owner>ritikagup@google.com</owner>
+  <owner>clank-actor@google.com</owner>
+  <summary>
+    The reason an actor task was stopped while Chrome was in {Mode} mode.
+    Recorded once when the task stops. Android only.
+  </summary>
+  <token key="Mode">
+    <variant name="BackgroundActuation" summary="background actuation"/>
+    <variant name="Foreground" summary="standard foreground"/>
+    <variant name="Pip" summary="picture-in-picture"/>
+  </token>
+</histogram>
+
 <histogram name="Actor.Task.SubsequentWaits" units="count"
     expires_after="2027-02-14">
   <owner>linnan@google.com</owner>

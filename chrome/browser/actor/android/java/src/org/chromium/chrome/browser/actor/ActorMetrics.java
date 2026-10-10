@@ -34,6 +34,12 @@ import java.util.WeakHashMap;
 public class ActorMetrics implements ActorKeyedService.Observer {
     public static final String ACTOR_NOTIFICATION_TIME_BETWEEN_WORKLOG_UPDATES =
             "Actor.Notification.TimeBetweenWorklogUpdates";
+    public static final String ACTOR_TASK_STOPPED_REASON_BACKGROUND_ACTUATION =
+            "Actor.Task.StoppedReason.BackgroundActuation";
+    public static final String ACTOR_TASK_STOPPED_REASON_FOREGROUND =
+            "Actor.Task.StoppedReason.Foreground";
+    public static final String ACTOR_TASK_STOPPED_REASON_PIP = "Actor.Task.StoppedReason.Pip";
+
     private static final int INVALID_TASK_ID = -1;
     private static final int INVALID_TASK_STATE = -1;
     private static final Set<Intent> sRecordedIntents =
@@ -191,6 +197,9 @@ public class ActorMetrics implements ActorKeyedService.Observer {
         if (!mStoppedTasks.add(taskId)) {
             return;
         }
+        RecordHistogram.recordEnumeratedHistogram(
+                getStoppedReasonModeHistogram(taskId), stoppedReason, StoppedReason.MAX_VALUE + 1);
+
         String reasonName = getStoppedReasonName(stoppedReason);
         if (!reasonName.isEmpty()) {
             int clickCount = mOmniboxClickCounts.getOrDefault(taskId, 0);
@@ -198,6 +207,21 @@ public class ActorMetrics implements ActorKeyedService.Observer {
                     "Actor.Task.OmniboxClickCount." + reasonName, clickCount);
         }
         mOmniboxClickCounts.remove(taskId);
+    }
+
+    /**
+     * Returns the stopped reason histogram for the task's execution mode. Relies on ActorMetrics
+     * being registered before ActorForegroundServiceManager so the background session is checked
+     * before cleanup. Background actuation takes precedence over PiP.
+     */
+    private String getStoppedReasonModeHistogram(@ActorTaskId int taskId) {
+        if (ActorForegroundServiceController.get().hasBackgroundSessionForTask(taskId)) {
+            return ACTOR_TASK_STOPPED_REASON_BACKGROUND_ACTUATION;
+        }
+        if (mCurrentGlobalMode == ActorMode.PIP) {
+            return ACTOR_TASK_STOPPED_REASON_PIP;
+        }
+        return ACTOR_TASK_STOPPED_REASON_FOREGROUND;
     }
 
     /**

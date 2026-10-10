@@ -99,6 +99,16 @@ public interface ActorForegroundServiceController {
      */
     default void onTaskCompleted(int taskId) {}
 
+    /**
+     * Returns whether the given task currently has an active background actuation session.
+     *
+     * @param taskId The ID of the task to check.
+     * @return True if the task has an active background session, false otherwise.
+     */
+    default boolean hasBackgroundSessionForTask(int taskId) {
+        return false;
+    }
+
     /** Destroys the background actuation manager and cleans up its resources. */
     default void destroyBackgroundActuationManager() {}
 

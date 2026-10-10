@@ -131,8 +131,12 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
         }
         mKeyedService = service;
         if (mKeyedService != null) {
-            mKeyedService.addObserver(this);
+            // ActorMetrics must be registered before `this` because it needs to observe
+            // onTaskStopped and onTaskStateChanged before ActorForegroundServiceManager
+            // cleans up the background session via getServiceController().onTaskCompleted().
+            // Otherwise, mode detection would misclassify Foreground tasks due to early cleanup.
             mKeyedService.addObserver(ActorMetrics.getInstance());
+            mKeyedService.addObserver(this);
             mPendingTaskCount = mKeyedService.getPendingTasksCount();
             if (mNotificationService == null) {
                 mNotificationService = new ActorNotificationService(mKeyedService);
