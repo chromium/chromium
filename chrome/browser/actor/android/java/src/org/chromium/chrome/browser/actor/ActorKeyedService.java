@@ -151,14 +151,14 @@ public class ActorKeyedService {
     }
 
     /**
-     * Called when a background tab is ready for actuation.
+     * Called when a tab (background or foreground) has been prepared and is ready for actuation.
      *
      * @param tab The prepared tab.
      * @param glicTriggerMessageId The GLIC trigger message ID associated with the request.
      */
-    public void setPreparedBackgroundTab(Tab tab, String glicTriggerMessageId) {
+    public void setTabReady(Tab tab, String glicTriggerMessageId) {
         if (mNativePtr == 0) return;
-        ActorKeyedServiceJni.get().setPreparedBackgroundTab(mNativePtr, tab, glicTriggerMessageId);
+        ActorKeyedServiceJni.get().setTabReady(mNativePtr, tab, glicTriggerMessageId);
     }
 
     /**
@@ -245,7 +245,7 @@ public class ActorKeyedService {
 
         void stopTask(long nativeActorKeyedServiceAndroid, int taskId, int stopReason);
 
-        void setPreparedBackgroundTab(
+        void setTabReady(
                 long nativeActorKeyedServiceAndroid,
                 @JniType("TabAndroid*") Tab tab,
                 @JniType("std::string") String glicTriggerMessageId);

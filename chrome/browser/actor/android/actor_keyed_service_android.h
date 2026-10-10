@@ -43,8 +43,7 @@ class ActorKeyedServiceAndroid : public base::SupportsUserData::Data {
   void RemovePendingTask(const std::string& context_id);
 
   // Called by JNI.
-  void SetPreparedBackgroundTab(TabAndroid* tab,
-                                const std::string& glic_trigger_message_id);
+  void SetTabReady(TabAndroid* tab, const std::string& glic_trigger_message_id);
 
   void NotifyBackgroundSetupFailed(const std::string& glic_trigger_message_id);
 

@@ -179,13 +179,12 @@ public class ActorForegroundServiceImpl extends SplitCompatService.Impl {
                     // TODO(b/547386277) :This flow is similar to desktop, see if we use merge this.
                     Log.d(
                             TAG,
-                            "Tabbed activity is visible, explicitly appending a background tab for"
+                            "Tabbed activity is visible, explicitly appending a tab for"
                                     + " actuation.");
                     if (actorService != null) {
                         Tab appendedTab = generateForegroundTabForTask();
                         if (appendedTab != null) {
-                            actorService.setPreparedBackgroundTab(
-                                    appendedTab, glicTriggerMessageId);
+                            actorService.setTabReady(appendedTab, glicTriggerMessageId);
                         } else {
                             actorService.notifyBackgroundSetupFailed(glicTriggerMessageId);
                         }

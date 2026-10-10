@@ -153,7 +153,7 @@ void ActorKeyedServiceAndroid::StopTask(int32_t task_id, int32_t stop_reason) {
                      static_cast<ActorTask::StoppedReason>(stop_reason));
 }
 
-void ActorKeyedServiceAndroid::SetPreparedBackgroundTab(
+void ActorKeyedServiceAndroid::SetTabReady(
     TabAndroid* tab,
     const std::string& glic_trigger_message_id) {
   service_->NotifyBackgroundTabReady(tab, glic_trigger_message_id);

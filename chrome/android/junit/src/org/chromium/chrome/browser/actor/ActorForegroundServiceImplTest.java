@@ -272,7 +272,7 @@ public class ActorForegroundServiceImplTest {
 
         mServiceImpl.onStartCommand(intent, /* flags= */ 0, /* startId= */ 1);
 
-        verify(mMockActorService).setPreparedBackgroundTab(eq(ntpTab), eq("test-message-id"));
+        verify(mMockActorService).setTabReady(eq(ntpTab), eq("test-message-id"));
         verify(mMockActorService, never()).notifyBackgroundSetupFailed(any());
     }
 }
