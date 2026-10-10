@@ -83,6 +83,12 @@ public class VerticalTabCollapseButtonContextMenuCoordinatorUnitTest {
         assertEquals(
                 R.drawable.material_ic_check_24dp,
                 itemModel.get(ListMenuItemProperties.END_ICON_ID));
+        assertEquals(
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.vertical_tabs_expand_on_hover_menu_end_icon_margin),
+                itemModel.get(ListMenuItemProperties.END_ICON_MARGIN_START));
     }
 
     @Test
@@ -96,8 +102,8 @@ public class VerticalTabCollapseButtonContextMenuCoordinatorUnitTest {
         assertEquals(R.string.expand_tabs_on_hover, itemModel.get(ListMenuItemProperties.TITLE_ID));
         assertTrue(itemModel.get(ListMenuItemProperties.CHECKABLE));
         assertFalse(itemModel.get(ListMenuItemProperties.CHECKED));
-        assertEquals(
-                android.R.color.transparent, itemModel.get(ListMenuItemProperties.END_ICON_ID));
+        assertEquals(0, itemModel.get(ListMenuItemProperties.END_ICON_ID));
+        assertEquals(0, itemModel.get(ListMenuItemProperties.END_ICON_MARGIN_START));
     }
 
     @Test

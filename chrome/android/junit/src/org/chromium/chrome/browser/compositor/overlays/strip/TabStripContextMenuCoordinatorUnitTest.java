@@ -232,6 +232,12 @@ public class TabStripContextMenuCoordinatorUnitTest {
         assertEquals(
                 R.drawable.material_ic_check_24dp,
                 expandOnHoverItemModel.get(ListMenuItemProperties.END_ICON_ID));
+        assertEquals(
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.vertical_tabs_expand_on_hover_menu_end_icon_margin),
+                expandOnHoverItemModel.get(ListMenuItemProperties.END_ICON_MARGIN_START));
 
         var histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -267,9 +273,8 @@ public class TabStripContextMenuCoordinatorUnitTest {
                 expandOnHoverItemModel.get(ListMenuItemProperties.TITLE_ID));
         assertTrue(expandOnHoverItemModel.get(ListMenuItemProperties.CHECKABLE));
         assertFalse(expandOnHoverItemModel.get(ListMenuItemProperties.CHECKED));
-        assertEquals(
-                android.R.color.transparent,
-                expandOnHoverItemModel.get(ListMenuItemProperties.END_ICON_ID));
+        assertEquals(0, expandOnHoverItemModel.get(ListMenuItemProperties.END_ICON_ID));
+        assertEquals(0, expandOnHoverItemModel.get(ListMenuItemProperties.END_ICON_MARGIN_START));
 
         mCoordinator
                 .getListMenuDelegate(mContentView)

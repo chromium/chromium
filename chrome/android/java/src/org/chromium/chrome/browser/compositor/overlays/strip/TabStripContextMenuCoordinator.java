@@ -256,7 +256,7 @@ public class TabStripContextMenuCoordinator {
                     && VerticalTabUtils.isExpandOnHoverFeatureEnabled()) {
                 itemList.add(
                         VerticalTabCollapseButtonContextMenuCoordinator.buildExpandOnHoverMenuItem(
-                                isIncognito));
+                                mContext, isIncognito));
             }
         }
 

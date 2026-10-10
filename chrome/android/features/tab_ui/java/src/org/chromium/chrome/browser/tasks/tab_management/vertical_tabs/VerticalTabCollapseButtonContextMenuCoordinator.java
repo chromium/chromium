@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management.vertical_tabs;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.MENU_ITEM_ID;
 
 import android.app.Activity;
+import android.content.Context;
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
@@ -99,21 +100,27 @@ public class VerticalTabCollapseButtonContextMenuCoordinator {
      * Builds the checkable "Auto expand tabs on hover" menu item. A checkmark is shown at the end
      * of the item while expand-on-hover is on. Selecting the item is expected to flip the setting.
      *
+     * @param context The {@link Context} used to resolve resources.
      * @param isIncognito Whether the menu is shown in incognito mode.
      * @return The menu item.
      */
-    public static ListItem buildExpandOnHoverMenuItem(boolean isIncognito) {
+    public static ListItem buildExpandOnHoverMenuItem(Context context, boolean isIncognito) {
         boolean isChecked = VerticalTabUtils.isExpandOnHoverEnabled();
         ListItem item =
                 new ListItemBuilder()
                         .withTitleRes(R.string.expand_tabs_on_hover)
-                        .withEndIconRes(
-                                isChecked
-                                        ? R.drawable.material_ic_check_24dp
-                                        : android.R.color.transparent)
+                        .withEndIconRes(isChecked ? R.drawable.material_ic_check_24dp : 0)
                         .withMenuId(R.id.toggle_expand_tabs_on_hover_menu_id)
                         .withIsIncognito(isIncognito)
                         .build();
+        // Only reserve space for the checkmark while it is shown, so the menu is narrower when off.
+        item.model.set(
+                ListMenuItemProperties.END_ICON_MARGIN_START,
+                isChecked
+                        ? context.getResources()
+                                .getDimensionPixelSize(
+                                        R.dimen.vertical_tabs_expand_on_hover_menu_end_icon_margin)
+                        : 0);
         item.model.set(ListMenuItemProperties.CHECKABLE, true);
         item.model.set(ListMenuItemProperties.CHECKED, isChecked);
         return item;
@@ -121,7 +128,7 @@ public class VerticalTabCollapseButtonContextMenuCoordinator {
 
     private View buildMenuView(boolean isIncognito) {
         ModelList modelList = new ModelList();
-        modelList.add(buildExpandOnHoverMenuItem(isIncognito));
+        modelList.add(buildExpandOnHoverMenuItem(mActivity, isIncognito));
         return TabStripContextMenuCoordinator.inflateMenuContentView(
                 mActivity, modelList, contentView -> getListMenuDelegate());
     }
