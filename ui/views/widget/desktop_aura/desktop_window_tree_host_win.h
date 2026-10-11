@@ -370,6 +370,10 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
   // the implementation of ::ShowCursor() is based on a counter, so making this
   // member static ensures that ::ShowCursor() is always called exactly once
   // whenever the cursor visibility state changes.
+  // Used for legacy behavior when `features::kHideCursorWhileTyping` is
+  // disabled.
+  // TODO(crbug.com/567626032): Clean up `is_cursor_visible_` and fallback
+  // branches once `features::kHideCursorWhileTyping` launches permanently.
   static bool is_cursor_visible_;
 
   // Modality of the window should be immutable, so we can cache it here for

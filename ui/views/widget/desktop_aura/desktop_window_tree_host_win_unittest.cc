@@ -26,9 +26,11 @@
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 #include "ui/accessibility/platform/ax_system_caret_win.h"
+#include "ui/aura/client/cursor_client.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/focus/focus_manager.h"
@@ -1068,6 +1070,53 @@ TEST_F(DesktopWindowTreeHostWinTest, MissingWmDestroyDoesNotCrash) {
   ::DestroyWindow(widget_hwnd);
   EXPECT_TRUE(widget.IsClosed());
   g_original_wndproc = nullptr;
+}
+
+TEST_F(DesktopWindowTreeHostWinTest, RestoresHiddenCursorOnCancelMode) {
+  base::test::ScopedFeatureList feature_list(
+      ::features::kHideCursorWhileTyping);
+
+  WidgetAutoclosePtr widget(CreateTopLevelNativeWidget());
+  widget->Show();
+
+  aura::client::CursorClient* cursor_client =
+      aura::client::GetCursorClient(widget->GetNativeWindow()->GetRootWindow());
+  ASSERT_TRUE(cursor_client);
+  EXPECT_TRUE(cursor_client->IsCursorVisible());
+  EXPECT_NE(nullptr, ::GetCursor());
+
+  // Hide the cursor.
+  cursor_client->HideCursor();
+  EXPECT_FALSE(cursor_client->IsCursorVisible());
+  EXPECT_EQ(nullptr, ::GetCursor());
+
+  // When a native dialog opens, the host receives WM_CANCELMODE and should
+  // restore the cursor.
+  ::SendMessage(widget->GetNativeWindow()->GetHost()->GetAcceleratedWidget(),
+                WM_CANCELMODE, 0, 0);
+  EXPECT_TRUE(cursor_client->IsCursorVisible());
+  EXPECT_NE(nullptr, ::GetCursor());
+}
+
+TEST_F(DesktopWindowTreeHostWinTest,
+       DoesNotRestoreHiddenCursorOnCancelModeWhenFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(::features::kHideCursorWhileTyping);
+
+  WidgetAutoclosePtr widget(CreateTopLevelNativeWidget());
+  widget->Show();
+
+  aura::client::CursorClient* cursor_client =
+      aura::client::GetCursorClient(widget->GetNativeWindow()->GetRootWindow());
+  ASSERT_TRUE(cursor_client);
+  EXPECT_TRUE(cursor_client->IsCursorVisible());
+
+  cursor_client->HideCursor();
+  EXPECT_FALSE(cursor_client->IsCursorVisible());
+
+  ::SendMessage(widget->GetNativeWindow()->GetHost()->GetAcceleratedWidget(),
+                WM_CANCELMODE, 0, 0);
+  EXPECT_FALSE(cursor_client->IsCursorVisible());
 }
 
 }  // namespace test
