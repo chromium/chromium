@@ -437,10 +437,7 @@ if (!is_android) {
 
   source_set("browser_content_setting_bubble_model_delegate_impl") {
     sources = [ "browser_content_setting_bubble_model_delegate.cc" ]
-    public_deps = [
-      ":browser_content_setting_bubble_model_delegate",
-      "//chrome/browser:browser_public_dependencies",
-    ]
+    public_deps = [ ":browser_content_setting_bubble_model_delegate" ]
     deps = [
       ":browser_tabstrip",
       "//base",
@@ -466,10 +463,7 @@ if (!is_android) {
 
   source_set("browser_window_theme_observer_impl") {
     sources = [ "browser_window_theme_observer.cc" ]
-    public_deps = [
-      ":browser_window_theme_observer",
-      "//chrome/browser:browser_public_dependencies",
-    ]
+    public_deps = [ ":browser_window_theme_observer" ]
     deps = [
       ":browser_window_header",
       "//chrome/browser/themes",
@@ -483,10 +477,7 @@ if (!is_android) {
 
   source_set("browser_window_deleter_impl") {
     sources = [ "browser_window_deleter.cc" ]
-    public_deps = [
-      ":browser_window_deleter",
-      "//chrome/browser:browser_public_dependencies",
-    ]
+    public_deps = [ ":browser_window_deleter" ]
     deps = [
       ":browser_window_header",
       "//chrome/browser/ui/browser_window",
@@ -503,10 +494,7 @@ if (!is_android) {
 
   source_set("browser_tabrestore_impl") {
     sources = [ "browser_tabrestore.cc" ]
-    public_deps = [
-      ":browser_tabrestore",
-      "//chrome/browser:browser_public_dependencies",
-    ]
+    public_deps = [ ":browser_tabrestore" ]
     deps = [
       ":browser_window_header",
       ":tab_ui_helper",
@@ -564,10 +552,7 @@ if (!is_android) {
 
   source_set("browser_live_tab_context_impl") {
     sources = [ "browser_live_tab_context.cc" ]
-    public_deps = [
-      ":browser_live_tab_context",
-      "//chrome/browser:browser_public_dependencies",
-    ]
+    public_deps = [ ":browser_live_tab_context" ]
     deps = [
       ":browser_commands",
       ":browser_init_state",
@@ -626,10 +611,7 @@ if (!is_android) {
 
   source_set("unload_controller_impl") {
     sources = [ "unload_controller.cc" ]
-    public_deps = [
-      ":unload_controller",
-      "//chrome/browser:browser_public_dependencies",
-    ]
+    public_deps = [ ":unload_controller" ]
     deps = [
       ":browser_commands",
       ":browser_live_tab_context",
@@ -693,10 +675,7 @@ if (!is_android) {
 
   source_set("browser_command_controller_impl") {
     sources = [ "browser_command_controller.cc" ]
-    public_deps = [
-      ":browser_command_controller",
-      "//chrome/browser:browser_public_dependencies",
-    ]
+    public_deps = [ ":browser_command_controller" ]
     deps = [
       ":accelerator_table",
       ":browser_actions",
@@ -843,10 +822,7 @@ if (!is_android) {
 
   source_set("browser_commands_impl") {
     sources = [ "browser_commands.cc" ]
-    public_deps = [
-      ":browser_commands",
-      "//chrome/browser:browser_public_dependencies",
-    ]
+    public_deps = [ ":browser_commands" ]
     deps = [
       ":accelerator_utils_headers",
       ":browser_command_controller",
@@ -1009,10 +985,7 @@ if (is_mac) {
 
   source_set("browser_commands_mac_impl") {
     sources = [ "browser_commands_mac.mm" ]
-    public_deps = [
-      ":browser_commands_mac",
-      "//chrome/browser:browser_public_dependencies",
-    ]
+    public_deps = [ ":browser_commands_mac" ]
     deps = [
       ":browser_commands",
       ":browser_window_header",
@@ -1540,7 +1513,6 @@ if (!is_android) {
 
   source_set("core") {
     sources = [ "browser.cc" ]
-    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
     deps = [
       ":browser_command_controller",
       ":browser_header",
@@ -1861,10 +1833,7 @@ if (!is_android) {
 
   source_set("browser_tab_strip_model_delegate_impl") {
     sources = [ "browser_tab_strip_model_delegate.cc" ]
-    public_deps = [
-      ":browser_tab_strip",
-      "//chrome/browser:browser_public_dependencies",
-    ]
+    public_deps = [ ":browser_tab_strip" ]
     deps = [
       ":browser_commands",
       ":browser_init_state",
@@ -1948,10 +1917,7 @@ if (!is_android) {
 
   source_set("chrome_pages_impl") {
     sources = [ "chrome_pages.cc" ]
-    public_deps = [
-      ":chrome_pages",
-      "//chrome/browser:browser_public_dependencies",
-    ]
+    public_deps = [ ":chrome_pages" ]
     deps = [
       ":browser_element_identifiers",
       ":browser_window_header",
@@ -2503,13 +2469,6 @@ if (toolkit_views) {
       "//ui/views",
     ]
 
-    # The sad tab feature (base SadTab, its controller, the WebContents helper
-    # and the SadTabView). Public headers are free of ui:ui blockers; the
-    # implementation reaches views/frame (browser_view.h, contents_web_view.h)
-    # through browser_public_dependencies, with an allow_circular_includes_from
-    # entry on //chrome/browser/ui:ui.
-    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
     if (is_chromeos) {
       # sad_tab.cc / sad_tab_view.cc check kiosk mode on ChromeOS.
       deps += [ "//chromeos/components/kiosk" ]
@@ -2704,10 +2663,7 @@ if (is_chromeos) {
 
   source_set("settings_window_manager_chromeos_impl") {
     sources = [ "settings_window_manager_chromeos.cc" ]
-    public_deps = [
-      ":settings_window_manager_chromeos",
-      "//chrome/browser:browser_public_dependencies",
-    ]
+    public_deps = [ ":settings_window_manager_chromeos" ]
     deps = [
       ":browser_window_header",
       "//ash",

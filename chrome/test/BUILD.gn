@@ -5315,5 +5315,4 @@ test("captcha_provider_fuzztests") {
     "//third_party/fuzztest:fuzztest_gtest_main",
     "//url",
   ]
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }

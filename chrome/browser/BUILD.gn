@@ -513,7 +513,6 @@ if (!is_android) {
 
   source_set("chrome_browser_interface_binders_webui_parts_desktop") {
     sources = [ "chrome_browser_interface_binders_webui_parts_desktop.cc" ]
-    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
     deps = [
       ":chrome_browser_interface_binders_webui_parts",
       "//base",
@@ -713,8 +712,6 @@ if (!is_win && !is_android) {
     if (is_linux || is_chromeos) {
       deps += [ "//chrome/browser/ui/dialogs:process_singleton_dialog_linux" ]
     }
-
-    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   }
 }
 
@@ -912,10 +909,6 @@ if (is_chromeos) {
       "//ui/base",
       "//ui/chromeos/strings",
     ]
-
-    # platform_util_ash.cc includes browser.h/browser_window.h, owned by
-    # //chrome/browser/ui (the ui target adds the back-edge).
-    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   }
 
   source_set("browser_process_platform_part_ash") {
@@ -971,10 +964,6 @@ if (is_chromeos) {
       "//ui/base",
       "//ui/base:types",
     ]
-
-    # browser_process_platform_part_ash.cc includes browser.h/browser_window.h,
-    # owned by //chrome/browser/ui (the ui target adds the back-edge).
-    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   }
 } else {
   source_set("fullscreen") {
