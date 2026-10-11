@@ -33,9 +33,9 @@ import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
@@ -51,12 +51,12 @@ import org.chromium.ui.test.util.DeviceRestriction;
 
 /** Integration tests for sign-in / sign-out behavior in {@link SettingsPage}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@DoNotBatch(reason = "Tests sign-in and sign-out which mutates global account state")
+@Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
 @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
 public class SettingsPageSigninTest {
-    private final SigninTestRule mSigninTestRule = new SigninTestRule();
+    private final SigninTestRule mSigninTestRule = SigninTestRule.createWithCleanups();
     private final ChromeTabbedActivityTestRule mActivityTestRule =
             new ChromeTabbedActivityTestRule();
 
