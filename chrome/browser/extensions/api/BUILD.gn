@@ -190,6 +190,7 @@ function_registration("api_registration") {
     "glic_private/glic_private_api.h",
     "module/module.h",
     "tabs/tabs_api.h",
+    "tabs/windows_api.h",
     "terminal/terminal_private_api.h",
     "web_view/chrome_web_view_internal_api.h",
   ]

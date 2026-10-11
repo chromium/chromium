@@ -35,15 +35,10 @@
 #include "chrome/browser/safe_browsing/extension_telemetry/tabs_api_signal.h"
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
-#endif
-
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class BrowserWindowInterface;
 class GURL;
-class SessionID;
 class SkBitmap;
 class TabListInterface;
 
@@ -62,12 +57,6 @@ class TabInterface;
 namespace user_prefs {
 class PrefRegistrySyncable;
 }
-
-#if !BUILDFLAG(IS_ANDROID)
-namespace web_app {
-class IsolatedWebAppUrlInfo;
-}
-#endif
 
 namespace extensions {
 
@@ -134,6 +123,19 @@ bool GetTabById(int tab_id,
                 int* index_out,
                 std::string* error_out);
 
+// Moves the given tab to the `target_browser`. On success, returns the new
+// index of the tab in the target tabstrip. On failure, returns -1. Assumes that
+// the caller has already checked whether the target window is different from
+// the source. `allow_other_window_types` indicates whether moving tabs to
+// windows with types other than BrowserWindowInterface::TYPE_NORMAL is
+// supported; this is allowed in certain cases (like moving a tab to a popup).
+int MoveTabToWindow(ExtensionFunction* function,
+                    int tab_id,
+                    BrowserWindowInterface* target_browser,
+                    int new_index,
+                    bool allow_other_window_types,
+                    std::string* error);
+
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 // Notifies the safe browsing telemetry service of a relevant extension action.
 void NotifyExtensionTelemetry(Profile* profile,
@@ -164,97 +166,6 @@ bool WindowBoundsIntersectDisplays(const gfx::Rect& bounds);
 // Converts a ZoomMode to its ZoomSettings representation.
 void ZoomModeToZoomSettings(zoom::ZoomController::ZoomMode zoom_mode,
                             api::tabs::ZoomSettings* zoom_settings);
-
-// Windows
-class WindowsGetFunction : public ExtensionFunction {
-  ~WindowsGetFunction() override = default;
-  ResponseAction Run() override;
-  DECLARE_EXTENSION_FUNCTION("windows.get", WINDOWS_GET)
-};
-class WindowsGetCurrentFunction : public ExtensionFunction {
-  ~WindowsGetCurrentFunction() override = default;
-  ResponseAction Run() override;
-  DECLARE_EXTENSION_FUNCTION("windows.getCurrent", WINDOWS_GETCURRENT)
-};
-class WindowsGetLastFocusedFunction : public ExtensionFunction {
-  ~WindowsGetLastFocusedFunction() override = default;
-  ResponseAction Run() override;
-  DECLARE_EXTENSION_FUNCTION("windows.getLastFocused", WINDOWS_GETLASTFOCUSED)
-};
-class WindowsGetAllFunction : public ExtensionFunction {
-  ~WindowsGetAllFunction() override = default;
-  ResponseAction Run() override;
-  DECLARE_EXTENSION_FUNCTION("windows.getAll", WINDOWS_GETALL)
-};
-class WindowsCreateFunction : public ExtensionFunction {
- public:
-  WindowsCreateFunction();
-  ResponseAction Run() override;
-  DECLARE_EXTENSION_FUNCTION("windows.create", WINDOWS_CREATE)
-
-  // Ensures the tab for the window is valid.
-  static base::expected<void, std::string> ValidateTab(
-      WindowController* source_window,
-      Profile* window_profile,
-      content::WebContents* web_contents,
-      bool is_locked_fullscreen = false);
-
- private:
-  ~WindowsCreateFunction() override;
-
-  // Uses `create_data` to set the window position and size in `window_bounds`.
-  // Returns an error string, or the empty string if the bounds are valid.
-  static std::string SetWindowBounds(
-      const api::windows::Create::Params::CreateData& create_data,
-      gfx::Rect& window_bounds);
-
-#if BUILDFLAG(IS_ANDROID)
-  void OnBrowserWindowCreatedAsynchronously(BrowserWindowInterface* new_window);
-#endif
-
-  // Handles post-creation window initialization. `new_window` is the newly-
-  // created browser window.
-  // Returns the response to pass back to the extension.
-  ResponseValue OnBrowserWindowCreated(BrowserWindowInterface* new_window);
-
-#if BUILDFLAG(IS_CHROMEOS)
-  void OnBocaWindowCreatedAsynchronously(const SessionID& session_id);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if !BUILDFLAG(IS_ANDROID)
-  // The info for an isolated web app to open, if any.
-  std::optional<web_app::IsolatedWebAppUrlInfo> isolated_web_app_url_info_;
-#endif
-
-  // The creation data parameters supplied by the extension.
-  std::optional<api::windows::Create::Params::CreateData> create_data_;
-
-  // The set of parsed URLs to open in the newly-created window.
-  std::vector<GURL> urls_;
-
-  // Whether to set the calling extension context as the opener of the newly-
-  // created window. Not supported for service worker callers.
-  bool set_self_as_opener_ = false;
-};
-class WindowsUpdateFunction : public ExtensionFunction {
-  ~WindowsUpdateFunction() override = default;
-  ResponseAction Run() override;
-  DECLARE_EXTENSION_FUNCTION("windows.update", WINDOWS_UPDATE)
-
- private:
-  // Applies the updates from `params` to the `browser` window.
-  void UpdateWindowState(const api::windows::Update::Params& params,
-                         BrowserWindowInterface* browser,
-                         WindowController* window_controller,
-                         ui::mojom::WindowShowState show_state,
-                         bool set_window_bounds,
-                         const gfx::Rect& window_bounds);
-};
-class WindowsRemoveFunction : public ExtensionFunction {
-  ~WindowsRemoveFunction() override = default;
-  ResponseAction Run() override;
-  DECLARE_EXTENSION_FUNCTION("windows.remove", WINDOWS_REMOVE)
-};
 
 // Tabs
 class TabsGetFunction : public ExtensionFunction {
@@ -473,9 +384,9 @@ class TabsDetectLanguageFunction
   DECLARE_EXTENSION_FUNCTION("tabs.detectLanguage", TABS_DETECTLANGUAGE)
 };
 
-class TabsCaptureVisibleTabFunction :
-    public extensions::WebContentsCaptureClient,
-    public ExtensionFunction {
+class TabsCaptureVisibleTabFunction
+    : public extensions::WebContentsCaptureClient,
+      public ExtensionFunction {
  public:
   TabsCaptureVisibleTabFunction();
 
