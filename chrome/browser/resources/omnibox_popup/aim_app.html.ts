@@ -12,6 +12,7 @@ export function getHtml(this: OmniboxAimAppElement) {
   return html`<!--_html_template_start_-->
 <div id="content">
   <cr-omnibox-composebox searchbox-next-enabled id="composebox"
+      composebox-no-flicker-suggestions-fix
       searchbox-layout-mode="${this.getSearchboxLayoutMode_()}"
       ?disable-caret-color-animation="${!this.caretAnimationsEnabled_}"
       ?energy-effect-enabled="${this.energyEffectEnabled_}"

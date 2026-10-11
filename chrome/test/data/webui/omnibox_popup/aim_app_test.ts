@@ -479,6 +479,7 @@ suite('AimAppTest', function() {
         assertTrue(composebox.shouldShowGhostFiles);
         assertTrue(composebox.usePecApi);
         assertTrue(composebox.smartComposeEnabled);
+        assertTrue(composebox.composeboxNoFlickerSuggestionsFix);
       });
 
   test('ResetsSubmittingOnClose', async function() {
