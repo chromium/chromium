@@ -59,10 +59,7 @@ static_library("dlp") {
     "dlp_scoped_file_access_delegate.h",
   ]
 
-  public_deps = [
-    "//chrome/browser:browser_public_dependencies",
-    "//chromeos/ash/components/browser_delegate",
-  ]
+  public_deps = [ "//chromeos/ash/components/browser_delegate" ]
 
   deps = [
     "//ash",
@@ -77,6 +74,7 @@ static_library("dlp") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/chromeos/policy/dlp/dialogs",
     "//chrome/browser/download",
+    "//chrome/browser/policy",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/navigator",

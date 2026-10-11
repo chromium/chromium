@@ -10,12 +10,13 @@ static_library("upload_office_to_cloud") {
     "upload_office_to_cloud.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
+    "//ash/constants",
     "//base",
+    "//chrome/browser/policy",
     "//chrome/browser/profiles:profile",
     "//chrome/common:constants",
+    "//chrome/common/extensions/api",
     "//chromeos/constants",
     "//components/prefs",
   ]

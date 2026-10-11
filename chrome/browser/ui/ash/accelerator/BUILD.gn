@@ -10,10 +10,9 @@ static_library("accelerator") {
     "chrome_accelerator_prefs_delegate.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//ash",
+    "//chrome/browser/policy",
     "//chrome/browser/profiles:profile_manager",
     "//components/user_manager",
   ]

@@ -36,8 +36,8 @@ static_library("display_settings") {
 
   deps = [
     "//ash/constants",
-    "//chrome/browser:browser_public_dependencies",
     "//chromeos/dbus/power:power_manager_proto",
+    "//content/public/browser",
     "//ui/display/util",
   ]
 }

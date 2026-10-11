@@ -16,7 +16,6 @@ static_library("lobster") {
 
   public_deps = [
     "//base",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ui/views/bubble",
     "//chrome/browser/ui/webui/ash/mako:mako_bubble",
     "//chrome/browser/ui/webui/top_chrome",

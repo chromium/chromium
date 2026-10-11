@@ -15,8 +15,8 @@ static_library("focus_mode") {
   ]
 
   public_deps = [
-    "//chrome/browser:browser_public_dependencies",
     "//chromeos/ash/components/dbus/constants",
+    "//dbus",
   ]
 
   deps = [
@@ -34,6 +34,7 @@ static_library("focus_mode") {
     "//chromeos/ash/components/dbus/cryptohome:attestation_proto",
     "//chromeos/ash/components/settings",
     "//chromeos/ash/components/signin:identity_manager_provider",
+    "//components/signin/public/identity_manager",
     "//google_apis/common",
     "//net/traffic_annotation",
   ]

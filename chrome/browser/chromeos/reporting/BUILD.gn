@@ -20,11 +20,10 @@ static_library("reporting") {
     "user_reporting_settings.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//base",
     "//chrome/browser/chromeos/reporting/websites",
+    "//chrome/browser/enterprise",
     "//chrome/browser/profiles:profile",
     "//components/content_settings/core/common",
     "//components/pref_registry",

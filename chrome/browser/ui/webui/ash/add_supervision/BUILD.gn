@@ -43,7 +43,6 @@ static_library("add_supervision") {
   deps = [
     "//chrome/app:generated_resources",
     "//chrome/app:generated_resources_grit",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser:resources",
     "//chrome/browser:resources_grit",
     "//chrome/browser/ash/app_list/arc",
@@ -82,6 +81,8 @@ source_set("unit_tests") {
   sources = [ "add_supervision_handler_utils_unittest.cc" ]
   deps = [
     "//chrome/browser/ui/webui/ash/add_supervision",
+    "//components/services/app_service",
+    "//components/services/app_service/public/cpp:app_types",
     "//testing/gtest",
   ]
 }
