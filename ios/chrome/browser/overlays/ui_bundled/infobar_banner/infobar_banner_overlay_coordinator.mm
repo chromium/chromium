@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/collaboration_group/collaboration_group_infobar_banner_overlay_mediator.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/collaboration_out_of_date/collaboration_out_of_date_infobar_banner_overlay_mediator.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/confirm/confirm_infobar_banner_overlay_mediator.h"
+#import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/contextual_cue/contextual_cue_infobar_banner_overlay_mediator.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/features.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/infobar_banner_overlay_mediator.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/passwords/password_infobar_banner_overlay_mediator.h"
@@ -71,6 +72,7 @@
     [TailoredSecurityInfobarBannerOverlayMediator class],
     [SyncErrorInfobarBannerOverlayMediator class],
     [EnhancedSafeBrowsingBannerOverlayMediator class],
+    [ContextualCueInfobarBannerOverlayMediator class],
   ];
 }
 
@@ -267,6 +269,9 @@
     case InfobarType::kInfobarTypeCollaborationOutOfDate:
       mediatorClass =
           [CollaborationOutOfDateInfobarBannerOverlayMediator class];
+      break;
+    case InfobarType::kInfobarTypeContextualCue:
+      mediatorClass = [ContextualCueInfobarBannerOverlayMediator class];
       break;
     default:
       NOTREACHED() << "Received unsupported infobarType.";
