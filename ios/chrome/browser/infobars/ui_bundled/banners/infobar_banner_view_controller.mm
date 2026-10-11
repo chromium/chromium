@@ -80,6 +80,7 @@ const CGFloat kRevampLabelsStackViewVerticalSpacing = 3.0;
 const CGFloat kHeightCornerRadiusThreshold = 90.0;
 const CGFloat kButtonMaxWidthMultiplier = 0.40;
 const CGFloat kRevampButtonVerticalPadding = 10.0;
+const CGFloat kRevampButtonMinimumScaleFactor = 0.8;
 }  // namespace
 
 @interface InfobarBannerViewController () <UIGestureRecognizerDelegate>
@@ -369,7 +370,8 @@ const CGFloat kRevampButtonVerticalPadding = 10.0;
 
   // Labels setup.
   UIFont* headlineFont =
-      [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+      [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline
+          compatibleWithTraitCollection:self.view.traitCollection];
   UILabel* titleLabel = [[UILabel alloc] init];
   titleLabel.text = self.titleText;
   titleLabel.font = headlineFont;
@@ -386,7 +388,8 @@ const CGFloat kRevampButtonVerticalPadding = 10.0;
   UILabel* subTitleLabel = [[UILabel alloc] init];
   subTitleLabel.text = self.subtitleText;
   subTitleLabel.font =
-      [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+      [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote
+          compatibleWithTraitCollection:self.view.traitCollection];
   subTitleLabel.adjustsFontForContentSizeCategory = YES;
   subTitleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
   subTitleLabel.numberOfLines = _subtitleNumberOfLines;
@@ -423,6 +426,8 @@ const CGFloat kRevampButtonVerticalPadding = 10.0;
 
   // Button setup.
   UIButton* actionButton = [UIButton buttonWithType:UIButtonTypeSystem];
+  actionButton.maximumContentSizeCategory =
+      UIContentSizeCategoryExtraExtraLarge;
   UIButtonConfiguration* buttonConfig =
       [UIButtonConfiguration filledButtonConfiguration];
   buttonConfig.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
@@ -433,24 +438,36 @@ const CGFloat kRevampButtonVerticalPadding = 10.0;
       kRevampButtonVerticalPadding,
       kInfobarBannerRevampButtonHorizontalPadding);
   buttonConfig.titleAlignment = UIButtonConfigurationTitleAlignmentCenter;
-  NSMutableParagraphStyle* paragraphStyle =
-      [[NSMutableParagraphStyle alloc] init];
-  paragraphStyle.alignment = NSTextAlignmentCenter;
-  NSDictionary<NSAttributedStringKey, id>* titleAttributes = @{
-    NSFontAttributeName : headlineFont,
-    NSParagraphStyleAttributeName : paragraphStyle,
+  buttonConfig.title = self.buttonText ?: @"";
+  __weak __typeof(actionButton) weakButton = actionButton;
+  buttonConfig.titleTextAttributesTransformer =
+      ^NSDictionary<NSAttributedStringKey, id>*(
+          NSDictionary<NSAttributedStringKey, id>* incoming) {
+    NSMutableDictionary<NSAttributedStringKey, id>* outgoing =
+        [incoming mutableCopy];
+    UITraitCollection* traitCollection =
+        weakButton.traitCollection
+            ?: [UITraitCollection currentTraitCollection];
+    outgoing[NSFontAttributeName] =
+        [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline
+            compatibleWithTraitCollection:traitCollection];
+    NSMutableParagraphStyle* paragraphStyle =
+        [[NSMutableParagraphStyle alloc] init];
+    paragraphStyle.alignment = NSTextAlignmentCenter;
+    outgoing[NSParagraphStyleAttributeName] = paragraphStyle;
+    return outgoing;
   };
-  buttonConfig.attributedTitle =
-      [[NSAttributedString alloc] initWithString:self.buttonText ?: @""
-                                      attributes:titleAttributes];
+  actionButton.configurationUpdateHandler = ^(UIButton* button) {
+    button.titleLabel.adjustsFontForContentSizeCategory = YES;
+    button.titleLabel.adjustsFontSizeToFitWidth = YES;
+    button.titleLabel.minimumScaleFactor = kRevampButtonMinimumScaleFactor;
+    button.titleLabel.numberOfLines = 2;
+    button.titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+    button.titleLabel.textAlignment = NSTextAlignmentCenter;
+    button.titleLabel.isAccessibilityElement = NO;
+  };
   actionButton.configuration = buttonConfig;
 
-  actionButton.titleLabel.adjustsFontForContentSizeCategory = YES;
-  actionButton.titleLabel.adjustsFontSizeToFitWidth = YES;
-  actionButton.titleLabel.numberOfLines = 2;
-  actionButton.titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-  actionButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-  actionButton.titleLabel.isAccessibilityElement = NO;
   actionButton.accessibilityIdentifier = kInfobarBannerAcceptButtonIdentifier;
   actionButton.accessibilityLabel = self.buttonText;
   actionButton.pointerInteractionEnabled = YES;
@@ -463,6 +480,9 @@ const CGFloat kRevampButtonVerticalPadding = 10.0;
   [actionButton
       setContentCompressionResistancePriority:UILayoutPriorityRequired
                                       forAxis:UILayoutConstraintAxisHorizontal];
+  [actionButton
+      setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                      forAxis:UILayoutConstraintAxisVertical];
 
   CALayer* buttonLayer = actionButton.layer;
   buttonLayer.shadowOffset =
@@ -607,18 +627,9 @@ const CGFloat kRevampButtonVerticalPadding = 10.0;
   _buttonText = buttonText;
   if (self.infobarButton.configuration) {
     UIButtonConfiguration* configuration = self.infobarButton.configuration;
-    NSDictionary* titleAttributes =
-        configuration.attributedTitle.length
-            ? [configuration.attributedTitle attributesAtIndex:0
-                                                effectiveRange:nil]
-            : nil;
-    configuration.attributedTitle =
-        [[NSAttributedString alloc] initWithString:_buttonText ?: @""
-                                        attributes:titleAttributes];
+    configuration.title = _buttonText ?: @"";
     self.infobarButton.configuration = configuration;
-    self.infobarButton.titleLabel.textAlignment = NSTextAlignmentCenter;
     self.infobarButton.accessibilityLabel = _buttonText;
-    self.infobarButton.titleLabel.isAccessibilityElement = NO;
   } else {
     [self.infobarButton setTitle:_buttonText forState:UIControlStateNormal];
   }
