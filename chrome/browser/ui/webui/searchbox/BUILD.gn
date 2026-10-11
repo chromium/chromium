@@ -18,7 +18,6 @@ source_set("searchbox") {
   ]
   public_deps = [
     "//base",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ui/webui/new_tab_page/composebox/variations",
     "//components/contextual_search:prefs",
     "//components/lens/proto/server:proto",

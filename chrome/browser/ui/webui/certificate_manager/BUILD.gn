@@ -24,7 +24,6 @@ if (chrome_root_store_cert_management_ui) {
       "enterprise_cert_sources.h",
       "user_cert_sources.h",
     ]
-    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
     deps = [
       "//base",
       "//chrome/app:generated_resources_grit",

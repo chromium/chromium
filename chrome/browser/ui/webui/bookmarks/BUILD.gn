@@ -19,7 +19,6 @@ if (!is_android) {
       "bookmarks_message_handler.h",
       "bookmarks_ui.h",
     ]
-    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
     deps = [
       "//base",
       "//chrome/app:generated_resources",

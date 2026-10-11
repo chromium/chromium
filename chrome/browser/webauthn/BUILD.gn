@@ -92,10 +92,7 @@ source_set("impl") {
     "webauthn_switches.cc",
   ]
 
-  public_deps = [
-    ":webauthn",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ ":webauthn" ]
 
   deps = [
     "//base",
@@ -232,10 +229,7 @@ if (is_android) {
       "android/webauthn_request_delegate_android.cc",
     ]
 
-    public_deps = [
-      ":webauthn_request_delegate_android",
-      "//chrome/browser:browser_public_dependencies",
-    ]
+    public_deps = [ ":webauthn_request_delegate_android" ]
 
     deps = [
       ":webauthn",

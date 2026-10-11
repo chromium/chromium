@@ -108,7 +108,7 @@ source_set("impl") {
     "virtual_card_enroll_bubble_controller_impl.cc",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  public_deps = []
 
   deps = [
     ":payments",

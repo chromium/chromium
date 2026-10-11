@@ -120,8 +120,6 @@ source_set("task_manager") {
 # interface. This does have circular dependencies with //chrome/browser and
 # //chrome/browser/ui.
 source_set("impl") {
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   sources = [
     "providers/browser_process_task.cc",
     "providers/browser_process_task_provider.cc",

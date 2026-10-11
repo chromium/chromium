@@ -108,8 +108,6 @@ source_set("impl") {
         "//chrome/browser/ui/user_education",
       ]
     }
-
-    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   }
 }
 
