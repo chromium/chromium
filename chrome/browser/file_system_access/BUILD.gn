@@ -92,7 +92,6 @@ source_set("impl") {
     deps += [ "//components/guest_view/browser" ]
   }
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   if (!is_android) {
     deps += [ "//chrome/browser/ui:browser_window_header" ]
   }

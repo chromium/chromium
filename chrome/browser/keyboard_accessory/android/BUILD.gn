@@ -43,10 +43,7 @@ source_set("impl") {
     "payment_method_accessory_controller_impl.cc",
     "payment_method_accessory_controller_impl.h",
   ]
-  public_deps = [
-    ":android",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ ":android" ]
   deps = [
     "//base",
     "//chrome/browser/android:resource_mapper",

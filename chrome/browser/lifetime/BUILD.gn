@@ -76,19 +76,20 @@ source_set("impl") {
     "browser_shutdown.cc",
   ]
 
-  public_deps = [
-    ":lifetime",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ ":lifetime" ]
 
   deps = [
     ":termination_notification",
     "//build/config/compiler:compiler_buildflags",
     "//chrome/browser:browser_process",
     "//chrome/browser:browser_process_platform_part",
+    "//chrome/browser:buildflags",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_util",
     "//chrome/common:buildflags",
+    "//chrome/common:chrome_features",
+    "//chrome/common:constants",
+    "//chrome/common:non_code_constants",
     "//components/crash/core/common:crash_key",
     "//components/language/core/browser",
     "//components/language/core/common",

@@ -128,10 +128,7 @@ source_set("impl") {
     "page_load_metrics_initialize.cc",
   ]
 
-  public_deps = [
-    ":page_load_metrics",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ ":page_load_metrics" ]
 
   deps = [
     "//chrome/browser:after_startup_task_utils",

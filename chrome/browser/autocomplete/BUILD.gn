@@ -160,8 +160,6 @@ source_set("impl") {
       "//extensions/browser",
     ]
   }
-
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("aim_eligibility_service") {

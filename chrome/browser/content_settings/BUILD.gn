@@ -37,8 +37,6 @@ source_set("content_settings") {
 
   deps = []
 
-  allow_circular_includes_from = []
-
   if (is_android) {
     sources += [
       "javascript_optimizer_provider_android.h",
@@ -64,8 +62,6 @@ source_set("content_settings") {
 }
 
 source_set("impl") {
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   sources = [
     "content_settings_manager_delegate.cc",
     "mixed_content_settings_tab_helper.cc",
@@ -177,8 +173,6 @@ source_set("content_settings_factory_impl") {
     "//ui/webui",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   if (enable_extensions_core) {
     deps += [ "//extensions/browser" ]
   }
@@ -208,8 +202,6 @@ source_set("content_settings_util_impl") {
     "//chrome/browser/ui/browser_window",
     "//content/public/browser",
   ]
-
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   if (!is_android) {
     deps += [

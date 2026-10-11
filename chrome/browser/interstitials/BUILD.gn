@@ -32,10 +32,7 @@ source_set("impl") {
     "enterprise_util.cc",
   ]
 
-  public_deps = [
-    ":interstitials",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ ":interstitials" ]
 
   deps = [
     "//base",

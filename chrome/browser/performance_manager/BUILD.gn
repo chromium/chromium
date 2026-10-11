@@ -158,10 +158,7 @@ source_set("impl") {
     "user_tuning/user_tuning_utils.cc",
   ]
 
-  public_deps = [
-    ":performance_manager",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ ":performance_manager" ]
 
   deps = [
     "//chrome/browser:browser_process",

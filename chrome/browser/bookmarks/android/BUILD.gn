@@ -25,7 +25,6 @@ source_set("android") {
 
 source_set("impl") {
   sources = [ "bookmark_bridge.cc" ]
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
     ":android",
     "//chrome/android:chrome_jni_headers",
@@ -35,6 +34,7 @@ source_set("impl") {
     "//chrome/browser/reading_list",
     "//chrome/browser/signin",
     "//chrome/browser/undo",
+    "//components/dom_distiller/core",
     "//components/query_parser",
     "//components/undo",
   ]

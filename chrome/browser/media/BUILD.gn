@@ -408,10 +408,7 @@ source_set("impl") {
     "unified_autoplay_config.cc",
   ]
 
-  public_deps = [
-    ":media",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ ":media" ]
 
   deps = [
     ":media_engagement_preload_proto",

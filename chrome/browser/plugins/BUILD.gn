@@ -63,10 +63,9 @@ source_set("plugins") {
 source_set("impl") {
   sources = [ "pdf_iframe_navigation_throttle.cc" ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     ":plugins",
+    "//chrome/common",
     "//components/pdf/common:constants",
     "//components/pdf/common:util",
     "//net",

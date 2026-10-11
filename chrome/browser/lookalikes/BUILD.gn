@@ -49,7 +49,6 @@ source_set("impl") {
     "safety_tip_ui_helper.cc",
     "safety_tip_web_contents_observer.cc",
   ]
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
     ":lookalikes",
     "//chrome/browser:browser_process",

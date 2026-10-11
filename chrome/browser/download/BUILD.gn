@@ -180,10 +180,7 @@ source_set("impl") {
     "trusted_sources_manager.cc",
   ]
 
-  public_deps = [
-    ":download",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ ":download" ]
 
   deps = [
     ":status_text_builder_utils",

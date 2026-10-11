@@ -60,10 +60,7 @@ source_set("impl") {
     "web_hid_histograms.cc",
   ]
 
-  public_deps = [
-    ":hid",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ ":hid" ]
 
   deps = [
     "//base",
@@ -116,6 +113,9 @@ source_set("impl") {
 
   if (enable_extensions) {
     sources += [ "web_view_chooser_context.cc" ]
+  }
+
+  if (enable_extensions_core) {
     deps += [
       "//extensions/browser",
       "//extensions/common",

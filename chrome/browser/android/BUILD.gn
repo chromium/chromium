@@ -657,7 +657,6 @@ if (is_android) {
 
     public_deps = [
       ":persisted_tab_data",
-      "//chrome/browser:browser_public_dependencies",
       "//chrome/browser/accessibility/accessibility_prefs",
       "//chrome/browser/android/webapk:webapk_sources",
       "//chrome/browser/glic/browser_ui",

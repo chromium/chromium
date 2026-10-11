@@ -137,10 +137,7 @@ source_set("impl") {
     ]
   }
 
-  public_deps = [
-    ":accessibility",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ ":accessibility" ]
 
   deps += [
     "//base",
@@ -148,6 +145,8 @@ source_set("impl") {
     "//chrome/browser/manta",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/tab_contents",
+    "//chrome/common:channel_info",
+    "//chrome/common:constants",
     "//components/language/core/browser",
     "//components/live_caption:constants",
     "//components/manta",
@@ -174,9 +173,6 @@ source_set("impl") {
       "//components/infobars/content",
     ]
   }
-
-  allow_circular_includes_from =
-      [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("unit_tests") {
