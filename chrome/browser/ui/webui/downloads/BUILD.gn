@@ -27,7 +27,6 @@ source_set("downloads") {
     "downloads_list_tracker.h",
     "downloads_ui.h",
   ]
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
     ":mojo_bindings",
     "//base",

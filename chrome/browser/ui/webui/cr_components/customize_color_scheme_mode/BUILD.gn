@@ -10,7 +10,6 @@ source_set("customize_color_scheme_mode") {
   sources = [ "customize_color_scheme_mode_handler.cc" ]
   public = [ "customize_color_scheme_mode_handler.h" ]
   public_deps = [
-    "//chrome/browser:browser_public_dependencies",
     "//mojo/public/cpp/bindings",
     "//ui/webui/resources/cr_components/customize_color_scheme_mode:mojom",
   ]

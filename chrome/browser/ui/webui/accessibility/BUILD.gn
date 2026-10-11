@@ -17,8 +17,6 @@ source_set("accessibility") {
 source_set("impl") {
   sources = [ "accessibility_ui.cc" ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     ":accessibility",
     "//chrome/browser/profiles:profile",

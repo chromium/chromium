@@ -16,7 +16,6 @@ source_set("history_clusters") {
   if (!is_android) {
     sources += [ "history_clusters_handler.cc" ]
     public += [ "history_clusters_handler.h" ]
-    public_deps += [ "//chrome/browser:browser_public_dependencies" ]
     deps += [
       "//base",
       "//chrome/app:command_ids",

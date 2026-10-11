@@ -47,8 +47,6 @@ if (!is_android) {
       "shopping_ui_handler_delegate.cc",
     ]
 
-    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
     deps = [
       ":commerce",
       "//chrome/app:command_ids",

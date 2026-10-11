@@ -15,10 +15,7 @@ source_set("most_visited") {
     "most_visited_handler.h",
     "most_visited_pref_observer.h",
   ]
-  public_deps = [
-    "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/ui/search",
-  ]
+  public_deps = [ "//chrome/browser/ui/search" ]
   deps = [
     "//base",
     "//chrome/browser:browser_features",

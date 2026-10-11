@@ -30,7 +30,6 @@ if (!is_android) {
       "feedback_handler.cc",
       "feedback_ui.cc",
     ]
-    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
     deps = [
       ":feedback",
       "//base",

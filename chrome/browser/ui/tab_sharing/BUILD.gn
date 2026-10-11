@@ -42,7 +42,6 @@ if (!is_android) {
       "//ui/strings:ui_strings",
       "//ui/strings:ui_strings_grit",
     ]
-    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   }
 
   source_set("test_support") {

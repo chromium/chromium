@@ -52,8 +52,6 @@ source_set("impl") {
     "access_code_cast_ui.cc",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     ":access_code_cast",
     "//base",

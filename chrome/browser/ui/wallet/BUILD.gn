@@ -42,8 +42,6 @@ source_set("wallet") {
       "//chrome/browser/ui/views/frame:browser_view_header",
     ]
   }
-
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 if (toolkit_views) {

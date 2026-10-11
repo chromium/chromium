@@ -5,7 +5,6 @@
 source_set("history_embeddings") {
   sources = [ "history_embeddings_handler.cc" ]
   public = [ "history_embeddings_handler.h" ]
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
     "//base",
     "//base:i18n",

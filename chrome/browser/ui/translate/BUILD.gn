@@ -48,7 +48,6 @@ if (!is_android) {
       "//chrome/browser/ui:browser_window_header",
       "//components/translate/core/browser",
     ]
-    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   }
 }
 

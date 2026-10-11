@@ -13,7 +13,6 @@ source_set("sessions") {
 
   public_deps = [
     "//base",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
     "//components/sessions:session_id",

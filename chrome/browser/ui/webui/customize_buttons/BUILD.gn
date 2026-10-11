@@ -21,11 +21,12 @@ source_set("customize_buttons") {
   sources = [ "customize_buttons_handler.h" ]
   public_deps = [
     ":mojo_bindings",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/new_tab_page",
     "//chrome/browser/resources/new_tab_shared:resources_grit",
     "//chrome/browser/ui/webui/side_panel/customize_chrome",
     "//chrome/common",
+    "//components/tabs:public",
+    "//ui/base/interaction",
   ]
   if (!is_android) {
     public_deps += [ "//chrome/browser/ui/views/side_panel" ]

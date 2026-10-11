@@ -10,8 +10,6 @@ source_set("inspect") {
     "inspect_ui.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//base",
     "//chrome/browser:browser_process",
