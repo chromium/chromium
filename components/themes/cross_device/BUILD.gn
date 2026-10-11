@@ -27,7 +27,10 @@ source_set("cross_device") {
     "//skia",
     "//url",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//components/themes/common",
+  ]
 }
 
 source_set("unit_tests") {
@@ -37,6 +40,7 @@ source_set("unit_tests") {
     ":cross_device",
     "//base",
     "//base/test:test_support",
+    "//components/themes/common",
     "//testing/gmock",
     "//testing/gtest",
   ]

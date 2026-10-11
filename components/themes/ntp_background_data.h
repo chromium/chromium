@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/token.h"
+#include "components/themes/common/image_url_options.h"
 #include "components/themes/ntp_background.pb.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
@@ -30,27 +31,8 @@ enum class ErrorType {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSNtpBackgroundServiceErrorType)
 
-// Retrieve the options to be added to a thumbnail image URL.
-std::string GetThumbnailImageOptions();
-
 // Label added to request to filter out unwanted collections.
 std::string GetFilteringLabel();
-
-// Retrieve the options to be added to an image URL.
-std::string GetImageOptions();
-
-// Adds options for resizing an image to its url.
-// Without options added to the image, it is 512x512.
-// Returns an empty GURL if `image_url` is not a valid HTTP(S) URL.
-// TODO(crbug.com/41408116): Request resolution from service, instead of
-// setting it here.
-GURL AddOptionsToImageURL(const std::string& image_url,
-                          const std::string& image_options);
-
-// Removes the options for resizing an image from a url. The URL includes the
-// options after a single `=` but all still part of the path, so they can't be
-// removed with built-in URL modification tools.
-GURL RemoveOptionsFromImageURL(const std::string& image_url);
 
 // Background images are organized into collections, according to a theme. This
 // struct contains the data required to display information about a collection,

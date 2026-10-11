@@ -28,6 +28,7 @@ source_set("themes") {
     "//components/keyed_service/core",
     "//components/prefs",
     "//components/signin/public/identity_manager",
+    "//components/themes/common",
     "//net",
     "//services/network/public/cpp",
     "//skia",

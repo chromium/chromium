@@ -5,8 +5,14 @@
 #include "components/themes/cross_device/cross_device_theme_tracker.h"
 
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
+#include "components/sync/protocol/theme_android_specifics.pb.h"
+#include "components/sync/protocol/theme_ios_specifics.pb.h"
 #include "components/sync/protocol/theme_specifics.pb.h"
+#include "components/themes/common/image_url_options.h"
 #include "components/themes/cross_device/theme_comparer.h"
+#include "components/themes/cross_device/theme_translation.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -224,6 +230,145 @@ TEST_F(CrossDeviceThemeTrackerTest,
   auto themes = tracker_.GetOtherDevicesThemes();
   ASSERT_EQ(themes.size(), 1u);
   EXPECT_EQ(themes[0].data_type, syncer::THEMES_IOS);
+}
+
+class ThemeTranslationTest : public testing::Test {
+ protected:
+  static constexpr char kTestCollectionId[] = "collection_1";
+  static constexpr char kBaseImageUrl[] =
+      "https://lh3.googleusercontent.com/proxy/image123";
+  static constexpr char kMobileImageOptions[] = "=s2556-k-no-nd";
+
+#if BUILDFLAG(IS_ANDROID)
+  static constexpr char kDesktopImageOptions[] = "=w3840-h2160-p-k-no-nd-mv";
+
+  using SourceSpecifics = sync_pb::ThemeSpecifics;
+  using LocalSpecifics = sync_pb::ThemeAndroidSpecifics;
+
+  DeviceThemeInfo<LocalSpecifics> TranslateSource(
+      const SourceSpecifics& specifics) {
+    return TranslateDesktop(specifics);
+  }
+#else
+  using SourceSpecifics = sync_pb::ThemeAndroidSpecifics;
+  using LocalSpecifics = sync_pb::ThemeSpecifics;
+
+  DeviceThemeInfo<LocalSpecifics> TranslateSource(
+      const SourceSpecifics& specifics) {
+    return TranslateAndroid(specifics);
+  }
+#endif
+
+  template <typename Specifics = SourceSpecifics>
+  Specifics CreateSpecificsWithNtpBackground(
+      std::optional<std::string> url = std::nullopt,
+      std::optional<std::string> collection_id = kTestCollectionId) {
+    Specifics specifics;
+    auto* bg = specifics.mutable_ntp_background();
+    if (collection_id.has_value()) {
+      bg->set_collection_id(*collection_id);
+    }
+    if (url.has_value()) {
+      bg->set_url(*url);
+    }
+    return specifics;
+  }
+
+  void VerifyTranslatedNtpBackground(
+      const DeviceThemeInfo<LocalSpecifics>& translated,
+      std::optional<std::string> expected_url,
+      std::optional<std::string> expected_collection_id = kTestCollectionId) {
+    ASSERT_TRUE(translated.theme.has_ntp_background());
+    if (expected_url.has_value()) {
+      EXPECT_EQ(translated.theme.ntp_background().url(), *expected_url);
+    } else {
+      EXPECT_FALSE(translated.theme.ntp_background().has_url());
+    }
+    if (expected_collection_id.has_value()) {
+      EXPECT_EQ(translated.theme.ntp_background().collection_id(),
+                *expected_collection_id);
+    } else {
+      EXPECT_FALSE(translated.theme.ntp_background().has_collection_id());
+    }
+  }
+};
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(ThemeTranslationTest, TranslateDesktopAndIosNormalizeNtpBackgroundUrl) {
+  const std::string expected_url =
+      std::string(kBaseImageUrl) + GetImageOptions();
+
+  DeviceThemeInfo<sync_pb::ThemeAndroidSpecifics> translated_desktop =
+      TranslateDesktop(
+          CreateSpecificsWithNtpBackground<sync_pb::ThemeSpecifics>(
+              std::string(kBaseImageUrl) + kDesktopImageOptions));
+  EXPECT_TRUE(translated_desktop.theme.use_custom_theme());
+  VerifyTranslatedNtpBackground(translated_desktop, expected_url);
+
+  DeviceThemeInfo<sync_pb::ThemeAndroidSpecifics> translated_ios =
+      TranslateIos(CreateSpecificsWithNtpBackground<sync_pb::ThemeIosSpecifics>(
+          std::string(kBaseImageUrl) + kMobileImageOptions));
+  EXPECT_TRUE(translated_ios.theme.use_custom_theme());
+  VerifyTranslatedNtpBackground(translated_ios, expected_url);
+  EXPECT_TRUE(ThemeComparer<sync_pb::ThemeAndroidSpecifics>::Equals(
+      translated_desktop.theme, translated_ios.theme));
+}
+#else
+TEST_F(ThemeTranslationTest, TranslateAndroidAndIosNormalizeNtpBackgroundUrl) {
+  const std::string mobile_image_url =
+      std::string(kBaseImageUrl) + kMobileImageOptions;
+  const std::string expected_url =
+      std::string(kBaseImageUrl) + GetImageOptions();
+
+  DeviceThemeInfo<sync_pb::ThemeSpecifics> translated_android =
+      TranslateAndroid(
+          CreateSpecificsWithNtpBackground<sync_pb::ThemeAndroidSpecifics>(
+              mobile_image_url));
+  VerifyTranslatedNtpBackground(translated_android, expected_url);
+
+  DeviceThemeInfo<sync_pb::ThemeSpecifics> translated_ios =
+      TranslateIos(CreateSpecificsWithNtpBackground<sync_pb::ThemeIosSpecifics>(
+          mobile_image_url));
+  VerifyTranslatedNtpBackground(translated_ios, expected_url);
+  EXPECT_TRUE(ThemeComparer<sync_pb::ThemeSpecifics>::Equals(
+      translated_android.theme, translated_ios.theme));
+}
+#endif
+
+TEST_F(ThemeTranslationTest, TranslateHandlesEmptyOrUnsetNtpBackgroundUrl) {
+  VerifyTranslatedNtpBackground(
+      TranslateSource(CreateSpecificsWithNtpBackground()),
+      /*expected_url=*/std::nullopt);
+  VerifyTranslatedNtpBackground(
+      TranslateSource(CreateSpecificsWithNtpBackground("")),
+      /*expected_url=*/"");
+}
+
+TEST_F(ThemeTranslationTest,
+       TranslateLeavesNonHttpOrInvalidNtpBackgroundUrlUnchanged) {
+  const std::string non_http_url = "chrome-search://local-ntp/background.jpg";
+  VerifyTranslatedNtpBackground(
+      TranslateSource(CreateSpecificsWithNtpBackground(non_http_url)),
+      non_http_url);
+
+  // Malformed sync data from a remote client must be left untouched and must
+  // not trigger `GURL::spec()` on an invalid URL.
+  const std::string invalid_url = "not a valid url=s2556-k-no-nd";
+  VerifyTranslatedNtpBackground(
+      TranslateSource(CreateSpecificsWithNtpBackground(invalid_url)),
+      invalid_url);
+}
+
+TEST_F(ThemeTranslationTest,
+       TranslateLeavesNtpBackgroundUrlWithoutCollectionIdUnchanged) {
+  VerifyTranslatedNtpBackground(
+      TranslateSource(CreateSpecificsWithNtpBackground(
+          kBaseImageUrl, /*collection_id=*/std::nullopt)),
+      kBaseImageUrl, /*expected_collection_id=*/std::nullopt);
+  VerifyTranslatedNtpBackground(
+      TranslateSource(CreateSpecificsWithNtpBackground(kBaseImageUrl,
+                                                       /*collection_id=*/"")),
+      kBaseImageUrl, /*expected_collection_id=*/"");
 }
 
 }  // namespace

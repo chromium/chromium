@@ -1,0 +1,15 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Foundational helpers shared by //components/themes and its subdirectories.
+# Targets in this directory must not depend on //components/themes or any of
+# its other subdirectories, so that dependencies remain strictly one-way.
+source_set("common") {
+  sources = [
+    "image_url_options.cc",
+    "image_url_options.h",
+  ]
+  public_deps = [ "//url" ]
+  deps = [ "//base" ]
+}
