@@ -491,6 +491,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="18139523105317219">EDI tarafi nomi</translation>
 <translation id="1816436748874040213">Sayt ulashilgan varaqlarda zum oʻzgartirish va varaqlashga ruxsat soʻrashi mumkin</translation>
 <translation id="1816707915923025275">@history yozib, ochilgan sahifalardan qidiring</translation>
+<translation id="1816771466809215784">Hisob-kitobda avtomatik kiritilishi uchun bu karta egasining ismini Google Walletga saqlang</translation>
 <translation id="1817364650920811003">Vazifasi: Chrome maslahati. Qulaylik nomi: <ph name="CHROME_TIP" /></translation>
 <translation id="182139138257690338">avtomatik yuklamalar</translation>
 <translation id="1821930232296380041">Yaroqsiz so‘rov yoki so‘rov parametrlari noto‘g‘ri</translation>
@@ -4257,6 +4258,7 @@ Batafsil axborot:
 <translation id="813024282736408069">Avtomatik kiritish uchun virtual kartani yoqing</translation>
 <translation id="8131740175452115882">Tasdiqlash</translation>
 <translation id="8135546115396015134">chap tugma</translation>
+<translation id="8136385032646505126">Karta egasining ismi saqlansinmi?</translation>
 <translation id="8137185688006450980">Tibbiy sugʻurta tariflarini taqqoslab ber</translation>
 <translation id="8138591088112729119">Personal Intelligence asosida ishlaydi</translation>
 <translation id="814071672416123670">Tashkilotingiz siyosatlari tufayli kontent nusxalanmadi</translation>

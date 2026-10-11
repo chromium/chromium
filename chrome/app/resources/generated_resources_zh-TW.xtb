@@ -4563,7 +4563,7 @@
 <translation id="4435020454241191356">新增設定檔名稱或標籤</translation>
 <translation id="4436201444922652535">連結</translation>
 <translation id="443719869834432257">事件類型：<ph name="EVENT_TYPES" /></translation>
-<translation id="4437879751057074691">提供儲存密碼和密碼金鑰的選項</translation>
+<translation id="4437879751057074691">詢問是否儲存密碼和密碼金鑰</translation>
 <translation id="4437947179446780764">新增自訂 DNS 服務供應商</translation>
 <translation id="4438043733494739848">透明</translation>
 <translation id="4441147046941420429">如要繼續，請將安全金鑰從裝置上移除，然後重新插入並輕觸安全金鑰</translation>
@@ -8130,7 +8130,7 @@
 <translation id="7220019174139618249">無法將密碼匯出到「<ph name="FOLDER" />」</translation>
 <translation id="722099540765702221">電源</translation>
 <translation id="7221301072025277667">將右側網站取消靜音</translation>
-<translation id="7221869452894271364">重新載入此網頁</translation>
+<translation id="7221869452894271364">重新載入網頁</translation>
 <translation id="7222232353993864120">電子郵件地址</translation>
 <translation id="7222335051802562841">完成更新</translation>
 <translation id="7222373446505536781">F11</translation>

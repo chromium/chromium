@@ -135,6 +135,7 @@ Chromeni yaxshilashda ishlatiladigan maʼlumotlar qoʻshimcha sozlamalarini <ph 
 <translation id="1485343711570311792"><ph name="NATIVE_APP_NAME" /> ilovasida ochish • <ph name="DEVICE_NAME" /> qurilmasidan yuborildi</translation>
 <translation id="1495677929897281669">Varaqqa qaytish</translation>
 <translation id="1496514951988037011">foydalanuvchi nomi</translation>
+<translation id="1498051468374914325">Dasturchi vositalari konsolini ochish</translation>
 <translation id="1501480321619201731">Ha</translation>
 <translation id="1506061864768559482">Qidiruv tizimi</translation>
 <translation id="1513352483775369820">Xatcho‘plar va qidiruv tarixi</translation>
@@ -142,6 +143,7 @@ Chromeni yaxshilashda ishlatiladigan maʼlumotlar qoʻshimcha sozlamalarini <ph 
 <translation id="1516966594427080024">Yangi varaqni inkognito rejimida ochish</translation>
 <translation id="152204906462707884">Brauzer tarixini tezkor oʻchiring va maxfiylikni yaxshiroq boshqaring</translation>
 <translation id="153446405401665083">Chromening yangi versiyasi chiqdi</translation>
+<translation id="1537160738459068682">Dasturchi vositalari elementlarini ochish</translation>
 <translation id="1540012742443808215">Manzillar qatorida tepada joylangan</translation>
 <translation id="1543035591122163372">Parollar va boshqa maʼlumotlaringizni <ph name="DEVICE_TYPE" /> qurilmasidan olish uchun hisobingizga kiring</translation>
 <translation id="1544084554881119930">Toʻlov usullari va manzillar shifrlanmaydi. Chrome brauzer tarixi sinxronlanmaydi.
@@ -2060,6 +2062,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="9024318700713112071">Chromeni birlamchi brauzer etib belgilang.</translation>
 <translation id="9027728231343310283">Bekor qilish: <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Koʻchirish\u2026</translation>
+<translation id="9038316201889095704">Saqlanmagan oʻzgarishlar mavjudligida sahifadan qidirish faolsizlantirilgan.</translation>
 <translation id="904146253922032365">Varaqlarni vertikal chiqarish uchun bosib turing</translation>
 <translation id="9042893549633094279">Maxfiylik va xavfsizlik</translation>
 <translation id="9047347135558855162">Chrome orqali tezkor qidiruv</translation>

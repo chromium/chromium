@@ -512,6 +512,7 @@
 <translation id="2524699375503213836">Safaridan maʼlumotlaringizni import qiling</translation>
 <translation id="2526166285241366046">Parolni saqlash</translation>
 <translation id="2529021024822217800">Hammasini ochish</translation>
+<translation id="2530932541542751783">Bu sozlamada nimadir xato ketdi. Chrome va iPadOS tizimini yangilab, qayta ishga tushiring va qayta urining. Bu xatolik takrorlanaversa, iPad qurilmangiz bu sozlamani dastaklamasligi mumkin.</translation>
 <translation id="2536991091671391962">Saqlangan parollardan istalgan qurilmada foydalanishingiz mumkin. Ular Google Parollar menejerida <ph name="EMAIL" /> hisobiga saqlangan.</translation>
 <translation id="2538103551183528357">Yashirin, parol</translation>
 <translation id="2538705697765638552">Maʼlumotlaringizni saqlang va Google mahsulotlarida shakllarni toʻldirish kabi vazifalarni tezroq bajaring. <ph name="USER_EMAIL" /> uchun Google Walletdagi axborotni boshqarish mumkin.</translation>
@@ -928,6 +929,7 @@
 <translation id="3933372629914873850"><ph name="URL" /> hisobiga kirasiz</translation>
 <translation id="3934905113567851655">Hajmini oʻzgartirish uchun chimding</translation>
 <translation id="393732545649378031">Hisob</translation>
+<translation id="3939683043166875001">Top saytlar, Discover tasmasi va boshqalarni berkitish yoki chiqarish.</translation>
 <translation id="3940195383040445971">Narxlarni varaqlarda kuzatish</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{{COUNT} ta varaqni yopish}other{{COUNT} ta varaqni yopish}}</translation>
 <translation id="3946483119107054883">CSV faylini yuklab olish</translation>
@@ -1090,6 +1092,7 @@
 <translation id="4455710003856931944">Ortga qaytish yoki oldinga oʻtish uchun chekkasini yonga suring.</translation>
 <translation id="4460014764210899310">Guruhni bekor qilish</translation>
 <translation id="446314443268698477">Kamera yoki galereya orqali tegishli mahsulotlarni aniqlang, tarjima qiling va xarid qiling</translation>
+<translation id="4465941170695753889">Varaqlar guruhini yaratish uchun bosib turing</translation>
 <translation id="4469324811108161144">Eslatmalar <ph name="CHARACTER_LIMIT" /> ta belgidan oshmasin.</translation>
 <translation id="4470766488397113689">Bugun nima ustida ishlamoqchisiz?</translation>
 <translation id="4471472356135655769">Parollar eksport qilinmadi</translation>
@@ -1262,6 +1265,7 @@
 <translation id="4977176874984951085">Sahifa amallari menyusini ochish</translation>
 <translation id="4979397965658815378">Xatcho‘plar, tarix, parollar va boshqa sozlamalarni barcha qurilmalaringizda sinxronlash uchun Google hisobingizga kiring.</translation>
 <translation id="4985921635659180565">Faylning oʻchirilishi reja qilinganidan keyin bekor qilinmaydi.</translation>
+<translation id="4985969760619279130">{COUNT,plural, =1{Varaq (1) ulashilgan}other{Varaqlar ({COUNT}) ulashilgan}}</translation>
 <translation id="498624032394115435">Havolaga ega har kim barcha varaqlarni tahrirlashi mumkin.</translation>
 <translation id="4986428648020277392">Prompt: Qaysi birini sotib olishim kerak? 2/3</translation>
 <translation id="498768198683310172">Gemini bilan ishlashni boshlang</translation>
@@ -1919,6 +1923,7 @@ Kompyuterda davom etish uchun <ph name="OTHER_EMAIL" /> hisobiga almashtiring. B
 <translation id="6938212956536472404">Bu varaqni ulashish imkonsiz</translation>
 <translation id="6945221475159498467">Tanlash</translation>
 <translation id="6946722113367118030">Oʻychan</translation>
+<translation id="6947751977892029882">Bu sozlamada nimadir xato ketdi. Chrome va iOS tizimini yangilab, qayta ishga tushiring va qayta urining. Bu xatolik takrorlanaversa, iPhone qurilmangizda bu sozlama ishlamasligi mumkin.</translation>
 <translation id="6950522403736391608">Yashirin</translation>
 <translation id="695965663642079255">Tezroq hisob-kitob qilish uchun toʻlov axborotini saqlang va boshqaring</translation>
 <translation id="6962809930976936328">Gemini bilan statistika oling</translation>
@@ -2342,6 +2347,7 @@ Istalgan vaqtda qayta ishga tushirishingiz mumkin.</translation>
 <translation id="8264966119170358612">Saqlangan parollaringizdan ayrimlari Googledan boshqa tashqi xizmatlarning sizib chiqarilgan axborotlari ichidan topildi. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="8265730590513812063">Chrome menyusini oching</translation>
 <translation id="826614135184049678">iPad qurilmasini tiklash mobaynida <ph name="USER_NAME" /> hisobingizdan chiqarildingiz. Hisobga qayta kirish uchun “Davom etish” ustiga bosing.</translation>
+<translation id="8266370374397811600">Yangi yutuq ochildi! 🥳</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">Profilni almashtirish arafasidasiz</translation>
 <translation id="8275068909952022340">Yana…</translation>

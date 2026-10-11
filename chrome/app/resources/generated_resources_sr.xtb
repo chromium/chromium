@@ -1587,6 +1587,7 @@
 <translation id="2215070081105889450">Да бисте делили звук, делите картицу или екран</translation>
 <translation id="2217208085547223783">Степен поузданости</translation>
 <translation id="2218019600945559112">Миш и тачпед</translation>
+<translation id="2218116022473625437">У подешавањима можете да искључите истицање текста, измените глас и промените изглед странице.</translation>
 <translation id="2218515861914035131">Лепљење у облику отвореног текста</translation>
 <translation id="2219007152108311874">Питај при свакој посети</translation>
 <translation id="2220529011494928058">Пријави проблем</translation>
@@ -3759,6 +3760,7 @@
 <translation id="3812525830114410218">Неисправан сертификат</translation>
 <translation id="3813296892522778813">Идите на <ph name="BEGIN_LINK_CHROMIUM" />страницу помоћи за Google Chrome<ph name="END_LINK_CHROMIUM" /> ако не можете да пронађете оно што тражите</translation>
 <translation id="3813358687923336574">Језик који се користи за превођење страница и брзе одговоре</translation>
+<translation id="3815509884387832993">Слушајте ову страницу као да је подкаст уз AI репродукцију помоћу дугмета Укључи AI репродукцију на траци с алаткама режима за читање</translation>
 <translation id="3815668647912194650">Задржите ову групу да бисте додали картице касније или је напустите ако више не желите да јој приступате.</translation>
 <translation id="3816118180265633665">Chrome боје</translation>
 <translation id="3817524650114746564">Отвори подешавања проксија рачунара</translation>
@@ -4143,6 +4145,7 @@
 <translation id="4109135793348361820">Премести прозор код <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Врати упозорење</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлајн)</translation>
+<translation id="4112282889480354965">Додаци и вештине</translation>
 <translation id="4113743276555482284">Лозинка за фајл</translation>
 <translation id="4114524937989710624">Предложени фајлови вам се приказују да бисте лако могли да се вратите најновијим активностима на Google диску.
         <ph name="BREAK" />
@@ -8786,6 +8789,7 @@
 <translation id="7702463352133825032">Зауставите пребацивање на <ph name="DEVICE_NAME" /></translation>
 <translation id="7704305437604973648">Задатак</translation>
 <translation id="7705085181312584869">Помоћ при писању</translation>
+<translation id="7705230242432916648">Слушајте ову страницу као да је подкаст уз AI репродукцију</translation>
 <translation id="7705276765467986571">Није могуће учитати модел обележивача.</translation>
 <translation id="7705334495398865155">Насумично бирајте ИД хардвера (BSSID) да бисте спречили друге да прате овај уређај.</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -10214,6 +10218,7 @@
 <translation id="8780123805589053431">Преузимај описе слика са Google-а</translation>
 <translation id="8780443667474968681">Гласовна претрага је искључена.</translation>
 <translation id="8781834595282316166">Нова картица у групи</translation>
+<translation id="878190123554258638"><ph name="SHORTCUT_TITLE" />, користите тастере са стрелицама налево и надесно да бисте преместили пречицу. Притисните Enter или Escape да бисте завршили.</translation>
 <translation id="8781980678064919987">Искључи се кад се поклопац затвори</translation>
 <translation id="8783171585655659524">Додај снимак екрана</translation>
 <translation id="8785622406424941542">Писаљка</translation>

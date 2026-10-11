@@ -1587,6 +1587,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2215070081105889450">Da biste delili zvuk, delite karticu ili ekran</translation>
 <translation id="2217208085547223783">Stepen pouzdanosti</translation>
 <translation id="2218019600945559112">Miš i tačped</translation>
+<translation id="2218116022473625437">U podešavanjima možete da isključite isticanje teksta, izmenite glas i promenite izgled stranice.</translation>
 <translation id="2218515861914035131">Lepljenje u obliku otvorenog teksta</translation>
 <translation id="2219007152108311874">Pitaj pri svakoj poseti</translation>
 <translation id="2220529011494928058">Prijavi problem</translation>
@@ -3759,6 +3760,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3812525830114410218">Neispravan sertifikat</translation>
 <translation id="3813296892522778813">Idite na <ph name="BEGIN_LINK_CHROMIUM" />stranicu pomoći za Google Chrome<ph name="END_LINK_CHROMIUM" /> ako ne možete da pronađete ono što tražite</translation>
 <translation id="3813358687923336574">Jezik koji se koristi za prevođenje stranica i brze odgovore</translation>
+<translation id="3815509884387832993">Slušajte ovu stranicu kao da je podkast uz AI reprodukciju pomoću dugmeta Uključi AI reprodukciju na traci s alatkama režima za čitanje</translation>
 <translation id="3815668647912194650">Zadržite ovu grupu da biste dodali kartice kasnije ili je napustite ako više ne želite da joj pristupate.</translation>
 <translation id="3816118180265633665">Chrome boje</translation>
 <translation id="3817524650114746564">Otvori podešavanja proksija računara</translation>
@@ -4143,6 +4145,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4109135793348361820">Premesti prozor kod <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Vrati upozorenje</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (oflajn)</translation>
+<translation id="4112282889480354965">Dodaci i veštine</translation>
 <translation id="4113743276555482284">Lozinka za fajl</translation>
 <translation id="4114524937989710624">Predloženi fajlovi vam se prikazuju da biste lako mogli da se vratite najnovijim aktivnostima na Google disku.
         <ph name="BREAK" />
@@ -8786,6 +8789,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="7702463352133825032">Zaustavite prebacivanje na <ph name="DEVICE_NAME" /></translation>
 <translation id="7704305437604973648">Zadatak</translation>
 <translation id="7705085181312584869">Pomoć pri pisanju</translation>
+<translation id="7705230242432916648">Slušajte ovu stranicu kao da je podkast uz AI reprodukciju</translation>
 <translation id="7705276765467986571">Nije moguće učitati model obeleživača.</translation>
 <translation id="7705334495398865155">Nasumično birajte ID hardvera (BSSID) da biste sprečili druge da prate ovaj uređaj.</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -10214,6 +10218,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="8780123805589053431">Preuzimaj opise slika sa Google-a</translation>
 <translation id="8780443667474968681">Glasovna pretraga je isključena.</translation>
 <translation id="8781834595282316166">Nova kartica u grupi</translation>
+<translation id="878190123554258638"><ph name="SHORTCUT_TITLE" />, koristite tastere sa strelicama nalevo i nadesno da biste premestili prečicu. Pritisnite Enter ili Escape da biste završili.</translation>
 <translation id="8781980678064919987">Isključi se kad se poklopac zatvori</translation>
 <translation id="8783171585655659524">Dodaj snimak ekrana</translation>
 <translation id="8785622406424941542">Pisaljka</translation>
