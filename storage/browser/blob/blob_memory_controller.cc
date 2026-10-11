@@ -974,7 +974,8 @@ void BlobMemoryController::MaybeScheduleEvictionUntilSystemHealthy(
     // We only page when we have enough items to fill a whole page file.
     if (populated_memory_items_bytes_ < min_page_file_size)
       break;
-    DCHECK_LE(min_page_file_size, static_cast<uint64_t>(blob_memory_used_));
+    DCHECK_LE(min_page_file_size + in_flight_memory_used_,
+              static_cast<uint64_t>(blob_memory_used_));
 
     std::vector<scoped_refptr<ShareableBlobDataItem>> items_to_swap;
 
@@ -982,6 +983,7 @@ void BlobMemoryController::MaybeScheduleEvictionUntilSystemHealthy(
         CollectItemsForEviction(&items_to_swap, min_page_file_size);
     if (total_items_size == 0)
       break;
+    CHECK_GE(total_memory_usage, total_items_size);
 
     std::vector<base::span<const uint8_t>> data_for_paging;
     for (auto& shared_blob_item : items_to_swap) {
@@ -993,6 +995,8 @@ void BlobMemoryController::MaybeScheduleEvictionUntilSystemHealthy(
     pending_evictions_++;
     disk_used_ += total_items_size;
     in_flight_memory_used_ += total_items_size;
+    // These items will no longer use memory once they are written to disk.
+    total_memory_usage -= total_items_size;
 
     // Create our file reference.
     FilePath page_file_path = GenerateNextPageFileName();
