@@ -32,6 +32,7 @@ import androidx.test.espresso.matcher.ViewMatchers.Visibility;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -49,19 +50,21 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.educational_tip.EducationalTipModuleUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.setup_list.SetupListManager;
+import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -71,7 +74,6 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
-import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
@@ -89,7 +91,7 @@ import java.util.List;
  * <p>TODO(crbug.com/493130564): Revert to regular runner after
  * MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS launch.
  */
-@DoNotBatch(reason = "This test relies on native initialization")
+@Batch(Batch.PER_CLASS)
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 // TODO(b/555414915): Update Android tests with WebUI NTP enabled on AL.
@@ -111,7 +113,7 @@ public class NewTabPageSigninPromoTest {
 
     private final FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
-    private final SigninTestRule mSigninTestRule = new SigninTestRule();
+    private final SigninTestRule mSigninTestRule = SigninTestRule.createWithCleanups();
 
     @Rule
     public final RuleChain mRuleChain =
@@ -124,13 +126,8 @@ public class NewTabPageSigninPromoTest {
     @Mock private SetupListManager mSetupListManager;
     @Mock private ExternalAuthUtils mExternalAuthUtilsMock;
 
-    private final SigninTestUtil.CustomDeviceLockActivityLauncher mDeviceLockActivityLauncher =
-            new SigninTestUtil.CustomDeviceLockActivityLauncher();
-
     @Before
     public void setUp() {
-        DeviceLockActivityLauncherImpl.setInstanceForTesting(mDeviceLockActivityLauncher);
-
         Mockito.when(mSetupListManager.isSetupListActive()).thenReturn(false);
         SetupListManager.setInstanceForTesting(mSetupListManager);
         EducationalTipModuleUtils.setEducationalTipActiveForTesting(false);
@@ -142,6 +139,21 @@ public class NewTabPageSigninPromoTest {
                 .thenReturn(false);
     }
 
+    @After
+    public void tearDown() {
+        ChromeSharedPreferences.getInstance()
+                .removeKey(ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED);
+        ChromeSharedPreferences.getInstance()
+                .removeKey(
+                        ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
+                                SigninPreferencesManager.SigninPromoAccessPointId.NTP));
+        ChromeSharedPreferences.getInstance()
+                .removeKey(ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT);
+        ChromeSharedPreferences.getInstance()
+                .removeKey(ChromePreferenceKeys.SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME);
+        ChromeSharedPreferences.getInstance()
+                .removeKey(ChromePreferenceKeys.SIGNIN_PROMO_NTP_LAST_SHOWN_TIME);
+    }
 
     private void openNewTabPage() {
         if (!mIsActivityStarted) {
@@ -288,7 +300,7 @@ public class NewTabPageSigninPromoTest {
         waitForVisibleView(withId(R.id.signin_promo_primary_button));
         onView(withId(R.id.signin_promo_primary_button)).perform(click());
         // Handle Automotive Device Lock (for Automotive Tests).
-        SigninTestUtil.completeDeviceLockIfOnAutomotive(mDeviceLockActivityLauncher);
+        mSigninTestRule.completeDeviceLockIfOnAutomotive();
         // Wait for promo to disappear.
         waitForNoView(withId(R.id.signin_promo_view_container));
         // Once the sign-in promo disappears, the sign-in flow is complete.
