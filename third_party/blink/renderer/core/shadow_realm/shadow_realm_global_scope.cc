@@ -121,11 +121,11 @@ bool ShadowRealmGlobalScope::IsIsolatedContext() const {
 }
 
 ukm::UkmRecorder* ShadowRealmGlobalScope::UkmRecorder() {
-  NOTREACHED();
+  return nullptr;
 }
 
 ukm::SourceId ShadowRealmGlobalScope::UkmSourceID() const {
-  NOTREACHED();
+  return ukm::kInvalidSourceId;
 }
 
 ExecutionContextToken ShadowRealmGlobalScope::GetExecutionContextToken() const {

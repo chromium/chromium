@@ -2937,6 +2937,7 @@
       "Win"
     ],
     "bases": [
+      "http/tests/shadowrealm/full-gc-crash.html",
       "http/tests/shadowrealm/webexposed/global-interface-listing-shadow-realm.html"
     ],
     "exclusive_tests": "ALL",
