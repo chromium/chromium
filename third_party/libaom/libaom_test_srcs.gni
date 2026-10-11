@@ -66,6 +66,7 @@ aom_unit_test_encoder_sources = [
   "//third_party/libaom/source/libaom/test/datarate_test.cc",
   "//third_party/libaom/source/libaom/test/datarate_test.h",
   "//third_party/libaom/source/libaom/test/encode_api_test.cc",
+  "//third_party/libaom/source/libaom/test/encode_internal_test.cc",
   "//third_party/libaom/source/libaom/test/encode_large_width_height_test.cc",
   "//third_party/libaom/source/libaom/test/encode_small_width_height_test.cc",
   "//third_party/libaom/source/libaom/test/encode_test_driver.cc",
