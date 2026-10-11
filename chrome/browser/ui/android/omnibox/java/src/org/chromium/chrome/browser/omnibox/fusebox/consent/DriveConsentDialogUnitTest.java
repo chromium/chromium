@@ -8,6 +8,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -26,6 +28,7 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -157,5 +160,22 @@ public class DriveConsentDialogUnitTest {
         assertFalse(result);
         Intent intent = Shadows.shadowOf(mActivity).getNextStartedActivity();
         assertEquals("https://policies.google.com/terms", intent.getDataString());
+    }
+
+    @Test
+    public void onConsentComplete_whileShown_coversWebContentsThenDismisses() {
+        mActivity.setContentView(mLoadingOverlay);
+        ShadowLooper.idleMainLooper();
+        mLoadingOverlay.setVisibility(View.GONE);
+        mDialog.setLoadingOverlayForTesting(mLoadingOverlay);
+
+        mDialog.onConsentComplete(true);
+        assertEquals(View.VISIBLE, mLoadingOverlay.getVisibility());
+        verify(mModalDialogManager, never()).dismissDialog(any(), anyInt());
+
+        ShadowLooper.idleMainLooper();
+        verify(mModalDialogManager)
+                .dismissDialog(mModalDialogModel, DialogDismissalCause.ACTION_ON_CONTENT);
+        verify(mOnConsentComplete).onResult(true);
     }
 }

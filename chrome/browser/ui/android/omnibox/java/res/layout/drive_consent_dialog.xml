@@ -9,13 +9,12 @@ found in the LICENSE file.
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@macro/default_bg_color">
+    android:padding="@dimen/drive_consent_dialog_content_inset">
 
     <View
         android:id="@+id/drive_consent_loading_overlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@macro/default_bg_color"
         android:clickable="true" />
 
     <org.chromium.ui.widget.LoadingView
