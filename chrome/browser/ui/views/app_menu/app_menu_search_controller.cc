@@ -201,6 +201,10 @@ void AppMenuSearchController::AddSearchItem(
       .SetAction(action)
       .SetTitle(std::u16string(title))
       .SetSecondaryText(std::u16string(secondary_text));
+  if (const ui::ImageModel* icon_override =
+          action->GetProperty(AppMenuActionItem::kIconOverrideKey)) {
+    builder.SetIconOverride(*icon_override);
+  }
   search_items_.push_back(builder.Build());
 }
 
@@ -223,7 +227,9 @@ AppMenuSearchController::ProcessSearchResults(
     if (section.size() < max_cap) {
       section.push_back({
           .action_item = search_item->GetActionItem(),
+          .title = search_item->GetTitle(),
           .breadcrumb = search_item->GetSecondaryText(),
+          .icon_override = search_item->GetIconOverride(),
       });
       --remaining_capacity;
     }
@@ -293,9 +299,19 @@ actions::ActionItem* AppMenuSearchController::BuildSearchResultsTree(
     for (const auto& item : items) {
       auto indirect_item =
           std::make_unique<actions::IndirectActionItem>(item.action_item);
+      // Always show the title that matched, even when it's the action's own
+      // text. Otherwise the row shows the action's text, which can differ
+      // (e.g. a text override on the menu row) or be empty (icon-only
+      // buttons, which are titled by their tooltip).
+      indirect_item->SetProperty(AppMenuActionItem::kTextOverrideKey,
+                                 item.title);
       if (!item.breadcrumb.empty()) {
         indirect_item->SetProperty(AppMenuActionItem::kSecondaryTextKey,
                                    item.breadcrumb);
+      }
+      if (item.icon_override) {
+        indirect_item->SetProperty(AppMenuActionItem::kIconOverrideKey,
+                                   *item.icon_override);
       }
       container->AddChild(std::move(indirect_item));
     }

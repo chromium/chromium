@@ -40,6 +40,12 @@ AppMenuSearchItem::Builder& AppMenuSearchItem::Builder::SetSecondaryText(
   return *this;
 }
 
+AppMenuSearchItem::Builder& AppMenuSearchItem::Builder::SetIconOverride(
+    ui::ImageModel icon_override) {
+  icon_override_ = std::move(icon_override);
+  return *this;
+}
+
 std::unique_ptr<AppMenuSearchItem> AppMenuSearchItem::Builder::Build() {
   CHECK(type_.has_value());
   CHECK(action_);
@@ -53,6 +59,7 @@ std::unique_ptr<AppMenuSearchItem> AppMenuSearchItem::Builder::Build() {
   search_item->SetActionItem(action_item);
   search_item->SetTitle(std::move(*title_));
   search_item->SetSecondaryText(std::move(secondary_text_));
+  search_item->SetIconOverride(std::move(icon_override_));
   return search_item;
 }
 

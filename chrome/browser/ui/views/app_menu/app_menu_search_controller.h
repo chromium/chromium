@@ -6,12 +6,14 @@
 #define CHROME_BROWSER_UI_VIEWS_APP_MENU_APP_MENU_SEARCH_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_search_item.h"
+#include "ui/base/models/image_model.h"
 
 class FuzzyFinder;
 struct FuzzySearchResult;
@@ -61,9 +63,18 @@ class AppMenuSearchController {
     struct Item {
       raw_ptr<actions::ActionItem> action_item = nullptr;
 
+      // The title search matched (see ExtractItemTitle()), displayed as the
+      // item's title in search results. It can differ from the action's own
+      // text, e.g. a text override on the menu row or the action's tooltip.
+      std::u16string_view title;
+
       // Secondary context text (e.g. parent submenu or folder name) displayed
       // as a breadcrumb beneath the item's title in search results.
       std::u16string_view breadcrumb;
+
+      // The icon override of the indexed menu row, if any, displayed as the
+      // item's icon in search results.
+      std::optional<ui::ImageModel> icon_override;
     };
 
     SearchResults();

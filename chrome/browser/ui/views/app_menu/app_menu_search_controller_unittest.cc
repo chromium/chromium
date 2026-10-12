@@ -11,6 +11,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gtest_util.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_action_item.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_search_item.h"
@@ -18,6 +19,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 
 namespace {
 
@@ -507,6 +509,34 @@ TEST_F(AppMenuSearchControllerTest,
   }
 
   EXPECT_TRUE(found_secondary_text);
+}
+
+TEST_F(AppMenuSearchControllerTest,
+       BuildSearchResultsTreeAttachesTitleAndIconOverride) {
+  const ui::ImageModel icon = ui::ImageModel::FromVectorIcon(kTabIcon);
+  scope_->AddChild(actions::ActionItem::Builder()
+                       .SetActionId(kActionToggleVerticalTabs)
+                       .SetText(u"Show tabs vertically")
+                       .Build());
+  menu_root_->AddChild(AppMenuActionItem::CreateIndirect(
+      kActionToggleVerticalTabs, scope_.get(),
+      {
+          .text_override = u"Show tabs horizontally",
+          .icon_override = icon,
+      }));
+
+  controller_->InitializeSearchIndex();
+  actions::ActionItem* const results_root = controller_->Search(u"horizontal");
+  ASSERT_NE(results_root, nullptr);
+  const auto& rows = results_root->GetChildren().children();
+  ASSERT_EQ(rows.size(), 1u);
+  const actions::BaseAction* const row = rows[0].get();
+
+  ASSERT_NE(row->GetProperty(AppMenuActionItem::kTextOverrideKey), nullptr);
+  EXPECT_EQ(*row->GetProperty(AppMenuActionItem::kTextOverrideKey),
+            u"Show tabs horizontally");
+  ASSERT_NE(row->GetProperty(AppMenuActionItem::kIconOverrideKey), nullptr);
+  EXPECT_EQ(*row->GetProperty(AppMenuActionItem::kIconOverrideKey), icon);
 }
 
 TEST_F(AppMenuSearchControllerTest, FlattenHierarchyExtractsSynonyms) {
