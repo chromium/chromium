@@ -38,6 +38,7 @@ import org.chromium.content_public.browser.SharedArrayBuffer;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageFinishedHelper;
 import org.chromium.net.test.util.TestWebServer;
 
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Locale;
@@ -242,6 +243,76 @@ public class PostMessageTest extends AwParameterizedTest {
                 </script>
             </body></html>
             """;
+    // Replies over the transferred port with the value it read out of the
+    // SharedArrayBuffer, so the reply can only arrive if the buffer and the port
+    // both made the trip in the same message.
+    private static final String TITLE_FROM_POSTMESSAGE_TO_FRAME_SHARED_ARRAY_BUFFER_AND_PORT =
+            """
+            <!DOCTYPE html><html><body>
+                <script>
+                    onmessage = function (e) {
+                        if (!e.ports || e.ports.length !== 1) {
+                            document.title = 'Error: Expected exactly one port';
+                            return;
+                        }
+                        if (!(e.data instanceof SharedArrayBuffer)) {
+                            e.ports[0].postMessage('Error: Not a SharedArrayBuffer');
+                            return;
+                        }
+                        const view = new Int32Array(e.data);
+                        e.ports[0].postMessage('sab:' + view[0]);
+                    };
+                    onmessageerror = function(e) {
+                        document.title = 'Error: messageerror fired';
+                    };
+                </script>
+            </body></html>
+            """;
+    // As TITLE_FROM_POSTMESSAGE_TO_FRAME_SHARED_ARRAY_BUFFER, but also reports how
+    // many messages have been delivered, so that a message which should have been
+    // dropped is distinguishable from one that merely arrived later.
+    private static final String TITLE_FROM_POSTMESSAGE_TO_FRAME_SHARED_ARRAY_BUFFER_COUNTED =
+            """
+            <!DOCTYPE html><html><body>
+                <script>
+                    var received = 0;
+                    onmessage = function (e) {
+                        received++;
+                        if (e.data instanceof SharedArrayBuffer) {
+                            const view = new Int32Array(e.data);
+                            document.title = view[0] + '/' + received;
+                        } else {
+                            document.title = 'Error: Not a SharedArrayBuffer/' + received;
+                        }
+                    };
+                    onmessageerror = function(e) {
+                        document.title = 'Error: messageerror fired';
+                    };
+                </script>
+            </body></html>
+            """;
+    private static final String TEST_PAGE_POST_SHARED_ARRAY_BUFFER_TO_APP =
+            String.format(
+                    Locale.ROOT,
+                    """
+                    <!DOCTYPE html><html><body>
+                        <script>
+                            onmessage = function (e) {
+                                if (!e.ports || e.ports.length === 0) return;
+                                try {
+                                    const sab = new SharedArrayBuffer(4);
+                                    e.ports[0].postMessage(sab);
+                                    e.ports[0].postMessage("%s");
+                                } catch (err) {
+                                    if (e.ports && e.ports.length > 0) {
+                                        e.ports[0].postMessage("Error: " + err.name);
+                                    }
+                                }
+                            };
+                       </script>
+                    </body></html>
+                    """,
+                    JS_MESSAGE);
 
     // Concats all the data fields of the received messages to the transferred channel
     // and makes it available as page title.
@@ -343,6 +414,42 @@ public class PostMessageTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-PostMessage"})
+    public void testPostSharedArrayBuffer() throws Throwable {
+        mActivityTestRule.getAwBrowserContext().setCrossOriginIsolatedAllowList(Set.of("*"));
+
+        List<Pair<String, String>> requestHeaders =
+                List.of(new Pair<>("Document-Isolation-Policy", "isolate-and-credentialless"));
+        final String url =
+                mWebServer.setResponse(
+                        "/test.html",
+                        TITLE_FROM_POSTMESSAGE_TO_FRAME_SHARED_ARRAY_BUFFER,
+                        requestHeaders);
+        OnPageFinishedHelper onPageFinishedHelper = mContentsClient.getOnPageFinishedHelper();
+        int currentCallCount = onPageFinishedHelper.getCallCount();
+        mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
+        onPageFinishedHelper.waitForCallback(currentCallCount);
+
+        SharedArrayBuffer sab = SharedArrayBuffer.allocate(null, 4);
+
+        ByteBuffer buffer = sab.mapAndCreateByteBuffer();
+        buffer.putInt(0, 42);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    MessagePayload payload = new MessagePayload(sab);
+
+                    mAwContents.postMessageToMainFrame(payload, "*", null);
+                });
+
+        CriteriaHelper.pollUiThread(
+                () -> "42".equals(mAwContents.getTitle()),
+                "JS failed to receive or read the SharedArrayBuffer. Current title: "
+                        + mAwContents.getTitle());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Android-PostMessage"})
     public void testPostSharedArrayBufferWithoutAllowlist() throws Throwable {
         List<Pair<String, String>> responseHeaders =
                 List.of(new Pair<>("Document-Isolation-Policy", "isolate-and-credentialless"));
@@ -366,6 +473,178 @@ public class PostMessageTest extends AwParameterizedTest {
                             IllegalStateException.class,
                             () -> mAwContents.postMessageToMainFrame(payload, "*", null));
                 });
+    }
+
+    // SharedArrayBuffer can only be sent from Java to JS, not from JS to the app.
+    // Verify that attempting to send a SharedArrayBuffer from JS to the app over a
+    // MessagePort is handled gracefully and ignored.
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Android-PostMessage"})
+    public void testPostSharedArrayBufferToApp() throws Throwable {
+        mActivityTestRule.getAwBrowserContext().setCrossOriginIsolatedAllowList(Set.of("*"));
+
+        List<Pair<String, String>> requestHeaders =
+                List.of(new Pair<>("Document-Isolation-Policy", "isolate-and-credentialless"));
+        final String url =
+                mWebServer.setResponse(
+                        "/test.html", TEST_PAGE_POST_SHARED_ARRAY_BUFFER_TO_APP, requestHeaders);
+        OnPageFinishedHelper onPageFinishedHelper = mContentsClient.getOnPageFinishedHelper();
+        int currentCallCount = onPageFinishedHelper.getCallCount();
+        mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
+        onPageFinishedHelper.waitForCallback(currentCallCount);
+
+        final ChannelContainer channelContainer = new ChannelContainer();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    MessagePort[] channel = mAwContents.createMessageChannel();
+                    channel[0].setMessageCallback(
+                            (message, _, _) -> channelContainer.notifyCalled(message), null);
+                    mAwContents.postMessageToMainFrame(
+                            new MessagePayload(WEBVIEW_MESSAGE),
+                            mWebServer.getBaseUrl(),
+                            new MessagePort[] {channel[1]});
+                });
+
+        ChannelContainer.Data data = channelContainer.waitForMessageCallback();
+        Assert.assertEquals(JS_MESSAGE, data.getStringValue());
+        // Assert that onMessage was called only for the valid string message,
+        // and the SharedArrayBuffer was ignored.
+        Assert.assertTrue(channelContainer.isQueueEmpty());
+    }
+
+    // A SharedArrayBuffer takes a WebView-specific route to the renderer rather than
+    // the content-layer postMessage path, so transferring ports alongside one
+    // exercises plumbing that the other postMessage tests never reach.
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Android-PostMessage"})
+    public void testPostSharedArrayBufferWithMessagePort() throws Throwable {
+        mActivityTestRule.getAwBrowserContext().setCrossOriginIsolatedAllowList(Set.of("*"));
+
+        List<Pair<String, String>> requestHeaders =
+                List.of(new Pair<>("Document-Isolation-Policy", "isolate-and-credentialless"));
+        final String url =
+                mWebServer.setResponse(
+                        "/test.html",
+                        TITLE_FROM_POSTMESSAGE_TO_FRAME_SHARED_ARRAY_BUFFER_AND_PORT,
+                        requestHeaders);
+        OnPageFinishedHelper onPageFinishedHelper = mContentsClient.getOnPageFinishedHelper();
+        int currentCallCount = onPageFinishedHelper.getCallCount();
+        mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
+        onPageFinishedHelper.waitForCallback(currentCallCount);
+
+        SharedArrayBuffer sab = SharedArrayBuffer.allocate(null, 4);
+        ByteBuffer buffer = sab.mapAndCreateByteBuffer();
+        buffer.putInt(0, 42);
+
+        final ChannelContainer channelContainer = new ChannelContainer();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    MessagePort[] channel = mAwContents.createMessageChannel();
+                    channel[0].setMessageCallback(
+                            (message, _, _) -> channelContainer.notifyCalled(message), null);
+                    mAwContents.postMessageToMainFrame(
+                            new MessagePayload(sab), "*", new MessagePort[] {channel[1]});
+                });
+
+        // The page only replies once it has both the buffer and the port, and the
+        // value proves the buffer it got is the one that was sent.
+        ChannelContainer.Data data = channelContainer.waitForMessageCallback();
+        Assert.assertEquals("sab:42", data.getStringValue());
+    }
+
+    // The target origin is honoured for SharedArrayBuffers too. Every other test
+    // here uses the "*" wildcard, so nothing else would notice this check going
+    // missing on the WebView-specific route.
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Android-PostMessage"})
+    public void testPostSharedArrayBufferToWrongOrigin() throws Throwable {
+        mActivityTestRule.getAwBrowserContext().setCrossOriginIsolatedAllowList(Set.of("*"));
+
+        List<Pair<String, String>> requestHeaders =
+                List.of(new Pair<>("Document-Isolation-Policy", "isolate-and-credentialless"));
+        final String url =
+                mWebServer.setResponse(
+                        "/test.html",
+                        TITLE_FROM_POSTMESSAGE_TO_FRAME_SHARED_ARRAY_BUFFER_COUNTED,
+                        requestHeaders);
+        OnPageFinishedHelper onPageFinishedHelper = mContentsClient.getOnPageFinishedHelper();
+        int currentCallCount = onPageFinishedHelper.getCallCount();
+        mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
+        onPageFinishedHelper.waitForCallback(currentCallCount);
+
+        SharedArrayBuffer rejected = SharedArrayBuffer.allocate(null, 4);
+        rejected.mapAndCreateByteBuffer().putInt(0, 1);
+        SharedArrayBuffer accepted = SharedArrayBuffer.allocate(null, 4);
+        accepted.mapAndCreateByteBuffer().putInt(0, 42);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mAwContents.postMessageToMainFrame(
+                            new MessagePayload(rejected), "http://not-the-test-server.test", null);
+                    // Sent second over the same pipe, so it cannot overtake the first.
+                    mAwContents.postMessageToMainFrame(
+                            new MessagePayload(accepted), mWebServer.getBaseUrl(), null);
+                });
+
+        // "42/1": the page has seen exactly one message, and it is the second one.
+        // Had the mismatched message been delivered the count would read 2.
+        CriteriaHelper.pollUiThread(
+                () -> "42/1".equals(mAwContents.getTitle()),
+                "Expected only the correctly targeted message to arrive. Current title: "
+                        + mAwContents.getTitle());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Android-PostMessage"})
+    public void testPostSharedArrayBufferOverMessagePortThrows() throws Throwable {
+        SharedArrayBuffer sab = SharedArrayBuffer.allocate(null, 4);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    MessagePort[] channel = mAwContents.createMessageChannel();
+                    Assert.assertThrows(
+                            UnsupportedOperationException.class,
+                            () -> channel[0].postMessage(new MessagePayload(sab), null));
+                });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Android-PostMessage"})
+    public void testPostClosedSharedArrayBufferIsDropped() throws Throwable {
+        mActivityTestRule.getAwBrowserContext().setCrossOriginIsolatedAllowList(Set.of("*"));
+
+        List<Pair<String, String>> requestHeaders =
+                List.of(new Pair<>("Document-Isolation-Policy", "isolate-and-credentialless"));
+        final String url =
+                mWebServer.setResponse(
+                        "/test.html",
+                        TITLE_FROM_POSTMESSAGE_TO_FRAME_SHARED_ARRAY_BUFFER_COUNTED,
+                        requestHeaders);
+        OnPageFinishedHelper onPageFinishedHelper = mContentsClient.getOnPageFinishedHelper();
+        int currentCallCount = onPageFinishedHelper.getCallCount();
+        mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
+        onPageFinishedHelper.waitForCallback(currentCallCount);
+
+        SharedArrayBuffer closedSab = SharedArrayBuffer.allocate(null, 4);
+        closedSab.close();
+        SharedArrayBuffer validSab = SharedArrayBuffer.allocate(null, 4);
+        validSab.mapAndCreateByteBuffer().putInt(0, 42);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mAwContents.postMessageToMainFrame(new MessagePayload(closedSab), "*", null);
+                    mAwContents.postMessageToMainFrame(new MessagePayload(validSab), "*", null);
+                });
+
+        CriteriaHelper.pollUiThread(
+                () -> "42/1".equals(mAwContents.getTitle()),
+                "Expected closed SharedArrayBuffer to be dropped and valid one delivered. Title: "
+                        + mAwContents.getTitle());
     }
 
     @Test

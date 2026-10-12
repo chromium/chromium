@@ -120,6 +120,17 @@ class AwContents : public FindHelper::Listener,
   void Destroy(JNIEnv* env);
   void DocumentHasImages(JNIEnv* env,
                          const base::android::JavaRef<jobject>& message);
+  // Delivers a SharedArrayBuffer message from the embedding application to the
+  // main frame's document. This exists separately from
+  // WebContents::PostMessageToMainFrame() because the shared memory region
+  // backing the buffer cannot travel in a blink::TransferableMessage, so it
+  // needs WebView's own frame interface. An empty `target_origin` is a
+  // wildcard.
+  void PostSharedArrayBufferMessageToMainFrame(
+      JNIEnv* env,
+      const base::android::JavaRef<jobject>& payload_obj,
+      const std::u16string& target_origin,
+      const base::android::JavaRef<jobjectArray>& ports);
   void GenerateMHTML(JNIEnv* env,
                      const std::string& path,
                      const base::android::JavaRef<jobject>& callback);

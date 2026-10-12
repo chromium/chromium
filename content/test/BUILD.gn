@@ -3687,6 +3687,7 @@ test("content_unittests") {
       "//components/download/internal/common:internal_java",
       "//content/browser:fontations_name_table_ffi",
       "//content/public/android:content_java",
+      "//content/public/android:content_jni_headers",
       "//content/public/android:content_main_dex_jni",
       "//content/public/android:jar_jni",
       "//gin:v8_snapshot_assets",

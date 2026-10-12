@@ -3705,6 +3705,31 @@ public class AwContents implements SmartClipProvider {
                                 + " `Profile#setCrossOriginIsolatedAllowlist()`, and add the"
                                 + " Document-Isolation-Policy header the page's response.");
             }
+            // A SharedArrayBuffer cannot go over WebContents#postMessageToMainFrame: the
+            // shared memory region backing it has no place in TransferableMessage, the
+            // renderer-to-renderer message type, and content has no channel that can carry
+            // it. Deliver it over WebView's own frame interface instead.
+            //
+            // That bypasses WebContentsImpl#postMessageToMainFrame, so the argument
+            // handling it would have done has to happen here.
+            if (sentPorts != null) {
+                for (MessagePort port : sentPorts) {
+                    if (port.isClosed() || port.isTransferred()) {
+                        throw new IllegalStateException("Port is already closed or transferred");
+                    }
+                    if (port.isStarted()) {
+                        throw new IllegalStateException("Port is already started");
+                    }
+                }
+            }
+            // Internally a wildcard target origin is the empty string.
+            AwContentsJni.get()
+                    .postSharedArrayBufferMessageToMainFrame(
+                            mNativeAwContents,
+                            messagePayload,
+                            "*".equals(targetOrigin) ? "" : targetOrigin,
+                            sentPorts);
+            return;
         }
 
         mWebContents.postMessageToMainFrame(messagePayload, null, targetOrigin, sentPorts);
@@ -5258,6 +5283,15 @@ public class AwContents implements SmartClipProvider {
         void setCompositorFrameConsumer(long nativeAwContents, long nativeCompositorFrameConsumer);
 
         void documentHasImages(long nativeAwContents, Message message);
+
+        // Delivers `payload`, which must hold a SharedArrayBuffer, to the main frame's
+        // document. Unlike WebContents#postMessageToMainFrame this can carry the shared
+        // memory region backing the buffer. An empty `targetOrigin` is a wildcard.
+        void postSharedArrayBufferMessageToMainFrame(
+                long nativeAwContents,
+                MessagePayload payload,
+                @JniType("std::u16string") String targetOrigin,
+                @Nullable MessagePort[] ports);
 
         void generateMHTML(
                 long nativeAwContents,

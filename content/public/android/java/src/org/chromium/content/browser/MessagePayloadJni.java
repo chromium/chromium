@@ -4,7 +4,10 @@
 
 package org.chromium.content.browser;
 
+import android.system.ErrnoException;
+
 import org.jni_zero.CalledByNative;
+import org.jni_zero.CalledByNativeForTesting;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.build.annotations.NullMarked;
@@ -43,6 +46,14 @@ final class MessagePayloadJni {
     @CalledByNative
     private static byte[] getAsArrayBuffer(MessagePayload payload) {
         return payload.getAsArrayBuffer();
+    }
+
+    @CalledByNativeForTesting
+    private static MessagePayload createFromSharedArrayBufferForTesting(byte[] arrayBuffer)
+            throws ErrnoException {
+        SharedArrayBuffer sab = SharedArrayBuffer.allocate(null, arrayBuffer.length);
+        sab.mapAndCreateByteBuffer().put(arrayBuffer);
+        return new MessagePayload(sab);
     }
 
     @CalledByNative

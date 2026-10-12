@@ -8,6 +8,7 @@
 #include <string>
 #include <variant>
 
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "components/js_injection/common/interfaces.mojom-shared.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/base/big_buffer_mojom_traits.h"
@@ -53,6 +54,13 @@ struct UnionTraits<js_injection::mojom::JsWebMessageDataView,
     return std::get<std::unique_ptr<blink::WebMessageArrayBufferPayload>>(
         payload);
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  static base::UnsafeSharedMemoryRegion& shared_array_buffer_value(
+      blink::WebMessagePayload& payload) {
+    return std::get<base::UnsafeSharedMemoryRegion>(payload);
+  }
+#endif
 
   static js_injection::mojom::JsWebMessageDataView::Tag GetTag(
       const blink::WebMessagePayload& payload);

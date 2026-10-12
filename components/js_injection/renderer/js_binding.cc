@@ -13,6 +13,7 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/strings/string_util.h"
+#include "build/build_config.h"
 #include "components/js_injection/common/interfaces.mojom.h"
 #include "components/js_injection/renderer/js_communication.h"
 #include "content/public/common/isolated_world_ids.h"
@@ -181,7 +182,17 @@ void JsBinding::OnPostMessage(blink::WebMessagePayload message) {
                 base::span(static_cast<uint8_t*>(backing_store->Data()),
                            backing_store->ByteLength())));
             return v8::ArrayBuffer::New(isolate, std::move(backing_store));
-          }},
+          },
+#if BUILDFLAG(IS_ANDROID)
+          [isolate](base::UnsafeSharedMemoryRegion& shared_memory)
+              -> v8::Local<v8::Value> {
+            // TODO(https://crbug.com/552897761): Extract the memory and wrap
+            // it in a v8::SharedArrayBuffer. For now, return Null so the C++
+            // code compiles.
+            return v8::Null(isolate);
+          },
+#endif
+      },
       message);
 
   // Simulate MessageEvent's data property. See

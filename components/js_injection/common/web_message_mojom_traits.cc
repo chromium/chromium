@@ -43,7 +43,14 @@ js_injection::mojom::JsWebMessageDataView::Tag UnionTraits<
           [](const std::unique_ptr<blink::WebMessageArrayBufferPayload>&) {
             return js_injection::mojom::JsWebMessageDataView::Tag::
                 kArrayBufferValue;
-          }},
+          },
+#if BUILDFLAG(IS_ANDROID)
+          [](const base::UnsafeSharedMemoryRegion&) {
+            return js_injection::mojom::JsWebMessageDataView::Tag::
+                kSharedArrayBufferValue;
+          },
+#endif
+      },
       payload);
 }
 
@@ -52,23 +59,37 @@ bool UnionTraits<
     js_injection::mojom::JsWebMessageDataView,
     blink::WebMessagePayload>::Read(js_injection::mojom::JsWebMessageDataView r,
                                     blink::WebMessagePayload* out) {
-  if (r.is_string_value()) {
-    std::u16string string_value;
-    if (!r.ReadStringValue(&string_value))
-      return false;
-    out->emplace<std::u16string>(std::move(string_value));
-  } else if (r.is_array_buffer_value()) {
-    std::unique_ptr<blink::WebMessageArrayBufferPayload> array_buffer_value;
-    if (!r.ReadArrayBufferValue(&array_buffer_value)) {
-      return false;
+  switch (r.tag()) {
+    case js_injection::mojom::JsWebMessageDataView::Tag::kStringValue: {
+      std::u16string string_value;
+      if (!r.ReadStringValue(&string_value)) {
+        return false;
+      }
+      out->emplace<std::u16string>(std::move(string_value));
+      return true;
     }
-    out->emplace<std::unique_ptr<blink::WebMessageArrayBufferPayload>>(
-        std::move(array_buffer_value));
-  } else {
-    return false;
+    case js_injection::mojom::JsWebMessageDataView::Tag::kArrayBufferValue: {
+      std::unique_ptr<blink::WebMessageArrayBufferPayload> array_buffer_value;
+      if (!r.ReadArrayBufferValue(&array_buffer_value)) {
+        return false;
+      }
+      out->emplace<std::unique_ptr<blink::WebMessageArrayBufferPayload>>(
+          std::move(array_buffer_value));
+      return true;
+    }
+#if BUILDFLAG(IS_ANDROID)
+    case js_injection::mojom::JsWebMessageDataView::Tag::
+        kSharedArrayBufferValue: {
+      base::UnsafeSharedMemoryRegion shared_memory;
+      if (!r.ReadSharedArrayBufferValue(&shared_memory)) {
+        return false;
+      }
+      out->emplace<base::UnsafeSharedMemoryRegion>(std::move(shared_memory));
+      return true;
+    }
+#endif
   }
-
-  return true;
+  return false;
 }
 
 }  // namespace mojo

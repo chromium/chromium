@@ -9,6 +9,7 @@ import "components/origin_matcher/origin_matcher.mojom";
 import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/values.mojom";
+import "mojo/public/mojom/base/shared_memory.mojom";
 import "third_party/blink/public/mojom/messaging/message_port_descriptor.mojom";
 
 // JsObject struct represents a JavaScript object we will inject in the main
@@ -59,6 +60,8 @@ struct JsWebMessageArrayBufferValue {
 union JsWebMessage {
   mojo_base.mojom.String16 string_value;
   JsWebMessageArrayBufferValue array_buffer_value;
+  [EnableIf=is_android]
+  mojo_base.mojom.UnsafeSharedMemoryRegion shared_array_buffer_value;
 };
 
 // For JavaScript postMessage() API, implemented by browser.

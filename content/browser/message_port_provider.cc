@@ -43,6 +43,13 @@ void PostMessageToFrameInternal(
   for (auto& port : ports)
     channels.emplace_back(MessagePortChannel(std::move(port)));
 
+  // Note that this is reached by every embedder on the platform, not just
+  // WebView -- Chrome Custom Tabs and Trusted Web Activities post through here
+  // too, with a verified source origin -- so nothing here may assume a WebView
+  // renderer on the other end. SharedArrayBuffer payloads are consequently not
+  // deliverable from here at all: the regions backing them can only travel over
+  // a WebView-specific interface, so WebView diverts those messages before they
+  // reach this function.
   blink::TransferableMessage message = blink::EncodeWebMessagePayload(data);
   message.ports = std::move(channels);
   // As the message is posted from the embedder and not from another renderer,

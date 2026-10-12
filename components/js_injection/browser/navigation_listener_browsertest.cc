@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <string>
+#include <variant>
 
 #include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
@@ -243,6 +244,22 @@ class NavigationListenerBrowserTest : public content::ContentBrowserTest,
     return host;
   }
 
+  // The WebMessage->message field is a std::variant without an equals operator
+  // on Android builds due to the inclusion of base::UnsafeSharedMemoryRegion.
+  // This helper function handles this by explicitly extracting the u16string
+  // variant from both the WebMessage created from `expected_dict` and the next
+  // message received for the host.
+  void AssertNextMessageForHostMatchesDict(base::DictValue&& expected_dict,
+                                           HostToken& host) {
+    std::unique_ptr<WebMessage> web_message =
+        NavigationWebMessageSender::CreateWebMessage(std::move(expected_dict));
+    WebMessage* next_message = listener().NextMessageForHost(host);
+    ASSERT_TRUE(std::holds_alternative<std::u16string>(web_message->message));
+    ASSERT_TRUE(std::holds_alternative<std::u16string>(next_message->message));
+    ASSERT_EQ(std::get<std::u16string>(web_message->message),
+              std::get<std::u16string>(next_message->message));
+  }
+
   void CheckNavigationMessage(HostToken& host, std::string type) {
     base::DictValue expected_dict = base::DictValue().Set("type", type);
     if (type == NavigationWebMessageSender::kOptedInMessage) {
@@ -251,10 +268,7 @@ class NavigationListenerBrowserTest : public content::ContentBrowserTest,
       expected_dict.Set("supports_dom_content_loaded", true);
       expected_dict.Set("supports_first_contentful_paint", true);
     }
-    ASSERT_EQ(
-        NavigationWebMessageSender::CreateWebMessage(std::move(expected_dict))
-            ->message,
-        listener().NextMessageForHost(host)->message);
+    AssertNextMessageForHostMatchesDict(std::move(expected_dict), host);
   }
 
   void CheckMessagesForNavigation(HostToken& host_before_nav,
@@ -288,10 +302,8 @@ class NavigationListenerBrowserTest : public content::ContentBrowserTest,
     start_message.Set("type",
                       NavigationWebMessageSender::kNavigationStartedMessage);
     listener().WaitForNextMessageForHost(host_before_nav);
-    ASSERT_EQ(
-        NavigationWebMessageSender::CreateWebMessage(std::move(start_message))
-            ->message,
-        listener().NextMessageForHost(host_before_nav)->message);
+    AssertNextMessageForHostMatchesDict(std::move(start_message),
+                                        host_before_nav);
 
     // PAGE_DELETED message is dispatched just before the NAVIGATION_COMPLETED
     // message.
@@ -314,10 +326,8 @@ class NavigationListenerBrowserTest : public content::ContentBrowserTest,
     complete_message.Merge(base_message_dict.Clone());
     HostToken host_after_nav = GetCurrentHostToken();
     listener().WaitForNextMessageForHost(host_after_nav);
-    ASSERT_EQ(NavigationWebMessageSender::CreateWebMessage(
-                  std::move(complete_message))
-                  ->message,
-              listener().NextMessageForHost(host_after_nav)->message);
+    AssertNextMessageForHostMatchesDict(std::move(complete_message),
+                                        host_after_nav);
 
     // PAGE_LOAD_END message is dispatched after the NAVIGATION_COMPLETED
     // message.
@@ -608,10 +618,7 @@ IN_PROC_BROWSER_TEST_P(NavigationListenerBrowserTest,
   cross_doc_start_message.Set(
       "type", NavigationWebMessageSender::kNavigationStartedMessage);
   listener().WaitForNextMessageForHost(host);
-  ASSERT_EQ(NavigationWebMessageSender::CreateWebMessage(
-                std::move(cross_doc_start_message))
-                ->message,
-            listener().NextMessageForHost(host)->message);
+  AssertNextMessageForHostMatchesDict(std::move(cross_doc_start_message), host);
 
   // Before the cross-document navigation above finishes, do a same-document
   // navigation.
@@ -666,10 +673,8 @@ IN_PROC_BROWSER_TEST_P(NavigationListenerBrowserTest,
           .Set("isErrorPage", false);
   cross_doc_complete_message.Merge(cross_doc_base_message_dict.Clone());
   listener().WaitForNextMessageForHost(host2);
-  ASSERT_EQ(NavigationWebMessageSender::CreateWebMessage(
-                std::move(cross_doc_complete_message))
-                ->message,
-            listener().NextMessageForHost(host2)->message);
+  AssertNextMessageForHostMatchesDict(std::move(cross_doc_complete_message),
+                                      host2);
   CheckNavigationMessage(host2,
                          NavigationWebMessageSender::kPageLoadEndMessage);
 

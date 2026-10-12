@@ -22,6 +22,20 @@ namespace content::android {
 CONTENT_EXPORT base::android::ScopedJavaLocalRef<jobjectArray>
     CreateJavaMessagePort(std::vector<blink::MessagePortDescriptor>);
 
+// The reverse: unwrap a java array of
+// `org.chromium.content_public.browser.MessagePort`, taking ownership of the
+// descriptors underneath and destroying the java wrappers. A null array yields
+// an empty vector.
+//
+// Embedders that deliver messages over their own channel, rather than through
+// `MessagePortProvider`, need this to move the ports across; everything inside
+// content should be going through `MessagePortProvider` instead.
+//
+// Must be called on the UI thread.
+CONTENT_EXPORT std::vector<blink::MessagePortDescriptor> ReleaseJavaMessagePort(
+    JNIEnv* env,
+    const base::android::JavaRef<jobjectArray>& jports);
+
 }  // namespace content::android
 
 #endif  // CONTENT_PUBLIC_BROWSER_ANDROID_MESSAGE_PORT_HELPER_H_

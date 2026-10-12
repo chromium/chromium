@@ -225,7 +225,20 @@ TransferableMessage EncodeWebMessagePayload(const WebMessagePayload& payload) {
                     array_buffer->GetIsResizableByUserJavaScript()
                         ? std::optional(array_buffer->GetMaxByteLength())
                         : std::nullopt));
-          }},
+          },
+#if BUILDFLAG(IS_ANDROID)
+          [&](const base::UnsafeSharedMemoryRegion&) {
+            // A `TransferableMessage` has nowhere to carry the region, so a
+            // reference written here would resolve to nothing in the renderer.
+            // WebView routes SharedArrayBuffers over its own frame interface
+            // and lets the renderer serialize them; see
+            // `WebLocalFrame::PostEmbedderMessageEvent()`.
+            NOTREACHED()
+                << "SharedArrayBuffer payloads cannot be encoded into a "
+                   "TransferableMessage.";
+          },
+#endif
+      },
       payload);
 
   message.owned_encoded_message = std::move(buffer);

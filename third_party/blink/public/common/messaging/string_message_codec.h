@@ -11,8 +11,13 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "build/build_config.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/messaging/transferable_message.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/memory/unsafe_shared_memory_region.h"
+#endif
 
 namespace mojo_base {
 class BigBuffer;
@@ -62,8 +67,15 @@ class BLINK_COMMON_EXPORT WebMessageArrayBufferPayload {
 };
 
 // Represent WebMessage payload type between browser and renderer process.
+#if BUILDFLAG(IS_ANDROID)
+using WebMessagePayload =
+    std::variant<std::u16string,
+                 std::unique_ptr<WebMessageArrayBufferPayload>,
+                 base::UnsafeSharedMemoryRegion>;
+#else
 using WebMessagePayload =
     std::variant<std::u16string, std::unique_ptr<WebMessageArrayBufferPayload>>;
+#endif
 
 // To support exposing HTML message ports to Java, it is necessary to be able
 // to encode and decode message data using the same serialization format as V8.
@@ -72,10 +84,16 @@ using WebMessagePayload =
 // the V8 serialization code, we duplicate some of the serialization logic
 // (just for simple string or array buffer messages) here. This is
 // a trade-off between overall complexity / performance and code duplication.
-// Fortunately, we only need to handle string messages and this serialization
-// format is static, as it is a format we currently persist to disk via
-// IndexedDB.
+// Fortunately, we only need to handle a subset of payload types and this
+// serialization format is static, as it is a format we currently persist to
+// disk via IndexedDB.
 
+// A SharedArrayBuffer payload is not encodable: the shared memory region
+// backing it cannot travel inside a `TransferableMessage`, which is the
+// renderer-to-renderer message type. WebView delivers such payloads over
+// `android_webview.mojom.LocalMainFrame` instead, and the renderer serializes
+// them itself; see `WebLocalFrame::PostEmbedderMessageEvent()`. Passing one
+// here is a programming error.
 BLINK_COMMON_EXPORT TransferableMessage
 EncodeWebMessagePayload(const WebMessagePayload& payload);
 

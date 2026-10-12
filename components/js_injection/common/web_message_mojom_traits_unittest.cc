@@ -6,6 +6,7 @@
 
 #include <variant>
 
+#include "build/build_config.h"
 #include "components/js_injection/common/interfaces.mojom.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,5 +40,30 @@ TEST(WebMessageMojomTraitsTest, ArrayBufferRoundTrip) {
   array_buffer_output->CopyInto(output_vector);
   EXPECT_EQ(kArrayBuffer, output_vector);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST(WebMessageMojomTraitsTest, SharedArrayBufferRoundTrip) {
+  base::UnsafeSharedMemoryRegion region =
+      base::UnsafeSharedMemoryRegion::Create(1024);
+  ASSERT_TRUE(region.IsValid());
+  base::WritableSharedMemoryMapping mapping = region.Map();
+  ASSERT_TRUE(mapping.IsValid());
+  mapping.GetMemoryAsSpan<uint8_t>()[0] = 42;
+
+  blink::WebMessagePayload payload = std::move(region);
+
+  blink::WebMessagePayload output;
+  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::JsWebMessage>(payload,
+                                                                       output));
+
+  ASSERT_TRUE(std::holds_alternative<base::UnsafeSharedMemoryRegion>(output));
+  base::UnsafeSharedMemoryRegion output_region =
+      std::get<base::UnsafeSharedMemoryRegion>(std::move(output));
+  ASSERT_TRUE(output_region.IsValid());
+  base::WritableSharedMemoryMapping output_mapping = output_region.Map();
+  ASSERT_TRUE(output_mapping.IsValid());
+  EXPECT_EQ(42, output_mapping.GetMemoryAsSpan<uint8_t>()[0]);
+}
+#endif
 
 }  // namespace js_injection

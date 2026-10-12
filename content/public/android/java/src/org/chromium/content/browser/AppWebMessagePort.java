@@ -22,6 +22,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.MessagePayload;
+import org.chromium.content_public.browser.MessagePayloadType;
 import org.chromium.content_public.browser.MessagePort;
 
 /**
@@ -205,6 +206,10 @@ public class AppWebMessagePort implements MessagePort {
     @Override
     public void postMessage(MessagePayload messagePayload, MessagePort @Nullable [] sentPorts)
             throws IllegalStateException {
+        if (messagePayload.getType() == MessagePayloadType.SHARED_ARRAY_BUFFER) {
+            throw new UnsupportedOperationException(
+                    "Posting SharedArrayBuffer over MessagePort is not supported");
+        }
         if (isClosed() || isTransferred()) {
             throw new IllegalStateException("Port is already closed or transferred");
         }

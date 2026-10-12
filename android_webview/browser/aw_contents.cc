@@ -61,6 +61,7 @@
 #include "base/location.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
@@ -92,6 +93,8 @@
 #include "components/sensitive_content/android/android_sensitive_content_client.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "content/public/browser/android/child_process_importance.h"
+#include "content/public/browser/android/message_payload.h"
+#include "content/public/browser/android/message_port_helper.h"
 #include "content/public/browser/android/synchronous_compositor.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -118,6 +121,8 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
+#include "third_party/blink/public/common/messaging/message_port_descriptor.h"
+#include "third_party/blink/public/common/messaging/string_message_codec.h"
 #include "third_party/blink/public/common/navigation/navigation_params.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/jni_zero/default_conversions.h"
@@ -584,6 +589,50 @@ void AwContents::DocumentHasImages(JNIEnv* env,
   j_message.Reset(env, message);
   render_view_host_ext_->DocumentHasImages(
       base::BindOnce(&DocumentHasImagesCallback, j_message));
+}
+
+void AwContents::PostSharedArrayBufferMessageToMainFrame(
+    JNIEnv* env,
+    const JavaRef<jobject>& payload_obj,
+    const std::u16string& target_origin,
+    const JavaRef<jobjectArray>& ports) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  blink::WebMessagePayload payload =
+      content::android::ConvertToWebMessagePayloadFromJava(
+          ScopedJavaLocalRef<jobject>(payload_obj));
+  auto* region = std::get_if<base::UnsafeSharedMemoryRegion>(&payload);
+
+  // Take the ports back from Java regardless of whether the message survives:
+  // the caller has already handed them over, and leaving the wrappers behind
+  // would strand ports that are neither usable nor transferred.
+  std::vector<blink::MessagePortDescriptor> released_ports =
+      content::android::ReleaseJavaMessagePort(env, ports);
+
+  // Only a SharedArrayBuffer travels this way; anything else should have gone
+  // over WebContents::PostMessageToMainFrame(). An invalid region means the
+  // Java buffer could not be mapped, e.g. because it was already closed.
+  if (!region || !region->IsValid()) {
+    return;
+  }
+
+  // Everything an embedder must not control (a serialized payload, blobs, user
+  // activation, delegated capability, task attribution, the sender's agent
+  // cluster) is absent from EmbedderTransferableMessage by construction. The
+  // renderer serializes the buffer itself; see
+  // WebLocalFrame::PostEmbedderMessageEvent().
+  auto embedder_message = mojom::EmbedderTransferableMessage::New();
+  embedder_message->ports = std::move(released_ports);
+  embedder_message->shared_array_buffer = std::move(*region);
+
+  // An empty target origin is postMessage()'s "*" wildcard.
+  std::optional<url::Origin> origin;
+  if (!target_origin.empty()) {
+    origin = url::Origin::Create(GURL(target_origin));
+  }
+
+  render_view_host_ext_->PostEmbedderMessageEvent(origin,
+                                                  std::move(embedder_message));
 }
 
 namespace {

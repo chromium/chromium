@@ -50,6 +50,12 @@ base::android::ScopedJavaLocalRef<jobjectArray> CreateJavaMessagePort(
       org_chromium_content_browser_AppWebMessagePort_clazz(env));
 }
 
+std::vector<blink::MessagePortDescriptor> ReleaseJavaMessagePort(
+    JNIEnv* env,
+    const base::android::JavaRef<jobjectArray>& jports) {
+  return AppWebMessagePort::Release(env, jports);
+}
+
 // static
 base::android::ScopedJavaLocalRef<jobject> AppWebMessagePort::Create(
     blink::MessagePortDescriptor&& descriptor) {
