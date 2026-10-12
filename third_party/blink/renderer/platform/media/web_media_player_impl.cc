@@ -690,6 +690,7 @@ void WebMediaPlayerImpl::Shutdown() {
   memory_usage_reporting_timer_.Stop();
   background_pause_timer_.Stop();
   update_background_status_cb_.Cancel();
+  have_enough_after_lazy_load_cb_.Cancel();
   media_log_->OnWebMediaPlayerDestroyed();
 
   demuxer_manager_->StopAndResetClient();
@@ -1932,9 +1933,9 @@ void WebMediaPlayerImpl::OnPipelineSuspended() {
       // connection, briefly (250ms chosen arbitrarily) delay signaling "have
       // enough" to the MultiBufferDataSource.
       //
-      // Unretained() is safe here since the base::CancelableOnceClosure will
-      // cancel upon destruction of this class and `demuxer_manager_` is
-      // gauranteeed to outlive us as a result of the DestructionHelper.
+      // Unretained() is safe here since `have_enough_after_lazy_load_cb_` is
+      // cancelled in Shutdown() before `demuxer_manager_` is destroyed via
+      // DestructionHelper.
       have_enough_after_lazy_load_cb_.Reset(
           BindOnce(&media::DemuxerManager::StopPreloading,
                    Unretained(demuxer_manager_.get())));
