@@ -107,6 +107,9 @@ class MODULES_EXPORT DecoderTemplate
   // Called when the active configuration changes after a configure().
   virtual void OnActiveConfigChanged(const MediaConfigType& config);
 
+  // Called when the decoder is reset via reset() or Shutdown().
+  virtual void OnReset();
+
   // Virtual for UTs.
   virtual MediaDecoderType* decoder() { return decoder_.get(); }
 

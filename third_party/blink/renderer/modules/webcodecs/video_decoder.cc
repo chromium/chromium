@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/webcodecs/video_decoder.h"
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
@@ -692,8 +693,8 @@ VideoDecoder::MakeInput(const InputType& chunk, bool verify_key_frame) {
     }
   }
 
-  chunk_metadata_[chunk.buffer()->timestamp()] =
-      ChunkMetadata{chunk.buffer()->duration()};
+  chunk_metadata_.push_back(
+      ChunkMetadata{chunk.buffer()->timestamp(), chunk.buffer()->duration()});
 
   return decoder_buffer;
 }
@@ -705,9 +706,10 @@ media::DecoderStatus::Or<VideoDecoder::OutputType*> VideoDecoder::MakeOutput(
     output->metadata().transformation = active_transform_;
   }
 
-  const auto it = chunk_metadata_.find(output->timestamp());
+  const auto it = std::ranges::find(chunk_metadata_, output->timestamp(),
+                                    &ChunkMetadata::timestamp);
   if (it != chunk_metadata_.end()) {
-    const auto duration = it->second.duration;
+    const auto duration = it->duration;
     if (!duration.is_zero() && duration != media::kNoTimestamp) {
       auto wrapped_output = media::VideoFrame::WrapVideoFrame(
           output, output->format(), output->visible_rect(),
@@ -717,15 +719,26 @@ media::DecoderStatus::Or<VideoDecoder::OutputType*> VideoDecoder::MakeOutput(
       output = wrapped_output;
     }
 
-    // We erase from the beginning onward to our target frame since frames
-    // should be returned in presentation order.
-    chunk_metadata_.erase(chunk_metadata_.begin(), it + 1);
+    // Consume the matched entry. Since outputs may arrive out of input order
+    // (e.g., B-frame reordering up to 16 frames), only evict unmatched older
+    // entries that exceed the maximum reordering window.
+    constexpr ptrdiff_t kMaxReorderedFrames = 16;
+    const ptrdiff_t index = it - chunk_metadata_.begin();
+    chunk_metadata_.EraseAt(static_cast<wtf_size_t>(index));
+    if (index > kMaxReorderedFrames) {
+      chunk_metadata_.EraseAt(
+          0, static_cast<wtf_size_t>(index - kMaxReorderedFrames));
+    }
   }
   return MakeGarbageCollected<OutputType>(std::move(output), context);
 }
 
 void VideoDecoder::OnActiveConfigChanged(const MediaConfigType& config) {
   active_transform_ = config.video_transformation();
+}
+
+void VideoDecoder::OnReset() {
+  chunk_metadata_.clear();
 }
 
 const AtomicString& VideoDecoder::InterfaceName() const {

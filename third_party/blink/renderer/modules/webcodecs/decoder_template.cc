@@ -130,6 +130,9 @@ template <typename Traits>
 void DecoderTemplate<Traits>::OnActiveConfigChanged(const MediaConfigType&) {}
 
 template <typename Traits>
+void DecoderTemplate<Traits>::OnReset() {}
+
+template <typename Traits>
 void DecoderTemplate<Traits>::configure(const ConfigType* config,
                                         ExceptionState& exception_state) {
   DVLOG(1) << __func__;
@@ -595,6 +598,7 @@ void DecoderTemplate<Traits>::ResetAlgorithm() {
   // configuration.
   active_config_.reset();
   active_preference_.reset();
+  OnReset();
 
   Request* request = MakeGarbageCollected<Request>();
   request->type = Request::Type::kReset;

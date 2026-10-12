@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/mock_filters.h"
+#include "media/base/video_frame.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
@@ -28,6 +29,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/codec_pressure_manager.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_pressure_manager_provider.h"
 #include "third_party/blink/renderer/modules/webcodecs/encoded_video_chunk.h"
+#include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
@@ -61,6 +63,10 @@ class FakeVideoDecoder : public VideoDecoder {
                    ExceptionState& exception_state)
       : VideoDecoder(script_state, init, exception_state) {}
   ~FakeVideoDecoder() override = default;
+
+  using VideoDecoder::MakeInput;
+  using VideoDecoder::MakeOutput;
+  using VideoDecoder::OnReset;
 
   void SetupMockHardwareDecoder(base::RepeatingClosure quit_closure) {
     mock_decoder_ = std::make_unique<media::MockVideoDecoder>(
@@ -442,6 +448,134 @@ TEST_F(VideoDecoderTest, BitstreamConversionPreservesKeyFrameFlag) {
   }
 }
 #endif
+
+EncodedVideoChunk* CreateChunkWithDuration(
+    int64_t timestamp_us,
+    std::optional<int64_t> duration_us = std::nullopt) {
+  auto buffer = base::MakeRefCounted<media::DecoderBuffer>(0);
+  buffer->set_timestamp(base::Microseconds(timestamp_us));
+  buffer->set_duration(duration_us ? base::Microseconds(*duration_us)
+                                   : media::kNoTimestamp);
+  buffer->set_is_key_frame(true);
+  return MakeGarbageCollected<EncodedVideoChunk>(std::move(buffer));
+}
+
+scoped_refptr<media::VideoFrame> CreateMediaFrameWithTimestamp(
+    int64_t timestamp_us) {
+  auto frame = media::VideoFrame::CreateBlackFrame(gfx::Size(16, 16));
+  frame->set_timestamp(base::Microseconds(timestamp_us));
+  return frame;
+}
+
+TEST_F(VideoDecoderTest, OutputDurationWithDuplicateTimestamps) {
+  V8TestingScope v8_scope;
+  MockFunctionScope mock_functions(v8_scope.GetScriptState());
+
+  auto* fake_decoder = CreateFakeDecoder(
+      v8_scope.GetScriptState(),
+      CreateVideoDecoderInit(v8_scope.GetScriptState(), mock_functions),
+      v8_scope.GetExceptionState());
+  ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
+
+  auto* chunk1 =
+      CreateChunkWithDuration(/*timestamp_us=*/0, /*duration_us=*/111);
+  auto* chunk2 =
+      CreateChunkWithDuration(/*timestamp_us=*/0, /*duration_us=*/222);
+
+  ASSERT_TRUE(
+      fake_decoder->MakeInput(*chunk1, /*verify_key_frame=*/false).has_value());
+  ASSERT_TRUE(
+      fake_decoder->MakeInput(*chunk2, /*verify_key_frame=*/false).has_value());
+
+  auto out1 = fake_decoder->MakeOutput(CreateMediaFrameWithTimestamp(0),
+                                       v8_scope.GetExecutionContext());
+  ASSERT_TRUE(out1.has_value());
+  EXPECT_EQ(std::optional<uint64_t>(111u), std::move(out1).value()->duration());
+
+  auto out2 = fake_decoder->MakeOutput(CreateMediaFrameWithTimestamp(0),
+                                       v8_scope.GetExecutionContext());
+  ASSERT_TRUE(out2.has_value());
+  EXPECT_EQ(std::optional<uint64_t>(222u), std::move(out2).value()->duration());
+
+  // Both entries for timestamp 0 have been consumed.
+  auto out3 = fake_decoder->MakeOutput(CreateMediaFrameWithTimestamp(0),
+                                       v8_scope.GetExecutionContext());
+  ASSERT_TRUE(out3.has_value());
+  EXPECT_EQ(std::nullopt, std::move(out3).value()->duration());
+}
+
+TEST_F(VideoDecoderTest, OutputDurationWithReorderedTimestamps) {
+  V8TestingScope v8_scope;
+  MockFunctionScope mock_functions(v8_scope.GetScriptState());
+
+  auto* fake_decoder = CreateFakeDecoder(
+      v8_scope.GetScriptState(),
+      CreateVideoDecoderInit(v8_scope.GetScriptState(), mock_functions),
+      v8_scope.GetExceptionState());
+  ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
+
+  // Enqueue 8 chunks with decode-order timestamps and distinct durations.
+  for (int64_t i = 0; i < 8; ++i) {
+    auto* chunk = CreateChunkWithDuration(/*timestamp_us=*/i * 1000,
+                                          /*duration_us=*/5000 + i);
+    ASSERT_TRUE(fake_decoder->MakeInput(*chunk, /*verify_key_frame=*/false)
+                    .has_value());
+  }
+
+  // Emit outputs in B-frame reordered presentation sequence.
+  constexpr std::array<int64_t, 8> kOutputOrder = {0, 2, 1, 4, 3, 6, 5, 7};
+  for (int64_t idx : kOutputOrder) {
+    auto out =
+        fake_decoder->MakeOutput(CreateMediaFrameWithTimestamp(idx * 1000),
+                                 v8_scope.GetExecutionContext());
+    ASSERT_TRUE(out.has_value());
+    EXPECT_EQ(std::optional<uint64_t>(5000u + idx),
+              std::move(out).value()->duration());
+  }
+}
+
+TEST_F(VideoDecoderTest, ResetClearsPendingChunkMetadata) {
+  V8TestingScope v8_scope;
+  MockFunctionScope mock_functions(v8_scope.GetScriptState());
+
+  auto* fake_decoder = CreateFakeDecoder(
+      v8_scope.GetScriptState(),
+      CreateVideoDecoderInit(v8_scope.GetScriptState(), mock_functions),
+      v8_scope.GetExceptionState());
+  ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
+
+  {
+    base::RunLoop run_loop;
+    fake_decoder->SetupMockSoftwareDecoder(run_loop.QuitClosure());
+    fake_decoder->configure(CreateVideoConfig(), v8_scope.GetExceptionState());
+    ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
+    run_loop.Run();
+  }
+
+  auto* pre_reset_chunk =
+      CreateChunkWithDuration(/*timestamp_us=*/0, /*duration_us=*/111);
+  ASSERT_TRUE(
+      fake_decoder->MakeInput(*pre_reset_chunk, /*verify_key_frame=*/false)
+          .has_value());
+
+  EXPECT_CALL(*fake_decoder->mock_decoder(), Reset_(_))
+      .WillOnce([](base::OnceClosure& closure) {
+        scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
+            FROM_HERE, std::move(closure));
+      });
+  fake_decoder->reset(v8_scope.GetExceptionState());
+  ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
+
+  auto* post_reset_chunk = CreateChunkWithDuration(/*timestamp_us=*/0);
+  ASSERT_TRUE(
+      fake_decoder->MakeInput(*post_reset_chunk, /*verify_key_frame=*/false)
+          .has_value());
+
+  auto out = fake_decoder->MakeOutput(CreateMediaFrameWithTimestamp(0),
+                                      v8_scope.GetExecutionContext());
+  ASSERT_TRUE(out.has_value());
+  EXPECT_EQ(std::nullopt, std::move(out).value()->duration());
+}
 
 }  // namespace
 
