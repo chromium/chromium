@@ -385,6 +385,7 @@ robolectric_library("player_junit_java") {
     "java/src/org/chromium/chrome/browser/readaloud/player/mini/MiniPlayerMediatorUnitTest.java",
   ]
   deps = [
+    ":features_java",
     ":player_java",
     ":test_support_java",
     "//base:base_java",

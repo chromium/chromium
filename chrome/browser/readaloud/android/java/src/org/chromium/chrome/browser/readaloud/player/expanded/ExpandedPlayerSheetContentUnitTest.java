@@ -36,7 +36,9 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.readaloud.ReadAloudFeatures;
 import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
 import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
 import org.chromium.chrome.browser.readaloud.player.R;
@@ -313,6 +315,7 @@ public class ExpandedPlayerSheetContentUnitTest {
     }
 
     @Test
+    @DisableFeatures(ReadAloudFeatures.READ_ALOUD_NATIVE)
     public void testLoadingTextIsSetCorrectly() {
         TextView loadingText = mContentView.findViewById(R.id.readaloud_loading_text);
 
@@ -324,6 +327,22 @@ public class ExpandedPlayerSheetContentUnitTest {
         mContent.setRequestedPlaybackMode(PlaybackMode.CLASSIC);
         assertEquals(
                 loadingText.getText(), mContext.getString(R.string.readaloud_playback_loading));
+    }
+
+    @Test
+    @EnableFeatures(ReadAloudFeatures.READ_ALOUD_NATIVE)
+    public void testLoadingTextIsSetCorrectly_nativeEnabled() {
+        TextView loadingText = mContentView.findViewById(R.id.readaloud_loading_text);
+
+        mContent.setRequestedPlaybackMode(PlaybackMode.OVERVIEW);
+        assertEquals(
+                loadingText.getText(),
+                mContext.getString(R.string.readaloud_mini_player_loading_ai_playback));
+
+        mContent.setRequestedPlaybackMode(PlaybackMode.CLASSIC);
+        assertEquals(
+                loadingText.getText(),
+                mContext.getString(R.string.readaloud_playback_loading_page));
     }
 
     @Test

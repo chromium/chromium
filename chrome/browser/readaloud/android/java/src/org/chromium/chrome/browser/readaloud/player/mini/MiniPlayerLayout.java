@@ -28,9 +28,11 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.StringRes;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.readaloud.ReadAloudFeatures;
 import org.chromium.chrome.browser.readaloud.player.Colors;
 import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
 import org.chromium.chrome.browser.readaloud.player.R;
@@ -232,7 +234,7 @@ public class MiniPlayerLayout extends LinearLayout implements SwipeGestureListen
             mLoadingMessage.setText(
                     mContext.getString(R.string.readaloud_mini_player_loading_ai_playback));
         } else {
-            mLoadingMessage.setText(mContext.getString(R.string.readaloud_playback_loading));
+            mLoadingMessage.setText(mContext.getString(getStandardLoadingStringRes()));
         }
     }
 
@@ -346,9 +348,15 @@ public class MiniPlayerLayout extends LinearLayout implements SwipeGestureListen
                     mContext.getString(R.string.readaloud_mini_player_loading_ai_playback));
             mSpinner.setContentDescription(mContext.getString(R.string.readaloud_mini_player_spinner_overview_content_description));
         } else {
-            mLoadingMessage.setText(mContext.getString(R.string.readaloud_playback_loading));
+            mLoadingMessage.setText(mContext.getString(getStandardLoadingStringRes()));
             mSpinner.setContentDescription(mContext.getString(R.string.readaloud_mini_player_spinner_classic_content_description));
         }
+    }
+
+    private static @StringRes int getStandardLoadingStringRes() {
+        return ReadAloudFeatures.isNativeEnabled()
+                ? R.string.readaloud_playback_loading_page
+                : R.string.readaloud_playback_loading;
     }
 
     private void showNormalLayout() {

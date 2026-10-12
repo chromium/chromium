@@ -279,6 +279,9 @@
       <message name="IDS_READALOUD_PLAYBACK_LOADING" desc="Message displayed when 'Listen to this page' playback is buffering.">
         Loading…
       </message>
+      <message name="IDS_READALOUD_PLAYBACK_LOADING_PAGE" desc="Message displayed in the player when 'Listen to this page' standard playback is loading the page.">
+        Loading page…
+      </message>
       <message name="IDS_READALOUD_MINI_PLAYER_SPINNER_CLASSIC_CONTENT_DESCRIPTION" desc="Accessibility string for the mini-player spinner when loading classic readaloud">
         Loading
       </message>

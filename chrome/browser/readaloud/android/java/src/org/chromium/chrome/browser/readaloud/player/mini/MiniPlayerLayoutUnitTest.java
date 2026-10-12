@@ -36,6 +36,9 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.readaloud.ReadAloudFeatures;
 import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
 import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
@@ -92,6 +95,7 @@ public class MiniPlayerLayoutUnitTest {
     }
 
     @Test
+    @DisableFeatures(ReadAloudFeatures.READ_ALOUD_NATIVE)
     public void testBufferingStrings() {
         mLayout.setRequestedPlaybackMode(PlaybackMode.OVERVIEW);
         mLayout.onPlaybackStateChanged(PlaybackListener.State.BUFFERING);
@@ -104,6 +108,23 @@ public class MiniPlayerLayoutUnitTest {
         mLayout.setRequestedPlaybackMode(PlaybackMode.CLASSIC);
         assertEquals(
                 mLayout.getContext().getString(R.string.readaloud_playback_loading),
+                ((TextView) mLayout.findViewById(R.id.loading_message)).getText());
+    }
+
+    @Test
+    @EnableFeatures(ReadAloudFeatures.READ_ALOUD_NATIVE)
+    public void testBufferingStrings_nativeEnabled() {
+        mLayout.setRequestedPlaybackMode(PlaybackMode.OVERVIEW);
+        mLayout.onPlaybackStateChanged(PlaybackListener.State.BUFFERING);
+
+        assertEquals(View.VISIBLE, mLayout.findViewById(R.id.buffering_layout).getVisibility());
+        assertEquals(
+                mLayout.getContext().getString(R.string.readaloud_mini_player_loading_ai_playback),
+                ((TextView) mLayout.findViewById(R.id.loading_message)).getText());
+
+        mLayout.setRequestedPlaybackMode(PlaybackMode.CLASSIC);
+        assertEquals(
+                mLayout.getContext().getString(R.string.readaloud_playback_loading_page),
                 ((TextView) mLayout.findViewById(R.id.loading_message)).getText());
     }
 
