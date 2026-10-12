@@ -50,6 +50,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/native_ui_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
@@ -85,6 +86,7 @@
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace views::examples {
@@ -3891,6 +3893,7 @@ std::unique_ptr<views::DialogDelegate> JsonViewBuilder::BuildDialogDelegate(
       host = views::BubbleDialogModelHost::CreateModal(
           std::move(model), modal_type, /*autosize=*/true,
           /*owned_by_widget=*/false);
+      host->SetArrow(arrow);
     }
 
     bool use_desktop_widget = true;
@@ -4001,6 +4004,85 @@ std::unique_ptr<views::DialogDelegate> JsonViewBuilder::BuildDialogDelegate(
 
   delegate->SetContentsView(std::move(contents_view));
   return delegate;
+}
+
+JsonViewBuilder::DialogWidgetResult::DialogWidgetResult() = default;
+
+JsonViewBuilder::DialogWidgetResult::DialogWidgetResult(
+    std::unique_ptr<views::Widget> widget,
+    std::unique_ptr<views::DialogDelegate> delegate)
+    : delegate(std::move(delegate)), widget(std::move(widget)) {}
+
+JsonViewBuilder::DialogWidgetResult::~DialogWidgetResult() {
+  // Widget must always be destroyed before DialogDelegate.
+  widget.reset();
+  delegate.reset();
+}
+
+JsonViewBuilder::DialogWidgetResult::DialogWidgetResult(DialogWidgetResult&&) =
+    default;
+
+JsonViewBuilder::DialogWidgetResult&
+JsonViewBuilder::DialogWidgetResult::operator=(DialogWidgetResult&&) = default;
+
+JsonViewBuilder::DialogWidgetResult JsonViewBuilder::ShowDialogOrBubble(
+    const base::DictValue& dict,
+    views::View* anchor_view,
+    gfx::NativeWindow parent_window,
+    std::string* error_msg) {
+  std::unique_ptr<views::DialogDelegate> delegate =
+      BuildDialogDelegate(dict, error_msg);
+  if (!delegate) {
+    return {};
+  }
+
+  // Ensure client ownership of the widget
+  delegate->SetOwnershipOfNewWidget(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+
+  auto* bubble_delegate = delegate->AsBubbleDialogDelegate();
+  views::DialogDelegate* raw_delegate = delegate.get();
+
+  gfx::NativeView parent_view =
+      parent_window ? gfx::GetViewForWindow(parent_window) : gfx::NativeView();
+  if (!parent_view && anchor_view && anchor_view->GetWidget()) {
+    parent_view = anchor_view->GetWidget()->GetNativeView();
+  }
+
+  if (bubble_delegate && (anchor_view || delegate->GetModalType() ==
+                                             ui::mojom::ModalType::kNone)) {
+    if (anchor_view) {
+      bubble_delegate->SetAnchorView(anchor_view);
+      if (delegate->GetModalType() == ui::mojom::ModalType::kWindow) {
+        delegate->SetModalType(ui::mojom::ModalType::kChild);
+      }
+    }
+    if (parent_view) {
+      bubble_delegate->set_parent_window(parent_view);
+    }
+    std::unique_ptr<views::Widget> widget =
+        views::BubbleDialogDelegate::CreateBubble(bubble_delegate);
+    if (!widget) {
+      if (error_msg) {
+        *error_msg = "Failed to initialize bubble widget";
+      }
+      return {};
+    }
+    widget->Show();
+    return {std::move(widget), std::move(delegate)};
+  }
+
+  views::Widget* raw_widget = views::DialogDelegate::CreateDialogWidget(
+      raw_delegate, parent_window, parent_view);
+  if (!raw_widget) {
+    if (error_msg) {
+      *error_msg = "Failed to initialize dialog widget";
+    }
+    return {};
+  }
+  std::unique_ptr<views::Widget> widget = base::WrapUnique(raw_widget);
+  widget->Show();
+  return {std::move(widget), std::move(delegate)};
 }
 
 }  // namespace views::examples

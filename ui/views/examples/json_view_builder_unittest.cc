@@ -11,6 +11,7 @@
 #include "base/path_service.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/platform/ax_platform_for_test.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -41,6 +42,7 @@
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/test/test_layout_provider.h"
+#include "ui/views/test/views_test_base.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 
@@ -1940,5 +1942,157 @@ TEST_F(JsonViewBuilderTest, TestDialogDelegate_TypeAndValueValidation) {
               std::string::npos);
   }
 }
+
+#if !BUILDFLAG(IS_FUCHSIA)
+class JsonViewBuilderWidgetTest : public ViewsTestBase {
+ public:
+  JsonViewBuilderWidgetTest() = default;
+  ~JsonViewBuilderWidgetTest() override = default;
+
+  void SetUp() override {
+    if (!ui::ResourceBundle::HasSharedInstance()) {
+      base::FilePath ui_test_pak_path;
+      if (base::PathService::Get(ui::UI_TEST_PAK, &ui_test_pak_path)) {
+        ui::ResourceBundle::InitSharedInstanceWithPakPath(ui_test_pak_path);
+      }
+    }
+    ViewsTestBase::SetUp();
+  }
+};
+
+TEST_F(JsonViewBuilderWidgetTest, TestShowDialogOrBubble_Dialog) {
+  std::unique_ptr<Widget> parent_widget =
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  parent_widget->Show();
+
+  const char kJson[] = R"({
+    "type": "Dialog",
+    "title": "Test Window Dialog",
+    "contents": {
+      "type": "Label",
+      "properties": {
+        "Text": "Dialog contents"
+      }
+    }
+  })";
+  auto result =
+      base::JSONReader::Read(kJson, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  ASSERT_TRUE(result.has_value());
+  std::string error_msg;
+  auto dialog_result = JsonViewBuilder::ShowDialogOrBubble(
+      result->GetDict(), nullptr, parent_widget->GetNativeWindow(), &error_msg);
+  ASSERT_NE(dialog_result.widget, nullptr) << error_msg;
+  ASSERT_NE(dialog_result.delegate, nullptr);
+  EXPECT_TRUE(dialog_result.widget->IsVisible());
+  EXPECT_EQ(dialog_result.delegate->GetWindowTitle(), u"Test Window Dialog");
+
+  // Teardown: widget must be reset before delegate
+  dialog_result.widget.reset();
+  dialog_result.delegate.reset();
+}
+
+TEST_F(JsonViewBuilderWidgetTest, TestShowDialogOrBubble_Bubble) {
+  std::unique_ptr<Widget> parent_widget =
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  View* anchor_view = parent_widget->SetContentsView(std::make_unique<View>());
+  parent_widget->Show();
+
+  const char kJson[] = R"({
+    "type": "Bubble",
+    "title": "Test Bubble Popup",
+    "arrow": "TOP_RIGHT",
+    "contents": {
+      "type": "Label",
+      "properties": {
+        "Text": "Bubble contents"
+      }
+    }
+  })";
+  auto result =
+      base::JSONReader::Read(kJson, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  ASSERT_TRUE(result.has_value());
+  std::string error_msg;
+  auto bubble_result = JsonViewBuilder::ShowDialogOrBubble(
+      result->GetDict(), anchor_view, parent_widget->GetNativeWindow(),
+      &error_msg);
+  ASSERT_NE(bubble_result.widget, nullptr) << error_msg;
+  ASSERT_NE(bubble_result.delegate, nullptr);
+  EXPECT_TRUE(bubble_result.widget->IsVisible());
+  auto* bubble_delegate = bubble_result.delegate->AsBubbleDialogDelegate();
+  ASSERT_NE(bubble_delegate, nullptr);
+  EXPECT_EQ(bubble_delegate->GetAnchorView(), anchor_view);
+  EXPECT_EQ(bubble_delegate->arrow(), BubbleBorder::Arrow::TOP_RIGHT);
+
+  bubble_result.widget.reset();
+  bubble_result.delegate.reset();
+}
+
+TEST_F(JsonViewBuilderWidgetTest, TestShowDialogOrBubble_DialogModel) {
+  std::unique_ptr<Widget> parent_widget =
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  parent_widget->Show();
+
+  const char kJson[] = R"({
+    "type": "DialogModel",
+    "title": "Test DialogModel Popup",
+    "modal_type": "kChild",
+    "fields": [
+      {
+        "type": "paragraph",
+        "text": "Model paragraph text"
+      }
+    ]
+  })";
+  auto result =
+      base::JSONReader::Read(kJson, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  ASSERT_TRUE(result.has_value());
+  std::string error_msg;
+  auto model_result = JsonViewBuilder::ShowDialogOrBubble(
+      result->GetDict(), nullptr, parent_widget->GetNativeWindow(), &error_msg);
+  ASSERT_NE(model_result.widget, nullptr) << error_msg;
+  ASSERT_NE(model_result.delegate, nullptr);
+  EXPECT_TRUE(model_result.widget->IsVisible());
+
+  model_result.widget.reset();
+  model_result.delegate.reset();
+}
+
+TEST_F(JsonViewBuilderWidgetTest, TestShowDialogOrBubble_DialogModel_Anchored) {
+  std::unique_ptr<Widget> parent_widget =
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  View* anchor_view = parent_widget->SetContentsView(std::make_unique<View>());
+  parent_widget->Show();
+
+  const char kJson[] = R"({
+    "type": "DialogModel",
+    "title": "Test Anchored DialogModel Popup",
+    "modal_type": "kChild",
+    "arrow": "TOP_LEFT",
+    "fields": [
+      {
+        "type": "paragraph",
+        "text": "Model paragraph text"
+      }
+    ]
+  })";
+  auto result =
+      base::JSONReader::Read(kJson, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  ASSERT_TRUE(result.has_value());
+  std::string error_msg;
+  auto model_result = JsonViewBuilder::ShowDialogOrBubble(
+      result->GetDict(), anchor_view, parent_widget->GetNativeWindow(),
+      &error_msg);
+  ASSERT_NE(model_result.widget, nullptr) << error_msg;
+  ASSERT_NE(model_result.delegate, nullptr);
+  EXPECT_TRUE(model_result.widget->IsVisible());
+  auto* bubble_delegate = model_result.delegate->AsBubbleDialogDelegate();
+  ASSERT_NE(bubble_delegate, nullptr);
+  EXPECT_EQ(bubble_delegate->GetAnchorView(), anchor_view);
+  EXPECT_EQ(bubble_delegate->arrow(), BubbleBorder::Arrow::TOP_LEFT);
+
+  model_result.widget.reset();
+  model_result.delegate.reset();
+}
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
 }  // namespace views::examples

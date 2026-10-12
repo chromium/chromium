@@ -54,6 +54,7 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/window/dialog_delegate.h"
 
 namespace views::examples {
 
@@ -240,6 +241,98 @@ const char kDefaultJsonScript[] =
   ]
 })";
 
+const char kDialogBootstrapJsonScript[] = R"({
+  "type": "BoxLayoutView",
+  "properties": {
+    "Orientation": "kVertical",
+    "BetweenChildSpacing": 12,
+    "InsideBorderInsets": "16,16,16,16",
+    "background": "solid,0xF8F9FA"
+  },
+  "children": [
+    {
+      "type": "BoxLayoutView",
+      "properties": {
+        "Orientation": "kVertical",
+        "BetweenChildSpacing": 4
+      },
+      "children": [
+        {
+          "type": "Label",
+          "properties": {
+            "ID": "100",
+            "Text": "Popup Preview",
+            "TextStyle": "STYLE_HEADLINE_4_BOLD",
+            "HorizontalAlignment": "ALIGN_LEFT"
+          }
+        },
+        {
+          "type": "Label",
+          "properties": {
+            "ID": "101",
+            "Text": "Popup Specifications",
+            "TextStyle": "STYLE_SECONDARY",
+            "HorizontalAlignment": "ALIGN_LEFT"
+          }
+        }
+      ]
+    },
+    {
+      "type": "BoxLayoutView",
+      "properties": {
+        "Orientation": "kHorizontal",
+        "BetweenChildSpacing": 10
+      },
+      "children": [
+        {
+          "type": "MdTextButton",
+          "properties": {
+            "ID": "102",
+            "Text": "Show Popup",
+            "Style": "kProminent"
+          }
+        },
+        {
+          "type": "Label",
+          "properties": {
+            "Text": "Click the button above to launch the popup widget.",
+            "TextStyle": "STYLE_CAPTION",
+            "HorizontalAlignment": "ALIGN_LEFT"
+          }
+        }
+      ]
+    },
+    {
+      "type": "BoxLayoutView",
+      "properties": {
+        "ID": "103",
+        "Orientation": "kVertical",
+        "BetweenChildSpacing": 8,
+        "InsideBorderInsets": "8,8,8,8",
+        "border": "solid,1,0xD3D3D3",
+        "Visible": "false"
+      },
+      "children": [
+        {
+          "type": "Label",
+          "properties": {
+            "Text": "Contents Preview:",
+            "TextStyle": "STYLE_EMPHASIZED",
+            "HorizontalAlignment": "ALIGN_LEFT"
+          }
+        },
+        {
+          "type": "View",
+          "properties": {
+            "ID": "104",
+            "UseDefaultFillLayout": "true"
+          }
+        }
+      ]
+    }
+  ]
+})";
+
 class CanvasRootView : public BoxLayoutView {
  public:
   METADATA_HEADER(CanvasRootView, BoxLayoutView)
@@ -272,6 +365,9 @@ END_METADATA
 ViewsCanvasExample::ViewsCanvasExample() : ExampleBase("Views Canvas") {}
 
 ViewsCanvasExample::~ViewsCanvasExample() {
+  widget_observation_.Reset();
+  popup_widget_.reset();
+  popup_delegate_.reset();
   if (select_file_dialog_) {
     select_file_dialog_->ListenerDestroyed();
   }
@@ -393,6 +489,57 @@ void ViewsCanvasExample::OnOpenButtonPressed() {
                                   owning_window, nullptr);
 }
 
+void ViewsCanvasExample::OnShowPopupPressed(View* anchor_view) {
+  if (!json_editor_ || !status_label_ || !preview_container_) {
+    return;
+  }
+  std::string json_text = base::UTF16ToUTF8(json_editor_->GetText());
+  auto result = base::JSONReader::ReadAndReturnValueWithError(
+      json_text, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  if (!result.has_value() || !result->is_dict()) {
+    status_label_->SetText(u"JSON Error: Unable to parse popup spec");
+    status_label_->SetEnabledColor(SK_ColorRED);
+    return;
+  }
+  std::string show_error;
+  gfx::NativeWindow parent_window =
+      preview_container_->GetWidget()
+          ? preview_container_->GetWidget()->GetNativeWindow()
+          : gfx::NativeWindow();
+
+  widget_observation_.Reset();
+  popup_widget_.reset();
+  popup_delegate_.reset();
+
+  auto popup_result = JsonViewBuilder::ShowDialogOrBubble(
+      result->GetDict(), anchor_view, parent_window, &show_error);
+  if (!popup_result.widget) {
+    status_label_->SetText(
+        base::UTF8ToUTF16("Popup Launch Error: " + show_error));
+    status_label_->SetEnabledColor(SK_ColorRED);
+  } else {
+    popup_widget_ = std::move(popup_result.widget);
+    popup_delegate_ = std::move(popup_result.delegate);
+    widget_observation_.Observe(popup_widget_.get());
+    status_label_->SetText(u"Popup displayed successfully!");
+    status_label_->SetEnabledColor(gfx::kGoogleGreen800);
+  }
+}
+
+void ViewsCanvasExample::OnWidgetDestroyed(Widget* widget) {
+  if (popup_widget_.get() == widget) {
+    widget_observation_.Reset();
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&ViewsCanvasExample::CleanupPopup,
+                                  weak_factory_.GetWeakPtr()));
+  }
+}
+
+void ViewsCanvasExample::CleanupPopup() {
+  popup_widget_.reset();
+  popup_delegate_.reset();
+}
+
 void ViewsCanvasExample::FileSelected(const ui::SelectedFileInfo& file,
                                       int index) {
   std::string file_content;
@@ -408,6 +555,10 @@ void ViewsCanvasExample::RebuildPreview(const std::string& json_text) {
   if (!preview_container_ || !status_label_) {
     return;
   }
+
+  widget_observation_.Reset();
+  popup_widget_.reset();
+  popup_delegate_.reset();
 
   // Clear existing preview.
   preview_container_->RemoveAllChildViews();
@@ -432,6 +583,131 @@ void ViewsCanvasExample::RebuildPreview(const std::string& json_text) {
   }
 
   const base::DictValue& root_dict = result->GetDict();
+
+  // Check if the JSON specifies a Dialog, Bubble, or DialogModel.
+  if (JsonViewBuilder::IsDialogOrBubbleSpec(root_dict)) {
+    bool is_model = JsonViewBuilder::IsDialogModelSpec(root_dict);
+    const base::DictValue* info_dict = &root_dict;
+    if (const base::DictValue* nested = root_dict.FindDict("dialog_model")) {
+      info_dict = nested;
+    } else if (const base::DictValue* nested_d = root_dict.FindDict("dialog")) {
+      info_dict = nested_d;
+    } else if (const base::DictValue* nested_b = root_dict.FindDict("bubble")) {
+      info_dict = nested_b;
+    }
+
+    std::string spec_type = is_model ? "DialogModel" : "Dialog / Bubble";
+    if (const std::string* type_ptr = root_dict.FindString("type")) {
+      spec_type = *type_ptr;
+    }
+
+    std::string title_str = "Popup Preview";
+    if (const std::string* t = info_dict->FindString("title")) {
+      title_str = *t;
+    }
+
+    std::string modal_str = info_dict->FindString("modal_type")
+                                ? *info_dict->FindString("modal_type")
+                                : (spec_type == "Bubble" ? "kNone" : "kWindow");
+
+    bool close_on_deact = info_dict->FindBool("close_on_deactivate")
+                              .value_or(spec_type == "Bubble" || is_model);
+
+    std::string desc =
+        "Type: " + spec_type + "  |  Modal: " + modal_str + "  |  Dismiss: " +
+        (close_on_deact ? "Focus Loss / Buttons" : "Explicit Buttons");
+
+    auto bootstrap_result = base::JSONReader::ReadAndReturnValueWithError(
+        kDialogBootstrapJsonScript, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+    if (!bootstrap_result.has_value() || !bootstrap_result->is_dict()) {
+      status_label_->SetText(u"Bootstrap Error: Invalid dialog bootstrap spec");
+      status_label_->SetEnabledColor(SK_ColorRED);
+      preview_container_->InvalidateLayout();
+      return;
+    }
+
+    const base::DictValue& bootstrap_dict = bootstrap_result->GetDict();
+
+    std::unique_ptr<views::View> card_view =
+        JsonViewBuilder::BuildView(bootstrap_dict, &error_msg);
+    if (!card_view) {
+      status_label_->SetText(base::UTF8ToUTF16("Build Error: " + error_msg));
+      status_label_->SetEnabledColor(SK_ColorRED);
+      preview_container_->InvalidateLayout();
+      return;
+    }
+
+    views::View* raw_card =
+        preview_container_->AddChildView(std::move(card_view));
+    if (!JsonViewBuilder::ApplyPropertiesRecursive(raw_card, bootstrap_dict,
+                                                   &error_msg)) {
+      preview_container_->RemoveAllChildViews();
+      status_label_->SetText(base::UTF8ToUTF16("Property Error: " + error_msg));
+      status_label_->SetEnabledColor(SK_ColorRED);
+      preview_container_->InvalidateLayout();
+      return;
+    }
+
+    // Configure header labels and action button from the parsed spec
+    if (auto* title_label =
+            views::AsViewClass<views::Label>(raw_card->GetViewByID(100))) {
+      title_label->SetText(base::UTF8ToUTF16(title_str));
+    }
+    if (auto* desc_label =
+            views::AsViewClass<views::Label>(raw_card->GetViewByID(101))) {
+      desc_label->SetText(base::UTF8ToUTF16(desc));
+    }
+
+    views::LabelButton* raw_trigger_btn =
+        views::AsViewClass<views::LabelButton>(raw_card->GetViewByID(102));
+    if (raw_trigger_btn) {
+      raw_trigger_btn->SetText(base::UTF8ToUTF16("Show " + spec_type));
+      raw_trigger_btn->SetCallback(base::BindRepeating(
+          &ViewsCanvasExample::OnShowPopupPressed, base::Unretained(this),
+          base::Unretained(raw_trigger_btn)));
+    }
+
+    // If contents dict is present, embed contents preview into slot
+    if (const base::DictValue* contents_dict =
+            info_dict->FindDict("contents")) {
+      views::View* preview_box = raw_card->GetViewByID(103);
+      views::View* preview_slot = raw_card->GetViewByID(104);
+      if (preview_box && preview_slot) {
+        preview_box->SetVisible(true);
+        std::string content_err;
+        auto built_content =
+            JsonViewBuilder::BuildView(*contents_dict, &content_err);
+        if (built_content) {
+          views::View* raw_c =
+              preview_slot->AddChildView(std::move(built_content));
+          JsonViewBuilder::ApplyPropertiesRecursive(raw_c, *contents_dict,
+                                                    &content_err);
+        }
+      }
+    }
+
+    preview_container_->InvalidateLayout();
+
+    // Automatically trigger on render
+    gfx::NativeWindow parent_window =
+        preview_container_->GetWidget()
+            ? preview_container_->GetWidget()->GetNativeWindow()
+            : gfx::NativeWindow();
+    auto popup_result = JsonViewBuilder::ShowDialogOrBubble(
+        root_dict, raw_trigger_btn, parent_window, &error_msg);
+    if (popup_result.widget) {
+      popup_widget_ = std::move(popup_result.widget);
+      popup_delegate_ = std::move(popup_result.delegate);
+      widget_observation_.Observe(popup_widget_.get());
+      status_label_->SetText(u"Popup rendered and displayed!");
+      status_label_->SetEnabledColor(gfx::kGoogleGreen800);
+    } else {
+      status_label_->SetText(
+          base::UTF8ToUTF16("Popup Ready. Launch Error: " + error_msg));
+      status_label_->SetEnabledColor(SK_ColorRED);
+    }
+    return;
+  }
 
   // Pass 1: Build View Tree
   std::unique_ptr<views::View> built_root =
