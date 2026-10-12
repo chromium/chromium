@@ -1078,8 +1078,9 @@ void QuicChromiumClientSession::QuicChromiumPathValidationWriterDelegate::
 
 void QuicChromiumClientSession::QuicChromiumPathValidationWriterDelegate::
     NotifySessionProbeFailed(handles::NetworkHandle network) {
-  session_->MaybeCancelProbing(network, peer_address_,
-                               ProbingCancellationReason::kWriterError);
+  session_->MaybeCancelSpecificInFlightProbe(
+      network, peer_address_, ProbingCancellationReason::kWriterError,
+      /*superseded_cause=*/std::nullopt);
 }
 
 void QuicChromiumClientSession::QuicChromiumPathValidationWriterDelegate::
@@ -2858,17 +2859,10 @@ void QuicChromiumClientSession::LogProbeFailure(
   }
 }
 
-void QuicChromiumClientSession::MaybeCancelProbing(
-    handles::NetworkHandle network,
-    const quic::QuicSocketAddress& peer_address,
+void QuicChromiumClientSession::CancelInFlightProbe(
     ProbingCancellationReason reason,
     std::optional<QuicMigrationAttemptCause> superseded_cause) {
-  auto* context = static_cast<QuicChromiumPathValidationContext*>(
-      connection()->GetPathValidationContext());
-  if (!context || context->network() != network ||
-      context->peer_address() != peer_address) {
-    return;
-  }
+  CHECK(connection()->HasPendingPathValidation());
 
   quic::PathValidationFailure::Reason failure_reason =
       quic::PathValidationFailure::Reason::kUnknown;
@@ -2894,6 +2888,31 @@ void QuicChromiumClientSession::MaybeCancelProbing(
 
   connection()->CancelPathValidation(
       quic::PathValidationFailure{failure_reason});
+}
+
+void QuicChromiumClientSession::MaybeCancelSpecificInFlightProbe(
+    handles::NetworkHandle network,
+    const quic::QuicSocketAddress& peer_address,
+    ProbingCancellationReason reason,
+    std::optional<QuicMigrationAttemptCause> superseded_cause) {
+  auto* context = static_cast<QuicChromiumPathValidationContext*>(
+      connection()->GetPathValidationContext());
+  if (!context || context->network() != network ||
+      context->peer_address() != peer_address) {
+    return;
+  }
+
+  CancelInFlightProbe(reason, superseded_cause);
+}
+
+void QuicChromiumClientSession::MaybeCancelAnyInFlightProbe(
+    QuicMigrationAttemptCause superseded_by_cause) {
+  if (!connection()->HasPendingPathValidation()) {
+    return;
+  }
+
+  CancelInFlightProbe(ProbingCancellationReason::kSuperseded,
+                      superseded_by_cause);
 }
 
 void QuicChromiumClientSession::OnNetworkConnected(
@@ -2963,8 +2982,10 @@ void QuicChromiumClientSession::OnNetworkDisconnectedV2(
       NetLogEventType::QUIC_CONNECTION_MIGRATION_ON_NETWORK_DISCONNECTED,
       "disconnected_network", disconnected_network);
 
-  MaybeCancelProbing(disconnected_network, peer_address(),
-                     ProbingCancellationReason::kNetworkDisconnected);
+  MaybeCancelSpecificInFlightProbe(
+      disconnected_network, peer_address(),
+      ProbingCancellationReason::kNetworkDisconnected,
+      /*superseded_cause=*/std::nullopt);
 
   if (disconnected_network == default_network_) {
     DVLOG(1) << "Default network: " << default_network_ << " is disconnected.";
@@ -3130,8 +3151,14 @@ void QuicChromiumClientSession::MigrateNetworkImmediately(
     return;
   }
 
-  MaybeCancelProbing(network, peer_address(),
-                     ProbingCancellationReason::kSuperseded, migration_cause);
+  if (!base::FeatureList::IsEnabled(
+          features::kQuicAlwaysCancelPreExistingProbingOnMigration)) {
+    // When enabled, cancellation for any probe happens within
+    // MigrateWithoutProbing.
+    MaybeCancelSpecificInFlightProbe(network, peer_address(),
+                                     ProbingCancellationReason::kSuperseded,
+                                     migration_cause);
+  }
   pending_migrate_network_immediately_ = true;
   MigrateWithoutProbing(
       migration_cause, network, ToIPEndPoint(connection()->peer_address()),
@@ -3750,14 +3777,9 @@ void QuicChromiumClientSession::FinishStartProbing(
   }
 
   QuicMigrationAttemptCause cause = context->cause();
-  if (auto* existing_context = static_cast<QuicChromiumPathValidationContext*>(
-          connection()->GetPathValidationContext())) {
-    // If a probe is currently in flight, explicitly cancel it with its
-    // superseding cause before ValidatePath() starts the new one.
-    MaybeCancelProbing(existing_context->network(),
-                       existing_context->peer_address(),
-                       ProbingCancellationReason::kSuperseded, cause);
-  }
+  // If a probe is currently in flight, explicitly cancel it with its
+  // superseding cause before ValidatePath() starts the new one.
+  MaybeCancelAnyInFlightProbe(cause);
 
   context->reader()->StartReading();
   path_validation_writer_delegate_.set_network(context->target_network());
@@ -4429,6 +4451,15 @@ void QuicChromiumClientSession::MigrateWithoutProbing(
     }
   }
 
+  if (base::FeatureList::IsEnabled(
+          features::kQuicAlwaysCancelPreExistingProbingOnMigration)) {
+    // For immediate migrations, cancel any in-flight probe before starting
+    // asynchronous socket configuration for the new path. This way we prevent
+    // an in-flight probe from completing and committing another migration
+    // while `ConnectAndConfigureSocket` is in flight.
+    MaybeCancelAnyInFlightProbe(migration_cause);
+  }
+
   // Create and configure socket on `network`.
   // TODO(crbug.com/518753285): Once we no longer bindToNetwork via
   // `ConnectAndConfigureSocket`, bind the socket via this `CreateSocket` call,
@@ -4549,6 +4580,15 @@ bool QuicChromiumClientSession::CommitMigration(
     HistogramAndLogMigrationFailure(MIGRATION_STATUS_TOO_MANY_CHANGES,
                                     connection_id(), "Too many changes");
     return false;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kQuicAlwaysCancelPreExistingProbingOnMigration)) {
+    // When committing a migration, cancel any in-flight probe. This catches
+    // any probe that was started while an immediate migration was
+    // asynchronously configuring its socket; or, any other probe that was
+    // started during the probing of a probing migration.
+    MaybeCancelAnyInFlightProbe(migration_context->cause());
   }
 
   IPEndPoint local_address;

@@ -2363,7 +2363,8 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocketNoConnectionId) {
       QuicMigrationAttemptFailureReason::kNoUnusedConnectionId, 1);
 }
 
-TEST_P(QuicChromiumClientSessionTest, MaybeCancelProbing_InFlightAttemptFails) {
+TEST_P(QuicChromiumClientSessionTest,
+       MaybeCancelSpecificInFlightProbe_InFlightAttemptFails) {
   quic::QuicConnectionId cid_on_new_path =
       quic::test::TestConnectionId(12345678);
   MockQuicData quic_data(version_);
@@ -2411,8 +2412,10 @@ TEST_P(QuicChromiumClientSessionTest, MaybeCancelProbing_InFlightAttemptFails) {
       quic::PathValidationReason::kConnectionMigration);
 
   base::HistogramTester histogram_tester;
-  session_->MaybeCancelProbing(target_network, target_peer_address,
-                               ProbingCancellationReason::kWriterError);
+  session_->MaybeCancelSpecificInFlightProbe(
+      target_network, target_peer_address,
+      ProbingCancellationReason::kWriterError,
+      /*superseded_cause=*/std::nullopt);
 
   histogram_tester.ExpectUniqueSample("Net.Quic.Migration.Attempt.Eligible",
                                       false, 1);
@@ -2450,9 +2453,9 @@ TEST_P(QuicChromiumClientSessionTest, ProbingFailsWithNoUnusedConnectionId) {
   Initialize();
   CompleteCryptoHandshake();
 
-  // Note: unlike MaybeCancelProbing_InFlightAttemptFails above, the server
-  // never sends a NEW_CONNECTION_ID frame, so there is no unused connection ID
-  // to consume for the alternative path.
+  // Note: unlike MaybeCancelSpecificInFlightProbe_InFlightAttemptFails above,
+  // the server never sends a NEW_CONNECTION_ID frame, so there is no unused
+  // connection ID to consume for the alternative path.
   ASSERT_FALSE(session_->connection()->HasUnusedConnectionId());
 
   MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 0)};
@@ -2495,7 +2498,8 @@ TEST_P(QuicChromiumClientSessionTest, ProbingFailsWithNoUnusedConnectionId) {
                                       MIGRATION_STATUS_INTERNAL_ERROR, 1);
 }
 
-TEST_P(QuicChromiumClientSessionTest, MaybeCancelProbing_IneligibleReason) {
+TEST_P(QuicChromiumClientSessionTest,
+       MaybeCancelSpecificInFlightProbe_IneligibleReason) {
   quic::QuicConnectionId cid_on_new_path =
       quic::test::TestConnectionId(12345678);
   MockQuicData quic_data(version_);
@@ -2543,8 +2547,10 @@ TEST_P(QuicChromiumClientSessionTest, MaybeCancelProbing_IneligibleReason) {
       quic::PathValidationReason::kConnectionMigration);
 
   base::HistogramTester histogram_tester;
-  session_->MaybeCancelProbing(target_network, target_peer_address,
-                               ProbingCancellationReason::kNetworkDisconnected);
+  session_->MaybeCancelSpecificInFlightProbe(
+      target_network, target_peer_address,
+      ProbingCancellationReason::kNetworkDisconnected,
+      /*superseded_cause=*/std::nullopt);
 
   histogram_tester.ExpectTotalCount("Net.Quic.Migration.Attempt.Eligible", 0);
   histogram_tester.ExpectUniqueSample(
@@ -2563,7 +2569,8 @@ TEST_P(QuicChromiumClientSessionTest, MaybeCancelProbing_IneligibleReason) {
                                       MIGRATION_STATUS_DISCONNECTING, 1);
 }
 
-TEST_P(QuicChromiumClientSessionTest, MaybeCancelProbing_SupersededReason) {
+TEST_P(QuicChromiumClientSessionTest,
+       MaybeCancelSpecificInFlightProbe_SupersededReason) {
   quic::QuicConnectionId cid_on_new_path =
       quic::test::TestConnectionId(12345678);
   MockQuicData quic_data(version_);
@@ -2611,9 +2618,10 @@ TEST_P(QuicChromiumClientSessionTest, MaybeCancelProbing_SupersededReason) {
       quic::PathValidationReason::kConnectionMigration);
 
   base::HistogramTester histogram_tester;
-  session_->MaybeCancelProbing(target_network, target_peer_address,
-                               ProbingCancellationReason::kSuperseded,
-                               QuicMigrationAttemptCause::kOnWriteError);
+  session_->MaybeCancelSpecificInFlightProbe(
+      target_network, target_peer_address,
+      ProbingCancellationReason::kSuperseded,
+      QuicMigrationAttemptCause::kOnWriteError);
 
   histogram_tester.ExpectTotalCount("Net.Quic.Migration.Attempt.Eligible", 0);
   histogram_tester.ExpectUniqueSample("Net.Quic.Migration.Attempt.Superseded",
@@ -2628,6 +2636,179 @@ TEST_P(QuicChromiumClientSessionTest, MaybeCancelProbing_SupersededReason) {
   histogram_tester.ExpectUniqueSample(
       "Net.QuicSession.ConnectionMigration",
       MIGRATION_STATUS_CANCELED_BY_NEWER_VALIDATION, 1);
+}
+
+TEST_P(QuicChromiumClientSessionTest,
+       CommitMigration_CancelsInFlightProbeAsSuperseded) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kQuicAlwaysCancelPreExistingProbingOnMigration);
+  quic::test::QuicFlagSaver flags;
+  SetQuicReloadableFlag(quic_active_connection_id_limit, true);
+  config_.SetActiveConnectionIdLimitToSend(3);
+  quic::QuicConnectionId cid_for_probe =
+      quic::test::TestConnectionId(12345678);
+  quic::QuicConnectionId cid_for_commit =
+      quic::test::TestConnectionId(87654321);
+  MockQuicData quic_data(version_);
+  int packet_num = 1;
+  int peer_packet_num = 1;
+  socket_data_.reset();
+  quic_data.AddRead(ASYNC, ERR_IO_PENDING);
+  quic_data.AddWrite(ASYNC,
+                     client_maker_.MakeInitialSettingsPacket(packet_num++));
+  quic_data.AddRead(ASYNC, server_maker_.Packet(peer_packet_num++)
+                               .AddNewConnectionIdFrame(cid_for_commit,
+                                                        /*sequence_number=*/1u,
+                                                        /*retire_prior_to=*/0u)
+                               .AddNewConnectionIdFrame(cid_for_probe,
+                                                        /*sequence_number=*/2u,
+                                                        /*retire_prior_to=*/0u)
+                               .Build());
+  quic_data.AddRead(ASYNC, ERR_IO_PENDING);
+  quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
+  quic_data.AddSocketDataToFactory(&socket_factory_);
+  Initialize();
+  CompleteCryptoHandshake();
+
+  // Make both new connection IDs available after handshake completion.
+  quic_data.Resume();
+  base::RunLoop().RunUntilIdle();
+
+  MockRead probe_reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 0)};
+  MockWrite probe_writes[] = {MockWrite(SYNCHRONOUS, ERR_IO_PENDING, 1)};
+  SequencedSocketData probe_socket_data(probe_reads, probe_writes);
+  auto probe_context = CreateMigrationAttemptContext(
+      QuicMigrationAttemptCause::kOnNetworkMadeDefault, &probe_socket_data);
+
+  IPEndPoint probe_local_address;
+  probe_context->reader()->socket()->GetLocalAddress(&probe_local_address);
+  auto path_validation_context = std::make_unique<
+      QuicChromiumClientSession::QuicChromiumPathValidationContext>(
+      ToQuicSocketAddress(probe_local_address), std::move(probe_context));
+
+  session_->connection()->ValidatePath(
+      std::move(path_validation_context),
+      std::make_unique<QuicChromiumClientSession::
+                           ConnectionMigrationValidationResultDelegate>(
+          session_.get()),
+      quic::PathValidationReason::kConnectionMigration);
+  ASSERT_TRUE(session_->connection()->HasPendingPathValidation());
+
+  MockRead commit_reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 0)};
+  MockWrite commit_writes[] = {MockWrite(SYNCHRONOUS, ERR_IO_PENDING, 1)};
+  SequencedSocketData commit_socket_data(commit_reads, commit_writes);
+  auto commit_context = CreateMigrationAttemptContext(
+      QuicMigrationAttemptCause::kOnNetworkDisconnected, &commit_socket_data);
+
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(*session_, UnregisterQuicConnectionClosePayload());
+  EXPECT_CALL(*session_, RegisterQuicConnectionClosePayload());
+  EXPECT_TRUE(session_->CommitMigration(std::move(commit_context)));
+  EXPECT_FALSE(session_->connection()->HasPendingPathValidation());
+
+  // The in-flight probe was cancelled as superseded by OnNetworkDisconnected.
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.Superseded",
+      QuicMigrationAttemptCause::kOnNetworkDisconnected, 1);
+
+  // The committed migration succeeded.
+  histogram_tester.ExpectUniqueSample("Net.Quic.Migration.Attempt.Eligible",
+                                      true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.Eligible.ByTrigger.OnNetworkDisconnected",
+      true, 1);
+  histogram_tester.ExpectTotalCount("Net.Quic.Migration.Attempt.FailureReason",
+                                    0);
+  histogram_tester.ExpectTotalCount(
+      "Net.Quic.Migration.Attempt.SpuriousOutcome", 0);
+  histogram_tester.ExpectTotalCount(
+      "Net.Quic.Migration.Attempt.UnclassifiedOutcome", 0);
+}
+
+TEST_P(QuicChromiumClientSessionTest,
+       CommitMigration_FeatureDisabled_DoesNotCancelInFlightProbe) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kQuicAlwaysCancelPreExistingProbingOnMigration);
+  quic::test::QuicFlagSaver flags;
+  SetQuicReloadableFlag(quic_active_connection_id_limit, true);
+  config_.SetActiveConnectionIdLimitToSend(3);
+  quic::QuicConnectionId cid_for_probe =
+      quic::test::TestConnectionId(12345678);
+  quic::QuicConnectionId cid_for_commit =
+      quic::test::TestConnectionId(87654321);
+  MockQuicData quic_data(version_);
+  int packet_num = 1;
+  int peer_packet_num = 1;
+  socket_data_.reset();
+  quic_data.AddRead(ASYNC, ERR_IO_PENDING);
+  quic_data.AddWrite(ASYNC,
+                     client_maker_.MakeInitialSettingsPacket(packet_num++));
+  quic_data.AddRead(ASYNC, server_maker_.Packet(peer_packet_num++)
+                               .AddNewConnectionIdFrame(cid_for_commit,
+                                                        /*sequence_number=*/1u,
+                                                        /*retire_prior_to=*/0u)
+                               .AddNewConnectionIdFrame(cid_for_probe,
+                                                        /*sequence_number=*/2u,
+                                                        /*retire_prior_to=*/0u)
+                               .Build());
+  quic_data.AddRead(ASYNC, ERR_IO_PENDING);
+  quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
+  quic_data.AddSocketDataToFactory(&socket_factory_);
+  Initialize();
+  CompleteCryptoHandshake();
+
+  // Make both new connection IDs available after handshake completion.
+  quic_data.Resume();
+  base::RunLoop().RunUntilIdle();
+
+  MockRead probe_reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 0)};
+  MockWrite probe_writes[] = {MockWrite(SYNCHRONOUS, ERR_IO_PENDING, 1)};
+  SequencedSocketData probe_socket_data(probe_reads, probe_writes);
+  auto probe_context = CreateMigrationAttemptContext(
+      QuicMigrationAttemptCause::kOnNetworkMadeDefault, &probe_socket_data);
+
+  IPEndPoint probe_local_address;
+  probe_context->reader()->socket()->GetLocalAddress(&probe_local_address);
+  auto path_validation_context = std::make_unique<
+      QuicChromiumClientSession::QuicChromiumPathValidationContext>(
+      ToQuicSocketAddress(probe_local_address), std::move(probe_context));
+
+  session_->connection()->ValidatePath(
+      std::move(path_validation_context),
+      std::make_unique<QuicChromiumClientSession::
+                           ConnectionMigrationValidationResultDelegate>(
+          session_.get()),
+      quic::PathValidationReason::kConnectionMigration);
+  ASSERT_TRUE(session_->connection()->HasPendingPathValidation());
+
+  MockRead commit_reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 0)};
+  MockWrite commit_writes[] = {MockWrite(SYNCHRONOUS, ERR_IO_PENDING, 1)};
+  SequencedSocketData commit_socket_data(commit_reads, commit_writes);
+  auto commit_context = CreateMigrationAttemptContext(
+      QuicMigrationAttemptCause::kOnNetworkDisconnected, &commit_socket_data);
+
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(*session_, UnregisterQuicConnectionClosePayload());
+  EXPECT_CALL(*session_, RegisterQuicConnectionClosePayload());
+  EXPECT_TRUE(session_->CommitMigration(std::move(commit_context)));
+  // When the feature is disabled, CommitMigration does not cancel the in-flight probe.
+  EXPECT_TRUE(session_->connection()->HasPendingPathValidation());
+
+  histogram_tester.ExpectTotalCount("Net.Quic.Migration.Attempt.Superseded", 0);
+
+  histogram_tester.ExpectUniqueSample("Net.Quic.Migration.Attempt.Eligible",
+                                      true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.Eligible.ByTrigger.OnNetworkDisconnected",
+      true, 1);
+  histogram_tester.ExpectTotalCount("Net.Quic.Migration.Attempt.FailureReason",
+                                    0);
+  histogram_tester.ExpectTotalCount(
+      "Net.Quic.Migration.Attempt.SpuriousOutcome", 0);
+  histogram_tester.ExpectTotalCount(
+      "Net.Quic.Migration.Attempt.UnclassifiedOutcome", 0);
 }
 
 TEST_P(QuicChromiumClientSessionTest, PathValidationFailure_RetryTimeout) {

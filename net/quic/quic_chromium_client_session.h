@@ -761,13 +761,24 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   void LogProbeFailure(handles::NetworkHandle network,
                        const quic::QuicSocketAddress& peer_address);
 
+  // Marks the ongoing probing attempt according to `reason` and cancels path
+  // validation. Requires an in-flight path validation to exist.
+  void CancelInFlightProbe(
+      ProbingCancellationReason reason,
+      std::optional<QuicMigrationAttemptCause> superseded_cause);
+
   // If there is an ongoing probing on <network, peer_address>, marks the
   // attempt according to `reason` and cancels path validation.
-  void MaybeCancelProbing(
+  void MaybeCancelSpecificInFlightProbe(
       handles::NetworkHandle network,
       const quic::QuicSocketAddress& peer_address,
       ProbingCancellationReason reason,
-      std::optional<QuicMigrationAttemptCause> superseded_cause = std::nullopt);
+      std::optional<QuicMigrationAttemptCause> superseded_cause);
+
+  // If there is any ongoing probing, marks the attempt as superseded by
+  // `superseded_by_cause` and cancels path validation.
+  void MaybeCancelAnyInFlightProbe(
+      QuicMigrationAttemptCause superseded_by_cause);
 
   // quic::QuicSpdySession methods:
   size_t WriteHeadersOnHeadersStream(

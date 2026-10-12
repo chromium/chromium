@@ -863,6 +863,9 @@ BASE_FEATURE(kQuicIgnoreRedundantOnNetworkMadeDefault,
 BASE_FEATURE(kQuicLongerIdleConnectionTimeout,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kQuicAlwaysCancelPreExistingProbingOnMigration,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kQuicWaitForNewNetworkTimeout, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(base::TimeDelta,
                    kQuicWaitForNewNetworkTimeoutParam,

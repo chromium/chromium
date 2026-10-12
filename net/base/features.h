@@ -863,6 +863,11 @@ NET_EXPORT BASE_DECLARE_FEATURE(kQuicIgnoreRedundantOnNetworkMadeDefault);
 // If enabled, we will use a longer idle timeout.
 NET_EXPORT BASE_DECLARE_FEATURE(kQuicLongerIdleConnectionTimeout);
 
+// If enabled, always cancel pre-existing probing when migrating immediately or
+// committing a migration.
+NET_EXPORT BASE_DECLARE_FEATURE(
+    kQuicAlwaysCancelPreExistingProbingOnMigration);
+
 // Controls the timeout for waiting for a new network to connect before giving
 // up on connection migration.
 NET_EXPORT BASE_DECLARE_FEATURE(kQuicWaitForNewNetworkTimeout);
