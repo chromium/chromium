@@ -1,6 +1,6 @@
 include_rules = [
-  # Used only for non-iOS.
+  # Used for non-iOS and iOS Blink tests.
   "+content/public/test",
-  # Used only for iOS.
+  # Used only for iOS WebKit tests.
   "+ios/web/public/test",
 ]
