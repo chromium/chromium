@@ -118,6 +118,8 @@ void ReadAloudService::Play(content::WebContents* new_web_contents) {
     Initialize(new_web_contents);
   }
 
+  user_requested_play_ = true;
+
   // Start or resume audio playback.
   CHECK(media_session_);
   media_session_->NotifyPlaybackStarted();
@@ -131,6 +133,8 @@ void ReadAloudService::Play(content::WebContents* new_web_contents) {
 }
 
 void ReadAloudService::Pause() {
+  user_requested_play_ = false;
+
   if (media_session_) {
     media_session_->NotifyPlaybackPaused();
   }
@@ -153,6 +157,8 @@ void ReadAloudService::Stop() {
 }
 
 void ReadAloudService::ResetPlayback() {
+  user_requested_play_ = false;
+
   // Detach observer since tracking is only needed during active playback.
   Observe(nullptr);
 
@@ -271,10 +277,6 @@ void ReadAloudService::OnSessionSuspended() {
 
 void ReadAloudService::OnSessionResumed() {
   Play(web_contents());
-}
-
-bool ReadAloudService::IsPlaybackPaused() const {
-  return !media_session_ || media_session_->is_paused();
 }
 
 void ReadAloudService::Shutdown() {
@@ -407,12 +409,11 @@ void ReadAloudService::OnOverviewGenerated(mojo_base::BigBuffer response_bytes,
     return;
   }
 
-  // TODO(cl/8542391): Prevent unintended play signal if user requested
-  // pause during generation.
-
-  // Signal Play() so that content starts playing as soon
-  // as the overview text content is set.
-  utility_player_->Play();
+  // If user did not cancel play, signal Play() so that content
+  // starts playing as soon as the overview text content is set.
+  if (user_requested_play_) {
+    utility_player_->Play();
+  }
   utility_player_->SetOverviewContent(
       std::move(response_bytes),
       base::BindOnce(&ReadAloudService::OnOverviewContentSet,
@@ -604,10 +605,13 @@ void ReadAloudService::OnDistillationFailed(
 void ReadAloudService::OnPlaybackStateChanged(
     read_aloud::mojom::PlaybackState state) {
   switch (state) {
+    case read_aloud::mojom::PlaybackState::kEndOfStream:
+      user_requested_play_ = false;
+      NotifyPlaybackStateChanged(state);
+      return;
     case read_aloud::mojom::PlaybackState::kPaused:
     case read_aloud::mojom::PlaybackState::kBuffering:
     case read_aloud::mojom::PlaybackState::kPlaying:
-    case read_aloud::mojom::PlaybackState::kEndOfStream:
       // TODO(b/562011435): Utility-initiated pauses do not reach MediaSession.
       // media_session_->NotifyPlaybackPaused() should be called so the OS
       // notification reflects the paused state.

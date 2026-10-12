@@ -1281,7 +1281,6 @@ TEST_F(ReadAloudServiceTest, AudioStreamCreationFailureDispatchesError) {
   run_loop.Run();
 
   EXPECT_EQ(service()->web_contents(), nullptr);
-  EXPECT_TRUE(service()->IsPlaybackPaused());
 
   EXPECT_CALL(*delegate_ptr, OnNativeDestroyed()).Times(1);
 }
@@ -1672,6 +1671,26 @@ TEST_F(ReadAloudServiceTest,
   view_delegate->OnArticleReady(&proto);
 
   EXPECT_THAT(fake_controller()->received_segments(), testing::IsEmpty());
+}
+
+TEST_F(ReadAloudServiceTest, OverviewModePauseDuringGenerationDoesNotAutoPlay) {
+  dom_distiller::ViewRequestDelegate* view_delegate = StartOverviewSession();
+  ASSERT_NE(view_delegate, nullptr);
+
+  service()->Play(web_contents());
+  EXPECT_EQ(fake_controller()->play_count(), 0);
+
+  // User pauses while overview generation is in-flight.
+  service()->Pause();
+
+  DeliverDistilledArticle(view_delegate);
+  // utility Play() must not be called because user paused.
+  EXPECT_EQ(fake_controller()->play_count(), 0);
+
+  // Resuming playback after generation completes forwards Play() to utility.
+  service()->Play(web_contents());
+  fake_controller()->FlushForTesting();
+  EXPECT_EQ(fake_controller()->play_count(), 1);
 }
 
 TEST_F(ReadAloudServiceTest, OverviewModeGeneratedTitleUpdatesMetadata) {

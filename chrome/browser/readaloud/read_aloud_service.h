@@ -205,8 +205,6 @@ class ReadAloudService
   void OnSessionSuspended();
   void OnSessionResumed();
 
-  bool IsPlaybackPaused() const;
-
   // content::WebContentsObserver:
   void WebContentsDestroyed() override;
   void PrimaryPageChanged(content::Page& page) override;
@@ -309,6 +307,10 @@ class ReadAloudService
   // True if the overview script has been generated and set
   // for the utility process.
   bool overview_script_loaded_ = false;
+
+  // Tracks explicit user playback intent in the browser process across
+  // asynchronous distillation and overview generation operations.
+  bool user_requested_play_ = false;
 
   base::WeakPtrFactory<ReadAloudService> weak_factory_{this};
 };
