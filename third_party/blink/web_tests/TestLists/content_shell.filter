@@ -235,7 +235,6 @@ external/wpt/html/semantics/forms/form-submission-0/multipart-formdata.window.ht
 external/wpt/html/semantics/forms/form-submission-target/form-target-blank-useractivation-multi-globals.html
 external/wpt/html/semantics/forms/form-submission-target/rel-input-target.html
 external/wpt/html/semantics/forms/the-input-element/focus-dynamic-type-change.html
-external/wpt/html/semantics/forms/the-input-element/focus-dynamic-type-change-on-blur.html
 external/wpt/html/semantics/forms/the-input-element/range-intrinsic-size.html
 external/wpt/html/semantics/forms/the-option-element/dynamic-content-change-rendering.html
 external/wpt/html/semantics/links/links-created-by-a-and-area-elements/target_blank_useractivation*

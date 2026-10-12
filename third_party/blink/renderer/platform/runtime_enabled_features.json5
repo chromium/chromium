@@ -6527,6 +6527,12 @@
       name: "TargetRangesForBackwardDeletionUnit",
       status: "stable",
     },
+    {
+      // Kill switch for releasing directly focused temporal input hosts on blur.
+      // See crbug.com/541316137.
+      name: "TemporalInputHostBlur",
+      status: "stable",
+    },
     // For unit tests.
     {
       // This is for testing copied_from_base_feature_if.

@@ -54,6 +54,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/date_components.h"
 #include "third_party/blink/renderer/platform/text/date_time_format.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
@@ -341,9 +342,19 @@ void MultipleFieldsTemporalInputTypeView::Trace(Visitor* visitor) const {
 }
 
 void MultipleFieldsTemporalInputTypeView::Blur() {
+  const bool host_was_focused =
+      GetElement().GetDocument().FocusedElement() == &GetElement();
   if (DateTimeEditElement* edit = GetDateTimeEditElement())
     edit->BlurByOwner();
   ClosePopupView();
+  // Coarse pointer devices focus the input itself rather than a subfield.
+  // Do not blur a subfield focused during chooser closure: it would still
+  // adjust to the input host in Element::blur().
+  if (RuntimeEnabledFeatures::TemporalInputHostBlurEnabled() &&
+      host_was_focused &&
+      GetElement().GetDocument().FocusedElement() == &GetElement()) {
+    GetElement().DefaultBlur();
+  }
 }
 
 void MultipleFieldsTemporalInputTypeView::AdjustStyle(
