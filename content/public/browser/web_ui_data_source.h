@@ -156,6 +156,26 @@ class WebUIDataSource {
   virtual void OverrideCrossOriginEmbedderPolicy(const std::string& value) = 0;
   virtual void OverrideCrossOriginResourcePolicy(const std::string& value) = 0;
 
+  // Sets whether any WebUI origin that can request this source's scheme is
+  // allowed to read its responses cross-origin via
+  // "Access-Control-Allow-Origin: *". If set to true, this wildcard setting
+  // takes precedence and broadly covers all requesting origins, superseding any
+  // individual origins added via AddAccessControlAllowOrigin().
+  virtual void SetAllowAllOrigins(bool allow_all_origins) = 0;
+
+  // Adds an allowed origin for the "Access-Control-Allow-Origin" header on this
+  // source's responses. `origin` must not be opaque.
+  //
+  // For sandboxed WebUI frames / documents with opaque origins, add the
+  // precursor tuple origin (e.g. `chrome-untrusted://foo`) instead, as matching
+  // automatically resolves precursor origins. For arbitrary opaque origins or
+  // "null" requests without a precursor, use `SetAllowAllOrigins(true)`.
+  //
+  // Note that if SetAllowAllOrigins(true) is enabled, the wildcard will broadly
+  // cover all requesting origins regardless of whether specific origins have
+  // been added here.
+  virtual void AddAccessControlAllowOrigin(const url::Origin& origin) = 0;
+
   // Removes directives related to Trusted Types from the CSP header.
   virtual void DisableTrustedTypesCSP() = 0;
 
