@@ -377,10 +377,10 @@ bool ParseExpirationDate(std::u16string_view text,
   std::u16string year_local;
 
   // Check for a separator.
-  std::u16string found_separator;
-  const std::vector<std::u16string> kSeparators{u"-", u"/", u"|"};
-  for (const std::u16string& separator : kSeparators) {
-    if (text.find(separator) != std::u16string::npos) {
+  std::u16string_view found_separator;
+  constexpr std::u16string_view kSeparators[] = {u"-", u"/", u"|"};
+  for (std::u16string_view separator : kSeparators) {
+    if (text.find(separator) != std::u16string_view::npos) {
       found_separator = separator;
       break;
     }
