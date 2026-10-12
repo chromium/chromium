@@ -4,6 +4,7 @@
 
 #include "services/network/web_bundle/web_bundle_url_loader_factory.h"
 
+#include "base/base64.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -15,6 +16,7 @@
 #include "mojo/public/cpp/system/functions.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/blocked_by_response_reason.mojom.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -664,6 +666,177 @@ TEST_F(WebBundleURLLoaderFactoryRequireCorpTest, ClonedReporterDestruction) {
   EXPECT_EQ(net::ERR_BLOCKED_BY_RESPONSE,
             result.client->completion_status().error_code);
   EXPECT_THAT(coep_reports(), ::testing::ElementsAre(GURL(kCrossOriginJsUrl)));
+}
+
+TEST_F(WebBundleURLLoaderFactoryTest, UnencodedDigestParsed) {
+  constexpr char kValidDigestHeader[] =
+      "sha-256=:X48E9qOokqqrvdts8nOJRJN3OWDUoyWxBf7kbu9DBPE=:";
+  web_package::WebBundleBuilder builder;
+  builder.AddExchange(kResourceUrl,
+                      {{":status", "200"},
+                       {"content-type", "application/json"},
+                       {"unencoded-digest", kValidDigestHeader}},
+                      R"({"hello": "world"})");
+  builder.AddExchange(kResourceUrl2,
+                      {{":status", "200"},
+                       {"content-type", "application/json"},
+                       {"unencoded-digest", "malformed-digest"}},
+                      R"({"hello": "world"})");
+  WriteBundle(builder.CreateBundle());
+  FinishWritingBundle();
+
+  auto valid_request = StartRequest(GURL(kResourceUrl), kResourceRequestId);
+  valid_request.client->RunUntilComplete();
+  EXPECT_EQ(net::OK, valid_request.client->completion_status().error_code);
+  ASSERT_TRUE(valid_request.client->response_head()->unencoded_digests);
+  EXPECT_EQ(
+      1u,
+      valid_request.client->response_head()->unencoded_digests->digests.size());
+  EXPECT_TRUE(
+      valid_request.client->response_head()->unencoded_digests->issues.empty());
+
+  auto malformed_request =
+      StartRequest(GURL(kResourceUrl2), kResourceRequestId2);
+  malformed_request.client->RunUntilComplete();
+  EXPECT_EQ(net::OK, malformed_request.client->completion_status().error_code);
+  ASSERT_TRUE(malformed_request.client->response_head()->unencoded_digests);
+  EXPECT_TRUE(malformed_request.client->response_head()
+                  ->unencoded_digests->digests.empty());
+  EXPECT_FALSE(malformed_request.client->response_head()
+                   ->unencoded_digests->issues.empty());
+}
+
+TEST_F(WebBundleURLLoaderFactoryTest, SRIMessageSignatureValid) {
+  constexpr char kPublicKey[] = "JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=";
+  constexpr char kValidDigestHeader[] =
+      "sha-256=:X48E9qOokqqrvdts8nOJRJN3OWDUoyWxBf7kbu9DBPE=:";
+  constexpr char kValidSignatureInputHeader[] =
+      "signature=(\"unencoded-digest\";sf);"
+      "keyid=\"JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=\";"
+      "tag=\"ed25519-integrity\"";
+  constexpr char kValidSignatureHeader[] =
+      "signature=:SbCdPUyjc0IBJjFbVRWs81ucEUcFz87b37nQ63d6kDW+/"
+      "JvDmET6O5cSdwlddePvlwemLdaWFuY6pQGO+hrkAg==:";
+
+  web_package::WebBundleBuilder builder;
+  builder.AddExchange(kResourceUrl,
+                      {{":status", "200"},
+                       {"content-type", "application/json"},
+                       {"unencoded-digest", kValidDigestHeader},
+                       {"signature-input", kValidSignatureInputHeader},
+                       {"signature", kValidSignatureHeader}},
+                      R"({"hello": "world"})");
+  WriteBundle(builder.CreateBundle());
+  FinishWritingBundle();
+
+  network::ResourceRequest request =
+      CreateRequest(GURL(kResourceUrl), kResourceRequestId);
+  std::optional<std::vector<uint8_t>> decoded_key =
+      base::Base64Decode(kPublicKey);
+  ASSERT_TRUE(decoded_key.has_value());
+  request.expected_public_keys = {*decoded_key};
+
+  auto result = StartRequest(request);
+  result.client->RunUntilComplete();
+
+  EXPECT_EQ(net::OK, result.client->completion_status().error_code);
+  ASSERT_TRUE(result.client->response_head()->unencoded_digests);
+  EXPECT_EQ(1u,
+            result.client->response_head()->unencoded_digests->digests.size());
+  std::string body;
+  EXPECT_TRUE(mojo::BlockingCopyToString(result.client->response_body_release(),
+                                         &body));
+  EXPECT_EQ(R"({"hello": "world"})", body);
+}
+
+TEST_F(WebBundleURLLoaderFactoryTest, SRIMessageSignatureInvalidBlocked) {
+  constexpr char kValidDigestHeader[] =
+      "sha-256=:X48E9qOokqqrvdts8nOJRJN3OWDUoyWxBf7kbu9DBPE=:";
+  constexpr char kValidSignatureInputHeader[] =
+      "signature=(\"unencoded-digest\";sf);"
+      "keyid=\"JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=\";"
+      "tag=\"ed25519-integrity\"";
+  constexpr char kInvalidSignatureHeader[] =
+      "signature=:gHim9e5Pk2H7c9BStOmxSmkyc8+ioZgoxynu3d4INAT4dwfj"
+      "5LhvaV9DFnEQ9p7C0hzW4o4Qpkm5aApd6WLLCw==:";
+
+  web_package::WebBundleBuilder builder;
+  builder.AddExchange(kResourceUrl,
+                      {{":status", "200"},
+                       {"content-type", "application/json"},
+                       {"unencoded-digest", kValidDigestHeader},
+                       {"signature-input", kValidSignatureInputHeader},
+                       {"signature", kInvalidSignatureHeader}},
+                      R"({"hello": "world"})");
+  WriteBundle(builder.CreateBundle());
+  FinishWritingBundle();
+
+  auto result = StartRequest(GURL(kResourceUrl), kResourceRequestId);
+  result.client->RunUntilComplete();
+
+  EXPECT_EQ(net::ERR_BLOCKED_BY_RESPONSE,
+            result.client->completion_status().error_code);
+  EXPECT_EQ(mojom::BlockedByResponseReason::kSRIMessageSignatureMismatch,
+            result.client->completion_status().blocked_by_response_reason);
+}
+
+TEST_F(WebBundleURLLoaderFactoryTest,
+       SRIMessageSignatureExpectedPublicKeyMismatchOrMissingBlocked) {
+  constexpr char kOtherPublicKey[] =
+      "xDnP380zcL4rJ76rXYjeHlfMyPZEOqpJYjsjEppbuXE=";
+  constexpr char kValidDigestHeader[] =
+      "sha-256=:X48E9qOokqqrvdts8nOJRJN3OWDUoyWxBf7kbu9DBPE=:";
+  constexpr char kValidSignatureInputHeader[] =
+      "signature=(\"unencoded-digest\";sf);"
+      "keyid=\"JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=\";"
+      "tag=\"ed25519-integrity\"";
+  constexpr char kValidSignatureHeader[] =
+      "signature=:SbCdPUyjc0IBJjFbVRWs81ucEUcFz87b37nQ63d6kDW+/"
+      "JvDmET6O5cSdwlddePvlwemLdaWFuY6pQGO+hrkAg==:";
+
+  web_package::WebBundleBuilder builder;
+  // Signed with kPublicKey, not kOtherPublicKey.
+  builder.AddExchange(kResourceUrl,
+                      {{":status", "200"},
+                       {"content-type", "application/json"},
+                       {"unencoded-digest", kValidDigestHeader},
+                       {"signature-input", kValidSignatureInputHeader},
+                       {"signature", kValidSignatureHeader}},
+                      R"({"hello": "world"})");
+  // Unsigned response.
+  builder.AddExchange(
+      kResourceUrl2, {{":status", "200"}, {"content-type", "application/json"}},
+      R"({"hello": "world"})");
+  WriteBundle(builder.CreateBundle());
+  FinishWritingBundle();
+
+  std::optional<std::vector<uint8_t>> other_key =
+      base::Base64Decode(kOtherPublicKey);
+  ASSERT_TRUE(other_key.has_value());
+
+  // 1. Signed with a different public key than expected -> blocked.
+  network::ResourceRequest wrong_key_request =
+      CreateRequest(GURL(kResourceUrl), kResourceRequestId);
+  wrong_key_request.expected_public_keys = {*other_key};
+  auto wrong_key_result = StartRequest(wrong_key_request);
+  wrong_key_result.client->RunUntilComplete();
+  EXPECT_EQ(net::ERR_BLOCKED_BY_RESPONSE,
+            wrong_key_result.client->completion_status().error_code);
+  EXPECT_EQ(
+      mojom::BlockedByResponseReason::kSRIMessageSignatureMismatch,
+      wrong_key_result.client->completion_status().blocked_by_response_reason);
+
+  // 2. Unsigned response when client requires public key integrity -> blocked.
+  network::ResourceRequest unsigned_request =
+      CreateRequest(GURL(kResourceUrl2), kResourceRequestId2);
+  unsigned_request.expected_public_keys = {*other_key};
+  auto unsigned_result = StartRequest(unsigned_request);
+  unsigned_result.client->RunUntilComplete();
+  EXPECT_EQ(net::ERR_BLOCKED_BY_RESPONSE,
+            unsigned_result.client->completion_status().error_code);
+  EXPECT_EQ(
+      mojom::BlockedByResponseReason::kSRIMessageSignatureMismatch,
+      unsigned_result.client->completion_status().blocked_by_response_reason);
 }
 
 }  // namespace network
