@@ -56,7 +56,7 @@ public class NewTabPageMemoryLeakTest {
             ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     @Rule public SuggestionsDependenciesRule mSuggestionsDeps = new SuggestionsDependenciesRule();
-    @Rule public SigninTestRule mSigninTestRule = SigninTestRule.createWithCleanups();
+    @Rule public SigninTestRule mSigninTestRule = new SigninTestRule();
 
     private NewTabPage mNtp;
 
