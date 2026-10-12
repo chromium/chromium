@@ -66,7 +66,8 @@ public class ExtensionActionListCoordinator implements Destroyable {
             @Nullable ContextMenuPopulatorFactory contextMenuPopulatorFactory,
             @Nullable SelectionDropdownMenuDelegate selectionDropdownMenuDelegate,
             TabModelSelector tabModelSelector,
-            ModalDialogManager modalDialogManager) {
+            ModalDialogManager modalDialogManager,
+            Runnable clearOmniboxFocus) {
         mContext = context;
         mContainer = container;
 
@@ -84,7 +85,8 @@ public class ExtensionActionListCoordinator implements Destroyable {
                         contextMenuPopulatorFactory,
                         selectionDropdownMenuDelegate,
                         tabModelSelector,
-                        modalDialogManager);
+                        modalDialogManager,
+                        clearOmniboxFocus);
 
         ExtensionsToolbarDragTouchHandler dragTouchHandler =
                 new ExtensionsToolbarDragTouchHandler(context, mModels);

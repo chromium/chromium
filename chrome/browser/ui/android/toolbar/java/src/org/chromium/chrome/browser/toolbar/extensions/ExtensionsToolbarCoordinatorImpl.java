@@ -126,6 +126,7 @@ public class ExtensionsToolbarCoordinatorImpl
             TabModelSelector tabModelSelector,
             ModalDialogManager modalDialogManager,
             @Nullable Runnable onFeatureRemoved,
+            Runnable clearOmniboxFocus,
             boolean isWebApp) {
         mIsWebApp = isWebApp;
         mBridge = new ExtensionActionsBridge(task, profile);
@@ -155,7 +156,8 @@ public class ExtensionsToolbarCoordinatorImpl
                         contextMenuPopulatorFactory,
                         selectionDropdownMenuDelegate,
                         tabModelSelector,
-                        modalDialogManager);
+                        modalDialogManager,
+                        clearOmniboxFocus);
         mToolbarModel = new PropertyModel.Builder(ExtensionsToolbarProperties.ALL_KEYS).build();
         mMenuButtonChangeProcessor =
                 PropertyModelChangeProcessor.create(
@@ -176,6 +178,7 @@ public class ExtensionsToolbarCoordinatorImpl
                         mExtensionsToolbarBridge,
                         mMenuButtonPinningDelegate,
                         modalDialogManager,
+                        clearOmniboxFocus,
                         mIsWebApp);
 
         mExtensionAccessControlButtonCoordinator =
@@ -187,7 +190,8 @@ public class ExtensionsToolbarCoordinatorImpl
                         CallbackUtils.emptyCallback(),
                         () ->
                                 mContainer.getResources().getConfiguration().screenWidthDp
-                                        < COMPACT_WINDOW_THRESHOLD_DP);
+                                        < COMPACT_WINDOW_THRESHOLD_DP,
+                        clearOmniboxFocus);
         mPrefChangeRegistrar = PrefServiceUtil.createFor(profile);
         mPrefChangeRegistrar.addObserver(
                 Pref.PIN_EXTENSIONS_MENU_BUTTON, this::updateMenuButtonPinState);

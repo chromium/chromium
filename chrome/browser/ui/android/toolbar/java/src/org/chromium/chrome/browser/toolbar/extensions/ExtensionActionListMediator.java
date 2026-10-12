@@ -136,6 +136,7 @@ class ExtensionActionListMediator implements Destroyable {
     private final ExtensionActionListCoordinator.RecyclerViewDelegate mRecyclerViewDelegate;
     private final TabModelSelector mTabModelSelector;
     private final Handler mHandler = new Handler(Looper.getMainLooper());
+    private final Runnable mClearOmniboxFocus;
 
     private @Nullable AnchoredPopupWindow mHoverCard;
     private @Nullable String mHoverCardActionId;
@@ -183,7 +184,8 @@ class ExtensionActionListMediator implements Destroyable {
             @Nullable ContextMenuPopulatorFactory contextMenuPopulatorFactory,
             @Nullable SelectionDropdownMenuDelegate selectionDropdownMenuDelegate,
             TabModelSelector tabModelSelector,
-            ModalDialogManager modalDialogManager) {
+            ModalDialogManager modalDialogManager,
+            Runnable clearOmniboxFocus) {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mModels = models;
@@ -196,6 +198,7 @@ class ExtensionActionListMediator implements Destroyable {
         mSelectionDropdownMenuDelegate = selectionDropdownMenuDelegate;
         mTabModelSelector = tabModelSelector;
         mModalDialogManager = modalDialogManager;
+        mClearOmniboxFocus = clearOmniboxFocus;
         mModalDialogManager.addObserver(mModalDialogManagerObserver);
 
         mExtensionsToolbarBridge.setActionListDelegate(mToolbarDelegate);
@@ -619,6 +622,7 @@ class ExtensionActionListMediator implements Destroyable {
     }
 
     private void onPrimaryClick(String actionId) {
+        mClearOmniboxFocus.run();
         if (mActionState instanceof ActionState.PopupActive activeState) {
             boolean closeOnly = activeState.getActionId().equals(actionId);
             closePopup();
@@ -777,6 +781,7 @@ class ExtensionActionListMediator implements Destroyable {
 
     @VisibleForTesting
     void requestShowContextMenu(String actionId) {
+        mClearOmniboxFocus.run();
         closeHoverCard();
         closePopup();
         closeContextMenu();

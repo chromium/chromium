@@ -150,6 +150,7 @@ public class ExtensionActionListMediatorTest {
     @Mock private TabModelSelector mTabModelSelector;
 
     @Mock private ModalDialogManager mModalDialogManager;
+    @Mock private Runnable mClearOmniboxFocus;
 
     @Captor private ArgumentCaptor<ListMenuHost.PopupMenuShownListener> mPopupListenerCaptor;
 
@@ -227,7 +228,8 @@ public class ExtensionActionListMediatorTest {
                         /* contextMenuPopulatorFactory= */ null,
                         /* selectionDropdownMenuDelegate= */ null,
                         mTabModelSelector,
-                        mModalDialogManager) {
+                        mModalDialogManager,
+                        mClearOmniboxFocus) {
                     @Override
                     Bitmap getIconForAction(String actionId, WebContents webContents) {
                         ActionData action = mActions.get(actionId);
@@ -264,6 +266,24 @@ public class ExtensionActionListMediatorTest {
         assertNotNull(
                 "Long click listener should be set",
                 item.model.get(ExtensionActionButtonProperties.ON_LONG_CLICK_LISTENER));
+    }
+
+    @Test
+    public void testClickActionButton_clearsOmniboxFocus() {
+        ListItem item = mModels.get(0);
+        View.OnClickListener clickListener =
+                item.model.get(ExtensionActionButtonProperties.ON_CLICK_LISTENER);
+        clickListener.onClick(null);
+        verify(mClearOmniboxFocus).run();
+    }
+
+    @Test
+    public void testLongClickActionButton_clearsOmniboxFocus() {
+        ListItem item = mModels.get(0);
+        View.OnLongClickListener longClickListener =
+                item.model.get(ExtensionActionButtonProperties.ON_LONG_CLICK_LISTENER);
+        longClickListener.onLongClick(null);
+        verify(mClearOmniboxFocus).run();
     }
 
     @Test

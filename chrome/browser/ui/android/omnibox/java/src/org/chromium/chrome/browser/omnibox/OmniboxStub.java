@@ -32,6 +32,12 @@ public interface OmniboxStub {
      */
     void endInput();
 
+    /**
+     * Enter the DRAFTING_NO_FOCUS state; see {@link
+     * org.chromium.components.omnibox.AutocompleteInput.DisplayState}
+     */
+    void enterDraftingNoFocus();
+
     /** Handler for scrim clicks. */
     void onScrimClicked();
 

@@ -103,6 +103,7 @@ public class ExtensionsMenuCoordinatorTest {
     @Mock private Tracker mTracker;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private ModalDialogManager mModalDialogManager;
+    @Mock private Runnable mClearOmniboxFocus;
 
     @Captor private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
 
@@ -178,6 +179,7 @@ public class ExtensionsMenuCoordinatorTest {
                         mExtensionsToolbarBridge,
                         mMenuButtonPinningDelegate,
                         mModalDialogManager,
+                        mClearOmniboxFocus,
                         /* isWebApp= */ false);
 
         // Clear invocations from initialization to ensure tests start fresh.
@@ -647,6 +649,7 @@ public class ExtensionsMenuCoordinatorTest {
                         mExtensionsToolbarBridge,
                         mMenuButtonPinningDelegate,
                         mModalDialogManager,
+                        mClearOmniboxFocus,
                         /* isWebApp= */ true);
         View webAppPinRow =
                 webAppCoordinator
@@ -654,6 +657,12 @@ public class ExtensionsMenuCoordinatorTest {
                         .findViewById(R.id.extensions_menu_pin_menu_icon_button);
         assertEquals(View.GONE, webAppPinRow.getVisibility());
         webAppCoordinator.destroy();
+    }
+
+    @Test
+    public void testClickMenuButton_clearsOmniboxFocus() {
+        mExtensionsMenuButton.performClick();
+        verify(mClearOmniboxFocus).run();
     }
 
     private ExtensionsMenuTypes.SiteSettingsState createSiteSettingsState(

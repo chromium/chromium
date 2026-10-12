@@ -60,6 +60,7 @@ public interface ExtensionsToolbarCoordinator extends ChromeAndroidTaskFeature, 
             TabModelSelector tabModelSelector,
             ModalDialogManager modalDialogManager,
             @Nullable Runnable onFeatureRemoved,
+            Runnable clearOmniboxFocus,
             boolean isWebApp) {
         // Check if the extension UI is enabled first.
         if (!ExtensionUi.isEnabled(profile)) {
@@ -86,6 +87,7 @@ public interface ExtensionsToolbarCoordinator extends ChromeAndroidTaskFeature, 
                 tabModelSelector,
                 modalDialogManager,
                 onFeatureRemoved,
+                clearOmniboxFocus,
                 isWebApp);
         return coordinator;
     }
@@ -112,6 +114,7 @@ public interface ExtensionsToolbarCoordinator extends ChromeAndroidTaskFeature, 
             TabModelSelector tabModelSelector,
             ModalDialogManager modalDialogManager,
             @Nullable Runnable onFeatureRemoved,
+            Runnable clearOmniboxFocus,
             boolean isWebApp);
 
     /**

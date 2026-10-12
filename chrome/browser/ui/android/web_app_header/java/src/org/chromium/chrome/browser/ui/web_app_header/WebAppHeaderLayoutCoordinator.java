@@ -481,6 +481,8 @@ public class WebAppHeaderLayoutCoordinator
                                                             mTabModelSelector,
                                                             mModalDialogManager,
                                                             cleanup,
+                                                            /* clearOmniboxFocus= */ CallbackUtils
+                                                                    .emptyRunnable(),
                                                             /* isWebApp= */ true));
                 });
     }

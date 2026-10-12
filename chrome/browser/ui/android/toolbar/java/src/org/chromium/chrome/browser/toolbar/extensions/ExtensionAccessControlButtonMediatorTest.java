@@ -75,6 +75,7 @@ public class ExtensionAccessControlButtonMediatorTest {
 
     @Captor private ArgumentCaptor<ExtensionsToolbarBridge.Observer> mToolbarObserverCaptor;
     @Mock private UrlFormatter.Natives mUrlFormatterJniMock;
+    @Mock private Runnable mClearOmniboxFocus;
 
     private ExtensionAccessControlButtonMediator mMediator;
     private PropertyModel mModel;
@@ -127,7 +128,8 @@ public class ExtensionAccessControlButtonMediatorTest {
                         mCurrentTabSupplier,
                         mExtensionsToolbarBridge,
                         (v) -> {},
-                        mIsWindowCompactSupplier);
+                        mIsWindowCompactSupplier,
+                        mClearOmniboxFocus);
         verify(mExtensionsToolbarBridge).addObserver(mToolbarObserverCaptor.capture());
     }
 
@@ -215,6 +217,7 @@ public class ExtensionAccessControlButtonMediatorTest {
         OnClickListener listener =
                 mModel.get(ExtensionsToolbarProperties.REQUEST_ACCESS_BUTTON_CLICK_LISTENER);
         listener.onClick(null);
+        verify(mClearOmniboxFocus).run();
 
         // 3. Button changes to "Allowed" state (-1)
         assertEquals(

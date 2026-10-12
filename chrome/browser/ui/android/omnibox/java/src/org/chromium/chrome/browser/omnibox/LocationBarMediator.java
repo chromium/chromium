@@ -3229,11 +3229,13 @@ public class LocationBarMediator
     }
 
     /** Enter the DRAFTING_NO_FOCUS state, executing all necessary and convenient pre-processing. */
-    @VisibleForTesting
-    /* package */ void enterDraftingNoFocus() {
-        assert mCurrentInput != null;
-        if (displayStateEquals(DisplayState.DRAFTING_NO_FOCUS)) return;
+    @Override
+    public void enterDraftingNoFocus() {
+        if (displayStateEquals(DisplayState.DRAFTING_NO_FOCUS) || !userTextDiffersFromInitial()) {
+            return;
+        }
 
+        assert mCurrentInput != null;
         // We set the selection to SELECT_END so that on resume, when we set the selection to
         // SELECT_ALL in @see #beginOrResumeInput(boolean), a view update actually occurs (the
         // UrlBarMediator guards against duplicate updates.

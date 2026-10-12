@@ -52,6 +52,7 @@ class ExtensionAccessControlButtonMediator implements Destroyable {
     private @Nullable PropertyModel mMessage;
     private String[] mMessageExtensionIds = new String[0];
     private @Nullable WebContents mMessageWebContents;
+    private final Runnable mClearOmniboxFocus;
     private final Callback<@Nullable Tab> mTabSupplierObserver =
             (tab) -> refreshRequestAccessButton();
     private final Runnable mClearAllowedTextRunnable =
@@ -67,13 +68,15 @@ class ExtensionAccessControlButtonMediator implements Destroyable {
             NullableObservableSupplier<Tab> currentTabSupplier,
             ExtensionsToolbarBridge extensionsToolbarBridge,
             Callback<Boolean> visibilityObserver,
-            Supplier<Boolean> isWindowCompactSupplier) {
+            Supplier<Boolean> isWindowCompactSupplier,
+            Runnable clearOmniboxFocus) {
         mContext = context;
         mCurrentTabSupplier = currentTabSupplier;
         mExtensionsToolbarBridge = extensionsToolbarBridge;
         mModel = model;
         mVisibilityObserver = visibilityObserver;
         mIsWindowCompactSupplier = isWindowCompactSupplier;
+        mClearOmniboxFocus = clearOmniboxFocus;
 
         mExtensionsToolbarBridge.addObserver(mToolbarObserver);
         mCurrentTabSupplier.addSyncObserverAndPostIfNonNull(mTabSupplierObserver);
@@ -248,6 +251,7 @@ class ExtensionAccessControlButtonMediator implements Destroyable {
         mModel.set(
                 ExtensionsToolbarProperties.REQUEST_ACCESS_BUTTON_CLICK_LISTENER,
                 (v) -> {
+                    mClearOmniboxFocus.run();
                     handleAccessGranted(webContents);
                 });
     }

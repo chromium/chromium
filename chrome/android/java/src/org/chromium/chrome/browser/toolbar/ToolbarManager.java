@@ -2788,6 +2788,7 @@ public class ToolbarManager
                                                         mTabModelSelector,
                                                         mModalDialogManagerSupplier.get(),
                                                         cleanup,
+                                                        this::enterDraftingNoFocusOrEndInput,
                                                         /* isWebApp= */ false));
                 if (mExtensionsToolbarCoordinator != null) {
                     mToolbar.setExtensionsToolbarCoordinator(mExtensionsToolbarCoordinator);
@@ -3556,6 +3557,17 @@ public class ToolbarManager
     public void endFuseboxInput() {
         if (mIsDestroyed || mLocationBar == null || mLocationBar.getOmniboxStub() == null) return;
         assumeNonNull(mLocationBar.getOmniboxStub()).endInput();
+    }
+
+    // Attempts to enter the drafting no focus state; if this does not succeed (i.e. the UrlBar is
+    // still focused) then ends input entirely.
+    public void enterDraftingNoFocusOrEndInput() {
+        if (mIsDestroyed || mLocationBar == null || mLocationBar.getOmniboxStub() == null) return;
+        OmniboxStub omniboxStub = assertNonNull(mLocationBar.getOmniboxStub());
+        omniboxStub.enterDraftingNoFocus();
+        if (omniboxStub.isUrlBarFocused()) {
+            omniboxStub.endInput();
+        }
     }
 
     private void onScrimClicked() {

@@ -109,6 +109,7 @@ public class ExtensionsMenuCoordinator
     private long mLastDismissalTimeMs;
     private boolean mIsMenuOpen;
     private final boolean mIsWebApp;
+    private final Runnable mClearOmniboxFocus;
 
     /**
      * Constructor.
@@ -125,6 +126,7 @@ public class ExtensionsMenuCoordinator
      * @param MenuButtonPinningDelegate The {@link MenuButtonPinningDelegate} to handle pinning the
      *     icon.
      * @param modalDialogManager The {@link ModalDialogManager}.
+     * @param clearOmniboxFocus Runnable to clear focus on the omnibox.
      * @param isWebApp Whether this extensions menu is in a web app.
      */
     public ExtensionsMenuCoordinator(
@@ -139,6 +141,7 @@ public class ExtensionsMenuCoordinator
             ExtensionsToolbarBridge extensionsToolbarBridge,
             MenuButtonPinningDelegate menuButtonPinningDelegate,
             ModalDialogManager modalDialogManager,
+            Runnable clearOmniboxFocus,
             boolean isWebApp) {
         mContext = context;
         mCurrentTabSupplier = currentTabSupplier;
@@ -149,6 +152,7 @@ public class ExtensionsMenuCoordinator
         mExtensionsToolbarBridge = extensionsToolbarBridge;
         mMenuButtonPinningDelegate = menuButtonPinningDelegate;
         mModalDialogManager = modalDialogManager;
+        mClearOmniboxFocus = clearOmniboxFocus;
         mIsWebApp = isWebApp;
 
         mExtensionsToolbarBridge.setMenuDelegate(this);
@@ -199,6 +203,7 @@ public class ExtensionsMenuCoordinator
                                     < CLICK_TO_DISMISS_THRESHOLD_MS) {
                         return;
                     }
+                    mClearOmniboxFocus.run();
                     TrackerFactory.getTrackerForProfile(mProfile)
                             .notifyEvent(EventConstants.EXTENSIONS_MENU_BUTTON_CLICKED);
                     createMediator();
