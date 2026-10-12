@@ -51,8 +51,8 @@ class MEDIA_EXPORT AC4 {
   // Use to parse AC4 DSI when dsi version is 1
   bool ParseAc4DsiV1(BitReader& reader);
   bool ParseAc4PresentationV1Dsi(BitReader& reader,
-                                 int pres_bytes,
-                                 int& consumed_pres_bytes,
+                                 size_t pres_bytes,
+                                 size_t& consumed_pres_bytes,
                                  uint8_t bitstream_version,
                                  uint8_t presentation_version);
   bool ParseAc4SubstreamGroupDsi(BitReader& reader,

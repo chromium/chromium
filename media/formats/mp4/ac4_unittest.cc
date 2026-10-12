@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/formats/mp4/ac4.h"
+
 #include <vector>
 
 #include "media/base/mock_media_log.h"
-#include "media/formats/mp4/ac4.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -115,6 +116,31 @@ TEST_F(AC4Test, AJOCInputTest) {
   EXPECT_EQ(stream_info.is_ajoc, 1);
   EXPECT_EQ(stream_info.is_ims, 0);
   EXPECT_EQ(stream_info.channels, 0);
+}
+
+TEST_F(AC4Test, ZeroPresBytesInputTest) {
+  // Same header as ChannelBasedCodingInputTest, but with pres_bytes (byte 13)
+  // set to 0. Should fail gracefully without a checked_cast crash.
+  constexpr uint8_t kTestData[]{0x20, 0x9a, 0x01, 0x60, 0x00, 0x00, 0x00,
+                                0x1f, 0xff, 0xff, 0xff, 0xe0, 0x01, 0x00,
+                                0xf9, 0x00, 0x00, 0x09, 0x00, 0x00, 0x11,
+                                0xca, 0x02, 0x00, 0x00, 0x11, 0xc0, 0x80};
+
+  EXPECT_FALSE(Parse({std::begin(kTestData), std::end(kTestData)}));
+}
+
+TEST_F(AC4Test, ExtendedPresBytesInputTest) {
+  // Same presentation payload as ChannelBasedCodingInputTest, but with
+  // pres_bytes = 255 (0xff) and add_pres_bytes = 1 (0x00, 0x01), giving a
+  // 256-byte presentation. Previously uint8_t pres_bytes overflowed to 0.
+  std::vector<uint8_t> data = {0x20, 0x9a, 0x01, 0x60, 0x00, 0x00, 0x00, 0x1f,
+                               0xff, 0xff, 0xff, 0xe0, 0x01, 0xff, 0x00, 0x01,
+                               0xf9, 0x00, 0x00, 0x09, 0x00, 0x00, 0x11, 0xca,
+                               0x02, 0x00, 0x00, 0x11, 0xc0, 0x80};
+  // Pad to 16 (header) + 256 (pres_bytes) = 272 bytes.
+  data.resize(16 + 256, 0x00);
+
+  EXPECT_TRUE(Parse(data));
 }
 
 }  // namespace mp4

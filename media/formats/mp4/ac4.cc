@@ -124,8 +124,9 @@ bool AC4::ParseAc4DsiV1(BitReader& reader) {
     uint8_t presentation_version;
     // presentation_version, 8 bits
     RCHECK(reader.ReadBits(8, &presentation_version));
-    uint8_t pres_bytes;
-    // pres_bytes, 8 bits
+    // Initially read as 8 bits, but if 255, a 16-bit `add_pres_bytes` is added
+    // to it below (max 255 + 65535 = 65790, which exceeds uint16_t).
+    size_t pres_bytes;
     RCHECK(reader.ReadBits(8, &pres_bytes));
     if (pres_bytes == 255) {
       uint16_t add_pres_bytes;
@@ -134,7 +135,7 @@ bool AC4::ParseAc4DsiV1(BitReader& reader) {
       pres_bytes += add_pres_bytes;
     }
 
-    int consumed_pres_bytes = 0;
+    size_t consumed_pres_bytes = 0;
     if (presentation_version == 0) {
       // This case is not supported anymore.
       return false;
@@ -144,8 +145,8 @@ bool AC4::ParseAc4DsiV1(BitReader& reader) {
                                        presentation_version));
     }
 
-    int skip_bytes = pres_bytes - consumed_pres_bytes;
-    RCHECK(skip_bytes >= 0);
+    RCHECK(pres_bytes >= consumed_pres_bytes);
+    const size_t skip_bytes = pres_bytes - consumed_pres_bytes;
     RCHECK(reader.SkipBits(skip_bytes * 8));
   }
 
@@ -153,8 +154,8 @@ bool AC4::ParseAc4DsiV1(BitReader& reader) {
 }
 
 bool AC4::ParseAc4PresentationV1Dsi(BitReader& reader,
-                                    int pres_bytes,
-                                    int& consumed_pres_bytes,
+                                    size_t pres_bytes,
+                                    size_t& consumed_pres_bytes,
                                     uint8_t bitstream_version,
                                     uint8_t presentation_version) {
   const size_t initial_bits_read = reader.bits_read();
@@ -297,8 +298,8 @@ bool AC4::ParseAc4PresentationV1Dsi(BitReader& reader,
 
   RCHECK(Ac4ByteAlign(reader));
 
-  if ((reader.bits_read() - initial_bits_read) <=
-      base::checked_cast<size_t>(pres_bytes - 1) * 8) {
+  const size_t consumed_bytes = (reader.bits_read() - initial_bits_read) / 8;
+  if (consumed_bytes < pres_bytes) {
     // Skip de_indicator, 1 bit
     RCHECK(reader.SkipBits(1));
     // Skip dolby_atmos_indicator, 1 bit

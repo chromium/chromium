@@ -19,11 +19,13 @@ DTSX::DTSX(const DTSX& other) = default;
 DTSX::~DTSX() = default;
 
 bool DTSX::Parse(const std::vector<uint8_t>& data, MediaLog* media_log) {
-  if (data.empty())
+  if (data.empty()) {
     return false;
+  }
 
-  if (data.size() < (2 + 3 + 5 + 32 + 1 + 2 + 8) / 8)
+  if (data.size() < (2 + 3 + 5 + 32 + 1 + 2 + 8) / 8) {
     return false;
+  }
   DVLOG(3) << "dtsx data.size " << data.size();
   // Parse udts box using reader.
   BitReader reader(data);
@@ -93,36 +95,18 @@ bool DTSX::Parse(const std::vector<uint8_t>& data, MediaLog* media_log) {
   int base_sampling_frequency = 0;
   uint8_t base_sampling_frequency_code = 0;
   RCHECK(reader.ReadBits(1, &base_sampling_frequency_code));
-  if (base_sampling_frequency_code == 1)
+  if (base_sampling_frequency_code == 1) {
     base_sampling_frequency = 48000;
-  else
+  } else {
     base_sampling_frequency = 44100;
-
-  // Read SampleRateMod
-  int sample_rate_mod = 0;
-  uint8_t sample_rate_mod_code;
-  RCHECK(reader.ReadBits(2, &sample_rate_mod_code));
-  switch (sample_rate_mod) {
-    case 0:
-      sample_rate_mod = 1;
-      break;
-    case 1:
-      sample_rate_mod = 2;
-      break;
-    case 2:
-      sample_rate_mod = 4;
-      break;
-    case 3:
-      sample_rate_mod = 8;
-      break;
-    default:
-      // error, should not hit default case.
-      DLOG(ERROR) << "SampleRateMod invalid value";
-      return false;
   }
 
+  // Read SampleRateMod
+  uint8_t sample_rate_mod_code;
+  RCHECK(reader.ReadBits(2, &sample_rate_mod_code));
+
   // Calculate the Sampling Frequency
-  sampling_frequency_ = base_sampling_frequency * sample_rate_mod;
+  sampling_frequency_ = base_sampling_frequency * (1 << sample_rate_mod_code);
 
   LogDtsxParameters();
   return true;

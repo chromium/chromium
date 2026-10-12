@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/formats/mp4/dtsx.h"
+
 #include <stdint.h>
 
 #include <string>
 
 #include "media/base/mock_media_log.h"
-#include "media/formats/mp4/dtsx.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -53,6 +54,21 @@ TEST_F(DTSXTest, NormalInputTest) {
   EXPECT_EQ(dtsx_.GetNumPresentations(), 0u);
   EXPECT_EQ(dtsx_.GetChannelMask(), 63u);
   EXPECT_EQ(dtsx_.GetSamplingFrequency(), 48000);
+}
+
+TEST_F(DTSXTest, SampleRateModTest) {
+  // Byte 6 has bit 7 = 1 (48000 Hz base) and bits 6..5 = sample_rate_mod_code.
+  // sample_rate_mod_code = 1 -> 2x (96000 Hz).
+  EXPECT_TRUE(Parse({0x01, 0x20, 0x00, 0x00, 0x00, 0x3f, 0xa0, 0x00}));
+  EXPECT_EQ(dtsx_.GetSamplingFrequency(), 96000);
+
+  // sample_rate_mod_code = 2 -> 4x (192000 Hz).
+  EXPECT_TRUE(Parse({0x01, 0x20, 0x00, 0x00, 0x00, 0x3f, 0xc0, 0x00}));
+  EXPECT_EQ(dtsx_.GetSamplingFrequency(), 192000);
+
+  // sample_rate_mod_code = 3 -> 8x (352800 Hz with 44100 Hz base).
+  EXPECT_TRUE(Parse({0x01, 0x20, 0x00, 0x00, 0x00, 0x3f, 0x60, 0x00}));
+  EXPECT_EQ(dtsx_.GetSamplingFrequency(), 352800);
 }
 
 }  // namespace mp4
