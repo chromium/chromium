@@ -736,7 +736,7 @@ Response BrowserHandler::GetGlobalPrivacyControl(bool* out_gpc) {
   if (session()->GetAgentHost()->GetType() != DevToolsAgentHost::kTypeBrowser) {
     return Response::ServerError("Browser agent host required");
   }
-  *out_gpc = IsGlobalPrivacyControlSettingEnabled();
+  *out_gpc = GetGlobalPrivacyControlDevToolsOverride().value_or(false);
   return Response::Success();
 }
 
@@ -748,7 +748,7 @@ Response BrowserHandler::SetGlobalPrivacyControl(bool in_gpc, bool* out_gpc) {
     return Response::ServerError("Browser agent host required");
   }
   UpdateGlobalPrivacyControlDevToolsOverride(in_gpc);
-  *out_gpc = IsGlobalPrivacyControlSettingEnabled();
+  *out_gpc = GetGlobalPrivacyControlDevToolsOverride().value_or(false);
   return Response::Success();
 }
 

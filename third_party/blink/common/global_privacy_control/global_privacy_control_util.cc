@@ -35,8 +35,16 @@ bool IsGlobalPrivacyControlFeatureAndSettingEnabled(
   if (base::FeatureList::IsEnabled(features::kGlobalPrivacyControlForce)) {
     return true;
   }
-  return renderer_preferences.is_global_privacy_control_setting_enabled &&
-         base::FeatureList::IsEnabled(features::kGlobalPrivacyControlTest);
+
+  if (!IsGlobalPrivacyControlFeatureEnabled()) {
+    return false;
+  }
+
+  // The DevTools override, when explicitly set, takes precedence over the
+  // embedder's profile setting. When unset, fall back to the embedder's
+  // setting.
+  return renderer_preferences.global_privacy_control_devtools_override.value_or(
+      renderer_preferences.is_global_privacy_control_setting_enabled);
 }
 
 void MaybeRecordGlobalPrivacyControlSourceMetric(

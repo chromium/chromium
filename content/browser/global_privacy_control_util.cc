@@ -35,15 +35,8 @@ void ResetGlobalPrivacyControlDevToolsOverride() {
   SyncRendererPrefs();
 }
 
-bool IsGlobalPrivacyControlSettingEnabled() {
-  std::optional<bool> global_privacy_control_devtools_override =
-      g_global_privacy_control_devtools_override.load();
-  if (global_privacy_control_devtools_override) {
-    return *global_privacy_control_devtools_override;
-  }
-  // TODO(crbug.com/40745270): This is where a profile setting would be returned
-  // if it existed.
-  return false;
+std::optional<bool> GetGlobalPrivacyControlDevToolsOverride() {
+  return g_global_privacy_control_devtools_override.load();
 }
 
 }  // namespace content

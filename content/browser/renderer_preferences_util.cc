@@ -4,6 +4,8 @@
 
 #include "content/browser/renderer_preferences_util.h"
 
+#include <optional>
+
 #include "content/browser/global_privacy_control_util.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
@@ -17,10 +19,11 @@ void UpdateRendererPreferencesForWorkerHelper(
   CHECK(preferences);
   GetContentClient()->browser()->UpdateRendererPreferencesForWorker(
       context, preferences);
-  // TODO(crbug.com/40745270): Rename IsGlobalPrivacyControlSettingEnabled to
-  // IsGlobalPrivacyControlDevToolsOverrideEnabled
-  preferences->is_global_privacy_control_setting_enabled |=
-      IsGlobalPrivacyControlSettingEnabled();
+  // Set the DevTools GPC override, if one is set. This takes precedence
+  // over the embedder's profile setting (see
+  // `IsGlobalPrivacyControlFeatureAndSettingEnabled()`).
+  preferences->global_privacy_control_devtools_override =
+      GetGlobalPrivacyControlDevToolsOverride();
 }
 
 }  // namespace content

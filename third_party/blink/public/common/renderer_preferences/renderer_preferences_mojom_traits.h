@@ -300,6 +300,11 @@ struct BLINK_COMMON_EXPORT
     return data.is_global_privacy_control_setting_enabled;
   }
 
+  static std::optional<bool> global_privacy_control_devtools_override(
+      const ::blink::RendererPreferences& data) {
+    return data.global_privacy_control_devtools_override;
+  }
+
   static bool Read(blink::mojom::RendererPreferencesDataView,
                    ::blink::RendererPreferences* out);
 };

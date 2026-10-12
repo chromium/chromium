@@ -137,6 +137,9 @@ bool StructTraits<blink::mojom::RendererPreferencesDataView,
   out->is_global_privacy_control_setting_enabled =
       data.is_global_privacy_control_setting_enabled();
 
+  out->global_privacy_control_devtools_override =
+      data.global_privacy_control_devtools_override();
+
   return true;
 }
 

@@ -214,8 +214,14 @@ struct RendererPreferences {
   // the browser window.
   bool system_color_chooser_is_modal = false;
 
-  // Whether the Global Privacy Control is enabled for the profile (or via the
-  // DevTools override). Do not check this directly, instead use
+  // Whether the Global Privacy Control setting is enabled for the profile, as
+  // populated by the embedder. Do not check this directly, instead use
   // `IsGlobalPrivacyControlFeature(AndSetting)Enabled` to gate features/headers.
   bool is_global_privacy_control_setting_enabled = false;
+
+  // If specified, the DevTools override for the Global Privacy Control
+  // setting, which takes precedence over
+  // `is_global_privacy_control_setting_enabled`. If null, no override is set
+  // and the embedder's setting applies.
+  bool? global_privacy_control_devtools_override;
 };

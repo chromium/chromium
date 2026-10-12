@@ -286,8 +286,11 @@ void RenderViewHostImpl::GetPlatformSpecificPrefs(
       ui::Clipboard::IsSupportedClipboardBuffer(
           ui::ClipboardBuffer::kSelection);
 #endif
-  prefs->is_global_privacy_control_setting_enabled =
-      IsGlobalPrivacyControlSettingEnabled();
+  // Set the DevTools GPC override, if one is set. This takes precedence
+  // over the embedder's profile setting (see
+  // `IsGlobalPrivacyControlFeatureAndSettingEnabled()`).
+  prefs->global_privacy_control_devtools_override =
+      GetGlobalPrivacyControlDevToolsOverride();
 }
 
 // static

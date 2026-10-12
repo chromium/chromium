@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_GLOBAL_PRIVACY_CONTROL_UTIL_H_
 #define CONTENT_BROWSER_GLOBAL_PRIVACY_CONTROL_UTIL_H_
 
+#include <optional>
+
 #include "content/common/content_export.h"
 
 namespace content {
@@ -17,11 +19,13 @@ CONTENT_EXPORT void UpdateGlobalPrivacyControlDevToolsOverride(bool new_gpc);
 // session disconnects.
 CONTENT_EXPORT void ResetGlobalPrivacyControlDevToolsOverride();
 
-// Returns true if the profile setting (or DevTools setting override) is
-// enabled, but does not depend on the feature. Use this to determine the
-// setting sent down to the renderer only. Do not gate feature access or headers
-// using this, use `IsGlobalPrivacyControlFeature(AndSetting)Enabled` instead.
-CONTENT_EXPORT bool IsGlobalPrivacyControlSettingEnabled();
+// Returns the DevTools GPC setting override, if one is set. When set, it takes
+// precedence over the embedder's profile setting; when unset (std::nullopt),
+// callers should fall back to the embedder's setting. This does not depend on
+// the feature. Use this to determine the setting sent down to the renderer
+// only. Do not gate feature access or headers using this, use
+// `IsGlobalPrivacyControlFeature(AndSetting)Enabled` instead.
+CONTENT_EXPORT std::optional<bool> GetGlobalPrivacyControlDevToolsOverride();
 
 }  // namespace content
 
