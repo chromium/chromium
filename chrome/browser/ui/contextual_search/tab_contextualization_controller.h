@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <vector>
 
 #include "base/callback_list.h"
 #include "base/functional/callback_helpers.h"
@@ -152,6 +153,12 @@ class TabContextualizationController : public content::WebContentsObserver {
   PageContextAvailability GetPageContextAvailability() const;
   void MaybeCompleteDeferredPageContextRequests();
   void CompleteDeferredPageContextRequests(bool should_extract);
+  GetPageContextCallback WrapInFlightPageContextCallback(
+      GetPageContextCallback callback);
+  void CompleteInFlightPageContextRequest(
+      const base::UnguessableToken& request_id,
+      std::unique_ptr<lens::ContextualInputData> data);
+  void CancelInFlightPageContextRequests();
 
   // Gets the annotated page content from the page context eligibility API.
   void GetAnnotatedPageContent(GetAnnotatedPageContentCallback callback);
@@ -221,10 +228,20 @@ class TabContextualizationController : public content::WebContentsObserver {
     GetPageContextCallback callback;
   };
 
+  struct InFlightPageContextRequest {
+    base::UnguessableToken request_id;
+    std::optional<base::UnguessableToken> cancellation_id;
+    GetPageContextCallback callback;
+  };
+
   // Client supplied callbacks received for tabs that are currently loading.
   // Page content extraction is deferred until the loading completes after which
   // these callbacks will be used.
   std::vector<DeferredPageContextRequest> deferred_page_context_requests_;
+
+  // Callbacks for active asynchronous page context extractions. Completed with
+  // nullptr if the tab navigates, is discarded, detaches, or is destroyed.
+  std::vector<InFlightPageContextRequest> in_flight_page_context_requests_;
 
   std::optional<base::UnguessableToken> scoped_cancellation_id_;
 

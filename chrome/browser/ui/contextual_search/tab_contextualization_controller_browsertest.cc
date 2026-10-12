@@ -58,8 +58,23 @@ class TestTabContextualizationController
       : TabContextualizationController(tab) {}
   ~TestTabContextualizationController() override = default;
 
+  void CaptureScreenshot(
+      std::optional<lens::ImageEncodingOptions> image_options,
+      CaptureScreenshotCallback callback) override {
+    if (hold_screenshot_callback_) {
+      held_screenshot_callback_ = std::move(callback);
+      return;
+    }
+    TabContextualizationController::CaptureScreenshot(std::move(image_options),
+                                                      std::move(callback));
+  }
+
   void SetIsPageContextEligible(bool is_eligible) {
     is_page_context_eligible_ = is_eligible;
+  }
+
+  void SetHoldScreenshotCallback(bool hold) {
+    hold_screenshot_callback_ = hold;
   }
 
   void CallOnApcAndEligibilityReceivedForGetPageContext(
@@ -81,6 +96,8 @@ class TestTabContextualizationController
 
  private:
   bool is_page_context_eligible_ = true;
+  bool hold_screenshot_callback_ = false;
+  CaptureScreenshotCallback held_screenshot_callback_;
 };
 
 class TabContextualizationControllerBrowserTest : public InProcessBrowserTest {
@@ -363,6 +380,114 @@ IN_PROC_BROWSER_TEST_F(TabContextualizationControllerBrowserTest,
   // Because the committed origin (b.com) does not match the request origin
   // (a.com), the result is dropped and nullptr is returned.
   EXPECT_EQ(future.Take(), nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(TabContextualizationControllerBrowserTest,
+                       GetPageContextFailsWhenNavigatedInFlight) {
+  auto* controller = GetTabContextualizationController();
+  controller->SetHoldScreenshotCallback(true);
+
+  GURL url1(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
+
+  base::test::TestFuture<std::unique_ptr<lens::ContextualInputData>> future;
+  controller->GetPageContext(future.GetCallback());
+
+  // Navigating while capture is in flight should resolve the callback with
+  // nullptr instead of dropping it silently.
+  GURL url2(embedded_test_server()->GetURL("b.com", "/title2.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url2));
+
+  EXPECT_EQ(future.Take(), nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(TabContextualizationControllerBrowserTest,
+                       GetPageContextFailsWhenTabDiscardedInFlight) {
+  auto* controller = GetTabContextualizationController();
+
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  base::test::TestFuture<std::unique_ptr<lens::ContextualInputData>> future;
+  controller->GetPageContext(future.GetCallback());
+
+  content::WebContents* original_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  std::unique_ptr<content::WebContents> discarded_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(browser()->GetProfile()));
+  discarded_contents->GetController().CopyStateFrom(
+      &original_contents->GetController(), /*needs_reload=*/true);
+  browser()->tab_strip_model()->DiscardWebContents(
+      original_contents, std::move(discarded_contents));
+
+  EXPECT_EQ(future.Take(), nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(TabContextualizationControllerBrowserTest,
+                       GetPageContextCancelledInFlight) {
+  auto* controller = GetTabContextualizationController();
+
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  const base::UnguessableToken cancellation_id =
+      base::UnguessableToken::Create();
+  bool callback_called = false;
+  controller->GetPageContext(
+      base::BindLambdaForTesting(
+          [&callback_called](std::unique_ptr<lens::ContextualInputData> data) {
+            callback_called = true;
+          }),
+      cancellation_id);
+
+  EXPECT_TRUE(controller->CancelPageContextRequest(cancellation_id));
+  EXPECT_FALSE(controller->CancelPageContextRequest(cancellation_id));
+  EXPECT_FALSE(callback_called);
+}
+
+IN_PROC_BROWSER_TEST_F(TabContextualizationControllerBrowserTest,
+                       GetPageContextLoadingThenCancelledInFlight) {
+  auto* controller = GetTabContextualizationController();
+  controller->SetHoldScreenshotCallback(true);
+
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Discard the tab so that GetPageContext() triggers LoadIfNeeded() while the
+  // tab is loading.
+  content::WebContents* original_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  std::unique_ptr<content::WebContents> discarded_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(browser()->GetProfile()));
+  discarded_contents->GetController().CopyStateFrom(
+      &original_contents->GetController(), /*needs_reload=*/true);
+  browser()->tab_strip_model()->DiscardWebContents(
+      original_contents, std::move(discarded_contents));
+
+  content::WebContents* active_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  active_contents->SetWasDiscarded(true);
+  active_contents->GetController().SetNeedsReload();
+
+  const base::UnguessableToken cancellation_id =
+      base::UnguessableToken::Create();
+  bool callback_called = false;
+  controller->GetPageContext(
+      base::BindLambdaForTesting(
+          [&callback_called](std::unique_ptr<lens::ContextualInputData> data) {
+            callback_called = true;
+          }),
+      cancellation_id);
+
+  // Wait for reload to finish so the request transitions from loading to
+  // in-flight (held at CaptureScreenshot).
+  ASSERT_TRUE(content::WaitForLoadStop(active_contents));
+
+  EXPECT_TRUE(controller->CancelPageContextRequest(cancellation_id));
+  EXPECT_FALSE(controller->CancelPageContextRequest(cancellation_id));
+  EXPECT_FALSE(callback_called);
 }
 
 class TabContextualizationControllerWakeHiddenTabBrowserTest

@@ -4,7 +4,10 @@
 
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 
+#include <algorithm>
+#include <tuple>
 #include <utility>
+#include <vector>
 
 #include "base/auto_reset.h"
 #include "base/functional/bind.h"
@@ -65,7 +68,7 @@ TabContextualizationController::TabContextualizationController(
 }
 
 TabContextualizationController::~TabContextualizationController() {
-  in_flight_weak_ptr_factory_.InvalidateWeakPtrs();
+  CancelInFlightPageContextRequests();
   CompleteDeferredPageContextRequests(false);
 }
 
@@ -76,8 +79,8 @@ void TabContextualizationController::WillDiscardContents(
   is_page_context_eligible_ = false;
   did_first_visually_non_empty_paint_ = false;
   did_dom_content_loaded_ = false;
-  pending_page_context_timer_.Stop();
-  in_flight_weak_ptr_factory_.InvalidateWeakPtrs();
+  CancelInFlightPageContextRequests();
+  CompleteDeferredPageContextRequests(false);
   Observe(new_contents);
 }
 
@@ -104,15 +107,17 @@ void TabContextualizationController::PrimaryPageChanged(content::Page& page) {
   is_page_context_eligible_ = false;
   did_first_visually_non_empty_paint_ = false;
   did_dom_content_loaded_ = false;
-  pending_page_context_timer_.Stop();
-  in_flight_weak_ptr_factory_.InvalidateWeakPtrs();
+  if (deferred_page_context_requests_.empty()) {
+    pending_page_context_timer_.Stop();
+  }
+  CancelInFlightPageContextRequests();
 }
 
 void TabContextualizationController::WillDetach(
     tabs::TabInterface* tab,
     tabs::TabInterface::DetachReason reason) {
   is_page_context_eligible_ = false;
-  in_flight_weak_ptr_factory_.InvalidateWeakPtrs();
+  CancelInFlightPageContextRequests();
   CompleteDeferredPageContextRequests(false);
 }
 
@@ -232,10 +237,56 @@ void TabContextualizationController::CompleteDeferredPageContextRequests(
   pending_page_context_timer_.Stop();
   for (auto& request : std::exchange(deferred_page_context_requests_, {})) {
     if (should_extract) {
+      base::AutoReset<std::optional<base::UnguessableToken>> cancellation_scope(
+          &scoped_cancellation_id_, request.cancellation_id);
       FetchPageContextInternal(std::move(request.callback));
     } else {
       std::move(request.callback).Run(nullptr);
     }
+  }
+}
+
+TabContextualizationController::GetPageContextCallback
+TabContextualizationController::WrapInFlightPageContextCallback(
+    GetPageContextCallback callback) {
+  base::UnguessableToken request_id = base::UnguessableToken::Create();
+  in_flight_page_context_requests_.push_back(
+      {request_id, scoped_cancellation_id_, std::move(callback)});
+  base::ScopedClosureRunner drop_runner(base::BindOnce(
+      &TabContextualizationController::CompleteInFlightPageContextRequest,
+      in_flight_weak_ptr_factory_.GetWeakPtr(), request_id, nullptr));
+  return base::BindOnce(
+      [](base::WeakPtr<TabContextualizationController> controller,
+         base::UnguessableToken request_id,
+         base::ScopedClosureRunner drop_runner,
+         std::unique_ptr<lens::ContextualInputData> data) {
+        std::ignore = drop_runner.Release();
+        if (controller) {
+          controller->CompleteInFlightPageContextRequest(request_id,
+                                                         std::move(data));
+        }
+      },
+      in_flight_weak_ptr_factory_.GetWeakPtr(), request_id,
+      std::move(drop_runner));
+}
+
+void TabContextualizationController::CompleteInFlightPageContextRequest(
+    const base::UnguessableToken& request_id,
+    std::unique_ptr<lens::ContextualInputData> data) {
+  auto it = std::ranges::find(in_flight_page_context_requests_, request_id,
+                              &InFlightPageContextRequest::request_id);
+  if (it == in_flight_page_context_requests_.end()) {
+    return;
+  }
+  GetPageContextCallback callback = std::move(it->callback);
+  in_flight_page_context_requests_.erase(it);
+  std::move(callback).Run(std::move(data));
+}
+
+void TabContextualizationController::CancelInFlightPageContextRequests() {
+  in_flight_weak_ptr_factory_.InvalidateWeakPtrs();
+  for (auto& request : std::exchange(in_flight_page_context_requests_, {})) {
+    std::move(request.callback).Run(nullptr);
   }
 }
 
@@ -426,8 +477,8 @@ void TabContextualizationController::GetPageContext(
       pending_page_context_timer_.Start(
           FROM_HERE, base::Seconds(timeout_sec),
           base::BindOnce(&TabContextualizationController::
-                              CompleteDeferredPageContextRequests,
-                          in_flight_weak_ptr_factory_.GetWeakPtr(), true));
+                             CompleteDeferredPageContextRequests,
+                         weak_ptr_factory_.GetWeakPtr(), true));
     }
   }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -443,11 +494,17 @@ void TabContextualizationController::GetPageContext(
 
 bool TabContextualizationController::CancelPageContextRequest(
     const base::UnguessableToken& cancellation_id) {
-  return std::erase_if(
-             deferred_page_context_requests_,
-             [&cancellation_id](const DeferredPageContextRequest& request) {
-               return request.cancellation_id == cancellation_id;
-             }) > 0;
+  size_t erased_deferred = std::erase_if(
+      deferred_page_context_requests_,
+      [&cancellation_id](const DeferredPageContextRequest& request) {
+        return request.cancellation_id == cancellation_id;
+      });
+  size_t erased_in_flight = std::erase_if(
+      in_flight_page_context_requests_,
+      [&cancellation_id](const InFlightPageContextRequest& request) {
+        return request.cancellation_id == cancellation_id;
+      });
+  return (erased_deferred + erased_in_flight) > 0;
 }
 
 void TabContextualizationController::FetchPageContextInternal(
@@ -457,6 +514,8 @@ void TabContextualizationController::FetchPageContextInternal(
     std::move(callback).Run(nullptr);
     return;
   }
+
+  callback = WrapInFlightPageContextCallback(std::move(callback));
 
   auto contextual_input_data = std::make_unique<lens::ContextualInputData>();
 
