@@ -15,7 +15,6 @@ import type {ShowAtConfigPrefs} from '../content/read_anything_types.js';
 import {ToolbarEvent} from '../content/read_anything_types.js';
 
 import {getHtml} from './font_menu.html.js';
-import {getIndexOrDefault} from './menu_util.js';
 import type {MenuStateItem, ToolbarMenu} from './menu_util.js';
 import type {SimpleActionMenuElement} from './simple_action_menu.js';
 
@@ -75,8 +74,11 @@ export class FontMenuElement extends FontMenuElementBase implements
     this.$.menu.close();
   }
 
-  protected currentFontIndex_(): number {
-    return getIndexOrDefault(this.options_, this.font);
+  // An unsupported font renders as the first supported one, matching
+  // getValidatedFontName().
+  protected selectedFont_(): string|undefined {
+    const fonts = this.options_.map(option => option.data);
+    return fonts.includes(this.font) ? this.font : fonts[0];
   }
 
   protected onFontChange_() {

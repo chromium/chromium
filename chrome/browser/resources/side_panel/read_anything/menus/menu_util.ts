@@ -87,25 +87,3 @@ export interface ToolbarMenu {
   open(anchor: HTMLElement, showAtConfig?: ShowAtConfigPrefs): void;
   close(): void;
 }
-
-// TODO(crbug.com/346612365): Consider renaming this method to be more
-// descriptive.
-// Returns the index of the item in menuArray that contains the given data.
-export function getIndexOfSetting(
-    menuArray: Array<MenuStateItem<unknown>>, dataToFind: unknown): number {
-  return menuArray.findIndex((item) => (item.data === dataToFind));
-}
-
-// Returns the index of the item in menuArray that contains the given data. If
-// the given data does not exist in the menuArray anymore, returns the first
-// index.
-export function getIndexOrDefault(
-    menuArray: Array<MenuStateItem<unknown>>, data: unknown): number {
-  const index = getIndexOfSetting(menuArray, data);
-
-  if (index < 0 && menuArray.length > 0) {
-    return 0;
-  }
-
-  return index;
-}

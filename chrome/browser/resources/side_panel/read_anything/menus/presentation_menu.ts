@@ -14,7 +14,6 @@ import {ToolbarEvent} from '../content/read_anything_types.js';
 import type {ShowAtConfigPrefs} from '../content/read_anything_types.js';
 
 import type {MenuStateItem, ToolbarMenu} from './menu_util.js';
-import {getIndexOfSetting} from './menu_util.js';
 import {getHtml} from './presentation_menu.html.js';
 import type {SimpleActionMenuElement} from './simple_action_menu.js';
 
@@ -67,10 +66,6 @@ export class PresentationMenuElement extends PresentationMenuElementBase
 
   close() {
     this.$.menu.close();
-  }
-
-  protected restoredPresentationIndex_(): number {
-    return getIndexOfSetting(this.options_, this.presentationState);
   }
 
   protected onPresentationChange_(e: CustomEvent<{data: number}>) {

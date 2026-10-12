@@ -38,22 +38,12 @@ suite('LineSpacing', () => {
 
   test('restores saved spacing option', async () => {
     const spacing = visualBrowserProxy.getVeryLooseLineSpacing();
-    const startingIndex = lineSpacingMenu.$.menu.currentSelectedIndex;
-    assertNotEquals(spacing, startingIndex);
+    assertNotEquals(spacing, lineSpacingMenu.$.menu.selectedValue);
 
     lineSpacingMenu.lineSpacing = spacing;
     await microtasksFinished();
 
-    assertNotEquals(startingIndex, lineSpacingMenu.$.menu.currentSelectedIndex);
-  });
-
-  test('does nothing if saved spacing is the same', async () => {
-    const startingIndex = lineSpacingMenu.$.menu.currentSelectedIndex;
-
-    lineSpacingMenu.lineSpacing = 0;
-    await microtasksFinished();
-
-    assertEquals(startingIndex, lineSpacingMenu.$.menu.currentSelectedIndex);
+    assertEquals(spacing, lineSpacingMenu.$.menu.selectedValue);
   });
 
   test('can be closed programatically', () => {

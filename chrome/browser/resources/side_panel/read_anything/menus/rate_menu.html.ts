@@ -12,8 +12,7 @@ export function getHtml(this: RateMenuElement) {
   return html`<!--_html_template_start_-->
 <simple-action-menu id="menu" class="immersive-top-level-menu"
     label="$i18n{voiceSpeedLabel}" .menuItems="${this.options_}"
-    event-name="${ToolbarEvent.RATE}"
-    current-selected-index="${this.restoredRateIndex_()}">
+    event-name="${ToolbarEvent.RATE}" .selectedValue="${this.speechRate}">
 </simple-action-menu>
 <!--_html_template_end_-->`;
 }

@@ -11,8 +11,7 @@ export function getHtml(this: FontMenuElement) {
   return html`<!--_html_template_start_-->
 <simple-action-menu id="menu" label="$i18n{fontNameTitle}"
     .menuItems="${this.options_}" .nonModal="${this.nonModal}"
-    event-name="${ToolbarEvent.FONT}"
-    current-selected-index="${this.currentFontIndex_()}"
+    event-name="${ToolbarEvent.FONT}" .selectedValue="${this.selectedFont_()}"
     @font-change="${this.onFontChange_}">
 </simple-action-menu>
 <!--_html_template_end_-->`;

@@ -38,23 +38,12 @@ suite('LetterSpacing', () => {
 
   test('restores saved spacing option', async () => {
     const spacing = visualBrowserProxy.getVeryWideLetterSpacing();
-    const startingIndex = letterSpacingMenu.$.menu.currentSelectedIndex;
-    assertNotEquals(spacing, startingIndex);
+    assertNotEquals(spacing, letterSpacingMenu.$.menu.selectedValue);
 
     letterSpacingMenu.letterSpacing = spacing;
     await microtasksFinished();
 
-    assertNotEquals(
-        startingIndex, letterSpacingMenu.$.menu.currentSelectedIndex);
-  });
-
-  test('does nothing if saved spacing is the same', async () => {
-    const startingIndex = letterSpacingMenu.$.menu.currentSelectedIndex;
-
-    letterSpacingMenu.letterSpacing = 0;
-    await microtasksFinished();
-
-    assertEquals(startingIndex, letterSpacingMenu.$.menu.currentSelectedIndex);
+    assertEquals(spacing, letterSpacingMenu.$.menu.selectedValue);
   });
 
   test('can be closed programatically', () => {

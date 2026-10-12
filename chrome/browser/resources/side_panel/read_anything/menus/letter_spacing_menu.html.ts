@@ -13,7 +13,7 @@ export function getHtml(this: LetterSpacingMenuElement) {
 <simple-action-menu id="menu" label="$i18n{letterSpacingTitle}"
     .menuItems="${this.options_}" .nonModal="${this.nonModal}"
     event-name="${ToolbarEvent.LETTER_SPACING}"
-    current-selected-index="${this.restoredLetterSpacingIndex_()}"
+    .selectedValue="${this.letterSpacing}"
     @letter-spacing-change="${this.onLetterSpacingChange_}">
 </simple-action-menu>
 <!--_html_template_end_-->`;

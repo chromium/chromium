@@ -13,7 +13,7 @@ export function getHtml(this: HighlightMenuElement) {
 <simple-action-menu id="menu" label="$i18n{voiceHighlightLabel}"
     .menuItems="${this.options_}" .nonModal="${this.nonModal}"
     event-name="${ToolbarEvent.HIGHLIGHT_CHANGE}"
-    current-selected-index="${this.restoredHighlightIndex_()}"
+    .selectedValue="${this.highlightGranularity}"
     @highlight-change="${this.onHighlightChange_}">
 </simple-action-menu>
 <!--_html_template_end_-->`;

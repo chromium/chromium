@@ -14,7 +14,6 @@ import type {AudioBrowserProxy} from '../read_aloud/audio_browser_proxy.js';
 import {AudioBrowserProxyImpl} from '../read_aloud/audio_browser_proxy.js';
 
 import {getHtml} from './highlight_menu.html.js';
-import {getIndexOfSetting} from './menu_util.js';
 import type {MenuStateItem, ToolbarMenu} from './menu_util.js';
 import type {SimpleActionMenuElement} from './simple_action_menu.js';
 
@@ -80,10 +79,6 @@ export class HighlightMenuElement extends HighlightMenuElementBase implements
 
   close() {
     this.$.menu.close();
-  }
-
-  protected restoredHighlightIndex_(): number {
-    return getIndexOfSetting(this.options_, this.highlightGranularity);
   }
 
   protected onHighlightChange_() {

@@ -72,12 +72,12 @@ suite('FontMenu', () => {
     fontMenu.font = 'font 1';
     fontMenu.areFontsLoaded = true;
     await microtasksFinished();
-    assertEquals(0, fontMenu.$.menu.currentSelectedIndex);
+    assertEquals('font 1', fontMenu.$.menu.selectedValue);
 
     fontMenu.font = 'font 2';
     await microtasksFinished();
 
-    assertEquals(1, fontMenu.$.menu.currentSelectedIndex);
+    assertEquals('font 2', fontMenu.$.menu.selectedValue);
   });
 
   test('uses the first font if font not available', async () => {
@@ -91,15 +91,7 @@ suite('FontMenu', () => {
     // Update the fonts to exclude the previously chosen font
     await updateFonts(fonts);
 
-    const checkMarks =
-        fontMenu.$.menu.$.lazyMenu.get().querySelectorAll<HTMLElement>(
-            '.check-mark-showing-true');
-    const hiddenCheckMarks =
-        fontMenu.$.menu.$.lazyMenu.get().querySelectorAll<HTMLElement>(
-            '.check-mark-showing-false');
-    assertEquals(1, checkMarks.length);
-    assertEquals(2, hiddenCheckMarks.length);
-    assertEquals(0, fontMenu.$.menu.currentSelectedIndex);
+    assertEquals(fonts[0], fontMenu.$.menu.selectedValue);
     // Avoid overriding the user default font
     assertEquals(defaultFont, visualBrowserProxy.getFontName());
   });

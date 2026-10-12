@@ -36,22 +36,12 @@ suite('RateMenuElement', () => {
 
   test('restores saved rate option', async () => {
     const rate = 1.2;
-    const startingIndex = rateMenu.$.menu.currentSelectedIndex;
-    assertNotEquals(rate, startingIndex);
+    assertNotEquals(rate, rateMenu.$.menu.selectedValue);
 
     rateMenu.speechRate = rate;
     await microtasksFinished();
 
-    assertNotEquals(startingIndex, rateMenu.$.menu.currentSelectedIndex);
-  });
-
-  test('does nothing if saved rate is the same', async () => {
-    const startingIndex = rateMenu.$.menu.currentSelectedIndex;
-
-    rateMenu.speechRate = 1;
-    await microtasksFinished();
-
-    assertEquals(startingIndex, rateMenu.$.menu.currentSelectedIndex);
+    assertEquals(rate, rateMenu.$.menu.selectedValue);
   });
 
   // <if expr="is_chromeos">

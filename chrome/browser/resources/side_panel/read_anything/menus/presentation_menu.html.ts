@@ -13,7 +13,7 @@ export function getHtml(this: PresentationMenuElement) {
 <simple-action-menu non-modal id="menu" label="$i18n{viewLabel}"
     .menuItems="${this.options_}"
     event-name="${ToolbarEvent.PRESENTATION_CHANGE}"
-    current-selected-index="${this.restoredPresentationIndex_()}"
+    .selectedValue="${this.presentationState}"
     @presentation-change="${this.onPresentationChange_}">
 </simple-action-menu>
 <!--_html_template_end_-->`;

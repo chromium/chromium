@@ -14,7 +14,6 @@ import {ToolbarEvent} from '../content/read_anything_types.js';
 import type {ShowAtConfigPrefs} from '../content/read_anything_types.js';
 
 import {getHtml} from './letter_spacing_menu.html.js';
-import {getIndexOfSetting} from './menu_util.js';
 import type {MenuStateItem, ToolbarMenu} from './menu_util.js';
 import type {SimpleActionMenuElement} from './simple_action_menu.js';
 
@@ -85,10 +84,6 @@ export class LetterSpacingMenuElement extends LetterSpacingMenuElementBase
 
   protected onLetterSpacingChange_() {
     this.fire(ToolbarEvent.CLOSE_ALL_MENUS);
-  }
-
-  protected restoredLetterSpacingIndex_(): number {
-    return getIndexOfSetting(this.options_, this.letterSpacing);
   }
 }
 

@@ -69,23 +69,12 @@ suite('HighlightMenuElement', () => {
   test('restores saved highlight option', async () => {
     createHighlightMenu();
     const granularity = audioBrowserProxy.getWordHighlighting();
-    const startingIndex = highlightMenu.$.menu.currentSelectedIndex;
-    assertNotEquals(granularity, startingIndex);
+    assertNotEquals(granularity, highlightMenu.$.menu.selectedValue);
 
     highlightMenu.highlightGranularity = granularity;
     await microtasksFinished();
 
-    assertNotEquals(startingIndex, highlightMenu.$.menu.currentSelectedIndex);
-  });
-
-  test('does nothing if saved highlight is the same', async () => {
-    createHighlightMenu();
-    const startingIndex = highlightMenu.$.menu.currentSelectedIndex;
-
-    highlightMenu.highlightGranularity = 0;
-    await microtasksFinished();
-
-    assertEquals(startingIndex, highlightMenu.$.menu.currentSelectedIndex);
+    assertEquals(granularity, highlightMenu.$.menu.selectedValue);
   });
 
   test('can be closed programatically', () => {

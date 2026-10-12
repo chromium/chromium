@@ -19,7 +19,7 @@ export function getHtml(this: SimpleActionMenuElement) {
               data-index="${index}">
             <cr-icon
                 class="button-image check-mark check-mark-showing-${
-                    this.isItemSelected_(index)}"
+                    this.isItemSelected_(item)}"
                 icon="${this.webuiRoundedIconsEnabled_ ?
                     'read-anything-20:check-small' :
                     'read-anything-20:check-mark-old'}"

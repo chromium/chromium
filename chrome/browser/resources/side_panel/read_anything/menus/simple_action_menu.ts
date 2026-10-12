@@ -49,7 +49,7 @@ export class SimpleActionMenuElement extends SimpleActionMenuElementBase {
 
   static override get properties() {
     return {
-      currentSelectedIndex: {type: Number},
+      selectedValue: {type: Object},
       menuItems: {type: Array},
       eventName: {type: String},
       label: {type: String},
@@ -59,7 +59,10 @@ export class SimpleActionMenuElement extends SimpleActionMenuElementBase {
     };
   }
 
-  accessor currentSelectedIndex: number = 0;
+  // Data of the item that shows the checkmark. Item data is heterogeneous
+  // across menus (numbers, strings) and Lit properties can't be generic or
+  // primitive unions, hence unknown.
+  accessor selectedValue: unknown = undefined;
   accessor menuItems: Array<MenuStateItem<unknown>> = [];
   accessor nonModal: boolean = false;
   accessor closeOnClick: boolean = true;
@@ -82,9 +85,8 @@ export class SimpleActionMenuElement extends SimpleActionMenuElementBase {
 
   protected onClick_(e: Event) {
     const currentTarget = e.currentTarget as HTMLElement;
-    this.currentSelectedIndex =
-        Number.parseInt(currentTarget.dataset['index']!);
-    const menuItem = this.menuItems[this.currentSelectedIndex];
+    const index = Number.parseInt(currentTarget.dataset['index']!);
+    const menuItem = this.menuItems[index];
     assert(menuItem);
     this.fire(this.eventName, {data: menuItem.data});
     if (this.closeOnClick) {
@@ -92,8 +94,8 @@ export class SimpleActionMenuElement extends SimpleActionMenuElementBase {
     }
   }
 
-  protected isItemSelected_(index: number): boolean {
-    return index === this.currentSelectedIndex;
+  protected isItemSelected_(item: MenuStateItem<unknown>): boolean {
+    return item.data === this.selectedValue;
   }
 
   protected doesItemHaveIcon_(item: MenuStateItem<unknown>): boolean {

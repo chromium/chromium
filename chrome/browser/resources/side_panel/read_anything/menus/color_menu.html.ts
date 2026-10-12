@@ -12,8 +12,7 @@ export function getHtml(this: ColorMenuElement) {
   return html`<!--_html_template_start_-->
 <simple-action-menu id="menu" label="$i18n{themeTitle}"
     .menuItems="${this.options_}" .nonModal="${this.nonModal}"
-    event-name="${ToolbarEvent.THEME}"
-    current-selected-index="${this.restoredThemeIndex_()}"
+    event-name="${ToolbarEvent.THEME}" .selectedValue="${this.theme}"
     @theme-change="${this.onThemeChange_}">
 </simple-action-menu>
 <!--_html_template_end_-->`;

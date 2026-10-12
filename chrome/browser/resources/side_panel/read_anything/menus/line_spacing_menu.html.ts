@@ -12,8 +12,7 @@ export function getHtml(this: LineSpacingMenuElement) {
   return html`<!--_html_template_start_-->
 <simple-action-menu id="menu" label="$i18n{lineSpacingTitle}"
     event-name="${ToolbarEvent.LINE_SPACING}" .menuItems="${this.options_}"
-    .nonModal="${this.nonModal}"
-    current-selected-index="${this.restoredLineSpacingIndex_()}"
+    .nonModal="${this.nonModal}" .selectedValue="${this.lineSpacing}"
     @line-spacing-change="${this.onLineSpacingChange_}">
 </simple-action-menu>
 <!--_html_template_end_-->`;

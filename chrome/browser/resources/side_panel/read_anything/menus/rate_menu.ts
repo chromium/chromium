@@ -9,7 +9,6 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {MenuStateItem} from './menu_util.js';
-import {getIndexOfSetting} from './menu_util.js';
 import {getHtml} from './rate_menu.html.js';
 import type {SimpleActionMenuElement} from './simple_action_menu.js';
 
@@ -66,10 +65,6 @@ export class RateMenuElement extends RateMenuElementBase {
 
   open(anchor: HTMLElement) {
     this.$.menu.open(anchor);
-  }
-
-  protected restoredRateIndex_(): number {
-    return getIndexOfSetting(this.options_, this.speechRate);
   }
 }
 

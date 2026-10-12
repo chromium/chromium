@@ -38,22 +38,12 @@ suite('ColorMenuElement', () => {
 
   test('restores saved color option', async () => {
     const color = visualBrowserProxy.getYellowTheme();
-    const startingIndex = colorMenu.$.menu.currentSelectedIndex;
-    assertNotEquals(color, startingIndex);
+    assertNotEquals(color, colorMenu.$.menu.selectedValue);
 
     colorMenu.theme = color;
     await microtasksFinished();
 
-    assertNotEquals(startingIndex, colorMenu.$.menu.currentSelectedIndex);
-  });
-
-  test('does nothing if saved color is the same', async () => {
-    const startingIndex = colorMenu.$.menu.currentSelectedIndex;
-
-    colorMenu.theme = 0;
-    await microtasksFinished();
-
-    assertEquals(startingIndex, colorMenu.$.menu.currentSelectedIndex);
+    assertEquals(color, colorMenu.$.menu.selectedValue);
   });
 
   test('can be closed programatically', () => {
