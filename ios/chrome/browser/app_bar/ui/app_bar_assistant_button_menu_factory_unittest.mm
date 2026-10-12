@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/app_bar/ui/app_bar_assistant_button_menu_factory.h"
 
 #import "base/apple/foundation_util.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_mutator.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -18,12 +19,13 @@
 namespace {
 
 // Number of entries of the menu when all of them are shown.
-constexpr NSUInteger kAllEntriesCount = 3;
+constexpr NSUInteger kAllEntriesCount = 4;
 
 // Indexes of the entries when all of them are shown.
 constexpr NSUInteger kAskGeminiEntryIndex = 0;
-constexpr NSUInteger kLensEntryIndex = 1;
-constexpr NSUInteger kAccountEntryIndex = 2;
+constexpr NSUInteger kAIMEntryIndex = 1;
+constexpr NSUInteger kLensEntryIndex = 2;
+constexpr NSUInteger kAccountEntryIndex = 3;
 
 }  // namespace
 
@@ -63,6 +65,7 @@ TEST_F(AppBarAssistantButtonMenuFactoryTest, TestAllEntries) {
   UIMenu* menu =
       [factory_ menuWithCheckedState:AppBarAssistantButtonState::kLens
                        showAskGemini:YES
+                             showAIM:YES
                             showLens:YES
                          showAccount:YES];
 
@@ -72,6 +75,8 @@ TEST_F(AppBarAssistantButtonMenuFactoryTest, TestAllEntries) {
   EXPECT_TRUE(menu.options & UIMenuOptionsSingleSelection);
   ASSERT_EQ(kAllEntriesCount, menu.children.count);
   ExpectAction(menu, kAskGeminiEntryIndex, IDS_IOS_APP_BAR_ASK_GEMINI,
+               /*checked=*/false);
+  ExpectAction(menu, kAIMEntryIndex, IDS_OMNIBOX_AI_MODE_SCOPE_PLACEHOLDER_TEXT,
                /*checked=*/false);
   ExpectAction(menu, kLensEntryIndex, IDS_IOS_LENS_PRODUCT_NAME,
                /*checked=*/true);
@@ -83,6 +88,7 @@ TEST_F(AppBarAssistantButtonMenuFactoryTest, TestAllEntries) {
 TEST_F(AppBarAssistantButtonMenuFactoryTest, TestHiddenEntries) {
   UIMenu* menu = [factory_ menuWithCheckedState:AppBarAssistantButtonState::kAsk
                                   showAskGemini:YES
+                                        showAIM:NO
                                        showLens:NO
                                     showAccount:NO];
 
@@ -91,10 +97,30 @@ TEST_F(AppBarAssistantButtonMenuFactoryTest, TestHiddenEntries) {
                /*checked=*/true);
 }
 
+// Tests that the AI Mode entry is checked when `checkedState` is `kAIM` and
+// notifies the mutator with `kAsk` when selected.
+TEST_F(AppBarAssistantButtonMenuFactoryTest, TestAIMEntry) {
+  UIMenu* menu = [factory_ menuWithCheckedState:AppBarAssistantButtonState::kAIM
+                                  showAskGemini:NO
+                                        showAIM:YES
+                                       showLens:NO
+                                    showAccount:NO];
+
+  ASSERT_EQ(1u, menu.children.count);
+  ExpectAction(menu, 0, IDS_OMNIBOX_AI_MODE_SCOPE_PLACEHOLDER_TEXT,
+               /*checked=*/true);
+
+  OCMExpect([mutator_ setPreferredAssistantButtonState:
+                          AppBarAssistantButtonPreferredState::kAsk]);
+  [ActionAtIndex(menu, 0) performWithSender:nil target:nil];
+  EXPECT_OCMOCK_VERIFY(mutator_);
+}
+
 // Tests that selecting an entry sends its state to the mutator.
 TEST_F(AppBarAssistantButtonMenuFactoryTest, TestSelectionNotifiesMutator) {
   UIMenu* menu = [factory_ menuWithCheckedState:AppBarAssistantButtonState::kAsk
                                   showAskGemini:YES
+                                        showAIM:YES
                                        showLens:YES
                                     showAccount:YES];
   ASSERT_EQ(kAllEntriesCount, menu.children.count);

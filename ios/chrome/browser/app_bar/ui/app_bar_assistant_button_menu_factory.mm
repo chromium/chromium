@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/app_bar/ui/app_bar_assistant_button_menu_factory.h"
 
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_assistant_button_symbol.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_mutator.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -14,17 +15,28 @@
 
 - (UIMenu*)menuWithCheckedState:(AppBarAssistantButtonState)checkedState
                   showAskGemini:(BOOL)showAskGemini
+                        showAIM:(BOOL)showAIM
                        showLens:(BOOL)showLens
                     showAccount:(BOOL)showAccount {
   NSMutableArray<UIMenuElement*>* actions = [NSMutableArray array];
   if (showAskGemini) {
     [actions addObject:[self actionWithTitleID:IDS_IOS_APP_BAR_ASK_GEMINI
+                                         state:AppBarAssistantButtonState::kAsk
                                 preferredState:
                                     AppBarAssistantButtonPreferredState::kAsk
                                   checkedState:checkedState]];
   }
+  if (showAIM) {
+    [actions
+        addObject:
+            [self actionWithTitleID:IDS_OMNIBOX_AI_MODE_SCOPE_PLACEHOLDER_TEXT
+                              state:AppBarAssistantButtonState::kAIM
+                     preferredState:AppBarAssistantButtonPreferredState::kAsk
+                       checkedState:checkedState]];
+  }
   if (showLens) {
     [actions addObject:[self actionWithTitleID:IDS_IOS_LENS_PRODUCT_NAME
+                                         state:AppBarAssistantButtonState::kLens
                                 preferredState:
                                     AppBarAssistantButtonPreferredState::kLens
                                   checkedState:checkedState]];
@@ -32,6 +44,7 @@
   if (showAccount) {
     [actions
         addObject:[self actionWithTitleID:IDS_IOS_APP_BAR_ACCOUNT
+                                    state:AppBarAssistantButtonState::kAccount
                            preferredState:AppBarAssistantButtonPreferredState::
                                               kAccount
                              checkedState:checkedState]];
@@ -47,19 +60,17 @@
 
 #pragma mark - Private
 
-// Returns the menu action titled with the `titleID` string, which selects
-// `preferredState` as the preferred assistant button state. `preferredState`
-// must not be `kDefault`. The action is checked when the assistant button state
-// matching `preferredState` is `checkedState`. Its icon is the one of the
-// assistant button in that state, so that it previews the button resulting from
+// Returns the menu action titled with the `titleID` string for `state`, which
+// selects `preferredState` as the preferred assistant button state. The action
+// is checked when `state` is `checkedState`. Its icon is the one of the
+// assistant button in `state`, so that it previews the button resulting from
 // its selection. For Account, the generic symbol is used instead of the avatar,
 // as the entry describes the kind of button, not the signed-in identity.
 - (UIAction*)actionWithTitleID:(int)titleID
+                         state:(AppBarAssistantButtonState)state
                 preferredState:
                     (AppBarAssistantButtonPreferredState)preferredState
                   checkedState:(AppBarAssistantButtonState)checkedState {
-  AppBarAssistantButtonState state =
-      AssistantButtonStateFromPreferredState(preferredState).value();
   __weak __typeof(self) weakSelf = self;
   UIAction* action = [UIAction
       actionWithTitle:l10n_util::GetNSString(titleID)
