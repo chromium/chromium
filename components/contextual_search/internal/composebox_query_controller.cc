@@ -1634,6 +1634,7 @@ ComposeboxQueryController::CreateContextualInputs(
         viewport_contextual_input->set_upload_type(
             *info->input_data->upload_type);
       }
+      viewport_contextual_input->set_is_viewport_image(true);
     }
   }
   return contextual_inputs;
