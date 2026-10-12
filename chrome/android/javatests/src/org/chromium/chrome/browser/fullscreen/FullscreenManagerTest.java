@@ -1206,6 +1206,7 @@ public class FullscreenManagerTest {
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
     })
+    @DisabledTest(message = "https://crbug.com/572586223")
     public void testFullscreenExitWithSelectionPopPresentLegacy() throws InterruptedException {
         WebPageStation page = mActivityTestRule.startOnUrl(FULLSCREEN_WITH_SELECTION_POPUP);
 
