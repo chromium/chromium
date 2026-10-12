@@ -69,6 +69,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/third_party/mozilla/url_parse.h"
+#include "url/url_canon_stdstring.h"
 #include "url/url_util.h"
 
 namespace net::registry_controlled_domains {

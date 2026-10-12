@@ -23,6 +23,7 @@
 #include "net/base/filename_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/third_party/mozilla/url_parse.h"
+#include "url/url_canon_stdstring.h"
 #include "url/url_file.h"
 #include "url/url_util.h"
 

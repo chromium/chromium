@@ -5,6 +5,7 @@
 #include "net/base/url_util.h"
 
 #include "build/build_config.h"
+#include "url/url_canon_stdstring.h"
 
 #if BUILDFLAG(IS_POSIX)
 #include <netinet/in.h>

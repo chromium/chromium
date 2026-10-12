@@ -16,6 +16,7 @@
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "url/gurl.h"
 #include "url/url_canon.h"
+#include "url/url_canon_stdstring.h"
 #include "url/url_util.h"
 
 namespace webauthn {

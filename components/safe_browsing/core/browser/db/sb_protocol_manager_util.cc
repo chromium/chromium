@@ -30,6 +30,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/http/http_request_headers.h"
+#include "url/url_canon_stdstring.h"
 #include "url/url_util.h"
 
 using base::Time;

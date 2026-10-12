@@ -24,6 +24,7 @@
 #include "base/values.h"
 #include "net/base/parse_number.h"
 #include "url/gurl.h"
+#include "url/url_canon_stdstring.h"
 
 namespace net {
 namespace {
