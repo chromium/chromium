@@ -10,6 +10,7 @@ source_set("switcher_info") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/browser/signin/model:system_identity",
     "//ios/public/provider/chrome/browser/switcher_info:switcher_info_api",
   ]
 }

@@ -101,14 +101,19 @@ class IOSChromeDefaultBrowserMetricsProviderTest : public PlatformTest {
     return profile_manager_.AddProfileWithBuilder(std::move(builder));
   }
 
-  ProfileIOS* AddSignedInProfile() {
+  ProfileIOS* AddSignedInProfile(
+      const std::vector<id<SystemIdentity>>& identities = {
+          [FakeSystemIdentity fakeIdentity1]}) {
+    CHECK(!identities.empty());
     ProfileIOS* profile = AddProfileWithDeviceSwitcherLabels({});
-    FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
-    FakeSystemIdentityManager::FromSystemIdentityManager(
-        GetApplicationContext()->GetSystemIdentityManager())
-        ->AddIdentity(identity);
+    FakeSystemIdentityManager* system_identity_manager =
+        FakeSystemIdentityManager::FromSystemIdentityManager(
+            GetApplicationContext()->GetSystemIdentityManager());
+    for (id<SystemIdentity> identity : identities) {
+      system_identity_manager->AddIdentity(identity);
+    }
     AuthenticationServiceFactory::GetForProfile(profile)->SignIn(
-        identity, signin_metrics::AccessPoint::kStartPage);
+        identities.front(), signin_metrics::AccessPoint::kStartPage);
     return profile;
   }
 
@@ -385,8 +390,8 @@ TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
   }
 }
 
-// Tests that when no signed-in profile exists, the .SwitcherInfo.Unknown
-// variants are recorded.
+// Tests that when no signed-in profile exists (even if device identities are
+// present), the .SwitcherInfo.Unknown variants are recorded.
 TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
        RecordsSwitcherInfoUnknownVariantWhenNotSignedIn) {
   base::test::ScopedFeatureList feature_list;
@@ -395,6 +400,9 @@ TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
   ios::provider::test::SetSwitcherInfoResult(ios::provider::SwitcherInfoResult{
       .switcher_status = ios::provider::SwitcherStatus::kSwitcher,
       .is_chrome_user = true});
+  FakeSystemIdentityManager::FromSystemIdentityManager(
+      GetApplicationContext()->GetSystemIdentityManager())
+      ->AddIdentity([FakeSystemIdentity fakeIdentity1]);
   AddProfileWithDeviceSwitcherLabels({});
 
   IOSChromeDefaultBrowserMetricsProvider provider(
@@ -408,6 +416,93 @@ TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
         base::StrCat({histogram, ".SwitcherInfo.AndroidSwitcher"}), 0);
     histogram_tester_.ExpectTotalCount(
         base::StrCat({histogram, ".SwitcherInfo.NotAndroidSwitcher"}), 0);
+  }
+}
+
+// Tests that when a secondary identity in a signed-in profile has kSwitcher
+// status while the primary identity has kNotSwitcher, all signed-in identities
+// are queried and .SwitcherInfo.AndroidSwitcher is recorded.
+TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
+       RecordsSwitcherInfoAndroidSwitcherFromSecondaryIdentity) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      kQuerySwitcherInfoSignalForDefaultBrowserMetrics);
+  FakeSystemIdentity* primary_identity = [FakeSystemIdentity fakeIdentity1];
+  FakeSystemIdentity* secondary_identity = [FakeSystemIdentity fakeIdentity2];
+
+  ios::provider::test::SetSwitcherInfoResultForIdentity(
+      primary_identity,
+      ios::provider::SwitcherInfoResult{
+          .switcher_status = ios::provider::SwitcherStatus::kNotSwitcher,
+          .is_chrome_user = false});
+  ios::provider::test::SetSwitcherInfoResultForIdentity(
+      secondary_identity,
+      ios::provider::SwitcherInfoResult{
+          .switcher_status = ios::provider::SwitcherStatus::kSwitcher,
+          .is_chrome_user = true});
+
+  AddSignedInProfile({primary_identity, secondary_identity});
+
+  IOSChromeDefaultBrowserMetricsProvider provider(
+      metrics::MetricsLogUploader::MetricServiceType::UMA);
+  provider.OnDidCreateMetricsLog();
+  task_environment_.FastForwardBy(base::Seconds(1));
+  for (const char* histogram : kDefaultBrowserHistograms) {
+    histogram_tester_.ExpectBucketCount(
+        base::StrCat({histogram, ".SwitcherInfo.AndroidSwitcher"}), false, 1);
+    histogram_tester_.ExpectTotalCount(
+        base::StrCat({histogram, ".SwitcherInfo.NotAndroidSwitcher"}), 0);
+    histogram_tester_.ExpectTotalCount(
+        base::StrCat({histogram, ".SwitcherInfo.Unknown"}), 0);
+  }
+
+  LogOpenHTTPURLFromExternalURL();
+  provider.OnDidCreateMetricsLog();
+  task_environment_.FastForwardBy(base::Seconds(1));
+  for (const char* histogram : kDefaultBrowserHistograms) {
+    histogram_tester_.ExpectBucketCount(
+        base::StrCat({histogram, ".SwitcherInfo.AndroidSwitcher"}), true, 1);
+    histogram_tester_.ExpectBucketCount(
+        base::StrCat({histogram, ".SwitcherInfo.AndroidSwitcher"}), false, 1);
+  }
+}
+
+// Tests that when the primary identity has kUnknown status and a secondary
+// identity in the signed-in profile has kNotSwitcher, all signed-in identities
+// are queried and .SwitcherInfo.NotAndroidSwitcher is recorded.
+TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
+       RecordsSwitcherInfoNotAndroidSwitcherFromSecondaryIdentity) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      kQuerySwitcherInfoSignalForDefaultBrowserMetrics);
+  FakeSystemIdentity* primary_identity = [FakeSystemIdentity fakeIdentity1];
+  FakeSystemIdentity* secondary_identity = [FakeSystemIdentity fakeIdentity2];
+
+  ios::provider::test::SetSwitcherInfoResultForIdentity(
+      primary_identity,
+      ios::provider::SwitcherInfoResult{
+          .switcher_status = ios::provider::SwitcherStatus::kUnknown,
+          .is_chrome_user = false});
+  ios::provider::test::SetSwitcherInfoResultForIdentity(
+      secondary_identity,
+      ios::provider::SwitcherInfoResult{
+          .switcher_status = ios::provider::SwitcherStatus::kNotSwitcher,
+          .is_chrome_user = false});
+
+  AddSignedInProfile({primary_identity, secondary_identity});
+
+  IOSChromeDefaultBrowserMetricsProvider provider(
+      metrics::MetricsLogUploader::MetricServiceType::UMA);
+  provider.OnDidCreateMetricsLog();
+  task_environment_.FastForwardBy(base::Seconds(1));
+  for (const char* histogram : kDefaultBrowserHistograms) {
+    histogram_tester_.ExpectBucketCount(
+        base::StrCat({histogram, ".SwitcherInfo.NotAndroidSwitcher"}), false,
+        1);
+    histogram_tester_.ExpectTotalCount(
+        base::StrCat({histogram, ".SwitcherInfo.AndroidSwitcher"}), 0);
+    histogram_tester_.ExpectTotalCount(
+        base::StrCat({histogram, ".SwitcherInfo.Unknown"}), 0);
   }
 }
 

@@ -11,8 +11,13 @@
 
 namespace ios::provider::test {
 
-// Sets the result returned by `GetSwitcherInfo()` in tests.
+// Sets the default result returned by `GetSwitcherInfo()` in tests when no
+// per-identity result is configured.
 void SetSwitcherInfoResult(std::optional<SwitcherInfoResult> result);
+
+// Sets the result returned by `GetSwitcherInfo()` for `identity`.
+void SetSwitcherInfoResultForIdentity(id<SystemIdentity> identity,
+                                      std::optional<SwitcherInfoResult> result);
 
 // Resets the test switcher info state back to default (`std::nullopt`).
 void ResetSwitcherInfoState();

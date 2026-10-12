@@ -32,6 +32,8 @@
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/public/provider/chrome/browser/switcher_info/switcher_info_api.h"
 
 namespace {
@@ -172,12 +174,14 @@ void RecordSwitcherInfoSignalHistograms(
          application_context->GetProfileManager()->GetLoadedProfiles()) {
       AuthenticationService* authentication_service =
           AuthenticationServiceFactory::GetForProfile(profile);
-      if (!authentication_service) {
+      ChromeAccountManagerService* account_manager_service =
+          ChromeAccountManagerServiceFactory::GetForProfile(profile);
+      if (!authentication_service || !account_manager_service ||
+          !authentication_service->HasPrimaryIdentity()) {
         continue;
       }
-      id<SystemIdentity> identity =
-          authentication_service->GetPrimaryIdentity();
-      if (identity) {
+      for (id<SystemIdentity> identity in account_manager_service
+               ->GetAllIdentities()) {
         identities.push_back(identity);
       }
     }
