@@ -32,7 +32,9 @@ enum class IOSHomeActionType {
   kQuickActionAIM = 16,
   kTabSwitcher = 17,
   kPlusButton = 18,
-  kMaxValue = kPlusButton,
+  kStandaloneAIMModule = 19,
+  kAimInMostVisited = 20,
+  kMaxValue = kAimInMostVisited,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
 

@@ -10,12 +10,14 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/favicon_base/favicon_types.h"
+#import "components/ntp_tiles/features.h"
 #import "components/ntp_tiles/metrics.h"
 #import "components/ntp_tiles/ntp_tile_impression.h"
 #import "components/ntp_tiles/tile_visual_type.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/content_suggestions/model/content_suggestions_metrics_constants.h"
 #import "ios/chrome/browser/content_suggestions/model/content_suggestions_metrics_recorder.h"
+#import "ios/chrome/browser/content_suggestions/most_visited_tiles/public/metrics.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_item.h"
 #import "ios/chrome/browser/content_suggestions/public/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/set_up_list/public/set_up_list_utils.h"
@@ -193,6 +195,12 @@ favicon_base::IconType GetIconTypeFromAttributes(
       index, item.source, item.titleSource,
       GetVisualTypeFromAttributes(item.attributes),
       GetIconTypeFromAttributes(item.attributes), item.URL));
+  if (ntp_tiles::GetAimButtonRefactorArm() ==
+      ntp_tiles::AimButtonRefactorArm::kAimAsMvt) {
+    if ([item isAIMTile]) {
+      RecordAimTileImpressionAtIndex(static_cast<int>(index));
+    }
+  }
 }
 
 + (void)recordMostVisitedTileOpened:(MostVisitedItem*)item

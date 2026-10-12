@@ -37,4 +37,19 @@ void RecordSnackbarUndoUserAction(bool undo_pin);
 void RecordPinnedSiteFormUserAction(PinnedSiteAction form,
                                     MostVisitedPinSiteFormUserAction action);
 
+/// Records user action when the AIM tile is unpinned from most visited tiles.
+void RecordAimTileUnpinnedUserAction();
+
+/// Records user action when unpinning of the AIM tile is reverted via snackbar.
+void RecordAimTileUndoUnpinUserAction();
+
+/// Records the destination index when the user reorders the AIM tile.
+void RecordAimTileMovedToIndex(int index);
+
+/// Records the index of the AIM tile when it is tapped in most visited tiles.
+void RecordAimTileTappedAtIndex(int index);
+
+/// Records the impression index of the AIM tile in most visited tiles.
+void RecordAimTileImpressionAtIndex(int index);
+
 #endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_MOST_VISITED_TILES_PUBLIC_METRICS_H_

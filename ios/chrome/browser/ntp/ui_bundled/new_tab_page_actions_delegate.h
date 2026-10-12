@@ -26,6 +26,12 @@
 // A most visited tile has been tapped.
 - (void)mostVisitedTileOpened;
 
+// The AIM tile in Most Visited Tiles has been tapped.
+- (void)aimInMostVisitedOpened;
+
+// The standalone AIM module beside the most visited collection has been tapped.
+- (void)standaloneAIMModuleOpened;
+
 // A shortcut tile has been tapped.
 - (void)shortcutTileOpened;
 

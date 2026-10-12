@@ -341,6 +341,12 @@ GURL GetValidUrl(NSString* urlString) {
 - (void)moveMostVisitedItem:(MostVisitedItem*)item toIndex:(NSUInteger)index {
   _mostVisitedSites->ReorderCustomLink(item.URL, index);
   RecordReorderUserAction();
+  if (ntp_tiles::GetAimButtonRefactorArm() ==
+      ntp_tiles::AimButtonRefactorArm::kAimAsMvt) {
+    if ([item isAIMTile]) {
+      RecordAimTileMovedToIndex(static_cast<int>(index));
+    }
+  }
 
   // VoiceOver announcement.
   NSString* announcement = l10n_util::GetNSStringF(
@@ -498,12 +504,26 @@ GURL GetValidUrl(NSString* urlString) {
   if (_mostVisitedSites->HasCustomLink(url)) {
     // Remove the custom link.
     if (_mostVisitedSites->DeleteCustomLink(url)) {
+      ntp_tiles::AimButtonRefactorArm arm =
+          ntp_tiles::GetAimButtonRefactorArm();
+      BOOL isAIMTile = [item isAIMTile];
+      if (arm == ntp_tiles::AimButtonRefactorArm::kAimAsMvt) {
+        if (isAIMTile) {
+          RecordAimTileUnpinnedUserAction();
+        }
+      }
       [self showSnackbarWithMessage:
                 l10n_util::GetNSString(
                     IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_SNACKBAR_UNPINNED)
                          undoAction:^{
                            [weakSelf undoLastPinAction];
                            RecordSnackbarUndoUserAction(/*undo_pin=*/NO);
+                           if (arm ==
+                               ntp_tiles::AimButtonRefactorArm::kAimAsMvt) {
+                             if (isAIMTile) {
+                               RecordAimTileUndoUnpinUserAction();
+                             }
+                           }
                          }];
     }
     return;
@@ -647,10 +667,18 @@ GURL GetValidUrl(NSString* urlString) {
 // Logs a histogram due to a Most Visited item being opened.
 - (void)logMostVisitedOpening:(MostVisitedItem*)item
                       atIndex:(NSInteger)mostVisitedIndex {
-  [self.NTPActionsDelegate mostVisitedTileOpened];
   [ContentSuggestionsMetricsRecorder
       recordMostVisitedTileOpened:item
                           atIndex:mostVisitedIndex];
+  if (ntp_tiles::GetAimButtonRefactorArm() ==
+      ntp_tiles::AimButtonRefactorArm::kAimAsMvt) {
+    if ([item isAIMTile]) {
+      RecordAimTileTappedAtIndex(static_cast<int>(mostVisitedIndex));
+      [self.NTPActionsDelegate aimInMostVisitedOpened];
+      return;
+    }
+  }
+  [self.NTPActionsDelegate mostVisitedTileOpened];
 }
 
 // Opens the `URL` in a new tab `incognito` or not. `originPoint` is the origin
