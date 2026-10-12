@@ -1264,6 +1264,7 @@
 <translation id="498624032394115435">Alle som har linken, kan redigere alle faner.</translation>
 <translation id="4986428648020277392">Forespørsel: Hvilken bør jeg kjøpe? 2 av 3</translation>
 <translation id="498768198683310172">Begynn å bruke Gemini</translation>
+<translation id="4989163558385430922">Se alle</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, administreres av organisasjonen din.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Farge på fanegruppe: <ph name="COLOR" /></translation>
@@ -2027,7 +2028,6 @@ Du kan starte på nytt når som helst.</translation>
 <translation id="7346922058131593019">Hva vil du jobbe med, <ph name="USER_FIRST_NAME" />?</translation>
 <translation id="7347998088283246662">Importer passord, logg, bokmerker med mer</translation>
 <translation id="7352651011704765696">Noe gikk galt</translation>
-<translation id="7357999308187750900">Se alle</translation>
 <translation id="736564850024123010">Endre adressefeltets plassering for å få en tilpasset opplevelse.</translation>
 <translation id="7366909168761621528">Nettleserdata</translation>
 <translation id="7367530036083223701">Få sikker tilgang til passordene dine fra startskjermen med Passordlagring-modulen.</translation>
@@ -2361,7 +2361,6 @@ Du kan starte på nytt når som helst.</translation>
 <translation id="8333459276976141586">Live kommer til å bruke mikrofonen. Trykk på Live-knappen for å slå på mikrofonen. For å slå av mikrofonen, trykk på stoppknappen eller lukk Gemini.</translation>
 <translation id="833647236762414178">Opprett, lagre og administrer passordene og passnøklene dine for å logge på nettsteder og apper enkelt. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Sikkerhetskopier tingene dine, og bruk dem på alle enheter.</translation>
-<translation id="8345328955902001853">{count,plural, =1{Fullfør 1 oppgave til for å gå opp til nytt nivå}other{Fullfør {count} oppgaver til for å gå opp til nytt nivå}}</translation>
 <translation id="8348530355586151720">Trykk på menyen med tre prikker</translation>
 <translation id="8349305172487531364">Bokmerkerad</translation>
 <translation id="8360164927489392419">Opptak av interaksjonene dine med Live og innhold du deler med funksjonen, lagres og behandles i tråd med <ph name="BEGIN_LINK" />merknaden om personvern for Gemini-apper<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
@@ -2586,7 +2585,6 @@ Du kan starte på nytt når som helst.</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, festet nettsted</translation>
 <translation id="8990960056509724223">Filen kunne ikke lagres på grunn av retningslinjene for organisasjonen din</translation>
 <translation id="8998289560386111590">Ikke tilgjengelig på enheten din</translation>
-<translation id="9003263770394939629">Foreslått av Gemini. Administrer forbedret autofyll i innstillingene.</translation>
 <translation id="9003677638446136377">Sjekk på nytt</translation>
 <translation id="9006453925669499173">Meny → Ny inkognitofane</translation>
 <translation id="9008201768610948239">Ignorer</translation>
@@ -2595,7 +2593,6 @@ Du kan starte på nytt når som helst.</translation>
 <translation id="9029650858822697271">Du ble logget av</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Bekreft sletting av nettlesingsdata</translation>
-<translation id="9035699147763101514">Basert på personlig tilpasset intelligens med Gemini. Administrer valgene dine i innstillingene.</translation>
 <translation id="9038526468059454274">Oppsummer med</translation>
 <translation id="9039373489628511875">Båndbredde</translation>
 <translation id="9042893549633094279">Personvern og sikkerhet</translation>

@@ -1264,6 +1264,7 @@
 <translation id="498624032394115435">Alle med linket kan redigere alle faner.</translation>
 <translation id="4986428648020277392">Prompt: Hvilken skal jeg købe? 2 af 3</translation>
 <translation id="498768198683310172">Begynd at bruge Gemini</translation>
+<translation id="4989163558385430922">Se alle</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, som administreres af din organisation.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Fanegruppens farve <ph name="COLOR" /></translation>
@@ -2028,7 +2029,6 @@ Du kan til enhver tid genstarte.</translation>
 <translation id="7346922058131593019">Hvad vil du arbejde på, <ph name="USER_FIRST_NAME" />?</translation>
 <translation id="7347998088283246662">Importér adgangskoder, historik, bogmærker m.m.</translation>
 <translation id="7352651011704765696">Noget gik galt</translation>
-<translation id="7357999308187750900">Se alle</translation>
 <translation id="736564850024123010">Flyt din adresselinje for at få en tilpasset oplevelse.</translation>
 <translation id="7366909168761621528">Browserdata</translation>
 <translation id="7367530036083223701">Få sikker adgang til dine adgangskoder fra startskærmen med widgetten Adgangs­kode­admin­istrator.</translation>
@@ -2362,7 +2362,6 @@ Du kan til enhver tid genstarte.</translation>
 <translation id="8333459276976141586">Live anvender din mikrofon. Når du trykker på Live-knappen, tændes mikrofonen. Hvis du vil slukke mikrofonen, skal du trykke på stopknappen eller lukke Gemini.</translation>
 <translation id="833647236762414178">Opret, gem og administrer dine adgangskoder og adgangsnøgler, så du nemt kan logge ind på websites og i apps. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Sikkerhedskopiér dit indhold, og få adgang til det på enhver enhed.</translation>
-<translation id="8345328955902001853">{count,plural, =1{Udfør 1 opgave mere for at stige i niveau}one{Udfør {count} opgave mere for at stige i niveau}other{Udfør {count} opgaver mere for at stige i niveau}}</translation>
 <translation id="8348530355586151720">Tryk på prikmenuen</translation>
 <translation id="8349305172487531364">Bogmærkelinje</translation>
 <translation id="8360164927489392419">Optagelser af dine interaktioner med Live og indhold, du deler med funktionen, gemmes og behandles i henhold til <ph name="BEGIN_LINK" />privatlivsmeddelelsen for Gemini-apps<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
@@ -2588,7 +2587,6 @@ Du kan til enhver tid genstarte.</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, fastgjort website</translation>
 <translation id="8990960056509724223">Filen kunne ikke gemmes på grund af din organisations politikker</translation>
 <translation id="8998289560386111590">Ikke tilgængelig på din enhed</translation>
-<translation id="9003263770394939629">Foreslået af Gemini. Administrer forbedret autofyld i indstillingerne.</translation>
 <translation id="9003677638446136377">Kontrollér igen</translation>
 <translation id="9006453925669499173">Menu → Ny inkognitofane</translation>
 <translation id="9008201768610948239">Ignorer</translation>
@@ -2597,7 +2595,6 @@ Du kan til enhver tid genstarte.</translation>
 <translation id="9029650858822697271">Du er blevet logget ud</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Bekræft sletning af browserdata</translation>
-<translation id="9035699147763101514">Leveret af Personlig intelligens med Gemini. Administrer dine valg i indstillingerne.</translation>
 <translation id="9038526468059454274">Opsummer med</translation>
 <translation id="9039373489628511875">Båndbredde</translation>
 <translation id="9042893549633094279">Privatliv og sikkerhed</translation>

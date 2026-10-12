@@ -5632,6 +5632,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5246282308050205996"><ph name="APP_NAME" /> đã xảy ra lỗi. Nhấp vào bong bóng này để khởi động lại ứng dụng.</translation>
 <translation id="5247051749037287028">Tên hiển thị (không bắt buộc)</translation>
 <translation id="5247243947166567755">Chọn <ph name="BOOKMARK_TITLE" /></translation>
+<translation id="524751727772074981">Hỏi bất cứ điều gì và từ bất cứ đâu với Gemini trong Chrome</translation>
 <translation id="5248934139541843042">Xem người tổ chức</translation>
 <translation id="5249624017678798539">Trình duyệt đã gặp lỗi trước khi quá trình tải xuống hoàn tất.</translation>
 <translation id="5249818097095743806">Sử dụng khoá bảo mật của bạn</translation>
@@ -6341,7 +6342,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5828181959764767444">Hoàng hôn</translation>
 <translation id="5828545842856466741">Thêm hồ sơ...</translation>
 <translation id="5828633471261496623">Đang in...</translation>
-<translation id="5829137022934788067">Cung cấp cho tôi thông tin về lựa chọn này</translation>
 <translation id="5829214552954466783">Chia sẻ <ph name="CREDENTIAL_TYPE" /> cho tên người dùng: <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">Phương thức thanh toán của bạn trong Google Wallet</translation>
 <translation id="5830512293931520102">Mật khẩu của bạn được mã hoá và không ai có thể nhìn thấy</translation>

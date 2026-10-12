@@ -1265,6 +1265,7 @@
 <translation id="498624032394115435">Iedereen met de link kan alle tabbladen bewerken.</translation>
 <translation id="4986428648020277392">Prompt: Welke moet ik kopen? 2 van 3</translation>
 <translation id="498768198683310172">Aan de slag met Gemini</translation>
+<translation id="4989163558385430922">Alles bekijken</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, beheerd door je organisatie.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Kleur van tabbladgroep <ph name="COLOR" /></translation>
@@ -2029,7 +2030,6 @@ Je kunt op elk moment opnieuw beginnen.</translation>
 <translation id="7346922058131593019">Waar wil je aan werken, <ph name="USER_FIRST_NAME" />?</translation>
 <translation id="7347998088283246662">Importeer onder andere wachtwoorden, geschiedenis en bookmarks</translation>
 <translation id="7352651011704765696">Er is iets misgegaan</translation>
-<translation id="7357999308187750900">Alles weergeven</translation>
 <translation id="736564850024123010">Wijzig de positie van de adresbalk voor een aangepaste functionaliteit.</translation>
 <translation id="7366909168761621528">Browsegegevens</translation>
 <translation id="7367530036083223701">Krijg beveiligd toegang tot je wachtwoorden vanaf het startscherm met de widget Wachtwoordmanager.</translation>
@@ -2363,7 +2363,6 @@ Je kunt op elk moment opnieuw beginnen.</translation>
 <translation id="8333459276976141586">Live gebruikt je microfoon. Als je op de Live-knop tikt, gaat de microfoon aan. Als je de microfoon wilt uitzetten, tik je op de knop Stoppen of sluit je Gemini.</translation>
 <translation id="833647236762414178">Maak, bewaar en beheer je wachtwoorden en toegangssleutels om makkelijk in te loggen bij sites en apps. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Maak een back-up van je gegevens en gebruik deze op elk apparaat.</translation>
-<translation id="8345328955902001853">{count,plural, =1{Rond nog 1 taak af om een hoger niveau te bereiken}other{Rond nog {count} taken af om een hoger niveau te bereiken}}</translation>
 <translation id="8348530355586151720">Tik op het menu met 3 stippen</translation>
 <translation id="8349305172487531364">Bookmarkbalk</translation>
 <translation id="8360164927489392419">Opnamen van je interacties met Live en content die je in deze chats deelt, worden opgeslagen en verwerkt volgens de <ph name="BEGIN_LINK" />Privacyverklaring van Gemini Apps<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
@@ -2590,7 +2589,6 @@ Je kunt op elk moment opnieuw beginnen.</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, vastgezette site</translation>
 <translation id="8990960056509724223">Kan het bestand niet opslaan vanwege het beleid van je organisatie</translation>
 <translation id="8998289560386111590">Niet beschikbaar op je apparaat</translation>
-<translation id="9003263770394939629">Voorgesteld door Gemini. Beheer verbeterd automatisch invullen in de instellingen.</translation>
 <translation id="9003677638446136377">Nogmaals controleren</translation>
 <translation id="9006453925669499173">Menu → Nieuw incognitotabblad</translation>
 <translation id="9008201768610948239">Negeren</translation>
@@ -2599,7 +2597,6 @@ Je kunt op elk moment opnieuw beginnen.</translation>
 <translation id="9029650858822697271">Je bent uitgelogd</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Browsegegevens verwijderen bevestigen</translation>
-<translation id="9035699147763101514">Mogelijk gemaakt door Personal Intelligence met Gemini. Beheer je keuzes in de instellingen.</translation>
 <translation id="9038526468059454274">Vat het samen met</translation>
 <translation id="9039373489628511875">Bandbreedte</translation>
 <translation id="9042893549633094279">Privacy en beveiliging</translation>

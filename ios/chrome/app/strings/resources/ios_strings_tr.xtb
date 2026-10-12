@@ -1264,6 +1264,7 @@
 <translation id="498624032394115435">Bağlantıya sahip olan herkes tüm sekmeleri düzenleyebilir.</translation>
 <translation id="4986428648020277392">İstem: Hangisini satın almalıyım? 2/3</translation>
 <translation id="498768198683310172">Gemini'ı kullanmaya başlayın</translation>
+<translation id="4989163558385430922">Tümünü göster</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, kuruluşunuz tarafından yönetiliyor.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Sekme grubu rengi <ph name="COLOR" /></translation>
@@ -2027,7 +2028,6 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="7346922058131593019">Ne üzerinde çalışmak istiyorsunuz, <ph name="USER_FIRST_NAME" />?</translation>
 <translation id="7347998088283246662">Şifreler, geçmiş, yer işaretleri ve daha fazlasını içe aktarın</translation>
 <translation id="7352651011704765696">Bir hata oluştu</translation>
-<translation id="7357999308187750900">Tümünü Göster</translation>
 <translation id="736564850024123010">Özelleştirilmiş bir deneyim için adres çubuğunuzun konumunu değiştirin.</translation>
 <translation id="7366909168761621528">Tarama verileri</translation>
 <translation id="7367530036083223701">Şifre Yöneticisi widget'ını kullanarak şifrelerinize ana ekrandan güvenli bir şekilde erişin.</translation>
@@ -2361,7 +2361,6 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="8333459276976141586">Live, mikrofonunuzu kullanır. Live düğmesine dokunduğunuzda mikrofon açılır. Mikrofonu kapatmak için Durdur düğmesine dokunun veya Gemini'ı kapatın.</translation>
 <translation id="833647236762414178">Sitelerde ve uygulamalarda kolayca oturum açabilmek için şifreler ve geçiş anahtarları oluşturun, kaydedin, yönetin. <ph name="BEGIN_LINK" />Daha fazla bilgi edinin<ph name="END_LINK" />.</translation>
 <translation id="8343993175958086504">Verilerinizi yedekleyin ve istediğiniz cihazda kullanın.</translation>
-<translation id="8345328955902001853">{count,plural, =1{Seviye atlamak için 1 görev daha tamamlayın}other{Seviye atlamak için {count} görev daha tamamlayın}}</translation>
 <translation id="8348530355586151720">Üç nokta menü simgesine dokunun.</translation>
 <translation id="8349305172487531364">Yer işaretleri çubuğu</translation>
 <translation id="8360164927489392419">Live ile etkileşimleriniz ve paylaştığınız içerikler kaydedilerek <ph name="BEGIN_LINK" />Gemini Uygulamaları Gizlilik Uyarısı<ph name="END_LINK" />'na uygun şekilde işlenir. <ph name="BEGIN_LINK" />Daha fazla bilgi edinin<ph name="END_LINK" />.</translation>
@@ -2586,7 +2585,6 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, sabitlenmiş site</translation>
 <translation id="8990960056509724223">Dosya, kuruluşunuzun politikaları nedeniyle kaydedilemedi</translation>
 <translation id="8998289560386111590">Cihazınızda kullanılamıyor</translation>
-<translation id="9003263770394939629">Gemini tarafından önerildi. Gelişmiş otomatik doldurma özelliğini ayarlardan yönetin.</translation>
 <translation id="9003677638446136377">Tekrar kontrol et</translation>
 <translation id="9006453925669499173">Menü → Yeni gizli Sekme</translation>
 <translation id="9008201768610948239">Yoksay</translation>
@@ -2595,7 +2593,6 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="9029650858822697271">Oturumunuz kapatıldı</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Tarama verilerinin silinmesini onayla</translation>
-<translation id="9035699147763101514">Kişisel Zeka özellikli Gemini tarafından desteklenir. Seçimlerinizi ayarlardan yönetin.</translation>
 <translation id="9038526468059454274">Şununla özetleyin:</translation>
 <translation id="9039373489628511875">Bant genişliği</translation>
 <translation id="9042893549633094279">Gizlilik ve güvenlik</translation>

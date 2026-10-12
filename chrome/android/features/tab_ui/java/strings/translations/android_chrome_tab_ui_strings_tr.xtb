@@ -15,7 +15,6 @@
 <translation id="1321004960118052490">Etkin olmayan öğeleriniz birikmez</translation>
 <translation id="1329584516321524826">Az önce güncellendi</translation>
 <translation id="1340839264183302272">Gruptan çık</translation>
-<translation id="1386966479075994683">Sekmeleri Genişlet</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> sekme içeren, <ph name="COLOR_NAME" /> renkli ve <ph name="CARD_LABEL" /> etiketli <ph name="TITLE_OF_GROUP" /> paylaşılan sekme grubunu genişletin.}other{<ph name="TABS_COUNT_MANY" /> sekme içeren, <ph name="COLOR_NAME" /> renkli ve <ph name="CARD_LABEL" /> etiketli <ph name="TITLE_OF_GROUP" /> paylaşılan sekme grubunu genişletin.}}</translation>
 <translation id="1486715732399361704">Tüm sekme gruplarınızı burada bulabilirsiniz</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> dakika önce oluşturuldu}other{<ph name="NUM_MINS_MANY" /> dakika önce oluşturuldu}}</translation>
@@ -66,6 +65,7 @@
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> puan</translation>
 <translation id="266935134738038806">Siteye git</translation>
 <translation id="2671423594960767771">Grubu paylaş</translation>
+<translation id="2729310339366257582">Sekmeleri daralt</translation>
 <translation id="2734252994837336591">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> hafta önce güncellendi}other{<ph name="NUM_WEEKS_MANY" /> hafta önce güncellendi}}</translation>
 <translation id="2753877351161418426">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> saat önce güncellendi}other{<ph name="NUM_HOURS_MANY" /> saat önce güncellendi}}</translation>
 <translation id="2755485474385016903">Yapılan değişiklikleri gruptaki herkes görür</translation>
@@ -136,7 +136,6 @@
 <translation id="5073204694187207510">Tam ekran ızgarayı gizler</translation>
 <translation id="5076161749301278626">Mağaza yorumları gösterilsin mi?</translation>
 <translation id="5161254044473106830">Başlık gerekiyor</translation>
-<translation id="5204584298075822291">Sekmeleri Daralt</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome, etkin olmayan sekmeleri ve sekme gruplarını <ph name="AUTO_DELETE_DELAY_ONE" /> ay sonra otomatik olarak kapatır. Bu özelliği Ayarlar'dan değiştirebilirsiniz.}other{Chrome, etkin olmayan sekmeleri ve sekme gruplarını <ph name="AUTO_DELETE_DELAY_MANY" /> ay sonra otomatik olarak kapatır. Bu özelliği Ayarlar'dan değiştirebilirsiniz.}}</translation>
 <translation id="5254233580564156835">Bellek kullanımı: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">Son sekmeniz</translation>
@@ -191,6 +190,7 @@
 <translation id="709473454666962555">Sekme grubu seçin</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Sekmeyi paylaş}other{Sekmeleri paylaş}}</translation>
 <translation id="7129458170538955174">Bu mağazayla ilgili bilgiler ekranın yarısına kadar açıldı</translation>
+<translation id="7194343495483122559">Sekmeleri genişlet</translation>
 <translation id="7204204600596740190">Çoklu seçim modu</translation>
 <translation id="7211038039686180558">Sekme gruplarınız, oturum açılmış tüm cihazlarınızda otomatik olarak kaydedilip güncellenir</translation>
 <translation id="7326879924029668159">İade politikasını ve daha fazlasını görün</translation>

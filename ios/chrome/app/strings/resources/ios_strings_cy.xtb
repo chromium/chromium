@@ -852,6 +852,7 @@
 <translation id="3672283986707092811">Dewis Popeth</translation>
 <translation id="3679163990085797665">Dileu cofnodion y rhestr ddarllen</translation>
 <translation id="368329460027487650">Rydych wedi'ch allgofnodi. Yn agor opsiynau i fewngofnodi.</translation>
+<translation id="3689746421535476813">Dewiswch ddull talu sydd wedi'i gadw i'w olygu, neu ychwanegwch ddull talu newydd</translation>
 <translation id="3695446226812920698">Dysgu sut</translation>
 <translation id="3700134753671613714">Mewngofnodwch i gael eich nodau tudalen ar eich holl ddyfeisiau.</translation>
 <translation id="3701167022068948696">Trwsio nawr</translation>
@@ -1264,6 +1265,7 @@
 <translation id="498624032394115435">Gall unrhyw un sydd â'r ddolen olygu'r holl dabiau.</translation>
 <translation id="4986428648020277392">Anogwr: Pa un ddylwn i ei brynu? 2 o 3</translation>
 <translation id="498768198683310172">Dechrau defnyddio Gemini</translation>
+<translation id="4989163558385430922">Gweld popeth</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, rheolir gan eich sefydliad.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Lliw grŵp tabiau <ph name="COLOR" /></translation>
@@ -1719,6 +1721,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="6372558618707314581">Ewch i unrhyw dudalen rydych yn ei hoffi</translation>
 <translation id="6374469231428023295">Rhoi cynnig arall arni</translation>
 <translation id="6374514103145916800">Gofyn</translation>
+<translation id="6381241974485088375">Addaswch eich tudalen tab newydd unrhyw bryd o'r fan hon</translation>
 <translation id="6383719166112032471">Agor Lleoliad…</translation>
 <translation id="6387994324662817823">Mae cyfrineiriau'n cael eu cadw i Rheolwr Cyfrineiriau Google ar y ddyfais hon yn unig.</translation>
 <translation id="6393156038355142111">Awgrymu cyfrinair cryf</translation>
@@ -2027,7 +2030,6 @@ Gallwch ailgychwyn unrhyw bryd.</translation>
 <translation id="7346922058131593019">Beth wyt ti eisiau gweithio arno, <ph name="USER_FIRST_NAME" />?</translation>
 <translation id="7347998088283246662">Mewnforio cyfrineiriau, hanes, nodau tudalen a rhagor</translation>
 <translation id="7352651011704765696">Aeth rhywbeth o'i le</translation>
-<translation id="7357999308187750900">Gweld Popeth</translation>
 <translation id="736564850024123010">Newidiwch leoliad eich bar cyfeiriad i gael profiad sydd wedi'i bersonolieiddio.</translation>
 <translation id="7366909168761621528">Data pori</translation>
 <translation id="7367530036083223701">Cael mynediad at eich cyfrineiriau'n ddiogel o'r sgrîn hafan gyda'r celfigyn Rheolwr Cyfrineiriau.</translation>
@@ -2361,7 +2363,6 @@ Gallwch ailgychwyn unrhyw bryd.</translation>
 <translation id="8333459276976141586">Bydd Live yn defnyddio'ch meicroffon. Mae tapio'r botwm Byw yn troi'r meic ymlaen. I ddiffodd y meic, tapiwch y botwm stopio neu caewch Gemini.</translation>
 <translation id="833647236762414178">Creu, cadw a rheoli'ch cyfrineiriau a'ch codau pas i fewngofnodi'n hawdd i wefannau ac apiau. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Gwneud copïau wrth gefn o'ch pethau a'u defnyddio ar unrhyw ddyfais.</translation>
-<translation id="8345328955902001853">{count,plural, =1{Cwblhewch 1 dasg arall i fynd lefel yn uwch}zero{Cwblhewch {count} tasg arall i fynd lefel yn uwch}two{Cwblhewch {count} dasg arall i fynd lefel yn uwch}few{Cwblhewch {count} tasg arall i fynd lefel yn uwch}many{Cwblhewch {count} thasg arall i fynd lefel yn uwch}other{Cwblhewch {count} tasg arall i fynd lefel yn uwch}}</translation>
 <translation id="8348530355586151720">Tapiwch y ddewislen tri dot</translation>
 <translation id="8349305172487531364">Bar nodau tudalen</translation>
 <translation id="8360164927489392419">Mae recordiadau o'ch rhyngweithiadau â Live a chynnwys rydych yn ei rannu ag ef yn cael eu cadw a'u prosesu yn unol â'r <ph name="BEGIN_LINK" />Hysbysiad Preifatrwydd Gemini Apps<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
@@ -2425,6 +2426,7 @@ Gallwch ailgychwyn unrhyw bryd.</translation>
 <translation id="8535368836838588657">Datgelu'r cyfrinair</translation>
 <translation id="8540426897269305488">Mewngofnodi gyda <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8542331710562073430">Aeth rhywbeth o'i le. Tapiwch y botwm Live i roi cynnig arall ar fynd yn Fyw.</translation>
+<translation id="8544172904312384600">Golygu neu ychwanegu dull talu newydd</translation>
 <translation id="8545276357312221485">Gwiriwch eich gosodiadau porwr diofyn</translation>
 <translation id="854938212724803178">Mae gennych 1 cyfrinair sydd wedi'i ddarganfod. Trwsiwch ef nawr i aros yn ddiogel.</translation>
 <translation id="8551311254462607218">Yn y bar cyfeiriad, tapiwch yr eicon camera Google Lens</translation>
@@ -2463,6 +2465,7 @@ Gallwch ailgychwyn unrhyw bryd.</translation>
 <translation id="8639963783467694461">Gosodiadau awtolenwi</translation>
 <translation id="8642417828095157370">Mae tabiau'n cael eu rhannu i gael atebion mwy perthnasol</translation>
 <translation id="8643403533759285912">Dileu Grŵp</translation>
+<translation id="8646357898207744479">Lens</translation>
 <translation id="8647280737650867362">Methu â dad-dracio'r pris.</translation>
 <translation id="8654802032646794042">Canslo</translation>
 <translation id="8655861111558401309">Dewiswch Dileu Data Pori</translation>
@@ -2586,7 +2589,6 @@ Gallwch ailgychwyn unrhyw bryd.</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, gwefan wedi'i phinio</translation>
 <translation id="8990960056509724223">Nid oedd modd cadw'r ffeil oherwydd polisïau eich sefydliad</translation>
 <translation id="8998289560386111590">Dim ar gael ar eich dyfais</translation>
-<translation id="9003263770394939629">Awgrymwyd gan Gemini Rheoli awtolenwi gwell yn y gosodiadau.</translation>
 <translation id="9003677638446136377">Gwirio eto</translation>
 <translation id="9006453925669499173">Dewislen → Tab Anhysbys newydd</translation>
 <translation id="9008201768610948239">Anwybyddu</translation>
@@ -2595,7 +2597,6 @@ Gallwch ailgychwyn unrhyw bryd.</translation>
 <translation id="9029650858822697271">Cawsoch eich allgofnodi</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Cadarnhau dileu data pori</translation>
-<translation id="9035699147763101514">Pwerir gan Ddeallusrwydd Personol gyda Gemini. Rheoli eich dewisiadau yn y gosodiadau.</translation>
 <translation id="9038526468059454274">Crynhoi gyda</translation>
 <translation id="9039373489628511875">Lled band</translation>
 <translation id="9042893549633094279">Preifatrwydd a diogelwch</translation>

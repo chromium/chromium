@@ -5615,6 +5615,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="5246282308050205996"><ph name="APP_NAME" /> zlyhala. Aplikáciu reštartujte kliknutím na túto bublinu.</translation>
 <translation id="5247051749037287028">Zobrazovaný názov (nepovinné)</translation>
 <translation id="5247243947166567755">Vybrať <ph name="BOOKMARK_TITLE" /></translation>
+<translation id="524751727772074981">S Gemini v Chrome sa môžete pýtať na čokoľvek a kdekoľvek</translation>
 <translation id="5248934139541843042">Zobraziť usporiadanie</translation>
 <translation id="5249624017678798539">Prehliadač zlyhal pred dokončením sťahovania.</translation>
 <translation id="5249818097095743806">Použite svoj bezpečnostný kľúč</translation>
@@ -6323,7 +6324,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5828181959764767444">Západ slnka</translation>
 <translation id="5828545842856466741">Pridať profil…</translation>
 <translation id="5828633471261496623">Prebieha tlač...</translation>
-<translation id="5829137022934788067">Povedz mi o tomto výbere</translation>
 <translation id="5829214552954466783">Zdieľať <ph name="CREDENTIAL_TYPE" /> pre používateľské meno: <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">Vaše spôsoby platby v Peňaženke Google</translation>
 <translation id="5830512293931520102">Vaše heslo je šifrované a nikomu sa nikdy nezobrazí</translation>

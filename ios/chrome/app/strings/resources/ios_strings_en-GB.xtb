@@ -1264,6 +1264,7 @@
 <translation id="498624032394115435">Anyone with the link can edit all tabs.</translation>
 <translation id="4986428648020277392">Prompt: Which should I buy? 2 of 3</translation>
 <translation id="498768198683310172">Start using Gemini</translation>
+<translation id="4989163558385430922">See all</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, managed by your organisation.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Tab group colour <ph name="COLOR" /></translation>
@@ -2027,7 +2028,6 @@ You can restart at any time.</translation>
 <translation id="7346922058131593019">What do you want to work on, <ph name="USER_FIRST_NAME" />?</translation>
 <translation id="7347998088283246662">Import passwords, history, bookmarks and more</translation>
 <translation id="7352651011704765696">Something went wrong</translation>
-<translation id="7357999308187750900">See all</translation>
 <translation id="736564850024123010">Switch the position of your address bar for a customised experience.</translation>
 <translation id="7366909168761621528">Browsing data</translation>
 <translation id="7367530036083223701">Securely access your passwords from the home screen with the Password Manager widget.</translation>
@@ -2361,7 +2361,6 @@ You can restart at any time.</translation>
 <translation id="8333459276976141586">Live will use your microphone. Tapping the Live button turns on the mic. To turn off the mic, tap the stop button or close Gemini.</translation>
 <translation id="833647236762414178">Create, save and manage your passwords and passkeys to easily sign in to sites and apps. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Back up your stuff and use it on any device.</translation>
-<translation id="8345328955902001853">{count,plural, =1{Complete 1 more task to level up}other{Complete {count} more tasks to level up}}</translation>
 <translation id="8348530355586151720">Tap the three-dot menu</translation>
 <translation id="8349305172487531364">Bookmarks bar</translation>
 <translation id="8360164927489392419">Recordings of your interactions with Live and content that you share with it are saved and processed per the <ph name="BEGIN_LINK" />Gemini Apps Privacy Notice<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
@@ -2586,7 +2585,6 @@ You can restart at any time.</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, pinned site</translation>
 <translation id="8990960056509724223">File couldn't save due to your organisation's policies</translation>
 <translation id="8998289560386111590">Not available on your device</translation>
-<translation id="9003263770394939629">Suggested by Gemini. Manage enhanced autofill in settings.</translation>
 <translation id="9003677638446136377">Check again</translation>
 <translation id="9006453925669499173">Menu → New Incognito tab</translation>
 <translation id="9008201768610948239">Ignore</translation>
@@ -2595,7 +2593,6 @@ You can restart at any time.</translation>
 <translation id="9029650858822697271">You were signed out</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Confirm delete browsing data</translation>
-<translation id="9035699147763101514">Powered by Personal Intelligence with Gemini. Manage your choices in settings.</translation>
 <translation id="9038526468059454274">Sum it up with</translation>
 <translation id="9039373489628511875">Bandwidth</translation>
 <translation id="9042893549633094279">Privacy and security</translation>

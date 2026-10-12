@@ -71,7 +71,6 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> ruxsatini tanlang</translation>
 <translation id="1113000785583998331">IBAN raqami saqlansinmi?</translation>
 <translation id="1113869188872983271">&amp;Qayta tartiblashni qaytarish</translation>
-<translation id="1117709830616495622">Gemini bilan Personal Intelligence texnologiyasi asosida ishlaydi.</translation>
 <translation id="111897705806685148">Boshqa qurilmada kirish kalitini ishlating</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google hisobingizga saqlangan Chrome maʼlumotlarini boshqarish uchun avval Tab, keyin Enter tugmasini bosing</translation>
 <translation id="1121990216147052230">Menga vazifalar roʻyxatini tuzib ber</translation>
@@ -532,7 +531,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1890171020361705182">Dino oʻyini. Pikselli dinozavr kaktuslar va pterodaktillarga chap berib, choʻl orqali oʻtadi. Ovozli koʻrsatmani eshitganingizda, toʻsiqdan oʻtish uchun ekranga tegining.</translation>
 <translation id="1898423065542865115">Filtrlar</translation>
 <translation id="1898678876221454577">Skaner-nusxani saqlash uchun hisobga kiring</translation>
-<translation id="1898804291554630487">Bu sahifa haqida savol bering</translation>
 <translation id="1901443836186977402">{1,plural, =1{Bu <ph name="DOMAIN" /> serveri ekanligi tasdiqlanmadi. Uning xavfsizlik sertifikati bir kun oldin eskirgan. Bu muammo server sozlamalari xato moslangan yoki kimdir sizning shaxsiy maʼlumotlaringizni oʻgʻirlashga harakat qilayotganda chiqishi mumkin. Unutmangki, kompyuteringizdagi vaqt: <ph name="CURRENT_DATE" />. Agar vaqt xato boʻlsa, uni oʻzgartiring va sahifani yangilang.}other{Bu <ph name="DOMAIN" /> serveri ekanligi tasdiqlanmadi. Uning xavfsizlik sertifikati # kun oldin eskirgan. Bu muammo server sozlamalari xato moslangan yoki kimdir sizning shaxsiy maʼlumotlaringizni oʻgʻirlashga harakat qilayotganda chiqishi mumkin. Unutmangki, kompyuteringizdagi vaqt: <ph name="CURRENT_DATE" />. Agar vaqt xato boʻlsa, uni oʻzgartiring va sahifani yangilang.}}</translation>
 <translation id="190166348986967700">Administrator <ph name="DATE_TIME" /> da fayllarni <ph name="CLOUD_PROVIDER" /> xizmatiga yuklaydi. Fayllarni yuklash yakunlanmaguncha qurlima aloqada qolsin. Yuklash vaqtida qurilmadagi fayllarni faqat oʻqish mumkin.</translation>
 <translation id="1902576642799138955">Muddati</translation>
@@ -841,8 +839,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2384307209577226199">Korporativ (birlamchi)</translation>
 <translation id="2385809941344967209">Chrome brauzerini Chrome sozlamalari orqali yangilash</translation>
 <translation id="2386255080630008482">Server sertifikati bekor qilingan.</translation>
-<translation id="2387424091060104123">Gemini taklif qilgan · <ph name="SRC_LINK" />Manbalarni koʻrish<ph name="END_SRC_LINK" />
-Bu taklifni Chromedan olib tashlash mumkin. Asl manba oʻchirilmaydi. <ph name="MANAGE_LINK" />Yaxshilangan avtomatik kiritishni boshqarish<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">Aniqlashtirish</translation>
 <translation id="2392959068659972793">Qiymati belgilanmagan qoidalarni ko‘rsatish</translation>
 <translation id="239429038616798445">Bu yetkazib berish usuli hozirda ishlamaydi. Boshqa usulni tanlang.</translation>
@@ -1245,7 +1241,6 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="3109788962812161063">Profil boshqaruvi</translation>
 <translation id="3112892588078695695">Telefon raqami: <ph name="PHONE" />.</translation>
 <translation id="3113284927548439113">Uchinchi siljish</translation>
-<translation id="3113930177999394798">@history yozib, AI yordamida ochilgan sahifalardan qidiring</translation>
 <translation id="3114040155724590991">Android tizimi yangilanmoqda
     Ilova odatdagidan kechroq ishga tushishi mumkin.</translation>
 <translation id="3114197119223448048">yangi faollik</translation>
@@ -1424,7 +1419,6 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="3413466783792948876">Ochiq tarmoqqa ulangan boʻlsangiz, bu saytga keyinroq kirish xavfsiz boʻladi. Uydagi va ishxonadagi Wi-Fi kabi ishonchli tarmoqlardan kirish xavfsizroq hisoblanadi.</translation>
 <translation id="3414952576877147120">Hajmi:</translation>
 <translation id="341513675006332771">Chrome Dino oʻyini tugmasi, Chromeda Dino Run oʻyinini boshlash uchun faollashtiring</translation>
-<translation id="3415471717466570460">Soʻrovlar, eng mos natijalar hamda topilgan sahifalardagi kontent Googlega yuboriladi. Xodimlarimiz bu funksiyani yaxshilash maqsadida mazkur maʼlumotlarni koʻrishi mumkin. Bu tajribaviy funksiya va ishlashida xatolar chiqishi mumkin.</translation>
 <translation id="3417390269491141648">Tibbiy sugʻurta tariflarini taqqoslang va ular orasidagi asosiy farqlarni aniqla</translation>
 <translation id="3421387094817716717">Elliptik egri chiziqli ochiq kalit</translation>
 <translation id="3422248202833853650">Xotirani bo‘shatish uchun boshqa dasturlarni yopib ko‘ring.</translation>
@@ -1900,7 +1894,6 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4185037616931963178">Redress raqamini xavfsiz yangilang</translation>
 <translation id="4186035307311647330">Narxni kuzatmaslik</translation>
-<translation id="4190446002599583608">AI yordamida brauzer tarixidan qidirish</translation>
 <translation id="4191334393248735295">Uzunlik</translation>
 <translation id="4195459680867822611">Chrome maslahatlari tugmasi, Chrome funksiyalari bilan tanishish uchun faollashtiring</translation>
 <translation id="4195643157523330669">Yangi varaqda ochish</translation>
@@ -1947,7 +1940,6 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="424063167283213501">Tanish sayohatchi raqamini (KTN) saqlash</translation>
 <translation id="4241830393007970744">Siz ochayotgan saytda firibgarlar sizni aldab, parollaringiz, telefon yoki kredit karta raqamlaringizni oʻgʻirlashi yoki oʻchirishi mumkin zararli dasurni oʻrnatishi mumkin.</translation>
 <translation id="4242380780309416996">Konvert (qalin)</translation>
-<translation id="4242981939686657948">Brauzer tarixidan yanada qulay qidirish uchun buni yoqing:</translation>
 <translation id="4244926541863471678">Plyonka</translation>
 <translation id="42481816218163154">Ertalabki ishlarni yengillashtirishga yordam beradigan 15 daqiqalik tonggi tartib tuzib ber. Unga oʻzini anglash mashqi ham kiritilganini tekshir</translation>
 <translation id="4250343410682686342">Hozir olib, keyin toʻlash xatoligi ekrani toʻliq hajmda ochildi.</translation>
@@ -3889,7 +3881,6 @@ Batafsil axborot:
 <translation id="7514365320538308">Yuklab olish</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">VR ishlatishga shu safar ruxsat berildi</translation>
-<translation id="7517198908921983825">Gemini taklif qilgan · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Envelope C10</translation>
 <translation id="7518003948725431193">Bu manzilda hech qanday veb-sahifa topilmadi: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -4387,7 +4378,6 @@ Batafsil axborot:
 <translation id="8350416046273606058">Yorliqda boʻsh joylar boʻlmasligi kerak: “<ph name="SHORTCUT_NAME" />”</translation>
 <translation id="8351131234907093545">Qayd yaratish</translation>
 <translation id="8352849934814541340">Bu qurilma administratori qoʻshimcha funksiyali ilovalarni oʻrnatdi. Bu ilovalar ayrim axborotlaringizdan foydalanishi mumkin.</translation>
-<translation id="8353273112634584260">Gemini bilan Personal Intelligence texnologiyasi asosida ishlaydi. Yaxshilangan avtomatik kiritish funksiyasini yanada takomillashtirish maqsadida soʻrovlaringiz, sahifa sarlavhalari va URL manzillaringiz koʻrib chiqilishi mumkin.</translation>
 <translation id="8355270400102541638">Qurilmadagi ishdan chiqish konteksti:</translation>
 <translation id="8362914115861174987">Bu tilga tarjima qilish</translation>
 <translation id="8363502534493474904">Parvoz rejimini o‘chirib ko‘ring</translation>
@@ -4734,7 +4724,6 @@ Batafsil axborot:
 <translation id="9001074447101275817"><ph name="DOMAIN" /> proksi-serveri foydalanuvchi nomi va parolni talab qiladi.</translation>
 <translation id="9001963517402879850">Sakrang!</translation>
 <translation id="9002677862950442746">Tasdiqlash kodi: <ph name="OTP" /></translation>
-<translation id="9003263770394939629">Gemini taklif qilgan. Sozlamalar orqali yaxshilangan avtomatik kiritishni boshqaring.</translation>
 <translation id="9003639428623471314">Envelope Kahu</translation>
 <translation id="9004367719664099443">VR seansi faol</translation>
 <translation id="9005998258318286617">PDF hujjat yuklanmadi.</translation>
@@ -4753,7 +4742,6 @@ Batafsil axborot:
 <translation id="9027531288681624875">Butun ekrandan chiqish uchun |<ph name="ACCELERATOR" />| tugmasini bosib turing</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Xavfsizlik xatosi</translation>
-<translation id="9035699147763101514">Gemini bilan Personal Intelligence texnologiyasi asosida ishlaydi. Tanlovlarni sozlamalar orqali boshqaring.</translation>
 <translation id="9035824888276246493">Xavfsizlik kodlarini saqlash</translation>
 <translation id="9036306139374661733">Mikrofonga ruxsat berilsinmi?</translation>
 <translation id="9036484080057916082">Imzolangan sertifikatlar vaqt belgilari roʻyxati</translation>
@@ -4908,7 +4896,6 @@ Batafsil axborot:
 <translation id="961930410699694996">Joylashuv axborotiga shu safar ruxsat berildi</translation>
 <translation id="962484866189421427">Bu kontent soxta ilovalarni o‘rnatishga urinishi mumkin. Shuningdek, sizni kuzatishi yoki axborot yig‘ishi mumkin. <ph name="BEGIN_LINK" />Baribir ko‘rsatilsin<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">Mintaqangizdagi qonunga asoslanib, Chromium sizdan asosiy qidiruv tizimini tanlashingizni soʻraydi. Bu qidiruv tizimlari mintaqangizda mashhur va tasodifiy tartibda chiqariladi.</translation>
-<translation id="963837307749850257">Barcha foydalanuvchilar</translation>
 <translation id="963988220224168636">Google Walletga redress raqamini xavfsiz kiriting</translation>
 <translation id="964050462028070434">Parol va kodlarni boshqarish…</translation>
 <translation id="964681140808832181">Ha, bekor qilinsin</translation>

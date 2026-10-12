@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Hautatu honetarako baimena: <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">IBANa gorde nahi duzu?</translation>
 <translation id="1113869188872983271">&amp;Desegin berrantolatzea</translation>
-<translation id="1117709830616495622">Gemini-ren adimen pertsonalizatuarekin.</translation>
 <translation id="111897705806685148">Erabili beste gailu bateko sarbide-kodea</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Sakatu tabuladorea eta, ondoren, sakatu "Sartu" Google-ko kontuan Chrome-ko zein informazio gordetzen duzun kudeatzeko.</translation>
 <translation id="1121990216147052230">Egin egitekoen zerrenda bat niretzat</translation>
@@ -532,7 +531,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1890171020361705182">Dino jokoa. Pixelez egindako dinosauro bat paisaia lehor batean barrena doa kaktusei eta pterodaktiloei iskintxo eginez. Soinutxo bat entzuten duzunean, sakatu pantaila oztopoen gainetik salto egiteko.</translation>
 <translation id="1898423065542865115">Iragazkiak</translation>
 <translation id="1898678876221454577">Hasi saioa eskaneatzea gordetzeko</translation>
-<translation id="1898804291554630487">Egin orri honi buruzko galdera bat</translation>
 <translation id="1901443836186977402">{1,plural, =1{Zerbitzariak ezin izan du egiaztatu <ph name="DOMAIN" /> denik haren segurtasun-ziurtagiria iraungi egin delako azken egunean. Baliteke oker konfiguratuta dagoelako edo erasotzaile batek zure konexioa atzeman duelako izatea. Ordenagailuko erlojuak duen data <ph name="CURRENT_DATE" /> da. Zuzena al da? Hala ez bada, zuzendu sistemako erlojua eta freskatu orria.}other{Zerbitzariak ezin izan du egiaztatu <ph name="DOMAIN" /> denik haren segurtasun-ziurtagiria iraungi egin zelako duela # egun. Baliteke oker konfiguratuta dagoelako edo erasotzaile batek zure konexioa atzeman duelako izatea. Ordenagailuko erlojuak duen data <ph name="CURRENT_DATE" /> da. Zuzena al da? Hala ez bada, zuzendu sistemako erlojua eta freskatu orria.}}</translation>
 <translation id="190166348986967700">Administratzailea data honetan hasiko da fitxategiak <ph name="CLOUD_PROVIDER" /> zerbitzura kargatzen: <ph name="DATE_TIME" />. Mantendu gailua konektatuta fitxategien karga osatu arte. Kargatu bitartean, gailuko fitxategiak irakurtzeko soilik izango dituzu erabilgarri.</translation>
 <translation id="1902576642799138955">Balio-aldia</translation>
@@ -841,8 +839,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2384307209577226199">Enpresaren balio lehenetsia</translation>
 <translation id="2385809941344967209">Eguneratu Chrome arakatzaile horren ezarpenetan</translation>
 <translation id="2386255080630008482">Zerbitzariaren ziurtagiria baliogabetu egin da.</translation>
-<translation id="2387424091060104123">Gemini-k iradokita · <ph name="SRC_LINK" />Ikusi iturburuak<ph name="END_SRC_LINK" />
-Iradokizun hau Chrome-tik ken dezakezu. Jatorrizko materiala ez da ezabatuko. <ph name="MANAGE_LINK" />Kudeatu Betetze automatiko hobetua<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">Idatzi xehetasun gehiago</translation>
 <translation id="2392959068659972793">Erakutsi balioak ezarri gabe dituzten gidalerroak</translation>
 <translation id="239429038616798445">Ez dago erabilgarri bidalketa-metodo hori. Saiatu beste metodo batekin.</translation>
@@ -1245,7 +1241,6 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="3109788962812161063">Profilaren kudeaketa</translation>
 <translation id="3112892588078695695">Telefono-zenbakia: <ph name="PHONE" /></translation>
 <translation id="3113284927548439113">Hirugarren lanaldia</translation>
-<translation id="3113930177999394798">AAren laguntzaz zerbait arakatze-historian bilatzeko, idatzi @historia</translation>
 <translation id="3114040155724590991">Android sistema eguneratzen
     Baliteke ohi baino denbora gehiago behar izatea aplikazioa abiarazteko.</translation>
 <translation id="3114197119223448048">jarduera berriak</translation>
@@ -1423,7 +1418,6 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="3413466783792948876">Sare publiko bat badarabilzu, webgunea geroago bisitatzea seguruagoa da. Arrisku gutxiago dago sare fidagarri bat erabiltzean; adibidez, etxeko edo laneko wifia.</translation>
 <translation id="3414952576877147120">Tamaina:</translation>
 <translation id="341513675006332771">Chrome-ko Dino jokoan jokatzen hasteko botoia: aktiba ezazu Chrome-ko Dino jokoan aritzeko</translation>
-<translation id="3415471717466570460">Zure bilaketak, bat-etortzerik onenak eta haien orrien edukiak Google-ra bidaltzen dira, eta baliteke gizakiak diren berrikusleek ikustea, eginbidea hobetzeko. Eginbide esperimental bat da hau, eta ez du beti dena ongi egingo.</translation>
 <translation id="3417390269491141648">Konparatu aukeran ditudan osasun-planak eta azaldu haien arteko desberdintasun nagusiak</translation>
 <translation id="3421387094817716717">Kurba eliptikoko gako publikoa</translation>
 <translation id="3422248202833853650">Saiatu beste programa batzuk ixten memoria gehiago uzteko erabilgarri.</translation>
@@ -1900,7 +1894,6 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="4179515394835346607"><ph name="ROW_NAME" />: <ph name="ROW_CONTENT" /></translation>
 <translation id="4185037616931963178">Eguneratu zuzenketa-zenbakia modu seguruan</translation>
 <translation id="4186035307311647330">Utzi prezioaren jarraipena egiteari</translation>
-<translation id="4190446002599583608">Historiaren barneko bilaketa, AA bidez</translation>
 <translation id="4191334393248735295">Luzera</translation>
 <translation id="4195459680867822611">Chrome-ri buruzko aholkuak ikusteko botoia: aktiba ezazu Chrome-ren eginbideei buruzko informazioa lortzeko</translation>
 <translation id="4195643157523330669">Ireki fitxa berri batean</translation>
@@ -1947,7 +1940,6 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="424063167283213501">Gorde fidagarritzat jotako bidaiariaren zenbakia</translation>
 <translation id="4241830393007970744">Baliteke bisitatu nahi duzun webguneko erasotzaileak zu iruzurtzen saiatzea softwarea instala dezazun, edo informazioa eman dezazun, hala nola pasahitzak, telefono-zenbakia edo kreditu-txartelen zenbakiak.</translation>
 <translation id="4242380780309416996">Gutuna (astuna)</translation>
-<translation id="4242981939686657948">Arakatze-historian bilaketak egiteko modu ahaltsuago bat lortzeko, aktiba ezazu</translation>
 <translation id="4244926541863471678">Zinema</translation>
 <translation id="42481816218163154">Sortu goizeko 15 minutuko ohitura bat, goizak errazagoak izan daitezen. Ziurtatu mindfulness ariketa bat duela.</translation>
 <translation id="4250343410682686342">Epekako ordainketaren errorearen pantaila altuera osoan irekita dago.</translation>
@@ -3889,7 +3881,6 @@ Xehetasun gehiago:
 <translation id="7514365320538308">Deskargatu</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">EBa erabil daiteke oraingoan</translation>
-<translation id="7517198908921983825">Gemini-k iradokita · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">C10 gutun-azala</translation>
 <translation id="7518003948725431193">Ez da aurkitu web-orririk <ph name="URL" /> helbidean</translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -4386,7 +4377,6 @@ Xehetasun gehiago:
 <translation id="8350416046273606058">Lasterbideak ezin du zuriunerik izan: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Sortu oharra</translation>
 <translation id="8352849934814541340">Gailuaren administratzaileak aplikazio batzuk instalatu ditu, funtzio gehigarriak izan ditzazun. Aplikazioek zure datu batzuk atzi ditzakete.</translation>
-<translation id="8353273112634584260">Gemini-ren adimen pertsonalizatuarekin. Baliteke eskaerak, orrien izenak eta URLak berrikustea, betetze automatiko hobetua hobetzeko.</translation>
 <translation id="8355270400102541638">Gailuko hutsegitearen testuingurua:</translation>
 <translation id="8362914115861174987">Itzuli hizkuntza honetara:</translation>
 <translation id="8363502534493474904">Hegaldi modua desaktibatu.</translation>
@@ -4733,7 +4723,6 @@ Xehetasun gehiago:
 <translation id="9001074447101275817"><ph name="DOMAIN" /> proxyak erabiltzaile-izena eta pasahitza behar ditu.</translation>
 <translation id="9001963517402879850">Egin salto!</translation>
 <translation id="9002677862950442746">Egiaztapen-kodea: <ph name="OTP" /></translation>
-<translation id="9003263770394939629">Gemini-k iradokita. Kudeatu betetze automatiko hobetua ezarpenetan.</translation>
 <translation id="9003639428623471314">Kahu gutun-azala</translation>
 <translation id="9004367719664099443">EBko saioa abian da</translation>
 <translation id="9005998258318286617">Ezin izan da kargatu PDF dokumentua.</translation>
@@ -4752,7 +4741,6 @@ Xehetasun gehiago:
 <translation id="9027531288681624875">Pantaila osotik irteteko, eduki sakatuta |<ph name="ACCELERATOR" />|</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Segurtasun-errorea</translation>
-<translation id="9035699147763101514">Gemini-ren adimen pertsonalizatuarekin. Kudeatu aukerak ezarpenetan.</translation>
 <translation id="9035824888276246493">Gorde segurtasun-kodeak</translation>
 <translation id="9036306139374661733">Mikrofonoa erabiltzeko baimena eman nahi diozu?</translation>
 <translation id="9036484080057916082">Sinatutako ziurtagiriaren denbora-zigiluen zerrenda</translation>
@@ -4906,7 +4894,6 @@ Xehetasun gehiago:
 <translation id="961930410699694996">Kokapena erabil daiteke une honetan</translation>
 <translation id="962484866189421427">Eduki hau beste zerbaiten plantak egiten dituzten aplikazio iruzurtiak instalatzen saia daiteke edo datuak bil ditzake zure jarraipena egiteko. <ph name="BEGIN_LINK" />Erakutsi hala ere<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">Zure lurraldeko lege bat dela eta, Chromium-ek bilatzaile lehenetsia aukeratzeko eskatzen dizu. Bilatzaile hauek asko erabiltzen dira zure lurraldean, eta ausaz zerrendatzen dira.</translation>
-<translation id="963837307749850257">Erabiltzaile guztiak</translation>
 <translation id="963988220224168636">Gehitu zuzenketa-zenbakia modu seguruan Google Wallet-en</translation>
 <translation id="964050462028070434">Kudeatu pasahitzak eta sarbide-gakoak…</translation>
 <translation id="964681140808832181">Bai, bertan behera utzi nahi dut</translation>

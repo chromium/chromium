@@ -15,7 +15,6 @@
 <translation id="1321004960118052490">የእርስዎ ገቢር ያልሆኑ ንጥሎች አይደራረቡም</translation>
 <translation id="1329584516321524826">አሁን የተዘመነ</translation>
 <translation id="1340839264183302272">ቡድኑን ለቅቀው ይውጡ</translation>
-<translation id="1386966479075994683">ትሮችን ዘርጋ</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{የተጋራ የ<ph name="TITLE_OF_GROUP" /> የትር ቡድንን በ<ph name="TABS_COUNT_ONE" /> ትር፣ በ<ph name="COLOR_NAME" /> ቀለም፣ በ<ph name="CARD_LABEL" /> መሰየሚያ ይዘረጋል።}one{የተጋራ የ<ph name="TITLE_OF_GROUP" /> የትር ቡድንን በ<ph name="TABS_COUNT_MANY" /> ትር፣ በ<ph name="COLOR_NAME" /> ቀለም፣ በ<ph name="CARD_LABEL" /> መሰየሚያ ይዘረጋል።}other{የተጋራ የ<ph name="TITLE_OF_GROUP" /> የትር ቡድንን በ<ph name="TABS_COUNT_MANY" /> ትሮች፣ በ<ph name="COLOR_NAME" /> ቀለም፣ በ<ph name="CARD_LABEL" /> መሰየሚያ ይዘረጋል።}}</translation>
 <translation id="1486715732399361704">ሁሉንም የትር ቡድኖችዎን እዚህ ማግኘት ይችላሉ</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{ከ<ph name="NUM_MINS_ONE" /> ደቂቃ በፊት የተፈጠረ}one{ከ<ph name="NUM_MINS_MANY" /> ደቂቃ በፊት የተፈጠረ}other{ከ<ph name="NUM_MINS_MANY" /> ደቂቃዎች በፊት የተፈጠረ}}</translation>
@@ -66,6 +65,7 @@
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ደረጃ</translation>
 <translation id="266935134738038806">ጣቢያ ይጎብኙ</translation>
 <translation id="2671423594960767771">ቡድንን አጋራ</translation>
+<translation id="2729310339366257582">ትሮችን ሰብስብ</translation>
 <translation id="2734252994837336591">{NUM_WEEKS,plural, =1{ከ<ph name="NUM_WEEKS_ONE" /> ሳምንት በፊት ተዘምኗል}one{ከ<ph name="NUM_WEEKS_MANY" /> ሳምንት በፊት ተዘምኗል}other{ከ<ph name="NUM_WEEKS_MANY" /> ሳምንታት በፊት ተዘምኗል}}</translation>
 <translation id="2753877351161418426">{NUM_HOURS,plural, =1{ከ<ph name="NUM_HOURS_ONE" /> ሰዓት በፊት ተዘምኗል}one{ከ<ph name="NUM_HOURS_MANY" /> ሰዓት በፊት ተዘምኗል}other{ከ<ph name="NUM_HOURS_MANY" /> ሰዓታት በፊት ተዘምኗል}}</translation>
 <translation id="2755485474385016903">የተደረጉ ለውጦች በቡድኑ ውስጥ ባሉ ሁሉም ሰዎች ይታያሉ</translation>
@@ -136,7 +136,6 @@
 <translation id="5073204694187207510">የሙሉ ማያ ፍርግርግን ደብቅ</translation>
 <translation id="5076161749301278626">የመደብር ግምገማዎችን ይመለከታሉ?</translation>
 <translation id="5161254044473106830">ርዕስ ያስፈልጋል</translation>
-<translation id="5204584298075822291">ትሮችን ሰብስብ</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome ከ<ph name="AUTO_DELETE_DELAY_ONE" /> ወር በኋላ ገቢር ያልሆኑ ትሮች እና የትር ቡድኖችን በራስ-ሰር ይዘጋል። ይህን በቅንብሮች ውስጥ መለወጥ ይችላሉ።}one{Chrome ከ<ph name="AUTO_DELETE_DELAY_MANY" /> ወር በኋላ ገቢር ያልሆኑ ትሮች እና የትር ቡድኖችን በራስ-ሰር ይዘጋል። ይህን በቅንብሮች ውስጥ መለወጥ ይችላሉ።}other{Chrome ከ<ph name="AUTO_DELETE_DELAY_MANY" /> ወራት በኋላ ገቢር ያልሆኑ ትሮች እና የትር ቡድኖችን በራስ-ሰር ይዘጋል። ይህን በቅንብሮች ውስጥ መለወጥ ይችላሉ።}}</translation>
 <translation id="5254233580564156835">የማህደረ ትውስታ አጠቃቀም፦ <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">የእርስዎ የመጨረሻ ትር</translation>
@@ -191,6 +190,7 @@
 <translation id="709473454666962555">የትር ቡድን ይምረጡ</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{ትርን አጋራ}one{ትርን አጋራ}other{ትሮችን አጋራ}}</translation>
 <translation id="7129458170538955174">ስለዚህ መደብር መረጃ በግማሽ ቁመት ተከፍቷል</translation>
+<translation id="7194343495483122559">ትሮችን ዘርጋ</translation>
 <translation id="7204204600596740190">ባለብዙ ምርጫ ሁነታ</translation>
 <translation id="7211038039686180558">የትር ቡድኖችዎ በመለያ በተገባባቸው ሁሉም መሣሪያዎችዎ ላይ በራስ-ሰር ይቀመጣሉ እና ይዘመናሉ</translation>
 <translation id="7326879924029668159">የመመለሻ መመሪያን እና ሌሎችንም ይመልከቱ</translation>

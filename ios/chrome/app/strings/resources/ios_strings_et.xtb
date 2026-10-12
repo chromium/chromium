@@ -1264,6 +1264,7 @@
 <translation id="498624032394115435">Igaüks, kellel on link, saab muuta kõiki vahelehti.</translation>
 <translation id="4986428648020277392">Päring: millise peaksin ostma? 2/3</translation>
 <translation id="498768198683310172">Alustage Gemini kasutamist</translation>
+<translation id="4989163558385430922">Kuva kõik</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, haldab teie organisatsioon.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Vahelehegrupi värv: <ph name="COLOR" /></translation>
@@ -2027,7 +2028,6 @@ Saate igal ajal uuesti alustada.</translation>
 <translation id="7346922058131593019">Mida soovite teha, <ph name="USER_FIRST_NAME" />?</translation>
 <translation id="7347998088283246662">Importige paroole, ajalugu, järjehoidjaid ja muud.</translation>
 <translation id="7352651011704765696">Midagi läks valesti</translation>
-<translation id="7357999308187750900">Kuva kõik</translation>
 <translation id="736564850024123010">Kohandatud kasutuskogemuse saamiseks saate vahetada oma aadressiriba asukohta.</translation>
 <translation id="7366909168761621528">Sirvimisandmed</translation>
 <translation id="7367530036083223701">Paroolihalduri vidinaga pääsete avakuval oma paroolidele turvaliselt juurde.</translation>
@@ -2361,7 +2361,6 @@ Saate igal ajal uuesti alustada.</translation>
 <translation id="8333459276976141586">Live kasutab teie mikrofoni. Nupu Live puudutamine lülitab mikrofoni sisse. Mikrofoni väljalülitamiseks puudutage nuppu Peata või sulgege Gemini.</translation>
 <translation id="833647236762414178">Looge, salvestage ja hallake oma paroole ning pääsuvõtmeid, et saaksite hõlpsalt saitidele ja rakendustesse sisse logida. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Varundage oma sisu ja kasutage seda mis tahes seadmes.</translation>
-<translation id="8345328955902001853">{count,plural, =1{Taseme tõstmiseks täitke veel 1 ülesanne.}other{Taseme tõstmiseks täitke veel {count} ülesannet.}}</translation>
 <translation id="8348530355586151720">Puudutage kolme punktiga menüüd</translation>
 <translation id="8349305172487531364">Järjehoidjariba</translation>
 <translation id="8360164927489392419">Teie Live’i interaktsioonide salvestised ja sisu, mida selle funktsiooniga jagate, salvestatakse ning neid töödeldakse <ph name="BEGIN_LINK" />Gemini rakenduste privaatsusteatise<ph name="END_LINK" /> kohaselt. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
@@ -2586,7 +2585,6 @@ Saate igal ajal uuesti alustada.</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, kinnitatud sait</translation>
 <translation id="8990960056509724223">Faili ei saanud teie organisatsiooni eeskirjade tõttu salvestada.</translation>
 <translation id="8998289560386111590">Pole teie seadmes saadaval</translation>
-<translation id="9003263770394939629">Gemini soovitatud. Täiustatud automaattäidet saate hallata seadetes.</translation>
 <translation id="9003677638446136377">Kontrolli uuesti</translation>
 <translation id="9006453925669499173">Menüü → Uus inkognito vaheleht</translation>
 <translation id="9008201768610948239">Eira</translation>
@@ -2595,7 +2593,6 @@ Saate igal ajal uuesti alustada.</translation>
 <translation id="9029650858822697271">Teid logiti välja</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Kinnita sirvimisandmete kustutamine</translation>
-<translation id="9035699147763101514">Toimib Gemini Personal Intelligence'i abil. Hallake oma valikuid seadetes.</translation>
 <translation id="9038526468059454274">Kokkuvõtte tegemine teenusega</translation>
 <translation id="9039373489628511875">Ribalaius</translation>
 <translation id="9042893549633094279">Privaatsus ja turvalisus</translation>

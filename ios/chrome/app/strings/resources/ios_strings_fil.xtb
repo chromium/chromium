@@ -1264,6 +1264,7 @@
 <translation id="498624032394115435">Mae-edit ng sinumang may link ang lahat ng tab.</translation>
 <translation id="4986428648020277392">Prompt: Alin ang dapat kong bilhin? 2 sa 3</translation>
 <translation id="498768198683310172">Simulang gamitin ang Gemini</translation>
+<translation id="4989163558385430922">Tingnan lahat</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, pinapamahalaan ng iyong organisasyon.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Kulay <ph name="COLOR" /> na grupo ng tab</translation>
@@ -2027,7 +2028,6 @@ Puwede kang mag-restart anumang oras.</translation>
 <translation id="7346922058131593019">Ano ang gusto mong gawin, <ph name="USER_FIRST_NAME" />?</translation>
 <translation id="7347998088283246662">Mag-import ng mga password, history, mga bookmark, at higit pa</translation>
 <translation id="7352651011704765696">Nagkaroon ng problema</translation>
-<translation id="7357999308187750900">Tingnan Lahat</translation>
 <translation id="736564850024123010">Baguhin ang posisyon ng iyong address bar para sa naka-customize na experience.</translation>
 <translation id="7366909168761621528">Data sa pag-browse</translation>
 <translation id="7367530036083223701">Secure na i-access ang iyong mga password mula sa home screen gamit ang widget ng Password Manager.</translation>
@@ -2361,7 +2361,6 @@ Puwede kang mag-restart anumang oras.</translation>
 <translation id="8333459276976141586">Gagamitin ng Live ang iyong mikropono. Kapag nag-tap sa button na Live, mag-o-on ang mikropono. Para i-off ang mic, i-tap ang button na ihinto o isara ang Gemini.</translation>
 <translation id="833647236762414178">Gawin, i-save, at pamahalaan ang iyong mga password at passkey para madaling makapag-sign in sa mga site at app. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">I-back up ang iyong mga file at gamitin ito sa anumang device.</translation>
-<translation id="8345328955902001853">{count,plural, =1{Kumumpleto ng 1 pang gawain para mag-level up}one{Kumumpleto ng {count} pang gawain para mag-level up}other{Kumumpleto ng {count} pang gawain para mag-level up}}</translation>
 <translation id="8348530355586151720">I-tap ang menu na tatlong tuldok</translation>
 <translation id="8349305172487531364">Bookmarks bar</translation>
 <translation id="8360164927489392419">Sine-save at pinoproseso ang mga recording ng iyong mga interaction sa Live at content na na-share mo rito alinsunod sa <ph name="BEGIN_LINK" />Notification ng Privacy sa Mga Gemini App<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
@@ -2587,7 +2586,6 @@ Puwede kang mag-restart anumang oras.</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, naka-pin na site</translation>
 <translation id="8990960056509724223">Hindi ma-save ang file dahil sa mga patakaran ng iyong organisasyon</translation>
 <translation id="8998289560386111590">Hindi available sa iyong device</translation>
-<translation id="9003263770394939629">Iminumungkahi ng Gemini. Pamahalaan ang pinahusay na autofill sa mga setting.</translation>
 <translation id="9003677638446136377">Suriing muli</translation>
 <translation id="9006453925669499173">Menu → Bagong tab na Incognito</translation>
 <translation id="9008201768610948239">Balewalain</translation>
@@ -2596,7 +2594,6 @@ Puwede kang mag-restart anumang oras.</translation>
 <translation id="9029650858822697271">Na-sign out ka</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Kumpirmahin ang pag-delete ng data mula sa pag-browse</translation>
-<translation id="9035699147763101514">Pinapagana ng Personal Intelligence sa Gemini. Pamahalaan ang iyong mga pinili sa mga setting.</translation>
 <translation id="9038526468059454274">Ibuod ito gamit ang</translation>
 <translation id="9039373489628511875">Bandwidth</translation>
 <translation id="9042893549633094279">Privacy at seguridad</translation>

@@ -1264,6 +1264,7 @@
 <translation id="498624032394115435">ଲିଙ୍କ ଥିବା ଯେ କୌଣସି ବ୍ୟକ୍ତି ସମସ୍ତ ଟାବକୁ ଏଡିଟ କରିପାରିବେ।</translation>
 <translation id="4986428648020277392">ପ୍ରମ୍ପ୍ଟ: ମୁଁ କେଉଁଟି କିଣିବା ଉଚିତ? 3ରୁ 2</translation>
 <translation id="498768198683310172">Gemini ବ୍ୟବହାର କରିବା ଆରମ୍ଭ କରନ୍ତୁ</translation>
+<translation id="4989163558385430922">ସବୁ ଦେଖନ୍ତୁ</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, ଆପଣଙ୍କ ସଂସ୍ଥା ଦ୍ୱାରା ପରିଚାଳିତ।</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />। <ph name="AI_TIER" />।</translation>
 <translation id="4992255726304765516">ଟାବ ଗ୍ରୁପର ରଙ୍ଗ<ph name="COLOR" /></translation>
@@ -2027,7 +2028,6 @@ Handoff, ନିଶ୍ଚିତ ରୂପେ ସେଟିଂସ୍‍ର ସା�
 <translation id="7346922058131593019"><ph name="USER_FIRST_NAME" />, ଆପଣ କେଉଁ ବିଷୟରେ କାମ କରିବାକୁ ଚାହୁଁଛନ୍ତି?</translation>
 <translation id="7347998088283246662">ପାସୱାର୍ଡ, ଇତିହାସ, ବୁକମାର୍କ ଏବଂ ଆହୁରି ଅନେକ କିଛି ଇମ୍ପୋର୍ଟ କରନ୍ତୁ</translation>
 <translation id="7352651011704765696">କିଛି ଭୁଲ୍ ହୋଇଛି</translation>
-<translation id="7357999308187750900">ସବୁ ଦେଖନ୍ତୁ</translation>
 <translation id="736564850024123010">ଏକ କଷ୍ଟମାଇଜ କରାଯାଇଥିବା ଅନୁଭୂତି ପାଇଁ ଆପଣଙ୍କ ଠିକଣା ବାରର ସ୍ଥିତିକୁ ସୁଇଚ କରନ୍ତୁ।</translation>
 <translation id="7366909168761621528">ବ୍ରାଉଜିଂ ଡାଟା</translation>
 <translation id="7367530036083223701">Password Manager ୱିଜେଟ ସହ ହୋମ ସ୍କ୍ରିନରୁ ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ସୁରକ୍ଷିତ ଭାବରେ ଆକ୍ସେସ କରନ୍ତୁ।</translation>
@@ -2361,7 +2361,6 @@ Handoff, ନିଶ୍ଚିତ ରୂପେ ସେଟିଂସ୍‍ର ସା�
 <translation id="8333459276976141586">ଲାଇଭ ଆପଣଙ୍କ ମାଇକ୍ରୋଫୋନକୁ ବ୍ୟବହାର କରିବ। ଲାଇଭ ବଟନରେ ଟାପ କରିବା ଫଳରେ ଏହା ମାଇକକୁ ଚାଲୁ କରେ। ମାଇକ ବନ୍ଦ କରିବାକୁ, ବନ୍ଦ କରନ୍ତୁ ବଟନରେ ଟାପ କରନ୍ତୁ କିମ୍ବା Gemini ବନ୍ଦ କରନ୍ତୁ।</translation>
 <translation id="833647236762414178">ସାଇଟ ଏବଂ ଆପ୍ସରେ ସହଜରେ ସାଇନ ଇନ କରିବାକୁ ଆପଣଙ୍କ ପାସୱାର୍ଡ ଏବଂ ପାସକୀଗୁଡ଼ିକ ତିଆରି କରନ୍ତୁ। <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">ଆପଣଙ୍କ ଷ୍ଟଫର ବେକଅପ ନେଇ ଯେ କୌଣସି ଡିଭାଇସରେ ଏହାକୁ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
-<translation id="8345328955902001853">{count,plural, =1{ଲେଭେଲ ଅପ କରିବାକୁ 1 ଅଧିକ ଟାସ୍କ ସମ୍ପୂର୍ଣ୍ଣ କରନ୍ତୁ}other{ଲେଭେଲ ଅପ କରିବାକୁ {count} ଅଧିକ ଟାସ୍କ ସମ୍ପୂର୍ଣ୍ଣ କରନ୍ତୁ}}</translation>
 <translation id="8348530355586151720">ତିନି-ଡଟ ମେନୁରେ ଟାପ କରନ୍ତୁ</translation>
 <translation id="8349305172487531364">ବୁକମାର୍କସ୍ ଦଣ୍ଡିକା</translation>
 <translation id="8360164927489392419">ଲାଇଭ ସହିତ ଆପଣଙ୍କର ଇଣ୍ଟରାକ୍ସନର ରେକର୍ଡିଂ ଏବଂ ଆପଣ ଏହା ସହିତ ସେୟାର କରୁଥିବା ବିଷୟବସ୍ତୁକୁ <ph name="BEGIN_LINK" />Gemini ଆପ୍ସ ଗୋପନୀୟତା ନୋଟିସ<ph name="END_LINK" /> ଅନୁଯାୟୀ ସେଭ କରି ପ୍ରକ୍ରିୟାନ୍ଵିତ କରାଯାଏ। <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
@@ -2586,7 +2585,6 @@ Handoff, ନିଶ୍ଚିତ ରୂପେ ସେଟିଂସ୍‍ର ସା�
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, ପିନ କରାଯାଇଥିବା ସାଇଟ</translation>
 <translation id="8990960056509724223">ଆପଣଙ୍କ ସଂସ୍ଥାର ନୀତି ଯୋଗୁଁ ଫାଇଲ ସେଭ ହୋଇପାରିଲା ନାହିଁ</translation>
 <translation id="8998289560386111590">ଆପଣଙ୍କ ଡିଭାଇସରେ ଉପଲବ୍ଧ ନାହିଁ</translation>
-<translation id="9003263770394939629">Gemini ଦ୍ୱାରା ପରାମର୍ଶ ଦିଆଯାଇଛି। ସେଟିଂସରେ ଉନ୍ନତ ଅଟୋଫିଲକୁ ପରିଚାଳନା କରନ୍ତୁ।</translation>
 <translation id="9003677638446136377">ପୁଣି ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="9006453925669499173">ମେନୁ → ନୂଆ ଇନକଗ୍ନିଟୋ ଟାବ</translation>
 <translation id="9008201768610948239">ଅଣଦେଖା କରନ୍ତୁ</translation>
@@ -2595,7 +2593,6 @@ Handoff, ନିଶ୍ଚିତ ରୂପେ ସେଟିଂସ୍‍ର ସା�
 <translation id="9029650858822697271">ଆପଣ ସାଇନ ଆଉଟ ହୋଇଯାଇଛନ୍ତି</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">'ବ୍ରାଉଜିଂ ଡାଟା ଡିଲିଟ କରନ୍ତୁ'କୁ ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
-<translation id="9035699147763101514">Gemini ସହ ପର୍ସନାଲ ଇଣ୍ଟେଲିଜେନ୍ସ ଦ୍ୱାରା ପରିଚାଳିତ। ସେଟିଂସରେ ଆପଣଙ୍କ ପସନ୍ଦଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ।</translation>
 <translation id="9038526468059454274">ଏହା ସହିତ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="9039373489628511875">ବ୍ୟାଣ୍ଡୱିଡଥ୍</translation>
 <translation id="9042893549633094279">ଗୋପନୀୟତା ଏବଂ ସୁରକ୍ଷା</translation>

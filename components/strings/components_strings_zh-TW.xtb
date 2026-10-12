@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">選取<ph name="PERMISSION_NAME" />權限設定</translation>
 <translation id="1113000785583998331">要儲存 IBAN 嗎？</translation>
 <translation id="1113869188872983271">復原重新排序(&amp;U)</translation>
-<translation id="1117709830616495622">搭載 Gemini 個人化智慧服務。</translation>
 <translation id="111897705806685148">使用其他裝置的密碼金鑰</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />；依序按下 Tab 鍵和 Enter 鍵，即可管理要儲存到 Google 帳戶的 Chrome 資訊</translation>
 <translation id="1121990216147052230">幫我建立待辦事項清單</translation>
@@ -531,7 +530,6 @@
 <translation id="1890171020361705182">在這款恐龍遊戲中，你要協助在荒野中奔馳的像素風恐龍閃避仙人掌和翼手龍。聽見提示音效時，輕觸一下即可躍過障礙物。</translation>
 <translation id="1898423065542865115">篩選</translation>
 <translation id="1898678876221454577">登入即可儲存掃描結果</translation>
-<translation id="1898804291554630487">詢問這個網頁的內容</translation>
 <translation id="1901443836186977402">{1,plural, =1{伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全憑證已在昨天到期。這可能是因為設定錯誤，或是有攻擊者攔截你的連線。這台電腦的時鐘目前設為 <ph name="CURRENT_DATE" />，這是正確的時間嗎？如果不是的話，請更新系統時鐘，然後重新整理這個網頁。}other{伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全憑證已在 # 天前到期。這可能是因為設定錯誤，或有攻擊者攔截你的連線。這台電腦的時鐘目前設為 <ph name="CURRENT_DATE" />，這是正確的時間嗎？如果不是的話，請更新系統時鐘，然後重新整理這個網頁。}}</translation>
 <translation id="190166348986967700">系統管理員會在 <ph name="DATE_TIME" /> 開始將你的檔案上傳到 <ph name="CLOUD_PROVIDER" />。完成之前，請勿中斷裝置連線。上傳期間，你只能讀取本機檔案。</translation>
 <translation id="1902576642799138955">有效期間</translation>
@@ -840,8 +838,6 @@
 <translation id="2384307209577226199">企業預設</translation>
 <translation id="2385809941344967209">前往 Chrome 設定更新 Chrome</translation>
 <translation id="2386255080630008482">伺服器憑證已遭撤銷。</translation>
-<translation id="2387424091060104123">建議由 Gemini 提供 · <ph name="SRC_LINK" />查看來源<ph name="END_SRC_LINK" />
-你可以透過 Chrome 移除這項建議，這不會刪除原始來源。<ph name="MANAGE_LINK" />管理強化版自動填入功能<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">詳述</translation>
 <translation id="2392959068659972793">顯示尚未設定任何值的政策</translation>
 <translation id="239429038616798445">不支援所選的運送方式，請改選其他方式。</translation>
@@ -1244,7 +1240,6 @@
 <translation id="3109788962812161063">管理設定檔</translation>
 <translation id="3112892588078695695">電話號碼：<ph name="PHONE" />。</translation>
 <translation id="3113284927548439113">第三批</translation>
-<translation id="3113930177999394798">輸入「@history」即可透過 AI 技術搜尋瀏覽記錄</translation>
 <translation id="3114040155724590991">如果更新 Android System，啟動應用程式的時間可能會比平常來得久。</translation>
 <translation id="3114197119223448048">新活動</translation>
 <translation id="3115363211799416195">{0,plural, =1{要下載機密檔案嗎？}other{要下載機密檔案嗎？}}</translation>
@@ -1424,7 +1419,6 @@
 <translation id="3413466783792948876">如果使用公用網路，最保險的做法是不要造訪這個網站，等到連上可信任的網路 (例如住家或公司的 Wi-Fi) 時再造訪，風險會比較低。</translation>
 <translation id="3414952576877147120">空間大小：</translation>
 <translation id="341513675006332771">「暢玩 Chrome 恐龍遊戲」按鈕，啟動後即可暢玩 Chrome 恐龍遊戲</translation>
-<translation id="3415471717466570460">你的搜尋字詞、最相符的搜尋結果和相關網頁內容會傳送給 Google，也可能由人工審查員查看，以改善這項功能。這項功能仍在實驗階段，提供的結果不一定準確。</translation>
 <translation id="3417390269491141648">比較我的健康保險方案選項，並列出各方案的主要差異</translation>
 <translation id="3421387094817716717">橢圓曲線公開金鑰</translation>
 <translation id="3422248202833853650">嘗試關閉其他程式以釋出記憶體。</translation>
@@ -1902,7 +1896,6 @@
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4185037616931963178">安全地更新救濟號碼</translation>
 <translation id="4186035307311647330">取消追蹤價格</translation>
-<translation id="4190446002599583608">採用 AI 技術的記錄搜尋功能</translation>
 <translation id="4191334393248735295">長度</translation>
 <translation id="4195459680867822611">「查看 Chrome 提示」按鈕，啟動後即可瞭解各項 Chrome 功能</translation>
 <translation id="4195643157523330669">在新分頁中開啟</translation>
@@ -1949,7 +1942,6 @@
 <translation id="424063167283213501">儲存已知旅客號碼</translation>
 <translation id="4241830393007970744">你嘗試前往的網站可能有攻擊者，會誘騙你安裝軟體或提供資訊，例如密碼、電話號碼或信用卡號碼。</translation>
 <translation id="4242380780309416996">信封 (重磅)</translation>
-<translation id="4242981939686657948">如要使用進階的瀏覽記錄搜尋方式，請開啟</translation>
 <translation id="4244926541863471678">膜</translation>
 <translation id="42481816218163154">幫我規劃 15 分鐘的晨間作息，讓早晨時光更從容。請務必加入正念練習</translation>
 <translation id="4250343410682686342">「先買後付」錯誤畫面已開啟，並顯示在整個畫面。</translation>
@@ -3893,7 +3885,6 @@
 <translation id="7514365320538308">下載</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">這次允許使用 VR</translation>
-<translation id="7517198908921983825">Gemini 提供的建議 · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Envelope C10</translation>
 <translation id="7518003948725431193">找不到此網址的網頁：<ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -4390,7 +4381,6 @@
 <translation id="8350416046273606058">搜尋捷徑不得包含空格：「<ph name="SHORTCUT_NAME" />」</translation>
 <translation id="8351131234907093545">寫筆記</translation>
 <translation id="8352849934814541340">這部裝置的管理員已安裝支援額外功能的應用程式，這些應用程式可存取你的部分資料。</translation>
-<translation id="8353273112634584260">搭載 Gemini 個人化智慧服務。你的要求、網頁標題和網址可能會送交人工審查，以改進強化版自動填入功能。</translation>
 <translation id="8355270400102541638">本機當機內容：</translation>
 <translation id="8362914115861174987">譯文語言：</translation>
 <translation id="8363502534493474904">關閉飛航模式</translation>
@@ -4737,7 +4727,6 @@
 <translation id="9001074447101275817"><ph name="DOMAIN" /> Proxy 要求提供使用者名稱和密碼。</translation>
 <translation id="9001963517402879850">跳起來！</translation>
 <translation id="9002677862950442746">驗證碼：<ph name="OTP" /></translation>
-<translation id="9003263770394939629">Gemini 提供的建議。請前往「設定」管理強化版自動填入功能。</translation>
 <translation id="9003639428623471314">Envelope Kahu</translation>
 <translation id="9004367719664099443">正在執行 VR 工作階段</translation>
 <translation id="9005998258318286617">無法載入 PDF 文件。</translation>
@@ -4756,7 +4745,6 @@
 <translation id="9027531288681624875">如要退出全螢幕模式，請按住 |<ph name="ACCELERATOR" />| 鍵</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">安全性錯誤</translation>
-<translation id="9035699147763101514">採用 Gemini 個人化智慧服務。你可以前往「設定」管理偏好選項。</translation>
 <translation id="9035824888276246493">儲存安全碼</translation>
 <translation id="9036306139374661733">要授予麥克風權限嗎？</translation>
 <translation id="9036484080057916082">憑證簽署的時間戳記清單</translation>
@@ -4910,7 +4898,6 @@
 <translation id="961930410699694996">這次允許存取位置資訊</translation>
 <translation id="962484866189421427">這項內容可能會試圖讓你安裝身分不實的欺騙性應用程式，或是收集可用於追蹤你的資料。<ph name="BEGIN_LINK" />仍要顯示<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">根據你所在地區的法律，Chromium 會要求你選擇預設搜尋引擎。這些是你所在地區的熱門搜尋引擎，顯示方式為隨機排列。</translation>
-<translation id="963837307749850257">所有使用者</translation>
 <translation id="963988220224168636">將救濟號碼安全新增到 Google 錢包</translation>
 <translation id="964050462028070434">管理密碼和密碼金鑰…</translation>
 <translation id="964681140808832181">是的，我要取消</translation>

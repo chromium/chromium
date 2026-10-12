@@ -1264,6 +1264,7 @@
 <translation id="498624032394115435">Всеки, който разполага с връзката, може да редактира всички раздели.</translation>
 <translation id="4986428648020277392">Подкана 2 от 3: Кои да купя?</translation>
 <translation id="498768198683310172">Започнете да използвате Gemini</translation>
+<translation id="4989163558385430922">Преглед на всички</translation>
 <translation id="499122600724363620"><ph name="NAME" /> (<ph name="EMAIL" />). Управлява се от организацията ви.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Цветът на групата раздели е <ph name="COLOR" /></translation>
@@ -1719,6 +1720,7 @@
 <translation id="6372558618707314581">Отворете желана от вас страница.</translation>
 <translation id="6374469231428023295">Нов опит</translation>
 <translation id="6374514103145916800">Попитайте</translation>
+<translation id="6381241974485088375">Персонализирайте новия раздел по всяко време оттук</translation>
 <translation id="6383719166112032471">Отваряне на местоположението…</translation>
 <translation id="6387994324662817823">Паролите се запазват в мениджъра на паролите в Google само на това устройство.</translation>
 <translation id="6393156038355142111">Предложение за надеждна парола</translation>
@@ -2027,7 +2029,6 @@
 <translation id="7346922058131593019">Върху какво искате да работите, <ph name="USER_FIRST_NAME" />?</translation>
 <translation id="7347998088283246662">Импортиране на пароли, история, отметки и др.</translation>
 <translation id="7352651011704765696">Нещо се обърка</translation>
-<translation id="7357999308187750900">Преглед на всички</translation>
 <translation id="736564850024123010">Променете позицията на адресната лента, за да персонализирате практическата си работа.</translation>
 <translation id="7366909168761621528">Данни за сърфирането</translation>
 <translation id="7367530036083223701">Осъществявайте сигурен достъп до паролите си от началния екран посредством приспособлението на Мениджър на пароли.</translation>
@@ -2361,7 +2362,6 @@
 <translation id="8333459276976141586">Live ще използва микрофона ви. Ако докоснете бутона Live, микрофонът ще се включи. За да го изключите, докоснете бутона за спиране или затворете Gemini.</translation>
 <translation id="833647236762414178">Създавайте, запазвайте и управлявайте паролите и ключовете си за достъп, за да влизате лесно в сайтовете и приложенията. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Създайте резервно копие на нещата си и ги използвайте на всяко устройство.</translation>
-<translation id="8345328955902001853">{count,plural, =1{Изпълнете още 1 задача, за да преминете към по-горно ниво}other{Изпълнете още {count} задачи, за да преминете към по-горно ниво}}</translation>
 <translation id="8348530355586151720">Докоснете менюто с три точки.</translation>
 <translation id="8349305172487531364">Лента на отметките</translation>
 <translation id="8360164927489392419">Записите на взаимодействията ви с функцията Live и съдържанието, което споделяте с нея, се запазват и обработват съгласно <ph name="BEGIN_LINK" />Съобщението за поверителност за приложенията Gemini<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
@@ -2463,6 +2463,7 @@
 <translation id="8639963783467694461">Настройки за автоматично попълване</translation>
 <translation id="8642417828095157370">Разделите се споделят с цел по-уместни отговори</translation>
 <translation id="8643403533759285912">Изтриване на групата</translation>
+<translation id="8646357898207744479">Обектив</translation>
 <translation id="8647280737650867362">Спирането на проследяването на цената не бе успешно.</translation>
 <translation id="8654802032646794042">Отказ</translation>
 <translation id="8655861111558401309">Изберете „Изтриване на данните за сърфирането“</translation>
@@ -2586,7 +2587,6 @@
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" /> – фиксиран сайт</translation>
 <translation id="8990960056509724223">Файлът не бе запазен поради правилата на организацията ви</translation>
 <translation id="8998289560386111590">Не е налице на устройството ви</translation>
-<translation id="9003263770394939629">Предложено от Gemini. Управлявайте подобреното автоматично попълване от настройките.</translation>
 <translation id="9003677638446136377">Повторна проверка</translation>
 <translation id="9006453925669499173">Меню → Нов раздел в режим „инкогнито“</translation>
 <translation id="9008201768610948239">Пренебрегване</translation>
@@ -2595,7 +2595,6 @@
 <translation id="9029650858822697271">Излязохте от профила си</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Потвърждаване на изтриването на данните за сърфирането</translation>
-<translation id="9035699147763101514">Функцията е базирана на Personal Intelligence с Gemini. Можете да управлявате избора си в настройките.</translation>
 <translation id="9038526468059454274">Обобщете с</translation>
 <translation id="9039373489628511875">Капацитет</translation>
 <translation id="9042893549633094279">Поверителност и сигурност</translation>

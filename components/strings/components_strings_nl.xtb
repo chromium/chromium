@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Rechten selecteren voor <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">IBAN opslaan?</translation>
 <translation id="1113869188872983271">&amp;Volgorde wijzigen ongedaan maken</translation>
-<translation id="1117709830616495622">Mogelijk gemaakt door Personal Intelligence met Gemini.</translation>
 <translation id="111897705806685148">Toegangssleutel van een ander apparaat gebruiken</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om te beheren welke Chrome-informatie je opslaat in je Google-account</translation>
 <translation id="1121990216147052230">Maak een takenlijst voor me</translation>
@@ -532,7 +531,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1890171020361705182">Dino-game. Een gepixeleerde dinosaurus ontwijkt cactussen en pterodactylussen terwijl deze door een verlaten landschap rent. Als je een audiosignaal hoort, tik je om over obstakels te springen.</translation>
 <translation id="1898423065542865115">Filteren</translation>
 <translation id="1898678876221454577">Log in om je scan op te slaan</translation>
-<translation id="1898804291554630487">Vraag stellen over deze pagina</translation>
 <translation id="1901443836186977402">{1,plural, =1{Deze server kan niet bewijzen dat dit <ph name="DOMAIN" /> is. Het bijbehorende beveiligingscertificaat is in de afgelopen 24 uur verlopen. Dit kan worden veroorzaakt door een verkeerde configuratie of een aanvaller die je verbinding onderschept. De klok van je computer is momenteel ingesteld op <ph name="CURRENT_DATE" />. Klopt dat? Zo niet, dan moet je de klok van je systeem aanpassen en daarna deze pagina vernieuwen.}other{Deze server kan niet bewijzen dat dit <ph name="DOMAIN" /> is. Het bijbehorende beveiligingscertificaat is # dagen geleden verlopen. Dit kan worden veroorzaakt door een verkeerde configuratie of een aanvaller die je verbinding onderschept. De klok van je computer is momenteel ingesteld op <ph name="CURRENT_DATE" />. Klopt dat? Zo niet, dan moet je de klok van je systeem aanpassen en daarna deze pagina vernieuwen.}}</translation>
 <translation id="190166348986967700">Je beheerder begint op <ph name="DATE_TIME" /> je bestanden naar <ph name="CLOUD_PROVIDER" /> te uploaden. Houd je apparaat verbonden totdat de bestandsupload is afgerond. Tijdens het uploaden kun je alleen lokale bestanden lezen.</translation>
 <translation id="1902576642799138955">Geldigheidsduur</translation>
@@ -841,8 +839,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2384307209577226199">Zakelijk standaard</translation>
 <translation id="2385809941344967209">Chrome updaten in de Chrome-instellingen</translation>
 <translation id="2386255080630008482">Het servercertificaat is ingetrokken.</translation>
-<translation id="2387424091060104123">Voorgesteld door Gemini · <ph name="SRC_LINK" />Bronnen bekijken<ph name="END_SRC_LINK" />
-Je kunt deze suggestie verwijderen uit Chrome. Je oorspronkelijke bron wordt niet verwijderd. <ph name="MANAGE_LINK" />Verbeterd automatisch invullen beheren<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">Uitbreiden</translation>
 <translation id="2392959068659972793">Beleid zonder ingestelde waarde bekijken</translation>
 <translation id="239429038616798445">Deze verzendmethode is niet beschikbaar. Kies een andere methode.</translation>
@@ -1245,7 +1241,6 @@ Ga naar de <ph name="BEGIN_LINK" />betaalinstellingen<ph name="END_LINK" /> om o
 <translation id="3109788962812161063">Profiel beheren</translation>
 <translation id="3112892588078695695">Telefoonnummer: <ph name="PHONE" />.</translation>
 <translation id="3113284927548439113">Derde dienst</translation>
-<translation id="3113930177999394798">Typ @history om in je browsegeschiedenis te zoeken, mogelijk gemaakt door AI</translation>
 <translation id="3114040155724590991">Android-systeem updaten
 Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3114197119223448048">nieuwe activiteit</translation>
@@ -1423,7 +1418,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3413466783792948876">Het is het veiligst om deze site later te bezoeken als je nu een openbaar netwerk gebruikt. Je loopt minder risico als je een vertrouwd netwerk, zoals je wifi-netwerk thuis of op het werk, gebruikt.</translation>
 <translation id="3414952576877147120">Grootte:</translation>
 <translation id="341513675006332771">Knop Chrome Dino-game spelen. Activeer deze om de Dino Run-game in Chrome te spelen.</translation>
-<translation id="3415471717466570460">Je zoekopdrachten, de beste overeenkomsten en de bijbehorende paginacontent worden naar Google gestuurd en kunnen door menselijke reviewers worden bekeken om deze functie te verbeteren. Dit is een experimentele functie die het niet altijd juist heeft.</translation>
 <translation id="3417390269491141648">Vergelijk mijn opties voor gezondheidsplannen en breng de belangrijkste verschillen tussen deze opties in kaart</translation>
 <translation id="3421387094817716717">Openbare sleutel voor elliptische kromme</translation>
 <translation id="3422248202833853650">Probeer andere programma's af te sluiten om geheugen vrij te maken.</translation>
@@ -1898,7 +1892,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4185037616931963178">Redress number beveiligd updaten</translation>
 <translation id="4186035307311647330">Prijs volgen</translation>
-<translation id="4190446002599583608">Zoeken in geschiedenis, mogelijk gemaakt door AI</translation>
 <translation id="4191334393248735295">Lengte</translation>
 <translation id="4195459680867822611">Knop Chrome-tips bekijken. Activeer deze voor meer informatie over Chrome-functies.</translation>
 <translation id="4195643157523330669">Openen op nieuw tabblad</translation>
@@ -1945,7 +1938,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="424063167283213501">Known Traveler Number opslaan</translation>
 <translation id="4241830393007970744">Aanvallers op de site die je probeerde te bezoeken, kunnen je misleiden zodat je software installeert of gegevens zoals je wachtwoorden, telefoonnummers of creditcardnummers openbaar maakt.</translation>
 <translation id="4242380780309416996">Envelop (zwaargewicht)</translation>
-<translation id="4242981939686657948">Voor een krachtigere manier om in je browsegeschiedenis te zoeken activeer je</translation>
 <translation id="4244926541863471678">Film</translation>
 <translation id="42481816218163154">Maak een ochtendroutine van 15 minuten die mijn hardlopen in de ochtend soepeler laat verlopen. Zorg dat het een mindfulness-oefening bevat</translation>
 <translation id="4250343410682686342">Voortgangsscherm voor Koop nu, betaal later is op volledige hoogte geopend.</translation>
@@ -3888,7 +3880,6 @@ Aanvullende informatie:
 <translation id="7514365320538308">Downloaden</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">VR deze keer toegestaan</translation>
-<translation id="7517198908921983825">Voorgesteld door Gemini · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Envelop C10</translation>
 <translation id="7518003948725431193">Er is geen webpagina gevonden voor het webadres: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -4385,7 +4376,6 @@ Aanvullende informatie:
 <translation id="8350416046273606058">De snelkoppeling mag geen spaties bevatten: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="8351131234907093545">Notitie maken</translation>
 <translation id="8352849934814541340">De beheerder van dit apparaat heeft apps geïnstalleerd voor aanvullende functies. Apps hebben toegang tot sommige van je gegevens.</translation>
-<translation id="8353273112634584260">Mogelijk gemaakt door Personal Intelligence met Gemini. Je verzoeken, paginatitels en URL's kunnen worden beoordeeld om verbeterd automatisch invullen te verbeteren.</translation>
 <translation id="8355270400102541638">Lokale crashcontext:</translation>
 <translation id="8362914115861174987">Vertalen naar het</translation>
 <translation id="8363502534493474904">Zet de vliegtuigmodus uit</translation>
@@ -4732,7 +4722,6 @@ Aanvullende informatie:
 <translation id="9001074447101275817">Voor de proxy <ph name="DOMAIN" /> zijn een gebruikersnaam en wachtwoord vereist.</translation>
 <translation id="9001963517402879850">Spring!</translation>
 <translation id="9002677862950442746">Verificatiecode: <ph name="OTP" /></translation>
-<translation id="9003263770394939629">Voorgesteld door Gemini. Beheer verbeterd automatisch invullen in de instellingen.</translation>
 <translation id="9003639428623471314">Envelop Kahu</translation>
 <translation id="9004367719664099443">VR-sessie is bezig</translation>
 <translation id="9005998258318286617">Kan pdf-document niet laden</translation>
@@ -4751,7 +4740,6 @@ Aanvullende informatie:
 <translation id="9027531288681624875">Houd |<ph name="ACCELERATOR" />| ingedrukt om het volledige scherm te sluiten</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Beveiligingsfout</translation>
-<translation id="9035699147763101514">Mogelijk gemaakt door Personal Intelligence met Gemini. Beheer je keuzes in de instellingen.</translation>
 <translation id="9035824888276246493">Beveiligingscodes opslaan</translation>
 <translation id="9036306139374661733">Microfoon toestaan?</translation>
 <translation id="9036484080057916082">Lijst met tijdstempels voor ondertekend certificaat</translation>
@@ -4905,7 +4893,6 @@ Aanvullende informatie:
 <translation id="961930410699694996">Locatie deze keer toegestaan</translation>
 <translation id="962484866189421427">Deze content kan mogelijk proberen misleidende apps te installeren die zich voordoen als iets anders of gegevens verzamelen die kunnen worden gebruikt om je te volgen. <ph name="BEGIN_LINK" />Toch bekijken<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">Op basis van een wet in je regio vraagt Chromium je om je standaard zoekmachine te kiezen. Deze zoekmachines zijn populair in je regio en worden in willekeurige volgorde getoond.</translation>
-<translation id="963837307749850257">Alle gebruikers</translation>
 <translation id="963988220224168636">Redress number beveiligd toevoegen aan Google Wallet</translation>
 <translation id="964050462028070434">Wachtwoorden en toegangscodes beheren…</translation>
 <translation id="964681140808832181">Ja, ik wil annuleren</translation>

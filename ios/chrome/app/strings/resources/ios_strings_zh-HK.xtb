@@ -1264,6 +1264,7 @@
 <translation id="498624032394115435">任何擁有連結的人均可編輯所有分頁。</translation>
 <translation id="4986428648020277392">提示：我應該買邊款？第 2 個，總共 3 個</translation>
 <translation id="498768198683310172">開始使用 Gemini</translation>
+<translation id="4989163558385430922">查看全部</translation>
 <translation id="499122600724363620"><ph name="NAME" />，<ph name="EMAIL" />，該帳戶由你的機構管理。</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />，<ph name="EMAIL" />。<ph name="AI_TIER" /></translation>
 <translation id="4992255726304765516">分頁群組顏色係<ph name="COLOR" /></translation>
@@ -1719,6 +1720,7 @@
 <translation id="6372558618707314581">前往要瀏覽的頁面</translation>
 <translation id="6374469231428023295">再試一次</translation>
 <translation id="6374514103145916800">詢問</translation>
+<translation id="6381241974485088375">你可隨時在這裡自訂新分頁</translation>
 <translation id="6383719166112032471">開啟位置…</translation>
 <translation id="6387994324662817823">密碼只會儲存至此裝置上的「Google 密碼管理工具」。</translation>
 <translation id="6393156038355142111">建議安全性強的密碼</translation>
@@ -2025,7 +2027,6 @@
 <translation id="7346922058131593019"><ph name="USER_FIRST_NAME" />，你想處理啲咩？</translation>
 <translation id="7347998088283246662">匯入密碼、記錄、書籤等內容</translation>
 <translation id="7352651011704765696">發生問題</translation>
-<translation id="7357999308187750900">顯示全部</translation>
 <translation id="736564850024123010">切換網址列的位置，享受自訂的使用體驗。</translation>
 <translation id="7366909168761621528">瀏覽資料</translation>
 <translation id="7367530036083223701">在主畫面上使用「密碼管理工具」小工具安全存取密碼。</translation>
@@ -2359,7 +2360,6 @@
 <translation id="8333459276976141586">Live 將會使用你的麥克風。輕按「Live」按鈕即可開啟麥克風。如要關閉麥克風，請輕按「停止」按鈕或關閉 Gemini。</translation>
 <translation id="833647236762414178">建立、儲存及管理密碼和密鑰，輕鬆登入網站和應用程式。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">備份資料即可在任何裝置上使用。</translation>
-<translation id="8345328955902001853">{count,plural, =1{完成多 1 項任務即可升級}other{完成多 {count} 項任務即可升級}}</translation>
 <translation id="8348530355586151720">輕按三點選單</translation>
 <translation id="8349305172487531364">書籤列</translation>
 <translation id="8360164927489392419">你與 Live 互動的錄音和分享的內容會根據《<ph name="BEGIN_LINK" />Gemini 應用程式私隱聲明<ph name="END_LINK" />》儲存和處理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
@@ -2461,6 +2461,7 @@
 <translation id="8639963783467694461">自動填入設定</translation>
 <translation id="8642417828095157370">系統會分享分頁以提供更相關的答案</translation>
 <translation id="8643403533759285912">刪除群組</translation>
+<translation id="8646357898207744479">智能鏡頭</translation>
 <translation id="8647280737650867362">無法取消追蹤價格。</translation>
 <translation id="8654802032646794042">取消</translation>
 <translation id="8655861111558401309">選取 [刪除瀏覽資料]</translation>
@@ -2584,7 +2585,6 @@
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />，已固定的網站</translation>
 <translation id="8990960056509724223">根據你機構的政策，你不可儲存檔案</translation>
 <translation id="8998289560386111590">此功能無法在您的裝置上使用</translation>
-<translation id="9003263770394939629">由 Gemini 建議。你可以在設定中管理強化版自動填入功能。</translation>
 <translation id="9003677638446136377">再次檢查</translation>
 <translation id="9006453925669499173">選單 → 新無痕式分頁</translation>
 <translation id="9008201768610948239">略過</translation>
@@ -2593,7 +2593,6 @@
 <translation id="9029650858822697271">系統已將你登出</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">確認刪除瀏覽資料</translation>
-<translation id="9035699147763101514">採用 Gemini「個人化智能」技術。你可以在設定中管理選擇。</translation>
 <translation id="9038526468059454274">想總結內容，就用</translation>
 <translation id="9039373489628511875">頻寬</translation>
 <translation id="9042893549633094279">私隱權和安全性</translation>

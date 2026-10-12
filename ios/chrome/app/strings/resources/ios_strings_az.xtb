@@ -852,6 +852,7 @@
 <translation id="3672283986707092811">Hamısını seçin</translation>
 <translation id="3679163990085797665">Oxunmuşları silin</translation>
 <translation id="368329460027487650">Çıxılıb. Giriş seçimlərini açır.</translation>
+<translation id="3689746421535476813">Redaktə etmək üçün yadda saxlanılmış ödəniş metodu seçin və ya yeni ödəniş metodu əlavə edin</translation>
 <translation id="3695446226812920698">Yolunu öyrənin.</translation>
 <translation id="3700134753671613714">Bütün cihazlarınızda əlfəcinləri əldə etmək üçün daxil olun.</translation>
 <translation id="3701167022068948696">İndi düzəliş edin</translation>
@@ -1264,6 +1265,7 @@
 <translation id="498624032394115435">Keçidi olan hər kəs bütün tablara düzəliş edə bilər.</translation>
 <translation id="4986428648020277392">Göstəriş: Hansını almalıyam? 2/3</translation>
 <translation id="498768198683310172">Gemini-dan istifadə etməyə başlayın</translation>
+<translation id="4989163558385430922">Hamısına baxın</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, təşkilatınız tərəfindən idarə olunur.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Tab qrupu rəngi <ph name="COLOR" /></translation>
@@ -2027,7 +2029,6 @@ Kompüterinizdə davam etmək üçün <ph name="OTHER_EMAIL" /> hesabına keçin
 <translation id="7346922058131593019"><ph name="USER_FIRST_NAME" />, nə üzərində işləmək istəyirsiniz?</translation>
 <translation id="7347998088283246662">Parolları, tarixçəni, əlfəcinləri və s. import edin</translation>
 <translation id="7352651011704765696">Xəta oldu</translation>
-<translation id="7357999308187750900">Hamısına baxın</translation>
 <translation id="736564850024123010">Fərdi təcrübə üçün ünvan panelinin yerini dəyişin.</translation>
 <translation id="7366909168761621528">Axtarış Datası</translation>
 <translation id="7367530036083223701">Parol meneceri vidceti ilə parollara əsas ekrandan təhlükəsiz daxil olun.</translation>
@@ -2361,7 +2362,6 @@ Kompüterinizdə davam etmək üçün <ph name="OTHER_EMAIL" /> hesabına keçin
 <translation id="8333459276976141586">Live mikrofonunuzdan istifadə edəcək. Live düyməsinə toxunduqda mikrofon aktiv edilir. Mikrofonu söndürmək üçün dayandırın düyməsinə toxunun və ya Gemini-ı bağlayın.</translation>
 <translation id="833647236762414178">Sayt və tətbiqlərə asanlıqla daxil olmaq üçün parol və giriş açarları yaradın, yadda saxlayın və idarə edin. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Elementləri yedəkləyin və istənilən cihazda istifadə edin.</translation>
-<translation id="8345328955902001853">{count,plural, =1{Növbəti səviyyəyə keçmək üçün daha 1 tapşırığı tamamlayın}other{Növbəti səviyyəyə keçmək üçün daha {count} tapşırığı tamamlayın}}</translation>
 <translation id="8348530355586151720">Üç nöqtə menyusuna toxunun</translation>
 <translation id="8349305172487531364">Əlfəcin paneli</translation>
 <translation id="8360164927489392419">Live ilə interaksiyalarınızın qeydləri və paylaşdığınız kontent <ph name="BEGIN_LINK" />Gemini tətbiqi məxfilik bildirişinə<ph name="END_LINK" /> uyğun şəkildə saxlanılır və emal edilir. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
@@ -2425,6 +2425,7 @@ Kompüterinizdə davam etmək üçün <ph name="OTHER_EMAIL" /> hesabına keçin
 <translation id="8535368836838588657">Parolu göstərin</translation>
 <translation id="8540426897269305488"><ph name="CELL_ACCESSIBILITY_LABEL" /> ilə daxil olun</translation>
 <translation id="8542331710562073430">Xəta oldu. Yenidən Canlı yayıma keçməyə cəhd etmək üçün Live düyməsinə toxunun.</translation>
+<translation id="8544172904312384600">Redaktə edin və ya yeni ödəniş metodu əlavə edin</translation>
 <translation id="8545276357312221485">Defolt brauzer ayarlarını yoxlayın</translation>
 <translation id="854938212724803178">1 oğurlanmış parol var. Təhlükəsizlik üçün bunu indi həll edin.</translation>
 <translation id="8551311254462607218">Ünvan panelində Google Linza kamera ikonasına toxunun</translation>
@@ -2586,7 +2587,6 @@ Kompüterinizdə davam etmək üçün <ph name="OTHER_EMAIL" /> hesabına keçin
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, bərkidilmiş sayt</translation>
 <translation id="8990960056509724223">Təşkilatınızın siyasətlərinə əsasən faylı yadda saxlamaq mümkün olmadı</translation>
 <translation id="8998289560386111590">Cihazınızda əlçatan deyil</translation>
-<translation id="9003263770394939629">Gemini tərəfindən təklif edildi. Ayarlarda təkmilləşdirilmiş avtodoldurmanı idarə edin.</translation>
 <translation id="9003677638446136377">Yenidən yoxlayın</translation>
 <translation id="9006453925669499173">Menyu → Yeni Anonim tab</translation>
 <translation id="9008201768610948239">İqnor</translation>
@@ -2595,7 +2595,6 @@ Kompüterinizdə davam etmək üçün <ph name="OTHER_EMAIL" /> hesabına keçin
 <translation id="9029650858822697271">Çıxış edildi</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Baxış datasının silinməsini təsdiq edin</translation>
-<translation id="9035699147763101514">Gemini ilə Şəxsi Zəka tərəfindən dəstəklənir. Seçimlərinizi ayarlarda idarə edin.</translation>
 <translation id="9038526468059454274">Bununla yekunlaşdırın:</translation>
 <translation id="9039373489628511875">Ötürmə qabiliyyəti</translation>
 <translation id="9042893549633094279">Məxfilik və təhlükəsizlik</translation>

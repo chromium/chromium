@@ -71,7 +71,6 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> 권한을 선택합니다</translation>
 <translation id="1113000785583998331">IBAN을 저장하시겠습니까?</translation>
 <translation id="1113869188872983271">재정렬 실행 취소(&amp;U)</translation>
-<translation id="1117709830616495622">Gemini의 개인 인텔리전스를 기반으로 합니다.</translation>
 <translation id="111897705806685148">다른 기기의 패스키 사용</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab과 Enter를 차례로 눌러 Google 계정에 저장할 Chrome 정보 관리</translation>
 <translation id="1121990216147052230">할 일 목록 만들어 줘</translation>
@@ -532,7 +531,6 @@
 <translation id="1890171020361705182">공룡 게임입니다. 픽셀 스타일의 공룡이 선인장과 프테로사우루스를 피하며 황무지를 달려갑니다. 오디오 신호음이 들리면 탭하여 장애물을 뛰어넘으세요.</translation>
 <translation id="1898423065542865115">필터링</translation>
 <translation id="1898678876221454577">스캔한 항목을 저장하려면 로그인하세요</translation>
-<translation id="1898804291554630487">이 페이지에 대해 질문하기</translation>
 <translation id="1901443836186977402">{1,plural, =1{서버의 보안 인증서가 마지막 날 만료되어 서버가 <ph name="DOMAIN" />임을 입증할 수 없습니다. 설정이 잘못되었거나 공격자가 연결을 가로채고 있기 때문일 수 있습니다. 현재 컴퓨터의 시간이 <ph name="CURRENT_DATE" />로 설정되어 있습니다. 시간이 정확하지 않으면 시스템 시간을 수정하고 이 페이지를 새로고침하세요.}other{서버의 보안 인증서가 #일 전에 만료되어 서버가 <ph name="DOMAIN" />임을 입증할 수 없습니다. 설정이 잘못되었거나 공격자가 연결을 가로채고 있기 때문일 수 있습니다. 현재 컴퓨터의 시간이 <ph name="CURRENT_DATE" />로 설정되어 있습니다. 시간이 정확하지 않으면 시스템 시간을 수정하고 이 페이지를 새로고침하세요.}}</translation>
 <translation id="190166348986967700"><ph name="DATE_TIME" />에 관리자가 파일을 <ph name="CLOUD_PROVIDER" />에 업로드하기 시작합니다. 파일 업로드가 완료될 때까지 기기를 연결된 상태로 유지하세요. 업로드하는 동안에는 로컬 파일을 읽는 것만 가능합니다.</translation>
 <translation id="1902576642799138955">유효성 기간</translation>
@@ -841,8 +839,6 @@
 <translation id="2384307209577226199">엔터프라이즈 기본값</translation>
 <translation id="2385809941344967209">Chrome 설정에서 Chrome을 업데이트하세요.</translation>
 <translation id="2386255080630008482">서버 인증서가 폐기되었습니다.</translation>
-<translation id="2387424091060104123">Gemini 추천 · <ph name="SRC_LINK" />소스 보기<ph name="END_SRC_LINK" />
-Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제되지 않습니다. <ph name="MANAGE_LINK" />향상된 자동 완성 관리<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">더 상세하게 작성</translation>
 <translation id="2392959068659972793">값이 설정되지 않은 정책 표시</translation>
 <translation id="239429038616798445">사용할 수 없는 배송 방법입니다. 다른 방법을 선택하세요.</translation>
@@ -1245,7 +1241,6 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="3109788962812161063">프로필 관리</translation>
 <translation id="3112892588078695695">전화번호: <ph name="PHONE" />.</translation>
 <translation id="3113284927548439113">세 번째 근무조</translation>
-<translation id="3113930177999394798">AI 기반 방문 기록을 검색하려면 @history를 입력하세요.</translation>
 <translation id="3114040155724590991">Android 시스템 업데이트
     앱을 시작하는 데 평소보다 오래 걸릴 수 있습니다.</translation>
 <translation id="3114197119223448048">새로운 활동</translation>
@@ -1426,7 +1421,6 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="3413466783792948876">공용 네트워크를 사용 중이라면 나중에 이 사이트를 방문하는 것이 가장 안전합니다. 집이나 직장 Wi-Fi와 같이 신뢰할 수 있는 네트워크를 사용하면 위험이 적습니다.</translation>
 <translation id="3414952576877147120">크기:</translation>
 <translation id="341513675006332771">Chrome 공룡 게임 플레이 버튼, Chrome에서 공룡 게임을 플레이하려면 활성화하세요.</translation>
-<translation id="3415471717466570460">검색어, 최적 일치 항목, 페이지 콘텐츠가 Google로 전송되며 이 기능을 개선하기 위해 인적 검토자가 이를 확인할 수 있습니다. 실험용 기능이므로 정확하지 않을 수 있습니다.</translation>
 <translation id="3417390269491141648">건강 보험 옵션을 비교하고 주요 차이점을 분석해 줘.</translation>
 <translation id="3421387094817716717">타원 곡선 공개 키</translation>
 <translation id="3422248202833853650">다른 프로그램을 종료하여 메모리를 확보하세요.</translation>
@@ -1904,7 +1898,6 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4185037616931963178">안전하게 리드레스 번호 업데이트하기</translation>
 <translation id="4186035307311647330">가격 추적 취소</translation>
-<translation id="4190446002599583608">AI 기반 방문 기록 검색</translation>
 <translation id="4191334393248735295">길이</translation>
 <translation id="4195459680867822611">Chrome 도움말 보기 버튼, Chrome 기능에 관해 자세히 알아보려면 활성화하세요.</translation>
 <translation id="4195643157523330669">새 탭에서 열기</translation>
@@ -1951,7 +1944,6 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="424063167283213501">KTN(Known Traveler Number) 저장</translation>
 <translation id="4241830393007970744">방문하려고 한 사이트의 공격자가 속임수를 써서 소프트웨어를 설치하거나 비밀번호, 전화번호, 신용카드 번호 등을 공개하도록 유도할 수 있습니다.</translation>
 <translation id="4242380780309416996">봉투(중량)</translation>
-<translation id="4242981939686657948">방문 기록 검색을 강화하려면 다음을 사용 설정해 주세요.</translation>
 <translation id="4244926541863471678">필름</translation>
 <translation id="42481816218163154">아침을 더 원활하게 시작하는 데 도움이 되는 15분짜리 아침 루틴을 만들어 줘. 마음챙김 운동도 포함해야 해.</translation>
 <translation id="4250343410682686342">선구매 후지불 오류 화면이 전체 높이로 열렸습니다.</translation>
@@ -3894,7 +3886,6 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="7514365320538308">다운로드</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">이번에는 VR 허용됨</translation>
-<translation id="7517198908921983825">Gemini 추천 · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">봉투 C10</translation>
 <translation id="7518003948725431193">다음 웹 주소(<ph name="URL" />)에 대해 발견된 웹페이지가 없습니다.</translation>
 <translation id="7521387064766892559">자바스크립트</translation>
@@ -4391,7 +4382,6 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="8350416046273606058">단축어에는 공백을 포함할 수 없습니다. "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">메모 만들기</translation>
 <translation id="8352849934814541340">이 기기의 관리자가 추가 기능을 위한 애플리케이션을 설치했습니다. 애플리케이션에는 내 데이터 중 일부에 액세스할 권한이 있습니다.</translation>
-<translation id="8353273112634584260">Gemini의 개인 인텔리전스를 기반으로 합니다. 향상된 자동 완성을 개선하기 위해 요청, 페이지 제목, URL이 검토될 수 있습니다.</translation>
 <translation id="8355270400102541638">로컬 비정상 종료 컨텍스트:</translation>
 <translation id="8362914115861174987">도착어</translation>
 <translation id="8363502534493474904">비행기 모드 사용 중지</translation>
@@ -4738,7 +4728,6 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="9001074447101275817">프록시 <ph name="DOMAIN" />에 사용자 이름 및 비밀번호를 입력해야 합니다.</translation>
 <translation id="9001963517402879850">점프하세요</translation>
 <translation id="9002677862950442746">인증 코드: <ph name="OTP" /></translation>
-<translation id="9003263770394939629">Gemini가 추천합니다. 설정에서 향상된 자동 완성 기능을 관리해 보세요.</translation>
 <translation id="9003639428623471314">봉투 Kahu</translation>
 <translation id="9004367719664099443">VR 세션 진행 중</translation>
 <translation id="9005998258318286617">PDF 문서를 로드하지 못했습니다.</translation>
@@ -4757,7 +4746,6 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="9027531288681624875">전체 화면을 종료하려면 |<ph name="ACCELERATOR" />| 키를 길게 누르세요.</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">보안 오류</translation>
-<translation id="9035699147763101514">Gemini의 개인 인텔리전스를 기반으로 합니다. 설정에서 선택사항을 관리하세요</translation>
 <translation id="9035824888276246493">보안 코드 저장</translation>
 <translation id="9036306139374661733">마이크 권한을 허용하시겠습니까?</translation>
 <translation id="9036484080057916082">서명된 인증서 타임스탬프 목록</translation>
@@ -4911,7 +4899,6 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="961930410699694996">현재 위치 허용됨</translation>
 <translation id="962484866189421427">이 콘텐츠에서 다른 앱인 것처럼 가장하거나 사용자를 추적하는 데 사용될 수 있는 데이터를 수집하는 사기성 앱을 설치할 수도 있습니다. <ph name="BEGIN_LINK" />그래도 표시하기<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">거주 지역의 법률에 따라 사용자에게 기본 검색엔진을 선택하도록 요청하는 메시지가 Chromium에 표시됩니다. 거주 지역에서 인기 있는 검색엔진이 임의의 순서로 표시됩니다.</translation>
-<translation id="963837307749850257">모든 사용자</translation>
 <translation id="963988220224168636">Google 월렛에 안전하게 리드레스 번호 추가</translation>
 <translation id="964050462028070434">비밀번호 및 패스키 관리…</translation>
 <translation id="964681140808832181">예, 취소하겠습니다.</translation>

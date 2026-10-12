@@ -1264,6 +1264,7 @@
 <translation id="498624032394115435">Ktokoľvek s odkazom môže upravovať všetky karty.</translation>
 <translation id="4986428648020277392">Pokyn: Ktoré mám kúpiť? 2 z 3</translation>
 <translation id="498768198683310172">Začať používať Gemini</translation>
+<translation id="4989163558385430922">Zobraziť všetko</translation>
 <translation id="499122600724363620">Účet <ph name="NAME" /> <ph name="EMAIL" /> spravovaný vašou organizáciou.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Farba skupiny kariet: <ph name="COLOR" /></translation>
@@ -2027,7 +2028,6 @@ Kedykoľvek môžete začať odznova.</translation>
 <translation id="7346922058131593019"><ph name="USER_FIRST_NAME" />, na čom chcete pracovať?</translation>
 <translation id="7347998088283246662">Importujte heslá, históriu, záložky a ďalší obsah</translation>
 <translation id="7352651011704765696">Niečo sa pokazilo</translation>
-<translation id="7357999308187750900">Zobraziť všetky</translation>
 <translation id="736564850024123010">Zmenou umiestnenia panela s adresou získate prispôsobenejšie prostredie.</translation>
 <translation id="7366909168761621528">Údaje prehliadania</translation>
 <translation id="7367530036083223701">Získajte zabezpečený prístup k svojim heslám z plochy pomocou miniaplikácie Správca hesiel.</translation>
@@ -2361,7 +2361,6 @@ Kedykoľvek môžete začať odznova.</translation>
 <translation id="8333459276976141586">Live bude používať váš mikrofón. Klepnutím na tlačidlo Live zapnete mikrofón. Ak ho chcete vypnúť, klepnite na tlačidlo zastavenia alebo zavrite Gemini.</translation>
 <translation id="833647236762414178">Vytvárajte, ukladajte a spravujte svoje heslá a prístupové kľúče, aby ste sa mohli ľahko prihlasovať na weboch a v aplikáciách. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Zálohujte svoj obsah a používajte ho v ľubovoľnom zariadení.</translation>
-<translation id="8345328955902001853">{count,plural, =1{Ak chcete prejsť na vyššiu úroveň, dokončite ešte jednu úlohu}few{Ak chcete prejsť na vyššiu úroveň, dokončite ešte {count} úlohy}many{Complete {count} more tasks to level up}other{Ak chcete prejsť na vyššiu úroveň, dokončite ešte {count} úloh}}</translation>
 <translation id="8348530355586151720">Klepnite na trojbodkovú ponuku</translation>
 <translation id="8349305172487531364">Panel so záložkami</translation>
 <translation id="8360164927489392419">Záznamy vašich interakcií s funkciou Live a obsah, ktorý s ňou zdieľate, sa ukladajú a spracúvajú v súlade s <ph name="BEGIN_LINK" />oznámením o ochrane súkromia v aplikáciách Gemini<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
@@ -2586,7 +2585,6 @@ Kedykoľvek môžete začať odznova.</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, pripnutý web</translation>
 <translation id="8990960056509724223">Súbor sa nepodarilo uložiť pre pravidlá vašej organizácie</translation>
 <translation id="8998289560386111590">V zariadení nie je k dispozícii</translation>
-<translation id="9003263770394939629">✨ Navrhnuté Gemini. Vylepšené automatické dopĺňanie môžete spravovať v nastaveniach.</translation>
 <translation id="9003677638446136377">Skontrolovať znova</translation>
 <translation id="9006453925669499173">Ponuka → Nová karta inkognito</translation>
 <translation id="9008201768610948239">Ignorovať</translation>
@@ -2595,7 +2593,6 @@ Kedykoľvek môžete začať odznova.</translation>
 <translation id="9029650858822697271">Systém vás odhlásil</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Potvrdiť odstránenie dát prehliadania</translation>
-<translation id="9035699147763101514">Využíva inteligenciu na mieru s Gemini. Svoje voľby môžete spravovať v nastaveniach.</translation>
 <translation id="9038526468059454274">Zhrňte to pomocou</translation>
 <translation id="9039373489628511875">Rýchlosť pripojenia</translation>
 <translation id="9042893549633094279">Ochrana súkromia a zabezpečenie</translation>

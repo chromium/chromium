@@ -5626,6 +5626,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="5246282308050205996">A(z) <ph name="APP_NAME" /> összeomlott. Az alkalmazás újraindításához kattintson erre a buborékra.</translation>
 <translation id="5247051749037287028">Megjelenítendő név (nem kötelező)</translation>
 <translation id="5247243947166567755">A következő kiválasztása: <ph name="BOOKMARK_TITLE" /></translation>
+<translation id="524751727772074981">Bármit megkérdezhet, közvetlenül a Gemini Chrome-ban segítségével</translation>
 <translation id="5248934139541843042">Rendező megtekintése</translation>
 <translation id="5249624017678798539">A böngésző a letöltés befejeződése előtt összeomlott.</translation>
 <translation id="5249818097095743806">Biztonsági kulcs használata</translation>
@@ -6336,7 +6337,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5828181959764767444">Napnyugta</translation>
 <translation id="5828545842856466741">Profil hozzáadása…</translation>
 <translation id="5828633471261496623">Nyomtatás...</translation>
-<translation id="5829137022934788067">Információkat kérek erről a kiválasztásról</translation>
 <translation id="5829214552954466783"><ph name="CREDENTIAL_TYPE" /> megosztása a következő felhasználónévre vonatkozóan: <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">Az Ön fizetési módjai a Google Walletben</translation>
 <translation id="5830512293931520102">Jelszava titkosítva van, és senki sem láthatja</translation>

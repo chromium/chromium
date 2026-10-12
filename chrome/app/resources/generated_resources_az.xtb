@@ -1588,6 +1588,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2215070081105889450">Audio paylaşmaq üçün tab və ya ekran paylaşın</translation>
 <translation id="2217208085547223783">Güvən statusu</translation>
 <translation id="2218019600945559112">Maus və taçped</translation>
+<translation id="2218116022473625437">Ayarlarda mətn vurğulamasını deaktiv edə, səsi tənzimləyə və səhifənin görünüşünü dəyişə bilərsiniz.</translation>
 <translation id="2218515861914035131">Tam mətn olaraq yerləşdirin</translation>
 <translation id="2219007152108311874">Hər girişdə soruşulsun</translation>
 <translation id="2220529011494928058">Problemi xəbər verin</translation>
@@ -3763,6 +3764,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3812525830114410218">İşləməyən sertifikat</translation>
 <translation id="3813296892522778813">Axtardığınızı tapa bilmirsinizsə <ph name="BEGIN_LINK_CHROMIUM" />Google Chrome yardımı<ph name="END_LINK_CHROMIUM" /> bölməsinə gedin</translation>
 <translation id="3813358687923336574">Səhifələrin tərcüməsi və Sürətli cavablar üçün istifadə olunan dil</translation>
+<translation id="3815509884387832993">Oxu rejimi alətlər panelindəki "Sİ oxutmasını aktiv edin" düyməsindən istifadə edərək Sİ oxutması ilə bu səhifəni podkast kimi dinləyin</translation>
 <translation id="3815668647912194650">Sonra tab əlavə etmək üçün bu qrupu saxlayın və ya artıq ona daxil olmaq istəmirsinizsə, çıxın.</translation>
 <translation id="3816118180265633665">Chrome Rəngləri</translation>
 <translation id="3817524650114746564">Kompüterin proksi ayarlarına keçin</translation>
@@ -4145,6 +4147,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4109135793348361820">Pəncərəni <ph name="USER_NAME" /> istifadəçisinə daşıyın (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Xəbərdarlığı bərpa edin</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (oflayn)</translation>
+<translation id="4112282889480354965">Artırmalar və bacarıqlar</translation>
 <translation id="4113743276555482284">Fayl parolu</translation>
 <translation id="4114524937989710624">Google Diskdəki ən son fəaliyyətinizə asanlıqla qayıtmağınıza kömək etmək üçün təklif olunan faylları görürsünüz.
         <ph name="BREAK" />
@@ -5617,6 +5620,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5246282308050205996"><ph name="APP_NAME" /> qəzaya uğradı. Tətbiqi yenidən başlatmaq üçün bu topa klikləyin.</translation>
 <translation id="5247051749037287028">Display adı (istəyə görə)</translation>
 <translation id="5247243947166567755"><ph name="BOOKMARK_TITLE" /> seçin</translation>
+<translation id="524751727772074981">Chrome-da Gemini ilə istədiyinizi soruşun</translation>
 <translation id="5248934139541843042">Düzənləyiciyə baxın</translation>
 <translation id="5249624017678798539">Endirmə tamamlanmamış brauzer sındı-töküldü.</translation>
 <translation id="5249818097095743806">Təhlükəsizlik açarını istifadə edin</translation>
@@ -6326,7 +6330,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5828181959764767444">Günəşin batması</translation>
 <translation id="5828545842856466741">Profil əlavə edin...</translation>
 <translation id="5828633471261496623">Çap edilir...</translation>
-<translation id="5829137022934788067">Bu seçim haqqında məlumat ver</translation>
 <translation id="5829214552954466783">İstifadəçi adı (<ph name="USER_EMAIL" />) üçün paylaşın: <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="5829544019044013776">Google Pulqabıdakı ödəniş metodlarınız</translation>
 <translation id="5830512293931520102">Parolunuz şifrlənib və heç kəs tərəfindən görünmür</translation>
@@ -8784,6 +8787,7 @@ Buraya quraşdırılmış proqram təminatı, fayllar, brauzeriniz, cihazın əm
 <translation id="7702463352133825032"><ph name="DEVICE_NAME" /> cihazında yayımı dayandırın</translation>
 <translation id="7704305437604973648">Tapşırıq</translation>
 <translation id="7705085181312584869">Yazmağa kömək et</translation>
+<translation id="7705230242432916648">Sİ oxutması ilə bu səhifəni podkast kimi dinləyin</translation>
 <translation id="7705276765467986571">Əlfəcin modelini yükləmək olmadı.</translation>
 <translation id="7705334495398865155">Başqalarının bu cihazı izləməsinin qarşısını almaq üçün aparatınızın ID-sini (BSSID) randomizasiya edin.</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -10210,6 +10214,7 @@ Buraya quraşdırılmış proqram təminatı, fayllar, brauzeriniz, cihazın əm
 <translation id="8780123805589053431">Google'dan şəkil təsvirlərini əldə edin</translation>
 <translation id="8780443667474968681">Səsli axtarış deaktiv edilib.</translation>
 <translation id="8781834595282316166">Qrupa Yeni Tab</translation>
+<translation id="878190123554258638"><ph name="SHORTCUT_TITLE" />, qısayolu köçürmək üçün Sol və Sağ ox düymələrindən istifadə edin. Bitirmək üçün Enter və ya Escape düyməsinə basın.</translation>
 <translation id="8781980678064919987">Qapaq bağlı olan zaman söndürün</translation>
 <translation id="8783171585655659524">Ekran görüntüsünü daxil edin</translation>
 <translation id="8785622406424941542">Stylus</translation>

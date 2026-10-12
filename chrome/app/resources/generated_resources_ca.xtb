@@ -5611,6 +5611,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir el zoom.</translation>
 <translation id="5246282308050205996"><ph name="APP_NAME" /> ha deixat de funcionar. Feu clic en aquest globus per reiniciar l'aplicació.</translation>
 <translation id="5247051749037287028">Nom visible (opcional)</translation>
 <translation id="5247243947166567755">Selecciona <ph name="BOOKMARK_TITLE" /></translation>
+<translation id="524751727772074981">Fes una pregunta, des d'on siguis, amb Gemini a Chrome</translation>
 <translation id="5248934139541843042">Mostra l'organitzador</translation>
 <translation id="5249624017678798539">El navegador ha fallat abans de completar-se la baixada.</translation>
 <translation id="5249818097095743806">Fes servir la clau de seguretat</translation>
@@ -6318,7 +6319,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5828181959764767444">Posta de sol</translation>
 <translation id="5828545842856466741">Afegeix un perfil...</translation>
 <translation id="5828633471261496623">S'està imprimint...</translation>
-<translation id="5829137022934788067">Dona'm informació sobre aquesta selecció</translation>
 <translation id="5829214552954466783">Comparteix <ph name="CREDENTIAL_TYPE" /> per al nom d'usuari: <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">Les teves formes de pagament a Google Wallet</translation>
 <translation id="5830512293931520102">La contrasenya està encriptada i no l'ha vist mai ningú</translation>

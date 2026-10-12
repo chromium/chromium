@@ -5630,6 +5630,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5246282308050205996"><ph name="APP_NAME" /> er gået ned. Klik her for at genstarte appen.</translation>
 <translation id="5247051749037287028">Vist navn (valgfrit)</translation>
 <translation id="5247243947166567755">Vælg <ph name="BOOKMARK_TITLE" /></translation>
+<translation id="524751727772074981">Spørg om alt, lige der hvor du er, med Gemini i Chrome</translation>
 <translation id="5248934139541843042">Se arrangør</translation>
 <translation id="5249624017678798539">Browseren lukkede ned, før overførslen var fuldført.</translation>
 <translation id="5249818097095743806">Brug din sikkerhedsnøgle</translation>
@@ -6339,7 +6340,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5828181959764767444">Solnedgang</translation>
 <translation id="5828545842856466741">Tilføj profil...</translation>
 <translation id="5828633471261496623">Udskriver...</translation>
-<translation id="5829137022934788067">Fortæl mig om dette valg</translation>
 <translation id="5829214552954466783">Del <ph name="CREDENTIAL_TYPE" /> til brugernavnet: <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">Dine betalingsmetoder i Google Wallet</translation>
 <translation id="5830512293931520102">Din adgangskode er krypteret og kan ikke ses af nogen</translation>

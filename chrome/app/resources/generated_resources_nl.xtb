@@ -5615,6 +5615,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5246282308050205996"><ph name="APP_NAME" /> is vastgelopen. Klik op deze ballon om de app opnieuw te starten.</translation>
 <translation id="5247051749037287028">Weergavenaam (optioneel)</translation>
 <translation id="5247243947166567755"><ph name="BOOKMARK_TITLE" /> selecteren</translation>
+<translation id="524751727772074981">Stel een vraag met Gemini in Chrome, zonder je tabblad te verlaten</translation>
 <translation id="5248934139541843042">Organisator tonen</translation>
 <translation id="5249624017678798539">De browser is gecrasht voordat het downloaden is voltooid.</translation>
 <translation id="5249818097095743806">Je beveiligingssleutel gebruiken</translation>
@@ -6321,7 +6322,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5828181959764767444">Zonsondergang</translation>
 <translation id="5828545842856466741">Profiel toevoegen...</translation>
 <translation id="5828633471261496623">Bezig met afdrukken....</translation>
-<translation id="5829137022934788067">Vertel me meer over deze selectie</translation>
 <translation id="5829214552954466783"><ph name="CREDENTIAL_TYPE" /> delen voor gebruikersnaam: <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">Je betaalmethoden in Google Wallet</translation>
 <translation id="5830512293931520102">Je wachtwoord is versleuteld en wordt nooit door iemand gezien</translation>

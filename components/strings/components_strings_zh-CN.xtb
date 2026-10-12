@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">选择对<ph name="PERMISSION_NAME" />的权限</translation>
 <translation id="1113000785583998331">保存 IBAN？</translation>
 <translation id="1113869188872983271">撤消顺序调整(&amp;U)</translation>
-<translation id="1117709830616495622">由 Gemini 中的个性化智能服务提供支持</translation>
 <translation id="111897705806685148">使用另一部设备中的通行密钥</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键，即可管理要将哪些 Chrome 信息保存到 Google 账号中</translation>
 <translation id="1121990216147052230">为我列一个待办事项清单</translation>
@@ -532,7 +531,6 @@
 <translation id="1890171020361705182">恐龙游戏。在这款游戏中，您要协助一头正在荒野中奔跑的像素化恐龙躲避仙人掌和翼手龙。您只需在听到提示音时点按一下空格键，即可让恐龙跃过障碍物。</translation>
 <translation id="1898423065542865115">过滤</translation>
 <translation id="1898678876221454577">登录即可保存扫描结果</translation>
-<translation id="1898804291554630487">询问与此页面有关的问题</translation>
 <translation id="1901443836186977402">{1,plural, =1{此服务器无法证明其所在网域是 <ph name="DOMAIN" />；其安全证书已在昨天过期。出现此问题的原因可能是配置有误，或是有攻击者拦截您的连接。计算机的时钟目前已设为 <ph name="CURRENT_DATE" />，请问是否正确？如果不正确，请更正系统的时钟，然后刷新此页面。}other{此服务器无法证明其所在网域是 <ph name="DOMAIN" />；其安全证书已在 # 天前过期。出现此问题的原因可能是配置有误，或是有攻击者拦截您的连接。计算机的时钟目前已设为 <ph name="CURRENT_DATE" />，请问是否正确？如果不正确，请更正系统的时钟，然后刷新此页面。}}</translation>
 <translation id="190166348986967700">管理员将于 <ph name="DATE_TIME" />开始将文件上传到<ph name="CLOUD_PROVIDER" />。在文件上传完成之前，请让设备保持连接状态。在上传期间，您将只能读取本地文件。</translation>
 <translation id="1902576642799138955">有效期</translation>
@@ -841,8 +839,6 @@
 <translation id="2384307209577226199">在企业环境中默认实施</translation>
 <translation id="2385809941344967209">请前往 Chrome 设置以更新 Chrome</translation>
 <translation id="2386255080630008482">服务器的证书已撤消。</translation>
-<translation id="2387424091060104123">来自 Gemini 的建议 · <ph name="SRC_LINK" />查看来源<ph name="END_SRC_LINK" />
-您可以从 Chrome 中移除此建议。原始来源不会被删除。<ph name="MANAGE_LINK" />管理增强型自动填充功能<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">详述</translation>
 <translation id="2392959068659972793">显示未设定值的政策</translation>
 <translation id="239429038616798445">该送货方式不可用。请另选一种方式。</translation>
@@ -1245,7 +1241,6 @@
 <translation id="3109788962812161063">个人资料管理</translation>
 <translation id="3112892588078695695">电话号码：<ph name="PHONE" />。</translation>
 <translation id="3113284927548439113">第三批</translation>
-<translation id="3113930177999394798">输入 @history 即可搜索浏览记录，此功能由 AI 提供支持</translation>
 <translation id="3114040155724590991">正在更新 Android 系统
     启动您的应用可能需要比平时多用一些时间。</translation>
 <translation id="3114197119223448048">新活动</translation>
@@ -1424,7 +1419,6 @@
 <translation id="3413466783792948876">如果您使用的是公共网络，安全起见，建议您稍后再访问此网站。使用您信任的网络（例如家中或单位的 Wi-Fi）可以降低风险。</translation>
 <translation id="3414952576877147120">大小：</translation>
 <translation id="341513675006332771">“玩 Chrome 恐龙游戏”按钮，激活它即可在 Chrome 中玩《Dino Run》游戏</translation>
-<translation id="3415471717466570460">您的搜索内容、最佳匹配结果和相应网页内容将发送给 Google，并且可能会由人工审核员查看，以改进此功能。这是一项实验性功能，并非始终准确无误。</translation>
 <translation id="3417390269491141648">帮我对比不同的健康保险方案，并详细分析它们的主要区别</translation>
 <translation id="3421387094817716717">椭圆曲线公共密钥</translation>
 <translation id="3422248202833853650">请尝试退出其他程序以释放内存。</translation>
@@ -1900,7 +1894,6 @@
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> - <ph name="ROW_CONTENT" /></translation>
 <translation id="4185037616931963178">安全地更新身份纠正识别号</translation>
 <translation id="4186035307311647330">取消跟踪价格</translation>
-<translation id="4190446002599583608">利用 AI 搜索历史记录</translation>
 <translation id="4191334393248735295">长度</translation>
 <translation id="4195459680867822611">“查看 Chrome 提示”按钮，激活它即可了解各项 Chrome 功能</translation>
 <translation id="4195643157523330669">在新标签页中打开</translation>
@@ -1947,7 +1940,6 @@
 <translation id="424063167283213501">保存已知旅客编号</translation>
 <translation id="4241830393007970744">您尝试访问的网站上的攻击者可能会诱使您安装软件或泄露某些信息，例如您的密码、手机号码或信用卡号码。</translation>
 <translation id="4242380780309416996">信封（重磅纸）</translation>
-<translation id="4242981939686657948">如需更强大的浏览记录搜索方式，请开启</translation>
 <translation id="4244926541863471678">膜</translation>
 <translation id="42481816218163154">制定一个 15 分钟的晨间例行活动，帮助我更顺畅地开启每一天。记得帮我安排正念练习</translation>
 <translation id="4250343410682686342">“先买后付”错误界面已以标准高度显示。</translation>
@@ -3890,7 +3882,6 @@
 <translation id="7514365320538308">下载</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">这次允许使用 VR</translation>
-<translation id="7517198908921983825">来自 Gemini 的建议 · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">C10 信封</translation>
 <translation id="7518003948725431193">找不到与以下网址对应的网页：<ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -4387,7 +4378,6 @@
 <translation id="8350416046273606058">快捷字词不得包含空格：“<ph name="SHORTCUT_NAME" />”</translation>
 <translation id="8351131234907093545">创建记事</translation>
 <translation id="8352849934814541340">此设备的管理员已安装了一些应用来提供更多功能。这些应用有权访问您的部分数据。</translation>
-<translation id="8353273112634584260">由 Gemini 中的个性化智能服务提供支持。为改进增强型自动填充功能，我们可能会对您的请求、网页标题和网址进行审核。</translation>
 <translation id="8355270400102541638">本机崩溃上下文：</translation>
 <translation id="8362914115861174987">目标语言</translation>
 <translation id="8363502534493474904">关闭飞行模式</translation>
@@ -4735,7 +4725,6 @@
 <translation id="9001074447101275817">代理 (<ph name="DOMAIN" />) 要求提供用户名和密码。</translation>
 <translation id="9001963517402879850">跳！</translation>
 <translation id="9002677862950442746">验证码：<ph name="OTP" /></translation>
-<translation id="9003263770394939629">来自 Gemini 的建议。在设置中管理增强型自动填充功能。</translation>
 <translation id="9003639428623471314">Kahu 信封</translation>
 <translation id="9004367719664099443">VR 会话正在进行中</translation>
 <translation id="9005998258318286617">未能加载 PDF 文档。</translation>
@@ -4754,7 +4743,6 @@
 <translation id="9027531288681624875">若要退出全屏模式，请按住 |<ph name="ACCELERATOR" />|</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">安全错误</translation>
-<translation id="9035699147763101514">由 Gemini 中的个性化智能服务提供支持。您可以在设置中管理自己的选择。</translation>
 <translation id="9035824888276246493">保存安全码</translation>
 <translation id="9036306139374661733">允许使用麦克风？</translation>
 <translation id="9036484080057916082">签名证书时间戳列表</translation>
@@ -4908,7 +4896,6 @@
 <translation id="961930410699694996">这次可以使用位置信息</translation>
 <translation id="962484866189421427">此内容可能会尝试安装欺骗性应用，而这些应用能够冒充其他内容或收集可用于对您进行跟踪的数据。<ph name="BEGIN_LINK" />仍然显示<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">根据您所在地区的法律，Chromium 要求您选择默认搜索引擎。这些搜索引擎在您所在的地区非常热门，是按随机顺序显示的。</translation>
-<translation id="963837307749850257">所有用户</translation>
 <translation id="963988220224168636">安全地向 Google 钱包添加身份纠正识别号</translation>
 <translation id="964050462028070434">管理密码和通行密钥…</translation>
 <translation id="964681140808832181">是的，我要取消</translation>

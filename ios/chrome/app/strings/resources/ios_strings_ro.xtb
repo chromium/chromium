@@ -1264,6 +1264,7 @@
 <translation id="498624032394115435">Oricine are linkul poate să editeze toate filele.</translation>
 <translation id="4986428648020277392">Solicitare: Ce ar trebui să cumpăr? 2 din 3</translation>
 <translation id="498768198683310172">Începe să folosești Gemini</translation>
+<translation id="4989163558385430922">Afișează-le pe toate</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, gestionat de organizația ta.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Culoarea grupului de file <ph name="COLOR" /></translation>
@@ -2027,7 +2028,6 @@ Poți reporni oricând.</translation>
 <translation id="7346922058131593019">La ce vrei să lucrezi, <ph name="USER_FIRST_NAME" />?</translation>
 <translation id="7347998088283246662">Importă parolele, istoricul, marcajele și multe altele.</translation>
 <translation id="7352651011704765696">A apărut o eroare</translation>
-<translation id="7357999308187750900">Afișează tot</translation>
 <translation id="736564850024123010">Schimbă poziția barei de adrese pentru o experiență personalizată.</translation>
 <translation id="7366909168761621528">Date de navigare</translation>
 <translation id="7367530036083223701">Accesează-ți în siguranță parolele de pe ecranul de pornire, folosind widgetul Manager de parole.</translation>
@@ -2361,7 +2361,6 @@ Poți reporni oricând.</translation>
 <translation id="8333459276976141586">Live îți va folosi microfonul. Dacă atingi butonul Live, microfonul se va activa. Ca să dezactivezi microfonul, atinge butonul de oprire sau închide Gemini.</translation>
 <translation id="833647236762414178">Creează, salvează și gestionează parolele și cheile de acces pentru a te conecta cu ușurință la site-uri și aplicații. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Fă backup datelor și folosește-le pe orice dispozitiv.</translation>
-<translation id="8345328955902001853">{count,plural, =1{Finalizează încă o activitate pentru a trece la nivelul următor}few{Finalizează încă {count} activități pentru a trece la nivelul următor}other{Finalizează încă {count} de activități pentru a trece la nivelul următor}}</translation>
 <translation id="8348530355586151720">Atinge meniul cu trei puncte</translation>
 <translation id="8349305172487531364">Bara de marcaje</translation>
 <translation id="8360164927489392419">Înregistrările interacțiunilor tale cu Live și conținutul la care permiți accesul acestei funcții sunt salvate și prelucrate conform <ph name="BEGIN_LINK" />Notificării privind confidențialitatea în Aplicațiile Gemini<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
@@ -2586,7 +2585,6 @@ Poți reporni oricând.</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, site fixat</translation>
 <translation id="8990960056509724223">Fișierul nu a putut fi salvat din cauza politicilor organizației.</translation>
 <translation id="8998289560386111590">Nu este disponibil pe dispozitivul tău</translation>
-<translation id="9003263770394939629">Sugestie de la Gemini. Gestionează completarea automată îmbunătățită în setări.</translation>
 <translation id="9003677638446136377">Verifică din nou</translation>
 <translation id="9006453925669499173">Meniu → Filă incognito nouă</translation>
 <translation id="9008201768610948239">Ignorați</translation>
@@ -2595,7 +2593,6 @@ Poți reporni oricând.</translation>
 <translation id="9029650858822697271">Te-ai deconectat</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Confirmă ștergerea datelor de navigare</translation>
-<translation id="9035699147763101514">Dezvoltat de Inteligența personalizată cu Gemini. Gestionează-ți opțiunile în setări.</translation>
 <translation id="9038526468059454274">Rezumă cu</translation>
 <translation id="9039373489628511875">Lățime de bandă</translation>
 <translation id="9042893549633094279">Confidențialitate și securitate</translation>

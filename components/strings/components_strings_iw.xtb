@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">צריך לבחור את ההרשאה של <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">‏לשמור את מספר ה-IBAN?</translation>
 <translation id="1113869188872983271">&amp;ביטול של שינוי סדר</translation>
-<translation id="1117709830616495622">‏מופעל על ידי AI מותאם אישית עם Gemini.</translation>
 <translation id="111897705806685148">שימוש במפתח גישה ממכשיר אחר</translation>
 <translation id="1119009590493440389">‏‫<ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. כדי לקבוע איזה מידע מ-Chrome יישמר בחשבון Google, צריך ללחוץ על Tab ואז על Enter</translation>
 <translation id="1121990216147052230">תיצור לי רשימת משימות</translation>
@@ -532,7 +531,6 @@
 <translation id="1890171020361705182">‏משחק Dino. דינוזאור בתצוגת פיקסלים חומק מקטטוסים ומפטרודקטילים בעודו רץ על רקע נוף שומם. כששומעים את האות באודיו, צריך ללחוץ כדי לדלג מעל מכשולים.</translation>
 <translation id="1898423065542865115">סינון</translation>
 <translation id="1898678876221454577">כדי לשמור את הסריקה, צריך להיכנס לחשבון</translation>
-<translation id="1898804291554630487">כאן שואלים שאלה לגבי הדף הזה</translation>
 <translation id="1901443836186977402">{1,plural, =1{השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />. התוקף של אישור האבטחה שלו פג במהלך היממה האחרונה. ייתכן שהסיבה לכך היא הגדרה שגויה או שתוקף מיירט את החיבור שלך. על פי השעון במחשב שלך, עכשיו <ph name="CURRENT_DATE" />. האם זה נכון? אם לא, עליך לכוון את שעון המערכת ולאחר מכן לרענן את הדף הזה.}one{השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />. תוקף אישור האבטחה שלו פג לפני # ימים. ייתכן שהסיבה לכך היא תצורה שגויה או שתוקף מיירט את החיבור שלך. על פי השעון במחשב שלך, עכשיו <ph name="CURRENT_DATE" />. האם זה נכון? אם לא, עליך לכוון את שעון המערכת ולאחר מכן לרענן את הדף הזה.}two{השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />. תוקף אישור האבטחה שלו פג לפני יומיים. ייתכן שהסיבה לכך היא תצורה שגויה או שתוקף מיירט את החיבור שלך. על פי השעון במחשב שלך, עכשיו <ph name="CURRENT_DATE" />. האם זה נכון? אם לא, עליך לכוון את שעון המערכת ולאחר מכן לרענן את הדף הזה.}other{השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />. תוקף אישור האבטחה שלו פג לפני # ימים. ייתכן שהסיבה לכך היא תצורה שגויה או שתוקף מיירט את החיבור שלך. על פי השעון במחשב שלך, עכשיו <ph name="CURRENT_DATE" />. האם זה נכון? אם לא, עליך לכוון את שעון המערכת ולאחר מכן לרענן את הדף הזה.}}</translation>
 <translation id="190166348986967700">האדמין יתחיל להעלות את הקבצים שלך אל <ph name="CLOUD_PROVIDER" /> ב-<ph name="DATE_TIME" />. צריך להשאיר את המכשיר מחובר עד שההעלאה של הקובץ תסתיים. במהלך ההעלאה, תהיה לך אפשרות לקרוא רק קבצים מקומיים.</translation>
 <translation id="1902576642799138955">תקופת תוקף</translation>
@@ -841,8 +839,6 @@
 <translation id="2384307209577226199">ברירת מחדל של ארגון</translation>
 <translation id="2385809941344967209">‏עדכון Chrome דרך הגדרות Chrome</translation>
 <translation id="2386255080630008482">אישור השרת נשלל.</translation>
-<translation id="2387424091060104123">‏הצעה של Gemini · <ph name="SRC_LINK" />למקורות<ph name="END_SRC_LINK" />
-אפשר להסיר את ההצעה הזו מ-Chrome. המקור לא יימחק. <ph name="MANAGE_LINK" />ניהול המילוי האוטומטי המשופר<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">יותר מפורט</translation>
 <translation id="2392959068659972793">הצגת מדיניות ללא ערך מוגדר</translation>
 <translation id="239429038616798445">שיטת המשלוח הזו לא זמינה. עליך לבחור שיטה אחרת.</translation>
@@ -1245,7 +1241,6 @@
 <translation id="3109788962812161063">ניהול פרופילים</translation>
 <translation id="3112892588078695695">מספר טלפון: <ph name="PHONE" /></translation>
 <translation id="3113284927548439113">משמרת שלישית</translation>
-<translation id="3113930177999394798">‏צריך להקליד ‎@history כדי לחפש בהיסטוריית הגלישה באמצעות AI</translation>
 <translation id="3114040155724590991">‏עדכון מערכת Android
     ההפעלה של האפליקציה עשויה להימשך זמן רב יותר מהרגיל.</translation>
 <translation id="3114197119223448048">פעילות חדשה</translation>
@@ -1426,7 +1421,6 @@
 <translation id="3413466783792948876">‏אם משתמשים ברשת ציבורית, מומלץ להיכנס לאתר אחר כך כדי לשמור על הבטיחות. הסיכון נמוך יותר ברשת מהימנה, כמו ה-Wi-Fi בבית או במקום העבודה.</translation>
 <translation id="3414952576877147120">גודל:</translation>
 <translation id="341513675006332771">‏הכפתור להפעלת המשחק Chrome Dino, מפעילים אותו כדי לשחק במשחק Dino Run ב-Chrome</translation>
-<translation id="3415471717466570460">‏החיפושים שלך, ההתאמות הכי טובות ותוכן הדפים שלהם נשלחים אל Google. יכול להיות שבודקים אנושיים יראו אותם כדי לשפר את התכונה הזו. התכונה הזאת היא ניסיונית והתוצאות שלה לא תמיד מדויקות.</translation>
 <translation id="3417390269491141648">תשווה בין האפשרויות שלי לביטוח בריאות ותפרט את ההבדלים העיקריים ביניהן</translation>
 <translation id="3421387094817716717">מפתח ציבורי עם עקומה אליפטית</translation>
 <translation id="3422248202833853650">מומלץ לצאת מתוכניות אחרות וכך לפנות מקום בזיכרון.</translation>
@@ -1551,7 +1545,7 @@
 <translation id="3614001939154393113">יכול להיות שתוקפים מנסים לגנוב את המידע שלך מ-<ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (לדוגמה: סיסמאות, הודעות או פרטי כרטיסי אשראי). <ph name="BEGIN_LEARN_MORE_LINK" />מידע נוסף על האזהרה הזו<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="361438452008624280">רשומה ברשימה "<ph name="LANGUAGE_ID" />": שפה לא מוכרת או לא נתמכת.</translation>
 <translation id="3614934205542186002">‏<ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, לוחצים על Tab ואז על Enter כדי להריץ בדיקת אבטחה בהגדרות Chrome</translation>
-<translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
+<translation id="3615354126333642335">‫<ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">‏לא ניתן לשמור את הכרטיס הזה ב-Google Wallet. במקום זאת, הוא נשמר ב-Chrome במכשיר הזה. בפעם הבאה שייעשה שימוש ב-IBAN הזה, תוצג לך שאלה מ-Chrome שוב.</translation>
 <translation id="3621401353678567613">כדי לקבל התראות על ירידות במחיר של המוצרים שבמעקב, צריך להפעיל את ההתראות בהגדרות.</translation>
 <translation id="362276910939193118">כל ההיסטוריה</translation>
@@ -1904,7 +1898,6 @@
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4185037616931963178">‏עדכון מספר ה-Redress באופן מאובטח</translation>
 <translation id="4186035307311647330">ביטול המעקב אחר המחירים</translation>
-<translation id="4190446002599583608">‏חיפוש בהיסטוריה, באמצעות AI</translation>
 <translation id="4191334393248735295">אורך</translation>
 <translation id="4195459680867822611">‏הכפתור להצגת טיפים ל-Chrome, מפעילים אותו כדי לקבל מידע על התכונות של Chrome</translation>
 <translation id="4195643157523330669">פתיחה בכרטיסייה חדשה</translation>
@@ -1951,7 +1944,6 @@
 <translation id="424063167283213501">‏לשמור את מספר ה-KTN?</translation>
 <translation id="4241830393007970744">תוקפים באתר שבו ניסית לבקר עשויים לגרום לך בדרכי מרמה להתקין תוכנות או לחשוף פרטים כמו הסיסמאות, מספרי הטלפון או מספרי כרטיסי האשראי שלך.</translation>
 <translation id="4242380780309416996">Envelope (Heavyweight)</translation>
-<translation id="4242981939686657948">כדי לחפש בהיסטוריית הגלישה בצורה יעילה יותר, צריך להפעיל את</translation>
 <translation id="4244926541863471678">Film</translation>
 <translation id="42481816218163154">תיצור שגרת בוקר של 15 דקות שתעזור לי להתחיל את הבוקר בצורה חלקה יותר. תוודא שהיא כוללת תרגיל מיינדפולנס.</translation>
 <translation id="4250343410682686342">‏מסך השגיאה של "קונים עכשיו, משלמים אחר כך (BNPL)" נפתח במסך מלא.</translation>
@@ -2340,7 +2332,7 @@ Del</translation>
 <translation id="4887435305021446590">‏לפתיחת Gmail</translation>
 <translation id="4887785555357166111">שמירת הפריים</translation>
 <translation id="4891425819480327855">‏‫<ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, לוחצים על Tab ואז על Enter כדי למחוק את היסטוריית הגלישה, קובצי ה-Cookie, המטמון ועוד בהגדרות של Chrome</translation>
-<translation id="4892391379033030113">כפתור לפתיחת חלון מבודד, מפעילים אותו כדי לפתוח חלון מבודד חדש לגלישה פרטית</translation>
+<translation id="4892391379033030113">כפתור לפתיחת חלון מבודד, פותח חלון מבודד חדש לגלישה פרטית</translation>
 <translation id="4892518386797173871">חלק אחורי</translation>
 <translation id="4894390983254799375">למשל מזהה המכשיר, שם המכשיר, גרסת מערכת ההפעלה ושם המשתמש במערכת ההפעלה</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -3900,7 +3892,6 @@ Del</translation>
 <translation id="7514365320538308">הורדה</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">‏יש אישור לשימוש חד-פעמי ב-VR</translation>
-<translation id="7517198908921983825">‏הצעה של Gemini · ‏<ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">‏מעטפה – C10</translation>
 <translation id="7518003948725431193">לא נמצא דף אינטרנט עבור כתובת האינטרנט: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -4236,7 +4227,7 @@ Del</translation>
 <translation id="8075898834294118863">ניהול ההגדרות לאתרים</translation>
 <translation id="8076492880354921740">כרטיסיות</translation>
 <translation id="8076880883123051368">‏יכול להיות שבחשבון שלך ב-Google יש סוגים אחרים של היסטוריית גלישה בכתובת <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, כמו למשל <ph name="BEGIN_LINK_GAA" />הפעילות בממשקי Gemini<ph name="END_LINK_GAA" /></translation>
-<translation id="8077465698530018904">ביטול הבחירה</translation>
+<translation id="8077465698530018904">הסרת האזור שנבחר</translation>
 <translation id="8077669823243888800">מעטפה – סינית 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{להעלות את הקובץ הסודי?}one{להעלות את הקבצים הסודיים?}two{להעלות את הקבצים הסודיים?}other{להעלות את הקבצים הסודיים?}}</translation>
 <translation id="8079031581361219619">לטעון את האתר מחדש?</translation>
@@ -4397,7 +4388,6 @@ Del</translation>
 <translation id="8350416046273606058">קיצור הדרך לא יכול להכיל רווחים: '<ph name="SHORTCUT_NAME" />'</translation>
 <translation id="8351131234907093545">יצירת הערה</translation>
 <translation id="8352849934814541340">האדמין של המכשיר הזה התקין אפליקציות שמספקות פונקציות נוספות. לאפליקציות יש גישה לחלק מהנתונים שלך.</translation>
-<translation id="8353273112634584260">‏מופעל על ידי AI מותאם אישית עם Gemini. יכול להיות שהבקשות שלך, כותרות הדפים וכתובות ה-URL ייבדקו כדי לייעל את המילוי האוטומטי המשופר.</translation>
 <translation id="8355270400102541638">ההקשר המקומי של הקריסה:</translation>
 <translation id="8362914115861174987">תרגום ל</translation>
 <translation id="8363502534493474904">לכבות את מצב הטיסה</translation>
@@ -4744,7 +4734,6 @@ Del</translation>
 <translation id="9001074447101275817">‏שרת ה-proxy ‏<ph name="DOMAIN" /> מצריך שם משתמש וסיסמה.</translation>
 <translation id="9001963517402879850">צריך לקפוץ!</translation>
 <translation id="9002677862950442746">קוד אימות: <ph name="OTP" /></translation>
-<translation id="9003263770394939629">‏הצעה של Gemini. אפשר לנהל את המילוי האוטומטי המשופר בהגדרות.</translation>
 <translation id="9003639428623471314">‏מעטפה – Kahu</translation>
 <translation id="9004367719664099443">‏יש עכשיו סשן VR פעיל</translation>
 <translation id="9005998258318286617">‏הטעינה של מסמך ה-PDF נכשלה.</translation>
@@ -4763,7 +4752,6 @@ Del</translation>
 <translation id="9027531288681624875">כדי לצאת מהמסך המלא, צריך ללחוץ לחיצה ארוכה על |<ph name="ACCELERATOR" />|</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">שגיאת אבטחה</translation>
-<translation id="9035699147763101514">‏מופעל על ידי AI מותאם אישית עם Gemini. אפשר לנהל את הבחירות שלך בהגדרות.</translation>
 <translation id="9035824888276246493">שמירת קודי האבטחה</translation>
 <translation id="9036306139374661733">לאפשר את הגישה למיקרופון?</translation>
 <translation id="9036484080057916082">רשימת חותמות הזמן של אישורים חתומים</translation>
@@ -4918,7 +4906,6 @@ Del</translation>
 <translation id="961930410699694996">יש אישור לשימוש חד-פעמי במיקום</translation>
 <translation id="962484866189421427">ייתכן שבתוכן הזה יש קוד להתקנת אפליקציות מטעות שמתחזות למשהו אחר או שאוספות נתונים המאפשרים לעקוב אחריך. <ph name="BEGIN_LINK" />אני רוצה לראות בכל זאת<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">‏בהתאם לחוק באזור שלך, אנחנו מאפשרים לך לבחור את מנוע החיפוש שישמש כברירת המחדל ב-Chromium. מנועי החיפוש האלה פופולריים באזור שלך ומוצגים בסדר אקראי.</translation>
-<translation id="963837307749850257">כל המשתמשים</translation>
 <translation id="963988220224168636">‏הוספת מספר Redress באופן מאובטח ל-Google Wallet</translation>
 <translation id="964050462028070434">ניהול של סיסמאות ומפתחות גישה…</translation>
 <translation id="964681140808832181">כן, אני רוצה לבטל</translation>

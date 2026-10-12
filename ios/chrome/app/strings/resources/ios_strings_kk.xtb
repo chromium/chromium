@@ -1264,6 +1264,7 @@
 <translation id="498624032394115435">Сілтемені алған кез келген адам барлық қойындыны өзгерте алады.</translation>
 <translation id="4986428648020277392">Нұсқау: қайсысын сатып алған дұрыс? 2/3</translation>
 <translation id="498768198683310172">Gemini-ды пайдалануды бастау</translation>
+<translation id="4989163558385430922">Барлығын көру</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, ұйымыңыз басқарады.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Қойындылар тобының түсі <ph name="COLOR" /></translation>
@@ -2027,7 +2028,6 @@ Handoff функциясы параметрлердің жалпы бөлімі�
 <translation id="7346922058131593019"><ph name="USER_FIRST_NAME" />, не істегіңіз келеді?</translation>
 <translation id="7347998088283246662">Құпия сөздерді, тарихты, бетбелгілерді және т.б. импорттаңыз.</translation>
 <translation id="7352651011704765696">Бірнәрсе дұрыс емес</translation>
-<translation id="7357999308187750900">Барлығын көру</translation>
 <translation id="736564850024123010">Браузерді пайдалану ыңғайлы болуы үшін, мекенжай жолағының орнын ауыстырыңыз.</translation>
 <translation id="7366909168761621528">Шолу деректері</translation>
 <translation id="7367530036083223701">Password Manager виджеті көмегімен құпия сөздеріңізге негізгі экраннан қауіпсіз кіріңіз.</translation>
@@ -2361,7 +2361,6 @@ Handoff функциясы параметрлердің жалпы бөлімі�
 <translation id="8333459276976141586">Live микрофоныңызды пайдаланады. Live түймесін түртсеңіз, микрофон қосылады. Микрофонды өшіру үшін тоқтату түймесін түртіңіз немесе Gemini-ды жабыңыз.</translation>
 <translation id="833647236762414178">Сайттар мен қолданбаларда аккаунтқа оңай кіру үшін құпия сөздер мен кіру кілттерін жасаңыз, сақтаңыз және басқарыңыз. <ph name="BEGIN_LINK" />Толық ақпарат<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Деректердің сақтық көшірмесін жасап, оларды кез келген құрылғыда пайдаланыңыз.</translation>
-<translation id="8345328955902001853">{count,plural, =1{Деңгейіңізді көтеру үшін тағы 1 тапсырма орындаңыз.}other{Деңгейіңізді көтеру үшін тағы {count} тапсырма орындаңыз.}}</translation>
 <translation id="8348530355586151720">Үш нүктелі мәзірді түртіңіз.</translation>
 <translation id="8349305172487531364">Бетбелгілер жолағы</translation>
 <translation id="8360164927489392419">Live функциясымен өзара әрекеттеріңіздің жазбалары және онымен бөліскен контент <ph name="BEGIN_LINK" />Gemini қолданбаларының құпиялық мәлімдемесіне<ph name="END_LINK" /> сәйкес сақталады және өңделеді. <ph name="BEGIN_LINK" />Толық ақпарат<ph name="END_LINK" /></translation>
@@ -2586,7 +2585,6 @@ Handoff функциясы параметрлердің жалпы бөлімі�
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, бекітілген сайт</translation>
 <translation id="8990960056509724223">Файл ұйымыңыздың саясаттарына сәйкес сақталмады.</translation>
 <translation id="8998289560386111590">Құрылғыңызда қолжетімсіз.</translation>
-<translation id="9003263770394939629">Gemini ұсынған. Параметрлерде дұрысталған автотолтыру функциясын басқарыңыз.</translation>
 <translation id="9003677638446136377">Қайтадан тексеру</translation>
 <translation id="9006453925669499173">Мәзір → Жаңа инкогнито қойындысы</translation>
 <translation id="9008201768610948239">Елемеу</translation>
@@ -2595,7 +2593,6 @@ Handoff функциясы параметрлердің жалпы бөлімі�
 <translation id="9029650858822697271">Аккаунттан шығарылдыңыз</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Браузерді пайдалану деректерін жоюды растау</translation>
-<translation id="9035699147763101514">Gemini-дағы Personal Intelligence арқылы істейді. Таңдауларыңызды параметрлерде реттей аласыз.</translation>
 <translation id="9038526468059454274">Қорытынды жасаңыз:</translation>
 <translation id="9039373489628511875">Өткізу мүмкіндігі</translation>
 <translation id="9042893549633094279">Құпиялық және қауіпсіздік</translation>

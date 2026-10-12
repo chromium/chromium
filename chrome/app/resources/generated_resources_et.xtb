@@ -5620,6 +5620,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5246282308050205996"><ph name="APP_NAME" /> läks krahhi. Rakenduse taaskäivitamiseks klõpsake sellel jutumullil.</translation>
 <translation id="5247051749037287028">Kuvatav nimi (valikuline)</translation>
 <translation id="5247243947166567755">Vali <ph name="BOOKMARK_TITLE" /></translation>
+<translation id="524751727772074981">Saate Geminilt Chrome'is küsida kõike, just seal, kus olete</translation>
 <translation id="5248934139541843042">Korraldaja kuvamine</translation>
 <translation id="5249624017678798539">Brauser jooksis enne allalaadimise lõppu kokku.</translation>
 <translation id="5249818097095743806">Kasutage oma turvavõtit</translation>
@@ -6329,7 +6330,6 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5828181959764767444">Päikeseloojang</translation>
 <translation id="5828545842856466741">Lisa profiil …</translation>
 <translation id="5828633471261496623">Printimine ...</translation>
-<translation id="5829137022934788067">Räägi mulle sellest valikust</translation>
 <translation id="5829214552954466783">Jaga kasutajanime <ph name="USER_EMAIL" /> mandaati <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="5829544019044013776">Teie makseviisid Google Walletis</translation>
 <translation id="5830512293931520102">Teie parool on krüpteeritud ja keegi pole seda kunagi näinud</translation>

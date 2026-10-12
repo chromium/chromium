@@ -1264,6 +1264,7 @@
 <translation id="498624032394115435">Ikviens, kam ir saite, var rediģēt visas cilnes.</translation>
 <translation id="4986428648020277392">Uzvedne: kuru man vajadzētu iegādāties? 2. no 3</translation>
 <translation id="498768198683310172">Sākt izmantot Gemini</translation>
+<translation id="4989163558385430922">Skatīt visu</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" /> (pārvalda jūsu organizācija).</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Ciļņu grupas krāsa: <ph name="COLOR" /></translation>
@@ -2027,7 +2028,6 @@ Varat jebkurā laikā atkal iespējot Level Up.</translation>
 <translation id="7346922058131593019">Ko vēlaties paveikt, <ph name="USER_FIRST_NAME" />?</translation>
 <translation id="7347998088283246662">Importējiet paroles, vēsturi, grāmatzīmes un citus datus.</translation>
 <translation id="7352651011704765696">Radās problēma</translation>
-<translation id="7357999308187750900">Skatīt visus</translation>
 <translation id="736564850024123010">Mainiet adreses joslas pozīciju, lai pielāgotu saskarni savai gaumei un vajadzībām.</translation>
 <translation id="7366909168761621528">Pārlūkošanas dati</translation>
 <translation id="7367530036083223701">Droši piekļūstiet parolēm sākuma ekrānā, izmantojot Paroļu pārvaldnieka logrīku.</translation>
@@ -2361,7 +2361,6 @@ Varat jebkurā laikā atkal iespējot Level Up.</translation>
 <translation id="8333459276976141586">Live izmantos jūsu mikrofonu. Pieskaroties Live režīma pogai, tiek ieslēgts mikrofons. Lai izslēgtu mikrofonu, pieskarieties pogai Pārtraukt vai aizveriet Gemini.</translation>
 <translation id="833647236762414178">Izveidojiet, saglabājiet un pārvaldiet paroles un piekļuves atslēgas, lai varētu ērti pierakstīties vietnēs un lietotnēs. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="8343993175958086504">Varat dublēt savus datus un izmantot tos jebkurā ierīcē.</translation>
-<translation id="8345328955902001853">{count,plural, =1{Izpildiet vēl 1 uzdevumu, lai pārietu uz nākamo līmeni.}zero{Izpildiet vēl {count} uzdevumus, lai pārietu uz nākamo līmeni.}one{Izpildiet vēl {count} uzdevumu, lai pārietu uz nākamo līmeni.}other{Izpildiet vēl {count} uzdevumus, lai pārietu uz nākamo līmeni.}}</translation>
 <translation id="8348530355586151720">Pieskarieties trīs punktu izvēlnei.</translation>
 <translation id="8349305172487531364">Grāmatzīmju josla</translation>
 <translation id="8360164927489392419">Jūsu mijiedarbības ieraksti ar funkciju Live un saturs, ko ar to kopīgojat, tiek saglabāts un apstrādāts atbilstoši <ph name="BEGIN_LINK" />Gemini Apps konfidencialitātes paziņojumam<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Uzzināt vairāk<ph name="END_LINK" /></translation>
@@ -2586,7 +2585,6 @@ Varat jebkurā laikā atkal iespējot Level Up.</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, piesprausta vietne</translation>
 <translation id="8990960056509724223">Failu nevarēja saglabāt jūsu organizācijas politiku dēļ.</translation>
 <translation id="8998289560386111590">Nav pieejams jūsu ierīcē</translation>
-<translation id="9003263770394939629">Gemini ieteikums. Pārvaldiet uzlaboto automātisko aizpildi iestatījumos.</translation>
 <translation id="9003677638446136377">Pārbaudīt vēlreiz</translation>
 <translation id="9006453925669499173">Izvēlne → Jauna inkognito cilne</translation>
 <translation id="9008201768610948239">Ignorēt</translation>
@@ -2595,7 +2593,6 @@ Varat jebkurā laikā atkal iespējot Level Up.</translation>
 <translation id="9029650858822697271">Jūs tikāt izrakstīts</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Apstiprināt pārlūkošanas datu dzēšanu</translation>
-<translation id="9035699147763101514">Nodrošina funkcija “Personīgais intelekts” ar Gemini. Pārvaldiet savas izvēles iestatījumos.</translation>
 <translation id="9038526468059454274">Apkopojiet, izmantojot</translation>
 <translation id="9039373489628511875">Joslas platums</translation>
 <translation id="9042893549633094279">Konfidencialitāte un drošība</translation>

@@ -5614,6 +5614,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5246282308050205996">Arresto anomalo di <ph name="APP_NAME" />. Fai clic su questo fumetto per riavviare l'applicazione.</translation>
 <translation id="5247051749037287028">Nome visualizzato (facoltativo)</translation>
 <translation id="5247243947166567755">Seleziona <ph name="BOOKMARK_TITLE" /></translation>
+<translation id="524751727772074981">Chiedi qualsiasi cosa, ovunque ti trovi, con Gemini in Chrome</translation>
 <translation id="5248934139541843042">Visualizza organizzatore</translation>
 <translation id="5249624017678798539">Si è verificato un arresto anomalo del browser prima che il download fosse completato.</translation>
 <translation id="5249818097095743806">Utilizza il tuo token di sicurezza</translation>
@@ -6321,7 +6322,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5828181959764767444">Tramonto</translation>
 <translation id="5828545842856466741">Aggiungi profilo…</translation>
 <translation id="5828633471261496623">Stampa in corso...</translation>
-<translation id="5829137022934788067">Parlami di questa selezione</translation>
 <translation id="5829214552954466783">Condividi <ph name="CREDENTIAL_TYPE" /> per il nome utente: <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">I tuoi metodi di pagamento in Google Wallet</translation>
 <translation id="5830512293931520102">La tua password è criptata e non può essere visualizzata da nessuno</translation>

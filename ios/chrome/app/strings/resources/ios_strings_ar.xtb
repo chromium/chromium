@@ -852,6 +852,7 @@
 <translation id="3672283986707092811">اختيار الكل</translation>
 <translation id="3679163990085797665">حذف الإدخالات المقروءة</translation>
 <translation id="368329460027487650">تم تسجيل الخروج. سيتم فتح خيارات لتسجيل الدخول.</translation>
+<translation id="3689746421535476813">يمكنك اختيار إحدى طُرق الدفع المحفوظة لتعديلها، أو إضافة طريقة دفع جديدة</translation>
 <translation id="3695446226812920698">تعرَّف على كيفية إجراء ذلك</translation>
 <translation id="3700134753671613714">سجّل الدخول للحصول على الإشارات المرجعية في جميع أجهزتك.</translation>
 <translation id="3701167022068948696">إصلاح الخطأ الآن</translation>
@@ -1264,6 +1265,7 @@
 <translation id="498624032394115435">يمكن لأي مستخدم لديه الرابط تعديل جميع علامات التبويب.</translation>
 <translation id="4986428648020277392">الطلب: أيّ منتج يجب أن أشتري؟ 2 من 3</translation>
 <translation id="498768198683310172">‏البدء باستخدام Gemini</translation>
+<translation id="4989163558385430922">عرض الكل</translation>
 <translation id="499122600724363620">تدير مؤسستك حساب "<ph name="NAME" />" (<ph name="EMAIL" />).</translation>
 <translation id="4991383000638469704">‫"<ph name="USER_NAME" />"، <ph name="EMAIL" />. "<ph name="AI_TIER" />"</translation>
 <translation id="4992255726304765516">لون مجموعة علامات التبويب: <ph name="COLOR" /></translation>
@@ -1717,6 +1719,7 @@
 <translation id="6372558618707314581">عليك الانتقال إلى أي صفحة مطلوبة</translation>
 <translation id="6374469231428023295">إعادة المحاولة</translation>
 <translation id="6374514103145916800">طرح سؤال</translation>
+<translation id="6381241974485088375">يمكنك متى شئت تخصيص صفحة "علامة تبويب جديدة" من هنا</translation>
 <translation id="6383719166112032471">‏فتح عنوان URL…</translation>
 <translation id="6387994324662817823">‏يتم حفظ كلمات المرور ضمن "مدير كلمات المرور في Google" على هذا الجهاز فقط.</translation>
 <translation id="6393156038355142111">اقتراح كلمة مرور قوية</translation>
@@ -2025,7 +2028,6 @@
 <translation id="7346922058131593019">ما هو المطلوب إنجازه يا <ph name="USER_FIRST_NAME" />؟</translation>
 <translation id="7347998088283246662">يمكنك استيراد كلمات المرور والسجلّ والإشارات المرجعية وغيرها</translation>
 <translation id="7352651011704765696">حدث خطأ</translation>
-<translation id="7357999308187750900">عرض الكل</translation>
 <translation id="736564850024123010">يمكنك تبديل مكان شريط العناوين للحصول على تجربة استخدام مخصصة.</translation>
 <translation id="7366909168761621528">بيانات التصفح</translation>
 <translation id="7367530036083223701">يمكنك الوصول إلى كلمات المرور بأمان من الشاشة الرئيسية باستخدام التطبيق المصغَّر "مدير كلمات المرور".</translation>
@@ -2360,7 +2362,6 @@
 <translation id="8333459276976141586">‏ستستخدم ميزة Live الميكروفون، ويمكنك تفعيله بمجرد النقر على زر الميزة. لإيقافه، يُرجى النقر على زر الإيقاف أو إغلاق Gemini.</translation>
 <translation id="833647236762414178">يمكنك إنشاء كلمات المرور ومفاتيح المرور وحفظها وإدارتها لتسجيل الدخول بسهولة إلى المواقع الإلكترونية والتطبيقات. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">يمكنك الاحتفاظ بنسخة احتياطية من بياناتك واستخدامها على أي جهاز.</translation>
-<translation id="8345328955902001853">{count,plural, =1{يجب إكمال مَهمّة واحدة أخرى للانتقال إلى مستوى أعلى}zero{يجب إكمال {count} مَهمّة إضافية للانتقال إلى مستوى أعلى}two{يجب إكمال مَهمّتَين إضافيتَين ({count}) للانتقال إلى مستوى أعلى}few{يجب إكمال {count} مهام إضافية للانتقال إلى مستوى أعلى}many{يجب إكمال {count} مَهمّة إضافية للانتقال إلى مستوى أعلى}other{يجب إكمال {count} مَهمّة إضافية للانتقال إلى مستوى أعلى}}</translation>
 <translation id="8348530355586151720">انقر على قائمة الخيارات الإضافية</translation>
 <translation id="8349305172487531364">شريط الإشارات</translation>
 <translation id="8360164927489392419">‏عند استخدام ميزة Live، يتم حفظ ومعالجة تسجيلات لتفاعلاتك والمحتوى الذي شاركته، وذلك بموجب <ph name="BEGIN_LINK" />إشعار الخصوصية في "تطبيقات Gemini"<ph name="END_LINK" />. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
@@ -2424,6 +2425,7 @@
 <translation id="8535368836838588657">الكشف عن كلمة المرور</translation>
 <translation id="8540426897269305488">تسجيل الدخول باستخدام <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8542331710562073430">‏حدث خطأ. يُرجى النقر على زر Live لمحاولة بدء الجلسة مجددًا.</translation>
+<translation id="8544172904312384600">تعديل طريقة دفع أو إضافة طريقة دفع جديدة</translation>
 <translation id="8545276357312221485">التحقُّق من إعدادات المتصفِّح التلقائية</translation>
 <translation id="854938212724803178">لديك كلمة مرور واحدة محتمَل تعرّضها للاختراق. عليك تغييرها الآن للحفاظ على أمانك.</translation>
 <translation id="8551311254462607218">‏في شريط العناوين، يُرجى النقر على رمز كاميرا "عدسة Google"</translation>
@@ -2462,6 +2464,7 @@
 <translation id="8639963783467694461">إعدادات الملء التلقائي</translation>
 <translation id="8642417828095157370">تتم مشاركة علامات التبويب لتقديم ردود أكثر صلةً</translation>
 <translation id="8643403533759285912">حذف المجموعة</translation>
+<translation id="8646357898207744479">‏عدسة Google</translation>
 <translation id="8647280737650867362">تعذَّر إيقاف تتبُّع السعر.</translation>
 <translation id="8654802032646794042">إلغاء</translation>
 <translation id="8655861111558401309">يُرجى اختيار "حذف بيانات التصفّح"</translation>
@@ -2585,7 +2588,6 @@
 <translation id="8988107725234939347">‫"<ph name="WEBSITE_TITLE" />"، موقع إلكتروني مثبَّت</translation>
 <translation id="8990960056509724223">يتعذَّر حفظ الملف بسبب سياسات مؤسستك</translation>
 <translation id="8998289560386111590">غير متاح على جهازك</translation>
-<translation id="9003263770394939629">‏من اقتراح Gemini. يمكنك إدارة ميزة "الملء التلقائي المحسّن" في الإعدادات.</translation>
 <translation id="9003677638446136377">التحقق مرة أخرى</translation>
 <translation id="9006453925669499173">"القائمة" ← "علامة تبويب جديدة في وضع التصفّح المتخفي"</translation>
 <translation id="9008201768610948239">تجاهل</translation>
@@ -2594,7 +2596,6 @@
 <translation id="9029650858822697271">تم تسجيل خروجك من الحساب</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">تأكيد حذف بيانات التصفّح</translation>
-<translation id="9035699147763101514">‏تستنِد هذه الميزة إلى "الذكاء المخصّص" في Gemini. ويمكنك إدارة اختياراتك في الإعدادات.</translation>
 <translation id="9038526468059454274">الملخص بانتظارك مع</translation>
 <translation id="9039373489628511875">معدّل نقل البيانات</translation>
 <translation id="9042893549633094279">الخصوصية والأمان</translation>

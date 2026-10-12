@@ -1597,6 +1597,7 @@
 <translation id="2215070081105889450">Аудио хуваалцахын тулд оронд нь таб эсвэл дэлгэц хуваалцана уу</translation>
 <translation id="2217208085547223783">Итгэмжлэлийн төлөв</translation>
 <translation id="2218019600945559112">Хулгана, мэдрэгч самбар</translation>
+<translation id="2218116022473625437">Та тохиргооноос текст тодруулахыг унтраах, дуу хоолойг өөрчлөх, хуудасны харагдах байдлыг засах боломжтой.</translation>
 <translation id="2218515861914035131">Текст хэлбэрээр хуулан буулгах</translation>
 <translation id="2219007152108311874">Зочлох бүрд асуух</translation>
 <translation id="2220529011494928058">Асуудлыг мэдэгдэх</translation>
@@ -3772,6 +3773,7 @@
 <translation id="3812525830114410218">Муу сертификат</translation>
 <translation id="3813296892522778813">Хэрэв та хайж байгаа зүйлээ олохгүй байвал <ph name="BEGIN_LINK_CHROMIUM" />Google Chrome тусламж<ph name="END_LINK_CHROMIUM" /> хэсэгт очно уу</translation>
 <translation id="3813358687923336574">Хуудсыг орчуулах болон Шуурхай хариултад ашигласан хэл</translation>
+<translation id="3815509884387832993">Унших горимын хэрэгслийн мөр дэх ХОУ-аар дахин тоглуулахыг асаах товчийг ашиглан энэ хуудсыг подкаст шиг сонсоорой</translation>
 <translation id="3815668647912194650">Дараа таб нэмэхийн тулд энэ бүлгийг үлдээх эсвэл та цаашид уг бүлэгт хандахыг хүсэхгүй байвал гарна уу.</translation>
 <translation id="3816118180265633665">Chrome-н өнгө</translation>
 <translation id="3817524650114746564">Компьютерынхоо прокси тохиргоог нээнэ үү</translation>
@@ -4155,6 +4157,7 @@
 <translation id="4109135793348361820">Цонхыг  <ph name="USER_NAME" /> ( <ph name="USER_EMAIL" /> ) руу зөөх</translation>
 <translation id="4110485659976215879">Сануулгыг сэргээх</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлайн)</translation>
+<translation id="4112282889480354965">Өргөтгөл, ур чадвар</translation>
 <translation id="4113743276555482284">Файлын нууц үг</translation>
 <translation id="4114524937989710624">Та Google Драйвт хамгийн саяхны үйл ажиллагаа руугаа хялбархан буцахад тань туслах санал болгосон файлуудыг харж байна.
         <ph name="BREAK" />
@@ -5627,6 +5630,7 @@
 <translation id="5246282308050205996"><ph name="APP_NAME" /> эвдэрсэн байна. Энэ аппликйешнийг дахин эхлүүлэхийн тулд энэ заагч суман дээр дарна уу.</translation>
 <translation id="5247051749037287028">Дэлгэцийн нэр (заавал биш)</translation>
 <translation id="5247243947166567755"><ph name="BOOKMARK_TITLE" />-г сонгох</translation>
+<translation id="524751727772074981">Chrome дахь Gemini-р байгаа газраасаа хүссэн зүйлээ асуугаарай</translation>
 <translation id="5248934139541843042">Зохион байгуулагчийг харах</translation>
 <translation id="5249624017678798539">Татаж дуусахаас өмнө веб хөтөч ажиллагаагүй болсон.</translation>
 <translation id="5249818097095743806">Аюулгүй байдлын түлхүүрээ ашиглана уу</translation>
@@ -6337,7 +6341,6 @@
 <translation id="5828181959764767444">Нар жаргах</translation>
 <translation id="5828545842856466741">Профайл нэмэх...</translation>
 <translation id="5828633471261496623">Хэвлэж байна...</translation>
-<translation id="5829137022934788067">Надад энэ сонголтын талаар хэлнэ үү</translation>
 <translation id="5829214552954466783"><ph name="USER_EMAIL" /> хэрэглэгчийн нэрийн <ph name="CREDENTIAL_TYPE" />-г хуваалцах</translation>
 <translation id="5829544019044013776">Таны Google Wallet дахь төлбөрийн хэрэгсэл</translation>
 <translation id="5830512293931520102">Таны нууц үг шифрлэгдсэн бөгөөд хэнд ч харагдахгүй</translation>
@@ -8795,6 +8798,7 @@
 <translation id="7702463352133825032"><ph name="DEVICE_NAME" />-д дамжуулахыг зогсоох</translation>
 <translation id="7704305437604973648">Даалгавар</translation>
 <translation id="7705085181312584869">Надад бичихэд тусал</translation>
+<translation id="7705230242432916648">ХОУ-аар тоглуулахаар энэ хуудсыг подкаст шиг сонсоорой</translation>
 <translation id="7705276765467986571">Хайлтын жагсаалтын загварыг ачаалж чадсангүй.</translation>
 <translation id="7705334495398865155">Бусад хүмүүс энэ төхөөрөмжийг хянахаас сэргийлэхийн тулд өөрийн техник хангамжийн ID-г (BSSID) санамсаргүй байдлаар эмхэлнэ үү.</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -10221,6 +10225,7 @@
 <translation id="8780123805589053431">Google-с зургийн тайлбар авах</translation>
 <translation id="8780443667474968681">Дуут хайлтыг унтраасан байна.</translation>
 <translation id="8781834595282316166">Бүлэг доторх шинэ таб</translation>
+<translation id="878190123554258638"><ph name="SHORTCUT_TITLE" />, товчлолыг зөөхөд зүүн, баруун сум товчийг ашиглана уу. Дуусгахын тулд Enter эсвэл Escape дээр дарна уу.</translation>
 <translation id="8781980678064919987">Бүрхүүл хаагдсан үед унтраах</translation>
 <translation id="8783171585655659524">Дэлгэцийн зургийг оруулах</translation>
 <translation id="8785622406424941542">Мэдрэгч үзэг</translation>

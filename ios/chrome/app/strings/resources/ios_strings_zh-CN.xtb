@@ -1264,6 +1264,7 @@
 <translation id="498624032394115435">知道链接的任何人都能修改所有标签页。</translation>
 <translation id="4986428648020277392">提示：我该买哪个？（第 2 个，共 3 个）</translation>
 <translation id="498768198683310172">开始使用 Gemini</translation>
+<translation id="4989163558385430922">查看全部</translation>
 <translation id="499122600724363620"><ph name="NAME" />，<ph name="EMAIL" />，由组织管理。</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />，<ph name="EMAIL" />。<ph name="AI_TIER" />。</translation>
 <translation id="4992255726304765516">标签页分组颜色为<ph name="COLOR" /></translation>
@@ -2027,7 +2028,6 @@
 <translation id="7346922058131593019"><ph name="USER_FIRST_NAME" />，您想处理点什么？</translation>
 <translation id="7347998088283246662">导入密码、历史记录、书签等</translation>
 <translation id="7352651011704765696">出了点问题</translation>
-<translation id="7357999308187750900">查看全部</translation>
 <translation id="736564850024123010">更换地址栏的位置，获享个性化体验。</translation>
 <translation id="7366909168761621528">浏览数据</translation>
 <translation id="7367530036083223701">使用“密码管理工具”小组件从主屏幕安全地获取您的密码。</translation>
@@ -2361,7 +2361,6 @@
 <translation id="8333459276976141586">Live 模式会使用麦克风。点按“Live”按钮即可开启麦克风。如要关闭麦克风，请点按“停止”按钮或关闭 Gemini。</translation>
 <translation id="833647236762414178">您可以创建、保存和管理密码与通行密钥，以便轻松登录网站和应用。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">备份您的资料，在任何设备上使用</translation>
-<translation id="8345328955902001853">{count,plural, =1{再完成 1 项任务即可升级}other{再完成 {count} 项任务即可升级}}</translation>
 <translation id="8348530355586151720">点按三点状菜单</translation>
 <translation id="8349305172487531364">书签栏</translation>
 <translation id="8360164927489392419">您与 Live 模式互动的记录以及您与 Live 模式分享的内容会依据<ph name="BEGIN_LINK" />《Gemini 应用隐私权声明》<ph name="END_LINK" />保存和处理。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
@@ -2586,7 +2585,6 @@
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />，已固定的网站</translation>
 <translation id="8990960056509724223">根据您所在组织的政策，无法保存文件</translation>
 <translation id="8998289560386111590">在您的设备上不可用</translation>
-<translation id="9003263770394939629">来自 Gemini 的建议。在设置中管理增强型自动填充功能。</translation>
 <translation id="9003677638446136377">再次检查</translation>
 <translation id="9006453925669499173">菜单 → 打开新的无痕式标签页</translation>
 <translation id="9008201768610948239">忽略</translation>
@@ -2595,7 +2593,6 @@
 <translation id="9029650858822697271">您已退出账号</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">确认删除浏览数据</translation>
-<translation id="9035699147763101514">由 Gemini 中的个性化智能服务提供支持。您可以在设置中管理自己的选择。</translation>
 <translation id="9038526468059454274">轻松总结，尽在</translation>
 <translation id="9039373489628511875">带宽</translation>
 <translation id="9042893549633094279">隐私与安全</translation>

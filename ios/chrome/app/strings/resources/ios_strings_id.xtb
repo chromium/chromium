@@ -1264,6 +1264,7 @@
 <translation id="498624032394115435">Siapa saja yang memiliki link ini dapat mengedit semua tab.</translation>
 <translation id="4986428648020277392">Perintah: Mana yang harus saya beli? 2 dari 3</translation>
 <translation id="498768198683310172">Mulai gunakan Gemini</translation>
+<translation id="4989163558385430922">Lihat semua</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, dikelola oleh organisasi Anda.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Warna grup tab <ph name="COLOR" /></translation>
@@ -2027,7 +2028,6 @@ Anda dapat memulai ulang kapan saja.</translation>
 <translation id="7346922058131593019">Apa yang ingin Anda kerjakan, <ph name="USER_FIRST_NAME" />?</translation>
 <translation id="7347998088283246662">Impor sandi, histori, bookmark, dan lainnya</translation>
 <translation id="7352651011704765696">Terjadi error</translation>
-<translation id="7357999308187750900">Lihat Semua</translation>
 <translation id="736564850024123010">Ganti posisi kolom URL untuk mendapatkan pengalaman yang disesuaikan.</translation>
 <translation id="7366909168761621528">Data browsing</translation>
 <translation id="7367530036083223701">Akses sandi Anda dengan aman dari layar utama dengan widget Pengelola Sandi.</translation>
@@ -2361,7 +2361,6 @@ Anda dapat memulai ulang kapan saja.</translation>
 <translation id="8333459276976141586">Live akan menggunakan mikrofon Anda. Mengetuk tombol Live akan mengaktifkan mikrofon. Untuk menonaktifkan mikrofon, ketuk tombol berhenti atau tutup Gemini.</translation>
 <translation id="833647236762414178">Buat, simpan, dan kelola sandi &amp; kunci sandi Anda untuk login dengan mudah ke situs dan aplikasi. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Cadangkan data Anda dan gunakan di perangkat mana pun.</translation>
-<translation id="8345328955902001853">{count,plural, =1{Selesaikan 1 tugas lagi untuk naik level}other{Selesaikan {count} tugas lagi untuk naik level}}</translation>
 <translation id="8348530355586151720">Ketuk menu tiga titik</translation>
 <translation id="8349305172487531364">Bilah bookmark</translation>
 <translation id="8360164927489392419">Rekaman interaksi Anda dengan Live dan konten yang Anda bagikan selama interaksi disimpan dan diproses sesuai dengan <ph name="BEGIN_LINK" />Pemberitahuan Privasi Aplikasi Gemini<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
@@ -2586,7 +2585,6 @@ Anda dapat memulai ulang kapan saja.</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, situs yang disematkan</translation>
 <translation id="8990960056509724223">File tidak dapat disimpan karena kebijakan organisasi Anda</translation>
 <translation id="8998289560386111590">Tidak tersedia di perangkat Anda</translation>
-<translation id="9003263770394939629">Disarankan oleh Gemini. Kelola isi otomatis yang ditingkatkan di setelan.</translation>
 <translation id="9003677638446136377">Periksa lagi</translation>
 <translation id="9006453925669499173">Menu → Tab Samaran baru</translation>
 <translation id="9008201768610948239">Abaikan</translation>
@@ -2595,7 +2593,6 @@ Anda dapat memulai ulang kapan saja.</translation>
 <translation id="9029650858822697271">Anda telah logout</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Konfirmasi penghapusan data penjelajahan</translation>
-<translation id="9035699147763101514">Didukung oleh Kecerdasan Personal dengan Gemini. Kelola pilihan Anda di setelan.</translation>
 <translation id="9038526468059454274">Buat ringkasan dengan</translation>
 <translation id="9039373489628511875">Bandwidth</translation>
 <translation id="9042893549633094279">Privasi dan keamanan</translation>

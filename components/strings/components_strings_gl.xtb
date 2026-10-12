@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Seleccionar permiso para <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Queres gardar o IBAN?</translation>
 <translation id="1113869188872983271">&amp;Desfacer o cambio de orde</translation>
-<translation id="1117709830616495622">Con tecnoloxía de Intelixencia personalizada de Gemini.</translation>
 <translation id="111897705806685148">Usar clave de acceso doutro dispositivo</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, preme Tabulador e, a continuación, Introducir para xestionar a información de Chrome que gardas na túa Conta de Google</translation>
 <translation id="1121990216147052230">Crea unha lista de tarefas pendentes</translation>
@@ -532,7 +531,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1890171020361705182">Xogo do dinosauro. Un dinosauro pixelado esquiva cactos e pterodáctilos mentres vai a fume de carozo por unha paisaxe desolada. Cando escoites un sinal de audio, toca a pantalla para saltar os obstáculos.</translation>
 <translation id="1898423065542865115">Filtrando</translation>
 <translation id="1898678876221454577">Inicia sesión para gardar o escaneamento</translation>
-<translation id="1898804291554630487">Fai unha pregunta sobre esta páxina</translation>
 <translation id="1901443836186977402">{1,plural, =1{Este servidor non puido demostrar que é <ph name="DOMAIN" />; o seu certificado de seguranza caducou o último día. Isto pode deberse a un erro de configuración ou a que un atacante interceptase a túa conexión. A data actual do reloxo do teu ordenador é a seguinte: <ph name="CURRENT_DATE" />. É correcta? Se non é así, debes corrixir o reloxo do sistema e despois actualizar esta páxina.}other{Este servidor non puido demostrar que é <ph name="DOMAIN" />; o seu certificado de seguranza caducou hai # días. Isto pode deberse a un erro de configuración ou a que un atacante interceptase a túa conexión. A data actual do reloxo do teu ordenador é a seguinte: <ph name="CURRENT_DATE" />. É correcta? Se non é así, debes corrixir o reloxo do sistema e despois actualizar esta páxina.}}</translation>
 <translation id="190166348986967700">A persoa administradora comezará a cargar ficheiros en <ph name="CLOUD_PROVIDER" /> á/s <ph name="DATE_TIME" />. Mantén o dispositivo conectado ata que acabe o proceso. Durante a carga, só poderás ler os ficheiros locais.</translation>
 <translation id="1902576642799138955">Período de validez</translation>
@@ -841,8 +839,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2384307209577226199">Política predeterminada da empresa</translation>
 <translation id="2385809941344967209">Actualizar Chrome desde a súa configuración</translation>
 <translation id="2386255080630008482">Revogouse o certificado do servidor.</translation>
-<translation id="2387424091060104123">Suxestión de Gemini · <ph name="SRC_LINK" />Ver fontes<ph name="END_SRC_LINK" />
-Podes quitar esta suxestión de Chrome. A fonte orixinal non se eliminará. <ph name="MANAGE_LINK" />Xestionar a función de autocompletar mellorada<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">Engadir detalles</translation>
 <translation id="2392959068659972793">Mostrar políticas sen ningún valor establecido</translation>
 <translation id="239429038616798445">Este método de envío non está dispoñible. Proba cun diferente.</translation>
@@ -1245,7 +1241,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="3109788962812161063">Xestión de perfís</translation>
 <translation id="3112892588078695695">Número de teléfono: <ph name="PHONE" />.</translation>
 <translation id="3113284927548439113">Terceira quenda</translation>
-<translation id="3113930177999394798">Escribe @historial para facer buscas no teu historial de navegación grazas á tecnoloxía de IA</translation>
 <translation id="3114040155724590991">Actualizando sistema Android
     É posible que se tarde máis do habitual en iniciar a aplicación.</translation>
 <translation id="3114197119223448048">actividade nova</translation>
@@ -1426,7 +1421,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="3413466783792948876">Se estás usando unha rede pública, á opción máis segura é que entres neste sitio noutro momento. As redes de confianza, como a wifi da casa ou do traballo, supoñen menos riscos.</translation>
 <translation id="3414952576877147120">Tamaño:</translation>
 <translation id="341513675006332771">Botón para xogar ao xogo do dinosauro de Chrome. Actívao para xogar a Dino Run en Chrome</translation>
-<translation id="3415471717466570460">As túas buscas, o mellores resultados e o contido das páxinas envíanse a Google. Os membros do equipo de revisión poden ver esa información para mellorar esta función, que é experimental, polo que non sempre acerta.</translation>
 <translation id="3417390269491141648">Compara as opcións do meu plan de saúde e analiza as principais diferenzas entre elas</translation>
 <translation id="3421387094817716717">Clave pública de Elliptic Curve</translation>
 <translation id="3422248202833853650">Proba a saír doutros programas para liberar memoria.</translation>
@@ -1904,7 +1898,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4185037616931963178">Actualiza o número Redress de forma segura</translation>
 <translation id="4186035307311647330">Deixar de facer seguimento de prezos</translation>
-<translation id="4190446002599583608">Buscas no historial con tecnoloxía de IA</translation>
 <translation id="4191334393248735295">Lonxitude</translation>
 <translation id="4195459680867822611">Botón para ver consellos de Chrome. Actívao para obter máis información sobre as funcións de Chrome</translation>
 <translation id="4195643157523330669">Abrir en pestana nova</translation>
@@ -1951,7 +1944,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="424063167283213501">Garda o número de viaxeiro coñecido (KTN)</translation>
 <translation id="4241830393007970744">Os atacantes do sitio que tentaches visitar poderían enganarte para que instales software ou reveles información como os teus contrasinais, números de teléfono ou tarxetas de crédito.</translation>
 <translation id="4242380780309416996">Sobre (alta gramaxe)</translation>
-<translation id="4242981939686657948">Para desfrutar dunha maneira máis potente de facer buscas no historial de navegación, activa</translation>
 <translation id="4244926541863471678">Filme</translation>
 <translation id="42481816218163154">Crea unha rutina matinal de 15 minutos que me axude a que as mañás sexan máis levadeiras. Asegúrate de que inclúa un exercicio de atención plena</translation>
 <translation id="4250343410682686342">A pantalla de erro de pago aprazado está aberta a altura completa.</translation>
@@ -3894,7 +3886,6 @@ Detalles adicionais:
 <translation id="7514365320538308">Descargar</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">Permitiuse a RV neste momento</translation>
-<translation id="7517198908921983825">Suxestión de Gemini · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Sobre C10</translation>
 <translation id="7518003948725431193">Non se atopou ningunha páxina web para o enderezo web: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -4391,7 +4382,6 @@ Detalles adicionais:
 <translation id="8350416046273606058">O atallo non pode conter espazos: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Crear nota</translation>
 <translation id="8352849934814541340">O administrador deste dispositivo instalou aplicacións que ofrecen funcións adicionais. As aplicacións teñen acceso a algúns dos teus datos.</translation>
-<translation id="8353273112634584260">Con tecnoloxía de Intelixencia personalizada de Gemini. As túas solicitudes, os títulos das páxinas e os URL poden revisarse para mellorar a función de autocompletar mellorada.</translation>
 <translation id="8355270400102541638">Contexto do fallo local:</translation>
 <translation id="8362914115861174987">Traducir ao</translation>
 <translation id="8363502534493474904">Desactivar o modo avión</translation>
@@ -4738,7 +4728,6 @@ Detalles adicionais:
 <translation id="9001074447101275817">O proxy <ph name="DOMAIN" /> require un nome de usuario e un contrasinal.</translation>
 <translation id="9001963517402879850">Salta!</translation>
 <translation id="9002677862950442746">Código de verificación: <ph name="OTP" /></translation>
-<translation id="9003263770394939629">Suxestión de Gemini. Xestiona a función de autocompletar mellorada na configuración.</translation>
 <translation id="9003639428623471314">Sobre Kahu</translation>
 <translation id="9004367719664099443">Sesión de RV en curso</translation>
 <translation id="9005998258318286617">Produciuse un erro ao cargar o documento PDF.</translation>
@@ -4757,7 +4746,6 @@ Detalles adicionais:
 <translation id="9027531288681624875">Para saír da pantalla completa, mantén premido |<ph name="ACCELERATOR" />|</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Erro de seguranza</translation>
-<translation id="9035699147763101514">Con tecnoloxía de Intelixencia personalizada de Gemini. Xestiona as túas opcións na configuración.</translation>
 <translation id="9035824888276246493">Gardar códigos de seguranza</translation>
 <translation id="9036306139374661733">Queres permitir o acceso ao micrófono?</translation>
 <translation id="9036484080057916082">Lista de marcas de tempo dos certificados asinados</translation>
@@ -4912,7 +4900,6 @@ Detalles adicionais:
 <translation id="961930410699694996">Permítese o uso da localización esta vez</translation>
 <translation id="962484866189421427">Este contido pode tentar instalar aplicacións enganosas que pretenden pasar por algo que non son ou recompilar datos que se poden utilizar para facer un seguimento das túas accións. <ph name="BEGIN_LINK" />Mostrar igualmente<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">De acordo cunha lei da túa rexión, Chromium pídeche que escollas un buscador predeterminado. Estes buscadores son populares na túa zona e móstranse en orde aleatoria.</translation>
-<translation id="963837307749850257">Todos os usuarios</translation>
 <translation id="963988220224168636">Engadir o número Redress de forma segura a Google Wallet</translation>
 <translation id="964050462028070434">Xestionar contrasinais e claves de acceso…</translation>
 <translation id="964681140808832181">Si, quero cancelar a carga</translation>

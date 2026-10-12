@@ -1264,6 +1264,7 @@
 <translation id="498624032394115435">Toutes les personnes disposant du lien peuvent modifier tous les onglets.</translation>
 <translation id="4986428648020277392">Prompt 2 sur 3 : Lequel devrais-je acheter ?</translation>
 <translation id="498768198683310172">Commencer à utiliser Gemini</translation>
+<translation id="4989163558385430922">Tout afficher</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, géré par votre organisation.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Couleur du groupe d'onglets <ph name="COLOR" /></translation>
@@ -2027,7 +2028,6 @@ Vous pouvez recommencer à tout moment.</translation>
 <translation id="7346922058131593019">Sur quoi souhaitez-vous travailler, <ph name="USER_FIRST_NAME" /> ?</translation>
 <translation id="7347998088283246662">Importez vos mots de passe, historique, favoris et plus encore</translation>
 <translation id="7352651011704765696">Un problème est survenu</translation>
-<translation id="7357999308187750900">Tout afficher</translation>
 <translation id="736564850024123010">Déplacez la barre d'adresse pour une expérience personnalisée.</translation>
 <translation id="7366909168761621528">Données de navigation</translation>
 <translation id="7367530036083223701">Accédez à vos mots de passe de manière sécurisée depuis l'écran d'accueil avec le widget Gestionnaire de mots de passe.</translation>
@@ -2361,7 +2361,6 @@ Vous pouvez recommencer à tout moment.</translation>
 <translation id="8333459276976141586">Live utilisera votre micro. Le micro s'active lorsque vous appuyez sur le bouton "Live". Pour désactiver le micro, appuyez sur le bouton "Arrêter" ou fermez Gemini.</translation>
 <translation id="833647236762414178">Créez, enregistrez et gérez vos mots de passe et clés d'accès pour vous connecter facilement à des sites et applis. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Sauvegardez vos données et utilisez-les sur n'importe quel appareil.</translation>
-<translation id="8345328955902001853">{count,plural, =1{Effectuez 1 tâche de plus pour passer au niveau supérieur}one{Effectuez {count} tâche de plus pour passer au niveau supérieur}other{Effectuez {count} tâches de plus pour passer au niveau supérieur}}</translation>
 <translation id="8348530355586151720">Appuyez sur l'icône du menu à trois points</translation>
 <translation id="8349305172487531364">Barre de favoris</translation>
 <translation id="8360164927489392419">Vos interactions avec Live et les contenus que vous partagez avec Gemini sont enregistrés et traités conformément à l‘<ph name="BEGIN_LINK" />Avis de confidentialité des applications Gemini<ph name="END_LINK" />. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
@@ -2586,7 +2585,6 @@ Vous pouvez recommencer à tout moment.</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, site épinglé</translation>
 <translation id="8990960056509724223">Impossible d'enregistrer le fichier à cause des règles de votre organisation</translation>
 <translation id="8998289560386111590">Non disponible sur votre appareil</translation>
-<translation id="9003263770394939629">Suggéré par Gemini. Gérez la saisie automatique améliorée dans les paramètres.</translation>
 <translation id="9003677638446136377">Revérifier</translation>
 <translation id="9006453925669499173">Menu → Nouvel onglet de navigation privée</translation>
 <translation id="9008201768610948239">Ignorer</translation>
@@ -2595,7 +2593,6 @@ Vous pouvez recommencer à tout moment.</translation>
 <translation id="9029650858822697271">Vous avez été déconnecté</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Confirmer la suppression des données de navigation</translation>
-<translation id="9035699147763101514">Optimisé par l'Intelligence personnalisée avec Gemini. Gérez vos choix dans les paramètres.</translation>
 <translation id="9038526468059454274">Résumez avec</translation>
 <translation id="9039373489628511875">Bande passante</translation>
 <translation id="9042893549633094279">Confidentialité et sécurité</translation>

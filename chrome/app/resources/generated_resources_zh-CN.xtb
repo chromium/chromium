@@ -5612,6 +5612,7 @@
 <translation id="5246282308050205996">“<ph name="APP_NAME" />”崩溃了。点击此信息框，以重启该应用。</translation>
 <translation id="5247051749037287028">显示名（可选）</translation>
 <translation id="5247243947166567755">选择“<ph name="BOOKMARK_TITLE" />”</translation>
+<translation id="524751727772074981">借助 Chrome 中的 Gemini，无需离开当前页面即可随心提问</translation>
 <translation id="5248934139541843042">查看整理工具</translation>
 <translation id="5249624017678798539">浏览器崩溃了，下载还未完成。</translation>
 <translation id="5249818097095743806">使用安全密钥</translation>
@@ -6318,7 +6319,6 @@
 <translation id="5828181959764767444">日落</translation>
 <translation id="5828545842856466741">添加个人资料…</translation>
 <translation id="5828633471261496623">正在打印...</translation>
-<translation id="5829137022934788067">向我介绍一下所选内容</translation>
 <translation id="5829214552954466783">分享以下用户名的<ph name="CREDENTIAL_TYPE" />：<ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">您在 Google 钱包中的支付方式</translation>
 <translation id="5830512293931520102">您的密码会经过加密处理，且不会向任何人显示</translation>

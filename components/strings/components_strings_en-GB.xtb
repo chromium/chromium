@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Select permission for <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Save IBAN?</translation>
 <translation id="1113869188872983271">&amp;Undo reorder</translation>
-<translation id="1117709830616495622">Powered by Personal Intelligence with Gemini.</translation>
 <translation id="111897705806685148">Use Passkey from another device</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, press Tab then Enter to manage what Chrome info you save in your Google Account</translation>
 <translation id="1121990216147052230">Make me a to-do list</translation>
@@ -532,7 +531,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1890171020361705182">Dino game. A pixelated dinosaur dodges cacti and pterodactyls as it runs across a desolate landscape. When you hear an audio cue, tap to jump over obstacles.</translation>
 <translation id="1898423065542865115">Filtering</translation>
 <translation id="1898678876221454577">Sign in to save your scan</translation>
-<translation id="1898804291554630487">Ask about this page</translation>
 <translation id="1901443836186977402">{1,plural, =1{This server could not prove that it is <ph name="DOMAIN" />; its security certificate expired in the last day. This may be caused by a misconfiguration or an attacker intercepting your connection. Your computer's clock is currently set to <ph name="CURRENT_DATE" />. Does that look right? If not, you should correct your system's clock and then refresh this page.}other{This server could not prove that it is <ph name="DOMAIN" />; its security certificate expired # days ago. This may be caused by a misconfiguration or an attacker intercepting your connection. Your computer's clock is currently set to <ph name="CURRENT_DATE" />. Does that look right? If not, you should correct your system's clock and then refresh this page.}}</translation>
 <translation id="190166348986967700">Your administrator will start uploading your files to <ph name="CLOUD_PROVIDER" /> on <ph name="DATE_TIME" />. Keep your device connected until your file upload is complete. During the upload, you will only be able to read local files.</translation>
 <translation id="1902576642799138955">Validity Period</translation>
@@ -841,8 +839,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2384307209577226199">Enterprise default</translation>
 <translation id="2385809941344967209">Update Chrome from your Chrome settings</translation>
 <translation id="2386255080630008482">Server's certificate has been revoked</translation>
-<translation id="2387424091060104123">Suggested by Gemini · <ph name="SRC_LINK" />View sources<ph name="END_SRC_LINK" />
-You can remove this suggestion from Chrome. Your original source won't be deleted. <ph name="MANAGE_LINK" />Manage enhanced autofill<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">Elaborate</translation>
 <translation id="2392959068659972793">Show policies with no value set</translation>
 <translation id="239429038616798445">This delivery method isn’t available. Try a different method.</translation>
@@ -1245,7 +1241,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3109788962812161063">Profile management</translation>
 <translation id="3112892588078695695">Phone number: <ph name="PHONE" />.</translation>
 <translation id="3113284927548439113">Third shift</translation>
-<translation id="3113930177999394798">Type @history to search your browsing history, powered by AI</translation>
 <translation id="3114040155724590991">Updating Android System
     Starting your app may take longer than usual.</translation>
 <translation id="3114197119223448048">new activity</translation>
@@ -1426,7 +1421,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3413466783792948876">It's safest to visit this site later if you're using a public network. There is less risk from a trusted network, like your home or work Wi-Fi.</translation>
 <translation id="3414952576877147120">Size:</translation>
 <translation id="341513675006332771">Play Chrome Dino game button, activate to play the dino run game in Chrome</translation>
-<translation id="3415471717466570460">Your searches, best matches and their page contents are sent to Google and may be seen by human reviewers to improve this feature. This is an experimental feature and won't always get it right.</translation>
 <translation id="3417390269491141648">Compare my health plan options and breakdown the key differences between them</translation>
 <translation id="3421387094817716717">Elliptic Curve Public Key</translation>
 <translation id="3422248202833853650">Try exiting other programmes to free up memory.</translation>
@@ -1904,7 +1898,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4185037616931963178">Update redress number securely</translation>
 <translation id="4186035307311647330">Untrack price</translation>
-<translation id="4190446002599583608">History search, powered by AI</translation>
 <translation id="4191334393248735295">Length</translation>
 <translation id="4195459680867822611">See Chrome tips button, activate to learn about Chrome features</translation>
 <translation id="4195643157523330669">Open in new tab</translation>
@@ -1951,7 +1944,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="424063167283213501">Save known traveller number</translation>
 <translation id="4241830393007970744">Attackers on the site that you tried visiting might trick you into installing software or revealing things like your passwords, phone or credit card numbers.</translation>
 <translation id="4242380780309416996">Envelope (heavyweight)</translation>
-<translation id="4242981939686657948">For a more powerful way to search your browsing history, turn on</translation>
 <translation id="4244926541863471678">Film</translation>
 <translation id="42481816218163154">Create a 15-minute morning routine that helps make my mornings run smoother. Make sure that it includes a mindfulness exercise</translation>
 <translation id="4250343410682686342">Buy now, pay later error screen opened at full height.</translation>
@@ -3895,7 +3887,6 @@ Additional details:
 <translation id="7514365320538308">Download</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">VR allowed this time</translation>
-<translation id="7517198908921983825">Suggested by Gemini · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Envelope C10</translation>
 <translation id="7518003948725431193">No web page was found for the web address: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -4392,7 +4383,6 @@ Additional details:
 <translation id="8350416046273606058">Shortcut can't contain spaces: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Create note</translation>
 <translation id="8352849934814541340">The administrator of this device has installed applications for additional functions. Applications have access to some of your data.</translation>
-<translation id="8353273112634584260">Powered by Personal Intelligence with Gemini. Your requests, page titles and URLs may be reviewed to improve enhanced autofill.</translation>
 <translation id="8355270400102541638">Local crash context:</translation>
 <translation id="8362914115861174987">Translate to</translation>
 <translation id="8363502534493474904">Turning off aeroplane mode</translation>
@@ -4739,7 +4729,6 @@ Additional details:
 <translation id="9001074447101275817">The proxy <ph name="DOMAIN" /> requires a username and password.</translation>
 <translation id="9001963517402879850">Jump!</translation>
 <translation id="9002677862950442746">Verification code: <ph name="OTP" /></translation>
-<translation id="9003263770394939629">Suggested by Gemini. Manage enhanced autofill in settings.</translation>
 <translation id="9003639428623471314">Envelope Kahu</translation>
 <translation id="9004367719664099443">VR session in progress</translation>
 <translation id="9005998258318286617">Failed to load PDF document.</translation>
@@ -4758,7 +4747,6 @@ Additional details:
 <translation id="9027531288681624875">To exit full screen, press and hold |<ph name="ACCELERATOR" />|</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Security error</translation>
-<translation id="9035699147763101514">Powered by Personal Intelligence with Gemini. Manage your choices in settings.</translation>
 <translation id="9035824888276246493">Save security codes</translation>
 <translation id="9036306139374661733">Allow microphone?</translation>
 <translation id="9036484080057916082">Signed Certificate Timestamp List</translation>
@@ -4913,7 +4901,6 @@ Additional details:
 <translation id="961930410699694996">Location allowed this time</translation>
 <translation id="962484866189421427">This content might try to install deceptive apps that pretend to be something else or collect data that may be used to track you. <ph name="BEGIN_LINK" />Show anyway<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">Based on a law in your region, Chromium asks you to choose your default search engine. These search engines are popular in your region and are shown in random order.</translation>
-<translation id="963837307749850257">All users</translation>
 <translation id="963988220224168636">Add redress number securely to Google Wallet</translation>
 <translation id="964050462028070434">Manage passwords and passkeys…</translation>
 <translation id="964681140808832181">Yes, I want to cancel</translation>

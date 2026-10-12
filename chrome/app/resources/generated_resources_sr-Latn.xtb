@@ -5618,6 +5618,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5246282308050205996">Aplikacija <ph name="APP_NAME" /> je otkazala. Kliknite na ovaj oblačić da biste je ponovo pokrenuli.</translation>
 <translation id="5247051749037287028">Ime za prikaz (opcionalno)</translation>
 <translation id="5247243947166567755">Izaberite <ph name="BOOKMARK_TITLE" /></translation>
+<translation id="524751727772074981">Pitajte bilo šta gde god da ste pomoću Gemini-ja u Chrome-u</translation>
 <translation id="5248934139541843042">Prikaži organizatora</translation>
 <translation id="5249624017678798539">Pregledač je otkazao pre nego što je preuzimanje dovršeno.</translation>
 <translation id="5249818097095743806">Koristite bezbednosni ključ</translation>
@@ -6326,7 +6327,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5828181959764767444">Zalazak sunca</translation>
 <translation id="5828545842856466741">Dodaj profil…</translation>
 <translation id="5828633471261496623">Štampanje...</translation>
-<translation id="5829137022934788067">Reci mi više o ovom izboru</translation>
 <translation id="5829214552954466783">Delite <ph name="CREDENTIAL_TYPE" /> za korisničko ime: <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">Načini plaćanja u Google novčaniku</translation>
 <translation id="5830512293931520102">Lozinka je šifrovana i niko ne može da je vidi</translation>

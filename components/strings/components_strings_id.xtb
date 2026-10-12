@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Pilih izin untuk <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Simpan IBAN?</translation>
 <translation id="1113869188872983271">&amp;Urungkan pengaturan ulang</translation>
-<translation id="1117709830616495622">Didukung oleh Kecerdasan Personal dengan Gemini.</translation>
 <translation id="111897705806685148">Gunakan Kunci Sandi dari Perangkat Lain</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk mengelola info Chrome yang Anda simpan di Akun Google Anda</translation>
 <translation id="1121990216147052230">Buatkan daftar tugas</translation>
@@ -533,7 +532,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="1890171020361705182">Game Dino. Dinosaurus dalam bentuk piksel akan menghindari kaktus dan pterodaktil saat melintasi lanskap terpencil. Saat Anda mendengar isyarat audio, ketuk untuk melompati rintangan.</translation>
 <translation id="1898423065542865115">Pemfilteran</translation>
 <translation id="1898678876221454577">Login untuk menyimpan hasil pemindaian Anda</translation>
-<translation id="1898804291554630487">Tanyakan info tentang halaman ini</translation>
 <translation id="1901443836186977402">{1,plural, =1{Server ini tidak dapat membuktikan bahwa ini adalah <ph name="DOMAIN" />; masa berlaku sertifikat keamanannya telah habis beberapa hari yang lalu. Hal ini mungkin disebabkan oleh kesalahan konfigurasi, atau ada penyerang yang menginterupsi sambungan Anda. Saat ini jam komputer Anda disetel ke <ph name="CURRENT_DATE" />. Apakah sudah sesuai? Jika belum, sebaiknya perbaiki jam sistem dan muat ulang halaman ini.}other{Server ini tidak dapat membuktikan bahwa ini adalah <ph name="DOMAIN" />; masa berlaku sertifikat keamanannya telah habis # hari yang lalu. Hal ini mungkin disebabkan oleh kesalahan konfigurasi, atau ada penyerang yang menginterupsi sambungan Anda. Saat ini jam komputer Anda disetel ke <ph name="CURRENT_DATE" />. Apakah sudah benar? Jika belum, sebaiknya perbaiki jam sistem dan muat ulang halaman ini.}}</translation>
 <translation id="190166348986967700">Administrator akan mulai mengupload file Anda ke <ph name="CLOUD_PROVIDER" /> pada <ph name="DATE_TIME" />. Tetap hubungkan perangkat Anda hingga proses upload file selesai. Selama proses upload, Anda hanya dapat membaca file lokal.</translation>
 <translation id="1902576642799138955">Periode Validitas</translation>
@@ -842,8 +840,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2384307209577226199">Default perusahaan</translation>
 <translation id="2385809941344967209">Update Chrome dari setelan Chrome</translation>
 <translation id="2386255080630008482">Sertifikat server telah dicabut.</translation>
-<translation id="2387424091060104123">Disarankan oleh Gemini · <ph name="SRC_LINK" />Lihat sumber<ph name="END_SRC_LINK" />
-Anda dapat menghapus saran ini dari Chrome. Sumber asli Anda tidak akan dihapus. <ph name="MANAGE_LINK" />Kelola isi otomatis yang ditingkatkan<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">Jelaskan</translation>
 <translation id="2392959068659972793">Tampilkan kebijakan yang nilainya tidak ditetapkan</translation>
 <translation id="239429038616798445">Metode pengiriman tidak tersedia. Coba metode lain.</translation>
@@ -1246,7 +1242,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="3109788962812161063">Pengelolaan profil</translation>
 <translation id="3112892588078695695">Nomor telepon: <ph name="PHONE" /></translation>
 <translation id="3113284927548439113">Shift ketiga</translation>
-<translation id="3113930177999394798">Ketik @histori untuk menelusuri histori penjelajahan Anda, yang didukung teknologi AI</translation>
 <translation id="3114040155724590991">Mengupdate Sistem Android
     Memulai aplikasi Anda mungkin memerlukan waktu lebih lama dari biasanya.</translation>
 <translation id="3114197119223448048">aktivitas baru</translation>
@@ -1427,7 +1422,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="3413466783792948876">Sebaiknya buka situs ini nanti, jika Anda saat ini menggunakan jaringan publik. Risiko dari jaringan tepercaya lebih kecil, seperti Wi-Fi rumah atau kantor Anda.</translation>
 <translation id="3414952576877147120">Ukuran:</translation>
 <translation id="341513675006332771">Tombol Mainkan game Chrome Dino, aktifkan untuk memainkan game Dino Run di Chrome</translation>
-<translation id="3415471717466570460">Penelusuran Anda, kecocokan terbaik, dan konten halamannya dikirim ke Google dan dapat dilihat oleh petugas peninjau untuk meningkatkan kualitas fitur ini. Fitur ini bersifat eksperimental dan tidak selalu benar.</translation>
 <translation id="3417390269491141648">Bandingkan opsi paket kesehatan saya dan uraikan perbedaan utamanya</translation>
 <translation id="3421387094817716717">Kunci Publik Kurva Eliptis</translation>
 <translation id="3422248202833853650">Coba program lain yang ada untuk mengosongkan memori.</translation>
@@ -1904,7 +1898,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4185037616931963178">Perbarui redress number dengan aman</translation>
 <translation id="4186035307311647330">Batalkan pemantauan harga</translation>
-<translation id="4190446002599583608">Penelusuran histori, didukung teknologi AI</translation>
 <translation id="4191334393248735295">Panjang</translation>
 <translation id="4195459680867822611">Tombol Lihat tips Chrome, aktifkan untuk mempelajari fitur-fitur Chrome</translation>
 <translation id="4195643157523330669">Buka di tab baru</translation>
@@ -1951,7 +1944,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="424063167283213501">Simpan Known Traveler Number</translation>
 <translation id="4241830393007970744">Penyerang di situs yang Anda coba kunjungi dapat mengelabui Anda agar menginstal software atau mengungkapkan hal-hal seperti sandi, nomor telepon, atau nomor kartu kredit Anda.</translation>
 <translation id="4242380780309416996">Amplop (Berat)</translation>
-<translation id="4242981939686657948">Untuk cara yang lebih efektif dalam menelusuri histori penjelajahan, aktifkan</translation>
 <translation id="4244926541863471678">Film</translation>
 <translation id="42481816218163154">Buatkan rutinitas pagi 15 menit agar pagi saya terasa lebih lancar. Pastikan rutinitas tersebut menyertakan latihan mindfulness</translation>
 <translation id="4250343410682686342">Layar error Beli Sekarang, Bayar Nanti terbuka sepenuhnya.</translation>
@@ -3893,7 +3885,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="7514365320538308">Download</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">VR diizinkan kali ini</translation>
-<translation id="7517198908921983825">Disarankan oleh Gemini · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Envelope C10</translation>
 <translation id="7518003948725431193">Tidak ada halaman web yang ditemukan untuk alamat web:<ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -4390,7 +4381,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="8350416046273606058">Pintasan tidak boleh berisi spasi: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Buat catatan</translation>
 <translation id="8352849934814541340">Administrator perangkat ini telah menginstal aplikasi untuk fungsi tambahan. Aplikasi memiliki akses ke sebagian data Anda.</translation>
-<translation id="8353273112634584260">Didukung oleh Kecerdasan Personal dengan Gemini. Permintaan, judul halaman, dan URL Anda dapat ditinjau untuk meningkatkan kualitas isi otomatis yang ditingkatkan.</translation>
 <translation id="8355270400102541638">Konteks Error Lokal:</translation>
 <translation id="8362914115861174987">Terjemahkan ke</translation>
 <translation id="8363502534493474904">Nonaktifkan mode pesawat</translation>
@@ -4735,7 +4725,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="9001074447101275817">Proxy <ph name="DOMAIN" /> memerlukan nama pengguna dan sandi.</translation>
 <translation id="9001963517402879850">Lompat!</translation>
 <translation id="9002677862950442746">Kode verifikasi: <ph name="OTP" /></translation>
-<translation id="9003263770394939629">Disarankan oleh Gemini. Kelola isi otomatis yang ditingkatkan di setelan.</translation>
 <translation id="9003639428623471314">Envelope Kahu</translation>
 <translation id="9004367719664099443">Sesi VR sedang berlangsung</translation>
 <translation id="9005998258318286617">Gagal memuat dokumen PDF.</translation>
@@ -4754,7 +4743,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="9027531288681624875">Untuk keluar dari layar penuh, tekan lama |<ph name="ACCELERATOR" />|</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Kesalahan keamanan</translation>
-<translation id="9035699147763101514">Didukung oleh Kecerdasan Personal dengan Gemini. Kelola pilihan Anda di setelan.</translation>
 <translation id="9035824888276246493">Simpan kode keamanan</translation>
 <translation id="9036306139374661733">Izinkan mikrofon?</translation>
 <translation id="9036484080057916082">Daftar Stempel Waktu Sertifikat yang Ditandatangani</translation>
@@ -4909,7 +4897,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="961930410699694996">Lokasi diizinkan kali ini</translation>
 <translation id="962484866189421427">Konten ini mungkin mencoba menginstal aplikasi tidak jujur dengan berpura-pura menjadi sesuatu yang lain atau mengumpulkan data yang dapat digunakan untuk melacak Anda. <ph name="BEGIN_LINK" />Tampilkan saja<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">Berdasarkan hukum di wilayah Anda, Chromium meminta Anda memilih mesin telusur default. Mesin telusur ini populer di wilayah Anda dan ditampilkan dalam urutan acak.</translation>
-<translation id="963837307749850257">Semua pengguna</translation>
 <translation id="963988220224168636">Tambahkan redress number dengan aman ke Google Wallet</translation>
 <translation id="964050462028070434">Kelola Sandi dan Passkeys…</translation>
 <translation id="964681140808832181">Ya, saya ingin membatalkan</translation>

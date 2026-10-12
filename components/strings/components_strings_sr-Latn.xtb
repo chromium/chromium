@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Izaberite dozvolu: <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Želite da sačuvate IBAN?</translation>
 <translation id="1113869188872983271">&amp;Opozovi promenu redosleda</translation>
-<translation id="1117709830616495622">Omogućava Personalizovana inteligencija pomoću Gemini-ja.</translation>
 <translation id="111897705806685148">Koristi pristupni ključ sa drugog uređaja</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, pa Enter da biste upravljali time koje Chrome informacije čuvate na Google nalogu</translation>
 <translation id="1121990216147052230">Napravi mi listu zadataka</translation>
@@ -532,7 +531,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1890171020361705182">Igra sa dinosaurusom. Pikselizovani dinosaurus izbegava kaktuse i pterodaktile dok trči pustim pejzažem. Kada čujete zvučni signal dodirnite da biste preskakali prepreke.</translation>
 <translation id="1898423065542865115">Filtriranje</translation>
 <translation id="1898678876221454577">Prijavite se da biste sačuvali skeniranje</translation>
-<translation id="1898804291554630487">Postavite pitanje o ovoj stranici</translation>
 <translation id="1901443836186977402">{1,plural, =1{Ovaj server ne može da dokaže da je <ph name="DOMAIN" />; njegov bezbednosni sertifikat je istekao prethodnog dana. Uzrok tome je možda pogrešna konfiguracija ili napadač koji je prekinuo vezu. Sat računara je trenutno podešen na <ph name="CURRENT_DATE" />. Da li je to tačno? Ako nije, trebalo bi da ispravite sat sistema i da zatim osvežite ovu stranicu.}one{Ovaj server ne može da dokaže da je <ph name="DOMAIN" />; njegov bezbednosni sertifikat je istekao pre # dan. Uzrok tome je možda pogrešna konfiguracija ili napadač koji je prekinuo vezu. Sat računara je trenutno podešen na <ph name="CURRENT_DATE" />. Da li je to tačno? Ako nije, trebalo bi da ispravite sat sistema i da zatim osvežite ovu stranicu.}few{Ovaj server ne može da dokaže da je <ph name="DOMAIN" />; njegov bezbednosni sertifikat je istekao pre # dana. Uzrok tome je možda pogrešna konfiguracija ili napadač koji je prekinuo vezu. Sat računara je trenutno podešen na <ph name="CURRENT_DATE" />. Da li je to tačno? Ako nije, trebalo bi da ispravite sat sistema i da zatim osvežite ovu stranicu.}other{Ovaj server ne može da dokaže da je <ph name="DOMAIN" />; njegov bezbednosni sertifikat je istekao pre # dana. Uzrok tome je možda pogrešna konfiguracija ili napadač koji je prekinuo vezu. Sat računara je trenutno podešen na <ph name="CURRENT_DATE" />. Da li je to tačno? Ako nije, trebalo bi da ispravite sat sistema i da zatim osvežite ovu stranicu.}}</translation>
 <translation id="190166348986967700">Administrator će početi da otprema fajlove u <ph name="CLOUD_PROVIDER" /> <ph name="DATE_TIME" />. Neka uređaj bude povezan dok se otpremanje fajla ne završi. Tokom otpremanja moći ćete da čitate samo lokalne fajlove.</translation>
 <translation id="1902576642799138955">Period validnosti</translation>
@@ -841,8 +839,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2384307209577226199">Podrazumevane smernice za preduzeće</translation>
 <translation id="2385809941344967209">Ažurirajte Chrome pomoću podešavanja Chrome-a</translation>
 <translation id="2386255080630008482">Sertifikat servera je opozvan.</translation>
-<translation id="2387424091060104123">Predlaže Gemini · <ph name="SRC_LINK" />Prikaži izvore<ph name="END_SRC_LINK" />
-Možete da uklonite ovaj predlog iz Chrome-a. Originalni izvor neće biti izbrisan. <ph name="MANAGE_LINK" />Upravljaj poboljšanim automatskim popunjavanjem<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">Razradi</translation>
 <translation id="2392959068659972793">Prikaži smernice bez podešenih vrednosti</translation>
 <translation id="239429038616798445">Ovaj način slanja nije dostupan. Isprobajte neki drugi način.</translation>
@@ -1245,7 +1241,6 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="3109788962812161063">Upravljanje profilom</translation>
 <translation id="3112892588078695695">Broj telefona: <ph name="PHONE" />.</translation>
 <translation id="3113284927548439113">Treća smena</translation>
-<translation id="3113930177999394798">Unesite @history da biste pretražili istoriju pregledanja koju omogućava veštačka inteligencija</translation>
 <translation id="3114040155724590991">Ažuriranje Android sistema
     Pokretanje aplikacije može da traje duže nego obično.</translation>
 <translation id="3114197119223448048">nova aktivnost</translation>
@@ -1426,7 +1421,6 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="3413466783792948876">Najbezbednije je da posetite ovaj sajt kasnije ako koristite javnu mrežu. Rizik je manji sa pouzdane mreže, poput kućne ili poslovne WiFi mreže.</translation>
 <translation id="3414952576877147120">Veličina:</translation>
 <translation id="341513675006332771">Dugme Igraj igru Chrome dinosaurus, aktivirajte ga da biste igrali igru Dinosaurus u Chrome-u</translation>
-<translation id="3415471717466570460">Pretrage, najbolja podudaranja i sadržaj stranica šalju se Google-u i osobe koje pregledaju mogu da ih vide radi poboljšanja ove funkcije. Ovo je eksperimentalna funkcija i neće uvek raditi kako treba.</translation>
 <translation id="3417390269491141648">Uporedi moje opcije zdravstvenog osiguranja i navedi ključne razlike između njih</translation>
 <translation id="3421387094817716717">Javni ključ eliptične krive</translation>
 <translation id="3422248202833853650">Probajte da izađete iz drugih programa da biste oslobodili memoriju.</translation>
@@ -1904,7 +1898,6 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4185037616931963178">Bezbedno ažurirajte broj obeštećenja</translation>
 <translation id="4186035307311647330">Opozovi praćenje cene</translation>
-<translation id="4190446002599583608">Pretraga istorije, koju omogućava AI</translation>
 <translation id="4191334393248735295">Dužina</translation>
 <translation id="4195459680867822611">Dugme Prikaži Chrome savete, aktivirajte ga da biste saznali više o Chrome funkcijama</translation>
 <translation id="4195643157523330669">Otvori na novoj kartici</translation>
@@ -1951,7 +1944,6 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="424063167283213501">Sačuvajte broj registrovanog putnika</translation>
 <translation id="4241830393007970744">Napadači na sajtu koji ste probali da posetite mogu da vas prevare da instalirate softver ili otkrijete stvari poput lozinki, telefona ili brojeva kreditnih kartica.</translation>
 <translation id="4242380780309416996">Koverta (teška)</translation>
-<translation id="4242981939686657948">Da biste omogućili efikasniji način pretrage istorije pregledanja, uključite</translation>
 <translation id="4244926541863471678">Film</translation>
 <translation id="42481816218163154">Napravi 15-minutnu jutarnju rutinu uz koju će mi jutra teći laganije. Pobrini se da obuhvata vežbu svesnosti</translation>
 <translation id="4250343410682686342">Ekran sa greškom za opciju Kupite odmah, platite kasnije otvoren je na celom ekranu.</translation>
@@ -3894,7 +3886,6 @@ Dodatni detalji:
 <translation id="7514365320538308">Preuzmi</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">VR je dozvoljen ovaj put</translation>
-<translation id="7517198908921983825">Predlaže Gemini · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Koverta C10</translation>
 <translation id="7518003948725431193">Nijedna veb-stranica nije pronađena za veb adresu: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -4391,7 +4382,6 @@ Dodatni detalji:
 <translation id="8350416046273606058">Prečica ne može da sadrži razmake: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="8351131234907093545">Napravite belešku</translation>
 <translation id="8352849934814541340">Administrator ovog uređaja je instalirao aplikacije za dodatne funkcije. Aplikacije imaju pristup nekim od podataka.</translation>
-<translation id="8353273112634584260">Omogućava Personalizovana inteligencija pomoću Gemini-ja. Zahtevi, naslovi stranica i URL-ovi mogu da se pregledaju radi poboljšanja poboljšanog automatskog popunjavanja.</translation>
 <translation id="8355270400102541638">Kontekst lokalnog otkazivanja:</translation>
 <translation id="8362914115861174987">Prevodi na jezik</translation>
 <translation id="8363502534493474904">da isključite režim rada u avionu</translation>
@@ -4739,7 +4729,6 @@ Dodatni detalji:
 <translation id="9001074447101275817">Proksi <ph name="DOMAIN" /> zahteva korisničko ime i lozinku.</translation>
 <translation id="9001963517402879850">Skočite!</translation>
 <translation id="9002677862950442746">Verifikacioni kôd: <ph name="OTP" /></translation>
-<translation id="9003263770394939629">Predlaže Gemini. Upravljajte poboljšanim automatskim popunjavanjem u podešavanjima.</translation>
 <translation id="9003639428623471314">Koverta Kahu</translation>
 <translation id="9004367719664099443">VR sesija je u toku</translation>
 <translation id="9005998258318286617">Učitavanje PDF dokumenta nije uspelo.</translation>
@@ -4758,7 +4747,6 @@ Dodatni detalji:
 <translation id="9027531288681624875">Da biste izašli iz režima celog ekrana, pritisnite i zadržite |<ph name="ACCELERATOR" />|</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Bezbednosna greška</translation>
-<translation id="9035699147763101514">Omogućava Personalizovana inteligencija pomoću Gemini-ja. Upravljajte izborima u podešavanjima.</translation>
 <translation id="9035824888276246493">Sačuvaj bezbednosne kodove</translation>
 <translation id="9036306139374661733">Želite li da dozvolite mikrofon?</translation>
 <translation id="9036484080057916082">Lista vremenskih oznaka potpisanih sertifikata</translation>
@@ -4913,7 +4901,6 @@ Dodatni detalji:
 <translation id="961930410699694996">Lokacija je dozvoljena ovaj put</translation>
 <translation id="962484866189421427">Ovaj sadržaj možda pokušava da instalira obmanjujuće aplikacije koje se pretvaraju da su nešto drugo ili da prikupljaju podatke koji mogu da se koriste za praćenje. <ph name="BEGIN_LINK" />Prikaži<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">Na osnovu zakona u vašem regionu Chromium traži da odaberete podrazumevani pretraživač. Ovi pretraživači su popularni u vašem regionu i prikazuju se nasumičnim redosledom.</translation>
-<translation id="963837307749850257">Svi korisnici</translation>
 <translation id="963988220224168636">Bezbedno dodajte broj obeštećenja u Google novčanik</translation>
 <translation id="964050462028070434">Upravljajte lozinkama i pristupnim kodovima…</translation>
 <translation id="964681140808832181">Da, želim da otkažem</translation>

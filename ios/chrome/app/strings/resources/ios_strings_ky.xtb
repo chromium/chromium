@@ -1264,6 +1264,7 @@
 <translation id="498624032394115435">Шилтемеси бар колдонуучулардын баары бардык өтмөктөрдү түзөтө алышат.</translation>
 <translation id="4986428648020277392">Сурам: Кайсынысын сатып алсам болот? 3 ичинен 2</translation>
 <translation id="498768198683310172">Gemini'ды колдонуп баштаңыз</translation>
+<translation id="4989163558385430922">Баарын көрүү</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" /> аккаунтун уюмуңуз тескейт.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Өтмөктөр тобунун түсү: <ph name="COLOR" /></translation>
@@ -2027,7 +2028,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="7346922058131593019">Эмненин үстүндө иштегиңиз келет, <ph name="USER_FIRST_NAME" />?</translation>
 <translation id="7347998088283246662">Сырсөздөрдү, таржымалды, кыстармаларды жана башкаларды өткөрүп алуу</translation>
 <translation id="7352651011704765696">Бир жерден ката кетти</translation>
-<translation id="7357999308187750900">Баарын көрүү</translation>
 <translation id="736564850024123010">Кызматты жекелештирүү үчүн дарек тилкесинин абалын өзгөртүңүз.</translation>
 <translation id="7366909168761621528">Серептөө дайындары</translation>
 <translation id="7367530036083223701">Сырсөздөрдү башкаргыч виджети менен сырсөздөрдү башкы экрандан коопсуз колдонуңуз.</translation>
@@ -2361,7 +2361,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8333459276976141586">Live микрофонуңузду колдонот. Live баскычы басылганда, микрофон күйгүзүлөт. Микрофонду өчүрүү үчүн токтотуу баскычын басып же Gemini'ды жабыңыз.</translation>
 <translation id="833647236762414178">Сайттарга жана колдонмолорго оңой кирүү үчүн сырсөздөрдү жана киргизүүчү ачкычтарды түзүп, сактап жана тескеңиз. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Маалыматтын камдык көчүрмөсүн сактап, башка түзмөктө колдоно аласыз.</translation>
-<translation id="8345328955902001853">{count,plural, =1{Кийинки деңгээлге өтүү үчүн дагы 1 тапшырманы аткарыңыз}other{Кийинки деңгээлге өтүү үчүн дагы {count} тапшырманы аткарыңыз}}</translation>
 <translation id="8348530355586151720">Үч чекиттүү менюну таптаңыз</translation>
 <translation id="8349305172487531364">Кыстармалар тилкеси</translation>
 <translation id="8360164927489392419">Live режиминдеги аракеттериңиз жана ошол режимде бөлүшкөн нерселериңиз <ph name="BEGIN_LINK" />Gemini колдонмолорунун купуялык билдирүүсүнө<ph name="END_LINK" /> ылайык сакталат жана иштелет. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
@@ -2586,7 +2585,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, кадалган сайт</translation>
 <translation id="8990960056509724223">Уюмуңуздун эрежелеринен улам файл сакталган жок</translation>
 <translation id="8998289560386111590">Түзмөгүңүздө жеткиликтүү эмес</translation>
-<translation id="9003263770394939629">Gemini сунуштады. Параметрлерден жакшыртылган автотолтурууну тескеңиз.</translation>
 <translation id="9003677638446136377">Кайра текшерүү</translation>
 <translation id="9006453925669499173">Меню → Жаңы жашыруун өтмөк</translation>
 <translation id="9008201768610948239">Этибарга албоо</translation>
@@ -2595,7 +2593,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="9029650858822697271">Аккаунттан чыгып кеттиңиз</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Серептөө дайындарын өчүрүүнү ырастаңыз</translation>
-<translation id="9035699147763101514">Gemini менен Personal Intelligence сунуштайт. Параметрлерден тандоолоруңузду тескеңиз.</translation>
 <translation id="9038526468059454274">Кыскача жыйынтыктаңыз:</translation>
 <translation id="9039373489628511875">Өткөрүү жөндөмдүүлүгү</translation>
 <translation id="9042893549633094279">Купуялык жана коопсуздук</translation>

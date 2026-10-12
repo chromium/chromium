@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Kies toestemming vir <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Stoor IBAN?</translation>
 <translation id="1113869188872983271">Ontdoen herrangskikking</translation>
-<translation id="1117709830616495622">Aangedryf deur Persoonlike Intelligensie met Gemini.</translation>
 <translation id="111897705806685148">Gebruik toegangsleutel van ’n ander toestel</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab en dan Enter om te bestuur watter Chrome-inligting jy in jou Google-rekening stoor</translation>
 <translation id="1121990216147052230">Maak vir my ’n doenlys</translation>
@@ -532,7 +531,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1890171020361705182">Dinosourusspeletjie. 'n Gepiekseleerde dinosourus systap kaktusse en pterodaktiele terwyl dit oor 'n verlate landskap hardloop. Tik om oor hindernisse te spring wanneer jy 'n oudiowenk hoor.</translation>
 <translation id="1898423065542865115">Filtrering</translation>
 <translation id="1898678876221454577">Meld aan om jou skandering te stoor</translation>
-<translation id="1898804291554630487">Vra oor hierdie bladsy</translation>
 <translation id="1901443836186977402">{1,plural, =1{Hierdie bediener kon nie bewys dat dit <ph name="DOMAIN" /> is nie. Die sekuriteitsertifikaat daarvan het in die afgelope dag verval. Dit is dalk veroorsaak deur 'n wanopstelling of 'n aanvaller wat jou verbinding onderskep het. Jou rekenaar se horlosie is tans gestel op <ph name="CURRENT_DATE" />. Lyk dit reg? Indien nie, moet jy jou stelsel se horlosie regstel en hierdie bladsy dan herlaai.}other{Hierdie bediener kon nie bewys dat dit <ph name="DOMAIN" /> is nie. Die sekuriteitsertifikaat daarvan het # dae gelede verval. Dit is dalk veroorsaak deur 'n wanopstelling of 'n aanvaller wat jou verbinding onderskep. Jou rekenaar se horlosie is tans gestel op <ph name="CURRENT_DATE" />. Lyk dit reg? Indien nie, moet jy jou stelsel se horlosie regstel en hierdie bladsy dan herlaai.}}</translation>
 <translation id="190166348986967700">Jou administrateur sal op <ph name="DATE_TIME" /> jou lêers na <ph name="CLOUD_PROVIDER" /> begin oplaai. Hou jou toestel gekoppel tot jou lêeroplaai voltooi is. Jy sal tydens die oplaai net plaaslike lêers kan lees.</translation>
 <translation id="1902576642799138955">Geldigheidtydperk</translation>
@@ -841,8 +839,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2384307209577226199">Ondernemingverstek</translation>
 <translation id="2385809941344967209">Dateer Chrome in jou Chrome-instellings op</translation>
 <translation id="2386255080630008482">Bediener se sertifikaat is herroep.</translation>
-<translation id="2387424091060104123">Voorgestel deur Gemini · <ph name="SRC_LINK" />Bekyk bronne<ph name="END_SRC_LINK" />
-Jy kan hierdie voorstel uit Chrome verwyder. Jou oorspronklike bron sal nie uitgevee word nie. <ph name="MANAGE_LINK" />Bestuur Gevorderde Outovul<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">Wei uit</translation>
 <translation id="2392959068659972793">Wys beleide met geen waarde gestel nie</translation>
 <translation id="239429038616798445">Daardie versendingmetode is nie beskikbaar nie. Probeer 'n ander metode.</translation>
@@ -1245,7 +1241,6 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="3109788962812161063">Profielbestuur</translation>
 <translation id="3112892588078695695">Foonnommer: <ph name="PHONE" /></translation>
 <translation id="3113284927548439113">Derde skof</translation>
-<translation id="3113930177999394798">Tik @geskiedenis om jou blaaigeskiedenis te deur soek, aangedryf deur KI</translation>
 <translation id="3114040155724590991">Dateer tans Android-stelsel op
     Dit kan langer as gewoonlik neem om jou app te begin.</translation>
 <translation id="3114197119223448048">nuwe aktiwiteit</translation>
@@ -1426,7 +1421,6 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="3413466783792948876">As jy 'n publieke netwerk gebruik, is dit veiliger om later hierdie werf te besoek. Daar is minder risiko met ’n vertroude netwerk, soos die wi-fi by jou huis of werk.</translation>
 <translation id="3414952576877147120">Grootte:</translation>
 <translation id="341513675006332771">Knoppie om Chrome Dino-speletjie te speel; aktiveer om die Dino Run-speletjie in Chrome te speel</translation>
-<translation id="3415471717466570460">Jou soektogte, beste passings en hul bladsyinhoud word na Google toe gestuur en kan gesien word deur ’n mens wat kontrolering uitvoer om hierdie kenmerk te verbeter. Dit is ’n eksperimentele kenmerk en sal dit nie altyd regkry nie.</translation>
 <translation id="3417390269491141648">Vergelyk my gesondheidpakketopsies en sit die belangrikste verskille tussen hulle uiteen</translation>
 <translation id="3421387094817716717">Elliptiesekurwe- publieke sleutel</translation>
 <translation id="3422248202833853650">Probeer opwindende ander programme om berging beskikbaar te maak.</translation>
@@ -1904,7 +1898,6 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4185037616931963178">Dateer regstellingnommer veilig op</translation>
 <translation id="4186035307311647330">Stop prysnasporing</translation>
-<translation id="4190446002599583608">Geskiedenissoektog, aangedryf deur KI</translation>
 <translation id="4191334393248735295">Lengte</translation>
 <translation id="4195459680867822611">Knoppie om Chrome-wenke te sien; aktiveer om meer oor Chrome-kenmerke te wete te kom</translation>
 <translation id="4195643157523330669">Maak in nuwe oortjie oop</translation>
@@ -1951,7 +1944,6 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="424063167283213501">Stoor bekendereisigernommer</translation>
 <translation id="4241830393007970744">Aanvallers op die webwerf wat jy probeer besoek het, kan jou dalk mislei om sagteware te installeer of dinge soos jou wagwoorde, foonnommer of kredietkaartnommers te openbaar.</translation>
 <translation id="4242380780309416996">Koevert (swaar)</translation>
-<translation id="4242981939686657948">Vir ’n kragtiger manier om jou blaaigeskiedenis te deursoek, skakel aan</translation>
 <translation id="4244926541863471678">Film</translation>
 <translation id="42481816218163154">Skep ’n oggendroetine van 15 minute wat help om my oggende gladder te laat verloop. Maak seker dat dit ’n bewustheidsoefening insluit</translation>
 <translation id="4250343410682686342">Koop-Nou-Betaal-Later-foutskerm is teen volle hoogte oopgemaak.</translation>
@@ -3894,7 +3886,6 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7514365320538308">Laai af</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">VR word hierdie keer toegelaat</translation>
-<translation id="7517198908921983825">Voorgestel deur Gemini · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Koevert C10</translation>
 <translation id="7518003948725431193">Geen webbladsy is vir die volgende webadres gevind nie: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -4391,7 +4382,6 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8350416046273606058">Kortpad kan nie spasies bevat nie: “<ph name="SHORTCUT_NAME" />”</translation>
 <translation id="8351131234907093545">Skep nota</translation>
 <translation id="8352849934814541340">Die administrateur van hierdie toestel het apps vir bykomende funksies geïnstalleer. Apps het toegang tot sommige van jou data.</translation>
-<translation id="8353273112634584260">Aangedryf deur Persoonlike Intelligensie met Gemini. Jou versoeke, bladsytitels en URL’e kan nagegaan word om Gevorderde Outovul te verbeter.</translation>
 <translation id="8355270400102541638">Konteks van plaaslike omval:</translation>
 <translation id="8362914115861174987">Vertaal in</translation>
 <translation id="8363502534493474904">Vliegtuigmodus afskakel</translation>
@@ -4738,7 +4728,6 @@ Bykomende besonderhede:
 <translation id="9001074447101275817">Die instaanbediener <ph name="DOMAIN" /> vereis 'n gebruikernaam en wagwoord.</translation>
 <translation id="9001963517402879850">Spring!</translation>
 <translation id="9002677862950442746">Verifikasiekode: <ph name="OTP" /></translation>
-<translation id="9003263770394939629">Voorgestel deur Gemini. Bestuur verbeterde outovul in instellings.</translation>
 <translation id="9003639428623471314">Koevert Kahu</translation>
 <translation id="9004367719664099443">VR-sessie is aan die gang</translation>
 <translation id="9005998258318286617">Kon nie 'n PDF-dokument laai nie.</translation>
@@ -4757,7 +4746,6 @@ Bykomende besonderhede:
 <translation id="9027531288681624875">Druk en hou |<ph name="ACCELERATOR" />| om uit volskerm te gaan</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Sekuriteitsfout</translation>
-<translation id="9035699147763101514">Aangedryf deur Persoonlike Intelligensie met Gemini. Bestuur jou keuses in instellings.</translation>
 <translation id="9035824888276246493">Stoor sekuriteitskodes</translation>
 <translation id="9036306139374661733">Laat mikrofoon toe?</translation>
 <translation id="9036484080057916082">Getekende sertifikaat se tydstempellys</translation>
@@ -4912,7 +4900,6 @@ Bykomende besonderhede:
 <translation id="961930410699694996">Ligging nie hierdie keer toegelaat nie</translation>
 <translation id="962484866189421427">Hierdie inhoud kan probeer om misleidende programme te installeer wat voorgee om iets anders te wees of wat data insamel wat gebruik kan word om jou na te spoor. <ph name="BEGIN_LINK" />Wys in elk geval<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">Op grond van ’n wet in jou streek, vra Chromium jou om jou versteksoekenjin te kies. Hierdie soekenjins is gewild in jou streek en word in lukrake volgorde gewys.</translation>
-<translation id="963837307749850257">Alle gebruikers</translation>
 <translation id="963988220224168636">Voeg regstellingnommer veilig by Google Wallet</translation>
 <translation id="964050462028070434">Bestuur wagwoorde en toegangsleutels …</translation>
 <translation id="964681140808832181">Ja, ek wil kanselleer</translation>

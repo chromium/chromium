@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Vælg tilladelse til <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Vil du gemme IBAN?</translation>
 <translation id="1113869188872983271">&amp;Fortryd omarrangering</translation>
-<translation id="1117709830616495622">Leveret af Personlig intelligens med Gemini.</translation>
 <translation id="111897705806685148">Brug en adgangsnøgle fra en anden enhed</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" /> – tryk på Tab-tasten efterfulgt af Enter for at administrere, hvilke Chrome-oplysninger du gemmer på din Google-konto</translation>
 <translation id="1121990216147052230">Lav en huskeliste til mig</translation>
@@ -532,7 +531,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1890171020361705182">Dino-spillet. En pixeleret dinosaur suser gennem et øde landskab, hvor den hopper over kaktusser og undviger flyveøgler. Når du hører en lyd, skal du trykke for at hoppe over forhindringer.</translation>
 <translation id="1898423065542865115">Filtrering</translation>
 <translation id="1898678876221454577">Log ind for at gemme din scanning</translation>
-<translation id="1898804291554630487">Stil spørgsmål om denne side</translation>
 <translation id="1901443836186977402">{1,plural, =1{Denne server kunne ikke bevise, at den er <ph name="DOMAIN" />, da sikkerhedscertifikatet udløb inden for det seneste døgn. Dette kan skyldes en fejlkonfiguration, eller at en hacker har opfanget din forbindelse. Din computers ur er i øjeblikket indstillet til <ph name="CURRENT_DATE" />. Er det korrekt? Hvis ikke, skal du indstille uret korrekt og derefter opdatere denne side.}one{Denne server kunne ikke bevise, at den er <ph name="DOMAIN" />, da sikkerhedscertifikatet udløb for # dag siden. Dette kan skyldes en fejlkonfiguration, eller at en hacker har opfanget din forbindelse. Uret på din computer er indstillet til <ph name="CURRENT_DATE" />. Er det korrekt? Hvis ikke, skal du indstille uret korrekt og opdatere denne side.}other{Denne server kunne ikke bevise, at den er <ph name="DOMAIN" />, da sikkerhedscertifikatet udløb for # dage siden. Dette kan skyldes en fejlkonfiguration, eller at en hacker har opfanget din forbindelse. Uret på din computer er indstillet til <ph name="CURRENT_DATE" />. Er det korrekt? Hvis ikke, skal du indstille uret korrekt og opdatere denne side.}}</translation>
 <translation id="190166348986967700">Din administrator starter uploaden af dine filer til <ph name="CLOUD_PROVIDER" /> <ph name="DATE_TIME" />. Sørg for, at din enhed er forbundet, indtil din filupload er fuldført. Under uploaden kan du kun læse lokale filer.</translation>
 <translation id="1902576642799138955">Gyldighedsperiode</translation>
@@ -841,8 +839,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2384307209577226199">Virksomhedsstandard</translation>
 <translation id="2385809941344967209">Opdater Chrome i dine Chrome-indstillinger</translation>
 <translation id="2386255080630008482">Serverens certifikat er blevet tilbagekaldt.</translation>
-<translation id="2387424091060104123">Foreslået af Gemini · <ph name="SRC_LINK" />Se kilder<ph name="END_SRC_LINK" />
-Du kan fjerne dette forslag fra Chrome. Din oprindelige kilde slettes ikke. <ph name="MANAGE_LINK" />Administrer forbedret autofyld<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">Uddyb</translation>
 <translation id="2392959068659972793">Vis politikker uden nogen værdier</translation>
 <translation id="239429038616798445">Denne forsendelsesmetode er ikke tilgængelig. Prøv en anden metode.</translation>
@@ -1245,7 +1241,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="3109788962812161063">Profiladministration</translation>
 <translation id="3112892588078695695">Telefonnummer: <ph name="PHONE" />.</translation>
 <translation id="3113284927548439113">Tredje arbejdsskift</translation>
-<translation id="3113930177999394798">Skriv @history for at søge i din browserhistorik ved hjælp af AI</translation>
 <translation id="3114040155724590991">Opdaterer Android-systemet
     Det kan tage længere tid end normalt at åbne din app.</translation>
 <translation id="3114197119223448048">ny aktivitet</translation>
@@ -1426,7 +1421,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="3413466783792948876">Hvis du bruger et offentligt netværk, så er det sikrest at vente og besøge dette website senere. Det er mindre risikabelt at bruge et netværk, du har tillid til, f.eks. Wi-Fi-netværket derhjemme eller på din arbejdsplads.</translation>
 <translation id="3414952576877147120">Størrelse:</translation>
 <translation id="341513675006332771">Knappen Spil Chrome Dino, aktivér for at spille Dino Run-spillet i Chrome</translation>
-<translation id="3415471717466570460">Dine søgninger, bedste matches og deres sideindhold sendes til Google og kan blive set af menneskelige kontrollanter for at forbedre denne funktion. Dette er en eksperimentel funktion, som ikke altid rammer plet.</translation>
 <translation id="3417390269491141648">Sammenlign mine muligheder for sundhedsforsikring, og vis de vigtigste forskelle på dem</translation>
 <translation id="3421387094817716717">Offentlig nøgle med elliptisk kurve</translation>
 <translation id="3422248202833853650">Prøv at lukke programmer for at frigøre hukommelse.</translation>
@@ -1904,7 +1898,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4185037616931963178">Opdater redress-nummeret på en sikker måde</translation>
 <translation id="4186035307311647330">Hold ikke længere øje med prisen</translation>
-<translation id="4190446002599583608">Søgning i historikken ved hjælp af AI</translation>
 <translation id="4191334393248735295">Længde</translation>
 <translation id="4195459680867822611">Knappen Se tips til Chrome, aktivér for at få flere oplysninger om Chrome-funktioner</translation>
 <translation id="4195643157523330669">Åbn på ny fane</translation>
@@ -1951,7 +1944,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="424063167283213501">Gem Known Traveler-nummer</translation>
 <translation id="4241830393007970744">Hackere på det website, du har forsøgt at besøge, kan narre dig til at installere software eller afsløre data som f.eks. dine adgangskoder, dit telefonnummer eller dine kreditkortnumre.</translation>
 <translation id="4242380780309416996">Kuvert (tung)</translation>
-<translation id="4242981939686657948">Hvis du vil søge i din browserhistorik på en mere effektiv måde, skal du aktivere</translation>
 <translation id="4244926541863471678">Film</translation>
 <translation id="42481816218163154">Opret en morgenrutine på 15 minutter, der kan hjælpe mig med at få en mere afslappet morgen. Sørg for, at den indeholder en mindfulnessøvelse</translation>
 <translation id="4250343410682686342">Skærmen med fejlmeddelelse for Køb nu, betal senere er åbnet i fuld højde.</translation>
@@ -3895,7 +3887,6 @@ Yderligere oplysninger:
 <translation id="7514365320538308">Download</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">VR er tilladt denne gang</translation>
-<translation id="7517198908921983825">Foreslået af Gemini · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Konvolut C10</translation>
 <translation id="7518003948725431193">Ingen webside fundet på webadressen: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -4392,7 +4383,6 @@ Yderligere oplysninger:
 <translation id="8350416046273606058">Genvejen må ikke indeholde mellemrum: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Opret note</translation>
 <translation id="8352849934814541340">Administratoren af denne enhed har installeret apps til yderligere funktioner. De pågældende apps har adgang til nogle af dine data.</translation>
-<translation id="8353273112634584260">Leveret af Personlig intelligens med Gemini. Dine anmodninger, sidetitler og webadresser kan blive gennemgået for at gøre forbedret autofyld endnu bedre.</translation>
 <translation id="8355270400102541638">Lokal nedbrudskontekst:</translation>
 <translation id="8362914115861174987">Oversæt til</translation>
 <translation id="8363502534493474904">Deaktivere flytilstand</translation>
@@ -4740,7 +4730,6 @@ Yderligere oplysninger:
 <translation id="9001074447101275817">Proxyserveren <ph name="DOMAIN" /> kræver et brugernavn og en adgangskode.</translation>
 <translation id="9001963517402879850">Hop!</translation>
 <translation id="9002677862950442746">Verificeringskode: <ph name="OTP" /></translation>
-<translation id="9003263770394939629">Foreslået af Gemini. Administrer forbedret autofyld i indstillingerne.</translation>
 <translation id="9003639428623471314">Konvolut Kahu</translation>
 <translation id="9004367719664099443">VR-sessionen er i gang</translation>
 <translation id="9005998258318286617">PDF-dokumentet kunne ikke indlæses.</translation>
@@ -4759,7 +4748,6 @@ Yderligere oplysninger:
 <translation id="9027531288681624875">Hold fingeren på |<ph name="ACCELERATOR" />| for at afslutte fuld skærm</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Sikkerhedsfejl</translation>
-<translation id="9035699147763101514">Leveret af Personlig intelligens med Gemini. Administrer dine valg i indstillingerne.</translation>
 <translation id="9035824888276246493">Gem sikkerhedskoder</translation>
 <translation id="9036306139374661733">Vil du give adgang til mikrofonen?</translation>
 <translation id="9036484080057916082">Liste over tidsstempler for signeret certifikat</translation>
@@ -4914,7 +4902,6 @@ Yderligere oplysninger:
 <translation id="961930410699694996">Der er givet adgang til lokation denne gang</translation>
 <translation id="962484866189421427">Dette indhold kan forsøge at installere vildledende apps, der foregiver at være noget andet, eller som indsamler data, der kan anvendes til at overvåge dig. <ph name="BEGIN_LINK" />Vis alligevel<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">I henhold til lovgivningen i din region beder Chromium dig om at vælge din standardsøgemaskine. Disse søgemaskiner er populære i din region og vises i vilkårlig rækkefølge.</translation>
-<translation id="963837307749850257">Alle brugere</translation>
 <translation id="963988220224168636">Føj et redress-nummer til Google Wallet på sikker vis</translation>
 <translation id="964050462028070434">Administrer adgangskoder og adgangsnøgler…</translation>
 <translation id="964681140808832181">Ja, jeg vil annullere</translation>

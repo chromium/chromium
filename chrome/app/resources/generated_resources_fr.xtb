@@ -5613,6 +5613,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5246282308050205996"><ph name="APP_NAME" /> a planté. Cliquez sur cette info-bulle pour redémarrer l'application.</translation>
 <translation id="5247051749037287028">Nom à afficher (facultatif)</translation>
 <translation id="5247243947166567755">Sélectionner <ph name="BOOKMARK_TITLE" /></translation>
+<translation id="524751727772074981">Posez vos questions à Gemini dans Chrome sans changer de page</translation>
 <translation id="5248934139541843042">Afficher l'organisateur</translation>
 <translation id="5249624017678798539">Le navigateur a planté avant la fin du téléchargement.</translation>
 <translation id="5249818097095743806">Utilisez votre clé de sécurité</translation>
@@ -6322,7 +6323,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5828181959764767444">Coucher de soleil</translation>
 <translation id="5828545842856466741">Ajouter un profil…</translation>
 <translation id="5828633471261496623">Impression...</translation>
-<translation id="5829137022934788067">Donne-moi des infos sur cette sélection</translation>
 <translation id="5829214552954466783">Partager le <ph name="CREDENTIAL_TYPE" /> pour le nom d'utilisateur : <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">Vos modes de paiement dans Google Wallet</translation>
 <translation id="5830512293931520102">Votre mot de passe est chiffré et personne ne peut le voir</translation>

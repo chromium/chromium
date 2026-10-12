@@ -1265,6 +1265,7 @@
 <translation id="498624032394115435">Свако са линком може да мења све картице.</translation>
 <translation id="4986428648020277392">Упит: Шта да купим? 2. од 3</translation>
 <translation id="498768198683310172">Почните да користите Gemini</translation>
+<translation id="4989163558385430922">Прикажи све</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, овим управља организација.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Боја групе картица <ph name="COLOR" /></translation>
@@ -2028,7 +2029,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7346922058131593019">На чему желите да радите, <ph name="USER_FIRST_NAME" />?</translation>
 <translation id="7347998088283246662">Увезите лозинке, историју, обележиваче и друго</translation>
 <translation id="7352651011704765696">Дошло је до грешке</translation>
-<translation id="7357999308187750900">Прикажи све</translation>
 <translation id="736564850024123010">Промените положај траке за адресу да бисте имали прилагођени доживљај.</translation>
 <translation id="7366909168761621528">Подаци прегледања</translation>
 <translation id="7367530036083223701">Безбедно приступајте лозинкама са почетног екрана помоћу виџета Менаџер лозинки.</translation>
@@ -2362,7 +2362,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8333459276976141586">Live ће користити микрофон. Додиром на дугме Live укључује се микрофон. Да бисте искључили микрофон, додирните дугме Заустави или затворите Gemini.</translation>
 <translation id="833647236762414178">Правите и чувајте лозинке и приступне кључеве и управљајте њима да бисте се лако пријављивали на сајтове и у апликације. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Правите резервне копије садржаја и користите га на било ком уређају.</translation>
-<translation id="8345328955902001853">{count,plural, =1{Довршите још 1 задатак да бисте прешли на следећи ниво}one{Довршите још {count} задатак да бисте прешли на следећи ниво}few{Довршите још {count} задатка да бисте прешли на следећи ниво}other{Довршите још {count} задатака да бисте прешли на следећи ниво}}</translation>
 <translation id="8348530355586151720">Додирните мени са три тачке</translation>
 <translation id="8349305172487531364">Трака са обележивачима</translation>
 <translation id="8360164927489392419">Снимци интеракција са Live-ом и садржај који делите са њим чувају се и обрађују у складу са <ph name="BEGIN_LINK" />Обавештењем о приватности Gemini апликација<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
@@ -2588,7 +2587,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, закачен сајт</translation>
 <translation id="8990960056509724223">Чување фајла није могуће због смерница организације</translation>
 <translation id="8998289560386111590">Није доступно на вашем уређају</translation>
-<translation id="9003263770394939629">Предлаже Gemini. Управљајте побољшаним аутоматским попуњавањем у подешавањима.</translation>
 <translation id="9003677638446136377">Проверите поново</translation>
 <translation id="9006453925669499173">Мени → Нова картица без архивирања</translation>
 <translation id="9008201768610948239">Игнориши</translation>
@@ -2597,7 +2595,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="9029650858822697271">Одјављени сте</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Потврдите брисање података прегледања</translation>
-<translation id="9035699147763101514">Омогућава Персонализована интелигенција помоћу Gemini-ја. Управљајте изборима у подешавањима.</translation>
 <translation id="9038526468059454274">Резимирајте помоћу</translation>
 <translation id="9039373489628511875">Пропусни опсег</translation>
 <translation id="9042893549633094279">Приватност и безбедност</translation>

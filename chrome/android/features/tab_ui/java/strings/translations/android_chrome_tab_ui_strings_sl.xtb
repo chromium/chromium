@@ -15,7 +15,6 @@
 <translation id="1321004960118052490">Neaktivni elementi se ne bodo kopičili</translation>
 <translation id="1329584516321524826">Pravkar posodobljeno</translation>
 <translation id="1340839264183302272">Zapusti skupino</translation>
-<translation id="1386966479075994683">Razširi zavihke</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{Razširitev deljene skupine zavihkov <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_ONE" /> zavihkom, barva: <ph name="COLOR_NAME" />, z oznako <ph name="CARD_LABEL" />.}one{Razširitev deljene skupine zavihkov <ph name="TITLE_OF_GROUP" /> s/z <ph name="TABS_COUNT_MANY" /> zavihkom, barva: <ph name="COLOR_NAME" />, z oznako <ph name="CARD_LABEL" />.}two{Razširitev deljene skupine zavihkov <ph name="TITLE_OF_GROUP" /> s/z <ph name="TABS_COUNT_MANY" /> zavihkoma, barva: <ph name="COLOR_NAME" />, z oznako <ph name="CARD_LABEL" />.}few{Razširitev deljene skupine zavihkov <ph name="TITLE_OF_GROUP" /> s/z <ph name="TABS_COUNT_MANY" /> zavihki, barva: <ph name="COLOR_NAME" />, z oznako <ph name="CARD_LABEL" />.}other{Razširitev deljene skupine zavihkov <ph name="TITLE_OF_GROUP" /> s/z <ph name="TABS_COUNT_MANY" /> zavihki, barva: <ph name="COLOR_NAME" />, z oznako <ph name="CARD_LABEL" />.}}</translation>
 <translation id="1486715732399361704">Vse skupine zavihkov so prikazane tukaj</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Ustvarjeno pred <ph name="NUM_MINS_ONE" /> minuto}one{Ustvarjeno pred <ph name="NUM_MINS_MANY" /> minuto}two{Ustvarjeno pred <ph name="NUM_MINS_MANY" /> minutama}few{Ustvarjeno pred <ph name="NUM_MINS_MANY" /> minutami}other{Ustvarjeno pred <ph name="NUM_MINS_MANY" /> minutami}}</translation>
@@ -66,6 +65,7 @@
 <translation id="2662028055331606429">Ocena <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Na spletno mesto</translation>
 <translation id="2671423594960767771">Deli skupino</translation>
+<translation id="2729310339366257582">Strni zavihke</translation>
 <translation id="2734252994837336591">{NUM_WEEKS,plural, =1{Posodobljeno pred <ph name="NUM_WEEKS_ONE" /> tednom}one{Posodobljeno pred <ph name="NUM_WEEKS_MANY" /> tednom}two{Posodobljeno pred <ph name="NUM_WEEKS_MANY" /> tednoma}few{Posodobljeno pred <ph name="NUM_WEEKS_MANY" /> tedni}other{Posodobljeno pred <ph name="NUM_WEEKS_MANY" /> tedni}}</translation>
 <translation id="2753877351161418426">{NUM_HOURS,plural, =1{Posodobljeno pred <ph name="NUM_HOURS_ONE" /> uro}one{Posodobljeno pred <ph name="NUM_HOURS_MANY" /> uro}two{Posodobljeno pred <ph name="NUM_HOURS_MANY" /> urama}few{Posodobljeno pred <ph name="NUM_HOURS_MANY" /> urami}other{Posodobljeno pred <ph name="NUM_HOURS_MANY" /> urami}}</translation>
 <translation id="2755485474385016903">Spremembe so vidne vsem v skupini</translation>
@@ -136,7 +136,6 @@
 <translation id="5073204694187207510">Skrij celozaslonsko mrežo</translation>
 <translation id="5076161749301278626">Si želite ogledati mnenja o trgovini?</translation>
 <translation id="5161254044473106830">Naslov je obvezen</translation>
-<translation id="5204584298075822291">Strni zavihke</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome samodejno zapre neaktivne zavihke in skupine zavihkov po <ph name="AUTO_DELETE_DELAY_ONE" /> mesecu. To lahko spremenite v nastavitvah.}one{Chrome samodejno zapre neaktivne zavihke in skupine zavihkov po <ph name="AUTO_DELETE_DELAY_MANY" /> mesecu. To lahko spremenite v nastavitvah.}two{Chrome samodejno zapre neaktivne zavihke in skupine zavihkov po <ph name="AUTO_DELETE_DELAY_MANY" /> mesecih. To lahko spremenite v nastavitvah.}few{Chrome samodejno zapre neaktivne zavihke in skupine zavihkov po <ph name="AUTO_DELETE_DELAY_MANY" /> mesecih. To lahko spremenite v nastavitvah.}other{Chrome samodejno zapre neaktivne zavihke in skupine zavihkov po <ph name="AUTO_DELETE_DELAY_MANY" /> mesecih. To lahko spremenite v nastavitvah.}}</translation>
 <translation id="5254233580564156835">Uporaba pomnilnika: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">Zadnji zavihek</translation>
@@ -191,6 +190,7 @@
 <translation id="709473454666962555">Izbira skupine zavihkov</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Deli zavihek}one{Deli zavihke}two{Deli zavihke}few{Deli zavihke}other{Deli zavihke}}</translation>
 <translation id="7129458170538955174">Informacije o tej trgovini, odprte pri polovični višini.</translation>
+<translation id="7194343495483122559">Razširi zavihke</translation>
 <translation id="7204204600596740190">Način z več izbirami</translation>
 <translation id="7211038039686180558">Skupine zavihkov se samodejno shranjujejo in posodabljajo v vseh napravah, v katerih ste prijavljeni</translation>
 <translation id="7326879924029668159">Oglejte si pravilnik o vračilih in drugo.</translation>

@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Vyberte povolenie pre <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Chcete uložiť IBAN?</translation>
 <translation id="1113869188872983271">&amp;Vrátiť späť zmenu poradia</translation>
-<translation id="1117709830616495622">Táto funkcia využíva inteligenciu na mieru s Gemini.</translation>
 <translation id="111897705806685148">Použiť prístupový kľúč z iného zariadenia</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, stlačením klávesov Tab a potom Enter spravujte, ktoré informácie z Chromu sa ukladajú vo vašom účte Google</translation>
 <translation id="1121990216147052230">Vytvor mi zoznam úloh</translation>
@@ -532,7 +531,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1890171020361705182">Hra s dinosaurom Pixelovaný dinosaurus beží pustou krajinou a vyhýba sa kaktusom a pterodaktylom. Keď začujete zvuk, klepnutím preskočte cez prekážky.</translation>
 <translation id="1898423065542865115">Filtrovanie</translation>
 <translation id="1898678876221454577">Ak chcete sken uložiť, prihláste sa</translation>
-<translation id="1898804291554630487">Spýtajte sa na túto stránku</translation>
 <translation id="1901443836186977402">{1,plural, =1{Tento server nedokázal potvrdiť, či ide o doménu <ph name="DOMAIN" />. Platnosť jej bezpečnostného certifikátu vypršala včera. Môže to byť následok nesprávnej konfigurácie alebo napadnutia vášho pripojenia útočníkom. Hodiny vášho počítača sú momentálne nastavené na <ph name="CURRENT_DATE" />. Je tento čas správny? Ak nie, opravte čas na hodinách systému a potom obnovte túto stránku.}few{Tento server nedokázal potvrdiť, že ide o doménu <ph name="DOMAIN" />. Platnosť jej bezpečnostného certifikátu vypršala pred # dňami. Môže to byť následok nesprávnej konfigurácie alebo napadnutia vášho pripojenia útočníkom. Hodiny vášho počítača sú momentálne nastavené na <ph name="CURRENT_DATE" />. Je tento čas správny? Ak nie, opravte čas na hodinách systému a potom obnovte túto stránku.}many{Tento server nedokázal potvrdiť, že ide o doménu <ph name="DOMAIN" />. Platnosť jej bezpečnostného certifikátu vypršala pred # dňa. Môže to byť následok nesprávnej konfigurácie alebo napadnutia vášho pripojenia útočníkom. Hodiny vášho počítača sú momentálne nastavené na <ph name="CURRENT_DATE" />. Je tento čas správny? Ak nie, opravte čas na hodinách systému a potom obnovte túto stránku.}other{Tento server nedokázal potvrdiť, že ide o doménu <ph name="DOMAIN" />. Platnosť jej bezpečnostného certifikátu vypršala pred # dňami. Môže to byť následok nesprávnej konfigurácie alebo napadnutia vášho pripojenia útočníkom. Hodiny vášho počítača sú momentálne nastavené na <ph name="CURRENT_DATE" />. Je tento čas správny? Ak nie, opravte čas na hodinách systému a potom obnovte túto stránku.}}</translation>
 <translation id="190166348986967700">Správca začne <ph name="CLOUD_PROVIDER" /> nahrávať vaše súbory do služby <ph name="DATE_TIME" />. Ponechajte zariadenie pripojené, kým sa nahrávanie súborov nedokončí. Počas nahrávania budete môcť čítať iba miestne súbory.</translation>
 <translation id="1902576642799138955">Doba platnosti</translation>
@@ -841,8 +839,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2384307209577226199">Predvolené nastavenie na podnikovej úrovni</translation>
 <translation id="2385809941344967209">Aktualizovať Chrome v jeho nastaveniach</translation>
 <translation id="2386255080630008482">Certifikát servera bol zrušený.</translation>
-<translation id="2387424091060104123">Navrhnuté Gemini · <ph name="SRC_LINK" />Zobraziť zdroje<ph name="END_SRC_LINK" />
-Tento návrh môžete z Chromu odstrániť. Pôvodný zdroj sa neodstráni. <ph name="MANAGE_LINK" />Spravovať vylepšené automatické dopĺňanie<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">Rozviesť</translation>
 <translation id="2392959068659972793">Zobraziť pravidlá bez nastavenej hodnoty</translation>
 <translation id="239429038616798445">Tento spôsob dodania nie je k dispozícii. Skúste inú možnosť.</translation>
@@ -1245,7 +1241,6 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="3109788962812161063">Správa profilu</translation>
 <translation id="3112892588078695695">Telefónne číslo: <ph name="PHONE" />.</translation>
 <translation id="3113284927548439113">Tretia zmena</translation>
-<translation id="3113930177999394798">Ak chcete vyhľadávať v histórii prehliadania, ktorá využíva umelú inteligenciu, napíšte @history</translation>
 <translation id="3114040155724590991">Systém Android sa aktualizuje.
     Spustenie aplikácie môže trvať dlhšie než zvyčajne.</translation>
 <translation id="3114197119223448048">nová aktivita</translation>
@@ -1423,7 +1418,6 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="3413466783792948876">Ak používate verejnú sieť, najbezpečnejšie je navštíviť tento web neskôr. Dôveryhodná sieť, napríklad Wi‑Fi u vás doma či v práci, je menej riziková.</translation>
 <translation id="3414952576877147120">Veľkosť:</translation>
 <translation id="341513675006332771">Tlačidlo Hrať hru Chrome Dino, ktorého aktivovaním si môžete zahrať hru Dino Run v Chrome</translation>
-<translation id="3415471717466570460">Vyhľadávania, najlepšie zhody a obsah na ich stránkach sa odosielajú Googlu a môžu ich prezerať kontrolóri na účely zlepšovania tejto funkcie. Toto je experimentálna funkcia a nie vždy funguje správne.</translation>
 <translation id="3417390269491141648">Porovnaj moje možnosti zdravotného poistenia a vysvetli kľúčové rozdiely medzi nimi</translation>
 <translation id="3421387094817716717">Verejný kľúč založený na eliptickej krivke</translation>
 <translation id="3422248202833853650">Skúste ukončiť ostatné programy a uvoľniť tak miesto v pamäti.</translation>
@@ -1900,7 +1894,6 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4185037616931963178">Bezpečne si aktualizujte číslo Redress Control Number</translation>
 <translation id="4186035307311647330">Prestať sledovať cenu</translation>
-<translation id="4190446002599583608">Vyhľadávanie v histórii využívajúce umelú inteligenciu</translation>
 <translation id="4191334393248735295">Dĺžka</translation>
 <translation id="4195459680867822611">Tlačidlo Zobraziť tipy Chromu, ktorého aktivovaním zobrazíte informácie o funkciách Chromu</translation>
 <translation id="4195643157523330669">Otvoriť na novej karte</translation>
@@ -1947,7 +1940,6 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="424063167283213501">Uložte číslo Known Traveler Number</translation>
 <translation id="4241830393007970744">Útočníci na webe, na ktorý ste sa pokúsili prejsť, sa vás môžu pokúsiť podvodom presvedčiť, aby ste si nainštalovali softvér alebo prezradili informácie, ako sú vaše heslá, telefónne čísla či čísla kreditných kariet.</translation>
 <translation id="4242380780309416996">Obálka (vysoká gramáž)</translation>
-<translation id="4242981939686657948">Ak chcete vyhľadávať v histórii prehliadania efektívnejšie, zapnite toto nastavenie</translation>
 <translation id="4244926541863471678">Film</translation>
 <translation id="42481816218163154">Vytvor mi 15‑minútovú rannú rutinu, s ktorou budú moje rána bez stresu. Nech obsahuje aj cvičenie bdelej pozornosti.</translation>
 <translation id="4250343410682686342">Obrazovka chyby platby Kúpte hneď, plaťte neskôr je otvorená na celú výšku.</translation>
@@ -3890,7 +3882,6 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="7514365320538308">Stiahnuť</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">Režim VR je momentálne povolený</translation>
-<translation id="7517198908921983825">Navrhol Gemini · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Obálka C10</translation>
 <translation id="7518003948725431193">Na <ph name="URL" /> sa nenašla žiadna webová stránka</translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -4387,7 +4378,6 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="8350416046273606058">Skratka nemôže obsahovať medzery: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Vytvoriť poznámku</translation>
 <translation id="8352849934814541340">Správca tohto zariadenia nainštaloval aplikácie pre ďalšie funkcie. Aplikácie majú prístup k niektorým vašim údajom.</translation>
-<translation id="8353273112634584260">Táto funkcia využíva inteligenciu na mieru s Gemini. Vaše žiadosti, názvy stránok a webové adresy môžu byť skontrolované s cieľom zlepšiť vylepšené automatické dopĺňanie.</translation>
 <translation id="8355270400102541638">Miestny kontext zrútenia:</translation>
 <translation id="8362914115861174987">Preklad do jazyka</translation>
 <translation id="8363502534493474904">Vypnúť režim v lietadle</translation>
@@ -4735,7 +4725,6 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="9001074447101275817">Proxy server <ph name="DOMAIN" /> vyžaduje používateľské meno a heslo.</translation>
 <translation id="9001963517402879850">Skočte!</translation>
 <translation id="9002677862950442746">Overovací kód: <ph name="OTP" /></translation>
-<translation id="9003263770394939629">✨ Navrhnuté Gemini. Vylepšené automatické dopĺňanie môžete spravovať v nastaveniach.</translation>
 <translation id="9003639428623471314">Obálka Kahu</translation>
 <translation id="9004367719664099443">Prebieha relácia VR</translation>
 <translation id="9005998258318286617">Dokument PDF sa nepodarilo načítať.</translation>
@@ -4754,7 +4743,6 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="9027531288681624875">Ak chcete ukončiť režim celej obrazovky, pridržte |<ph name="ACCELERATOR" />|</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Chyba zabezpečenia</translation>
-<translation id="9035699147763101514">Využíva inteligenciu na mieru s Gemini. Svoje voľby môžete spravovať v nastaveniach.</translation>
 <translation id="9035824888276246493">Ukladať bezpečnostné kódy</translation>
 <translation id="9036306139374661733">Chcete povoliť prístup k mikrofónu?</translation>
 <translation id="9036484080057916082">Zoznam časových pečiatok podpísaného certifikátu</translation>
@@ -4908,7 +4896,6 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="961930410699694996">Poloha je momentálne povolená</translation>
 <translation id="962484866189421427">Tento obsah sa môže pokúsiť nainštalovať klamlivé aplikácie vydávajúce sa za iné aplikácie alebo zhromažďovať údaje, ktoré sa dajú použiť na sledovanie vašej osoby. <ph name="BEGIN_LINK" />Napriek tomu zobraziť<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">Na základe práva vo vašom regióne vás Chromium žiada, aby ste si vybrali predvolený vyhľadávač. Tieto vyhľadávače sú populárne vo vašom regióne a zobrazujú sa v náhodnom poradí.</translation>
-<translation id="963837307749850257">Všetci používatelia</translation>
 <translation id="963988220224168636">Bezpečne si pridajte číslo Redress Control Number do Peňaženky Google</translation>
 <translation id="964050462028070434">Spravovať heslá a prístupové kľúče…</translation>
 <translation id="964681140808832181">Áno, naozaj zrušiť</translation>

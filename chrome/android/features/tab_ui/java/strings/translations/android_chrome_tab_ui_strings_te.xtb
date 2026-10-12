@@ -15,7 +15,6 @@
 <translation id="1321004960118052490">మీ ఇన్‌యాక్టివ్‌గా ఉన్న ఐటెమ్‌లు అనుమతించబడదు</translation>
 <translation id="1329584516321524826">ఇప్పుడే అప్‌డేట్ చేయబడింది</translation>
 <translation id="1340839264183302272">గ్రూప్ నుండి నిష్క్రమించండి</translation>
-<translation id="1386966479075994683">ట్యాబ్‌లను విస్తరించండి</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ట్యాబ్, <ph name="COLOR_NAME" /> రంగు, <ph name="CARD_LABEL" /> లేబుల్ ఉన్న షేర్ చేసిన <ph name="TITLE_OF_GROUP" /> ట్యాబ్ గ్రూప్‌ను విస్తరించండి.}other{<ph name="TABS_COUNT_MANY" /> ట్యాబ్‌లు, <ph name="COLOR_NAME" /> రంగు, <ph name="CARD_LABEL" /> లేబుల్ ఉన్న షేర్ చేసిన <ph name="TITLE_OF_GROUP" /> ట్యాబ్ గ్రూప్‌ను విస్తరించండి.}}</translation>
 <translation id="1486715732399361704">మీరు మీ అన్ని ట్యాబ్ గ్రూప్‌లను ఇక్కడ కనుగొనవచ్చు</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> నిమిషం క్రితం క్రియేట్ చేయడం జరిగింది}other{<ph name="NUM_MINS_MANY" /> నిమిషాల క్రితం క్రియేట్ చేయడం జరిగింది}}</translation>
@@ -66,6 +65,7 @@
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> రేటింగ్</translation>
 <translation id="266935134738038806">సైట్‌కు వెళ్లండి</translation>
 <translation id="2671423594960767771">గ్రూప్‌ను షేర్ చేయండి</translation>
+<translation id="2729310339366257582">ట్యాబ్‌లను కుదించండి</translation>
 <translation id="2734252994837336591">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> వారం క్రితం అప్‌డేట్ చేయబడింది}other{<ph name="NUM_WEEKS_MANY" /> వారాల క్రితం అప్‌డేట్ చేయబడింది}}</translation>
 <translation id="2753877351161418426">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> గంట క్రితం అప్‌డేట్ చేయబడింది}other{<ph name="NUM_HOURS_MANY" /> గంటల క్రితం అప్‌డేట్ చేయబడింది}}</translation>
 <translation id="2755485474385016903">చేసిన మార్పులు గ్రూప్‌లోని అందరికీ కనిపిస్తాయి</translation>
@@ -136,7 +136,6 @@
 <translation id="5073204694187207510">ఫుల్-స్క్రీన్‌ గ్రిడ్‌‌ను దాచిపెట్టు</translation>
 <translation id="5076161749301278626">స్టోర్ రివ్యూలను చూడాలనుకుంటున్నారా?</translation>
 <translation id="5161254044473106830">శీర్షిక అవసరం</translation>
-<translation id="5204584298075822291">ట్యాబ్‌లను కుదించండి</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{<ph name="AUTO_DELETE_DELAY_ONE" /> నెల తర్వాత Chrome ఆటోమేటిక్‌గా ఇన్‌యాక్టివ్ ట్యాబ్‌లు, ట్యాబ్ గ్రూప్‌లను మూసివేస్తుంది. మీరు దీన్ని సెట్టింగ్‌లలో మార్చవచ్చు.}other{<ph name="AUTO_DELETE_DELAY_MANY" /> నెలల తర్వాత Chrome ఆటోమేటిక్‌గా ఇన్‌యాక్టివ్ ట్యాబ్‌లు, ట్యాబ్ గ్రూప్‌లను మూసివేస్తుంది. మీరు దీన్ని సెట్టింగ్‌లలో మార్చవచ్చు.}}</translation>
 <translation id="5254233580564156835">మెమరీ వినియోగం: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">మీ చివరి ట్యాబ్</translation>
@@ -191,6 +190,7 @@
 <translation id="709473454666962555">ట్యాబ్ గ్రూప్‌ను ఎంచుకోండి</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{ట్యాబ్‌ను షేర్ చేయండి}other{ట్యాబ్‌లను షేర్ చేయండి}}</translation>
 <translation id="7129458170538955174">ఈ స్టోర్ గురించిన సమాచారం స్క్రీన్‌లో సగం వరకు తెరవబడింది</translation>
+<translation id="7194343495483122559">ట్యాబ్‌లను విస్తరించండి</translation>
 <translation id="7204204600596740190">బహుళ-ఎంపిక మోడ్</translation>
 <translation id="7211038039686180558">మీ ట్యాబ్ గ్రూప్‌లు మీరు సైన్ ఇన్ చేసిన అన్ని పరికరాలలో ఆటోమేటిక్‌గా సేవ్ చేయడం, అప్‌డేట్ చేయడం జరుగుతుంది</translation>
 <translation id="7326879924029668159">రిటర్న్ పాలసీ, ఇంకా మరిన్నింటిని చూడండి</translation>

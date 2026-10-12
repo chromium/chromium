@@ -5629,6 +5629,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5246282308050205996"><ph name="APP_NAME" /> het omgeval. Klik hierdie ballon om die app te herbegin.</translation>
 <translation id="5247051749037287028">Toestelnaam (opsioneel)</translation>
 <translation id="5247243947166567755">Kies <ph name="BOOKMARK_TITLE" /></translation>
+<translation id="524751727772074981">Vra enigiets, net waar jy is, met Gemini in Chrome</translation>
 <translation id="5248934139541843042">Bekyk organiseerder</translation>
 <translation id="5249624017678798539">Die blaaier het ineengestort voordat die aflaai voltooi is.</translation>
 <translation id="5249818097095743806">Gebruik jou sekuriteitsleutel</translation>
@@ -6339,7 +6340,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5828181959764767444">Sonsondergang</translation>
 <translation id="5828545842856466741">Voeg profiel by …</translation>
 <translation id="5828633471261496623">Druk tans uit …</translation>
-<translation id="5829137022934788067">Vertel my van hierdie keuse</translation>
 <translation id="5829214552954466783">Deel <ph name="CREDENTIAL_TYPE" /> vir gebruikernaam: <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">Jou betaalmetodes in Google Wallet</translation>
 <translation id="5830512293931520102">Jou wagwoord word geënkripteer en niemand sal dit ooit sien nie</translation>

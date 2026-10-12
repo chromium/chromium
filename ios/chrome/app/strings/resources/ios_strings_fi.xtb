@@ -1264,6 +1264,7 @@
 <translation id="498624032394115435">Kaikki linkin saaneet voivat muokata kaikkia välilehtiä.</translation>
 <translation id="4986428648020277392">Kehote: Kumpi minun kannattaa ostaa? 2/3</translation>
 <translation id="498768198683310172">Aloita Geminin käyttö</translation>
+<translation id="4989163558385430922">Näytä kaikki</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, organisaatiosi hallinnoima.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Välilehtiryhmän väri on <ph name="COLOR" /></translation>
@@ -2028,7 +2029,6 @@ Voit aloittaa uudelleen milloin tahansa.</translation>
 <translation id="7346922058131593019">Mitä haluat tehdä, <ph name="USER_FIRST_NAME" />?</translation>
 <translation id="7347998088283246662">Tuo esimerkiksi salasanat, historia ja kirjanmerkit</translation>
 <translation id="7352651011704765696">Tapahtui jokin virhe</translation>
-<translation id="7357999308187750900">Näytä kaikki</translation>
 <translation id="736564850024123010">Personoi kokemusta vaihtamalla osoitepalkin paikkaa.</translation>
 <translation id="7366909168761621528">Selausdata</translation>
 <translation id="7367530036083223701">Salasanat-widgetillä pääset salasanoihisi turvallisesti aloitusnäytöltä.</translation>
@@ -2362,7 +2362,6 @@ Voit aloittaa uudelleen milloin tahansa.</translation>
 <translation id="8333459276976141586">Live käyttää mikrofonia. Jos napautat Live-painiketta, mikrofoni menee päälle. Jos haluat laittaa mikrofonin pois päältä, napauta pysäytyspainiketta tai sulje Gemini.</translation>
 <translation id="833647236762414178">Luo, tallenna ja muokkaa salasanoja ja avainkoodeja, jotta voit kirjautua helposti sivustoille ja sovelluksiin. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Varmuuskopioi sisältösi ja käytä sitä millä tahansa laitteella.</translation>
-<translation id="8345328955902001853">{count,plural, =1{Suorita vielä yksi tehtävä, niin pääset seuraavalle tasolle}other{Suorita vielä {count} tehtävää, niin pääset seuraavalle tasolle}}</translation>
 <translation id="8348530355586151720">Napauta kolmen pisteen valikkoa</translation>
 <translation id="8349305172487531364">Kirjanmerkkipalkki</translation>
 <translation id="8360164927489392419">Tallenteet Live-toiminnastasi ja Livelle jakamasi sisältö tallennetaan ja niitä käsitellään <ph name="BEGIN_LINK" />Gemini-sovellusten tietosuojailmoituksen<ph name="END_LINK" /> mukaisesti. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
@@ -2588,7 +2587,6 @@ Voit aloittaa uudelleen milloin tahansa.</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, kiinnitetty sivusto</translation>
 <translation id="8990960056509724223">Tiedostoa ei voitu tallentaa organisaation käytäntöjen vuoksi</translation>
 <translation id="8998289560386111590">Ei saatavilla laitteellasi</translation>
-<translation id="9003263770394939629">Geminin ehdotus. Muuta parannettua automaattista täyttöä asetuksista.</translation>
 <translation id="9003677638446136377">Tarkista uudelleen</translation>
 <translation id="9006453925669499173">Valikko → Uusi incognito-välilehti</translation>
 <translation id="9008201768610948239">Ohita</translation>
@@ -2597,7 +2595,6 @@ Voit aloittaa uudelleen milloin tahansa.</translation>
 <translation id="9029650858822697271">Sinut on kirjattu ulos</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Vahvista selausdatan poisto</translation>
-<translation id="9035699147763101514">Hyödyntää Geminin henkilökohtaista älyä. Muuta valintoja asetuksista.</translation>
 <translation id="9038526468059454274">Tee yhteenveto</translation>
 <translation id="9039373489628511875">Kaistanleveys</translation>
 <translation id="9042893549633094279">Yksityisyys ja turvallisuus</translation>

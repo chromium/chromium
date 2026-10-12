@@ -71,7 +71,6 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> için izin seçin</translation>
 <translation id="1113000785583998331">IBAN kaydedilsin mi?</translation>
 <translation id="1113869188872983271">Sıralama değişikliğini &amp;geri al</translation>
-<translation id="1117709830616495622">Kişisel Zeka özellikli Gemini tarafından desteklenir.</translation>
 <translation id="111897705806685148">Başka Bir Cihazdaki Geçiş Anahtarını Kullan</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Hesabınıza hangi Chrome bilgilerini kaydettiğinizi yönetmek için Sekme'ye, ardından Enter tuşuna basın</translation>
 <translation id="1121990216147052230">Benim için yapılacaklar listesi oluştur</translation>
@@ -532,7 +531,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1890171020361705182">Dinozor oyunu. Pikselleşmiş bir dinozor, kaktüslerden ve pterodaktillerden sakınarak terk edilmiş bir düzlükte koşuyor. Sesli ipucu duyduğunuzda engellerin üzerinden atlamak için ekrana dokunun.</translation>
 <translation id="1898423065542865115">Filtreleme</translation>
 <translation id="1898678876221454577">Taramanızı kaydetmek için oturum açın</translation>
-<translation id="1898804291554630487">Bu sayfa hakkında soru sorun</translation>
 <translation id="1901443836186977402">{1,plural, =1{Bu sunucu <ph name="DOMAIN" /> olduğunu kanıtlayamadı. Güvenlik sertifikasının süresi son bir gün içinde sona ermiş. Bu durum, yanlış yapılandırmadan veya bağlantınıza müdahale eden bir saldırgandan kaynaklanıyor olabilir. Bilgisayarınızın saati şu anda <ph name="CURRENT_DATE" /> olarak ayarlanmış. Doğru görünüyor mu? Görünmüyorsa sisteminizin saatini düzeltip ardından bu sayfayı yenilemelisiniz.}other{Bu sunucu <ph name="DOMAIN" /> olduğunu kanıtlayamadı. Güvenlik sertifikasının süresi # gün önce sona ermiş. Bu durum, yanlış yapılandırmadan veya bağlantınıza müdahale eden bir saldırgandan kaynaklanıyor olabilir. Bilgisayarınızın saati şu anda <ph name="CURRENT_DATE" /> olarak ayarlanmış. Doğru görünüyor mu? Görünmüyorsa sisteminizin saatini düzeltmeli ve sonra bu sayfayı yenilemelisiniz.}}</translation>
 <translation id="190166348986967700">Yöneticiniz, dosyalarınızı <ph name="DATE_TIME" /> itibarıyla <ph name="CLOUD_PROVIDER" /> hedefine yüklemeye başlayacak. Dosya yükleme işlemi tamamlanana kadar cihazınızın bağlantısını kesmeyin. Yükleme sırasında yerel dosyaları yalnızca okuyabilirsiniz.</translation>
 <translation id="1902576642799138955">Geçerlilik Süresi</translation>
@@ -841,8 +839,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2384307209577226199">Kuruluşun varsayılan ayarı</translation>
 <translation id="2385809941344967209">Chrome ayarlarınızdan Chrome'u güncelleyin</translation>
 <translation id="2386255080630008482">Sunucunun sertifikası iptal edildi.</translation>
-<translation id="2387424091060104123">Gemini tarafından önerildi · <ph name="SRC_LINK" />Kaynakları göster<ph name="END_SRC_LINK" />
-Bu öneriyi Chrome'dan kaldırabilirsiniz. Orijinal kaynağınız silinmez. <ph name="MANAGE_LINK" />Gelişmiş otomatik doldurmayı yönetme<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">Detaylandır</translation>
 <translation id="2392959068659972793">Hiçbir değer ayarlanmamış politikaları göster</translation>
 <translation id="239429038616798445">Bu gönderim yöntemi kullanılamıyor. Farklı bir yöntem deneyin.</translation>
@@ -1245,7 +1241,6 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="3109788962812161063">Profili yönetimi</translation>
 <translation id="3112892588078695695">Telefon numarası: <ph name="PHONE" />.</translation>
 <translation id="3113284927548439113">Üçüncü vardiya</translation>
-<translation id="3113930177999394798">Yapay zeka destekli tarama geçmişinizde arama yapmak için @history yazın</translation>
 <translation id="3114040155724590991">Android sistemi güncelleniyor
     Uygulamanızın başlatılması normalden daha uzun sürebilir.</translation>
 <translation id="3114197119223448048">yeni etkinlik</translation>
@@ -1426,7 +1421,6 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="3413466783792948876">Herkese açık ağ kullanıyorsanız bu siteyi daha sonra ziyaret etmeniz daha güvenli olur. Eviniz veya iş yerinizdeki kablosuz ağ gibi güvenilir ağlar daha az risk taşır.</translation>
 <translation id="3414952576877147120">Boyut:</translation>
 <translation id="341513675006332771">Chrome Dinozor oyununu oyna düğmesi, Chrome'da Dinozor oyununu oynamak için etkinleştirin</translation>
-<translation id="3415471717466570460">Aramalarınız, en iyi eşleşmeler ve sayfa içerikleri Google'a gönderilerek bu özelliğin geliştirilmesi için inceleme uzmanları tarafından görüntülenebilir. Bu, deneysel bir özellik olduğundan her zaman doğru sonuç vermeyebilir.</translation>
 <translation id="3417390269491141648">Sağlık planı seçeneklerimi karşılaştır ve aralarındaki temel farkları maddeler halinde listele</translation>
 <translation id="3421387094817716717">Eliptik Eğri Ortak Anahtarı</translation>
 <translation id="3422248202833853650">Bellekte yer açmak için diğer programlardan çıkmayı deneyin.</translation>
@@ -1904,7 +1898,6 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4185037616931963178">Redress no'yu güvenli bir şekilde güncelleyin</translation>
 <translation id="4186035307311647330">Fiyat takibini bırak</translation>
-<translation id="4190446002599583608">Yapay zeka destekli geçmişte arama</translation>
 <translation id="4191334393248735295">Uzunluk</translation>
 <translation id="4195459680867822611">Chrome ipuçlarını göster düğmesi, Chrome özellikleri hakkında bilgi edinmek için etkinleştirin</translation>
 <translation id="4195643157523330669">Yeni sekmede aç</translation>
@@ -1951,7 +1944,6 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="424063167283213501">Known Traveler Number'ı kaydedin</translation>
 <translation id="4241830393007970744">Ziyaret etmeye çalıştığınız sitedeki saldırganlar, yazılım yüklemeniz veya şifreleriniz, telefon ya da kredi kartı numaralarınız gibi bilgileri vermeniz için sizi kandırabilir.</translation>
 <translation id="4242380780309416996">Zarf (Kalın)</translation>
-<translation id="4242981939686657948">Tarama geçmişinizde arama yapmanın daha etkili bir yolu için şunu etkinleştirin:</translation>
 <translation id="4244926541863471678">Film</translation>
 <translation id="42481816218163154">Sabahları daha rahat bir başlangıç yapmamı sağlayacak 15 dakikalık bir sabah rutini oluştur. Farkındalık egzersizi de içerdiğinden emin ol</translation>
 <translation id="4250343410682686342">"Şimdi al sonra öde" hata ekranı tam ekranda açıldı.</translation>
@@ -3895,7 +3887,6 @@ Ek ayrıntılar:
 <translation id="7514365320538308">İndir</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">VR'ye bu sefer izin verildi</translation>
-<translation id="7517198908921983825">Gemini tarafından önerildi · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Zarf C10</translation>
 <translation id="7518003948725431193">Şu web adresi için web sayfası bulunamadı:<ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -4392,7 +4383,6 @@ Ek ayrıntılar:
 <translation id="8350416046273606058">Kısayol, boşluk içeremez: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Not oluştur</translation>
 <translation id="8352849934814541340">Bu cihazın yöneticisi diğer işlevler için uygulamalar yüklemiş. Söz konusu uygulamaların bazı verilerinize erişimi bulunuyor.</translation>
-<translation id="8353273112634584260">Kişisel Zeka özellikli Gemini tarafından desteklenir. İstekleriniz, sayfa başlıklarınız ve URL'leriniz gelişmiş otomatik doldurma özelliğini daha iyi hale getirmek için incelenebilir.</translation>
 <translation id="8355270400102541638">Yerel Kilitlenme Bağlamı:</translation>
 <translation id="8362914115861174987">Şu dile çevir:</translation>
 <translation id="8363502534493474904">Uçak modunu kapatın</translation>
@@ -4740,7 +4730,6 @@ Ek ayrıntılar:
 <translation id="9001074447101275817"><ph name="DOMAIN" /> proxy'si için kullanıcı adı ve şifre gerekiyor.</translation>
 <translation id="9001963517402879850">Zıpla!</translation>
 <translation id="9002677862950442746">Doğrulama kodu: <ph name="OTP" /></translation>
-<translation id="9003263770394939629">Gemini tarafından önerildi. Gelişmiş otomatik doldurma özelliğini ayarlardan yönetin.</translation>
 <translation id="9003639428623471314">Zarf Kahu</translation>
 <translation id="9004367719664099443">VR oturumu devam ediyor</translation>
 <translation id="9005998258318286617">PDF dokümanı yüklenemedi.</translation>
@@ -4759,7 +4748,6 @@ Ek ayrıntılar:
 <translation id="9027531288681624875">Tam ekrandan çıkmak için |<ph name="ACCELERATOR" />| tuşunu basılı tutun</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Güvenlik hatası</translation>
-<translation id="9035699147763101514">Kişisel Zeka özellikli Gemini tarafından desteklenir. Seçimlerinizi ayarlardan yönetin.</translation>
 <translation id="9035824888276246493">Güvenlik kodlarını kaydet</translation>
 <translation id="9036306139374661733">Mikrofona izin verilsin mi?</translation>
 <translation id="9036484080057916082">İmzalı Sertifika Zaman Damgası Listesi</translation>
@@ -4913,7 +4901,6 @@ Ek ayrıntılar:
 <translation id="961930410699694996">Şu anda konuma izin veriliyor</translation>
 <translation id="962484866189421427">Bu içerik başka bir şeyi taklit eden aldatıcı uygulamalar yükleyebilir veya sizi izlemek için kullanılabilecek veriler toplayabilir. <ph name="BEGIN_LINK" />Yine de göster<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">Chromium, bölgenizdeki bir yasa uyarınca varsayılan arama motorunuzu seçmenizi ister. Bölgenizde popüler olan bu arama motorları rastgele sırayla gösterilmiştir.</translation>
-<translation id="963837307749850257">Tüm kullanıcılar</translation>
 <translation id="963988220224168636">Redress no'yu Google Cüzdan'a güvenli şekilde ekleyin</translation>
 <translation id="964050462028070434">Şifreleri ve şifre anahtarlarını yönetin…</translation>
 <translation id="964681140808832181">Evet, iptal etmek istiyorum</translation>

@@ -1265,6 +1265,7 @@
 <translation id="498624032394115435">Allir með tengilinn geta breytt öllum flipum.</translation>
 <translation id="4986428648020277392">Skipun: Hvort ætti ég að kaupa? 2 af 3</translation>
 <translation id="498768198683310172">Byrja að nota Gemini</translation>
+<translation id="4989163558385430922">Sjá allt</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" /> (stjórnað af fyrirtækinu þínu).</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Litur flipahóps <ph name="COLOR" /></translation>
@@ -2028,7 +2029,6 @@ Til að halda áfram í tölvunni skaltu skipta í <ph name="OTHER_EMAIL" />. Þ
 <translation id="7346922058131593019">Hvað viltu vinna við, <ph name="USER_FIRST_NAME" />?</translation>
 <translation id="7347998088283246662">Flyttu inn aðgangsorð, feril, bókamerki og fleira</translation>
 <translation id="7352651011704765696">Eitthvað fór úrskeiðis</translation>
-<translation id="7357999308187750900">Sjá allt</translation>
 <translation id="736564850024123010">Sérstilltu upplifun þína með því að breyta staðsetningu veffangastikunnar.</translation>
 <translation id="7366909168761621528">Vefskoðunargögn</translation>
 <translation id="7367530036083223701">Fáðu öruggan aðgang að aðgangsorðunum þínum af heimaskjánum með aðgangsorðastjórnunargræjunni.</translation>
@@ -2362,7 +2362,6 @@ Til að halda áfram í tölvunni skaltu skipta í <ph name="OTHER_EMAIL" />. Þ
 <translation id="8333459276976141586">Live mun nota hljóðnemann þinn. Ef þú ýtir á Live-hnappinn verður kveikt á hljóðnemanum. Til að slökkva á hljóðnemanum skaltu ýta á stopp-hnappinn eða loka Gemini.</translation>
 <translation id="833647236762414178">Búðu til, vistaðu og stjórnaðu aðgangsorðum og aðgangslyklum til að skrá þig inn á vefsvæði og forrit á einfaldan hátt. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Afritaðu efnið þitt og notaðu það í hvaða tæki sem er.</translation>
-<translation id="8345328955902001853">{count,plural, =1{Ljúktu einu verkefni í viðbót til að hækka um stig}one{Ljúktu {count} verkefni í viðbót til að hækka um stig}other{Ljúktu {count} verkefnum í viðbót til að hækka um stig}}</translation>
 <translation id="8348530355586151720">Ýttu á þriggja punkta valmyndina</translation>
 <translation id="8349305172487531364">Bókamerkjastika</translation>
 <translation id="8360164927489392419">Upptökur af samskiptum þínum í raunspjalli og efni sem þú deilir með því eru vistaðar og unnið úr þeim í samræmi við <ph name="BEGIN_LINK" />upplýsingar um persónuvernd Gemini-forrita<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
@@ -2588,7 +2587,6 @@ Til að halda áfram í tölvunni skaltu skipta í <ph name="OTHER_EMAIL" />. Þ
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, fest vefsvæði</translation>
 <translation id="8990960056509724223">Ekki tókst að vista skrá vegna reglna fyrirtækisins þíns</translation>
 <translation id="8998289560386111590">Ekki í boði í tækinu þínu</translation>
-<translation id="9003263770394939629">Tillaga frá Gemini. Stjórnaðu ítarlegri sjálfvirkri útfyllingu í stillingum.</translation>
 <translation id="9003677638446136377">Prófa aftur</translation>
 <translation id="9006453925669499173">Valmynd → Nýr huliðsflipi</translation>
 <translation id="9008201768610948239">Hunsa</translation>
@@ -2597,7 +2595,6 @@ Til að halda áfram í tölvunni skaltu skipta í <ph name="OTHER_EMAIL" />. Þ
 <translation id="9029650858822697271">Þú skráðist út</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Staðfesta eyðingu vefskoðunargagna</translation>
-<translation id="9035699147763101514">Knúið af persónulegri greind með Gemini. Þú getur stjórnað valkostunum þínum í stillingunum.</translation>
 <translation id="9038526468059454274">Taka saman með</translation>
 <translation id="9039373489628511875">Bandvídd</translation>
 <translation id="9042893549633094279">Persónuvernd og öryggi</translation>

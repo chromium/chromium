@@ -5614,6 +5614,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5246282308050205996"><ph name="APP_NAME" /> kilitlendi. Uygulamayı yeniden başlatmak için bu balonu tıklayın.</translation>
 <translation id="5247051749037287028">Görünen ad (isteğe bağlı)</translation>
 <translation id="5247243947166567755">Seçin: <ph name="BOOKMARK_TITLE" /></translation>
+<translation id="524751727772074981">Chrome'da Gemini ile bulunduğunuz yerden istediğinizi sorun</translation>
 <translation id="5248934139541843042">Düzenleyiciyi görüntüle</translation>
 <translation id="5249624017678798539">İndirme tamamlanmadan önce tarayıcı kilitlendi.</translation>
 <translation id="5249818097095743806">Güvenlik anahtarınızı kullanın</translation>
@@ -6323,7 +6324,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5828181959764767444">Gün batımı</translation>
 <translation id="5828545842856466741">Profil ekle...</translation>
 <translation id="5828633471261496623">Yazdırılıyor...</translation>
-<translation id="5829137022934788067">Bu seçim hakkında bilgi ver</translation>
 <translation id="5829214552954466783"><ph name="USER_EMAIL" /> kullanıcı adı için <ph name="CREDENTIAL_TYPE" /> bilgisini paylaş</translation>
 <translation id="5829544019044013776">Google Cüzdan'daki ödeme yöntemleriniz</translation>
 <translation id="5830512293931520102">Şifreniz şifrelenir ve başkaları tarafından görülmez</translation>

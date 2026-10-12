@@ -1266,6 +1266,7 @@
 <translation id="498624032394115435">Sesiapa sahaja yang mempunyai pautan boleh mengedit semua tab.</translation>
 <translation id="4986428648020277392">Gesaan: Manakah yang perlu saya beli? 2 daripada 3</translation>
 <translation id="498768198683310172">Mula menggunakan Gemini</translation>
+<translation id="4989163558385430922">Lihat semua</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, diurus oleh organisasi anda.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Kumpulan tab berwarna <ph name="COLOR" /></translation>
@@ -2030,7 +2031,6 @@ Anda boleh memulakan semula pada bila-bila masa.</translation>
 <translation id="7346922058131593019">Apakah perkara yang mahu anda usahakan, <ph name="USER_FIRST_NAME" />?</translation>
 <translation id="7347998088283246662">Import kata laluan, sejarah, penanda halaman dan pelbagai lagi</translation>
 <translation id="7352651011704765696">Kesilapan telah berlaku</translation>
-<translation id="7357999308187750900">Lihat Semua</translation>
 <translation id="736564850024123010">Tukar kedudukan bar alamat anda untuk mendapatkan pengalaman yang disesuaikan.</translation>
 <translation id="7366909168761621528">Data penyemakan imbas</translation>
 <translation id="7367530036083223701">Akses kata laluan anda dengan selamat daripada skrin utama dengan widget Password Manager.</translation>
@@ -2364,7 +2364,6 @@ Anda boleh memulakan semula pada bila-bila masa.</translation>
 <translation id="8333459276976141586">Live akan menggunakan mikrofon anda. Mikrofon akan dihidupkan apabila butang Live diketik. Untuk mematikan mikrofon, ketik butang berhenti atau tutup Gemini.</translation>
 <translation id="833647236762414178">Buat, simpan dan urus kata laluan &amp; kunci laluan anda supaya anda dapat log masuk ke laman dan apl dengan mudah. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Sandarkan bahan anda dan gunakan bahan itu pada mana-mana peranti.</translation>
-<translation id="8345328955902001853">{count,plural, =1{Selesaikan 1 tugasan lagi untuk naik tahap}other{Selesaikan {count} tugasan lagi untuk naik tahap}}</translation>
 <translation id="8348530355586151720">Ketik menu tiga titik</translation>
 <translation id="8349305172487531364">Bar penanda halaman</translation>
 <translation id="8360164927489392419">Rakaman interaksi anda dengan Live dan kandungan yang anda kongsi dengan Live disimpan dan diproses mengikut <ph name="BEGIN_LINK" />Notis Privasi Apl Gemini<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
@@ -2591,7 +2590,6 @@ Anda boleh memulakan semula pada bila-bila masa.</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, laman yang disematkan</translation>
 <translation id="8990960056509724223">Fail tidak dapat disimpan disebabkan oleh dasar organisasi anda</translation>
 <translation id="8998289560386111590">Tidak tersedia pada peranti anda</translation>
-<translation id="9003263770394939629">Dicadangkan oleh Gemini. Urus autolengkap dipertingkatkan dalam tetapan.</translation>
 <translation id="9003677638446136377">Semak sekali lagi</translation>
 <translation id="9006453925669499173">Menu → Tab Inkognito baharu</translation>
 <translation id="9008201768610948239">Abaikan</translation>
@@ -2600,7 +2598,6 @@ Anda boleh memulakan semula pada bila-bila masa.</translation>
 <translation id="9029650858822697271">Anda telah dilog keluar</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Sahkan pemadaman data semakan imbas</translation>
-<translation id="9035699147763101514">Dikuasakan oleh Kecerdasan Peribadi dengan Gemini. Urus pilihan anda dalam tetapan.</translation>
 <translation id="9038526468059454274">Ringkaskan dengan</translation>
 <translation id="9039373489628511875">Lebar Jalur</translation>
 <translation id="9042893549633094279">Privasi dan keselamatan</translation>

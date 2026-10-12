@@ -5613,6 +5613,7 @@
 <translation id="5246282308050205996"><ph name="APP_NAME" /> ขัดข้อง คลิกที่บอลลูนนี้เพื่อรีสตาร์ตแอปพลิเคชันนี้</translation>
 <translation id="5247051749037287028">ชื่อที่แสดง (ไม่บังคับ)</translation>
 <translation id="5247243947166567755">เลือก <ph name="BOOKMARK_TITLE" /></translation>
+<translation id="524751727772074981">ถามอะไรก็ได้จากที่ที่คุณอยู่ด้วย Gemini ใน Chrome</translation>
 <translation id="5248934139541843042">ดูผู้จัด</translation>
 <translation id="5249624017678798539">เบราว์เซอร์ขัดข้องก่อนที่จะดาวน์โหลดเสร็จ</translation>
 <translation id="5249818097095743806">ใช้คีย์ความปลอดภัย</translation>
@@ -6319,7 +6320,6 @@
 <translation id="5828181959764767444">พระอาทิตย์ตก</translation>
 <translation id="5828545842856466741">เพิ่มโปรไฟล์...</translation>
 <translation id="5828633471261496623">กำลังพิมพ์...</translation>
-<translation id="5829137022934788067">บอกฉันเกี่ยวกับตัวเลือกนี้</translation>
 <translation id="5829214552954466783">แชร์<ph name="CREDENTIAL_TYPE" />สำหรับชื่อผู้ใช้: <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">วิธีการชำระเงินของคุณใน Google Wallet</translation>
 <translation id="5830512293931520102">รหัสผ่านของคุณได้รับการเข้ารหัสและจะไม่มีใครเห็นรหัสผ่านของคุณ</translation>

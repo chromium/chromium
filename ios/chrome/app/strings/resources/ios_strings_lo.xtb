@@ -1265,6 +1265,7 @@
 <translation id="498624032394115435">ທຸກຄົນທີ່ມີລິ້ງສາມາດແກ້ໄຂແຖບທັງໝົດໄດ້.</translation>
 <translation id="4986428648020277392">ພຣອມ: ຂ້ອຍຄວນຊື້ອັນໃດດີ? 2 ຈາກ 3</translation>
 <translation id="498768198683310172">ເລີ່ມໃຊ້ Gemini</translation>
+<translation id="4989163558385430922">ເບິ່ງທັງໝົດ</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" /> ຈັດການໂດຍອົງກອນຂອງທ່ານ.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">ສີຂອງກຸ່ມແຖບ <ph name="COLOR" /></translation>
@@ -2028,7 +2029,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="7346922058131593019">ທ່ານຕ້ອງການເຮັດຫຍັງ, <ph name="USER_FIRST_NAME" />?</translation>
 <translation id="7347998088283246662">ນຳເຂົ້າລະຫັດຜ່ານ, ປະຫວັດ, ບຸກມາກ ແລະ ອື່ນໆ</translation>
 <translation id="7352651011704765696">ມີ​ບາງ​ອັນ​ຜິດ​ພາດ</translation>
-<translation id="7357999308187750900">ເບິ່ງທັງໝົດ</translation>
 <translation id="736564850024123010">ສະຫຼັບຕຳແໜ່ງຂອງແຖບທີ່ຢູ່ຂອງທ່ານເພື່ອປະສົບການໃນການນຳໃຊ້ທີ່ປັບແຕ່ງເອງໄດ້.</translation>
 <translation id="7366909168761621528">ຂໍ້ມູນການທ່ອງເວັບ</translation>
 <translation id="7367530036083223701">ເຂົ້າເຖິງລະຫັດຂອງທ່ານໄດ້ຢ່າງປອດໄພຈາກໂຮມສະກຣີນດ້ວຍວິດເຈັດຕົວຈັດການລະຫັດຜ່ານ.</translation>
@@ -2362,7 +2362,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8333459276976141586">ຄຸນສົມບັດ Live ຈະໃຊ້ໄມໂຄຣໂຟນຂອງທ່ານ. ການແຕະປຸ່ມ Live ຈະເປີດໄມ. ເພື່ອປິດໄມ, ໃຫ້ແຕະປຸ່ມຢຸດ ຫຼື ປິດ Gemini.</translation>
 <translation id="833647236762414178">ສ້າງ, ບັນທຶກ ແລະ ຈັດການລະຫັດຜ່ານ ແລະ ກະແຈຜ່ານຂອງທ່ານເພື່ອເຂົ້າສູ່ລະບົບເວັບໄຊ ແລະ ແອັບໄດ້ຢ່າງງ່າຍດາຍ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">ສຳຮອງຂໍ້ມູນຂອງທ່ານ ແລະ ໃຊ້ມັນຢູ່ອຸປະກອນໃດກໍໄດ້.</translation>
-<translation id="8345328955902001853">{count,plural, =1{ເຮັດໜ້າວຽກອີກ 1 ລາຍການໃຫ້ສຳເລັດເພື່ອເລື່ອນລະດັບ}other{ເຮັດໜ້າວຽກອີກ {count} ລາຍການໃຫ້ສຳເລັດເພື່ອເລື່ອນລະດັບ}}</translation>
 <translation id="8348530355586151720">ແຕະເມນູສາມຈ້ຳ</translation>
 <translation id="8349305172487531364">ແຖບບຸກມາກສ໌</translation>
 <translation id="8360164927489392419">ລະບົບຈະບັນທຶກ ແລະ ປະມວນຜົນການໂຕ້ຕອບຂອງທ່ານກັບຄຸນສົມບັດ Live ແລະ ເນື້ອຫາທີ່ທ່ານແບ່ງປັນຕາມ <ph name="BEGIN_LINK" />ປະກາດຄວາມເປັນສ່ວນຕົວແອັບ Gemini<ph name="END_LINK" />. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
@@ -2588,7 +2587,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, ເວັບໄຊທີ່ປັກໝຸດແລ້ວ</translation>
 <translation id="8990960056509724223">ບໍ່ສາມາດບັນທຶກໄຟລ໌ໄດ້ເນື່ອງຈາກນະໂຍບາຍຂອງອົງກອນຂອງທ່ານ</translation>
 <translation id="8998289560386111590">ບໍ່ມີໃຫ້ໃນອຸປະກອນຂອງທ່ານ</translation>
-<translation id="9003263770394939629">ແນະນຳໂດຍ Gemini. ຈັດການການຕື່ມຂໍ້ມູນອັດຕະໂນມັດທີ່ປັບປຸງໃຫ້ດີຂຶ້ນໃນການຕັ້ງຄ່າ.</translation>
 <translation id="9003677638446136377">ກວດ​ເບິ່ງ​ອີກ</translation>
 <translation id="9006453925669499173">ເມນູ → ແຖບບໍ່ເປີດເຜີຍຕົວຕົນໃໝ່</translation>
 <translation id="9008201768610948239">ບໍ່ສົນໃຈ</translation>
@@ -2597,7 +2595,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="9029650858822697271">ທ່ານອອກຈາກລະບົບແລ້ວ</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">ຢືນຢັນການລຶບຂໍ້ມູນການທ່ອງເວັບ</translation>
-<translation id="9035699147763101514">ຂັບເຄື່ອນໂດຍ Personal Intelligence ຈາກ Gemini. ຈັດການຕົວເລືອກຂອງທ່ານໄດ້ໃນການຕັ້ງຄ່າ.</translation>
 <translation id="9038526468059454274">ສະຫຼຸບດ້ວຍ</translation>
 <translation id="9039373489628511875">ແບນ​ວິດ</translation>
 <translation id="9042893549633094279">ຄວາມເປັນສ່ວນຕົວ ແລະ ຄວາມປອດໄພ</translation>

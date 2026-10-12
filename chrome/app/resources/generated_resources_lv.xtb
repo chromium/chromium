@@ -5614,6 +5614,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5246282308050205996"><ph name="APP_NAME" /> ir sabojājies. Noklikšķiniet uz šī balona, lai restartētu šo lietotni.</translation>
 <translation id="5247051749037287028">Parādāmais nosaukums (neobligāti)</translation>
 <translation id="5247243947166567755">Atlasīt vienumu <ph name="BOOKMARK_TITLE" /></translation>
+<translation id="524751727772074981">Atvērtajā ekrānā varat jautāt jebko Gemini pārlūkā Chrome</translation>
 <translation id="5248934139541843042">Skatīt kārtotāju</translation>
 <translation id="5249624017678798539">Pārlūks avarēja, pirms lejupielāde tika pabeigta.</translation>
 <translation id="5249818097095743806">Izmantojiet drošības atslēgu</translation>
@@ -6320,7 +6321,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5828181959764767444">Saulriets</translation>
 <translation id="5828545842856466741">Pievienot profilu...</translation>
 <translation id="5828633471261496623">Notiek drukāšana...</translation>
-<translation id="5829137022934788067">Pastāsti man par šo atlasīto tekstu</translation>
 <translation id="5829214552954466783">Kopīgot datus (<ph name="CREDENTIAL_TYPE" />) lietotājvārdam: <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">Jūsu maksājumu veidi lietotnē Google maks</translation>
 <translation id="5830512293931520102">Jūsu parole ir šifrēta, un neviens to nekad neredzēs.</translation>

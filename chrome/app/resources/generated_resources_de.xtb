@@ -5613,6 +5613,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5246282308050205996"><ph name="APP_NAME" /> ist abgestürzt. Klicke auf dieses Fenster, um die App erneut zu laden.</translation>
 <translation id="5247051749037287028">Anzeigename (optional)</translation>
 <translation id="5247243947166567755"><ph name="BOOKMARK_TITLE" /> auswählen</translation>
+<translation id="524751727772074981">Mit Gemini in Chrome zu allem Fragen stellen</translation>
 <translation id="5248934139541843042">Organisationsfunktion einblenden</translation>
 <translation id="5249624017678798539">Der Browser ist während des Downloads abgestürzt.</translation>
 <translation id="5249818097095743806">Sicherheitsschlüssel verwenden</translation>
@@ -6319,7 +6320,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5828181959764767444">Sonnenuntergang</translation>
 <translation id="5828545842856466741">Profil hinzufügen…</translation>
 <translation id="5828633471261496623">Wird gedruckt...</translation>
-<translation id="5829137022934788067">Gib mir Informationen zu dieser Auswahl</translation>
 <translation id="5829214552954466783"><ph name="CREDENTIAL_TYPE" /> mit <ph name="USER_EMAIL" /> teilen</translation>
 <translation id="5829544019044013776">Deine Zahlungsmethoden in Google Wallet</translation>
 <translation id="5830512293931520102">Dein Passwort ist verschlüsselt und wird von niemandem gesehen</translation>

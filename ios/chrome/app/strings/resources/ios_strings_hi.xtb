@@ -1265,6 +1265,7 @@
 <translation id="498624032394115435">जिन लोगों के पास यह लिंक है वे हर टैब में बदलाव कर सकते हैं.</translation>
 <translation id="4986428648020277392">प्रॉम्प्ट: मुझे क्या खरीदना चाहिए? तीन में से दूसरी स्लाइड</translation>
 <translation id="498768198683310172">Gemini का इस्तेमाल करना शुरू करें</translation>
+<translation id="4989163558385430922">सभी देखें</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" /> को आपका संगठन मैनेज करता है.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">टैब ग्रुप का रंग <ph name="COLOR" /></translation>
@@ -2029,7 +2030,6 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="7346922058131593019"><ph name="USER_FIRST_NAME" />, आपको किस विषय पर काम करना है?</translation>
 <translation id="7347998088283246662">पासवर्ड, इतिहास, बुकमार्क वगैरह इंपोर्ट करें</translation>
 <translation id="7352651011704765696">कुछ गलत हुआ</translation>
-<translation id="7357999308187750900">सभी देखें</translation>
 <translation id="736564850024123010">अपनी पसंद के मुताबिक अनुभव पाने के लिए, पता बार की जगह बदलें.</translation>
 <translation id="7366909168761621528">ब्राउज़िंग डेटा</translation>
 <translation id="7367530036083223701">Password Manager विजेट की मदद से, होम स्क्रीन से अपने पासवर्ड सुरक्षित तरीके से ऐक्सेस करें.</translation>
@@ -2363,7 +2363,6 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="8333459276976141586">Live बातचीत में आपके माइक्रोफ़ोन का इस्तेमाल किया जाएगा. 'Live बातचीत' बटन पर टैप करने से माइक चालू हो जाता है. माइक बंद करने के लिए, 'रोकें' बटन पर टैप करें या Gemini को बंद करें.</translation>
 <translation id="833647236762414178">साइटों और ऐप्लिकेशन में आसानी से साइन इन करने के लिए, पासवर्ड और पासकी बनाएं, उन्हें सेव करें, और मैनेज करें. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">अपने डेटा का बैक अप लें और इसे किसी भी डिवाइस पर इस्तेमाल करें</translation>
-<translation id="8345328955902001853">{count,plural, =1{अगले लेवल पर जाने के लिए, 1 और टास्क पूरा करें}one{अगले लेवल पर जाने के लिए, {count} और टास्क पूरा करें}other{अगले लेवल पर जाने के लिए, {count} और टास्क पूरे करें}}</translation>
 <translation id="8348530355586151720">तीन बिंदु वाले मेन्यू पर टैप करें</translation>
 <translation id="8349305172487531364">बुकमार्क बार</translation>
 <translation id="8360164927489392419">Gemini के साथ की गई Live बातचीत की रिकॉर्डिंग और बातचीत में शेयर किए गए कॉन्टेंट को, <ph name="BEGIN_LINK" />Gemini Apps के निजता नोटिस<ph name="END_LINK" /> के मुताबिक सेव और प्रोसेस किया जाता है. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
@@ -2590,7 +2589,6 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, पिन की गई साइट</translation>
 <translation id="8990960056509724223">आपके संगठन की नीतियों की वजह से, फ़ाइल सेव नहीं की जा सकी</translation>
 <translation id="8998289560386111590">यह मोड आपके डिवाइस पर उपलब्ध नहीं है</translation>
-<translation id="9003263770394939629">Gemini ने सुझाया है. सेटिंग में जाकर, ऑटोमैटिक तरीके से भरने की बेहतर सुविधा मैनेज करें.</translation>
 <translation id="9003677638446136377">फिर से जाँचें</translation>
 <translation id="9006453925669499173">मेन्यू → नया गुप्त टैब</translation>
 <translation id="9008201768610948239">ध्यान न दें</translation>
@@ -2599,7 +2597,6 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="9029650858822697271">आपको साइन आउट कर दिया गया था</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">ब्राउज़िंग डेटा मिटाने की पुष्टि करें</translation>
-<translation id="9035699147763101514">यह सुविधा Gemini के पर्सनल इंटेलिजेंस की मदद से काम करती है. सेटिंग में जाकर, अपनी पसंद के मुताबिक बदलाव करें.</translation>
 <translation id="9038526468059454274">इसकी मदद से खास जानकारी पाएं</translation>
 <translation id="9039373489628511875">बैंडविड्थ</translation>
 <translation id="9042893549633094279">निजता और सुरक्षा</translation>

@@ -5628,6 +5628,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5246282308050205996">Program <ph name="APP_NAME" /> se je zrušil. Kliknite ta oblaček, da ga znova zaženete.</translation>
 <translation id="5247051749037287028">Prikazno ime (izbirno)</translation>
 <translation id="5247243947166567755">Izberite: <ph name="BOOKMARK_TITLE" /></translation>
+<translation id="524751727772074981">Z Geminijem v Chromu lahko vprašate kar koli, kjer koli ste</translation>
 <translation id="5248934139541843042">Ogled organizatorja</translation>
 <translation id="5249624017678798539">Brskalnik se je sesul pred koncem prenosa.</translation>
 <translation id="5249818097095743806">Uporaba varnostnega ključa</translation>
@@ -6338,7 +6339,6 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5828181959764767444">Sončni zahod</translation>
 <translation id="5828545842856466741">Dodajanje profila …</translation>
 <translation id="5828633471261496623">Tiskanje ...</translation>
-<translation id="5829137022934788067">Povej mi več o tej izbiri</translation>
 <translation id="5829214552954466783">Deljenje poverilnice <ph name="CREDENTIAL_TYPE" /> za uporabniško ime: <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">Vaša plačilna sredstva v Google Denarnici</translation>
 <translation id="5830512293931520102">Vaše geslo je šifrirano in ga nihče ne vidi</translation>
@@ -6587,6 +6587,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6006484371116297560">Klasična</translation>
 <translation id="6007053304250788613">V zrcalnem načinu je mogoče izključiti samo en zaslon</translation>
 <translation id="6007240208646052708">Glasovno iskanje v vašem jeziku ni na voljo.</translation>
+<translation id="6007858579659393165">Zavihki imajo nov prosojen videz</translation>
 <translation id="6010651352520077187">Če je ta možnost vklopljena, bo Google Prevajalnik ponudil prevajanje spletnih mest v želeni jezik. Samodejno lahko prevaja tudi spletna mesta.</translation>
 <translation id="6011193465932186973">Prstni odtis</translation>
 <translation id="6011308810877101166">Izboljšanje predlogov za iskanje</translation>
@@ -9484,6 +9485,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8212601853154459483"><ph name="PROFILE_MANAGER" /> upravlja ta profil in zahteva, da ustvarite ločen profil za račun <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="8212792694174629011">Ni profilov. Poskusite optično prebrati kodo QR s fotoaparatom naprave ali vnesite kodo za aktiviranje, ki jo zagotovi operater.</translation>
 <translation id="8214489666383623925">Odpri datoteko ...</translation>
+<translation id="8214771296778317256">Tukaj izberite želeno oblikovanje zavihkov</translation>
 <translation id="8215129063232901118">Dostopajte do zmožnosti telefona v napravi <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8217212468862726597">Označevanje kazalca</translation>
 <translation id="8217399928341212914">Še naprej blokiraj samodejni prenos več datotek</translation>
@@ -10729,6 +10731,7 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="9154194610265714752">Posodobljeno</translation>
 <translation id="915485121129452731">Tablični računalnik s pisalom</translation>
 <translation id="9155344700756733162">Preklic izbire barve</translation>
+<translation id="9155515662479003830">V nastavitvah lahko kadar koli preklopite nazaj na klasični slog</translation>
 <translation id="9157096865782046368">0,8 sekunde</translation>
 <translation id="9157697743260533322">Nastavitev samodejnih posodobitev za vse uporabnike ni uspela (napaka preverjanj pred zagonom: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="9157915340203975005">Vrata tiskalnika so odprta</translation>

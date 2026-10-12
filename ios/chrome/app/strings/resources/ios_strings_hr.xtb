@@ -1264,6 +1264,7 @@
 <translation id="498624032394115435">Svatko s vezom može uređivati sve kartice.</translation>
 <translation id="4986428648020277392">Upit: Što trebam kupiti? 2 od 3</translation>
 <translation id="498768198683310172">Počnite upotrebljavati Gemini</translation>
+<translation id="4989163558385430922">Prikaži sve</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, pod upravljanjem vaše organizacije.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Boja grupe kartica <ph name="COLOR" /></translation>
@@ -2027,7 +2028,6 @@ Možete ponovno pokrenuti bilo kada.</translation>
 <translation id="7346922058131593019">Na što se želite usredotočiti, <ph name="USER_FIRST_NAME" />?</translation>
 <translation id="7347998088283246662">Uvezite zaporke, povijest, oznake i drugo</translation>
 <translation id="7352651011704765696">Nešto nije u redu</translation>
-<translation id="7357999308187750900">Prikaži sve</translation>
 <translation id="736564850024123010">Promijenite položaj adresne trake radi prilagođenog doživljaja.</translation>
 <translation id="7366909168761621528">Podaci o pregledavanju</translation>
 <translation id="7367530036083223701">Sigurno pristupajte svojim zaporkama na početnom zaslonu pomoću widgeta Upravitelj zaporki.</translation>
@@ -2361,7 +2361,6 @@ Možete ponovno pokrenuti bilo kada.</translation>
 <translation id="8333459276976141586">Live će upotrebljavati vaš mikrofon. Ako dodirnete gumb Live, uključit će se mikrofon. Da biste isključili mikrofon, dodirnite gumb za zaustavljanje ili zatvorite Gemini.</translation>
 <translation id="833647236762414178">Izradite i spremite zaporke i pristupne ključeve te upravljajte njima kako biste se lako prijavljivali na web-lokacije i u aplikacije. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Sigurnosno kopirajte svoje sadržaje i upotrebljavajte ih na bilo kojem uređaju.</translation>
-<translation id="8345328955902001853">{count,plural, =1{Dovršite još jedan zadatak da biste prešli na višu razinu}one{Dovršite još {count} zadatak da biste prešli na višu razinu}few{Dovršite još {count} zadatka da biste prešli na višu razinu}other{Dovršite još {count} zadataka da biste prešli na višu razinu}}</translation>
 <translation id="8348530355586151720">Dodirnite izbornik s tri točke.</translation>
 <translation id="8349305172487531364">Traka oznaka</translation>
 <translation id="8360164927489392419">Snimke vaših interakcija sa značajkom Live i sadržaj koji s njome dijelite spremaju se i obrađuju u skladu s <ph name="BEGIN_LINK" />obavijesti o privatnosti za Gemini aplikacije<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
@@ -2586,7 +2585,6 @@ Možete ponovno pokrenuti bilo kada.</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, prikvačena web-lokacija</translation>
 <translation id="8990960056509724223">Spremanje datoteke nije uspjelo zbog pravila vaše organizacije</translation>
 <translation id="8998289560386111590">Nije dostupno na vašem uređaju</translation>
-<translation id="9003263770394939629">Predlaže Gemini. Upravljajte poboljšanim automatskim popunjavanjem u postavkama.</translation>
 <translation id="9003677638446136377">Provjeri ponovo</translation>
 <translation id="9006453925669499173">Izbornik → Nova anonimna kartica</translation>
 <translation id="9008201768610948239">Zanemari</translation>
@@ -2595,7 +2593,6 @@ Možete ponovno pokrenuti bilo kada.</translation>
 <translation id="9029650858822697271">Odjavljeni ste</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Potvrdite brisanje podataka o pregledavanju</translation>
-<translation id="9035699147763101514">Omogućuje osobna inteligencija s Geminijem. Svojim odabirima možete upravljati u postavkama.</translation>
 <translation id="9038526468059454274">Sažmite sadržaj uz</translation>
 <translation id="9039373489628511875">Propusnost</translation>
 <translation id="9042893549633094279">Privatnost i sigurnost</translation>

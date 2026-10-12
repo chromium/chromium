@@ -852,6 +852,7 @@
 <translation id="3672283986707092811">Бүгдийг сонгох</translation>
 <translation id="3679163990085797665">Унших материалыг устгах</translation>
 <translation id="368329460027487650">Гарсан. Нэвтрэх сонголтуудыг нээнэ.</translation>
+<translation id="3689746421535476813">Засахын тулд хадгалсан төлбөрийн хэрэгсэл сонгох эсвэл шинэ төлбөрийн хэрэгсэл нэмнэ үү</translation>
 <translation id="3695446226812920698">Заавар харах</translation>
 <translation id="3700134753671613714">Бүх төхөөрөмж дээр хавчуурга авахын тулд нэвтэрнэ үү.</translation>
 <translation id="3701167022068948696">Одоо засах</translation>
@@ -1264,6 +1265,7 @@
 <translation id="498624032394115435">Холбоостой дурын хүн бүх табыг засах боломжтой.</translation>
 <translation id="4986428648020277392">Заавар: Би алийг нь худалдаж авах вэ? 3-ын 2</translation>
 <translation id="498768198683310172">Gemini-г ашиглаж эхлэх</translation>
+<translation id="4989163558385430922">Бүгдийг харах</translation>
 <translation id="499122600724363620">Танай байгууллагаас тохиргоо хийсэн <ph name="NAME" />, <ph name="EMAIL" />.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Табын бүлгийн <ph name="COLOR" /> өнгө</translation>
@@ -2028,7 +2030,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7346922058131593019"><ph name="USER_FIRST_NAME" />, та юун дээр ажилламаар байна вэ?</translation>
 <translation id="7347998088283246662">Нууц үг, түүх, хавчуурга болон бусад зүйлийг импортлоорой</translation>
 <translation id="7352651011704765696">Алдаа гарсан байна</translation>
-<translation id="7357999308187750900">Бүгдийг харах</translation>
 <translation id="736564850024123010">Өөрчилсөн хэрэглээнд зориулж хаяг оруулах хэсгийн байрлалаа сэлгэнэ үү.</translation>
 <translation id="7366909168761621528">Хайх өгөгдөл</translation>
 <translation id="7367530036083223701">Нууц үгний менежерийн виджетээр үндсэн нүүрээсээ нууц үгнүүддээ аюулгүй хандаарай.</translation>
@@ -2362,7 +2363,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8333459276976141586">Live таны микрофоныг ашиглана. Live товчийг товшвол микрофон асна. Микрофоныг унтраахын тулд зогсоох товчин дээр товших эсвэл Gemini-г хаана уу.</translation>
 <translation id="833647236762414178">Сайт, аппад хялбархан нэвтрэхийн тулд нууц үг, нэвтрэх түлхүүрээ үүсгэж, хадгалж, удирдана уу. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Зүйлсээ хуулбарлаж, дурын төхөөрөмж дээр ашиглана уу.</translation>
-<translation id="8345328955902001853">{count,plural, =1{Түвшин ахихын тулд өөр 1 даалгавар гүйцэтгэнэ үү}other{Түвшин ахихын тулд өөр {count} даалгавар гүйцэтгэнэ үү}}</translation>
 <translation id="8348530355586151720">Гурван цэгтэй цэсийг товшино уу</translation>
 <translation id="8349305172487531364">Хайлтын жагсаалтын цонх</translation>
 <translation id="8360164927489392419">Таны Live-тай хийсэн харилцан үйлдэл, түүнтэй хуваалцсан контентын бичлэгийг <ph name="BEGIN_LINK" />Gemini-тай харилцдаг аппын нууцлалын сануулгын<ph name="END_LINK" /> дагуу хадгалж, боловсруулдаг. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
@@ -2426,6 +2426,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8535368836838588657">Нууц үгийг ил болгох</translation>
 <translation id="8540426897269305488"><ph name="CELL_ACCESSIBILITY_LABEL" />-р нэвтрэх</translation>
 <translation id="8542331710562073430">Ямар нэг алдаа гарлаа. Live-г дахин ашиглахаар оролдохын тулд Live товчин дээр товшино уу.</translation>
+<translation id="8544172904312384600">Төлбөрийн хэрэгслийг засах, шинийг нэмэх</translation>
 <translation id="8545276357312221485">Өгөгдмөл хөтчийн тохиргоогоо шалгах</translation>
 <translation id="854938212724803178">Танд алдагдсан 1 нууц үг байна. Аюулгүй байхын тулд үүнийг одоо засна уу.</translation>
 <translation id="8551311254462607218">Хаяг оруулах хэсэгт Google Lens-н камерын дүрс тэмдэг дээр товшино уу</translation>
@@ -2588,7 +2589,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" /> сайтыг бэхэлсэн</translation>
 <translation id="8990960056509724223">Танай байгууллагын бодлогын улмаас файлыг хадгалж чадсангүй</translation>
 <translation id="8998289560386111590">Таны төхөөрөмжид боломжгүй</translation>
-<translation id="9003263770394939629">Gemini-с санал болгосон. Сайжруулсан автоматаар бөглөх хэсгийг тохиргооноос удирдана уу.</translation>
 <translation id="9003677638446136377">Дахин шалгах</translation>
 <translation id="9006453925669499173">Цэс → Шинэ нууцлалтай таб</translation>
 <translation id="9008201768610948239">Алгас</translation>
@@ -2597,7 +2597,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="9029650858822697271">Таныг гаргасан</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Интернэтээр үзсэн өгөгдлийг устгах үйлдлийг баталгаажуулах</translation>
-<translation id="9035699147763101514">Gemini-тай Personal Intelligence-р дэмжсэн. Тохиргооноос сонголтуудаа удирдана уу.</translation>
 <translation id="9038526468059454274">Дараахаар хураангуйлах</translation>
 <translation id="9039373489628511875">Мессежийн өргөн</translation>
 <translation id="9042893549633094279">Нууцлал, аюулгүй байдал</translation>

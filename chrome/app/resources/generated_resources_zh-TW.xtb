@@ -5608,6 +5608,7 @@
 <translation id="5246282308050205996"><ph name="APP_NAME" /> 當機了，請按一下這個提示框來重新啟動應用程式。</translation>
 <translation id="5247051749037287028">顯示名稱 (選填)</translation>
 <translation id="5247243947166567755">請選取「<ph name="BOOKMARK_TITLE" />」</translation>
+<translation id="524751727772074981">使用 Chrome 內建 Gemini，隨時隨地都能提問</translation>
 <translation id="5248934139541843042">檢視整理工具</translation>
 <translation id="5249624017678798539">瀏覽器在下載尚未完成時當機。</translation>
 <translation id="5249818097095743806">使用安全金鑰</translation>
@@ -6314,7 +6315,6 @@
 <translation id="5828181959764767444">日落</translation>
 <translation id="5828545842856466741">新增設定檔...</translation>
 <translation id="5828633471261496623">列印中...</translation>
-<translation id="5829137022934788067">說明這段選取內容</translation>
 <translation id="5829214552954466783">分享使用者名稱為 <ph name="USER_EMAIL" /> 的<ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="5829544019044013776">Google 錢包中的付款方式</translation>
 <translation id="5830512293931520102">你的密碼已經過加密處理，任何人都不會看到</translation>

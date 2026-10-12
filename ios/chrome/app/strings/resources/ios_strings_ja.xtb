@@ -852,6 +852,7 @@
 <translation id="3672283986707092811">すべて選択</translation>
 <translation id="3679163990085797665">既読を削除</translation>
 <translation id="368329460027487650">ログアウトしています。ログインのオプションを開きます。</translation>
+<translation id="3689746421535476813">保存済みのお支払い方法を選択して編集するか、新しいお支払い方法を追加します</translation>
 <translation id="3695446226812920698">詳細</translation>
 <translation id="3700134753671613714">ログインすると、お使いのどのデバイスでも同じブックマークを利用できるようになります。</translation>
 <translation id="3701167022068948696">今すぐ修正</translation>
@@ -1264,6 +1265,7 @@
 <translation id="498624032394115435">リンクを知っているユーザーは誰でも、すべてのタブを編集できます。</translation>
 <translation id="4986428648020277392">プロンプト: どちらを買うべき？3 つのうちの 2 つ目</translation>
 <translation id="498768198683310172">Gemini の使用を開始</translation>
+<translation id="4989163558385430922">すべて表示</translation>
 <translation id="499122600724363620"><ph name="NAME" />（<ph name="EMAIL" />）、組織によって管理されています。</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />、<ph name="EMAIL" />。<ph name="AI_TIER" />。</translation>
 <translation id="4992255726304765516">タブグループの色 <ph name="COLOR" /></translation>
@@ -2028,7 +2030,6 @@ Level Up はいつでも再開できます。</translation>
 <translation id="7346922058131593019"><ph name="USER_FIRST_NAME" /> さん、何をしますか？</translation>
 <translation id="7347998088283246662">パスワード、履歴、ブックマークなどをインポートできます</translation>
 <translation id="7352651011704765696">問題が発生しました</translation>
-<translation id="7357999308187750900">すべて見る</translation>
 <translation id="736564850024123010">アドレスバーの位置を変更して使用環境をカスタマイズできます。</translation>
 <translation id="7366909168761621528">閲覧履歴データ</translation>
 <translation id="7367530036083223701">パスワード マネージャー ウィジェットを使用すると、ホーム画面からパスワードに安全にアクセスできます。</translation>
@@ -2362,7 +2363,6 @@ Level Up はいつでも再開できます。</translation>
 <translation id="8333459276976141586">Live ではマイクを使用します。[Live] ボタンをタップするとマイクがオンになります。マイクをオフにするには、[停止] ボタンをタップするか Gemini を閉じてください。</translation>
 <translation id="833647236762414178">パスワードとパスキーを作成、保存、管理して、サイトやアプリに簡単にログインできるようにします。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">データをバックアップして、他のデバイスで使用できるようにします。</translation>
-<translation id="8345328955902001853">{count,plural, =1{レベルアップするには、あと 1 件のタスクを完了してください}other{レベルアップするには、あと {count} 件のタスクを完了してください}}</translation>
 <translation id="8348530355586151720">その他メニューをタップ</translation>
 <translation id="8349305172487531364">ブックマーク バー</translation>
 <translation id="8360164927489392419">Live での会話の録音と Live で共有したコンテンツは、<ph name="BEGIN_LINK" />Gemini アプリのプライバシーに関するお知らせ<ph name="END_LINK" />に従って保存および処理されます。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
@@ -2426,6 +2426,7 @@ Level Up はいつでも再開できます。</translation>
 <translation id="8535368836838588657">パスワードを表示</translation>
 <translation id="8540426897269305488"><ph name="CELL_ACCESSIBILITY_LABEL" /> でログイン</translation>
 <translation id="8542331710562073430">エラーが発生しました。[Live] ボタンをタップして、もう一度お試しください。</translation>
+<translation id="8544172904312384600">新しいお支払い方法を編集または追加</translation>
 <translation id="8545276357312221485">既定のブラウザ設定を確認する</translation>
 <translation id="854938212724803178">不正使用されたパスワード 1 件: 安全を確保するため、今すぐ修正してください。</translation>
 <translation id="8551311254462607218">アドレスバーで Google レンズのカメラアイコンをタップします</translation>
@@ -2588,7 +2589,6 @@ Level Up はいつでも再開できます。</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />、固定されたサイト</translation>
 <translation id="8990960056509724223">組織のポリシーにより、ファイルを保存できませんでした</translation>
 <translation id="8998289560386111590">お使いのデバイスではご利用いただけません</translation>
-<translation id="9003263770394939629">Gemini による提案。高精度の自動入力は [設定] で管理できます。</translation>
 <translation id="9003677638446136377">もう一度確認</translation>
 <translation id="9006453925669499173">[メニュー] → [新しいシークレット タブ]</translation>
 <translation id="9008201768610948239">無視する</translation>
@@ -2597,7 +2597,6 @@ Level Up はいつでも再開できます。</translation>
 <translation id="9029650858822697271">ログアウトしました</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">閲覧履歴データの削除を確定する</translation>
-<translation id="9035699147763101514">Gemini のパーソナル インテリジェンスを使用します。選択内容は [設定] で管理できます。</translation>
 <translation id="9038526468059454274">文章を要約するなら</translation>
 <translation id="9039373489628511875">帯域幅</translation>
 <translation id="9042893549633094279">プライバシーとセキュリティ</translation>

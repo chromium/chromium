@@ -1264,6 +1264,7 @@
 <translation id="498624032394115435">लिंक असलेली कोणतीही व्यक्ती सर्व टॅब संपादित करू शकते.</translation>
 <translation id="4986428648020277392">प्रॉम्प्ट: मी कोणते खरेदी करावे? ३ पैकी २</translation>
 <translation id="498768198683310172">Gemini वापरण्यास सुरुवात करा</translation>
+<translation id="4989163558385430922">सर्व पहा</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, तुमच्या संस्थेने व्यवस्थापित केला आहे.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">टॅब गटाचा रंग <ph name="COLOR" /></translation>
@@ -2029,7 +2030,6 @@
 <translation id="7346922058131593019"><ph name="USER_FIRST_NAME" />, तुम्हाला कशावर काम करायचे आहे?</translation>
 <translation id="7347998088283246662">पासवर्ड, इतिहास, बुकमार्क आणि आणखी बऱ्याच गोष्टी इंपोर्ट करा</translation>
 <translation id="7352651011704765696">काहीतरी चूक झाली</translation>
-<translation id="7357999308187750900">सर्व पहा</translation>
 <translation id="736564850024123010">कस्टमाइझ केलेल्या अनुभवासाठी तुमच्या अ‍ॅड्रेस बारचे स्थान स्विच करा.</translation>
 <translation id="7366909168761621528">ब्राउझिंग डेटा</translation>
 <translation id="7367530036083223701">Password Manager विजेट वापरून होम स्क्रीनवरून तुमचे पासवर्ड सुरक्षितपणे ॲक्सेस करा.</translation>
@@ -2363,7 +2363,6 @@
 <translation id="8333459276976141586">Live तुमचा मायक्रोफोन वापरेल. Live बटणावर टॅप केल्याने माइक सुरू होतो. माइक बंद करण्यासाठी, थांबवा बटणावर टॅप करा किंवा Gemini बंद करा.</translation>
 <translation id="833647236762414178">साइट आणि ॲप्समध्ये सहजपणे साइन इन करण्यासाठी तुमचे पासवर्ड आणि पासकी तयार करा, सेव्ह करा आणि व्यवस्थापित करा. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">तुमच्या आशयाचा बॅकअप घ्या आणि तो कोणत्याही डिव्हाइसवर वापरा.</translation>
-<translation id="8345328955902001853">{count,plural, =1{लेव्हल अप करण्यासाठी आणखी १ टास्क पूर्ण करा}other{लेव्हल अप करण्यासाठी आणखी {count} टास्क पूर्ण करा}}</translation>
 <translation id="8348530355586151720">थ्री डॉट मेनूवर टॅप करा</translation>
 <translation id="8349305172487531364">बुकमार्क बार</translation>
 <translation id="8360164927489392419">Live सोबतच्या तुमच्या संवादांची रेकॉर्डिंग आणि तुम्ही त्याच्यासोबत शेअर करता तो आशय <ph name="BEGIN_LINK" />Gemini अ‍ॅप्स गोपनीयता नोटिस<ph name="END_LINK" /> यानुसार सेव्ह केला जातो व त्यावर प्रक्रिया केली जाते. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
@@ -2589,7 +2588,6 @@
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, पिन केलेली साइट</translation>
 <translation id="8990960056509724223">तुमच्या संस्थेच्या धोरणांमुळे फाइल सेव्ह करता आली नाही</translation>
 <translation id="8998289560386111590">तुमच्या डिव्हाइसवर उपलब्ध नाही</translation>
-<translation id="9003263770394939629">Gemini द्वारे सुचवलेले. सेटिंग्जमध्ये वर्धित ऑटोफिल व्यवस्थापित करा.</translation>
 <translation id="9003677638446136377">पुन्हा तपासा</translation>
 <translation id="9006453925669499173">मेनू → नवीन गुप्त टॅब</translation>
 <translation id="9008201768610948239">दुर्लक्ष करा</translation>
@@ -2598,7 +2596,6 @@
 <translation id="9029650858822697271">तुम्हाला साइन आउट केले गेले होते</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">ब्राउझिंग डेटा हटवणे कन्फर्म करा</translation>
-<translation id="9035699147763101514">Gemini सह पर्सनल इंटेलिजन्स द्वारे सक्षम केलेले. सेटिंग्जमध्ये तुमच्या निवडी व्यवस्थापित करा.</translation>
 <translation id="9038526468059454274">यासोबत सारांश द्या</translation>
 <translation id="9039373489628511875">बँडविड्थ</translation>
 <translation id="9042893549633094279">गोपनीयता आणि सुरक्षा</translation>

@@ -329,6 +329,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="2327445548174191329">Izvor: <ph name="DEVICE_NAME" /></translation>
 <translation id="232757965409810352">Spremi stranicu kao…</translation>
 <translation id="2328474416100889417">Svi će odmah izgubiti pristup grupi kartica <ph name="GROUP_NAME" /> i sve će se veze pozivnice isključiti</translation>
+<translation id="2328773543844041445">Automatski proširi kartice ako se pokazivač zadrži iznad njih</translation>
 <translation id="2330186936255788117">Više oznaka</translation>
 <translation id="2330243730505117832">Element Odaberite uređaj je zatvoren.</translation>
 <translation id="2332515770639153015">Uključeno je poboljšano sigurno pregledavanje</translation>

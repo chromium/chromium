@@ -1264,6 +1264,7 @@
 <translation id="498624032394115435">Noma ngubani onelinki angahlela wonke amathebhu.</translation>
 <translation id="4986428648020277392">Umyalelo: Yikuphi okufanele ngikuthenge? oku-2 koku-3</translation>
 <translation id="498768198683310172">Qala ukusebenzisa iGemini</translation>
+<translation id="4989163558385430922">Buka konke</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, ilawulwa yinhlangano yakho.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Umbala weqembu lethebhu <ph name="COLOR" /></translation>
@@ -2027,7 +2028,6 @@ Ungaqala kabusha noma nini.</translation>
 <translation id="7346922058131593019">Yini ofuna ukusebenza kuyo, <ph name="USER_FIRST_NAME" />?</translation>
 <translation id="7347998088283246662">Ngenisa amaphasiwedi, umlando, amabhukhimakhi nokuningi</translation>
 <translation id="7352651011704765696">Okuthile akuhambanga kahle</translation>
-<translation id="7357999308187750900">Buka Konke</translation>
 <translation id="736564850024123010">Shintsha isikhundla sebha lekheli lakho ukuze uthole ukuzizwela ngokwezifiso.</translation>
 <translation id="7366909168761621528">Idatha yokuphequlula</translation>
 <translation id="7367530036083223701">Thola ngokuvikelekile amaphasiwedi akho esikrinini sokuqala ngewijethi ye-Password Manager.</translation>
@@ -2361,7 +2361,6 @@ Ungaqala kabusha noma nini.</translation>
 <translation id="8333459276976141586">Okubukhoma kuzosebenzisa imakrofoni yakho. Ukuthepha inkinobho ethi Bukhoa kuvula imakrofoni. Ukuze uvale imakrofoni, thepha inkinobho yokumisa noma vala iGemini.</translation>
 <translation id="833647236762414178">Sungula, ulondoloze, futhi ulawule amaphasiwedi nezikhiye zakho zokudlula ukuze ukwazi ukungena ngemvume kalula kumasayithi nakuma-app. <ph name="BEGIN_LINK" />Funda kabanzi<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Yenza isipele izinto zakho futhi uzisebenzise kunoma iyiphi idivayisi.</translation>
-<translation id="8345328955902001853">{count,plural, =1{Qedela umsebenzi o-1 ngaphezulu ukuze ukhuphuke kuleveli}one{Qedela imisebenzi engu-{count} eyengeziwe ukuze ukhuphuke kuleveli}other{Qedela imisebenzi engu-{count} eyengeziwe ukuze ukhuphuke kuleveli}}</translation>
 <translation id="8348530355586151720">Thepha imenyu yamachashazi amathathu</translation>
 <translation id="8349305172487531364">Ibha yamabhukhimakhi</translation>
 <translation id="8360164927489392419">Okurekhodiwe kokuxhumana kwakho Ngokubukhoma kanye nekhontenti owabelana ngayo kuyagcinwa futhi kucutshungulwe <ph name="BEGIN_LINK" />Ngokwesaziso Sobumfihlo bama-App eGemini<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Funda kabanzi<ph name="END_LINK" /></translation>
@@ -2586,7 +2585,6 @@ Ungaqala kabusha noma nini.</translation>
 <translation id="8988107725234939347">I-<ph name="WEBSITE_TITLE" />, isayithi ephiniwe</translation>
 <translation id="8990960056509724223">Ifayela alikwazanga ukulondoloza ngenxa yezinqubomgomo zenhlangano yakho</translation>
 <translation id="8998289560386111590">Ayitholakali kudivayisi yakho</translation>
-<translation id="9003263770394939629">Iphakanyiswe yiGemini Lawula ukuzigcwalisela okuthuthukisiwe kumasethingi.</translation>
 <translation id="9003677638446136377">Hlola futhi</translation>
 <translation id="9006453925669499173">Imenyu → Ithebhu Entsha ye-Incognito</translation>
 <translation id="9008201768610948239">Ziba</translation>
@@ -2595,7 +2593,6 @@ Ungaqala kabusha noma nini.</translation>
 <translation id="9029650858822697271">Ukhishwe ngemvume</translation>
 <translation id="9030785788945687215">I-Gmail</translation>
 <translation id="9032405509996909363">Qinisekisa ukusula idatha yokubhrawuza</translation>
-<translation id="9035699147763101514">Inikwe amandla Imisebenzi Yobuhlakani Bomuntu Siqu ngeGemini. Lawula okukhethayo kumasethingi.</translation>
 <translation id="9038526468059454274">Yifinyeze ngokuthi</translation>
 <translation id="9039373489628511875">Umkhawulokudonsa</translation>
 <translation id="9042893549633094279">Ubumfihlo nokuvikeleka</translation>

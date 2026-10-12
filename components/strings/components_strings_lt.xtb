@@ -71,7 +71,6 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" />: pasirinkite leidimą</translation>
 <translation id="1113000785583998331">Išsaugoti IBAN?</translation>
 <translation id="1113869188872983271">&amp;Anuliuoti pertvarkymą</translation>
-<translation id="1117709830616495622">Teikia Asmeninis intelektas su „Gemini“.</translation>
 <translation id="111897705806685148">Prieigos rakto iš kito įrenginio naudojimas</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />; paspauskite tabuliavimo klavišą, tada „Enter“, jei norite tvarkyti, kokią „Chrome“ informaciją išsaugote „Google“ paskyroje</translation>
 <translation id="1121990216147052230">Sukurk man užduočių sąrašą</translation>
@@ -532,7 +531,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1890171020361705182">Dinozauro žaidimas. Pikseliais atvaizduotas dinozauras bėga per dykynę ir bando išvengti kaktusų ir pterodaktilių. Išgirdę garsinį signalą, palieskite, kad peršoktumėte per kliūtis.</translation>
 <translation id="1898423065542865115">Filtravimas</translation>
 <translation id="1898678876221454577">Prisijunkite, kad išsaugotumėte nuskaitytą dokumentą</translation>
-<translation id="1898804291554630487">Paklauskite apie šį puslapį</translation>
 <translation id="1901443836186977402">{1,plural, =1{Šiam serveriui nepavyko patvirtinti, kad tai yra <ph name="DOMAIN" />; jo saugos sertifikato galiojimas baigėsi pastarąją dieną. Taip gali būti dėl netinkamos konfigūracijos ar dėl ryšį pertraukusio užpuolėjo. Šiuo metu kompiuterio laikrodis nustatytas į <ph name="CURRENT_DATE" />. Ar šis laikas tinkamas? Jeigu ne, pakoreguokite sistemos laikrodį ir atnaujinkite šį puslapį.}one{Šiam serveriui nepavyko patvirtinti, kad tai yra <ph name="DOMAIN" />; jo saugos sertifikato galiojimas baigėsi prieš # dieną. Taip gali būti dėl netinkamos konfigūracijos ar dėl ryšį pertraukusio užpuolėjo. Šiuo metu kompiuterio laikrodis nustatytas į <ph name="CURRENT_DATE" />. Ar šis laikas tinkamas? Jeigu ne, pakoreguokite sistemos laikrodį ir atnaujinkite šį puslapį.}few{Šiam serveriui nepavyko patvirtinti, kad tai yra <ph name="DOMAIN" />; jo saugos sertifikato galiojimas baigėsi prieš # dienas. Taip gali būti dėl netinkamos konfigūracijos ar dėl ryšį pertraukusio užpuolėjo. Šiuo metu kompiuterio laikrodis nustatytas į <ph name="CURRENT_DATE" />. Ar šis laikas tinkamas? Jeigu ne, pakoreguokite sistemos laikrodį ir atnaujinkite šį puslapį.}many{Šiam serveriui nepavyko patvirtinti, kad tai yra <ph name="DOMAIN" />; jo saugos sertifikato galiojimas baigėsi prieš # dienos. Taip gali būti dėl netinkamos konfigūracijos ar dėl ryšį pertraukusio užpuolėjo. Šiuo metu kompiuterio laikrodis nustatytas į <ph name="CURRENT_DATE" />. Ar šis laikas tinkamas? Jeigu ne, pakoreguokite sistemos laikrodį ir atnaujinkite šį puslapį.}other{Šiam serveriui nepavyko patvirtinti, kad tai yra <ph name="DOMAIN" />; jo saugos sertifikato galiojimas baigėsi prieš # dienų. Taip gali būti dėl netinkamos konfigūracijos ar dėl ryšį pertraukusio užpuolėjo. Šiuo metu kompiuterio laikrodis nustatytas į <ph name="CURRENT_DATE" />. Ar šis laikas tinkamas? Jeigu ne, pakoreguokite sistemos laikrodį ir atnaujinkite šį puslapį.}}</translation>
 <translation id="190166348986967700">Administratorius pradės įkelti failus į „<ph name="CLOUD_PROVIDER" />“ <ph name="DATE_TIME" />. Laikykite įrenginį prijungtą, kol bus baigtas failų įkėlimas. Įkeliant vietinius failus galima tik skaityti.</translation>
 <translation id="1902576642799138955">Galiojimo laikas</translation>
@@ -841,8 +839,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2384307209577226199">Numatytieji įmonės nustatymai</translation>
 <translation id="2385809941344967209">Atnaujinkite „Chrome“ šios naršyklės nustatymuose</translation>
 <translation id="2386255080630008482">Serverio sertifikatas panaikintas.</translation>
-<translation id="2387424091060104123">Siūlo „Gemini“ · <ph name="SRC_LINK" />Peržiūrėti šaltinius<ph name="END_SRC_LINK" />
-Galite pašalinti šį pasiūlymą iš „Chrome“. Pradinis šaltinis nebus ištrintas. <ph name="MANAGE_LINK" />Tvarkyti išmanųjį automatinį pildymą<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">Detalizuoti</translation>
 <translation id="2392959068659972793">Rodyti politiką su nenustatyta verte</translation>
 <translation id="239429038616798445">Šis pristatymo metodas nepasiekiamas. Išbandykite kitą metodą.</translation>
@@ -1245,7 +1241,6 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="3109788962812161063">Profilio tvarkymas</translation>
 <translation id="3112892588078695695">Telefono numeris: <ph name="PHONE" />.</translation>
 <translation id="3113284927548439113">Trečia pamaina</translation>
-<translation id="3113930177999394798">Įveskite @history, kad galėtumėte ieškoti DI pagrįstoje naršymo istorijoje</translation>
 <translation id="3114040155724590991">„Android“ sistemos atnaujinimas
     Programos paleidimas gali trukti ilgiau nei įprastai.</translation>
 <translation id="3114197119223448048">nauja veikla</translation>
@@ -1427,7 +1422,6 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="3413466783792948876">Saugiausia šioje svetainėje apsilankyti vėliau, jei naudojate viešąjį tinklą. Patikimas tinklas, pvz., namų ar darbo „Wi-Fi“ ryšys, kelia mažesnę riziką.</translation>
 <translation id="3414952576877147120">Dydis:</translation>
 <translation id="341513675006332771">Mygtukas „Paleisti „Chrome“ dinozauro žaidimą“; suaktyvinkite, jei norite žaisti žaidimą „Dino Run“ naršyklėje „Chrome“</translation>
-<translation id="3415471717466570460">Jūsų paieškos, geriausios atitiktys ir jų puslapių turinys siunčiami „Google“ ir juos gali matyti tikrinantys žmonės, siekiant patobulinti šią funkciją. Tai eksperimentinė funkcija ir ji ne visada pateikia tinkamus atsakymus.</translation>
 <translation id="3417390269491141648">Palygink mano sveikatos plano parinktis ir išskaidyk pagrindinius jų skirtumus</translation>
 <translation id="3421387094817716717">Elipsės formos kreivės viešasis raktas</translation>
 <translation id="3422248202833853650">Pabandykite išeiti iš kitų programų, kad atlaisvintumėte atminties.</translation>
@@ -1905,7 +1899,6 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4185037616931963178">Patikimai atnaujinkite skundo numerį</translation>
 <translation id="4186035307311647330">Nebestebėti kainų</translation>
-<translation id="4190446002599583608">Istorijos paieška, kurią teikia DI</translation>
 <translation id="4191334393248735295">Ilgis</translation>
 <translation id="4195459680867822611">Mygtukas „Žr. „Chrome“ patarimus“; suaktyvinkite, jei norite sužinoti apie „Chrome“ funkcijas</translation>
 <translation id="4195643157523330669">Atidaryti naujame skirtuke</translation>
@@ -1952,7 +1945,6 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="424063167283213501">Išsaugokite žinomo keliautojo numerį</translation>
 <translation id="4241830393007970744">Svetainės, kurioje bandėte apsilankyti, atakos vykdytojai gali apgaule priversti jus įdiegti programinę įrangą ar atskleisti informaciją, pvz., slaptažodžius, telefono ar kredito kortelių numerius.</translation>
 <translation id="4242380780309416996">Vokas (sunkus)</translation>
-<translation id="4242981939686657948">Kad galėtumėte efektyviau ieškoti naršymo istorijoje, įjunkite</translation>
 <translation id="4244926541863471678">Juosta</translation>
 <translation id="42481816218163154">Sukurk penkiolikos minučių rytinę rutiną, kuri padėtų sklandžiau pradėti rytą. Įsitikink, kad įtrauktas sąmoningumo pratimas</translation>
 <translation id="4250343410682686342">Funkcijos „Pirkite dabar, mokėkite vėliau“ klaidos ekranas atidarytas per visą aukštį.</translation>
@@ -3896,7 +3888,6 @@ Papildoma išsami informacija:
 <translation id="7514365320538308">Atsisiųsti</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">VR leidžiama šį kartą</translation>
-<translation id="7517198908921983825">Siūlo „Gemini“ · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">C10 vokas</translation>
 <translation id="7518003948725431193">Nerasta nė vieno tinklalapio šiuo žiniatinklio adresu: <ph name="URL" /></translation>
 <translation id="7521387064766892559">„JavaScript“</translation>
@@ -4393,7 +4384,6 @@ Papildoma išsami informacija:
 <translation id="8350416046273606058">Į spartųjį klavišą negalima įtraukti tarpų: „<ph name="SHORTCUT_NAME" />“</translation>
 <translation id="8351131234907093545">Sukurti užrašą</translation>
 <translation id="8352849934814541340">Šio įrenginio administratorius įdiegė papildomų funkcijų programų. Naudojant programas galima pasiekti kai kuriuos jūsų duomenis.</translation>
-<translation id="8353273112634584260">Teikia Asmeninis intelektas su „Gemini“. Užklausos, puslapių pavadinimai ir URL gali būti peržiūrėti siekiant patobulinti išmanųjį automatinį pildymą.</translation>
 <translation id="8355270400102541638">Vietinės strigties kontekstas:</translation>
 <translation id="8362914115861174987">Versti į</translation>
 <translation id="8363502534493474904">Išjungti lėktuvo režimą</translation>
@@ -4741,7 +4731,6 @@ Papildoma išsami informacija:
 <translation id="9001074447101275817">Tarpiniame serveryje <ph name="DOMAIN" /> būtina įvesti naudotojo vardą ir slaptažodį.</translation>
 <translation id="9001963517402879850">Šok!</translation>
 <translation id="9002677862950442746">Patvirtinimo kodas: <ph name="OTP" /></translation>
-<translation id="9003263770394939629">Siūlo „Gemini“. Tvarkykite patobulintą automatinį pildymą nustatymuose.</translation>
 <translation id="9003639428623471314">„Kahu“ vokas</translation>
 <translation id="9004367719664099443">Vyksta VR sesija</translation>
 <translation id="9005998258318286617">PDF dokumento įkelti nepavyko.</translation>
@@ -4760,7 +4749,6 @@ Papildoma išsami informacija:
 <translation id="9027531288681624875">Jei norite išeiti iš viso ekrano režimo, paspauskite ir palaikykite |<ph name="ACCELERATOR" />|</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Saugos klaida</translation>
-<translation id="9035699147763101514">Teikia Asmeninis intelektas su „Gemini“. Tvarkykite pasirinkimus nustatymuose.</translation>
 <translation id="9035824888276246493">Išsaugoti saugos kodus</translation>
 <translation id="9036306139374661733">Leisti pasiekti mikrofoną?</translation>
 <translation id="9036484080057916082">Pasirašyto sertifikato laiko žymių sąrašas</translation>
@@ -4915,7 +4903,6 @@ Papildoma išsami informacija:
 <translation id="961930410699694996">Vietovės informacija leidžiama šį kartą</translation>
 <translation id="962484866189421427">Šis turinys gali bandyti įdiegti klaidinančių programų, kurios apsimeta kitomis programomis, arba rinkti duomenis, naudojamus jums stebėti. <ph name="BEGIN_LINK" />Rodyti vis tiek<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">Atsižvelgdama į jūsų regiono įstatymus, „Chromium“ prašo pasirinkti numatytąjį paieškos variklį. Šie paieškos varikliai populiarūs jūsų regione ir rodomi atsitiktine tvarka.</translation>
-<translation id="963837307749850257">Visi vartotojai</translation>
 <translation id="963988220224168636">Saugiai pridėkite skundo numerį prie „Google Wallet“</translation>
 <translation id="964050462028070434">Tvarkyti slaptažodžius ir „passkey“…</translation>
 <translation id="964681140808832181">Taip, noriu atšaukti</translation>

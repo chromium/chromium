@@ -852,6 +852,7 @@
 <translation id="3672283986707092811">ਸਭ ਚੁਣੋ</translation>
 <translation id="3679163990085797665">ਪੜ੍ਹੇ ਹੋਏ ਇੰਦਰਾਜ਼ਾਂ ਨੂੰ ਮਿਟਾਓ</translation>
 <translation id="368329460027487650">ਸਾਈਨ-ਆਊਟ ਕੀਤਾ ਗਿਆ। ਇਹ ਸਾਈਨ-ਇਨ ਕਰਨ ਦੇ ਵਿਕਲਪਾਂ ਨੂੰ ਖੋਲ੍ਹਦਾ ਹੈ।</translation>
+<translation id="3689746421535476813">ਸੰਪਾਦਨ ਕਰਨ ਲਈ ਰੱਖਿਅਤ ਕੀਤੀ ਭੁਗਤਾਨ ਵਿਧੀ ਚੁਣੋ ਜਾਂ ਕੋਈ ਨਵੀਂ ਭੁਗਤਾਨ ਵਿਧੀ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="3695446226812920698">ਜਾਣੋ ਕਿਵੇਂ</translation>
 <translation id="3700134753671613714">ਆਪਣੀਆਂ ਸਾਰੀਆਂ ਡਿਵਾਈਸਾਂ ਤੇ ਆਪਣੇ ਬੁੱਕਮਾਰਕ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਸਾਈਨ ਇਨ ਕਰੋ।</translation>
 <translation id="3701167022068948696">ਹੁਣੇ ਠੀਕ ਕਰੋ</translation>
@@ -1264,6 +1265,7 @@
 <translation id="498624032394115435">ਜਿਸ ਕੋਲ ਵੀ ਲਿੰਕ ਹੈ, ਉਹ ਸਾਰੀਆਂ ਟੈਬਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰ ਸਕਦਾ ਹੈ।</translation>
 <translation id="4986428648020277392">ਉਤਪ੍ਰੇਰਕ: ਮੈਨੂੰ ਕਿਹੜਾ ਖਰੀਦਣਾ ਚਾਹੀਦਾ ਹੈ? 3 ਵਿੱਚੋਂ 2</translation>
 <translation id="498768198683310172">Gemini ਨੂੰ ਵਰਤਣਾ ਸ਼ੁਰੂ ਕਰੋ</translation>
+<translation id="4989163558385430922">ਸਭ ਦੇਖੋ</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, ਤੁਹਾਡੀ ਸੰਸਥਾ ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਹੈ।</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />। <ph name="AI_TIER" />।</translation>
 <translation id="4992255726304765516">ਟੈਬ ਗਰੁੱਪ ਦਾ ਰੰਗ <ph name="COLOR" /></translation>
@@ -1719,6 +1721,7 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="6372558618707314581">ਆਪਣੀ ਪਸੰਦ ਦੇ ਕਿਸੇ ਵੀ ਪੰਨੇ 'ਤੇ ਜਾਓ</translation>
 <translation id="6374469231428023295">ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="6374514103145916800">ਪੁੱਛੋ</translation>
+<translation id="6381241974485088375">ਇੱਥੋਂ ਕਿਸੇ ਵੀ ਵੇਲੇ ਆਪਣੇ ਨਵੇਂ ਟੈਬ ਪੰਨੇ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
 <translation id="6383719166112032471">ਟਿਕਾਣਾ ਖੋਲ੍ਹੋ…</translation>
 <translation id="6387994324662817823">ਪਾਸਵਰਡ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ Google ਪਾਸਵਰਡ ਪ੍ਰਬੰਧਕ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੇ ਗਏ ਹਨ।</translation>
 <translation id="6393156038355142111">ਮਜ਼ਬੂਤ ਪਾਸਵਰਡ ਸੁਝਾਓ</translation>
@@ -2027,7 +2030,6 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="7346922058131593019">ਤੁਸੀਂ ਕਿਸ ਚੀਜ਼ 'ਤੇ ਕੰਮ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ, <ph name="USER_FIRST_NAME" />?</translation>
 <translation id="7347998088283246662">ਪਾਸਵਰਡ, ਇਤਿਹਾਸ, ਬੁੱਕਮਾਰਕ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਆਯਾਤ ਕਰੋ</translation>
 <translation id="7352651011704765696">ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ</translation>
-<translation id="7357999308187750900">ਸਭ ਦੇਖੋ</translation>
 <translation id="736564850024123010">ਵਿਉਂਤਬੱਧ ਅਨੁਭਵ ਲਈ ਆਪਣੇ ਪਤਾ ਬਾਰ ਦੀ ਸਥਿਤੀ ਨੂੰ ਬਦਲੋ।</translation>
 <translation id="7366909168761621528">ਬ੍ਰਾਊਜ਼ਿੰਗ  ਡਾਟਾ </translation>
 <translation id="7367530036083223701">Password Manager ਵਿਜੇਟ ਦੀ ਮਦਦ ਨਾਲ ਹੋਮ ਸਕ੍ਰੀਨ ਤੋਂ ਆਪਣੇ ਪਾਸਵਰਡਾਂ ਤੱਕ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਪਹੁੰਚ ਕਰੋ।</translation>
@@ -2361,7 +2363,6 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="8333459276976141586">Live ਤੁਹਾਡੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਵਰਤੋਂ ਕਰੇਗਾ। Live ਬਟਨ 'ਤੇ ਟੈਪ ਕਰਨ ਨਾਲ ਮਾਈਕ ਚਾਲੂ ਹੋ ਜਾਂਦਾ ਹੈ। ਮਾਈਕ ਬੰਦ ਕਰਨ ਲਈ, ਰੋਕੋ ਬਟਨ 'ਤੇ ਟੈਪ ਕਰੋ ਜਾਂ Gemini ਨੂੰ ਬੰਦ ਕਰੋ।</translation>
 <translation id="833647236762414178">ਸਾਈਟਾਂ ਅਤੇ ਐਪਾਂ ਵਿੱਚ ਆਸਾਨੀ ਨਾਲ ਸਾਈਨ-ਇਨ ਕਰਨ ਲਈ ਆਪਣੇ ਪਾਸਵਰਡ ਅਤੇ ਪਾਸਕੀਆਂ ਬਣਾਓ, ਉਨ੍ਹਾਂ ਨੂੰ ਰੱਖਿਅਤ ਕਰੋ ਅਤੇ ਉਨ੍ਹਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ। <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">ਆਪਣੀ ਸਮੱਗਰੀ ਦਾ ਬੈਕਅੱਪ ਲਓ ਅਤੇ ਇਸਨੂੰ ਕਿਸੇ ਵੀ ਡੀਵਾਈਸ 'ਤੇ ਵਰਤੋ।</translation>
-<translation id="8345328955902001853">{count,plural, =1{ਅਗਲੇ ਪੱਧਰ 'ਤੇ ਜਾਣ ਲਈ 1 ਹੋਰ ਕਾਰਜ ਪੂਰਾ ਕਰੋ}one{ਅਗਲੇ ਪੱਧਰ 'ਤੇ ਜਾਣ ਲਈ {count} ਹੋਰ ਕਾਰਜ ਪੂਰਾ ਕਰੋ}other{ਅਗਲੇ ਪੱਧਰ 'ਤੇ ਜਾਣ ਲਈ {count} ਹੋਰ ਕਾਰਜ ਪੂਰੇ ਕਰੋ}}</translation>
 <translation id="8348530355586151720">ਤਿੰਨ-ਬਿੰਦੂਆਂ ਵਾਲੇ ਮੀਨੂ 'ਤੇ ਟੈਪ ਕਰੋ</translation>
 <translation id="8349305172487531364">ਬੁੱਕਮਾਰਕਸ ਬਾਰ</translation>
 <translation id="8360164927489392419">Live ਨਾਲ ਤੁਹਾਡੀਆਂ ਅੰਤਰਕਿਰਿਆਵਾਂ ਦੀਆਂ ਰਿਕਾਰਡਿੰਗਾਂ ਅਤੇ ਤੁਹਾਡੇ ਵੱਲੋਂ ਇਸ ਨਾਲ ਸਾਂਝੇ ਕੀਤੇ ਕੰਟੈਂਟ ਨੂੰ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ ਅਤੇ ਇਸ 'ਤੇ <ph name="BEGIN_LINK" />Gemini ਐਪਾਂ ਸੰਬੰਧੀ ਪਰਦੇਦਾਰੀ ਨੋਟਿਸ<ph name="END_LINK" /> ਮੁਤਾਬਕ ਪ੍ਰਕਿਰਿਆ ਕੀਤੀ ਜਾਂਦੀ ਹੈ। <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
@@ -2425,6 +2426,7 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="8535368836838588657">ਪਾਸਵਰਡ ਦਿਖਾਓ</translation>
 <translation id="8540426897269305488"><ph name="CELL_ACCESSIBILITY_LABEL" /> ਨਾਲ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="8542331710562073430">ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ। ਦੁਬਾਰਾ ਲਾਈਵ ਹੋਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਨ ਲਈ ਲਾਈਵ ਬਟਨ 'ਤੇ ਟੈਪ ਕਰੋ।</translation>
+<translation id="8544172904312384600">ਸੰਪਾਦਨ ਕਰੋ ਜਾਂ ਕੋਈ ਨਵੀਂ ਭੁਗਤਾਨ ਵਿਧੀ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="8545276357312221485">ਆਪਣੀਆਂ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਬ੍ਰਾਊਜ਼ਰ ਸੈਟਿੰਗਾਂ ਦੀ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="854938212724803178">ਤੁਹਾਡਾ 1 ਛੇੜਛਾੜ ਵਾਲਾ ਪਾਸਵਰਡ ਹੈ। ਸੁਰੱਖਿਅਤ ਰਹਿਣ ਲਈ ਇਸਨੂੰ ਹੁਣੇ ਠੀਕ ਕਰੋ।</translation>
 <translation id="8551311254462607218">ਪਤਾ ਬਾਰ ਵਿੱਚ, Google Lens ਕੈਮਰਾ ਪ੍ਰਤੀਕ 'ਤੇ ਟੈਪ ਕਰੋ</translation>
@@ -2463,6 +2465,7 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="8639963783467694461">ਆਟੋਫਿਲ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="8642417828095157370">ਟੈਬਾਂ ਨੂੰ ਹੋਰ ਢੁਕਵੇਂ ਜਵਾਬਾਂ ਲਈ ਸਾਂਝਾ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="8643403533759285912">ਗਰੁੱਪ ਮਿਟਾਓ</translation>
+<translation id="8646357898207744479">Lens</translation>
 <translation id="8647280737650867362">ਕੀਮਤ ਦੀ ਟਰੈਕਿੰਗ ਬੰਦ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ।</translation>
 <translation id="8654802032646794042">ਰੱਦ ਕਰੋ</translation>
 <translation id="8655861111558401309">'ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਮਿਟਾਓ' ਨੂੰ ਚੁਣੋ</translation>
@@ -2586,7 +2589,6 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, ਪਿੰਨ ਕੀਤੀ ਸਾਈਟ</translation>
 <translation id="8990960056509724223">ਤੁਹਾਡੀ ਸੰਸਥਾ ਦੀਆਂ ਨੀਤੀਆਂ ਕਰਕੇ ਫ਼ਾਈਲ ਨੂੰ ਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
 <translation id="8998289560386111590">ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
-<translation id="9003263770394939629">Gemini ਵੱਲੋਂ ਸੁਝਾਇਆ ਗਿਆ। ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਵਿਸਤ੍ਰਿਤ ਆਟੋਫਿਲ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ।</translation>
 <translation id="9003677638446136377">ਦੁਬਾਰਾ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="9006453925669499173">ਮੀਨੂ → ਨਵੀਂ ਇਨਕੋਗਨਿਟੋ ਟੈਬ</translation>
 <translation id="9008201768610948239">ਅਣਡਿੱਠ ਕਰੋ</translation>
@@ -2595,7 +2597,6 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="9029650858822697271">ਤੁਹਾਨੂੰ ਸਾਈਨ-ਆਊਟ ਹੋ ਗਏ ਸੀ</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਮਿਟਾਉਣ ਦੀ ਤਸਦੀਕ ਕਰੋ</translation>
-<translation id="9035699147763101514">Gemini ਨਾਲ ਪਰਸਨਲ ਇੰਟੈਲੀਜੈਂਸ ਵੱਲੋਂ ਸੰਚਾਲਿਤ। ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਆਪਣੀਆਂ ਚੋਣਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ।</translation>
 <translation id="9038526468059454274">ਇਸ ਨਾਲ ਸਾਰਾਂਸ਼ ਦਿਓ</translation>
 <translation id="9039373489628511875">ਬੈਂਡਵਿਡਥ</translation>
 <translation id="9042893549633094279">ਪਰਦੇਦਾਰੀ ਅਤੇ ਸੁਰੱਖਿਆ</translation>

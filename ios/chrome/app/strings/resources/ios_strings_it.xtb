@@ -1264,6 +1264,7 @@
 <translation id="498624032394115435">Chiunque abbia il link può modificare tutte le schede.</translation>
 <translation id="4986428648020277392">Prompt: quale dovrei comprare? 2 di 3</translation>
 <translation id="498768198683310172">Inizia a usare Gemini</translation>
+<translation id="4989163558385430922">Mostra tutto</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, gestito dalla tua organizzazione.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Colore del gruppo di schede: <ph name="COLOR" /></translation>
@@ -2027,7 +2028,6 @@ Puoi ricominciare in qualsiasi momento.</translation>
 <translation id="7346922058131593019">Su cosa vuoi lavorare, <ph name="USER_FIRST_NAME" />?</translation>
 <translation id="7347998088283246662">Importa password, cronologia, preferiti e altro</translation>
 <translation id="7352651011704765696">Si è verificato un problema</translation>
-<translation id="7357999308187750900">Mostra tutto</translation>
 <translation id="736564850024123010">Cambia la posizione della barra degli indirizzi per un'esperienza personalizzata.</translation>
 <translation id="7366909168761621528">Dati di navigazione</translation>
 <translation id="7367530036083223701">Accedi in sicurezza alle tue password dalla schermata Home con il widget Gestore delle password.</translation>
@@ -2361,7 +2361,6 @@ Puoi ricominciare in qualsiasi momento.</translation>
 <translation id="8333459276976141586">Live userà il microfono. Tocca il pulsante Live per attivare il microfono. Per disattivare il microfono, tocca il pulsante di interruzione o chiudi Gemini.</translation>
 <translation id="833647236762414178">Crea, salva e gestisci le tue password e passkey in modo da poter accedere facilmente ai siti e alle app. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Fai il backup dei tuoi dati e usali su qualsiasi dispositivo.</translation>
-<translation id="8345328955902001853">{count,plural, =1{Completa 1 altra attività per salire di livello}other{Completa {count} altre attività per salire di livello}}</translation>
 <translation id="8348530355586151720">Tocca il menu con tre puntini</translation>
 <translation id="8349305172487531364">Barra dei preferiti</translation>
 <translation id="8360164927489392419">Le registrazioni delle interazioni con Live e i contenuti che condividi vengono salvati e trattati secondo l‘<ph name="BEGIN_LINK" />Informativa sulla privacy delle app Gemini<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
@@ -2586,7 +2585,6 @@ Puoi ricominciare in qualsiasi momento.</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, sito fissato</translation>
 <translation id="8990960056509724223">Impossibile salvare il file a causa delle policy della tua organizzazione</translation>
 <translation id="8998289560386111590">Non disponibile sul tuo dispositivo</translation>
-<translation id="9003263770394939629">Suggerito da Gemini Gestisci la compilazione automatica avanzata nelle impostazioni.</translation>
 <translation id="9003677638446136377">Controlla</translation>
 <translation id="9006453925669499173">Menu → Nuova scheda Incognito</translation>
 <translation id="9008201768610948239">Ignora</translation>
@@ -2595,7 +2593,6 @@ Puoi ricominciare in qualsiasi momento.</translation>
 <translation id="9029650858822697271">Il tuo account è stato disconnesso</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Conferma eliminazione dei dati di navigazione</translation>
-<translation id="9035699147763101514">Basato su Personal Intelligence con Gemini. Gestisci le tue scelte nelle impostazioni.</translation>
 <translation id="9038526468059454274">Riassumi con</translation>
 <translation id="9039373489628511875">Larghezza di banda</translation>
 <translation id="9042893549633094279">Privacy e sicurezza</translation>

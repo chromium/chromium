@@ -15,7 +15,6 @@
 <translation id="1321004960118052490">閒置項目不會保留</translation>
 <translation id="1329584516321524826">剛才更新</translation>
 <translation id="1340839264183302272">退出群組</translation>
-<translation id="1386966479075994683">展開分頁</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{展開含有 <ph name="TABS_COUNT_ONE" /> 個分頁的「<ph name="TITLE_OF_GROUP" />」共用分頁群組，顏色為<ph name="COLOR_NAME" />，標籤為「<ph name="CARD_LABEL" />」。}other{展開含有 <ph name="TABS_COUNT_MANY" /> 個分頁的「<ph name="TITLE_OF_GROUP" />」共用分頁群組，顏色為<ph name="COLOR_NAME" />，標籤為「<ph name="CARD_LABEL" />」。}}</translation>
 <translation id="1486715732399361704">你可以在這裡找到所有分頁群組</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> 分鐘前建立}other{<ph name="NUM_MINS_MANY" /> 分鐘前建立}}</translation>
@@ -66,6 +65,7 @@
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" /> 分 (滿分 <ph name="RATING_BASELINE" /> 分)</translation>
 <translation id="266935134738038806">造訪網站</translation>
 <translation id="2671423594960767771">分享群組項目</translation>
+<translation id="2729310339366257582">收合分頁</translation>
 <translation id="2734252994837336591">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> 週前更新}other{<ph name="NUM_WEEKS_MANY" /> 週前更新}}</translation>
 <translation id="2753877351161418426">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> 小時前更新}other{<ph name="NUM_HOURS_MANY" /> 小時前更新}}</translation>
 <translation id="2755485474385016903">群組成員都會看到所做的變更</translation>
@@ -136,7 +136,6 @@
 <translation id="5073204694187207510">隱藏全螢幕格狀檢視</translation>
 <translation id="5076161749301278626">要查看商店評論嗎？</translation>
 <translation id="5161254044473106830">請輸入標題</translation>
-<translation id="5204584298075822291">收合分頁</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome 會在 <ph name="AUTO_DELETE_DELAY_ONE" /> 個月後自動關閉閒置的分頁和分頁群組。你可以前往設定變更。}other{Chrome 會在 <ph name="AUTO_DELETE_DELAY_MANY" /> 個月後自動關閉閒置的分頁和分頁群組。你可以前往設定變更。}}</translation>
 <translation id="5254233580564156835">記憶體用量：<ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">最後一個分頁</translation>
@@ -191,6 +190,7 @@
 <translation id="709473454666962555">選取分頁群組</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{分享分頁}other{分享分頁}}</translation>
 <translation id="7129458170538955174">這間店的資訊已開啟，顯示在畫面下半部</translation>
+<translation id="7194343495483122559">展開分頁</translation>
 <translation id="7204204600596740190">多選模式</translation>
 <translation id="7211038039686180558">分頁群組會自動儲存，並同步至你登入帳戶的所有裝置</translation>
 <translation id="7326879924029668159">查看退貨政策等資訊</translation>

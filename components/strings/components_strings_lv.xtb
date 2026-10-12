@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Atlasiet atļauju: <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Vai saglabāt IBAN?</translation>
 <translation id="1113869188872983271">&amp;Atsaukt pārkārtošanu</translation>
-<translation id="1117709830616495622">Nodrošina funkcija “Personīgais intelekts” ar Gemini.</translation>
 <translation id="111897705806685148">Izmantot piekļuves atslēgu no citas ierīces</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai pārvaldītu, kāda Chrome informācija tiek saglabāta jūsu Google kontā, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
 <translation id="1121990216147052230">Izveido man uzdevumu sarakstu</translation>
@@ -532,7 +531,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1890171020361705182">Dinozaura spēle. Pikselizēts dinozaurs izvairās no kaktusiem un pterodaktiliem, šķērsojot tuksnešainu ainavu. Kad dzirdat audio norādi, pieskarieties, lai pārlēktu šķēršļiem.</translation>
 <translation id="1898423065542865115">Filtrēšana</translation>
 <translation id="1898678876221454577">Pierakstieties, lai saglabātu skenējumu</translation>
-<translation id="1898804291554630487">Jautājiet par šo lapu</translation>
 <translation id="1901443836186977402">{1,plural, =1{Šis serveris nevarēja pierādīt, ka šī ir vietne <ph name="DOMAIN" />. Tās drošības sertifikāta derīguma termiņš beidzās pēdējās dienas laikā. Šī problēma var rasties nepareizas konfigurācijas dēļ vai tādēļ, ka kāds uzbrucējs ir pārtvēris jūsu savienojumu. Jūsu datora pulkstenī pašlaik ir iestatīts šāds datums: <ph name="CURRENT_DATE" />. Vai tas ir pareizs? Ja datums nav pareizs, mainiet sistēmas pulksteni un pēc tam atsvaidziniet šo lapu.}zero{Šis serveris nevarēja pierādīt, ka šī ir vietne <ph name="DOMAIN" />. Tās drošības sertifikāta derīguma termiņš beidzās pirms # dienām. Šī problēma var rasties nepareizas konfigurācijas dēļ vai tādēļ, ka kāds uzbrucējs ir pārtvēris jūsu savienojumu. Jūsu datora pulkstenī pašlaik ir iestatīts šāds datums: <ph name="CURRENT_DATE" />. Vai tas ir pareizs? Ja datums nav pareizs, mainiet sistēmas pulksteni un pēc tam atsvaidziniet šo lapu.}one{Šis serveris nevarēja pierādīt, ka šī ir vietne <ph name="DOMAIN" />. Tās drošības sertifikāta derīguma termiņš beidzās pirms # dienas. Šī problēma var rasties nepareizas konfigurācijas dēļ vai tādēļ, ka kāds uzbrucējs ir pārtvēris jūsu savienojumu. Jūsu datora pulkstenī pašlaik ir iestatīts šāds datums: <ph name="CURRENT_DATE" />. Vai tas ir pareizs? Ja datums nav pareizs, mainiet sistēmas pulksteni un pēc tam atsvaidziniet šo lapu.}other{Šis serveris nevarēja pierādīt, ka šī ir vietne <ph name="DOMAIN" />. Tās drošības sertifikāta derīguma termiņš beidzās pirms # dienām. Šī problēma var rasties nepareizas konfigurācijas dēļ vai tādēļ, ka kāds uzbrucējs ir pārtvēris jūsu savienojumu. Jūsu datora pulkstenī pašlaik ir iestatīts šāds datums: <ph name="CURRENT_DATE" />. Vai tas ir pareizs? Ja datums nav pareizs, mainiet sistēmas pulksteni un pēc tam atsvaidziniet šo lapu.}}</translation>
 <translation id="190166348986967700">Jūsu administrators sāks augšupielādēt failus pakalpojumā <ph name="CLOUD_PROVIDER" /> (<ph name="DATE_TIME" />). Ierīcei ir jāpaliek savienotai līdz brīdim, kad failu augšupielāde būs pabeigta. Augšupielādes laikā varēsiet lasīt tikai lokālos failus.</translation>
 <translation id="1902576642799138955">Derīguma laiks</translation>
@@ -841,8 +839,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2384307209577226199">Uzņēmuma noklusējuma politika</translation>
 <translation id="2385809941344967209">Atjauniniet pārlūku Chrome savos Chrome iestatījumos.</translation>
 <translation id="2386255080630008482">Servera sertifikāts ir atsaukts.</translation>
-<translation id="2387424091060104123">Gemini ieteikums · <ph name="SRC_LINK" />Skatīt avotus<ph name="END_SRC_LINK" />
-Varat noņemt šo ieteikumu no pārlūka Chrome. Sākotnējais avots netiks dzēsts. <ph name="MANAGE_LINK" />Pārvaldiet uzlaboto automātisko aizpildi<ph name="END_MANAGE_LINK" />.</translation>
 <translation id="239203817277685015">Uzlabots</translation>
 <translation id="2392959068659972793">Rādīt politikas, kuru vērtība nav iestatīta</translation>
 <translation id="239429038616798445">Šis nosūtīšanas veids nav pieejams. Izmēģiniet citu veidu.</translation>
@@ -1245,7 +1241,6 @@ Lai paslēptu vēlākas maksāšanas iespējas, pārejiet uz <ph name="BEGIN_LIN
 <translation id="3109788962812161063">Profila pārvaldība</translation>
 <translation id="3112892588078695695">Tālruņa numurs: <ph name="PHONE" />.</translation>
 <translation id="3113284927548439113">Trešā maiņa</translation>
-<translation id="3113930177999394798">Ievadiet “@history”, lai meklētu saturu savā pārlūkošanas vēsturē (nodrošina MI)</translation>
 <translation id="3114040155724590991">Notiek Android sistēmas atjaunināšana
     Jūsu lietotnes palaišana var aizņemt vairāk laika nekā parasti.</translation>
 <translation id="3114197119223448048">jaunas darbības</translation>
@@ -1426,7 +1421,6 @@ Lai paslēptu vēlākas maksāšanas iespējas, pārejiet uz <ph name="BEGIN_LIN
 <translation id="3413466783792948876">Ja izmantojat publisku tīklu, visdrošāk ir apmeklēt šo vietni vēlāk. Uzticamā tīklā, piemēram, mājas vai darba Wi-Fi tīklā, risks ir mazāks.</translation>
 <translation id="3414952576877147120">Lielums:</translation>
 <translation id="341513675006332771">Poga “Spēlēt Chrome dinozaura spēli”. Aktivizējiet, lai pārlūkā Chrome spēlētu dinozaura skriešanas spēli.</translation>
-<translation id="3415471717466570460">Jūsu meklēšanas vaicājumi, precīzākās atbilstības un to lapu saturs tiek nosūtīti Google serveriem, un šo saturu var skatīt pārskatītāji, lai uzlabotu šo funkciju. Šī ir eksperimentāla funkcija, un tā ne vienmēr darbojas pareizi.</translation>
 <translation id="3417390269491141648">Salīdzini man pieejamās veselības apdrošināšanas plānu iespējas un izskaidro galvenās atšķirības starp tām.</translation>
 <translation id="3421387094817716717">Eliptiskas līknes publiskā atslēga</translation>
 <translation id="3422248202833853650">Aizveriet citas programmas, lai atbrīvotu vietu atmiņā.</translation>
@@ -1902,7 +1896,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4179515394835346607"><ph name="ROW_NAME" />: <ph name="ROW_CONTENT" /></translation>
 <translation id="4185037616931963178">Kompensācijas numura droša atjaunināšana</translation>
 <translation id="4186035307311647330">Atcelt cenas izsekošanu</translation>
-<translation id="4190446002599583608">MI nodrošināta meklēšana vēsturē</translation>
 <translation id="4191334393248735295">Garums</translation>
 <translation id="4195459680867822611">Poga “Skatīt Chrome padomus”. Aktivizējiet, lai uzzinātu par Chrome funkcijām.</translation>
 <translation id="4195643157523330669">Atvērt jaunā cilnē</translation>
@@ -1949,7 +1942,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="424063167283213501">Zināmā ceļotāja numura saglabāšana</translation>
 <translation id="4241830393007970744">Vietnē, kuru mēģinājāt apmeklēt, uzbrucēji var jūs maldināt, lai pamudinātu instalēt programmatūru vai atklāt kādu informāciju, piemēram, jūsu paroles, tālruņa numuru vai kredītkaršu numurus.</translation>
 <translation id="4242380780309416996">Aploksne (augsta gramāža)</translation>
-<translation id="4242981939686657948">Lai efektīvāk veiktu meklēšanu pārlūkošanas vēsturē, ieslēdziet iestatījumu</translation>
 <translation id="4244926541863471678">Plēve</translation>
 <translation id="42481816218163154">Izveido 15 minūšu rīta rutīnu, kas man palīdzēs efektīvāk sākt dienu. Noteikti iekļauj tajā apzinātības vingrinājumu.</translation>
 <translation id="4250343410682686342">Funkcijas “Pērciet tūlīt, maksājiet vēlāk” kļūdas ekrāns ir atvērts pilnā augstumā.</translation>
@@ -3893,7 +3885,6 @@ Papildu informācija:
 <translation id="7514365320538308">Lejupielādēt</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">Atļauts šoreiz izmantot VR</translation>
-<translation id="7517198908921983825">Gemini ieteikums · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Aploksne C10</translation>
 <translation id="7518003948725431193">Šādā tīmekļa adresē netika atrasta neviena tīmekļa lapa: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -4390,7 +4381,6 @@ Papildu informācija:
 <translation id="8350416046273606058">Saīsnē nedrīkst būt atstarpes: “<ph name="SHORTCUT_NAME" />”.</translation>
 <translation id="8351131234907093545">Izveidot piezīmi</translation>
 <translation id="8352849934814541340">Šīs ierīces administrators ir instalējis lietojumprogrammas papildu funkcijām. Lietojumprogrammām ir piekļuve dažiem jūsu datiem.</translation>
-<translation id="8353273112634584260">Nodrošina funkcija “Personīgais intelekts” ar Gemini. Jūsu pieprasījumi, lapu nosaukumi un vietrāži URL var tikt pārskatīti, lai padarītu precīzāku uzlaboto automātisko aizpildi.</translation>
 <translation id="8355270400102541638">Lokālais avārijas konteksts:</translation>
 <translation id="8362914115861174987">Tulkot šādā valodā:</translation>
 <translation id="8363502534493474904">Izslēdziet lidojuma režīmu.</translation>
@@ -4738,7 +4728,6 @@ Papildu informācija:
 <translation id="9001074447101275817">Starpniekserveris <ph name="DOMAIN" /> pieprasa lietotājvārdu un paroli.</translation>
 <translation id="9001963517402879850">Leciet!</translation>
 <translation id="9002677862950442746">Verifikācijas kods: <ph name="OTP" /></translation>
-<translation id="9003263770394939629">Gemini ieteikums. Pārvaldiet uzlaboto automātisko aizpildi iestatījumos.</translation>
 <translation id="9003639428623471314">Aploksne Kahu</translation>
 <translation id="9004367719664099443">Notiek VR sesija</translation>
 <translation id="9005998258318286617">Neizdevās ielādēt PDF dokumentu.</translation>
@@ -4757,7 +4746,6 @@ Papildu informācija:
 <translation id="9027531288681624875">Lai izietu no pilnekrāna režīma, nospiediet un turiet taustiņu |<ph name="ACCELERATOR" />|.</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Drošības kļūda</translation>
-<translation id="9035699147763101514">Nodrošina funkcija “Personīgais intelekts” ar Gemini. Pārvaldiet savas izvēles iestatījumos.</translation>
 <translation id="9035824888276246493">Saglabāt drošības kodus</translation>
 <translation id="9036306139374661733">Vai atļaut piekļuvi mikrofonam?</translation>
 <translation id="9036484080057916082">Parakstītā sertifikāta laikspiedolu saraksts</translation>
@@ -4911,7 +4899,6 @@ Papildu informācija:
 <translation id="961930410699694996">Ir atļauts šoreiz izmantot atrašanās vietas datus</translation>
 <translation id="962484866189421427">Šis saturs jūsu ierīcē var mēģināt instalēt maldinošas lietotnes, kas tiek uzdodas par cita veida saturu, vai vākt datus, kas var tikt izmantoti jūsu izsekošanai. <ph name="BEGIN_LINK" />Tāpat rādīt<ph name="END_LINK" />.</translation>
 <translation id="963734905955638680">Saskaņā ar kādu tiesību aktu, kas ir spēkā jūsu reģionā, pārlūks Chromium aicina jūs izvēlēties noklusējuma meklētājprogrammu. Šīs meklētājprogrammas ir populāras jūsu reģionā un tiek rādītas nejaušā secībā.</translation>
-<translation id="963837307749850257">Visi lietotāji</translation>
 <translation id="963988220224168636">Kompensācijas numura droša pievienošana lietotnei Google maks</translation>
 <translation id="964050462028070434">Pārvaldīt paroles un piekļuves atslēgas…</translation>
 <translation id="964681140808832181">Jā, es vēlos atcelt</translation>

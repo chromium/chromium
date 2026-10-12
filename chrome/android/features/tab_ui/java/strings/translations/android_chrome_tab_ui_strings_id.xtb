@@ -15,7 +15,6 @@
 <translation id="1321004960118052490">Item yang tidak aktif tidak akan menumpuk</translation>
 <translation id="1329584516321524826">Baru saja diperbarui</translation>
 <translation id="1340839264183302272">Keluar dari grup</translation>
-<translation id="1386966479075994683">Luaskan Tab</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{Luaskan grup tab bersama <ph name="TITLE_OF_GROUP" /> yang berisi <ph name="TABS_COUNT_ONE" /> tab, warna <ph name="COLOR_NAME" />, dengan label <ph name="CARD_LABEL" />.}other{Luaskan grup tab bersama <ph name="TITLE_OF_GROUP" /> yang berisi <ph name="TABS_COUNT_MANY" /> tab, warna <ph name="COLOR_NAME" />, dengan label <ph name="CARD_LABEL" />.}}</translation>
 <translation id="1486715732399361704">Anda dapat menemukan semua grup tab di sini</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Dibuat <ph name="NUM_MINS_ONE" /> menit lalu}other{Dibuat <ph name="NUM_MINS_MANY" /> menit lalu}}</translation>
@@ -66,6 +65,7 @@
 <translation id="2662028055331606429">Rating <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Buka situs</translation>
 <translation id="2671423594960767771">Bagikan grup</translation>
+<translation id="2729310339366257582">Ciutkan tab</translation>
 <translation id="2734252994837336591">{NUM_WEEKS,plural, =1{Diperbarui <ph name="NUM_WEEKS_ONE" /> minggu lalu}other{Diperbarui <ph name="NUM_WEEKS_MANY" /> minggu lalu}}</translation>
 <translation id="2753877351161418426">{NUM_HOURS,plural, =1{Diperbarui <ph name="NUM_HOURS_ONE" /> jam lalu}other{Diperbarui <ph name="NUM_HOURS_MANY" /> jam lalu}}</translation>
 <translation id="2755485474385016903">Perubahan yang dilakukan akan terlihat oleh semua orang dalam grup</translation>
@@ -136,7 +136,6 @@
 <translation id="5073204694187207510">Sembunyikan petak layar penuh</translation>
 <translation id="5076161749301278626">Lihat ulasan toko?</translation>
 <translation id="5161254044473106830">Perlu judul</translation>
-<translation id="5204584298075822291">Ciutkan Tab</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome akan otomatis menutup tab dan grup tab yang tidak aktif setelah <ph name="AUTO_DELETE_DELAY_ONE" /> bulan. Anda dapat mengubahnya di setelan.}other{Chrome akan otomatis menutup tab dan grup tab yang tidak aktif setelah <ph name="AUTO_DELETE_DELAY_MANY" /> bulan. Anda dapat mengubahnya di setelan.}}</translation>
 <translation id="5254233580564156835">Penggunaan memori: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">Tab terakhir Anda</translation>
@@ -191,6 +190,7 @@
 <translation id="709473454666962555">Pilih grup tab</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Bagikan tab}other{Bagikan tab}}</translation>
 <translation id="7129458170538955174">Informasi tentang toko ini terbuka setengah</translation>
+<translation id="7194343495483122559">Luaskan tab</translation>
 <translation id="7204204600596740190">Mode multi-pilihan</translation>
 <translation id="7211038039686180558">Grup tab Anda disimpan dan diperbarui otomatis di semua perangkat yang digunakan untuk login</translation>
 <translation id="7326879924029668159">Lihat kebijakan pengembalian dan lainnya</translation>

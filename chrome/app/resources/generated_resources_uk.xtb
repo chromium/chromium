@@ -5628,6 +5628,7 @@
 <translation id="5246282308050205996">Відбулося аварійне завершення роботи програми <ph name="APP_NAME" />. Натисніть цю спливаючу підказку, щоб перезапустити програму.</translation>
 <translation id="5247051749037287028">Відображувана назва (необов’язково)</translation>
 <translation id="5247243947166567755">Вибрати закладку "<ph name="BOOKMARK_TITLE" />"</translation>
+<translation id="524751727772074981">Ставте запитання, де б ви не були, завдяки Gemini у Chrome</translation>
 <translation id="5248934139541843042">Показати менеджер вкладок</translation>
 <translation id="5249624017678798539">Завантаження не закінчилося через аварійне завершення роботи веб-переглядача.</translation>
 <translation id="5249818097095743806">Скористайтеся своїм ключем безпеки</translation>
@@ -6334,7 +6335,6 @@
 <translation id="5828181959764767444">Захід сонця</translation>
 <translation id="5828545842856466741">Додати профіль…</translation>
 <translation id="5828633471261496623">Друк...</translation>
-<translation id="5829137022934788067">Розкажи більше про виділений фрагмент</translation>
 <translation id="5829214552954466783">Надіслати <ph name="CREDENTIAL_TYPE" /> користувачу <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">Ваші способи оплати в Google Гаманці</translation>
 <translation id="5830512293931520102">Ваш пароль зашифровано, і ніхто не може його побачити.</translation>

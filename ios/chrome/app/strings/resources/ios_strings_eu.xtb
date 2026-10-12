@@ -1264,6 +1264,7 @@
 <translation id="498624032394115435">Esteka duten guztiek fitxa guztiak edita ditzakete.</translation>
 <translation id="4986428648020277392">Eskaera-mezua: zein erosi beharko nuke? Hirutik bigarrena.</translation>
 <translation id="498768198683310172">Hasi Gemini erabiltzen</translation>
+<translation id="4989163558385430922">Ikusi guztiak</translation>
 <translation id="499122600724363620"><ph name="NAME" /> (<ph name="EMAIL" />), erakundeak kudeatzen du.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Fitxa talderako kolore <ph name="COLOR" /></translation>
@@ -2027,7 +2028,6 @@ Nahi duzunean has zaitezke berriro.</translation>
 <translation id="7346922058131593019">Zertan egin nahi duzu lan, <ph name="USER_FIRST_NAME" />?</translation>
 <translation id="7347998088283246662">Inportatu pasahitzak, historia, laster-markak eta abar</translation>
 <translation id="7352651011704765696">Arazo bat izan da</translation>
-<translation id="7357999308187750900">Ikusi guztiak</translation>
 <translation id="736564850024123010">Zerbitzua pertsonalizatzeko, aldatu helbide-barraren posizioa.</translation>
 <translation id="7366909168761621528">Arakatze-datuak</translation>
 <translation id="7367530036083223701">Atzitu zure pasahitzak orri nagusitik segurtasun osoz Pasahitz-kudeatzailea widgetarekin.</translation>
@@ -2361,7 +2361,6 @@ Nahi duzunean has zaitezke berriro.</translation>
 <translation id="8333459276976141586">Live-k mikrofonoa erabiliko du. Live botoia sakatuz gero, mikrofonoa aktibatuko da. Mikrofonoa desaktibatzeko, sakatu gelditzeko botoia edo itxi Gemini.</translation>
 <translation id="833647236762414178">Sortu, gorde eta kudeatu pasahitzak eta sarbide-gakoak webgune eta aplikazioetan saioa erraz hasteko. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Egin zure gauzen babeskopiak, edozein gailutan erabil ditzazun.</translation>
-<translation id="8345328955902001853">{count,plural, =1{Mailaz igotzeko, osatu beste zeregin bat}other{Mailaz igotzeko, osatu beste {count} zeregin}}</translation>
 <translation id="8348530355586151720">Sakatu 3 puntuko menua.</translation>
 <translation id="8349305172487531364">Laster-marken barra</translation>
 <translation id="8360164927489392419">Live-rekin dituzun interakzioen grabaketak eta harekin partekatzen duzun edukia <ph name="BEGIN_LINK" />Gemini-ren aplikazioen Pribatutasun-oharra<ph name="END_LINK" /> oinarri hartuta gordetzen eta prozesatzen dira. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
@@ -2586,7 +2585,6 @@ Nahi duzunean has zaitezke berriro.</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, ainguratutako webgunea</translation>
 <translation id="8990960056509724223">Ezin izan da gorde fitxategia, erakundearen gidalerroak direla eta</translation>
 <translation id="8998289560386111590">Ez dago erabilgarri zure gailuan</translation>
-<translation id="9003263770394939629">Gemini-k iradokita. Kudeatu betetze automatiko hobetua ezarpenetan.</translation>
 <translation id="9003677638446136377">Egiaztatu berriro</translation>
 <translation id="9006453925669499173">Menua → Ezkutuko moduko fitxa berria</translation>
 <translation id="9008201768610948239">Egin ez ikusi</translation>
@@ -2595,7 +2593,6 @@ Nahi duzunean has zaitezke berriro.</translation>
 <translation id="9029650858822697271">Zure saioa amaitu da</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Berretsi arakatze-datuak ezabatu nahi dituzula</translation>
-<translation id="9035699147763101514">Gemini-ren adimen pertsonalizatuarekin. Kudeatu aukerak ezarpenetan.</translation>
 <translation id="9038526468059454274">Laburbildu honekin:</translation>
 <translation id="9039373489628511875">Banda-zabalera</translation>
 <translation id="9042893549633094279">Pribatutasuna eta segurtasuna</translation>

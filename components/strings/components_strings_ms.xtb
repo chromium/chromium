@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Pilih kebenaran untuk <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Simpan IBAN?</translation>
 <translation id="1113869188872983271">&amp;Buat asal susun semula</translation>
-<translation id="1117709830616495622">Dikuasakan oleh Kecerdasan Peribadi dengan Gemini.</translation>
 <translation id="111897705806685148">Gunakan Kunci laluan daripada Peranti Lain</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab kemudian Enter untuk mengurus maklumat Chrome yang anda simpan dalam Google Account anda</translation>
 <translation id="1121990216147052230">Buat senarai tugasan untuk saya</translation>
@@ -532,7 +531,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1890171020361705182">Permainan Dino. Dinosaur berpiksel mengelak daripada terlanggar kaktus dan pterodaktil ketika berlari merentas daratan yang tandus. Apabila anda mendengar kiu audio, ketik untuk melompat melepasi halangan.</translation>
 <translation id="1898423065542865115">Penapisan</translation>
 <translation id="1898678876221454577">Log masuk untuk menyimpan imbasan anda</translation>
-<translation id="1898804291554630487">Tanya tentang halaman ini</translation>
 <translation id="1901443836186977402">{1,plural, =1{Pelayan ini tidak dapat membuktikan bahawa itu ialah <ph name="DOMAIN" />; sijil keselamatan domain itu tamat tempoh sehari yang lalu. Ini mungkin disebabkan oleh kesilapan konfigurasi atau penyerang memintas sambungan anda. Jam komputer anda ditetapkan kepada <ph name="CURRENT_DATE" /> pada masa ini. Adakah itu betul? Jika tidak, anda perlu membetulkan jam sistem anda dan kemudian memuatkan semula halaman ini.}other{Pelayan ini tidak dapat membuktikan bahawa itu ialah <ph name="DOMAIN" />; sijil keselamatan domain itu tamat tempoh # hari yang lalu. Ini mungkin disebabkan oleh kesilapan konfigurasi atau penyerang memintas sambungan anda. Jam komputer anda buat masa ini ditetapkan kepada <ph name="CURRENT_DATE" />. Adakah itu betul? Jika tidak, anda perlu membetulkan jam sistem anda dan kemudian memuatkan semula halaman ini.}}</translation>
 <translation id="190166348986967700">Pentadbir anda akan mula memuat naik fail anda kepada <ph name="CLOUD_PROVIDER" /> pada <ph name="DATE_TIME" />. Pastikan peranti anda disambungkan sehingga fail anda selesai dimuat naik. Semasa proses muat naik, anda akan dapat membaca fail setempat sahaja.</translation>
 <translation id="1902576642799138955">Tempoh Masa Sah</translation>
@@ -841,8 +839,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2384307209577226199">Lalai perusahaan</translation>
 <translation id="2385809941344967209">Kemas kini Chrome daripada tetapan Chrome anda</translation>
 <translation id="2386255080630008482">Sijil pelayan telah dibatalkan.</translation>
-<translation id="2387424091060104123">Dicadangkan oleh Gemini · <ph name="SRC_LINK" />Lihat sumber<ph name="END_SRC_LINK" />
-Anda boleh mengalih keluar cadangan ini daripada Chrome. Sumber asal anda tidak akan dipadamkan. <ph name="MANAGE_LINK" />Urus autolengkap dipertingkatkan<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">Huraikan</translation>
 <translation id="2392959068659972793">Paparkan dasar tanpa nilai yang ditetapkan</translation>
 <translation id="239429038616798445">Kaedah penghantaran ini tidak tersedia. Cuba kaedah lain.</translation>
@@ -1245,7 +1241,6 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="3109788962812161063">Pengurusan profil</translation>
 <translation id="3112892588078695695">Nombor telefon: <ph name="PHONE" />.</translation>
 <translation id="3113284927548439113">Syif ketiga</translation>
-<translation id="3113930177999394798">Taip @sejarah untuk mencari sejarah penyemakan imbas anda, dikuasakan oleh AI</translation>
 <translation id="3114040155724590991">Mengemas Kini Sistem Android
     Pemulaan apl anda mungkin mengambil masa yang lebih lama daripada biasa.</translation>
 <translation id="3114197119223448048">aktiviti baharu</translation>
@@ -1426,7 +1421,6 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="3413466783792948876">Anda akan lebih selamat jika melawati laman ini kemudian jika anda menggunakan rangkaian awam. Terdapat kurang risiko daripada rangkaian yang dipercayai, seperti Wi-Fi rumah atau tempat kerja anda.</translation>
 <translation id="3414952576877147120">Saiz:</translation>
 <translation id="341513675006332771">Butang main permainan Chrome Dino, aktifkan untuk bermain permainan Dino Run dalam Chrome</translation>
-<translation id="3415471717466570460">Carian anda, padanan terbaik dan kandungan halaman tersebut dihantar kepada Google dan mungkin akan dilihat oleh jurusemak untuk meningkatkan ciri ini. Ciri ini merupakan ciri percubaan dan tidak akan sentiasa memberikan hasil yang betul.</translation>
 <translation id="3417390269491141648">Bandingkan pilihan pelan kesihatan saya dan huraikan perbezaan utama antara pilihan tersebut</translation>
 <translation id="3421387094817716717">Kunci Awam Lengkung Eliptik</translation>
 <translation id="3422248202833853650">Cuba keluar daripada atur cara lain untuk mengosongkan memori.</translation>
@@ -1905,7 +1899,6 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4185037616931963178">Kemas kinikan nombor tebus rugi dengan selamat</translation>
 <translation id="4186035307311647330">Nyahjejak harga</translation>
-<translation id="4190446002599583608">Carian sejarah, yang dikuasakan oleh AI</translation>
 <translation id="4191334393248735295">Panjang</translation>
 <translation id="4195459680867822611">Butang lihat petua Chrome, aktifkan untuk mengetahui tentang ciri Chrome</translation>
 <translation id="4195643157523330669">Buka dalam tab baharu</translation>
@@ -1952,7 +1945,6 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="424063167283213501">Simpan Nombor Pengembara Yang Diketahui</translation>
 <translation id="4241830393007970744">Penyerang pada laman yang cuba anda lawati mungkin memperdaya anda untuk memasang perisian atau mendedahkan perkara seperti kata laluan, telefon atau nombor kad kredit anda.</translation>
 <translation id="4242380780309416996">Envelop (Tebal)</translation>
-<translation id="4242981939686657948">Untuk mendapatkan cara yang lebih berkesan untuk membuat carian sejarah penyemakan imbas anda, hidupkan</translation>
 <translation id="4244926541863471678">Saput</translation>
 <translation id="42481816218163154">Buat rutin pagi 15 minit yang menjadikan pagi saya berjalan dengan lebih lancar. Pastikan rutin tersebut merangkumi latihan kesedaran minda</translation>
 <translation id="4250343410682686342">Skrin ralat Beli Sekarang, Bayar Kemudian dibuka pada ketinggian penuh.</translation>
@@ -3896,7 +3888,6 @@ Butiran tambahan:
 <translation id="7514365320538308">Muat Turun</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">VR dibenarkan pada masa ini</translation>
-<translation id="7517198908921983825">Dicadangkan oleh Gemini · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Sampul C10</translation>
 <translation id="7518003948725431193">Tiada halaman web dijumpai untuk alamat web: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -4393,7 +4384,6 @@ Butiran tambahan:
 <translation id="8350416046273606058">Pintasan tidak boleh mengandungi ruang: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Buat nota</translation>
 <translation id="8352849934814541340">Pentadbir peranti ini telah memasang aplikasi untuk fungsi tambahan. Aplikasi memiliki akses kepada sesetengah data anda.</translation>
-<translation id="8353273112634584260">Dikuasakan oleh Kecerdasan Peribadi dengan Gemini. Permintaan, tajuk halaman dan URL anda mungkin disemak untuk meningkatkan autolengkap dipertingkatkan.</translation>
 <translation id="8355270400102541638">Konteks Ranap Sistem Setempat:</translation>
 <translation id="8362914115861174987">Terjemahkan kepada</translation>
 <translation id="8363502534493474904">Matikan mod pesawat</translation>
@@ -4741,7 +4731,6 @@ Butiran tambahan:
 <translation id="9001074447101275817"><ph name="DOMAIN" /> proksi memerlukan nama pengguna dan kata laluan.</translation>
 <translation id="9001963517402879850">Lompat!</translation>
 <translation id="9002677862950442746">Kod pengesahan: <ph name="OTP" /></translation>
-<translation id="9003263770394939629">Dicadangkan oleh Gemini. Urus autolengkap dipertingkatkan dalam tetapan.</translation>
 <translation id="9003639428623471314">Sampul Kahu</translation>
 <translation id="9004367719664099443">Sesi VR sedang berlangsung</translation>
 <translation id="9005998258318286617">Gagal memuatkan dokumen PDF.</translation>
@@ -4760,7 +4749,6 @@ Butiran tambahan:
 <translation id="9027531288681624875">Untuk keluar daripada skrin penuh, tekan dan tahan |<ph name="ACCELERATOR" />|</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Ralat keselamatan</translation>
-<translation id="9035699147763101514">Dikuasakan oleh Kecerdasan Peribadi dengan Gemini. Urus pilihan anda dalam tetapan.</translation>
 <translation id="9035824888276246493">Simpan kod keselamatan</translation>
 <translation id="9036306139374661733">Benarkan mikrofon?</translation>
 <translation id="9036484080057916082">Senarai Cap Masa Sijil yang Ditandatangani</translation>
@@ -4915,7 +4903,6 @@ Butiran tambahan:
 <translation id="961930410699694996">Lokasi dibenarkan pada masa ini</translation>
 <translation id="962484866189421427">Kandungan ini mungkin cuba memasang apl mengelirukan yang berpura-pura menjadi sesuatu yang lain atau mengumpulkan data yang mungkin digunakan untuk menjejak anda. <ph name="BEGIN_LINK" />Tunjukkan juga <ph name="END_LINK" /></translation>
 <translation id="963734905955638680">Berdasarkan undang-undang di rantau anda, Chromium meminta anda memilih enjin carian lalai anda. Enjin carian ini popular di rantau anda dan ditunjukkan dalam tertib rawak.</translation>
-<translation id="963837307749850257">Semua pengguna</translation>
 <translation id="963988220224168636">Tambahkan nombor tebus rugi dengan selamat pada Google Wallet</translation>
 <translation id="964050462028070434">Urus Kata Laluan dan Kunci Laluan…</translation>
 <translation id="964681140808832181">Ya, saya mahu membatalkan langganan</translation>

@@ -5629,6 +5629,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5246282308050205996">Nag-crash ang <ph name="APP_NAME" />. Mag-click sa lobong ito upang i-restart ang app.</translation>
 <translation id="5247051749037287028">Display name (opsyonal)</translation>
 <translation id="5247243947166567755">Piliin ang <ph name="BOOKMARK_TITLE" /></translation>
+<translation id="524751727772074981">Magtanong, nasaan ka man, gamit ang Gemini sa Chrome</translation>
 <translation id="5248934139541843042">Tingnan ang organizer</translation>
 <translation id="5249624017678798539">Nag-crash ang browser bago nakumpleto ang pag-download.</translation>
 <translation id="5249818097095743806">Gamitin ang iyong security key</translation>
@@ -6338,7 +6339,6 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5828181959764767444">Paglubog ng araw</translation>
 <translation id="5828545842856466741">Magdagdag ng profile...</translation>
 <translation id="5828633471261496623">Nagpi-print...</translation>
-<translation id="5829137022934788067">Sabihin sa akin ang tungkol sa pagpiling ito</translation>
 <translation id="5829214552954466783">I-share ang <ph name="CREDENTIAL_TYPE" /> para sa username: <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">Iyong mga paraan ng pagbabayad sa Google Wallet</translation>
 <translation id="5830512293931520102">Naka-encrypt ang iyong password at hindi ito nakikita ng kahit sino</translation>

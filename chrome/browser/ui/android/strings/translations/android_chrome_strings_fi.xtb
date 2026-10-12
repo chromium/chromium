@@ -329,6 +329,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="2327445548174191329">Lähde: <ph name="DEVICE_NAME" /></translation>
 <translation id="232757965409810352">Tallenna sivu nimellä…</translation>
 <translation id="2328474416100889417">Kaikki menettävät välittömästi pääsyn välilehtiryhmään "<ph name="GROUP_NAME" />", ja kaikki kutsulinkit poistetaan käytöstä</translation>
+<translation id="2328773543844041445">Laajenna välilehdet automaattisesti, kun viet hiiren niiden päälle</translation>
 <translation id="2330186936255788117">Lisää kirjanmerkkejä</translation>
 <translation id="2330243730505117832">"Valitse laite" on suljettu.</translation>
 <translation id="2332515770639153015">Parannettu selaussuoja on päällä</translation>

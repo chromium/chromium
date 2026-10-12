@@ -1264,6 +1264,7 @@
 <translation id="498624032394115435">Visi nuorodą turintys žmonės gali redaguoti visus skirtukus.</translation>
 <translation id="4986428648020277392">Užklausa: kurias turėčiau pirkti? 2 iš 3</translation>
 <translation id="498768198683310172">Pradėti naudoti „Gemini“</translation>
+<translation id="4989163558385430922">Žr. viską</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, valdo jūsų organizacija.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Skirtukų grupės spalva <ph name="COLOR" /></translation>
@@ -2028,7 +2029,6 @@ Galite bet kada paleisti iš naujo.</translation>
 <translation id="7346922058131593019"><ph name="USER_FIRST_NAME" />, ką norite daryti?</translation>
 <translation id="7347998088283246662">Importuokite slaptažodžius, istoriją, žymes ir kt.</translation>
 <translation id="7352651011704765696">Kažkas negerai</translation>
-<translation id="7357999308187750900">Žr. viską</translation>
 <translation id="736564850024123010">Perjunkite adreso juostos poziciją, kad galėtumėte naudotis tinkintomis funkcijomis.</translation>
 <translation id="7366909168761621528">Naršymo duomenys</translation>
 <translation id="7367530036083223701">Saugiai pasiekite slaptažodžius pagrindiniame ekrane naudodami Slaptažodžių tvarkyklės valdiklį.</translation>
@@ -2362,7 +2362,6 @@ Galite bet kada paleisti iš naujo.</translation>
 <translation id="8333459276976141586">Funkcija „Live“ naudos jūsų mikrofoną. Palietus mygtuką „Live“ mikrofonas įsijungs. Jei norite išjungti mikrofoną, palieskite sustabdymo mygtuką arba uždarykite „Gemini“.</translation>
 <translation id="833647236762414178">Kurkite, saugokite ir tvarkykite slaptažodžius bei prieigos raktus, kad galėtumėte lengvai prisijungti prie svetainių ir programų. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Sukurkite atsarginę turinio kopiją ir naudokite ją bet kuriame įrenginyje.</translation>
-<translation id="8345328955902001853">{count,plural, =1{Atlikite dar 1 užduotį, kad pasiektumėte aukštesnį lygį}one{Atlikite dar {count} užduotį, kad pasiektumėte aukštesnį lygį}few{Atlikite dar {count} užduotis, kad pasiektumėte aukštesnį lygį}many{Atlikite dar {count} užduoties, kad pasiektumėte aukštesnį lygį}other{Atlikite dar {count} užduočių, kad pasiektumėte aukštesnį lygį}}</translation>
 <translation id="8348530355586151720">Palieskite trijų taškų meniu</translation>
 <translation id="8349305172487531364">Žymių juosta</translation>
 <translation id="8360164927489392419">Jūsų sąveikų su funkcija „Live“ įrašai ir turinys, kurį bendrinate su šia funkcija, išsaugomi ir apdorojami pagal <ph name="BEGIN_LINK" />„Gemini Apps“ privatumo pranešimą<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
@@ -2588,7 +2587,6 @@ Galite bet kada paleisti iš naujo.</translation>
 <translation id="8988107725234939347">„<ph name="WEBSITE_TITLE" />“, prisegta svetainė</translation>
 <translation id="8990960056509724223">Failo nepavyko išsaugoti dėl organizacijos politikos</translation>
 <translation id="8998289560386111590">Nepasiekiama jūsų įrenginyje</translation>
-<translation id="9003263770394939629">Siūlo „Gemini“. Tvarkykite patobulintą automatinį pildymą nustatymuose.</translation>
 <translation id="9003677638446136377">Tikrinti dar kartą</translation>
 <translation id="9006453925669499173">Meniu → „Naujas inkognito skirtukas“</translation>
 <translation id="9008201768610948239">Nepaisyti</translation>
@@ -2597,7 +2595,6 @@ Galite bet kada paleisti iš naujo.</translation>
 <translation id="9029650858822697271">Buvote atjungti</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Patvirtinti naršymo duomenų ištrynimą</translation>
-<translation id="9035699147763101514">Teikia Asmeninis intelektas su „Gemini“. Tvarkykite pasirinkimus nustatymuose.</translation>
 <translation id="9038526468059454274">Apibendrinkite naudodami</translation>
 <translation id="9039373489628511875">Pralaidumas</translation>
 <translation id="9042893549633094279">Privatumas ir sauga</translation>

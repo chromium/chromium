@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Sélectionnez une autorisation pour <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Enregistrer l'IBAN ?</translation>
 <translation id="1113869188872983271">&amp;Annuler la réorganisation</translation>
-<translation id="1117709830616495622">Optimisé par l'Intelligence personnalisée avec Gemini.</translation>
 <translation id="111897705806685148">Utiliser la clé d'accès d'un autre appareil</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyer sur Tabulation, puis sur Entrée pour gérer les infos Chrome que vous enregistrez dans votre compte Google</translation>
 <translation id="1121990216147052230">Crée-moi une liste de tâches</translation>
@@ -532,7 +531,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1890171020361705182">Jeu du dino. Un dinosaure pixelisé traverse un paysage désolé en esquivant les cactus et les ptérodactyles. Lorsque vous entendez un signal audio, appuyez pour le faire sauter par-dessus les obstacles.</translation>
 <translation id="1898423065542865115">Filtrage</translation>
 <translation id="1898678876221454577">Connectez-vous pour enregistrer votre scan</translation>
-<translation id="1898804291554630487">Question sur cette page</translation>
 <translation id="1901443836186977402">{1,plural, =1{Impossible de vérifier que ce serveur est bien <ph name="DOMAIN" />, car son certificat de sécurité est arrivé à expiration au cours des dernières 24 heures. Cela peut être dû à une mauvaise configuration ou à l'interception de votre connexion par un pirate informatique. L'horloge de votre ordinateur indique actuellement <ph name="CURRENT_DATE" />. Cela vous semble-t-il correct ? Si ce n'est pas le cas, vous devez corriger l'horloge de votre système, puis actualiser la page.}one{Impossible de vérifier que ce serveur est bien <ph name="DOMAIN" />, car son certificat de sécurité est arrivé à expiration il y a # jour. Cela peut être dû à une mauvaise configuration ou à l'interception de votre connexion par un pirate informatique. L'horloge de votre ordinateur indique actuellement <ph name="CURRENT_DATE" />. Cela vous semble-t-il correct ? Si ce n'est pas le cas, vous devez corriger l'horloge de votre système, puis actualiser la page.}other{Impossible de vérifier que ce serveur est bien <ph name="DOMAIN" />, car son certificat de sécurité est arrivé à expiration il y a # jours. Cela peut être dû à une mauvaise configuration ou à l'interception de votre connexion par un pirate informatique. L'horloge de votre ordinateur indique actuellement <ph name="CURRENT_DATE" />. Cela vous semble-t-il correct ? Si ce n'est pas le cas, vous devez corriger l'horloge de votre système, puis actualiser la page.}}</translation>
 <translation id="190166348986967700">Votre administrateur commencera à importer vos fichiers dans <ph name="CLOUD_PROVIDER" /> le <ph name="DATE_TIME" />. Laissez votre appareil connecté jusqu'à la fin de l'importation. Pendant l'importation, vous ne pourrez lire que les fichiers locaux.</translation>
 <translation id="1902576642799138955">Durée de validité</translation>
@@ -841,8 +839,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2384307209577226199">Valeur par défaut définie par l'entreprise</translation>
 <translation id="2385809941344967209">Mettez à jour votre navigateur dans les paramètres Chrome</translation>
 <translation id="2386255080630008482">Le certificat du serveur a été révoqué.</translation>
-<translation id="2387424091060104123">Suggéré par Gemini · <ph name="SRC_LINK" />Voir les sources<ph name="END_SRC_LINK" />
-Vous pouvez supprimer cette suggestion de Chrome. Votre source d'origine ne sera pas supprimée. <ph name="MANAGE_LINK" />Gérer la saisie automatique améliorée<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">Développer</translation>
 <translation id="2392959068659972793">Afficher les règles non paramétrées</translation>
 <translation id="239429038616798445">Mode d'expédition non disponible. Choisissez-en un autre.</translation>
@@ -1245,7 +1241,6 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="3109788962812161063">Gestion du profil</translation>
 <translation id="3112892588078695695">Numéro de téléphone : <ph name="PHONE" />.</translation>
 <translation id="3113284927548439113">Troisième quart de travail</translation>
-<translation id="3113930177999394798">Saisissez @historique pour faire une recherche optimisée par l'IA dans votre historique de navigation</translation>
 <translation id="3114040155724590991">Mise à jour du système Android…
     Votre appli peut prendre plus de temps que d'habitude pour démarrer.</translation>
 <translation id="3114197119223448048">nouvelle activité</translation>
@@ -1426,7 +1421,6 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="3413466783792948876">Si vous utilisez un réseau public, visiter ce site plus tard serait plus sûr. Un réseau de confiance, comme votre réseau Wi-Fi domestique ou professionnel, présente moins de risques.</translation>
 <translation id="3414952576877147120">Taille :</translation>
 <translation id="341513675006332771">Bouton "Jouer au jeu Chrome Dino" à activer pour y jouer dans Chrome</translation>
-<translation id="3415471717466570460">Vos recherches, les meilleurs résultats et le contenu des pages correspondantes sont envoyés à Google. Ils peuvent être consultés par des réviseurs humains afin d'améliorer cette fonctionnalité. Il s'agit d'une fonctionnalité expérimentale qui n'est pas infaillible.</translation>
 <translation id="3417390269491141648">Compare les assurances maladie disponibles et souligne leurs principales différences</translation>
 <translation id="3421387094817716717">Clé publique de la courbe elliptique</translation>
 <translation id="3422248202833853650">Essayez de fermer les autres programmes pour libérer de la mémoire.</translation>
@@ -1904,7 +1898,6 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4185037616931963178">Mettez à jour votre numéro de recours de manière sécurisée</translation>
 <translation id="4186035307311647330">Ne plus suivre le prix</translation>
-<translation id="4190446002599583608">Recherche dans l'historique optimisée par l'IA</translation>
 <translation id="4191334393248735295">Longueur</translation>
 <translation id="4195459680867822611">Bouton "Voir les astuces Chrome" à activer pour en savoir plus sur les fonctionnalités de Chrome</translation>
 <translation id="4195643157523330669">Ouvrir dans un nouvel onglet</translation>
@@ -1951,7 +1944,6 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="424063167283213501">Enregistrer le Known Traveler Number</translation>
 <translation id="4241830393007970744">Des pirates informatiques sur le site que vous avez essayé de consulter peuvent vous inciter à installer des logiciels ou à révéler des infos, comme vos mots de passe, ou vos numéro de téléphone ou de carte de crédit.</translation>
 <translation id="4242380780309416996">Enveloppe (haute densité)</translation>
-<translation id="4242981939686657948">Pour rechercher plus efficacement dans votre historique de navigation, activez la</translation>
 <translation id="4244926541863471678">Pellicule</translation>
 <translation id="42481816218163154">Crée une routine matinale de 15 minutes pour améliorer mon quotidien. Assure-toi d'inclure un exercice de pleine conscience.</translation>
 <translation id="4250343410682686342">Écran d'erreur Acheter maintenant, payer plus tard ouvert à pleine hauteur.</translation>
@@ -3896,7 +3888,6 @@ Informations supplémentaires :
 <translation id="7514365320538308">Télécharger</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">RV autorisée cette fois-ci</translation>
-<translation id="7517198908921983825">Suggéré par Gemini · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Enveloppe C10</translation>
 <translation id="7518003948725431193">Aucune page Web trouvée à l'adresse :<ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -4393,7 +4384,6 @@ Informations supplémentaires :
 <translation id="8350416046273606058">Le raccourci ne peut pas contenir d'espaces : "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Créer une note</translation>
 <translation id="8352849934814541340">L'administrateur de cet appareil a installé des applis permettant d'utiliser des fonctions supplémentaires. Ces applis ont accès à certaines de vos données.</translation>
-<translation id="8353273112634584260">Optimisé par l'Intelligence personnalisée avec Gemini. Vos requêtes, titres de page et URL peuvent être examinés pour perfectionner la saisie automatique améliorée.</translation>
 <translation id="8355270400102541638">Contexte de plantage local :</translation>
 <translation id="8362914115861174987">Langue cible</translation>
 <translation id="8363502534493474904">Désactivez le mode Avion.</translation>
@@ -4740,7 +4730,6 @@ Informations supplémentaires :
 <translation id="9001074447101275817">Le proxy <ph name="DOMAIN" /> nécessite un nom d'utilisateur et un mot de passe.</translation>
 <translation id="9001963517402879850">Sautez !</translation>
 <translation id="9002677862950442746">Code de validation : <ph name="OTP" /></translation>
-<translation id="9003263770394939629">Suggéré par Gemini. Gérez la saisie automatique améliorée dans les paramètres.</translation>
 <translation id="9003639428623471314">Enveloppe Kahu</translation>
 <translation id="9004367719664099443">Session RV en cours</translation>
 <translation id="9005998258318286617">Échec de chargement du document PDF.</translation>
@@ -4759,7 +4748,6 @@ Informations supplémentaires :
 <translation id="9027531288681624875">Pour quitter le mode plein écran, appuyez de manière prolongée sur |<ph name="ACCELERATOR" />|</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Erreur liée à la sécurité</translation>
-<translation id="9035699147763101514">Optimisé par l'Intelligence personnalisée avec Gemini. Gérez vos choix dans les paramètres.</translation>
 <translation id="9035824888276246493">Enregistrer les codes de sécurité</translation>
 <translation id="9036306139374661733">Autoriser l'accès au micro ?</translation>
 <translation id="9036484080057916082">Liste des codes temporels du certificat signé</translation>
@@ -4913,7 +4901,6 @@ Informations supplémentaires :
 <translation id="961930410699694996">Accès à la position autorisé cette fois-ci</translation>
 <translation id="962484866189421427">Ce contenu peut essayer d'installer des applications trompeuses se faisant passer pour d'autres, ou de collecter des données afin de vous surveiller. <ph name="BEGIN_LINK" />Je souhaite y accéder malgré tout.<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">Conformément à la législation en vigueur dans votre région, Chromium vous demande de sélectionner un moteur de recherche par défaut. Ces moteurs de recherche populaires dans votre région sont affichés dans un ordre aléatoire.</translation>
-<translation id="963837307749850257">Tous les utilisateurs</translation>
 <translation id="963988220224168636">Ajoutez un numéro de recours de manière sécurisée à Google Wallet</translation>
 <translation id="964050462028070434">Gérer les mots de passe et les clés d'accès…</translation>
 <translation id="964681140808832181">Oui, je souhaite annuler</translation>

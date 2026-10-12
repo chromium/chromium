@@ -5618,6 +5618,7 @@
 <translation id="5246282308050205996">Апликација <ph name="APP_NAME" /> је отказала. Кликните на овај облачић да бисте је поново покренули.</translation>
 <translation id="5247051749037287028">Име за приказ (опционално)</translation>
 <translation id="5247243947166567755">Изаберите <ph name="BOOKMARK_TITLE" /></translation>
+<translation id="524751727772074981">Питајте било шта где год да сте помоћу Gemini-ја у Chrome-у</translation>
 <translation id="5248934139541843042">Прикажи организатора</translation>
 <translation id="5249624017678798539">Прегледач је отказао пре него што је преузимање довршено.</translation>
 <translation id="5249818097095743806">Користите безбедносни кључ</translation>
@@ -6326,7 +6327,6 @@
 <translation id="5828181959764767444">Залазак сунца</translation>
 <translation id="5828545842856466741">Додај профил…</translation>
 <translation id="5828633471261496623">Штампање...</translation>
-<translation id="5829137022934788067">Реци ми више о овом избору</translation>
 <translation id="5829214552954466783">Делите <ph name="CREDENTIAL_TYPE" /> за корисничко име: <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">Начини плаћања у Google новчанику</translation>
 <translation id="5830512293931520102">Лозинка је шифрована и нико не може да је види</translation>

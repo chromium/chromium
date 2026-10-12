@@ -5616,6 +5616,7 @@
 <translation id="5246282308050205996"><ph name="APP_NAME" />-ში შეცდომაა. პროგრამის გადასატვირთად დააწკაპუნეთ ამ ბუშტზე.</translation>
 <translation id="5247051749037287028">საჩვენებელი სახელი (არასავალდებულო)</translation>
 <translation id="5247243947166567755">აირჩეს <ph name="BOOKMARK_TITLE" /></translation>
+<translation id="524751727772074981">იკითხეთ ნებისმიერი რამ პირდაპირ იქ, სადაც ხართ, Gemini-ს მეშვეობით Chrome-ში</translation>
 <translation id="5248934139541843042">ორგანიზატორის ნახვა</translation>
 <translation id="5249624017678798539">ბრაუზერი გაითიშა ჩამოტვირთვის დასრულებამდე.</translation>
 <translation id="5249818097095743806">თქვენი უსაფრთხოების გასაღების გამოყენება</translation>
@@ -6325,7 +6326,6 @@
 <translation id="5828181959764767444">დაისი</translation>
 <translation id="5828545842856466741">პროფილის დამატება…</translation>
 <translation id="5828633471261496623">ბეჭდვა…</translation>
-<translation id="5829137022934788067">მიამბე ამ არჩევანის შესახებ</translation>
 <translation id="5829214552954466783"><ph name="CREDENTIAL_TYPE" />-ის გაზიარება მომხმარებლის სახელისთვის: <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">თქვენი გადახდის მეთოდები Google საფულეში</translation>
 <translation id="5830512293931520102">თქვენი პაროლი დაშიფრულია და მას ვერავინ ნახავს</translation>

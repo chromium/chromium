@@ -1591,6 +1591,7 @@
 <translation id="2215070081105889450">لمشاركة الصوت، عليك مشاركة علامة التبويب أو الشاشة بدلاً من ذلك.</translation>
 <translation id="2217208085547223783">حالة موثوقية الشهادة</translation>
 <translation id="2218019600945559112">الماوس ولوحة اللمس</translation>
+<translation id="2218116022473625437">يمكنك إيقاف تمييز النص وتعديل الصوت وتغيير مظهر الصفحة من خلال الإعدادات.</translation>
 <translation id="2218515861914035131">لصق كنص عادي</translation>
 <translation id="2219007152108311874">السؤال عند كل زيارة للموقع الإلكتروني</translation>
 <translation id="2220529011494928058">الإبلاغ عن مشكلة</translation>
@@ -3764,6 +3765,7 @@
 <translation id="3812525830114410218">شهادة سيئة</translation>
 <translation id="3813296892522778813">‏يمكنك الانتقال إلى <ph name="BEGIN_LINK_CHROMIUM" />مساعدة Google Chrome<ph name="END_LINK_CHROMIUM" /> إذا لم تتمكن من العثور عما تبحث عنه</translation>
 <translation id="3813358687923336574">اللغة المستخدمة لترجمة الصفحات وميزة "معلومات سريعة"</translation>
+<translation id="3815509884387832993">يمكنك الاستماع إلى هذه الصفحة كأنّها بودكاست باستخدام ميزة "التشغيل بالذكاء الاصطناعي" بالنقر على زر "تفعيل ميزة التشغيل بالذكاء الاصطناعي" في شريط أدوات "وضع القراءة"</translation>
 <translation id="3815668647912194650">يمكنك الاحتفاظ بهذه المجموعة لإضافة علامات تبويب إليها لاحقًا، أو مغادرتها إذا لم تعُد بحاجة إليها.</translation>
 <translation id="3816118180265633665">‏ألوان Chrome</translation>
 <translation id="3817524650114746564">فتح إعدادات الخادم الوكيل الخاصة بالكمبيوتر</translation>
@@ -4145,6 +4147,7 @@
 <translation id="4109135793348361820">نقل النافذة إلى <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">استعادة التحذير</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (غير متصل بالإنترنت)</translation>
+<translation id="4112282889480354965">الإضافات والمهارات</translation>
 <translation id="4113743276555482284">كلمة مرور الملف</translation>
 <translation id="4114524937989710624">‏تظهر لك ملفات مُقترحة لمساعدتك في الرجوع بسهولة إلى آخر نشاط أجريته في Google Drive.
         <ph name="BREAK" />
@@ -5617,6 +5620,7 @@
 <translation id="5246282308050205996">لقد تعطل <ph name="APP_NAME" />. انقر على هذا البالون لإعادة تشغيل التطبيق.</translation>
 <translation id="5247051749037287028">الاسم المعروض (اختياري)</translation>
 <translation id="5247243947166567755">اختيار "<ph name="BOOKMARK_TITLE" />"</translation>
+<translation id="524751727772074981">‏طرح أي سؤال من أي مكان باستخدام "Gemini في Chrome"</translation>
 <translation id="5248934139541843042">عرض المنظِّم</translation>
 <translation id="5249624017678798539">تعطل المتصفح قبل انتهاء التنزيل.</translation>
 <translation id="5249818097095743806">استخدام مفتاح الأمان</translation>
@@ -6326,7 +6330,6 @@
 <translation id="5828181959764767444">غروب</translation>
 <translation id="5828545842856466741">إضافة ملف شخصي...</translation>
 <translation id="5828633471261496623">الطباعة جارية...</translation>
-<translation id="5829137022934788067">أريد معلومات عن هذا الاختيار</translation>
 <translation id="5829214552954466783">مشاركة <ph name="CREDENTIAL_TYPE" /> لاسم المستخدم <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">‏طُرق الدفع في "محفظة Google"</translation>
 <translation id="5830512293931520102">كلمة المرور مشفَّرة ولا يمكن لأي شخص الاطّلاع عليها</translation>
@@ -6575,6 +6578,7 @@
 <translation id="6006484371116297560">كلاسيكي</translation>
 <translation id="6007053304250788613">يمكن استبعاد شاشة واحدة فقط في "وضع المرآة"</translation>
 <translation id="6007240208646052708">البحث الصوتي غير متاح بلغتك.</translation>
+<translation id="6007858579659393165">مظهر شفّاف جديد لعلامات التبويب</translation>
 <translation id="6010651352520077187">‏عند تفعيل هذه الميزة، ستعرض خدمة "ترجمة Google" خيار ترجمة المواقع الإلكترونية إلى لغتك المفضّلة. ويمكن لهذه الخدمة أيضًا ترجمة المواقع الإلكترونية تلقائيًا.</translation>
 <translation id="6011193465932186973">بصمة الإصبع</translation>
 <translation id="6011308810877101166">تحسين اقتراحات البحث</translation>
@@ -8793,6 +8797,7 @@
 <translation id="7702463352133825032">إيقاف البث على "<ph name="DEVICE_NAME" />"</translation>
 <translation id="7704305437604973648">المهمة</translation>
 <translation id="7705085181312584869">ساعدني في الكتابة</translation>
+<translation id="7705230242432916648">يمكنك الاستماع إلى هذه الصفحة كأنّها بودكاست باستخدام ميزة "التشغيل بالذكاء الاصطناعي"</translation>
 <translation id="7705276765467986571">تعذر تحميل نموذج الإشارة.</translation>
 <translation id="7705334495398865155">‏اختيار رقم تعريف عشوائي لهذا الجهاز (معرّف مجموعة الخدمات الأساسية (BSSID)) لمنع الآخرين من تتبُّعه</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -9475,6 +9480,7 @@
 <translation id="8212601853154459483">هذا الملف الشخصي تتم إدارته من قِبَل <ph name="PROFILE_MANAGER" />، ويُطلب منك بموجب هذه الإدارة إنشاء ملف شخصي منفصل لحساب <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="8212792694174629011">لم يتم العثور على أي ملفات شخصية. جرِّب مسح رمز الاستجابة السريعة ضوئيًا باستخدام كاميرا جهازك أو أدخِل رمز التفعيل المقدَّم من مشغِّل شبكة الجوّال.</translation>
 <translation id="8214489666383623925">فتح ملف...</translation>
+<translation id="8214771296778317256">يمكنك اختيار نمط علامة التبويب المفضّل لديك هنا</translation>
 <translation id="8215129063232901118">يمكنك استخدام <ph name="DEVICE_TYPE" /> للاستفادة من إمكانيات هاتفك.</translation>
 <translation id="8217212468862726597">تمييز مؤشر الماوس</translation>
 <translation id="8217399928341212914">متابعة حظر عمليات التنزيل التلقائية لعدة ملفات</translation>
@@ -10222,6 +10228,7 @@
 <translation id="8780123805589053431">‏الحصول على أوصاف الصور من Google</translation>
 <translation id="8780443667474968681">تم إيقاف ميزة البحث الصوتي.</translation>
 <translation id="8781834595282316166">علامة تبويب جديدة في مجموعة</translation>
+<translation id="878190123554258638">‏‫<ph name="SHORTCUT_TITLE" />، يمكنك استخدام مفتاحَي السهمَين المتجهَين لليسار ولليمين لنقل الاختصار. ويمكنك الضغط على مفتاح Enter أو Escape للإنهاء.</translation>
 <translation id="8781980678064919987">إيقاف التشغيل عند إغلاق الغطاء</translation>
 <translation id="8783171585655659524">تضمين لقطة شاشة</translation>
 <translation id="8785622406424941542">قلم الشاشة</translation>
@@ -10720,6 +10727,7 @@
 <translation id="9154194610265714752">تم التحديث</translation>
 <translation id="915485121129452731">جهاز لوحي مع قلم</translation>
 <translation id="9155344700756733162">إلغاء اختيار اللون</translation>
+<translation id="9155515662479003830">يمكنك العودة إلى النمط الكلاسيكي متى شئت من خلال "الإعدادات"</translation>
 <translation id="9157096865782046368">0,8 ثانية</translation>
 <translation id="9157697743260533322">فشل في إعداد التحديثات التلقائية لجميع المستخدمين (خطأ إطلاق الاختبار المبدئي: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="9157915340203975005">باب الطابعة مفتوح</translation>

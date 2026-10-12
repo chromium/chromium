@@ -1264,6 +1264,7 @@
 <translation id="498624032394115435">Vsi s povezavo lahko urejajo vse zavihke.</translation>
 <translation id="4986428648020277392">Poziv: Katerega naj kupim? 2 od 3</translation>
 <translation id="498768198683310172">Začni uporabljati Gemini</translation>
+<translation id="4989163558385430922">Pokaži vse</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, upravlja vaša organizacija.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Barva skupine zavihkov je <ph name="COLOR" /></translation>
@@ -1719,6 +1720,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6372558618707314581">Odprite katero koli stran</translation>
 <translation id="6374469231428023295">Vnovični poskus</translation>
 <translation id="6374514103145916800">Vprašajte</translation>
+<translation id="6381241974485088375">Stran novega zavihka lahko kadar koli prilagodite tukaj</translation>
 <translation id="6383719166112032471">Odpiranje lokacije …</translation>
 <translation id="6387994324662817823">Gesla so shranjena v Google Upravitelju gesel samo v tej napravi.</translation>
 <translation id="6393156038355142111">Predlagaj močno geslo</translation>
@@ -2027,7 +2029,6 @@ Kadar koli lahko znova začnete.</translation>
 <translation id="7346922058131593019">Česa se želite lotiti, <ph name="USER_FIRST_NAME" />?</translation>
 <translation id="7347998088283246662">Uvozite gesla, zgodovino, zaznamke in drugo</translation>
 <translation id="7352651011704765696">Prišlo je do neznane težave</translation>
-<translation id="7357999308187750900">Pokaži vse</translation>
 <translation id="736564850024123010">Za prilagojeno izkušnjo spremenite položaj naslovne vrstice.</translation>
 <translation id="7366909168761621528">Podatki brskanja</translation>
 <translation id="7367530036083223701">S pripomočkom Upravitelj gesel varno dostopajte do gesel na začetnem zaslonu.</translation>
@@ -2361,7 +2362,6 @@ Kadar koli lahko znova začnete.</translation>
 <translation id="8333459276976141586">Funkcija Live bo uporabila vaš mikrofon. Če se dotaknete gumba za funkcijo Live, se vklopi mikrofon. Če ga želite izklopiti, se dotaknite gumba za ustavitev ali zaprite Geminija.</translation>
 <translation id="833647236762414178">Ustvarite, shranite in upravljajte gesla in ključe za dostop, da se boste lahko preprosto prijavili na spletnih mestih in v aplikacijah. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Varnostno kopirajte vsebino in jo uporabljajte v poljubni napravi.</translation>
-<translation id="8345328955902001853">{count,plural, =1{Dokončajte še 1 opravilo, da boste dosegli naslednjo stopnjo}one{Dokončajte še {count} opravilo, da boste dosegli naslednjo stopnjo}two{Dokončajte še {count} opravili, da boste dosegli naslednjo stopnjo}few{Dokončajte še {count} opravila, da boste dosegli naslednjo stopnjo}other{Dokončajte še {count} opravil, da boste dosegli naslednjo stopnjo}}</translation>
 <translation id="8348530355586151720">Dotaknite se menija z ikono s tremi pikami</translation>
 <translation id="8349305172487531364">Vrstica z zaznamki</translation>
 <translation id="8360164927489392419">Zapisi o vaših interakcijah s funkcijo Live in vsebino, ki jo delite z njo, se shranjujejo in obdelujejo skladno z <ph name="BEGIN_LINK" />obvestilom o zasebnosti za aplikacije Gemini<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
@@ -2463,6 +2463,7 @@ Kadar koli lahko znova začnete.</translation>
 <translation id="8639963783467694461">Nastavitve samodejnega izpolnjevanja</translation>
 <translation id="8642417828095157370">Zavihki se delijo z namenom zagotavljanja ustreznejših odgovorov</translation>
 <translation id="8643403533759285912">Izbris skupine</translation>
+<translation id="8646357898207744479">Lens</translation>
 <translation id="8647280737650867362">Cene ni bilo mogoče prenehati spremljati.</translation>
 <translation id="8654802032646794042">Prekliči</translation>
 <translation id="8655861111558401309">Izberite »Izbriši podatke brskanja«</translation>
@@ -2586,7 +2587,6 @@ Kadar koli lahko znova začnete.</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, pripeto spletno mesto</translation>
 <translation id="8990960056509724223">Datoteke ni bilo mogoče shraniti zaradi pravilnikov vaše organizacije</translation>
 <translation id="8998289560386111590">Ni na voljo v vaši napravi</translation>
-<translation id="9003263770394939629">Predlagal Gemini. Izboljšano samodejno izpolnjevanje lahko upravljate v nastavitvah.</translation>
 <translation id="9003677638446136377">Vnovično preverjanje</translation>
 <translation id="9006453925669499173">Meni → Novi anonimni zavihek</translation>
 <translation id="9008201768610948239">Prezri</translation>
@@ -2595,7 +2595,6 @@ Kadar koli lahko znova začnete.</translation>
 <translation id="9029650858822697271">Bili ste odjavljeni</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Potrditev brisanja podatkov brskanja</translation>
-<translation id="9035699147763101514">Uporablja osebno inteligenco z Geminijem. Izbire upravljajte v nastavitvah.</translation>
 <translation id="9038526468059454274">Povzemite z:</translation>
 <translation id="9039373489628511875">Pasovna širina</translation>
 <translation id="9042893549633094279">Zasebnost in varnost</translation>

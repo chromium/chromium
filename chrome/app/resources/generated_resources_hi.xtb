@@ -5630,6 +5630,7 @@
 <translation id="5246282308050205996"><ph name="APP_NAME" /> क्रैश हो गया है. ऐप्‍लिकेशन को रीस्टार्ट करने के लिए इस गुब्‍बारे पर क्‍लिक करें .</translation>
 <translation id="5247051749037287028">दिखाई देने वाला नाम (वैकल्पिक)</translation>
 <translation id="5247243947166567755"><ph name="BOOKMARK_TITLE" /> चुनें</translation>
+<translation id="524751727772074981">Chrome में Gemini से कहीं भी, कभी भी अपने सवाल पूछें</translation>
 <translation id="5248934139541843042">ऑर्गनाइज़र पैनल देखें</translation>
 <translation id="5249624017678798539">डाउनलोड पूरा होने से पहले ही ब्राउज़र क्रैश हो गया था.</translation>
 <translation id="5249818097095743806">अपनी सुरक्षा कुंजी का इस्तेमाल करें</translation>
@@ -6338,7 +6339,6 @@
 <translation id="5828181959764767444">सूर्यास्त</translation>
 <translation id="5828545842856466741">प्रोफ़ाइल जोड़ें...</translation>
 <translation id="5828633471261496623">प्रिंट हो रहा है...</translation>
-<translation id="5829137022934788067">मुझे इसके बारे में बताओ</translation>
 <translation id="5829214552954466783">इस उपयोगकर्ता नाम के लिए <ph name="CREDENTIAL_TYPE" /> शेयर करें: <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">Google Wallet में पेमेंट के तरीके</translation>
 <translation id="5830512293931520102">आपका पासवर्ड एन्क्रिप्ट (सुरक्षित) किया जाता है और किसी को भी नहीं दिखता है</translation>

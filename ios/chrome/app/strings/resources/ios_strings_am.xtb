@@ -1264,6 +1264,7 @@
 <translation id="498624032394115435">አገናኙ ያለው ማንኛውም ሰው ሁሉንም ትሮች ማርትዕ ይችላል።</translation>
 <translation id="4986428648020277392">ጥያቄ፦ የትኛውን መግዛት አለብኝ? 2 ከ3</translation>
 <translation id="498768198683310172">Gemini መጠቀም ጀምር</translation>
+<translation id="4989163558385430922">ሁሉንም ይመልከቱ</translation>
 <translation id="499122600724363620"><ph name="NAME" />፣ <ph name="EMAIL" />፣ በድርጅትዎ የሚተዳደር።</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />፣ <ph name="EMAIL" />። <ph name="AI_TIER" />።</translation>
 <translation id="4992255726304765516">የትር ቡድን ቀለም <ph name="COLOR" /></translation>
@@ -2027,7 +2028,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7346922058131593019">ምን ላይ መሥራት ይፈልጋሉ፣ <ph name="USER_FIRST_NAME" />?</translation>
 <translation id="7347998088283246662">የይለፍ ቃላትን፣ ታሪክን፣ ዕልባቶችን እና ሌሎችንም ያስመጡ</translation>
 <translation id="7352651011704765696">የሆነ ችግር ተፈጥሯል</translation>
-<translation id="7357999308187750900">ሁሉንም አሳይ</translation>
 <translation id="736564850024123010">ብጁ ለተደረገ ተሞክሮ የአድራሻ አሞሌዎን ቦታ ይቀይሩ።</translation>
 <translation id="7366909168761621528">የአሰሳ ውሂብ</translation>
 <translation id="7367530036083223701">በሚስጥር ቁልፍ አስተዳዳሪ ምግብር የይለፍ ቃላቶችዎን ከመነሻ ማያ ገፁ ደህንነቱ በተጠበቀ ሁኔታ ይድረሱ።</translation>
@@ -2361,7 +2361,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8333459276976141586">ቀጥታ ሥርጭት ማይክሮፎንዎን ይጠቀማል። የቀጥታ ሥርጭት አዝራርን መታ ማድረግ ማይክሮፎኑን ያበራዋል። ማይክሮፎኑን ለማጥፋት፣ የማቆሚያ አዝራሩን መታ ያድርጉ ወይም Geminiን ይዝጉ።</translation>
 <translation id="833647236762414178">በቀላሉ ወደ ጣቢያዎች እና መተግበሪያዎች በመለያ ለመግባት የእርስዎን የይለፍ ቃሎች እና የይለፍ ቁልፎች ይፍጠሩ፣ ያስቀምጡ እና ያስተዳድሩ። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">የእርስዎን ነገሮች ምትኬ ያስቀምጡ እና በማንኛውም መሣሪያ ላይ ይጠቀሙበት።</translation>
-<translation id="8345328955902001853">{count,plural, =1{ደረጃ ከፍ ለማድረግ 1 ተጨማሪ ተግባር ያጠናቅቁ}one{ደረጃ ለማሳደግ {count} ተጨማሪ ተግባር ያጠናቅቁ}other{ደረጃ ለማሳደግ {count} ተጨማሪ ተግባራትን ያጠናቅቁ}}</translation>
 <translation id="8348530355586151720">ባለ ሦስት ነጥብ ምናሌውን መታ ያድርጉ</translation>
 <translation id="8349305172487531364">የዕልባቶች አሞሌ</translation>
 <translation id="8360164927489392419">ከLive ጋር ያለዎት መስተጋብሮች እና ለእሱ የሚያጋሩት ይዘት ቅጂዎች <ph name="BEGIN_LINK" />በGemini መተግበሪያ የግላዊነት ማስታወቂያ<ph name="END_LINK" /> መሠረት ይቀመጣሉ እና ይሰናዳሉ። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
@@ -2586,7 +2585,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />፣ የተሰካ ጣቢያ</translation>
 <translation id="8990960056509724223">በድርጅትዎ መመሪያዎች ምክንያት ፋይልን ማስቀመጥ አልተቻለም</translation>
 <translation id="8998289560386111590">መሣሪያዎ ላይ አይገኝም</translation>
-<translation id="9003263770394939629">በGemini የተጠቆመ። በቅንብሮች ውስጥ የተሻሻለ ራስ-ሙላን ያስተዳድሩ።</translation>
 <translation id="9003677638446136377">እንደገና ፈትሽ</translation>
 <translation id="9006453925669499173">ምናሌ → አዲስ ማንነት የማያሳውቅ ትር</translation>
 <translation id="9008201768610948239">ችላ በል</translation>
@@ -2595,7 +2593,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="9029650858822697271">እርስዎ ዘግተው ወጥተዋል</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">የአሰሳ ውሂብን ሰርዝን ያረጋግጡ</translation>
-<translation id="9035699147763101514">በGemini በግል ብልሃት የተጎላበተ። በቅንብሮች ውስጥ ምርጫዎችዎን ያስተዳድሩ።</translation>
 <translation id="9038526468059454274">በሚከተለው ያጠቃልሉ</translation>
 <translation id="9039373489628511875">መተላለፊያ ይዘት</translation>
 <translation id="9042893549633094279">ግላዊነት እና ደኅንነት</translation>

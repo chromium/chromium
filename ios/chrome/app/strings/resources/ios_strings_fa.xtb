@@ -1264,6 +1264,7 @@
 <translation id="498624032394115435">هر کسی پیوند را داشته باشد می‌تواند همه زبانه‌ها را ویرایش کند.</translation>
 <translation id="4986428648020277392">پیام‌واره: کدام را بخرم؟ ‫۲ از ۳</translation>
 <translation id="498768198683310172">‏شروع استفاده از Gemini</translation>
+<translation id="4989163558385430922">دیدن همه</translation>
 <translation id="499122600724363620">‫<ph name="NAME" />،‏ <ph name="EMAIL" />، توسط سازمانتان مدیریت می‌شود.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />، <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">رنگ <ph name="COLOR" /> گروه زبانه</translation>
@@ -2027,7 +2028,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7346922058131593019">می‌خواهید روی چه چیزی کار کنید، <ph name="USER_FIRST_NAME" />؟</translation>
 <translation id="7347998088283246662">گذرواژه‌ها، سابقه، نشانک‌ها، و موارد دیگر را وارد کنید.</translation>
 <translation id="7352651011704765696">مشکلی پیش آمد</translation>
-<translation id="7357999308187750900">دیدن همه</translation>
 <translation id="736564850024123010">برای داشتن تجربه‌ای سفارشی‌سازی‌شده، جای نوار نشانی را تغییر دهید.</translation>
 <translation id="7366909168761621528">داده‌های مرور</translation>
 <translation id="7367530036083223701">با ابزاره «مدیر گذرواژه»، به‌طور ایمن ازطریق صفحه اصلی به گذرواژه‌هایتان دسترسی پیدا کنید.</translation>
@@ -2361,7 +2361,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8333459276976141586">‏‫Live از میکروفون شما استفاده خواهد کرد. با تک‌ضرب زدن روی دکمه Live، میکروفون روشن می‌شود. برای خاموش کردن میکروفون، روی دکمه «توقف» تک‌ضرب بزنید یا Gemini را ببندید.</translation>
 <translation id="833647236762414178">گذرواژه‌ها و گذرکلیدهایتان را ایجاد، ذخیره، و مدیریت کنید تا بتوانید به‌راحتی به سیستم سایت‌ها و برنامه‌ها وارد شوید. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">از داده‌هایتان پشتیبان بگیرید و در هر دستگاهی از آن‌ها استفاده کنید.</translation>
-<translation id="8345328955902001853">{count,plural, =1{برای ارتقای سطح ۱ تکلیف دیگر را تکمیل کنید}one{برای ارتقای سطح {count} تکلیف دیگر را تکمیل کنید}other{برای ارتقای سطح {count} تکلیف دیگر را تکمیل کنید}}</translation>
 <translation id="8348530355586151720">روی منوِ سه‌نقطه‌ای تک‌ضرب بزنید</translation>
 <translation id="8349305172487531364">نوار نشانک‌ها</translation>
 <translation id="8360164927489392419">‏ضبط‌های مربوط به تعاملات شما با Live و محتوایی که با آن هم‌رسانی می‌کنید مطابق با <ph name="BEGIN_LINK" />ابلاغیه حریم خصوصی «برنامه‌های Gemini»<ph name="END_LINK" /> ذخیره و پردازش می‌شوند. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
@@ -2586,7 +2585,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8988107725234939347">‫<ph name="WEBSITE_TITLE" />، سایت سنجاق‌شده</translation>
 <translation id="8990960056509724223">به‌دلیل خط‌مشی‌های سازمانتان، فایل ذخیره نشد</translation>
 <translation id="8998289560386111590">در دستگاهتان دردسترس نیست</translation>
-<translation id="9003263770394939629">‏پیشنهادشده توسط Gemini. مدیریت کردن تکمیل خودکار بهبودیافته در تنظیمات</translation>
 <translation id="9003677638446136377">بررسی مجدد</translation>
 <translation id="9006453925669499173">منو ← زبانه ناشناس جدید</translation>
 <translation id="9008201768610948239">نادیده گرفتن</translation>
@@ -2595,7 +2593,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="9029650858822697271">از سیستم خارج شدید</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">تأیید کردن حذف داده‌های مرور</translation>
-<translation id="9035699147763101514">‏پشتیبانی شده توسط «هوش شخصی‌سازی‌شده» با Gemini. انتخاب‌هایتان را در تنظیمات مدیریت کنید.</translation>
 <translation id="9038526468059454274">خلاصه کردن با</translation>
 <translation id="9039373489628511875">پهنای باند</translation>
 <translation id="9042893549633094279">حریم خصوصی و امنیت</translation>

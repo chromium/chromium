@@ -1587,6 +1587,7 @@
 <translation id="2215070081105889450">音声を共有するには、タブまたは画面を共有してください</translation>
 <translation id="2217208085547223783">信頼状態</translation>
 <translation id="2218019600945559112">マウスとタッチパッド</translation>
+<translation id="2218116022473625437">設定で、テキストのハイライト表示をオフにしたり、音声やページの表示を変更したりできます。</translation>
 <translation id="2218515861914035131">プレーン テキストとして貼り付ける</translation>
 <translation id="2219007152108311874">毎回確認する</translation>
 <translation id="2220529011494928058">問題を報告</translation>
@@ -3757,6 +3758,7 @@
 <translation id="3812525830114410218">不適切な証明書</translation>
 <translation id="3813296892522778813">探しているものが見つからない場合は、<ph name="BEGIN_LINK_CHROMIUM" />Google Chrome のヘルプ<ph name="END_LINK_CHROMIUM" />をご覧ください。</translation>
 <translation id="3813358687923336574">ページの翻訳とクイック アンサーに使用する言語</translation>
+<translation id="3815509884387832993">リーディング モードのツールバーにある [AI 再生をオンにする] ボタンを使用すると、AI 再生でポッドキャストのように、このページの読み上げを聴くことができます</translation>
 <translation id="3815668647912194650">後でタブを追加できるようにこのグループを保持するか、今後使用しない場合は退出します。</translation>
 <translation id="3816118180265633665">Chrome の色</translation>
 <translation id="3817524650114746564">パソコンのプロキシ設定を開く</translation>
@@ -4141,6 +4143,7 @@
 <translation id="4109135793348361820"><ph name="USER_NAME" />（<ph name="USER_EMAIL" />）にウィンドウを移動</translation>
 <translation id="4110485659976215879">警告を復元</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" />（オフライン）</translation>
+<translation id="4112282889480354965">拡張機能とスキル</translation>
 <translation id="4113743276555482284">ファイルのパスワード</translation>
 <translation id="4114524937989710624">Google ドライブで最近使用したファイルに簡単にアクセスできるよう、ファイルの候補が表示されています。
         <ph name="BREAK" />
@@ -5611,6 +5614,7 @@
 <translation id="5246282308050205996"><ph name="APP_NAME" /> がクラッシュしました。このバルーンをクリックして再起動してください。</translation>
 <translation id="5247051749037287028">表示名（省略可）</translation>
 <translation id="5247243947166567755"><ph name="BOOKMARK_TITLE" /> を選択</translation>
+<translation id="524751727772074981">Gemini in Chrome なら、その場で何でも質問できます</translation>
 <translation id="5248934139541843042">整理機能を表示</translation>
 <translation id="5249624017678798539">ダウンロードの完了前にブラウザで問題が発生しました。</translation>
 <translation id="5249818097095743806">セキュリティ キーを使用する</translation>
@@ -6318,7 +6322,6 @@
 <translation id="5828181959764767444">日の入り</translation>
 <translation id="5828545842856466741">プロファイルを追加...</translation>
 <translation id="5828633471261496623">印刷中...</translation>
-<translation id="5829137022934788067">選択したテキストについて教えて</translation>
 <translation id="5829214552954466783">ユーザー名 <ph name="USER_EMAIL" /> の <ph name="CREDENTIAL_TYPE" /> を共有</translation>
 <translation id="5829544019044013776">Google ウォレットのお支払い方法の設定</translation>
 <translation id="5830512293931520102">パスワードは暗号化され、誰にも表示されません</translation>
@@ -8778,6 +8781,7 @@
 <translation id="7702463352133825032"><ph name="DEVICE_NAME" /> へのキャストを停止する</translation>
 <translation id="7704305437604973648">タスク</translation>
 <translation id="7705085181312584869">文書作成サポート</translation>
+<translation id="7705230242432916648">AI 再生でポッドキャストのように、このページを読み上げを聴くことができます</translation>
 <translation id="7705276765467986571">ブックマーク モデルを読み込むことができませんでした。</translation>
 <translation id="7705334495398865155">ハードウェアの ID（BSSID）をランダム化して、他のユーザーがこのデバイスを追跡できないようにします。</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -10206,6 +10210,7 @@
 <translation id="8780123805589053431">Google から画像の説明を取得</translation>
 <translation id="8780443667474968681">音声検索がオフになっています。</translation>
 <translation id="8781834595282316166">グループにタブを追加</translation>
+<translation id="878190123554258638"><ph name="SHORTCUT_TITLE" />、ショートカットを移動するには、左右の矢印キーを使用します。終了するには、Enter キーまたは Esc キーを押します。</translation>
 <translation id="8781980678064919987">ディスプレイを閉じたときにシャットダウンする</translation>
 <translation id="8783171585655659524">スクリーンショットを含める</translation>
 <translation id="8785622406424941542">タッチペン</translation>

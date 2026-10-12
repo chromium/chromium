@@ -1264,6 +1264,7 @@
 <translation id="498624032394115435">링크가 있는 사용자가 모든 탭을 수정할 수 있습니다.</translation>
 <translation id="4986428648020277392">프롬프트: 어떤 걸 사야 할까? 2/3</translation>
 <translation id="498768198683310172">Gemini 사용 시작하기</translation>
+<translation id="4989163558385430922">모두 보기</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, 조직에서 관리합니다.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">탭 그룹 색상: <ph name="COLOR" /></translation>
@@ -2028,7 +2029,6 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="7346922058131593019"><ph name="USER_FIRST_NAME" />님, 무엇을 하고 싶으신가요?</translation>
 <translation id="7347998088283246662">비밀번호, 방문 기록, 북마크 등을 가져오세요.</translation>
 <translation id="7352651011704765696">문제가 발생했습니다</translation>
-<translation id="7357999308187750900">모두 보기</translation>
 <translation id="736564850024123010">주소 표시줄 위치를 전환하여 맞춤 환경을 이용하세요</translation>
 <translation id="7366909168761621528">인터넷 사용 기록</translation>
 <translation id="7367530036083223701">비밀번호 관리자 위젯으로 홈 화면에서 비밀번호에 안전하게 액세스하세요.</translation>
@@ -2362,7 +2362,6 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="8333459276976141586">Live에서 마이크를 사용합니다. Live 버튼을 탭하면 마이크가 켜집니다. 마이크를 끄려면 중지 버튼을 탭하거나 Gemini를 닫으세요.</translation>
 <translation id="833647236762414178">사이트와 앱에 쉽게 로그인할 수 있도록 비밀번호와 패스키를 만들고, 저장하고, 관리하세요. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">콘텐츠를 백업하고 어느 기기에서나 사용하세요</translation>
-<translation id="8345328955902001853">{count,plural, =1{레벨을 올리려면 작업을 1개 더 완료하세요.}other{레벨을 올리려면 작업을 {count}개 더 완료하세요.}}</translation>
 <translation id="8348530355586151720">점 3개 메뉴를 탭합니다.</translation>
 <translation id="8349305172487531364">북마크바</translation>
 <translation id="8360164927489392419">Live와의 상호작용이 녹음된 파일 및 Live와 공유한 콘텐츠는 <ph name="BEGIN_LINK" />Gemini 앱 개인정보처리방침<ph name="END_LINK" />에 따라 저장되고 처리됩니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
@@ -2588,7 +2587,6 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, 고정된 사이트</translation>
 <translation id="8990960056509724223">조직의 정책으로 인해 파일을 저장할 수 없습니다.</translation>
 <translation id="8998289560386111590">내 기기에서 사용할 수 없음</translation>
-<translation id="9003263770394939629">Gemini가 추천합니다. 설정에서 향상된 자동 완성 기능을 관리해 보세요.</translation>
 <translation id="9003677638446136377">다시 확인</translation>
 <translation id="9006453925669499173">메뉴 → 새 시크릿 탭</translation>
 <translation id="9008201768610948239">무시</translation>
@@ -2597,7 +2595,6 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="9029650858822697271">로그아웃되었습니다</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">인터넷 사용 기록 삭제 확인</translation>
-<translation id="9035699147763101514">Gemini의 개인 인텔리전스를 기반으로 합니다. 설정에서 선택사항을 관리하세요</translation>
 <translation id="9038526468059454274">다음 도구로 요약하기:</translation>
 <translation id="9039373489628511875">대역폭</translation>
 <translation id="9042893549633094279">개인 정보 보호 및 보안</translation>

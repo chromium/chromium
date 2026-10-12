@@ -5615,6 +5615,7 @@
 <translation id="5246282308050205996"><ph name="APP_NAME" />-ը խափանվել է: Հավելվածը վերագործարկելու համար սեղմեք այս փուչիկի վրա:</translation>
 <translation id="5247051749037287028">Ցուցադրվող անունը (կամընտիր)</translation>
 <translation id="5247243947166567755">Ընտրել <ph name="BOOKMARK_TITLE" /> տարրը</translation>
+<translation id="524751727772074981">Հարցրեք ցանկացած բան ցանկացած տեղում «Gemini-ը Chrome-ում» մոդելի միջոցով</translation>
 <translation id="5248934139541843042">Դիտել կազմակերպչին</translation>
 <translation id="5249624017678798539">Դիտարկիչը խափանվեց և ներբեռնումը չավարտվեց:</translation>
 <translation id="5249818097095743806">Օգտագործեք ձեր անվտանգության բանալին</translation>
@@ -6321,7 +6322,6 @@
 <translation id="5828181959764767444">Մայրամուտ</translation>
 <translation id="5828545842856466741">Ավելացնել պրոֆիլ...</translation>
 <translation id="5828633471261496623">Տպում…</translation>
-<translation id="5829137022934788067">Պատմիր ինձ այս ընտրության մասին</translation>
 <translation id="5829214552954466783">Կիսվել հետևյալ օգտանվան հետ կապված <ph name="CREDENTIAL_TYPE" />ով՝ <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">Ձեր վճարման եղանակները Google Wallet-ում</translation>
 <translation id="5830512293931520102">Գաղտնաբառերը գաղտնագրված են և տեսանելի են միայն ձեզ</translation>

@@ -5629,6 +5629,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5246282308050205996"><ph name="APP_NAME" /> has crashed. Click this balloon to restart the app.</translation>
 <translation id="5247051749037287028">Display name (optional)</translation>
 <translation id="5247243947166567755">Select <ph name="BOOKMARK_TITLE" /></translation>
+<translation id="524751727772074981">Ask anything, right where you are, with Gemini in Chrome</translation>
 <translation id="5248934139541843042">View organiser</translation>
 <translation id="5249624017678798539">The browser crashed before the download completed.</translation>
 <translation id="5249818097095743806">Use your security key</translation>
@@ -6338,7 +6339,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5828181959764767444">Sunset</translation>
 <translation id="5828545842856466741">Add profile…</translation>
 <translation id="5828633471261496623">Printing...</translation>
-<translation id="5829137022934788067">Tell me about this selection</translation>
 <translation id="5829214552954466783">Share <ph name="CREDENTIAL_TYPE" /> for username: <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">Your payment methods in Google Wallet</translation>
 <translation id="5830512293931520102">Your password is encrypted and never seen by anyone</translation>

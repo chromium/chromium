@@ -1265,6 +1265,7 @@
 <translation id="498624032394115435">Bất cứ ai có đường liên kết này đều có thể chỉnh sửa tất cả các thẻ.</translation>
 <translation id="4986428648020277392">Câu lệnh: Tôi nên mua sản phẩm nào? 2/3</translation>
 <translation id="498768198683310172">Bắt đầu sử dụng Gemini</translation>
+<translation id="4989163558385430922">Xem tất cả</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, do tổ chức của bạn quản lý.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Màu của nhóm thẻ <ph name="COLOR" /></translation>
@@ -2029,7 +2030,6 @@ Bạn có thể bắt đầu lại bất cứ lúc nào.</translation>
 <translation id="7346922058131593019">Bạn muốn làm việc nào, <ph name="USER_FIRST_NAME" />?</translation>
 <translation id="7347998088283246662">Nhập mật khẩu, nhật ký, dấu trang và nhiều dữ liệu khác</translation>
 <translation id="7352651011704765696">Đã xảy ra lỗi</translation>
-<translation id="7357999308187750900">Xem tất cả</translation>
 <translation id="736564850024123010">Chuyển vị trí của thanh địa chỉ để có trải nghiệm phù hợp.</translation>
 <translation id="7366909168761621528">Dữ liệu duyệt web</translation>
 <translation id="7367530036083223701">Truy cập vào mật khẩu của bạn một cách an toàn từ màn hình chính bằng tiện ích Trình quản lý mật khẩu.</translation>
@@ -2363,7 +2363,6 @@ Bạn có thể bắt đầu lại bất cứ lúc nào.</translation>
 <translation id="8333459276976141586">Tính năng Live sẽ sử dụng micrô của bạn. Khi bạn nhấn vào nút Live, micrô sẽ bật. Để tắt micrô, hãy nhấn vào nút dừng hoặc đóng Gemini.</translation>
 <translation id="833647236762414178">Tạo, lưu và quản lý mật khẩu và khoá truy cập để dễ dàng đăng nhập vào các trang web và ứng dụng. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Sao lưu và sử dụng dữ liệu của bạn trên mọi thiết bị.</translation>
-<translation id="8345328955902001853">{count,plural, =1{Hoàn thành 1 việc cần làm nữa để lên cấp}other{Hoàn thành {count} việc cần làm nữa để lên cấp}}</translation>
 <translation id="8348530355586151720">Nhấn vào trình đơn có biểu tượng ba dấu chấm</translation>
 <translation id="8349305172487531364">Thanh dấu trang</translation>
 <translation id="8360164927489392419">Các bản ghi về hoạt động tương tác của bạn với chế độ Live cũng như những nội dung bạn chia sẻ với chế độ này được lưu và xử lý theo <ph name="BEGIN_LINK" />Thông báo về quyền riêng tư của Các ứng dụng Gemini<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
@@ -2590,7 +2589,6 @@ Bạn có thể bắt đầu lại bất cứ lúc nào.</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, trang web đã được ghim</translation>
 <translation id="8990960056509724223">Không thể lưu tệp do các chính sách của tổ chức bạn</translation>
 <translation id="8998289560386111590">Tính năng đăng nhập không hoạt động trên thiết bị của bạn</translation>
-<translation id="9003263770394939629">Do Gemini đề xuất. Quản lý tự động điền nâng cao trong phần cài đặt.</translation>
 <translation id="9003677638446136377">Kiểm tra lại</translation>
 <translation id="9006453925669499173">Trình đơn → Thẻ ẩn danh mới</translation>
 <translation id="9008201768610948239">Bỏ qua</translation>
@@ -2599,7 +2597,6 @@ Bạn có thể bắt đầu lại bất cứ lúc nào.</translation>
 <translation id="9029650858822697271">Hệ thống đã đăng xuất bạn</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Xác nhận yêu cầu xoá dữ liệu duyệt web</translation>
-<translation id="9035699147763101514">Dựa trên Trí thông minh cá nhân của Gemini. Quản lý lựa chọn của bạn trong phần cài đặt.</translation>
 <translation id="9038526468059454274">Tóm tắt bằng</translation>
 <translation id="9039373489628511875">Băng thông</translation>
 <translation id="9042893549633094279">Quyền riêng tư và bảo mật</translation>

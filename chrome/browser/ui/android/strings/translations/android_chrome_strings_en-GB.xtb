@@ -329,6 +329,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2327445548174191329">From <ph name="DEVICE_NAME" /></translation>
 <translation id="232757965409810352">Save page as…</translation>
 <translation id="2328474416100889417">Everyone will immediately lose access to the '<ph name="GROUP_NAME" />' tab group, and all invitation links will be turned off</translation>
+<translation id="2328773543844041445">Auto-expand tabs on hover</translation>
 <translation id="2330186936255788117">More bookmarks</translation>
 <translation id="2330243730505117832">'Choose a device' is closed.</translation>
 <translation id="2332515770639153015">Enhanced Safe Browsing is on</translation>

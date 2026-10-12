@@ -5629,6 +5629,7 @@
 <translation id="5246282308050205996"><ph name="APP_NAME" /> падна. Кликнете на балонот за да ја рестартирате апликацијата.</translation>
 <translation id="5247051749037287028">Име за прикажување (изборно)</translation>
 <translation id="5247243947166567755">Изберете <ph name="BOOKMARK_TITLE" /></translation>
+<translation id="524751727772074981">Прашувајте што било, од каде што сте, со Gemini во Chrome</translation>
 <translation id="5248934139541843042">Прикажи го организаторот</translation>
 <translation id="5249624017678798539">Прелистувачот падна пред да заврши преземањето.</translation>
 <translation id="5249818097095743806">Користете го безбедносниот клуч</translation>
@@ -6338,7 +6339,6 @@
 <translation id="5828181959764767444">Зајдисонце</translation>
 <translation id="5828545842856466741">Додајте профил…</translation>
 <translation id="5828633471261496623">Се печати…</translation>
-<translation id="5829137022934788067">Кажи ми за изборов</translation>
 <translation id="5829214552954466783">Споделете <ph name="CREDENTIAL_TYPE" /> за корисничкото име: <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">Вашите начини на плаќање во Google Wallet</translation>
 <translation id="5830512293931520102">Вашата лозинка е шифрирана и не може да ја види никој никогаш</translation>

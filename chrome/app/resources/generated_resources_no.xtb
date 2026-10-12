@@ -5623,6 +5623,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5246282308050205996"><ph name="APP_NAME" /> har krasjet. Klikk på denne ballongen for å starten programmet på nytt.</translation>
 <translation id="5247051749037287028">Visningsnavn (valgfritt)</translation>
 <translation id="5247243947166567755">Velg <ph name="BOOKMARK_TITLE" /></translation>
+<translation id="524751727772074981">Spør om hva som helst, akkurat der du er, med Gemini i Chrome</translation>
 <translation id="5248934139541843042">Vis arrangøren</translation>
 <translation id="5249624017678798539">Nettleseren krasjet før nedlastingen var ferdig.</translation>
 <translation id="5249818097095743806">Bruk sikkerhetsnøkkelen din</translation>
@@ -6330,7 +6331,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5828181959764767444">Solnedgang</translation>
 <translation id="5828545842856466741">Legg til profil…</translation>
 <translation id="5828633471261496623">Skriver ut …</translation>
-<translation id="5829137022934788067">Fortell meg om dette valget</translation>
 <translation id="5829214552954466783">Del <ph name="CREDENTIAL_TYPE" /> for brukernavnet <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">Betalingsmåtene dine i Google Wallet</translation>
 <translation id="5830512293931520102">Passordet ditt er kryptert og blir aldri sett av noen</translation>

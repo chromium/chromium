@@ -1264,6 +1264,7 @@
 <translation id="498624032394115435">Çdo person që ka lidhjen mund të modifikojë të gjitha skedat.</translation>
 <translation id="4986428648020277392">Kërkesa: Cilin duhet të blej? 2 nga 3</translation>
 <translation id="498768198683310172">Fillo të përdorësh Gemini</translation>
+<translation id="4989163558385430922">Shiko të gjitha</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, menaxhohet nga organizata jote.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Ngjyra e grupit të skedave: <ph name="COLOR" /></translation>
@@ -2027,7 +2028,6 @@ Mund ta rinisësh në çdo kohë.</translation>
 <translation id="7346922058131593019">Çfarë dëshiron të bësh më pas, <ph name="USER_FIRST_NAME" />?</translation>
 <translation id="7347998088283246662">Importo fjalëkalimet, historikun, faqeshënuesit etj.</translation>
 <translation id="7352651011704765696">Diçka shkoi keq</translation>
-<translation id="7357999308187750900">Shiko të gjitha</translation>
 <translation id="736564850024123010">Ndërroje pozicionin e shiritit të adresave për një përvojë të personalizuar.</translation>
 <translation id="7366909168761621528">Të dhënat e shfletimit</translation>
 <translation id="7367530036083223701">Qasu në mënyrë të sigurt në fjalëkalimet e tua nga ekrani bazë me miniaplikacionin "Menaxheri i fjalëkalimeve".</translation>
@@ -2361,7 +2361,6 @@ Mund ta rinisësh në çdo kohë.</translation>
 <translation id="8333459276976141586">Live do të përdorë mikrofonin tënd. Trokitja te butoni i Live aktivizon mikrofonin. Për të çaktivizuar mikrofonin, trokit te butoni i ndalimit ose mbyll Gemini.</translation>
 <translation id="833647236762414178">Krijo, ruaj dhe menaxho fjalëkalimet dhe çelësat e kalimit për t'u identifikuar me lehtësi në sajte dhe aplikacione. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Rezervo gjërat e tua dhe përdori në çdo pajisje.</translation>
-<translation id="8345328955902001853">{count,plural, =1{Përfundo 1 detyrë tjetër për t'u ngjitur në nivel}other{Përfundo {count} detyra të tjera për t'u ngjitur në nivel}}</translation>
 <translation id="8348530355586151720">Trokit te menyja me tri pika</translation>
 <translation id="8349305172487531364">Shiriti i faqeshënuesve</translation>
 <translation id="8360164927489392419">Regjistrimet e ndërveprimeve të tua me Live dhe përmbajtjet që ndan me të ruhen dhe përpunohen sipas <ph name="BEGIN_LINK" />Njoftimit të privatësisë për aplikacionet Gemini<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
@@ -2586,7 +2585,6 @@ Mund ta rinisësh në çdo kohë.</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, sajt i gozhduar</translation>
 <translation id="8990960056509724223">Skedari nuk mund të ruhej për shkak të politikave të organizatës sate</translation>
 <translation id="8998289560386111590">Nuk ofrohet në pajisjen tënde</translation>
-<translation id="9003263770394939629">Sugjeruar nga Gemini. Menaxho plotësimin automatik të përmirësuar te cilësimet.</translation>
 <translation id="9003677638446136377">Kontrollo sërish</translation>
 <translation id="9006453925669499173">Menyja → Skedë e re "e fshehtë"</translation>
 <translation id="9008201768610948239">Shpërfill</translation>
@@ -2595,7 +2593,6 @@ Mund ta rinisësh në çdo kohë.</translation>
 <translation id="9029650858822697271">Ke dalë nga llogaria</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Konfirmo fshirjen e të dhënave të shfletimit</translation>
-<translation id="9035699147763101514">Mundësuar nga "Inteligjenca personale" me Gemini. Menaxho zgjedhjet e tua te cilësimet.</translation>
 <translation id="9038526468059454274">Përmblidhe me</translation>
 <translation id="9039373489628511875">Gjerësia e bandës</translation>
 <translation id="9042893549633094279">Privatësia dhe siguria</translation>

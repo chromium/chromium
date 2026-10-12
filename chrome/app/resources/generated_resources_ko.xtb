@@ -5628,6 +5628,7 @@
 <translation id="5246282308050205996"><ph name="APP_NAME" />이(가) 다운되었습니다. 앱을 다시 시작하려면 이 풍선을 클릭하세요.</translation>
 <translation id="5247051749037287028">표시 이름(선택사항)</translation>
 <translation id="5247243947166567755"><ph name="BOOKMARK_TITLE" /> 선택</translation>
+<translation id="524751727772074981">어디서든 무엇이든 Chrome의 Gemini에게 물어보세요</translation>
 <translation id="5248934139541843042">주최자 보기</translation>
 <translation id="5249624017678798539">다운로드가 완료되기 전에 브라우저가 종료되었습니다.</translation>
 <translation id="5249818097095743806">보안 키 사용</translation>
@@ -6337,7 +6338,6 @@
 <translation id="5828181959764767444">일몰</translation>
 <translation id="5828545842856466741">프로필 추가...</translation>
 <translation id="5828633471261496623">인쇄 중...</translation>
-<translation id="5829137022934788067">이 선택 항목에 대해 알려 줘</translation>
 <translation id="5829214552954466783">사용자 이름(<ph name="USER_EMAIL" />)의 <ph name="CREDENTIAL_TYPE" /> 공유</translation>
 <translation id="5829544019044013776">Google 월렛의 결제 수단</translation>
 <translation id="5830512293931520102">비밀번호는 암호화되어 있으며 누구에게도 공개되지 않습니다.</translation>

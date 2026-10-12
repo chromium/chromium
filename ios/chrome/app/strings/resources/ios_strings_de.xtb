@@ -1264,6 +1264,7 @@
 <translation id="498624032394115435">Jeder Nutzer mit dem Link kann alle Tabs bearbeiten.</translation>
 <translation id="4986428648020277392">Prompt: Welche soll ich kaufen? 2 von 3</translation>
 <translation id="498768198683310172">Gemini nutzen</translation>
+<translation id="4989163558385430922">Alle ansehen</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, von deiner Organisation verwaltet.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Farbe der Tabgruppe: <ph name="COLOR" /></translation>
@@ -2027,7 +2028,6 @@ Du kannst „Level Up“ jederzeit wieder aktivieren.</translation>
 <translation id="7346922058131593019">Woran möchtest du arbeiten, <ph name="USER_FIRST_NAME" />?</translation>
 <translation id="7347998088283246662">Du kannst Passwörter, deinen Verlauf, Lesezeichen und mehr importieren</translation>
 <translation id="7352651011704765696">Ein Problem ist aufgetreten</translation>
-<translation id="7357999308187750900">Alle ansehen</translation>
 <translation id="736564850024123010">Du kannst die Position der Adressleiste verschieben, um den Browser an deine Bedürfnisse anzupassen.</translation>
 <translation id="7366909168761621528">Browserdaten</translation>
 <translation id="7367530036083223701">Mit dem Widget „Passwortmanager“ kannst du vom Startbildschirm aus sicher auf deine Passwörter zugreifen.</translation>
@@ -2361,7 +2361,6 @@ Du kannst „Level Up“ jederzeit wieder aktivieren.</translation>
 <translation id="8333459276976141586">Für Gemini Live wird dein Mikrofon verwendet. Wenn du auf den Button „Live“ tippst, wird das Mikrofon aktiviert. Um es wieder zu deaktivieren, tippe auf „Stopp“ oder schließe Gemini.</translation>
 <translation id="833647236762414178">Hier kannst du Passwörter und Passkeys erstellen, speichern und verwalten, damit du dich einfacher auf Websites und in Apps anmelden kannst. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Du kannst deine Inhalte sichern und auf jedem Gerät verwenden.</translation>
-<translation id="8345328955902001853">{count,plural, =1{Erledige noch 1 Aufgabe, um das nächste Level zu erreichen}other{Erledige noch {count} weitere Aufgaben, um aufzusteigen}}</translation>
 <translation id="8348530355586151720">Tippe auf das Dreipunkt-Menü</translation>
 <translation id="8349305172487531364">Lesezeichenleiste</translation>
 <translation id="8360164927489392419">Aufzeichnungen deiner Interaktionen mit Gemini Live und Inhalte, die du für die Funktion freigibst, werden gemäß den <ph name="BEGIN_LINK" />Datenschutzhinweisen für Gemini-Apps<ph name="END_LINK" /> gespeichert und verarbeitet. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
@@ -2586,7 +2585,6 @@ Du kannst „Level Up“ jederzeit wieder aktivieren.</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, angepinnte Website</translation>
 <translation id="8990960056509724223">Die Datei konnte nicht gespeichert werden, da sie nicht den Richtlinien deiner Organisation entspricht</translation>
 <translation id="8998289560386111590">Auf deinem Gerät nicht verfügbar</translation>
-<translation id="9003263770394939629">Von Gemini vorgeschlagen. Du kannst die Funktion „Erweitertes Autofill“ in den Einstellungen verwalten.</translation>
 <translation id="9003677638446136377">Erneut prüfen</translation>
 <translation id="9006453925669499173">„Menü“ → „Neuer Inkognitotab“</translation>
 <translation id="9008201768610948239">Ignorieren</translation>
@@ -2595,7 +2593,6 @@ Du kannst „Level Up“ jederzeit wieder aktivieren.</translation>
 <translation id="9029650858822697271">Du wurdest abgemeldet</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Löschen der Browserdaten bestätigen</translation>
-<translation id="9035699147763101514">Unterstützt durch Personal Intelligence mit Gemini. Du kannst deine Auswahl in den Einstellungen verwalten.</translation>
 <translation id="9038526468059454274">Zusammenfassen mit</translation>
 <translation id="9039373489628511875">Bandbreite</translation>
 <translation id="9042893549633094279">Datenschutz und Sicherheit</translation>

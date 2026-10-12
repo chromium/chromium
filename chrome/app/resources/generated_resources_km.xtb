@@ -728,6 +728,7 @@
 <translation id="1552752544932680961">គ្រប់គ្រងកម្មវិធីបន្ថែម</translation>
 <translation id="1553538517812678578">គ្មានដែនកំណត់</translation>
 <translation id="1553947773881524342"><ph name="LINK_BEGIN" />ស្វែងយល់​បន្ថែម<ph name="LINK_END" />អំពី Microsoft 365 នៅលើ Chromebook របស់អ្នក។</translation>
+<translation id="1554343363646356023">&amp;ផ្ទាំងដាច់ដោយឡែកថ្មី</translation>
 <translation id="1554640914375980459">បាញ់​ពន្លឺអេក្រង់ នៅពេលអ្នក​ទទួលបាន​ការជូនដំណឹង។ ប្រើ​ការជូនដំណឹង​បាញ់ពន្លឺ​ដោយប្រុងប្រយ័ត្ន ប្រសិនបើអ្នក​ងាយមានរំញោចចំពោះពន្លឺ។</translation>
 <translation id="1555130319947370107">ខៀវ</translation>
 <translation id="1556127816860282890">សកម្មភាព​ផ្ទៃខាងក្រោយ និង​បែបផែន​ដែលមើលឃើញ​មួយចំនួន ដូចជា​ការរំកិល​រលូន អាចត្រូវបាន​ដាក់កំហិត</translation>
@@ -3082,6 +3083,7 @@
 <translation id="3320957378743864387">មិនអនុញ្ញាតឱ្យផ្ដល់ជំនួយក្នុងការសរសេរទេ</translation>
 <translation id="3321460131042519426">បើកដំណើរការតម្រឹមពាក្យ</translation>
 <translation id="3321494112580110651">មិនឃើញ​ម៉ាស៊ីនបោះពុម្ព​របស់អ្នក​ឬ?</translation>
+<translation id="3321512411079201586">&amp;ដាច់ដោយឡែក</translation>
 <translation id="3321776060736518525">ពី <ph name="APP_URL" /></translation>
 <translation id="3323288183237359315">ដំឡើង​សម្រាប់ Edge</translation>
 <translation id="3323521181261657960">ម៉ោងបន្ថែម! អ្នក​ទទួល​បាន​រយៈពេលប្រើប្រាស់ឧបករណ៍​បន្ថែម</translation>
@@ -3168,6 +3170,7 @@
 <translation id="3390740059150071453">មើលទៅ​ខាងឆ្វេង</translation>
 <translation id="3393554941209044235">ការវិភាគ​ឯកសាររបស់ Chrome</translation>
 <translation id="3394072120086516913">កុំព្យូទ័រ​ត្រូវបានភ្ជាប់តាមបណ្ដាញប្រើខ្សែ ហើយ​ឧបករណ៍​បញ្ជូន​ត្រូវបានភ្ជាប់តាម Wi-Fi</translation>
+<translation id="3394561494170561143">&amp;ផ្ទាំង​ដាច់ដោយ​ឡែកថ្មី</translation>
 <translation id="3394850431319394743">បានអនុញ្ញាត​ឱ្យប្រើព័ត៌មានសម្គាល់ ដើម្បីចាក់​ខ្លឹមសារដែលមាន​ការការពារ</translation>
 <translation id="339722927132407568">គាំង</translation>
 <translation id="3399432415385675819">ការជូនដំណឹងនឹងត្រូវបានបិទ</translation>
@@ -5629,6 +5632,7 @@
 <translation id="5246282308050205996"><ph name="APP_NAME" /> បានគាំង។ ចុចប៉េងប៉ោងនេះដើម្បីចាប់ផ្តើមកម្មវិធីនេះឡើងវិញ។</translation>
 <translation id="5247051749037287028">ឈ្មោះ​បង្ហាញ​ (ជាជម្រើស)</translation>
 <translation id="5247243947166567755">ជ្រើសរើស <ph name="BOOKMARK_TITLE" /></translation>
+<translation id="524751727772074981">សួរអ្វីក៏បានពីកន្លែងដែលអ្នកនៅដោយប្រើ Gemini ក្នុង Chrome</translation>
 <translation id="5248934139541843042">មើលអ្នក​រៀបចំ</translation>
 <translation id="5249624017678798539">កម្មវិធីរុករកបានគាំង មុនពេលការទាញយកបានបញ្ចប់។</translation>
 <translation id="5249818097095743806">ប្រើ​សោសុវត្ថិភាព​របស់អ្នក</translation>
@@ -6338,7 +6342,6 @@
 <translation id="5828181959764767444">ថ្ងៃលិច</translation>
 <translation id="5828545842856466741">បញ្ចូល​កម្រង​ព័ត៌មាន...</translation>
 <translation id="5828633471261496623">កំពុងបោះពុម្ព...</translation>
-<translation id="5829137022934788067">ប្រាប់ខ្ញុំអំពីការជ្រើសរើសនេះ</translation>
 <translation id="5829214552954466783">ចែករំលែក<ph name="CREDENTIAL_TYPE" />សម្រាប់​ឈ្មោះអ្នកប្រើប្រាស់៖ <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">វិធីបង់ប្រាក់​របស់អ្នក​នៅក្នុង Google Wallet</translation>
 <translation id="5830512293931520102">ពាក្យសម្ងាត់របស់អ្នកត្រូវបានអ៊ីនគ្រីប ហើយគ្មាននរណាម្នាក់មើលឃើញពាក្យសម្ងាត់នោះទេ</translation>
@@ -7044,6 +7047,7 @@
 <translation id="6370021412472292592">មិនអាចដំណើរការមេនីហ្វេសទេ។</translation>
 <translation id="6370551072524410110">ស្វែងរក + shift + Backspace</translation>
 <translation id="637135143619858508">បន្ទាត់ឃ្លាតគ្នា</translation>
+<translation id="6372413553057593904">ផ្ទាំង​អសកម្ម​នៅក្នុង "<ph name="WINDOW_TITLE" />"</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">ព្យាយាមម្តងទៀត</translation>
 <translation id="637642201764944055">បន្ទាប់ពី​ខែធ្នូ ឆ្នាំ 2022 កំណែ​ចាស់ៗ​នៃកម្មវិធី Chrome នឹង​មិន​បើក​បាន​នៅលើ​ឧបករណ៍ Linux ទេ។ សូមទាក់ទង​ទៅ​អ្នក​គ្រប់គ្រង​របស់អ្នក ដើម្បី​ដំឡើង​ទៅ​កំណែ​ថ្មី ឬ​លុប​កម្មវិធី​នេះ​ចេញ។</translation>
@@ -9178,6 +9182,7 @@
 <translation id="7991296728590311172">ការកំណត់ការប្រើប៊ូតុងចុច</translation>
 <translation id="7992080146463834191">សង្ខេប​ខ្លឹមសារ សម្រួល​ភាសា​ស្មុគស្មាញ ឬ​សួរសំណួរ។</translation>
 <translation id="7992203134935383159">ការ​សំយោគ​ការ​និយាយ</translation>
+<translation id="7992462686695281167">&amp;ឯកជន</translation>
 <translation id="7997826902155442747">ដំណើរការអាទិភាព</translation>
 <translation id="7998701048266085837">URL</translation>
 <translation id="7999229196265990314">បានបង្កើតឯកសារខាងក្រោម៖

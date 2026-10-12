@@ -5614,6 +5614,7 @@
 <translation id="5246282308050205996"><ph name="APP_NAME" /> क्रयास भएको छ। एप पुन: चालू गर्नको लागि यस बेलुनलाई क्लिक गर्नुहोस्।</translation>
 <translation id="5247051749037287028">नाम प्रदर्शन गर्नुहोस् (ऐच्छिक)</translation>
 <translation id="5247243947166567755"><ph name="BOOKMARK_TITLE" /> चयन गर्नुहोस्</translation>
+<translation id="524751727772074981">Chrome मा उपलब्ध Gemini लाई आफू भएकै ठाउँबाट कुनै पनि कुरा सोध्नुहोस्</translation>
 <translation id="5248934139541843042">आयोजक हेर्नुहोस्</translation>
 <translation id="5249624017678798539">डाउनलोड पूरा हुनुभन्दा अगाडि नै ब्राउजर क्र्यास भयो।</translation>
 <translation id="5249818097095743806">आफ्नो सुरक्षा साँचो प्रयोग गर्नुहोस्</translation>
@@ -6323,7 +6324,6 @@
 <translation id="5828181959764767444">सूर्यास्त</translation>
 <translation id="5828545842856466741">प्रोफाइल हाल्नुहोस्...</translation>
 <translation id="5828633471261496623">प्रिन्ट गर्दै...</translation>
-<translation id="5829137022934788067">मलाई यो चयनका बारेमा बताउनुहोस्</translation>
 <translation id="5829214552954466783">यो युजरनेमको <ph name="CREDENTIAL_TYPE" /> सेयर गर्नुहोस्: <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">Google Wallet मा भएका तपाईंका भुक्तानी विधिहरू</translation>
 <translation id="5830512293931520102">तपाईंको पासवर्ड इन्क्रिप्ट गरिएको हुन्छ र कसैले कहिल्यै पनि उक्त पासवर्ड देख्दैनन्</translation>

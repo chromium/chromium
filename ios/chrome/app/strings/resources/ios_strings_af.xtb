@@ -1264,6 +1264,7 @@
 <translation id="498624032394115435">Enigiemand met die skakel kan alle oortjies wysig.</translation>
 <translation id="4986428648020277392">Instruksieteks: Watter een moet ek koop? 2 van 3</translation>
 <translation id="498768198683310172">Begin om Gemini te gebruik</translation>
+<translation id="4989163558385430922">Sien alles</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, bestuur deur jou organisasie.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Kleur van oortjiegroep is <ph name="COLOR" /></translation>
@@ -2027,7 +2028,6 @@ Jy kan enige tyd herbegin.</translation>
 <translation id="7346922058131593019">Waaraan wil jy werk, <ph name="USER_FIRST_NAME" />?</translation>
 <translation id="7347998088283246662">Voer wagwoorde, geskiedenis, boekmerke en meer in</translation>
 <translation id="7352651011704765696">Iets het verkeerd geloop</translation>
-<translation id="7357999308187750900">Sien alles</translation>
 <translation id="736564850024123010">Verander die posisie van jou adresbalk vir ’n gepasmaakte ervaring.</translation>
 <translation id="7366909168761621528">Blaaierdata</translation>
 <translation id="7367530036083223701">Kry met die Wagwoordbestuurderlegstuk veilige toegang tot jou wagwoorde vanaf die tuisskerm.</translation>
@@ -2361,7 +2361,6 @@ Jy kan enige tyd herbegin.</translation>
 <translation id="8333459276976141586">Live sal jou mikrofoon gebruik. Die mikrofoon skakel aan as jy op die Live-knoppie tik. Tik op die stopknoppie of maak Gemini toe om die mikrofoon af te skakel.</translation>
 <translation id="833647236762414178">Skep, stoor en bestuur jou wagwoorde en toegangsleutels om maklik by werwe en apps aan te meld. <ph name="BEGIN_LINK" />Meer inligting<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Rugsteun jou goed en gebruik dit op enige toestel.</translation>
-<translation id="8345328955902001853">{count,plural, =1{Voltooi nog 1 taak om na die volgende vlak te vorder}other{Voltooi nog {count} take om na die volgende vlak te vorder}}</translation>
 <translation id="8348530355586151720">Tik op die driekol-kieslys</translation>
 <translation id="8349305172487531364">Boekmerkebalk</translation>
 <translation id="8360164927489392419">Opnames van jou interaksies met Live en inhoud wat jy daarmee deel, word gestoor en verwerk volgens <ph name="BEGIN_LINK" />Gemini-apps se privaatheidkennisgewing<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Meer inligting<ph name="END_LINK" /></translation>
@@ -2586,7 +2585,6 @@ Jy kan enige tyd herbegin.</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, vasgespelde werf</translation>
 <translation id="8990960056509724223">Lêer kon weens jou organisasie se beleide nie gestoor word nie</translation>
 <translation id="8998289560386111590">Nie op jou toestel beskikbaar nie</translation>
-<translation id="9003263770394939629">Voorgestel deur Gemini. Bestuur verbeterde outovul in instellings.</translation>
 <translation id="9003677638446136377">Kyk weer</translation>
 <translation id="9006453925669499173">Kieslys → Nuwe Incognito-oortjie</translation>
 <translation id="9008201768610948239">Ignoreer</translation>
@@ -2595,7 +2593,6 @@ Jy kan enige tyd herbegin.</translation>
 <translation id="9029650858822697271">Jy is afgemeld</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Bevestig Vee blaaierdata uit</translation>
-<translation id="9035699147763101514">Aangedryf deur Persoonlike Intelligensie met Gemini. Bestuur jou keuses in instellings.</translation>
 <translation id="9038526468059454274">Som dit op met</translation>
 <translation id="9039373489628511875">Bandwydte</translation>
 <translation id="9042893549633094279">Privaatheid en sekuriteit</translation>

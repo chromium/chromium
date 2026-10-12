@@ -5615,6 +5615,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5246282308050205996"><ph name="APP_NAME" /> është ndërprerë aksidentalisht. Kliko te kjo balonë për ta rinisur aplikacionin.</translation>
 <translation id="5247051749037287028">Emri i shfaqur (opsional)</translation>
 <translation id="5247243947166567755">Zgjidh "<ph name="BOOKMARK_TITLE" />"</translation>
+<translation id="524751727772074981">Pyet për çdo gjë, pikërisht aty ku je, me Gemini në Chrome</translation>
 <translation id="5248934139541843042">Shiko organizuesin</translation>
 <translation id="5249624017678798539">Shfletuesi u ndërpre aksidentalisht përpara përfundimit të shkarkimit.</translation>
 <translation id="5249818097095743806">Përdor çelësin e sigurisë</translation>
@@ -6323,7 +6324,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5828181959764767444">Perëndimi i diellit</translation>
 <translation id="5828545842856466741">Shto profil...</translation>
 <translation id="5828633471261496623">Po printon...</translation>
-<translation id="5829137022934788067">Më trego për këtë zgjedhje</translation>
 <translation id="5829214552954466783">Ndaj <ph name="CREDENTIAL_TYPE" /> për emrin e përdoruesit: <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">Mënyrat e tua të pagesës në "Portofolin e Google"</translation>
 <translation id="5830512293931520102">Fjalëkalimi yt është i enkriptuar dhe nuk është parë asnjëherë nga askush</translation>

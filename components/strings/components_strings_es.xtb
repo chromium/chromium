@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Seleccionar permiso de <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">¿Guardar IBAN?</translation>
 <translation id="1113869188872983271">&amp;Deshacer reorganización</translation>
-<translation id="1117709830616495622">Con Inteligencia personalizada de Gemini.</translation>
 <translation id="111897705806685148">Usar la llave de acceso de otro dispositivo</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador e Intro para gestionar qué información de Chrome guardas en tu cuenta de Google</translation>
 <translation id="1121990216147052230">Hazme una lista de tareas</translation>
@@ -532,7 +531,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1890171020361705182">Juego del dinosaurio. Un dinosaurio pixelado esquiva cactus y pterodáctilos mientras corre por un paisaje desértico. Cuando escuches una señal sonora, toca para saltar los obstáculos.</translation>
 <translation id="1898423065542865115">Filtrado</translation>
 <translation id="1898678876221454577">Inicia sesión para guardar tu documento escaneado</translation>
-<translation id="1898804291554630487">Preguntar sobre esta página</translation>
 <translation id="1901443836186977402">{1,plural, =1{Este servidor no ha podido demostrar que es <ph name="DOMAIN" />; su certificado de seguridad ha caducado en las últimas 24 horas. Este problema puede deberse a una configuración incorrecta o a que un atacante ha interceptado la conexión. La fecha que consta en el reloj de tu ordenador actualmente es el <ph name="CURRENT_DATE" />. ¿Es correcto? Si no lo es, corrige el reloj del sistema y, a continuación, actualiza esta página.}other{Este servidor no ha podido demostrar que es <ph name="DOMAIN" />; su certificado de seguridad caducó hace # días. Este problema puede deberse a una configuración incorrecta o a que un atacante ha interceptado la conexión. La fecha que consta en el reloj de tu ordenador actualmente es el <ph name="CURRENT_DATE" />. ¿Es correcto? Si no lo es, corrige el reloj del sistema y, a continuación, actualiza esta página.}}</translation>
 <translation id="190166348986967700">Tu administrador empezará a subir tus archivos a <ph name="CLOUD_PROVIDER" /> el <ph name="DATE_TIME" />. Mantén el dispositivo conectado hasta que se complete la subida. Durante el proceso, solo podrás leer los archivos locales.</translation>
 <translation id="1902576642799138955">Período de validez</translation>
@@ -841,8 +839,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2384307209577226199">Empresa (con valores predeterminados)</translation>
 <translation id="2385809941344967209">Actualiza Chrome desde la configuración</translation>
 <translation id="2386255080630008482">Se ha revocado el certificado de servidor.</translation>
-<translation id="2387424091060104123">Sugerido por Gemini · <ph name="SRC_LINK" />Ver fuentes<ph name="END_SRC_LINK" />
-Puedes eliminar esta sugerencia de Chrome. Tu fuente original no se eliminará. <ph name="MANAGE_LINK" />Gestionar Autocompletar mejorado<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">Desarrollar</translation>
 <translation id="2392959068659972793">Mostrar políticas sin valores establecidos</translation>
 <translation id="239429038616798445">Este método de envío no está disponible. Selecciona otro.</translation>
@@ -1245,7 +1241,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="3109788962812161063">Gestión de perfiles</translation>
 <translation id="3112892588078695695">Número de teléfono: <ph name="PHONE" />.</translation>
 <translation id="3113284927548439113">Tercer turno</translation>
-<translation id="3113930177999394798">Escribe @historial para buscar en tu historial de navegación con tecnología de IA</translation>
 <translation id="3114040155724590991">Actualizando el sistema Android
     Tu aplicación puede tardar más de lo habitual en iniciarse.</translation>
 <translation id="3114197119223448048">actividad nueva</translation>
@@ -1426,7 +1421,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="3413466783792948876">Si estás usando una red pública, lo más seguro es que visites este sitio más tarde. Las redes de confianza, como la red Wi-Fi de tu casa o del trabajo, conllevan menos riesgos.</translation>
 <translation id="3414952576877147120">Tamaño:</translation>
 <translation id="341513675006332771">Botón Jugar a El dinosaurio de Chrome: actívalo para jugar al juego del dinosaurio de Chrome</translation>
-<translation id="3415471717466570460">Tus búsquedas, las mejores coincidencias y el contenido de las páginas se envían a Google. Puede que toda esta información la vean revisores humanos para mejorar esta función. Se trata de una función experimental y no siempre acierta.</translation>
 <translation id="3417390269491141648">Compara mis opciones de seguro médico y desglosa las principales diferencias entre ellas</translation>
 <translation id="3421387094817716717">Clave pública de curva elíptica</translation>
 <translation id="3422248202833853650">Prueba a salir de otros programas para liberar memoria.</translation>
@@ -1904,7 +1898,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4185037616931963178">Actualiza el número Redress de forma segura</translation>
 <translation id="4186035307311647330">Dejar de seguir precio</translation>
-<translation id="4190446002599583608">Búsqueda en el historial con la tecnología de IA</translation>
 <translation id="4191334393248735295">Longitud</translation>
 <translation id="4195459680867822611">Botón Ver consejos de Chrome: actívalo para obtener información sobre las funciones de Chrome</translation>
 <translation id="4195643157523330669">Abrir en una pestaña nueva</translation>
@@ -1951,7 +1944,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="424063167283213501">Guardar número de viajero conocido</translation>
 <translation id="4241830393007970744">Es posible que los atacantes del sitio que has intentado visitar te engañen para que instales software o proporciones información como tus contraseñas, tu teléfono o tus números de tarjeta de crédito.</translation>
 <translation id="4242380780309416996">Sobre (grueso)</translation>
-<translation id="4242981939686657948">Para buscar en tu historial de navegación de forma más eficiente, activa</translation>
 <translation id="4244926541863471678">Película</translation>
 <translation id="42481816218163154">Crea una rutina matutina de 15 minutos que me ayude a empezar el día con buen pie. Asegúrate de que incluya un ejercicio de mindfulness.</translation>
 <translation id="4250343410682686342">La pantalla de error de pago aplazado está abierta a altura completa.</translation>
@@ -3895,7 +3887,6 @@ Más información:
 <translation id="7514365320538308">Descargar</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">Realidad virtual permitida esta vez</translation>
-<translation id="7517198908921983825">Sugerido por Gemini · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Sobre C10</translation>
 <translation id="7518003948725431193">No se ha encontrado ninguna página web para la dirección <ph name="URL" />.</translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -4392,7 +4383,6 @@ Más información:
 <translation id="8350416046273606058">El acceso directo no puede contener espacios: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="8351131234907093545">Crear nota</translation>
 <translation id="8352849934814541340">El administrador de este dispositivo ha instalado aplicaciones que aportan funciones adicionales. Las aplicaciones tienen acceso a algunos de tus datos.</translation>
-<translation id="8353273112634584260">Con Inteligencia personalizada de Gemini. Tus solicitudes, títulos de páginas y URLs se pueden revisar para optimizar Autocompletar mejorado.</translation>
 <translation id="8355270400102541638">Contexto del fallo local:</translation>
 <translation id="8362914115861174987">Traducir al</translation>
 <translation id="8363502534493474904">Desactivar el modo Avión</translation>
@@ -4739,7 +4729,6 @@ Más información:
 <translation id="9001074447101275817">El proxy <ph name="DOMAIN" /> requiere un nombre de usuario y una contraseña.</translation>
 <translation id="9001963517402879850">¡Salta!</translation>
 <translation id="9002677862950442746">Código de verificación: <ph name="OTP" /></translation>
-<translation id="9003263770394939629">Sugerido por Gemini. Gestiona la función Autocompletar mejorada en los ajustes.</translation>
 <translation id="9003639428623471314">Sobre Kahu</translation>
 <translation id="9004367719664099443">Sesión de realidad virtual en curso</translation>
 <translation id="9005998258318286617">Se ha producido un error al cargar el documento PDF.</translation>
@@ -4758,7 +4747,6 @@ Más información:
 <translation id="9027531288681624875">Para salir de la pantalla completa, mantén pulsado |<ph name="ACCELERATOR" />|</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Error de seguridad</translation>
-<translation id="9035699147763101514">Con Inteligencia personalizada de Gemini. Gestiona tus opciones en los ajustes.</translation>
 <translation id="9035824888276246493">Guardar códigos de seguridad</translation>
 <translation id="9036306139374661733">¿Permitir micrófono?</translation>
 <translation id="9036484080057916082">Lista de marcas de tiempo de certificados firmados</translation>
@@ -4913,7 +4901,6 @@ Más información:
 <translation id="961930410699694996">Ubicación permitida esta vez</translation>
 <translation id="962484866189421427">Este contenido podría intentar instalar aplicaciones engañosas que se hagan pasar por otra persona o recojan datos que podrían usarse para realizar un seguimiento de tu actividad. <ph name="BEGIN_LINK" />Mostrar de todos modos<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">De acuerdo con una ley de tu zona, Chromium te pide que elijas tu buscador predeterminado. Los buscadores que aparecen en la lista son populares en tu zona y se muestran en orden aleatorio.</translation>
-<translation id="963837307749850257">Todos los usuarios</translation>
 <translation id="963988220224168636">Añadir número Redress de forma segura a Google Wallet</translation>
 <translation id="964050462028070434">Gestionar contraseñas y llaves de acceso…</translation>
 <translation id="964681140808832181">Sí, quiero cancelarlo</translation>

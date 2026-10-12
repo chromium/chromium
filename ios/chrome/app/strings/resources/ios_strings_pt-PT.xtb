@@ -1264,6 +1264,7 @@
 <translation id="498624032394115435">Qualquer pessoa com o link pode editar todos os separadores.</translation>
 <translation id="4986428648020277392">Comando: qual devo comprar? 2 de 3</translation>
 <translation id="498768198683310172">Começar a usar o Gemini</translation>
+<translation id="4989163558385430922">Ver tudo</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, gerida pela sua organização.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Cor do grupo de separadores: <ph name="COLOR" /></translation>
@@ -2028,7 +2029,6 @@ Pode reiniciar em qualquer altura.</translation>
 <translation id="7346922058131593019">Em que quer trabalhar, <ph name="USER_FIRST_NAME" />?</translation>
 <translation id="7347998088283246662">Importe palavras-passe, histórico, marcadores e muito mais</translation>
 <translation id="7352651011704765696">Algo correu mal</translation>
-<translation id="7357999308187750900">Ver tudo</translation>
 <translation id="736564850024123010">Mude a posição da barra de endereço para ter uma experiência personalizada.</translation>
 <translation id="7366909168761621528">Dados de navegação</translation>
 <translation id="7367530036083223701">Aceda às suas palavras-passe em segurança a partir do ecrã principal com o widget do Gestor de Palavras-passe.</translation>
@@ -2362,7 +2362,6 @@ Pode reiniciar em qualquer altura.</translation>
 <translation id="8333459276976141586">O Live vai usar o microfone. Para ativar o microfone, toque no botão do Live. Para desligar o microfone, toque no botão Parar ou feche o Gemini.</translation>
 <translation id="833647236762414178">Crie, guarde e faça a gestão das suas palavras-passe e chaves de acesso para iniciar sessão facilmente em sites e apps. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Faça uma cópia de segurança dos seus itens e use-os em qualquer dispositivo.</translation>
-<translation id="8345328955902001853">{count,plural, =1{Conclua mais 1 tarefa para subir de nível}other{Conclua mais {count} tarefas para subir de nível}}</translation>
 <translation id="8348530355586151720">Toque no menu de três pontos</translation>
 <translation id="8349305172487531364">Barra de marcadores</translation>
 <translation id="8360164927489392419">As gravações das suas interações com o Live e os conteúdos que partilha com esta funcionalidade são guardados e tratados de acordo com o <ph name="BEGIN_LINK" />Aviso de Privacidade das Apps Gemini<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
@@ -2588,7 +2587,6 @@ Pode reiniciar em qualquer altura.</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, site fixado</translation>
 <translation id="8990960056509724223">Não foi possível guardar o ficheiro devido às políticas da sua organização</translation>
 <translation id="8998289560386111590">Não disponível no seu dispositivo</translation>
-<translation id="9003263770394939629">Sugerido pelo Gemini. Faça a gestão do preenchimento automático melhorado nas definições.</translation>
 <translation id="9003677638446136377">Rever novamente</translation>
 <translation id="9006453925669499173">Menu → Novo separador de navegação anónima</translation>
 <translation id="9008201768610948239">Ignorar</translation>
@@ -2597,7 +2595,6 @@ Pode reiniciar em qualquer altura.</translation>
 <translation id="9029650858822697271">A sua sessão foi terminada</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Confirmar eliminação de dados de navegação</translation>
-<translation id="9035699147763101514">Com tecnologia da Inteligência Personalizada com o Gemini. Faça a gestão das suas escolhas nas definições.</translation>
 <translation id="9038526468059454274">Resuma com o</translation>
 <translation id="9039373489628511875">Largura de banda</translation>
 <translation id="9042893549633094279">Privacidade e segurança</translation>

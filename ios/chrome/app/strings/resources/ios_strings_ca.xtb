@@ -1264,6 +1264,7 @@
 <translation id="498624032394115435">Tothom que tingui l'enllaç pot editar totes les pestanyes.</translation>
 <translation id="4986428648020277392">Indicació: Quins hauria de comprar? 2 de 3</translation>
 <translation id="498768198683310172">Comença a utilitzar Gemini</translation>
+<translation id="4989163558385430922">Mostra-ho tot</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, gestionat per la teva organització.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Grup de pestanyes de color <ph name="COLOR" /></translation>
@@ -2027,7 +2028,6 @@ Pots reiniciar Level Up en qualsevol moment.</translation>
 <translation id="7346922058131593019">En què vols treballar, <ph name="USER_FIRST_NAME" />?</translation>
 <translation id="7347998088283246662">Importa les contrasenyes, l'historial, les adreces d'interès i més</translation>
 <translation id="7352651011704765696">S'ha produït un error</translation>
-<translation id="7357999308187750900">Mostra-ho tot</translation>
 <translation id="736564850024123010">Canvia la posició de la barra d'adreces per gaudir d'una experiència personalitzada.</translation>
 <translation id="7366909168761621528">Dades de navegació</translation>
 <translation id="7367530036083223701">Accedeix de manera segura a les teves contrasenyes des de la pantalla d'inici amb el widget del gestor de contrasenyes.</translation>
@@ -2361,7 +2361,6 @@ Pots reiniciar Level Up en qualsevol moment.</translation>
 <translation id="8333459276976141586">Live farà servir el micròfon. En tocar el botó Live, s'activarà el micròfon. Per desactivar-lo, toca el botó Atura o tanca Gemini.</translation>
 <translation id="833647236762414178">Crea, desa i gestiona les teves contrasenyes i claus d'accés per iniciar la sessió fàcilment en llocs web i aplicacions. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Fes una còpia de seguretat de les teves dades i utilitza-les en qualsevol dispositiu.</translation>
-<translation id="8345328955902001853">{count,plural, =1{Completa 1 tasca més per pujar de nivell}other{Completa {count} tasques més per pujar de nivell}}</translation>
 <translation id="8348530355586151720">Toca el menú de tres punts</translation>
 <translation id="8349305172487531364">Barra d'adreces d'interès</translation>
 <translation id="8360164927489392419">Les gravacions de les teves interaccions amb Live i el contingut que hi comparteixes es desen i es tracten d'acord amb l’<ph name="BEGIN_LINK" />avís de privadesa de les aplicacions de Gemini<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
@@ -2586,7 +2585,6 @@ Pots reiniciar Level Up en qualsevol moment.</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, lloc web fixat</translation>
 <translation id="8990960056509724223">El fitxer no s'ha pogut desar a causa de les polítiques de l'organització</translation>
 <translation id="8998289560386111590">No disponible al teu dispositiu</translation>
-<translation id="9003263770394939629">Suggerit per Gemini. Gestiona l'emplenament automàtic millorat a la configuració.</translation>
 <translation id="9003677638446136377">Torna-ho a provar</translation>
 <translation id="9006453925669499173">Menú → Nova pestanya d'incògnit</translation>
 <translation id="9008201768610948239">Ignora</translation>
@@ -2595,7 +2593,6 @@ Pots reiniciar Level Up en qualsevol moment.</translation>
 <translation id="9029650858822697271">S'ha tancat la teva sessió</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Confirma si vols suprimir les dades de navegació</translation>
-<translation id="9035699147763101514">Amb la tecnologia d'Intel·ligència personal de Gemini. Gestiona les teves opcions a la configuració.</translation>
 <translation id="9038526468059454274">Resumeix-ho amb</translation>
 <translation id="9039373489628511875">Amplada de banda</translation>
 <translation id="9042893549633094279">Privadesa i seguretat</translation>

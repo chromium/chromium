@@ -15,7 +15,6 @@
 <translation id="1321004960118052490">闲置标签页不会长期堆积</translation>
 <translation id="1329584516321524826">上次更新时间：刚才</translation>
 <translation id="1340839264183302272">退出分组</translation>
-<translation id="1386966479075994683">展开标签页</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{展开包含 <ph name="TABS_COUNT_ONE" /> 个标签页的“<ph name="TITLE_OF_GROUP" />”共享标签页分组，颜色为<ph name="COLOR_NAME" />，标签为“<ph name="CARD_LABEL" />”。}other{展开包含 <ph name="TABS_COUNT_MANY" /> 个标签页的“<ph name="TITLE_OF_GROUP" />”共享标签页分组，颜色为<ph name="COLOR_NAME" />，标签为“<ph name="CARD_LABEL" />”。}}</translation>
 <translation id="1486715732399361704">您可在此处找到您的所有标签页分组</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{创建时间：<ph name="NUM_MINS_ONE" /> 分钟前}other{创建时间：<ph name="NUM_MINS_MANY" /> 分钟前}}</translation>
@@ -66,6 +65,7 @@
 <translation id="2662028055331606429">当前评分是 <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">访问网站</translation>
 <translation id="2671423594960767771">共享分组</translation>
+<translation id="2729310339366257582">收起标签页</translation>
 <translation id="2734252994837336591">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> 周前更新}other{<ph name="NUM_WEEKS_MANY" /> 周前更新}}</translation>
 <translation id="2753877351161418426">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> 小时前更新}other{<ph name="NUM_HOURS_MANY" /> 小时前更新}}</translation>
 <translation id="2755485474385016903">分组中的所有人都会看到所做的更改</translation>
@@ -136,7 +136,6 @@
 <translation id="5073204694187207510">隐藏“全屏网格状视图”按钮</translation>
 <translation id="5076161749301278626">查看商店评价？</translation>
 <translation id="5161254044473106830">必须提供标题</translation>
-<translation id="5204584298075822291">收起标签页</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome 会在 <ph name="AUTO_DELETE_DELAY_ONE" /> 个月后自动关闭闲置的标签页和标签页分组。您可以在设置中进行更改。}other{Chrome 会在 <ph name="AUTO_DELETE_DELAY_MANY" /> 个月后自动关闭闲置的标签页和标签页分组。您可以在设置中进行更改。}}</translation>
 <translation id="5254233580564156835">内存用量：<ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">您的最后一个标签页</translation>
@@ -191,6 +190,7 @@
 <translation id="709473454666962555">选择标签页分组</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{分享标签页}other{分享标签页}}</translation>
 <translation id="7129458170538955174">此商店的相关信息已半屏打开</translation>
+<translation id="7194343495483122559">展开标签页</translation>
 <translation id="7204204600596740190">多选模式</translation>
 <translation id="7211038039686180558">您的标签页分组会自动保存，并在您所有已登录账号的设备上更新</translation>
 <translation id="7326879924029668159">查看退货政策及其他信息</translation>

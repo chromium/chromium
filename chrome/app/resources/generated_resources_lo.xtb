@@ -5631,6 +5631,7 @@
 <translation id="5246282308050205996"><ph name="APP_NAME" /> ໄດ້ເກີດການຂັດຂ້ອງ. ຄລິກປູມເປົ້ານີ້ເພື່ອ​ເລີ່​ມ​ເປີດແອັບໃໝ່.</translation>
 <translation id="5247051749037287028">ຊື່ສະແດງ (ເລືອກໄດ້)</translation>
 <translation id="5247243947166567755">ເລືອກ <ph name="BOOKMARK_TITLE" /></translation>
+<translation id="524751727772074981">ຖາມຫຍັງກໍໄດ້, ຈາກບ່ອນທີ່ທ່ານຢູ່, ດ້ວຍ Gemini ໃນ Chrome</translation>
 <translation id="5248934139541843042">ເບິ່ງຜູ້ຈັດງານ</translation>
 <translation id="5249624017678798539">ບຣາວເຊີ​ເກີດ​ຂັດຂ້ອງ ກ່ອນ​ທີ່​ການ​ດາວ​ໂຫລດ​​ຈະ​ສໍາ​ເລັດ.</translation>
 <translation id="5249818097095743806">ໃຊ້ກະແຈຄວາມປອດໄພຂອງທ່ານ</translation>
@@ -6339,7 +6340,6 @@
 <translation id="5828181959764767444">ຕາເວັນຕົກ</translation>
 <translation id="5828545842856466741">ເພີ່ມໂປຣໄຟລ໌່...</translation>
 <translation id="5828633471261496623">ກໍາລັງພິມ...</translation>
-<translation id="5829137022934788067">ບອກຂ້ອຍກ່ຽວກັບການເລືອກນີ້</translation>
 <translation id="5829214552954466783">ແບ່ງປັນ <ph name="CREDENTIAL_TYPE" /> ສຳລັບຊື່ຜູ້ໃຊ້: <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">ວິທີການຈ່າຍເງິນຂອງທ່ານໃນ Google Wallet</translation>
 <translation id="5830512293931520102">ໄດ້ມີການເຂົ້າລະຫັດລະຫັດຜ່ານຂອງທ່ານແລ້ວ ແລະ ຄົນອື່ນຈະບໍ່ມີທາງເຫັນມັນໄດ້</translation>

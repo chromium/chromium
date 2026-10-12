@@ -5627,6 +5627,7 @@
 <translation id="5246282308050205996"><ph name="APP_NAME" /> क्रॅश झाला आहे. ॲप्लिकेशन रीस्टार्ट करण्यासाठी या फुग्यावर क्लिक करा.</translation>
 <translation id="5247051749037287028">डिस्प्ले नाव (पर्यायी)</translation>
 <translation id="5247243947166567755"><ph name="BOOKMARK_TITLE" /> निवडा</translation>
+<translation id="524751727772074981">Chrome मधील Gemini वापरून तुम्ही जिथे आहात तिथेच काहीही विचारा</translation>
 <translation id="5248934139541843042">आयोजक पहा</translation>
 <translation id="5249624017678798539">डाउनलोड पूर्ण होण्यापूर्वी ब्राउझर क्रॅश पूर्ण झाला.</translation>
 <translation id="5249818097095743806">तुमची सिक्युरिटी की वापरा</translation>
@@ -6336,7 +6337,6 @@
 <translation id="5828181959764767444">सूर्यास्त</translation>
 <translation id="5828545842856466741">प्रोफाइल जोडा…</translation>
 <translation id="5828633471261496623">प्रिंट करत आहे...</translation>
-<translation id="5829137022934788067">मला या निवडीबद्दल सांग</translation>
 <translation id="5829214552954466783">वापरकर्ता नावासाठी <ph name="CREDENTIAL_TYPE" /> शेअर करा: <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">Google Wallet मधील तुमच्या पेमेंट पद्धती</translation>
 <translation id="5830512293931520102">तुमचा पासवर्ड एन्क्रिप्ट केलेला आहे आणि तो कधीच कोणालाही दिसत नाही</translation>

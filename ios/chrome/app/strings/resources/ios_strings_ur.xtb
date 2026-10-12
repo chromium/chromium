@@ -1264,6 +1264,7 @@
 <translation id="498624032394115435">لنک کا حامل کوئی بھی شخص تمام ٹیبز میں ترمیم کر سکتا ہے۔</translation>
 <translation id="4986428648020277392">پرامپٹ: مجھے کون سا خریدنا چاہیے؟ ‫3 میں سے 2</translation>
 <translation id="498768198683310172">‏Gemini استعمال کرنا شروع کريں</translation>
+<translation id="4989163558385430922">سبھی دیکھیں</translation>
 <translation id="499122600724363620"><ph name="NAME" />، <ph name="EMAIL" />، آپ کی تنظیم کے زیر انتظام ہے۔</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />، <ph name="EMAIL" />۔ <ph name="AI_TIER" />۔</translation>
 <translation id="4992255726304765516">ٹیب گروپ کا رنگ <ph name="COLOR" /></translation>
@@ -2027,7 +2028,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7346922058131593019">آپ کس چیز پر کام کرنا چاہتے ہیں، <ph name="USER_FIRST_NAME" />؟</translation>
 <translation id="7347998088283246662">پاس ورڈز، سرگزشت، بُک مارکس اور بہت کچھ درآمد کریں</translation>
 <translation id="7352651011704765696">کچھ غلط ہو گیا</translation>
-<translation id="7357999308187750900">سبھی دیکھیں</translation>
 <translation id="736564850024123010">حسب ضرورت تجربے کیلئے اپنے ایڈریس بار کی پوزیشن پر سوئچ کریں۔</translation>
 <translation id="7366909168761621528">براؤزنگ ڈیٹا</translation>
 <translation id="7367530036083223701">پاس ورڈ مینیجر ویجیٹ کی مدد سے ہوم اسکرین سے اپنے پاس ورڈز تک محفوظ طریقے سے رسائی حاصل کریں۔</translation>
@@ -2361,7 +2361,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8333459276976141586">‏‫Live آپ کا مائیکروفون استعمال کرے گا۔ ‫Live بٹن کو تھپتھپانے سے مائیک آن ہو جاتا ہے۔ مائیک کو آف کرنے کے لیے، روکیں بٹن پر تھپتھپائیں یا Gemini بند کریں۔</translation>
 <translation id="833647236762414178">سائٹس اور ایپس میں آسانی سے سائن ان کرنے کے لیے اپنے پاس ورڈز اور پاس کیز بنائیں، محفوظ کریں اور ان کا نظم کریں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">اپنے ڈیٹا کا بیک اپ لیں اور اسے کسی بھی آلے پر استعمال کریں۔</translation>
-<translation id="8345328955902001853">{count,plural, =1{لیول میں اضافہ کے لیے 1 مزید ٹاسک مکمل کریں}other{لیول میں اضافہ کے لیے {count} مزید ٹاسکس مکمل کریں}}</translation>
 <translation id="8348530355586151720">تین نقطے والے مینیو پر تھپتھپائیں</translation>
 <translation id="8349305172487531364">بُک مارکس بار</translation>
 <translation id="8360164927489392419">‏‫Live کے ساتھ آپ کے تعاملات کی ریکارڈنگز اور آپ کے اس کے ساتھ اشتراک کردہ مواد کو <ph name="BEGIN_LINK" />Gemini ایپس کی رازداری کے نوٹس<ph name="END_LINK" /> کے مطابق محفوظ اور پروسیس کیا جاتا ہے۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
@@ -2586,7 +2585,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8988107725234939347">‫<ph name="WEBSITE_TITLE" />، پن کردہ سائٹ</translation>
 <translation id="8990960056509724223">آپ کی تنظیم کی پالیسیوں کی وجہ سے فائل محفوظ نہیں ہو سکی</translation>
 <translation id="8998289560386111590">آپ کے آلے پر دستیاب نہیں ہے</translation>
-<translation id="9003263770394939629">‏‫Gemini کی طرف سے تجویز کردہ۔ ترتیبات میں بہتر کردہ آٹو فل کا نظم کریں۔</translation>
 <translation id="9003677638446136377">دوبارہ چیک کریں</translation>
 <translation id="9006453925669499173">مینو ← نیا پوشیدگی ٹیب</translation>
 <translation id="9008201768610948239">نظر انداز کریں</translation>
@@ -2595,7 +2593,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="9029650858822697271">آپ کو سائن آؤٹ کر دیا گیا</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">'براؤزنگ ڈیٹا کو حذف کریں' کی تصدیق کریں</translation>
-<translation id="9035699147763101514">‏‫Gemini کے ساتھ ذاتی ذہانت کے ذریعے تقویت یافتہ۔ ترتیبات میں اپنے انتخاب کا نظم کریں۔</translation>
 <translation id="9038526468059454274">اس کے ساتھ اس کا خلاصہ کریں</translation>
 <translation id="9039373489628511875">بینڈ وڈتھ</translation>
 <translation id="9042893549633094279">رازداری اور سیکیورٹی</translation>

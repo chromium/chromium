@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">ለ<ph name="PERMISSION_NAME" /> ፈቃድ አቀናብር</translation>
 <translation id="1113000785583998331">አይቢኤኤን ይቀመጥ?</translation>
 <translation id="1113869188872983271">&amp;እንደገና ደርድርን ቀልብስ</translation>
-<translation id="1117709830616495622">በGemini በግል ብልሃት የተጎላበተ።</translation>
 <translation id="111897705806685148">የይለፍ ቁልፍን ከሌላ መሣሪያ ይጠቀሙ</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ Google መለያዎ ውስጥ ምን የChrome መረጃ እንደሚያስቀምጡ ለማስተዳደር ትርን ከዚያም አስገባን ይጫኑ</translation>
 <translation id="1121990216147052230">የሚደረጉ ነገሮች ዝርዝር አዘጋጅልኝ</translation>
@@ -532,7 +531,6 @@
 <translation id="1890171020361705182">የዳይኖ ጨዋታ። በፒክስሎች የተሰራ የዳይኖሰር በረሃን ሮጦ እያቋረጠ ሳለ ቁልቋሎችን እና ቴሮዳክቲሎችን ያመልጣል። የድምጽ ምልክት ሲሰሙ መሰናክሎችን ለመዝለል መታ ያድርጉ።</translation>
 <translation id="1898423065542865115">በማጣራት ላይ</translation>
 <translation id="1898678876221454577">ቅኝትዎን ለማስቀመጥ በመለያ ይግቡ</translation>
-<translation id="1898804291554630487">ስለ እዚህ ገፅ ይጠይቁ</translation>
 <translation id="1901443836186977402">{1,plural, =1{ይህ አገልጋይ <ph name="DOMAIN" /> መሆኑን ማረጋገጥ አልቻለም፤ የደህንነት እውቅና ማረጋገጫው ባለፈው ቀን ነው ጊዜ ያበቃው። ይሄ በተሳሳተ አወቃቀር ወይም አንድ አጥቂ ግንኙነትዎን በመጥለፉ የተከሰተ ሊሆን ይችላል። የኮምፒውተርዎ ሰዓት በአሁኑ ጊዜ ወደ <ph name="CURRENT_DATE" /> ተቀናብሯል። ይህ ልክ ይመስላል? ትክክል ካልሆነ የስርዓትዎን ሰዓት ማስተካከል እና ይህንን ገፅ ማደስ አለብዎት።}one{ይህ አገልጋይ <ph name="DOMAIN" /> መሆኑን ማረጋገጥ አልቻለም፤ የደህንነት ዕውቅና ማረጋገጫው ከ# ቀኖች በፊት ጊዜው አብቅቷል። ይህ በተሳሳተ ውቅረት ወይም የእርስዎን ግንኙነት በሚጠልፍ አጥቂ ምክንያት የተፈጠረ ሊሆን ይችላል። የእርስዎ ኮምፒውተር ሰዓት አሁን ወደ <ph name="CURRENT_DATE" /> ተዋቅሯል። ትክክል ይመስላል? ካልሆነ የሥርዓትዎን ሰዓት ማስተካከልና ከዚያ ይህን ገፅ ማደስ ይኖርብዎታል።}other{ይህ አገልጋይ <ph name="DOMAIN" /> መሆኑን ማረጋገጥ አልቻለም፤ የደህንነት ዕውቅና ማረጋገጫው ከ# ቀኖች በፊት ጊዜው አብቅቷል። ይህ በተሳሳተ ውቅረት ወይም የእርስዎን ግንኙነት በሚጠልፍ አጥቂ ምክንያት የተፈጠረ ሊሆን ይችላል። የእርስዎ ኮምፒውተር ሰዓት አሁን ወደ <ph name="CURRENT_DATE" /> ተዋቅሯል። ትክክል ይመስላል? ካልሆነ የሥርዓትዎን ሰዓት ማስተካከልና ከዚያ ይህን ገፅ ማደስ ይኖርብዎታል።}}</translation>
 <translation id="190166348986967700">አስተዳዳሪዎ የእርስዎን ፋይሎች ወደ <ph name="CLOUD_PROVIDER" /> <ph name="DATE_TIME" /> ላይ መስቀል ይጀምራሉ። የፋይልዎ ሰቀላ እስኪጠናቅቅ ድረስ መሣሪያዎን እንደተገናኘ ያቆዩ። በሰቀላው ወቅት ማንበብ የሚችሉት አካባቢያዊ ፋይሎችን ብቻ ነው።</translation>
 <translation id="1902576642799138955">የተገቢነት ክፍለ ጊዜ</translation>
@@ -841,8 +839,6 @@
 <translation id="2384307209577226199">የንግድ ድርጅት ነባሪ</translation>
 <translation id="2385809941344967209">ከእርስዎ የChrome ቅንብሮች ሆነው Chromeን ያዘምኑ</translation>
 <translation id="2386255080630008482">የአገልጋይ እውቅና ማረጋገጫ ተሽሯል።</translation>
-<translation id="2387424091060104123">በGemini የተጠቆመ · <ph name="SRC_LINK" />ምንጮችን ይመልከቱ<ph name="END_SRC_LINK" />
-ይህን ጥቆማ ከChrome ማስወገድ ይችላሉ። የመጀመሪያው ምንጭዎ አይሰረዝም። <ph name="MANAGE_LINK" />የተሻሻለ ራስ-ሙላን ያስተዳድሩ<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">አብራራ</translation>
 <translation id="2392959068659972793">ምንም እሴት ያልተዋቀረላቸው መምሪያዎችን አሳይ</translation>
 <translation id="239429038616798445">ይህ የመላኪያ ዘዴ አይገኝም። የተለየ ዘዴ ይሞክሩ።</translation>
@@ -1245,7 +1241,6 @@
 <translation id="3109788962812161063">የመገለጫ አስተዳደር</translation>
 <translation id="3112892588078695695">ስልክ ቁጥር፦ <ph name="PHONE" />።</translation>
 <translation id="3113284927548439113">ሶስተኛ ፈረቃ</translation>
-<translation id="3113930177999394798">በሰው ሠራሽ አስተውሎት የተጎላበተ የአሰሳ ታሪክዎን ለመፈለግ @history ብለው ይተይቡ</translation>
 <translation id="3114040155724590991">የAndroid ስርዓትን በማዘመን ላይ
     መተግበሪያዎን ማስጀመር ከተለመደው ጊዜ በላይ ሊወስድ ይችላል።</translation>
 <translation id="3114197119223448048">አዲስ እንቅስቃሴ</translation>
@@ -1425,7 +1420,6 @@
 <translation id="3413466783792948876">ይፋዊ አውታረ መረብ እየተጠቀሙ ከሆነ ይህን ጣቢያ በኋላ ላይ ቢጎበኙት የበለጠ ደህንነቱ የተጠበቀ ይሆናል። እንደ የእርስዎ ቤት ወይም የሥራ Wi-Fi ካለ የታመነ አውታረ መረብ ያነሰ ስጋት አለ።</translation>
 <translation id="3414952576877147120">መጠን፦</translation>
 <translation id="341513675006332771">የChrome Dino ጨዋታ አዝራርን ያጫወቱ፣ በChrome ውስጥ የDino አሂድ ጨዋታ ለመጫወት ያግብሩ</translation>
-<translation id="3415471717466570460">የእርስዎ ፍለጋዎች፣ የተሻለ ተዛማጆች፣ እና የገፅ ይዘታቸው ወደ Google ይላካሉ እና ይህን ባህሪ ለማሻሻል በሰው ገምጋሚዎች ሊታዩ ይችላሉ። ይህ የሙከራ ባህሪ ሲሆን ሁልጊዜ ትክክል አይሆንም።</translation>
 <translation id="3417390269491141648">የጤና ዕቅድ አማራጮቼን አነጻጽር እና በመካከላቸው ያሉትን ቁልፍ ልዩነቶች አብራራ</translation>
 <translation id="3421387094817716717">ሞላላ ጥምዝ ይፋዊ ቁልፍ</translation>
 <translation id="3422248202833853650">የማህደረ ትውስታ ቦታን ለማስለቀቅ ከሌሎች ፕሮግራሞች ዘግተው ለመውጣት ይውጡ።</translation>
@@ -1903,7 +1897,6 @@
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4185037616931963178">የማስተካከያ ቁጥርን ደኅንነቱ በተጠበቀ ሁኔታ ያዘምኑ</translation>
 <translation id="4186035307311647330">ዋጋ ላይ ክትትል ማድረግ አቁም</translation>
-<translation id="4190446002599583608">በAI የተጎላበተ የታሪክ ፍለጋ</translation>
 <translation id="4191334393248735295">ርዝመት</translation>
 <translation id="4195459680867822611">የChrome ጠቃሚ ምክሮች አዝራርን ይመልከቱ ስለ Chrome ባህሪያት ለማወቅ ያግብሩ</translation>
 <translation id="4195643157523330669">በአዲስ ትር ክፈት</translation>
@@ -1950,7 +1943,6 @@
 <translation id="424063167283213501">የሚታወቅ የተጓዥ ቁጥርን ያስቀምጡ</translation>
 <translation id="4241830393007970744">እርስዎ ለመጎብኘት በሞከሩት ጣቢያ ላይ ያሉ አጥቂዎች ሶፍትዌር እንዲጭኑ ወይም እንደ የእርስዎ የይለፍ ቃሎች፣ ስልክ ወይም የክሬዲት ካርድ ቁጥሮች ያሉ ነገሮችን እንዲገልፁ ሊያታልሉዎት ይችላሉ።</translation>
 <translation id="4242380780309416996">ፖስታ (ከባድ ክብደት)</translation>
-<translation id="4242981939686657948">የእርስዎን የአሰሳ ታሪክ ለመፈለግ ተጨማሪ ኃይል ያለው መንገድ ለማግኘት ያብሩ</translation>
 <translation id="4244926541863471678">ፊልም</translation>
 <translation id="42481816218163154">ጠዋቶቼን ይበልጥ በተቀላጠፈ ሁኔታ እንዲሄዱ የሚያግዝ የ15 ደቂቃ የጠዋት ተግባር ፍጠር። የአስተሳሰብ ልምምድ ማካተቱን አረጋግጥ</translation>
 <translation id="4250343410682686342">የአሁን ይግዙ፣ በኋላ ይክፈሉ ስሕተት ማያ ገጽ በሙሉ ቁመት ተከፍቷል።</translation>
@@ -3894,7 +3886,6 @@
 <translation id="7514365320538308">አውርድ</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">ምናባዊ እውነታ በዚህ ጊዜ ተፈቅዷል</translation>
-<translation id="7517198908921983825">በGemini የተጠቆመ · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">ሲ10 ፖስታ</translation>
 <translation id="7518003948725431193">ለዚህ የድር አድራሻ ምንም ድረ-ገፅ አልተገኘም፦ <ph name="URL" /></translation>
 <translation id="7521387064766892559">ጃቫስክሪፕት</translation>
@@ -4391,7 +4382,6 @@
 <translation id="8350416046273606058">አቋራጭ ክፍተቶችን መያዝ አይችልም፦ «<ph name="SHORTCUT_NAME" />»</translation>
 <translation id="8351131234907093545">ማስታወሻን ይፍጠሩ</translation>
 <translation id="8352849934814541340">የዚህ መሣሪያ አስተዳዳሪ ለተጨማሪ ተግባራት መተግበሪያዎችን ጭኗል። መተግበሪያዎች የአንዳንድ ውሂብዎ መዳረሻ አላቸው።</translation>
-<translation id="8353273112634584260">በGemini በግል ብልሃት የተጎላበተ። የተሻሻለ ራስ-ሙላን ለማሻሻል የእርስዎ ጥያቄዎች፣ የገጽ ርዕሶች እና ዩአርኤሎች ሊገመገሙ ይችላሉ።</translation>
 <translation id="8355270400102541638">የአካባቢያዊ ስንክል አውድ፦</translation>
 <translation id="8362914115861174987">ወደዚህ መተርጎም</translation>
 <translation id="8363502534493474904">የአውሮፕላን ሁነታን ማጥፋት</translation>
@@ -4739,7 +4729,6 @@
 <translation id="9001074447101275817">ተኪ <ph name="DOMAIN" /> የተጠቃሚ ስም እና የይለፍ ቃል ያስፈልገዋል።</translation>
 <translation id="9001963517402879850">ዝለል!</translation>
 <translation id="9002677862950442746">የማረጋገጫ ኮድ፦ <ph name="OTP" /></translation>
-<translation id="9003263770394939629">በGemini የተጠቆመ። በቅንብሮች ውስጥ የተሻሻለ ራስ-ሙላን ያስተዳድሩ።</translation>
 <translation id="9003639428623471314">ካሁ ፖስታ</translation>
 <translation id="9004367719664099443">VR ክፍለ ጊዜ በሂደት ላይ ነው</translation>
 <translation id="9005998258318286617">የፒዲኤፍ ሰነድ መጫን አልተሳካም።</translation>
@@ -4758,7 +4747,6 @@
 <translation id="9027531288681624875">ከሙሉ ማያ ገጽ ለመውጣት |<ph name="ACCELERATOR" />|ን ተጭነው ይያዙ</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">የደህንነት ጥበቃ ስህተት</translation>
-<translation id="9035699147763101514">በGemini በግል ብልሃት የተጎላበተ። በቅንብሮች ውስጥ ምርጫዎችዎን ያስተዳድሩ።</translation>
 <translation id="9035824888276246493">የደህንነት ኮዶችን ያስቀምጡ</translation>
 <translation id="9036306139374661733">ማይክሮፎን ይፈቀድ?</translation>
 <translation id="9036484080057916082">የተፈረመበት የዕውቅና ማረጋገጫ የጊዜ ማህተም ዝርዝር</translation>
@@ -4913,7 +4901,6 @@
 <translation id="961930410699694996">አካባቢ ለዚህ ጊዜ ይፈቀዳል</translation>
 <translation id="962484866189421427">ይህ ይዘት የሆነ ሌላ ነገር እንደሆኑ የሚያስመስሉ አጭበርባሪ መተግበሪያዎችን ወይም እርስዎን ለመከታተል ጥቅም ላይ ሊውል የሚችል ውሂብን የሚሰበስቡ መተግበሪያዎችን ለመጫን ሊሞክር ይችል ይሆናል። <ph name="BEGIN_LINK" />የሆነው ሆኖ አሳይ<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">በክልልዎ ውስጥ ባለ ሕግ ላይ በመመሥረት Chromium የእርስዎን ነባሪ የፍለጋ ፕሮግራም እንዲመርጡ ይጠይቀዎታል። እነዚህ የፍለጋ ፕሮግራሞች በክልልዎ ውስጥ ታዋቂ ናቸው፣ እና የዘፈቀደ በሆነ ቅደም ተከተል ይታያሉ።</translation>
-<translation id="963837307749850257">ሁሉም ተጠቃሚዎች</translation>
 <translation id="963988220224168636">የማስተካከያ ቁጥርን ደኅንነቱ በተጠበቀ ሁኔታ ወደ Google Wallet ያክሉ</translation>
 <translation id="964050462028070434">የይለፍ ቃላትን እና የይለፍ ቁልፎችን ያስተዳድሩ…</translation>
 <translation id="964681140808832181">አዎ፣ መሰረዝ እፈልጋለሁ</translation>

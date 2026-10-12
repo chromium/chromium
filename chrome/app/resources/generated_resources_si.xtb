@@ -5617,6 +5617,7 @@
 <translation id="5246282308050205996"><ph name="APP_NAME" /> බිඳ වැටී තිබේ. යෙදුම නැවත ඇරඹීමට මෙම බැලූනය මත ක්ලික් කරන්න.</translation>
 <translation id="5247051749037287028">සංදර්ශන නාමය (විකල්පමය)</translation>
 <translation id="5247243947166567755"><ph name="BOOKMARK_TITLE" /> තෝරන්න</translation>
+<translation id="524751727772074981">ඔබ සිටින තැනම සිට, Chrome හි Gemini සමග ඕනෑම දෙයක් අසන්න</translation>
 <translation id="5248934139541843042">සංවිධායක බලන්න</translation>
 <translation id="5249624017678798539">බාගැනීම අවසන් වීමට පෙර බ්‍රව්සරය බිඳවැටිනි.</translation>
 <translation id="5249818097095743806">ඔබේ ආරක්ෂිත යතුර භාවිත කරන්න</translation>
@@ -6326,7 +6327,6 @@
 <translation id="5828181959764767444">හිරු බැසීම</translation>
 <translation id="5828545842856466741">පැතිකඩ එක් කරන්න...</translation>
 <translation id="5828633471261496623">මුද්‍රණය වේ...</translation>
-<translation id="5829137022934788067">මෙම තේරීම ගැන මට කියන්න</translation>
 <translation id="5829214552954466783">පරිශීලක නාමය සඳහා <ph name="CREDENTIAL_TYPE" /> බෙදා ගන්න: <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">Google Wallet හි ඔබේ ගෙවීම් ක්‍රම</translation>
 <translation id="5830512293931520102">ඔබේ මුරපදය සංකේතනය කර ඇති අතර කිසිවෙකුට එය නොපෙනේ</translation>

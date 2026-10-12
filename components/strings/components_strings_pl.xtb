@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Wybierz uprawnienia dla: <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Zapisać numer IBAN?</translation>
 <translation id="1113869188872983271">&amp;Cofnij zmianę kolejności</translation>
-<translation id="1117709830616495622">Technologia spersonalizowanej inteligencji w Gemini</translation>
 <translation id="111897705806685148">Użyj klucza dostępu z innego urządzenia</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, aby zarządzać informacjami z Chrome, które zapisujesz na koncie Google, naciśnij Tab, a potem Enter</translation>
 <translation id="1121990216147052230">Zrób dla mnie listę zadań do wykonania</translation>
@@ -532,7 +531,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1890171020361705182">Gra z dinozaurem. Pikselowy dinozaur biegnie przez pustynię, unikając kaktusów i pterodaktyli. Gdy usłyszysz dźwięk, kliknij, aby przeskoczyć przeszkodę.</translation>
 <translation id="1898423065542865115">Filtrowanie</translation>
 <translation id="1898678876221454577">Zaloguj się, aby zapisać skan</translation>
-<translation id="1898804291554630487">Zapytaj o tę stronę</translation>
 <translation id="1901443836186977402">{1,plural, =1{Ten serwer nie może udowodnić, że należy do domeny <ph name="DOMAIN" />. Jego certyfikat bezpieczeństwa wygasł w ciągu ostatniej doby. Może to wynikać z błędnej konfiguracji lub przechwycenia połączenia. Zegar komputera jest obecnie ustawiony na <ph name="CURRENT_DATE" />. Czy to prawidłowa data? Jeśli nie, popraw zegar systemowy, a potem odśwież tę stronę.}few{Ten serwer nie może udowodnić, że należy do domeny <ph name="DOMAIN" />. Jego certyfikat wygasł # dni temu. Może to wynikać z błędnej konfiguracji lub przechwycenia połączenia. Zegar komputera jest obecnie ustawiony na <ph name="CURRENT_DATE" />. Czy to prawidłowa data? Jeśli nie, popraw zegar systemowy, a potem odśwież tę stronę.}many{Ten serwer nie może udowodnić, że należy do domeny <ph name="DOMAIN" />. Jego certyfikat wygasł # dni temu. Może to wynikać z błędnej konfiguracji lub przechwycenia połączenia. Zegar komputera jest obecnie ustawiony na <ph name="CURRENT_DATE" />. Czy to prawidłowa data? Jeśli nie, popraw zegar systemowy, a potem odśwież tę stronę.}other{Ten serwer nie może udowodnić, że należy do domeny <ph name="DOMAIN" />. Jego certyfikat wygasł # dnia temu. Może to wynikać z błędnej konfiguracji lub przechwycenia połączenia. Zegar komputera jest obecnie ustawiony na <ph name="CURRENT_DATE" />. Czy to prawidłowa data? Jeśli nie, popraw zegar systemowy, a potem odśwież tę stronę.}}</translation>
 <translation id="190166348986967700">Administrator zacznie przesyłać Twoje pliki do usługi <ph name="CLOUD_PROVIDER" /> <ph name="DATE_TIME" />. Dopóki pliki nie zostaną przesłane, nie odłączaj urządzenia. Podczas przesyłania możliwy będzie tylko odczyt plików lokalnych.</translation>
 <translation id="1902576642799138955">Okres ważności</translation>
@@ -841,8 +839,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2384307209577226199">Domyślne zasady przedsiębiorstwa</translation>
 <translation id="2385809941344967209">Aktualizuj Chrome z poziomu ustawień przeglądarki</translation>
 <translation id="2386255080630008482">Certyfikat serwera został unieważniony.</translation>
-<translation id="2387424091060104123">Sugerowane przez Gemini · <ph name="SRC_LINK" />Wyświetl źródła<ph name="END_SRC_LINK" />
-Możesz usunąć tę sugestię z Chrome. Oryginalne źródło nie zostanie usunięte. <ph name="MANAGE_LINK" />Zarządzaj ulepszonym autouzupełnianiem<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">Rozwiń</translation>
 <translation id="2392959068659972793">Pokaż zasady bez ustawionej wartości</translation>
 <translation id="239429038616798445">Ta metoda wysyłki jest niedostępna. Wybierz inną.</translation>
@@ -1245,7 +1241,6 @@ Aby ukryć opcje płatności odroczonej, otwórz <ph name="BEGIN_LINK" />ustawie
 <translation id="3109788962812161063">Zarządzanie profilami</translation>
 <translation id="3112892588078695695">Numer telefonu: <ph name="PHONE" />.</translation>
 <translation id="3113284927548439113">Trzecia zmiana</translation>
-<translation id="3113930177999394798">Aby wyszukać w historii przeglądania z wykorzystaniem AI, wpisz @history</translation>
 <translation id="3114040155724590991">Aktualizacja systemu Android
 Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3114197119223448048">nowa aktywność</translation>
@@ -1426,7 +1421,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3413466783792948876">Jeśli korzystasz z sieci publicznej, najlepiej będzie odwiedzić tę witrynę później. W zaufanej sieci, np. w domu lub pracy, ryzyko jest mniejsze.</translation>
 <translation id="3414952576877147120">Rozmiar:</translation>
 <translation id="341513675006332771">Przycisk Zagraj w grę z dinozaurem w Chrome; aktywuj, aby zagrać w grę Dino Run w Chrome</translation>
-<translation id="3415471717466570460">Twoje wyszukiwania, najlepsze dopasowania i zawartość stron są wysyłane do Google. Mogą je zobaczyć weryfikatorzy, którzy pracują nad ulepszaniem tej funkcji. Jest to funkcja eksperymentalna, która nie zawsze działa prawidłowo.</translation>
 <translation id="3417390269491141648">Porównaj opcje mojego ubezpieczenia medycznego i przeanalizuj kluczowe różnice między nimi</translation>
 <translation id="3421387094817716717">Kryptografia klucza publicznego oparta na krzywych eliptycznych</translation>
 <translation id="3422248202833853650">Zamknij inne programy, by zwolnić pamięć.</translation>
@@ -1904,7 +1898,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4185037616931963178">Bezpiecznie zaktualizuj numer Redress</translation>
 <translation id="4186035307311647330">Wyłącz śledzenie ceny</translation>
-<translation id="4190446002599583608">Wyszukiwanie w historii z wykorzystaniem AI</translation>
 <translation id="4191334393248735295">Długość</translation>
 <translation id="4195459680867822611">Przycisk Zobacz wskazówki na temat Chrome; aktywuj, aby dowiedzieć się więcej o funkcjach Chrome</translation>
 <translation id="4195643157523330669">Otwórz w nowej karcie</translation>
@@ -1951,7 +1944,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="424063167283213501">Zapisz numer KTN</translation>
 <translation id="4241830393007970744">Osoby przeprowadzające atak na stronie, którą próbujesz otworzyć, mogą podstępem nakłonić Cię do zainstalowania oprogramowania lub ujawnienia takich danych jak Twoje hasła, numery telefonów czy numery kart kredytowych.</translation>
 <translation id="4242380780309416996">Koperta (ciężka)</translation>
-<translation id="4242981939686657948">Aby wygodniej wyszukiwać w historii przeglądania, włącz</translation>
 <translation id="4244926541863471678">Film</translation>
 <translation id="42481816218163154">Utwórz 15-minutową rutynę poranną, która pomoże mi lepiej zacząć dzień. Upewnij się, że zawiera sesję medytacyjną</translation>
 <translation id="4250343410682686342">Ekran błędu opcji „Kup teraz, zapłać później” otwarty na całą wysokość.</translation>
@@ -3895,7 +3887,6 @@ Dodatkowe informacje:
 <translation id="7514365320538308">Pobierz</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">Przyznano jednorazowy dostęp do rzeczywistości wirtualnej</translation>
-<translation id="7517198908921983825">Sugerowane przez Gemini · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Koperta C10</translation>
 <translation id="7518003948725431193">Nie znaleziono strony internetowej pod adresem <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -4392,7 +4383,6 @@ Dodatkowe informacje:
 <translation id="8350416046273606058">Skrót nie może zawierać spacji: „<ph name="SHORTCUT_NAME" />”</translation>
 <translation id="8351131234907093545">Utwórz notatkę</translation>
 <translation id="8352849934814541340">Administrator urządzenia zainstalował aplikacje obsługujące dodatkowe funkcje. Aplikacje mają dostęp do niektórych Twoich danych.</translation>
-<translation id="8353273112634584260">Technologia spersonalizowanej inteligencji w Gemini Twoje prośby, tytuły stron i adresy URL mogą być weryfikowane w celu doskonalenia funkcji ulepszonego autouzupełniania.</translation>
 <translation id="8355270400102541638">Lokalny kontekst awarii:</translation>
 <translation id="8362914115861174987">Tłumacz na</translation>
 <translation id="8363502534493474904">Wyłącz tryb samolotowy</translation>
@@ -4739,7 +4729,6 @@ Dodatkowe informacje:
 <translation id="9001074447101275817">Serwer proxy <ph name="DOMAIN" /> wymaga nazwy użytkownika i hasła.</translation>
 <translation id="9001963517402879850">Skacz!</translation>
 <translation id="9002677862950442746">Kod weryfikacyjny: <ph name="OTP" /></translation>
-<translation id="9003263770394939629">Sugerowane przez Gemini. Zarządzaj ulepszonym autouzupełnianiem w ustawieniach.</translation>
 <translation id="9003639428623471314">Koperta Kahu</translation>
 <translation id="9004367719664099443">Trwa sesja VR</translation>
 <translation id="9005998258318286617">Nie udało się wczytać dokumentu PDF.</translation>
@@ -4758,7 +4747,6 @@ Dodatkowe informacje:
 <translation id="9027531288681624875">Aby zamknąć tryb pełnoekranowy, naciśnij i przytrzymaj |<ph name="ACCELERATOR" />|</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Błąd zabezpieczeń</translation>
-<translation id="9035699147763101514">Technologia spersonalizowanej inteligencji w Gemini Możesz zarządzać swoimi wyborami w ustawieniach.</translation>
 <translation id="9035824888276246493">Zapisuj kody zabezpieczające</translation>
 <translation id="9036306139374661733">Zezwolić na używanie mikrofonu?</translation>
 <translation id="9036484080057916082">Lista sygnatur czasowych podpisanego certyfikatu</translation>
@@ -4912,7 +4900,6 @@ Dodatkowe informacje:
 <translation id="961930410699694996">Przyznano jednorazowy dostęp do lokalizacji</translation>
 <translation id="962484866189421427">Te treści mogą próbować zainstalować wprowadzające w błąd aplikacje, które udają, że są przeznaczone do czegoś innego niż w rzeczywistości, lub zbierają dane, na podstawie których można Cię śledzić. <ph name="BEGIN_LINK" />Pokaż mimo to<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">Zgodnie z przepisami prawa obowiązującymi w Twoim regionie Chromium prosi Cię o wybranie domyślnej wyszukiwarki. Te wyszukiwarki są popularne w Twoim regionie. Pokazujemy je w kolejności losowej.</translation>
-<translation id="963837307749850257">Wszyscy użytkownicy</translation>
 <translation id="963988220224168636">Bezpiecznie dodaj numer redress do Portfela Google</translation>
 <translation id="964050462028070434">Zarządzaj hasłami i kluczami dostępu…</translation>
 <translation id="964681140808832181">Tak, chcę anulować</translation>

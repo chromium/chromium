@@ -1264,6 +1264,7 @@
 <translation id="498624032394115435">Kdokoli s odkazem může upravovat všechny karty.</translation>
 <translation id="4986428648020277392">Prompt: Která mám koupit? 2 ze 3</translation>
 <translation id="498768198683310172">Začít používat Gemini</translation>
+<translation id="4989163558385430922">Zobrazit vše</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, spravováno vaší organizací.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Barva skupiny karet: <ph name="COLOR" /></translation>
@@ -2027,7 +2028,6 @@ Kdykoli můžete začít znovu.</translation>
 <translation id="7346922058131593019">Na čem chcete pracovat, <ph name="USER_FIRST_NAME" />?</translation>
 <translation id="7347998088283246662">Importujte hesla, historii, záložky a další položky</translation>
 <translation id="7352651011704765696">Něco se pokazilo</translation>
-<translation id="7357999308187750900">Zobrazit vše</translation>
 <translation id="736564850024123010">Prostředí si můžete přizpůsobit změnou polohy adresního řádku.</translation>
 <translation id="7366909168761621528">Údaje o prohlížení</translation>
 <translation id="7367530036083223701">Mějte svá hesla bezpečně k dispozici z plochy prostřednictvím widgetu Správce hesel.</translation>
@@ -2361,7 +2361,6 @@ Kdykoli můžete začít znovu.</translation>
 <translation id="8333459276976141586">Režim Live bude používat mikrofon. Klepnutím na tlačítko Live zapnete mikrofon. Pokud ho budete chtít vypnout, klepněte na tlačítko Zastavit nebo Gemini zavřete.</translation>
 <translation id="833647236762414178">Vytváření, ukládání a správa hesel a přístupových klíčů pro snadné přihlašování na weby a do aplikací. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Zálohujte si data a používejte je na libovolném zařízení.</translation>
-<translation id="8345328955902001853">{count,plural, =1{K postupu na další úroveň dokončete ještě 1 úkol}few{K postupu na další úroveň dokončete ještě {count} úkoly}many{K postupu na další úroveň dokončete ještě {count} úkolu}other{K postupu na další úroveň dokončete ještě {count} úkolů}}</translation>
 <translation id="8348530355586151720">Klepněte na nabídku se třemi tečkami</translation>
 <translation id="8349305172487531364">Lišta záložek</translation>
 <translation id="8360164927489392419">Nahrávky vašich interakcí v režimu Live a obsah, který sdílíte, se ukládají a zpracovávají v souladu s <ph name="BEGIN_LINK" />upozorněním ve věci ochrany soukromí v aplikacích s Gemini<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
@@ -2586,7 +2585,6 @@ Kdykoli můžete začít znovu.</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, připnutý web</translation>
 <translation id="8990960056509724223">Soubor se kvůli zásadám vaší organizace nepodařilo uložit</translation>
 <translation id="8998289560386111590">Na vašem zařízení není k dispozici</translation>
-<translation id="9003263770394939629">Návrh od Gemini. Vylepšené automatické vyplňování můžete spravovat v nastavení.</translation>
 <translation id="9003677638446136377">Zkontrolovat znovu</translation>
 <translation id="9006453925669499173">Nabídka → Nová anonymní karta</translation>
 <translation id="9008201768610948239">Ignorovat</translation>
@@ -2595,7 +2593,6 @@ Kdykoli můžete začít znovu.</translation>
 <translation id="9029650858822697271">Byli jste odhlášeni</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Potvrdit vymazání údajů o prohlížení</translation>
-<translation id="9035699147763101514">Využívá Osobní inteligenci s Gemini. Své volby můžete spravovat v nastavení.</translation>
 <translation id="9038526468059454274">Nechte si obsah shrnout od</translation>
 <translation id="9039373489628511875">Šířka pásma</translation>
 <translation id="9042893549633094279">Ochrana soukromí a zabezpečení</translation>

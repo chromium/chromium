@@ -1264,6 +1264,7 @@
 <translation id="498624032394115435">A link birtokában bárki szerkesztheti az összes lapot.</translation>
 <translation id="4986428648020277392">Kérdés: Melyiket vegyem meg? 3/2</translation>
 <translation id="498768198683310172">A Gemini használatának megkezdése</translation>
+<translation id="4989163558385430922">Összes megtekintése</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, az Ön szervezete kezeli.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Lapcsoport színe: <ph name="COLOR" /></translation>
@@ -2027,7 +2028,6 @@ Bármikor újraindíthatja.</translation>
 <translation id="7346922058131593019">Min szeretne dolgozni, <ph name="USER_FIRST_NAME" />?</translation>
 <translation id="7347998088283246662">Importálhatja a jelszavakat, az előzményeket, a könyvjelzőket és egyebeket</translation>
 <translation id="7352651011704765696">Valami nem működik</translation>
-<translation id="7357999308187750900">Összes megtekintése</translation>
 <translation id="736564850024123010">A személyre szabott élmény érdekében módosíthatja a címsáv pozícióját.</translation>
 <translation id="7366909168761621528">Böngészési adatok</translation>
 <translation id="7367530036083223701">A Jelszókezelő modullal biztonságosan hozzáférhet jelszavaihoz a kezdőképernyőn.</translation>
@@ -2361,7 +2361,6 @@ Bármikor újraindíthatja.</translation>
 <translation id="8333459276976141586">A Live mód használni fogja a mikrofont. A Live gombra koppintva bekapcsolja a mikrofont. A mikrofon kikapcsolásához koppintson a Leállítás gombra, vagy zárja be a Geminit.</translation>
 <translation id="833647236762414178">Létrehozhatja, mentheti és kezelheti jelszavait és azonosítókulcsait, hogy egyszerűen bejelentkezhessen a webhelyekre és az alkalmazásokba. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="8343993175958086504">Biztonsági másolatot készíthet adatairól, és bármely eszközön használatja őket.</translation>
-<translation id="8345328955902001853">{count,plural, =1{A szintlépéshez még 1 feladatot kell elvégeznie}other{A szintlépéshez még {count} feladatot kell elvégeznie}}</translation>
 <translation id="8348530355586151720">Koppintson a hárompontos menüre.</translation>
 <translation id="8349305172487531364">Könyvjelzősáv</translation>
 <translation id="8360164927489392419">A Live funkcióval folytatott interakciókról készült felvételeket és az Ön által a funkcióval megosztott tartalmakat <ph name="BEGIN_LINK" />A Gemini-appok adatvédelmi közleményének<ph name="END_LINK" /> megfelelően mentjük és dolgozzuk fel. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
@@ -2586,7 +2585,6 @@ Bármikor újraindíthatja.</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, kitűzött webhely</translation>
 <translation id="8990960056509724223">Nem sikerült menteni a fájlt a szervezeti házirendek miatt</translation>
 <translation id="8998289560386111590">Nem áll rendelkezésre az eszközén</translation>
-<translation id="9003263770394939629">A Gemini javaslata. A továbbfejlesztett automatikus kitöltést a beállításokban kezelheti.</translation>
 <translation id="9003677638446136377">Ellenőrzés újra</translation>
 <translation id="9006453925669499173">Menü → Új inkognitó lap</translation>
 <translation id="9008201768610948239">Mellőzés</translation>
@@ -2595,7 +2593,6 @@ Bármikor újraindíthatja.</translation>
 <translation id="9029650858822697271">A rendszer kijelentkeztette Önt</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Böngészési adatok törlésének megerősítése</translation>
-<translation id="9035699147763101514">A Gemini Személyre szabott intelligencia funkciójával. A beállításokban kezelheti a választásait.</translation>
 <translation id="9038526468059454274">Összegezze a következővel:</translation>
 <translation id="9039373489628511875">Sávszélesség</translation>
 <translation id="9042893549633094279">Adatvédelem és biztonság</translation>

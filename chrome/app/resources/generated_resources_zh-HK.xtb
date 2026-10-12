@@ -5625,6 +5625,7 @@
 <translation id="5246282308050205996"><ph name="APP_NAME" /> 當機了，請按一下這個汽球來重新啟動應用程式。</translation>
 <translation id="5247051749037287028">顯示名稱 (選填)</translation>
 <translation id="5247243947166567755">揀 <ph name="BOOKMARK_TITLE" /></translation>
+<translation id="524751727772074981">隨時隨地向 Chrome 版 Gemini 提問</translation>
 <translation id="5248934139541843042">查看主辦者</translation>
 <translation id="5249624017678798539">瀏覽器在下載尚未完成時當機。</translation>
 <translation id="5249818097095743806">使用安全密鑰</translation>
@@ -6331,7 +6332,6 @@
 <translation id="5828181959764767444">日落</translation>
 <translation id="5828545842856466741">新增設定檔…</translation>
 <translation id="5828633471261496623">列印中…</translation>
-<translation id="5829137022934788067">說明所選內容</translation>
 <translation id="5829214552954466783">分享使用者名稱 <ph name="USER_EMAIL" /> 嘅<ph name="CREDENTIAL_TYPE" />：</translation>
 <translation id="5829544019044013776">「Google 錢包」入面嘅付款方法</translation>
 <translation id="5830512293931520102">你的密碼會加密，且不會向其他人顯示</translation>
@@ -6579,6 +6579,7 @@
 <translation id="6006484371116297560">經典主題</translation>
 <translation id="6007053304250788613">鏡像模式只可排除一個顯示屏</translation>
 <translation id="6007240208646052708">無法使用您的語言執行語音搜尋。</translation>
+<translation id="6007858579659393165">分頁換上全新透明外觀</translation>
 <translation id="6010651352520077187">開啟後，「Google 翻譯」會顯示語言選項，並根據您的偏好語言翻譯網站內容。此外，這項服務亦可自動翻譯網站內容。</translation>
 <translation id="6011193465932186973">指紋</translation>
 <translation id="6011308810877101166">改善搜尋建議</translation>
@@ -9467,6 +9468,7 @@
 <translation id="8212601853154459483">此帳戶由 <ph name="PROFILE_MANAGER" /> 管理，並要求您為 <ph name="USER_EMAIL_ADDRESS" /> 帳戶建立獨立的個人檔案</translation>
 <translation id="8212792694174629011">找不到任何設定檔。請嘗試使用裝置相機掃瞄 QR 碼，或輸入流動網絡供應商提供的啟動碼。</translation>
 <translation id="8214489666383623925">開啟檔案…</translation>
+<translation id="8214771296778317256">在此選擇偏好的分頁樣式</translation>
 <translation id="8215129063232901118">透過 <ph name="DEVICE_TYPE" /> 使用手機功能</translation>
 <translation id="8217212468862726597">突顯指標</translation>
 <translation id="8217399928341212914">繼續禁止自動下載多個檔案</translation>
@@ -10710,6 +10712,7 @@
 <translation id="9154194610265714752">已更新</translation>
 <translation id="915485121129452731">數位繪圖板</translation>
 <translation id="9155344700756733162">取消揀顏色</translation>
+<translation id="9155515662479003830">你可隨時在設定中切換回傳統樣式</translation>
 <translation id="9157096865782046368">0.8 秒</translation>
 <translation id="9157697743260533322">無法為所有使用者設定自動更新 (預先啟動錯誤：<ph name="ERROR_NUMBER" />)</translation>
 <translation id="9157915340203975005">打印機蓋目前打開</translation>

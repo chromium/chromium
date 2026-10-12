@@ -1264,6 +1264,7 @@
 <translation id="498624032394115435">Yeyote aliye na kiungo anaweza kubadilisha vichupo vyote.</translation>
 <translation id="4986428648020277392">Kidokezo: Ninunue kipi? 2 kati ya 3</translation>
 <translation id="498768198683310172">Anza kutumia Gemini</translation>
+<translation id="4989163558385430922">Angalia vyote</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, inadhibitiwa na shirika lako.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Rangi ya <ph name="COLOR" /> ya kikundi cha vichupo</translation>
@@ -2027,7 +2028,6 @@ Unaweza kuanzisha upya wakati wowote.</translation>
 <translation id="7346922058131593019">Ungependa kushughulikia jambo gani, <ph name="USER_FIRST_NAME" />?</translation>
 <translation id="7347998088283246662">Pakia manenosiri, historia, alamisho na zaidi</translation>
 <translation id="7352651011704765696">Hitilafu fulani imetokea</translation>
-<translation id="7357999308187750900">Angalia Yote</translation>
 <translation id="736564850024123010">Badilisha nafasi ya sehemu ya anwani ili uitumie upendavyo.</translation>
 <translation id="7366909168761621528">Data ya kuvinjari</translation>
 <translation id="7367530036083223701">Fikia manenosiri yako kwa usalama kwenye skrini ya kwanza ukitumia wijeti ya Kidhibiti cha Manenosiri.</translation>
@@ -2361,7 +2361,6 @@ Unaweza kuanzisha upya wakati wowote.</translation>
 <translation id="8333459276976141586">Live itatumia maikrofoni yako. Ukigusa kitufe cha Live utawasha maikrofoni. Ili uzime maikrofoni, gusa kitufe cha kusimamisha au ufunge Gemini.</translation>
 <translation id="833647236762414178">Buni, hifadhi na udhibiti manenosiri na funguo za siri ili uingie kwa urahisi katika akaunti za tovuti na programu. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Hifadhi nakala ya maudhui yako ili uyatumie kwenye kifaa chochote.</translation>
-<translation id="8345328955902001853">{count,plural, =1{Kamilisha jukumu 1 zaidi ili upande kiwango}other{Kamilisha majukumu mengine {count} ili upande kiwango}}</translation>
 <translation id="8348530355586151720">Gusa menyu ya nukta tatu</translation>
 <translation id="8349305172487531364">Sehemu ya Alamisho</translation>
 <translation id="8360164927489392419">Rekodi za jinsi unavyotumia Live na maudhui unayoiruhusu ifikie huhifadhiwa na kuchakatwa kwa mujibu wa <ph name="BEGIN_LINK" />Ilani ya Faragha ya Programu za Gemini<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
@@ -2586,7 +2585,6 @@ Unaweza kuanzisha upya wakati wowote.</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, tovuti imebandikwa</translation>
 <translation id="8990960056509724223">Imeshindwa kuhifadhi faili kutokana na sera za shirika lako</translation>
 <translation id="8998289560386111590">Haipatikani katika kifaa chako</translation>
-<translation id="9003263770394939629">Yametolewa na Gemini. Dhibiti kipengele kilichoboreshwa cha kujaza kiotomatiki katika mipangilio.</translation>
 <translation id="9003677638446136377">Angalia tena</translation>
 <translation id="9006453925669499173">Menyu → Kichupo kipya cha faragha</translation>
 <translation id="9008201768610948239">Puuza</translation>
@@ -2595,7 +2593,6 @@ Unaweza kuanzisha upya wakati wowote.</translation>
 <translation id="9029650858822697271">Uliondolewa kwenye akaunti</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Thibitisha kufuta data ya kuvinjari</translation>
-<translation id="9035699147763101514">Inaendeshwa na Umaizi wa Binafsi kwenye Gemini. Dhibiti chaguo ulizo nazo katika mipangilio.</translation>
 <translation id="9038526468059454274">Andaa muhtasari ukitumia</translation>
 <translation id="9039373489628511875">Kipimo data</translation>
 <translation id="9042893549633094279">Faragha na usalama</translation>

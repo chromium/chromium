@@ -5615,6 +5615,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5246282308050205996"><ph name="APP_NAME" /> ha dejado de funcionar. Haz clic en este globo para reiniciar la aplicación.</translation>
 <translation id="5247051749037287028">Nombre visible (opcional)</translation>
 <translation id="5247243947166567755">Seleccionar <ph name="BOOKMARK_TITLE" /></translation>
+<translation id="524751727772074981">Pregunta lo que quieras, estés donde estés, con Gemini en Chrome</translation>
 <translation id="5248934139541843042">Ver organizador</translation>
 <translation id="5249624017678798539">Se ha producido un fallo en el navegador antes de que se completara la descarga.</translation>
 <translation id="5249818097095743806">Usar tu llave de seguridad</translation>
@@ -6323,7 +6324,6 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5828181959764767444">Atardecer</translation>
 <translation id="5828545842856466741">Añadir perfil...</translation>
 <translation id="5828633471261496623">Imprimiendo...</translation>
-<translation id="5829137022934788067">Dame información sobre esta selección</translation>
 <translation id="5829214552954466783">Compartir <ph name="CREDENTIAL_TYPE" /> del nombre de usuario <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">Tus métodos de pago en Google Wallet</translation>
 <translation id="5830512293931520102">Tu contraseña está cifrada y nadie la puede ver</translation>

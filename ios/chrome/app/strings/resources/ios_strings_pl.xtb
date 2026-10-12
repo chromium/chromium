@@ -1264,6 +1264,7 @@
 <translation id="498624032394115435">Każda osoba, która ma link, może edytować wszystkie karty.</translation>
 <translation id="4986428648020277392">Prompt: który mam kupić? 2 z 3</translation>
 <translation id="498768198683310172">Zacznij korzystać z Gemini</translation>
+<translation id="4989163558385430922">Pokaż wszystko</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, konto zarządzane przez Twoją organizację.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Kolor grupy kart: <ph name="COLOR" /></translation>
@@ -2028,7 +2029,6 @@ Możesz to wznowić w dowolnym momencie.</translation>
 <translation id="7346922058131593019">Nad czym chcesz pracować, <ph name="USER_FIRST_NAME" />?</translation>
 <translation id="7347998088283246662">Importuj hasła, historię, zakładki i inne dane</translation>
 <translation id="7352651011704765696">Coś poszło nie tak</translation>
-<translation id="7357999308187750900">Zobacz wszystkie</translation>
 <translation id="736564850024123010">Zmień położenie paska adresu, aby dostosować przeglądanie do swoich potrzeb.</translation>
 <translation id="7366909168761621528">Dane przeglądania</translation>
 <translation id="7367530036083223701">Widżet Menedżera haseł zapewnia bezpieczny dostęp do haseł na ekranie głównym.</translation>
@@ -2362,7 +2362,6 @@ Możesz to wznowić w dowolnym momencie.</translation>
 <translation id="8333459276976141586">Tryb Live będzie korzystać z Twojego mikrofonu. Naciśnięcie przycisku Live włącza mikrofon. Aby wyłączyć mikrofon, kliknij przycisk zatrzymania lub zamknij Gemini.</translation>
 <translation id="833647236762414178">Twórz i zapisuj hasła oraz klucze dostępu i zarządzaj nimi, aby łatwo logować się na stronach i w aplikacjach. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Twórz kopie zapasowe swoich danych i używaj ich na dowolnym urządzeniu.</translation>
-<translation id="8345328955902001853">{count,plural, =1{Wykonaj jeszcze 1 zadanie, aby przejść na kolejny poziom}few{Wykonaj jeszcze {count} zadania, aby przejść na kolejny poziom}many{Wykonaj jeszcze {count} zadań, aby przejść na kolejny poziom}other{Wykonaj jeszcze {count} zadania, aby przejść na kolejny poziom}}</translation>
 <translation id="8348530355586151720">Dotknij menu z 3 kropkami</translation>
 <translation id="8349305172487531364">Pasek zakładek</translation>
 <translation id="8360164927489392419">Nagrania Twoich interakcji w trybie Live i treści, które wówczas udostępniasz, są zapisywane i przetwarzane zgodnie z <ph name="BEGIN_LINK" />Informacjami na temat ochrony prywatności w aplikacjach z Gemini<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
@@ -2588,7 +2587,6 @@ Możesz to wznowić w dowolnym momencie.</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, przypięta witryna</translation>
 <translation id="8990960056509724223">Ze względu na zasady obowiązujące w Twojej organizacji nie udało się zapisać pliku</translation>
 <translation id="8998289560386111590">Niedostępne na Twoim urządzeniu</translation>
-<translation id="9003263770394939629">Sugerowane przez Gemini. Zarządzaj ulepszonym autouzupełnianiem w ustawieniach.</translation>
 <translation id="9003677638446136377">Sprawdź ponownie</translation>
 <translation id="9006453925669499173">Menu → Nowa karta incognito</translation>
 <translation id="9008201768610948239">Ignoruj</translation>
@@ -2597,7 +2595,6 @@ Możesz to wznowić w dowolnym momencie.</translation>
 <translation id="9029650858822697271">Nastąpiło wylogowanie</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Potwierdź usunięcie danych przeglądania</translation>
-<translation id="9035699147763101514">Technologia spersonalizowanej inteligencji w Gemini Możesz zarządzać swoimi wyborami w ustawieniach.</translation>
 <translation id="9038526468059454274">Podsumuj z pomocą</translation>
 <translation id="9039373489628511875">Przepustowość</translation>
 <translation id="9042893549633094279">Prywatność i bezpieczeństwo</translation>

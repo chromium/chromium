@@ -15,7 +15,6 @@
 <translation id="1321004960118052490">Gli elementi non attivi non si accumuleranno</translation>
 <translation id="1329584516321524826">Aggiornata adesso</translation>
 <translation id="1340839264183302272">Lascia il gruppo</translation>
-<translation id="1386966479075994683">Espandi schede</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{Espandi il gruppo di schede condiviso <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_ONE" /> scheda, colore <ph name="COLOR_NAME" />, con etichetta <ph name="CARD_LABEL" />.}other{Espandi il gruppo di schede condiviso <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_MANY" /> schede, colore <ph name="COLOR_NAME" />, con etichetta <ph name="CARD_LABEL" />.}}</translation>
 <translation id="1486715732399361704">Qui troverai tutti i tuoi gruppi di schede</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Creato <ph name="NUM_MINS_ONE" /> minuto fa}other{Creato <ph name="NUM_MINS_MANY" /> minuti fa}}</translation>
@@ -66,6 +65,7 @@
 <translation id="2662028055331606429">Valutazione di <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Visita il sito</translation>
 <translation id="2671423594960767771">Condividi gruppo</translation>
+<translation id="2729310339366257582">Comprimi schede</translation>
 <translation id="2734252994837336591">{NUM_WEEKS,plural, =1{Ultimo aggiornamento: <ph name="NUM_WEEKS_ONE" /> settimana fa}other{Ultimo aggiornamento: <ph name="NUM_WEEKS_MANY" /> settimane fa}}</translation>
 <translation id="2753877351161418426">{NUM_HOURS,plural, =1{Ultimo aggiornamento: <ph name="NUM_HOURS_ONE" /> ora fa}other{Ultimo aggiornamento: <ph name="NUM_HOURS_MANY" /> ore fa}}</translation>
 <translation id="2755485474385016903">Le modifiche apportate sono visibili a tutti i membri del gruppo</translation>
@@ -136,7 +136,6 @@
 <translation id="5073204694187207510">Nascondi la griglia a schermo intero</translation>
 <translation id="5076161749301278626">Vuoi visualizzare le recensioni sul negozio?</translation>
 <translation id="5161254044473106830">Titolo obbligatorio</translation>
-<translation id="5204584298075822291">Comprimi schede</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome chiude automaticamente le schede e i gruppi di schede inattivi dopo <ph name="AUTO_DELETE_DELAY_ONE" /> mese. Puoi modificare questa opzione nelle Impostazioni.}other{Chrome chiude automaticamente le schede e i gruppi di schede inattivi dopo <ph name="AUTO_DELETE_DELAY_MANY" /> mesi. Puoi modificare questa opzione nelle Impostazioni.}}</translation>
 <translation id="5254233580564156835">Memoria utilizzata: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">Ultima scheda</translation>
@@ -191,6 +190,7 @@
 <translation id="709473454666962555">Seleziona un gruppo di schede.</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Condividi scheda}other{Condividi schede}}</translation>
 <translation id="7129458170538955174">Informazioni su questo negozio aperte nella parte inferiore dello schermo</translation>
+<translation id="7194343495483122559">Espandi schede</translation>
 <translation id="7204204600596740190">Modalità di selezione multipla</translation>
 <translation id="7211038039686180558">I gruppi di schede vengono automaticamente salvati e aggiornati su tutti i dispositivi su cui hai eseguito l'accesso</translation>
 <translation id="7326879924029668159">Visualizza le norme sui resi e non solo</translation>

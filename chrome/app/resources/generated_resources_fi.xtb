@@ -5625,6 +5625,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5246282308050205996"><ph name="APP_NAME" /> on kaatunut. Käynnistä sovellus uudelleen klikkaamalla tätä kuplaa.</translation>
 <translation id="5247051749037287028">Näyttönimi (valinnainen)</translation>
 <translation id="5247243947166567755">Valitse <ph name="BOOKMARK_TITLE" /></translation>
+<translation id="524751727772074981">Kysy mitä tahansa Gemini in Chromella</translation>
 <translation id="5248934139541843042">Näytä järjestäjä</translation>
 <translation id="5249624017678798539">Selain kaatui ennen latauksen päättymistä.</translation>
 <translation id="5249818097095743806">Käytä suojausavainta</translation>
@@ -6334,7 +6335,6 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5828181959764767444">Auringonlasku</translation>
 <translation id="5828545842856466741">Lisää profiili…</translation>
 <translation id="5828633471261496623">Tulostetaan...</translation>
-<translation id="5829137022934788067">Kerro valinnasta</translation>
 <translation id="5829214552954466783">Jaa <ph name="CREDENTIAL_TYPE" /> käyttäjätunnukselle: <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">Maksutavat Google Walletissa</translation>
 <translation id="5830512293931520102">Salasana on salattu, eikä kukaan näe sitä</translation>
