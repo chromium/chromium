@@ -4107,6 +4107,12 @@
       status: "stable",
     },
     {
+      // Clear stale shaping when a line-breaking retry overflows.
+      // https://crbug.com/559557312
+      name: "LineBreakerClearShapeResultOnOverflow",
+      status: "stable",
+    },
+    {
       // crbug.com/542686223 crbug.com/568304685
       name: "LineBreakerHanKerningEnd",
     },

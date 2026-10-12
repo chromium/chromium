@@ -1707,6 +1707,11 @@ LineBreaker::BreakResult LineBreaker::BreakText(
       item_result->inline_size = available_width_with_hyphens + 1;
       item_result->text_offset.end = item.EndOffset();
       item_result->text_offset.AssertNotEmpty();
+      if (RuntimeEnabledFeatures::
+              LineBreakerClearShapeResultOnOverflowEnabled()) {
+        // Discard shaping from a previous attempt with a different text range.
+        item_result->shape_result = nullptr;
+      }
       return kOverflow;
     }
     DCHECK_EQ(shape_result->NumCharacters(),
