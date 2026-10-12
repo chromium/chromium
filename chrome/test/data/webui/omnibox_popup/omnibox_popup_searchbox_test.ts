@@ -3544,6 +3544,52 @@ suite('OmniboxPopupSearchboxTest', function() {
    assertEquals(0, testProxy.handler.getCallCount('openAutocompleteMatch'));
  });
 
+ test('SelectionStaysOnDeletedLineAfterMatchDeletion', async () => {
+   const matches = [0, 1, 2, 3].map(i => {
+     return createSearchMatchForTesting({
+       allowedToBeDefaultMatch: i === 0,
+       fillIntoEdit: `query ${i}`,
+       destinationUrl: `https://example.com/${i}`,
+       supportsDeletion: true,
+     });
+   });
+   searchbox.activeQueryId = 0;
+   searchbox.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+     queryId: 0,
+     input: 'query',
+     matches,
+   }));
+   await microtasksFinished();
+
+   searchbox.setSelection({
+     line: 2,
+     state: SelectionLineState.kFocusedButtonRemoveSuggestion,
+     actionIndex: 0,
+   });
+   await microtasksFinished();
+   await searchbox.handleKeyNavigation(
+       new KeyboardEvent('keydown', {key: 'Enter', cancelable: true}));
+   const [line, url] =
+       await testProxy.handler.whenCalled('deleteAutocompleteMatch');
+   assertEquals(2, line);
+   assertEquals('https://example.com/2', url);
+
+   // Like the native omnibox, the selection stays on the deleted line rather
+   // than moving to the default match.
+   searchbox.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+     queryId: searchbox.activeQueryId,
+     input: 'query',
+     matches: matches.filter((_, i) => i !== 2),
+   }));
+   await microtasksFinished();
+
+   assertDeepEquals(
+       {line: 2, state: SelectionLineState.kNormal, actionIndex: 0},
+       searchbox.selection);
+   assertEquals(2, searchbox.selectedMatchIndex);
+   assertEquals('query 3', searchbox.$.input.inputElement.value);
+ });
+
  test(
      'EnterKeyWithVirtualFocusOnContextualEntrypointOpensContextMenu',
      async () => {

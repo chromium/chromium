@@ -173,6 +173,10 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
     controlKeyState: ControlKeyState = ControlKeyState.UP;
 
     private lastIgnoredEnterEvent_: KeyboardEvent|null = null;
+    // The line of the match the backend was last asked to delete, while
+    // waiting for the post-deletion result. Null if no match was selected at
+    // the time. See `shouldPreserveSelectionOnMatchDeletion()`.
+    private pendingDeletionLine_: number|null = null;
     private searchboxEventTracker_: EventTracker = new EventTracker();
     private callbackRouter_: PageCallbackRouter =
         SearchboxBrowserProxy.getInstance().callbackRouter;
@@ -204,9 +208,16 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
         this.activeQueryId = -1;
       });
       // When deleting a match, unfreeze `activeQueryId` so post-deletion
-      // results are accepted.
-      this.searchboxEventTracker_.add(this, 'match-remove', () => {
-        this.unfreezeActiveQueryId();
+      // results are accepted. The match element sends the deletion request
+      // itself, and its line is the event's detail.
+      this.searchboxEventTracker_.add(this, 'match-remove', (e: Event) => {
+        // Like `OmniboxEditModel::TryDeletingPopupLine()`, only move the
+        // selection to the deleted line if a match was selected.
+        const hasSelectedMatch = this.virtualFocusEnabled ?
+            this.selection.line >= 0 :
+            this.selectedMatchIndex >= 0;
+        this.onMatchDeletionRequested_(
+            hasSelectedMatch ? (e as CustomEvent<number|null>).detail : null);
       });
       // Listen for 'keyup' on window to reliably catch Control key releases
       // even if the user clicks outside the searchbox while holding Control.
@@ -304,12 +315,14 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       // by setting `activeQueryId` to -1.
       this.activeQueryId = -1;
       this.lastQueriedInput = null;
+      this.pendingDeletionLine_ = null;
     }
 
     queryAutocomplete(
         input: string, preventInlineAutocomplete: boolean, isOnFocus: boolean) {
       this.activeQueryId = this.nextQueryId_++;
       this.lastQueriedInput = input;
+      this.pendingDeletionLine_ = null;
 
       preventInlineAutocomplete = preventInlineAutocomplete ||
           this.getInputElement().preventInlineAutocomplete(input);
@@ -332,6 +345,16 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
     }
 
     shouldAppendDotComOnCtrlEnter(): boolean {
+      return false;
+    }
+
+    /**
+     * Whether the post-deletion result should keep the selection on the
+     * deleted match's line, clamped to the remaining matches, like
+     * `OmniboxEditModel::TryDeletingPopupLine()`. Otherwise, it's handled like
+     * any other result, which e.g. reselects the default match, if any.
+     */
+    shouldPreserveSelectionOnMatchDeletion(): boolean {
       return false;
     }
 
@@ -420,12 +443,20 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
         return;
       }
 
+      // The first result accepted after a deletion request is normally the
+      // post-deletion result.
+      const deletedLine = this.pendingDeletionLine_;
+      this.pendingDeletionLine_ = null;
+
       this.result = result;
       const hasMatches = this.hasMatches();
       this.updateDropdownVisibility();
 
+      const lineAfterDeletion = this.getLineAfterMatchDeletion_(deletedLine);
       const firstMatch = hasMatches ? this.result.matches[0] : null;
-      if (firstMatch && firstMatch.allowedToBeDefaultMatch) {
+      if (lineAfterDeletion !== null) {
+        await this.selectLineAfterMatchDeletion_(lineAfterDeletion);
+      } else if (firstMatch && firstMatch.allowedToBeDefaultMatch) {
         // Select the default match and update the input.
         if (this.virtualFocusEnabled) {
           const available = this.getAvailableSelections(this.result);
@@ -476,6 +507,44 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
           });
         }
       }
+    }
+
+    /**
+     * Returns the line to select in the post-deletion result, or null to
+     * handle it like any other result. Like
+     * `OmniboxEditModel::TryDeletingPopupLine()`, the selection stays on the
+     * deleted match's line, clamped to the remaining matches.
+     */
+    private getLineAfterMatchDeletion_(deletedLine: number|null): number|null {
+      if (deletedLine === null || deletedLine < 0 || !this.hasMatches() ||
+          !this.shouldPreserveSelectionOnMatchDeletion()) {
+        return null;
+      }
+      const matches = this.result!.matches;
+      const line = Math.min(deletedLine, matches.length - 1);
+      // Selecting the default match like for any other result also restores
+      // its inline autocompletion.
+      return line === 0 && matches[0]!.allowedToBeDefaultMatch ? null : line;
+    }
+
+    /**
+     * Selects the match at `line` and previews it in the input, as if the user
+     * had navigated to it.
+     */
+    private async selectLineAfterMatchDeletion_(line: number) {
+      const selection: OmniboxPopupSelection = {
+        line,
+        state: SelectionLineState.kNormal,
+        actionIndex: 0,
+      };
+      if (this.virtualFocusEnabled) {
+        this.setSelection(selection);
+      } else {
+        await this.getDropdownElement().selectIndex(line);
+      }
+      // Wait for `selectedMatch` to be updated.
+      await this.updateComplete;
+      this.updateInputForSelection(selection, /*key=*/ '');
     }
 
     onInputFocusChanged(e: CustomEvent<{value: string, isOnFocus: boolean}>) {
@@ -678,9 +747,7 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
           SelectionLineState.kFocusedButtonRemoveSuggestion) {
         e.preventDefault();
         if (this.selectedMatch && this.selectedMatch.supportsDeletion) {
-          this.unfreezeActiveQueryId();
-          this.pageHandler().deleteAutocompleteMatch(
-              this.selection.line, this.selectedMatch.destinationUrl);
+          this.deleteMatch_(this.selection.line, this.selectedMatch);
         }
         return true;
       }
@@ -921,10 +988,7 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       if (e.key === 'Delete') {
         if (e.shiftKey && !e.altKey && !e.ctrlKey && !e.metaKey) {
           if (this.selectedMatch && this.selectedMatch.supportsDeletion) {
-            // Unfreeze `activeQueryId` so post-deletion results are accepted.
-            this.unfreezeActiveQueryId();
-            this.pageHandler().deleteAutocompleteMatch(
-                this.matchIndex, this.selectedMatch.destinationUrl);
+            this.deleteMatch_(this.matchIndex, this.selectedMatch);
             e.preventDefault();
           }
         }
@@ -1200,6 +1264,22 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
     unfreezeActiveQueryId() {
       this.activeQueryId = this.nextQueryId_ - 1;
     }
+
+    /** Asks the backend to delete `match`, the match at `line`. */
+    private deleteMatch_(line: number, match: AutocompleteMatch) {
+      this.onMatchDeletionRequested_(line);
+      this.pageHandler().deleteAutocompleteMatch(line, match.destinationUrl);
+    }
+
+    /**
+     * Called when the backend is asked to delete the match at `line`, which is
+     * null if the selection shouldn't move to that line afterwards.
+     */
+    private onMatchDeletionRequested_(line: number|null) {
+      // Unfreeze `activeQueryId` so post-deletion results are accepted.
+      this.unfreezeActiveQueryId();
+      this.pendingDeletionLine_ = line;
+    }
   }
 
   return SearchboxMixin;
@@ -1266,6 +1346,7 @@ export interface SearchboxMixinInterface extends
       isOnFocus: boolean): void;
   getTabId(): number|null;
   shouldAppendDotComOnCtrlEnter(): boolean;
+  shouldPreserveSelectionOnMatchDeletion(): boolean;
   updateInputForSelection(nextSelection: OmniboxPopupSelection, key: string):
       void;
 }

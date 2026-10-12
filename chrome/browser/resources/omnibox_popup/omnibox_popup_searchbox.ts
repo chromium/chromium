@@ -612,6 +612,10 @@ export class OmniboxPopupSearchboxElement extends
     return true;
   }
 
+  override shouldPreserveSelectionOnMatchDeletion(): boolean {
+    return true;
+  }
+
   override isBackgroundTabNavigation(e: KeyboardEvent|MouseEvent): boolean {
     // Duplicate logic from
     // `searchbox::ComputeOpenDispositionFromModifiersAndLogToUma()` to

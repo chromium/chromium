@@ -1191,10 +1191,6 @@ IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest, NavigateSuggestions) {
 // via Shift-Delete.
 IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest,
                        NavigateSuggestionsTab) {
-  FAILS_IN_MODE(Mode::kFull,
-                "Shift-del to delete suggestion doesn't work in full "
-                "(crbug.com/559671477); also behavior on deleting with button "
-                " is different");
   history::HistoryService* history_service =
       HistoryServiceFactory::GetForProfile(this->browser()->GetProfile(),
                                            ServiceAccessType::EXPLICIT_ACCESS);

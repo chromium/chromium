@@ -121,6 +121,12 @@ class TestSearchboxMixinElement extends TestElementBase {
   override shouldAppendDotComOnCtrlEnter() {
     return this.shouldAppendDotCom;
   }
+
+  preserveSelectionOnMatchDeletion = false;
+
+  override shouldPreserveSelectionOnMatchDeletion() {
+    return this.preserveSelectionOnMatchDeletion;
+  }
 }
 
 customElements.define(TestSearchboxMixinElement.is, TestSearchboxMixinElement);
@@ -133,6 +139,60 @@ function simulateUserTextInput(
     data: value ? value.slice(-1) : '',
   }));
   return microtasksFinished();
+}
+
+/**
+ * Types 'https://local' and responds with deletable matches, the first of which
+ * is the default match, like in the interactive
+ * `WebUILocationBarInteractiveUiTest.NavigateSuggestionsTab` test.
+ */
+async function showDeletableMatches(element: TestSearchboxMixinElement):
+    Promise<AutocompleteMatch[]> {
+  const matches = [
+    createUrlMatch({
+      allowedToBeDefaultMatch: true,
+      inlineAutocompletion: '.test',
+      fillIntoEdit: 'https://local.test',
+      destinationUrl: 'https://local.test/',
+      supportsDeletion: true,
+    }),
+    ...['https://local', 'https://local.test/1', 'https://local.test/2'].map(
+        url => createUrlMatch({
+          fillIntoEdit: url,
+          destinationUrl: url,
+          supportsDeletion: true,
+        })),
+  ];
+  await simulateUserTextInput(element.getInputElement(), 'https://local');
+  element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+    queryId: element.activeQueryId,
+    input: 'https://local',
+    matches,
+  }));
+  await microtasksFinished();
+  return matches;
+}
+
+/**
+ * Waits for the deletion of `matches[line]` to be requested, then responds
+ * with the post-deletion result. Returns the remaining matches.
+ */
+async function respondToMatchDeletion(
+    element: TestSearchboxMixinElement, testProxy: TestSearchboxBrowserProxy,
+    matches: AutocompleteMatch[], line: number): Promise<AutocompleteMatch[]> {
+  const args = await testProxy.handler.whenCalled('deleteAutocompleteMatch');
+  assertEquals(line, args.line);
+  assertEquals(matches[line]!.destinationUrl, args.url);
+  testProxy.handler.reset();
+
+  const remainingMatches = matches.filter((_, i) => i !== line);
+  element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+    queryId: element.activeQueryId,
+    input: element.result!.input,
+    matches: remainingMatches,
+  }));
+  await microtasksFinished();
+  return remainingMatches;
 }
 
 /**
@@ -1002,6 +1062,28 @@ suite('SearchboxMixinTest', () => {
     assertEquals(1, matchEls.length);
     assertTrue(matchEls[0]!.hasAttribute('selected'));
   });
+
+  test(
+      'selection stays on the line of a removed match when opted in',
+      async () => {
+        element.preserveSelectionOnMatchDeletion = true;
+        const mockInput = element.getInputElement();
+        const matches = await showDeletableMatches(element);
+        assertEquals(0, element.selectedMatchIndex);
+
+        mockInput.inputElement.dispatchEvent(createKeyboardEvent('ArrowDown'));
+        await microtasksFinished();
+        mockInput.inputElement.dispatchEvent(createKeyboardEvent('ArrowDown'));
+        await microtasksFinished();
+        assertEquals(2, element.selectedMatchIndex);
+
+        mockInput.inputElement.dispatchEvent(
+            createKeyboardEvent('Delete', {shiftKey: true}));
+        await respondToMatchDeletion(element, testProxy, matches, 2);
+
+        assertEquals(2, element.selectedMatchIndex);
+        assertEquals('https://local.test/2', mockInput.inputElement.value);
+      });
 
   test('autocomplete response', async () => {
     const mockInput = element.getInputElement();
@@ -4152,5 +4234,145 @@ suite('SearchboxMixinVirtualFocusTest', () => {
         await microtasksFinished();
 
         assertDeepEquals(kDefaultSelection, element.selection);
+      });
+
+  test(
+      'post-deletion selects the default match when not opted in', async () => {
+        const mockInput = element.getInputElement();
+        const matches = await showDeletableMatches(element);
+        mockInput.inputElement.dispatchEvent(createKeyboardEvent('ArrowDown'));
+        await microtasksFinished();
+        mockInput.inputElement.dispatchEvent(createKeyboardEvent('ArrowDown'));
+        await microtasksFinished();
+        assertEquals(2, element.selection.line);
+
+        mockInput.inputElement.dispatchEvent(
+            createKeyboardEvent('Delete', {shiftKey: true}));
+        await respondToMatchDeletion(element, testProxy, matches, 2);
+
+        assertDeepEquals(
+            {line: 0, state: SelectionLineState.kNormal, actionIndex: 0},
+            element.selection);
+        assertEquals('https://local.test', mockInput.inputElement.value);
+      });
+
+  test(
+      'post-deletion keeps the selection on the deleted line when opted in',
+      async () => {
+        element.preserveSelectionOnMatchDeletion = true;
+        const mockInput = element.getInputElement();
+        let matches = await showDeletableMatches(element);
+        mockInput.inputElement.dispatchEvent(createKeyboardEvent('ArrowDown'));
+        await microtasksFinished();
+        mockInput.inputElement.dispatchEvent(createKeyboardEvent('ArrowDown'));
+        await microtasksFinished();
+        assertEquals(2, element.selection.line);
+        assertEquals('https://local.test/1', mockInput.inputElement.value);
+
+        // The next match moves up into the deleted line and is selected.
+        mockInput.inputElement.dispatchEvent(
+            createKeyboardEvent('Delete', {shiftKey: true}));
+        matches = await respondToMatchDeletion(element, testProxy, matches, 2);
+        assertDeepEquals(
+            {line: 2, state: SelectionLineState.kNormal, actionIndex: 0},
+            element.selection);
+        assertEquals('https://local.test/2', mockInput.inputElement.value);
+        assertEquals('', mockInput.lastInput()?.inline);
+
+        // Deleting the last match selects the new last match.
+        mockInput.inputElement.dispatchEvent(
+            createKeyboardEvent('Delete', {shiftKey: true}));
+        matches = await respondToMatchDeletion(element, testProxy, matches, 2);
+        assertDeepEquals(
+            {line: 1, state: SelectionLineState.kNormal, actionIndex: 0},
+            element.selection);
+        assertEquals('https://local', mockInput.inputElement.value);
+
+        // Ending up on the default match restores its inline autocompletion.
+        mockInput.inputElement.dispatchEvent(
+            createKeyboardEvent('Delete', {shiftKey: true}));
+        await respondToMatchDeletion(element, testProxy, matches, 1);
+        assertDeepEquals(
+            {line: 0, state: SelectionLineState.kNormal, actionIndex: 0},
+            element.selection);
+        assertEquals('https://local.test', mockInput.inputElement.value);
+        assertEquals('.test', mockInput.lastInput()?.inline);
+      });
+
+  test(
+      'post-deletion keeps the selection on the line of the activated ' +
+          'remove button when opted in',
+      async () => {
+        element.preserveSelectionOnMatchDeletion = true;
+        const mockInput = element.getInputElement();
+        const matches = await showDeletableMatches(element);
+        element.setSelection({
+          line: 2,
+          state: SelectionLineState.kFocusedButtonRemoveSuggestion,
+          actionIndex: 0,
+        });
+        await microtasksFinished();
+
+        mockInput.inputElement.dispatchEvent(createKeyboardEvent('Enter'));
+        await respondToMatchDeletion(element, testProxy, matches, 2);
+
+        assertDeepEquals(
+            {line: 2, state: SelectionLineState.kNormal, actionIndex: 0},
+            element.selection);
+        assertEquals('https://local.test/2', mockInput.inputElement.value);
+      });
+
+  test(
+      'post-deletion selects the line of the clicked remove button when ' +
+          'opted in',
+      async () => {
+        element.preserveSelectionOnMatchDeletion = true;
+        const mockInput = element.getInputElement();
+        const matches = await showDeletableMatches(element);
+        assertEquals(0, element.selection.line);
+
+        // Like `OmniboxEditModel::TryDeletingPopupLine()`, the selection moves
+        // to the deleted line, clamped to the remaining matches.
+        const matchEls =
+            element.getDropdownElement().shadowRoot.querySelectorAll(
+                'cr-searchbox-match');
+        matchEls[3]!.$.remove.click();
+        await respondToMatchDeletion(element, testProxy, matches, 3);
+
+        assertDeepEquals(
+            {line: 2, state: SelectionLineState.kNormal, actionIndex: 0},
+            element.selection);
+        assertEquals('https://local.test/1', mockInput.inputElement.value);
+      });
+
+  test(
+      'post-deletion keeps nothing selected after clicking a remove button ' +
+          'with nothing selected when opted in',
+      async () => {
+        element.preserveSelectionOnMatchDeletion = true;
+        const mockInput = element.getInputElement();
+        const matches = [0, 1, 2].map(i => {
+          return createSearchMatchForTesting({
+            supportsDeletion: true,
+            fillIntoEdit: `zps ${i}`,
+            destinationUrl: `https://example.com/zps${i}`,
+          });
+        });
+        element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+          queryId: element.activeQueryId,
+          input: '',
+          matches,
+        }));
+        await microtasksFinished();
+        assertDeepEquals(kDefaultSelection, element.selection);
+
+        const matchEls =
+            element.getDropdownElement().shadowRoot.querySelectorAll(
+                'cr-searchbox-match');
+        matchEls[1]!.$.remove.click();
+        await respondToMatchDeletion(element, testProxy, matches, 1);
+
+        assertDeepEquals(kDefaultSelection, element.selection);
+        assertEquals('', mockInput.inputElement.value);
       });
 });

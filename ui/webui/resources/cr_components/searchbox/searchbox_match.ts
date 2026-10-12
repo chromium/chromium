@@ -394,7 +394,7 @@ export class SearchboxMatchElement extends CrLitElement {
     e.preventDefault();   // Prevents default browser action (navigation).
     e.stopPropagation();  // Prevents <iron-selector> from selecting the match.
 
-    this.fire('match-remove');
+    this.fire('match-remove', this.matchIndex);
     this.pageHandler_.deleteAutocompleteMatch(
         this.matchIndex, this.match.destinationUrl);
   }
