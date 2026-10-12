@@ -22,6 +22,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ttc/core/features.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -35,6 +36,7 @@
 #include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_ui.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
@@ -1079,4 +1081,64 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
   // Cleanup.
   model_->UpdatePinnedState(action1, false);
   model_->UpdatePinnedState(action2, false);
+}
+
+class WebUIPinnedToolbarActionsAiOverlayBrowserTest
+    : public WebUIPinnedToolbarActionsBrowserTest {
+ public:
+  WebUIPinnedToolbarActionsAiOverlayBrowserTest() {
+    feature_list_.InitAndEnableFeature(features::kAiOverlayDialog);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsAiOverlayBrowserTest,
+                       AutoPinnedOnStartup) {
+  EXPECT_TRUE(model_->Contains(kActionShowAiOverlayDialog));
+  UnpinAction(kActionShowAiOverlayDialog,
+              toolbar_ui_api::mojom::PinnedToolbarAction::kShowAiOverlayDialog);
+  PinAction(kActionShowAiOverlayDialog,
+            toolbar_ui_api::mojom::PinnedToolbarAction::kShowAiOverlayDialog);
+}
+
+class WebUIPinnedToolbarActionsByDateHistoryBrowserTest
+    : public WebUIPinnedToolbarActionsBrowserTest {
+ public:
+  WebUIPinnedToolbarActionsByDateHistoryBrowserTest() {
+    feature_list_.InitAndEnableFeature(features::kByDateHistoryInSidePanel);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsByDateHistoryBrowserTest,
+                       PinUnpinHistory) {
+  PinAction(kActionSidePanelShowHistory,
+            toolbar_ui_api::mojom::PinnedToolbarAction::kSidePanelShowHistory);
+  UnpinAction(
+      kActionSidePanelShowHistory,
+      toolbar_ui_api::mojom::PinnedToolbarAction::kSidePanelShowHistory);
+}
+
+class WebUIPinnedToolbarActionsTtcBrowserTest
+    : public WebUIPinnedToolbarActionsBrowserTest {
+ public:
+  WebUIPinnedToolbarActionsTtcBrowserTest() {
+    feature_list_.InitAndEnableFeature(ttc::kTtc);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsTtcBrowserTest,
+                       AutoPinnedOnStartup) {
+  EXPECT_TRUE(model_->Contains(kActionTtcToolbar));
+  UnpinAction(kActionTtcToolbar,
+              toolbar_ui_api::mojom::PinnedToolbarAction::kTtcToolbar);
+  PinAction(kActionTtcToolbar,
+            toolbar_ui_api::mojom::PinnedToolbarAction::kTtcToolbar);
 }

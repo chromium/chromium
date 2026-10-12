@@ -39,6 +39,10 @@
 #include "ui/color/color_provider.h"
 #include "ui/views/controls/webview/webview.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/constants/chromeos_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 WebUIPinnedToolbarActionsTestBase::WebUIPinnedToolbarActionsTestBase()
     : WebUIToolbarWebViewTestBase(
           {features::kInitialWebUI, features::kWebUIPinnedToolbarActions,
@@ -55,7 +59,12 @@ WebUIPinnedToolbarActionsTestBase::WebUIPinnedToolbarActionsTestBase()
            contextual_tasks::kContextualTasks,
            contextual_tasks::kContextualTasksForceEntryPointEligibility,
            // Facilitate testing kActionSendSharedTabGroupFeedback
-           data_sharing::features::kDataSharingFeature},
+           data_sharing::features::kDataSharingFeature,
+// Facilitate testing kActionSidePanelShowGlic
+#if BUILDFLAG(IS_CHROMEOS)
+           chromeos::features::kFeatureManagementGlic,
+#endif  // BUILDFLAG(IS_CHROMEOS)
+           features::kGlic},
           {}),
       kActionMappings{
           {kActionNewIncognitoWindow,
@@ -127,6 +136,8 @@ WebUIPinnedToolbarActionsTestBase::WebUIPinnedToolbarActionsTestBase()
                kSendSharedTabGroupFeedback},
           {kActionSidePanelShowComments,
            toolbar_ui_api::mojom::PinnedToolbarAction::kSidePanelShowComments},
+          {kActionSidePanelShowGlic,
+           toolbar_ui_api::mojom::PinnedToolbarAction::kSidePanelShowGlic},
       } {
 }
 
@@ -137,11 +148,11 @@ void WebUIPinnedToolbarActionsTestBase::SetUpOnMainThread() {
   WebUIToolbarWebViewTestBase::SetUpOnMainThread();
   // Make everything pinnable and visible by default to facilitate testing.
   for (const auto& mapping : kActionMappings) {
-    SetPinnableProperty(mapping.first, true);
     if (actions::ActionItem* action_item =
             actions::ActionManager::Get().FindAction(
                 mapping.first,
                 BrowserActions::From(browser())->root_action_item())) {
+      SetPinnableProperty(mapping.first, true);
       action_item->SetVisible(true);
     }
   }

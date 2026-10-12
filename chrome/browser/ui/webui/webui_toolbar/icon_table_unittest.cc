@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "build/branding_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_test_utils.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
@@ -512,6 +513,23 @@ TEST_F(IconTableTest, ExtensionIconsAreMapped) {
   for (const gfx::VectorIcon* icon : extension_icons) {
     EXPECT_TRUE(icon_table_.RegisterVectorIcon(*icon).has_value())
         << "Missing mapping for extension icon: "
+        << (icon->name ? icon->name : "(null)");
+  }
+}
+
+TEST_F(IconTableTest, PinnedToolbarActionIconsAreMapped) {
+  const gfx::VectorIcon* pinned_action_icons[] = {
+      &vector_icons::kMicFilledIcon,           &vector_icons::kMicOldIcon,
+      &vector_icons::kMicChromeRefreshOldIcon, &vector_icons::kScienceIcon,
+      &vector_icons::kScienceOldIcon,
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      &vector_icons::kAudioSparkIcon,
+#endif
+  };
+
+  for (const gfx::VectorIcon* icon : pinned_action_icons) {
+    EXPECT_TRUE(icon_table_.RegisterVectorIcon(*icon).has_value())
+        << "Missing mapping for pinned action icon: "
         << (icon->name ? icon->name : "(null)");
   }
 }

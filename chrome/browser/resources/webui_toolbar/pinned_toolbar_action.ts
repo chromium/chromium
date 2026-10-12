@@ -219,6 +219,16 @@ export class PinnedToolbarActionElement extends PinnedToolbarActionElementBase {
         return ContextMenuType.kPinnedActionSendSharedTabGroupFeedback;
       case PinnedToolbarAction.kSidePanelShowComments:
         return ContextMenuType.kPinnedActionSidePanelShowComments;
+      case PinnedToolbarAction.kShowAiOverlayDialog:
+        return ContextMenuType.kPinnedActionShowAiOverlayDialog;
+      case PinnedToolbarAction.kTtcToolbar:
+        return ContextMenuType.kPinnedActionTtcToolbar;
+      case PinnedToolbarAction.kSidePanelShowHistory:
+        return ContextMenuType.kPinnedActionSidePanelShowHistory;
+      case PinnedToolbarAction.kShowChromeLabs:
+        return ContextMenuType.kPinnedActionShowChromeLabs;
+      case PinnedToolbarAction.kSidePanelShowGlic:
+        return ContextMenuType.kPinnedActionSidePanelShowGlic;
       case PinnedToolbarAction.kUnspecified:
       case PinnedToolbarAction.kDivider:
         return ContextMenuType.kUnspecified;
