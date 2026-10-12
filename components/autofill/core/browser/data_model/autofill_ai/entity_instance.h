@@ -312,8 +312,8 @@ class EntityInstance final {
     // Returns `management_url` if `kAutofillAiWalletServerProvidedDeepLink` is
     // enabled and `management_url` is provided. Otherwise, returns the fallback
     // Wallet URL for an entity with `type` and `guid`.
-    std::string GetManagementUrlWithFallback(EntityType type,
-                                             const EntityId& guid) const;
+    GURL GetManagementUrlWithFallback(EntityType type,
+                                      const EntityId& guid) const;
 
     // Canonical management URL for this entity on wallet.google.com.
     // Empty if not provided by the server or before sync propagation.

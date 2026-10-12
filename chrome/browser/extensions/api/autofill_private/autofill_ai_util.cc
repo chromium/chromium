@@ -114,7 +114,8 @@ void EntityInstanceToPrivateApiEntityInstanceWithLabels(
           std::get<EntityInstance::WalletRecordTypePayload>(
               entity_instance.record_type_data())
               .GetManagementUrlWithFallback(entity_instance.type(),
-                                            entity_instance.guid());
+                                            entity_instance.guid())
+              .spec();
     }
     entity_instance_with_labels.is_read_only =
         entity_instance.are_attributes_read_only().value();

@@ -522,10 +522,10 @@ void LogEntitySaveOrUpdate(AutofillAIEntityEditMode mode,
   CHECK(_entityInstance.has_value());
   CHECK(std::holds_alternative<EntityInstance::WalletRecordTypePayload>(
       _entityInstance->record_type_data()));
-  return GURL(std::get<autofill::EntityInstance::WalletRecordTypePayload>(
-                  _entityInstance->record_type_data())
-                  .GetManagementUrlWithFallback(_entityInstance->type(),
-                                                _entityInstance->guid()));
+  return std::get<autofill::EntityInstance::WalletRecordTypePayload>(
+             _entityInstance->record_type_data())
+      .GetManagementUrlWithFallback(_entityInstance->type(),
+                                    _entityInstance->guid());
 }
 
 #pragma mark - Private

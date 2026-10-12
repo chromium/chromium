@@ -404,7 +404,8 @@ EntityDataManagerAndroid::GetEntitiesWithLabels(JNIEnv* env) {
                     std::get<EntityInstance::WalletRecordTypePayload>(
                         entity->record_type_data())
                         .GetManagementUrlWithFallback(entity->type(),
-                                                      entity->guid()))
+                                                      entity->guid())
+                        .spec())
               : std::nullopt);
     }
   }

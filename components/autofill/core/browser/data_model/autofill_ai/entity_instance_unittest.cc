@@ -23,6 +23,7 @@
 #include "components/personal_context/proto/features/at_memory.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace autofill {
 namespace {
@@ -1040,7 +1041,7 @@ TEST_P(GetManagementUrlWithFallbackTest, ResolvesExpectedUrl) {
   EXPECT_EQ(payload.GetManagementUrlWithFallback(
                 EntityType(test_case.entity_type),
                 EntityInstance::EntityId("123-456:789")),
-            test_case.expected_url)
+            GURL(test_case.expected_url))
       << test_case.description;
 }
 

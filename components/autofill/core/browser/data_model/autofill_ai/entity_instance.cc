@@ -47,6 +47,7 @@
 #include "components/autofill/core/common/dense_set.h"
 #include "components/personal_context/proto/features/at_memory.pb.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
+#include "url/gurl.h"
 
 namespace autofill {
 
@@ -831,8 +832,7 @@ EntityInstance::RecordType EntityInstance::record_type() const {
                     record_type_data_);
 }
 
-std::string
-EntityInstance::WalletRecordTypePayload::GetManagementUrlWithFallback(
+GURL EntityInstance::WalletRecordTypePayload::GetManagementUrlWithFallback(
     EntityType type,
     const EntityId& guid) const {
   if (base::FeatureList::IsEnabled(
@@ -841,15 +841,15 @@ EntityInstance::WalletRecordTypePayload::GetManagementUrlWithFallback(
       // We revalidate it here to protect the code against, e.g.,
       // reading corrupted data from the local entity database.
       IsValidWalletManagementUrl(management_url)) {
-    return management_url.spec();
+    return management_url;
   }
   switch (type.name()) {
     case EntityTypeName::kVehicle:
     case EntityTypeName::kFlightReservation:
-      return kWalletPassesPageURL;
+      return GURL(kWalletPassesPageURL);
     case EntityTypeName::kOrder:
     case EntityTypeName::kShipment:
-      return kWalletTransactionsPageURL;
+      return GURL(kWalletTransactionsPageURL);
     case EntityTypeName::kPassport:
     case EntityTypeName::kDriversLicense:
     case EntityTypeName::kNationalIdCard:
@@ -859,15 +859,15 @@ EntityInstance::WalletRecordTypePayload::GetManagementUrlWithFallback(
       // enabled.
       if (!base::FeatureList::IsEnabled(
               features::kAutofillAiWalletPrivatePassesDeepLink)) {
-        return kWalletPassesPageURL;
+        return GURL(kWalletPassesPageURL);
       }
       // TODO(crbug.com/560061580): Remove guid from the parameters of
       // `GetManagementUrlWithFallback` once
       // kAutofillAiServerProvidedDeeplink is fully launched and supersedes
       // kAutofillAiWalletPrivatePassesDeepLink.
-      return base::StringPrintf(
+      return GURL(base::StringPrintf(
           kWalletPrivatePassPageURL,
-          base::EscapeQueryParamValue(guid.value(), /*use_plus=*/false));
+          base::EscapeQueryParamValue(guid.value(), /*use_plus=*/false)));
   }
   NOTREACHED();
 }
