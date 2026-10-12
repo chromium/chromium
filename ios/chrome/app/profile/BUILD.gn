@@ -483,6 +483,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/first_run/public:best_features_item",
     "//ios/chrome/browser/first_run/public:features",
+    "//ios/chrome/browser/intelligence/actor/metrics",
     "//ios/chrome/browser/intelligence/actor/model",
     "//ios/chrome/browser/intelligence/actor/public:actor_task_ui_protocols",
     "//ios/chrome/browser/intelligence/actor/public:actor_types",

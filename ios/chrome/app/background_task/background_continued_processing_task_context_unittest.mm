@@ -767,6 +767,49 @@ TEST_F(BackgroundContinuedProcessingTaskContextTest,
     EXPECT_TRUE(expirationCalledBeforeOsCompletion);
     EXPECT_TRUE(finishHandlerCalled);
     EXPECT_TRUE(context.isCompleted);
+    EXPECT_FALSE(context.isCancelled);
+  }
+}
+
+// Tests that if the underlying task's progress was cancelled (e.g. from the
+// Live Activity) when its expiration handler fires, the context records
+// `cancelled`.
+TEST_F(BackgroundContinuedProcessingTaskContextTest,
+       TestTaskExpirationRecordsCancelledProgress) {
+  if (!@available(iOS 26.0, *)) {
+    GTEST_SKIP() << "BGContinuedProcessingTask requires iOS 26.0+.";
+  }
+
+  if (@available(iOS 26.0, *)) {
+    __block BOOL cancelledInExpirationHandler = NO;
+    BackgroundContinuedProcessingTaskContext* __block weakContext = nil;
+    BackgroundContinuedProcessingTaskContext* context =
+        CreateTestContext(@"cancelled.test.id", ^{
+          cancelledInExpirationHandler = weakContext.isCancelled;
+        });
+    weakContext = context;
+
+    NSProgress* progress =
+        [NSProgress progressWithTotalUnitCount:kDefaultTotalUnitsOfProgress];
+    __block void (^capturedExpirationHandler)(void) = nil;
+    id mockTask = OCMClassMock([BGContinuedProcessingTask class]);
+    OCMStub([(BGContinuedProcessingTask*)mockTask progress])
+        .andReturn(progress);
+    OCMStub(
+        [mockTask setExpirationHandler:[OCMArg checkWithBlock:^BOOL(id value) {
+                    capturedExpirationHandler = [value copy];
+                    return YES;
+                  }]]);
+
+    [context attachUnderlyingTask:mockTask];
+    ASSERT_NE(capturedExpirationHandler, nil);
+
+    [progress cancel];
+    capturedExpirationHandler();
+
+    EXPECT_TRUE(cancelledInExpirationHandler);
+    EXPECT_TRUE(context.isCompleted);
+    EXPECT_TRUE(context.isCancelled);
   }
 }
 

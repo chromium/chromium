@@ -254,6 +254,29 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_constants.h:IncognitoLockSettingStartupState) -->
 
+<!-- LINT.IfChange(IOSActorBackgroundTaskEndReason) -->
+
+<enum name="IOSActorBackgroundTaskEndReason">
+  <int value="0" label="Actor task stopped successfully"/>
+  <int value="1" label="Actor task stopped internally with failure"/>
+  <int value="2" label="Actor task waiting on user (yielded or paused)"/>
+  <int value="3" label="Expired by system"/>
+  <int value="4" label="Cancelled from the Live Activity by user"/>
+  <int value="5" label="Actor task destroyed while holding the context"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/intelligence/actor/metrics/actor_background_task_metrics.h:IOSActorBackgroundTaskEndReason) -->
+
+<!-- LINT.IfChange(IOSActorBackgroundTaskIneligibilityReason) -->
+
+<enum name="IOSActorBackgroundTaskIneligibilityReason">
+  <int value="0" label="Actor backgrounding disabled"/>
+  <int value="1" label="Already holds a live background task context"/>
+  <int value="2" label="Task state does not keep a background task alive"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/intelligence/actor/metrics/actor_background_task_metrics.h:IOSActorBackgroundTaskIneligibilityReason) -->
+
 <enum name="IOSAddressValidationOutcome">
   <int value="0" label="Address is valid for Long Press"/>
   <int value="1" label="Address is valid for One Tap"/>

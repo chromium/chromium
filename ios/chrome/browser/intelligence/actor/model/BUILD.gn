@@ -26,6 +26,7 @@ source_set("model") {
   public_deps = [
     "//components/actor/core:journal",
     "//components/sessions:session_id",
+    "//ios/chrome/browser/intelligence/actor/metrics",
   ]
   deps = [
     ":tab_helper",

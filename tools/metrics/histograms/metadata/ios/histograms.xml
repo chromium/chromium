@@ -260,6 +260,55 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/ios/chrome/browser/promos_manager/model/constants.h:Promo) -->
 
+<histogram name="IOS.Actor.BackgroundTask.Duration" units="ms"
+    expires_after="2027-04-01">
+  <owner>nicolasmacbeth@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    How long an actor task held a background continued processing task, from the
+    moment the system started the task and handed its context to the actor until
+    the actor ended it. Recorded once per background task when it ends. iOS
+    only.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Actor.BackgroundTask.EndReason"
+    enum="IOSActorBackgroundTaskEndReason" expires_after="2027-04-01">
+  <owner>nicolasmacbeth@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Tracks why an actor task's background continued processing task ended.
+    Recorded once per background task when it is finalized. iOS only.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Actor.BackgroundTask.IneligibilityReason"
+    enum="IOSActorBackgroundTaskIneligibilityReason" expires_after="2027-04-01">
+  <owner>nicolasmacbeth@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Records a single ineligibility reason when an active actor task is not
+    eligible to request a background continued processing task, on background
+    entry. Logged whenever the eligibility check fails. Each ineligibility
+    reason gets recorded individually, therefore this histogram cannot be
+    meaningfully used for eligibility distribution. Instead use the
+    IOS.Actor.BackgroundTask.RequestEligibility histogram for that purpose. iOS
+    only.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Actor.BackgroundTask.RequestEligibility" enum="Boolean"
+    expires_after="2027-04-01">
+  <owner>nicolasmacbeth@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Records whether an active actor task is eligible to request a background
+    continued processing task when the app enters the background. Recorded once
+    per active actor task on each background entry. Nothing is recorded when
+    there are no active actor tasks. iOS only.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Actor.PageStability.Outcome"
     enum="IOSPageStabilityOutcome" expires_after="2027-02-25">
   <owner>kaklilu@google.com</owner>

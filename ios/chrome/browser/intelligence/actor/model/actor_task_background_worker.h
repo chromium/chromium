@@ -11,7 +11,9 @@
 #import "base/memory/raw_ptr.h"
 #import "base/memory/raw_ref.h"
 #import "base/memory/weak_ptr.h"
+#import "base/time/time.h"
 #import "base/timer/timer.h"
+#import "ios/chrome/browser/intelligence/actor/metrics/actor_background_task_metrics.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 
 @class BackgroundContinuedProcessingTaskContext;
@@ -75,8 +77,9 @@ class ActorTaskBackgroundWorker {
   base::WeakPtr<ActorTaskBackgroundWorker> GetWeakPtr();
 
   // Returns whether a background task should be requested for the owning task
-  // now: backgrounding is enabled, no live context is held and the task's
-  // current state should keep a background task alive.
+  // now (backgrounding is enabled, no live context is held and the task's
+  // current state should keep a background task alive) and records the request
+  // eligibility and any ineligibility reasons.
   bool ShouldRequestBackgroundTask() const;
 
   // Sets the background task context and applies the latest task update as its
@@ -103,6 +106,10 @@ class ActorTaskBackgroundWorker {
  private:
   friend class ActorTaskBackgroundWorkerTest;
 
+  // Returns whether a background task should be requested for the owning task
+  // now, recording any applicable ineligibility reasons.
+  bool GetBackgroundTaskRequestEligibility() const;
+
   // Updates the context subtitle to `task_update`. No-op if `task_update` is
   // empty or identical to the current value.
   void UpdateBackgroundTaskSubtitle(const std::string& task_update);
@@ -110,9 +117,9 @@ class ActorTaskBackgroundWorker {
   // Advances the context progress by one discrete step.
   void IncrementBackgroundTaskProgress();
 
-  // Ends the background task: marks the context completed with `success`
-  // (no-op if it already completed or expired) and drops the context reference.
-  void FinalizeBackgroundTask(bool success);
+  // Finalizes the background task for `reason` and records the end reason &
+  // duration.
+  void FinalizeBackgroundTask(ActorBackgroundTaskEndReason reason);
 
   // Starts the JavaScript heartbeat ping timer if backgrounding is enabled and
   // the timer is not already running.
@@ -145,6 +152,9 @@ class ActorTaskBackgroundWorker {
   // Active context for background continued processing, if requested.
   __strong BackgroundContinuedProcessingTaskContext* background_task_context_ =
       nil;
+
+  // When `background_task_context_` was received.
+  base::TimeTicks background_task_started_at_;
 
   // Repeating timer for sending JavaScript heartbeat pings.
   base::RepeatingTimer heartbeat_timer_;

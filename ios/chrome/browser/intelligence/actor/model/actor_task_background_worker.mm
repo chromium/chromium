@@ -4,8 +4,11 @@
 
 #import "ios/chrome/browser/intelligence/actor/model/actor_task_background_worker.h"
 
+#import <string_view>
+
 #import "base/check.h"
 #import "base/functional/bind.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
@@ -44,6 +47,39 @@ bool ShouldKeepBackgroundTaskAlive(ActorTaskState task_state) {
   }
 }
 
+// Returns whether the context is completed with success when the background
+// task ends for `reason`.
+bool IsSuccessfulEndReason(ActorBackgroundTaskEndReason reason) {
+  switch (reason) {
+    case ActorBackgroundTaskEndReason::kSucceeded:
+    case ActorBackgroundTaskEndReason::kWaitingOnUser:
+      return true;
+    case ActorBackgroundTaskEndReason::kFailed:
+    case ActorBackgroundTaskEndReason::kExpired:
+    case ActorBackgroundTaskEndReason::kCancelled:
+    case ActorBackgroundTaskEndReason::kDestroyed:
+      return false;
+  }
+}
+
+// Returns the journal name of `reason`.
+std::string_view EndReasonToString(ActorBackgroundTaskEndReason reason) {
+  switch (reason) {
+    case ActorBackgroundTaskEndReason::kSucceeded:
+      return "succeeded";
+    case ActorBackgroundTaskEndReason::kFailed:
+      return "failed";
+    case ActorBackgroundTaskEndReason::kWaitingOnUser:
+      return "waiting_on_user";
+    case ActorBackgroundTaskEndReason::kExpired:
+      return "expired";
+    case ActorBackgroundTaskEndReason::kCancelled:
+      return "cancelled";
+    case ActorBackgroundTaskEndReason::kDestroyed:
+      return "destroyed";
+  }
+}
+
 }  // namespace
 
 ActorTaskBackgroundWorker::ActorTaskBackgroundWorker(
@@ -56,7 +92,7 @@ ActorTaskBackgroundWorker::ActorTaskBackgroundWorker(
 
 ActorTaskBackgroundWorker::~ActorTaskBackgroundWorker() {
   StopHeartbeatTimer();
-  FinalizeBackgroundTask(/*success=*/false);
+  FinalizeBackgroundTask(ActorBackgroundTaskEndReason::kDestroyed);
 }
 
 const std::string& ActorTaskBackgroundWorker::title() const {
@@ -69,13 +105,10 @@ ActorTaskBackgroundWorker::GetWeakPtr() {
 }
 
 bool ActorTaskBackgroundWorker::ShouldRequestBackgroundTask() const {
-  if (!IsGeminiActorBackgroundingEnabled()) {
-    return false;
-  }
-  if (background_task_context_ && !background_task_context_.completed) {
-    return false;
-  }
-  return ShouldKeepBackgroundTaskAlive(delegate_->GetTaskState());
+  const bool is_eligible = GetBackgroundTaskRequestEligibility();
+  base::UmaHistogramBoolean(kActorBackgroundTaskRequestEligibilityHistogram,
+                            is_eligible);
+  return is_eligible;
 }
 
 void ActorTaskBackgroundWorker::SetContext(
@@ -84,6 +117,10 @@ void ActorTaskBackgroundWorker::SetContext(
     return;
   }
   background_task_context_ = context;
+  background_task_started_at_ = base::TimeTicks::Now();
+  LogJournalEvent(*journal_, GURL(), task_id_,
+                  "ActorTaskBackgroundWorker::SetContext",
+                  {{"status", "background_task_started"}});
   UpdateBackgroundTaskSubtitle(delegate_->GetLastTaskUpdate());
 }
 
@@ -107,9 +144,9 @@ void ActorTaskBackgroundWorker::OnStateChanged(ActorTaskState new_state) {
     UpdateBackgroundTaskSubtitle(delegate_->GetLastTaskUpdate());
     StartHeartbeatTimer();
   } else if (!ShouldKeepBackgroundTaskAlive(new_state)) {
-    // End the background task before long waits (e.g., paused) to avoid
-    // stalling system progress.
-    FinalizeBackgroundTask(/*success=*/true);
+    // End the background task when waiting on the user (e.g., paused, yielded)
+    // to avoid stalling system progress.
+    FinalizeBackgroundTask(ActorBackgroundTaskEndReason::kWaitingOnUser);
   }
 }
 
@@ -119,10 +156,38 @@ void ActorTaskBackgroundWorker::OnWillExecuteTool() {
 
 void ActorTaskBackgroundWorker::OnStopped(bool success) {
   StopHeartbeatTimer();
-  FinalizeBackgroundTask(success);
+  FinalizeBackgroundTask(success ? ActorBackgroundTaskEndReason::kSucceeded
+                                 : ActorBackgroundTaskEndReason::kFailed);
 }
 
 #pragma mark - Private
+
+bool ActorTaskBackgroundWorker::GetBackgroundTaskRequestEligibility() const {
+  bool is_eligible = true;
+
+  if (!IsGeminiActorBackgroundingEnabled()) {
+    base::UmaHistogramEnumeration(
+        kActorBackgroundTaskIneligibilityReasonHistogram,
+        ActorBackgroundTaskIneligibilityReason::kBackgroundingDisabled);
+    is_eligible = false;
+  }
+
+  if (background_task_context_ && !background_task_context_.completed) {
+    base::UmaHistogramEnumeration(
+        kActorBackgroundTaskIneligibilityReasonHistogram,
+        ActorBackgroundTaskIneligibilityReason::kAlreadyHasContext);
+    is_eligible = false;
+  }
+
+  if (!ShouldKeepBackgroundTaskAlive(delegate_->GetTaskState())) {
+    base::UmaHistogramEnumeration(
+        kActorBackgroundTaskIneligibilityReasonHistogram,
+        ActorBackgroundTaskIneligibilityReason::kStateDoesNotKeepAlive);
+    is_eligible = false;
+  }
+
+  return is_eligible;
+}
 
 void ActorTaskBackgroundWorker::UpdateBackgroundTaskSubtitle(
     const std::string& task_update) {
@@ -142,15 +207,34 @@ void ActorTaskBackgroundWorker::IncrementBackgroundTaskProgress() {
   }
 }
 
-void ActorTaskBackgroundWorker::FinalizeBackgroundTask(bool success) {
+void ActorTaskBackgroundWorker::FinalizeBackgroundTask(
+    ActorBackgroundTaskEndReason reason) {
   if (!background_task_context_) {
     return;
   }
-
-  if (!background_task_context_.completed) {
-    [background_task_context_ setTaskCompletedWithSuccess:success];
-  }
+  BackgroundContinuedProcessingTaskContext* context = background_task_context_;
   background_task_context_ = nil;
+
+  ActorBackgroundTaskEndReason effective_reason = reason;
+  if (context.completed) {
+    effective_reason = context.cancelled
+                           ? ActorBackgroundTaskEndReason::kCancelled
+                           : ActorBackgroundTaskEndReason::kExpired;
+  } else {
+    [context
+        setTaskCompletedWithSuccess:IsSuccessfulEndReason(effective_reason)];
+  }
+
+  base::UmaHistogramEnumeration(kActorBackgroundTaskEndReasonHistogram,
+                                effective_reason);
+  base::UmaHistogramLongTimes(
+      kActorBackgroundTaskDurationHistogram,
+      base::TimeTicks::Now() - background_task_started_at_);
+  LogJournalEvent(
+      *journal_, GURL(), task_id_,
+      "ActorTaskBackgroundWorker::FinalizeBackgroundTask",
+      {{"end_reason", std::string(EndReasonToString(effective_reason))},
+       {"progress", base::NumberToString(context.fractionCompleted)}});
 }
 
 void ActorTaskBackgroundWorker::StartHeartbeatTimer() {

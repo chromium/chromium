@@ -35,6 +35,10 @@
 // Whether the task has already been completed or expired.
 @property(nonatomic, readonly, getter=isCompleted) BOOL completed;
 
+// Whether the task was cancelled by the user from the system-provided Live
+// Activity before expiring.
+@property(nonatomic, readonly, getter=isCancelled) BOOL cancelled;
+
 // Updates both the title and subtitle simultaneously in the system-provided
 // Live Activity. `title` must not be empty. `subtitle` defaults to an empty
 // string if nil.

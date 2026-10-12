@@ -4,11 +4,14 @@
 
 #import "ios/chrome/browser/intelligence/actor/model/actor_task_background_worker.h"
 
+#import <map>
 #import <memory>
 #import <string>
+#import <string_view>
 #import <vector>
 
 #import "base/memory/weak_ptr.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
 #import "base/values.h"
@@ -16,6 +19,7 @@
 #import "ios/chrome/app/background_task/background_continued_processing_task_configuration.h"
 #import "ios/chrome/app/background_task/background_continued_processing_task_context.h"
 #import "ios/chrome/app/background_task/features.h"
+#import "ios/chrome/browser/intelligence/actor/metrics/actor_background_task_metrics.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/web/public/js_messaging/content_world.h"
@@ -26,6 +30,7 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
 
 namespace actor {
 
@@ -33,6 +38,12 @@ namespace {
 
 // Name of the journal event logged when a heartbeat ping fails.
 constexpr char kHeartbeatPingFailedEvent[] = "ActorTask::HeartbeatPingFailed";
+
+// Names of the journal events logged when a background task starts and ends.
+constexpr char kBackgroundTaskStartedEvent[] =
+    "ActorTaskBackgroundWorker::SetContext";
+constexpr char kBackgroundTaskFinalizedEvent[] =
+    "ActorTaskBackgroundWorker::FinalizeBackgroundTask";
 
 // Fake delegate exposing settable task state to the worker. Like
 // `ActorTask`, it only returns controlled WebStates that are still alive.
@@ -74,18 +85,30 @@ BackgroundContinuedProcessingTaskContext* CreateContext() {
                finishHandler:nil];
 }
 
-// Returns the number of heartbeat ping failures logged to `journal`.
-int CountHeartbeatPingFailures(AggregatedJournal& journal) {
-  int failures = 0;
+// Returns the details of the events named `event_name` in `journal`, one
+// key-value map per event, in logging order.
+std::vector<std::map<std::string, std::string>> JournalEventDetails(
+    AggregatedJournal& journal,
+    std::string_view event_name) {
+  std::vector<std::map<std::string, std::string>> events;
   for (AggregatedJournal::EntryBuffer::Iterator it = journal.Items(); it;
        ++it) {
     const std::unique_ptr<AggregatedJournal::Entry>* entry_ptr = *it;
-    if (entry_ptr && *entry_ptr && (*entry_ptr)->data &&
-        (*entry_ptr)->data->event == kHeartbeatPingFailedEvent) {
-      failures++;
+    if (!entry_ptr || !*entry_ptr || !(*entry_ptr)->data ||
+        (*entry_ptr)->data->event != event_name) {
+      continue;
+    }
+    std::map<std::string, std::string>& details = events.emplace_back();
+    for (const mojom::JournalDetailsPtr& detail : (*entry_ptr)->data->details) {
+      details[detail->key] = detail->value;
     }
   }
-  return failures;
+  return events;
+}
+
+// Returns the number of heartbeat ping failures logged to `journal`.
+int CountHeartbeatPingFailures(AggregatedJournal& journal) {
+  return JournalEventDetails(journal, kHeartbeatPingFailedEvent).size();
 }
 
 }  // namespace
@@ -311,6 +334,171 @@ TEST_F(ActorTaskBackgroundWorkerTest, InertWhenBackgroundingDisabled) {
   EXPECT_NSEQ(@"", context.subtitle);
 }
 
+#pragma mark - Metrics and journal
+
+// Tests that stopping the task with success records the succeeded end reason
+// and journals the end with full progress.
+TEST_F(ActorTaskBackgroundWorkerTest, RecordsSucceededEndReason) {
+  base::HistogramTester histogram_tester;
+  worker_->SetContext(CreateContext());
+
+  worker_->OnStopped(/*success=*/true);
+
+  histogram_tester.ExpectUniqueSample(kActorBackgroundTaskEndReasonHistogram,
+                                      ActorBackgroundTaskEndReason::kSucceeded,
+                                      1);
+  std::vector<std::map<std::string, std::string>> events =
+      JournalEventDetails(journal_, kBackgroundTaskFinalizedEvent);
+  ASSERT_EQ(1u, events.size());
+  EXPECT_EQ("succeeded", events[0]["end_reason"]);
+  EXPECT_EQ("1", events[0]["progress"]);
+}
+
+// Tests that stopping the task with failure records the failed end reason.
+TEST_F(ActorTaskBackgroundWorkerTest, RecordsFailedEndReason) {
+  base::HistogramTester histogram_tester;
+  worker_->SetContext(CreateContext());
+
+  worker_->OnStopped(/*success=*/false);
+
+  histogram_tester.ExpectUniqueSample(kActorBackgroundTaskEndReasonHistogram,
+                                      ActorBackgroundTaskEndReason::kFailed, 1);
+  std::vector<std::map<std::string, std::string>> events =
+      JournalEventDetails(journal_, kBackgroundTaskFinalizedEvent);
+  ASSERT_EQ(1u, events.size());
+  EXPECT_EQ("failed", events[0]["end_reason"]);
+}
+
+// Tests that entering a state that waits on the user records the
+// waiting-on-user end reason.
+TEST_F(ActorTaskBackgroundWorkerTest, RecordsWaitingOnUserEndReason) {
+  base::HistogramTester histogram_tester;
+  worker_->SetContext(CreateContext());
+
+  worker_->OnStateChanged(ActorTaskState::kWaitingOnUser);
+
+  histogram_tester.ExpectUniqueSample(
+      kActorBackgroundTaskEndReasonHistogram,
+      ActorBackgroundTaskEndReason::kWaitingOnUser, 1);
+  std::vector<std::map<std::string, std::string>> events =
+      JournalEventDetails(journal_, kBackgroundTaskFinalizedEvent);
+  ASSERT_EQ(1u, events.size());
+  EXPECT_EQ("waiting_on_user", events[0]["end_reason"]);
+}
+
+// Tests that a context that already expired is reported as such, whichever
+// path finalizes it, with its progress at the time it was completed.
+TEST_F(ActorTaskBackgroundWorkerTest, RecordsExpiredEndReason) {
+  base::HistogramTester histogram_tester;
+  BackgroundContinuedProcessingTaskContext* context = CreateContext();
+  worker_->SetContext(context);
+  [context setTaskCompletedWithSuccess:NO];
+
+  worker_->OnStopped(/*success=*/true);
+
+  histogram_tester.ExpectUniqueSample(kActorBackgroundTaskEndReasonHistogram,
+                                      ActorBackgroundTaskEndReason::kExpired,
+                                      1);
+  std::vector<std::map<std::string, std::string>> events =
+      JournalEventDetails(journal_, kBackgroundTaskFinalizedEvent);
+  ASSERT_EQ(1u, events.size());
+  EXPECT_EQ("expired", events[0]["end_reason"]);
+  EXPECT_EQ("0", events[0]["progress"]);
+}
+
+// Tests that a context that was cancelled from the Live Activity is reported
+// as cancelled, whichever path finalizes it, with its progress at the time it
+// was completed.
+TEST_F(ActorTaskBackgroundWorkerTest, RecordsCancelledEndReason) {
+  base::HistogramTester histogram_tester;
+  BackgroundContinuedProcessingTaskContext* context =
+      OCMPartialMock(CreateContext());
+  OCMStub([context isCancelled]).andReturn(YES);
+  worker_->SetContext(context);
+  [context setTaskCompletedWithSuccess:NO];
+
+  worker_->OnStopped(/*success=*/true);
+
+  histogram_tester.ExpectUniqueSample(kActorBackgroundTaskEndReasonHistogram,
+                                      ActorBackgroundTaskEndReason::kCancelled,
+                                      1);
+  std::vector<std::map<std::string, std::string>> events =
+      JournalEventDetails(journal_, kBackgroundTaskFinalizedEvent);
+  ASSERT_EQ(1u, events.size());
+  EXPECT_EQ("cancelled", events[0]["end_reason"]);
+  EXPECT_EQ("0", events[0]["progress"]);
+}
+
+// Tests that destroying the worker with a live context records the
+// destroyed end reason.
+TEST_F(ActorTaskBackgroundWorkerTest, RecordsDestroyedEndReason) {
+  base::HistogramTester histogram_tester;
+  worker_->SetContext(CreateContext());
+
+  worker_.reset();
+
+  histogram_tester.ExpectUniqueSample(kActorBackgroundTaskEndReasonHistogram,
+                                      ActorBackgroundTaskEndReason::kDestroyed,
+                                      1);
+  std::vector<std::map<std::string, std::string>> events =
+      JournalEventDetails(journal_, kBackgroundTaskFinalizedEvent);
+  ASSERT_EQ(1u, events.size());
+  EXPECT_EQ("destroyed", events[0]["end_reason"]);
+}
+
+// Tests that the duration from receiving the context to ending the background
+// task is recorded.
+TEST_F(ActorTaskBackgroundWorkerTest, RecordsDuration) {
+  base::HistogramTester histogram_tester;
+  worker_->SetContext(CreateContext());
+
+  task_environment_.FastForwardBy(base::Seconds(42));
+  worker_->OnStopped(/*success=*/true);
+
+  histogram_tester.ExpectUniqueTimeSample(kActorBackgroundTaskDurationHistogram,
+                                          base::Seconds(42), 1);
+}
+
+// Tests that nothing is recorded or journaled when finalizing without a
+// context.
+TEST_F(ActorTaskBackgroundWorkerTest, RecordsNothingWithoutContext) {
+  base::HistogramTester histogram_tester;
+
+  worker_->OnStateChanged(ActorTaskState::kPausedByUser);
+  worker_->OnStopped(/*success=*/false);
+  worker_.reset();
+
+  histogram_tester.ExpectTotalCount(kActorBackgroundTaskEndReasonHistogram, 0);
+  histogram_tester.ExpectTotalCount(kActorBackgroundTaskDurationHistogram, 0);
+  EXPECT_TRUE(
+      JournalEventDetails(journal_, kBackgroundTaskFinalizedEvent).empty());
+}
+
+// Tests that a finalized context is recorded once even if later hooks fire.
+TEST_F(ActorTaskBackgroundWorkerTest, RecordsContextOnce) {
+  base::HistogramTester histogram_tester;
+  worker_->SetContext(CreateContext());
+
+  worker_->OnStateChanged(ActorTaskState::kWaitingOnUser);
+  worker_->OnStopped(/*success=*/false);
+  worker_.reset();
+
+  histogram_tester.ExpectTotalCount(kActorBackgroundTaskEndReasonHistogram, 1);
+  histogram_tester.ExpectTotalCount(kActorBackgroundTaskDurationHistogram, 1);
+  EXPECT_EQ(
+      1u, JournalEventDetails(journal_, kBackgroundTaskFinalizedEvent).size());
+}
+
+// Tests that receiving a context journals the start of the background task.
+TEST_F(ActorTaskBackgroundWorkerTest, JournalsBackgroundTaskStart) {
+  worker_->SetContext(CreateContext());
+
+  std::vector<std::map<std::string, std::string>> events =
+      JournalEventDetails(journal_, kBackgroundTaskStartedEvent);
+  ASSERT_EQ(1u, events.size());
+  EXPECT_EQ("background_task_started", events[0]["status"]);
+}
+
 #pragma mark - Accessors
 
 // Tests that `task_id()` reflects the constructor argument and `title()` the
@@ -338,7 +526,8 @@ TEST_F(ActorTaskBackgroundWorkerTest, WeakPtrInvalidatedOnDestruction) {
 #pragma mark - ShouldRequestBackgroundTask
 
 // Tests that a background task is requested only in states that keep one
-// alive (init, acting, reflecting).
+// alive (init, acting, reflecting), recording the boolean request eligibility
+// and `kStateDoesNotKeepAlive` when ineligible.
 TEST_F(ActorTaskBackgroundWorkerTest, ShouldRequestBackgroundTaskPerState) {
   const struct {
     ActorTaskState state;
@@ -355,37 +544,88 @@ TEST_F(ActorTaskBackgroundWorkerTest, ShouldRequestBackgroundTaskPerState) {
       {ActorTaskState::kFailed, false},
   };
   for (const auto& test_case : kCases) {
+    base::HistogramTester histogram_tester;
     delegate_.state = test_case.state;
     EXPECT_EQ(test_case.expected, worker_->ShouldRequestBackgroundTask())
         << "state: " << static_cast<int>(test_case.state);
+    histogram_tester.ExpectUniqueSample(
+        kActorBackgroundTaskRequestEligibilityHistogram, test_case.expected, 1);
+    if (test_case.expected) {
+      histogram_tester.ExpectTotalCount(
+          kActorBackgroundTaskIneligibilityReasonHistogram, 0);
+    } else {
+      histogram_tester.ExpectUniqueSample(
+          kActorBackgroundTaskIneligibilityReasonHistogram,
+          ActorBackgroundTaskIneligibilityReason::kStateDoesNotKeepAlive, 1);
+    }
   }
 }
 
 // Tests that a live context blocks a new request, while a completed (e.g.
-// expired) context does not.
+// expired) context does not, recording the corresponding request eligibility
+// and `kAlreadyHasContext`.
 TEST_F(ActorTaskBackgroundWorkerTest,
        ShouldRequestBackgroundTaskDependsOnContextLiveness) {
+  base::HistogramTester histogram_tester;
   ASSERT_TRUE(worker_->ShouldRequestBackgroundTask());
+  histogram_tester.ExpectUniqueSample(
+      kActorBackgroundTaskRequestEligibilityHistogram, true, 1);
+  histogram_tester.ExpectTotalCount(
+      kActorBackgroundTaskIneligibilityReasonHistogram, 0);
 
   BackgroundContinuedProcessingTaskContext* context = CreateContext();
   worker_->SetContext(context);
   EXPECT_FALSE(worker_->ShouldRequestBackgroundTask());
+  histogram_tester.ExpectBucketCount(
+      kActorBackgroundTaskRequestEligibilityHistogram, false, 1);
+  histogram_tester.ExpectUniqueSample(
+      kActorBackgroundTaskIneligibilityReasonHistogram,
+      ActorBackgroundTaskIneligibilityReason::kAlreadyHasContext, 1);
 
   [context setTaskCompletedWithSuccess:NO];
   EXPECT_TRUE(worker_->ShouldRequestBackgroundTask());
+  histogram_tester.ExpectBucketCount(
+      kActorBackgroundTaskRequestEligibilityHistogram, true, 2);
+  histogram_tester.ExpectTotalCount(
+      kActorBackgroundTaskRequestEligibilityHistogram, 3);
+  histogram_tester.ExpectTotalCount(
+      kActorBackgroundTaskIneligibilityReasonHistogram, 1);
 }
 
 // Tests that no background task is requested when backgrounding is disabled,
-// even in a state that keeps one alive.
+// even in a state that keeps one alive, and that all applicable ineligibility
+// reasons are recorded when multiple conditions fail.
 TEST_F(ActorTaskBackgroundWorkerTest,
        ShouldRequestBackgroundTaskFalseWhenDisabled) {
   base::test::ScopedFeatureList disabled_feature_list;
   disabled_feature_list.InitAndDisableFeature(
       kEnableBackgroundContinuedProcessing);
   ASSERT_FALSE(IsGeminiActorBackgroundingEnabled());
+  base::HistogramTester histogram_tester;
   delegate_.state = ActorTaskState::kActing;
 
   EXPECT_FALSE(worker_->ShouldRequestBackgroundTask());
+  histogram_tester.ExpectUniqueSample(
+      kActorBackgroundTaskRequestEligibilityHistogram, false, 1);
+  histogram_tester.ExpectUniqueSample(
+      kActorBackgroundTaskIneligibilityReasonHistogram,
+      ActorBackgroundTaskIneligibilityReason::kBackgroundingDisabled, 1);
+
+  // When both backgrounding is disabled and the state does not keep a
+  // background task alive, both ineligibility reasons are recorded while
+  // eligibility is still recorded once.
+  delegate_.state = ActorTaskState::kWaitingOnUser;
+  EXPECT_FALSE(worker_->ShouldRequestBackgroundTask());
+  histogram_tester.ExpectUniqueSample(
+      kActorBackgroundTaskRequestEligibilityHistogram, false, 2);
+  histogram_tester.ExpectBucketCount(
+      kActorBackgroundTaskIneligibilityReasonHistogram,
+      ActorBackgroundTaskIneligibilityReason::kBackgroundingDisabled, 2);
+  histogram_tester.ExpectBucketCount(
+      kActorBackgroundTaskIneligibilityReasonHistogram,
+      ActorBackgroundTaskIneligibilityReason::kStateDoesNotKeepAlive, 1);
+  histogram_tester.ExpectTotalCount(
+      kActorBackgroundTaskIneligibilityReasonHistogram, 3);
 }
 
 #pragma mark - Heartbeat

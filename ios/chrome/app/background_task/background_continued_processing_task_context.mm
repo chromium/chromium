@@ -113,6 +113,9 @@ int64_t NextLinearStepAboveUnits(int64_t units,
   // expiration.
   BOOL _completed;
 
+  // Whether the task was cancelled from the system-provided Live Activity.
+  BOOL _cancelled;
+
   // The reported outcome of the task completion.
   BOOL _successfulCompletion;
 
@@ -145,6 +148,7 @@ int64_t NextLinearStepAboveUnits(int64_t units,
         [NSProgress progressWithTotalUnitCount:configuration.totalUnits];
     _expectedStepCount = configuration.expectedStepCount;
     _completed = NO;
+    _cancelled = NO;
     _successfulCompletion = NO;
 
     if (configuration.progressHeartbeatInterval.is_positive()) {
@@ -297,6 +301,11 @@ int64_t NextLinearStepAboveUnits(int64_t units,
   return _completed;
 }
 
+- (BOOL)isCancelled {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  return _cancelled;
+}
+
 - (void)setTaskCompletedWithSuccess:(BOOL)success {
   [self setTaskCompletedWithSuccess:success fillProgress:YES];
 }
@@ -401,7 +410,7 @@ int64_t NextLinearStepAboveUnits(int64_t units,
 }
 
 #if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
-- (void)handleSystemExpiration {
+- (void)handleSystemExpiration API_AVAILABLE(ios(26.0)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if (_completed) {
     return;
@@ -409,6 +418,7 @@ int64_t NextLinearStepAboveUnits(int64_t units,
 
   _completed = YES;
   _successfulCompletion = NO;
+  _cancelled = _task.progress.cancelled;
   _progressHeartbeatTimer.Stop();
 
   // Retain the handler in a local variable before nil-ing out the ivar to
@@ -420,12 +430,10 @@ int64_t NextLinearStepAboveUnits(int64_t units,
     handler();
   }
 
-  if (@available(iOS 26.0, *)) {
-    if (_task) {
-      _task.expirationHandler = nil;
-      [_task setTaskCompletedWithSuccess:NO];
-      _task = nil;
-    }
+  if (_task) {
+    _task.expirationHandler = nil;
+    [_task setTaskCompletedWithSuccess:NO];
+    _task = nil;
   }
 
   ProceduralBlock finishHandler = _finishHandler;

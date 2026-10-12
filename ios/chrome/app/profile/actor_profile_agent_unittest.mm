@@ -11,6 +11,7 @@
 
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/actor/core/task_source_info.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
@@ -20,6 +21,7 @@
 #import "ios/chrome/app/background_task/background_continued_processing_task_request.h"
 #import "ios/chrome/app/background_task/features.h"
 #import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/browser/intelligence/actor/metrics/actor_background_task_metrics.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_task_background_worker.h"
@@ -237,6 +239,79 @@ TEST_F(ActorProfileAgentBackgroundingTest, OneRequestPerEligibleTask) {
   ASSERT_EQ(2u, requests.count);
   EXPECT_NSEQ(@"First", requests[0].configuration.title);
   EXPECT_NSEQ(@"Second", requests[1].configuration.title);
+}
+
+// Tests that the request eligibility of each active task's background
+// worker is recorded on background entry.
+TEST_F(ActorProfileAgentBackgroundingTest, RecordsRequestEligibilityPerWorker) {
+  base::HistogramTester histogram_tester;
+  [profile_state_ addAgent:agent_];
+  CreateTask("First");
+  actor::ActorTaskId holding_id = CreateTask("Holding");
+  actor::ActorTaskId waiting_id = CreateTask("Waiting");
+  CreateTask("Second");
+  WorkerForTask(holding_id)->SetContext(CreateContext());
+  InterruptTask(waiting_id);
+
+  NSArray<BackgroundContinuedProcessingTaskRequest*>* requests =
+      agent_.continuedProcessingTaskRequests;
+
+  ASSERT_EQ(2u, requests.count);
+  histogram_tester.ExpectBucketCount(
+      actor::kActorBackgroundTaskRequestEligibilityHistogram, true, 2);
+  histogram_tester.ExpectBucketCount(
+      actor::kActorBackgroundTaskRequestEligibilityHistogram, false, 2);
+  histogram_tester.ExpectTotalCount(
+      actor::kActorBackgroundTaskRequestEligibilityHistogram, 4);
+  histogram_tester.ExpectBucketCount(
+      actor::kActorBackgroundTaskIneligibilityReasonHistogram,
+      actor::ActorBackgroundTaskIneligibilityReason::kAlreadyHasContext, 1);
+  histogram_tester.ExpectBucketCount(
+      actor::kActorBackgroundTaskIneligibilityReasonHistogram,
+      actor::ActorBackgroundTaskIneligibilityReason::kStateDoesNotKeepAlive, 1);
+  histogram_tester.ExpectTotalCount(
+      actor::kActorBackgroundTaskIneligibilityReasonHistogram, 2);
+}
+
+// Tests that a task is recorded as ineligible with `kBackgroundingDisabled`
+// when actor backgrounding is disabled.
+TEST_F(ActorProfileAgentTest, RecordsBackgroundingDisabledEligibility) {
+  base::test::ScopedFeatureList disabled_feature_list;
+  disabled_feature_list.InitAndDisableFeature(
+      kEnableBackgroundContinuedProcessing);
+  base::HistogramTester histogram_tester;
+  [profile_state_ addAgent:agent_];
+  CreateTask("Task");
+
+  NSArray<BackgroundContinuedProcessingTaskRequest*>* requests =
+      agent_.continuedProcessingTaskRequests;
+
+  EXPECT_EQ(0u, requests.count);
+  histogram_tester.ExpectUniqueSample(
+      actor::kActorBackgroundTaskRequestEligibilityHistogram, false, 1);
+  histogram_tester.ExpectUniqueSample(
+      actor::kActorBackgroundTaskIneligibilityReasonHistogram,
+      actor::ActorBackgroundTaskIneligibilityReason::kBackgroundingDisabled, 1);
+}
+
+// Tests that nothing is recorded when there are no active tasks, whether the
+// actor service does not exist yet or exists without any live tasks.
+TEST_F(ActorProfileAgentTest, RecordsNothingWithoutActiveTasks) {
+  base::HistogramTester histogram_tester;
+  [profile_state_ addAgent:agent_];
+
+  EXPECT_NSEQ(@[], agent_.continuedProcessingTaskRequests);
+
+  actor::ActorTaskId task_id = CreateTask("Task");
+  service()->StopTask(task_id, actor::ActorTaskStoppedReason::kTaskComplete);
+  ASSERT_TRUE(service()->GetWeakTaskBackgroundWorkers().empty());
+
+  EXPECT_EQ(0u, agent_.continuedProcessingTaskRequests.count);
+
+  histogram_tester.ExpectTotalCount(
+      actor::kActorBackgroundTaskRequestEligibilityHistogram, 0);
+  histogram_tester.ExpectTotalCount(
+      actor::kActorBackgroundTaskIneligibilityReasonHistogram, 0);
 }
 
 // Tests that a request's configuration fails rather than queues the task, and
