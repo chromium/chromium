@@ -1,0 +1,147 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=/signin_vars.css.js
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+/* Styles shared by the refreshed managed user profile notice screens */
+
+:host {
+  --disclaimer-card-width: 300px;
+  --disclaimer-cards-gap: 24px;
+  color: var(--color-sys-on-surface);
+}
+
+.avatar-container {
+  --avatar-size: 92px;
+  --badge-icon-size: 24px;
+  --badge-offset: -4px;
+  --badge-size: 36px;
+  height: var(--avatar-size);
+  width: var(--avatar-size);
+  z-index: 1;
+}
+
+.avatar {
+  border-radius: 50%;
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
+.work-badge {
+  align-items: center;
+  background-color: var(--signin-work-badge-background-color);
+  border: 1px solid var(--cr-scrollable-border-color);
+  border-radius: 50%;
+  bottom: var(--badge-offset);
+  box-sizing: border-box;
+  display: flex;
+  height: var(--badge-size);
+  inset-inline-end: var(--badge-offset);
+  justify-content: center;
+  position: absolute;
+  width: var(--badge-size);
+}
+
+.work-badge > cr-icon {
+  border-radius: 50%;
+  box-shadow: var(--cr-elevation-1);
+  height: var(--badge-icon-size);
+  padding: calc((var(--badge-size) - var(--badge-icon-size)) / 2);
+  width: var(--badge-icon-size);
+}
+
+/* Title and subtitle container */
+.text-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-block-end: 24px;
+  text-align: center;
+}
+
+.title {
+  font-size: 24px;
+  margin: 0;
+  padding-inline: 48px;
+}
+
+.title:focus {
+  outline: none;
+}
+
+.subtitle {
+  align-self: center;
+  font-size: 16px;
+  margin: 0;
+  max-width:
+      calc(var(--disclaimer-card-width) * 2 + var(--disclaimer-cards-gap));
+}
+
+.disclaimer-container {
+  display: flex;
+  gap: var(--disclaimer-cards-gap);
+  justify-content: center;
+}
+
+.disclaimer {
+  align-items: center;
+  background-color: var(--cr-fallback-color-surface);
+  border: 1px solid var(--cr-fallback-color-surface-variant);
+  border-radius: 24px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 24px;
+  text-align: center;
+  width: var(--disclaimer-card-width);
+}
+
+.disclaimer .icon {
+  flex-shrink: 0;
+  height: 36px;
+  width: 36px;
+}
+
+.disclaimer h2 {
+  font-size: 16px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.disclaimer p {
+  color: var(--cr-secondary-text-color);
+  line-height: 20px;
+  margin: 0;
+}
+
+/* Keep consistent with managed_user_profile_notice_app_refresh.css */
+@media screen and ((max-width: 1024px) or (max-height: 750px)) {
+  .avatar-container {
+    --avatar-size: 64px;
+    --badge-icon-size: 16px;
+    --badge-offset: -2px;
+    --badge-size: 24px;
+  }
+
+  .subtitle {
+    font-size: 15px;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .work-badge {
+    border-color: var(--md-background-color);
+  }
+
+  .disclaimer {
+    background-color: var(--cr-fallback-color-surface2);
+    border: none;
+  }
+}

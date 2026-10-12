@@ -17,8 +17,8 @@ export function getHtml(this: ManagedUserProfileNoticeDisclosureRefreshElement) 
           ?autoplay="${!this.disableAnimations_}">
       </cr-lottie>
     ` : ''}
-    <div id="avatarContainer">
-      <img id="avatar" alt="$i18n{avatarAccessibilityLabel}"
+    <div id="avatarContainer" class="avatar-container">
+      <img id="avatar" class="avatar" alt="$i18n{avatarAccessibilityLabel}"
           src="${this.pictureUrl}">
       ${this.showEnterpriseBadge ? html`
         <div class="work-badge">
@@ -29,7 +29,7 @@ export function getHtml(this: ManagedUserProfileNoticeDisclosureRefreshElement) 
       ` : ''}
     </div>
   </div>
-  <div id="textContainer">
+  <div id="textContainer" class="text-container">
     <h1 id="title" class="title" tabindex="-1">${this.title}</h1>
     <p id="subtitle" class="subtitle">${this.subtitle}</p>
   </div>

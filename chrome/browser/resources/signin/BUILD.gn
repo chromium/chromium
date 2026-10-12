@@ -133,6 +133,7 @@ build_webui("build") {
       "managed_user_profile_notice/managed_user_profile_notice_data_handling.css",
       "managed_user_profile_notice/managed_user_profile_notice_disclosure.css",
       "managed_user_profile_notice/managed_user_profile_notice_disclosure_refresh.css",
+      "managed_user_profile_notice/managed_user_profile_notice_refresh_shared.css",
       "managed_user_profile_notice/managed_user_profile_notice_state.css",
       "managed_user_profile_notice/managed_user_profile_notice_value_prop.css",
       "managed_user_profile_notice/signals_disclaimer.css",

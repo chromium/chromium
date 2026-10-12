@@ -5,16 +5,10 @@
 /* #css_wrapper_metadata_start
  * #type=style-lit
  * #import=/signin_shared.css.js
- * #import=/signin_vars.css.js
+ * #import=./managed_user_profile_notice_refresh_shared.css.js
  * #scheme=relative
- * #include=signin-shared
+ * #include=signin-shared managed-user-profile-notice-refresh-shared
  * #css_wrapper_metadata_end */
-
-:host {
-  color: var(--color-sys-on-surface);
-  --disclaimer-cards-gap: 24px;
-  --disclaimer-card-width: 300px;
-}
 
 :host([is-oidc-dialog]) .title {
   font-size: 24px;
@@ -38,16 +32,6 @@ main {
   justify-content: center;
 }
 
-#avatarContainer {
-  --avatar-size: 92px;
-  --badge-size: 36px;
-  --badge-icon-size: 24px;
-  --badge-offset: -4px;
-  height: var(--avatar-size);
-  width: var(--avatar-size);
-  z-index: 1;
-}
-
 :host(:not([revamp-enabled])) #avatarContainer,
 :host([revamp-enabled][app-mode='profile-picker']) #avatarContainer {
   margin-inline: auto;
@@ -63,133 +47,13 @@ main {
   pointer-events: none;
 }
 
-#avatar {
-  border-radius: 50%;
-  display: block;
-  height: 100%;
-  width: 100%;
-}
-
-.work-badge {
-  align-items: center;
-  background-color: var(--signin-work-badge-background-color);
-  border: 1px solid var(--cr-scrollable-border-color);
-  border-radius: 50%;
-  box-sizing: border-box;
-  display: flex;
-  height: var(--badge-size);
-  width: var(--badge-size);
-  justify-content: center;
-  position: absolute;
-  inset-inline-end: var(--badge-offset);
-  bottom: var(--badge-offset);
-}
-
-.work-badge > cr-icon {
-  border-radius: 50%;
-  box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.25);
-  height: var(--badge-icon-size);
-  width: var(--badge-icon-size);
-  padding: calc((var(--badge-size) - var(--badge-icon-size)) / 2);
-}
-
-#textContainer {
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin-block-end: 24px;
-}
-
-.title {
+:host([app-mode='first-run']) .title {
   font-size: 32px;
-  margin: 0;
-  padding-inline: 48px;
-}
-
-:host([app-mode='profile-picker']) .title {
-  font-size: 24px;
-}
-
-.subtitle {
-  align-self: center;
-  font-size: 16px;
-  max-width: calc(var(--disclaimer-card-width) * 2 + var(--disclaimer-cards-gap));
-  margin: 0;
-}
-
-.title:focus {
-  outline: none;
-}
-
-.disclaimer-container {
-  display: flex;
-  gap: var(--disclaimer-cards-gap);
-  justify-content: center;
-}
-
-.disclaimer {
-  width: var(--disclaimer-card-width);
-  align-items: center;
-  background-color: var(--cr-fallback-color-surface);
-  border: 1px solid var(--google-grey-200);
-  border-radius: 24px;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 24px;
-  text-align: center;
-}
-
-.disclaimer .icon {
-  flex-shrink: 0;
-  height: 36px;
-  width: 36px;
-}
-
-.disclaimer h2 {
-  font-size: 16px;
-  font-weight: 500;
-  margin: 0;
-}
-
-.disclaimer p {
-  color: var(--cr-secondary-text-color);
-  line-height: 20px;
-  margin: 0;
 }
 
 /* Keep consistent with managed_user_profile_notice_app_refresh.css */
 @media screen and ((max-width: 1024px) or (max-height: 750px)) {
-  #avatarContainer {
-    --avatar-size: 64px;
-    --badge-size: 24px;
-    --badge-icon-size: 16px;
-    --badge-offset: -2px;
-  }
-
   :host([revamp-enabled][app-mode='first-run']) #headerContainer {
     height: 140px;
-  }
-
-  .subtitle {
-    font-size: 15px;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  .work-badge {
-    border-color: var(--md-background-color);
-  }
-
-  .work-badge > cr-icon {
-    box-shadow: 0 0 2px rgba(var(--google-grey-800-rgb), 0.12),
-       0 0 6px rgba(var(--google-grey-800-rgb), 0.15);
-  }
-
-  .disclaimer {
-    background-color: var(--cr-fallback-color-surface2);
-    border: none;
   }
 }
