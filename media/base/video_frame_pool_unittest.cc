@@ -12,6 +12,7 @@
 
 #include "base/bits.h"
 #include "base/compiler_specific.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -42,8 +43,10 @@ class VideoFramePoolTest
       EXPECT_EQ(coded_size, frame->coded_size());
     } else {
       const gfx::Size adjusted(
-          base::bits::AlignUpDeprecatedDoNotUse(coded_size.width(), 2),
-          base::bits::AlignUpDeprecatedDoNotUse(coded_size.height(), 2));
+          base::bits::AlignUp<size_t>(
+              base::checked_cast<size_t>(coded_size.width()), 2),
+          base::bits::AlignUp<size_t>(
+              base::checked_cast<size_t>(coded_size.height()), 2));
       EXPECT_EQ(adjusted, frame->coded_size());
     }
     EXPECT_EQ(visible_rect, frame->visible_rect());

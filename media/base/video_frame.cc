@@ -1052,12 +1052,15 @@ gfx::Size VideoFrame::PlaneSizeInSamples(VideoPixelFormat format,
                                          const gfx::Size& coded_size) {
   DCHECK(IsValidPlane(format, plane));
   const gfx::Size subsample_size = SampleSize(format, plane);
-  return gfx::Size(base::bits::AlignUpDeprecatedDoNotUse(
-                       coded_size.width(), subsample_size.width()) /
-                       subsample_size.width(),
-                   base::bits::AlignUpDeprecatedDoNotUse(
-                       coded_size.height(), subsample_size.height()) /
-                       subsample_size.height());
+  return gfx::Size(
+      base::bits::AlignUp<size_t>(
+          base::checked_cast<size_t>(coded_size.width()),
+          base::checked_cast<size_t>(subsample_size.width())) /
+          subsample_size.width(),
+      base::bits::AlignUp<size_t>(
+          base::checked_cast<size_t>(coded_size.height()),
+          base::checked_cast<size_t>(subsample_size.height())) /
+          subsample_size.height());
 }
 
 // static
@@ -1168,7 +1171,9 @@ std::vector<size_t> VideoFrame::ComputeStrides(VideoPixelFormat format,
 size_t VideoFrame::Rows(size_t plane, VideoPixelFormat format, int height) {
   DCHECK(IsValidPlane(format, plane));
   const int sample_height = SampleSize(format, plane).height();
-  return base::bits::AlignUpDeprecatedDoNotUse(height, sample_height) /
+  return base::bits::AlignUp<size_t>(
+             base::checked_cast<size_t>(height),
+             base::checked_cast<size_t>(sample_height)) /
          sample_height;
 }
 
@@ -1176,7 +1181,9 @@ size_t VideoFrame::Rows(size_t plane, VideoPixelFormat format, int height) {
 size_t VideoFrame::Columns(size_t plane, VideoPixelFormat format, int width) {
   DCHECK(IsValidPlane(format, plane));
   const int sample_width = SampleSize(format, plane).width();
-  return base::bits::AlignUpDeprecatedDoNotUse(width, sample_width) /
+  return base::bits::AlignUp<size_t>(
+             base::checked_cast<size_t>(width),
+             base::checked_cast<size_t>(sample_width)) /
          sample_width;
 }
 
@@ -1380,10 +1387,13 @@ base::span<T> VideoFrame::GetVisibleDataInternal(base::span<T> data,
 
   // Calculate an offset that is properly aligned for all planes.
   const gfx::Size alignment = CommonAlignment(format());
-  const gfx::Point offset(base::bits::AlignDownDeprecatedDoNotUse(
-                              visible_rect_.x(), alignment.width()),
-                          base::bits::AlignDownDeprecatedDoNotUse(
-                              visible_rect_.y(), alignment.height()));
+  const gfx::Point offset(
+      base::bits::AlignDown<size_t>(
+          base::checked_cast<size_t>(visible_rect_.x()),
+          base::checked_cast<size_t>(alignment.width())),
+      base::bits::AlignDown<size_t>(
+          base::checked_cast<size_t>(visible_rect_.y()),
+          base::checked_cast<size_t>(alignment.height())));
 
   const size_t plane_stride = stride(plane);
   const gfx::Size subsample = SampleSize(format(), plane);
@@ -1694,10 +1704,12 @@ gfx::Size VideoFrame::DetermineAlignedSize(VideoPixelFormat format,
                                            const gfx::Size& dimensions) {
   const gfx::Size alignment = CommonAlignment(format);
   const gfx::Size adjusted =
-      gfx::Size(base::bits::AlignUpDeprecatedDoNotUse(dimensions.width(),
-                                                      alignment.width()),
-                base::bits::AlignUpDeprecatedDoNotUse(dimensions.height(),
-                                                      alignment.height()));
+      gfx::Size(base::bits::AlignUp<size_t>(
+                    base::checked_cast<size_t>(dimensions.width()),
+                    base::checked_cast<size_t>(alignment.width())),
+                base::bits::AlignUp<size_t>(
+                    base::checked_cast<size_t>(dimensions.height()),
+                    base::checked_cast<size_t>(alignment.height())));
   DCHECK((adjusted.width() % alignment.width() == 0) &&
          (adjusted.height() % alignment.height() == 0));
   return adjusted;
