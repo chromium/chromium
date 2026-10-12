@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/feature_list.h"
 #include "base/location.h"
@@ -65,7 +66,9 @@
 #include "chrome/browser/net/qwac_web_contents_observer.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
+#include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/page_info/about_this_site_tab_helper.h"
 #include "chrome/browser/page_info/page_info_features.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
@@ -254,7 +257,9 @@
 #include "components/image_fetcher/core/image_fetcher_service.h"
 #include "components/metrics/content/metrics_services_web_contents_observer.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
+#include "components/page_content_annotations/content/annotate_page_content_request.h"
 #include "components/page_content_annotations/content/page_content_annotations_web_contents_observer.h"
+#include "components/page_content_annotations/core/page_content_extraction_types.h"
 #include "components/passage_embeddings/core/passage_embeddings_features.h"
 #include "components/performance_manager/embedder/performance_manager_registry.h"
 #include "components/permissions/permission_indicators_tab_data.h"
@@ -262,6 +267,8 @@
 #include "components/permissions/permission_request_manager.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/security_interstitials/core/features.h"
+#include "components/sessions/content/session_tab_helper.h"
+#include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "components/wallet/core/common/wallet_features.h"
@@ -361,6 +368,21 @@
 
 namespace tabs {
 
+namespace {
+
+using page_content_annotations::AnnotatedPageContentRequest;
+
+std::optional<int64_t> GetPageContentAnnotationsTabId(
+    content::WebContents* web_contents) {
+  SessionID id = sessions::SessionTabHelper::IdForTab(web_contents);
+  if (id.is_valid()) {
+    return id.id();
+  }
+  return std::nullopt;
+}
+
+}  // namespace
+
 TabFeatures::TabFeatures() = default;
 TabFeatures::~TabFeatures() = default;
 
@@ -390,6 +412,15 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
       tab.RegisterWillDiscardContents(base::BindRepeating(
           &TabFeatures::WillDiscardContents, weak_factory_.GetWeakPtr())));
   tab_subscriptions_.push_back(webui::InitEmbeddingContext(&tab));
+
+  auto* page_content_extraction_service = page_content_annotations::
+      PageContentExtractionServiceFactory::GetForProfile(profile);
+  if (page_content_extraction_service) {
+    AnnotatedPageContentRequest::CreateForWebContents(
+        tab.GetContents(), *page_content_extraction_service,
+        base::BindRepeating(&page_content_annotations::FetchPageContext),
+        base::BindRepeating(&GetPageContentAnnotationsTabId));
+  }
 
   InitializePageLoadMetricsForWebContents(tab.GetContents());
 
@@ -1388,6 +1419,15 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   DCHECK_EQ(old_contents, tab->GetContents());
 
   Profile* profile = tab->GetBrowserWindowInterface()->GetProfile();
+
+  auto* page_content_extraction_service = page_content_annotations::
+      PageContentExtractionServiceFactory::GetForProfile(profile);
+  if (page_content_extraction_service) {
+    AnnotatedPageContentRequest::CreateForWebContents(
+        new_contents, *page_content_extraction_service,
+        base::BindRepeating(&page_content_annotations::FetchPageContext),
+        base::BindRepeating(&GetPageContentAnnotationsTabId));
+  }
 
   InitializePageLoadMetricsForWebContents(new_contents);
 

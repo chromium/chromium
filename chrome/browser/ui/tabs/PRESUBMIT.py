@@ -17,6 +17,12 @@ _TAB_FEATURES_CC = 'tab_features.cc'
 # justified in the CL description and reviewed by chrome/browser/ui/tabs
 # OWNERS.
 _ALLOWED_CREATE_FOR_CALLS = (
+  # AnnotatedPageContentRequest lives in
+  # //components/page_content_annotations/content and is looked up on
+  # WebContents by
+  # PageContentExtractionService::GetAnnotatedPageContentRequestFromWebContents,
+  # so the WebContents must own it.
+  'AnnotatedPageContentRequest::CreateForWebContents',
   # BookmarkTabHelper is also attached to non-tab WebContents in
   # extensions::BookmarkManagerPrivateDragEventRouter, so the WebContents
   # must own it.
