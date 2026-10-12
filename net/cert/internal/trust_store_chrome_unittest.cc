@@ -970,156 +970,236 @@ TEST(TrustStoreChromeTestNoFixture, LoadCompiledInMtcTrustAnchorCaIds) {
   }
 }
 
-std::tuple<std::shared_ptr<const bssl::MTCAnchor>,
-           std::shared_ptr<const bssl::ParsedCertificate>>
-MakeTestMtcAnchorAndLeaf(MtcLogBuilder& mtc_log_builder) {
-  std::unique_ptr<net::CertBuilder> mtc_leaf_builder =
-      std::move(net::CertBuilder::CreateSimpleChain(1u)[0]);
+class TrustStoreChromeMtcTest
+    : public testing::TestWithParam<
+          std::tuple<bool, chrome_root_store::SpecVersion>> {
+ public:
+  bool use_test_roots() const { return std::get<0>(GetParam()); }
 
-  uint64_t leaf_index = mtc_log_builder.AddEntry(*mtc_leaf_builder);
-  mtc_log_builder.AdvanceLandmark();
+  chrome_root_store::SpecVersion signer_set_spec() const {
+    return std::get<1>(GetParam());
+  }
 
-  auto leaf_buffer =
-      mtc_log_builder.CreateSignaturelessCertificateBuffer(leaf_index);
-  CHECK(leaf_buffer);
-  std::shared_ptr<const bssl::ParsedCertificate> mtc_leaf =
-      ToParsedCertificate(std::move(leaf_buffer));
+  net::MtcLogBuilder::SpecVersion log_builder_spec() const {
+    switch (signer_set_spec()) {
+      case chrome_root_store::SPEC_VERSION_DRAFT05:
+        return net::MtcLogBuilder::kPlants05;
+      case chrome_root_store::SPEC_VERSION_DRAFT07:
+        return net::MtcLogBuilder::kPlants07;
+      default:
+        NOTREACHED();
+    }
+  }
 
-  return {std::make_shared<bssl::MTCAnchor>(
-              mtc_log_builder.ca_id(), bssl::SignatureAlgorithm::kMldsa44,
-              x509_util::CreateCryptoBuffer(std::string_view("fake key")),
-              mtc_log_builder.GetPerLogLandmarkSubtreeHashes()),
-          std::move(mtc_leaf)};
-}
+  net::MtcLogBuilder CreateLogBuilder(
+      base::span<const uint8_t> ca_id,
+      net::MtcLogBuilder::LogNumber log_number) const {
+    return net::MtcLogBuilder(ca_id, log_number, log_builder_spec());
+  }
 
-TEST(TrustStoreChromeTestNoFixture, LoadMtcTrustAnchors) {
-  for (bool use_test_roots : {false, true}) {
-    SCOPED_TRACE(use_test_roots);
-    constexpr uint8_t kTestMtcCaId_1[] = {0x09u, 0x01u, 0x03u, 0x04u};
-    constexpr uint8_t kUntrustedMtcCaId[] = {0x09u, 0x02u, 0x03u, 0x04u};
-    constexpr uint8_t kTestMtcCaId_3[] = {0x08u, 0x03u, 0x02u, 0x01u};
-    constexpr uint8_t kTestMtcCaId_4[] = {0x08u, 0x04u, 0x05u, 0x06u};
+  std::shared_ptr<const bssl::MTCAnchor> CreateMTCAnchor(
+      base::span<const uint8_t> ca_id,
+      bssl::SignatureAlgorithm ca_signature_algorithm,
+      bssl::UniquePtr<CRYPTO_BUFFER> ca_key,
+      std::vector<bssl::LogTrustedSubtrees> log_trusted_subtrees) const {
+    switch (signer_set_spec()) {
+      case chrome_root_store::SPEC_VERSION_DRAFT05:
+        return std::make_shared<bssl::MTCAnchor>(
+            ca_id, ca_signature_algorithm, std::move(ca_key),
+            std::move(log_trusted_subtrees));
+      case chrome_root_store::SPEC_VERSION_DRAFT07:
+        return bssl::MTCAnchor::CreatePlants07(ca_id, ca_signature_algorithm,
+                                               std::move(ca_key),
+                                               std::move(log_trusted_subtrees));
+      default:
+        NOTREACHED();
+    }
+  }
 
-    MtcLogBuilder mtc_log_builder(kTestMtcCaId_1, /*log_number=*/1);
-    auto [mtc_anchor, mtc_leaf] = MakeTestMtcAnchorAndLeaf(mtc_log_builder);
+  std::tuple<std::shared_ptr<const bssl::MTCAnchor>,
+             std::shared_ptr<const bssl::ParsedCertificate>>
+  MakeTestMtcAnchorAndLeaf(MtcLogBuilder& mtc_log_builder) {
+    std::unique_ptr<net::CertBuilder> mtc_leaf_builder =
+        std::move(net::CertBuilder::CreateSimpleChain(1u)[0]);
 
-    MtcLogBuilder untrusted_mtc_log_builder(kUntrustedMtcCaId,
-                                            /*log_number=*/1);
-    auto [untrusted_mtc_anchor, untrusted_mtc_leaf] =
-        MakeTestMtcAnchorAndLeaf(untrusted_mtc_log_builder);
+    uint64_t leaf_index = mtc_log_builder.AddEntry(*mtc_leaf_builder);
+    mtc_log_builder.AdvanceLandmark();
 
-    MtcLogBuilder mtc_log_builder_3(kTestMtcCaId_3, /*log_number=*/1);
-    auto [mtc_anchor_3, mtc_leaf_3] =
-        MakeTestMtcAnchorAndLeaf(mtc_log_builder_3);
+    auto leaf_buffer =
+        mtc_log_builder.CreateSignaturelessCertificateBuffer(leaf_index);
+    CHECK(leaf_buffer);
+    std::shared_ptr<const bssl::ParsedCertificate> mtc_leaf =
+        ToParsedCertificate(std::move(leaf_buffer));
 
-    MtcLogBuilder mtc_log_builder_4(kTestMtcCaId_4, /*log_number=*/1);
-    auto [mtc_anchor_4, mtc_leaf_4] =
-        MakeTestMtcAnchorAndLeaf(mtc_log_builder_4);
+    return {CreateMTCAnchor(
+                mtc_log_builder.ca_id(), bssl::SignatureAlgorithm::kMldsa44,
+                x509_util::CreateCryptoBuffer(std::string_view("fake key")),
+                mtc_log_builder.GetPerLogLandmarkSubtreeHashes()),
+            std::move(mtc_leaf)};
+  }
 
-    constexpr uint8_t kUnknownMtcCaId[] = {0x11, 0x22, 0x33, 0x44, 0x55, 0x66};
-    MtcLogBuilder mtc_log_builder_unknown(kUnknownMtcCaId, /*log_number=*/1);
-    auto [mtc_anchor_unknown, mtc_leaf_unknown] =
-        MakeTestMtcAnchorAndLeaf(mtc_log_builder_unknown);
+  chrome_root_store::Signer* AddSignerSetIssuerWithSpecVersion(
+      chrome_root_store::SignerSet& signer_set,
+      base::span<const uint8_t> log_id,
+      std::string_view operator_name,
+      std::optional<int32_t> crs_root_id) {
+    chrome_root_store::Signer* issuer =
+        net::AddSignerSetIssuer(signer_set, log_id, operator_name, crs_root_id);
+    issuer->set_spec_version(signer_set_spec());
+    return issuer;
+  }
+};
 
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatureStates(
-        {{net::features::kTLSTrustAnchorIDs, true},
-         {net::features::kVerifyMTCs, true},
-         {net::features::kTestRootStore, use_test_roots}});
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    TrustStoreChromeMtcTest,
+    testing::Combine(testing::Bool(),
+                     testing::Values(chrome_root_store::SPEC_VERSION_DRAFT05,
+                                     chrome_root_store::SPEC_VERSION_DRAFT07)),
+    [](const testing::TestParamInfo<TrustStoreChromeMtcTest::ParamType>& info) {
+      std::string_view spec_string;
+      switch (std::get<1>(info.param)) {
+        case chrome_root_store::SPEC_VERSION_DRAFT05:
+          spec_string = "Plants05";
+          break;
+        case chrome_root_store::SPEC_VERSION_DRAFT07:
+          spec_string = "Plants07";
+          break;
+        default:
+          NOTREACHED();
+      }
+      return base::StrCat({
+          std::get<0>(info.param) ? "TestRootsOn" : "TestRootsOff",
+          spec_string,
+      });
+    });
 
-    chrome_root_store::SignerSet signer_set;
-    signer_set.mutable_timestamp()->set_seconds(1);
-    AddSignerSetIssuer(signer_set, kTestMtcCaId_1, "operator", 11);
-    AddSignerSetIssuer(signer_set, kUntrustedMtcCaId, "operator", 12)
-        ->set_realm(chrome_root_store::REALM_UNTRUSTED_VALIDATION_ONLY);
-    AddSignerSetIssuer(signer_set, kTestMtcCaId_3, "operator", 13);
-    AddSignerSetIssuer(signer_set, kTestMtcCaId_4, "operator", 14);
+TEST_P(TrustStoreChromeMtcTest, LoadMtcTrustAnchors) {
+  constexpr uint8_t kTestMtcCaId_1[] = {0x09u, 0x01u, 0x03u, 0x04u};
+  constexpr uint8_t kUntrustedMtcCaId[] = {0x09u, 0x02u, 0x03u, 0x04u};
+  constexpr uint8_t kTestMtcCaId_3[] = {0x08u, 0x03u, 0x02u, 0x01u};
+  constexpr uint8_t kTestMtcCaId_4[] = {0x08u, 0x04u, 0x05u, 0x06u};
 
-    {
-      ChromeRootStoreData root_store_data =
-          ChromeRootStoreData::CreateForTesting(
-              kChromeRootCertList, kEutlRootCertList, /*version=*/1);
-      std::optional<ChromeRootStoreSignerSet> parsed_set =
-          ChromeRootStoreSignerSet::CreateFromProto(signer_set);
-      ASSERT_TRUE(parsed_set);
-      root_store_data.SetSignerSet(*parsed_set);
+  MtcLogBuilder mtc_log_builder(
+      CreateLogBuilder(kTestMtcCaId_1, /*log_number=*/1));
+  auto [mtc_anchor, mtc_leaf] = MakeTestMtcAnchorAndLeaf(mtc_log_builder);
 
-      TrustStoreChrome trust_store_chrome(&root_store_data, nullptr);
+  MtcLogBuilder untrusted_mtc_log_builder(CreateLogBuilder(kUntrustedMtcCaId,
+                                                           /*log_number=*/1));
+  auto [untrusted_mtc_anchor, untrusted_mtc_leaf] =
+      MakeTestMtcAnchorAndLeaf(untrusted_mtc_log_builder);
 
-      EXPECT_TRUE(trust_store_chrome.ContainsMTCAnchor(mtc_anchor.get()));
-      EXPECT_TRUE(trust_store_chrome.GetTrustedMTCIssuerOf(mtc_leaf.get()));
+  MtcLogBuilder mtc_log_builder_3(
+      CreateLogBuilder(kTestMtcCaId_3, /*log_number=*/1));
+  auto [mtc_anchor_3, mtc_leaf_3] = MakeTestMtcAnchorAndLeaf(mtc_log_builder_3);
 
-      EXPECT_EQ(use_test_roots, trust_store_chrome.ContainsMTCAnchor(
-                                    untrusted_mtc_anchor.get()));
-      EXPECT_EQ(use_test_roots, !!trust_store_chrome.GetTrustedMTCIssuerOf(
+  MtcLogBuilder mtc_log_builder_4(
+      CreateLogBuilder(kTestMtcCaId_4, /*log_number=*/1));
+  auto [mtc_anchor_4, mtc_leaf_4] = MakeTestMtcAnchorAndLeaf(mtc_log_builder_4);
+
+  constexpr uint8_t kUnknownMtcCaId[] = {0x11, 0x22, 0x33, 0x44, 0x55, 0x66};
+  MtcLogBuilder mtc_log_builder_unknown(
+      CreateLogBuilder(kUnknownMtcCaId, /*log_number=*/1));
+  auto [mtc_anchor_unknown, mtc_leaf_unknown] =
+      MakeTestMtcAnchorAndLeaf(mtc_log_builder_unknown);
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureStates(
+      {{net::features::kTLSTrustAnchorIDs, true},
+       {net::features::kVerifyMTCs, true},
+       {net::features::kTestRootStore, use_test_roots()}});
+
+  chrome_root_store::SignerSet signer_set;
+  signer_set.mutable_timestamp()->set_seconds(1);
+  AddSignerSetIssuerWithSpecVersion(signer_set, kTestMtcCaId_1, "operator", 11);
+  AddSignerSetIssuerWithSpecVersion(signer_set, kUntrustedMtcCaId, "operator",
+                                    12)
+      ->set_realm(chrome_root_store::REALM_UNTRUSTED_VALIDATION_ONLY);
+  AddSignerSetIssuerWithSpecVersion(signer_set, kTestMtcCaId_3, "operator", 13);
+  AddSignerSetIssuerWithSpecVersion(signer_set, kTestMtcCaId_4, "operator", 14);
+
+  {
+    ChromeRootStoreData root_store_data = ChromeRootStoreData::CreateForTesting(
+        kChromeRootCertList, kEutlRootCertList, /*version=*/1);
+    std::optional<ChromeRootStoreSignerSet> parsed_set =
+        ChromeRootStoreSignerSet::CreateFromProto(signer_set);
+    ASSERT_TRUE(parsed_set);
+    root_store_data.SetSignerSet(*parsed_set);
+
+    TrustStoreChrome trust_store_chrome(&root_store_data, nullptr);
+
+    EXPECT_TRUE(trust_store_chrome.ContainsMTCAnchor(mtc_anchor.get()));
+    EXPECT_TRUE(trust_store_chrome.GetTrustedMTCIssuerOf(mtc_leaf.get()));
+
+    EXPECT_EQ(use_test_roots(),
+              trust_store_chrome.ContainsMTCAnchor(untrusted_mtc_anchor.get()));
+    EXPECT_EQ(use_test_roots(), !!trust_store_chrome.GetTrustedMTCIssuerOf(
                                     untrusted_mtc_leaf.get()));
 
-      EXPECT_TRUE(trust_store_chrome.ContainsMTCAnchor(mtc_anchor_3.get()));
-      EXPECT_TRUE(trust_store_chrome.GetTrustedMTCIssuerOf(mtc_leaf_3.get()));
+    EXPECT_TRUE(trust_store_chrome.ContainsMTCAnchor(mtc_anchor_3.get()));
+    EXPECT_TRUE(trust_store_chrome.GetTrustedMTCIssuerOf(mtc_leaf_3.get()));
 
-      EXPECT_TRUE(trust_store_chrome.ContainsMTCAnchor(mtc_anchor_4.get()));
-      EXPECT_TRUE(trust_store_chrome.GetTrustedMTCIssuerOf(mtc_leaf_4.get()));
+    EXPECT_TRUE(trust_store_chrome.ContainsMTCAnchor(mtc_anchor_4.get()));
+    EXPECT_TRUE(trust_store_chrome.GetTrustedMTCIssuerOf(mtc_leaf_4.get()));
 
-      EXPECT_FALSE(
-          trust_store_chrome.ContainsMTCAnchor(mtc_anchor_unknown.get()));
-      EXPECT_FALSE(
-          trust_store_chrome.GetTrustedMTCIssuerOf(mtc_leaf_unknown.get()));
-    }
+    EXPECT_FALSE(
+        trust_store_chrome.ContainsMTCAnchor(mtc_anchor_unknown.get()));
+    EXPECT_FALSE(
+        trust_store_chrome.GetTrustedMTCIssuerOf(mtc_leaf_unknown.get()));
+  }
 
-    chrome_root_store::MtcMetadata mtc_metadata_proto;
-    mtc_metadata_proto.set_update_time_seconds(
-        base::Time::Now().InMillisecondsSinceUnixEpoch() / 1000);
+  chrome_root_store::MtcMetadata mtc_metadata_proto;
+  mtc_metadata_proto.set_update_time_seconds(
+      base::Time::Now().InMillisecondsSinceUnixEpoch() / 1000);
 
-    // Only the first and fourth log are added to the MtcMetadata proto.
-    mtc_log_builder.FillMtcMetadataAnchorProto(
-        mtc_metadata_proto.add_mtc_anchor_data());
-    mtc_log_builder_4.FillMtcMetadataAnchorProto(
-        mtc_metadata_proto.add_mtc_anchor_data());
-    // Also add metadata for the MTC anchor that is not present in the
-    // SignerSet. It should be ignored and this anchor should still be
-    // considered untrusted.
-    mtc_log_builder_unknown.FillMtcMetadataAnchorProto(
-        mtc_metadata_proto.add_mtc_anchor_data());
+  // Only the first and fourth log are added to the MtcMetadata proto.
+  mtc_log_builder.FillMtcMetadataAnchorProto(
+      mtc_metadata_proto.add_mtc_anchor_data());
+  mtc_log_builder_4.FillMtcMetadataAnchorProto(
+      mtc_metadata_proto.add_mtc_anchor_data());
+  // Also add metadata for the MTC anchor that is not present in the
+  // SignerSet. It should be ignored and this anchor should still be
+  // considered untrusted.
+  mtc_log_builder_unknown.FillMtcMetadataAnchorProto(
+      mtc_metadata_proto.add_mtc_anchor_data());
 
-    auto mtc_metadata = ChromeRootStoreMtcMetadata::CreateFromMtcMetadataProto(
-        mtc_metadata_proto);
-    ASSERT_TRUE(mtc_metadata);
+  auto mtc_metadata = ChromeRootStoreMtcMetadata::CreateFromMtcMetadataProto(
+      mtc_metadata_proto);
+  ASSERT_TRUE(mtc_metadata);
 
-    // The presence of MtcMetadata is not required for a MTC CA to be considered
-    // trusted (since it still can be used with standalone MTCs even if the
-    // trusted landmark data isn't available.) This just confirms that if a
-    // MtcMetadata is supplied, with data for only some of the MTC CAs, it has
-    // no effect on which MTC CAs are considered trusted.
-    {
-      ChromeRootStoreData root_store_data =
-          ChromeRootStoreData::CreateForTesting(
-              kChromeRootCertList, kEutlRootCertList, /*version=*/1);
-      std::optional<ChromeRootStoreSignerSet> parsed_set =
-          ChromeRootStoreSignerSet::CreateFromProto(signer_set);
-      ASSERT_TRUE(parsed_set);
-      root_store_data.SetSignerSet(*parsed_set);
+  // The presence of MtcMetadata is not required for a MTC CA to be considered
+  // trusted (since it still can be used with standalone MTCs even if the
+  // trusted landmark data isn't available.) This just confirms that if a
+  // MtcMetadata is supplied, with data for only some of the MTC CAs, it has
+  // no effect on which MTC CAs are considered trusted.
+  {
+    ChromeRootStoreData root_store_data = ChromeRootStoreData::CreateForTesting(
+        kChromeRootCertList, kEutlRootCertList, /*version=*/1);
+    std::optional<ChromeRootStoreSignerSet> parsed_set =
+        ChromeRootStoreSignerSet::CreateFromProto(signer_set);
+    ASSERT_TRUE(parsed_set);
+    root_store_data.SetSignerSet(*parsed_set);
 
-      TrustStoreChrome trust_store_chrome(&root_store_data, &*mtc_metadata);
+    TrustStoreChrome trust_store_chrome(&root_store_data, &*mtc_metadata);
 
-      EXPECT_TRUE(trust_store_chrome.ContainsMTCAnchor(mtc_anchor.get()));
-      EXPECT_TRUE(trust_store_chrome.GetTrustedMTCIssuerOf(mtc_leaf.get()));
+    EXPECT_TRUE(trust_store_chrome.ContainsMTCAnchor(mtc_anchor.get()));
+    EXPECT_TRUE(trust_store_chrome.GetTrustedMTCIssuerOf(mtc_leaf.get()));
 
-      EXPECT_EQ(use_test_roots, trust_store_chrome.ContainsMTCAnchor(
-                                    untrusted_mtc_anchor.get()));
-      EXPECT_EQ(use_test_roots, !!trust_store_chrome.GetTrustedMTCIssuerOf(
+    EXPECT_EQ(use_test_roots(),
+              trust_store_chrome.ContainsMTCAnchor(untrusted_mtc_anchor.get()));
+    EXPECT_EQ(use_test_roots(), !!trust_store_chrome.GetTrustedMTCIssuerOf(
                                     untrusted_mtc_leaf.get()));
 
-      EXPECT_TRUE(trust_store_chrome.ContainsMTCAnchor(mtc_anchor_3.get()));
-      EXPECT_TRUE(trust_store_chrome.GetTrustedMTCIssuerOf(mtc_leaf_3.get()));
+    EXPECT_TRUE(trust_store_chrome.ContainsMTCAnchor(mtc_anchor_3.get()));
+    EXPECT_TRUE(trust_store_chrome.GetTrustedMTCIssuerOf(mtc_leaf_3.get()));
 
-      EXPECT_TRUE(trust_store_chrome.ContainsMTCAnchor(mtc_anchor_4.get()));
-      EXPECT_TRUE(trust_store_chrome.GetTrustedMTCIssuerOf(mtc_leaf_4.get()));
+    EXPECT_TRUE(trust_store_chrome.ContainsMTCAnchor(mtc_anchor_4.get()));
+    EXPECT_TRUE(trust_store_chrome.GetTrustedMTCIssuerOf(mtc_leaf_4.get()));
 
-      EXPECT_FALSE(
-          trust_store_chrome.ContainsMTCAnchor(mtc_anchor_unknown.get()));
-      EXPECT_FALSE(
-          trust_store_chrome.GetTrustedMTCIssuerOf(mtc_leaf_unknown.get()));
-    }
+    EXPECT_FALSE(
+        trust_store_chrome.ContainsMTCAnchor(mtc_anchor_unknown.get()));
+    EXPECT_FALSE(
+        trust_store_chrome.GetTrustedMTCIssuerOf(mtc_leaf_unknown.get()));
   }
 }
 
@@ -1580,6 +1660,14 @@ TEST(TrustStoreChromeTestNoFixture, SignerSetCreationIssuerFiltering) {
       ->set_signature_algorithm(
           static_cast<chrome_root_store::SignatureAlgorithm>(999999));
 
+  const std::vector<uint8_t> kIssuerNoSpecVersion = {0x0b};
+  AddSignerSetIssuer(proto, kIssuerNoSpecVersion, "op", std::nullopt)
+      ->clear_spec_version();
+
+  const std::vector<uint8_t> kIssuerUnknownSpecVersion = {0x0c};
+  AddSignerSetIssuer(proto, kIssuerUnknownSpecVersion, "op", std::nullopt)
+      ->set_spec_version(static_cast<chrome_root_store::SpecVersion>(999999));
+
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitWithFeatures({features::kVerifyMTCs},
@@ -1590,10 +1678,18 @@ TEST(TrustStoreChromeTestNoFixture, SignerSetCreationIssuerFiltering) {
     std::vector<std::vector<uint8_t>> usable_issuer_ids;
     for (const auto& issuer : parsed_set->trusted_issuers()) {
       usable_issuer_ids.push_back(issuer.base_id);
+      if (issuer.base_id == kIssuerNoSpecVersion) {
+        // TODO(crbug.com/452986180): Remove this once issuers with missing
+        // spec_version get filtered out.
+        EXPECT_EQ(issuer.spec_version, chrome_root_store::SPEC_VERSION_DRAFT05);
+      }
     }
+    // TODO(crbug.com/452986180): Remove kIssuerNoSpecVersion here and below
+    // once issuers with missing spec_version get filtered out.
     EXPECT_THAT(usable_issuer_ids,
                 testing::UnorderedElementsAre(
-                    kIssuerUsable, kIssuerStateQualified, kIssuerStateFrozen));
+                    kIssuerUsable, kIssuerStateQualified, kIssuerStateFrozen,
+                    kIssuerNoSpecVersion));
   }
 
   {
@@ -1613,7 +1709,7 @@ TEST(TrustStoreChromeTestNoFixture, SignerSetCreationIssuerFiltering) {
     EXPECT_THAT(usable_issuer_ids,
                 testing::UnorderedElementsAre(
                     kIssuerUsable, kIssuerStateQualified, kIssuerStateFrozen,
-                    kIssuerUntrustedRealm));
+                    kIssuerNoSpecVersion, kIssuerUntrustedRealm));
   }
 }
 

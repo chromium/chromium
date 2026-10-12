@@ -13,6 +13,7 @@
 #include "base/containers/transparent_hash.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -70,6 +71,7 @@
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 #include "base/version_info/version_info.h"  // nogncheck
+#include "net/cert/root_store_proto_lite/signer_set.pb.h"
 #endif
 
 using net::test::IsError;
@@ -740,10 +742,87 @@ TEST_F(CertVerifyProcBuiltinTest, SimpleSuccess) {
   histograms.ExpectTotalCount("Net.Certificate.TrustAnchor2.Verify", 0u);
 }
 
-TEST_F(CertVerifyProcBuiltinTest, SimpleSignaturelessMtcSuccess) {
+class CertVerifyProcBuiltinMtcTest
+    : public CertVerifyProcBuiltinTest,
+      public ::testing::WithParamInterface<bssl::MTCAnchor::MtcSpecVersion> {
+ public:
+  bssl::MTCAnchor::MtcSpecVersion spec_version() const { return GetParam(); }
+
+  MtcLogBuilder::SpecVersion log_builder_spec() const {
+    switch (GetParam()) {
+      // Plants-04 and plants-05 are wire compatible. The enum in boringssl and
+      // chromium happened to be different as to which version they used since
+      // those are the versions of the draft that were current at the time.
+      case bssl::MTCAnchor::kPlants04:
+        return MtcLogBuilder::kPlants05;
+      case bssl::MTCAnchor::kPlants07:
+        return MtcLogBuilder::kPlants07;
+    }
+    NOTREACHED();
+  }
+
+  std::shared_ptr<const bssl::MTCAnchor> CreateMTCAnchor(
+      base::span<const uint8_t> ca_id,
+      bssl::SignatureAlgorithm ca_signature_algorithm,
+      bssl::UniquePtr<CRYPTO_BUFFER> ca_key,
+      std::vector<bssl::LogTrustedSubtrees> log_trusted_subtrees) const {
+    switch (spec_version()) {
+      case bssl::MTCAnchor::kPlants04:
+        return std::make_shared<bssl::MTCAnchor>(
+            ca_id, ca_signature_algorithm, std::move(ca_key),
+            std::move(log_trusted_subtrees));
+      case bssl::MTCAnchor::kPlants07:
+        return bssl::MTCAnchor::CreatePlants07(ca_id, ca_signature_algorithm,
+                                               std::move(ca_key),
+                                               std::move(log_trusted_subtrees));
+    }
+    NOTREACHED();
+  }
+
+  MtcLogBuilder CreateLogBuilder(base::span<const uint8_t> ca_id,
+                                 MtcLogBuilder::LogNumber log_number) const {
+    return MtcLogBuilder(ca_id, log_number, log_builder_spec());
+  }
+
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  chrome_root_store::SpecVersion signer_set_spec() const {
+    switch (GetParam()) {
+      case bssl::MTCAnchor::kPlants04:
+        return chrome_root_store::SPEC_VERSION_DRAFT05;
+      case bssl::MTCAnchor::kPlants07:
+        return chrome_root_store::SPEC_VERSION_DRAFT07;
+    }
+    NOTREACHED();
+  }
+
+  Signer CreateIssuerSigner(base::span<const uint8_t> base_id) const {
+    auto signer = Signer::CreateForTesting(
+        chrome_root_store::SIGNER_TYPE_ISSUER, base_id);
+    signer.spec_version = signer_set_spec();
+    return signer;
+  }
+#endif
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    CertVerifyProcBuiltinMtcTest,
+    ::testing::Values(bssl::MTCAnchor::kPlants04, bssl::MTCAnchor::kPlants07),
+    [](const testing::TestParamInfo<bssl::MTCAnchor::MtcSpecVersion>&
+           param_info) {
+      switch (param_info.param) {
+        case bssl::MTCAnchor::kPlants04:
+          return "Plants04";
+        case bssl::MTCAnchor::kPlants07:
+          return "Plants07";
+      }
+      NOTREACHED();
+    });
+
+TEST_P(CertVerifyProcBuiltinMtcTest, SimpleSignaturelessMtcSuccess) {
   constexpr uint8_t kMtcCaId[] = {0x09, 0x08, 0x07};
   constexpr uint16_t kLogNumber = 1;
-  net::MtcLogBuilder mtc_log(kMtcCaId, kLogNumber);
+  net::MtcLogBuilder mtc_log(CreateLogBuilder(kMtcCaId, kLogNumber));
   // TODO(crbug.com/469624806): improve interface for creating MTC cert
   // builders.
   std::unique_ptr<net::CertBuilder> mtc_leaf1 =
@@ -758,7 +837,7 @@ TEST_F(CertVerifyProcBuiltinTest, SimpleSignaturelessMtcSuccess) {
   auto ca_key = crypto::keypair::PrivateKey::GenerateEcP256();
 
   bssl::TrustStoreInMemory trust_store;
-  auto mtc_anchor = std::make_shared<const bssl::MTCAnchor>(
+  auto mtc_anchor = CreateMTCAnchor(
       kMtcCaId, bssl::SignatureAlgorithm::kEcdsaSha256,
       x509_util::CreateCryptoBuffer(ca_key.ToSubjectPublicKeyInfo()),
       mtc_log.GetPerLogLandmarkSubtreeHashes());
@@ -810,10 +889,10 @@ TEST_F(CertVerifyProcBuiltinTest, SimpleSignaturelessMtcSuccess) {
   }
 }
 
-TEST_F(CertVerifyProcBuiltinTest, MtcNonTrivialProof) {
+TEST_P(CertVerifyProcBuiltinMtcTest, MtcNonTrivialProof) {
   constexpr uint8_t kMtcCaId[] = {0x09, 0x08, 0x07};
   constexpr uint16_t kLogNumber = 1;
-  net::MtcLogBuilder mtc_log(kMtcCaId, kLogNumber);
+  net::MtcLogBuilder mtc_log(CreateLogBuilder(kMtcCaId, kLogNumber));
   // TODO(crbug.com/469624806): improve interface for creating MTC cert
   // builders.
   std::unique_ptr<net::CertBuilder> mtc_leaf1 =
@@ -840,7 +919,7 @@ TEST_F(CertVerifyProcBuiltinTest, MtcNonTrivialProof) {
   {
     // Verification should succeed if the anchor is configured with the
     // matching trusted landmark data.
-    auto mtc_anchor = std::make_shared<const bssl::MTCAnchor>(
+    auto mtc_anchor = CreateMTCAnchor(
         kMtcCaId, bssl::SignatureAlgorithm::kEcdsaSha256,
         x509_util::CreateCryptoBuffer(ca_key.ToSubjectPublicKeyInfo()),
         mtc_log.GetPerLogLandmarkSubtreeHashes());
@@ -865,7 +944,7 @@ TEST_F(CertVerifyProcBuiltinTest, MtcNonTrivialProof) {
     for (auto& subtree : landmark_data[0].trusted_subtrees) {
       subtree.hash[0] ^= 1;
     }
-    auto mtc_anchor = std::make_shared<const bssl::MTCAnchor>(
+    auto mtc_anchor = CreateMTCAnchor(
         kMtcCaId, bssl::SignatureAlgorithm::kEcdsaSha256,
         x509_util::CreateCryptoBuffer(ca_key.ToSubjectPublicKeyInfo()),
         landmark_data);
@@ -889,7 +968,7 @@ TEST_F(CertVerifyProcBuiltinTest, MtcNonTrivialProof) {
     trust_store.Clear();
     auto landmark_data = mtc_log.GetPerLogLandmarkSubtreeHashes();
     landmark_data[0].log_number++;
-    auto mtc_anchor = std::make_shared<const bssl::MTCAnchor>(
+    auto mtc_anchor = CreateMTCAnchor(
         kMtcCaId, bssl::SignatureAlgorithm::kEcdsaSha256,
         x509_util::CreateCryptoBuffer(ca_key.ToSubjectPublicKeyInfo()),
         landmark_data);
@@ -910,7 +989,7 @@ TEST_F(CertVerifyProcBuiltinTest, MtcNonTrivialProof) {
     // should fail with the standard ERR_CERT_AUTHORITY_INVALID error code.
     // TODO(crbug.com/452986180): make it return a more specific error code.
     trust_store.Clear();
-    auto mtc_anchor = std::make_shared<const bssl::MTCAnchor>(
+    auto mtc_anchor = CreateMTCAnchor(
         kMtcCaId, bssl::SignatureAlgorithm::kEcdsaSha256,
         x509_util::CreateCryptoBuffer(ca_key.ToSubjectPublicKeyInfo()),
         std::vector<bssl::LogTrustedSubtrees>());
@@ -927,10 +1006,10 @@ TEST_F(CertVerifyProcBuiltinTest, MtcNonTrivialProof) {
   }
 }
 
-TEST_F(CertVerifyProcBuiltinTest, StandaloneMtcVerification) {
+TEST_P(CertVerifyProcBuiltinMtcTest, StandaloneMtcVerification) {
   constexpr uint8_t kMtcCaId[] = {0x09, 0x08, 0x07};
   constexpr uint16_t kLogNumber = 1;
-  net::MtcLogBuilder mtc_log(kMtcCaId, kLogNumber);
+  net::MtcLogBuilder mtc_log(CreateLogBuilder(kMtcCaId, kLogNumber));
   // TODO(crbug.com/469624806): improve interface for creating MTC cert
   // builders.
   std::unique_ptr<net::CertBuilder> mtc_leaf1 =
@@ -955,7 +1034,7 @@ TEST_F(CertVerifyProcBuiltinTest, StandaloneMtcVerification) {
   SetMockIsKnownMtcAnchor(false);
 
   bssl::TrustStoreInMemory trust_store;
-  auto mtc_anchor = std::make_shared<const bssl::MTCAnchor>(
+  auto mtc_anchor = CreateMTCAnchor(
       ca_cosigner.id, ca_cosigner.signature_algorithm,
       x509_util::CreateCryptoBuffer(ca_cosigner.key.ToSubjectPublicKeyInfo()),
       std::vector<bssl::LogTrustedSubtrees>());
@@ -985,7 +1064,7 @@ TEST_F(CertVerifyProcBuiltinTest, StandaloneMtcVerification) {
   // a different key than used to sign the MTC.
   trust_store.Clear();
   auto different_key = crypto::keypair::PrivateKey::GenerateEcP256();
-  mtc_anchor = std::make_shared<const bssl::MTCAnchor>(
+  mtc_anchor = CreateMTCAnchor(
       ca_cosigner.id, ca_cosigner.signature_algorithm,
       x509_util::CreateCryptoBuffer(different_key.ToSubjectPublicKeyInfo()),
       std::vector<bssl::LogTrustedSubtrees>());
@@ -1010,10 +1089,10 @@ TEST_F(CertVerifyProcBuiltinTest, StandaloneMtcVerification) {
 }
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-TEST_F(CertVerifyProcBuiltinTest, StandaloneMtcCosignerPolicy) {
+TEST_P(CertVerifyProcBuiltinMtcTest, StandaloneMtcCosignerPolicy) {
   constexpr uint8_t kMtcCaId[] = {0x09, 0x08, 0x07};
   constexpr uint16_t kLogNumber = 1;
-  net::MtcLogBuilder mtc_log(kMtcCaId, kLogNumber);
+  net::MtcLogBuilder mtc_log(CreateLogBuilder(kMtcCaId, kLogNumber));
   // TODO(crbug.com/469624806): improve interface for creating MTC cert
   // builders.
   std::unique_ptr<net::CertBuilder> mtc_leaf1 =
@@ -1038,7 +1117,7 @@ TEST_F(CertVerifyProcBuiltinTest, StandaloneMtcCosignerPolicy) {
   SetMockMtcMirrors({&mirror_cosigner});
 
   bssl::TrustStoreInMemory trust_store;
-  auto mtc_anchor = std::make_shared<const bssl::MTCAnchor>(
+  auto mtc_anchor = CreateMTCAnchor(
       ca_cosigner.id, ca_cosigner.signature_algorithm,
       x509_util::CreateCryptoBuffer(ca_cosigner.key.ToSubjectPublicKeyInfo()),
       std::vector<bssl::LogTrustedSubtrees>());
@@ -1227,7 +1306,7 @@ TEST_F(CertVerifyProcBuiltinTest, StandaloneMtcCosignerPolicy) {
   }
 }
 
-TEST_F(CertVerifyProcBuiltinTest, MtcLogNumberLimits) {
+TEST_P(CertVerifyProcBuiltinMtcTest, MtcLogNumberLimits) {
   struct TestCase {
     uint16_t log_number;
     int min_log_number;
@@ -1305,7 +1384,7 @@ TEST_F(CertVerifyProcBuiltinTest, MtcLogNumberLimits) {
     SCOPED_TRACE(test.log_number);
     SCOPED_TRACE(test.min_log_number);
     constexpr uint8_t kMtcCaId[] = {0x09, 0x08, 0x07};
-    net::MtcLogBuilder mtc_log(kMtcCaId, test.log_number);
+    net::MtcLogBuilder mtc_log(CreateLogBuilder(kMtcCaId, test.log_number));
     std::unique_ptr<net::CertBuilder> mtc_leaf1 =
         std::move(net::CertBuilder::CreateSimpleChain(1u)[0]);
     uint64_t leaf_index = mtc_log.AddEntry(*mtc_leaf1);
@@ -1319,7 +1398,7 @@ TEST_F(CertVerifyProcBuiltinTest, MtcLogNumberLimits) {
         bssl::SignatureAlgorithm::kMldsa44};
 
     bssl::TrustStoreInMemory trust_store;
-    auto mtc_anchor = std::make_shared<const bssl::MTCAnchor>(
+    auto mtc_anchor = CreateMTCAnchor(
         ca_cosigner.id, ca_cosigner.signature_algorithm,
         x509_util::CreateCryptoBuffer(ca_cosigner.key.ToSubjectPublicKeyInfo()),
         test.load_landmark_data ? mtc_log.GetPerLogLandmarkSubtreeHashes()
@@ -1327,8 +1406,7 @@ TEST_F(CertVerifyProcBuiltinTest, MtcLogNumberLimits) {
     ASSERT_TRUE(trust_store.AddMTCTrustAnchor(mtc_anchor));
     AddTrustStore(&trust_store);
 
-    Signer signer_config = Signer::CreateForTesting(
-        chrome_root_store::SIGNER_TYPE_ISSUER, kMtcCaId);
+    Signer signer_config = CreateIssuerSigner(kMtcCaId);
     signer_config.min_log_number = test.min_log_number;
     TrustStoreChrome::MtcAnchorExtraData mtc_anchor_extra_data(
         std::move(signer_config));
@@ -1396,7 +1474,7 @@ TEST_F(CertVerifyProcBuiltinTest, MtcLogNumberLimits) {
   }
 }
 
-TEST_F(CertVerifyProcBuiltinTest, MtcMaxCertLifetime) {
+TEST_P(CertVerifyProcBuiltinMtcTest, MtcMaxCertLifetime) {
   struct TestCase {
     std::optional<base::TimeDelta> max_cert_lifetime;
     base::TimeDelta cert_lifetime;
@@ -1443,7 +1521,7 @@ TEST_F(CertVerifyProcBuiltinTest, MtcMaxCertLifetime) {
     SCOPED_TRACE(base::ToString(test.max_cert_lifetime));
     SCOPED_TRACE(test.cert_lifetime);
     constexpr uint8_t kMtcCaId[] = {0x09, 0x08, 0x07};
-    net::MtcLogBuilder mtc_log(kMtcCaId, kLogNumber);
+    net::MtcLogBuilder mtc_log(CreateLogBuilder(kMtcCaId, kLogNumber));
     std::unique_ptr<net::CertBuilder> mtc_leaf1 =
         std::move(net::CertBuilder::CreateSimpleChain(1u)[0]);
     mtc_leaf1->SetValidity(start, start + test.cert_lifetime);
@@ -1458,15 +1536,14 @@ TEST_F(CertVerifyProcBuiltinTest, MtcMaxCertLifetime) {
         bssl::SignatureAlgorithm::kMldsa44};
 
     bssl::TrustStoreInMemory trust_store;
-    auto mtc_anchor = std::make_shared<const bssl::MTCAnchor>(
+    auto mtc_anchor = CreateMTCAnchor(
         ca_cosigner.id, ca_cosigner.signature_algorithm,
         x509_util::CreateCryptoBuffer(ca_cosigner.key.ToSubjectPublicKeyInfo()),
         mtc_log.GetPerLogLandmarkSubtreeHashes());
     ASSERT_TRUE(trust_store.AddMTCTrustAnchor(mtc_anchor));
     AddTrustStore(&trust_store);
 
-    Signer signer_config = Signer::CreateForTesting(
-        chrome_root_store::SIGNER_TYPE_ISSUER, kMtcCaId);
+    Signer signer_config = CreateIssuerSigner(kMtcCaId);
     signer_config.max_cert_lifetime = test.max_cert_lifetime;
     TrustStoreChrome::MtcAnchorExtraData mtc_anchor_extra_data(
         std::move(signer_config));
@@ -1556,10 +1633,10 @@ TEST_F(CertVerifyProcBuiltinTest, CrsAnchorUsageHistogram) {
   }
 }
 
-TEST_F(CertVerifyProcBuiltinTest, MtcCrsAnchorUsageHistogram) {
+TEST_P(CertVerifyProcBuiltinMtcTest, MtcCrsAnchorUsageHistogram) {
   constexpr uint8_t kMtcCaId[] = {0x09, 0x08, 0x07};
   constexpr uint16_t kLogNumber = 1;
-  net::MtcLogBuilder mtc_log(kMtcCaId, kLogNumber);
+  net::MtcLogBuilder mtc_log(CreateLogBuilder(kMtcCaId, kLogNumber));
   // TODO(crbug.com/469624806): improve interface for creating MTC cert
   // builders.
   std::unique_ptr<net::CertBuilder> mtc_leaf1 =
@@ -1574,7 +1651,7 @@ TEST_F(CertVerifyProcBuiltinTest, MtcCrsAnchorUsageHistogram) {
   auto ca_key = crypto::keypair::PrivateKey::GenerateEcP256();
 
   bssl::TrustStoreInMemory trust_store;
-  auto mtc_anchor = std::make_shared<const bssl::MTCAnchor>(
+  auto mtc_anchor = CreateMTCAnchor(
       kMtcCaId, bssl::SignatureAlgorithm::kEcdsaSha256,
       x509_util::CreateCryptoBuffer(ca_key.ToSubjectPublicKeyInfo()),
       mtc_log.GetPerLogLandmarkSubtreeHashes());
@@ -1626,14 +1703,14 @@ TEST_F(CertVerifyProcBuiltinTest, MtcCrsAnchorUsageHistogram) {
   }
 }
 
-TEST_F(CertVerifyProcBuiltinTest, MtcRevocation) {
+TEST_P(CertVerifyProcBuiltinMtcTest, MtcRevocation) {
   constexpr uint8_t kMtcCaId[] = {0x09, 0x08, 0x07};
   constexpr uint64_t kLogNumber = 1;
 
   MtcLogBuilder::Cosigner ca_cosigner = {
       base::ToVector(kMtcCaId), crypto::keypair::PrivateKey::GenerateEcP256(),
       bssl::SignatureAlgorithm::kEcdsaSha256};
-  net::MtcLogBuilder mtc_log(kMtcCaId, kLogNumber);
+  net::MtcLogBuilder mtc_log(CreateLogBuilder(kMtcCaId, kLogNumber));
   // TODO(crbug.com/469624806): improve interface for creating MTC cert
   // builders.
   std::unique_ptr<net::CertBuilder> mtc_leaf1 =
@@ -1666,7 +1743,7 @@ TEST_F(CertVerifyProcBuiltinTest, MtcRevocation) {
   InitializeVerifyProc(CreateParams(/*additional_trust_anchors=*/{}));
 
   bssl::TrustStoreInMemory trust_store;
-  auto mtc_anchor = std::make_shared<const bssl::MTCAnchor>(
+  auto mtc_anchor = CreateMTCAnchor(
       ca_cosigner.id, ca_cosigner.signature_algorithm,
       x509_util::CreateCryptoBuffer(ca_cosigner.key.ToSubjectPublicKeyInfo()),
       mtc_log.GetPerLogLandmarkSubtreeHashes());
@@ -1676,8 +1753,7 @@ TEST_F(CertVerifyProcBuiltinTest, MtcRevocation) {
   // Test with GetMTCAnchorData returning a non-null MtcAnchorExtraData, but
   // with revoked_serials empty. Nothing should be revoked.
   TrustStoreChrome::MtcAnchorExtraData mtc_anchor_extra_data(
-      Signer::CreateForTesting(chrome_root_store::SIGNER_TYPE_ISSUER,
-                               kMtcCaId));
+      CreateIssuerSigner(kMtcCaId));
   SetMockMTCAnchorData(mtc_anchor_extra_data);
   for (const TestCertData& data : test_cert_data) {
     SCOPED_TRACE(data.mtc_log_index);
@@ -1776,10 +1852,11 @@ TEST_F(CertVerifyProcBuiltinTest, MtcRevocation) {
   }
 }
 
-TEST_F(CertVerifyProcBuiltinTest, SignaturelessMtcChromeRootStoreConstraints) {
+TEST_P(CertVerifyProcBuiltinMtcTest,
+       SignaturelessMtcChromeRootStoreConstraints) {
   constexpr uint8_t kMtcCaId[] = {0x09, 0x08, 0x07};
   constexpr uint16_t kLogNumber = 1;
-  net::MtcLogBuilder mtc_log(kMtcCaId, kLogNumber);
+  net::MtcLogBuilder mtc_log(CreateLogBuilder(kMtcCaId, kLogNumber));
   // TODO(crbug.com/469624806): improve interface for creating MTC cert
   // builders.
   std::unique_ptr<net::CertBuilder> mtc_leaf1 =
@@ -1794,7 +1871,7 @@ TEST_F(CertVerifyProcBuiltinTest, SignaturelessMtcChromeRootStoreConstraints) {
   auto ca_key = crypto::keypair::PrivateKey::GenerateEcP256();
 
   bssl::TrustStoreInMemory trust_store;
-  auto mtc_anchor = std::make_shared<const bssl::MTCAnchor>(
+  auto mtc_anchor = CreateMTCAnchor(
       kMtcCaId, bssl::SignatureAlgorithm::kEcdsaSha256,
       x509_util::CreateCryptoBuffer(ca_key.ToSubjectPublicKeyInfo()),
       mtc_log.GetPerLogLandmarkSubtreeHashes());
@@ -1850,13 +1927,13 @@ TEST_F(CertVerifyProcBuiltinTest, SignaturelessMtcChromeRootStoreConstraints) {
   }
 }
 
-TEST_F(CertVerifyProcBuiltinTest,
+TEST_P(CertVerifyProcBuiltinMtcTest,
        SignaturelessMtcChromeRootStoreConstraintsTimeConstraints) {
   const base::Time leaf_time = base::Time::Now() - base::Seconds(1);
 
   constexpr uint8_t kMtcCaId[] = {0x09, 0x08, 0x07};
   constexpr uint16_t kLogNumber = 1;
-  net::MtcLogBuilder mtc_log(kMtcCaId, kLogNumber);
+  net::MtcLogBuilder mtc_log(CreateLogBuilder(kMtcCaId, kLogNumber));
   // TODO(crbug.com/469624806): improve interface for creating MTC cert
   // builders.
   std::unique_ptr<net::CertBuilder> mtc_leaf1 =
@@ -1922,7 +1999,7 @@ TEST_F(CertVerifyProcBuiltinTest,
     auto ca_key = crypto::keypair::PrivateKey::GenerateEcP256();
 
     bssl::TrustStoreInMemory trust_store;
-    auto mtc_anchor = std::make_shared<const bssl::MTCAnchor>(
+    auto mtc_anchor = CreateMTCAnchor(
         kMtcCaId, bssl::SignatureAlgorithm::kEcdsaSha256,
         x509_util::CreateCryptoBuffer(ca_key.ToSubjectPublicKeyInfo()),
         mtc_log.GetPerLogLandmarkSubtreeHashes());
@@ -1990,11 +2067,11 @@ TEST_F(CertVerifyProcBuiltinTest,
   }
 }
 
-TEST_F(CertVerifyProcBuiltinTest,
+TEST_P(CertVerifyProcBuiltinMtcTest,
        SignaturelessMtcChromeRootStoreConstraintsSctConstraints) {
   constexpr uint8_t kMtcCaId[] = {0x09, 0x08, 0x07};
   constexpr uint16_t kLogNumber = 1;
-  net::MtcLogBuilder mtc_log(kMtcCaId, kLogNumber);
+  net::MtcLogBuilder mtc_log(CreateLogBuilder(kMtcCaId, kLogNumber));
   // TODO(crbug.com/469624806): improve interface for creating MTC cert
   // builders.
   std::unique_ptr<net::CertBuilder> mtc_leaf1 =
@@ -2009,7 +2086,7 @@ TEST_F(CertVerifyProcBuiltinTest,
   auto ca_key = crypto::keypair::PrivateKey::GenerateEcP256();
 
   bssl::TrustStoreInMemory trust_store;
-  auto mtc_anchor = std::make_shared<const bssl::MTCAnchor>(
+  auto mtc_anchor = CreateMTCAnchor(
       kMtcCaId, bssl::SignatureAlgorithm::kEcdsaSha256,
       x509_util::CreateCryptoBuffer(ca_key.ToSubjectPublicKeyInfo()),
       mtc_log.GetPerLogLandmarkSubtreeHashes());
@@ -2057,11 +2134,11 @@ TEST_F(CertVerifyProcBuiltinTest,
   }
 }
 
-TEST_F(CertVerifyProcBuiltinTest,
+TEST_P(CertVerifyProcBuiltinMtcTest,
        SignaturelessMtcChromeRootStoreConstraintsIndexConstraints) {
   constexpr uint8_t kMtcCaId[] = {0x09, 0x08, 0x07};
   constexpr uint16_t kLogNumber = 1;
-  net::MtcLogBuilder mtc_log(kMtcCaId, kLogNumber);
+  net::MtcLogBuilder mtc_log(CreateLogBuilder(kMtcCaId, kLogNumber));
   // TODO(crbug.com/469624806): improve interface for creating MTC cert
   // builders.
   std::unique_ptr<net::CertBuilder> mtc_leaf1 =
@@ -2078,7 +2155,7 @@ TEST_F(CertVerifyProcBuiltinTest,
   auto ca_key = crypto::keypair::PrivateKey::GenerateEcP256();
 
   bssl::TrustStoreInMemory trust_store;
-  auto mtc_anchor = std::make_shared<const bssl::MTCAnchor>(
+  auto mtc_anchor = CreateMTCAnchor(
       kMtcCaId, bssl::SignatureAlgorithm::kEcdsaSha256,
       x509_util::CreateCryptoBuffer(ca_key.ToSubjectPublicKeyInfo()),
       mtc_log.GetPerLogLandmarkSubtreeHashes());

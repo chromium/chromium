@@ -528,7 +528,7 @@ class MtcLogBuilder {
   // invalid test data.
   explicit MtcLogBuilder(base::span<const uint8_t> ca_id,
                          LogNumber log_number,
-                         SpecVersion spec = kPlants05);
+                         SpecVersion spec = kPlants07);
 
   ~MtcLogBuilder();
 

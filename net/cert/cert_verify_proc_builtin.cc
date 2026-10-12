@@ -663,7 +663,6 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
     // into a place that can be shared by both.
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
     const bssl::MTCAnchor* mtc_anchor = path->trust_anchor.MTCAnchor().get();
-    CHECK_EQ(mtc_anchor->spec_version(), bssl::MTCAnchor::kPlants04);
     const TrustStoreChrome::MtcAnchorExtraData* mtc_anchor_data =
         trust_store_->GetMTCAnchorData(mtc_anchor->ca_id());
     if (!mtc_anchor_data) {

@@ -90,7 +90,7 @@ const uint64_t kMaxSupportedCTCompatibilityVersion = 4;
 // verification to eventually fail for new signer sets. This should also only be
 // increased if Chrome is compatible with the version it is being incremented
 // to.
-const int64_t kMaxSupportedSignerSetCompatibilityVersion = 1;
+const int64_t kMaxSupportedSignerSetCompatibilityVersion = 2;
 
 // Ignore any MtcMetadata component update data that is older than this amount.
 // The MTC Metadata has a short useful lifetime, and since it impacts Trust

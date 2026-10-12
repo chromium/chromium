@@ -27,6 +27,7 @@
 #include "net/cert/internal/platform_trust_store.h"
 #include "net/cert/internal/trust_store_chrome.h"
 #include "net/cert/root_store_proto_lite/root_store.pb.h"
+#include "net/cert/root_store_proto_lite/signer_set.pb.h"
 #endif  // CHROME_ROOT_STORE_SUPPORTED
 
 namespace net {
@@ -163,7 +164,8 @@ TEST(SystemTrustStoreChrome, KnownRootsFromRootStoreProto) {
   base::test::ScopedFeatureList scoped_feature_list{features::kVerifyMTCs};
 
   static constexpr uint8_t kMtcCaId[] = {0x09, 0x08, 0x07};
-  static constexpr uint8_t kMtcCaId2[] = {0x02, 0x03, 0x04};
+  static constexpr uint8_t kMtcCaPlants05Id[] = {0x09, 0x08, 0x08};
+  static constexpr uint8_t kUnknownMtcCaId[] = {0x02, 0x03, 0x04};
   // The MTC CA key doesn't need to be parsable for this test.
   static constexpr uint8_t kFakeMtcKey[] = {1};
   int64_t crs_version = net::CompiledChromeRootStoreVersion();
@@ -179,7 +181,10 @@ TEST(SystemTrustStoreChrome, KnownRootsFromRootStoreProto) {
   ASSERT_TRUE(root_store_data);
 
   chrome_root_store::SignerSet signer_set;
-  AddSignerSetIssuer(signer_set, kMtcCaId, "op1", std::nullopt);
+  AddSignerSetIssuer(signer_set, kMtcCaId, "op1", std::nullopt)
+      ->set_spec_version(chrome_root_store::SPEC_VERSION_DRAFT07);
+  AddSignerSetIssuer(signer_set, kMtcCaPlants05Id, "op2", std::nullopt)
+      ->set_spec_version(chrome_root_store::SPEC_VERSION_DRAFT05);
   std::optional<ChromeRootStoreSignerSet> parsed_set =
       ChromeRootStoreSignerSet::CreateFromProto(signer_set);
   ASSERT_TRUE(parsed_set);
@@ -191,18 +196,28 @@ TEST(SystemTrustStoreChrome, KnownRootsFromRootStoreProto) {
 
   EXPECT_EQ(system_trust_store->chrome_root_store_version(), crs_version);
 
+  // The traditional anchor and MTC anchor that were added from the protos
+  // should be recognized as known roots.
   {
-    // The traditional anchor and MTC anchor that were added from the protos
-    // should be recognized as known roots.
     std::shared_ptr<const bssl::ParsedCertificate> parsed_root =
         x509_util::CreateParsedCertificate(bssl::UpRef(root->GetCertBuffer()),
                                            nullptr);
     ASSERT_TRUE(parsed_root);
     EXPECT_TRUE(system_trust_store->IsKnownRoot(parsed_root.get()));
-
+  }
+  {
+    std::shared_ptr<const bssl::MTCAnchor> mtc_anchor =
+        bssl::MTCAnchor::CreatePlants07(
+            bssl::MakeSpan(kMtcCaId), bssl::SignatureAlgorithm::kMldsa44,
+            x509_util::CreateCryptoBuffer(kFakeMtcKey),
+            std::vector<bssl::LogTrustedSubtrees>());
+    EXPECT_TRUE(system_trust_store->IsKnownMtcAnchor(mtc_anchor.get()));
+  }
+  {
     std::shared_ptr<const bssl::MTCAnchor> mtc_anchor =
         std::make_shared<bssl::MTCAnchor>(
-            bssl::MakeSpan(kMtcCaId), bssl::SignatureAlgorithm::kMldsa44,
+            bssl::MakeSpan(kMtcCaPlants05Id),
+            bssl::SignatureAlgorithm::kMldsa44,
             x509_util::CreateCryptoBuffer(kFakeMtcKey),
             std::vector<bssl::LogTrustedSubtrees>());
     EXPECT_TRUE(system_trust_store->IsKnownMtcAnchor(mtc_anchor.get()));
@@ -219,7 +234,7 @@ TEST(SystemTrustStoreChrome, KnownRootsFromRootStoreProto) {
 
     std::shared_ptr<const bssl::MTCAnchor> mtc_anchor2 =
         std::make_shared<bssl::MTCAnchor>(
-            bssl::MakeSpan(kMtcCaId2), bssl::SignatureAlgorithm::kMldsa44,
+            bssl::MakeSpan(kUnknownMtcCaId), bssl::SignatureAlgorithm::kMldsa44,
             x509_util::CreateCryptoBuffer(kFakeMtcKey),
             std::vector<bssl::LogTrustedSubtrees>());
     EXPECT_FALSE(system_trust_store->IsKnownMtcAnchor(mtc_anchor2.get()));

@@ -47,6 +47,7 @@ chrome_root_store::Signer* AddSignerSetIssuer(
   auto* issuer =
       FillSignerSetSigner(signer_set.add_issuers(), log_id, operator_name);
   issuer->set_type(chrome_root_store::SIGNER_TYPE_ISSUER);
+  issuer->set_spec_version(chrome_root_store::SPEC_VERSION_DRAFT07);
   if (crs_root_id) {
     issuer->set_crs_root_id(*crs_root_id);
   }

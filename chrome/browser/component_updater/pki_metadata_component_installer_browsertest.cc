@@ -24,6 +24,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
@@ -1323,7 +1324,8 @@ IN_PROC_BROWSER_TEST_F(PKIMetadataComponentChromeRootStoreUpdateTest,
 
 class PKIMetadataComponentChromeRootStoreMtcMetadataTest
     : public PKIMetadataComponentChromeRootStoreUpdateTest,
-      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+      public testing::WithParamInterface<
+          std::tuple<bool, bool, bool, chrome_root_store::SpecVersion>> {
  public:
   PKIMetadataComponentChromeRootStoreMtcMetadataTest() {
     feature_list_.InitWithFeatureStates(
@@ -1346,6 +1348,39 @@ class PKIMetadataComponentChromeRootStoreMtcMetadataTest
                             : chrome_root_store::REALM_PUBLICLY_TRUSTED;
   }
 
+  chrome_root_store::SpecVersion signer_set_spec() const {
+    return std::get<3>(GetParam());
+  }
+
+  net::MtcLogBuilder::SpecVersion log_builder_spec() const {
+    switch (signer_set_spec()) {
+      case chrome_root_store::SPEC_VERSION_DRAFT05:
+        return net::MtcLogBuilder::kPlants05;
+      case chrome_root_store::SPEC_VERSION_DRAFT07:
+        return net::MtcLogBuilder::kPlants07;
+      default:
+        NOTREACHED();
+    }
+  }
+
+  net::MtcLogBuilder CreateLogBuilder(
+      base::span<const uint8_t> ca_id,
+      net::MtcLogBuilder::LogNumber log_number) const {
+    return net::MtcLogBuilder(ca_id, log_number, log_builder_spec());
+  }
+
+  chrome_root_store::Signer* AddSignerSetIssuer(
+      chrome_root_store::SignerSet& signer_set,
+      base::span<const uint8_t> log_id,
+      std::string_view operator_name,
+      std::optional<int32_t> crs_root_id) {
+    chrome_root_store::Signer* issuer =
+        net::AddSignerSetIssuer(signer_set, log_id, operator_name, crs_root_id);
+    issuer->set_spec_version(signer_set_spec());
+    issuer->set_realm(realm());
+    return issuer;
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -1353,13 +1388,30 @@ class PKIMetadataComponentChromeRootStoreMtcMetadataTest
 INSTANTIATE_TEST_SUITE_P(
     ,
     PKIMetadataComponentChromeRootStoreMtcMetadataTest,
-    testing::Combine(testing::Bool(), testing::Bool(), testing::Bool()),
+    testing::Combine(testing::Bool(),
+                     testing::Bool(),
+                     testing::Bool(),
+                     testing::Values(chrome_root_store::SPEC_VERSION_DRAFT05,
+                                     chrome_root_store::SPEC_VERSION_DRAFT07)),
     [](const testing::TestParamInfo<
         PKIMetadataComponentChromeRootStoreMtcMetadataTest::ParamType>& info) {
-      return base::StrCat(
-          {std::get<0>(info.param) ? "MtcsOn" : "MtcsOff",
-           std::get<1>(info.param) ? "TestRootsOn" : "TestRootsOff",
-           std::get<2>(info.param) ? "UseTestRealm" : "UsePublicRealm"});
+      std::string_view spec_string;
+      switch (std::get<3>(info.param)) {
+        case chrome_root_store::SPEC_VERSION_DRAFT05:
+          spec_string = "Plants05";
+          break;
+        case chrome_root_store::SPEC_VERSION_DRAFT07:
+          spec_string = "Plants07";
+          break;
+        default:
+          NOTREACHED();
+      }
+      return base::StrCat({
+          std::get<0>(info.param) ? "MtcsOn" : "MtcsOff",
+          std::get<1>(info.param) ? "TestRootsOn" : "TestRootsOff",
+          std::get<2>(info.param) ? "UseTestRealm" : "UsePublicRealm",
+          spec_string,
+      });
     });
 
 IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
@@ -1521,16 +1573,12 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
     chrome_root_store::MtcConfig mtc_config;
     mtc_config.mutable_signer_set()->mutable_timestamp()->set_seconds(
         base::Time::Now().InSecondsFSinceUnixEpoch());
-    net::AddSignerSetIssuer(*mtc_config.mutable_signer_set(),
-                            kMtcCaStandaloneId, "op1", std::nullopt)
-        ->set_realm(realm());
-    net::AddSignerSetIssuer(*mtc_config.mutable_signer_set(),
-                            kMtcCaWithLandmarksId, "op2", std::nullopt)
-        ->set_realm(realm());
-    net::AddSignerSetIssuer(*mtc_config.mutable_signer_set(),
-                            kMtcCaInMetadataWithNoLandmarksId, "op3",
-                            std::nullopt)
-        ->set_realm(realm());
+    AddSignerSetIssuer(*mtc_config.mutable_signer_set(), kMtcCaStandaloneId,
+                       "op1", std::nullopt);
+    AddSignerSetIssuer(*mtc_config.mutable_signer_set(), kMtcCaWithLandmarksId,
+                       "op2", std::nullopt);
+    AddSignerSetIssuer(*mtc_config.mutable_signer_set(),
+                       kMtcCaInMetadataWithNoLandmarksId, "op3", std::nullopt);
 
     InstallCRSUpdate(root_store_proto, mtc_config);
 
@@ -1616,16 +1664,12 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
     chrome_root_store::MtcConfig mtc_config;
     mtc_config.mutable_signer_set()->mutable_timestamp()->set_seconds(
         base::Time::Now().InSecondsFSinceUnixEpoch());
-    net::AddSignerSetIssuer(*mtc_config.mutable_signer_set(),
-                            kMtcCaStandaloneId, "op1", std::nullopt)
-        ->set_realm(realm());
-    net::AddSignerSetIssuer(*mtc_config.mutable_signer_set(),
-                            kMtcCaWithLandmarksId, "op2", std::nullopt)
-        ->set_realm(realm());
-    net::AddSignerSetIssuer(*mtc_config.mutable_signer_set(),
-                            kMtcCaInMetadataWithNoLandmarksId, "op3",
-                            std::nullopt)
-        ->set_realm(realm());
+    AddSignerSetIssuer(*mtc_config.mutable_signer_set(), kMtcCaStandaloneId,
+                       "op1", std::nullopt);
+    AddSignerSetIssuer(*mtc_config.mutable_signer_set(), kMtcCaWithLandmarksId,
+                       "op2", std::nullopt);
+    AddSignerSetIssuer(*mtc_config.mutable_signer_set(),
+                       kMtcCaInMetadataWithNoLandmarksId, "op3", std::nullopt);
 
     InstallCRSUpdate(root_store_proto, mtc_config);
 
@@ -1772,9 +1816,8 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
     chrome_root_store::MtcConfig mtc_config;
     mtc_config.mutable_signer_set()->mutable_timestamp()->set_seconds(
         base::Time::Now().InSecondsFSinceUnixEpoch());
-    net::AddSignerSetIssuer(*mtc_config.mutable_signer_set(),
-                            kMtcCaWithLandmarksId, "op2", std::nullopt)
-        ->set_realm(realm());
+    AddSignerSetIssuer(*mtc_config.mutable_signer_set(), kMtcCaWithLandmarksId,
+                       "op2", std::nullopt);
 
     InstallCRSUpdate(root_store_proto, mtc_config);
 
@@ -1954,7 +1997,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
       base::ToVector(kMirrorId), crypto::keypair::PrivateKey::GenerateMldsa44(),
       bssl::SignatureAlgorithm::kMldsa44};
 
-  net::MtcLogBuilder mtc_log(kMtcCaId, /*log_number=*/1);
+  net::MtcLogBuilder mtc_log(CreateLogBuilder(kMtcCaId, /*log_number=*/1));
   // TODO(crbug.com/469624806): improve interface for creating MTC cert
   // builders.
   std::unique_ptr<net::CertBuilder> mtc_leaf =
@@ -1969,7 +2012,8 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
   // Second log builder, but with the same log id, will be used to generate a
   // MTC leaf cert with the same subject/index/issuer, but with a different
   // proof.
-  net::MtcLogBuilder different_mtc_log(kMtcCaId, /*log_number=*/1);
+  net::MtcLogBuilder different_mtc_log(
+      CreateLogBuilder(kMtcCaId, /*log_number=*/1));
   different_mtc_log.AddUnusedEntries(21, {0x02});
   uint64_t different_mtc_log_index = different_mtc_log.AddEntry(*mtc_leaf);
   different_mtc_log.AddUnusedEntries(7, {0x02});
@@ -2100,9 +2144,8 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
     chrome_root_store::MtcConfig mtc_config;
     mtc_config.mutable_signer_set()->mutable_timestamp()->set_seconds(
         base::Time::Now().InSecondsFSinceUnixEpoch());
-    auto* issuer = net::AddSignerSetIssuer(*mtc_config.mutable_signer_set(),
-                                           kMtcCaId, "op1", kFakeCrsRootId);
-    issuer->set_realm(realm());
+    auto* issuer = AddSignerSetIssuer(*mtc_config.mutable_signer_set(),
+                                      kMtcCaId, "op1", kFakeCrsRootId);
     issuer->set_signature_algorithm(
         chrome_root_store::SIGNATURE_ALGORITHM_ML_DSA44);
     issuer->set_key(
@@ -2298,7 +2341,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
       base::ToVector(kMirrorId), crypto::keypair::PrivateKey::GenerateMldsa44(),
       bssl::SignatureAlgorithm::kMldsa44};
 
-  net::MtcLogBuilder mtc_log(kMtcCaId, kLogNumber);
+  net::MtcLogBuilder mtc_log(CreateLogBuilder(kMtcCaId, kLogNumber));
 
   for (int i = 0; i < test_cert_data.size(); ++i) {
     TestCertData& data = test_cert_data[i];
@@ -2379,9 +2422,8 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
     mtc_config.mutable_signer_set()->mutable_timestamp()->set_seconds(
         base::Time::Now().InSecondsFSinceUnixEpoch());
 
-    auto* issuer = net::AddSignerSetIssuer(*mtc_config.mutable_signer_set(),
-                                           kMtcCaId, "op1", std::nullopt);
-    issuer->set_realm(realm());
+    auto* issuer = AddSignerSetIssuer(*mtc_config.mutable_signer_set(),
+                                      kMtcCaId, "op1", std::nullopt);
     issuer->set_signature_algorithm(
         chrome_root_store::SIGNATURE_ALGORITHM_ML_DSA44);
     issuer->set_key(
@@ -2518,7 +2560,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
       base::ToVector(kMirrorId), crypto::keypair::PrivateKey::GenerateMldsa44(),
       bssl::SignatureAlgorithm::kMldsa44};
 
-  net::MtcLogBuilder mtc_log(kMtcCaId, /*log_number=*/1);
+  net::MtcLogBuilder mtc_log(CreateLogBuilder(kMtcCaId, /*log_number=*/1));
   // TODO(crbug.com/469624806): improve interface for creating MTC cert
   // builders.
   std::unique_ptr<net::CertBuilder> mtc_leaf =
@@ -2553,9 +2595,8 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
   chrome_root_store::MtcConfig mtc_config;
   mtc_config.mutable_signer_set()->mutable_timestamp()->set_seconds(
       base::Time::Now().InSecondsFSinceUnixEpoch());
-  auto* issuer = net::AddSignerSetIssuer(*mtc_config.mutable_signer_set(),
-                                         kMtcCaId, "op1", std::nullopt);
-  issuer->set_realm(realm());
+  auto* issuer = AddSignerSetIssuer(*mtc_config.mutable_signer_set(), kMtcCaId,
+                                    "op1", std::nullopt);
   issuer->set_signature_algorithm(
       chrome_root_store::SIGNATURE_ALGORITHM_ML_DSA44);
   issuer->set_key(
@@ -2681,7 +2722,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
 
   int64_t crs_version = net::CompiledChromeRootStoreVersion();
 
-  net::MtcLogBuilder mtc_log(kMtcCaId, kLogNumber);
+  net::MtcLogBuilder mtc_log(CreateLogBuilder(kMtcCaId, kLogNumber));
 
   // TODO(crbug.com/469624806): improve interface for creating MTC cert
   // builders.
@@ -2753,9 +2794,8 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
     chrome_root_store::MtcConfig mtc_config;
     mtc_config.mutable_signer_set()->mutable_timestamp()->set_seconds(
         base::Time::Now().InSecondsFSinceUnixEpoch());
-    auto* issuer = net::AddSignerSetIssuer(*mtc_config.mutable_signer_set(),
-                                           kMtcCaId, "op1", std::nullopt);
-    issuer->set_realm(realm());
+    auto* issuer = AddSignerSetIssuer(*mtc_config.mutable_signer_set(),
+                                      kMtcCaId, "op1", std::nullopt);
     auto* constraint = issuer->add_constraints();
     constraint->add_permitted_dns_names("example.org");
     constraint->set_serial_not_after((kLogNumber << 48) + mtc_log_index2);

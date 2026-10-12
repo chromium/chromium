@@ -135,6 +135,8 @@ struct NET_EXPORT Signer {
   int32_t min_log_number = 0;
   bssl::SignatureAlgorithm signature_algorithm =
       bssl::SignatureAlgorithm::kMldsa44;
+  chrome_root_store::SpecVersion spec_version =
+      chrome_root_store::SPEC_VERSION_UNSET;
 };
 
 class NET_EXPORT ChromeRootStoreSignerSet {
