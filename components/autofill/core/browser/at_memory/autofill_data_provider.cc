@@ -212,7 +212,7 @@ MemorySearchResult CreateResultFromAddressProfile(
     NOTREACHED();
   }();
 
-  // Add other address fields as metadata.
+  // Add other profile fields as metadata.
   AddMetadataToResult(entry, profile, MemoryDataType::kNameFull, field_type,
                       app_locale);
   AddMetadataToResult(entry, profile, MemoryDataType::kAddressStreetAddress,
@@ -225,6 +225,12 @@ MemorySearchResult CreateResultFromAddressProfile(
                       app_locale);
   AddMetadataToResult(entry, profile, MemoryDataType::kAddressCountry,
                       field_type, app_locale);
+  AddMetadataToResult(entry, profile, MemoryDataType::kCompanyName, field_type,
+                      app_locale);
+  AddMetadataToResult(entry, profile, MemoryDataType::kEmail, field_type,
+                      app_locale);
+  AddMetadataToResult(entry, profile, MemoryDataType::kPhone, field_type,
+                      app_locale);
 
   if (std::optional<TypedValue> typed_home_country =
           GetHomeCountryTypedValue(profile)) {

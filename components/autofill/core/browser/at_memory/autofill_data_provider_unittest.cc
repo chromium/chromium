@@ -145,7 +145,10 @@ TEST_F(AutofillDataProviderTest, RetrieveAll_AddressData) {
                          u"666 Erebus St.\nApt 8"),
               IsMetadata(MemoryDataType::kAddressState, u"CA"),
               IsMetadata(MemoryDataType::kAddressZip, u"91111"),
-              IsMetadata(MemoryDataType::kAddressCountry, u"United States")),
+              IsMetadata(MemoryDataType::kAddressCountry, u"United States"),
+              IsMetadata(MemoryDataType::kCompanyName, u"Underworld"),
+              IsMetadata(MemoryDataType::kEmail, u"johndoe@hades.com"),
+              IsMetadata(MemoryDataType::kPhone, u"16502111111")),
           /*is_obfuscated=*/false, test::MakeGuid(1))));
 
   EXPECT_THAT(
@@ -158,7 +161,10 @@ TEST_F(AutofillDataProviderTest, RetrieveAll_AddressData) {
                          u"666 Erebus St.\nApt 8"),
               IsMetadata(MemoryDataType::kAddressCity, u"Elysium"),
               IsMetadata(MemoryDataType::kAddressState, u"CA"),
-              IsMetadata(MemoryDataType::kAddressCountry, u"United States")),
+              IsMetadata(MemoryDataType::kAddressCountry, u"United States"),
+              IsMetadata(MemoryDataType::kCompanyName, u"Underworld"),
+              IsMetadata(MemoryDataType::kEmail, u"johndoe@hades.com"),
+              IsMetadata(MemoryDataType::kPhone, u"16502111111")),
           /*is_obfuscated=*/false, test::MakeGuid(1))));
 
   EXPECT_THAT(
@@ -171,7 +177,10 @@ TEST_F(AutofillDataProviderTest, RetrieveAll_AddressData) {
                          u"666 Erebus St.\nApt 8"),
               IsMetadata(MemoryDataType::kAddressCity, u"Elysium"),
               IsMetadata(MemoryDataType::kAddressZip, u"91111"),
-              IsMetadata(MemoryDataType::kAddressCountry, u"United States")),
+              IsMetadata(MemoryDataType::kAddressCountry, u"United States"),
+              IsMetadata(MemoryDataType::kCompanyName, u"Underworld"),
+              IsMetadata(MemoryDataType::kEmail, u"johndoe@hades.com"),
+              IsMetadata(MemoryDataType::kPhone, u"16502111111")),
           /*is_obfuscated=*/false, test::MakeGuid(1))));
 
   EXPECT_THAT(RetrieveAllHelper(retriever(), MemoryDataType::kAddressCountry),
@@ -183,7 +192,10 @@ TEST_F(AutofillDataProviderTest, RetrieveAll_AddressData) {
                                  u"666 Erebus St.\nApt 8"),
                       IsMetadata(MemoryDataType::kAddressCity, u"Elysium"),
                       IsMetadata(MemoryDataType::kAddressState, u"CA"),
-                      IsMetadata(MemoryDataType::kAddressZip, u"91111")),
+                      IsMetadata(MemoryDataType::kAddressZip, u"91111"),
+                      IsMetadata(MemoryDataType::kCompanyName, u"Underworld"),
+                      IsMetadata(MemoryDataType::kEmail, u"johndoe@hades.com"),
+                      IsMetadata(MemoryDataType::kPhone, u"16502111111")),
                   /*is_obfuscated=*/false, test::MakeGuid(1))));
 
   EXPECT_THAT(
@@ -196,7 +208,10 @@ TEST_F(AutofillDataProviderTest, RetrieveAll_AddressData) {
               IsMetadata(MemoryDataType::kAddressCity, u"Elysium"),
               IsMetadata(MemoryDataType::kAddressState, u"CA"),
               IsMetadata(MemoryDataType::kAddressZip, u"91111"),
-              IsMetadata(MemoryDataType::kAddressCountry, u"United States")),
+              IsMetadata(MemoryDataType::kAddressCountry, u"United States"),
+              IsMetadata(MemoryDataType::kCompanyName, u"Underworld"),
+              IsMetadata(MemoryDataType::kEmail, u"johndoe@hades.com"),
+              IsMetadata(MemoryDataType::kPhone, u"16502111111")),
           /*is_obfuscated=*/false, test::MakeGuid(1))));
 
   EXPECT_THAT(
@@ -210,7 +225,9 @@ TEST_F(AutofillDataProviderTest, RetrieveAll_AddressData) {
               IsMetadata(MemoryDataType::kAddressCity, u"Elysium"),
               IsMetadata(MemoryDataType::kAddressState, u"CA"),
               IsMetadata(MemoryDataType::kAddressZip, u"91111"),
-              IsMetadata(MemoryDataType::kAddressCountry, u"United States")),
+              IsMetadata(MemoryDataType::kAddressCountry, u"United States"),
+              IsMetadata(MemoryDataType::kCompanyName, u"Underworld"),
+              IsMetadata(MemoryDataType::kPhone, u"16502111111")),
           /*is_obfuscated=*/false, test::MakeGuid(1))));
 
   EXPECT_THAT(
@@ -224,7 +241,9 @@ TEST_F(AutofillDataProviderTest, RetrieveAll_AddressData) {
               IsMetadata(MemoryDataType::kAddressCity, u"Elysium"),
               IsMetadata(MemoryDataType::kAddressState, u"CA"),
               IsMetadata(MemoryDataType::kAddressZip, u"91111"),
-              IsMetadata(MemoryDataType::kAddressCountry, u"United States")),
+              IsMetadata(MemoryDataType::kAddressCountry, u"United States"),
+              IsMetadata(MemoryDataType::kCompanyName, u"Underworld"),
+              IsMetadata(MemoryDataType::kEmail, u"johndoe@hades.com")),
           /*is_obfuscated=*/false, test::MakeGuid(1))));
 
   // Requesting for address should return only the full address.
@@ -241,7 +260,10 @@ TEST_F(AutofillDataProviderTest, RetrieveAll_AddressData) {
               IsMetadata(MemoryDataType::kAddressCity, u"Elysium"),
               IsMetadata(MemoryDataType::kAddressZip, u"91111"),
               IsMetadata(MemoryDataType::kAddressState, u"CA"),
-              IsMetadata(MemoryDataType::kAddressCountry, u"United States")),
+              IsMetadata(MemoryDataType::kAddressCountry, u"United States"),
+              IsMetadata(MemoryDataType::kCompanyName, u"Underworld"),
+              IsMetadata(MemoryDataType::kEmail, u"johndoe@hades.com"),
+              IsMetadata(MemoryDataType::kPhone, u"16502111111")),
           /*is_obfuscated=*/false, test::MakeGuid(1))));
 }
 
