@@ -409,6 +409,18 @@ WebDialogView::FrameKind WebDialogView::GetWebDialogFrameKind() const {
 ////////////////////////////////////////////////////////////////////////////////
 // content::WebContentsDelegate implementation:
 
+void WebDialogView::CanDownload(const GURL& url,
+                                const std::string& request_method,
+                                base::OnceCallback<void(bool)> callback) {
+  // Do not fall through to WebContentsDelegate's permissive default. Web
+  // dialogs render no download UI, so a download triggered by dialog content
+  // would be written to disk invisibly. Dialogs that host untrusted web
+  // content (e.g. captive portal sign-in on the login/lock screen or in
+  // kiosk sessions) must not allow this; the delegate decides.
+  const bool can_download = delegate_ ? delegate_->CanDialogDownload() : true;
+  std::move(callback).Run(can_download);
+}
+
 void WebDialogView::SetContentsBounds(WebContents* source,
                                       const gfx::Rect& bounds) {
   // The contained web page wishes to resize itself. We let it do this because

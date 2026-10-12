@@ -83,6 +83,10 @@ bool WebDialogDelegate::ShouldCloseDialogOnEscape() const {
   return close_on_escape_;
 }
 
+bool WebDialogDelegate::CanDialogDownload() const {
+  return can_download_;
+}
+
 bool WebDialogDelegate::ShouldShowCloseButton() const {
   return show_close_button_;
 }

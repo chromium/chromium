@@ -17,7 +17,11 @@ namespace ash {
 LockScreenCaptivePortalDialog::LockScreenCaptivePortalDialog()
     : BaseLockDialog(
           GURL(captive_portal::CaptivePortalDetector::GetDefaultUrl()),
-          CalculateOobeDialogSizeForPrimaryDisplay()) {}
+          CalculateOobeDialogSizeForPrimaryDisplay()) {
+  // The dialog renders an untrusted, network-controlled portal page in the
+  // lock-screen profile with no download UI; never allow it to write files.
+  set_can_download(false);
+}
 
 LockScreenCaptivePortalDialog::~LockScreenCaptivePortalDialog() = default;
 

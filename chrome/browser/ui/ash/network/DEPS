@@ -33,5 +33,8 @@ specific_include_rules = {
     "+chrome/browser/ui/navigator/browser_navigator.h",
     "+chrome/browser/ui/navigator/browser_navigator_params.h",
   ],
+  "network_portal_signin_controller_browsertest\\.cc": [
+    "+chrome/browser/ash/login/test/oobe_base_test.h",
+  ],
   "tether_notification_presenter_unittest\\.cc": ["+chrome/common"],
 }

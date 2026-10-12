@@ -205,6 +205,14 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
     close_on_escape_ = close_dialog_on_escape;
   }
 
+  // Returns true if the dialog's WebContents may trigger file downloads.
+  // Web dialogs render no download UI, so downloads complete invisibly;
+  // dialogs that display untrusted web content (e.g. captive portal
+  // sign-in pages on the login/lock screen or in kiosk sessions) must set
+  // this to false.
+  virtual bool CanDialogDownload() const;
+  void set_can_download(bool can_download) { can_download_ = can_download; }
+
   // A callback to allow the delegate to dictate that the window should not
   // have a title bar.  This is useful when presenting branded interfaces.
   virtual bool ShouldShowDialogTitle() const;
@@ -312,6 +320,7 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
   bool allow_web_contents_creation_ = true;
   std::string args_;
   bool can_close_ = false;
+  bool can_download_ = true;
   bool can_maximize_ = false;
   bool can_minimize_ = false;
   bool can_resize_ = true;

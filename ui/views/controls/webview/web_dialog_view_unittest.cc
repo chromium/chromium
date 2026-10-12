@@ -10,6 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/test_future.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_task_environment.h"
@@ -79,9 +80,9 @@ class WebDialogViewUnitTest : public views::test::WidgetTest {
     web_dialog_delegate_ =
         std::make_unique<TestWebDialogViewWebDialogDelegate>();
     web_contents_ = CreateWebContents();
-    web_dialog_view_ = new WebDialogView(
-        web_contents_->GetBrowserContext(), web_dialog_delegate_.get(),
-        std::make_unique<ui::test::TestWebContentsHandler>());
+    web_dialog_view_ =
+        new WebDialogView(browser_context(), web_dialog_delegate_.get(),
+                          std::make_unique<ui::test::TestWebContentsHandler>());
 
     // This prevents the initialization of the dialog from navigating
     // to the URL in the WebUI.  This is needed because the WebUI
@@ -229,6 +230,31 @@ TEST_F(WebDialogViewUnitTest, RootViewAccessibleName) {
 
 TEST_F(WebDialogViewUnitTest, MetadataTest) {
   test::TestViewMetadata(web_dialog_view());
+}
+
+TEST_F(WebDialogViewUnitTest, CanDownload) {
+  content::WebContentsDelegate* delegate = web_dialog_view();
+
+  // Downloads are allowed by default.
+  base::test::TestFuture<bool> allowed_by_default;
+  delegate->CanDownload(GURL(), "GET", allowed_by_default.GetCallback());
+  EXPECT_TRUE(allowed_by_default.Get());
+
+  // Dialogs that show untrusted content can disallow downloads.
+  web_dialog_delegate()->set_can_download(false);
+  base::test::TestFuture<bool> allowed_when_disabled;
+  delegate->CanDownload(GURL(), "GET", allowed_when_disabled.GetCallback());
+  EXPECT_FALSE(allowed_when_disabled.Get());
+
+  // If the delegate is destroyed/missing (e.g. after the dialog is closed),
+  // CanDownload should fall back to true to match the WebContentsDelegate
+  // default.
+  web_dialog_view()->OnDialogClosed("");
+  content::WebContentsDelegate* null_delegate = web_dialog_view();
+  base::test::TestFuture<bool> allowed_null_delegate;
+  null_delegate->CanDownload(GURL(), "GET",
+                             allowed_null_delegate.GetCallback());
+  EXPECT_TRUE(allowed_null_delegate.Get());
 }
 
 TEST_F(WebDialogViewUnitTest, AllowAccelerators) {

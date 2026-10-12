@@ -66,6 +66,9 @@ class SigninWebDialogDelegate : public ui::WebDialogDelegate {
   SigninWebDialogDelegate(GURL url, bool disable_https_upgrades)
       : disable_https_upgrades_(disable_https_upgrades) {
     set_can_close(true);
+    // The dialog renders an untrusted, network-controlled portal page in the
+    // signin profile with no download UI; never allow it to write files.
+    set_can_download(false);
     set_can_resize(false);
     set_dialog_content_url(url);
     set_dialog_modal_type(ui::mojom::ModalType::kSystem);

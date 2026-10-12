@@ -139,6 +139,9 @@ class WEBVIEW_EXPORT WebDialogView : public ClientView,
   FrameKind GetWebDialogFrameKind() const override;
 
   // content::WebContentsDelegate:
+  void CanDownload(const GURL& url,
+                   const std::string& request_method,
+                   base::OnceCallback<void(bool)> callback) override;
   void SetContentsBounds(content::WebContents* source,
                          const gfx::Rect& bounds) override;
   bool HandleKeyboardEvent(content::WebContents* source,

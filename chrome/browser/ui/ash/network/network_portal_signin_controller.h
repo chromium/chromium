@@ -85,6 +85,9 @@ class NetworkPortalSigninController : public views::WidgetObserver,
   // Returns whether the sigin UI is show.
   bool DialogIsShown();
 
+  // Returns the signin dialog widget, or nullptr if no dialog is shown.
+  views::Widget* GetDialogWidgetForTesting() const { return dialog_widget_; }
+
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
 
