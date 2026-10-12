@@ -252,8 +252,7 @@ class WgiDataFetcherWinTest : public DeviceServiceTestBase {
         shared_memory_region.Map();
     EXPECT_TRUE(shared_memory_mapping.IsValid());
     const GamepadHardwareBuffer* gamepad_buffer =
-        static_cast<const GamepadHardwareBuffer*>(
-            shared_memory_mapping.memory());
+        shared_memory_mapping.GetMemoryAs<GamepadHardwareBuffer>();
 
     // First we send zeroed out data for sanitization.
     mock_generic_fetcher_->SetTestData(zero_data);
@@ -718,7 +717,7 @@ TEST_F(WgiDataFetcherWinTest, VerifyGamepadInput) {
       shared_memory_region.Map();
   EXPECT_TRUE(shared_memory_mapping.IsValid());
   const GamepadHardwareBuffer* gamepad_buffer =
-      static_cast<const GamepadHardwareBuffer*>(shared_memory_mapping.memory());
+      shared_memory_mapping.GetMemoryAs<GamepadHardwareBuffer>();
 
   // State should be first set to the rest position to satisfy sanitization pre-
   // requisites.
@@ -827,7 +826,7 @@ TEST_F(WgiDataFetcherWinTest, WgiGamepadGetCurrentReadingError) {
       shared_memory_region.Map();
   EXPECT_TRUE(shared_memory_mapping.IsValid());
   const GamepadHardwareBuffer* gamepad_buffer =
-      static_cast<const GamepadHardwareBuffer*>(shared_memory_mapping.memory());
+      shared_memory_mapping.GetMemoryAs<GamepadHardwareBuffer>();
 
   // State should be first set to the rest position to satisfy sanitization pre-
   // requisites.
@@ -887,7 +886,7 @@ TEST_F(WgiDataFetcherWinTest, WgiGamepadGetButtonLabelError) {
       shared_memory_region.Map();
   EXPECT_TRUE(shared_memory_mapping.IsValid());
   const GamepadHardwareBuffer* gamepad_buffer =
-      static_cast<const GamepadHardwareBuffer*>(shared_memory_mapping.memory());
+      shared_memory_mapping.GetMemoryAs<GamepadHardwareBuffer>();
 
   // State should be first set to the rest position to satisfy sanitization pre-
   // requisites.
@@ -1038,7 +1037,7 @@ TEST_P(WgiDataFetcherWinXInputErrorTest, MetaUnavailableWhenXInputFailsToLoad) {
       shared_memory_region.Map();
   EXPECT_TRUE(shared_memory_mapping.IsValid());
   const GamepadHardwareBuffer* gamepad_buffer =
-      static_cast<const GamepadHardwareBuffer*>(shared_memory_mapping.memory());
+      shared_memory_mapping.GetMemoryAs<GamepadHardwareBuffer>();
 
   // State should be first set to the rest position to satisfy sanitization pre-
   // requisites.

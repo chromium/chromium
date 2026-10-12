@@ -1583,8 +1583,9 @@ void VTVideoEncodeAccelerator::ReturnBitstreamBuffer(
   size_t used_buffer_size = 0;
   const bool copy_rv = video_toolbox::CopySampleBufferToAnnexBBuffer(
       codec_, encode_output->sample_buffer.get(), keyframe,
-      hdr_metadata_sei_nalu, buffer_ref->size,
-      static_cast<char*>(buffer_ref->mapping.memory()), &used_buffer_size);
+      hdr_metadata_sei_nalu,
+      buffer_ref->mapping.GetMemoryAsSpan<char>().first(buffer_ref->size),
+      &used_buffer_size);
   if (!copy_rv) {
     NotifyErrorStatus(
         {EncoderStatus::Codes::kBitstreamConversionError,

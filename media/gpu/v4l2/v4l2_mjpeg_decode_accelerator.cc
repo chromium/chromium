@@ -215,7 +215,7 @@ class JobRecordBitstreamBuffer : public V4L2MjpegDecodeAccelerator::JobRecord {
     shm_mapping_ = shm_region_.MapAt(offset(), size());
     return shm_mapping_.IsValid();
   }
-  const void* memory() const override { return shm_mapping_.memory(); }
+  const void* memory() const override { return shm_mapping_.data(); }
 
   const scoped_refptr<VideoFrame>& out_frame() override { return out_frame_; }
 

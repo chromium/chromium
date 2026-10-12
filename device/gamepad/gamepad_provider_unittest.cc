@@ -158,7 +158,7 @@ class GamepadProviderTest : public testing::Test, public GamepadTestHelper {
     base::ReadOnlySharedMemoryMapping mapping = region.Map();
     EXPECT_TRUE(mapping.IsValid());
     const GamepadHardwareBuffer* buffer =
-        static_cast<const GamepadHardwareBuffer*>(mapping.memory());
+        mapping.GetMemoryAs<GamepadHardwareBuffer>();
 
     // Wait for initial data and verify no input change detected yet.
     WaitForData(buffer);
@@ -235,7 +235,7 @@ TEST_F(GamepadProviderTest, PollingAccess) {
   EXPECT_TRUE(mapping.IsValid());
 
   const GamepadHardwareBuffer* buffer =
-      static_cast<const GamepadHardwareBuffer*>(mapping.memory());
+      mapping.GetMemoryAs<GamepadHardwareBuffer>();
 
   // Wait until the shared memory buffer has been written at least once.
   WaitForData(buffer);
@@ -285,7 +285,7 @@ TEST_F(GamepadProviderTest, ConnectDisconnectMultiple) {
   EXPECT_TRUE(mapping.IsValid());
 
   const GamepadHardwareBuffer* buffer =
-      static_cast<const GamepadHardwareBuffer*>(mapping.memory());
+      mapping.GetMemoryAs<GamepadHardwareBuffer>();
 
   // Wait until the shared memory buffer has been written at least once.
   WaitForData(buffer);
@@ -344,7 +344,7 @@ TEST_F(GamepadProviderTest, UserGesture) {
   EXPECT_TRUE(mapping.IsValid());
 
   const GamepadHardwareBuffer* buffer =
-      static_cast<const GamepadHardwareBuffer*>(mapping.memory());
+      mapping.GetMemoryAs<GamepadHardwareBuffer>();
 
   // Wait until the shared memory buffer has been written at least once.
   WaitForData(buffer);
@@ -398,7 +398,7 @@ TEST_F(GamepadProviderTest, Sanitization) {
   ASSERT_TRUE(mapping.IsValid());
 
   const GamepadHardwareBuffer* buffer =
-      static_cast<const GamepadHardwareBuffer*>(mapping.memory());
+      mapping.GetMemoryAs<GamepadHardwareBuffer>();
 
   // Wait until the shared memory buffer has been written at least once.
   WaitForData(buffer);

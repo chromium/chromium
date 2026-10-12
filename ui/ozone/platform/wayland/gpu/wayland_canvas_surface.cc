@@ -91,7 +91,7 @@ class WaylandCanvasSurface::SharedMemoryBuffer {
     SkSurfaceProps props = skia::LegacyDisplayGlobals::GetSkSurfaceProps();
     sk_surface_ = SkSurfaces::WrapPixels(
         SkImageInfo::MakeN32Premul(size.width(), size.height()),
-        shm_mapping_.memory(), CalculateStride(size.width()), &props);
+        shm_mapping_.data(), CalculateStride(size.width()), &props);
     DCHECK(sk_surface_);
 
     dirty_region_.setRect(gfx::RectToSkIRect(gfx::Rect(size)));

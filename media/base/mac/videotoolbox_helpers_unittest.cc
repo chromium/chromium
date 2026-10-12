@@ -102,7 +102,7 @@ TEST(VideoToolboxHelpersTest, InsertsSeiNaluAfterParameterSets) {
 
   ASSERT_TRUE(CopySampleBufferToAnnexBBuffer(
       VideoCodec::kH264, sample_buffer.get(), /*keyframe=*/true, kAnnexBSeiNalu,
-      output.size(), output.data(), &used_buffer_size));
+      output, &used_buffer_size));
 
   EXPECT_EQ(used_buffer_size, expected_access_unit.size());
   EXPECT_TRUE(std::ranges::equal(

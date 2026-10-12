@@ -7,9 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <cstring>
-
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "media/base/video_frame.h"
@@ -68,8 +66,9 @@ TEST_F(MojoCdmAllocatorTest, ReuseCdmBuffer) {
   {
     // Create a mapping and write some test data.
     auto& mapping = GetRegion(buffer).mapping;
-    // Note: deliberately using sizeof() to include the null terminator.
-    UNSAFE_TODO(memcpy(mapping.memory(), kTestData, sizeof(kTestData)));
+    // Copy the array, including the null terminator.
+    mapping.GetMemoryAsSpan<char>().copy_prefix_from(
+        base::span_with_nul_from_cstring(kTestData));
   }
   buffer->Destroy();
 

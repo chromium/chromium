@@ -4,7 +4,7 @@
 
 #include "device/gamepad/gamepad_shared_buffer.h"
 
-#include "base/compiler_specific.h"
+#include <memory>
 
 namespace device {
 
@@ -15,10 +15,8 @@ GamepadSharedBuffer::GamepadSharedBuffer() {
   shared_memory_region_ = std::move(mapped_region.region);
   shared_memory_mapping_ = std::move(mapped_region.mapping);
 
-  void* mem = shared_memory_mapping_.memory();
-  DCHECK(mem);
-  hardware_buffer_ = new (mem) GamepadHardwareBuffer();
-  UNSAFE_TODO(memset(&(hardware_buffer_->data), 0, sizeof(Gamepads)));
+  hardware_buffer_ = std::construct_at(
+      shared_memory_mapping_.GetMemoryAs<GamepadHardwareBuffer>());
 }
 
 GamepadSharedBuffer::~GamepadSharedBuffer() = default;

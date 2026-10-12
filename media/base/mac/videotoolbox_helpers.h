@@ -31,8 +31,7 @@ MEDIA_EXPORT bool CopySampleBufferToAnnexBBuffer(
     CMSampleBufferRef sbuf,
     bool keyframe,
     base::span<const uint8_t> sei_nalu,
-    size_t annexb_buffer_size,
-    char* annexb_buffer,
+    base::span<char> annexb_buffer,
     size_t* used_buffer_size);
 
 struct ScopedVTCompressionSessionRefTraits {

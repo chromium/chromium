@@ -75,7 +75,7 @@ base::UnguessableToken SharedMemoryBufferBacking::GetGUID() const {
 }
 
 const void* SharedMemoryBufferBacking::GetMemory() const {
-  return shared_memory_mapping_.memory();
+  return shared_memory_mapping_.data();
 }
 
 base::span<const uint8_t> SharedMemoryBufferBacking::as_byte_span() const {

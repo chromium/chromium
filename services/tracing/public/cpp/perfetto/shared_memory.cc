@@ -40,7 +40,7 @@ base::UnsafeSharedMemoryRegion ChromeBaseSharedMemory::CloneRegion() {
 }
 
 const void* ChromeBaseSharedMemory::start() const {
-  return mapping_.memory();
+  return mapping_.data();
 }
 
 size_t ChromeBaseSharedMemory::size() const {

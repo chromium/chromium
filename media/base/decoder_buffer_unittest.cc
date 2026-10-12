@@ -5,13 +5,13 @@
 #include "media/base/decoder_buffer.h"
 
 #include <stdint.h>
-#include <string.h>
 
 #include <memory>
 #include <variant>
 
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -100,7 +100,7 @@ TEST(DecoderBufferTest, FromPlatformSharedMemoryRegion) {
   auto region = base::UnsafeSharedMemoryRegion::Create(kDataSize);
   auto mapping = region.Map();
   ASSERT_TRUE(mapping.IsValid());
-  UNSAFE_TODO(memcpy(mapping.GetMemoryAs<uint8_t>(), kData, kDataSize));
+  base::span(mapping).copy_from(kData);
 
   scoped_refptr<DecoderBuffer> buffer(
       DecoderBuffer::FromSharedMemoryRegion(std::move(region), 0, kDataSize));
@@ -119,7 +119,7 @@ TEST(DecoderBufferTest, FromPlatformSharedMemoryRegion_Unaligned) {
   auto region = base::UnsafeSharedMemoryRegion::Create(kDataSize);
   auto mapping = region.Map();
   ASSERT_TRUE(mapping.IsValid());
-  UNSAFE_TODO(memcpy(mapping.GetMemoryAs<uint8_t>(), kData, kDataSize));
+  base::span(mapping).copy_from(kData);
 
   scoped_refptr<DecoderBuffer> buffer(DecoderBuffer::FromSharedMemoryRegion(
       std::move(region), kDataOffset, kDataSize - kDataOffset));
@@ -137,7 +137,7 @@ TEST(DecoderBufferTest, FromPlatformSharedMemoryRegion_ZeroSize) {
   auto region = base::UnsafeSharedMemoryRegion::Create(kDataSize);
   auto mapping = region.Map();
   ASSERT_TRUE(mapping.IsValid());
-  UNSAFE_TODO(memcpy(mapping.memory(), kData, kDataSize));
+  base::span(mapping).copy_from(kData);
 
   scoped_refptr<DecoderBuffer> buffer(
       DecoderBuffer::FromSharedMemoryRegion(std::move(region), 0, 0));
@@ -150,8 +150,7 @@ TEST(DecoderBufferTest, FromSharedMemoryRegion) {
 
   auto mapping_region = base::ReadOnlySharedMemoryRegion::Create(kDataSize);
   ASSERT_TRUE(mapping_region.IsValid());
-  UNSAFE_TODO(
-      memcpy(mapping_region.mapping.GetMemoryAs<uint8_t>(), kData, kDataSize));
+  base::span(mapping_region.mapping).copy_from(kData);
 
   scoped_refptr<DecoderBuffer> buffer(DecoderBuffer::FromSharedMemoryRegion(
       std::move(mapping_region.region), 0, kDataSize));
@@ -169,8 +168,7 @@ TEST(DecoderBufferTest, FromSharedMemoryRegion_Unaligned) {
 
   auto mapping_region = base::ReadOnlySharedMemoryRegion::Create(kDataSize);
   ASSERT_TRUE(mapping_region.IsValid());
-  UNSAFE_TODO(
-      memcpy(mapping_region.mapping.GetMemoryAs<uint8_t>(), kData, kDataSize));
+  base::span(mapping_region.mapping).copy_from(kData);
 
   scoped_refptr<DecoderBuffer> buffer(DecoderBuffer::FromSharedMemoryRegion(
       std::move(mapping_region.region), kDataOffset, kDataSize - kDataOffset));
@@ -187,8 +185,7 @@ TEST(DecoderBufferTest, FromSharedMemoryRegion_ZeroSize) {
   const size_t kDataSize = std::size(kData);
 
   auto mapping_region = base::ReadOnlySharedMemoryRegion::Create(kDataSize);
-  UNSAFE_TODO(
-      memcpy(mapping_region.mapping.GetMemoryAs<uint8_t>(), kData, kDataSize));
+  base::span(mapping_region.mapping).copy_from(kData);
 
   scoped_refptr<DecoderBuffer> buffer(DecoderBuffer::FromSharedMemoryRegion(
       std::move(mapping_region.region), 0, 0));

@@ -11,6 +11,7 @@
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "base/notreached.h"
 #include "base/numerics/byte_conversions.h"
 #include "media/base/video_codecs.h"
@@ -26,35 +27,32 @@ static const char kAnnexBHeaderBytes[4] = {0, 0, 0, 1};
 class AnnexBBuffer {
  public:
   virtual bool Reserve(size_t size) = 0;
-  virtual void Append(const char* s, size_t n) = 0;
+  virtual void Append(base::span<const char> data) = 0;
   virtual size_t GetReservedSize() const = 0;
 };
 
 class RawAnnexBBuffer : public AnnexBBuffer {
  public:
-  RawAnnexBBuffer(char* annexb_buffer, size_t annexb_buffer_size)
-      : annexb_buffer_(annexb_buffer),
-        annexb_buffer_size_(annexb_buffer_size),
-        annexb_buffer_offset_(0) {}
+  explicit RawAnnexBBuffer(base::span<char> annexb_buffer)
+      : annexb_buffer_(annexb_buffer) {}
   RawAnnexBBuffer() = delete;
   RawAnnexBBuffer(const RawAnnexBBuffer&) = delete;
   RawAnnexBBuffer& operator=(const RawAnnexBBuffer&) = delete;
 
   bool Reserve(size_t size) override {
     reserved_size_ = size;
-    return size <= annexb_buffer_size_;
+    return size <= annexb_buffer_.size();
   }
-  void Append(const char* s, size_t n) override {
-    UNSAFE_TODO(memcpy(annexb_buffer_ + annexb_buffer_offset_, s, n));
-    annexb_buffer_offset_ += n;
+  void Append(base::span<const char> data) override {
+    annexb_buffer_.subspan(annexb_buffer_offset_, data.size()).copy_from(data);
+    annexb_buffer_offset_ += data.size();
     DCHECK_GE(reserved_size_, annexb_buffer_offset_);
   }
   size_t GetReservedSize() const override { return reserved_size_; }
 
  private:
-  raw_ptr<char, AllowPtrArithmetic> annexb_buffer_;
-  size_t annexb_buffer_size_;
-  size_t annexb_buffer_offset_;
+  base::raw_span<char> annexb_buffer_;
+  size_t annexb_buffer_offset_ = 0;
   size_t reserved_size_;
 };
 
@@ -70,8 +68,8 @@ class StringAnnexBBuffer : public AnnexBBuffer {
     str_annexb_buffer_->reserve(size);
     return true;
   }
-  void Append(const char* s, size_t n) override {
-    str_annexb_buffer_->append(s, n);
+  void Append(base::span<const char> data) override {
+    str_annexb_buffer_->append(data.data(), data.size());
   }
   size_t GetReservedSize() const override { return str_annexb_buffer_->size(); }
 
@@ -97,8 +95,8 @@ void CopyNalsToAnnexB(base::span<const char> buffer,
     }
     auto nals_buf = buffer.take_first(nal_size);
 
-    annexb_buffer->Append(kAnnexBHeaderBytes, sizeof(kAnnexBHeaderBytes));
-    annexb_buffer->Append(nals_buf.data(), nals_buf.size());
+    annexb_buffer->Append(kAnnexBHeaderBytes);
+    annexb_buffer->Append(nals_buf);
   }
 }
 
@@ -190,13 +188,18 @@ bool CopySampleBufferToAnnexBBuffer(VideoCodec codec,
         DLOG(ERROR) << " GetParameterSetAtIndex failed: " << status;
         return false;
       }
-      annexb_buffer->Append(kAnnexBHeaderBytes, sizeof(kAnnexBHeaderBytes));
-      annexb_buffer->Append(reinterpret_cast<const char*>(pset), pset_size);
+      // SAFETY: On success, GetParameterSetAtIndex() returns a pointer to
+      // `pset_size` bytes owned by `fdesc`. The sample buffer keeps `fdesc`
+      // alive while Append() copies the parameter set.
+      auto pset_span =
+          UNSAFE_BUFFERS(base::span<const uint8_t>(pset, pset_size));
+      annexb_buffer->Append(kAnnexBHeaderBytes);
+      annexb_buffer->Append(base::as_chars(pset_span));
     }
   }
 
   if (!sei_nalu.empty()) {
-    annexb_buffer->Append(base::as_chars(sei_nalu).data(), sei_nalu.size());
+    annexb_buffer->Append(base::as_chars(sei_nalu));
   }
 
   // Block buffers can be composed of non-contiguous chunks. For the sake of
@@ -255,10 +258,9 @@ bool CopySampleBufferToAnnexBBuffer(VideoCodec codec,
                                     CMSampleBufferRef sbuf,
                                     bool keyframe,
                                     base::span<const uint8_t> sei_nalu,
-                                    size_t annexb_buffer_size,
-                                    char* annexb_buffer,
+                                    base::span<char> annexb_buffer,
                                     size_t* used_buffer_size) {
-  RawAnnexBBuffer buffer(annexb_buffer, annexb_buffer_size);
+  RawAnnexBBuffer buffer(annexb_buffer);
   const bool copy_rv =
       CopySampleBufferToAnnexBBuffer(codec, sbuf, &buffer, keyframe, sei_nalu);
   *used_buffer_size = buffer.GetReservedSize();

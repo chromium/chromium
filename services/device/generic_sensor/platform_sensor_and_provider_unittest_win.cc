@@ -626,7 +626,7 @@ TEST_F(PlatformSensorAndProviderTestWin, CheckAccelerometerReadingConversion) {
 
   base::RunLoop().RunUntilIdle();
   const SensorReadingSharedBuffer* buffer =
-      static_cast<const SensorReadingSharedBuffer*>(mapping.memory());
+      mapping.GetMemoryAs<SensorReadingSharedBuffer>();
   EXPECT_THAT(buffer->reading.accel.x,
               RoundAccelerometerValue(-x_accel * base::kMeanGravityDouble));
   EXPECT_THAT(buffer->reading.accel.y,
@@ -669,7 +669,7 @@ TEST_F(PlatformSensorAndProviderTestWin, CheckGyroscopeReadingConversion) {
 
   base::RunLoop().RunUntilIdle();
   const SensorReadingSharedBuffer* buffer =
-      static_cast<const SensorReadingSharedBuffer*>(mapping.memory());
+      mapping.GetMemoryAs<SensorReadingSharedBuffer>();
   EXPECT_THAT(buffer->reading.gyro.x,
               RoundGyroscopeValue(base::DegToRad(x_ang_accel)));
   EXPECT_THAT(buffer->reading.gyro.y,
@@ -712,7 +712,7 @@ TEST_F(PlatformSensorAndProviderTestWin, CheckMagnetometerReadingConversion) {
 
   base::RunLoop().RunUntilIdle();
   const SensorReadingSharedBuffer* buffer =
-      static_cast<const SensorReadingSharedBuffer*>(mapping.memory());
+      mapping.GetMemoryAs<SensorReadingSharedBuffer>();
   EXPECT_THAT(buffer->reading.magn.x, x_magn_field * kMicroteslaInMilligauss);
   EXPECT_THAT(buffer->reading.magn.y, y_magn_field * kMicroteslaInMilligauss);
   EXPECT_THAT(buffer->reading.magn.z, z_magn_field * kMicroteslaInMilligauss);
@@ -754,7 +754,7 @@ TEST_F(PlatformSensorAndProviderTestWin,
 
   base::RunLoop().RunUntilIdle();
   const SensorReadingSharedBuffer* buffer =
-      static_cast<const SensorReadingSharedBuffer*>(mapping.memory());
+      mapping.GetMemoryAs<SensorReadingSharedBuffer>();
 
   EXPECT_THAT(buffer->reading.orientation_euler.x, x);
   EXPECT_THAT(buffer->reading.orientation_euler.y, y);
@@ -809,7 +809,7 @@ TEST_F(PlatformSensorAndProviderTestWin,
 
   base::RunLoop().RunUntilIdle();
   const SensorReadingSharedBuffer* buffer =
-      static_cast<const SensorReadingSharedBuffer*>(mapping.memory());
+      mapping.GetMemoryAs<SensorReadingSharedBuffer>();
 
   const float epsilon = 1.0e-3;
   EXPECT_NEAR(buffer->reading.orientation_quat.x, quat_elements[0], epsilon);

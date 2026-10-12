@@ -121,7 +121,7 @@ scoped_refptr<VideoFrame> SharedMemoryVideoFramePool::WrapBuffer(
                                    pooled_buffer.mapping, base::TimeDelta());
   CHECK(frame);
   // Sanity-check the assumption being made for SetMarkedBuffer():
-  CHECK_EQ(frame->data(0), pooled_buffer.mapping.memory());
+  CHECK_EQ(frame->data(0), pooled_buffer.mapping.data());
   utilized_buffers_.emplace(frame.get(), std::move(pooled_buffer.region));
   frame->AddDestructionObserver(
       base::BindOnce(&SharedMemoryVideoFramePool::OnFrameWrapperDestroyed,

@@ -214,7 +214,7 @@ TEST_F(GameInputDataFetcherTest, VerifyGamepadReading) {
       shared_memory_region.Map();
   ASSERT_TRUE(shared_memory_mapping.IsValid());
   const GamepadHardwareBuffer* gamepad_buffer =
-      static_cast<const GamepadHardwareBuffer*>(shared_memory_mapping.memory());
+      shared_memory_mapping.GetMemoryAs<GamepadHardwareBuffer>();
 
   mock_gameinput()->AssignMockReading(reading_empty.Get());
 
@@ -347,7 +347,7 @@ TEST_F(GameInputDataFetcherTest, VerifyControllerIdNames) {
       shared_memory_region.Map();
   ASSERT_TRUE(shared_memory_mapping.IsValid());
   const GamepadHardwareBuffer* gamepad_buffer =
-      static_cast<const GamepadHardwareBuffer*>(shared_memory_mapping.memory());
+      shared_memory_mapping.GetMemoryAs<GamepadHardwareBuffer>();
 
   // Add gamepads
   mock_gameinput()->InvokeDeviceCallback(fake_gamepad_0.Get(),

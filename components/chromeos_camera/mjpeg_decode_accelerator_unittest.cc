@@ -724,8 +724,8 @@ void JpegClient::PrepareMemory(int32_t task_id) {
     ASSERT_TRUE(in_shm_.IsValid());
     in_shm_mapping_ = in_shm_.Map();
     ASSERT_TRUE(in_shm_mapping_.IsValid());
-    UNSAFE_TODO(memcpy(in_shm_mapping_.memory(), task.image->data_str.data(),
-                       task.image->data_str.size()));
+    base::span(in_shm_mapping_)
+        .copy_from(base::as_byte_span(task.image->data_str));
 
     // Only I420 output buffer is used in the shared memory path.
     hw_out_frame_ = g_env->CreateMemoryVideoFrame(

@@ -506,7 +506,7 @@ TEST(VideoFrame, WrapSharedMemory) {
   ASSERT_TRUE(mapped_region.IsValid());
   gfx::Size coded_size(256, 256);
   gfx::Rect visible_rect(coded_size);
-  CreateTestY16Frame(coded_size, visible_rect, mapped_region.mapping.memory());
+  CreateTestY16Frame(coded_size, visible_rect, mapped_region.mapping.data());
   auto timestamp = base::Milliseconds(1);
   auto frame = VideoFrame::WrapExternalData(
       PIXEL_FORMAT_Y16, coded_size, visible_rect, visible_rect.size(),

@@ -4,11 +4,12 @@
 
 #include "content/browser/media/capture/frame_sink_video_capture_device.h"
 
+#include <algorithm>
 #include <array>
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -392,8 +393,8 @@ class FrameSinkVideoCaptureDeviceTest : public testing::Test {
         base::ReadOnlySharedMemoryRegion::Create(
             media::VideoFrame::AllocationSize(kFormat, kResolution));
     CHECK(region.IsValid());
-    UNSAFE_TODO(memset(region.mapping.memory(), GetFrameFillValue(frame_number),
-                       region.mapping.size()));
+    std::ranges::fill(base::span(region.mapping),
+                      GetFrameFillValue(frame_number));
 
     mojo::PendingRemote<viz::mojom::FrameSinkVideoConsumerFrameCallbacks>
         callbacks_remote;
