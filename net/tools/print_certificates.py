@@ -146,7 +146,7 @@ def decode_netlog_hexdump(netlog_text):
   del lines[0]
 
   bytes = []
-  hex_re = re.compile('\s*([0-9A-Fa-f ]{48})')
+  hex_re = re.compile(r'\s*([0-9A-Fa-f ]{48})')
   for line in lines:
     m = hex_re.search(line)
     if not m:
