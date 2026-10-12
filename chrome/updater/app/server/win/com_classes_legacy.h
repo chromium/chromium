@@ -262,6 +262,15 @@ class LegacyProcessLauncherImpl
 //
 // Placeholders may be embedded within words, and appropriate quoting of
 // back-slash, double-quotes, space, and tab is applied if necessary.
+//
+// SECURITY NOTE: The Application Command feature allows installed products to
+// pre-register and later run command lines. For system-scoped installations,
+// the command lines are run as NT AUTHORITY\SYSTEM on behalf of
+// lesser-privileged users. This feature is not a privilege escalation
+// vulnerability on its own: registering the command and placing the executable
+// under %ProgramFiles% both require administrator privileges, additionally
+// runtime substitutions are restricted to quoted parameters and disallowed in
+// the executable path
 class LegacyAppCommandWebImpl : public IDispatchImpl<IAppCommandWeb> {
  public:
   struct ErrorParams {
