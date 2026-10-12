@@ -16,6 +16,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "components/cbor/diagnostic_writer.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/writer.h"
@@ -894,15 +895,14 @@ static std::optional<std::string> FixInvalidUTF8String(
       // This string has been truncated. This is the case that we expect to
       // have to handle since CTAP2 devices are permitted to truncate strings
       // without reference to UTF-8.
-      const std::string candidate(
-          reinterpret_cast<const char*>(utf8_bytes.data()),
-          longest_valid_prefix_len);
+      std::string_view candidate =
+          base::as_string_view(utf8_bytes.first(longest_valid_prefix_len));
       // Check that the result is now acceptable to |IsStringUTF8|, which is
       // stricter than |StreamingUtf8Validator|. Without this, a string could
       // have both contained invalid code-points /and/ been truncated, and this
       // function would only have corrected the latter issue.
       if (base::IsStringUTF8(candidate)) {
-        return candidate;
+        return std::string(candidate);
       }
       return std::nullopt;
     }
