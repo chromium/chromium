@@ -19,12 +19,14 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/policy/policy_constants.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/core/browser/account_preview_data_service.h"
 #import "components/signin/ios/browser/features.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/tribool.h"
+#import "components/sync/protocol/sync_enums.pb.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "google_apis/gaia/gaia_auth_util.h"
@@ -64,8 +66,11 @@
 #import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "net/base/network_change_notifier.h"
 #import "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -186,6 +191,21 @@ void CheckSigninCoordinatorResultOrIdentity(
     CHECK(result.value());
   } else {
     CHECK_NE(result.error(), SigninCoordinatorResultSuccess);
+  }
+}
+
+// Converts sync device form factor to device type string.
+std::optional<std::u16string> GetDeviceTypeString(
+    sync_pb::SyncEnums_DeviceFormFactor form_factor) {
+  switch (form_factor) {
+    case sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE:
+      return l10n_util::GetStringUTF16(IDS_SIGNIN_DEVICE_TYPE_PHONE);
+    case sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_TABLET:
+      return l10n_util::GetStringUTF16(IDS_SIGNIN_DEVICE_TYPE_TABLET);
+    case sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP:
+      return l10n_util::GetStringUTF16(IDS_SIGNIN_DEVICE_TYPE_LAPTOP);
+    default:
+      return std::nullopt;
   }
 }
 
@@ -679,6 +699,48 @@ SigninCoordinatorResultOrIdentityFromSigninCoordinatorResult(
     return identity;
   }
   return base::unexpected(result);
+}
+
+NSString* GetPromoLabelStringForWebSignin(
+    const std::optional<AccountPreviewDataService::AccountPreviewPreference>&
+        preference) {
+  if (!preference || preference->preferred_data_types.empty()) {
+    return nil;
+  }
+
+  std::optional<std::u16string> device_type =
+      GetDeviceTypeString(preference->other_device_info.form_factor);
+
+  for (const PreferredDataTypeInfo& data_type_info :
+       preference->preferred_data_types) {
+    switch (data_type_info.data_type) {
+      case syncer::BOOKMARKS:
+        return device_type.has_value()
+                   ? l10n_util::GetNSStringF(
+                         IDS_SIGNIN_ACCOUNT_PICKER_BOTTOM_SHEET_SUBTITLE_FOR_WEB_SIGNIN_DEVICE_TYPE_BOOKMARKS,
+                         *device_type)
+                   : l10n_util::GetNSString(
+                         IDS_SIGNIN_ACCOUNT_PICKER_BOTTOM_SHEET_SUBTITLE_FOR_WEB_SIGNIN_ON_ALL_DEVICES_BOOKMARKS);
+      case syncer::PASSWORDS:
+        return device_type.has_value()
+                   ? l10n_util::GetNSStringF(
+                         IDS_SIGNIN_ACCOUNT_PICKER_BOTTOM_SHEET_SUBTITLE_FOR_WEB_SIGNIN_DEVICE_TYPE_PASSWORDS,
+                         *device_type)
+                   : l10n_util::GetNSString(
+                         IDS_SIGNIN_ACCOUNT_PICKER_BOTTOM_SHEET_SUBTITLE_FOR_WEB_SIGNIN_ON_ALL_DEVICES_PASSWORDS);
+      case syncer::AUTOFILL:
+      case syncer::AUTOFILL_WALLET_METADATA:
+        return device_type.has_value()
+                   ? l10n_util::GetNSStringF(
+                         IDS_SIGNIN_ACCOUNT_PICKER_BOTTOM_SHEET_SUBTITLE_FOR_WEB_SIGNIN_DEVICE_TYPE_SAVED_INFO,
+                         *device_type)
+                   : l10n_util::GetNSString(
+                         IDS_SIGNIN_ACCOUNT_PICKER_BOTTOM_SHEET_SUBTITLE_FOR_WEB_SIGNIN_ON_ALL_DEVICES_SAVED_INFO);
+      default:
+        break;
+    }
+  }
+  return nil;
 }
 
 }  // namespace signin
