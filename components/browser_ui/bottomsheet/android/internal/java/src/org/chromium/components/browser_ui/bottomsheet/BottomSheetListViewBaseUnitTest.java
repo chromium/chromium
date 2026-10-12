@@ -1167,6 +1167,15 @@ public class BottomSheetListViewBaseUnitTest {
 
     private static RecyclerView createItemDividerRecyclerView(
             Context context, RecyclerView.Adapter adapter, List<View> childViews) {
+        return createItemDividerRecyclerView(
+                context, adapter, childViews, /* firstVisibleAdapterPosition= */ 0);
+    }
+
+    private static RecyclerView createItemDividerRecyclerView(
+            Context context,
+            RecyclerView.Adapter adapter,
+            List<View> childViews,
+            int firstVisibleAdapterPosition) {
         return new RecyclerView(context) {
             @Override
             public @Nullable Adapter getAdapter() {
@@ -1174,9 +1183,20 @@ public class BottomSheetListViewBaseUnitTest {
             }
 
             @Override
+            public int getChildCount() {
+                return childViews.size();
+            }
+
+            @Override
             public @Nullable View getChildAt(int index) {
                 // Like the real RecyclerView, return null for positions that have no child view.
                 return index >= 0 && index < childViews.size() ? childViews.get(index) : null;
+            }
+
+            @Override
+            public int getChildAdapterPosition(View child) {
+                int index = childViews.indexOf(child);
+                return index != -1 ? firstVisibleAdapterPosition + index : NO_POSITION;
             }
         };
     }
@@ -1376,6 +1396,111 @@ public class BottomSheetListViewBaseUnitTest {
         assertNull("Skipped item should remain undecorated", view0.getBackground());
         assertNull("Skipped item should remain undecorated", view1.getBackground());
         assertNull("Skipped item should remain undecorated", view2.getBackground());
+    }
+
+    @Test
+    public void testItemDivider_MultipleSections_RoundsEachSectionIndependently() {
+        Activity activity = Robolectric.setupActivity(Activity.class);
+        activity.setTheme(R.style.Theme_BrowserUI_DayNight);
+
+        final int titleType = 1;
+        final int bodyType = 0;
+        final int footerType = 2;
+        List<View> views = new ArrayList<>();
+        for (int i = 0; i < 7; i++) {
+            views.add(new View(activity));
+        }
+        // Section 1: title + 1 body item. Section 2: title + 3 body items. Followed by a footer.
+        RecyclerView.Adapter adapter =
+                createSheetAdapter(
+                        List.of(
+                                titleType,
+                                bodyType,
+                                titleType,
+                                bodyType,
+                                bodyType,
+                                bodyType,
+                                footerType));
+        RecyclerView recyclerView = createItemDividerRecyclerView(activity, adapter, views);
+
+        TestItemDivider divider = new TestItemDivider(activity, Set.of(titleType, footerType));
+        divider.onDraw(new Canvas(), recyclerView, new RecyclerView.State());
+
+        assertNull(
+                "The first section title should remain undecorated", views.get(0).getBackground());
+        assertItemHasBackgroundDrawable(activity, views.get(1));
+        float[] singleSectionCorners = getItemCornerRadii(views.get(1));
+        assertTrue(
+                "Single item in section 1 should have rounded corners",
+                singleSectionCorners[0] > 0);
+        for (float corner : singleSectionCorners) {
+            assertEquals(
+                    "Single item in section 1 should have all four corners equally round",
+                    singleSectionCorners[0],
+                    corner,
+                    0.001f);
+        }
+
+        assertNull(
+                "The second section title should remain undecorated", views.get(2).getBackground());
+        assertItemHasBackgroundDrawable(activity, views.get(3));
+        assertItemHasBackgroundDrawable(activity, views.get(4));
+        assertItemHasBackgroundDrawable(activity, views.get(5));
+        assertTopCornersRounderThanBottom(
+                "The first item of section 2 should be rounder at the top than at the bottom",
+                views.get(3));
+        float[] middleCorners = getItemCornerRadii(views.get(4));
+        assertEquals(
+                "The middle item of section 2 should be as round at the top as at the bottom",
+                middleCorners[0],
+                middleCorners[3],
+                0.001f);
+        assertTrue(
+                "The middle item of section 2 should be less round than the top of the first item",
+                middleCorners[0] < getItemCornerRadii(views.get(3))[0]);
+        assertBottomCornersRounderThanTop(
+                "The last item of section 2 should be rounder at the bottom than at the top",
+                views.get(5));
+
+        assertNull("The footer should remain undecorated", views.get(6).getBackground());
+    }
+
+    @Test
+    public void testItemDivider_WhenScrolled_UsesAdapterPositionInsteadOfChildIndex() {
+        Activity activity = Robolectric.setupActivity(Activity.class);
+        activity.setTheme(R.style.Theme_BrowserUI_DayNight);
+
+        final int titleType = 1;
+        final int bodyType = 0;
+        // Adapter has 5 items: [title, body, title, body, body].
+        RecyclerView.Adapter adapter =
+                createSheetAdapter(List.of(titleType, bodyType, titleType, bodyType, bodyType));
+
+        // Simulate scrolling past the first two items so that only adapter positions 2..4 are
+        // attached as child views (child indices 0..2).
+        List<View> visibleViews =
+                List.of(new View(activity), new View(activity), new View(activity));
+        RecyclerView recyclerView =
+                createItemDividerRecyclerView(
+                        activity, adapter, visibleViews, /* firstVisibleAdapterPosition= */ 2);
+
+        TestItemDivider divider = new TestItemDivider(activity, Set.of(titleType));
+        divider.onDraw(new Canvas(), recyclerView, new RecyclerView.State());
+
+        // Child index 0 is adapter position 2 (titleType) -> undecorated.
+        assertNull(
+                "Scrolled section title should remain undecorated",
+                visibleViews.get(0).getBackground());
+        // Child index 1 is adapter position 3 (first item of section 2) -> top corners rounded.
+        assertItemHasBackgroundDrawable(activity, visibleViews.get(1));
+        assertTopCornersRounderThanBottom(
+                "First item of section 2 should be rounder at the top when scrolled",
+                visibleViews.get(1));
+        // Child index 2 is adapter position 4 (last item of section 2) -> bottom corners rounded.
+        assertItemHasBackgroundDrawable(activity, visibleViews.get(2));
+        assertBottomCornersRounderThanTop(
+                "Last item of section 2 should be rounder at the bottom when scrolled",
+                visibleViews.get(2));
     }
 
     /** A content view that remembers the width it was last measured with. */
