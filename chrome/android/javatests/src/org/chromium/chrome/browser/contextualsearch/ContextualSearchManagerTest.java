@@ -632,6 +632,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
+    @DisableIf.Device(DeviceFormFactor.AUTOMOTIVE) // crbug.com/572590826: No geo: handler on AVD.
     // Previously disabled: https://crbug.com/40221759
     public void testQuickActionIntent() throws Exception {
         // Add a new filter to the activity monitor that matches the intent that should be fired.
