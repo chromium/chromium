@@ -873,8 +873,8 @@
   <message name="IDS_AUTOFILL_AT_MEMORY_AI_DISCLOSURE_LINK" desc="Link text for the AI disclosure that points to a settings page." translateable="false">
     More about relevant data sent to Google
   </message>
-  <message name="IDS_AUTOFILL_AT_MEMORY_SHORTCUT_SETTINGS_PROMO" desc="The text shown at the bottom of the AtMemory search popup to inform the user that the keyboard shortcut can be changed in settings. $1 is the link text." translateable="false">
-    You can change keyboard shortcut in <ph name="SETTINGS_LINK">$1</ph>
+  <message name="IDS_AUTOFILL_AT_MEMORY_SHORTCUT_SETTINGS_PROMO" desc="The text shown at the bottom of the AtMemory search popup to inform the user that the keyboard shortcut for enhanced autofill can be changed in settings. $1 is the link text." translateable="false">
+    You can change keyboard shortcut for enhanced autofill in <ph name="SETTINGS_LINK">$1</ph>
   </message>
   <message name="IDS_AUTOFILL_AT_MEMORY_SHORTCUT_SETTINGS_PROMO_LINK" desc="Link text for the AtMemory shortcut promo that points to a settings page." translateable="false">
     settings
@@ -928,10 +928,10 @@
     Your saved info
   </message>
   <message name="IDS_AT_MEMORY_NOTICE_TEXT" desc="Body text of an informational notice introducing a new enhanced autofill feature. 'Personal Intelligence' and 'Gemini' are proper branding names and should remain unlocalized and match standard guidelines across languages. 'Manage settings' is a hyperlink that navigates the user to the Chrome settings page to adjust their preferences." formatter_data="android_java">
-    Powered by Personal Intelligence with Gemini. Your requests, page titles, and URLs may be reviewed to improve enhanced autofill. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Manage settings<ph name="END_LINK">&lt;/link&gt;</ph>
+    Powered by Gemini with Personal Intelligence. Your requests, page titles, and URLs may be reviewed to improve enhanced autofill. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Manage settings<ph name="END_LINK">&lt;/link&gt;</ph>
   </message>
   <message name="IDS_AT_MEMORY_NOTICE_TEXT_NO_LOGGING" desc="Body text of an informational notice introducing a new enhanced autofill feature. 'Personal Intelligence' and 'Gemini' are proper branding names and should remain unlocalized and match standard guidelines across languages. 'Manage settings' is a hyperlink that navigates the user to the Chrome settings page to adjust their preferences." formatter_data="android_java">
-    Powered by Personal Intelligence with Gemini. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Manage settings<ph name="END_LINK">&lt;/link&gt;</ph>
+    Powered by Gemini with Personal Intelligence. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Manage settings<ph name="END_LINK">&lt;/link&gt;</ph>
   </message>
   <message name="IDS_AT_MEMORY_NOTICE_TITLE" desc="Headline of an informational notice introducing a new enhanced autofill feature. 'Gmail' is a proper branding name and should remain unlocalized and match standard guidelines across languages." formatter_data="android_java">
     Now you can find and fill info from Gmail and more
@@ -963,7 +963,7 @@
     </message>
   </if>
    <message name="IDS_AUTOFILL_AT_MEMORY_SUGGESTION_SOURCE_TEXT" desc="The label for a text in the At Memory flyout that shows the source of the autofill suggestion." formatter_data="android_java" translateable="false">
-    Suggested by Gemini
+    From Gemini and connected apps
   </message>
   <message name="IDS_AUTOFILL_AI_SUGGESTED_BY_GEMINI" desc="Sublabel text indicating that a suggestion is sourced from Gemini." translateable="false">
     Suggested by Gemini
@@ -1984,17 +1984,17 @@ You can remove this suggestion from Chrome. Your original source won't be delete
     Verify it’s you to autofill sensitive info
   </message>
   <if expr="is_macosx">
-    <message name="IDS_AT_MEMORY_PROMO_TITLE" desc="Title of the AtMemory promo bubble on macOS. '⌘ ⌘' represents pressing the Command key twice.">
-      Press ⌘ ⌘ in any form to find and fill info without switching tabs
+    <message name="IDS_AT_MEMORY_PROMO_TITLE" desc="Title of the AtMemory promo bubble on macOS.">
+      Press ⌘ twice anywhere on the web to find and fill more info
     </message>
   </if>
   <if expr="not is_macosx">
     <message name="IDS_AT_MEMORY_PROMO_TITLE" desc="Title of the AtMemory promo bubble.">
-      Press Ctrl twice in any form to find and fill info without switching tabs
+      Press Ctrl twice anywhere on the web to find and fill more info
     </message>
   </if>
-  <message name="IDS_AT_MEMORY_PROMO_DESCRIPTION" desc="Description of the at-memory promo bubble.">
-    Enhanced autofill can now find and fill info — like flight numbers and appointment times — from apps like Gmail and Photos
+  <message name="IDS_AT_MEMORY_PROMO_DESCRIPTION" desc="Body text of the AtMemory promo bubble detailing the new autofill capabilities and data sources.">
+    Enhanced autofill can now find and fill info — like order numbers and flight confirmation codes — from apps like Gmail and Photos
   </message>
   <message name="IDS_AT_MEMORY_PROMO_LEARN_MORE_BUTTON" desc="Label of the 'Learn more' button in the at-memory promo bubble.">
     Learn more
