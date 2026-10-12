@@ -6,9 +6,11 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
+#include "components/webauthn/features.h"
 #include "device/fido/public/fido_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_features.h"
@@ -30,7 +32,7 @@ Mechanism CreateGpmPasskey(const std::u16string& user_name,
       {device::AuthenticatorType::kEnclave, kUserId, last_used_time});
   return Mechanism(
       std::move(cred_info), user_name,
-      features::IsRoundedIconsEnabled() ? kMobileIcon : kSmartphoneOldIcon,
+      ::features::IsRoundedIconsEnabled() ? kMobileIcon : kSmartphoneOldIcon,
       base::DoNothing());
 }
 
@@ -41,7 +43,7 @@ Mechanism CreatePlatformPasskey(const std::u16string& user_name,
       {device::AuthenticatorType::kICloudKeychain, kUserId, last_used_time});
   return Mechanism(
       std::move(cred_info), user_name,
-      features::IsRoundedIconsEnabled() ? kMobileIcon : kSmartphoneOldIcon,
+      ::features::IsRoundedIconsEnabled() ? kMobileIcon : kSmartphoneOldIcon,
       base::DoNothing());
 }
 
@@ -52,7 +54,7 @@ Mechanism CreatePassword(const std::u16string& user_name,
       Mechanism::Password(Mechanism::PasswordInfo(last_used_time));
   return Mechanism(
       std::move(password_data), user_name,
-      features::IsRoundedIconsEnabled() ? kMobileIcon : kSmartphoneOldIcon,
+      ::features::IsRoundedIconsEnabled() ? kMobileIcon : kSmartphoneOldIcon,
       base::DoNothing());
 }
 
@@ -163,9 +165,55 @@ TEST_P(CredentialSorterDesktopTest,
 }
 
 // Test deduplication: GPM Password preferred over GPM Passkey if Password
-// is newer.
+// is newer by more than the 5-minute recency tolerance.
 TEST_P(CredentialSorterDesktopTest,
        DeduplicateGpmPasskeyVsGpmPassword_PasswordNewer) {
+  std::vector<Mechanism> mechanisms;
+  base::Time time_now = base::Time::Now();
+  base::Time time_older = time_now - base::Minutes(6);
+
+  mechanisms.push_back(CreateGpmPasskey(u"user1", time_older));
+  mechanisms.push_back(CreatePassword(u"user1", time_now));
+
+  std::vector<Mechanism> result =
+      SortMechanisms(std::move(mechanisms), GetParam());
+  ASSERT_EQ(result.size(), 1u);
+  EXPECT_TRUE(std::holds_alternative<Mechanism::Password>(result[0].type));
+  ExpectDeduplicationRecorded(WebAuthnDeduplicatedType::kPassword);
+}
+
+// Test deduplication: GPM Passkey preferred over Password if Password is only
+// slightly newer (within the 5-minute recency tolerance).
+TEST_P(CredentialSorterDesktopTest,
+       DeduplicateGpmPasskeyVsGpmPassword_PasswordNewerWithinTolerance) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kWebAuthnGpmPasskeyRecencyTolerance);
+
+  std::vector<Mechanism> mechanisms;
+  base::Time time_now = base::Time::Now();
+  base::Time time_older = time_now - base::Minutes(1);
+
+  mechanisms.push_back(CreateGpmPasskey(u"user1", time_older));
+  mechanisms.push_back(CreatePassword(u"user1", time_now));
+
+  std::vector<Mechanism> result =
+      SortMechanisms(std::move(mechanisms), GetParam());
+  ASSERT_EQ(result.size(), 1u);
+  EXPECT_TRUE(std::holds_alternative<Mechanism::Credential>(result[0].type));
+  EXPECT_EQ(std::get<Mechanism::Credential>(result[0].type).value().source,
+            device::AuthenticatorType::kEnclave);
+  ExpectDeduplicationRecorded(WebAuthnDeduplicatedType::kGpmPasskey);
+}
+
+// Test deduplication: Password preferred over GPM Passkey when 1 minute newer
+// if the recency tolerance feature is disabled.
+TEST_P(CredentialSorterDesktopTest,
+       DeduplicateGpmPasskeyVsGpmPassword_ToleranceDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kWebAuthnGpmPasskeyRecencyTolerance);
+
   std::vector<Mechanism> mechanisms;
   base::Time time_now = base::Time::Now();
   base::Time time_older = time_now - base::Minutes(1);

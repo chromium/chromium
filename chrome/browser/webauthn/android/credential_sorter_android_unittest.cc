@@ -4,10 +4,12 @@
 
 #include "chrome/browser/webauthn/android/credential_sorter_android.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_password_manager_view.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/webauthn/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -92,9 +94,31 @@ TEST_F(CredentialSorterAndroidTest, DeduplicatePasskeyVsPassword_PasskeyNewer) {
   EXPECT_TRUE(std::holds_alternative<PasskeyCredential>(result[0]));
 }
 
-// Deduplication: Password preferred over Passkey if Password is newer.
+// Deduplication: Password preferred over Passkey if Password is newer by more
+// than the 5-minute recency tolerance.
 TEST_F(CredentialSorterAndroidTest,
        DeduplicatePasskeyVsPassword_PasswordNewer) {
+  std::vector<Credential> credentials;
+  base::Time time_now = base::Time::Now();
+  base::Time time_older = time_now - base::Minutes(6);
+
+  credentials.push_back(CreatePasskey("user1", time_older));
+  credentials.push_back(CreatePassword(u"user1", time_now));
+
+  std::vector<Credential> result = SortTouchToFillCredentials(
+      std::move(credentials), /* immediate_ui_mode= */ true);
+  ASSERT_EQ(result.size(), 1u);
+  EXPECT_TRUE(std::holds_alternative<UiCredential>(result[0]));
+}
+
+// Deduplication: Passkey preferred over Password if Password is only slightly
+// newer (within the 5-minute recency tolerance).
+TEST_F(CredentialSorterAndroidTest,
+       DeduplicatePasskeyVsPassword_PasswordNewerWithinTolerance) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kWebAuthnGpmPasskeyRecencyTolerance);
+
   std::vector<Credential> credentials;
   base::Time time_now = base::Time::Now();
   base::Time time_older = time_now - base::Minutes(1);
@@ -105,7 +129,7 @@ TEST_F(CredentialSorterAndroidTest,
   std::vector<Credential> result = SortTouchToFillCredentials(
       std::move(credentials), /* immediate_ui_mode= */ true);
   ASSERT_EQ(result.size(), 1u);
-  EXPECT_TRUE(std::holds_alternative<UiCredential>(result[0]));
+  EXPECT_TRUE(std::holds_alternative<PasskeyCredential>(result[0]));
 }
 
 // Sorting: Most recent first.
@@ -167,7 +191,7 @@ TEST_F(CredentialSorterAndroidTest, NoProcessingForOtherUIPresentations) {
 TEST_F(CredentialSorterAndroidTest, MultipleDeduplications) {
   std::vector<TouchToFillPasswordManagerView::Credential> credentials;
   base::Time time_now = base::Time::Now();
-  base::Time time_older = time_now - base::Minutes(1);
+  base::Time time_older = time_now - base::Minutes(6);
 
   // User 1: New password wins over passkey.
   credentials.push_back(CreatePassword(u"user1", time_now));

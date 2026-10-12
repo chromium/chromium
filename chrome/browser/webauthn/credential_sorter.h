@@ -11,8 +11,10 @@
 #include <variant>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "components/webauthn/features.h"
 
 namespace webauthn::sorting {
 
@@ -42,7 +44,8 @@ enum class SortableCredentialType {
 // and the passkey for each account. Then selects the best credential for the
 // account based on the following rules:
 // Rule 1: GPM Passkey vs Platform Passkey -> GPM Passkey.
-// Rule 2: GPM Passkey vs Password -> Most recent.
+// Rule 2: GPM Passkey vs Password -> Most recent (with a 5-minute tolerance
+//         favoring the GPM passkey).
 // Rule 3: Password vs Platform Passkey -> Platform Passkey.
 template <typename T, typename Traits>
 std::vector<T> DeduplicateCredentialsByAccount(
@@ -110,8 +113,15 @@ std::vector<T> DeduplicateCredentialsByAccount(
     if (best_gpm_passkey) {
       // GPM Passkey is present.
       if (best_password) {
-        // GPM Passkey vs Password: Most recent.
-        if (best_password_timestamp > best_gpm_passkey_timestamp) {
+        // GPM Passkey vs Password: Most recent (with a 5-minute tolerance
+        // favoring the GPM passkey so a newly upgraded passkey wins over the
+        // password used in the same sign-in flow).
+        const base::TimeDelta tolerance =
+            base::FeatureList::IsEnabled(
+                features::kWebAuthnGpmPasskeyRecencyTolerance)
+                ? base::Minutes(5)
+                : base::TimeDelta();
+        if (best_password_timestamp - tolerance > best_gpm_passkey_timestamp) {
           selected_credential = best_password;
         } else {
           selected_credential = best_gpm_passkey;

@@ -44,6 +44,10 @@ BASE_DECLARE_FEATURE(kDeleteOldHiddenPasskeys);
 // Reject RP IDs inside the caller's public suffix.
 BASE_DECLARE_FEATURE(kRejectRpIdsInsideCallersPublicSuffix);
 
+// Gives GPM passkeys a 5-minute recency tolerance when deduplicating against
+// passwords for the same account.
+BASE_DECLARE_FEATURE(kWebAuthnGpmPasskeyRecencyTolerance);
+
 }  // namespace webauthn::features
 
 #endif  // COMPONENTS_WEBAUTHN_FEATURES_H_

@@ -18,6 +18,7 @@ source_set("webauthn") {
   public_deps = [
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser:password_form",
+    "//components/webauthn:features",
     "//content/public/browser",
     "//device/fido",
   ]
