@@ -423,6 +423,13 @@ void PasswordChangeDelegateImpl::CancelPasswordChangeFlow() {
     logger->LogMessage(BrowserSavePasswordProgressLogger::
                            STRING_AUTOMATED_PASSWORD_CHANGE_CANCEL_FLOW);
   }
+  if (login_state_checker_ && logs_uploader_) {
+    logs_uploader_->SetFlowInterrupted(
+        ModelQualityLogsUploader::FlowStep::
+            PasswordChangeRequest_FlowStep_IS_LOGGED_IN_STEP,
+        ModelQualityLogsUploader::QualityStatus::
+            PasswordChangeQuality_StepQuality_SubmissionStatus_FLOW_INTERRUPTED);
+  }
   if (actuator_) {
     actuator_->Cancel();
   }
@@ -453,6 +460,13 @@ void PasswordChangeDelegateImpl::OnTabWillDetach(
   base::UmaHistogramEnumeration("PasswordManager.PasswordChange.UserClosedTab",
                                 current_state_);
 
+  if (login_state_checker_ && logs_uploader_) {
+    logs_uploader_->SetFlowInterrupted(
+        ModelQualityLogsUploader::FlowStep::
+            PasswordChangeRequest_FlowStep_IS_LOGGED_IN_STEP,
+        ModelQualityLogsUploader::QualityStatus::
+            PasswordChangeQuality_StepQuality_SubmissionStatus_FLOW_INTERRUPTED);
+  }
   if (actuator_) {
     // Notify actuator to record and treat it as cancelation.
     actuator_->Cancel();

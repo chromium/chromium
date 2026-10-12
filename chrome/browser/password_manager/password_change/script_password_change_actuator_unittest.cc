@@ -168,7 +168,25 @@ TEST_F(ScriptPasswordChangeActuatorTest, CancelWithoutActiveStepResetsState) {
   MockPasswordChangeActuatorObserver observer;
   actuator.AddObserver(&observer);
 
+  auto logging_data = std::make_unique<
+      optimization_guide::proto::PasswordChangeSubmissionLoggingData>();
+  logging_data->mutable_response()
+      ->mutable_is_logged_in_data()
+      ->set_is_logged_in(true);
+  GetLogsUploader()->SetLoggedInCheckQuality(/*retry_count=*/0,
+                                             std::move(logging_data));
+
   actuator.Cancel();
+
+  EXPECT_EQ(
+      actuator.GetLogsUploaderForTesting()
+          ->GetFinalLog()
+          .password_change_submission()
+          .quality()
+          .logged_in_check()
+          .status(),
+      optimization_guide::proto::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS);
 
   actuator.RemoveObserver(&observer);
 }

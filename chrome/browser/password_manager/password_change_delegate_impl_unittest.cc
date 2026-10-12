@@ -444,6 +444,27 @@ TEST_F(PasswordChangeDelegateImplTest,
           PasswordChangeDelegate::CoarseFinalPasswordChangeState::kCanceled));
 }
 
+TEST_F(PasswordChangeDelegateImplTest,
+       PasswordChangeFlowCanceledDuringSignInCheck) {
+  SetOptimizationFeatureEnabled(true);
+  CreateDelegate();
+  delegate()->StartPasswordChangeFlow();
+
+  EXPECT_CALL(*actuator(), Cancel());
+  delegate()->CancelPasswordChangeFlow();
+
+  optimization_guide::proto::PasswordChangeQuality quality =
+      delegate()
+          ->logs_uploader()
+          ->GetFinalLog()
+          .password_change_submission()
+          .quality();
+  EXPECT_EQ(
+      quality.logged_in_check().status(),
+      optimization_guide::proto::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_FLOW_INTERRUPTED);
+}
+
 TEST_F(PasswordChangeDelegateImplTest, PasswordChangeFlowCanceled) {
   SetOptimizationFeatureEnabled(true);
   CreateDelegate();

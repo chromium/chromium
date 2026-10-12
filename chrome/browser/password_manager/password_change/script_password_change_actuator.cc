@@ -373,9 +373,6 @@ void ScriptPasswordChangeActuator::ReportFlowInterruption(
         status);
     return;
   }
-
-  logs_uploader_->SetFlowInterrupted(
-      FlowStep::PasswordChangeRequest_FlowStep_IS_LOGGED_IN_STEP, status);
 }
 
 void ScriptPasswordChangeActuator::NotifyStateChanged(
