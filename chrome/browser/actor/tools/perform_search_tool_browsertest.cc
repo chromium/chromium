@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/perform_search_tool_request.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
+#include "components/actor/core/actor_features.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/search_engines/default_search_manager.h"
@@ -30,6 +32,8 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "url/gurl.h"
 
 namespace actor {
 
@@ -42,29 +46,41 @@ constexpr char16_t kKeyword[] = u"test";
 class ActorPerformSearchToolBrowserTest : public ActorToolsTest {
  public:
   ActorPerformSearchToolBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kGlicActor);
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{features::kGlicActor, {}},
+         {kGlicCrossOriginNavigationGating,
+          {{kGlicConfirmNavigationToNewOrigins.name, "true"}}}},
+        /*disabled_features=*/{});
   }
   ~ActorPerformSearchToolBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     ActorToolsTest::SetUpOnMainThread();
+    embedded_https_test_server().SetSSLConfig(
+        net::EmbeddedTestServer::CERT_TEST_NAMES);
     ASSERT_TRUE(embedded_test_server()->Start());
+    ASSERT_TRUE(embedded_https_test_server().Start());
 
+    SetDefaultSearchProviderUrl(embedded_test_server()->GetURL(kSearchUrlPath));
+  }
+
+  void SetDefaultSearchProviderUrl(const GURL& search_url) {
     TemplateURLService* template_url_service =
         TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
     ASSERT_TRUE(template_url_service);
 
     TemplateURLData data;
-    data.SetURL(embedded_test_server()->GetURL(kSearchUrlPath).spec());
+    data.SetURL(search_url.spec());
     data.SetShortName(kKeyword);
     data.SetKeyword(kKeyword);
-    auto* default_url =
+    TemplateURL* default_url =
         template_url_service->Add(std::make_unique<TemplateURL>(data));
     template_url_service->SetUserSelectedDefaultSearchProvider(default_url);
   }
 
-  GURL GetDefaultSearchURLForQuery(std::string_view query) {
-    TemplateURLService* template_url_service =
+  GURL GetDefaultSearchURLForQuery(std::string_view query) const {
+    const TemplateURLService* template_url_service =
         TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
     CHECK(template_url_service);
     const TemplateURL* default_provider =
@@ -92,6 +108,63 @@ IN_PROC_BROWSER_TEST_F(ActorPerformSearchToolBrowserTest,
   ExpectOkResult(result);
 
   EXPECT_EQ(web_contents()->GetURL(), GetDefaultSearchURLForQuery(kQuery));
+}
+
+// Verifies that PerformSearch grants the default search provider's origin in
+// AssociatedOriginGrant(), allowing cross-origin navigation when
+// kGlicConfirmNavigationToNewOrigins is enabled.
+IN_PROC_BROWSER_TEST_F(ActorPerformSearchToolBrowserTest,
+                       PerformSearchCrossOriginDefaultSearchProviderAllowed) {
+  constexpr char kQuery[] = "test query";
+  SetDefaultSearchProviderUrl(
+      embedded_https_test_server().GetURL("b.test", kSearchUrlPath));
+
+  const GURL url_start =
+      embedded_https_test_server().GetURL("a.test", kStartUrlPath);
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url_start));
+
+  std::unique_ptr<ToolRequest> action =
+      MakePerformSearchRequest(*active_tab(), kQuery);
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
+  ExpectOkResult(result);
+
+  EXPECT_EQ(web_contents()->GetURL(), GetDefaultSearchURLForQuery(kQuery));
+}
+
+class ActorPerformSearchToolExplicitGrantBrowserTest
+    : public ActorPerformSearchToolBrowserTest {
+ public:
+  ActorPerformSearchToolExplicitGrantBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        kGlicCrossOriginNavigationGating,
+        {{kGlicAllowImplicitToolOriginGrants.name, "false"},
+         {kGlicConfirmNavigationToNewOrigins.name, "true"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Verifies that when implicit tool origin grants are disabled, cross-origin
+// PerformSearch navigations are blocked by origin gating.
+IN_PROC_BROWSER_TEST_F(
+    ActorPerformSearchToolExplicitGrantBrowserTest,
+    PerformSearchCrossOriginBlockedWhenImplicitGrantsDisabled) {
+  constexpr char kQuery[] = "test query";
+  SetDefaultSearchProviderUrl(
+      embedded_https_test_server().GetURL("b.test", kSearchUrlPath));
+
+  const GURL url_start =
+      embedded_https_test_server().GetURL("a.test", kStartUrlPath);
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url_start));
+
+  std::unique_ptr<ToolRequest> action =
+      MakePerformSearchRequest(*active_tab(), kQuery);
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
+  ExpectErrorResult(result,
+                    mojom::ActionResultCode::kTriggeredNavigationBlocked);
 }
 
 IN_PROC_BROWSER_TEST_F(ActorPerformSearchToolBrowserTest, EmptyQueryFails) {
