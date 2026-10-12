@@ -453,11 +453,9 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   AXObject* GetOrCreate(LayoutObject* layout_object);
   AXObject* GetOrCreate(const Node*, AXObject* parent) override;
   AXObject* GetOrCreate(Node*, AXObject* parent);
-  AXObject* GetOrCreate(AbstractInlineTextBox*, AXObject* parent);
   AXObject* GetOrCreate(AXBlockFlowIterator::FragmentIndex index,
                         AXObject* parent);
 
-  AXObject* Get(AbstractInlineTextBox*) const;
   AXObject* Get(const LayoutObject* object,
                 AXBlockFlowIterator::FragmentIndex index) const;
 
@@ -934,16 +932,12 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // Helpers for CreateAndInit().
   AXObject* CreateFromRenderer(LayoutObject*);
   AXObject* CreateFromNode(Node*);
-  AXObject* CreateFromInlineTextBox(AbstractInlineTextBox*);
-  AXObject* CreateFromBlockFlowIterator(
-      AXBlockFlowIterator::FragmentIndex index);
 
   // Removes AXObject backed by passed-in object, if there is one.
   // It will also notify the parent that its children have changed, so that the
   // parent will recompute its children and be reserialized, unless
   // |notify_parent| is passed in as false.
   void Remove(LayoutObject*, bool notify_parent);
-  void Remove(AbstractInlineTextBox*, bool notify_parent);
   void Remove(const LayoutObject* object,
               AXBlockFlowIterator::FragmentIndex index,
               bool notify_parent);
@@ -1068,8 +1062,6 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // layout_object_mapping_. When the AXObject is backed by a node, its
   // AXID can be looked up via node->GetDomNodeId().
   HeapHashMap<Member<const LayoutObject>, AXID> layout_object_mapping_;
-  HeapHashMap<Member<AbstractInlineTextBox>, AXID>
-      inline_text_box_object_mapping_;
 
   // A LayoutObject may be connected to one or more AXInlineTextBoxes.
   struct AXInlineTextBoxFragmentMapping {

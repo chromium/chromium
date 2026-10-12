@@ -31,10 +31,8 @@
 #include <stdint.h>
 
 #include <optional>
-#include <utility>
 #include <variant>
 
-#include "base/notreached.h"
 #include "base/numerics/clamped_math.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/markers/custom_highlight_marker.h"
@@ -42,16 +40,11 @@
 #include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/core/highlight/highlight.h"
 #include "third_party/blink/renderer/core/layout/inline/abstract_inline_text_box.h"
-#include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
-#include "third_party/blink/renderer/core/layout/inline/inline_node.h"
-#include "third_party/blink/renderer/core/layout/inline/offset_mapping.h"
-#include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_block_flow_iterator.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object-inl.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_position.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_range.h"
-#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom-blink-forward.h"
@@ -59,27 +52,9 @@
 #include "ui/gfx/geometry/transform.h"
 
 namespace blink {
-namespace {
-
-using AXInlineTextBoxType = std::variant<Member<AbstractInlineTextBox>,
-                                         AXBlockFlowIterator::FragmentIndex>;
-
-}  // namespace
-AXInlineTextBox::AXInlineTextBox(AbstractInlineTextBox* inline_text_box,
-                                 AXObjectCacheImpl& ax_object_cache)
-    : AXObject(ax_object_cache), data_(inline_text_box) {}
-
 AXInlineTextBox::AXInlineTextBox(AXBlockFlowIterator::FragmentIndex index,
                                  AXObjectCacheImpl& ax_object_cache)
-    : AXObject(ax_object_cache), data_(index) {}
-
-void AXInlineTextBox::Trace(Visitor* visitor) const {
-  if (auto inline_text_box =
-          std::get_if<Member<AbstractInlineTextBox>>(&data_)) {
-    visitor->Trace(*inline_text_box);
-  }
-  AXObject::Trace(visitor);
-}
+    : AXObject(ax_object_cache), fragment_index_(index) {}
 
 void AXInlineTextBox::GetRelativeBounds(AXObject** out_container,
                                         gfx::RectF& out_bounds_in_container,
@@ -99,13 +74,9 @@ void AXInlineTextBox::GetRelativeBounds(AXObject** out_container,
 
   *out_container = ParentObject();
 
-  if (auto* inline_text_box = GetInlineTextBox()) {
-    out_bounds_in_container = gfx::RectF(inline_text_box->LocalBounds());
-  } else {
-    AXBlockFlowIterator it(ParentObject());
-    it.MoveToIndex(GetFragmentIndex().value());
-    out_bounds_in_container = gfx::RectF(it.LocalBounds());
-  }
+  AXBlockFlowIterator it(ParentObject());
+  it.MoveToIndex(fragment_index_);
+  out_bounds_in_container = gfx::RectF(it.LocalBounds());
 
   // Subtract the local bounding box of the parent because they're
   // both in the same coordinate system.
@@ -133,13 +104,9 @@ void AXInlineTextBox::TextCharacterOffsets(Vector<int>& offsets) const {
   if (IsDetached())
     return;
 
-  if (auto* inline_text_box = GetInlineTextBox()) {
-    inline_text_box->GetCharacterLayoutPixelOffsets(offsets);
-  } else {
-    AXBlockFlowIterator it(ParentObject());
-    it.MoveToIndex(GetFragmentIndex().value());
-    it.GetCharacterLayoutPixelOffsets(offsets);
-  }
+  AXBlockFlowIterator it(ParentObject());
+  it.MoveToIndex(fragment_index_);
+  it.GetCharacterLayoutPixelOffsets(offsets);
 }
 
 void AXInlineTextBox::GetWordBoundaries(Vector<int>& word_starts,
@@ -151,15 +118,9 @@ void AXInlineTextBox::GetWordBoundaries(Vector<int>& word_starts,
   }
 
   Vector<AbstractInlineTextBox::WordBoundaries> boundaries;
-  if (auto* inline_text_box = GetInlineTextBox()) {
-    inline_text_box->GetWordBoundaries(boundaries);
-  } else {
-    AXBlockFlowIterator it(ParentObject());
-    it.MoveToIndex(GetFragmentIndex().value());
-    // Todo: refactor this method to be in some other place, so it can be used
-    // by both algorithms, as it does not depend on internal class state.
-    AbstractInlineTextBox::GetWordBoundariesForText(boundaries, it.GetText());
-  }
+  AXBlockFlowIterator it(ParentObject());
+  it.MoveToIndex(fragment_index_);
+  AbstractInlineTextBox::GetWordBoundariesForText(boundaries, it.GetText());
   word_starts.reserve(boundaries.size());
   word_ends.reserve(boundaries.size());
   for (const auto& boundary : boundaries) {
@@ -174,16 +135,10 @@ int AXInlineTextBox::TextOffsetInFormattingContext(int offset) const {
     return 0;
 
   // Retrieve the text offset from the start of the layout block flow ancestor.
-  if (auto* inline_text_box = GetInlineTextBox()) {
-    return static_cast<int>(inline_text_box->TextOffsetInFormattingContext(
-        static_cast<unsigned int>(offset)));
-  } else {
-    AXBlockFlowIterator it(ParentObject());
-    it.MoveToIndex(GetFragmentIndex().value());
+  AXBlockFlowIterator it(ParentObject());
+  it.MoveToIndex(fragment_index_);
 
-    return it.TextStartOffset() + offset;
-  }
-  NOTREACHED();
+  return it.TextStartOffset() + offset;
 }
 
 int AXInlineTextBox::TextOffsetInContainer(int offset) const {
@@ -220,15 +175,10 @@ String AXInlineTextBox::GetName(ax::mojom::blink::NameFrom& name_from,
     return String();
 
   name_from = ax::mojom::blink::NameFrom::kContents;
-  if (auto* inline_text_box = GetInlineTextBox()) {
-    return inline_text_box->GetText();
-  } else {
-    AXBlockFlowIterator it(ParentObject());
-    it.MoveToIndex(GetFragmentIndex().value());
+  AXBlockFlowIterator it(ParentObject());
+  it.MoveToIndex(fragment_index_);
 
-    return it.GetText();
-  }
-  NOTREACHED();
+  return it.GetText();
 }
 
 // In addition to LTR and RTL direction, edit fields also support
@@ -237,14 +187,9 @@ ax::mojom::blink::WritingDirection AXInlineTextBox::GetTextDirection() const {
   if (IsDetached())
     return AXObject::GetTextDirection();
 
-  PhysicalDirection direction;
-  if (auto* inline_text_box = GetInlineTextBox()) {
-    direction = inline_text_box->GetDirection();
-  } else {
-    AXBlockFlowIterator it(ParentObject());
-    it.MoveToIndex(GetFragmentIndex().value());
-    direction = it.GetDirection();
-  }
+  AXBlockFlowIterator it(ParentObject());
+  it.MoveToIndex(fragment_index_);
+  PhysicalDirection direction = it.GetDirection();
 
   switch (direction) {
     case PhysicalDirection::kRight:
@@ -264,14 +209,6 @@ Document* AXInlineTextBox::GetDocument() const {
   return ParentObject() ? ParentObject()->GetDocument() : nullptr;
 }
 
-AbstractInlineTextBox* AXInlineTextBox::GetInlineTextBox() const {
-  if (auto inline_text_box =
-          std::get_if<Member<AbstractInlineTextBox>>(&data_)) {
-    return (*inline_text_box).Get();
-  }
-  return nullptr;
-}
-
 AXObject* AXInlineTextBox::NextOnLine() const {
   if (IsDetached())
     return nullptr;
@@ -279,13 +216,7 @@ AXObject* AXInlineTextBox::NextOnLine() const {
   // TODO(crbug.com/399206210): Investigate whether
   // AXInlineTextBox::NextOnLine of list markers should point to the list item
   // content.
-  if (GetInlineTextBox()) {
-    return NeighboringOnLine(Direction::kNext);
-  } else {
-    return NeighboringOnLineWithAXBlockFlowIterator(Direction::kNext);
-  }
-
-  NOTREACHED();
+  return NeighboringOnLine(Direction::kNext);
 }
 
 AXObject* AXInlineTextBox::PreviousOnLine() const {
@@ -298,21 +229,12 @@ AXObject* AXInlineTextBox::PreviousOnLine() const {
     return candidate;
   }
 
-  if (GetInlineTextBox()) {
-    return NeighboringOnLine(Direction::kPrevious);
-  } else {
-    return NeighboringOnLineWithAXBlockFlowIterator(Direction::kPrevious);
-  }
-  NOTREACHED();
+  return NeighboringOnLine(Direction::kPrevious);
 }
 
 std::optional<AXBlockFlowIterator::FragmentIndex>
 AXInlineTextBox::GetFragmentIndex() const {
-  if (auto* index = std::get_if<AXBlockFlowIterator::FragmentIndex>(&data_)) {
-    return *index;
-  }
-
-  return std::nullopt;
+  return IsDetached() ? std::nullopt : std::make_optional(fragment_index_);
 }
 
 void AXInlineTextBox::SerializeMarkerAttributes(
@@ -470,15 +392,6 @@ void AXInlineTextBox::Init(AXObject* parent) {
   UpdateCachedAttributeValuesIfNeeded(false);
 }
 
-void AXInlineTextBox::Detach() {
-  AXObject::Detach();
-  if (GetInlineTextBox()) {
-    data_ = nullptr;
-  } else {
-    data_ = 0u;
-  }
-}
-
 bool AXInlineTextBox::IsAXInlineTextBox() const {
   return true;
 }
@@ -490,15 +403,9 @@ bool AXInlineTextBox::IsLineBreakingObject() const {
   // If this object is a forced line break, or the parent is a <br>
   // element, then this object is line breaking.
   const AXObject* parent = ParentObject();
-  bool is_line_break = false;
-  if (auto* inline_text_box = GetInlineTextBox()) {
-    is_line_break = inline_text_box->IsLineBreak();
-  } else {
-    AXBlockFlowIterator it(ParentObject());
-    it.MoveToIndex(GetFragmentIndex().value());
-    is_line_break = it.IsLineBreak();
-  }
-  return is_line_break ||
+  AXBlockFlowIterator it(ParentObject());
+  it.MoveToIndex(fragment_index_);
+  return it.IsLineBreak() ||
          (parent && parent->RoleValue() == ax::mojom::blink::Role::kLineBreak);
 }
 
@@ -506,16 +413,9 @@ int AXInlineTextBox::TextLength() const {
   if (IsDetached())
     return 0;
 
-  int len = 0;
-  if (auto* inline_text_box = GetInlineTextBox()) {
-    len = inline_text_box->Len();
-  } else {
-    AXBlockFlowIterator it(ParentObject());
-    it.MoveToIndex(GetFragmentIndex().value());
-    len = it.GetText().length();
-  }
-
-  return len;
+  AXBlockFlowIterator it(ParentObject());
+  it.MoveToIndex(fragment_index_);
+  return it.GetText().length();
 }
 
 void AXInlineTextBox::ClearChildren() {
@@ -534,70 +434,8 @@ bool AXInlineTextBox::IsPartOfAListItem() const {
 }
 
 AXObject* AXInlineTextBox::NeighboringOnLine(const Direction direction) const {
-  InlineCursor cursor = GetInlineTextBox()->GetCursorOnLine();
-  AbstractInlineTextBox* candidate = nullptr;
-  while (cursor && !candidate) {
-    direction == Direction::kNext ? cursor.MoveToNext()
-                                  : cursor.MoveToPrevious();
-    if (!cursor) {
-      return nullptr;
-    }
-    switch (cursor.Current().Item()->Type()) {
-      case FragmentItem::kText:
-      case FragmentItem::kGeneratedText:
-        if (cursor.Current().GetLayoutObject()->IsText()) {
-          candidate = AbstractInlineTextBox::GetOrCreate(cursor);
-        }
-        break;
-
-      case FragmentItem::kLine:
-        return nullptr;
-
-      case FragmentItem::kBox:
-        if (cursor.Current().Item()->BoxFragment() &&
-            !cursor.Current().Item()->IsInlineBox()) {
-          // TODO(crbug.com/399204651): Implement navigating into separate
-          // PhysicalBox
-          // fragments.
-          return ::features::
-                         IsAccessibilityPruneRedundantInlineConnectivityEnabled()
-                     ? nullptr
-                 : direction == Direction::kNext
-                     ? ParentObject()->NextOnLine()
-                     : ParentObject()->PreviousOnLine();
-        }
-        // Inline-box continues on to the next/previous item. An inline box
-        // like <span> or <a> can have a box fragment of its own, for instance
-        // when it has an outline, but its contents are still in this item
-        // list and it does not change where the lines break.
-        break;
-
-      case FragmentItem::kInvalid:
-        NOTREACHED();
-    }
-  }
-
-  if (!candidate) {
-    return nullptr;
-  }
-
-  if (AXObject* obj = AXObjectCache().Get(candidate)) {
-    return obj;
-  }
-
-  // If an AbstractInlineTextBox exists, but no AXObject is associated with
-  // it, this means that the text is associated with an inert or aria-hiden
-  // node. Delegate to the parent the decision.
-  return ::features::IsAccessibilityPruneRedundantInlineConnectivityEnabled()
-             ? nullptr
-         : direction == Direction::kNext ? ParentObject()->NextOnLine()
-                                         : ParentObject()->PreviousOnLine();
-}
-
-AXObject* AXInlineTextBox::NeighboringOnLineWithAXBlockFlowIterator(
-    const Direction direction) const {
   AXBlockFlowIterator it(ParentObject());
-  it.MoveToIndex(GetFragmentIndex().value());
+  it.MoveToIndex(fragment_index_);
   AXBlockFlowData::Neighbor result_or_status;
   switch (direction) {
     case Direction::kNext:

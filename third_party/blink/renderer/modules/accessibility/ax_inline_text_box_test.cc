@@ -4,9 +4,6 @@
 
 #include "third_party/blink/renderer/modules/accessibility/ax_inline_text_box.h"
 
-#include "base/feature_list.h"
-#include "base/test/scoped_feature_list.h"
-#include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/abstract_range.h"
 #include "third_party/blink/renderer/core/dom/range.h"
@@ -23,7 +20,6 @@
 #include "third_party/blink/renderer/modules/accessibility/testing/accessibility_test.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
-#include "ui/accessibility/accessibility_features.h"
 
 using AXIntListAttribute = ax::mojom::blink::IntListAttribute;
 using AXMarkerType = ax::mojom::blink::MarkerType;
@@ -32,26 +28,9 @@ using AXHighlightType = ax::mojom::blink::HighlightType;
 namespace blink {
 namespace test {
 
-class AXInlineTextBoxTest : public AccessibilityTest,
-                            public testing::WithParamInterface<bool> {
- public:
-  void SetUp() override {
-    AccessibilityTest::SetUp();
-    bool feature_on = GetParam();
-    if (feature_on) {
-      list.InitWithFeatures({::features::kAccessibilityBlockFlowIterator}, {});
-    } else {
-      list.InitWithFeatures({}, {::features::kAccessibilityBlockFlowIterator});
-    }
-  }
+using AXInlineTextBoxTest = AccessibilityTest;
 
- protected:
-  base::test::ScopedFeatureList list;
-};
-
-INSTANTIATE_TEST_SUITE_P(BoolSequence, AXInlineTextBoxTest, testing::Bool());
-
-TEST_P(AXInlineTextBoxTest, GetWordBoundaries) {
+TEST_F(AXInlineTextBoxTest, GetWordBoundaries) {
   // &#9728; is the sun emoji symbol.
   // &#2460; is circled digit one.
   // Full string: "This, ☀ জ is ... a---+++test. <p>word</p>"
@@ -80,7 +59,7 @@ TEST_P(AXInlineTextBoxTest, GetWordBoundaries) {
   EXPECT_EQ(expected_word_ends, word_ends);
 }
 
-TEST_P(AXInlineTextBoxTest, GetDocumentMarkers) {
+TEST_F(AXInlineTextBoxTest, GetDocumentMarkers) {
   // There should be four inline text boxes in the following paragraph.
   SetBodyInnerHTML(R"HTML(
       <style>* { font-size: 10px; }</style>
@@ -181,7 +160,7 @@ TEST_P(AXInlineTextBoxTest, GetDocumentMarkers) {
   }
 }
 
-TEST_P(AXInlineTextBoxTest, AriaInvalidAndHighlightMarkers) {
+TEST_F(AXInlineTextBoxTest, AriaInvalidAndHighlightMarkers) {
   // There should be four inline text boxes in the following paragraph.
   SetBodyInnerHTML(
       R"HTML(<p id="paragraph"><span aria-invalid="spelling" id="span1">Misspelled</span> text with a <span aria-invalid="grammar" id="span2">grammar error</span>.</p>)HTML");
@@ -290,7 +269,7 @@ TEST_P(AXInlineTextBoxTest, AriaInvalidAndHighlightMarkers) {
   }
 }
 
-TEST_P(AXInlineTextBoxTest, TextOffsetInContainerWithASpan) {
+TEST_F(AXInlineTextBoxTest, TextOffsetInContainerWithASpan) {
   // There should be three inline text boxes in the following paragraph. The
   // span should reset the text start offset of all of them to 0.
   SetBodyInnerHTML(R"HTML(
@@ -328,7 +307,7 @@ TEST_P(AXInlineTextBoxTest, TextOffsetInContainerWithASpan) {
   ASSERT_EQ(nullptr, ax_inline_text_box->NextInPreOrderIncludingIgnored());
 }
 
-TEST_P(AXInlineTextBoxTest, TextOffsetInContainerWithMultipleInlineTextBoxes) {
+TEST_F(AXInlineTextBoxTest, TextOffsetInContainerWithMultipleInlineTextBoxes) {
   // There should be four inline text boxes in the following paragraph. The span
   // should not affect the text start offset of the text outside the span.
   SetBodyInnerHTML(R"HTML(
@@ -371,7 +350,7 @@ TEST_P(AXInlineTextBoxTest, TextOffsetInContainerWithMultipleInlineTextBoxes) {
   ASSERT_EQ(nullptr, ax_inline_text_box->NextInPreOrderIncludingIgnored());
 }
 
-TEST_P(AXInlineTextBoxTest, TextOffsetInContainerWithLineBreak) {
+TEST_F(AXInlineTextBoxTest, TextOffsetInContainerWithLineBreak) {
   // There should be three inline text boxes in the following paragraph. The
   // line break should reset the text start offset to 0 of both the inline text
   // box inside the line break, as well as the text start ofset of the second
@@ -411,7 +390,7 @@ TEST_P(AXInlineTextBoxTest, TextOffsetInContainerWithLineBreak) {
   ASSERT_EQ(nullptr, ax_inline_text_box->NextInPreOrderIncludingIgnored());
 }
 
-TEST_P(AXInlineTextBoxTest, TextOffsetInContainerWithBreakWord) {
+TEST_F(AXInlineTextBoxTest, TextOffsetInContainerWithBreakWord) {
   // There should be three inline text boxes in the following paragraph because
   // of the narrow width and the long word, coupled with the CSS "break-word"
   // property. Each inline text box should have a different offset in container.
@@ -461,7 +440,7 @@ TEST_P(AXInlineTextBoxTest, TextOffsetInContainerWithBreakWord) {
   ASSERT_EQ(nullptr, ax_inline_text_box->NextSiblingIncludingIgnored());
 }
 
-TEST_P(AXInlineTextBoxTest, GetTextDirection) {
+TEST_F(AXInlineTextBoxTest, GetTextDirection) {
   using WritingDirection = ax::mojom::blink::WritingDirection;
   SetBodyInnerHTML(R"HTML(
       <p id="paragraph" style="writing-mode:sideways-lr;">
@@ -482,7 +461,7 @@ TEST_P(AXInlineTextBoxTest, GetTextDirection) {
   EXPECT_EQ(WritingDirection::kBtt, ax_static_text->GetTextDirection());
 }
 
-TEST_P(AXInlineTextBoxTest, AXBlockFlowIteratorAPI_Simple) {
+TEST_F(AXInlineTextBoxTest, AXBlockFlowIteratorAPI_Simple) {
   SetBodyInnerHTML(R"HTML(
       <p id="paragraph">Hello <em>World</em></p>)HTML");
 
@@ -518,7 +497,7 @@ TEST_P(AXInlineTextBoxTest, AXBlockFlowIteratorAPI_Simple) {
   ASSERT_FALSE(it.Next());
 }
 
-TEST_P(AXInlineTextBoxTest, AXBlockFlowIteratorAPI_SoftLinebreak) {
+TEST_F(AXInlineTextBoxTest, AXBlockFlowIteratorAPI_SoftLinebreak) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -632,7 +611,7 @@ TEST_P(AXInlineTextBoxTest, AXBlockFlowIteratorAPI_SoftLinebreak) {
   // testing soft-line-breaking.
 }
 
-TEST_P(AXInlineTextBoxTest, AXBlockFlowIteratorAPI_HardtLinebreak) {
+TEST_F(AXInlineTextBoxTest, AXBlockFlowIteratorAPI_HardtLinebreak) {
   SetBodyInnerHTML(R"HTML(
     <p id="paragraph">Hello <br>World!</p>)HTML");
 
@@ -669,7 +648,7 @@ TEST_P(AXInlineTextBoxTest, AXBlockFlowIteratorAPI_HardtLinebreak) {
   ASSERT_FALSE(it.Next());
 }
 
-TEST_P(AXInlineTextBoxTest, AXBlockFlowIteratorAPI_Ellipsis) {
+TEST_F(AXInlineTextBoxTest, AXBlockFlowIteratorAPI_Ellipsis) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -710,12 +689,10 @@ TEST_P(AXInlineTextBoxTest, AXBlockFlowIteratorAPI_Ellipsis) {
   ASSERT_TRUE(it.Next());
   ASSERT_EQ("SPAN NESTED INSIDE DIV", it.GetText());
 
-  // Though the following behavior is correct insofar as it agrees with
-  // our AbstractInlineTextBox based algorithm, it breaks detection of
-  // bounding boxes for text selections, since that code assumes that the
-  // sum of the lengths of the inline text boxes aligns with the length
-  // of the parent static text object.
-  // TODO (accessibility): Revisit how inline text boxes are computed for
+  // This breaks detection of bounding boxes for text selections, since
+  // that code assumes that the sum of the lengths of the inline text boxes
+  // aligns with the length of the parent static text object.
+  // TODO(accessibility): Revisit how inline text boxes are computed for
   // ellipsis.
   std::optional<AXBlockFlowIterator::MapKey> next_on_line = it.NextOnLine();
   ASSERT_TRUE(next_on_line.has_value());
@@ -736,7 +713,7 @@ TEST_P(AXInlineTextBoxTest, AXBlockFlowIteratorAPI_Ellipsis) {
   ASSERT_FALSE(it.Next());
 }
 
-TEST_P(AXInlineTextBoxTest, AXBlockFlowIteratorAPI_Ruby) {
+TEST_F(AXInlineTextBoxTest, AXBlockFlowIteratorAPI_Ruby) {
   SetBodyInnerHTML(R"HTML(
     <ruby id="ruby">Ruby base<rt>ruby text</rt></ruby>)HTML");
 
@@ -766,7 +743,7 @@ TEST_P(AXInlineTextBoxTest, AXBlockFlowIteratorAPI_Ruby) {
   ASSERT_FALSE(it.Next());
 }
 
-TEST_P(AXInlineTextBoxTest, AXBlockFlowIteratorAPI_Ruby2) {
+TEST_F(AXInlineTextBoxTest, AXBlockFlowIteratorAPI_Ruby2) {
   SetBodyInnerHTML(R"HTML(
     <p style="font-family:monospace; width:5ch;">
       <ruby id="ruby">ruby base<rt>ruby text</rt></ruby>
@@ -802,7 +779,7 @@ TEST_P(AXInlineTextBoxTest, AXBlockFlowIteratorAPI_Ruby2) {
   ASSERT_FALSE(it.Next());
 }
 
-TEST_P(AXInlineTextBoxTest, AXBlockFlowIteratorAPI_CharacterOffsets) {
+TEST_F(AXInlineTextBoxTest, AXBlockFlowIteratorAPI_CharacterOffsets) {
   // Then Ahem font has consistent font metrics across platforms.
   LoadAhem();
 
@@ -844,7 +821,7 @@ TEST_P(AXInlineTextBoxTest, AXBlockFlowIteratorAPI_CharacterOffsets) {
   ASSERT_FALSE(it.Next());
 }
 
-TEST_P(AXInlineTextBoxTest, AXBlockFlowIteratorAPI_CharacterWidths_Ligature) {
+TEST_F(AXInlineTextBoxTest, AXBlockFlowIteratorAPI_CharacterWidths_Ligature) {
   // Google Sans supports ligatures (e.g. "fi" being rendered as a single glyph.
   LoadFontFromFile(GetFrame(), test::CoreTestDataPath("GoogleSans-Regular.ttf"),
                    AtomicString("Google Sans"));
@@ -891,7 +868,7 @@ TEST_P(AXInlineTextBoxTest, AXBlockFlowIteratorAPI_CharacterWidths_Ligature) {
   ASSERT_FALSE(it.Next());
 }
 
-TEST_P(AXInlineTextBoxTest, FirstLineTextTransformCrash) {
+TEST_F(AXInlineTextBoxTest, FirstLineTextTransformCrash) {
   InsertStyleElement(
       "#root { white-space: pre-wrap; word-break: break-all; width: 3ch; "
       "font-family: monospace; }"
@@ -905,7 +882,7 @@ TEST_P(AXInlineTextBoxTest, FirstLineTextTransformCrash) {
   ASSERT_NE(nullptr, ax_root);
 }
 
-TEST_P(AXInlineTextBoxTest, InlineBoxFragmentDoesNotJoinWrappedLines) {
+TEST_F(AXInlineTextBoxTest, InlineBoxFragmentDoesNotJoinWrappedLines) {
   // An outline gives the link a box fragment of its own on each line it wraps
   // across. Those box fragments must not hide the line boundary: the link
   // still wraps, so "Rowland" still starts a line and has nothing before it

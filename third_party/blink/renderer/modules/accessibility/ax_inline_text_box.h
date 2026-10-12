@@ -29,25 +29,21 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_INLINE_TEXT_BOX_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_INLINE_TEXT_BOX_H_
 
-#include <variant>
+#include <optional>
 
 #include "base/notreached.h"
-#include "third_party/blink/renderer/core/layout/inline/abstract_inline_text_box.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_block_flow_iterator.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
-#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 
 namespace blink {
 
 class AXObjectCacheImpl;
 
-// Encapsulates an AbstractInlineTextBox and adapts it for use in Blink's
+// Encapsulates an inline text box fragment and adapts it for use in Blink's
 // accessibility tree.
 class AXInlineTextBox final : public AXObject {
  public:
-  AXInlineTextBox(AbstractInlineTextBox*, AXObjectCacheImpl&);
   AXInlineTextBox(AXBlockFlowIterator::FragmentIndex, AXObjectCacheImpl&);
-  void Trace(Visitor* visitor) const override;
 
   AXInlineTextBox(const AXInlineTextBox&) = delete;
   AXInlineTextBox& operator=(const AXInlineTextBox&) = delete;
@@ -75,13 +71,11 @@ class AXInlineTextBox final : public AXObject {
     NOTREACHED();
   }
   void ClearChildren() override;
-  AbstractInlineTextBox* GetInlineTextBox() const override;
   std::optional<AXBlockFlowIterator::FragmentIndex> GetFragmentIndex()
       const override;
 
  protected:
   void Init(AXObject* parent) override;
-  void Detach() override;
   bool IsAXInlineTextBox() const override;
   bool IsLineBreakingObject() const override;
   int TextLength() const override;
@@ -94,24 +88,12 @@ class AXInlineTextBox final : public AXObject {
   enum class Direction { kNext, kPrevious };
   AXObject* NeighboringOnLine(const Direction direction) const;
 
-  // TODO(accessibility): rename this to the one above once we remove the AITB
-  // algorithm.
-  AXObject* NeighboringOnLineWithAXBlockFlowIterator(
-      const Direction direction) const;
-
   // TODO(a11y): Remove default argument on virtual override.
   // See https://google.github.io/styleguide/cppguide.html#Default_Arguments
   bool ComputeIsIgnored(IgnoredReasons* = nullptr) const override;
   bool IsPartOfAListItem() const;
 
-  // Holds one of two possible values that identify this AXInlineTextBox,
-  // depending on the algorithm being used.
-  GC_PLUGIN_IGNORE(
-      "crbug.com/570923792: Variant/optional/raw_ptr/raw_ref of "
-      "GCed/traceable/Member is disallowed")
-  std::variant<Member<AbstractInlineTextBox>,
-               AXBlockFlowIterator::FragmentIndex>
-      data_;
+  AXBlockFlowIterator::FragmentIndex fragment_index_;
 };
 
 }  // namespace blink

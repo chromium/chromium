@@ -148,7 +148,6 @@
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/inline/abstract_inline_text_box.h"
-#include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node.h"
 #include "third_party/blink/renderer/core/layout/inline/offset_mapping.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
@@ -6162,11 +6161,7 @@ void AXNodeObject::LoadInlineTextBoxesHelper() {
 
   if (AXObjectCache().lifecycle().StateAllowsImmediateTreeUpdates()) {
     // Can only add new objects while processing deferred events.
-    if (::features::IsAccessibilityBlockFlowIteratorEnabled()) {
-      AddInlineTextBoxChildrenWithBlockFlowIterator();
-    } else {
-      AddInlineTextBoxChildren();
-    }
+    AddInlineTextBoxChildren();
     // Avoid adding these children twice.
     SetNeedsToUpdateChildren(false);
     // If inline text box children were added, mark the node dirty so that the
@@ -6182,7 +6177,7 @@ void AXNodeObject::LoadInlineTextBoxesHelper() {
   }
 }
 
-void AXNodeObject::AddInlineTextBoxChildrenWithBlockFlowIterator() {
+void AXNodeObject::AddInlineTextBoxChildren() {
   CHECK(GetDocument());
   CHECK(ShouldLoadInlineTextBoxes());
   CHECK(GetLayoutObject());
@@ -6200,32 +6195,6 @@ void AXNodeObject::AddInlineTextBoxChildrenWithBlockFlowIterator() {
       return;
     }
     children_.push_back(box);
-  }
-}
-
-void AXNodeObject::AddInlineTextBoxChildren() {
-  CHECK(GetDocument());
-  CHECK(ShouldLoadInlineTextBoxes());
-  CHECK(GetLayoutObject());
-  GetLayoutObject()->CheckIsNotDestroyed();
-  CHECK(GetLayoutObject()->IsText()) << GetLayoutObject() << " " << this;
-  CHECK(!GetLayoutObject()->NeedsLayout());
-  CHECK(AXObjectCache().GetAXMode().has_mode(ui::AXMode::kInlineTextBoxes));
-  CHECK(!AXObjectCache().GetAXMode().HasFilterFlags(
-      ui::AXMode::kFormsAndLabelsOnly))
-      << "Form controls mode should not have inline text boxes turned on.";
-  CHECK(AXObjectCache().lifecycle().StateAllowsImmediateTreeUpdates())
-      << AXObjectCache();
-
-  auto* layout_text = To<LayoutText>(GetLayoutObject());
-  for (auto* box = layout_text->FirstAbstractInlineTextBox(); box;
-       box = box->NextInlineTextBox()) {
-    AXObject* ax_box = AXObjectCache().GetOrCreate(box, this);
-    if (!ax_box) {
-      continue;
-    }
-
-    children_.push_back(ax_box);
   }
 }
 
@@ -6432,11 +6401,7 @@ void AXNodeObject::AddChildrenImpl() {
   CHECK(CanHaveChildren());
 
   if (ShouldLoadInlineTextBoxes() && HasLayoutText(this)) {
-    if (::features::IsAccessibilityBlockFlowIteratorEnabled()) {
-      AddInlineTextBoxChildrenWithBlockFlowIterator();
-    } else {
-      AddInlineTextBoxChildren();
-    }
+    AddInlineTextBoxChildren();
     CHECK_ATTACHED();
     return;
   }

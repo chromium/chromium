@@ -1259,30 +1259,6 @@ AXObject* AXObjectCacheImpl::Get(
   return result;
 }
 
-AXObject* AXObjectCacheImpl::Get(AbstractInlineTextBox* inline_text_box) const {
-  if (!inline_text_box)
-    return nullptr;
-
-  auto it_ax = inline_text_box_object_mapping_.find(inline_text_box);
-  AXID ax_id =
-      it_ax != inline_text_box_object_mapping_.end() ? it_ax->value : 0;
-  if (!ax_id)
-    return nullptr;
-  DCHECK(!IsHashTraitsEmptyOrDeletedValue<HashTraits<AXID>>(ax_id));
-
-  auto it_result = objects_.find(ax_id);
-  AXObject* result = it_result != objects_.end() ? it_result->value : nullptr;
-#if DCHECK_IS_ON()
-  DCHECK(result) << "Had AXID for inline text box but no entry in objects_";
-  DCHECK(result->IsAXInlineTextBox());
-  // Do not allow detached objects except when disposing entire tree.
-  DCHECK(!result->IsDetached() || IsDisposing())
-      << "Detached AXInlineTextBox in map: " << "AXID#" << ax_id
-      << " Node=" << inline_text_box->GetText();
-#endif
-  return result;
-}
-
 AXObject* AXObjectCacheImpl::GetAnchorForPositionedObject(const AXObject* obj) {
   return relation_cache_->GetAnchorForPositionedObject(obj);
 }
@@ -1480,16 +1456,6 @@ AXObject* AXObjectCacheImpl::CreateFromNode(Node* node) {
     return MakeGarbageCollected<AXImageMapLink>(area, *this);
 
   return MakeGarbageCollected<AXNodeObject>(node, *this);
-}
-
-AXObject* AXObjectCacheImpl::CreateFromInlineTextBox(
-    AbstractInlineTextBox* inline_text_box) {
-  return MakeGarbageCollected<AXInlineTextBox>(inline_text_box, *this);
-}
-
-AXObject* AXObjectCacheImpl::CreateFromBlockFlowIterator(
-    AXBlockFlowIterator::FragmentIndex index) {
-  return MakeGarbageCollected<AXInlineTextBox>(index, *this);
 }
 
 AXObject* AXObjectCacheImpl::GetOrCreate(const Node* node, AXObject* parent) {
@@ -1712,7 +1678,8 @@ AXObject* AXObjectCacheImpl::GetOrCreate(
     return nullptr;
   }
 
-  Member<AXObject> new_obj = CreateFromBlockFlowIterator(index);
+  Member<AXObject> new_obj =
+      MakeGarbageCollected<AXInlineTextBox>(index, *this);
 
   AXID ax_id = AssociateAXID(new_obj);
 
@@ -1742,81 +1709,11 @@ AXObject* AXObjectCacheImpl::GetOrCreate(
   return new_obj;
 }
 
-AXObject* AXObjectCacheImpl::GetOrCreate(AbstractInlineTextBox* inline_text_box,
-                                         AXObject* parent) {
-  CHECK(lifecycle_.StateAllowsImmediateTreeUpdates())
-      << "Only create AXObjects while processing AX events and tree." << *this;
-
-  if (!inline_text_box)
-    return nullptr;
-
-  if (!parent) {
-    LayoutText* layout_text_parent = inline_text_box->GetLayoutText();
-    DCHECK(layout_text_parent);
-    parent = Get(layout_text_parent);
-    if (!parent) {
-      DCHECK(inline_text_box->GetText().ContainsOnlyWhitespaceOrEmpty() ||
-             IsFrozen() ||
-             !IsRelevantPseudoElementDescendant(*layout_text_parent))
-          << "No parent for non-whitespace inline textbox: "
-          << layout_text_parent
-          << "\nParent of parent: " << layout_text_parent->Parent();
-      return nullptr;
-    }
-  }
-
-  // Inline textboxes are included if and only if the parent is unignored.
-  // If the parent is ignored but included in tree, the inline textbox is
-  // still withheld.
-  if (parent->IsIgnored()) {
-    return nullptr;
-  }
-
-  if (AXObject* obj = Get(inline_text_box)) {
-#if DCHECK_IS_ON()
-    DCHECK(!obj->IsDetached())
-        << "AXObject for inline text box should not be detached: " << obj;
-    // AXInlineTextbox objects can't get a new parent, unlike other types of
-    // accessible objects that can get a new parent because they moved or
-    // because of aria-owns.
-    // AXInlineTextbox objects are only added via AddChildren() on static text
-    // or line break parents. The children are cleared, and detached from their
-    // parent before AddChildren() executes. There should be no previous parent.
-    DCHECK(parent->RoleValue() == ax::mojom::blink::Role::kStaticText ||
-           parent->RoleValue() == ax::mojom::blink::Role::kLineBreak);
-    DCHECK(!obj->ParentObject() || obj->ParentObject() == parent)
-        << "Mismatched old and new parent:" << "\n* Old parent: "
-        << obj->ParentObject() << "\n* New parent: " << parent;
-    DCHECK(ui::CanHaveInlineTextBoxChildren(parent->RoleValue()))
-        << "Unexpected parent of inline text box: " << parent->RoleValue();
-#endif
-    DCHECK(obj->ParentObject() == parent);
-    return obj;
-  }
-
-  // New AXObjects cannot be created when the tree is frozen.
-  if (IsFrozen()) {
-    return nullptr;
-  }
-
-  AXObject* new_obj = CreateFromInlineTextBox(inline_text_box);
-
-  AXID axid = AssociateAXID(new_obj);
-
-  inline_text_box_object_mapping_.Set(inline_text_box, axid);
-  new_obj->Init(parent);
-  return new_obj;
-}
-
 void AXObjectCacheImpl::Remove(AXObject* object, bool notify_parent) {
   DCHECK(object);
   if (object->IsAXInlineTextBox()) {
-    if (::features::IsAccessibilityBlockFlowIteratorEnabled()) {
-      Remove(object->ParentObject()->GetLayoutObject(),
-             object->GetFragmentIndex().value(), notify_parent);
-    } else {
-      Remove(object->GetInlineTextBox(), notify_parent);
-    }
+    Remove(object->ParentObject()->GetLayoutObject(),
+           object->GetFragmentIndex().value(), notify_parent);
   } else if (object->GetNode()) {
     Remove(object->GetNode(), notify_parent);
   } else if (object->GetLayoutObject()) {
@@ -2058,9 +1955,7 @@ void AXObjectCacheImpl::RemovePopup(Document* popup_document) {
 }
 
 // This is safe to call even if there isn't a current mapping.
-void AXObjectCacheImpl::Remove(AbstractInlineTextBox* inline_text_box) {
-  Remove(inline_text_box, /* notify_parent */ true);
-}
+void AXObjectCacheImpl::Remove(AbstractInlineTextBox* inline_text_box) {}
 
 void AXObjectCacheImpl::Remove(const LayoutObject* object,
                                AXBlockFlowIterator::FragmentIndex index,
@@ -2082,21 +1977,6 @@ void AXObjectCacheImpl::Remove(const LayoutObject* object,
     // This layout object has no more fragments it points to.
     layout_object_to_inline_text_boxes_.erase(iter);
   }
-
-  Remove(ax_id, notify_parent);
-}
-
-void AXObjectCacheImpl::Remove(AbstractInlineTextBox* inline_text_box,
-                               bool notify_parent) {
-  if (!inline_text_box)
-    return;
-
-  auto iter = inline_text_box_object_mapping_.find(inline_text_box);
-  if (iter == inline_text_box_object_mapping_.end())
-    return;
-
-  AXID ax_id = iter->value;
-  inline_text_box_object_mapping_.erase(iter);
 
   Remove(ax_id, notify_parent);
 }
@@ -2523,9 +2403,6 @@ void AXObjectCacheImpl::StyleChanged(const LayoutObject* layout_object,
 }
 
 void AXObjectCacheImpl::ClearBlockFlowCachedData(const LayoutObject* object) {
-  if (!::features::IsAccessibilityBlockFlowIteratorEnabled()) {
-    return;
-  }
   if (!object) {
     return;
   }
@@ -7141,7 +7018,6 @@ void AXObjectCacheImpl::Trace(Visitor* visitor) const {
   visitor->Trace(popup_document_);
   visitor->Trace(last_selected_from_active_descendant_);
   visitor->Trace(layout_object_mapping_);
-  visitor->Trace(inline_text_box_object_mapping_);
   visitor->Trace(layout_object_to_inline_text_boxes_);
   visitor->Trace(active_aria_modal_dialog_);
 

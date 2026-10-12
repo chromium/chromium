@@ -65,7 +65,7 @@ An [`AXObject`](ax_object.h) provides methods to determine roles, properties, an
 * [`AXNodeObject`](ax_node_object.h): This is a primary subclass that wraps a DOM [`Node`](../../core/dom/node.h) or a [`LayoutObject`](../../core/layout/layout_object.h) (or both). It stores references to these underlying web platform objects in its `node_` and `layout_object_` members, respectively. `AXNodeObject` also contains specific-case logic for various types of Nodes.
   * Some `AXNodeObject`s such as descendants of pseudo elements have only a layout object and do not correspond to actual DOM nodes.
   * Some `AXNodeObject`s such as those styled with display:none or display:contents have a `Node`, but no `LayoutObject`.
-* [`AXInlineTextBox`](ax_inline_text_box.h): This subclass specifically represents a line of text within the accessibility tree. `AXInlineTextBox` objects are leaf nodes, meaning they do not have children, and they encapsulate an [`AbstractInlineTextBox`](ax_inline_text_box.cc) or an [`AXBlockFlowIterator::FragmentIndex`](ax_inline_text_box.cc).
+* [`AXInlineTextBox`](ax_inline_text_box.h): This subclass specifically represents a line of text within the accessibility tree. `AXInlineTextBox` objects are leaf nodes, meaning they do not have children, and they encapsulate an [`AXBlockFlowIterator::FragmentIndex`](ax_block_flow_iterator.h).
 * Other, more specialized subclasses exist (e.g., [`AXImageMapLink`](ax_image_map_link.h), [`AXSlider`](ax_slider.h)), though many have been removed to reduce code complexity and fragility.
 
 ### Serialization of AXObject Data
