@@ -11,6 +11,7 @@ source_set("model") {
     "ios_sharing_service_factory.h",
     "ios_sharing_service_factory.mm",
   ]
+  public_deps = [ "//components/sharing_message/proto" ]
   deps = [
     ":sharing_message_bridge_factory",
     "//base",
