@@ -73,7 +73,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTunnelDevice : public FidoDevice {
   std::string GetId() const override;
   FidoTransportProtocol DeviceTransport() const override;
   FidoTunnelDevice* GetTunnelDevice() override;
-  base::flat_set<Feature> features() const;
+
+  // Returns the features advertised in the peer's post-handshake message, or
+  // `std::nullopt` if the tunnel failed before receiving it.
+  const std::optional<base::flat_set<Feature>>& features() const;
   base::WeakPtr<FidoDevice> GetWeakPtr() override;
   tunnelserver::KnownDomainID tunnel_server_domain() const;
 

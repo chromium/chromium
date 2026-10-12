@@ -324,13 +324,15 @@ FidoTunnelDevice* FidoTunnelDevice::GetTunnelDevice() {
   return this;
 }
 
-base::flat_set<cablev2::Feature> FidoTunnelDevice::features() const {
+const std::optional<base::flat_set<cablev2::Feature>>&
+FidoTunnelDevice::features() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(features_.has_value())
-      << "features() was called before it was ready. This should never "
-         "happen because no requests should be sent prior the post-handshake "
-         "message.";
-  return *features_;
+  // features() may only be called after
+  // DiscoverSupportedProtocolAndDeviceInfo() finished, which either initializes
+  // `features_` or transitions to `State::kError` if an error occurred before
+  // handshake completion.
+  DCHECK(features_.has_value() || state_ == State::kError);
+  return features_;
 }
 
 base::WeakPtr<FidoDevice> FidoTunnelDevice::GetWeakPtr() {
@@ -663,6 +665,7 @@ void FidoTunnelDevice::OnError() {
     established_connection_->Close();
     established_connection_.reset();
   } else {
+    features_.reset();
     websocket_client_.reset();
     if (discover_callback_) {
       DiscoverSupportedProtocolAndDeviceInfo(std::move(discover_callback_));
