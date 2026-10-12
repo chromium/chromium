@@ -58,6 +58,26 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/net/device_bound_session_prewarmer.cc:PrewarmOutcome) -->
 
+<variants name="DeviceBoundSessionRefreshType">
+  <variant name=".MissingCookie" summary="a missing cookie"/>
+  <variant name=".Proactive" summary="the proactive refresh heuristics"/>
+</variants>
+
+<!-- LINT.IfChange(RegistrationType) -->
+
+<variants name="DeviceBoundSessionRegistrationType">
+  <variant name=".Federated"
+      summary="federated session registrations (reusing a provider session
+               key)"/>
+  <variant name=".SingleSignOn"
+      summary="single sign-on session registrations (using a pre-provisioned
+               key)"/>
+  <variant name=".Standalone"
+      summary="standalone session registrations (generating a new key)"/>
+</variants>
+
+<!-- LINT.ThenChange(//net/device_bound_sessions/session_service_impl.h:RegistrationType) -->
+
 <variants name="DnsOverHttpsSecure">
   <variant name="Insecure" summary="DoH is not enabled"/>
   <variant name="Secure" summary="DoH is enabled"/>
@@ -2079,6 +2099,43 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.DeviceBoundSessions.RefreshDuration" units="ms"
+    expires_after="2027-10-07">
+  <owner>oussamajb@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the end-to-end latency of refreshing a Device Bound Session
+    (https://github.com/w3c/webappsec-dbsc/blob/main/README.md#refresh-procedure),
+    measured from the start of the session refresh attempt (including any key
+    restoration, network request, and challenge signing) until the refresh
+    network fetch completes. Logged on every refresh request fetch completion
+    (same condition as Net.DeviceBoundSessions.RefreshResult; not logged if key
+    restoration fails or all deferred requests are canceled before the fetch
+    starts). Recorded for all triggers and outcomes.
+  </summary>
+</histogram>
+
+<histogram name="Net.DeviceBoundSessions.RefreshDuration{RefreshType}{Outcome}"
+    units="ms" expires_after="2027-10-07">
+  <owner>oussamajb@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the end-to-end latency of refreshing a Device Bound Session
+    (https://github.com/w3c/webappsec-dbsc/blob/main/README.md#refresh-procedure),
+    measured from the start of the session refresh attempt (including any key
+    restoration, network request, and challenge signing) until the refresh
+    network fetch completes. Logged on every refresh request fetch completion
+    (same condition as Net.DeviceBoundSessions.RefreshResult; not logged if key
+    restoration fails or all deferred requests are canceled before the fetch
+    starts). Recorded for refreshes triggered by {RefreshType}, for {Outcome}.
+  </summary>
+  <token key="RefreshType" variants="DeviceBoundSessionRefreshType"/>
+  <token key="Outcome">
+    <variant name=".Failure" summary="failed refresh attempts"/>
+    <variant name=".Success" summary="successful refresh attempts"/>
+  </token>
+</histogram>
+
 <histogram name="Net.DeviceBoundSessions.RefreshQuotaExceededLastResult"
     enum="DeviceBoundSessionError" expires_after="2027-04-19">
   <owner>alexilin@chromium.org</owner>
@@ -2100,10 +2157,42 @@ chromium-metrics-reviews@google.com.
     This is logged every time we attempt to refresh the cookies bound by a
     session due to {RefreshType}.
   </summary>
-  <token key="RefreshType">
+  <token key="RefreshType" variants="DeviceBoundSessionRefreshType">
     <variant name="" summary="any refresh trigger"/>
-    <variant name=".MissingCookie" summary="a missing cookie"/>
-    <variant name=".Proactive" summary="the proactive refresh heuristics"/>
+  </token>
+</histogram>
+
+<histogram name="Net.DeviceBoundSessions.RegistrationDuration" units="ms"
+    expires_after="2027-10-07">
+  <owner>oussamajb@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the end-to-end latency of registering a Device Bound Session
+    (https://github.com/w3c/webappsec-dbsc/blob/main/README.md), measured from
+    when the registration request is initiated (including any key creation or
+    lookup, network request, and challenge signing) until registration finishes.
+    Logged on every registration completion regardless of registration type or
+    outcome.
+  </summary>
+</histogram>
+
+<histogram
+    name="Net.DeviceBoundSessions.RegistrationDuration{RegistrationType}{Outcome}"
+    units="ms" expires_after="2027-10-07">
+  <owner>oussamajb@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the end-to-end latency of registering a Device Bound Session
+    (https://github.com/w3c/webappsec-dbsc/blob/main/README.md), measured from
+    when the registration request is initiated (including any key creation or
+    lookup, network request, and challenge signing) until registration finishes.
+    Logged on every registration completion for {RegistrationType}, covering
+    {Outcome}.
+  </summary>
+  <token key="RegistrationType" variants="DeviceBoundSessionRegistrationType"/>
+  <token key="Outcome">
+    <variant name=".Failure" summary="failed registration attempts only"/>
+    <variant name=".Success" summary="successful registration attempts only"/>
   </token>
 </histogram>
 
@@ -2112,15 +2201,13 @@ chromium-metrics-reviews@google.com.
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
-    This records the outcome of {RegistrationType} Device Bound Session
-    registration (https://github.com/w3c/webappsec-dbsc/blob/main/README.md).
-    This is logged every time we attempt to register a new session.
+    This records the outcome of a Device Bound Session registration
+    (https://github.com/w3c/webappsec-dbsc/blob/main/README.md) for
+    {RegistrationType}. This is logged every time we attempt to register a new
+    session.
   </summary>
-  <token key="RegistrationType">
-    <variant name="" summary="any"/>
-    <variant name=".Federated" summary="a federated"/>
-    <variant name=".SingleSignOn" summary="a single sign-on"/>
-    <variant name=".Standalone" summary="a standalone"/>
+  <token key="RegistrationType" variants="DeviceBoundSessionRegistrationType">
+    <variant name="" summary="any registration type"/>
   </token>
 </histogram>
 

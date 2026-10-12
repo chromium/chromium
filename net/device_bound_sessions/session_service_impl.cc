@@ -19,6 +19,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/process/process.h"
+#include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/expected_macros.h"
@@ -454,6 +455,7 @@ void SessionServiceImpl::RegisterBoundSession(
               registration_params.access_callback,
               registration_params.fetcher_param.registration_endpoint(),
               RegistrationType::kSingleSignOn,
+              std::move(registration_params.timer_since_start),
               /*fetcher=*/nullptr, RegistrationResult(SessionError(error)));
         });
 
@@ -504,11 +506,11 @@ void SessionServiceImpl::RegisterFederatedBoundSession(
   ASSIGN_OR_RETURN(
       Session * provider_session, std::move(federated_provider_session),
       [&](SessionError::ErrorType error) {
-        OnRegistrationComplete(params.access_callback,
-                               params.fetcher_param.registration_endpoint(),
-                               RegistrationType::kFederated,
-                               /*fetcher=*/nullptr,
-                               RegistrationResult(SessionError(error)));
+        OnRegistrationComplete(
+            params.access_callback,
+            params.fetcher_param.registration_endpoint(),
+            RegistrationType::kFederated, std::move(params.timer_since_start),
+            /*fetcher=*/nullptr, RegistrationResult(SessionError(error)));
       });
 
   CHECK(provider_session->unexportable_key_id().has_value());
@@ -561,10 +563,10 @@ void SessionServiceImpl::StartRegistration(
   RegistrationFetcher* fetcher_raw = fetcher.get();
   registration_fetchers_.insert(std::move(fetcher));
 
-  auto callback = base::BindOnce(&SessionServiceImpl::OnRegistrationComplete,
-                                 weak_factory_.GetWeakPtr(),
-                                 std::move(params.access_callback), endpoint,
-                                 registration_type_for_histograms);
+  auto callback = base::BindOnce(
+      &SessionServiceImpl::OnRegistrationComplete, weak_factory_.GetWeakPtr(),
+      std::move(params.access_callback), endpoint,
+      registration_type_for_histograms, std::move(params.timer_since_start));
 
   std::move(fetch_starter)
       .Run(fetcher_raw, std::move(request_params), std::move(callback));
@@ -671,8 +673,11 @@ void SessionServiceImpl::OnRegistrationComplete(
     OnAccessCallback on_access_callback,
     GURL endpoint,
     RegistrationType registration_type_for_histograms,
+    base::ElapsedTimer timer,
     RegistrationFetcher* fetcher,
     RegistrationResult registration_result) {
+  // Measure the elapsed time as soon as the method is called.
+  const base::TimeDelta duration = timer.Elapsed();
   if (IsSubdomainOf(endpoint.host(), "google.com")) {
     base::UmaHistogramBoolean(
         "Net.DeviceBoundSessions.GoogleRegistrationIsFromStandard", true);
@@ -686,6 +691,15 @@ void SessionServiceImpl::OnRegistrationComplete(
       absl::StrFormat("Net.DeviceBoundSessions.RegistrationResult.%v",
                       registration_type_for_histograms),
       result);
+
+  std::string_view outcome =
+      result == SessionError::kSuccess ? "Success" : "Failure";
+  base::UmaHistogramMediumTimes("Net.DeviceBoundSessions.RegistrationDuration",
+                                duration);
+  base::UmaHistogramMediumTimes(
+      absl::StrFormat("Net.DeviceBoundSessions.RegistrationDuration.%v.%s",
+                      registration_type_for_histograms, outcome),
+      duration);
 }
 
 std::ranges::subrange<SessionServiceImpl::SessionsMap::iterator>
@@ -840,8 +854,11 @@ void SessionServiceImpl::OnRefreshRequestCompletion(
     RefreshTrigger trigger,
     OnAccessCallback on_access_callback,
     SessionKey session_key,
+    base::ElapsedTimer timer,
     RegistrationFetcher* fetcher,
     RegistrationResult registration_result) {
+  // Measure the elapsed time as soon as the method is called.
+  const base::TimeDelta duration = timer.Elapsed();
   SessionError::ErrorType result = OnRefreshRequestCompletionInternal(
       std::move(on_access_callback), session_key, fetcher,
       std::move(registration_result));
@@ -852,8 +869,9 @@ void SessionServiceImpl::OnRefreshRequestCompletion(
         /*was_proactive=*/trigger != RefreshTrigger::kMissingCookie, result);
   }
 
-  std::string histogram_base = "Net.DeviceBoundSessions.RefreshResult";
-  std::string suffix;
+  static constexpr std::string_view kResultHistogramBase =
+      "Net.DeviceBoundSessions.RefreshResult";
+  std::string_view suffix;
   switch (trigger) {
     case RefreshTrigger::kProactive:
       suffix = ".Proactive";
@@ -862,8 +880,17 @@ void SessionServiceImpl::OnRefreshRequestCompletion(
       suffix = ".MissingCookie";
       break;
   }
-  base::UmaHistogramEnumeration(histogram_base, result);
-  base::UmaHistogramEnumeration(histogram_base + suffix, result);
+  base::UmaHistogramEnumeration(kResultHistogramBase, result);
+  base::UmaHistogramEnumeration(base::StrCat({kResultHistogramBase, suffix}),
+                                result);
+
+  static constexpr std::string_view kDurationHistogramBase =
+      "Net.DeviceBoundSessions.RefreshDuration";
+  std::string_view outcome =
+      result == SessionError::kSuccess ? ".Success" : ".Failure";
+  base::UmaHistogramMediumTimes(kDurationHistogramBase, duration);
+  base::UmaHistogramMediumTimes(
+      base::StrCat({kDurationHistogramBase, suffix, outcome}), duration);
 }
 
 // Continue or restart all deferred requests and complete any proactive
@@ -1658,7 +1685,8 @@ void SessionServiceImpl::RefreshSessionInternal(
   auto callback =
       base::BindOnce(&SessionServiceImpl::OnRefreshRequestCompletion,
                      weak_factory_.GetWeakPtr(), params.trigger,
-                     std::move(params.access_callback), session_key);
+                     std::move(params.access_callback), session_key,
+                     std::move(params.timer_since_start));
 
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(

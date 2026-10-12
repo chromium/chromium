@@ -84,6 +84,9 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
     net::SiteForCookies site_for_cookies;
     net::NetLogWithSource net_log;
     std::optional<url::Origin> original_request_initiator;
+    // Measures end-to-end registration latency for histograms, starting from
+    // struct construction, which matches the registration start.
+    base::ElapsedTimer timer_since_start;
   };
 
   SessionServiceImpl(unexportable_keys::UnexportableKeyService& key_service,
@@ -200,6 +203,9 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
         unexportable_keys::BackgroundTaskPriority::kBestEffort;
     SessionService::OnAccessCallback access_callback;
     net::NetLogWithSource net_log;
+    // Measures end-to-end refresh latency for histograms, starting from struct
+    // construction, which matches the refresh start.
+    base::ElapsedTimer timer_since_start;
   };
 
   // The key is the site (eTLD+1) of the session's origin and the
@@ -255,11 +261,13 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   void OnRegistrationComplete(OnAccessCallback on_access_callback,
                               GURL endpoint,
                               RegistrationType registration_type_for_histograms,
+                              base::ElapsedTimer timer,
                               RegistrationFetcher* fetcher,
                               RegistrationResult registration_result);
   void OnRefreshRequestCompletion(RefreshTrigger trigger,
                                   OnAccessCallback on_access_callback,
                                   SessionKey session_key,
+                                  base::ElapsedTimer timer,
                                   RegistrationFetcher* fetcher,
                                   RegistrationResult registration_result);
 

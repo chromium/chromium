@@ -69,6 +69,7 @@ using ::testing::InSequence;
 using ::testing::Invoke;
 using ::testing::IsEmpty;
 using ::testing::Not;
+using ::testing::Pair;
 using ::testing::Property;
 using ::testing::Return;
 using ::testing::SaveArgByMove;
@@ -2512,6 +2513,13 @@ TEST_F(SessionServiceImplTestWithFederatedSessions,
 
   histograms.ExpectUniqueSample("Net.DeviceBoundSessions.RegistrationResult",
                                 SessionError::kInvalidFederatedSessionUrl, 1);
+  EXPECT_THAT(
+      histograms.GetTotalCountsForPrefix(
+          "Net.DeviceBoundSessions.RegistrationDuration"),
+      ElementsAre(
+          Pair("Net.DeviceBoundSessions.RegistrationDuration", 1),
+          Pair("Net.DeviceBoundSessions.RegistrationDuration.Federated.Failure",
+               1)));
 }
 
 TEST_F(SessionServiceImplTestWithFederatedSessions,
@@ -2618,11 +2626,20 @@ TEST_F(SessionServiceImplTest, EmptyResponseOnRegistration) {
 
   histograms.ExpectUniqueSample("Net.DeviceBoundSessions.RegistrationResult",
                                 SessionError::kEmptySessionConfig, 1);
+  EXPECT_THAT(
+      histograms.GetTotalCountsForPrefix(
+          "Net.DeviceBoundSessions.RegistrationDuration"),
+      ElementsAre(
+          Pair("Net.DeviceBoundSessions.RegistrationDuration", 1),
+          Pair(
+              "Net.DeviceBoundSessions.RegistrationDuration.Standalone.Failure",
+              1)));
 }
 
 TEST_F(SessionServiceImplTest, EmptyResponseOnRefresh) {
   // Register a session with kSessionId.
   AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
+  base::HistogramTester histograms;
 
   auto site = SchemefulSite(kTestUrl);
   ASSERT_TRUE(service().GetSession({site, Session::Id(kSessionId)}));
@@ -2673,6 +2690,13 @@ TEST_F(SessionServiceImplTest, EmptyResponseOnRefresh) {
   EXPECT_EQ(future.Take(), RefreshResult::kRefreshed);
 
   ASSERT_TRUE(service().GetSession({site, Session::Id(kSessionId)}));
+  EXPECT_THAT(
+      histograms.GetTotalCountsForPrefix(
+          "Net.DeviceBoundSessions.RefreshDuration"),
+      ElementsAre(
+          Pair("Net.DeviceBoundSessions.RefreshDuration", 1),
+          Pair("Net.DeviceBoundSessions.RefreshDuration.MissingCookie.Success",
+               1)));
 }
 
 TEST_F(SessionServiceImplTest, SessionUsage) {
@@ -3367,6 +3391,80 @@ TEST_F(SessionServiceImplWithStoreTest, SessionKeyRestoredOnUse) {
   EXPECT_EQ(future.Take(), RefreshResult::kRefreshed);
 }
 
+TEST_F(SessionServiceImplWithStoreTest, RefreshDurationWithKeyRestoration) {
+  base::HistogramTester histograms;
+  // Start loading
+  EXPECT_CALL(store(), LoadSessions).Times(1);
+  service().LoadSessionsAsync();
+
+  ASSERT_OK_AND_ASSIGN(
+      std::unique_ptr<Session> session,
+      Session::CreateFromProto(CreateSessionProto(kSessionId, kUrlString)));
+  ASSERT_TRUE(session);
+
+  SessionStore::SessionsMap session_map;
+  session_map.insert(
+      {SessionKey{SchemefulSite(kTestUrl), session->id()}, std::move(session)});
+  FinishLoadingSessions(std::move(session_map));
+
+  // Create a request that should be deferred due to the session
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
+  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+
+  HttpRequestHeaders extra_headers;
+  DbscRequest dbsc_request(request.get());
+  std::optional<SessionService::DeferralParams> maybe_deferral =
+      service().ShouldDefer(dbsc_request, &extra_headers);
+  ASSERT_TRUE(maybe_deferral);
+  EXPECT_EQ(**maybe_deferral->session_id, kSessionId);
+
+  // Now actually defer the request
+  constexpr base::TimeDelta kFetcherResponseDuration = base::Milliseconds(250);
+  constexpr base::TimeDelta kKeyRestoreDuration = base::Milliseconds(100);
+  constexpr base::TimeDelta kTotalExpectedDuration =
+      kFetcherResponseDuration + kKeyRestoreDuration;
+
+  auto scoped_test_fetcher =
+      ScopedTestRegistrationFetcher(base::BindLambdaForTesting(
+          [&](RegistrationFetcher::RegistrationCompleteCallback callback) {
+            FastForwardBy(kFetcherResponseDuration);
+            std::move(callback).Run(
+                nullptr, RegistrationResult(
+                             RegistrationResult::NoSessionConfigChange(), {}));
+          }));
+  EXPECT_CALL(store(), SaveSession);
+  EXPECT_CALL(store(),
+              RestoreSessionBindingKey(
+                  SessionKey(SchemefulSite(kTestUrl), Session::Id(kSessionId)),
+                  unexportable_keys::BackgroundTaskPriority::kUserBlocking, _))
+      .WillOnce([&](const SessionKey&,
+                    unexportable_keys::BackgroundTaskPriority,
+                    SessionStore::RestoreSessionBindingKeyCallback callback) {
+        FastForwardBy(kKeyRestoreDuration);
+        std::move(callback).Run(unexportable_keys::UnexportableSigningKeyId());
+      });
+
+  base::test::TestFuture<RefreshResult> future;
+  service().DeferRequestForRefresh(dbsc_request, *maybe_deferral,
+                                   future.GetCallback());
+  EXPECT_EQ(future.Take(), RefreshResult::kRefreshed);
+  EXPECT_THAT(
+      histograms.GetTotalCountsForPrefix(
+          "Net.DeviceBoundSessions.RefreshDuration"),
+      ElementsAre(
+          Pair("Net.DeviceBoundSessions.RefreshDuration", 1),
+          Pair("Net.DeviceBoundSessions.RefreshDuration.MissingCookie.Success",
+               1)));
+  histograms.ExpectUniqueTimeSample("Net.DeviceBoundSessions.RefreshDuration",
+                                    kTotalExpectedDuration, 1);
+  histograms.ExpectUniqueTimeSample(
+      "Net.DeviceBoundSessions.RefreshDuration.MissingCookie.Success",
+      kTotalExpectedDuration, 1);
+}
+
 TEST_F(SessionServiceImplWithStoreTest, RecoveryFromTransientSigningError) {
   // Start loading
   EXPECT_CALL(store(), LoadSessions).Times(1);
@@ -3687,6 +3785,13 @@ TEST_F(SessionServiceImplWithStoreTest,
   EXPECT_NE(service().GetSession({site, Session::Id(kSessionId)}), nullptr);
   histograms.ExpectUniqueSample("Net.DeviceBoundSessions.RegistrationResult",
                                 SessionError::kSuccess, 1);
+  EXPECT_THAT(
+      histograms.GetTotalCountsForPrefix(
+          "Net.DeviceBoundSessions.RegistrationDuration"),
+      ElementsAre(
+          Pair("Net.DeviceBoundSessions.RegistrationDuration", 1),
+          Pair("Net.DeviceBoundSessions.RegistrationDuration.Federated.Success",
+               1)));
 }
 
 TEST_F(SessionServiceImplWithStoreTest, RefreshNoConfigChangeSavesToStore) {
@@ -3783,6 +3888,14 @@ TEST_F(SessionServiceImplTest, GoogleRegistrationLog) {
       /*original_request_initiator=*/std::nullopt);
   histogram_tester.ExpectUniqueSample(
       "Net.DeviceBoundSessions.GoogleRegistrationIsFromStandard", true, 1);
+  EXPECT_THAT(
+      histogram_tester.GetTotalCountsForPrefix(
+          "Net.DeviceBoundSessions.RegistrationDuration"),
+      ElementsAre(
+          Pair("Net.DeviceBoundSessions.RegistrationDuration", 1),
+          Pair(
+              "Net.DeviceBoundSessions.RegistrationDuration.Standalone.Success",
+              1)));
 }
 
 TEST_F(SessionServiceImplTest, NoGoogleRegistrationLog) {
@@ -4174,6 +4287,13 @@ TEST_F(SessionServiceImplTest, FailedProactiveRefreshBlocksProactiveRefresh) {
       SessionServiceImpl::ProactiveRefreshAttempt::
           kPreviousFailedProactiveRefresh,
       1);
+  EXPECT_THAT(
+      histograms.GetTotalCountsForPrefix(
+          "Net.DeviceBoundSessions.RefreshDuration"),
+      ElementsAre(
+          Pair("Net.DeviceBoundSessions.RefreshDuration", 1),
+          Pair("Net.DeviceBoundSessions.RefreshDuration.Proactive.Failure",
+               1)));
 }
 
 TEST_F(SessionServiceImplTest, NoProactiveRefreshNeededYet) {
@@ -5144,6 +5264,13 @@ TEST_F(SessionServiceImplPreProvisionedKeyTest,
   histograms.ExpectUniqueSample(
       "Net.DeviceBoundSessions.RegistrationResult.SingleSignOn",
       SessionError::kSuccess, 1);
+  EXPECT_THAT(
+      histograms.GetTotalCountsForPrefix(
+          "Net.DeviceBoundSessions.RegistrationDuration"),
+      ElementsAre(Pair("Net.DeviceBoundSessions.RegistrationDuration", 1),
+                  Pair("Net.DeviceBoundSessions.RegistrationDuration."
+                       "SingleSignOn.Success",
+                       1)));
 
   // Validate that the pre-provisioned key was consumed upon session creation.
   EXPECT_THAT(FindPreProvisionedKey(
@@ -5186,6 +5313,13 @@ TEST_F(SessionServiceImplPreProvisionedKeyTest,
   histograms.ExpectUniqueSample(
       "Net.DeviceBoundSessions.RegistrationResult.SingleSignOn",
       SessionError::kPreProvisionedKeyNotFound, 1);
+  EXPECT_THAT(
+      histograms.GetTotalCountsForPrefix(
+          "Net.DeviceBoundSessions.RegistrationDuration"),
+      ElementsAre(Pair("Net.DeviceBoundSessions.RegistrationDuration", 1),
+                  Pair("Net.DeviceBoundSessions.RegistrationDuration."
+                       "SingleSignOn.Failure",
+                       1)));
 }
 
 TEST_F(SessionServiceImplPreProvisionedKeyTest,
