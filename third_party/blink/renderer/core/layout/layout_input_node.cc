@@ -145,6 +145,11 @@ bool LayoutInputNode::IsPaginatedRoot() const {
 
 BlockNode LayoutInputNode::ListMarkerBlockNodeIfListItem() const {
   if (auto* list_item = DynamicTo<LayoutListItem>(box_.Get())) {
+    // Allowing child layout implies child style was recalculated, so a marker
+    // that is laid out never has a stale style. See `ShouldLayoutChildren()`.
+    if (ChildLayoutBlockedByDisplayLock()) {
+      return BlockNode(nullptr);
+    }
     return BlockNode(DynamicTo<LayoutBox>(list_item->Marker()));
   }
   return BlockNode(nullptr);

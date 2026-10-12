@@ -107,8 +107,9 @@ class CORE_EXPORT LayoutInputNode {
   bool IsGrid() const { return IsBlock() && box_->IsLayoutGrid(); }
   bool IsGridLanes() const { return IsBlock() && box_->IsLayoutGridLanes(); }
   bool IsListItem() const { return IsBlock() && box_->IsLayoutListItem(); }
-  // Returns the list marker if |this.IsListItem()| with an outside list marker.
-  // Otherwise |nullptr|.
+  // Returns the list marker if |this.IsListItem()| with an outside list marker
+  // and its child layout is not blocked by a display lock. Otherwise
+  // |nullptr|.
   BlockNode ListMarkerBlockNodeIfListItem() const;
   bool IsListMarker() const {
     return IsBlock() && box_->IsLayoutOutsideListMarker();
