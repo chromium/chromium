@@ -31,7 +31,9 @@ found in the LICENSE file.
         android:gravity="start"
         android:textAlignment="viewStart"
         android:singleLine="true"
-        android:ellipsize="end"
+        android:ellipsize="none"
+        android:requiresFadingEdge="horizontal"
+        android:fadingEdgeLength="@dimen/border_texture_title_fade"
         android:textAppearance="@style/TextAppearance.TextMedium.Primary"
         android:importantForAccessibility="no" />
 

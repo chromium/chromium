@@ -76,8 +76,11 @@ found in the LICENSE file.
         android:layout_marginStart="@dimen/vertical_tab_item_favicon_margin_end"
         android:layout_marginEnd="@dimen/vertical_tab_item_title_margin_end"
         app:layout_constraintHorizontal_bias="0.0"
+        android:textAlignment="viewStart"
         android:singleLine="true"
-        android:ellipsize="end"
+        android:ellipsize="none"
+        android:requiresFadingEdge="horizontal"
+        android:fadingEdgeLength="@dimen/border_texture_title_fade"
         android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
 
     <!-- Actuation Spinner (Ring Overlay) -->

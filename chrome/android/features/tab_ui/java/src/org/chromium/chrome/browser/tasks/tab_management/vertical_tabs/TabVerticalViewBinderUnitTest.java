@@ -163,6 +163,11 @@ public class TabVerticalViewBinderUnitTest {
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.TITLE);
 
         assertEquals(TEST_TITLE, mTitleView.getText());
+        assertNull(mTitleView.getEllipsize());
+        assertTrue(mTitleView.isHorizontalFadingEdgeEnabled());
+        assertEquals(
+                mActivity.getResources().getDimensionPixelSize(R.dimen.border_texture_title_fade),
+                mTitleView.getHorizontalFadingEdgeLength());
         assertEquals(
                 mActivity.getString(R.string.accessibility_tabstrip_tab, TEST_TITLE),
                 mItemView.getContentDescription());
@@ -1170,6 +1175,11 @@ public class TabVerticalViewBinderUnitTest {
         mModel.set(TabProperties.TITLE, "My Research Group");
         TabVerticalViewBinder.bindTabGroupHeader(mModel, headerView, TabProperties.TITLE);
         assertEquals("My Research Group", titleView.getText());
+        assertNull(titleView.getEllipsize());
+        assertTrue(titleView.isHorizontalFadingEdgeEnabled());
+        assertEquals(
+                mActivity.getResources().getDimensionPixelSize(R.dimen.border_texture_title_fade),
+                titleView.getHorizontalFadingEdgeLength());
 
         // 2. Test Colors tinting
         mModel.set(TabProperties.TAB_GROUP_CARD_COLOR, TabGroupColorId.RED);
