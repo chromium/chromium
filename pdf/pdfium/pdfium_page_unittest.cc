@@ -1063,7 +1063,9 @@ TEST_P(PDFiumPageTextTest, HighlightTextRunInfo) {
 }
 
 TEST_P(PDFiumPageTextTest, GetTextRunInfoAtWithHeuristicEnhancements) {
+  constexpr int kDirectionRunCharIndex = 16;
   float font_size_disabled;
+  AccessibilityTextDirection direction_disabled;
   {
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitAndDisableFeature(
@@ -1072,9 +1074,15 @@ TEST_P(PDFiumPageTextTest, GetTextRunInfoAtWithHeuristicEnhancements) {
         GetFontMatrixPDFTextRunInfo(0);
     ASSERT_TRUE(text_run_info.has_value());
     font_size_disabled = text_run_info->style.font_size;
+
+    std::optional<AccessibilityTextRunInfo> direction_run_info =
+        GetFontMatrixPDFTextRunInfo(kDirectionRunCharIndex);
+    ASSERT_TRUE(direction_run_info.has_value());
+    direction_disabled = direction_run_info->direction;
   }
 
   float font_size_enabled;
+  AccessibilityTextDirection direction_enabled;
   {
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitAndEnableFeature(
@@ -1083,6 +1091,11 @@ TEST_P(PDFiumPageTextTest, GetTextRunInfoAtWithHeuristicEnhancements) {
         GetFontMatrixPDFTextRunInfo(0);
     ASSERT_TRUE(text_run_info.has_value());
     font_size_enabled = text_run_info->style.font_size;
+
+    std::optional<AccessibilityTextRunInfo> direction_run_info =
+        GetFontMatrixPDFTextRunInfo(kDirectionRunCharIndex);
+    ASSERT_TRUE(direction_run_info.has_value());
+    direction_enabled = direction_run_info->direction;
   }
 
   // For "A1", the base font size is 1.0, and the vertical scale of the matrix
@@ -1097,6 +1110,8 @@ TEST_P(PDFiumPageTextTest, GetTextRunInfoAtWithHeuristicEnhancements) {
   float expected_font_size_disabled = UsingTestFonts() ? 10.667f : 12.0f;
   EXPECT_NEAR(font_size_disabled, expected_font_size_disabled, 0.001f);
   EXPECT_NEAR(font_size_enabled, 10.0f, 0.001f);
+  EXPECT_EQ(direction_disabled, AccessibilityTextDirection::kTopToBottom);
+  EXPECT_EQ(direction_enabled, AccessibilityTextDirection::kLeftToRight);
 }
 
 TEST_P(PDFiumPageTextTest, GetTextRunInfoFontWeight) {

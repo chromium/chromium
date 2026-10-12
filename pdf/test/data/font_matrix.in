@@ -56,6 +56,12 @@ BT
 /F2 12 Tf
 50 100 Td (A4) Tj
 ET
+BT
+/F1 12 Tf
+50 120 Td (1) Tj
+2 -5 Td (.) Tj
+4 5 Td (a) Tj
+ET
 endstream
 endobj
 {{object 6 0}} <<

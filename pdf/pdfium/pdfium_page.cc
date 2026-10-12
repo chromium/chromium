@@ -1587,13 +1587,25 @@ AccessibilityTextRunInfo PDFiumPage::CalculateTextRunInfoAt(
   info.len = char_index - start_char_index;
   info.style.font_size = text_run_font_size;
   info.bounds = text_run_bounds;
-  // Infer text direction from first and last character of the text run. We
-  // can't base our decision on the character direction, since a character of a
-  // RTL language will have an angle of 0 when not rotated, just like a
-  // character in a LTR language.
-  info.direction = char_index - actual_start_char_index > 1
-                       ? GetDirectionFromAngle(text_run_angle)
-                       : AccessibilityTextDirection::kNone;
+  // Infer text direction for the run:
+  // - If the characters are rotated (`char_direction != kLeftToRight`), use
+  //   `char_direction`.
+  // - If the characters are unrotated (`char_direction == kLeftToRight`), they
+  //   can be either LTR or RTL. Only use `text_run_angle` when it indicates
+  //   `kRightToLeft`; otherwise use `char_direction` (`kLeftToRight`) so height
+  //   differences between adjacent characters (e.g. "1.") do not skew the
+  //   direction to vertical.
+  const AccessibilityTextDirection angle_direction =
+      GetDirectionFromAngle(text_run_angle);
+  if (char_index - actual_start_char_index <= 1) {
+    info.direction = AccessibilityTextDirection::kNone;
+  } else if (::features::IsPdfAccessibilityHeuristicEnhancementsEnabled() &&
+             (char_direction != AccessibilityTextDirection::kLeftToRight ||
+              angle_direction != AccessibilityTextDirection::kRightToLeft)) {
+    info.direction = char_direction;
+  } else {
+    info.direction = angle_direction;
+  }
   return info;
 }
 
