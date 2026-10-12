@@ -47,10 +47,13 @@ FieldCandidatesMap ParseFieldTypesWithPatterns(const FormData& form,
                                                bool ignore_small_forms) {
   FieldCandidatesMap field_type_map;
 
-  if (ShouldRunHeuristics(form, ignore_small_forms)) {
+  const DenseSet<FormParsingPermission> parsing_permissions =
+      GetFormParsingPermissions(form, ignore_small_forms);
+  if (parsing_permissions.contains(FormParsingPermission::kHeuristics)) {
     FormFieldParser::ParseFormFields(context, form.fields(), field_type_map,
                                      ignore_small_forms);
-  } else if (ShouldRunHeuristicsForSingleFields(form)) {
+  } else if (parsing_permissions.contains(
+                 FormParsingPermission::kSingleFieldHeuristics)) {
     FormFieldParser::ParseSingleFields(context, form.fields(), field_type_map);
     FormFieldParser::ParseStandaloneCVCFields(context, form.fields(),
                                               field_type_map);

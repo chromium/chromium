@@ -329,7 +329,9 @@ void AutofillManager::QueryServerPredictions(
     base::TimeTicks form_seen_timestamp) {
   std::vector<FormData> queryable_forms;
   for (const FormData& form : forms) {
-    if (ShouldBeQueried(form)) {
+    if (GetFormParsingPermissions(
+            form, /*ignore_small_forms=*/!client().IsTabInActorMode())
+            .contains(FormParsingPermission::kServerQuery)) {
       queryable_forms.push_back(form);
     }
   }
@@ -681,7 +683,10 @@ void AutofillManager::ParseFormsAsync(
                             << LogMessage::kAbortParsingTooManyForms << form;
       return true;
     }
-    if (!ShouldBeParsed(form, log_manager())) {
+    if (GetFormParsingPermissions(
+            form, /*ignore_small_forms=*/!client().IsTabInActorMode(),
+            log_manager())
+            .empty()) {
       LogCurrentFieldTypes(&form);
       return true;
     }
@@ -711,7 +716,10 @@ void AutofillManager::ParseFormAsync(
     return;
   }
 
-  if (!ShouldBeParsed(form, log_manager())) {
+  if (GetFormParsingPermissions(
+          form, /*ignore_small_forms=*/!client().IsTabInActorMode(),
+          log_manager())
+          .empty()) {
     LogCurrentFieldTypes(&form);
     // For Autocomplete, events need to be handled even for forms that cannot be
     // parsed.

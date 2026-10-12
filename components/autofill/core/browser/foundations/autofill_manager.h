@@ -624,8 +624,8 @@ class AutofillManager
   void RunMlModels(AsyncContext context,
                    base::OnceCallback<void(AsyncContext)> done_callback);
 
-  // Triggers the server predictions query for all `forms` that
-  // `ShouldBeQueried()`.
+  // Triggers the server predictions query for all `forms` that have
+  // `FormParsingPermission::kServerQuery`.
   void QueryServerPredictions(base::span<const FormData> forms,
                               base::TimeTicks form_seen_timestamp);
 
