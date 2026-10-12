@@ -990,6 +990,35 @@ public class LocationBarMediatorUnitTest {
     }
 
     @Test
+    public void testScrimOpacity_unconventionalRequestTypeWithoutSuggestions() {
+        mMediator.onFinishNativeInitialization();
+        mMediator.setProfile(mProfile);
+        AutocompleteInput input = mSessionState.getAutocompleteInput();
+        input.setRequestType(AutocompleteRequestType.SEARCH);
+        mMediator.onUrlFocusChange(/* hasFocus= */ true);
+
+        // Conventional request type: scrim is never opaque.
+        mMediator.onSuggestionsChanged(null, /* hasSuggestions= */ false);
+        verify(mScrimHandler, atLeastOnce()).setUseOpaqueScrim(false);
+        verify(mScrimHandler, never()).setUseOpaqueScrim(true);
+
+        // Unconventional request type without suggestions: scrim is opaque.
+        clearInvocations(mScrimHandler);
+        input.setRequestType(AutocompleteRequestType.AI_MODE);
+        verify(mScrimHandler).setUseOpaqueScrim(true);
+
+        // Unconventional request type with suggestions: scrim is not opaque.
+        clearInvocations(mScrimHandler);
+        mMediator.onSuggestionsChanged(null, /* hasSuggestions= */ true);
+        verify(mScrimHandler).setUseOpaqueScrim(false);
+
+        // Suggestions cleared again: scrim is opaque.
+        clearInvocations(mScrimHandler);
+        mMediator.onSuggestionsChanged(null, /* hasSuggestions= */ false);
+        verify(mScrimHandler).setUseOpaqueScrim(true);
+    }
+
+    @Test
     public void testSuspendInput_enabledState_transitionsToStandby() {
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);

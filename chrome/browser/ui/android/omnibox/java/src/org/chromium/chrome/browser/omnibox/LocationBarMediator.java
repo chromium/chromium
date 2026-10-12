@@ -1087,6 +1087,7 @@ public class LocationBarMediator
                     !OmniboxCapabilities.isDesktopPlatform()
                             && mCurrentInput.getAutocompleteState() == AutocompleteState.ENABLED);
         }
+        updateScrimOpacity(hasSuggestions);
 
         if (mUrlCoordinator.shouldAutocomplete()) {
             String siteSearchLabel = null;
@@ -2630,6 +2631,24 @@ public class LocationBarMediator
         mLocationBarLayout.onSpecializedFuseboxModeActivated(isSpecializedRequestType);
         updateAlwaysShowAiModeCallback();
         mSelectionController.reset();
+        updateScrimOpacity(
+                mAutocompleteCoordinator != null
+                        && mAutocompleteCoordinator.getSuggestionCount() != 0);
+    }
+
+    /**
+     * Makes the scrim opaque when the current input uses an unconventional request type and there
+     * are no suggestions to show; otherwise restores the default scrim appearance.
+     *
+     * @param hasSuggestions Whether any suggestions are currently present.
+     */
+    private void updateScrimOpacity(boolean hasSuggestions) {
+        if (mScrimHandler == null) return;
+        boolean useOpaqueScrim =
+                mCurrentInput != null
+                        && !mCurrentInput.isConventionalRequestType()
+                        && !hasSuggestions;
+        mScrimHandler.setUseOpaqueScrim(useOpaqueScrim);
     }
 
     private void onDisplayStateChanged(@DisplayState int displayState) {
