@@ -14,7 +14,6 @@
 #include "base/dcheck_is_on.h"
 #include "base/memory/ptr_util.h"
 #include "cc/input/hit_test_opaqueness.h"
-#include "third_party/blink/renderer/platform/geometry/infinite_int_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_list.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
@@ -187,8 +186,7 @@ class PLATFORM_EXPORT PaintController {
       DisplayItem::Type,
       const TransformPaintPropertyNode* scroll_translation,
       const gfx::Rect& scroll_hit_test_rect,
-      cc::HitTestOpaqueness,
-      const gfx::Rect& scrolling_contents_cull_rect = InfiniteIntRect());
+      cc::HitTestOpaqueness);
 
   void RecordSelection(std::optional<PaintedSelectionBound> start,
                        std::optional<PaintedSelectionBound> end,

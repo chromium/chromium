@@ -210,7 +210,6 @@ namespace {
 void UpdateCcScrollingContentsCullRect(
     cc::ScrollTree& scroll_tree,
     const ScrollPaintPropertyNode& scroll_node) {
-  CHECK(RuntimeEnabledFeatures::ScrollingContentsCullRectOnScrollNodeEnabled());
   gfx::Rect cull_rect = scroll_node.ScrollingContentsCullRect();
   if (cull_rect.Contains(scroll_node.ContentsRect())) {
     scroll_tree.ClearScrollingContentsCullRect(
@@ -592,10 +591,7 @@ int PropertyTreeManager::EnsureCompositorTransformNode(
       compositor_scroll_node.main_thread_repaint_reasons.PutAll(
           NonCompositedMainThreadRepaintReasons(transform_node));
     }
-    if (RuntimeEnabledFeatures::
-            ScrollingContentsCullRectOnScrollNodeEnabled()) {
-      UpdateCcScrollingContentsCullRect(scroll_tree_, *scroll_node);
-    }
+    UpdateCcScrollingContentsCullRect(scroll_tree_, *scroll_node);
   }
 
   compositor_node.visible_frame_element_id =

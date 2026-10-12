@@ -302,8 +302,7 @@ void PaintChunker::CreateScrollHitTestChunk(
     const DisplayItemClient& client,
     const TransformPaintPropertyNode* scroll_translation,
     const gfx::Rect& scroll_hit_test_rect,
-    cc::HitTestOpaqueness hit_test_opaqueness,
-    const gfx::Rect& scrolling_contents_cull_rect) {
+    cc::HitTestOpaqueness hit_test_opaqueness) {
 #if DCHECK_IS_ON()
   CheckNotFinished();
   if (id.type == DisplayItem::Type::kResizerScrollHitTest ||
@@ -334,7 +333,6 @@ void PaintChunker::CreateScrollHitTestChunk(
   auto& hit_test_data = chunk.EnsureHitTestData();
   hit_test_data.scroll_translation = scroll_translation;
   hit_test_data.scroll_hit_test_rect = scroll_hit_test_rect;
-  hit_test_data.scrolling_contents_cull_rect = scrolling_contents_cull_rect;
   SetWillForceNewChunk();
 }
 

@@ -1941,20 +1941,17 @@ void PaintLayerScrollableArea::RemoveScrollbarsForReconstruction() {
 void PaintLayerScrollableArea::DidUpdateCullRect() {
   last_cull_rect_update_scroll_position_ = ScrollPosition();
 
-  if (RuntimeEnabledFeatures::ScrollingContentsCullRectOnScrollNodeEnabled()) {
-    auto& fragment = GetLayoutBox()->GetMutableForPainting().FirstFragment();
-    if (auto* properties = fragment.PaintProperties()) {
-      if (auto* scroll_node = properties->MutableScroll()) {
-        scroll_node->SetScrollingContentsCullRect(
-            fragment.GetContentsCullRect().Rect());
-        if (auto* compositor =
-                GetLayoutBox()->GetFrameView()->GetPaintArtifactCompositor()) {
-          if (compositor->DirectlyUpdateScrollingContentsCullRect(
-                  *scroll_node)) {
-            scroll_node->CompositorSimpleValuesUpdated();
-          } else {
-            compositor->SetNeedsUpdate();
-          }
+  auto& fragment = GetLayoutBox()->GetMutableForPainting().FirstFragment();
+  if (auto* properties = fragment.PaintProperties()) {
+    if (auto* scroll_node = properties->MutableScroll()) {
+      scroll_node->SetScrollingContentsCullRect(
+          fragment.GetContentsCullRect().Rect());
+      if (auto* compositor =
+              GetLayoutBox()->GetFrameView()->GetPaintArtifactCompositor()) {
+        if (compositor->DirectlyUpdateScrollingContentsCullRect(*scroll_node)) {
+          scroll_node->CompositorSimpleValuesUpdated();
+        } else {
+          compositor->SetNeedsUpdate();
         }
       }
     }

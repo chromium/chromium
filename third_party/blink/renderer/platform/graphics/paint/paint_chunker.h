@@ -87,8 +87,7 @@ class PLATFORM_EXPORT PaintChunker final {
       const DisplayItemClient&,
       const TransformPaintPropertyNode* scroll_translation,
       const gfx::Rect& scroll_hit_test_rect,
-      cc::HitTestOpaqueness,
-      const gfx::Rect& scrolling_contents_cull_rect);
+      cc::HitTestOpaqueness);
 
   // The id will be used when we need to create a new current chunk.
   // Otherwise it's ignored. Returns true if a new chunk is added.

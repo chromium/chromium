@@ -87,12 +87,6 @@ String HitTestData::ToString() const {
   if (scroll_translation) {
     append_field("scroll_translation: ",
                  Format("{}", scroll_translation.Get()));
-    if (!RuntimeEnabledFeatures::
-            ScrollingContentsCullRectOnScrollNodeEnabled() &&
-        scrolling_contents_cull_rect != InfiniteIntRect()) {
-      append_field("scrolling_contents_cull_rect: ",
-                   String(scrolling_contents_cull_rect.ToString()));
-    }
   }
 
   sb.Append("}");

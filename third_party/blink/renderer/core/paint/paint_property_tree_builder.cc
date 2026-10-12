@@ -3746,8 +3746,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollNode() {
     state.snap_container_data = *data;
   }
 
-  if (RuntimeEnabledFeatures::ScrollingContentsCullRectOnScrollNodeEnabled() &&
-      properties_->Scroll()) {
+  if (properties_->Scroll()) {
     // Keep the original scrolling contents cull rect. Will update in
     // CullRectUpdater.
     state.scrolling_contents_cull_rect =

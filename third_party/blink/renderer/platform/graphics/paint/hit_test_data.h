@@ -5,13 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_HIT_TEST_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_HIT_TEST_DATA_H_
 
-#include "third_party/blink/renderer/platform/geometry/infinite_int_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/touch_action_rect.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -29,9 +27,6 @@ struct PLATFORM_EXPORT HitTestData : public GarbageCollected<HitTestData> {
   // scrolling depends whether the scroll_translation is composited.
   gfx::Rect scroll_hit_test_rect;
   Member<const TransformPaintPropertyNode> scroll_translation;
-  // When ScrollingContentsCullRectOnScrollNodeEnabled, this is on
-  // ScrollPaintPropertyNode instead.
-  gfx::Rect scrolling_contents_cull_rect = InfiniteIntRect();
 
   void Trace(Visitor* visitor) const { visitor->Trace(scroll_translation); }
 
@@ -42,10 +37,7 @@ struct PLATFORM_EXPORT HitTestData : public GarbageCollected<HitTestData> {
            xr_regions == rhs.xr_regions &&
 #endif
            scroll_hit_test_rect == rhs.scroll_hit_test_rect &&
-           scroll_translation == rhs.scroll_translation &&
-           (RuntimeEnabledFeatures::
-                ScrollingContentsCullRectOnScrollNodeEnabled() ||
-            scrolling_contents_cull_rect == rhs.scrolling_contents_cull_rect);
+           scroll_translation == rhs.scroll_translation;
   }
 
   String ToString() const;

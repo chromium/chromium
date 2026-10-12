@@ -48,8 +48,7 @@ PaintPropertyChangeType ScrollPaintPropertyNode::State::ComputeChange(
       prevent_scroll_axis_locking != other.prevent_scroll_axis_locking) {
     return PaintPropertyChangeType::kChangedOnlyValues;
   }
-  if (RuntimeEnabledFeatures::ScrollingContentsCullRectOnScrollNodeEnabled() &&
-      scrolling_contents_cull_rect != other.scrolling_contents_cull_rect) {
+  if (scrolling_contents_cull_rect != other.scrolling_contents_cull_rect) {
     return PaintPropertyChangeType::kChangedOnlySimpleValues;
   }
   return PaintPropertyChangeType::kUnchanged;
@@ -131,12 +130,9 @@ std::unique_ptr<JSONObject> ScrollPaintPropertyNode::ToJSON() const {
     }
   }
 
-  if (RuntimeEnabledFeatures::ScrollingContentsCullRectOnScrollNodeEnabled()) {
-    auto& rect = state_.scrolling_contents_cull_rect;
-    json->SetString("contents_cull_rect", rect == InfiniteIntRect()
-                                              ? "Inf"
-                                              : String(rect.ToString()));
-  }
+  auto& rect = state_.scrolling_contents_cull_rect;
+  json->SetString("contents_cull_rect",
+                  rect == InfiniteIntRect() ? "Inf" : String(rect.ToString()));
 
   return json;
 }

@@ -1483,7 +1483,6 @@ bool PaintArtifactCompositor::DirectlyUpdatePageScaleTransform(
 
 bool PaintArtifactCompositor::DirectlyUpdateScrollingContentsCullRect(
     const ScrollPaintPropertyNode& scroll) {
-  CHECK(RuntimeEnabledFeatures::ScrollingContentsCullRectOnScrollNodeEnabled());
   if (CanDirectlyUpdateProperties() &&
       !range_dependent_scrolls_.Contains(&scroll)) {
     PropertyTreeManager::DirectlyUpdateScrollingContentsCullRect(
