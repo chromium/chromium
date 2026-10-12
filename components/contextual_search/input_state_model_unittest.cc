@@ -421,6 +421,36 @@ TEST_F(InputStateModelTest, HidesToolsFromMenu) {
                                        omnibox::ToolMode::TOOL_MODE_IMAGE_GEN));
 }
 
+TEST_F(InputStateModelTest, GetAllowedTools) {
+  omnibox::SearchboxConfig config;
+  config.add_tool_configs()->set_tool(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+  config.add_tool_configs()->set_tool(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+  config.add_tool_configs()->set_tool(
+      omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD);
+  auto* hidden_config = config.add_tool_configs();
+  hidden_config->set_tool(omnibox::ToolMode::TOOL_MODE_CANVAS);
+  hidden_config->set_hide_from_menu(true);
+
+  // Hidden tools and `TOOL_MODE_IMAGE_GEN_UPLOAD` are never allowed.
+  EXPECT_THAT(
+      InputStateModel::GetAllowedTools(config, /*is_off_the_record=*/false),
+      testing::ElementsAre(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH,
+                           omnibox::ToolMode::TOOL_MODE_IMAGE_GEN));
+  // `TOOL_MODE_IMAGE_GEN` is not allowed off the record.
+  EXPECT_THAT(
+      InputStateModel::GetAllowedTools(config, /*is_off_the_record=*/true),
+      testing::ElementsAre(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH));
+
+  // Matches the allowed tools of a model built from the same config.
+  input_state_model_ = std::make_unique<InputStateModel>(
+      session_handle_, config, active_url_, /*is_off_the_record=*/false,
+      /*is_signed_in=*/true,
+      /*browser_identity_matches_aim_identity=*/true);
+  EXPECT_EQ(
+      input_state_model_->get_state_for_testing().allowed_tools,
+      InputStateModel::GetAllowedTools(config, /*is_off_the_record=*/false));
+}
+
 TEST_F(InputStateModelTest, UpdateToolFromUrl) {
   omnibox::SearchboxConfig config;
 

@@ -304,21 +304,7 @@ void InputStateModel::PopulateConfig(const SearchboxConfig& config) {
   if (mutable_config.has_rule_set()) {
     rule_set_ = mutable_config.rule_set();
 
-    state_.allowed_tools.clear();
-    state_.allowed_tools.reserve(mutable_config.tool_configs().size());
-    for (const auto& tool_config : mutable_config.tool_configs()) {
-      if (tool_config.hide_from_menu()) {
-        continue;
-      }
-      if (tool_config.tool() == omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD) {
-        continue;
-      }
-      if (is_off_the_record_ &&
-          tool_config.tool() == omnibox::ToolMode::TOOL_MODE_IMAGE_GEN) {
-        continue;
-      }
-      state_.allowed_tools.push_back(tool_config.tool());
-    }
+    state_.allowed_tools = GetAllowedTools(mutable_config, is_off_the_record_);
     state_.allowed_models.clear();
     state_.allowed_models.reserve(mutable_config.model_configs().size());
     for (const auto& model_config : mutable_config.model_configs()) {
@@ -457,6 +443,28 @@ bool InputStateModel::IsConfigPopulated(
   return config && (config->has_rule_set() || !config->tool_configs().empty() ||
                     !config->model_configs().empty() ||
                     !config->input_type_configs().empty());
+}
+
+// static
+std::vector<ToolMode> InputStateModel::GetAllowedTools(
+    const omnibox::SearchboxConfig& config,
+    bool is_off_the_record) {
+  std::vector<ToolMode> allowed_tools;
+  allowed_tools.reserve(config.tool_configs().size());
+  for (const auto& tool_config : config.tool_configs()) {
+    if (tool_config.hide_from_menu()) {
+      continue;
+    }
+    if (tool_config.tool() == omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD) {
+      continue;
+    }
+    if (is_off_the_record &&
+        tool_config.tool() == omnibox::ToolMode::TOOL_MODE_IMAGE_GEN) {
+      continue;
+    }
+    allowed_tools.push_back(tool_config.tool());
+  }
+  return allowed_tools;
 }
 
 // static

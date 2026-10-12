@@ -4,6 +4,7 @@
 
 #include "chrome/browser/android/omnibox/composebox_query_controller_bridge.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -736,6 +737,35 @@ std::vector<int32_t> ComposeboxQueryControllerBridge::GetSelectedTabIds()
 static bool JNI_ComposeboxQueryControllerBridge_IsFuseboxEligibleForProfile(
     Profile* profile) {
   return IsFuseboxEligibleForProfileInternal(profile);
+}
+
+static bool JNI_ComposeboxQueryControllerBridge_IsToolAllowedForProfile(
+    Profile* profile,
+    omnibox::ToolMode tool_mode) {
+  if (!profile) {
+    return false;
+  }
+
+  // Mirror the checks in JNI_ComposeboxQueryControllerBridge_Init(): if a
+  // controller can't be created, no tools are available.
+  AimEligibilityService* aim_service =
+      AimEligibilityServiceFactory::GetForProfile(profile);
+  if (!aim_service || !aim_service->IsAimEligible()) {
+    return false;
+  }
+  if (!contextual_search::ContextualSearchService::IsContextSharingEnabled(
+          profile->GetPrefs())) {
+    return false;
+  }
+
+  const omnibox::SearchboxConfig* config = aim_service->GetSearchboxConfig();
+  if (!config) {
+    return false;
+  }
+  return std::ranges::contains(
+      contextual_search::InputStateModel::GetAllowedTools(
+          *config, profile->IsOffTheRecord()),
+      tool_mode);
 }
 
 DEFINE_JNI(ComposeboxQueryControllerBridge)

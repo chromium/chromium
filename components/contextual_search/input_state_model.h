@@ -72,6 +72,14 @@ class InputStateModel {
   // entries for tools, models, or input types.
   static bool IsConfigPopulated(const omnibox::SearchboxConfig* config);
 
+  // Returns the tools from `config` that should be offered to the user, i.e.
+  // the tools that end up in `InputState::allowed_tools`. This is independent
+  // of any session state, so it can be used by surfaces that need to know
+  // which tools are available before a session is started.
+  static std::vector<ToolMode> GetAllowedTools(
+      const omnibox::SearchboxConfig& config,
+      bool is_off_the_record);
+
   // Returns the current input types from the session handle.
   static std::vector<InputType> GetCurrentInputTypes(
       const contextual_search::ContextualSearchSessionHandle* session_handle);

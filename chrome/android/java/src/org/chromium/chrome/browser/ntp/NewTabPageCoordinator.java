@@ -61,6 +61,7 @@ import org.chromium.chrome.browser.magic_stack.ModuleDelegateHost;
 import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.ntp.NewTabPage.OnSearchBoxScrollListener;
+import org.chromium.chrome.browser.ntp.NewTabPageUtils.ActionChips;
 import org.chromium.chrome.browser.ntp.search.NtpSearchBox;
 import org.chromium.chrome.browser.ntp.search.NtpSearchBoxFactory;
 import org.chromium.chrome.browser.ntp.search.SearchBoxCoordinator;
@@ -72,6 +73,7 @@ import org.chromium.chrome.browser.ntp_customization.theme.NtpCustomizationPromo
 import org.chromium.chrome.browser.omnibox.SearchEngineService;
 import org.chromium.chrome.browser.omnibox.SearchEngineService.SearchEngineIconObserver;
 import org.chromium.chrome.browser.omnibox.SearchEngineService.SearchEngineNameObserver;
+import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridge;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.setup_list.SetupListManager;
@@ -107,6 +109,7 @@ import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxFocusReason;
+import org.chromium.components.omnibox.ToolModeProtoIntDef.ToolMode;
 import org.chromium.components.search_engines.AiModeButtonUiConfig;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -638,7 +641,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         // log.
         mComposeplateCoordinator.setComposeplateButtonClickListener(
                 this::onComposeplateButtonClicked);
-        @NewTabPageUtils.ActionChips int chipType = NewTabPageUtils.getMerchandisingChipsType();
+        @ActionChips int chipType = getOptionalButtonChipType();
         if (chipType == NewTabPageUtils.ActionChips.CREATE_IMAGE) {
             mComposeplateCoordinator.setOptionalButtonClickListener(
                     this::onCreateButtonClicked, chipType);
@@ -1322,12 +1325,31 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
     private void updateComposeplateOptionalButtonVisibility() {
         if (mComposeplateCoordinator == null) return;
 
-        @NewTabPageUtils.ActionChips int chipType = NewTabPageUtils.getMerchandisingChipsType();
+        @ActionChips int chipType = NewTabPageUtils.getMerchandisingChipsType();
         boolean isOptionalButtonVisible =
                 mSearchProviderInfoDelegate.getSearchProviderIsGoogle()
                         && (chipType == NewTabPageUtils.ActionChips.CREATE_IMAGE
                                 || chipType == NewTabPageUtils.ActionChips.GALLERY);
         mComposeplateCoordinator.setOptionalButtonVisibility(isOptionalButtonVisible);
+    }
+
+    /**
+     * Returns the {@link NewTabPageUtils.ActionChips} type to show on the composeplate's optional
+     * button. The create image chip falls back to the canvas chip when image generation isn't an
+     * allowed tool for the current profile.
+     */
+    private @ActionChips int getOptionalButtonChipType() {
+        @ActionChips int chipType = NewTabPageUtils.getMerchandisingChipsType();
+        if (chipType == ActionChips.CREATE_IMAGE && !isImageGenToolAllowed()) {
+            return ActionChips.GALLERY;
+        }
+        return chipType;
+    }
+
+    /** Returns whether either image generation tool is allowed for the current profile. */
+    private boolean isImageGenToolAllowed() {
+        return ComposeboxQueryControllerBridge.isToolAllowedForProfile(
+                mProfile, ToolMode.TOOL_MODE_IMAGE_GEN);
     }
 
     /**

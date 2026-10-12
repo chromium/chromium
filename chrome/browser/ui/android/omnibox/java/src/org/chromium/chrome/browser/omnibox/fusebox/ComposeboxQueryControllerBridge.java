@@ -201,6 +201,18 @@ public class ComposeboxQueryControllerBridge {
         return ComposeboxQueryControllerBridgeJni.get().isFuseboxEligibleForProfile(profile);
     }
 
+    /**
+     * Returns whether {@code toolMode} would be in {@link InputState#allowedTools} for the given
+     * profile.
+     *
+     * <p>This is a static stateless helper to allow components in unfocused contexts (like the NTP)
+     * to check tool availability without having to instantiate a heavyweight native controller and
+     * session.
+     */
+    public static boolean isToolAllowedForProfile(Profile profile, @ToolMode int toolMode) {
+        return ComposeboxQueryControllerBridgeJni.get().isToolAllowedForProfile(profile, toolMode);
+    }
+
     /** Returns whether the user is eligible for PDF uploads. */
     boolean isPdfUploadEligible() {
         return ComposeboxQueryControllerBridgeJni.get().isPdfUploadEligible(mNativeInstance);
@@ -304,6 +316,10 @@ public class ComposeboxQueryControllerBridge {
         boolean isFuseboxEligible(long nativeComposeboxQueryControllerBridge);
 
         boolean isFuseboxEligibleForProfile(@JniType("Profile*") Profile profile);
+
+        boolean isToolAllowedForProfile(
+                @JniType("Profile*") Profile profile,
+                @ToolMode @JniType("omnibox::ToolMode") int toolMode);
 
         boolean isPdfUploadEligible(long nativeComposeboxQueryControllerBridge);
 

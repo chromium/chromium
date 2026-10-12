@@ -83,6 +83,8 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinatorFactory;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.omnibox.SearchEngineService;
+import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridge;
+import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridgeJni;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -118,6 +120,7 @@ import org.chromium.components.browser_ui.widget.displaystyle.VerticalDisplaySty
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxFocusReason;
+import org.chromium.components.omnibox.ToolModeProtoIntDef.ToolMode;
 import org.chromium.components.search_engines.AiModeButtonUiConfig;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.SigninFeatures;
@@ -150,6 +153,7 @@ public class NewTabPageCoordinatorUnitTest {
     @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
 
     @Mock private ComposeplateUtils.Natives mMockComposeplateUtilsJni;
+    @Mock private ComposeboxQueryControllerBridge.Natives mMockComposeboxQueryControllerBridgeJni;
     @Mock private HomeModulesRankingHelper.Natives mHomeModulesRankingHelperJniMock;
     @Mock private NewTabPageManager mManager;
     @Mock private Tab mTab;
@@ -223,6 +227,11 @@ public class NewTabPageCoordinatorUnitTest {
         ComposeplateUtilsJni.setInstanceForTesting(mMockComposeplateUtilsJni);
         when(mMockComposeplateUtilsJni.isAimEntrypointEligible(mProfile)).thenReturn(true);
         when(mMockComposeplateUtilsJni.isEnabledByPolicy(mProfile)).thenReturn(true);
+        ComposeboxQueryControllerBridgeJni.setInstanceForTesting(
+                mMockComposeboxQueryControllerBridgeJni);
+        when(mMockComposeboxQueryControllerBridgeJni.isToolAllowedForProfile(
+                        mProfile, ToolMode.TOOL_MODE_IMAGE_GEN))
+                .thenReturn(true);
         IncognitoUtils.setEnabledForTesting(true);
 
         // Setup for home modules.
@@ -929,6 +938,43 @@ public class NewTabPageCoordinatorUnitTest {
     })
     public void testOptionalButtonVisibility_SwitchBackToGoogle_Canvas() {
         testOptionalButtonVisibilitySwitchBackToGoogleImpl();
+    }
+
+    /**
+     * Verifies that the Create image chip falls back to the canvas chip when image generation isn't
+     * allowed.
+     */
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.NTP_AURORA,
+        ChromeFeatureList.NTP_AURORA_V2 + ":action_chips/2"
+    })
+    public void testOptionalButton_CreateImage_ImageGenNotAllowed_FallsBackToCanvas() {
+        when(mMockComposeboxQueryControllerBridgeJni.isToolAllowedForProfile(
+                        mProfile, ToolMode.TOOL_MODE_IMAGE_GEN))
+                .thenReturn(false);
+        // Tool availability is checked when the composeplate is created, so recreate the
+        // coordinator.
+        mCoordinator.destroy();
+        createCoordinator();
+
+        assertNotNull(mCoordinator.getComposeplateCoordinatorForTesting());
+        View optionalButton = mNewTabPageLayout.findViewById(R.id.optional_button);
+        assertEquals(View.VISIBLE, optionalButton.getVisibility());
+
+        // The Create image text isn't applied, so the layout's default gallery text is kept.
+        assertEquals(
+                mActivity.getString(R.string.omnibox_navattach_gallery),
+                optionalButton.getContentDescription());
+
+        // Clicking doesn't enter image generation mode.
+        optionalButton.performClick();
+        verify(mManager, never())
+                .focusSearchBox(
+                        anyBoolean(),
+                        eq(AutocompleteRequestType.IMAGE_GENERATION),
+                        eq(OmniboxFocusReason.NTP_AI_MODE),
+                        any());
     }
 
     /**
