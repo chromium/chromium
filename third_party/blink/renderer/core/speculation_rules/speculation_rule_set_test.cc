@@ -15,6 +15,7 @@
 #include "services/network/public/mojom/no_vary_search.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/dom/dom_node_id.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -2707,7 +2708,8 @@ TEST_F(DocumentRulesTest, LinkReferrerPolicy) {
       page_holder.GetPage().GetConsoleMessageStorage();
   EXPECT_EQ(console_message_storage.size(), 1u);
   EXPECT_THAT(console_message_storage.at(0)->Nodes(),
-              testing::Contains(link_with_disallowed_referrer->GetDomNodeId()));
+              testing::Contains(DOMNodeIdType(
+                  link_with_disallowed_referrer->GetDomNodeId())));
 }
 
 // Tests that changing the "referrerpolicy" attribute results in the

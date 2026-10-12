@@ -33,6 +33,7 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
+#include "third_party/blink/public/common/dom/dom_node_id.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/forms/form_control_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
@@ -2056,7 +2057,7 @@ void HTMLElement::ShowPopoverInternal(Element* invoker,
                   mojom::blink::ConsoleMessageSource::kOther,
                   mojom::blink::ConsoleMessageLevel::kError,
                   "Cannot open an auto popover nested inside a hint popover.");
-              Vector<DOMNodeId> nodes;
+              Vector<DOMNodeIdType> nodes;
               nodes.push_back(GetDomNodeId());
               message->SetNodes(original_document.GetFrame(), nodes);
               original_document.AddConsoleMessage(message);

@@ -7,13 +7,13 @@
 #include <memory>
 #include <utility>
 
+#include "third_party/blink/public/common/dom/dom_node_id.h"
 #include "third_party/blink/public/web/web_console_message.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -54,7 +54,7 @@ ConsoleMessage::ConsoleMessage(const WebConsoleMessage& message,
                                                           message.column_number,
                                                           nullptr)) {
   if (local_frame) {
-    Vector<DOMNodeId> nodes;
+    Vector<DOMNodeIdType> nodes;
     for (const WebNode& web_node : message.nodes)
       nodes.push_back(web_node.GetDomNodeId());
     SetNodes(local_frame, std::move(nodes));
@@ -111,11 +111,11 @@ LocalFrame* ConsoleMessage::Frame() const {
   return nullptr;
 }
 
-Vector<DOMNodeId>& ConsoleMessage::Nodes() {
+Vector<DOMNodeIdType>& ConsoleMessage::Nodes() {
   return nodes_;
 }
 
-void ConsoleMessage::SetNodes(LocalFrame* frame, Vector<DOMNodeId> nodes) {
+void ConsoleMessage::SetNodes(LocalFrame* frame, Vector<DOMNodeIdType> nodes) {
   frame_ = frame;
   nodes_ = std::move(nodes);
 }

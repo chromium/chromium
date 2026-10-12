@@ -12,6 +12,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "cc/base/features.h"
 #include "components/viz/common/view_transition_element_resource_id.h"
+#include "third_party/blink/public/common/dom/dom_node_id.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/resources/grit/blink_resources.h"
 #include "third_party/blink/renderer/bindings/core/v8/frozen_array.h"
@@ -551,7 +552,7 @@ ViewTransitionStyleTracker::ViewTransitionStyleTracker(
 
 void ViewTransitionStyleTracker::AddConsoleError(
     String message,
-    Vector<DOMNodeId> related_nodes) {
+    Vector<DOMNodeIdType> related_nodes) {
   auto* console_message = MakeGarbageCollected<ConsoleMessage>(
       mojom::blink::ConsoleMessageSource::kRendering,
       mojom::blink::ConsoleMessageLevel::kError, std::move(message));
@@ -854,7 +855,7 @@ bool ViewTransitionStyleTracker::FlattenAndVerifyElements(
       message.Append(kDuplicateTagBaseError);
       message.Append(name);
 
-      Vector<DOMNodeId> nodes;
+      Vector<DOMNodeIdType> nodes;
       // Find all the elements with this name.
       for (auto& name_finder : flat_list) {
         if (name_finder->name == name) {
@@ -875,7 +876,7 @@ bool ViewTransitionStyleTracker::FlattenAndVerifyElements(
       message.Append(kTagCollisionBaseError);
       message.Append(name);
       AddConsoleError(message.ReleaseString(),
-                      Vector<DOMNodeId>(element->GetDomNodeId()));
+                      Vector<DOMNodeIdType>(element->GetDomNodeId()));
       return false;
     }
 

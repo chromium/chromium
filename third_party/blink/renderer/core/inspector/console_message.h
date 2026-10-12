@@ -7,10 +7,10 @@
 
 #include <optional>
 
+#include "third_party/blink/public/common/dom/dom_node_id.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
-#include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -63,8 +63,8 @@ class CORE_EXPORT ConsoleMessage final
   const String& Message() const;
   const String& WorkerId() const;
   LocalFrame* Frame() const;
-  Vector<DOMNodeId>& Nodes();
-  void SetNodes(LocalFrame*, Vector<DOMNodeId> nodes);
+  Vector<DOMNodeIdType>& Nodes();
+  void SetNodes(LocalFrame*, Vector<DOMNodeIdType> nodes);
   const std::optional<mojom::blink::ConsoleMessageCategory>& Category() const;
   void SetCategory(mojom::blink::ConsoleMessageCategory category);
 
@@ -80,7 +80,7 @@ class CORE_EXPORT ConsoleMessage final
   double timestamp_;
   String worker_id_;
   WeakMember<LocalFrame> frame_;
-  Vector<DOMNodeId> nodes_;
+  Vector<DOMNodeIdType> nodes_;
 };
 
 }  // namespace blink

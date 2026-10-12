@@ -29,6 +29,7 @@
 #include <algorithm>
 #include <ranges>
 
+#include "third_party/blink/public/common/dom/dom_node_id.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_get_root_node_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_node_string_trustedscript.h"
@@ -3844,7 +3845,8 @@ void Node::AddConsoleMessage(mojom::blink::ConsoleMessageSource source,
                              const String& message) {
   auto* console_message =
       MakeGarbageCollected<ConsoleMessage>(source, level, message);
-  console_message->SetNodes(GetDocument().GetFrame(), {GetDomNodeId()});
+  console_message->SetNodes(GetDocument().GetFrame(),
+                            {DOMNodeIdType(GetDomNodeId())});
   GetDocument().AddConsoleMessage(console_message);
 }
 

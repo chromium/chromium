@@ -11,6 +11,7 @@
 #include "base/unguessable_token.h"
 #include "cc/layers/view_transition_content_layer.h"
 #include "components/viz/common/view_transition_element_resource_id.h"
+#include "third_party/blink/public/common/dom/dom_node_id.h"
 #include "third_party/blink/public/common/frame/view_transition_state.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_rule.h"
@@ -388,7 +389,8 @@ class ViewTransitionStyleTracker
   bool HasLiveNewContent() const;
   void EndTransition();
 
-  void AddConsoleError(String message, Vector<DOMNodeId> related_nodes = {});
+  void AddConsoleError(String message,
+                       Vector<DOMNodeIdType> related_nodes = {});
   void AddTransitionElement(Element*,
                             const AtomicString& name,
                             const AtomicString& nearest_containing_group,

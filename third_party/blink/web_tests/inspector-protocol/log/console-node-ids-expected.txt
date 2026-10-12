@@ -1,0 +1,5 @@
+Console messages preserve related DOM nodes.
+Node count: 2
+first
+second
+
