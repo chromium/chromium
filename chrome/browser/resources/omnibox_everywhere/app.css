@@ -186,10 +186,7 @@ omnibox-everywhere-omnibox::part(dropdown-content) {
   -webkit-app-region: drag;
   align-items: center;
   animation: fadeInMvt 200ms cubic-bezier(0, 0, 0.2, 1);
-  background: linear-gradient(
-          var(--omnibox-inactive-hover-overlay, transparent),
-          var(--omnibox-inactive-hover-overlay, transparent)),
-      var(--color-sys-surface-container-high, #fff);
+  background: var(--color-searchbox-background, #fff);
   /* Preserves 2px border width parity with omnibox-everywhere-omnibox and
    * composebox. */
   border: 2px solid transparent;
