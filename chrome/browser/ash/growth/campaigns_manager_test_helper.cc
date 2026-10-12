@@ -14,10 +14,26 @@
 #include "chrome/browser/global_features.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/ash/components/feature_engagement/feature_engagement_tracker_provider.h"
 #include "components/metrics/metrics_state_manager.h"
 #include "components/metrics/startup_visibility.h"
 #include "components/metrics/test/test_enabled_state_provider.h"
 #include "components/variations/service/test_variations_service.h"
+
+namespace {
+
+// A stub FeatureEngagementTrackerProvider so growth code paths that resolve a
+// Tracker (e.g. campaign impression logging) don't crash on Get() in unit
+// tests. Returns null; callers handle a missing tracker.
+class FakeFeatureEngagementTrackerProvider
+    : public ash::FeatureEngagementTrackerProvider {
+ public:
+  feature_engagement::Tracker* Find(const AccountId& account_id) override {
+    return nullptr;
+  }
+};
+
+}  // namespace
 
 CampaignsManagerTestHelper::CampaignsManagerTestHelper() = default;
 
@@ -27,6 +43,9 @@ void CampaignsManagerTestHelper::InitializeCampaignsManager(
     scoped_refptr<component_updater::ComponentManagerAsh>
         component_manager_ash) {
   CHECK(component_manager_ash);
+
+  feature_engagement_tracker_provider_ =
+      std::make_unique<FakeFeatureEngagementTrackerProvider>();
 
   browser_process_platform_part_test_api_ =
       std::make_unique<BrowserProcessPlatformPartTestApi>(
@@ -70,4 +89,5 @@ void CampaignsManagerTestHelper::ShutdownCampaignsManager() {
   metrics_enabled_state_provider_.reset();
   browser_process_platform_part_test_api_->ShutdownComponentManager();
   browser_process_platform_part_test_api_.reset();
+  feature_engagement_tracker_provider_.reset();
 }

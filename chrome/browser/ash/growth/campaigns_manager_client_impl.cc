@@ -36,10 +36,9 @@
 #include "chrome/browser/ash/login/demo_mode/demo_components.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_dimensions.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
-#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
+#include "chromeos/ash/components/feature_engagement/feature_engagement_tracker_provider.h"
 #include "chromeos/ash/components/growth/campaigns_logger.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/components/growth/campaigns_utils.h"
@@ -56,7 +55,6 @@
 #include "components/user_manager/user_manager.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/synthetic_trials.h"
-#include "content/public/browser/browser_context.h"
 #include "ui/display/screen.h"
 
 namespace {
@@ -77,13 +75,7 @@ feature_engagement::Tracker* GetTracker(const AccountId& account_id) {
   if (!account_id.is_valid()) {
     return nullptr;
   }
-  content::BrowserContext* context =
-      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
-          account_id);
-  if (!context) {
-    return nullptr;
-  }
-  return feature_engagement::TrackerFactory::GetForBrowserContext(context);
+  return ash::FeatureEngagementTrackerProvider::Get().Find(account_id);
 }
 
 }  // namespace

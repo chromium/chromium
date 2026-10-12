@@ -10,6 +10,10 @@
 #include "base/memory/scoped_refptr.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
 
+namespace ash {
+class FeatureEngagementTrackerProvider;
+}  // namespace ash
+
 namespace component_updater {
 class ComponentManagerAsh;
 }  // namespace component_updater
@@ -51,6 +55,12 @@ class CampaignsManagerTestHelper {
   }
 
  private:
+  // Installed as the process-wide FeatureEngagementTrackerProvider so growth
+  // code that resolves a Tracker in unit tests does not crash on Get().
+  // Destroyed last (after the client) so nothing dangles.
+  std::unique_ptr<ash::FeatureEngagementTrackerProvider>
+      feature_engagement_tracker_provider_;
+
   std::unique_ptr<BrowserProcessPlatformPartTestApi>
       browser_process_platform_part_test_api_;
 
