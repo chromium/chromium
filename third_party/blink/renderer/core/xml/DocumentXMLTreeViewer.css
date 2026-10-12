@@ -50,6 +50,14 @@ div.folder > span.hidden {
     white-space: pre-wrap;
 }
 
+.space-preserve {
+    white-space: pre-wrap;
+}
+
+.space-default {
+    white-space: normal;
+}
+
 .folder-button {
     user-select: none;
     cursor: pointer;

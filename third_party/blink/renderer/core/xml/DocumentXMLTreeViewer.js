@@ -79,6 +79,20 @@ function sourceXMLLoaded()
 
 // Tree processing.
 
+// https://www.w3.org/TR/xml/#sec-white-space
+// xml:space applies to descendants until one declares its own value. The class
+// goes on the element's container so that `white-space` is inherited, and a
+// nested declaration overrides it.
+function applyXMLSpace(element, node) {
+  const value =
+      node.getAttributeNS('http://www.w3.org/XML/1998/namespace', 'space');
+  if (value === 'preserve') {
+    element.classList.add('space-preserve');
+  } else if (value === 'default') {
+    element.classList.add('space-default');
+  }
+}
+
 function processNode(parentElement, node)
 {
   switch (node.nodeType) {
@@ -125,6 +139,7 @@ function processEmptyElement(parentElement, node)
 function processShortTextOnlyElement(parentElement, node)
 {
   var line = createLine();
+  applyXMLSpace(line, node);
   line.appendChild(createTag(node, false, false));
   for (var child = node.firstChild; child; child = child.nextSibling)
     line.appendChild(createText(child.nodeValue));
@@ -135,6 +150,7 @@ function processShortTextOnlyElement(parentElement, node)
 function processComplexElement(parentElement, node)
 {
   var folder = createFolder();
+  applyXMLSpace(folder, node);
   folder.start.appendChild(createTag(node, false, false));
 
   for (var child = node.firstChild; child; child = child.nextSibling)
@@ -159,14 +175,27 @@ function processCDATA(parentElement, node)
   parentElement.appendChild(line);
 }
 
+function isProcessingInstructionInProlog(node) {
+  if (node.parentNode !== sourceXML) {
+    return false;
+  }
+  for (var sibling = node.previousSibling; sibling;
+       sibling = sibling.previousSibling) {
+    if (sibling.nodeType === Node.ELEMENT_NODE) {
+      return false;
+    }
+  }
+  return true;
+}
+
 function processProcessingInstruction(parentElement, node)
 {
-  const seenRootElement = parentElement.childNodes.length > 0;
+  const inProlog = isProcessingInstructionInProlog(node);
   var line = createLine();
   line.appendChild(
       createComment('<?' + node.nodeName + ' ' + node.nodeValue + '?>'));
   parentElement.appendChild(line);
-  if (!seenRootElement && node.nodeName === 'xml-stylesheet') {
+  if (inProlog && node.nodeName === 'xml-stylesheet') {
     // This will only get hit if XSLT is disabled in the renderer.
     headerSpan.innerHTML =
         'This document cannot be formatted as intended. It uses XSLT, which ' +
@@ -179,6 +208,12 @@ function processProcessingInstruction(parentElement, node)
 
 function processText(parentElement, node)
 {
+  // When an xml:space="preserve" element has child nodes, the whitespace
+  // around them is a text node of its own. Appending it would produce blank
+  // lines that the XML file does not have, so skip it. Firefox does the same.
+  if (!/\S/.test(node.nodeValue)) {
+    return;
+  }
   parentElement.appendChild(createText(node.nodeValue));
 }
 

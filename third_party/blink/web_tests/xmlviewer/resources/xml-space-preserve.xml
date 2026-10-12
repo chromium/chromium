@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+<preserved xml:space="preserve">keep
+these    spaces</preserved>
+<collapsed>drop
+these    spaces</collapsed>
+<outer xml:space="preserve"><inner>inherited
+these    spaces</inner></outer>
+<outer xml:space="preserve"><inner xml:space="default">reset
+these    spaces</inner></outer>
+<indented xml:space="preserve">
+  <child>nested</child>
+</indented>
+<commented xml:space="preserve">
+  <!-- indented comment -->
+</commented>
+<horizontal xml:space="preserve">    <child/>   <child2/>   </horizontal>
+</root>

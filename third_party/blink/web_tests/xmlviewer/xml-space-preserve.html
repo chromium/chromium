@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script>
+async_test((t) => {
+  let xmlWindow;
+
+  t.add_cleanup(() => { xmlWindow.close(); });
+
+  function checkPreservedSpace() {
+    var sourcePretty = xmlWindow.document.getElementsByClassName('pretty-print')[0];
+
+    if (!sourcePretty || !sourcePretty.innerText) {
+      requestAnimationFrame(t.step_func(checkPreservedSpace));
+      return;
+    }
+
+    var text = sourcePretty.innerText;
+
+    // xml:space is honored
+    assert_true(text.includes('keep\nthese    spaces'),
+                'xml:space="preserve" keeps line breaks and runs of spaces');
+    assert_true(text.includes('drop these spaces'),
+                'whitespace still collapses without xml:space="preserve"');
+    assert_true(text.includes('inherited\nthese    spaces'),
+                'a descendant inherits xml:space="preserve"');
+    assert_true(text.includes('reset these spaces'),
+                'a descendant can opt out with xml:space="default"');
+
+    // Even with xml:space="preserve" set, whitespace-only text nodes between
+    // child nodes are not kept. They are reformatted, the same way Firefox
+    // does it.
+    assert_true(text.includes('<indented xml:space="preserve">\n<child>'),
+                'whitespace around a child element is not shown');
+    assert_true(text.includes('<commented xml:space="preserve">\n<!--'),
+                'whitespace around a child comment is not shown');
+    assert_true(text.includes('<horizontal xml:space="preserve">\n<child/>' +
+                              '\n<child2/>\n</horizontal>'),
+                'even in the horizontal case, the whitespace between child ' +
+                'elements is not preserved. line breaks format it instead');
+
+    t.done();
+  }
+
+  window.addEventListener("load", (e) => {
+    xmlWindow = window.open('resources/xml-space-preserve.xml',
+                            'XMLViewerTestWindow');
+    xmlWindow.onload = t.step_func(checkPreservedSpace);
+  });
+}, 'xml:space is honored in the XML tree viewer');
+</script>
+</head>
+<body>
+</body>
+</html>
