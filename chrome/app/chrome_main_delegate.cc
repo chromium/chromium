@@ -49,6 +49,7 @@
 #include "chrome/common/chrome_paths_internal.h"
 #include "chrome/common/chrome_result_codes.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/chrome_version.h"
 #include "chrome/common/crash_keys.h"
 #include "chrome/common/logging_chrome.h"
 #include "chrome/common/profiler/chrome_thread_group_profiler_client.h"
@@ -72,7 +73,6 @@
 #include "components/variations/service/variations_network_clock.h"
 #include "components/variations/variations_ids_provider.h"
 #include "components/version_info/channel.h"
-#include "components/version_info/version_info.h"
 #include "content/public/app/initialize_mojo_core.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_constants.h"
@@ -106,6 +106,7 @@
 
 #include "base/base_switches.h"
 #include "base/files/important_file_writer_cleaner.h"
+#include "base/process/launch.h"
 #include "base/process/process_handle.h"
 #include "base/win/current_module.h"
 #include "base/win/dark_mode_support.h"
@@ -113,7 +114,6 @@
 #include "base/win/resource_exhaustion.h"
 #include "base/win/win_util.h"
 #include "chrome/child/v8_crashpad_support_win.h"
-#include "chrome/common/chrome_version.h"
 #include "sandbox/win/src/sandbox.h"
 #include "sandbox/win/src/sandbox_factory.h"
 #include "ui/base/resource/resource_bundle_win.h"
@@ -414,7 +414,39 @@ bool SubprocessNeedsResourceBundle(const std::string& process_type) {
       process_type == switches::kUtilityProcess;
 }
 
-#if BUILDFLAG(IS_POSIX) && !defined(BUILDING_CHROME_RENDERER)
+#if !defined(BUILDING_CHROME_RENDERER)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_WIN)
+// Check for --version and --product-version; return true if we encountered
+// one of these switches and should exit now.
+bool HandleVersionSwitches(const base::CommandLine& command_line) {
+#if BUILDFLAG(IS_MAC)
+  const bool print_product_version = false;
+#else
+  const bool print_product_version =
+      command_line.HasSwitch(switches::kProductVersion);
+#endif
+  if (!print_product_version && !command_line.HasSwitch(switches::kVersion)) {
+    return false;
+  }
+
+#if BUILDFLAG(IS_WIN)
+  // chrome.exe is a GUI-subsystem binary, so its stdout is not connected to
+  // the launching console unless the caller redirected it (e.g., to a pipe).
+  base::RouteStdioToConsole(/*create_console_if_not_found=*/false);
+#endif
+
+  if (print_product_version) {
+    printf("%s\n", CHROME_VERSION_STRING);
+  } else {
+    printf("%s %s %s\n", PRODUCT_FULLNAME_STRING, CHROME_VERSION_STRING,
+           chrome::GetChannelName(chrome::WithExtendedStable(true)).c_str());
+  }
+  fflush(stdout);
+  return true;
+}
+#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_POSIX)
 bool HandleCreditsSwitch(const base::CommandLine& command_line) {
   if (!command_line.HasSwitch(switches::kCredits)) {
     return false;
@@ -462,27 +494,6 @@ bool HandleCreditsSwitch(const base::CommandLine& command_line) {
   return true;
 }
 
-// Check for --version and --product-version; return true if we encountered
-// one of these switches and should exit now.
-bool HandleVersionSwitches(const base::CommandLine& command_line) {
-#if !BUILDFLAG(IS_MAC)
-  if (command_line.HasSwitch(switches::kProductVersion)) {
-    UNSAFE_TODO(printf("%s\n", version_info::GetVersionNumber().data()));
-    return true;
-  }
-#endif
-
-  if (command_line.HasSwitch(switches::kVersion)) {
-    UNSAFE_TODO(printf(
-        "%s %s %s\n", version_info::GetProductName().data(),
-        version_info::GetVersionNumber().data(),
-        chrome::GetChannelName(chrome::WithExtendedStable(true)).c_str()));
-    return true;
-  }
-
-  return false;
-}
-
 #if BUILDFLAG(IS_LINUX)
 // Show the man page if --help or -h is on the command line.
 void HandleHelpSwitches(const base::CommandLine& command_line) {
@@ -515,6 +526,7 @@ void SetUpProfilingShutdownHandler() {
 #endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
 
 #endif  // BUILDFLAG(IS_POSIX)
+#endif  // !defined(BUILDING_CHROME_RENDERER)
 
 // Returns true if the browser will exit before feature list initialization
 // happens in the browser process.
@@ -1257,10 +1269,14 @@ std::optional<int> ChromeMainDelegate::BasicStartupComplete() {
   v8_crashpad_support::SetUp();
 #endif
 
-#if BUILDFLAG(IS_POSIX) && !defined(BUILDING_CHROME_RENDERER)
+#if !defined(BUILDING_CHROME_RENDERER)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_WIN)
   if (HandleVersionSwitches(command_line)) {
     return 0;  // Got a --version switch; exit with a success error code.
   }
+#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_POSIX)
   if (HandleCreditsSwitch(command_line)) {
     return 0;  // Got a --credits switch; exit with a success error code.
   }
@@ -1269,9 +1285,9 @@ std::optional<int> ChromeMainDelegate::BasicStartupComplete() {
   // This will directly exit if the user asked for help.
   HandleHelpSwitches(command_line);
 #endif
-#endif  // BUILDFLAG(IS_POSIX) && !defined(BUILDING_CHROME_RENDERER)
+#endif  // BUILDFLAG(IS_POSIX)
 
-#if BUILDFLAG(IS_WIN) && !defined(BUILDING_CHROME_RENDERER)
+#if BUILDFLAG(IS_WIN)
   // Must do this before any other usage of command line!
   if (HasDeprecatedArguments(command_line.GetCommandLineString())) {
     return 1;
@@ -1366,7 +1382,8 @@ std::optional<int> ChromeMainDelegate::BasicStartupComplete() {
     }
   }
 
-#endif  // BUILDFLAG(IS_WIN) && !defined(BUILDING_CHROME_RENDERER)
+#endif  // BUILDFLAG(IS_WIN)
+#endif  // !defined(BUILDING_CHROME_RENDERER)
 
   if (!IsInitFeatureListEarly()) {
     chrome::RegisterPathProvider();
