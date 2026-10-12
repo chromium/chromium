@@ -269,9 +269,9 @@ export class TopToolbarElement extends TopToolbarElementBase {
         '#overflowMenuButton');
     // Register help bubble only if 'G' logo is being shown.
     if ((this as unknown as HTMLElement)
-            .shadowRoot?.querySelector('.top-toolbar-logo')) {
+            .shadowRoot?.querySelector('.top-toolbar-logo-button')) {
       this.registerHelpBubble(
-          'kContextualTasksSuperGButtonElementId', '.top-toolbar-logo');
+          'kContextualTasksSuperGButtonElementId', '.top-toolbar-logo-button');
     }
   }
   // </if>
