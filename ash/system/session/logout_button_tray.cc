@@ -51,6 +51,8 @@ LogoutButtonTray::LogoutButtonTray(Shelf* shelf)
                               base::Unretained(this)),
           std::u16string(), CONTEXT_LAUNCHER_BUTTON));
   button_->SetStyle(ui::ButtonStyle::kProminent);
+  button_->SetBgColorIdOverride(cros_tokens::kColorAlert);
+  button_->SetEnabledTextColors(cros_tokens::kColorPrimaryInverted);
   set_use_bounce_in_animation(false);
 
   SetFocusBehavior(FocusBehavior::NEVER);
@@ -99,14 +101,6 @@ void LogoutButtonTray::OnActiveUserPrefServiceChanged(PrefService* prefs) {
 std::u16string LogoutButtonTray::GetLoginStatusString() {
   LoginStatus login_status = shelf()->GetStatusAreaWidget()->login_status();
   return user::GetLocalizedSignOutStringForStatus(login_status, false);
-}
-
-void LogoutButtonTray::OnThemeChanged() {
-  TrayBackgroundView::OnThemeChanged();
-  const auto* color_provider = GetColorProvider();
-  button_->SetBgColorIdOverride(cros_tokens::kColorAlert);
-  button_->SetEnabledTextColors(
-      color_provider->GetColor(cros_tokens::kColorPrimaryInverted));
 }
 
 void LogoutButtonTray::UpdateShowLogoutButtonInTray() {

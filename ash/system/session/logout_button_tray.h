@@ -53,7 +53,6 @@ class ASH_EXPORT LogoutButtonTray : public TrayBackgroundView,
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void HideBubble(const TrayBubbleView* bubble_view) override;
   void HandleLocaleChange() override;
-  void OnThemeChanged() override;
 
   // SessionObserver:
   void OnActiveUserPrefServiceChanged(PrefService* prefs) override;
