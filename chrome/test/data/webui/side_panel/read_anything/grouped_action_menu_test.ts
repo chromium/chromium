@@ -101,18 +101,20 @@ suite('GroupedActionMenuElement', () => {
       {
         header: {title: 'Header 1', separator: false},
         items: [
-          {title: 'Item 1', data: 1, selected: true},
+          {title: 'Item 1', data: 1},
           {title: 'Item 2', data: 2},
         ],
         eventName: ToolbarEvent.THEME,
+        selectedValue: 1,
       },
       {
         header: {title: 'Header 2', separator: true},
         items: [
-          {title: 'Item 3', data: 3, selected: true},
+          {title: 'Item 3', data: 3},
           {title: 'Item 4', data: 4},
         ],
         eventName: ToolbarEvent.LINE_SPACING,
+        selectedValue: 3,
       },
     ];
     await microtasksFinished();

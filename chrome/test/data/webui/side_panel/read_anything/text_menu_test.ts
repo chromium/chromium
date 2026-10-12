@@ -38,10 +38,7 @@ suite('TextMenuElement', () => {
         textMenu.font = newFont;
         await microtasksFinished();
 
-        const selectedItems =
-            textMenu.$.menu.menuGroups[0]!.items.filter(item => item.selected);
-        assertEquals(1, selectedItems.length, 'selected font count');
-        assertEquals(newFont, selectedItems[0]!.data, 'selected font data');
+        assertEquals(newFont, textMenu.$.menu.menuGroups[0]!.selectedValue);
       });
 
   test('on font change does not close menus', async () => {
@@ -63,11 +60,8 @@ suite('TextMenuElement', () => {
         textMenu.lineSpacing = looseLineSpacing;
         await microtasksFinished();
 
-        const selectedItems =
-            textMenu.$.menu.menuGroups[1]!.items.filter(item => item.selected);
-        assertEquals(1, selectedItems.length, 'selected spacing count');
         assertEquals(
-            looseLineSpacing, selectedItems[0]!.data, 'selected spacing data');
+            looseLineSpacing, textMenu.$.menu.menuGroups[1]!.selectedValue);
       });
 
   test('on line spacing change does not close menus', async () => {
@@ -90,12 +84,8 @@ suite('TextMenuElement', () => {
         textMenu.letterSpacing = wideLetterSpacing;
         await microtasksFinished();
 
-        const selectedItems =
-            textMenu.$.menu.menuGroups[2]!.items.filter(item => item.selected);
-        assertEquals(1, selectedItems.length, 'selected letter spacing count');
         assertEquals(
-            wideLetterSpacing, selectedItems[0]!.data,
-            'selected letter spacing data');
+            wideLetterSpacing, textMenu.$.menu.menuGroups[2]!.selectedValue);
       });
 
   test('on letter spacing change does not close menus', async () => {
@@ -141,29 +131,12 @@ suite('TextMenuElement', () => {
 
   test('restores saved line spacing option', async () => {
     const looseSpacing = visualBrowserProxy.looseLineSpacing;
-    const startingSelected =
-        textMenu.$.menu.menuGroups[1]!.items.find(item => item.selected);
-    assertNotEquals(looseSpacing, startingSelected?.data);
+    assertNotEquals(looseSpacing, textMenu.$.menu.menuGroups[1]!.selectedValue);
 
     textMenu.lineSpacing = looseSpacing;
     await microtasksFinished();
 
-    const newSelected =
-        textMenu.$.menu.menuGroups[1]!.items.find(item => item.selected);
-    assertEquals(looseSpacing, newSelected?.data);
-    assertNotEquals(startingSelected?.data, newSelected?.data);
-  });
-
-  test('does nothing if saved line spacing is the same', async () => {
-    const startingSelected =
-        textMenu.$.menu.menuGroups[1]!.items.find(item => item.selected);
-
-    textMenu.lineSpacing = startingSelected?.data as number;
-    await microtasksFinished();
-
-    const newSelected =
-        textMenu.$.menu.menuGroups[1]!.items.find(item => item.selected);
-    assertEquals(startingSelected?.data, newSelected?.data);
+    assertEquals(looseSpacing, textMenu.$.menu.menuGroups[1]!.selectedValue);
   });
 
   test('open and close methods control menu visibility', () => {

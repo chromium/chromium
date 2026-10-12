@@ -34,14 +34,14 @@ export function getHtml(this: GroupedActionMenuElement) {
                 role="${this.getItemRole_(item)}"
                 title="${item.ariaLabel || item.title}"
                 aria-label="${item.ariaLabel || item.title}"
-                aria-checked="${this.getItemAriaChecked_(item)}"
+                aria-checked="${this.getItemAriaChecked_(group, item)}"
                 aria-haspopup="${this.getItemAriaHasPopup_(item)}"
                 @click="${this.onClick_}" data-group-index="${groupIndex}"
                 data-item-index="${itemIndex}">
               ${item.itemType !== SettingsItemType.ACTION ? html`
                 <cr-icon
                     class="button-image check-mark check-mark-showing-${
-                        !!item.selected}"
+                        this.isItemSelected_(group, item)}"
                     icon="${this.getItemIcon_(item)}">
                 </cr-icon>
               ` : nothing}

@@ -112,6 +112,7 @@ export class LineFocusMenuElement extends LineFocusMenuElementBase implements
       },
       items: this.toggleOptions_,
       eventName: ToolbarEvent.LINE_FOCUS_TOGGLE,
+      selectedValue: this.lineFocusEnabled,
     };
   }
 
@@ -123,6 +124,7 @@ export class LineFocusMenuElement extends LineFocusMenuElementBase implements
       },
       items: this.styleOptions_,
       eventName: ToolbarEvent.LINE_FOCUS_STYLE,
+      selectedValue: this.lineFocusStyle ?? undefined,
     };
   }
 
@@ -134,6 +136,7 @@ export class LineFocusMenuElement extends LineFocusMenuElementBase implements
       },
       items: this.movementOptions_,
       eventName: ToolbarEvent.LINE_FOCUS_MOVEMENT,
+      selectedValue: this.lineFocusMovement ?? undefined,
     };
   }
 
@@ -144,17 +147,6 @@ export class LineFocusMenuElement extends LineFocusMenuElementBase implements
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
-    if (changedProperties.has('lineFocusEnabled')) {
-      this.updateOptionsForToggle_(this.lineFocusEnabled);
-    }
-    if (changedProperties.has('lineFocusStyle') &&
-        this.lineFocusStyle !== null) {
-      this.updateOptionsForStyle_(this.lineFocusStyle);
-    }
-    if (changedProperties.has('lineFocusMovement') &&
-        this.lineFocusMovement !== null) {
-      this.updateOptionsForMovement_(this.lineFocusMovement);
-    }
     if (changedProperties.has('lineFocusEnabled') ||
         changedProperties.has('lineFocusStyle') ||
         changedProperties.has('lineFocusMovement')) {
@@ -201,24 +193,6 @@ export class LineFocusMenuElement extends LineFocusMenuElementBase implements
   protected onLineFocusMovementChange_() {
     this.logger_.logTextSettingsChange(
         ReadAnythingSettingsChange.LINE_FOCUS_MOVEMENT_CHANGE);
-  }
-
-  private updateOptionsForToggle_(isEnabled: boolean) {
-    this.toggleOptions_.forEach(option => {
-      option.selected = option.data === isEnabled;
-    });
-  }
-
-  private updateOptionsForStyle_(newStyle: LineFocusStyle) {
-    this.styleOptions_.forEach(option => {
-      option.selected = option.data === newStyle;
-    });
-  }
-
-  private updateOptionsForMovement_(newMovement: LineFocusMovement) {
-    this.movementOptions_.forEach(option => {
-      option.selected = option.data === newMovement;
-    });
   }
 }
 

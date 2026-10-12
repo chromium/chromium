@@ -38,10 +38,7 @@ suite('AudioMenuElement', () => {
     audioMenu.highlightGranularity = wordHighlight;
     await microtasksFinished();
 
-    const selectedItems =
-        audioMenu.$.menu.menuGroups[1]!.items.filter(item => item.selected);
-    assertEquals(1, selectedItems.length);
-    assertEquals(wordHighlight, selectedItems[0]!.data);
+    assertEquals(wordHighlight, audioMenu.$.menu.menuGroups[1]!.selectedValue);
   });
 
   test('on highlight change does not close menus', async () => {
@@ -80,29 +77,12 @@ suite('AudioMenuElement', () => {
   test('restores saved highlight option', async () => {
     createAudioMenu();
     const granularity = audioBrowserProxy.getSentenceHighlighting();
-    const startingSelected =
-        audioMenu.$.menu.menuGroups[1]!.items.find(item => item.selected);
-    assertNotEquals(granularity, startingSelected?.data);
+    assertNotEquals(granularity, audioMenu.$.menu.menuGroups[1]!.selectedValue);
 
     audioMenu.highlightGranularity = granularity;
     await microtasksFinished();
 
-    const newSelected =
-        audioMenu.$.menu.menuGroups[1]!.items.find(item => item.selected);
-    assertEquals(granularity, newSelected?.data);
-  });
-
-  test('does nothing if saved highlight is the same', async () => {
-    createAudioMenu();
-    const startingSelected =
-        audioMenu.$.menu.menuGroups[1]!.items.find(item => item.selected);
-
-    audioMenu.highlightGranularity = 0;
-    await microtasksFinished();
-
-    const newSelected =
-        audioMenu.$.menu.menuGroups[1]!.items.find(item => item.selected);
-    assertEquals(startingSelected?.data, newSelected?.data);
+    assertEquals(granularity, audioMenu.$.menu.menuGroups[1]!.selectedValue);
   });
 
   test('can be closed programmatically', () => {

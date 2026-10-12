@@ -104,15 +104,21 @@ export class GroupedActionMenuElement extends GroupedActionMenuElementBase {
                                                        'menuitemradio';
   }
 
+  protected isItemSelected_(
+      group: MenuGroup<unknown>, item: MenuStateItem<unknown>): boolean {
+    return item.data === group.selectedValue;
+  }
+
   // Returns the aria-checked attribute for the menuitemradio role (radio item
   // type). Returns nothing for menuitem roles (action item) since those don't
   // require the attribute.
-  protected getItemAriaChecked_(item: MenuStateItem<unknown>): boolean|
+  protected getItemAriaChecked_(
+      group: MenuGroup<unknown>, item: MenuStateItem<unknown>): boolean|
       typeof nothing {
     if (item.itemType === SettingsItemType.ACTION) {
       return nothing;
     }
-    return item.selected ?? false;
+    return this.isItemSelected_(group, item);
   }
 
   // Returns the aria-haspopup attribute for items that open a dialog, so

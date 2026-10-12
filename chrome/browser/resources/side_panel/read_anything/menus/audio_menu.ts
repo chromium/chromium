@@ -93,57 +93,57 @@ export class AudioMenuElement extends AudioMenuElementBase implements
     },
   ];
 
-  protected accessor groups_: Array<MenuGroup<number|string>> = [
-    {
-      header: {
-        title: loadTimeData.getString('voiceLabel'),
-        separator: false,
-      },
-      items:
-          [
-            {
-              title: loadTimeData.getString('voiceSelectionLabel'),
-              icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled')?
-              'read-anything:voice-selection':
-                  'read-anything:voice-selection-old',
-              data: 'open-voice-selection-dialog',
-              itemType: SettingsItemType.ACTION,
-              eventName: 'open-voice-selection-dialog',
-              opensDialog: true,
-            },
-            {
-              title: loadTimeData.getString('accentMenuLabel'),
-              icon: 'read-anything:translate',
-              itemType: SettingsItemType.ACTION,
-              data: 'open-accent-menu',
-              eventName: 'open-accent-menu',
-              opensDialog: true,
-            },
-          ],
-    },
-    {
-      header: {
-        title: loadTimeData.getString('voiceHighlightLabel'),
-        separator: true,
-      },
-      items: this.highlightOptions_,
-      eventName: ToolbarEvent.HIGHLIGHT_CHANGE,
-    },
-  ];
+  protected accessor groups_: Array<MenuGroup<number|string>> =
+      this.computeGroups_();
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
-    if (changedProperties.has('highlightGranularity')) {
-      this.updateOptionsForHighlight_();
-    }
-    if (changedProperties.has('selectedVoice')) {
-      this.updateOptionsForVoice_();
-    }
     if (changedProperties.has('highlightGranularity') ||
         changedProperties.has('selectedVoice')) {
-      this.groups_ = [...this.groups_];
+      this.groups_ = this.computeGroups_();
     }
+  }
+
+  private computeGroups_(): Array<MenuGroup<number|string>> {
+    return [
+      {
+        header: {
+          title: loadTimeData.getString('voiceLabel'),
+          separator: false,
+        },
+        items: [
+          {
+            title: getVoiceDisplayName(
+                getVoiceTitleAndNatureNaming(this.selectedVoice)),
+            icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+                'read-anything:voice-selection' :
+                'read-anything:voice-selection-old',
+            data: 'open-voice-selection-dialog',
+            itemType: SettingsItemType.ACTION,
+            eventName: 'open-voice-selection-dialog',
+            opensDialog: true,
+          },
+          {
+            title: loadTimeData.getString('accentMenuLabel'),
+            icon: 'read-anything:translate',
+            itemType: SettingsItemType.ACTION,
+            data: 'open-accent-menu',
+            eventName: 'open-accent-menu',
+            opensDialog: true,
+          },
+        ],
+      },
+      {
+        header: {
+          title: loadTimeData.getString('voiceHighlightLabel'),
+          separator: true,
+        },
+        items: this.highlightOptions_,
+        eventName: ToolbarEvent.HIGHLIGHT_CHANGE,
+        selectedValue: this.highlightGranularity,
+      },
+    ];
   }
 
   open(anchor: HTMLElement, showAtConfig?: ShowAtConfigPrefs) {
@@ -174,25 +174,6 @@ export class AudioMenuElement extends AudioMenuElementBase implements
     event.stopPropagation();
     this.showVoiceSelectionDialog_ = false;
     this.fire(ToolbarEvent.VOICE_MENU_CLOSE);
-  }
-
-  private updateOptionsForHighlight_() {
-    this.highlightOptions_.forEach(option => {
-      option.selected = option.data === this.highlightGranularity;
-    });
-  }
-
-  private updateOptionsForVoice_() {
-    const voiceGroup = this.groups_[0];
-    if (!voiceGroup || !voiceGroup.items[0]) {
-      return;
-    }
-    const naming = getVoiceTitleAndNatureNaming(this.selectedVoice);
-    voiceGroup.items[0] = {
-      ...voiceGroup.items[0],
-      title: getVoiceDisplayName(naming),
-    };
-    voiceGroup.items = [...voiceGroup.items];
   }
 }
 

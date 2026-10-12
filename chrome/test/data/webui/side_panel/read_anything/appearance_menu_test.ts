@@ -39,10 +39,8 @@ suite('AppearanceMenuElement', () => {
     appearanceMenu.theme = yellowTheme;
     await microtasksFinished();
 
-    const selectedItems = appearanceMenu.$.menu.menuGroups[1]!.items.filter(
-        item => item.selected);
-    assertEquals(1, selectedItems.length, 'selected');
-    assertEquals(yellowTheme, selectedItems[0]!.data, 'data');
+    assertEquals(
+        yellowTheme, appearanceMenu.$.menu.menuGroups[1]!.selectedValue);
   });
 
   test('on theme change does not close menus', async () => {
@@ -60,29 +58,12 @@ suite('AppearanceMenuElement', () => {
 
   test('restores saved color option', async () => {
     const color = visualBrowserProxy.getYellowTheme();
-    const startingSelected =
-        appearanceMenu.$.menu.menuGroups[1]!.items.find(item => item.selected);
-    assertNotEquals(color, startingSelected?.data);
+    assertNotEquals(color, appearanceMenu.$.menu.menuGroups[1]!.selectedValue);
 
     appearanceMenu.theme = color;
     await microtasksFinished();
 
-    const newSelected =
-        appearanceMenu.$.menu.menuGroups[1]!.items.find(item => item.selected);
-    assertEquals(color, newSelected?.data);
-    assertNotEquals(startingSelected?.data, newSelected?.data);
-  });
-
-  test('does nothing if saved color is the same', async () => {
-    const startingSelected =
-        appearanceMenu.$.menu.menuGroups[1]!.items.find(item => item.selected);
-
-    appearanceMenu.theme = 0;
-    await microtasksFinished();
-
-    const newSelected =
-        appearanceMenu.$.menu.menuGroups[1]!.items.find(item => item.selected);
-    assertEquals(startingSelected?.data, newSelected?.data);
+    assertEquals(color, appearanceMenu.$.menu.menuGroups[1]!.selectedValue);
   });
 
   test('presentation prop update changes selected items', async () => {
@@ -90,12 +71,9 @@ suite('AppearanceMenuElement', () => {
         visualBrowserProxy.getInImmersiveOverlayPresentationState();
     await microtasksFinished();
 
-    const selectedItems = appearanceMenu.$.menu.menuGroups[0]!.items.filter(
-        item => item.selected);
-    assertEquals(1, selectedItems.length);
     assertEquals(
         visualBrowserProxy.getInImmersiveOverlayPresentationState(),
-        selectedItems[0]!.data);
+        appearanceMenu.$.menu.menuGroups[0]!.selectedValue);
   });
 
   test('on presentation change', async () => {

@@ -102,32 +102,8 @@ export class TextMenuElement extends TextMenuElementBase implements
     },
   ];
 
-  protected accessor groups_: Array<MenuGroup<number|string>> = [
-    {
-      header: {
-        title: loadTimeData.getString('fontNameTitle'),
-        separator: false,
-      },
-      items: this.fontOptions_,
-      eventName: ToolbarEvent.FONT,
-    },
-    {
-      header: {
-        title: loadTimeData.getString('lineSpacingTitle'),
-        separator: true,
-      },
-      items: this.lineSpacingOptions_,
-      eventName: ToolbarEvent.LINE_SPACING,
-    },
-    {
-      header: {
-        title: loadTimeData.getString('letterSpacingTitle'),
-        separator: true,
-      },
-      items: this.letterSpacingOptions_,
-      eventName: ToolbarEvent.LETTER_SPACING,
-    },
-  ];
+  protected accessor groups_: Array<MenuGroup<number|string>> =
+      this.computeGroups_();
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
@@ -141,11 +117,40 @@ export class TextMenuElement extends TextMenuElementBase implements
         changedProperties.has('letterSpacing') ||
         changedProperties.has('pageLanguage') ||
         changedProperties.has('areFontsLoaded')) {
-      this.updateOptionsForFont_();
-      this.updateOptionsForLineSpacing_();
-      this.updateOptionsForLetterSpacing_();
-      this.groups_ = [...this.groups_];
+      this.groups_ = this.computeGroups_();
     }
+  }
+
+  private computeGroups_(): Array<MenuGroup<number|string>> {
+    return [
+      {
+        header: {
+          title: loadTimeData.getString('fontNameTitle'),
+          separator: false,
+        },
+        items: this.fontOptions_,
+        eventName: ToolbarEvent.FONT,
+        selectedValue: this.font,
+      },
+      {
+        header: {
+          title: loadTimeData.getString('lineSpacingTitle'),
+          separator: true,
+        },
+        items: this.lineSpacingOptions_,
+        eventName: ToolbarEvent.LINE_SPACING,
+        selectedValue: this.lineSpacing,
+      },
+      {
+        header: {
+          title: loadTimeData.getString('letterSpacingTitle'),
+          separator: true,
+        },
+        items: this.letterSpacingOptions_,
+        eventName: ToolbarEvent.LETTER_SPACING,
+        selectedValue: this.letterSpacing,
+      },
+    ];
   }
 
   open(anchor: HTMLElement, showAtConfig?: ShowAtConfigPrefs) {
@@ -154,24 +159,6 @@ export class TextMenuElement extends TextMenuElementBase implements
 
   close() {
     this.$.menu.close();
-  }
-
-  private updateOptionsForFont_() {
-    this.fontOptions_.forEach(option => {
-      option.selected = option.data === this.font;
-    });
-  }
-
-  private updateOptionsForLineSpacing_() {
-    this.lineSpacingOptions_.forEach(option => {
-      option.selected = option.data === this.lineSpacing;
-    });
-  }
-
-  private updateOptionsForLetterSpacing_() {
-    this.letterSpacingOptions_.forEach(option => {
-      option.selected = option.data === this.letterSpacing;
-    });
   }
 
   private computeFontOptions_() {
@@ -184,9 +171,6 @@ export class TextMenuElement extends TextMenuElementBase implements
           data: font,
           style: `font-family:${font}`,
         }));
-    if (this.groups_[0]) {
-      this.groups_[0].items = this.fontOptions_;
-    }
   }
 }
 
