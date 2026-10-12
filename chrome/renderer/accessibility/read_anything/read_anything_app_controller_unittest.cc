@@ -76,6 +76,10 @@ class MockReadAnythingUntrustedPageHandler
               read_anything::mojom::ReadabilityDistillationResult::kEmpty, "",
               "");
         });
+    ON_CALL(*this, OnSelectionChange)
+        .WillByDefault(base::test::RunOnceCallbackRepeatedly<5>(true));
+    ON_CALL(*this, OnCollapseSelection)
+        .WillByDefault(base::test::RunOnceCallbackRepeatedly<0>(true));
   }
 
   MOCK_METHOD(void,
@@ -105,9 +109,13 @@ class MockReadAnythingUntrustedPageHandler
                ui::AXNodeID anchor_node_id,
                int anchor_offset,
                ui::AXNodeID focus_node_id,
-               int focus_offset),
+               int focus_offset,
+               OnSelectionChangeCallback callback),
               (override));
-  MOCK_METHOD(void, OnCollapseSelection, (), (override));
+  MOCK_METHOD(void,
+              OnCollapseSelection,
+              (OnCollapseSelectionCallback callback),
+              (override));
   MOCK_METHOD(void, OnCopy, (), (override));
   MOCK_METHOD(void,
               OnLineSpaceChange,
@@ -386,6 +394,23 @@ class ReadAnythingAppControllerTest : public testing::Test {
       const std::vector<ui::AXEvent>& events = std::vector<ui::AXEvent>()) {
     controller().AccessibilityEventReceived(updates[0].tree_data.tree_id,
                                             updates, events);
+  }
+
+  // Simulates a selection change on the main page.
+  void SetMainPageSelection(
+      ui::AXNodeID anchor_id,
+      int anchor_offset,
+      ui::AXNodeID focus_id,
+      int focus_offset,
+      ax::mojom::EventFrom event_from = ax::mojom::EventFrom::kNone) {
+    ui::AXTreeUpdate update;
+    test::SetUpdateTreeID(&update, tree_id_);
+    update.event_from = event_from;
+    update.tree_data.sel_anchor_object_id = anchor_id;
+    update.tree_data.sel_anchor_offset = anchor_offset;
+    update.tree_data.sel_focus_object_id = focus_id;
+    update.tree_data.sel_focus_offset = focus_offset;
+    AccessibilityEventReceived({std::move(update)});
   }
 
   std::u16string MoveToNextGranularityAndGetText() {
@@ -2595,12 +2620,56 @@ TEST_F(ReadAnythingAppControllerTest, OnSelectionChange) {
   int focus_offset = 1;
   EXPECT_CALL(page_handler_,
               OnSelectionChange(tree_id_, anchor_node_id, anchor_offset,
-                                focus_node_id, focus_offset))
+                                focus_node_id, focus_offset, testing::_))
       .Times(1);
   controller().OnSelectionChange(anchor_node_id, anchor_offset, focus_node_id,
                                  focus_offset);
   ASSERT_EQ(1, model().unprocessed_selections_from_reading_mode());
   Mock::VerifyAndClearExpectations(distiller_);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnSelectionChange_AppliedKeepsCounterUntilPostProcess) {
+  SendUpdateWithNodes(
+      {test::TextNode(/* id= */ 2), test::TextNode(/* id= */ 3)});
+
+  EXPECT_CALL(page_handler_, OnSelectionChange).Times(1);
+  controller().OnSelectionChange(2, 0, 3, 1);
+  FlushPageHandlerReplies();
+  EXPECT_EQ(1, model().unprocessed_selections_from_reading_mode());
+
+  // The main page reports the applied selection.
+  SetMainPageSelection(2, 0, 3, 1);
+  EXPECT_EQ(0, model().unprocessed_selections_from_reading_mode());
+}
+
+TEST_F(ReadAnythingAppControllerTest, OnSelectionChange_RejectedResetsCounter) {
+  SendUpdateWithNodes(
+      {test::TextNode(/* id= */ 2), test::TextNode(/* id= */ 3)});
+
+  EXPECT_CALL(page_handler_, OnSelectionChange)
+      .WillOnce(base::test::RunOnceCallback<5>(false));
+  controller().OnSelectionChange(2, 0, 3, 1);
+  EXPECT_EQ(1, model().unprocessed_selections_from_reading_mode());
+  FlushPageHandlerReplies();
+  EXPECT_EQ(0, model().unprocessed_selections_from_reading_mode());
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnSelectionChange_RejectedAfterUserSelectionKeepsCounterAtZero) {
+  SendUpdateWithNodes(
+      {test::TextNode(/* id= */ 2), test::TextNode(/* id= */ 3)});
+
+  EXPECT_CALL(page_handler_, OnSelectionChange)
+      .WillOnce(base::test::RunOnceCallback<5>(false));
+  controller().OnSelectionChange(2, 0, 3, 1);
+
+  // A user selection on the main page resets the counter before the reply.
+  SetMainPageSelection(2, 0, 3, 2, ax::mojom::EventFrom::kUser);
+  ASSERT_EQ(0, model().unprocessed_selections_from_reading_mode());
+
+  FlushPageHandlerReplies();
+  EXPECT_EQ(0, model().unprocessed_selections_from_reading_mode());
 }
 
 TEST_F(ReadAnythingAppControllerTest, OnCollapseSelection) {
@@ -2609,16 +2678,18 @@ TEST_F(ReadAnythingAppControllerTest, OnCollapseSelection) {
   ui::AXNodeData node3 = test::TextNode(/* id= */ 4);
 
   SendUpdateWithNodes({std::move(node1), std::move(node2), std::move(node3)});
-  EXPECT_CALL(page_handler_, OnCollapseSelection()).Times(1);
+  SetMainPageSelection(2, 0, 3, 1);
+  EXPECT_CALL(page_handler_, OnCollapseSelection).Times(1);
   controller().OnCollapseSelection();
   Mock::VerifyAndClearExpectations(distiller_);
 }
 
 TEST_F(ReadAnythingAppControllerTest,
        OnCollapseSelection_IncrementsModelCounter) {
+  SetMainPageSelection(2, 0, 3, 1);
   ASSERT_EQ(model().unprocessed_selections_from_reading_mode(), 0);
 
-  EXPECT_CALL(page_handler_, OnCollapseSelection()).Times(1);
+  EXPECT_CALL(page_handler_, OnCollapseSelection).Times(1);
   controller().OnCollapseSelection();
 
   EXPECT_EQ(model().unprocessed_selections_from_reading_mode(), 1);
@@ -2631,19 +2702,48 @@ TEST_F(ReadAnythingAppControllerTest,
   ASSERT_EQ(model().unprocessed_selections_from_reading_mode(), 0);
 
   EXPECT_CALL(page_handler_, OnSelectionChange).Times(0);
-  EXPECT_CALL(page_handler_, OnCollapseSelection()).Times(0);
+  EXPECT_CALL(page_handler_, OnCollapseSelection).Times(0);
   controller().OnCollapseSelection();
 
   EXPECT_EQ(model().unprocessed_selections_from_reading_mode(), 0);
 }
 
 TEST_F(ReadAnythingAppControllerTest,
-       OnCollapseSelection_NoOpWhenReadabilityMappingInProgress) {
-  model().set_is_readability_mapping_in_progress(true);
+       OnCollapseSelection_AppliesWhenReadingModeSelectionPending) {
+  SendUpdateWithNodes(
+      {test::TextNode(/* id= */ 2), test::TextNode(/* id= */ 3)});
+  ASSERT_FALSE(model().has_selection());
+  EXPECT_CALL(page_handler_, OnSelectionChange).Times(1);
+  controller().OnSelectionChange(2, 0, 3, 1);
+  ASSERT_EQ(1, model().unprocessed_selections_from_reading_mode());
 
-  EXPECT_CALL(page_handler_, OnCollapseSelection()).Times(0);
+  EXPECT_CALL(page_handler_, OnCollapseSelection).Times(1);
   controller().OnCollapseSelection();
 
+  EXPECT_EQ(2, model().unprocessed_selections_from_reading_mode());
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnCollapseSelection_NoOpWhenReadabilityMappingInProgress) {
+  SetMainPageSelection(2, 0, 3, 1);
+  model().set_is_readability_mapping_in_progress(true);
+
+  EXPECT_CALL(page_handler_, OnCollapseSelection).Times(0);
+  controller().OnCollapseSelection();
+
+  EXPECT_EQ(0, model().unprocessed_selections_from_reading_mode());
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnCollapseSelection_RejectedResetsCounter) {
+  SetMainPageSelection(2, 0, 3, 1);
+
+  EXPECT_CALL(page_handler_, OnCollapseSelection)
+      .WillOnce(base::test::RunOnceCallback<0>(false));
+  controller().OnCollapseSelection();
+  EXPECT_EQ(1, model().unprocessed_selections_from_reading_mode());
+
+  FlushPageHandlerReplies();
   EXPECT_EQ(0, model().unprocessed_selections_from_reading_mode());
 }
 
@@ -2746,7 +2846,7 @@ TEST_F(ReadAnythingAppControllerTest,
   int anchor_offset = 5;
   ui::AXNodeID focus_node_id = 3;
   int focus_offset = 5;
-  EXPECT_CALL(page_handler_, OnCollapseSelection()).Times(1);
+  EXPECT_CALL(page_handler_, OnCollapseSelection).Times(1);
   controller().OnSelectionChange(anchor_node_id, anchor_offset, focus_node_id,
                                  focus_offset);
   ASSERT_EQ(1, model().unprocessed_selections_from_reading_mode());
@@ -2796,7 +2896,7 @@ TEST_F(ReadAnythingAppControllerTest,
   int focus_offset = 1;
   EXPECT_CALL(page_handler_,
               OnSelectionChange(tree_id_, anchor_node_id, anchor_offset,
-                                focus_node_id, focus_offset))
+                                focus_node_id, focus_offset, testing::_))
       .Times(0);
   controller().OnSelectionChange(anchor_node_id, anchor_offset, focus_node_id,
                                  focus_offset);
@@ -3696,6 +3796,7 @@ TEST_F(ReadAnythingAppControllerScreen2xTest,
 
 TEST_F(ReadAnythingAppControllerScreen2xTest,
        ImmersiveMode_ResetsReadingModeSelectionCountOnUserSelection) {
+  SetMainPageSelection(2, 0, 3, 1);
   page_handler_.FlushForTesting();
   Mock::VerifyAndClearExpectations(&page_handler_);
   // 1. Start in immersive overlay with a good distillation.
@@ -3710,7 +3811,7 @@ TEST_F(ReadAnythingAppControllerScreen2xTest,
   page_handler_.FlushForTesting();
 
   // 2. Collapse selection from reading mode.
-  EXPECT_CALL(page_handler_, OnCollapseSelection()).Times(1);
+  EXPECT_CALL(page_handler_, OnCollapseSelection).Times(1);
   controller().OnCollapseSelection();
   page_handler_.FlushForTesting();
   EXPECT_EQ(model().unprocessed_selections_from_reading_mode(), 1);

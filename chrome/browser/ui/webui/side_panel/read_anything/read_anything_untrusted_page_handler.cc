@@ -1385,16 +1385,17 @@ void ReadAnythingUntrustedPageHandler::ResetReadabilityState() {
   readability_distillation_tree_change_start_time_ = base::TimeTicks();
 }
 
-void ReadAnythingUntrustedPageHandler::PerformActionInTargetTree(
+bool ReadAnythingUntrustedPageHandler::PerformActionInTargetTree(
     const ui::AXActionData& data) {
   CHECK(IsObservingTree(data.target_tree_id));
   ui::AXActionHandlerBase* handler =
       ui::AXActionHandlerRegistry::GetInstance()->GetActionHandler(
           data.target_tree_id);
   if (!handler) {
-    return;
+    return false;
   }
   handler->PerformAction(data);
+  return true;
 }
 
 void ReadAnythingUntrustedPageHandler::OnSelectionChange(
@@ -1402,9 +1403,11 @@ void ReadAnythingUntrustedPageHandler::OnSelectionChange(
     ui::AXNodeID anchor_node_id,
     int anchor_offset,
     ui::AXNodeID focus_node_id,
-    int focus_offset) {
+    int focus_offset,
+    OnSelectionChangeCallback callback) {
   if (!HasTransientUserActivation()) {
     VLOG(1) << "OnSelectionChange failed with no transient user activation";
+    std::move(callback).Run(false);
     return;
   }
 
@@ -1414,6 +1417,7 @@ void ReadAnythingUntrustedPageHandler::OnSelectionChange(
         ReadAnythingRendererRequestResult::kNotObservedTree);
     VLOG(1) << "Received selection request for tree_id " << target_tree_id
             << " which is not currently being observed";
+    std::move(callback).Run(false);
     return;
   }
 
@@ -1422,6 +1426,7 @@ void ReadAnythingUntrustedPageHandler::OnSelectionChange(
         kRendererSelectionRequestHistogram,
         ReadAnythingRendererRequestResult::kDisallowedActionOnPageType);
     VLOG(1) << "Ignoring selection change on non-HTTP/HTTPS frame";
+    std::move(callback).Run(false);
     return;
   }
 
@@ -1430,11 +1435,13 @@ void ReadAnythingUntrustedPageHandler::OnSelectionChange(
   if (!ui::IsValidAXNodeIDFromRenderer(anchor_node_id)) {
     VLOG(1) << "Received selection request with invalid anchor_node_id "
             << anchor_node_id;
+    std::move(callback).Run(false);
     return;
   }
   if (!ui::IsValidAXNodeIDFromRenderer(focus_node_id)) {
     VLOG(1) << "Received selection request with invalid focus_node_id "
             << focus_node_id;
+    std::move(callback).Run(false);
     return;
   }
   ui::AXActionData action_data;
@@ -1445,18 +1452,23 @@ void ReadAnythingUntrustedPageHandler::OnSelectionChange(
   action_data.focus_node_id = focus_node_id;
   action_data.focus_offset = focus_offset;
 
-  PerformActionInTargetTree(action_data);
+  std::move(callback).Run(PerformActionInTargetTree(action_data));
 }
 
-void ReadAnythingUntrustedPageHandler::OnCollapseSelection() {
+void ReadAnythingUntrustedPageHandler::OnCollapseSelection(
+    OnCollapseSelectionCallback callback) {
   if (!HasTransientUserActivation()) {
     VLOG(1) << "OnCollapseSelection failed with no transient user activation";
+    std::move(callback).Run(false);
     return;
   }
 
-  if (main_observer_ && main_observer_->web_contents()) {
-    main_observer_->web_contents()->CollapseSelection();
+  if (!main_observer_ || !main_observer_->web_contents()) {
+    std::move(callback).Run(false);
+    return;
   }
+  main_observer_->web_contents()->CollapseSelection();
+  std::move(callback).Run(true);
 }
 
 void ReadAnythingUntrustedPageHandler::OnDistillationStatus(

@@ -70,6 +70,10 @@ class MockReadAnythingUntrustedPageHandler
               read_anything::mojom::ReadabilityDistillationResult::kEmpty, "",
               "");
         });
+    ON_CALL(*this, OnSelectionChange)
+        .WillByDefault(base::test::RunOnceCallbackRepeatedly<5>(true));
+    ON_CALL(*this, OnCollapseSelection)
+        .WillByDefault(base::test::RunOnceCallbackRepeatedly<0>(true));
   }
 
   MOCK_METHOD(void,
@@ -99,9 +103,13 @@ class MockReadAnythingUntrustedPageHandler
                ui::AXNodeID anchor_node_id,
                int anchor_offset,
                ui::AXNodeID focus_node_id,
-               int focus_offset),
+               int focus_offset,
+               OnSelectionChangeCallback callback),
               (override));
-  MOCK_METHOD(void, OnCollapseSelection, (), (override));
+  MOCK_METHOD(void,
+              OnCollapseSelection,
+              (OnCollapseSelectionCallback callback),
+              (override));
   MOCK_METHOD(void, OnCopy, (), (override));
   MOCK_METHOD(void,
               OnLineSpaceChange,

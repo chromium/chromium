@@ -1506,9 +1506,11 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
       ReadAnythingRendererRequestResult::kNotObservedTree,
       /*expected_bucket_count=*/1);
 
+  base::test::TestFuture<bool> selection_applied;
   handler_remote_->OnSelectionChange(child_tree_id, /*anchor_node_id=*/1, 0,
-                                     /*focus_node_id=*/2, 5);
-  handler_remote_.FlushForTesting();
+                                     /*focus_node_id=*/2, 5,
+                                     selection_applied.GetCallback());
+  EXPECT_FALSE(selection_applied.Get());
   histogram_tester.ExpectUniqueSample(
       "Accessibility.ReadAnything.RendererRequestForSelection.Result",
       ReadAnythingRendererRequestResult::kNotObservedTree,
@@ -3781,19 +3783,48 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
 
   // Initial state with no transient user activation
   EXPECT_FALSE(rfh->HasTransientUserActivation());
+  base::test::TestFuture<bool> selection_applied;
   handler_remote_->OnSelectionChange(tree_id, /*anchor_node_id=*/1, 0,
-                                     /*focus_node_id=*/2, 5);
-  handler_remote_.FlushForTesting();
+                                     /*focus_node_id=*/2, 5,
+                                     selection_applied.GetCallback());
+  EXPECT_FALSE(selection_applied.Take());
   histogram_tester.ExpectTotalCount(histogram_name, 0);
 
   // Grant User Activation via simulated mouse click.
   GrantUserActivation(rfh);
   handler_remote_->OnSelectionChange(tree_id, /*anchor_node_id=*/1, 0,
-                                     /*focus_node_id=*/2, 5);
-  handler_remote_.FlushForTesting();
+                                     /*focus_node_id=*/2, 5,
+                                     selection_applied.GetCallback());
+  EXPECT_TRUE(selection_applied.Take());
   histogram_tester.ExpectUniqueSample(
       histogram_name, ReadAnythingRendererRequestResult::kAllowed,
       /*expected_bucket_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
+                       OnSelectionChange_InvalidNodeIdsNotApplied) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/simple.html")));
+  SetUpHandler();
+
+  content::RenderFrameHost* rfh = web_contents_->GetPrimaryMainFrame();
+  content::RenderFrameHost* main_rfh =
+      browser()->GetActiveTabInterface()->GetContents()->GetPrimaryMainFrame();
+  ui::AXTreeID tree_id = main_rfh->GetAXTreeID();
+  GrantUserActivation(rfh);
+
+  // Browser-generated IDs are invalid in renderer requests.
+  base::test::TestFuture<bool> selection_applied;
+  handler_remote_->OnSelectionChange(tree_id, ui::kFirstGeneratedBrowserNodeID,
+                                     0, /*focus_node_id=*/2, 5,
+                                     selection_applied.GetCallback());
+  EXPECT_FALSE(selection_applied.Take());
+
+  handler_remote_->OnSelectionChange(tree_id, /*anchor_node_id=*/1, 0,
+                                     ui::kFirstGeneratedBrowserNodeID, 5,
+                                     selection_applied.GetCallback());
+  EXPECT_FALSE(selection_applied.Take());
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
@@ -3805,11 +3836,16 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
       browser()->GetActiveTabInterface()->GetContents()->GetPrimaryMainFrame();
   ui::AXTreeID tree_id = main_rfh->GetAXTreeID();
 
+  base::test::TestFuture<bool> selection_applied;
+  base::test::TestFuture<bool> collapse_applied;
   handler_remote_->OnCopy();
   handler_remote_->OnLinkClicked(tree_id, 1);
-  handler_remote_->OnSelectionChange(tree_id, 1, 0, 1, 1);
-  handler_remote_->OnCollapseSelection();
+  handler_remote_->OnSelectionChange(tree_id, 1, 0, 1, 1,
+                                     selection_applied.GetCallback());
+  handler_remote_->OnCollapseSelection(collapse_applied.GetCallback());
   handler_remote_.FlushForTesting();
+  EXPECT_FALSE(selection_applied.Get());
+  EXPECT_FALSE(collapse_applied.Get());
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
@@ -3873,16 +3909,17 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
 
   // Initial state with no transient user activation
   EXPECT_FALSE(rfh->HasTransientUserActivation());
-  handler_remote_->OnCollapseSelection();
-  handler_remote_.FlushForTesting();
+  base::test::TestFuture<bool> collapse_applied;
+  handler_remote_->OnCollapseSelection(collapse_applied.GetCallback());
+  EXPECT_FALSE(collapse_applied.Take());
   EXPECT_FALSE(
       main_contents->GetRenderWidgetHostView()->GetSelectedText().empty());
 
   // Grant User Activation via simulated mouse click.
   GrantUserActivation(rfh);
 
-  handler_remote_->OnCollapseSelection();
-  handler_remote_.FlushForTesting();
+  handler_remote_->OnCollapseSelection(collapse_applied.GetCallback());
+  EXPECT_TRUE(collapse_applied.Take());
   ASSERT_TRUE(base::test::RunUntil([&]() {
     content::RenderWidgetHostView* view =
         main_contents->GetRenderWidgetHostView();
@@ -3930,9 +3967,11 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
       /*expected_bucket_count=*/1);
 
   // Selection change requests are dropped without error.
+  base::test::TestFuture<bool> selection_applied;
   handler_remote_->OnSelectionChange(tree_id, /*anchor_node_id=*/1, 0,
-                                     /*focus_node_id=*/2, 5);
-  handler_remote_.FlushForTesting();
+                                     /*focus_node_id=*/2, 5,
+                                     selection_applied.GetCallback());
+  EXPECT_FALSE(selection_applied.Get());
   histogram_tester.ExpectUniqueSample(
       "Accessibility.ReadAnything.RendererRequestForSelection.Result",
       ReadAnythingRendererRequestResult::kDisallowedActionOnPageType,
@@ -3979,10 +4018,11 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
       /*expected_bucket_count=*/1);
 
   // Selection change requests succeed for PDF tree.
-  handler_remote_->OnSelectionChange(pdf_rfh->GetAXTreeID(),
-                                     /*anchor_node_id=*/1, 0,
-                                     /*focus_node_id=*/2, 5);
-  handler_remote_.FlushForTesting();
+  base::test::TestFuture<bool> selection_applied;
+  handler_remote_->OnSelectionChange(
+      pdf_rfh->GetAXTreeID(), /*anchor_node_id=*/1, 0,
+      /*focus_node_id=*/2, 5, selection_applied.GetCallback());
+  EXPECT_TRUE(selection_applied.Get());
   histogram_tester.ExpectUniqueSample(
       "Accessibility.ReadAnything.RendererRequestForSelection.Result",
       ReadAnythingRendererRequestResult::kAllowed,
@@ -4029,10 +4069,11 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
       /*expected_bucket_count=*/1);
 
   // Selection change requests succeed for local PDF tree.
-  handler_remote_->OnSelectionChange(pdf_rfh->GetAXTreeID(),
-                                     /*anchor_node_id=*/1, 0,
-                                     /*focus_node_id=*/2, 5);
-  handler_remote_.FlushForTesting();
+  base::test::TestFuture<bool> selection_applied;
+  handler_remote_->OnSelectionChange(
+      pdf_rfh->GetAXTreeID(), /*anchor_node_id=*/1, 0,
+      /*focus_node_id=*/2, 5, selection_applied.GetCallback());
+  EXPECT_TRUE(selection_applied.Get());
   histogram_tester.ExpectUniqueSample(
       "Accessibility.ReadAnything.RendererRequestForSelection.Result",
       ReadAnythingRendererRequestResult::kAllowed,
@@ -4083,10 +4124,11 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
       /*expected_bucket_count=*/1);
 
   // Selection change requests succeed for PDF content frame tree.
-  handler_remote_->OnSelectionChange(pdf_content_rfh->GetAXTreeID(),
-                                     /*anchor_node_id=*/1, 0,
-                                     /*focus_node_id=*/2, 5);
-  handler_remote_.FlushForTesting();
+  base::test::TestFuture<bool> selection_applied;
+  handler_remote_->OnSelectionChange(
+      pdf_content_rfh->GetAXTreeID(), /*anchor_node_id=*/1, 0,
+      /*focus_node_id=*/2, 5, selection_applied.GetCallback());
+  EXPECT_TRUE(selection_applied.Get());
   histogram_tester.ExpectUniqueSample(
       "Accessibility.ReadAnything.RendererRequestForSelection.Result",
       ReadAnythingRendererRequestResult::kAllowed,
@@ -4138,10 +4180,11 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
       /*expected_bucket_count=*/1);
 
   // Selection change requests succeed for local PDF content frame tree.
-  handler_remote_->OnSelectionChange(pdf_content_rfh->GetAXTreeID(),
-                                     /*anchor_node_id=*/1, 0,
-                                     /*focus_node_id=*/2, 5);
-  handler_remote_.FlushForTesting();
+  base::test::TestFuture<bool> selection_applied;
+  handler_remote_->OnSelectionChange(
+      pdf_content_rfh->GetAXTreeID(), /*anchor_node_id=*/1, 0,
+      /*focus_node_id=*/2, 5, selection_applied.GetCallback());
+  EXPECT_TRUE(selection_applied.Get());
   histogram_tester.ExpectUniqueSample(
       "Accessibility.ReadAnything.RendererRequestForSelection.Result",
       ReadAnythingRendererRequestResult::kAllowed,

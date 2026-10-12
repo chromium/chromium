@@ -487,6 +487,9 @@ class ReadAnythingAppController
   // Returns true if a draw occurred.
   bool PostProcessSelection();
 
+  // Handles the browser's reply to a selection request from the side panel.
+  void OnSelectionRequestHandled(bool applied);
+
   // Signals that the side panel has finished loading and it's safe to show
   // the UI to avoid loading artifacts.
   void ShouldShowUI();

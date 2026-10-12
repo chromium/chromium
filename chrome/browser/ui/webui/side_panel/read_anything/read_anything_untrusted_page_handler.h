@@ -368,8 +368,9 @@ class ReadAnythingUntrustedPageHandler :
                          ui::AXNodeID anchor_node_id,
                          int anchor_offset,
                          ui::AXNodeID focus_node_id,
-                         int focus_offset) override;
-  void OnCollapseSelection() override;
+                         int focus_offset,
+                         OnSelectionChangeCallback callback) override;
+  void OnCollapseSelection(OnCollapseSelectionCallback callback) override;
 
   void SetDefaultLanguageCode(const std::string& code);
 
@@ -401,7 +402,8 @@ class ReadAnythingUntrustedPageHandler :
   // Restores settings from preferences.
   void RestoreSettingsFromPrefs();
 
-  void PerformActionInTargetTree(const ui::AXActionData& data);
+  // Returns false if the target tree has no action handler.
+  bool PerformActionInTargetTree(const ui::AXActionData& data);
 
   bool AreInnerContentsPdfContent(
       std::vector<content::WebContents*> inner_contents);

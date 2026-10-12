@@ -2592,14 +2592,19 @@ void ReadAnythingAppController::OnSelectionChange(ui::AXNodeID anchor_node_id,
   }
 
   model_.increment_selections_from_reading_mode();
-  page_handler_->OnSelectionChange(model_.active_tree_id(), anchor_node_id,
-                                   anchor_offset, focus_node_id, focus_offset);
+  page_handler_->OnSelectionChange(
+      model_.active_tree_id(), anchor_node_id, anchor_offset, focus_node_id,
+      focus_offset,
+      base::BindOnce(&ReadAnythingAppController::OnSelectionRequestHandled,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ReadAnythingAppController::OnCollapseSelection() {
-  // With no selection, the browser drops the empty PDF selection set below, so
-  // the incremented count would never be consumed.
-  if (IsPdf() && !model_.has_selection()) {
+  // Nothing to collapse unless a side panel selection is still pending. This
+  // drops collapses from the side panel clearing or redrawing its selection.
+  // PDFs also need the model's selection to set an empty one below.
+  if (!model_.has_selection() &&
+      (IsPdf() || model_.unprocessed_selections_from_reading_mode() == 0)) {
     return;
   }
   // Until mapping finishes, Readability content has no node IDs, so every side
@@ -2609,16 +2614,28 @@ void ReadAnythingAppController::OnCollapseSelection() {
   }
 
   model_.increment_selections_from_reading_mode();
+  auto callback =
+      base::BindOnce(&ReadAnythingAppController::OnSelectionRequestHandled,
+                     weak_ptr_factory_.GetWeakPtr());
   if (IsPdf()) {
     // CollapseSelection does nothing in pdfs, so just set an empty selection
     // instead.
     page_handler_->OnSelectionChange(
         model_.active_tree_id(), model_.start_node_id(), model_.start_offset(),
-        model_.start_node_id(), model_.start_offset());
+        model_.start_node_id(), model_.start_offset(), std::move(callback));
   } else {
-    page_handler_->OnCollapseSelection();
+    page_handler_->OnCollapseSelection(std::move(callback));
   }
 }
+
+void ReadAnythingAppController::OnSelectionRequestHandled(bool applied) {
+  // A dropped request produces no selection event. A user selection on the
+  // main page may have already reset the count.
+  if (!applied && model_.unprocessed_selections_from_reading_mode() > 0) {
+    model_.decrement_selections_from_reading_mode();
+  }
+}
+
 void ReadAnythingAppController::ResetGranularityIndex() {
   read_aloud_model_.ResetGranularityIndex();
 }

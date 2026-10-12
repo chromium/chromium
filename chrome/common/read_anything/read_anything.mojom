@@ -328,16 +328,18 @@ interface UntrustedPageHandler {
   // Target_tree_id is the AXTreeID that contains the link to be clicked;
   // anchor_node_id and focus_node_id are AXNodeIDs which identify the anchor
   // and focus AXNodes of the selection; anchor_offset and focus_offset are
-  // integer offsets in the selection.
+  // integer offsets in the selection. `applied` is false if the browser
+  // dropped the request, in which case no selection event follows.
   OnSelectionChange(
     ax.mojom.AXTreeID target_tree_id,
     int32 anchor_node_id,
     int32 anchor_offset,
     int32 focus_node_id,
-    int32 focus_offset);
+    int32 focus_offset) => (bool applied);
 
   // Informs the browser to collapse the selection made in the WebUI.
-  OnCollapseSelection();
+  // `applied` is false if the browser dropped the request.
+  OnCollapseSelection() => (bool applied);
 
   // Informs the browser of the status of the latest distillation attempt.
   OnDistillationStatus(read_anything.mojom.DistillationStatus status,
