@@ -183,8 +183,12 @@ class ChromePasswordManagerClient
       const autofill::PasswordSuggestionRequest& request) override;
 #endif
 
+  bool IsReauthBeforeFillingRequired(
+      device_reauth::DeviceAuthAvailabilityChecker* checker) override;
   bool IsReauthBeforeFillingRequiredLegacy(
       device_reauth::DeviceAuthenticator* authenticator) override;
+  std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker>
+  GetDeviceAuthAvailabilityChecker() override;
   // Returns a pointer to the DeviceAuthenticator which is created on demand.
   // This is currently only implemented for Android, Mac and Windows. On all
   // other platforms this will always be null.
@@ -537,6 +541,11 @@ class ChromePasswordManagerClient
   void PropagatePredictionsToPasswordManager(autofill::AutofillManager& manager,
                                              autofill::FormGlobalId form_id,
                                              FieldTypeSource source);
+
+  // `T` is `device_reauth::DeviceAuthenticator` or
+  // `device_reauth::DeviceAuthAvailabilityChecker`.
+  template <typename T>
+  bool IsReauthBeforeFillingRequiredImpl(T* availability_provider);
 
   void OnNonPasswordLoginDetected();
 

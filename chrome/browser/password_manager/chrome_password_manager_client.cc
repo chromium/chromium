@@ -80,6 +80,7 @@
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "components/critical_actions/core/browser/critical_action_service.h"
 #include "components/critical_actions/core/browser/features.h"
+#include "components/device_reauth/device_auth_availability_checker.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
@@ -759,42 +760,23 @@ void ChromePasswordManagerClient::ContinueShowKeyboardReplacingSurface(
 }
 #endif
 
+bool ChromePasswordManagerClient::IsReauthBeforeFillingRequired(
+    device_reauth::DeviceAuthAvailabilityChecker* checker) {
+  return IsReauthBeforeFillingRequiredImpl(checker);
+}
+
 bool ChromePasswordManagerClient::IsReauthBeforeFillingRequiredLegacy(
     device_reauth::DeviceAuthenticator* authenticator) {
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-  if (!GetLocalStatePrefs() || !GetPrefs() || !authenticator) {
-    return false;
-  }
-  return GetPasswordFeatureManager()
-      ->IsBiometricAuthenticationBeforeFillingEnabled();
-#elif BUILDFLAG(IS_ANDROID)
-  if (base::android::device_info::is_automotive()) {
-    CHECK(authenticator);
-    return true;
-  }
-  if (!authenticator || !GetPrefs()) {
-    return false;
-  }
+  return IsReauthBeforeFillingRequiredImpl(authenticator);
+}
 
-  device_reauth::BiometricStatus biometric_status =
-      authenticator->GetBiometricAvailabilityStatus();
-  base::UmaHistogramBoolean(
-      "PasswordManager.BiometricAuthPwdFillAndroid."
-      "CanAuthenticateWithBiometricOrScreenLock",
-      biometric_status != device_reauth::BiometricStatus::kUnavailable);
-  switch (biometric_status) {
-    case device_reauth::BiometricStatus::kBiometricsAvailable:
-    case device_reauth::BiometricStatus::kOnlyLskfAvailable:
-      return base::FeatureList::IsEnabled(
-                 password_manager::features::kBiometricTouchToFill) &&
-             GetPrefs()->GetBoolean(password_manager::prefs::
-                                        kBiometricAuthenticationBeforeFilling);
-    case device_reauth::BiometricStatus::kUnavailable:
-      return false;
-  }
+std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker>
+ChromePasswordManagerClient::GetDeviceAuthAvailabilityChecker() {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_CHROMEOS)
+  return ChromeDeviceAuthenticatorFactory::CreateAvailabilityChecker();
 #else
-  return false;
+  return nullptr;
 #endif
 }
 
@@ -2036,6 +2018,46 @@ void ChromePasswordManagerClient::OnFedCmFederatedLogin(bool success) {
 
 void ChromePasswordManagerClient::OnNonFedCmFederatedLogin() {
   OnNonPasswordLoginDetected();
+}
+
+template <typename T>
+bool ChromePasswordManagerClient::IsReauthBeforeFillingRequiredImpl(
+    T* availability_provider) {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+  if (!GetLocalStatePrefs() || !GetPrefs() || !availability_provider) {
+    return false;
+  }
+  return GetPasswordFeatureManager()
+      ->IsBiometricAuthenticationBeforeFillingEnabled();
+#elif BUILDFLAG(IS_ANDROID)
+  if (base::android::device_info::is_automotive()) {
+    CHECK(availability_provider);
+    return true;
+  }
+  if (!availability_provider || !GetPrefs()) {
+    return false;
+  }
+
+  device_reauth::BiometricStatus biometric_status =
+      availability_provider->GetBiometricAvailabilityStatus();
+  base::UmaHistogramBoolean(
+      "PasswordManager.BiometricAuthPwdFillAndroid."
+      "CanAuthenticateWithBiometricOrScreenLock",
+      biometric_status != device_reauth::BiometricStatus::kUnavailable);
+  switch (biometric_status) {
+    case device_reauth::BiometricStatus::kBiometricsAvailable:
+    case device_reauth::BiometricStatus::kOnlyLskfAvailable:
+      return base::FeatureList::IsEnabled(
+                 password_manager::features::kBiometricTouchToFill) &&
+             GetPrefs()->GetBoolean(password_manager::prefs::
+                                        kBiometricAuthenticationBeforeFilling);
+    case device_reauth::BiometricStatus::kUnavailable:
+      return false;
+  }
+#else
+  return false;
+#endif
 }
 
 void ChromePasswordManagerClient::OnNonPasswordLoginDetected() {

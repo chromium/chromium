@@ -26,6 +26,8 @@ static_library("device_reauth") {
 static_library("test_support") {
   testonly = true
   sources = [
+    "mock_device_auth_availability_checker.cc",
+    "mock_device_auth_availability_checker.h",
     "mock_device_authenticator.cc",
     "mock_device_authenticator.h",
   ]

@@ -20,6 +20,7 @@
 #import "components/autofill/core/browser/logging/log_manager.h"
 #import "components/autofill/core/browser/logging/log_router.h"
 #import "components/autofill/ios/browser/autofill_client_ios.h"
+#import "components/device_reauth/device_auth_availability_checker.h"
 #import "components/device_reauth/device_authenticator.h"
 #import "components/enterprise/connectors/core/features.h"
 #import "components/enterprise/connectors/core/reporting_event_router.h"
@@ -116,10 +117,25 @@ bool IOSChromePasswordManagerClient::PromptUserToChooseCredentials(
   return false;
 }
 
+bool IOSChromePasswordManagerClient::IsReauthBeforeFillingRequired(
+    device_reauth::DeviceAuthAvailabilityChecker* checker) {
+  CHECK(checker);
+  return checker->CanAuthenticateWithBiometricOrScreenLock();
+}
+
 bool IOSChromePasswordManagerClient::IsReauthBeforeFillingRequiredLegacy(
     device_reauth::DeviceAuthenticator* authenticator) {
   CHECK(authenticator);
   return authenticator->CanAuthenticateWithBiometricOrScreenLock();
+}
+
+std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker>
+IOSChromePasswordManagerClient::GetDeviceAuthAvailabilityChecker() {
+  ProfileIOS* profile = bridge_.profile;
+  CHECK(profile);
+  id<ReauthenticationProtocol> reauthModule =
+      ReauthenticationServiceFactory::GetForProfile(profile)->GetReauthModule();
+  return CreateIOSDeviceAuthAvailabilityChecker(reauthModule);
 }
 
 std::unique_ptr<device_reauth::DeviceAuthenticator>

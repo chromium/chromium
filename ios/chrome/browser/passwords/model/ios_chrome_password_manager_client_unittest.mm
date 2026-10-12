@@ -13,6 +13,7 @@
 #import "components/autofill/ios/browser/autofill_client_ios.h"
 #import "components/autofill/ios/browser/test_autofill_client_ios.h"
 #import "components/device_reauth/device_authenticator.h"
+#import "components/device_reauth/mock_device_auth_availability_checker.h"
 #import "components/device_reauth/mock_device_authenticator.h"
 #import "components/enterprise/connectors/core/features.h"
 #import "components/enterprise/connectors/core/reporting_event_router.h"
@@ -286,9 +287,22 @@ TEST_F(IOSChromePasswordManagerClientTest, OnPasswordBreachInvoked) {
 }
 
 // Tests that `IsReauthBeforeFillingRequired` returns true when the
-// authenticator can authenticate with biometric or screen lock.
+// checker can authenticate with biometric or screen lock.
 TEST_F(IOSChromePasswordManagerClientTest,
        IsReauthBeforeFillingRequired_ReauthRequired) {
+  PasswordManagerClient* client = passwordController_.passwordManagerClient;
+  auto checker =
+      std::make_unique<device_reauth::MockDeviceAuthAvailabilityChecker>();
+
+  EXPECT_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
+      .WillOnce(Return(true));
+  EXPECT_TRUE(client->IsReauthBeforeFillingRequired(checker.get()));
+}
+
+// Tests that `IsReauthBeforeFillingRequiredLegacy` returns true when the
+// authenticator can authenticate with biometric or screen lock.
+TEST_F(IOSChromePasswordManagerClientTest,
+       IsReauthBeforeFillingRequiredLegacy_ReauthRequired) {
   PasswordManagerClient* client = passwordController_.passwordManagerClient;
   auto authenticator =
       std::make_unique<device_reauth::MockDeviceAuthenticator>();
@@ -299,9 +313,22 @@ TEST_F(IOSChromePasswordManagerClientTest,
 }
 
 // Tests that `IsReauthBeforeFillingRequired` returns false when the
-// authenticator cannot authenticate with biometric or screen lock.
+// checker cannot authenticate with biometric or screen lock.
 TEST_F(IOSChromePasswordManagerClientTest,
        IsReauthBeforeFillingRequired_ReauthNotRequired) {
+  PasswordManagerClient* client = passwordController_.passwordManagerClient;
+  auto checker =
+      std::make_unique<device_reauth::MockDeviceAuthAvailabilityChecker>();
+
+  EXPECT_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
+      .WillOnce(Return(false));
+  EXPECT_FALSE(client->IsReauthBeforeFillingRequired(checker.get()));
+}
+
+// Tests that `IsReauthBeforeFillingRequiredLegacy` returns false when the
+// authenticator cannot authenticate with biometric or screen lock.
+TEST_F(IOSChromePasswordManagerClientTest,
+       IsReauthBeforeFillingRequiredLegacy_ReauthNotRequired) {
   PasswordManagerClient* client = passwordController_.passwordManagerClient;
   auto authenticator =
       std::make_unique<device_reauth::MockDeviceAuthenticator>();
@@ -317,6 +344,14 @@ TEST_F(IOSChromePasswordManagerClientTest, GetDeviceAuthenticator) {
   std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator =
       client->GetDeviceAuthenticator();
   EXPECT_TRUE(authenticator);
+}
+
+// Tests that `GetDeviceAuthAvailabilityChecker` returns a valid checker.
+TEST_F(IOSChromePasswordManagerClientTest, GetDeviceAuthAvailabilityChecker) {
+  PasswordManagerClient* client = passwordController_.passwordManagerClient;
+  std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker> checker =
+      client->GetDeviceAuthAvailabilityChecker();
+  EXPECT_TRUE(checker);
 }
 
 // Tests that `AutomaticPasswordSave` displays the password saved infobar.
