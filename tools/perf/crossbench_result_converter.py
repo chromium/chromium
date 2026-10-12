@@ -130,6 +130,8 @@ def convert(
         unit = 'unitless_biggerIsBetter'
       elif lower_key.endswith('_bytes'):
         unit = 'sizeInBytes_smallerIsBetter'
+      elif lower_key.endswith('_count'):
+        unit = 'count_smallerIsBetter'
       else:
         unit = 'ms_smallerIsBetter'
     elif len(key_parts) == 2:

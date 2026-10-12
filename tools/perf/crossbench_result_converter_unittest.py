@@ -162,6 +162,64 @@ class CrossbenchResultConverterTest(unittest.TestCase):
       'Default',
     )
 
+  def test_count_and_bytes_metrics(self):
+    with tempfile.TemporaryDirectory() as temp_dir:
+      dir_path = pathlib.Path(temp_dir)
+      tp_json_path = dir_path / 'wv_heapdump_memory.json'
+      tp_json_path.write_text(
+        json.dumps(
+          {
+            'native_retained_renderer_bytes': {
+              'values': [1048576],
+              'cb_story': 'load_url_post_destroy',
+            },
+            'native_retained_renderer_count': {
+              'values': [256],
+              'cb_story': 'load_url_post_destroy',
+            },
+            'java_retained_browser_aw_contents_count': {
+              'values': [0],
+              'cb_story': 'load_url_post_destroy',
+            },
+          }
+        )
+      )
+      cb_results = {
+        'probes': {
+          'trace_processor': {
+            'json': [str(tp_json_path)],
+          }
+        },
+        'browsers': {'webview': {'probes': {'trace_processor': None}}},
+      }
+      (dir_path / 'cb.results.json').write_text(json.dumps(cb_results))
+
+      out_file = dir_path / 'out.json'
+      crossbench_result_converter.convert(
+        dir_path, out_file, benchmark='embedder.crossbench'
+      )
+      results = self.list_to_dict(json.loads(out_file.read_text()))
+
+    self.assertEqual(len(results), 3)
+    self.check_result(
+      results,
+      'native_retained_renderer_bytes',
+      1048576,
+      'sizeInBytes_smallerIsBetter',
+    )
+    self.check_result(
+      results,
+      'native_retained_renderer_count',
+      256,
+      'count_smallerIsBetter',
+    )
+    self.check_result(
+      results,
+      'java_retained_browser_aw_contents_count',
+      0,
+      'count_smallerIsBetter',
+    )
+
   def test_loadline1_results(self):
     csv_content = 'browser,metric1,metric2\nBrowserA,123.45,54.321 ± 0.574\n'
     with tempfile.TemporaryDirectory() as temp_dir:
