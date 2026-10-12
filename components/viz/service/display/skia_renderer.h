@@ -194,6 +194,8 @@ class VIZ_SERVICE_EXPORT SkiaRenderer
       const SkImage* image,
       const gfx::RectF& valid_texel_bounds,
       DrawQuadParams* params) const;
+  gfx::RectF GetRenderPassLogicalBounds(
+      AggregatedRenderPassId render_pass_id) const;
 
   bool MustFlushBatchedQuads(const DrawQuad* new_quad,
                              const DrawRPDQParams* rpdq_params,

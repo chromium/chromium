@@ -417,6 +417,10 @@ BASE_FEATURE(kDisplaySchedulerAsClient, base::FEATURE_ENABLED_BY_DEFAULT);
 // should be removed as soon as we confirm that the optimization is stable.
 BASE_FEATURE(kRpdqFilterLookupOptimizations, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Kill switch for constraining render pass texture sampling to logical content
+// bounds. Remove after the behavior is stable.
+BASE_FEATURE(kRenderPassBackingLogicalBounds, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When enabled, bypasses deadlocks caused by outdated activation dependency
 // tokens when parent frame submission lags behind child surface execution.
 BASE_FEATURE(kBypassOutdatedSurfaceActivation,

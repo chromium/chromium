@@ -21,6 +21,7 @@
 #include "base/memory/shared_memory_mapping.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/base/math_util.h"
@@ -90,6 +91,30 @@ INSTANTIATE_TEST_SUITE_P(,
 
 // GetGpuRendererTypes() can return an empty list, e.g. on Fuchsia ARM64.
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(GPURendererPixelTest);
+
+class RenderPassBackingPixelTest : public VizPixelTestWithParam {
+ public:
+  RenderPassBackingPixelTest() {
+    feature_list_.InitAndEnableFeature(
+        features::kRenderPassBackingLogicalBounds);
+    device_viewport_size_ = gfx::Size(800, 600);
+    // Use production backing allocation so logical render pass bounds can be
+    // smaller than the allocated texture.
+    renderer_settings_.dont_round_texture_sizes_for_pixel_tests = false;
+    // Force render pass backings for bypassable render passes.
+    renderer_settings_.disable_render_pass_bypassing = true;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         RenderPassBackingPixelTest,
+                         testing::ValuesIn(GetGpuRendererTypes()),
+                         testing::PrintToStringParamName());
+
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(RenderPassBackingPixelTest);
 
 TEST_P(RendererPixelTest, SimpleGreenRect) {
   gfx::Rect rect(this->device_viewport_size_);
@@ -1708,6 +1733,56 @@ TEST_P(RendererPixelTest, EnlargedRenderPassTextureWithAntiAliasing) {
           .SetErrorPixelsPercentageLimit(100.f)
           .SetAvgAbsErrorLimit(5.f)
           .SetAbsErrorLimit(7)));
+}
+
+// Verifies that sampling is clamped to a render pass's logical bounds when its
+// backing is larger than its content. Without clamping, linear filtering can
+// sample transparent allocation padding and expose the red background.
+TEST_P(RenderPassBackingPixelTest, ClampToLogicalRenderPassBounds) {
+  const gfx::Rect viewport_rect(device_viewport_size_);
+  const gfx::Rect child_rect(100, 120);
+
+  // Create a 100x120 logical pass. Production allocation rounds its backing
+  // to 128x128.
+  AggregatedRenderPassId child_pass_id{1};
+  auto child_pass =
+      CreateTestRenderPass(child_pass_id, child_rect, gfx::Transform());
+  SharedQuadState* child_shared_state = CreateTestSharedQuadState(
+      gfx::Transform(), child_rect, child_pass.get(), gfx::MaskFilterInfo());
+  auto* blue_quad = child_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
+  blue_quad->SetNew(child_shared_state, child_rect, child_rect, SkColors::kBlue,
+                    false);
+
+  AggregatedRenderPassId root_pass_id{2};
+  auto root_pass = CreateTestRootRenderPass(root_pass_id, viewport_rect);
+
+  // Scale the complete logical pass to cover the 800x600 viewport over red.
+  gfx::Transform child_to_root_transform;
+  child_to_root_transform.Scale(8);
+  SharedQuadState* render_pass_shared_state =
+      CreateTestSharedQuadState(child_to_root_transform, child_rect,
+                                root_pass.get(), gfx::MaskFilterInfo());
+  CreateTestRenderPassDrawQuad(render_pass_shared_state, child_rect,
+                               child_pass_id, root_pass.get());
+
+  // Draw a red background on the root render pass.
+  SharedQuadState* background_shared_state = CreateTestSharedQuadState(
+      gfx::Transform(), viewport_rect, root_pass.get(), gfx::MaskFilterInfo());
+  auto* red_background =
+      root_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
+  red_background->SetNew(background_shared_state, viewport_rect, viewport_rect,
+                         SkColors::kRed, false);
+
+  AggregatedRenderPassList pass_list;
+  pass_list.push_back(std::move(child_pass));
+  pass_list.push_back(std::move(root_pass));
+
+  // Sampling must clamp to the logical bounds, leaving no red pixels visible.
+  std::vector<SkColor> expected_output_colors(
+      viewport_rect.width() * viewport_rect.height(),
+      SkColors::kBlue.toSkColor());
+  EXPECT_TRUE(this->RunPixelTest(&pass_list, &expected_output_colors,
+                                 cc::AlphaDiscardingExactPixelComparator()));
 }
 
 // This tests the case where we have a RenderPass with a mask, but the quad

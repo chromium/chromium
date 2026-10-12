@@ -711,6 +711,16 @@ SkiaRenderer::DrawQuadParams::DrawQuadParams(const gfx::Transform& cdt,
   }
 }
 
+gfx::RectF SkiaRenderer::GetRenderPassLogicalBounds(
+    AggregatedRenderPassId render_pass_id) const {
+  const AggregatedRenderPassList& render_passes =
+      *current_frame()->render_passes_in_draw_order;
+  auto render_pass = std::ranges::find(render_passes, render_pass_id,
+                                       &AggregatedRenderPass::id);
+  CHECK(render_pass != render_passes.end());
+  return gfx::RectF((*render_pass)->output_rect.size());
+}
+
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_WIN)
 struct SkiaRenderer::RenderPassOverlayParams {
   RenderPassOverlayParams() = default;
@@ -3422,8 +3432,10 @@ void SkiaRenderer::DrawRenderPassQuad(
 
   params->vis_tex_coords = cc::MathUtil::ScaleRectProportional(
       quad->tex_coord_rect(), gfx::RectF(quad->rect), params->visible_rect);
-  gfx::RectF valid_texel_bounds(content_image->width(),
-                                content_image->height());
+  const gfx::RectF valid_texel_bounds =
+      base::FeatureList::IsEnabled(features::kRenderPassBackingLogicalBounds)
+          ? GetRenderPassLogicalBounds(quad->render_pass_id)
+          : gfx::RectF(content_image->width(), content_image->height());
 
   // When the RPDQ was needed because of a copy request, it may not require any
   // advanced filtering/effects at which point it's basically a tiled quad.
@@ -4184,8 +4196,11 @@ void SkiaRenderer::PrepareRenderPassOverlay(
       params.vis_tex_coords = cc::MathUtil::ScaleRectProportional(
           quad->tex_coord_rect(), gfx::RectF(quad->rect), params.visible_rect);
 
-      gfx::RectF valid_texel_bounds(content_image->width(),
-                                    content_image->height());
+      const gfx::RectF valid_texel_bounds =
+          base::FeatureList::IsEnabled(
+              features::kRenderPassBackingLogicalBounds)
+              ? GetRenderPassLogicalBounds(quad->render_pass_id)
+              : gfx::RectF(content_image->width(), content_image->height());
 
       SkPaint paint = params.paint(GetContentColorFilter());
 
