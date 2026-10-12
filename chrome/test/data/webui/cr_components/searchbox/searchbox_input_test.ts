@@ -873,4 +873,81 @@ suite('SearchboxInputTest', () => {
         input.setInput({text: 'https://newurl.com', inline: ''});
         assertNotEquals(null, input.urlEmphasis);
       });
+
+  test('Selected text is painted above the mirror element', async () => {
+    input = await createInput({urlEmphasisEnabled: true});
+    const selectionForeground = 'rgb(255, 255, 255)';
+    input.style.setProperty(
+        '--color-searchbox-selection-foreground', selectionForeground);
+    input.setInput({text: 'chrome://flags', inline: ''});
+    await input.updateComplete;
+
+    const mirror = input.shadowRoot.querySelector<HTMLElement>('#mirror');
+    assertTrue(!!mirror);
+    assertTrue(isVisible(mirror));
+
+    // The mirror must be painted beneath the input, so that the input's
+    // selection highlight and selected text are drawn on top of it rather than
+    // being covered by the mirror's emphasis-colored text.
+    const mirrorZIndex = Number(window.getComputedStyle(mirror).zIndex);
+    const inputZIndex =
+        Number(window.getComputedStyle(input.inputElement).zIndex);
+    assertTrue(
+        mirrorZIndex < inputZIndex,
+        `mirror z-index ${mirrorZIndex} >= input z-index ${inputZIndex}`);
+
+    // Unselected input text is transparent (the mirror renders it instead),
+    // but selected text must remain visible.
+    assertEquals(
+        'rgba(0, 0, 0, 0)', window.getComputedStyle(input.inputElement).color);
+    assertEquals(
+        selectionForeground,
+        window.getComputedStyle(input.inputElement, '::selection').color);
+  });
+
+  test('Input background never covers the mirror element', async () => {
+    for (const multiLineEnabled of [false, true]) {
+      input = await createInput({urlEmphasisEnabled: true, multiLineEnabled});
+      // Embedders such as Lens set this to give the input a background, which
+      // would hide the mirror painted beneath the input.
+      input.style.setProperty(
+          '--color-cr-searchbox-input-textarea', 'rgb(255, 0, 0)');
+      await input.updateComplete;
+
+      assertEquals(
+          'rgba(0, 0, 0, 0)',
+          window.getComputedStyle(input.inputElement).backgroundColor,
+          `multiLineEnabled: ${multiLineEnabled}`);
+    }
+  });
+
+  test('Input shrinks to keep slotted controls inside the box', async () => {
+    input = await createInput({multiLineEnabled: true});
+    // Text with a large min-content width (a single long word).
+    input.setInput({text: 'a'.repeat(100), inline: ''});
+
+    const button = document.createElement('button');
+    button.slot = 'action-buttons';
+    button.style.flexShrink = '0';
+    button.style.width = '100px';
+    input.appendChild(button);
+    input.style.width = '200px';
+    await input.updateComplete;
+    await microtasksFinished();
+
+    const container =
+        input.shadowRoot.querySelector<HTMLElement>('#inputInnerContainer');
+    assertTrue(!!container);
+    const containerRect = container.getBoundingClientRect();
+    const buttonRect = button.getBoundingClientRect();
+    const inputRect = input.inputElement.getBoundingClientRect();
+    assertTrue(
+        buttonRect.right <= containerRect.right,
+        `button right ${buttonRect.right} overflows container right ${
+            containerRect.right}`);
+    assertTrue(
+        inputRect.right <= buttonRect.left,
+        `input right ${inputRect.right} overlaps button left ${
+            buttonRect.left}`);
+  });
 });

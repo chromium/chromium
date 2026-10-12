@@ -28,6 +28,11 @@
   display: flex;
   align-self: stretch;
   flex: 1;
+  /* Allow the container to shrink below the min-content width of the
+   * input/textarea it wraps (e.g. a single-line textarea's placeholder), so
+   * that sibling controls like the action buttons stay inside the searchbox in
+   * narrow windows. */
+  min-width: 0;
 }
 
 #mirror {
@@ -48,8 +53,12 @@
   /* Dimensions should match underlying input element. */
   height: 100%;
   width: 100%;
-  /* Mirror overlay is placed atop underlying input element. */
-  z-index: 101;
+  /* Mirror is placed beneath the underlying input element, whose own text is
+   * transparent (see below). This lets the input paint its selection
+   * highlight and selected text on top of the mirror, so selected text uses
+   * the selection colors rather than the mirror's (possibly low-contrast)
+   * emphasis colors. */
+  z-index: 99;
 }
 
 #mirror span:not(.dimmed) {
@@ -69,10 +78,27 @@
   text-decoration-color: currentColor;
 }
 
-:host([url-emphasis-enabled]) :is(input, textarea),
-:host([url-emphasis-enabled]) :is(input, textarea)::selection {
+/* Unselected text is rendered by the #mirror, but selected text is still
+ * rendered by the input itself (using its ::selection colors). */
+:host([url-emphasis-enabled]) :is(input, textarea) {
   caret-color: var(--color-searchbox-foreground);
   color: transparent;
+}
+
+/* Explicitly set selection colors so that selected text does not inherit the
+ * input's transparent text color. Embedders may override these via
+ * ::part(searchbox-input)::selection. */
+:host([url-emphasis-enabled]) :is(input, textarea)::selection {
+  background-color: var(--color-searchbox-selection-background);
+  color: var(--color-searchbox-selection-foreground);
+}
+
+/* The mirror is painted beneath the input, so the input must not paint a
+ * background over it (e.g. via --color-cr-searchbox-input-textarea). Uses
+ * #input so that this outranks the ":host([multi-line-enabled]) textarea" rule
+ * below. */
+:host([url-emphasis-enabled]) #input {
+  background-color: transparent;
 }
 
 :host([multi-line-enabled]) textarea {
