@@ -92,6 +92,10 @@ class GlicWebClientManager : public content::WebContentsObserver {
   void UnsetWebClient(
       std::optional<GlicWebClientLifecycleEvent> event = std::nullopt);
 
+  void OnWebClientStateChangedForTesting(mojom::WebClientState state) {
+    OnWebClientStateChanged(state);
+  }
+
   // content::WebContentsObserver:
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
@@ -101,7 +105,11 @@ class GlicWebClientManager : public content::WebContentsObserver {
       base::TerminationStatus status) override;
 
  private:
+  class Metrics;
+
   void OnWebClientStateChanged(mojom::WebClientState state);
+
+  std::unique_ptr<Metrics> metrics_;
 
   raw_ptr<Host> host_ = nullptr;
   raw_ptr<Delegate> delegate_ = nullptr;
