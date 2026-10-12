@@ -30,7 +30,51 @@ chromium-metrics-reviews@google.com.
   <variant name="Ignored"/>
 </variants>
 
+<!-- Keyed by GetPermissionRequestString(GetUmaValueForRequest(s)).
+     Same as AllPermissionTypes, plus the geolocation prompt type variants.
+     Use for histograms whose name is derived from a PermissionRequest via
+     GetPermissionRequestString(), which takes the GeolocationPromptType
+     into account. -->
+
+<variants name="AllPermissionRequestTypes">
+  <variant name="AR"/>
+  <variant name="AudioAndVideoCapture"/>
+  <variant name="AudioCapture"/>
+  <variant name="CameraPanTiltZoom"/>
+  <variant name="ClipboardReadWrite"/>
+  <variant name="Geolocation"/>
+  <variant name="GeolocationApproximate"/>
+  <variant name="GeolocationApproximateOrPrecise"/>
+  <variant name="GeolocationUpgrade"/>
+  <variant name="IdleDetection"/>
+  <variant name="KeyboardLock"/>
+  <variant name="LocalFonts"/>
+  <variant name="LocalNetwork"/>
+  <variant name="LocalNetworkAccess"/>
+  <variant name="LoopbackNetwork"/>
+  <variant name="MidiSysEx"/>
+  <variant name="MultipleDownload"/>
+  <variant name="Nfc"/>
+  <variant name="Notifications"/>
+  <variant name="PaymentHandler"/>
+  <variant name="PointerLock"/>
+  <variant name="ProtectedMedia"/>
+  <variant name="Quota"/>
+  <variant name="RegisterProtocolHandler"/>
+  <variant name="SecurityKeyAttestation"/>
+  <variant name="Sensors"/>
+  <variant name="StorageAccess"/>
+  <variant name="TopLevelStorageAccess"/>
+  <variant name="U2fApiRequest"/>
+  <variant name="VideoCapture"/>
+  <variant name="VR"/>
+  <variant name="WindowPlacement"/>
+</variants>
+
 <!-- LINT.IfChange(AllPermissionTypes) -->
+
+<!-- Keyed by GetPermissionString(ContentSettingsType) or by RequestType without
+     a prompt type. -->
 
 <variants name="AllPermissionTypes">
   <variant name="AR"/>
@@ -76,6 +120,23 @@ chromium-metrics-reviews@google.com.
   <variant name="FromSupervised"/>
   <variant name="FromUser"/>
 </variants>
+
+<!-- Keyed by GetPermissionRequestString(GetUmaValueForRequest(s)).
+     Same as CpssSupportedTypes, plus the geolocation prompt type
+     variants. Use for histograms whose name is derived from a
+     PermissionRequest via GetPermissionRequestString(), which takes
+     the GeolocationPromptType into account. -->
+
+<variants name="CpssSupportedRequestTypes">
+  <variant name="Geolocation"/>
+  <variant name="GeolocationApproximate"/>
+  <variant name="GeolocationApproximateOrPrecise"/>
+  <variant name="GeolocationUpgrade"/>
+  <variant name="Notifications"/>
+</variants>
+
+<!-- Keyed by GetPermissionString(ContentSettingsType) or by RequestType without
+     a prompt type. -->
 
 <variants name="CpssSupportedTypes">
   <variant name="Geolocation"/>
@@ -188,6 +249,9 @@ chromium-metrics-reviews@google.com.
   <variant name="AudioAndVideoCapture"/>
   <variant name="AudioCapture"/>
   <variant name="Geolocation"/>
+  <variant name="GeolocationApproximate"/>
+  <variant name="GeolocationApproximateOrPrecise"/>
+  <variant name="GeolocationUpgrade"/>
   <variant name="VideoCapture"/>
 </variants>
 
@@ -1050,7 +1114,7 @@ chromium-metrics-reviews@google.com.
     <variant name="Unlikely"/>
     <variant name="VeryUnlikely"/>
   </token>
-  <token key="PermissionType" variants="CpssSupportedTypes"/>
+  <token key="PermissionType" variants="CpssSupportedRequestTypes"/>
 </histogram>
 
 <histogram
@@ -1066,7 +1130,7 @@ chromium-metrics-reviews@google.com.
     <variant name="Loud"/>
     <variant name="Quiet"/>
   </token>
-  <token key="PermissionType" variants="CpssSupportedTypes"/>
+  <token key="PermissionType" variants="CpssSupportedRequestTypes"/>
   <token key="Gesture" variants="PermissionRequestGesture"/>
 </histogram>
 
@@ -1103,7 +1167,7 @@ chromium-metrics-reviews@google.com.
     prompt, for users with disabled MSBB. This is recorded when a permission
     prompt is resolved.
   </summary>
-  <token key="PermissionType" variants="CpssSupportedTypes"/>
+  <token key="PermissionType" variants="CpssSupportedRequestTypes"/>
   <token key="Gesture" variants="PermissionRequestGesture"/>
 </histogram>
 
@@ -1275,7 +1339,7 @@ chromium-metrics-reviews@google.com.
     gesture was associated with it,for users with enabled MSBB. This is recorded
     by the prediction service for Notifications and Geolocation permissions.
   </summary>
-  <token key="PermissionType" variants="CpssSupportedTypes"/>
+  <token key="PermissionType" variants="CpssSupportedRequestTypes"/>
   <token key="Gesture" variants="PermissionRequestGesture"/>
 </histogram>
 
@@ -1288,7 +1352,7 @@ chromium-metrics-reviews@google.com.
     Recorded whenever a permission is sent to the prediction service. Records
     which prediction service was used to generate the prediction.
   </summary>
-  <token key="PermissionType" variants="CpssSupportedTypes"/>
+  <token key="PermissionType" variants="CpssSupportedRequestTypes"/>
 </histogram>
 
 <histogram
@@ -1599,7 +1663,7 @@ chromium-metrics-reviews@google.com.
     Records whether the browser was always active while the {PermissionType}
     prompt was displayed. Recorded when a permission prompt was destroyed.
   </summary>
-  <token key="PermissionType" variants="AllPermissionTypes"/>
+  <token key="PermissionType" variants="AllPermissionRequestTypes"/>
 </histogram>
 
 <histogram
@@ -1697,7 +1761,7 @@ chromium-metrics-reviews@google.com.
     Records whether the browser was active at the time the {PermissionType}
     prompt was displayed. Recorded when a permission prompt started displaying.
   </summary>
-  <token key="PermissionType" variants="AllPermissionTypes"/>
+  <token key="PermissionType" variants="AllPermissionRequestTypes"/>
 </histogram>
 
 <histogram name="Permissions.Prompt.{PermissionType}.{Action}.WithBrowser"
@@ -1709,7 +1773,7 @@ chromium-metrics-reviews@google.com.
     Records whether the browser was always active before interacting with the
     prompt.
   </summary>
-  <token key="PermissionType" variants="AllPermissionTypes"/>
+  <token key="PermissionType" variants="AllPermissionRequestTypes"/>
   <token key="Action">
     <variant name="Accepted"/>
     <variant name="AcceptedOnce"/>
@@ -1734,6 +1798,9 @@ chromium-metrics-reviews@google.com.
     <variant name="AudioCapture"/>
     <variant name="ClipboardReadWrite"/>
     <variant name="Geolocation"/>
+    <variant name="GeolocationApproximate"/>
+    <variant name="GeolocationApproximateOrPrecise"/>
+    <variant name="GeolocationUpgrade"/>
     <variant name="IdleDetection"/>
     <variant name="MidiSysEx"/>
     <variant name="Notifications"/>
@@ -1754,7 +1821,7 @@ chromium-metrics-reviews@google.com.
     been resolved. Currently only implemented and reported for Clank.
   </summary>
   <token key="Disposition" variants="PromptDisposition"/>
-  <token key="PermissionType" variants="AllPermissionTypes"/>
+  <token key="PermissionType" variants="AllPermissionRequestTypes"/>
 </histogram>
 
 <histogram
@@ -1779,6 +1846,9 @@ chromium-metrics-reviews@google.com.
     <variant name="AudioCapture"/>
     <variant name="ClipboardReadWrite"/>
     <variant name="Geolocation"/>
+    <variant name="GeolocationApproximate"/>
+    <variant name="GeolocationApproximateOrPrecise"/>
+    <variant name="GeolocationUpgrade"/>
     <variant name="IdleDetection"/>
     <variant name="MidiSysEx"/>
     <variant name="Notifications"/>
@@ -1800,7 +1870,7 @@ chromium-metrics-reviews@google.com.
     Warning: this histogram was expired from 2024-02-20 to 2024-09-06; data may
     be missing.
   </summary>
-  <token key="PermissionType" variants="AllPermissionTypes"/>
+  <token key="PermissionType" variants="AllPermissionRequestTypes"/>
   <token key="Disposition" variants="PromptDisposition"/>
 </histogram>
 
@@ -1823,6 +1893,9 @@ chromium-metrics-reviews@google.com.
     <variant name="AudioCapture"/>
     <variant name="ClipboardReadWrite"/>
     <variant name="Geolocation"/>
+    <variant name="GeolocationApproximate"/>
+    <variant name="GeolocationApproximateOrPrecise"/>
+    <variant name="GeolocationUpgrade"/>
     <variant name="IdleDetection"/>
     <variant name="MidiSysEx"/>
     <variant name="Notifications"/>
@@ -1857,10 +1930,7 @@ chromium-metrics-reviews@google.com.
     <variant name="MessageUI"/>
     <variant name="MiniInfobar"/>
   </token>
-  <token key="PermissionType">
-    <variant name="Geolocation"/>
-    <variant name="Notifications"/>
-  </token>
+  <token key="PermissionType" variants="CpssSupportedRequestTypes"/>
 </histogram>
 
 <histogram name="Permissions.Prompt.{PermissionType}.{Gesture}.Attempt"
@@ -1874,7 +1944,7 @@ chromium-metrics-reviews@google.com.
     from 07.03.2025 (see crbug.com/400381904). Updated meaning: if this
     evaluates to true this means that the prompt could be displayed.
   </summary>
-  <token key="PermissionType" variants="AllPermissionTypes"/>
+  <token key="PermissionType" variants="AllPermissionRequestTypes"/>
   <token key="Gesture">
     <variant name="Gesture"/>
     <variant name="NoGesture"/>
