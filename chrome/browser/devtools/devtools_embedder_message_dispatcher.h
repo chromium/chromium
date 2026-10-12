@@ -40,6 +40,7 @@ class DevToolsEmbedderMessageDispatcher {
 
     virtual ~Delegate() = default;
 
+    virtual bool IsLocalFrontend() const = 0;
     virtual void ActivateWindow() = 0;
     virtual void CloseWindow() = 0;
     virtual void LoadCompleted() = 0;

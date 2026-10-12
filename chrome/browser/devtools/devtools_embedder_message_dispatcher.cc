@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ref.h"
 #include "base/types/optional_util.h"
 #include "base/values.h"
 #include "chrome/browser/devtools/devtools_dispatch_http_request_params.h"
@@ -272,6 +273,7 @@ bool ParseAndHandle(const base::RepeatingCallback<void(As...)>& handler,
     return false;
   }
   tuple.Apply(handler);
+  std::move(callback).Run(nullptr);
   return true;
 }
 
@@ -303,38 +305,63 @@ bool ParseAndHandleWithCallback(
  */
 class DispatcherImpl : public DevToolsEmbedderMessageDispatcher {
  public:
+  enum class AllowedFrontend {
+    kLocalOnly,
+    kAny,
+  };
+
+  explicit DispatcherImpl(Delegate& delegate) : delegate_(delegate) {}
   ~DispatcherImpl() override = default;
 
   bool Dispatch(DispatchCallback callback,
                 const std::string& method,
                 const base::ListValue& params) override {
     auto it = handlers_.find(method);
-    return it != handlers_.end() && it->second.Run(std::move(callback), params);
-  }
-
-  template<typename... As>
-  void RegisterHandler(const std::string& method,
-                       void (Delegate::*handler)(As...),
-                       Delegate* delegate) {
-    handlers_[method] = base::BindRepeating(
-        &ParseAndHandle<As...>,
-        base::BindRepeating(handler, base::Unretained(delegate)), method);
+    if (it == handlers_.end()) {
+      return false;
+    }
+    if (it->second.allowed_frontend == AllowedFrontend::kLocalOnly &&
+        !delegate_->IsLocalFrontend()) {
+      std::move(callback).Run(&it->second.blocked_response);
+      return true;
+    }
+    return it->second.handler.Run(std::move(callback), params);
   }
 
   template <typename... As>
-  void RegisterHandlerWithCallback(const std::string& method,
-                                   void (Delegate::*handler)(DispatchCallback,
-                                                             As...),
-                                   Delegate* delegate) {
-    handlers_[method] = base::BindRepeating(
-        &ParseAndHandleWithCallback<As...>,
-        base::BindRepeating(handler, base::Unretained(delegate)), method);
+  void RegisterHandler(const std::string& method,
+                       void (Delegate::*handler)(As...),
+                       AllowedFrontend allowed_frontend) {
+    handlers_[method] = {
+        base::BindRepeating(
+            &ParseAndHandle<As...>,
+            base::BindRepeating(handler, base::Unretained(delegate_)), method),
+        allowed_frontend};
+  }
+
+  template <typename... As>
+  void RegisterHandlerWithCallback(
+      const std::string& method,
+      void (Delegate::*handler)(DispatchCallback, As...),
+      AllowedFrontend allowed_frontend,
+      base::Value blocked_response = base::Value()) {
+    handlers_[method] = {
+        base::BindRepeating(
+            &ParseAndHandleWithCallback<As...>,
+            base::BindRepeating(handler, base::Unretained(delegate_)), method),
+        allowed_frontend, std::move(blocked_response)};
   }
 
  private:
   using Handler =
       base::RepeatingCallback<bool(DispatchCallback, const base::ListValue&)>;
-  using HandlerMap = std::map<std::string, Handler>;
+  struct HandlerEntry {
+    Handler handler;
+    AllowedFrontend allowed_frontend = AllowedFrontend::kLocalOnly;
+    base::Value blocked_response;
+  };
+  using HandlerMap = std::map<std::string, HandlerEntry>;
+  raw_ref<Delegate> delegate_;
   HandlerMap handlers_;
 };
 
@@ -342,120 +369,166 @@ class DispatcherImpl : public DevToolsEmbedderMessageDispatcher {
 std::unique_ptr<DevToolsEmbedderMessageDispatcher>
 DevToolsEmbedderMessageDispatcher::CreateForDevToolsFrontend(
     Delegate* delegate) {
-  auto d = std::make_unique<DispatcherImpl>();
+  using AllowedFrontend = DispatcherImpl::AllowedFrontend;
+  auto d = std::make_unique<DispatcherImpl>(*delegate);
 
-  d->RegisterHandler("bringToFront", &Delegate::ActivateWindow, delegate);
-  d->RegisterHandler("closeWindow", &Delegate::CloseWindow, delegate);
-  d->RegisterHandler("loadCompleted", &Delegate::LoadCompleted, delegate);
+  d->RegisterHandler("bringToFront", &Delegate::ActivateWindow,
+                     AllowedFrontend::kAny);
+  d->RegisterHandler("closeWindow", &Delegate::CloseWindow,
+                     AllowedFrontend::kAny);
+  d->RegisterHandler("loadCompleted", &Delegate::LoadCompleted,
+                     AllowedFrontend::kAny);
   d->RegisterHandler("setInspectedPageBounds",
-                     &Delegate::SetInspectedPageBounds, delegate);
+                     &Delegate::SetInspectedPageBounds, AllowedFrontend::kAny);
   d->RegisterHandler("inspectElementCompleted",
-                     &Delegate::InspectElementCompleted, delegate);
-  d->RegisterHandler("inspectedURLChanged",
-                     &Delegate::InspectedURLChanged, delegate);
-  d->RegisterHandlerWithCallback("setIsDocked",
-                                 &Delegate::SetIsDocked, delegate);
-  d->RegisterHandler("openInNewTab", &Delegate::OpenInNewTab, delegate);
+                     &Delegate::InspectElementCompleted, AllowedFrontend::kAny);
+  d->RegisterHandler("inspectedURLChanged", &Delegate::InspectedURLChanged,
+                     AllowedFrontend::kAny);
+  d->RegisterHandlerWithCallback("setIsDocked", &Delegate::SetIsDocked,
+                                 AllowedFrontend::kAny);
+  d->RegisterHandler("openInNewTab", &Delegate::OpenInNewTab,
+                     AllowedFrontend::kAny);
   d->RegisterHandler("openSearchResultsInNewTab",
-                     &Delegate::OpenSearchResultsInNewTab, delegate);
-  d->RegisterHandler("showItemInFolder", &Delegate::ShowItemInFolder, delegate);
-  d->RegisterHandler("save", &Delegate::SaveToFile, delegate);
-  d->RegisterHandler("append", &Delegate::AppendToFile, delegate);
-  d->RegisterHandler("requestFileSystems",
-                     &Delegate::RequestFileSystems, delegate);
-  d->RegisterHandler("addFileSystem", &Delegate::AddFileSystem, delegate);
-  d->RegisterHandler("removeFileSystem", &Delegate::RemoveFileSystem, delegate);
+                     &Delegate::OpenSearchResultsInNewTab,
+                     AllowedFrontend::kAny);
+  d->RegisterHandler("showItemInFolder", &Delegate::ShowItemInFolder,
+                     AllowedFrontend::kLocalOnly);
+  d->RegisterHandler("save", &Delegate::SaveToFile, AllowedFrontend::kAny);
+  d->RegisterHandler("append", &Delegate::AppendToFile,
+                     AllowedFrontend::kLocalOnly);
+  d->RegisterHandler("requestFileSystems", &Delegate::RequestFileSystems,
+                     AllowedFrontend::kAny);
+  d->RegisterHandler("addFileSystem", &Delegate::AddFileSystem,
+                     AllowedFrontend::kAny);
+  d->RegisterHandler("removeFileSystem", &Delegate::RemoveFileSystem,
+                     AllowedFrontend::kLocalOnly);
   d->RegisterHandler("upgradeDraggedFileSystemPermissions",
-                     &Delegate::UpgradeDraggedFileSystemPermissions, delegate);
-  d->RegisterHandlerWithCallback("connectAutomaticFileSystem",
-                                 &Delegate::ConnectAutomaticFileSystem,
-                                 delegate);
+                     &Delegate::UpgradeDraggedFileSystemPermissions,
+                     AllowedFrontend::kLocalOnly);
+  d->RegisterHandlerWithCallback(
+      "connectAutomaticFileSystem", &Delegate::ConnectAutomaticFileSystem,
+      AllowedFrontend::kLocalOnly,
+      base::Value(base::DictValue().Set("success", false)));
   d->RegisterHandler("disconnectAutomaticFileSystem",
-                     &Delegate::DisconnectAutomaticFileSystem, delegate);
-  d->RegisterHandler("indexPath", &Delegate::IndexPath, delegate);
+                     &Delegate::DisconnectAutomaticFileSystem,
+                     AllowedFrontend::kLocalOnly);
+  d->RegisterHandler("indexPath", &Delegate::IndexPath, AllowedFrontend::kAny);
   d->RegisterHandlerWithCallback("loadNetworkResource",
-                                 &Delegate::LoadNetworkResource, delegate);
-  d->RegisterHandler("stopIndexing", &Delegate::StopIndexing, delegate);
-  d->RegisterHandler("searchInPath", &Delegate::SearchInPath, delegate);
+                                 &Delegate::LoadNetworkResource,
+                                 AllowedFrontend::kAny);
+  d->RegisterHandler("stopIndexing", &Delegate::StopIndexing,
+                     AllowedFrontend::kAny);
+  d->RegisterHandler("searchInPath", &Delegate::SearchInPath,
+                     AllowedFrontend::kAny);
   d->RegisterHandler("setWhitelistedShortcuts",
-                     &Delegate::SetWhitelistedShortcuts, delegate);
+                     &Delegate::SetWhitelistedShortcuts, AllowedFrontend::kAny);
   d->RegisterHandler("setEyeDropperActive", &Delegate::SetEyeDropperActive,
-                     delegate);
-  d->RegisterHandler("showCertificateViewer",
-                     &Delegate::ShowCertificateViewer, delegate);
-  d->RegisterHandler("zoomIn", &Delegate::ZoomIn, delegate);
-  d->RegisterHandler("zoomOut", &Delegate::ZoomOut, delegate);
-  d->RegisterHandler("resetZoom", &Delegate::ResetZoom, delegate);
+                     AllowedFrontend::kAny);
+  d->RegisterHandler("showCertificateViewer", &Delegate::ShowCertificateViewer,
+                     AllowedFrontend::kAny);
+  d->RegisterHandler("zoomIn", &Delegate::ZoomIn, AllowedFrontend::kAny);
+  d->RegisterHandler("zoomOut", &Delegate::ZoomOut, AllowedFrontend::kAny);
+  d->RegisterHandler("resetZoom", &Delegate::ResetZoom, AllowedFrontend::kAny);
   d->RegisterHandler("setDevicesDiscoveryConfig",
-                     &Delegate::SetDevicesDiscoveryConfig, delegate);
+                     &Delegate::SetDevicesDiscoveryConfig,
+                     AllowedFrontend::kLocalOnly);
   d->RegisterHandler("setDevicesUpdatesEnabled",
-                     &Delegate::SetDevicesUpdatesEnabled, delegate);
-  d->RegisterHandler("openRemotePage", &Delegate::OpenRemotePage, delegate);
-  d->RegisterHandler("openNodeFrontend", &Delegate::OpenNodeFrontend, delegate);
+                     &Delegate::SetDevicesUpdatesEnabled,
+                     AllowedFrontend::kLocalOnly);
+  d->RegisterHandler("openRemotePage", &Delegate::OpenRemotePage,
+                     AllowedFrontend::kLocalOnly);
+  d->RegisterHandler("openNodeFrontend", &Delegate::OpenNodeFrontend,
+                     AllowedFrontend::kLocalOnly);
   d->RegisterHandler("dispatchProtocolMessage",
                      &Delegate::DispatchProtocolMessageFromDevToolsFrontend,
-                     delegate);
+                     AllowedFrontend::kAny);
   d->RegisterHandler("recordCountHistogram", &Delegate::RecordCountHistogram,
-                     delegate);
+                     AllowedFrontend::kAny);
   d->RegisterHandler("recordEnumeratedHistogram",
-                     &Delegate::RecordEnumeratedHistogram, delegate);
+                     &Delegate::RecordEnumeratedHistogram,
+                     AllowedFrontend::kAny);
   d->RegisterHandler("recordPerformanceHistogram",
-                     &Delegate::RecordPerformanceHistogram, delegate);
+                     &Delegate::RecordPerformanceHistogram,
+                     AllowedFrontend::kAny);
   d->RegisterHandler("recordPerformanceHistogramMedium",
-                     &Delegate::RecordPerformanceHistogramMedium, delegate);
+                     &Delegate::RecordPerformanceHistogramMedium,
+                     AllowedFrontend::kAny);
   d->RegisterHandler("recordUserMetricsAction",
-                     &Delegate::RecordUserMetricsAction, delegate);
+                     &Delegate::RecordUserMetricsAction, AllowedFrontend::kAny);
   d->RegisterHandler("recordNewBadgeUsage", &Delegate::RecordNewBadgeUsage,
-                     delegate);
-  d->RegisterHandler("setChromeFlag", &Delegate::SetChromeFlag, delegate);
-  d->RegisterHandler("recordImpression", &Delegate::RecordImpression, delegate);
-  d->RegisterHandler("recordResize", &Delegate::RecordResize, delegate);
-  d->RegisterHandler("recordClick", &Delegate::RecordClick, delegate);
-  d->RegisterHandler("recordHover", &Delegate::RecordHover, delegate);
-  d->RegisterHandler("recordDrag", &Delegate::RecordDrag, delegate);
-  d->RegisterHandler("recordChange", &Delegate::RecordChange, delegate);
-  d->RegisterHandler("recordKeyDown", &Delegate::RecordKeyDown, delegate);
+                     AllowedFrontend::kAny);
+  d->RegisterHandler("setChromeFlag", &Delegate::SetChromeFlag,
+                     AllowedFrontend::kLocalOnly);
+  d->RegisterHandler("recordImpression", &Delegate::RecordImpression,
+                     AllowedFrontend::kAny);
+  d->RegisterHandler("recordResize", &Delegate::RecordResize,
+                     AllowedFrontend::kAny);
+  d->RegisterHandler("recordClick", &Delegate::RecordClick,
+                     AllowedFrontend::kAny);
+  d->RegisterHandler("recordHover", &Delegate::RecordHover,
+                     AllowedFrontend::kAny);
+  d->RegisterHandler("recordDrag", &Delegate::RecordDrag,
+                     AllowedFrontend::kAny);
+  d->RegisterHandler("recordChange", &Delegate::RecordChange,
+                     AllowedFrontend::kAny);
+  d->RegisterHandler("recordKeyDown", &Delegate::RecordKeyDown,
+                     AllowedFrontend::kAny);
   d->RegisterHandler("recordSettingAccess", &Delegate::RecordSettingAccess,
-                     delegate);
+                     AllowedFrontend::kAny);
   d->RegisterHandler("recordFunctionCall", &Delegate::RecordFunctionCall,
-                     delegate);
+                     AllowedFrontend::kAny);
   d->RegisterHandler("registerPreference", &Delegate::RegisterPreference,
-                     delegate);
-  d->RegisterHandlerWithCallback("getPreferences",
-                                 &Delegate::GetPreferences, delegate);
+                     AllowedFrontend::kLocalOnly);
+  d->RegisterHandlerWithCallback("getPreferences", &Delegate::GetPreferences,
+                                 AllowedFrontend::kLocalOnly,
+                                 base::Value(base::Value::Type::DICT));
   d->RegisterHandlerWithCallback("getPreference", &Delegate::GetPreference,
-                                 delegate);
-  d->RegisterHandler("setPreference",
-                     &Delegate::SetPreference, delegate);
-  d->RegisterHandler("removePreference",
-                     &Delegate::RemovePreference, delegate);
-  d->RegisterHandler("clearPreferences",
-                     &Delegate::ClearPreferences, delegate);
-  d->RegisterHandlerWithCallback("getSyncInformation",
-                                 &Delegate::GetSyncInformation, delegate);
+                                 AllowedFrontend::kLocalOnly);
+  d->RegisterHandler("setPreference", &Delegate::SetPreference,
+                     AllowedFrontend::kLocalOnly);
+  d->RegisterHandler("removePreference", &Delegate::RemovePreference,
+                     AllowedFrontend::kLocalOnly);
+  d->RegisterHandler("clearPreferences", &Delegate::ClearPreferences,
+                     AllowedFrontend::kLocalOnly);
+  d->RegisterHandlerWithCallback(
+      "getSyncInformation", &Delegate::GetSyncInformation,
+      AllowedFrontend::kLocalOnly,
+      base::Value(base::DictValue().Set("isSyncActive", false)));
   d->RegisterHandlerWithCallback("getHostConfig", &Delegate::GetHostConfig,
-                                 delegate);
-  d->RegisterHandlerWithCallback("reattach",
-                                 &Delegate::Reattach, delegate);
-  d->RegisterHandler("readyForTest",
-                     &Delegate::ReadyForTest, delegate);
-  d->RegisterHandler("connectionReady", &Delegate::ConnectionReady, delegate);
+                                 AllowedFrontend::kAny);
+  d->RegisterHandlerWithCallback("reattach", &Delegate::Reattach,
+                                 AllowedFrontend::kAny);
+  d->RegisterHandler("readyForTest", &Delegate::ReadyForTest,
+                     AllowedFrontend::kAny);
+  d->RegisterHandler("connectionReady", &Delegate::ConnectionReady,
+                     AllowedFrontend::kAny);
   d->RegisterHandler("setOpenNewWindowForPopups",
-                     &Delegate::SetOpenNewWindowForPopups, delegate);
+                     &Delegate::SetOpenNewWindowForPopups,
+                     AllowedFrontend::kAny);
   d->RegisterHandler("registerExtensionsAPI", &Delegate::RegisterExtensionsAPI,
-                     delegate);
-  d->RegisterHandlerWithCallback("showSurvey", &Delegate::ShowSurvey, delegate);
+                     AllowedFrontend::kAny);
+  d->RegisterHandlerWithCallback("showSurvey", &Delegate::ShowSurvey,
+                                 AllowedFrontend::kAny);
   d->RegisterHandlerWithCallback("canShowSurvey", &Delegate::CanShowSurvey,
-                                 delegate);
+                                 AllowedFrontend::kAny);
 
-  d->RegisterHandlerWithCallback("doAidaConversation",
-                                 &Delegate::DoAidaConversation, delegate);
-  d->RegisterHandlerWithCallback("aidaCodeComplete",
-                                 &Delegate::AidaCodeComplete, delegate);
-  d->RegisterHandlerWithCallback("registerAidaClientEvent",
-                                 &Delegate::RegisterAidaClientEvent, delegate);
-  d->RegisterHandlerWithCallback("dispatchHttpRequest",
-                                 &Delegate::DispatchHttpRequest, delegate);
-  d->RegisterHandler("requestRestart", &Delegate::RequestRestart, delegate);
+  d->RegisterHandlerWithCallback(
+      "doAidaConversation", &Delegate::DoAidaConversation,
+      AllowedFrontend::kLocalOnly,
+      base::Value(base::DictValue().Set("error", "AIDA request was blocked")));
+  d->RegisterHandlerWithCallback(
+      "aidaCodeComplete", &Delegate::AidaCodeComplete,
+      AllowedFrontend::kLocalOnly,
+      base::Value(base::DictValue().Set("error", "AIDA request was blocked")));
+  d->RegisterHandlerWithCallback(
+      "registerAidaClientEvent", &Delegate::RegisterAidaClientEvent,
+      AllowedFrontend::kLocalOnly,
+      base::Value(base::DictValue().Set("error", "AIDA request was blocked")));
+  d->RegisterHandlerWithCallback(
+      "dispatchHttpRequest", &Delegate::DispatchHttpRequest,
+      AllowedFrontend::kLocalOnly,
+      base::Value(base::DictValue().Set("error", "Request validation failed")));
+  d->RegisterHandler("requestRestart", &Delegate::RequestRestart,
+                     AllowedFrontend::kLocalOnly);
   return d;
 }

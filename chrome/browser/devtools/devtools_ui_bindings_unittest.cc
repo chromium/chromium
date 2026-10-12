@@ -18,8 +18,10 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/test/test_sync_service.h"
@@ -70,6 +72,22 @@ class DevToolsUIBindingsLoadNetworkResourceTest : public testing::Test {
                                DevToolsUIBindings::DispatchCallback callback) {
     bindings_->LoadNetworkResource(std::move(callback), url, headers,
                                    stream_id);
+  }
+
+  base::Value DispatchMessage(const std::string& method,
+                              base::ListValue params = {}) {
+    base::RunLoop run_loop;
+    base::Value result;
+    EXPECT_TRUE(bindings_->embedder_message_dispatcher_->Dispatch(
+        base::BindLambdaForTesting([&](const base::Value* value) {
+          if (value) {
+            result = value->Clone();
+          }
+          run_loop.Quit();
+        }),
+        method, params));
+    run_loop.Run();
+    return result;
   }
 
  protected:
@@ -124,11 +142,177 @@ TEST_F(DevToolsUIBindingsLoadNetworkResourceTest,
       web_contents(),
       GURL("devtools://devtools/remote/serve_file/inspector.html"));
 
-  // Should return early without enabling device updates.
-  static_cast<DevToolsEmbedderMessageDispatcher::Delegate*>(bindings())
-      ->SetDevicesUpdatesEnabled(true);
+  // Should be blocked by dispatcher without enabling device updates.
+  DispatchMessage("setDevicesUpdatesEnabled", base::ListValue().Append(true));
 
   EXPECT_FALSE(GetDevicesUpdatesEnabled());
+}
+
+TEST_F(DevToolsUIBindingsLoadNetworkResourceTest,
+       RemoteFrontendCannotReadPreferences) {
+  {
+    ScopedDictPrefUpdate update(profile_->GetPrefs(),
+                                prefs::kDevToolsPreferences);
+    update->Set("script-snippets", "secret");
+  }
+
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(),
+      GURL("devtools://devtools/remote/serve_rev/@12345/inspector.html"));
+
+  base::Value prefs_result = DispatchMessage("getPreferences");
+  ASSERT_TRUE(prefs_result.is_dict());
+  EXPECT_TRUE(prefs_result.GetDict().empty());
+
+  base::Value pref_result = DispatchMessage(
+      "getPreference", base::ListValue().Append("script-snippets"));
+  EXPECT_TRUE(pref_result.is_none());
+}
+
+TEST_F(DevToolsUIBindingsLoadNetworkResourceTest,
+       RemoteFrontendCannotWritePreferences) {
+  {
+    ScopedDictPrefUpdate update(profile_->GetPrefs(),
+                                prefs::kDevToolsPreferences);
+    update->Set("script-snippets", "secret");
+  }
+
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(),
+      GURL("devtools://devtools/remote/serve_rev/@12345/inspector.html"));
+
+  DispatchMessage(
+      "setPreference",
+      base::ListValue().Append("script-snippets").Append("overwritten"));
+  DispatchMessage("setPreference",
+                  base::ListValue().Append("new-pref").Append("value"));
+  DispatchMessage("removePreference",
+                  base::ListValue().Append("script-snippets"));
+  DispatchMessage("clearPreferences");
+
+  const base::DictValue& dict =
+      profile_->GetPrefs()->GetDict(prefs::kDevToolsPreferences);
+  EXPECT_EQ(dict.size(), 1u);
+  ASSERT_NE(dict.FindString("script-snippets"), nullptr);
+  EXPECT_EQ(*dict.FindString("script-snippets"), "secret");
+}
+
+TEST_F(DevToolsUIBindingsLoadNetworkResourceTest,
+       RemoteFrontendCannotEnableSync) {
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(),
+      GURL("devtools://devtools/remote/serve_rev/@12345/inspector.html"));
+
+  DispatchMessage("setPreference",
+                  base::ListValue().Append("sync-preferences").Append("true"));
+  EXPECT_FALSE(
+      profile_->GetPrefs()->GetBoolean(prefs::kDevToolsSyncPreferences));
+
+  DispatchMessage("registerPreference",
+                  base::ListValue()
+                      .Append("synced-pref")
+                      .Append(base::DictValue().Set("synced", true)));
+  DispatchMessage("setPreference",
+                  base::ListValue().Append("synced-pref").Append("value"));
+
+  EXPECT_TRUE(profile_->GetPrefs()
+                  ->GetDict(prefs::kDevToolsSyncedPreferencesSyncEnabled)
+                  .empty());
+  EXPECT_TRUE(profile_->GetPrefs()
+                  ->GetDict(prefs::kDevToolsSyncedPreferencesSyncDisabled)
+                  .empty());
+  EXPECT_TRUE(
+      profile_->GetPrefs()->GetDict(prefs::kDevToolsPreferences).empty());
+}
+
+TEST_F(DevToolsUIBindingsLoadNetworkResourceTest,
+       RemoteFrontendGetSyncInformationIsRedacted) {
+  signin::IdentityTestEnvironment identity_test_env;
+  SyncServiceFactory::GetInstance()->SetTestingFactory(
+      profile_.get(), base::BindRepeating([](content::BrowserContext*) {
+        return static_cast<std::unique_ptr<KeyedService>>(
+            std::make_unique<syncer::TestSyncService>());
+      }));
+  auto* sync_service = static_cast<syncer::TestSyncService*>(
+      SyncServiceFactory::GetForProfile(profile_.get()));
+  AccountInfo account_info = identity_test_env.MakePrimaryAccountAvailable(
+      "sync@devtools.dev", signin::ConsentLevel::kSignin);
+  sync_service->SetSignedIn(signin::ConsentLevel::kSignin,
+                            account_info.GetCoreAccountInfo());
+
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(),
+      GURL("devtools://devtools/remote/serve_rev/@12345/inspector.html"));
+
+  base::Value result_val = DispatchMessage("getSyncInformation");
+  ASSERT_TRUE(result_val.is_dict());
+  const base::DictValue& result = result_val.GetDict();
+
+  EXPECT_EQ(result.FindBool("isSyncActive"), false);
+  EXPECT_EQ(result.Find("accountEmail"), nullptr);
+}
+
+TEST_F(DevToolsUIBindingsLoadNetworkResourceTest,
+       LocalFrontendPreferencesStillWork) {
+  {
+    ScopedDictPrefUpdate update(profile_->GetPrefs(),
+                                prefs::kDevToolsPreferences);
+    update->Set("script-snippets", "secret");
+  }
+
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("devtools://devtools/bundled/inspector.html"));
+
+  base::Value prefs_val = DispatchMessage("getPreferences");
+  ASSERT_TRUE(prefs_val.is_dict());
+  const base::DictValue& prefs_result = prefs_val.GetDict();
+
+  ASSERT_NE(prefs_result.FindString("script-snippets"), nullptr);
+  EXPECT_EQ(*prefs_result.FindString("script-snippets"), "secret");
+
+  DispatchMessage(
+      "setPreference",
+      base::ListValue().Append("new-pref").Append("persisted-value"));
+  const base::DictValue& dict =
+      profile_->GetPrefs()->GetDict(prefs::kDevToolsPreferences);
+  ASSERT_NE(dict.FindString("new-pref"), nullptr);
+  EXPECT_EQ(*dict.FindString("new-pref"), "persisted-value");
+}
+
+TEST_F(DevToolsUIBindingsLoadNetworkResourceTest,
+       LocalToRemoteNavigationRevokesAccess) {
+  {
+    ScopedDictPrefUpdate update(profile_->GetPrefs(),
+                                prefs::kDevToolsPreferences);
+    update->Set("script-snippets", "secret");
+  }
+
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("devtools://devtools/bundled/inspector.html"));
+
+  {
+    base::Value prefs_val = DispatchMessage("getPreferences");
+    ASSERT_TRUE(prefs_val.is_dict());
+    const base::DictValue& prefs_result = prefs_val.GetDict();
+    ASSERT_NE(prefs_result.FindString("script-snippets"), nullptr);
+    EXPECT_EQ(*prefs_result.FindString("script-snippets"), "secret");
+  }
+
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(),
+      GURL("devtools://devtools/remote/serve_rev/@12345/inspector.html"));
+
+  {
+    base::Value prefs_result = DispatchMessage("getPreferences");
+    ASSERT_TRUE(prefs_result.is_dict());
+    EXPECT_TRUE(prefs_result.GetDict().empty());
+  }
+
+  {
+    base::Value pref_result = DispatchMessage(
+        "getPreference", base::ListValue().Append("script-snippets"));
+    EXPECT_TRUE(pref_result.is_none());
+  }
 }
 
 TEST_F(DevToolsUIBindingsLoadNetworkResourceTest,

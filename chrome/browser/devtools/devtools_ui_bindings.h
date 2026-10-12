@@ -206,6 +206,7 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   bool MayWriteLocalFiles() override;
 
   // DevToolsEmbedderMessageDispatcher::Delegate implementation.
+  bool IsLocalFrontend() const override;
   void ActivateWindow() override;
   void CloseWindow() override;
   void LoadCompleted() override;
