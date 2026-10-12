@@ -7,6 +7,7 @@
 #include <cstdlib>
 
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -134,6 +135,29 @@ AdPositioning ComputeAdPositioning(Element* element) {
   return {
       .is_in_flow = candidate->StyleRef().GetPosition() == EPosition::kStatic,
       .viewport_sticky_offset_y = viewport_sticky_offset_y.Round()};
+}
+
+// Returns whether `hit_element`, the front-most element at a sample point, is
+// rendered by `element` itself: `element` proper, an internal of its user-agent
+// shadow tree (e.g., the media controls of a <video>), or the content of a
+// frame it owns (e.g., an ad <iframe>). Other descendants are deliberately not
+// included: they are distinct content covering `element` (e.g., page content
+// inside a <body> whose background image is an ad), and an ad-related
+// descendant is monitored on its own.
+bool IsRenderedByElement(const Element* hit_element, const Element& element) {
+  for (const Element* current = hit_element; current;) {
+    if (current == &element) {
+      return true;
+    }
+    if (current->GetDocument() != element.GetDocument()) {
+      current = current->GetDocument().LocalOwner();
+    } else if (current->IsInUserAgentShadowRoot()) {
+      current = current->OwnerShadowHost();
+    } else {
+      return false;
+    }
+  }
+  return false;
 }
 
 }  // namespace
@@ -351,18 +375,19 @@ DisplayAdElementMonitor::CheckOverlayVisibility(
       HitTestRequest::kIgnoreZeroOpacityObjects |
       HitTestRequest::kHitTestVisualOverflow;
 
-  HitTestRequest request(hit_type, /*stop_node=*/element_->GetLayoutObject());
+  // No stop node on purpose: it would skip the element's descendants, so a
+  // container (e.g., a <body> whose background image is an ad) covered by
+  // non-ad content would still be hit. Instead, descend fully and decide
+  // afterwards whether the front-most content is rendered by the element.
+  HitTestRequest request(hit_type);
   HitTestResult result(request, location);
 
   main_frame.ContentLayoutObject()->HitTestNoLifecycleUpdate(location, result);
 
-  Node* inner_node = result.InnerNode();
-
-  if (!inner_node || inner_node->GetDomNodeId() != element_->GetDomNodeId()) {
-    return OverlayVisibility::kInvisible;
-  }
-
-  return OverlayVisibility::kVisible;
+  // `InnerElement()` maps a text hit to its parent element.
+  return IsRenderedByElement(result.InnerElement(), *element_)
+             ? OverlayVisibility::kVisible
+             : OverlayVisibility::kInvisible;
 }
 
 DisplayAdElementMonitor::OverlayVisibility

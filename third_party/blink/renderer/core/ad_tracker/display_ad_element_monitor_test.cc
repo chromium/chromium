@@ -530,6 +530,73 @@ TEST_F(DisplayAdElementMonitorTest, ReportingForAdIframe_InsertUpdateHide) {
   testing::Mock::VerifyAndClearExpectations(&MockClient());
 }
 
+TEST_F(DisplayAdElementMonitorTest, ContainerAdObscuredByNonAdContent) {
+  // The <body> is ad-tagged (e.g., because its background image is an ad
+  // resource) but is covered by non-ad page content at its sample point (the
+  // viewport center). The content also hosts a genuine ad elsewhere.
+  frame_test_helpers::LoadHTMLString(helper_.LocalMainFrame(), R"(
+    <body style="margin:0; height:600px;">
+      <div id="content" style="height:100%; background-color:white;">
+        <img id="inner_ad" style="position:absolute; left:0px; top:0px; width:300px; height:250px;">
+      </div>
+    </body>
+  )",
+                                     WebURL(KURL("https://example.com")));
+  MarkFirstContentfulPaint();
+  UpdateLifecycle();
+
+  auto* body_element = GetDocument().body();
+  auto* content_element = GetDocument().getElementById(AtomicString("content"));
+  auto* inner_ad_element =
+      GetDocument().getElementById(AtomicString("inner_ad"));
+
+  // The <body> must not claim its sample point just because it is an ancestor
+  // of the non-ad content hit there. The inner ad is reported on its own.
+  EXPECT_CALL(MockClient(),
+              OnMainFrameAdRectangleChanged(inner_ad_element->GetDomNodeId(),
+                                            gfx::Rect(0, 0, 300, 250)));
+  EXPECT_CALL(MockClient(), OnMainFrameAdRectangleChanged(
+                                body_element->GetDomNodeId(), testing::_))
+      .Times(0);
+  body_element->SetIsAdRelated(NoProvenance{});
+  inner_ad_element->SetIsAdRelated(NoProvenance{});
+  UpdateLifecycle();
+  testing::Mock::VerifyAndClearExpectations(&MockClient());
+
+  // Once the content (and the ad it hosts) is gone, the <body>'s own box, i.e.,
+  // its ad background, is front-most, and it is reported.
+  EXPECT_CALL(MockClient(),
+              OnMainFrameAdRectangleChanged(body_element->GetDomNodeId(),
+                                            gfx::Rect(0, 0, 800, 600)));
+  EXPECT_CALL(MockClient(), OnMainFrameAdRectangleChanged(
+                                inner_ad_element->GetDomNodeId(), gfx::Rect()));
+  content_element->setAttribute(html_names::kStyleAttr,
+                                AtomicString("display:none;"));
+  task_environment_.FastForwardBy(base::Seconds(1));
+  UpdateLifecycle();
+  testing::Mock::VerifyAndClearExpectations(&MockClient());
+}
+
+TEST_F(DisplayAdElementMonitorTest, VideoAdMediaControlsAttributedToVideo) {
+  frame_test_helpers::LoadHTMLString(helper_.LocalMainFrame(), R"(
+    <video id="ad" controls style="position:absolute; left:100px; top:50px; width:300px; height:250px;"></video>
+  )",
+                                     WebURL(KURL("https://example.com")));
+  MarkFirstContentfulPaint();
+  UpdateLifecycle();
+
+  auto* ad_element = GetDocument().getElementById(AtomicString("ad"));
+
+  // The sample point (the video's center) lands on the media controls panel,
+  // which lives in the video's user-agent shadow tree.
+  EXPECT_CALL(MockClient(),
+              OnMainFrameAdRectangleChanged(ad_element->GetDomNodeId(),
+                                            gfx::Rect(100, 50, 300, 250)));
+  ad_element->SetIsAdRelated(NoProvenance{});
+  UpdateLifecycle();
+  testing::Mock::VerifyAndClearExpectations(&MockClient());
+}
+
 TEST_F(DisplayAdElementMonitorTest, LargeStickyAdDetected) {
   // Add a large div to make the body scrollable.
   // Viewport is 800x600. Threshold is 0.3 * 480000 = 144000.
