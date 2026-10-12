@@ -23,7 +23,7 @@ class AccountNameEmailStoreTestApi {
   const raw_ptr<AccountNameEmailStore> store_;
 };
 
-AccountNameEmailStoreTestApi test_api(AccountNameEmailStore* store) {
+inline AccountNameEmailStoreTestApi test_api(AccountNameEmailStore* store) {
   return AccountNameEmailStoreTestApi{store};
 }
 

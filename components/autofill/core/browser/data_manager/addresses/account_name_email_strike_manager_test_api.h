@@ -27,7 +27,7 @@ class AccountNameEmailStrikeManagerTestApi {
   const raw_ptr<AccountNameEmailStrikeManager> strike_manager_;
 };
 
-AccountNameEmailStrikeManagerTestApi test_api(
+inline AccountNameEmailStrikeManagerTestApi test_api(
     AccountNameEmailStrikeManager* store) {
   return AccountNameEmailStrikeManagerTestApi{store};
 }
