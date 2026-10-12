@@ -263,6 +263,7 @@ BASE_DECLARE_FEATURE(kOctoberTestUXR);
 BASE_DECLARE_FEATURE(kOmahaMinSdkVersionAndroid);
 BASE_DECLARE_FEATURE(kOnDemandBackgroundTabContextCapture);
 BASE_DECLARE_FEATURE(kOnDemandBackgroundTabContextCaptureOptimization);
+BASE_DECLARE_FEATURE(kOnStartupSettingsUi);
 BASE_DECLARE_FEATURE(kOnStartupWindowPolicy);
 BASE_DECLARE_FEATURE(kOneStepAimAccess);
 BASE_DECLARE_FEATURE(kOpenDownloadInPreferredApp);

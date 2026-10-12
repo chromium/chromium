@@ -11582,6 +11582,7 @@ from previous Chrome versions.
   <int value="-1026466717" label="BlockInsecureDownloads:enabled"/>
   <int value="-1026261178" label="GlicNoWebview:enabled"/>
   <int value="-1026192558" label="OopRasterizationDDL:enabled"/>
+  <int value="-1026135258" label="OnStartupSettingsUi:enabled"/>
   <int value="-1025125875" label="AssistantTimersV2:disabled"/>
   <int value="-1024731815" label="MessagesForAndroidNearOomReduction:enabled"/>
   <int value="-1024687559" label="ShortcutCustomization:enabled"/>
@@ -19658,6 +19659,7 @@ from previous Chrome versions.
   <int value="1414652547" label="LinkCapturingAutoDisplayIntentPicker:enabled"/>
   <int value="1414918327" label="enable-accelerated-video-decode"/>
   <int value="1415788025" label="force-drive-disclaimer-accepted:disabled"/>
+  <int value="1416196750" label="OnStartupSettingsUi:disabled"/>
   <int value="1416395000" label="CompanyEntityIconAdjustment:enabled"/>
   <int value="1416592483" label="ash-enable-mirrored-screen"/>
   <int value="1416845437" label="InstallPromptSegmentation:disabled"/>

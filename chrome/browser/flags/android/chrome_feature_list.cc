@@ -472,6 +472,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kOmahaMinSdkVersionAndroid,
     &kOnDemandBackgroundTabContextCapture,
     &kOnDemandBackgroundTabContextCaptureOptimization,
+    &kOnStartupSettingsUi,
     &kOnStartupWindowPolicy,
     &kOneStepAimAccess,
     &kOpenDownloadInPreferredApp,
@@ -908,6 +909,7 @@ BASE_FEATURE(kOctoberTestUXR, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kOmahaMinSdkVersionAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kOnDemandBackgroundTabContextCapture, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kOnDemandBackgroundTabContextCaptureOptimization, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kOnStartupSettingsUi, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kOnStartupWindowPolicy, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kOneStepAimAccess, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kOpenDownloadInPreferredApp, base::FEATURE_DISABLED_BY_DEFAULT);
