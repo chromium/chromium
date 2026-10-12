@@ -36,7 +36,7 @@ domain IO
       boolean eof
 
   # Return UUID of Blob object specified by a remote object id.
-  command resolveBlob
+  deprecated command resolveBlob
     parameters
       # Object id of a Blob object wrapper.
       Runtime.RemoteObjectId objectId
