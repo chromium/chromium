@@ -229,6 +229,10 @@ bool operator==(const Value& lhs, const Value& rhs) {
 }
 
 std::ostream& operator<<(std::ostream& out, const Value& value) {
+  return out << ValueView(value);
+}
+
+std::ostream& operator<<(std::ostream& out, ValueView value) {
   return out << WriteDiagnostic(
              value,
              /*rough_max_output_bytes=*/std::numeric_limits<size_t>::max());
@@ -255,5 +259,27 @@ std::ostream& operator<<(std::ostream& out, Value::Type type) {
   }
   return out << "Invalid Type (" << std::to_underlying(type) << ")";
 }
+
+ValueView::ValueView(bool value) noexcept : data_(value) {}
+
+ValueView::ValueView(Value::Null value) noexcept : data_(value) {}
+
+ValueView::ValueView(Value::Undefined value) noexcept : data_(value) {}
+
+ValueView::ValueView(int value)
+    : ValueView(base::checked_cast<int64_t>(value)) {}
+
+ValueView::ValueView(int64_t value) noexcept : data_(value) {}
+
+ValueView::ValueView(base::span<const uint8_t> value) noexcept : data_(value) {}
+
+ValueView::ValueView(std::string_view value) noexcept : data_(value) {}
+
+ValueView::ValueView(base::span<const Value> value) noexcept : data_(value) {}
+
+ValueView::ValueView(const Value::MapValue& value) noexcept : data_(value) {}
+
+ValueView::ValueView(const Value& value) noexcept
+    : data_(value.Visit([](const auto& v) { return Storage(v); })) {}
 
 }  // namespace cbor

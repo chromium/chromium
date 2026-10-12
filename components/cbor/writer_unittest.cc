@@ -27,7 +27,7 @@ namespace cbor {
 class CBORWriterTest : public testing::TestWithParam<bool> {
  protected:
   std::optional<std::vector<uint8_t>> DoWrite(
-      const Value& node,
+      ValueView node,
       size_t max_nesting_level = Writer::kDefaultMaxNestingDepth) {
     Writer::Config config;
     config.max_nesting_level = base::checked_cast<int>(max_nesting_level);
@@ -35,7 +35,7 @@ class CBORWriterTest : public testing::TestWithParam<bool> {
     return Writer::Write(node, config);
   }
 
-  std::optional<std::vector<uint8_t>> DoWrite(const Value& node,
+  std::optional<std::vector<uint8_t>> DoWrite(ValueView node,
                                               Writer::Config config) {
     config.use_rust = GetParam();
     return Writer::Write(node, config);
@@ -67,7 +67,7 @@ TEST_P(CBORWriterTest, TestWriteUint) {
        std::string_view("\x1b\x7f\xff\xff\xff\xff\xff\xff\xff")}};
 
   for (const UintTestCase& test_case : kUintTestCases) {
-    auto cbor = DoWrite(Value(test_case.value));
+    auto cbor = DoWrite(test_case.value);
     ASSERT_TRUE(cbor.has_value());
     EXPECT_THAT(cbor.value(), testing::ElementsAreArray(test_case.cbor));
   }

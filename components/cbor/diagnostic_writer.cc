@@ -8,8 +8,8 @@
 #include <stdint.h>
 
 #include <string>
-#include <vector>
 
+#include "base/containers/span.h"
 #include "base/json/string_escape.h"
 #include "base/numerics/clamped_math.h"
 #include "base/strings/string_number_conversions.h"
@@ -21,7 +21,7 @@ namespace cbor {
 
 namespace {
 
-[[nodiscard]] bool AppendHex(const std::vector<uint8_t>& bytes,
+[[nodiscard]] bool AppendHex(base::span<const uint8_t> bytes,
                              char type_char,
                              size_t rough_max_output_bytes,
                              std::string& s) {
@@ -47,7 +47,7 @@ namespace {
   return s.size() < rough_max_output_bytes;
 }
 
-[[nodiscard]] bool Serialize(const Value& node,
+[[nodiscard]] bool Serialize(ValueView node,
                              const size_t rough_max_output_bytes,
                              std::string& s) {
   return node.Visit(absl::Overload{
@@ -58,10 +58,10 @@ namespace {
       [&](const Value::InvalidUTF8& v) {
         return AppendHex(v.bytes, 's', rough_max_output_bytes, s);
       },
-      [&](const Value::BinaryValue& v) {
+      [&](base::span<const uint8_t> v) {
         return AppendHex(v, 'h', rough_max_output_bytes, s);
       },
-      [&](const std::string& v) {
+      [&](std::string_view v) {
         std::string quoted_and_escaped;
         base::EscapeJSONString(v, /*put_in_quotes=*/true, &quoted_and_escaped);
         if (base::ClampAdd(s.size(), quoted_and_escaped.size()) >
@@ -71,7 +71,7 @@ namespace {
         s.append(quoted_and_escaped);
         return true;
       },
-      [&](const Value::ArrayValue& nodes) {
+      [&](base::span<const Value> nodes) {
         s.push_back('[');
 
         for (bool first = true; const auto& subnode : nodes) {
@@ -125,7 +125,7 @@ namespace {
 
 }  // namespace
 
-std::string WriteDiagnostic(const Value& node, size_t rough_max_output_bytes) {
+std::string WriteDiagnostic(ValueView node, size_t rough_max_output_bytes) {
   std::string ret;
   std::ignore = Serialize(node, rough_max_output_bytes, ret);
   return ret;

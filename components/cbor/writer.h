@@ -88,11 +88,11 @@ class CBOR_EXPORT Writer {
   // Returns the CBOR byte string representation of |node|, or `std::nullopt`
   // if its nesting depth exceeds |max_nesting_level|.
   static std::optional<std::vector<uint8_t>> Write(
-      const Value& node,
+      ValueView node,
       size_t max_nesting_level = kDefaultMaxNestingDepth);
 
   // A version of |Write| above that takes a Config.
-  static std::optional<std::vector<uint8_t>> Write(const Value& node,
+  static std::optional<std::vector<uint8_t>> Write(ValueView node,
                                                    const Config& config);
 
  private:
@@ -100,7 +100,7 @@ class CBOR_EXPORT Writer {
 
   // Called recursively to build the CBOR bytestring. When completed,
   // |encoded_cbor_| will contain the CBOR.
-  bool EncodeCBOR(const Value& node,
+  bool EncodeCBOR(ValueView node,
                   int max_nesting_level,
                   bool allow_invalid_utf8);
 

@@ -39,7 +39,7 @@ TEST(CBORDiagnosticWriterTest, Basic) {
   EXPECT_EQ(
       "{1: 1, 2: -2, 3: \"test\", 4: h'01020304', 5: {5: true, 6: false}, 6: "
       "[1, 2, 3, \"foo\"], 7: \"es'cap\\\\in\\ng\"}",
-      WriteDiagnostic(cbor::Value(std::move(map))));
+      WriteDiagnostic(map));
 }
 
 TEST(CBORDiagnosticWriterTest, SizeLimit) {
@@ -50,16 +50,14 @@ TEST(CBORDiagnosticWriterTest, SizeLimit) {
   EXPECT_EQ("[1, 2, 3]", WriteDiagnostic(cbor::Value(array)));
   // A limit of zero is set, but it's only rough, so a few bytes might be
   // produced.
-  EXPECT_LT(WriteDiagnostic(cbor::Value(std::move(array)),
+  EXPECT_LT(WriteDiagnostic(array,
                             /*rough_max_output_bytes=*/0)
                 .size(),
             3u);
 
   std::vector<uint8_t> bytes;
   bytes.resize(100);
-  EXPECT_LT(
-      WriteDiagnostic(cbor::Value(bytes), /*rough_max_output_bytes=*/0).size(),
-      20u);
+  EXPECT_LT(WriteDiagnostic(bytes, /*rough_max_output_bytes=*/0).size(), 20u);
 }
 
 TEST(CBORDiagnosticWriterTest, LargeBytestrings) {
@@ -95,7 +93,7 @@ TEST(CBORDiagnosticWriterTest, LargeBytestrings) {
                                     std::string(test.length * 2, '0').c_str());
     }
 
-    EXPECT_EQ(expected, WriteDiagnostic(cbor::Value(std::move(array)),
+    EXPECT_EQ(expected, WriteDiagnostic(array,
                                         /*rough_max_output_bytes=*/128));
   }
 }

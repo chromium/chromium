@@ -198,8 +198,82 @@ class CBOR_EXPORT Value {
   Storage data_;
 };
 
+class CBOR_EXPORT ValueView final {
+ public:
+  ValueView() = delete;
+
+  ValueView(bool) noexcept;
+  ValueView(Value::Null) noexcept;
+  ValueView(Value::Undefined) noexcept;
+
+  explicit ValueView(float value) = delete;
+  explicit ValueView(double value) = delete;
+
+  ValueView(int value);
+  ValueView(int64_t value) noexcept;
+  explicit ValueView(uint64_t value) = delete;
+
+  // Constructors for `Type::BYTE_STRING`.
+  ValueView(const Value::BinaryValue& value LIFETIME_BOUND) noexcept
+      : ValueView(base::span(value)) {}
+  ValueView(base::span<const uint8_t> value LIFETIME_BOUND) noexcept;
+
+  template <size_t N>
+  ValueView(base::span<const uint8_t, N> value LIFETIME_BOUND) noexcept
+      : ValueView(base::span<const uint8_t>(value)) {}
+
+  // Constructors for `Type::STRING`.
+  ValueView(const char* value LIFETIME_BOUND) noexcept
+      : ValueView(std::string_view(value)) {}
+  ValueView(std::string_view value LIFETIME_BOUND) noexcept;
+
+  ValueView(const Value::ArrayValue& value LIFETIME_BOUND) noexcept
+      : ValueView(base::span(value)) {}
+  ValueView(base::span<const Value> value LIFETIME_BOUND) noexcept;
+
+  template <size_t N>
+  ValueView(base::span<const Value, N> value LIFETIME_BOUND) noexcept
+      : ValueView(base::span<const Value>(value)) {}
+
+  ValueView(const Value::MapValue& value LIFETIME_BOUND) noexcept;
+
+  ValueView(const Value& value LIFETIME_BOUND) noexcept;
+
+  // Prevent pointers from implicitly converting to `bool`.
+  template <typename T>
+  explicit ValueView(const T*) = delete;
+
+  ValueView(ValueView&&) noexcept = default;
+  ValueView& operator=(ValueView&&) noexcept = default;
+
+  ValueView(const ValueView&) noexcept = default;
+  ValueView& operator=(const ValueView&) noexcept = default;
+
+  ~ValueView() = default;
+
+  template <typename Visitor>
+  auto Visit(Visitor&& visitor) const {
+    return std::visit(std::forward<Visitor>(visitor), data_);
+  }
+
+ private:
+  using Storage =
+      std::variant<Value::Null,
+                   Value::Undefined,
+                   bool,
+                   int64_t,
+                   base::span<const uint8_t>,
+                   std::string_view,
+                   base::span<const Value>,
+                   std::reference_wrapper<const Value::MapValue>,
+                   std::reference_wrapper<const Value::InvalidUTF8>>;
+
+  Storage data_;
+};
+
 // Stream operators so for pretty-printing in tests.
 CBOR_EXPORT std::ostream& operator<<(std::ostream&, const Value&);
+CBOR_EXPORT std::ostream& operator<<(std::ostream&, ValueView);
 CBOR_EXPORT std::ostream& operator<<(std::ostream&, Value::Type);
 
 }  // namespace cbor

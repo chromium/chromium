@@ -109,7 +109,7 @@ std::optional<cbor::rust::MapKey> ConvertCppMapKeyToRust(
 }
 
 std::optional<cbor::rust::Value> ConvertCppValueToRust(
-    const Value& node LIFETIME_BOUND,
+    ValueView node LIFETIME_BOUND,
     const int max_nesting_level,
     const bool allow_invalid_utf8) {
   if (max_nesting_level < 0) {
@@ -127,16 +127,16 @@ std::optional<cbor::rust::Value> ConvertCppValueToRust(
       [](int64_t v) -> std::optional<cbor::rust::Value> {
         return cbor::rust::Value::MakeInt(v);
       },
-      [](const Value::BinaryValue& v) -> std::optional<cbor::rust::Value> {
+      [](base::span<const uint8_t> v) -> std::optional<cbor::rust::Value> {
         return cbor::rust::Value::MakeBytestring(
             rs_std::SliceRef<const uint8_t>(v));
       },
-      [](const std::string& v) -> std::optional<cbor::rust::Value> {
+      [](std::string_view v) -> std::optional<cbor::rust::Value> {
         auto str_ref = rs_std::StrRef::FromUtf8(v);
         CHECK(str_ref.has_value());
         return cbor::rust::Value::MakeString(*str_ref);
       },
-      [&](const Value::ArrayValue& array) -> std::optional<cbor::rust::Value> {
+      [&](base::span<const Value> array) -> std::optional<cbor::rust::Value> {
         rs_std::Vec<cbor::rust::Value> items =
             cbor::rust::vec_with_capacity_values(array.size());
         for (const Value& elem : array) {
@@ -189,7 +189,7 @@ std::optional<cbor::rust::Value> ConvertCppValueToRust(
 Writer::~Writer() = default;
 
 // static
-std::optional<std::vector<uint8_t>> Writer::Write(const Value& node,
+std::optional<std::vector<uint8_t>> Writer::Write(ValueView node,
                                                   const Config& config) {
   const bool use_rust = ShouldUseRustWriter(config.use_rust);
 
@@ -226,7 +226,7 @@ std::optional<std::vector<uint8_t>> Writer::Write(const Value& node,
 }
 
 // static
-std::optional<std::vector<uint8_t>> Writer::Write(const Value& node,
+std::optional<std::vector<uint8_t>> Writer::Write(ValueView node,
                                                   size_t max_nesting_level) {
   Config config;
   config.max_nesting_level = base::checked_cast<int>(max_nesting_level);
@@ -235,7 +235,7 @@ std::optional<std::vector<uint8_t>> Writer::Write(const Value& node,
 
 Writer::Writer(std::vector<uint8_t>* cbor) : encoded_cbor_(cbor) {}
 
-bool Writer::EncodeCBOR(const Value& node,
+bool Writer::EncodeCBOR(ValueView node,
                         const int max_nesting_level,
                         const bool allow_invalid_utf8) {
   if (max_nesting_level < 0)
@@ -263,14 +263,14 @@ bool Writer::EncodeCBOR(const Value& node,
         }
         return true;
       },
-      [&](const Value::BinaryValue& bytes) {
+      [&](base::span<const uint8_t> bytes) {
         StartItem(Value::Type::BYTE_STRING,
                   base::strict_cast<uint64_t>(bytes.size()));
         // Add the bytes.
         encoded_cbor_->insert(encoded_cbor_->end(), bytes.begin(), bytes.end());
         return true;
       },
-      [&](const std::string& string) {
+      [&](std::string_view string) {
         StartItem(Value::Type::STRING,
                   base::strict_cast<uint64_t>(string.size()));
 
@@ -279,7 +279,7 @@ bool Writer::EncodeCBOR(const Value& node,
                               string.end());
         return true;
       },
-      [&](const Value::ArrayValue& array) {
+      [&](base::span<const Value> array) {
         StartItem(Value::Type::ARRAY, array.size());
         for (const auto& value : array) {
           if (!EncodeCBOR(value, max_nesting_level - 1, allow_invalid_utf8)) {
