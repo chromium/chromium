@@ -3780,4 +3780,93 @@ TEST_F(ActionAppMenuTest, FooterButtonsRespondToMnemonics) {
   menu.CloseMenu();
 }
 
+TEST_F(ActionAppMenuTest, UserGeneratedBookmarkTitlesEscapeAmpersands) {
+  BookmarkModelFactory::GetInstance()->SetTestingFactory(
+      profile_.get(), BookmarkModelFactory::GetDefaultFactory());
+  BookmarkMergedSurfaceServiceFactory::GetInstance()->SetTestingFactory(
+      profile_.get(), BookmarkMergedSurfaceServiceFactory::GetDefaultFactory());
+
+  bookmarks::BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(profile_.get());
+  ASSERT_TRUE(bookmark_model);
+  bookmark_model->LoadEmptyForTest();
+
+  BookmarkMergedSurfaceService* bookmark_service =
+      BookmarkMergedSurfaceServiceFactory::GetForProfile(profile_.get());
+  ASSERT_TRUE(bookmark_service);
+  bookmark_service->LoadForTesting({});
+
+  const bookmarks::BookmarkNode* bar_node = bookmark_model->bookmark_bar_node();
+  const bookmarks::BookmarkNode* bookmark_node = bookmark_model->AddURL(
+      bar_node, 0, u"A&B Bookmark", GURL("https://www.google.com"));
+
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
+  ASSERT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+
+  views::MenuItemView* bookmarks_item =
+      root->GetMenuItemByID(kActionBookmarksSubmenu);
+  ASSERT_TRUE(bookmarks_item);
+  menu.WillShowMenu(bookmarks_item);
+
+  views::MenuItemView* bookmark_entry = nullptr;
+  for (views::MenuItemView* item :
+       bookmarks_item->GetSubmenu()->GetMenuItems()) {
+    if (item->title() == u"A&&B Bookmark") {
+      bookmark_entry = item;
+      break;
+    }
+  }
+  ASSERT_NE(bookmark_entry, nullptr);
+  EXPECT_EQ(bookmark_entry->GetMnemonic(), 0);
+
+  // Verify BookmarkNodeChanged also escapes ampersands.
+  bookmark_model->SetTitle(bookmark_node, u"C&D Bookmark",
+                           bookmarks::metrics::BookmarkEditSource::kOther);
+  EXPECT_EQ(bookmark_entry->title(), u"C&&D Bookmark");
+  EXPECT_EQ(bookmark_entry->GetMnemonic(), 0);
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+
+TEST_F(ActionAppMenuTest,
+       RecentTabsDynamicMenu_UserGeneratedItemsEscapeAmpersands) {
+  RecentTabsDynamicMenu dynamic_menu(&mock_window_interface_);
+  auto parent = actions::ActionItem::Builder().Build();
+
+  RecentTabItem tab_item(RecentTabItem::Type::kTab, u"A&B Tab");
+  RecentTabItem command_item(RecentTabItem::Type::kCommand, u"&Restore");
+  RecentTabItem split_item(RecentTabItem::Type::kSplit, u"X&Y Split");
+  split_item.add_child(
+      RecentTabItem(RecentTabItem::Type::kSplit, u"R&estore split view"));
+
+  dynamic_menu.CreateRecentTabsActionForTesting(
+      parent.get(), {tab_item, command_item, split_item});
+
+  const auto& children = parent->GetChildren().children();
+  ASSERT_EQ(children.size(), 3u);
+  EXPECT_EQ(children[0]->GetActionItem()->GetTextWithMnemonic(), u"A&&B Tab");
+  EXPECT_EQ(children[0]->GetActionItem()->GetText(), u"A&B Tab");
+  EXPECT_EQ(children[1]->GetActionItem()->GetTextWithMnemonic(), u"&Restore");
+  EXPECT_EQ(children[1]->GetActionItem()->GetText(), u"Restore");
+
+  actions::ActionItem* split_action = children[2]->GetActionItem();
+  EXPECT_EQ(split_action->GetTextWithMnemonic(), u"X&&Y Split");
+  EXPECT_EQ(split_action->GetText(), u"X&Y Split");
+  ASSERT_EQ(split_action->GetChildren().children().size(), 1u);
+  EXPECT_EQ(split_action->GetChildren()
+                .children()[0]
+                ->GetActionItem()
+                ->GetTextWithMnemonic(),
+            u"R&estore split view");
+  EXPECT_EQ(
+      split_action->GetChildren().children()[0]->GetActionItem()->GetText(),
+      u"Restore split view");
+}
+
 }  // namespace

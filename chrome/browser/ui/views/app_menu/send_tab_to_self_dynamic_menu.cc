@@ -39,6 +39,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/actions/actions.h"
+#include "ui/base/accelerators/menu_label_accelerator_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
@@ -242,7 +243,7 @@ void SendTabToSelfDynamicMenu::BuildSendTabToSelfActions(
 
     parent_item->AddChild(
         actions::ActionItem::Builder()
-            .SetText(label)
+            .SetText(ui::EscapeMenuLabelAmpersands(label))
             .SetImage(icon)
             .SetProperty(AppMenuActionItem::kDisplayTypeKey,
                          AppMenuActionItem::DisplayType::kRow)

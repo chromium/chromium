@@ -37,6 +37,7 @@
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/tabs/public/tab_group.h"
 #include "ui/actions/actions.h"
+#include "ui/base/accelerators/menu_label_accelerator_util.h"
 #include "ui/base/class_property.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
@@ -91,7 +92,7 @@ void TabGroupDynamicMenu::BuildTabGroupsAction(
         GetTabGroupContextMenuColorId(group->color()), gfx::kFaviconSize);
 
     auto group_builder = actions::ActionItem::Builder();
-    group_builder.SetText(group_title)
+    group_builder.SetText(ui::EscapeMenuLabelAmpersands(group_title))
         .SetImage(group_icon)
         .SetInvokeActionCallback(base::BindRepeating(
             &TabGroupDynamicMenu::PerformTabGroupAction, base::Unretained(this),
@@ -367,8 +368,9 @@ void TabGroupDynamicMenu::BuildTabGroupData(
     GURL tab_url = tab.url();
 
     auto tab_builder = actions::ActionItem::Builder();
-    tab_builder.SetText(tab_title).SetImage(tab_icon).SetInvokeActionCallback(
-        base::BindRepeating(
+    tab_builder.SetText(ui::EscapeMenuLabelAmpersands(tab_title))
+        .SetImage(tab_icon)
+        .SetInvokeActionCallback(base::BindRepeating(
             [](base::WeakPtr<TabGroupDynamicMenu> self, GURL url,
                actions::ActionItem* item,
                actions::ActionInvocationContext context) {

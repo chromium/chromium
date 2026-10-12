@@ -36,8 +36,25 @@
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/actions/actions.h"
+#include "ui/base/accelerators/menu_label_accelerator_util.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/color/color_id.h"
+
+namespace {
+
+bool MayHaveMnemonics(const RecentTabItem& item) {
+  if (item.type() == RecentTabItem::Type::kCommand) {
+    return true;
+  }
+  // The "Restore split view" action uses Type::kSplit for metrics tracking,
+  // but acts as a command item that allows mnemonics.
+  if (item.type() == RecentTabItem::Type::kSplit && item.children().empty()) {
+    return true;
+  }
+  return false;
+}
+
+}  // namespace
 
 RecentTabsDynamicMenu::RecentTabsDynamicMenu(BrowserWindowInterface* browser)
     : browser_window_interface_(browser) {}
@@ -181,24 +198,28 @@ void RecentTabsDynamicMenu::CreateRecentTabsAction(
       continue;
     }
 
+    const std::u16string title =
+        MayHaveMnemonics(recent_tab)
+            ? recent_tab.title()
+            : ui::EscapeMenuLabelAmpersands(recent_tab.title());
+
     std::unique_ptr<actions::BaseAction> action_item;
     if (recent_tab.type() == RecentTabItem::Type::kHeader) {
-      action_item = AppMenuActionItem::CreateHeader(recent_tab.title());
+      action_item = AppMenuActionItem::CreateHeader(title);
     } else {
       if (recent_tab.action_id().has_value()) {
         action_item = AppMenuActionItem::CreateIndirect(
             recent_tab.action_id().value(),
             BrowserActions::From(browser_window_interface_)->root_action_item(),
             {.container_color = ui::kColorMenuBackground,
-             .text_override = recent_tab.title().empty()
-                                  ? std::nullopt
-                                  : std::make_optional(recent_tab.title()),
+             .text_override =
+                 title.empty() ? std::nullopt : std::make_optional(title),
              .icon_override = recent_tab.icon().IsEmpty()
                                   ? std::nullopt
                                   : std::make_optional(recent_tab.icon())});
       } else {
         auto builder = actions::ActionItem::Builder();
-        builder.SetText(recent_tab.title())
+        builder.SetText(title)
             .SetImage(recent_tab.icon())
             .SetEnabled(recent_tab.enabled())
             .SetInvokeActionCallback(GetInvokeCallback(recent_tab))

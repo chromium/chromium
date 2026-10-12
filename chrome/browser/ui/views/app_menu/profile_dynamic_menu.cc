@@ -50,7 +50,6 @@
 #include "components/sync/service/sync_user_settings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/actions/actions.h"
-#include "ui/base/accelerators/menu_label_accelerator_util.h"
 #include "ui/base/base_window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
@@ -60,7 +59,6 @@
 #include "ui/color/color_provider_manager.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/native_ui_types.h"
-#include "ui/gfx/text_elider.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/widget/widget.h"
@@ -391,12 +389,6 @@ void ProfileDynamicMenu::BuildOtherProfilesSection(
       // callback.
       for (ProfileAttributesEntry* profile_entry : profile_entries) {
         std::u16string display_name = GetProfileMenuDisplayName(profile_entry);
-        std::u16string truncated_name =
-            ui::EscapeMenuLabelAmpersands(gfx::TruncateString(
-                display_name,
-                GetLayoutConstant(
-                    LayoutConstant::kAppMenuMaximumCharacterLength),
-                gfx::CHARACTER_BREAK));
 
         // Circular profile avatar icon.
         ui::ImageModel avatar_model =
@@ -417,7 +409,7 @@ void ProfileDynamicMenu::BuildOtherProfilesSection(
         }
 
         auto builder = actions::ActionItem::Builder();
-        builder.SetText(truncated_name)
+        builder.SetText(display_name)
             .SetImage(avatar_model)
             .SetInvokeActionCallback(base::BindRepeating(
                 [](base::FilePath profile_path, actions::ActionItem* item,

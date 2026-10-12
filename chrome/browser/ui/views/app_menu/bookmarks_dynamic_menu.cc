@@ -38,6 +38,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "ui/actions/actions.h"
+#include "ui/base/accelerators/menu_label_accelerator_util.h"
 #include "ui/base/class_property.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
@@ -472,7 +473,7 @@ void BookmarksDynamicMenu::BookmarkNodeChanged(
     std::u16string title = node->GetTitle().empty()
                                ? base::UTF8ToUTF16(node->url().spec())
                                : node->GetTitle();
-    action->SetText(title);
+    action->SetText(ui::EscapeMenuLabelAmpersands(title));
   }
 }
 
@@ -607,7 +608,7 @@ actions::ActionItem* BookmarksDynamicMenu::AddBookmarkNodeAction(
   std::u16string title = node->GetTitle().empty()
                              ? base::UTF8ToUTF16(node->url().spec())
                              : node->GetTitle();
-  builder.SetText(title);
+  builder.SetText(ui::EscapeMenuLabelAmpersands(title));
 
   const gfx::Image& image = service->bookmark_model()->GetFavicon(node);
   builder.SetImage(!image.IsEmpty() ? ui::ImageModel::FromImage(image)
@@ -661,7 +662,8 @@ actions::ActionItem* BookmarksDynamicMenu::AddBookmarkFolderAction(
           : chrome::BookmarkFolderIconType::kNormal;
 
   auto builder = actions::ActionItem::Builder();
-  builder.SetText(underlying_nodes[0]->GetTitle())
+  builder
+      .SetText(ui::EscapeMenuLabelAmpersands(underlying_nodes[0]->GetTitle()))
       .SetImage(
           chrome::GetBookmarkFolderIcon(folder_icon_type, ui::kColorMenuIcon))
       .SetProperty(AppMenuActionItem::kContainerColorKey,

@@ -211,3 +211,27 @@ TEST_F(ProfileDynamicMenuTest, BuildOtherProfiles_GuestProfile) {
 
   EXPECT_TRUE(parent_item->GetChildren().children().empty());
 }
+
+TEST_F(ProfileDynamicMenuTest,
+       BuildOtherProfiles_AmpersandInProfileNameNotMnemonic) {
+  TestingProfileManager profile_manager(TestingBrowserProcess::GetGlobal());
+  ASSERT_TRUE(profile_manager.SetUp());
+
+  TestingProfile* profile1 = profile_manager.CreateTestingProfile("Profile 1");
+  profile_manager.CreateTestingProfile("Jane&Doe");
+
+  ON_CALL(mock_window_interface_, GetProfile())
+      .WillByDefault(testing::Return(profile1));
+
+  ProfileDynamicMenu menu(&mock_window_interface_);
+  auto parent_item = actions::ActionItem::Builder().Build();
+
+  menu.BuildOtherProfiles(parent_item.get());
+
+  const auto& children = parent_item->GetChildren().children();
+  ASSERT_EQ(children.size(), 4u);
+  // GetProfileMenuDisplayName escapes '&' once; BuildOtherProfiles must not
+  // escape it a second time.
+  EXPECT_EQ(children[2]->GetActionItem()->GetTextWithMnemonic(), u"Jane&&Doe");
+  EXPECT_EQ(children[2]->GetActionItem()->GetText(), u"Jane&Doe");
+}
