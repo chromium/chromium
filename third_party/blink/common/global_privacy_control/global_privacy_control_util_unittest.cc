@@ -14,7 +14,7 @@ namespace blink {
 class GlobalPrivacyControlUtilTest : public testing::Test {
  private:
   base::test::ScopedFeatureList feature_list_{
-      /*enabled_features=*/{features::kGlobalPrivacyControlTest},
+      /*enabled_features=*/{features::kGlobalPrivacyControlApi},
       /*disabled_features=*/{features::kGlobalPrivacyControlForce}};
 };
 
@@ -58,7 +58,7 @@ TEST_F(GlobalPrivacyControlUtilTest, FeatureDisabledIgnoresSettingAndOverride) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
-      /*disabled_features=*/{features::kGlobalPrivacyControlTest,
+      /*disabled_features=*/{features::kGlobalPrivacyControlApi,
                              features::kGlobalPrivacyControlForce});
 
   RendererPreferences prefs;

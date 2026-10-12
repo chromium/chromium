@@ -22,16 +22,14 @@ inline constexpr double kGlobalPrivacyControlSourceHistogramSampleProbability =
 }  // namespace
 
 bool IsGlobalPrivacyControlFeatureEnabled() {
-  // TODO(crbug.com/40745270): `kGlobalPrivacyControlForce` currently enables
-  // this but it should be removed once we have a real setting to test.
+  // `kGlobalPrivacyControlForce` is kept for testing.
   return base::FeatureList::IsEnabled(features::kGlobalPrivacyControlForce) ||
-         base::FeatureList::IsEnabled(features::kGlobalPrivacyControlTest);
+         base::FeatureList::IsEnabled(features::kGlobalPrivacyControlApi);
 }
 
 bool IsGlobalPrivacyControlFeatureAndSettingEnabled(
     const RendererPreferences& renderer_preferences) {
-  // TODO(crbug.com/40745270): `kGlobalPrivacyControlForce` currently enables
-  // this but it should be removed once we have a real setting to test.
+  // `kGlobalPrivacyControlForce` is kept for testing.
   if (base::FeatureList::IsEnabled(features::kGlobalPrivacyControlForce)) {
     return true;
   }
