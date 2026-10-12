@@ -175,7 +175,7 @@ double EqualPowerPanner::UpdateDesiredGain(double azimuth,
   cached_azimuth_ = azimuth;
   cached_number_of_input_channels_ = number_of_input_channels;
 
-  double desired_pan_position;
+  double desired_pan_position = 0.0;
 
   if (number_of_input_channels == 1) {  // For mono source case.
     // Pan smoothly from left to right with azimuth going from -90 -> +90

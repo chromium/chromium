@@ -1281,7 +1281,7 @@ std::tuple<bool, float> AudioParamHandler::ValueForContextTime(
   }
 
   // Ask for just a single value.
-  float value;
+  float value = 0.0f;
   double sample_rate = audio_destination.SampleRate();
   size_t start_frame = audio_destination.CurrentSampleFrame();
   // One parameter change per render quantum.
@@ -2031,7 +2031,7 @@ std::tuple<size_t, float, size_t> AudioParamHandler::ProcessSetTarget(
       const float c2 = c0 * ((c0 - 3) * c0 + 3);
       const float c3 = c0 * (c0 * ((4 - c0) * c0 - 6) + 4);
 
-      float delta;
+      float delta = 0.0f;
       __m128 v_c = _mm_set_ps(c2, c1, c0, 0);
       __m128 v_delta, v_value, v_result;
 
@@ -2225,7 +2225,7 @@ std::tuple<size_t, float, size_t> AudioParamHandler::ProcessSetValueCurve(
         // occurred by incrementing the index by curvePointsPerFrame.
         double current_virtual_index =
             curve_virtual_index + k * curve_points_per_frame;
-        size_t curve_index0;
+        size_t curve_index0 = 0;
 
         // Clamp index to the last element of the array.
         if (current_virtual_index < curve_data.size()) {

@@ -78,7 +78,7 @@ double WaveShaperCurveValue(float input, base::span<const float> curve) {
   // the curve data. Then linearly interpolate between the two points in the
   // curve.
   const double virtual_index = 0.5 * (input + 1) * (curve.size() - 1);
-  double output;
+  double output = 0.0;
   if (virtual_index < 0) {
     // input < -1, so use curve[0]
     output = curve[0];

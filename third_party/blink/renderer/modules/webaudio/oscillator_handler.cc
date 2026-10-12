@@ -504,7 +504,7 @@ double OscillatorHandler::ProcessKRate(int n,
   const float incr = frequency * rate_scale;
 
   if (incr >= kInterpolate2Point) {
-    int k;
+    int k = 0;
     double v_index = virtual_read_index;
 
     std::tie(k, v_index) =
@@ -688,9 +688,9 @@ void OscillatorHandler::Process(uint32_t frames_to_process) {
     return;
   }
 
-  size_t quantum_frame_offset;
-  uint32_t non_silent_frames_to_process;
-  double start_frame_offset;
+  size_t quantum_frame_offset = 0;
+  uint32_t non_silent_frames_to_process = 0;
+  double start_frame_offset = 0.0;
 
   std::tie(quantum_frame_offset, non_silent_frames_to_process,
            start_frame_offset) =

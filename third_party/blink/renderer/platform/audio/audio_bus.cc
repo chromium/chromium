@@ -676,7 +676,7 @@ scoped_refptr<AudioBus> AudioBus::TryCreateBySampleRateConverting(
   }
 
   // First, mix to mono (if necessary) then sample-rate convert.
-  const AudioBus* resampler_source_bus;
+  const AudioBus* resampler_source_bus = nullptr;
   scoped_refptr<AudioBus> mixed_mono_bus;
   if (mix_to_mono) {
     mixed_mono_bus = AudioBus::TryCreateByMixingToMono(source_bus);

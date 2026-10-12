@@ -188,7 +188,7 @@ void HRTFPanner::Pan(double desired_azimuth,
   base::span<float> destination_r =
       output_bus->ChannelByType(AudioBus::kChannelRight)->MutableSpan();
 
-  double azimuth_blend;
+  double azimuth_blend = 0.0;
   const int desired_azimuth_index =
       CalculateDesiredAzimuthIndexAndBlend(azimuth, azimuth_blend);
 
@@ -232,14 +232,14 @@ void HRTFPanner::Pan(double desired_azimuth,
         std::min(kFramesPerSegment, frames_to_process - offset);
 
     // Get the HRTFKernels and interpolated delays.
-    HRTFKernel* kernel_l1;
-    HRTFKernel* kernel_r1;
-    HRTFKernel* kernel_l2;
-    HRTFKernel* kernel_r2;
-    double frame_delay_l1;
-    double frame_delay_r1;
-    double frame_delay_l2;
-    double frame_delay_r2;
+    HRTFKernel* kernel_l1 = nullptr;
+    HRTFKernel* kernel_r1 = nullptr;
+    HRTFKernel* kernel_l2 = nullptr;
+    HRTFKernel* kernel_r2 = nullptr;
+    double frame_delay_l1 = 0.0;
+    double frame_delay_r1 = 0.0;
+    double frame_delay_l2 = 0.0;
+    double frame_delay_r2 = 0.0;
     database->GetKernelsFromAzimuthElevation(azimuth_blend, azimuth_index1_,
                                              elevation1_, kernel_l1, kernel_r1,
                                              frame_delay_l1, frame_delay_r1);

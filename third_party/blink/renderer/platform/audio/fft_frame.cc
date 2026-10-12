@@ -233,7 +233,7 @@ void FFTFrame::InterpolateFrequencyComponents(const FFTFrame& frame1,
     }
 
     // Blend group-delays
-    double delta_phase_blend;
+    double delta_phase_blend = 0.0;
 
     if (delta_phase1 - delta_phase2 > std::numbers::pi) {
       delta_phase_blend =

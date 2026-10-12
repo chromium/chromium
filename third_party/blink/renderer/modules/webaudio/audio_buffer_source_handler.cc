@@ -157,9 +157,9 @@ void AudioBufferSourceHandler::Process(uint32_t frames_to_process) {
       return;
     }
 
-    uint32_t quantum_frame_offset;
-    uint32_t buffer_frames_to_process;
-    double start_time_offset;
+    uint32_t quantum_frame_offset = 0;
+    uint32_t buffer_frames_to_process = 0;
+    double start_time_offset = 0.0;
 
     std::tie(quantum_frame_offset, buffer_frames_to_process,
              start_time_offset) =
@@ -311,7 +311,7 @@ AudioBufferSourceHandler::ProcessInterpolatedPath(double virtual_start_frame,
       // the start of the loop. We calculate this instead of directly setting to
       // virtual_start_frame to preserve fractional loop bounds, and defensively
       // clamp to protect against floating point rounding issues.
-      double wrapped_index;
+      double wrapped_index = 0.0;
       if (virtual_delta_frames >= 1.0) {
         wrapped_index = virtual_read_index + 1.0 - virtual_delta_frames;
       } else if (virtual_delta_frames > 0) {
@@ -341,7 +341,7 @@ AudioBufferSourceHandler::ProcessInterpolatedPath(double virtual_start_frame,
       // The source channel may have been transferred already, so don't try
       // to read from it if it was. Just set the destination to 0.
       if (!source.empty()) {
-        double sample;
+        double sample = 0.0;
         if (read_index == read_index2 && read_index >= 1) {
           // We're at the end of the buffer, so just linearly extrapolate
           // from the last two samples.

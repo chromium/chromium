@@ -412,10 +412,10 @@ void BiquadFilterHandler::GetFrequencyResponse(
   std::unique_ptr<Biquad> response_kernel =
       std::make_unique<Biquad>(render_quantum_frames_);
 
-  float cutoff_frequency;
-  float q;
-  float gain;
-  float detune;  // in Cents
+  float cutoff_frequency = 0.0f;
+  float q = 0.0f;
+  float gain = 0.0f;
+  float detune = 0.0f;  // in Cents
 
   {
     // Get a copy of the current biquad filter coefficients so we can update

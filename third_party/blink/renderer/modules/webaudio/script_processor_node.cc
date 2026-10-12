@@ -206,7 +206,7 @@ ScriptProcessorNode* ScriptProcessorNode::Create(
   }
 
   // Sanitize user-supplied buffer size.
-  uint32_t buffer_size;
+  uint32_t buffer_size = 0;
   switch (requested_buffer_size) {
     case 0:
       // Choose an appropriate size.  For an AudioContext that is not closed, we

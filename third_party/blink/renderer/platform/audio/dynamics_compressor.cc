@@ -192,13 +192,13 @@ void DynamicsCompressor::Process(const AudioBus* source_bus,
     // envelope_rate is the rate we slew from current compressor level to the
     // desired level.  The exact rate depends on if we're attacking or
     // releasing and by how much.
-    float envelope_rate;
+    float envelope_rate = 0.0f;
 
     const bool is_releasing = scaled_desired_gain > compressor_gain_;
 
     // compression_diff_db is the difference between current compression level
     // and the desired level.
-    float db_compression_diff;
+    float db_compression_diff = 0.0f;
 
     if (scaled_desired_gain == 0) {
       db_compression_diff = is_releasing ? -1 : 1;

@@ -227,7 +227,7 @@ std::optional<uint32_t> OfflineAudioContext::CalculateEffectiveChunkSize(
   const uint32_t render_quantum_frames =
       GetDeferredTaskHandler().RenderQuantumFrames();
 
-  uint64_t buffer_size;
+  uint64_t buffer_size = 0;
   if (total_render_frames_.has_value()) {
     CHECK_LT(committed_frames_, total_render_frames_.value());
     uint32_t remaining = total_render_frames_.value() - committed_frames_;

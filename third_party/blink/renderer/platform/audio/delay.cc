@@ -163,7 +163,7 @@ void Delay::ProcessARate(base::span<const float> source,
   CopyToCircularBuffer(buffer_.as_span(), write_index_, source,
                        frames_to_process);
 
-  size_t frames_processed;
+  size_t frames_processed = 0;
   std::tie(frames_processed, write_index_) =
       ProcessARateVector(destination, frames_to_process);
 

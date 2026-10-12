@@ -644,7 +644,7 @@ static double RootFinder(double low,
   DCHECK(std::isfinite(f_high));
   DCHECK_LE(f_low * f_high, 0);
 
-  int iteration;
+  int iteration = 0;
   for (iteration = 0; iteration < kMaxIterations; ++iteration) {
     root = (f_low * high - f_high * low) / (f_low - f_high);
     if (fabs(high - low) < kAccuracyThreshold * fabs(high + low)) {

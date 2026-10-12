@@ -59,9 +59,9 @@ void ConstantSourceHandler::Process(uint32_t frames_to_process) {
     return;
   }
 
-  size_t quantum_frame_offset;
-  size_t non_silent_frames_to_process;
-  double start_frame_offset;
+  size_t quantum_frame_offset = 0;
+  size_t non_silent_frames_to_process = 0;
+  double start_frame_offset = 0.0;
 
   // Figure out where in the current rendering quantum that the source is
   // active and for how many frames.

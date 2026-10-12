@@ -113,7 +113,7 @@ bool FreezeAudioPort(v8::Isolate* isolate,
                      v8::Local<v8::Array>& audio_port_array) {
   v8::TryCatch try_catch(isolate);
 
-  bool port_frozen;
+  bool port_frozen = false;
   if (!audio_port_array->SetIntegrityLevel(context, v8::IntegrityLevel::kFrozen)
            .To(&port_frozen)) {
     return false;
@@ -126,7 +126,7 @@ bool FreezeAudioPort(v8::Isolate* isolate,
         !bus_value->IsObject()) {
       return false;
     }
-    bool bus_frozen;
+    bool bus_frozen = false;
     if (!bus_value.As<v8::Object>()
              ->SetIntegrityLevel(context, v8::IntegrityLevel::kFrozen)
              .To(&bus_frozen)) {
@@ -165,7 +165,7 @@ bool ClonePortTopology(v8::Isolate* isolate,
     size_t bus_length = audio_bus ? audio_bus->length() : 0;
     v8::Local<v8::Array> new_audio_bus =
         v8::Array::New(isolate, number_of_channels);
-    bool new_bus_added;
+    bool new_bus_added = false;
     if (!new_port_array
              ->CreateDataProperty(context, bus_index, new_audio_bus)
              .To(&new_bus_added)) {
@@ -181,7 +181,7 @@ bool ClonePortTopology(v8::Isolate* isolate,
           v8::ArrayBuffer::New(isolate, bus_length * sizeof(float));
       v8::Local<v8::Float32Array> float32_array =
           v8::Float32Array::New(array_buffer, 0, bus_length);
-      bool new_channel_added;
+      bool new_channel_added = false;
       if (!new_audio_bus
                ->CreateDataProperty(context, channel_index, float32_array)
                .To(&new_channel_added)) {
@@ -341,7 +341,7 @@ bool CloneParamValueMapToObject(
         v8::ArrayBuffer::New(isolate, array_size * sizeof(float));
     v8::Local<v8::Float32Array> float32_array =
         v8::Float32Array::New(array_buffer, 0, array_size);
-    bool new_param_array_created;
+    bool new_param_array_created = false;
     if (!new_params_object
              ->CreateDataProperty(context, v8_param_name, float32_array)
              .To(&new_param_array_created)) {
@@ -349,7 +349,7 @@ bool CloneParamValueMapToObject(
     }
   }
 
-  bool object_frozen;
+  bool object_frozen = false;
   if (!new_params_object
            ->SetIntegrityLevel(context, v8::IntegrityLevel::kFrozen)
            .To(&object_frozen)) {
