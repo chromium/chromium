@@ -154,10 +154,12 @@ void OnSodaResponse(const char* serialized_proto,
 
     if (result.has_timing_metrics()) {
       speech_recognition_result.timing_information = media::TimingInformation();
-      speech_recognition_result.timing_information->audio_start_time =
-          base::Microseconds(result.timing_metrics().audio_start_time_usec());
-      speech_recognition_result.timing_information->audio_end_time =
-          base::Microseconds(result.timing_metrics().event_end_time_usec());
+      speech_recognition_result.timing_information->audio_start_time = std::max(
+          base::Microseconds(result.timing_metrics().audio_start_time_usec()),
+          base::TimeDelta());
+      speech_recognition_result.timing_information->audio_end_time = std::max(
+          base::Microseconds(result.timing_metrics().event_end_time_usec()),
+          speech_recognition_result.timing_information->audio_start_time);
     }
 
     callbacks.recognition.Run(std::move(speech_recognition_result));
@@ -277,6 +279,27 @@ void SpeechRecognitionRecognizerImpl::OnRecognitionEvent(
     using SpeechTimestamp = SpeechTimestampEstimator::SpeechTimestamp;
     auto& timing_info = event.timing_information.value();
 
+    // SODA can emit negative or inverted audio timestamps (e.g. when
+    // subtracting preamble length or during text formatting alignment). Clamp
+    // timestamps so that `audio_start_time >= 0` and `audio_end_time >=
+    // audio_start_time`, as required by Mojo deserialization in
+    // TimingInformation StructTraits.
+    timing_info.audio_start_time =
+        std::max(timing_info.audio_start_time, base::TimeDelta());
+    timing_info.audio_end_time =
+        std::max(timing_info.audio_end_time, timing_info.audio_start_time);
+
+    if (timing_info.hypothesis_parts.has_value()) {
+      base::TimeDelta prev_offset = base::TimeDelta();
+      const base::TimeDelta max_offset =
+          timing_info.audio_end_time - timing_info.audio_start_time;
+      for (auto& part : *timing_info.hypothesis_parts) {
+        part.hypothesis_part_offset =
+            std::clamp(part.hypothesis_part_offset, prev_offset, max_offset);
+        prev_offset = part.hypothesis_part_offset;
+      }
+    }
+
     // During ResetSoda(), we reset `timestamp_estimator_`, and the next few
     // transcriptions might have missing or wrong timestamps, but they should
     // quickly return to being consistent.
@@ -303,6 +326,8 @@ void SpeechRecognitionRecognizerImpl::OnRecognitionEvent(
     }
     if (!media_timestamps.empty()) {
       timing_info.originating_media_timestamps = std::move(media_timestamps);
+    } else {
+      timing_info.originating_media_timestamps.reset();
     }
   }
 

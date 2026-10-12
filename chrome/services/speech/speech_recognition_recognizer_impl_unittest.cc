@@ -332,6 +332,83 @@ TEST_F(SpeechRecognitionRecognizerImplTest,
   ASSERT_FALSE(timestamps.has_value());
 }
 
+TEST_F(SpeechRecognitionRecognizerImplTest,
+       HandlesResultsWithInvertedAndNegativeAudioTimestamps) {
+  CreateRecognizer(CreateOptions(), kPrimaryLanguageName);
+
+  // Audio from media time [10s, 12s) corresponds to speech time [0s, 2s).
+  SendAudio(recognizer_.get(), base::Seconds(2), base::Seconds(10));
+
+  // 1. Inverted timestamps (`audio_end_time < audio_start_time`).
+  // Without clamping, Mojo deserialization fails with
+  // VALIDATION_ERROR_DESERIALIZATION_FAILED.
+  media::SpeechRecognitionResult inverted_result;
+  inverted_result.transcription = "inverted";
+  inverted_result.is_final = false;
+  inverted_result.timing_information = media::TimingInformation();
+  inverted_result.timing_information->audio_start_time = base::Seconds(2);
+  inverted_result.timing_information->audio_end_time = base::Seconds(1);
+
+  recognizer_->recognition_event_callback().Run(std::move(inverted_result));
+  WaitForRecognitionEvent();
+
+  ASSERT_TRUE(last_received_result_.timing_information.has_value());
+  EXPECT_EQ(last_received_result_.timing_information->audio_start_time,
+            base::Seconds(2));
+  EXPECT_EQ(last_received_result_.timing_information->audio_end_time,
+            base::Seconds(2));
+  EXPECT_FALSE(last_received_result_.timing_information
+                   ->originating_media_timestamps.has_value());
+
+  // 2. Negative start timestamp (`audio_start_time < 0`, `audio_end_time > 0`).
+  // Should clamp `audio_start_time` to 0s and compute media timestamps for
+  // [0s, 2s) -> [10s, 12s).
+  media::SpeechRecognitionResult negative_start_result;
+  negative_start_result.transcription = "negative start";
+  negative_start_result.is_final = true;
+  negative_start_result.timing_information = media::TimingInformation();
+  negative_start_result.timing_information->audio_start_time =
+      base::Seconds(-1);
+  negative_start_result.timing_information->audio_end_time = base::Seconds(2);
+  negative_start_result.timing_information->hypothesis_parts =
+      std::vector<media::HypothesisParts>{
+          media::HypothesisParts({"negative"}, base::Seconds(-1)),
+          media::HypothesisParts({"start"}, base::Seconds(5))};
+
+  recognizer_->recognition_event_callback().Run(
+      std::move(negative_start_result));
+  WaitForRecognitionEvent();
+
+  ASSERT_TRUE(last_received_result_.timing_information.has_value());
+  EXPECT_EQ(last_received_result_.timing_information->audio_start_time,
+            base::Seconds(0));
+  EXPECT_EQ(last_received_result_.timing_information->audio_end_time,
+            base::Seconds(2));
+  ASSERT_TRUE(last_received_result_.timing_information
+                  ->originating_media_timestamps.has_value());
+  ASSERT_EQ(last_received_result_.timing_information
+                ->originating_media_timestamps->size(),
+            1u);
+  EXPECT_EQ((*last_received_result_.timing_information
+                  ->originating_media_timestamps)[0]
+                .start,
+            base::Seconds(10));
+  EXPECT_EQ((*last_received_result_.timing_information
+                  ->originating_media_timestamps)[0]
+                .end,
+            base::Seconds(12));
+  ASSERT_TRUE(
+      last_received_result_.timing_information->hypothesis_parts.has_value());
+  ASSERT_EQ(last_received_result_.timing_information->hypothesis_parts->size(),
+            2u);
+  EXPECT_EQ((*last_received_result_.timing_information->hypothesis_parts)[0]
+                .hypothesis_part_offset,
+            base::Seconds(0));
+  EXPECT_EQ((*last_received_result_.timing_information->hypothesis_parts)[1]
+                .hypothesis_part_offset,
+            base::Seconds(2));
+}
+
 TEST_F(SpeechRecognitionRecognizerImplTest, ResetSodaWithDifferentCaseLang) {
   config_paths_[kPrimaryLanguageName] = base::FilePath::FromASCII("/fake/path");
   CreateRecognizer(CreateOptions(), kPrimaryLanguageNameLowerCase);
