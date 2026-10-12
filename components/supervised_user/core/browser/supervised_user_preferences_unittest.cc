@@ -41,11 +41,6 @@ TEST_F(SupervisedUserPreferencesTest, RegisterProfilePrefsAndCheckDefaults) {
                 prefs::kDefaultSupervisedUserFilteringBehavior),
             static_cast<int>(FilteringBehavior::kAllow));
 
-  // This is browser's default kSupervisedUserSafeSites setting (for
-  // unsupervised user).
-  EXPECT_EQ(supervised_user_test_environment_.pref_service()->GetBoolean(
-                prefs::kSupervisedUserSafeSites),
-            false);
   EXPECT_FALSE(IsSubjectToParentalControls(
       *supervised_user_test_environment_.pref_service()));
   // TODO(b/306376651): When we migrate more preference reading methods in this

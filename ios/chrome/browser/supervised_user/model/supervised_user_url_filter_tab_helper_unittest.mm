@@ -3,16 +3,16 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/supervised_user/model/supervised_user_url_filter_tab_helper.h"
-
 #import "base/memory/scoped_refptr.h"
 #import "base/task/single_thread_task_runner.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
-#import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/identity_test_utils.h"
+#import "components/supervised_user/core/browser/family_link_settings_service.h"
 #import "components/supervised_user/core/browser/supervised_user_service.h"
+#import "components/supervised_user/core/browser/supervised_user_test_environment.h"
 #import "components/supervised_user/core/browser/supervised_user_utils.h"
 #import "components/supervised_user/core/common/pref_names.h"
 #import "components/supervised_user/core/common/supervised_user_constants.h"
@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
 #import "ios/chrome/browser/supervised_user/model/child_account_service_factory.h"
+#import "ios/chrome/browser/supervised_user/model/family_link_settings_service_factory.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_capabilities.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_error_container.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
@@ -34,12 +35,11 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
+namespace supervised_user {
 namespace {
 
 const char kTestEmail[] = "test@gmail.com";
 NSString* const kExampleURL = @"http://example.com";
-
-}  // namespace
 
 class SupervisedUserURLFilterTabHelperTest : public PlatformTest {
  protected:
@@ -49,6 +49,8 @@ class SupervisedUserURLFilterTabHelperTest : public PlatformTest {
         IdentityManagerFactory::GetInstance(),
         base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
                                 BuildIdentityManagerForTests));
+    builder.AddTestingFactory(ChildAccountServiceFactory::GetInstance(),
+                              ChildAccountServiceFactory::GetDefaultFactory());
 
     profile_ = std::move(builder).Build();
     web_state_.SetBrowserState(profile_.get());
@@ -61,14 +63,15 @@ class SupervisedUserURLFilterTabHelperTest : public PlatformTest {
   // Signs the user into `email` as the primary Chrome account and sets the
   // given parental control capabilities on this account.
   void SignIn(const std::string& email, bool is_subject_to_parental_controls) {
-    signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(profile_.get());
-    AccountInfo account = signin::MakePrimaryAccountAvailable(
-        identity_manager, email, signin::ConsentLevel::kSignin);
-    supervised_user::UpdateSupervisionStatusForAccount(
-        account, identity_manager, is_subject_to_parental_controls);
+    if (is_subject_to_parental_controls) {
+      SupervisedUserTestEnvironment::EnableSupervisedAccount(
+          IdentityManagerFactory::GetForProfile(profile_.get()));
+    } else {
+      SupervisedUserTestEnvironment::EnableRegularAccount(
+          IdentityManagerFactory::GetForProfile(profile_.get()));
+    }
 
-    ASSERT_EQ(supervised_user::IsSubjectToParentalControls(profile_.get()),
+    ASSERT_EQ(IsSubjectToParentalControls(profile_.get()),
               is_subject_to_parental_controls);
   }
 
@@ -101,24 +104,8 @@ class SupervisedUserURLFilterTabHelperTest : public PlatformTest {
     return request_policy.ShouldCancelNavigation();
   }
 
-  void AllowExampleSiteForSupervisedUser() {
-    // This single host is allowed.
-    base::DictValue hosts;
-    hosts.Set("example.com", true);
-    profile_->GetPrefs()->SetDict(prefs::kSupervisedUserManualHosts,
-                                  hosts.Clone());
-
-    // But default behavior will block everything else.
-    profile_->GetPrefs()->SetInteger(
-        prefs::kDefaultSupervisedUserFilteringBehavior,
-        static_cast<int>(supervised_user::FilteringBehavior::kBlock));
-    profile_->GetPrefs()->SetBoolean(prefs::kSupervisedUserSafeSites, false);
-  }
-
-  void RestrictAllSitesForSupervisedUser() {
-    profile_->GetPrefs()->SetInteger(
-        prefs::kDefaultSupervisedUserFilteringBehavior,
-        static_cast<int>(supervised_user::FilteringBehavior::kBlock));
+  FamilyLinkSettingsService* family_link_settings_service() {
+    return FamilyLinkSettingsServiceFactory::GetForProfile(profile_.get());
   }
 
  private:
@@ -129,22 +116,25 @@ class SupervisedUserURLFilterTabHelperTest : public PlatformTest {
   web::FakeWebState web_state_;
 };
 
-// TODO(crbug.com/418284279): blocked because the preferences are not properly
-// flowing through the supervised user pref store.
 TEST_F(SupervisedUserURLFilterTabHelperTest,
-       DISABLED_BlockCertainSitesForSupervisedUser) {
+       BlockCertainSitesForSupervisedUser) {
   base::HistogramTester histogram_tester;
   SignIn(kTestEmail,
          /*is_subject_to_parental_controls=*/true);
-  RestrictAllSitesForSupervisedUser();
+
+  // Restricts all sites for the supervised user.
+  SupervisedUserTestEnvironment::SetWebFilterType(
+      WebFilterType::kCertainSites, *family_link_settings_service());
   EXPECT_TRUE(IsURLBlocked(kExampleURL));
   histogram_tester.ExpectTotalCount(
-      supervised_user::kSupervisedUserURLFilteringResultHistogramName, 1);
+      kSupervisedUserURLFilteringResultHistogramName, 1);
 
-  AllowExampleSiteForSupervisedUser();
+  // Adds singular exception to allow "example.com".
+  SupervisedUserTestEnvironment::SetManualFilterForHost(
+      "example.com", /*allowlist=*/true, *family_link_settings_service());
   EXPECT_FALSE(IsURLBlocked(kExampleURL));
   histogram_tester.ExpectTotalCount(
-      supervised_user::kSupervisedUserURLFilteringResultHistogramName, 2);
+      kSupervisedUserURLFilteringResultHistogramName, 2);
 }
 
 TEST_F(SupervisedUserURLFilterTabHelperTest,
@@ -163,3 +153,6 @@ TEST_F(SupervisedUserURLFilterTabHelperTest, AllowsAllSitesWhenOffTheRecord) {
   // it correctly allows for arbitrary navigation.
   EXPECT_FALSE(IsURLBlocked(kExampleURL));
 }
+
+}  // namespace
+}  // namespace supervised_user

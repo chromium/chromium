@@ -110,9 +110,6 @@ inline constexpr char kSupervisedUserManualURLs[] =
 inline constexpr char kSupervisedUserMetricsDayId[] =
     "supervised_user.metrics.day_id";
 
-// Stores whether the SafeSites filter is enabled.
-inline constexpr char kSupervisedUserSafeSites[] = "profile.managed.safe_sites";
-
 // Stores settings that can be modified both by a supervised user and their
 // manager. See SupervisedUserSharedSettingsService for a description of
 // the format.

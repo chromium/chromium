@@ -247,13 +247,10 @@ TEST_F(SupervisedUserPrefStoreTest, LocalOverridesAreClearedAfterDeactivation) {
   EXPECT_EQ(0u, fixture.changed_prefs()->size());
 
   service_.SetActive(true);
-  service_.SetLocalSetting(supervised_user::kSafeSitesEnabled,
+  service_.SetLocalSetting(supervised_user::kSigninAllowed,
                            base::Value(true));
   EXPECT_NE(0u, fixture.changed_prefs()->size())
       << "Expected default values to be set.";
-  EXPECT_EQ(fixture.changed_prefs()->FindBoolByDottedPath(
-                prefs::kSupervisedUserSafeSites),
-            base::Value(true));
 
   service_.SetActive(false);
   EXPECT_EQ(0u, fixture.changed_prefs()->size())

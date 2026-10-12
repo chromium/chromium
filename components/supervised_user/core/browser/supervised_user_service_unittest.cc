@@ -173,20 +173,6 @@ TEST_F(SupervisedUserServiceTestUnsupervised,
                 prefs::kDefaultSupervisedUserFilteringBehavior));
 }
 
-// Tests that supervision restrictions do not apply to unsupervised users.
-TEST_F(SupervisedUserServiceTestUnsupervised,
-       CantRequestTryToFilterClassificationViaFamilyLink) {
-  SetWebFilterType(WebFilterType::kTryToBlockMatureSites);
-
-  EXPECT_TRUE(supervised_user_test_environment_->pref_service()
-                  ->FindPreference(prefs::kSupervisedUserSafeSites)
-                  ->IsDefaultValue())
-      << "With supervision disabled, the pref should be "
-         "reset to default.";
-  EXPECT_FALSE(supervised_user_test_environment_->pref_service()->GetBoolean(
-      prefs::kSupervisedUserSafeSites));
-}
-
 // This test suite verifies how web filter type changes are propagated from this
 // service to the metrics service.
 class SupervisedUserServiceWebFilterTypeTransitionsTest

@@ -358,8 +358,8 @@ void SupervisedUserTestEnvironment::SetWebFilterType(
       settings_service.SetLocalSetting(
           kContentPackDefaultFilteringBehavior,
           base::Value(static_cast<int>(FilteringBehavior::kBlock)));
-
-      // Value of kSupervisedUserSafeSites is not important here.
+      // Safe sites setting has no effect nor meaning when default filtering
+      // behavior is block.
       break;
     case WebFilterType::kDisabled:
       NOTREACHED() << "To disable the URL filter, use "
