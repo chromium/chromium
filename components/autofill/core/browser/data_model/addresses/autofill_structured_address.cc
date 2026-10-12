@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -224,13 +225,9 @@ void StreetAddressNode::CalculateAddressLines() {
   // additional entries into the third line.
   if (address_lines_.size() > 3) {
     address_lines_[2] =
-        base::JoinString(std::vector<std::u16string>(address_lines_.begin() + 2,
-                                                     address_lines_.end()),
-                         u" ");
-    // Drop the addition address lines.
-    while (address_lines_.size() > 3) {
-      address_lines_.pop_back();
-    }
+        base::JoinString(base::span(address_lines_).subspan(2u), u" ");
+    // Drop the additional address lines.
+    address_lines_.resize(3);
   }
 }
 

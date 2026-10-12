@@ -19,6 +19,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
@@ -618,25 +619,22 @@ void AddressComponent::ParseValueAndAssignSubcomponentsByFallbackMethod() {
   std::vector<std::u16string> space_separated_tokens = base::SplitString(
       GetValue(), u" ", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
-  auto token_iterator = space_separated_tokens.begin();
   auto subcomponent_types = GetSubcomponentTypes();
 
   // Assign one space-separated token each to all but the last subcomponent.
   for (size_t i = 0; (i + 1) < subcomponent_types.size(); ++i) {
     // If there are no tokens left, parsing is done.
-    if (token_iterator == space_separated_tokens.end()) {
+    if (i == space_separated_tokens.size()) {
       return;
     }
-    // Set the current token to the type and advance the token iterator. By
-    // design, this should never fail.
-    CHECK(SetValueForType(subcomponent_types[i], *token_iterator,
+    // Set the current token to the type. By design, this should never fail.
+    CHECK(SetValueForType(subcomponent_types[i], space_separated_tokens[i],
                           VerificationStatus::kParsed));
-    token_iterator++;
   }
 
   // Collect all remaining tokens in the last subcomponent.
   std::u16string remaining_tokens = base::JoinString(
-      std::vector<std::u16string>(token_iterator, space_separated_tokens.end()),
+      base::span(space_separated_tokens).subspan(subcomponent_types.size() - 1),
       u" ");
   // By design, it should be possible to assign the value unless the regular
   // expression is wrong.
