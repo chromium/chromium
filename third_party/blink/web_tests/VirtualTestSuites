@@ -2397,6 +2397,7 @@
       "external/wpt/fullscreen/rendering/exit-fullscreen-scroll-to-unscrollable-area-overflow-x-hidden.html",
       "external/wpt/html/semantics/menu/tentative/menu-elements-default-style.html",
       "external/wpt/html/semantics/menu/tentative/menuitem-activate.html",
+      "external/wpt/html/semantics/menu/tentative/menulist-popover-attribute.html",
       "external/wpt/screen-orientation/lock-sandboxed-iframe.html",
       "external/wpt/shadow-dom/focus-navigation/reading-flow/tentative/carousel-grid-order.html",
       "fullscreen/full-screen-placeholder.html",
