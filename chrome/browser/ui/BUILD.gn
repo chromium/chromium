@@ -1104,28 +1104,26 @@ if (!is_android) {
   }
 }
 
-if (!is_android) {
-  source_set("accelerator_table") {
-    public = [ "accelerator_table.h" ]
-    sources = [ "accelerator_table.cc" ]
-    public_deps = [ "//ui/actions:actions_headers" ]
-    deps = [
-      "//chrome/app:command_ids",
-      "//chrome/browser/ui:ui_features",
-      "//chrome/browser/ui/actions:command_id_to_action_id",
-      "//chrome/browser/ui/tabs",
-      "//components/lens:buildflags",
-      "//components/lens:features",
-      "//ui/base",
-      "//ui/base:features",
-      "//ui/events:event_constants",
-      "//ui/events:events_base",
-    ]
-    if (is_mac) {
-      deps += [ "//chrome/browser:global_keyboard_shortcuts_mac" ]
-    }
+source_set("accelerator_table") {
+  public = [ "accelerator_table.h" ]
+  sources = [ "accelerator_table.cc" ]
+  public_deps = [ "//ui/actions:actions_headers" ]
+  deps = [
+    "//build:branding_buildflags",
+    "//chrome/app:command_ids",
+    "//chrome/browser/ui/actions:command_id_to_action_id",
+    "//printing/buildflags",
+    "//ui/base",
+    "//ui/base:features",
+    "//ui/events:event_constants",
+    "//ui/events:events_base",
+  ]
+  if (is_mac) {
+    deps += [ "//chrome/browser:global_keyboard_shortcuts_mac" ]
   }
+}
 
+if (!is_android) {
   source_set("breadcrumb_manager_browser_agent") {
     public = [ "breadcrumb_manager_browser_agent.h" ]
     sources = [ "breadcrumb_manager_browser_agent.cc" ]
@@ -2271,12 +2269,14 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 
   sources = [
+    "accelerator_table_unittest.cc",
     "incognito_allowed_url_unittest.cc",
     "recently_audible_helper_unittest.cc",
     "url_identity_unittest.cc",
   ]
 
   deps = [
+    ":accelerator_table",
     ":incognito_allowed_url",
     ":recently_audible_helper",
     ":test_support",
@@ -2294,7 +2294,6 @@ source_set("unit_tests") {
 
   if (!is_android) {
     sources += [
-      "accelerator_table_unittest.cc",
       "browser_manager_service_factory_unittest.cc",
       "browser_unittest.cc",
       "browser_window_state_unittest.cc",
@@ -2302,7 +2301,6 @@ source_set("unit_tests") {
       "managed_ui_for_supervised_user_unittest.cc",
     ]
     deps += [
-      ":accelerator_table",
       ":browser_manager_service",
       ":browser_window_state",
       ":intent_picker_tab_helper",

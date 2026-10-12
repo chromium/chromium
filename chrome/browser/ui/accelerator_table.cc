@@ -16,12 +16,7 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/actions/command_id_to_action_id.h"
-#include "chrome/browser/ui/tabs/features.h"
-#include "chrome/browser/ui/ui_features.h"
-#include "components/lens/buildflags.h"
-#include "components/lens/lens_features.h"
 #include "printing/buildflags/buildflags.h"
-#include "services/screen_ai/buildflags/buildflags.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/event_constants.h"
@@ -30,9 +25,6 @@
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/global_keyboard_shortcuts_mac.h"
 #endif
-
-// Android chrome shortcuts are implemented in KeyboardShortcuts.java.
-static_assert(!BUILDFLAG(IS_ANDROID));
 
 namespace {
 
