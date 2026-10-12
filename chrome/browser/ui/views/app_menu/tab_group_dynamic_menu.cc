@@ -91,8 +91,15 @@ void TabGroupDynamicMenu::BuildTabGroupsAction(
         GetTabGroupContextMenuColorId(group->color()), gfx::kFaviconSize);
 
     auto group_builder = actions::ActionItem::Builder();
-    group_builder.SetText(group_title).SetImage(group_icon);
+    group_builder.SetText(group_title)
+        .SetImage(group_icon)
+        .SetInvokeActionCallback(base::BindRepeating(
+            &TabGroupDynamicMenu::PerformTabGroupAction, base::Unretained(this),
+            tab_groups::TabGroupMenuAction::Type::OPEN_IN_BROWSER,
+            browser_window_interface_));
     auto group_action = std::move(group_builder).Build();
+    group_action->SetProperty(kSavedTabGroupGuidKey,
+                              std::make_unique<base::Uuid>(uuid));
     if (i == 0) {
       group_action->SetProperty(views::kElementIdentifierKey,
                                 tab_groups::STGEverythingMenu::kTabGroup);

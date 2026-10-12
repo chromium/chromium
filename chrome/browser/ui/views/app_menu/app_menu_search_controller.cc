@@ -169,6 +169,15 @@ void AppMenuSearchController::FlattenHierarchyRecursive(
   }
 
   const std::u16string_view title = ExtractItemTitle(action);
+
+  // Tab groups: only the groups are searchable, one result each.
+  if (current_type == AppMenuSearchItem::Type::kTabGroup) {
+    if (!action->GetActionItem()->GetActionId().has_value() && !title.empty()) {
+      AddSearchItem(action, current_type, title, /*secondary_text=*/u"");
+    }
+    return;
+  }
+
   const auto& children = action->GetChildren().children();
 
   // Recurse if the node is a container/submenu (even if currently empty).

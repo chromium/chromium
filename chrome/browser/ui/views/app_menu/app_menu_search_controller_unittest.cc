@@ -288,7 +288,7 @@ TEST_F(AppMenuSearchControllerTest,
 
   EXPECT_EQ(items[4]->GetTitle(), u"Research Group");
   EXPECT_EQ(items[4]->GetType(), AppMenuSearchItem::Type::kTabGroup);
-  EXPECT_EQ(items[4]->GetSecondaryText(), u"Tab Groups");
+  EXPECT_TRUE(items[4]->GetSecondaryText().empty());
 }
 
 TEST_F(AppMenuSearchControllerTest, StaticActionsAndTabGroups) {
@@ -322,13 +322,17 @@ TEST_F(AppMenuSearchControllerTest, StaticActionsAndTabGroups) {
                              .SetActionId(kActionTabGroupDelete)
                              .SetText(u"Delete group")
                              .Build());
+  group_entity->AddChild(
+      actions::ActionItem::Builder().SetText(u"Docs tab").Build());
   tab_groups_menu->AddChild(std::move(group_entity));
   menu_root_->AddChild(std::move(tab_groups_menu));
 
   controller_->InitializeSearchIndex();
 
+  // Each saved group is one result. The tab group actions (including "Create
+  // new tab group") and the group's tabs are not indexed.
   const auto& items = controller_->search_items_for_testing();
-  ASSERT_EQ(items.size(), 5u);
+  ASSERT_EQ(items.size(), 3u);
 
   EXPECT_EQ(items[0]->GetTitle(), u"Bookmark this tab");
   EXPECT_EQ(items[0]->GetType(), AppMenuSearchItem::Type::kAction);
@@ -338,21 +342,9 @@ TEST_F(AppMenuSearchControllerTest, StaticActionsAndTabGroups) {
   EXPECT_EQ(items[1]->GetType(), AppMenuSearchItem::Type::kBookmark);
   EXPECT_EQ(items[1]->GetSecondaryText(), u"Bookmarks");
 
-  EXPECT_EQ(items[2]->GetTitle(), u"Create new tab group");
-  EXPECT_EQ(items[2]->GetType(), AppMenuSearchItem::Type::kAction);
-  EXPECT_EQ(items[2]->GetSecondaryText(), u"Tab Groups");
-
-  // Tab group child actions are traversed and extracted as actionable items.
-  EXPECT_EQ(items[3]->GetTitle(), u"Open group");
-  EXPECT_EQ(items[3]->GetType(), AppMenuSearchItem::Type::kAction);
-  EXPECT_EQ(items[3]->GetSecondaryText(), u"Work");
-  EXPECT_EQ(items[3]->GetActionItem()->GetActionId(),
-            kActionTabGroupOpenInBrowser);
-
-  EXPECT_EQ(items[4]->GetTitle(), u"Delete group");
-  EXPECT_EQ(items[4]->GetType(), AppMenuSearchItem::Type::kAction);
-  EXPECT_EQ(items[4]->GetSecondaryText(), u"Work");
-  EXPECT_EQ(items[4]->GetActionItem()->GetActionId(), kActionTabGroupDelete);
+  EXPECT_EQ(items[2]->GetTitle(), u"Work");
+  EXPECT_EQ(items[2]->GetType(), AppMenuSearchItem::Type::kTabGroup);
+  EXPECT_TRUE(items[2]->GetSecondaryText().empty());
 }
 
 TEST_F(AppMenuSearchControllerTest, SearchRequiresInitializedIndex) {
