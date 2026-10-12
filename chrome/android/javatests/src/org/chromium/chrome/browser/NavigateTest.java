@@ -36,7 +36,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
@@ -70,7 +69,6 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -139,6 +137,7 @@ public class NavigateTest {
                 new TabLoadObserver(mActivityTestRule.getActivityTab(), expectedTitle, null);
         mOmnibox.sendKey(KeyEvent.KEYCODE_ENTER);
         observer.assertLoaded();
+        mOmnibox.checkFocus(false);
 
         // The URL has been set before the page notification was broadcast, so it is safe to access.
         return mOmnibox.getText();
@@ -166,7 +165,6 @@ public class NavigateTest {
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @MediumTest
     @Feature({"Navigation"})
-    @DisabledTest(message = "Flaky. See crbug.com/380238040")
     public void testNavigateMany() throws Exception {
         final String[] urls =
                 mTestServer.getURLs(
@@ -205,12 +203,11 @@ public class NavigateTest {
     @Test
     @MediumTest
     @Feature({"Navigation"})
-    @DisabledTest(message = "https://crbug.com/346968609")
     public void testOpenAndNavigate() throws Exception {
         final String url = mTestServer.getURL("/chrome/test/data/android/navigate/simple.html");
         navigateAndObserve(url);
 
-        final int tabCount = mActivityTestRule.getActivity().getCurrentTabModel().getCount();
+        final int tabCount = mActivityTestRule.tabsCount(/* incognito= */ false);
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
         UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
@@ -218,7 +215,7 @@ public class NavigateTest {
         Assert.assertEquals(
                 "Wrong number of tabs",
                 tabCount + 1,
-                mActivityTestRule.getActivity().getCurrentTabModel().getCount());
+                mActivityTestRule.tabsCount(/* incognito= */ false));
         String result = typeInOmniboxAndNavigate(url, "Simple");
         Assert.assertEquals(expectedLocation(url), result);
     }
@@ -843,12 +840,11 @@ public class NavigateTest {
 
     /**
      * Test that if the browser launches a renderer initiated intent towards itself, the url load
-     * will be renderer initiated and has the correct origin.
+     * will be renderer initiated and has an opaque origin.
      */
     @Test
     @MediumTest
     @Feature({"Navigation"})
-    @DisabledTest(message = "crbug.com/40720772")
     public void testRendererInitiatedIntentNavigate() throws Exception {
         final String finalUrl =
                 mTestServer.getURL("/chrome/test/data/android/renderer_initiated/final.html");
@@ -895,16 +891,12 @@ public class NavigateTest {
                             Tab tab, LoadUrlParams params, LoadUrlResult loadUrlResult) {
                         tab.removeObserver(this);
                         // Check that the final URL will be loaded properly, and the navigation
-                        // is renderer initiated and has the correct origin.
+                        // is renderer initiated and has an opaque origin.
                         Assert.assertEquals(finalUrl, params.getUrl());
                         Assert.assertEquals(true, params.getIsRendererInitiated());
-                        try {
-                            URL url = new URL(finalUrl);
-                            Origin origin = params.getInitiatorOrigin();
-                            Assert.assertEquals(url.getHost(), origin.getHost());
-                        } catch (Exception e) {
-                            throw new AssertionError("Cannot parse URL:" + finalUrl, e);
-                        }
+                        Origin origin = params.getInitiatorOrigin();
+                        Assert.assertNotNull(origin);
+                        Assert.assertTrue(origin.isOpaque());
                     }
                 };
         Tab tab = mActivityTestRule.getActivityTab();

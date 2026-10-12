@@ -486,9 +486,10 @@ public class OmniboxTestUtils {
         checkFocus(true);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mUrlBar.setText(userText);
-                    // Push this to the model as well.
-                    mUrlBar.setAutocompleteText(userText, "", null, null);
+                    InputConnection conn = mUrlBar.getInputConnection();
+                    assert conn != null;
+                    conn.setComposingRegion(0, mUrlBar.getText().length());
+                    conn.commitText(userText, 1);
                 });
         checkText(Matchers.equalTo(userText), null);
     }
