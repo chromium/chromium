@@ -5,18 +5,15 @@
 #include "mojo/core/broker.h"
 
 #include <fcntl.h>
-#include <unistd.h>
+#include <sys/types.h>
 
 #include <utility>
 #include <vector>
 
 #include "base/logging.h"
 #include "base/memory/platform_shared_memory_region.h"
-#include "build/build_config.h"
-#include "mojo/buildflags.h"
 #include "mojo/core/broker_messages.h"
 #include "mojo/core/channel.h"
-#include "mojo/core/platform_handle_utils.h"
 #include "mojo/public/cpp/platform/socket_utils_posix.h"
 
 namespace mojo {
@@ -69,8 +66,7 @@ Channel::MessagePtr WaitForBrokerMessage(
 
 }  // namespace
 
-Broker::Broker(PlatformHandle handle, bool wait_for_channel_handle)
-    : sync_channel_(std::move(handle)) {
+Broker::Broker(PlatformHandle handle) : sync_channel_(std::move(handle)) {
   CHECK(sync_channel_.is_valid());
 
   int fd = sync_channel_.GetFD().get();
@@ -79,25 +75,9 @@ Broker::Broker(PlatformHandle handle, bool wait_for_channel_handle)
   PCHECK(flags != -1);
   flags = fcntl(fd, F_SETFL, flags & ~O_NONBLOCK);
   PCHECK(flags != -1);
-
-  if (!wait_for_channel_handle) {
-    return;
-  }
-
-  // Wait for the first message, which should contain a handle.
-  std::vector<PlatformHandle> incoming_platform_handles;
-  if (WaitForBrokerMessage(fd, BrokerMessageType::INIT, 1, 0,
-                           &incoming_platform_handles)) {
-    inviter_endpoint_ =
-        PlatformChannelEndpoint(std::move(incoming_platform_handles[0]));
-  }
 }
 
 Broker::~Broker() = default;
-
-PlatformChannelEndpoint Broker::GetInviterEndpoint() {
-  return std::move(inviter_endpoint_);
-}
 
 base::WritableSharedMemoryRegion Broker::GetWritableSharedMemoryRegion(
     size_t num_bytes) {
@@ -105,7 +85,7 @@ base::WritableSharedMemoryRegion Broker::GetWritableSharedMemoryRegion(
 
   BufferRequestData* buffer_request;
   Channel::MessagePtr out_message = CreateBrokerMessage(
-      BrokerMessageType::BUFFER_REQUEST, 0, 0, &buffer_request);
+      BrokerMessageType::BUFFER_REQUEST, 0, &buffer_request);
   buffer_request->size = num_bytes;
   ssize_t write_result =
       SocketWrite(sync_channel_.GetFD().get(), out_message->data(),
@@ -119,14 +99,8 @@ base::WritableSharedMemoryRegion Broker::GetWritableSharedMemoryRegion(
     return base::WritableSharedMemoryRegion();
   }
 
-#if !BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_ANDROID) || \
-    BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
-  // Non-POSIX systems, as well as Android and Mac, only use a single handle to
-  // represent a writable region.
-  constexpr size_t kNumExpectedHandles = 1;
-#else
+  // A writable region is sent as a writable and a read-only descriptor.
   constexpr size_t kNumExpectedHandles = 2;
-#endif
 
   std::vector<PlatformHandle> handles;
   Channel::MessagePtr message = WaitForBrokerMessage(
@@ -142,13 +116,10 @@ base::WritableSharedMemoryRegion Broker::GetWritableSharedMemoryRegion(
     if (!guid.has_value()) {
       return base::WritableSharedMemoryRegion();
     }
-    if (handles.size() == 1) {
-      handles.emplace_back();
-    }
     return base::WritableSharedMemoryRegion::Deserialize(
         base::subtle::PlatformSharedMemoryRegion::Take(
-            CreateSharedMemoryRegionHandleFromPlatformHandles(
-                std::move(handles[0]), std::move(handles[1])),
+            base::subtle::ScopedFDPair(handles[0].TakeFD(),
+                                       handles[1].TakeFD()),
             base::subtle::PlatformSharedMemoryRegion::Mode::kWritable,
             num_bytes, guid.value()));
   }

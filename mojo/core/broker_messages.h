@@ -6,7 +6,6 @@
 #define MOJO_CORE_BROKER_MESSAGES_H_
 
 #include "base/compiler_specific.h"
-#include "build/build_config.h"
 #include "mojo/core/channel.h"
 
 namespace mojo {
@@ -15,9 +14,8 @@ namespace core {
 #pragma pack(push, 1)
 
 enum BrokerMessageType : uint32_t {
-  INIT,
-  BUFFER_REQUEST,
-  BUFFER_RESPONSE,
+  BUFFER_REQUEST = 1,
+  BUFFER_RESPONSE = 2,
 };
 
 struct BrokerMessageHeader {
@@ -37,15 +35,6 @@ struct BufferResponseData {
   uint64_t guid_low;
 };
 
-#if BUILDFLAG(IS_WIN)
-struct InitData {
-  // NOTE: InitData in the payload is followed by string16 data with exactly
-  // |pipe_name_length| wide characters (i.e., |pipe_name_length|*2 bytes.)
-  // This applies to Windows only.
-  uint32_t pipe_name_length;
-};
-#endif
-
 #pragma pack(pop)
 
 template <typename T>
@@ -61,14 +50,11 @@ inline bool GetBrokerMessageData(Channel::Message* message, T** out_data) {
 }
 
 template <typename T>
-inline Channel::MessagePtr CreateBrokerMessage(
-    BrokerMessageType type,
-    size_t num_handles,
-    size_t extra_data_size,
-    T** out_message_data,
-    void** out_extra_data = nullptr) {
-  const size_t message_size = sizeof(BrokerMessageHeader) +
-                              sizeof(**out_message_data) + extra_data_size;
+inline Channel::MessagePtr CreateBrokerMessage(BrokerMessageType type,
+                                               size_t num_handles,
+                                               T** out_message_data) {
+  const size_t message_size =
+      sizeof(BrokerMessageHeader) + sizeof(**out_message_data);
   Channel::MessagePtr message =
       Channel::Message::CreateMessage(message_size, num_handles);
   BrokerMessageHeader* header =
@@ -76,22 +62,6 @@ inline Channel::MessagePtr CreateBrokerMessage(
   header->type = type;
   header->padding = 0;
   *out_message_data = reinterpret_cast<T*>(UNSAFE_TODO(header + 1));
-  if (out_extra_data) {
-    *out_extra_data = UNSAFE_TODO(*out_message_data + 1);
-  }
-  return message;
-}
-
-inline Channel::MessagePtr CreateBrokerMessage(
-    BrokerMessageType type,
-    size_t num_handles,
-    std::nullptr_t** dummy_out_data) {
-  Channel::MessagePtr message =
-      Channel::Message::CreateMessage(sizeof(BrokerMessageHeader), num_handles);
-  BrokerMessageHeader* header =
-      reinterpret_cast<BrokerMessageHeader*>(message->mutable_payload());
-  header->type = type;
-  header->padding = 0;
   return message;
 }
 

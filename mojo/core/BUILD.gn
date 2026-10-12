@@ -38,7 +38,6 @@ source_set("impl_for_embedder") {
     "connection_params.h",
     "core_ipcz.h",
     "embedder/configuration.h",
-    "embedder/process_error_callback.h",
     "fuzzing_utils.h",
     "ipcz_api.h",
     "ipcz_driver/base_shared_memory_service.h",
@@ -58,7 +57,6 @@ source_set("impl_for_embedder") {
   ]
 
   sources = [
-    "broker.h",
     "channel.cc",
     "configuration.cc",
     "connection_params.cc",
@@ -107,7 +105,6 @@ source_set("impl_for_embedder") {
 
   if (is_posix && !mojo_use_apple_channel) {
     sources += [
-      "broker_posix.cc",
       "channel_posix.cc",
       "channel_posix.h",
     ]
@@ -126,10 +123,17 @@ source_set("impl_for_embedder") {
     sources += [ "channel_mac.cc" ]
   }
 
-  sources += [
-    "broker_host.cc",
-    "broker_host.h",
-  ]
+  # Keep in sync with SHARED_MEMORY_SERVICE_REQUIRED() in
+  # ipcz_driver/base_shared_memory_service.cc.
+  if (is_posix && !is_apple && !is_android) {
+    sources += [
+      "broker.h",
+      "broker_host.cc",
+      "broker_host.h",
+      "broker_messages.h",
+      "broker_posix.cc",
+    ]
+  }
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
@@ -137,10 +141,7 @@ source_set("impl_for_embedder") {
   deps = [ "//crypto" ]
 
   if (is_win) {
-    sources += [
-      "broker_win.cc",
-      "channel_win.cc",
-    ]
+    sources += [ "channel_win.cc" ]
   }
 
   if (!is_debug && !optimize_for_size) {
