@@ -1601,6 +1601,95 @@ class AndroidArm64HighReleaseBuildTest(AndroidBuildTest):
     mock_InstallOnAndroid.assert_any_call(self.device, 'some-file.apks')
     mock_InstallOnAndroid.assert_any_call(self.device, 'file2.apk')
 
+  @maybe_patch(
+    'bisect-builds.GsutilList',
+    side_effect=[
+      [
+        'gs://chrome-unsigned/android-B0urB0N/%s/' % x
+        for x in ['151.0.7922.175', '152.0.7977.7', '152.0.7977.84']
+      ],
+      [
+        'gs://chrome-unsigned/android-B0urB0N/151.0.7922.175/'
+        'high-arm_64/TrichromeChromeGoogle6432Stable.apks',
+        'gs://chrome-unsigned/android-B0urB0N/152.0.7977.84/'
+        'high-arm_64/ChromeStable.apks',
+      ],
+    ],
+  )
+  def test_get_rev_list_across_standalone_chrome_switch(self, mock_GsutilList):
+    options = bisect_builds.ParseCommandLine(
+      [
+        '-r',
+        '-a',
+        'android-arm64-high',
+        '--apk',
+        'chrome_stable',
+        '-g',
+        '151.0.7922.175',
+        '-b',
+        '152.0.7977.84',
+        '--no-local-cache',
+      ]
+    )
+    build = bisect_builds.create_archive_build(options)
+    self.assertIsInstance(build, bisect_builds.AndroidReleaseBuild)
+    self.assertEqual(build.get_rev_list(), ['151.0.7922.175', '152.0.7977.84'])
+    mock_GsutilList.assert_called_with(
+      'gs://chrome-unsigned/android-B0urB0N/151.0.7922.175/'
+      'high-arm_64/TrichromeChromeGoogle6432Stable.apks',
+      'gs://chrome-unsigned/android-B0urB0N/152.0.7977.7/'
+      'high-arm_64/ChromeStable.apks',
+      'gs://chrome-unsigned/android-B0urB0N/152.0.7977.84/'
+      'high-arm_64/ChromeStable.apks',
+      ignore_fail=True,
+    )
+
+  def test_get_download_url_standalone_chrome(self):
+    options = bisect_builds.ParseCommandLine(
+      [
+        '-r',
+        '-a',
+        'android-arm64-high',
+        '--apk',
+        'chrome_stable',
+        '-g',
+        '151.0.7922.175',
+        '-b',
+        '152.0.7977.84',
+      ]
+    )
+    build = bisect_builds.create_archive_build(options)
+    self.assertIsInstance(build, bisect_builds.AndroidReleaseBuild)
+    self.assertEqual(
+      build.get_download_url('152.0.7977.84'),
+      'gs://chrome-unsigned/android-B0urB0N/152.0.7977.84/high-arm_64/'
+      'ChromeStable.apks',
+    )
+    # Versions before the switch still use Trichrome.
+    self.assertIsInstance(build.get_download_url('151.0.7922.175'), dict)
+
+  @patch('bisect-builds.InstallOnAndroid')
+  def test_install_revision_standalone_chrome(self, mock_InstallOnAndroid):
+    options = bisect_builds.ParseCommandLine(
+      [
+        '-r',
+        '-a',
+        'android-arm64-high',
+        '--apk',
+        'chrome_stable',
+        '-g',
+        '151.0.7922.175',
+        '-b',
+        '152.0.7977.84',
+      ]
+    )
+    build = bisect_builds.create_archive_build(options)
+    self.assertIsInstance(build, bisect_builds.AndroidReleaseBuild)
+    build._install_revision('ChromeStable.apks', 'tmp-dir')
+    mock_InstallOnAndroid.assert_called_once_with(
+      self.device, 'ChromeStable.apks'
+    )
+
 
 class AndroidArm64HighOfficialBuildTest(AndroidBuildTest):
   @maybe_patch(
@@ -1653,15 +1742,19 @@ class AndroidArm64HighOfficialBuildTest(AndroidBuildTest):
     self.assertIsInstance(build, bisect_builds.AndroidOfficialBuild)
     self.assertEqual(
       build.get_download_url(1334338),
-      'gs://chrome-test-builds/official-by-commit'
-      '/android_arm64_high_end-builder-perf/full-build-linux_1334338.zip',
+      {
+        'trichrome': (
+          'gs://chrome-test-builds/official-by-commit'
+          '/android_arm64_high_end-builder-perf/full-build-linux_1334338.zip'
+        )
+      },
     )
 
   @patch(
     'glob.glob',
     side_effect=[
-      ['temp-dir/full-build-linux/apks/TrichromeChromeGoogle6432.apks'],
       ['temp-dir/full-build-linux/apks/TrichromeLibraryGoogle6432.apk'],
+      ['temp-dir/full-build-linux/apks/TrichromeChromeGoogle6432.apks'],
     ],
   )
   @patch('bisect-builds.UnzipFilenameToDir')
@@ -1684,7 +1777,7 @@ class AndroidArm64HighOfficialBuildTest(AndroidBuildTest):
     )
     build = bisect_builds.create_archive_build(options)
     self.assertIsInstance(build, bisect_builds.AndroidOfficialBuild)
-    build._install_revision('download.zip', 'tmp-dir')
+    build._install_revision({'trichrome': 'download.zip'}, 'tmp-dir')
     mock_UnzipFilenameToDir.assert_called_once_with('download.zip', 'tmp-dir')
     mock_InstallOnAndroid.assert_any_call(
       self.device,
@@ -1694,6 +1787,30 @@ class AndroidArm64HighOfficialBuildTest(AndroidBuildTest):
       self.device,
       'temp-dir/full-build-linux/apks/TrichromeChromeGoogle6432.apks',
     )
+
+  def test_use_trichrome_before_standalone_chrome(self):
+    options = bisect_builds.ParseCommandLine(
+      [
+        '-o',
+        '-a',
+        'android-arm64-high',
+        '--apk',
+        'chrome',
+        '-g',
+        '1334338',
+        '-b',
+        '1334380',
+      ]
+    )
+    build = bisect_builds.create_archive_build(options)
+    self.assertIsInstance(build, bisect_builds.AndroidOfficialBuild)
+    self.assertEqual(build.binary_name, 'Chrome.minimal.apks')
+    self.assertEqual(
+      build.trichrome_binary_name, 'TrichromeChromeGoogle6432.minimal.apks'
+    )
+    min_revision = build._min_standalone_chrome_revision()
+    self.assertTrue(build._use_trichrome(min_revision - 1))
+    self.assertFalse(build._use_trichrome(min_revision))
 
   @patch('sys.stdout', new_callable=io.StringIO)
   @patch(
@@ -1720,7 +1837,7 @@ class AndroidArm64HighOfficialBuildTest(AndroidBuildTest):
     build = bisect_builds.create_archive_build(options)
     self.assertIsInstance(build, bisect_builds.AndroidOfficialBuild)
     with self.assertRaises(bisect_builds.BisectException):
-      build._install_revision('download.zip', 'tmp-dir')
+      build._install_revision({'trichrome': 'download.zip'}, 'tmp-dir')
     self.assertIn("The list of available --apk:", mock_stdout.getvalue())
     self.assertIn("chrome_canary", mock_stdout.getvalue())
 
@@ -2767,6 +2884,28 @@ class AndroidDesktopReleaseBuildTest(AndroidBuildTest):
     build._install_revision(downloads, 'tmp-dir')
     mock_InstallOnAndroid.assert_any_call(self.device, 'some-file.apks')
     mock_InstallOnAndroid.assert_any_call(self.device, 'file2.apk')
+
+  def test_get_download_url_standalone_chrome(self):
+    options = bisect_builds.ParseCommandLine(
+      [
+        '-r',
+        '-a',
+        'android-desktop-x64',
+        '--apk',
+        'chrome_stable',
+        '-g',
+        '151.0.7922.175',
+        '-b',
+        '152.0.7977.84',
+      ]
+    )
+    build = bisect_builds.create_archive_build(options)
+    self.assertIsInstance(build, bisect_builds.AndroidDesktopReleaseBuild)
+    self.assertEqual(
+      build.get_download_url('152.0.7977.84'),
+      'gs://chrome-unsigned/android-B0urB0N/152.0.7977.84/desktop-x86_64/'
+      'ChromeDesktopStable.apks',
+    )
 
 
 if __name__ == '__main__':
