@@ -1984,6 +1984,12 @@ inline constexpr char kVariationsRestrictDogfoodName[] =
 inline constexpr char kVariationsRestrictDogfoodDescription[] =
     "When enabled, request dogfood variations from the variations server.";
 
+inline constexpr char kVoiceSearchEvolutionPhase1Name[] =
+    "Voice Search Evolution Phase 1";
+inline constexpr char kVoiceSearchEvolutionPhase1Description[] =
+    "Enables the redesigned Voice Search plate with modern waveform visualizer "
+    "and manual endpointing controls.";
+
 inline constexpr char kWaitThresholdMillisecondsForCapabilitiesApiName[] =
     "Maximum wait time (in seconds) for a response from the Account "
     "Capabilities API";

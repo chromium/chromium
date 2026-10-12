@@ -2964,6 +2964,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"assistant-aim-threads", flag_descriptions::kAssistantAimThreadsName,
      flag_descriptions::kAssistantAimThreadsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kAssistantAimThreads)},
+    {"voice-search-evolution-phase1",
+     flag_descriptions::kVoiceSearchEvolutionPhase1Name,
+     flag_descriptions::kVoiceSearchEvolutionPhase1Description,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kVoiceSearchEvolutionPhase1)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

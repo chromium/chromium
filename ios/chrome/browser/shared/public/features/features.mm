@@ -1240,3 +1240,9 @@ BASE_FEATURE(kAssistantAimThreads, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsAssistantAimThreadsEnabled() {
   return base::FeatureList::IsEnabled(kAssistantAimThreads);
 }
+
+BASE_FEATURE(kVoiceSearchEvolutionPhase1, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsVoiceSearchEvolutionPhase1Enabled() {
+  return base::FeatureList::IsEnabled(kVoiceSearchEvolutionPhase1);
+}
