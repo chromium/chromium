@@ -14,10 +14,7 @@ source_set("controlled_frame") {
     "web_url_pattern_natives.h",
   ]
 
-  configs += [
-    "//build/config:precompiled_headers",
-    "//build/config/compiler:wexit_time_destructors",
-  ]
+  configs += [ "//build/config:precompiled_headers" ]
 
   deps = [
     "//base",

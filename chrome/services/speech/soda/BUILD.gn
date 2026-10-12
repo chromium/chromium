@@ -20,8 +20,6 @@ source_set("soda") {
     "soda_test_paths.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   deps = [
     ":soda_api_proto",
     "//base",

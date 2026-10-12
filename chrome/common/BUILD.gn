@@ -85,7 +85,6 @@ source_set("channel_info") {
     "channel_info.cc",
     "channel_info.h",
   ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   deps = [ "//build:branding_buildflags" ]
   public_deps = [
     "//base",
@@ -113,7 +112,6 @@ source_set("ini_parser") {
     "ini_parser.cc",
     "ini_parser.h",
   ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   deps = [ "//base" ]
 }
 
@@ -126,7 +124,6 @@ group("common") {
 
 source_set("request_code_constants") {
   sources = [ "chrome_resource_request_blocked_reason.h" ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   public_deps = [ "//content/public/common" ]
 }
 
@@ -179,10 +176,7 @@ static_library("common_lib") {
   ]
   defines = []
 
-  configs += [
-    "//build/config:precompiled_headers",
-    "//build/config/compiler:wexit_time_destructors",
-  ]
+  configs += [ "//build/config:precompiled_headers" ]
 
   public_deps = [
     ":buildflags",
@@ -470,7 +464,6 @@ static_library("non_code_constants") {
     "chrome_switches.h",
     "env_vars.h",
   ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
     ":buildflags",
@@ -502,7 +495,6 @@ component("chrome_features") {
     "chrome_features.cc",
     "chrome_features.h",
   ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
     ":buildflags",
@@ -530,7 +522,6 @@ static_library("url_constants") {
     "webui_url_constants.cc",
     "webui_url_constants.h",
   ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
     ":buildflags",
@@ -570,7 +561,6 @@ static_library("constants") {
     "pref_font_webkit_names.h",
     "pref_names.h",
   ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
     ":buildflags",
@@ -673,8 +663,6 @@ if (is_mac) {
       "mac/app_mode_common.h",
       "mac/app_mode_common.mm",
     ]
-
-    configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
     deps = [
       ":constants",

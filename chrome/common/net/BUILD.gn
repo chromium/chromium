@@ -13,8 +13,6 @@ static_library("net") {
     "net_resource_provider.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   deps = [
     "//base",
     "//base:i18n",

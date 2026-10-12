@@ -421,7 +421,6 @@ if (!is_android && !is_mac) {
 
 if (is_win) {
   shared_library("chrome_dll") {
-    configs += [ "//build/config/compiler:wexit_time_destructors" ]
     configs -= [ "//build/config/compiler:thinlto_optimize_default" ]
     configs += [ "//build/config/compiler:thinlto_optimize_max" ]
 
@@ -556,8 +555,6 @@ if (is_win) {
       "app/llvm_profile_util.cc",
       "app/llvm_profile_util.h",
     ]
-
-    configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
     deps = [
       "//base:compiler_specific",
@@ -811,8 +808,6 @@ if (is_win) {
           "app/llvm_profile_util.h",
         ]
       }
-
-      configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
       defines = [ "HELPER_EXECUTABLE" ]
       if (defined(invoker.defines)) {
@@ -1363,10 +1358,7 @@ if (is_win) {
 
     ldflags = [ "-ObjC" ]
 
-    configs += [
-      ":chrome_dll_symbol_order",
-      "//build/config/compiler:wexit_time_destructors",
-    ]
+    configs += [ ":chrome_dll_symbol_order" ]
     if (!is_component_build && !using_sanitizer) {
       configs += [ ":chrome_dll_symbol_exports" ]
     }
@@ -1382,7 +1374,6 @@ if (is_win) {
       "Resources",
     ]
 
-    configs += [ "//build/config/compiler:wexit_time_destructors" ]
     configs -= [ "//build/config/compiler:thinlto_optimize_default" ]
     configs += [ "//build/config/compiler:thinlto_optimize_max" ]
 
@@ -2112,7 +2103,6 @@ if (enable_separate_renderer_binary) {
       if (is_win) {
         # On Windows, chrome_renderer is built as a shared library DLL, so match
         # the compiler and linker configs from :chrome_dll.
-        configs += [ "//build/config/compiler:wexit_time_destructors" ]
         configs -= [ "//build/config/compiler:thinlto_optimize_default" ]
         configs += [ "//build/config/compiler:thinlto_optimize_max" ]
         configs += [ "//build/config/win:delayloads" ]

@@ -248,8 +248,6 @@ static_library("renderer") {
 
   data_deps = [ "//tools/v8_context_snapshot" ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   if (enable_bound_session_credentials) {
     sources += [
       "bound_session_credentials/bound_session_request_throttled_handler_renderer_impl.cc",

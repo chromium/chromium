@@ -19,7 +19,6 @@ source_set("lib") {
     "hunspell_reader.cc",
     "hunspell_reader.h",
   ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   deps = [
     "//base",
     "//base:i18n",
@@ -59,7 +58,6 @@ executable("convert_dict") {
   testonly = true
 
   sources = [ "convert_dict.cc" ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   deps = [
     ":lib",
     "//base",

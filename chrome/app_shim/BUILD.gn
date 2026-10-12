@@ -76,8 +76,6 @@ bundle_data("app_mode_loader_plist_bundle_data") {
 }
 
 executable("app_mode_loader") {
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   sources = [ "app_mode_loader_mac.mm" ]
 
   if (is_component_build || is_asan || is_ubsan_any) {

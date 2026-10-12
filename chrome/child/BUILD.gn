@@ -7,8 +7,6 @@ import("//pdf/features.gni")
 static_library("child") {
   sources = []
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   deps = []
   data_deps = []
 

@@ -14,7 +14,6 @@ if (safe_browsing_mode != 0) {
       "archive_analyzer_results.cc",
       "archive_analyzer_results.h",
     ]
-    configs += [ "//build/config/compiler:wexit_time_destructors" ]
     deps = [
       ":binary_feature_extractor",
       ":download_type_util",
@@ -37,7 +36,6 @@ if (safe_browsing_mode != 0) {
       "download_type_util.cc",
       "download_type_util.h",
     ]
-    configs += [ "//build/config/compiler:wexit_time_destructors" ]
     deps = [
       "//base",
       "//components/safe_browsing/content/common:file_type_policies",
@@ -52,7 +50,6 @@ if (safe_browsing_mode != 0) {
         "disk_image_type_sniffer_mac.cc",
         "disk_image_type_sniffer_mac.h",
       ]
-      configs += [ "//build/config/compiler:wexit_time_destructors" ]
       deps = [ "//base" ]
     }
   }
@@ -62,7 +59,6 @@ if (safe_browsing_mode != 0) {
       "binary_feature_extractor.cc",
       "binary_feature_extractor.h",
     ]
-    configs += [ "//build/config/compiler:wexit_time_destructors" ]
     if (is_mac) {
       sources += [
         "binary_feature_extractor_mac.cc",
@@ -117,8 +113,6 @@ source_set("safe_browsing") {
       "protobuf_message_read_macros.h",
       "protobuf_message_write_macros.h",
     ]
-
-    configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
     deps += [
       "//base",

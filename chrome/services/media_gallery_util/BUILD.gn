@@ -17,8 +17,6 @@ source_set("lib") {
     "media_parser_factory.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   deps = [
     "//base",
     "//media",
