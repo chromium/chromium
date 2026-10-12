@@ -809,8 +809,8 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
 
   ComposeboxMenuItem* moreOptionsItem = [[ComposeboxMenuItem alloc]
       initWithTitle:uiConfig.moreOptionsSectionHeader
-              image:SymbolWithPointSize(SymbolGlobe,
-                                        kSharedTabFaviconSymbolSize)
+              image:SymbolWithPointSize(SymbolEllipsisCircle,
+                                        kSymbolActionPointSize)
                type:ComposeboxMenuItemType::kMoreOptionsSubmenu];
   [moreOptionsItems addObject:moreOptionsItem];
 
