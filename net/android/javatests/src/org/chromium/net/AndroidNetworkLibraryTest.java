@@ -74,6 +74,9 @@ public class AndroidNetworkLibraryTest {
 
             mockProxy.setMode(NetworkSecurityPolicy.DOMAIN_ENCRYPTION_MODE_OPPORTUNISTIC);
             Assert.assertEquals(EchMode.OPPORTUNISTIC, AndroidNetworkLibrary.getEchMode("foo.com"));
+
+            mockProxy.setMode(NetworkSecurityPolicy.DOMAIN_ENCRYPTION_MODE_REQUIRED);
+            Assert.assertEquals(EchMode.STRICT, AndroidNetworkLibrary.getEchMode("foo.com"));
         } finally {
             AndroidNetworkLibrary.NetworkSecurityPolicyProxy.setInstanceForTesting(originalProxy);
         }

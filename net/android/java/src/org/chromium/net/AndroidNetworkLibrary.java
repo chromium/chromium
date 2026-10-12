@@ -423,6 +423,8 @@ class AndroidNetworkLibrary {
             case NetworkSecurityPolicy.DOMAIN_ENCRYPTION_MODE_OPPORTUNISTIC:
             case NetworkSecurityPolicy.DOMAIN_ENCRYPTION_MODE_ENABLED:
                 return EchMode.OPPORTUNISTIC;
+            case NetworkSecurityPolicy.DOMAIN_ENCRYPTION_MODE_REQUIRED:
+                return EchMode.STRICT;
             default:
                 // Default to OPPORTUNISTIC to maintain Chromium's preference for ECH.
                 return EchMode.OPPORTUNISTIC;

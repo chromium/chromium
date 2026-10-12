@@ -16,6 +16,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/native_library.h"
 #include "base/strings/string_split.h"
@@ -23,6 +24,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "net/base/cronet_buildflags.h"
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_handle.h"
@@ -41,6 +43,14 @@ using base::android::ToJavaArrayOfByteArray;
 using base::android::ToJavaByteArray;
 
 namespace net::android {
+
+BASE_FEATURE(kPropagateStrictEchMode,
+#if BUILDFLAG(CRONET_BUILD)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 std::vector<std::string> GetUserAddedRoots() {
   std::vector<std::string> roots;
@@ -125,8 +135,13 @@ EchMode GetEchMode(std::string_view host) {
   }
 
   JNIEnv* env = AttachCurrentThread();
-  return static_cast<EchMode>(
+  EchMode mode = static_cast<EchMode>(
       Java_AndroidNetworkLibrary_getEchMode(env, std::string(host)));
+  if (!base::FeatureList::IsEnabled(kPropagateStrictEchMode) &&
+      mode == EchMode::kStrict) {
+    return EchMode::kOpportunistic;
+  }
+  return mode;
 }
 
 bool HaveOnlyLoopbackAddresses() {
