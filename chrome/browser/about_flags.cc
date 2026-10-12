@@ -5028,6 +5028,49 @@ const FeatureEntry::FeatureVariation kCentralizedInfoBarFrameworkVariations[] =
         {"Enable all", kCentralizedInfoBarFrameworkEnableAll, nullptr},
 };
 
+#if BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam
+    kEnablePixAccountLinkingNativeVariationADelay3s[] = {
+        {"prompt_variant", "VariationA"},
+        {"trigger_delay_seconds", "3"}};
+const FeatureEntry::FeatureParam
+    kEnablePixAccountLinkingNativeVariationADelay7s[] = {
+        {"prompt_variant", "VariationA"},
+        {"trigger_delay_seconds", "7"}};
+const FeatureEntry::FeatureParam
+    kEnablePixAccountLinkingNativeVariationBDelay3s[] = {
+        {"prompt_variant", "VariationB"},
+        {"trigger_delay_seconds", "3"}};
+const FeatureEntry::FeatureParam
+    kEnablePixAccountLinkingNativeVariationBDelay7s[] = {
+        {"prompt_variant", "VariationB"},
+        {"trigger_delay_seconds", "7"}};
+const FeatureEntry::FeatureParam
+    kEnablePixAccountLinkingNativeVariationCDelay3s[] = {
+        {"prompt_variant", "VariationC"},
+        {"trigger_delay_seconds", "3"}};
+const FeatureEntry::FeatureParam
+    kEnablePixAccountLinkingNativeVariationCDelay7s[] = {
+        {"prompt_variant", "VariationC"},
+        {"trigger_delay_seconds", "7"}};
+
+const FeatureEntry::FeatureVariation
+    kEnablePixAccountLinkingNativeVariations[] = {
+        {"- Variation A, 3s delay",
+         kEnablePixAccountLinkingNativeVariationADelay3s, nullptr},
+        {"- Variation A, 7s delay",
+         kEnablePixAccountLinkingNativeVariationADelay7s, nullptr},
+        {"- Variation B, 3s delay",
+         kEnablePixAccountLinkingNativeVariationBDelay3s, nullptr},
+        {"- Variation B, 7s delay",
+         kEnablePixAccountLinkingNativeVariationBDelay7s, nullptr},
+        {"- Variation C, 3s delay",
+         kEnablePixAccountLinkingNativeVariationCDelay3s, nullptr},
+        {"- Variation C, 7s delay",
+         kEnablePixAccountLinkingNativeVariationCDelay7s, nullptr},
+};
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(ENTERPRISE_PROXY)
 const FeatureEntry::FeatureParam kEnterpriseProxyErrorForced403[] = {
     {enterprise_net::kForcedDisguisedErrorCodeParamName, "403"}};
@@ -10278,7 +10321,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-pix-account-linking-native",
      flag_descriptions::kEnablePixAccountLinkingNativeName,
      flag_descriptions::kEnablePixAccountLinkingNativeDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(payments::facilitated::kEnablePixAccountLinkingNative)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         payments::facilitated::kEnablePixAccountLinkingNative,
+         kEnablePixAccountLinkingNativeVariations,
+         "EnablePixAccountLinkingNative")},
 
     {"enable-pix-payments-in-landscape-mode",
      flag_descriptions::kEnablePixPaymentsInLandscapeModeName,
