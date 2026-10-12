@@ -213,7 +213,9 @@ class AtMemoryManager : public AutofillManager::Observer {
   Suggestion CreateUnsupportedQuerySuggestion(const std::u16string& query);
 
   // Cancels any pending search queries and resets searching states.
-  void CancelPendingQueries();
+  // `query_completed` indicates that this happens because the final response
+  // of the query was received, which is reflected in the persisted state.
+  void CancelPendingQueries(AtMemoryQueryCompleted query_completed);
 
   // Invoked when `state_manager_` resets its state. Cancels pending search
   // queries and hides the suggestion popup if showing.

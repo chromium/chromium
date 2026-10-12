@@ -82,6 +82,27 @@ enum class AtMemoryUiSessionOutcome {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:AutofillAtMemoryUiSessionOutcome)
 
+// LINT.IfChange(AutofillAtMemoryStateRestored)
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// Describes which persisted search state (if any) was restored when the
+// AtMemory popup was shown with search statefulness enabled.
+enum class AtMemoryStateRestored {
+  // No search state was persisted for the field, so the popup started from the
+  // initial (empty query) state.
+  kNewSession = 0,
+  // A query that was typed but not submitted was restored.
+  kRestoredWithExistingQuery = 1,
+  // A submitted query whose response was still pending was restored.
+  kRestoredWhileSearching = 2,
+  // A submitted query together with its final response (results or an error)
+  // was restored.
+  kRestoredWithResponse = 3,
+  kMaxValue = kRestoredWithResponse,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:AutofillAtMemoryStateRestored)
+
 // Encapsulates the state and logging logic for the AtMemory search funnel.
 // This class tracks the progression of a user's interaction with the AtMemory
 // suggestions, from the initial display to the submission of a query.
@@ -113,6 +134,10 @@ class AtMemoryMetricsRecorder {
   // Records that the popup UI was hidden, so the next `OnPopupShown()` counts
   // as a new display.
   void OnPopupHidden();
+
+  // Records which persisted search state (if any) was restored when the popup
+  // was displayed. Emits "Autofill.AtMemory.StateRestored".
+  void OnStateRestored(AtMemoryStateRestored state_restored);
 
   // Records that a search query was submitted during this session.
   void OnQuerySubmitted(std::u16string_view query);

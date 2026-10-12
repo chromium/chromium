@@ -182,7 +182,7 @@ TEST_F(AtMemoryPersistedStateManagerTest,
 
   std::vector<Suggestion> suggestions;
   suggestions.emplace_back(u"123 Main St", SuggestionType::kAddressEntry);
-  state_manager().StopSearching();
+  state_manager().StopSearching(AtMemoryQueryCompleted(false));
   state_manager().OnSuggestionsChanged(suggestions);
 
   EXPECT_FALSE(state_manager().IsSearching());
@@ -194,7 +194,7 @@ TEST_F(AtMemoryPersistedStateManagerTest,
   EXPECT_THAT(restored_state->suggestions,
               ElementsAre(EqualsSuggestion(
                   SuggestionType::kAddressEntry, u"123 Main St")));
-  EXPECT_FALSE(restored_state->is_searching);
+  EXPECT_EQ(restored_state->status, AtMemorySearchStatus::kQueryModified);
   EXPECT_EQ(state_manager().field_origin(), FieldOrigin());
 }
 
@@ -229,7 +229,7 @@ TEST_F(AtMemoryPersistedStateManagerTest,
   ASSERT_TRUE(state.has_value());
   EXPECT_EQ(state->filter, u"add");
   EXPECT_TRUE(state->suggestions.empty());
-  EXPECT_FALSE(state->is_searching);
+  EXPECT_EQ(state->status, AtMemorySearchStatus::kQueryModified);
 
   // Clearing the filter resets state so that next open returns nullopt.
   state_manager().OnFilterChanged(u"");
@@ -268,7 +268,7 @@ TEST_F(AtMemoryPersistedStateManagerTest,
   fetching_suggestions.emplace_back(SuggestionType::kAtMemoryFetching);
   state_manager().OnSuggestionsChanged(fetching_suggestions);
 
-  state_manager().StopSearching();
+  state_manager().StopSearching(AtMemoryQueryCompleted(false));
   EXPECT_FALSE(state_manager().IsSearching());
 
   const std::optional<AtMemorySearchState>& restored_state =
@@ -276,7 +276,57 @@ TEST_F(AtMemoryPersistedStateManagerTest,
   ASSERT_TRUE(restored_state.has_value());
   EXPECT_EQ(restored_state->filter, u"ongoing_query");
   EXPECT_TRUE(restored_state->suggestions.empty());
-  EXPECT_FALSE(restored_state->is_searching);
+  EXPECT_EQ(restored_state->status, AtMemorySearchStatus::kQueryModified);
+}
+
+// Tests that `StopSearching()` with `AtMemoryQueryCompleted(true)` sets the
+// status to `kResponseReceived`, and that changing or resubmitting the filter
+// updates the status accordingly.
+TEST_F(AtMemoryPersistedStateManagerTest,
+       StopSearchingWithQueryCompletedSetsResponseReceived) {
+  state_manager().GetStateForField(field_id(), FieldOrigin());
+  state_manager().OnFilterSubmitted(u"address");
+  EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin())->status,
+            AtMemorySearchStatus::kSearching);
+
+  state_manager().StopSearching(AtMemoryQueryCompleted(true));
+  EXPECT_FALSE(state_manager().IsSearching());
+  EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin())->status,
+            AtMemorySearchStatus::kResponseReceived);
+
+  state_manager().OnFilterSubmitted(u"address2");
+  EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin())->status,
+            AtMemorySearchStatus::kSearching);
+
+  state_manager().StopSearching(AtMemoryQueryCompleted(true));
+  state_manager().OnFilterChanged(u"address3");
+  EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin())->status,
+            AtMemorySearchStatus::kQueryModified);
+}
+
+// Tests that cancelling a search via `StopSearching()` sets the status back to
+// `kQueryModified`.
+TEST_F(AtMemoryPersistedStateManagerTest,
+       StopSearchingWithoutQueryCompletedSetsQueryModified) {
+  state_manager().GetStateForField(field_id(), FieldOrigin());
+  state_manager().OnFilterSubmitted(u"address");
+  state_manager().StopSearching(AtMemoryQueryCompleted(false));
+  EXPECT_FALSE(state_manager().IsSearching());
+  EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin())->status,
+            AtMemorySearchStatus::kQueryModified);
+}
+
+// Tests that `StopSearching()` is a no-op when no search is in progress.
+TEST_F(AtMemoryPersistedStateManagerTest, StopSearchingWithoutSearchIsNoOp) {
+  state_manager().GetStateForField(field_id(), FieldOrigin());
+  state_manager().StopSearching(AtMemoryQueryCompleted(true));
+  EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin()),
+            std::nullopt);
+
+  state_manager().OnFilterChanged(u"address");
+  state_manager().StopSearching(AtMemoryQueryCompleted(true));
+  EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin())->status,
+            AtMemorySearchStatus::kQueryModified);
 }
 
 // Tests that `OnSuggestionAccepted` stores accepted suggestions in
@@ -546,7 +596,7 @@ TEST_F(AtMemoryPersistedStateManagerTest,
 
   std::vector<Suggestion> suggestions;
   suggestions.emplace_back(u"123 Main St", SuggestionType::kAddressEntry);
-  state_manager().StopSearching();
+  state_manager().StopSearching(AtMemoryQueryCompleted(false));
   state_manager().OnSuggestionsChanged(suggestions);
 
   ASSERT_TRUE(state_manager().GetStateForField(field_id(), FieldOrigin()));
@@ -672,7 +722,7 @@ TEST_F(AtMemoryPersistedStateManagerTest, StateExpiresAfterTtl) {
 
   std::vector<Suggestion> suggestions;
   suggestions.emplace_back(u"123 Main St", SuggestionType::kAddressEntry);
-  state_manager().StopSearching();
+  state_manager().StopSearching(AtMemoryQueryCompleted(false));
   state_manager().OnSuggestionsChanged(suggestions);
 
   // Before TTL expires, state is intact.

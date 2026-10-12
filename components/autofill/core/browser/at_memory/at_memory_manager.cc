@@ -477,6 +477,11 @@ const url::Origin& AtMemoryManager::target_field_origin() const {
              : target_field_origin_;
 }
 
+// Note that this is called not only when the popup is first shown, but also
+// whenever the suggestions of the already visible popup are updated (e.g. when
+// search results arrive). Logic that should run once per popup display belongs
+// in the `!popup_state_` block below, since `popup_state_` is only reset in
+// `OnPopupHidden()`.
 void AtMemoryManager::OnPopupShown(
     BrowserAutofillManager& bam,
     const FormGlobalId& form_id,
@@ -519,6 +524,11 @@ void AtMemoryManager::OnPopupShown(
     }
     // TODO(crbug.com/535486238): Restart `fetching_timer` if search is still
     // in progress when reopening the popup.
+
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillAtMemorySearchStatefulness)) {
+      state_manager_.OnPopupShown();
+    }
   }
 
   if (AtMemoryMetricsRecorder* recorder = metrics_recorder()) {
@@ -535,7 +545,7 @@ bool AtMemoryManager::OnFilterChanged(const std::u16string& filter) {
     state_manager_.OnFilterChanged(filter);
   }
   if (filter.empty()) {
-    CancelPendingQueries();
+    CancelPendingQueries(AtMemoryQueryCompleted(false));
     ShowEmptyQuerySuggestions();
     return true;
   }
@@ -583,7 +593,7 @@ void AtMemoryManager::OnPopupHidden(SuggestionHidingReason reason) {
   }
   if (!base::FeatureList::IsEnabled(
           features::kAutofillAtMemorySearchStatefulness)) {
-    CancelPendingQueries();
+    CancelPendingQueries(AtMemoryQueryCompleted(false));
     target_field_origin_ = url::Origin();
     // Without search statefulness the metrics session ends with the popup.
     // Destroying the recorder emits the session metrics.
@@ -894,7 +904,7 @@ void AtMemoryManager::ExecuteQuery(const std::u16string& filter) {
 
   // Cancel stale updates from previous queries.
   // At any point in time, there can be only one pending query.
-  CancelPendingQueries();
+  CancelPendingQueries(AtMemoryQueryCompleted(false));
 
   if (filter.empty()) {
     ShowEmptyQuerySuggestions();
@@ -1000,7 +1010,8 @@ Suggestion AtMemoryManager::CreateNoConnectionSuggestion(std::u16string query) {
   return suggestion;
 }
 
-void AtMemoryManager::CancelPendingQueries() {
+void AtMemoryManager::CancelPendingQueries(
+    AtMemoryQueryCompleted query_completed) {
   if (popup_state_) {
     popup_state_->fetching_timer.Stop();
     popup_state_->fetching_string_index = 0;
@@ -1008,14 +1019,14 @@ void AtMemoryManager::CancelPendingQueries() {
   query_weak_ptr_factory_.InvalidateWeakPtrs();
   if (base::FeatureList::IsEnabled(
           features::kAutofillAtMemorySearchStatefulness)) {
-    state_manager_.StopSearching();
+    state_manager_.StopSearching(query_completed);
   } else if (popup_state_) {
     popup_state_->is_searching = false;
   }
 }
 
 void AtMemoryManager::OnStateReset() {
-  CancelPendingQueries();
+  CancelPendingQueries(AtMemoryQueryCompleted(false));
   if (popup_state_) {
     client_->HideSuggestions(SuggestionHidingReason::kStaleData,
                              FillingProduct::kAtMemory);
@@ -1142,7 +1153,7 @@ void AtMemoryManager::OnSearchResultsReceived(const std::u16string& query,
   bool expecting_more_data =
       result.status == MemorySearchStatus::kPartialResponseSuccess;
   if (!expecting_more_data) {
-    CancelPendingQueries();
+    CancelPendingQueries(AtMemoryQueryCompleted(true));
   }
 
   if (AtMemoryMetricsRecorder* recorder = metrics_recorder()) {

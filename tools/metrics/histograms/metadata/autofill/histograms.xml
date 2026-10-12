@@ -2794,6 +2794,19 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.AtMemory.StateRestored"
+    enum="AutofillAtMemoryStateRestored" expires_after="2027-03-09">
+  <owner>doland@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records which persisted search state, if any, was restored when the Autofill
+    AtMemory popup was displayed. Emitted once per popup display, when the popup
+    is initially shown; updates of the suggestions in an already visible popup
+    (e.g. when search results arrive) are not recorded. Only emitted when search
+    statefulness (AutofillAtMemorySearchStatefulness) is enabled.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.AtMemory.SuggestionAccepted" enum="Boolean"
     expires_after="2027-03-09">
   <owner>rahimis@google.com</owner>

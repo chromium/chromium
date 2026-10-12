@@ -13,6 +13,7 @@
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/at_memory/at_memory_metrics_recorder.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
@@ -87,6 +88,24 @@ bool IsPrimaryMainFrame(AutofillDriver& driver) {
          driver.IsActive();
 }
 
+// Returns which kind of persisted search `state` (if any) is restored when the
+// popup is shown.
+AtMemoryStateRestored GetStateRestored(
+    const std::optional<AtMemorySearchState>& state) {
+  if (!state) {
+    return AtMemoryStateRestored::kNewSession;
+  }
+  switch (state->status) {
+    case AtMemorySearchStatus::kQueryModified:
+      return AtMemoryStateRestored::kRestoredWithExistingQuery;
+    case AtMemorySearchStatus::kSearching:
+      return AtMemoryStateRestored::kRestoredWhileSearching;
+    case AtMemorySearchStatus::kResponseReceived:
+      return AtMemoryStateRestored::kRestoredWithResponse;
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 AtMemoryPersistedStateManager::AtMemoryPersistedStateManager(
@@ -133,6 +152,12 @@ AtMemoryPersistedStateManager::GetStateForField(
   return search_state_;
 }
 
+void AtMemoryPersistedStateManager::OnPopupShown() {
+  if (metrics_recorder_) {
+    metrics_recorder_->OnStateRestored(GetStateRestored(search_state_));
+  }
+}
+
 void AtMemoryPersistedStateManager::OnFilterChanged(
     std::u16string_view filter) {
   CHECK(field_id_);
@@ -146,7 +171,7 @@ void AtMemoryPersistedStateManager::OnFilterChanged(
   }
   search_state_->filter = filter;
   search_state_->suggestions.clear();
-  search_state_->is_searching = false;
+  search_state_->status = AtMemorySearchStatus::kQueryModified;
   RestartSearchStateTimer();
 }
 
@@ -157,7 +182,7 @@ void AtMemoryPersistedStateManager::OnFilterSubmitted(
     search_state_.emplace();
   }
   search_state_->filter = filter;
-  search_state_->is_searching = true;
+  search_state_->status = AtMemorySearchStatus::kSearching;
   RestartSearchStateTimer();
 }
 
@@ -226,15 +251,19 @@ AtMemoryPersistedStateManager::TakeMetricsRecorder() {
 }
 
 bool AtMemoryPersistedStateManager::IsSearching() const {
-  return search_state_ && search_state_->is_searching;
+  return search_state_ &&
+         search_state_->status == AtMemorySearchStatus::kSearching;
 }
 
-void AtMemoryPersistedStateManager::StopSearching() {
-  if (!search_state_ || !search_state_->is_searching) {
+void AtMemoryPersistedStateManager::StopSearching(
+    AtMemoryQueryCompleted query_completed) {
+  if (!IsSearching()) {
     return;
   }
   search_state_->suggestions.clear();
-  search_state_->is_searching = false;
+  search_state_->status = query_completed.value()
+                              ? AtMemorySearchStatus::kResponseReceived
+                              : AtMemorySearchStatus::kQueryModified;
 }
 
 void AtMemoryPersistedStateManager::OnHistoryDeletions(

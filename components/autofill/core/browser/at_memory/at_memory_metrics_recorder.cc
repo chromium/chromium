@@ -351,6 +351,12 @@ void AtMemoryMetricsRecorder::OnPopupHidden() {
   is_popup_displayed_ = false;
 }
 
+void AtMemoryMetricsRecorder::OnStateRestored(
+    AtMemoryStateRestored state_restored) {
+  base::UmaHistogramEnumeration("Autofill.AtMemory.StateRestored",
+                                state_restored);
+}
+
 void AtMemoryMetricsRecorder::OnQuerySubmitted(std::u16string_view query) {
   ++query_count_;
   query_results_count_ = 0;

@@ -89,6 +89,11 @@ class AtMemoryPersistedStateManager
       const FieldGlobalId& field_id,
       const url::Origin& field_origin);
 
+  // Called once per display of the popup for the active field, after a metrics
+  // recorder was set. Records "Autofill.AtMemory.StateRestored" based on the
+  // current search state, i.e. the state the popup was opened with.
+  void OnPopupShown();
+
   void OnFilterChanged(std::u16string_view filter);
   void OnFilterSubmitted(const std::u16string& filter);
   void OnSuggestionsChanged(std::vector<Suggestion> suggestions);
@@ -109,7 +114,11 @@ class AtMemoryPersistedStateManager
   const FieldGlobalId& field_id() const { return field_id_; }
 
   bool IsSearching() const;
-  void StopSearching();
+  // Stops an ongoing search, if any. `query_completed` indicates that the
+  // search stopped because its final response was received, in which case the
+  // status becomes `AtMemorySearchStatus::kResponseReceived` (and
+  // `kQueryModified` otherwise).
+  void StopSearching(AtMemoryQueryCompleted query_completed);
 
   std::vector<Suggestion> previously_filled_suggestions() const;
 
