@@ -21,6 +21,7 @@
 #include "chrome/browser/readaloud/audio_generation/speech_synthesis_broker.h"
 #include "chrome/browser/readaloud/read_aloud_audio_broker.h"
 #include "chrome/browser/readaloud/read_aloud_playback_session.h"
+#include "chrome/browser/readaloud/voice_preview_controller.h"
 #include "chrome/common/readaloud/read_aloud_constants.h"
 #include "components/dom_distiller/content/browser/distiller_page_web_contents.h"
 #include "components/dom_distiller/core/distiller_page.h"
@@ -73,12 +74,17 @@ ReadAloudService::ReadAloudService(
     PlaybackControllerBinder controller_binder,
     ReadAloudAudioBroker::AudioStreamFactoryBinder factory_binder)
     : profile_(profile),
-      controller_binder_(std::move(controller_binder)),
-      audio_broker_(
-          std::make_unique<ReadAloudAudioBroker>(std::move(factory_binder))),
+      controller_binder_(controller_binder),
+      audio_broker_(std::make_unique<ReadAloudAudioBroker>(factory_binder)),
       speech_synthesis_broker_(std::make_unique<SpeechSynthesisBroker>()),
-      overview_generation_broker_(
-          std::make_unique<OverviewGenerationBroker>()) {}
+      overview_generation_broker_(std::make_unique<OverviewGenerationBroker>()),
+      voice_preview_controller_(std::make_unique<VoicePreviewController>(
+          profile,
+          speech_synthesis_broker_.get(),
+          base::BindRepeating(&ReadAloudService::OnVoicePreviewStateChanged,
+                              base::Unretained(this)),
+          std::move(controller_binder),
+          std::move(factory_binder))) {}
 
 ReadAloudService::~ReadAloudService() = default;
 
@@ -93,10 +99,20 @@ void ReadAloudService::NotifyPlaybackStateChanged(
   }
 }
 
+void ReadAloudService::OnVoicePreviewStateChanged(
+    std::string_view voice_id,
+    read_aloud::mojom::PlaybackState state) {
+  if (delegate_) {
+    delegate_->OnVoicePreviewPlaybackStateChanged(voice_id, state);
+  }
+}
+
 void ReadAloudService::Play(content::WebContents* new_web_contents) {
   if (!new_web_contents) {
     return;
   }
+
+  ResetVoicePreview();
 
   if (new_web_contents != web_contents()) {
     Initialize(new_web_contents);
@@ -131,6 +147,7 @@ void ReadAloudService::Pause() {
 }
 
 void ReadAloudService::Stop() {
+  ResetVoicePreview();
   ResetPlayback();
   NotifyPlaybackStateChanged(read_aloud::mojom::PlaybackState::kStopped);
 }
@@ -198,26 +215,31 @@ void ReadAloudService::PreviewVoice(std::string_view voice_id) {
   // Pause active article playback while previewing a voice.
   Pause();
 
-  // Notify the UI/client delegate that voice preview playback is buffering.
-  if (delegate_) {
-    delegate_->OnVoicePreviewPlaybackStateChanged(
-        voice_id, read_aloud::mojom::PlaybackState::kBuffering);
+  if (voice_preview_controller_) {
+    voice_preview_controller_->PlayPreview(voice_id);
   }
+}
 
-  // TODO(b/522835686): Implement actual voice preview audio synthesis via the
-  // utility process player and notify the delegate when playback transitions to
-  // read_aloud::mojom::PlaybackState::kPlaying.
+void ReadAloudService::PauseVoicePreview() {
+  if (voice_preview_controller_) {
+    voice_preview_controller_->PausePreview();
+  }
 }
 
 void ReadAloudService::StopVoicePreview() {
-  // TODO(b/522835686): Stop actual voice preview audio playback in the utility
-  // process player.
+  if (voice_preview_controller_) {
+    voice_preview_controller_->StopPreview();
+  }
+}
 
-  // Notify the UI/client delegate that voice preview playback has stopped.
-  // Passing an empty string indicates that any active voice preview is stopped.
-  if (delegate_) {
-    delegate_->OnVoicePreviewPlaybackStateChanged(
-        /*voice_id=*/"", read_aloud::mojom::PlaybackState::kStopped);
+void ReadAloudService::ResetVoicePreview() {
+  if (voice_preview_controller_) {
+    voice_preview_controller_->StopPreview();
+    // Guard against clobbering a new preview if `state_changed_callback_`
+    // re-entrantly started one during `StopPreview()`.
+    if (!voice_preview_controller_->IsPreviewActive()) {
+      voice_preview_controller_->Reset();
+    }
   }
 }
 void ReadAloudService::SetPlaybackMode(PlaybackMode mode) {
@@ -257,6 +279,7 @@ bool ReadAloudService::IsPlaybackPaused() const {
 
 void ReadAloudService::Shutdown() {
   ResetPlayback();
+  voice_preview_controller_.reset();
   weak_factory_.InvalidateWeakPtrs();
   if (delegate_) {
     delegate_->OnNativeDestroyed();
@@ -433,6 +456,7 @@ void ReadAloudService::Initialize(content::WebContents* new_web_contents) {
   if (!new_web_contents) {
     return;
   }
+  ResetVoicePreview();
   ResetPlayback();
   Observe(new_web_contents);
   media_session_ =

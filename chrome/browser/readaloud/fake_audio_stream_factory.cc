@@ -14,16 +14,19 @@
 namespace readaloud {
 
 FakeAudioStreamFactory::FakeAudioStreamFactory() = default;
-FakeAudioStreamFactory::~FakeAudioStreamFactory() = default;
+FakeAudioStreamFactory::~FakeAudioStreamFactory() {
+  Disconnect();
+}
 
 void FakeAudioStreamFactory::Bind(
     mojo::PendingReceiver<media::mojom::AudioStreamFactory> receiver) {
-  receiver_.reset();
-  receiver_.Bind(std::move(receiver));
+  receivers_.Add(this, std::move(receiver));
 }
 
 void FakeAudioStreamFactory::Disconnect() {
-  receiver_.reset();
+  receivers_.Clear();
+  stream_receivers_.clear();
+  pending_callbacks_.clear();
 }
 
 void FakeAudioStreamFactory::CreateOutputStream(
@@ -38,8 +41,8 @@ void FakeAudioStreamFactory::CreateOutputStream(
   last_device_id_ = device_id;
   last_params_ = params;
   last_group_id_ = group_id;
-  last_stream_receiver_ = std::move(stream);
-  last_callback_ = std::move(callback);
+  stream_receivers_.push_back(std::move(stream));
+  pending_callbacks_.emplace_back(params, std::move(callback));
   create_output_stream_called_count_++;
 
   if (create_output_stream_callback_) {
@@ -52,16 +55,20 @@ void FakeAudioStreamFactory::CreateOutputStream(
 }
 
 void FakeAudioStreamFactory::RespondWithLastCallback(bool succeed) {
-  if (last_callback_.is_null()) {
+  if (pending_callbacks_.empty()) {
     return;
   }
+  media::AudioParameters params = std::move(pending_callbacks_.back().first);
+  CreateOutputStreamCallback callback =
+      std::move(pending_callbacks_.back().second);
+  pending_callbacks_.pop_back();
   if (!succeed) {
-    std::move(last_callback_).Run(nullptr);
+    std::move(callback).Run(nullptr);
     return;
   }
   media::mojom::ReadWriteAudioDataPipePtr data_pipe =
-      CreateValidDataPipe(last_params_);
-  std::move(last_callback_).Run(std::move(data_pipe));
+      CreateValidDataPipe(params);
+  std::move(callback).Run(std::move(data_pipe));
 }
 
 media::mojom::ReadWriteAudioDataPipePtr

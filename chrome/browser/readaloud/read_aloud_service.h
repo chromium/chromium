@@ -35,6 +35,7 @@ class OverviewGenerationBroker;
 class ReadAloudPlaybackSession;
 class ReadAloudServiceTest;
 class SpeechSynthesisBroker;
+class VoicePreviewController;
 
 // Central lifecycle and state orchestrator for the Read Aloud feature in
 // Chrome, which allows users to listen to web page content.
@@ -178,8 +179,11 @@ class ReadAloudService
   // Sets the target language code for text-to-speech synthesis.
   void SetLanguageCode(std::string_view language_code);
 
-  // Plays a short audio sample of the specified voice.
+  // Plays or resumes a short audio sample of the specified voice.
   void PreviewVoice(std::string_view voice_id);
+
+  // Pauses the active voice preview playback.
+  void PauseVoicePreview();
 
   // Stops the active voice preview playback.
   void StopVoicePreview();
@@ -269,6 +273,10 @@ class ReadAloudService
   bool IsWaitingForOverviewContent() const;
   void HandlePlaybackError(std::string_view error_message);
   void NotifyPlaybackStateChanged(read_aloud::mojom::PlaybackState state);
+  void OnVoicePreviewStateChanged(std::string_view voice_id,
+                                  read_aloud::mojom::PlaybackState state);
+  // Stops any active voice preview and tears down preview session resources.
+  void ResetVoicePreview();
   // Releases the media session, distillation and utility resources without
   // notifying the delegate.
   void ResetPlayback();
@@ -295,6 +303,7 @@ class ReadAloudService
   std::unique_ptr<ReadAloudPlaybackSession> media_session_;
   std::unique_ptr<SpeechSynthesisBroker> speech_synthesis_broker_;
   std::unique_ptr<OverviewGenerationBroker> overview_generation_broker_;
+  std::unique_ptr<VoicePreviewController> voice_preview_controller_;
   PlaybackMode playback_mode_ = PlaybackMode::kClassic;
 
   // True if the overview script has been generated and set

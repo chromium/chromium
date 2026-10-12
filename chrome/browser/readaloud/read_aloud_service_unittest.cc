@@ -43,6 +43,7 @@
 #include "media/base/audio_parameters.h"
 #include "media/mojo/mojom/audio_data_pipe.mojom.h"
 #include "media/mojo/mojom/audio_output_stream.mojom.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -154,15 +155,20 @@ class FakePlaybackController
           receiver,
       mojo::PendingRemote<read_aloud::mojom::ReadAloudPlaybackControllerClient>
           client) {
-    receiver_.reset();
-    receiver_.Bind(std::move(receiver));
-    client_.reset();
+    receivers_.Add(this, std::move(receiver));
+    if (client_.is_bound()) {
+      client_.set_disconnect_handler(base::NullCallback());
+      previous_clients_.push_back(std::move(client_));
+    }
     client_.Bind(std::move(client));
+    client_.set_disconnect_handler(base::BindOnce(
+        &FakePlaybackController::OnClientDisconnected, base::Unretained(this)));
   }
 
   void Reset() {
-    receiver_.reset();
+    receivers_.Clear();
     client_.reset();
+    previous_clients_.clear();
     received_segments_.clear();
     last_audio_stream_.reset();
     last_data_pipe_.reset();
@@ -174,8 +180,12 @@ class FakePlaybackController
   }
 
   void FlushForTesting() {
-    if (receiver_.is_bound()) {
-      receiver_.FlushForTesting();
+    receivers_.FlushForTesting();
+    for (mojo::Remote<read_aloud::mojom::ReadAloudPlaybackControllerClient>&
+             prev_client : previous_clients_) {
+      if (prev_client.is_bound()) {
+        prev_client.FlushForTesting();
+      }
     }
     if (client_.is_bound()) {
       client_.FlushForTesting();
@@ -331,9 +341,27 @@ class FakePlaybackController
   }
 
  private:
-  mojo::Receiver<read_aloud::mojom::ReadAloudPlaybackController> receiver_{
-      this};
+  void OnClientDisconnected() {
+    client_.reset();
+    while (!previous_clients_.empty()) {
+      mojo::Remote<read_aloud::mojom::ReadAloudPlaybackControllerClient>
+          prev_client = std::move(previous_clients_.back());
+      previous_clients_.pop_back();
+      if (prev_client.is_bound() && prev_client.is_connected()) {
+        client_ = std::move(prev_client);
+        client_.set_disconnect_handler(
+            base::BindOnce(&FakePlaybackController::OnClientDisconnected,
+                           base::Unretained(this)));
+        break;
+      }
+    }
+  }
+
+  mojo::ReceiverSet<read_aloud::mojom::ReadAloudPlaybackController> receivers_;
   mojo::Remote<read_aloud::mojom::ReadAloudPlaybackControllerClient> client_;
+  std::vector<
+      mojo::Remote<read_aloud::mojom::ReadAloudPlaybackControllerClient>>
+      previous_clients_;
   std::vector<read_aloud::mojom::TextSegmentPtr> received_segments_;
   mojo::PendingRemote<media::mojom::AudioOutputStream> last_audio_stream_;
   media::mojom::ReadWriteAudioDataPipePtr last_data_pipe_;
@@ -1283,6 +1311,8 @@ TEST_F(ReadAloudServiceTest,
 }
 
 TEST_F(ReadAloudServiceTest, VoicePreviewDispatchesPlayingAndStoppedStates) {
+  SetFakeController(std::make_unique<FakePlaybackController>());
+
   auto delegate = std::make_unique<testing::StrictMock<MockDelegate>>();
   MockDelegate* delegate_ptr = delegate.get();
   service()->SetDelegate(std::move(delegate));
@@ -1293,6 +1323,31 @@ TEST_F(ReadAloudServiceTest, VoicePreviewDispatchesPlayingAndStoppedStates) {
                   kTestVoiceId, read_aloud::mojom::PlaybackState::kBuffering))
       .Times(1);
   service()->PreviewVoice(kTestVoiceId);
+
+  EXPECT_CALL(*delegate_ptr,
+              OnVoicePreviewPlaybackStateChanged(
+                  kTestVoiceId, read_aloud::mojom::PlaybackState::kPlaying))
+      .Times(1);
+  fake_controller()->client()->OnPlaybackStateChanged(
+      read_aloud::mojom::PlaybackState::kPlaying);
+  fake_controller()->FlushForTesting();
+
+  service()->PauseVoicePreview();
+  fake_controller()->FlushForTesting();
+  EXPECT_EQ(fake_controller()->pause_count(), 1);
+
+  EXPECT_CALL(*delegate_ptr,
+              OnVoicePreviewPlaybackStateChanged(
+                  kTestVoiceId, read_aloud::mojom::PlaybackState::kPaused))
+      .Times(1);
+  fake_controller()->client()->OnPlaybackStateChanged(
+      read_aloud::mojom::PlaybackState::kPaused);
+  fake_controller()->FlushForTesting();
+
+  // Calling PreviewVoice with the same voice ID resumes the paused preview.
+  service()->PreviewVoice(kTestVoiceId);
+  fake_controller()->FlushForTesting();
+  EXPECT_EQ(fake_controller()->play_count(), 2);
 
   EXPECT_CALL(*delegate_ptr,
               OnVoicePreviewPlaybackStateChanged(
@@ -1304,9 +1359,9 @@ TEST_F(ReadAloudServiceTest, VoicePreviewDispatchesPlayingAndStoppedStates) {
 }
 
 TEST_F(ReadAloudServiceTest, PreviewVoicePausesActivePlayback) {
-  std::unique_ptr<content::WebContents> test_contents = CreateTestWebContents();
-  service()->Play(test_contents.get());
-  EXPECT_EQ(service()->web_contents(), test_contents.get());
+  SetFakeController(std::make_unique<FakePlaybackController>());
+  service()->Play(web_contents());
+  EXPECT_EQ(service()->web_contents(), web_contents());
 
   auto delegate = std::make_unique<testing::StrictMock<MockDelegate>>();
   MockDelegate* delegate_ptr = delegate.get();
@@ -1314,7 +1369,7 @@ TEST_F(ReadAloudServiceTest, PreviewVoicePausesActivePlayback) {
 
   testing::InSequence s;
   // PreviewVoice should pause active article playback and start the requested
-  // voice preview.
+  // voice preview without disconnecting the paused article controller pipe.
   EXPECT_CALL(*delegate_ptr,
               OnPlaybackStateChanged(read_aloud::mojom::PlaybackState::kPaused))
       .Times(1);
@@ -1323,8 +1378,15 @@ TEST_F(ReadAloudServiceTest, PreviewVoicePausesActivePlayback) {
                   kTestVoiceId, read_aloud::mojom::PlaybackState::kBuffering))
       .Times(1);
   service()->PreviewVoice(kTestVoiceId);
+  fake_controller()->FlushForTesting();
+  EXPECT_EQ(fake_controller()->pause_count(), 1);
 
-  // Stopping playback returns article state to stopped before teardown.
+  // Stopping playback stops the active voice preview and returns article state
+  // to stopped before teardown.
+  EXPECT_CALL(*delegate_ptr,
+              OnVoicePreviewPlaybackStateChanged(
+                  /*voice_id=*/"", read_aloud::mojom::PlaybackState::kStopped))
+      .Times(1);
   EXPECT_CALL(*delegate_ptr, OnPlaybackStateChanged(
                                  read_aloud::mojom::PlaybackState::kStopped))
       .Times(1);
@@ -1334,18 +1396,35 @@ TEST_F(ReadAloudServiceTest, PreviewVoicePausesActivePlayback) {
 }
 
 TEST_F(ReadAloudServiceTest, PlayResumesPlaybackAfterVoicePreview) {
-  std::unique_ptr<content::WebContents> test_contents = CreateTestWebContents();
-  service()->Play(test_contents.get());
+  SetFakeController(std::make_unique<FakePlaybackController>());
+  service()->Play(web_contents());
   service()->PreviewVoice(kTestVoiceId);
+  fake_controller()->FlushForTesting();
 
   auto delegate = std::make_unique<testing::StrictMock<MockDelegate>>();
   MockDelegate* delegate_ptr = delegate.get();
   service()->SetDelegate(std::move(delegate));
 
   testing::InSequence s;
-  // Starting article playback again resumes article playback, but delegates
-  // state notification to the utility process.
-  service()->Play(test_contents.get());
+  // Starting article playback again stops the active voice preview and resumes
+  // article playback (delegating article kPlaying notification to the utility
+  // process).
+  EXPECT_CALL(*delegate_ptr,
+              OnVoicePreviewPlaybackStateChanged(
+                  /*voice_id=*/"", read_aloud::mojom::PlaybackState::kStopped))
+      .Times(1);
+  service()->Play(web_contents());
+  fake_controller()->FlushForTesting();
+  EXPECT_EQ(fake_controller()->play_count(), 3);
+
+  // Because Play() resets the preview controller's utility connection,
+  // subsequent utility state updates are routed to the article playback client.
+  EXPECT_CALL(*delegate_ptr, OnPlaybackStateChanged(
+                                 read_aloud::mojom::PlaybackState::kPlaying))
+      .Times(1);
+  fake_controller()->client()->OnPlaybackStateChanged(
+      read_aloud::mojom::PlaybackState::kPlaying);
+  fake_controller()->FlushForTesting();
 
   // Explicitly stopping playback returns article state to stopped before
   // teardown.
@@ -1353,6 +1432,26 @@ TEST_F(ReadAloudServiceTest, PlayResumesPlaybackAfterVoicePreview) {
                                  read_aloud::mojom::PlaybackState::kStopped))
       .Times(1);
   service()->Stop();
+
+  EXPECT_CALL(*delegate_ptr, OnNativeDestroyed()).Times(1);
+}
+
+TEST_F(ReadAloudServiceTest, InitializeStopsActiveVoicePreview) {
+  SetFakeController(std::make_unique<FakePlaybackController>());
+  service()->PreviewVoice(kTestVoiceId);
+
+  auto delegate = std::make_unique<testing::StrictMock<MockDelegate>>();
+  MockDelegate* delegate_ptr = delegate.get();
+  service()->SetDelegate(std::move(delegate));
+
+  testing::InSequence s;
+  EXPECT_CALL(*delegate_ptr,
+              OnVoicePreviewPlaybackStateChanged(
+                  /*voice_id=*/"", read_aloud::mojom::PlaybackState::kStopped))
+      .Times(1);
+  ExpectInitializeCallbacks(delegate_ptr, /*expected_title=*/"",
+                            /*expected_publisher=*/"");
+  service()->Initialize(web_contents());
 
   EXPECT_CALL(*delegate_ptr, OnNativeDestroyed()).Times(1);
 }

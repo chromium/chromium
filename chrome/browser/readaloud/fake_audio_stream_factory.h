@@ -7,6 +7,7 @@
 
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/unguessable_token.h"
@@ -15,6 +16,7 @@
 #include "media/mojo/mojom/audio_output_stream.mojom.h"
 #include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/audio/public/cpp/fake_stream_factory.h"
 
 namespace readaloud {
@@ -59,11 +61,14 @@ class FakeAudioStreamFactory : public audio::FakeStreamFactory {
   const base::UnguessableToken& last_group_id() const { return last_group_id_; }
 
  private:
+  mojo::ReceiverSet<media::mojom::AudioStreamFactory> receivers_;
   std::string last_device_id_;
   media::AudioParameters last_params_;
   base::UnguessableToken last_group_id_;
-  mojo::PendingReceiver<media::mojom::AudioOutputStream> last_stream_receiver_;
-  CreateOutputStreamCallback last_callback_;
+  std::vector<mojo::PendingReceiver<media::mojom::AudioOutputStream>>
+      stream_receivers_;
+  std::vector<std::pair<media::AudioParameters, CreateOutputStreamCallback>>
+      pending_callbacks_;
   int create_output_stream_called_count_ = 0;
   bool auto_respond_ = true;
   bool should_succeed_ = true;
