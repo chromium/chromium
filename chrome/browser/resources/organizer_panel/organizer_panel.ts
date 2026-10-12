@@ -35,6 +35,6 @@ export {StackedFaviconsElement} from './stacked_favicons.js';
 export {Color} from './tab_group_types.mojom-webui.js';
 export type {BrowserProxy as TabGroupsBrowserProxy, TabGroup, TabGroupsOrganizerPageRemote} from './tab_groups.mojom-webui.js';
 export {browserProxyFactory as tabGroupsBrowserProxyFactory, TabGroupsOrganizerPageCallbackRouter, TabGroupsOrganizerPageHandler, TabGroupsOrganizerPageHandlerRemote} from './tab_groups.mojom-webui.js';
-export type {PageRemote, ProfileData, RecentlyClosedTab, RecentlyClosedTabGroup, Tab, TokenRange} from './tab_search.mojom-webui.js';
+export type {PageRemote, ProfileData, RecentlyClosedSplitView, RecentlyClosedTab, RecentlyClosedTabGroup, Tab, TokenRange} from './tab_search.mojom-webui.js';
 export {browserProxyFactory, PageHandlerRemote, SplitTabLayout} from './tab_search.mojom-webui.js';
 export {TabAlertState} from './tabs.mojom-webui.js';

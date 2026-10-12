@@ -12,10 +12,10 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {OrganizerListSectionClient, OrganizerListSectionDelegate} from '../organizer_list_section_delegate.js';
 import type {OrganizerListSectionItem, OrganizerListSectionItemDescriptionPart, OrganizerListSectionItemIcon} from '../organizer_list_section_item.js';
 import type {BrowserProxy, ProfileData, Tab, TabGroup, TabsRemovedInfo, TabUpdateInfo} from '../tab_search.mojom-webui.js';
-import {browserProxyFactory, SplitTabLayout} from '../tab_search.mojom-webui.js';
+import {browserProxyFactory} from '../tab_search.mojom-webui.js';
 import {TabAlertState} from '../tabs.mojom-webui.js';
 
-import {compareTimeDescending, getTabCountText, tokenToString} from './tab_delegate_utils.js';
+import {compareTimeDescending, getSplitViewPrefixIcon, getTabCountText, tokenToString} from './tab_delegate_utils.js';
 
 // Trailing icon shown for tabs that are playing or muting audio.
 const AUDIO_ICON = 'organizer-panel:volume-up';
@@ -267,12 +267,8 @@ export class OpenTabsDelegate implements
 
     if (isSplitTab(item)) {
       title = [loadTimeData.getString('splitView')];
-      prefixIcon = {
-        stackedFavicons: {
-          urls: [item.tabs[0].url, item.tabs[1].url],
-          stackVertically: item.tabs[0].splitLayout === SplitTabLayout.kStacked,
-        },
-      };
+      prefixIcon = getSplitViewPrefixIcon(
+          [item.tabs[0].url, item.tabs[1].url], item.tabs[0].splitLayout);
     } else {
       title = [item.tab.title];
       prefixIcon = {url: item.tab.url};

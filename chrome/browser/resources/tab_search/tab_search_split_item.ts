@@ -50,6 +50,7 @@ export class TabSearchSplitItemElement extends TabSearchSplitItemBase {
       lastActiveTime: {internalValue: 0n},
       lastActiveElapsedText: '',
       tabUrls: [],
+      tabTitles: [],
       layout: SplitTabLayout.kSideBySide,
       groupId: null,
     },

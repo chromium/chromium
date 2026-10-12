@@ -1573,6 +1573,9 @@ IN_PROC_BROWSER_TEST_P(TabSearchPageHandlerTest, RecentlyClosedSplitView) {
   ASSERT_EQ(2u, split_view->tab_urls.size());
   EXPECT_EQ(tab_url2_.spec(), split_view->tab_urls[0].spec());
   EXPECT_EQ(tab_url1_.spec(), split_view->tab_urls[1].spec());
+  ASSERT_EQ(2u, split_view->tab_titles.size());
+  EXPECT_EQ(kTabName2, split_view->tab_titles[0]);
+  EXPECT_EQ(kTabName1, split_view->tab_titles[1]);
 
   EXPECT_CALL(page_, TabUpdated(_)).Times(testing::AnyNumber());
   EXPECT_CALL(page_, TabsRemoved(_)).Times(testing::AnyNumber());

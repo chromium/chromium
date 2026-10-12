@@ -189,6 +189,9 @@ struct RecentlyClosedSplitView {
   // The URLs of the tabs in the split view.
   array<url.mojom.Url> tab_urls;
 
+  // The titles of the tabs in the split view.
+  array<string> tab_titles;
+
   // The layout orientation of the split view.
   SplitTabLayout layout;
 

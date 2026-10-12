@@ -981,6 +981,7 @@ suite('TabSearchAppTest', () => {
         lastActiveTime: {internalValue: 0n},
         lastActiveElapsedText: '3 mins ago',
         tabUrls: ['https://google.com', 'https://paypal.com'],
+        tabTitles: ['Google', 'PayPal'],
         layout: SplitTabLayout.kSideBySide,
         groupId: null,
       }],

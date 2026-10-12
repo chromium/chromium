@@ -8,18 +8,24 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import type {OrganizerListSectionClient, OrganizerListSectionDelegate} from '../organizer_list_section_delegate.js';
-import type {OrganizerListSectionItem} from '../organizer_list_section_item.js';
-import type {BrowserProxy, ProfileData, RecentlyClosedTab, RecentlyClosedTabGroup, TabsRemovedInfo} from '../tab_search.mojom-webui.js';
+import type {OrganizerListSectionItem, OrganizerListSectionItemDescriptionPart} from '../organizer_list_section_item.js';
+import type {BrowserProxy, ProfileData, RecentlyClosedSplitView, RecentlyClosedTab, RecentlyClosedTabGroup, TabsRemovedInfo} from '../tab_search.mojom-webui.js';
 import {browserProxyFactory} from '../tab_search.mojom-webui.js';
 
-import {compareTimeDescending, getTabCountText, tokenToString} from './tab_delegate_utils.js';
+import {compareTimeDescending, getSplitViewPrefixIcon, getTabCountText, tokenToString} from './tab_delegate_utils.js';
 
 // Union type to represent all possible recently closed items (tabs, tab groups,
 // split views).
-export type RecentlyClosedItem = RecentlyClosedTab|RecentlyClosedTabGroup;
+export type RecentlyClosedItem =
+    RecentlyClosedTab|RecentlyClosedTabGroup|RecentlyClosedSplitView;
 
 function isTabGroup(item: RecentlyClosedItem): item is RecentlyClosedTabGroup {
-  return 'sessionId' in item;
+  return 'color' in item;
+}
+
+function isSplitView(item: RecentlyClosedItem):
+    item is RecentlyClosedSplitView {
+  return 'tabUrls' in item;
 }
 
 export class RecentTabsDelegate implements
@@ -29,6 +35,7 @@ export class RecentTabsDelegate implements
   private listenerIds_: number[] = [];
   private tabs_: RecentlyClosedTab[] = [];
   private tabGroups_: RecentlyClosedTabGroup[] = [];
+  private splitViews_: RecentlyClosedSplitView[] = [];
   private items_: RecentlyClosedItem[] = [];
 
   init(sectionClient: OrganizerListSectionClient) {
@@ -67,7 +74,8 @@ export class RecentTabsDelegate implements
   onItemClick(item: OrganizerListSectionItem<RecentlyClosedItem>) {
     const data = item.data;
     assert(data);
-    const id = isTabGroup(data) ? data.sessionId : data.tabId;
+    const id =
+        isTabGroup(data) || isSplitView(data) ? data.sessionId : data.tabId;
     this.browserProxy_.handler.openRecentlyClosedEntry(id);
   }
 
@@ -75,6 +83,7 @@ export class RecentTabsDelegate implements
     const {profileData} = await this.browserProxy_.handler.getProfileData();
     this.tabs_ = profileData.recentlyClosedTabs;
     this.tabGroups_ = profileData.recentlyClosedTabGroups;
+    this.splitViews_ = profileData.recentlyClosedSplitViews;
     this.items_ = this.extractAndSortItems_();
   }
 
@@ -86,6 +95,7 @@ export class RecentTabsDelegate implements
   private onTabsChanged_(profileData: ProfileData) {
     this.tabs_ = profileData.recentlyClosedTabs;
     this.tabGroups_ = profileData.recentlyClosedTabGroups;
+    this.splitViews_ = profileData.recentlyClosedSplitViews;
     this.items_ = this.extractAndSortItems_();
     this.notifyClient_();
   }
@@ -109,11 +119,14 @@ export class RecentTabsDelegate implements
   private extractAndSortItems_(): RecentlyClosedItem[] {
     const groupIds =
         new Set(this.tabGroups_.map(group => tokenToString(group.id)));
+    const splitViewIds =
+        new Set(this.splitViews_.map(split => tokenToString(split.id)));
     const filteredTabs = this.tabs_.filter(
-        tab => !tab.groupId || !groupIds.has(tokenToString(tab.groupId)));
+        tab => (!tab.groupId || !groupIds.has(tokenToString(tab.groupId))) &&
+            (!tab.splitId || !splitViewIds.has(tokenToString(tab.splitId))));
 
     const allItems: RecentlyClosedItem[] =
-        [...filteredTabs, ...this.tabGroups_];
+        [...filteredTabs, ...this.tabGroups_, ...this.splitViews_];
     return this.sortItems_(allItems);
   }
 
@@ -126,8 +139,13 @@ export class RecentTabsDelegate implements
 
   private toSectionItem_(item: RecentlyClosedItem):
       OrganizerListSectionItem<RecentlyClosedItem> {
-    return isTabGroup(item) ? this.tabGroupToSectionItem_(item) :
-                              this.tabToSectionItem_(item);
+    if (isTabGroup(item)) {
+      return this.tabGroupToSectionItem_(item);
+    }
+    if (isSplitView(item)) {
+      return this.splitViewToSectionItem_(item);
+    }
+    return this.tabToSectionItem_(item);
   }
 
   private tabToSectionItem_(tab: RecentlyClosedTab):
@@ -140,6 +158,24 @@ export class RecentTabsDelegate implements
         url: tab.url,
       },
       data: tab,
+    };
+  }
+
+  private splitViewToSectionItem_(splitView: RecentlyClosedSplitView):
+      OrganizerListSectionItem<RecentlyClosedItem> {
+    const description: OrganizerListSectionItemDescriptionPart[] = [];
+    if (splitView.lastActiveElapsedText) {
+      description.push({text: splitView.lastActiveElapsedText});
+    }
+    description.push(
+        {text: splitView.tabTitles[0]!}, {text: splitView.tabTitles[1]!});
+
+    return {
+      title: [loadTimeData.getString('splitView')],
+      description,
+      prefixIcon: getSplitViewPrefixIcon(
+          [splitView.tabUrls[0]!, splitView.tabUrls[1]!], splitView.layout),
+      data: splitView,
     };
   }
 

@@ -681,8 +681,11 @@ void TabSearchPageHandler::AddRecentlyClosedEntries(
             int nav_index = tab->normalized_navigation_index();
             if (nav_index >= 0 &&
                 nav_index < static_cast<int>(tab->navigations.size())) {
-              recently_closed_split_view->tab_urls.push_back(
-                  tab->navigations[nav_index].virtual_url());
+              const GURL& url = tab->navigations[nav_index].virtual_url();
+              recently_closed_split_view->tab_urls.push_back(url);
+              const std::u16string& title = tab->navigations[nav_index].title();
+              recently_closed_split_view->tab_titles.push_back(
+                  title.empty() ? url.spec() : base::UTF16ToUTF8(title));
             }
           }
 

@@ -5,6 +5,9 @@
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {Token} from '//resources/mojo/mojo/public/mojom/base/token.mojom-webui.js';
 
+import type {OrganizerListSectionItemIcon} from '../organizer_list_section_item.js';
+import {SplitTabLayout} from '../tab_search.mojom-webui.js';
+
 export function tokenToString(token: Token): string {
   return `${token.high.toString()}#${token.low.toString()}`;
 }
@@ -20,4 +23,15 @@ export function compareTimeDescending(
 export function getTabCountText(tabCount: number): string {
   return loadTimeData.getStringF(
       tabCount === 1 ? 'oneTab' : 'tabCount', tabCount);
+}
+
+export function getSplitViewPrefixIcon(
+    urls: [string, string],
+    layout: SplitTabLayout|null): OrganizerListSectionItemIcon {
+  return {
+    stackedFavicons: {
+      urls,
+      stackVertically: layout === SplitTabLayout.kStacked,
+    },
+  };
 }
