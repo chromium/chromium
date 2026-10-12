@@ -316,9 +316,6 @@ base::ByteSize Canvas2DResourceProvider::EstimatedSizeInBytes() const {
 }
 
 void Canvas2DResourceProvider::OnContextDestroyed() {
-  if (skia_canvas_) {
-    skia_canvas_->reset_image_provider();
-  }
   canvas_image_provider_.reset();
   if (image_pool_) {
     image_pool_->Clear();
@@ -539,12 +536,10 @@ void Canvas2DResourceProvider::RasterRecord(
     cc::PlaybackCallbacks::CustomDataRasterCallback custom_callback) {
   if (!is_accelerated_) {
     WillDrawUnaccelerated();
-    if (!skia_canvas_) {
-      skia_canvas_ = std::make_unique<cc::SkiaPaintCanvas>(
-          GetSkSurface()->getCanvas(), GetOrCreateSWCanvasImageProvider());
-    }
-    skia_canvas_->drawPicture(std::move(last_recording),
-                              std::move(custom_callback));
+    cc::SkiaPaintCanvas skia_canvas(GetSkSurface()->getCanvas(),
+                                    GetOrCreateSWCanvasImageProvider());
+    skia_canvas.drawPicture(std::move(last_recording),
+                            std::move(custom_callback));
     return;
   }
 
