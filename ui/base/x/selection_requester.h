@@ -10,10 +10,12 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/containers/queue.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "ui/gfx/x/connection.h"
 
 namespace ui {
@@ -85,23 +87,22 @@ class COMPONENT_EXPORT(UI_BASE_X) SelectionRequester {
     std::vector<scoped_refptr<base::RefCountedMemory>> out_data;
     x11::Atom out_type;
 
-    // Whether the XConvertSelection() request was successful.
-    bool success;
-
-    // True if the request is complete.
-    bool completed;
-
     ConvertSelectionCallback callback;
   };
 
-  // Mark |request| as completed. If the current request is completed, converts
-  // the selection for the next request.
-  void CompleteRequest(size_t index, bool success);
+  // Called when the in-flight request has not made progress within the
+  // timeout. Aborts the request so that subsequent requests can proceed.
+  void OnRequestTimeout();
 
-  // Converts the selection for the request at |current_request_index_|.
+  // Removes the current request from the queue, converts the selection for the
+  // next request, and runs the completed request's callback.
+  void CompleteCurrentRequest(bool success);
+
+  // Converts the selection for the request at the front of `requests_`.
   void ConvertSelectionForCurrentRequest();
 
-  // Returns the request at |current_request_index_| or NULL if there isn't any.
+  // Returns the request at the front of `requests_` or nullptr if there isn't
+  // any.
   Request* GetCurrentRequest();
 
   void RequestTypesRecursive(x11::Atom selection,
@@ -126,8 +127,12 @@ class COMPONENT_EXPORT(UI_BASE_X) SelectionRequester {
   // the selection.
   const x11::Atom x_property_;
 
-  // In progress requests.
-  std::vector<std::unique_ptr<Request>> requests_;
+  // Pending requests. Only the request at the front has been sent to the
+  // selection owner.
+  base::queue<std::unique_ptr<Request>> requests_;
+
+  // Aborts the in-flight request if the selection owner stops responding.
+  base::OneShotTimer timeout_timer_;
 
   base::WeakPtrFactory<SelectionRequester> weak_ptr_factory_{this};
 };
