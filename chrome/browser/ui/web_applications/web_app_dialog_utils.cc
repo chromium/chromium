@@ -50,6 +50,8 @@
 #include "components/webapps/browser/web_app_url_config.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/visibility.h"
+#include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
@@ -92,7 +94,16 @@ void ShowWebAppInstallFlowDialog(
     InstallOsType os_type,
     std::optional<ui::ImageModel> folder_image_model,
     std::optional<std::u16string> folder_label) {
-  if (!initiator_web_contents) {
+  // On MacOS, the showing of the install flow dialog goes through an async hop
+  // in the middle of which the installation might be cancelled if the user
+  // changes tabs, or closes the web contents. Explicitly exit the install
+  // flow earlier if that happens.
+  if (!initiator_web_contents ||
+      initiator_web_contents->GetVisibility() == content::Visibility::HIDDEN) {
+    CHECK(install_tracker);
+    install_tracker->ReportResult(webapps::MlInstallUserResponse::kIgnored);
+    std::move(web_app_acceptance_callback)
+        .Run(/*user_accepted=*/false, nullptr, base::DoNothing());
     return;
   }
   auto progress_delay =

@@ -291,8 +291,9 @@ void AppBannerManagerDesktop::DidFinishCreatingWebApp(
     return;
   }
 
-  // Catch only kSuccessNewInstall and kUserInstallDeclined. Report nothing on
-  // all other errors.
+  // Catch kSuccessNewInstall, kUserInstallDeclined, and pre-dialog tab-switch
+  // cancellations (kCancelledDueToMainFrameNavigation). Report nothing on all
+  // other errors.
   if (code == webapps::InstallResultCode::kSuccessNewInstall) {
     if (is_navigation_current) {
       app_banner_manager_->SendBannerAccepted();
@@ -307,6 +308,11 @@ void AppBannerManagerDesktop::DidFinishCreatingWebApp(
     TrackUserResponse(USER_RESPONSE_WEB_APP_DISMISSED);
     AppBannerSettingsHelper::RecordBannerDismissEvent(contents,
                                                       manifest_id.spec());
+  } else if (code ==
+             webapps::InstallResultCode::kCancelledDueToMainFrameNavigation) {
+    if (is_navigation_current) {
+      app_banner_manager_->SendBannerDismissed();
+    }
   }
 }
 

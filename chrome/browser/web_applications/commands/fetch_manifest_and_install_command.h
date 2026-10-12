@@ -166,6 +166,7 @@ class FetchManifestAndInstallCommand
   std::unique_ptr<ManifestToWebAppInstallInfoJob> manifest_to_install_info_job_;
 
   bool did_navigation_occur_before_start_ = false;
+  bool dialog_shown_ = false;
 
   std::unique_ptr<WebAppInstallInfo> web_app_info_;
   blink::mojom::ManifestPtr opt_manifest_;

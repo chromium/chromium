@@ -7,14 +7,19 @@
 #include <algorithm>
 #include <cstdlib>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
+#include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/banners/test_app_banner_manager_desktop.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -24,12 +29,14 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
+#include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
@@ -38,15 +45,21 @@
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/webapps/browser/banners/app_banner_manager.h"
 #include "content/public/browser/manifest_icon_downloader.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/views/test/widget_test.h"
+#include "ui/views/widget/any_widget_observer.h"
+#include "ui/views/widget/widget.h"
 
 namespace web_app {
 
@@ -348,6 +361,129 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest,
   web_contents->Close();
 
   loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest,
+                       TabSwitchWhileDialogOpenResolvesUserChoiceAsDismissed) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  auto* manager =
+      webapps::TestAppBannerManagerDesktop::FromWebContents(web_contents);
+  ASSERT_NE(manager, nullptr);
+
+  {
+    base::RunLoop run_loop;
+    manager->SetBannerPromptReplyCallback(run_loop.QuitClosure());
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_https_test_server().GetURL(
+                       "/banners/manifest_test_page.html?action=stash_event")));
+    run_loop.Run();
+  }
+
+  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+      install_future;
+  web_app::SetInstalledCallbackForTesting(install_future.GetCallback());
+
+  const std::string dialog_widget_name =
+      base::FeatureList::IsEnabled(features::kWebAppInstallDialog)
+          ? "WebAppInstallFlowDialog"
+          : "WebAppSimpleInstallDialog";
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       dialog_widget_name);
+  ASSERT_TRUE(content::ExecJs(web_contents, "callStashedPrompt();"));
+  views::Widget* widget = waiter.WaitIfNeededAndGet();
+  ASSERT_NE(widget, nullptr);
+
+  base::RunLoop prompt_reply_run_loop;
+  manager->SetBannerPromptReplyCallback(prompt_reply_run_loop.QuitClosure());
+  views::test::WidgetDestroyedWaiter destroyed_waiter(widget);
+
+  // Switching to a new foreground tab hides the installing tab while the
+  // dialog is open.
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
+  destroyed_waiter.Wait();
+
+  ASSERT_TRUE(install_future.Wait());
+  EXPECT_EQ(install_future.Get<webapps::InstallResultCode>(),
+            webapps::InstallResultCode::kUserInstallDeclined);
+
+  const std::u16string expected_title = u"Got userChoice: dismissed";
+  content::TitleWatcher title_watcher(web_contents, expected_title);
+  EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
+
+  prompt_reply_run_loop.Run();
+  EXPECT_EQ(webapps::AppBannerManager::State::PENDING_PROMPT,
+            manager->state_for_testing());
+  EXPECT_TRUE(manager->IsPromptAvailableForTesting());
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+}
+
+IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest,
+                       TabSwitchBeforeDialogResolvesUserChoiceAsDismissed) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  auto* manager =
+      webapps::TestAppBannerManagerDesktop::FromWebContents(web_contents);
+  ASSERT_NE(manager, nullptr);
+
+  {
+    base::RunLoop run_loop;
+    manager->SetBannerPromptReplyCallback(run_loop.QuitClosure());
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_https_test_server().GetURL(
+                       "/banners/manifest_test_page.html?action=stash_event")));
+    run_loop.Run();
+  }
+
+  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+      install_future;
+  web_app::SetInstalledCallbackForTesting(install_future.GetCallback());
+
+  base::RunLoop prompt_reply_run_loop;
+  manager->SetBannerPromptReplyCallback(prompt_reply_run_loop.QuitClosure());
+
+  // Switch tabs inside OnBannerShown(), which fires synchronously after
+  // ShowBannerUi() constructs and queues FetchManifestAndInstallCommand,
+  // before StartWithLock() / ShowInstallDialog() can run.
+  class BannerShownTabSwitcher : public webapps::AppBannerManager::Observer {
+   public:
+    BannerShownTabSwitcher(webapps::AppBannerManager* banner_manager,
+                           BrowserWindowInterface* browser)
+        : browser_(browser) {
+      observation_.Observe(banner_manager);
+    }
+
+    void OnInstallableWebAppStatusUpdated(
+        webapps::InstallableWebAppCheckResult result,
+        const std::optional<webapps::WebAppBannerData>& data) override {}
+
+    void OnBannerShown() override {
+      observation_.Reset();
+      chrome::NewTab(browser_, NewTabTypes::kNoUserAction);
+    }
+
+   private:
+    raw_ptr<BrowserWindowInterface> browser_;
+    base::ScopedObservation<webapps::AppBannerManager,
+                            webapps::AppBannerManager::Observer>
+        observation_{this};
+  } tab_switcher(manager->app_banner_manager(), browser());
+
+  ASSERT_TRUE(content::ExecJs(web_contents, "callStashedPrompt();"));
+
+  ASSERT_TRUE(install_future.Wait());
+  EXPECT_EQ(install_future.Get<webapps::InstallResultCode>(),
+            webapps::InstallResultCode::kCancelledDueToMainFrameNavigation);
+
+  const std::u16string expected_title = u"Got userChoice: dismissed";
+  content::TitleWatcher title_watcher(web_contents, expected_title);
+  EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
+
+  prompt_reply_run_loop.Run();
+  EXPECT_EQ(webapps::AppBannerManager::State::PENDING_PROMPT,
+            manager->state_for_testing());
+  EXPECT_TRUE(manager->IsPromptAvailableForTesting());
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
 }
 
 IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest,
