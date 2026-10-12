@@ -48,7 +48,7 @@ bool LoyaltyCard::IsValid() const {
 LoyaltyCard::AffiliationCategory LoyaltyCard::GetAffiliationCategory(
     const GURL& url) const {
   const bool has_affiliated_domain =
-      std::ranges::any_of(merchant_domains(), [url](const GURL& merchant_url) {
+      std::ranges::any_of(merchant_domains(), [&url](const GURL& merchant_url) {
         return affiliations::IsExtendedPublicSuffixDomainMatch(merchant_url,
                                                                url, {});
       });

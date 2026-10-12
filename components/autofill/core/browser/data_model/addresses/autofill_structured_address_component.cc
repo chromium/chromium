@@ -587,7 +587,7 @@ bool AddressComponent::IsValueCompatibleWithDescendants(
   }
 
   return std::ranges::all_of(
-      Subcomponents(), [value](const AddressComponent* c) {
+      Subcomponents(), [&value](const AddressComponent* c) {
         return c->IsValueCompatibleWithDescendants(value);
       });
 }

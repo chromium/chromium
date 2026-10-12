@@ -138,7 +138,7 @@ void Address::SetRawInfoWithVerificationStatus(FieldType type,
   if (type == ADDRESS_HOME_STREET_ADDRESS) {
     const std::u16string current_value = Root()->GetValueForType(type);
     if (!current_value.empty()) {
-      AreStringTokenEquivalent(value, Root()->GetValueForType(type))
+      AreStringTokenEquivalent(value, current_value)
           ? Root()->SetValueForType(ADDRESS_HOME_STREET_ADDRESS, value, status)
           : Root()->SetValueForType(ADDRESS_HOME_STREET_ADDRESS, value, status,
                                     /*invalidate_child_nodes=*/true);

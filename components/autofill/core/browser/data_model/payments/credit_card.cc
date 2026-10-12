@@ -993,8 +993,9 @@ std::pair<std::u16string, std::u16string> CreditCard::LabelPieces() const {
   }
 
   if (ShouldUseNewFopDisplay()) {
-    if (CardIdentifierForAutofillDisplay().has_value()) {
-      return std::make_pair(CardIdentifierForAutofillDisplay().value(),
+    if (std::optional<std::u16string> identifier =
+            CardIdentifierForAutofillDisplay()) {
+      return std::make_pair(*std::move(identifier),
                             NetworkAndLastFourDigits(/*obfuscation_length=*/2));
     }
     return std::make_pair(NetworkAndLastFourDigits(/*obfuscation_length=*/2),
