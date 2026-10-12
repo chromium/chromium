@@ -6,10 +6,15 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/command_line.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "base/time/time.h"
+#import "base/values.h"
+#import "components/prefs/pref_service.h"
+#import "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
+#import "components/segmentation_platform/public/features.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
@@ -18,6 +23,7 @@
 #import "ios/chrome/browser/screen/ui_bundled/screen_provider+protected.h"
 #import "ios/chrome/browser/screen/ui_bundled/screen_provider.h"
 #import "ios/chrome/browser/screen/ui_bundled/screen_type.h"
+#import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -42,6 +48,27 @@
 
 namespace {
 
+inline constexpr std::string_view kDeviceSwitcherUserSegmentPrefKey =
+    "segmentation_platform.device_switcher_util";
+
+std::unique_ptr<KeyedService> BuildSegmentationPlatformServiceWithLabels(
+    std::optional<std::vector<std::string>> labels,
+    ProfileIOS* profile) {
+  if (labels.has_value()) {
+    base::ListValue labels_list;
+    for (const std::string& label : *labels) {
+      labels_list.Append(label);
+    }
+    profile->GetPrefs()->SetDict(
+        kDeviceSwitcherUserSegmentPrefKey,
+        base::DictValue().Set(
+            "result", base::DictValue().Set("labels", std::move(labels_list))));
+  }
+  return segmentation_platform::SegmentationPlatformServiceFactory::
+      GetDefaultFactory()
+          .Run(profile);
+}
+
 class FirstRunCoordinatorTest : public PlatformTest {
  public:
   FirstRunCoordinatorTest() = default;
@@ -58,13 +85,19 @@ class FirstRunCoordinatorTest : public PlatformTest {
     PlatformTest::TearDown();
   }
 
-  void InitProfileAndBrowser() {
+  void InitProfileAndBrowser(std::optional<std::vector<std::string>>
+                                 device_switcher_labels = std::nullopt) {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateTestSyncService));
+    builder.AddTestingFactory(
+        segmentation_platform::SegmentationPlatformServiceFactory::
+            GetInstance(),
+        base::BindOnce(&BuildSegmentationPlatformServiceWithLabels,
+                       std::move(device_switcher_labels)));
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
 
     profile_state_ = [[ProfileState alloc] initWithAppState:nil];
@@ -119,6 +152,177 @@ class FirstRunCoordinatorTest : public PlatformTest {
   UIViewController* base_view_controller_ = nil;
   FirstRunCoordinator* coordinator_ = nil;
 };
+
+// Tests that when the user completes the FRE and is segmented as an Android
+// switcher, kAndroidSwitcher and success latency are recorded on UMA.
+TEST_F(FirstRunCoordinatorTest,
+       RecordsAndroidSwitcherSegmentationResultAndLatencyOnCompletion) {
+  feature_list_.InitAndEnableFeature(
+      first_run::kQueryDeviceSwitcherSignalsInFirstRun);
+  InitProfileAndBrowser(std::vector<std::string>{
+      segmentation_platform::DeviceSwitcherModel::kAndroidPhoneLabel});
+  base::HistogramTester histogram_tester;
+
+  StartCoordinatorWithScreens(@[ @(kSignIn), @(kStepsCompleted) ]);
+  [coordinator_
+      firstRunScreenCoordinatorWantsToBeStopped:coordinator_.childCoordinator];
+
+  histogram_tester.ExpectUniqueSample(
+      first_run::kDefaultBrowserPromoSegmentationResultHistogram,
+      first_run::DefaultBrowserPromoSegmentationResult::kAndroidSwitcher, 1);
+  histogram_tester.ExpectTotalCount(
+      first_run::kDefaultBrowserPromoSegmentationLatencySuccessHistogram, 1);
+  histogram_tester.ExpectTotalCount(
+      first_run::kDefaultBrowserPromoSegmentationLatencyFailureHistogram, 0);
+}
+
+// Tests that when the user has both Android phone and iOS phone Chrome labels,
+// the user is classified as kNotAndroidSwitcher on FRE completion.
+TEST_F(FirstRunCoordinatorTest,
+       RecordsNotAndroidSwitcherWhenIosPhoneLabelPresentOnCompletion) {
+  feature_list_.InitAndEnableFeature(
+      first_run::kQueryDeviceSwitcherSignalsInFirstRun);
+  InitProfileAndBrowser(std::vector<std::string>{
+      segmentation_platform::DeviceSwitcherModel::kAndroidPhoneLabel,
+      segmentation_platform::DeviceSwitcherModel::kIosPhoneChromeLabel});
+  base::HistogramTester histogram_tester;
+
+  StartCoordinatorWithScreens(@[ @(kSignIn), @(kStepsCompleted) ]);
+  [coordinator_
+      firstRunScreenCoordinatorWantsToBeStopped:coordinator_.childCoordinator];
+
+  histogram_tester.ExpectUniqueSample(
+      first_run::kDefaultBrowserPromoSegmentationResultHistogram,
+      first_run::DefaultBrowserPromoSegmentationResult::kNotAndroidSwitcher, 1);
+  histogram_tester.ExpectTotalCount(
+      first_run::kDefaultBrowserPromoSegmentationLatencySuccessHistogram, 1);
+  histogram_tester.ExpectTotalCount(
+      first_run::kDefaultBrowserPromoSegmentationLatencyFailureHistogram, 0);
+}
+
+// Tests that when the segmentation request times out after 60 seconds after
+// FRE completion, kNotReady and the 60-second failure latency are recorded on
+// UMA.
+TEST_F(FirstRunCoordinatorTest,
+       RecordsNotReadySegmentationResultOnTimeoutAfterCompletion) {
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{first_run::kQueryDeviceSwitcherSignalsInFirstRun},
+      /*disabled_features=*/{
+          segmentation_platform::features::kSegmentationPlatformDeviceSwitcher,
+          segmentation_platform::features::kSegmentationPlatformUmaFromSqlDb});
+  InitProfileAndBrowser();
+  base::HistogramTester histogram_tester;
+
+  StartCoordinatorWithScreens(@[ @(kSignIn), @(kStepsCompleted) ]);
+  [coordinator_
+      firstRunScreenCoordinatorWantsToBeStopped:coordinator_.childCoordinator];
+  task_environment_.FastForwardBy(base::Seconds(60));
+
+  histogram_tester.ExpectUniqueSample(
+      first_run::kDefaultBrowserPromoSegmentationResultHistogram,
+      first_run::DefaultBrowserPromoSegmentationResult::kNotReady, 1);
+  histogram_tester.ExpectTotalCount(
+      first_run::kDefaultBrowserPromoSegmentationLatencySuccessHistogram, 0);
+  histogram_tester.ExpectUniqueTimeSample(
+      first_run::kDefaultBrowserPromoSegmentationLatencyFailureHistogram,
+      base::Seconds(60), 1);
+}
+
+// Tests that when the device switcher model times out waiting for sync device
+// info (returning kNotSyncedLabel), kNotReady and failure latency are recorded
+// on UMA.
+TEST_F(FirstRunCoordinatorTest,
+       RecordsNotReadySegmentationResultWhenNotSyncedLabelPresent) {
+  feature_list_.InitAndEnableFeature(
+      first_run::kQueryDeviceSwitcherSignalsInFirstRun);
+  InitProfileAndBrowser(std::vector<std::string>{
+      segmentation_platform::DeviceSwitcherModel::kNotSyncedLabel});
+  base::HistogramTester histogram_tester;
+
+  StartCoordinatorWithScreens(@[ @(kSignIn), @(kStepsCompleted) ]);
+  [coordinator_
+      firstRunScreenCoordinatorWantsToBeStopped:coordinator_.childCoordinator];
+
+  histogram_tester.ExpectUniqueSample(
+      first_run::kDefaultBrowserPromoSegmentationResultHistogram,
+      first_run::DefaultBrowserPromoSegmentationResult::kNotReady, 1);
+  histogram_tester.ExpectTotalCount(
+      first_run::kDefaultBrowserPromoSegmentationLatencySuccessHistogram, 0);
+  histogram_tester.ExpectTotalCount(
+      first_run::kDefaultBrowserPromoSegmentationLatencyFailureHistogram, 1);
+}
+
+// Tests that when the segmentation result has no labels (failed
+// classification), kFailed and failure latency are recorded on UMA.
+TEST_F(FirstRunCoordinatorTest,
+       RecordsFailedSegmentationResultWhenLabelsEmpty) {
+  feature_list_.InitAndEnableFeature(
+      first_run::kQueryDeviceSwitcherSignalsInFirstRun);
+  InitProfileAndBrowser(std::vector<std::string>{});
+  base::HistogramTester histogram_tester;
+
+  StartCoordinatorWithScreens(@[ @(kSignIn), @(kStepsCompleted) ]);
+  [coordinator_
+      firstRunScreenCoordinatorWantsToBeStopped:coordinator_.childCoordinator];
+
+  histogram_tester.ExpectUniqueSample(
+      first_run::kDefaultBrowserPromoSegmentationResultHistogram,
+      first_run::DefaultBrowserPromoSegmentationResult::kFailed, 1);
+  histogram_tester.ExpectTotalCount(
+      first_run::kDefaultBrowserPromoSegmentationLatencySuccessHistogram, 0);
+  histogram_tester.ExpectTotalCount(
+      first_run::kDefaultBrowserPromoSegmentationLatencyFailureHistogram, 1);
+}
+
+// Tests that when the forced device switcher experimental flag is set, no
+// segmentation metrics are recorded on UMA.
+TEST_F(FirstRunCoordinatorTest,
+       DoesNotRecordSegmentationMetricsWhenExperimentalFlagSet) {
+  feature_list_.InitAndEnableFeature(
+      first_run::kQueryDeviceSwitcherSignalsInFirstRun);
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      "force-device-switcher-experience",
+      segmentation_platform::DeviceSwitcherModel::kAndroidPhoneLabel);
+  InitProfileAndBrowser(std::vector<std::string>{
+      segmentation_platform::DeviceSwitcherModel::kAndroidPhoneLabel});
+  base::HistogramTester histogram_tester;
+
+  StartCoordinatorWithScreens(@[ @(kSignIn), @(kStepsCompleted) ]);
+  [coordinator_
+      firstRunScreenCoordinatorWantsToBeStopped:coordinator_.childCoordinator];
+
+  histogram_tester.ExpectTotalCount(
+      first_run::kDefaultBrowserPromoSegmentationResultHistogram, 0);
+  histogram_tester.ExpectTotalCount(
+      first_run::kDefaultBrowserPromoSegmentationLatencySuccessHistogram, 0);
+  histogram_tester.ExpectTotalCount(
+      first_run::kDefaultBrowserPromoSegmentationLatencyFailureHistogram, 0);
+  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
+      "force-device-switcher-experience");
+}
+
+// Tests that when kQueryDeviceSwitcherSignalsInFirstRun is disabled, the
+// segmentation dispatcher is not queried on FRE completion and no metrics are
+// recorded.
+TEST_F(FirstRunCoordinatorTest,
+       DoesNotRecordSegmentationMetricsWhenFeatureDisabled) {
+  feature_list_.InitAndDisableFeature(
+      first_run::kQueryDeviceSwitcherSignalsInFirstRun);
+  InitProfileAndBrowser(std::vector<std::string>{
+      segmentation_platform::DeviceSwitcherModel::kAndroidPhoneLabel});
+  base::HistogramTester histogram_tester;
+
+  StartCoordinatorWithScreens(@[ @(kSignIn), @(kStepsCompleted) ]);
+  [coordinator_
+      firstRunScreenCoordinatorWantsToBeStopped:coordinator_.childCoordinator];
+
+  histogram_tester.ExpectTotalCount(
+      first_run::kDefaultBrowserPromoSegmentationResultHistogram, 0);
+  histogram_tester.ExpectTotalCount(
+      first_run::kDefaultBrowserPromoSegmentationLatencySuccessHistogram, 0);
+  histogram_tester.ExpectTotalCount(
+      first_run::kDefaultBrowserPromoSegmentationLatencyFailureHistogram, 0);
+}
 
 // Tests that when the signed-in user completes the FRE and the switcher info
 // API returns kSwitcher, kAndroidSwitcher and success latency are recorded on

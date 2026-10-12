@@ -6,6 +6,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import <algorithm>
+
 #import "base/apple/foundation_util.h"
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
@@ -16,6 +18,9 @@
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/metrics/metrics_service.h"
+#import "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
+#import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
+#import "components/segmentation_platform/public/result.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/authentication/fullscreen_signin_screen/coordinator/fullscreen_signin_screen_coordinator.h"
 #import "ios/chrome/browser/authentication/history_sync/coordinator/history_sync_coordinator.h"
@@ -35,6 +40,7 @@
 #import "ios/chrome/browser/screen/ui_bundled/screen_provider.h"
 #import "ios/chrome/browser/screen/ui_bundled/screen_type.h"
 #import "ios/chrome/browser/search_engine_choice/coordinator/search_engine_choice_coordinator.h"
+#import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -42,12 +48,106 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/new_tab_page_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/public/provider/chrome/browser/signin/choice_api.h"
 #import "ios/public/provider/chrome/browser/switcher_info/switcher_info_api.h"
 
 namespace {
+
+// Timeout for waiting for the device switcher classification result.
+constexpr base::TimeDelta kDeviceSwitcherWaitTimeout = base::Seconds(60);
+
+// Returns true if `result` classifies the user as an Android switcher.
+// A user is considered an Android switcher if the classification succeeded,
+// their primary (first) label is `kAndroidPhoneLabel`, and they were not also
+// classified with `kIosPhoneChromeLabel` (matching the Bring Android Tabs
+// criteria).
+bool IsAndroidSwitcher(
+    const segmentation_platform::ClassificationResult& result) {
+  return result.status == segmentation_platform::PredictionStatus::kSucceeded &&
+         !result.ordered_labels.empty() &&
+         result.ordered_labels[0] ==
+             segmentation_platform::DeviceSwitcherModel::kAndroidPhoneLabel &&
+         !std::ranges::contains(
+             result.ordered_labels,
+             segmentation_platform::DeviceSwitcherModel::kIosPhoneChromeLabel);
+}
+
+// Callback invoked when the segmentation device switcher classification result
+// is received or times out. Records the latency and the Android switcher
+// classification result.
+void OnSegmentationDeviceSwitcherResult(
+    base::ElapsedTimer timer,
+    const segmentation_platform::ClassificationResult& result) {
+  const base::TimeDelta elapsed = timer.Elapsed();
+
+  // Determine the Android switcher classification result from the segmentation
+  // platform prediction result.
+  first_run::DefaultBrowserPromoSegmentationResult segmentation_result =
+      first_run::DefaultBrowserPromoSegmentationResult::kNotReady;
+  bool is_success = false;
+  switch (result.status) {
+    case segmentation_platform::PredictionStatus::kNotReady:
+      segmentation_result =
+          first_run::DefaultBrowserPromoSegmentationResult::kNotReady;
+      break;
+    case segmentation_platform::PredictionStatus::kFailed:
+      segmentation_result =
+          first_run::DefaultBrowserPromoSegmentationResult::kFailed;
+      break;
+    case segmentation_platform::PredictionStatus::kSucceeded:
+      if (result.ordered_labels.empty()) {
+        segmentation_result =
+            first_run::DefaultBrowserPromoSegmentationResult::kFailed;
+      } else if (std::ranges::contains(
+                     result.ordered_labels,
+                     segmentation_platform::DeviceSwitcherModel::
+                         kNotSyncedLabel)) {
+        segmentation_result =
+            first_run::DefaultBrowserPromoSegmentationResult::kNotReady;
+      } else if (IsAndroidSwitcher(result)) {
+        segmentation_result =
+            first_run::DefaultBrowserPromoSegmentationResult::kAndroidSwitcher;
+        is_success = true;
+      } else {
+        segmentation_result = first_run::DefaultBrowserPromoSegmentationResult::
+            kNotAndroidSwitcher;
+        is_success = true;
+      }
+      break;
+  }
+
+  base::UmaHistogramMediumTimes(
+      is_success
+          ? first_run::kDefaultBrowserPromoSegmentationLatencySuccessHistogram
+          : first_run::kDefaultBrowserPromoSegmentationLatencyFailureHistogram,
+      elapsed);
+  base::UmaHistogramEnumeration(
+      first_run::kDefaultBrowserPromoSegmentationResultHistogram,
+      segmentation_result);
+}
+
+// Queries the segmentation platform device switcher classification result and
+// records the result and latency metrics.
+void RecordSegmentationDeviceSwitcherSignal(ProfileIOS* profile) {
+  if (!experimental_flags::GetSegmentForForcedDeviceSwitcherExperience()
+           .empty() ||
+      !first_run::IsQueryDeviceSwitcherSignalsInFirstRunEnabled()) {
+    return;
+  }
+  segmentation_platform::DeviceSwitcherResultDispatcher* dispatcher =
+      segmentation_platform::SegmentationPlatformServiceFactory::
+          GetDispatcherForProfile(profile);
+  if (!dispatcher) {
+    return;
+  }
+  dispatcher->WaitForClassificationResult(
+      kDeviceSwitcherWaitTimeout,
+      base::BindOnce(&OnSegmentationDeviceSwitcherResult,
+                     base::ElapsedTimer()));
+}
 
 // Callback invoked when the switcher info API result is received. Records the
 // latency and the Android switcher classification result.
@@ -103,6 +203,12 @@ void RecordSwitcherInfoDeviceSwitcherSignal(ProfileIOS* profile) {
   ios::provider::GetSwitcherInfo(
       identity, base::BindOnce(&OnSwitcherInfoDeviceSwitcherResult,
                                base::ElapsedTimer()));
+}
+
+// Queries device switcher signals to record Default Browser promo metrics.
+void RecordDeviceSwitcherSignals(ProfileIOS* profile) {
+  RecordSegmentationDeviceSwitcherSignal(profile);
+  RecordSwitcherInfoDeviceSwitcherSignal(profile);
 }
 
 }  // namespace
@@ -225,7 +331,7 @@ class FirstRunCoordinatorMetricsHelper final {
     base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
                                   first_run::kComplete);
 
-    RecordSwitcherInfoDeviceSwitcherSignal(self.profile);
+    RecordDeviceSwitcherSignals(self.profile);
 
     feature_engagement::Tracker* tracker =
         feature_engagement::TrackerFactory::GetForProfile(self.profile);
