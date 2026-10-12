@@ -531,7 +531,8 @@ bool DownloadController::ShowDangerousDownloadDialog(
   if (!window_android) {
     window_android = GetWindowHelper(item, /*should_schedule_removal=*/false);
   }
-  if (!window_android) {
+  if (!window_android && !base::FeatureList::IsEnabled(
+                             safe_browsing::kMaliciousApkDownloadCheck)) {
     return false;
   }
 

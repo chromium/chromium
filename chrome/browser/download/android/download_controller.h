@@ -74,9 +74,8 @@ class DownloadController : public DownloadControllerBase {
 
   DownloadCallbackValidator* validator() { return &validator_; }
 
-  // The download item is not dangerous. Shows the DangerousDownloadDialog
-  // (confirmation dialog for safe downloads). Returns whether the dialog was
-  // shown.
+  // Shows or queues the DangerousDownloadDialog for `item`. Returns whether
+  // the dialog was shown or queued.
   bool ShowDangerousDownloadDialog(download::DownloadItem* item);
 
  private:
