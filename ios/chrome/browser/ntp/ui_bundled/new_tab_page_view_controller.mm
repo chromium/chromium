@@ -204,6 +204,8 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
   UIImage* _aimIcon;
   // The accessibility label for the AI Mode button.
   NSString* _aimAccessibilityLabel;
+  // Whether AIM image generation is allowed.
+  BOOL _aimImageGenerationAllowed;
   // Tracks whether the NTP was scrolled to the top before a size transition.
   BOOL _scrolledToTop;
   // Constraints for the feed top section promo.
@@ -256,6 +258,11 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
   [_quickActionsViewController setAIMTitle:_aimTitle
                                       icon:_aimIcon
                         accessibilityLabel:_aimAccessibilityLabel];
+  if (ntp_tiles::GetAimButtonRefactorArm() ==
+      ntp_tiles::AimButtonRefactorArm::kImageGenerationQuickAction) {
+    [_quickActionsViewController
+        setAIMImageGenerationAllowed:_aimImageGenerationAllowed];
+  }
 
   // TODO(crbug.com/40799579): Remove this when bug is fixed.
   [self.feedWrapperViewController loadViewIfNeeded];
@@ -896,6 +903,13 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
       ntp_tiles::AimButtonRefactorArm::kAimAsModule) {
     [self.contentSuggestionsViewController setAIMAllowed:allowed];
   }
+}
+
+- (void)setAIMImageGenerationAllowed:(BOOL)allowed {
+  CHECK_EQ(ntp_tiles::GetAimButtonRefactorArm(),
+           ntp_tiles::AimButtonRefactorArm::kImageGenerationQuickAction);
+  _aimImageGenerationAllowed = allowed;
+  [_quickActionsViewController setAIMImageGenerationAllowed:allowed];
 }
 
 - (void)setAIMTitle:(NSString*)title

@@ -25,6 +25,7 @@
 #import "components/image_fetcher/core/image_fetcher.h"
 #import "components/image_fetcher/core/image_fetcher_service.h"
 #import "components/image_fetcher/core/request_metadata.h"
+#import "components/ntp_tiles/features.h"
 #import "components/ntp_tiles/pref_names.h"
 #import "components/omnibox/browser/aim_eligibility_service.h"
 #import "components/omnibox/browser/omnibox_pref_names.h"
@@ -108,6 +109,9 @@
 #import "ios/web/public/navigation/referrer.h"
 #import "ios/web/public/web_state.h"
 #import "skia/ext/skia_utils_ios.h"
+#import "third_party/omnibox_proto/searchbox_config.pb.h"
+#import "third_party/omnibox_proto/tool_config.pb.h"
+#import "third_party/omnibox_proto/tool_mode.pb.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
@@ -289,6 +293,32 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
       }));
 
   pref_service->SetBoolean(prefs::kIosImageFetcherShouldClearCache, false);
+}
+
+// Returns whether AIM image generation is allowed.
+BOOL IsAimImageGenerationAllowed(
+    const AimEligibilityService* aim_eligibility_service) {
+  CHECK_EQ(ntp_tiles::GetAimButtonRefactorArm(),
+           ntp_tiles::AimButtonRefactorArm::kImageGenerationQuickAction);
+  if (!aim_eligibility_service || !aim_eligibility_service->IsAimEligible() ||
+      !aim_eligibility_service->IsServerEligibilityEnabled()) {
+    return NO;
+  }
+
+  const omnibox::SearchboxConfig* config =
+      aim_eligibility_service->GetSearchboxConfig();
+
+  if (!config) {
+    return NO;
+  }
+
+  for (const auto& tool_config : config->tool_configs()) {
+    if (tool_config.tool() == omnibox::ToolMode::TOOL_MODE_IMAGE_GEN) {
+      return YES;
+    }
+  }
+
+  return NO;
 }
 
 }  // namespace
@@ -863,6 +893,11 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
   [self.consumer setAIMAllowed:aimAllowed];
   [self.headerConsumer setAIMAllowed:aimAllowed];
   [self.headerConsumer setFuseboxEligible:fuseboxEligible];
+  if (ntp_tiles::GetAimButtonRefactorArm() ==
+      ntp_tiles::AimButtonRefactorArm::kImageGenerationQuickAction) {
+    [self.consumer setAIMImageGenerationAllowed:IsAimImageGenerationAllowed(
+                                                    _aimEligibilityService)];
+  }
   if (_aiModeButtonServiceIOS) {
     [self.consumer
                setAIMTitle:_aiModeButtonServiceIOS->GetTitle()

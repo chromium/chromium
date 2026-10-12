@@ -25,6 +25,9 @@
                   icon:(UIImage*)icon
     accessibilityLabel:(NSString*)accessibilityLabel;
 
+// Sets whether AIM image generation is allowed.
+- (void)setAIMImageGenerationAllowed:(BOOL)imageGenerationAllowed;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_QUICK_ACTIONS_VIEW_CONTROLLER_H_

@@ -2466,8 +2466,7 @@ using ntp_tiles::AimButtonRefactorArm;
   CHECK_EQ(ntp_tiles::GetAimButtonRefactorArm(),
            ntp_tiles::AimButtonRefactorArm::kImageGenerationQuickAction);
 
-  // TODO(crbug.com/549020046): Add metrics recording hooks and a fallback to
-  // AIM web if the composebox cannot be shown.
+  // TODO(crbug.com/549020046): Add metrics recording hooks.
   if (![self canFocusComposeboxForAIM]) {
     return;
   }
@@ -2482,8 +2481,9 @@ using ntp_tiles::AimButtonRefactorArm;
 }
 
 - (void)openAIMAttachImage {
-  CHECK_EQ(ntp_tiles::GetAimButtonRefactorArm(),
-           ntp_tiles::AimButtonRefactorArm::kAttachImageQuickAction);
+  AimButtonRefactorArm arm = ntp_tiles::GetAimButtonRefactorArm();
+  CHECK(arm == AimButtonRefactorArm::kImageGenerationQuickAction ||
+        arm == AimButtonRefactorArm::kAttachImageQuickAction);
   // TODO(crbug.com/549020046): Implement this method and add metrics recording
   // hooks.
 }

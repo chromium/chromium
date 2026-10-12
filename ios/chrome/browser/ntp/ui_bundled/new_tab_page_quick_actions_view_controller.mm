@@ -18,6 +18,7 @@
 namespace {
 
 using ntp_tiles::AimButtonRefactorArm;
+using ntp_tiles::GetAimButtonRefactorArm;
 
 // The spacing in points between the buttons.
 constexpr CGFloat kButtonStackViewSpacing = 8.0;
@@ -37,6 +38,9 @@ constexpr CGFloat kLeadingActionWidthFactor = 0.36;
   UIButton* _aimImageGenerationButton;
   UIButton* _aimAttachImageButton;
   UIButton* _incognitoSearchButton;
+
+  // Whether AIM image generation is allowed.
+  BOOL _aimImageGenerationAllowed;
 
   // Constraint for the width of the AI Mode button in Split Toolbar mode.
   NSLayoutConstraint* _aimButtonSplitToolbarWidthConstraint;
@@ -61,6 +65,17 @@ constexpr CGFloat kLeadingActionWidthFactor = 0.36;
                                           withTitle:_aimTitle
                                                icon:_aimIcon
                                  accessibilityLabel:_aimAccessibilityLabel];
+}
+
+- (void)setAIMImageGenerationAllowed:(BOOL)imageGenerationAllowed {
+  CHECK_EQ(GetAimButtonRefactorArm(),
+           AimButtonRefactorArm::kImageGenerationQuickAction);
+  if (imageGenerationAllowed == _aimImageGenerationAllowed) {
+    return;
+  }
+  _aimImageGenerationAllowed = imageGenerationAllowed;
+  _aimImageGenerationButton.hidden = !imageGenerationAllowed;
+  _aimAttachImageButton.hidden = imageGenerationAllowed;
 }
 
 #pragma mark - Accessors & Mutators
@@ -90,7 +105,7 @@ constexpr CGFloat kLeadingActionWidthFactor = 0.36;
 
 // Creates the subviews for the Quick Actions row.
 - (void)createSubviews {
-  AimButtonRefactorArm arm = ntp_tiles::GetAimButtonRefactorArm();
+  AimButtonRefactorArm arm = GetAimButtonRefactorArm();
   switch (arm) {
     case AimButtonRefactorArm::kFocusComposeboxAimQuickAction:
     case AimButtonRefactorArm::kDisabled: {
@@ -114,10 +129,17 @@ constexpr CGFloat kLeadingActionWidthFactor = 0.36;
           accessibilityLabel:_aimAccessibilityLabel];
       _aimImageGenerationButton =
           [NewTabPageQuickActionsButtonFactory aimImageGenerationButton];
+      // Attach Images is a fallback button if image generation is not
+      // available.
+      _aimAttachImageButton =
+          [NewTabPageQuickActionsButtonFactory aimAttachImageButton];
+      _aimImageGenerationButton.hidden = !_aimImageGenerationAllowed;
+      _aimAttachImageButton.hidden = _aimImageGenerationAllowed;
       _incognitoSearchButton = [NewTabPageQuickActionsButtonFactory
           incognitoSearchButtonWithTitle:NO];
       [_buttonStackView addArrangedSubview:_aimButton];
       [_buttonStackView addArrangedSubview:_aimImageGenerationButton];
+      [_buttonStackView addArrangedSubview:_aimAttachImageButton];
       [_buttonStackView addArrangedSubview:_incognitoSearchButton];
 
       _aimButtonSplitToolbarWidthConstraint = [_aimButton.widthAnchor
@@ -127,6 +149,8 @@ constexpr CGFloat kLeadingActionWidthFactor = 0.36;
         _aimButtonSplitToolbarWidthConstraint,
         [_aimImageGenerationButton.widthAnchor
             constraintEqualToAnchor:_incognitoSearchButton.widthAnchor],
+        [_aimAttachImageButton.widthAnchor
+            constraintEqualToAnchor:_aimImageGenerationButton.widthAnchor],
       ]];
       break;
     }
@@ -209,7 +233,7 @@ constexpr CGFloat kLeadingActionWidthFactor = 0.36;
 // Updates the horizontal constraints for the button stack view based on the
 // layout environment.
 - (void)updateButtonStackConstraints {
-  AimButtonRefactorArm arm = ntp_tiles::GetAimButtonRefactorArm();
+  AimButtonRefactorArm arm = GetAimButtonRefactorArm();
   CHECK(arm == AimButtonRefactorArm::kImageGenerationQuickAction ||
         arm == AimButtonRefactorArm::kAttachImageQuickAction);
 
@@ -229,14 +253,15 @@ constexpr CGFloat kLeadingActionWidthFactor = 0.36;
 }
 
 - (void)didTapAIMImageGenerationButton {
-  CHECK_EQ(ntp_tiles::GetAimButtonRefactorArm(),
+  CHECK_EQ(GetAimButtonRefactorArm(),
            AimButtonRefactorArm::kImageGenerationQuickAction);
   [self.NTPShortcutsHandler openAIMImageGeneration];
 }
 
 - (void)didTapAIMAttachImageButton {
-  CHECK_EQ(ntp_tiles::GetAimButtonRefactorArm(),
-           AimButtonRefactorArm::kAttachImageQuickAction);
+  AimButtonRefactorArm arm = GetAimButtonRefactorArm();
+  CHECK(arm == AimButtonRefactorArm::kAttachImageQuickAction ||
+        arm == AimButtonRefactorArm::kImageGenerationQuickAction);
   [self.NTPShortcutsHandler openAIMAttachImage];
 }
 

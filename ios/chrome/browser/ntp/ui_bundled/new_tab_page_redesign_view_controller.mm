@@ -8,6 +8,7 @@
 
 #import <algorithm>
 
+#import "components/ntp_tiles/features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/public/magic_stack_constants.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_collection_view.h"
@@ -176,6 +177,7 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
   NSString* _defaultSearchEngineName;
   BOOL _isGoogleDefaultSearchEngine;
   BOOL _isAIMAllowed;
+  BOOL _aimImageGenerationAllowed;
   BOOL _fuseboxEligible;
   BOOL _didNotifyLensBadgeDisplay;
   BOOL _lensButtonWithNewBadgeTapped;
@@ -308,6 +310,11 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
         [[NewTabPageQuickActionsViewController alloc] init];
     _quickActionsViewController.layoutGuideCenter = self.layoutGuideCenter;
     _quickActionsViewController.NTPShortcutsHandler = self.NTPShortcutsHandler;
+    if (ntp_tiles::GetAimButtonRefactorArm() ==
+        ntp_tiles::AimButtonRefactorArm::kImageGenerationQuickAction) {
+      [_quickActionsViewController
+          setAIMImageGenerationAllowed:_aimImageGenerationAllowed];
+    }
     [_quickActionsViewController setAIMTitle:_aimTitle
                                         icon:_aimIcon
                           accessibilityLabel:_aimAccessibilityLabel];
@@ -1433,6 +1440,17 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
   }
   [self updateLeadingView];
   [self updateActionButtons];
+}
+
+- (void)setAIMImageGenerationAllowed:(BOOL)aimImageGenerationAllowed {
+  CHECK_EQ(ntp_tiles::GetAimButtonRefactorArm(),
+           ntp_tiles::AimButtonRefactorArm::kImageGenerationQuickAction);
+  if (aimImageGenerationAllowed == _aimImageGenerationAllowed) {
+    return;
+  }
+  _aimImageGenerationAllowed = aimImageGenerationAllowed;
+  [_quickActionsViewController
+      setAIMImageGenerationAllowed:aimImageGenerationAllowed];
 }
 
 - (void)setAIMTitle:(NSString*)title
