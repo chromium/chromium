@@ -127,7 +127,7 @@ class TabGroupView : public TabCollectionZOrderManager,
   void OnDataChanged();
   void UpdateChildVisibilityForCollapseState(bool collapsed);
 
-  TabStripOrientation orientation_ = TabStripOrientation::kHorizontal;
+  const TabStripOrientation orientation_;
   raw_ptr<TabCollectionNode> collection_node_ = nullptr;
   tab_groups::TabGroupVisualData tab_group_visual_data_;
   const raw_ptr<TabGroupHeaderView> group_header_ = nullptr;

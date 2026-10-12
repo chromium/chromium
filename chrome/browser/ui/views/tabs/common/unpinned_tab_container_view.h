@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/tabs/common/dragged_tabs_container.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_animating_layout_manager.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_z_order_manager.h"
+#include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -81,7 +82,8 @@ class UnpinnedTabContainerView
 
   void ResetCollectionNode();
 
-  raw_ptr<TabCollectionNode> collection_node_;
+  const TabStripOrientation orientation_;
+  raw_ptr<TabCollectionNode> collection_node_ = nullptr;
 
   // The available main-axis space allocated by TabStripViewLayout.
   views::SizeBound available_space_;

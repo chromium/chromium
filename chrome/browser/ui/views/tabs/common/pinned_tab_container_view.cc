@@ -42,13 +42,14 @@ PinnedTabContainerView::PinnedTabContainerView(
                                  TabStripOrientation::kHorizontal
               ? DragLayout::kHorizontal
               : DragLayout::kSquash),
+      orientation_(collection_node->orientation()),
       collection_node_(collection_node),
       layout_manager_(*SetLayoutManager(std::make_unique<
                                         TabCollectionAnimatingLayoutManager>(
           std::make_unique<views::DelegatingLayoutManager>(this),
           *this,
           collection_node->GetController()->animation_coordinator(),
-          collection_node->orientation() == TabStripOrientation::kHorizontal
+          orientation_ == TabStripOrientation::kHorizontal
               ? TabCollectionAnimatingLayoutManager::AnimationAxis::kHorizontal
               : TabCollectionAnimatingLayoutManager::AnimationAxis::
                     kHorizontalWrappingVertically,
@@ -64,7 +65,7 @@ PinnedTabContainerView::PinnedTabContainerView(
       base::BindOnce(&PinnedTabContainerView::ResetCollectionNode,
                      base::Unretained(this)));
 
-  if (collection_node_->orientation() == TabStripOrientation::kVertical) {
+  if (orientation_ == TabStripOrientation::kVertical) {
     if (auto* state_controller =
             collection_node_->GetController()->GetStateController()) {
       OnCollapseStateChanged(state_controller->GetCollapseState());
@@ -80,8 +81,7 @@ PinnedTabContainerView::~PinnedTabContainerView() = default;
 
 views::ProposedLayout PinnedTabContainerView::CalculateProposedLayout(
     const views::SizeBounds& size_bounds) const {
-  if (collection_node_ &&
-      collection_node_->orientation() == TabStripOrientation::kHorizontal) {
+  if (orientation_ == TabStripOrientation::kHorizontal) {
     return CalculateHorizontalLayout(size_bounds);
   }
   return CalculateVerticalLayout(size_bounds);
@@ -92,7 +92,7 @@ gfx::Size PinnedTabContainerView::GetMinimumSize() const {
     return gfx::Size();
   }
 
-  if (collection_node_->orientation() == TabStripOrientation::kHorizontal) {
+  if (orientation_ == TabStripOrientation::kHorizontal) {
     int min_width = 0;
     size_t count = 0;
     for (const auto* child : collection_node_->GetDirectChildren()) {
@@ -146,8 +146,7 @@ bool PinnedTabContainerView::IsViewDragging(
 
 bool PinnedTabContainerView::ShouldAnimateOpacityForAddAndRemove(
     const views::View& child_view) const {
-  if (collection_node_ &&
-      collection_node_->orientation() == TabStripOrientation::kHorizontal) {
+  if (orientation_ == TabStripOrientation::kHorizontal) {
     return false;
   }
   // Only animate opacity for tab views.
@@ -165,7 +164,7 @@ PinnedTabContainerView::GetLinkDropIndex(const gfx::Point& loc_in_container) {
     return std::nullopt;
   }
 
-  if (collection_node_->orientation() == TabStripOrientation::kHorizontal) {
+  if (orientation_ == TabStripOrientation::kHorizontal) {
     if (auto index = GetLinkDropIndexForHorizontal(loc_in_container)) {
       return index;
     }
@@ -188,8 +187,7 @@ PinnedTabContainerView::GetLinkDropIndex(const gfx::Point& loc_in_container) {
 std::optional<BrowserRootView::DropIndex>
 PinnedTabContainerView::GetLinkDropIndexForHorizontal(
     const gfx::Point& loc_in_container) {
-  const bool is_vertical =
-      collection_node_->orientation() == TabStripOrientation::kVertical;
+  const bool is_vertical = orientation_ == TabStripOrientation::kVertical;
   const int padding = is_vertical ? kTabPadding : 0;
   const int logical_x = GetMirroredXInView(loc_in_container.x());
 
@@ -298,8 +296,7 @@ void PinnedTabContainerView::ResetCollectionNode() {
 void PinnedTabContainerView::OnCollapseStateChanged(
     tabs::VerticalTabStripCollapseState state) {
   // Collapsed state only exists for the vertical orientation.
-  CHECK(!collection_node_ ||
-        collection_node_->orientation() == TabStripOrientation::kVertical);
+  CHECK_EQ(orientation_, TabStripOrientation::kVertical);
   set_drag_axes(state == tabs::VerticalTabStripCollapseState::kCollapsed
                     ? DragAxes::kVerticalOnly
                     : DragAxes::kBoth);

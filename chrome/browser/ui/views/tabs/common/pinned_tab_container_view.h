@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/tabs/common/dragged_tabs_container.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_animating_layout_manager.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_z_order_manager.h"
+#include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/view.h"
@@ -80,7 +81,8 @@ class PinnedTabContainerView
   void ResetCollectionNode();
   void OnCollapseStateChanged(tabs::VerticalTabStripCollapseState state);
 
-  raw_ptr<TabCollectionNode> collection_node_;
+  const TabStripOrientation orientation_;
+  raw_ptr<TabCollectionNode> collection_node_ = nullptr;
   const raw_ref<TabCollectionAnimatingLayoutManager> layout_manager_;
 
   base::CallbackListSubscription node_destroyed_subscription_;

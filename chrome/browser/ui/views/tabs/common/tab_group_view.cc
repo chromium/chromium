@@ -80,10 +80,10 @@ TabGroupView::TabGroupView(TabCollectionNode* collection_node)
       group_line_(AddChildView(std::make_unique<TabGroupLineView>(*this))),
       layout_manager_(*SetLayoutManager(std::make_unique<
                                         TabCollectionAnimatingLayoutManager>(
-          std::make_unique<TabGroupViewLayout>(collection_node->orientation()),
+          std::make_unique<TabGroupViewLayout>(orientation_),
           *this,
           collection_node->GetController()->animation_coordinator(),
-          collection_node->orientation() == TabStripOrientation::kHorizontal
+          orientation_ == TabStripOrientation::kHorizontal
               ? TabCollectionAnimatingLayoutManager::AnimationAxis::kHorizontal
               : TabCollectionAnimatingLayoutManager::AnimationAxis::kVertical,
           /*animate_host_size=*/false))) {
@@ -216,8 +216,7 @@ bool TabGroupView::IsViewDragging(const views::View& child_view) const {
 
 bool TabGroupView::ShouldAnimateOpacityForAddAndRemove(
     const views::View& child_view) const {
-  if (collection_node_ &&
-      collection_node_->orientation() == TabStripOrientation::kHorizontal) {
+  if (orientation_ == TabStripOrientation::kHorizontal) {
     return false;
   }
   // Only animate opacity for tab views.
@@ -233,8 +232,7 @@ void TabGroupView::SetAvailableSpace(views::SizeBound space) {
 }
 
 int TabGroupView::GetCrossoverWidth() const {
-  if (collection_node_ &&
-      collection_node_->orientation() == TabStripOrientation::kHorizontal) {
+  if (orientation_ == TabStripOrientation::kHorizontal) {
     return static_cast<TabGroupViewLayout*>(
                layout_manager_->target_layout_manager())
         ->CalculateHorizontalCrossoverWidth(this);
@@ -244,8 +242,7 @@ int TabGroupView::GetCrossoverWidth() const {
 
 std::optional<views::SizeBound>
 TabGroupView::GetAvailableMainAxisSpaceOverride() const {
-  if (collection_node_ &&
-      collection_node_->orientation() == TabStripOrientation::kHorizontal) {
+  if (orientation_ == TabStripOrientation::kHorizontal) {
     if (available_space_.is_bounded()) {
       return available_space_;
     }

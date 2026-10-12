@@ -45,15 +45,6 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
-namespace {
-
-bool IsVerticalOrientation(const TabCollectionNode* collection_node) {
-  return collection_node &&
-         collection_node->orientation() == TabStripOrientation::kVertical;
-}
-
-}  // namespace
-
 class TabStripView::TargetViewsTracker : public views::ViewObserver {
  public:
   explicit TargetViewsTracker(TabStripOrientation orientation)
@@ -171,9 +162,10 @@ class TabStripView::TargetViewsTracker : public views::ViewObserver {
 };
 
 TabStripView::TabStripView(TabCollectionNode* collection_node)
-    : collection_node_(collection_node),
-      target_views_tracker_(std::make_unique<TargetViewsTracker>(
-          collection_node->orientation())) {
+    : orientation_(collection_node->orientation()),
+      collection_node_(collection_node),
+      target_views_tracker_(
+          std::make_unique<TargetViewsTracker>(orientation_)) {
   // Paint to a layer and mask to bounds to prevent tabs from overflowing and
   // drawing outside the window boundaries on Linux when the window is small.
   // This is configured here rather than a higher-level container so that drop
@@ -182,8 +174,7 @@ TabStripView::TabStripView(TabCollectionNode* collection_node)
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetMasksToBounds(true);
 
-  SetLayoutManager(
-      std::make_unique<TabStripViewLayout>(collection_node->orientation()));
+  SetLayoutManager(std::make_unique<TabStripViewLayout>(orientation_));
   SetProperty(views::kElementIdentifierKey, kTabStripElementId);
 
   pinned_tabs_scroll_view_ = AddChildView(std::make_unique<views::ScrollView>(
@@ -199,7 +190,7 @@ TabStripView::TabStripView(TabCollectionNode* collection_node)
       views::ScrollView::ScrollWithLayers::kEnabled));
   SetScrollViewProperties(unpinned_tabs_scroll_view_);
 
-  if (!IsVerticalOrientation(collection_node_)) {
+  if (orientation_ == TabStripOrientation::kHorizontal) {
     unpinned_tab_scroll_type_recorder_ =
         std::make_unique<tabs::UnpinnedTabScrollTypeRecorder>(
             unpinned_tabs_scroll_view_);
@@ -484,7 +475,7 @@ void TabStripView::SetIsAnimatingSize(bool is_animating) {
        {pinned_tabs_scroll_view_, unpinned_tabs_scroll_view_}) {
     // Scrollbars are not visible in the horizontal orientation so only update
     // for the vertical orientation.
-    if (scroll_view && IsVerticalOrientation(collection_node_)) {
+    if (scroll_view && orientation_ == TabStripOrientation::kVertical) {
       if (auto* scroll_bar = views::AsViewClass<VerticalTabStripScrollBar>(
               scroll_view->vertical_scroll_bar())) {
         scroll_bar->SetIsAnimatingSize(is_animating);
@@ -573,7 +564,7 @@ void TabStripView::SetScrollViewProperties(views::ScrollView* scroll_view) {
   scroll_view->SetUseContentsPreferredSize(true);
   scroll_view->SetBackgroundColor(std::nullopt);
   CHECK(collection_node_);
-  if (IsVerticalOrientation(collection_node_)) {
+  if (orientation_ == TabStripOrientation::kVertical) {
     scroll_view->SetHorizontalScrollBarMode(
         views::ScrollView::ScrollBarMode::kDisabled);
     scroll_view->SetOverflowGradientMask(
@@ -661,7 +652,7 @@ void TabStripView::EnsureViewsVisibleInViewportPostLayout(
     return;
   }
 
-  const bool is_vertical = IsVerticalOrientation(collection_node_);
+  const bool is_vertical = orientation_ == TabStripOrientation::kVertical;
 
   // Handle the case where the scroll view is currently not in an overflow
   // state. In such a case the tracked views will be visible in the scroll
@@ -747,7 +738,7 @@ void TabStripView::EnableOverflowVisuals(views::ScrollView* scroll_view) {
   // Override the post-layout callback to prevent any scheduled scroll requests
   // from running.
   scroll_view->RegisterPostLayoutCallback(base::DoNothing());
-  if (IsVerticalOrientation(collection_node_)) {
+  if (orientation_ == TabStripOrientation::kVertical) {
     scroll_view->SetDrawOverflowIndicator(true);
     scroll_view->SetVerticalScrollBarMode(
         views::ScrollView::ScrollBarMode::kEnabled);
@@ -770,7 +761,7 @@ void TabStripView::EnableOverflowVisuals(views::ScrollView* scroll_view) {
 void TabStripView::DisableOverflowVisuals(views::ScrollView* scroll_view) {
   // If in the vertical orientation also hide scrollbar visuals. This is not
   // needed for horizontal since the scrollbar is not shown.
-  if (IsVerticalOrientation(collection_node_)) {
+  if (orientation_ == TabStripOrientation::kVertical) {
     scroll_view->SetDrawOverflowIndicator(false);
     scroll_view->SetVerticalScrollBarMode(
         views::ScrollView::ScrollBarMode::kHiddenButEnabled);

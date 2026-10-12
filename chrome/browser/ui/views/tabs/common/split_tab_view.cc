@@ -31,7 +31,8 @@
 #include "ui/views/widget/widget.h"
 
 SplitTabView::SplitTabView(TabCollectionNode* collection_node)
-    : collection_node_(collection_node),
+    : orientation_(collection_node->orientation()),
+      collection_node_(collection_node),
       hover_controller_(gfx::Animation::ShouldRenderRichAnimation()
                             ? std::make_unique<GlowHoverController>(
                                   this,
@@ -118,17 +119,17 @@ void SplitTabView::OnPaint(gfx::Canvas* canvas) {
 
 views::ProposedLayout SplitTabView::CalculateProposedLayout(
     const views::SizeBounds& size_bounds) const {
-  if (collection_node_ &&
-      collection_node_->orientation() == TabStripOrientation::kHorizontal) {
+  if (orientation_ == TabStripOrientation::kHorizontal) {
     return CalculateHorizontalLayout(size_bounds);
   }
   return CalculateVerticalLayout(size_bounds);
 }
 
 gfx::Size SplitTabView::GetMinimumSize() const {
-  if (collection_node_ &&
-      collection_node_->orientation() == TabStripOrientation::kHorizontal) {
-    const auto children = collection_node_->GetDirectChildren();
+  if (orientation_ == TabStripOrientation::kHorizontal) {
+    const auto children = collection_node_
+                              ? collection_node_->GetDirectChildren()
+                              : TabCollectionNode::ChildViews();
     if (children.empty()) {
       return gfx::Size(0, 0);
     }

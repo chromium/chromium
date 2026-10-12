@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/frame/browser_root_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_z_order_manager.h"
+#include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/view.h"
@@ -81,6 +82,7 @@ class SplitTabView : public TabCollectionZOrderManager,
   std::unique_ptr<views::View> RemoveChildViewForReparenting(
       views::View* child_view);
 
+  const TabStripOrientation orientation_;
   raw_ptr<TabCollectionNode> collection_node_ = nullptr;
   bool hovered_ = false;
   bool pinned_ = false;

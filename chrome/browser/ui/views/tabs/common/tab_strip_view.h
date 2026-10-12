@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -141,6 +142,7 @@ class TabStripView final : public views::View,
   friend class TabStripViewLayout;
 
   PrefChangeRegistrar pref_change_registrar_;
+  const TabStripOrientation orientation_;
   raw_ptr<TabCollectionNode> collection_node_ = nullptr;
   raw_ptr<views::ScrollView> pinned_tabs_scroll_view_ = nullptr;
   raw_ptr<PinnedTabContainerView> pinned_tabs_container_view_ = nullptr;
