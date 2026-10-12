@@ -39,6 +39,7 @@
 #include "chrome/browser/enterprise/reporting/saas_usage/saas_usage_navigation_observer.h"
 #include "chrome/browser/external_protocol/external_protocol_observer.h"
 #include "chrome/browser/facilitated_payments/ui/chrome_facilitated_payments_client.h"
+#include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
 #include "chrome/browser/file_system_access/file_system_access_tab_helper.h"
 #include "chrome/browser/glic/host/context/glic_page_features_manager.h"
@@ -415,6 +416,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
       tab.RegisterWillDiscardContents(base::BindRepeating(
           &TabFeatures::WillDiscardContents, weak_factory_.GetWeakPtr())));
   tab_subscriptions_.push_back(webui::InitEmbeddingContext(&tab));
+
+  favicon::CreateContentFaviconDriverForWebContents(tab.GetContents());
 
   if (!profile->IsOffTheRecord()) {
     HistoryTabHelper::GetOrCreateForWebContents(tab.GetContents());
@@ -1433,6 +1436,8 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   DCHECK_EQ(old_contents, tab->GetContents());
 
   Profile* profile = tab->GetBrowserWindowInterface()->GetProfile();
+
+  favicon::CreateContentFaviconDriverForWebContents(new_contents);
 
   if (!profile->IsOffTheRecord()) {
     HistoryTabHelper::GetOrCreateForWebContents(new_contents);
