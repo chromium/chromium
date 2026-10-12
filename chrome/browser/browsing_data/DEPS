@@ -11,6 +11,7 @@ include_rules = [
   "+chrome/browser/autocomplete/zero_suggest_cache_service_factory.h",
   "+chrome/browser/autofill/autofill_entity_data_manager_factory.h",
   "+chrome/browser/autofill/autofill_uitest_util.h",
+  "+chrome/browser/autofill/entity_suppression_manager_factory.h",
   "+chrome/browser/autofill/personal_data_manager_factory.h",
   "+chrome/browser/bookmarks/bookmark_model_factory.h",
   "+chrome/browser/browser_process.h",

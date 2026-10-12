@@ -39,7 +39,8 @@ class EntitySuppressionManagerImpl
   bool SuppressEntity(EntityInstance entity) override;
   bool UndoInSessionSuppressedEntity(
       const EntityInstance::EntityId& entity_id) override;
-  bool ClearAllSuppressions() override;
+  bool ClearSuppressions(base::Time delete_begin,
+                         base::Time delete_end) override;
   bool IsSuppressed(const EntityInstance& entity) const override;
 
   // EntitySuppressionSyncBridge::Observer:

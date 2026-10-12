@@ -44,6 +44,7 @@
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/zero_suggest_cache_service_factory.h"
+#include "chrome/browser/autofill/entity_suppression_manager_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
@@ -103,6 +104,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/mock_entity_suppression_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager_test_util.h"
@@ -2690,6 +2692,35 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
   // All entries should be removed.
   EXPECT_TRUE(
       prefs->GetDict(autofill::prefs::kAutofillEmailVerificationState).empty());
+}
+
+TEST_F(ChromeBrowsingDataRemoverDelegateTest,
+       EntitySuppressionsClearedOnAutofillRemoval) {
+  base::test::ScopedFeatureList feature_list{
+      autofill::features::kAutofillAmbientAutofillSuppression};
+  auto* mock_suppression_manager =
+      static_cast<autofill::MockEntitySuppressionManager*>(
+          autofill::EntitySuppressionManagerFactory::GetInstance()
+              ->SetTestingFactoryAndUse(
+                  GetProfile(),
+                  base::BindOnce([](content::BrowserContext*)
+                                     -> std::unique_ptr<KeyedService> {
+                    return std::make_unique<
+                        autofill::MockEntitySuppressionManager>();
+                  })));
+
+  // Perform removal for the last hour.
+  const base::Time begin_time = AnHourAgo();
+  EXPECT_CALL(*mock_suppression_manager,
+              ClearSuppressions(begin_time, base::Time::Max()));
+  BlockUntilBrowsingDataRemoved(begin_time, base::Time::Max(),
+                                constants::DATA_TYPE_FORM_DATA, false);
+
+  // Perform removal for all-time.
+  EXPECT_CALL(*mock_suppression_manager,
+              ClearSuppressions(base::Time(), base::Time::Max()));
+  BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
+                                constants::DATA_TYPE_FORM_DATA, false);
 }
 
 TEST_F(ChromeBrowsingDataRemoverDelegateTest, ZeroSuggestPrefsBasedCacheClear) {

@@ -118,9 +118,10 @@ class EntitySuppressionSyncBridgeTest : public testing::Test {
   }
 
   void WriteToStore(const std::string& guid,
-                    const EntitySuppressionEntry& entry) {
+                    const EntitySuppressionEntry& entry,
+                    base::Time creation_time = base::Time::Now()) {
     sync_pb::AutofillEntitySuppressionSpecifics specifics =
-        CreateSpecificsFromEntitySuppressionEntry(guid, entry);
+        CreateSpecificsFromEntitySuppressionEntry(guid, entry, creation_time);
     std::string encrypted_blob;
     ASSERT_TRUE(encryptor().EncryptString(specifics.SerializeAsString(),
                                           &encrypted_blob));
@@ -531,9 +532,10 @@ TEST_F(EntitySuppressionSyncBridgeTest,
   EXPECT_EQ(GetFirstGuid(), "guid1");
 }
 
-// Tests that ClearAllSuppressions deletes all entries from local state and
-// store, commits deletions to Sync, and notifies observers once.
-TEST_F(EntitySuppressionSyncBridgeTest, ClearAllSuppressions) {
+// Tests that ClearSuppressions with a full time range deletes all entries from
+// local state and store, commits deletions to Sync, and notifies observers
+// once.
+TEST_F(EntitySuppressionSyncBridgeTest, ClearSuppressions) {
   WriteToStore("guid1", CreatePassportEntry());
   WriteToStore("guid2", CreateDriversLicenseEntry());
   CreateBridge();
@@ -542,21 +544,45 @@ TEST_F(EntitySuppressionSyncBridgeTest, ClearAllSuppressions) {
   EXPECT_CALL(mock_processor(), Delete("guid1", _, _));
   EXPECT_CALL(mock_processor(), Delete("guid2", _, _));
   EXPECT_CALL(observer(), OnSuppressionsChanged()).Times(1);
-  EXPECT_TRUE(bridge().ClearAllSuppressions());
+  EXPECT_TRUE(bridge().ClearSuppressions(base::Time(), base::Time::Max()));
 
   EXPECT_TRUE(bridge().GetSuppressions().empty());
   EXPECT_TRUE(ReadAllRecordsFromStore().empty());
 }
 
-// Tests that ClearAllSuppressions returns false and does not notify observers
-// when there are no suppressions.
-TEST_F(EntitySuppressionSyncBridgeTest, ClearAllSuppressions_Empty) {
+// Tests that ClearSuppressions only deletes entries whose creation time falls
+// within [delete_begin, delete_end].
+TEST_F(EntitySuppressionSyncBridgeTest, ClearSuppressions_TimeRange) {
+  const base::Time t1 =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(100));
+  const base::Time t2 =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(200));
+  EntitySuppressionEntry entry1 = CreatePassportEntry();
+  EntitySuppressionEntry entry2 = CreateDriversLicenseEntry();
+  WriteToStore("guid1", entry1, t1);
+  WriteToStore("guid2", entry2, t2);
+  CreateBridge();
+  ASSERT_EQ(bridge().GetSuppressions().size(), 2u);
+
+  EXPECT_CALL(mock_processor(), Delete("guid1", _, _)).Times(0);
+  EXPECT_CALL(mock_processor(), Delete("guid2", _, _));
+  EXPECT_CALL(observer(), OnSuppressionsChanged()).Times(1);
+  EXPECT_TRUE(
+      bridge().ClearSuppressions(t1 + base::Seconds(50), base::Time::Max()));
+
+  EXPECT_THAT(bridge().GetSuppressions(), ElementsAre(entry1));
+  EXPECT_EQ(ReadAllRecordsFromStore().size(), 1u);
+}
+
+// Tests that ClearSuppressions returns false and does not notify observers
+// when there are no matching suppressions.
+TEST_F(EntitySuppressionSyncBridgeTest, ClearSuppressions_Empty) {
   CreateBridge();
   ASSERT_TRUE(bridge().GetSuppressions().empty());
 
   EXPECT_CALL(mock_processor(), Delete).Times(0);
   EXPECT_CALL(observer(), OnSuppressionsChanged()).Times(0);
-  EXPECT_FALSE(bridge().ClearAllSuppressions());
+  EXPECT_FALSE(bridge().ClearSuppressions(base::Time(), base::Time::Max()));
 }
 
 }  // namespace

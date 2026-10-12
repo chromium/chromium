@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "base/time/time.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_entry.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
@@ -43,14 +44,17 @@ EntitySuppressionEntry CreateTestPassportEntry() {
 // preserves all data.
 TEST(EntitySuppressionSyncUtilTest, RoundTripConversion) {
   EntitySuppressionEntry original_entry = CreateTestPassportEntry();
+  const base::Time creation_time =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(1234567890));
 
   sync_pb::AutofillEntitySuppressionSpecifics specifics =
       CreateSpecificsFromEntitySuppressionEntry("test-guid-1234",
-                                                original_entry);
+                                                original_entry, creation_time);
   std::optional<EntitySuppressionEntry> converted_entry =
       CreateEntitySuppressionEntryFromSpecifics(specifics);
 
   EXPECT_EQ(specifics.guid(), "test-guid-1234");
+  EXPECT_EQ(specifics.creation_time_windows_epoch_micros(), 1234567890);
   EXPECT_TRUE(AreEntitySuppressionSpecificsValid(specifics));
   ASSERT_TRUE(converted_entry.has_value());
   EXPECT_EQ(*converted_entry, original_entry);

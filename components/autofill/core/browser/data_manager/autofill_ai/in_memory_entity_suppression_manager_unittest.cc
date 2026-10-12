@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/data_manager/autofill_ai/in_memory_entity_suppression_manager.h"
 
+#include "base/test/task_environment.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/test_utils/entity_data_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -24,6 +25,8 @@ class InMemoryEntitySuppressionManagerTest : public testing::Test {
   ~InMemoryEntitySuppressionManagerTest() override = default;
 
  protected:
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   InMemoryEntitySuppressionManager suppression_manager_;
 };
 
@@ -218,9 +221,9 @@ TEST_F(InMemoryEntitySuppressionManagerTest,
   EXPECT_EQ(nullptr, suppression_manager_.GetSyncControllerDelegate());
 }
 
-// Tests that ClearAllSuppressions removes all suppressed entities and notifies
-// observers.
-TEST_F(InMemoryEntitySuppressionManagerTest, ClearAllSuppressions) {
+// Tests that ClearSuppressions with a full time range removes all suppressed
+// entities and notifies observers.
+TEST_F(InMemoryEntitySuppressionManagerTest, ClearSuppressions) {
   EntityInstance passport = test::GetPassportEntityInstance();
   EntityInstance vehicle = test::GetVehicleEntityInstance();
   ASSERT_TRUE(suppression_manager_.SuppressEntity(passport));
@@ -230,20 +233,49 @@ TEST_F(InMemoryEntitySuppressionManagerTest, ClearAllSuppressions) {
   suppression_manager_.AddObserver(&observer);
 
   EXPECT_CALL(observer, OnEntitySuppressionsChanged()).Times(1);
-  EXPECT_TRUE(suppression_manager_.ClearAllSuppressions());
+  EXPECT_TRUE(
+      suppression_manager_.ClearSuppressions(base::Time(), base::Time::Max()));
 
   EXPECT_FALSE(suppression_manager_.IsSuppressed(passport));
   EXPECT_FALSE(suppression_manager_.IsSuppressed(vehicle));
 }
 
-// Tests that ClearAllSuppressions returns false and does not notify observers
+// Tests that ClearSuppressions only removes suppressed entities created within
+// [delete_begin, delete_end].
+TEST_F(InMemoryEntitySuppressionManagerTest, ClearSuppressions_TimeRange) {
+  EntityInstance passport = test::GetPassportEntityInstance();
+  EntityInstance vehicle = test::GetVehicleEntityInstance();
+  ASSERT_TRUE(suppression_manager_.SuppressEntity(passport));
+
+  task_environment_.FastForwardBy(base::Hours(2));
+  const base::Time delete_begin = base::Time::Now() - base::Hours(1);
+  ASSERT_TRUE(suppression_manager_.SuppressEntity(vehicle));
+
+  MockEntitySuppressionManagerObserver observer;
+  suppression_manager_.AddObserver(&observer);
+
+  EXPECT_CALL(observer, OnEntitySuppressionsChanged());
+  EXPECT_TRUE(
+      suppression_manager_.ClearSuppressions(delete_begin, base::Time::Max()));
+
+  EXPECT_TRUE(suppression_manager_.IsSuppressed(passport));
+  EXPECT_FALSE(suppression_manager_.IsSuppressed(vehicle));
+  EXPECT_FALSE(
+      suppression_manager_.UndoInSessionSuppressedEntity(vehicle.guid()));
+  EXPECT_CALL(observer, OnEntitySuppressionsChanged());
+  EXPECT_TRUE(
+      suppression_manager_.UndoInSessionSuppressedEntity(passport.guid()));
+}
+
+// Tests that ClearSuppressions returns false and does not notify observers
 // when nothing is suppressed.
-TEST_F(InMemoryEntitySuppressionManagerTest, ClearAllSuppressions_Empty) {
+TEST_F(InMemoryEntitySuppressionManagerTest, ClearSuppressions_Empty) {
   MockEntitySuppressionManagerObserver observer;
   suppression_manager_.AddObserver(&observer);
 
   EXPECT_CALL(observer, OnEntitySuppressionsChanged()).Times(0);
-  EXPECT_FALSE(suppression_manager_.ClearAllSuppressions());
+  EXPECT_FALSE(
+      suppression_manager_.ClearSuppressions(base::Time(), base::Time::Max()));
 }
 
 }  // namespace

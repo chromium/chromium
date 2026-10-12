@@ -34,4 +34,7 @@ message AutofillEntitySuppressionSpecifics {
 
   // Schema version when suppressed.
   optional int32 schema_version = 3;
+
+  // The time the suppression was created.
+  optional int64 creation_time_windows_epoch_micros = 4;
 }

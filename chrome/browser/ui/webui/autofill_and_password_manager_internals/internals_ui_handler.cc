@@ -459,7 +459,7 @@ void InternalsUIHandler::OnClearAutofillAiEntitySuppressions(
   if (EntitySuppressionManager* suppression_manager =
           EntitySuppressionManagerFactory::GetForProfile(
               Profile::FromWebUI(web_ui()))) {
-    suppression_manager->ClearAllSuppressions();
+    suppression_manager->ClearSuppressions(base::Time(), base::Time::Max());
   }
   FireWebUIListener("notify-reset-done",
                     base::Value(kClearAutofillAiEntitySuppressionsDone));

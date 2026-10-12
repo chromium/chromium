@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "base/time/time.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_entry.h"
 #include "components/sync/protocol/autofill_entity_suppression_specifics.pb.h"
 
@@ -18,16 +19,20 @@ struct EntityData;
 
 namespace autofill {
 
-// For a given `guid` and `entry`, returns the corresponding
+// For a given `guid`, `entry`, and `creation_time`, returns the corresponding
 // `sync_pb::AutofillEntitySuppressionSpecifics`.
 sync_pb::AutofillEntitySuppressionSpecifics
-CreateSpecificsFromEntitySuppressionEntry(const std::string& guid,
-                                          const EntitySuppressionEntry& entry);
+CreateSpecificsFromEntitySuppressionEntry(
+    const std::string& guid,
+    const EntitySuppressionEntry& entry,
+    base::Time creation_time = base::Time::Now());
 
-// Converts the given `guid` and `entry` into a `syncer::EntityData`.
+// Converts the given `guid`, `entry`, and `creation_time` into a
+// `syncer::EntityData`.
 std::unique_ptr<syncer::EntityData> CreateEntityDataFromEntitySuppressionEntry(
     const std::string& guid,
-    const EntitySuppressionEntry& entry);
+    const EntitySuppressionEntry& entry,
+    base::Time creation_time = base::Time::Now());
 
 // Converts the given `specifics` into a `syncer::EntityData`.
 std::unique_ptr<syncer::EntityData>

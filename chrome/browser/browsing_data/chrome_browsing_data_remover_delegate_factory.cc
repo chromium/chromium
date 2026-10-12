@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/zero_suggest_cache_service_factory.h"
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
+#include "chrome/browser/autofill/entity_suppression_manager_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
@@ -89,6 +90,7 @@ ChromeBrowsingDataRemoverDelegateFactory::
               .Build()) {
   DependsOn(AccountPasswordStoreFactory::GetInstance());
   DependsOn(autofill::AutofillEntityDataManagerFactory::GetInstance());
+  DependsOn(autofill::EntitySuppressionManagerFactory::GetInstance());
   DependsOn(autofill::PersonalDataManagerFactory::GetInstance());
   DependsOn(BookmarkModelFactory::GetInstance());
   DependsOn(DownloadCoreServiceFactory::GetInstance());

@@ -2511,6 +2511,7 @@ VISIT_PROTO_FIELDS(const sync_pb::AutofillEntitySuppressionSpecifics& proto) {
   VISIT(guid);
   VISIT(entity_suppression_key);
   VISIT(schema_version);
+  VISIT(creation_time_windows_epoch_micros);
 }
 
 }  // namespace syncer

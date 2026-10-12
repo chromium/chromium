@@ -68,12 +68,24 @@ bool EntitySuppressionManagerImpl::UndoInSessionSuppressedEntity(
   return modified;
 }
 
-bool EntitySuppressionManagerImpl::ClearAllSuppressions() {
+bool EntitySuppressionManagerImpl::ClearSuppressions(base::Time delete_begin,
+                                                     base::Time delete_end) {
   if (!sync_bridge_->IsLoaded()) {
     return false;
   }
-  suppressed_entries_by_entity_id_.clear();
-  return sync_bridge_->ClearAllSuppressions();
+  if (!sync_bridge_->ClearSuppressions(delete_begin, delete_end)) {
+    return false;
+  }
+  absl::erase_if(suppressed_entries_by_entity_id_,
+                 [this](std::pair<const EntityInstance::EntityId,
+                                  std::vector<EntitySuppressionEntry>>& pair) {
+                   std::erase_if(pair.second,
+                                 [this](const EntitySuppressionEntry& entry) {
+                                   return !sync_bridge_->IsSuppressed(entry);
+                                 });
+                   return pair.second.empty();
+                 });
+  return true;
 }
 
 bool EntitySuppressionManagerImpl::IsSuppressed(

@@ -28,8 +28,9 @@ void InMemoryEntitySuppressionManager::RemoveObserver(Observer* observer) {
 
 bool InMemoryEntitySuppressionManager::SuppressEntity(EntityInstance entity) {
   bool modified = false;
+  const base::Time now = base::Time::Now();
   for (EntitySuppressionEntry& entry : GetEntitySuppressionEntries(entity)) {
-    if (suppressed_entries_.insert(entry).second) {
+    if (suppressed_entries_.try_emplace(entry, now).second) {
       suppressed_entries_by_entity_id_[entity.guid()].push_back(
           std::move(entry));
       modified = true;
@@ -60,12 +61,35 @@ bool InMemoryEntitySuppressionManager::UndoInSessionSuppressedEntity(
   return modified;
 }
 
-bool InMemoryEntitySuppressionManager::ClearAllSuppressions() {
-  if (suppressed_entries_.empty()) {
+bool InMemoryEntitySuppressionManager::ClearSuppressions(
+    base::Time delete_begin,
+    base::Time delete_end) {
+  if (delete_begin.is_null()) {
+    delete_begin = base::Time::Min();
+  }
+  if (delete_end.is_null()) {
+    delete_end = base::Time::Max();
+  }
+
+  const size_t removed_count = absl::erase_if(
+      suppressed_entries_,
+      [&](const std::pair<const EntitySuppressionEntry, base::Time>& pair) {
+        return pair.second >= delete_begin && pair.second <= delete_end;
+      });
+  if (removed_count == 0) {
     return false;
   }
-  suppressed_entries_.clear();
-  suppressed_entries_by_entity_id_.clear();
+
+  absl::erase_if(suppressed_entries_by_entity_id_,
+                 [this](std::pair<const EntityInstance::EntityId,
+                                  std::vector<EntitySuppressionEntry>>& pair) {
+                   std::erase_if(pair.second,
+                                 [this](const EntitySuppressionEntry& entry) {
+                                   return !suppressed_entries_.contains(entry);
+                                 });
+                   return pair.second.empty();
+                 });
+
   observers_.Notify(&Observer::OnEntitySuppressionsChanged);
   return true;
 }

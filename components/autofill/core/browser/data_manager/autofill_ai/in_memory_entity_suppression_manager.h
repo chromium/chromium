@@ -8,10 +8,10 @@
 #include <vector>
 
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_entry.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace autofill {
 
@@ -34,7 +34,8 @@ class InMemoryEntitySuppressionManager : public EntitySuppressionManager {
   bool SuppressEntity(EntityInstance entity) override;
   bool UndoInSessionSuppressedEntity(
       const EntityInstance::EntityId& entity_id) override;
-  bool ClearAllSuppressions() override;
+  bool ClearSuppressions(base::Time delete_begin,
+                         base::Time delete_end) override;
   bool IsSuppressed(const EntityInstance& entity) const override;
 
   base::WeakPtr<syncer::DataTypeControllerDelegate> GetSyncControllerDelegate()
@@ -43,8 +44,9 @@ class InMemoryEntitySuppressionManager : public EntitySuppressionManager {
  private:
   base::ObserverList<Observer> observers_;
 
-  // Set storing representations of suppressed merge constraint sets.
-  absl::flat_hash_set<EntitySuppressionEntry> suppressed_entries_;
+  // Map storing representations of suppressed merge constraint sets and their
+  // creation timestamps.
+  absl::flat_hash_map<EntitySuppressionEntry, base::Time> suppressed_entries_;
   absl::flat_hash_map<EntityInstance::EntityId,
                       std::vector<EntitySuppressionEntry>>
       suppressed_entries_by_entity_id_;
