@@ -441,9 +441,7 @@ TEST_F(BrowserActuatorFcmIntegrationTest,
       browser_actuator::BrowserActuatorServiceFactory::GetForProfile(
           profile_.get());
   ASSERT_NE(service, nullptr);
-  EXPECT_NE(
-      service->GetFactory(browser_actuator::FactoryId::kSessionStreamRecorder),
-      nullptr);
+  EXPECT_NE(service->GetStreamRecorderFactory(), nullptr);
 
   // 3. Verify the started stream delivers subsequent downstream CloseSession.
   browser_actuator::ActuatorDownstreamMessage close_msg;

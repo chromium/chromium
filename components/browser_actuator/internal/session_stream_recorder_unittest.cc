@@ -47,18 +47,6 @@ class FakeTransportSession : public TransportSession {
   std::string session_id_;
 };
 
-class FakeOtherFactory : public TransportHandlerFactory {
- public:
-  FactoryId GetFactoryId() const override { return FactoryId::kControl; }
-  std::vector<PayloadType> GetSupportedPayloadTypes() const override {
-    return {};
-  }
-  std::unique_ptr<TransportHandler> OnNewSession(
-      TransportSession* session) override {
-    return nullptr;
-  }
-};
-
 class TestObserver : public SessionStreamRecorder::Observer {
  public:
   void OnDownstreamMessage(base::TimeTicks timestamp,
@@ -901,16 +889,6 @@ TEST(SessionStreamRecorderFactoryTest, GetAllSessionsIncludesUpstreamEvents) {
   EXPECT_EQ(sessions[0].total_upstream_messages, 1u);
   ASSERT_EQ(sessions[0].events.size(), 1u);
   EXPECT_FALSE(sessions[0].events[0].is_downstream);
-}
-
-TEST(SessionStreamRecorderFactoryTest, FromFactory) {
-  EXPECT_EQ(SessionStreamRecorderFactory::FromFactory(nullptr), nullptr);
-
-  SessionStreamRecorderFactory factory;
-  EXPECT_EQ(SessionStreamRecorderFactory::FromFactory(&factory), &factory);
-
-  FakeOtherFactory other_factory;
-  EXPECT_EQ(SessionStreamRecorderFactory::FromFactory(&other_factory), nullptr);
 }
 
 }  // namespace

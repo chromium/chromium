@@ -166,9 +166,7 @@ class BrowserActuatorIntegrationTest : public testing::Test {
     service_ = std::make_unique<BrowserActuatorServiceImpl>(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_),
-        identity_test_env_.identity_manager(),
-        /*extra_factories=*/
-        std::vector<std::unique_ptr<TransportHandlerFactory>>{});
+        identity_test_env_.identity_manager());
   }
 
   // Waits for an upstream HTTP POST request, parses its protobuf body into
@@ -263,8 +261,8 @@ TEST_F(BrowserActuatorIntegrationTest,
   // Verify chrome://browser-actuator-internals SessionStreamRecorderFactory
   // records both the downstream StartSession message (via TransportHandler)
   // and the upstream StartSessionAck message (via TransportMessageObserver).
-  auto* recorder_factory = static_cast<SessionStreamRecorderFactory*>(
-      service_->GetFactory(FactoryId::kSessionStreamRecorder));
+  SessionStreamRecorderFactory* recorder_factory =
+      service_->GetStreamRecorderFactory();
   ASSERT_NE(recorder_factory, nullptr);
   base::DictValue dump = recorder_factory->ExportAllSessionsAsValue();
   const base::ListValue* sessions = dump.FindList("sessions");
@@ -339,8 +337,8 @@ TEST_F(BrowserActuatorIntegrationTest, DownstreamCloseSessionDestroysSession) {
   ASSERT_TRUE(WaitFor(
       [&]() { return service_->GetSession("session-to-close") == nullptr; }));
 
-  auto* recorder_factory = static_cast<SessionStreamRecorderFactory*>(
-      service_->GetFactory(FactoryId::kSessionStreamRecorder));
+  SessionStreamRecorderFactory* recorder_factory =
+      service_->GetStreamRecorderFactory();
   ASSERT_NE(recorder_factory, nullptr);
   base::DictValue dump = recorder_factory->ExportAllSessionsAsValue();
   const base::ListValue* sessions = dump.FindList("sessions");

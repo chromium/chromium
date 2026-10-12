@@ -7,14 +7,12 @@
 
 #include <string_view>
 
-#include "components/browser_actuator/public/common.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace browser_actuator {
 
 class SessionStreamRecorderFactory;
 class TransportChannel;
-class TransportHandlerFactory;
 class TransportSession;
 
 // Service that provides browser actuation capabilities.
@@ -38,17 +36,6 @@ class BrowserActuatorService : public KeyedService {
   // Gets an existing transport session for session_id, or nullptr if none
   // exists.
   virtual TransportSession* GetSession(std::string_view session_id) = 0;
-
-  // Returns the extra handler factory owned by this service with the given
-  // `id`, or nullptr if no such factory is owned by this service.
-  //
-  // This accessor is intended for embedder-layer diagnostic consumers
-  // (specifically chrome://browser-actuator-internals) that need to retrieve
-  // concrete factories (such as SessionStreamRecorderFactory) injected into
-  // the service at construction time without //components needing to know
-  // embedder-layer concrete types. Callers that need the concrete type must
-  // downcast and must own the `FactoryId` that identifies it.
-  virtual TransportHandlerFactory* GetFactory(FactoryId id) = 0;
 
   // Returns the session stream recorder factory owned by this service, or
   // nullptr if session recording is not enabled.

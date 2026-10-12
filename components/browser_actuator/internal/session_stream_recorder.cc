@@ -299,16 +299,6 @@ SessionStreamRecorderFactory::~SessionStreamRecorderFactory() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-// static
-SessionStreamRecorderFactory* SessionStreamRecorderFactory::FromFactory(
-    TransportHandlerFactory* factory) {
-  if (!factory ||
-      factory->GetFactoryId() != FactoryId::kSessionStreamRecorder) {
-    return nullptr;
-  }
-  return static_cast<SessionStreamRecorderFactory*>(factory);
-}
-
 FactoryId SessionStreamRecorderFactory::GetFactoryId() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return FactoryId::kSessionStreamRecorder;

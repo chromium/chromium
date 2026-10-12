@@ -186,11 +186,6 @@ class SessionStreamRecorderFactory : public TransportHandlerFactory,
   SessionStreamRecorderFactory& operator=(const SessionStreamRecorderFactory&) =
       delete;
 
-  // Narrows a factory obtained from BrowserActuatorService::GetFactory().
-  // Returns nullptr if `factory` is null or is not a recorder factory.
-  static SessionStreamRecorderFactory* FromFactory(
-      TransportHandlerFactory* factory);
-
   // TransportHandlerFactory implementation:
   FactoryId GetFactoryId() const override;
   std::vector<PayloadType> GetSupportedPayloadTypes() const override;
