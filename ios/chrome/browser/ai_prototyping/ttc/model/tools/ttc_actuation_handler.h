@@ -17,8 +17,8 @@ namespace actor {
 class ActorService;
 }  // namespace actor
 
-@class TTCActuationRequest;
-@class TTCActuationResponse;
+struct TtcActuationRequest;
+struct TtcActuationResponse;
 
 // The handler for TTC actuations, bridging incoming actuation
 // requests to the Chromium Actor Service orchestration layer.
@@ -55,10 +55,11 @@ class ActorService;
 // @param request The actuation request containing action protos.
 // @param taskID The ID of the task to execute actions within.
 // @param completionBlock Invoked with the execution response.
-- (void)dispatchActuationRequest:(TTCActuationRequest*)request
+- (void)dispatchActuationRequest:(const TtcActuationRequest&)request
                        forTaskID:(actor::ActorTaskId)taskID
                  completionBlock:
-                     (void (^)(TTCActuationResponse* response))completionBlock;
+                     (void (^)(const TtcActuationResponse& response))
+                         completionBlock;
 
 // Stops the task identified by `taskID` with the specified `reason` and
 // releases its tab binding. If an actuation request is currently in progress

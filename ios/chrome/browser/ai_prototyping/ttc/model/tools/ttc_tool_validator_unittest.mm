@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ai_prototyping/ttc/model/tools/ttc_tool_validator.h"
 
+#import <optional>
 #import <string>
 #import <utility>
 #import <vector>
@@ -13,7 +14,6 @@
 #import "ios/chrome/browser/ai_prototyping/ttc/model/tools/ttc_actuation_data_types.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/tools/ttc_tool_definitions.h"
 #import "testing/gtest/include/gtest/gtest.h"
-#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
 namespace {
@@ -135,20 +135,19 @@ TEST_F(TtcToolValidatorTest, TestUrlValidation) {
   EXPECT_TRUE(result.has_value());
 }
 
-// Tests creation of TTCActuationRequest from single tool call.
+// Tests creation of TtcActuationRequest from single tool call.
 TEST_F(TtcToolValidatorTest, TestCreateActuationRequestSingle) {
   base::DictValue open_url_args;
   open_url_args.Set("url", "https://example.com");
   auto request_result = TtcToolValidator::CreateActuationRequest(
       ttc::kToolOpenUrl, open_url_args, "call_single");
   ASSERT_TRUE(request_result.has_value());
-  TTCActuationRequest* request = request_result.value();
-  EXPECT_NSEQ(request.callID, @"call_single");
-  ASSERT_EQ(request.actionProtos.count, 1u);
+  const TtcActuationRequest& request = request_result.value();
+  EXPECT_EQ(request.call_id(), "call_single");
+  ASSERT_EQ(request.action_protos.size(), 1u);
 
   optimization_guide::proto::Action action;
-  NSData* data = request.actionProtos[0];
-  ASSERT_TRUE(action.ParseFromArray([data bytes], [data length]));
+  ASSERT_TRUE(action.ParseFromString(request.action_protos[0]));
   EXPECT_TRUE(action.has_navigate());
   EXPECT_EQ(action.navigate().url(), "https://example.com/");
 
@@ -157,28 +156,24 @@ TEST_F(TtcToolValidatorTest, TestCreateActuationRequestSingle) {
   auto back_result = TtcToolValidator::CreateActuationRequest(
       ttc::kToolGoBack, empty_args, "call_back");
   ASSERT_TRUE(back_result.has_value());
-  TTCActuationRequest* back_request = back_result.value();
-  ASSERT_EQ(back_request.actionProtos.count, 1u);
+  const TtcActuationRequest& back_request = back_result.value();
+  ASSERT_EQ(back_request.action_protos.size(), 1u);
   optimization_guide::proto::Action back_action;
-  ASSERT_TRUE(
-      back_action.ParseFromArray([back_request.actionProtos[0] bytes],
-                                 [back_request.actionProtos[0] length]));
+  ASSERT_TRUE(back_action.ParseFromString(back_request.action_protos[0]));
   EXPECT_TRUE(back_action.has_back());
 
   // Forward tool request.
   auto forward_result = TtcToolValidator::CreateActuationRequest(
       ttc::kToolGoForward, empty_args, "call_forward");
   ASSERT_TRUE(forward_result.has_value());
-  TTCActuationRequest* forward_request = forward_result.value();
-  ASSERT_EQ(forward_request.actionProtos.count, 1u);
+  const TtcActuationRequest& forward_request = forward_result.value();
+  ASSERT_EQ(forward_request.action_protos.size(), 1u);
   optimization_guide::proto::Action forward_action;
-  ASSERT_TRUE(
-      forward_action.ParseFromArray([forward_request.actionProtos[0] bytes],
-                                    [forward_request.actionProtos[0] length]));
+  ASSERT_TRUE(forward_action.ParseFromString(forward_request.action_protos[0]));
   EXPECT_TRUE(forward_action.has_forward());
 }
 
-// Tests creation of TTCActuationRequest from batch of tool calls.
+// Tests creation of TtcActuationRequest from batch of tool calls.
 TEST_F(TtcToolValidatorTest, TestCreateActuationRequestBatch) {
   // Empty tool calls rejected.
   base::ListValue empty_calls;
@@ -214,68 +209,54 @@ TEST_F(TtcToolValidatorTest, TestCreateActuationRequestBatch) {
   auto request_result =
       TtcToolValidator::CreateActuationRequestWithToolCalls(tool_calls);
   ASSERT_TRUE(request_result.has_value());
-  TTCActuationRequest* request = request_result.value();
-  EXPECT_NSEQ(request.callID, @"call_batch_1");
-  ASSERT_EQ(request.callIDs.count, 2u);
-  EXPECT_NSEQ(request.callIDs[0], @"call_batch_1");
-  EXPECT_NSEQ(request.callIDs[1], @"call_batch_2");
-  ASSERT_EQ(request.actionProtos.count, 2u);
+  const TtcActuationRequest& request = request_result.value();
+  EXPECT_EQ(request.call_id(), "call_batch_1");
+  ASSERT_EQ(request.call_ids.size(), 2u);
+  EXPECT_EQ(request.call_ids[0], "call_batch_1");
+  EXPECT_EQ(request.call_ids[1], "call_batch_2");
+  ASSERT_EQ(request.action_protos.size(), 2u);
 
   optimization_guide::proto::Action action1;
-  ASSERT_TRUE(action1.ParseFromArray([request.actionProtos[0] bytes],
-                                     [request.actionProtos[0] length]));
+  ASSERT_TRUE(action1.ParseFromString(request.action_protos[0]));
   EXPECT_TRUE(action1.has_navigate());
   EXPECT_EQ(action1.navigate().url(), "https://google.com/");
 
   optimization_guide::proto::Action action2;
-  ASSERT_TRUE(action2.ParseFromArray([request.actionProtos[1] bytes],
-                                     [request.actionProtos[1] length]));
+  ASSERT_TRUE(action2.ParseFromString(request.action_protos[1]));
   EXPECT_TRUE(action2.has_back());
 }
 
-// Tests TTCActuationResponse initialization and property access.
-TEST_F(TtcToolValidatorTest, TestTTCActuationResponse) {
-  @autoreleasepool {
-    NSData* dummyResult =
-        [@"actions_result_data" dataUsingEncoding:NSUTF8StringEncoding];
-    TTCActuationResponse* response = [[TTCActuationResponse alloc]
-             initWithResultCode:actor::mojom::ActionResultCode::kOk
-                   errorMessage:nil
-        serializedActionsResult:dummyResult
-                         callID:@"call_123"];
+// Tests TtcActuationResponse initialization and field access.
+TEST_F(TtcToolValidatorTest, TestTtcActuationResponse) {
+  TtcActuationResponse response(actor::mojom::ActionResultCode::kOk,
+                                std::string(), "call_123");
 
-    EXPECT_EQ(response.resultCode, actor::mojom::ActionResultCode::kOk);
-    EXPECT_NSEQ(response.errorMessage, nil);
-    EXPECT_NSEQ(response.serializedActionsResult, dummyResult);
-    EXPECT_NSEQ(response.callID, @"call_123");
+  EXPECT_EQ(response.result_code, actor::mojom::ActionResultCode::kOk);
+  EXPECT_TRUE(response.error_message.empty());
+  EXPECT_EQ(response.call_id, "call_123");
 
-    // Convenience error response without serialized result proto.
-    TTCActuationResponse* errorResponse = [[TTCActuationResponse alloc]
-        initWithResultCode:actor::mojom::ActionResultCode::kArgumentsInvalid
-              errorMessage:@"Something went wrong"
-                    callID:@"call_error"];
+  TtcActuationResponse error_response(
+      actor::mojom::ActionResultCode::kArgumentsInvalid, "Something went wrong",
+      "call_error");
 
-    EXPECT_EQ(errorResponse.resultCode,
-              actor::mojom::ActionResultCode::kArgumentsInvalid);
-    EXPECT_NSEQ(errorResponse.errorMessage, @"Something went wrong");
-    EXPECT_NSEQ(errorResponse.serializedActionsResult, nil);
-    EXPECT_NSEQ(errorResponse.callID, @"call_error");
-  }
+  EXPECT_EQ(error_response.result_code,
+            actor::mojom::ActionResultCode::kArgumentsInvalid);
+  EXPECT_EQ(error_response.error_message, "Something went wrong");
+  EXPECT_EQ(error_response.call_id, "call_error");
 }
 
-// Tests TTCActuationRequest batch call IDs accessor.
-TEST_F(TtcToolValidatorTest, TestTTCActuationRequestBatchCallIDs) {
-  @autoreleasepool {
-    NSArray<NSString*>* callIDs = @[ @"call_1", @"call_2", @"call_3" ];
-    TTCActuationRequest* request =
-        [[TTCActuationRequest alloc] initWithActionProtos:@[]
-                                               taskUpdate:@"In progress"
-                                                  callIDs:callIDs];
+// Tests TtcActuationRequest batch call IDs accessor.
+TEST_F(TtcToolValidatorTest, TestTtcActuationRequestBatchCallIDs) {
+  std::vector<std::string> call_ids = {"call_1", "call_2", "call_3"};
+  TtcActuationRequest request({}, "In progress", call_ids);
 
-    EXPECT_NSEQ(request.callID, @"call_1");
-    EXPECT_NSEQ(request.callIDs, callIDs);
-    EXPECT_NSEQ(request.taskUpdate, @"In progress");
-  }
+  EXPECT_EQ(request.call_id(), "call_1");
+  EXPECT_EQ(request.call_ids, call_ids);
+  EXPECT_EQ(request.task_update, "In progress");
+
+  TtcActuationRequest empty_ids_request({}, "In progress",
+                                        std::vector<std::string>{});
+  EXPECT_EQ(empty_ids_request.call_id(), std::nullopt);
 }
 
 }  // namespace

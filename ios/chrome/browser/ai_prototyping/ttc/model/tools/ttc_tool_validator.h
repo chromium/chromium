@@ -5,14 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_AI_PROTOTYPING_TTC_MODEL_TOOLS_TTC_TOOL_VALIDATOR_H_
 #define IOS_CHROME_BROWSER_AI_PROTOTYPING_TTC_MODEL_TOOLS_TTC_TOOL_VALIDATOR_H_
 
-#import <Foundation/Foundation.h>
-
 #import <string>
 
 #import "base/types/expected.h"
 #import "base/values.h"
-
-@class TTCActuationRequest;
+#import "ios/chrome/browser/ai_prototyping/ttc/model/tools/ttc_actuation_data_types.h"
 
 namespace ttc {
 
@@ -31,10 +28,10 @@ inline constexpr char kErrorMessageUnknownTool[] = "Unknown tool name.";
 }  // namespace ttc
 
 // Validates incoming TTC tool calls and acts as an adapter constructing
-// `TTCActuationRequest` payloads for `TTCActuationHandler`.
+// `TtcActuationRequest` payloads for `TtcActuationHandler`.
 // Note: Generated `Action` protobufs intentionally do not include `tab_id` or
 // `window_id`; these runtime session identifiers are injected downstream by
-// `TTCActuationHandler` using active `WebState` tracking.
+// `TtcActuationHandler` using active `WebState` tracking.
 class TtcToolValidator {
  public:
   TtcToolValidator() = delete;
@@ -49,7 +46,7 @@ class TtcToolValidator {
 
   // Validates a tool call and creates an actuation request containing the
   // serialized `optimization_guide::proto::Action` proto.
-  static base::expected<TTCActuationRequest*, std::string>
+  static base::expected<TtcActuationRequest, std::string>
   CreateActuationRequest(const std::string& name,
                          const base::DictValue& arguments,
                          const std::string& call_id);
@@ -58,7 +55,7 @@ class TtcToolValidator {
   // request containing all serialized `optimization_guide::proto::Action`
   // protos. Each dictionary in `tool_calls` must contain `"name"`, `"id"`, and
   // optional `"args"`.
-  static base::expected<TTCActuationRequest*, std::string>
+  static base::expected<TtcActuationRequest, std::string>
   CreateActuationRequestWithToolCalls(const base::ListValue& tool_calls);
 };
 

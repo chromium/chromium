@@ -7,9 +7,9 @@
 #import <optional>
 #import <string>
 #import <utility>
+#import <vector>
 
 #import "base/strings/string_util.h"
-#import "base/strings/sys_string_conversions.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/tools/ttc_actuation_data_types.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/tools/ttc_tool_definitions.h"
@@ -25,8 +25,8 @@ constexpr char kUrlKey[] = "url";
 constexpr char kNewTabKey[] = "new_tab";
 
 // Task update strings.
-NSString* const kSingleToolTaskUpdate = @"Executing TTC tool";
-NSString* const kBatchToolTaskUpdate = @"Executing TTC tools";
+constexpr char kSingleToolTaskUpdate[] = "Executing TTC tool";
+constexpr char kBatchToolTaskUpdate[] = "Executing TTC tools";
 
 // Converts a boolean-like `base::Value` into an optional bool.
 std::optional<bool> ParseBooleanValue(const base::Value& value) {
@@ -71,11 +71,12 @@ optimization_guide::proto::Action BuildActionProto(
   return action;
 }
 
-// Serializes a protobuf action to `NSData`.
-NSData* SerializeActionProto(const optimization_guide::proto::Action& action) {
+// Serializes a protobuf action to `std::string`.
+std::string SerializeActionProto(
+    const optimization_guide::proto::Action& action) {
   std::string serialized;
   action.SerializeToString(&serialized);
-  return [NSData dataWithBytes:serialized.data() length:serialized.size()];
+  return serialized;
 }
 
 }  // namespace
@@ -119,7 +120,7 @@ base::expected<void, std::string> TtcToolValidator::ValidateToolCall(
 }
 
 // static
-base::expected<TTCActuationRequest*, std::string>
+base::expected<TtcActuationRequest, std::string>
 TtcToolValidator::CreateActuationRequest(const std::string& name,
                                          const base::DictValue& arguments,
                                          const std::string& call_id) {
@@ -129,24 +130,25 @@ TtcToolValidator::CreateActuationRequest(const std::string& name,
     return base::unexpected(validation.error());
   }
 
-  NSData* action_data = SerializeActionProto(BuildActionProto(name, arguments));
-  TTCActuationRequest* request = [[TTCActuationRequest alloc]
-      initWithActionProtos:@[ action_data ]
-                taskUpdate:kSingleToolTaskUpdate
-                    callID:base::SysUTF8ToNSString(call_id)];
-  return request;
+  std::vector<std::string> action_protos = {
+      SerializeActionProto(BuildActionProto(name, arguments)),
+  };
+  return TtcActuationRequest(std::move(action_protos), kSingleToolTaskUpdate,
+                             call_id);
 }
 
 // static
-base::expected<TTCActuationRequest*, std::string>
+base::expected<TtcActuationRequest, std::string>
 TtcToolValidator::CreateActuationRequestWithToolCalls(
     const base::ListValue& tool_calls) {
   if (tool_calls.empty()) {
     return base::unexpected(ttc::kErrorMessageEmptyToolCalls);
   }
 
-  NSMutableArray<NSData*>* action_protos = [NSMutableArray array];
-  NSMutableArray<NSString*>* call_ids = [NSMutableArray array];
+  std::vector<std::string> action_protos;
+  std::vector<std::string> call_ids;
+  action_protos.reserve(tool_calls.size());
+  call_ids.reserve(tool_calls.size());
   const base::DictValue empty_args;
 
   for (const base::Value& item : tool_calls) {
@@ -176,14 +178,11 @@ TtcToolValidator::CreateActuationRequestWithToolCalls(
       return base::unexpected(validation.error());
     }
 
-    [call_ids addObject:base::SysUTF8ToNSString(*call_id)];
-    [action_protos
-        addObject:SerializeActionProto(BuildActionProto(*name, *args))];
+    call_ids.push_back(*call_id);
+    action_protos.push_back(
+        SerializeActionProto(BuildActionProto(*name, *args)));
   }
 
-  TTCActuationRequest* request =
-      [[TTCActuationRequest alloc] initWithActionProtos:action_protos
-                                             taskUpdate:kBatchToolTaskUpdate
-                                                callIDs:call_ids];
-  return request;
+  return TtcActuationRequest(std::move(action_protos), kBatchToolTaskUpdate,
+                             std::move(call_ids));
 }

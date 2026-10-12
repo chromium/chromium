@@ -4,62 +4,54 @@
 
 #import "ios/chrome/browser/ai_prototyping/ttc/model/tools/ttc_actuation_data_types.h"
 
-@implementation TTCActuationRequest
+#import <optional>
+#import <utility>
 
-#pragma mark - Public
+TtcActuationRequest::TtcActuationRequest(std::vector<std::string> action_protos,
+                                         std::string task_update,
+                                         std::vector<std::string> call_ids)
+    : action_protos(std::move(action_protos)),
+      task_update(std::move(task_update)),
+      call_ids(std::move(call_ids)) {}
 
-- (instancetype)initWithActionProtos:(NSArray<NSData*>*)actionProtos
-                          taskUpdate:(NSString*)taskUpdate
-                             callIDs:(NSArray<NSString*>*)callIDs {
-  self = [super init];
-  if (self) {
-    _actionProtos = [actionProtos copy] ?: @[];
-    _taskUpdate = [taskUpdate copy];
-    _callIDs = [callIDs copy] ?: @[];
+TtcActuationRequest::TtcActuationRequest(std::vector<std::string> action_protos,
+                                         std::string task_update,
+                                         std::string call_id)
+    : action_protos(std::move(action_protos)),
+      task_update(std::move(task_update)) {
+  if (!call_id.empty()) {
+    call_ids.push_back(std::move(call_id));
   }
-  return self;
 }
 
-- (instancetype)initWithActionProtos:(NSArray<NSData*>*)actionProtos
-                          taskUpdate:(NSString*)taskUpdate
-                              callID:(NSString*)callID {
-  NSArray<NSString*>* callIDs = callID ? @[ callID ] : @[];
-  return [self initWithActionProtos:actionProtos
-                         taskUpdate:taskUpdate
-                            callIDs:callIDs];
-}
+TtcActuationRequest::TtcActuationRequest(const TtcActuationRequest&) = default;
+TtcActuationRequest& TtcActuationRequest::operator=(
+    const TtcActuationRequest&) = default;
+TtcActuationRequest::TtcActuationRequest(TtcActuationRequest&&) = default;
+TtcActuationRequest& TtcActuationRequest::operator=(TtcActuationRequest&&) =
+    default;
+TtcActuationRequest::~TtcActuationRequest() = default;
 
-- (NSString*)callID {
-  return _callIDs.firstObject ?: @"";
-}
-
-@end
-
-@implementation TTCActuationResponse
-
-#pragma mark - Public
-
-- (instancetype)initWithResultCode:(actor::mojom::ActionResultCode)resultCode
-                      errorMessage:(NSString*)errorMessage
-           serializedActionsResult:(NSData*)serializedActionsResult
-                            callID:(NSString*)callID {
-  self = [super init];
-  if (self) {
-    _resultCode = resultCode;
-    _errorMessage = [errorMessage copy];
-    _serializedActionsResult = [serializedActionsResult copy];
-    _callID = [callID copy];
+std::optional<std::string> TtcActuationRequest::call_id() const {
+  if (call_ids.empty()) {
+    return std::nullopt;
   }
-  return self;
+  return call_ids.front();
 }
 
-- (instancetype)initWithResultCode:(actor::mojom::ActionResultCode)resultCode
-                      errorMessage:(NSString*)errorMessage
-                            callID:(NSString*)callID {
-  return [self initWithResultCode:resultCode
-                     errorMessage:errorMessage
-          serializedActionsResult:nil
-                           callID:callID];
-}
+TtcActuationResponse::TtcActuationResponse(
+    actor::mojom::ActionResultCode result_code,
+    std::string error_message,
+    std::string call_id)
+    : result_code(result_code),
+      error_message(std::move(error_message)),
+      call_id(std::move(call_id)) {}
 
-@end
+TtcActuationResponse::TtcActuationResponse(const TtcActuationResponse&) =
+    default;
+TtcActuationResponse& TtcActuationResponse::operator=(
+    const TtcActuationResponse&) = default;
+TtcActuationResponse::TtcActuationResponse(TtcActuationResponse&&) = default;
+TtcActuationResponse& TtcActuationResponse::operator=(TtcActuationResponse&&) =
+    default;
+TtcActuationResponse::~TtcActuationResponse() = default;

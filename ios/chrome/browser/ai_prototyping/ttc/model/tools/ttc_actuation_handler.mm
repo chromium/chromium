@@ -35,23 +35,23 @@
 
 namespace {
 
-using ActuationCallback = base::OnceCallback<void(TTCActuationResponse*)>;
+using ActuationCallback = base::OnceCallback<void(const TtcActuationResponse&)>;
 
 struct ActiveActuation {
   ActuationCallback callback;
-  NSString* callID = nil;
+  std::string call_id;
 };
 
 // Message constants for internal actuation error reporting.
-NSString* const kActuationHandlerDisconnectedMessage =
-    @"Actuation handler disconnected.";
-NSString* const kTaskNotActiveOrStoppedMessage =
-    @"Task does not exist or has been stopped.";
-NSString* const kFailedToParseActionProtoMessage =
-    @"Failed to parse action proto.";
-NSString* const kEmptyActionSequenceMessage = @"Empty action sequence.";
-NSString* const kConcurrentActionSequenceMessage =
-    @"An action sequence is already in progress for this task.";
+constexpr char kActuationHandlerDisconnectedMessage[] =
+    "Actuation handler disconnected.";
+constexpr char kTaskNotActiveOrStoppedMessage[] =
+    "Task does not exist or has been stopped.";
+constexpr char kFailedToParseActionProtoMessage[] =
+    "Failed to parse action proto.";
+constexpr char kEmptyActionSequenceMessage[] = "Empty action sequence.";
+constexpr char kConcurrentActionSequenceMessage[] =
+    "An action sequence is already in progress for this task.";
 
 // Sets `tab_id` on `sub_action` if not already explicitly populated.
 template <typename SubAction>
@@ -193,11 +193,10 @@ void InjectDataIntoAction(optimization_guide::proto::Action& action,
   for (auto& [taskID, actuation] : callbacks) {
     if (actuation.callback) {
       std::move(actuation.callback)
-          .Run([[TTCActuationResponse alloc]
-              initWithResultCode:actor::mojom::ActionResultCode::
-                                     kExecutorDestroyed
-                    errorMessage:kActuationHandlerDisconnectedMessage
-                          callID:actuation.callID]);
+          .Run(TtcActuationResponse(
+              actor::mojom::ActionResultCode::kExecutorDestroyed,
+              kActuationHandlerDisconnectedMessage,
+              std::move(actuation.call_id)));
     }
   }
 }
@@ -234,73 +233,66 @@ void InjectDataIntoAction(optimization_guide::proto::Action& action,
   return taskID;
 }
 
-- (void)dispatchActuationRequest:(TTCActuationRequest*)request
+- (void)dispatchActuationRequest:(const TtcActuationRequest&)request
                        forTaskID:(actor::ActorTaskId)taskID
                  completionBlock:
-                     (void (^)(TTCActuationResponse* response))completionBlock {
+                     (void (^)(const TtcActuationResponse& response))
+                         completionBlock {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  CHECK(request);
   CHECK(completionBlock);
 
+  std::string callId = request.call_id().value_or(std::string());
   actor::ActorService* actorService = [self actorService];
   auto taskIt = _taskToWebStateIDMap.find(taskID);
   if (!actorService || taskIt == _taskToWebStateIDMap.end()) {
-    completionBlock([[TTCActuationResponse alloc]
-        initWithResultCode:actor::mojom::ActionResultCode::kTaskWentAway
-              errorMessage:kTaskNotActiveOrStoppedMessage
-                    callID:request.callID]);
+    completionBlock(TtcActuationResponse(
+        actor::mojom::ActionResultCode::kTaskWentAway,
+        kTaskNotActiveOrStoppedMessage, std::move(callId)));
     return;
   }
 
-  if (request.actionProtos.count == 0) {
-    completionBlock([[TTCActuationResponse alloc]
-        initWithResultCode:actor::mojom::ActionResultCode::kEmptyActionSequence
-              errorMessage:kEmptyActionSequenceMessage
-                    callID:request.callID]);
+  if (request.action_protos.empty()) {
+    completionBlock(TtcActuationResponse(
+        actor::mojom::ActionResultCode::kEmptyActionSequence,
+        kEmptyActionSequenceMessage, std::move(callId)));
     return;
   }
 
   if (_activeCallbacks.find(taskID) != _activeCallbacks.end()) {
-    completionBlock([[TTCActuationResponse alloc]
-        initWithResultCode:actor::mojom::ActionResultCode::
-                               kExecutionEngineExistingAction
-              errorMessage:kConcurrentActionSequenceMessage
-                    callID:request.callID]);
+    completionBlock(TtcActuationResponse(
+        actor::mojom::ActionResultCode::kExecutionEngineExistingAction,
+        kConcurrentActionSequenceMessage, std::move(callId)));
     return;
   }
 
   web::WebStateID webStateId = taskIt->second;
   std::vector<optimization_guide::proto::Action> actions;
-  actions.reserve(request.actionProtos.count);
+  actions.reserve(request.action_protos.size());
 
-  for (NSData* data in request.actionProtos) {
+  for (const std::string& protoBytes : request.action_protos) {
     optimization_guide::proto::Action action;
-    if (!action.ParseFromArray([data bytes], [data length])) {
-      completionBlock([[TTCActuationResponse alloc]
-          initWithResultCode:actor::mojom::ActionResultCode::kArgumentsInvalid
-                errorMessage:kFailedToParseActionProtoMessage
-                      callID:request.callID]);
+    if (!action.ParseFromString(protoBytes)) {
+      completionBlock(TtcActuationResponse(
+          actor::mojom::ActionResultCode::kArgumentsInvalid,
+          kFailedToParseActionProtoMessage, std::move(callId)));
       return;
     }
     InjectDataIntoAction(action, webStateId,
                          _browserID.value_or(SessionID::InvalidValue()));
-    actions.push_back(action);
+    actions.push_back(std::move(action));
   }
 
   _activeCallbacks[taskID] = {
       base::BindOnce(completionBlock),
-      request.callID,
+      std::move(callId),
   };
 
   __weak __typeof(self) weakSelf = self;
-  NSString* callID = request.callID;
 
   actorService->PerformActions(
-      taskID, actions, base::SysNSStringToUTF8(request.taskUpdate),
+      taskID, actions, request.task_update,
       base::BindOnce(^(actor::PerformActionsResult result) {
-        [weakSelf handlePerformActionsResult:result
-                                      taskID:taskID
-                                      callID:callID];
+        [weakSelf handlePerformActionsResult:result taskID:taskID];
       }));
 }
 
@@ -319,11 +311,10 @@ void InjectDataIntoAction(optimization_guide::proto::Action& action,
     ActiveActuation actuation = std::move(callbackIt->second);
     _activeCallbacks.erase(callbackIt);
     if (actuation.callback) {
-      TTCActuationResponse* response = [[TTCActuationResponse alloc]
-          initWithResultCode:actor::mojom::ActionResultCode::kTaskWentAway
-                errorMessage:kTaskNotActiveOrStoppedMessage
-                      callID:actuation.callID];
-      std::move(actuation.callback).Run(response);
+      std::move(actuation.callback)
+          .Run(TtcActuationResponse(
+              actor::mojom::ActionResultCode::kTaskWentAway,
+              kTaskNotActiveOrStoppedMessage, std::move(actuation.call_id)));
     }
   }
 
@@ -351,8 +342,7 @@ void InjectDataIntoAction(optimization_guide::proto::Action& action,
 }
 
 - (void)handlePerformActionsResult:(const actor::PerformActionsResult&)result
-                            taskID:(actor::ActorTaskId)taskID
-                            callID:(NSString*)callID {
+                            taskID:(actor::ActorTaskId)taskID {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
 
   auto it = _activeCallbacks.find(taskID);
@@ -376,13 +366,9 @@ void InjectDataIntoAction(optimization_guide::proto::Action& action,
   }
 
   if (actuation.callback) {
-    TTCActuationResponse* response = [[TTCActuationResponse alloc]
-        initWithResultCode:resultCode
-              errorMessage:errorMessage.empty()
-                               ? nil
-                               : base::SysUTF8ToNSString(errorMessage)
-                    callID:callID];
-    std::move(actuation.callback).Run(response);
+    std::move(actuation.callback)
+        .Run(TtcActuationResponse(resultCode, std::move(errorMessage),
+                                  std::move(actuation.call_id)));
   }
 }
 
