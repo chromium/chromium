@@ -48,6 +48,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/profile_deletion_observer.h"
+#include "chrome/test/base/profile_destruction_waiter.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
@@ -1179,8 +1180,9 @@ IN_PROC_BROWSER_TEST_F(ProfileManagerDestroyProfileBrowserTest,
   EXPECT_TRUE(profile_manager->IsValidProfile(&profile2));
 
   // Close the browser for profile2.
+  ProfileDestructionWaiter waiter(&profile2);
   CloseBrowserSynchronously(browser2);
-  content::RunAllTasksUntilIdle();
+  waiter.Wait();
 
   EXPECT_TRUE(profile_manager->IsValidProfile(&profile1));
   EXPECT_FALSE(profile_manager->IsValidProfile(&profile2));
