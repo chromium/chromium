@@ -1291,8 +1291,11 @@ class ApiTests extends ApiTestFixtureBase {
     const link = document.createElement('a');
     link.setAttribute('href', 'https://www.chromium.org');
     document.body.appendChild(link);
+    const isMac = (await this.host.getPlatform?.()) === Platform.MAC_OS ||
+        /Mac/.test(navigator.platform);
     link.dispatchEvent(new MouseEvent('click', {
-      ctrlKey: true,
+      ctrlKey: !isMac,
+      metaKey: isMac,
       bubbles: true,
       cancelable: true,
       view: window,
