@@ -166,18 +166,15 @@ scoped_refptr<StaticBitmapImage> AcceleratedStaticBitmapImage::CreateFromRaster(
     format = viz::SinglePlaneFormat::kRGBA_8888;
   }
 
-  const bool is_mappable_shared_image_allowed =
+  const bool is_scanout_supported =
       is_gpu_compositing_enabled &&
-      IsScanoutSupportedForCanvasWithFormat(format, capabilities);
+      IsScanoutSupportedForCanvasWithFormat(format, capabilities) &&
+      context_provider_wrapper->ContextProvider()
+          .SharedImageInterface()
+          ->GetCapabilities()
+          .supports_scanout_shared_images;
 
-  // If we cannot use overlay, we have to remove the scanout flag.
-  const auto& shared_image_caps = context_provider_wrapper->ContextProvider()
-                                      .SharedImageInterface()
-                                      ->GetCapabilities();
-  bool is_overlay_supported = is_mappable_shared_image_allowed &&
-                              shared_image_caps.supports_scanout_shared_images;
-
-  if (!is_overlay_supported) {
+  if (!is_scanout_supported) {
     shared_image_usage_flags.RemoveAll(gpu::SHARED_IMAGE_USAGE_SCANOUT);
   }
 
