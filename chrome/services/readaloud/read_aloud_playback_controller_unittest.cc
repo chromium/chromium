@@ -489,7 +489,7 @@ TEST_F(ReadAloudPlaybackControllerTest,
   mock_client_->WaitForDisconnect();
 }
 
-TEST_F(ReadAloudPlaybackControllerTest, SetTextContentNotifiesClientPaused) {
+TEST_F(ReadAloudPlaybackControllerTest, SetTextContentDoesNotEmitStateChange) {
   CreateSession();
   std::vector<read_aloud::mojom::TextSegmentPtr> segments;
   auto seg = read_aloud::mojom::TextSegment::New();
@@ -498,7 +498,8 @@ TEST_F(ReadAloudPlaybackControllerTest, SetTextContentNotifiesClientPaused) {
   segments.push_back(std::move(seg));
 
   controller_remote_->SetTextContent(std::move(segments));
-  mock_client_->WaitForStateChange(read_aloud::mojom::PlaybackState::kPaused);
+  FlushAll();
+  EXPECT_THAT(mock_client_->state_history(), testing::IsEmpty());
 }
 
 TEST_F(ReadAloudPlaybackControllerTest, SetTextContentRoutesOnTextChunkedIPC) {
@@ -570,7 +571,7 @@ TEST_F(ReadAloudPlaybackControllerTest, SetTextContentGapsAreValid) {
   segments.push_back(std::move(second_segment));
 
   controller_remote_->SetTextContent(std::move(segments));
-  mock_client_->WaitForStateChange(read_aloud::mojom::PlaybackState::kPaused);
+  mock_client_->WaitForChunks();
 
   // Seeking to canonical timeline chunk 1 (from the second segment) succeeds.
   controller_remote_->SeekToWord(1, 0);
@@ -630,8 +631,7 @@ TEST_F(ReadAloudPlaybackControllerTest,
   FlushAll();
 
   EXPECT_EQ(synthesis_requests, 0);
-  EXPECT_EQ(mock_client_->last_state(),
-            read_aloud::mojom::PlaybackState::kPaused);
+  EXPECT_THAT(mock_client_->state_history(), testing::IsEmpty());
 }
 
 TEST_F(ReadAloudPlaybackControllerTest, SeekToWordEndOfStringIsValid) {
@@ -1687,11 +1687,10 @@ TEST_F(ReadAloudPlaybackControllerTest,
   auto [success, title] = future.Take();
   EXPECT_TRUE(success);
   EXPECT_EQ(title, "Test Overview Title");
-  // Loading new content resets internal queues and
-  // defaults the engine to Paused.
+  // Loading new content resets internal queues without emitting a spurious
+  // state change before Play().
   FlushAll();
-  EXPECT_EQ(mock_client_->last_state(),
-            read_aloud::mojom::PlaybackState::kPaused);
+  EXPECT_THAT(mock_client_->state_history(), testing::IsEmpty());
 }
 
 TEST_F(ReadAloudPlaybackControllerTest, SetOverviewContentFailureReportsError) {

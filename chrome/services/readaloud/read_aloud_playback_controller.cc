@@ -231,11 +231,7 @@ void ReadAloudPlaybackController::SetTextContent(
     client_->OnTextChunked(std::move(chunk_strings));
   }
 
-  if (!MaybePlayOnReady()) {
-    // When new text content is loaded, playback defaults to paused until the
-    // user explicitly triggers Play(). Notify client to synchronize UI state.
-    SetPlaybackState(read_aloud::mojom::PlaybackState::kPaused);
-  }
+  MaybePlayOnReady();
 }
 
 void ReadAloudPlaybackController::SetOverviewContent(
