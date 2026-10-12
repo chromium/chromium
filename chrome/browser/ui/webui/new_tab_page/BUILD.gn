@@ -39,15 +39,19 @@ source_set("new_tab_page") {
   ]
   public_deps = [
     ":mojo_bindings",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/new_tab_page",
     "//chrome/browser/search/background",
     "//chrome/browser/themes",
     "//chrome/browser/ui/webui/customize_buttons:mojo_bindings",
     "//chrome/browser/ui/webui/new_tab_page/action_chips",
     "//chrome/browser/ui/webui/new_tab_page/action_chips:mojo_bindings",
+    "//chrome/common",
+    "//chrome/common:constants",
     "//components/page_image_service/mojom:mojo_bindings",
     "//components/themes",
+    "//components/user_education/common",
+    "//ui/base/interaction",
+    "//ui/native_theme",
     "//ui/webui",
     "//ui/webui/resources/cr_components/composebox:mojo_bindings",
     "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
@@ -70,7 +74,6 @@ source_set("impl") {
     "untrusted_source.cc",
   ]
   public = [ "new_tab_page_handler.h" ]
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
     ":mojo_bindings",
     ":new_tab_page",
@@ -158,7 +161,6 @@ source_set("impl") {
     "//components/sync",
     "//components/tabs:public",
     "//components/themes",
-    "//components/user_education/common",
     "//content/public/browser",
     "//google_apis",
     "//media",
@@ -172,7 +174,6 @@ source_set("impl") {
     "//third_party/re2",
     "//ui/actions",
     "//ui/base",
-    "//ui/base/interaction",
     "//ui/color",
     "//ui/gfx/codec",
     "//ui/native_theme",

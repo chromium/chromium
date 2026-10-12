@@ -29,12 +29,13 @@ source_set("print_preview") {
   ]
   public_deps = [
     "//base",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/printing",
     "//chrome/browser/ui/webui",
+    "//chrome/common:buildflags",
     "//chrome/services/printing/public/mojom",
     "//components/printing/common:mojo_interfaces",
     "//components/services/print_compositor/public/mojom",
+    "//components/signin/public/identity_manager",
     "//content/public/browser",
     "//extensions/browser",
     "//extensions/common",
@@ -73,7 +74,6 @@ source_set("impl") {
     "print_preview_utils.cc",
     "printer_handler.cc",
   ]
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
     ":print_preview",
     "//base",
@@ -154,6 +154,7 @@ source_set("impl") {
     ]
     deps += [
       "//ash/constants",
+      "//ash/webui/settings/public/constants:mojom",
       "//chrome/browser:browser_process_platform_part",
       "//chrome/browser/ash/drive",
       "//chrome/browser/ash/printing",

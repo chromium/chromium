@@ -26,15 +26,16 @@ source_set("iwa_dev") {
     "iwa_dev_ui.cc",
     "iwa_dev_ui.h",
   ]
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
     ":mojo_bindings",
     "//base",
     "//chrome/browser:file_select_helper",
+    "//chrome/browser/policy",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/iwa_dev:resources",
     "//chrome/browser/web_applications",
     "//chrome/common",
+    "//components/policy/core/browser",
     "//components/webapps/isolated_web_apps",
     "//content/public/browser",
     "//ui/base",

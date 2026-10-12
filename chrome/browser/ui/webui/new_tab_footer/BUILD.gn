@@ -37,10 +37,10 @@ source_set("impl") {
     "new_tab_footer_helper.cc",
     "new_tab_footer_ui.cc",
   ]
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
     ":new_tab_footer",
     "//chrome/browser:browser_process",
+    "//chrome/browser/enterprise",
     "//chrome/browser/enterprise/browser_management:management_identity",
     "//chrome/browser/extensions",
     "//chrome/browser/new_tab_page",

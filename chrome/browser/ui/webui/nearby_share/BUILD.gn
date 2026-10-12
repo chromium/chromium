@@ -13,10 +13,13 @@ static_library("nearby_share") {
     "shared_resources.cc",
     "shared_resources.h",
   ]
-
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
+  public_deps = [
+    "//chrome/common",
+    "//ui/views/controls/webview",
+  ]
   deps = [
+    "//chrome/app:generated_resources",
+    "//chrome/app/theme:theme_resources",
     "//chrome/browser/nearby_sharing",
     "//chrome/browser/nearby_sharing:share_target",
     "//chrome/browser/nearby_sharing/common",

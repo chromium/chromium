@@ -46,8 +46,6 @@ source_set("top_chrome") {
 # interface. This does have circular dependencies with //chrome/browser and
 # //chrome/browser/ui.
 source_set("impl") {
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   sources = [
     "top_chrome_web_ui_controller.cc",
     "top_chrome_webui_config.cc",
@@ -61,6 +59,7 @@ source_set("impl") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/webui:log_web_ui_url",
     "//chrome/common",
+    "//components/input",
     "//components/zoom",
     "//content/public/browser",
     "//ui/base",

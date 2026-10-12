@@ -37,10 +37,7 @@ if (is_win || is_mac || is_linux || is_chromeos) {
 
   source_set("profile_menu_coordinator_impl") {
     sources = [ "profile_menu_coordinator.cc" ]
-    public_deps = [
-      ":profile_menu_coordinator",
-      "//chrome/browser:browser_public_dependencies",
-    ]
+    public_deps = [ ":profile_menu_coordinator" ]
     deps = [
       ":avatar_toolbar_button",
       ":incognito_menu_view",
@@ -189,10 +186,7 @@ if (is_win || is_mac || is_linux || is_chromeos) {
 
   source_set("signin_view_controller_delegate_views_impl") {
     sources = [ "signin_view_controller_delegate_views.cc" ]
-    public_deps = [
-      ":signin_view_controller_delegate_views",
-      "//chrome/browser:browser_public_dependencies",
-    ]
+    public_deps = [ ":signin_view_controller_delegate_views" ]
     deps = [
       "//base",
       "//chrome/browser:browser_process",
@@ -677,7 +671,6 @@ if (toolkit_views) {
 if (enable_dice_support) {
   source_set("cross_device_signin_qr_bubble_views") {
     sources = [ "cross_device_signin_qr_bubble_views.cc" ]
-    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
     deps = [
       ":avatar_toolbar_button",
       "//base",
@@ -755,6 +748,7 @@ source_set("batch_upload_dialog_view") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/profiles",
     "//chrome/browser/ui/webui/signin:batch_upload",
+    "//chrome/common",
     "//chrome/common:constants",
     "//components/constrained_window",
     "//components/input",
@@ -848,10 +842,7 @@ if (is_win || is_mac || is_linux) {
 if (enable_dice_support) {
   source_set("profile_picker_feature_promo_controller_impl") {
     sources = [ "profile_picker_feature_promo_controller.cc" ]
-    public_deps = [
-      ":profile_picker_feature_promo_controller",
-      "//chrome/browser:browser_public_dependencies",
-    ]
+    public_deps = [ ":profile_picker_feature_promo_controller" ]
     deps = [
       ":profile_picker_view",
       "//base",
@@ -874,10 +865,7 @@ if (enable_dice_support) {
 
   source_set("profile_picker_widget_impl") {
     sources = [ "profile_picker_widget.cc" ]
-    public_deps = [
-      ":profile_picker_widget",
-      "//chrome/browser:browser_public_dependencies",
-    ]
+    public_deps = [ ":profile_picker_widget" ]
     deps = [
       ":profile_picker_view",
       "//base",
@@ -905,10 +893,7 @@ if (enable_dice_support) {
 
   source_set("profile_picker_sign_in_provider_impl") {
     sources = [ "profile_picker_sign_in_provider.cc" ]
-    public_deps = [
-      ":profile_picker_sign_in_provider",
-      "//chrome/browser:browser_public_dependencies",
-    ]
+    public_deps = [ ":profile_picker_sign_in_provider" ]
     deps = [
       ":profile_management_types",
       ":profile_picker_utils",
@@ -958,10 +943,7 @@ if (enable_dice_support) {
 
   source_set("profile_picker_reauth_provider_impl") {
     sources = [ "profile_picker_reauth_provider.cc" ]
-    public_deps = [
-      ":profile_picker_reauth_provider",
-      "//chrome/browser:browser_public_dependencies",
-    ]
+    public_deps = [ ":profile_picker_reauth_provider" ]
     deps = [
       ":profile_management_types",
       ":profile_picker_sign_in_provider",
@@ -994,10 +976,7 @@ if (enable_dice_support) {
 
   source_set("profile_management_step_controller_impl") {
     sources = [ "profile_management_step_controller.cc" ]
-    public_deps = [
-      ":profile_management_step_controller",
-      "//chrome/browser:browser_public_dependencies",
-    ]
+    public_deps = [ ":profile_management_step_controller" ]
     deps = [
       ":profile_management_types",
       ":profile_picker_post_sign_in_adapter",
@@ -1055,10 +1034,7 @@ if (enable_dice_support) {
 
   source_set("dice_web_signin_interception_bubble_view_impl") {
     sources = [ "dice_web_signin_interception_bubble_view.cc" ]
-    public_deps = [
-      ":dice_web_signin_interception_bubble_view",
-      "//chrome/browser:browser_public_dependencies",
-    ]
+    public_deps = [ ":dice_web_signin_interception_bubble_view" ]
     deps = [
       "//base",
       "//chrome/app:branded_strings",
@@ -1126,7 +1102,6 @@ if (enable_dice_support) {
     ]
     deps = [
       ":profile_management_types",
-      "//chrome/browser:browser_public_dependencies",
       "//chrome/browser/enterprise",
       "//chrome/browser/regional_capabilities",
       "//chrome/browser/signin",
@@ -1211,10 +1186,7 @@ if (enable_dice_support) {
 
   source_set("profile_picker_flow_controller_impl") {
     sources = [ "profile_picker_flow_controller.cc" ]
-    public_deps = [
-      ":profile_picker_flow_controller",
-      "//chrome/browser:browser_public_dependencies",
-    ]
+    public_deps = [ ":profile_picker_flow_controller" ]
     deps = [
       ":avatar_toolbar_button",
       ":profile_customization_bubble_sync_controller",
@@ -1268,10 +1240,7 @@ if (enable_dice_support) {
 
   source_set("first_run_flow_controller_impl") {
     sources = [ "first_run_flow_controller.cc" ]
-    public_deps = [
-      ":first_run_flow_controller",
-      "//chrome/browser:browser_public_dependencies",
-    ]
+    public_deps = [ ":first_run_flow_controller" ]
     deps = [
       ":profile_management_step_controller",
       ":profile_picker_flow_controller",
@@ -1303,6 +1272,7 @@ if (enable_dice_support) {
       "//chrome/common:channel_info",
       "//chrome/common:constants",
       "//components/application_locale_storage",
+      "//components/lens",
       "//components/prefs",
       "//components/signin/public/base",
       "//components/signin/public/identity_manager",

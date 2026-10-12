@@ -7,13 +7,15 @@ assert(!is_android)
 source_set("history") {
   public = [ "history_side_panel_ui.h" ]
   public_deps = [
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/history_clusters",
     "//chrome/browser/ui/webui/top_chrome",
+    "//chrome/common",
+    "//chrome/common:constants",
     "//components/page_image_service",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
     "//ui/webui/resources/cr_components/history:mojo_bindings",
+    "//ui/webui/resources/cr_components/history_embeddings:mojo_bindings",
   ]
 }
 

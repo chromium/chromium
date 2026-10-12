@@ -13,6 +13,7 @@ static_library("calculator_app") {
   deps = [
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications",
+    "//extensions/browser",
     "//extensions/common",
   ]
 }

@@ -15,7 +15,6 @@ if (!is_android) {
       "ntp_resource_cache.h",
       "ntp_resource_cache_factory.h",
     ]
-    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
     deps = [
       "//base",
       "//chrome/app:branded_strings",
@@ -23,6 +22,7 @@ if (!is_android) {
       "//chrome/app/theme:theme_resources",
       "//chrome/browser:browser_process",
       "//chrome/browser:browser_process_platform_part",
+      "//chrome/browser/enterprise/isolated_mode",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/signin",
       "//chrome/browser/themes",
@@ -64,7 +64,6 @@ if (!is_android) {
       "core_app_launcher_handler.h",
       "new_tab_ui.h",
     ]
-    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
     deps = [
       ":ntp_resource_cache",
       "//base",

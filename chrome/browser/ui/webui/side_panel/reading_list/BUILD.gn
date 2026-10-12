@@ -23,13 +23,16 @@ source_set("reading_list") {
   ]
   public_deps = [
     ":mojo_bindings",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ui/webui:webui_load_timer",
     "//chrome/browser/ui/webui/top_chrome",
+    "//chrome/common",
+    "//chrome/common:constants",
     "//components/reading_list/core",
     "//components/user_education/webui",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
+    "//ui/menus",
+    "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
   ]
 }
 

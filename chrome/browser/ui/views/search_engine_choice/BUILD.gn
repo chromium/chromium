@@ -21,6 +21,7 @@ source_set("search_engine_choice") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/search_engine_choice",
     "//chrome/browser/ui/webui/search_engine_choice",
+    "//chrome/common",
     "//chrome/common:constants",
     "//components/constrained_window",
     "//components/web_modal",

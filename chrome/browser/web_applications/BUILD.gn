@@ -711,7 +711,6 @@ source_set("web_applications") {
   public_deps = [
     ":app_id_helpers",
     ":iwa_types",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/web_applications/isolated_web_apps:isolated_web_apps_no_pwa_core_deps",
     "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
     "//chrome/browser/web_applications/proto",
@@ -733,6 +732,7 @@ source_set("sub_apps_service") {
   deps = [
     ":web_applications",
     "//base",
+    "//chrome/app:generated_resources",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/notifications",
     "//chrome/browser/permissions",

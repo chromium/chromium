@@ -19,10 +19,10 @@ if (!is_android) {
       "user_education_internals_page_handler_impl.h",
       "user_education_internals_ui.h",
     ]
-    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
     deps = [
       ":mojo_bindings",
       "//base",
+      "//chrome/browser:browser_process",
       "//chrome/browser:global_features",
       "//chrome/browser/feature_engagement",
       "//chrome/browser/profiles:profile",

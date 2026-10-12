@@ -94,7 +94,6 @@ source_set("impl") {
   public_deps = [
     ":jumplist",
     ":win",
-    "//chrome/browser:browser_public_dependencies",
   ]
 
   deps = [
@@ -103,6 +102,7 @@ source_set("impl") {
     "//chrome/app/theme:chrome_unscaled_resources_grit",
     "//chrome/browser:browser_process",
     "//chrome/browser:shell_integration",
+    "//chrome/browser/enterprise/isolated_mode",
     "//chrome/browser/favicon",
     "//chrome/browser/history",
     "//chrome/browser/policy:path_parser",
@@ -114,12 +114,14 @@ source_set("impl") {
     "//chrome/chrome_elf:constants",
     "//chrome/chrome_elf:dll_hash",
     "//chrome/chrome_elf:third_party_shared_defines",
+    "//chrome/common:channel_info",
     "//chrome/common:constants",
     "//chrome/common:version_header",
     "//chrome/install_static:install_static_util",
     "//chrome/installer/util:with_no_strings",
     "//chrome/services/util_win/public/mojom",
     "//components/crash/core/common:crash_key",
+    "//components/enterprise/isolated_mode",
     "//components/favicon/core",
     "//components/policy/core/common",
     "//components/prefs",

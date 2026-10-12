@@ -24,9 +24,9 @@ source_set("new_tab_page_third_party") {
   ]
   public_deps = [
     ":mojo_bindings",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/themes",
     "//chrome/common",
+    "//content/public/browser",
     "//ui/webui",
   ]
 }
@@ -37,12 +37,12 @@ source_set("impl") {
     "new_tab_page_third_party_handler.cc",
     "new_tab_page_third_party_ui.cc",
   ]
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
     ":mojo_bindings",
     ":new_tab_page_third_party",
     "//base",
     "//chrome/app/theme:theme_resources",
+    "//chrome/browser:browser_features",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/new_tab_page_third_party:resources",
     "//chrome/browser/themes",

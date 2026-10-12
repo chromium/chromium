@@ -24,10 +24,12 @@ source_set("bookmarks") {
   ]
   public_deps = [
     ":mojo_bindings",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/bookmarks",
     "//chrome/browser/ui/webui:webui_load_timer",
     "//chrome/browser/ui/webui/top_chrome",
+    "//chrome/common",
+    "//chrome/common:constants",
+    "//components/commerce/core/mojom:mojo_bindings",
     "//components/page_image_service/mojom:mojo_bindings",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
@@ -42,6 +44,7 @@ source_set("impl") {
   public_deps = [ ":bookmarks" ]
   deps = [
     "//chrome/app:command_ids",
+    "//chrome/browser:browser_features",
     "//chrome/browser/bookmarks",
     "//chrome/browser/commerce",
     "//chrome/browser/enterprise/isolated_mode",
