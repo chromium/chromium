@@ -816,10 +816,10 @@ TEST_F(AccountPreviewMetricsRecorderTest,
   // 1st recording succeeds.
   recorder.RecordSwitchingHeuristicResult(result);
   histogram_tester.ExpectUniqueSample(
-      "Signin.SwitchingHeuristic.WouldShowPromo",
+      "Signin.SwitchingHeuristic.WouldShowPromo2",
       AccountSwitchingSelectionOutcome::kWouldShowLowPrimaryScore, 1);
   histogram_tester.ExpectUniqueSample(
-      "Signin.SwitchingHeuristic.WouldShowPromo.Profile1",
+      "Signin.SwitchingHeuristic.WouldShowPromo2.Profile1",
       AccountSwitchingSelectionOutcome::kWouldShowLowPrimaryScore, 1);
   EXPECT_EQ(pref_service()->GetTime(
                 prefs::kAccountPreviewSwitchingHeuristicLastRecordedPref),
@@ -827,19 +827,19 @@ TEST_F(AccountPreviewMetricsRecorderTest,
 
   // 2nd call immediately after is rate-limited.
   recorder.RecordSwitchingHeuristicResult(result);
-  histogram_tester.ExpectTotalCount("Signin.SwitchingHeuristic.WouldShowPromo",
+  histogram_tester.ExpectTotalCount("Signin.SwitchingHeuristic.WouldShowPromo2",
                                     1);
 
   // Fast forward 23 hours -> still rate-limited.
   task_environment_.FastForwardBy(base::Hours(23));
   recorder.RecordSwitchingHeuristicResult(result);
-  histogram_tester.ExpectTotalCount("Signin.SwitchingHeuristic.WouldShowPromo",
+  histogram_tester.ExpectTotalCount("Signin.SwitchingHeuristic.WouldShowPromo2",
                                     1);
 
   // Fast forward 2 more hours (total 25 hours) -> records again.
   task_environment_.FastForwardBy(base::Hours(2));
   recorder.RecordSwitchingHeuristicResult(result);
-  histogram_tester.ExpectTotalCount("Signin.SwitchingHeuristic.WouldShowPromo",
+  histogram_tester.ExpectTotalCount("Signin.SwitchingHeuristic.WouldShowPromo2",
                                     2);
 }
 

@@ -141,8 +141,11 @@ enum class AccountSwitchingSelectionOutcome {
   // Promo would not be shown: Preview data is missing (e.g. fetch failed) for
   // all regular secondary accounts.
   kWouldNotShowSecondaryMissingPreviewData = 11,
+  // Promo would not be shown: Primary account is signed in to another device
+  // (`has_other_devices()` is true).
+  kWouldNotShowPrimaryHasOtherDevices = 12,
 
-  kMaxValue = kWouldNotShowSecondaryMissingPreviewData,
+  kMaxValue = kWouldNotShowPrimaryHasOtherDevices,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:AccountSwitchingSelectionOutcome)
 
@@ -178,21 +181,23 @@ struct AccountSwitchingSelectionResult {
 //    otherwise `kWouldNotShowExternalAppPrimaryAccount`.
 // 5. Primary account must have preview data -> otherwise
 //    `kWouldNotShowPrimaryMissingPreviewData`.
-// 6. At least one regular secondary account must exist -> otherwise
+// 6. Primary account must not be signed in to another device -> otherwise
+//    `kWouldNotShowPrimaryHasOtherDevices`.
+// 7. At least one regular secondary account must exist -> otherwise
 //    `kWouldNotShowNoRegularSecondaryAccount`.
-// 7. At least one regular secondary account must have preview data -> otherwise
+// 8. At least one regular secondary account must have preview data -> otherwise
 //    `kWouldNotShowSecondaryMissingPreviewData`.
-// 8. At least one regular secondary account must be signed in to another
+// 9. At least one regular secondary account must be signed in to another
 //    device -> otherwise `kWouldNotShowNoSecondaryWithOtherDevices`.
-// 9. Primary account score must be below 6 -> otherwise
-//    `kWouldNotShowPrimaryExceedsUpperLimit`.
-// 10. Compare the highest-scoring cross-device regular secondary account (X)
-//    against the primary account score (Y):
-//    - For Y in {0, 2}: select secondary if X > Y
-//    (`kWouldShowLowPrimaryScore`).
-//    - For Y in {3, 5}: select secondary if X > 2 * Y
-//      (`kWouldShowDoubledPrimaryScore`).
-//    - Otherwise, `kWouldNotShowSecondaryDoesNotMeetThreshold`.
+// 10. Primary account score must be below 6 -> otherwise
+//     `kWouldNotShowPrimaryExceedsUpperLimit`.
+// 11. Compare the highest-scoring cross-device regular secondary account (X)
+//     against the primary account score (Y):
+//     - For Y in {0, 2}: select secondary if X > Y
+//       (`kWouldShowLowPrimaryScore`).
+//     - For Y in {3, 5}: select secondary if X > 2 * Y
+//       (`kWouldShowDoubledPrimaryScore`).
+//     - Otherwise, `kWouldNotShowSecondaryDoesNotMeetThreshold`.
 AccountSwitchingSelectionResult ComputeAccountSwitchingSelection(
     base::span<const AccountPreviewHeuristicContext> accounts);
 

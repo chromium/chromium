@@ -4550,7 +4550,7 @@ kept as long as profile signout is possible -->
   </summary>
 </histogram>
 
-<histogram name="Signin.SwitchingHeuristic.WouldShowPromo{ProfileIndex}"
+<histogram name="Signin.SwitchingHeuristic.WouldShowPromo2{ProfileIndex}"
     enum="AccountSwitchingSelectionOutcome" expires_after="2027-08-26">
   <owner>rsult@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -4560,6 +4560,10 @@ kept as long as profile signout is possible -->
     it would not be shown). Recorded once per day at most when the switching
     account selection is computed or updated for a profile (after preview data
     is fetched for all accounts).
+
+    Replaced Signin.SwitchingHeuristic.WouldShowPromo{ProfileIndex} in M157
+    after updating the heuristic to not offer switching when the primary account
+    is already signed in to another device.
 
     {ProfileIndex}
   </summary>

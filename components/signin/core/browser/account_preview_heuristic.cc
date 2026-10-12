@@ -404,6 +404,12 @@ AccountSwitchingSelectionResult ComputeAccountSwitchingSelection(
     return result;
   }
 
+  if (primary_account.has_other_devices()) {
+    result.outcome =
+        AccountSwitchingSelectionOutcome::kWouldNotShowPrimaryHasOtherDevices;
+    return result;
+  }
+
   bool has_regular_secondary = false;
   bool has_regular_secondary_with_preview_data = false;
   const AccountPreviewHeuristicContext* best_secondary = nullptr;

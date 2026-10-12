@@ -345,6 +345,7 @@ chromium-metrics-reviews@google.com.
   <int value="11"
       label="Would not show: Secondary accounts missing preview data (fetch
              failed)"/>
+  <int value="12" label="Would not show: Primary account has other devices"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/core/browser/account_preview_heuristic.h:AccountSwitchingSelectionOutcome) -->

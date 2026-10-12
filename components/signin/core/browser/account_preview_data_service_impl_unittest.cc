@@ -1245,7 +1245,7 @@ TEST_F(AccountPreviewDataServiceTest,
   run_loop.Run();
 
   histogram_tester.ExpectUniqueSample(
-      "Signin.SwitchingHeuristic.WouldShowPromo",
+      "Signin.SwitchingHeuristic.WouldShowPromo2",
       AccountSwitchingSelectionOutcome::
           kWouldNotShowNoSecondaryWithOtherDevices,
       1);
@@ -1274,7 +1274,7 @@ TEST_F(AccountPreviewDataServiceTest,
   run_loop.Run();
 
   histogram_tester.ExpectUniqueSample(
-      "Signin.SwitchingHeuristic.WouldShowPromo",
+      "Signin.SwitchingHeuristic.WouldShowPromo2",
       AccountSwitchingSelectionOutcome::kWouldNotShowNoPrimaryAccount, 1);
 }
 
@@ -1301,7 +1301,7 @@ TEST_F(AccountPreviewDataServiceTest,
   run_loop.Run();
 
   histogram_tester.ExpectUniqueSample(
-      "Signin.SwitchingHeuristic.WouldShowPromo",
+      "Signin.SwitchingHeuristic.WouldShowPromo2",
       AccountSwitchingSelectionOutcome::kWouldNotShowPrimaryMissingPreviewData,
       1);
 }
@@ -1349,6 +1349,43 @@ TEST_F(AccountPreviewDataServiceTest, GetPreferredAccountForSwitching) {
 }
 
 TEST_F(AccountPreviewDataServiceTest,
+       GetPreferredAccountForSwitchingNotOfferedWhenPrimaryHasOtherDevices) {
+  base::HistogramTester histogram_tester;
+
+  signin::WaitForRefreshTokensLoaded(identity_test_env_.identity_manager());
+
+  AllDataAvailableWaiter waiter(service_.get());
+  AccountInfo primary = identity_test_env_.MakePrimaryAccountAvailable(
+      "primary@gmail.com", ConsentLevel::kSignin);
+  AccountInfo secondary =
+      identity_test_env_.MakeAccountAvailable("secondary@gmail.com");
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  identity_test_env_.SetCookieAccounts(
+      {{std::string(primary.GetEmail()), primary.GetGaiaId()},
+       {std::string(secondary.GetEmail()), secondary.GetGaiaId()}});
+#endif
+
+  const std::vector<DevicePreview> other_devices = {DevicePreview{
+      .cache_guid = "other_device",
+      .last_updated = base::Time::Now(),
+      .os_type = sync_pb::SyncEnums_OsType_OS_TYPE_ANDROID,
+      .form_factor =
+          sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE}};
+
+  // Resolve primary with 0 data but signed in to another device, and secondary
+  // with passwords above median and another device.
+  SimulateSuccessfulFetch(&test_url_loader_factory_, {}, other_devices);
+  SimulateSuccessfulFetch(&test_url_loader_factory_, {.password_count = 50},
+                          other_devices);
+  waiter.Wait();
+
+  EXPECT_EQ(service_->GetPreferredAccountForSwitching(), std::nullopt);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SwitchingHeuristic.WouldShowPromo2",
+      AccountSwitchingSelectionOutcome::kWouldNotShowPrimaryHasOtherDevices, 1);
+}
+
+TEST_F(AccountPreviewDataServiceTest,
        DoesNotStoreSwitchingAccountWhenFeatureDisabledButRecordsMetrics) {
   base::HistogramTester histogram_tester;
 
@@ -1382,7 +1419,7 @@ TEST_F(AccountPreviewDataServiceTest,
 
   EXPECT_EQ(service_->GetPreferredAccountForSwitching(), std::nullopt);
   histogram_tester.ExpectUniqueSample(
-      "Signin.SwitchingHeuristic.WouldShowPromo",
+      "Signin.SwitchingHeuristic.WouldShowPromo2",
       AccountSwitchingSelectionOutcome::kWouldShowLowPrimaryScore, 1);
 }
 

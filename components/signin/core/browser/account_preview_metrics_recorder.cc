@@ -258,7 +258,7 @@ void AccountPreviewMetricsRecorder::RecordSwitchingHeuristicResult(
   }
 
   profile_metrics_service_->UmaHistogramEnumeration(
-      "Signin.SwitchingHeuristic.WouldShowPromo", switching_result.outcome);
+      "Signin.SwitchingHeuristic.WouldShowPromo2", switching_result.outcome);
 
   pref_service_->SetTime(
       prefs::kAccountPreviewSwitchingHeuristicLastRecordedPref, now);

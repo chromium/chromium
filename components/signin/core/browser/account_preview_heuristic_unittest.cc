@@ -976,6 +976,17 @@ TEST_F(AccountPreviewHeuristicTest,
   EXPECT_EQ(res.selected_account, std::nullopt);
   primary.preview_data = &low_data;
 
+  // Primary is signed in to another device ->
+  // kWouldNotShowPrimaryHasOtherDevices.
+  AccountPreviewData low_data_with_devices = CreatePreviewData({}, devices);
+  primary.preview_data = &low_data_with_devices;
+  res = ComputeAccountSwitchingSelection({primary, secondary});
+  EXPECT_EQ(
+      res.outcome,
+      AccountSwitchingSelectionOutcome::kWouldNotShowPrimaryHasOtherDevices);
+  EXPECT_EQ(res.selected_account, std::nullopt);
+  primary.preview_data = &low_data;
+
   // Regular secondary has missing preview data ->
   // kWouldNotShowSecondaryMissingPreviewData.
   secondary.preview_data = nullptr;
@@ -1029,6 +1040,10 @@ TEST_F(AccountPreviewHeuristicTest,
       "dev1", base::Time::Now(),
       sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE)};
   // Primary Y in {0, 2}: needs secondary X >= Y + 1.
+  AccountPreviewData primary_score0 = CreatePreviewData();
+  AccountPreviewData primary_score2 = CreatePreviewData({
+      .passwords = switches::kPasswordsQ1Threshold.Get(),
+  });
   AccountPreviewData score0 = CreatePreviewData({}, devices);
   AccountPreviewData score1 = CreatePreviewData(
       {
@@ -1049,7 +1064,7 @@ TEST_F(AccountPreviewHeuristicTest,
 
   AccountPreviewHeuristicContext primary0{
       .gaia_id = GaiaId("primary0"),
-      .preview_data = &score0,
+      .preview_data = &primary_score0,
       .is_primary = true,
   };
   AccountPreviewHeuristicContext sec0{
@@ -1086,7 +1101,7 @@ TEST_F(AccountPreviewHeuristicTest,
   // Primary Y = 2: needs X >= 3.
   AccountPreviewHeuristicContext primary2{
       .gaia_id = GaiaId("primary2"),
-      .preview_data = &score2,
+      .preview_data = &primary_score2,
       .is_primary = true,
   };
 
@@ -1109,12 +1124,10 @@ TEST_F(AccountPreviewHeuristicTest,
       "dev1", base::Time::Now(),
       sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE)};
   // Primary Y = 3 (1xQ2 + 1xQ1): needs X > 6 (i.e. X >= 7).
-  AccountPreviewData score3 = CreatePreviewData(
-      {
-          .passwords = switches::kPasswordsQ1Threshold.Get(),
-          .bookmarks = switches::kBookmarksQ1Threshold.Get() / 2,
-      },
-      devices);
+  AccountPreviewData score3 = CreatePreviewData({
+      .passwords = switches::kPasswordsQ1Threshold.Get(),
+      .bookmarks = switches::kBookmarksQ1Threshold.Get() / 2,
+  });
   AccountPreviewData score6 = CreatePreviewData(
       {
           .passwords = switches::kPasswordsMedianThreshold.Get(),
@@ -1129,12 +1142,10 @@ TEST_F(AccountPreviewHeuristicTest,
       },
       devices);
   // Primary Y = 5 (1xQ3 + 1xQ1): needs X > 10 (i.e. X >= 11).
-  AccountPreviewData score5 = CreatePreviewData(
-      {
-          .passwords = switches::kPasswordsMedianThreshold.Get(),
-          .bookmarks = switches::kBookmarksQ1Threshold.Get() / 2,
-      },
-      devices);
+  AccountPreviewData score5 = CreatePreviewData({
+      .passwords = switches::kPasswordsMedianThreshold.Get(),
+      .bookmarks = switches::kBookmarksQ1Threshold.Get() / 2,
+  });
   AccountPreviewData score10 = CreatePreviewData(
       {
           .passwords = switches::kPasswordsQ3Threshold.Get(),
