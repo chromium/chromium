@@ -7544,7 +7544,7 @@
     },
     {
       name: "WebTransportReliability",
-      status: "experimental",
+      status: "stable",
       base_feature: "none",
     },
     {

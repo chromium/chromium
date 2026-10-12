@@ -3326,6 +3326,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method close
 [Worker]     method constructor
 [Worker] interface WebTransport
+[Worker]     static getter supportsReliableOnly
 [Worker]     attribute @@toStringTag
 [Worker]     getter closed
 [Worker]     getter datagrams
@@ -3333,6 +3334,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter incomingUnidirectionalStreams
 [Worker]     getter protocol
 [Worker]     getter ready
+[Worker]     getter reliability
 [Worker]     getter responseHeaders
 [Worker]     method close
 [Worker]     method constructor
