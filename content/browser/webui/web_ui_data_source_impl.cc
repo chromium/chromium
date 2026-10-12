@@ -182,6 +182,18 @@ class WebUIDataSourceImpl::InternalDataSource : public URLDataSource {
   std::string GetCrossOriginResourcePolicy() override {
     return parent_->corp_value_;
   }
+  std::string GetAccessControlAllowOriginForOrigin(
+      const std::string& origin) override {
+    if (parent_->access_control_allow_all_origins_) {
+      return "*";
+    }
+    url::Origin parsed_origin = url::Origin::Create(GURL(origin));
+    if (!parsed_origin.opaque() &&
+        parent_->access_control_allow_origins_.contains(parsed_origin)) {
+      return origin;
+    }
+    return URLDataSource::GetAccessControlAllowOriginForOrigin(origin);
+  }
   bool ShouldDenyXFrameOptions() override {
     return parent_->deny_xframe_options_;
   }
@@ -368,6 +380,21 @@ void WebUIDataSourceImpl::OverrideCrossOriginResourcePolicy(
     const std::string& value) {
   CHECK(!resources_frozen_);
   corp_value_ = value;
+}
+
+void WebUIDataSourceImpl::SetAllowAllOrigins(bool allow_all_origins) {
+  CHECK(!resources_frozen_);
+  access_control_allow_all_origins_ = allow_all_origins;
+}
+
+void WebUIDataSourceImpl::AddAccessControlAllowOrigin(
+    const url::Origin& origin) {
+  CHECK(!resources_frozen_);
+  CHECK(!origin.opaque())
+      << "Opaque origins cannot be uniquely allowlisted. For sandboxed WebUI "
+         "frames, allow the precursor origin instead; for arbitrary opaque "
+         "origins, use SetAllowAllOrigins(true).";
+  access_control_allow_origins_.insert(origin);
 }
 
 void WebUIDataSourceImpl::DisableTrustedTypesCSP() {

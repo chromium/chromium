@@ -666,10 +666,10 @@ WorkerScriptFetcher::CreateFactoryBundle(
     auto requesting_scheme =
         creator_render_frame_host->GetLastCommittedOrigin().scheme();
     non_network_factories.emplace(
-        requesting_scheme,
-        CreateWebUIURLLoaderFactory(
-            creator_render_frame_host, requesting_scheme,
-            /*allowed_hosts=*/base::flat_set<std::string>()));
+        requesting_scheme, CreateWebUIURLLoaderFactory(
+                               creator_render_frame_host, requesting_scheme,
+                               /*allowed_hosts=*/base::flat_set<std::string>(),
+                               request_initiator_storage_key.origin()));
   }
 
   auto factory_bundle =

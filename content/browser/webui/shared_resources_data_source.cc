@@ -54,6 +54,10 @@ void PopulateSharedResourcesDataSource(WebUIDataSource* source) {
   // included in the either the ts_library() target for the UI using them (if
   // they are only used by one UI) or in //ui/webui/resources/mojo:build_ts
   // (if used by multiple UIs).
+  // The shared resources are static assets bundled with Chrome, meant to be
+  // readable by every WebUI origin (both chrome:// and chrome-untrusted://).
+  source->SetAllowAllOrigins(true);
+
   source->AddResourcePaths(kWebuiResources);
 #if BUILDFLAG(IS_CHROMEOS)
   source->AddResourcePaths(kAshWebuiCommonResources);

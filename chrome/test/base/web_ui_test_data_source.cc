@@ -76,6 +76,8 @@ content::WebUIDataSource* CreateAndAddUntrustedWebUITestDataSource(
       browser_context, chrome::kChromeUIUntrustedWebUITestURL);
 
   SetupTestDataSource(source, content::kChromeUIUntrustedScheme);
+  // Test files are loaded by every chrome-untrusted:// page under test.
+  source->SetAllowAllOrigins(true);
   return source;
 }
 

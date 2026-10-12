@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/favicon/favicon_utils.h"
@@ -240,6 +241,17 @@ bool FaviconSource::ShouldServiceRequest(
 #endif
   return URLDataSource::ShouldServiceRequest(url, browser_context,
                                              render_process_id);
+}
+
+std::string FaviconSource::GetAccessControlAllowOriginForOrigin(
+    const std::string& origin) {
+  // chrome-untrusted://favicon2 serves the favicons that the Data Sharing
+  // page renders for the tabs of a shared tab group.
+  if (serve_untrusted_ &&
+      base::StrCat({origin, "/"}) == chrome::kChromeUIUntrustedDataSharingURL) {
+    return origin;
+  }
+  return content::URLDataSource::GetAccessControlAllowOriginForOrigin(origin);
 }
 
 ui::NativeTheme* FaviconSource::GetNativeTheme(
