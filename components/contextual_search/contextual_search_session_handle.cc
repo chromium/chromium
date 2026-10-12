@@ -139,6 +139,16 @@ bool IsSessionForPrimaryAccount(signin::IdentityManager* identity_manager,
   return primary_account.gaia == accounts[auth_user_index].gaia_id;
 }
 
+// Returns whether `token` is present in `list`. If `must_be_submitted` is true,
+// the entry must also have `submitted == true`.
+bool IsTokenInTabList(const std::vector<TabInfo>& list,
+                      const base::UnguessableToken& token,
+                      bool must_be_submitted) {
+  return std::ranges::any_of(list, [&](const TabInfo& tab) {
+    return tab.context_token == token && (!must_be_submitted || tab.submitted);
+  });
+}
+
 }  // namespace
 
 ContextualSearchSessionHandle::ContextualSearchSessionHandle(
@@ -493,13 +503,20 @@ bool ContextualSearchSessionHandle::DeleteFile(
   bool is_tab_and_deselection_enabled =
       omnibox::IsTabDeselectionInComposeboxEnabled() && is_tab;
 
-  bool is_submitted = std::find(submitted_context_tokens_.begin(),
-                                submitted_context_tokens_.end(),
-                                file_token) != submitted_context_tokens_.end();
+  // Check whether `file_token` was already sent to the server in a previous
+  // query (either still in `submitted_context_tokens_`, or persisted as a
+  // submitted tab in `tab_context_.attached` or `displaced_submitted_tabs_`
+  // after `ClearSubmittedContextTokens()` ran).
+  bool was_sent_to_server =
+      std::ranges::contains(submitted_context_tokens_, file_token) ||
+      IsTokenInTabList(tab_context_.attached, file_token,
+                       /*must_be_submitted=*/true) ||
+      IsTokenInTabList(displaced_submitted_tabs_, file_token,
+                       /*must_be_submitted=*/false);
 
-  if (is_submitted && !is_tab_and_deselection_enabled) {
-    // If the file was already submitted and deselection is not supported for
-    // it, do not delete it.
+  if (was_sent_to_server && !is_tab_and_deselection_enabled) {
+    // If the file was already sent to the server and deselection is not
+    // supported for it, do not delete it.
     return false;
   }
 
@@ -512,13 +529,19 @@ bool ContextualSearchSessionHandle::DeleteFile(
 
   bool should_delete_from_controller = true;
 
-  // Can delete tab fully (from controller) if it is NOT already submitted.
-  // Otherwise, leave in controller for metadata.
+  // Can delete tab fully (from controller) if it was NOT already sent to the
+  // server. Otherwise, leave in controller for metadata.
+  auto* tab_validator = GetTabValidator();
+  const bool is_current_tab_valid =
+      !tab_validator || tab_validator->IsTabValidAndPointingToUrl(*file_info);
   if (is_tab_and_deselection_enabled) {
-    // Track that this tab was explicitly deselected in this session.
-    tab_context_.deselected[file_info->tab_session_id.value()] = std::make_pair(
-        file_info->tab_url.value_or(GURL()), file_info->tab_title.value_or(""));
-    if (is_submitted) {
+    if (is_current_tab_valid) {
+      // Track that this tab was explicitly deselected in this session.
+      tab_context_.deselected[file_info->tab_session_id.value()] =
+          std::make_pair(file_info->tab_url.value_or(GURL()),
+                         file_info->tab_title.value_or(""));
+    }
+    if (was_sent_to_server) {
       // Remove the deselected tab from `submitted_context_tokens_`
       // so it is immediately excluded from the active query context and
       // tabstrip underlines. Do NOT delete it from the context controller
@@ -542,16 +565,15 @@ bool ContextualSearchSessionHandle::DeleteFile(
     metrics_recorder->RecordFileDeletedMetrics(success, file_type, file_status);
   }
 
-  // Only remove the attached tab if it was not yet submitted and
-  // the latest token was removed. This means deleting a superseded/stale
-  // token for a re-uploaded tab keeps the tab attached.
-  if (success && !is_submitted) {
+  // Remove the attached tab if its current token was deleted. If the entry was
+  // already submitted, `RemoveAttachedTabForToken()` moves it into
+  // `displaced_submitted_tabs_` so `TakeRemovedContexts()` can report its
+  // `request_id` on the next query submission.
+  if (success) {
     RemoveAttachedTabForToken(file_token);
   }
 
-  // Clean up associated stale tokens with this tab. Do not erase the
-  // submitted entry in `tab_context_.attached` since that has the
-  // `request_id` required to send a deletion request to the server.
+  // Clean up associated stale tokens with this tab.
   if (success && is_tab_and_deselection_enabled && tab_session_id.has_value()) {
     SessionID session_id = tab_session_id.value();
     // Avoid duplicates to avoid deletion from the controller (on the second
@@ -560,16 +582,31 @@ bool ContextualSearchSessionHandle::DeleteFile(
     // memory contiguousness and better cache locality.
     base::flat_set<base::UnguessableToken> other_tokens;
     if (context_controller) {
-      for (const auto& token : uploaded_context_tokens_) {
+      auto maybe_add_other_token = [&](const base::UnguessableToken& token) {
+        if (token == file_token) {
+          return;
+        }
         const auto* info = context_controller->GetFileInfo(token);
-        if (info && info->tab_session_id == session_id && token != file_token) {
+        if (info && info->tab_session_id == session_id) {
+          // If `file_token` was removed because it is no longer valid (e.g.
+          // the tab navigated to a new URL), do not delete a newly uploaded
+          // token that is valid for the tab's current URL.
+          if (!is_current_tab_valid && tab_validator &&
+              tab_validator->IsTabValidAndPointingToUrl(*info)) {
+            return;
+          }
           other_tokens.insert(token);
         }
+      };
+      for (const auto& token : uploaded_context_tokens_) {
+        maybe_add_other_token(token);
       }
       for (const auto& token : submitted_context_tokens_) {
-        const auto* info = context_controller->GetFileInfo(token);
-        if (info && info->tab_session_id == session_id && token != file_token) {
-          other_tokens.insert(token);
+        maybe_add_other_token(token);
+      }
+      for (const TabInfo& tab : tab_context_.attached) {
+        if (tab.tab_id == session_id.id()) {
+          maybe_add_other_token(tab.context_token);
         }
       }
     }
@@ -662,6 +699,7 @@ void ContextualSearchSessionHandle::CreateSearchUrl(
     MarkTabAckByServer(token);
   }
 
+  displaced_submitted_tabs_.clear();
   sts_toggled_removed_contexts_.clear();
   smart_tab_sharing_toggled_since_last_turn_ = false;
 
@@ -712,6 +750,11 @@ void ContextualSearchSessionHandle::OnSmartTabSharingToggled(bool active) {
                 std::make_pair(file_info->tab_url.value_or(GURL()),
                                file_info->tab_title.value_or(""));
           }
+        }
+      }
+      for (const TabInfo& tab : displaced_submitted_tabs_) {
+        if (tab.request_id.has_value()) {
+          sts_toggled_removed_contexts_.push_back(tab.request_id.value());
         }
       }
 
@@ -833,48 +876,55 @@ ContextualSearchSessionHandle::TakeRemovedContexts() {
     smart_tab_sharing_toggled_since_last_turn_ = false;
   }
 
-  // Check for closed/navigated/removed tabs.
-  std::vector<SessionID> deleted_tabs;
   bool context_management_enabled =
       base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox);
   bool signal_browser_tab_deletions = base::FeatureList::IsEnabled(
       lens::features::kLensDeleteContextOnPageNavigation);
 
-  // Go through persisted tabs (tabs submitted to the server in a previous
-  // turn).
-  for (const TabInfo& tab : tab_context_.attached) {
+  auto maybe_remove_persisted_tab = [&](const TabInfo& tab) {
     if (!tab.submitted || !tab.tab_id.has_value()) {
-      continue;
+      return false;
     }
     const SessionID session_id = SessionID::FromSerializedValue(*tab.tab_id);
     const base::UnguessableToken& persisted_token = tab.context_token;
     base::UnguessableToken token_to_validate;
+    bool should_remove_from_server = false;
 
     if (context_management_enabled) {
       // If explicitly deselected by user, treat as deleted. Check this
       // directly because committed tabs are cleared from active lists.
       if (tab_context_.deselected.contains(session_id)) {
-        deleted_tabs.push_back(session_id);
-        continue;
-      }
+        should_remove_from_server = true;
+      } else {
+        token_to_validate = GetActiveTokenForTab(session_id);
+        if (token_to_validate.is_empty()) {
+          // If not active, it might be committed. Fallback to the original
+          // token.
+          token_to_validate = persisted_token;
+        }
 
-      token_to_validate = GetActiveTokenForTab(session_id);
-      if (token_to_validate.is_empty()) {
-        // If not active, it might be committed. Fallback to the original token.
-        token_to_validate = persisted_token;
-      }
-
-      // If the token does not match the last submitted token, then that means
-      // the webpage in the tab has changed and recontextualization has
-      // triggered, (meaning the tab is still attached; its contents have been
-      // updated). Thus, remove that old stale token without notifying the
-      // server. Do not notify the server since the tab is still attached, it
-      // just has new content (and a new token). This can trigger, but the
-      // closed/deleted tab logic down below can also trigger since they
-      // are not mutually exclusive.
-      if (token_to_validate != persisted_token) {
-        std::erase(uploaded_context_tokens_, persisted_token);
-        std::erase(submitted_context_tokens_, persisted_token);
+        // If the token does not match the last submitted token, a newer token
+        // exists for the same `session_id`. If recontextualized on the same
+        // page, `persisted_token` is superceded and no removal is sent. If the
+        // tab navigated to a new URL (`!persisted_file_info->is_superceded` and
+        // `!tab_validator->IsTabValidAndPointingToUrl(*persisted_file_info)`),
+        // `persisted_token` is stale because it represents a previous page URL;
+        // we set `token_to_validate = persisted_token` so validation fails
+        // below and `persisted_token`'s `request_id` is sent in
+        // `removed_contexts` while keeping the new token for the new URL.
+        if (token_to_validate != persisted_token) {
+          const auto* persisted_file_info =
+              context_controller->GetFileInfo(persisted_token);
+          if (signal_browser_tab_deletions && tab_validator &&
+              persisted_file_info && !persisted_file_info->is_superceded &&
+              !tab_validator->IsTabValidAndPointingToUrl(
+                  *persisted_file_info)) {
+            token_to_validate = persisted_token;
+          } else {
+            std::erase(uploaded_context_tokens_, persisted_token);
+            std::erase(submitted_context_tokens_, persisted_token);
+          }
+        }
       }
     } else {
       // Flag disabled: `uploaded_context_tokens_` is cleared after each query.
@@ -882,34 +932,24 @@ ContextualSearchSessionHandle::TakeRemovedContexts() {
       token_to_validate = persisted_token;
     }
 
-    if (signal_browser_tab_deletions && tab_validator &&
-        !token_to_validate.is_empty()) {
+    if (!should_remove_from_server && signal_browser_tab_deletions &&
+        tab_validator && !token_to_validate.is_empty()) {
       const auto* file_info =
           context_controller->GetFileInfo(token_to_validate);
       // If the tab is closed or this token is stale (no new token replaced it
       // after navigation), delete it from the server. If the tab is
       // closed, delete all tokens associated with the tab.
       if (file_info && !tab_validator->IsTabValidAndPointingToUrl(*file_info)) {
-        deleted_tabs.push_back(session_id);
+        should_remove_from_server = true;
       }
     }
-  }
 
-  // Remove fully navigated tabs that are no longer tracked since there was no
-  // recontextualization to track them. Also remove closed tabs. Notify server
-  // of any of these tracking removals.
-  for (const auto& session_id : deleted_tabs) {
-    auto persisted_it = std::ranges::find_if(
-        tab_context_.attached,
-        [&](const TabInfo& tab) { return tab.tab_id == session_id.id(); });
-    if (persisted_it == tab_context_.attached.end() ||
-        !persisted_it->submitted) {
-      continue;
+    if (!should_remove_from_server) {
+      return false;
     }
-    const base::UnguessableToken stored_token = persisted_it->context_token;
 
     // Add tab `request_id` to server for tab removal on the server.
-    AppendUniqueRequestId(removed_contexts, persisted_it->request_id.value());
+    AppendUniqueRequestId(removed_contexts, tab.request_id.value());
 
     // Check if tab is still open.
     bool tab_still_open = false;
@@ -918,7 +958,7 @@ ContextualSearchSessionHandle::TakeRemovedContexts() {
       // it is valid. If it is valid, the tab is still open (navigated).
       base::UnguessableToken active_token = GetActiveTokenForTab(session_id);
       base::UnguessableToken validated_token =
-          context_management_enabled ? active_token : stored_token;
+          context_management_enabled ? active_token : persisted_token;
       // If context management is enabled, always validate the active token
       // if present (it might be a deselected tab skipped during validation
       // earlier). If disabled, only validate if it is a new token
@@ -949,11 +989,23 @@ ContextualSearchSessionHandle::TakeRemovedContexts() {
       });
     } else {
       // Remove only the expired token that navigation made irrelevant.
-      std::erase(uploaded_context_tokens_, stored_token);
-      std::erase(submitted_context_tokens_, stored_token);
+      std::erase(uploaded_context_tokens_, persisted_token);
+      std::erase(submitted_context_tokens_, persisted_token);
     }
+    return true;
+  };
 
-    tab_context_.attached.erase(persisted_it);
+  // Entries in `displaced_submitted_tabs_` may have been displaced in
+  // `AddAttachedTab()` by same-page recontextualization (`is_superceded ==
+  // true`, not added to `removed_contexts`) or by cross-URL navigation /
+  // `DeleteFile()` (added to `removed_contexts`). `maybe_remove_persisted_tab`
+  // handles both the check and the shared controller/token cleanup.
+  for (const TabInfo& tab : displaced_submitted_tabs_) {
+    maybe_remove_persisted_tab(tab);
+  }
+  displaced_submitted_tabs_.clear();
+
+  if (std::erase_if(tab_context_.attached, maybe_remove_persisted_tab) > 0) {
     tab_context_dirty_ = true;
   }
   MaybeNotifyTabContextSubscribers();
@@ -1089,6 +1141,7 @@ ContextualSearchSessionHandle::GetPersistedTabs() const {
 }
 
 void ContextualSearchSessionHandle::ClearAllPersistedTabs() {
+  displaced_submitted_tabs_.clear();
   if (std::erase_if(tab_context_.attached,
                     [](const TabInfo& tab) { return tab.submitted; }) > 0) {
     tab_context_dirty_ = true;
@@ -1177,6 +1230,9 @@ void ContextualSearchSessionHandle::AddAttachedTab(TabInfo tab) {
   } else if (*it == tab) {
     return;
   } else {
+    if (it->submitted && it->context_token != tab.context_token) {
+      displaced_submitted_tabs_.push_back(std::move(*it));
+    }
     *it = std::move(tab);
   }
   NotifyTabContextSubscribers();
@@ -1184,8 +1240,14 @@ void ContextualSearchSessionHandle::AddAttachedTab(TabInfo tab) {
 
 void ContextualSearchSessionHandle::RemoveAttachedTabForToken(
     const base::UnguessableToken& file_token) {
-  if (std::erase_if(tab_context_.attached, [&file_token](const TabInfo& tab) {
-        return tab.context_token == file_token;
+  if (std::erase_if(tab_context_.attached, [&](TabInfo& tab) {
+        if (tab.context_token != file_token) {
+          return false;
+        }
+        if (tab.submitted) {
+          displaced_submitted_tabs_.push_back(std::move(tab));
+        }
+        return true;
       }) == 0) {
     return;
   }

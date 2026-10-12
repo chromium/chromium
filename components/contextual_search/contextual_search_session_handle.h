@@ -547,8 +547,9 @@ class ContextualSearchSessionHandle {
   // and `AddDelayedTabContext()`.
   void AddAttachedTab(TabInfo tab);
 
-  // Removes attached tabs whose `context_token` is `file_token`. Notifies tab
-  // context subscribers if any tabs were removed.
+  // Removes attached tabs whose `context_token` is `file_token`, moving any
+  // submitted entries to `displaced_submitted_tabs_`. Notifies tab context
+  // subscribers if any tabs were removed.
   void RemoveAttachedTabForToken(const base::UnguessableToken& file_token);
 
   // Notifies tab context subscribers if tab context has been updated
@@ -594,6 +595,13 @@ class ContextualSearchSessionHandle {
   // `attached` with `submitted` are persistent tabs that are still tracked
   // for the purpose of deleting them from server if manually removed by user.
   TabContextState tab_context_;
+
+  // Submitted tabs that were removed or replaced in `tab_context_.attached`
+  // and are awaiting server-side removal inspection in `TakeRemovedContexts()`.
+  // TODO(crbug.com/563055721): Consolidate persisted and submitted tab
+  // tracking out of `tab_context_.attached` into a unified submitted
+  // list and remove `displaced_submitted_tabs_`.
+  std::vector<TabInfo> displaced_submitted_tabs_;
 
   // Subscribers to changes in the tab context state.
   base::RepeatingCallbackList<void(const TabContextState&)>
