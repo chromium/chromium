@@ -455,6 +455,8 @@ public class WebappNavigationTest {
     @Test
     @SmallTest
     @Feature({"Webapps"})
+    // TODO(crbug.com/571163249): Re-enable this test.
+    @DisabledTest(message = "https://crbug.com/571163249")
     public void testOpenInChromeFromContextMenuTabbedChrome() throws Exception {
         // Needed to get full context menu.
         FirstRunStatus.setFirstRunFlowComplete(true);
