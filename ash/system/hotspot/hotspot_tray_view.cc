@@ -17,7 +17,6 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
-#include "ui/color/color_provider.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
@@ -52,6 +51,7 @@ using hotspot_config::mojom::HotspotState;
 HotspotTrayView::HotspotTrayView(Shelf* shelf) : TrayItemView(shelf) {
   Shell::Get()->session_controller()->AddObserver(this);
   CreateImageView();
+  UpdateIconImage();
   SetVisible(false);
 
   GetHotspotConfigService(
@@ -75,11 +75,6 @@ std::u16string HotspotTrayView::GetAccessibleNameString() const {
 views::View* HotspotTrayView::GetTooltipHandlerForPoint(
     const gfx::Point& point) {
   return GetLocalBounds().Contains(point) ? this : nullptr;
-}
-
-void HotspotTrayView::OnThemeChanged() {
-  TrayItemView::OnThemeChanged();
-  UpdateIconImage();
 }
 
 void HotspotTrayView::HandleLocaleChange() {
@@ -112,9 +107,8 @@ void HotspotTrayView::UpdateIconVisibilityAndTooltip() {
 void HotspotTrayView::UpdateIconImage() {
   image_view()->SetImage(ui::ImageModel::FromVectorIcon(
       hotspot_icon::GetIconForHotspot(state_),
-      GetColorProvider()->GetColor(
-          is_active() ? cros_tokens::kCrosSysSystemOnPrimaryContainer
-                      : cros_tokens::kCrosSysOnSurface),
+      is_active() ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+                  : cros_tokens::kCrosSysOnSurface,
       kUnifiedTrayIconSize));
 }
 

@@ -43,7 +43,6 @@ class ASH_EXPORT HotspotTrayView
  private:
   // views::TrayItemView:
   void HandleLocaleChange() override;
-  void OnThemeChanged() override;
   void UpdateLabelOrImageViewColor(bool active) override;
 
   // SessionObserver:
