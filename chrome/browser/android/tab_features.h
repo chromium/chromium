@@ -157,6 +157,7 @@ class MLInstallabilityPromoter;
 
 class AboutThisSiteTabHelper;
 class AutoPictureInPictureTabHelper;
+class BreadcrumbManagerTabHelper;
 class ChainedBackNavigationTracker;
 class ChromeFacilitatedPaymentsClient;
 class ConnectionHelpTabHelper;
@@ -354,6 +355,7 @@ class TabFeatures {
       one_time_permissions_tracker_helper_;
   std::unique_ptr<predictors::LoadingPredictorTabHelper>
       loading_predictor_tab_helper_;
+  std::unique_ptr<BreadcrumbManagerTabHelper> breadcrumb_manager_tab_helper_;
 
   // Holds the WebUI embedding context subscription.
   base::CallbackListSubscription tab_subscription_;

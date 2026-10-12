@@ -5,31 +5,47 @@
 #ifndef CHROME_BROWSER_BREADCRUMBS_BREADCRUMB_MANAGER_TAB_HELPER_H_
 #define CHROME_BROWSER_BREADCRUMBS_BREADCRUMB_MANAGER_TAB_HELPER_H_
 
+#include <optional>
+
 #include "components/breadcrumbs/core/breadcrumb_manager_tab_helper.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace content {
 class NavigationHandle;
 class WebContents;
 }  // namespace content
 
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
+
 // Handles logging of Breadcrumb events associated with |web_contents_|.
 class BreadcrumbManagerTabHelper
     : public breadcrumbs::BreadcrumbManagerTabHelper,
-      public content::WebContentsObserver,
-      public content::WebContentsUserData<BreadcrumbManagerTabHelper> {
+      public content::WebContentsObserver {
  public:
+  DECLARE_USER_DATA(BreadcrumbManagerTabHelper);
+
+  BreadcrumbManagerTabHelper(
+      tabs::TabInterface& tab,
+      content::WebContents* web_contents,
+      std::optional<int> previous_unique_id = std::nullopt);
   ~BreadcrumbManagerTabHelper() override;
   BreadcrumbManagerTabHelper(const BreadcrumbManagerTabHelper&) = delete;
   BreadcrumbManagerTabHelper& operator=(const BreadcrumbManagerTabHelper&) =
       delete;
 
+  static BreadcrumbManagerTabHelper* From(tabs::TabInterface* tab);
+  static const BreadcrumbManagerTabHelper* From(const tabs::TabInterface* tab);
+  static BreadcrumbManagerTabHelper* FromWebContents(
+      content::WebContents* web_contents);
+  static const BreadcrumbManagerTabHelper* FromWebContents(
+      const content::WebContents* web_contents);
+
+  std::optional<int> GetPreviousUniqueId() const { return previous_unique_id_; }
+
  private:
-  friend class content::WebContentsUserData<BreadcrumbManagerTabHelper>;
-
-  explicit BreadcrumbManagerTabHelper(content::WebContents* web_contents);
-
   // breadcrumbs::BreadcrumbManagerTabHelper:
   void PlatformLogEvent(const std::string& event) override;
 
@@ -47,7 +63,9 @@ class BreadcrumbManagerTabHelper
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override;
 
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
+  const std::optional<int> previous_unique_id_;
+  ui::ScopedUnownedUserData<BreadcrumbManagerTabHelper>
+      scoped_unowned_user_data_;
 };
 
 #endif  // CHROME_BROWSER_BREADCRUMBS_BREADCRUMB_MANAGER_TAB_HELPER_H_

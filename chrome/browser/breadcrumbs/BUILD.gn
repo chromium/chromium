@@ -5,6 +5,11 @@
 assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
 
 source_set("breadcrumbs") {
+  public_deps = [
+    "//components/tabs:public",
+    "//ui/base/unowned_user_data",
+  ]
+
   deps = [
     "//base",
     "//chrome/browser/profiles:profile",
@@ -35,6 +40,7 @@ source_set("unit_tests") {
     "//components/crash/core/common:crash_key",
     "//components/infobars/content",
     "//components/infobars/core",
+    "//components/tabs:test_support",
     "//content/test:test_support",
     "//testing/gtest",
   ]

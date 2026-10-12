@@ -46,6 +46,7 @@ class AskBeforeHttpDialogController;
 class AutoPictureInPictureTabHelper;
 class BookmarkBarPreloadPipelineManager;
 class BookmarkPageActionController;
+class BreadcrumbManagerTabHelper;
 class BrowserSyncedTabDelegate;
 class ChromeFacilitatedPaymentsClient;
 class CollaborationMessagingPageActionController;
@@ -1063,6 +1064,8 @@ class TabFeatures {
 
   std::unique_ptr<predictors::LoadingPredictorTabHelper>
       loading_predictor_tab_helper_;
+
+  std::unique_ptr<BreadcrumbManagerTabHelper> breadcrumb_manager_tab_helper_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

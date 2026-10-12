@@ -67,12 +67,6 @@ const std::optional<std::string> FindEventContaining(const std::string& str) {
 
 // Test fixture for BreadcrumbManagerTabHelper class.
 class BreadcrumbManagerTabHelperBrowserTest : public InProcessBrowserTest {
- protected:
-  void SetUpOnMainThread() override {
-    BreadcrumbManagerTabHelper::CreateForWebContents(
-        browser()->tab_strip_model()->GetActiveWebContents());
-  }
-
  private:
   // TODO(https://crbug.com/423465927): Explore a better approach to make the
   // existing tests run with the prewarm feature enabled.
@@ -114,8 +108,6 @@ class BreadcrumbManagerTabHelperSecurityStateBrowserTest
   }
 
   void SetUpOnMainThread() override {
-    BreadcrumbManagerTabHelper::CreateForWebContents(
-        browser()->tab_strip_model()->GetActiveWebContents());
     ASSERT_TRUE(https_server_.Start());
   }
 

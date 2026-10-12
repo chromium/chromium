@@ -1382,7 +1382,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   }
 
   if (breadcrumbs::IsEnabled(g_browser_process->local_state())) {
-    BreadcrumbManagerTabHelper::CreateForWebContents(tab.GetContents());
+    breadcrumb_manager_tab_helper_ =
+        GetUserDataFactory().CreateInstance<BreadcrumbManagerTabHelper>(
+            tab, tab, tab.GetContents());
   }
 
   PrefsTabHelper::CreateForWebContents(tab.GetContents());
@@ -2061,8 +2063,12 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
                 *tab, *tab, new_contents);
   }
 
-  if (breadcrumbs::IsEnabled(g_browser_process->local_state())) {
-    BreadcrumbManagerTabHelper::CreateForWebContents(new_contents);
+  if (breadcrumb_manager_tab_helper_) {
+    int previous_unique_id = breadcrumb_manager_tab_helper_->GetUniqueId();
+    breadcrumb_manager_tab_helper_.reset();
+    breadcrumb_manager_tab_helper_ =
+        GetUserDataFactory().CreateInstance<BreadcrumbManagerTabHelper>(
+            *tab, *tab, new_contents, previous_unique_id);
   }
 
   PrefsTabHelper::CreateForWebContents(new_contents);

@@ -32,11 +32,6 @@ _ALLOWED_CREATE_FOR_CALLS = (
   # ChromeContentBrowserClient::CanCreateWindow, and PopupOpenerTabHelper, so
   # the WebContents must own it.
   'blocked_content::PopupBlockerTabHelper::CreateForWebContents',
-  # BreadcrumbManagerTabHelper is looked up on old_contents by
-  # BreadcrumbManagerBrowserAgent::OnTabStripModelChanged
-  # (TabStripModelChange::kReplaced) after TabFeatures::WillDiscardContents
-  # swaps in new_contents, so the WebContents must own it.
-  'BreadcrumbManagerTabHelper::CreateForWebContents',
   # CaptivePortalTabHelper lives in //components/captive_portal/content and
   # is also attached to non-tab GuestView WebContents in
   # ChromeGuestViewManagerDelegate, so the WebContents must own it.

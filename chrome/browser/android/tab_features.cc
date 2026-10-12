@@ -749,7 +749,9 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
 
   if (breadcrumbs::IsEnabled(g_browser_process->local_state()) &&
       infobars::ContentInfoBarManager::FromWebContents(web_contents)) {
-    BreadcrumbManagerTabHelper::CreateForWebContents(web_contents);
+    breadcrumb_manager_tab_helper_ =
+        GetUserDataFactory().CreateInstance<BreadcrumbManagerTabHelper>(
+            *tab, *tab, web_contents);
   }
 
   PrefsTabHelper::CreateForWebContents(web_contents);

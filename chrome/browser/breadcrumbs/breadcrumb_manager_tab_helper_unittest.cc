@@ -17,6 +17,7 @@
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
+#include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_web_contents_factory.h"
@@ -72,17 +73,24 @@ class BreadcrumbManagerTabHelperTest : public ChromeRenderViewHostTestHarness {
     infobars::ContentInfoBarManager::CreateForWebContents(web_contents());
     infobars::ContentInfoBarManager::CreateForWebContents(
         second_web_contents_.get());
-    BreadcrumbManagerTabHelper::CreateForWebContents(web_contents());
-    BreadcrumbManagerTabHelper::CreateForWebContents(
-        second_web_contents_.get());
+    first_tab_helper_ = std::make_unique<BreadcrumbManagerTabHelper>(
+        first_tab_, web_contents());
+    second_tab_helper_ = std::make_unique<BreadcrumbManagerTabHelper>(
+        second_tab_, second_web_contents_.get());
   }
 
   void TearDown() override {
+    second_tab_helper_.reset();
+    first_tab_helper_.reset();
     second_web_contents_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
+  tabs::MockTabInterface first_tab_;
+  tabs::MockTabInterface second_tab_;
   std::unique_ptr<content::WebContents> second_web_contents_;
+  std::unique_ptr<BreadcrumbManagerTabHelper> first_tab_helper_;
+  std::unique_ptr<BreadcrumbManagerTabHelper> second_tab_helper_;
 
   const GURL kTestURL = GURL("https://test");
 };
@@ -90,11 +98,9 @@ class BreadcrumbManagerTabHelperTest : public ChromeRenderViewHostTestHarness {
 // Tests that the identifiers returned for different WebContents are unique.
 TEST_F(BreadcrumbManagerTabHelperTest, UniqueIdentifiers) {
   const int first_tab_identifier =
-      BreadcrumbManagerTabHelper::FromWebContents(web_contents())
-          ->GetUniqueId();
+      BreadcrumbManagerTabHelper::From(&first_tab_)->GetUniqueId();
   const int second_tab_identifier =
-      BreadcrumbManagerTabHelper::FromWebContents(second_web_contents_.get())
-          ->GetUniqueId();
+      BreadcrumbManagerTabHelper::From(&second_tab_)->GetUniqueId();
 
   EXPECT_GT(first_tab_identifier, 0);
   EXPECT_GT(second_tab_identifier, 0);
