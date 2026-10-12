@@ -18,13 +18,11 @@ namespace autofill {
 using AtMemoryQueryCompleted =
     base::StrongAlias<struct AtMemoryQueryCompletedTag, bool>;
 
-// Status of the AtMemory search for the active field. The 0-state (no filter
-// entered yet, or the filter was cleared) is represented by the absence of an
-// `AtMemorySearchState`.
-// TODO(crbug.com/535486238): Consider adding a `kZeroState` value and making
-// the persisted search state non-optional, so that the 0-state is modelled
-// explicitly instead of by `std::nullopt`.
+// Status of the AtMemory search for the active field.
 enum class AtMemorySearchStatus {
+  // The initial state: no filter was entered yet, or the filter was cleared.
+  // The filter and the suggestions are empty in this state.
+  kZeroState,
   // The user entered or modified the filter but has not submitted it, or the
   // search for the submitted filter was cancelled.
   kQueryModified,
@@ -39,7 +37,7 @@ enum class AtMemorySearchStatus {
 struct AtMemorySearchState {
   std::vector<Suggestion> suggestions;
   std::u16string filter;
-  AtMemorySearchStatus status = AtMemorySearchStatus::kQueryModified;
+  AtMemorySearchStatus status = AtMemorySearchStatus::kZeroState;
 };
 
 }  // namespace autofill

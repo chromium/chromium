@@ -7,7 +7,6 @@
 
 #include <cstddef>
 #include <memory>
-#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -50,10 +49,9 @@ class AutofillClient;
 // invoking any mutation methods (`OnFilterChanged`, `OnFilterSubmitted`).
 // When a new field is focused, any existing state for a prior field is reset.
 //
-// A `std::nullopt` state represents the unmodified / initial 0-state for the
-// active field (e.g. before any filter has been entered, or after clearing the
-// filter). `search_state_` is only instantiated once the user enters or submits
-// a query.
+// The initial 0-state for the active field (e.g. before any filter has been
+// entered, or after clearing the filter) is represented by
+// `AtMemorySearchStatus::kZeroState`.
 class AtMemoryPersistedStateManager
     : public history::HistoryServiceObserver,
       public personal_context::PersonalContextEligibilityService::Observer,
@@ -84,10 +82,10 @@ class AtMemoryPersistedStateManager
 
   // Returns the existing persisted state if `field_id` matches the stored
   // persisted AtMemory search state. Otherwise resets state and initializes a
-  // new persisted AtMemory search state for `field_id` with `field_origin`.
-  const std::optional<AtMemorySearchState>& GetStateForField(
-      const FieldGlobalId& field_id,
-      const url::Origin& field_origin);
+  // new persisted AtMemory search state (in `kZeroState`) for `field_id` with
+  // `field_origin`.
+  const AtMemorySearchState& GetStateForField(const FieldGlobalId& field_id,
+                                              const url::Origin& field_origin);
 
   // Called once per display of the popup for the active field, after a metrics
   // recorder was set. Records "Autofill.AtMemory.StateRestored" based on the
@@ -170,9 +168,9 @@ class AtMemoryPersistedStateManager
   FieldGlobalId field_id_;
   // Origin of the field for which the `search_state_` is kept.
   url::Origin field_origin_;
-  // State of the search for the active field. Reset if
+  // State of the search for the active field. Reset to `kZeroState` if
   // `GetStateForField` is called for another field.
-  std::optional<AtMemorySearchState> search_state_;
+  AtMemorySearchState search_state_;
   // Metrics recorder for the active field session. Reset when the search state
   // for the field is reset or when ownership is transferred on fill.
   std::unique_ptr<AtMemoryMetricsRecorder> metrics_recorder_;

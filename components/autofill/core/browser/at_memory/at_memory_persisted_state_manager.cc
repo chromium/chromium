@@ -58,14 +58,12 @@ const Suggestion* FindParentSuggestion(
 // Otherwise returns `accepted_suggestion` itself.
 const Suggestion& GetSuggestionToStore(
     const Suggestion& accepted_suggestion,
-    const std::optional<AtMemorySearchState>& search_state,
+    const AtMemorySearchState& search_state,
     base::span<const AtMemoryPersistedStateManager::ExpiringSuggestion>
         previously_filled_suggestions) {
-  if (search_state) {
-    if (const Suggestion* parent = FindParentSuggestion(
-            accepted_suggestion, search_state->suggestions)) {
-      return *parent;
-    }
+  if (const Suggestion* parent =
+          FindParentSuggestion(accepted_suggestion, search_state.suggestions)) {
+    return *parent;
   }
   if (const Suggestion* parent = FindParentSuggestion(
           accepted_suggestion, previously_filled_suggestions)) {
@@ -88,14 +86,12 @@ bool IsPrimaryMainFrame(AutofillDriver& driver) {
          driver.IsActive();
 }
 
-// Returns which kind of persisted search `state` (if any) is restored when the
-// popup is shown.
-AtMemoryStateRestored GetStateRestored(
-    const std::optional<AtMemorySearchState>& state) {
-  if (!state) {
-    return AtMemoryStateRestored::kNewSession;
-  }
-  switch (state->status) {
+// Returns which kind of persisted search `state` is restored when the popup is
+// shown.
+AtMemoryStateRestored GetStateRestored(const AtMemorySearchState& state) {
+  switch (state.status) {
+    case AtMemorySearchStatus::kZeroState:
+      return AtMemoryStateRestored::kNewSession;
     case AtMemorySearchStatus::kQueryModified:
       return AtMemoryStateRestored::kRestoredWithExistingQuery;
     case AtMemorySearchStatus::kSearching:
@@ -140,8 +136,7 @@ AtMemoryPersistedStateManager::AtMemoryPersistedStateManager(
 
 AtMemoryPersistedStateManager::~AtMemoryPersistedStateManager() = default;
 
-const std::optional<AtMemorySearchState>&
-AtMemoryPersistedStateManager::GetStateForField(
+const AtMemorySearchState& AtMemoryPersistedStateManager::GetStateForField(
     const FieldGlobalId& field_id,
     const url::Origin& field_origin) {
   if (field_id_ != field_id) {
@@ -162,36 +157,31 @@ void AtMemoryPersistedStateManager::OnFilterChanged(
     std::u16string_view filter) {
   CHECK(field_id_);
   if (filter.empty()) {
-    search_state_.reset();
+    search_state_ = {};
     search_state_timer_.Stop();
     return;
   }
-  if (!search_state_) {
-    search_state_.emplace();
-  }
-  search_state_->filter = filter;
-  search_state_->suggestions.clear();
-  search_state_->status = AtMemorySearchStatus::kQueryModified;
+  search_state_.filter = filter;
+  search_state_.suggestions.clear();
+  search_state_.status = AtMemorySearchStatus::kQueryModified;
   RestartSearchStateTimer();
 }
 
 void AtMemoryPersistedStateManager::OnFilterSubmitted(
     const std::u16string& filter) {
   CHECK(field_id_);
-  if (!search_state_) {
-    search_state_.emplace();
-  }
-  search_state_->filter = filter;
-  search_state_->status = AtMemorySearchStatus::kSearching;
+  search_state_.filter = filter;
+  search_state_.status = AtMemorySearchStatus::kSearching;
   RestartSearchStateTimer();
 }
 
 void AtMemoryPersistedStateManager::OnSuggestionsChanged(
     std::vector<Suggestion> suggestions) {
-  if (!search_state_) {
+  // The suggestions shown in the 0-state are not persisted.
+  if (search_state_.status == AtMemorySearchStatus::kZeroState) {
     return;
   }
-  search_state_->suggestions = std::move(suggestions);
+  search_state_.suggestions = std::move(suggestions);
   RestartSearchStateTimer();
 }
 
@@ -251,8 +241,7 @@ AtMemoryPersistedStateManager::TakeMetricsRecorder() {
 }
 
 bool AtMemoryPersistedStateManager::IsSearching() const {
-  return search_state_ &&
-         search_state_->status == AtMemorySearchStatus::kSearching;
+  return search_state_.status == AtMemorySearchStatus::kSearching;
 }
 
 void AtMemoryPersistedStateManager::StopSearching(
@@ -260,10 +249,10 @@ void AtMemoryPersistedStateManager::StopSearching(
   if (!IsSearching()) {
     return;
   }
-  search_state_->suggestions.clear();
-  search_state_->status = query_completed.value()
-                              ? AtMemorySearchStatus::kResponseReceived
-                              : AtMemorySearchStatus::kQueryModified;
+  search_state_.suggestions.clear();
+  search_state_.status = query_completed.value()
+                             ? AtMemorySearchStatus::kResponseReceived
+                             : AtMemorySearchStatus::kQueryModified;
 }
 
 void AtMemoryPersistedStateManager::OnHistoryDeletions(
@@ -341,13 +330,12 @@ void AtMemoryPersistedStateManager::ResetSearchState() {
   search_state_timer_.Stop();
   field_id_ = FieldGlobalId();
   field_origin_ = url::Origin();
-  search_state_.reset();
+  search_state_ = {};
   metrics_recorder_.reset();
 }
 
 void AtMemoryPersistedStateManager::OnSearchStateTimerExpired() {
-  const bool has_suggestions =
-      search_state_ && !search_state_->suggestions.empty();
+  const bool has_suggestions = !search_state_.suggestions.empty();
   ResetSearchState();
   if (has_suggestions && on_reset_callback_) {
     on_reset_callback_.Run();

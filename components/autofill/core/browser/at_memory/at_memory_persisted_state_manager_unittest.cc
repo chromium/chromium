@@ -47,8 +47,17 @@ namespace {
 using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::Field;
-using ::testing::Optional;
+using ::testing::IsEmpty;
+using ::testing::Not;
 using ::testing::SizeIs;
+
+// Matches an `AtMemorySearchState` in the 0-state.
+auto IsZeroState() {
+  return AllOf(
+      Field(&AtMemorySearchState::status, AtMemorySearchStatus::kZeroState),
+      Field(&AtMemorySearchState::filter, IsEmpty()),
+      Field(&AtMemorySearchState::suggestions, IsEmpty()));
+}
 
 url::Origin FieldOrigin() {
   return url::Origin::Create(GURL("https://example.com"));
@@ -154,22 +163,36 @@ class AtMemoryPersistedStateManagerTest
   FieldGlobalId other_field_id_{test::MakeFieldGlobalId()};
 };
 
-// Tests that accessing a new field returns `std::nullopt`.
-TEST_F(AtMemoryPersistedStateManagerTest, ReturnsNulloptForNewField) {
-  EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin()),
-            std::nullopt);
+// Tests that accessing a new field returns the 0-state.
+TEST_F(AtMemoryPersistedStateManagerTest, ReturnsZeroStateForNewField) {
+  EXPECT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              IsZeroState());
   EXPECT_EQ(state_manager().field_origin(), FieldOrigin());
 }
 
-// Tests that opening and closing without editing returns `std::nullopt`.
-TEST_F(AtMemoryPersistedStateManagerTest, OpenCloseWithoutEditReturnsNullopt) {
-  EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin()),
-            std::nullopt);
-  // Opening again on the same field without typing or searching returns
-  // nullopt.
-  EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin()),
-            std::nullopt);
+// Tests that opening and closing without editing returns the 0-state.
+TEST_F(AtMemoryPersistedStateManagerTest,
+       OpenCloseWithoutEditReturnsZeroState) {
+  EXPECT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              IsZeroState());
+  // Opening again on the same field without typing or searching returns the
+  // 0-state.
+  EXPECT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              IsZeroState());
   EXPECT_EQ(state_manager().field_origin(), FieldOrigin());
+}
+
+// Tests that suggestions shown in the 0-state (e.g. empty-query suggestions)
+// are not persisted and the state stays in the 0-state.
+TEST_F(AtMemoryPersistedStateManagerTest,
+       DoesNotPersistSuggestionsInZeroState) {
+  state_manager().GetStateForField(field_id(), FieldOrigin());
+  std::vector<Suggestion> suggestions;
+  suggestions.emplace_back(u"123 Main St", SuggestionType::kAddressEntry);
+  state_manager().OnSuggestionsChanged(suggestions);
+
+  EXPECT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              IsZeroState());
 }
 
 // Tests that filter and retrieved suggestions are stored and restored for the
@@ -187,14 +210,13 @@ TEST_F(AtMemoryPersistedStateManagerTest,
 
   EXPECT_FALSE(state_manager().IsSearching());
 
-  const std::optional<AtMemorySearchState>& restored_state =
+  const AtMemorySearchState& restored_state =
       state_manager().GetStateForField(field_id(), FieldOrigin());
-  ASSERT_TRUE(restored_state.has_value());
-  EXPECT_EQ(restored_state->filter, u"address");
-  EXPECT_THAT(restored_state->suggestions,
-              ElementsAre(EqualsSuggestion(
-                  SuggestionType::kAddressEntry, u"123 Main St")));
-  EXPECT_EQ(restored_state->status, AtMemorySearchStatus::kQueryModified);
+  EXPECT_EQ(restored_state.filter, u"address");
+  EXPECT_THAT(restored_state.suggestions,
+              ElementsAre(EqualsSuggestion(SuggestionType::kAddressEntry,
+                                           u"123 Main St")));
+  EXPECT_EQ(restored_state.status, AtMemorySearchStatus::kQueryModified);
   EXPECT_EQ(state_manager().field_origin(), FieldOrigin());
 }
 
@@ -208,9 +230,9 @@ TEST_F(AtMemoryPersistedStateManagerTest,
   suggestions.emplace_back(u"123 Main St", SuggestionType::kAddressEntry);
   state_manager().OnSuggestionsChanged(suggestions);
 
-  EXPECT_EQ(
+  EXPECT_THAT(
       state_manager().GetStateForField(other_field_id(), OtherFieldOrigin()),
-      std::nullopt);
+      IsZeroState());
   EXPECT_EQ(state_manager().field_origin(), OtherFieldOrigin());
 }
 
@@ -224,17 +246,16 @@ TEST_F(AtMemoryPersistedStateManagerTest,
   state_manager().OnFilterChanged(u"add");
   EXPECT_FALSE(state_manager().IsSearching());
 
-  const std::optional<AtMemorySearchState>& state =
+  const AtMemorySearchState& state =
       state_manager().GetStateForField(field_id(), FieldOrigin());
-  ASSERT_TRUE(state.has_value());
-  EXPECT_EQ(state->filter, u"add");
-  EXPECT_TRUE(state->suggestions.empty());
-  EXPECT_EQ(state->status, AtMemorySearchStatus::kQueryModified);
+  EXPECT_EQ(state.filter, u"add");
+  EXPECT_TRUE(state.suggestions.empty());
+  EXPECT_EQ(state.status, AtMemorySearchStatus::kQueryModified);
 
-  // Clearing the filter resets state so that next open returns nullopt.
+  // Clearing the filter resets the state to the 0-state.
   state_manager().OnFilterChanged(u"");
-  EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin()),
-            std::nullopt);
+  EXPECT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              IsZeroState());
 }
 
 // Tests that accessing the field origin when no field is active crashes with a
@@ -253,8 +274,8 @@ TEST_F(AtMemoryPersistedStateManagerTest,
       Suggestion(u"123 Main St", SuggestionType::kAddressEntry));
 
   EXPECT_CHECK_DEATH(state_manager().field_origin());
-  EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin()),
-            std::nullopt);
+  EXPECT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              IsZeroState());
 }
 
 // Tests that stopping an ongoing search clears incomplete suggestions.
@@ -271,12 +292,11 @@ TEST_F(AtMemoryPersistedStateManagerTest,
   state_manager().StopSearching(AtMemoryQueryCompleted(false));
   EXPECT_FALSE(state_manager().IsSearching());
 
-  const std::optional<AtMemorySearchState>& restored_state =
+  const AtMemorySearchState& restored_state =
       state_manager().GetStateForField(field_id(), FieldOrigin());
-  ASSERT_TRUE(restored_state.has_value());
-  EXPECT_EQ(restored_state->filter, u"ongoing_query");
-  EXPECT_TRUE(restored_state->suggestions.empty());
-  EXPECT_EQ(restored_state->status, AtMemorySearchStatus::kQueryModified);
+  EXPECT_EQ(restored_state.filter, u"ongoing_query");
+  EXPECT_TRUE(restored_state.suggestions.empty());
+  EXPECT_EQ(restored_state.status, AtMemorySearchStatus::kQueryModified);
 }
 
 // Tests that `StopSearching()` with `AtMemoryQueryCompleted(true)` sets the
@@ -286,21 +306,21 @@ TEST_F(AtMemoryPersistedStateManagerTest,
        StopSearchingWithQueryCompletedSetsResponseReceived) {
   state_manager().GetStateForField(field_id(), FieldOrigin());
   state_manager().OnFilterSubmitted(u"address");
-  EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin())->status,
+  EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin()).status,
             AtMemorySearchStatus::kSearching);
 
   state_manager().StopSearching(AtMemoryQueryCompleted(true));
   EXPECT_FALSE(state_manager().IsSearching());
-  EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin())->status,
+  EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin()).status,
             AtMemorySearchStatus::kResponseReceived);
 
   state_manager().OnFilterSubmitted(u"address2");
-  EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin())->status,
+  EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin()).status,
             AtMemorySearchStatus::kSearching);
 
   state_manager().StopSearching(AtMemoryQueryCompleted(true));
   state_manager().OnFilterChanged(u"address3");
-  EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin())->status,
+  EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin()).status,
             AtMemorySearchStatus::kQueryModified);
 }
 
@@ -312,7 +332,7 @@ TEST_F(AtMemoryPersistedStateManagerTest,
   state_manager().OnFilterSubmitted(u"address");
   state_manager().StopSearching(AtMemoryQueryCompleted(false));
   EXPECT_FALSE(state_manager().IsSearching());
-  EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin())->status,
+  EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin()).status,
             AtMemorySearchStatus::kQueryModified);
 }
 
@@ -320,12 +340,12 @@ TEST_F(AtMemoryPersistedStateManagerTest,
 TEST_F(AtMemoryPersistedStateManagerTest, StopSearchingWithoutSearchIsNoOp) {
   state_manager().GetStateForField(field_id(), FieldOrigin());
   state_manager().StopSearching(AtMemoryQueryCompleted(true));
-  EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin()),
-            std::nullopt);
+  EXPECT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              IsZeroState());
 
   state_manager().OnFilterChanged(u"address");
   state_manager().StopSearching(AtMemoryQueryCompleted(true));
-  EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin())->status,
+  EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin()).status,
             AtMemorySearchStatus::kQueryModified);
 }
 
@@ -599,14 +619,15 @@ TEST_F(AtMemoryPersistedStateManagerTest,
   state_manager().StopSearching(AtMemoryQueryCompleted(false));
   state_manager().OnSuggestionsChanged(suggestions);
 
-  ASSERT_TRUE(state_manager().GetStateForField(field_id(), FieldOrigin()));
+  ASSERT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              Not(IsZeroState()));
 
   state_manager().OnHistoryDeletions(
       /*history_service=*/nullptr, history::DeletionInfo::ForAllHistory());
 
   EXPECT_CHECK_DEATH(state_manager().field_origin());
-  EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin()),
-            std::nullopt);
+  EXPECT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              IsZeroState());
 }
 
 // Tests that history deletion clears ongoing in-flight search state.
@@ -621,8 +642,8 @@ TEST_F(AtMemoryPersistedStateManagerTest,
 
   EXPECT_FALSE(state_manager().IsSearching());
   EXPECT_CHECK_DEATH(state_manager().field_origin());
-  EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin()),
-            std::nullopt);
+  EXPECT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              IsZeroState());
 }
 
 // Tests that history deletion clears previously filled suggestions.
@@ -666,8 +687,8 @@ TEST_F(AtMemoryPersistedStateManagerTest,
                             /*restrict_urls=*/std::nullopt));
 
   EXPECT_TRUE(state_manager().IsSearching());
-  EXPECT_TRUE(
-      state_manager().GetStateForField(field_id(), FieldOrigin()).has_value());
+  EXPECT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              Not(IsZeroState()));
   EXPECT_EQ(state_manager().previously_filled_suggestions().size(), 1u);
 }
 
@@ -687,8 +708,8 @@ TEST_F(AtMemoryPersistedStateManagerTest,
 
   identity_test_env().ClearPrimaryAccount();
 
-  EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin()),
-            std::nullopt);
+  EXPECT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              IsZeroState());
   EXPECT_TRUE(state_manager().previously_filled_suggestions().empty());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
@@ -709,8 +730,8 @@ TEST_F(AtMemoryPersistedStateManagerTest,
   identity_test_env().MakePrimaryAccountAvailable(
       "user2@example.com", signin::ConsentLevel::kSignin);
 
-  EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin()),
-            std::nullopt);
+  EXPECT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              IsZeroState());
   EXPECT_TRUE(state_manager().previously_filled_suggestions().empty());
 }
 
@@ -728,16 +749,15 @@ TEST_F(AtMemoryPersistedStateManagerTest, StateExpiresAfterTtl) {
   // Before TTL expires, state is intact.
   task_environment().FastForwardBy(
       AtMemoryPersistedStateManager::kDefaultTimeToLive - base::Seconds(1));
-  const std::optional<AtMemorySearchState>& active_state =
+  const AtMemorySearchState& active_state =
       state_manager().GetStateForField(field_id(), FieldOrigin());
-  ASSERT_TRUE(active_state.has_value());
-  EXPECT_EQ(active_state->filter, u"address");
+  EXPECT_EQ(active_state.filter, u"address");
   EXPECT_EQ(state_manager().field_origin(), FieldOrigin());
 
   // Once TTL expires, state is reset.
   task_environment().FastForwardBy(base::Seconds(1));
-  EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin()),
-            std::nullopt);
+  EXPECT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              IsZeroState());
 }
 
 // Tests that state mutations (filter changes, receiving suggestions, submitting
@@ -755,8 +775,8 @@ TEST_F(AtMemoryPersistedStateManagerTest, MutationsResetTtl) {
 
   // Advance to the total default TTL.
   task_environment().FastForwardBy(base::Minutes(10));
-  EXPECT_TRUE(
-      state_manager().GetStateForField(field_id(), FieldOrigin()).has_value());
+  EXPECT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              Not(IsZeroState()));
 
   // 2. OnSuggestionsChanged: receive suggestions, resetting TTL timer.
   std::vector<Suggestion> suggestions;
@@ -766,8 +786,8 @@ TEST_F(AtMemoryPersistedStateManagerTest, MutationsResetTtl) {
   // Advance another partial duration.
   task_environment().FastForwardBy(
       AtMemoryPersistedStateManager::kDefaultTimeToLive - base::Minutes(10));
-  EXPECT_TRUE(
-      state_manager().GetStateForField(field_id(), FieldOrigin()).has_value());
+  EXPECT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              Not(IsZeroState()));
 
   // 3. OnFilterSubmitted: submit new query, resetting TTL timer.
   state_manager().OnFilterSubmitted(u"submitted address");
@@ -775,16 +795,15 @@ TEST_F(AtMemoryPersistedStateManagerTest, MutationsResetTtl) {
   // Advance another partial duration.
   task_environment().FastForwardBy(
       AtMemoryPersistedStateManager::kDefaultTimeToLive - base::Minutes(10));
-  const std::optional<AtMemorySearchState>& active_state =
+  const AtMemorySearchState& active_state =
       state_manager().GetStateForField(field_id(), FieldOrigin());
-  ASSERT_TRUE(active_state.has_value());
-  EXPECT_EQ(active_state->filter, u"submitted address");
+  EXPECT_EQ(active_state.filter, u"submitted address");
   EXPECT_EQ(state_manager().field_origin(), FieldOrigin());
 
   // Advance remaining duration to cross the default TTL deadline.
   task_environment().FastForwardBy(base::Minutes(10));
-  EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin()),
-            std::nullopt);
+  EXPECT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              IsZeroState());
 }
 
 // Tests that disabling the Personal Context settings toggle clears both the
@@ -796,16 +815,16 @@ TEST_F(AtMemoryPersistedStateManagerTest, SettingsToggleDisabledClearsState) {
       Suggestion(u"123 Main St", SuggestionType::kAddressEntry));
   state_manager().GetStateForField(field_id(), FieldOrigin());
   state_manager().OnFilterSubmitted(u"address");
-  ASSERT_TRUE(
-      state_manager().GetStateForField(field_id(), FieldOrigin()).has_value());
+  ASSERT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              Not(IsZeroState()));
   ASSERT_FALSE(state_manager().previously_filled_suggestions().empty());
 
   pref_service().SetBoolean(
       personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
       false);
 
-  EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin()),
-            std::nullopt);
+  EXPECT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              IsZeroState());
   EXPECT_TRUE(state_manager().previously_filled_suggestions().empty());
 }
 
@@ -820,15 +839,15 @@ TEST_F(AtMemoryPersistedStateManagerTest,
       Suggestion(u"123 Main St", SuggestionType::kAddressEntry));
   state_manager().GetStateForField(field_id(), FieldOrigin());
   state_manager().OnFilterSubmitted(u"address");
-  ASSERT_TRUE(
-      state_manager().GetStateForField(field_id(), FieldOrigin()).has_value());
+  ASSERT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              Not(IsZeroState()));
   ASSERT_FALSE(state_manager().previously_filled_suggestions().empty());
 
   eligibility_service().SetEligibilityState(
       personal_context::PersonalContextEligibilityState::kDisabledNotEligible);
 
-  EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin()),
-            std::nullopt);
+  EXPECT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              IsZeroState());
   EXPECT_TRUE(state_manager().previously_filled_suggestions().empty());
 }
 
@@ -849,8 +868,8 @@ TEST_F(AtMemoryPersistedStateManagerTest,
   eligibility_service().SetEligibilityState(
       personal_context::PersonalContextEligibilityState::kEligible);
 
-  EXPECT_TRUE(
-      state_manager().GetStateForField(field_id(), FieldOrigin()).has_value());
+  EXPECT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              Not(IsZeroState()));
   EXPECT_FALSE(state_manager().previously_filled_suggestions().empty());
 }
 
@@ -898,12 +917,12 @@ TEST_F(AtMemoryPersistedStateManagerNavigationTest,
   state_manager().GetStateForField(field_id(), FieldOrigin());
   state_manager().OnFilterSubmitted(u"passport");
   ASSERT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
-              Optional(Field(&AtMemorySearchState::filter, u"passport")));
+              Field(&AtMemorySearchState::filter, u"passport"));
 
   ResetAutofillDriver(autofill_driver(0));
 
-  EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin()),
-            std::nullopt);
+  EXPECT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              IsZeroState());
 }
 
 // Tests that when the primary main frame driver transitions to kPendingDeletion
@@ -913,12 +932,12 @@ TEST_F(AtMemoryPersistedStateManagerNavigationTest,
   state_manager().GetStateForField(field_id(), FieldOrigin());
   state_manager().OnFilterSubmitted(u"passport");
   ASSERT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
-              Optional(Field(&AtMemorySearchState::filter, u"passport")));
+              Field(&AtMemorySearchState::filter, u"passport"));
 
   DeleteAutofillDriver(autofill_driver(0));
 
-  EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin()),
-            std::nullopt);
+  EXPECT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              IsZeroState());
 }
 
 // Tests that a subframe's navigation (kPendingReset) does NOT reset the
@@ -931,12 +950,12 @@ TEST_F(AtMemoryPersistedStateManagerNavigationTest,
   state_manager().GetStateForField(field_id(), FieldOrigin());
   state_manager().OnFilterSubmitted(u"passport");
   ASSERT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
-              Optional(Field(&AtMemorySearchState::filter, u"passport")));
+              Field(&AtMemorySearchState::filter, u"passport"));
 
   ResetAutofillDriver(autofill_driver(1));
 
   EXPECT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
-              Optional(Field(&AtMemorySearchState::filter, u"passport")));
+              Field(&AtMemorySearchState::filter, u"passport"));
 }
 
 // Tests that a subframe's deletion (kPendingDeletion) does NOT reset the
@@ -949,12 +968,12 @@ TEST_F(AtMemoryPersistedStateManagerNavigationTest,
   state_manager().GetStateForField(field_id(), FieldOrigin());
   state_manager().OnFilterSubmitted(u"passport");
   ASSERT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
-              Optional(Field(&AtMemorySearchState::filter, u"passport")));
+              Field(&AtMemorySearchState::filter, u"passport"));
 
   DeleteAutofillDriver(autofill_driver(1));
 
   EXPECT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
-              Optional(Field(&AtMemorySearchState::filter, u"passport")));
+              Field(&AtMemorySearchState::filter, u"passport"));
 }
 
 // Tests that state changes that do not indicate frame reset or deletion (e.g.
@@ -963,13 +982,13 @@ TEST_F(AtMemoryPersistedStateManagerNavigationTest, NoResetOnActivation) {
   state_manager().GetStateForField(field_id(), FieldOrigin());
   state_manager().OnFilterSubmitted(u"passport");
   ASSERT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
-              Optional(Field(&AtMemorySearchState::filter, u"passport")));
+              Field(&AtMemorySearchState::filter, u"passport"));
 
   DeactivateAutofillDriver(autofill_driver(0));
   ActivateAutofillDriver(autofill_driver(0));
 
   EXPECT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
-              Optional(Field(&AtMemorySearchState::filter, u"passport")));
+              Field(&AtMemorySearchState::filter, u"passport"));
 }
 
 // Tests that a navigation in a main frame that is not *primary* - i.e. the main
@@ -983,13 +1002,13 @@ TEST_F(AtMemoryPersistedStateManagerNavigationTest,
   state_manager().GetStateForField(field_id(), FieldOrigin());
   state_manager().OnFilterSubmitted(u"passport");
   ASSERT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
-              Optional(Field(&AtMemorySearchState::filter, u"passport")));
+              Field(&AtMemorySearchState::filter, u"passport"));
 
   ResetAutofillDriver(autofill_driver(1));
   DeleteAutofillDriver(autofill_driver(1));
 
   EXPECT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
-              Optional(Field(&AtMemorySearchState::filter, u"passport")));
+              Field(&AtMemorySearchState::filter, u"passport"));
 }
 
 // Tests that a navigation in the main frame of an embedded frame tree (i.e. a
@@ -1002,13 +1021,13 @@ TEST_F(AtMemoryPersistedStateManagerNavigationTest,
   state_manager().GetStateForField(field_id(), FieldOrigin());
   state_manager().OnFilterSubmitted(u"passport");
   ASSERT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
-              Optional(Field(&AtMemorySearchState::filter, u"passport")));
+              Field(&AtMemorySearchState::filter, u"passport"));
 
   ResetAutofillDriver(autofill_driver(1));
   DeleteAutofillDriver(autofill_driver(1));
 
   EXPECT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
-              Optional(Field(&AtMemorySearchState::filter, u"passport")));
+              Field(&AtMemorySearchState::filter, u"passport"));
 }
 
 // Tests that navigation resets all state including search state and previously
@@ -1025,13 +1044,13 @@ TEST_F(AtMemoryPersistedStateManagerNavigationTest, AllStateResetOnNavigation) {
   state_manager().GetStateForField(field_id(), FieldOrigin());
   state_manager().OnFilterSubmitted(u"passport");
   ASSERT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
-              Optional(Field(&AtMemorySearchState::filter, u"passport")));
+              Field(&AtMemorySearchState::filter, u"passport"));
 
   ResetAutofillDriver(autofill_driver(0));
 
   // Search state is reset on navigation.
-  EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin()),
-            std::nullopt);
+  EXPECT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              IsZeroState());
 
   // Previously filled suggestions are also cleared on navigation.
   EXPECT_TRUE(state_manager().previously_filled_suggestions().empty());

@@ -459,9 +459,10 @@ AtMemorySearchState AtMemoryManager::GetStateForField(
     std::optional<AutofillSuggestionTriggerSource> trigger_source) {
   if (base::FeatureList::IsEnabled(
           features::kAutofillAtMemorySearchStatefulness)) {
-    if (const std::optional<AtMemorySearchState>& state =
-            state_manager_.GetStateForField(field_id, field_origin)) {
-      return *state;
+    if (const AtMemorySearchState& state =
+            state_manager_.GetStateForField(field_id, field_origin);
+        state.status != AtMemorySearchStatus::kZeroState) {
+      return state;
     }
   } else {
     target_field_origin_ = field_origin;
