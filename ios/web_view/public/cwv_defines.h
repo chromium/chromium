@@ -163,4 +163,7 @@
 // Supports mandatory re-auth delegate methods on CWVAutofillControllerDelegate.
 #define IOS_WEB_VIEW_SUPPORTS_MANDATORY_REAUTH 1
 
+// Supports CWVAutofillErrorDialogContext and showErrorDialogWithContext.
+#define IOS_WEB_VIEW_SUPPORTS_AUTOFILL_ERROR_DIALOG 1
+
 #endif  // IOS_WEB_VIEW_PUBLIC_CWV_DEFINES_H_

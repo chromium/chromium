@@ -13,6 +13,7 @@
 #import "base/notimplemented.h"
 #import "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #import "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
+#import "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #import "components/autofill/core/browser/payments/bnpl_util.h"
 #import "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #import "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
@@ -225,7 +226,9 @@ IOSWebViewPaymentsAutofillClient::GetMultipleRequestPaymentsNetworkInterface() {
 }
 
 void IOSWebViewPaymentsAutofillClient::ShowAutofillErrorDialog(
-    AutofillErrorDialogContext context) {}
+    AutofillErrorDialogContext context) {
+  [bridge_ showAutofillErrorDialogWithContext:context];
+}
 
 PaymentsWindowManager*
 IOSWebViewPaymentsAutofillClient::GetPaymentsWindowManager() {

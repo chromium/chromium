@@ -23,6 +23,7 @@
 namespace autofill {
 class AutofillProfile;
 class CreditCard;
+struct AutofillErrorDialogContext;
 }  // namespace autofill
 
 // WebView extension of AutofillClientIOSBridge.
@@ -121,6 +122,10 @@ class CreditCard;
 
 // Bridge for PaymentsAutofillClient's method `IsMandatoryReauthEnabled`.
 - (BOOL)shouldRequireMandatoryReauth;
+
+// Bridge for PaymentsAutofillClient's method `ShowAutofillErrorDialog`.
+- (void)showAutofillErrorDialogWithContext:
+    (const autofill::AutofillErrorDialogContext&)context;
 
 @end
 

@@ -4,6 +4,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import <iterator>
 #import <memory>
 #import <optional>
 
@@ -19,6 +20,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/test/test_future.h"
 #import "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
+#import "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #import "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #import "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #import "components/autofill/core/browser/payments/otp_unmask_delegate.h"
@@ -63,6 +65,7 @@
 #import "ios/web/public/test/web_test.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_controller+testing.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_controller_internal.h"
+#import "ios/web_view/internal/autofill/cwv_autofill_error_dialog_context_internal.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_prefs.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_profile_internal.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_suggestion_internal.h"
@@ -2234,7 +2237,7 @@ TEST_F(CWVAutofillPrefsTest, MigrateObsoleteClearsSafeLifecyclePref) {
   EXPECT_FALSE(prefs.HasPrefPath(kObsoleteSafeLifecyclePref));
 }
 
-// Fixture for the mandatory re-auth bridges between
+// Fixture for the mandatory re-auth and error dialog bridges between
 // ChromeWebView's autofill client and `CWVAutofillControllerDelegate`.
 class CWVAutofillControllerMandatoryReauthTest
     : public CWVAutofillControllerTestBase {
@@ -2487,6 +2490,128 @@ TEST_F(CWVAutofillControllerMandatoryReauthTest, IsMandatoryReauthEnabled) {
       .andReturn(NO);
   EXPECT_FALSE(payments_client->IsMandatoryReauthEnabled());
   EXPECT_OCMOCK_VERIFY(delegate);
+}
+
+// Test that `ShowAutofillErrorDialog()` forwards the context to the delegate.
+TEST_F(CWVAutofillControllerMandatoryReauthTest, ShowAutofillErrorDialog) {
+  std::unique_ptr<autofill::WebViewAutofillClientIOS> client =
+      CreateClientBridgedToController();
+  id delegate = OCMProtocolMock(@protocol(CWVAutofillControllerDelegate));
+  autofill_controller_.delegate = delegate;
+
+  autofill::AutofillErrorDialogContext context;
+  context.type = autofill::AutofillErrorDialogType::
+      kMaskedServerCardRiskBasedUnmaskingPermanentError;
+  context.server_returned_title = "Title";
+  context.server_returned_description = "Description";
+
+  OCMExpect([delegate
+              autofillController:autofill_controller_
+      showErrorDialogWithContext:[OCMArg checkWithBlock:^BOOL(
+                                             CWVAutofillErrorDialogContext*
+                                                 value) {
+        return value.type ==
+                   CWVAutofillErrorDialogTypeMaskedServerCardRiskBasedUnmaskingPermanentError &&
+               [value.serverReturnedTitle isEqualToString:@"Title"] &&
+               [value.serverReturnedDescription isEqualToString:@"Description"];
+      }]]);
+  client->GetPaymentsAutofillClient()->ShowAutofillErrorDialog(context);
+  EXPECT_OCMOCK_VERIFY(delegate);
+}
+
+// Test that absent server strings map to nil and unsupported types map to
+// `CWVAutofillErrorDialogTypeUnknown`.
+TEST_F(CWVAutofillControllerMandatoryReauthTest, ErrorDialogContextDefaults) {
+  autofill::AutofillErrorDialogContext context;
+  context.type = autofill::AutofillErrorDialogType::kBnplPermanentError;
+
+  CWVAutofillErrorDialogContext* value =
+      [[CWVAutofillErrorDialogContext alloc] initWithContext:context];
+
+  EXPECT_EQ(CWVAutofillErrorDialogTypeUnknown, value.type);
+  EXPECT_FALSE(value.serverReturnedTitle);
+  EXPECT_FALSE(value.serverReturnedDescription);
+}
+
+// Test that empty server strings map to nil, so embedders fall back to text
+// derived from `type`.
+TEST_F(CWVAutofillControllerMandatoryReauthTest,
+       ErrorDialogContextEmptyServerStrings) {
+  autofill::AutofillErrorDialogContext context;
+  context.server_returned_title = "";
+  context.server_returned_description = "";
+
+  CWVAutofillErrorDialogContext* value =
+      [[CWVAutofillErrorDialogContext alloc] initWithContext:context];
+
+  EXPECT_FALSE(value.serverReturnedTitle);
+  EXPECT_FALSE(value.serverReturnedDescription);
+}
+
+// Test that every `AutofillErrorDialogType` maps to the expected
+// `CWVAutofillErrorDialogType`.
+TEST_F(CWVAutofillControllerMandatoryReauthTest,
+       ErrorDialogContextTypeMapping) {
+  using autofill::AutofillErrorDialogType;
+  static constexpr struct {
+    AutofillErrorDialogType type;
+    CWVAutofillErrorDialogType expected_type;
+  } kTestCases[] = {
+      {AutofillErrorDialogType::kVirtualCardTemporaryError,
+       CWVAutofillErrorDialogTypeVirtualCardTemporaryError},
+      {AutofillErrorDialogType::kVirtualCardPermanentError,
+       CWVAutofillErrorDialogTypeVirtualCardPermanentError},
+      {AutofillErrorDialogType::kVirtualCardNotEligibleError,
+       CWVAutofillErrorDialogTypeVirtualCardNotEligibleError},
+      {AutofillErrorDialogType::kTypeUnknown,
+       CWVAutofillErrorDialogTypeUnknown},
+      {AutofillErrorDialogType::
+           kMaskedServerCardRiskBasedUnmaskingPermanentError,
+       CWVAutofillErrorDialogTypeMaskedServerCardRiskBasedUnmaskingPermanentError},
+      {AutofillErrorDialogType::kMaskedServerCardRiskBasedUnmaskingNetworkError,
+       CWVAutofillErrorDialogTypeMaskedServerCardRiskBasedUnmaskingNetworkError},
+      {AutofillErrorDialogType::kMaskedServerIbanUnmaskingTemporaryError,
+       CWVAutofillErrorDialogTypeUnknown},
+      {AutofillErrorDialogType::kCreditCardUploadError,
+       CWVAutofillErrorDialogTypeUnknown},
+      {AutofillErrorDialogType::kVirtualCardEnrollmentTemporaryError,
+       CWVAutofillErrorDialogTypeUnknown},
+      {AutofillErrorDialogType::kCardInfoRetrievalTemporaryError,
+       CWVAutofillErrorDialogTypeCardInfoRetrievalTemporaryError},
+      {AutofillErrorDialogType::kCardInfoRetrievalPermanentError,
+       CWVAutofillErrorDialogTypeCardInfoRetrievalPermanentError},
+      {AutofillErrorDialogType::kBnplTemporaryError,
+       CWVAutofillErrorDialogTypeUnknown},
+      {AutofillErrorDialogType::kBnplPermanentError,
+       CWVAutofillErrorDialogTypeUnknown},
+      {AutofillErrorDialogType::kBnplUnsupportedCurrencyError,
+       CWVAutofillErrorDialogTypeUnknown},
+  };
+  // Fails to compile if a new `AutofillErrorDialogType` has no test case.
+  static_assert(std::size(kTestCases) ==
+                static_cast<size_t>(AutofillErrorDialogType::kMaxValue) + 1);
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(testing::Message() << "AutofillErrorDialogType: "
+                                    << static_cast<int>(test_case.type));
+    autofill::AutofillErrorDialogContext context;
+    context.type = test_case.type;
+
+    CWVAutofillErrorDialogContext* value =
+        [[CWVAutofillErrorDialogContext alloc] initWithContext:context];
+
+    EXPECT_EQ(test_case.expected_type, value.type);
+  }
+}
+
+// Test that `ShowAutofillErrorDialog()` is a no-op when the delegate does not
+// implement the error dialog method.
+TEST_F(CWVAutofillControllerMandatoryReauthTest,
+       ShowAutofillErrorDialogWithoutDelegateImplementation) {
+  std::unique_ptr<autofill::WebViewAutofillClientIOS> client =
+      CreateClientBridgedToController();
+  client->GetPaymentsAutofillClient()->ShowAutofillErrorDialog(
+      autofill::AutofillErrorDialogContext());
 }
 
 }  // namespace

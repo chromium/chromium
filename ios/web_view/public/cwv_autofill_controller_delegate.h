@@ -10,6 +10,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class CWVAutofillController;
+@class CWVAutofillErrorDialogContext;
 @class CWVAutofillForm;
 @class CWVAutofillFormSuggestion;
 @class CWVAutofillProfile;
@@ -314,6 +315,13 @@ typedef void (^ProceduralBlock)(void);
 - (void)autofillController:(CWVAutofillController*)autofillController
     authenticateUserWithReason:(NSString*)reason
              completionHandler:(void (^)(BOOL success))completionHandler;
+
+// Called when an error should be shown to the user during a payments autofill
+// flow, e.g. when a card could not be retrieved from the server. Called on the
+// main thread, after any progress dialog has been asked to close.
+// If this method is not implemented, no error is shown.
+- (void)autofillController:(CWVAutofillController*)autofillController
+    showErrorDialogWithContext:(CWVAutofillErrorDialogContext*)context;
 
 @end
 
