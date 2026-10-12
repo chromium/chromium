@@ -3234,7 +3234,7 @@ void ReadAnythingAppController::ApplyAccessibilityUpdatesForReadability(
 
   // If there's been a selection on the main page, the selection should be
   // processed so that Immersive can open to the correctly selected text.
-  if (IsReadabilitySelectTextEnabled() &&
+  if (IsReadabilitySelectTextEnabled() && !read_aloud_model_.speech_playing() &&
       model_.requires_post_process_selection()) {
     // TODO: crbug.com/505770261- Once general select-to-distill is enabled
     // this should be re-evaluated to prevent switching distillation modes

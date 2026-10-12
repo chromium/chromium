@@ -6598,6 +6598,31 @@ TEST_F(ReadAnythingAppControllerReadabilitySelectTextTest,
   EXPECT_FALSE(model().requires_post_process_selection());
 }
 
+TEST_F(
+    ReadAnythingAppControllerReadabilitySelectTextTest,
+    AccessibilityEventReceived_Readability_DoesNotProcessSelectionWhenSpeechPlaying) {
+  EXPECT_CALL(page_handler_,
+              OnDistillationStateChanged(
+                  read_anything::mojom::ReadAnythingDistillationState::
+                      kDistillationWithContent))
+      .Times(1);
+  controller().SetDistillationState(
+      read_anything::mojom::ReadAnythingDistillationState::
+          kDistillationWithContent);
+  controller().OnIsSpeechActiveChanged(true);
+
+  model().set_requires_post_process_selection(true);
+
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  AccessibilityEventReceived({update});
+
+  EXPECT_TRUE(model().requires_post_process_selection());
+
+  controller().OnIsSpeechActiveChanged(false);
+  EXPECT_FALSE(model().requires_post_process_selection());
+}
+
 TEST_F(ReadAnythingAppControllerReadabilitySelectTextTest,
        ProcessModelUpdates_Readability_RequiresDistillation) {
   // Provide  "stale" content.
