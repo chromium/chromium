@@ -69,6 +69,8 @@ class CORE_EXPORT InspectorTaskRunner final
   void ProcessInterruptingTasks();
   void RequestQuitProcessingInterruptingTasks();
 
+  bool IsInterrupting() const { return is_interrupting_; }
+
  private:
   friend ThreadSafeRefCounted<InspectorTaskRunner>;
   explicit InspectorTaskRunner(
@@ -88,6 +90,7 @@ class CORE_EXPORT InspectorTaskRunner final
   bool quit_requested_ = false;
   base::ConditionVariable task_queue_cv_;
   Deque<Task> interrupting_task_queue_;
+  bool is_interrupting_ = false;
   bool disposed_ GUARDED_BY(lock_) = false;
 };
 
