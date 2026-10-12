@@ -165,6 +165,7 @@ source_set("impl") {
     "//components/password_manager/core/browser/features:utils",
     "//components/password_manager/core/browser/password_store:password_store_impl",
     "//components/payments/content:utils",
+    "//components/payments/core",
     "//components/performance_manager",
     "//components/privacy_sandbox:privacy_sandbox_settings_headers",
     "//components/safe_browsing/core/browser:suspicious_site_warning_allowlist",

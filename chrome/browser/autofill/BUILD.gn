@@ -62,8 +62,9 @@ static_library("autofill") {
 
   public_deps = [
     "//base",
-    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
+    "//components/autofill/content/browser",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
     "//components/keyed_service/content",
@@ -84,7 +85,6 @@ static_library("autofill") {
     "//chrome/browser/net",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/personal_context",
-    "//chrome/browser/profiles",
     "//chrome/browser/signin",
     "//chrome/browser/strike_database",
     "//chrome/browser/subscription_eligibility",
@@ -92,7 +92,6 @@ static_library("autofill") {
     "//chrome/browser/webdata_services",
     "//chrome/common:constants",
     "//components/account_settings",
-    "//components/autofill/content/browser",
     "//components/image_fetcher/core",
     "//components/personal_context/core",
     "//components/prefs",

@@ -40,7 +40,10 @@ source_set("device_notifications") {
 
 source_set("impl") {
   sources = []
-  deps = [ ":device_notifications" ]
+  deps = [
+    ":device_notifications",
+    "//extensions/browser",
+  ]
 
   if (!is_android) {
     sources += [
@@ -73,7 +76,6 @@ source_set("impl") {
       deps += [ "//components/vector_icons" ]
     }
   }
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("test_support") {

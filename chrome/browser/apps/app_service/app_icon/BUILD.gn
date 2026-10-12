@@ -32,6 +32,7 @@ source_set("app_icon") {
     "//components/services/app_service",
     "//components/webapps/common",
     "//content/public/browser",
+    "//services/data_decoder/public/cpp",
   ]
 
   if (enable_extensions) {
@@ -42,7 +43,7 @@ source_set("app_icon") {
     ]
   }
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  public_deps = []
 
   if (is_chromeos) {
     sources += [

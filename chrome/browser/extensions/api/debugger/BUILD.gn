@@ -28,6 +28,7 @@ source_set("debugger") {
     "//base:i18n",
     "//chrome/app:generated_resources",
     "//chrome/app:generated_resources_grit",
+    "//chrome/browser:browser_process",
     "//chrome/browser/devtools",
     "//chrome/browser/extensions",
     "//chrome/browser/infobars",

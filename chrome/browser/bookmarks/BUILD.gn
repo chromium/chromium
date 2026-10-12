@@ -56,8 +56,6 @@ source_set("impl") {
     "permanent_folder_ordering_tracker.cc",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     ":bookmarks",
     "//chrome/browser:browser_process",
@@ -65,6 +63,7 @@ source_set("impl") {
     "//chrome/browser/enterprise/browser_management:management_identity",
     "//chrome/browser/favicon",
     "//chrome/browser/history",
+    "//chrome/browser/policy",
     "//chrome/browser/sync",
     "//chrome/browser/undo",
     "//components/bookmarks/common",
@@ -72,7 +71,9 @@ source_set("impl") {
     "//components/commerce/core:feature_list",
     "//components/commerce/core:shopping_service",
     "//components/favicon/core",
+    "//components/favicon_base",
     "//components/history/core/browser",
+    "//components/os_crypt/async/browser",
     "//components/policy:generated",
     "//components/pref_registry",
     "//components/prefs",

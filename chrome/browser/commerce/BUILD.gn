@@ -14,7 +14,6 @@ source_set("commerce") {
 
 source_set("impl") {
   sources = [ "shopping_service_factory.cc" ]
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
     ":commerce",
     "//chrome/browser:browser_process",
@@ -27,6 +26,7 @@ source_set("impl") {
     "//chrome/browser/sessions",
     "//chrome/browser/signin",
     "//chrome/browser/sync",
+    "//chrome/common:chrome_features",
     "//components/commerce/content/browser",
     "//components/commerce/core:commerce_constants",
     "//components/commerce/core:commerce_subscription_db_content_proto",

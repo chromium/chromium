@@ -60,6 +60,7 @@ source_set("impl") {
 
   deps = [
     ":contextual_cueing",
+    "//chrome/browser:browser_process",
     "//chrome/browser:primitives",
     "//chrome/browser/favicon",
     "//chrome/browser/optimization_guide",
@@ -74,6 +75,8 @@ source_set("impl") {
     "//chrome/browser/ui/side_panel",
     "//chrome/browser/ui/side_panel:side_panel_views_dependent",
     "//chrome/browser/ui/tabs:tabs_public",
+    "//chrome/common",
+    "//chrome/common:channel_info",
     "//components/favicon/core",
     "//components/infobars/content",
     "//components/keyed_service/core",

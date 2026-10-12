@@ -16,13 +16,7 @@ source_set("enterprise_networking_attributes") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  public_deps = [
-    "//extensions/browser",
-
-    # TODO(crbug.com/354842935): Temporarily added to access
-    # primary user profile without changing the behavior.
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ "//extensions/browser" ]
 
   deps = [
     "//base",
@@ -33,6 +27,7 @@ source_set("enterprise_networking_attributes") {
     "//chrome/common/extensions/api",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/network",
+    "//components/user_manager",
     "//net",
   ]
 }

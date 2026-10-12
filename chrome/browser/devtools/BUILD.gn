@@ -133,8 +133,9 @@ static_library("devtools") {
 
   public_deps = [
     ":devtools_toggle_action",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser:primitives",
+    "//content/public/browser",
+    "//content/public/common:buildflags",
   ]
 
   deps = [
@@ -551,7 +552,6 @@ static_library("test_support") {
       "//chrome/test:test_support",
       "//chrome/test/base:chrome_test_utils",
       "//components/policy/core/common:test_support",
-      "//content/public/browser",
       "//content/test:test_support",
     ]
 

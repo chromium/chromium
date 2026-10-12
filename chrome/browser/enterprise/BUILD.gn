@@ -470,10 +470,7 @@ source_set("impl") {
     "util/managed_browser_utils.cc",
   ]
 
-  public_deps = [
-    ":enterprise",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ ":enterprise" ]
 
   deps = [
     ":browser_launch_reporting",

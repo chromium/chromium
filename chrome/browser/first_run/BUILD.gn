@@ -41,12 +41,11 @@ source_set("first_run") {
 source_set("impl") {
   sources = []
 
-  public_deps = [
-    ":first_run",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ ":first_run" ]
 
   deps = [
+    "//chrome/browser:browser_features",
+    "//chrome/browser:shell_integration",
     "//chrome/browser/bookmarks",
     "//chrome/browser/favicon",
     "//chrome/browser/google",

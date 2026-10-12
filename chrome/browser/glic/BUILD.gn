@@ -520,7 +520,6 @@ source_set("impl") {
 
   public_deps = [
     ":private_types",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/actor",
   ]
   deps = [

@@ -32,6 +32,9 @@ source_set("impl") {
   deps = [
     ":digital_credentials",
     "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/app/vector_icons",
+    "//chrome/browser:resources",
     "//chrome/browser/net",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles:profile",
@@ -61,8 +64,6 @@ source_set("impl") {
       "//ui/views",
     ]
   }
-
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("unit_tests") {

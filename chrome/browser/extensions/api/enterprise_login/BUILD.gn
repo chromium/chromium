@@ -18,9 +18,10 @@ source_set("enterprise_login") {
   deps = [
     "//base",
     "//chrome/browser:browser_process",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/lifetime",
+    "//chrome/common:constants",
     "//chrome/common/extensions/api",
     "//components/prefs",
+    "//components/user_manager",
   ]
 }

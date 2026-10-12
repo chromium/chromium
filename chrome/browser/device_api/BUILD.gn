@@ -70,8 +70,6 @@ source_set("impl") {
       "//chromeos/components/kiosk",
     ]
   }
-
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("unit_tests") {

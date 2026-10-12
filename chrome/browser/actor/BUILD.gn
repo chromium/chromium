@@ -268,6 +268,7 @@ source_set("impl") {
     "//components/actor/core:logging",
     "//components/affiliations/core/browser:affiliations",
     "//components/affiliations/core/browser/domain_matching",
+    "//components/autofill/content/browser",
     "//components/autofill/core/browser",
     "//components/autofill/core/browser/integrators/actor:actor_form_filling_types",
     "//components/bookmarks/browser",
@@ -305,8 +306,6 @@ source_set("impl") {
     "//ui/gfx/codec",
     "//url",
   ]
-
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   if (is_android) {
     deps += [
@@ -360,7 +359,6 @@ source_set("actor_tab_data_impl") {
   deps = [
     ":actor",
     "//base",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/actor/ui:dom_node_geometry",
     "//chrome/browser/ui/tabs:tabs_public",
     "//chrome/common",
