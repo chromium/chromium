@@ -166,7 +166,7 @@ public class SupportLibWebViewChromiumFactory
                 WebFeatures.WEB_SURFACE + WebFeatures.DEV_SUFFIX,
                 Features.ADD_QUIC_HINTS_WILDCARDS,
                 Features.THEME_COLOR_CALLBACK + Features.DEV_SUFFIX,
-                Features.NAVIGATION_LISTENER_NAVIGATION_STATE + Features.DEV_SUFFIX,
+                Features.NAVIGATION_LISTENER_NAVIGATION_STATE,
                 // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                 // when they're initially added (this can be removed in a future CL). The one
                 // exception is when adding a new method to an interface that extends from
