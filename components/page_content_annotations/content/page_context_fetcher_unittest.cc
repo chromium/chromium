@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -26,7 +27,10 @@
 #include "build/buildflag.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/page_content_annotations/content/page_context_fetcher_metrics.h"
+#include "components/page_content_annotations/content/page_context_fetcher_options.h"
+#include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/viz/common/surfaces/tracked_element_rects.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
@@ -1108,6 +1112,142 @@ TEST_F(PageContextFetcherPdfCallbackTest, FetchPdfContentCallbackTimeout) {
   EXPECT_TRUE(pending_callback.IsCancelled());
   std::move(pending_callback)
       .Run(PdfResult(url::Origin::Create(GURL("https://example.com"))));
+}
+
+class PageContextFetcherScreenshotMetricsTest
+    : public content::RenderViewHostTestHarness {
+ public:
+  PageContextFetcherScreenshotMetricsTest() = default;
+  ~PageContextFetcherScreenshotMetricsTest() override = default;
+
+ protected:
+  void SetUp() override {
+    content::RenderViewHostTestHarness::SetUp();
+    content::NavigationSimulator::NavigateAndCommitFromBrowser(
+        web_contents(), GURL("https://example.com"));
+    fetcher_ = std::make_unique<PageContextFetcher>(
+        base::NullCallback(), /*progress_listener=*/nullptr,
+        /*fetch_pdf_content_callback=*/base::NullCallback());
+    fetcher_->Observe(web_contents());
+    fetcher_->pending_result_ = std::make_unique<FetchPageContextResult>();
+    fetcher_->callback_ = future_.GetCallback();
+    fetcher_->initialization_done_ = true;
+    fetcher_->inner_text_done_ = true;
+    fetcher_->pdf_done_ = true;
+    fetcher_->annotated_page_content_done_ = true;
+  }
+
+  void TearDown() override {
+    fetcher_.reset();
+    content::RenderViewHostTestHarness::TearDown();
+  }
+
+  void CallGetTabScreenshot(const ScreenshotOptions& options) {
+    fetcher_->GetTabScreenshot(*web_contents(), options);
+  }
+
+  void CallReceivedViewportBitmap(
+      const content::CopyFromSurfaceResult& result) {
+    fetcher_->ReceivedViewportBitmap(result);
+  }
+
+  void CallReceivedViewportBitmapOrError(
+      base::expected<const SkBitmap*, std::string> bitmap_result,
+      const viz::TrackedElementRects& tracked_element_rects = {}) {
+    fetcher_->ReceivedViewportBitmapOrError(tracked_element_rects,
+                                            std::move(bitmap_result));
+  }
+
+  void CallOnScreenshotTimeout() { fetcher_->OnScreenshotTimeout(); }
+
+  std::unique_ptr<PageContextFetcher> fetcher_;
+  base::test::TestFuture<FetchPageContextResultCallbackArg> future_;
+};
+
+TEST_F(PageContextFetcherScreenshotMetricsTest, NoViewOrSurface) {
+  base::HistogramTester histograms;
+  // In RenderViewHostTestHarness, IsSurfaceAvailableForCopy() is false by
+  // default.
+  CallGetTabScreenshot(ScreenshotOptions::ViewportOnly(
+      /*paint_preview_options=*/std::nullopt,
+      /*screenshot_collection_options=*/std::nullopt));
+
+  histograms.ExpectUniqueSample(kScreenshotCaptureStatusHistogram,
+                                ScreenshotCaptureStatus::kNoViewOrSurface, 1);
+}
+
+TEST_F(PageContextFetcherScreenshotMetricsTest, CopyFromSurfaceError) {
+  base::HistogramTester histograms;
+  CallReceivedViewportBitmap(
+      base::unexpected(content::CopyFromSurfaceError::kUnknown));
+
+  histograms.ExpectUniqueSample(kScreenshotCaptureStatusHistogram,
+                                ScreenshotCaptureStatus::kCopyFromSurfaceError,
+                                1);
+}
+
+TEST_F(PageContextFetcherScreenshotMetricsTest, PaintPreviewError) {
+  base::HistogramTester histograms;
+  CallReceivedViewportBitmapOrError(base::unexpected("paint preview failed"));
+
+  histograms.ExpectUniqueSample(kScreenshotCaptureStatusHistogram,
+                                ScreenshotCaptureStatus::kPaintPreviewError, 1);
+}
+
+TEST_F(PageContextFetcherScreenshotMetricsTest, Timeout) {
+  base::HistogramTester histograms;
+  CallOnScreenshotTimeout();
+
+  histograms.ExpectUniqueSample(kScreenshotCaptureStatusHistogram,
+                                ScreenshotCaptureStatus::kTimeout, 1);
+}
+
+TEST_F(PageContextFetcherScreenshotMetricsTest, Success) {
+  base::HistogramTester histograms;
+
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(10, 10);
+  bitmap.eraseColor(SK_ColorBLUE);
+
+  CallReceivedViewportBitmapOrError(base::ok(&bitmap));
+  ASSERT_TRUE(future_.Wait());
+
+  histograms.ExpectUniqueSample(kScreenshotCaptureStatusHistogram,
+                                ScreenshotCaptureStatus::kSuccess, 1);
+}
+
+TEST_F(PageContextFetcherScreenshotMetricsTest, RedactionError) {
+  base::test::ScopedFeatureList feature_list(
+      blink::features::kAIPageContentTrackedElementsPassword);
+  base::HistogramTester histograms;
+
+  // A bitmap with valid dimensions/info but unallocated pixels fails during
+  // pixel copy when redaction is requested.
+  SkBitmap unallocated_bitmap;
+  unallocated_bitmap.setInfo(SkImageInfo::MakeN32Premul(10, 10));
+
+  viz::TrackedElementRects tracked_rects;
+  tracked_rects[viz::TrackedElementFeature::kPasswordTracking].emplace_back(
+      viz::TrackedElementId::CreateRandom(), gfx::Rect(0, 0, 5, 5));
+
+  CallReceivedViewportBitmapOrError(base::ok(&unallocated_bitmap),
+                                    tracked_rects);
+  ASSERT_TRUE(future_.Wait());
+
+  histograms.ExpectUniqueSample(kScreenshotCaptureStatusHistogram,
+                                ScreenshotCaptureStatus::kRedactionError, 1);
+}
+
+TEST_F(PageContextFetcherScreenshotMetricsTest, EncodingError) {
+  base::HistogramTester histograms;
+
+  // An empty SkBitmap cannot be encoded by JPEGCodec.
+  SkBitmap empty_bitmap;
+  CallReceivedViewportBitmapOrError(base::ok(&empty_bitmap));
+  ASSERT_TRUE(future_.Wait());
+
+  histograms.ExpectUniqueSample(kScreenshotCaptureStatusHistogram,
+                                ScreenshotCaptureStatus::kEncodingError, 1);
 }
 
 }  // namespace page_content_annotations

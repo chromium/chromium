@@ -12,4 +12,8 @@ void RecordPdfTextExtractionStatus(PdfTextExtractionStatus status) {
   base::UmaHistogramEnumeration(kPdfTextExtractionStatusHistogram, status);
 }
 
+void RecordScreenshotCaptureStatus(ScreenshotCaptureStatus status) {
+  base::UmaHistogramEnumeration(kScreenshotCaptureStatusHistogram, status);
+}
+
 }  // namespace page_content_annotations

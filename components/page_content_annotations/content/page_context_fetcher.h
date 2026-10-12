@@ -240,6 +240,7 @@ class PageContextFetcher : public content::WebContentsObserver {
   friend class PageContextFetcherPdfBytesExtractionTest;
   friend class PageContextFetcherPdfTextExtractionTest;
   friend class PageContextFetcherHangingPdfTest;
+  friend class PageContextFetcherScreenshotMetricsTest;
 
   // Redacts a screenshot by painting over sensitive regions with
   // `redaction_color`.
@@ -285,8 +286,10 @@ class PageContextFetcher : public content::WebContentsObserver {
 
   void OnScreenshotTimeout();
 
+  struct ScreenshotError;
+
   void ReceivedEncodedScreenshot(
-      base::expected<std::pair<std::vector<uint8_t>, SkBitmap>, std::string>
+      base::expected<std::pair<std::vector<uint8_t>, SkBitmap>, ScreenshotError>
           screenshot_data);
 
   void ReceivedInnerText(

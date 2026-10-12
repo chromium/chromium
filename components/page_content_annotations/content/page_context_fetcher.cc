@@ -354,6 +354,11 @@ std::optional<std::vector<uint8_t>> EncodeScreenshot(
   return encoded;
 }
 
+struct PageContextFetcher::ScreenshotError {
+  ScreenshotCaptureStatus status;
+  std::string message;
+};
+
 PageContextFetcher::PageContextFetcher(
     GetScreenshotServiceCallback get_screenshot_service_callback,
     std::unique_ptr<FetchPageProgressListener> progress_listener,
@@ -512,7 +517,9 @@ void PageContextFetcher::GetTabScreenshot(
 
   if (!view || !view->IsSurfaceAvailableForCopy()) {
     ReceivedEncodedScreenshot(
-        base::unexpected("Could not retrieve RenderWidgetHostView."));
+        base::unexpected(ScreenshotError{
+            ScreenshotCaptureStatus::kNoViewOrSurface,
+            "Could not retrieve RenderWidgetHostView."}));
     return;
   }
 
@@ -529,7 +536,9 @@ void PageContextFetcher::GetTabScreenshot(
         get_screenshot_service_callback_.Run(web_contents.GetBrowserContext());
     if (!service) {
       ReceivedEncodedScreenshot(
-          base::unexpected("Could not get PageContentScreenshotService."));
+          base::unexpected(ScreenshotError{
+              ScreenshotCaptureStatus::kPaintPreviewError,
+              "Could not get PageContentScreenshotService."}));
       return;
     }
 
@@ -539,7 +548,9 @@ void PageContextFetcher::GetTabScreenshot(
             web_contents,
             screenshot_options.paint_preview_options()->iframe_redaction_scope),
         [&](std::string error) {
-          ReceivedEncodedScreenshot(base::unexpected(std::move(error)));
+          ReceivedEncodedScreenshot(base::unexpected(ScreenshotError{
+              ScreenshotCaptureStatus::kPaintPreviewError,
+              std::move(error)}));
           return;
         });
 
@@ -629,9 +640,9 @@ void PageContextFetcher::ReceivedViewportBitmap(
   if (!result.has_value()) {
     base::UmaHistogramEnumeration("Glic.PageContextFetcher.GetScreenshotError",
                                   result.error());
-    ReceivedViewportBitmapOrError(
-        viz::TrackedElementRects(),
-        base::unexpected<std::string>(ToString(result.error())));
+    ReceivedEncodedScreenshot(base::unexpected(ScreenshotError{
+        ScreenshotCaptureStatus::kCopyFromSurfaceError,
+        std::string(ToString(result.error()))}));
     return;
   }
 
@@ -661,7 +672,9 @@ void PageContextFetcher::ReceivedViewportBitmapOrError(
     MaybeAddIframeInfo();
     RedactAndEncodeScreenshotIfNeeded();
   } else {
-    ReceivedEncodedScreenshot(base::unexpected(bitmap_result.error()));
+    ReceivedEncodedScreenshot(base::unexpected(ScreenshotError{
+        ScreenshotCaptureStatus::kPaintPreviewError,
+        std::move(bitmap_result.error())}));
   }
 }
 
@@ -678,24 +691,26 @@ void PageContextFetcher::RedactAndEncodeScreenshot(
              std::optional<ScreenshotOptions::ScreenshotCollectionOptions>
                  screenshot_collection_options)
               -> base::expected<std::pair<std::vector<uint8_t>, SkBitmap>,
-                                std::string> {
-            ASSIGN_OR_RETURN(SkBitmap redacted_bitmap,
-                             PageContextFetcher::RedactScreenshotOnWorkerThread(
-                                 bitmap, visible_bounding_boxes_for_redaction,
-                                 redaction_color));
-
-            std::optional<std::vector<uint8_t>> encoded =
-                EncodeScreenshot(redacted_bitmap, screenshot_collection_options);
-            base::expected<std::pair<std::vector<uint8_t>, SkBitmap>,
-                           std::string>
-                reply;
-            if (encoded) {
-              reply.emplace(
-                  std::make_pair(std::move(encoded.value()), redacted_bitmap));
-            } else {
-              reply = base::unexpected("JPEGCodec failed to encode");
+                                ScreenshotError> {
+            base::expected<SkBitmap, std::string> redacted_bitmap =
+                PageContextFetcher::RedactScreenshotOnWorkerThread(
+                    bitmap, visible_bounding_boxes_for_redaction,
+                    redaction_color);
+            if (!redacted_bitmap.has_value()) {
+              return base::unexpected(ScreenshotError{
+                  ScreenshotCaptureStatus::kRedactionError,
+                  std::move(redacted_bitmap.error())});
             }
-            return reply;
+
+            std::optional<std::vector<uint8_t>> encoded = EncodeScreenshot(
+                *redacted_bitmap, screenshot_collection_options);
+            if (!encoded) {
+              return base::unexpected(ScreenshotError{
+                  ScreenshotCaptureStatus::kEncodingError,
+                  "JPEGCodec failed to encode"});
+            }
+            return std::make_pair(std::move(*encoded),
+                                  std::move(*redacted_bitmap));
           },
           *screenshot_bitmap_, std::move(visible_bounding_boxes_for_redaction),
           screenshot_redaction_color_, screenshot_collection_options_),
@@ -771,11 +786,12 @@ void PageContextFetcher::OnScreenshotTimeout() {
     return;
   }
 
-  ReceivedEncodedScreenshot(base::unexpected("ScreenshotTimeout"));
+  ReceivedEncodedScreenshot(base::unexpected(ScreenshotError{
+      ScreenshotCaptureStatus::kTimeout, "ScreenshotTimeout"}));
 }
 
 void PageContextFetcher::ReceivedEncodedScreenshot(
-    base::expected<std::pair<std::vector<uint8_t>, SkBitmap>, std::string>
+    base::expected<std::pair<std::vector<uint8_t>, SkBitmap>, ScreenshotError>
         screenshot_data) {
   // This function can be called multiple times, for timeout behavior. Early
   // exit if it's already been called.
@@ -786,6 +802,7 @@ void PageContextFetcher::ReceivedEncodedScreenshot(
   screenshot_done_ = true;
   capture_count_lock_ = {};
   if (screenshot_data.has_value()) {
+    RecordScreenshotCaptureStatus(ScreenshotCaptureStatus::kSuccess);
     pending_result_->screenshot_result.value().screenshot_data =
         std::move(screenshot_data.value().first);
     switch (GetScreenshotImageType(screenshot_collection_options_)) {
@@ -808,12 +825,13 @@ void PageContextFetcher::ReceivedEncodedScreenshot(
       progress_listener_->EndScreenshot(std::nullopt);
     }
   } else {
+    RecordScreenshotCaptureStatus(screenshot_data.error().status);
     pending_result_->screenshot_result =
-        base::unexpected(screenshot_data.error());
+        base::unexpected(screenshot_data.error().message);
     base::UmaHistogramTimes(
         "Glic.PageContextFetcher.GetEncodedScreenshot.Failure", elapsed);
     if (progress_listener_) {
-      progress_listener_->EndScreenshot(screenshot_data.error());
+      progress_listener_->EndScreenshot(screenshot_data.error().message);
     }
   }
   if (pending_result_->screenshot_result.has_value()) {

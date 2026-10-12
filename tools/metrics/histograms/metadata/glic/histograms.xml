@@ -2424,6 +2424,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.PageContextFetcher.GetEncodedScreenshot.Status"
+    enum="ScreenshotCaptureStatus" expires_after="2027-04-09">
+  <owner>linnan@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the status (success or failure reason) of a screenshot capture
+    request in PageContextFetcher. Recorded once per screenshot capture request
+    when it completes or fails.
+  </summary>
+</histogram>
+
 <histogram name="Glic.PageContextFetcher.GetScreenshot" units="ms"
     expires_after="2027-03-07">
   <owner>carlosk@chromium.org</owner>
