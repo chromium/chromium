@@ -2602,6 +2602,11 @@ void ReadAnythingAppController::OnCollapseSelection() {
   if (IsPdf() && !model_.has_selection()) {
     return;
   }
+  // Until mapping finishes, Readability content has no node IDs, so every side
+  // panel selection change arrives as a collapse.
+  if (model_.is_readability_mapping_in_progress()) {
+    return;
+  }
 
   model_.increment_selections_from_reading_mode();
   if (IsPdf()) {
@@ -3237,8 +3242,11 @@ void ReadAnythingAppController::ApplyAccessibilityUpdatesForReadability(
     PostProcessSelection();
   }
 
-  // Check if we should perform text mapping for readability text selection.
-  MaybeMapRenderedTextToTree();
+  // Only attempt mapping when the tree changes or loading finishes (as
+  // kLoadComplete may arrive with an empty `updates` list).
+  if (!updates.empty() || model_.page_finished_loading()) {
+    MaybeMapRenderedTextToTree();
+  }
 }
 
 void ReadAnythingAppController::OnRenderedTextBlocksAvailable(

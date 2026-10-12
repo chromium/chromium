@@ -1716,15 +1716,40 @@ bool ReadAnythingAppModel::MapRenderedTextToTree(
   occupied_ax_ranges_.clear();
   // Ensure the mapping storage size matches the input blocks.
   text_to_ax_map_.resize(blocks.size());
-  should_map_rendered_text_to_tree_for_readability_ = false;
 
   FlattenAXTree(tree);
   base::TimeDelta flattening_duration = step_timer.Elapsed();
 
-  // If the AXTree is empty, there is no text to map back to.
+  const bool is_loaded = page_finished_loading_ || tree->data().loaded;
+
+  // If the AXTree is empty, there is no text to map back to. Once loading has
+  // finished, reset the mapping flags so mapping is not retried on every event.
   if (global_ax_tree_text_.empty()) {
+    if (is_loaded) {
+      should_map_rendered_text_to_tree_for_readability_ = false;
+      is_readability_mapping_in_progress_ = false;
+    }
     return false;
   }
+
+  // Build a frequency map of the distilled blocks.
+  step_timer = base::ElapsedTimer();
+  size_t total_distilled_chars = 0;
+  base::flat_map<std::u16string_view, int> readability_block_counts;
+  for (const auto& block : blocks) {
+    if (!block.empty()) {
+      total_distilled_chars += block.length();
+      readability_block_counts[block]++;
+    }
+  }
+  const size_t tree_mapping_coverage =
+      total_distilled_chars == 0
+          ? 0
+          : (global_ax_tree_text_.size() * 100) / total_distilled_chars;
+  if (!is_loaded && tree_mapping_coverage < kMinReadabilityMappingSuccessRate) {
+    return false;
+  }
+  base::TimeDelta initial_anchors_duration = step_timer.Elapsed();
 
   // Build a Suffix Array index of the original page's text. Finding a text
   // block can then be done in O(log N) time.
@@ -1733,25 +1758,34 @@ bool ReadAnythingAppModel::MapRenderedTextToTree(
   index.Build(global_ax_tree_text_);
   base::TimeDelta suffix_array_duration = step_timer.Elapsed();
 
-  // Build a frequency map of the distilled blocks.
   step_timer = base::ElapsedTimer();
-  base::flat_map<std::u16string_view, int> readability_block_counts;
-  for (const auto& block : blocks) {
-    if (!block.empty()) {
-      readability_block_counts[block]++;
-    }
-  }
-
   std::vector<AlignmentAnchor> candidates =
       FindGloballyUniqueBlocks(blocks, index, readability_block_counts);
 
   std::vector<AlignmentAnchor> major_anchors =
       FilterMonotonicAnchors(std::move(candidates));
-  base::TimeDelta initial_anchors_duration = step_timer.Elapsed();
+  initial_anchors_duration += step_timer.Elapsed();
 
   step_timer = base::ElapsedTimer();
   GapSubstringAlignment(blocks, index, major_anchors);
   base::TimeDelta gap_alignment_duration = step_timer.Elapsed();
+
+  std::optional<size_t> success_rate;
+  if (total_distilled_chars > 0) {
+    size_t total_mapped_chars = 0;
+    for (const auto& block_segments : text_to_ax_map_) {
+      for (const auto& segment : block_segments) {
+        total_mapped_chars += (segment.end - segment.start);
+      }
+    }
+    success_rate = (total_mapped_chars * 100) / total_distilled_chars;
+    if (!is_loaded &&
+        success_rate.value() < kMinReadabilityMappingSuccessRate) {
+      text_to_ax_map_.assign(blocks.size(), {});
+      occupied_ax_ranges_.clear();
+      return false;
+    }
+  }
 
   // Sort mapping segments for every block to ensure physical DOM splitting
   // happens in sequential order in the WebUI.
@@ -1762,9 +1796,10 @@ bool ReadAnythingAppModel::MapRenderedTextToTree(
               });
   }
 
+  should_map_rendered_text_to_tree_for_readability_ = false;
   RecordReadabilityMappingMetrics(
-      blocks, total_timer.Elapsed(), flattening_duration, suffix_array_duration,
-      initial_anchors_duration, gap_alignment_duration);
+      success_rate, total_timer.Elapsed(), flattening_duration,
+      suffix_array_duration, initial_anchors_duration, gap_alignment_duration);
 
   return true;
 }
@@ -2201,29 +2236,16 @@ ReadAnythingAppModel::CreateSegmentsForMatch(size_t ax_start,
 }
 
 void ReadAnythingAppModel::RecordReadabilityMappingMetrics(
-    const std::vector<std::u16string>& blocks,
+    std::optional<size_t> success_rate,
     base::TimeDelta total_duration,
     base::TimeDelta flattening_duration,
     base::TimeDelta suffix_array_duration,
     base::TimeDelta initial_anchors_duration,
     base::TimeDelta gap_alignment_duration) {
-  size_t total_distilled_chars = 0;
-  for (const auto& block : blocks) {
-    total_distilled_chars += block.length();
-  }
-
-  if (total_distilled_chars > 0) {
-    size_t total_mapped_chars = 0;
-    for (const auto& block_segments : text_to_ax_map_) {
-      for (const auto& segment : block_segments) {
-        total_mapped_chars += (segment.end - segment.start);
-      }
-    }
-    int success_rate =
-        static_cast<int>((total_mapped_chars * 100) / total_distilled_chars);
+  if (success_rate.has_value()) {
     base::UmaHistogramPercentage(
         "Accessibility.ReadAnything.ReadabilityMapping.SuccessRate",
-        success_rate);
+        success_rate.value());
   }
 
   base::UmaHistogramTimes(

@@ -2638,6 +2638,16 @@ TEST_F(ReadAnythingAppControllerTest,
 }
 
 TEST_F(ReadAnythingAppControllerTest,
+       OnCollapseSelection_NoOpWhenReadabilityMappingInProgress) {
+  model().set_is_readability_mapping_in_progress(true);
+
+  EXPECT_CALL(page_handler_, OnCollapseSelection()).Times(0);
+  controller().OnCollapseSelection();
+
+  EXPECT_EQ(0, model().unprocessed_selections_from_reading_mode());
+}
+
+TEST_F(ReadAnythingAppControllerTest,
        OnSelectionChange_ClickAfterClickDoesNotUpdateSelection) {
   ui::AXNodeData node1 = test::TextNode(/* id= */ 2);
   ui::AXNodeData node2 = test::TextNode(/* id= */ 3);
@@ -6510,13 +6520,21 @@ TEST_F(ReadAnythingAppControllerReadabilitySelectTextTest,
   // The mapping couldn't run because the tree is missing.
   EXPECT_TRUE(model().should_map_rendered_text_to_tree_for_readability());
 
-  // Simulate the AXTree update arriving and triggering an AX event.
+  // Simulate an initial incomplete AXTree update with no text.
+  ui::AXTreeUpdate empty_update;
+  test::SetUpdateTreeID(&empty_update, new_tree_id);
+  empty_update.root_id = 1;
+  empty_update.nodes = {test::GenericContainerNode(1)};
+  AccessibilityEventReceived({empty_update});
+
+  // Mapping should remain pending until the tree has matching text.
+  EXPECT_TRUE(model().should_map_rendered_text_to_tree_for_readability());
+
+  // Simulate the populated AXTree update arriving and triggering an AX event.
   ui::AXTreeUpdate update;
   test::SetUpdateTreeID(&update, new_tree_id);
   update.root_id = 1;
-  ui::AXNodeData root;
-  root.id = 1;
-  update.nodes = {std::move(root)};
+  update.nodes = {test::TextNode(1, u"block1")};
   AccessibilityEventReceived({update});
 
   // Verify that the mapping was triggered and the flag was reset.
@@ -6534,9 +6552,7 @@ TEST_F(ReadAnythingAppControllerReadabilitySelectTextTest,
   ui::AXTreeUpdate update;
   test::SetUpdateTreeID(&update, new_tree_id);
   update.root_id = 1;
-  ui::AXNodeData root;
-  root.id = 1;
-  update.nodes = {std::move(root)};
+  update.nodes = {test::TextNode(1, u"block1")};
   AccessibilityEventReceived({update});
 
   // Verify that the flag is still false because blocks haven't arrived.
