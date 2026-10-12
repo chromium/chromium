@@ -2170,7 +2170,6 @@ if (!is_android) {
     # NOTE: This is the main "browser_tests" section for |is_chromeos|.
     if (is_chromeos) {
       sources += [
-        "//third_party/liblouis/wasm/liblouis_wrapper_browsertest.cc",
         "base/ash/web_ui_browser_test_browsertest.cc",
         "data/webui/chromeos/async_gen.cc",
         "data/webui/chromeos/async_gen.h",
@@ -2262,6 +2261,7 @@ if (!is_android) {
         "//chromeos/strings",
         "//components/live_caption:constants",
         "//components/reporting/util:test_callbacks_support",
+        "//third_party/liblouis:browser_tests",
         "//ui/display:display_manager_test_api",
         "//ui/file_manager:file_manager_gen_resources_grit",
         "//ui/file_manager:resources_grit",

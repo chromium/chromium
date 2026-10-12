@@ -38,3 +38,17 @@ if (!is_castos) {
     outputs = [ "${chromevox_test_data_dir}/{{source_file_part}}" ]
   }
 }
+
+if (is_chromeos) {
+  source_set("browser_tests") {
+    testonly = true
+    sources = [ "wasm/liblouis_wrapper_browsertest.cc" ]
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    deps = [
+      "//base",
+      "//chrome/browser/extensions:test_support",
+      "//content/test:test_support",
+    ]
+    data_deps = [ ":liblouis_test_data" ]
+  }
+}
