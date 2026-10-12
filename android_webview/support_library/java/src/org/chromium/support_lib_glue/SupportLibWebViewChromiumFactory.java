@@ -161,7 +161,7 @@ public class SupportLibWebViewChromiumFactory
                 Features.NAVIGATION_GET_RESPONSE_HEADERS + Features.DEV_SUFFIX,
                 WebFeatures.WEB_CONTENT,
                 Features.WEBVIEW_NAVIGATE_DRAIN_PREFETCH,
-                Features.NAVIGATION_GET_NAVIGATION_START_UPTIME_MILLIS + Features.DEV_SUFFIX,
+                Features.NAVIGATION_GET_NAVIGATION_START_UPTIME_MILLIS,
                 Features.WEB_MESSAGE_SHARED_ARRAY_BUFFER + Features.DEV_SUFFIX,
                 WebFeatures.WEB_SURFACE + WebFeatures.DEV_SUFFIX,
                 Features.ADD_QUIC_HINTS_WILDCARDS,
