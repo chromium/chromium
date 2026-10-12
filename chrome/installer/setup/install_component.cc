@@ -10,16 +10,17 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/base64.h"
 #include "base/check.h"
 #include "base/containers/span.h"
+#include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/logging.h"
 #include "base/values.h"
@@ -60,33 +61,30 @@ InstallStatus InstallComponentInternal(
     const InstallerState& installer_state,
     base::span<const ComponentConfig> supported_components,
     crx_file::VerifierFormat verifier_format) {
-  // Validate source file: must not be empty and must not reference parent dirs.
-  CHECK(!source_file.empty() && !source_file.ReferencesParent());
+  // Source file must be absolute, non-empty and must not reference parent dirs.
+  CHECK(source_file.IsAbsolute() && !source_file.ReferencesParent());
 
-  // TOCTOU-Safe Staged copy into admin-protected temp directory.
-  SelfCleaningTempDir temp_path;
-  if (!temp_path.Initialize(installer_state.target_path().DirName(),
-                            kInstallTempDir)) {
-    PLOG(ERROR) << "Failed to initialize temporary directory";
+  // Reject anything that is not a regular non-empty file.
+  base::File::Info source_info;
+  if (base::GetFileInfo(source_file, &source_info)) {
+    CHECK(!source_info.is_directory && source_info.size > 0);
+  }
+
+  // The staged CRX is a copy of a caller-chosen file made before the file has
+  // been validated. We stage it in a secure temporary directory (SystemTemp on
+  // Windows when running as SYSTEM or default admin, or the users's private
+  // Temp directory) to ensure unprivileged users cannot read back files they
+  // cannot open themselves.
+  base::ScopedTempDir staged_crx_dir;
+  if (!staged_crx_dir.CreateUniqueTempDir(FILE_PATH_LITERAL("CrxStaging"))) {
+    PLOG(ERROR) << "Failed to create CRX staging directory";
     return installer::INSTALL_COMPONENT_FAILED_INTERNAL;
   }
 
-  FileConductor file_conductor(temp_path.path());
-  absl::Cleanup undo_on_failure = [&file_conductor] {
-    VLOG(1) << "Failure occurred, calling FileConductor::Undo()";
-    file_conductor.Undo();
-  };
-
-  base::FilePath staged_crx_dir;
-  if (!base::CreateTemporaryDirInDir(temp_path.path(), L"CrxStaging",
-                                     &staged_crx_dir)) {
-    PLOG(ERROR) << "Failed to create CRX staging subdirectory in "
-                << temp_path.path();
-    return installer::INSTALL_COMPONENT_FAILED_INTERNAL;
-  }
-
-  base::FilePath staged_file = staged_crx_dir.Append(source_file.BaseName());
-  if (!file_conductor.CopyEntry(source_file, staged_file)) {
+  base::FilePath staged_file =
+      staged_crx_dir.GetPath().Append(source_file.BaseName());
+  if (!base::CopyFile(source_file, staged_file)) {
+    PLOG(ERROR) << "Failed to copy CRX to staging directory";
     return installer::INSTALL_COMPONENT_FAILED_INTERNAL;
   }
 
@@ -127,8 +125,20 @@ InstallStatus InstallComponentInternal(
     return installer::INSTALL_COMPONENT_FAILED_SIGNATURE;
   }
 
-  // Fresh directory for unpacking the CRX payload to prevent filename
-  // collisions with the staged CRX file.
+  // Temp directory for unpacking the CRX payload, under the installer's dir.
+  SelfCleaningTempDir temp_path;
+  if (!temp_path.Initialize(installer_state.target_path().DirName(),
+                            kInstallTempDir)) {
+    PLOG(ERROR) << "Failed to initialize temporary directory";
+    return installer::INSTALL_COMPONENT_FAILED_INTERNAL;
+  }
+
+  FileConductor file_conductor(temp_path.path());
+  absl::Cleanup undo_on_failure = [&file_conductor] {
+    VLOG(1) << "Failure occurred, calling FileConductor::Undo()";
+    file_conductor.Undo();
+  };
+
   base::FilePath unpack_dir;
   if (!base::CreateTemporaryDirInDir(temp_path.path(), L"Unpacked",
                                      &unpack_dir)) {
@@ -141,6 +151,11 @@ InstallStatus InstallComponentInternal(
   if (!zip::Unzip(staged_file, unpack_dir)) {
     LOG(ERROR) << "Failed to unpack CRX.";
     return installer::INSTALL_COMPONENT_INVALID_INPUT;
+  }
+
+  // The staged copy is no longer needed once its contents have been extracted.
+  if (!staged_crx_dir.Delete()) {
+    VLOG(1) << "Failed to delete staged CRX directory";
   }
 
   // Read manifest.json to get version and validate name.

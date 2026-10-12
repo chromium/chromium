@@ -4,9 +4,10 @@
 
 #include "chrome/installer/setup/install_component.h"
 
+#include <windows.h>
+
 #include <stdint.h>
 
-#include <memory>
 #include <optional>
 #include <string>
 
@@ -16,6 +17,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/version.h"
+#include "base/win/security_descriptor.h"
 #include "chrome/installer/setup/installer_state.h"
 #include "chrome/installer/util/util_constants.h"
 #include "components/crx_file/crx_verifier.h"
@@ -507,6 +509,33 @@ TEST(InstallComponentTest, IncompletePreviousInstallationOverwritten) {
   EXPECT_FALSE(
       base::PathExists(v394_incomplete.AppendASCII("manifest.json.tmp")));
   EXPECT_FALSE(base::PathExists(v394_incomplete.AppendASCII("stale.dll")));
+}
+
+// Verifies that the installed component directory inherits its ACL from the
+// parent application directory. This ensures that components installed by an
+// elevated process remain accessible to standard unprivileged user processes.
+TEST(InstallComponentTest, InstalledComponentDirectoryInheritsAcl) {
+  InstallerState installer_state(InstallerState::SYSTEM_LEVEL);
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  installer_state.set_target_path_for_testing(temp_dir.GetPath());
+
+  base::FilePath src_file = GetTestCrxPath();
+  ASSERT_TRUE(base::PathExists(src_file));
+  ASSERT_EQ(INSTALL_COMPONENT_SUCCESS,
+            InstallComponentForTesting(
+                src_file, installer_state, kTestComponents,
+                crx_file::VerifierFormat::CRX3_WITH_TEST_PUBLISHER_PROOF));
+
+  base::FilePath installed_dir =
+      temp_dir.GetPath().AppendASCII(kTestDeveloperCrxId).AppendASCII("394");
+  ASSERT_TRUE(base::PathExists(installed_dir));
+
+  std::optional<base::win::SecurityDescriptor> descriptor =
+      base::win::SecurityDescriptor::FromFile(installed_dir,
+                                              DACL_SECURITY_INFORMATION);
+  ASSERT_TRUE(descriptor.has_value());
+  EXPECT_FALSE(descriptor->dacl_protected());
 }
 
 }  // namespace installer
