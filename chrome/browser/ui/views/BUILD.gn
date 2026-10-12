@@ -117,6 +117,7 @@ source_set("bubble_anchor_util_views_impl") {
     "//chrome/browser/ui/views/toolbar",
     "//chrome/browser/ui/webui",
     "//components/content_settings/core/common:features",
+    "//components/payments/core",
     "//components/tabs:public",
     "//content/public/browser",
     "//ui/base",

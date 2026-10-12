@@ -27,6 +27,7 @@ static_library("add_supervision") {
 
   public_deps = [
     ":mojo_bindings",
+    "//ash/constants",
     "//base",
     "//chrome/browser/ui/webui/ash/system_web_dialog",
     "//components/signin/public/identity_manager",
@@ -63,10 +64,12 @@ static_library("add_supervision") {
     "//components/application_locale_storage",
     "//components/constrained_window",
     "//components/google/core/common",
+    "//components/services/app_service",
     "//components/services/app_service/public/cpp:app_types",
     "//components/session_manager/core",
     "//components/signin/public/base",
     "//components/supervised_user/core/browser",
+    "//components/sync/base:features",
     "//components/user_manager",
     "//google_apis",
     "//ui/resources:ui_resources_grd",

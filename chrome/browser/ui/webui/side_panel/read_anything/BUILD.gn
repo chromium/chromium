@@ -26,6 +26,7 @@ source_set("read_anything") {
     "//components/translate/core/browser",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
+    "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
   ]
   deps = [
     "//chrome/app:command_ids",
@@ -63,6 +64,7 @@ source_set("read_anything") {
     "//pdf:features",
     "//ui/strings",
     "//ui/webui",
+    "//ui/webui/resources",
     "//ui/webui/tracked_element",
   ]
 

@@ -1900,6 +1900,7 @@ if (is_win) {
     ]
     deps = [
       "//chrome/browser:browser_process",
+      "//chrome/browser:shell_integration",
       "//chrome/browser/profiles",
       "//chrome/browser/profiles:misc",
       "//chrome/browser/profiles:profile",

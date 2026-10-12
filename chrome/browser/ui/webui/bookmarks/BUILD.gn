@@ -41,6 +41,7 @@ if (!is_android) {
       "//chrome/browser/ui/webui:plural_string_handler",
       "//chrome/browser/ui/webui:theme_source",
       "//chrome/browser/ui/webui/page_not_available_for_guest",
+      "//chrome/browser/ui/webui/side_panel/bookmarks:mojo_bindings",
       "//chrome/browser/ui/webui/signin:signin_utils",
       "//chrome/common",
       "//components/bookmarks/browser",

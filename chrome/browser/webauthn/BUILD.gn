@@ -102,6 +102,7 @@ source_set("impl") {
     "//base",
     "//chrome/browser/password_manager",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/webauthn/proto",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser:password_form",
     "//components/password_manager/core/browser/password_store:password_store_interface",

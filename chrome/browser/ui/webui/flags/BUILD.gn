@@ -17,6 +17,7 @@ source_set("flags") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser:flags",
+    "//chrome/browser/infobars",
     "//chrome/browser/lifetime",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:ui_features",
@@ -34,9 +35,9 @@ source_set("flags") {
     "//ui/webui",
     "//ui/webui/resources",
   ]
-  deps += [ "//chrome/browser/infobars" ]
   if (is_chromeos) {
     deps += [
+      "//ash/constants",
       "//chrome/browser/ash/login/session",
       "//chrome/browser/ash/profiles",
       "//chrome/browser/ash/settings",

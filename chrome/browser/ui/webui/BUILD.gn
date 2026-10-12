@@ -590,6 +590,7 @@ source_set("chrome_web_ui_controller_factory") {
     "//ui/base",
   ]
   deps = [
+    "//chrome/browser:buildflags",
     "//chrome/browser:flags",
     "//chrome/browser/contextual_tasks:ui",
     "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
@@ -610,6 +611,7 @@ source_set("chrome_web_ui_controller_factory") {
     "//components/password_manager/content/common",
     "//components/prefs",
     "//components/privacy_sandbox:features",
+    "//components/resources:components_scaled_resources",
     "//content/public/common",
     "//ui/accessibility",
     "//ui/base:features",

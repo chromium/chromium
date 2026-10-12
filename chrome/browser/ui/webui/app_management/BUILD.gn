@@ -28,6 +28,7 @@ source_set("app_management") {
     "//chrome/browser/apps/app_service",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications:features",
+    "//chrome/common:chrome_features",
     "//components/app_constants",
     "//components/prefs",
     "//content/public/browser",
@@ -39,6 +40,7 @@ source_set("app_management") {
   ]
 
   if (is_chromeos) {
+    public_deps += [ "//ash/public/cpp" ]
     sources += [
       "app_management_page_handler_chromeos.cc",
       "app_management_page_handler_chromeos.h",
@@ -51,6 +53,7 @@ source_set("app_management") {
       "//chrome/browser/ash/apps",
       "//chrome/browser/ui/ash/shelf",
       "//chromeos/ash/experiences/arc:arc_app_constants",
+      "//extensions/browser",
     ]
   } else {
     sources += [
@@ -94,6 +97,7 @@ source_set("unit_tests") {
       "//chromeos/ash/experiences/arc:arc_app_constants",
       "//chromeos/ash/experiences/arc:arc_features",
       "//chromeos/ash/experiences/arc:arc_test_support",
+      "//extensions/browser",
     ]
   }
 }

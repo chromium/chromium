@@ -20,6 +20,7 @@ source_set("management") {
     "//base",
     "//chrome/app:generated_resources",
     "//chrome/app/theme:theme_resources",
+    "//chrome/browser:browser_features",
     "//chrome/browser:browser_process",
     "//chrome/browser:browser_process_platform_part",
     "//chrome/browser/enterprise",

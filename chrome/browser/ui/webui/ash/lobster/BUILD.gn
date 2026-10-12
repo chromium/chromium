@@ -15,6 +15,7 @@ static_library("lobster") {
   ]
 
   public_deps = [
+    ":lobster_mojom",
     "//base",
     "//chrome/browser/ui/views/bubble",
     "//chrome/browser/ui/webui/ash/mako:mako_bubble",

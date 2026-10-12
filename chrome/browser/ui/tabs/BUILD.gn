@@ -710,6 +710,7 @@ if (!is_android) {
       "//components/permissions",
       "//components/pref_registry",
       "//components/privacy_sandbox:features",
+      "//components/record_replay/core/common",
       "//components/safe_browsing:buildflags",
       "//components/safe_browsing/content/browser",
       "//components/safe_browsing/core/common:features",

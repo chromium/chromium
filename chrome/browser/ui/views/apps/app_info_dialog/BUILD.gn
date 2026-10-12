@@ -55,6 +55,7 @@ source_set("impl") {
   if (is_chromeos) {
     sources += [ "arc_app_info_links_panel.cc" ]
     deps += [
+      "//ash/public/cpp",
       "//ash/strings",
       "//chrome/browser/ash/arc:arc_util",
       "//chrome/browser/ui/ash/shelf",

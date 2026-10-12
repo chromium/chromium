@@ -268,6 +268,9 @@ source_set("impl") {
       "//chrome/browser/extensions",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/extensions",
+      "//chrome/common:constants",
+      "//content/public/browser",
+      "//extensions/common",
     ]
   }
 

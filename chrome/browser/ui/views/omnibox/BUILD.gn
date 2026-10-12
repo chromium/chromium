@@ -154,6 +154,7 @@ source_set("impl") {
     "//chrome/browser/ui/webui/top_chrome",
     "//chrome/browser/user_education",
     "//chrome/common:buildflags",
+    "//components/input",
     "//components/lens:features",
     "//components/omnibox/browser",
     "//components/omnibox/common",
