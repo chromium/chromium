@@ -451,7 +451,14 @@ class InterceptionJob : public network::mojom::URLLoaderClient,
       std::move(pending_auth_callback_)
           .Run(/*use_fallback=*/true, std::nullopt);
     }
-    DevToolsURLLoaderInterceptor::UnregisterJob(this);
+    if (!IsCorsPreflight()) {
+      DevToolsURLLoaderInterceptor::UnregisterJob(this);
+    }
+  }
+
+  bool IsCorsPreflight() const {
+    return create_loader_params_->options &
+           network::mojom::kURLLoadOptionAsCorsPreflight;
   }
 
   Response InnerContinueRequest(std::unique_ptr<Modifications> modifications);
@@ -813,8 +820,19 @@ void DevToolsURLLoaderFactoryProxy::CreateLoaderAndStart(
 
   GlobalRequestID global_req_id(ToOriginatingProcessIdUnsafe(process_id_),
                                 request_id);
+  // CORS preflights reuse the request ID of the request they precede. On a
+  // redirect, the network service sends the preflight for the new URL while the
+  // original request is still in flight (crbug.com/570354835), so preflights
+  // are exempt from collision handling. This holds even if a renderer sets
+  // kURLLoadOptionAsCorsPreflight itself, which it can on non-network factories
+  // that have no CorsURLLoaderFactory in front: preflight jobs are never
+  // indexed by GlobalRequestID or registered for auth routing, so they cannot
+  // displace or impersonate another job.
+  const bool is_cors_preflight =
+      options & network::mojom::kURLLoadOptionAsCorsPreflight;
   if (InterceptionJob* existing_job =
-          interceptor->FindJobByGlobalId(global_req_id)) {
+          is_cors_preflight ? nullptr
+                            : interceptor->FindJobByGlobalId(global_req_id)) {
     // Genuine child/renderer processes strictly have process IDs >= 1
     // (content::ChildProcessId starts generating IDs at 1). Values <= 0
     // represent browser-initiated contexts (0 for navigations, or -1 for
@@ -1154,7 +1172,11 @@ InterceptionJob::InterceptionJob(
   loader_receiver_.set_disconnect_handler(
       base::BindOnce(&InterceptionJob::Shutdown, base::Unretained(this)));
 
-  DevToolsURLLoaderInterceptor::RegisterJob(this);
+  // An auth challenge for the shared request ID belongs to the request the
+  // preflight precedes, so preflights are kept out of auth routing.
+  if (!IsCorsPreflight()) {
+    DevToolsURLLoaderInterceptor::RegisterJob(this);
+  }
 
   url_chain_.push_back(create_loader_params_->request.url);
 
@@ -1171,7 +1193,12 @@ bool InterceptionJob::StartJobAndMaybeNotify() {
 
   current_id_ =
       base::StringPrintf("interception-job-%d.%d", id_seq_, redirect_count_);
-  interceptor_->AddJob(global_req_id_, current_id_, this);
+  interceptor_->AddJob(current_id_, this);
+  // A preflight shares the request ID of the in-flight request it precedes, so
+  // indexing it would hide that request from collision handling.
+  if (!IsCorsPreflight()) {
+    interceptor_->IndexJobByGlobalId(global_req_id_, this);
+  }
 
   const network::ResourceRequest& request = create_loader_params_->request;
   stages_ = interceptor_->GetInterceptionStages(
@@ -1938,7 +1965,7 @@ void InterceptionJob::Shutdown() {
     TRACE_EVENT_END("devtools", GetNamedTrack());
   }
   if (interceptor_)
-    interceptor_->RemoveJob(global_req_id_, current_id_);
+    interceptor_->RemoveJob(global_req_id_, current_id_, this);
   delete this;
 }
 
@@ -1998,7 +2025,7 @@ void InterceptionJob::FollowRedirect(
     redirected_request_id_ = current_id_;
     // Pretend that each redirect hop is a new request -- this is for
     // compatibilty with URLRequestJob-based interception implementation.
-    interceptor_->RemoveJob(global_req_id_, current_id_);
+    interceptor_->RemoveJob(global_req_id_, current_id_, this);
     redirect_count_++;
     if (StartJobAndMaybeNotify())
       return;
