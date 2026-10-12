@@ -54,6 +54,9 @@
 // The title of the more options section.
 @property(nonatomic, readonly, copy) NSString* moreOptionsSectionHeader;
 
+// The title of the attachments section.
+@property(nonatomic, readonly, copy) NSString* attachmentsSectionHeader;
+
 // Creates a new instance with local fallback strings and icons.
 + (instancetype)localFallbackUIConfig;
 

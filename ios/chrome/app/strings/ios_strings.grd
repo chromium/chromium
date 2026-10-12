@@ -1917,6 +1917,9 @@
       <message name="IDS_IOS_COMPOSEBOX_MENU_ADD_CURRENT_TAB_ACTION" desc="The contextual menu option for attaching the current tab. [iOS only].">
         Add tab
       </message>
+      <message name="IDS_IOS_COMPOSEBOX_MENU_ATTACHMENTS_SECTION_TITLE" desc="The title or the attachments section in the plus button menu.">
+       Add to your search
+      </message>
       <message name="IDS_IOS_COMPOSEBOX_MENU_CURRENT_TAB_ACTION" desc="The contextual menu option for attaching the current tab. [iOS only].">
         Current tab
       </message>

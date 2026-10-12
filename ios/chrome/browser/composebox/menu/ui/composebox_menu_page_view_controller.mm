@@ -209,6 +209,11 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
     identifier = _sections[sectionIndex].identifier;
   }
 
+  NSString* sectionTitle = nil;
+  if (sectionIndex < (NSInteger)_sections.count) {
+    sectionTitle = _sections[sectionIndex].title;
+  }
+
   BOOL useCarousel =
       identifier == ComposeboxMenuSectionIdentifier::kAttachments &&
       _menuPageType != ComposeboxMenuPageType::kSecondaryPage;
@@ -260,6 +265,29 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
         UICollectionLayoutSectionOrthogonalScrollingBehaviorContinuous;
     section.interGroupSpacing = kAttachmentItemSpacing;
 
+    NSMutableArray<NSCollectionLayoutBoundarySupplementaryItem*>*
+        supplementaryItems = [NSMutableArray array];
+
+    if (sectionTitle) {
+      UIFont* titleFont =
+          [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+      CGFloat fontHeight = titleFont.lineHeight;
+      NSCollectionLayoutSize* headerSize = [NSCollectionLayoutSize
+          sizeWithWidthDimension:[NSCollectionLayoutDimension
+                                     fractionalWidthDimension:1.0]
+                 heightDimension:[NSCollectionLayoutDimension
+                                     estimatedDimension:fontHeight]];
+
+      NSString* elementKind = UICollectionElementKindSectionHeader;
+      NSCollectionLayoutBoundarySupplementaryItem* header =
+          [NSCollectionLayoutBoundarySupplementaryItem
+              boundarySupplementaryItemWithLayoutSize:headerSize
+                                          elementKind:elementKind
+                                            alignment:NSRectAlignmentTop];
+
+      [supplementaryItems addObject:header];
+    }
+
     if (_sections.count > 1) {
       NSCollectionLayoutSize* footerSize = [NSCollectionLayoutSize
           sizeWithWidthDimension:[NSCollectionLayoutDimension
@@ -268,21 +296,25 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
                      [NSCollectionLayoutDimension
                          absoluteDimension:2 * kSeparatorVerticalPadding +
                                            kSeparatorHeight]];
+
       NSString* elementKind = UICollectionElementKindSectionFooter;
       NSCollectionLayoutBoundarySupplementaryItem* footer =
           [NSCollectionLayoutBoundarySupplementaryItem
               boundarySupplementaryItemWithLayoutSize:footerSize
                                           elementKind:elementKind
                                             alignment:NSRectAlignmentBottom];
-      section.boundarySupplementaryItems = @[ footer ];
+      [supplementaryItems addObject:footer];
     }
 
+    section.boundarySupplementaryItems = supplementaryItems;
     return section;
   } else {
     UICollectionLayoutListConfiguration* listConfig =
         [[UICollectionLayoutListConfiguration alloc]
             initWithAppearance:UICollectionLayoutListAppearanceInsetGrouped];
-    listConfig.headerMode = UICollectionLayoutListHeaderModeSupplementary;
+    listConfig.headerMode = sectionTitle
+                                ? UICollectionLayoutListHeaderModeSupplementary
+                                : UICollectionLayoutListHeaderModeNone;
     listConfig.backgroundColor =
         [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
     NSCollectionLayoutSection* section = [NSCollectionLayoutSection
@@ -647,8 +679,13 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
       _menuPageType == ComposeboxMenuPageType::kFullMenu ||
       _menuPageType == ComposeboxMenuPageType::kMainPage;
 
+  BOOL showSectionTitle = IsPlusButtonMenuStringUpdatesEnabled() &&
+                          _menuPageType == ComposeboxMenuPageType::kMainPage;
+  NSString* title =
+      showSectionTitle ? _inputState.uiConfig.attachmentsSectionHeader : nil;
+
   return [[ComposeboxMenuSection alloc]
-                 initWithTitle:nil
+                 initWithTitle:title
                          items:attachmentsItems
                     identifier:ComposeboxMenuSectionIdentifier::kAttachments
       showAsHorizontalCarousel:showAsHorizontalCarousel];

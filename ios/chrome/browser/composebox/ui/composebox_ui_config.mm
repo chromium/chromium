@@ -197,6 +197,11 @@
   return l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_MORE_OPTIONS_MENU_TITLE);
 }
 
+- (NSString*)attachmentsSectionHeader {
+  return l10n_util::GetNSString(
+      IDS_IOS_COMPOSEBOX_MENU_ATTACHMENTS_SECTION_TITLE);
+}
+
 - (NSString*)toolsSectionHeader {
   // With the strings update, the tools section header is not shown.
   if (IsPlusButtonMenuStringUpdatesEnabled()) {
