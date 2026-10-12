@@ -245,6 +245,7 @@ export class AppElement extends AppElementBase {
           {type: Boolean},
       voiceSearchCoherenceRealboxAutoEndpointEnabled_: {type: Boolean},
       voiceSearchCoherenceRealboxHelperTextEnabled_: {type: Boolean},
+      androidSpeechRecognition_: {type: Boolean},
 
       voiceSearchTranscript_: {type: String},
       voiceSearchReceivedSpeech_: {type: Boolean},
@@ -405,6 +406,10 @@ export class AppElement extends AppElementBase {
       loadTimeData.getBoolean('voiceSearchCoherenceRealboxAutoEndpointEnabled');
   protected accessor voiceSearchCoherenceRealboxHelperTextEnabled_: boolean =
       loadTimeData.getBoolean('voiceSearchCoherenceRealboxHelperTextEnabled');
+  // `true` only on Android, where voice search uses Android's speech recognizer
+  // (see new_tab_page_ui.cc).
+  protected accessor androidSpeechRecognition_: boolean =
+      loadTimeData.getBoolean('androidSpeechRecognition');
 
   protected accessor voiceSearchTranscript_: string = '';
   protected accessor voiceSearchReceivedSpeech_: boolean = false;

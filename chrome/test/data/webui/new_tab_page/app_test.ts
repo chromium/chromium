@@ -4776,6 +4776,9 @@ suite('NewTabPageAppTest', () => {
         vsClass.activeRecognition_ = null;
         vsClass.pendingStartInstance_ = null;
       }
+
+      // Use desktop speech recognition unless a test opts into Android's.
+      loadTimeData.overrideValues({androidSpeechRecognition: false});
     });
 
     teardown(() => {
@@ -4897,6 +4900,62 @@ suite('NewTabPageAppTest', () => {
         });
 
     test(
+        'keeps listening when Android speech recognition ends after an ' +
+            'utterance',
+        async () => {
+          loadTimeData.overrideValues({
+            googleBaseUrl: 'chrome://new-tab-page/',
+            voiceSearchCoherenceAnySearchboxExperimentEnabled: true,
+            voiceSearchCoherenceRealboxAutoEndpointEnabled: false,
+            androidSpeechRecognition: true,
+          });
+          await recreateApp();
+
+          // Open voice search dialog.
+          const searchbox = $$(app, '#searchbox');
+          assertTrue(!!searchbox);
+          searchbox.dispatchEvent(new Event('open-voice-search'));
+          await microtasksFinished();
+
+          const voiceSearch =
+              app.shadowRoot.querySelector('cr-composebox-voice-search');
+          assertTrue(!!voiceSearch);
+          assertTrue(voiceSearch.androidContinuousRecognitionEnabled);
+
+          // Simulate speech recognition result (user speaks).
+          mockSpeechRecognition.onresult!
+              (createResults('test query', /*isFinal=*/ true));
+          await microtasksFinished();
+
+          // Android's recognizer ends its session after every utterance.
+          mockSpeechRecognition.voiceSearchInProgress = false;
+          mockSpeechRecognition.onend!();
+          await microtasksFinished();
+
+          // Like on desktop, voice search keeps listening instead of
+          // submitting right away.
+          assertTrue(mockSpeechRecognition.voiceSearchInProgress);
+          assertEquals(0, windowProxy.getCallCount('navigate'));
+          assertTrue(!!app.shadowRoot.querySelector('#voiceSearchDialog'));
+
+          // The user keeps speaking, then submits.
+          mockSpeechRecognition.onresult!
+              (createResults('tomorrow', /*isFinal=*/ true));
+          await voiceSearch.updateComplete;
+          const submitButton =
+              voiceSearch.shadowRoot.querySelector('#submitButton');
+          assertTrue(!!submitButton);
+          submitButton.dispatchEvent(new CustomEvent('submit-click'));
+          await microtasksFinished();
+
+          // Both utterances are submitted.
+          assertEquals(1, windowProxy.getCallCount('navigate'));
+          assertEquals(
+              'chrome://new-tab-page/search?q=test+query+tomorrow&gs_ivs=1&sourceid=chrome',
+              windowProxy.getArgs('navigate')[0]);
+        });
+
+    test(
         'force-submits query when voice recognition text exceeds 120 ' +
             'character limit and NTP searchbox (realbox) voice search ' +
             'coherence experiment is enabled',
@@ -4974,6 +5033,8 @@ suite('NewTabPageAppTest', () => {
           assertTrue(!!voiceSearch);
           await voiceSearch.updateComplete;
           assertFalse(voiceSearch.dynamicTimeoutEnabled);
+          // Only enabled where voice search uses Android's speech recognizer.
+          assertFalse(voiceSearch.androidContinuousRecognitionEnabled);
           assertTrue(voiceSearch.autosubmitEnabled);
           assertEquals(3000, voiceSearch.idleTimeout);
           assertEquals(10000, voiceSearch.manualSubmitIdleTimeout);

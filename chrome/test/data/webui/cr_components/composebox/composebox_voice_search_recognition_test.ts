@@ -671,4 +671,253 @@ suite('ComposeboxVoiceSearchRecognition', () => {
         voiceSearchElement.shadowRoot.querySelector('#submitButton');
     assertTrue(!!submitButton, 'Submit button should be shown');
   });
+
+  suite('AndroidContinuousRecognition', () => {
+    let voiceSearchElement: ComposeboxVoiceSearchElement;
+    let finalResult: string|null;
+    let recordingStoppedTranscript: string|null;
+
+    setup(async () => {
+      loadTimeData.overrideValues({androidSpeechRecognition: true});
+      await createComposeboxElement();
+      voiceSearchElement = getVoiceSearchElement(composeboxElement);
+      voiceSearchElement.androidContinuousRecognitionEnabled = true;
+      voiceSearchElement.idleTimeout = 3000;
+      voiceSearchElement.manualSubmitIdleTimeout = 10000;
+
+      finalResult = null;
+      recordingStoppedTranscript = null;
+      voiceSearchElement.addEventListener(
+          'voice-search-final-result', (e: Event) => {
+            finalResult = (e as CustomEvent<string>).detail;
+          });
+      voiceSearchElement.addEventListener('recording-stopped', (e: Event) => {
+        recordingStoppedTranscript = (e as CustomEvent<string>).detail;
+      });
+
+      getVoiceSearchButton(composeboxElement)!.click();
+      await microtasksFinished();
+      assertEquals(1, mockSpeechRecognition.startCount);
+      mockSpeechRecognition.onaudiostart!(new Event('audiostart'));
+    });
+
+    // Simulates Android's recognizer reporting the transcript of its current
+    // session.
+    function sendResult(transcript: string) {
+      const result = createResults(1);
+      Object.assign(result.results[0]![0]!, {confidence: 0, transcript});
+      mockSpeechRecognition.onresult!(result);
+    }
+
+    // Simulates Android's recognizer ending its session on its own.
+    function endSession() {
+      mockSpeechRecognition.voiceSearchInProgress = false;
+      mockSpeechRecognition.onend!();
+    }
+
+    // Runs the callback of the latest timer that was set with `delayMs`.
+    function fireTimer(delayMs: number) {
+      const timerCall = [...windowProxy.getArgs('setTimeout')].reverse().find(
+          (call: [unknown, number]) => call[1] === delayMs);
+      assertTrue(!!timerCall);
+      (timerCall[0] as Function)();
+    }
+
+    function getDisplayedTranscript(): string {
+      const input =
+          voiceSearchElement.shadowRoot.querySelector<HTMLElement>('#input');
+      assertTrue(!!input);
+      return input.textContent?.trim() ?? '';
+    }
+
+    test('restarts recognition when Android ends the session', async () => {
+      sendResult('hello');
+      endSession();
+      await microtasksFinished();
+
+      assertEquals(2, mockSpeechRecognition.startCount);
+      assertTrue(mockSpeechRecognition.voiceSearchInProgress);
+      assertEquals('hello', getDisplayedTranscript());
+      assertEquals(null, finalResult);
+      assertEquals(null, recordingStoppedTranscript);
+    });
+
+    test(
+        'joins transcripts and stops recording on idle timeout in manual ' +
+            'submit mode',
+        async () => {
+          sendResult('hello');
+          endSession();
+          sendResult('world');
+          await microtasksFinished();
+          assertEquals('hello world', getDisplayedTranscript());
+
+          fireTimer(10000);
+          await microtasksFinished();
+
+          assertEquals('hello world', recordingStoppedTranscript);
+          assertEquals(null, finalResult);
+        });
+
+    test(
+        'joins transcripts and submits on idle timeout in auto submit mode',
+        async () => {
+          voiceSearchElement.autosubmitEnabled = true;
+          sendResult('hello');
+          endSession();
+          sendResult('world');
+
+          fireTimer(3000);
+          await microtasksFinished();
+
+          assertEquals('hello world', finalResult);
+          assertEquals(null, recordingStoppedTranscript);
+        });
+
+    test(
+        'does not add a space if the previous session ends with whitespace',
+        async () => {
+          sendResult('hello ');
+          endSession();
+          sendResult('world');
+          await microtasksFinished();
+
+          assertEquals('hello world', getDisplayedTranscript());
+        });
+
+    test('keeps the submit button enabled after a restart', async () => {
+      voiceSearchElement.submitStopButtonsEnabled = true;
+      sendResult('hello');
+      endSession();
+      // The restarted session has not recognized anything yet.
+      sendResult('');
+      await microtasksFinished();
+
+      const submitButton =
+          voiceSearchElement.shadowRoot.querySelector('#submitButton');
+      assertTrue(!!submitButton);
+      assertFalse(submitButton.hasAttribute('disabled'));
+    });
+
+    test('applies the query length limit to the whole transcript', () => {
+      voiceSearchElement.queryLengthLimit = 10;
+      sendResult('hello');
+      endSession();
+      // What earlier sessions recognized counts towards the limit too.
+      sendResult('you');
+      assertEquals(null, recordingStoppedTranscript);
+
+      sendResult('world');
+      assertEquals('hello world', recordingStoppedTranscript);
+    });
+
+    test('ignores no-speech and no-match errors', async () => {
+      // Before any speech.
+      mockSpeechRecognition.onerror!(new SpeechRecognitionErrorEvent(
+          'error', {message: '', error: 'no-speech'}));
+      endSession();
+      assertEquals(2, mockSpeechRecognition.startCount);
+
+      // After speech.
+      sendResult('hello');
+      mockSpeechRecognition.onnomatch!(new Event('nomatch'));
+      endSession();
+      await microtasksFinished();
+
+      assertEquals(3, mockSpeechRecognition.startCount);
+      assertEquals(null, voiceSearchElement.detailedError);
+      assertEquals('hello', getDisplayedTranscript());
+    });
+
+    test('restarted sessions do not reset the idle timer', () => {
+      sendResult('hello');
+      endSession();
+      windowProxy.resetResolver('setTimeout');
+
+      mockSpeechRecognition.onaudiostart!(new Event('audiostart'));
+      mockSpeechRecognition.onspeechstart!(new Event('speechstart'));
+      assertEquals(0, windowProxy.getCallCount('setTimeout'));
+
+      // Like on desktop, results still do.
+      sendResult('world');
+      assertTrue(windowProxy.getCallCount('setTimeout') > 0);
+    });
+
+    test(
+        'ends with an error after too many restarts without results',
+        async () => {
+          sendResult('hello');
+          for (let i = 0; i < 5; i++) {
+            endSession();
+          }
+          assertEquals(6, mockSpeechRecognition.startCount);
+
+          endSession();
+          await microtasksFinished();
+
+          assertEquals(6, mockSpeechRecognition.startCount);
+          assertEquals(
+              1,
+              metrics.count(
+                  'VoiceSearch.Errors.NTP_REALBOX',
+                  VoiceSearchError.NO_SPEECH));
+          // Neither submits nor stops recording with the transcript.
+          assertEquals(null, finalResult);
+          assertEquals(null, recordingStoppedTranscript);
+        });
+
+    test('ends with an error if recognition fails to restart', async () => {
+      sendResult('hello');
+      mockSpeechRecognition.start = () => {
+        throw new DOMException('', 'InvalidStateError');
+      };
+      endSession();
+      await microtasksFinished();
+
+      assertEquals(VoiceSearchError.OTHER, voiceSearchElement.detailedError);
+      assertEquals(null, finalResult);
+      assertEquals(null, recordingStoppedTranscript);
+    });
+
+    test('does not restart recognition while the page is hidden', async () => {
+      sendResult('hello');
+      // Blink aborts recognition on Android when the page gets hidden.
+      Object.defineProperty(
+          document, 'hidden', {value: true, configurable: true});
+      try {
+        endSession();
+      } finally {
+        Reflect.deleteProperty(document, 'hidden');
+      }
+      await microtasksFinished();
+
+      assertEquals(1, mockSpeechRecognition.startCount);
+      assertEquals('hello', recordingStoppedTranscript);
+      assertEquals(null, finalResult);
+    });
+
+    test(
+        'does not restart recognition once voice search is removed',
+        async () => {
+          sendResult('hello');
+          composeboxElement.remove();
+          await microtasksFinished();
+
+          assertEquals(1, mockSpeechRecognition.startCount);
+          assertFalse(mockSpeechRecognition.voiceSearchInProgress);
+        });
+
+    test(
+        'submits when Android ends the session if continuous recognition is ' +
+            'disabled',
+        async () => {
+          voiceSearchElement.androidContinuousRecognitionEnabled = false;
+          sendResult('hello');
+          endSession();
+          await microtasksFinished();
+
+          assertEquals(1, mockSpeechRecognition.startCount);
+          assertEquals('hello', finalResult);
+        });
+  });
 });
