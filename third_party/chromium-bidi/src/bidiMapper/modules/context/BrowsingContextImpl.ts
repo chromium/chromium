@@ -1966,7 +1966,14 @@ export class BrowsingContextImpl {
     }
 
     const matchedBackendNodeIds = new Set<number>();
+    const isMaxNodeCountReached = () =>
+      maxNodeCount !== undefined &&
+      maxNodeCount > 0 &&
+      matchedBackendNodeIds.size >= maxNodeCount;
     for (const backendNodeId of startBackendNodeIds) {
+      if (isMaxNodeCountReached()) {
+        break;
+      }
       const {nodes} = await this.#cdpTarget.cdpClient.sendCommand(
         'Accessibility.queryAXTree',
         {
@@ -1979,11 +1986,7 @@ export class BrowsingContextImpl {
       for (const node of nodes) {
         if (node.backendDOMNodeId && node.role?.type === 'role') {
           matchedBackendNodeIds.add(node.backendDOMNodeId);
-          if (
-            maxNodeCount !== undefined &&
-            maxNodeCount > 0 &&
-            matchedBackendNodeIds.size >= maxNodeCount
-          ) {
+          if (isMaxNodeCountReached()) {
             break;
           }
         }
