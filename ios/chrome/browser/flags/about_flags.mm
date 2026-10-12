@@ -152,7 +152,6 @@ const FeatureEntry::Choice kSendTabToSelfEnhancedHandoffChoices[] = {
      "SendTabToSelfPropagateScrollPosition,"
      "SendTabToSelfPostSendToast,"
      "SendTabToSelfEnhancedBottomsheet,"
-     "SyncSimplifyDeviceNaming,"
      "SyncUseServerDeterminedDeviceName,"
      "SyncSessionsUsePreferredDisplayName"},
     {"Enabled with fast-follows", switches::kEnableFeatures,
@@ -164,7 +163,6 @@ const FeatureEntry::Choice kSendTabToSelfEnhancedHandoffChoices[] = {
      "SendTabToSelfPostSendToast,"
      "SendTabToSelfEnhancedBottomsheet,"
      "SendTabToSelfSupportAutoOpenInTabGrid,"
-     "SyncSimplifyDeviceNaming,"
      "SyncDisambiguateDeviceNamesWithChannel,"
      "SyncUseServerDeterminedDeviceName,"
      "SyncSessionsUsePreferredDisplayName,"
@@ -179,7 +177,6 @@ const FeatureEntry::Choice kSendTabToSelfEnhancedHandoffChoices[] = {
      "SendTabToSelfPostSendToast,"
      "SendTabToSelfEnhancedBottomsheet,"
      "SendTabToSelfSupportAutoOpenInTabGrid,"
-     "SyncSimplifyDeviceNaming,"
      "SyncDisambiguateDeviceNamesWithChannel,"
      "SyncUseServerDeterminedDeviceName,"
      "SyncSessionsUsePreferredDisplayName,"

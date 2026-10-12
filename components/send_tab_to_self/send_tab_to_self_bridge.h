@@ -132,7 +132,6 @@ class SendTabToSelfBridge : public syncer::DataTypeSyncBridge,
   // For testing only.
   static std::unique_ptr<syncer::DataTypeStore> DestroyAndStealStoreForTest(
       std::unique_ptr<SendTabToSelfBridge> bridge);
-  void SetLocalDeviceNameForTest(const std::string& local_device_name);
 
  private:
   // Notifies observers that the model is ready once both the local store
@@ -246,9 +245,6 @@ class SendTabToSelfBridge : public syncer::DataTypeSyncBridge,
 
   // `pref_service_` isn't owned.
   const raw_ptr<PrefService> pref_service_;
-
-  // The name of this local device, set only for testing.
-  std::optional<std::string> local_device_name_for_testing_;
 
   // In charge of actually persisting changes to disk, or loading previous data.
   std::unique_ptr<syncer::DataTypeStore> store_;

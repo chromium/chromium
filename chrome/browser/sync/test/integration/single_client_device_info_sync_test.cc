@@ -380,10 +380,8 @@ class SingleClientDeviceInfoSyncTestWithServerDeterminedName
     : public SingleClientDeviceInfoSyncTest {
  public:
   SingleClientDeviceInfoSyncTestWithServerDeterminedName() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{syncer::kSyncSimplifyDeviceNaming,
-                              syncer::kSyncUseServerDeterminedDeviceName},
-        /*disabled_features=*/{});
+    feature_list_.InitAndEnableFeature(
+        syncer::kSyncUseServerDeterminedDeviceName);
   }
 
  protected:

@@ -91,8 +91,7 @@ class SyncSessionsClientImpl final : public sync_sessions::SyncSessionsClient {
     if (!device_info) {
       return std::nullopt;
     }
-    return syncer::GetDisplayNameCandidates(device_info)
-        .preferred_name_if_unique;
+    return syncer::GetDeviceDisplayName(device_info);
   }
 
   // SyncSessionsClient implementation.

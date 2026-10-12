@@ -16,7 +16,6 @@
 #include "components/sharing_message/sharing_constants.h"
 #include "components/sharing_message/sharing_target_device_info.h"
 #include "components/sharing_message/sharing_utils.h"
-#include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_name_util.h"
@@ -69,13 +68,8 @@ std::optional<SharingTargetDeviceInfo> SharingDeviceSourceSync::GetDeviceByGuid(
     return std::nullopt;
   }
 
-  std::string display_name =
-      base::FeatureList::IsEnabled(syncer::kSyncSimplifyDeviceNaming)
-          ? syncer::GetDeviceDisplayName(device_info)
-          : syncer::GetDisplayNameCandidates(device_info).fallback_full_name;
-
   return SharingTargetDeviceInfo(
-      device_info->guid(), std::move(display_name),
+      device_info->guid(), syncer::GetDeviceDisplayName(device_info),
       GetDevicePlatform(*device_info), device_info->pulse_interval(),
       device_info->form_factor(), device_info->last_updated_timestamp());
 }
@@ -87,7 +81,7 @@ SharingDeviceSourceSync::GetDeviceCandidates(
     return {};
   }
 
-  return ConvertAndDeduplicateDevices(FilterDeviceCandidates(
+  return ConvertDevices(FilterDeviceCandidates(
       device_info_tracker_->GetAllDeviceInfo(), required_feature));
 }
 
@@ -167,8 +161,7 @@ SharingDeviceSourceSync::FilterDeviceCandidates(
   return devices;
 }
 
-std::vector<SharingTargetDeviceInfo>
-SharingDeviceSourceSync::ConvertAndDeduplicateDevices(
+std::vector<SharingTargetDeviceInfo> SharingDeviceSourceSync::ConvertDevices(
     std::vector<const syncer::DeviceInfo*> devices) const {
   // Sort the devices so the most recently modified devices are first.
   std::sort(devices.begin(), devices.end(),
@@ -177,35 +170,10 @@ SharingDeviceSourceSync::ConvertAndDeduplicateDevices(
                      device2->last_updated_timestamp();
             });
 
-  if (base::FeatureList::IsEnabled(syncer::kSyncSimplifyDeviceNaming)) {
-    // Resolve display names for the filtered list by using the preferred name.
-    return base::ToVector(devices, [](const auto& device) {
-      return SharingTargetDeviceInfo(
-          device->guid(), syncer::GetDeviceDisplayName(device),
-          GetDevicePlatform(*device), device->pulse_interval(),
-          device->form_factor(), device->last_updated_timestamp());
-    });
-  }
-
-  const syncer::DeviceInfo* local_device =
-      local_device_info_provider_->GetLocalDeviceInfo();
-  std::optional<std::string> local_full_name;
-  if (local_device) {
-    local_full_name =
-        syncer::GetDisplayNameCandidates(local_device).fallback_full_name;
-  }
-
-  // Resolve display names for the filtered list. This handles de-duplication
-  // by name and chooses between short/full names based on collisions.
-  std::vector<syncer::DeviceInfoWithName> device_names =
-      syncer::DetermineDisplayNamesAndDeduplicate(devices, local_full_name);
-
-  // Convert to SharingTargetDeviceInfo, filtering out any devices that were
-  // de-duplicated by the naming utility.
-  return base::ToVector(device_names, [](const auto& info) {
+  return base::ToVector(devices, [](const auto& device) {
     return SharingTargetDeviceInfo(
-        info.device->guid(), info.display_name, GetDevicePlatform(*info.device),
-        info.device->pulse_interval(), info.device->form_factor(),
-        info.device->last_updated_timestamp());
+        device->guid(), syncer::GetDeviceDisplayName(device),
+        GetDevicePlatform(*device), device->pulse_interval(),
+        device->form_factor(), device->last_updated_timestamp());
   });
 }

@@ -80,9 +80,6 @@
     <message name="IDS_SYNC_DEVICE_NAME_LAPTOP_FORMAT" desc="Format for device name when it is a laptop computer, combining manufacturer and 'Laptop' (e.g. 'Google Laptop').">
       <ph name="MANUFACTURER">$1<ex>Google</ex></ph> Laptop
     </message>
-    <message name="IDS_SYNC_DEVICE_NAME_WITH_MODEL_FORMAT" desc="Format for device name with model, combining the preferred device name and the model (e.g. 'Google Phone Pixel 2').">
-      <ph name="DEVICE_NAME">$1<ex>Google Phone</ex></ph> <ph name="MODEL">$2<ex>Pixel 2</ex></ph>
-    </message>
     <message name="IDS_SYNC_DEVICE_NAME_WITH_DISAMBIGUATION_FORMAT" desc="Format for device name with a disambiguation label (such as channel or client name/profile) in parentheses, combining the device name and the label (e.g. 'Google Phone (Canary)').">
       <ph name="DEVICE_NAME">$1<ex>Google Phone</ex></ph> (<ph name="DISAMBIGUATION_LABEL">$2<ex>Canary</ex></ph>)
     </message>

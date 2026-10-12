@@ -10,7 +10,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
@@ -18,7 +17,6 @@
 #include "components/sharing_message/features.h"
 #include "components/sharing_message/sharing_constants.h"
 #include "components/sharing_message/sharing_utils.h"
-#include "components/sync/base/features.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_name_util.h"
@@ -84,7 +82,6 @@ class SharingDeviceSourceSyncTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   syncer::TestSyncService test_sync_service_;
   syncer::FakeDeviceInfoSyncService fake_device_info_sync_service_;
@@ -163,37 +160,13 @@ TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_NotReady) {
           .empty());
 }
 
-enum class DeviceNamingMode {
-  kLegacyWithDeduplication,
-  kSimplifiedWithoutDeduplication,
-};
-
-class SharingDeviceSourceSyncNamingTest
-    : public SharingDeviceSourceSyncTest,
-      public testing::WithParamInterface<DeviceNamingMode> {
- public:
-  SharingDeviceSourceSyncNamingTest() {
-    if (GetParam() == DeviceNamingMode::kSimplifiedWithoutDeduplication) {
-      scoped_feature_list_.InitAndEnableFeature(
-          syncer::kSyncSimplifyDeviceNaming);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          syncer::kSyncSimplifyDeviceNaming);
-    }
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Tests the deduplication and local device filtering behavior of
-// GetDeviceCandidates. Parameterized by whether simplified device naming is
-// enabled.
-TEST_P(SharingDeviceSourceSyncNamingTest,
-       GetDeviceCandidates_DeduplicationBehavior) {
+// Tests that `GetDeviceCandidates()` keeps all remote devices (including those
+// sharing a client name, hardware info, or the local device's name) while
+// filtering out the local device by GUID, sorted by recency.
+TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_DeduplicationBehavior) {
   auto device_source = CreateDeviceSource(/*wait_until_ready=*/true);
 
-  // Add two devices with the same |client_name| without hardware info.
+  // Add two devices with the same `client_name` without hardware info.
   task_environment_.FastForwardBy(base::Seconds(10));
   auto device_info_1 =
       CreateDeviceInfo("client_name_1", SharingFeature::kRemoteCopy);
@@ -226,32 +199,20 @@ TEST_P(SharingDeviceSourceSyncNamingTest,
   auto devices =
       device_source->GetDeviceCandidates(SharingFeature::kRemoteCopy);
 
-  if (GetParam() == DeviceNamingMode::kSimplifiedWithoutDeduplication) {
-    // With kSyncSimplifyDeviceNaming enabled:
-    // 1. No deduplication (device_info_1 and device_info_3 are kept).
-    // 2. No filtering of same-name-as-local-device (device_info_5 is kept).
-    // 3. Local device itself is still filtered out (by GUID).
-    ASSERT_EQ(5u, devices.size());
-    EXPECT_EQ(device_info_5->guid(), devices[0].guid());
-    EXPECT_EQ(device_info_4->guid(), devices[1].guid());
-    EXPECT_EQ(device_info_3->guid(), devices[2].guid());
-    EXPECT_EQ(device_info_2->guid(), devices[3].guid());
-    EXPECT_EQ(device_info_1->guid(), devices[4].guid());
-  } else {
-    // With kSyncSimplifyDeviceNaming disabled:
-    // 1. Deduplication active (device_info_4 keeps newer, drops 3.
-    // device_info_2 keeps newer, drops 1).
-    // 2. Local device name matching active (device_info_5 is dropped because it
-    // matches local device name).
-    ASSERT_EQ(2u, devices.size());
-    EXPECT_EQ(device_info_4->guid(), devices[0].guid());
-    EXPECT_EQ(device_info_2->guid(), devices[1].guid());
-  }
+  // 1. No deduplication (`device_info_1` and `device_info_3` are kept).
+  // 2. No filtering of same-name-as-local-device (`device_info_5` is kept).
+  // 3. Local device itself is filtered out by GUID.
+  ASSERT_EQ(5u, devices.size());
+  EXPECT_EQ(device_info_5->guid(), devices[0].guid());
+  EXPECT_EQ(device_info_4->guid(), devices[1].guid());
+  EXPECT_EQ(device_info_3->guid(), devices[2].guid());
+  EXPECT_EQ(device_info_2->guid(), devices[3].guid());
+  EXPECT_EQ(device_info_1->guid(), devices[4].guid());
 }
 
-// Tests that device names are resolved correctly, including collision
-// resolution in legacy mode and preferred names in simplified mode.
-TEST_P(SharingDeviceSourceSyncNamingTest, GetDeviceCandidates_DeviceNaming) {
+// Tests that `GetDeviceCandidates()` resolves device names using
+// `syncer::GetDeviceDisplayName()`.
+TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_DeviceNaming) {
   auto device_source = CreateDeviceSource(/*wait_until_ready=*/true);
 
   task_environment_.FastForwardBy(base::Seconds(10));
@@ -281,38 +242,14 @@ TEST_P(SharingDeviceSourceSyncNamingTest, GetDeviceCandidates_DeviceNaming) {
       device_source->GetDeviceCandidates(SharingFeature::kRemoteCopy);
   ASSERT_EQ(4u, devices.size());
 
-  if (GetParam() == DeviceNamingMode::kSimplifiedWithoutDeduplication) {
-    // With kSyncSimplifyDeviceNaming enabled:
-    // All devices get their preferred name, even if they collide.
-    EXPECT_EQ(syncer::GetDisplayNameCandidates(device_info_4.get())
-                  .preferred_name_if_unique,
-              devices[0].client_name());
-    EXPECT_EQ(syncer::GetDisplayNameCandidates(device_info_3.get())
-                  .preferred_name_if_unique,
-              devices[1].client_name());
-    EXPECT_EQ(syncer::GetDisplayNameCandidates(device_info_2.get())
-                  .preferred_name_if_unique,
-              devices[2].client_name());
-    EXPECT_EQ(syncer::GetDisplayNameCandidates(device_info_1.get())
-                  .preferred_name_if_unique,
-              devices[3].client_name());
-  } else {
-    // With kSyncSimplifyDeviceNaming disabled:
-    // Collision resolution is active, so colliding devices get fallback full
-    // names.
-    EXPECT_EQ(syncer::GetDisplayNameCandidates(device_info_4.get())
-                  .preferred_name_if_unique,
-              devices[0].client_name());
-    EXPECT_EQ(syncer::GetDisplayNameCandidates(device_info_3.get())
-                  .fallback_full_name,
-              devices[1].client_name());
-    EXPECT_EQ(syncer::GetDisplayNameCandidates(device_info_2.get())
-                  .fallback_full_name,
-              devices[2].client_name());
-    EXPECT_EQ(syncer::GetDisplayNameCandidates(device_info_1.get())
-                  .preferred_name_if_unique,
-              devices[3].client_name());
-  }
+  EXPECT_EQ(syncer::GetDeviceDisplayName(device_info_4.get()),
+            devices[0].client_name());
+  EXPECT_EQ(syncer::GetDeviceDisplayName(device_info_3.get()),
+            devices[1].client_name());
+  EXPECT_EQ(syncer::GetDeviceDisplayName(device_info_2.get()),
+            devices[2].client_name());
+  EXPECT_EQ(syncer::GetDeviceDisplayName(device_info_1.get()),
+            devices[3].client_name());
 }
 
 TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_Expired) {
@@ -349,18 +286,22 @@ TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_MissingRequirements) {
   EXPECT_TRUE(candidates.empty());
 }
 
+// Tests that `GetDeviceCandidates()` filters out expired devices and devices
+// missing required features, and returns remaining candidates with their
+// display names.
 TEST_F(SharingDeviceSourceSyncTest,
        GetDeviceCandidates_ExpiredAndMissingRequirements) {
   auto device_source = CreateDeviceSource(/*wait_until_ready=*/true);
 
-  // This device will be filtered out because its older than |min_updated_time|.
+  // This device will be filtered out because it is older than
+  // `min_updated_time`.
   task_environment_.FastForwardBy(base::Seconds(10));
   auto device_info_1 =
       CreateDeviceInfo("model 3", SharingFeature::kRemoteCopy,
                        "manufacturer 2", "model 3");
   fake_device_info_tracker_.Add(device_info_1.get());
 
-  // This device will be displayed with its short name.
+  // This device will be displayed with its display name.
   task_environment_.FastForwardBy(kSharingDeviceExpiration);
   auto device_info_2 =
       CreateDeviceInfo("model 1", SharingFeature::kRemoteCopy,
@@ -373,7 +314,7 @@ TEST_F(SharingDeviceSourceSyncTest,
                                         "manufacturer 1", "model 1");
   fake_device_info_tracker_.Add(device_info_3.get());
 
-  // This device will be displayed with its short name.
+  // This device will be displayed with its display name.
   task_environment_.FastForwardBy(base::Seconds(10));
   auto device_info_4 =
       CreateDeviceInfo("model 2", SharingFeature::kRemoteCopy,
@@ -384,13 +325,11 @@ TEST_F(SharingDeviceSourceSyncTest,
       device_source->GetDeviceCandidates(SharingFeature::kRemoteCopy);
   ASSERT_EQ(2u, devices.size());
   EXPECT_EQ(device_info_4->guid(), devices[0].guid());
-  EXPECT_EQ(
-      syncer::GetDisplayNameCandidates(device_info_4.get()).preferred_name_if_unique,
-      devices[0].client_name());
+  EXPECT_EQ(syncer::GetDeviceDisplayName(device_info_4.get()),
+            devices[0].client_name());
   EXPECT_EQ(device_info_2->guid(), devices[1].guid());
-  EXPECT_EQ(
-      syncer::GetDisplayNameCandidates(device_info_2.get()).preferred_name_if_unique,
-      devices[1].client_name());
+  EXPECT_EQ(syncer::GetDeviceDisplayName(device_info_2.get()),
+            devices[1].client_name());
 }
 
 TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_NoChannel) {
@@ -433,9 +372,3 @@ TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_SenderIDChannel) {
   ASSERT_EQ(1u, devices.size());
   EXPECT_EQ(device_info->guid(), devices[0].guid());
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    SharingDeviceSourceSyncNamingTest,
-    testing::Values(DeviceNamingMode::kLegacyWithDeduplication,
-                    DeviceNamingMode::kSimplifiedWithoutDeduplication));

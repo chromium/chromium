@@ -13,7 +13,6 @@
 #include "components/sharing_message/sharing_constants.h"
 #include "components/sharing_message/sharing_metrics.h"
 #include "components/sharing_message/sharing_utils.h"
-#include "components/sync/base/features.h"
 #include "components/sync/protocol/unencrypted_sharing_message.pb.h"
 #include "components/sync_device_info/device_name_util.h"
 #include "components/sync_device_info/local_device_info_provider.h"
@@ -83,10 +82,7 @@ base::OnceClosure SharingMessageSender::SendIosPushMessageToDevice(
 
   message.set_sender_guid(local_device_info->guid());
   message.set_sender_device_name(
-      base::FeatureList::IsEnabled(syncer::kSyncSimplifyDeviceNaming)
-          ? syncer::GetDeviceDisplayName(local_device_info)
-          : syncer::GetDisplayNameCandidates(local_device_info)
-                .fallback_full_name);
+      syncer::GetDeviceDisplayName(local_device_info));
 
   TRACE_EVENT_BEGIN("sharing", "Sharing.DoSendMessage",
                     perfetto::Track(trace_id));
@@ -237,10 +233,7 @@ base::OnceClosure SharingMessageSender::SendMessageToTarget(
 
   message.set_sender_guid(local_device_info->guid());
   message.set_sender_device_name(
-      base::FeatureList::IsEnabled(syncer::kSyncSimplifyDeviceNaming)
-          ? syncer::GetDeviceDisplayName(local_device_info)
-          : syncer::GetDisplayNameCandidates(local_device_info)
-                .fallback_full_name);
+      syncer::GetDeviceDisplayName(local_device_info));
 
   task_runner_->PostDelayedTask(
       FROM_HERE,

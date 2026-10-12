@@ -50,15 +50,9 @@ class SharingDeviceSourceSync : public SharingDeviceSource,
   // Called by |local_device_info_provider_| when it is ready.
   void OnLocalDeviceInfoProviderReady();
 
-  // TODO(crbug.com/522788942): Rename this to ConvertDevices and simplify the
-  // comment once kSyncSimplifyDeviceNaming is fully launched.
-  //
-  // Deduplicates devices based on their full name. For devices with duplicate
-  // full names, only the most recently updated device is returned. All devices
-  // are renamed to either their short name if that one is unique, or their full
-  // name otherwise. The returned list is sorted in (not strictly) descending
-  // order by last_updated_timestamp.
-  std::vector<SharingTargetDeviceInfo> ConvertAndDeduplicateDevices(
+  // Converts `devices` to `SharingTargetDeviceInfo` using their display names,
+  // sorted in descending order by `last_updated_timestamp`.
+  std::vector<SharingTargetDeviceInfo> ConvertDevices(
       std::vector<const syncer::DeviceInfo*> devices) const;
 
   std::vector<const syncer::DeviceInfo*> FilterDeviceCandidates(
