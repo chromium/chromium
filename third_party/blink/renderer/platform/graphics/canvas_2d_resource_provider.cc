@@ -271,11 +271,6 @@ bool Canvas2DResourceProvider::WritePixels(const SkImageInfo& orig_info,
     WillDrawUnaccelerated();
     DCHECK(IsValid());
 
-    if (!skia_canvas_) {
-      skia_canvas_ = std::make_unique<cc::SkiaPaintCanvas>(
-          GetSkSurface()->getCanvas(), GetOrCreateSWCanvasImageProvider());
-    }
-
     return GetSkSurface()->getCanvas()->writePixels(orig_info, pixels,
                                                     row_bytes, x, y);
   }
