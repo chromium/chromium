@@ -399,6 +399,7 @@ std::u16string MenuItemView::GetAccessibleNameForMenuItem(
 }
 
 void MenuItemView::Cancel() {
+  CHECK(!parent_menu_item_);
   if (controller_ && !canceled_) {
     canceled_ = true;
     controller_->Cancel(MenuController::ExitType::kAll);
@@ -799,6 +800,17 @@ int MenuItemView::GetTrailingPadding() const {
   }
   return GetItemHorizontalBorder() +
          MenuConfig::instance().item_horizontal_padding;
+}
+
+void MenuItemView::SetController(MenuController* controller) {
+  // Only the root holds the controller; everything else goes through
+  // GetMenuController(), which walks up to the root.
+  CHECK(!parent_menu_item_);
+  if (controller) {
+    controller_ = controller->AsWeakPtr();
+  } else {
+    controller_.reset();
+  }
 }
 
 MenuController* MenuItemView::GetMenuController() {

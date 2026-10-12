@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/actions/actions.h"
@@ -60,6 +61,23 @@ TEST_F(MenuItemViewUnitTest, AddAndRemoveChildren) {
   root_menu.RemoveMenuItem(item);
 
   EXPECT_TRUE(submenu->GetMenuItems().empty());
+}
+
+using MenuItemViewDeathTest = MenuItemViewUnitTest;
+
+// Only the root item may hold the controller; other items reach it through
+// GetMenuController().
+TEST_F(MenuItemViewDeathTest, SetControllerOnNonRootItem) {
+  views::TestMenuItemView root_menu;
+  MenuItemView* item = root_menu.AppendMenuItem(0);
+  EXPECT_CHECK_DEATH(item->SetController(nullptr));
+}
+
+// Cancel() acts on the root's controller, so it must be called on the root.
+TEST_F(MenuItemViewDeathTest, CancelOnNonRootItem) {
+  views::TestMenuItemView root_menu;
+  MenuItemView* item = root_menu.AppendMenuItem(0);
+  EXPECT_CHECK_DEATH(item->Cancel());
 }
 
 TEST_F(MenuItemViewUnitTest, AppendMenuItemSeparator) {

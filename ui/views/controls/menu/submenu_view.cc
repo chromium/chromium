@@ -101,7 +101,6 @@ const MenuItemView* SubmenuView::GetMenuItemAt(size_t index) const {
 
 int SubmenuView::GetPreferredItemHeight() const {
   EmptyMenuMenuItem menu_item(parent_menu_item_);
-  menu_item.set_controller(parent_menu_item_->GetMenuController());
   return menu_item.GetPreferredSize({}).height();
 }
 

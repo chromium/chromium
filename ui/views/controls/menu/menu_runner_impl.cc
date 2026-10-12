@@ -195,7 +195,7 @@ void MenuRunnerImpl::RunMenuAt(
   controller->set_use_ash_system_ui_layout(
       (run_types & MenuRunner::USE_ASH_SYS_UI_LAYOUT) != 0);
   controller_ = controller->AsWeakPtr();
-  menu_->set_controller(controller_.get());
+  menu_->SetController(controller_.get());
   menu_->PrepareForRun(has_mnemonics,
                        !for_drop_ && ShouldShowMnemonics(run_types));
   if (show_menu_host_duration_histogram.has_value() &&
@@ -244,9 +244,9 @@ void MenuRunnerImpl::OnMenuClosed(NotifyType type,
     }
   }
 
-  menu_->set_controller(nullptr);
+  menu_->SetController(nullptr);
   for (MenuItemView* sibling_menu : sibling_menus_) {
-    sibling_menu->set_controller(nullptr);
+    sibling_menu->SetController(nullptr);
   }
 
   if (owns_controller_ && controller_) {

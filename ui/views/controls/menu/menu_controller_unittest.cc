@@ -635,12 +635,12 @@ void MenuControllerTest::CreateMenu(const CreateMenuOptions& options) {
     menu_controller_ =
         new MenuController(for_drop(), menu_controller_delegate_.get());
   }
-  menu_item_->set_controller(menu_controller_);
+  menu_item_->SetController(menu_controller_);
 
   if (options.show) {
     MenuItemView* root_item =
         options.item ? options.item.get() : menu_item_.get();
-    root_item->set_controller(menu_controller_);
+    root_item->SetController(menu_controller_);
     menu_controller_->Run(owner(), nullptr, root_item, gfx::Rect(),
                           options.position, ui::mojom::MenuSourceType::kNone,
                           options.menu_type);
@@ -785,7 +785,7 @@ void MenuControllerTest::TestMenuControllerReplacementDuringDrag() {
   menu_item()->GetSubmenu()->Close();
   menu_controller_ =
       new MenuController(/*for_drop=*/false, menu_controller_delegate_.get());
-  menu_item_->set_controller(menu_controller_);
+  menu_item_->SetController(menu_controller_);
   menu_controller_->Run(owner_.get(), nullptr, menu_item(), gfx::Rect(),
                         MenuAnchorPosition::kTopLeft);
   EXPECT_TRUE(showing());
@@ -2653,7 +2653,7 @@ TEST_F(MenuControllerTest, MouseAtMenuItemOnShow) {
   auto menu_item = std::make_unique<MenuItemView>(menu_delegate());
   const MenuItemView* const first_item = menu_item->AppendMenuItem(1, u"One");
   menu_item->AppendMenuItem(2, u"Two");
-  menu_item->set_controller(menu_controller());
+  menu_item->SetController(menu_controller());
 
   // Move the mouse to where the first menu item will be shown,
   // and show the menu.
@@ -2868,7 +2868,7 @@ TEST_F(MenuControllerTest, RepostEventToEmptyMenuItem) {
   auto nested_menu_delegate_1 = std::make_unique<test::TestMenuDelegate>();
   auto nested_menu_item_1 =
       std::make_unique<MenuItemView>(nested_menu_delegate_1.get());
-  nested_menu_item_1->set_controller(menu_controller());
+  nested_menu_item_1->SetController(menu_controller());
   SubmenuView* const nested_menu_submenu = nested_menu_item_1->CreateSubmenu();
   ShowSubmenu(nested_menu_submenu);
   menu_host_for_submenu(nested_menu_submenu)
@@ -2921,7 +2921,7 @@ TEST_F(MenuControllerTest, RepostEventToEmptyMenuItem) {
   auto nested_menu_delegate_2 = std::make_unique<test::TestMenuDelegate>();
   auto nested_menu_item_2 =
       std::make_unique<MenuItemView>(nested_menu_delegate_2.get());
-  nested_menu_item_2->set_controller(menu_controller());
+  nested_menu_item_2->SetController(menu_controller());
   auto nested_controller_delegate_2 =
       std::make_unique<TestMenuControllerDelegate>();
   menu_controller()->AddNestedDelegate(nested_controller_delegate_2.get());
@@ -2971,7 +2971,7 @@ TEST_F(MenuControllerTest,
   // Create context menu
   auto context_menu = std::make_unique<MenuItemView>(menu_delegate());
   context_menu->AppendMenuItem(1, u"Action");
-  context_menu->set_controller(menu_controller());
+  context_menu->SetController(menu_controller());
 
   auto context_delegate = std::make_unique<TestMenuControllerDelegate>();
   menu_controller()->AddNestedDelegate(context_delegate.get());
@@ -3225,7 +3225,7 @@ TEST_F(MenuControllerTest, NoUseAfterFreeWhenMenuCanceledOnMousePress) {
 
   // Creating own MenuItem for a minimal test environment.
   auto item = std::make_unique<MenuItemView>(menu_delegate());
-  item->set_controller(menu_controller());
+  item->SetController(menu_controller());
   item->SetBounds(0, 0, 50, 50);
 
   SubmenuView* const submenu = item->CreateSubmenu();

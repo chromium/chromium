@@ -177,6 +177,7 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
       std::optional<ui::NewBadgeType> badge_type);
 
   // Hides and cancels the menu. This does nothing if the menu is not open.
+  // Must only be called on the root item.
   void Cancel();
 
   // Add an item to the menu at a specified index.  ChildrenChanged() should
@@ -426,13 +427,9 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
   // Returns the trailing horizontal padding after content.
   int GetTrailingPadding() const;
 
-  void set_controller(MenuController* controller) {
-    if (controller) {
-      controller_ = controller->AsWeakPtr();
-    } else {
-      controller_.reset();
-    }
-  }
+  // Sets the controller running this menu. Only valid on the root item; other
+  // items get the controller from the root via GetMenuController().
+  void SetController(MenuController* controller);
   MenuController* GetMenuController();
   const MenuController* GetMenuController() const;
 
@@ -716,7 +713,9 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
   // as necessary.
   raw_ptr<MenuDelegate> delegate_ = nullptr;
 
-  // The controller for the run operation, or NULL if the menu isn't showing.
+  // The controller for the run operation, or null if the menu isn't showing.
+  // Only set on the root menu item; use GetMenuController() instead of
+  // accessing this directly.
   base::WeakPtr<MenuController> controller_;
 
   // Used to detect when Cancel was invoked.
