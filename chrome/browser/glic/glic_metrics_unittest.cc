@@ -1160,21 +1160,6 @@ TEST_F(GlicMetricsTrustFirstOnboardingTest, ShownAndAccepted) {
   histogram_tester().ExpectTotalCount("Glic.Fre.Dismissed.InvocationSource", 0);
 }
 
-TEST_F(GlicMetricsTrustFirstOnboardingTest, ShownAndAccepted_FeatureDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kGlicOnboardingMetricsMigration);
-
-  metrics()->OnGlicWindowStartedOpening(/*attached=*/false,
-                                        mojom::InvocationSource::kOsButton);
-  EXPECT_EQ(user_action_tester().GetActionCount("Glic.Fre.Shown"), 1);
-
-  metrics()->OnTrustFirstOnboardingAccept();
-  // Glic.Fre.Accept was renamed and the two metrics are mutually exclusive.
-  EXPECT_EQ(user_action_tester().GetActionCount("Glic.Fre.Accept"), 1);
-  EXPECT_EQ(user_action_tester().GetActionCount("Glic.Onboarding.Accept"), 0);
-}
-
 TEST_F(GlicMetricsTrustFirstOnboardingTest, NotShownIfConsented) {
   enabling()->SetCompletedFre(prefs::FreStatus::kCompleted);
   EXPECT_TRUE(enabling()->HasConsented());

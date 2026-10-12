@@ -404,11 +404,7 @@ void GlicMetrics::OnOptInImpression(OptInFlow flow) {
 }
 
 void GlicMetrics::OnOptInAccepted(OptInFlow flow) {
-  if (base::FeatureList::IsEnabled(features::kGlicOnboardingMetricsMigration)) {
-    base::RecordAction(base::UserMetricsAction("Glic.Onboarding.OptInAccept"));
-  } else {
-    base::RecordAction(base::UserMetricsAction("Glic.Fre.Accept"));
-  }
+  base::RecordAction(base::UserMetricsAction("Glic.Onboarding.OptInAccept"));
   base::UmaHistogramEnumeration("Glic.Fre.Accept.FlowSource", flow);
 }
 

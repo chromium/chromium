@@ -13428,9 +13428,10 @@ should be able to be added at any place in this file.
   <description>
     This metric is currently broken. It is logged once per profile
     initialization if Glic is enabled for that profile. The only action a user
-    can take to enable Glic is to accept the FRE. Use Glic.Fre.Accept instead of
-    this metric. All other actions that might enable Glic are not user
-    initiated. And not likely to occur once the FRE has been accepted.
+    can take to enable Glic is to accept the FRE. Use
+    Glic.Onboarding.OptInAccept instead of this metric. All other actions that
+    might enable Glic are not user initiated. And not likely to occur once the
+    FRE has been accepted.
   </description>
 </action>
 
@@ -13522,12 +13523,6 @@ should be able to be added at any place in this file.
     Logged if the user uses the focus hotkey while Glic is open. Triggered by
     hotkey presses captured in Chrome as well as in the Glic window.
   </description>
-</action>
-
-<action name="Glic.Fre.Accept">
-  <owner>iwells@google.com</owner>
-  <owner>erikchen@chromium.org</owner>
-  <description>Logged if the FRE is accepted.</description>
 </action>
 
 <action name="Glic.Fre.Dismissed">
