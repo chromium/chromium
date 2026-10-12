@@ -20,8 +20,6 @@
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decider.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
-#include "components/optimization_guide/core/model_execution/model_broker_client.h"
-#include "components/optimization_guide/core/model_execution/model_execution_features_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/proto/hints.pb.h"
@@ -51,7 +49,9 @@ class PageHandler;
 
 namespace optimization_guide {
 class ChromeHintsManager;
+class ModelBrokerClient;
 class ModelExecutionEnabledBrowserTest;
+class ModelExecutionFeaturesController;
 class ModelExecutionLiveTest;
 class ModelExecutionManager;
 class ModelQualityLogsUploaderService;
@@ -63,6 +63,7 @@ class PredictionManagerBrowserTestBase;
 class PredictionModelDownloadClient;
 class PredictionModelStoreBrowserTestBase;
 class PushNotificationManager;
+class SettingsEnabledObserver;
 class TabUrlProvider;
 class TopHostProvider;
 
