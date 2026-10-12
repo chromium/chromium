@@ -13,6 +13,7 @@ import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.ui.test.util.MockitoHelper.clearInvocations;
@@ -122,7 +123,6 @@ public class HintTextUpdaterUnitTest {
         lenient()
                 .when(mLocationBarDataProvider.getFuseboxSessionState())
                 .thenReturn(mFuseboxSessionState);
-        lenient().when(mFuseboxSessionState.getAutocompleteInput()).thenReturn(mAutocompleteInput);
         lenient()
                 .when(mFuseboxCoordinator.getFuseboxStateSupplier())
                 .thenReturn(mFuseboxStateSupplier);
@@ -230,8 +230,8 @@ public class HintTextUpdaterUnitTest {
     public void testGetOmniboxHintText_ContextualTasks() {
         GURL aiUrl = new GURL("chrome://contextual-tasks");
         String aiTitle = "My AI Page";
-        mAutocompleteInput.setPageUrl(aiUrl);
-        mAutocompleteInput.setPageTitle(aiTitle);
+        when(mLocationBarDataProvider.getCurrentGurl()).thenReturn(aiUrl);
+        when(mLocationBarDataProvider.getTitle()).thenReturn(aiTitle);
 
         mUpdater.onTitleChanged();
 
@@ -333,6 +333,30 @@ public class HintTextUpdaterUnitTest {
         clearInvocations(mUpdateHintTextCallback);
         mAutocompleteInput.setRequestType(AutocompleteRequestType.IMAGE_GENERATION);
         verify(mUpdateHintTextCallback).onResult(eq("Describe your image"));
+    }
+
+    @Test
+    public void testGetOmniboxHintText_SessionStateNotConsultedAfterEndInput() {
+        when(mSearchEngineService.getSearchEngineName()).thenReturn("Google");
+        mAutocompleteInput.setRequestType(AutocompleteRequestType.AI_MODE);
+        clearInvocations(mUpdateHintTextCallback, mFuseboxSessionState);
+
+        mUpdater.endInput();
+
+        verify(mUpdateHintTextCallback).onResult(eq("Search Google or type URL"));
+        verifyNoInteractions(mFuseboxSessionState);
+    }
+
+    @Test
+    public void testGetOmniboxHintText_SessionStateNotConsultedForSearchRequest() {
+        when(mSearchEngineService.getSearchEngineName()).thenReturn("Google");
+        mAutocompleteInput.setRequestType(AutocompleteRequestType.SEARCH);
+        clearInvocations(mUpdateHintTextCallback, mFuseboxSessionState);
+
+        mUpdater.onTitleChanged();
+
+        verify(mUpdateHintTextCallback).onResult(eq("Search Google or type URL"));
+        verifyNoInteractions(mFuseboxSessionState);
     }
 
     @Test

@@ -197,7 +197,7 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
                     mCurrentInput != null
                             && mCurrentInput.getDisplayState() != DisplayState.SUGGESTIONS
                             && TextUtils.isEmpty(mCurrentInput.getUserText());
-            mUpdateHintTextCallback.onResult(showDefaultHint ? getDefaultHintText() : "");
+            mUpdateHintTextCallback.onResult(showDefaultHint ? getOmniboxHintText() : "");
             return;
         }
 
@@ -220,24 +220,16 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
             return;
         }
 
-        mUpdateHintTextCallback.onResult(getDefaultHintText());
+        mUpdateHintTextCallback.onResult(getOmniboxHintText());
     }
 
-    private String getDefaultHintText() {
-        FuseboxSessionState fuseboxSession = FuseboxSessionState.from(mLocationBarDataProvider);
-        return getOmniboxHintText(fuseboxSession);
-    }
-
-    private String getOmniboxHintText(@Nullable FuseboxSessionState fuseboxSessionState) {
-        if (fuseboxSessionState != null) {
-            AutocompleteInput input = fuseboxSessionState.getAutocompleteInput();
-            if (input != null) {
-                GURL url = input.getPageUrl();
-                String title = input.getPageTitle();
-                if (ContextualTasksUtils.isContextualTasksUrl(url) && !TextUtils.isEmpty(title)) {
-                    return title;
-                }
-            }
+    private String getOmniboxHintText() {
+        // The hint describes the page currently shown in the tab, which is independent of any
+        // input session, so read the current page from the data provider.
+        GURL url = mLocationBarDataProvider.getCurrentGurl();
+        String title = mLocationBarDataProvider.getTitle();
+        if (ContextualTasksUtils.isContextualTasksUrl(url) && !TextUtils.isEmpty(title)) {
+            return title;
         }
 
         assert mSearchEngineService != null;
@@ -247,7 +239,7 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
             return mResourceProvider.getString(R.string.omnibox_empty_hint);
         }
 
-        String toolHint = getToolHintFromInputState(fuseboxSessionState);
+        String toolHint = getToolHintFromInputState();
         if (!TextUtils.isEmpty(toolHint)) {
             return toolHint;
         }
@@ -255,14 +247,21 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
         return getSearchEngineHintText(searchEngineService, searchEngineName);
     }
 
-    private @Nullable String getToolHintFromInputState(
-            @Nullable FuseboxSessionState fuseboxSessionState) {
-        if (fuseboxSessionState == null || mCurrentInput == null) {
+    private @Nullable String getToolHintFromInputState() {
+        if (mCurrentInput == null) {
             return null;
         }
 
         @AutocompleteRequestType int requestType = mCurrentInput.getRequestType();
         if (!ToolModeUtils.isAimRequest(requestType)) {
+            return null;
+        }
+
+        // The tool configuration lives on the session state, so it is only consulted while an
+        // input session is active and an AIM request type is selected.
+        FuseboxSessionState fuseboxSessionState =
+                FuseboxSessionState.from(mLocationBarDataProvider);
+        if (fuseboxSessionState == null) {
             return null;
         }
 
