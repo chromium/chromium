@@ -134,6 +134,7 @@ CONTENT_EXPORT
 
 - (bool)dropInProgressForTesting;
 - (void)setDropInProgressForTesting;
+- (bool)isDragCanceledForTesting;
 
 @end
 

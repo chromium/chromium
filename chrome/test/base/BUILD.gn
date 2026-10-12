@@ -1524,7 +1524,7 @@ if (is_chromeos) {
   }
 }
 
-if (use_aura || is_android) {
+if (use_aura || is_android || is_mac) {
   source_set("drag_and_drop_test_utils") {
     testonly = true
     sources = [ "drag_and_drop_test_utils.h" ]
@@ -1555,6 +1555,17 @@ if (use_aura || is_android) {
         "//net",
         "//ui/android",
         "//ui/base/clipboard:clipboard_types",
+      ]
+    } else if (is_mac) {
+      sources += [ "drag_and_drop_test_utils_mac.mm" ]
+      deps += [
+        "//content/public/common",
+        "//ui/base",
+        "//ui/base/clipboard",
+      ]
+      frameworks = [
+        "AppKit.framework",
+        "Foundation.framework",
       ]
     }
   }

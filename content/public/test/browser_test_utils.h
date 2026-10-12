@@ -2677,6 +2677,14 @@ RegisterWebContentsCreationCallback(
 // and/or main. This can be useful to enable when the process hosting the window
 // is a standalone executable without an Info.plist.
 bool EnableNativeWindowActivation();
+
+// Returns true if the most recent drag enter on `web_contents` was rejected
+// (e.g. by `WebContentsDelegate::CanDragEnter` or an invalid target view).
+bool IsDragCanceledForTesting(WebContents* web_contents);
+
+// Resets internal `WebDragDest` state on `web_contents` after a simulated
+// rejected drag exits.
+void CleanupDragStateForTesting(WebContents* web_contents);
 #endif  // BUILDFLAG(IS_MAC)
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

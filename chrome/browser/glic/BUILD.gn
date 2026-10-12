@@ -978,6 +978,7 @@ source_set("browser_tests") {
     "host/glic_api_skills_browsertest.cc",
     "host/glic_api_zss_browsertest.cc",
     "host/glic_chrome_tools_browsertest.cc",
+    "host/glic_drag_and_drop_browsertest.cc",
     "host/glic_internals_browsertest.cc",
     "host/glic_no_webview_contents_manager_browsertest.cc",
     "host/glic_overlay_browsertest.cc",
@@ -1024,13 +1025,9 @@ source_set("browser_tests") {
     "//chrome/test:test_support",
     "//chrome/test/base:browser_test_waiters",
     "//chrome/test/base:chrome_test_utils",
+    "//chrome/test/base:drag_and_drop_test_utils",
     "//chrome/test/base:profile_lifecycle_test_utils",
     "//chrome/test/base:testing_browser_process",
-  ]
-  if (use_aura) {
-    deps += [ "//chrome/test/base:drag_and_drop_test_utils" ]
-  }
-  deps += [
     "//components/actor/core",
     "//components/actor/public/mojom:mojo_bindings",
     "//components/contextual_tasks/public:feature_list",
@@ -1053,11 +1050,6 @@ source_set("browser_tests") {
     "//third_party/blink/public/common:headers",
     "//ui/gfx/geometry",
   ]
-
-  if (!is_mac) {
-    sources += [ "host/glic_drag_and_drop_browsertest.cc" ]
-    deps += [ "//chrome/test/base:drag_and_drop_test_utils" ]
-  }
 
   if (!is_android) {
     sources += [
@@ -1085,13 +1077,12 @@ source_set("browser_tests") {
       "widget/glic_side_panel_coordinator_browsertest.cc",
     ]
 
-    if (!is_mac && enterprise_cloud_content_analysis) {
+    if (enterprise_cloud_content_analysis) {
       sources += [
         "host/glic_drag_and_drop_policy_browsertest.cc",
         "host/glic_web_drag_and_drop_browsertest.cc",
       ]
     }
-
     deps += [
       ":glic",
       ":impl",

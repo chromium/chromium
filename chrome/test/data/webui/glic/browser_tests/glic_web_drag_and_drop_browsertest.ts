@@ -7,7 +7,7 @@
 import {InvocationSource} from '/glic/glic_api/glic_api.js';
 import type {InvokeOptions} from '/glic/glic_api/glic_api.js';
 
-import {ApiTestFixtureBase, assertEquals, assertFalse, testMain, waitFor} from './browser_test_base.js';
+import {ApiTestFixtureBase, assertEquals, assertFalse, assertTrue, testMain, waitFor} from './browser_test_base.js';
 
 class GlicWebDragAndDropBrowserTest extends ApiTestFixtureBase {
   override async setUpTest() {
@@ -97,7 +97,8 @@ class GlicWebDragAndDropBrowserTest extends ApiTestFixtureBase {
     const droppedData =
         await waitFor(invokeDropPromise, 40000, 'Invoke never arrived');
 
-    assertEquals('cors-allowed.jpg', droppedData);
+    // macOS names files by UTType (jpeg); Aura uses the Blink extension (jpg).
+    assertTrue(/^cors-allowed\.jpe?g$/.test(droppedData), droppedData);
     assertFalse(state.wasDropped);
     assertEquals(0, state.droppedTypesCount);
     assertEquals(0, state.droppedFilesCount);

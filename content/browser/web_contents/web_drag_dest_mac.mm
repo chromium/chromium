@@ -243,6 +243,8 @@ void OnWebContentsViewDelegatePerformingDropComplete(
     return NSDragOperationNone;
   }
 
+  _canceled = false;
+
   // Save off the RVH so we can tell if it changes during a drag. If it does,
   // we need to send a new enter message in draggingUpdated:.
   _currentRVH = _webContents->GetRenderViewHost();
@@ -778,6 +780,10 @@ void OnWebContentsViewDelegatePerformingDropComplete(
 
 - (void)setDropInProgressForTesting {
   _dropInProgress = true;
+}
+
+- (bool)isDragCanceledForTesting {
+  return _canceled || !_pendingDragEnteredInfo;
 }
 
 @end
