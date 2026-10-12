@@ -31,7 +31,6 @@
 #include "components/send_tab_to_self/proto_conversions.h"
 #include "components/send_tab_to_self/send_tab_to_self_commit_tracker.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
-#include "components/send_tab_to_self/target_device_info.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/deletion_origin.h"
@@ -43,6 +42,7 @@
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync_device_info/device_name_util.h"
 #include "components/sync_device_info/local_device_info_util.h"
+#include "components/sync_device_info/remote_device_info.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
 namespace send_tab_to_self {
@@ -757,7 +757,7 @@ bool SendTabToSelfBridge::HasValidTargetDevice() {
   return GetTargetDeviceInfoSortedList().size() > 0;
 }
 
-std::vector<TargetDeviceInfo>
+std::vector<syncer::RemoteDeviceInfo>
 SendTabToSelfBridge::GetTargetDeviceInfoSortedList() {
   TRACE_EVENT0("ui", "SendTabToSelfBridge::GetTargetDeviceInfoSortedList");
   if (!IsReady()) {
@@ -793,12 +793,9 @@ SendTabToSelfBridge::GetTargetDeviceInfoSortedList() {
     std::vector<const syncer::DeviceInfo*> raw_devices = base::ToVector(
         devices,
         [](const DeviceWithTimestamp& entry) { return entry.device.get(); });
-    // TODO(crbug.com/522788942): Consider moving TargetDeviceInfo out of
-    // send_tab_to_self (e.g. into sync_device_info or sharing) so multiple
-    // clients can share a unified struct.
     std::vector<std::string> device_names =
         syncer::GetDeviceDisplayNames(raw_devices, GetLocalDeviceInfo());
-    std::vector<TargetDeviceInfo> target_devices;
+    std::vector<syncer::RemoteDeviceInfo> target_devices;
     target_devices.reserve(devices.size());
     for (size_t i = 0; i < devices.size(); ++i) {
       target_devices.emplace_back(
@@ -824,17 +821,18 @@ SendTabToSelfBridge::GetTargetDeviceInfoSortedList() {
   return base::ToVector(device_names, [&](const auto& info) {
     auto it =
         std::ranges::find(devices, info.device, &DeviceWithTimestamp::device);
-    return TargetDeviceInfo(info.display_name, info.device->guid(),
-                            info.device->form_factor(), info.device->os_type(),
-                            it->last_active, it->has_high_precision);
+    return syncer::RemoteDeviceInfo(
+        info.display_name, info.device->guid(), info.device->form_factor(),
+        info.device->os_type(), it->last_active, it->has_high_precision);
   });
 }
 
-std::optional<TargetDeviceInfo> SendTabToSelfBridge::GetTargetDeviceInfo(
-    std::string_view cache_guid) {
-  const std::vector<TargetDeviceInfo> devices = GetTargetDeviceInfoSortedList();
-  auto it =
-      std::ranges::find(devices, cache_guid, &TargetDeviceInfo::cache_guid);
+std::optional<syncer::RemoteDeviceInfo>
+SendTabToSelfBridge::GetTargetDeviceInfo(std::string_view cache_guid) {
+  const std::vector<syncer::RemoteDeviceInfo> devices =
+      GetTargetDeviceInfoSortedList();
+  auto it = std::ranges::find(devices, cache_guid,
+                              &syncer::RemoteDeviceInfo::cache_guid);
   return it != devices.end() ? std::make_optional(*it) : std::nullopt;
 }
 

@@ -13,9 +13,9 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/send_tab_to_self/features.h"
 #import "components/send_tab_to_self/send_tab_to_self_model.h"
-#import "components/send_tab_to_self/target_device_info.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync_device_info/device_info.h"
+#import "components/sync_device_info/remote_device_info.h"
 #import "ios/chrome/browser/send_tab_to_self/ui/send_tab_to_self_constants.h"
 #import "ios/chrome/browser/send_tab_to_self/ui/send_tab_to_self_image_detail_text_item.h"
 #import "ios/chrome/browser/send_tab_to_self/ui/send_tab_to_self_manage_devices_item.h"
@@ -66,12 +66,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @implementation SendTabToSelfTableViewController {
   // The list of devices with their names, cache_guids, device types,
   // and active times.
-  std::vector<send_tab_to_self::TargetDeviceInfo> _targetDeviceList;
+  std::vector<syncer::RemoteDeviceInfo> _targetDeviceList;
 }
 
 - (instancetype)initWithDeviceList:
-                    (std::vector<send_tab_to_self::TargetDeviceInfo>)
-                        targetDeviceList
+                    (std::vector<syncer::RemoteDeviceInfo>)targetDeviceList
                           delegate:(id<SendTabToSelfModalDelegate>)delegate
                      accountAvatar:(UIImage*)accountAvatar
                       accountEmail:(NSString*)accountEmail {

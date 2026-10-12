@@ -34,12 +34,12 @@
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
-#include "components/send_tab_to_self/target_device_info.h"
 #include "components/send_tab_to_self/target_device_list_waiter.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync_device_info/device_info.h"
+#include "components/sync_device_info/remote_device_info.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/events/event.h"
@@ -213,13 +213,14 @@ SendTabToSelfBubbleController::send_tab_to_self_bubble_view() const {
   return send_tab_to_self_bubble_view_;
 }
 
-std::vector<TargetDeviceInfo> SendTabToSelfBubbleController::GetValidDevices() {
+std::vector<syncer::RemoteDeviceInfo>
+SendTabToSelfBubbleController::GetValidDevices() {
   SendTabToSelfSyncService* const service =
       SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile());
   SendTabToSelfModel* const model =
       service ? service->GetSendTabToSelfModel() : nullptr;
   return model ? model->GetTargetDeviceInfoSortedList()
-               : std::vector<TargetDeviceInfo>();
+               : std::vector<syncer::RemoteDeviceInfo>();
 }
 
 AccountInfo SendTabToSelfBubbleController::GetSharingAccountInfo() {
@@ -257,7 +258,7 @@ void SendTabToSelfBubbleController::OnDeviceSelected(
   syncer::DeviceInfo::FormFactor form_factor =
       syncer::DeviceInfo::FormFactor::kUnknown;
   if (send_tab_to_self::SendTabToSelfModel* model = GetModel()) {
-    std::optional<send_tab_to_self::TargetDeviceInfo> device =
+    std::optional<syncer::RemoteDeviceInfo> device =
         model->GetTargetDeviceInfo(target_device_guid);
     if (device) {
       form_factor = device->form_factor;

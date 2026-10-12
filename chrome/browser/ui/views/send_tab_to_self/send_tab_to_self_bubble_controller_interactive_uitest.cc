@@ -24,7 +24,7 @@
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
-#include "components/send_tab_to_self/target_device_info.h"
+#include "components/sync_device_info/remote_device_info.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -36,6 +36,7 @@ namespace {
 
 using FormFactor = syncer::DeviceInfo::FormFactor;
 using OsType = syncer::DeviceInfo::OsType;
+using syncer::RemoteDeviceInfo;
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryTabId);
 // Baseline Gerrit CL number of the most recent CL that modified the UI.
@@ -106,7 +107,7 @@ class SendTabToSelfInteractiveUiTest : public InteractiveBrowserTest {
   }
 
   auto SetUpTargetDevicesAndShowBubble(
-      std::vector<TargetDeviceInfo> target_devices) {
+      std::vector<RemoteDeviceInfo> target_devices) {
     const GURL test_url = embedded_test_server()->GetURL("/empty.html");
     return Steps(
         InstrumentTab(kPrimaryTabId),
@@ -132,7 +133,7 @@ class SendTabToSelfInteractiveUiTest : public InteractiveBrowserTest {
 
   auto SetUpSingleDeviceAndShowBubble() {
     return SetUpTargetDevicesAndShowBubble(
-        {TargetDeviceInfo("device_1", "device_1", FormFactor::kDesktop,
+        {RemoteDeviceInfo("device_1", "device_1", FormFactor::kDesktop,
                           OsType::kLinux, base::Time::Now())});
   }
 
@@ -215,9 +216,9 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfDeviceSelectionInteractiveUiTest,
                        SendTabMultipleDevicesDeviceSelection) {
   RunTestSequence(
       SetUpTargetDevicesAndShowBubble(
-          {TargetDeviceInfo("device_1", "device_1", FormFactor::kDesktop,
+          {RemoteDeviceInfo("device_1", "device_1", FormFactor::kDesktop,
                             OsType::kLinux, base::Time::Now()),
-           TargetDeviceInfo("device_2", "device_2", FormFactor::kPhone,
+           RemoteDeviceInfo("device_2", "device_2", FormFactor::kPhone,
                             OsType::kAndroid, base::Time::Now())}),
       NameDescendantViewByType<SendTabToSelfBubbleDeviceButton>(
           SendTabToSelfDevicePickerBubbleView::

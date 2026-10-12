@@ -18,6 +18,7 @@
 #import "components/send_tab_to_self/features.h"
 #import "components/send_tab_to_self/send_tab_to_self_model.h"
 #import "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
+#import "components/sync_device_info/remote_device_info.h"
 #import "ios/chrome/browser/send_tab_to_self/coordinator/send_tab_to_self_coordinator_delegate.h"
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_browser_agent.h"
 #import "ios/chrome/browser/send_tab_to_self/ui/send_tab_to_self_modal_delegate.h"
@@ -206,7 +207,7 @@ TEST_F(SendTabToSelfCoordinatorTest, SendsTabDirectToDeviceSuccessfully) {
 
   // Configure fake model.
   model_->SetSendResult(send_tab_to_self::SendTabToSelfResult::kSuccess);
-  model_->AddTargetDevice(send_tab_to_self::TargetDeviceInfo(
+  model_->AddTargetDevice(syncer::RemoteDeviceInfo(
       kTargetDeviceName, kTargetDeviceGUID,
       syncer::DeviceInfo::FormFactor::kPhone, syncer::DeviceInfo::OsType::kIOS,
       base::Time::Now()));
@@ -277,7 +278,7 @@ TEST_F(SendTabToSelfCoordinatorTest,
   // Configure fake model with connection failure.
   model_->SetSendResult(
       send_tab_to_self::SendTabToSelfResult::kFailureNoInternetConnection);
-  model_->AddTargetDevice(send_tab_to_self::TargetDeviceInfo(
+  model_->AddTargetDevice(syncer::RemoteDeviceInfo(
       kTargetDeviceName, kTargetDeviceGUID,
       syncer::DeviceInfo::FormFactor::kPhone, syncer::DeviceInfo::OsType::kIOS,
       base::Time::Now()));
@@ -328,7 +329,7 @@ TEST_F(SendTabToSelfCoordinatorTest,
 
   // Configure fake model.
   model_->SetSendResult(send_tab_to_self::SendTabToSelfResult::kSuccess);
-  model_->AddTargetDevice(send_tab_to_self::TargetDeviceInfo(
+  model_->AddTargetDevice(syncer::RemoteDeviceInfo(
       kTargetDeviceName, kTargetDeviceGUID,
       syncer::DeviceInfo::FormFactor::kPhone, syncer::DeviceInfo::OsType::kIOS,
       base::Time::Now()));

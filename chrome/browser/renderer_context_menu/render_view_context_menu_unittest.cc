@@ -88,7 +88,6 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
-#include "components/send_tab_to_self/target_device_info.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/tabs/public/tab_interface.h"

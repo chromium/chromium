@@ -41,8 +41,8 @@
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
-#include "components/send_tab_to_self/target_device_info.h"
 #include "components/sync_device_info/device_info.h"
+#include "components/sync_device_info/remote_device_info.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/user_education/common/tutorial/tutorial_registry.h"
 #include "components/user_education/common/tutorial/tutorial_service.h"
@@ -459,10 +459,10 @@ class SendTabToSelfIphInteractiveUiTest : public InteractiveFeaturePromoTest {
             SendTabToSelfSyncServiceFactory::GetForProfile(
                 browser()->GetProfile()))
             ->GetFakeSendTabToSelfModel();
-    TargetDeviceInfo target_device(kTargetDeviceName, kTargetDeviceCacheGuid,
-                                   syncer::DeviceInfo::FormFactor::kPhone,
-                                   syncer::DeviceInfo::OsType::kAndroid,
-                                   base::Time::Now());
+    syncer::RemoteDeviceInfo target_device(
+        kTargetDeviceName, kTargetDeviceCacheGuid,
+        syncer::DeviceInfo::FormFactor::kPhone,
+        syncer::DeviceInfo::OsType::kAndroid, base::Time::Now());
     model->SetTargetDeviceInfoSortedList({target_device});
     model->SetHasValidTargetDevice(true);
     model->SetIsReady(true);

@@ -1,8 +1,8 @@
-// Copyright 2026 The Chromium Authors
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/send_tab_to_self/target_device_info.h"
+#include "components/sync_device_info/remote_device_info.h"
 
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -11,26 +11,26 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace send_tab_to_self {
+namespace syncer {
 namespace {
 
 using ::testing::Test;
-using FormFactor = syncer::DeviceInfo::FormFactor;
-using OsType = syncer::DeviceInfo::OsType;
+using FormFactor = DeviceInfo::FormFactor;
+using OsType = DeviceInfo::OsType;
 
 constexpr char kDeviceName[] = "device";
 constexpr char kCacheGuid[] = "guid";
 
-class TargetDeviceInfoTest : public Test {
+class RemoteDeviceInfoTest : public Test {
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 // Verifies that activity within the last minute formats as "Active now".
-TEST_F(TargetDeviceInfoTest, ActiveNow) {
+TEST_F(RemoteDeviceInfoTest, ActiveNow) {
   base::Time last_updated = base::Time::Now() - base::Seconds(30);
-  TargetDeviceInfo device_info(kDeviceName, kCacheGuid, FormFactor::kDesktop,
+  RemoteDeviceInfo device_info(kDeviceName, kCacheGuid, FormFactor::kDesktop,
                                OsType::kLinux, last_updated,
                                /*has_high_precision_timestamp=*/true);
 
@@ -39,9 +39,9 @@ TEST_F(TargetDeviceInfoTest, ActiveNow) {
 }
 
 // Verifies that future timestamps (clock skew) clamp to "Active now".
-TEST_F(TargetDeviceInfoTest, FutureTimestampClampsToActiveNow) {
+TEST_F(RemoteDeviceInfoTest, FutureTimestampClampsToActiveNow) {
   base::Time last_updated = base::Time::Now() + base::Minutes(5);
-  TargetDeviceInfo device_info(kDeviceName, kCacheGuid, FormFactor::kDesktop,
+  RemoteDeviceInfo device_info(kDeviceName, kCacheGuid, FormFactor::kDesktop,
                                OsType::kLinux, last_updated,
                                /*has_high_precision_timestamp=*/true);
 
@@ -50,9 +50,9 @@ TEST_F(TargetDeviceInfoTest, FutureTimestampClampsToActiveNow) {
 }
 
 // Verifies plural minute formatting when active several minutes ago.
-TEST_F(TargetDeviceInfoTest, ActiveMinutes) {
+TEST_F(RemoteDeviceInfoTest, ActiveMinutes) {
   base::Time last_updated = base::Time::Now() - base::Minutes(5);
-  TargetDeviceInfo device_info(kDeviceName, kCacheGuid, FormFactor::kDesktop,
+  RemoteDeviceInfo device_info(kDeviceName, kCacheGuid, FormFactor::kDesktop,
                                OsType::kLinux, last_updated,
                                /*has_high_precision_timestamp=*/true);
 
@@ -62,9 +62,9 @@ TEST_F(TargetDeviceInfoTest, ActiveMinutes) {
 }
 
 // Verifies plural hour formatting when active several hours ago.
-TEST_F(TargetDeviceInfoTest, ActiveHours) {
+TEST_F(RemoteDeviceInfoTest, ActiveHours) {
   base::Time last_updated = base::Time::Now() - base::Hours(5);
-  TargetDeviceInfo device_info(kDeviceName, kCacheGuid, FormFactor::kDesktop,
+  RemoteDeviceInfo device_info(kDeviceName, kCacheGuid, FormFactor::kDesktop,
                                OsType::kLinux, last_updated,
                                /*has_high_precision_timestamp=*/true);
 
@@ -74,9 +74,9 @@ TEST_F(TargetDeviceInfoTest, ActiveHours) {
 }
 
 // Verifies singular minute boundary at exactly 1 minute elapsed.
-TEST_F(TargetDeviceInfoTest, ActiveOneMinute) {
+TEST_F(RemoteDeviceInfoTest, ActiveOneMinute) {
   base::Time last_updated = base::Time::Now() - base::Minutes(1);
-  TargetDeviceInfo device_info(kDeviceName, kCacheGuid, FormFactor::kDesktop,
+  RemoteDeviceInfo device_info(kDeviceName, kCacheGuid, FormFactor::kDesktop,
                                OsType::kLinux, last_updated,
                                /*has_high_precision_timestamp=*/true);
 
@@ -86,9 +86,9 @@ TEST_F(TargetDeviceInfoTest, ActiveOneMinute) {
 }
 
 // Verifies upper minute boundary at 59 minutes elapsed.
-TEST_F(TargetDeviceInfoTest, ActiveFiftyNineMinutes) {
+TEST_F(RemoteDeviceInfoTest, ActiveFiftyNineMinutes) {
   base::Time last_updated = base::Time::Now() - base::Minutes(59);
-  TargetDeviceInfo device_info(kDeviceName, kCacheGuid, FormFactor::kDesktop,
+  RemoteDeviceInfo device_info(kDeviceName, kCacheGuid, FormFactor::kDesktop,
                                OsType::kLinux, last_updated,
                                /*has_high_precision_timestamp=*/true);
 
@@ -98,9 +98,9 @@ TEST_F(TargetDeviceInfoTest, ActiveFiftyNineMinutes) {
 }
 
 // Verifies singular hour boundary at exactly 1 hour elapsed.
-TEST_F(TargetDeviceInfoTest, ActiveOneHour) {
+TEST_F(RemoteDeviceInfoTest, ActiveOneHour) {
   base::Time last_updated = base::Time::Now() - base::Hours(1);
-  TargetDeviceInfo device_info(kDeviceName, kCacheGuid, FormFactor::kDesktop,
+  RemoteDeviceInfo device_info(kDeviceName, kCacheGuid, FormFactor::kDesktop,
                                OsType::kLinux, last_updated,
                                /*has_high_precision_timestamp=*/true);
 
@@ -110,9 +110,9 @@ TEST_F(TargetDeviceInfoTest, ActiveOneHour) {
 }
 
 // Verifies upper hour boundary at 23 hours elapsed.
-TEST_F(TargetDeviceInfoTest, ActiveTwentyThreeHours) {
+TEST_F(RemoteDeviceInfoTest, ActiveTwentyThreeHours) {
   base::Time last_updated = base::Time::Now() - base::Hours(23);
-  TargetDeviceInfo device_info(kDeviceName, kCacheGuid, FormFactor::kDesktop,
+  RemoteDeviceInfo device_info(kDeviceName, kCacheGuid, FormFactor::kDesktop,
                                OsType::kLinux, last_updated,
                                /*has_high_precision_timestamp=*/true);
 
@@ -123,9 +123,9 @@ TEST_F(TargetDeviceInfoTest, ActiveTwentyThreeHours) {
 
 // Verifies day-granularity fallback when `has_high_precision_timestamp` is
 // false.
-TEST_F(TargetDeviceInfoTest, ActiveTodayWhenNoHighPrecision) {
+TEST_F(RemoteDeviceInfoTest, ActiveTodayWhenNoHighPrecision) {
   base::Time last_updated = base::Time::Now() - base::Minutes(5);
-  TargetDeviceInfo device_info(kDeviceName, kCacheGuid, FormFactor::kDesktop,
+  RemoteDeviceInfo device_info(kDeviceName, kCacheGuid, FormFactor::kDesktop,
                                OsType::kLinux, last_updated,
                                /*has_high_precision_timestamp=*/false);
 
@@ -135,9 +135,9 @@ TEST_F(TargetDeviceInfoTest, ActiveTodayWhenNoHighPrecision) {
 }
 
 // Verifies singular day fallback when elapsed time is at least 1 day.
-TEST_F(TargetDeviceInfoTest, OneDayAgoFallback) {
+TEST_F(RemoteDeviceInfoTest, OneDayAgoFallback) {
   base::Time last_updated = base::Time::Now() - base::Days(1) - base::Hours(1);
-  TargetDeviceInfo device_info(kDeviceName, kCacheGuid, FormFactor::kDesktop,
+  RemoteDeviceInfo device_info(kDeviceName, kCacheGuid, FormFactor::kDesktop,
                                OsType::kLinux, last_updated,
                                /*has_high_precision_timestamp=*/true);
 
@@ -147,9 +147,9 @@ TEST_F(TargetDeviceInfoTest, OneDayAgoFallback) {
 }
 
 // Verifies plural days fallback when elapsed time is multiple days.
-TEST_F(TargetDeviceInfoTest, MultipleDaysAgoFallback) {
+TEST_F(RemoteDeviceInfoTest, MultipleDaysAgoFallback) {
   base::Time last_updated = base::Time::Now() - base::Days(3) - base::Hours(1);
-  TargetDeviceInfo device_info(kDeviceName, kCacheGuid, FormFactor::kDesktop,
+  RemoteDeviceInfo device_info(kDeviceName, kCacheGuid, FormFactor::kDesktop,
                                OsType::kLinux, last_updated,
                                /*has_high_precision_timestamp=*/false);
 
@@ -159,8 +159,8 @@ TEST_F(TargetDeviceInfoTest, MultipleDaysAgoFallback) {
 }
 
 // Tests that the default constructor initializes members to default values.
-TEST_F(TargetDeviceInfoTest, DefaultConstructor_InitializesDefaultValues) {
-  TargetDeviceInfo device_info;
+TEST_F(RemoteDeviceInfoTest, DefaultConstructor_InitializesDefaultValues) {
+  RemoteDeviceInfo device_info;
   EXPECT_TRUE(device_info.device_name.empty());
   EXPECT_TRUE(device_info.cache_guid.empty());
   EXPECT_EQ(FormFactor::kUnknown, device_info.form_factor);
@@ -170,4 +170,4 @@ TEST_F(TargetDeviceInfoTest, DefaultConstructor_InitializesDefaultValues) {
 }
 
 }  // namespace
-}  // namespace send_tab_to_self
+}  // namespace syncer

@@ -14,7 +14,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "components/send_tab_to_self/entry_point_display_reason.h"
 #include "components/send_tab_to_self/metrics_util.h"
-#include "components/send_tab_to_self/target_device_info.h"
+#include "components/sync_device_info/remote_device_info.h"
 #include "ui/menus/simple_menu_model.h"
 #include "url/gurl.h"
 
@@ -66,7 +66,7 @@ class SendTabToSelfSubMenuModel : public ui::SimpleMenuModel,
  private:
   SendTabToSelfSubMenuModel(content::WebContents* primary_web_contents,
                             EntryPointDisplayReason display_reason,
-                            std::vector<TargetDeviceInfo> devices,
+                            std::vector<syncer::RemoteDeviceInfo> devices,
                             ShareEntryPoint entry_point,
                             const GURL& target_url,
                             const std::string& target_title);
@@ -77,7 +77,7 @@ class SendTabToSelfSubMenuModel : public ui::SimpleMenuModel,
   base::WeakPtr<content::WebContents> primary_web_contents_;
   std::vector<base::WeakPtr<content::WebContents>> web_contents_list_;
   const EntryPointDisplayReason display_reason_;
-  const std::vector<TargetDeviceInfo> devices_;
+  const std::vector<syncer::RemoteDeviceInfo> devices_;
   const ShareEntryPoint entry_point_;
   const GURL target_url_;
   const std::string target_title_;

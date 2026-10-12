@@ -54,13 +54,13 @@
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
-#include "components/send_tab_to_self/target_device_info.h"
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
 #include "components/sessions/core/session_id.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/test/fake_data_type_controller_delegate.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_device_info/device_info_util.h"
+#include "components/sync_device_info/remote_device_info.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/sync_sessions/mock_open_tabs_ui_delegate.h"
 #include "components/sync_sessions/mock_session_sync_service.h"
@@ -494,10 +494,9 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
   FaviconServiceMock* favicon_service() { return favicon_service_; }
 
   void AddMockTargetDevice(syncer::DeviceInfo::FormFactor form_factor) {
-    send_tab_to_self_model()->AddTargetDevice(
-        send_tab_to_self::TargetDeviceInfo(
-            kTargetDeviceFullName, kTargetDeviceCacheGuid, form_factor,
-            syncer::DeviceInfo::OsType::kChromeOsAsh, base::Time::Now()));
+    send_tab_to_self_model()->AddTargetDevice(syncer::RemoteDeviceInfo(
+        kTargetDeviceFullName, kTargetDeviceCacheGuid, form_factor,
+        syncer::DeviceInfo::OsType::kChromeOsAsh, base::Time::Now()));
   }
 
   TestMediaController* media_controller() const {

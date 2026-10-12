@@ -20,9 +20,9 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/metrics_util.h"
-#include "components/send_tab_to_self/target_device_info.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/sync_device_info/remote_device_info.h"
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "ui/events/base_event_utils.h"
@@ -36,6 +36,7 @@ namespace {
 
 using FormFactor = syncer::DeviceInfo::FormFactor;
 using OsType = syncer::DeviceInfo::OsType;
+using syncer::RemoteDeviceInfo;
 
 class StubSendTabToSelfBubbleController : public SendTabToSelfBubbleController {
  public:
@@ -53,7 +54,7 @@ class StubSendTabToSelfBubbleController : public SendTabToSelfBubbleController {
     reason_ = reason;
   }
 
-  std::vector<TargetDeviceInfo> GetValidDevices() override {
+  std::vector<RemoteDeviceInfo> GetValidDevices() override {
     const auto now = base::Time::Now();
     return {{"Device_1", "device_guid_1", FormFactor::kDesktop, OsType::kLinux,
              now - base::Days(0)},

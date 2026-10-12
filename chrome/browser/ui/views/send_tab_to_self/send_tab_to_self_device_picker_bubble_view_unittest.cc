@@ -18,8 +18,8 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/send_tab_to_self/features.h"
-#include "components/send_tab_to_self/target_device_info.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/sync_device_info/remote_device_info.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -38,6 +38,7 @@ namespace {
 
 using FormFactor = syncer::DeviceInfo::FormFactor;
 using OsType = syncer::DeviceInfo::OsType;
+using syncer::RemoteDeviceInfo;
 
 constexpr char kDeviceGuid3[] = "device_guid_3";
 constexpr char kDeviceName3[] = "Device_3";
@@ -49,7 +50,7 @@ class SendTabToSelfBubbleControllerMock : public SendTabToSelfBubbleController {
 
   ~SendTabToSelfBubbleControllerMock() override = default;
 
-  std::vector<TargetDeviceInfo> GetValidDevices() override {
+  std::vector<RemoteDeviceInfo> GetValidDevices() override {
     base::SimpleTestClock clock;
     return {{"Device_1", "device_guid_1", FormFactor::kDesktop, OsType::kLinux,
              clock.Now() - base::Days(0)},

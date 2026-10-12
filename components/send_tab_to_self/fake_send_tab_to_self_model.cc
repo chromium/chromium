@@ -20,7 +20,7 @@
 #include "components/send_tab_to_self/page_context.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model_observer.h"
-#include "components/send_tab_to_self/target_device_info.h"
+#include "components/sync_device_info/remote_device_info.h"
 #include "url/gurl.h"
 
 namespace send_tab_to_self {
@@ -157,15 +157,15 @@ bool FakeSendTabToSelfModel::HasValidTargetDevice() {
   return has_valid_target_device_;
 }
 
-std::vector<TargetDeviceInfo>
+std::vector<syncer::RemoteDeviceInfo>
 FakeSendTabToSelfModel::GetTargetDeviceInfoSortedList() {
   return devices_;
 }
 
-std::optional<TargetDeviceInfo> FakeSendTabToSelfModel::GetTargetDeviceInfo(
-    std::string_view cache_guid) {
-  auto it =
-      std::ranges::find(devices_, cache_guid, &TargetDeviceInfo::cache_guid);
+std::optional<syncer::RemoteDeviceInfo>
+FakeSendTabToSelfModel::GetTargetDeviceInfo(std::string_view cache_guid) {
+  auto it = std::ranges::find(devices_, cache_guid,
+                              &syncer::RemoteDeviceInfo::cache_guid);
   return it != devices_.end() ? std::make_optional(*it) : std::nullopt;
 }
 
@@ -192,11 +192,12 @@ void FakeSendTabToSelfModel::SetHasValidTargetDevice(
 }
 
 void FakeSendTabToSelfModel::SetTargetDeviceInfoSortedList(
-    const std::vector<TargetDeviceInfo>& devices) {
+    const std::vector<syncer::RemoteDeviceInfo>& devices) {
   devices_ = devices;
 }
 
-void FakeSendTabToSelfModel::AddTargetDevice(const TargetDeviceInfo& device) {
+void FakeSendTabToSelfModel::AddTargetDevice(
+    const syncer::RemoteDeviceInfo& device) {
   devices_.push_back(device);
 }
 

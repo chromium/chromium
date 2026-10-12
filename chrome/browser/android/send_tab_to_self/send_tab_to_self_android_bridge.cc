@@ -30,11 +30,11 @@
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
-#include "components/send_tab_to_self/target_device_info.h"
 #include "components/send_tab_to_self/target_device_list_waiter.h"
 #include "components/sync/protocol/send_tab_to_self_specifics.pb.h"
 #include "components/sync_device_info/device_info_sync_service.h"
 #include "components/sync_device_info/device_info_tracker.h"
+#include "components/sync_device_info/remote_device_info.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "content/public/browser/web_contents.h"
 #include "url/android/gurl_android.h"
@@ -148,10 +148,10 @@ JNI_SendTabToSelfAndroidBridge_GetAllTargetDeviceInfos(JNIEnv* env,
       SendTabToSelfSyncServiceFactory::GetForProfile(profile)
           ->GetSendTabToSelfModel();
   if (model->IsReady()) {
-    std::vector<TargetDeviceInfo> sorted_devices =
+    std::vector<syncer::RemoteDeviceInfo> sorted_devices =
         model->GetTargetDeviceInfoSortedList();
     infos.reserve(sorted_devices.size());
-    for (const TargetDeviceInfo& info : sorted_devices) {
+    for (const syncer::RemoteDeviceInfo& info : sorted_devices) {
       infos.push_back(Java_TargetDeviceInfo_build(
           env, info.device_name, info.cache_guid,
           static_cast<int>(info.form_factor), static_cast<int>(info.os_type),

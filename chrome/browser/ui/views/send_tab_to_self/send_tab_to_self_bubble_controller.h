@@ -42,11 +42,14 @@ class Event;
 
 class AccountInfo;
 
+namespace syncer {
+struct RemoteDeviceInfo;
+}  // namespace syncer
+
 namespace send_tab_to_self {
 
 enum class SendTabToSelfResult;
 class SendTabToSelfBubbleView;
-struct TargetDeviceInfo;
 
 class SendTabToSelfModel;
 class TargetDeviceListWaiter;
@@ -72,7 +75,7 @@ class SendTabToSelfBubbleController
   // Returns nullptr if no bubble is currently shown.
   SendTabToSelfBubbleView* send_tab_to_self_bubble_view() const;
   // Returns the valid devices info map.
-  virtual std::vector<TargetDeviceInfo> GetValidDevices();
+  virtual std::vector<syncer::RemoteDeviceInfo> GetValidDevices();
 
   virtual AccountInfo GetSharingAccountInfo();
 
@@ -150,7 +153,8 @@ class SendTabToSelfBubbleController
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
 
-  // Non-null while waiting for the target device list to be ready after sign-in.
+  // Non-null while waiting for the target device list to be ready after
+  // sign-in.
   std::unique_ptr<TargetDeviceListWaiter> target_device_list_waiter_;
 
   base::WeakPtrFactory<SendTabToSelfBubbleController> weak_ptr_factory_{this};

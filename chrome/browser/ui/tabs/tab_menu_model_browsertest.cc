@@ -59,7 +59,7 @@
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
-#include "components/send_tab_to_self/target_device_info.h"
+#include "components/sync_device_info/remote_device_info.h"
 #include "components/tabs/public/split_tab_data.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -1045,7 +1045,7 @@ class TabMenuModelSendTabToSelfBrowserTest : public TabMenuModelBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(TabMenuModelSendTabToSelfBrowserTest,
                        SendMultipleSelectedTabs) {
-  std::vector<send_tab_to_self::TargetDeviceInfo> devices;
+  std::vector<syncer::RemoteDeviceInfo> devices;
   devices.emplace_back("Device 0", "guid0",
                        syncer::DeviceInfo::FormFactor::kDesktop,
                        syncer::DeviceInfo::OsType::kLinux, base::Time::Now());

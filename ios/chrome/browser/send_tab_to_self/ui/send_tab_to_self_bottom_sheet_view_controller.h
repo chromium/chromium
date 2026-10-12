@@ -9,9 +9,9 @@
 
 #import "ios/chrome/browser/shared/ui/bottom_sheet/table_view_bottom_sheet_view_controller.h"
 
-namespace send_tab_to_self {
-struct TargetDeviceInfo;
-}
+namespace syncer {
+struct RemoteDeviceInfo;
+}  // namespace syncer
 
 @protocol SendTabToSelfModalDelegate;
 
@@ -21,8 +21,7 @@ struct TargetDeviceInfo;
     : TableViewBottomSheetViewController
 
 - (instancetype)initWithDeviceList:
-                    (std::vector<send_tab_to_self::TargetDeviceInfo>)
-                        targetDeviceList
+                    (std::vector<syncer::RemoteDeviceInfo>)targetDeviceList
                       accountEmail:(NSString*)accountEmail
                           delegate:(id<SendTabToSelfModalDelegate>)delegate
     NS_DESIGNATED_INITIALIZER;

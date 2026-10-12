@@ -34,8 +34,8 @@
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
-#include "components/send_tab_to_self/target_device_info.h"
 #include "components/sync_device_info/device_info.h"
+#include "components/sync_device_info/remote_device_info.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/actions/actions.h"
@@ -115,7 +115,7 @@ SendTabToSelfDynamicMenu::~SendTabToSelfDynamicMenu() = default;
 
 // static
 std::u16string SendTabToSelfDynamicMenu::GetDeviceItemLabel(
-    const send_tab_to_self::TargetDeviceInfo& device) {
+    const syncer::RemoteDeviceInfo& device) {
   return l10n_util::GetStringFUTF16(IDS_SEND_TAB_TO_SELF_DEVICE_LABEL,
                                     base::UTF8ToUTF16(device.device_name),
                                     device.GetLastActiveTimeForDisplay());
@@ -227,7 +227,7 @@ void SendTabToSelfDynamicMenu::BuildSendTabToSelfActions(
       SendTabToSelfSyncServiceFactory::GetForProfile(
           browser_window_interface_->GetProfile());
 
-  std::vector<send_tab_to_self::TargetDeviceInfo> devices =
+  std::vector<syncer::RemoteDeviceInfo> devices =
       service->GetSendTabToSelfModel()->GetTargetDeviceInfoSortedList();
 
   if (devices.size() > kMaxDevices) {

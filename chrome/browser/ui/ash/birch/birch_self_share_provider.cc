@@ -15,7 +15,7 @@
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
-#include "components/send_tab_to_self/target_device_info.h"
+#include "components/sync_device_info/remote_device_info.h"
 
 namespace ash {
 
@@ -97,7 +97,7 @@ void BirchSelfShareProvider::RequestBirchDataFetch() {
       const std::string entry_guid = entry->GetGUID();
       const std::string device_cache_guid =
           entry->GetTargetDeviceSyncCacheGuid();
-      std::optional<send_tab_to_self::TargetDeviceInfo> device_info =
+      std::optional<syncer::RemoteDeviceInfo> device_info =
           model->GetTargetDeviceInfo(device_cache_guid);
 
       // We set the `secondary_icon_type` of the birch item based on the origin

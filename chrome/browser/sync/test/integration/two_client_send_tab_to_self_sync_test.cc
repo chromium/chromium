@@ -24,10 +24,10 @@
 #include "components/send_tab_to_self/send_tab_to_self_bridge.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
-#include "components/send_tab_to_self/target_device_info.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_sync_service.h"
 #include "components/sync_device_info/local_device_info_provider.h"
+#include "components/sync_device_info/remote_device_info.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -226,11 +226,11 @@ IN_PROC_BROWSER_TEST_P(TwoClientSendTabToSelfSyncTest,
       ->GetDeviceInfoTracker()
       ->ForcePulseForTest();
 
-  std::vector<send_tab_to_self::TargetDeviceInfo> profile1_target_devices =
+  std::vector<syncer::RemoteDeviceInfo> profile1_target_devices =
       SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0))
           ->GetSendTabToSelfModel()
           ->GetTargetDeviceInfoSortedList();
-  std::vector<send_tab_to_self::TargetDeviceInfo> profile2_target_devices =
+  std::vector<syncer::RemoteDeviceInfo> profile2_target_devices =
       SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(1))
           ->GetSendTabToSelfModel()
           ->GetTargetDeviceInfoSortedList();

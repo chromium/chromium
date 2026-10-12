@@ -10,7 +10,7 @@
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_device_button.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/send_tab_to_self/features.h"
-#include "components/send_tab_to_self/target_device_info.h"
+#include "components/sync_device_info/remote_device_info.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -273,7 +273,8 @@ void SendTabToSelfDevicePickerBubbleView::CreateDevicesScrollView() {
   list_layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStretch);
   SendTabToSelfBubbleDeviceButton* first_device = nullptr;
-  for (const TargetDeviceInfo& device : controller_->GetValidDevices()) {
+  for (const syncer::RemoteDeviceInfo& device :
+       controller_->GetValidDevices()) {
     auto* view = device_list_view->AddChildView(
         std::make_unique<SendTabToSelfBubbleDeviceButton>(this, device));
     view->SetGroup(kDeviceButtonGroup);

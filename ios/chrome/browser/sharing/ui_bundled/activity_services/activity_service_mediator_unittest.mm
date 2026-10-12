@@ -12,6 +12,7 @@
 #import "components/send_tab_to_self/fake_send_tab_to_self_model.h"
 #import "components/send_tab_to_self/features.h"
 #import "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
+#import "components/sync_device_info/remote_device_info.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
@@ -494,14 +495,14 @@ TEST_F(
 
     // Explicitly set target device list order using
     // SetTargetDeviceInfoSortedList.
-    std::vector<send_tab_to_self::TargetDeviceInfo> devices = {
-        send_tab_to_self::TargetDeviceInfo(
+    std::vector<syncer::RemoteDeviceInfo> devices = {
+        syncer::RemoteDeviceInfo(
             "Phone", kPhoneGuid, syncer::DeviceInfo::FormFactor::kPhone,
             syncer::DeviceInfo::OsType::kIOS, base::Time::Now()),
-        send_tab_to_self::TargetDeviceInfo(
+        syncer::RemoteDeviceInfo(
             "Tablet", kTabletGuid, syncer::DeviceInfo::FormFactor::kTablet,
             syncer::DeviceInfo::OsType::kIOS, base::Time::Now()),
-        send_tab_to_self::TargetDeviceInfo(
+        syncer::RemoteDeviceInfo(
             "Desktop", kDesktopGuid, syncer::DeviceInfo::FormFactor::kDesktop,
             syncer::DeviceInfo::OsType::kIOS, base::Time::Now()),
     };

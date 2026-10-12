@@ -36,8 +36,6 @@ static_library("send_tab_to_self") {
     "send_tab_to_self_model_observer.h",
     "send_tab_to_self_sync_service.cc",
     "send_tab_to_self_sync_service.h",
-    "target_device_info.cc",
-    "target_device_info.h",
     "target_device_list_waiter.cc",
     "target_device_list_waiter.h",
   ]
@@ -55,7 +53,6 @@ static_library("send_tab_to_self") {
     "//components/signin/public/identity_manager",
     "//components/strings",
     "//components/sync",
-    "//components/sync_device_info",
     "//components/sync_sessions",
     "//components/version_info",
     "//google_apis",
@@ -65,6 +62,7 @@ static_library("send_tab_to_self") {
   public_deps = [
     ":features",
     "//components/send_tab_to_self/proto:send_tab_to_self_proto",
+    "//components/sync_device_info",
   ]
 }
 
@@ -136,7 +134,6 @@ source_set("unit_tests") {
     "send_tab_to_self_bridge_unittest.cc",
     "send_tab_to_self_commit_tracker_unittest.cc",
     "send_tab_to_self_entry_unittest.cc",
-    "target_device_info_unittest.cc",
     "target_device_list_waiter_unittest.cc",
   ]
   deps = [

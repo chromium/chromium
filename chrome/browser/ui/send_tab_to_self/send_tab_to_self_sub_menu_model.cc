@@ -115,7 +115,7 @@ std::vector<base::WeakPtr<content::WebContents>> GetWeakWebContentsList(
 
 // Returns the list of target devices to show in the context menu.
 // The returned list is capped at `kMaxDevices`.
-std::vector<TargetDeviceInfo> GetDevicesForDisplay(
+std::vector<syncer::RemoteDeviceInfo> GetDevicesForDisplay(
     content::WebContents* web_contents) {
   CHECK(web_contents);
 
@@ -127,7 +127,7 @@ std::vector<TargetDeviceInfo> GetDevicesForDisplay(
     return {};
   }
 
-  std::vector<TargetDeviceInfo> devices =
+  std::vector<syncer::RemoteDeviceInfo> devices =
       service->GetSendTabToSelfModel()->GetTargetDeviceInfoSortedList();
   // To keep the context menu from growing too large, the list of target
   // devices is capped. The exact limit is defined by `kMaxDevices` and matches
@@ -183,7 +183,7 @@ bool ShouldShowSubmenu(ShareEntryPoint entry_point,
 }
 
 // Returns the label to show for a device in the context menu.
-std::u16string GetDeviceItemLabel(const TargetDeviceInfo& device) {
+std::u16string GetDeviceItemLabel(const syncer::RemoteDeviceInfo& device) {
   return l10n_util::GetStringFUTF16(IDS_SEND_TAB_TO_SELF_DEVICE_LABEL,
                                     base::UTF8ToUTF16(device.device_name),
                                     device.GetLastActiveTimeForDisplay());
@@ -208,7 +208,7 @@ SendTabToSelfSubMenuModel::MaybeCreateForTab(
     return nullptr;
   }
 
-  std::vector<TargetDeviceInfo> devices;
+  std::vector<syncer::RemoteDeviceInfo> devices;
   if (*reason == EntryPointDisplayReason::kOfferFeature) {
     devices = GetDevicesForDisplay(primary_web_contents);
     if (devices.empty()) {
@@ -238,7 +238,7 @@ SendTabToSelfSubMenuModel::MaybeCreateForMultipleTabs(
 SendTabToSelfSubMenuModel::SendTabToSelfSubMenuModel(
     content::WebContents* primary_web_contents,
     EntryPointDisplayReason display_reason,
-    std::vector<TargetDeviceInfo> devices,
+    std::vector<syncer::RemoteDeviceInfo> devices,
     ShareEntryPoint entry_point,
     const GURL& target_url,
     const std::string& target_title)

@@ -41,6 +41,7 @@
 #include "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync_device_info/remote_device_info.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -65,6 +66,7 @@ namespace {
 
 using FormFactor = syncer::DeviceInfo::FormFactor;
 using OsType = syncer::DeviceInfo::OsType;
+using syncer::RemoteDeviceInfo;
 
 using testing::AnyOf;
 using testing::Bool;
@@ -221,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
       sync_service->GetSendTabToSelfModel());
 
   sync_service->GetFakeSendTabToSelfModel()->SetTargetDeviceInfoSortedList(
-      {TargetDeviceInfo(kTargetDeviceName, kTargetDeviceId,
+      {RemoteDeviceInfo(kTargetDeviceName, kTargetDeviceId,
                         FormFactor::kDesktop, OsType::kLinux,
                         base::Time::Now())});
 
@@ -249,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
       sync_service->GetSendTabToSelfModel());
 
   sync_service->GetFakeSendTabToSelfModel()->SetTargetDeviceInfoSortedList(
-      {TargetDeviceInfo(kTargetDeviceName, kTargetDeviceId, FormFactor::kPhone,
+      {RemoteDeviceInfo(kTargetDeviceName, kTargetDeviceId, FormFactor::kPhone,
                         OsType::kAndroid, base::Time::Now())});
 
   controller->OnDeviceSelected(kTargetDeviceId, kTargetDeviceName);
@@ -276,7 +278,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
       sync_service->GetSendTabToSelfModel());
 
   sync_service->GetFakeSendTabToSelfModel()->SetTargetDeviceInfoSortedList(
-      {TargetDeviceInfo(kTargetDeviceName, kTargetDeviceId, FormFactor::kTablet,
+      {RemoteDeviceInfo(kTargetDeviceName, kTargetDeviceId, FormFactor::kTablet,
                         OsType::kAndroid, base::Time::Now())});
 
   controller->OnDeviceSelected(kTargetDeviceId, kTargetDeviceName);
@@ -302,7 +304,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
       sync_service->GetSendTabToSelfModel());
 
   sync_service->GetFakeSendTabToSelfModel()->SetTargetDeviceInfoSortedList(
-      {TargetDeviceInfo(kTargetDeviceName, kTargetDeviceId,
+      {RemoteDeviceInfo(kTargetDeviceName, kTargetDeviceId,
                         FormFactor::kDesktop, OsType::kLinux,
                         base::Time::Now())});
   sync_service->GetFakeSendTabToSelfModel()->SetSendResult(
@@ -328,7 +330,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
   ASSERT_TRUE(sync_service);
 
   sync_service->GetFakeSendTabToSelfModel()->SetTargetDeviceInfoSortedList(
-      {TargetDeviceInfo(kTargetDeviceName, kTargetDeviceId,
+      {RemoteDeviceInfo(kTargetDeviceName, kTargetDeviceId,
                         FormFactor::kDesktop, OsType::kLinux,
                         base::Time::Now())});
 
@@ -695,10 +697,10 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
       EntryPointDisplayReason::kOfferFeature);
   // Set up 2 target devices.
   sync_service->GetFakeSendTabToSelfModel()->SetTargetDeviceInfoSortedList(
-      {TargetDeviceInfo(kSecondDeviceName, kSecondDeviceId,
+      {RemoteDeviceInfo(kSecondDeviceName, kSecondDeviceId,
                         FormFactor::kDesktop, OsType::kLinux,
                         base::Time::Now()),
-       TargetDeviceInfo(kTargetDeviceName, kTargetDeviceId,
+       RemoteDeviceInfo(kTargetDeviceName, kTargetDeviceId,
                         FormFactor::kDesktop, OsType::kLinux,
                         base::Time::Now())});
 

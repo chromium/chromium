@@ -39,11 +39,11 @@
 #include "components/send_tab_to_self/fake_send_tab_to_self_model.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
-#include "components/send_tab_to_self/target_device_info.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/skills/features.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_device_info/device_info.h"
+#include "components/sync_device_info/remote_device_info.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/user_education/common/tutorial/tutorial_description.h"
 #include "content/public/test/test_renderer_host.h"
@@ -945,7 +945,7 @@ TEST_F(ActionAppMenuManagerTest,
 
   // 2. kOfferFeature with non-empty devices creates a dynamic submenu.
   sync_service->GetFakeSendTabToSelfModel()->SetTargetDeviceInfoSortedList(
-      {send_tab_to_self::TargetDeviceInfo(
+      {syncer::RemoteDeviceInfo(
           "My Phone", "guid1", syncer::DeviceInfo::FormFactor::kPhone,
           syncer::DeviceInfo::OsType::kAndroid, base::Time::Now())});
   root->ResetActionList();

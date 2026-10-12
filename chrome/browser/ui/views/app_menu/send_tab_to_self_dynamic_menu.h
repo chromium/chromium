@@ -10,8 +10,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "components/send_tab_to_self/target_device_info.h"
 #include "components/sync_device_info/device_info.h"
+#include "components/sync_device_info/remote_device_info.h"
 #include "ui/actions/actions.h"
 
 // Class to support the creation of the Send Tab to Self Submenu in the AppMenu.
@@ -32,7 +32,7 @@ class SendTabToSelfDynamicMenu {
 
  private:
   static std::u16string GetDeviceItemLabel(
-      const send_tab_to_self::TargetDeviceInfo& device);
+      const syncer::RemoteDeviceInfo& device);
 
   void ExecuteDeviceSelection(const std::string& target_device_guid,
                               const std::string& device_name,

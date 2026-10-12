@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SEND_TAB_TO_SELF_TARGET_DEVICE_INFO_H_
-#define COMPONENTS_SEND_TAB_TO_SELF_TARGET_DEVICE_INFO_H_
+#ifndef COMPONENTS_SYNC_DEVICE_INFO_REMOTE_DEVICE_INFO_H_
+#define COMPONENTS_SYNC_DEVICE_INFO_REMOTE_DEVICE_INFO_H_
 
 #include <string>
 
@@ -11,24 +11,20 @@
 #include "components/sync_device_info/device_info.h"
 
 namespace syncer {
-class DeviceInfo;
-}  // namespace syncer
 
-namespace send_tab_to_self {
-
-// Device information for generating send tab to self UI.
-struct TargetDeviceInfo {
-  TargetDeviceInfo();
-  TargetDeviceInfo(std::string device_name,
+// Remote device information for generating cross-device UIs.
+struct RemoteDeviceInfo {
+  RemoteDeviceInfo();
+  RemoteDeviceInfo(std::string device_name,
                    std::string cache_guid,
-                   syncer::DeviceInfo::FormFactor form_factor,
-                   syncer::DeviceInfo::OsType os_type,
+                   DeviceInfo::FormFactor form_factor,
+                   DeviceInfo::OsType os_type,
                    base::Time last_updated_timestamp,
                    bool has_high_precision_timestamp = false);
-  TargetDeviceInfo(const TargetDeviceInfo& other);
-  ~TargetDeviceInfo();
+  RemoteDeviceInfo(const RemoteDeviceInfo& other);
+  ~RemoteDeviceInfo();
 
-  bool operator==(const TargetDeviceInfo& rhs) const;
+  bool operator==(const RemoteDeviceInfo& rhs) const;
 
   // Returns a localized string representing the time since the device was last
   // updated.
@@ -42,10 +38,9 @@ struct TargetDeviceInfo {
   // Device guid.
   std::string cache_guid;
   // Device Form Factor.
-  syncer::DeviceInfo::FormFactor form_factor =
-      syncer::DeviceInfo::FormFactor::kUnknown;
+  DeviceInfo::FormFactor form_factor = DeviceInfo::FormFactor::kUnknown;
   // Device OS Type.
-  syncer::DeviceInfo::OsType os_type = syncer::DeviceInfo::OsType::kUnknown;
+  DeviceInfo::OsType os_type = DeviceInfo::OsType::kUnknown;
   // Last updated timestamp.
   base::Time last_updated_timestamp;
   // Whether the device timestamp is highly precise (e.g. from sessions sync)
@@ -53,6 +48,6 @@ struct TargetDeviceInfo {
   bool has_high_precision_timestamp = false;
 };
 
-}  // namespace send_tab_to_self
+}  // namespace syncer
 
-#endif  // COMPONENTS_SEND_TAB_TO_SELF_TARGET_DEVICE_INFO_H_
+#endif  // COMPONENTS_SYNC_DEVICE_INFO_REMOTE_DEVICE_INFO_H_

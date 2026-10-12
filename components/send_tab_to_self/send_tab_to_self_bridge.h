@@ -44,7 +44,6 @@ class SessionSyncService;
 namespace send_tab_to_self {
 
 class SendTabToSelfCommitTracker;
-struct TargetDeviceInfo;
 
 // Interface for a persistence layer for send tab to self.
 // All interface methods have to be called on main thread.
@@ -118,8 +117,9 @@ class SendTabToSelfBridge : public syncer::DataTypeSyncBridge,
                           ShareActivatedEntryPoint entry_point) override;
   bool IsReady() override;
   bool HasValidTargetDevice() override;
-  std::vector<TargetDeviceInfo> GetTargetDeviceInfoSortedList() override;
-  std::optional<TargetDeviceInfo> GetTargetDeviceInfo(
+  std::vector<syncer::RemoteDeviceInfo> GetTargetDeviceInfoSortedList()
+      override;
+  std::optional<syncer::RemoteDeviceInfo> GetTargetDeviceInfo(
       std::string_view cache_guid) override;
 
   // history::HistoryServiceObserver:

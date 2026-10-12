@@ -29,7 +29,7 @@
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
-#include "components/send_tab_to_self/target_device_info.h"
+#include "components/sync_device_info/remote_device_info.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -45,6 +45,7 @@ namespace {
 
 using FormFactor = syncer::DeviceInfo::FormFactor;
 using OsType = syncer::DeviceInfo::OsType;
+using syncer::RemoteDeviceInfo;
 
 using testing::ElementsAre;
 using testing::Field;
@@ -93,7 +94,7 @@ class SendTabToSelfSubMenuModelTest : public ChromeRenderViewHostTestHarness {
 // devices.
 TEST_F(SendTabToSelfSubMenuModelTest, GetDevicesForDisplayLimitsToFive) {
   base::Time now = base::Time::Now();
-  std::vector<TargetDeviceInfo> devices;
+  std::vector<RemoteDeviceInfo> devices;
   for (int i = 0; i < 10; ++i) {
     devices.emplace_back("Device " + base::NumberToString(i),
                          "guid" + base::NumberToString(i), FormFactor::kDesktop,
@@ -118,7 +119,7 @@ TEST_F(SendTabToSelfSubMenuModelTest, GetDevicesForDisplayLimitsToFive) {
 // expected device information.
 TEST_F(SendTabToSelfSubMenuModelTest, ExecuteCommandSendsToDevice) {
   base::Time now = base::Time::Now();
-  std::vector<TargetDeviceInfo> devices;
+  std::vector<RemoteDeviceInfo> devices;
   devices.emplace_back("Device 0", "guid0", FormFactor::kDesktop,
                        OsType::kLinux, now);
   model()->SetTargetDeviceInfoSortedList(devices);
@@ -154,7 +155,7 @@ TEST_F(SendTabToSelfSubMenuModelTest, ExecuteCommandSendsToDevice) {
 TEST_F(SendTabToSelfSubMenuModelTest,
        ExecuteCommandSendsTargetUrlAndTitleWhenProvided) {
   base::Time now = base::Time::Now();
-  std::vector<TargetDeviceInfo> devices;
+  std::vector<RemoteDeviceInfo> devices;
   devices.emplace_back("Device 0", "guid0", FormFactor::kDesktop,
                        OsType::kLinux, now);
   model()->SetTargetDeviceInfoSortedList(devices);
@@ -184,7 +185,7 @@ TEST_F(SendTabToSelfSubMenuModelTest,
 TEST_F(SendTabToSelfSubMenuModelTest,
        ExecuteCommandSendsTitleFallbackWhenTitleEmpty) {
   base::Time now = base::Time::Now();
-  std::vector<TargetDeviceInfo> devices;
+  std::vector<RemoteDeviceInfo> devices;
   devices.emplace_back("Device 0", "guid0", FormFactor::kDesktop,
                        OsType::kLinux, now);
   model()->SetTargetDeviceInfoSortedList(devices);
@@ -215,7 +216,7 @@ TEST_F(SendTabToSelfSubMenuModelTest,
 // to the submenu model with the expected localized label.
 TEST_F(SendTabToSelfSubMenuModelTest, BuildMenuAddsDevicesAndManageItem) {
   base::Time now = base::Time::Now();
-  std::vector<TargetDeviceInfo> devices;
+  std::vector<RemoteDeviceInfo> devices;
   devices.emplace_back("Device 0", "guid0", FormFactor::kDesktop,
                        OsType::kLinux, now);
   model()->SetTargetDeviceInfoSortedList(devices);
@@ -241,7 +242,7 @@ TEST_F(SendTabToSelfSubMenuModelTest, BuildMenuAddsDevicesAndManageItem) {
 // across all platforms including macOS.
 TEST_F(SendTabToSelfSubMenuModelTest, BuildMenuUsesSentenceCaseForShareMenu) {
   base::Time now = base::Time::Now();
-  std::vector<TargetDeviceInfo> devices;
+  std::vector<RemoteDeviceInfo> devices;
   devices.emplace_back("Device 0", "guid0", FormFactor::kDesktop,
                        OsType::kLinux, now);
   model()->SetTargetDeviceInfoSortedList(devices);
@@ -259,7 +260,7 @@ TEST_F(SendTabToSelfSubMenuModelTest, BuildMenuUsesSentenceCaseForShareMenu) {
 // Tests that `OnMenuWillShow` records device count metrics.
 TEST_F(SendTabToSelfSubMenuModelTest, OnMenuWillShowRecordsMetrics) {
   base::Time now = base::Time::Now();
-  std::vector<TargetDeviceInfo> devices;
+  std::vector<RemoteDeviceInfo> devices;
   devices.emplace_back("Device 0", "guid0", FormFactor::kDesktop,
                        OsType::kLinux, now);
   devices.emplace_back("Device 1", "guid1", FormFactor::kDesktop,
@@ -284,7 +285,7 @@ TEST_F(SendTabToSelfSubMenuModelTest, OnMenuWillShowRecordsMetrics) {
 // `MaybeCreateForMultipleTabs`.
 TEST_F(SendTabToSelfSubMenuModelTest, ExecuteCommandSendsMultipleTabsToDevice) {
   base::Time now = base::Time::Now();
-  std::vector<TargetDeviceInfo> devices;
+  std::vector<RemoteDeviceInfo> devices;
   devices.emplace_back("Device 0", "guid0", FormFactor::kDesktop,
                        OsType::kLinux, now);
   model()->SetTargetDeviceInfoSortedList(devices);
@@ -337,7 +338,7 @@ TEST_F(SendTabToSelfSubMenuModelTest, ExecuteCommandSendsMultipleTabsToDevice) {
 // was open.
 TEST_F(SendTabToSelfSubMenuModelTest, ExecuteCommandSkipsDestroyedWebContents) {
   base::Time now = base::Time::Now();
-  std::vector<TargetDeviceInfo> devices;
+  std::vector<RemoteDeviceInfo> devices;
   devices.emplace_back("Device 0", "guid0", FormFactor::kDesktop,
                        OsType::kLinux, now);
   model()->SetTargetDeviceInfoSortedList(devices);

@@ -30,7 +30,6 @@
 #import "components/send_tab_to_self/page_context.h"
 #import "components/send_tab_to_self/send_tab_to_self_model.h"
 #import "components/send_tab_to_self/send_tab_to_self_sync_service.h"
-#import "components/send_tab_to_self/target_device_info.h"
 #import "components/send_tab_to_self/target_device_list_waiter.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/strings/grit/components_strings.h"

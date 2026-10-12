@@ -8,9 +8,9 @@
 
 #include "base/time/time.h"
 #include "components/send_tab_to_self/fake_send_tab_to_self_model.h"
-#include "components/send_tab_to_self/target_device_info.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync_device_info/device_info.h"
+#include "components/sync_device_info/remote_device_info.h"
 #include "url/gurl.h"
 
 namespace send_tab_to_self {
@@ -52,7 +52,7 @@ StubSendTabToSelfSyncService::GetFakeSendTabToSelfModel() {
 void StubSendTabToSelfSyncService::UpdateTargetDevicesForDisplayReason() {
   if (entry_point_display_reason_ == EntryPointDisplayReason::kOfferFeature) {
     if (model_.GetTargetDeviceInfoSortedList().empty()) {
-      model_.SetTargetDeviceInfoSortedList({TargetDeviceInfo(
+      model_.SetTargetDeviceInfoSortedList({syncer::RemoteDeviceInfo(
           "Device", "guid", syncer::DeviceInfo::FormFactor::kDesktop,
           syncer::DeviceInfo::OsType::kLinux, base::Time::Now())});
     }

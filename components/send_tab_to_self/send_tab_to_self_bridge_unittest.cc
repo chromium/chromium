@@ -27,7 +27,6 @@
 #include "components/send_tab_to_self/pref_names.h"
 #include "components/send_tab_to_self/proto/send_tab_to_self.pb.h"
 #include "components/send_tab_to_self/proto_conversions.h"
-#include "components/send_tab_to_self/target_device_info.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
 #include "components/sync/base/features.h"
@@ -44,6 +43,7 @@
 #include "components/sync_device_info/device_info_util.h"
 #include "components/sync_device_info/device_name_util.h"
 #include "components/sync_device_info/fake_device_info_tracker.h"
+#include "components/sync_device_info/remote_device_info.h"
 #include "components/sync_device_info/test_device_info_builder.h"
 #include "components/sync_sessions/fake_open_tabs_ui_delegate.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
@@ -56,6 +56,7 @@ namespace send_tab_to_self {
 
 namespace {
 
+using syncer::RemoteDeviceInfo;
 using testing::_;
 using testing::AllOf;
 using testing::ElementsAre;
@@ -1532,13 +1533,13 @@ TEST_P(SendTabToSelfBridgeNamingTest,
   if (GetParam() == DeviceNamingMode::kSimplifiedWithoutDeduplication) {
     // With kSyncSimplifyDeviceNaming enabled: all devices should be returned
     // (no deduplication). Sorted by recency.
-    TargetDeviceInfo target_device_info1(
+    RemoteDeviceInfo target_device_info1(
         kDeviceName, recent_device->guid(), recent_device->form_factor(),
         recent_device->os_type(), recent_device->last_updated_timestamp());
-    TargetDeviceInfo target_device_info2(
+    RemoteDeviceInfo target_device_info2(
         kDeviceName, old_device->guid(), old_device->form_factor(),
         old_device->os_type(), old_device->last_updated_timestamp());
-    TargetDeviceInfo target_device_info3(
+    RemoteDeviceInfo target_device_info3(
         kDeviceName, older_device->guid(), older_device->form_factor(),
         older_device->os_type(), older_device->last_updated_timestamp());
 
@@ -1548,7 +1549,7 @@ TEST_P(SendTabToSelfBridgeNamingTest,
   } else {
     // With kSyncSimplifyDeviceNaming disabled: only the most recent device's
     // guid is returned.
-    TargetDeviceInfo target_device_info(
+    RemoteDeviceInfo target_device_info(
         recent_device->client_name(), recent_device->guid(),
         recent_device->form_factor(), recent_device->os_type(),
         recent_device->last_updated_timestamp());
@@ -1573,7 +1574,7 @@ TEST_F(SendTabToSelfBridgeTest,
                    "model", /*send_tab_to_self_receiving_enabled=*/false);
   AddTestDevice(disabled_device.get());
 
-  TargetDeviceInfo target_device_info(
+  RemoteDeviceInfo target_device_info(
       enabled_device->client_name(), enabled_device->guid(),
       enabled_device->form_factor(), enabled_device->os_type(),
       enabled_device->last_updated_timestamp());
@@ -1595,7 +1596,7 @@ TEST_F(SendTabToSelfBridgeTest,
       "valid_guid", "valid_device_name", clock()->Now() - base::Days(1));
   AddTestDevice(valid_device.get());
 
-  TargetDeviceInfo target_device_info(
+  RemoteDeviceInfo target_device_info(
       valid_device->client_name(), valid_device->guid(),
       valid_device->form_factor(), valid_device->os_type(),
       valid_device->last_updated_timestamp());
@@ -1623,11 +1624,11 @@ TEST_P(SendTabToSelfBridgeNamingTest,
       "other_guid", "other_device_name", clock()->Now() - base::Minutes(2));
   AddTestDevice(other_device.get());
 
-  TargetDeviceInfo other_local_target_info(
+  RemoteDeviceInfo other_local_target_info(
       other_local_device->client_name(), other_local_device->guid(),
       other_local_device->form_factor(), other_local_device->os_type(),
       other_local_device->last_updated_timestamp());
-  TargetDeviceInfo other_target_info(
+  RemoteDeviceInfo other_target_info(
       other_device->client_name(), other_device->guid(),
       other_device->form_factor(), other_device->os_type(),
       other_device->last_updated_timestamp());
@@ -1655,11 +1656,11 @@ TEST_F(SendTabToSelfBridgeTest,
       "recent_guid", "recent_name", clock()->Now() - base::Days(1));
   AddTestDevice(recent_device.get());
 
-  TargetDeviceInfo older_device_info(
+  RemoteDeviceInfo older_device_info(
       older_device->client_name(), older_device->guid(),
       older_device->form_factor(), older_device->os_type(),
       older_device->last_updated_timestamp());
-  TargetDeviceInfo recent_device_info(
+  RemoteDeviceInfo recent_device_info(
       recent_device->client_name(), recent_device->guid(),
       recent_device->form_factor(), recent_device->os_type(),
       recent_device->last_updated_timestamp());
@@ -1687,7 +1688,7 @@ TEST_F(SendTabToSelfBridgeTest,
   AddTestDevice(device.get());
 
   // Make sure the list has the device.
-  TargetDeviceInfo device_info(device->client_name(), device->guid(),
+  RemoteDeviceInfo device_info(device->client_name(), device->guid(),
                                device->form_factor(), device->os_type(),
                                device->last_updated_timestamp());
 
@@ -1700,7 +1701,7 @@ TEST_F(SendTabToSelfBridgeTest,
   AddTestDevice(new_device.get());
 
   // Make sure both devices are in the list.
-  TargetDeviceInfo new_device_info(
+  RemoteDeviceInfo new_device_info(
       new_device->client_name(), new_device->guid(), new_device->form_factor(),
       new_device->os_type(), new_device->last_updated_timestamp());
 
@@ -1724,10 +1725,10 @@ TEST_F(SendTabToSelfBridgeTest,
   EXPECT_THAT(
       bridge()->GetTargetDeviceInfoSortedList(),
       ElementsAre(
-          TargetDeviceInfo(device1->client_name(), device1->guid(),
+          RemoteDeviceInfo(device1->client_name(), device1->guid(),
                            device1->form_factor(), device1->os_type(),
                            device1->last_updated_timestamp()),
-          TargetDeviceInfo(device2_old->client_name(), device2_old->guid(),
+          RemoteDeviceInfo(device2_old->client_name(), device2_old->guid(),
                            device2_old->form_factor(), device2_old->os_type(),
                            device2_old->last_updated_timestamp())));
 
@@ -1740,10 +1741,10 @@ TEST_F(SendTabToSelfBridgeTest,
   EXPECT_THAT(
       bridge()->GetTargetDeviceInfoSortedList(),
       ElementsAre(
-          TargetDeviceInfo(device2_new->client_name(), device2_new->guid(),
+          RemoteDeviceInfo(device2_new->client_name(), device2_new->guid(),
                            device2_new->form_factor(), device2_new->os_type(),
                            device2_new->last_updated_timestamp()),
-          TargetDeviceInfo(device1->client_name(), device1->guid(),
+          RemoteDeviceInfo(device1->client_name(), device1->guid(),
                            device1->form_factor(), device1->os_type(),
                            device1->last_updated_timestamp())));
 }
@@ -2028,7 +2029,7 @@ TEST_F(SendTabToSelfBridgeTest,
 
   open_tabs_ui_delegate()->AddForeignSession("guid", session_time);
 
-  TargetDeviceInfo expected_device_info(device->client_name(), device->guid(),
+  RemoteDeviceInfo expected_device_info(device->client_name(), device->guid(),
                                         device->form_factor(),
                                         device->os_type(), session_time,
                                         /*has_high_precision_timestamp=*/true);
@@ -2052,7 +2053,7 @@ TEST_F(SendTabToSelfBridgeTest,
 
   open_tabs_ui_delegate()->AddForeignSession("guid", session_time);
 
-  TargetDeviceInfo expected_device_info(device->client_name(), device->guid(),
+  RemoteDeviceInfo expected_device_info(device->client_name(), device->guid(),
                                         device->form_factor(),
                                         device->os_type(), device_time,
                                         /*has_high_precision_timestamp=*/true);
@@ -2102,13 +2103,13 @@ TEST_P(SendTabToSelfBridgeNamingTest,
     EXPECT_THAT(
         bridge()->GetTargetDeviceInfoSortedList(),
         ElementsAre(
-            Field(&TargetDeviceInfo::device_name, "Manufacturer Phone"),
-            Field(&TargetDeviceInfo::device_name, "Manufacturer Phone")));
+            Field(&RemoteDeviceInfo::device_name, "Manufacturer Phone"),
+            Field(&RemoteDeviceInfo::device_name, "Manufacturer Phone")));
   } else {
     EXPECT_THAT(bridge()->GetTargetDeviceInfoSortedList(),
-                ElementsAre(Field(&TargetDeviceInfo::device_name,
+                ElementsAre(Field(&RemoteDeviceInfo::device_name,
                                   "Manufacturer Phone model1"),
-                            Field(&TargetDeviceInfo::device_name,
+                            Field(&RemoteDeviceInfo::device_name,
                                   "Manufacturer Phone model2")));
   }
 }
@@ -2130,7 +2131,7 @@ TEST_F(SendTabToSelfBridgeTest,
       CreateDevice("guid_recent", kFullName, clock()->Now() - base::Days(1));
   AddTestDevice(device_recent.get());
 
-  std::vector<TargetDeviceInfo> list =
+  std::vector<RemoteDeviceInfo> list =
       bridge()->GetTargetDeviceInfoSortedList();
   ASSERT_EQ(1ul, list.size());
   EXPECT_EQ("guid_recent", list[0].cache_guid);
@@ -2171,8 +2172,8 @@ TEST_P(SendTabToSelfBridgeNamingTest,
   AddTestDevice(device2.get());
 
   EXPECT_THAT(bridge()->GetTargetDeviceInfoSortedList(),
-              ElementsAre(Field(&TargetDeviceInfo::device_name, "Google Phone"),
-                          Field(&TargetDeviceInfo::device_name,
+              ElementsAre(Field(&RemoteDeviceInfo::device_name, "Google Phone"),
+                          Field(&RemoteDeviceInfo::device_name,
                                 "Google Phone (Canary)")));
 }
 
@@ -2230,7 +2231,7 @@ TEST_F(SendTabToSelfBridgeTest,
   AddTestDevice(device_recent_disabled.get());
   AddTestDevice(device_older_enabled.get());
 
-  std::vector<TargetDeviceInfo> list =
+  std::vector<RemoteDeviceInfo> list =
       bridge()->GetTargetDeviceInfoSortedList();
   ASSERT_EQ(1ul, list.size());
   EXPECT_EQ("guid_older", list[0].cache_guid);
@@ -2251,13 +2252,13 @@ TEST_F(SendTabToSelfBridgeTest,
   AddTestDevice(device1.get());
   AddTestDevice(device2.get());
 
-  std::vector<TargetDeviceInfo> list =
+  std::vector<RemoteDeviceInfo> list =
       bridge()->GetTargetDeviceInfoSortedList();
   // Stable sort should preserve the order from GetAllDeviceInfo if timestamps
   // are equal. FakeDeviceInfoTracker::GetAllDeviceInfo usually returns in order
   // of addition. This is a safety check for deterministic behavior.
-  EXPECT_THAT(list, ElementsAre(Field(&TargetDeviceInfo::cache_guid, "guid1"),
-                                Field(&TargetDeviceInfo::cache_guid, "guid2")));
+  EXPECT_THAT(list, ElementsAre(Field(&RemoteDeviceInfo::cache_guid, "guid1"),
+                                Field(&RemoteDeviceInfo::cache_guid, "guid2")));
 }
 
 TEST_F(SendTabToSelfBridgeTest, GetTargetDeviceInfoSortedList_FormFactors) {
@@ -2282,12 +2283,12 @@ TEST_F(SendTabToSelfBridgeTest, GetTargetDeviceInfoSortedList_FormFactors) {
   AddTestDevice(desktop.get());
   AddTestDevice(phone.get());
 
-  std::vector<TargetDeviceInfo> list =
+  std::vector<RemoteDeviceInfo> list =
       bridge()->GetTargetDeviceInfoSortedList();
   EXPECT_THAT(list, UnorderedElementsAre(
-                        Field(&TargetDeviceInfo::form_factor,
+                        Field(&RemoteDeviceInfo::form_factor,
                               syncer::DeviceInfo::FormFactor::kDesktop),
-                        Field(&TargetDeviceInfo::form_factor,
+                        Field(&RemoteDeviceInfo::form_factor,
                               syncer::DeviceInfo::FormFactor::kPhone)));
 }
 
@@ -2305,7 +2306,7 @@ TEST_F(SendTabToSelfBridgeTest, GetTargetDeviceInfo) {
   AddTestDevice(desktop.get());
 
   // Valid lookup.
-  std::optional<TargetDeviceInfo> device =
+  std::optional<RemoteDeviceInfo> device =
       bridge()->GetTargetDeviceInfo("desktop_guid");
   ASSERT_TRUE(device.has_value());
   EXPECT_EQ(device->cache_guid, "desktop_guid");
@@ -2313,7 +2314,7 @@ TEST_F(SendTabToSelfBridgeTest, GetTargetDeviceInfo) {
   EXPECT_EQ(device->form_factor, syncer::DeviceInfo::FormFactor::kDesktop);
 
   // Invalid lookup.
-  std::optional<TargetDeviceInfo> invalid_device =
+  std::optional<RemoteDeviceInfo> invalid_device =
       bridge()->GetTargetDeviceInfo("non_existent_guid");
   EXPECT_FALSE(invalid_device.has_value());
 }
@@ -2349,8 +2350,8 @@ TEST_P(SendTabToSelfBridgeNamingTest,
     // In simplified mode, name-based local device filtering is disabled.
     EXPECT_THAT(bridge()->GetTargetDeviceInfoSortedList(),
                 ElementsAre(AllOf(
-                    Field(&TargetDeviceInfo::cache_guid, kMyDuplicateGuid),
-                    Field(&TargetDeviceInfo::device_name, "local_name"))));
+                    Field(&RemoteDeviceInfo::cache_guid, kMyDuplicateGuid),
+                    Field(&RemoteDeviceInfo::device_name, "local_name"))));
   } else {
     // The duplicate device should be excluded because its fallback full name
     // matches the local device's fallback full name.

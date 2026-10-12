@@ -6,9 +6,9 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/send_tab_to_self/target_device_info.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync_device_info/device_info.h"
+#import "components/sync_device_info/remote_device_info.h"
 #import "ios/chrome/browser/send_tab_to_self/ui/send_tab_to_self_constants.h"
 #import "ios/chrome/browser/send_tab_to_self/ui/send_tab_to_self_modal_delegate.h"
 #import "ios/chrome/browser/shared/ui/bottom_sheet/table_view_bottom_sheet_view_controller+subclassing.h"
@@ -32,14 +32,13 @@ constexpr CGFloat kSymbolSize = 22;
 @end
 
 @implementation SendTabToSelfBottomSheetViewController {
-  std::vector<send_tab_to_self::TargetDeviceInfo> _targetDeviceList;
+  std::vector<syncer::RemoteDeviceInfo> _targetDeviceList;
   NSString* _accountEmail;
   __weak id<SendTabToSelfModalDelegate> _delegate;
 }
 
 - (instancetype)initWithDeviceList:
-                    (std::vector<send_tab_to_self::TargetDeviceInfo>)
-                        targetDeviceList
+                    (std::vector<syncer::RemoteDeviceInfo>)targetDeviceList
                       accountEmail:(NSString*)accountEmail
                           delegate:(id<SendTabToSelfModalDelegate>)delegate {
   ButtonStackConfiguration* configuration =
@@ -162,7 +161,7 @@ constexpr CGFloat kSymbolSize = 22;
     return;
   }
 
-  const send_tab_to_self::TargetDeviceInfo& device = _targetDeviceList[index];
+  const syncer::RemoteDeviceInfo& device = _targetDeviceList[index];
 
   [self showLoadingState];
 
@@ -214,8 +213,7 @@ constexpr CGFloat kSymbolSize = 22;
 - (UITableViewCell*)layoutCell:(UITableViewCell*)cell
              forTableViewWidth:(CGFloat)tableViewWidth
                    atIndexPath:(NSIndexPath*)indexPath {
-  const send_tab_to_self::TargetDeviceInfo& device =
-      _targetDeviceList[indexPath.row];
+  const syncer::RemoteDeviceInfo& device = _targetDeviceList[indexPath.row];
 
   TableViewCellContentConfiguration* configuration =
       [[TableViewCellContentConfiguration alloc] init];

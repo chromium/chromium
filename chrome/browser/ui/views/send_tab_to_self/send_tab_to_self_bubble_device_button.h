@@ -12,10 +12,13 @@
 #include "components/sync_device_info/device_info.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
+namespace syncer {
+struct RemoteDeviceInfo;
+}  // namespace syncer
+
 namespace send_tab_to_self {
 
 class SendTabToSelfDevicePickerBubbleView;
-struct TargetDeviceInfo;
 
 // A button representing a device in share bubble. It is highlighted when
 // hovered.
@@ -24,7 +27,7 @@ class SendTabToSelfBubbleDeviceButton : public HoverButton {
 
  public:
   SendTabToSelfBubbleDeviceButton(SendTabToSelfDevicePickerBubbleView* bubble,
-                                  const TargetDeviceInfo& device_info);
+                                  const syncer::RemoteDeviceInfo& device_info);
   SendTabToSelfBubbleDeviceButton(const SendTabToSelfBubbleDeviceButton&) =
       delete;
   SendTabToSelfBubbleDeviceButton& operator=(

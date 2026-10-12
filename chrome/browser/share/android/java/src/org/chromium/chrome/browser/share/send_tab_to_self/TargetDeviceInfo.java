@@ -12,8 +12,8 @@ import org.chromium.components.sync_device_info.FormFactor;
 import org.chromium.components.sync_device_info.OsType;
 
 /**
- * SendTabToSelfEntry mirrors the native struct send_tab_to_self::TargetDeviceInfo declared in
- * //components/send_tab_to_self/target_device_info.h. This provides useful getters and methods
+ * SendTabToSelfEntry mirrors the native struct syncer::RemoteDeviceInfo declared in
+ * //components/sync_device_info/remote_device_info.h. This provides useful getters and methods
  * called by native code.
  */
 @NullMarked

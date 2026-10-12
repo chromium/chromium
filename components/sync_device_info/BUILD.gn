@@ -35,6 +35,8 @@ static_library("sync_device_info") {
     "local_device_info_provider_impl.h",
     "local_device_info_util.cc",
     "local_device_info_util.h",
+    "remote_device_info.cc",
+    "remote_device_info.h",
   ]
 
   configs += [ "//build/config:precompiled_headers" ]
@@ -124,6 +126,7 @@ source_set("unit_tests") {
     "device_name_util_unittest.cc",
     "local_device_info_provider_impl_unittest.cc",
     "local_device_info_util_unittest.cc",
+    "remote_device_info_unittest.cc",
   ]
 
   configs += [ "//build/config:precompiled_headers" ]
@@ -134,10 +137,12 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/prefs:test_support",
+    "//components/strings",
     "//components/sync:test_support",
     "//components/version_info:version_string",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base",
   ]
 
   if (is_chromeos) {

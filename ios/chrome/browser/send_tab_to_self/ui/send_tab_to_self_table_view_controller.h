@@ -9,9 +9,9 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
 
-namespace send_tab_to_self {
-struct TargetDeviceInfo;
-}
+namespace syncer {
+struct RemoteDeviceInfo;
+}  // namespace syncer
 
 @protocol SendTabToSelfModalDelegate;
 
@@ -19,12 +19,12 @@ struct TargetDeviceInfo;
 // Send Tab To Self Modal dialog.
 @interface SendTabToSelfTableViewController : LegacyChromeTableViewController
 
-- (instancetype)
-    initWithDeviceList:
-        (std::vector<send_tab_to_self::TargetDeviceInfo>)targetDeviceList
-              delegate:(id<SendTabToSelfModalDelegate>)delegate
-         accountAvatar:(UIImage*)accountAvatar
-          accountEmail:(NSString*)accountEmail NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithDeviceList:
+                    (std::vector<syncer::RemoteDeviceInfo>)targetDeviceList
+                          delegate:(id<SendTabToSelfModalDelegate>)delegate
+                     accountAvatar:(UIImage*)accountAvatar
+                      accountEmail:(NSString*)accountEmail
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;

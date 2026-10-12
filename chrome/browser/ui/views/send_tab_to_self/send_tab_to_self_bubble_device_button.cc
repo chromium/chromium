@@ -13,8 +13,8 @@
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_device_picker_bubble_view.h"
 #include "components/send_tab_to_self/features.h"
-#include "components/send_tab_to_self/target_device_info.h"
 #include "components/sync_device_info/device_info.h"
+#include "components/sync_device_info/remote_device_info.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -85,7 +85,7 @@ std::unique_ptr<views::ImageView> CreateCheckmarkIcon() {
 
 SendTabToSelfBubbleDeviceButton::SendTabToSelfBubbleDeviceButton(
     SendTabToSelfDevicePickerBubbleView* bubble,
-    const TargetDeviceInfo& device_info)
+    const syncer::RemoteDeviceInfo& device_info)
     : HoverButton(GetPressedCallback(bubble, this),
                   CreateIcon(device_info.form_factor),
                   base::UTF8ToUTF16(device_info.device_name),

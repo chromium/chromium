@@ -23,7 +23,6 @@ namespace send_tab_to_self {
 class SendTabToSelfEntry;
 struct NavigationHistory;
 struct PageContext;
-struct TargetDeviceInfo;
 
 class FakeSendTabToSelfModel final : public SendTabToSelfModel {
  public:
@@ -52,16 +51,17 @@ class FakeSendTabToSelfModel final : public SendTabToSelfModel {
                           ShareActivatedEntryPoint entry_point) override;
   bool IsReady() override;
   bool HasValidTargetDevice() override;
-  std::vector<TargetDeviceInfo> GetTargetDeviceInfoSortedList() override;
-  std::optional<TargetDeviceInfo> GetTargetDeviceInfo(
+  std::vector<syncer::RemoteDeviceInfo> GetTargetDeviceInfoSortedList()
+      override;
+  std::optional<syncer::RemoteDeviceInfo> GetTargetDeviceInfo(
       std::string_view cache_guid) override;
 
   // Methods to configure the fake behavior:
   void SetIsReady(bool is_ready);
   void SetHasValidTargetDevice(bool has_valid_target_device);
   void SetTargetDeviceInfoSortedList(
-      const std::vector<TargetDeviceInfo>& devices);
-  void AddTargetDevice(const TargetDeviceInfo& device);
+      const std::vector<syncer::RemoteDeviceInfo>& devices);
+  void AddTargetDevice(const syncer::RemoteDeviceInfo& device);
   void SetLocalDeviceName(std::string_view device_name);
   void SetLocalCacheGuid(std::string_view cache_guid);
   void SetSendResult(SendTabToSelfResult result);
@@ -123,7 +123,7 @@ class FakeSendTabToSelfModel final : public SendTabToSelfModel {
   std::string local_cache_guid_ = "";
   std::map<std::string, std::unique_ptr<SendTabToSelfEntry>, std::less<>>
       entries_;
-  std::vector<TargetDeviceInfo> devices_;
+  std::vector<syncer::RemoteDeviceInfo> devices_;
   std::string last_opened_guid_;
   std::string last_dismissed_guid_;
   std::string last_activated_guid_;
