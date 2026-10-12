@@ -104,7 +104,6 @@ static_library("autofill") {
     "//components/wallet/core/browser",
     "//third_party/libphonenumber",
   ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   if (is_android) {
     sources += [
       "android/android_autofill_availability_status.h",

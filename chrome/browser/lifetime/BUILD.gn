@@ -11,8 +11,6 @@ source_set("termination_notification") {
     "termination_notification.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [ "//base" ]
 
   deps = [ "//content/public/browser" ]

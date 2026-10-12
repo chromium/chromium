@@ -10,8 +10,6 @@ source_set("browser_instance") {
     "web_contents_instance_id_utils.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   deps = [
     "//base",
     "//chrome/browser/profiles:profile",

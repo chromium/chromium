@@ -17,10 +17,7 @@ source_set("system") {
 
   sources = [ "system_permission_settings.cc" ]
 
-  configs += [
-    "//build/config/compiler:wexit_time_destructors",
-    "//build/config/compiler:wglobal_constructors",
-  ]
+  configs += [ "//build/config/compiler:wglobal_constructors" ]
 
   public_deps = [
     "//base",

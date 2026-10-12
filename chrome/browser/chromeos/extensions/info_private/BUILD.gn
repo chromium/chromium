@@ -8,8 +8,6 @@ assert(enable_extensions)
 assert(is_chromeos)
 
 static_library("info_private") {
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   sources = [
     "info_private_api.cc",
     "info_private_api.h",

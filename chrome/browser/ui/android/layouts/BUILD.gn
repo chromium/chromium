@@ -42,8 +42,6 @@ source_set("android") {
     "scene_layer.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   deps = [
     ":layouts_jni_headers",
     "//cc/slim",

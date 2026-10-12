@@ -27,8 +27,6 @@ source_set("publishers") {
     "publisher_host_impl.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   deps = [
     "//base",
     "//chrome/browser/apps/app_service",

@@ -8,8 +8,6 @@ assert(enable_extensions)
 assert(is_chromeos)
 
 static_library("external_loader") {
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   sources = [
     "device_local_account_external_policy_loader.cc",
     "device_local_account_external_policy_loader.h",

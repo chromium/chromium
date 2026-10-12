@@ -37,8 +37,6 @@ source_set("app_service") {
     "web_contents_app_id_utils.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = []
 
   deps = [

@@ -8,8 +8,6 @@ assert(enable_extensions)
 assert(is_chromeos)
 
 static_library("wallpaper") {
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   sources = [
     "wallpaper_api.cc",
     "wallpaper_api.h",

@@ -20,8 +20,6 @@ source_set("announcement_notification") {
     "//url",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   if (is_android) {
     sources += [ "announcement_notification_delegate_android.h" ]
   } else {
@@ -38,8 +36,6 @@ source_set("impl") {
     "announcement_notification_service_factory.cc",
     "empty_announcement_notification_service.cc",
   ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   # TODO(xingliu): Move code depends on //chrome/browser out of this module.
   deps = [

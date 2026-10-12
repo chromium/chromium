@@ -44,8 +44,6 @@ source_set("platform_apps") {
     ]
   }
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [
     "//apps",
     "//chrome/browser/apps/platform_apps/api:api_registration",

@@ -1038,10 +1038,7 @@ source_set("core") {
     "universal_web_contents_observers.cc",
   ]
 
-  configs += [
-    "//build/config/compiler:wexit_time_destructors",
-    "//build/config:precompiled_headers",
-  ]
+  configs += [ "//build/config:precompiled_headers" ]
   defines = [ "ZLIB_CONST" ]
 
   if (is_chrome_branded || use_official_enterprise_connectors_api_keys) {
@@ -2207,10 +2204,7 @@ source_set("core") {
 # static_library produces an empty archive, which the Windows librarian
 # (lld-link /lib) rejects with "lib failed".
 source_set("browser") {
-  configs += [
-    "//build/config/compiler:wexit_time_destructors",
-    "//build/config:precompiled_headers",
-  ]
+  configs += [ "//build/config:precompiled_headers" ]
   defines = [ "ZLIB_CONST" ]
 
   if (is_chrome_branded || use_official_enterprise_connectors_api_keys) {

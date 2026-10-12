@@ -36,10 +36,7 @@ source_set("ai") {
     ]
   }
 
-  configs += [
-    "//build/config/compiler:wexit_time_destructors",
-    "//build/config/compiler:wglobal_constructors",
-  ]
+  configs += [ "//build/config/compiler:wglobal_constructors" ]
   public_deps = [
     "//base",
     "//chrome/browser/actor",
@@ -80,10 +77,7 @@ source_set("impl") {
     ]
   }
 
-  configs += [
-    "//build/config/compiler:wexit_time_destructors",
-    "//build/config/compiler:wglobal_constructors",
-  ]
+  configs += [ "//build/config/compiler:wglobal_constructors" ]
 
   public_deps = [ "//components/content_extraction/content/browser" ]
   deps = [

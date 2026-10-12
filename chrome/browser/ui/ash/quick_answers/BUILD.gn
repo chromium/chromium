@@ -14,8 +14,6 @@ source_set("quick_answers") {
     "quick_answers_ui_controller.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [ "//chrome/browser/ui/ash/quick_answers/ui" ]
 
   # quick_answers_ui_controller.h/.cc includes headers owned by the ui:

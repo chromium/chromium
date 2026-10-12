@@ -29,8 +29,6 @@ source_set("api") {
     "sync_file_system/sync_file_system_api_helpers.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   deps = [
     "//chrome/app:generated_resources_grit",
     "//chrome/browser:primitives",

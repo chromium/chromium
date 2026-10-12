@@ -14,8 +14,6 @@ source_set("optical_character_recognizer") {
     "//content/public/browser",
     "//services/screen_ai/public/mojom",
   ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("test_support") {
@@ -30,6 +28,4 @@ source_set("test_support") {
     "//services/screen_ai/public/mojom",
   ]
   public_deps = [ ":optical_character_recognizer" ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }

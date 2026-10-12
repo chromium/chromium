@@ -38,8 +38,6 @@ source_set("impl") {
     "share_metrics.cc",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [ ":share" ]
 
   deps = [

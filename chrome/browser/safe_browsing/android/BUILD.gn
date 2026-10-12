@@ -16,8 +16,6 @@ generate_jni("jni_headers") {
 source_set("android") {
   sources = [ "safe_browsing_bridge.cc" ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   deps = [
     ":jni_headers",
     "//chrome/browser:browser_process",

@@ -225,8 +225,6 @@ if (enable_vr) {
       "//ui/gfx/animation/keyframe",
     ]
 
-    configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
     defines = [ "VR_UI_IMPLEMENTATION" ]
 
     if (is_android) {
@@ -273,8 +271,6 @@ if (enable_vr) {
       "//ui/base",
       "//ui/display",
     ]
-
-    configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
     defines = [ "VR_IMPLEMENTATION" ]
 
@@ -346,8 +342,6 @@ if (enable_vr) {
       "//services/metrics/public/cpp:ukm_builders",
       "//skia",
     ]
-
-    configs += [ "//build/config/compiler:wexit_time_destructors" ]
   }
 
   test("vr_common_unittests") {

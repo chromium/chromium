@@ -126,10 +126,7 @@ static_library("devtools") {
     "chrome_devtools_session_base.h",
   ]
 
-  configs += [
-    "//build/config/compiler:wexit_time_destructors",
-    "//build/config:precompiled_headers",
-  ]
+  configs += [ "//build/config:precompiled_headers" ]
 
   public_deps = [
     ":devtools_toggle_action",

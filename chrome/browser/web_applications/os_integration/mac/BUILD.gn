@@ -21,8 +21,6 @@ source_set("web_app_shortcut_copier_lib") {
 }
 
 executable("web_app_shortcut_copier") {
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   sources = [ "web_app_shortcut_copier_main_mac.cc" ]
 
   deps = [ "//chrome:chrome_framework+link_nested" ]

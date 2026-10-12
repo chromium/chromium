@@ -10,8 +10,6 @@ source_set("system_web_apps") {
     "system_web_app_utils.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   deps = [
     "//base",
     "//chromeos/ash/components/browser_delegate",
@@ -71,8 +69,6 @@ source_set("impl") {
     "system_web_app_ui_utils.cc",
     "system_web_app_utils.cc",
   ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
     ":system_web_apps",

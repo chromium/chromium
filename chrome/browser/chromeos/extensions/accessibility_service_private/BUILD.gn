@@ -8,8 +8,6 @@ assert(enable_extensions)
 assert(is_chromeos)
 
 static_library("accessibility_service_private") {
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   sources = [
     "accessibility_service_private.cc",
     "accessibility_service_private.h",

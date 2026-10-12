@@ -22,7 +22,6 @@ source_set("data_decoder_util") {
   ]
   public_deps = [ "//services/data_decoder/public/cpp" ]
   deps = [ "//base" ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("logger_list") {
@@ -36,7 +35,6 @@ source_set("logger_list") {
     "//components/media_router/browser",
     "//content/public/browser",
   ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 static_library("media_router_feature") {
@@ -60,7 +58,6 @@ static_library("media_router_feature") {
     "//crypto",
     "//media",
   ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   if (is_chromeos) {
     deps += [ "//chromeos/ash/components/browser_context_helper" ]
@@ -103,7 +100,6 @@ static_library("router") {
     "//third_party/icu",
     "//url",
   ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   if (!is_android) {
     sources += [

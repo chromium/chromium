@@ -8,8 +8,6 @@ source_set("reading_list") {
     "reading_list_model_factory.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [
     "//chrome/browser/profiles:profile",
     "//components/reading_list/core",
