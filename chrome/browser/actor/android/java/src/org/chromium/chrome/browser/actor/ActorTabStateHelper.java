@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.actor;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.Token;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -463,10 +464,16 @@ public class ActorTabStateHelper {
             }
             return;
         }
+        boolean isColdStart = !selector.isTabStateInitialized();
+        long startTimeMs = TimeUtils.uptimeMillis();
         AtomicBoolean isCompleted = new AtomicBoolean(false);
         Callback<@Nullable Tab> completeOnce =
                 (selected) -> {
                     if (isCompleted.getAndSet(true)) return;
+                    if (selected != null) {
+                        ActorMetrics.recordOnTabAddedLatency(
+                                TimeUtils.uptimeMillis() - startTimeMs, isColdStart);
+                    }
                     if (onTabSelected != null) {
                         onTabSelected.onResult(selected);
                     }
