@@ -11,6 +11,8 @@
 #include <vector>
 
 #include "base/apple/scoped_cftyperef.h"
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "crypto/apple/keychain_v2.h"
 #include "crypto/apple/scoped_fake_keychain_v2.h"
 #include "crypto/crypto_export.h"
@@ -30,15 +32,20 @@ class CRYPTO_EXPORT FakeKeychainV2 : public KeychainV2 {
   FakeKeychainV2& operator=(const FakeKeychainV2&) = delete;
   ~FakeKeychainV2() override;
 
-  const std::vector<base::apple::ScopedCFTypeRef<CFDictionaryRef>>& items() {
+  std::vector<base::apple::ScopedCFTypeRef<CFDictionaryRef>> items() const {
+    base::AutoLock auto_lock(lock_);
     return items_;
   }
 
   void set_secure_enclave_available(bool is_secure_enclave_available) {
+    base::AutoLock auto_lock(lock_);
     is_secure_enclave_available_ = is_secure_enclave_available;
   }
 
-  void set_uv_method(UVMethod uv_method) { uv_method_ = uv_method; }
+  void set_uv_method(UVMethod uv_method) {
+    base::AutoLock auto_lock(lock_);
+    uv_method_ = uv_method;
+  }
 
   // KeychainV2:
   NSArray* GetTokenIDs() override;
@@ -68,18 +75,28 @@ class CRYPTO_EXPORT FakeKeychainV2 : public KeychainV2 {
   // |FindGenericPassword()| call so we can simulate the result of different
   // user interactions.
   void set_find_generic_result(OSStatus result) {
+    base::AutoLock auto_lock(lock_);
     find_generic_result_ = result;
   }
   // Returns the true if |AddGenericPassword()| was called.
-  bool called_add_generic() const { return called_add_generic_; }
+  bool called_add_generic() const {
+    base::AutoLock auto_lock(lock_);
+    return called_add_generic_;
+  }
 
   // Clears all items from the fake keychain.
-  void ClearItems() { items_.clear(); }
+  void ClearItems() {
+    base::AutoLock auto_lock(lock_);
+    items_.clear();
+  }
 
   // |ItemUpdate()| can return different results depending on user interaction
   // with the system Keychain. For mocking purposes we allow the user of this
   // class to specify the result code.
-  void set_item_update_result(OSStatus result) { item_update_result_ = result; }
+  void set_item_update_result(OSStatus result) {
+    base::AutoLock auto_lock(lock_);
+    item_update_result_ = result;
+  }
 
 #if !BUILDFLAG(IS_IOS)
   base::apple::ScopedCFTypeRef<CFTypeRef> TaskCopyValueForEntitlement(
@@ -93,24 +110,27 @@ class CRYPTO_EXPORT FakeKeychainV2 : public KeychainV2 {
 #endif  // !BUILDFLAG(IS_IOS_TVOS)
 
  private:
-  bool is_secure_enclave_available_ = true;
+  mutable base::Lock lock_;
 
-  UVMethod uv_method_ = UVMethod::kBiometrics;
+  bool is_secure_enclave_available_ GUARDED_BY(lock_) = true;
+
+  UVMethod uv_method_ GUARDED_BY(lock_) = UVMethod::kBiometrics;
 
   // items_ contains the keychain items created by `KeyCreateRandomKey`.
-  std::vector<base::apple::ScopedCFTypeRef<CFDictionaryRef>> items_;
+  std::vector<base::apple::ScopedCFTypeRef<CFDictionaryRef>> items_
+      GUARDED_BY(lock_);
   // keychain_access_group_ is the value of `kSecAttrAccessGroup` that this
   // keychain expects to operate on.
   base::apple::ScopedCFTypeRef<CFStringRef> keychain_access_group_;
 
   // Result code for the |FindGenericPassword()| method.
-  OSStatus find_generic_result_ = noErr;
+  OSStatus find_generic_result_ GUARDED_BY(lock_) = noErr;
 
   // Records whether |AddGenericPassword()| gets called.
-  bool called_add_generic_ = false;
+  bool called_add_generic_ GUARDED_BY(lock_) = false;
 
   // Result code for the |ItemUpdate()| method.
-  OSStatus item_update_result_ = noErr;
+  OSStatus item_update_result_ GUARDED_BY(lock_) = noErr;
 };
 
 }  // namespace crypto::apple
