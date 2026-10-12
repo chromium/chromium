@@ -249,6 +249,7 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
   CHECK(tab);
   tab_subscription_ = webui::InitEmbeddingContext(tab);
 
+  ChromeTranslateClient::CreateForWebContents(web_contents);
   if (!content_settings::PageSpecificContentSettings::GetDelegateForWebContents(
           web_contents)) {
     content_settings::PageSpecificContentSettings::CreateForWebContents(

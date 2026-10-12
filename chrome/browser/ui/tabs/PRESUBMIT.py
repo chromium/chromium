@@ -46,6 +46,12 @@ _ALLOWED_CREATE_FOR_CALLS = (
   # SimpleWebViewDialog, and ChromeSafeBrowsingDelegate, so the WebContents
   # must own it.
   'ChromePasswordReuseDetectionManagerClient::CreateForWebContents',
+  # ChromeTranslateClient is looked up on WebContents across //chrome/browser
+  # (e.g. RenderViewContextMenu, SyncSessionsRouterTabHelper, and
+  # ChromeCommandHandler) and detaches from ContentTranslateDriver in
+  # WebContentsDestroyed() after TabFeatures is destroyed, so WebContents must
+  # own it.
+  'ChromeTranslateClient::CreateForWebContents',
   # PageSpecificContentSettings lives in //components/content_settings/browser
   # and is also attached to non-tab and pre-tab WebContents (such as
   # ChromeThinWebViewInitializer, GuestView, PrerenderNewTabHandle, and Android

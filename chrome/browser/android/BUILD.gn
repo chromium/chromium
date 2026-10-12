@@ -215,6 +215,7 @@ source_set("tabs_impl") {
     "//chrome/browser/sync_tab_context",
     "//chrome/browser/tab_contents",
     "//chrome/browser/task_manager",
+    "//chrome/browser/translate",
     "//chrome/browser/trusted_vault",
     "//chrome/browser/ui:recently_audible_helper",
     "//chrome/browser/ui/android:context_menu_helper",
