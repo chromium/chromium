@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -22,6 +23,11 @@
 namespace extensions {
 
 namespace {
+
+base::FilePath& GetSessionStateChangeDirOverride() {
+  static base::NoDestructor<base::FilePath> dir_override;
+  return *dir_override;
+}
 
 void OnSessionStateChangeFileUpdate(
     const base::FilePath& watched_path,
@@ -63,6 +69,10 @@ void WatchSessionStateChangeFile(
 
 bool WebAuthenticationProxyRemoteSessionStateChangeNotifier::
     GetSessionStateChangeDir(base::FilePath* out) {
+  if (!GetSessionStateChangeDirOverride().empty()) {
+    *out = GetSessionStateChangeDirOverride();
+    return true;
+  }
   // The path must be stable, i.e. the remote desktop app should not need to do
   // any sort of discovery, which rules out the User Data Directory. It also has
   // to be user-writable, because the app isn't expected to run as root.
@@ -73,6 +83,11 @@ bool WebAuthenticationProxyRemoteSessionStateChangeNotifier::
   *out = default_udd.Append(
       FILE_PATH_LITERAL("WebAuthenticationProxyRemoteSessionStateChange"));
   return true;
+}
+
+void WebAuthenticationProxyRemoteSessionStateChangeNotifier::
+    SetSessionStateChangeDirForTesting(base::FilePath dir) {
+  GetSessionStateChangeDirOverride() = std::move(dir);
 }
 
 WebAuthenticationProxyRemoteSessionStateChangeNotifier::

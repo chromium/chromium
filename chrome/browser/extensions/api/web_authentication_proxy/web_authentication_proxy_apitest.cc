@@ -505,6 +505,10 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, GetAssertionCancel) {
 
 IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest,
                        RemoteSessionStateChange) {
+  WebAuthenticationProxyRemoteSessionStateChangeNotifier::
+      SetSessionStateChangeDirForTesting(profile()->GetPath().Append(
+          FILE_PATH_LITERAL("WebAuthenticationProxyRemoteSessionStateChange")));
+
   const Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII(
                         "web_authentication_proxy/remote_session_state_change"),
@@ -513,6 +517,9 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest,
 
   browsertest_util::StopServiceWorkerForExtensionGlobalScope(profile(),
                                                              extension->id());
+  // Ensure `WatchSessionStateChangeFile` has finished setting up the
+  // `FilePathWatcher` on the background sequence before writing the file.
+  content::RunAllTasksUntilIdle();
 
   // Write to the magic file to trigger the event.
   ResultCatcher result_catcher;

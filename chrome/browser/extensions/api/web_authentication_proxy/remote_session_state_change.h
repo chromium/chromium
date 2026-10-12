@@ -31,6 +31,7 @@ class WebAuthenticationProxyRemoteSessionStateChangeNotifier {
  public:
   // Returns the directory in which the extension is expected to write its file.
   static bool GetSessionStateChangeDir(base::FilePath* out);
+  static void SetSessionStateChangeDirForTesting(base::FilePath dir);
 
   WebAuthenticationProxyRemoteSessionStateChangeNotifier(
       EventRouter* event_router,
