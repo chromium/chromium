@@ -253,7 +253,7 @@ Open full certificate details
     </DIV>
     <DIV class=origin-view-section origin-view-notes >
         <DIV >
-The security details above are from the first inspected response.
+The security details above are from the first inspected response
         </DIV>
     </DIV>
 </DIV>
@@ -411,7 +411,7 @@ Open full certificate details
     </DIV>
     <DIV class=origin-view-section origin-view-notes >
         <DIV >
-The security details above are from the first inspected response.
+The security details above are from the first inspected response
         </DIV>
     </DIV>
 </DIV>
@@ -569,7 +569,7 @@ Open full certificate details
     </DIV>
     <DIV class=origin-view-section origin-view-notes >
         <DIV >
-The security details above are from the first inspected response.
+The security details above are from the first inspected response
         </DIV>
     </DIV>
 </DIV>
@@ -735,7 +735,7 @@ Open full certificate details
     </DIV>
     <DIV class=origin-view-section origin-view-notes >
         <DIV >
-The security details above are from the first inspected response.
+The security details above are from the first inspected response
         </DIV>
     </DIV>
 </DIV>

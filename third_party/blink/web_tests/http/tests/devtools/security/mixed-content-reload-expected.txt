@@ -21,10 +21,10 @@ mixed content
             </SPAN>
         </DIV>
         <DIV >
-This page includes HTTP resources.
+This page includes HTTP resources
         </DIV>
         <DIV class=security-mixed-content >
-Reload the page to record requests for HTTP resources.
+Reload the page to record requests for HTTP resources
         </DIV>
     </DIV>
 </DIV>
@@ -49,7 +49,7 @@ mixed content
             </SPAN>
         </DIV>
         <DIV >
-This page includes HTTP resources.
+This page includes HTTP resources
         </DIV>
         <BUTTON class=security-mixed-content devtools-link text-button link-style role=link tabindex=0 >
 View 1 request in Network panel

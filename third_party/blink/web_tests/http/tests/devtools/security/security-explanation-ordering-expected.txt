@@ -19,7 +19,7 @@ valid and trusted
             </SPAN>
         </DIV>
         <DIV >
-The connection to this site is using a valid, trusted server certificate issued by Issuer.
+The connection to this site is using a valid, trusted server certificate issued by Issuer
         </DIV>
         <DEVTOOLS-BUTTON role=button class=origin-button jslog=Action; track: click; context: security.view-certificate >
 View certificate
@@ -53,7 +53,7 @@ all served securely
             </SPAN>
         </DIV>
         <DIV >
-All resources on this page are served securely.
+All resources on this page are served securely
         </DIV>
     </DIV>
 </DIV>
@@ -76,7 +76,7 @@ Public-Key-Pinning bypassed
             </SPAN>
         </DIV>
         <DIV >
-Public-Key-Pinning was bypassed by a local root certificate.
+Public-Key-Pinning was bypassed by a local root certificate
         </DIV>
     </DIV>
 </DIV>
@@ -99,7 +99,7 @@ obsolete connection settings
             </SPAN>
         </DIV>
         <DIV >
-The connection to this site is encrypted and authenticated using TLS 1.0, RSA, and AES_128_CBC with HMAC-SHA1.
+The connection to this site is encrypted and authenticated using TLS 1.0, RSA, and AES_128_CBC with HMAC-SHA1
         </DIV>
     </DIV>
 </DIV>

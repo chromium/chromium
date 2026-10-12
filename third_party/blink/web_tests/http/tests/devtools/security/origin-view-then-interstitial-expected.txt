@@ -100,7 +100,7 @@ View requests in Network panel
 Not secure
         </DIV>
         <DIV >
-Your connection to this origin isn’t secure.
+Your connection to this origin isn’t secure
         </DIV>
     </DIV>
 </DIV>

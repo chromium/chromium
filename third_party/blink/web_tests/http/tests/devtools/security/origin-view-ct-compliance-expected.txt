@@ -156,12 +156,12 @@ Certificate Transparency
         <DIV class= sct-details hidden  >
         </DIV>
         <DIV class=origin-view-section-notes >
-This request complies with Chrome’s Certificate Transparency policy.
+This request complies with Chrome’s Certificate Transparency policy
         </DIV>
     </DIV>
     <DIV class=origin-view-section origin-view-notes >
         <DIV >
-The security details above are from the first inspected response.
+The security details above are from the first inspected response
         </DIV>
     </DIV>
 </DIV>

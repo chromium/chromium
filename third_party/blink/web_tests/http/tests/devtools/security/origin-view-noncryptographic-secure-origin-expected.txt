@@ -50,7 +50,7 @@ View requests in Network panel
 Secure
         </DIV>
         <DIV >
-This origin is a non-HTTPS secure origin.
+This origin is a non-HTTPS secure origin
         </DIV>
     </DIV>
 </DIV>
