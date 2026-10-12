@@ -58,6 +58,7 @@ source_set("speech") {
     ]
 
     public_deps += [
+      "//ash/public/cpp",
       "//chrome/browser/ash/accessibility",
       "//chromeos/ash/experiences/extensions/common/api",
       "//chromeos/services/tts/public/mojom",
@@ -88,8 +89,6 @@ source_set("speech") {
 }
 
 source_set("impl") {
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   sources = [
     "chrome_speech_recognition_manager_delegate.cc",
     "on_device_speech_recognition_impl.cc",
@@ -103,10 +102,12 @@ source_set("impl") {
     "//chrome/browser/component_updater",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles:profile_manager",
+    "//chrome/common:constants",
     "//chrome/services/speech/buildflags",
     "//components/language/core/browser",
     "//components/user_prefs",
     "//content/public/browser",
+    "//extensions/buildflags",
     "//media/mojo/mojom:speech_recognition",
     "//media/mojo/mojom:web_speech_recognition",
     "//mojo/public/cpp/bindings",
@@ -231,6 +232,7 @@ if (!is_android) {
         "//content/test:test_support",
       ]
       deps += [
+        "//ash/constants",
         "//chromeos/ash/experiences/extensions/browser/speech:speech_recognition_constants",
         "//components/soda",
         "//components/soda:constants",

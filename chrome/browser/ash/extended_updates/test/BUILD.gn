@@ -32,6 +32,7 @@ source_set("unit_tests") {
     ":test_support",
     "//chrome/browser/ash/extended_updates",
     "//chrome/browser/profiles:profile",
+    "//content/public/browser",
     "//testing/gmock",
     "//testing/gtest",
   ]

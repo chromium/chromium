@@ -75,6 +75,7 @@ static_library("child_accounts") {
     "//ash/resources/vector_icons",
     "//ash/strings:strings_grit",
     "//ash/webui/settings/public/constants:mojom",
+    "//chrome/app:generated_resources",
     "//chrome/browser/ash/child_accounts/parent_access_code",
     "//chrome/browser/ash/child_accounts/time_limits",
     "//chrome/browser/ash/policy/core",

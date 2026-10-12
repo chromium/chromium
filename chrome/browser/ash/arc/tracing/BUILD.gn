@@ -40,14 +40,13 @@ static_library("tracing") {
     "uma_perf_reporting.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//ash",
     "//ash/constants",
     "//base",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_manager",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/sync:sync_service_provider",
     "//chromeos/ash/experiences/arc",

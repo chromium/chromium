@@ -32,6 +32,7 @@ source_set("read_write_cards_manager") {
   ]
   deps = [
     ":read_write_cards",
+    "//ash/constants",
     "//base",
     "//chrome/browser/ash/magic_boost",
     "//chrome/browser/ui/ash/editor_menu",

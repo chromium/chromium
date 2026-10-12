@@ -10,12 +10,10 @@ static_library("base") {
     "locale_util.h",
   ]
 
-  public_deps = [
-    "//base",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ "//base" ]
 
   deps = [
+    "//ash/constants",
     "//chrome/browser/profiles:profile",
     "//chrome/common:constants",
     "//components/application_locale_storage",

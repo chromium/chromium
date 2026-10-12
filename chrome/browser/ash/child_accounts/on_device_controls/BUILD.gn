@@ -27,7 +27,6 @@ static_library("on_device_controls") {
 
   public_deps = [
     "//base",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles",
     "//components/services/app_service/public/cpp:instance_update",
   ]
@@ -39,6 +38,7 @@ static_library("on_device_controls") {
     "//ash/strings:strings_grit",
     "//ash/webui/settings/public/constants:mojom",
     "//base/version_info",
+    "//chrome/browser/policy",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/system",
     "//chromeos/ash/experiences/settings_ui",

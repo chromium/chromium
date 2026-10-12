@@ -25,7 +25,6 @@ static_library("avatar") {
 
   public_deps = [
     "//base",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile_downloader",
     "//components/session_manager/core",
     "//components/sync_preferences",
@@ -91,7 +90,10 @@ static_library("test_support") {
     "//url",
   ]
 
-  deps = [ "//skia" ]
+  deps = [
+    "//services/data_decoder/public/cpp",
+    "//skia",
+  ]
 }
 
 source_set("browser_tests") {

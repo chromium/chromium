@@ -12,8 +12,6 @@ static_library("tasks") {
     "tasks_client_impl.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//ash",
     "//ash/constants",
@@ -28,6 +26,7 @@ static_library("tasks") {
     "//components/services/app_service",
     "//components/signin/public/identity_manager",
     "//components/user_manager",
+    "//content/public/browser",
     "//google_apis",
     "//google_apis/common",
     "//google_apis/tasks",

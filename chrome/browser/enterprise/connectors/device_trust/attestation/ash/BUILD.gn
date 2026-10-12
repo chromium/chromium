@@ -28,7 +28,9 @@ source_set("ash") {
 
   public_deps = [
     "//base",
+    "//components/account_id",
     "//components/enterprise/device_trust/core/attestation",
+    "//components/user_manager",
   ]
 }
 

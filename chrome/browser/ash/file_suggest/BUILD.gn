@@ -20,8 +20,6 @@ static_library("file_suggest") {
     "local_file_suggestion_provider.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//ash",
     "//ash/constants",
@@ -67,6 +65,7 @@ static_library("test_support") {
   deps = [
     ":file_suggest",
     "//base",
+    "//chrome/browser:browser_process",
     "//chrome/browser/profiles:profile",
     "//testing/gmock",
   ]

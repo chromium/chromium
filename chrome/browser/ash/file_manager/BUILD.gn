@@ -106,7 +106,6 @@ static_library("file_manager") {
 
   public_deps = [
     "//base",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser:primitives",
     "//chrome/browser/profiles:profile",
     "//chrome/services/file_util/public/cpp",

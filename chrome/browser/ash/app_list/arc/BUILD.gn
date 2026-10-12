@@ -54,8 +54,6 @@ static_library("arc") {
     "intent.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//ash",
     "//ash/constants",

@@ -11,6 +11,7 @@ static_library("image_source") {
   ]
 
   deps = [
+    "//ash/constants",
     "//base",
     "//chrome/browser/ash/login/users/avatar",
     "//components/user_manager",
