@@ -57,7 +57,8 @@ class TTCKeyedServiceTest : public PlatformTest {
 
 // Test that `TTCKeyedService` is instantiated for regular profile when enabled.
 TEST_F(TTCKeyedServiceTest, TestServiceCreatedForRegularProfileWhenEnabled) {
-  TTCKeyedService* service = TTCKeyedService::Get(profile_.get());
+  TTCKeyedService* service =
+      TTCKeyedServiceFactory::GetForProfile(profile_.get());
   ASSERT_TRUE(service != nullptr);
   EXPECT_TRUE(service->IsEnabled());
   EXPECT_EQ(service->profile(), profile_.get());
@@ -66,7 +67,8 @@ TEST_F(TTCKeyedServiceTest, TestServiceCreatedForRegularProfileWhenEnabled) {
 // Test that `TTCKeyedService` returns nullptr when feature flag is disabled.
 TEST_F(TTCKeyedServiceTest, TestServiceNotCreatedWhenFeatureDisabled) {
   InitProfile(/*enable_ttc=*/false);
-  TTCKeyedService* service = TTCKeyedService::Get(profile_.get());
+  TTCKeyedService* service =
+      TTCKeyedServiceFactory::GetForProfile(profile_.get());
   EXPECT_EQ(service, nullptr);
 }
 
@@ -75,13 +77,14 @@ TEST_F(TTCKeyedServiceTest, TestServiceNotCreatedForIncognitoProfile) {
   ProfileIOS* otr_profile =
       profile_->CreateOffTheRecordProfileWithTestingFactories();
   ASSERT_TRUE(otr_profile != nullptr);
-  TTCKeyedService* service = TTCKeyedService::Get(otr_profile);
+  TTCKeyedService* service = TTCKeyedServiceFactory::GetForProfile(otr_profile);
   EXPECT_EQ(service, nullptr);
 }
 
 // Test that initial service state is inactive and controller is null.
 TEST_F(TTCKeyedServiceTest, TestInitialStateIsSessionInactive) {
-  TTCKeyedService* service = TTCKeyedService::Get(profile_.get());
+  TTCKeyedService* service =
+      TTCKeyedServiceFactory::GetForProfile(profile_.get());
   ASSERT_TRUE(service != nullptr);
   EXPECT_FALSE(service->is_session_active());
   EXPECT_EQ(service->session_controller(), nil);
@@ -92,7 +95,8 @@ TEST_F(TTCKeyedServiceTest, TestInitialStateIsSessionInactive) {
 // Test that starting and ending a session transitions service state and
 // lifecycle.
 TEST_F(TTCKeyedServiceTest, TestStartAndEndSessionTransitionsState) {
-  TTCKeyedService* service = TTCKeyedService::Get(profile_.get());
+  TTCKeyedService* service =
+      TTCKeyedServiceFactory::GetForProfile(profile_.get());
   ASSERT_TRUE(service != nullptr);
 
   service->StartSession();
@@ -110,7 +114,8 @@ TEST_F(TTCKeyedServiceTest, TestStartAndEndSessionTransitionsState) {
 
 // Test that ending a session when inactive is a safe no-op.
 TEST_F(TTCKeyedServiceTest, TestEndSessionWhenInactiveIsNoOp) {
-  TTCKeyedService* service = TTCKeyedService::Get(profile_.get());
+  TTCKeyedService* service =
+      TTCKeyedServiceFactory::GetForProfile(profile_.get());
   ASSERT_TRUE(service != nullptr);
   EXPECT_FALSE(service->is_session_active());
   EXPECT_EQ(service->session_controller(), nil);
@@ -122,7 +127,8 @@ TEST_F(TTCKeyedServiceTest, TestEndSessionWhenInactiveIsNoOp) {
 
 // Test that state change callbacks are invoked on start and end.
 TEST_F(TTCKeyedServiceTest, TestStateChangedCallbackNotification) {
-  TTCKeyedService* service = TTCKeyedService::Get(profile_.get());
+  TTCKeyedService* service =
+      TTCKeyedServiceFactory::GetForProfile(profile_.get());
   ASSERT_TRUE(service != nullptr);
 
   std::vector<TTCServiceState> received_states;
@@ -143,7 +149,8 @@ TEST_F(TTCKeyedServiceTest, TestStateChangedCallbackNotification) {
 
 // Test that Shutdown cleans up active sessions.
 TEST_F(TTCKeyedServiceTest, TestShutdownEndsActiveSession) {
-  TTCKeyedService* service = TTCKeyedService::Get(profile_.get());
+  TTCKeyedService* service =
+      TTCKeyedServiceFactory::GetForProfile(profile_.get());
   ASSERT_TRUE(service != nullptr);
 
   service->StartSession();
@@ -156,7 +163,8 @@ TEST_F(TTCKeyedServiceTest, TestShutdownEndsActiveSession) {
 
 // Test that controller disconnect ends the session in TTCKeyedService.
 TEST_F(TTCKeyedServiceTest, TestControllerDisconnectEndsSessionInService) {
-  TTCKeyedService* service = TTCKeyedService::Get(profile_.get());
+  TTCKeyedService* service =
+      TTCKeyedServiceFactory::GetForProfile(profile_.get());
   ASSERT_NE(service, nullptr);
 
   service->StartSession();
@@ -172,7 +180,8 @@ TEST_F(TTCKeyedServiceTest, TestControllerDisconnectEndsSessionInService) {
 
 // Test that background notification ends the session in TTCKeyedService.
 TEST_F(TTCKeyedServiceTest, TestBackgroundNotificationEndsSessionInService) {
-  TTCKeyedService* service = TTCKeyedService::Get(profile_.get());
+  TTCKeyedService* service =
+      TTCKeyedServiceFactory::GetForProfile(profile_.get());
   ASSERT_NE(service, nullptr);
 
   service->StartSession();
@@ -190,7 +199,8 @@ TEST_F(TTCKeyedServiceTest, TestBackgroundNotificationEndsSessionInService) {
 
 // Test that starting an already active session asserts/crashes.
 TEST_F(TTCKeyedServiceTest, TestStartSessionCrashesIfAlreadyStarted) {
-  TTCKeyedService* service = TTCKeyedService::Get(profile_.get());
+  TTCKeyedService* service =
+      TTCKeyedServiceFactory::GetForProfile(profile_.get());
   ASSERT_TRUE(service != nullptr);
 
   service->StartSession();
@@ -199,7 +209,8 @@ TEST_F(TTCKeyedServiceTest, TestStartSessionCrashesIfAlreadyStarted) {
 
 // Test that GetWeakPtr returns a valid weak pointer to the service.
 TEST_F(TTCKeyedServiceTest, TestWeakPtrValidity) {
-  TTCKeyedService* service = TTCKeyedService::Get(profile_.get());
+  TTCKeyedService* service =
+      TTCKeyedServiceFactory::GetForProfile(profile_.get());
   ASSERT_TRUE(service != nullptr);
 
   base::WeakPtr<TTCKeyedService> weak_ptr = service->GetWeakPtr();
@@ -210,7 +221,8 @@ TEST_F(TTCKeyedServiceTest, TestWeakPtrValidity) {
 // cleared when the next session starts.
 TEST_F(TTCKeyedServiceTest,
        TestJournalSurvivesEndSessionAndClearsOnNextStartSession) {
-  TTCKeyedService* service = TTCKeyedService::Get(profile_.get());
+  TTCKeyedService* service =
+      TTCKeyedServiceFactory::GetForProfile(profile_.get());
   ASSERT_TRUE(service != nullptr);
 
   service->StartSession();

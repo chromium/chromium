@@ -23,10 +23,6 @@ class ProfileIOS;
 // lifecycle, state transitions, and coordination for a Profile.
 class TTCKeyedService : public KeyedService {
  public:
-  // Returns the `TTCKeyedService` associated with `profile`, or nullptr
-  // if disabled.
-  static TTCKeyedService* Get(ProfileIOS* profile);
-
   explicit TTCKeyedService(ProfileIOS* profile);
   TTCKeyedService(const TTCKeyedService&) = delete;
   TTCKeyedService& operator=(const TTCKeyedService&) = delete;

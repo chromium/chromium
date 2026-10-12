@@ -10,7 +10,6 @@
 #import "base/check.h"
 #import "components/ttc/app/ttc_backend.h"
 #import "components/ttc/app/ttc_mes_client.h"
-#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_keyed_service_factory.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_session_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_websocket_backend.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
@@ -18,11 +17,6 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/public/provider/chrome/browser/intelligence/ttc_api.h"
-
-// static
-TTCKeyedService* TTCKeyedService::Get(ProfileIOS* profile) {
-  return TTCKeyedServiceFactory::GetForProfile(profile);
-}
 
 TTCKeyedService::TTCKeyedService(ProfileIOS* profile) : profile_(profile) {
   CHECK(profile_);

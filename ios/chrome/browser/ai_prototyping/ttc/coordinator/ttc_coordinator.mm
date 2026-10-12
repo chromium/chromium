@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/ai_prototyping/ttc/coordinator/ttc_mediator.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_keyed_service.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_keyed_service_factory.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/ui/ttc_view_controller.h"
 #import "ios/chrome/browser/ai_prototyping/utils/ai_prototyping_constants.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -25,7 +26,8 @@
       [[TTCViewController alloc] initForFeature:AIPrototypingFeature::kTTC];
 
   TTCKeyedService* ttcService =
-      self.profile ? TTCKeyedService::Get(self.profile) : nullptr;
+      self.profile ? TTCKeyedServiceFactory::GetForProfile(self.profile)
+                   : nullptr;
   _mediator = [[TTCMediator alloc] initWithTTCService:ttcService];
 
   _mediator.consumer = _viewController;

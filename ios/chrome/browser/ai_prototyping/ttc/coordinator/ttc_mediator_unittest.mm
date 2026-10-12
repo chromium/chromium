@@ -31,7 +31,7 @@ class TTCMediatorTest : public PlatformTest {
     scoped_feature_list_.InitAndEnableFeature(kTTCEnabled);
     TTCKeyedServiceFactory::GetInstance();
     profile_ = TestProfileIOS::Builder().Build();
-    ttc_service_ = TTCKeyedService::Get(profile_.get());
+    ttc_service_ = TTCKeyedServiceFactory::GetForProfile(profile_.get());
     mediator_ = [[TTCMediator alloc] initWithTTCService:ttc_service_];
     mock_consumer_ = OCMProtocolMock(@protocol(TTCConsumer));
   }
