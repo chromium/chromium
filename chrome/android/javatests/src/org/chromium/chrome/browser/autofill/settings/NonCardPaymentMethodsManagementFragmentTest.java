@@ -26,6 +26,7 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -49,6 +50,7 @@ import org.chromium.components.autofill.payments.PaymentRail;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.url.GURL;
 
 import java.util.concurrent.TimeoutException;
@@ -249,6 +251,7 @@ public class NonCardPaymentMethodsManagementFragmentTest {
     // Test that available eWallet accounts are listed as preference items.
     @Test
     @MediumTest
+    @DisableIf.Device(DeviceFormFactor.AUTOMOTIVE) // crbug.com/571618450
     public void testEwalletAccountShown() {
         AutofillTestHelper.addEwallet(EWALLET_ACCOUNT);
         SettingsActivityInterface activity = mSettingsActivityTestRule.startSettingsActivity();
