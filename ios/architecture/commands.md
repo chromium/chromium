@@ -6,11 +6,11 @@
 
 ## Architectural Motivation
 
-In iOS Chrome, **coordinators** encapsulate self-contained UI features (often
-managing a **mediator** for model interaction and a **view controller** for view
-management). Frequently, a feature or model-layer component needs to request a
-UI change outside of its own scope—for example, presenting the Settings UI or
-opening the Reading List.
+In iOS Chrome, **[coordinators](coordinators.md)** encapsulate self-contained UI
+features (often managing a **mediator** for model interaction and a **view
+controller** for view management). Frequently, a feature or model-layer
+component needs to request a UI change outside of its own scope—for example,
+presenting the Settings UI or opening the Reading List.
 
 Because of encapsulation and decoupling:
 
@@ -105,14 +105,14 @@ their shared functional domain (`<Feature>Commands`).
     that dictate *how* or *where* the feature is presented relative to the rest
     of the UI.
 *   **Command objects for complex parameters:** When a command requires more
-    than three parameters, or has multiple variants taking different combinations
-    of model-layer parameters, bundle those parameters into a **command object**
-    (an Objective-C class named `<Verb><Feature>Command` that encapsulates the
-    payload, following the classic *Command* pattern) and pass that object as
-    the sole parameter to a single command method. This allows the parameter set
-    to evolve without updating every call site. Command object headers and
-    implementations live in the same directory as the command protocols that use
-    them:
+    than three parameters, or has multiple variants taking different
+    combinations of model-layer parameters, bundle those parameters into a
+    **command object** (an Objective-C class named `<Verb><Feature>Command` that
+    encapsulates the payload, following the classic *Command* pattern) and pass
+    that object as the sole parameter to a single command method. This allows
+    the parameter set to evolve without updating every call site. Command object
+    headers and implementations live in the same directory as the command
+    protocols that use them:
     ```objectivec
     // generate_qr_code_command.h
     @interface GenerateQRCodeCommand : NSObject
@@ -156,8 +156,8 @@ their shared functional domain (`<Feature>Commands`).
 
 ### Shared vs. Local Command Protocols
 
-*   **Shared command protocols:** Any command protocol that can be invoked across
-    features must be defined in its own header in
+*   **Shared command protocols:** Any command protocol that can be invoked
+    across features must be defined in its own header in
     `//ios/chrome/browser/shared/public/commands/` (along with any command
     object headers and `.mm` implementation files it uses). Every protocol in
     this directory must be dispatched through `CommandDispatcher`, and *only*
@@ -415,13 +415,14 @@ handler for each command protocol an object requires:
 
 *   **Child-to-parent coordinator communication:** Because coordinators
     encapsulate independent features, delegating upward from a child coordinator
-    to its parent coordinator via a custom delegate protocol is discouraged. Use
-    command dispatch instead.
+    to its parent coordinator via a custom delegate protocol is generally
+    discouraged in favor of command dispatch (see
+    [Coordinator Delegates](coordinators.md#coordinator-delegates)).
 *   **Intra-feature communication:** Within a single feature, use **mutator**
     and **consumer** protocols for communication between a view controller and
     its mediator, or a **local command protocol** for purely internal UI
     actions.
-*   **Avoid "Middle Man" forwarding:** Do not create a delegate protocol whose
+*   **Avoid forwarding protocols:** Do not create a delegate protocol whose
     only purpose is to forward a call to a command handler in the same layer.
     For example, if a custom subview has a button that triggers `-hideFoo` on
     `id<FooCommands>`, pass `fooHandler` directly to the subview rather than
@@ -443,9 +444,9 @@ handler for each command protocol an object requires:
 *   **Command Protocol:** An Objective-C protocol grouping functionally related
     UI commands (`*Commands`). Shared command protocols live in
     `//ios/chrome/browser/shared/public/commands/`.
-*   **Coordinator:** A controller-layer object that encapsulates a UI feature,
-    manages the lifecycle of its mediator(s), view controller(s), and child
-    coordinators, and configures command dispatch.
+*   **[Coordinator](coordinators.md):** A controller-layer object that
+    encapsulates a UI feature, manages the lifecycle of its mediator(s), view
+    controller(s), and child coordinators, and configures command dispatch.
 *   **Disintermediated Dispatch:** A structural pattern that connects message
     senders and receivers at runtime via a central dispatcher without coupling
     them to one another or relaying messages through an object hierarchy.

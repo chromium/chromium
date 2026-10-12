@@ -14,8 +14,10 @@ class ProfileIOS;
 
 typedef NSMutableArray<ChromeCoordinator*> MutableCoordinatorArray;
 
-// A coordinator object that manages view controllers and other coordinators.
-// Members of this class should clean up their own UI when they are deallocated.
+// Base class for coordinators that manage a UI feature scoped to a Browser.
+// Subclasses must set up their UI and dependencies in `-start` and tear them
+// down in `-stop` (never in `-dealloc`).
+// See //ios/architecture/coordinators.md for details.
 NS_SWIFT_UI_ACTOR
 @interface ChromeCoordinator : NSObject
 
@@ -26,12 +28,13 @@ NS_SWIFT_UI_ACTOR
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Child coordinators created by this object.
+// Legacy array of child coordinators. Prefer storing child coordinators in
+// explicit, typed instance variables or properties instead.
 @property(strong, nonatomic, readonly)
     MutableCoordinatorArray* childCoordinators;
 
-// The currently 'active' child coordinator, if any. By default this is the last
-// coordinator in `childCoordinators`, but subclasses need not adhere to that.
+// Legacy convenience property returning `childCoordinators.lastObject` by
+// default. Avoid using in new code.
 @property(strong, nonatomic, readonly)
     ChromeCoordinator* activeChildCoordinator;
 
@@ -44,18 +47,17 @@ NS_SWIFT_UI_ACTOR
 @property(weak, nonatomic, readonly)
     UINavigationController* baseNavigationController;
 
-// The coordinator's Browser, if one was assigned.
+// The coordinator's Browser. Must not be accessed after `-stop`.
 @property(assign, nonatomic, readonly) Browser* browser;
 
-// The profile associated with the `browser`, if one is assigned.
+// Convenience getter for `self.browser->GetProfile()`. Must not be accessed
+// after `-stop`.
 @property(assign, nonatomic, readonly) ProfileIOS* profile;
 
-// The scene state associated with `browser`, if one is assigned.
+// Convenience getter for `self.browser->GetSceneState()`.
 @property(weak, nonatomic, readonly) SceneState* sceneState;
 
-// Is profile associated with the `browser` off the record (incognito).
-// It is an error to call this method when the profile is nil (in most cases,
-// this is only the case when the coordinator stops). This will CHECK.
+// Convenience getter for `self.profile->IsOffTheRecord()`.
 - (BOOL)isOffTheRecord;
 
 // The basic lifecycle methods for coordinators are -start and -stop. These

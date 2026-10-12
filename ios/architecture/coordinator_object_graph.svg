@@ -1,0 +1,58 @@
+<svg width="600" height="380" viewBox="0 0 600 380" xmlns="http://www.w3.org/2000/svg" font-family="monospace">
+  <rect width="600" height="380" fill="#ffffff" />
+  <defs>
+    <marker id="blk-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#333333" />
+    </marker>
+    <marker id="red-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#dd0000" />
+    </marker>
+  </defs>
+
+  <!-- Model Layer Cloud -->
+  <ellipse cx="130" cy="55" rx="95" ry="38" fill="#f4cccc" stroke="#333333" stroke-width="1.5" />
+  <text x="130" y="60" text-anchor="middle" font-size="14" font-style="italic" font-weight="bold" fill="#111111">Model Layer</text>
+
+  <!-- Dispatcher Diamond -->
+  <polygon points="510,7 558,55 510,103 462,55" fill="#cfe2f3" stroke="#333333" stroke-width="1.5" />
+  <text x="510" y="59" text-anchor="middle" font-size="13" font-weight="bold" fill="#111111">Dispatcher</text>
+
+  <!-- Mediator -->
+  <rect x="40" y="140" width="180" height="54" fill="#fff2cc" stroke="#333333" stroke-width="1.5" />
+  <text x="130" y="172" text-anchor="middle" font-size="14" font-weight="bold" fill="#111111">Mediator</text>
+
+  <!-- Coordinator -->
+  <rect x="270" y="140" width="180" height="54" fill="#fff2cc" stroke="#333333" stroke-width="1.5" />
+  <text x="360" y="172" text-anchor="middle" font-size="14" font-weight="bold" fill="#111111">Coordinator</text>
+
+  <!-- View Controller -->
+  <rect x="40" y="240" width="410" height="54" fill="#cfe2f3" stroke="#333333" stroke-width="1.5" />
+  <text x="245" y="272" text-anchor="middle" font-size="14" font-weight="bold" fill="#111111">View Controller</text>
+
+  <!-- Views -->
+  <rect x="40" y="320" width="410" height="44" fill="#d9ead3" stroke="#333333" stroke-width="1.5" />
+  <text x="245" y="347" text-anchor="middle" font-size="14" font-weight="bold" fill="#111111">Views</text>
+
+  <!-- Ownership (solid black) -->
+  <line x1="270" y1="167" x2="222" y2="167" stroke="#333333" stroke-width="1.5" marker-end="url(#blk-arrow)" />
+  <line x1="360" y1="194" x2="262" y2="239" stroke="#333333" stroke-width="1.5" marker-end="url(#blk-arrow)" />
+  <line x1="245" y1="294" x2="245" y2="318" stroke="#333333" stroke-width="1.5" marker-end="url(#blk-arrow)" />
+
+  <!-- Provision (dashed black) -->
+  <path d="M 355 140 Q 340 65 227 55" fill="none" stroke="#333333" stroke-width="1.3" stroke-dasharray="5,4" marker-end="url(#blk-arrow)" />
+  <text x="300" y="92" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#333333">provides models</text>
+
+  <path d="M 365 140 Q 380 65 460 55" fill="none" stroke="#333333" stroke-width="1.3" stroke-dasharray="5,4" marker-end="url(#blk-arrow)" />
+  <text x="435" y="102" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#333333">configures / handlers</text>
+
+  <!-- Protocol interactions (heavy red) -->
+  <line x1="130" y1="95" x2="130" y2="138" stroke="#dd0000" stroke-width="2.5" marker-start="url(#red-arrow)" marker-end="url(#red-arrow)" />
+  <line x1="130" y1="194" x2="130" y2="238" stroke="#dd0000" stroke-width="2.5" marker-end="url(#red-arrow)" />
+  <text x="164" y="220" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#dd0000">consumer</text>
+
+  <path d="M 40 267 Q 5 217 38 167" fill="none" stroke="#dd0000" stroke-width="2.5" marker-end="url(#red-arrow)" />
+  <text x="22" y="200" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#dd0000">mutator</text>
+
+  <path d="M 450 267 Q 535 215 510 105" fill="none" stroke="#dd0000" stroke-width="2.5" marker-end="url(#red-arrow)" />
+  <text x="538" y="190" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#dd0000">commands</text>
+</svg>

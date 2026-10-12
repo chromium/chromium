@@ -34,18 +34,17 @@
 }
 
 - (Browser*)browser {
-  // Browser can only be nil after -stop. Coordinators should typically not
-  // execute any code after this point, and definitely should not refer to
-  // browser.
+  // `_browser` is only nullptr if the Browser was destroyed before this
+  // coordinator was stopped and deallocated. Coordinators should not execute
+  // code or access `browser` after `-stop`.
   CHECK(_browser.get(), base::NotFatalUntil::M155);
   return _browser.get();
 }
 
 - (ProfileIOS*)profile {
   ProfileIOS* profile = self.browser->GetProfile();
-  // Profile can only be nil after -stop. Coordinators should typically not
-  // execute any code after this point, and definitely should not refer to
-  // profile.
+  // `profile` should always be non-nil for a live Browser. Coordinators should
+  // not execute code or access `profile` after `-stop`.
   CHECK(profile, base::NotFatalUntil::M155);
   return profile;
 }
