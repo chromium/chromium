@@ -5,7 +5,9 @@
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 
-#include "base/compiler_specific.h"
+#include <array>
+
+#include "base/containers/span.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
@@ -24,7 +26,10 @@ class OcclusionQueryTest : public testing::Test {
 
   void TearDown() override { gl_.Destroy(); }
 
-  void DrawRect(float x, float z, float scale, float* color);
+  void DrawRect(float x,
+                float z,
+                float scale,
+                base::span<const float, 4> color);
 
   GLManager gl_;
 
@@ -33,36 +38,42 @@ class OcclusionQueryTest : public testing::Test {
   GLint color_loc_;
 };
 
-static void SetMatrix(float x, float z, float scale, float* matrix) {
+static void SetMatrix(float x,
+                      float z,
+                      float scale,
+                      base::span<float, 16> matrix) {
   matrix[0] = scale;
-  UNSAFE_TODO(matrix[1]) = 0.0f;
-  UNSAFE_TODO(matrix[2]) = 0.0f;
-  UNSAFE_TODO(matrix[3]) = 0.0f;
+  matrix[1] = 0.0f;
+  matrix[2] = 0.0f;
+  matrix[3] = 0.0f;
 
-  UNSAFE_TODO(matrix[4]) = 0.0f;
-  UNSAFE_TODO(matrix[5]) = scale;
-  UNSAFE_TODO(matrix[6]) = 0.0f;
-  UNSAFE_TODO(matrix[7]) = 0.0f;
+  matrix[4] = 0.0f;
+  matrix[5] = scale;
+  matrix[6] = 0.0f;
+  matrix[7] = 0.0f;
 
-  UNSAFE_TODO(matrix[8]) = 0.0f;
-  UNSAFE_TODO(matrix[9]) = 0.0f;
-  UNSAFE_TODO(matrix[10]) = scale;
-  UNSAFE_TODO(matrix[11]) = 0.0f;
+  matrix[8] = 0.0f;
+  matrix[9] = 0.0f;
+  matrix[10] = scale;
+  matrix[11] = 0.0f;
 
-  UNSAFE_TODO(matrix[12]) = x;
-  UNSAFE_TODO(matrix[13]) = 0.0f;
-  UNSAFE_TODO(matrix[14]) = z;
-  UNSAFE_TODO(matrix[15]) = 1.0f;
+  matrix[12] = x;
+  matrix[13] = 0.0f;
+  matrix[14] = z;
+  matrix[15] = 1.0f;
 }
 
-void OcclusionQueryTest::DrawRect(float x, float z, float scale, float* color) {
-  GLfloat matrix[16];
+void OcclusionQueryTest::DrawRect(float x,
+                                  float z,
+                                  float scale,
+                                  base::span<const float, 4> color) {
+  std::array<GLfloat, 16> matrix;
 
   SetMatrix(x, z, scale, matrix);
 
   // Set up the model matrix
-  glUniformMatrix4fv(matrix_loc_, 1, GL_FALSE, matrix);
-  glUniform4fv(color_loc_, 1, color);
+  glUniformMatrix4fv(matrix_loc_, 1, GL_FALSE, matrix.data());
+  glUniform4fv(color_loc_, 1, color.data());
 
   glDrawArrays(GL_TRIANGLES, 0, 6);
 }
@@ -111,12 +122,12 @@ TEST_F(OcclusionQueryTest, Occlusion) {
   glUseProgram(program);
 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  static float red[] = { 1.0f, 0.0f, 0.0f, 1.0f };
-  DrawRect(0, 0.0f, 0.50f, red);
+  static constexpr auto kRed = std::array{1.0f, 0.0f, 0.0f, 1.0f};
+  DrawRect(0, 0.0f, 0.50f, kRed);
 
   glBeginQueryEXT(GL_ANY_SAMPLES_PASSED_EXT, query);
-  static float blue[] = { 0.0f, 0.0f, 1.0f, 1.0f };
-  DrawRect(-0.125f, 0.1f, 0.25f, blue);
+  static constexpr auto kBlue = std::array{0.0f, 0.0f, 1.0f, 1.0f};
+  DrawRect(-0.125f, 0.1f, 0.25f, kBlue);
   glEndQueryEXT(GL_ANY_SAMPLES_PASSED_EXT);
 
   glFinish();
@@ -129,10 +140,10 @@ TEST_F(OcclusionQueryTest, Occlusion) {
   EXPECT_FALSE(query_status);
 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  DrawRect(1, 0.0f, 0.50f, red);
+  DrawRect(1, 0.0f, 0.50f, kRed);
 
   glBeginQueryEXT(GL_ANY_SAMPLES_PASSED_EXT, query);
-  DrawRect(-0.125f, 0.1f, 0.25f, blue);
+  DrawRect(-0.125f, 0.1f, 0.25f, kBlue);
   glEndQueryEXT(GL_ANY_SAMPLES_PASSED_EXT);
 
   glFinish();
