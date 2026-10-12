@@ -1999,6 +1999,7 @@ interface Document : Node
     getter onended
     getter onerror
     getter onfocus
+    getter onfocusreset
     getter onformdata
     getter onfreeze
     getter onfullscreenchange
@@ -2233,6 +2234,7 @@ interface Document : Node
     setter onended
     setter onerror
     setter onfocus
+    setter onfocusreset
     setter onformdata
     setter onfreeze
     setter onfullscreenchange

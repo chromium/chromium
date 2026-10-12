@@ -82,6 +82,7 @@ class MutationObserverAgentData
     Supplement<Agent>::Trace(visitor);
     visitor->Trace(active_mutation_observers_);
     visitor->Trace(active_slot_change_list_);
+    visitor->Trace(focus_reset_documents_);
   }
 
   void EnqueueSlotChange(HTMLSlotElement& slot) {
@@ -99,6 +100,21 @@ class MutationObserverAgentData
     active_slot_change_list_.swap(kept);
   }
 
+  void EnqueueFocusReset(Document& document) {
+    if (focus_reset_documents_.Contains(&document)) {
+      return;
+    }
+    EnsureEnqueueMicrotask();
+    focus_reset_documents_.push_back(&document);
+  }
+
+  void CleanFocusResetList(Document& document) {
+    wtf_size_t index = focus_reset_documents_.Find(&document);
+    if (index != kNotFound) {
+      focus_reset_documents_.EraseAt(index);
+    }
+  }
+
   void ActivateObserver(MutationObserver* observer) {
     EnsureEnqueueMicrotask();
     active_mutation_observers_.insert(observer);
@@ -111,7 +127,7 @@ class MutationObserverAgentData
  private:
   void EnsureEnqueueMicrotask() {
     if (active_mutation_observers_.empty() &&
-        active_slot_change_list_.empty()) {
+        active_slot_change_list_.empty() && focus_reset_documents_.empty()) {
       GetSupplementable()->event_loop()->EnqueueMicrotask(
           BindOnce(&MutationObserverAgentData::DeliverMutations,
                    WrapWeakPersistent(this)));
@@ -126,6 +142,8 @@ class MutationObserverAgentData
     active_mutation_observers_.clear();
     SlotChangeList slots;
     slots.swap(active_slot_change_list_);
+    HeapVector<Member<Document>> focus_reset_documents;
+    focus_reset_documents.swap(focus_reset_documents_);
     for (const auto& slot : slots)
       slot->ClearSlotChangeEventEnqueued();
     std::sort(observers.begin(), observers.end(),
@@ -134,12 +152,22 @@ class MutationObserverAgentData
       observer->Deliver();
     for (const auto& slot : slots)
       slot->DispatchSlotChangeEvent();
+    // https://github.com/whatwg/html/pull/13050
+    // Fire focusreset at documents whose focused element was removed, unless
+    // focus was explicitly moved in the meantime (including by the mutation
+    // observer callbacks and slotchange handlers above).
+    for (const auto& document : focus_reset_documents) {
+      document->FireFocusResetEventIfNeeded();
+    }
   }
 
  private:
   // For MutationObserver.
   MutationObserverSet active_mutation_observers_;
   SlotChangeList active_slot_change_list_;
+  // Documents with a pending focus reset (see Document::
+  // SetHasPendingFocusReset()).
+  HeapVector<Member<Document>> focus_reset_documents_;
 };
 
 class MutationObserver::V8DelegateImpl final
@@ -317,6 +345,19 @@ void MutationObserver::EnqueueSlotChange(HTMLSlotElement& slot) {
 void MutationObserver::CleanSlotChangeList(Document& document) {
   MutationObserverAgentData::From(document.GetAgent())
       .CleanSlotChangeList(document);
+}
+
+// static
+void MutationObserver::EnqueueFocusReset(Document& document) {
+  DCHECK(IsMainThread());
+  MutationObserverAgentData::From(document.GetAgent())
+      .EnqueueFocusReset(document);
+}
+
+// static
+void MutationObserver::CleanFocusResetList(Document& document) {
+  MutationObserverAgentData::From(document.GetAgent())
+      .CleanFocusResetList(document);
 }
 
 static void ActivateObserver(MutationObserver* observer) {

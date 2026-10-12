@@ -1834,6 +1834,22 @@ void FocusController::SetFocusedFrame(Frame* frame, bool notify_embedder) {
   auto* old_remote = DynamicTo<RemoteFrame>(focused_frame_.Get());
   auto* new_remote = DynamicTo<RemoteFrame>(frame);
 
+  if (RuntimeEnabledFeatures::FocusResetEventEnabled()) {
+    // https://html.spec.whatwg.org/C/#focus-update-steps
+    // "For each entry of old chain and new chain, if entry is a Document
+    // object, then set entry's has pending focus reset to false." The focus
+    // chains include the documents of all ancestor frames.
+    for (Frame* chain_frame : {focused_frame_.Get(), frame}) {
+      for (; chain_frame; chain_frame = chain_frame->Tree().Parent()) {
+        if (auto* local_frame = DynamicTo<LocalFrame>(chain_frame)) {
+          if (Document* document = local_frame->GetDocument()) {
+            document->ClearHasPendingFocusReset();
+          }
+        }
+      }
+    }
+  }
+
   focused_frame_ = frame;
 
   // For cross-origin (remote) frames, DOM focus events do not cross process
@@ -1933,8 +1949,34 @@ Frame* FocusController::FocusedOrMainFrame() const {
 }
 
 void FocusController::FrameDetached(Frame* detached_frame) {
-  if (detached_frame == focused_frame_)
-    SetFocusedFrame(nullptr);
+  if (detached_frame != focused_frame_) {
+    return;
+  }
+
+  // https://html.spec.whatwg.org/C/#node-remove-focus-fixup
+  // Removing a focused nested frame (e.g. an <iframe>) removes the focused
+  // area of its parent document (the frame owner element), which resets that
+  // document's focus to its viewport. Walk up through any ancestor frames which
+  // are being detached as part of the same removal to find the document whose
+  // focused area was removed.
+  Document* document_with_focus_reset = nullptr;
+  if (RuntimeEnabledFeatures::FocusResetEventEnabled() && IsFocused()) {
+    Frame* ancestor = detached_frame->Tree().Parent();
+    while (ancestor && !ancestor->IsAttached()) {
+      ancestor = ancestor->Tree().Parent();
+    }
+    if (auto* local_ancestor = DynamicTo<LocalFrame>(ancestor)) {
+      document_with_focus_reset = local_ancestor->GetDocument();
+    }
+  }
+
+  SetFocusedFrame(nullptr);
+
+  // SetFocusedFrame() clears any pending focus reset for the documents in the
+  // old focus chain, so this needs to happen afterwards.
+  if (document_with_focus_reset) {
+    document_with_focus_reset->SetHasPendingFocusReset();
+  }
 }
 
 HTMLFrameOwnerElement* FocusController::FocusedFrameOwnerElement(

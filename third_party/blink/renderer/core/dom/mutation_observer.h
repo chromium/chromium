@@ -102,6 +102,10 @@ class CORE_EXPORT MutationObserver final
   static void DeliverMutations();
   static void EnqueueSlotChange(HTMLSlotElement&);
   static void CleanSlotChangeList(Document&);
+  // Queues a "focusreset" check for the document in the mutation observer
+  // microtask, after slotchange events.
+  static void EnqueueFocusReset(Document&);
+  static void CleanFocusResetList(Document&);
 
   MutationObserver(ExecutionContext*, Delegate*);
   ~MutationObserver() override;

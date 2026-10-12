@@ -442,6 +442,7 @@ class CORE_EXPORT Document : public ContainerNode,
   DEFINE_ATTRIBUTE_EVENT_LISTENER(beforecopy, kBeforecopy)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(beforecut, kBeforecut)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(beforepaste, kBeforepaste)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(focusreset, kFocusreset)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(freeze, kFreeze)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(pointerlockchange, kPointerlockchange)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(pointerlockerror, kPointerlockerror)
@@ -1157,6 +1158,18 @@ class CORE_EXPORT Document : public ContainerNode,
   Element* FocusedElement() const { return focused_element_.Get(); }
   const FocusOptions* GetFocusOptions() const { return focus_options_.Get(); }
   void ClearFocusedElementIfNeeded();
+  // https://html.spec.whatwg.org/C/#has-pending-focus-reset
+  // Set when the focused element is removed from the document (synchronous
+  // focus fixup) while the document has focus, which also queues a mutation
+  // observer microtask to fire "focusreset". Cleared when focus is explicitly
+  // moved, or when the "focusreset" event is fired.
+  void SetHasPendingFocusReset();
+  void ClearHasPendingFocusReset() { has_pending_focus_reset_ = false; }
+  bool HasPendingFocusReset() const { return has_pending_focus_reset_; }
+  // Called from the mutation observer microtask. Fires "focusreset" at this
+  // document if its focused area is the viewport and a focus reset is still
+  // pending.
+  void FireFocusResetEventIfNeeded();
   void UpdateFocusgroupLastFocused(Element& focused_element);
   UserActionElementSet& UserActionElements() { return user_action_elements_; }
   const UserActionElementSet& UserActionElements() const {
@@ -2847,6 +2860,8 @@ class CORE_EXPORT Document : public ContainerNode,
   bool autofocus_processed_flag_ = false;
   mojom::blink::FocusType last_focus_type_;
   bool had_keyboard_event_ = false;
+  // https://html.spec.whatwg.org/C/#has-pending-focus-reset
+  bool has_pending_focus_reset_ = false;
   HeapTaskRunnerTimer<Document> clear_focused_element_timer_;
   // https://html.spec.whatwg.org/C/#autofocus-candidates
   // We implement this as a Vector because its maximum size is typically 1.

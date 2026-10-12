@@ -3443,6 +3443,7 @@ void Document::Shutdown() {
     GetPage()->GetChromeClient().AttachRootLayer(nullptr, GetFrame());
 
   MutationObserver::CleanSlotChangeList(*this);
+  MutationObserver::CleanFocusResetList(*this);
 
   hover_element_ = nullptr;
   active_element_ = nullptr;
@@ -5826,11 +5827,24 @@ void Document::RemoveFocusedElementOfSubtree(Node& node,
       // up with the new node's position in the DOM.
       SetShouldUpdateSelectionAfterLayout(true);
     } else {
+      // https://html.spec.whatwg.org/C/#node-remove-focus-fixup
+      // "If the has focus steps given node's node document return true, then
+      // set document's has pending focus reset to true." This has to be
+      // computed before clearing the focused element.
+      const bool set_pending_focus_reset =
+          RuntimeEnabledFeatures::FocusResetEventEnabled() && hasFocus();
       BlurEventBehavior blur_event_behavior =
           RuntimeEnabledFeatures::OmitBlurEventOnElementRemovalEnabled()
               ? BlurEventBehavior::kDropWhenRemoving
               : BlurEventBehavior::kFire;
       ClearFocusedElement(blur_event_behavior);
+      // SetFocusedElement() clears the flag, so set it afterwards. If a
+      // (legacy) blur handler moved focus elsewhere, the focused area is no
+      // longer the viewport, which is equivalent to the spec's "focus update
+      // steps" having cleared the flag.
+      if (set_pending_focus_reset && !focused_element_) {
+        SetHasPendingFocusReset();
+      }
     }
   }
 }
@@ -5919,6 +5933,12 @@ bool Document::SetFocusedElement(Element* new_focused_element,
     if (NodeChildRemovalTracker::IsBeingRemoved(*new_focused_element))
       return true;
   }
+
+  // https://html.spec.whatwg.org/C/#focus-update-steps
+  // "For each entry of old chain and new chain, if entry is a Document object,
+  // then set entry's has pending focus reset to false." Focus is being moved
+  // explicitly, so there is no need to report an earlier focus reset.
+  ClearHasPendingFocusReset();
 
   if (focused_element_ == new_focused_element) {
     // Even though `focused_element_` hasn't changed, `focus_options_` may have,
@@ -6137,6 +6157,35 @@ void Document::ClearFocusedElement(BlurEventBehavior blur_event_behavior) {
                      mojom::blink::FocusType::kNone, nullptr);
   params.blur_event_behavior = blur_event_behavior;
   SetFocusedElement(nullptr, params);
+}
+
+void Document::SetHasPendingFocusReset() {
+  DCHECK(RuntimeEnabledFeatures::FocusResetEventEnabled());
+  has_pending_focus_reset_ = true;
+  // Like slotchange, focusreset is fired from the mutation observer microtask,
+  // so it's dispatched before the next rendering update and doesn't depend on
+  // the document being rendered.
+  MutationObserver::EnqueueFocusReset(*this);
+}
+
+void Document::FireFocusResetEventIfNeeded() {
+  DCHECK(RuntimeEnabledFeatures::FocusResetEventEnabled());
+  if (!std::exchange(has_pending_focus_reset_, false) || !IsActive()) {
+    return;
+  }
+  // https://github.com/whatwg/html/pull/13050
+  // Fire focusreset only if the focused area of the document is still its
+  // viewport. The focused area is the viewport if there's no focused element
+  // and focus isn't inside a nested frame (in which case the focused area
+  // would be the frame owner element).
+  if (focused_element_) {
+    return;
+  }
+  if (GetFrame() && GetPage() &&
+      GetPage()->GetFocusController().FocusedFrameOwnerElement(*GetFrame())) {
+    return;
+  }
+  DispatchEvent(*Event::Create(event_type_names::kFocusreset));
 }
 
 void Document::UpdateFocusgroupLastFocused(Element& focused_element) {

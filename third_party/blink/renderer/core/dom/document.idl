@@ -214,6 +214,8 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     attribute EventHandler onbeforecopy;
     attribute EventHandler onbeforecut;
     attribute EventHandler onbeforepaste;
+    // https://github.com/whatwg/html/pull/13050
+    [RuntimeEnabled=FocusResetEvent] attribute EventHandler onfocusreset;
     attribute EventHandler onfreeze;
     [Measure] attribute EventHandler onprerenderingchange;
     attribute EventHandler onresume;

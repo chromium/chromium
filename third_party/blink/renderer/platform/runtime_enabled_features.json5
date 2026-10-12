@@ -3362,6 +3362,13 @@
       status: "experimental",
     },
     {
+      // Fires a "focusreset" event at a Document during "update the rendering"
+      // when its focused element was removed and focus was not explicitly
+      // moved since. https://github.com/whatwg/html/pull/13050
+      name: "FocusResetEvent",
+      status: "experimental",
+    },
+    {
       // Respects explicit outline colors for focus rings in dark mode and uses
       // an off-white default. https://issues.chromium.org/issues/480978106
       name: "FocusRingRespectExplicitOutlineColorInDarkMode",

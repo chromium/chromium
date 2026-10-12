@@ -124,6 +124,7 @@
     "focus",
     "focusin",
     "focusout",
+    "focusreset",
     "formdata",
     "frameratechange",
     "freeze",
