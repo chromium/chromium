@@ -2,14 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_EMAIL_VERIFIER_EMAIL_VERIFICATION_POPUP_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_EMAIL_VERIFIER_EMAIL_VERIFICATION_POPUP_VIEW_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_EMAIL_VERIFIER_EMAIL_VERIFICATION_POPUP_VIEW_IMPL_H_
+#define CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_EMAIL_VERIFIER_EMAIL_VERIFICATION_POPUP_VIEW_IMPL_H_
 
 #include <memory>
+#include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "chrome/browser/ui/autofill/email_verifier/email_verification_popup_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
 #include "components/favicon_base/favicon_types.h"
 #include "net/base/schemeful_site.h"
@@ -32,11 +35,10 @@ namespace autofill {
 
 class EmailVerificationPopupController;
 
-// A popup that asks the user for permission to automatically verify their
-// email address with an identity provider.
-// Similar to PasswordCrossDomainConfirmationPopupViewViews.
-class EmailVerificationPopupView : public PopupBaseView {
-  METADATA_HEADER(EmailVerificationPopupView, PopupBaseView)
+// The Views implementation of `EmailVerificationPopupView`.
+class EmailVerificationPopupViewImpl : public EmailVerificationPopupView,
+                                       public PopupBaseView {
+  METADATA_HEADER(EmailVerificationPopupViewImpl, PopupBaseView)
  public:
   enum class PopupViewId {
     kNone = 0,
@@ -44,43 +46,41 @@ class EmailVerificationPopupView : public PopupBaseView {
     kCancelButton,
   };
 
-  static base::WeakPtr<EmailVerificationPopupView> Show(
+  static base::WeakPtr<EmailVerificationPopupViewImpl> Show(
       base::WeakPtr<EmailVerificationPopupController> controller,
       views::Widget* parent_widget,
       const net::SchemefulSite& issuer_site,
       const std::u16string& email,
       base::OnceCallback<void(bool)> callback);
 
-  EmailVerificationPopupView(
+  EmailVerificationPopupViewImpl(
       base::WeakPtr<EmailVerificationPopupController> controller,
       views::Widget* parent_widget,
       const net::SchemefulSite& issuer_site,
       const std::u16string& email,
       base::OnceCallback<void(bool)> callback);
-  EmailVerificationPopupView(const EmailVerificationPopupView&) = delete;
-  EmailVerificationPopupView& operator=(const EmailVerificationPopupView&) =
+  EmailVerificationPopupViewImpl(const EmailVerificationPopupViewImpl&) =
       delete;
+  EmailVerificationPopupViewImpl& operator=(
+      const EmailVerificationPopupViewImpl&) = delete;
 
-  ~EmailVerificationPopupView() override;
+  ~EmailVerificationPopupViewImpl() override;
+
+  // EmailVerificationPopupView:
+  void Hide() override;
+  void ShowLoadingState() override;
+  bool OverlapsWithPictureInPictureWindow() const override;
 
   // PopupBaseView:
-  virtual void Hide();
-  virtual void Show();
-  virtual bool OverlapsWithPictureInPictureWindow() const;
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
-
-  virtual void ShowLoadingState();
 
   views::Throbber* throbber_for_testing();
   views::MdTextButton* confirm_button_for_testing() { return confirm_button_; }
   views::MdTextButton* cancel_button_for_testing() { return cancel_button_; }
 
-  base::WeakPtr<EmailVerificationPopupView> GetWeakPtr() {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
-
  private:
+  void Show();
   void OnConfirm(const ui::Event& event);
   void OnCancel(const ui::Event& event);
   void OnFaviconLoaded(const favicon_base::LargeIconResult& result);
@@ -91,9 +91,9 @@ class EmailVerificationPopupView : public PopupBaseView {
   raw_ptr<views::MdTextButtonWithSpinner> confirm_button_ = nullptr;
   raw_ptr<views::MdTextButton> cancel_button_ = nullptr;
   base::CancelableTaskTracker favicon_task_tracker_;
-  base::WeakPtrFactory<EmailVerificationPopupView> weak_ptr_factory_{this};
+  base::WeakPtrFactory<EmailVerificationPopupViewImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_EMAIL_VERIFIER_EMAIL_VERIFICATION_POPUP_VIEW_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_EMAIL_VERIFIER_EMAIL_VERIFICATION_POPUP_VIEW_IMPL_H_

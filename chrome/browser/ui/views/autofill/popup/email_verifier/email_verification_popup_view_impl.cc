@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/autofill/popup/email_verifier/email_verification_popup_view.h"
+#include "chrome/browser/ui/views/autofill/popup/email_verifier/email_verification_popup_view_impl.h"
 
 #include <memory>
 #include <utility>
@@ -54,7 +54,7 @@ constexpr int kDesiredIconSize = 20;
 constexpr int kEmailVerificationMaxWidth = 400;
 }  // namespace
 
-EmailVerificationPopupView::EmailVerificationPopupView(
+EmailVerificationPopupViewImpl::EmailVerificationPopupViewImpl(
     base::WeakPtr<EmailVerificationPopupController> controller,
     views::Widget* parent_widget,
     const net::SchemefulSite& issuer_site,
@@ -109,7 +109,7 @@ EmailVerificationPopupView::EmailVerificationPopupView(
           /*min_source_size_in_pixel=*/kMinIconSize,
           /*size_in_pixel_to_resize_to=*/kDesiredIconSize,
           favicon::LargeIconService::NoBigEnoughIconBehavior::kReturnBitmap,
-          base::BindOnce(&EmailVerificationPopupView::OnFaviconLoaded,
+          base::BindOnce(&EmailVerificationPopupViewImpl::OnFaviconLoaded,
                          weak_ptr_factory_.GetWeakPtr()),
           &favicon_task_tracker_);
     }
@@ -159,8 +159,9 @@ EmailVerificationPopupView::EmailVerificationPopupView(
           .SetText(l10n_util::GetStringUTF16(
               IDS_AUTOFILL_EMAIL_VERIFIER_PROMPT_NOT_NOW))
           .SetStyle(ui::ButtonStyle::kTonal)
-          .SetCallback(base::BindRepeating(
-              &EmailVerificationPopupView::OnCancel, base::Unretained(this)))
+          .SetCallback(
+              base::BindRepeating(&EmailVerificationPopupViewImpl::OnCancel,
+                                  base::Unretained(this)))
           .SetID(static_cast<int>(PopupViewId::kCancelButton))
           .Build());
 
@@ -169,15 +170,16 @@ EmailVerificationPopupView::EmailVerificationPopupView(
           .SetText(l10n_util::GetStringUTF16(
               IDS_AUTOFILL_EMAIL_VERIFIER_PROMPT_VERIFY))
           .SetStyle(ui::ButtonStyle::kProminent)
-          .SetCallback(base::BindRepeating(
-              &EmailVerificationPopupView::OnConfirm, base::Unretained(this)))
+          .SetCallback(
+              base::BindRepeating(&EmailVerificationPopupViewImpl::OnConfirm,
+                                  base::Unretained(this)))
           .SetID(static_cast<int>(PopupViewId::kConfirmButton))
           .Build());
 }
 
-EmailVerificationPopupView::~EmailVerificationPopupView() = default;
+EmailVerificationPopupViewImpl::~EmailVerificationPopupViewImpl() = default;
 
-void EmailVerificationPopupView::ShowLoadingState() {
+void EmailVerificationPopupViewImpl::ShowLoadingState() {
   if (confirm_button_) {
     // Per UX, the button keeps its prominent color while loading instead of
     // greying out, so it is not disabled via SetEnabled(), which would also
@@ -208,27 +210,28 @@ void EmailVerificationPopupView::ShowLoadingState() {
   }
 }
 
-views::Throbber* EmailVerificationPopupView::throbber_for_testing() {
+views::Throbber* EmailVerificationPopupViewImpl::throbber_for_testing() {
   return confirm_button_ && confirm_button_->GetSpinnerVisible()
-             ? confirm_button_->GetSpinnerForTesting()
+             ? confirm_button_->GetSpinnerForTesting()  // IN-TEST
              : nullptr;
 }
 
-void EmailVerificationPopupView::Hide() {
+void EmailVerificationPopupViewImpl::Hide() {
   weak_ptr_factory_.InvalidateWeakPtrs();
   DoHide();
 }
 
-void EmailVerificationPopupView::Show() {
+void EmailVerificationPopupViewImpl::Show() {
   DoShow();
   input_protector_.VisibilityChanged(true);
 }
 
-bool EmailVerificationPopupView::OverlapsWithPictureInPictureWindow() const {
+bool EmailVerificationPopupViewImpl::OverlapsWithPictureInPictureWindow()
+    const {
   return BoundsOverlapWithPictureInPictureWindow(GetBoundsInScreen());
 }
 
-gfx::Size EmailVerificationPopupView::CalculatePreferredSize(
+gfx::Size EmailVerificationPopupViewImpl::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   int width =
       std::min(views::View::CalculatePreferredSize(available_size).width(),
@@ -237,7 +240,7 @@ gfx::Size EmailVerificationPopupView::CalculatePreferredSize(
                    GetLayoutManager()->GetPreferredHeightForWidth(this, width));
 }
 
-void EmailVerificationPopupView::OnConfirm(const ui::Event& event) {
+void EmailVerificationPopupViewImpl::OnConfirm(const ui::Event& event) {
   if (input_protector_.IsPossiblyUnintendedInteraction(
           event, /*allow_key_events=*/false)) {
     return;
@@ -247,13 +250,13 @@ void EmailVerificationPopupView::OnConfirm(const ui::Event& event) {
   }
 }
 
-void EmailVerificationPopupView::OnCancel(const ui::Event& event) {
+void EmailVerificationPopupViewImpl::OnCancel(const ui::Event& event) {
   if (callback_) {
     std::move(callback_).Run(false);
   }
 }
 
-void EmailVerificationPopupView::OnFaviconLoaded(
+void EmailVerificationPopupViewImpl::OnFaviconLoaded(
     const favicon_base::LargeIconResult& result) {
   if (result.bitmap.is_valid() && icon_view_) {
     gfx::Image image =
@@ -262,7 +265,7 @@ void EmailVerificationPopupView::OnFaviconLoaded(
   }
 }
 
-BEGIN_METADATA(EmailVerificationPopupView)
+BEGIN_METADATA(EmailVerificationPopupViewImpl)
 END_METADATA
 
 // static
@@ -272,10 +275,22 @@ base::WeakPtr<EmailVerificationPopupView> EmailVerificationPopupView::Show(
     const net::SchemefulSite& issuer_site,
     const std::u16string& email,
     base::OnceCallback<void(bool)> callback) {
-  auto* view = new EmailVerificationPopupView(
+  return EmailVerificationPopupViewImpl::Show(
+      controller, parent_widget, issuer_site, email, std::move(callback));
+}
+
+// static
+base::WeakPtr<EmailVerificationPopupViewImpl>
+EmailVerificationPopupViewImpl::Show(
+    base::WeakPtr<EmailVerificationPopupController> controller,
+    views::Widget* parent_widget,
+    const net::SchemefulSite& issuer_site,
+    const std::u16string& email,
+    base::OnceCallback<void(bool)> callback) {
+  auto* view = new EmailVerificationPopupViewImpl(
       controller, parent_widget, issuer_site, email, std::move(callback));
   view->Show();
-  return view->GetWeakPtr();
+  return view->weak_ptr_factory_.GetWeakPtr();
 }
 
 }  // namespace autofill

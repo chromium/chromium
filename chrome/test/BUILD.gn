@@ -3470,6 +3470,7 @@ test("unit_tests") {
       "//chrome/browser/task_manager:unit_tests",
       "//chrome/browser/themes:unit_tests",
       "//chrome/browser/ui/actions:unit_tests",
+      "//chrome/browser/ui/autofill/email_verifier:unit_tests",
       "//chrome/browser/ui/color:unit_tests",
       "//chrome/browser/ui/commerce:unit_tests",
       "//chrome/browser/ui/content_settings:unit_tests",

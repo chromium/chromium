@@ -8,7 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/ui/views/autofill/popup/email_verifier/email_verification_popup_view.h"
+#include "chrome/browser/ui/autofill/email_verifier/email_verification_popup_view.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/views/widget/widget.h"
 

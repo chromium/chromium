@@ -8,6 +8,7 @@ source_set("email_verifier") {
   public = [
     "email_verification_controller.h",
     "email_verification_popup_controller.h",
+    "email_verification_popup_view.h",
     "email_verified_toast_menu_model.h",
   ]
 
@@ -44,5 +45,48 @@ source_set("impl") {
     "//components/tabs:public",
     "//components/vector_icons",
     "//ui/views",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "mock_email_verification_popup_view.cc",
+    "mock_email_verification_popup_view.h",
+  ]
+
+  public_deps = [
+    ":email_verifier",
+    "//base",
+    "//testing/gmock",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "email_verification_controller_test_api.h",
+    "email_verification_controller_unittest.cc",
+  ]
+
+  deps = [
+    ":email_verifier",
+    ":impl",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
+    "//components/autofill/core/browser",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//net",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/blink/public:blink_headers",
+    "//ui/gfx/geometry",
+    "//url",
   ]
 }
