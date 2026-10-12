@@ -5,18 +5,14 @@
 // This file handles messages from the client, usually passing them on
 // to the browser via mojo.
 
-import {enumFromClient} from '../../enum_conversions.js';
 import type {WebClientHandlerInterface} from '../../glic.mojom-webui.js';
 import type {                            //
-             ClientErrorDialogType,      //
              ConversationInfo,           //
              CounterAbuseVerdict,        //
-             MicrophoneStatus,           //
              OpenPinnedTabPickerOptions, //
              PinTabsOptions,             //
              TabContextOptions,          //
              UnpinTabsOptions,           //
-             WebClientMode,              //
              ZeroStateSuggestions,       //
 } from '../../glic_api/glic_api.js';
 import {replaceProperties} from '../conversions.js';
@@ -38,16 +34,13 @@ import {                             //
   idFromClient,                      //
   idToClient,                        //
   imageBytesResultToClient,          //
-  microphoneStatusToMojo,            //
   openPinnedTabPickerOptionsToMojo,  //
   optionalFromClient,                //
   pinTabsOptionsToMojo,              //
   tabContextOptionsFromClient,       //
   tabContextToClient,                //
-  timeDeltaFromClient,               //
   unpinTabsOptionsToMojo,            //
   urlToClient,                       //
-  webClientModeToMojo,               //
 } from './conversions.js';
 import type {GlicApiHost} from './glic_api_host.js';
 
@@ -186,27 +179,9 @@ export class HostMessageHandler implements PostMessageHandler<WebClientHost> {
     this.handler.activateTab(idFromClient(request.tabId));
   }
 
-  async resizeWindow(request: {
-    size: {width: number, height: number},
-    options?: {durationMs?: number},
-  }) {
-    return await this.handler.resizeWidget(
-        request.size, timeDeltaFromClient(request.options?.durationMs));
-  }
-
-  enableDragResize(request: {enabled: boolean}) {
-    return this.handler.enableDragResize(request.enabled);
-  }
-
   deleteCapturedRegion(request: {tabId: string, regionId: string}) {
     this.handler.deleteCapturedRegion(
         idFromClient(request.tabId), request.regionId);
-  }
-
-  setMinimumWidgetSize(request: {
-    size: {width: number, height: number},
-  }) {
-    return this.handler.setMinimumPanelSize(request.size);
   }
 
   async getUserProfileInfo(_request: void, extras: ResponseExtras) {
@@ -285,30 +260,5 @@ export class HostMessageHandler implements PostMessageHandler<WebClientHost> {
   }): Promise<{success: boolean}> {
     return this.handler.subscribeToPageMetadata(
         idFromClient(request.tabId), request.names);
-  }
-
-  onModeChange(request: {newMode: WebClientMode}): void {
-    this.handler.onModeChange(webClientModeToMojo(request.newMode));
-  }
-
-  onMicrophoneStatusChange(request: {status: MicrophoneStatus}): void {
-    this.handler.onMicrophoneStatusChange(
-        microphoneStatusToMojo(request.status));
-  }
-
-  setOnboardingCompleted(): void {
-    this.handler.setOnboardingCompleted();
-  }
-
-  setErrorDialogState(request: {
-    shownDialogType?: ClientErrorDialogType,
-  }): void {
-    if (request.shownDialogType !== undefined) {
-      this.handler.clientErrorDialogStateChanged(
-          enumFromClient(request.shownDialogType));
-    }
-    // TODO(b/506142920): Avoid showing error panels to the user if it is
-    // presented while the panel is backgrounded. Automatically reload the
-    // page instead.
   }
 }

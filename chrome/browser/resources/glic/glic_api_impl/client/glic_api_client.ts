@@ -110,6 +110,7 @@ import {                              //
   idFromClient,                       //
   idToClient,                         //
   invokeOptionsToClient,              //
+  microphoneStatusToMojo,             //
   pageMetadataToClient,               //
   panelOpeningDataToClient,           //
   panelStateToClient,                 //
@@ -822,27 +823,28 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
   }
 
   onModeChange?(newMode: WebClientMode): void {
-    this.clientRemote.requestNoResponse('onModeChange', {newMode});
+    this.handler.onModeChange(webClientModeToMojo(newMode));
   }
 
   onMicrophoneStatusChange?(status: MicrophoneStatus): void {
-    this.clientRemote.requestNoResponse('onMicrophoneStatusChange', {status});
+    this.handler.onMicrophoneStatusChange(microphoneStatusToMojo(status));
   }
 
   setErrorDialogState?(shownDialogType?: ClientErrorDialogType): void {
-    this.clientRemote.requestNoResponse(
-        'setErrorDialogState', {shownDialogType});
+    this.handler.clientErrorDialogStateChanged(enumFromClient(shownDialogType));
+    // TODO(b/506142920): Avoid showing error panels to the user if it is
+    // presented while the panel is backgrounded. Automatically reload the
+    // page instead.
   }
 
-  async resizeWindow(
-      width: number, height: number,
-      options?: ResizeWindowOptions): Promise<void> {
-    return this.clientRemote.requestWithResponse(
-        'resizeWindow', {size: {width, height}, options});
+  resizeWindow(width: number, height: number, options?: ResizeWindowOptions):
+      Promise<void> {
+    return this.handler.resizeWidget(
+        {width, height}, timeDeltaFromClient(options?.durationMs));
   }
 
-  enableDragResize?(enabled: boolean): Promise<void> {
-    return this.clientRemote.requestWithResponse('enableDragResize', {enabled});
+  async enableDragResize?(enabled: boolean): Promise<void> {
+    this.handler.enableDragResize(enabled);
   }
 
   captureRegion?
@@ -860,9 +862,8 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
         'deleteCapturedRegion', {tabId, regionId});
   }
 
-  setMinimumWidgetSize(width: number, height: number): Promise<void> {
-    return this.clientRemote.requestWithResponse(
-        'setMinimumWidgetSize', {size: {width, height}});
+  async setMinimumWidgetSize(width: number, height: number): Promise<void> {
+    this.handler.setMinimumPanelSize({width, height});
   }
 
   getPanelState?(): ObservableValueImpl<PanelState> {
@@ -1159,8 +1160,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
 
 
   setOnboardingCompleted?(): void {
-    return this.clientRemote.requestNoResponse(
-        'setOnboardingCompleted', undefined);
+    this.handler.setOnboardingCompleted();
   }
 
   isOnboardingCompleted?(): ObservableValue<boolean> {

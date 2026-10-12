@@ -6,7 +6,6 @@ import type {                            //
              AdditionalContext,          //
              AdditionalContextPart,      //
              AnnotatedPageData,          //
-             ClientErrorDialogType,      //
              ConversationInfo,           //
              CounterAbuseVerdict,        //
              ErrorReasonTypes,           //
@@ -14,7 +13,6 @@ import type {                            //
              FocusedTabDataHasFocus,     //
              FocusedTabDataHasNoFocus,   //
              InvokeOptions,              //
-             MicrophoneStatus,           //
              OpenPinnedTabPickerOptions, //
              PageMetadata,               //
              PdfDocumentData,            //
@@ -25,7 +23,6 @@ import type {                            //
              TabData,                    //
              UnpinTabsOptions,           //
              UserProfileInfo,            //
-             WebClientMode,              //
              ZeroStateSuggestions,       //
 } from '../glic_api/glic_api.js';
 
@@ -128,36 +125,6 @@ export const WebClientHostDef = defInterface({
       histogram: {id: 76},
     },
     {
-      name: 'resizeWindow',
-      request: defMessage<{
-        size: {
-          width: number,
-          height: number,
-        },
-        options?: {
-          durationMs?: number,
-        },
-      }>(),
-      histogram: {id: 17},
-    },
-    {
-      name: 'enableDragResize',
-      request: defMessage<{
-        enabled: boolean,
-      }>(),
-      histogram: {id: 18},
-    },
-    {
-      name: 'setMinimumWidgetSize',
-      request: defMessage<{
-        size: {
-          width: number,
-          height: number,
-        },
-      }>(),
-      histogram: {id: 20},
-    },
-    {
       name: 'getUserProfileInfo',
       response: defMessage<{
         profileInfo?: UserProfileInfoPrivate,
@@ -239,31 +206,6 @@ export const WebClientHostDef = defInterface({
       histogram: {id: 63},
     },
     {
-      name: 'onModeChange',
-      request: defMessage<{
-        newMode: WebClientMode,
-      }>(),
-      histogram: {id: 70},
-    },
-    {
-      name: 'setOnboardingCompleted',
-      histogram: {id: 80},
-    },
-    {
-      name: 'onMicrophoneStatusChange',
-      request: defMessage<{
-        status: MicrophoneStatus,
-      }>(),
-      histogram: {id: 90},
-    },
-
-    {
-      name: 'setErrorDialogState',
-      request: defMessage<{
-        shownDialogType?: ClientErrorDialogType,
-      }>(),
-    },
-    {
       name: 'reportClientTransientError',
       request: defMessage<{
         abslStatus: number,
@@ -323,10 +265,10 @@ export const RECORDED_REQUEST_IDS = {
   // Do not reuse deleted request ID: 14,
   // Do not reuse deleted request ID: 15,
   // Do not reuse deleted request ID: 16,
-  ResizeWindow: 17,
-  EnableDragResize: 18,
+  // Do not reuse deleted request ID: 17,
+  // Do not reuse deleted request ID: 18,
   // Do not reuse deleted request ID: 19,
-  SetMinimumWidgetSize: 20,
+  // Do not reuse deleted request ID: 20,
   // Do not reuse deleted request ID: 21,
   // Do not reuse deleted request ID: 22,
   // Do not reuse deleted request ID: 23,
@@ -376,7 +318,7 @@ export const RECORDED_REQUEST_IDS = {
   // Do not reuse deleted request ID: 67,
   // Do not reuse deleted request ID: 68,
   // Do not reuse deleted request ID: 69,
-  OnModeChange: 70,
+  // Do not reuse deleted request ID: 70,
   // Do not reuse deleted request ID: 71,
   // Do not reuse deleted request ID: 72,
   // Do not reuse deleted request ID: 73,
@@ -385,7 +327,7 @@ export const RECORDED_REQUEST_IDS = {
   ActivateTab: 76,
   // Do not reuse deleted request ID: 77,
   // Do not reuse deleted request ID: 78,
-  SetOnboardingCompleted: 80,
+  // Do not reuse deleted request ID: 80,
   // Do not reuse deleted request ID: 81,
   // Do not reuse deleted request ID: 82,
   // Do not reuse deleted request ID: 83,
@@ -395,7 +337,7 @@ export const RECORDED_REQUEST_IDS = {
   // Do not reuse deleted request ID: 87,
   // Do not reuse deleted request ID: 88,
   // Do not reuse deleted request ID: 89,
-  OnMicrophoneStatusChange: 90,
+  // Do not reuse deleted request ID: 90,
   // Do not reuse deleted request ID: 91,
   DeleteCapturedRegion: 92,
   // Do not reuse deleted request ID: 93,

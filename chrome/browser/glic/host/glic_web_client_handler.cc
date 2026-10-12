@@ -811,17 +811,20 @@ class GlicWebClientHandler
   }
 
   void OnModeChange(glic::mojom::WebClientMode new_mode) override {
+    LogApiRequest(GlicHostApiRequestId::kOnModeChange);
     glic_service_->metrics()->SetWebClientMode(new_mode);
     host().OnInteractionModeChange(new_mode);
   }
 
   void OnMicrophoneStatusChange(glic::mojom::MicrophoneStatus status) override {
+    LogApiRequest(GlicHostApiRequestId::kOnMicrophoneStatusChange);
     host().OnMicrophoneStatusChanged(status);
   }
 
   void ResizeWidget(const gfx::Size& size,
                     base::TimeDelta duration,
                     ResizeWidgetCallback callback) override {
+    LogApiRequest(GlicHostApiRequestId::kResizeWindow);
     host().ResizePanel(size, duration, std::move(callback));
   }
 
@@ -1115,10 +1118,12 @@ class GlicWebClientHandler
   }
 
   void SetMinimumPanelSize(const gfx::Size& size) override {
+    LogApiRequest(GlicHostApiRequestId::kSetMinimumWidgetSize);
     host().SetMinimumWidgetSize(size);
   }
 
   void EnableDragResize(bool enabled) override {
+    LogApiRequest(GlicHostApiRequestId::kEnableDragResize);
     host().SetDragResizeEnabled(enabled);
   }
 
@@ -1518,6 +1523,7 @@ class GlicWebClientHandler
   }
 
   void SetOnboardingCompleted() override {
+    LogApiRequest(GlicHostApiRequestId::kSetOnboardingCompleted);
     glic_service_->metrics()->OnTrustFirstOnboardingAccept();
     glic_service_->enabling().SetCompletedFre(prefs::FreStatus::kCompleted);
 
