@@ -1471,7 +1471,9 @@ class AutocompleteMediator
         mShouldPreventOmniboxAutocomplete = false;
 
         if (siteSearchData != null) {
-            if (!isPreview) {
+            if (isPreview) {
+                stopAutocomplete(AutocompleteStopReason.INTERACTION);
+            } else {
                 onInputChanged();
             }
         } else {

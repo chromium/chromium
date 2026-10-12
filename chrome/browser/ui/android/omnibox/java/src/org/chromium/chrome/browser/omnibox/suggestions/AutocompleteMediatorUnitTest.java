@@ -2652,6 +2652,7 @@ public class AutocompleteMediatorUnitTest {
         verify(mAutocompleteDelegate).setOmniboxEditingText("");
 
         verify(mAutocompleteController, never()).start(any(), any(), anyInt(), anyBoolean());
+        verify(mAutocompleteController).stop(AutocompleteStopReason.INTERACTION);
 
         // Exit preview
         clearInvocations(mAutocompleteController);
