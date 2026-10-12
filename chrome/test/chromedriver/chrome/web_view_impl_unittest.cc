@@ -280,6 +280,7 @@ class SetFileInputFilesTest : public testing::Test {
     base::DictValue version;
     version.Set("Browser", "Chrome/155.0.8000.0");
     version.Set("WebKit-Version", "537.36 (@123456)");
+    version.Set("User-Agent", "test user agent");
     if (file_path_style) {
       version.Set("File-Path-Style", *file_path_style);
     }

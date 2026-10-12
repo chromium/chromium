@@ -39,6 +39,7 @@ struct BrowserInfo {
   std::string android_package;
   std::string browser_name;
   std::string browser_version;
+  std::string user_agent;
   std::string web_socket_url;
   DevToolsEndpoint debugger_endpoint;
   int major_version = 0;

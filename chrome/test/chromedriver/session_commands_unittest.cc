@@ -525,6 +525,22 @@ class MockChrome : public StubChrome {
 
 }  // namespace
 
+TEST(SessionCommandsTest, CreateCapabilitiesIncludesUserAgent) {
+  BrowserInfo browser_info;
+  browser_info.user_agent = "test user agent";
+  MockChrome* chrome = new MockChrome(browser_info);
+  Session session("id", std::unique_ptr<Chrome>(chrome));
+  Capabilities capabilities;
+  base::DictValue desired_caps;
+
+  base::DictValue result = internal::CreateCapabilitiesForTesting(
+      &session, capabilities, desired_caps);
+
+  const std::string* user_agent = result.FindString("userAgent");
+  ASSERT_NE(nullptr, user_agent);
+  EXPECT_EQ("test user agent", *user_agent);
+}
+
 TEST(SessionCommandsTest, ConfigureHeadlessSession_dotNotation) {
   Capabilities capabilities;
   base::DictValue caps;

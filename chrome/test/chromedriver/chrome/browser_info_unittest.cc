@@ -11,6 +11,8 @@
 
 namespace {
 
+constexpr char kUserAgent[] = "test user agent";
+
 void AssertParseBrowserInfoFails(const std::string& data) {
   BrowserInfo browser_info;
   Status status = BrowserInfo::ParseBrowserInfo(data, &browser_info);
@@ -19,9 +21,15 @@ void AssertParseBrowserInfoFails(const std::string& data) {
 
 std::string CreateBrowserInfoJson(std::string_view extra_fields) {
   return base::StrCat(
-      {"{\"Browser\": \"Chrome/37.0.2062.124\", \"WebKit-Version\": "
-       "\"537.36 (@181352)\"",
-       extra_fields, "}"});
+      {"{\"Browser\": \"Chrome/37.0.2062.124\", \"User-Agent\": \"", kUserAgent,
+       "\", \"WebKit-Version\": \"537.36 (@181352)\"", extra_fields, "}"});
+}
+
+void AssertFillFromBrowserVersionResponseFails(
+    const base::DictValue& response) {
+  BrowserInfo browser_info;
+  Status status = browser_info.FillFromBrowserVersionResponse(response);
+  ASSERT_TRUE(status.IsError());
 }
 
 }  // namespace
@@ -38,14 +46,27 @@ TEST(ParseBrowserInfo, NoBrowserKey) {
   AssertParseBrowserInfoFails("{}");
 }
 
+TEST(ParseBrowserInfo, NoUserAgent) {
+  AssertParseBrowserInfoFails(
+      R"json({"Browser":"Chrome/37.0.2062.124",
+              "WebKit-Version":"537.36 (@181352)"})json");
+}
+
+TEST(ParseBrowserInfo, UserAgentIsNotString) {
+  AssertParseBrowserInfoFails(
+      R"json({"Browser":"Chrome/37.0.2062.124",
+              "User-Agent":1,
+              "WebKit-Version":"537.36 (@181352)"})json");
+}
+
 TEST(ParseBrowserInfo, BlinkVersionContainsSvnRevision) {
-  std::string data("{\"Browser\": \"Chrome/37.0.2062.124\","
-                   " \"WebKit-Version\": \"537.36 (@181352)\"}");
+  std::string data = CreateBrowserInfoJson("");
   BrowserInfo browser_info;
   Status status = browser_info.ParseBrowserInfo(data);
   ASSERT_TRUE(status.IsOk());
   ASSERT_EQ("chrome", browser_info.browser_name);
   ASSERT_EQ("37.0.2062.124", browser_info.browser_version);
+  ASSERT_EQ(kUserAgent, browser_info.user_agent);
   ASSERT_EQ(37, browser_info.major_version);
   ASSERT_EQ(2062, browser_info.build_no);
   ASSERT_EQ(181352, browser_info.blink_revision);
@@ -120,15 +141,18 @@ TEST(ParseBrowserInfo, AndroidPackageForcesPosixFilePathStyle) {
 }
 
 TEST(ParseBrowserInfo, BlinkVersionContainsGitHash) {
-  std::string data("{\"Browser\": \"Chrome/37.0.2062.124\","
-                   " \"WebKit-Version\":"
-                   " \"537.36 (@28f741cfcabffe68a9c12c4e7152569c906bd88f)\"}");
+  std::string data(
+      "{\"Browser\": \"Chrome/37.0.2062.124\","
+      " \"User-Agent\": \"test user agent\","
+      " \"WebKit-Version\":"
+      " \"537.36 (@28f741cfcabffe68a9c12c4e7152569c906bd88f)\"}");
   BrowserInfo browser_info;
   const int default_blink_revision = browser_info.blink_revision;
   Status status = browser_info.ParseBrowserInfo(data);
   ASSERT_TRUE(status.IsOk());
   ASSERT_EQ("chrome", browser_info.browser_name);
   ASSERT_EQ("37.0.2062.124", browser_info.browser_version);
+  ASSERT_EQ(kUserAgent, browser_info.user_agent);
   ASSERT_EQ(37, browser_info.major_version);
   ASSERT_EQ(2062, browser_info.build_no);
   ASSERT_EQ(default_blink_revision, browser_info.blink_revision);
@@ -241,11 +265,13 @@ TEST(IsGitHash, SvnRevision) {
 TEST(FillFromBrowserVersionResponse, Chrome) {
   base::DictValue response;
   response.Set("product", "Chrome/37.0.2062.124");
+  response.Set("userAgent", kUserAgent);
   BrowserInfo browser_info;
   Status status = browser_info.FillFromBrowserVersionResponse(response);
   ASSERT_TRUE(status.IsOk());
   ASSERT_EQ("chrome", browser_info.browser_name);
   ASSERT_EQ("37.0.2062.124", browser_info.browser_version);
+  ASSERT_EQ(kUserAgent, browser_info.user_agent);
   ASSERT_EQ(37, browser_info.major_version);
   ASSERT_EQ(2062, browser_info.build_no);
   ASSERT_FALSE(browser_info.is_headless_shell);
@@ -255,13 +281,28 @@ TEST(FillFromBrowserVersionResponse, Chrome) {
 TEST(FillFromBrowserVersionResponse, HeadlessChrome) {
   base::DictValue response;
   response.Set("product", "HeadlessChrome/39.0.2171.59");
+  response.Set("userAgent", kUserAgent);
   BrowserInfo browser_info;
   Status status = browser_info.FillFromBrowserVersionResponse(response);
   ASSERT_TRUE(status.IsOk());
   ASSERT_EQ("chrome-headless-shell", browser_info.browser_name);
   ASSERT_EQ("39.0.2171.59", browser_info.browser_version);
+  ASSERT_EQ(kUserAgent, browser_info.user_agent);
   ASSERT_EQ(39, browser_info.major_version);
   ASSERT_EQ(2171, browser_info.build_no);
   ASSERT_TRUE(browser_info.is_headless_shell);
   EXPECT_EQ(FilePathStyle::kUnknown, browser_info.file_path_style);
+}
+
+TEST(FillFromBrowserVersionResponse, NoUserAgent) {
+  base::DictValue response;
+  response.Set("product", "Chrome/37.0.2062.124");
+  AssertFillFromBrowserVersionResponseFails(response);
+}
+
+TEST(FillFromBrowserVersionResponse, UserAgentIsNotString) {
+  base::DictValue response;
+  response.Set("product", "Chrome/37.0.2062.124");
+  response.Set("userAgent", 1);
+  AssertFillFromBrowserVersionResponseFails(response);
 }

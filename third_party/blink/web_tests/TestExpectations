@@ -2234,7 +2234,6 @@ crbug.com/395962971 [ Android ] external/wpt/webdriver/tests/classic/element_sen
 crbug.com/395962971 [ Android ] external/wpt/webdriver/tests/classic/get_element_property/get.py [ Skip Timeout ]
 crbug.com/395962971 [ Android ] external/wpt/webdriver/tests/classic/get_window_rect/user_prompts.py [ Failure ]
 crbug.com/395962971 [ Android ] external/wpt/webdriver/tests/classic/maximize_window/user_prompts.py [ Failure ]
-crbug.com/395962971 [ Android ] external/wpt/webdriver/tests/classic/new_session/response.py [ Failure ]
 crbug.com/395962971 [ Android ] external/wpt/webdriver/tests/classic/perform_actions/key_events.py [ Skip Timeout ]
 crbug.com/395962971 [ Android ] external/wpt/webdriver/tests/classic/perform_actions/pointer_mouse_drag.py [ Skip Timeout ]
 crbug.com/395962971 [ Android ] external/wpt/webdriver/tests/classic/perform_actions/pointer_mouse.py [ Skip Timeout ]

@@ -180,6 +180,7 @@ base::DictValue CreateCapabilities(Session* session,
                               : kBrowserCapabilityName);
   caps.Set(session->w3c_compliant ? "browserVersion" : "version",
            session->chrome->GetBrowserInfo()->browser_version);
+  caps.Set("userAgent", session->chrome->GetBrowserInfo()->user_agent);
   std::string os_name = session->chrome->GetOperatingSystemName();
   if (os_name.find("Windows") != std::string::npos)
     os_name = "Windows";
@@ -480,6 +481,13 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
 }  // namespace
 
 namespace internal {
+
+base::DictValue CreateCapabilitiesForTesting(
+    Session* session,
+    const Capabilities& capabilities,
+    const base::DictValue& desired_caps) {
+  return CreateCapabilities(session, capabilities, desired_caps);
+}
 
 Status ConfigureSession(Session* session,
                         const base::DictValue& params,

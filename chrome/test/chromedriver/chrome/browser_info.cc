@@ -12,6 +12,7 @@
 #include <string_view>
 
 #include "base/json/json_reader.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -29,6 +30,18 @@ FilePathStyle ParseFilePathStyle(std::string_view file_path_style) {
     return FilePathStyle::kPosix;
   }
   return FilePathStyle::kUnknown;
+}
+
+Status ParseUserAgent(const base::DictValue& response,
+                      std::string_view key,
+                      std::string* user_agent) {
+  const std::string* value = response.FindString(key);
+  if (!value) {
+    return Status(kUnknownError,
+                  base::StrCat({"version doesn't include '", key, "'"}));
+  }
+  *user_agent = *value;
+  return Status(kOk);
 }
 
 }  // namespace
@@ -50,6 +63,11 @@ Status BrowserInfo::FillFromBrowserVersionResponse(
   const std::string* browser_string = response.FindString("product");
   if (!browser_string) {
     return Status(kUnknownError, "version doesn't include 'Browser'");
+  }
+
+  Status status = ParseUserAgent(response, "userAgent", &user_agent);
+  if (status.IsError()) {
+    return status;
   }
 
   return ParseBrowserString(false, *browser_string, this);
@@ -99,6 +117,11 @@ Status BrowserInfo::ParseBrowserInfo(std::string_view data,
     browser_info->file_path_style = file_path_style
                                         ? ParseFilePathStyle(*file_path_style)
                                         : FilePathStyle::kUnknown;
+  }
+
+  status = ParseUserAgent(*dict, "User-Agent", &browser_info->user_agent);
+  if (status.IsError()) {
+    return status;
   }
 
   // "webSocketDebuggerUrl" is only returned on Chrome 62.0.3178 and above,

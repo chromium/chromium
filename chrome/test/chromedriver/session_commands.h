@@ -212,6 +212,11 @@ Status ForwardBidiCommand(Session* session,
                           std::unique_ptr<base::Value>* value);
 
 namespace internal {
+base::DictValue CreateCapabilitiesForTesting(
+    Session* session,
+    const Capabilities& capabilities,
+    const base::DictValue& desired_caps);
+
 Status ConfigureHeadlessSession(Session* session,
                                 const Capabilities& capabilities);
 
