@@ -158,6 +158,13 @@ class WebUIContentsPreloadManager::WebUIControllerEmbedderStub final
   void ShowUI() override {
     CHECK(preload_state_);
     preload_state_->ready_to_show = true;
+    // The contents is created visible so that it loads at full priority. Once
+    // it is ready, hide it until it is shown: while visible, it keeps the
+    // shared top-chrome renderer at foreground priority.
+    if (base::FeatureList::IsEnabled(
+            features::kPreloadTopChromeWebUIHideWhenReady)) {
+      web_contents_->WasHidden();
+    }
   }
 
   // Attach this stub as the embedder of `web_contents`, assuming that the

@@ -181,6 +181,9 @@ inline constexpr base::FeatureParam<std::string>
 
 BASE_DECLARE_FEATURE(kPreloadTopChromeWebUILessNavigations);
 
+// Kill switch: hide the preloaded WebContents once its page is ready to show.
+BASE_DECLARE_FEATURE(kPreloadTopChromeWebUIHideWhenReady);
+
 BASE_DECLARE_FEATURE(kPressAndHoldEscToExitBrowserFullscreen);
 
 #if BUILDFLAG(IS_WIN)

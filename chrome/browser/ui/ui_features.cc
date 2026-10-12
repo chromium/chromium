@@ -217,6 +217,12 @@ BASE_FEATURE(kPreloadTopChromeWebUI, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kPreloadTopChromeWebUILessNavigations,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Hides the preloaded WebContents once its page is ready to show. A visible
+// preload keeps the shared top-chrome renderer at foreground priority, so that
+// renderer never backgrounds or purges memory while every WebUI is hidden.
+BASE_FEATURE(kPreloadTopChromeWebUIHideWhenReady,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables exiting browser fullscreen (users putting the browser itself into the
 // fullscreen mode via the browser UI or shortcuts) with press-and-hold Esc.
 BASE_FEATURE(kPressAndHoldEscToExitBrowserFullscreen,
