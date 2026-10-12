@@ -722,6 +722,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTest,
   GetModel().DeletePasskey(passkey.credential_id(), FROM_HERE);
   EXPECT_TRUE(
       GetModel().GetPasskeys(AnyRp(), ShadowedCredentials::kInclude).empty());
+  EXPECT_TRUE(ServerPasskeysMatchChecker(IsEmpty()).Wait());
 }
 
 IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTest,
@@ -958,6 +959,11 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTest,
                                            .user_display_name = kDisplayName1,
                                        },
                                        /*updated_by_user=*/false));
+  EXPECT_TRUE(ServerPasskeysMatchChecker(
+                  ElementsAre(AllOf(EntityHasSyncId(passkey.sync_id()),
+                                    EntityHasUsername(kUsername1),
+                                    EntityHasDisplayName(kDisplayName1))))
+                  .Wait());
 }
 
 IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTest,
