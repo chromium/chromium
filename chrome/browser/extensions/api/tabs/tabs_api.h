@@ -10,15 +10,11 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
-#include "chrome/browser/extensions/window_controller.h"
 #include "chrome/common/extensions/api/tabs.h"
-#include "chrome/common/extensions/api/windows.h"
-#include "components/safe_browsing/buildflags.h"
 #include "components/translate/core/browser/translate_driver.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -28,12 +24,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_resource.h"
 #include "extensions/common/user_script.h"
-#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-#include "chrome/browser/safe_browsing/extension_telemetry/tabs_api_signal.h"
-#endif
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -59,109 +50,6 @@ class PrefRegistrySyncable;
 }
 
 namespace extensions {
-
-// This namespace includes a collection of conceptually-internal helper methods
-// and constants that are currently here because they are used by both
-// tabs_api.cc and tabs_api_non_android.cc. Eventually, they should only be
-// used by tabs_api.cc, and we can move them to an anonymous namespace in
-// tabs_api.cc.
-// TODO(devlin): Do that. ^^
-namespace tabs_internal {
-
-inline constexpr char kMissingLockWindowFullscreenPrivatePermission[] =
-    "Cannot lock window to fullscreen or close a locked fullscreen window "
-    "without lockWindowFullscreenPrivate manifest permission";
-
-// A helper class to extract popular properties from different arguments.
-template <typename T>
-class ApiParameterExtractor {
- public:
-  explicit ApiParameterExtractor(std::optional<T>& params) : params_(*params) {}
-  ~ApiParameterExtractor() = default;
-
-  bool populate_tabs() {
-    if (params_->query_options && params_->query_options->populate) {
-      return *params_->query_options->populate;
-    }
-    return false;
-  }
-
-  WindowController::TypeFilter type_filters() {
-    if (params_->query_options && params_->query_options->window_types) {
-      return WindowController::GetFilterFromWindowTypes(
-          *params_->query_options->window_types);
-    }
-    return WindowController::kNoWindowFilter;
-  }
-
- private:
-  raw_ref<T> params_;
-};
-
-// Returns true if the given `extension` has API access to the locked
-// fullscreen permission.
-bool ExtensionHasLockedFullscreenPermission(const Extension* extension);
-
-// Helper method to generate a new tab object for the given `contents`,
-// appropriately scrubbed of data for the given `extension`.
-api::tabs::Tab CreateTabObjectHelper(content::WebContents* contents,
-                                     const Extension* extension,
-                                     mojom::ContextType context,
-                                     BrowserWindowInterface* browser,
-                                     int tab_index);
-
-// Retrieves the tab associated with the given `tab_id`, populating
-// `contents_out`, `window_out`, and `index_out` with the result. If the tab
-// isn't found and `error_out` is non-null, populates `error_out` with an
-// appropriate error.
-// Returns true if the tab was found.
-bool GetTabById(int tab_id,
-                content::BrowserContext* context,
-                bool include_incognito,
-                WindowController** window_out,
-                content::WebContents** contents_out,
-                int* index_out,
-                std::string* error_out);
-
-// Moves the given tab to the `target_browser`. On success, returns the new
-// index of the tab in the target tabstrip. On failure, returns -1. Assumes that
-// the caller has already checked whether the target window is different from
-// the source. `allow_other_window_types` indicates whether moving tabs to
-// windows with types other than BrowserWindowInterface::TYPE_NORMAL is
-// supported; this is allowed in certain cases (like moving a tab to a popup).
-int MoveTabToWindow(ExtensionFunction* function,
-                    int tab_id,
-                    BrowserWindowInterface* target_browser,
-                    int new_index,
-                    bool allow_other_window_types,
-                    std::string* error);
-
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-// Notifies the safe browsing telemetry service of a relevant extension action.
-void NotifyExtensionTelemetry(Profile* profile,
-                              const Extension* extension,
-                              safe_browsing::TabsApiInfo::ApiMethod api_method,
-                              const std::string& current_url,
-                              const std::string& new_url,
-                              const std::optional<StackTrace>& js_callstack);
-#endif
-
-// Gets the WebContents for `tab_id` if it is specified. Otherwise get the
-// WebContents for the active tab in the `function`'s current window.
-// Returns nullptr and fills `error` if failed.
-content::WebContents* GetTabsAPIDefaultWebContents(ExtensionFunction* function,
-                                                   int tab_id,
-                                                   std::string* error);
-
-// Converts the given `state` to the mojom::WindowShowState equivalent.
-ui::mojom::WindowShowState ConvertToWindowShowState(
-    api::windows::WindowState state);
-
-// Returns whether the given `bounds` intersect with at least 50% of all the
-// displays.
-bool WindowBoundsIntersectDisplays(const gfx::Rect& bounds);
-
-}  // namespace tabs_internal
 
 // Converts a ZoomMode to its ZoomSettings representation.
 void ZoomModeToZoomSettings(zoom::ZoomController::ZoomMode zoom_mode,

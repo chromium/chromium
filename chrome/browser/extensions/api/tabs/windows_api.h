@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "chrome/common/extensions/api/windows.h"
 #include "extensions/browser/extension_function.h"
@@ -24,12 +23,7 @@
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class BrowserWindowInterface;
-class Profile;
 class SessionID;
-
-namespace content {
-class WebContents;
-}
 
 namespace gfx {
 class Rect;
@@ -64,13 +58,6 @@ class WindowsCreateFunction : public ExtensionFunction {
   WindowsCreateFunction();
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("windows.create", WINDOWS_CREATE)
-
-  // Ensures the tab for the window is valid.
-  static base::expected<void, std::string> ValidateTab(
-      WindowController* source_window,
-      Profile* window_profile,
-      content::WebContents* web_contents,
-      bool is_locked_fullscreen = false);
 
  private:
   ~WindowsCreateFunction() override;

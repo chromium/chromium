@@ -4,6 +4,8 @@
 
 #include "chrome/browser/extensions/api/tabs/windows_api.h"
 
+#include <stdint.h>
+
 #include <algorithm>
 #include <memory>
 #include <optional>
@@ -11,11 +13,12 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ref.h"
 #include "base/types/expected.h"
 #include "base/types/optional_util.h"
 #include "chrome/browser/devtools/devtools_window.h"
-#include "chrome/browser/extensions/api/tabs/tabs_api.h"
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
+#include "chrome/browser/extensions/api/tabs/tabs_util.h"
 #include "chrome/browser/extensions/api/tabs/windows_util.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -34,11 +37,14 @@
 #include "components/sessions/core/session_id.h"
 #include "content/public/browser/navigation_handle.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/mojom/api_permission_id.mojom-shared.h"
+#include "extensions/common/permissions/permissions_data.h"
 #include "ui/base/base_window.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/geometry/rect.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "base/strings/stringprintf.h"
@@ -68,6 +74,89 @@ namespace windows = api::windows;
 
 namespace {
 
+constexpr char kMissingLockWindowFullscreenPrivatePermission[] =
+    "Cannot lock window to fullscreen or close a locked fullscreen window "
+    "without lockWindowFullscreenPrivate manifest permission";
+
+// A helper class to extract popular properties from different arguments.
+template <typename T>
+class ApiParameterExtractor {
+ public:
+  explicit ApiParameterExtractor(std::optional<T>& params) : params_(*params) {}
+  ~ApiParameterExtractor() = default;
+
+  bool populate_tabs() {
+    if (params_->query_options && params_->query_options->populate) {
+      return *params_->query_options->populate;
+    }
+    return false;
+  }
+
+  WindowController::TypeFilter type_filters() {
+    if (params_->query_options && params_->query_options->window_types) {
+      return WindowController::GetFilterFromWindowTypes(
+          *params_->query_options->window_types);
+    }
+    return WindowController::kNoWindowFilter;
+  }
+
+ private:
+  raw_ref<T> params_;
+};
+
+// Returns true if the given `extension` has API access to the locked
+// fullscreen permission.
+bool ExtensionHasLockedFullscreenPermission(const Extension* extension) {
+  return extension && extension->permissions_data()->HasAPIPermission(
+                          mojom::APIPermissionID::kLockWindowFullscreenPrivate);
+}
+
+// Converts the given `state` to the mojom::WindowShowState equivalent.
+ui::mojom::WindowShowState ConvertToWindowShowState(
+    windows::WindowState state) {
+  switch (state) {
+    case windows::WindowState::kNormal:
+      return ui::mojom::WindowShowState::kNormal;
+    case windows::WindowState::kMinimized:
+      return ui::mojom::WindowShowState::kMinimized;
+    case windows::WindowState::kMaximized:
+      return ui::mojom::WindowShowState::kMaximized;
+    case windows::WindowState::kFullscreen:
+    case windows::WindowState::kLockedFullscreen:
+      return ui::mojom::WindowShowState::kFullscreen;
+    case windows::WindowState::kNone:
+      return ui::mojom::WindowShowState::kDefault;
+  }
+  NOTREACHED();
+}
+
+// Returns whether the given `bounds` intersect with at least 50% of all the
+// displays.
+bool WindowBoundsIntersectDisplays(const gfx::Rect& bounds) {
+  // Bail if `bounds` has an overflown area.
+  auto checked_area = bounds.size().GetCheckedArea();
+  if (!checked_area.IsValid()) {
+    return false;
+  }
+
+  // An empty rect cannot intersect any display.
+  if (bounds.IsEmpty()) {
+    return false;
+  }
+
+  const int bounds_area = checked_area.ValueOrDie();
+
+  int64_t intersect_area = 0;
+  for (const auto& display : display::Screen::Get()->GetAllDisplays()) {
+    gfx::Rect display_bounds = display.bounds();
+    display_bounds.Intersect(bounds);
+    intersect_area += display_bounds.size().GetArea();
+  }
+  // Compare using multiplication rather than division, which would truncate
+  // to zero for areas smaller than two.
+  return 2 * intersect_area >= bounds_area;
+}
+
 constexpr char kInvalidWindowTypeError[] = "Invalid value for type";
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -79,8 +168,6 @@ constexpr char kWindowCreateCannotParseIwaUrlError[] =
 constexpr char kWindowCreateCannotUseTabIdWithIwaError[] =
     "Creating a new window for an Isolated Web App does not support adding a "
     "tab by its ID.";
-constexpr char kCannotMoveIwaTabError[] =
-    "The tab of an Isolated Web App cannot be moved.";
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -244,9 +331,8 @@ base::expected<void, std::string> MaybeSetLockedFullscreenState(
   const bool is_locked_fullscreen = IsLockedFullscreen(browser);
   if ((params.update_info.state == windows::WindowState::kLockedFullscreen ||
        is_locked_fullscreen) &&
-      !tabs_internal::ExtensionHasLockedFullscreenPermission(extension)) {
-    return base::unexpected(
-        tabs_internal::kMissingLockWindowFullscreenPrivatePermission);
+      !ExtensionHasLockedFullscreenPermission(extension)) {
+    return base::unexpected(kMissingLockWindowFullscreenPrivatePermission);
   }
 
   // State will be WINDOW_STATE_NONE if the state parameter wasn't passed from
@@ -319,7 +405,7 @@ ExtensionFunction::ResponseAction WindowsGetFunction::Run() {
       windows::Get::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  tabs_internal::ApiParameterExtractor<windows::Get::Params> extractor(params);
+  ApiParameterExtractor<windows::Get::Params> extractor(params);
   WindowController* window_controller = nullptr;
   std::string error;
   if (!windows_util::GetControllerFromWindowID(this, params->window_id,
@@ -341,8 +427,7 @@ ExtensionFunction::ResponseAction WindowsGetCurrentFunction::Run() {
       windows::GetCurrent::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  tabs_internal::ApiParameterExtractor<windows::GetCurrent::Params> extractor(
-      params);
+  ApiParameterExtractor<windows::GetCurrent::Params> extractor(params);
   WindowController* window_controller = nullptr;
   std::string error;
   if (!windows_util::GetControllerFromWindowID(
@@ -364,8 +449,7 @@ ExtensionFunction::ResponseAction WindowsGetLastFocusedFunction::Run() {
       windows::GetLastFocused::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  tabs_internal::ApiParameterExtractor<windows::GetLastFocused::Params>
-      extractor(params);
+  ApiParameterExtractor<windows::GetLastFocused::Params> extractor(params);
 
   BrowserWindowInterface* last_focused_browser = nullptr;
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
@@ -396,8 +480,7 @@ ExtensionFunction::ResponseAction WindowsGetAllFunction::Run() {
       windows::GetAll::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  tabs_internal::ApiParameterExtractor<windows::GetAll::Params> extractor(
-      params);
+  ApiParameterExtractor<windows::GetAll::Params> extractor(params);
   base::ListValue window_list;
   WindowController::PopulateTabBehavior populate_tab_behavior =
       extractor.populate_tabs() ? WindowController::kPopulateTabs
@@ -491,25 +574,24 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
   if (create_data_ && create_data_->tab_id) {
     // Find the tab.
     content::WebContents* web_contents = nullptr;
-    if (!tabs_internal::GetTabById(*create_data_->tab_id, calling_profile,
-                                   include_incognito_information(),
-                                   &source_window, &web_contents,
-                                   /*index_out=*/nullptr, &error)) {
+    if (!tabs_util::GetTabById(*create_data_->tab_id, calling_profile,
+                               include_incognito_information(), &source_window,
+                               &web_contents,
+                               /*index_out=*/nullptr, &error)) {
       return RespondNow(Error(std::move(error)));
     }
 
     // Validate the tab information. Return an error if it's not valid.
-    auto tab_validation = ValidateTab(source_window, window_profile,
-                                      web_contents, is_locked_fullscreen);
+    auto tab_validation = tabs_util::ValidateTabForMove(
+        source_window, window_profile, web_contents, is_locked_fullscreen);
     if (!tab_validation.has_value()) {
       return RespondNow(Error(std::move(tab_validation.error())));
     }
   }
 
   if (is_locked_fullscreen) {
-    if (!tabs_internal::ExtensionHasLockedFullscreenPermission(extension())) {
-      return RespondNow(
-          Error(tabs_internal::kMissingLockWindowFullscreenPrivatePermission));
+    if (!ExtensionHasLockedFullscreenPermission(extension())) {
+      return RespondNow(Error(kMissingLockWindowFullscreenPrivatePermission));
     }
   }
 
@@ -613,7 +695,7 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
 
   if (create_data_ && create_data_->state != windows::WindowState::kNone) {
     create_params.initial_show_state =
-        tabs_internal::ConvertToWindowShowState(create_data_->state);
+        ConvertToWindowShowState(create_data_->state);
   }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -757,7 +839,7 @@ ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
       std::string error;
       // -1 means "move tab to the end", which is what we want.
       int new_index = -1;
-      if (tabs_internal::MoveTabToWindow(
+      if (tabs_util::MoveTabToWindow(
               this, *create_data_->tab_id, new_window, new_index,
               /*allow_other_window_types=*/true, &error) < 0) {
         return Error(std::move(error));
@@ -884,45 +966,6 @@ ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
 }
 
 // static
-base::expected<void, std::string> WindowsCreateFunction::ValidateTab(
-    WindowController* source_window,
-    Profile* window_profile,
-    content::WebContents* web_contents,
-    bool is_locked_fullscreen) {
-  if (!source_window) {
-    // The source window can be null for prerender tabs.
-    return base::unexpected(tabs_constants::kInvalidWindowStateError);
-  }
-  if (!source_window->GetBrowserWindowInterface()) {
-    return base::unexpected(
-        ExtensionTabUtil::kCanOnlyMoveTabsWithinNormalWindowsError);
-  }
-#if !BUILDFLAG(IS_ANDROID)
-  BrowserWindowInterface* source_browser = source_window->GetBrowser();
-  CHECK(source_browser);
-  if (web_app::AppBrowserController* controller =
-          web_app::AppBrowserController::From(source_browser);
-      controller && controller->IsIsolatedWebApp()) {
-    return base::unexpected(kCannotMoveIwaTabError);
-  }
-#endif
-
-  if (!ExtensionTabUtil::IsTabStripEditable(*source_window->profile())) {
-    return base::unexpected(ExtensionTabUtil::kTabStripNotEditableError);
-  }
-
-  if (source_window->profile() != window_profile) {
-    return base::unexpected(
-        ExtensionTabUtil::kCanOnlyMoveTabsWithinSameProfileError);
-  }
-
-  if (DevToolsWindow::IsDevToolsWindow(web_contents)) {
-    return base::unexpected(tabs_constants::kNotAllowedForDevToolsError);
-  }
-
-  return {};
-}
-
 // static
 std::string WindowsCreateFunction::SetWindowBounds(
     const api::windows::Create::Params::CreateData& create_data,
@@ -959,8 +1002,7 @@ std::string WindowsCreateFunction::SetWindowBounds(
   // initialized (see above), there is no size to validate against yet.
   const bool has_bounds_to_validate =
       set_window_size || (set_window_position && !window_bounds.IsEmpty());
-  if (has_bounds_to_validate &&
-      !tabs_internal::WindowBoundsIntersectDisplays(window_bounds)) {
+  if (has_bounds_to_validate && !WindowBoundsIntersectDisplays(window_bounds)) {
     return tabs_constants::kInvalidWindowBoundsError;
   }
 
@@ -1013,13 +1055,12 @@ ExtensionFunction::ResponseAction WindowsUpdateFunction::Run() {
   const bool set_window_bounds =
       UpdateWindowBoundsFromParams(*params, window_bounds);
 
-  if (set_window_bounds &&
-      !tabs_internal::WindowBoundsIntersectDisplays(window_bounds)) {
+  if (set_window_bounds && !WindowBoundsIntersectDisplays(window_bounds)) {
     return RespondNow(Error(tabs_constants::kInvalidWindowBoundsError));
   }
 
   ui::mojom::WindowShowState show_state =
-      tabs_internal::ConvertToWindowShowState(params->update_info.state);
+      ConvertToWindowShowState(params->update_info.state);
   if (set_window_bounds &&
       (show_state == ui::mojom::WindowShowState::kMinimized ||
        show_state == ui::mojom::WindowShowState::kMaximized ||
@@ -1158,9 +1199,8 @@ ExtensionFunction::ResponseAction WindowsRemoveFunction::Run() {
 #if BUILDFLAG(IS_CHROMEOS)
   if (window_controller->GetBrowserWindowInterface() &&
       IsLockedFullscreen(window_controller->GetBrowserWindowInterface()) &&
-      !tabs_internal::ExtensionHasLockedFullscreenPermission(extension())) {
-    return RespondNow(
-        Error(tabs_internal::kMissingLockWindowFullscreenPrivatePermission));
+      !ExtensionHasLockedFullscreenPermission(extension())) {
+    return RespondNow(Error(kMissingLockWindowFullscreenPrivatePermission));
   }
 #endif
 

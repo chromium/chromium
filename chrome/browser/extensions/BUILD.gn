@@ -179,6 +179,8 @@ source_set("extensions") {
     "api/tabs/tabs_constants.h",
     "api/tabs/tabs_event_router.cc",
     "api/tabs/tabs_event_router.h",
+    "api/tabs/tabs_util.cc",
+    "api/tabs/tabs_util.h",
     "api/tabs/tabs_windows_api.cc",
     "api/tabs/tabs_windows_api.h",
     "api/tabs/windows_api.cc",
