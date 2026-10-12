@@ -24,6 +24,8 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.AiModeActivati
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.MobileFuseboxPickerOutcome;
 import org.chromium.chrome.browser.omnibox.fusebox.PopupButtonData.PopupButtonType;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.omnibox.AimModelsProtoIntDef.ModelMode;
 import org.chromium.components.omnibox.AutocompleteRequestType;
@@ -315,6 +317,19 @@ public class FuseboxMetricsUnitTest {
                         "Omnibox.MobileFusebox.AttachmentsPopupItemSelected", false);
         FuseboxMetrics.notifyAttachmentsPopupClosed(/* itemSelected= */ false);
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testNotifyPlusMenuShown_recordsLastOpenTime() {
+        long before = TimeUtils.currentTimeMillis();
+        FuseboxMetrics.notifyPlusMenuShown();
+        long after = TimeUtils.currentTimeMillis();
+
+        long lastOpen =
+                ChromeSharedPreferences.getInstance()
+                        .readLong(ChromePreferenceKeys.OMNIBOX_FUSEBOX_PLUS_MENU_LAST_OPEN_TIME);
+        assertThat(lastOpen).isAtLeast(before);
+        assertThat(lastOpen).isAtMost(after);
     }
 
     @Test

@@ -658,6 +658,10 @@ public final class ChromePreferenceKeys {
     public static final String OMNIBOX_CACHED_ZERO_SUGGEST_GROUPS_INFO =
             "Chrome.Omnibox.CachedZeroSuggestGroupsInfo";
 
+    /** Wall-clock time (ms) of the most recent Fusebox Plus menu open. */
+    public static final String OMNIBOX_FUSEBOX_PLUS_MENU_LAST_OPEN_TIME =
+            "Chrome.Omnibox.FuseboxPlusMenuLastOpenTime";
+
     /**
      * Prefix of the preferences to persist pushed notifications when native is not initialized.
      * Each suffix pertains to a specific OptimizationType. All entries are cleared when native is
@@ -1291,6 +1295,7 @@ public final class ChromePreferenceKeys {
                 OFFLINE_MEASUREMENTS_SYSTEM_STATE_LIST,
                 OFFLINE_MEASUREMENTS_USER_AGENT_STRING,
                 OMNIBOX_CACHED_ZERO_SUGGEST_GROUPS_INFO,
+                OMNIBOX_FUSEBOX_PLUS_MENU_LAST_OPEN_TIME,
                 OPTIMIZATION_GUIDE_PUSH_NOTIFICATION_CACHE.pattern(),
                 OS_ADVANCED_PROTECTION_SETTING,
                 OS_ADVANCED_PROTECTION_SETTING_UPDATED_TIME,
