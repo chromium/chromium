@@ -41,6 +41,7 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/button/label_button_border.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -169,7 +170,7 @@ TabGroupHeaderView::TabGroupHeaderView(
 
   if (editor_bubble_button_) {
     ConfigureEditorBubbleButton(editor_bubble_button_);
-    editor_bubble_button_->SetVisible(delegate_->IsGroupFocused());
+    SetEditorBubbleButtonVisibilityOnHover(/*is_hovered=*/false);
   }
   editor_bubble_opened_subscription_ =
       editor_bubble_tracker_.RegisterOnBubbleOpened(base::BindRepeating(
@@ -729,9 +730,21 @@ void TabGroupHeaderView::SetEditorBubbleButtonVisibilityOnHover(
   if (!editor_bubble_button_) {
     return;
   }
-  editor_bubble_button_->SetVisible(delegate_->IsGroupFocused() ||
-                                    editor_bubble_tracker_.is_open() ||
-                                    is_hovered);
+  const bool is_focused = delegate_->IsGroupFocused();
+  editor_bubble_button_->SetBorder(
+      is_focused ? views::CreateEmptyBorder(gfx::Insets())
+                 : std::unique_ptr<views::Border>(
+                       editor_bubble_button_->CreateDefaultBorder()));
+  editor_bubble_button_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(
+          is_focused ? views::MinimumFlexSizeRule::kPreferred
+                     : views::MinimumFlexSizeRule::kScaleToMinimumSnapToZero,
+          is_focused ? views::MaximumFlexSizeRule::kUnbounded
+                     : views::MaximumFlexSizeRule::kPreferred)
+          .WithAlignment(views::LayoutAlignment::kEnd));
+  editor_bubble_button_->SetVisible(
+      is_focused || editor_bubble_tracker_.is_open() || is_hovered);
 }
 
 void TabGroupHeaderView::ShowEditorBubble() {

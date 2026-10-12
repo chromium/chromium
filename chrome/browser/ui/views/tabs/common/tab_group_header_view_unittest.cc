@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_group_data.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_style.h"
 #include "chrome/grit/generated_resources.h"
@@ -243,6 +244,29 @@ TEST_F(TabGroupHeaderViewTest, FocusModeVisibility) {
   // Move mouse outside the header.
   MoveMouseTo(generator, header, false);
   EXPECT_TRUE(header->editor_bubble_button()->GetVisible());
+  EXPECT_FALSE(header->collapse_icon_for_testing()->GetVisible());
+
+  // In the collapsed tab strip, the 3-dot button should always be visible.
+  tab_groups::TabGroupId group_id = tab_groups::TabGroupId::GenerateNew();
+  tabs::MockTabGroup mock_tab_group(nullptr, group_id, visual_data);
+  EXPECT_CALL(delegate, GetTabGroup())
+      .WillRepeatedly(testing::ReturnRef(mock_tab_group));
+
+  tabs::TabGroupData data;
+  data.visual_data = visual_data;
+  data.is_sharing_group = true;
+  EXPECT_CALL(delegate, GetTabGroupData())
+      .WillRepeatedly(testing::ReturnRef(data));
+  header->OnDataChanged(data);
+
+  header->SetBounds(0, 0,
+                    GetLayoutConstant(LayoutConstant::kVerticalTabMinWidth),
+                    GetLayoutConstant(LayoutConstant::kVerticalTabHeight));
+  header->DeprecatedLayoutImmediately();
+  EXPECT_TRUE(header->editor_bubble_button()->GetVisible());
+  EXPECT_GT(header->editor_bubble_button()->width(), 0);
+  EXPECT_EQ(header->editor_bubble_button()->bounds().CenterPoint().x(),
+            header->GetLocalBounds().CenterPoint().x());
   EXPECT_FALSE(header->collapse_icon_for_testing()->GetVisible());
 }
 
