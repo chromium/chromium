@@ -48,17 +48,14 @@
 }
 
 .voice-row {
-  --cr-radio-button-label-spacing: 0;
-  --cr-radio-button-size: 18px;
   align-items: center;
   border-radius: 8px;
   box-sizing: border-box;
-  cursor: pointer;
   display: flex;
   height: 48px;
   margin: 0;
   padding-block: 0;
-  padding-inline: 4px 12px;
+  padding-inline: 4px 0;
   transition: background-color 150ms ease;
   width: 100%;
 }
@@ -67,13 +64,14 @@
   background-color: var(--cr-hover-background-color);
 }
 
-.voice-row-content {
-  align-items: center;
-  contain: inline-size;
-  display: flex;
+.voice-radio-button {
+  --cr-radio-button-label-spacing: 0;
+  --cr-radio-button-size: 18px;
+  box-sizing: border-box;
   flex: 1;
+  height: 100%;
   min-width: 0;
-  width: 100%;
+  padding-inline-end: 12px;
 }
 
 /* Left: Play Button & Adjacent Spinner */
@@ -111,11 +109,14 @@
 
 /* Middle column: the voice's identity (title and description). */
 .voice-text {
+  box-sizing: border-box;
+  contain: inline-size;
   display: flex;
   flex-direction: column;
   flex-grow: 1;
   min-width: 0;
   padding-inline: 8px;
+  width: 100%;
 }
 
 .voice-name {

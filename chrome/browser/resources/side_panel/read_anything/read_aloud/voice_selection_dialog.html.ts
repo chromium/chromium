@@ -38,37 +38,38 @@ export function getHtml(this: VoiceSelectionDialogElement) {
           ${group.language}
         </div>
         ${group.voices.map((voiceItem, voiceIndex) => html`
-          <cr-radio-button class="voice-row label-first" hide-label-text
-              label="${this.voiceLabel_(this.voiceDisplayName_(voiceItem))}"
-              name="${voiceItem.voice.name}" data-test-id="${voiceItem.id}">
-            <div class="voice-row-content">
-              <!-- LEFT: Play/Stop Preview Button & Adjacent Spinner -->
-              <div class="preview-group">
-                <cr-icon-button id="preview-icon"
-                    tabindex="${this.previewButtonTabIndex_(
-                        voiceItem, groupIndex === 0 && voiceIndex === 0)}"
-                    class="voice-preview-button" aria-label="${
-                        this.previewLabel_(voiceItem.previewInitiated)}"
-                    title="${this.previewLabel_(voiceItem.previewInitiated)}"
-                    iron-icon="${
-                        this.previewIcon_(voiceItem.previewInitiated)}"
-                    data-group-index="${groupIndex}"
-                    data-voice-index="${voiceIndex}"
-                    @click="${this.onVoicePreviewClick_}">
-                </cr-icon-button>
+          <div class="voice-row">
+            <!-- LEFT: Play/Stop Preview Button & Adjacent Spinner -->
+            <div class="preview-group">
+              <cr-icon-button id="preview-icon"
+                  tabindex="${this.previewButtonTabIndex_(
+                      voiceItem, groupIndex === 0 && voiceIndex === 0)}"
+                  class="voice-preview-button" aria-label="${
+                      this.previewLabel_(voiceItem.previewInitiated)}"
+                  title="${this.previewLabel_(voiceItem.previewInitiated)}"
+                  iron-icon="${
+                      this.previewIcon_(voiceItem.previewInitiated)}"
+                  data-group-index="${groupIndex}"
+                  data-voice-index="${voiceIndex}"
+                  @click="${this.onVoicePreviewClick_}">
+              </cr-icon-button>
 
-                <span class="spinner-span"
-                    ?hidden="${this.hideSpinner_(voiceItem)}">
-                  <picture class="spinner">
-                    <source media="(prefers-color-scheme: dark)"
-                        srcset="//resources/images/throbber_small_dark.svg">
-                    <img srcset="//resources/images/throbber_small.svg" alt="">
-                  </picture>
-                </span>
-              </div>
+              <span class="spinner-span"
+                  ?hidden="${this.hideSpinner_(voiceItem)}">
+                <picture class="spinner">
+                  <source media="(prefers-color-scheme: dark)"
+                      srcset="//resources/images/throbber_small_dark.svg">
+                  <img srcset="//resources/images/throbber_small.svg" alt="">
+                </picture>
+              </span>
+            </div>
 
-              <!-- CENTER: Voice identity: The nature name and the voice
-                   description. -->
+            <!-- CENTER & RIGHT: Voice identity: The nature name and the voice
+                 description, and the radio selection button. -->
+            <cr-radio-button class="voice-radio-button label-first"
+                hide-label-text
+                label="${this.voiceLabel_(this.voiceDisplayName_(voiceItem))}"
+                name="${voiceItem.voice.name}" data-test-id="${voiceItem.id}">
               <div class="voice-text">
                 <span class="voice-name" aria-hidden="true"
                     lang="${this.voiceLang_(voiceItem)}"><!--
@@ -81,8 +82,8 @@ export function getHtml(this: VoiceSelectionDialogElement) {
                   --></span>
                 ` : ''}
               </div>
-            </div>
-          </cr-radio-button>
+            </cr-radio-button>
+          </div>
         `)}
       `)}
     </cr-radio-group>

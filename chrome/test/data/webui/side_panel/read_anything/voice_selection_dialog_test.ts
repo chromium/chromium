@@ -55,6 +55,13 @@ suite('VoiceSelectionDialog', () => {
         `cr-radio-button[data-test-id="${stringToHtmlTestId(voice.name)}"]`)!;
   }
 
+  function getPreviewButtonForVoice(voice: SpeechSynthesisVoice):
+      CrIconButtonElement {
+    const radioButton = getDropdownItemForVoice(voice);
+    return radioButton.closest('.voice-row')!
+        .querySelector<CrIconButtonElement>('#preview-icon')!;
+  }
+
   function getRadioGroup(): CrRadioGroupElement {
     return dialog.$.voiceSelectionDialog.querySelector<CrRadioGroupElement>(
         '#voiceRadioGroup')!;
@@ -172,13 +179,8 @@ suite('VoiceSelectionDialog', () => {
       async () => {
         await drawDialog();
 
-        const selectedItem = getDropdownItemForVoice(googleNaturalVoice);
-        const unselectedItem = getDropdownItemForVoice(googleStandardVoice);
-
-        const selectedPreview =
-            selectedItem.querySelector<CrIconButtonElement>('#preview-icon')!;
-        const unselectedPreview =
-            unselectedItem.querySelector<CrIconButtonElement>('#preview-icon')!;
+        const selectedPreview = getPreviewButtonForVoice(googleNaturalVoice);
+        const unselectedPreview = getPreviewButtonForVoice(googleStandardVoice);
 
         assertEquals('0', selectedPreview.getAttribute('tabindex'));
         assertEquals('-1', unselectedPreview.getAttribute('tabindex'));
@@ -310,8 +312,7 @@ suite('VoiceSelectionDialog', () => {
     await drawDialog();
 
     const standardVoiceItem = getDropdownItemForVoice(googleStandardVoice);
-    const previewBtn =
-        standardVoiceItem.querySelector<CrIconButtonElement>('#preview-icon')!;
+    const previewBtn = getPreviewButtonForVoice(googleStandardVoice);
 
     previewBtn.click();
     await microtasksFinished();
@@ -337,15 +338,11 @@ suite('VoiceSelectionDialog', () => {
             createSpeechSynthesisVoice({name: 'Missing Voice', lang: 'fr-FR'});
         await drawDialog();
 
-        const naturalItem = getDropdownItemForVoice(googleNaturalVoice);
-        const standardItem = getDropdownItemForVoice(googleStandardVoice);
-        const naturalPreview =
-            naturalItem.querySelector<CrIconButtonElement>('#preview-icon')!;
+        const naturalPreview = getPreviewButtonForVoice(googleNaturalVoice);
 
         assertEquals('0', naturalPreview.getAttribute('tabindex'));
 
-        const standardPreview =
-            standardItem.querySelector<CrIconButtonElement>('#preview-icon')!;
+        const standardPreview = getPreviewButtonForVoice(googleStandardVoice);
 
         assertEquals('-1', standardPreview.getAttribute('tabindex'));
       });
@@ -386,9 +383,7 @@ suite('VoiceSelectionDialog', () => {
         const playPreviewPromise = eventToPromise<
             CustomEvent<{previewVoice: SpeechSynthesisVoice | null}>>(
             ToolbarEvent.PLAY_PREVIEW, dialog);
-        const standardItem = getDropdownItemForVoice(googleStandardVoice);
-        const previewBtn =
-            standardItem.querySelector<CrIconButtonElement>('#preview-icon')!;
+        const previewBtn = getPreviewButtonForVoice(googleStandardVoice);
         const mockTimer = new MockTimer();
         mockTimer.install();
         previewBtn.click();
@@ -400,8 +395,7 @@ suite('VoiceSelectionDialog', () => {
         mockTimer.uninstall();
         await microtasksFinished();
 
-        const updatedPreviewBtn =
-            standardItem.querySelector<CrIconButtonElement>('#preview-icon')!;
+        const updatedPreviewBtn = getPreviewButtonForVoice(googleStandardVoice);
 
         assertEquals(
             'read-anything-20:stop-circle', updatedPreviewBtn.ironIcon);
@@ -419,9 +413,7 @@ suite('VoiceSelectionDialog', () => {
           playPreviewPayloads.push(e.detail.previewVoice);
         });
 
-        const standardItem = getDropdownItemForVoice(googleStandardVoice);
-        const previewBtn =
-            standardItem.querySelector<CrIconButtonElement>('#preview-icon')!;
+        const previewBtn = getPreviewButtonForVoice(googleStandardVoice);
 
         const mockTimer = new MockTimer();
         mockTimer.install();
@@ -449,9 +441,7 @@ suite('VoiceSelectionDialog', () => {
   test('closing dialog stops active preview', async () => {
     await drawDialog();
 
-    const standardItem = getDropdownItemForVoice(googleStandardVoice);
-    const previewBtn =
-        standardItem.querySelector<CrIconButtonElement>('#preview-icon')!;
+    const previewBtn = getPreviewButtonForVoice(googleStandardVoice);
 
     const mockTimer = new MockTimer();
     mockTimer.install();
