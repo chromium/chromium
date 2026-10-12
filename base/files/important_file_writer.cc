@@ -402,7 +402,10 @@ bool ImportantFileWriter::WriteFileAtomicallyImpl(
     ::SetLastError(last_error);
 #endif
     DPLOG(WARNING) << "Failed to replace " << path << " with " << tmp_file_path;
-    DeleteTmpFileWithRetry(File(), tmp_file_path);
+    // Preserve the temp file as a recovery candidate if the target is missing.
+    if (PathExists(path)) {
+      DeleteTmpFileWithRetry(File(), tmp_file_path);
+    }
   }
 
   const TimeDelta write_duration = TimeTicks::Now() - write_start;
