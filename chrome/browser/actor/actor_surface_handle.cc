@@ -38,14 +38,18 @@ class ActorSurfaceLookup {
     return it == registered_surfaces_.end() ? nullptr : it->second.get();
   }
 
-  ActorSurfaceHandle GetNextHandle() {
+  int32_t GetNextRawValue() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (base::FeatureList::IsEnabled(kUseTabHandleAsSurfaceHandle)) {
+      // TODO(b/565820285): Remove with kUseTabHandleAsSurfaceHandle. While it
+      // is enabled, tab-backed surfaces take their tab's (positive) raw value
+      // in ActorSurfaceRegistry, so every handle minted here is for a headless
+      // surface and counts down from -1 to stay clear of tab values.
       CHECK_GT(next_headless_handle_, std::numeric_limits<int32_t>::min());
-      return ActorSurfaceHandle(next_headless_handle_--);
+      return next_headless_handle_--;
     }
     CHECK_LT(next_handle_, std::numeric_limits<int32_t>::max());
-    return ActorSurfaceHandle(next_handle_++);
+    return next_handle_++;
   }
 
   void Register(ActorSurfaceHandle handle, ActorSurface* surface) {
@@ -168,9 +172,14 @@ ActorSurfaceHandle ActorSurfaceHandle::From(tabs::TabHandle tab) {
 }
 
 // static
-ActorSurfaceHandle ActorSurfaceHandle::NextHandle(
-    base::PassKey<ActorSurfaceRegistry>) {
-  return ActorSurfaceLookup::GetInstance().GetNextHandle();
+ActorSurfaceHandle ActorSurfaceHandle::CreateForTesting() {
+  return NextHandle();
+}
+
+// static
+ActorSurfaceHandle ActorSurfaceHandle::NextHandle() {
+  return ActorSurfaceHandle(
+      ActorSurfaceLookup::GetInstance().GetNextRawValue());
 }
 
 // static

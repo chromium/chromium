@@ -43,7 +43,7 @@ IN_PROC_BROWSER_TEST_F(ActorSurfaceTabHelperBrowserTest,
   EXPECT_EQ(first_surface->GetTabHandle(), first_tab->GetHandle());
   EXPECT_EQ(first_surface->GetWebContents(), first_tab->GetContents());
   EXPECT_EQ(first_surface->GetActorTabData(), ActorTabData::From(first_tab));
-  EXPECT_EQ(ActorSurfaceHandle(first_tab->GetHandle().raw_value()).Get(),
+  EXPECT_EQ(ActorSurfaceHandle::From(first_tab->GetHandle()).Get(),
             first_surface);
 
   // Opening a second tab eagerly creates its surface.
@@ -55,7 +55,9 @@ IN_PROC_BROWSER_TEST_F(ActorSurfaceTabHelperBrowserTest,
       browser()->GetTabStripModel()->GetTabAtIndex(1);
   ASSERT_TRUE(second_tab);
   const tabs::TabHandle second_tab_handle = second_tab->GetHandle();
-  const ActorSurfaceHandle second_surface_handle(second_tab_handle.raw_value());
+  const ActorSurfaceHandle second_surface_handle =
+      ActorSurfaceHandle::From(second_tab_handle);
+  ASSERT_FALSE(second_surface_handle.is_null());
 
   ActorSurface* second_surface = registry.GetForTab(second_tab_handle);
   ASSERT_TRUE(second_surface);
@@ -143,7 +145,7 @@ IN_PROC_BROWSER_TEST_F(ActorSurfaceTabHelperBrowserTest,
       incognito_browser->GetTabStripModel()->GetActiveTab();
   ASSERT_TRUE(incognito_tab);
   EXPECT_NE(ActorSurfaceTabHelper::From(incognito_tab), nullptr);
-  EXPECT_EQ(ActorSurfaceHandle(incognito_tab->GetHandle().raw_value()).Get(),
+  EXPECT_EQ(ActorSurfaceHandle::From(incognito_tab->GetHandle()).Get(),
             nullptr);
   EXPECT_EQ(regular_registry.GetForTab(incognito_tab->GetHandle()), nullptr);
   EXPECT_EQ(regular_registry.size(), initial_size);

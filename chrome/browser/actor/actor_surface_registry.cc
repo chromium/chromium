@@ -9,7 +9,6 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
-#include "base/types/pass_key.h"
 #include "chrome/browser/actor/actor_surface_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/actor/core/actor_features.h"
@@ -79,11 +78,12 @@ void ActorSurfaceRegistry::OnTabCreated(tabs::TabInterface& tab) {
       return;
     }
   }
+  // The only place a surface handle may reuse a tab's raw value; removed with
+  // kUseTabHandleAsSurfaceHandle. Nothing may rely on the two being equal.
   ActorSurfaceHandle handle =
       base::FeatureList::IsEnabled(kUseTabHandleAsSurfaceHandle)
           ? ActorSurfaceHandle(tab_handle.raw_value())
-          : ActorSurfaceHandle::NextHandle(
-                base::PassKey<ActorSurfaceRegistry>());
+          : ActorSurfaceHandle::NextHandle();
   CHECK(!owned_surfaces_.contains(handle));
   CHECK(!tab_to_surface_.contains(tab_handle));
   owned_surfaces_.emplace(
@@ -109,8 +109,7 @@ ActorSurface* ActorSurfaceRegistry::CreateForHeadless(
   if (ActorSurface* existing = GetForHeadless(contents)) {
     return existing;
   }
-  ActorSurfaceHandle handle =
-      ActorSurfaceHandle::NextHandle(base::PassKey<ActorSurfaceRegistry>());
+  ActorSurfaceHandle handle = ActorSurfaceHandle::NextHandle();
   CHECK(!owned_surfaces_.contains(handle));
   owned_surfaces_.emplace(handle,
                           std::make_unique<ActorSurfaceImpl>(handle, contents));

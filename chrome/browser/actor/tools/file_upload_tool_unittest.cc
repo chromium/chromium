@@ -41,10 +41,8 @@ class FileUploadToolTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   MockToolDelegate delegate_;
   tabs::MockTabInterface mock_tab_;
-  // Tab-backed surfaces reuse the tab handle's raw value.
-  ActorSurfaceImpl actor_surface_{
-      ActorSurfaceHandle(mock_tab_.GetHandle().raw_value()),
-      mock_tab_.GetHandle()};
+  ActorSurfaceImpl actor_surface_{ActorSurfaceHandle::CreateForTesting(),
+                                  mock_tab_.GetHandle()};
 };
 
 TEST_F(FileUploadToolTest, Validate_Succeeds) {

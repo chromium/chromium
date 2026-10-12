@@ -1011,7 +1011,7 @@ TestTabState::TestTabState(content::WebContents* web_contents) {
 
   tab_data = std::make_unique<ActorTabData>(&tab);
   actor_surface = std::make_unique<ActorSurfaceImpl>(
-      ActorSurfaceHandle(tab.GetHandle().raw_value()), tab.GetHandle());
+      ActorSurfaceHandle::CreateForTesting(), tab.GetHandle());
 }
 
 TestTabState::~TestTabState() {

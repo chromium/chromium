@@ -15,6 +15,8 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
+#include "chrome/browser/actor/actor_surface_tab_helper.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/tools/fake_tool_request.h"
@@ -31,6 +33,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 namespace actor {
 
@@ -831,8 +834,24 @@ TEST_F(ActorTaskTest, AddTab_RejectsCrossProfileTabEvenWithNullContents) {
 }
 
 TEST_F(ActorTaskTest, AddActorSurface_RejectsNonExistentSurface) {
+  // A handle whose surface has been destroyed resolves to nothing.
+  ::ui::UnownedUserDataHost user_data_host;
+  tabs::MockTabInterface tab;
+  ON_CALL(tab, GetProfile).WillByDefault(::testing::Return(profile_.get()));
+  ON_CALL(tab, GetUnownedUserDataHost())
+      .WillByDefault(::testing::ReturnRef(user_data_host));
+  auto actor_surface_tab_helper = std::make_unique<ActorSurfaceTabHelper>(tab);
+  const ActorSurfaceHandle stale_handle =
+      ActorSurfaceHandle::From(tab.GetHandle());
+  ASSERT_FALSE(stale_handle.is_null());
+  actor_surface_tab_helper.reset();
+  // Let the destroyed surface's tab mapping expire (it is kept until the end of
+  // the current task).
+  task_environment_.RunUntilIdle();
+  ASSERT_FALSE(stale_handle.Get());
+
   base::test::TestFuture<mojom::ActionResultPtr> add_actor_surface_future;
-  task_->AddActorSurface(ActorSurfaceHandle(99999),
+  task_->AddActorSurface(stale_handle,
                          /*stop_task_on_detach=*/true,
                          add_actor_surface_future.GetCallback());
   auto result = add_actor_surface_future.Take();
@@ -843,14 +862,18 @@ TEST_F(ActorTaskTest, AddActorSurface_RejectsNonExistentSurface) {
 TEST_F(ActorTaskTest, AddActorSurface_RoutesToAddTabForTabBackedSurface) {
   std::unique_ptr<tabs::MockTabInterface> cross_profile_tab =
       CreateCrossProfileMockTab();
-  ActorSurfaceImpl actor_surface(
-      ActorSurfaceHandle(cross_profile_tab->GetHandle().raw_value()),
-      cross_profile_tab->GetHandle());
+  ::ui::UnownedUserDataHost user_data_host;
+  ON_CALL(*cross_profile_tab, GetUnownedUserDataHost())
+      .WillByDefault(::testing::ReturnRef(user_data_host));
+  ActorSurfaceTabHelper actor_surface_tab_helper(*cross_profile_tab);
+  const ActorSurfaceHandle actor_surface_handle =
+      ActorSurfaceHandle::From(cross_profile_tab->GetHandle());
+  ASSERT_FALSE(actor_surface_handle.is_null());
 
   // AddTab() rejects the cross-profile tab backing the surface, which shows
   // AddActorSurface() resolved and forwarded the surface's tab.
   base::test::TestFuture<mojom::ActionResultPtr> add_actor_surface_future;
-  task_->AddActorSurface(actor_surface.GetHandle(),
+  task_->AddActorSurface(actor_surface_handle,
                          /*stop_task_on_detach=*/true,
                          add_actor_surface_future.GetCallback());
   auto result = add_actor_surface_future.Take();

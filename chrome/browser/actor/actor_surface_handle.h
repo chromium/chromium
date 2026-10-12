@@ -9,7 +9,6 @@
 #include <ostream>
 #include <utility>
 
-#include "base/types/pass_key.h"
 #include "components/tabs/public/tab_interface.h"
 
 namespace actor {
@@ -50,8 +49,6 @@ class ActorSurfaceHandle {
   static constexpr int32_t kNullValue = 0;
 
   constexpr ActorSurfaceHandle() = default;
-  constexpr explicit ActorSurfaceHandle(int32_t raw_value)
-      : raw_value_(raw_value) {}
 
   static constexpr ActorSurfaceHandle Null() { return ActorSurfaceHandle(); }
 
@@ -79,9 +76,10 @@ class ActorSurfaceHandle {
   // lookup still exists), so that cleanups can still happen.
   static ActorSurfaceHandle From(tabs::TabHandle tab);
 
-  // Mints the next unique handle (> 0, or < 0 for headless surfaces while
-  // kUseTabHandleAsSurfaceHandle is enabled).
-  static ActorSurfaceHandle NextHandle(base::PassKey<ActorSurfaceRegistry>);
+  // Mints a new, unique handle with no surface registered under it. Tests use
+  // it to construct surfaces directly or to get a handle that resolves to
+  // nothing. It takes no value, so a test can't make a handle from a TabHandle.
+  static ActorSurfaceHandle CreateForTesting();
 
   friend constexpr bool operator==(ActorSurfaceHandle,
                                    ActorSurfaceHandle) = default;
@@ -94,7 +92,16 @@ class ActorSurfaceHandle {
   }
 
  private:
+  // Only the surface code mints handles, so no other raw value (in particular
+  // a tabs::TabHandle's) can be turned into a handle.
   friend class ActorSurfaceImpl;
+  friend class ActorSurfaceRegistry;
+
+  constexpr explicit ActorSurfaceHandle(int32_t raw_value)
+      : raw_value_(raw_value) {}
+
+  // Mints a new, unique, non-null handle. Handles are never reused.
+  static ActorSurfaceHandle NextHandle();
 
   // Registers or unregisters an ActorSurface in the lookup table.
   static void Register(ActorSurfaceHandle handle, ActorSurface* surface);

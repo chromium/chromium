@@ -206,7 +206,6 @@ TEST_F(ActorSurfaceRegistryTest, OnTabCreatedIsIdempotent) {
   ActorSurface* surface = registry_->GetForTab(tab_handle());
   ASSERT_TRUE(surface);
   EXPECT_TRUE(surface->IsTab());
-  EXPECT_EQ(surface->GetHandle().raw_value(), tab_handle().raw_value());
   EXPECT_EQ(surface->GetHandle().Get(), surface);
   EXPECT_EQ(registry_->Get(surface->GetHandle()), surface);
   EXPECT_EQ(registry_->size(), 1u);

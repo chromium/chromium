@@ -236,10 +236,8 @@ class AttemptOtpFillingToolTest : public testing::Test {
         web_contents_, GURL("https://example.com"));
     EXPECT_CALL(*mock_tab_, GetContents())
         .WillRepeatedly(Return(web_contents_));
-    // Tab-backed surfaces reuse the tab handle's raw value.
     actor_surface_ = std::make_unique<ActorSurfaceImpl>(
-        ActorSurfaceHandle(mock_tab_->GetHandle().raw_value()),
-        mock_tab_->GetHandle());
+        ActorSurfaceHandle::CreateForTesting(), mock_tab_->GetHandle());
     EXPECT_CALL(delegate_->mock_otp_service(), ValidateFormFillingContext)
         .WillRepeatedly(Return(autofill::FormFillingContextStatus::kSecure));
     ON_CALL(delegate_->mock_otp_service(), GetLoginContextOrigin())

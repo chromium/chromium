@@ -67,9 +67,8 @@ TEST(FileUploadToolRequestTest, CreateToolNullTabReturnsError) {
 TEST(FileUploadToolRequestTest, CreateTool_EmptyFileListFails) {
   MockToolDelegate delegate;
   tabs::MockTabInterface mock_tab;
-  ActorSurfaceImpl actor_surface(
-      ActorSurfaceHandle(mock_tab.GetHandle().raw_value()),
-      mock_tab.GetHandle());
+  ActorSurfaceImpl actor_surface(ActorSurfaceHandle::CreateForTesting(),
+                                 mock_tab.GetHandle());
   FileUploadToolRequest request(
       mock_tab.GetHandle(), DomNode{.node_id = 1, .document_identifier = "doc"},
       /*files=*/{});
@@ -84,9 +83,8 @@ TEST(FileUploadToolRequestTest, CreateTool_EmptyFileListFails) {
 TEST(FileUploadToolRequestTest, CreateTool_ValidUrlSucceeds) {
   MockToolDelegate delegate;
   tabs::MockTabInterface mock_tab;
-  ActorSurfaceImpl actor_surface(
-      ActorSurfaceHandle(mock_tab.GetHandle().raw_value()),
-      mock_tab.GetHandle());
+  ActorSurfaceImpl actor_surface(ActorSurfaceHandle::CreateForTesting(),
+                                 mock_tab.GetHandle());
   FileUploadToolRequest request(
       mock_tab.GetHandle(), DomNode{.node_id = 1, .document_identifier = "doc"},
       {FileUploadSource(GURL("https://example.com/file.pdf"))});
@@ -100,9 +98,8 @@ TEST(FileUploadToolRequestTest, CreateTool_ValidUrlSucceeds) {
 TEST(FileUploadToolRequestTest, CreateTool_NonHttpUrlFails) {
   MockToolDelegate delegate;
   tabs::MockTabInterface mock_tab;
-  ActorSurfaceImpl actor_surface(
-      ActorSurfaceHandle(mock_tab.GetHandle().raw_value()),
-      mock_tab.GetHandle());
+  ActorSurfaceImpl actor_surface(ActorSurfaceHandle::CreateForTesting(),
+                                 mock_tab.GetHandle());
   FileUploadToolRequest request(
       mock_tab.GetHandle(), DomNode{.node_id = 1, .document_identifier = "doc"},
       {FileUploadSource(GURL("file:///etc/passwd"))});
@@ -117,9 +114,8 @@ TEST(FileUploadToolRequestTest, CreateTool_NonHttpUrlFails) {
 TEST(FileUploadToolRequestTest, CreateTool_InvalidUrlFails) {
   MockToolDelegate delegate;
   tabs::MockTabInterface mock_tab;
-  ActorSurfaceImpl actor_surface(
-      ActorSurfaceHandle(mock_tab.GetHandle().raw_value()),
-      mock_tab.GetHandle());
+  ActorSurfaceImpl actor_surface(ActorSurfaceHandle::CreateForTesting(),
+                                 mock_tab.GetHandle());
   FileUploadToolRequest request(
       mock_tab.GetHandle(), DomNode{.node_id = 1, .document_identifier = "doc"},
       {FileUploadSource(GURL("not a url"))});

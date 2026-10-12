@@ -169,9 +169,8 @@ TEST_P(AttemptFormFillingToolRequestTest,
        CreateToolPropagatesCreditCardOpaqueToken) {
   MockToolDelegate delegate;
   tabs::MockTabInterface mock_tab;
-  ActorSurfaceImpl actor_surface(
-      ActorSurfaceHandle(mock_tab.GetHandle().raw_value()),
-      mock_tab.GetHandle());
+  ActorSurfaceImpl actor_surface(ActorSurfaceHandle::CreateForTesting(),
+                                 mock_tab.GetHandle());
 
   AttemptFormFillingToolRequest request(
       mock_tab.GetHandle(),
