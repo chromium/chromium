@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_rect_read_only.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_writable_stream.h"
 #include "third_party/blink/renderer/bindings/modules/v8/serialization/v8_script_value_deserializer_for_modules.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data_copy_to_options.h"
@@ -41,9 +42,12 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_arraybuffer_jsonwebkey.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_cryptokey_cryptokeypair.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_datagrams_writable.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
+#include "third_party/blink/renderer/core/streams/underlying_sink_base.h"
+#include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/crypto/crypto_key.h"
@@ -69,6 +73,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/audio_data_transfer_list.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_transfer_list.h"
+#include "third_party/blink/renderer/modules/webtransport/web_transport_datagrams_writable.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
@@ -85,6 +90,43 @@ using testing::UnorderedElementsAre;
 
 namespace blink {
 namespace {
+
+class NoopUnderlyingSink final : public UnderlyingSinkBase {
+ public:
+  ScriptPromise<IDLUndefined> start(ScriptState* script_state,
+                                    WritableStreamDefaultController*,
+                                    ExceptionState&) override {
+    return ToResolvedUndefinedPromise(script_state);
+  }
+
+  ScriptPromise<IDLUndefined> write(ScriptState* script_state,
+                                    ScriptValue,
+                                    WritableStreamDefaultController*,
+                                    ExceptionState&) override {
+    return ToResolvedUndefinedPromise(script_state);
+  }
+
+  ScriptPromise<IDLUndefined> close(ScriptState* script_state,
+                                    ExceptionState&) override {
+    return ToResolvedUndefinedPromise(script_state);
+  }
+
+  ScriptPromise<IDLUndefined> abort(ScriptState* script_state,
+                                    ScriptValue,
+                                    ExceptionState&) override {
+    return ToResolvedUndefinedPromise(script_state);
+  }
+};
+
+WebTransportDatagramsWritable* CreateWebTransportDatagramsWritable(
+    ScriptState* script_state) {
+  auto* stream = MakeGarbageCollected<WebTransportDatagramsWritable>(
+      script_state, /*transport=*/nullptr, /*client=*/nullptr,
+      /*send_group=*/nullptr, /*send_order=*/0);
+  stream->Init(script_state, MakeGarbageCollected<NoopUnderlyingSink>(),
+               ASSERT_NO_EXCEPTION);
+  return stream;
+}
 
 v8::Local<v8::Value> RoundTripForModules(
     v8::Local<v8::Value> value,
@@ -123,6 +165,32 @@ testing::AssertionResult HadDOMExceptionInModulesTest(const StringView& name,
   if (dom_exception->name() != name)
     return testing::AssertionFailure() << "was " << dom_exception->name();
   return testing::AssertionSuccess();
+}
+
+TEST(V8ScriptValueSerializerForModulesTest,
+     TransferWebTransportDatagramsWritableAsWritableStream) {
+  test::TaskEnvironment task_environment;
+  ScopedWebTransportDatagramsWritableForTest scoped_feature(true);
+  V8TestingScope scope;
+  ScriptState* script_state = scope.GetScriptState();
+
+  auto* stream = CreateWebTransportDatagramsWritable(script_state);
+
+  v8::Local<v8::Value> wrapper =
+      ToV8Traits<WebTransportDatagramsWritable>::ToV8(script_state, stream);
+  HeapVector<ScriptObject> transfer_list = {
+      ScriptObject(scope.GetIsolate(), wrapper)};
+  Transferables transferables;
+  ASSERT_TRUE(SerializedScriptValue::ExtractTransferables(
+      scope.GetIsolate(), transfer_list, transferables, ASSERT_NO_EXCEPTION));
+  v8::Local<v8::Value> result =
+      RoundTripForModules(wrapper, scope, &transferables);
+
+  ASSERT_FALSE(result.IsEmpty());
+  EXPECT_TRUE(stream->locked());
+  EXPECT_TRUE(V8WritableStream::ToWrappable(scope.GetIsolate(), result));
+  EXPECT_FALSE(
+      V8WebTransportDatagramsWritable::ToWrappable(scope.GetIsolate(), result));
 }
 
 static const char kEcdsaPrivateKey[] =
