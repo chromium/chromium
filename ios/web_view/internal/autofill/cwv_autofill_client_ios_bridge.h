@@ -107,6 +107,21 @@ class CreditCard;
 - (void)didReceiveUnmaskOtpVerificationResult:
     (autofill::OtpUnmaskResult)unmaskResult;
 
+// Returns whether the embedder is able to authenticate the user for mandatory
+// re-auth, i.e. whether `-authenticateUserWithReason:completion:` can do more
+// than fail immediately.
+- (BOOL)canAuthenticateUser;
+
+// Bridge for `device_reauth::DeviceAuthenticator::AuthenticateWithMessage`.
+// Asks the embedder to authenticate the user, showing `reason`. `completion`
+// is always run asynchronously on the calling sequence, with `false` if the
+// embedder cannot authenticate the user.
+- (void)authenticateUserWithReason:(NSString*)reason
+                        completion:(base::OnceCallback<void(bool)>)completion;
+
+// Bridge for PaymentsAutofillClient's method `IsMandatoryReauthEnabled`.
+- (BOOL)shouldRequireMandatoryReauth;
+
 @end
 
 #endif  // IOS_WEB_VIEW_INTERNAL_AUTOFILL_CWV_AUTOFILL_CLIENT_IOS_BRIDGE_H_

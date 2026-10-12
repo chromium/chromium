@@ -17,6 +17,7 @@
 #import "base/notimplemented.h"
 #import "base/scoped_multi_source_observation.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/bind_post_task.h"
 #import "base/values.h"
 #import "components/autofill/core/browser/autofill_field.h"
 #import "components/autofill/core/browser/form_structure.h"
@@ -915,6 +916,44 @@ struct FocusedFieldState {
 - (void)didReceiveUnmaskOtpVerificationResult:
     (autofill::OtpUnmaskResult)unmaskResult {
   [_OTPVerifier didReceiveUnmaskOtpVerificationResult:unmaskResult];
+}
+
+- (BOOL)canAuthenticateUser {
+  return [_delegate
+      respondsToSelector:@selector(
+                             autofillController:authenticateUserWithReason:
+                             completionHandler:)];
+}
+
+- (void)authenticateUserWithReason:(NSString*)reason
+                        completion:(base::OnceCallback<void(bool)>)completion {
+  // Embedders typically complete from a `LocalAuthentication` reply queue, so
+  // hop back to the current sequence. This also guarantees that `completion`
+  // is never run synchronously.
+  base::OnceCallback<void(bool)> postingCompletion =
+      base::BindPostTaskToCurrentDefault(std::move(completion));
+
+  if (![_delegate
+          respondsToSelector:@selector(
+                                 autofillController:authenticateUserWithReason:
+                                 completionHandler:)]) {
+    std::move(postingCompletion).Run(false);
+    return;
+  }
+
+  [_delegate autofillController:self
+      authenticateUserWithReason:reason
+               completionHandler:base::CallbackToBlock(
+                                     std::move(postingCompletion))];
+}
+
+- (BOOL)shouldRequireMandatoryReauth {
+  if (![_delegate
+          respondsToSelector:
+              @selector(autofillControllerShouldRequireMandatoryReauth:)]) {
+    return NO;
+  }
+  return [_delegate autofillControllerShouldRequireMandatoryReauth:self];
 }
 
 #pragma mark - AutofillDriverIOSBridge

@@ -32,6 +32,7 @@ config("config") {
   frameworks = [
     "CoreGraphics.framework",
     "Foundation.framework",
+    "LocalAuthentication.framework",
     "MobileCoreServices.framework",
     "UIKit.framework",
   ]

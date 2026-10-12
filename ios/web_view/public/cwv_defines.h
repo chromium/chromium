@@ -160,4 +160,7 @@
 // Supports -[CWVPreferences autofillScopedFormActivityEnabled].
 #define IOS_WEB_VIEW_SUPPORTS_AUTOFILL_SCOPED_FORM_ACTIVITY 1
 
+// Supports mandatory re-auth delegate methods on CWVAutofillControllerDelegate.
+#define IOS_WEB_VIEW_SUPPORTS_MANDATORY_REAUTH 1
+
 #endif  // IOS_WEB_VIEW_PUBLIC_CWV_DEFINES_H_

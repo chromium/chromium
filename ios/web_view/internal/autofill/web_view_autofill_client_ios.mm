@@ -20,6 +20,7 @@
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/browser/autofill_util.h"
+#import "components/device_reauth/device_authenticator.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/security_state/ios/security_state_utils.h"
 #import "ios/web/public/browser_state.h"
@@ -28,6 +29,7 @@
 #import "ios/web_view/internal/autofill/ios_web_view_payments_autofill_client.h"
 #import "ios/web_view/internal/autofill/web_view_autocomplete_history_manager_factory.h"
 #import "ios/web_view/internal/autofill/web_view_autofill_log_router_factory.h"
+#import "ios/web_view/internal/autofill/web_view_device_authenticator.h"
 #import "ios/web_view/internal/autofill/web_view_personal_data_manager_factory.h"
 #import "ios/web_view/internal/autofill/web_view_strike_database_factory.h"
 #import "ios/web_view/internal/metrics/web_view_profile_metrics_service_factory.h"
@@ -323,6 +325,17 @@ LogManager* WebViewAutofillClientIOS::GetCurrentLogManager() {
 autofill_metrics::FormInteractionsUkmLogger&
 WebViewAutofillClientIOS::GetFormInteractionsUkmLogger() {
   return form_interactions_ukm_logger_;
+}
+
+std::unique_ptr<device_reauth::DeviceAuthenticator>
+WebViewAutofillClientIOS::GetDeviceAuthenticator(std::string histogram) const {
+  // Without an embedder that can prompt, there is no way to authenticate.
+  // Returning null keeps consumers on their "no authenticator" path (for
+  // mandatory re-auth, filling without authentication).
+  if (![bridge_ canAuthenticateUser]) {
+    return nullptr;
+  }
+  return std::make_unique<WebViewDeviceAuthenticator>(bridge_);
 }
 
 }  // namespace autofill
