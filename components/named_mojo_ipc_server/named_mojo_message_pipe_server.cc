@@ -145,12 +145,16 @@ void NamedMojoMessagePipeServer::OnClientConnected(
   }
 #undef INVALID_PROCESS_LOG
 
+  const MojoSendInvitationFlags send_invitation_flags =
+      options_.send_invitation_flags_callback
+          ? options_.send_invitation_flags_callback.Run(*info)
+          : options_.extra_send_invitation_flags;
+
   if (is_isolated) {
     // Create isolated connection.
     auto connection = std::make_unique<mojo::IsolatedConnection>();
-    mojo::ScopedMessagePipeHandle message_pipe =
-        connection->Connect(std::move(endpoint), std::move(peer_process),
-                            options_.extra_send_invitation_flags);
+    mojo::ScopedMessagePipeHandle message_pipe = connection->Connect(
+        std::move(endpoint), std::move(peer_process), send_invitation_flags);
     on_message_pipe_ready_.Run(std::move(message_pipe), std::move(info),
                                result.context, std::move(connection));
     return;
@@ -158,7 +162,7 @@ void NamedMojoMessagePipeServer::OnClientConnected(
 
   // Create non-isolated connection.
   mojo::OutgoingInvitation invitation;
-  invitation.set_extra_flags(options_.extra_send_invitation_flags);
+  invitation.set_extra_flags(send_invitation_flags);
   mojo::ScopedMessagePipeHandle message_pipe =
       std::holds_alternative<uint64_t>(options_.message_pipe_id)
           ? invitation.AttachMessagePipe(
