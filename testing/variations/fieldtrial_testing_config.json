@@ -9529,21 +9529,6 @@
             ]
         }
     ],
-    "HttpsFirstBalancedModeAutoEnableAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "HttpsFirstBalancedModeAutoEnable"
-                    ]
-                }
-            ]
-        }
-    ],
     "HttpsFirstModeV2ForTypicallySecureUsers": [
         {
             "platforms": [

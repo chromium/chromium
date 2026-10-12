@@ -1249,13 +1249,8 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, AdvancedProtectionStatusChange) {
           profile());
   ASSERT_TRUE(aps_manager);
 
-#if BUILDFLAG(IS_ANDROID)
-  const HttpsFirstModeSetting expected_default_setting =
-      HttpsFirstModeSetting::kDisabled;
-#else
   const HttpsFirstModeSetting expected_default_setting =
       HttpsFirstModeSetting::kEnabledBalanced;
-#endif
 
   // Initially, the Strict HFM pref is disabled.
   EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled));
@@ -1297,13 +1292,8 @@ TEST_F(HttpsFirstModeSettingsTrackerTest,
   content::StoragePartition* storage_partition =
       profile()->GetDefaultStoragePartition();
 
-#if BUILDFLAG(IS_ANDROID)
-  const HttpsFirstModeSetting expected_default_setting =
-      HttpsFirstModeSetting::kDisabled;
-#else
   const HttpsFirstModeSetting expected_default_setting =
       HttpsFirstModeSetting::kEnabledBalanced;
-#endif
 
   ASSERT_EQ(service->GetCurrentSetting(), expected_default_setting);
 
