@@ -51,7 +51,6 @@ import org.chromium.base.ui.KeyboardUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feedback.FeedbackPolicyManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -66,11 +65,8 @@ import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.content_public.browser.ContentFeatureList;
-import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.util.KeyEventUtils;
-import org.chromium.url.GURL;
-import org.chromium.url.JUnitTestGURLs;
 
 import java.util.List;
 import java.util.Set;
@@ -104,7 +100,6 @@ public class KeyboardShortcutsTest {
     @Mock private WebContents mWebContents;
     @Mock private Profile mProfile;
 
-    @Mock private HomepageManager mHomepageManager;
     @Mock private FeedbackPolicyManager mFeedbackPolicyManager;
 
     @Before
@@ -116,7 +111,6 @@ public class KeyboardShortcutsTest {
         mPinnedTabCloseManager = spy(PinnedTabClosureManagerFactory.getInstance());
         PinnedTabClosureManagerFactory.setInstanceForTesting(mPinnedTabCloseManager);
 
-        HomepageManager.setInstanceForTesting(mHomepageManager);
         FeedbackPolicyManager.setInstanceForTesting(mFeedbackPolicyManager);
         when(mFeedbackPolicyManager.isUserFeedbackAllowed()).thenReturn(true);
     }
@@ -124,9 +118,6 @@ public class KeyboardShortcutsTest {
     @Test
     @SmallTest
     public void testOpenHomePage() {
-        GURL mockGurl = JUnitTestGURLs.EXAMPLE_URL;
-        when(mHomepageManager.getHomepageGurl(anyBoolean())).thenReturn(mockGurl);
-
         boolean isKeyEventHandled =
                 keyDown(
                         KeyEvent.KEYCODE_HOME,
@@ -134,7 +125,9 @@ public class KeyboardShortcutsTest {
                         /* isCurrentTabVisible= */ true);
 
         assertTrue("Expected key event to be handled for Alt+Home", isKeyEventHandled);
-        verify(mTab).loadUrl(any(LoadUrlParams.class));
+        verify(mMenuOrKeyboardActionController)
+                .onMenuOrKeyboardAction(
+                        /* id= */ eq(R.id.open_home_page), /* fromMenu= */ eq(false));
     }
 
     /**

@@ -30,7 +30,6 @@ import org.chromium.chrome.browser.devtools.DevToolsWindowAndroid;
 import org.chromium.chrome.browser.feedback.FeedbackPolicyManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
-import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
@@ -43,12 +42,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.task_manager.TaskManager;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
-import org.chromium.content_public.browser.BrowserContextHandle;
-import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.device.gamepad.GamepadList;
 import org.chromium.ui.accessibility.AccessibilityState;
-import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.util.KeyEventUtils;
 
 import java.lang.annotation.Retention;
@@ -1067,17 +1062,6 @@ public class KeyboardShortcuts {
                 new KeyboardShortcutInfo(context.getString(resId), keyCode, keyModifier));
     }
 
-    private static void updateToolbarAfterReloading(
-            ToolbarManager toolbarManager, Tab currentTab, WebContents currentWebContents) {
-        if (toolbarManager != null
-                && currentWebContents != null
-                && currentWebContents.focusLocationBarByDefault()) {
-            toolbarManager.revertLocationBarChanges();
-        } else if (currentTab.getView() != null) {
-            currentTab.getView().requestFocus();
-        }
-    }
-
     /**
      * This should be called from the Activity's onKeyDown() to handle keyboard shortcuts.
      *
@@ -1123,10 +1107,6 @@ public class KeyboardShortcuts {
         }
 
         TabModel currentTabModel = tabModelSelector.getCurrentModel();
-        Tab currentTab = tabModelSelector.getCurrentTab();
-        WebContents currentWebContents = currentTab == null ? null : currentTab.getWebContents();
-        BrowserContextHandle browserContextHandle =
-                currentTab == null ? null : currentTab.getProfile().getOriginalProfile();
 
         int tabCount = currentTabModel.getCount();
 
@@ -1222,14 +1202,8 @@ public class KeyboardShortcuts {
         if (isCurrentTabVisible) {
             switch (semanticMeaning) {
                 case KeyboardShortcutsSemanticMeaning.OPEN_HOME_PAGE:
-                    if (currentTab != null) {
-                        String homePageUrl =
-                                HomepageManager.getInstance()
-                                        .getHomepageGurl(currentTab.isIncognito())
-                                        .getSpec();
-                        currentTab.loadUrl(
-                                new LoadUrlParams(homePageUrl, PageTransition.HOME_PAGE));
-                    }
+                    menuOrKeyboardActionController.onMenuOrKeyboardAction(
+                            R.id.open_home_page, false);
                     return true;
                 case KeyboardShortcutsSemanticMeaning.TAB_SEARCH_SIDE_UI:
                     int actionId =
@@ -1320,35 +1294,28 @@ public class KeyboardShortcuts {
                     menuOrKeyboardActionController.onMenuOrKeyboardAction(R.id.print_id, false);
                     return true;
                 case KeyboardShortcutsSemanticMeaning.ZOOM_IN:
-                    ZoomController.zoomInPage(currentTab);
+                    menuOrKeyboardActionController.onMenuOrKeyboardAction(R.id.zoom_in, false);
                     return true;
                 case KeyboardShortcutsSemanticMeaning.ZOOM_OUT:
-                    ZoomController.zoomOutPage(currentTab);
+                    menuOrKeyboardActionController.onMenuOrKeyboardAction(R.id.zoom_out, false);
                     return true;
                 case KeyboardShortcutsSemanticMeaning.ZOOM_RESET:
-                    ZoomController.zoomResetPage(currentTab, browserContextHandle);
+                    menuOrKeyboardActionController.onMenuOrKeyboardAction(R.id.zoom_reset, false);
                     return true;
                 case KeyboardShortcutsSemanticMeaning.RELOAD_TAB:
-                    if (currentTab != null) {
-                        currentTab.reload();
-                        updateToolbarAfterReloading(toolbarManager, currentTab, currentWebContents);
-                    }
+                    menuOrKeyboardActionController.onMenuOrKeyboardAction(
+                            R.id.reload_menu_id, false);
                     return true;
                 case KeyboardShortcutsSemanticMeaning.RELOAD_TAB_BYPASSING_CACHE:
-                    if (currentTab != null) {
-                        currentTab.reloadIgnoringCache();
-                        updateToolbarAfterReloading(toolbarManager, currentTab, currentWebContents);
-                    }
+                    menuOrKeyboardActionController.onMenuOrKeyboardAction(
+                            R.id.reload_ignoring_cache, false);
                     return true;
                 case KeyboardShortcutsSemanticMeaning.HISTORY_GO_BACK:
-                    if (currentTab != null && currentTab.canGoBack()) {
-                        currentTab.goBack();
-                    }
+                    menuOrKeyboardActionController.onMenuOrKeyboardAction(R.id.back_menu_id, false);
                     return true;
                 case KeyboardShortcutsSemanticMeaning.HISTORY_GO_FORWARD:
-                    if (currentTab != null && currentTab.canGoForward()) {
-                        currentTab.goForward();
-                    }
+                    menuOrKeyboardActionController.onMenuOrKeyboardAction(
+                            R.id.forward_menu_id, false);
                     return true;
                 case KeyboardShortcutsSemanticMeaning.TOGGLE_CARET_BROWSING:
                     menuOrKeyboardActionController.onMenuOrKeyboardAction(
