@@ -82,6 +82,8 @@ source_set("impl") {
     "//base",
     "//base:i18n",
     "//chrome/browser/app_mode",
+    "//chrome/browser/plugins",
+    "//chrome/browser/policy",
     "//chrome/common",
     "//components/renderer_context_menu",
     "//content/public/browser",

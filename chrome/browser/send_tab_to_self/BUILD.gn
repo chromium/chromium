@@ -39,6 +39,7 @@ source_set("impl") {
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//components/sync/service",
+    "//components/user_manager",
     "//content/public/browser",
     "//url",
   ]

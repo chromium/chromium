@@ -115,6 +115,7 @@ source_set("impl") {
     "//chrome/browser/ui/side_panel:side_panel_views_dependent",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/cr_components/theme_color_picker",
+    "//chrome/browser:browser_process",
     "//chrome/browser/visited_url_ranking",
     "//components/content_settings/core/browser:cookie_settings",
     "//components/feature_engagement/public",

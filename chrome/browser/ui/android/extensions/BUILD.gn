@@ -64,6 +64,8 @@ if (enable_extensions_core) {
       "//chrome/browser/ui/extensions:extensions_menu_handler",
       "//chrome/browser/ui/side_panel",
       "//chrome/browser/ui/toolbar",
+      "//chrome/common",
+      "//components/input",
       "//content/public/browser",
       "//extensions/browser",
       "//extensions/browser:extension_action_enums",

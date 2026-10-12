@@ -66,6 +66,7 @@ source_set("onc") {
     ]
 
     deps = [
+      ":policy",
       "//ash/constants",
       "//base",
       "//chrome/browser:browser_process",
@@ -1080,6 +1081,7 @@ source_set("policy") {
     "//components/reporting/proto:upload_tracker_proto",
     "//components/reporting/resources:resource_manager",
     "//components/reporting/util:status",
+    "//components/omnibox/browser",
     "//components/reporting/util:task_runner_context",
     "//components/signin/public/identity_manager",
     "//google_apis",

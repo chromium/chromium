@@ -83,9 +83,14 @@ source_set("impl") {
   ]
 
   deps = [
+    "//chrome/browser:buildflags",
     "//chrome/browser/glic",
     "//chrome/browser/lifetime",
   ]
+
+  if (enable_extensions_core) {
+    deps += [ "//extensions/browser" ]
+  }
 
   if (enable_extensions) {
     deps += [

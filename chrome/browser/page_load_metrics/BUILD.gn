@@ -132,6 +132,7 @@ source_set("impl") {
 
   deps = [
     "//chrome/browser:after_startup_task_utils",
+    "//chrome/browser:browser_process",
     "//chrome/browser/actor",
     "//chrome/browser/bookmarks",
     "//chrome/browser/content_settings",

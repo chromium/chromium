@@ -187,6 +187,7 @@ source_set("impl") {
   deps = [
     ":extension_post_install_dialog",
     ":extensions",
+    "//chrome/app:generated_resources",
     "//chrome/browser/extensions",
     "//chrome/browser/favicon",
     "//chrome/browser/image_fetcher",
@@ -206,21 +207,27 @@ source_set("impl") {
     "//chrome/browser/ui/hats",
     "//chrome/browser/ui/side_panel:side_panel_views_dependent",
     "//chrome/browser/ui/toolbar",
+    "//chrome/common",
+    "//chrome/common:channel_info",
+    "//chrome/common:chrome_features",
+    "//chrome/common/extensions",
     "//components/google/core/common",
     "//components/image_fetcher/core",
     "//components/search_engines",
     "//components/sessions",
+    "//components/strings:components_strings",
     "//components/tabs:public",
     "//components/url_formatter",
     "//components/vector_icons",
     "//extensions/common",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//ui/native_theme",
     "//ui/strings",
   ]
 
   if (is_win || is_mac || is_linux || is_chromeos) {
     sources += [ "extension_install_ui_desktop.cc" ]
     deps += [
-      "//chrome/app:generated_resources",
       "//chrome/browser/prefs",
       "//chrome/browser/themes",
       "//chrome/browser/ui:browser_commands",

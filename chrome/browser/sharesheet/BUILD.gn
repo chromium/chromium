@@ -52,6 +52,7 @@ source_set("impl") {
     "//chrome/browser/nearby_sharing",
     "//chrome/browser/nearby_sharing:impl",
     "//chrome/browser/ui/ash/sharesheet",
+    "//chrome/common:chrome_features",
     "//components/drive",
     "//content/public/browser",
   ]

@@ -145,6 +145,7 @@ source_set("impl") {
     "//chrome/browser/ui/browser_window",
     "//components/history/content/browser",
     "//components/infobars/content",
+    "//components/input",
     "//components/keyed_service/core",
     "//components/prefs",
     "//components/signin/public/identity_manager",

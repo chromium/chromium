@@ -218,6 +218,9 @@ source_set("impl") {
     "//components/site_engagement/content",
     "//components/visibility_timer",
     "//ui/message_center",
+    "//chrome/app:generated_resources",
+    "//components/search_engines",
+    "//ui/native_theme",
     "//ui/strings:ui_strings_grit",
   ]
 

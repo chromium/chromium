@@ -68,6 +68,7 @@ source_set("autofill") {
     "//base:i18n",
     "//chrome/android:chrome_jni_headers",
     "//chrome/android/features/keyboard_accessory:jni_headers",
+    "//chrome/browser:browser_process",
     "//chrome/browser/android:resource_mapper",
     "//chrome/browser/autofill",
     "//chrome/browser/autofill/android:jni_headers",

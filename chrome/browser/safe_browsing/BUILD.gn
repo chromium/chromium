@@ -657,6 +657,7 @@ static_library("safe_browsing") {
       deps += [
         "//chrome/android:chrome_jni_headers",
         "//chrome/app/vector_icons",
+        "//chrome/browser/android:resource_mapper",
         "//chrome/browser/safe_browsing/android",
         "//chrome/browser/ui/android/hats",
         "//chrome/browser/ui/android/tab_model",

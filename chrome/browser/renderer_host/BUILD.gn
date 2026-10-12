@@ -22,7 +22,7 @@ source_set("renderer_host") {
     "//chrome/browser/preloading/prefetch/no_state_prefetch",
   ]
 
-  if (enable_extensions) {
+  if (enable_extensions_core) {
     public_deps += [ "//extensions/browser" ]
   }
 

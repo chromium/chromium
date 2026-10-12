@@ -336,7 +336,10 @@ source_set("test_support") {
   ]
 
   if (is_chromeos) {
-    deps += [ "//chromeos/dbus/power" ]
+    deps += [
+      "//ash/constants",
+      "//chromeos/dbus/power",
+    ]
   }
 }
 

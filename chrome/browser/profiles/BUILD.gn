@@ -813,6 +813,7 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/persisted_state_db",
     "//chrome/browser/personal_context",
     "//chrome/browser/personal_context/first_run",
+    "//chrome/browser/plugins",
     "//chrome/browser/predictors",
     "//chrome/browser/prefs",
     "//chrome/browser/preloading",
@@ -887,6 +888,7 @@ source_set("profiles_extra_parts_impl") {
     "//components/enterprise/network_header_injection/core",
     "//components/manta",
     "//components/omnibox/browser",
+    "//components/on_device_translation/buildflags",
     "//components/optimization_guide/core",
     "//components/password_manager/content/browser",
     "//components/password_manager/core/browser/features:password_features",
@@ -1088,6 +1090,7 @@ source_set("profiles_extra_parts_impl") {
     deps += [
       "//chrome/browser/password_manager/factories:startup_import_factory",
       "//chrome/browser/password_manager/remote_actor",
+      "//components/commerce/core:coupon_db_content_proto",
     ]
   }
 
