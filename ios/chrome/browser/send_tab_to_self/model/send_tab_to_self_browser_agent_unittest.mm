@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_browser_agent.h"
 
+#import <UIKit/UIKit.h>
+
 #import <memory>
 
 #import "base/functional/bind.h"
@@ -625,6 +627,104 @@ TEST_F(SendTabToSelfBrowserAgentAutoOpenTest,
       2);
 }
 
+// Tests that when an entry was shared before the current foreground session
+// started (and only arrives via Sync after the scene is already foregrounded),
+// both kUnopenedImmediately and kTabsOpenedInBackgroundUponActivation are
+// recorded.
+TEST_F(SendTabToSelfBrowserAgentAutoOpenTest,
+       ShouldRecordUponActivationForEntriesSharedBeforeForeground) {
+  base::HistogramTester histogram_tester;
+  web::WebState* web_state = AppendNewWebState(GURL(kBlankURL));
+  InfoBarManagerImpl* infobar_manager =
+      InfoBarManagerImpl::FromWebState(web_state);
+  ASSERT_EQ(0UL, infobar_manager->infobars().size());
+
+  ExpectSceneCommandForBackgroundTabOpen();
+
+  const send_tab_to_self::SendTabToSelfEntry* entry =
+      model_->AddEntryRemotely(CreateRemoteEntryParams(
+          GURL(kExampleURL), base::Time::Now() - base::Seconds(10)));
+
+  VerifyBackgroundTabOpened(entry);
+  EXPECT_TRUE(model_->GetEntryByGUID(entry->GetGUID())->IsOpened());
+  EXPECT_EQ(1UL, infobar_manager->infobars().size());
+
+  histogram_tester.ExpectTotalCount("Sharing.SendTabToSelf.AutoOpenOutcome2",
+                                    2);
+  histogram_tester.ExpectBucketCount(
+      "Sharing.SendTabToSelf.AutoOpenOutcome2",
+      send_tab_to_self::AutoOpenOutcome::kUnopenedImmediately, 1);
+  histogram_tester.ExpectBucketCount(
+      "Sharing.SendTabToSelf.AutoOpenOutcome2",
+      send_tab_to_self::AutoOpenOutcome::kTabsOpenedInBackgroundUponActivation,
+      1);
+}
+
+// Tests that an entry received while the app is in the background is still
+// auto-opened immediately, but is recorded as not opened immediately and then
+// opened upon activation. Returning to the foreground opens nothing more for
+// the already-opened entry, and subsequent entries shared in the new foreground
+// session are recorded as opened immediately in the background.
+TEST_F(SendTabToSelfBrowserAgentAutoOpenTest,
+       ShouldRecordUponActivationForEntriesReceivedWhileAppBackgrounded) {
+  base::HistogramTester histogram_tester;
+  web::WebState* web_state = AppendNewWebState(GURL(kBlankURL));
+  InfoBarManagerImpl* infobar_manager =
+      InfoBarManagerImpl::FromWebState(web_state);
+  ASSERT_EQ(0UL, infobar_manager->infobars().size());
+
+  // Transition the app to the background and receive a remote entry.
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:UIApplicationDidEnterBackgroundNotification
+                    object:nil];
+  ExpectSceneCommandForBackgroundTabOpen();
+
+  const send_tab_to_self::SendTabToSelfEntry* entry = model_->AddEntryRemotely(
+      GURL(kExampleURL), "title", kDeviceID, send_tab_to_self::PageContext(),
+      send_tab_to_self::NavigationHistory());
+
+  // Verify the entry is auto-opened and attributed as unopened immediately
+  // followed by opened upon activation.
+  VerifyBackgroundTabOpened(entry);
+  ASSERT_TRUE(model_->GetEntryByGUID(entry->GetGUID())->IsOpened());
+  ASSERT_EQ(1UL, infobar_manager->infobars().size());
+  histogram_tester.ExpectTotalCount("Sharing.SendTabToSelf.AutoOpenOutcome2",
+                                    2);
+  histogram_tester.ExpectBucketCount(
+      "Sharing.SendTabToSelf.AutoOpenOutcome2",
+      send_tab_to_self::AutoOpenOutcome::kUnopenedImmediately, 1);
+  histogram_tester.ExpectBucketCount(
+      "Sharing.SendTabToSelf.AutoOpenOutcome2",
+      send_tab_to_self::AutoOpenOutcome::kTabsOpenedInBackgroundUponActivation,
+      1);
+
+  // Return to the foreground and verify the already-opened entry does not
+  // trigger another open or metric sample.
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:UIApplicationWillEnterForegroundNotification
+                    object:nil];
+
+  ASSERT_EQ(1UL, infobar_manager->infobars().size());
+  histogram_tester.ExpectTotalCount("Sharing.SendTabToSelf.AutoOpenOutcome2",
+                                    2);
+
+  // Receive a new entry during the new foreground session and verify it is
+  // attributed as opened immediately in the background.
+  ExpectSceneCommandForBackgroundTabOpen();
+  const send_tab_to_self::SendTabToSelfEntry* foreground_entry =
+      model_->AddEntryRemotely(GURL(kOtherURL), "title", kDeviceID,
+                               send_tab_to_self::PageContext(),
+                               send_tab_to_self::NavigationHistory());
+
+  VerifyBackgroundTabOpened(foreground_entry);
+  EXPECT_TRUE(model_->GetEntryByGUID(foreground_entry->GetGUID())->IsOpened());
+  histogram_tester.ExpectTotalCount("Sharing.SendTabToSelf.AutoOpenOutcome2",
+                                    3);
+  histogram_tester.ExpectBucketCount(
+      "Sharing.SendTabToSelf.AutoOpenOutcome2",
+      send_tab_to_self::AutoOpenOutcome::kTabsOpenedImmediatelyInBackground, 1);
+}
+
 // Tests that SendTabToSelfTabCardLabelData is attached when the tab is loaded
 // in the background, but NOT when loaded in the foreground.
 TEST_F(SendTabToSelfBrowserAgentAutoOpenTest,
@@ -808,6 +908,107 @@ TEST_F(SendTabToSelfBrowserAgentAutoOpenInTabGridTest,
   EXPECT_EQ(0UL, infobar_manager->infobars().size());
 
   histogram_tester.ExpectUniqueSample(
+      "Sharing.SendTabToSelf.AutoOpenOutcome2",
+      send_tab_to_self::AutoOpenOutcome::kTabsOpenedImmediatelyInBackground, 1);
+}
+
+// Tests that when the user is in the Tab Grid and an entry arrives that was
+// shared before the current foreground session started, it is auto-opened in
+// the background and logs both kUnopenedImmediately and
+// kTabsOpenedInBackgroundUponActivation.
+TEST_F(SendTabToSelfBrowserAgentAutoOpenInTabGridTest,
+       ShouldRecordUponActivationInTabGridForEntriesSharedBeforeForeground) {
+  base::HistogramTester histogram_tester;
+
+  web::WebState* web_state = AppendNewWebState(
+      GURL(kBlankURL), /*activate=*/true, /*is_visible=*/false);
+  InfoBarManagerImpl* infobar_manager =
+      InfoBarManagerImpl::FromWebState(web_state);
+  ASSERT_EQ(0UL, infobar_manager->infobars().size());
+
+  const send_tab_to_self::SendTabToSelfEntry* entry =
+      model_->AddEntryRemotely(CreateRemoteEntryParams(
+          GURL(kExampleURL), base::Time::Now() - base::Seconds(10)));
+
+  VerifyBackgroundTabOpened(entry);
+  EXPECT_TRUE(model_->GetEntryByGUID(entry->GetGUID())->IsOpened());
+  EXPECT_EQ(0UL, infobar_manager->infobars().size());
+
+  histogram_tester.ExpectTotalCount("Sharing.SendTabToSelf.AutoOpenOutcome2",
+                                    2);
+  histogram_tester.ExpectBucketCount(
+      "Sharing.SendTabToSelf.AutoOpenOutcome2",
+      send_tab_to_self::AutoOpenOutcome::kUnopenedImmediately, 1);
+  histogram_tester.ExpectBucketCount(
+      "Sharing.SendTabToSelf.AutoOpenOutcome2",
+      send_tab_to_self::AutoOpenOutcome::kTabsOpenedInBackgroundUponActivation,
+      1);
+}
+
+// Tests that when the app is in the background and the user was in the Tab
+// Grid, an incoming entry is still auto-opened immediately, but is recorded as
+// not opened immediately and then opened upon activation. Returning to the
+// foreground opens nothing more for the already-opened entry, and subsequent
+// entries shared in the new foreground session are recorded as opened
+// immediately in the background.
+TEST_F(SendTabToSelfBrowserAgentAutoOpenInTabGridTest,
+       ShouldRecordUponActivationInTabGridForEntriesReceivedWhileBackgrounded) {
+  base::HistogramTester histogram_tester;
+
+  web::WebState* web_state = AppendNewWebState(
+      GURL(kBlankURL), /*activate=*/true, /*is_visible=*/false);
+  InfoBarManagerImpl* infobar_manager =
+      InfoBarManagerImpl::FromWebState(web_state);
+  ASSERT_EQ(0UL, infobar_manager->infobars().size());
+
+  // Transition the app to the background and receive a remote entry while in
+  // the Tab Grid.
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:UIApplicationDidEnterBackgroundNotification
+                    object:nil];
+
+  const send_tab_to_self::SendTabToSelfEntry* entry = model_->AddEntryRemotely(
+      GURL(kExampleURL), "title", kDeviceID, send_tab_to_self::PageContext(),
+      send_tab_to_self::NavigationHistory());
+
+  // Verify the entry is auto-opened in the background without an infobar, and
+  // attributed as unopened immediately followed by opened upon activation.
+  VerifyBackgroundTabOpened(entry);
+  ASSERT_TRUE(model_->GetEntryByGUID(entry->GetGUID())->IsOpened());
+  ASSERT_EQ(0UL, infobar_manager->infobars().size());
+  histogram_tester.ExpectTotalCount("Sharing.SendTabToSelf.AutoOpenOutcome2",
+                                    2);
+  histogram_tester.ExpectBucketCount(
+      "Sharing.SendTabToSelf.AutoOpenOutcome2",
+      send_tab_to_self::AutoOpenOutcome::kUnopenedImmediately, 1);
+  histogram_tester.ExpectBucketCount(
+      "Sharing.SendTabToSelf.AutoOpenOutcome2",
+      send_tab_to_self::AutoOpenOutcome::kTabsOpenedInBackgroundUponActivation,
+      1);
+
+  // Return to the foreground and verify the already-opened entry does not
+  // trigger another open or metric sample.
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:UIApplicationWillEnterForegroundNotification
+                    object:nil];
+
+  ASSERT_EQ(1, url_loader_->load_new_tab_call_count);
+  ASSERT_EQ(0UL, infobar_manager->infobars().size());
+  histogram_tester.ExpectTotalCount("Sharing.SendTabToSelf.AutoOpenOutcome2",
+                                    2);
+
+  // Receive a new entry during the new foreground session and verify it is
+  // attributed as opened immediately in the background.
+  const send_tab_to_self::SendTabToSelfEntry* foreground_entry =
+      model_->AddEntryRemotely(GURL(kOtherURL), "title", kDeviceID,
+                               send_tab_to_self::PageContext(),
+                               send_tab_to_self::NavigationHistory());
+
+  VerifyBackgroundTabOpened(foreground_entry, /*expected_call_count=*/2);
+  EXPECT_TRUE(model_->GetEntryByGUID(foreground_entry->GetGUID())->IsOpened());
+  histogram_tester.ExpectTotalCount("Sharing.SendTabToSelf.AutoOpenOutcome2",
+                                    3);
+  histogram_tester.ExpectBucketCount(
       "Sharing.SendTabToSelf.AutoOpenOutcome2",
       send_tab_to_self::AutoOpenOutcome::kTabsOpenedImmediatelyInBackground, 1);
 }

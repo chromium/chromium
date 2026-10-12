@@ -293,7 +293,11 @@ TEST_F(SendTabPushNotificationClientTest,
   EXPECT_EQ(model_->last_activated_entry_point(),
             send_tab_to_self::ShareActivatedEntryPoint::kMobileNotification);
 
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester.ExpectTotalCount(kAutoOpenOutcomeHistogram, 2);
+  histogram_tester.ExpectBucketCount(
+      kAutoOpenOutcomeHistogram,
+      send_tab_to_self::AutoOpenOutcome::kUnopenedImmediately, 1);
+  histogram_tester.ExpectBucketCount(
       kAutoOpenOutcomeHistogram,
       send_tab_to_self::AutoOpenOutcome::kTabOpenedViaNotification, 1);
   EXPECT_EQ(user_action_tester.GetActionCount(

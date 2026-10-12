@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_browser_agent.h"
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 #import <algorithm>
 #import <string>
@@ -250,13 +250,48 @@ void RecordScrollPositionResult(
   }
 }
 
+// Records AutoOpenOutcome metrics for `entry` when it is auto-opened in the
+// background immediately upon receipt in `DisplayNewEntries`.
+void RecordAutoOpenOutcomeForNewEntry(
+    const send_tab_to_self::SendTabToSelfEntry* entry,
+    base::Time foreground_session_start) {
+  // On iOS, entries shared while the user was away from Chrome can still take
+  // the immediate auto-open path in two cases:
+  // 1. Chrome is currently in the background
+  //    (`foreground_session_start.is_null()`), where the active WebState still
+  //    reports `IsVisible() == true` (or Tab Grid auto-open is enabled).
+  // 2. The entry was shared before Chrome entered the foreground
+  //    (`entry->GetSharedTime() < foreground_session_start`), because iOS
+  //    suspends Sync while backgrounded and only downloads the entry shortly
+  //    after Chrome returns to the foreground.
+  // Record both cases like other platforms do for entries shared while away:
+  // `kUnopenedImmediately` followed by
+  // `kTabsOpenedInBackgroundUponActivation`. Note that `GetSharedTime()` uses
+  // the sending device's clock, so clock skew between devices can misclassify
+  // entries shared close to the foreground transition.
+  const bool shared_while_away =
+      foreground_session_start.is_null() ||
+      entry->GetSharedTime() < foreground_session_start;
+  if (shared_while_away) {
+    send_tab_to_self::RecordAutoOpenOutcome(
+        send_tab_to_self::AutoOpenOutcome::kUnopenedImmediately);
+    send_tab_to_self::RecordAutoOpenOutcome(
+        send_tab_to_self::AutoOpenOutcome::
+            kTabsOpenedInBackgroundUponActivation);
+  } else {
+    send_tab_to_self::RecordAutoOpenOutcome(
+        send_tab_to_self::AutoOpenOutcome::kTabsOpenedImmediatelyInBackground);
+  }
+}
+
 }  // namespace
 
 SendTabToSelfBrowserAgent::SendTabToSelfBrowserAgent(Browser* browser)
     : BrowserUserData(browser),
       model_(
           SendTabToSelfSyncServiceFactory::GetForProfile(browser_->GetProfile())
-              ->GetSendTabToSelfModel()) {
+              ->GetSendTabToSelfModel()),
+      foreground_session_start_(base::Time::Now()) {
   browser_observation_.Observe(browser_);
   model_observation_.Observe(model_.get());
   UrlLoadingNotifierBrowserAgent* loading_notifier =
@@ -265,6 +300,7 @@ SendTabToSelfBrowserAgent::SendTabToSelfBrowserAgent(Browser* browser)
     url_loading_observation_.Observe(loading_notifier);
   }
   web_state_list_observation_.Observe(browser_->GetWebStateList());
+  RegisterAppLifecycleObservers();
   if (base::FeatureList::IsEnabled(send_tab_to_self::kSendTabToSelfAutoOpen)) {
     if (web::WebState* web_state =
             browser_->GetWebStateList()->GetActiveWebState()) {
@@ -279,7 +315,19 @@ SendTabToSelfBrowserAgent::SendTabToSelfBrowserAgent(Browser* browser)
 SendTabToSelfBrowserAgent::~SendTabToSelfBrowserAgent() = default;
 
 void SendTabToSelfBrowserAgent::BrowserDestroyed(Browser* browser) {
+  // Invalidate weak pointers and unregister NSNotificationCenter observers
+  // before tearing down browser state.
   weak_ptr_factory_.InvalidateWeakPtrs();
+  if (application_backgrounding_observer_) {
+    [[NSNotificationCenter defaultCenter]
+        removeObserver:application_backgrounding_observer_];
+    application_backgrounding_observer_ = nil;
+  }
+  if (application_foregrounding_observer_) {
+    [[NSNotificationCenter defaultCenter]
+        removeObserver:application_foregrounding_observer_];
+    application_foregrounding_observer_ = nil;
+  }
   web_state_list_observation_.Reset();
   url_loading_observation_.Reset();
   model_observation_.Reset();
@@ -324,9 +372,7 @@ void SendTabToSelfBrowserAgent::DisplayNewEntries(
     if (should_auto_open) {
       for (const send_tab_to_self::SendTabToSelfEntry* entry : new_entries) {
         OpenEntryInBackgroundTab(entry);
-        send_tab_to_self::RecordAutoOpenOutcome(
-            send_tab_to_self::AutoOpenOutcome::
-                kTabsOpenedImmediatelyInBackground);
+        RecordAutoOpenOutcomeForNewEntry(entry, foreground_session_start_);
       }
       // Only display the infobar banner if the active WebState is currently
       // visible (i.e., user is not in the Tab Grid screen or a Settings page).
@@ -510,6 +556,36 @@ void SendTabToSelfBrowserAgent::DisplayInfoBar(
           entry, opened_tab_count, model_,
           HandlerForProtocol(browser_->GetCommandDispatcher(), SceneCommands),
           browser_->GetWebStateList())));
+}
+
+void SendTabToSelfBrowserAgent::RegisterAppLifecycleObservers() {
+  // Observe app background and foreground transitions to track when the
+  // current foreground session started for AutoOpenOutcome metrics.
+  // UIApplicationDidEnterBackgroundNotification and
+  // UIApplicationWillEnterForegroundNotification are used instead of
+  // active/inactive notifications so that transient inactive states (such as
+  // system alerts, notification banners, or Control Center) do not reset
+  // `foreground_session_start_`.
+  base::WeakPtr<SendTabToSelfBrowserAgent> weak_ptr =
+      weak_ptr_factory_.GetWeakPtr();
+  application_backgrounding_observer_ = [[NSNotificationCenter defaultCenter]
+      addObserverForName:UIApplicationDidEnterBackgroundNotification
+                  object:nil
+                   queue:nil
+              usingBlock:^(NSNotification*) {
+                if (weak_ptr) {
+                  weak_ptr->foreground_session_start_ = base::Time();
+                }
+              }];
+  application_foregrounding_observer_ = [[NSNotificationCenter defaultCenter]
+      addObserverForName:UIApplicationWillEnterForegroundNotification
+                  object:nil
+                   queue:nil
+              usingBlock:^(NSNotification*) {
+                if (weak_ptr) {
+                  weak_ptr->foreground_session_start_ = base::Time::Now();
+                }
+              }];
 }
 
 void SendTabToSelfBrowserAgent::CleanUpObserversAndVariables() {
