@@ -496,10 +496,10 @@ class CertBuilder {
 };
 
 // Creates MTC logs and certificates.
-// TODO(crbug.com/469624806): for plants-05, an MTC CA can have multiple logs,
-// but this class only represents a single log. That's fine for most testing,
-// but it might be useful to have a higher level test class for representing a
-// CA with multiple logs? (The only place it really matters currently are the
+// TODO(crbug.com/469624806): an MTC CA can have multiple logs, but this class
+// only represents a single log. That's fine for most testing, but it might be
+// useful to have a higher level test class for representing a CA with multiple
+// logs? (The only place it really matters currently are the
 // FillMtcMetadataAnchorProto and GetPerLogLandmarkSubtreeHashes methods,
 // otherwise you could just create multiple MtcLogBuilder objects to represent
 // each log for a single CA.)
@@ -510,18 +510,25 @@ class MtcLogBuilder {
   using LandmarkNumber = uint64_t;
   using LogIndex = uint64_t;
 
+  enum SpecVersion {
+    kPlants05,
+    kPlants07,
+  };
+
   struct Cosigner {
     std::vector<uint8_t> id;
     crypto::keypair::PrivateKey key;
     bssl::SignatureAlgorithm signature_algorithm;
   };
 
-  // Create a log builder for draft-plants-05 with the specified `ca_id` and
-  // `log_number`.
+  // Create a log builder with the specified `ca_id` and `log_number` for spec
+  // version `spec`.
   // The spec requires `log_number` to be non-zero to generate valid a log, but
   // this class allows it to be 0 so that tests can generate intentionally
   // invalid test data.
-  explicit MtcLogBuilder(base::span<const uint8_t> ca_id, LogNumber log_number);
+  explicit MtcLogBuilder(base::span<const uint8_t> ca_id,
+                         LogNumber log_number,
+                         SpecVersion spec = kPlants05);
 
   ~MtcLogBuilder();
 
@@ -569,8 +576,7 @@ class MtcLogBuilder {
   // Like `GetLandmarkSubtreeHashes`, but returns the result in a vector of
   // LogTrustedSubtrees. Since MtcLogBuilder is a per-log object, the result
   // will only have one entry in the vector. This is a convenience helper
-  // that returns the data format the boringssl MTCAnchor constructor wants for
-  // a plants-05 MTC CA.
+  // that returns the data format the boringssl MTCAnchor constructor wants.
   std::vector<bssl::LogTrustedSubtrees> GetPerLogLandmarkSubtreeHashes() const;
 
   // Add entry to the log and return the index of the entry.
@@ -632,7 +638,7 @@ class MtcLogBuilder {
   std::vector<uint8_t> CreateMtcProof(LogIndex index,
                                       bssl::Subtree subtree,
                                       std::vector<Cosigner*> cosigners);
-  std::vector<uint8_t> CreateCosignedMessage(bssl::Subtree subtree,
+  std::vector<uint8_t> CreateCosignedSubtree(bssl::Subtree subtree,
                                              const Cosigner* cosigner);
   std::vector<uint8_t> CreateMtcSignature(bssl::Subtree subtree,
                                           const Cosigner* cosigner);
@@ -663,7 +669,8 @@ class MtcLogBuilder {
     std::vector<uint8_t> BuildMerkleTreeCertEntryTbsCertEntry(
         std::vector<uint8_t> issuer_tlv);
     std::vector<uint8_t> BuildTBSCertificate(std::vector<uint8_t> issuer_tlv,
-                                             uint64_t serial);
+                                             uint64_t serial,
+                                             SpecVersion spec);
 
     // Fields corresponding to TBSCertificateLogEntry:
     // TODO(crbug.com/469624806): Version is always v3. Support
@@ -681,6 +688,8 @@ class MtcLogBuilder {
     // Additional fields for creating a final certificate:
     std::vector<uint8_t> subject_public_key_info;
   };
+
+  SpecVersion spec_;
 
   // The tree size at each landmark (the vector is a mapping from
   // LandmarkNumber to LogIndex). Landmark 0 is always the empty tree.
