@@ -18,6 +18,7 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/check_op.h"
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -87,6 +88,10 @@ constexpr auto kDelayForGetUnmaskDetails = base::Minutes(3);
 
 // Suffix for server IDs in the cache indicating that a card is a virtual card.
 constexpr char kVirtualCardIdentifier[] = "_vcn";
+
+// Command line switch that, when set, makes RetrieveCreditCardForOpaqueToken
+// return a mock card without communicating with a server.
+constexpr char kUseMockOpaqueTokenCardSwitch[] = "use-mock-opaque-token-card";
 
 // Returns whether card-on-device verification is enforced for server card
 // unmasking. Always false on iOS, which never issues the GetUnmaskDetails()
@@ -468,6 +473,22 @@ void CreditCardAccessManager::FetchCreditCard(
 void CreditCardAccessManager::RetrieveCreditCardForOpaqueToken(
     const std::string& credit_card_opaque_token,
     OnCreditCardRetrievedForOpaqueTokenCallback callback) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kUseMockOpaqueTokenCardSwitch)) {
+    CreditCard dummy_card;
+    dummy_card.set_record_type(CreditCard::RecordType::kLocalCard);
+    dummy_card.SetRawInfo(CREDIT_CARD_NAME_FULL, u"Elisa Beckett");
+    dummy_card.SetRawInfo(CREDIT_CARD_NUMBER, u"4111111111111111");
+    dummy_card.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"12");
+    dummy_card.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, u"2028");
+    dummy_card.SetNickname(u"Elisa's Card");
+    dummy_card.set_cvc(u"123");
+
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::move(dummy_card)));
+    return;
+  }
+
   payments::MultipleRequestPaymentsNetworkInterface* network_interface =
       payments_autofill_client().GetMultipleRequestPaymentsNetworkInterface();
   if (credit_card_opaque_token.empty() || !network_interface) {
