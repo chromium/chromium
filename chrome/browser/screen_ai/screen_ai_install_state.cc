@@ -60,6 +60,13 @@ ScreenAIInstallState* ScreenAIInstallState::GetInstance() {
 
 // static
 bool ScreenAIInstallState::VerifyLibraryVersion(const base::Version& version) {
+  // Device compatibility check is needed here to invalidate any older or
+  // pre-existing library on disk, preventing it from being loaded and causing
+  // the component updater to delete it.
+  if (!IsDeviceCompatible()) {
+    return false;
+  }
+
   base::Version min_version(kMinExpectedVersion);
   CHECK(min_version.IsValid());
 
@@ -128,6 +135,14 @@ void ScreenAIInstallState::AddObserver(
 void ScreenAIInstallState::DownloadComponent() {
   if (!features::IsScreenAIOCREnabled() &&
       !features::IsScreenAIMainContentExtractionEnabled()) {
+    SetState(State::kDownloadFailed);
+    return;
+  }
+
+  // Although verification rejects incompatible binaries post-install, this
+  // check avoids initiating an unnecessary network download when a feature
+  // triggers an on-demand download request.
+  if (!IsDeviceCompatible()) {
     SetState(State::kDownloadFailed);
     return;
   }
