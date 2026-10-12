@@ -14,10 +14,9 @@ static_library("event_based_logs") {
     "event_observer_base.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     ":utils",
+    "//ash/constants",
     "//base",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/reporting/event_based_logs/event_observers",
@@ -33,6 +32,7 @@ static_library("event_based_logs") {
     "//components/reporting/client:report_queue",
     "//components/reporting/client:report_queue_factory",
     "//components/reporting/util:status",
+    "//components/user_manager",
     "//services/preferences/public/cpp",
   ]
 

@@ -20,13 +20,12 @@ static_library("desks") {
     "desks_templates_app_launch_handler.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//ash",
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
+    "//chrome/app/theme:theme_resources",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/app_restore",
     "//chrome/browser/ash/floating_workspace:utils",
@@ -50,6 +49,7 @@ static_library("desks") {
     "//components/keyed_service/core",
     "//components/tab_groups",
     "//components/user_manager",
+    "//extensions/browser",
     "//ui/base",
     "//ui/color",
     "//ui/gfx",
@@ -83,6 +83,7 @@ source_set("unit_tests") {
     "//components/app_restore",
     "//components/user_manager",
     "//content/test:test_support",
+    "//extensions/browser",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/aura",

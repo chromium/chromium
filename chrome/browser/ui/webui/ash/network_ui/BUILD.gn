@@ -13,10 +13,14 @@ static_library("network_ui") {
     "onc_import_message_handler.cc",
     "onc_import_message_handler.h",
   ]
-
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
+  public_deps = [
+    "//ash/constants",
+    "//chromeos/ash/services/cellular_setup/public/mojom",
+    "//chromeos/ash/services/connectivity/public/mojom",
+    "//chromeos/services/network_config/public/mojom",
+  ]
   deps = [
+    "//ash/public/cpp",
     "//ash/strings",
     "//ash/webui/common:trusted_types_util",
     "//ash/webui/network_ui:network_diagnostics_resource_provider",
@@ -29,6 +33,7 @@ static_library("network_ui") {
     "//chrome/browser/extensions",
     "//chrome/browser/feedback",
     "//chrome/browser/net",
+    "//chrome/browser/policy",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/chromeos/network_ui:resources",
     "//chrome/browser/ui/ash/system",
@@ -48,6 +53,7 @@ static_library("network_ui") {
     "//components/policy/core/browser",
     "//components/prefs",
     "//components/server_certificate_database",
+    "//components/user_manager",
     "//content/public/browser",
     "//ui/chromeos/strings:strings_provider",
     "//ui/webui",

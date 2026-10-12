@@ -12,8 +12,6 @@ static_library("tpm") {
     "tpm_firmware_update_notification.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//ash/constants",
     "//ash/public/cpp",
@@ -39,6 +37,7 @@ source_set("unit_tests") {
 
   deps = [
     ":tpm",
+    "//ash/constants",
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ash/policy/enrollment",

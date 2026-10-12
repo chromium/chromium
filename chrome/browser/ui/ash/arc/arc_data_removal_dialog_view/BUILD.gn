@@ -7,8 +7,6 @@ assert(is_chromeos)
 static_library("arc_data_removal_dialog_view") {
   sources = [ "arc_data_removal_dialog_view.cc" ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//ash/strings",
     "//chrome/browser/ash/app_list/app_service",
@@ -16,5 +14,13 @@ static_library("arc_data_removal_dialog_view") {
     "//chrome/browser/ash/arc/session",
     "//chromeos/ash/experiences/arc:arc_app_constants",
     "//components/constrained_window",
+    "//components/strings:components_strings",
+    "//ui/base",
+    "//ui/base:types",
+    "//ui/base/metadata",
+    "//ui/base/mojom",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/gfx/geometry",
+    "//ui/views",
   ]
 }

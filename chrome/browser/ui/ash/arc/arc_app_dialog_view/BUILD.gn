@@ -7,14 +7,13 @@ assert(is_chromeos)
 static_library("arc_app_dialog_view") {
   sources = [ "arc_app_dialog_view.cc" ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//ash/strings",
     "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_list/app_service",
     "//chrome/browser/ash/app_list/arc",
     "//components/constrained_window",
+    "//components/strings:components_strings",
   ]
 }
 

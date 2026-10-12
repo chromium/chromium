@@ -19,6 +19,7 @@ static_library("search") {
   public_deps = [
     "//ash/public/cpp",
     "//base",
+    "//chrome/browser/ui/webui/ash/settings/pages/search/mojom",
     "//chrome/browser/ui/webui/settings",
     "//chromeos/ash/components/audio",
     "//chromeos/components/magic_boost/public/cpp",
@@ -28,7 +29,6 @@ static_library("search") {
   deps = [
     "//ash/constants",
     "//chrome/app:generated_resources",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/input_method",
     "//chrome/browser/ash/lobster",
     "//chrome/browser/ash/magic_boost",

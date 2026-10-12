@@ -10,14 +10,13 @@ static_library("graduation") {
     "graduation_manager_impl.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//ash",
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
     "//chrome/browser/ash/system_web_apps",
+    "//chrome/browser/policy",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/ui/ash/shelf",
@@ -26,6 +25,7 @@ static_library("graduation") {
     "//chromeos/ash/components/browser_delegate",
     "//chromeos/ash/components/system_web_apps:system_web_app_type",
     "//components/application_locale_storage",
+    "//components/google/core/common",
     "//components/prefs",
     "//components/session_manager/core",
   ]

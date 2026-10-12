@@ -12,8 +12,6 @@ source_set("system_web_apps") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//base",
     "//chromeos/ash/components/browser_delegate",
@@ -76,8 +74,6 @@ source_set("impl") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     ":system_web_apps",
     "//ash/webui/connectivity_diagnostics",
@@ -98,6 +94,7 @@ source_set("impl") {
     "//chromeos/ash/components/system_web_apps:system_web_app_type",
     "//chromeos/ash/experiences/system_web_apps/types",
     "//components/services/app_service",
+    "//components/user_manager",
     "//components/webapps/common",
     "//content/public/browser",
     "//ui/base",

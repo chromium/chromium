@@ -12,10 +12,10 @@ static_library("echo_private") {
 
   deps = [
     ":echo_private_api_util",
+    "//ash/constants",
     "//base",
     "//base:i18n",
     "//chrome/browser:browser_process",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/notifications",
     "//chrome/browser/extensions",
     "//chrome/common",

@@ -16,7 +16,6 @@ static_library("crostini") {
 
   public_deps = [
     "//base",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/guest_os",
     "//chrome/browser/ui/webui/settings",
@@ -34,6 +33,7 @@ static_library("crostini") {
     "//chrome/browser/ash/bruschetta",
     "//chrome/browser/ash/crostini:crostini_installer_types_mojom",
     "//chrome/browser/ash/file_manager",
+    "//chrome/browser/policy",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/views/bruschetta",
     "//chrome/browser/ui/views/crostini",
