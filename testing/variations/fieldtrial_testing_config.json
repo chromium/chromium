@@ -6329,22 +6329,6 @@
             ]
         }
     ],
-    "DiscardCompositionBackBuffersAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PropagateOcclusionToVizAndroid",
-                        "VizBufferQueueDiscardOnVisibilityChange"
-                    ]
-                }
-            ]
-        }
-    ],
     "DiscardCompositionBackBuffersMac": [
         {
             "platforms": [
