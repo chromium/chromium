@@ -13,7 +13,7 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/chrome/browser/signin/services/SigninManagerImpl.java",
     "java/src/org/chromium/chrome/browser/signin/services/SigninMetricsUtils.java",
     "java/src/org/chromium/chrome/browser/signin/services/UnifiedConsentServiceBridge.java",
-    "java/src/org/chromium/chrome/browser/signin/services/WebSigninBridge.java",
+    "java/src/org/chromium/chrome/browser/signin/services/WebSigninTrackerBridge.java",
   ]
 }
 
@@ -34,7 +34,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/signin/services/SigninPreferencesManager.java",
     "java/src/org/chromium/chrome/browser/signin/services/SubscriptionTierBrandingDelegate.java",
     "java/src/org/chromium/chrome/browser/signin/services/UnifiedConsentServiceBridge.java",
-    "java/src/org/chromium/chrome/browser/signin/services/WebSigninBridge.java",
+    "java/src/org/chromium/chrome/browser/signin/services/WebSigninTrackerBridge.java",
   ]
   deps = [
     ":java_resources",
@@ -120,7 +120,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/signin/services/DisplayableProfileDataUnitTest.java",
     "junit/src/org/chromium/chrome/browser/signin/services/ProfileDataCacheUnitTest.java",
     "junit/src/org/chromium/chrome/browser/signin/services/ProfileDataUtilsUnitTest.java",
-    "junit/src/org/chromium/chrome/browser/signin/services/WebSigninBridgeTest.java",
+    "junit/src/org/chromium/chrome/browser/signin/services/WebSigninTrackerBridgeTest.java",
   ]
   deps = [
     ":java",

@@ -14,7 +14,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.signin.services.WebSigninBridge;
+import org.chromium.chrome.browser.signin.services.WebSigninTrackerBridge;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.components.signin.SigninFeatureMap;
@@ -94,7 +94,7 @@ public class WebSigninRedirectCoordinator {
     private @Nullable GURL mContinueUrl;
     private @Nullable GURL mInitialTabURL;
     private @DialogState int mDialogState = DialogState.NOT_SHOWN;
-    private @Nullable WebSigninBridge mWebSigninBridge;
+    private @Nullable WebSigninTrackerBridge mWebSigninTrackerBridge;
     private @Nullable PropertyModel mModel;
     private @Nullable ModalDialogManager mDialogManager;
     private boolean mMinShowTimePassed;
@@ -116,8 +116,8 @@ public class WebSigninRedirectCoordinator {
             return;
         }
 
-        // It's possible that this is invoked before a previous WebSigninBridge has responded so
-        // destroy any previous bridges.
+        // It's possible that this is invoked before a previous WebSigninTrackerBridge has responded
+        // so destroy any previous bridges.
         destroy();
 
         mIsWaitOutcomeRecorded = false;
@@ -127,8 +127,8 @@ public class WebSigninRedirectCoordinator {
         mContinueUrl = continueUrl;
         mInitialTabURL = initialTabURL;
 
-        mWebSigninBridge =
-                new WebSigninBridge.Factory()
+        mWebSigninTrackerBridge =
+                new WebSigninTrackerBridge.Factory()
                         .createWithEmail(tab.getProfile(), email, this::onSigninResult);
 
         startTimerOrForceShowDialog();
@@ -146,8 +146,8 @@ public class WebSigninRedirectCoordinator {
             return;
         }
 
-        // It's possible that this is invoked before a previous WebSigninBridge has responded so
-        // destroy any previous bridges.
+        // It's possible that this is invoked before a previous WebSigninTrackerBridge has responded
+        // so destroy any previous bridges.
         destroy();
 
         mIsWaitOutcomeRecorded = false;
@@ -157,8 +157,8 @@ public class WebSigninRedirectCoordinator {
         mContinueUrl = continueUrl;
         mInitialTabURL = initialTabURL;
 
-        mWebSigninBridge =
-                new WebSigninBridge.Factory()
+        mWebSigninTrackerBridge =
+                new WebSigninTrackerBridge.Factory()
                         .createWithCoreAccountId(tab.getProfile(), accountId, this::onSigninResult);
 
         startTimerOrForceShowDialog();
@@ -172,10 +172,10 @@ public class WebSigninRedirectCoordinator {
         mMinDialogVisibleTimer.cancelTimer();
         mDeferredSigninResult = null;
 
-        if (mWebSigninBridge != null) {
+        if (mWebSigninTrackerBridge != null) {
             recordWaitOutcomeAborted();
-            mWebSigninBridge.destroy();
-            mWebSigninBridge = null;
+            mWebSigninTrackerBridge.destroy();
+            mWebSigninTrackerBridge = null;
         }
 
         if (mDialogState == DialogState.SHOWN) {
@@ -298,8 +298,8 @@ public class WebSigninRedirectCoordinator {
     }
 
     private void onSigninResult(@WebSigninTrackerResult int result) {
-        if (mWebSigninBridge == null) {
-            // mWebSigninBridge has already been destroyed so return early.
+        if (mWebSigninTrackerBridge == null) {
+            // mWebSigninTrackerBridge has already been destroyed so return early.
             return;
         }
         assert mTab != null;

@@ -27,16 +27,16 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.browser.WebSigninTrackerResult;
 import org.chromium.google_apis.gaia.GaiaId;
 
-/** Unit tests for {@link WebSigninBridge}. */
+/** Unit tests for {@link WebSigninTrackerBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class WebSigninBridgeTest {
+public class WebSigninTrackerBridgeTest {
     private static final CoreAccountInfo CORE_ACCOUNT_INFO =
             CoreAccountInfo.createFromEmailAndGaiaId("user@domain.com", new GaiaId("gaia-id-user"));
-    private static final long NATIVE_WEB_SIGNIN_BRIDGE = 1000L;
+    private static final long NATIVE_WEB_SIGNIN_TRACKER_BRIDGE = 1000L;
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private WebSigninBridge.Natives mNativeMock;
+    @Mock private WebSigninTrackerBridge.Natives mNativeMock;
 
     @Mock private Profile mProfileMock;
 
@@ -45,22 +45,22 @@ public class WebSigninBridgeTest {
     @Captor
     private ArgumentCaptor<Callback<@WebSigninTrackerResult Integer>> mWebSigninCallbackCaptor;
 
-    private final WebSigninBridge.Factory mFactory = new WebSigninBridge.Factory();
+    private final WebSigninTrackerBridge.Factory mFactory = new WebSigninTrackerBridge.Factory();
 
     @Before
     public void setUp() {
-        WebSigninBridgeJni.setInstanceForTesting(mNativeMock);
+        WebSigninTrackerBridgeJni.setInstanceForTesting(mNativeMock);
         when(mNativeMock.createWithCoreAccountId(
                         eq(mProfileMock), eq(CORE_ACCOUNT_INFO.getId()), any()))
-                .thenReturn(NATIVE_WEB_SIGNIN_BRIDGE);
+                .thenReturn(NATIVE_WEB_SIGNIN_TRACKER_BRIDGE);
     }
 
     @Test
     public void testFactoryCreate() {
-        WebSigninBridge webSigninBridge =
+        WebSigninTrackerBridge webSigninTrackerBridge =
                 mFactory.createWithCoreAccountId(
                         mProfileMock, CORE_ACCOUNT_INFO.getId(), mCallbackMock);
-        Assert.assertNotNull("Factory#create should not return null!", webSigninBridge);
+        Assert.assertNotNull("Factory#create should not return null!", webSigninTrackerBridge);
         verify(mNativeMock)
                 .createWithCoreAccountId(eq(mProfileMock), eq(CORE_ACCOUNT_INFO.getId()), any());
     }
@@ -77,18 +77,18 @@ public class WebSigninBridgeTest {
 
         mWebSigninCallbackCaptor.getValue().onResult(WebSigninTrackerResult.SUCCESS);
 
-        verify(mNativeMock).destroy(NATIVE_WEB_SIGNIN_BRIDGE);
+        verify(mNativeMock).destroy(NATIVE_WEB_SIGNIN_TRACKER_BRIDGE);
     }
 
     @Test
     public void testOnSigninSucceed() {
-        WebSigninBridge.onSigninResult(mCallbackMock, WebSigninTrackerResult.SUCCESS);
+        WebSigninTrackerBridge.onSigninResult(mCallbackMock, WebSigninTrackerResult.SUCCESS);
         verify(mCallbackMock).onResult(WebSigninTrackerResult.SUCCESS);
     }
 
     @Test
     public void testOnSigninFailed() {
-        WebSigninBridge.onSigninResult(mCallbackMock, WebSigninTrackerResult.OTHER_ERROR);
+        WebSigninTrackerBridge.onSigninResult(mCallbackMock, WebSigninTrackerResult.OTHER_ERROR);
         verify(mCallbackMock).onResult(WebSigninTrackerResult.OTHER_ERROR);
     }
 }

@@ -86,7 +86,7 @@ source_set("signin") {
       "android/signin_bridge.h",
       "android/signin_bridge_factory.h",
       "android/signin_manager_android.h",
-      "android/web_signin_bridge.h",
+      "android/web_signin_tracker_bridge.h",
       "signin_manager_android_factory.h",
       "signin_ui_delegate_impl_android.h",
     ]
@@ -322,7 +322,7 @@ source_set("impl") {
       "android/signin_manager_android.cc",
       "android/signin_metrics_utils.cc",
       "android/unified_consent_service_bridge.cc",
-      "android/web_signin_bridge.cc",
+      "android/web_signin_tracker_bridge.cc",
       "identity_services_provider_android.cc",
       "signin_manager_android_factory.cc",
       "signin_ui_delegate_impl_android.cc",

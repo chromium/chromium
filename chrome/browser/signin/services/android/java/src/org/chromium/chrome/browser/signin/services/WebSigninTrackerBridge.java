@@ -26,37 +26,37 @@ import java.util.Objects;
  */
 @MainThread
 @NullMarked
-public class WebSigninBridge {
-    /** Factory to create WebSigninBridge object. */
+public class WebSigninTrackerBridge {
+    /** Factory to create WebSigninTrackerBridge object. */
     public static class Factory {
         /**
-         * Creates a WebSigninBridge object.
+         * Creates a WebSigninTrackerBridge object.
          *
          * @param profile The profile to use for the sign-in.
          * @param accountId The primary account used for the sign-in process.
          * @param callback The callback to be notified about sign-in result.
          */
-        public WebSigninBridge createWithCoreAccountId(
+        public WebSigninTrackerBridge createWithCoreAccountId(
                 Profile profile,
                 CoreAccountId accountId,
                 Callback<@WebSigninTrackerResult Integer> callback) {
-            return new WebSigninBridge(profile, accountId, callback);
+            return new WebSigninTrackerBridge(profile, accountId, callback);
         }
 
         /**
-         * Creates a WebSigninBridge object.
+         * Creates a WebSigninTrackerBridge object.
          *
          * @param profile The profile to use for the sign-in.
          * @param email The primary account email used for the sign-in process.
          * @param callback The callback to be notified about sign-in result.
          */
-        public WebSigninBridge createWithEmail(
+        public WebSigninTrackerBridge createWithEmail(
                 Profile profile, String email, Callback<@WebSigninTrackerResult Integer> callback) {
-            return new WebSigninBridge(profile, email, callback);
+            return new WebSigninTrackerBridge(profile, email, callback);
         }
     }
 
-    private long mNativeWebSigninBridge;
+    private long mNativeWebSigninTrackerBridge;
 
     /**
      * Notifies the passed {@link Listener} when the sign-in process completes either successfully
@@ -66,18 +66,19 @@ public class WebSigninBridge {
      * @param accountId The primary account used for the sign-in process.
      * @param callback The callback to be notified about sign-in result.
      */
-    private WebSigninBridge(
+    private WebSigninTrackerBridge(
             Profile profile,
             CoreAccountId accountId,
             Callback<@WebSigninTrackerResult Integer> callback) {
         Objects.requireNonNull(accountId);
         Objects.requireNonNull(callback);
-        mNativeWebSigninBridge =
-                WebSigninBridgeJni.get()
+        mNativeWebSigninTrackerBridge =
+                WebSigninTrackerBridgeJni.get()
                         .createWithCoreAccountId(
                                 profile, accountId, createDestroyCallback(callback));
 
-        assert mNativeWebSigninBridge != 0 : "Couldn't create native WebSigninBridge object!";
+        assert mNativeWebSigninTrackerBridge != 0
+                : "Couldn't create native WebSigninTrackerBridge object!";
     }
 
     /**
@@ -88,14 +89,15 @@ public class WebSigninBridge {
      * @param email The primary account email used for the sign-in process.
      * @param callback The callback to be notified about sign-in result.
      */
-    private WebSigninBridge(
+    private WebSigninTrackerBridge(
             Profile profile, String email, Callback<@WebSigninTrackerResult Integer> callback) {
         Objects.requireNonNull(email);
         Objects.requireNonNull(callback);
-        mNativeWebSigninBridge =
-                WebSigninBridgeJni.get()
+        mNativeWebSigninTrackerBridge =
+                WebSigninTrackerBridgeJni.get()
                         .createWithEmail(profile, email, createDestroyCallback(callback));
-        assert mNativeWebSigninBridge != 0 : "Couldn't create native WebSigninBridge object!";
+        assert mNativeWebSigninTrackerBridge != 0
+                : "Couldn't create native WebSigninTrackerBridge object!";
     }
 
     /**
@@ -112,11 +114,11 @@ public class WebSigninBridge {
 
     /** Releases native resources used by this class. */
     public void destroy() {
-        if (mNativeWebSigninBridge == 0) return;
+        if (mNativeWebSigninTrackerBridge == 0) return;
 
-        long nativeWebSigninBridge = mNativeWebSigninBridge;
-        mNativeWebSigninBridge = 0;
-        WebSigninBridgeJni.get().destroy(nativeWebSigninBridge);
+        long nativeWebSigninTrackerBridge = mNativeWebSigninTrackerBridge;
+        mNativeWebSigninTrackerBridge = 0;
+        WebSigninTrackerBridgeJni.get().destroy(nativeWebSigninTrackerBridge);
     }
 
     @VisibleForTesting
@@ -139,6 +141,6 @@ public class WebSigninBridge {
                 @JniType("std::string") String email,
                 Callback<@WebSigninTrackerResult Integer> callback);
 
-        void destroy(long webSigninBridgePtr);
+        void destroy(long webSigninTrackerBridgePtr);
     }
 }

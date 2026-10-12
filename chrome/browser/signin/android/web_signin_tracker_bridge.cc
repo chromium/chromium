@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/signin/android/web_signin_bridge.h"
+#include "chrome/browser/signin/android/web_signin_tracker_bridge.h"
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
@@ -15,7 +15,7 @@
 #include "google_apis/gaia/core_account_id.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/browser/signin/services/android/jni_headers/WebSigninBridge_jni.h"
+#include "chrome/browser/signin/services/android/jni_headers/WebSigninTrackerBridge_jni.h"
 
 using base::android::JavaRef;
 
@@ -23,12 +23,13 @@ namespace {
 void ForwardOnSigninCompletedToJava(
     const base::android::ScopedJavaGlobalRef<jobject>& j_callback,
     signin::WebSigninTracker::Result result) {
-  Java_WebSigninBridge_onSigninResult(base::android::AttachCurrentThread(),
-                                      j_callback, static_cast<int32_t>(result));
+  Java_WebSigninTrackerBridge_onSigninResult(
+      base::android::AttachCurrentThread(), j_callback,
+      static_cast<int32_t>(result));
 }
 }  // namespace
 
-WebSigninBridge::WebSigninBridge(
+WebSigninTrackerBridge::WebSigninTrackerBridge(
     signin::IdentityManager* identity_manager,
     AccountReconcilor* account_reconcilor,
     std::variant<CoreAccountId, std::string> signin_account,
@@ -38,9 +39,9 @@ WebSigninBridge::WebSigninBridge(
                std::move(signin_account),
                std::move(callback)) {}
 
-WebSigninBridge::~WebSigninBridge() = default;
+WebSigninTrackerBridge::~WebSigninTrackerBridge() = default;
 
-static int64_t JNI_WebSigninBridge_CreateWithCoreAccountId(
+static int64_t JNI_WebSigninTrackerBridge_CreateWithCoreAccountId(
     JNIEnv* env,
     Profile* profile,
     const CoreAccountId& account_id,
@@ -56,11 +57,11 @@ static int64_t JNI_WebSigninBridge_CreateWithCoreAccountId(
           &ForwardOnSigninCompletedToJava,
           base::android::ScopedJavaGlobalRef<jobject>(j_listener));
   return reinterpret_cast<intptr_t>(
-      new WebSigninBridge(identity_manager, account_reconcilor, account_id,
-                          std::move(on_signin_completed)));
+      new WebSigninTrackerBridge(identity_manager, account_reconcilor,
+                                 account_id, std::move(on_signin_completed)));
 }
 
-static int64_t JNI_WebSigninBridge_CreateWithEmail(
+static int64_t JNI_WebSigninTrackerBridge_CreateWithEmail(
     JNIEnv* env,
     Profile* profile,
     const std::string& account_email,
@@ -75,14 +76,15 @@ static int64_t JNI_WebSigninBridge_CreateWithEmail(
       on_signin_completed = base::BindOnce(
           &ForwardOnSigninCompletedToJava,
           base::android::ScopedJavaGlobalRef<jobject>(j_listener));
-  return reinterpret_cast<intptr_t>(
-      new WebSigninBridge(identity_manager, account_reconcilor, account_email,
-                          std::move(on_signin_completed)));
+  return reinterpret_cast<intptr_t>(new WebSigninTrackerBridge(
+      identity_manager, account_reconcilor, account_email,
+      std::move(on_signin_completed)));
 }
 
-static void JNI_WebSigninBridge_Destroy(JNIEnv* env,
-                                        int64_t web_signin_bridge) {
-  delete reinterpret_cast<WebSigninBridge*>(web_signin_bridge);
+static void JNI_WebSigninTrackerBridge_Destroy(
+    JNIEnv* env,
+    int64_t web_signin_tracker_bridge) {
+  delete reinterpret_cast<WebSigninTrackerBridge*>(web_signin_tracker_bridge);
 }
 
-DEFINE_JNI(WebSigninBridge)
+DEFINE_JNI(WebSigninTrackerBridge)

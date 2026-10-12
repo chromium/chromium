@@ -29,7 +29,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtilsJni;
-import org.chromium.chrome.browser.signin.services.WebSigninBridge;
+import org.chromium.chrome.browser.signin.services.WebSigninTrackerBridge;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.signin.DelegateContext;
@@ -60,9 +60,9 @@ public class WebSigninAccountPickerDelegateTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
-    @Mock private WebSigninBridge.Factory mWebSigninBridgeFactoryMock;
+    @Mock private WebSigninTrackerBridge.Factory mWebSigninTrackerBridgeFactoryMock;
 
-    @Mock private WebSigninBridge mWebSigninBridgeMock;
+    @Mock private WebSigninTrackerBridge mWebSigninTrackerBridgeMock;
 
     @Mock private Profile mProfileMock;
 
@@ -87,8 +87,9 @@ public class WebSigninAccountPickerDelegateTest {
     public void setUp() {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         SigninMetricsUtilsJni.setInstanceForTesting(mSigninMetricsUtilsJniMock);
-        when(mWebSigninBridgeFactoryMock.createWithCoreAccountId(eq(mProfileMock), any(), any()))
-                .thenReturn(mWebSigninBridgeMock);
+        when(mWebSigninTrackerBridgeFactoryMock.createWithCoreAccountId(
+                        eq(mProfileMock), any(), any()))
+                .thenReturn(mWebSigninTrackerBridgeMock);
     }
 
     @After
@@ -103,12 +104,12 @@ public class WebSigninAccountPickerDelegateTest {
         when(mTabModelSelectorMock.getTabById(TAB_ID)).thenReturn(mTabMock);
         mDelegate =
                 new WebSigninAccountPickerDelegate(
-                        mProfileMock, mTabModelSelectorMock, mWebSigninBridgeFactoryMock);
+                        mProfileMock, mTabModelSelectorMock, mWebSigninTrackerBridgeFactoryMock);
 
         mDelegate.runPostSigninAction(
                 TestAccounts.ACCOUNT1, DELEGATE_CONTEXT, mPostSigninCallbackMock);
 
-        verifyWebSigninBridgeAndTriggerCallback(WebSigninTrackerResult.SUCCESS);
+        verifyWebSigninTrackerBridgeAndTriggerCallback(WebSigninTrackerResult.SUCCESS);
 
         verify(mPostSigninCallbackMock).onResult(PostSigninOperationResult.SUCCESS);
     }
@@ -121,11 +122,11 @@ public class WebSigninAccountPickerDelegateTest {
         when(mTabMock.getProfile()).thenReturn(mProfileMock);
         mDelegate =
                 new WebSigninAccountPickerDelegate(
-                        mTabMock, mWebSigninBridgeFactoryMock, CONTINUE_URL);
+                        mTabMock, mWebSigninTrackerBridgeFactoryMock, CONTINUE_URL);
 
         mDelegate.onSignInComplete(TestAccounts.ACCOUNT1, mSigninStateControllerMock);
 
-        verifyWebSigninBridgeAndTriggerCallback(WebSigninTrackerResult.SUCCESS);
+        verifyWebSigninTrackerBridgeAndTriggerCallback(WebSigninTrackerResult.SUCCESS);
 
         verify(mSigninStateControllerMock).onSigninComplete();
     }
@@ -134,12 +135,12 @@ public class WebSigninAccountPickerDelegateTest {
     public void testSignInFailedWithConnectionError() {
         mDelegate =
                 new WebSigninAccountPickerDelegate(
-                        mProfileMock, mTabModelSelectorMock, mWebSigninBridgeFactoryMock);
+                        mProfileMock, mTabModelSelectorMock, mWebSigninTrackerBridgeFactoryMock);
 
         mDelegate.runPostSigninAction(
                 TestAccounts.ACCOUNT1, DELEGATE_CONTEXT, mPostSigninCallbackMock);
 
-        verifyWebSigninBridgeAndTriggerCallback(WebSigninTrackerResult.OTHER_ERROR);
+        verifyWebSigninTrackerBridgeAndTriggerCallback(WebSigninTrackerResult.OTHER_ERROR);
 
         verify(mPostSigninCallbackMock).onResult(PostSigninOperationResult.OTHER_ERROR);
     }
@@ -149,11 +150,11 @@ public class WebSigninAccountPickerDelegateTest {
         when(mTabMock.getProfile()).thenReturn(mProfileMock);
         mDelegate =
                 new WebSigninAccountPickerDelegate(
-                        mTabMock, mWebSigninBridgeFactoryMock, CONTINUE_URL);
+                        mTabMock, mWebSigninTrackerBridgeFactoryMock, CONTINUE_URL);
 
         mDelegate.onSignInComplete(TestAccounts.ACCOUNT1, mSigninStateControllerMock);
 
-        verifyWebSigninBridgeAndTriggerCallback(WebSigninTrackerResult.OTHER_ERROR);
+        verifyWebSigninTrackerBridgeAndTriggerCallback(WebSigninTrackerResult.OTHER_ERROR);
 
         verify(mSigninStateControllerMock).showGenericError();
     }
@@ -162,12 +163,12 @@ public class WebSigninAccountPickerDelegateTest {
     public void testSignInFailedWithGaiaError() {
         mDelegate =
                 new WebSigninAccountPickerDelegate(
-                        mProfileMock, mTabModelSelectorMock, mWebSigninBridgeFactoryMock);
+                        mProfileMock, mTabModelSelectorMock, mWebSigninTrackerBridgeFactoryMock);
 
         mDelegate.runPostSigninAction(
                 TestAccounts.ACCOUNT1, DELEGATE_CONTEXT, mPostSigninCallbackMock);
 
-        verifyWebSigninBridgeAndTriggerCallback(WebSigninTrackerResult.AUTH_ERROR);
+        verifyWebSigninTrackerBridgeAndTriggerCallback(WebSigninTrackerResult.AUTH_ERROR);
 
         verify(mPostSigninCallbackMock).onResult(PostSigninOperationResult.AUTH_ERROR);
     }
@@ -177,16 +178,17 @@ public class WebSigninAccountPickerDelegateTest {
         when(mTabMock.getProfile()).thenReturn(mProfileMock);
         mDelegate =
                 new WebSigninAccountPickerDelegate(
-                        mTabMock, mWebSigninBridgeFactoryMock, CONTINUE_URL);
+                        mTabMock, mWebSigninTrackerBridgeFactoryMock, CONTINUE_URL);
 
         mDelegate.onSignInComplete(TestAccounts.ACCOUNT1, mSigninStateControllerMock);
 
-        verifyWebSigninBridgeAndTriggerCallback(WebSigninTrackerResult.AUTH_ERROR);
+        verifyWebSigninTrackerBridgeAndTriggerCallback(WebSigninTrackerResult.AUTH_ERROR);
         verify(mSigninStateControllerMock).showAuthError();
     }
 
-    private void verifyWebSigninBridgeAndTriggerCallback(@WebSigninTrackerResult int result) {
-        verify(mWebSigninBridgeFactoryMock)
+    private void verifyWebSigninTrackerBridgeAndTriggerCallback(
+            @WebSigninTrackerResult int result) {
+        verify(mWebSigninTrackerBridgeFactoryMock)
                 .createWithCoreAccountId(
                         eq(mProfileMock),
                         eq(TestAccounts.ACCOUNT1.getId()),

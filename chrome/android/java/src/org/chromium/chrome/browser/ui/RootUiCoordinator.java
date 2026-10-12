@@ -159,7 +159,7 @@ import org.chromium.chrome.browser.share.scroll_capture.ScrollCaptureManager;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.WebSigninRedirectCoordinator;
 import org.chromium.chrome.browser.signin.WebSigninRedirectCoordinatorSupplier;
-import org.chromium.chrome.browser.signin.services.WebSigninBridge;
+import org.chromium.chrome.browser.signin.services.WebSigninTrackerBridge;
 import org.chromium.chrome.browser.tab.AccessibilityVisibilityHandler;
 import org.chromium.chrome.browser.tab.AutofillSessionLifetimeController;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
@@ -1786,7 +1786,7 @@ public class RootUiCoordinator
                                     new WebSigninAccountPickerDelegate(
                                             profile,
                                             mTabModelSelectorSupplier.asNonNull().get(),
-                                            new WebSigninBridge.Factory()),
+                                            new WebSigninTrackerBridge.Factory()),
                                     assertNonNull(mDeviceLockActivityLauncherSupplier.get()),
                                     profileSupplier,
                                     getBottomSheetControllerSupplier().asNonNull(),

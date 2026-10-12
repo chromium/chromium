@@ -30,7 +30,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
-import org.chromium.chrome.browser.signin.services.WebSigninBridge;
+import org.chromium.chrome.browser.signin.services.WebSigninTrackerBridge;
 import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
@@ -417,7 +417,8 @@ final class SigninBridge {
                 accountPreviewDataService,
                 assertNonNull(windowAndroid.getModalDialogManager()),
                 bottomSheetController,
-                new WebSigninAccountPickerDelegate(tab, new WebSigninBridge.Factory(), continueUrl),
+                new WebSigninAccountPickerDelegate(
+                        tab, new WebSigninTrackerBridge.Factory(), continueUrl),
                 strings,
                 DeviceLockActivityLauncherImpl.get(),
                 AccountPickerLaunchMode.DEFAULT,

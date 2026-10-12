@@ -544,8 +544,8 @@ public class AccountPickerBottomSheetMediator
     }
 
     /**
-     * Callback for the PropertyKey
-     * {@link AccountPickerBottomSheetProperties#ON_SELECTED_ACCOUNT_CLICKED}.
+     * Callback for the PropertyKey {@link
+     * AccountPickerBottomSheetProperties#ON_SELECTED_ACCOUNT_CLICKED}.
      */
     private void onSelectedAccountClicked() {
         assert !mIsSeamlessSignin;
@@ -556,8 +556,8 @@ public class AccountPickerBottomSheetMediator
     }
 
     /**
-     * Callback for the PropertyKey
-     * {@link AccountPickerBottomSheetProperties#ON_CONTINUE_AS_CLICKED}.
+     * Callback for the PropertyKey {@link
+     * AccountPickerBottomSheetProperties#ON_CONTINUE_AS_CLICKED}.
      */
     private void onContinueAsClicked() {
         @ViewState int viewState = mModel.get(AccountPickerBottomSheetProperties.VIEW_STATE);
@@ -719,8 +719,8 @@ public class AccountPickerBottomSheetMediator
                     public void onSignInComplete() {
                         // Delegates can optionally run extra operations immediately after sign-in
                         // while the loading bottom sheet is still shown. For example, websignin
-                        // creates a WebSigninBridge which asynchronously awaits cookie sync. If
-                        // this fails reauthentication is necessary.
+                        // creates a WebSigninTrackerBridge which asynchronously awaits cookie sync.
+                        // If this fails reauthentication is necessary.
                         mAccountPickerDelegate.runPostSigninAction(
                                 selectedAccount,
                                 result -> handlePostSigninResult(selectedAccount, result));
