@@ -152,6 +152,10 @@ void PasswordGenerationFrameHelper::AddManualGenerationEnabledField(
   generation_enabled_fields_.insert(field_renderer_id);
 }
 
+void PasswordGenerationFrameHelper::DidNavigateFrame() {
+  generation_enabled_fields_.clear();
+}
+
 autofill::PasswordRequirementsSpec
 PasswordGenerationFrameHelper::GetPasswordRequirementsSpec(
     const GURL& last_committed_url,
