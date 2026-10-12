@@ -531,10 +531,16 @@ export class OmniboxEverywhereOmniboxElement extends
     this.processFiles_(e.detail.files, ComposeboxContextAddedMethod.COPY_PASTE);
   }
 
+  // Files are attached as AI Mode context, so they can only be added when AI
+  // Mode is available and policy allows sharing context with search.
+  protected canAddFileContext_(): boolean {
+    return this.fileContextEnabled_ && this.isFuseboxEnabled;
+  }
+
   protected processFiles_(
       files: FileList|null,
       contextAdditionMethod: ComposeboxContextAddedMethod) {
-    if (!files || files.length === 0) {
+    if (!files || files.length === 0 || !this.canAddFileContext_()) {
       return;
     }
     recordContextAdditionMethod(contextAdditionMethod, 'OmniboxEverywhere');

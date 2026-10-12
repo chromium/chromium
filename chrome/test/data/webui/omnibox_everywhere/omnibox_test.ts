@@ -488,6 +488,77 @@ suite('OmniboxEverywhereOmniboxTest', () => {
         assertFalse(
             !!testOmnibox.shadowRoot.querySelector('#lensSearchButton'));
       });
+
+  test(
+      'pasted files do not open composebox when AI Mode is unavailable',
+      async () => {
+        testProxy.page.updateAimPopupEligibility(false);
+        await microtasksFinished();
+
+        let openComposeboxCalled = false;
+        omnibox.addEventListener('open-composebox', () => {
+          openComposeboxCalled = true;
+        });
+
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(
+            new File(['foo'], 'foo.png', {type: 'image/png'}));
+        const input = omnibox.shadowRoot.querySelector('#input')!;
+        input.dispatchEvent(new CustomEvent('searchbox-input-files-pasted', {
+          detail: {files: dataTransfer.files},
+          bubbles: true,
+          composed: true,
+        }));
+        await microtasksFinished();
+
+        assertFalse(openComposeboxCalled);
+      });
+
+  test(
+      'dropped files do not open composebox when AI Mode is unavailable',
+      async () => {
+        testProxy.page.updateAimPopupEligibility(false);
+        await microtasksFinished();
+
+        let openComposeboxCalled = false;
+        omnibox.addEventListener('open-composebox', () => {
+          openComposeboxCalled = true;
+        });
+
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(
+            new File(['foo'], 'foo.png', {type: 'image/png'}));
+        omnibox.addDroppedFiles(dataTransfer.files);
+        await microtasksFinished();
+
+        assertFalse(openComposeboxCalled);
+      });
+
+  test('allow-file-paste follows AI Mode eligibility', async () => {
+    assertTrue(omnibox.$.input.allowFilePaste);
+
+    testProxy.page.updateAimPopupEligibility(false);
+    await microtasksFinished();
+    assertFalse(omnibox.$.input.allowFilePaste);
+
+    testProxy.page.updateAimPopupEligibility(true);
+    await microtasksFinished();
+    assertTrue(omnibox.$.input.allowFilePaste);
+  });
+
+  test(
+      'allow-file-paste is off when AI Mode is unavailable at load',
+      async () => {
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        loadTimeData.overrideValues({isFuseboxEnabled: false});
+        const testOmnibox =
+            document.createElement('omnibox-everywhere-omnibox');
+        document.body.appendChild(testOmnibox);
+        await microtasksFinished();
+
+        assertFalse(testOmnibox.$.input.allowFilePaste);
+      });
+
   test('dropdownIsVisible preserves bottomControls', async () => {
     const bottomControls =
         omnibox.shadowRoot.querySelector<HTMLElement>('#bottomControls');
