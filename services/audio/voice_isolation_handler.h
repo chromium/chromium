@@ -44,6 +44,11 @@ class ProcessingAudioFifo;
 // t=0 in pass-through warmup.
 class VoiceIsolationHandler {
  public:
+  // Called on the capture/processing thread to deliver processed audio.
+  // `audio_capture_time` is adjusted by the voice isolation algorithmic delay
+  // when voice isolation is active and clamped to be monotonically
+  // non-decreasing across bypass-to-active transitions (consecutive buffers may
+  // share a timestamp immediately after re-enabling).
   using DeliverProcessedAudioCallback = base::RepeatingCallback<void(
       const media::AudioBus& audio_bus,
       base::TimeTicks audio_capture_time,
@@ -85,7 +90,12 @@ class VoiceIsolationHandler {
       LogCallback log_callback = base::DoNothing(),
       std::unique_ptr<media::AudioDebugRecorder> debug_recorder = nullptr);
 
-  // Processes the captured audio. Called on the capture/processing thread.
+  // Processes the captured audio and delivers it via
+  // `deliver_processed_audio_callback_`, adjusting `audio_capture_time` by the
+  // voice isolation algorithmic delay when active (clamped to be monotonically
+  // non-decreasing across bypass-to-active transitions, so consecutive buffers
+  // may share a timestamp immediately after re-enabling). Called on the
+  // capture/processing thread.
   void ProcessCapturedAudio(const media::AudioBus& audio_source,
                             base::TimeTicks audio_capture_time,
                             const media::AudioGlitchInfo& audio_glitch_info);
@@ -203,6 +213,12 @@ class VoiceIsolationHandler {
   // ON -> OFF transitions (crossfade to microphone and clear internal
   // buffers). Only used in ProcessCapturedAudioInternal().
   bool was_previously_bypassed_ = true;
+
+  // Last delivered capture timestamp. While voice isolation is active,
+  // delivered timestamps are clamped to this value so they are monotonically
+  // non-decreasing (relevant when transitioning from bypassed to active).
+  // Only used in ProcessCapturedAudioInternal().
+  base::TimeTicks last_delivered_capture_time_;
 
   class StartupMetricsLogger;
 

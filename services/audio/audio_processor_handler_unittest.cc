@@ -1493,6 +1493,116 @@ TEST_F(AudioProcessorHandlerTest,
 }
 
 TEST_F(AudioProcessorHandlerTest,
+       VoiceIsolationHandlerAdjustsTimestampWhenActive) {
+  // Timestamp calculation and clamping are thread-agnostic; pin the synchronous
+  // (no FIFO) path.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      media::kWebRtcVoiceIsolationProcessingFifo);
+
+  auto mock_voice_isolation = std::make_unique<media::MockVoiceIsolation>();
+  media::MockVoiceIsolation* mock_ptr = mock_voice_isolation.get();
+  constexpr base::TimeDelta kDelay = base::Milliseconds(25);
+  EXPECT_CALL(*mock_ptr, AlgorithmicDelay())
+      .WillRepeatedly(testing::Return(kDelay));
+
+  std::unique_ptr<VoiceIsolationHandler> handler =
+      CreateVoiceIsolationHandlerWithMock(std::move(mock_voice_isolation),
+                                          output_params_,
+                                          deliver_callback_.Get());
+  ASSERT_TRUE(handler);
+
+  auto input_bus = media::AudioBus::Create(output_params_);
+  input_bus->Zero();
+  const base::TimeTicks t0 = base::TimeTicks() + base::Milliseconds(1000);
+
+  // 1. Frame `t0` (1000 ms): when voice isolation is active, delivered
+  // timestamp is adjusted by `kDelay` (25 ms) -> `t0 - kDelay` (975 ms).
+  EXPECT_CALL(deliver_callback_, Run(_, t0 - kDelay, _)).Times(1);
+  handler->ProcessCapturedAudio(*input_bus, t0, media::AudioGlitchInfo());
+  testing::Mock::VerifyAndClearExpectations(&deliver_callback_);
+
+  // 2. Frame `t1 = t0 + 10 ms` (1010 ms): on the ON -> OFF crossfade frame
+  // (`was_previously_bypassed_ == false`), ProcessAudio() runs one last time to
+  // crossfade to the microphone signal, and the delivered timestamp is
+  // unadjusted -> `t1` (1010 ms).
+  handler->SetVoiceIsolation(false);
+  const base::TimeTicks t1 = t0 + base::Milliseconds(10);
+  EXPECT_CALL(deliver_callback_, Run(_, t1, _)).Times(1);
+  handler->ProcessCapturedAudio(*input_bus, t1, media::AudioGlitchInfo());
+  testing::Mock::VerifyAndClearExpectations(&deliver_callback_);
+
+  // 3. Frame `t2 = t1 + 10 ms` (1020 ms): in steady-state bypass,
+  // ProcessAudio() is not called and the delivered timestamp is also
+  // unadjusted -> `t2` (1020 ms).
+  const base::TimeTicks t2 = t1 + base::Milliseconds(10);
+  EXPECT_CALL(*mock_ptr, ProcessAudio(_, _)).Times(0);
+  EXPECT_CALL(deliver_callback_, Run(_, t2, _)).Times(1);
+  handler->ProcessCapturedAudio(*input_bus, t2, media::AudioGlitchInfo());
+  testing::Mock::VerifyAndClearExpectations(&deliver_callback_);
+}
+
+TEST_F(AudioProcessorHandlerTest,
+       VoiceIsolationHandlerClampsTimestampOnReenable) {
+  // Timestamp calculation and clamping are thread-agnostic; pin the synchronous
+  // (no FIFO) path.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      media::kWebRtcVoiceIsolationProcessingFifo);
+
+  auto mock_voice_isolation = std::make_unique<media::MockVoiceIsolation>();
+  media::MockVoiceIsolation* mock_ptr = mock_voice_isolation.get();
+  // Use a delay (25 ms) that exceeds two 10 ms buffers and is not a multiple of
+  // the buffer duration so clamping spans multiple active frames and the first
+  // unclamped timestamp (`t3 - kDelay` = 1005 ms) is distinct from `t0`.
+  constexpr base::TimeDelta kDelay = base::Milliseconds(25);
+  EXPECT_CALL(*mock_ptr, AlgorithmicDelay())
+      .WillRepeatedly(testing::Return(kDelay));
+
+  std::unique_ptr<VoiceIsolationHandler> handler =
+      CreateVoiceIsolationHandlerWithMock(std::move(mock_voice_isolation),
+                                          output_params_,
+                                          deliver_callback_.Get());
+  ASSERT_TRUE(handler);
+
+  auto input_bus = media::AudioBus::Create(output_params_);
+  input_bus->Zero();
+  const base::TimeTicks t0 = base::TimeTicks() + base::Milliseconds(1000);
+
+  // 1. Frame `t0` (1000 ms): while bypassed, the delivered timestamp is
+  // unadjusted -> `t0` (1000 ms).
+  handler->SetVoiceIsolation(false);
+  EXPECT_CALL(deliver_callback_, Run(_, t0, _)).Times(1);
+  handler->ProcessCapturedAudio(*input_bus, t0, media::AudioGlitchInfo());
+  testing::Mock::VerifyAndClearExpectations(&deliver_callback_);
+
+  // 2. Frame `t1 = t0 + 10 ms` (1010 ms): when re-enabled, `t1 - kDelay`
+  // (985 ms) is `< t0` (1000 ms), so the delivered timestamp is clamped to
+  // `t0` (1000 ms) to guarantee monotonicity.
+  handler->SetVoiceIsolation(true);
+  const base::TimeTicks t1 = t0 + base::Milliseconds(10);
+  EXPECT_CALL(deliver_callback_, Run(_, t0, _)).Times(1);
+  handler->ProcessCapturedAudio(*input_bus, t1, media::AudioGlitchInfo());
+  testing::Mock::VerifyAndClearExpectations(&deliver_callback_);
+
+  // 3. Frame `t2 = t1 + 10 ms` (1020 ms): `t2 - kDelay` (995 ms) is still
+  // `< t0` (1000 ms), so the delivered timestamp is clamped to `t0` (1000 ms)
+  // for a second active frame.
+  const base::TimeTicks t2 = t1 + base::Milliseconds(10);
+  EXPECT_CALL(deliver_callback_, Run(_, t0, _)).Times(1);
+  handler->ProcessCapturedAudio(*input_bus, t2, media::AudioGlitchInfo());
+  testing::Mock::VerifyAndClearExpectations(&deliver_callback_);
+
+  // 4. Frame `t3 = t2 + 10 ms` (1030 ms): now `t3 - kDelay` (1005 ms) is
+  // `>= t0` (1000 ms), so the delivered timestamp resumes advancing as
+  // `t3 - kDelay` (1005 ms).
+  const base::TimeTicks t3 = t2 + base::Milliseconds(10);
+  EXPECT_CALL(deliver_callback_, Run(_, t3 - kDelay, _)).Times(1);
+  handler->ProcessCapturedAudio(*input_bus, t3, media::AudioGlitchInfo());
+  testing::Mock::VerifyAndClearExpectations(&deliver_callback_);
+}
+
+TEST_F(AudioProcessorHandlerTest,
        VoiceIsolationHandlerClearBuffersWithProcessingFifo) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(media::kWebRtcVoiceIsolationProcessingFifo);

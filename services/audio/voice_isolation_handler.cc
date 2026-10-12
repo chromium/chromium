@@ -322,6 +322,7 @@ void VoiceIsolationHandler::ProcessCapturedAudioInternal(
               audio_source.channels());
 
   const media::AudioBus* delivered_bus = &audio_source;
+  base::TimeTicks delivered_capture_time = audio_capture_time;
   const bool is_bypassed = IsVoiceIsolationBypassed();
 
   // Run voice isolation while it is enabled, and one last time on the ON -> OFF
@@ -341,12 +342,22 @@ void VoiceIsolationHandler::ProcessCapturedAudioInternal(
       // re-enabled.
       // Note: the voice isolation output lags the microphone signal by its
       // algorithmic delay, so this transition still skips the buffered
-      // lookahead. The crossfade only removes the amplitude discontinuity.
+      // lookahead; the delivered timestamp jumps forward by the algorithmic
+      // delay, matching the skipped lookahead. The crossfade only removes the
+      // amplitude discontinuity.
       CHECK(!was_previously_bypassed_);
       transition_crossfader_.Crossfade(/*from=*/*output_bus_,
                                        /*to=*/audio_source,
                                        /*destination=*/*output_bus_);
       voice_isolation_->ClearBuffers();
+    } else {
+      // VI output lags its input by AlgorithmicDelay(). After an OFF -> ON
+      // transition, t - delay falls behind the last delivered timestamp, so
+      // clamp to keep timestamps non-decreasing (the last value is repeated for
+      // floor(delay / buffer_duration) frames while VI primes).
+      delivered_capture_time =
+          std::max(audio_capture_time - voice_isolation_->AlgorithmicDelay(),
+                   last_delivered_capture_time_);
     }
 
     if (was_previously_bypassed_) {
@@ -366,7 +377,9 @@ void VoiceIsolationHandler::ProcessCapturedAudioInternal(
     debug_recorder_->OnData(delivered_bus);
   }
 
-  deliver_processed_audio_callback_.Run(*delivered_bus, audio_capture_time,
+  last_delivered_capture_time_ = delivered_capture_time;
+
+  deliver_processed_audio_callback_.Run(*delivered_bus, delivered_capture_time,
                                         audio_glitch_info);
 }
 
