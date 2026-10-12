@@ -1005,6 +1005,7 @@ if (is_android) {
       "//chrome/browser/glic:impl",
       "//chrome/browser/glic/browser_ui:glow",
       "//chrome/browser/glic/common",
+      "//chrome/browser/history",
       "//chrome/browser/history:impl",
       "//chrome/browser/image_decoder",
       "//chrome/browser/metrics:impl",

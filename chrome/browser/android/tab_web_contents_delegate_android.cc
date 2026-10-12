@@ -691,6 +691,11 @@ WebContents* TabWebContentsDelegateAndroid::AddNewContents(
   }
 
   TabHelpers::AttachTabHelpers(new_contents.get());
+  Profile* profile =
+      Profile::FromBrowserContext(new_contents->GetBrowserContext());
+  if (!profile->IsOffTheRecord()) {
+    HistoryTabHelper::GetOrCreateForWebContents(new_contents.get());
+  }
   if (optimization_guide::features::IsOptimizationHintsEnabled()) {
     OptimizationGuideWebContentsObserver::CreateForWebContents(
         new_contents.get());

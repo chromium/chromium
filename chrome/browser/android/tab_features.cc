@@ -246,6 +246,9 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
   CHECK(tab);
   tab_subscription_ = webui::InitEmbeddingContext(tab);
 
+  if (!profile->IsOffTheRecord()) {
+    HistoryTabHelper::GetOrCreateForWebContents(web_contents);
+  }
   webapps::InstallableManager::CreateForWebContents(web_contents);
   if (optimization_guide::features::IsOptimizationHintsEnabled()) {
     OptimizationGuideWebContentsObserver::CreateForWebContents(web_contents);

@@ -70,6 +70,11 @@ _ALLOWED_CREATE_FOR_CALLS = (
   # is destroyed, and is looked up on WebContents by
   # UkmPageLoadMetricsObserver, so WebContents must own it.
   'HistoryClustersTabHelper::CreateForWebContents',
+  # HistoryTabHelper is also attached to pre-tab Android WebContents in
+  # ChromeExtensionHostDelegate::CreateTab and
+  # TabWebContentsDelegateAndroid::AddNewContents, and is looked up on
+  # WebContents across //chrome/browser, so the WebContents must own it.
+  'HistoryTabHelper::GetOrCreateForWebContents',
   # HttpsOnlyModeTabHelper is also attached to non-tab and pre-tab WebContents
   # in HttpsUpgradesInterceptor::MaybeCreateLoader and
   # HttpsUpgradesNavigationThrottle::MaybeCreateThrottleFor, and is queried on

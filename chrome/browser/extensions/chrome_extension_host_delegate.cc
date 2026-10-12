@@ -30,6 +30,7 @@
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/content_settings/request_desktop_site_web_contents_observer_android.h"
 #include "chrome/browser/extensions/tab_helper.h"
+#include "chrome/browser/history/history_tab_helper.h"
 #include "chrome/browser/optimization_guide/optimization_guide_web_contents_observer.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -69,6 +70,9 @@ void ChromeExtensionHostDelegate::CreateTab(
   }
 
   CHECK(web_contents);
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  CHECK(profile);
 #if BUILDFLAG(IS_ANDROID)
   // On Android, tab creation is asynchronous, but `CreateNewWindow()`
   // immediately starts navigation. Attach `TabHelpers` synchronously so
@@ -79,6 +83,9 @@ void ChromeExtensionHostDelegate::CreateTab(
   // idempotent.
   // TODO(crbug.com/499200457): Add instrumentation test.
   TabAndroid::AttachTabHelpers(web_contents.get());
+  if (!profile->IsOffTheRecord()) {
+    HistoryTabHelper::GetOrCreateForWebContents(web_contents.get());
+  }
   if (optimization_guide::features::IsOptimizationHintsEnabled()) {
     OptimizationGuideWebContentsObserver::CreateForWebContents(
         web_contents.get());
@@ -91,9 +98,6 @@ void ChromeExtensionHostDelegate::CreateTab(
   }
   TabHelper::CreateForWebContents(web_contents.get());
 #endif
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  CHECK(profile);
   BrowserWindowInterface* browser =
       browser_window_util::GetLastActiveNormalBrowserWithProfile(
           *profile, /*include_incognito_or_parent=*/false);

@@ -416,6 +416,10 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
           &TabFeatures::WillDiscardContents, weak_factory_.GetWeakPtr())));
   tab_subscriptions_.push_back(webui::InitEmbeddingContext(&tab));
 
+  if (!profile->IsOffTheRecord()) {
+    HistoryTabHelper::GetOrCreateForWebContents(tab.GetContents());
+  }
+
   webapps::InstallableManager::CreateForWebContents(tab.GetContents());
 
   if (optimization_guide::features::IsOptimizationHintsEnabled()) {
@@ -1429,6 +1433,10 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   DCHECK_EQ(old_contents, tab->GetContents());
 
   Profile* profile = tab->GetBrowserWindowInterface()->GetProfile();
+
+  if (!profile->IsOffTheRecord()) {
+    HistoryTabHelper::GetOrCreateForWebContents(new_contents);
+  }
 
   webapps::InstallableManager::CreateForWebContents(new_contents);
 
