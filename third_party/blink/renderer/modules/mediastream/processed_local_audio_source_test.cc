@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -272,6 +273,50 @@ TEST_P(ProcessedLocalAudioSourceTest, VerifyAudioFlow) {
   // when the track is stopped.
   EXPECT_CALL(*mock_audio_capturer_source(), Stop());
   MediaStreamAudioTrack::From(audio_track())->Stop();
+}
+
+// A capture error reported by the platform capturer (e.g. the Audio Service
+// stream failed) must stop the capturer and end the track, and the error code
+// must be recorded on the source.
+TEST_P(ProcessedLocalAudioSourceTest, CaptureErrorStopsCapturerAndEndsTrack) {
+  base::test::ScopedFeatureList scoped_feature_list;
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  if (GetParam() == ProcessingLocation::kAudioService) {
+    scoped_feature_list.InitAndEnableFeature(
+        media::kChromeWideEchoCancellation);
+  } else {
+    scoped_feature_list.InitAndDisableFeature(
+        media::kChromeWideEchoCancellation);
+  }
+#endif
+
+  AudioProcessingProperties properties;
+  CreateProcessedLocalAudioSource(MediaStreamAudioProcessingLayout(
+      properties,
+      /*available_platform_effects=*/0,
+      /*channels=*/ChannelLayoutToChannelCount(kProcessedChannelLayout)));
+
+  EXPECT_CALL(*mock_audio_capturer_source(),
+              Initialize(_, capture_source_callback()));
+  EXPECT_CALL(*mock_audio_capturer_source(), SetAutomaticGainControl(_));
+  EXPECT_CALL(*mock_audio_capturer_source(), Start())
+      .WillOnce(Invoke(
+          capture_source_callback(),
+          &media::AudioCapturerSource::CaptureCallback::OnCaptureStarted));
+  ASSERT_TRUE(audio_source()->ConnectToInitializedTrack(audio_track()));
+  ASSERT_EQ(audio_track()->GetReadyState(), MediaStreamSource::kReadyStateLive);
+  ASSERT_FALSE(audio_source()->ErrorCode().has_value());
+
+  // The error is handled on a posted task, which must stop the capturer.
+  EXPECT_CALL(*mock_audio_capturer_source(), Stop());
+  capture_source_callback()->OnCaptureError(
+      media::AudioCapturerSource::ErrorCode::kUnknown, "stream error");
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return audio_track()->GetReadyState() ==
+           MediaStreamSource::kReadyStateEnded;
+  }));
+  EXPECT_EQ(audio_source()->ErrorCode(),
+            media::AudioCapturerSource::ErrorCode::kUnknown);
 }
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)

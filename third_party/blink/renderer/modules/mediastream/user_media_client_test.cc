@@ -46,6 +46,7 @@
 #include "third_party/blink/public/web/modules/mediastream/web_media_stream_device_observer.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_boolean_string.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_capabilities.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_settings.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -179,9 +180,14 @@ class MockLocalMediaStreamAudioSource : public blink::MediaStreamAudioSource {
   void ChangeSourceImpl(const blink::MediaStreamDevice& new_device) override {
     EnsureSourceIsStopped();
   }
+  // Simulates a capture error reported by the platform (e.g. the Audio Service
+  // stream died); `StopSourceOnError()` is protected.
+  void StopSourceDueToError(media::AudioCapturerSource::ErrorCode code) {
+    StopSourceOnError(code, "");
+  }
   void StopSourceDueToPermissionError() {
-    StopSourceOnError(media::AudioCapturerSource::ErrorCode::kSystemPermissions,
-                      "");
+    StopSourceDueToError(
+        media::AudioCapturerSource::ErrorCode::kSystemPermissions);
   }
   std::optional<AudioProcessingProperties> GetInitialAudioProcessingProperties()
       const override;
@@ -982,10 +988,15 @@ class UserMediaClientTest : public ::testing::Test {
         /*execution_context=*/nullptr, desc->AudioComponents()[0]);
   }
 
+  // `force_audio_input_1` adds deviceId {exact: audio_input_1}. Pass false
+  // when a rejection must be attributed to voiceIsolation: with several
+  // unsatisfied constraints, the reported one is whichever the last candidate
+  // device failed on, which for the other fake device is deviceId.
   MediaStreamTrack* RequestLocalAudioTrackWithVoiceIsolationExact(
-      std::optional<bool> voice_isolation_exact) {
-    return RequestLocalAudioTrackWithVoiceIsolation(voice_isolation_exact,
-                                                    std::nullopt);
+      std::optional<bool> voice_isolation_exact,
+      bool force_audio_input_1 = true) {
+    return RequestLocalAudioTrackWithVoiceIsolation(
+        voice_isolation_exact, std::nullopt, force_audio_input_1);
   }
 
   MediaStreamTrack* RequestLocalAudioTrackWithVoiceIsolationIdeal(
@@ -996,9 +1007,12 @@ class UserMediaClientTest : public ::testing::Test {
 
   MediaStreamTrack* RequestLocalAudioTrackWithVoiceIsolation(
       std::optional<bool> voice_isolation_exact,
-      std::optional<bool> voice_isolation_ideal) {
+      std::optional<bool> voice_isolation_ideal,
+      bool force_audio_input_1 = true) {
     blink::MockConstraintFactory constraint_factory;
-    constraint_factory.basic().device_id.SetExact(fake_ids_->audio_input_1);
+    if (force_audio_input_1) {
+      constraint_factory.basic().device_id.SetExact(fake_ids_->audio_input_1);
+    }
     if (voice_isolation_exact.has_value()) {
       constraint_factory.basic().voice_isolation.SetExact(
           *voice_isolation_exact);
@@ -1016,6 +1030,20 @@ class UserMediaClientTest : public ::testing::Test {
         user_media_processor_->last_generated_descriptor();
     return MakeGarbageCollected<MediaStreamTrackImpl>(
         /*execution_context=*/nullptr, desc->AudioComponents()[0]);
+  }
+
+  // Makes the audio input device report (or stop reporting) voice isolation
+  // support, both to the media devices dispatcher (used during capability
+  // selection) and to the mock dispatcher host (used when opening the device).
+  void SetVoiceIsolationSupport(bool supported) {
+    int effects = media_devices_dispatcher_.AudioParameters().effects();
+    if (supported) {
+      effects |= media::AudioParameters::VOICE_ISOLATION_SUPPORTED;
+    } else {
+      effects &= ~media::AudioParameters::VOICE_ISOLATION_SUPPORTED;
+    }
+    media_devices_dispatcher_.AudioParameters().set_effects(effects);
+    mock_dispatcher_host_.SetAudioDeviceEffects(effects);
   }
 
   MediaStreamTrack* RequestAudioTrackWithRestrictOwnAudio() {
@@ -2301,14 +2329,7 @@ TEST_F(UserMediaClientTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(media::kWebRtcVoiceIsolationDenoiser);
 #endif
-  // Configure both the media devices dispatcher (used during capability
-  // selection) and the mock dispatcher host (used when opening the device)
-  // to support voice isolation.
-  media_devices_dispatcher_.AudioParameters().set_effects(
-      media_devices_dispatcher_.AudioParameters().effects() |
-      media::AudioParameters::VOICE_ISOLATION_SUPPORTED);
-  mock_dispatcher_host_.SetAudioDeviceEffects(
-      media::AudioParameters::VOICE_ISOLATION_SUPPORTED);
+  SetVoiceIsolationSupport(true);
 
   MediaStreamTrack* track = RequestLocalAudioTrackWithVoiceIsolationExact(true);
   ASSERT_TRUE(track);
@@ -2330,14 +2351,7 @@ TEST_F(UserMediaClientTest,
        VoiceIsolationCapabilitiesOnlyFalseWhenStartedWithoutVoiceIsolation) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(media::kWebRtcVoiceIsolationDenoiser);
-  // Configure both the media devices dispatcher (used during capability
-  // selection) and the mock dispatcher host (used when opening the device)
-  // to support voice isolation.
-  media_devices_dispatcher_.AudioParameters().set_effects(
-      media_devices_dispatcher_.AudioParameters().effects() |
-      media::AudioParameters::VOICE_ISOLATION_SUPPORTED);
-  mock_dispatcher_host_.SetAudioDeviceEffects(
-      media::AudioParameters::VOICE_ISOLATION_SUPPORTED);
+  SetVoiceIsolationSupport(true);
 
   for (std::optional<bool> voice_isolation_exact :
        {std::optional<bool>(std::nullopt), std::optional<bool>(false)}) {
@@ -2365,14 +2379,7 @@ TEST_F(UserMediaClientTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(media::kWebRtcVoiceIsolationDenoiser);
 #endif
-  // Configure both the media devices dispatcher (used during capability
-  // selection) and the mock dispatcher host (used when opening the device)
-  // to support voice isolation.
-  media_devices_dispatcher_.AudioParameters().set_effects(
-      media_devices_dispatcher_.AudioParameters().effects() |
-      media::AudioParameters::VOICE_ISOLATION_SUPPORTED);
-  mock_dispatcher_host_.SetAudioDeviceEffects(
-      media::AudioParameters::VOICE_ISOLATION_SUPPORTED);
+  SetVoiceIsolationSupport(true);
 
   // 1. Request Track 1 with voiceIsolation = true exact.
   MediaStreamTrack* track1 =
@@ -2459,14 +2466,7 @@ TEST_F(UserMediaClientTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(media::kWebRtcVoiceIsolationDenoiser);
 #endif
-  // Configure both the media devices dispatcher (used during capability
-  // selection) and the mock dispatcher host (used when opening the device)
-  // to support voice isolation.
-  media_devices_dispatcher_.AudioParameters().set_effects(
-      media_devices_dispatcher_.AudioParameters().effects() |
-      media::AudioParameters::VOICE_ISOLATION_SUPPORTED);
-  mock_dispatcher_host_.SetAudioDeviceEffects(
-      media::AudioParameters::VOICE_ISOLATION_SUPPORTED);
+  SetVoiceIsolationSupport(true);
   // 1. Request Track 1 with voiceIsolation = true ideal.
   MediaStreamTrack* track1 =
       RequestLocalAudioTrackWithVoiceIsolationIdeal(true);
@@ -2551,14 +2551,7 @@ TEST_F(UserMediaClientTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(media::kWebRtcVoiceIsolationDenoiser);
 #endif
-  // Configure both the media devices dispatcher (used during capability
-  // selection) and the mock dispatcher host (used when opening the device)
-  // to support voice isolation.
-  media_devices_dispatcher_.AudioParameters().set_effects(
-      media_devices_dispatcher_.AudioParameters().effects() |
-      media::AudioParameters::VOICE_ISOLATION_SUPPORTED);
-  mock_dispatcher_host_.SetAudioDeviceEffects(
-      media::AudioParameters::VOICE_ISOLATION_SUPPORTED);
+  SetVoiceIsolationSupport(true);
 
   // 1. Request Track with voiceIsolation = true exact.
   MediaStreamTrack* track = RequestLocalAudioTrackWithVoiceIsolationExact(true);
@@ -2614,14 +2607,7 @@ TEST_F(
     ApplyConstraintsAudioDeviceTrackStartedWithoutVoiceIsolationFailsExactTrue) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(media::kWebRtcVoiceIsolationDenoiser);
-  // Configure both the media devices dispatcher (used during capability
-  // selection) and the mock dispatcher host (used when opening the device)
-  // to support voice isolation.
-  media_devices_dispatcher_.AudioParameters().set_effects(
-      media_devices_dispatcher_.AudioParameters().effects() |
-      media::AudioParameters::VOICE_ISOLATION_SUPPORTED);
-  mock_dispatcher_host_.SetAudioDeviceEffects(
-      media::AudioParameters::VOICE_ISOLATION_SUPPORTED);
+  SetVoiceIsolationSupport(true);
 
   // 1. Request Track with voiceIsolation = false (disabled at stream startup).
   MediaStreamTrack* track =
@@ -2652,6 +2638,111 @@ TEST_F(
 
   // Stop tracks and GC to ensure a clean slate.
   blink::MediaStreamTrackPlatform::GetTrack(WebMediaStreamTrack(component))
+      ->Stop();
+  blink::WebHeap::CollectGarbageForTesting();
+}
+
+// After the voice isolation stream died and the device stopped advertising
+// voice isolation support (the Audio Service invalidates a model that failed),
+// the original track ends and a new request with voiceIsolation {exact: true}
+// is rejected on that constraint.
+TEST_F(UserMediaClientTest,
+       VoiceIsolationExactRequestRejectedAfterSourceDiedAndSupportRevoked) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kWebRtcVoiceIsolationDenoiser);
+  SetVoiceIsolationSupport(true);
+
+  MediaStreamTrack* track = RequestLocalAudioTrackWithVoiceIsolationExact(
+      true, /*force_audio_input_1=*/false);
+  ASSERT_TRUE(track);
+  ASSERT_EQ(track->readyState(), V8MediaStreamTrackState::Enum::kLive);
+
+  MockLocalMediaStreamAudioSource* source =
+      user_media_processor_->last_created_local_audio_source();
+  ASSERT_TRUE(source);
+  source->StopSourceDueToError(media::AudioCapturerSource::ErrorCode::kUnknown);
+  test::RunPendingTasks();
+  ASSERT_EQ(track->readyState(), V8MediaStreamTrackState::Enum::kEnded);
+
+  SetVoiceIsolationSupport(false);
+
+  EXPECT_FALSE(RequestLocalAudioTrackWithVoiceIsolationExact(
+      true, /*force_audio_input_1=*/false));
+  EXPECT_EQ(request_state(), kRequestFailed);
+  EXPECT_EQ(
+      user_media_processor_->error_reason(),
+      blink::mojom::blink::MediaStreamRequestResult::CONSTRAINT_NOT_SATISFIED);
+  EXPECT_EQ(user_media_processor_->constraint_name(), "voiceIsolation");
+
+  blink::WebHeap::CollectGarbageForTesting();
+}
+
+// Negative control for the test above: the same sequence with support still
+// advertised is served again with a new source for the same device. This
+// verifies both that the dead source was removed from `local_sources_`
+// (otherwise `FindLocalSource` would reuse the stopped source and the request
+// would fail with `TRACK_START_FAILURE_AUDIO`) and that the rejection above is
+// caused by the capability change rather than the earlier stream error.
+TEST_F(UserMediaClientTest,
+       VoiceIsolationExactRequestServedAfterSourceDiedWhileSupportRemains) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kWebRtcVoiceIsolationDenoiser);
+  SetVoiceIsolationSupport(true);
+
+  MediaStreamTrack* track = RequestLocalAudioTrackWithVoiceIsolationExact(
+      true, /*force_audio_input_1=*/false);
+  ASSERT_TRUE(track);
+
+  MockLocalMediaStreamAudioSource* source =
+      user_media_processor_->last_created_local_audio_source();
+  ASSERT_TRUE(source);
+  source->StopSourceDueToError(media::AudioCapturerSource::ErrorCode::kUnknown);
+  test::RunPendingTasks();
+  ASSERT_EQ(track->readyState(), V8MediaStreamTrackState::Enum::kEnded);
+
+  MediaStreamTrack* new_track = RequestLocalAudioTrackWithVoiceIsolationExact(
+      true, /*force_audio_input_1=*/false);
+  ASSERT_TRUE(new_track);
+  EXPECT_EQ(new_track->readyState(), V8MediaStreamTrackState::Enum::kLive);
+  EXPECT_EQ(new_track->getSettings()->voiceIsolation(), true);
+
+  blink::MediaStreamTrackPlatform::GetTrack(
+      WebMediaStreamTrack(new_track->Component()))
+      ->Stop();
+  blink::WebHeap::CollectGarbageForTesting();
+}
+
+// When voice isolation support is revoked after a stream failure, a request
+// with voiceIsolation {ideal: true} succeeds by falling back to a track
+// without voice isolation.
+TEST_F(
+    UserMediaClientTest,
+    VoiceIsolationIdealRequestServedWithoutVoiceIsolationAfterSupportRevoked) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kWebRtcVoiceIsolationDenoiser);
+  SetVoiceIsolationSupport(true);
+
+  MediaStreamTrack* track = RequestLocalAudioTrackWithVoiceIsolationIdeal(true);
+  ASSERT_TRUE(track);
+  EXPECT_EQ(track->getSettings()->voiceIsolation(), true);
+
+  MockLocalMediaStreamAudioSource* source =
+      user_media_processor_->last_created_local_audio_source();
+  ASSERT_TRUE(source);
+  source->StopSourceDueToError(media::AudioCapturerSource::ErrorCode::kUnknown);
+  test::RunPendingTasks();
+  ASSERT_EQ(track->readyState(), V8MediaStreamTrackState::Enum::kEnded);
+
+  SetVoiceIsolationSupport(false);
+
+  MediaStreamTrack* fallback_track =
+      RequestLocalAudioTrackWithVoiceIsolationIdeal(true);
+  ASSERT_TRUE(fallback_track);
+  EXPECT_EQ(fallback_track->readyState(), V8MediaStreamTrackState::Enum::kLive);
+  EXPECT_EQ(fallback_track->getSettings()->voiceIsolation(), false);
+
+  blink::MediaStreamTrackPlatform::GetTrack(
+      WebMediaStreamTrack(fallback_track->Component()))
       ->Stop();
   blink::WebHeap::CollectGarbageForTesting();
 }
