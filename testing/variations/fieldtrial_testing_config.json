@@ -3510,6 +3510,7 @@
                         "MigratedCollectedCookies": "true",
                         "MigratedDefaultBrowser": "true",
                         "MigratedDevToolsConfirm": "true",
+                        "MigratedDevToolsRemoteDebugging": "true",
                         "MigratedDevToolsSharedProcess": "true",
                         "MigratedFileAccessDisabled": "true",
                         "MigratedGoogleApiKeys": "true",

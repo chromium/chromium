@@ -8,7 +8,9 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/branding_buildflags.h"
 #include "build/buildflag.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -21,6 +23,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/known_interception_disclosure_infobar_delegate.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/navigator/browser_navigator.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_delegate.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -34,7 +39,9 @@
 #include "extensions/buildflags/buildflags.h"
 #include "google_apis/google_api_keys.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "url/gurl.h"
 
@@ -463,6 +470,40 @@ void RegisterInfoBars() {
                 l10n_util::GetStringUTF16(IDS_DEV_TOOLS_CONFIRM_DENY_BUTTON),
                 base::DoNothing())
             .SetScope(InfoBarScope::kGlobal)
+            .Build();
+    browser_infobar_manager->Register(std::move(spec));
+  }
+
+  if (IsInfoBarMigrated(
+          InfoBarDelegate::DEV_TOOLS_REMOTE_DEBUGGING_INFOBAR_DELEGATE)) {
+    auto spec =
+        InfoBarSpec::Builder(
+            InfoBarDelegate::DEV_TOOLS_REMOTE_DEBUGGING_INFOBAR_DELEGATE)
+            .SetMessageText(
+                l10n_util::GetStringUTF16(IDS_CONTROLLED_BY_AUTOMATION))
+            .SetScope(InfoBarScope::kGlobal)
+            .SetExpireOnNavigation(false)
+            .AddOkButton(
+                l10n_util::GetStringUTF16(
+                    IDS_DEV_TOOLS_CONNECTION_DIALOG_DISABLE_TEXT),
+                base::BindRepeating([](content::WebContents*) {
+                  // Post so the infobar closes before the new tab activates.
+                  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                      FROM_HERE, base::BindOnce([] {
+                        BrowserWindowInterface* browser =
+                            GlobalBrowserCollection::GetInstance()
+                                ->GetLastActiveBrowser();
+                        if (!browser) {
+                          return;
+                        }
+                        NavigateParams params(
+                            browser, GURL("chrome://inspect#remote-debugging"),
+                            ui::PAGE_TRANSITION_LINK);
+                        params.disposition =
+                            WindowOpenDisposition::NEW_FOREGROUND_TAB;
+                        Navigate(&params);
+                      }));
+                }))
             .Build();
     browser_infobar_manager->Register(std::move(spec));
   }

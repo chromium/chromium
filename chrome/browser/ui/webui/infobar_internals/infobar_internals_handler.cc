@@ -572,6 +572,16 @@ bool InfoBarInternalsHandler::PerformInfoBarActionInternal(
       return true;
     }
     case InfoBarType::kDevToolsRemoteDebugging: {
+      if (infobars::IsInfoBarMigrated(
+              infobars::InfoBarDelegate::
+                  DEV_TOOLS_REMOTE_DEBUGGING_INFOBAR_DELEGATE)) {
+        if (!browser_infobar_manager) {
+          return false;
+        }
+        return browser_infobar_manager->ShowGlobally(
+            infobars::InfoBarDelegate::
+                DEV_TOOLS_REMOTE_DEBUGGING_INFOBAR_DELEGATE);
+      }
       GlobalConfirmInfoBar::Show(
           std::make_unique<DevToolsRemoteServerInfobarDelegate>());
       return true;

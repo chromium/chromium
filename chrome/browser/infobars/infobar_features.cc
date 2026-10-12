@@ -47,6 +47,11 @@ BASE_FEATURE_PARAM(bool,
                    false);
 
 BASE_FEATURE_PARAM(bool,
+                   kMigratedDevToolsRemoteDebugging,
+                   &kCentralizedInfoBarFramework,
+                   false);
+
+BASE_FEATURE_PARAM(bool,
                    kMigratedDevToolsSharedProcess,
                    &kCentralizedInfoBarFramework,
                    false);
@@ -172,6 +177,8 @@ const base::FeatureParam<bool>* GetInfoBarMigrationParam(
       return &kMigratedDefaultBrowser;
     case InfoBarDelegate::DEV_TOOLS_INFOBAR_DELEGATE:
       return &kMigratedDevToolsConfirm;
+    case InfoBarDelegate::DEV_TOOLS_REMOTE_DEBUGGING_INFOBAR_DELEGATE:
+      return &kMigratedDevToolsRemoteDebugging;
     case InfoBarDelegate::DEV_TOOLS_SHARED_PROCESS_DELEGATE:
       return &kMigratedDevToolsSharedProcess;
     case InfoBarDelegate::FILE_ACCESS_DISABLED_INFOBAR_DELEGATE:

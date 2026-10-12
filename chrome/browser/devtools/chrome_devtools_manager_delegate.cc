@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/devtools/chrome_devtools_session.h"
 #include "chrome/browser/devtools/device/android_device_manager.h"
 #include "chrome/browser/devtools/device/tcp_device_provider.h"
@@ -24,6 +25,8 @@
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/protocol/target_handler.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/infobars/browser_infobar_manager.h"
+#include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -550,6 +553,25 @@ void ChromeDevToolsManagerDelegate::AcceptDebugging(AcceptCallback callback) {
 
 void ChromeDevToolsManagerDelegate::SetActiveWebSocketConnections(
     size_t count) {
+  if (infobars::IsInfoBarMigrated(
+          infobars::InfoBarDelegate::
+              DEV_TOOLS_REMOTE_DEBUGGING_INFOBAR_DELEGATE)) {
+    auto* browser_infobar_manager =
+        infobars::BrowserInfoBarManager::From(g_browser_process);
+    CHECK(browser_infobar_manager);
+
+    if (count == 0) {
+      browser_infobar_manager->Hide(
+          infobars::InfoBarDelegate::
+              DEV_TOOLS_REMOTE_DEBUGGING_INFOBAR_DELEGATE);
+    } else {
+      browser_infobar_manager->ShowGlobally(
+          infobars::InfoBarDelegate::
+              DEV_TOOLS_REMOTE_DEBUGGING_INFOBAR_DELEGATE);
+    }
+    return;
+  }
+
   if (count == 0 && infobar_) {
     // We need to reset the pointer to the infobar before closing it because
     // closing the infobar deletes it.
