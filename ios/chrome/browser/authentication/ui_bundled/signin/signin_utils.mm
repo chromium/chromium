@@ -209,6 +209,53 @@ std::optional<std::u16string> GetDeviceTypeString(
   }
 }
 
+struct PromoLabelStringIds {
+  int device_bookmarks;
+  int all_devices_bookmarks;
+  int device_passwords;
+  int all_devices_passwords;
+  int device_saved_info;
+  int all_devices_saved_info;
+};
+
+NSString* GetPromoLabelStringWithIds(
+    const std::optional<
+        signin::AccountPreviewDataService::AccountPreviewPreference>&
+        preference,
+    const PromoLabelStringIds& ids) {
+  if (!preference || preference->preferred_data_types.empty()) {
+    return nil;
+  }
+
+  std::optional<std::u16string> device_type =
+      GetDeviceTypeString(preference->other_device_info.form_factor);
+  auto format_label = [&](int device_id, int all_devices_id) {
+    return device_type.has_value()
+               ? l10n_util::GetNSStringF(device_id, *device_type)
+               : l10n_util::GetNSString(all_devices_id);
+  };
+
+  for (const signin::PreferredDataTypeInfo& data_type_info :
+       preference->preferred_data_types) {
+    if (!preference->other_device_info.enabled_data_types.Has(
+            data_type_info.data_type)) {
+      continue;
+    }
+    switch (data_type_info.data_type) {
+      case syncer::BOOKMARKS:
+        return format_label(ids.device_bookmarks, ids.all_devices_bookmarks);
+      case syncer::PASSWORDS:
+        return format_label(ids.device_passwords, ids.all_devices_passwords);
+      case syncer::AUTOFILL:
+      case syncer::AUTOFILL_WALLET_METADATA:
+        return format_label(ids.device_saved_info, ids.all_devices_saved_info);
+      default:
+        break;
+    }
+  }
+  return nil;
+}
+
 }  // namespace
 
 #pragma mark - Public
@@ -704,43 +751,29 @@ SigninCoordinatorResultOrIdentityFromSigninCoordinatorResult(
 NSString* GetPromoLabelStringForWebSignin(
     const std::optional<AccountPreviewDataService::AccountPreviewPreference>&
         preference) {
-  if (!preference || preference->preferred_data_types.empty()) {
-    return nil;
-  }
+  constexpr PromoLabelStringIds kWebSigninIds = {
+      IDS_SIGNIN_ACCOUNT_PICKER_BOTTOM_SHEET_SUBTITLE_FOR_WEB_SIGNIN_DEVICE_TYPE_BOOKMARKS,
+      IDS_SIGNIN_ACCOUNT_PICKER_BOTTOM_SHEET_SUBTITLE_FOR_WEB_SIGNIN_ON_ALL_DEVICES_BOOKMARKS,
+      IDS_SIGNIN_ACCOUNT_PICKER_BOTTOM_SHEET_SUBTITLE_FOR_WEB_SIGNIN_DEVICE_TYPE_PASSWORDS,
+      IDS_SIGNIN_ACCOUNT_PICKER_BOTTOM_SHEET_SUBTITLE_FOR_WEB_SIGNIN_ON_ALL_DEVICES_PASSWORDS,
+      IDS_SIGNIN_ACCOUNT_PICKER_BOTTOM_SHEET_SUBTITLE_FOR_WEB_SIGNIN_DEVICE_TYPE_SAVED_INFO,
+      IDS_SIGNIN_ACCOUNT_PICKER_BOTTOM_SHEET_SUBTITLE_FOR_WEB_SIGNIN_ON_ALL_DEVICES_SAVED_INFO,
+  };
+  return GetPromoLabelStringWithIds(preference, kWebSigninIds);
+}
 
-  std::optional<std::u16string> device_type =
-      GetDeviceTypeString(preference->other_device_info.form_factor);
-
-  for (const PreferredDataTypeInfo& data_type_info :
-       preference->preferred_data_types) {
-    switch (data_type_info.data_type) {
-      case syncer::BOOKMARKS:
-        return device_type.has_value()
-                   ? l10n_util::GetNSStringF(
-                         IDS_SIGNIN_ACCOUNT_PICKER_BOTTOM_SHEET_SUBTITLE_FOR_WEB_SIGNIN_DEVICE_TYPE_BOOKMARKS,
-                         *device_type)
-                   : l10n_util::GetNSString(
-                         IDS_SIGNIN_ACCOUNT_PICKER_BOTTOM_SHEET_SUBTITLE_FOR_WEB_SIGNIN_ON_ALL_DEVICES_BOOKMARKS);
-      case syncer::PASSWORDS:
-        return device_type.has_value()
-                   ? l10n_util::GetNSStringF(
-                         IDS_SIGNIN_ACCOUNT_PICKER_BOTTOM_SHEET_SUBTITLE_FOR_WEB_SIGNIN_DEVICE_TYPE_PASSWORDS,
-                         *device_type)
-                   : l10n_util::GetNSString(
-                         IDS_SIGNIN_ACCOUNT_PICKER_BOTTOM_SHEET_SUBTITLE_FOR_WEB_SIGNIN_ON_ALL_DEVICES_PASSWORDS);
-      case syncer::AUTOFILL:
-      case syncer::AUTOFILL_WALLET_METADATA:
-        return device_type.has_value()
-                   ? l10n_util::GetNSStringF(
-                         IDS_SIGNIN_ACCOUNT_PICKER_BOTTOM_SHEET_SUBTITLE_FOR_WEB_SIGNIN_DEVICE_TYPE_SAVED_INFO,
-                         *device_type)
-                   : l10n_util::GetNSString(
-                         IDS_SIGNIN_ACCOUNT_PICKER_BOTTOM_SHEET_SUBTITLE_FOR_WEB_SIGNIN_ON_ALL_DEVICES_SAVED_INFO);
-      default:
-        break;
-    }
-  }
-  return nil;
+NSString* GetPromoLabelStringForNtpSignedOutIcon(
+    const std::optional<AccountPreviewDataService::AccountPreviewPreference>&
+        preference) {
+  constexpr PromoLabelStringIds kNtpIds = {
+      IDS_SIGNIN_ACCOUNT_PICKER_BOTTOM_SHEET_SUBTITLE_FOR_DEVICE_TYPE_BOOKMARKS,
+      IDS_SIGNIN_ACCOUNT_PICKER_BOTTOM_SHEET_SUBTITLE_ON_ALL_DEVICES_BOOKMARKS,
+      IDS_SIGNIN_ACCOUNT_PICKER_BOTTOM_SHEET_SUBTITLE_FOR_DEVICE_TYPE_PASSWORDS,
+      IDS_SIGNIN_ACCOUNT_PICKER_BOTTOM_SHEET_SUBTITLE_ON_ALL_DEVICES_PASSWORDS,
+      IDS_SIGNIN_ACCOUNT_PICKER_BOTTOM_SHEET_SUBTITLE_FOR_DEVICE_TYPE_SAVED_INFO,
+      IDS_SIGNIN_ACCOUNT_PICKER_BOTTOM_SHEET_SUBTITLE_ON_ALL_DEVICES_SAVED_INFO,
+  };
+  return GetPromoLabelStringWithIds(preference, kNtpIds);
 }
 
 }  // namespace signin

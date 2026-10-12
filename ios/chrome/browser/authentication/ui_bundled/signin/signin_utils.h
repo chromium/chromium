@@ -222,6 +222,12 @@ NSString* GetPromoLabelStringForWebSignin(
     const std::optional<AccountPreviewDataService::AccountPreviewPreference>&
         preference);
 
+// Returns the promo label string for NTP sign-in based on `preference`, or nil
+// if no customized subtitle applies.
+NSString* GetPromoLabelStringForNtpSignedOutIcon(
+    const std::optional<AccountPreviewDataService::AccountPreviewPreference>&
+        preference);
+
 }  // namespace signin
 
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_SIGNIN_UTILS_H_

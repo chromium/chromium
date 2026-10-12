@@ -73,6 +73,18 @@ NSString* GetPromoLabelString(
       }
       return l10n_util::GetNSString(IDS_IOS_SIGNIN_SHEET_LABEL_FOR_WEB_SIGNIN);
     case signin_metrics::AccessPoint::kNtpSignedOutIcon:
+      // This could check `sync_types_disabled_by_policy` only for the types
+      // mentioned in the regular string, but keep it here for consistency with
+      // other access points.
+      if (sync_transport_disabled_by_policy ||
+          !sync_types_disabled_by_policy.empty()) {
+        return nil;
+      }
+      if (NSString* label =
+              signin::GetPromoLabelStringForNtpSignedOutIcon(preference)) {
+        return label;
+      }
+      return l10n_util::GetNSString(IDS_IOS_IDENTITY_DISC_SIGN_IN_PROMO_LABEL);
     case signin_metrics::AccessPoint::kOverflowMenu:
     case signin_metrics::AccessPoint::kLevelUp:
       // This could check `sync_types_disabled_by_policy` only for the types
