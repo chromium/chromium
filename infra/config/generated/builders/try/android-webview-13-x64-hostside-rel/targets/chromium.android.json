@@ -8,6 +8,7 @@
           "--recover-devices"
         ],
         "description": "Run with android_33_google_apis_x64",
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -67,6 +68,7 @@
           "--recover-devices"
         ],
         "description": "Run with android_33_google_apis_x64",
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
