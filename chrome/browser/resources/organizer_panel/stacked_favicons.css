@@ -12,24 +12,80 @@
 }
 
 .favicons {
-  --stacked-favicons-overlap_: -2px;
+  --stacked-favicons-border-radius_: 3px;
+  --stacked-favicons-buffer_: 2px;
+  --stacked-favicons-cutout-radius_:
+      calc(var(--stacked-favicons-border-radius_) +
+          var(--stacked-favicons-buffer_));
+  --stacked-favicons-cutout-straight-length_:
+      calc(var(--stacked-favicons-size_) -
+          2 * var(--stacked-favicons-border-radius_));
+  --stacked-favicons-overlap_: -4px;
+  --stacked-favicons-second-offset_:
+      calc(var(--stacked-favicons-size_) + var(--stacked-favicons-overlap_));
+  --stacked-favicons-size_: 16px;
   align-items: center;
   display: flex;
-  isolation: isolate;
   justify-content: center;
 }
 
 .favicons .favicon {
-  background-color: var(--color-list-item-url-favicon-background,
-      var(--cr-fallback-color-neutral-container));
   background-position: center center;
   background-repeat: no-repeat;
-  border-radius: 100%;
-  box-shadow: 0 0 0 2px var(--color-list-item-url-favicon-background,
-      var(--cr-fallback-color-neutral-container));
-  height: 16px;
+  border-radius: var(--stacked-favicons-border-radius_);
+  height: var(--stacked-favicons-size_);
   position: relative;
-  width: 16px;
+  width: var(--stacked-favicons-size_);
+}
+
+/* Cut a 2px transparent gap out of #firstFavicon where #secondFavicon overlaps
+ * it so the surface underneath shows through. evenodd subtracts the second
+ * shape from the first.
+ */
+#firstFavicon {
+  --stacked-favicons-cutout-x_:
+      calc(var(--stacked-favicons-second-offset_) -
+          var(--stacked-favicons-buffer_));
+  --stacked-favicons-cutout-y_: calc(-1 * var(--stacked-favicons-buffer_));
+  clip-path: shape(
+      /* Full #firstFavicon box. */
+      evenodd from 0 0,
+      hline to 100%,
+      vline to 100%,
+      hline to 0,
+      close,
+      /* Rounded-rect cutout around #secondFavicon, traced clockwise from its
+       * top straight edge. */
+      move to calc(var(--stacked-favicons-cutout-x_) +
+          var(--stacked-favicons-cutout-radius_))
+          var(--stacked-favicons-cutout-y_),
+      /* Top edge and top-right corner. */
+      hline by var(--stacked-favicons-cutout-straight-length_),
+      arc by var(--stacked-favicons-cutout-radius_)
+          var(--stacked-favicons-cutout-radius_)
+          of var(--stacked-favicons-cutout-radius_) cw,
+      /* Right edge and bottom-right corner. */
+      vline by var(--stacked-favicons-cutout-straight-length_),
+      arc by calc(-1 * var(--stacked-favicons-cutout-radius_))
+          var(--stacked-favicons-cutout-radius_)
+          of var(--stacked-favicons-cutout-radius_) cw,
+      /* Bottom edge and bottom-left corner. */
+      hline by calc(-1 * var(--stacked-favicons-cutout-straight-length_)),
+      arc by calc(-1 * var(--stacked-favicons-cutout-radius_))
+          calc(-1 * var(--stacked-favicons-cutout-radius_))
+          of var(--stacked-favicons-cutout-radius_) cw,
+      /* Left edge and top-left corner. */
+      vline by calc(-1 * var(--stacked-favicons-cutout-straight-length_)),
+      arc by var(--stacked-favicons-cutout-radius_)
+          calc(-1 * var(--stacked-favicons-cutout-radius_))
+          of var(--stacked-favicons-cutout-radius_) cw,
+      close);
+}
+
+:host-context([dir=rtl]):host(:not([stack-vertically])) #firstFavicon {
+  --stacked-favicons-cutout-x_:
+      calc(-1 * var(--stacked-favicons-second-offset_) -
+          var(--stacked-favicons-buffer_));
 }
 
 :host(:not([stack-vertically])) .favicons .favicon:not(:first-child) {
@@ -38,6 +94,13 @@
 
 :host([stack-vertically]) .favicons {
   flex-direction: column;
+}
+
+:host([stack-vertically]) #firstFavicon {
+  --stacked-favicons-cutout-x_: calc(-1 * var(--stacked-favicons-buffer_));
+  --stacked-favicons-cutout-y_:
+      calc(var(--stacked-favicons-second-offset_) -
+          var(--stacked-favicons-buffer_));
 }
 
 :host([stack-vertically]) .favicons .favicon:not(:first-child) {

@@ -41,8 +41,8 @@
 
 #expandButton::part(icon) {
   margin-block: -4px;
-  margin-inline-end: 12px;
-  margin-inline-start: 0;
+  margin-inline-end: 8px;
+  margin-inline-start: 2px;
   order: -1;
 }
 
