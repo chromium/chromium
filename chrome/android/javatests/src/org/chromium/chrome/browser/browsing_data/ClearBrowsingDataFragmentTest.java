@@ -73,12 +73,12 @@ import org.mockito.stubbing.Answer;
 
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -138,18 +138,19 @@ import java.util.Set;
 /** Tests for ClearBrowsingDataFragment interaction with underlying data model. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DoNotBatch(reason = "Manages sign-in state, which is global.")
+@Batch(Batch.PER_CLASS)
 @DisableFeatures({ChromeFeatureList.SETTINGS_IN_TAB, ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP})
 public class ClearBrowsingDataFragmentTest {
-    @Rule
+    @Rule(order = 0)
+    public final SigninTestRule mSigninTestRule = SigninTestRule.createWithCleanups();
+
+    @Rule(order = 1)
     public FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
-    @Rule
+    @Rule(order = 2)
     public SettingsTestRule<ClearBrowsingDataFragment> mSettingsActivityTestRule =
             new SettingsTestRule<>(ClearBrowsingDataFragment.class);
-
-    @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -198,7 +199,6 @@ public class ClearBrowsingDataFragmentTest {
 
         mActivityTestRule.startOnBlankPage();
         mUserActionTester = new UserActionTester();
-
 
         // There can be some left-over notification channels from other tests.
         // TODO(crbug.com/41452182): Find a general solution to avoid leaking channels between
