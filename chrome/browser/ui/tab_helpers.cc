@@ -47,7 +47,6 @@
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/tracing/common/tracing_switches.h"
-#include "components/webapps/browser/installable/installable_manager.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/buildflags.h"
@@ -135,7 +134,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
   if (!profile->IsOffTheRecord()) {
     HistoryTabHelper::GetOrCreateForWebContents(web_contents);
   }
-  webapps::InstallableManager::CreateForWebContents(web_contents);
 
   // NO! Do not just add your tab helper here. This is a large alphabetized
   // block; please insert your tab helper above in alphabetical order.

@@ -153,6 +153,10 @@ _ALLOWED_CREATE_FOR_CALLS = (
   # picker sign-in WebContents in ProfilePickerSignInProvider, so the
   # WebContents must own it.
   'TrustedVaultEncryptionKeysTabHelper::CreateForWebContents',
+  # InstallableManager lives in //components/webapps/browser/installable and is
+  # also attached to non-tab WebContents in web_app::CreateWebAppInstallTabHelpers
+  # for background web-app installation, so the WebContents must own it.
+  'webapps::InstallableManager::CreateForWebContents',
   # PreRedirectionURLObserver lives in //components/webapps and is also
   # attached to non-tab WebContents in web_app::CreateWebAppInstallTabHelpers
   # for background web-app installation, so the WebContents must own it.

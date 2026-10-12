@@ -275,6 +275,7 @@
 #include "components/ukm/content/source_url_recorder.h"
 #include "components/wallet/core/common/wallet_features.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
+#include "components/webapps/browser/installable/installable_manager.h"
 #include "components/webapps/browser/installable/ml_installability_promoter.h"
 #include "net/base/features.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -414,6 +415,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
       tab.RegisterWillDiscardContents(base::BindRepeating(
           &TabFeatures::WillDiscardContents, weak_factory_.GetWeakPtr())));
   tab_subscriptions_.push_back(webui::InitEmbeddingContext(&tab));
+
+  webapps::InstallableManager::CreateForWebContents(tab.GetContents());
 
   if (optimization_guide::features::IsOptimizationHintsEnabled()) {
     OptimizationGuideWebContentsObserver::CreateForWebContents(
@@ -1426,6 +1429,8 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   DCHECK_EQ(old_contents, tab->GetContents());
 
   Profile* profile = tab->GetBrowserWindowInterface()->GetProfile();
+
+  webapps::InstallableManager::CreateForWebContents(new_contents);
 
   if (optimization_guide::features::IsOptimizationHintsEnabled()) {
     OptimizationGuideWebContentsObserver::CreateForWebContents(new_contents);
