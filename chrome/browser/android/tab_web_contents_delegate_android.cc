@@ -42,6 +42,7 @@
 #include "chrome/browser/history/history_tab_helper.h"
 #include "chrome/browser/media/protected_media_identifier_permission_context.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
+#include "chrome/browser/optimization_guide/optimization_guide_web_contents_observer.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
@@ -75,6 +76,7 @@
 #include "components/navigation_interception/intercept_navigation_delegate.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/paint_preview/buildflags/buildflags.h"
 #include "components/pdf/common/constants.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer.h"
@@ -689,6 +691,10 @@ WebContents* TabWebContentsDelegateAndroid::AddNewContents(
   }
 
   TabHelpers::AttachTabHelpers(new_contents.get());
+  if (optimization_guide::features::IsOptimizationHintsEnabled()) {
+    OptimizationGuideWebContentsObserver::CreateForWebContents(
+        new_contents.get());
+  }
   InitializePageLoadMetricsForWebContents(new_contents.get());
   RequestDesktopSiteWebContentsObserverAndroid::CreateForWebContents(
       new_contents.get());

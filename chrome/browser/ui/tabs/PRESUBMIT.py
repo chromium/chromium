@@ -86,6 +86,11 @@ _ALLOWED_CREATE_FOR_CALLS = (
   # records popup-close metrics in WebContentsDestroyed() after TabFeatures is
   # destroyed, so WebContents must own it.
   'login_detection::LoginDetectionTabHelper::MaybeCreateForWebContents',
+  # OptimizationGuideWebContentsObserver is also attached to pre-tab
+  # PrerenderNewTabHandle and Android popup WebContents and flushes navigation
+  # metrics in WebContentsDestroyed() after TabFeatures is destroyed, so the
+  # WebContents must own it.
+  'OptimizationGuideWebContentsObserver::CreateForWebContents',
   # PermissionRecoverySuccessRateTracker lives in //components/permissions and
   # is also attached to non-tab WebContents in
   # PaymentHandlerWebFlowViewController::PopulateSheet, DocumentPipHost, and

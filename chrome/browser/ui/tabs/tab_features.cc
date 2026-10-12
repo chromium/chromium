@@ -66,6 +66,7 @@
 #include "chrome/browser/net/qwac_web_contents_observer.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/optimization_guide/optimization_guide_web_contents_observer.h"
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
@@ -257,6 +258,7 @@
 #include "components/image_fetcher/core/image_fetcher_service.h"
 #include "components/metrics/content/metrics_services_web_contents_observer.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/page_content_annotations/content/annotate_page_content_request.h"
 #include "components/page_content_annotations/content/page_content_annotations_web_contents_observer.h"
 #include "components/page_content_annotations/core/page_content_extraction_types.h"
@@ -412,6 +414,11 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
       tab.RegisterWillDiscardContents(base::BindRepeating(
           &TabFeatures::WillDiscardContents, weak_factory_.GetWeakPtr())));
   tab_subscriptions_.push_back(webui::InitEmbeddingContext(&tab));
+
+  if (optimization_guide::features::IsOptimizationHintsEnabled()) {
+    OptimizationGuideWebContentsObserver::CreateForWebContents(
+        tab.GetContents());
+  }
 
   auto* page_content_extraction_service = page_content_annotations::
       PageContentExtractionServiceFactory::GetForProfile(profile);
@@ -1419,6 +1426,10 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   DCHECK_EQ(old_contents, tab->GetContents());
 
   Profile* profile = tab->GetBrowserWindowInterface()->GetProfile();
+
+  if (optimization_guide::features::IsOptimizationHintsEnabled()) {
+    OptimizationGuideWebContentsObserver::CreateForWebContents(new_contents);
+  }
 
   auto* page_content_extraction_service = page_content_annotations::
       PageContentExtractionServiceFactory::GetForProfile(profile);

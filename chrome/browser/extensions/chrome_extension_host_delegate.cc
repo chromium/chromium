@@ -30,7 +30,9 @@
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/content_settings/request_desktop_site_web_contents_observer_android.h"
 #include "chrome/browser/extensions/tab_helper.h"
+#include "chrome/browser/optimization_guide/optimization_guide_web_contents_observer.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #endif
@@ -77,6 +79,10 @@ void ChromeExtensionHostDelegate::CreateTab(
   // idempotent.
   // TODO(crbug.com/499200457): Add instrumentation test.
   TabAndroid::AttachTabHelpers(web_contents.get());
+  if (optimization_guide::features::IsOptimizationHintsEnabled()) {
+    OptimizationGuideWebContentsObserver::CreateForWebContents(
+        web_contents.get());
+  }
   InitializePageLoadMetricsForWebContents(web_contents.get());
   RequestDesktopSiteWebContentsObserverAndroid::CreateForWebContents(
       web_contents.get());

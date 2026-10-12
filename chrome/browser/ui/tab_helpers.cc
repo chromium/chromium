@@ -21,7 +21,6 @@
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/history/history_tab_helper.h"
-#include "chrome/browser/optimization_guide/optimization_guide_web_contents_observer.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
@@ -41,7 +40,6 @@
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
-#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/page_info/core/features.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/search/ntp_features.h"
@@ -138,9 +136,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
     HistoryTabHelper::GetOrCreateForWebContents(web_contents);
   }
   webapps::InstallableManager::CreateForWebContents(web_contents);
-  if (optimization_guide::features::IsOptimizationHintsEnabled()) {
-    OptimizationGuideWebContentsObserver::CreateForWebContents(web_contents);
-  }
 
   // NO! Do not just add your tab helper here. This is a large alphabetized
   // block; please insert your tab helper above in alphabetical order.
