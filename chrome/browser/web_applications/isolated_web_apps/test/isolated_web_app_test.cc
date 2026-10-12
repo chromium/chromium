@@ -5,6 +5,8 @@
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test.h"
 
 #include "base/test/test_timeouts.h"
+#include "build/build_config.h"
+#include "build/config/linux/dbus/buildflags.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate_factory.h"
 #include "chrome/browser/component_updater/iwa_key_distribution_component_installer.h"
@@ -14,6 +16,10 @@
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "content/public/common/content_features.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
+#include "components/dbus/thread_linux/dbus_thread_linux.h"
+#endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
 
 namespace web_app {
 
@@ -67,6 +73,16 @@ void IsolatedWebAppTest::TearDown() {
 
   profile_ = nullptr;
   profile_manager_.DeleteAllTestingProfiles();
+
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
+  // The shared D-Bus thread is a plain `base::Thread` that the task
+  // environment does not track, so a reply to a D-Bus call made during the
+  // test could still be posted to the main thread after the final
+  // `RunUntilIdle()` in `~BrowserTaskEnvironment()`, failing its
+  // `MainThreadIsIdle()` check. Shut the thread down now that its users are
+  // gone; this matches `content::RenderViewHostTestHarness::TearDown()`.
+  dbus_thread_linux::Shutdown();
+#endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
 
   env_.reset();
 }

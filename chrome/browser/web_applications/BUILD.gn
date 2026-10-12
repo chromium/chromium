@@ -1624,12 +1624,17 @@ source_set("isolated_web_app_test") {
   ]
 
   deps = [
+    "//build/config/linux/dbus:buildflags",
     "//chrome/browser",
     "//chrome/browser/component_updater",
     "//chrome/common:chrome_features",
     "//content/public/common",
     "//services/network/public/cpp",
   ]
+
+  if (is_linux && use_dbus) {
+    deps += [ "//components/dbus" ]
+  }
 }
 
 # Separate from :web_applications_test_support because this browser-test
