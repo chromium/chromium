@@ -880,6 +880,11 @@ public class TabListMediator implements TabListNotificationHandler {
         return mTrackingTabs;
     }
 
+    /** Returns whether the tab list supports displaying tab groups. */
+    boolean supportsTabGroups() {
+        return mTabListConfig.supportsTabGroups;
+    }
+
     /** Returns whether the tab list supports displaying tab loading state. */
     boolean supportsTabLoadingState() {
         return mTabListConfig.supportsTabLoadingState;
@@ -1739,7 +1744,7 @@ public class TabListMediator implements TabListNotificationHandler {
      * @param index The UI index in {@link #mModelList} where the card should be inserted.
      */
     void addTabCardToModel(Tab tab, int index) {
-        boolean isTabGroup = isTabInTabGroup(tab) && mTabListLayoutDelegate.supportsTabGroups();
+        boolean isTabGroup = isTabInTabGroup(tab) && mTabListConfig.supportsTabGroups;
         if (isTabGroup) {
             Token tabGroupId = tab.getTabGroupId();
             assumeNonNull(tabGroupId);
@@ -1956,7 +1961,7 @@ public class TabListMediator implements TabListNotificationHandler {
      * @param model The {@link PropertyModel} representing the tab or group card.
      */
     void updateDescriptionString(PropertyModel model) {
-        if (!mTabListLayoutDelegate.supportsTabGroups()) return;
+        if (!mTabListConfig.supportsTabGroups) return;
         TextResolver contentDescriptionResolver =
                 (context) -> {
                     TabModel tabModel = getCurrentTabModelChecked();
@@ -2187,7 +2192,7 @@ public class TabListMediator implements TabListNotificationHandler {
     String getLatestTitleForTabOrGroup(Tab tab, @Nullable PropertyModel model, boolean useDefault) {
         boolean isTabGroup;
         if (model == null) {
-            isTabGroup = mTabListLayoutDelegate.supportsTabGroups() && isTabInTabGroup(tab);
+            isTabGroup = mTabListConfig.supportsTabGroups && isTabInTabGroup(tab);
         } else {
             isTabGroup = TabProperties.isTabGroupHeader(model);
         }
@@ -2412,7 +2417,7 @@ public class TabListMediator implements TabListNotificationHandler {
     void recordPriceAnnotationsEnabledMetrics() {
         if (!mTabListConfig.supportsMessageCards
                 || getCurrentTabModelChecked().isIncognitoBranded()
-                || !mTabListLayoutDelegate.supportsTabGroups()
+                || !mTabListConfig.supportsTabGroups
                 || mOriginalProfile == null
                 || !PriceTrackingFeatures.isPriceAnnotationsEligible(mOriginalProfile)) {
             return;
@@ -2548,7 +2553,7 @@ public class TabListMediator implements TabListNotificationHandler {
     }
 
     private void addObservers(TabModel tabModel, List<Tab> tabs) {
-        boolean supportsTabGroups = mTabListLayoutDelegate.supportsTabGroups();
+        boolean supportsTabGroups = mTabListConfig.supportsTabGroups;
         for (Tab tab : tabs) {
             Token tabGroupId = tab.getTabGroupId();
             // When tab groups are supported, `tabs` only contains one entry per group.
@@ -3022,7 +3027,7 @@ public class TabListMediator implements TabListNotificationHandler {
 
             // Special case in defense of a group not being completely closed. We need to find the
             // group by the tab's old root ID or group token.
-            if (!mTabListLayoutDelegate.supportsTabGroups()) return;
+            if (!mTabListConfig.supportsTabGroups) return;
 
             Token tabGroupId = tab.getTabGroupId();
             int index =
@@ -3170,7 +3175,7 @@ public class TabListMediator implements TabListNotificationHandler {
      */
     void updateTabGroupProperties(
             PropertyModel model, @Nullable Token tabGroupId, @TabGroupColorId int colorId) {
-        if (!mTabListLayoutDelegate.supportsTabGroups() || tabGroupId == null) {
+        if (!mTabListConfig.supportsTabGroups || tabGroupId == null) {
             clearTabGroupProperties(model);
             return;
         }

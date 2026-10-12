@@ -337,6 +337,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
         TabListConfig tabListConfig =
                 new TabListConfig.Builder(layoutType)
                         .setTabUiType(tabUiType)
+                        .setSupportsTabGroups(layoutType != TabListLayoutType.FLAT)
                         .setSupportsMessageCards(isGridMode)
                         .setSupportsShrinkCloseAnimation(isGridMode)
                         .setSupportsTabContextClick(true)

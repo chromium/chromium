@@ -447,11 +447,6 @@ public class FlatLayoutDelegateUnitTest {
     }
 
     @Test
-    public void testSupportsTabGroups() {
-        assertFalse(mDelegate.supportsTabGroups());
-    }
-
-    @Test
     public void testIsChildTabRepresentedByGroupCard() {
         assertFalse(mDelegate.isChildTabRepresentedByGroupCard(mTab1));
     }
@@ -605,7 +600,8 @@ public class FlatLayoutDelegateUnitTest {
         mDelegate.didRemoveTabGroup(TAB_GROUP_ID, TabGroupObserver.DidRemoveTabGroupReason.MERGE);
 
         // Flat layout does not display tab group headers, so no updates should occur.
-        verifyNoInteractions(mMediator);
+        verify(mMediator).supportsTabGroups();
+        verifyNoMoreInteractions(mMediator);
     }
 
     @Test

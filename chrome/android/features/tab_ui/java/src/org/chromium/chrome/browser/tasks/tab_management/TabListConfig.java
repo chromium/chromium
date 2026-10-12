@@ -29,6 +29,12 @@ public class TabListConfig {
     public final @UiType int tabUiType;
 
     /**
+     * Whether the layout supports displaying tab groups (e.g. as group cards in GTS or group
+     * headers in Vertical Tabs). False for layouts that ignore tab groups (like Flat layout).
+     */
+    public final boolean supportsTabGroups;
+
+    /**
      * Whether the layout supports message card items (e.g. IPH, promo cards, price welcome cards).
      * Currently only the Tab Switcher Grid ({@link TabListLayoutType#GROUPED}) uses message cards
      * and price tracking. If a non-grid layout needs price tracking independently in the future,
@@ -70,6 +76,7 @@ public class TabListConfig {
     private TabListConfig(Builder builder) {
         layoutType = builder.mLayoutType;
         tabUiType = builder.mTabUiType;
+        supportsTabGroups = builder.mSupportsTabGroups;
         supportsMessageCards = builder.mSupportsMessageCards;
         supportsModifierMultiSelect = builder.mSupportsModifierMultiSelect;
         supportsTabLoadingState = builder.mSupportsTabLoadingState;
@@ -85,6 +92,7 @@ public class TabListConfig {
     public static class Builder {
         private final @TabListLayoutType int mLayoutType;
         private @UiType int mTabUiType;
+        private boolean mSupportsTabGroups;
         private boolean mSupportsMessageCards;
         private boolean mSupportsModifierMultiSelect;
         private boolean mSupportsTabLoadingState;
@@ -111,6 +119,15 @@ public class TabListConfig {
          */
         public Builder setTabUiType(@UiType int tabUiType) {
             mTabUiType = tabUiType;
+            return this;
+        }
+
+        /**
+         * @param supportsTabGroups Whether the tab list supports displaying tab groups.
+         * @return The {@link Builder} instance.
+         */
+        public Builder setSupportsTabGroups(boolean supportsTabGroups) {
+            mSupportsTabGroups = supportsTabGroups;
             return this;
         }
 

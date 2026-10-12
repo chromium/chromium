@@ -56,11 +56,6 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
     }
 
     @Override
-    boolean supportsTabGroups() {
-        return true;
-    }
-
-    @Override
     boolean isChildTabRepresentedByGroupCard(Tab tab) {
         return false;
     }

@@ -572,6 +572,7 @@ public class VerticalTabListCoordinator {
 
         TabListConfig tabListConfig =
                 new TabListConfig.Builder(TabListLayoutType.NESTED)
+                        .setSupportsTabGroups(/* supportsTabGroups= */ true)
                         .setSupportsModifierMultiSelect(/* supportsModifierMultiSelect= */ true)
                         .setSupportsTabLoadingState(/* supportsTabLoadingState= */ true)
                         .setTabClosingSource(TabClosingSource.VERTICAL_TAB_STRIP)

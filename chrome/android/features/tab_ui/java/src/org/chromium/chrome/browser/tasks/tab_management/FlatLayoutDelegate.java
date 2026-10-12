@@ -35,11 +35,6 @@ class FlatLayoutDelegate extends TabListLayoutDelegate {
     }
 
     @Override
-    boolean supportsTabGroups() {
-        return false;
-    }
-
-    @Override
     boolean isChildTabRepresentedByGroupCard(Tab tab) {
         return false;
     }

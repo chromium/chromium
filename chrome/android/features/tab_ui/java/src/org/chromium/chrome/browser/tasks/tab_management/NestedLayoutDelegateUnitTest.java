@@ -83,6 +83,7 @@ public class NestedLayoutDelegateUnitTest {
         mDelegate = new NestedLayoutDelegate(mMediator, mModelList);
         when(mMediator.getCurrentTabModelChecked()).thenReturn(mTabModel);
         when(mMediator.isTrackingTabs()).thenReturn(true);
+        when(mMediator.supportsTabGroups()).thenReturn(true);
         when(mMediator.supportsTabLoadingState()).thenReturn(true);
         when(mTabModel.getTabGroupColorWithFallback(any(Token.class)))
                 .thenReturn(TabGroupColorId.BLUE);
@@ -376,11 +377,6 @@ public class NestedLayoutDelegateUnitTest {
         mDelegate.onTabClose(mTab1);
 
         assertEquals(0, mModelList.size());
-    }
-
-    @Test
-    public void testSupportsTabGroups() {
-        assertTrue(mDelegate.supportsTabGroups());
     }
 
     @Test

@@ -7158,6 +7158,10 @@ public class TabListMediatorUnitTest {
                 hasMatchingConfig
                         ? mTabListConfig.tabUiType
                         : (mode == TabListMode.BOTTOM_STRIP ? UiType.STRIP : UiType.TAB);
+        boolean supportsTabGroups =
+                hasMatchingConfig
+                        ? mTabListConfig.supportsTabGroups
+                        : (layoutType != TabListLayoutType.FLAT);
         boolean supportsMessageCards =
                 hasMatchingConfig
                         ? mTabListConfig.supportsMessageCards
@@ -7197,6 +7201,7 @@ public class TabListMediatorUnitTest {
         mTabListConfig =
                 new TabListConfig.Builder(layoutType)
                         .setTabUiType(tabUiType)
+                        .setSupportsTabGroups(supportsTabGroups)
                         .setSupportsMessageCards(supportsMessageCards)
                         .setSupportsModifierMultiSelect(supportsModifierMultiSelect)
                         .setSupportsTabLoadingState(supportsTabLoadingState)

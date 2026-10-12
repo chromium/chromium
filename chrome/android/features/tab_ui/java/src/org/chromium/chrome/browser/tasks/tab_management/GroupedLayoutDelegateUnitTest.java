@@ -91,6 +91,7 @@ public class GroupedLayoutDelegateUnitTest {
         mDelegate = new GroupedLayoutDelegate(mMediator, mModelList, mThumbnailProvider);
         when(mMediator.getCurrentTabModelChecked()).thenReturn(mTabModel);
         when(mMediator.isTrackingTabs()).thenReturn(true);
+        when(mMediator.supportsTabGroups()).thenReturn(true);
         when(mTab1.getId()).thenReturn(TAB1_ID);
         when(mTab1.isInitialized()).thenReturn(true);
         when(mTab2.getId()).thenReturn(TAB2_ID);
@@ -724,11 +725,6 @@ public class GroupedLayoutDelegateUnitTest {
         mDelegate.onTabClose(mTab1);
 
         assertEquals(1, mModelList.size());
-    }
-
-    @Test
-    public void testSupportsTabGroups() {
-        assertTrue(mDelegate.supportsTabGroups());
     }
 
     @Test
