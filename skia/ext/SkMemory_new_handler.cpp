@@ -81,7 +81,16 @@ void* sk_realloc_throw(void* addr, size_t size) {
 #if defined(UNDEFINED_SANITIZER)
     // It's slower to use alloc + free instead of realloc, but avoids mixing up
     // our allocators, which should placate UBSAN.
-    size_t old_size = sk_malloc_size(addr, 0);
+    size_t old_size = 0;
+    if (addr) {
+#if BUILDFLAG(IS_WIN)
+      old_size = _msize(addr);
+#elif BUILDFLAG(IS_APPLE)
+      old_size = malloc_size(addr);
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+      old_size = malloc_usable_size(addr);
+#endif
+    }
     void* result = sk_malloc_throw(size);
     sk_careful_memcpy(result, addr, std::min(size, old_size));
     sk_free(addr);
