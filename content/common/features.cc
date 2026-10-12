@@ -221,8 +221,10 @@ BASE_FEATURE(kDocumentPolicyNegotiation, base::FEATURE_DISABLED_BY_DEFAULT);
 // When enabled, sandboxed renderer processes (except spare renderers) are
 // initially bound with a strong (BIND_IMPORTANT) binding right at creation
 // time, putting them immediately in the top-app cpuset group on Android.
+// Owner: khokhlov@google.com
+// TODO(crbug.com/536874828): Remove after the feature reaches 100% Stable.
 BASE_FEATURE(kEarlyTopAppForSandboxedRenderer,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // When enabled `EditContext::updateSelection` calls from async selectionchange

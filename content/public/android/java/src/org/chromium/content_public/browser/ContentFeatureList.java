@@ -167,7 +167,7 @@ public class ContentFeatureList {
             new MutableFlagWithSafeDefault(
                     ContentFeatureMap.getInstance(),
                     ContentInternalFeatures.EARLY_TOP_APP_FOR_SANDBOXED_RENDERER,
-                    false);
+                    true);
 
     public static final MutableFlagWithSafeDefault sSpareRendererProcessPriority =
             new MutableFlagWithSafeDefault(
