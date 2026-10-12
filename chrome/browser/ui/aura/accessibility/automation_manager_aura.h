@@ -57,6 +57,10 @@ class AutomationManagerAura : public views::ViewsAXManager,
   FRIEND_TEST_ALL_PREFIXES(AutomationManagerAuraBrowserTest, WebAppearsOnce);
   FRIEND_TEST_ALL_PREFIXES(AutomationManagerAuraBrowserTest, EventFromAction);
   FRIEND_TEST_ALL_PREFIXES(AutomationManagerAuraBrowserTest,
+                           PerformActionIgnoredForNodeOutsideClientTree);
+  FRIEND_TEST_ALL_PREFIXES(AutomationManagerAuraBrowserTest,
+                           PerformActionIgnoredForVirtualViewOutsideClientTree);
+  FRIEND_TEST_ALL_PREFIXES(AutomationManagerAuraBrowserTest,
                            SerializeOnDataChanged);
   FRIEND_TEST_ALL_PREFIXES(AutomationManagerAuraBrowserTest,
                            GetFocusOnChildTree);

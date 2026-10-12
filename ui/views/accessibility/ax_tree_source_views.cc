@@ -26,7 +26,8 @@ AXTreeSourceViews::AXTreeSourceViews(ui::AXNodeID root_id,
 
 AXTreeSourceViews::~AXTreeSourceViews() = default;
 
-void AXTreeSourceViews::HandleAccessibleAction(const ui::AXActionData& action) {
+AXAuraObjWrapper* AXTreeSourceViews::GetActionTarget(
+    const ui::AXActionData& action) const {
   int id = action.target_node_id;
 
   // In Views, we only support setting the selection within a single node,
@@ -36,7 +37,11 @@ void AXTreeSourceViews::HandleAccessibleAction(const ui::AXActionData& action) {
     id = action.anchor_node_id;
   }
 
-  AXAuraObjWrapper* obj = GetFromId(id);
+  return GetFromId(id);
+}
+
+void AXTreeSourceViews::HandleAccessibleAction(const ui::AXActionData& action) {
+  AXAuraObjWrapper* obj = GetActionTarget(action);
   if (obj) {
     obj->HandleAccessibleAction(action);
   }

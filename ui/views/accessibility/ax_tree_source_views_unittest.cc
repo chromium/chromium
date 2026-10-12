@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_tree_data.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/test/test_window_delegate.h"
@@ -133,6 +134,33 @@ TEST_F(AXTreeSourceViewsTest, Basics) {
 
   // Null pointers is the null value.
   EXPECT_EQ(nullptr, tree.GetNull());
+}
+
+TEST_F(AXTreeSourceViewsTest, GetActionTarget) {
+  AXAuraObjCache cache;
+  AXAuraObjWrapper* root = cache.GetOrCreate(widget_->GetContentsView());
+  TestAXTreeSourceViews tree(root->GetUniqueId(), &cache);
+
+  AXAuraObjWrapper* label1 = cache.GetOrCreate(label1_);
+  AXAuraObjWrapper* textfield = cache.GetOrCreate(textfield_);
+
+  // Most actions target the node in |target_node_id|.
+  ui::AXActionData action;
+  action.action = ax::mojom::Action::kDoDefault;
+  action.target_node_id = label1->GetUniqueId();
+  EXPECT_EQ(label1, tree.GetActionTarget(action));
+
+  // Unknown ids have no target.
+  action.target_node_id = ui::kInvalidAXNodeID;
+  EXPECT_EQ(nullptr, tree.GetActionTarget(action));
+
+  // Setting the selection targets the node in |anchor_node_id|.
+  ui::AXActionData selection;
+  selection.action = ax::mojom::Action::kSetSelection;
+  selection.target_node_id = label1->GetUniqueId();
+  selection.anchor_node_id = textfield->GetUniqueId();
+  selection.focus_node_id = selection.anchor_node_id;
+  EXPECT_EQ(textfield, tree.GetActionTarget(selection));
 }
 
 TEST_F(AXTreeSourceViewsTest, GetTreeDataWithFocus) {

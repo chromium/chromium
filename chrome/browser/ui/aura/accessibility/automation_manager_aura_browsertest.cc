@@ -22,10 +22,14 @@
 #include "content/public/test/scoped_accessibility_mode_override.h"
 #include "extensions/browser/api/automation_internal/automation_event_router_interface.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/accessibility/aura/aura_window_properties.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree.h"
+#include "ui/aura/window.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/accessibility/ax_aura_obj_wrapper.h"
 #include "ui/views/accessibility/ax_tree_source_views.h"
 #include "ui/views/accessibility/ax_virtual_view.h"
@@ -211,6 +215,33 @@ class AutomationEventWaiter
   std::unique_ptr<ui::AXNodeData> matched_wait_for_data_change_;
   ui::AXNodeID data_change_target_node_id_ = ui::kInvalidAXNodeID;
 };
+
+// A view that records how many accessible actions were dispatched to it.
+class ActionRecordingView : public views::View {
+  METADATA_HEADER(ActionRecordingView, views::View)
+
+ public:
+  ActionRecordingView() {
+    GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
+    GetViewAccessibility().SetName("button", ax::mojom::NameFrom::kAttribute);
+  }
+  ActionRecordingView(const ActionRecordingView&) = delete;
+  ActionRecordingView& operator=(const ActionRecordingView&) = delete;
+  ~ActionRecordingView() override = default;
+
+  bool HandleAccessibleAction(const ui::AXActionData& action_data) override {
+    ++action_count_;
+    return true;
+  }
+
+  int action_count() const { return action_count_; }
+
+ private:
+  int action_count_ = 0;
+};
+
+BEGIN_METADATA(ActionRecordingView)
+END_METADATA
 
 ui::TableColumn TestTableColumn(int id, const std::string& title) {
   ui::TableColumn column;
@@ -656,6 +687,153 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, EventFromAction) {
   cache_ptr->set_focused_widget_for_testing(nullptr);
 
   RunAccessibilityChecks(widget);
+}
+
+// Verifies that an action is not dispatched to a node that has been pruned
+// from the client tree, e.g. because an ancestor window is considered
+// invisible to accessibility, even though the node's wrapper is still in the
+// cache.
+IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest,
+                       PerformActionIgnoredForNodeOutsideClientTree) {
+  auto cache = std::make_unique<views::AXAuraObjCache>();
+  auto* cache_ptr = cache.get();
+  AutomationManagerAura* manager = AutomationManagerAura::GetInstance();
+  manager->set_ax_aura_obj_cache_for_testing(std::move(cache));
+  manager->send_window_state_on_enable_ = false;
+  manager->Enable();
+  AutomationEventWaiter waiter;
+
+  views::Widget* widget = new views::Widget;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW);
+  params.bounds = {0, 0, 200, 200};
+  widget->Init(std::move(params));
+  widget->Show();
+  widget->Activate();
+
+  views::Widget* other_widget = new views::Widget;
+  views::Widget::InitParams other_params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW);
+  other_params.bounds = {0, 300, 200, 200};
+  other_widget->Init(std::move(other_params));
+  other_widget->Show();
+
+  auto* view = widget->GetRootView()->AddChildView(
+      std::make_unique<ActionRecordingView>());
+  const ui::AXNodeID node_id = cache_ptr->GetOrCreate(view)->GetUniqueId();
+  auto* other_view = other_widget->GetRootView()->AddChildView(
+      std::make_unique<ActionRecordingView>());
+  const ui::AXNodeID other_node_id =
+      cache_ptr->GetOrCreate(other_view)->GetUniqueId();
+
+  // Wait for both views to be serialized to the client tree.
+  while (!waiter.ax_tree()->GetFromId(node_id) ||
+         !waiter.ax_tree()->GetFromId(other_node_id)) {
+    ASSERT_NE(nullptr, waiter.WaitForEvent(ax::mojom::Event::kChildrenChanged));
+  }
+
+  // Views receive actions while they are in the client tree.
+  ui::AXActionData action_data;
+  action_data.action = ax::mojom::Action::kDoDefault;
+  action_data.target_tree_id = manager->ax_tree_id();
+  action_data.target_node_id = node_id;
+  manager->PerformAction(action_data);
+  EXPECT_EQ(1, view->action_count());
+
+  // Mark the first widget's window as invisible to accessibility. The
+  // serializer prunes its subtree from the client tree, but the view's
+  // wrapper remains in the cache because the view still exists.
+  widget->GetNativeWindow()->SetProperty(
+      ui::kAXConsiderInvisibleAndIgnoreChildren, true);
+  while (waiter.ax_tree()->GetFromId(node_id)) {
+    ASSERT_NE(nullptr, waiter.WaitForEvent(ax::mojom::Event::kChildrenChanged));
+  }
+  ASSERT_NE(nullptr, cache_ptr->Get(node_id));
+
+  // The action targets a node the client can no longer see, so it must not
+  // reach the view.
+  manager->PerformAction(action_data);
+  EXPECT_EQ(1, view->action_count());
+
+  // Nodes that are still in the client tree keep receiving actions.
+  ASSERT_NE(nullptr, waiter.ax_tree()->GetFromId(other_node_id));
+  action_data.target_node_id = other_node_id;
+  manager->PerformAction(action_data);
+  EXPECT_EQ(1, other_view->action_count());
+}
+
+// Verifies that an action targeting an AXVirtualView is only dispatched while
+// the virtual view is part of the client tree. Virtual view ids stay
+// resolvable as long as their owner view exists, including ids that were
+// never serialized, so client tree membership must gate the dispatch.
+IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest,
+                       PerformActionIgnoredForVirtualViewOutsideClientTree) {
+  auto cache = std::make_unique<views::AXAuraObjCache>();
+  auto* cache_ptr = cache.get();
+  AutomationManagerAura* manager = AutomationManagerAura::GetInstance();
+  manager->set_ax_aura_obj_cache_for_testing(std::move(cache));
+  manager->send_window_state_on_enable_ = false;
+  manager->Enable();
+  AutomationEventWaiter waiter;
+
+  views::Widget* widget = new views::Widget;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW);
+  params.bounds = {0, 0, 200, 200};
+  widget->Init(std::move(params));
+  widget->Show();
+  widget->Activate();
+
+  auto* view = widget->GetRootView()->AddChildView(
+      std::make_unique<ActionRecordingView>());
+
+  auto virtual_child = std::make_unique<views::AXVirtualView>();
+  virtual_child->SetRole(ax::mojom::Role::kButton);
+  virtual_child->SetName("virtual button");
+  const ui::AXNodeID virtual_id = virtual_child->GetUniqueId();
+  view->GetViewAccessibility().AddVirtualChildView(std::move(virtual_child));
+  cache_ptr->GetOrCreate(view);
+
+  // Wait for the virtual view to be serialized to the client tree.
+  while (!waiter.ax_tree()->GetFromId(virtual_id)) {
+    ASSERT_NE(nullptr, waiter.WaitForEvent(ax::mojom::Event::kChildrenChanged));
+  }
+
+  // Actions on the virtual view are forwarded to its owner view while the
+  // virtual view is in the client tree.
+  ui::AXActionData action_data;
+  action_data.action = ax::mojom::Action::kDoDefault;
+  action_data.target_tree_id = manager->ax_tree_id();
+  action_data.target_node_id = virtual_id;
+  manager->PerformAction(action_data);
+  EXPECT_EQ(1, view->action_count());
+
+  // Mark the widget's window as invisible to accessibility, pruning its
+  // subtree, including the virtual view, from the client tree.
+  widget->GetNativeWindow()->SetProperty(
+      ui::kAXConsiderInvisibleAndIgnoreChildren, true);
+  while (waiter.ax_tree()->GetFromId(virtual_id)) {
+    ASSERT_NE(nullptr, waiter.WaitForEvent(ax::mojom::Event::kChildrenChanged));
+  }
+
+  manager->PerformAction(action_data);
+  EXPECT_EQ(1, view->action_count());
+
+  // A virtual view added under the hidden subtree never enters the client
+  // tree; its id must not be actionable either.
+  auto late_virtual_child = std::make_unique<views::AXVirtualView>();
+  late_virtual_child->SetRole(ax::mojom::Role::kButton);
+  late_virtual_child->SetName("late virtual button");
+  const ui::AXNodeID late_virtual_id = late_virtual_child->GetUniqueId();
+  view->GetViewAccessibility().AddVirtualChildView(
+      std::move(late_virtual_child));
+
+  action_data.target_node_id = late_virtual_id;
+  manager->PerformAction(action_data);
+  EXPECT_EQ(1, view->action_count());
 }
 
 // Verify that re-enabling AutomationManagerAura after disable will not cause

@@ -195,6 +195,16 @@ void ViewsAXManager::PerformAction(const ui::AXActionData& data) {
     return;
   }
 
+  // Clients only know about nodes that have been serialized to them. Ignore
+  // actions targeting nodes outside of the client tree, e.g. nodes with an
+  // ancestor that's marked invisible, mirroring how events on such nodes are
+  // suppressed in SendPendingUpdate().
+  views::AXAuraObjWrapper* target = tree_source_->GetActionTarget(data);
+  if (!tree_serializer_ || !target ||
+      !tree_serializer_->IsInClientTree(target)) {
+    return;
+  }
+
   tree_source_->HandleAccessibleAction(data);
 }
 

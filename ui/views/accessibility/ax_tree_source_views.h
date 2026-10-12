@@ -39,6 +39,10 @@ class VIEWS_EXPORT AXTreeSourceViews
   AXTreeSourceViews& operator=(const AXTreeSourceViews&) = delete;
   ~AXTreeSourceViews() override;
 
+  // Returns the Aura object targeted by |action|, or nullptr if there is
+  // none.
+  AXAuraObjWrapper* GetActionTarget(const ui::AXActionData& action) const;
+
   // Invokes an action on an Aura object.
   void HandleAccessibleAction(const ui::AXActionData& action);
 
