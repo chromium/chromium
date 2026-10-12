@@ -137,9 +137,11 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibility
     using pointer = BrowserAccessibility*;
     using reference = BrowserAccessibility&;
 
+    PlatformChildIterator();
     PlatformChildIterator(const BrowserAccessibility* parent,
                           BrowserAccessibility* child);
     PlatformChildIterator(const PlatformChildIterator& it);
+    PlatformChildIterator& operator=(const PlatformChildIterator& it);
     ~PlatformChildIterator() override;
     PlatformChildIterator& operator++() override;
     // Postfix increment/decrement can't be overrides. See comment in
@@ -154,7 +156,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibility
     BrowserAccessibility* operator->() const override;
 
    private:
-    raw_ptr<const BrowserAccessibility> parent_;
+    raw_ptr<const BrowserAccessibility> parent_ = nullptr;
     AXNode::ChildIteratorBase<BrowserAccessibility,
                               &BrowserAccessibility::PlatformGetNextSibling,
                               &BrowserAccessibility::PlatformGetPreviousSibling,
@@ -170,15 +172,10 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibility
         : parent_(parent) {}
     PlatformChildrenRange(const PlatformChildrenRange&) = default;
 
-    PlatformChildIterator begin() { return parent_->PlatformChildrenBegin(); }
-    PlatformChildIterator end() { return parent_->PlatformChildrenEnd(); }
-
-    std::reverse_iterator<PlatformChildIterator> rbegin() {
-      return std::reverse_iterator(parent_->PlatformChildrenEnd());
+    PlatformChildIterator begin() const {
+      return parent_->PlatformChildrenBegin();
     }
-    std::reverse_iterator<PlatformChildIterator> rend() {
-      return std::reverse_iterator(parent_->PlatformChildrenBegin());
-    }
+    PlatformChildIterator end() const { return parent_->PlatformChildrenEnd(); }
 
    private:
     const raw_ptr<const BrowserAccessibility> parent_;

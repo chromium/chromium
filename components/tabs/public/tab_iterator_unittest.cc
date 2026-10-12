@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <ranges>
 #include <utility>
 
-#include "base/containers/adapters.h"
 #include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
 #include "components/split_tabs/split_tab_visual_data.h"
@@ -243,7 +243,7 @@ TEST_F(TabCollectionIteratorTest,
   EXPECT_EQ(*mid_it, collection()->GetTabAtIndexRecursive(4));
 }
 
-TEST_F(TabCollectionIteratorTest, ReverseIteratorAndBaseReversed) {
+TEST_F(TabCollectionIteratorTest, ReverseIteratorAndViewsReverse) {
   for (int i = 0; i < 5; i++) {
     collection()->AddTab(CreateTab(), collection()->ChildCount());
   }
@@ -255,9 +255,9 @@ TEST_F(TabCollectionIteratorTest, ReverseIteratorAndBaseReversed) {
   }
   EXPECT_EQ(expected_index, -1);
 
-  // Verify base::Reversed support.
+  // Verify std::views::reverse support.
   expected_index = 4;
-  for (TabInterface* tab : base::Reversed(*collection())) {
+  for (TabInterface* tab : std::views::reverse(*collection())) {
     EXPECT_EQ(tab, collection()->GetTabAtIndexRecursive(expected_index--));
   }
   EXPECT_EQ(expected_index, -1);

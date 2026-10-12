@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/wtf/linked_hash_set.h"
 
+#include <ranges>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -15,6 +17,8 @@ static_assert(!IsTraceableV<LinkedHashSet<int>>,
               "LinkedHashSet must not be traceable.");
 static_assert(!IsTraceableV<LinkedHashSet<String>>,
               "LinkedHashSet must not be traceable.");
+static_assert(std::ranges::bidirectional_range<LinkedHashSet<int>>);
+static_assert(std::ranges::bidirectional_range<const LinkedHashSet<int>>);
 
 TEST(LinkedHashSetTest, CopyConstructAndAssignInt) {
   using Set = LinkedHashSet<ValueInstanceCount<int>>;

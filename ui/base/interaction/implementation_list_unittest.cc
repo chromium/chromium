@@ -4,6 +4,8 @@
 
 #include "ui/base/interaction/implementation_list.h"
 
+#include <ranges>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/safe_castable.h"
 
@@ -12,6 +14,11 @@ namespace ui {
 namespace {
 
 class SingletonBase : public SafeCastable {};
+
+static_assert(
+    std::ranges::bidirectional_range<ImplementationList<SingletonBase>>);
+static_assert(
+    std::ranges::bidirectional_range<const ImplementationList<SingletonBase>>);
 
 class SingletonImpl1 : public SingletonBase {
  public:
@@ -109,6 +116,10 @@ TEST(FrameworkSpecificRegistrationListTest, Iterator) {
   EXPECT_TRUE(it++->IsA<SingletonImpl1>());
   EXPECT_TRUE(it->IsA<SingletonImpl2>());
   EXPECT_TRUE(++it == registration_list.end());
+  EXPECT_TRUE((--it)->IsA<SingletonImpl2>());
+  EXPECT_TRUE((it--)->IsA<SingletonImpl2>());
+  EXPECT_TRUE(it == registration_list.begin());
+  EXPECT_TRUE(it->IsA<SingletonImpl1>());
 }
 
 TEST(FrameworkSpecificRegistrationListTest, GetImplementation) {

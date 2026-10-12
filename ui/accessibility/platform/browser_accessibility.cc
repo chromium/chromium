@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <ranges>
 
 #include "base/check.h"
 #include "base/logging.h"
@@ -1164,9 +1165,18 @@ gfx::NativeViewAccessible BrowserAccessibility::GetTableAncestor() const {
   return gfx::NativeViewAccessible();
 }
 
+static_assert(std::ranges::bidirectional_range<
+              BrowserAccessibility::PlatformChildrenRange>);
+
+BrowserAccessibility::PlatformChildIterator::PlatformChildIterator() = default;
+
 BrowserAccessibility::PlatformChildIterator::PlatformChildIterator(
     const PlatformChildIterator& it)
     : parent_(it.parent_), platform_iterator(it.platform_iterator) {}
+
+BrowserAccessibility::PlatformChildIterator&
+BrowserAccessibility::PlatformChildIterator::operator=(
+    const PlatformChildIterator& it) = default;
 
 BrowserAccessibility::PlatformChildIterator::PlatformChildIterator(
     const BrowserAccessibility* parent,
@@ -1214,6 +1224,11 @@ BrowserAccessibility::PlatformChildIterator::GetNativeViewAccessible() const {
 
 std::optional<size_t>
 BrowserAccessibility::PlatformChildIterator::GetIndexInParent() const {
+  // A default-constructed iterator has no parent. Return std::nullopt so that
+  // two such iterators compare equal in `ChildIterator::operator==`.
+  if (!parent_) {
+    return std::nullopt;
+  }
   if (platform_iterator == parent_->PlatformChildrenEnd().platform_iterator)
     return parent_->PlatformChildCount();
 

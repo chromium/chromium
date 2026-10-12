@@ -104,6 +104,9 @@ TabCollection::TabIterator::TabIterator(const tabs::TabCollection* root,
 
 TabCollection::TabIterator::TabIterator(const TabIterator& iterator) = default;
 
+TabCollection::TabIterator& TabCollection::TabIterator::operator=(
+    const TabIterator& iterator) = default;
+
 TabCollection::TabIterator::~TabIterator() = default;
 
 void TabCollection::TabIterator::Next() {

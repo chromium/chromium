@@ -23,6 +23,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_LINKED_HASH_SET_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_LINKED_HASH_SET_H_
 
+#include <iterator>
+
 #include "third_party/blink/renderer/platform/wtf/allocator/partition_allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -85,6 +87,7 @@ class LinkedHashSet {
   template <typename T>
   class IteratorWrapper {
    public:
+    using iterator_category = std::bidirectional_iterator_tag;
     using value_type = typename T::value_type;
     using size_type = typename T::size_type;
     using difference_type = typename T::difference_type;

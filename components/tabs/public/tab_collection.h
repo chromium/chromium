@@ -65,6 +65,7 @@ class TabCollection : public SupportsHandles<TabCollectionHandleFactory> {
                 bool is_end = false);
     explicit TabIterator(TabInterface* tab);
     TabIterator(const TabIterator& iterator);
+    TabIterator& operator=(const TabIterator& iterator);
     ~TabIterator();
 
     pointer operator->() const { return cur_; }

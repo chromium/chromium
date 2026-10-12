@@ -7,10 +7,10 @@
 #include <algorithm>
 #include <cstdint>
 #include <optional>
+#include <ranges>
 #include <utility>
 
 #include "base/check.h"
-#include "base/containers/adapters.h"
 #include "base/containers/span.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -3342,7 +3342,8 @@ void AIPageContentAgent::ContentBuilder::ComputeHitTestableNodesInViewport(
   int32_t next_z_order = 1;
   // Use the list-based NodeSet directly to preserve insertion-order semantics
   // and duplicate filtering while avoiding intermediate storage.
-  for (const auto& member_node : base::Reversed(result.ListBasedTestResult())) {
+  for (const auto& member_node :
+       std::views::reverse(result.ListBasedTestResult())) {
     Node* node = member_node.Get();
     CHECK(node);
     if (!node->GetLayoutObject()) {

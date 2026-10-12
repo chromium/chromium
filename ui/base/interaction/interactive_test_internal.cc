@@ -8,6 +8,7 @@
 #include <iterator>
 #include <memory>
 #include <ostream>
+#include <ranges>
 #include <sstream>
 #include <string_view>
 #include <variant>
@@ -15,7 +16,6 @@
 
 #include "base/callback_list.h"
 #include "base/check.h"
-#include "base/containers/adapters.h"
 #include "base/containers/map_util.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
@@ -297,7 +297,7 @@ gfx::NativeWindow InteractiveTestPrivate::GetNativeWindowFor(
     const ui::TrackedElement* el) const {
   gfx::NativeWindow window = gfx::NativeWindow();
 
-  for (auto& framework : base::Reversed(framework_implementations_)) {
+  for (auto& framework : std::views::reverse(framework_implementations_)) {
     window = framework.GetNativeWindowFromElement(el);
     if (window) {
       break;
@@ -326,7 +326,7 @@ gfx::NativeWindow InteractiveTestPrivate::GetNativeWindowFor(
   // cache because it will always return the primary window for the context, but
   // the mouse could be over a child window.
   if (!window) {
-    for (auto& framework : base::Reversed(framework_implementations_)) {
+    for (auto& framework : std::views::reverse(framework_implementations_)) {
       window = framework.GetNativeWindowFromContext(el->context());
       if (window) {
         break;
@@ -450,7 +450,7 @@ void InteractiveTestPrivate::DoTestSetUp() {
   }
 }
 void InteractiveTestPrivate::DoTestTearDown() {
-  for (auto& framework : base::Reversed(framework_implementations_)) {
+  for (auto& framework : std::views::reverse(framework_implementations_)) {
     framework.DoTestTearDown();
   }
   state_observer_elements_.clear();
@@ -458,7 +458,7 @@ void InteractiveTestPrivate::DoTestTearDown() {
 }
 
 void InteractiveTestPrivate::OnSequenceComplete() {
-  for (auto& framework : base::Reversed(framework_implementations_)) {
+  for (auto& framework : std::views::reverse(framework_implementations_)) {
     framework.OnSequenceComplete();
   }
 
@@ -487,7 +487,7 @@ void InteractiveTestPrivate::OnSequenceComplete() {
 
 void InteractiveTestPrivate::OnSequenceAborted(
     const InteractionSequence::AbortedData& data) {
-  for (auto& framework : base::Reversed(framework_implementations_)) {
+  for (auto& framework : std::views::reverse(framework_implementations_)) {
     framework.OnSequenceAborted(data);
   }
   if (aborted_callback_for_testing_) {
@@ -650,7 +650,7 @@ InteractiveTestPrivate::DebugTreeNode InteractiveTestPrivate::DebugDumpContext(
     ui::ElementContext context) const {
   std::string context_description;
   for (auto& framework_implementation :
-       base::Reversed(framework_implementations_)) {
+       std::views::reverse(framework_implementations_)) {
     context_description =
         framework_implementation.DebugDescribeContext(context);
     if (!context_description.empty()) {
@@ -666,11 +666,11 @@ InteractiveTestPrivate::DebugTreeNode InteractiveTestPrivate::DebugDumpContext(
                                                element_list.end());
   std::vector<std::vector<DebugTreeNode>> temp;
   for (auto& framework_implementation :
-       base::Reversed(framework_implementations_)) {
+       std::views::reverse(framework_implementations_)) {
     temp.push_back(framework_implementation.DebugDumpElements(elements));
   }
   CHECK(elements.empty());
-  for (auto& nodes : base::Reversed(temp)) {
+  for (auto& nodes : std::views::reverse(temp)) {
     std::move(nodes.begin(), nodes.end(), std::back_inserter(node.children));
   }
   return node;

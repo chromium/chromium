@@ -25,24 +25,33 @@ class ImplementationList {
  public:
   using ListType = std::vector<std::unique_ptr<BaseClass>>;
 
-  // Implements a simple forward iterator over instances.
+  // Implements a simple bidirectional iterator over instances.
   template <class It = typename ListType::iterator>
   class Iterator {
    public:
+    using iterator_category = std::bidirectional_iterator_tag;
+    using value_type = BaseClass;
     using difference_type = std::iter_difference_t<It>;
+    using pointer = BaseClass*;
+    using reference = BaseClass&;
 
     Iterator() = default;
     ~Iterator() = default;
     Iterator(const Iterator&) = default;
     Iterator& operator=(const Iterator&) = default;
 
-    BaseClass& operator*() { return *(it_->get()); }
-    BaseClass* operator->() { return it_->get(); }
+    BaseClass& operator*() const { return *(it_->get()); }
+    BaseClass* operator->() const { return it_->get(); }
     Iterator& operator++() {
       ++it_;
       return *this;
     }
     Iterator operator++(int) { return Iterator(it_++); }
+    Iterator& operator--() {
+      --it_;
+      return *this;
+    }
+    Iterator operator--(int) { return Iterator(it_--); }
     friend bool operator==(const Iterator&, const Iterator&) = default;
 
    private:

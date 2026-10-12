@@ -76,8 +76,10 @@ class AX_EXPORT AXNode final {
     using pointer = NodeType*;
     using reference = NodeType&;
 
+    ChildIteratorBase() = default;
     ChildIteratorBase(const NodeType* parent, NodeType* child);
-    ChildIteratorBase(const ChildIteratorBase& it);
+    ChildIteratorBase(const ChildIteratorBase& it) = default;
+    ChildIteratorBase& operator=(const ChildIteratorBase& it) = default;
     ~ChildIteratorBase() = default;
     friend bool operator==(const ChildIteratorBase& lhs,
                            const ChildIteratorBase& rhs) {
@@ -90,8 +92,8 @@ class AX_EXPORT AXNode final {
     NodeType* operator->() const;
 
    protected:
-    raw_ptr<const NodeType> parent_;
-    raw_ptr<NodeType> child_;
+    raw_ptr<const NodeType> parent_ = nullptr;
+    raw_ptr<NodeType> child_ = nullptr;
     raw_ptr<NodeType> first_child_{nullptr};
     raw_ptr<NodeType> last_child_{nullptr};
   };
@@ -852,19 +854,6 @@ AXNode::ChildIteratorBase<NodeType,
                           LastChild>::ChildIteratorBase(const NodeType* parent,
                                                         NodeType* child)
     : parent_(parent), child_(child) {}
-
-template <typename NodeType,
-          NodeType* (NodeType::*NextSibling)() const,
-          NodeType* (NodeType::*PreviousSibling)() const,
-          NodeType* (NodeType::*FirstChild)() const,
-          NodeType* (NodeType::*LastChild)() const>
-AXNode::ChildIteratorBase<NodeType,
-                          NextSibling,
-                          PreviousSibling,
-                          FirstChild,
-                          LastChild>::ChildIteratorBase(const ChildIteratorBase&
-                                                            it)
-    : parent_(it.parent_), child_(it.child_) {}
 
 template <typename NodeType,
           NodeType* (NodeType::*NextSibling)() const,

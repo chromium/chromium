@@ -9,11 +9,11 @@
 #include <algorithm>
 #include <map>
 #include <memory>
+#include <ranges>
 #include <utility>
 
 #include "base/auto_reset.h"
 #include "base/check_deref.h"
-#include "base/containers/adapters.h"
 #include "base/logging.h"
 #include "base/memory/safety_checks.h"
 #include "base/metrics/histogram_functions.h"
@@ -2127,7 +2127,7 @@ void BrowserAccessibilityManager::BuildAXTreeHitTestCacheInternal(
   // assume the object that occurs later in the tree is on top of one that comes
   // before it.
   auto range = node->PlatformChildren();
-  for (const auto& child : base::Reversed(range)) {
+  for (const auto& child : std::views::reverse(range)) {
     // Skip table columns because cells are only contained in rows,
     // not columns.
     if (child.GetRole() == ax::mojom::Role::kColumn)
