@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -42,6 +43,10 @@ int gbm_bo_get_fd_for_plane(struct gbm_bo* bo, int plane)
 namespace ui {
 namespace gbm_wrapper {
 namespace {
+
+// Maximum dimension for GBM buffer allocation to prevent integer overflow in
+// minigbm stride/size calculations (https://crbug.com/536516239).
+constexpr int kMaxGbmBufferDimension = 16384;
 
 uint32_t GetHandleForPlane(struct gbm_bo* bo, int plane) {
   return gbm_bo_get_handle_for_plane(bo, plane).u32;
@@ -312,6 +317,8 @@ class Device final : public ui::GbmDevice {
   std::unique_ptr<ui::GbmBuffer> CreateBuffer(uint32_t format,
                                               const gfx::Size& size,
                                               uint32_t flags) override {
+    CHECK_LE(size.width(), kMaxGbmBufferDimension);
+    CHECK_LE(size.height(), kMaxGbmBufferDimension);
     struct gbm_bo* bo = gbm_bo_create(device_.get(), size.width(),
                                       size.height(), format, flags);
     if (!bo) {
@@ -339,6 +346,8 @@ class Device final : public ui::GbmDevice {
     if (modifiers.empty()) {
       return CreateBuffer(format, requested_size, flags);
     }
+    CHECK_LE(requested_size.width(), kMaxGbmBufferDimension);
+    CHECK_LE(requested_size.height(), kMaxGbmBufferDimension);
 
     // Buggy drivers prevent us from getting plane FDs from a BO which had its
     // previously imported BO destroyed. E.g: Nvidia. Thus, on Linux Desktop, we
