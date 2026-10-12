@@ -11,6 +11,7 @@
 
 #include "ash/accelerators/accelerator_prefs_delegate.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_paths.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/chrome_switches.h"
 #include "ash/game_dashboard/game_dashboard_delegate.h"
@@ -65,7 +66,6 @@
 #include "chrome/browser/ui/ash/wm/coral_delegate_impl.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/webui/ash/diagnostics_dialog/diagnostics_dialog.h"
-#include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/audio/system_sounds_delegate_impl.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_delegate/browser_controller.h"
@@ -393,7 +393,7 @@ bool ChromeShellDelegate::IsUiDevToolsStarted() const {
 
 void ChromeShellDelegate::StartUiDevTools() {
   base::FilePath output_dir;
-  bool result = base::PathService::Get(chrome::DIR_USER_DATA, &output_dir);
+  bool result = base::PathService::Get(ash::DIR_USER_DATA, &output_dir);
   DCHECK(result);
 
   return ui_devtools::ServerHolder::GetInstance()->CreateUiDevTools(output_dir);
