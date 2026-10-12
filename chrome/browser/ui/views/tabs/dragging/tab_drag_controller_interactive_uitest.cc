@@ -5309,6 +5309,11 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
       [&]() { return TabDragController::GetSourceContext() == nullptr; }));
   ASSERT_TRUE(TabDragController::IsActive());
 
+  // Drag to the trailing end of the tabstrip to ensure we're in a
+  // predictable spot within the strip.
+  StopAnimating(tab_strip2);
+  ASSERT_TRUE(DragInputToCenter(tab_strip2->tab_at(1)));
+
   // Target the window holding capture, not whichever browser is focused.
   ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
       browser2->GetWindow()->GetNativeWindow(), ui::VKEY_ESCAPE, false, false,
