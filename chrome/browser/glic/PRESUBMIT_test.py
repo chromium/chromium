@@ -552,6 +552,146 @@ class CheckGlicFeaturesDefaultStateTest(unittest.TestCase):
     self.assertEqual(results, [])
 
 
+class CheckMemberOrderingTest(unittest.TestCase):
+  def testNoAffectedFiles(self):
+    mock_input_api = PRESUBMIT_test_mocks.MockInputApi()
+    mock_output_api = PRESUBMIT_test_mocks.MockOutputApi()
+    results = PRESUBMIT.CheckChangeOnUpload(mock_input_api, mock_output_api)
+    self.assertEqual(results, [])
+
+  def testNonCppFilesEdited(self):
+    mock_input_api = PRESUBMIT_test_mocks.MockInputApi()
+    mock_input_api.files = [
+      PRESUBMIT_test_mocks.MockFile(
+        'chrome/browser/glic/BUILD.gn',
+        ['# Some build file content'],
+      ),
+      PRESUBMIT_test_mocks.MockFile(
+        'chrome/browser/glic/tools/check_member_order.py',
+        ['# Some python content'],
+      ),
+    ]
+    mock_output_api = PRESUBMIT_test_mocks.MockOutputApi()
+    results = PRESUBMIT.CheckChangeOnUpload(mock_input_api, mock_output_api)
+    self.assertEqual(results, [])
+
+  def testCompliantCppFile(self):
+    mock_input_api = PRESUBMIT_test_mocks.MockInputApi()
+    mock_input_api.files = [
+      PRESUBMIT_test_mocks.MockFile(
+        'chrome/browser/glic/actor/glic_actor_action_execution_browsertest.cc',
+        ['// Copyright 2026'],
+      ),
+    ]
+    mock_output_api = PRESUBMIT_test_mocks.MockOutputApi()
+    results = PRESUBMIT.CheckChangeOnUpload(mock_input_api, mock_output_api)
+    self.assertEqual(results, [])
+
+  def testNonCompliantCppFile(self):
+    repo_root = PRESUBMIT_test_mocks._REPO_ROOT
+    glic_dir = os.path.join(repo_root, 'chrome', 'browser', 'glic')
+    tmp_file_path = os.path.join(glic_dir, 'test_member_order_violation.h')
+    rel_path = os.path.relpath(tmp_file_path, repo_root)
+    unix_rel_path = rel_path.replace('\\', '/')
+
+    violating_content = (
+      'class BadClass {\n private:\n  int field_ = 0;\n  void Helper();\n};\n'
+    )
+    with open(tmp_file_path, 'w', encoding='utf-8') as f:
+      f.write(violating_content)
+
+    try:
+      mock_input_api = PRESUBMIT_test_mocks.MockInputApi()
+      mock_input_api.presubmit_local_path = glic_dir
+      mock_input_api.InitFiles(
+        [
+          PRESUBMIT_test_mocks.MockFile(
+            rel_path,
+            violating_content.splitlines(),
+          ),
+        ]
+      )
+      mock_output_api = PRESUBMIT_test_mocks.MockOutputApi()
+      results = PRESUBMIT.CheckChangeOnUpload(mock_input_api, mock_output_api)
+      self.assertEqual(len(results), 1)
+      self.assertEqual(results[0].type, 'error')
+      self.assertIn(
+        'Class member fields should be declared after member functions',
+        results[0].message,
+      )
+      self.assertIn(unix_rel_path, results[0].items)
+    finally:
+      if os.path.exists(tmp_file_path):
+        os.remove(tmp_file_path)
+
+  def testCppFileOutsideGlicIgnored(self):
+    repo_root = PRESUBMIT_test_mocks._REPO_ROOT
+    notes_dir = os.path.join(repo_root, '.notes')
+    os.makedirs(notes_dir, exist_ok=True)
+    tmp_file_path = os.path.join(notes_dir, 'outside_glic_member_file.h')
+    rel_path = os.path.relpath(tmp_file_path, repo_root)
+
+    violating_content = (
+      'class BadClass {\n private:\n  int field_ = 0;\n  void Helper();\n};\n'
+    )
+    with open(tmp_file_path, 'w', encoding='utf-8') as f:
+      f.write(violating_content)
+
+    try:
+      mock_input_api = PRESUBMIT_test_mocks.MockInputApi()
+      mock_input_api.presubmit_local_path = os.path.join(
+        repo_root, 'chrome', 'browser', 'glic'
+      )
+      mock_input_api.InitFiles(
+        [
+          PRESUBMIT_test_mocks.MockFile(
+            rel_path,
+            violating_content.splitlines(),
+          ),
+        ]
+      )
+      mock_output_api = PRESUBMIT_test_mocks.MockOutputApi()
+      results = PRESUBMIT.CheckChangeOnUpload(mock_input_api, mock_output_api)
+      self.assertEqual(results, [])
+    finally:
+      if os.path.exists(tmp_file_path):
+        os.remove(tmp_file_path)
+
+  def testUnrelatedLineChangedDoesNotTriggerError(self):
+    repo_root = PRESUBMIT_test_mocks._REPO_ROOT
+    glic_dir = os.path.join(repo_root, 'chrome', 'browser', 'glic')
+    tmp_file_path = os.path.join(glic_dir, 'test_unrelated_line_member.h')
+    rel_path = os.path.relpath(tmp_file_path, repo_root)
+
+    violating_content = (
+      '// Unrelated line 1\n'
+      'class ExistingClass {\n'
+      ' private:\n'
+      '  int field_ = 0;\n'
+      '  void Helper();\n'
+      '};\n'
+    )
+    with open(tmp_file_path, 'w', encoding='utf-8') as f:
+      f.write(violating_content)
+
+    try:
+      mock_input_api = PRESUBMIT_test_mocks.MockInputApi()
+      mock_input_api.presubmit_local_path = glic_dir
+      mock_file = PRESUBMIT_test_mocks.MockFile(
+        rel_path,
+        violating_content.splitlines(),
+      )
+      # Simulate editing only line 1 (the comment)
+      mock_file._changed_contents = [(1, '// Unrelated line 1')]
+      mock_input_api.InitFiles([mock_file])
+      mock_output_api = PRESUBMIT_test_mocks.MockOutputApi()
+      results = PRESUBMIT.CheckChangeOnUpload(mock_input_api, mock_output_api)
+      self.assertEqual(results, [])
+    finally:
+      if os.path.exists(tmp_file_path):
+        os.remove(tmp_file_path)
+
+
 # Include tool unit tests so they execute with PRESUBMIT_test.py
 sys.path.insert(
   0, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'tools')
@@ -566,6 +706,7 @@ from check_glic_api_test_registration_test import (  # noqa: E402
   CheckGlicApiTestRegistrationTsHandlingTest,  # noqa: F401
   CheckGlicApiTestRegistrationTypeScriptExtractorTest,  # noqa: F401
 )
+from check_member_order_test import CheckMemberOrderTest  # noqa: E402, F401
 from sort_headers_test import SortHeadersTest  # noqa: E402, F401
 
 if __name__ == '__main__':
