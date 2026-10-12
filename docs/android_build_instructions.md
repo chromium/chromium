@@ -212,7 +212,6 @@ feature to package optimized versions for different OS versions.
 2. `trichrome_chrome_bundle` (`TrichromeChrome.aab`)
    * `minSdkVersion=29` (Android 10).
    * Native code shared with WebView through a "Static Shared Library APK": `trichrome_library_apk`
-   * Corresponding WebView target: `trichrome_webview_bundle`
 
 *** note
 **Notes:**

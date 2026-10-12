@@ -25,7 +25,6 @@ WebView.
 In N, we made it possible for the Chrome APK to also provide a WebView
 implementation to save space, and introduced mechanisms to enable switching
 between different implementations. This is discussed in more detail in the
-[guide to WebView packaging variants](webview-packaging-variants.md) and in the
 [channel switching documentation](channels.md). For the purposes of this doc,
 you can assume all references to "the APK" or "the WebView APK" refer to the
 currently selected WebView implementation - loading is handled the same way.

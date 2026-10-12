@@ -89,7 +89,6 @@ at all if the current provider doesn't support the host's bitness.)
 ## Packaging variants
 
 Since Android Lollipop, WebView has been implemented by an updatable package.
-See [Packaging Variants](webview-packaging-variants.md) for details.
 
 ## See also
 

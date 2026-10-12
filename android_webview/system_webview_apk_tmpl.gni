@@ -16,8 +16,8 @@ import("//device/vr/buildflags/buildflags.gni")
 import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
 
 declare_args() {
-  # Android package name to use when compiling the system_webview_apk and
-  # trichrome_webview_apk targets. This should be used if the Android build
+  # Android package name to use when compiling the system_webview_apk
+  # targets. This should be used if the Android build
   # on which you are going to install WebView is configured to load a
   # different package name than the default used in AOSP.
   system_webview_package_name = "com.android.webview"
@@ -233,7 +233,7 @@ template("system_webview_apk_or_module_tmpl") {
             shared_libraries = [ "//android_webview:monochrome" ]
             _include_primary_support = true
           } else {
-            # trichrome_webview_32_bundle
+            # 32-bit-only WebView on a 64-bit target.
             static_library_provider_use_secondary_abi = true
           }
           assert(_include_32_bit_webview)

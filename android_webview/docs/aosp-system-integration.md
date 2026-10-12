@@ -54,29 +54,6 @@ use it before continuing, as troubleshooting issues with WebView can be more
 difficult.
 ***
 
-You will need to make several decisions before building WebView for AOSP:
-
-### Choosing a WebView variant
-
-There are currently three different variants of WebView that you can build, and
-you will need to decide which one is appropriate for your device. All three have
-the exact same features and app-facing behaviour, but are packaged in different
-ways that can provide advantages in certain configurations.
-
-More detailed background and technical information about the different variants
-of WebView [is available here](webview-packaging-variants.md), but here's a
-summary:
-
-#### Standalone WebView
-
-Most AOSP devices will use this variant. The standalone WebView is a single APK
-which contains the entire WebView implementation. The prebuilt APK provided in
-AOSP is a standalone WebView APK.
-
-**Note:** We focus on `system_webview_apk` (Standalone WebView) rather than
-Trichrome because shipping WebView separately from Chrome reduces start-up
-time, and reduces ANRs.
-
 The build target is called `system_webview_apk` and the resulting output file is
 called `SystemWebView.apk`. The prebuilt APK provided in AOSP has been renamed
 to `AndroidWebview.apk` for historical reasons, and the filename used in AOSP is
@@ -89,28 +66,6 @@ this target, the WebView renderer process runs in 64-bit mode, which is
 significantly faster than 32-bit renderer processes. This build optimized for
 speed is more suitable for devices with at least 4GB of RAM, since 64-bit renderer
 processes are expected to consume more memory.
-
-#### Trichrome
-
-**Note:** This variant is no longer recommended. You should use `system_webview_apk` instead.
-
-Trichrome is only compatible with Android Q and later.
-
-Trichrome is composed of three APK/AABs:
-
-1. TrichromeWebView contains WebView-specific code and data, and provides
-Android apps with the WebView implementation.
-
-2. TrichromeChrome contains browser-specific code and data, and provides the
-user with a Chromium-based web browser.
-
-3. TrichromeLibrary contains the shared code and data, and is only used as an
-internal implementation detail of TrichromeWebView and TrichromeChrome.
-
-The build targets are called `trichrome_webview_apk`, `trichrome_chrome_bundle`,
-and `trichrome_library_apk` respectively, and the resulting output files are
-called `TrichromeWebView.apk`, `TrichromeChrome.aab`, and
-`TrichromeLibrary.apk`.
 
 ### Choosing a WebView version
 
@@ -307,11 +262,6 @@ LOCAL_CERTIFICATE := PRESIGNED
 This will prevent the Android build system from resigning the APK with the
 default platform key.
 
-For Trichrome APKs you will need to define your own prebuilt
-modules in a new `Android.mk` file. You may need to contact the WebView team via
-the [android-webview-dev Google group][1] for help creating the correct build
-files.
-
 ### Configuring the Android framework
 
 The permitted WebView implementations are configured using an XML file in the
@@ -331,7 +281,7 @@ You can print the base64-encoded signature of a compiled APK with the following
 
 ```shell
 # For an APK or Bundle target compiled from chromium:
-$ out/Default/bin/trichrome_webview_apk print-certs --full-cert
+$ out/Default/bin/system_webview_apk print-certs --full-cert
 
 # For a pre-compiled APK or Bundle:
 $ build/android/apk_operations.py print-certs --full-cert \

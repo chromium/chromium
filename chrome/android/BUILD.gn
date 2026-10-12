@@ -2895,7 +2895,6 @@ if (_is_default_toolchain) {
     deps = [
       ":trichrome_chrome_bundle",
       ":trichrome_library_apk",
-      "//android_webview:trichrome_webview_bundle",
     ]
   }
 
@@ -3474,10 +3473,10 @@ if (_is_default_toolchain &&
         ":trichrome_library_32_apk_validate_libs_and_assets",
         ":trichrome_library_64_32_apk_validate_libs_and_assets",
         ":trichrome_library_64_apk_validate_libs_and_assets",
-        "//android_webview:trichrome_webview_32_64_bundle_validate_libs_and_assets",
-        "//android_webview:trichrome_webview_32_bundle_validate_libs_and_assets",
-        "//android_webview:trichrome_webview_64_32_bundle_validate_libs_and_assets",
-        "//android_webview:trichrome_webview_64_bundle_validate_libs_and_assets",
+        "//android_webview:system_webview_32_64_bundle_validate_libs_and_assets",
+        "//android_webview:system_webview_32_bundle_validate_libs_and_assets",
+        "//android_webview:system_webview_64_32_bundle_validate_libs_and_assets",
+        "//android_webview:system_webview_64_bundle_validate_libs_and_assets",
       ]
     }
     if (enable_manifest_verification) {
@@ -3495,12 +3494,8 @@ if (_is_default_toolchain &&
         "//android_webview:system_webview_32_64_base_bundle_module_validate_android_manifest",
         "//android_webview:system_webview_32_base_bundle_module_validate_android_manifest",
         "//android_webview:system_webview_64_32_base_bundle_module_validate_android_manifest",
+        "//android_webview:system_webview_64_32_bundle_validate_proguard_config",
         "//android_webview:system_webview_64_base_bundle_module_validate_android_manifest",
-        "//android_webview:trichrome_webview_32_64_base_bundle_module_validate_android_manifest",
-        "//android_webview:trichrome_webview_32_base_bundle_module_validate_android_manifest",
-        "//android_webview:trichrome_webview_64_32_base_bundle_module_validate_android_manifest",
-        "//android_webview:trichrome_webview_64_32_bundle_validate_proguard_config",
-        "//android_webview:trichrome_webview_64_base_bundle_module_validate_android_manifest",
       ]
     }
   }
