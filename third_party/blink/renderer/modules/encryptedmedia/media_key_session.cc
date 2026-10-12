@@ -420,7 +420,7 @@ MediaKeySession::MediaKeySession(ScriptState* script_state,
       closed_promise_(MakeGarbageCollected<ClosedPromise>(
           ExecutionContext::From(script_state))),
       action_timer_(ExecutionContext::From(script_state)
-                        ->GetTaskRunner(TaskType::kMiscPlatformAPI),
+                        ->GetTaskRunner(TaskType::kMediaElementEvent),
                     this,
                     &MediaKeySession::ActionTimerFired) {
   DVLOG(MEDIA_KEY_SESSION_LOG_LEVEL) << __func__ << "(" << this << ")";

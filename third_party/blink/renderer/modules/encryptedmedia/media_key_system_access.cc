@@ -231,7 +231,7 @@ ScriptPromise<MediaKeys> MediaKeySystemAccess::createMediaKeys(
   auto* execution_context = ExecutionContext::From(script_state);
   access_->CreateContentDecryptionModule(
       helper->Result(),
-      execution_context->GetTaskRunner(TaskType::kInternalMedia));
+      execution_context->GetTaskRunner(TaskType::kMediaElementEvent));
 
   ReportMetrics(execution_context, GetInternalKeySystem());
 

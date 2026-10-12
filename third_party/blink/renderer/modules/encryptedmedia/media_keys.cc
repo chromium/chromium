@@ -253,7 +253,7 @@ MediaKeys::MediaKeys(
       config_(config),
       media_element_(nullptr),
       reserved_for_media_element_(false),
-      timer_(context->GetTaskRunner(TaskType::kMiscPlatformAPI),
+      timer_(context->GetTaskRunner(TaskType::kMediaElementEvent),
              this,
              &MediaKeys::TimerFired) {
   DVLOG(MEDIA_KEYS_LOG_LEVEL) << __func__ << "(" << this << ")";
