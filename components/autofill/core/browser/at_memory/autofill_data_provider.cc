@@ -239,7 +239,6 @@ MemorySearchResult CreateResultFromAddressProfile(
     }
   }
 
-  entry.confidence_score = profile.GetRankingScore(base::Time::Now());
   return entry;
 }
 
