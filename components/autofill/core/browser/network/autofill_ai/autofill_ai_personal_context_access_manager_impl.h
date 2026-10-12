@@ -96,6 +96,7 @@ class AutofillAiPersonalContextAccessManagerImpl
   // personal_context::PersonalContextEligibilityService::Observer:
   void OnEligibilityStateChanged(
       personal_context::PersonalContextEligibilityState new_state) override;
+  void OnContextSourceDisabled() override;
 
   // EntitySuppressionManager::Observer:
   void OnEntitySuppressionsChanged() override;

@@ -1191,6 +1191,28 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest, WipeStateOnDisablement) {
   EXPECT_FALSE(access_manager().IsTypePrefetched(kPassportType));
 }
 
+// Tests that when OnContextSourceDisabled is called, all cached state is wiped.
+TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
+       WipeStateOnContextSourceDisabled) {
+  EntityInstance::EntityId passport_guid = PrefetchMaskedPassportAndGetGuid();
+  EntityInstance passport_unmasked =
+      test::GetPassportEntityInstance(
+          {.record_type = EntityInstance::RecordType::kPersonalContext})
+          .CopyWithNewEntityId(passport_guid);
+  test_api(access_manager()).CacheUnmaskedSpiiEntity(passport_unmasked);
+
+  ASSERT_TRUE(access_manager().IsTypePrefetched(kPassportType));
+  ASSERT_TRUE(access_manager().ServerHasSpiiPresenceSignal(kPassportType));
+  ASSERT_EQ(GetUnmaskedSpiiEntitySync(passport_guid), passport_unmasked);
+
+  EXPECT_CALL(mock_observer(), OnMaskedEntityTypeEvicted(_, kPassportType));
+  access_manager().OnContextSourceDisabled();
+
+  EXPECT_FALSE(access_manager().IsTypePrefetched(kPassportType));
+  EXPECT_FALSE(access_manager().ServerHasSpiiPresenceSignal(kPassportType));
+  EXPECT_EQ(GetUnmaskedSpiiEntitySync(passport_guid), std::nullopt);
+}
+
 // Tests that a pending request blocks subsequent requests for the same type.
 TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
        PendingRequestBlocksSubsequent) {

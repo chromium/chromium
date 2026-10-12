@@ -51,6 +51,7 @@ class MockPersonalContextEligibilityServiceObserver
               (PersonalContextEligibilityState),
               (override));
   MOCK_METHOD(void, OnEncryptionEligibilityChanged, (bool), (override));
+  MOCK_METHOD(void, OnContextSourceDisabled, (), (override));
 };
 
 class PersonalContextEligibilityServiceImplTest : public testing::Test {
@@ -242,6 +243,8 @@ TEST_F(PersonalContextEligibilityServiceImplTest,
 
   service().OnAccountSettingDataUpdated(
       account_settings::kAccountSettingContextWorkspace.name);
+  service().OnAccountSettingDataUpdated(
+      account_settings::kAccountSettingContextPhotos.name);
   EXPECT_EQ(service().GetEligibilityState(),
             PersonalContextEligibilityState::kDisabledNotEligible);
 
@@ -267,6 +270,8 @@ TEST_F(PersonalContextEligibilityServiceImplTest,
 
     service().OnAccountSettingDataUpdated(
         account_settings::kAccountSettingContextWorkspace.name);
+    service().OnAccountSettingDataUpdated(
+        account_settings::kAccountSettingContextPhotos.name);
     EXPECT_EQ(service().GetEligibilityState(),
               PersonalContextEligibilityState::kEligible);
     EXPECT_FALSE(service().IsEligibleForEncryption());
@@ -280,8 +285,10 @@ TEST_F(PersonalContextEligibilityServiceImplTest,
     EXPECT_CALL(mock_account_settings_service_,
                 GetBoolean(AccountSettingWithName(
                     account_settings::kAccountSettingContextPhotos.name)))
-        .WillRepeatedly(Return(true));
+        .WillOnce(Return(true));
 
+    service().OnAccountSettingDataUpdated(
+        account_settings::kAccountSettingContextWorkspace.name);
     service().OnAccountSettingDataUpdated(
         account_settings::kAccountSettingContextPhotos.name);
     EXPECT_EQ(service().GetEligibilityState(),
@@ -308,9 +315,11 @@ TEST_F(PersonalContextEligibilityServiceImplTest,
                   account_settings::kAccountSettingContextPhotos.name)))
       .WillRepeatedly(Return(false));
 
-  // Notify the service that an account setting has changed.
+  // Notify the service that account settings have changed.
   service().OnAccountSettingDataUpdated(
       account_settings::kAccountSettingContextWorkspace.name);
+  service().OnAccountSettingDataUpdated(
+      account_settings::kAccountSettingContextPhotos.name);
 
   // The cache should be updated to kDisabledNotEligible.
   EXPECT_EQ(service().GetEligibilityState(),
@@ -321,10 +330,6 @@ TEST_F(PersonalContextEligibilityServiceImplTest,
               GetBoolean(AccountSettingWithName(
                   account_settings::kAccountSettingContextWorkspace.name)))
       .WillRepeatedly(Return(true));
-  EXPECT_CALL(mock_account_settings_service_,
-              GetBoolean(AccountSettingWithName(
-                  account_settings::kAccountSettingContextPhotos.name)))
-      .WillRepeatedly(Return(false));
 
   // Notify again.
   service().OnAccountSettingDataUpdated(
@@ -666,6 +671,57 @@ TEST_F(PersonalContextEligibilityServiceImplTest,
   EXPECT_EQ(service().GetEligibilityState(),
             PersonalContextEligibilityState::kEligible);
   EXPECT_TRUE(service().IsEligibleForEncryption());
+}
+
+TEST_F(PersonalContextEligibilityServiceImplTest,
+       NotifiedWhenContextSourceDisabled) {
+  service().OnAccountSettingsLoaded();
+
+  MockPersonalContextEligibilityServiceObserver observer;
+  base::ScopedObservation<PersonalContextEligibilityService,
+                          PersonalContextEligibilityService::Observer>
+      scoped_observation(&observer);
+  scoped_observation.Observe(&service());
+
+  // Disable Workspace while keeping Photos enabled.
+  ON_CALL(mock_account_settings_service_,
+          GetBoolean(AccountSettingWithName(
+              account_settings::kAccountSettingContextWorkspace.name)))
+      .WillByDefault(Return(false));
+  ON_CALL(mock_account_settings_service_,
+          GetBoolean(AccountSettingWithName(
+              account_settings::kAccountSettingContextPhotos.name)))
+      .WillByDefault(Return(true));
+
+  EXPECT_CALL(observer, OnContextSourceDisabled()).Times(1);
+  service().OnAccountSettingDataUpdated(
+      account_settings::kAccountSettingContextWorkspace.name);
+
+  // Another update while Workspace is already disabled should not trigger
+  // OnContextSourceDisabled().
+  EXPECT_CALL(observer, OnContextSourceDisabled()).Times(0);
+  service().OnAccountSettingDataUpdated(
+      account_settings::kAccountSettingContextWorkspace.name);
+
+  // Re-enabling Workspace should not trigger OnContextSourceDisabled().
+  ON_CALL(mock_account_settings_service_,
+          GetBoolean(AccountSettingWithName(
+              account_settings::kAccountSettingContextWorkspace.name)))
+      .WillByDefault(Return(true));
+
+  EXPECT_CALL(observer, OnContextSourceDisabled()).Times(0);
+  service().OnAccountSettingDataUpdated(
+      account_settings::kAccountSettingContextWorkspace.name);
+
+  // Disable Photos while keeping Workspace enabled.
+  ON_CALL(mock_account_settings_service_,
+          GetBoolean(AccountSettingWithName(
+              account_settings::kAccountSettingContextPhotos.name)))
+      .WillByDefault(Return(false));
+
+  EXPECT_CALL(observer, OnContextSourceDisabled()).Times(1);
+  service().OnAccountSettingDataUpdated(
+      account_settings::kAccountSettingContextPhotos.name);
 }
 
 }  // namespace

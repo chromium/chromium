@@ -735,6 +735,10 @@ void AutofillAiPersonalContextAccessManagerImpl::OnEligibilityStateChanged(
   }
 }
 
+void AutofillAiPersonalContextAccessManagerImpl::OnContextSourceDisabled() {
+  WipeCache();
+}
+
 void AutofillAiPersonalContextAccessManagerImpl::
     OnPersonalContextSettingsToggleChanged() {
   ComputeAndMaybeLogNonEligibilityReason();

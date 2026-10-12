@@ -113,18 +113,15 @@ SatisfiesAccountRequirements(const signin::IdentityManager* identity_manager,
                         std::optional<PersonalContextNonEligibilityReason>>
 SatisfiesAccountSettingRequirements(
     account_settings::AccountSettingService* account_settings,
+    bool is_workspace_enabled,
+    bool is_photos_enabled,
     std::string* debug_message = nullptr) {
   if (!account_settings) {
     MaybeOutputReason(debug_message, "Account settings service not available.");
     return std::pair{false, std::nullopt};
   }
 
-  if (!account_settings
-           ->GetBoolean(account_settings::kAccountSettingContextWorkspace)
-           .value_or(false) &&
-      !account_settings
-           ->GetBoolean(account_settings::kAccountSettingContextPhotos)
-           .value_or(false)) {
+  if (!is_workspace_enabled && !is_photos_enabled) {
     MaybeOutputReason(debug_message, "No context sources are enabled.");
     return std::pair{
         false,
@@ -203,6 +200,7 @@ PersonalContextEligibilityServiceImpl::PersonalContextEligibilityServiceImpl(
       locale_(std::move(locale)) {
   if (account_settings_service_) {
     account_settings_observation_.Observe(account_settings_service_);
+    UpdateContextSourcesState();
   }
   if (identity_manager) {
     identity_manager_observer_.Observe(identity_manager);
@@ -320,8 +318,9 @@ PersonalContextEligibilityServiceImpl::ComputeEligibilityState() {
     return std::pair{kDisabledNotEligible, std::nullopt};
   }
 
-  if (auto [satisfied, reason] =
-          SatisfiesAccountSettingRequirements(account_settings_service_.get());
+  if (auto [satisfied, reason] = SatisfiesAccountSettingRequirements(
+          account_settings_service_.get(), is_workspace_enabled_,
+          is_photos_enabled_);
       !satisfied) {
     return std::pair{kDisabledNotEligible, reason};
   }
@@ -350,10 +349,7 @@ bool PersonalContextEligibilityServiceImpl::ComputeEligibilityForEncryption()
     return false;
   }
 
-  return account_settings_service_ &&
-         account_settings_service_
-             ->GetBoolean(account_settings::kAccountSettingContextPhotos)
-             .value_or(false);
+  return account_settings_service_ && is_photos_enabled_;
 }
 
 void PersonalContextEligibilityServiceImpl::UpdateEligibilityState() {
@@ -394,6 +390,20 @@ void PersonalContextEligibilityServiceImpl::UpdateEligibilityState() {
   }
 }
 
+void PersonalContextEligibilityServiceImpl::UpdateContextSourcesState() {
+  if (!account_settings_service_) {
+    return;
+  }
+  is_workspace_enabled_ =
+      account_settings_service_
+          ->GetBoolean(account_settings::kAccountSettingContextWorkspace)
+          .value_or(false);
+  is_photos_enabled_ =
+      account_settings_service_
+          ->GetBoolean(account_settings::kAccountSettingContextPhotos)
+          .value_or(false);
+}
+
 void PersonalContextEligibilityServiceImpl::OnPrefsInitialized(bool success) {
   UpdateEligibilityState();
 }
@@ -419,10 +429,40 @@ void PersonalContextEligibilityServiceImpl::OnExtendedAccountInfoUpdated(
 
 void PersonalContextEligibilityServiceImpl::OnAccountSettingDataUpdated(
     const std::string& setting_name) {
+  if (!account_settings_service_) {
+    return;
+  }
+
+  bool notify_workspace_disabled = false;
+  if (setting_name == account_settings::kAccountSettingContextWorkspace.name) {
+    const bool new_workspace_enabled =
+        account_settings_service_
+            ->GetBoolean(account_settings::kAccountSettingContextWorkspace)
+            .value_or(false);
+    notify_workspace_disabled = is_workspace_enabled_ && !new_workspace_enabled;
+    is_workspace_enabled_ = new_workspace_enabled;
+  }
+
+  bool notify_photos_disabled = false;
+  if (setting_name == account_settings::kAccountSettingContextPhotos.name) {
+    const bool new_photos_enabled =
+        account_settings_service_
+            ->GetBoolean(account_settings::kAccountSettingContextPhotos)
+            .value_or(false);
+    notify_photos_disabled = is_photos_enabled_ && !new_photos_enabled;
+    is_photos_enabled_ = new_photos_enabled;
+  }
+
   UpdateEligibilityState();
+
+  if (notify_workspace_disabled || notify_photos_disabled) {
+    observers_.Notify(
+        &PersonalContextEligibilityService::Observer::OnContextSourceDisabled);
+  }
 }
 
 void PersonalContextEligibilityServiceImpl::OnAccountSettingsLoaded() {
+  UpdateContextSourcesState();
   UpdateEligibilityState();
 }
 

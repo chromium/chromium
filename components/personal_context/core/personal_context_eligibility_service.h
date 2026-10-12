@@ -34,6 +34,10 @@ class PersonalContextEligibilityService : public KeyedService {
     // encryption eligibility, and subsequently whenever the value returned by
     // IsEligibleForEncryption() changes.
     virtual void OnEncryptionEligibilityChanged(bool is_eligible) {}
+
+    // Called whenever any of the Personal Context sources (Workspace or Photos)
+    // gets disabled.
+    virtual void OnContextSourceDisabled() {}
   };
 
   ~PersonalContextEligibilityService() override = default;

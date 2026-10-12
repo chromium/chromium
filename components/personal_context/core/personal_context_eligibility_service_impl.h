@@ -70,6 +70,7 @@ class PersonalContextEligibilityServiceImpl
   ComputeEligibilityState();
   bool ComputeEligibilityForEncryption() const;
   void UpdateEligibilityState();
+  void UpdateContextSourcesState();
 
   const raw_ptr<account_settings::AccountSettingService>
       account_settings_service_;
@@ -90,6 +91,8 @@ class PersonalContextEligibilityServiceImpl
   PersonalContextEligibilityState eligibility_state_ =
       PersonalContextEligibilityState::kDisabledNotEligible;
   bool is_eligible_for_encryption_ = false;
+  bool is_workspace_enabled_ = false;
+  bool is_photos_enabled_ = false;
   // Cached last non-eligibility reason for logging.
   std::optional<PersonalContextNonEligibilityReason>
       last_non_eligibility_reason_;
