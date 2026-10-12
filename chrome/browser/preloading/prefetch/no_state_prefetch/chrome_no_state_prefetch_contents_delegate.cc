@@ -5,6 +5,7 @@
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 
 #include "build/build_config.h"
+#include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/ui/tab_helpers.h"
@@ -40,6 +41,7 @@ void ChromeNoStatePrefetchContentsDelegate::OnNoStatePrefetchContentsCreated(
     content::WebContents* web_contents) {
   DCHECK(web_contents);
   TabHelpers::AttachTabHelpers(web_contents);
+  InitializePageLoadMetricsForWebContents(web_contents);
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (extensions::GetViewType(web_contents) ==
       extensions::mojom::ViewType::kInvalid) {

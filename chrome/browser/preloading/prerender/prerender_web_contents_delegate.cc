@@ -5,6 +5,7 @@
 #include "chrome/browser/preloading/prerender/prerender_web_contents_delegate.h"
 
 #include "build/build_config.h"
+#include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/ui/tab_helpers.h"
 #include "extensions/buildflags/buildflags.h"
@@ -23,6 +24,7 @@
 void PrerenderWebContentsDelegateImpl::PrerenderWebContentsCreated(
     content::WebContents* prerender_web_contents) {
   TabHelpers::AttachTabHelpers(prerender_web_contents);
+  InitializePageLoadMetricsForWebContents(prerender_web_contents);
 #if BUILDFLAG(IS_ANDROID)
   RequestDesktopSiteWebContentsObserverAndroid::CreateForWebContents(
       prerender_web_contents);

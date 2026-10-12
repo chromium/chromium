@@ -273,10 +273,11 @@ TEST_F(PageLoadMetricsInitializeTest, SameWindowClassification) {
   ASSERT_TRUE(AfterStartupTaskUtils::IsBrowserStartupComplete());
 
   // Populate tab strip with two tabs so count > 1.
-  tab_strip_model_->AppendWebContents(CreateTestWebContents(),
-                                      /*foreground=*/true);
-  tab_strip_model_->AppendWebContents(CreateTestWebContents(),
-                                      /*foreground=*/true);
+  for (int i = 0; i < 2; ++i) {
+    std::unique_ptr<content::WebContents> tab = CreateTestWebContents();
+    InitializePageLoadMetricsForWebContents(tab.get());
+    tab_strip_model_->AppendWebContents(std::move(tab), /*foreground=*/true);
+  }
   ASSERT_EQ(2, tab_strip_model_->count());
 
   std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
