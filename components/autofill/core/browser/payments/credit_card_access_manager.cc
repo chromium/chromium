@@ -1872,6 +1872,11 @@ void CreditCardAccessManager::StartDeviceAuthenticationForFilling(
         authentication_method,
         autofill_metrics::MandatoryReauthAuthenticationFlowEvent::kFlowSkipped);
     OnCreditCardFetched(*card, /*card_was_fetched_from_cache=*/false);
+    // `is_authentication_in_progress_` was set above and would otherwise stay
+    // true, causing `FetchCreditCard()` to early-return on every subsequent
+    // fetch. Mirrors the reset in `OnDeviceAuthenticationResponseForFilling()`.
+    // `card` must not be used after this point, as it may point to `card_`.
+    Reset();
     return;
   }
 

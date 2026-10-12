@@ -549,5 +549,113 @@ INSTANTIATE_TEST_SUITE_P(,
                          CreditCardAccessManagerMandatoryReauthIntegrationTest,
                          testing::Bool());
 
+// Test suite for the mandatory re-auth skip path: the pref is enabled but the
+// device has no supported authentication method, so re-auth is skipped and the
+// card is filled directly.
+class CreditCardAccessManagerMandatoryReauthSkipTest
+    : public CreditCardAccessManagerMandatoryReauthTestBase {
+ public:
+  CreditCardAccessManagerMandatoryReauthSkipTest() = default;
+  ~CreditCardAccessManagerMandatoryReauthSkipTest() override = default;
+
+ protected:
+  bool PrefIsEnabled() const override { return true; }
+
+  // Unused, since re-auth is never attempted on the skip path.
+  bool MandatoryReauthResponseIsSuccess() const override { return false; }
+
+  bool HasAuthenticator() const override { return false; }
+
+  payments::MandatoryReauthAuthenticationMethod GetAuthenticationMethod()
+      const override {
+    return payments::MandatoryReauthAuthenticationMethod::kUnsupportedMethod;
+  }
+};
+
+// Test that after a local card is filled via the re-auth skip path, the
+// authentication state is reset so that a second fetch also fills.
+TEST_F(CreditCardAccessManagerMandatoryReauthSkipTest,
+       MandatoryReauth_FetchLocalCardTwice_BothFill) {
+  base::HistogramTester histogram_tester;
+  CreateLocalCard(kTestGUID, kTestNumber);
+  const CreditCard* card =
+      personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
+  PrepareToFetchCreditCardAndWaitForCallbacks();
+  SetUpDeviceAuthenticatorResponseMock();
+
+  credit_card_access_manager().FetchCreditCard(
+      card, /*require_user_confirmation=*/false,
+      base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                     accessor().GetWeakPtr()));
+  EXPECT_EQ(accessor().number(), kTestNumber16);
+  EXPECT_FALSE(IsAuthenticationInProgress());
+
+  // Use a fresh accessor so that the second fill is observed independently of
+  // the first.
+  TestAccessor second_accessor;
+  credit_card_access_manager().FetchCreditCard(
+      card, /*require_user_confirmation=*/false,
+      base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                     second_accessor.GetWeakPtr()));
+  EXPECT_EQ(second_accessor.number(), kTestNumber16);
+  EXPECT_EQ(second_accessor.cvc(), kTestCvc16);
+  EXPECT_FALSE(IsAuthenticationInProgress());
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.PaymentMethods.CheckoutFlow.ReauthUsage.LocalCard."
+      "UnsupportedMethod",
+      autofill_metrics::MandatoryReauthAuthenticationFlowEvent::kFlowSkipped,
+      2);
+}
+
+// Test that after a masked server card is filled via the risk-based green path
+// followed by the re-auth skip path, the authentication state is reset so that
+// a second fetch also fills.
+TEST_F(CreditCardAccessManagerMandatoryReauthSkipTest,
+       MandatoryReauth_FetchMaskedServerCardTwice_BothFill) {
+  base::HistogramTester histogram_tester;
+  CreateServerCard(kTestGUID, kTestNumber, kTestServerId);
+  const CreditCard* masked_server_card =
+      personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
+  CreditCard unmasked_card = *masked_server_card;
+  unmasked_card.set_record_type(CreditCard::RecordType::kFullServerCard);
+  SetUpDeviceAuthenticatorResponseMock();
+
+  credit_card_access_manager().FetchCreditCard(
+      masked_server_card, /*require_user_confirmation=*/false,
+      base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                     accessor().GetWeakPtr()));
+  credit_card_access_manager().OnRiskBasedAuthenticationResponseReceived(
+      CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse()
+          .with_result(CreditCardRiskBasedAuthenticator::
+                           RiskBasedAuthenticationResponse::Result::
+                               kNoAuthenticationRequired)
+          .with_card(unmasked_card));
+  EXPECT_EQ(accessor().number(), kTestNumber16);
+  EXPECT_FALSE(IsAuthenticationInProgress());
+
+  // Use a fresh accessor so that the second fill is observed independently of
+  // the first.
+  TestAccessor second_accessor;
+  credit_card_access_manager().FetchCreditCard(
+      masked_server_card, /*require_user_confirmation=*/false,
+      base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                     second_accessor.GetWeakPtr()));
+  credit_card_access_manager().OnRiskBasedAuthenticationResponseReceived(
+      CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse()
+          .with_result(CreditCardRiskBasedAuthenticator::
+                           RiskBasedAuthenticationResponse::Result::
+                               kNoAuthenticationRequired)
+          .with_card(unmasked_card));
+  EXPECT_EQ(second_accessor.number(), kTestNumber16);
+  EXPECT_FALSE(IsAuthenticationInProgress());
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.PaymentMethods.CheckoutFlow.ReauthUsage.ServerCard."
+      "UnsupportedMethod",
+      autofill_metrics::MandatoryReauthAuthenticationFlowEvent::kFlowSkipped,
+      2);
+}
+
 }  // namespace
 }  // namespace autofill
