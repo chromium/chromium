@@ -51,6 +51,7 @@ source_set("impl") {
     "//chrome/browser/ui:tab_helpers",
     "//chrome/browser/ui/browser_window",
     "//chrome/common:chrome_features",
+    "//components/content_settings/browser",
     "//components/optimization_guide/core:features",
     "//components/page_load_metrics/browser",
     "//components/page_load_metrics/google/browser",

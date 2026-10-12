@@ -28,6 +28,7 @@
 #include "chrome/browser/complex_tasks/task_tab_helper.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/mixed_content_settings_tab_helper.h"
+#include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/content_settings/request_desktop_site_web_contents_observer_android.h"
 #include "chrome/browser/content_settings/sound_content_setting_observer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_tab_visit_tracker.h"
@@ -136,6 +137,7 @@
 #include "components/client_hints/browser/client_hints_web_contents_observer.h"
 #include "components/commerce/content/browser/commerce_tab_helper.h"
 #include "components/content_capture/common/content_capture_features.h"
+#include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/download/content/factory/navigation_monitor_factory.h"
 #include "components/download/content/public/download_navigation_observer.h"
@@ -247,6 +249,12 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
   CHECK(tab);
   tab_subscription_ = webui::InitEmbeddingContext(tab);
 
+  if (!content_settings::PageSpecificContentSettings::GetDelegateForWebContents(
+          web_contents)) {
+    content_settings::PageSpecificContentSettings::CreateForWebContents(
+        web_contents,
+        std::make_unique<PageSpecificContentSettingsDelegate>(web_contents));
+  }
   favicon::CreateContentFaviconDriverForWebContents(web_contents);
   if (!profile->IsOffTheRecord()) {
     HistoryTabHelper::GetOrCreateForWebContents(web_contents);

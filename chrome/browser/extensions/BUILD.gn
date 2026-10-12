@@ -701,6 +701,7 @@ source_set("extensions") {
       "//chrome/browser/optimization_guide",
       "//chrome/browser/page_load_metrics",
       "//chrome/browser/ui/android/tab_model",
+      "//components/content_settings/browser",
       "//components/optimization_guide/core:features",
     ]
 

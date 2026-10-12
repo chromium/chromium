@@ -34,6 +34,7 @@
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/content_settings/request_desktop_site_web_contents_observer_android.h"
 #include "chrome/browser/content_settings/sound_content_setting_observer.h"
 #include "chrome/browser/devtools/devtools_window.h"
@@ -66,6 +67,7 @@
 #include "components/blocked_content/popup_blocker.h"
 #include "components/blocked_content/popup_tracker.h"
 #include "components/browser_ui/util/android/url_constants.h"
+#include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/external_intents/android/external_intents_features.h"
 #include "components/find_in_page/find_notification_details.h"
 #include "components/find_in_page/find_tab_helper.h"
@@ -691,6 +693,9 @@ WebContents* TabWebContentsDelegateAndroid::AddNewContents(
   }
 
   TabHelpers::AttachTabHelpers(new_contents.get());
+  content_settings::PageSpecificContentSettings::CreateForWebContents(
+      new_contents.get(), std::make_unique<PageSpecificContentSettingsDelegate>(
+                              new_contents.get()));
   Profile* profile =
       Profile::FromBrowserContext(new_contents->GetBrowserContext());
   if (!profile->IsOffTheRecord()) {

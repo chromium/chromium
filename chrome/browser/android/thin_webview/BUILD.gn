@@ -39,8 +39,10 @@ source_set("initializer") {
 
   deps = [
     "//chrome/browser/android:web_contents_theme_client",
+    "//chrome/browser/content_settings",
     "//chrome/browser/ui:tab_helpers",
     "//chrome/browser/ui/android:context_menu_helper",
+    "//components/content_settings/browser",
     "//components/performance_manager",
     "//components/permissions",
 

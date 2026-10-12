@@ -4,9 +4,13 @@
 
 #include "chrome/browser/android/thin_webview/chrome_thin_webview_initializer.h"
 
+#include <memory>
+
 #include "chrome/browser/android/web_contents_theme_client.h"
+#include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/ui/android/context_menu_helper.h"
 #include "chrome/browser/ui/tab_helpers.h"
+#include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/performance_manager/embedder/performance_manager_registry.h"
 #include "components/permissions/permission_request_manager.h"
 
@@ -27,6 +31,9 @@ void ChromeThinWebViewInitializer::AttachTabHelpers(
     bool enable_permission_requests,
     bool enable_browser_autofill) {
   TabHelpers::AttachTabHelpers(web_contents, enable_browser_autofill);
+  content_settings::PageSpecificContentSettings::CreateForWebContents(
+      web_contents,
+      std::make_unique<PageSpecificContentSettingsDelegate>(web_contents));
   if (!permissions::PermissionRequestManager::FromWebContents(web_contents)) {
     if (auto* pm_registry =
             performance_manager::PerformanceManagerRegistry::GetInstance()) {

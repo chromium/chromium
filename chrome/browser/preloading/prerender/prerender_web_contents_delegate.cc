@@ -5,10 +5,12 @@
 #include "chrome/browser/preloading/prerender/prerender_web_contents_delegate.h"
 
 #include "build/build_config.h"
+#include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/optimization_guide/optimization_guide_web_contents_observer.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/ui/tab_helpers.h"
+#include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "extensions/buildflags/buildflags.h"
 
@@ -26,6 +28,10 @@
 void PrerenderWebContentsDelegateImpl::PrerenderWebContentsCreated(
     content::WebContents* prerender_web_contents) {
   TabHelpers::AttachTabHelpers(prerender_web_contents);
+  content_settings::PageSpecificContentSettings::CreateForWebContents(
+      prerender_web_contents,
+      std::make_unique<PageSpecificContentSettingsDelegate>(
+          prerender_web_contents));
   if (optimization_guide::features::IsOptimizationHintsEnabled()) {
     OptimizationGuideWebContentsObserver::CreateForWebContents(
         prerender_web_contents);

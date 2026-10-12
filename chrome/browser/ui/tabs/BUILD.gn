@@ -690,6 +690,7 @@ if (!is_android) {
       "//components/client_hints/browser",
       "//components/commerce/content/browser",
       "//components/compose:buildflags",
+      "//components/content_settings/browser",
       "//components/content_settings/core/browser",
       "//components/contextual_tasks/public",
       "//components/download/content/factory",

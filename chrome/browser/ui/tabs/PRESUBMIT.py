@@ -46,6 +46,11 @@ _ALLOWED_CREATE_FOR_CALLS = (
   # SimpleWebViewDialog, and ChromeSafeBrowsingDelegate, so the WebContents
   # must own it.
   'ChromePasswordReuseDetectionManagerClient::CreateForWebContents',
+  # PageSpecificContentSettings lives in //components/content_settings/browser
+  # and is also attached to non-tab and pre-tab WebContents (such as
+  # ChromeThinWebViewInitializer, GuestView, PrerenderNewTabHandle, and Android
+  # popup WebContents), so the WebContents must own it.
+  'content_settings::PageSpecificContentSettings::CreateForWebContents',
   # DlpContentTabHelper is also attached to non-tab Chrome App window
   # WebContents in ChromeAppDelegate and looked up from arbitrary WebContents
   # by DlpContentManager, so the WebContents must own it.

@@ -27,6 +27,7 @@
 #include "chrome/browser/complex_tasks/task_tab_helper.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/mixed_content_settings_tab_helper.h"
+#include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/content_settings/sound_content_setting_observer.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_controller.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
@@ -254,6 +255,7 @@
 #include "components/client_hints/browser/client_hints_web_contents_observer.h"
 #include "components/commerce/content/browser/commerce_tab_helper.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/facilitated_payments/core/features/features.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/image_fetcher/core/image_fetcher_service.h"
@@ -416,6 +418,14 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
       tab.RegisterWillDiscardContents(base::BindRepeating(
           &TabFeatures::WillDiscardContents, weak_factory_.GetWeakPtr())));
   tab_subscriptions_.push_back(webui::InitEmbeddingContext(&tab));
+
+  if (!content_settings::PageSpecificContentSettings::GetDelegateForWebContents(
+          tab.GetContents())) {
+    content_settings::PageSpecificContentSettings::CreateForWebContents(
+        tab.GetContents(),
+        std::make_unique<PageSpecificContentSettingsDelegate>(
+            tab.GetContents()));
+  }
 
   favicon::CreateContentFaviconDriverForWebContents(tab.GetContents());
 
@@ -1436,6 +1446,13 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   DCHECK_EQ(old_contents, tab->GetContents());
 
   Profile* profile = tab->GetBrowserWindowInterface()->GetProfile();
+
+  if (!content_settings::PageSpecificContentSettings::GetDelegateForWebContents(
+          new_contents)) {
+    content_settings::PageSpecificContentSettings::CreateForWebContents(
+        new_contents,
+        std::make_unique<PageSpecificContentSettingsDelegate>(new_contents));
+  }
 
   favicon::CreateContentFaviconDriverForWebContents(new_contents);
 
