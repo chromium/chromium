@@ -16,6 +16,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.os.Build;
+
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.After;
@@ -29,7 +31,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.TriState;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.blink.mojom.Authenticator;
 import org.chromium.blink.mojom.AuthenticatorStatus;
@@ -41,6 +45,7 @@ import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.blink.mojom.WebAuthnClientCapability;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.components.ukm.UkmRecorderJni;
+import org.chromium.components.webauthn.cred_man.CredManSupportProvider;
 import org.chromium.content_public.browser.LifecycleState;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.Visibility;
@@ -50,6 +55,7 @@ import org.chromium.url.Origin;
 
 /** Tests for {@link AuthenticatorImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@DisableFeatures({WebauthnFeatures.WEBAUTHN_ANDROID_CRED_MAN_FOR_DEV})
 public class AuthenticatorImplTest {
     private AuthenticatorImpl mAuthenticator;
     private Origin mOrigin;
@@ -409,6 +415,41 @@ public class AuthenticatorImplTest {
         when(mModeProviderMock.getGlobalWebauthnMode()).thenReturn(WebauthnMode.APP);
         when(mWebauthnBrowserBridgeNativesMock.shouldDisallowCredentialRequest(mRenderFrameHost))
                 .thenReturn(true);
+
+        Authenticator.GetCredential_Response callback =
+                mock(Authenticator.GetCredential_Response.class);
+        GetCredentialOptions options = new GetCredentialOptions();
+        options.publicKey = new PublicKeyCredentialRequestOptions();
+        mAuthenticator.getCredential(options, callback);
+
+        verify(callback, never()).call(any());
+        verify(mFido2CredentialRequestMock).handleGetCredentialRequest(any(), any(), any(), any());
+    }
+
+    @Test
+    public void testMakeCredential_notChrome_noGmsCore_credManAvailable() {
+        GmsCoreUtils.setGmsCoreVersionForTesting(-1);
+        CredManSupportProvider.setupForTesting(
+                Build.VERSION_CODES.UPSIDE_DOWN_CAKE, TriState.NOT_SET);
+        when(mModeProviderMock.getWebauthnMode(any())).thenReturn(WebauthnMode.APP);
+        when(mModeProviderMock.getGlobalWebauthnMode()).thenReturn(WebauthnMode.APP);
+
+        Authenticator.MakeCredential_Response callback =
+                mock(Authenticator.MakeCredential_Response.class);
+        mAuthenticator.makeCredential(new PublicKeyCredentialCreationOptions(), callback);
+
+        verify(callback, never()).call(anyInt(), any(), any());
+        verify(mFido2CredentialRequestMock)
+                .handleMakeCredentialRequest(any(), any(), any(), any(), any());
+    }
+
+    @Test
+    public void testGetCredential_notChrome_noGmsCore_credManAvailable() {
+        GmsCoreUtils.setGmsCoreVersionForTesting(-1);
+        CredManSupportProvider.setupForTesting(
+                Build.VERSION_CODES.UPSIDE_DOWN_CAKE, TriState.NOT_SET);
+        when(mModeProviderMock.getWebauthnMode(any())).thenReturn(WebauthnMode.APP);
+        when(mModeProviderMock.getGlobalWebauthnMode()).thenReturn(WebauthnMode.APP);
 
         Authenticator.GetCredential_Response callback =
                 mock(Authenticator.GetCredential_Response.class);

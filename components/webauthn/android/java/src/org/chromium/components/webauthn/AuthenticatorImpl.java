@@ -32,6 +32,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.password_manager.BrowserAssistedLoginType;
 import org.chromium.components.ukm.UkmRecorder;
+import org.chromium.components.webauthn.cred_man.CredManSupportProvider;
 import org.chromium.content_public.browser.LifecycleState;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.Visibility;
@@ -209,8 +210,7 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
                                     .build()));
             return;
         }
-        if (!GmsCoreUtils.isWebauthnSupported()
-                || (!isChrome(mWebContents) && !GmsCoreUtils.isResultReceiverSupported())) {
+        if (!hasCredentialBackend()) {
             mRequestCallback.onComplete(
                     WebauthnRequestResponse.forFailedMakeCredential(
                             AuthenticatorStatus.NOT_IMPLEMENTED,
@@ -317,9 +317,7 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
                 options.publicKey == null
                         && options.password
                         && options.mediation == Mediation.IMMEDIATE;
-        if (!GmsCoreUtils.isWebauthnSupported()
-                || (!isChrome(mWebContents) && !GmsCoreUtils.isResultReceiverSupported())
-                || (options.publicKey == null && !isPasswordOnlyFlux)) {
+        if (!hasCredentialBackend() || (options.publicKey == null && !isPasswordOnlyFlux)) {
             RequestMetrics metrics =
                     new RequestMetrics.Builder()
                             .setGetAssertionOutcome(GetAssertionOutcome.OTHER_FAILURE)
@@ -366,9 +364,17 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
         return GmsCoreUtils.isWebauthnSupported() && isChrome(mWebContents);
     }
 
-    private boolean couldSupportUvpaa() {
-        return GmsCoreUtils.isWebauthnSupported()
-                && (isChrome(mWebContents) || GmsCoreUtils.isResultReceiverSupported());
+    /**
+     * Returns whether there is a backend that can serve requests from this WebContents. Chrome uses
+     * GMSCore. Other embedders, e.g. WebView, cannot receive activity results, so they need either
+     * Android Credential Manager or a GMSCore that can respond via ResultReceiver.
+     */
+    private boolean hasCredentialBackend() {
+        if (isChrome(mWebContents)) {
+            return GmsCoreUtils.isWebauthnSupported();
+        }
+        return (GmsCoreUtils.isWebauthnSupported() && GmsCoreUtils.isResultReceiverSupported())
+                || CredManSupportProvider.getCredManSupportForWebView() != CredManSupport.DISABLED;
     }
 
     @Override
@@ -382,7 +388,7 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
                     callback.call(isUvpaa);
                 };
 
-        if (!couldSupportUvpaa()) {
+        if (!hasCredentialBackend()) {
             decoratedCallback.call(false);
             return;
         }
@@ -410,7 +416,7 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
         capabilities.add(
                 createWebAuthnClientCapability(AuthenticatorConstants.CAPABILITY_PPAA, true));
 
-        if (!couldSupportUvpaa()) {
+        if (!hasCredentialBackend()) {
             capabilities.add(
                     createWebAuthnClientCapability(
                             AuthenticatorConstants.CAPABILITY_CONDITIONAL_GET, false));
@@ -445,8 +451,7 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
                                             couldSupportConditionalMediation() && isUvpaa));
                             capabilities.add(
                                     createWebAuthnClientCapability(
-                                            AuthenticatorConstants.CAPABILITY_UVPAA,
-                                            couldSupportUvpaa() && isUvpaa));
+                                            AuthenticatorConstants.CAPABILITY_UVPAA, isUvpaa));
                             capabilities.add(
                                     createWebAuthnClientCapability(
                                             AuthenticatorConstants.CAPABILITY_CONDITIONAL_CREATE,
