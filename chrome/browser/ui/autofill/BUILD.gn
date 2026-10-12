@@ -171,8 +171,6 @@ source_set("impl") {
     "risk_util.cc",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     ":autofill",
     ":autofill_ai_ui_utils_impl",

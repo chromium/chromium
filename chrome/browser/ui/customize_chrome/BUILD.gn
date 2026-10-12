@@ -32,6 +32,7 @@ source_set("customize_chrome_base") {
     "//chrome/browser/search/background",
 
     # Does not actually depend on //ui/views for is_android.
+    "//chrome/app:branded_strings",
     "//chrome/browser/ui/side_panel:side_panel_views_dependent",
     "//chrome/browser/ui/webui/side_panel/customize_chrome:customize_chrome_ui",
   ]

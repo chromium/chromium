@@ -78,6 +78,7 @@ source_set("impl") {
     "//chrome/common",
     "//components/bookmarks/browser",
     "//components/history/core/browser",
+    "//components/input",
     "//components/optimization_guide/content/browser",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/search_engines",
@@ -113,7 +114,6 @@ source_set("impl") {
     ]
     deps += [
       "//chrome/browser/ui/android/tab_model",
-      "//components/input",
       "//ui/events",
     ]
   }

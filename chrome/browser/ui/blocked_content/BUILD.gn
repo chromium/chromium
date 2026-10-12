@@ -51,11 +51,10 @@ source_set("impl") {
     "//chrome/common:constants",
     "//chrome/common:mojo_bindings",
     "//components/content_settings/core/browser",
+    "//components/guest_view/buildflags",
     "//extensions/buildflags",
     "//services/metrics/public/cpp:ukm_builders",
   ]
-
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   if (!is_android) {
     sources += [

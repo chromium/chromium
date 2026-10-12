@@ -12,20 +12,17 @@ source_set("bluetooth") {
     "//content/public/browser",
   ]
 
-  deps = []
   if (!is_android) {
     sources += [ "chrome_bluetooth_chooser_controller.h" ]
   }
 }
 
 source_set("impl") {
-  deps = []
+  deps = [ "//chrome/browser/ui/browser_window" ]
   sources = []
 
   if (!is_android) {
     sources += [ "chrome_bluetooth_chooser_controller.cc" ]
-
-    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
     deps += [
       ":bluetooth",

@@ -34,18 +34,20 @@ source_set("impl") {
   ]
   deps = [
     ":file_system_access",
+    "//chrome/app:generated_resources",
     "//chrome/browser/ui:url_identity",
     "//chrome/browser/ui/dialogs",
     "//ui/base/interaction",
     "//ui/strings:ui_strings",
   ]
+  if (!is_android) {
+    deps += [ "//ui/views" ]
+  }
 
   if (safe_browsing_mode != 0) {
     sources += [ "file_system_access_dangerous_file_dialog.cc" ]
     deps += [ "//components/safe_browsing/content/common:file_type_policies" ]
   }
-
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 if (!is_android) {

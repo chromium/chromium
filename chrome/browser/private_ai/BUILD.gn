@@ -8,7 +8,6 @@ source_set("private_ai") {
     "private_ai_service_factory.h",
   ]
   public_deps = [
-    "//chrome/browser:browser_public_dependencies",
     "//components/private_ai",
     "//components/private_ai/phosphor",
   ]
@@ -19,6 +18,7 @@ source_set("private_ai") {
     "//chrome/browser/net",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/signin",
+    "//chrome/common:channel_info",
     "//components/keyed_service/core",
     "//components/optimization_guide/core",
     "//components/prefs",

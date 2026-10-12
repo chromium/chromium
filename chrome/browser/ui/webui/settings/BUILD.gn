@@ -56,6 +56,7 @@ source_set("settings") {
 
   public_deps = [
     "//base",
+    "//chrome/browser:shell_integration",
     "//chrome/browser/engagement",
     "//chrome/browser/importer",
     "//chrome/browser/net",
@@ -63,6 +64,7 @@ source_set("settings") {
     "//chrome/browser/performance_manager/public/user_tuning",
     "//chrome/browser/permissions/system",
     "//chrome/browser/profile_resetter",
+    "//chrome/browser/profile_resetter:profile_reset_report_proto",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/screen_ai:screen_ai_install_state",
     "//chrome/browser/themes",
@@ -99,6 +101,7 @@ source_set("settings") {
     "//extensions/common",
     "//ui/base",
     "//ui/shell_dialogs",
+    "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
     "//url",
   ]
 

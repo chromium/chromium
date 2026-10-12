@@ -49,8 +49,6 @@ source_set("bookmarks") {
 }
 
 source_set("impl") {
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   sources = [
     "bookmark_bar_controller.cc",
     "bookmark_context_menu_controller.cc",

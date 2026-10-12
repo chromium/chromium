@@ -320,7 +320,6 @@ source_set("impl") {
       "//components/signin/public/base:signin_switches",
     ]
   }
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   if (!is_android) {
     deps += [ "//chrome/browser/ui/views/frame:browser_view_header" ]

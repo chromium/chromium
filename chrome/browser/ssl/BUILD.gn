@@ -112,10 +112,7 @@ source_set("impl") {
     "typed_navigation_upgrade_throttle.cc",
   ]
 
-  public_deps = [
-    ":ssl",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ ":ssl" ]
 
   deps = [
     "//chrome/browser:browser_process",
@@ -158,6 +155,7 @@ source_set("impl") {
     ]
     deps += [
       "//chrome/android:chrome_jni_headers",
+      "//chrome/browser/android:resource_mapper",
       "//chrome/browser/android:tabs_public",
       "//chrome/browser/ssl/android:jni_headers",
     ]

@@ -20,6 +20,7 @@ source_set("actor") {
     "//chrome/browser/actor",
     "//chrome/browser/actor/ui",
     "//chrome/browser/critical_actions",
+    "//chrome/browser/enterprise",
     "//chrome/browser/feedback",
     "//chrome/browser/glic",
     "//chrome/browser/glic:glic_metrics",

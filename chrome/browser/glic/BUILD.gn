@@ -108,6 +108,7 @@ source_set("glic") {
     "//chrome/browser:shell_integration",
     "//chrome/browser/actor",
     "//chrome/browser/actor/ui:states",
+    "//chrome/browser/enterprise",
     "//chrome/browser/glic/public:features",
     "//chrome/browser/glic/public:request_headers",
     "//chrome/browser/glic/resources:browser_resources",
@@ -122,6 +123,7 @@ source_set("glic") {
     "//components/autofill/core/browser/integrators/actor:actor_form_filling_types",
     "//components/browser_actuator/public",
     "//components/content_extraction/content/browser",
+    "//components/enterprise",
     "//components/favicon/core",
     "//components/feature_engagement/public",
     "//components/glic:glic_pref_names",
@@ -186,6 +188,7 @@ source_set("glic") {
       "//chrome/browser/ui/tabs",
     ]
   } else {  # is_android
+    public_deps += [ "//chrome/browser/android:resource_mapper" ]
     sources += [
       "public/widget/glic_side_panel_coordinator_android.h",
       "public/widget/glic_side_panel_coordinator_desktop_android.h",

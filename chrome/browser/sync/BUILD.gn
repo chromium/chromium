@@ -60,7 +60,6 @@ source_set("sync") {
   public_deps = [
     ":factories",
     "//base",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sharing",
     "//chrome/browser/tab_group_sync:factories",
@@ -194,6 +193,7 @@ source_set("sync") {
   }
 
   if (is_android) {
+    public_deps += [ "//chrome/browser/ui/android/tab_model" ]
     sources += [
       "cross_device_theme_tracker_android.cc",
       "cross_device_theme_tracker_android.h",
@@ -213,7 +213,6 @@ source_set("sync") {
       "//chrome/browser/ntp_customization:jni_headers",
       "//chrome/browser/sync/android:jni_headers",
       "//chrome/browser/tab",
-      "//chrome/browser/ui/android/tab_model",
       "//ui/color:color_provider_key",
       "//ui/color/dynamic_color",
     ]
@@ -435,7 +434,9 @@ source_set("data_type_store_service_factory") {
   public_deps = [
     "//base",
     "//chrome/browser/profiles:profile",
+    "//chrome/common",
     "//components/sync/model",
+    "//components/webapps/browser",
   ]
   deps = [ "//components/keyed_service/content" ]
 }

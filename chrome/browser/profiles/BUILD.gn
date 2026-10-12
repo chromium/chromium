@@ -58,10 +58,7 @@ source_set("misc") {
     "storage_partition_descriptor.h",
   ]
 
-  public_deps = [
-    ":profiles",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ ":profiles" ]
 
   deps = [
     ":profile",
@@ -72,10 +69,12 @@ source_set("misc") {
     "//chrome/app:branded_strings",
     "//chrome/app:generated_resources",
     "//chrome/browser:after_startup_task_utils",
+    "//chrome/browser:browser_features",
     "//chrome/browser:browser_process",
     "//chrome/browser:buildflags",
     "//chrome/browser:flags",
     "//chrome/browser:global_features",
+    "//chrome/browser:shell_integration",
     "//chrome/browser:startup_data",
     "//chrome/browser/accessibility",
     "//chrome/browser/app_mode",
@@ -102,6 +101,7 @@ source_set("misc") {
     "//chrome/browser/origin_trials",
     "//chrome/browser/password_manager/factories",
     "//chrome/browser/permissions",
+    "//chrome/browser/plugins",
     "//chrome/browser/prefs",
     "//chrome/browser/prefs:util",
     "//chrome/browser/privacy",
@@ -139,6 +139,7 @@ source_set("misc") {
     "//components/history/core/common",
     "//components/keyed_service/content",
     "//components/language/core/common",
+    "//components/payments/core",
     "//components/policy/core/browser",
     "//components/policy/core/common",
     "//components/pref_registry",
@@ -350,7 +351,7 @@ source_set("renderer_updater") {
     ":profile",
     "//base",
     "//build:chromeos_buildflags",
-    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser:browser_process",
     "//chrome/common",
     "//components/content_settings/core/browser",
     "//components/keyed_service/core",
@@ -491,6 +492,8 @@ source_set("profile_manager_impl") {
     ":profile_manager",
     ":profile_util",
     "//base",
+    "//chrome/app:branded_strings",
+    "//chrome/app:generated_resources",
     "//chrome/browser:browser_features",
     "//chrome/browser:browser_process",
     "//chrome/browser:browser_process_platform_part",
@@ -506,10 +509,14 @@ source_set("profile_manager_impl") {
     "//chrome/browser/supervised_user",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/unified_consent",
+    "//chrome/common",
     "//chrome/common:buildflags",
+    "//chrome/common:channel_info",
     "//chrome/common:constants",
+    "//components/bookmarks/common",
     "//components/crash/core/common",
     "//components/profile_metrics",
+    "//components/search_engines",
     "//components/signin/core/browser",
     "//components/signin/public/base:signin_buildflags",
     "//components/supervised_user/core/browser",
@@ -630,10 +637,7 @@ source_set("profile_util_impl") {
     "reporting_util.cc",
   ]
 
-  public_deps = [
-    "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/browsing_data",
-  ]
+  public_deps = [ "//chrome/browser/browsing_data" ]
 
   deps = [
     ":misc",
@@ -907,10 +911,7 @@ source_set("profiles_extra_parts_impl") {
     "//ui/webui:buildflags",
   ]
 
-  public_deps = [
-    "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/search/background",
-  ]
+  public_deps = [ "//chrome/browser/search/background" ]
 
   if (is_android) {
     deps += [

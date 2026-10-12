@@ -209,10 +209,7 @@ source_set("impl") {
     "signin_profile_attributes_updater_factory.cc",
     "signin_util.cc",
   ]
-  public_deps = [
-    ":signin",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ ":signin" ]
   deps = [
     "//chrome/browser:browser_process_platform_part",
     "//chrome/browser:global_features",

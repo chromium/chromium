@@ -46,8 +46,6 @@ source_set("prefs") {
 }
 
 source_set("impl") {
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   sources = [
     "browser_prefs.cc",
     "chrome_command_line_pref_store.cc",
@@ -524,8 +522,6 @@ source_set("util") {
 }
 
 source_set("util_impl") {
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   sources = [
     "pref_service_incognito_allowlist.cc",
     "pref_service_syncable_util.cc",
@@ -550,6 +546,10 @@ source_set("util_impl") {
     "//components/ukm",
     "//components/url_formatter",
   ]
+
+  if (is_chromeos) {
+    deps += [ "//ash/constants" ]
+  }
 
   if (is_android) {
     deps += [ "//chrome/browser/flags:flags_android" ]
