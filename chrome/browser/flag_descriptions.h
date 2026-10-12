@@ -4226,6 +4226,13 @@ inline constexpr char kGlobalPrivacyControlDescription[] =
     "Enables Global Privacy Control (GPC) signal. Sends Sec-GPC=1 header with "
     "requests to indicate privacy preferences to websites.";
 
+inline constexpr char kGlobalPrivacyControlApiName[] =
+    "Global Privacy Control API";
+inline constexpr char kGlobalPrivacyControlApiDescription[] =
+    "Enables Global Privacy Control (GPC) signal. Sends Sec-GPC=1 header "
+    "with requests and sets navigator.globalPrivacyControl JS API to indicate "
+    "privacy preferences to websites.";
+
 inline constexpr char kAnnotatedPageContentsForVirtualStructureName[] =
     "Use annotated page contents to populate virtual structure";
 inline constexpr char kAnnotatedPageContentsForVirtualStructureDescription[] =

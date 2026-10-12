@@ -4019,6 +4019,11 @@
     "expiry_milestone": 170
   },
   {
+    "name": "enable-global-privacy-control-api",
+    "owners": ["arichiv@chromium.org", "mcczarny@gmail.com"],
+    "expiry_milestone": 170
+  },
+  {
     "name": "enable-global-vaapi-lock",
     "owners": [
       "jeffcchen@chromium.org",

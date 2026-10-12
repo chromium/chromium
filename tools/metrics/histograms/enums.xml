@@ -12690,6 +12690,7 @@ from previous Chrome versions.
   <int value="-696693295" label="Canvas2DImageChromium:disabled"/>
   <int value="-696225611" label="UseSerialBusEnumerator:disabled"/>
   <int value="-695983716" label="SeaPenEnterprise:enabled"/>
+  <int value="-695889947" label="GlobalPrivacyControlApi:disabled"/>
   <int value="-695764575" label="NearbySharingBackgroundScanning:enabled"/>
   <int value="-695687521" label="double-buffer-compositing"/>
   <int value="-694943768" label="ContextualSearchSuppressShortView:disabled"/>
@@ -18116,6 +18117,7 @@ from previous Chrome versions.
   <int value="960883599" label="IPH_SupervisedUserProfileSignin:enabled"/>
   <int value="961019394" label="IOSPromoRefreshedPasswordBubble:disabled"/>
   <int value="961134466" label="GlicReuseCookies:disabled"/>
+  <int value="961875211" label="GlobalPrivacyControlApi:enabled"/>
   <int value="962191833" label="StopAppIndexingReport:disabled"/>
   <int value="963054071" label="MlUrlPiecewiseMappedSearchBlending:enabled"/>
   <int value="963457392" label="ChromeHomeModernLayout:disabled"/>
