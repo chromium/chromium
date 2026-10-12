@@ -9,6 +9,7 @@
 #include <set>
 #include <utility>
 
+#include "base/containers/adapters.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/utf_string_conversions.h"
@@ -797,7 +798,9 @@ void ContextualTasksExtensionHandler::SendTabContextToExtensionPage(
     return session_tab_id;
   };
 
-  for (const auto& tab : state.attached) {
+  // Attached tabs are reversed to show the newest tabs first and processed
+  // before restored tabs so they take precedence during deduplication.
+  for (const auto& tab : base::Reversed(state.attached)) {
     const int32_t tab_handler_id = resolve_tab_id(*tab.tab_id);
     // Session handle guarantees that `tab_id` is present. De-duplicate.
     if (!seen_tab_ids.insert(tab_handler_id).second) {
@@ -817,7 +820,7 @@ void ContextualTasksExtensionHandler::SendTabContextToExtensionPage(
     }
   }
 
-  for (const auto& tab : state.restored) {
+  for (const auto& tab : base::Reversed(state.restored)) {
     // Tab ID is not guaranteed to be present. Verify it exists.
     if (!tab.tab_id.has_value()) {
       continue;

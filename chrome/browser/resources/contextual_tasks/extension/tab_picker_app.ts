@@ -244,7 +244,7 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
       this.selectedTabs = this.selectedTabs.filter(t => t.tabId !== tab.tabId);
       this.browserProxy_.deleteTabContext(tab.tabId);
     } else {
-      this.selectedTabs = [...this.selectedTabs, tab];
+      this.selectedTabs = [tab, ...this.selectedTabs];
       this.browserProxy_.addTabContext(tab.tabId);
       const hasActiveTab =
           this.tabSuggestions.some(t => t.showInCurrentTabChip);

@@ -2763,8 +2763,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
       .WillOnce([&](std::vector<searchbox::mojom::TabInfoPtr> tabs,
                     const std::vector<int32_t>& submitted_tab_ids) {
         ASSERT_EQ(tabs.size(), 3u);
-        EXPECT_EQ(tabs[0]->tab_id, 11);
-        EXPECT_EQ(tabs[1]->tab_id, 12);
+        EXPECT_EQ(tabs[0]->tab_id, 12);
+        EXPECT_EQ(tabs[1]->tab_id, 11);
         EXPECT_EQ(tabs[2]->tab_id, 13);
         EXPECT_THAT(submitted_tab_ids, testing::ElementsAre(12, 13));
         run_loop.Quit();
@@ -2774,6 +2774,62 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
   child_handler->CreateExtensionPageHandler(mock_child_page.BindAndGetRemote(),
                                             std::move(child_handler_receiver));
   run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
+                       OnTabContextStateChanged_OrdersTabsMostRecentFirst) {
+  auto attach_tab = [&](int32_t tab_id, const std::string& url,
+                        const std::string& title,
+                        std::vector<int32_t> expected_order) {
+    const base::UnguessableToken token = base::UnguessableToken::Create();
+    mock_session_handle_->GetUploadedContextTokensForTesting().push_back(token);
+
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock_page_, OnTabContextUpdated(_, _))
+        .WillOnce([&](std::vector<searchbox::mojom::TabInfoPtr> tabs,
+                      const std::vector<int32_t>& /*submitted_tab_ids*/) {
+          std::vector<int32_t> actual_ids;
+          for (const auto& tab : tabs) {
+            actual_ids.push_back(tab->tab_id);
+          }
+          EXPECT_EQ(actual_ids, expected_order);
+          run_loop.Quit();
+        });
+
+    mock_session_handle_->AddDelayedTabContext(token, tab_id, GURL(url), title);
+    run_loop.Run();
+  };
+
+  attach_tab(1, "https://example.com/1", "Tab 1", {1});
+  attach_tab(2, "https://example.com/2", "Tab 2", {2, 1});
+  attach_tab(3, "https://example.com/3", "Tab 3", {3, 2, 1});
+  attach_tab(4, "https://example.com/4", "Tab 4", {4, 3, 2, 1});
+
+  contextual_search::TabInfo restored_1;
+  restored_1.tab_id = 10;
+  restored_1.url = GURL("https://example.com/r1");
+  restored_1.title = "Restored 1";
+
+  contextual_search::TabInfo restored_2;
+  restored_2.tab_id = 20;
+  restored_2.url = GURL("https://example.com/r2");
+  restored_2.title = "Restored 2";
+
+  base::RunLoop restore_run_loop;
+  EXPECT_CALL(mock_page_, OnTabContextUpdated(_, _))
+      .WillOnce([&](std::vector<searchbox::mojom::TabInfoPtr> tabs,
+                    const std::vector<int32_t>& submitted_tab_ids) {
+        std::vector<int32_t> actual_ids;
+        for (const auto& tab : tabs) {
+          actual_ids.push_back(tab->tab_id);
+        }
+        EXPECT_THAT(actual_ids, testing::ElementsAre(4, 3, 2, 1, 20, 10));
+        EXPECT_THAT(submitted_tab_ids, testing::ElementsAre(20, 10));
+        restore_run_loop.Quit();
+      });
+
+  mock_session_handle_->SetRestoredTabs({restored_1, restored_2});
+  restore_run_loop.Run();
 }
 
 class ContextualTasksExtensionHandlerContextLibraryBrowserTest

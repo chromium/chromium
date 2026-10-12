@@ -284,6 +284,9 @@ suite('TabPickerTest', () => {
     await microtasksFinished();
 
     assertEquals('Sharing 2 tabs', label.textContent.trim());
+    assertEquals(2, app.selectedTabs.length);
+    assertEquals(tab1.tabId, app.selectedTabs[0]!.tabId);
+    assertEquals(tab0.tabId, app.selectedTabs[1]!.tabId);
 
     // Deselect first tab.
     const deselectPromise1 =
