@@ -38,6 +38,7 @@
 #import "components/saved_tab_groups/internal/tab_group_sync_service_test_utils.h"
 #import "components/saved_tab_groups/public/features.h"
 #import "components/saved_tab_groups/public/tab_group_sync_service.h"
+#import "components/signin/core/browser/test_account_preview_data_service.h"
 #import "components/signin/internal/identity_manager/fake_profile_oauth2_token_service.h"
 #import "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #import "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
@@ -402,6 +403,11 @@ base::TimeDelta PasswordCheckMinimumDuration() {
 
 std::unique_ptr<drive::DriveService> GetOverriddenDriveService() {
   return std::make_unique<drive::TestDriveService>();
+}
+
+std::unique_ptr<signin::AccountPreviewDataService>
+GetOverriddenAccountPreviewDataService() {
+  return std::make_unique<signin::TestAccountPreviewDataService>();
 }
 
 feature_engagement::FeatureActivation FETDemoModeOverride() {

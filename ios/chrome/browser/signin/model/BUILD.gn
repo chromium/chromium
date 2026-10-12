@@ -199,6 +199,7 @@ source_set("account_preview_data_service_factory") {
     "//components/signin/core/browser",
     "//components/signin/ios/browser",
     "//components/signin/public/base:signin_switches",
+    "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/metrics/model:profile_metrics_service_factory",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",

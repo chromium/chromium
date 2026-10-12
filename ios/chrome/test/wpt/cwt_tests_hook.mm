@@ -139,6 +139,11 @@ std::unique_ptr<drive::DriveService> GetOverriddenDriveService() {
   return nullptr;
 }
 
+std::unique_ptr<signin::AccountPreviewDataService>
+GetOverriddenAccountPreviewDataService() {
+  return nullptr;
+}
+
 feature_engagement::FeatureActivation FETDemoModeOverride() {
   return feature_engagement::FeatureActivation::AllEnabled();
 }

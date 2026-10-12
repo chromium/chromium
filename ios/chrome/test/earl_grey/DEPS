@@ -54,5 +54,6 @@ specific_include_rules = {
    "+components/password_manager/ios",
    "+components/saved_tab_groups",
    "+components/signin/internal/identity_manager",
+   "+components/signin/core/browser/test_account_preview_data_service.h",
   ],
 }

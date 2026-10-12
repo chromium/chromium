@@ -184,6 +184,10 @@ class GURL;
 // if User Policy is enabled.
 - (void)closeManagedAccountSignInDialogIfAny:(FakeSystemIdentity*)fakeIdentity;
 
+// Sets the preferred account in `TestAccountPreviewDataService` for sign-in
+// promos. If `fakeIdentity` is nil, clears the preferred account.
+- (void)setPreferredAccountForPromo:(FakeSystemIdentity*)fakeIdentity;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_TEST_SIGNIN_EARL_GREY_H_

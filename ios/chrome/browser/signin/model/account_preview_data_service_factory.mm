@@ -12,6 +12,7 @@
 #import "components/signin/core/browser/account_preview_data_service_impl.h"
 #import "components/signin/ios/browser/wait_for_network_callback_helper_ios.h"
 #import "components/signin/public/base/signin_switches.h"
+#import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/metrics/model/ios_profile_metrics_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -53,6 +54,12 @@ AccountPreviewDataServiceFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
   if (!base::FeatureList::IsEnabled(switches::kEnableAccountPreviewData)) {
     return nullptr;
+  }
+
+  std::unique_ptr<signin::AccountPreviewDataService> overridden_service =
+      tests_hook::GetOverriddenAccountPreviewDataService();
+  if (overridden_service) {
+    return overridden_service;
   }
 
   metrics::ProfileMetricsService* profile_metrics_service =

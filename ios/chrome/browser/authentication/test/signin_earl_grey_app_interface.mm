@@ -14,6 +14,8 @@
 #import "components/bookmarks/browser/titled_url_match.h"
 #import "components/policy/core/browser/signin/profile_separation_policies.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/core/browser/account_preview_data_service.h"
+#import "components/signin/core/browser/test_account_preview_data_service.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/identity_manager/account_capabilities.h"
@@ -39,6 +41,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/scene_sign_in_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
+#import "ios/chrome/browser/signin/model/account_preview_data_service_factory.h"
 #import "ios/chrome/browser/signin/model/account_profile_mapper.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -305,6 +308,21 @@
         profileSeparationDataMigrationSettings {
   chrome_test_util::SetPolicyResponseForNextProfileSeparationPolicyRequest(
       profileSeparationDataMigrationSettings);
+}
+
++ (void)setPreferredAccountForPromo:(FakeSystemIdentity*)fakeIdentity {
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
+  signin::TestAccountPreviewDataService* accountPreviewDataService =
+      static_cast<signin::TestAccountPreviewDataService*>(
+          AccountPreviewDataServiceFactory::GetForProfile(profile));
+  CHECK(accountPreviewDataService);
+  if (!fakeIdentity) {
+    accountPreviewDataService->SetPreferredAccountForPromo(std::nullopt);
+    return;
+  }
+  signin::AccountPreviewDataService::AccountPreviewPreference preference;
+  preference.gaia_id = fakeIdentity.gaiaId;
+  accountPreviewDataService->SetPreferredAccountForPromo(preference);
 }
 
 @end

@@ -42,6 +42,7 @@ source_set("hooks") {
     "//components/saved_tab_groups/internal:service_test_utils",
     "//components/saved_tab_groups/public",
     "//components/saved_tab_groups/test_support",
+    "//components/signin/core/browser:test_support",
     "//components/signin/internal/identity_manager",
     "//components/signin/internal/identity_manager:test_support",
     "//components/sync:test_support",

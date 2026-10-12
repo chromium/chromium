@@ -40,6 +40,7 @@
   // Resets the number of dismissals for web sign-in.
   [ChromeEarlGrey setIntegerValue:0
                       forUserPref:prefs::kSigninWebSignDismissalCount];
+  [SigninEarlGrey setPreferredAccountForPromo:nil];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
@@ -49,6 +50,15 @@
     config.features_disabled.push_back(switches::kNoAccountWebSignin);
   } else {
     config.features_enabled.push_back(switches::kNoAccountWebSignin);
+  }
+  if ([self
+          isRunningTest:
+              @selector(testPreferredAccountSelectedWithMultipleIdentities)] ||
+      [self
+          isRunningTest:@selector(
+                            testFirstAccountSelectedWhenNoPreferredAccount)]) {
+    config.features_enabled.push_back(
+        switches::kEnableAccountPreviewPreferredAccount);
   }
   return config;
 }
@@ -268,6 +278,53 @@
       performAction:grey_tap()];
   [SigninEarlGreyUI verifyWebSigninIsVisible:NO];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity2];
+}
+
+// Tests that when there are multiple accounts on the device and the second
+// account is preferred, the second account is selected in the bottom sheet.
+- (void)testPreferredAccountSelectedWithMultipleIdentities {
+  FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
+  FakeSystemIdentity* fakeIdentity2 = [FakeSystemIdentity fakeIdentity2];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity2];
+  [SigninEarlGrey setPreferredAccountForPromo:fakeIdentity2];
+
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI
+      tapSettingsMenuButton:chrome_test_util::SettingsSignInRowMatcher()];
+
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::AccountChooserButtonMatcher(
+                                   fakeIdentity2)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ConsistencySigninPrimaryButtonMatcher()]
+      performAction:grey_tap()];
+  [SigninEarlGreyUI verifyWebSigninIsVisible:NO];
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity2];
+}
+
+// Tests that when there are multiple accounts on the device and no account is
+// preferred, the first account is selected in the bottom sheet.
+- (void)testFirstAccountSelectedWhenNoPreferredAccount {
+  FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
+  FakeSystemIdentity* fakeIdentity2 = [FakeSystemIdentity fakeIdentity2];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity2];
+
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI
+      tapSettingsMenuButton:chrome_test_util::SettingsSignInRowMatcher()];
+
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::AccountChooserButtonMatcher(
+                                   fakeIdentity1)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ConsistencySigninPrimaryButtonMatcher()]
+      performAction:grey_tap()];
+  [SigninEarlGreyUI verifyWebSigninIsVisible:NO];
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity1];
 }
 
 @end

@@ -65,6 +65,10 @@ class BulkLeakCheckServiceInterface;
 class RecipientsFetcher;
 }  // namespace password_manager
 
+namespace signin {
+class AccountPreviewDataService;
+}  // namespace signin
+
 namespace tab_groups {
 class TabGroupSyncService;
 }  // namespace tab_groups
@@ -228,6 +232,11 @@ base::TimeDelta PasswordCheckMinimumDuration();
 // Returns a Drive service instance that should be used in EG tests. The real
 // instance will be used if this hook returns a nullptr.
 std::unique_ptr<drive::DriveService> GetOverriddenDriveService();
+
+// Returns an `AccountPreviewDataService` instance that should be used in EG
+// tests. The real instance will be used if this hook returns a nullptr.
+std::unique_ptr<signin::AccountPreviewDataService>
+GetOverriddenAccountPreviewDataService();
 
 // Override the Feature Engagement Tracker used in tests with a demo version.
 feature_engagement::FeatureActivation FETDemoModeOverride();
