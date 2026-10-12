@@ -108,7 +108,9 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
     @TabAlert
     int getAlertStateForTab(Tab tab) {
         @TabAlert int alertState = tab.getAlertState();
-        if (alertState == TabAlert.GLIC_ACCESSING || alertState == TabAlert.GLIC_SHARING) {
+        if (alertState == TabAlert.GLIC_ACCESSING
+                || alertState == TabAlert.GLIC_SHARING
+                || alertState == TabAlert.AI_MODE_SHARING) {
             // Glic accessing and sharing states use dedicated tab underlines on the vertical tab
             // strip and are not shown in the grid tab switcher.
             return TabAlert.NONE;

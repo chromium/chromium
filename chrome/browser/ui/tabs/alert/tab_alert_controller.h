@@ -6,15 +6,18 @@
 #define CHROME_BROWSER_UI_TABS_ALERT_TAB_ALERT_CONTROLLER_H_
 
 #include <optional>
+#include <set>
 #include <vector>
 
 #include "base/callback_list.h"
 #include "base/containers/flat_set.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "components/tabs/public/tab_alert.h"
+#include "components/tabs/public/tab_interface.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace content {
@@ -27,7 +30,6 @@ enum class TabIndicatorStatus;
 }  // namespace actor::ui
 
 namespace tabs {
-class TabInterface;
 
 // Comparator used to determine which tab alert has a higher priority to be
 // shown.
@@ -38,9 +40,11 @@ struct CompareAlerts {
 // Observes the corresponding web contents for the tab to keep track of all
 // active alerts. Callers can subscribe and be notified when the tab alert that
 // should be shown changes.
-class TabAlertController : public tabs::ContentsObservingTabFeature,
-                           public MediaStreamCaptureIndicator::Observer,
-                           public vr::VrTabHelper::Observer {
+class TabAlertController
+    : public tabs::ContentsObservingTabFeature,
+      public MediaStreamCaptureIndicator::Observer,
+      public vr::VrTabHelper::Observer,
+      public contextual_tasks::ActiveTaskContextProvider::Observer {
  public:
   explicit TabAlertController(TabInterface& tab);
   TabAlertController(const TabAlertController&) = delete;
@@ -104,6 +108,11 @@ class TabAlertController : public tabs::ContentsObservingTabFeature,
   // VrTabHelper::Observer:
   void OnIsContentDisplayedInHeadsetChanged(bool state) override;
 
+  // contextual_tasks::ActiveTaskContextProvider::Observer:
+  void OnContextTabsChanged(
+      const std::set<tabs::TabHandle>& context_tabs) override;
+  void OnActiveTaskContextProviderDestroyed() override;
+
  private:
   class ScopedAlertNotifier;
 
@@ -114,6 +123,10 @@ class TabAlertController : public tabs::ContentsObservingTabFeature,
       actor::ui::TabIndicatorStatus tab_indicator_state);
   void OnRecentlyAudibleStateChanged(bool was_audible);
   void OnChildAlertsStateChange();
+  void MaybeObserveActiveTaskContextProvider();
+  void OnTabWillDetach(TabInterface* tab_interface,
+                       TabInterface::DetachReason reason);
+  void OnTabDidInsert(TabInterface* tab_interface);
 
   // Adds `alert` to the set of already active alerts for this tab if it isn't
   // currently active. Otherwise, removes `alert` from the set and is considered
@@ -141,6 +154,12 @@ class TabAlertController : public tabs::ContentsObservingTabFeature,
   // is displaying content to a headset.
   base::ScopedObservation<vr::VrTabHelper, vr::VrTabHelper::Observer>
       vr_tab_helper_observation_{this};
+
+  // Observes the ActiveTaskContextProvider so that the controller will be
+  // notified when the tab is shared with AI Mode.
+  base::ScopedObservation<contextual_tasks::ActiveTaskContextProvider,
+                          contextual_tasks::ActiveTaskContextProvider::Observer>
+      active_task_context_provider_observation_{this};
 
   // Subscriptions to be notified when an alert status has changed.
   base::CallbackListSubscription recently_audible_subscription_;

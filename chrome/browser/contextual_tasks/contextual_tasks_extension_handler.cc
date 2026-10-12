@@ -521,6 +521,7 @@ void ContextualTasksExtensionHandler::AddTabContext(
               if (auto model = ud->GetOrCreateInputStateModel()) {
                 model->OnContextChanged();
               }
+              ud->RefreshActiveTaskContext();
             }
           },
           user_data->AsWeakPtr()),
@@ -538,6 +539,7 @@ void ContextualTasksExtensionHandler::AddTabContext(
     user_data->AssociateTabWithTask(session_id);
     user_data->OnTabContextUploadStarted(*result);
     user_data->UpdateContextLibraryInputState();
+    user_data->RefreshActiveTaskContext();
   }
 
   std::move(callback).Run(result);

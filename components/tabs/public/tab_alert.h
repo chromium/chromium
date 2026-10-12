@@ -27,6 +27,7 @@ enum class TabAlert {
   kVideoRecording,         // Video [only] being recorded, consumed by tab.
   kGlicAccessing,          // Glic is accessing the tab's contents.
   kGlicSharing,            // The tab's contents are shared with glic.
+  kAiModeSharing,          // The tab's contents are shared with AI Mode.
   kActorAccessing,         // Actor is accessing the tab's contents.
   kActorWaitingOnUser,     // Actor is waiting on user to respond.
 };

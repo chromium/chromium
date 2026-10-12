@@ -417,7 +417,9 @@ public class StripLayoutTab extends StripLayoutView {
 
     /** Returns whether an alert indicator should be shown. */
     public boolean shouldShowAlertIndicator() {
-        if (mAlertState == TabAlert.GLIC_ACCESSING || mAlertState == TabAlert.GLIC_SHARING) {
+        if (mAlertState == TabAlert.GLIC_ACCESSING
+                || mAlertState == TabAlert.GLIC_SHARING
+                || mAlertState == TabAlert.AI_MODE_SHARING) {
             // Tab underlines replace the alert indicator for Glic accessing and sharing states on
             // the tab strip.
             return false;

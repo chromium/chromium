@@ -293,7 +293,8 @@ void RecordTabAddedMetric(
 #if !BUILDFLAG(IS_ANDROID)
 void RemoveTabUnderline(int32_t tab_id,
                         BrowserWindowInterface* browser_window_interface) {
-  if (base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox)) {
+  if (base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox) ||
+      IsContextualTasksSidePanelRearchitectureEnabled()) {
     const tabs::TabHandle handle = tabs::TabHandle(tab_id);
     tabs::TabInterface* const tab = handle.Get();
     auto* browser_window =
@@ -344,7 +345,8 @@ CaptureAndUploadTabContext(
     session_handle->RemoveDeselectedTab(SessionID::FromSerializedValue(tab_id));
   }
 
-  if (base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox)) {
+  if (base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox) ||
+      IsContextualTasksSidePanelRearchitectureEnabled()) {
     if (auto* browser_window = browser_window_interface
                                    ? browser_window_interface
                                    : tab->GetBrowserWindowInterface()) {

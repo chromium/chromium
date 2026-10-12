@@ -81,6 +81,8 @@ MojoTabAlertState EnumTraits<MojoTabAlertState, NativeTabAlertState>::ToMojom(
       return MojoTabAlertState::kGlicAccessing;
     case NativeTabAlertState::kGlicSharing:
       return MojoTabAlertState::kGlicSharing;
+    case NativeTabAlertState::kAiModeSharing:
+      return MojoTabAlertState::kAiModeSharing;
   }
   NOTREACHED();
 }
@@ -127,6 +129,8 @@ EnumTraits<MojoTabAlertState, NativeTabAlertState>::FromMojom(
       return NativeTabAlertState::kGlicAccessing;
     case MojoTabAlertState::kGlicSharing:
       return NativeTabAlertState::kGlicSharing;
+    case MojoTabAlertState::kAiModeSharing:
+      return NativeTabAlertState::kAiModeSharing;
   }
   NOTREACHED();
 }

@@ -1321,7 +1321,8 @@ void Tab::UpdateIconVisibility() {
       alert_indicator_button_->showing_alert_state();
   if (glic_tab_underline_view_ &&
       (current_alert_state == tabs::TabAlert::kGlicAccessing ||
-       current_alert_state == tabs::TabAlert::kGlicSharing)) {
+       current_alert_state == tabs::TabAlert::kGlicSharing ||
+       current_alert_state == tabs::TabAlert::kAiModeSharing)) {
     // Tab underlines for glic multitab replace `alert_indicator_button` as the
     // UI indicator for sharing. In this case, ensure the alert indicator is
     // hidden.

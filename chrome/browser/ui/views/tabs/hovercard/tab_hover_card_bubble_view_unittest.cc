@@ -9,12 +9,16 @@
 
 #include "base/logging.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/views/tabs/hovercard/fade_footer_view.h"
 #include "chrome/browser/ui/views/tabs/hovercard/filename_elider.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/tabs/public/tab_alert.h"
 #include "content/public/test/browser_task_environment.h"
 #include "skia/ext/font_utils.h"
 #include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/render_text.h"
 #include "ui/views/widget/widget.h"
@@ -382,3 +386,15 @@ class TabHoverCardBubbleViewTest : public ChromeViewsTestBase {
   TabHoverCardBubbleViewTest() = default;
   ~TabHoverCardBubbleViewTest() override = default;
 };
+
+TEST_F(TabHoverCardBubbleViewTest, AlertFooterRowAiModeSharing) {
+  FadeAlertFooterRow alert_row(/*is_fade_out_view=*/false);
+  AlertFooterRowData data;
+  data.alert_state = tabs::TabAlert::kAiModeSharing;
+  alert_row.SetData(data);
+
+  EXPECT_EQ(
+      alert_row.footer_label()->GetText(),
+      l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_ALERT_STATE_AI_MODE_SHARING));
+  EXPECT_FALSE(alert_row.icon()->GetImageModel().IsEmpty());
+}

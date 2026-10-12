@@ -1039,6 +1039,8 @@ void ContextualTasksWebContentsUserData::DoSubmitQueryCleanup() {
     model->RemoveLensCrop();
   }
 
+  RefreshActiveTaskContext();
+
   CloseLensAsync(
       lens::LensOverlayDismissalSource::kContextualTasksQuerySubmitted);
   UpdateContextState();
@@ -1152,7 +1154,18 @@ void ContextualTasksWebContentsUserData::ClearFiles() {
 
 void ContextualTasksWebContentsUserData::AssociateTabWithTask(
     SessionID tab_session_id) {
-  if (!task_id_.has_value() || !tab_session_id.is_valid()) {
+  if (!tab_session_id.is_valid()) {
+    return;
+  }
+  base::Uuid task_id = task_id_.value_or(base::Uuid());
+  if (!task_id.is_valid()) {
+    if (auto* helper = ContextualSearchWebContentsHelper::FromWebContents(
+            &GetWebContents());
+        helper && helper->task_id().has_value()) {
+      task_id = *helper->task_id();
+    }
+  }
+  if (!task_id.is_valid()) {
     return;
   }
   Profile* profile =
@@ -1160,7 +1173,7 @@ void ContextualTasksWebContentsUserData::AssociateTabWithTask(
   if (auto* service =
           contextual_tasks::ContextualTasksServiceFactory::GetForProfile(
               profile)) {
-    service->AssociateTabWithTask(*task_id_, tab_session_id);
+    service->AssociateTabWithTask(task_id, tab_session_id);
   }
 }
 

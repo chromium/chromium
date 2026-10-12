@@ -31,6 +31,7 @@ ui::ColorId GetAlertIndicatorColor(TabAlert state,
     case tabs::TabAlert::kPipPlaying:
     case tabs::TabAlert::kGlicAccessing:
     case tabs::TabAlert::kGlicSharing:
+    case tabs::TabAlert::kAiModeSharing:
     case tabs::TabAlert::kActorWaitingOnUser:
     case tabs::TabAlert::kActorAccessing:
       group = 1;
@@ -118,6 +119,7 @@ const gfx::VectorIcon& GetAlertIcon(TabAlert alert_state) {
       return kCursorSparkIcon;
     case TabAlert::kGlicAccessing:
     case TabAlert::kGlicSharing:
+    case TabAlert::kAiModeSharing:
       return glic::GlicVectorIconManager::GetVectorIcon(
           IDR_GLIC_ACCESSING_ICON);
     case TabAlert::kNone:

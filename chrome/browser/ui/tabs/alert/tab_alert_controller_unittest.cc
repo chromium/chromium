@@ -12,19 +12,24 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/observer_list.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/permissions/system/system_permission_settings.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tabs/alert/child_tab_alert_helper.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/tabs/public/tab_alert.h"
 #include "content/public/browser/web_contents.h"
@@ -35,9 +40,48 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 namespace tabs {
+
+class FakeActiveTaskContextProvider
+    : public contextual_tasks::ActiveTaskContextProvider {
+ public:
+  explicit FakeActiveTaskContextProvider(BrowserWindowInterface* window)
+      : scoped_unowned_user_data_(window->GetUnownedUserDataHost(), *this) {}
+
+  ~FakeActiveTaskContextProvider() override {
+    for (auto& observer : observers_) {
+      observer.OnActiveTaskContextProviderDestroyed();
+    }
+  }
+
+  void AddObserver(Observer* observer) override {
+    observers_.AddObserver(observer);
+  }
+  void RemoveObserver(Observer* observer) override {
+    observers_.RemoveObserver(observer);
+  }
+  void SetContextualTasksPanelController(
+      contextual_tasks::ContextualTasksPanelController*) override {}
+  void AddLocalTabUnderline(TabHandle tab_handle) override {}
+  void RemoveLocalTabUnderline(TabHandle tab_handle) override {}
+  void ClearAllLocalTabUnderlines() override {}
+  void RefreshContext() override {}
+
+  void NotifyContextTabsChanged(const std::set<TabHandle>& context_tabs) {
+    for (auto& observer : observers_) {
+      observer.OnContextTabsChanged(context_tabs);
+    }
+  }
+
+ private:
+  base::ObserverList<Observer> observers_;
+  ui::ScopedUnownedUserData<contextual_tasks::ActiveTaskContextProvider>
+      scoped_unowned_user_data_;
+};
 
 class MockTabAlertControllerSubscriber {
  public:
@@ -54,11 +98,18 @@ class TabAlertControllerTest : public testing::Test {
     web_contents_ = content::WebContentsTester::CreateTestWebContents(
         profile_.get(), nullptr);
 
+    ON_CALL(mock_browser_window_, GetUnownedUserDataHost())
+        .WillByDefault(testing::ReturnRef(window_user_data_host_));
+    active_task_context_provider_ =
+        std::make_unique<FakeActiveTaskContextProvider>(&mock_browser_window_);
+
     mock_tab_ = std::make_unique<MockTabInterface>();
     ON_CALL(*mock_tab_, GetContents())
         .WillByDefault(testing::Return(web_contents_.get()));
     ON_CALL(*mock_tab_, GetUnownedUserDataHost())
         .WillByDefault(testing::ReturnRef(user_data_host_));
+    ON_CALL(*mock_tab_, GetBrowserWindowInterface())
+        .WillByDefault(testing::Return(&mock_browser_window_));
 
     vr_tab_helper_ = std::make_unique<vr::VrTabHelper>(*mock_tab_);
     recently_audible_helper_ = std::make_unique<RecentlyAudibleHelper>(
@@ -74,6 +125,7 @@ class TabAlertControllerTest : public testing::Test {
     child_tab_alert_helper_.reset();
     recently_audible_helper_.reset();
     vr_tab_helper_.reset();
+    active_task_context_provider_.reset();
     mock_tab_.reset();
     web_contents_.reset();
     profile_.reset();
@@ -103,6 +155,9 @@ class TabAlertControllerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   content::RenderViewHostTestEnabler test_enabler_;
+  ui::UnownedUserDataHost window_user_data_host_;
+  testing::NiceMock<MockBrowserWindowInterface> mock_browser_window_;
+  std::unique_ptr<FakeActiveTaskContextProvider> active_task_context_provider_;
   ui::UnownedUserDataHost user_data_host_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<content::WebContents> web_contents_;
@@ -530,6 +585,64 @@ TEST_F(TabAlertControllerTest, ChildMediaAlert_SafeAfterTabDestroyed) {
   tab_alert_controller_.reset();
   child_tab_alert_helper_.reset();
   child_alert.RunAndReset();
+}
+
+TEST_F(TabAlertControllerTest, AiModeSharingUpdatesAlertController) {
+  base::test::ScopedFeatureList rearch_feature_list;
+  rearch_feature_list.InitAndEnableFeature(
+      contextual_tasks::kContextualTasksSidePanelRearchitecture);
+  tab_alert_controller_.reset();
+  tab_alert_controller_ = std::make_unique<TabAlertController>(*mock_tab_);
+
+  EXPECT_FALSE(tab_alert_controller()->GetAlertToShow().has_value());
+
+  active_task_context_provider_->NotifyContextTabsChanged(
+      {tab_interface()->GetHandle()});
+  EXPECT_TRUE(tab_alert_controller()->IsAlertActive(TabAlert::kAiModeSharing));
+  EXPECT_EQ(tab_alert_controller()->GetAlertToShow(), TabAlert::kAiModeSharing);
+  EXPECT_EQ(
+      TabAlertController::GetTabAlertStateText(TabAlert::kAiModeSharing),
+      l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_ALERT_STATE_AI_MODE_SHARING));
+  EXPECT_EQ(
+      TabAlertController::GetAccessibleAlertStringId(TabAlert::kAiModeSharing),
+      IDS_TAB_AX_LABEL_AI_MODE_SHARING);
+
+  // Verify priority relative to PipPlaying (lower) and BluetoothConnected
+  // (higher).
+  tab_alert_controller()->MediaPictureInPictureChanged(true);
+  EXPECT_EQ(tab_alert_controller()->GetAlertToShow(), TabAlert::kAiModeSharing);
+
+  tab_alert_controller()->OnCapabilityTypesChanged(
+      content::WebContentsCapabilityType::kBluetoothConnected, true);
+  EXPECT_EQ(tab_alert_controller()->GetAlertToShow(),
+            TabAlert::kBluetoothConnected);
+
+  tab_alert_controller()->OnCapabilityTypesChanged(
+      content::WebContentsCapabilityType::kBluetoothConnected, false);
+  EXPECT_EQ(tab_alert_controller()->GetAlertToShow(), TabAlert::kAiModeSharing);
+
+  active_task_context_provider_->NotifyContextTabsChanged({});
+  EXPECT_FALSE(tab_alert_controller()->IsAlertActive(TabAlert::kAiModeSharing));
+  EXPECT_EQ(tab_alert_controller()->GetAlertToShow(), TabAlert::kPipPlaying);
+
+  // Destroying the provider clears the active alert.
+  active_task_context_provider_->NotifyContextTabsChanged(
+      {tab_interface()->GetHandle()});
+  EXPECT_TRUE(tab_alert_controller()->IsAlertActive(TabAlert::kAiModeSharing));
+  active_task_context_provider_.reset();
+  EXPECT_FALSE(tab_alert_controller()->IsAlertActive(TabAlert::kAiModeSharing));
+}
+
+TEST_F(TabAlertControllerTest, AiModeSharingIgnoredWhenRearchitectureDisabled) {
+  base::test::ScopedFeatureList rearch_feature_list;
+  rearch_feature_list.InitAndDisableFeature(
+      contextual_tasks::kContextualTasksSidePanelRearchitecture);
+  tab_alert_controller_.reset();
+  tab_alert_controller_ = std::make_unique<TabAlertController>(*mock_tab_);
+
+  active_task_context_provider_->NotifyContextTabsChanged(
+      {tab_interface()->GetHandle()});
+  EXPECT_FALSE(tab_alert_controller()->IsAlertActive(TabAlert::kAiModeSharing));
 }
 
 }  // namespace tabs

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/contextual_tasks/active_task_context_provider_impl.h"
 
+#include <algorithm>
 #include <map>
 
 #include "base/feature_list.h"
@@ -88,6 +89,28 @@ std::set<tabs::TabHandle> GetTabsFromContext(
       context_session_ids_url_map.try_emplace(
           *file_info.tab_session_id, *file_info.tab_url,
           base::UTF8ToUTF16(file_info.tab_title.value_or("")));
+    }
+  }
+
+  if (session_handle && IsContextualTasksSidePanelRearchitectureEnabled()) {
+    const auto uploaded_tokens = session_handle->GetUploadedContextTokens();
+    for (const auto& attached_tab :
+         session_handle->GetTabContextState().attached) {
+      if (!attached_tab.tab_id.has_value()) {
+        continue;
+      }
+      const bool is_active =
+          attached_tab.submitted ||
+          std::ranges::contains(uploaded_tokens, attached_tab.context_token);
+      if (!is_active) {
+        continue;
+      }
+      SessionID id = SessionID::FromSerializedValue(*attached_tab.tab_id);
+      if (id.is_valid()) {
+        context_session_ids_url_map.try_emplace(
+            id, std::make_pair(attached_tab.url,
+                               base::UTF8ToUTF16(attached_tab.title)));
+      }
     }
   }
 

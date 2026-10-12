@@ -22,10 +22,12 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tabs/alert/child_tab_alert_helper.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/tabs/public/tab_alert.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
@@ -42,20 +44,21 @@ bool CompareAlerts::operator()(TabAlert first, TabAlert second) const {
   // Alerts are ordered from highest priority to be shown to lowest priority.
   static constexpr auto tab_alert_priority =
       base::MakeFixedFlatMap<TabAlert, int>(
-          {{TabAlert::kDesktopCapturing, 17},
-           {TabAlert::kTabCapturing, 16},
-           {TabAlert::kMediaRecording, 15},
-           {TabAlert::kAudioRecording, 14},
-           {TabAlert::kVideoRecording, 13},
-           {TabAlert::kBluetoothConnected, 12},
-           {TabAlert::kBluetoothScanActive, 11},
-           {TabAlert::kUsbConnected, 10},
-           {TabAlert::kHidConnected, 9},
-           {TabAlert::kSerialConnected, 8},
-           {TabAlert::kActorWaitingOnUser, 7},
-           {TabAlert::kActorAccessing, 6},
-           {TabAlert::kGlicAccessing, 5},
-           {TabAlert::kGlicSharing, 4},
+          {{TabAlert::kDesktopCapturing, 18},
+           {TabAlert::kTabCapturing, 17},
+           {TabAlert::kMediaRecording, 16},
+           {TabAlert::kAudioRecording, 15},
+           {TabAlert::kVideoRecording, 14},
+           {TabAlert::kBluetoothConnected, 13},
+           {TabAlert::kBluetoothScanActive, 12},
+           {TabAlert::kUsbConnected, 11},
+           {TabAlert::kHidConnected, 10},
+           {TabAlert::kSerialConnected, 9},
+           {TabAlert::kActorWaitingOnUser, 8},
+           {TabAlert::kActorAccessing, 7},
+           {TabAlert::kGlicAccessing, 6},
+           {TabAlert::kGlicSharing, 5},
+           {TabAlert::kAiModeSharing, 4},
            // NOTE: VR must take priority over the audio alert ones
            // because most VR content has audio and its usage is implied by the
            // VR icon.
@@ -137,6 +140,16 @@ TabAlertController::TabAlertController(TabInterface& tab)
             base::BindRepeating(&TabAlertController::OnChildAlertsStateChange,
                                 base::Unretained(this))));
   }
+
+  if (contextual_tasks::IsContextualTasksSidePanelRearchitectureEnabled()) {
+    MaybeObserveActiveTaskContextProvider();
+    callback_subscriptions_.emplace_back(
+        tab.RegisterWillDetach(base::BindRepeating(
+            &TabAlertController::OnTabWillDetach, base::Unretained(this))));
+    callback_subscriptions_.emplace_back(
+        tab.RegisterDidInsert(base::BindRepeating(
+            &TabAlertController::OnTabDidInsert, base::Unretained(this))));
+  }
 }
 
 TabAlertController::~TabAlertController() = default;
@@ -216,6 +229,9 @@ std::u16string TabAlertController::GetTabAlertStateText(
     case TabAlert::kGlicSharing:
       return l10n_util::GetStringUTF16(
           IDS_TOOLTIP_TAB_ALERT_STATE_GLIC_SHARING);
+    case TabAlert::kAiModeSharing:
+      return l10n_util::GetStringUTF16(
+          IDS_TOOLTIP_TAB_ALERT_STATE_AI_MODE_SHARING);
     case TabAlert::kNone:
       NOTREACHED();
   }
@@ -260,6 +276,8 @@ int TabAlertController::GetAccessibleAlertStringId(const TabAlert alert_state) {
       return IDS_TAB_AX_LABEL_GLIC_ACCESSING;
     case TabAlert::kGlicSharing:
       return IDS_TAB_AX_LABEL_GLIC_SHARING;
+    case TabAlert::kAiModeSharing:
+      return IDS_TAB_AX_LABEL_AI_MODE_SHARING;
     case TabAlert::kNone:
       NOTREACHED();
   }
@@ -291,6 +309,7 @@ void TabAlertController::RecordCloseTabMetrics(const TabAlert alert_state) {
     case TabAlert::kActorAccessing:
     case TabAlert::kGlicAccessing:
     case TabAlert::kGlicSharing:
+    case TabAlert::kAiModeSharing:
     case TabAlert::kNone:
       break;
   }
@@ -439,6 +458,19 @@ void TabAlertController::OnIsContentDisplayedInHeadsetChanged(bool state) {
   UpdateAlertState(TabAlert::kVrPresentingInHeadset, state);
 }
 
+void TabAlertController::OnContextTabsChanged(
+    const std::set<tabs::TabHandle>& context_tabs) {
+  ScopedAlertNotifier notifier(this);
+  UpdateAlertState(TabAlert::kAiModeSharing,
+                   context_tabs.contains(tab().GetHandle()));
+}
+
+void TabAlertController::OnActiveTaskContextProviderDestroyed() {
+  active_task_context_provider_observation_.Reset();
+  ScopedAlertNotifier notifier(this);
+  UpdateAlertState(TabAlert::kAiModeSharing, false);
+}
+
 void TabAlertController::OnGlicSharingStateChange(bool is_sharing) {
   ScopedAlertNotifier notifier(this);
   UpdateAlertState(TabAlert::kGlicSharing, is_sharing);
@@ -481,6 +513,31 @@ void TabAlertController::OnRecentlyAudibleStateChanged(bool was_audible) {
 void TabAlertController::OnChildAlertsStateChange() {
   ScopedAlertNotifier notifier(this);
   UpdateMediaAlert();
+}
+
+void TabAlertController::MaybeObserveActiveTaskContextProvider() {
+  if (active_task_context_provider_observation_.IsObserving()) {
+    return;
+  }
+  if (BrowserWindowInterface* browser_window =
+          tab().GetBrowserWindowInterface()) {
+    if (auto* active_task_context_provider =
+            contextual_tasks::ActiveTaskContextProvider::From(browser_window)) {
+      active_task_context_provider_observation_.Observe(
+          active_task_context_provider);
+    }
+  }
+}
+
+void TabAlertController::OnTabWillDetach(TabInterface* tab_interface,
+                                         TabInterface::DetachReason reason) {
+  active_task_context_provider_observation_.Reset();
+  ScopedAlertNotifier notifier(this);
+  UpdateAlertState(TabAlert::kAiModeSharing, false);
+}
+
+void TabAlertController::OnTabDidInsert(TabInterface* tab_interface) {
+  MaybeObserveActiveTaskContextProvider();
 }
 
 void TabAlertController::UpdateAlertState(TabAlert alert, bool is_active) {

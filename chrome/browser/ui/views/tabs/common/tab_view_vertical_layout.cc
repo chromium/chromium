@@ -151,14 +151,15 @@ bool TabViewVerticalLayout::IsChildVisible(const views::View* child_view,
   }
 
   if (child_view == TabView().alert_indicator_) {
+    const std::optional<tabs::TabAlert> current_alert_state =
+        TabView().alert_indicator_->showing_alert_state();
     if (TabView().glic_tab_underline_view_ &&
-        (TabView().alert_indicator_->showing_alert_state() ==
-             tabs::TabAlert::kGlicAccessing ||
-         TabView().alert_indicator_->showing_alert_state() ==
-             tabs::TabAlert::kGlicSharing)) {
+        (current_alert_state == tabs::TabAlert::kGlicAccessing ||
+         current_alert_state == tabs::TabAlert::kGlicSharing ||
+         current_alert_state == tabs::TabAlert::kAiModeSharing)) {
       return false;
     }
-    return TabView().alert_indicator_->showing_alert_state().has_value();
+    return current_alert_state.has_value();
   }
 
   if (child_view == TabView().icon_) {
