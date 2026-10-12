@@ -760,6 +760,9 @@ class DeepScanningRequestTest : public testing::Test {
   TestingProfile* profile() { return profile_; }
 
  protected:
+  // Must outlive `task_environment_` so background tasks running during
+  // teardown do not race against command line restoration.
+  base::test::ScopedCommandLine scoped_command_line_;
   base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
@@ -2100,6 +2103,8 @@ TEST_F(DeepScanningReportingTest, ReportForceSaveToGDrive) {
 class DeepScanningReportingAutomationTest : public DeepScanningReportingTest {
  public:
   DeepScanningReportingAutomationTest() {
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+        switches::kEnableAutomation);
     SetFeatures(
         /*enabled=*/{enterprise_data_protection::kEnableForceDownloadToCloud,
                      safe_browsing::kEnhancedFieldsForSecOps},
@@ -2108,14 +2113,9 @@ class DeepScanningReportingAutomationTest : public DeepScanningReportingTest {
 
   void SetUp() override {
     DeepScanningReportingTest::SetUp();
-    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
-        switches::kEnableAutomation);
     content::DownloadItemUtils::AttachInfoForTesting(&item_, profile_,
                                                      web_contents_.get());
   }
-
- protected:
-  base::test::ScopedCommandLine scoped_command_line_;
 };
 
 TEST_F(DeepScanningReportingAutomationTest,
