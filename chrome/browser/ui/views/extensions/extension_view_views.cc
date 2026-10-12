@@ -144,7 +144,13 @@ ui::Cursor ExtensionViewViews::GetCursor(const ui::MouseEvent& event) {
 
 void ExtensionViewViews::OnWebContentsAttached(views::WebView*) {
   host_->CreateRendererSoon();
-  SetVisible(false);
+  // Popups remain hidden until their content has loaded to avoid resizing
+  // flicker. Other views should remain visible so that views::FocusManager can
+  // properly manage focus when they are shown.
+  if (host_->extension_host_type() ==
+      extensions::mojom::ViewType::kExtensionPopup) {
+    SetVisible(false);
+  }
 }
 
 BEGIN_METADATA(ExtensionViewViews)

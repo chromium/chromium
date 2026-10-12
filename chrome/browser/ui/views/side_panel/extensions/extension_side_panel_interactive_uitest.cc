@@ -10,6 +10,11 @@
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
+#include "chrome/browser/ui/view_ids.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -40,6 +45,7 @@ class ExtensionSidePanelInteractiveTest : public ExtensionBrowserTest {
 // Test that the extension's side panel web contents is focused when shown.
 IN_PROC_BROWSER_TEST_F(ExtensionSidePanelInteractiveTest,
                        SidePanelWebContentsFocusedOnShow) {
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
   TestExtensionDir dir;
   dir.WriteManifest(R"({
     "name": "Autofocus Test",
@@ -89,6 +95,62 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelInteractiveTest,
   // WebContents is indeed the input element.
   EXPECT_EQ("autofocus-input",
             content::EvalJs(side_panel_contents, "document.activeElement.id"));
+}
+
+// Test that clicking the Omnibox properly focuses it when an extension side
+// panel is shown.
+IN_PROC_BROWSER_TEST_F(ExtensionSidePanelInteractiveTest,
+                       OmniboxCanBeFocusedWhenSidePanelShown) {
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+  TestExtensionDir dir;
+  dir.WriteManifest(R"({
+    "name": "Side Panel Focus Test",
+    "version": "1.0",
+    "manifest_version": 3,
+    "permissions": ["sidePanel"],
+    "side_panel": {
+      "default_path": "panel.html"
+    }
+  })");
+  dir.WriteFile(FILE_PATH_LITERAL("panel.html"), R"(
+    <html>
+      <body>
+        <input id="autofocus-input" autofocus>
+        <script src="panel.js"></script>
+      </body>
+    </html>
+  )");
+  dir.WriteFile(FILE_PATH_LITERAL("panel.js"), R"(
+    const input = document.getElementById("autofocus-input");
+    if (document.activeElement === input) {
+      chrome.test.sendMessage("ready");
+    } else {
+      input.addEventListener("focus", () => chrome.test.sendMessage("ready"), { once: true });
+    }
+  )");
+
+  ExtensionTestMessageListener ready_listener("ready");
+  const Extension* extension = LoadExtension(dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  SidePanelEntry::Key extension_key = GetKey(extension->id());
+  SidePanelUI* const side_panel_ui = GetSidePanelUI();
+
+  side_panel_ui->Show(extension_key, std::nullopt,
+                      /*suppress_animations=*/true);
+  ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
+
+  // Click on the omnibox to focus it.
+  ASSERT_NO_FATAL_FAILURE(
+      ui_test_utils::ClickOnView(browser(), VIEW_ID_OMNIBOX));
+  ASSERT_NO_FATAL_FAILURE(
+      ui_test_utils::WaitForViewFocus(browser(), VIEW_ID_OMNIBOX, true));
+
+  LocationBarView* location_bar =
+      BrowserView::GetBrowserViewForBrowser(browser())->GetLocationBarView();
+  ASSERT_TRUE(location_bar);
+  EXPECT_TRUE(location_bar->omnibox_view()->HasFocus());
+  side_panel_ui->Close();
 }
 
 }  // namespace extensions
