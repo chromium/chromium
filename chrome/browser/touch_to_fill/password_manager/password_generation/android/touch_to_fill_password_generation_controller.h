@@ -14,6 +14,7 @@
 #include "chrome/browser/touch_to_fill/password_manager/password_generation/android/touch_to_fill_password_generation_delegate.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 
@@ -80,6 +81,8 @@ class TouchToFillPasswordGenerationController
   content::RenderWidgetHost::SuppressShowingImeCallback
       suppress_showing_ime_callback_;
   bool suppress_showing_ime_callback_added_ = false;
+  // The frame to whose widget `suppress_showing_ime_callback_` was added.
+  content::GlobalRenderFrameHostId suppress_showing_ime_frame_id_;
 
   autofill::password_generation::PasswordGenerationType
       password_generation_type_;

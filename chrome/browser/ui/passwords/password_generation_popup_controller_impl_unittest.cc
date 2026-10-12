@@ -253,6 +253,22 @@ TEST_F(PasswordGenerationPopupControllerImplTest, DestroyInPasswordAccepted) {
   controller->PasswordAccepted();
 }
 
+// Tests that accepting the password doesn't crash if the driver is gone, e.g.
+// because the frame was deleted since the popup was shown.
+TEST_F(PasswordGenerationPopupControllerImplTest,
+       PasswordAcceptedWithoutDriverDoesNotCrash) {
+  std::unique_ptr<MockPasswordManagerDriver> driver = CreateDriver();
+  base::WeakPtr<PasswordGenerationPopupController> controller =
+      PasswordGenerationPopupControllerImpl::GetOrCreate(
+          /*previous=*/nullptr, ui_data().bounds, ui_data(),
+          driver->AsWeakPtr(), /*observer=*/nullptr, web_contents(),
+          main_rfh());
+  driver.reset();
+
+  controller->PasswordAccepted();
+  EXPECT_FALSE(controller);
+}
+
 TEST_F(PasswordGenerationPopupControllerImplTest, GetElementTextDirection) {
   ui_data().text_direction = base::i18n::TextDirection::RIGHT_TO_LEFT;
   base::WeakPtr<PasswordGenerationPopupController> controller =

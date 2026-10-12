@@ -250,7 +250,11 @@ void PasswordGenerationPopupControllerImpl::PasswordAccepted() {
   // |this| can be destroyed here because GeneratedPasswordAccepted pops up
   // another UI and generates some event to close the dropdown.
   if (weak_this) {
-    driver_->FocusNextFieldAfterPasswords();
+    // `driver_` can also be null if it was invalidated since the popup was
+    // shown, e.g. because the frame was deleted.
+    if (driver_) {
+      driver_->FocusNextFieldAfterPasswords();
+    }
     weak_this->HideImpl();
   }
 }
@@ -441,9 +445,10 @@ PasswordGenerationPopupControllerImpl::GetElementTextDirection() const {
 }
 
 void PasswordGenerationPopupControllerImpl::HideImpl() {
-  // Detach if the frame is still alive.
+  // Detach if the frame is still alive. `KeyPressRegistrator` checks this
+  // itself, so this doesn't depend on `driver_`.
+  key_press_handler_manager_->RemoveKeyPressHandler();
   if (driver_) {
-    key_press_handler_manager_->RemoveKeyPressHandler();
     // The preview might have not been cleared (e.g. popup closed with ESC).
     driver_->ClearPreviewedForm();
   }
