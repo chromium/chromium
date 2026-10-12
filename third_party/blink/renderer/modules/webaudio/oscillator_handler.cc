@@ -188,7 +188,7 @@ bool OscillatorHandler::SetInitialType(const String& oscillator_type) {
 }
 
 void OscillatorHandler::SetInitialPeriodicWave(
-    PeriodicWaveHandler* periodic_wave_handler) {
+    const PeriodicWaveHandler* periodic_wave_handler) {
   DCHECK(periodic_wave_handler);
   SetPeriodicWave(periodic_wave_handler);
 }
@@ -762,7 +762,8 @@ void OscillatorHandler::Process(uint32_t frames_to_process) {
   output_bus->ClearSilentFlag();
 }
 
-void OscillatorHandler::SetPeriodicWave(PeriodicWaveHandler* periodic_wave) {
+void OscillatorHandler::SetPeriodicWave(
+    const PeriodicWaveHandler* periodic_wave) {
   DCHECK(IsMainThread());
   DCHECK(periodic_wave);
 

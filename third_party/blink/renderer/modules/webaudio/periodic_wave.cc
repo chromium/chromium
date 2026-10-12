@@ -72,19 +72,16 @@ PeriodicWave* PeriodicWave::Create(BaseAudioContext& context,
     return nullptr;
   }
 
-  PeriodicWave* periodic_wave =
-      MakeGarbageCollected<PeriodicWave>(context.sampleRate());
-  return periodic_wave->handler()->CreateBandLimitedTables(
-             base::span<const float>(real), base::span<const float>(imag),
-             disable_normalization)
-             ? periodic_wave
-             : nullptr;
+  PeriodicWaveHandler* handler = PeriodicWaveHandler::Create(
+      context.sampleRate(), base::span<const float>(real),
+      base::span<const float>(imag), disable_normalization);
+  return handler ? MakeGarbageCollected<PeriodicWave>(handler) : nullptr;
 }
 
 PeriodicWave* PeriodicWave::Create(BaseAudioContext* context,
                                    const PeriodicWaveOptions* options,
                                    ExceptionState& exception_state) {
-  bool normalize = options->disableNormalization();
+  const bool disable_normalization = options->disableNormalization();
 
   Vector<float> real_coef;
   Vector<float> imag_coef;
@@ -108,48 +105,38 @@ PeriodicWave* PeriodicWave::Create(BaseAudioContext* context,
     imag_coef[1] = 1;
   }
 
-  return Create(*context, real_coef, imag_coef, normalize, exception_state);
+  return Create(*context, real_coef, imag_coef, disable_normalization,
+                exception_state);
 }
 
 PeriodicWave* PeriodicWave::CreateSine(float sample_rate) {
-  PeriodicWave* periodic_wave = MakeGarbageCollected<PeriodicWave>(sample_rate);
-  return periodic_wave->handler()->GenerateBasicWaveform(
-             OscillatorHandler::SINE)
-             ? periodic_wave
-             : nullptr;
+  return CreateBasicWaveform(sample_rate, OscillatorHandler::SINE);
 }
 
 PeriodicWave* PeriodicWave::CreateSquare(float sample_rate) {
-  PeriodicWave* periodic_wave = MakeGarbageCollected<PeriodicWave>(sample_rate);
-  return periodic_wave->handler()->GenerateBasicWaveform(
-             OscillatorHandler::SQUARE)
-             ? periodic_wave
-             : nullptr;
+  return CreateBasicWaveform(sample_rate, OscillatorHandler::SQUARE);
 }
 
 PeriodicWave* PeriodicWave::CreateSawtooth(float sample_rate) {
-  PeriodicWave* periodic_wave = MakeGarbageCollected<PeriodicWave>(sample_rate);
-  return periodic_wave->handler()->GenerateBasicWaveform(
-             OscillatorHandler::SAWTOOTH)
-             ? periodic_wave
-             : nullptr;
+  return CreateBasicWaveform(sample_rate, OscillatorHandler::SAWTOOTH);
 }
 
 PeriodicWave* PeriodicWave::CreateTriangle(float sample_rate) {
-  PeriodicWave* periodic_wave = MakeGarbageCollected<PeriodicWave>(sample_rate);
-  return periodic_wave->handler()->GenerateBasicWaveform(
-             OscillatorHandler::TRIANGLE)
-             ? periodic_wave
-             : nullptr;
+  return CreateBasicWaveform(sample_rate, OscillatorHandler::TRIANGLE);
 }
 
-PeriodicWave::PeriodicWave(float sample_rate)
-    : periodic_wave_handler_(
-          MakeGarbageCollected<PeriodicWaveHandler>(sample_rate)) {}
+PeriodicWave::PeriodicWave(const PeriodicWaveHandler* handler)
+    : periodic_wave_handler_(handler) {}
 
 void PeriodicWave::Trace(Visitor* visitor) const {
   visitor->Trace(periodic_wave_handler_);
   ScriptWrappable::Trace(visitor);
+}
+
+PeriodicWave* PeriodicWave::CreateBasicWaveform(float sample_rate, int shape) {
+  PeriodicWaveHandler* handler =
+      PeriodicWaveHandler::CreateBasicWaveform(sample_rate, shape);
+  return handler ? MakeGarbageCollected<PeriodicWave>(handler) : nullptr;
 }
 
 }  // namespace blink

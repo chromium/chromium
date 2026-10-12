@@ -29,6 +29,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_PERIODIC_WAVE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_PERIODIC_WAVE_H_
 
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webaudio/periodic_wave_handler.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -40,7 +41,10 @@ class BaseAudioContext;
 class ExceptionState;
 class PeriodicWaveOptions;
 
-class PeriodicWave final : public ScriptWrappable {
+// PeriodicWave represents a periodic audio waveform defined by its Fourier
+// coefficients, used by OscillatorNode to shape its output. It is a
+// main-thread ScriptWrappable wrapper around PeriodicWaveHandler.
+class MODULES_EXPORT PeriodicWave final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -54,22 +58,26 @@ class PeriodicWave final : public ScriptWrappable {
   static PeriodicWave* Create(BaseAudioContext&,
                               const Vector<float>& real,
                               const Vector<float>& imag,
-                              bool normalize,
+                              bool disable_normalization,
                               ExceptionState&);
 
   static PeriodicWave* Create(BaseAudioContext*,
                               const PeriodicWaveOptions*,
                               ExceptionState&);
 
-  explicit PeriodicWave(float sample_rate);
+  explicit PeriodicWave(const PeriodicWaveHandler* handler);
   ~PeriodicWave() final = default;
 
   void Trace(Visitor*) const final;
 
-  PeriodicWaveHandler* handler() { return periodic_wave_handler_.Get(); }
+  const PeriodicWaveHandler* handler() const {
+    return periodic_wave_handler_.Get();
+  }
 
  private:
-  const Member<PeriodicWaveHandler> periodic_wave_handler_;
+  static PeriodicWave* CreateBasicWaveform(float sample_rate, int shape);
+
+  const Member<const PeriodicWaveHandler> periodic_wave_handler_;
 };
 
 }  // namespace blink
