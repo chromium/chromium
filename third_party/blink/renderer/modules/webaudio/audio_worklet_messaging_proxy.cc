@@ -19,10 +19,12 @@
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_object_proxy.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_processor.h"
 #include "third_party/blink/renderer/modules/webaudio/cross_thread_audio_worklet_processor_info.h"
+#include "third_party/blink/renderer/modules/webaudio/deferred_task_handler.h"
 #include "third_party/blink/renderer/modules/webaudio/offline_audio_worklet_thread.h"
 #include "third_party/blink/renderer/modules/webaudio/realtime_audio_worklet_thread.h"
 #include "third_party/blink/renderer/modules/webaudio/semi_realtime_audio_worklet_thread.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_public.h"
 
@@ -33,20 +35,39 @@ AudioWorkletMessagingProxy::AudioWorkletMessagingProxy(
     AudioWorklet* worklet)
     : ThreadedWorkletMessagingProxy(execution_context), worklet_(worklet) {}
 
+AudioWorkletMessagingProxy::~AudioWorkletMessagingProxy() {
+  DCHECK(pending_create_processor_handlers_.empty());
+}
+
 void AudioWorkletMessagingProxy::CreateProcessor(
     scoped_refptr<AudioWorkletHandler> handler,
     MessagePortChannel message_port_channel,
     scoped_refptr<SerializedScriptValue> node_options) {
   DCHECK(IsMainThread());
+  if (!GetWorkerThread()) {
+    return;
+  }
+  // Retain a reference on the main thread while processor creation is in
+  // flight on the worklet thread. This ensures the handler lifetime extends
+  // until the completion task returns to the main thread.
+  pending_create_processor_handlers_.insert(handler);
+  scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner =
+      GetParentExecutionContextTaskRunners()->Get(TaskType::kInternalDefault);
+  String name = handler->Name();
   PostCrossThreadTask(
       *GetWorkerThread()->GetTaskRunner(TaskType::kMiscPlatformAPI), FROM_HERE,
       CrossThreadBindOnce(
           &AudioWorkletMessagingProxy::CreateProcessorOnRenderingThread,
-          CrossThreadUnretained(GetWorkerThread()), handler, handler->Name(),
-          std::move(message_port_channel), std::move(node_options)));
+          MakeCrossThreadWeakHandle(this),
+          std::move(main_thread_task_runner),
+          CrossThreadUnretained(GetWorkerThread()), std::move(handler),
+          std::move(name), std::move(message_port_channel),
+          std::move(node_options)));
 }
 
 void AudioWorkletMessagingProxy::CreateProcessorOnRenderingThread(
+    CrossThreadWeakHandle<AudioWorkletMessagingProxy> proxy_handle,
+    scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
     WorkerThread* worker_thread,
     scoped_refptr<AudioWorkletHandler> handler,
     const String& name,
@@ -58,6 +79,57 @@ void AudioWorkletMessagingProxy::CreateProcessorOnRenderingThread(
   AudioWorkletProcessor* processor = global_scope->CreateProcessor(
       name, message_port_channel, std::move(node_options));
   handler->SetProcessorOnRenderThread(processor);
+
+  // Transfer the handler reference back to the main thread in the completion
+  // task. This guarantees that if this was the last reference, destruction
+  // happens on the main thread rather than on this worker thread.
+  //
+  // Note that this reference is not the authoritative one:
+  // `pending_create_processor_handlers_` on the main thread holds a reference
+  // for the entire duration of the creation task. If this task is discarded
+  // (e.g. the task runner shuts down), the set entry still keeps the handler
+  // alive until `WorkerThreadTerminated()` releases it under the graph lock.
+  PostCrossThreadTask(
+      *main_thread_task_runner, FROM_HERE,
+      CrossThreadBindOnce(&AudioWorkletMessagingProxy::DidCreateProcessor,
+                          MakeUnwrappingCrossThreadWeakHandle(proxy_handle),
+                          std::move(handler)));
+}
+
+void AudioWorkletMessagingProxy::DidCreateProcessor(
+    scoped_refptr<AudioWorkletHandler> handler) {
+  DCHECK(IsMainThread());
+  // AudioHandler teardown and associated graph modifications must occur
+  // on the main thread under the graph lock. Releasing both the set entry
+  // and the passed parameter here ensures safe destruction if references
+  // dropped.
+  DeferredTaskHandler::GraphAutoLocker locker(
+      handler->GetDeferredTaskHandler());
+  pending_create_processor_handlers_.erase(handler);
+  handler = nullptr;
+}
+
+void AudioWorkletMessagingProxy::WorkerThreadTerminated() {
+  DCHECK(IsMainThread());
+  // Release any handlers whose processor creation was aborted by worker
+  // termination, ensuring their destruction occurs under the graph lock.
+  //
+  // A messaging proxy serves exactly one BaseAudioContext, so all pending
+  // handlers share a single DeferredTaskHandler. That lets one lock cover the
+  // release of the whole set.
+  if (!pending_create_processor_handlers_.empty()) {
+    auto& any_handler = *pending_create_processor_handlers_.begin();
+    DeferredTaskHandler* deferred_task_handler =
+        &any_handler->GetDeferredTaskHandler();
+    DeferredTaskHandler::GraphAutoLocker locker(*deferred_task_handler);
+    for (const auto& pending_handler : pending_create_processor_handlers_) {
+      DCHECK_EQ(&pending_handler->GetDeferredTaskHandler(),
+                deferred_task_handler);
+      pending_handler->MarkProcessorInactiveOnMainThread();
+    }
+    pending_create_processor_handlers_.clear();
+  }
+  ThreadedWorkletMessagingProxy::WorkerThreadTerminated();
 }
 
 void AudioWorkletMessagingProxy::SynchronizeWorkletProcessorInfoList(
