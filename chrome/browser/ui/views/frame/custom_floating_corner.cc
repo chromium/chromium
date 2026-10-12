@@ -253,7 +253,8 @@ const views::View& CustomFloatingCorner::GetView() const {
 }
 
 void CustomFloatingCorner::OnBrowserPaintAsActiveChanged() {
-  if (std::holds_alternative<FrameTheme>(background_.color)) {
+  if (background_.is_visible() &&
+      std::holds_alternative<FrameTheme>(background_.color)) {
     SchedulePaint();
   }
 }

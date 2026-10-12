@@ -337,7 +337,9 @@ void BrowserFrameViewMac::UpdateThrobber(bool running) {}
 
 void BrowserFrameViewMac::PaintAsActiveChanged() {
   UpdateCaptionButtonPlaceholderContainerBackground();
-  BrowserFrameView::PaintAsActiveChanged();
+  if (!is_glass_frame_eligible_) {
+    BrowserFrameView::PaintAsActiveChanged();
+  }
 }
 
 void BrowserFrameViewMac::OnThemeChanged() {
