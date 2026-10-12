@@ -13,19 +13,19 @@
 #include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/strings/grit/components_strings.h"
 #include "components/sync_device_info/device_info.h"
+#include "components/sync_device_info/remote_device_info.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/sync_sessions/synced_session.h"
 #include "content/public/browser/web_ui.h"
-#include "ui/base/l10n/l10n_util.h"
 
 namespace settings {
 
@@ -56,28 +56,6 @@ std::string_view GetFormFactorString(
   }
 }
 
-// Formats `modified_time` into a localized relative activity label (e.g.,
-// "Active now", "Active 5m ago", "Active 3h ago", or "Updated 2 days ago").
-// TODO(crbug.com/570417844): Extract a shared relative device activity
-// formatter instead of mirroring
-// `send_tab_to_self::TargetDeviceInfo::GetLastActiveTimeForDisplay()`.
-std::string FormatLastActiveTime(base::Time modified_time) {
-  const base::TimeDelta time_elapsed = base::Time::Now() - modified_time;
-  if (time_elapsed < base::Minutes(1)) {
-    return l10n_util::GetStringUTF8(IDS_SEND_TAB_TO_SELF_DEVICE_ACTIVE_NOW);
-  }
-  if (time_elapsed < base::Hours(1)) {
-    return l10n_util::GetPluralStringFUTF8(
-        IDS_SEND_TAB_TO_SELF_DEVICE_ACTIVE_MINUTES, time_elapsed.InMinutes());
-  }
-  if (time_elapsed < base::Days(1)) {
-    return l10n_util::GetPluralStringFUTF8(
-        IDS_SEND_TAB_TO_SELF_DEVICE_ACTIVE_HOURS, time_elapsed.InHours());
-  }
-  return l10n_util::GetPluralStringFUTF8(
-      IDS_SEND_TAB_TO_SELF_DEVICE_LAST_UPDATE_DAYS, time_elapsed.InDays());
-}
-
 // Returns true if the foreign session identified by `session_tag` is visible
 // in the local device tab list.
 bool IsSessionVisible(const PrefService& prefs, std::string_view session_tag) {
@@ -96,7 +74,11 @@ base::DictValue BuildSessionDictionary(
   return base::DictValue()
       .Set("tag", session.GetSessionTag())
       .Set("name", session.GetSessionName())
-      .Set("lastActiveTime", FormatLastActiveTime(session.GetModifiedTime()))
+      .Set("lastActiveTime",
+           base::UTF16ToUTF8(
+               syncer::RemoteDeviceInfo::GetLastActiveTimeForDisplay(
+                   session.GetModifiedTime(),
+                   /*has_high_precision_timestamp=*/true)))
       .Set("formFactor", GetFormFactorString(session.GetDeviceFormFactor()))
       .Set("visible", visible);
 }
@@ -165,7 +147,7 @@ base::ListValue DeviceTabVisibilityHandler::GetDeviceTabVisibilityList() const {
     return {};
   }
 
-  // TODO(crbug.com/570417844): Also include synced devices that have no open
+  // TODO(crbug.com/572717502): Also include synced devices that have no open
   // tabs (`GetAllForeignSessions()` only returns sessions with open tabs).
   std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
       sessions;

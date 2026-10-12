@@ -169,5 +169,21 @@ TEST_F(RemoteDeviceInfoTest, DefaultConstructor_InitializesDefaultValues) {
   EXPECT_FALSE(device_info.has_high_precision_timestamp);
 }
 
+// Verifies that the static `GetLastActiveTimeForDisplay` overload formats both
+// high-precision and day-granularity timestamps without constructing a
+// `RemoteDeviceInfo` instance.
+TEST_F(RemoteDeviceInfoTest, StaticGetLastActiveTimeForDisplay) {
+  const base::Time last_updated = base::Time::Now() - base::Minutes(5);
+
+  EXPECT_EQ(l10n_util::GetPluralStringFUTF16(
+                IDS_SEND_TAB_TO_SELF_DEVICE_ACTIVE_MINUTES, 5),
+            RemoteDeviceInfo::GetLastActiveTimeForDisplay(
+                last_updated, /*has_high_precision_timestamp=*/true));
+  EXPECT_EQ(l10n_util::GetPluralStringFUTF16(
+                IDS_SEND_TAB_TO_SELF_DEVICE_LAST_UPDATE_DAYS, 0),
+            RemoteDeviceInfo::GetLastActiveTimeForDisplay(
+                last_updated, /*has_high_precision_timestamp=*/false));
+}
+
 }  // namespace
 }  // namespace syncer

@@ -27,10 +27,13 @@ struct RemoteDeviceInfo {
   bool operator==(const RemoteDeviceInfo& rhs) const;
 
   // Returns a localized string representing the time since the device was last
-  // updated.
-  // The string is formatted as follows:
-  // - "< 1 minute": "Active now"
-  // - ">= 1 minute": "Active X minutes/hours/days ago"
+  // updated. When `has_high_precision_timestamp` is true, sub-day durations
+  // are formatted as "Active now" (< 1 minute) or "Active X minutes/hours ago"
+  // (< 1 day); when false, only day-granularity durations ("Active today",
+  // "Active X days ago") are used.
+  static std::u16string GetLastActiveTimeForDisplay(
+      base::Time last_updated_timestamp,
+      bool has_high_precision_timestamp);
   std::u16string GetLastActiveTimeForDisplay() const;
 
   // Device display name.

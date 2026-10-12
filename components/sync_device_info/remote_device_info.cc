@@ -33,7 +33,10 @@ RemoteDeviceInfo::~RemoteDeviceInfo() = default;
 
 bool RemoteDeviceInfo::operator==(const RemoteDeviceInfo& rhs) const = default;
 
-std::u16string RemoteDeviceInfo::GetLastActiveTimeForDisplay() const {
+// static
+std::u16string RemoteDeviceInfo::GetLastActiveTimeForDisplay(
+    base::Time last_updated_timestamp,
+    bool has_high_precision_timestamp) {
   const base::TimeDelta delta =
       std::max(base::TimeDelta(), base::Time::Now() - last_updated_timestamp);
 
@@ -55,6 +58,11 @@ std::u16string RemoteDeviceInfo::GetLastActiveTimeForDisplay() const {
 
   return l10n_util::GetPluralStringFUTF16(
       IDS_SEND_TAB_TO_SELF_DEVICE_LAST_UPDATE_DAYS, delta.InDays());
+}
+
+std::u16string RemoteDeviceInfo::GetLastActiveTimeForDisplay() const {
+  return GetLastActiveTimeForDisplay(last_updated_timestamp,
+                                     has_high_precision_timestamp);
 }
 
 }  // namespace syncer
