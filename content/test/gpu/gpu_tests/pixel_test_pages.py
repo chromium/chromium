@@ -7,9 +7,7 @@
 from collections.abc import Callable
 from enum import Enum
 import json
-import logging
 import os
-import posixpath
 import time
 import urllib.parse
 
@@ -21,7 +19,6 @@ from gpu_tests import crop_actions as ca
 from gpu_tests import overlay_support
 from gpu_tests import skia_gold_heartbeat_integration_test_base as sghitb
 from gpu_tests import skia_gold_matching_algorithms as algo
-from gpu_tests.util import websocket_server as wss
 
 CRASH_TYPE_BROWSER = 'browser'
 CRASH_TYPE_GPU = 'gpu-process'
@@ -213,123 +210,6 @@ class TestActionSleepBeforeRender(sghitb.TestAction):
     sghitb.EvalInTestIframe(tab, 'render()')
 
 
-class TestActionRunOffscreenCanvasIBRCWebGLLowPerfTest(sghitb.TestAction):
-  """Runs steps for an offscreen canvas IBRC WebGL test on the low power GPU."""
-
-  def Run(
-    self,
-    test_case: PixelTestPage,
-    tab_data: sghitb.TabData,
-    loop_state: sghitb.LoopState,
-    test_instance: sghitb.SkiaGoldHeartbeatIntegrationTestBase,
-  ) -> None:
-    tab = tab_data.tab
-    test_instance.AssertLowPowerGPU()
-    sghitb.EvalInTestIframe(tab, 'setup()')
-    # Wait a few seconds for any (incorrect) GPU switched notifications to
-    # propagate throughout the system.
-    time.sleep(5)
-    test_instance.AssertLowPowerGPU()
-    sghitb.EvalInTestIframe(tab, 'render()')
-
-
-class TestActionRunOffscreenCanvasIBRCWebGLHighPerfTest(sghitb.TestAction):
-  """Runs steps for an offscreen canvas IBRC WebGL test on the high perf GPU."""
-
-  def Run(
-    self,
-    test_case: PixelTestPage,
-    tab_data: sghitb.TabData,
-    loop_state: sghitb.LoopState,
-    test_instance: sghitb.SkiaGoldHeartbeatIntegrationTestBase,
-  ) -> None:
-    tab = tab_data.tab
-    test_instance.AssertLowPowerGPU()
-    sghitb.EvalInTestIframe(tab, 'setup(true)')
-    # Wait a few seconds for any (incorrect) GPU switched notifications to
-    # propagate throughout the system.
-    time.sleep(5)
-    test_instance.AssertHighPerformanceGPU()
-    sghitb.EvalInTestIframe(tab, 'render()')
-
-
-class TestActionRunTestWithHighPerformanceTab(sghitb.TestAction):
-  """Runs steps for a specific test with a high perf second tab present."""
-
-  def Run(
-    self,
-    test_case: PixelTestPage,
-    tab_data: sghitb.TabData,
-    loop_state: sghitb.LoopState,
-    test_instance: sghitb.SkiaGoldHeartbeatIntegrationTestBase,
-  ) -> None:
-    tab = tab_data.tab
-    if not test_instance.IsDualGPUMacLaptop():
-      # Short-circuit this test.
-      logging.info(
-        'Short-circuiting test because not running on dual-GPU Mac laptop'
-      )
-      sghitb.EvalInTestIframe(tab, 'initialize(false)')
-      return
-
-    high_performance_tab = tab.browser.tabs.New()
-    high_performance_file = posixpath.join(
-      gpu_path_util.GPU_DATA_RELATIVE_PATH,
-      'functional_webgl_high_performance.html',
-    )
-    high_performance_websocket_server = wss.WebsocketServer()
-    high_performance_websocket_server.StartServer()
-    high_performance_tab_data = sghitb.TabData(
-      high_performance_tab, high_performance_websocket_server
-    )
-    high_performance_loop_state = sghitb.LoopState()
-    try:
-      test_instance.NavigateTo(
-        high_performance_file, tab_data=high_performance_tab_data
-      )
-      test_instance.HandleMessageLoop(
-        SHORT_GLOBAL_TIMEOUT,
-        loop_state=high_performance_loop_state,
-        tab_data=high_performance_tab_data,
-      )
-      assert high_performance_loop_state.test_finished
-
-      # Wait a few seconds for the GPU switched notification to propagate
-      # throughout the system.
-      time.sleep(5)
-      # Switch back to the main tab and quickly start its rendering, while the
-      # high-power GPU is still active.
-      tab.Activate()
-      sghitb.EvalInTestIframe(tab, 'initialize(true)')
-      test_instance.HandleMessageLoop(
-        SHORT_GLOBAL_TIMEOUT, loop_state=loop_state, tab_data=tab_data
-      )
-      high_performance_tab.Close()
-    finally:
-      high_performance_websocket_server.StopServer()
-    # Wait for ~15 seconds for the system to switch back to the
-    # integrated GPU.
-    time.sleep(15)
-    # Run the page to completion.
-    sghitb.EvalInTestIframe(tab, 'setTimeout(runToCompletion, 0)')
-
-
-class TestActionRunLowToHighPowerTest(sghitb.TestAction):
-  """Runs steps for the low to high power GPU transition test."""
-
-  def Run(
-    self,
-    test_case: PixelTestPage,
-    tab_data: sghitb.TabData,
-    loop_state: sghitb.LoopState,
-    test_instance: sghitb.SkiaGoldHeartbeatIntegrationTestBase,
-  ) -> None:
-    is_dual_gpu = test_instance.IsDualGPUMacLaptop()
-    sghitb.EvalInTestIframe(
-      tab_data.tab, f'initialize({json.dumps(is_dual_gpu)})'
-    )
-
-
 # pytype: enable=signature-mismatch
 
 
@@ -361,12 +241,6 @@ class PixelTestPages:
     switch_tab_test_actions = [
       sghitb.TestActionWaitForContinue(SHORT_GLOBAL_TIMEOUT),
       TestActionSwitchTabs(),
-      sghitb.TestActionWaitForFinish(SHORT_GLOBAL_TIMEOUT),
-    ]
-
-    low_power_test_actions = [
-      sghitb.TestActionWaitForContinue(SHORT_GLOBAL_TIMEOUT),
-      TestActionRunOffscreenCanvasIBRCWebGLLowPerfTest(),
       sghitb.TestActionWaitForFinish(SHORT_GLOBAL_TIMEOUT),
     ]
 
@@ -711,18 +585,6 @@ class PixelTestPages:
         crop_action=standard_crop,
         browser_args=sw_compositing_args,
         test_actions=switch_tab_test_actions,
-      ),
-      PixelTestPage(
-        'pixel_offscreen_canvas_ibrc_webgl_main.html',
-        base_name + '_OffscreenCanvasIBRCWebGLMain',
-        crop_action=standard_crop,
-        test_actions=low_power_test_actions,
-      ),
-      PixelTestPage(
-        'pixel_offscreen_canvas_ibrc_webgl_worker.html',
-        base_name + '_OffscreenCanvasIBRCWebGLWorker',
-        crop_action=standard_crop,
-        test_actions=low_power_test_actions,
       ),
       PixelTestPage(
         'pixel_webgl_preserved_after_tab_switch.html',
@@ -1673,64 +1535,6 @@ class PixelTestPages:
         base_name + '_OffscreenCanvasIBRCWorkerAngleGL',
         crop_action=standard_crop,
         browser_args=angle_gl,
-      ),
-    ]
-
-  # Pages that should be run only on dual-GPU MacBook Pros (at the
-  # present time, anyway).
-  @staticmethod
-  def DualGPUMacSpecificPages(base_name: str) -> list[PixelTestPage]:
-
-    low_to_high_power_test_actions = [
-      sghitb.TestActionWaitForContinue(SHORT_GLOBAL_TIMEOUT),
-      TestActionRunLowToHighPowerTest(),
-      sghitb.TestActionWaitForFinish(SHORT_GLOBAL_TIMEOUT),
-    ]
-
-    high_perf_test_actions = [
-      sghitb.TestActionWaitForContinue(SHORT_GLOBAL_TIMEOUT),
-      TestActionRunOffscreenCanvasIBRCWebGLHighPerfTest(),
-      sghitb.TestActionWaitForFinish(SHORT_GLOBAL_TIMEOUT),
-    ]
-
-    standard_crop = ca.NonWhiteContentCropAction(
-      initial_crop=ca.FixedRectCropAction(0, 0, 350, 350)
-    )
-
-    return [
-      PixelTestPage(
-        'pixel_webgl_high_to_low_power.html',
-        base_name + '_WebGLHighToLowPower',
-        crop_action=standard_crop,
-        test_actions=[
-          sghitb.TestActionWaitForContinue(SHORT_GLOBAL_TIMEOUT),
-          TestActionRunTestWithHighPerformanceTab(),
-          sghitb.TestActionWaitForFinish(SHORT_GLOBAL_TIMEOUT),
-        ],
-      ),
-      PixelTestPage(
-        'pixel_webgl_low_to_high_power.html',
-        base_name + '_WebGLLowToHighPower',
-        crop_action=standard_crop,
-        test_actions=low_to_high_power_test_actions,
-      ),
-      PixelTestPage(
-        'pixel_webgl_low_to_high_power_alpha_false.html',
-        base_name + '_WebGLLowToHighPowerAlphaFalse',
-        crop_action=standard_crop,
-        test_actions=low_to_high_power_test_actions,
-      ),
-      PixelTestPage(
-        'pixel_offscreen_canvas_ibrc_webgl_main.html',
-        base_name + '_OffscreenCanvasIBRCWebGLHighPerfMain',
-        crop_action=standard_crop,
-        test_actions=high_perf_test_actions,
-      ),
-      PixelTestPage(
-        'pixel_offscreen_canvas_ibrc_webgl_worker.html',
-        base_name + '_OffscreenCanvasIBRCWebGLHighPerfWorker',
-        crop_action=standard_crop,
-        test_actions=high_perf_test_actions,
       ),
     ]
 

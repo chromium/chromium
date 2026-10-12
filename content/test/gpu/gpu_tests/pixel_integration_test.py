@@ -6,7 +6,6 @@ import logging
 import os
 import posixpath
 import sys
-import time
 from typing import Any
 import unittest
 
@@ -68,15 +67,7 @@ class PixelIntegrationTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
     return serial_globs
 
   def _GetSerialTests(self) -> set[str]:
-    serial_tests = {
-      # High/low power tests don't work properly with multiple browsers
-      # active.
-      'Pixel_OffscreenCanvasIBRCWebGLHighPerfWorker',
-      'Pixel_OffscreenCanvasIBRCWebGLMain',
-      'Pixel_OffscreenCanvasIBRCWebGLWorker',
-      'Pixel_WebGLLowToHighPower',
-      'Pixel_WebGLLowToHighPowerAlphaFalse',
-    }
+    serial_tests = set()
 
     if host_information.IsLinux() and host_information.IsAmdGpu():
       serial_tests |= {
@@ -119,10 +110,6 @@ class PixelIntegrationTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
     pages += namespace.MeetEffectsPages(cls.test_base_name)
     if host_information.IsMac():
       pages += namespace.MacSpecificPages(cls.test_base_name)
-      # Unfortunately we don't have a browser instance here so can't tell
-      # whether we should really run these tests. They're short-circuited to a
-      # certain degree on the other platforms.
-      pages += namespace.DualGPUMacSpecificPages(cls.test_base_name)
     if host_information.IsWindows():
       pages += namespace.DirectCompositionPages(cls.test_base_name)
       pages += namespace.HdrTestPages(cls.test_base_name)
@@ -194,11 +181,6 @@ class PixelIntegrationTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
       self._RestartBrowser(
         'Must restart after non-standard test actions or if required by test'
       )
-      if test_case.used_custom_test_actions and self.IsDualGPUMacLaptop():
-        # Give the system a few seconds to reliably indicate that the
-        # low-power GPU is active again, to avoid race conditions if the next
-        # test makes assertions about the active GPU.
-        time.sleep(4)
 
   def GetExpectedCrashes(self, args: ct.TestArgs) -> None:
     """Returns which crashes, per process type, to expect for the current test.

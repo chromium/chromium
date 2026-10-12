@@ -106,18 +106,6 @@
 # This is for things like tests that will never be supported on a particular
 # platform/configuration.
 
-# Mac NVIDIA only uses the low-power GPU.
-crbug.com/1441633 [ mac angle-opengl nvidia ] ContextLost_MacWebGLCopyTexSubImage2DHighPowerSwitchDoesNotCrash [ Skip ]
-crbug.com/1186582 [ mac angle-opengl nvidia ] ContextLost_MacWebGLMultisamplingHighPowerSwitchDoesNotCrash [ Skip ]
-crbug.com/681341 [ mac angle-opengl nvidia ] ContextLost_MacWebGLMultisamplingHighPowerSwitchLosesContext [ Skip ]
-crbug.com/681341 [ mac angle-opengl nvidia ] ContextLost_MacWebGLPreserveDBHighPowerSwitchLosesContext [ Skip ]
-
-# Metal does not switch the GPU of existing contexts.
-crbug.com/1448964 [ mac angle-metal ] ContextLost_MacWebGLCopyTexSubImage2DHighPowerSwitchDoesNotCrash [ Skip ]
-crbug.com/1448964 [ mac angle-metal ] ContextLost_MacWebGLMultisamplingHighPowerSwitchDoesNotCrash [ Skip ]
-crbug.com/1448964 [ mac angle-metal ] ContextLost_MacWebGLMultisamplingHighPowerSwitchLosesContext [ Skip ]
-crbug.com/1448964 [ mac angle-metal ] ContextLost_MacWebGLPreserveDBHighPowerSwitchLosesContext [ Skip ]
-
 # These tests use base::Process::TerminateCurrentProcessImmediately(0) on the
 # GPU process and expect a normal exit code reported to the browser process.
 # On Android, this returns a process killed exit code.
@@ -162,7 +150,6 @@ crbug.com/1154047 [ fuchsia ] GpuCrash_SoftwareFallbackDisabled [ Skip ]
 # This hardware configuration is effectively obsolete; this won't be investigated.
 crbug.com/1161570 [ mac nvidia debug ] GpuCrash_InfoForHardwareGpu [ Skip ]
 crbug.com/1161570 [ mac nvidia debug ] GpuCrash_SoftwareFallbackDisabled [ Skip ]
-crbug.com/1161570 [ mac nvidia debug ] GpuCrash_InfoForDualHardwareGpus [ Skip ]
 
 # Flaky hangs on Mac Debug Intel. Attempted to suppress with
 # RetryOnFailure, but test was persistently flaky. Test is reliable in
@@ -174,7 +161,6 @@ crbug.com/1297151 [ mac intel debug ] GpuCrash_SoftwareFallbackDisabled [ Skip ]
 # Flaky hangs on Mac Debug AMD, stalling the test suite for 60 minutes.
 crbug.com/1327754 [ mac amd debug ] GpuCrash_InfoForHardwareGpu [ Skip ]
 crbug.com/1327754 [ mac amd debug ] GpuCrash_SoftwareFallbackDisabled [ Skip ]
-crbug.com/1327754 [ mac amd debug ] GpuCrash_InfoForDualHardwareGpus [ Skip ]
 
 # Vulkan enabled on linux, the crash fallback logic is different.
 crbug.com/1334650 [ linux ] GpuCrash_InfoForHardwareGpu [ Skip ]
@@ -214,7 +200,6 @@ crbug.com/329145823 [ win release nvidia ] GpuCrash_InfoForHardwareGpu [ Failure
 crbug.com/329145823 [ win release nvidia ] GpuCrash_SoftwareFallbackDisabled [ Failure ]
 crbug.com/329145823 [ angle-metal arch-x86_64 graphite-enabled mac memory_ge_16gb release ] GpuCrash_InfoForHardwareGpu [ Failure ]
 crbug.com/329145823 [ angle-metal arch-x86_64 graphite-enabled mac memory_ge_16gb release ] GpuCrash_SoftwareFallbackDisabled [ Failure ]
-crbug.com/329145823 [ angle-metal graphite-enabled intel-gen-9 mac no-asan release ] GpuCrash_InfoForDualHardwareGpus [ Failure ]
 
 # Windows debug causes render process hangs due to slow gpu process restart.
 crbug.com/1416920 [ win debug ] GpuCrash_InfoForHardwareGpu [ Failure ]

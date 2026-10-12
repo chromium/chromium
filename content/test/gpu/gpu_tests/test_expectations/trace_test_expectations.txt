@@ -106,10 +106,6 @@
 # This is for things like tests that will never be supported on a particular
 # platform/configuration.
 
-# Require page actions - which are only supported in pixel tests.
-crbug.com/1048892 TraceTest_OffscreenCanvasIBRCWebGLMain [ Skip ]
-crbug.com/1048892 TraceTest_OffscreenCanvasIBRCWebGLWorker [ Skip ]
-
 # The TraceTest versions of the pixel tests' Video_Context_Loss tests
 # appear flaky on multiple platforms. These are mainly meant to run as
 # pixel tests so they're being skipped in this test suite.

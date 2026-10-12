@@ -272,9 +272,7 @@ uint64_t CHROME_LUID_to_uint64_t(const CHROME_LUID& luid) {
   uint64_t id64 = static_cast<uint32_t>(luid.HighPart);
   return (id64 << 32) | (luid.LowPart & 0xFFFFFFFF);
 }
-#endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 const GPUInfo::GPUDevice* GetDefaultGPU(
     const GPUInfo& gpu_info,
     const GpuFeatureInfo& gpu_feature_info) {
@@ -298,8 +296,7 @@ const GPUInfo::GPUDevice* GetDefaultGPU(
   }
 }
 
-// GPU picking is only effective with ANGLE/Metal backend on Mac and
-// on Windows with EGL.
+// GPU picking is only effective on Windows.
 // Returns the default GPU's system_device_id.
 void SetupGLDisplayManagerEGL(const GPUInfo& gpu_info,
                               const GpuFeatureInfo& gpu_feature_info) {
@@ -308,7 +305,7 @@ void SetupGLDisplayManagerEGL(const GPUInfo& gpu_info,
       gpu_info.GetGpuByPreference(gl::GpuPreference::kHighPerformance);
   const GPUInfo::GPUDevice* gpu_low_power =
       gpu_info.GetGpuByPreference(gl::GpuPreference::kLowPower);
-#if BUILDFLAG(IS_WIN)
+
   // On Windows the default GPU may not be the low power GPU.
   const GPUInfo::GPUDevice* gpu_default =
       GetDefaultGPU(gpu_info, gpu_feature_info);
@@ -318,15 +315,6 @@ void SetupGLDisplayManagerEGL(const GPUInfo& gpu_info,
       gpu_low_power ? CHROME_LUID_to_uint64_t(gpu_low_power->luid) : 0;
   uint64_t system_device_id_default =
       CHROME_LUID_to_uint64_t(gpu_default->luid);
-#else  // IS_MAC
-  const GPUInfo::GPUDevice* gpu_default =
-      gpu_low_power ? gpu_low_power : GetDefaultGPU(gpu_info, gpu_feature_info);
-  uint64_t system_device_id_high_perf =
-      gpu_high_perf ? gpu_high_perf->system_device_id : 0;
-  uint64_t system_device_id_low_power =
-      gpu_low_power ? gpu_low_power->system_device_id : 0;
-  uint64_t system_device_id_default = gpu_default->system_device_id;
-#endif  // BUILDFLAG(IS_WIN)
 
   if (gpu_info.GpuCount() <= 1) {
     gl::SetGpuPreferenceEGL(gl::GpuPreference::kDefault,
@@ -366,7 +354,7 @@ void SetupGLDisplayManagerEGL(const GPUInfo& gpu_info,
   }
   return;
 }
-#endif  // IS_WIN || IS_MAC
+#endif  // IS_WIN
 
 }  // namespace
 
@@ -1061,9 +1049,9 @@ bool GpuInit2::CollectBasicInfoAndComputeFeatures(InitState& state) {
 }
 
 void GpuInit2::ConfigureGpuSelection(InitState& state) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN)
   SetupGLDisplayManagerEGL(gpu_info_, gpu_feature_info_);
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_WIN)
 
   CHECK_EQ(gl::GetGLImplementation(), gl::kGLImplementationNone);
 

@@ -146,10 +146,6 @@ def GetGpuDeviceId(gpu_info: tgi.GPUInfo | None, index: int) -> int | str:
   return 0
 
 
-def IsIntel(vendor_id: int) -> bool:
-  return vendor_id == constants.GpuVendor.INTEL
-
-
 # Intel GPU architectures
 def IsIntelGen9(gpu_device_id: int) -> bool:
   return gpu_device_id & INTEL_DEVICE_ID_MASK in INTEL_GEN_9

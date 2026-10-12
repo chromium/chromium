@@ -106,16 +106,6 @@
 # This is for things like tests that will never be supported on a particular
 # platform/configuration.
 
-# Dual-GPU NVIDIA MacBook Pros no longer activate the discrete GPU.
-crbug.com/681341 [ mac angle-opengl nvidia ] GpuProcess_mac_webgl_backgrounded_high_performance [ Skip ]
-crbug.com/681341 [ mac angle-opengl nvidia ] GpuProcess_mac_webgl_high_performance [ Skip ]
-crbug.com/681341 [ mac angle-opengl nvidia ] GpuProcess_mac_webgl_terminated_high_performance [ Skip ]
-
-# Metal does not switch the GPU of existing contexts.
-crbug.com/1448964 [ mac angle-metal ] GpuProcess_mac_webgl_backgrounded_high_performance [ Skip ]
-crbug.com/1448964 [ mac angle-metal ] GpuProcess_mac_webgl_high_performance [ Skip ]
-crbug.com/1448964 [ mac angle-metal ] GpuProcess_mac_webgl_terminated_high_performance [ Skip ]
-
 # Android and Fuchsia do not support software fallback.
 [ android ] GpuProcess_disable_gpu [ Skip ]
 [ android ] GpuProcess_disable_gpu_and_swiftshader [ Skip ]
