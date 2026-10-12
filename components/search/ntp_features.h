@@ -319,6 +319,11 @@ extern const base::FeatureParam<int> kBookmarkBarCountThreshold;
 extern const base::FeatureParam<base::TimeDelta>
     kBookmarkBarMinStalenessTimeInterval;
 
+// Parameter determining whether the Threads Rail is shown in hybrid mode: the
+// folded state is rendered natively by Chrome, while the expanded state is
+// rendered by GWS.
+extern const base::FeatureParam<bool> kNtpThreadsRailHybridParam;
+
 // Returns the timeout after which the load of a module should be aborted.
 base::TimeDelta GetModulesLoadTimeout();
 

@@ -1666,6 +1666,14 @@ const FeatureEntry::FeatureVariation kNtpNextVariations[] = {
     {"- Allow Disable", kNtpNextAllowDisablement, nullptr},
 };
 
+const FeatureEntry::FeatureParam kNtpThreadsRailHybrid[] = {
+    {"NtpThreadsRailHybridParam", "true"},
+};
+
+const FeatureEntry::FeatureVariation kNtpThreadsRailVariations[] = {
+    {"- Hybrid", kNtpThreadsRailHybrid, nullptr},
+};
+
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 
@@ -7426,6 +7434,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNtpEnableInstantApiAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(ntp_features::kNtpEnableInstantApiAndroid)},
 
+    {"ntp-threads-rail", flag_descriptions::kNtpThreadsRailName,
+     flag_descriptions::kNtpThreadsRailDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpThreadsRail,
+                                    kNtpThreadsRailVariations,
+                                    "NtpThreadsRail")},
+
 #if !BUILDFLAG(IS_ANDROID)
     {"chrome-dark-neutrals-26", flag_descriptions::kChromeDarkNeutrals26Name,
      flag_descriptions::kChromeDarkNeutrals26Description, kOsDesktop,
@@ -7604,10 +7618,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"ntp-shortcuts-reorder", flag_descriptions::kNtpShortcutsReorderName,
      flag_descriptions::kNtpShortcutsReorderDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kNtpShortcutsReorder)},
-
-    {"ntp-threads-rail", flag_descriptions::kNtpThreadsRailName,
-     flag_descriptions::kNtpThreadsRailDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_features::kNtpThreadsRail)},
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 

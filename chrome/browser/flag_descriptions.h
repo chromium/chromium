@@ -7081,7 +7081,9 @@ inline constexpr char kNtpDoodleMuralsDescription[] =
 
 inline constexpr char kNtpThreadsRailName[] = "NTP Threads Rail";
 inline constexpr char kNtpThreadsRailDescription[] =
-    "Enables the Threads Rail on the NTP.";
+    "Enables the Threads Rail on the NTP. The Hybrid variation renders the "
+    "folded state natively in Chrome while the expanded state is rendered by "
+    "Google Search.";
 
 inline constexpr char kNtpSimplificationBookmarkBarName[] =
     "NTP Simplification Bookmark Bar";
