@@ -65,7 +65,7 @@ void InvalidateInlineItems(LayoutObject* object) {
   // be prohibited when moved to different parent as if it were destroyed.
   if (object->FirstInlineFragmentItemIndex()) {
     if (auto* text = DynamicTo<LayoutText>(object))
-      text->DetachAxHooksIfNeeded();
+      text->ClearAccessibilityCacheIfNeeded();
     FragmentItems::LayoutObjectWillBeMoved(*object);
   }
   object->SetIsInLayoutNGInlineFormattingContext(false);

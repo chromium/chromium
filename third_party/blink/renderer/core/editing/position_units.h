@@ -60,8 +60,8 @@ CORE_EXPORT PositionWithAffinity NextWordPosition(
 CORE_EXPORT PositionInFlatTreeWithAffinity NextWordPosition(
     const PositionInFlatTree&,
     PlatformWordBehavior = PlatformWordBehavior::kWordDontSkipSpaces);
-bool IsWordBreak(UChar);
-bool IsWordBoundary(UChar);
+CORE_EXPORT bool IsWordBreak(UChar);
+CORE_EXPORT bool IsWordBoundary(UChar);
 
 // ----- sentences -----
 // Definitions are in position_units_sentence.cc.

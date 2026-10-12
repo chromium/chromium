@@ -91,7 +91,6 @@
 #include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
-#include "third_party/blink/renderer/core/layout/inline/abstract_inline_text_box.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
@@ -1953,9 +1952,6 @@ void AXObjectCacheImpl::RemovePopup(Document* popup_document) {
   pending_events_to_serialize_.clear();
   tree_update_callback_queue_popup_.clear();
 }
-
-// This is safe to call even if there isn't a current mapping.
-void AXObjectCacheImpl::Remove(AbstractInlineTextBox* inline_text_box) {}
 
 void AXObjectCacheImpl::Remove(const LayoutObject* object,
                                AXBlockFlowIterator::FragmentIndex index,

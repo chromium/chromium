@@ -95,7 +95,7 @@ PositionInFlatTree EndOfWordPositionInternal(const PositionInFlatTree& position,
 }
 
 // IMPORTANT: If you update the logic of this algorithm, please also update the
-// one in `AbstractInlineTextBox::GetWordBoundariesForText`. The word offsets
+// one in `AXObject::GetWordBoundariesForText`. The word offsets
 // computed over there needs to stay in sync with the ones computed here in
 // order for screen readers to announce the right words when using caret
 // navigation (ctrl + left/right arrow).

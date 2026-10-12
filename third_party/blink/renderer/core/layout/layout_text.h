@@ -38,7 +38,6 @@
 
 namespace blink {
 
-class AbstractInlineTextBox;
 class ContentCaptureManager;
 class OffsetMapping;
 struct InlineItemsData;
@@ -252,18 +251,6 @@ class CORE_EXPORT LayoutText : public LayoutObject {
 
   void RemoveAndDestroyTextBoxes();
 
-  AbstractInlineTextBox* FirstAbstractInlineTextBox();
-
-  bool HasAbstractInlineTextBox() const {
-    NOT_DESTROYED();
-    return has_abstract_inline_text_box_;
-  }
-
-  void SetHasAbstractInlineTextBox() {
-    NOT_DESTROYED();
-    has_abstract_inline_text_box_ = true;
-  }
-
   PhysicalRect DebugRect() const override;
 
   void AutosizingMultiplerChanged() {
@@ -342,7 +329,7 @@ class CORE_EXPORT LayoutText : public LayoutObject {
 
   void InvalidateSubtreeLayoutForFontUpdates() override;
 
-  void DetachAxHooksIfNeeded();
+  void ClearAccessibilityCacheIfNeeded();
 
   // Returns the logical location of the first line box, and the logical height
   // of the LayoutText.
@@ -457,14 +444,9 @@ class CORE_EXPORT LayoutText : public LayoutObject {
 
  private:
   ContentCaptureManager* GetOrResetContentCaptureManager();
-  void DetachAxHooks();
   void ClearBlockFlowCachedData();
 
   virtual unsigned NonCollapsedCaretMaxOffset() const;
-
-  // Used for LayoutNG with accessibility. True if inline fragments are
-  // associated to |AbstractInlineTextBox|.
-  unsigned has_abstract_inline_text_box_ : 1;
 
   unsigned has_variable_length_transform_ : 1;
 
@@ -498,11 +480,8 @@ inline wtf_size_t LayoutText::FirstInlineFragmentItemIndex() const {
   return first_fragment_item_index_;
 }
 
-inline void LayoutText::DetachAxHooksIfNeeded() {
+inline void LayoutText::ClearAccessibilityCacheIfNeeded() {
   NOT_DESTROYED();
-  if (has_abstract_inline_text_box_) [[unlikely]] {
-    DetachAxHooks();
-  }
   if (!IsInLayoutNGInlineFormattingContext()) {
     return;
   }

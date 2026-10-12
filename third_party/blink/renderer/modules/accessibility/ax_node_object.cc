@@ -147,7 +147,6 @@
 #include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
-#include "third_party/blink/renderer/core/layout/inline/abstract_inline_text_box.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node.h"
 #include "third_party/blink/renderer/core/layout/inline/offset_mapping.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
@@ -8915,14 +8914,7 @@ void AXNodeObject::GetWordBoundaries(Vector<int>& word_starts,
     return;
   }
 
-  Vector<AbstractInlineTextBox::WordBoundaries> boundaries;
-  AbstractInlineTextBox::GetWordBoundariesForText(boundaries, text_alternative);
-  word_starts.reserve(boundaries.size());
-  word_ends.reserve(boundaries.size());
-  for (const auto& boundary : boundaries) {
-    word_starts.push_back(boundary.start_index);
-    word_ends.push_back(boundary.end_index);
-  }
+  GetWordBoundariesForText(word_starts, word_ends, text_alternative);
 }
 
 void AXNodeObject::Trace(Visitor* visitor) const {

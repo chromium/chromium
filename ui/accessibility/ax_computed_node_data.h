@@ -164,9 +164,9 @@ class AX_EXPORT AXComputedNodeData final {
   // calculations are done using UTF16 and text content can be extracted in
   // either format (platform specific). We should be able to remove the UTF16
   // extraction for bounds calculations now that the character bounds vector is
-  // guaranteed to match the length of the text in UTF16. The CharacterWidths
-  // method in AbstractInlineTextBox pads the vector in the event of the shaper
-  // failing to return glyph metrics for all characters.
+  // guaranteed to match the length of the text in UTF16.
+  // `AXBlockFlowIterator::GetCharacterLayoutPixelOffsets` pads the vector in
+  // the event of the shaper failing to return glyph metrics for all characters.
   mutable std::optional<std::string> text_content_with_paragraph_breaks_utf8_;
   mutable std::optional<std::u16string>
       text_content_with_paragraph_breaks_utf16_;

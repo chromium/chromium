@@ -74,7 +74,6 @@ namespace blink {
 
 class AXBlockFlowData;
 class AXRelationCache;
-class AbstractInlineTextBox;
 class HTMLAreaElement;
 class WebLocalFrameClient;
 
@@ -251,7 +250,6 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // parent will recompute its children and be reserialized.
   void Remove(Node*) override;
   void RemovePopup(Document*) override;
-  void Remove(AbstractInlineTextBox*) override;
   // Remove an AXObject or its subtree, and if |notify_parent| is true,
   // recompute the parent's children and reserialize the parent.
   void Remove(AXObject*, bool notify_parent);

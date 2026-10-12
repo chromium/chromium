@@ -58,12 +58,12 @@ FragmentItems::FragmentItems(const FragmentItems& other)
       size_of_earlier_fragments_(other.size_of_earlier_fragments_),
       items_(other.items_) {
   for (const auto& other_item : other.items_) {
-    // The |other| object is likely going to be freed after this copy. Detach
-    // any |AbstractInlineTextBox|, as they store a pointer to an individual
-    // |FragmentItem|.
+    // The `other` object is likely going to be freed after this copy. Clear
+    // cached accessibility inline text box data for any associated
+    // `LayoutText`.
     if (auto* layout_text =
             DynamicTo<LayoutText>(other_item.GetMutableLayoutObject()))
-      layout_text->DetachAxHooksIfNeeded();
+      layout_text->ClearAccessibilityCacheIfNeeded();
   }
 }
 

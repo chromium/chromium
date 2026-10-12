@@ -48,7 +48,6 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
-#include "third_party/blink/renderer/core/layout/inline/abstract_inline_text_box.h"
 #include "third_party/blink/renderer/core/layout/inline/fragment_item.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item_span.h"
@@ -171,7 +170,6 @@ LayoutText::LayoutText(Node* node, String str)
       valid_ng_items_(false),
       has_bidi_control_items_(false),
       is_text_fragment_(false),
-      has_abstract_inline_text_box_(false),
       text_(std::move(str)) {
   DCHECK(text_);
   DCHECK(!node || !node->IsDocumentNode());
@@ -248,7 +246,7 @@ void LayoutText::RemoveAndDestroyTextBoxes() {
   NOT_DESTROYED();
 
   if (FirstInlineFragmentItemIndex()) {
-    DetachAxHooksIfNeeded();
+    ClearAccessibilityCacheIfNeeded();
     FragmentItems::LayoutObjectWillBeDestroyed(*this);
     ClearFirstInlineFragmentItemIndex();
   }
@@ -283,22 +281,7 @@ void LayoutText::WillBeDestroyed(const ComputedStyle* style) {
 
 void LayoutText::DeleteTextBoxes() {
   NOT_DESTROYED();
-  DetachAxHooksIfNeeded();
-}
-
-void LayoutText::DetachAxHooks() {
-  NOT_DESTROYED();
-  // TODO(layout-dev): Because We should call |WillDestroy()| once for
-  // associated fragments, when you reuse fragments, you should construct
-  // AbstractInlineTextBox for them.
-  DCHECK(has_abstract_inline_text_box_);
-  has_abstract_inline_text_box_ = false;
-  // TODO(yosin): Make sure we call this function within valid containg block
-  // of |this|.
-  InlineCursor cursor;
-  for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject()) {
-    AbstractInlineTextBox::WillDestroy(cursor);
-  }
+  ClearAccessibilityCacheIfNeeded();
 }
 
 void LayoutText::ClearBlockFlowCachedData() {
@@ -312,20 +295,18 @@ void LayoutText::ClearBlockFlowCachedData() {
 void LayoutText::ClearFirstInlineFragmentItemIndex() {
   NOT_DESTROYED();
   CHECK(IsInLayoutNGInlineFormattingContext()) << *this;
-  DetachAxHooksIfNeeded();
+  ClearAccessibilityCacheIfNeeded();
   first_fragment_item_index_ = 0u;
 }
 
 void LayoutText::SetFirstInlineFragmentItemIndex(wtf_size_t index) {
   NOT_DESTROYED();
   CHECK(IsInLayoutNGInlineFormattingContext());
-  // TODO(yosin): Call |AbstractInlineTextBox::WillDestroy()|.
   DCHECK_NE(index, 0u);
-  DetachAxHooksIfNeeded();
-  // Changing the first fragment item index causes
-  // LayoutText::FirstAbstractInlineTextBox to return a box,
-  // so notify the AX object for this LayoutText that it might need to
-  // recompute its text child.
+  ClearAccessibilityCacheIfNeeded();
+  // Changing the first fragment item index means this `LayoutText` now has an
+  // inline fragment item, so notify the AX object for this `LayoutText` that
+  // it might need to recompute its text child.
   if (index > 0 && first_fragment_item_index_ == 0) {
     if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
       cache->TextChanged(this);
@@ -340,10 +321,6 @@ void LayoutText::InLayoutNGInlineFormattingContextWillChange(bool new_value) {
     ClearFirstInlineFragmentItemIndex();
   else
     DeleteTextBoxes();
-
-  // Because there are no inline boxes associated to this text, we should not
-  // have abstract inline text boxes too.
-  DCHECK(!has_abstract_inline_text_box_);
 }
 
 Vector<LayoutText::TextBoxInfo> LayoutText::GetTextBoxInfo() const {
@@ -1371,14 +1348,6 @@ void LayoutText::MomentarilyRevealLastTypedCharacter(
     GetSecureTextTimers().insert(this, secure_text_timer);
   }
   secure_text_timer->RestartWithNewText(last_typed_character_offset);
-}
-
-AbstractInlineTextBox* LayoutText::FirstAbstractInlineTextBox() {
-  NOT_DESTROYED();
-  DCHECK(IsInLayoutNGInlineFormattingContext());
-  InlineCursor cursor;
-  cursor.MoveTo(*this);
-  return AbstractInlineTextBox::GetOrCreate(cursor);
 }
 
 void LayoutText::InvalidatePaint(const PaintInvalidatorContext& context) const {

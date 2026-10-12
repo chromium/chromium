@@ -39,7 +39,6 @@
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
 #include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/core/highlight/highlight.h"
-#include "third_party/blink/renderer/core/layout/inline/abstract_inline_text_box.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_block_flow_iterator.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object-inl.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
@@ -117,16 +116,9 @@ void AXInlineTextBox::GetWordBoundaries(Vector<int>& word_starts,
     return;
   }
 
-  Vector<AbstractInlineTextBox::WordBoundaries> boundaries;
   AXBlockFlowIterator it(ParentObject());
   it.MoveToIndex(fragment_index_);
-  AbstractInlineTextBox::GetWordBoundariesForText(boundaries, it.GetText());
-  word_starts.reserve(boundaries.size());
-  word_ends.reserve(boundaries.size());
-  for (const auto& boundary : boundaries) {
-    word_starts.push_back(boundary.start_index);
-    word_ends.push_back(boundary.end_index);
-  }
+  GetWordBoundariesForText(word_starts, word_ends, it.GetText());
 }
 
 int AXInlineTextBox::TextOffsetInFormattingContext(int offset) const {

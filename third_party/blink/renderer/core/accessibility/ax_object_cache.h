@@ -49,7 +49,6 @@ struct AXTreeUpdate;
 
 namespace blink {
 
-class AbstractInlineTextBox;
 class AriaNotifications;
 class AriaNotificationOptions;
 class AXObject;
@@ -110,7 +109,6 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   virtual void RemoveSubtree(const Node*, bool remove_root) = 0;
   virtual void RemoveAXObjectsInLayoutSubtree(LayoutObject*) = 0;
   virtual void RemovePopup(Document*) = 0;
-  virtual void Remove(AbstractInlineTextBox*) = 0;
 
   virtual const Element* RootAXEditableElement(const Node*) = 0;
 

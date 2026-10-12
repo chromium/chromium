@@ -749,6 +749,9 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // each word in the object's text.
   virtual void GetWordBoundaries(Vector<int>& word_starts,
                                  Vector<int>& word_ends) const;
+  static void GetWordBoundariesForText(Vector<int>& word_starts,
+                                       Vector<int>& word_ends,
+                                       const String& text);
 
   // For all inline text boxes and atomic text fields: Returns the length of the
   // inline's text or the field's value respectively.
