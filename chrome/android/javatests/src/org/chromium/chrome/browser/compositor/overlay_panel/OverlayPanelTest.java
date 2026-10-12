@@ -13,6 +13,7 @@ import static org.mockito.Mockito.verify;
 import android.app.Activity;
 import android.content.Context;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
@@ -52,7 +53,6 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 /** Tests logic in the OverlayPanel. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class OverlayPanelTest {
     private static final int MOCK_VIEWPORT_WIDTH = 400;
     private static final int MOCK_VIEWPORT_HEIGHT = 1000;
@@ -73,13 +73,13 @@ public class OverlayPanelTest {
 
     @Mock private LayoutManagerImpl mLayoutManager;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
-    @Mock private ViewGroup mCompositorViewHolder;
     @Mock private Tab mTab;
     @Mock private InsetObserver mInsetObserver;
     @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
     @Mock private BottomControlsStacker mBottomControlsStacker;
     @Mock private OverlayPanelContent mMockContent;
 
+    private ViewGroup mCompositorViewHolder;
     Activity mActivity;
     ActivityWindowAndroid mWindowAndroid;
     TestOverlayPanel mPanel;
@@ -172,6 +172,7 @@ public class OverlayPanelTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivity = activityTestRule.getActivity();
+                    mCompositorViewHolder = new FrameLayout(mActivity);
                     mWindowAndroid =
                             new ActivityWindowAndroid(
                                     mActivity,

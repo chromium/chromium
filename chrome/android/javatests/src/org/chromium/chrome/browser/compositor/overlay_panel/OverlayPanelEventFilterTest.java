@@ -10,6 +10,7 @@ import android.os.Build;
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.core.app.ApplicationProvider;
@@ -49,7 +50,6 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 /** Class responsible for testing the OverlayPanelEventFilter. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class OverlayPanelEventFilterTest {
     private static final float PANEL_ALMOST_MAXIMIZED_OFFSET_Y_DP = 50.f;
     private static final float BAR_HEIGHT_DP = 100.f;
@@ -72,12 +72,12 @@ public class OverlayPanelEventFilterTest {
 
     @Mock private LayoutManagerImpl mLayoutManager;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
-    @Mock private ViewGroup mCompositorViewHolder;
     @Mock private Tab mTab;
     @Mock private OverlayPanelContentDelegate mOverlayPanelContentDelegate;
     @Mock private OverlayPanelContentProgressObserver mOverlayPanelContentProgressObserver;
     @Mock private InsetObserver mInsetObserver;
 
+    private ViewGroup mCompositorViewHolder;
     private float mTouchSlopDp;
     private float mDpToPx;
 
@@ -279,6 +279,7 @@ public class OverlayPanelEventFilterTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivity = activityTestRule.getActivity();
+                    mCompositorViewHolder = new FrameLayout(mActivity);
                     mWindowAndroid =
                             new ActivityWindowAndroid(
                                     mActivity,

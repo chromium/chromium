@@ -90,7 +90,6 @@ import java.util.function.Supplier;
 /** Unit tests for {@link org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome} */
 @Batch(PER_CLASS)
 @RunWith(ChromeJUnit4ClassRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class LayoutManagerTest implements MockTabModelDelegate {
     private static final String TAG = "LayoutManagerTest";
 
@@ -104,10 +103,9 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @Mock private HubLayoutDependencyHolder mHubLayoutDependencyHolder;
     @Mock private TabWindowManager mTabWindowManager;
     @Mock private ToolbarManager mToolbarManager;
-    @Mock private ViewGroup mContentView;
-    @Mock private CompositorViewHolder mCompositorViewHolder;
     @Mock private OverridableTabCount mOverridableTabCount;
 
+    private ViewGroup mContentView;
     private NonNullObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier;
     private TabModelSelector mTabModelSelector;
     private OneshotSupplierImpl<TabSwitcher> mTabSwitcherSupplier;
@@ -181,11 +179,13 @@ public class LayoutManagerTest implements MockTabModelDelegate {
             int standardIndexSelected,
             int incognitoIndexSelected,
             boolean incognitoSelected) {
-        mCompositorViewHolderSupplier = ObservableSuppliers.createNonNull(mCompositorViewHolder);
         Context context =
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
+        mCompositorViewHolderSupplier =
+                ObservableSuppliers.createNonNull(
+                        new CompositorViewHolder(context, /* attrs= */ null));
 
         mDpToPx = context.getResources().getDisplayMetrics().density;
 
