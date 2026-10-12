@@ -218,7 +218,7 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
         }
         // Sync the color down to the child models so decorations (like the group spine) can
         // read it.
-        updateColorForChildTabsInNestedLayout(tabGroupId, newColor);
+        mMediator.updateColorForChildTabs(tabGroupId, newColor);
     }
 
     @Override
@@ -422,28 +422,6 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
             return mModelList.indexFromTabGroupId(tabAfterGroupId);
         }
         return getIndexFromTabId(tabAfter.getId());
-    }
-
-    /**
-     * Updates the UI properties of child tabs when their group color changes.
-     *
-     * @param tabGroupId The ID of the tab group.
-     * @param newColor The new color of the tab group.
-     */
-    private void updateColorForChildTabsInNestedLayout(
-            Token tabGroupId, @TabGroupColorId int newColor) {
-        EitherGroupId eitherGroupId = EitherGroupId.createLocalId(new LocalTabGroupId(tabGroupId));
-        boolean foundGroup = false;
-        for (int i = 0; i < mModelList.size(); i++) {
-            PropertyModel childModel = mModelList.get(i).model;
-            if (TabProperties.isTabInGroup(childModel)
-                    && tabGroupId.equals(childModel.get(TabProperties.TAB_GROUP_ID))) {
-                mMediator.updateTabGroupColorViewProvider(eitherGroupId, childModel, newColor);
-                foundGroup = true;
-            } else if (foundGroup) {
-                break;
-            }
-        }
     }
 
     @Override

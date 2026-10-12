@@ -3220,6 +3220,27 @@ public class TabListMediator implements TabListNotificationHandler {
         }
     }
 
+    /**
+     * Updates the UI properties of child tabs when their group color changes.
+     *
+     * @param tabGroupId The ID of the tab group.
+     * @param newColor The new color of the tab group.
+     */
+    void updateColorForChildTabs(Token tabGroupId, @TabGroupColorId int newColor) {
+        EitherGroupId eitherGroupId = EitherGroupId.createLocalId(new LocalTabGroupId(tabGroupId));
+        boolean foundGroup = false;
+        for (int i = 0; i < mModelList.size(); i++) {
+            PropertyModel childModel = mModelList.get(i).model;
+            if (TabProperties.isTabInGroup(childModel)
+                    && tabGroupId.equals(childModel.get(TabProperties.TAB_GROUP_ID))) {
+                updateTabGroupColorViewProvider(eitherGroupId, childModel, newColor);
+                foundGroup = true;
+            } else if (foundGroup) {
+                break;
+            }
+        }
+    }
+
     private void showLimitSnackbar() {
         if (mSnackbarManager == null) return;
 

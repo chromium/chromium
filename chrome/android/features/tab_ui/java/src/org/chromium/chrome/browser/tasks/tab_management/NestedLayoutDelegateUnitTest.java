@@ -479,17 +479,12 @@ public class NestedLayoutDelegateUnitTest {
     @Test
     public void testDidChangeTabGroupColor() {
         PropertyModel headerModel = addGroupHeaderToModelList(TAB1_ID);
-        PropertyModel child1Model = addTabToModelList(TAB1_ID, TAB_GROUP_ID);
-        PropertyModel child2Model = addTabToModelList(TAB2_ID, TAB_GROUP_ID);
 
         mDelegate.didChangeTabGroupColor(TAB_GROUP_ID, TabGroupColorId.BLUE);
 
         verify(mMediator)
                 .updateTabGroupColorViewProvider(any(), eq(headerModel), eq(TabGroupColorId.BLUE));
-        verify(mMediator)
-                .updateTabGroupColorViewProvider(any(), eq(child1Model), eq(TabGroupColorId.BLUE));
-        verify(mMediator)
-                .updateTabGroupColorViewProvider(any(), eq(child2Model), eq(TabGroupColorId.BLUE));
+        verify(mMediator).updateColorForChildTabs(TAB_GROUP_ID, TabGroupColorId.BLUE);
     }
 
     @Test

@@ -844,6 +844,20 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    public void testUpdateColorForChildTabs() {
+        PropertyModel childModel = mModelList.get(0).model;
+        PropertyModel ungroupedModel = mModelList.get(1).model;
+        childModel.set(TabProperties.TAB_GROUP_ID, TAB_GROUP_ID);
+
+        mMediator.updateColorForChildTabs(TAB_GROUP_ID, TabGroupColorId.BLUE);
+
+        var provider = childModel.get(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER);
+        assertNotNull(provider);
+        assertEquals(TabGroupColorId.BLUE, provider.getTabGroupColorIdForTesting());
+        assertNull(ungroupedModel.get(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER));
+    }
+
+    @Test
     public void updatesFaviconFetcher_SingleTab_GroupedLayout() {
         mModelList.get(0).model.set(TabProperties.FAVICON_FETCHER, null);
         assertNull(mModelList.get(0).model.get(TabProperties.FAVICON_FETCHER));
