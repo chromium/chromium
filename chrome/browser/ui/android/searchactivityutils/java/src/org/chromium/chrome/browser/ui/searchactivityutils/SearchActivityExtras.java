@@ -46,7 +46,6 @@ public @interface SearchActivityExtras {
         IntentOrigin.UNKNOWN,
         IntentOrigin.SEARCH_WIDGET,
         IntentOrigin.QUICK_ACTION_SEARCH_WIDGET,
-        IntentOrigin.CUSTOM_TAB,
         IntentOrigin.HUB,
         IntentOrigin.LAUNCHER,
         IntentOrigin.WEB_SEARCH,
@@ -63,8 +62,7 @@ public @interface SearchActivityExtras {
         /** Calling component is QuickActionSearchWidget. */
         int QUICK_ACTION_SEARCH_WIDGET = 2;
 
-        /** Calling component is Chrome Custom Tab. */
-        int CUSTOM_TAB = 3;
+        // 3: Obsolete (was CUSTOM_TAB).
 
         /** Calling component is Hub. */
         int HUB = 4;

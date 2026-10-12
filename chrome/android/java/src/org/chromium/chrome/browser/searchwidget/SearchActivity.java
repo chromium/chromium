@@ -343,12 +343,7 @@ public class SearchActivity extends AsyncInitializationActivity
 
         if (mUmaActivityObserver != null) mUmaActivityObserver.endUmaSession();
         mUmaActivityObserver =
-                new UmaActivityObserver(
-                        this,
-                        getLifecycleDispatcher(),
-                        intentOrigin == IntentOrigin.CUSTOM_TAB
-                                ? ActivityType.CUSTOM_TAB
-                                : ActivityType.TABBED);
+                new UmaActivityObserver(this, getLifecycleDispatcher(), ActivityType.TABBED);
 
         RecordHistogram.recordEnumeratedHistogram(
                 HISTOGRAM_INTENT_ORIGIN, intentOrigin, IntentOrigin.COUNT);
@@ -364,14 +359,6 @@ public class SearchActivity extends AsyncInitializationActivity
         mSearchBoxDataProvider.setCurrentUrl(SearchActivityUtils.getIntentUrl(intent));
 
         switch (intentOrigin) {
-            case IntentOrigin.CUSTOM_TAB:
-                // Note: this may be refined by refinePageClassWithProfile().
-                mSearchBoxDataProvider.setPageClassification(PageClassification.OTHER_ON_CCT);
-                locationBarUiOverrides
-                        .setLensEntrypointAllowed(false)
-                        .setVoiceEntrypointAllowed(false);
-                break;
-
             case IntentOrigin.QUICK_ACTION_SEARCH_WIDGET:
                 locationBarUiOverrides
                         .setLensEntrypointAllowed(true)
@@ -411,31 +398,7 @@ public class SearchActivity extends AsyncInitializationActivity
                 break;
         }
 
-        var profile = mProfileSupplier.get();
-        if (profile != null) refinePageClassWithProfile(profile);
-
         beginQuery();
-    }
-
-    /** Translate current intent origin and extras to a PageClassification. */
-    @VisibleForTesting
-    /* package */ void refinePageClassWithProfile(Profile profile) {
-        @PageClassification
-        int pageClass = mSearchBoxDataProvider.getPageClassification(/* prefetch= */ false);
-
-        // Verify if the PageClassification can be refined.
-        var url = SearchActivityUtils.getIntentUrl(getIntent());
-        if (pageClass != PageClassification.OTHER_ON_CCT || GURL.isEmptyOrInvalid(url)) {
-            return;
-        }
-
-        var templateSvc = TemplateUrlServiceFactory.getForProfile(profile);
-        if (templateSvc != null && templateSvc.isSearchResultsPageFromDefaultSearchProvider(url)) {
-            mSearchBoxDataProvider.setPageClassification(
-                    PageClassification.SEARCH_RESULT_PAGE_ON_CCT);
-        } else {
-            mSearchBoxDataProvider.setPageClassification(PageClassification.OTHER_ON_CCT);
-        }
     }
 
     @Override
@@ -456,20 +419,18 @@ public class SearchActivity extends AsyncInitializationActivity
 
         Profile profile = mProfileSupplier.get();
         if (profile != null) {
-            finishNativeInitializationWithProfile(profile);
+            finishNativeInitializationWithProfile();
         } else {
             new OneShotCallback<>(
                     mProfileSupplier,
                     newProfile -> {
                         if (isDestroyed()) return;
-                        finishNativeInitializationWithProfile(newProfile);
+                        finishNativeInitializationWithProfile();
                     });
         }
     }
 
-    private void finishNativeInitializationWithProfile(Profile profile) {
-        refinePageClassWithProfile(profile);
-
+    private void finishNativeInitializationWithProfile() {
         if (mCurrentSession.intentOrigin == IntentOrigin.HUB) {
             setHubSearchBoxUrlBarElements();
         }
@@ -743,8 +704,6 @@ public class SearchActivity extends AsyncInitializationActivity
                                 default -> null;
                             };
 
-                    // Tracked by Custom Tabs.
-                    case IntentOrigin.CUSTOM_TAB -> null;
                     case IntentOrigin.HUB -> USED_TEXT_FROM_HUB_WIDGET;
                     default -> null;
                 };
@@ -803,7 +762,6 @@ public class SearchActivity extends AsyncInitializationActivity
         if (mCurrentSession != null) {
             String suffix =
                     switch (mCurrentSession.intentOrigin) {
-                        case IntentOrigin.CUSTOM_TAB -> ".CustomTab";
                         case IntentOrigin.QUICK_ACTION_SEARCH_WIDGET -> ".ShortcutsWidget";
                         case IntentOrigin.LAUNCHER -> ".Launcher";
                         case IntentOrigin.HUB -> ".Hub";

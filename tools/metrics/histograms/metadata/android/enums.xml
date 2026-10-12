@@ -2067,7 +2067,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Unknown / External"/>
   <int value="1" label="Search Widget"/>
   <int value="2" label="Shortcuts Widget"/>
-  <int value="3" label="Custom Tab"/>
+  <int value="3" label="(Obsolete) Custom Tab"/>
   <int value="4" label="Hub"/>
   <int value="5" label="Launcher"/>
   <int value="6" label="WebSearch / External"/>

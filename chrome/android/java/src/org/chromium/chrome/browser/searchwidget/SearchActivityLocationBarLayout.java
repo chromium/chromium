@@ -121,9 +121,7 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
 
         // TODO(crbug.com/372036449): Move setting the hint text from the layout to using the URL
         // bar view binder and model properties.
-        if (origin == IntentOrigin.CUSTOM_TAB) {
-            mUrlBar.setHint(R.string.omnibox_on_cct_empty_hint);
-        } else if (origin == IntentOrigin.HUB) {
+        if (origin == IntentOrigin.HUB) {
             boolean isIncognito = mLocationBarDataProvider.isIncognitoBranded();
             @StringRes
             int hintTextRes =

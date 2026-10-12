@@ -77,7 +77,7 @@ public class SearchActivityUtilsUnitTest {
 
     private final Activity mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
     private final SearchActivityClientImpl mClient =
-            new SearchActivityClientImpl(mActivity, IntentOrigin.CUSTOM_TAB);
+            new SearchActivityClientImpl(mActivity, IntentOrigin.HUB);
 
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
     private @Mock ResourceRequestBody.Natives mResourceRequestBodyJni;
@@ -113,7 +113,7 @@ public class SearchActivityUtilsUnitTest {
         mClient.requestOmniboxForResult(mClient.newIntentBuilder().setPageUrl(EMPTY_URL).build());
 
         var intent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
-        assertEquals(IntentOrigin.CUSTOM_TAB, SearchActivityUtils.getIntentOrigin(intent));
+        assertEquals(IntentOrigin.HUB, SearchActivityUtils.getIntentOrigin(intent));
     }
 
     @Test
@@ -137,7 +137,7 @@ public class SearchActivityUtilsUnitTest {
         mClient.requestOmniboxForResult(mClient.newIntentBuilder().setPageUrl(EMPTY_URL).build());
 
         var intent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
-        assertEquals(IntentOrigin.CUSTOM_TAB, SearchActivityUtils.getIntentOrigin(intent));
+        assertEquals(IntentOrigin.HUB, SearchActivityUtils.getIntentOrigin(intent));
 
         // Invalid variants
         intent.setAction(null);
@@ -204,7 +204,7 @@ public class SearchActivityUtilsUnitTest {
         intent.putExtra(SearchManager.QUERY, "query");
 
         SearchActivitySession session = SearchActivityUtils.getIntentSession(intent);
-        assertEquals(IntentOrigin.CUSTOM_TAB, session.intentOrigin);
+        assertEquals(IntentOrigin.HUB, session.intentOrigin);
         assertEquals(SearchType.VOICE, session.searchType);
         assertEquals(AutocompleteRequestType.AI_MODE, session.requestType);
         assertEquals("query", session.query);
@@ -391,7 +391,7 @@ public class SearchActivityUtilsUnitTest {
                 mClient.newIntentBuilder().setPageUrl(GOOD_URL).setReferrer("").build());
 
         var intent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
-        assertEquals(IntentOrigin.CUSTOM_TAB, SearchActivityUtils.getIntentOrigin(intent));
+        assertEquals(IntentOrigin.HUB, SearchActivityUtils.getIntentOrigin(intent));
         assertNull(SearchActivityUtils.getReferrer(intent));
 
         // Remove trust
@@ -405,7 +405,7 @@ public class SearchActivityUtilsUnitTest {
                 mClient.newIntentBuilder().setPageUrl(GOOD_URL).setReferrer(null).build());
 
         var intent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
-        assertEquals(IntentOrigin.CUSTOM_TAB, SearchActivityUtils.getIntentOrigin(intent));
+        assertEquals(IntentOrigin.HUB, SearchActivityUtils.getIntentOrigin(intent));
         assertNull(SearchActivityUtils.getReferrer(intent));
 
         // Remove trust

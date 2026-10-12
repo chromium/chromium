@@ -115,7 +115,6 @@ public class SearchActivityUnitTest {
             new OmniboxLoadUrlParams.Builder(TEST_URL, PageTransition.TYPED).build();
     private static final String HISTOGRAM_SUFFIX_SEARCH_WIDGET = ".SearchWidget";
     private static final String HISTOGRAM_SUFFIX_SHORTCUTS_WIDGET = ".ShortcutsWidget";
-    private static final String HISTOGRAM_SUFFIX_CUSTOM_TAB = ".CustomTab";
     private static final String HISTOGRAM_SUFFIX_LAUNCHER = ".Launcher";
     private static final String HISTOGRAM_SUFFIX_HUB = ".Hub";
 
@@ -246,7 +245,7 @@ public class SearchActivityUnitTest {
     @Test
     public void loadUrl_dispatchResultToCallingActivity() {
         setProfile(mProfile);
-        mActivity.handleNewIntent(buildTestServiceIntent(IntentOrigin.CUSTOM_TAB), false);
+        mActivity.handleNewIntent(buildTestServiceIntent(IntentOrigin.HUB), false);
 
         ArgumentCaptor<OmniboxLoadUrlParams> captor =
                 ArgumentCaptor.forClass(OmniboxLoadUrlParams.class);
@@ -258,7 +257,7 @@ public class SearchActivityUnitTest {
                                 TerminationReason.NAVIGATION)
                         .expectIntRecord(
                                 SearchActivity.HISTOGRAM_SESSION_TERMINATION_REASON
-                                        + HISTOGRAM_SUFFIX_CUSTOM_TAB,
+                                        + HISTOGRAM_SUFFIX_HUB,
                                 TerminationReason.NAVIGATION)
                         .build()) {
             mActivity.loadUrl(LOAD_URL_PARAMS_SIMPLE, false);
@@ -282,7 +281,7 @@ public class SearchActivityUnitTest {
 
     @Test
     public void terminateSession_dispatchResultToCallingActivity() {
-        var intent = buildTestServiceIntent(IntentOrigin.CUSTOM_TAB);
+        var intent = buildTestServiceIntent(IntentOrigin.HUB);
         mActivity.handleNewIntent(intent, false);
         clearInvocations(mUtils);
 
@@ -297,7 +296,7 @@ public class SearchActivityUnitTest {
                                     SearchActivity.HISTOGRAM_SESSION_TERMINATION_REASON, reason)
                             .expectIntRecord(
                                     SearchActivity.HISTOGRAM_SESSION_TERMINATION_REASON
-                                            + HISTOGRAM_SUFFIX_CUSTOM_TAB,
+                                            + HISTOGRAM_SUFFIX_HUB,
                                     reason)
                             .build()) {
                 mActivity.finish(reason, null);
@@ -523,28 +522,6 @@ public class SearchActivityUnitTest {
     }
 
     @Test
-    public void handleNewIntent_forCustomTabNoProfile() {
-        try (var watcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        SearchActivity.HISTOGRAM_INTENT_ORIGIN, IntentOrigin.CUSTOM_TAB)) {
-            mActivity.handleNewIntent(buildTestServiceIntent(IntentOrigin.CUSTOM_TAB), false);
-        }
-
-        assertEquals(
-                PageClassification.OTHER_ON_CCT,
-                mDataProvider.getPageClassification(/* prefetch= */ true));
-        assertEquals(
-                PageClassification.OTHER_ON_CCT,
-                mDataProvider.getPageClassification(/* prefetch= */ false));
-        assertFalse(mActivity.getEmbedderUiOverridesForTesting().isLensEntrypointAllowed());
-        assertFalse(mActivity.getEmbedderUiOverridesForTesting().isVoiceEntrypointAllowed());
-
-        // Note that the profile is not available at this point, so we should not attempt to refine
-        // the page class.
-        verifyNoMoreInteractions(mTemplateUrlFactoryJni, mTemplateUrlSvc);
-    }
-
-    @Test
     public void handleNewIntent_passIntentUrlToLocationBarData() {
         mActivity.handleNewIntent(buildTestWidgetIntent(IntentOrigin.SEARCH_WIDGET), false);
         assertEquals(TEST_URL, mDataProvider.getCurrentGurl().getSpec());
@@ -562,22 +539,6 @@ public class SearchActivityUnitTest {
             var actions = tester.getActions();
             assertEquals(1, actions.size());
             assertEquals(SearchActivity.USED_ANY_FROM_SEARCH_WIDGET, actions.get(0));
-
-            tester.tearDown();
-        }
-    }
-
-    @Test
-    public void recordUsage_customTabs() {
-        int[] searchTypes = new int[] {SearchType.TEXT, SearchType.VOICE, SearchType.LENS};
-
-        for (var searchType : searchTypes) {
-            var tester = new UserActionTester();
-
-            SearchActivity.recordUsage(IntentOrigin.CUSTOM_TAB, searchType);
-
-            var actions = tester.getActions();
-            assertEquals(0, actions.size());
 
             tester.tearDown();
         }
@@ -621,7 +582,6 @@ public class SearchActivityUnitTest {
                 Set.of(
                         IntentOrigin.SEARCH_WIDGET,
                         IntentOrigin.QUICK_ACTION_SEARCH_WIDGET,
-                        IntentOrigin.CUSTOM_TAB,
                         IntentOrigin.HUB);
         int[] searchTypes = new int[] {SearchType.TEXT, SearchType.VOICE, SearchType.LENS};
 
@@ -637,118 +597,6 @@ public class SearchActivityUnitTest {
                 tester.tearDown();
             }
         }
-    }
-
-    @Test
-    public void refinePageClassWithProfile_noRefinementForSearchWidget() {
-        doReturn(true).when(mTemplateUrlSvc).isSearchResultsPageFromDefaultSearchProvider(any());
-        mActivity.handleNewIntent(buildTestWidgetIntent(IntentOrigin.SEARCH_WIDGET), false);
-
-        assertEquals(
-                PageClassification.ANDROID_SEARCH_WIDGET,
-                mDataProvider.getPageClassification(/* prefetch= */ false));
-        verifyNoMoreInteractions(mTemplateUrlSvc);
-    }
-
-    @Test
-    public void refinePageClassWithProfile_noRefinementForShortcutsWidget() {
-        doReturn(true).when(mTemplateUrlSvc).isSearchResultsPageFromDefaultSearchProvider(any());
-        mActivity.handleNewIntent(
-                buildTestWidgetIntent(IntentOrigin.QUICK_ACTION_SEARCH_WIDGET), false);
-
-        assertEquals(
-                PageClassification.ANDROID_SHORTCUTS_WIDGET,
-                mDataProvider.getPageClassification(/* prefetch= */ false));
-        verifyNoMoreInteractions(mTemplateUrlSvc);
-    }
-
-    @Test
-    public void refinePageClassWithProfile_refinesBasicUrlForSearchResultsPage() {
-        setProfile(mProfile);
-
-        {
-            // Simulate Search Results Page.
-            doReturn(true)
-                    .when(mTemplateUrlSvc)
-                    .isSearchResultsPageFromDefaultSearchProvider(any());
-            mActivity.handleNewIntent(buildTestServiceIntent(IntentOrigin.CUSTOM_TAB), false);
-            assertEquals(
-                    PageClassification.SEARCH_RESULT_PAGE_ON_CCT,
-                    mDataProvider.getPageClassification(/* prefetch= */ false));
-            assertEquals(
-                    PageClassification.SEARCH_RESULT_PAGE_ON_CCT,
-                    mDataProvider.getPageClassification(/* prefetch= */ true));
-        }
-
-        {
-            // Simulate arbitrary page.
-            doReturn(false)
-                    .when(mTemplateUrlSvc)
-                    .isSearchResultsPageFromDefaultSearchProvider(any());
-            mActivity.handleNewIntent(buildTestServiceIntent(IntentOrigin.CUSTOM_TAB), false);
-            assertEquals(
-                    PageClassification.OTHER_ON_CCT,
-                    mDataProvider.getPageClassification(/* prefetch= */ false));
-            assertEquals(
-                    PageClassification.OTHER_ON_CCT,
-                    mDataProvider.getPageClassification(/* prefetch= */ true));
-        }
-    }
-
-    @Test
-    public void refinePageClassWithProfile_ignoresNullUrl() {
-        doReturn(true).when(mTemplateUrlSvc).isSearchResultsPageFromDefaultSearchProvider(any());
-        mActivity.handleNewIntent(
-                newIntentBuilder(IntentOrigin.CUSTOM_TAB, /* url= */ null)
-                        .setResolutionType(ResolutionType.SEND_TO_CALLER)
-                        .build(),
-                false);
-
-        assertEquals(
-                PageClassification.OTHER_ON_CCT,
-                mDataProvider.getPageClassification(/* prefetch= */ false));
-        verifyNoMoreInteractions(mTemplateUrlSvc);
-    }
-
-    @Test
-    public void refinePageClassWithProfile_ignoresEmptyUrl() {
-        doReturn(true).when(mTemplateUrlSvc).isSearchResultsPageFromDefaultSearchProvider(any());
-        mActivity.handleNewIntent(
-                newIntentBuilder(IntentOrigin.CUSTOM_TAB, /* url= */ "")
-                        .setResolutionType(ResolutionType.SEND_TO_CALLER)
-                        .build(),
-                false);
-
-        assertEquals(
-                PageClassification.OTHER_ON_CCT,
-                mDataProvider.getPageClassification(/* prefetch= */ false));
-        verifyNoMoreInteractions(mTemplateUrlSvc);
-    }
-
-    @Test
-    public void refinePageClassWithProfile_ignoresInvalidUrl() {
-        doReturn(true).when(mTemplateUrlSvc).isSearchResultsPageFromDefaultSearchProvider(any());
-        mActivity.handleNewIntent(
-                newIntentBuilder(IntentOrigin.CUSTOM_TAB, /* url= */ "aoeui")
-                        .setResolutionType(ResolutionType.SEND_TO_CALLER)
-                        .build(),
-                false);
-
-        assertEquals(
-                PageClassification.OTHER_ON_CCT,
-                mDataProvider.getPageClassification(/* prefetch= */ false));
-        verifyNoMoreInteractions(mTemplateUrlSvc);
-    }
-
-    @Test
-    public void refinePageClassWithProfile_noTemplateUrl() {
-        doReturn(null).when(mTemplateUrlFactoryJni).getTemplateUrlService(any());
-
-        mActivity.handleNewIntent(buildTestServiceIntent(IntentOrigin.CUSTOM_TAB), false);
-
-        assertEquals(
-                PageClassification.OTHER_ON_CCT,
-                mDataProvider.getPageClassification(/* prefetch= */ false));
     }
 
     @Test
@@ -919,13 +767,6 @@ public class SearchActivityUnitTest {
         verify(mLocationBarCoordinator).setUrlBarFocus(captor.capture());
         assertEquals("", captor.getValue().getUserText());
         clearInvocations(mLocationBarCoordinator);
-
-        intent = buildTestServiceIntent(IntentOrigin.CUSTOM_TAB);
-        intent.removeExtra(SearchManager.QUERY);
-        mActivity.onNewIntent(intent);
-        assertEquals("Search the web in Chrome", mUrlBar.getHint());
-        verify(mLocationBarCoordinator).setUrlBarFocus(captor.capture());
-        assertEquals("", captor.getValue().getUserText());
     }
 
     @Test
@@ -1060,10 +901,10 @@ public class SearchActivityUnitTest {
                             .expectIntRecord(SearchActivity.HISTOGRAM_NAVIGATION_TARGET_TYPE, type)
                             .expectIntRecord(
                                     SearchActivity.HISTOGRAM_NAVIGATION_TARGET_TYPE
-                                            + HISTOGRAM_SUFFIX_CUSTOM_TAB,
+                                            + HISTOGRAM_SUFFIX_HUB,
                                     type)
                             .build()) {
-                mActivity.onNewIntent(buildTestServiceIntent(IntentOrigin.CUSTOM_TAB));
+                mActivity.onNewIntent(buildTestServiceIntent(IntentOrigin.HUB));
                 mActivity.recordNavigationTargetType(entry.getKey());
             }
         }

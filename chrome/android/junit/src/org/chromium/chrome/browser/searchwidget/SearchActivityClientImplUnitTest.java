@@ -59,7 +59,7 @@ public class SearchActivityClientImplUnitTest {
 
     private final Activity mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
     private final SearchActivityClientImpl mClient =
-            new SearchActivityClientImpl(mActivity, IntentOrigin.CUSTOM_TAB);
+            new SearchActivityClientImpl(mActivity, IntentOrigin.HUB);
 
     @Before
     public void setUp() {
@@ -80,7 +80,7 @@ public class SearchActivityClientImplUnitTest {
                 new int[] {
                     IntentOrigin.SEARCH_WIDGET,
                     IntentOrigin.QUICK_ACTION_SEARCH_WIDGET,
-                    IntentOrigin.CUSTOM_TAB,
+                    IntentOrigin.HUB,
                 };
 
         for (int origin : origins) {
@@ -118,7 +118,7 @@ public class SearchActivityClientImplUnitTest {
                 new int[] {
                     IntentOrigin.SEARCH_WIDGET,
                     IntentOrigin.QUICK_ACTION_SEARCH_WIDGET,
-                    IntentOrigin.CUSTOM_TAB,
+                    IntentOrigin.HUB,
                 };
 
         for (int origin : origins) {
@@ -156,7 +156,7 @@ public class SearchActivityClientImplUnitTest {
                 new int[] {
                     IntentOrigin.SEARCH_WIDGET,
                     IntentOrigin.QUICK_ACTION_SEARCH_WIDGET,
-                    IntentOrigin.CUSTOM_TAB,
+                    IntentOrigin.HUB,
                 };
 
         for (int origin : origins) {
@@ -202,7 +202,7 @@ public class SearchActivityClientImplUnitTest {
         assertEquals(
                 String.format(
                         SearchActivityClientImpl.ACTION_SEARCH_FORMAT,
-                        IntentOrigin.CUSTOM_TAB,
+                        IntentOrigin.HUB,
                         SearchType.TEXT,
                         AutocompleteRequestType.AI_MODE),
                 intent.getAction());
