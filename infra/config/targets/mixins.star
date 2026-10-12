@@ -530,6 +530,13 @@ targets.mixin(
 # Choose virtual_device_large spec for more ram. This mixin works on emulators
 # only.
 targets.mixin(
+    name = "fuchsia-arm64-large-device-spec",
+    args = [
+        "--device-spec=arm64-emu-large",
+    ],
+)
+
+targets.mixin(
     name = "fuchsia-large-device-spec",
     args = [
         "--device-spec=x64-emu-large",

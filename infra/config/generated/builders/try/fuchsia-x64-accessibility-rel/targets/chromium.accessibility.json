@@ -9,7 +9,8 @@
           "--gtest_filter=*All/DumpAccessibility*/fuchsia*",
           "--test-arg=--disable-gpu",
           "--test-arg=--headless",
-          "--test-arg=--ozone-platform=headless"
+          "--test-arg=--ozone-platform=headless",
+          "--device-spec=x64-emu-large"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"

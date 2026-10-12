@@ -135,6 +135,7 @@ ci.builder(
         mixins = [
             "arm64",
             "docker",
+            "fuchsia-arm64-large-device-spec",
             "linux-ubuntu",
         ],
         per_test_modifications = {
@@ -155,6 +156,11 @@ ci.builder(
             ),
             "screenshot_sync_validating_tests": targets.remove(
                 reason = "crbug.com/42050042, crbug.com/42050537 this test does not work on swiftshader on arm64",
+            ),
+            "fuchsia_sizes": targets.per_test_modification(
+                remove_mixins = [
+                    "fuchsia-arm64-large-device-spec",
+                ],
             ),
         },
     ),
@@ -217,6 +223,7 @@ ci.builder(
             "cast_test_lists",
         ],
         mixins = [
+            "fuchsia-large-device-spec",
             "isolate_profile_data",
             "linux-jammy",
             targets.mixin(
