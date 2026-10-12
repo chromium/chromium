@@ -11,7 +11,6 @@ import android.content.Intent;
 import android.net.Uri;
 
 import androidx.annotation.Nullable;
-import androidx.test.runner.lifecycle.Stage;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -20,7 +19,6 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
@@ -30,6 +28,8 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowApp
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.LoadUrlParams;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
 /** Utilities helper class for multi-window tests. */
@@ -170,7 +170,8 @@ public class MultiWindowTestHelper {
      * Creates a new ChromeTabbedActivity (API 31 only) for use in tests.
      *
      * @param context The context used to build the intent to start the new activity.
-     * @return The newly created ChromeTabbedActivity after it is resumed.
+     * @return The newly created ChromeTabbedActivity after it is resumed and its tab state is
+     *     initialized.
      */
     public static ChromeTabbedActivity createNewChromeTabbedActivity(Context context) {
         Intent intent =
@@ -180,9 +181,48 @@ public class MultiWindowTestHelper {
                         /* preferNew= */ true,
                         /* openAdjacently= */ false,
                         NewWindowAppSource.MENU);
-        return ApplicationTestUtils.waitForActivityWithClass(
-                ChromeTabbedActivity.class,
-                Stage.RESUMED,
+        return waitForNewChromeTabbedActivity(
                 () -> ContextUtils.getApplicationContext().startActivity(intent));
+    }
+
+    /**
+     * Runs {@code trigger} on the UI thread and waits for a newly created {@link
+     * ChromeTabbedActivity} (excluding any already-running instances) to reach {@link
+     * ActivityState#RESUMED} and complete tab state initialization.
+     *
+     * @param trigger Runnable that initiates creation of the new window.
+     * @return The newly created {@link ChromeTabbedActivity}.
+     */
+    public static ChromeTabbedActivity waitForNewChromeTabbedActivity(Runnable trigger) {
+        Set<Activity> existingActivities =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> new HashSet<>(ApplicationStatus.getRunningActivities()));
+        ThreadUtils.runOnUiThreadBlocking(trigger);
+
+        AtomicReference<ChromeTabbedActivity> newActivityRef = new AtomicReference<>();
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    for (Activity runningActivity : ApplicationStatus.getRunningActivities()) {
+                        if (runningActivity instanceof ChromeTabbedActivity
+                                && !existingActivities.contains(runningActivity)) {
+                            newActivityRef.set((ChromeTabbedActivity) runningActivity);
+                            break;
+                        }
+                    }
+                    ChromeTabbedActivity candidate = newActivityRef.get();
+                    Criteria.checkThat(
+                            "New ChromeTabbedActivity was not created.",
+                            candidate,
+                            Matchers.notNullValue());
+                    Criteria.checkThat(
+                            ApplicationStatus.getStateForActivity(candidate),
+                            Matchers.is(ActivityState.RESUMED));
+                    Criteria.checkThat(
+                            candidate.getTabModelSelectorSupplier().get(), Matchers.notNullValue());
+                    Criteria.checkThat(
+                            candidate.getTabModelSelector().isTabStateInitialized(),
+                            Matchers.is(true));
+                });
+        return newActivityRef.get();
     }
 }

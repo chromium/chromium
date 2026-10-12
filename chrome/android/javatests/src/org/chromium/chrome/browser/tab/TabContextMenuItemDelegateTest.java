@@ -25,7 +25,6 @@ import android.os.Build;
 
 import androidx.test.espresso.intent.Intents;
 import androidx.test.filters.SmallTest;
-import androidx.test.runner.lifecycle.Stage;
 
 import org.junit.After;
 import org.junit.Before;
@@ -37,7 +36,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
@@ -146,9 +144,7 @@ public class TabContextMenuItemDelegateTest {
 
         // Open a new window when there is only one existing window.
         ChromeTabbedActivity secondActivity =
-                ApplicationTestUtils.waitForActivityWithClass(
-                        ChromeTabbedActivity.class,
-                        Stage.RESUMED,
+                MultiWindowTestHelper.waitForNewChromeTabbedActivity(
                         () ->
                                 mContextMenuDelegate.openInOtherWindow(
                                         new GURL("about:blank"),
@@ -204,9 +200,7 @@ public class TabContextMenuItemDelegateTest {
         createContextMenuForCurrentTab();
 
         ChromeTabbedActivity activity =
-                ApplicationTestUtils.waitForActivityWithClass(
-                        ChromeTabbedActivity.class,
-                        Stage.RESUMED,
+                MultiWindowTestHelper.waitForNewChromeTabbedActivity(
                         () ->
                                 mContextMenuDelegate.openInOtherWindow(
                                         new GURL("about:blank"),
