@@ -4,8 +4,13 @@
 
 #include "components/one_time_tokens/core/browser/util/expiring_subscription_manager.h"
 
+#include <memory>
+#include <utility>
+#include <vector>
+
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
+#include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -617,6 +622,37 @@ TEST_F(ExpiringSubscriptionTest,
   EXPECT_TRUE(second_expired.IsReady());
   EXPECT_FALSE(second.IsAlive());
   EXPECT_EQ(subscription_manager.GetNumberSubscribers(), 0u);
+}
+
+using ExpiringSubscriptionDeathTest = ExpiringSubscriptionTest;
+
+// Verifies that destroying the manager inside a notification callback triggers
+// a DCHECK.
+TEST_F(ExpiringSubscriptionDeathTest, NotifyCallbackDestroysManager) {
+  auto subscription_manager =
+      std::make_unique<ExpiringSubscriptionManagerType>();
+  base::Time now = base::Time::Now();
+
+  ExpiringSubscription subscription = subscription_manager->Subscribe(
+      now + base::Minutes(5),
+      base::BindLambdaForTesting([&](int) { subscription_manager.reset(); }),
+      /*expiration_callback=*/base::DoNothing());
+
+  EXPECT_DCHECK_DEATH(subscription_manager->Notify(123));
+}
+
+// Verifies that destroying the manager inside an expiration callback triggers a
+// DCHECK.
+TEST_F(ExpiringSubscriptionDeathTest, ExpirationCallbackDestroysManager) {
+  auto subscription_manager =
+      std::make_unique<ExpiringSubscriptionManagerType>();
+  base::Time now = base::Time::Now();
+
+  ExpiringSubscription subscription = subscription_manager->Subscribe(
+      now + base::Minutes(5), base::DoNothing(),
+      base::BindLambdaForTesting([&]() { subscription_manager.reset(); }));
+
+  EXPECT_DCHECK_DEATH(task_environment_.FastForwardBy(base::Minutes(5)));
 }
 
 }  // namespace one_time_tokens

@@ -11,10 +11,12 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/one_time_tokens/core/browser/util/expiring_subscription.h"
@@ -140,7 +142,7 @@ class ExpiringSubscriptionManager : public ExpiringSubscriptionManagerBase {
   //
   // `callback` should be safe to call during this time (it may be protected via
   // a WeakPtr binding). It is called every time `Notify()` is called while the
-  // subscription did not not expire.
+  // subscription has not expired.
   //
   // If provided, the optional `expiration_callback` will be executed exactly
   // once if the subscription reaches its `expiration_time`.
@@ -163,10 +165,10 @@ class ExpiringSubscriptionManager : public ExpiringSubscriptionManagerBase {
                                 weak_ptr_factory_.GetWeakPtr());
   }
 
-  // Calls the notification callback on all subscribers with the handle of the
-  // subscription followed by `args`.
+  // Calls the notification callback on all subscribers with `args`.
   // This method is safe against re-entrancy. A notification callback is
-  // permitted to add, cancel, or modify subscriptions.
+  // permitted to add, cancel, or modify subscriptions, but must not destroy
+  // `this`.
   template <typename... RunArgs>
   void Notify(const RunArgs&... args) {
     // Copy all handles because a callback may modify the subscriptions_.
@@ -176,7 +178,10 @@ class ExpiringSubscriptionManager : public ExpiringSubscriptionManagerBase {
       all_handles.push_back(handle);
     }
 
-    // Execute the notifications.
+    // Execute the notifications. Callbacks must not destroy the
+    // `ExpiringSubscriptionManager` instance.
+    base::WeakPtr<ExpiringSubscriptionManagerBase> weak_this =
+        weak_ptr_factory_.GetWeakPtr();
     for (const ExpiringSubscriptionHandle& handle : all_handles) {
       if (auto iter = subscriptions_.find(handle);
           iter != subscriptions_.end()) {
@@ -184,6 +189,10 @@ class ExpiringSubscriptionManager : public ExpiringSubscriptionManagerBase {
         static_cast<internal::ExpiringSubscriptionData<Signature>&>(
             subscription)
             .notification_callback.Run(args...);
+        DCHECK(weak_this);
+        if (!weak_this) {
+          return;
+        }
       }
     }
   }

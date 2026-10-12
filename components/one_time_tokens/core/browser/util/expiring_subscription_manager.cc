@@ -8,6 +8,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
+
 namespace one_time_tokens {
 
 namespace internal {
@@ -78,13 +80,19 @@ void ExpiringSubscriptionManagerBase::ProcessExpirations() {
   }
   expiration_queue_.erase(expiration_queue_.begin(), expired_end);
 
-  // Update internal state before invoking external callbacks. An invoked
-  // callback could potentially destroy the `ExpiringSubscriptionManager`
-  // instance, leading to a Use-After-Free if we accessed `this` afterwards.
+  // Update internal state before invoking external callbacks in case a callback
+  // adds or modifies subscriptions. Callbacks must not destroy the
+  // `ExpiringSubscriptionManager` instance.
   UpdateNextExpirationTimer();
 
+  base::WeakPtr<ExpiringSubscriptionManagerBase> weak_this =
+      weak_ptr_factory_.GetWeakPtr();
   for (auto& callback : expiration_callbacks) {
     std::move(callback).Run();
+    DCHECK(weak_this);
+    if (!weak_this) {
+      return;
+    }
   }
 }
 
