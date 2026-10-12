@@ -3739,6 +3739,24 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram
+    name="PasswordManager.RemoteActorCredentialSharing.{Request}.Latency"
+    units="ms" expires_after="2027-04-28">
+  <owner>derinel@google.com</owner>
+  <owner>anki-team@google.com</owner>
+  <summary>
+    Records the time elapsed from starting a {Request} request (including OAuth2
+    token fetch and HTTP request) to receiving a response during remote actor
+    credential sharing.
+  </summary>
+  <token key="Request">
+    <variant name="PassboxDelete" summary="Passbox credential deletion"/>
+    <variant name="PassboxUpdate" summary="Passbox credential update"/>
+    <variant name="PermissionService"
+        summary="Agentic Permission Service permission grant"/>
+  </token>
+</histogram>
+
 <histogram name="PasswordManager.RequestVerificationAsyncResult"
     enum="AuthenticationResultStatusWin" expires_after="2027-02-28">
   <owner>sygiet@google.com</owner>

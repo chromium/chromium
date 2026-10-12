@@ -12,6 +12,7 @@
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -63,6 +64,7 @@ class RemoteActorCredentialStoreClientTest : public testing::Test {
 };
 
 TEST_F(RemoteActorCredentialStoreClientTest, UpdateCredentialSuccess) {
+  base::HistogramTester histogram_tester;
   identity_test_env_.MakePrimaryAccountAvailable("user@gmail.com",
                                                  signin::ConsentLevel::kSignin);
 
@@ -132,6 +134,8 @@ TEST_F(RemoteActorCredentialStoreClientTest, UpdateCredentialSuccess) {
       pending_request->request.url.spec(), "{}");
 
   EXPECT_TRUE(future.Get());
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.RemoteActorCredentialSharing.PassboxUpdate.Latency", 1);
 }
 
 TEST_F(RemoteActorCredentialStoreClientTest,
@@ -184,6 +188,7 @@ TEST_F(RemoteActorCredentialStoreClientTest,
 }
 
 TEST_F(RemoteActorCredentialStoreClientTest, DeleteCredentialSuccess) {
+  base::HistogramTester histogram_tester;
   identity_test_env_.MakePrimaryAccountAvailable("user@gmail.com",
                                                  signin::ConsentLevel::kSignin);
 
@@ -212,6 +217,8 @@ TEST_F(RemoteActorCredentialStoreClientTest, DeleteCredentialSuccess) {
       pending_request->request.url.spec(), "");
 
   EXPECT_TRUE(future.Get());
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.RemoteActorCredentialSharing.PassboxDelete.Latency", 1);
 }
 
 }  // namespace password_manager

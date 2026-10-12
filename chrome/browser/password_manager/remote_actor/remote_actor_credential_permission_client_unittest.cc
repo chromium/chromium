@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -47,6 +48,7 @@ class RemoteActorCredentialPermissionClientTest : public testing::Test {
 
 TEST_F(RemoteActorCredentialPermissionClientTest,
        GrantPasswordPermissionSuccess) {
+  base::HistogramTester histogram_tester;
   identity_test_env_.MakePrimaryAccountAvailable("user@gmail.com",
                                                  signin::ConsentLevel::kSignin);
 
@@ -110,6 +112,9 @@ TEST_F(RemoteActorCredentialPermissionClientTest,
       pending_request->request.url.spec(), "{}");
 
   EXPECT_TRUE(future.Get());
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.RemoteActorCredentialSharing.PermissionService.Latency",
+      1);
 }
 
 TEST_F(RemoteActorCredentialPermissionClientTest,

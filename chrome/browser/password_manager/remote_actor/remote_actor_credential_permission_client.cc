@@ -17,6 +17,7 @@
 #include "chrome/browser/password_manager/remote_actor/remote_actor_request_helper.h"
 #include "chrome/browser/password_manager/remote_actor/remote_actor_switches.h"
 #include "chrome/common/chrome_features.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/signin/public/base/oauth_consumer_id.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -165,7 +166,11 @@ void RemoteActorCredentialPermissionClient::GrantPasswordPermission(
       signin::OAuthConsumerId::kActorLoginPermissionService,
       kRemotePermissionTrafficAnnotation, url_loader_factory_,
       base::BindOnce(&RemoteActorCredentialPermissionClient::OnRequestCompleted,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     metrics_util::TimeCallback(
+                         std::move(callback),
+                         "PasswordManager.RemoteActorCredentialSharing."
+                         "PermissionService.Latency"))));
 }
 
 void RemoteActorCredentialPermissionClient::StartRequest(

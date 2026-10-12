@@ -25,6 +25,7 @@
 #include "chrome/browser/password_manager/remote_actor/protos/remote_actor_list_affiliated_passwords_result.pb.h"
 #include "chrome/browser/password_manager/remote_actor/remote_actor_request_helper.h"
 #include "chrome/browser/password_manager/remote_actor/remote_actor_switches.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/sync/password_proto_utils.h"
 #include "components/signin/public/base/oauth_consumer_id.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -169,7 +170,11 @@ void RemoteActorCredentialStoreClient::UpdateCredential(
       signin::OAuthConsumerId::kRemoteActorLoginCredentialsService,
       kPassboxTrafficAnnotation, url_loader_factory_,
       base::BindOnce(&RemoteActorCredentialStoreClient::OnRequestCompleted,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     metrics_util::TimeCallback(
+                         std::move(callback),
+                         "PasswordManager.RemoteActorCredentialSharing."
+                         "PassboxUpdate.Latency"))));
 }
 
 void RemoteActorCredentialStoreClient::DeleteCredential(
@@ -195,7 +200,11 @@ void RemoteActorCredentialStoreClient::DeleteCredential(
       signin::OAuthConsumerId::kRemoteActorLoginCredentialsService,
       kPassboxTrafficAnnotation, url_loader_factory_,
       base::BindOnce(&RemoteActorCredentialStoreClient::OnRequestCompleted,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     metrics_util::TimeCallback(
+                         std::move(callback),
+                         "PasswordManager.RemoteActorCredentialSharing."
+                         "PassboxDelete.Latency"))));
 }
 
 void RemoteActorCredentialStoreClient::StartRequest(
