@@ -53,6 +53,17 @@ constexpr char kMinimumMV3CSPWithChromeResources[] =
     "script-src 'self' chrome://resources 'wasm-unsafe-eval' "
     "'inline-speculation-rules'; "
     "object-src 'self';";
+// The minimum CSP for component extensions that can access chrome://webui-test.
+static const char kMinimumMV3CSPWithWebUITest[] =
+    "script-src 'self' chrome://webui-test 'wasm-unsafe-eval' "
+    "'inline-speculation-rules'; "
+    "object-src 'self';";
+// The minimum CSP for component extensions that can access both
+// chrome://resources and chrome://webui-test.
+static const char kMinimumMV3CSPWithChromeResourcesAndWebUITest[] =
+    "script-src 'self' chrome://resources chrome://webui-test "
+    "'wasm-unsafe-eval' 'inline-speculation-rules'; "
+    "object-src 'self';";
 // The minimum CSP to be used in isolated worlds. The placeholder is for the
 // extension's dynamic URL.
 constexpr char kMinimumMV3IsolatedWorldCSPTemplate[] =
@@ -141,12 +152,28 @@ std::string_view GetDefaultExtensionPagesCSP(const Extension& extension) {
 std::string_view GetMinimumMV3CSPForExtension(const Extension& extension) {
   CHECK_GE(extension.manifest_version(), 3);
 
-  if (csp_validator::IsExtensionAllowedToUseChromeResources(extension.id()) &&
-      extension.location() == mojom::ManifestLocation::kComponent) {
-    // The minimum CSP for these extensions should include access to
-    // chrome://resources. This is okay because they are built into the browser
-    // as component extensions.
-    return kMinimumMV3CSPWithChromeResources;
+  if (extension.location() == mojom::ManifestLocation::kComponent) {
+    const bool allows_chrome_resources =
+        csp_validator::IsExtensionAllowedToUseChromeResources(extension.id());
+    // Listing chrome://webui-test in the manifest is not enough on its own;
+    // the test-only switch must also be set.
+    const bool allows_webui_test =
+        csp_validator::IsWebUITestAllowedForLocation(extension.location()) &&
+        CSPInfo::GetExtensionPagesCSP(&extension).find("chrome://webui-test") !=
+            std::string::npos;
+
+    // The minimum CSP for these extensions may include access to
+    // chrome://resources and chrome://webui-test. This is okay because they
+    // are built into the browser as component extensions.
+    if (allows_chrome_resources && allows_webui_test) {
+      return kMinimumMV3CSPWithChromeResourcesAndWebUITest;
+    }
+    if (allows_chrome_resources) {
+      return kMinimumMV3CSPWithChromeResources;
+    }
+    if (allows_webui_test) {
+      return kMinimumMV3CSPWithWebUITest;
+    }
   }
 
   return Manifest::IsUnpackedLocation(extension.location())

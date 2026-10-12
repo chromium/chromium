@@ -25,6 +25,7 @@
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/core_extensions_api_provider.h"
+#include "extensions/common/csp_validator.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_api.h"
 #include "extensions/common/extension_urls.h"
@@ -246,11 +247,22 @@ void ChromeExtensionsClient::AddOriginAccessPermissions(
   // allowlist entry.
   if (extensions::Manifest::IsComponentLocation(extension.location()) &&
       is_extension_active) {
-    origin_patterns->push_back(network::mojom::CorsOriginPattern::New(
-        content::kChromeUIScheme, chrome::kChromeUIThemeHost, /*port=*/0,
-        network::mojom::CorsDomainMatchMode::kDisallowSubdomains,
-        network::mojom::CorsPortMatchMode::kAllowAnyPort,
-        network::mojom::CorsOriginAccessMatchPriority::kMaxPriority));
+    std::vector<const char*> hosts = {chrome::kChromeUIThemeHost};
+    // chrome://webui-test only exists in browser tests, and is only granted
+    // when the test-only switch is set. WebUI test helpers served from it
+    // import from chrome://resources, so that host is granted alongside it.
+    if (extensions::csp_validator::IsWebUITestAllowedForLocation(
+            extension.location())) {
+      hosts.push_back(content::kChromeUIResourcesHost);
+      hosts.push_back(chrome::kChromeUIWebUITestHost);
+    }
+    for (const char* host : hosts) {
+      origin_patterns->push_back(network::mojom::CorsOriginPattern::New(
+          content::kChromeUIScheme, host, /*port=*/0,
+          network::mojom::CorsDomainMatchMode::kDisallowSubdomains,
+          network::mojom::CorsPortMatchMode::kAllowAnyPort,
+          network::mojom::CorsOriginAccessMatchPriority::kMaxPriority));
+    }
   }
 
   // TODO(jstritar): We should try to remove this special case. Also, these

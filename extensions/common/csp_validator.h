@@ -145,6 +145,14 @@ bool DoesCSPDisallowRemoteCode(const std::string& extension_id,
 // chrome://resources in its Content Security Policy.
 bool IsExtensionAllowedToUseChromeResources(const std::string& extension_id);
 
+// Returns true if extensions at `location` may use chrome://webui-test in their
+// Content Security Policy. This requires a built-in component extension and the
+// test-only --allow-webui-test-in-component-extensions switch. WebUI pages are
+// not subject to this check; see
+// `switches::kAllowWebUITestInComponentExtensions` for why extensions are
+// gated.
+bool IsWebUITestAllowedForLocation(mojom::ManifestLocation location);
+
 }  // namespace csp_validator
 
 }  // namespace extensions

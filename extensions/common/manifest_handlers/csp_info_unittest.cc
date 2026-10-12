@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "components/version_info/channel.h"
@@ -17,6 +18,7 @@
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/sandboxed_page_info.h"
 #include "extensions/common/manifest_test.h"
+#include "extensions/common/switches.h"
 
 namespace extensions {
 
@@ -671,6 +673,54 @@ TEST_F(CSPInfoUnitTest, SandboxedPagesInvalidCharacters) {
   LoadAndExpectError(manifest_data,
                      GetInvalidManifestKeyError(
                          keys::kContentSecurityPolicy_SandboxedPagesPath));
+}
+
+TEST_F(CSPInfoUnitTest, ComponentExtensionWebUITestCSP) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Component Extension with WebUI Test CSP",
+           "manifest_version": 3,
+           "version": "0.1",
+           "content_security_policy": {
+             "extension_pages":
+                 "script-src 'self' chrome://webui-test; object-src 'self';"
+           }
+         })";
+
+  ManifestData manifest_data(base::test::ParseJsonDict(kManifest));
+  const std::string expected_error = ErrorUtils::FormatErrorMessage(
+      errors::kInvalidCSPInsecureValueError,
+      keys::kContentSecurityPolicy_ExtensionPagesPath, "chrome://webui-test",
+      "script-src");
+
+  // Listing chrome://webui-test in the manifest is not enough on its own:
+  // without the test-only switch, component extensions are rejected.
+  LoadAndExpectError(manifest_data, expected_error,
+                     mojom::ManifestLocation::kComponent);
+
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      switches::kAllowWebUITestInComponentExtensions);
+
+  // With the switch, component extensions can specify chrome://webui-test in
+  // extension_pages CSP.
+  scoped_refptr<Extension> extension =
+      LoadAndExpectSuccess(manifest_data, mojom::ManifestLocation::kComponent);
+  ASSERT_TRUE(extension);
+  EXPECT_EQ("script-src 'self' chrome://webui-test; object-src 'self';",
+            CSPInfo::GetExtensionPagesCSP(extension.get()));
+  EXPECT_EQ(
+      "script-src 'self' chrome://webui-test 'wasm-unsafe-eval' "
+      "'inline-speculation-rules'; object-src 'self';",
+      *CSPInfo::GetMinimumCSPToAppend(*extension, "/test.html",
+                                      /*is_service_worker=*/false));
+
+  // External component and non-component extensions cannot use
+  // chrome://webui-test, even with the switch.
+  LoadAndExpectError(manifest_data, expected_error,
+                     mojom::ManifestLocation::kExternalComponent);
+  LoadAndExpectError(manifest_data, expected_error,
+                     mojom::ManifestLocation::kInternal);
 }
 
 }  // namespace extensions

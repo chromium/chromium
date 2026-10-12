@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -28,6 +29,7 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/install_warning.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/switches.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 
 namespace extensions::csp_validator {
@@ -70,6 +72,7 @@ constexpr std::string_view kHashSourcePrefixes[] = {
 };
 
 constexpr char kChromeResourcesUrl[] = "chrome://resources";
+constexpr char kChromeWebUITestUrl[] = "chrome://webui-test";
 constexpr const char* const kExtensionsAllowedToUseChromeResources[] = {
     extension_misc::kChromeVoxExtensionId,
     extension_misc::kIndigoExtensionId,
@@ -744,6 +747,14 @@ bool DoesCSPDisallowRemoteCode(const std::string& extension_id,
             return true;
           }
 
+          if (source_lower == kChromeWebUITestUrl &&
+              IsWebUITestAllowedForLocation(location)) {
+            // chrome://webui-test only exists in browser tests. Built-in
+            // component extensions may load test helpers from it when the
+            // test-only switch is set.
+            return true;
+          }
+
           return source_lower == kSelfSource || source_lower == kNoneSource ||
                  IsLocalHostSource(source_lower) ||
                  source_lower == kWasmUnsafeEvalSource;
@@ -786,6 +797,12 @@ bool DoesCSPDisallowRemoteCode(const std::string& extension_id,
 bool IsExtensionAllowedToUseChromeResources(const std::string& extension_id) {
   return std::ranges::contains(kExtensionsAllowedToUseChromeResources,
                                extension_id);
+}
+
+bool IsWebUITestAllowedForLocation(mojom::ManifestLocation location) {
+  return location == mojom::ManifestLocation::kComponent &&
+         base::CommandLine::ForCurrentProcess()->HasSwitch(
+             switches::kAllowWebUITestInComponentExtensions);
 }
 
 }  // namespace extensions::csp_validator

@@ -15,6 +15,8 @@ const char kAllowHTTPBackgroundPage[] = "allow-http-background-page";
 const char kAllowLegacyExtensionManifests[] =
     "allow-legacy-extension-manifests";
 const char kAllowlistedExtensionID[] = "allowlisted-extension-id";
+const char kAllowWebUITestInComponentExtensions[] =
+    "allow-webui-test-in-component-extensions";
 const char kEmbeddedExtensionOptions[] = "embedded-extension-options";
 const char kEnableBLEAdvertising[] = "enable-ble-advertising-in-apps";
 const char kEnableExperimentalExtensionApis[] =

@@ -12,11 +12,13 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_command_line.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/install_warning.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
+#include "extensions/common/switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using extensions::ErrorUtils;
@@ -771,5 +773,52 @@ TEST(ExtensionCSPValidator, DoesCSPDisallowRemoteCodeChromeResources) {
       "chrome://resources", "script-src");
   EXPECT_FALSE(extensions::csp_validator::DoesCSPDisallowRemoteCode(
       extension_misc::kPdfExtensionId, location, policy, kManifestKey, &error));
+  EXPECT_EQ(base::ASCIIToUTF16(expected_error), error);
+}
+
+TEST(ExtensionCSPValidator, DoesCSPDisallowRemoteCodeChromeWebUITest) {
+  const char* kManifestKey = "mock_key";
+  const char* policy =
+      "default-src 'none'; script-src 'self' chrome://webui-test;";
+  const std::string expected_error = ErrorUtils::FormatErrorMessage(
+      extensions::manifest_errors::kInvalidCSPInsecureValueError, kManifestKey,
+      "chrome://webui-test", "script-src");
+  std::u16string error;
+
+  // Without the test-only switch, even component extensions cannot access
+  // chrome://webui-test.
+  EXPECT_FALSE(extensions::csp_validator::DoesCSPDisallowRemoteCode(
+      extension_misc::kPdfExtensionId,
+      extensions::mojom::ManifestLocation::kComponent, policy, kManifestKey,
+      &error));
+  EXPECT_EQ(base::ASCIIToUTF16(expected_error), error);
+
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      extensions::switches::kAllowWebUITestInComponentExtensions);
+
+  // With the switch, component extensions can access chrome://webui-test.
+  error.clear();
+  EXPECT_TRUE(extensions::csp_validator::DoesCSPDisallowRemoteCode(
+      extension_misc::kPdfExtensionId,
+      extensions::mojom::ManifestLocation::kComponent, policy, kManifestKey,
+      &error));
+  EXPECT_EQ(u"", error);
+
+  // External component extensions are installed from an update URL, so they
+  // cannot access chrome://webui-test even with the switch.
+  EXPECT_FALSE(extensions::csp_validator::DoesCSPDisallowRemoteCode(
+      extension_misc::kPdfExtensionId,
+      extensions::mojom::ManifestLocation::kExternalComponent, policy,
+      kManifestKey, &error));
+  EXPECT_EQ(base::ASCIIToUTF16(expected_error), error);
+
+  // Non-component extensions cannot access chrome://webui-test even with the
+  // switch.
+  error.clear();
+  EXPECT_FALSE(extensions::csp_validator::DoesCSPDisallowRemoteCode(
+      extension_misc::kPdfExtensionId,
+      extensions::mojom::ManifestLocation::kInternal, policy, kManifestKey,
+      &error));
   EXPECT_EQ(base::ASCIIToUTF16(expected_error), error);
 }
