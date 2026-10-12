@@ -184,22 +184,16 @@ Color DefaultBackgroundColor(
     SearchTextIsActiveMatch search_text_is_active_match) {
   switch (pseudo) {
     case kPseudoIdSelection:
-      if (is_read_back_allowed_rendering ||
-          document.GetFrame()->Selection().FrameIsFocusedAndActive()) {
-        // CSS Color 4 defines `Highlight` as the background of selected items,
-        // so active selection and the `Highlight` system color should match,
-        // even when not preserving privacy.
-        // https://www.w3.org/TR/css-color-4/#valdef-color-highlight
-        //
-        // `Highlight` does not use the accent color, so we do not need to check
-        // if it can be exposed.
+      if (is_read_back_allowed_rendering) {
         return LayoutTheme::GetTheme().SystemColor(
             CSSValueID::kHighlight, color_scheme,
-            document.GetColorProviderForPainting(color_scheme),
-            /*can_expose_accent_color=*/false);
+            document.GetColorProviderForPainting(color_scheme), false);
       }
-      return LayoutTheme::GetTheme().InactiveSelectionBackgroundColor(
-          color_scheme);
+      return document.GetFrame()->Selection().FrameIsFocusedAndActive()
+                 ? LayoutTheme::GetTheme().ActiveSelectionBackgroundColor(
+                       color_scheme)
+                 : LayoutTheme::GetTheme().InactiveSelectionBackgroundColor(
+                       color_scheme);
     case kPseudoIdSearchText:
       return LayoutTheme::GetTheme().PlatformTextSearchHighlightColor(
           search_text_is_active_match == SearchTextIsActiveMatch::kYes,
