@@ -48,6 +48,12 @@
                      disabled:(BOOL)disabled;
 
 - (instancetype)initWithTitle:(NSString*)title
+                     subtitle:(NSString*)subtitle
+                        image:(UIImage*)image
+                         type:(ComposeboxMenuItemType)type
+                     disabled:(BOOL)disabled;
+
+- (instancetype)initWithTitle:(NSString*)title
                         image:(UIImage*)image
                          type:(ComposeboxMenuItemType)type;
 

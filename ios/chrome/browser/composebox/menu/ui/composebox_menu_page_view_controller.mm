@@ -122,6 +122,11 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
   [self setUpCollectionView];
   [self setUpDataSource];
   [self applySnapshot];
+
+  if (_menuPageType == ComposeboxMenuPageType::kSecondaryPage) {
+    self.title =
+        l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_MORE_OPTIONS_MENU_TITLE);
+  }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -316,8 +321,7 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
 - (NSArray<ComposeboxMenuItem*>*)availableAttachmentItems {
   CHECK(_inputState);
   ComposeboxMenuItem* currentTabItem = [[ComposeboxMenuItem alloc]
-      initWithTitle:l10n_util::GetNSString(
-                        IDS_IOS_COMPOSEBOX_MENU_ADD_CURRENT_TAB_ACTION)
+      initWithTitle:[self currentTabTitle]
               image:SymbolWithPointSize(SymbolGlobe, kSymbolActionPointSize)
                type:ComposeboxMenuItemType::kCurrentTab
            disabled:[_inputState isAttachmentDisabled:
@@ -711,6 +715,7 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
       [toolsItems
           addObject:[[ComposeboxMenuItem alloc]
                         initWithTitle:[uiConfig menuLabelForTool:mode]
+                             subtitle:[uiConfig menuSubtitleForTool:mode]
                                 image:[uiConfig iconForTool:mode]
                                  type:MenuItemTypeForTool(mode)
                              disabled:[_inputState isToolDisabled:mode]]];
@@ -782,8 +787,7 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
     }
 
     ComposeboxMenuItem* currentTabItem = [[ComposeboxMenuItem alloc]
-        initWithTitle:l10n_util::GetNSString(
-                          IDS_IOS_COMPOSEBOX_MENU_ADD_CURRENT_TAB_ACTION)
+        initWithTitle:[self currentTabTitle]
                 image:icon
                  type:ComposeboxMenuItemType::kCurrentTab
              disabled:[_inputState
@@ -794,13 +798,13 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
 
   ComposeboxUIConfig* uiConfig = _inputState.uiConfig;
   if (![_inputState isToolHidden:ComposeboxMode::kAIM]) {
-    [moreOptionsItems
-        addObject:[[ComposeboxMenuItem alloc]
-                      initWithTitle:[uiConfig
-                                        menuLabelForTool:ComposeboxMode::kAIM]
-                              image:[uiConfig iconForTool:ComposeboxMode::kAIM]
-                               type:MenuItemTypeForTool(ComposeboxMode::kAIM)
-                           disabled:NO]];
+    ComposeboxMenuItem* aimItem = [[ComposeboxMenuItem alloc]
+        initWithTitle:[uiConfig menuLabelForTool:ComposeboxMode::kAIM]
+             subtitle:[uiConfig menuSubtitleForTool:ComposeboxMode::kAIM]
+                image:[uiConfig iconForTool:ComposeboxMode::kAIM]
+                 type:MenuItemTypeForTool(ComposeboxMode::kAIM)
+             disabled:NO];
+    [moreOptionsItems addObject:aimItem];
   }
 
   ComposeboxMenuItem* moreOptionsItem = [[ComposeboxMenuItem alloc]
@@ -814,6 +818,15 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
       initWithTitle:nil
               items:moreOptionsItems
          identifier:ComposeboxMenuSectionIdentifier::kMoreOptionsSubmenu];
+}
+
+// The title used for the current tab item.
+- (NSString*)currentTabTitle {
+  return IsPlusButtonMenuStringUpdatesEnabled()
+             ? l10n_util::GetNSString(
+                   IDS_IOS_COMPOSEBOX_ASK_ABOUT_THIS_PAGE_ACTION)
+             : l10n_util::GetNSString(
+                   IDS_IOS_COMPOSEBOX_MENU_ADD_CURRENT_TAB_ACTION);
 }
 
 @end

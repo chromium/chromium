@@ -1926,6 +1926,15 @@
       <message name="IDS_IOS_COMPOSEBOX_MENU_SHARED_TABS" desc="The Composebox menu title for shared tabs section. [iOS only].">
         Shared tabs
       </message>
+      <message name="IDS_IOS_COMPOSEBOX_MENU_SUBITITLE_AIM" desc="The Composebox menu option subtitle for AIM. [iOS only].">
+        Smarter, faster answers
+      </message>
+      <message name="IDS_IOS_COMPOSEBOX_MENU_SUBITITLE_CANVAS" desc="The Composebox menu option subtitle for canvas. [iOS only].">
+        Code, write or make slides
+      </message>
+      <message name="IDS_IOS_COMPOSEBOX_MENU_SUBITITLE_IMAGE_GENERATION" desc="The Composebox menu option subtitle for image generation. [iOS only].">
+        Visualize and edit
+      </message>
       <message name="IDS_IOS_COMPOSEBOX_MENU_TAB_NO_LONGER_SHARED" desc="Message shown in a snackbar after a tab is removed from the shared list. [iOS only].">
         Tab removed
       </message>

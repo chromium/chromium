@@ -1707,6 +1707,12 @@ inline constexpr char kPlusButtonMenuMoreOptionsSubmenuDescription[] =
     "When enabled, the full list of options in the plus menu is grouped in a "
     "submenu.";
 
+inline constexpr char kPlusButtonMenuStringUpdatesName[] =
+    "Use the updated strings in the plus button menu.";
+inline constexpr char kPlusButtonMenuStringUpdatesDescription[] =
+    "When enabled, the updated strings and subtitles are shown in the plus "
+    "button menu";
+
 inline constexpr char kPriceTrackingPromoName[] =
     "Enables price tracking notification promo card";
 inline constexpr char kPriceTrackingPromoDescription[] =

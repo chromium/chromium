@@ -850,6 +850,12 @@ BASE_DECLARE_FEATURE(kPlusButtonMenuMoreOptionsSubmenu);
 // Returns true if the submenu groupping is enabled in the plus menu.
 bool IsPlusButtonMenuMoreOptionsSubmenu();
 
+// Enables the string updates in the plus button menu.
+BASE_DECLARE_FEATURE(kPlusButtonMenuStringUpdates);
+
+// Returns true if the string updates in the plus button menu.
+bool IsPlusButtonMenuStringUpdatesEnabled();
+
 // Enables the `AssistantAimMinimizedState` feature.
 BASE_DECLARE_FEATURE(kAssistantAimMinimizedState);
 

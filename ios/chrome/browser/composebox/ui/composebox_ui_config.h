@@ -71,6 +71,9 @@
 // Returns the menu label for the given tool.
 - (NSString*)menuLabelForTool:(ComposeboxMode)tool;
 
+// Returns the menu subtitle for the given tool.
+- (NSString*)menuSubtitleForTool:(ComposeboxMode)tool;
+
 // Returns the chip label for the given tool.
 - (NSString*)chipLabelForTool:(ComposeboxMode)tool;
 

@@ -67,6 +67,20 @@
 }
 
 - (instancetype)initWithTitle:(NSString*)title
+                     subtitle:(NSString*)subtitle
+                        image:(UIImage*)image
+                         type:(ComposeboxMenuItemType)type
+                     disabled:(BOOL)disabled {
+  return [self initWithTitle:title
+                    subtitle:subtitle
+                    favicons:nil
+                       image:image
+                        type:type
+                    disabled:disabled
+                     favicon:nil];
+}
+
+- (instancetype)initWithTitle:(NSString*)title
                         image:(UIImage*)image
                          type:(ComposeboxMenuItemType)type {
   return [self initWithTitle:title

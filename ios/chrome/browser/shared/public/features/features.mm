@@ -1064,6 +1064,14 @@ bool IsPlusButtonMenuMoreOptionsSubmenu() {
   return base::FeatureList::IsEnabled(kPlusButtonMenuMoreOptionsSubmenu);
 }
 
+// Enables the string updates in the plus button menu.
+BASE_FEATURE(kPlusButtonMenuStringUpdates, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Returns true if the string updates in the plus button menu.
+bool IsPlusButtonMenuStringUpdatesEnabled() {
+  return base::FeatureList::IsEnabled(kPlusButtonMenuStringUpdates);
+}
+
 BASE_FEATURE(kAssistantAimMinimizedState, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsAssistantAimMinimizedStateEnabled() {
