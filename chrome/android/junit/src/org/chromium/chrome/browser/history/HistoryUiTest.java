@@ -46,6 +46,7 @@ import androidx.test.espresso.intent.matcher.IntentMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.hamcrest.Matcher;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -66,6 +67,7 @@ import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
@@ -161,6 +163,7 @@ public class HistoryUiTest {
     private HistoryContentManager mContentManager;
     private RecyclerView mRecyclerView;
     private Activity mActivity;
+    private UserActionTester mUserActionTester;
 
     private HistoryItem mItem1;
     private HistoryItem mItem2;
@@ -201,6 +204,7 @@ public class HistoryUiTest {
 
     @Before
     public void setUp() throws Exception {
+        mUserActionTester = new UserActionTester();
         FeatureOverrides.overrideFlag(
                 SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS,
                 mIsIdentityManagerSourceOfAccounts);
@@ -284,6 +288,11 @@ public class HistoryUiTest {
                 /* shouldClusterByDomain= */ false,
                 /* openHistoryItemCallback= */ null,
                 /* edgeToEdgePadAdjusterGenerator= */ null);
+    }
+
+    @After
+    public void tearDown() {
+        mUserActionTester.tearDown();
     }
 
     @Test
@@ -721,6 +730,7 @@ public class HistoryUiTest {
 
         appFilter.getChipViewForTesting().performClick();
         verify(mAppFilterSheet).openSheet(eq(null));
+        assertEquals(1, mUserActionTester.getActionCount("Android.HistoryPage.OpenAppFilterSheet"));
 
         // Verify ContentManager is updated with the selected app info.
         FilterItem selected = new FilterItem("Ernie", null, appId1);
@@ -729,6 +739,7 @@ public class HistoryUiTest {
                 "The expected app 'Ernie' was not chosen",
                 appFilter.getSelectedItemForTesting(),
                 selected);
+        assertEquals(1, mUserActionTester.getActionCount("Android.HistoryPage.AppFilterSelected"));
 
         FilterItem selected2 = new FilterItem("Bert", null, appId2);
         appFilter.onItemSelected(selected2);
@@ -736,6 +747,7 @@ public class HistoryUiTest {
                 "The expected app 'Bert' was not chosen",
                 appFilter.getSelectedItemForTesting(),
                 selected2);
+        assertEquals(2, mUserActionTester.getActionCount("Android.HistoryPage.AppFilterSelected"));
 
         // Revert to full history.
         appFilter.onItemSelected(null);
@@ -743,6 +755,7 @@ public class HistoryUiTest {
                 "The history was not reverted to full",
                 appFilter.getSelectedItemForTesting(),
                 null);
+        assertEquals(2, mUserActionTester.getActionCount("Android.HistoryPage.AppFilterSelected"));
     }
 
     @EnableFeatures(ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_DOMAIN)
@@ -755,15 +768,19 @@ public class HistoryUiTest {
 
         hostFilter.getChipViewForTesting().performClick();
         verify(mAppFilterSheet).openSheet(eq(null));
+        assertEquals(
+                1, mUserActionTester.getActionCount("Android.HistoryPage.OpenHostFilterSheet"));
 
         FilterItem selectedHost = new FilterItem("www.google.com", null, "www.google.com");
         hostFilter.onItemSelected(selectedHost);
         Assert.assertEquals(selectedHost, hostFilter.getSelectedItemForTesting());
         Assert.assertEquals("www.google.com", mAdapter.getHostNameForTest());
+        assertEquals(1, mUserActionTester.getActionCount("Android.HistoryPage.HostFilterSelected"));
 
         hostFilter.onItemSelected(null);
         Assert.assertNull(hostFilter.getSelectedItemForTesting());
         Assert.assertNull(mAdapter.getHostNameForTest());
+        assertEquals(1, mUserActionTester.getActionCount("Android.HistoryPage.HostFilterSelected"));
     }
 
     @DisableFeatures(ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_DOMAIN)
@@ -897,6 +914,8 @@ public class HistoryUiTest {
 
         clientFilter.getChipViewForTesting().performClick();
         verify(mAppFilterSheet).openSheet(eq(null));
+        assertEquals(
+                1, mUserActionTester.getActionCount("Android.HistoryPage.OpenDeviceFilterSheet"));
 
         // Selecting a client filters by all of its client IDs.
         FilterItem selectedClient =
@@ -904,10 +923,14 @@ public class HistoryUiTest {
         clientFilter.onItemSelected(selectedClient);
         Assert.assertEquals(selectedClient, clientFilter.getSelectedItemForTesting());
         Assert.assertEquals(List.of("client_1", "client_1b"), mAdapter.getClientIdsForTest());
+        assertEquals(
+                1, mUserActionTester.getActionCount("Android.HistoryPage.DeviceFilterSelected"));
 
         clientFilter.onItemSelected(null);
         Assert.assertNull(clientFilter.getSelectedItemForTesting());
         Assert.assertTrue(mAdapter.getClientIdsForTest().isEmpty());
+        assertEquals(
+                1, mUserActionTester.getActionCount("Android.HistoryPage.DeviceFilterSelected"));
     }
 
     @EnableFeatures(ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_DEVICE)
@@ -976,18 +999,26 @@ public class HistoryUiTest {
 
         actorFilter.getChipViewForTesting().performClick();
         verify(mAppFilterSheet).openSheet(eq(null));
+        assertEquals(
+                1, mUserActionTester.getActionCount("Android.HistoryPage.OpenActorFilterSheet"));
 
         actorFilter.onItemSelected(actors.get(0));
         Assert.assertEquals(actors.get(0), actorFilter.getSelectedItemForTesting());
         Assert.assertEquals(ActorFilter.USER, mAdapter.getActorFilterForTest());
+        assertEquals(
+                1, mUserActionTester.getActionCount("Android.HistoryPage.ActorFilterSelected"));
 
         actorFilter.onItemSelected(actors.get(1));
         Assert.assertEquals(actors.get(1), actorFilter.getSelectedItemForTesting());
         Assert.assertEquals(ActorFilter.ACTOR, mAdapter.getActorFilterForTest());
+        assertEquals(
+                2, mUserActionTester.getActionCount("Android.HistoryPage.ActorFilterSelected"));
 
         actorFilter.onItemSelected(null);
         Assert.assertNull(actorFilter.getSelectedItemForTesting());
         Assert.assertEquals(ActorFilter.ANY, mAdapter.getActorFilterForTest());
+        assertEquals(
+                2, mUserActionTester.getActionCount("Android.HistoryPage.ActorFilterSelected"));
     }
 
     @DisableFeatures(ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_ACTOR)
@@ -1048,6 +1079,7 @@ public class HistoryUiTest {
         Assert.assertNull(clientFilter.getSelectedItemForTesting());
         Assert.assertNull(mAdapter.getHostNameForTest());
         Assert.assertTrue(mAdapter.getClientIdsForTest().isEmpty());
+        assertEquals(1, mUserActionTester.getActionCount("Android.HistoryPage.ClearAllFilters"));
     }
 
     @EnableFeatures(ChromeFeatureList.APP_SPECIFIC_HISTORY)

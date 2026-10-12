@@ -470,14 +470,14 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
                         R.string.history_filter_by_host,
                         showHostFilter(),
                         this::onHostFilterUpdated,
-                        /* onSheetOpened= */ null);
+                        mUmaRecorder::recordHostFilterSheetOpened);
         mClientFilter =
                 new HistoryFilterChip(
                         R.id.client_history_filter_chip,
                         R.string.history_filter_by_client,
                         showClientFilter(),
                         this::onClientFilterUpdated,
-                        /* onSheetOpened= */ null);
+                        mUmaRecorder::recordDeviceFilterSheetOpened);
         mActorFilter =
                 new HistoryFilterChip(
                         R.id.actor_history_filter_chip,
@@ -485,7 +485,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
                         /* sheetHeaderResId= */ R.string.history_actor_filter_sheet_header,
                         showActorFilter(),
                         this::onActorFilterUpdated,
-                        /* onSheetOpened= */ null);
+                        mUmaRecorder::recordActorFilterSheetOpened);
         mFilterChips = List.of(mAppFilter, mHostFilter, mClientFilter, mActorFilter);
         // The actor filter offers a fixed set of options, so no query is needed to populate it.
         maybeBuildActorInfoList();
@@ -989,26 +989,39 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     }
 
     private void onAppFilterUpdated(@Nullable FilterItem appInfo) {
+        if (appInfo != null) {
+            mUmaRecorder.recordAppFilterSelected();
+        }
         updateResetFiltersButtonVisibility();
         mHistoryAdapter.updateAppFilter(appInfo);
     }
 
     private void onHostFilterUpdated(@Nullable FilterItem hostInfo) {
+        if (hostInfo != null) {
+            mUmaRecorder.recordHostFilterSelected();
+        }
         updateResetFiltersButtonVisibility();
         mHistoryAdapter.updateHostFilter(hostInfo);
     }
 
     private void onClientFilterUpdated(@Nullable FilterItem clientInfo) {
+        if (clientInfo != null) {
+            mUmaRecorder.recordDeviceFilterSelected();
+        }
         updateResetFiltersButtonVisibility();
         mHistoryAdapter.updateClientFilter(clientInfo);
     }
 
     private void onActorFilterUpdated(@Nullable FilterItem actorInfo) {
+        if (actorInfo != null) {
+            mUmaRecorder.recordActorFilterSelected();
+        }
         updateResetFiltersButtonVisibility();
         mHistoryAdapter.updateActorFilter(actorInfo);
     }
 
     private void resetFilters() {
+        mUmaRecorder.recordClearAllFilters();
         for (HistoryFilterChip chip : mFilterChips) {
             chip.reset();
         }

@@ -3943,6 +3943,31 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Android.HistoryPage.ActorFilterSelected">
+  <owner>dullweber@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <description>
+    User selected an option in the history actor filter sheet.
+  </description>
+</action>
+
+<action name="Android.HistoryPage.AppFilterSelected">
+  <owner>dullweber@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <description>
+    User selected an app in the history app filter sheet.
+  </description>
+</action>
+
+<action name="Android.HistoryPage.ClearAllFilters">
+  <owner>dullweber@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <description>
+    User clicked the clear all button to reset all applied filters on the
+    Android history page.
+  </description>
+</action>
+
 <action name="Android.HistoryPage.ClearBrowsingData">
   <owner>twellington@chromium.org</owner>
   <description>
@@ -3958,6 +3983,22 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Android.HistoryPage.DeviceFilterSelected">
+  <owner>dullweber@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <description>
+    User selected a device in the history device filter sheet.
+  </description>
+</action>
+
+<action name="Android.HistoryPage.HostFilterSelected">
+  <owner>dullweber@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <description>
+    User selected a host in the history host filter sheet.
+  </description>
+</action>
+
 <action name="Android.HistoryPage.LoadMoreOnScroll">
   <owner>twellington@chromium.org</owner>
   <description>
@@ -3966,11 +4007,38 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Android.HistoryPage.OpenActorFilterSheet">
+  <owner>dullweber@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <description>
+    User opened the history actor filter sheet. Reported when user taps the
+    actor filter chip UI to bring up the sheet.
+  </description>
+</action>
+
 <action name="Android.HistoryPage.OpenAppFilterSheet">
   <owner>jinsukkim@chromium.org</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <description>
     User opened the history app filter sheet. Reported when user taps the app
+    filter chip UI to bring up the sheet.
+  </description>
+</action>
+
+<action name="Android.HistoryPage.OpenDeviceFilterSheet">
+  <owner>dullweber@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <description>
+    User opened the history device filter sheet. Reported when user taps the
+    device filter chip UI to bring up the sheet.
+  </description>
+</action>
+
+<action name="Android.HistoryPage.OpenHostFilterSheet">
+  <owner>dullweber@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <description>
+    User opened the history host filter sheet. Reported when user taps the host
     filter chip UI to bring up the sheet.
   </description>
 </action>
