@@ -4,12 +4,17 @@
 
 #include "media/webrtc/voice_isolation/voice_isolation_test_utils.h"
 
+#include <cstddef>
+#include <cstdint>
 #include <vector>
 
 #include "base/base_paths.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
+#include "base/test/insecure_random_generator.h"
+#include "media/webrtc/voice_isolation/stft_voice_isolation.h"
 #include "third_party/tflite/src/tensorflow/lite/model_builder.h"
 #include "third_party/tflite/src/tensorflow/lite/schema/schema_generated.h"
 #include "third_party/tflite/src/tensorflow/lite/version.h"
@@ -19,6 +24,9 @@ namespace media {
 namespace {
 
 constexpr char kTestModelFileName[] = "test_model_1_2_160_2.tflite";
+
+// WindowedFft::ForwardTransform() returns two DFTs per call.
+constexpr size_t kNumDftsPerCall = 2;
 
 }  // namespace
 
@@ -81,6 +89,24 @@ FakeModel BuildModelWithSameInputOutputTensor(int tensor_size) {
       fake_model.buffer.size());
   CHECK(fake_model.model);
   return fake_model;
+}
+
+std::vector<std::vector<float>> MakeNoiseDfts(uint64_t seed,
+                                              size_t dft_size,
+                                              size_t num_calls) {
+  base::test::InsecureRandomGenerator generator;
+  generator.ReseedForTesting(seed);
+  WindowedFft windowed_fft(base::checked_cast<int>(dft_size));
+  std::vector<float> audio(dft_size);
+  std::vector<std::vector<float>> dfts(
+      num_calls, std::vector<float>(kNumDftsPerCall * dft_size));
+  for (std::vector<float>& call_dfts : dfts) {
+    for (float& sample : audio) {
+      sample = static_cast<float>(generator.RandDouble());
+    }
+    windowed_fft.ForwardTransform(audio, call_dfts);
+  }
+  return dfts;
 }
 
 }  // namespace media

@@ -34,7 +34,20 @@
 namespace media {
 namespace {
 
-constexpr int64_t kModelInputSize = 640;
+// The model processes two 16kHz DFTs (20 ms each) per call.
+constexpr size_t kNumFfts = 2;
+
+// Floats per 16kHz DFT.
+constexpr size_t kExpectedFftSize = 320;
+
+// Floats of the model input tensor: all DFTs of a call.
+constexpr size_t kFrameSize = kNumFfts * kExpectedFftSize;
+constexpr int64_t kModelInputSize = static_cast<int64_t>(kFrameSize);
+
+// The model output interleaves its two outputs for each frequency bin: the
+// (re, im) pair of the dereverberated output, then the (re, im) pair of the
+// denoising-only output.
+constexpr size_t kDenoisingOnlyOutputOffset = 2;
 
 bool ValidateModelInterpreter(tflite::Interpreter* interpreter) {
   if (!interpreter) {
@@ -108,16 +121,20 @@ TfLiteVoiceIsolation::TfLiteVoiceIsolation(
       input_tensor_span_(WrapInputTensor(interpreter_.get(), /*index=*/0)),
       output_tensor_span_(WrapOutputTensor(interpreter_.get(), /*index=*/0)),
       bias_(std::move(bias)),
-      frame_size_(input_tensor_span_.size()) {
+      mask_estimation_dfts_(
+          base::AlignedUninit<float>(kFrameSize,
+                                     SpeechMaskEstimator::kDftAlignment)),
+      speech_mask_estimator_(/*dft_size=*/kExpectedFftSize) {
+  CHECK_EQ(input_tensor_span_.size(), kFrameSize);
   CHECK_EQ(interpreter_->inputs().size(), 1u);
   CHECK_EQ(interpreter_->outputs().size(), 1u);
   const size_t output_elements = output_tensor_span_.size();
   CHECK_EQ(bias_.size(), output_elements);
   temp_output_.resize(output_elements);
-  CHECK_EQ(frame_size_ * 2, output_elements);
+  CHECK_EQ(kFrameSize * 2, output_elements);
   CHECK_NE(interpreter_->typed_input_tensor<float>(0),
            interpreter_->typed_output_tensor<float>(0));
-  DVLOG(1) << "TfLiteVoiceIsolation frame_size=" << frame_size_;
+  DVLOG(1) << "TfLiteVoiceIsolation frame_size=" << kFrameSize;
 }
 
 base::expected<std::unique_ptr<TfLiteVoiceIsolation>,
@@ -184,23 +201,20 @@ void TfLiteVoiceIsolation::ProcessAudio(base::span<const float> input_dfts,
   CHECK_EQ(input_dfts.size(), FrameSize());
   CHECK_EQ(output_dfts.size(), FrameSize());
 
-  constexpr size_t num_ffts = 2;
-  const size_t fft_size = input_dfts.size() / num_ffts;
-  constexpr size_t kExpectedFftSize = 320;
-  CHECK_EQ(fft_size, kExpectedFftSize);
-
   // Pack input: move over frequency bins to the inference buffer. Offset by 2
   // since DC and Nyquist component are moved out of the buffer already. The
-  // model takes size `num_ffts * fft_size`. We pad the omitted bins with 0.
-  for (size_t i = 0; i < num_ffts; ++i) {
-    const auto input_slice = input_dfts.subspan(i * fft_size + 2, fft_size - 2);
-    auto tensor_slice = input_tensor_span_.subspan(i * fft_size, fft_size - 2);
+  // model takes size `kModelInputSize`. We pad the omitted bins with 0.
+  for (size_t i = 0; i < kNumFfts; ++i) {
+    const auto input_slice =
+        input_dfts.subspan(i * kExpectedFftSize + 2, kExpectedFftSize - 2);
+    auto tensor_slice =
+        input_tensor_span_.subspan(i * kExpectedFftSize, kExpectedFftSize - 2);
     CHECK_EQ(input_slice.size(), tensor_slice.size());
 
     tensor_slice.copy_from(input_slice);
 
-    input_tensor_span_[(i + 1) * fft_size - 2] = 0.0f;
-    input_tensor_span_[(i + 1) * fft_size - 1] = 0.0f;
+    input_tensor_span_[(i + 1) * kExpectedFftSize - 2] = 0.0f;
+    input_tensor_span_[(i + 1) * kExpectedFftSize - 1] = 0.0f;
   }
 
   {
@@ -214,37 +228,60 @@ void TfLiteVoiceIsolation::ProcessAudio(base::span<const float> input_dfts,
   }
 
   const size_t num_output_channels =
-      temp_output_.size() / (num_ffts * fft_size);
+      temp_output_.size() / (kNumFfts * kExpectedFftSize);
 
   const float dereverb_weight = 1.0f;
 
-  CHECK_EQ(num_ffts, 2u);
   CHECK_EQ(num_output_channels, 2u);
-  CHECK_GE(fft_size, 2u);
 
-  for (size_t i = 0; i < num_ffts; ++i) {
-    const int frame_index = i * fft_size * num_output_channels;
-    const auto input_slice = input_dfts.subspan(i * fft_size, fft_size);
-    const auto output_slice = output_dfts.subspan(i * fft_size, fft_size);
-    CHECK_EQ(output_dfts.size(), static_cast<size_t>(fft_size * 2));
+  // The denoising-only output of the model removes noise but keeps
+  // reverberation. Unpack it like the dereverberated output below, with the DC
+  // and Nyquist components of the input, and estimate the speech mask from it,
+  // so that the mask only reflects the noise that the model removes. This runs
+  // before the output loop, which may overwrite `input_dfts` if it aliases
+  // `output_dfts`.
+  const base::span<float> mask_estimation_dfts(mask_estimation_dfts_);
+  for (size_t i = 0; i < kNumFfts; ++i) {
+    const size_t frame_index = i * kExpectedFftSize * num_output_channels;
+    const base::span<const float> input_slice =
+        input_dfts.subspan(i * kExpectedFftSize, kExpectedFftSize);
+    const base::span<float> denoising_only_slice =
+        mask_estimation_dfts.subspan(i * kExpectedFftSize, kExpectedFftSize);
+
+    denoising_only_slice[0] = input_slice[0];
+    denoising_only_slice[1] = input_slice[1];
+
+    for (size_t j = 0; j < kExpectedFftSize - 2; j += 2) {
+      const size_t denoising_only_index =
+          frame_index + num_output_channels * j + kDenoisingOnlyOutputOffset;
+      denoising_only_slice[j + 2] = temp_output_[denoising_only_index];
+      denoising_only_slice[j + 3] = temp_output_[denoising_only_index + 1];
+    }
+  }
+  speech_mask_estimator_.Estimate(input_dfts, mask_estimation_dfts);
+
+  for (size_t i = 0; i < kNumFfts; ++i) {
+    const size_t frame_index = i * kExpectedFftSize * num_output_channels;
+    const base::span<const float> input_slice =
+        input_dfts.subspan(i * kExpectedFftSize, kExpectedFftSize);
+    const base::span<float> output_slice =
+        output_dfts.subspan(i * kExpectedFftSize, kExpectedFftSize);
 
     // Restore the DC and Nyquist components from the input.
     output_slice[0] = input_slice[0];
     output_slice[1] = input_slice[1];
 
-    for (unsigned int j = 0; j < fft_size - 2; j += 2) {
+    for (size_t j = 0; j < kExpectedFftSize - 2; j += 2) {
       // Channel 0 contains the dereverbed and denoised signal.
-      output_slice[j + 2] =
-          dereverb_weight * temp_output_[frame_index + num_output_channels * j];
-      output_slice[j + 3] =
-          dereverb_weight *
-          temp_output_[frame_index + num_output_channels * j + 1];
+      const size_t dereverb_index = frame_index + num_output_channels * j;
+      output_slice[j + 2] = dereverb_weight * temp_output_[dereverb_index];
+      output_slice[j + 3] = dereverb_weight * temp_output_[dereverb_index + 1];
     }
   }
 }
 
 size_t TfLiteVoiceIsolation::FrameSize() const {
-  return frame_size_;
+  return kFrameSize;
 }
 
 size_t TfLiteVoiceIsolation::FramesPerSecond() const {
@@ -258,6 +295,7 @@ void TfLiteVoiceIsolation::ClearBuffers() {
     // real-time audio thread.
     CHECK_EQ(interpreter_->ResetVariableTensors(), kTfLiteOk);
   }
+  speech_mask_estimator_.Clear();
 }
 
 base::TimeDelta TfLiteVoiceIsolation::AlgorithmicDelay() const {
@@ -265,6 +303,10 @@ base::TimeDelta TfLiteVoiceIsolation::AlgorithmicDelay() const {
   // TODO(crbug.com/568614815): Read lookahead delay from TFLite model metadata
   // so future models can declare lookahead dynamically.
   return base::TimeDelta();
+}
+
+base::span<const float> TfLiteVoiceIsolation::SpeechMask() const {
+  return speech_mask_estimator_.mask();
 }
 
 }  // namespace media

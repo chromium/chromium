@@ -61,7 +61,7 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) WindowedFft {
 
   void ForwardTransform(base::span<const float> input_audio,
                         base::span<float> output_dfts);
-  void InverseTransform(base::span<float> input_dfts,
+  void InverseTransform(base::span<const float> input_dfts,
                         base::span<float> output_audio);
 
   // Clears the internal state.

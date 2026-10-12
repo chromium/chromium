@@ -165,7 +165,7 @@ void WindowedFft::ForwardTransform(base::span<const float> input_audio,
                    forward_buffer_first_half, apply_window);
 }
 
-void WindowedFft::InverseTransform(base::span<float> input_dfts,
+void WindowedFft::InverseTransform(base::span<const float> input_dfts,
                                    base::span<float> output_audio) {
   CHECK_EQ(input_dfts.size(), 2 * fft_size_);
   CHECK_EQ(output_audio.size(), fft_size_);
@@ -187,8 +187,8 @@ void WindowedFft::InverseTransform(base::span<float> input_dfts,
       base::span<const float>(inv_fft_window_).first(fft_size_ / 2);
   const auto window_second_half =
       base::span<const float>(inv_fft_window_).subspan(fft_size_ / 2);
-  base::span<float> input_first_dft = input_dfts.first(fft_size_);
-  base::span<float> input_second_dft = input_dfts.subspan(fft_size_);
+  base::span<const float> input_first_dft = input_dfts.first(fft_size_);
+  base::span<const float> input_second_dft = input_dfts.subspan(fft_size_);
   auto output_audio_first_half = output_audio.first(fft_size_ / 2);
   auto output_audio_second_half = output_audio.subspan(fft_size_ / 2);
 

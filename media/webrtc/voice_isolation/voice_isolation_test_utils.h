@@ -5,7 +5,10 @@
 #ifndef MEDIA_WEBRTC_VOICE_ISOLATION_VOICE_ISOLATION_TEST_UTILS_H_
 #define MEDIA_WEBRTC_VOICE_ISOLATION_VOICE_ISOLATION_TEST_UTILS_H_
 
+#include <cstddef>
+#include <cstdint>
 #include <memory>
+#include <vector>
 
 #include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
 #include "third_party/tflite/src/tensorflow/lite/model_builder.h"
@@ -32,6 +35,15 @@ FakeModel BuildBogusModel();
 // `tensor_size` elements is used as both the single input and single output,
 // and no operators.
 FakeModel BuildModelWithSameInputOutputTensor(int tensor_size);
+
+// Returns the input DFTs of `num_calls` consecutive calls of a component that
+// processes two 50%-overlapping DFTs of `dft_size` floats per call, like
+// TfLiteVoiceIsolation, for uniform white noise generated from `seed`. A
+// WindowedFft analysis, like the one in front of TfLiteVoiceIsolation, makes
+// the DFTs consistent: consecutive DFTs share half of their window.
+std::vector<std::vector<float>> MakeNoiseDfts(uint64_t seed,
+                                              size_t dft_size,
+                                              size_t num_calls);
 
 }  // namespace media
 

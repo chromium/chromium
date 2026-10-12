@@ -15,6 +15,9 @@ source_set("voice_isolation") {
     "buffered_voice_isolation.h",
     "passthrough_voice_isolation.cc",
     "passthrough_voice_isolation.h",
+    "spectral_voice_isolation_component.h",
+    "speech_mask_estimator.cc",
+    "speech_mask_estimator.h",
     "stft_voice_isolation.cc",
     "stft_voice_isolation.h",
     "tflite_voice_isolation.cc",
@@ -59,7 +62,11 @@ source_set("test_support") {
     "voice_isolation_test_utils.cc",
     "voice_isolation_test_utils.h",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//media/webrtc",
+  ]
   public_deps = [
     "//third_party/flatbuffers",
     "//third_party/tflite",
@@ -86,6 +93,7 @@ source_set("unit_tests") {
     "band_split_voice_isolation_unittest.cc",
     "buffered_voice_isolation_unittest.cc",
     "passthrough_voice_isolation_unittest.cc",
+    "speech_mask_estimator_unittest.cc",
     "stft_voice_isolation_unittest.cc",
     "tflite_voice_isolation_unittest.cc",
     "voice_isolation_unittest.cc",

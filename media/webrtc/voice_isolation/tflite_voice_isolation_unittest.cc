@@ -5,10 +5,12 @@
 #include "media/webrtc/voice_isolation/tflite_voice_isolation.h"
 
 #include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/to_vector.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/time/time.h"
 #include "media/webrtc/voice_isolation/voice_isolation_test_utils.h"
@@ -20,6 +22,9 @@
 namespace media {
 namespace {
 
+using ::testing::Each;
+using ::testing::FloatNear;
+
 // Layout of the TfLiteVoiceIsolation frame: two DFTs of `kDftSize` floats
 // each. The first two floats of every DFT hold the DC and Nyquist components,
 // which bypass the model. The remaining `kDftSize - 2` floats are fed to the
@@ -27,6 +32,19 @@ namespace {
 constexpr size_t kNumDfts = 2;
 constexpr size_t kDftSize = 320;
 constexpr size_t kNumBypassedFloats = 2;
+
+// The speech mask has one value per bin, from DC to Nyquist.
+constexpr size_t kSpeechMaskSize = kDftSize / 2 + 1;
+
+// Number of calls of the speech mask tests. The first call primes the
+// overlap-add history of the mask estimation, so the checks of the mask values
+// start at the second one.
+constexpr size_t kNumSpeechMaskCalls = 4;
+constexpr size_t kFirstCheckedSpeechMaskCall = 1;
+
+// Seeds of two different white noise test signals.
+constexpr uint64_t kFirstNoiseSeed = 1;
+constexpr uint64_t kSecondNoiseSeed = 2;
 
 // Constants of the stateful test model.
 constexpr float kModelInputOffset = 1.0f;
@@ -61,10 +79,10 @@ std::vector<float> MakeTestInput(size_t frame_size, int frame_index) {
 //   prev_0 = s, prev_1 = x_0 + 1
 //   y_t = x_t + leaky_relu(0.5 * prev_t)
 //   s <- x_1 + 1
-// The model also outputs a second channel `2 * y_t + 42`, which
-// TfLiteVoiceIsolation must ignore. It is not a constant offset of `y_t`, so
-// reading the wrong channel changes the output even after the bias
-// subtraction.
+// The model also outputs a second channel `2 * y_t + 42`, the denoising-only
+// output, which ProcessAudio() must leave out of its output and estimate the
+// speech mask from. It is not a constant offset of `y_t`, so reading the wrong
+// channel changes the output even after the bias subtraction.
 class StatefulTestModelReference {
  public:
   StatefulTestModelReference() : state_(kDftSize, 0.0f) {}
@@ -106,6 +124,20 @@ class StatefulTestModelReference {
  private:
   std::vector<float> state_;
 };
+
+// Feeds `voice_isolation` the calls of `input_dfts` and returns the speech
+// mask after each call.
+std::vector<std::vector<float>> ProcessAndGetSpeechMasks(
+    TfLiteVoiceIsolation& voice_isolation,
+    const std::vector<std::vector<float>>& input_dfts) {
+  std::vector<std::vector<float>> masks;
+  std::vector<float> output(voice_isolation.FrameSize());
+  for (const std::vector<float>& call_dfts : input_dfts) {
+    voice_isolation.ProcessAudio(call_dfts, output);
+    masks.push_back(base::ToVector(voice_isolation.SpeechMask()));
+  }
+  return masks;
+}
 
 }  // namespace
 
@@ -189,6 +221,120 @@ TEST(TfLiteVoiceIsolation, DISABLED_ClearBuffersRestoresInitialState) {
   voice_isolation->ClearBuffers();
   voice_isolation->ProcessAudio(input, output3);
   EXPECT_EQ(output1, output3);
+}
+
+TEST(TfLiteVoiceIsolation, SpeechMaskStartsAtOne) {
+  std::unique_ptr<tflite::FlatBufferModel> model =
+      LoadVoiceIsolationTestModel();
+  ASSERT_NE(model, nullptr);
+
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<TfLiteVoiceIsolation> voice_isolation,
+                       TfLiteVoiceIsolation::MaybeCreate(model.get()));
+
+  EXPECT_EQ(voice_isolation->SpeechMask().size(), kSpeechMaskSize);
+  EXPECT_THAT(base::ToVector(voice_isolation->SpeechMask()), Each(1.0f));
+}
+
+// Both outputs of the test model equal its input, so the denoising-only output
+// equals the input DFTs and nothing is suppressed.
+// TODO(barrerap): The two outputs are equal, so no test fails if the speech
+// mask is estimated from the dereverberated output. Check the channel with a
+// test model whose outputs differ, such as the stateful one, whose
+// denoising-only output is twice the dereverberated output after the bias
+// subtraction.
+TEST(TfLiteVoiceIsolation, SpeechMaskIsNearOneForIdentityModel) {
+  constexpr float kTolerance = 1e-3f;
+  std::unique_ptr<tflite::FlatBufferModel> model =
+      LoadVoiceIsolationTestModel();
+  ASSERT_NE(model, nullptr);
+
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<TfLiteVoiceIsolation> voice_isolation,
+                       TfLiteVoiceIsolation::MaybeCreate(model.get()));
+
+  const std::vector<std::vector<float>> masks = ProcessAndGetSpeechMasks(
+      *voice_isolation, MakeNoiseDfts(kFirstNoiseSeed, /*dft_size=*/kDftSize,
+                                      /*num_calls=*/kNumSpeechMaskCalls));
+
+  for (size_t call = kFirstCheckedSpeechMaskCall; call < kNumSpeechMaskCalls;
+       ++call) {
+    EXPECT_THAT(masks[call], Each(FloatNear(1.0f, kTolerance)))
+        << "call " << call;
+  }
+}
+
+TEST(TfLiteVoiceIsolation, ProcessAudioSupportsInPlaceAliasing) {
+  std::unique_ptr<tflite::FlatBufferModel> model =
+      LoadVoiceIsolationTestModel();
+  ASSERT_NE(model, nullptr);
+
+  ASSERT_OK_AND_ASSIGN(
+      std::unique_ptr<TfLiteVoiceIsolation> out_of_place_voice_isolation,
+      TfLiteVoiceIsolation::MaybeCreate(model.get()));
+  ASSERT_OK_AND_ASSIGN(
+      std::unique_ptr<TfLiteVoiceIsolation> in_place_voice_isolation,
+      TfLiteVoiceIsolation::MaybeCreate(model.get()));
+
+  const std::vector<std::vector<float>> input_dfts =
+      MakeNoiseDfts(kFirstNoiseSeed, /*dft_size=*/kDftSize,
+                    /*num_calls=*/kNumSpeechMaskCalls);
+  std::vector<float> out_of_place_output(
+      out_of_place_voice_isolation->FrameSize());
+
+  for (size_t call = 0; call < kNumSpeechMaskCalls; ++call) {
+    out_of_place_voice_isolation->ProcessAudio(input_dfts[call],
+                                               out_of_place_output);
+
+    std::vector<float> in_place_buffer = input_dfts[call];
+    in_place_voice_isolation->ProcessAudio(in_place_buffer, in_place_buffer);
+
+    EXPECT_EQ(in_place_buffer, out_of_place_output) << "call " << call;
+    EXPECT_EQ(base::ToVector(in_place_voice_isolation->SpeechMask()),
+              base::ToVector(out_of_place_voice_isolation->SpeechMask()))
+        << "call " << call;
+  }
+}
+
+TEST(TfLiteVoiceIsolation, ClearBuffersResetsSpeechMask) {
+  std::unique_ptr<tflite::FlatBufferModel> model =
+      LoadVoiceIsolationTestModel();
+  ASSERT_NE(model, nullptr);
+
+  // Both signals have the same level: a much louder first signal would mostly
+  // raise the magnitudes of the second one, which the cap of the mask at 1
+  // hides.
+  const std::vector<std::vector<float>> first_signal =
+      MakeNoiseDfts(kFirstNoiseSeed, /*dft_size=*/kDftSize,
+                    /*num_calls=*/kNumSpeechMaskCalls);
+  const std::vector<std::vector<float>> second_signal =
+      MakeNoiseDfts(kSecondNoiseSeed, /*dft_size=*/kDftSize,
+                    /*num_calls=*/kNumSpeechMaskCalls);
+
+  // Reference: a fresh instance fed the second signal.
+  ASSERT_OK_AND_ASSIGN(
+      std::unique_ptr<TfLiteVoiceIsolation> fresh_voice_isolation,
+      TfLiteVoiceIsolation::MaybeCreate(model.get()));
+  const std::vector<std::vector<float>> expected_masks =
+      ProcessAndGetSpeechMasks(*fresh_voice_isolation, second_signal);
+
+  // Without ClearBuffers(), the first signal changes the mask of the second
+  // one. Otherwise this test could not detect whether ClearBuffers() resets the
+  // mask estimation.
+  ASSERT_OK_AND_ASSIGN(
+      std::unique_ptr<TfLiteVoiceIsolation> uncleared_voice_isolation,
+      TfLiteVoiceIsolation::MaybeCreate(model.get()));
+  ProcessAndGetSpeechMasks(*uncleared_voice_isolation, first_signal);
+  ASSERT_NE(ProcessAndGetSpeechMasks(*uncleared_voice_isolation, second_signal),
+            expected_masks);
+
+  // ClearBuffers() resets the mask to all ones, and the mask estimation then
+  // behaves as in a fresh instance.
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<TfLiteVoiceIsolation> voice_isolation,
+                       TfLiteVoiceIsolation::MaybeCreate(model.get()));
+  ProcessAndGetSpeechMasks(*voice_isolation, first_signal);
+  voice_isolation->ClearBuffers();
+  EXPECT_THAT(base::ToVector(voice_isolation->SpeechMask()), Each(1.0f));
+  EXPECT_EQ(ProcessAndGetSpeechMasks(*voice_isolation, second_signal),
+            expected_masks);
 }
 
 // Verifies that attempting to initialize TfLiteVoiceIsolation with a FlatBuffer

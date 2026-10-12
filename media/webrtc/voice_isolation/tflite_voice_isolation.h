@@ -8,12 +8,17 @@
 #include <cstddef>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/aligned_memory.h"
 #include "base/memory/raw_span.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "media/webrtc/voice_isolation/spectral_voice_isolation_component.h"
+#include "media/webrtc/voice_isolation/speech_mask_estimator.h"
 #include "media/webrtc/voice_isolation/voice_isolation_component.h"
 #include "third_party/tflite/src/tensorflow/lite/interpreter.h"
 #include "third_party/tflite/src/tensorflow/lite/model_builder.h"
@@ -21,9 +26,13 @@
 namespace media {
 
 // Denoiser using a TfLite model internally. Ideally the provided model will
-// remove all noise in the input signal preserving only human speech.
+// remove all noise in the input signal preserving only human speech. The model
+// has two outputs: the dereverberated output (noise and reverberation
+// removed), which ProcessAudio() returns, and the denoising-only output (noise
+// removed, reverberation kept), from which the speech mask that SpeechMask()
+// returns is estimated.
 class COMPONENT_EXPORT(MEDIA_WEBRTC) TfLiteVoiceIsolation
-    : public VoiceIsolationComponent {
+    : public SpectralVoiceIsolationComponent {
  public:
   ~TfLiteVoiceIsolation() override;
 
@@ -36,6 +45,13 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) TfLiteVoiceIsolation
   size_t FramesPerSecond() const override;
   void ClearBuffers() override;
   base::TimeDelta AlgorithmicDelay() const override;
+
+  // 161 values, one per bin of the 16kHz DFTs, from DC to Nyquist. Estimated
+  // over the window of the first input DFT of the call (so it lags the second
+  // DFT by 10 ms); see SpectralVoiceIsolationComponent::SpeechMask() for the
+  // boundary limitations at DC (bin 0), Nyquist (bin 160), and the top bins
+  // near 8 kHz (bins 158..160).
+  base::span<const float> SpeechMask() const override;
 
   // `model` needs to outlive this TfLiteVoiceIsolation instance.
   static base::expected<std::unique_ptr<TfLiteVoiceIsolation>,
@@ -51,7 +67,11 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) TfLiteVoiceIsolation
   base::raw_span<float> output_tensor_span_;
   std::vector<float> bias_;
   std::vector<float> temp_output_;
-  const size_t frame_size_;
+
+  // Denoising-only output of the last model call, unpacked into two 16-byte
+  // aligned DFTs for SpeechMaskEstimator::Estimate().
+  base::AlignedHeapArray<float> mask_estimation_dfts_;
+  SpeechMaskEstimator speech_mask_estimator_;
 };
 }  // namespace media
 
