@@ -1779,6 +1779,9 @@ void MenuController::OnMenuItemDestroying(MenuItemView* menu_item) {
 #endif
   UnregisterAlertedItem(menu_item);
 
+  if (result_ == menu_item) {
+    result_ = nullptr;
+  }
   if (pending_state_.item == menu_item) {
     pending_state_.item = nullptr;
   }
