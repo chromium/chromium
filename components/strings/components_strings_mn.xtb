@@ -71,7 +71,6 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" />-д зөвшөөрөл сонгох</translation>
 <translation id="1113000785583998331">Олон улсын банк акаунтны дугаарыг хадгалах уу?</translation>
 <translation id="1113869188872983271">&amp; Дахин эрэмбэлэх үйлдлийг буцаах</translation>
-<translation id="1117709830616495622">Gemini-тай Personal Intelligence-р дэмжсэн.</translation>
 <translation id="111897705806685148">Өөр төхөөрөмжөөс нэвтрэх түлхүүр ашиглах</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Бүртгэлдээ Chrome-н ямар мэдээллийг хадгалахаа удирдахын тулд Tab, дараа нь Enter дээр дарна уу</translation>
 <translation id="1121990216147052230">Надад хийх зүйлсийн жагсаалт гаргаж өгнө үү</translation>
@@ -843,8 +842,6 @@
 <translation id="2384307209577226199">Байгууллагын өгөгдмөл</translation>
 <translation id="2385809941344967209">Chrome-н тохиргоон дээрээс Chrome-г шинэчлэх</translation>
 <translation id="2386255080630008482">Серверийн гэрчилгээг цуцалсан байна.</translation>
-<translation id="2387424091060104123">Gemini-с санал болгосон · <ph name="SRC_LINK" />Эх сурвалжуудыг харах<ph name="END_SRC_LINK" />
-Та энэ зөвлөмжийг Chrome-с хасах боломжтой. Таны эх сурвалжийг устгахгүй. <ph name="MANAGE_LINK" />Сайжруулсан автомат бөглөлтийг удирдах<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">Сайтар боловсруулах</translation>
 <translation id="2392959068659972793">Утга нь тодорхойлогдоогүй журмуудыг харуул</translation>
 <translation id="239429038616798445">Хүргэлтийн энэ арга боломжгүй тул өөр арга сонгоно уу.</translation>
@@ -3899,7 +3896,6 @@
 <translation id="7514365320538308">Татаж авах</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">VR-г энэ удаад зөвшөөрсөн</translation>
-<translation id="7517198908921983825">Gemini-с санал болгосон · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Дугтуй C10</translation>
 <translation id="7518003948725431193">Энэ веб хаягаар хайхад тохирох хуудас олдсонгүй: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -4394,7 +4390,6 @@
 <translation id="8350416046273606058">Товчлол зай агуулах боломжгүй: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Тэмдэглэл үүсгэх</translation>
 <translation id="8352849934814541340">Энэ төхөөрөмжийн администратор нэмэлт функцэд зориулж аппликэйшнүүдийг суулгасан. Аппликэйшнүүд таны зарим өгөгдөлд хандах эрхтэй.</translation>
-<translation id="8353273112634584260">Gemini-тай Personal Intelligence-р дэмжсэн. Сайжруулсан автомат бөглөлтийг сайжруулахын тулд таны хүсэлт, хуудасны гарчиг, URL-г хянаж магадгүй.</translation>
 <translation id="8355270400102541638">Дотоод гэмтлийн контекст:</translation>
 <translation id="8362914115861174987">Дараах руу орчуулах</translation>
 <translation id="8363502534493474904">Нислэгийн горимыг унтрааж байна</translation>
@@ -4574,7 +4569,6 @@
 <translation id="8699041776323235191">HID төхөөрөмж</translation>
 <translation id="8699985386408839112">Каку дугтуй 1</translation>
 <translation id="8702965365666568344">Тогтоогч тууз</translation>
-<translation id="8703242769654966101">Wallet-д Pix-г идэвхжүүлнэ үү</translation>
 <translation id="8703372953981978786">Энэ холбоос ажиллахгүй байна</translation>
 <translation id="8703575177326907206">Таны <ph name="DOMAIN" /> руу холбогдох холболтыг шифрлээгүй байна.</translation>
 <translation id="8705331520020532516">Сери дугаар</translation>
@@ -4742,7 +4736,6 @@
 <translation id="9001074447101275817"><ph name="DOMAIN" /> прокси нь хэрэглэгчийн нэр, нууц үг шаарддаг.</translation>
 <translation id="9001963517402879850">Үсэр!</translation>
 <translation id="9002677862950442746">Баталгаажуулах код: <ph name="OTP" /></translation>
-<translation id="9003263770394939629">Gemini-с санал болгосон. Сайжруулсан автоматаар бөглөх хэсгийг тохиргооноос удирдана уу.</translation>
 <translation id="9003639428623471314">Кахү дугтуй</translation>
 <translation id="9004367719664099443">Виртуал орчны (VR) харилцан үйлдлийг хийж байна</translation>
 <translation id="9005998258318286617">PDF документыг ачаалж чадсангүй.</translation>
@@ -4761,7 +4754,6 @@
 <translation id="9027531288681624875">Бүтэн дэлгэцээс гарахын тулд |<ph name="ACCELERATOR" />|-г удаан дарна уу</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Аюулгүй байдлын алдаа</translation>
-<translation id="9035699147763101514">Gemini-тай Personal Intelligence-р дэмжсэн. Тохиргооноос сонголтуудаа удирдана уу.</translation>
 <translation id="9035824888276246493">Аюулгүй байдлын кодуудыг хадгалах</translation>
 <translation id="9036306139374661733">Микрофоныг зөвшөөрөх үү?</translation>
 <translation id="9036484080057916082">Гарын үсэг зурсан сертификатын хугацаа тэмдэглэгчийн жагсаалт</translation>

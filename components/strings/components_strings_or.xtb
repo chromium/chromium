@@ -71,7 +71,6 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" />ପାଇଁ ଅନୁମତି ଚୟନ କରନ୍ତୁ</translation>
 <translation id="1113000785583998331">IBAN ସେଭ କରିବେ?</translation>
 <translation id="1113869188872983271">&amp;ପୁନଃକ୍ରମକୁ ପୂର୍ବବତ୍‌ କରନ୍ତୁ</translation>
-<translation id="1117709830616495622">Gemini ସହ ପର୍ସନାଲ ଇଣ୍ଟେଲିଜେନ୍ସ ଦ୍ୱାରା ପରିଚାଳିତ।</translation>
 <translation id="111897705806685148">ଅନ୍ୟ ଏକ ଡିଭାଇସରୁ ପାସକୀ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ଆପଣ କେଉଁ Chrome ସୂଚନା ସେଭ କରନ୍ତି ତାହା ପରିଚାଳନା କରିବାକୁ ଟାବ ତା'ପରେ ଏଣ୍ଟର ଦବାନ୍ତୁ</translation>
 <translation id="1121990216147052230">ମୋ ପାଇଁ ଏକ ଟୁ-ଡୁ ତାଲିକା ତିଆରି କରନ୍ତୁ</translation>
@@ -843,8 +842,6 @@
 <translation id="2384307209577226199">ଏଣ୍ଟର୍‌ପ୍ରାଇଜ୍ ଡିଫଲ୍ଟ</translation>
 <translation id="2385809941344967209">ଆପଣଙ୍କ Chrome ସେଟିଂସରୁ Chrome ଅପଡେଟ୍ କରନ୍ତୁ</translation>
 <translation id="2386255080630008482">ସର୍ଭରର ସାର୍ଟିଫିକେଟଟି ପ୍ରତ୍ୟାହାର କରାଯାଇଛି।</translation>
-<translation id="2387424091060104123">Gemini ଦ୍ୱାରା ପରାମର୍ଶ ଦିଆଯାଇଛି · <ph name="SRC_LINK" />ସୋର୍ସଗୁଡ଼ିକୁ ଭ୍ୟୁ କରନ୍ତୁ<ph name="END_SRC_LINK" />
-ଆପଣ Chromeରୁ ଏହି ପରାମର୍ଶକୁ କାଢ଼ି ଦେଇପାରିବେ। ଆପଣଙ୍କ ମୂଳ ସୋର୍ସ ଡିଲିଟ ହେବ ନାହିଁ। <ph name="MANAGE_LINK" />ଉନ୍ନତ ଅଟୋଫିଲକୁ ପରିଚାଳନା କରନ୍ତୁ<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">ବିସ୍ତୃତ କରନ୍ତୁ</translation>
 <translation id="2392959068659972793">କୌଣସି ମୂଲ୍ୟ ସେଟ୍‍ କରାଯାଇନଥିବା ନୀତିଗୁଡ଼ିକ ଦେଖାନ୍ତୁ</translation>
 <translation id="239429038616798445">ପଠାଇବାର ଏହି ପଦ୍ଧତି ଉପଲବ୍ଧ ନାହିଁ। ଅନ୍ୟ ଏକ ପଦ୍ଧତି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
@@ -3895,7 +3892,6 @@
 <translation id="7514365320538308">ଡାଉନ୍‌‌ଲୋଡ୍‌ କରନ୍ତୁ</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">ଏହି ଥର VRକୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
-<translation id="7517198908921983825">Gemini ଦ୍ୱାରା ପରାମର୍ଶ ଦିଆଯାଇଛି · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">ଏନଭେଲପ C10</translation>
 <translation id="7518003948725431193">ଏହି ୱେବ୍ ଠିକଣା ପାଇଁ କୌଣସି ୱେବ୍‌ପୃଷ୍ଠା ମିଳିଲା ନାହିଁ: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -4390,7 +4386,6 @@
 <translation id="8350416046273606058">ସର୍ଟକଟରେ ସ୍ପେସ ରହିପାରିବ ନାହିଁ: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">ନୋଟ୍ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="8352849934814541340">ଅତିରିକ୍ତ ଫଙ୍କସନ ପାଇଁ ଏହି ଡିଭାଇସର ଆଡମିନିଷ୍ଟ୍ରେଟର ଆପ୍ଲିକେସନଗୁଡ଼ିକୁ ଇନଷ୍ଟଲ କରିଛନ୍ତି। ଆପ୍ଲିକେସନଗୁଡ଼ିକର ଆପଣଙ୍କର କିଛି ଡାଟାକୁ ଆକ୍ସେସ ଅଛି।</translation>
-<translation id="8353273112634584260">Gemini ସହ ପର୍ସନାଲ ଇଣ୍ଟେଲିଜେନ୍ସ ଦ୍ୱାରା ପରିଚାଳିତ। ଉନ୍ନତ ଅଟୋଫିଲକୁ ଉନ୍ନତ କରିବା ପାଇଁ ଆପଣଙ୍କ ଅନୁରୋଧ, ପୃଷ୍ଠା ଟାଇଟେଲ ଏବଂ URLଗୁଡ଼ିକୁ ରିଭ୍ୟୁ କରାଯାଇପାରେ।</translation>
 <translation id="8355270400102541638">ସ୍ଥାନୀୟ କ୍ରାସ୍ ପ୍ରସଙ୍ଗ:</translation>
 <translation id="8362914115861174987">ଏଥିକୁ ଅନୁବାଦ କରନ୍ତୁ</translation>
 <translation id="8363502534493474904">ଏରୋପ୍ଲେନ୍ ମୋଡ୍ ବନ୍ଦ କରନ୍ତୁ</translation>
@@ -4570,7 +4565,6 @@
 <translation id="8699041776323235191">HID ଡିଭାଇସ୍</translation>
 <translation id="8699985386408839112">ଏନଭେଲପ କାକୁ 1</translation>
 <translation id="8702965365666568344">ମାଉଣ୍ଟିଂ ଟେପ</translation>
-<translation id="8703242769654966101">Walletରେ Pixକୁ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="8703372953981978786">ଏହି ଲିଙ୍କଟି କାମ କରୁନାହିଁ</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> ସହ ଆପଣଙ୍କର ସଂଯୋଜନା ଏନକ୍ରିପ୍ଟ ହୋଇ ନାହିଁ ।</translation>
 <translation id="8705331520020532516">କ୍ରମିକ ସଂଖ୍ୟା</translation>
@@ -4738,7 +4732,6 @@
 <translation id="9001074447101275817">ପ୍ରକ୍ସି <ph name="DOMAIN" /> ଏକ ୟୁଜରନେମ ଓ ପାସୱାର୍ଡ ଆବଶ୍ୟକ କରେ।</translation>
 <translation id="9001963517402879850">ଜମ୍ପ୍ କରନ୍ତୁ!</translation>
 <translation id="9002677862950442746">ଯାଞ୍ଚକରଣ କୋଡ: <ph name="OTP" /></translation>
-<translation id="9003263770394939629">Gemini ଦ୍ୱାରା ପରାମର୍ଶ ଦିଆଯାଇଛି। ସେଟିଂସରେ ଉନ୍ନତ ଅଟୋଫିଲକୁ ପରିଚାଳନା କରନ୍ତୁ।</translation>
 <translation id="9003639428623471314">ଏନଭେଲପ କାହୁ</translation>
 <translation id="9004367719664099443">VR ସମୟ ଅବଧି ପ୍ରକ୍ରିୟାରତ ଅଛି</translation>
 <translation id="9005998258318286617">PDF ଡକ୍ୟୁମେଣ୍ଟ ଲୋଡ୍ ହେବାରେ ବିଫଳ ହେଲା।</translation>
@@ -4757,7 +4750,6 @@
 <translation id="9027531288681624875">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନରୁ ବାହାରି ଯିବା ପାଇଁ |<ph name="ACCELERATOR" />|କୁ ଦବାଇ ଧରି ରଖନ୍ତୁ</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">ସୁରକ୍ଷା ତ୍ରୁଟି</translation>
-<translation id="9035699147763101514">Gemini ସହ ପର୍ସନାଲ ଇଣ୍ଟେଲିଜେନ୍ସ ଦ୍ୱାରା ପରିଚାଳିତ। ସେଟିଂସରେ ଆପଣଙ୍କ ପସନ୍ଦଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ।</translation>
 <translation id="9035824888276246493">ସୁରକ୍ଷା କୋଡଗୁଡ଼ିକୁ ସେଭ କରନ୍ତୁ</translation>
 <translation id="9036306139374661733">ମାଇକ୍ରୋଫୋନ୍ ଅନୁମତି ଦେବେ?</translation>
 <translation id="9036484080057916082">ସାଇନ କରାଯାଇଥିବା ସାର୍ଟିଫିକେଟ ଟାଇମଷ୍ଟାମ୍ପ ତାଲିକା</translation>

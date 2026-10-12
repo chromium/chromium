@@ -71,7 +71,6 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> සඳහා අවසරය තෝරන්න</translation>
 <translation id="1113000785583998331">IBAN සුරකින්න ද?</translation>
 <translation id="1113869188872983271">යළි ඇණවුම් කිරීම &amp;පසුගමනය කරන්න</translation>
-<translation id="1117709830616495622">Gemini සමග පුද්ගලික බුද්ධිය මඟින් බලගන්වයි.</translation>
 <translation id="111897705806685148">වෙනත් උපාංගයකින් මුරයතුර භාවිතා කරන්න</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, ඔබ ඔබේ Google ගිණුමේ සුරකින Chrome තතු කළමනාකරණය කිරීමට Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
 <translation id="1121990216147052230">මට කළ යුතු දේ ලැයිස්තුවක් සාදන්න</translation>
@@ -843,8 +842,6 @@
 <translation id="2384307209577226199">ව්‍යවසාය පෙරනිමි</translation>
 <translation id="2385809941344967209">ඔබගේ Chrome සැකසීම් වෙතින් Chrome යාවත්කාලීන කරන්න</translation>
 <translation id="2386255080630008482">සර්වරයේ සහතිකය අවලංගු කර තිබේ.</translation>
-<translation id="2387424091060104123">Gemini විසින් යෝජනා කරන ලදි · <ph name="SRC_LINK" />මූලාශ්‍ර බලන්න<ph name="END_SRC_LINK" />
-ඔබට මෙම යෝජනාව Chrome වෙතින් ඉවත් කළ හැක. ඔබේ මුල් මූලාශ්‍රය මකා නොදමනු ඇත. <ph name="MANAGE_LINK" />වැඩිදියුණු කළ ස්වයංක්‍රීය පිරවීම කළමනාකරණය කරන්න<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">විස්තර කරන්න</translation>
 <translation id="2392959068659972793">අගයක් සකසා නොමැති ප්‍රතිපත්ති පෙන්වන්න</translation>
 <translation id="239429038616798445">මෙම නැව්ගත කිරීමේ ක්‍රමය ලබා ගත නොහැකිය. වෙනත් ක්‍රමයක් උත්සාහ කරන්න.</translation>
@@ -3899,7 +3896,6 @@
 <translation id="7514365320538308">බාගන්න</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">මෙවර VR ඉඩ දී ඇත</translation>
-<translation id="7517198908921983825">Gemini විසින් යෝජනා කරන ලදි · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">ලියුම් කවරය C10</translation>
 <translation id="7518003948725431193">ජාල ලිපිනය සඳහා කිසිඳු ජාල පිටුවක් හමු නොවුනි: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -4394,7 +4390,6 @@
 <translation id="8350416046273606058">කෙටිමඟේ හිස්තැන් අඩංගු විය නොහැක: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">සටහන සාදන්න</translation>
 <translation id="8352849934814541340">මෙම උපාංගයෙහි පරිපාලකයා අතිරේක කාර්යයන් සඳහා යෙදුම් ස්ථාපනය කර ඇත. යෙදුම්වලට ඔබේ සමහර දත්තවලට ප්‍රවේශය ඇත.</translation>
-<translation id="8353273112634584260">Gemini සමග පුද්ගලික බුද්ධිය මඟින් බලගන්වයි. වැඩිදියුණු කළ ස්වයංක්‍රීය පිරවීම වැඩි දියුණු කිරීම සඳහා ඔබේ ඉල්ලීම්, පිටු මාතෘකා සහ URL සමාලෝචනය කළ හැක.</translation>
 <translation id="8355270400102541638">ස්ථානීය බිඳ වැටීම් සංදර්භය:</translation>
 <translation id="8362914115861174987">පරිවර්තනය කරන්න</translation>
 <translation id="8363502534493474904">ගුවන් යානා ප්‍රකාරය ක්‍රියාවිරහිත කරමින්</translation>
@@ -4574,7 +4569,6 @@
 <translation id="8699041776323235191">HID උපාංගය</translation>
 <translation id="8699985386408839112">ලියුම් කවරය කකු 1</translation>
 <translation id="8702965365666568344">සවි කිරීම් පටි</translation>
-<translation id="8703242769654966101">Wallet තුළ Pix සබල කරන්න</translation>
 <translation id="8703372953981978786">මෙම සබැඳිය ක්‍රියා නොකරයි</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> වෙත ඔබේ සම්බන්ධතාව සංකේතනය කර නැත.</translation>
 <translation id="8705331520020532516">කාණ්ඩ අංකය</translation>
@@ -4742,7 +4736,6 @@
 <translation id="9001074447101275817">සේවාදායකය <ph name="DOMAIN" /> ට පරිශීලක නාමයක් සහ මුරපදයක් අවශ්‍යයි.</translation>
 <translation id="9001963517402879850">පනින්න!</translation>
 <translation id="9002677862950442746">සත්‍යාපන කේතය: <ph name="OTP" /></translation>
-<translation id="9003263770394939629">Gemini විසින් යෝජනා කරන ලදි. සැකසීම් තුළ ඉහළ නැංවූ ස්වයං පිරවුම කළමනාකරණය කරන්න.</translation>
 <translation id="9003639428623471314">ලියුම් කවරය කහු</translation>
 <translation id="9004367719664099443">VR සැසිය ප්‍රගතියේ පවතියි</translation>
 <translation id="9005998258318286617">PDF ගොනුව පූරණය කිරීමට අසමත් විය.</translation>
@@ -4761,7 +4754,6 @@
 <translation id="9027531288681624875">පූර්ණ තිරයෙන් පිටවීමට, |<ph name="ACCELERATOR" />| ඔබා සිටින්න</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">ආරක්ෂක දෝෂය</translation>
-<translation id="9035699147763101514">Gemini සමග පුද්ගලික බුද්ධිය මගින් බලගන්වයි. සැකසීම් තුළ ඔබේ තේරීම් කළමනාකරණය කරන්න.</translation>
 <translation id="9035824888276246493">ආරක්‍ෂක කේත සුරකින්න</translation>
 <translation id="9036306139374661733">මයික්‍රෆෝනය ඉඩ දෙන්නද?</translation>
 <translation id="9036484080057916082">අත්සන් කළ සහතික කාල මුද්‍රා ලැයිස්තුව</translation>

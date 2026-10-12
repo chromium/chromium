@@ -71,7 +71,6 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> এর জন্য অনুমতি বেছে নিন</translation>
 <translation id="1113000785583998331">IBAN সেভ করতে চান?</translation>
 <translation id="1113869188872983271">&amp;পুনর্বিন্যাসকে পূর্বাবস্থায় ফেরান</translation>
-<translation id="1117709830616495622">Gemini-র পার্সোনাল ইন্টেলিজেন্স দ্বারা পরিচালিত।</translation>
 <translation id="111897705806685148">অন্য ডিভাইস থেকে পাসকী ব্যবহার করুন</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, আপনার Google অ্যাকাউন্টে Chrome-এর কোন কোন তথ্য সেভ করবেন তা ম্যানেজ করতে প্রথমে Tab, তারপরে Enter প্রেস করুন</translation>
 <translation id="1121990216147052230">একটি টু-ডু লিস্ট তৈরি করে দাও</translation>
@@ -844,8 +843,6 @@
 <translation id="2384307209577226199">এন্টারপ্রাইজ ডিফল্ট</translation>
 <translation id="2385809941344967209">Chrome সেটিংস থেকে ব্রাউজার আপডেট করুন</translation>
 <translation id="2386255080630008482">সার্ভারের সার্টিফিকেটটি প্রত্যাহার করা হয়েছে৷</translation>
-<translation id="2387424091060104123">Gemini-এর সাজেস্ট করা · <ph name="SRC_LINK" />সোর্স দেখুন<ph name="END_SRC_LINK" />
-আপনি Chrome থেকে এই সাজেশন সরাতে পারবেন। আপনার আসল সোর্স মোছা হবে না। <ph name="MANAGE_LINK" />উন্নত অটোফিল ম্যানেজ করুন<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">ব্যাখ্যা করুন</translation>
 <translation id="2392959068659972793">কোনো মান সেট করা নেই এমন নীতিগুলি দেখান</translation>
 <translation id="239429038616798445">এই পদ্ধতিতে শিপিং করা যাবে না। অন্য পদ্ধতি ব্যবহার করুন।</translation>
@@ -3900,7 +3897,6 @@
 <translation id="7514365320538308">ডাউনলোড করুন</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">এই মুহূর্তে ভিআর (VR) ব্যবহার করার অনুমতি রয়েছে</translation>
-<translation id="7517198908921983825">Gemini-র মাধ্যমে সাজেস্ট করা হয়েছে · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">এনভেলপ C10</translation>
 <translation id="7518003948725431193">No webpage was found for the web address: <ph name="URL" /></translation>
 <translation id="7521387064766892559">জাভাস্ক্রিপ্ট</translation>
@@ -4395,7 +4391,6 @@
 <translation id="8350416046273606058">শর্টকাটে স্পেস থাকা চলবে না: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">নোট তৈরি করুন</translation>
 <translation id="8352849934814541340">এই ডিভাইসের অ্যাডমিনিস্ট্রেটর অতিরিক্ত ফাংশনের জন্য এক্সটেনশন ইনস্টল করেছেন। এক্সটেনশন আপনার কিছু ডেটা অ্যাক্সেস করেছে।</translation>
-<translation id="8353273112634584260">Gemini-র পার্সোনাল ইন্টেলিজেন্স দ্বারা পরিচালিত। 'উন্নত অটোফিল' ফিচারের পারফর্ম্যান্স উন্নত করতে আপনার অনুরোধ, পেজ টাইটেল ও URL পর্যালোচনা করা হতে পারে।</translation>
 <translation id="8355270400102541638">স্থানীয় স্তরে ক্র্যাশ রিপোর্টের প্রসঙ্গ:</translation>
 <translation id="8362914115861174987">এই ভাষায় অনুবাদ করুন</translation>
 <translation id="8363502534493474904">বিমান মোড বন্ধ করে দেখুন</translation>
@@ -4575,7 +4570,6 @@
 <translation id="8699041776323235191">HID ডিভাইস</translation>
 <translation id="8699985386408839112">এনভেলপ কাকু ১</translation>
 <translation id="8702965365666568344">মাউন্টিং টেপ</translation>
-<translation id="8703242769654966101">Wallet-এ Pix চালু করুন</translation>
 <translation id="8703372953981978786">এই লিঙ্ক কাজ করছে না</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" />-এ আপনার কানেকশন এনক্রিপ্ট হয় নি৷</translation>
 <translation id="8705331520020532516">ক্রমিক সংখ্যা</translation>
@@ -4743,7 +4737,6 @@
 <translation id="9001074447101275817"><ph name="DOMAIN" /> প্রক্সিতে একটি ইউজারনেম এবং পাসওয়ার্ড দিতে হবে।</translation>
 <translation id="9001963517402879850">লাফ দিন!</translation>
 <translation id="9002677862950442746">যাচাইকরণ কোড: <ph name="OTP" /></translation>
-<translation id="9003263770394939629">Gemini-র সাজেশন সেটিংস থেকে উন্নত অটোফিল ম্যানেজ করুন।</translation>
 <translation id="9003639428623471314">এনভেলপ কাহু</translation>
 <translation id="9004367719664099443">ভিআর (VR) সেশন চলছে</translation>
 <translation id="9005998258318286617">পিডিএফ ডকুমেন্ট লোড করা যায়নি।</translation>
@@ -4762,7 +4755,6 @@
 <translation id="9027531288681624875">ফুল স্ক্রিন থেকে বেরিয়ে আসতে, |<ph name="ACCELERATOR" />| প্রেস করে ধরে রাখুন</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">নিরাপত্তা ত্রুটি</translation>
-<translation id="9035699147763101514">Gemini-র পার্সোনাল ইন্টেলিজেন্স দ্বারা পরিচালিত। সেটিংস থেকে আপনার পছন্দ ম্যানেজ করুন।</translation>
 <translation id="9035824888276246493">নিরাপত্তা কোড সেভ করুন</translation>
 <translation id="9036306139374661733">মাইক্রোফোন অ্যাক্সেসের অনুমতি দেবেন?</translation>
 <translation id="9036484080057916082">সই করা সার্টিফিকেট টাইমস্ট্যাম্প সংক্রান্ত তালিকা</translation>

@@ -2082,7 +2082,7 @@
 <translation id="2588271083332682494">קבוצות של כרטיסיות עוזרות לשמור על סדר</translation>
 <translation id="2588636910004461974">מכשירים של <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">‏אין להציג קובצי Drive אף פעם</translation>
-<translation id="2595270892115552212">‏כשמתחילים משימה מממשקי Gemini אחרים, כולל gemini.google.com ואפליקציות Gemini לנייד, Gemini יכול להשתמש בתכונה "פעולות אוטומטיות בדפדפן" ב-Chrome במכשיר הזה כדי לבצע פעולות באתרים ולהשלים משימות בשמך. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
+<translation id="2595270892115552212">‏ברגע שהתחלת משימה בממשק אחר של Gemini, כולל gemini.google.com ואפליקציות Gemini לנייד, Gemini יכול להשתמש בפיצ'ר "פעולות אוטומטיות בדפדפן" ב-Chrome במכשיר הזה כדי לעשות משימות בשמך. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="2597073208962000830">‏התכונה 'שיתוף מהיר' מחפשת מכשירים קרובים באמצעות Bluetooth.</translation>
 <translation id="2598136842498757793">התאמה אישית של כפתורי סרגל הכלים</translation>
 <translation id="2598710988533271874">‏יש גרסה חדשה זמינה של Chrome</translation>
@@ -2825,7 +2825,7 @@
 <translation id="3132996321662585180">רענון מדי יום</translation>
 <translation id="3134312457920437826">לא ניתן להתקין את התוסף כי הוא משתמש בגרסה של המניפסט שלא נתמכת.</translation>
 <translation id="3134393957315651797">יש לבחור מצב לניסוי <ph name="EXPERIMENT_NAME" />. תיאור הניסוי: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
-<translation id="3134822828309700120">‏לתת רשות לאפליקציות אחרות של Gemini לגלוש מרחוק מכל מכשיר</translation>
+<translation id="3134822828309700120">‏אני מרשה לממשקי Gemini אחרים לגלוש מרחוק מכל מכשיר</translation>
 <translation id="3139925690611372679">אווטאר ברירת מחדל צהוב</translation>
 <translation id="314095642664111744">השבתת המיקוד</translation>
 <translation id="3141093262818886744">אני רוצה לפתוח בכל זאת</translation>
@@ -3642,7 +3642,7 @@
 <translation id="3736487688526377259">צריך לבחור את המכשיר שאליו יישלח הקישור הזה.</translation>
 <translation id="3737058101969549870">לשמור את נתוני הגלישה הקיימים בנפרד מהפרופיל החדש?</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
-<translation id="3739203168951159754">‏‫Gemini יכול להשתמש בפעולות אוטומטיות בדפדפן רק אם המכשיר לא במצב שינה ו-Chrome מופעל.</translation>
+<translation id="3739203168951159754">‏‫Gemini יכול להשתמש בפעולות אוטומטיות בדפדפן רק אם המכשיר לא במצב שינה ו-Chrome פועל.</translation>
 <translation id="3739254215541673094">לפתוח את <ph name="APPLICATION" />?</translation>
 <translation id="3739349485749941749">אתרים יכולים לבקש הרשאה לחפש מדפסות שלמכשיר יש גישה אליהן ולהשתמש בהן</translation>
 <translation id="3741056951918180319">תמיד אפשר ללחוץ על התוסף כדי להשתמש בו בכל אתר שהוא</translation>
@@ -5807,7 +5807,7 @@
 <translation id="5414836363063783498">בתהליך אימות…</translation>
 <translation id="5415497281076257439">ביטוי</translation>
 <translation id="5415871492522952905">ההיסטוריה והכרטיסיות יופיעו בכל המכשירים שלך, כך שתהיה לך אפשרות להמשיך מהמקום שבו הפסקת.</translation>
-<translation id="5417160551295347092">‏‫Gemini עלול לטעות. למשל, הוא עשוי לשתף מידע אישי או לבצע רכישות ללא רשות. <ph name="LINK_BEGIN" />כדאי לעיין בסיכונים<ph name="LINK_END" /></translation>
+<translation id="5417160551295347092">‏‫Gemini עלול לטעות. למשל, יכול להיות שהוא ישתף מידע ששייך לך או יבצע רכישות בלי לקבל ממך רשות. <ph name="LINK_BEGIN" />כדאי לעיין בסיכונים<ph name="LINK_END" />.</translation>
 <translation id="5417293056300086453">האתר הזה יכול להשתמש במזהים כדי להפעיל תוכן מוגן.</translation>
 <translation id="5417312524372586921">עיצובי דפדפן</translation>
 <translation id="541737483547792035">הגדלת המסך</translation>
@@ -6565,7 +6565,7 @@
 <translation id="6003143259071779217">‏הסרת הרשת הסלולרית של eSIM</translation>
 <translation id="6003479444341796444">סרגל הכותרת לא מוצג</translation>
 <translation id="6003582434972667631">העיצוב מוגדר על ידי הארגון שלך</translation>
-<translation id="600407115562756795">‏‫Gemini יחליט אילו פעולות לבצע על סמך המשימות שמתחילים או מעדכנים.</translation>
+<translation id="600407115562756795">‏‫Gemini יחליט אילו פעולות לבצע על סמך המשימות שהתחלת או עדכנת.</translation>
 <translation id="6005045517426700202">בניין לבנים</translation>
 <translation id="6006484371116297560">קלאסי</translation>
 <translation id="6007053304250788613">ניתן לא לכלול רק מסך אחד במצב השתקפות במראה</translation>
@@ -9413,7 +9413,7 @@
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />. מדפסת <ph name="ITEM_POSITION" /> מתוך <ph name="NUM_PRINTERS" />.</translation>
 <translation id="8180785270975217276">מצב החיסכון באנרגיה פועל</translation>
 <translation id="8180786512391440389">"<ph name="EXTENSION" />" יכול לקרוא ולמחוק קובצי תמונות, וידאו ואודיו במיקומים המסומנים.</translation>
-<translation id="8181132988581553950">‏ל-Gemini תהיה גישה לאותם אתרים כמוך, כולל אתרים שהתחברת אליהם. הוא ישתף מידע נחוץ עם צדדים שלישיים, כולל פרטים אישיים שעשויים להיחשב כרגישים.</translation>
+<translation id="8181132988581553950">‏ל-Gemini תהיה גישה לאותם אתרים כמוך, כולל אתרים שהתחברת אליהם. במידת הצורך, הוא ישתף מידע עם צדדים שלישיים, כולל פרטים אישיים שאולי רגישים בעיניך.</translation>
 <translation id="8183703640399301650">‏ה-EID של המכשיר הוא <ph name="EID_NUMBER" /> וה-IMEI של המכשיר הוא <ph name="IMEI_NUMBER" />. המספרים האלה יכולים לשמש להפעלת השירות.</translation>
 <translation id="8184288427634747179">מעבר אל <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">מידע נוסף</translation>

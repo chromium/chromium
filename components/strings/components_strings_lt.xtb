@@ -71,7 +71,6 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" />: pasirinkite leidimą</translation>
 <translation id="1113000785583998331">Išsaugoti IBAN?</translation>
 <translation id="1113869188872983271">&amp;Anuliuoti pertvarkymą</translation>
-<translation id="1117709830616495622">Teikia Asmeninis intelektas su „Gemini“.</translation>
 <translation id="111897705806685148">Prieigos rakto iš kito įrenginio naudojimas</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />; paspauskite tabuliavimo klavišą, tada „Enter“, jei norite tvarkyti, kokią „Chrome“ informaciją išsaugote „Google“ paskyroje</translation>
 <translation id="1121990216147052230">Sukurk man užduočių sąrašą</translation>
@@ -843,8 +842,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2384307209577226199">Numatytieji įmonės nustatymai</translation>
 <translation id="2385809941344967209">Atnaujinkite „Chrome“ šios naršyklės nustatymuose</translation>
 <translation id="2386255080630008482">Serverio sertifikatas panaikintas.</translation>
-<translation id="2387424091060104123">Siūlo „Gemini“ · <ph name="SRC_LINK" />Peržiūrėti šaltinius<ph name="END_SRC_LINK" />
-Galite pašalinti šį pasiūlymą iš „Chrome“. Pradinis šaltinis nebus ištrintas. <ph name="MANAGE_LINK" />Tvarkyti išmanųjį automatinį pildymą<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">Detalizuoti</translation>
 <translation id="2392959068659972793">Rodyti politiką su nenustatyta verte</translation>
 <translation id="239429038616798445">Šis pristatymo metodas nepasiekiamas. Išbandykite kitą metodą.</translation>
@@ -3901,7 +3898,6 @@ Papildoma išsami informacija:
 <translation id="7514365320538308">Atsisiųsti</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">VR leidžiama šį kartą</translation>
-<translation id="7517198908921983825">Siūlo „Gemini“ · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">C10 vokas</translation>
 <translation id="7518003948725431193">Nerasta nė vieno tinklalapio šiuo žiniatinklio adresu: <ph name="URL" /></translation>
 <translation id="7521387064766892559">„JavaScript“</translation>
@@ -4396,7 +4392,6 @@ Papildoma išsami informacija:
 <translation id="8350416046273606058">Į spartųjį klavišą negalima įtraukti tarpų: „<ph name="SHORTCUT_NAME" />“</translation>
 <translation id="8351131234907093545">Sukurti užrašą</translation>
 <translation id="8352849934814541340">Šio įrenginio administratorius įdiegė papildomų funkcijų programų. Naudojant programas galima pasiekti kai kuriuos jūsų duomenis.</translation>
-<translation id="8353273112634584260">Teikia Asmeninis intelektas su „Gemini“. Užklausos, puslapių pavadinimai ir URL gali būti peržiūrėti siekiant patobulinti išmanųjį automatinį pildymą.</translation>
 <translation id="8355270400102541638">Vietinės strigties kontekstas:</translation>
 <translation id="8362914115861174987">Versti į</translation>
 <translation id="8363502534493474904">Išjungti lėktuvo režimą</translation>
@@ -4577,7 +4572,6 @@ Papildoma išsami informacija:
 <translation id="8699041776323235191">HID įrenginys</translation>
 <translation id="8699985386408839112">„Kaku 1“ vokas</translation>
 <translation id="8702965365666568344">Montavimo juosta</translation>
-<translation id="8703242769654966101">Įgalinti „Pix“ sistemoje „Wallet“</translation>
 <translation id="8703372953981978786">Ši nuoroda neveikia</translation>
 <translation id="8703575177326907206">Jūsų ryšys su <ph name="DOMAIN" /> nekoduotas.</translation>
 <translation id="8705331520020532516">Serijos numeris</translation>
@@ -4745,7 +4739,6 @@ Papildoma išsami informacija:
 <translation id="9001074447101275817">Tarpiniame serveryje <ph name="DOMAIN" /> būtina įvesti naudotojo vardą ir slaptažodį.</translation>
 <translation id="9001963517402879850">Šok!</translation>
 <translation id="9002677862950442746">Patvirtinimo kodas: <ph name="OTP" /></translation>
-<translation id="9003263770394939629">Siūlo „Gemini“. Tvarkykite patobulintą automatinį pildymą nustatymuose.</translation>
 <translation id="9003639428623471314">„Kahu“ vokas</translation>
 <translation id="9004367719664099443">Vyksta VR sesija</translation>
 <translation id="9005998258318286617">PDF dokumento įkelti nepavyko.</translation>
@@ -4764,7 +4757,6 @@ Papildoma išsami informacija:
 <translation id="9027531288681624875">Jei norite išeiti iš viso ekrano režimo, paspauskite ir palaikykite |<ph name="ACCELERATOR" />|</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Saugos klaida</translation>
-<translation id="9035699147763101514">Teikia Asmeninis intelektas su „Gemini“. Tvarkykite pasirinkimus nustatymuose.</translation>
 <translation id="9035824888276246493">Išsaugoti saugos kodus</translation>
 <translation id="9036306139374661733">Leisti pasiekti mikrofoną?</translation>
 <translation id="9036484080057916082">Pasirašyto sertifikato laiko žymių sąrašas</translation>

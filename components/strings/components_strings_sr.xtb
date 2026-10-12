@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Изаберите дозволу: <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Желите да сачувате IBAN?</translation>
 <translation id="1113869188872983271">&amp;Опозови промену редоследа</translation>
-<translation id="1117709830616495622">Омогућава Персонализована интелигенција помоћу Gemini-ја.</translation>
 <translation id="111897705806685148">Користи приступни кључ са другог уређаја</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте управљали тиме које Chrome информације чувате на Google налогу</translation>
 <translation id="1121990216147052230">Направи ми листу задатака</translation>
@@ -843,8 +842,6 @@
 <translation id="2384307209577226199">Подразумеване смернице за предузеће</translation>
 <translation id="2385809941344967209">Ажурирајте Chrome помоћу подешавања Chrome-а</translation>
 <translation id="2386255080630008482">Сертификат сервера је опозван.</translation>
-<translation id="2387424091060104123">Предлаже Gemini · <ph name="SRC_LINK" />Прикажи изворе<ph name="END_SRC_LINK" />
-Можете да уклоните овај предлог из Chrome-а. Оригинални извор неће бити избрисан. <ph name="MANAGE_LINK" />Управљај побољшаним аутоматским попуњавањем<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">Разради</translation>
 <translation id="2392959068659972793">Прикажи смернице без подешених вредности</translation>
 <translation id="239429038616798445">Овај начин слања није доступан. Испробајте неки други начин.</translation>
@@ -3899,7 +3896,6 @@
 <translation id="7514365320538308">Преузми</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">ВР је дозвољен овај пут</translation>
-<translation id="7517198908921983825">Предлаже Gemini · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Коверта C10</translation>
 <translation id="7518003948725431193">Ниједна веб-страница није пронађена за веб адресу: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -4394,7 +4390,6 @@
 <translation id="8350416046273606058">Пречица не може да садржи размаке: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="8351131234907093545">Направите белешку</translation>
 <translation id="8352849934814541340">Администратор овог уређаја је инсталирао апликације за додатне функције. Апликације имају приступ неким од података.</translation>
-<translation id="8353273112634584260">Омогућава Персонализована интелигенција помоћу Gemini-ја. Захтеви, наслови страница и URL-ови могу да се прегледају ради побољшања побољшаног аутоматског попуњавања.</translation>
 <translation id="8355270400102541638">Контекст локалног отказивања:</translation>
 <translation id="8362914115861174987">Преводи на језик</translation>
 <translation id="8363502534493474904">да искључите режим рада у авиону</translation>
@@ -4575,7 +4570,6 @@
 <translation id="8699041776323235191">Уређај са интерфејсом</translation>
 <translation id="8699985386408839112">Коверта Kaku 1</translation>
 <translation id="8702965365666568344">Трака за монтирање</translation>
-<translation id="8703242769654966101">Омогућите Pix у Новчанику</translation>
 <translation id="8703372953981978786">Овај линк не ради</translation>
 <translation id="8703575177326907206">Ваша веза са доменом <ph name="DOMAIN" /> није шифрована.</translation>
 <translation id="8705331520020532516">Серијски број</translation>
@@ -4743,7 +4737,6 @@
 <translation id="9001074447101275817">Прокси <ph name="DOMAIN" /> захтева корисничко име и лозинку.</translation>
 <translation id="9001963517402879850">Скочите!</translation>
 <translation id="9002677862950442746">Верификациони кôд: <ph name="OTP" /></translation>
-<translation id="9003263770394939629">Предлаже Gemini. Управљајте побољшаним аутоматским попуњавањем у подешавањима.</translation>
 <translation id="9003639428623471314">Коверта Kahu</translation>
 <translation id="9004367719664099443">ВР сесија је у току</translation>
 <translation id="9005998258318286617">Учитавање PDF документа није успело.</translation>
@@ -4762,7 +4755,6 @@
 <translation id="9027531288681624875">Да бисте изашли из режима целог екрана, притисните и задржите |<ph name="ACCELERATOR" />|</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Безбедносна грешка</translation>
-<translation id="9035699147763101514">Омогућава Персонализована интелигенција помоћу Gemini-ја. Управљајте изборима у подешавањима.</translation>
 <translation id="9035824888276246493">Сачувај безбедносне кодове</translation>
 <translation id="9036306139374661733">Желите ли да дозволите микрофон?</translation>
 <translation id="9036484080057916082">Листа временских ознака потписаних сертификата</translation>

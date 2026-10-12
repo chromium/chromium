@@ -71,7 +71,6 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> için izin seçin</translation>
 <translation id="1113000785583998331">IBAN kaydedilsin mi?</translation>
 <translation id="1113869188872983271">Sıralama değişikliğini &amp;geri al</translation>
-<translation id="1117709830616495622">Kişisel Zeka özellikli Gemini tarafından desteklenir.</translation>
 <translation id="111897705806685148">Başka Bir Cihazdaki Geçiş Anahtarını Kullan</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Hesabınıza hangi Chrome bilgilerini kaydettiğinizi yönetmek için Sekme'ye, ardından Enter tuşuna basın</translation>
 <translation id="1121990216147052230">Benim için yapılacaklar listesi oluştur</translation>
@@ -843,8 +842,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2384307209577226199">Kuruluşun varsayılan ayarı</translation>
 <translation id="2385809941344967209">Chrome ayarlarınızdan Chrome'u güncelleyin</translation>
 <translation id="2386255080630008482">Sunucunun sertifikası iptal edildi.</translation>
-<translation id="2387424091060104123">Gemini tarafından önerildi · <ph name="SRC_LINK" />Kaynakları göster<ph name="END_SRC_LINK" />
-Bu öneriyi Chrome'dan kaldırabilirsiniz. Orijinal kaynağınız silinmez. <ph name="MANAGE_LINK" />Gelişmiş otomatik doldurmayı yönetme<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">Detaylandır</translation>
 <translation id="2392959068659972793">Hiçbir değer ayarlanmamış politikaları göster</translation>
 <translation id="239429038616798445">Bu gönderim yöntemi kullanılamıyor. Farklı bir yöntem deneyin.</translation>
@@ -3900,7 +3897,6 @@ Ek ayrıntılar:
 <translation id="7514365320538308">İndir</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">VR'ye bu sefer izin verildi</translation>
-<translation id="7517198908921983825">Gemini tarafından önerildi · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Zarf C10</translation>
 <translation id="7518003948725431193">Şu web adresi için web sayfası bulunamadı:<ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -4395,7 +4391,6 @@ Ek ayrıntılar:
 <translation id="8350416046273606058">Kısayol, boşluk içeremez: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Not oluştur</translation>
 <translation id="8352849934814541340">Bu cihazın yöneticisi diğer işlevler için uygulamalar yüklemiş. Söz konusu uygulamaların bazı verilerinize erişimi bulunuyor.</translation>
-<translation id="8353273112634584260">Kişisel Zeka özellikli Gemini tarafından desteklenir. İstekleriniz, sayfa başlıklarınız ve URL'leriniz gelişmiş otomatik doldurma özelliğini daha iyi hale getirmek için incelenebilir.</translation>
 <translation id="8355270400102541638">Yerel Kilitlenme Bağlamı:</translation>
 <translation id="8362914115861174987">Şu dile çevir:</translation>
 <translation id="8363502534493474904">Uçak modunu kapatın</translation>
@@ -4576,7 +4571,6 @@ Ek ayrıntılar:
 <translation id="8699041776323235191">HID cihazı</translation>
 <translation id="8699985386408839112">Zarf Kaku 1</translation>
 <translation id="8702965365666568344">Montaj Bandı</translation>
-<translation id="8703242769654966101">Cüzdan'da Pix'i etkinleştirin</translation>
 <translation id="8703372953981978786">Bu bağlantı çalışmıyor</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> bağlantınız şifrelenmedi.</translation>
 <translation id="8705331520020532516">Seri Numarası</translation>
@@ -4744,7 +4738,6 @@ Ek ayrıntılar:
 <translation id="9001074447101275817"><ph name="DOMAIN" /> proxy'si için kullanıcı adı ve şifre gerekiyor.</translation>
 <translation id="9001963517402879850">Zıpla!</translation>
 <translation id="9002677862950442746">Doğrulama kodu: <ph name="OTP" /></translation>
-<translation id="9003263770394939629">Gemini tarafından önerildi. Gelişmiş otomatik doldurma özelliğini ayarlardan yönetin.</translation>
 <translation id="9003639428623471314">Zarf Kahu</translation>
 <translation id="9004367719664099443">VR oturumu devam ediyor</translation>
 <translation id="9005998258318286617">PDF dokümanı yüklenemedi.</translation>
@@ -4763,7 +4756,6 @@ Ek ayrıntılar:
 <translation id="9027531288681624875">Tam ekrandan çıkmak için |<ph name="ACCELERATOR" />| tuşunu basılı tutun</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Güvenlik hatası</translation>
-<translation id="9035699147763101514">Kişisel Zeka özellikli Gemini tarafından desteklenir. Seçimlerinizi ayarlardan yönetin.</translation>
 <translation id="9035824888276246493">Güvenlik kodlarını kaydet</translation>
 <translation id="9036306139374661733">Mikrofona izin verilsin mi?</translation>
 <translation id="9036484080057916082">İmzalı Sertifika Zaman Damgası Listesi</translation>

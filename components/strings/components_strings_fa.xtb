@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">مجوز <ph name="PERMISSION_NAME" /> را انتخاب کنید</translation>
 <translation id="1113000785583998331">‏‫IBAN ذخیره شود؟</translation>
 <translation id="1113869188872983271">&amp;واگرد تغییر ترتیب</translation>
-<translation id="1117709830616495622">‏مبتنی بر «هوش شخصی‌سازی‌شده» با Gemini.</translation>
 <translation id="111897705806685148">استفاده از گذرکلید از دستگاهی دیگر</translation>
 <translation id="1119009590493440389">‏‫<ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />، برای مدیریت اطلاعات Chrome که در «حساب Google» ذخیره می‌کنید، کلید «جهش» و سپس Enter را فشار دهید</translation>
 <translation id="1121990216147052230">فهرست کارها برایم بسازید</translation>
@@ -844,8 +843,6 @@
 <translation id="2384307209577226199">پیش‌فرض شرکتی</translation>
 <translation id="2385809941344967209">‏Chrome را از تنظیمات Chrome به‌روزرسانی کنید</translation>
 <translation id="2386255080630008482">گواهی سرور باطل شده است.</translation>
-<translation id="2387424091060104123">‏پیشنهادشده توسط Gemini · <ph name="SRC_LINK" />مشاهده منابع<ph name="END_SRC_LINK" />
-می‌توانید این پیشنهاد را از Chrome بردارید. منبع اصلی‌تان حذف نخواهد شد. <ph name="MANAGE_LINK" />مدیریت «تکمیل خودکار بهبودیافته»<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">بسط دادن</translation>
 <translation id="2392959068659972793">نمایش خط‌مشی‌ها با مقدار تنظیم نشده</translation>
 <translation id="239429038616798445">این روش ارسال در دسترس نیست. روش دیگری را امتحان کنید.</translation>
@@ -3901,7 +3898,6 @@
 <translation id="7514365320538308">بارگیری</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">«واقعیت مجازی» این بار اجازه هست</translation>
-<translation id="7517198908921983825">‏پیشنهادشده توسط Gemini · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">پاکت سی۱۰</translation>
 <translation id="7518003948725431193">صفحه وبی با این آدرس وب یافت نشد: <ph name="URL" /></translation>
 <translation id="7521387064766892559">جاوا اسکریپت</translation>
@@ -4396,7 +4392,6 @@
 <translation id="8350416046273606058">میان‌بر نمی‌تواند حاوی فاصله باشد: «<ph name="SHORTCUT_NAME" />»</translation>
 <translation id="8351131234907093545">یادداشت ایجاد کنید</translation>
 <translation id="8352849934814541340">سرپرست این دستگاه برنامه‌هایی را برای افزودن عملکردهای بیشتر نصب کرده است. این برنامه‌ها به برخی‌از داده‌های شما دسترسی دارند.</translation>
-<translation id="8353273112634584260">‏مبتنی بر «هوش شخصی‌سازی‌شده» با Gemini. درخواست‌های شما، عنوان‌های صفحه، و نشانی‌های وب ممکن است برای بهبود تکمیل خودکار بهبودیافته بازبینی شوند.</translation>
 <translation id="8355270400102541638">بافت خرابی محلی:</translation>
 <translation id="8362914115861174987">ترجمه به</translation>
 <translation id="8363502534493474904">خاموش کردن حالت هواپیما</translation>
@@ -4576,7 +4571,6 @@
 <translation id="8699041776323235191">‏دستگاه HID</translation>
 <translation id="8699985386408839112">پاکت کاکو ۱</translation>
 <translation id="8702965365666568344">نوارچسب نصب</translation>
-<translation id="8703242769654966101">‏فعال‌سازی Pix در «کیف پول»</translation>
 <translation id="8703372953981978786">این پیوند کار نمی‌کند</translation>
 <translation id="8703575177326907206">اتصال شما به <ph name="DOMAIN" /> رمزگذاری نشده است.</translation>
 <translation id="8705331520020532516">شمارهٔ سریال</translation>
@@ -4744,7 +4738,6 @@
 <translation id="9001074447101275817">پروکسی <ph name="DOMAIN" /> به نام کاربری و گذرواژه نیاز دارد.</translation>
 <translation id="9001963517402879850">پرش!</translation>
 <translation id="9002677862950442746">کد درستی‌سنجی: <ph name="OTP" /></translation>
-<translation id="9003263770394939629">‏پیشنهادشده توسط Gemini. مدیریت کردن تکمیل خودکار بهبودیافته در تنظیمات</translation>
 <translation id="9003639428623471314">پاکت کاهو</translation>
 <translation id="9004367719664099443">‏جلسه VR درحال انجام است</translation>
 <translation id="9005998258318286617">‏سند PDF بارگیری نشد.</translation>
@@ -4763,7 +4756,6 @@
 <translation id="9027531288681624875">برای خروج از تمام‌صفحه، |<ph name="ACCELERATOR" />| را فشار دهید و نگه دارید</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">خطای امنیتی</translation>
-<translation id="9035699147763101514">‏پشتیبانی شده توسط «هوش شخصی‌سازی‌شده» با Gemini. انتخاب‌هایتان را در تنظیمات مدیریت کنید.</translation>
 <translation id="9035824888276246493">ذخیره کردن کدهای امنیتی</translation>
 <translation id="9036306139374661733">میکروفون مجاز شود؟</translation>
 <translation id="9036484080057916082">فهرست مُهر زمان گواهینامه امضاشده</translation>

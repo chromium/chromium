@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Επιλέξτε άδεια για <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Αποθήκευση IBAN;</translation>
 <translation id="1113869188872983271">&amp;Αναίρεση αναδιάταξης</translation>
-<translation id="1117709830616495622">Με την υποστήριξη της Προσωπικής νοημοσύνης με το Gemini.</translation>
 <translation id="111897705806685148">Χρήση κλειδιού πρόσβασης από άλλη συσκευή</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε Tab και μετά Enter, για να διαχειριστείτε τις πληροφορίες του Chrome που αποθηκεύετε στον Λογαριασμό σας Google</translation>
 <translation id="1121990216147052230">Φτιάξε μια λίστα με τις εκκρεμότητές μου</translation>
@@ -843,8 +842,6 @@
 <translation id="2384307209577226199">Προεπιλογή επιχείρησης</translation>
 <translation id="2385809941344967209">Ενημερώστε το Chrome από τις ρυθμίσεις του Chrome,</translation>
 <translation id="2386255080630008482">Το πιστοποιητικό του διακομιστή ανακλήθηκε.</translation>
-<translation id="2387424091060104123">Προτείνεται από το Gemini · <ph name="SRC_LINK" />Προβολή πηγών<ph name="END_SRC_LINK" />
-Μπορείτε να καταργήσετε αυτή την πρόταση από το Chrome. Η αρχική πηγή δεν θα διαγραφεί. <ph name="MANAGE_LINK" />Διαχείριση βελτιωμένης αυτόματης συμπλήρωσης<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">Σύνθετο</translation>
 <translation id="2392959068659972793">Εμφάνιση πολιτικών χωρίς τιμή που να έχει οριστεί.</translation>
 <translation id="239429038616798445">Αυτός ο τρόπος αποστολής δεν είναι διαθέσιμος. Δοκιμάστε έναν άλλο τρόπο.</translation>
@@ -3902,7 +3899,6 @@
 <translation id="7514365320538308">Λήψη</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">Επιτράπηκε η χρήση του VR για αυτή τη φορά</translation>
-<translation id="7517198908921983825">Προτείνεται από το Gemini · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Φάκελος C10</translation>
 <translation id="7518003948725431193">Δεν βρέθηκε καμία ιστοσελίδα για τη διεύθυνση ιστού:<ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -4397,7 +4393,6 @@
 <translation id="8350416046273606058">Η συντόμευση δεν μπορεί να περιέχει κενά: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Δημιουργία σημείωσης</translation>
 <translation id="8352849934814541340">Ο διαχειριστής αυτής της συσκευής εγκατέστησε εφαρμογές για επιπλέον λειτουργίες. Οι εφαρμογές έχουν πρόσβαση σε κάποια από τα δεδομένα σας.</translation>
-<translation id="8353273112634584260">Με την υποστήριξη της Προσωπικής νοημοσύνης με το Gemini. Τα αιτήματα, οι τίτλοι σελίδων και τα URL σας ενδέχεται να ελεγχθούν για τη βελτίωση της βελτιωμένης αυτόματης συμπλήρωσης.</translation>
 <translation id="8355270400102541638">Περιβάλλον τοπικού σφάλματος:</translation>
 <translation id="8362914115861174987">Μετάφραση στα</translation>
 <translation id="8363502534493474904">Απενεργοποιήστε τη λειτουργία πτήσης.</translation>
@@ -4578,7 +4573,6 @@
 <translation id="8699041776323235191">Συσκευή HID</translation>
 <translation id="8699985386408839112">Φάκελος Kaku 1</translation>
 <translation id="8702965365666568344">Ταινία στερέωσης</translation>
-<translation id="8703242769654966101">Ενεργοποίηση Pix στο Πορτοφόλι</translation>
 <translation id="8703372953981978786">Αυτός ο σύνδεσμος δεν λειτουργεί</translation>
 <translation id="8703575177326907206">Η σύνδεσή σας με τον τομέα <ph name="DOMAIN" /> δεν είναι κρυπτογραφημένη.</translation>
 <translation id="8705331520020532516">Σειριακός αριθμός</translation>
@@ -4746,7 +4740,6 @@
 <translation id="9001074447101275817">Απαιτείται όνομα χρήστη και κωδικός πρόσβασης για το διακομιστή μεσολάβησης <ph name="DOMAIN" />.</translation>
 <translation id="9001963517402879850">Αναπήδηση!</translation>
 <translation id="9002677862950442746">Κωδικός επαλήθευσης: <ph name="OTP" /></translation>
-<translation id="9003263770394939629">Προτείνεται από το Gemini. Διαχειριστείτε τη βελτιωμένη αυτόματη συμπλήρωση στις ρυθμίσεις.</translation>
 <translation id="9003639428623471314">Φάκελος Kahu</translation>
 <translation id="9004367719664099443">Περίοδος λειτουργίας VR σε εξέλιξη</translation>
 <translation id="9005998258318286617">Η φόρτωση του εγγράφου PDF απέτυχε.</translation>
@@ -4765,7 +4758,6 @@
 <translation id="9027531288681624875">Για έξοδο από την πλήρη οθόνη, πατήστε παρατεταμένα |<ph name="ACCELERATOR" />|</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Σφάλμα ασφάλειας</translation>
-<translation id="9035699147763101514">Με την υποστήριξη της Προσωπικής νοημοσύνης με το Gemini. Διαχειριστείτε τις επιλογές σας στις Ρυθμίσεις.</translation>
 <translation id="9035824888276246493">Αποθήκευση κωδικών ασφαλείας</translation>
 <translation id="9036306139374661733">Να επιτρέπεται το μικρόφωνο;</translation>
 <translation id="9036484080057916082">Λίστα χρονικών σημάνσεων υπογεγραμμένων πιστοποιητικών</translation>

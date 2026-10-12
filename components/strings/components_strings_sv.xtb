@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Välj behörighet för <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Vill du spara IBAN?</translation>
 <translation id="1113869188872983271">&amp;Ångra Ändra ordning</translation>
-<translation id="1117709830616495622">Drivs av Personlig intelligens med Gemini.</translation>
 <translation id="111897705806685148">Använd nyckeln från en annan enhet</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />: tryck på Tabb och sedan på Retur om du vill hantera vilken Chrome-information du sparar i Google-kontot</translation>
 <translation id="1121990216147052230">Skapa en att göra-lista åt mig</translation>
@@ -843,8 +842,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2384307209577226199">Standardinställning i företaget</translation>
 <translation id="2385809941344967209">Uppdatera Chrome via inställningarna för Chrome</translation>
 <translation id="2386255080630008482">Servercertifikatet har återkallats.</translation>
-<translation id="2387424091060104123">Förslag från Gemini · <ph name="SRC_LINK" />Visa källor<ph name="END_SRC_LINK" />
-Du kan ta bort det här förslaget från Chrome. Den ursprungliga källan raderas inte. <ph name="MANAGE_LINK" />Hantera förbättrad autofyll<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">Utveckla</translation>
 <translation id="2392959068659972793">Visa policyer utan inställt värde</translation>
 <translation id="239429038616798445">Det här fraktalternativet är inte tillgängligt. Testa ett annat alternativ.</translation>
@@ -3900,7 +3897,6 @@ Mer information.
 <translation id="7514365320538308">Ladda ned</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">VR tillåts den här gången</translation>
-<translation id="7517198908921983825">Förslag från Gemini · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">C10-kuvert</translation>
 <translation id="7518003948725431193">Det fanns ingen webbsida på webbadressen: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -4395,7 +4391,6 @@ Mer information.
 <translation id="8350416046273606058">Genvägen får inte innehålla blanksteg: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="8351131234907093545">Skapa anteckning</translation>
 <translation id="8352849934814541340">Administratören för enheten har installerat appar för ytterligare funktioner. Apparna har åtkomst till en del av din data.</translation>
-<translation id="8353273112634584260">Drivs av Personlig intelligens med Gemini. Dina begäranden, sidrubriker och webbadresser kan granskas för att göra förbättrad autofyll ännu bättre.</translation>
 <translation id="8355270400102541638">Kontext för lokal krasch:</translation>
 <translation id="8362914115861174987">Översätt till</translation>
 <translation id="8363502534493474904">inaktivera flygplansläget</translation>
@@ -4576,7 +4571,6 @@ Mer information:
 <translation id="8699041776323235191">HID-enhet</translation>
 <translation id="8699985386408839112">Kaku 1-kuvert</translation>
 <translation id="8702965365666568344">Monteringstejp</translation>
-<translation id="8703242769654966101">Aktivera Pix i Wallet</translation>
 <translation id="8703372953981978786">Den här länken fungerar inte</translation>
 <translation id="8703575177326907206">Din anslutning till <ph name="DOMAIN" /> är inte krypterad.</translation>
 <translation id="8705331520020532516">Serienummer</translation>
@@ -4744,7 +4738,6 @@ Mer information:
 <translation id="9001074447101275817">Proxyservern <ph name="DOMAIN" /> kräver användarnamn och lösenord.</translation>
 <translation id="9001963517402879850">Hoppa!</translation>
 <translation id="9002677862950442746">Verifieringskod: <ph name="OTP" /></translation>
-<translation id="9003263770394939629">Förslag från Gemini. Hantera förbättrad autofyll i inställningarna.</translation>
 <translation id="9003639428623471314">Kahu-kuvert</translation>
 <translation id="9004367719664099443">En VR-session pågår</translation>
 <translation id="9005998258318286617">Det gick inte att läsa in PDF-dokumentet.</translation>
@@ -4763,7 +4756,6 @@ Mer information:
 <translation id="9027531288681624875">Avsluta helskärmsläget genom att hålla nere |<ph name="ACCELERATOR" />|</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Säkerhetsfel</translation>
-<translation id="9035699147763101514">Drivs av Personlig intelligens med Gemini. Hantera dina val i inställningarna.</translation>
 <translation id="9035824888276246493">Spara säkerhetskoder</translation>
 <translation id="9036306139374661733">Vill du tillåta mikrofon?</translation>
 <translation id="9036484080057916082">Lista med tidsstämplar för signerade certifikat</translation>

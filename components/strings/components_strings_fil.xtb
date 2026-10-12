@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Pumili ng pahintulot para sa <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">I-save ang IBAN?</translation>
 <translation id="1113869188872983271">&amp;I-undo ang pagbabago sa ayos</translation>
-<translation id="1117709830616495622">Pinapagana ng Personal Intelligence sa Gemini.</translation>
 <translation id="111897705806685148">Gumamit ng Passkey mula sa Ibang Device</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab at pagkatapos ay ang Enter para pamahalaan kung anong impormasyon sa Chrome ang ise-save mo sa iyong Google Account</translation>
 <translation id="1121990216147052230">Gawan ako ng listahan ng gagawin</translation>
@@ -843,8 +842,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2384307209577226199">Default ng enterprise</translation>
 <translation id="2385809941344967209">I-update ang Chrome mula sa iyong mga setting ng Chrome</translation>
 <translation id="2386255080630008482">Nabawi ang certificate ng server.</translation>
-<translation id="2387424091060104123">Iminumungkahi ng Gemini · <ph name="SRC_LINK" />Tingnan ang mga source<ph name="END_SRC_LINK" />
-Puwede mong alisin ang suhestyong ito sa Chrome. Hindi made-delete ang iyong orihinal na source. <ph name="MANAGE_LINK" />Pamahalaan ang pinahusay na autofill<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">Idetalye pa</translation>
 <translation id="2392959068659972793">Ipakita ang mga patakarang walang nakatakdang halaga</translation>
 <translation id="239429038616798445">Hindi available ang paraan ng pagpapadala na ito. Sumubok ng ibang paraan.</translation>
@@ -3900,7 +3897,6 @@ Mga karagdagang detalye:
 <translation id="7514365320538308">I-download</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">Pinapayagan ang VR sa pagkakataong ito</translation>
-<translation id="7517198908921983825">Iminumungkahi ng Gemini · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Envelope C10</translation>
 <translation id="7518003948725431193">Walang webpage na nahanap para sa web address:<ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -4395,7 +4391,6 @@ Mga karagdagang detalye:
 <translation id="8350416046273606058">Hindi puwedeng makaroon ng mga espasyo ang shortcut: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Gumawa ng tala</translation>
 <translation id="8352849934814541340">Nag-install ang administrator ng device na ito ng mga application para sa mga karagdagang function. May access ang mga application sa ilan sa iyong data.</translation>
-<translation id="8353273112634584260">Pinapagana ng Personal Intelligence sa Gemini. Posibleng suriin ang iyong mga request, pamagat ng page, at URL para mapaganda ang pinahusay na autofill.</translation>
 <translation id="8355270400102541638">Konteksto ng Lokal na Pag-crash:</translation>
 <translation id="8362914115861174987">Isalin sa</translation>
 <translation id="8363502534493474904">I-off ang airplane mode</translation>
@@ -4575,7 +4570,6 @@ Mga karagdagang detalye:
 <translation id="8699041776323235191">HID device</translation>
 <translation id="8699985386408839112">Envelope Kaku 1</translation>
 <translation id="8702965365666568344">Mounting Tape</translation>
-<translation id="8703242769654966101">I-enable ang Pix sa Wallet</translation>
 <translation id="8703372953981978786">Hindi gumagana ang link na ito</translation>
 <translation id="8703575177326907206">Ang iyong koneksyon sa <ph name="DOMAIN" /> ay hindi naka-encrypt.</translation>
 <translation id="8705331520020532516">Serial Number</translation>
@@ -4743,7 +4737,6 @@ Mga karagdagang detalye:
 <translation id="9001074447101275817">Nangangailangan ang proxy na <ph name="DOMAIN" /> ng username at password.</translation>
 <translation id="9001963517402879850">Tumalon!</translation>
 <translation id="9002677862950442746">Code sa pag-verify: <ph name="OTP" /></translation>
-<translation id="9003263770394939629">Iminumungkahi ng Gemini. Pamahalaan ang pinahusay na autofill sa mga setting.</translation>
 <translation id="9003639428623471314">Envelope Kahu</translation>
 <translation id="9004367719664099443">Kasalukuyang isinasagawa ang VR session</translation>
 <translation id="9005998258318286617">Hindi na-load ang PDF document.</translation>
@@ -4762,7 +4755,6 @@ Mga karagdagang detalye:
 <translation id="9027531288681624875">Para lumabas sa full screen, pindutin nang matagal ang |<ph name="ACCELERATOR" />|</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Error sa seguridad</translation>
-<translation id="9035699147763101514">Pinapagana ng Personal Intelligence sa Gemini. Pamahalaan ang iyong mga pinili sa mga setting.</translation>
 <translation id="9035824888276246493">Mag-save ng mga panseguridad na code</translation>
 <translation id="9036306139374661733">Payagan ang mikropono?</translation>
 <translation id="9036484080057916082">Listahan ng Timestamp ng Nilagdaang Certificate</translation>

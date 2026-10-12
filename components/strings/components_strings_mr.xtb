@@ -71,7 +71,6 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> ची परवानगी निवडा</translation>
 <translation id="1113000785583998331">IBAN सेव्ह करायचा आहे का?</translation>
 <translation id="1113869188872983271">&amp;पुनर्क्रमित करा पूर्ववत करा</translation>
-<translation id="1117709830616495622">Gemini सह पर्सनल इंटेलिजन्स द्वारे सक्षम केलेले.</translation>
 <translation id="111897705806685148">दुसऱ्या डिव्हाइसमधील पासकी वापरा</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, तुम्ही तुमच्या Google खाते मध्ये कोणती Chrome माहिती सेव्ह करता हे व्यवस्थापित करण्यासाठी टॅब प्रेस करा आणि त्यानंतर एंटर प्रेस करा</translation>
 <translation id="1121990216147052230">माझ्यासाठी कामांची सूची तयार कर</translation>
@@ -843,8 +842,6 @@
 <translation id="2384307209577226199">एंटरप्राइझ डीफॉल्ट</translation>
 <translation id="2385809941344967209">तुमच्‍या Chrome सेटिंग्जमधून Chrome अपडेट करा</translation>
 <translation id="2386255080630008482">सर्व्हरचे सर्टिफिकेट रिव्होक केले गेले.</translation>
-<translation id="2387424091060104123">Gemini द्वारे सुचवलेले · <ph name="SRC_LINK" />स्रोत पहा<ph name="END_SRC_LINK" />
-तुम्ही Chrome मधून ही सूचना काढून टाकू शकता. तुमचा मूळ स्रोत हटवला जाणार नाही. <ph name="MANAGE_LINK" />वर्धित ऑटोफिल व्यवस्थापित करा<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">सविस्तरपणे सांगा</translation>
 <translation id="2392959068659972793">कोणतेही मूल्य सेट केल्याशिवाय धोरणे दर्शवा</translation>
 <translation id="239429038616798445">ही शिपिंग पद्धत उपलब्ध नाही. वेगळी पद्धत वापरून पहा.</translation>
@@ -3900,7 +3897,6 @@
 <translation id="7514365320538308">डाउनलोड करा</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">या वेळी VR ला अनुमती आहे</translation>
-<translation id="7517198908921983825">Gemini द्वारे सुचवलेले · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">एन्व्हलप सी१०</translation>
 <translation id="7518003948725431193">या वेबपत्त्यासाठी वेबपेज आढळले नाही: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -4395,7 +4391,6 @@
 <translation id="8350416046273606058">शॉर्टकटमध्ये स्पेस असू शकत नाहीत: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">टीप तयार करा</translation>
 <translation id="8352849934814541340">या डिव्हाइसच्या अ‍ॅडमिनिस्ट्रेटरने अतिरिक्त फंक्शनसाठी अ‍ॅप्लिकेशन इंस्टॉल केली आहेत. अ‍ॅप्लिकेशनकडे तुमच्या काही डेटाचा अ‍ॅक्सेस आहे.</translation>
-<translation id="8353273112634584260">Gemini सह पर्सनल इंटेलिजन्स द्वारे सक्षम केलेले. वर्धित ऑटोफिलमध्ये सुधारणा करण्यासाठी तुमच्या विनंत्या, पेजची शीर्षके आणि URLs यांचे पुनरावलोकन केले जाऊ शकते.</translation>
 <translation id="8355270400102541638">स्थानिक क्रॅश संदर्भ:</translation>
 <translation id="8362914115861174987">यामध्ये भाषांतर करा</translation>
 <translation id="8363502534493474904">विमान मोड बंद करा</translation>
@@ -4575,7 +4570,6 @@
 <translation id="8699041776323235191">HID डिव्हाइस</translation>
 <translation id="8699985386408839112">एन्व्हलप काकू १</translation>
 <translation id="8702965365666568344">माउंटिंग टेप</translation>
-<translation id="8703242769654966101">Wallet मध्ये Pix सुरू करा</translation>
 <translation id="8703372953981978786">ही लिंक काम करत नाही</translation>
 <translation id="8703575177326907206">तुमचे <ph name="DOMAIN" /> चे कनेक्शन एंक्रिप्ट केलेले नाही.</translation>
 <translation id="8705331520020532516">सिरीअल नंबर</translation>
@@ -4743,7 +4737,6 @@
 <translation id="9001074447101275817">प्रॉक्सी <ph name="DOMAIN" /> ला वापरकर्ता नाव आणि पासवर्ड आवश्यक आहेत.</translation>
 <translation id="9001963517402879850">उडी मारा!</translation>
 <translation id="9002677862950442746">पडताळणी कोड: <ph name="OTP" /></translation>
-<translation id="9003263770394939629">Gemini द्वारे सुचवलेले. सेटिंग्जमध्ये वर्धित ऑटोफिल व्यवस्थापित करा.</translation>
 <translation id="9003639428623471314">एन्व्हलप काकू</translation>
 <translation id="9004367719664099443">VR सेशन प्रगतीपथावर आहे</translation>
 <translation id="9005998258318286617">पीडीएफ दस्तऐवज लोड करण्यात अपयश आले.</translation>
@@ -4762,7 +4755,6 @@
 <translation id="9027531288681624875">फुल स्क्रीनमधून बाहेर पडण्यासाठी, |<ph name="ACCELERATOR" />| प्रेस करून धरून ठेवा</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">सुरक्षितता एरर</translation>
-<translation id="9035699147763101514">Gemini सह पर्सनल इंटेलिजन्स द्वारे सक्षम केलेले. सेटिंग्जमध्ये तुमच्या निवडी व्यवस्थापित करा.</translation>
 <translation id="9035824888276246493">सुरक्षा कोड सेव्ह करा</translation>
 <translation id="9036306139374661733">मायक्रोफोनची अनुमती द्यायची का?</translation>
 <translation id="9036484080057916082">स्वाक्षरी केलेल्या सर्टिफिकेट ची टाइमस्टॅंप सूची</translation>

@@ -71,7 +71,6 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> માટે પરવાનગી પસંદ કરો</translation>
 <translation id="1113000785583998331">IBAN સાચવીએ?</translation>
 <translation id="1113869188872983271">&amp;પુનઃક્રમાંકિત કરવું પૂર્વવત્ કરો</translation>
-<translation id="1117709830616495622">Gemini સાથે પર્સનલ ઇન્ટેલિજન્સ દ્વારા સંચાલિત.</translation>
 <translation id="111897705806685148">અન્ય ડિવાઇસમાંથી પાસકીનો ઉપયોગ કરો</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, તમે તમારા Google એકાઉન્ટમાં Chromeની કઈ માહિતી સાચવો છો તે મેનેજ કરવા માટે, પહેલાં Tab અને પછી Enter કી દબાવો</translation>
 <translation id="1121990216147052230">મારા માટે કરવાના કાર્યોની સૂચિ બનાવો</translation>
@@ -843,8 +842,6 @@
 <translation id="2384307209577226199">એન્ટરપ્રાઇઝ ડિફૉલ્ટ</translation>
 <translation id="2385809941344967209">તમારા Chrome સેટિંગમાંથી Chrome અપડેટ કરો</translation>
 <translation id="2386255080630008482">સર્વરનું પ્રમાણપત્ર રદ કરવામાં આવ્યું છે.</translation>
-<translation id="2387424091060104123">Gemini દ્વારા સૂચિત · <ph name="SRC_LINK" />સૉર્સ જુઓ<ph name="END_SRC_LINK" />
-તમે Chromeમાંથી આ સૂચન કાઢી નાખી શકો છો. તમારો ઑરિજિનલ સૉર્સ ડિલીટ કરવામાં આવશે નહીં. <ph name="MANAGE_LINK" />ઑટોમૅટિક રીતે ભરવાની બહેતર સુવિધા મેનેજ કરો<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">ઝીણવટપૂર્વકનું પરિણામ</translation>
 <translation id="2392959068659972793">કોઈ કિંમત સેટ નહીં સાથે પૉલિસીઓ બતાવો</translation>
 <translation id="239429038616798445">આ વિતરણ પદ્ધતિ ઉપલબ્ધ નથી. કોઈ ભિન્ન પદ્ધતિ અજમાવો.</translation>
@@ -3900,7 +3897,6 @@
 <translation id="7514365320538308">ડાઉનલોડ કરો</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">આ વખતે VRને મંજૂરી આપવામાં આવી</translation>
-<translation id="7517198908921983825">Gemini દ્વારા સૂચિત · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">એન્વલપ C10</translation>
 <translation id="7518003948725431193">વેબ ઍડ્રેસ માટે કોઈ વેબપેજ મળ્યું નથી: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -4395,7 +4391,6 @@
 <translation id="8350416046273606058">શૉર્ટકટમાં સ્પેસ શામેલ હોઈ શકે નહીં: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">નોંધ બનાવો</translation>
 <translation id="8352849934814541340">આ ડિવાઇસના ઍડમિનિસ્ટ્રેટર દ્વારા વધારાના કાર્યો માટે ઍપ્લિકેશન ઇન્સ્ટૉલ કરવામાં આવી છે. ઍપ્લિકેશન તમારા અમુક ડેટાનો ઍક્સેસ ધરાવે છે.</translation>
-<translation id="8353273112634584260">Gemini સાથે પર્સનલ ઇન્ટેલિજન્સ દ્વારા સંચાલિત. ઑટોમૅટિક રીતે ભરવાની બહેતર સુવિધાને બહેતર બનાવવા માટે, તમારી વિનંતીઓ, પેજના શીર્ષકો અને URLsનો રિવ્યૂ કરવામાં આવી શકે છે.</translation>
 <translation id="8355270400102541638">સ્થાનિક ક્રૅશ સંદર્ભ:</translation>
 <translation id="8362914115861174987">આ ભાષામાં અનુવાદ કરો</translation>
 <translation id="8363502534493474904">એરપ્લેન મોડ બંધ કરીને</translation>
@@ -4575,7 +4570,6 @@
 <translation id="8699041776323235191">HID ડિવાઇસ</translation>
 <translation id="8699985386408839112">એન્વલપ કાકૂ 1</translation>
 <translation id="8702965365666568344">માઉન્ટિંગ ટેપ</translation>
-<translation id="8703242769654966101">Walletમાં Pix ચાલુ કરો</translation>
 <translation id="8703372953981978786">આ લિંક કામ કરતી નથી</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> સાથેનું તમારું કનેક્શન એન્ક્રિપ્ટેડ નથી.</translation>
 <translation id="8705331520020532516">અનુક્રમ નંબર</translation>
@@ -4743,7 +4737,6 @@
 <translation id="9001074447101275817">પ્રૉક્સી <ph name="DOMAIN" />ને વપરાશકર્તાનામ અને પાસવર્ડની જરૂર છે.</translation>
 <translation id="9001963517402879850">કૂદો!</translation>
 <translation id="9002677862950442746">ચકાસણી કોડ: <ph name="OTP" /></translation>
-<translation id="9003263770394939629">Gemini દ્વારા સૂચિત. સેટિંગમાં જઈને વધુ સારી બનાવેલી ઑટોમૅટિક રીતે ભરવાની સુવિધા મેનેજ કરો.</translation>
 <translation id="9003639428623471314">એન્વલપ કાહૂ</translation>
 <translation id="9004367719664099443">VR સત્ર ચાલુ છે</translation>
 <translation id="9005998258318286617">PDF દસ્તાવેજ લોડ કરવામાં નિષ્ફળ થયાં.</translation>
@@ -4762,7 +4755,6 @@
 <translation id="9027531288681624875">પૂર્ણ સ્ક્રીનમાંથી બહાર નીકળવા માટે, |<ph name="ACCELERATOR" />| દબાવી રાખો</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">સુરક્ષા ભૂલ</translation>
-<translation id="9035699147763101514">Gemini સાથે પર્સનલ ઇન્ટેલિજન્સ દ્વારા સંચાલિત. સેટિંગમાં તમારી પસંદગીઓ મેનેજ કરો.</translation>
 <translation id="9035824888276246493">સુરક્ષા કોડ સાચવો</translation>
 <translation id="9036306139374661733">શું માઇક્રોફોનની મંજૂરી આપીએ?</translation>
 <translation id="9036484080057916082">હસ્તાક્ષરિત સર્ટિફિકેટ ટાઇમસ્ટેમ્પની સૂચિ</translation>

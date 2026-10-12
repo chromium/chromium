@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Wybierz uprawnienia dla: <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Zapisać numer IBAN?</translation>
 <translation id="1113869188872983271">&amp;Cofnij zmianę kolejności</translation>
-<translation id="1117709830616495622">Technologia spersonalizowanej inteligencji w Gemini</translation>
 <translation id="111897705806685148">Użyj klucza dostępu z innego urządzenia</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, aby zarządzać informacjami z Chrome, które zapisujesz na koncie Google, naciśnij Tab, a potem Enter</translation>
 <translation id="1121990216147052230">Zrób dla mnie listę zadań do wykonania</translation>
@@ -843,8 +842,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2384307209577226199">Domyślne zasady przedsiębiorstwa</translation>
 <translation id="2385809941344967209">Aktualizuj Chrome z poziomu ustawień przeglądarki</translation>
 <translation id="2386255080630008482">Certyfikat serwera został unieważniony.</translation>
-<translation id="2387424091060104123">Sugerowane przez Gemini · <ph name="SRC_LINK" />Wyświetl źródła<ph name="END_SRC_LINK" />
-Możesz usunąć tę sugestię z Chrome. Oryginalne źródło nie zostanie usunięte. <ph name="MANAGE_LINK" />Zarządzaj ulepszonym autouzupełnianiem<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">Rozwiń</translation>
 <translation id="2392959068659972793">Pokaż zasady bez ustawionej wartości</translation>
 <translation id="239429038616798445">Ta metoda wysyłki jest niedostępna. Wybierz inną.</translation>
@@ -3900,7 +3897,6 @@ Dodatkowe informacje:
 <translation id="7514365320538308">Pobierz</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">Przyznano jednorazowy dostęp do rzeczywistości wirtualnej</translation>
-<translation id="7517198908921983825">Sugerowane przez Gemini · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Koperta C10</translation>
 <translation id="7518003948725431193">Nie znaleziono strony internetowej pod adresem <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -4395,7 +4391,6 @@ Dodatkowe informacje:
 <translation id="8350416046273606058">Skrót nie może zawierać spacji: „<ph name="SHORTCUT_NAME" />”</translation>
 <translation id="8351131234907093545">Utwórz notatkę</translation>
 <translation id="8352849934814541340">Administrator urządzenia zainstalował aplikacje obsługujące dodatkowe funkcje. Aplikacje mają dostęp do niektórych Twoich danych.</translation>
-<translation id="8353273112634584260">Technologia spersonalizowanej inteligencji w Gemini Twoje prośby, tytuły stron i adresy URL mogą być weryfikowane w celu doskonalenia funkcji ulepszonego autouzupełniania.</translation>
 <translation id="8355270400102541638">Lokalny kontekst awarii:</translation>
 <translation id="8362914115861174987">Tłumacz na</translation>
 <translation id="8363502534493474904">Wyłącz tryb samolotowy</translation>
@@ -4575,7 +4570,6 @@ Dodatkowe informacje:
 <translation id="8699041776323235191">Urządzenie HID</translation>
 <translation id="8699985386408839112">Koperta Kaku 1</translation>
 <translation id="8702965365666568344">Taśma montażowa</translation>
-<translation id="8703242769654966101">Włącz Pix w Portfelu</translation>
 <translation id="8703372953981978786">Ten link nie działa</translation>
 <translation id="8703575177326907206">Połączenie z witryną <ph name="DOMAIN" /> nie jest szyfrowane.</translation>
 <translation id="8705331520020532516">Numer seryjny</translation>
@@ -4743,7 +4737,6 @@ Dodatkowe informacje:
 <translation id="9001074447101275817">Serwer proxy <ph name="DOMAIN" /> wymaga nazwy użytkownika i hasła.</translation>
 <translation id="9001963517402879850">Skacz!</translation>
 <translation id="9002677862950442746">Kod weryfikacyjny: <ph name="OTP" /></translation>
-<translation id="9003263770394939629">Sugerowane przez Gemini. Zarządzaj ulepszonym autouzupełnianiem w ustawieniach.</translation>
 <translation id="9003639428623471314">Koperta Kahu</translation>
 <translation id="9004367719664099443">Trwa sesja VR</translation>
 <translation id="9005998258318286617">Nie udało się wczytać dokumentu PDF.</translation>
@@ -4762,7 +4755,6 @@ Dodatkowe informacje:
 <translation id="9027531288681624875">Aby zamknąć tryb pełnoekranowy, naciśnij i przytrzymaj |<ph name="ACCELERATOR" />|</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Błąd zabezpieczeń</translation>
-<translation id="9035699147763101514">Technologia spersonalizowanej inteligencji w Gemini Możesz zarządzać swoimi wyborami w ustawieniach.</translation>
 <translation id="9035824888276246493">Zapisuj kody zabezpieczające</translation>
 <translation id="9036306139374661733">Zezwolić na używanie mikrofonu?</translation>
 <translation id="9036484080057916082">Lista sygnatur czasowych podpisanego certyfikatu</translation>

@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Selecciona un permís per a <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Vols desar l'IBAN?</translation>
 <translation id="1113869188872983271">&amp;Desfés el canvi d'ordre</translation>
-<translation id="1117709830616495622">Amb la tecnologia d'Intel·ligència personal amb Gemini.</translation>
 <translation id="111897705806685148">Utilitza la clau d'accés d'un altre dispositiu</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />; prem Tab i després Retorn per gestionar la informació de Chrome que deses al teu Compte de Google.</translation>
 <translation id="1121990216147052230">Fes-me una llista de tasques pendents</translation>
@@ -843,8 +842,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2384307209577226199">Predeterminada de l'empresa</translation>
 <translation id="2385809941344967209">Actualitza Chrome des de la configuració de Chrome</translation>
 <translation id="2386255080630008482">El certificat del servidor s'ha revocat.</translation>
-<translation id="2387424091060104123">Suggerit per Gemini · <ph name="SRC_LINK" />Mostra les fonts<ph name="END_SRC_LINK" />
-Pots suprimir aquest suggeriment perquè no aparegui a Chrome. La font original no se suprimirà. <ph name="MANAGE_LINK" />Gestiona l'emplenament automàtic millorat<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">Elabora</translation>
 <translation id="2392959068659972793">Mostra les polítiques sense valors definits</translation>
 <translation id="239429038616798445">Aquest mètode d'enviament no està disponible. Prova'n un altre.</translation>
@@ -3900,7 +3897,6 @@ Detalls addicionals:
 <translation id="7514365320538308">Baixa</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">S'ha permès la RV aquesta vegada</translation>
-<translation id="7517198908921983825">Suggerit per Gemini · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Sobre C10</translation>
 <translation id="7518003948725431193">No s'ha trobat cap pàgina web per a l'adreça: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -4395,7 +4391,6 @@ Detalls addicionals:
 <translation id="8350416046273606058">La drecera no pot contenir espais: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Crea una nota</translation>
 <translation id="8352849934814541340">L'administrador del dispositiu ha instal·lat aplicacions per obtenir funcions addicionals. Les aplicacions tenen accés a algunes de les teves dades.</translation>
-<translation id="8353273112634584260">Amb la tecnologia d'Intel·ligència personal amb Gemini. És possible que les teves sol·licituds, els títols de les pàgines i els URL es revisin per perfeccionar l'emplenament automàtic millorat.</translation>
 <translation id="8355270400102541638">Context del bloqueig local:</translation>
 <translation id="8362914115861174987">Tradueix a</translation>
 <translation id="8363502534493474904">Desactiva el mode d'avió.</translation>
@@ -4575,7 +4570,6 @@ Detalls addicionals:
 <translation id="8699041776323235191">Dispositiu d'interfície humana</translation>
 <translation id="8699985386408839112">Sobre Kaku 1</translation>
 <translation id="8702965365666568344">Cinta de muntatge</translation>
-<translation id="8703242769654966101">Activa Pix a Wallet</translation>
 <translation id="8703372953981978786">Aquest enllaç no funciona</translation>
 <translation id="8703575177326907206">La teva connexió a <ph name="DOMAIN" /> no està xifrada.</translation>
 <translation id="8705331520020532516">Número de sèrie</translation>
@@ -4743,7 +4737,6 @@ Detalls addicionals:
 <translation id="9001074447101275817">El servidor intermediari del domini <ph name="DOMAIN" /> requereix un nom d'usuari i una contrasenya.</translation>
 <translation id="9001963517402879850">Salta!</translation>
 <translation id="9002677862950442746">Codi de verificació: <ph name="OTP" /></translation>
-<translation id="9003263770394939629">Suggerit per Gemini. Gestiona l'emplenament automàtic millorat a la configuració.</translation>
 <translation id="9003639428623471314">Sobre Kahu</translation>
 <translation id="9004367719664099443">Sessió de realitat virtual en curs</translation>
 <translation id="9005998258318286617">No es pot carregar el document PDF.</translation>
@@ -4762,7 +4755,6 @@ Detalls addicionals:
 <translation id="9027531288681624875">Per sortir de la pantalla completa, mantén premut |<ph name="ACCELERATOR" />|</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Error de seguretat</translation>
-<translation id="9035699147763101514">Amb la tecnologia d'Intel·ligència personal de Gemini. Gestiona les teves opcions a la configuració.</translation>
 <translation id="9035824888276246493">Desa els codis de seguretat</translation>
 <translation id="9036306139374661733">Vols permetre l'accés al micròfon?</translation>
 <translation id="9036484080057916082">Llista de marques de temps de certificats signats</translation>

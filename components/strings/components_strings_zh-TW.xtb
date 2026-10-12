@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">選取<ph name="PERMISSION_NAME" />權限設定</translation>
 <translation id="1113000785583998331">要儲存 IBAN 嗎？</translation>
 <translation id="1113869188872983271">復原重新排序(&amp;U)</translation>
-<translation id="1117709830616495622">搭載 Gemini 個人化智慧服務。</translation>
 <translation id="111897705806685148">使用其他裝置的密碼金鑰</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />；依序按下 Tab 鍵和 Enter 鍵，即可管理要儲存到 Google 帳戶的 Chrome 資訊</translation>
 <translation id="1121990216147052230">幫我建立待辦事項清單</translation>
@@ -842,8 +841,6 @@
 <translation id="2384307209577226199">企業預設</translation>
 <translation id="2385809941344967209">前往 Chrome 設定更新 Chrome</translation>
 <translation id="2386255080630008482">伺服器憑證已遭撤銷。</translation>
-<translation id="2387424091060104123">建議由 Gemini 提供 · <ph name="SRC_LINK" />查看來源<ph name="END_SRC_LINK" />
-你可以透過 Chrome 移除這項建議，這不會刪除原始來源。<ph name="MANAGE_LINK" />管理強化版自動填入功能<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">詳述</translation>
 <translation id="2392959068659972793">顯示尚未設定任何值的政策</translation>
 <translation id="239429038616798445">不支援所選的運送方式，請改選其他方式。</translation>
@@ -3898,7 +3895,6 @@
 <translation id="7514365320538308">下載</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">這次允許使用 VR</translation>
-<translation id="7517198908921983825">Gemini 提供的建議 · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Envelope C10</translation>
 <translation id="7518003948725431193">找不到此網址的網頁：<ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -4393,7 +4389,6 @@
 <translation id="8350416046273606058">搜尋捷徑不得包含空格：「<ph name="SHORTCUT_NAME" />」</translation>
 <translation id="8351131234907093545">寫筆記</translation>
 <translation id="8352849934814541340">這部裝置的管理員已安裝支援額外功能的應用程式，這些應用程式可存取你的部分資料。</translation>
-<translation id="8353273112634584260">搭載 Gemini 個人化智慧服務。你的要求、網頁標題和網址可能會送交人工審查，以改進強化版自動填入功能。</translation>
 <translation id="8355270400102541638">本機當機內容：</translation>
 <translation id="8362914115861174987">譯文語言：</translation>
 <translation id="8363502534493474904">關閉飛航模式</translation>
@@ -4573,7 +4568,6 @@
 <translation id="8699041776323235191">HID 裝置</translation>
 <translation id="8699985386408839112">Envelope Kaku 1</translation>
 <translation id="8702965365666568344">膠帶</translation>
-<translation id="8703242769654966101">在 Google 錢包中啟用 Pix</translation>
 <translation id="8703372953981978786">這個連結無效</translation>
 <translation id="8703575177326907206">你到 <ph name="DOMAIN" /> 的連線未加密。</translation>
 <translation id="8705331520020532516">序號</translation>
@@ -4741,7 +4735,6 @@
 <translation id="9001074447101275817"><ph name="DOMAIN" /> Proxy 要求提供使用者名稱和密碼。</translation>
 <translation id="9001963517402879850">跳起來！</translation>
 <translation id="9002677862950442746">驗證碼：<ph name="OTP" /></translation>
-<translation id="9003263770394939629">Gemini 提供的建議。請前往「設定」管理強化版自動填入功能。</translation>
 <translation id="9003639428623471314">Envelope Kahu</translation>
 <translation id="9004367719664099443">正在執行 VR 工作階段</translation>
 <translation id="9005998258318286617">無法載入 PDF 文件。</translation>
@@ -4760,7 +4753,6 @@
 <translation id="9027531288681624875">如要退出全螢幕模式，請按住 |<ph name="ACCELERATOR" />| 鍵</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">安全性錯誤</translation>
-<translation id="9035699147763101514">採用 Gemini 個人化智慧服務。你可以前往「設定」管理偏好選項。</translation>
 <translation id="9035824888276246493">儲存安全碼</translation>
 <translation id="9036306139374661733">要授予麥克風權限嗎？</translation>
 <translation id="9036484080057916082">憑證簽署的時間戳記清單</translation>

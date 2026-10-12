@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Përzgjidh autorizimin për <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Të ruhet numri IBAN?</translation>
 <translation id="1113869188872983271">&amp;Zhbëj rirenditjen</translation>
-<translation id="1117709830616495622">Mundësuar nga "Inteligjenca personale" me Gemini.</translation>
 <translation id="111897705806685148">Përdor çelësin e kalimit nga një pajisje tjetër</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp "Tab" dhe më pas "Enter" për të menaxhuar se çfarë informacionesh të Chrome ruhen në "Llogarinë tënde të Google"</translation>
 <translation id="1121990216147052230">Më bëj një listë të gjërave për të bërë</translation>
@@ -843,8 +842,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2384307209577226199">Parazgjedhja e ndërmarrjes</translation>
 <translation id="2385809941344967209">Përditësoje Chrome nga cilësimet e tua të Chrome</translation>
 <translation id="2386255080630008482">Certifikata e serverit është revokuar.</translation>
-<translation id="2387424091060104123">Sugjeruar nga Gemini · <ph name="SRC_LINK" />Shiko burimet<ph name="END_SRC_LINK" />
-Mund ta heqësh këtë sugjerim nga Chrome. Burimi yt origjinal nuk do të fshihet. <ph name="MANAGE_LINK" />Menaxho plotësimin automatik të përmirësuar<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">Shtjello</translation>
 <translation id="2392959068659972793">Shfaq politikat pa asnjë vlerë të caktuar</translation>
 <translation id="239429038616798445">Kjo mënyrë dërgimi nuk ofrohet. Provo një mënyrë tjetër.</translation>
@@ -3898,7 +3895,6 @@ Detaje shtesë:
 <translation id="7514365320538308">Shkarko</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">VR-ja u lejua këtë herë</translation>
-<translation id="7517198908921983825">Sugjeruar nga Gemini · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Zarf C10</translation>
 <translation id="7518003948725431193">Nuk u gjet asnjë uebsajt për adresën: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -4393,7 +4389,6 @@ Detaje shtesë:
 <translation id="8350416046273606058">Shkurtorja nuk mund të përfshijë hapësira: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Krijo një shënim</translation>
 <translation id="8352849934814541340">Administratori i kësaj pajisjeje ka instaluar aplikacione për funksionet shtesë. Aplikacionet kanë qasje te disa prej të dhënave të tua.</translation>
-<translation id="8353273112634584260">Mundësuar nga "Inteligjenca personale" me Gemini. Kërkesat, titujt e faqeve dhe URL-të e tua mund të shqyrtohen për të përmirësuar plotësimin automatik të përmirësuar.</translation>
 <translation id="8355270400102541638">Konteksti lokal i ndërprerjes aksidentale:</translation>
 <translation id="8362914115861174987">Përkthe në</translation>
 <translation id="8363502534493474904">Të çaktivizosh modalitetin e aeroplanit</translation>
@@ -4573,7 +4568,6 @@ Detaje shtesë:
 <translation id="8699041776323235191">Pajisje HID</translation>
 <translation id="8699985386408839112">Zarf Kaku 1</translation>
 <translation id="8702965365666568344">Shirit montimi</translation>
-<translation id="8703242769654966101">Aktivizo Pix te "Portofoli"</translation>
 <translation id="8703372953981978786">Kjo lidhje nuk funksionon</translation>
 <translation id="8703575177326907206">Lidhja me <ph name="DOMAIN" /> nuk është e enkriptuar.</translation>
 <translation id="8705331520020532516">Numri i serisë</translation>
@@ -4741,7 +4735,6 @@ Detaje shtesë:
 <translation id="9001074447101275817">Përfaqësuesi <ph name="DOMAIN" /> kërkon një emër përdoruesi dhe një fjalëkalim.</translation>
 <translation id="9001963517402879850">Kërce!</translation>
 <translation id="9002677862950442746">Kodi i verifikimit: <ph name="OTP" /></translation>
-<translation id="9003263770394939629">Sugjeruar nga Gemini. Menaxho plotësimin automatik të përmirësuar te cilësimet.</translation>
 <translation id="9003639428623471314">Zarf Kahu</translation>
 <translation id="9004367719664099443">Sesioni VR në proces</translation>
 <translation id="9005998258318286617">Ngarkimi i dokumentit PDF dështoi.</translation>
@@ -4760,7 +4753,6 @@ Detaje shtesë:
 <translation id="9027531288681624875">Për të dalë nga ekrani i plotë, shtyp dhe mbaj shtypur |<ph name="ACCELERATOR" />|</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Gabim i sigurisë</translation>
-<translation id="9035699147763101514">Mundësuar nga "Inteligjenca personale" me Gemini. Menaxho zgjedhjet e tua te cilësimet.</translation>
 <translation id="9035824888276246493">Ruaj kodet e sigurisë</translation>
 <translation id="9036306139374661733">Të lejohet mikrofoni?</translation>
 <translation id="9036484080057916082">Lista e vulave kohore të certifikatave të nënshkruara</translation>

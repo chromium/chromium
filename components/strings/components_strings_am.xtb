@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">ለ<ph name="PERMISSION_NAME" /> ፈቃድ አቀናብር</translation>
 <translation id="1113000785583998331">አይቢኤኤን ይቀመጥ?</translation>
 <translation id="1113869188872983271">&amp;እንደገና ደርድርን ቀልብስ</translation>
-<translation id="1117709830616495622">በGemini በግል ብልሃት የተጎላበተ።</translation>
 <translation id="111897705806685148">የይለፍ ቁልፍን ከሌላ መሣሪያ ይጠቀሙ</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ Google መለያዎ ውስጥ ምን የChrome መረጃ እንደሚያስቀምጡ ለማስተዳደር ትርን ከዚያም አስገባን ይጫኑ</translation>
 <translation id="1121990216147052230">የሚደረጉ ነገሮች ዝርዝር አዘጋጅልኝ</translation>
@@ -843,8 +842,6 @@
 <translation id="2384307209577226199">የንግድ ድርጅት ነባሪ</translation>
 <translation id="2385809941344967209">ከእርስዎ የChrome ቅንብሮች ሆነው Chromeን ያዘምኑ</translation>
 <translation id="2386255080630008482">የአገልጋይ እውቅና ማረጋገጫ ተሽሯል።</translation>
-<translation id="2387424091060104123">በGemini የተጠቆመ · <ph name="SRC_LINK" />ምንጮችን ይመልከቱ<ph name="END_SRC_LINK" />
-ይህን ጥቆማ ከChrome ማስወገድ ይችላሉ። የመጀመሪያው ምንጭዎ አይሰረዝም። <ph name="MANAGE_LINK" />የተሻሻለ ራስ-ሙላን ያስተዳድሩ<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">አብራራ</translation>
 <translation id="2392959068659972793">ምንም እሴት ያልተዋቀረላቸው መምሪያዎችን አሳይ</translation>
 <translation id="239429038616798445">ይህ የመላኪያ ዘዴ አይገኝም። የተለየ ዘዴ ይሞክሩ።</translation>
@@ -3899,7 +3896,6 @@
 <translation id="7514365320538308">አውርድ</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">ምናባዊ እውነታ በዚህ ጊዜ ተፈቅዷል</translation>
-<translation id="7517198908921983825">በGemini የተጠቆመ · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">ሲ10 ፖስታ</translation>
 <translation id="7518003948725431193">ለዚህ የድር አድራሻ ምንም ድረ-ገፅ አልተገኘም፦ <ph name="URL" /></translation>
 <translation id="7521387064766892559">ጃቫስክሪፕት</translation>
@@ -4394,7 +4390,6 @@
 <translation id="8350416046273606058">አቋራጭ ክፍተቶችን መያዝ አይችልም፦ «<ph name="SHORTCUT_NAME" />»</translation>
 <translation id="8351131234907093545">ማስታወሻን ይፍጠሩ</translation>
 <translation id="8352849934814541340">የዚህ መሣሪያ አስተዳዳሪ ለተጨማሪ ተግባራት መተግበሪያዎችን ጭኗል። መተግበሪያዎች የአንዳንድ ውሂብዎ መዳረሻ አላቸው።</translation>
-<translation id="8353273112634584260">በGemini በግል ብልሃት የተጎላበተ። የተሻሻለ ራስ-ሙላን ለማሻሻል የእርስዎ ጥያቄዎች፣ የገጽ ርዕሶች እና ዩአርኤሎች ሊገመገሙ ይችላሉ።</translation>
 <translation id="8355270400102541638">የአካባቢያዊ ስንክል አውድ፦</translation>
 <translation id="8362914115861174987">ወደዚህ መተርጎም</translation>
 <translation id="8363502534493474904">የአውሮፕላን ሁነታን ማጥፋት</translation>
@@ -4575,7 +4570,6 @@
 <translation id="8699041776323235191">የHID መሣሪያ</translation>
 <translation id="8699985386408839112">ካኩ 1 ፖስታ</translation>
 <translation id="8702965365666568344">ማፈናጠጫ ቴፕ</translation>
-<translation id="8703242769654966101">Wallet ውስጥ Pix ያንቁ</translation>
 <translation id="8703372953981978786">ይህ አገናኝ አይሠራም</translation>
 <translation id="8703575177326907206">ከ<ph name="DOMAIN" /> ጋር ያለዎት ግንኙነት አልተመሰጠረም</translation>
 <translation id="8705331520020532516">መለያ ቁጥር</translation>
@@ -4743,7 +4737,6 @@
 <translation id="9001074447101275817">ተኪ <ph name="DOMAIN" /> የተጠቃሚ ስም እና የይለፍ ቃል ያስፈልገዋል።</translation>
 <translation id="9001963517402879850">ዝለል!</translation>
 <translation id="9002677862950442746">የማረጋገጫ ኮድ፦ <ph name="OTP" /></translation>
-<translation id="9003263770394939629">በGemini የተጠቆመ። በቅንብሮች ውስጥ የተሻሻለ ራስ-ሙላን ያስተዳድሩ።</translation>
 <translation id="9003639428623471314">ካሁ ፖስታ</translation>
 <translation id="9004367719664099443">VR ክፍለ ጊዜ በሂደት ላይ ነው</translation>
 <translation id="9005998258318286617">የፒዲኤፍ ሰነድ መጫን አልተሳካም።</translation>
@@ -4762,7 +4755,6 @@
 <translation id="9027531288681624875">ከሙሉ ማያ ገጽ ለመውጣት |<ph name="ACCELERATOR" />|ን ተጭነው ይያዙ</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">የደህንነት ጥበቃ ስህተት</translation>
-<translation id="9035699147763101514">በGemini በግል ብልሃት የተጎላበተ። በቅንብሮች ውስጥ ምርጫዎችዎን ያስተዳድሩ።</translation>
 <translation id="9035824888276246493">የደህንነት ኮዶችን ያስቀምጡ</translation>
 <translation id="9036306139374661733">ማይክሮፎን ይፈቀድ?</translation>
 <translation id="9036484080057916082">የተፈረመበት የዕውቅና ማረጋገጫ የጊዜ ማህተም ዝርዝር</translation>

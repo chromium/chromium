@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Engedély kiválasztása a következőhöz: <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Menti az IBAN-számot?</translation>
 <translation id="1113869188872983271">&amp;Átrendezés visszavonása</translation>
-<translation id="1117709830616495622">A Gemini Személyre szabott intelligencia funkciójával.</translation>
 <translation id="111897705806685148">Másik eszközről származó azonosítókulcs használata</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, nyomja le a Tab, majd az Enter billentyűt a Google-fiókba menteni kívánt Chrome-adatok kezeléséhez</translation>
 <translation id="1121990216147052230">Készíts nekem egy teendőlistát</translation>
@@ -843,8 +842,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2384307209577226199">Vállalati alapértelmezett</translation>
 <translation id="2385809941344967209">A Chrome-ot a Chrome-beállítások között frissítheti</translation>
 <translation id="2386255080630008482">A szerver tanúsítványát visszavonták.</translation>
-<translation id="2387424091060104123">A Gemini javaslata · <ph name="SRC_LINK" />Források megtekintése<ph name="END_SRC_LINK" />
-Ezt a javaslatot eltávolíthatja a Chrome-ból. Az eredeti forrás nem fog törlődni. <ph name="MANAGE_LINK" />A továbbfejlesztett automatikus kitöltés kezelése.<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">Részletesebb</translation>
 <translation id="2392959068659972793">Beállított értékkel nem rendelkező házirendek megjelenítése</translation>
 <translation id="239429038616798445">Ez a szállítási mód nem áll rendelkezésre. Próbálkozzon másik móddal.</translation>
@@ -3897,7 +3894,6 @@ További részletek:
 <translation id="7514365320538308">Letöltés</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">A VR erre az alkalomra engedélyezve van</translation>
-<translation id="7517198908921983825">A Gemini javaslata · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">C10 boríték</translation>
 <translation id="7518003948725431193">Nem található weboldal az internetcímen:<ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -4392,7 +4388,6 @@ További részletek:
 <translation id="8350416046273606058">A billentyűparancs nem tartalmazhat szóközt: „<ph name="SHORTCUT_NAME" />”</translation>
 <translation id="8351131234907093545">Jegyzet létrehozása</translation>
 <translation id="8352849934814541340">Az eszköz rendszergazdája alkalmazásokat telepített további funkciók használata céljából. Az alkalmazások hozzáférhetnek az Ön bizonyos adataihoz.</translation>
-<translation id="8353273112634584260">A Gemini Személyre szabott intelligencia funkciójával. A továbbfejlesztett automatikus kitöltés javítása érdekében ellenőrizhetjük a kéréseket, az oldalcímeket és az URL-eket.</translation>
 <translation id="8355270400102541638">Összeomlás helyi kontextusa:</translation>
 <translation id="8362914115861174987">Fordítás a következő nyelvre:</translation>
 <translation id="8363502534493474904">Repülős üzemmód kikapcsolása</translation>
@@ -4573,7 +4568,6 @@ További részletek:
 <translation id="8699041776323235191">HID-eszköz</translation>
 <translation id="8699985386408839112">Kaku 1 boríték</translation>
 <translation id="8702965365666568344">Ragasztószalag</translation>
-<translation id="8703242769654966101">A Pix engedélyezése a Walletben</translation>
 <translation id="8703372953981978786">Ez a link nem működik</translation>
 <translation id="8703575177326907206">A kapcsolat (<ph name="DOMAIN" />) nem titkosított.</translation>
 <translation id="8705331520020532516">Sorozatszám</translation>
@@ -4741,7 +4735,6 @@ További részletek:
 <translation id="9001074447101275817">A(z) <ph name="DOMAIN" /> proxy felhasználónevet és jelszót kér.</translation>
 <translation id="9001963517402879850">Ugrás!</translation>
 <translation id="9002677862950442746">Ellenőrző kód: <ph name="OTP" /></translation>
-<translation id="9003263770394939629">A Gemini javaslata. A továbbfejlesztett automatikus kitöltést a beállításokban kezelheti.</translation>
 <translation id="9003639428623471314">Kahu boríték</translation>
 <translation id="9004367719664099443">VR-munkamenet folyamatban</translation>
 <translation id="9005998258318286617">A PDF-dokumentum betöltése sikertelen.</translation>
@@ -4760,7 +4753,6 @@ További részletek:
 <translation id="9027531288681624875">A teljes képernyős nézetből való kilépéshez tartsa lenyomva a következőt: |<ph name="ACCELERATOR" />|</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Biztonsági hiba</translation>
-<translation id="9035699147763101514">A Gemini Személyre szabott intelligencia funkciójával. A beállításokban kezelheti a választásait.</translation>
 <translation id="9035824888276246493">Biztonsági kódok mentése</translation>
 <translation id="9036306139374661733">Engedélyezi a mikrofonhasználatot?</translation>
 <translation id="9036484080057916082">Az aláírt tanúsítvány időbélyeglistája</translation>

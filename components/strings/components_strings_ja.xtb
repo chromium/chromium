@@ -71,7 +71,6 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> の権限を選択します</translation>
 <translation id="1113000785583998331">IBAN を保存しますか？</translation>
 <translation id="1113869188872983271">順序変更の取り消し（&amp;U）</translation>
-<translation id="1117709830616495622">Gemini のパーソナル インテリジェンスを使用します。</translation>
 <translation id="111897705806685148">別のデバイスのパスキーを使用</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Google アカウントに保存する Chrome の情報を管理できます</translation>
 <translation id="1121990216147052230">ToDo リストを作成して</translation>
@@ -843,8 +842,6 @@
 <translation id="2384307209577226199">企業のデフォルト</translation>
 <translation id="2385809941344967209">Chrome の設定で Chrome を更新します</translation>
 <translation id="2386255080630008482">サーバーの証明書は取り消されています。</translation>
-<translation id="2387424091060104123">Gemini による提案 · <ph name="SRC_LINK" />ソースを表示<ph name="END_SRC_LINK" />
-Chrome からこの提案を削除できます。元のソースは削除されません。<ph name="MANAGE_LINK" />高精度の自動入力を管理<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">より詳しく</translation>
 <translation id="2392959068659972793">値が設定されていないポリシーを表示する</translation>
 <translation id="239429038616798445">この配送方法はご利用いただけません。別の方法を選択してください。</translation>
@@ -3900,7 +3897,6 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="7514365320538308">ダウンロード</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">一時的に VR を許可しました</translation>
-<translation id="7517198908921983825">Gemini による提案 · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">C10 封筒</translation>
 <translation id="7518003948725431193">次の URL のウェブページは見つかりませんでした:<ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -4395,7 +4391,6 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="8350416046273606058">ショートカットにスペースを含めることはできません: 「<ph name="SHORTCUT_NAME" />」</translation>
 <translation id="8351131234907093545">メモを作成</translation>
 <translation id="8352849934814541340">このデバイスの管理者によって、機能を追加するアプリケーションがインストールされました。このアプリケーションでは、ユーザーデータの一部にアクセスする場合があります。</translation>
-<translation id="8353273112634584260">Gemini のパーソナル インテリジェンスを使用します。リクエスト、ページのタイトル、URL は、高精度の自動入力の改善に向けて確認される場合があります。</translation>
 <translation id="8355270400102541638">ローカル クラッシュ コンテキスト:</translation>
 <translation id="8362914115861174987">訳文の言語</translation>
 <translation id="8363502534493474904">機内モードをオフにする</translation>
@@ -4576,7 +4571,6 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="8699041776323235191">HID デバイス</translation>
 <translation id="8699985386408839112">角形 1 号封筒</translation>
 <translation id="8702965365666568344">粘着テープ</translation>
-<translation id="8703242769654966101">ウォレットで Pix を有効にする</translation>
 <translation id="8703372953981978786">このリンクは機能していません</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> への接続は暗号化されていません。</translation>
 <translation id="8705331520020532516">シリアル番号</translation>
@@ -4744,7 +4738,6 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="9001074447101275817">プロキシ <ph name="DOMAIN" /> にはユーザー名とパスワードを指定する必要があります。</translation>
 <translation id="9001963517402879850">ジャンプ！</translation>
 <translation id="9002677862950442746">確認コード: <ph name="OTP" /></translation>
-<translation id="9003263770394939629">Gemini による提案。高精度の自動入力は [設定] で管理できます。</translation>
 <translation id="9003639428623471314">Kahu 封筒</translation>
 <translation id="9004367719664099443">VR セッションが進行中</translation>
 <translation id="9005998258318286617">PDF ドキュメントを読み込めませんでした。</translation>
@@ -4763,7 +4756,6 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="9027531288681624875">全画面表示を終了するには、|<ph name="ACCELERATOR" />| を長押しします</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">セキュリティ エラー</translation>
-<translation id="9035699147763101514">Gemini のパーソナル インテリジェンスを使用します。選択内容は [設定] で管理できます。</translation>
 <translation id="9035824888276246493">セキュリティ コードを保存する</translation>
 <translation id="9036306139374661733">マイクの使用を許可しますか？</translation>
 <translation id="9036484080057916082">署名付き証明書のタイムスタンプ リスト</translation>

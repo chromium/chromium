@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Velja heimild fyrir <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Vista IBAN-númer?</translation>
 <translation id="1113869188872983271">Aft&amp;urkalla nýja röðun</translation>
-<translation id="1117709830616495622">Knúið af persónulegri greind með Gemini.</translation>
 <translation id="111897705806685148">Nota aðgangslykil úr öðru tæki</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á Tab og svo Enter til að stjórna því hvaða Chrome-upplýsingar þú vistar á Google-reikningnum þínum</translation>
 <translation id="1121990216147052230">Búðu til verkefnalista fyrir mig</translation>
@@ -843,8 +842,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2384307209577226199">Sjálfgildi fyrirtækis</translation>
 <translation id="2385809941344967209">Uppfærðu Chrome í stillingum Chrome</translation>
 <translation id="2386255080630008482">Vottorð þjónsins hefur verið afturkallað.</translation>
-<translation id="2387424091060104123">Tillaga frá Gemini · <ph name="SRC_LINK" />Skoða heimildir<ph name="END_SRC_LINK" />
-Þú getur fjarlægt þessa tillögu úr Chrome. Upprunalegu heimildinni verður ekki eytt. <ph name="MANAGE_LINK" />Stjórna ítarlegri sjálfvirkri útfyllingu<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">Bæta meiru við</translation>
 <translation id="2392959068659972793">Sýna reglur með engin gildi valin</translation>
 <translation id="239429038616798445">Þessi sendingarmáti er ekki í boði. Prófaðu annan sendingarmáta.</translation>
@@ -3899,7 +3896,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="7514365320538308">Sækja</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">Sýndarveruleiki leyfður í þetta sinn</translation>
-<translation id="7517198908921983825">Tillaga frá Gemini · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Umslag: C10</translation>
 <translation id="7518003948725431193">Engin vefsíða fannst fyrir veffangið: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -4394,7 +4390,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="8350416046273606058">Flýtileið má ekki innihalda bil: „<ph name="SHORTCUT_NAME" />“</translation>
 <translation id="8351131234907093545">Búa til glósu</translation>
 <translation id="8352849934814541340">Kerfisstjóri þessa tækis hefur sett upp forrit fyrir fleiri aðgerðir. Forrit hafa aðgang að einhverjum gögnum í þinni eigu.</translation>
-<translation id="8353273112634584260">Knúið af persónulegri greind með Gemini. Farið verður yfir beiðnirnar þínar, titla síðna og vefslóðir til að bæta ítarlega sjálfvirka útfyllingu.</translation>
 <translation id="8355270400102541638">Samhengi staðbundins hruns:</translation>
 <translation id="8362914115861174987">Þýða yfir á</translation>
 <translation id="8363502534493474904">Slökkva á flugstillingu</translation>
@@ -4574,7 +4569,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="8699041776323235191">HID-tæki</translation>
 <translation id="8699985386408839112">Umslag: kaku 1</translation>
 <translation id="8702965365666568344">Festingarlímband</translation>
-<translation id="8703242769654966101">Virkja Pix í Veski</translation>
 <translation id="8703372953981978786">Tengillinn virkar ekki</translation>
 <translation id="8703575177326907206">Tengingin þín við <ph name="DOMAIN" /> er ekki dulkóðuð.</translation>
 <translation id="8705331520020532516">Raðnúmer</translation>
@@ -4742,7 +4736,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="9001074447101275817">Staðgengilsþjónninn <ph name="DOMAIN" /> krefst notandanafns og aðgangsorðs.</translation>
 <translation id="9001963517402879850">Hoppaðu!</translation>
 <translation id="9002677862950442746">Staðfestingarkóði: <ph name="OTP" /></translation>
-<translation id="9003263770394939629">Tillaga frá Gemini. Stjórnaðu ítarlegri sjálfvirkri útfyllingu í stillingum.</translation>
 <translation id="9003639428623471314">Umslag: kahu</translation>
 <translation id="9004367719664099443">VR-lota í gangi</translation>
 <translation id="9005998258318286617">Mistókst að hlaða PDF-skjal.</translation>
@@ -4761,7 +4754,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="9027531288681624875">Til að loka öllum skjánum skaltu halda |<ph name="ACCELERATOR" />| inni</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Öryggisvilla</translation>
-<translation id="9035699147763101514">Knúið af persónulegri greind með Gemini. Þú getur stjórnað valkostunum þínum í stillingunum.</translation>
 <translation id="9035824888276246493">Vista öryggisnúmer</translation>
 <translation id="9036306139374661733">Leyfa hljóðnema?</translation>
 <translation id="9036484080057916082">Tímastimplalisti undirritaðra vottorða</translation>

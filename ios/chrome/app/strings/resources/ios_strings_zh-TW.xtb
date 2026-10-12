@@ -267,7 +267,7 @@
 <translation id="1779354709911146450">驗證錯誤</translation>
 <translation id="1780152987505130652">關閉群組</translation>
 <translation id="178400879184240105">沒有重複使用的密碼</translation>
-<translation id="17906873777101817">提供儲存密碼和密碼金鑰的選項</translation>
+<translation id="17906873777101817">詢問是否儲存密碼和密碼金鑰</translation>
 <translation id="1794893174442046596">分頁群組</translation>
 <translation id="1807893857950749072">允許接收價格追蹤通知…</translation>
 <translation id="1808142805674973090">切換模式</translation>
@@ -2577,7 +2577,6 @@
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />，釘選的網站</translation>
 <translation id="8990960056509724223">根據貴機構的政策，無法儲存檔案</translation>
 <translation id="8998289560386111590">這項功能無法在你的裝置上使用</translation>
-<translation id="9003263770394939629">Gemini 提供的建議。請前往「設定」管理強化版自動填入功能。</translation>
 <translation id="9003677638446136377">重新檢查</translation>
 <translation id="9006453925669499173">「選單」→「新增無痕分頁」</translation>
 <translation id="9008201768610948239">略過</translation>
@@ -2586,7 +2585,6 @@
 <translation id="9029650858822697271">系統已將你登出</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">確認刪除瀏覽資料</translation>
-<translation id="9035699147763101514">採用 Gemini 個人化智慧服務。你可以前往「設定」管理偏好選項。</translation>
 <translation id="9038526468059454274">想摘要內容，就用</translation>
 <translation id="9039373489628511875">頻寬</translation>
 <translation id="9042893549633094279">隱私權和安全性</translation>

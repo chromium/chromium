@@ -71,7 +71,6 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" />க்கான அனுமதியைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="1113000785583998331">IBANனைச் சேமிக்கவா?</translation>
 <translation id="1113869188872983271">&amp;மறுவரிசைப்படுத்தலைச் செயல்தவிர்</translation>
-<translation id="1117709830616495622">Gemini மூலம் தனிப்பட்ட நுண்ணறிவு வழங்குகிறது.</translation>
 <translation id="111897705806685148">மற்றொரு சாதனத்தில் உள்ள கடவுச்சாவியைப் பயன்படுத்து</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, உங்கள் Google கணக்கில் எந்தெந்த Chrome தகவல்களைச் சேமிக்க வேண்டும் என்பதை நிர்வகிக்க Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்</translation>
 <translation id="1121990216147052230">செய்ய வேண்டியவை பட்டியலை உருவாக்கு</translation>
@@ -843,8 +842,6 @@
 <translation id="2384307209577226199">நிறுவன இயல்புநிலை</translation>
 <translation id="2385809941344967209">Chrome அமைப்புகளில் Chromeமைப் புதுப்பித்தல்</translation>
 <translation id="2386255080630008482">சேவையகச் சான்றிதழ் திரும்பப் பெறப்பட்டது.</translation>
-<translation id="2387424091060104123">Gemini பரிந்துரைத்தது · <ph name="SRC_LINK" />ஆவணங்களைப் பாருங்கள்<ph name="END_SRC_LINK" />
-இந்தப் பரிந்துரையை Chromeமில் இருந்து அகற்றலாம். உங்கள் அசல் ஆவணம் நீக்கப்படாது. <ph name="MANAGE_LINK" />மேம்பட்ட தானியங்கு நிரப்பல் அம்சத்தை நிர்வகியுங்கள்<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">விவரி</translation>
 <translation id="2392959068659972793">மதிப்பும் எதுவும் அமைக்கப்படாத கொள்கைகளைக் காட்டு</translation>
 <translation id="239429038616798445">இந்த ஷிப்பிங் முறை இல்லை. வேறு முறையைப் பயன்படுத்திப் பார்க்கவும்.</translation>
@@ -3895,7 +3892,6 @@
 <translation id="7514365320538308">பதிவிறக்கு</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">இந்த முறை VR அனுமதிக்கப்பட்டது</translation>
-<translation id="7517198908921983825">Gemini பரிந்துரைப்பது · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">என்வெலப் C10</translation>
 <translation id="7518003948725431193">வலை முகவரிக்கான வலைப்பக்கங்கள் ஏதும் காணப்படவில்லை: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -4390,7 +4386,6 @@
 <translation id="8350416046273606058">ஷார்ட்கட்டில் இடைவெளிகள் இருக்கக்கூடாது: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">குறிப்பை உருவாக்கு</translation>
 <translation id="8352849934814541340">கூடுதல் செயல்பாடுகளுக்காக, சில ஆப்ஸை இந்தச் சாதனத்தின் நிர்வாகி நிறுவியுள்ளார். உங்களின் சில தரவுக்கான அணுகல் ஆப்ஸிற்கு உள்ளது.</translation>
-<translation id="8353273112634584260">Gemini மூலம் தனிப்பட்ட நுண்ணறிவு வழங்குகிறது. மேம்பட்ட தானியங்கு நிரப்பல் அம்சத்தை மேம்படுத்த உங்கள் கோரிக்கைகள், பக்கத் தலைப்புகள், URLகள் ஆகியவை மதிப்பாய்வு செய்யப்படலாம்.</translation>
 <translation id="8355270400102541638">அகச் சிதைவுச் சூழல்:</translation>
 <translation id="8362914115861174987">இதற்கு மொழிபெயர்க்கும்:</translation>
 <translation id="8363502534493474904">விமானப் பயன்முறையை முடக்குதல்</translation>
@@ -4570,7 +4565,6 @@
 <translation id="8699041776323235191">HID சாதனம்</translation>
 <translation id="8699985386408839112">என்வெலப் காகு 1</translation>
 <translation id="8702965365666568344">மவுண்ட்டிங் டேப்</translation>
-<translation id="8703242769654966101">Walletடில் Pixஐ ஆன் செய்</translation>
 <translation id="8703372953981978786">இந்த இணைப்பு வேலை செய்யவில்லை</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> க்கான உங்கள் இணைப்பு என்க்ரிப்ட் செய்யப்படவில்லை.</translation>
 <translation id="8705331520020532516">வரிசை எண்</translation>
@@ -4738,7 +4732,6 @@
 <translation id="9001074447101275817"><ph name="DOMAIN" /> என்கிற ப்ராக்ஸிக்கு பயனர்பெயரும் கடவுச்சொல்லும் தேவை.</translation>
 <translation id="9001963517402879850">தாண்டுங்கள்!</translation>
 <translation id="9002677862950442746">சரிபார்ப்புக் குறியீடு: <ph name="OTP" /></translation>
-<translation id="9003263770394939629">Gemini பரிந்துரைத்தது. மேம்பட்ட தானாக நிரப்புதல் அம்சத்தை அமைப்புகளில் நிர்வகிக்கலாம்.</translation>
 <translation id="9003639428623471314">என்வெலப் காஹு</translation>
 <translation id="9004367719664099443">VR அமர்வு செயல்பாட்டிலுள்ளது</translation>
 <translation id="9005998258318286617">PDF ஆவணத்தை ஏற்ற முடியவில்லை.</translation>
@@ -4757,7 +4750,6 @@
 <translation id="9027531288681624875">முழுத்திரையில் இருந்து வெளியேற |<ph name="ACCELERATOR" />| பட்டனை அழுத்திப் பிடித்திருக்கவும்</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">பாதுகாப்புப் பிழை</translation>
-<translation id="9035699147763101514">Gemini மூலம் தனிப்பட்ட நுண்ணறிவு வழங்குகிறது. அமைப்புகளில் உங்கள் விருப்பங்களை நிர்வகிக்கலாம்.</translation>
 <translation id="9035824888276246493">பாதுகாப்புக் குறியீடுகளைச் சேமி</translation>
 <translation id="9036306139374661733">மைக்ரோஃபோன் அணுகலை வழங்கவா?</translation>
 <translation id="9036484080057916082">கையொப்பமிட்ட சான்றிதழ் நேரமுத்திரைப் பட்டியல்</translation>

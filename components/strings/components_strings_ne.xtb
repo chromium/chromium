@@ -71,7 +71,6 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> का अनुमतिहरू चयन गर्नुहोस्</translation>
 <translation id="1113000785583998331">IBAN सेभ गर्ने हो?</translation>
 <translation id="1113869188872983271">क्रम परिवर्तन &amp;पूर्ववत गर्नुहोस्</translation>
-<translation id="1117709830616495622">Gemini मा उपलब्ध पर्सनल इन्टेलिजेन्स प्रयोग गरी बनाइएको।</translation>
 <translation id="111897705806685148">अर्कै डिभाइसमा भएको पासकी प्रयोग गर्नुहोस्</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome मा भएको कुन जानकारी आफ्नो Google खातामा सेभ गर्ने भन्ने कुरा व्यवस्थापन गर्न ट्याब अनि त्यसपछि इन्टर थिच्नुहोस्</translation>
 <translation id="1121990216147052230">मेरो गर्नु पर्ने कार्यहरूको सूची बनाउनुहोस्</translation>
@@ -843,8 +842,6 @@
 <translation id="2384307209577226199">उद्यम डिफल्ट</translation>
 <translation id="2385809941344967209">आफ्नो Chrome ब्राउजरका सेटिङमा गई Chrome अपडेट गर्नुहोस्</translation>
 <translation id="2386255080630008482">सर्भरको प्रमाणपत्रलाई खारेज गरिएको छ।</translation>
-<translation id="2387424091060104123">Gemini ले सिफारिस गरेको · <ph name="SRC_LINK" />स्रोतहरू हेर्नुहोस्<ph name="END_SRC_LINK" />
-तपाईं Chrome बाट यो सुझाव हटाउन सक्नुहुन्छ। तपाईंको मूल स्रोत मेटाइने छैन। <ph name="MANAGE_LINK" />अटोफिल गर्ने परिष्कृत सुविधा व्यवस्थापन गर्नुहोस्<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">व्याख्या गर्नुहोस्</translation>
 <translation id="2392959068659972793">कुनै मान सेट बिना नै नीतिहरू देखाउनुहोस्</translation>
 <translation id="239429038616798445">ढुवानीको यो विधि उपलब्ध छैन। फरक विधि चयन गर्ने प्रयास गर्नुहोस्।</translation>
@@ -3897,7 +3894,6 @@
 <translation id="7514365320538308">डाउनलोड गर्नुहोस्</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">यस पटकका लागि VR प्रयोग गर्ने अनुमति दिइएको छ</translation>
-<translation id="7517198908921983825">Gemini ले सिफारिस गरेको · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Envelope C10</translation>
 <translation id="7518003948725431193">निम्न वेब ठेगानाको लागि कुनैपनि वेबपृष्ठ फेला परेन: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -4392,7 +4388,6 @@
 <translation id="8350416046273606058">सर्टकटको नाममा स्पेस समावेश गर्न मिल्दैन: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">टिपोट सिर्जना गर्नुहोस्</translation>
 <translation id="8352849934814541340">यो डिभाइसका एड्मिनले थप सुविधाहरू प्राप्त गर्न विभिन्न एप इन्स्टल गरेका छन्। ती एपले तपाईंका केही जानकारी प्रयोग गर्न सक्छन्।</translation>
-<translation id="8353273112634584260">Gemini मा उपलब्ध पर्सनल इन्टेलिजेन्स प्रयोग गरी बनाइएको। अटोफिल गर्ने परिष्कृत सुविधाको गुणस्तर सुधार गर्ने प्रयोजनका लागि तपाईंका अनुरोध, पेजका शीर्षक र URL हरूको समीक्षा गरिन सक्छ।</translation>
 <translation id="8355270400102541638">स्थानीय क्र्यासको सन्दर्भ:</translation>
 <translation id="8362914115861174987">यो भाषामा अनुवाद गर्नुहोस्:</translation>
 <translation id="8363502534493474904">हवाइजहाज मोडलाई निष्क्रिय गर्नुहोस्</translation>
@@ -4572,7 +4567,6 @@
 <translation id="8699041776323235191">HID यन्त्र</translation>
 <translation id="8699985386408839112">Envelope Kaku 1</translation>
 <translation id="8702965365666568344">माउन्टिङ टेप</translation>
-<translation id="8703242769654966101">Wallet मा Pix अन गर्नुहोस्</translation>
 <translation id="8703372953981978786">यो लिंकले काम गर्दैन</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> सँग तपाईंको जडान गुप्तलिखित छैन।</translation>
 <translation id="8705331520020532516">क्रम संख्या</translation>
@@ -4740,7 +4734,6 @@
 <translation id="9001074447101275817">प्रोक्सी <ph name="DOMAIN" /> लाई एक एक-पटके टेक्स्ट म्यासेज र पासवर्ड आवश्यक छ।</translation>
 <translation id="9001963517402879850">उफ्रनुहोस्!</translation>
 <translation id="9002677862950442746">पुष्टि कोड: <ph name="OTP" /></translation>
-<translation id="9003263770394939629">Gemini ले सिफारिस गरेको। सेटिङमा गई अटोफिल गर्ने परिष्कृत सुविधा व्यवस्थापन गर्नुहोस्।</translation>
 <translation id="9003639428623471314">Envelope Kahu</translation>
 <translation id="9004367719664099443">VR सत्र जारी छ</translation>
 <translation id="9005998258318286617">PDF डकुमेन्ट लोड गर्न सकिएन।</translation>
@@ -4759,7 +4752,6 @@
 <translation id="9027531288681624875">फुल स्क्रिनबाट बाहिरिन |<ph name="ACCELERATOR" />| थिचिराख्नुहोस्</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">सुरक्षा त्रुटी</translation>
-<translation id="9035699147763101514">Gemini मा उपलब्ध पर्सनल इन्टेलिजेन्स प्रयोग गरी बनाइएको। सेटिङमा गई आफ्ना विकल्पहरू व्यवस्थापन गर्नुहोस्।</translation>
 <translation id="9035824888276246493">सेक्युरिटी कोडहरू सेभ गर्नुहोस्</translation>
 <translation id="9036306139374661733">माइक्रोफोन प्रयोग गर्ने अनुमति दिने हो?</translation>
 <translation id="9036484080057916082">हस्ताक्षर गरिएको सर्टिफिकेट टाइमस्ट्याम्पको सूची</translation>

@@ -71,7 +71,6 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> 권한을 선택합니다</translation>
 <translation id="1113000785583998331">IBAN을 저장하시겠습니까?</translation>
 <translation id="1113869188872983271">재정렬 실행 취소(&amp;U)</translation>
-<translation id="1117709830616495622">Gemini의 개인 인텔리전스를 기반으로 합니다.</translation>
 <translation id="111897705806685148">다른 기기의 패스키 사용</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab과 Enter를 차례로 눌러 Google 계정에 저장할 Chrome 정보 관리</translation>
 <translation id="1121990216147052230">할 일 목록 만들어 줘</translation>
@@ -843,8 +842,6 @@
 <translation id="2384307209577226199">엔터프라이즈 기본값</translation>
 <translation id="2385809941344967209">Chrome 설정에서 Chrome을 업데이트하세요.</translation>
 <translation id="2386255080630008482">서버 인증서가 폐기되었습니다.</translation>
-<translation id="2387424091060104123">Gemini 추천 · <ph name="SRC_LINK" />소스 보기<ph name="END_SRC_LINK" />
-Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제되지 않습니다. <ph name="MANAGE_LINK" />향상된 자동 완성 관리<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">더 상세하게 작성</translation>
 <translation id="2392959068659972793">값이 설정되지 않은 정책 표시</translation>
 <translation id="239429038616798445">사용할 수 없는 배송 방법입니다. 다른 방법을 선택하세요.</translation>
@@ -3899,7 +3896,6 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="7514365320538308">다운로드</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">이번에는 VR 허용됨</translation>
-<translation id="7517198908921983825">Gemini 추천 · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">봉투 C10</translation>
 <translation id="7518003948725431193">다음 웹 주소(<ph name="URL" />)에 대해 발견된 웹페이지가 없습니다.</translation>
 <translation id="7521387064766892559">자바스크립트</translation>
@@ -4394,7 +4390,6 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="8350416046273606058">단축어에는 공백을 포함할 수 없습니다. "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">메모 만들기</translation>
 <translation id="8352849934814541340">이 기기의 관리자가 추가 기능을 위한 애플리케이션을 설치했습니다. 애플리케이션에는 내 데이터 중 일부에 액세스할 권한이 있습니다.</translation>
-<translation id="8353273112634584260">Gemini의 개인 인텔리전스를 기반으로 합니다. 향상된 자동 완성을 개선하기 위해 요청, 페이지 제목, URL이 검토될 수 있습니다.</translation>
 <translation id="8355270400102541638">로컬 비정상 종료 컨텍스트:</translation>
 <translation id="8362914115861174987">도착어</translation>
 <translation id="8363502534493474904">비행기 모드 사용 중지</translation>
@@ -4574,7 +4569,6 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="8699041776323235191">HID 기기</translation>
 <translation id="8699985386408839112">봉투 Kaku 1</translation>
 <translation id="8702965365666568344">마운팅 테이프</translation>
-<translation id="8703242769654966101">월렛에서 Pix 사용 설정</translation>
 <translation id="8703372953981978786">링크가 작동하지 않음</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" />로의 연결은 암호화되지 않습니다.</translation>
 <translation id="8705331520020532516">일련번호</translation>
@@ -4742,7 +4736,6 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="9001074447101275817">프록시 <ph name="DOMAIN" />에 사용자 이름 및 비밀번호를 입력해야 합니다.</translation>
 <translation id="9001963517402879850">점프하세요</translation>
 <translation id="9002677862950442746">인증 코드: <ph name="OTP" /></translation>
-<translation id="9003263770394939629">Gemini가 추천합니다. 설정에서 향상된 자동 완성 기능을 관리해 보세요.</translation>
 <translation id="9003639428623471314">봉투 Kahu</translation>
 <translation id="9004367719664099443">VR 세션 진행 중</translation>
 <translation id="9005998258318286617">PDF 문서를 로드하지 못했습니다.</translation>
@@ -4761,7 +4754,6 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="9027531288681624875">전체 화면을 종료하려면 |<ph name="ACCELERATOR" />| 키를 길게 누르세요.</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">보안 오류</translation>
-<translation id="9035699147763101514">Gemini의 개인 인텔리전스를 기반으로 합니다. 설정에서 선택사항을 관리하세요</translation>
 <translation id="9035824888276246493">보안 코드 저장</translation>
 <translation id="9036306139374661733">마이크 권한을 허용하시겠습니까?</translation>
 <translation id="9036484080057916082">서명된 인증서 타임스탬프 목록</translation>

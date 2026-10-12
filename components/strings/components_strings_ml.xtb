@@ -71,7 +71,6 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> എന്നതിന്‍റെ അനുമതി തിരഞ്ഞെടുക്കുക</translation>
 <translation id="1113000785583998331">IBAN സംരക്ഷിക്കണോ?</translation>
 <translation id="1113869188872983271">&amp;പുനഃക്രമീകരിക്കുന്നത് പഴയപടിയാക്കുക</translation>
-<translation id="1117709830616495622">Gemini-യിലെ പേഴ്‌സണൽ ഇന്റലിജൻസ് ലഭ്യമാക്കുന്നത്.</translation>
 <translation id="111897705806685148">മറ്റൊരു ഉപകരണത്തിൽ നിന്ന് പാസ്‌കീ ഉപയോഗിക്കുക</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, നിങ്ങളുടെ Google Account-ൽ ഏതെല്ലാം Chrome വിവരങ്ങളാണ് സംരക്ഷിക്കേണ്ടത് എന്ന് മാനേജ് ചെയ്യാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
 <translation id="1121990216147052230">എനിക്ക് ചെയ്യേണ്ടവയുടെ ലിസ്റ്റ് ഉണ്ടാക്കിത്തരൂ</translation>
@@ -843,8 +842,6 @@
 <translation id="2384307209577226199">എന്റര്‍പ്രൈസ് ഡിഫോൾട്ട്</translation>
 <translation id="2385809941344967209">നിങ്ങളുടെ Chrome ക്രമീകരണത്തിൽ നിന്ന് Chrome അപ്‌ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="2386255080630008482">സെർവറിന്റെ സർട്ടിഫിക്കറ്റ് റദ്ദാക്കി.</translation>
-<translation id="2387424091060104123">Gemini നിർദ്ദേശിച്ചത് · <ph name="SRC_LINK" />ഉറവിടങ്ങൾ കാണുക<ph name="END_SRC_LINK" />
-Chrome-ൽ നിന്ന് നിങ്ങൾക്ക് ഈ നിർദ്ദേശം നീക്കം ചെയ്യാം. നിങ്ങളുടെ ഒറിജിനൽ ഉറവിടം ഇല്ലാതാക്കില്ല. <ph name="MANAGE_LINK" />മെച്ചപ്പെടുത്തിയ സ്വയമേവ പൂരിപ്പിക്കൽ മാനേജ് ചെയ്യുക<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">വിശദമാക്കുക</translation>
 <translation id="2392959068659972793">മൂല്യമൊന്നും സജ്ജമാക്കാത്ത നയങ്ങൾ കാണിക്കുക</translation>
 <translation id="239429038616798445">ഈ ഷിപ്പിംഗ് രീതി ലഭ്യമല്ല. മറ്റൊരു രീതി പരീക്ഷിക്കുക.</translation>
@@ -3897,7 +3894,6 @@ Chrome-ൽ നിന്ന് നിങ്ങൾക്ക് ഈ നിർദ്
 <translation id="7514365320538308">ഡൗൺലോഡ് ചെയ്യുക</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">ഇപ്പോൾ മാത്രം VR അനുവദിച്ചിരിക്കുന്നു</translation>
-<translation id="7517198908921983825">Gemini നിർദ്ദേശിച്ചത് · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Envelope C10</translation>
 <translation id="7518003948725431193">വെബ് വിലാസത്തിനായി വെബ്‌പേജൊന്നും കണ്ടെത്തിയില്ല: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -4392,7 +4388,6 @@ Chrome-ൽ നിന്ന് നിങ്ങൾക്ക് ഈ നിർദ്
 <translation id="8350416046273606058">കുറുക്കുവഴിയിൽ സ്പേസ് ഉണ്ടാകരുത്: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">കുറിപ്പ് സൃഷ്‌ടിക്കുക</translation>
 <translation id="8352849934814541340">ഈ ഉപകരണത്തിന്റെ അഡ്‌മിൻ, അധിക ഫംഗ്ഷനുകൾക്കുള്ള ആപ്പുകൾ ഇൻസ്‌റ്റാൾ ചെയ്‌തിരിക്കുന്നു. ആപ്പുകൾക്ക് നിങ്ങളുടെ ചില ഡാറ്റയിലേക്ക് ആക്‌സസ് ഉണ്ട്.</translation>
-<translation id="8353273112634584260">Gemini-യിലെ പേഴ്‌സണൽ ഇന്റലിജൻസ് ലഭ്യമാക്കുന്നത്. സ്വയമേവ പൂരിപ്പിക്കൽ മെച്ചപ്പെടുത്താൻ നിങ്ങളുടെ അഭ്യർത്ഥനകളും പേജിന്റെ പേരുകളും URL-കളും അവലോകനം ചെയ്തേക്കാം.</translation>
 <translation id="8355270400102541638">ലോക്കൽ ക്രാഷ് സന്ദർഭം:</translation>
 <translation id="8362914115861174987">ഈ ഭാഷയിലേക്ക് വിവർത്തനം ചെയ്യുക</translation>
 <translation id="8363502534493474904">ഫ്ലൈറ്റ് മോഡ് ഓഫാക്കുന്നു</translation>
@@ -4572,7 +4567,6 @@ Chrome-ൽ നിന്ന് നിങ്ങൾക്ക് ഈ നിർദ്
 <translation id="8699041776323235191">HID ഉപകരണം</translation>
 <translation id="8699985386408839112">Envelope Kaku 1</translation>
 <translation id="8702965365666568344">മൗണ്ട് ചെയ്യൽ ടേപ്പ്</translation>
-<translation id="8703242769654966101">Wallet-ൽ Pix പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="8703372953981978786">ഈ ലിങ്ക് പ്രവർത്തിക്കുന്നില്ല</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> ലേക്കുള്ള നിങ്ങളുടെ കണക്ഷന്‍ എന്‍‌ക്രിപ്റ്റ് ചെയ്തിട്ടില്ല.</translation>
 <translation id="8705331520020532516">സീരിയല്‍‌ നമ്പര്‍‌</translation>
@@ -4740,7 +4734,6 @@ Chrome-ൽ നിന്ന് നിങ്ങൾക്ക് ഈ നിർദ്
 <translation id="9001074447101275817">പ്രോക്‌സി <ph name="DOMAIN" /> ഡൊമെയ്‌നിന് ഉപയോക്തൃനാമവും പാസ്‌വേഡും ആവശ്യമാണ്.</translation>
 <translation id="9001963517402879850">ചാടുക!</translation>
 <translation id="9002677862950442746">പരിശോധിച്ചുറപ്പിക്കൽ കോഡ്: <ph name="OTP" /></translation>
-<translation id="9003263770394939629">Gemini നിർദ്ദേശിച്ചത്. ക്രമീകരണത്തിൽ മെച്ചപ്പെടുത്തിയ സ്വയമേവ പൂരിപ്പിക്കൽ മാനേജ് ചെയ്യുക.</translation>
 <translation id="9003639428623471314">Envelope Kahu</translation>
 <translation id="9004367719664099443">VR സെഷൻ പുരോഗമിക്കുന്നു</translation>
 <translation id="9005998258318286617">PDF ഡോക്യുമെന്റ് ലോഡ് ചെയ്യാനായില്ല.</translation>
@@ -4759,7 +4752,6 @@ Chrome-ൽ നിന്ന് നിങ്ങൾക്ക് ഈ നിർദ്
 <translation id="9027531288681624875">പൂർണ്ണ സ്ക്രീനിൽ നിന്ന് പുറത്തുകടക്കാൻ |<ph name="ACCELERATOR" />| അമർത്തിപ്പിടിക്കുക</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">സുരക്ഷാ പിശക്</translation>
-<translation id="9035699147763101514">Gemini-യിലെ പേഴ്‌സണൽ ഇന്റലിജൻസ് ലഭ്യമാക്കുന്നത്. ക്രമീകരണത്തിൽ നിങ്ങളുടെ ചോയ്‌സുകൾ മാനേജ് ചെയ്യുക.</translation>
 <translation id="9035824888276246493">സുരക്ഷാ കോഡുകൾ സംരക്ഷിക്കുക</translation>
 <translation id="9036306139374661733">മൈക്രോഫോൺ അനുമതി നൽകണോ?</translation>
 <translation id="9036484080057916082">സൈൻ ചെയ്‌ത സർട്ടിഫിക്കറ്റ് ടൈംസ്റ്റാമ്പ് ലിസ്റ്റ്</translation>

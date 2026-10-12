@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Selecione uma permissão para <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Salvar IBAN?</translation>
 <translation id="1113869188872983271">&amp;Desfazer reordenar</translation>
-<translation id="1117709830616495622">Com a tecnologia da Inteligência Personalizada do Gemini.</translation>
 <translation id="111897705806685148">Usar a chave de acesso de outro dispositivo</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, pressione "Tab" e "Enter" para gerenciar quais informações do Chrome você salva na sua Conta do Google</translation>
 <translation id="1121990216147052230">Crie uma lista de tarefas para mim</translation>
@@ -843,8 +842,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2384307209577226199">Padrão da empresa</translation>
 <translation id="2385809941344967209">Atualize o navegador nas configurações do Chrome</translation>
 <translation id="2386255080630008482">O certificado do servidor foi revogado.</translation>
-<translation id="2387424091060104123">Sugestão do Gemini · <ph name="SRC_LINK" />Fontes<ph name="END_SRC_LINK" />
-Se quiser, você pode remover essa sugestão do Chrome. A fonte original dos dados não será excluída. <ph name="MANAGE_LINK" />Gerencie o preenchimento automático aprimorado<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">Elaborar</translation>
 <translation id="2392959068659972793">Mostrar políticas sem valor definido</translation>
 <translation id="239429038616798445">Esse método de envio não está disponível. Tente um método diferente.</translation>
@@ -3900,7 +3897,6 @@ Mais detalhes:
 <translation id="7514365320538308">Baixar</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">RV permitida apenas desta vez</translation>
-<translation id="7517198908921983825">Sugerido pelo Gemini · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">Envelope C10</translation>
 <translation id="7518003948725431193">Nenhuma página da web foi encontrada para o endereço da Web:<ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -4395,7 +4391,6 @@ Mais detalhes:
 <translation id="8350416046273606058">O atalho não pode conter espaços: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Criar nota</translation>
 <translation id="8352849934814541340">O administrador do dispositivo instalou aplicativos para funções adicionais. Os aplicativos têm acesso a alguns dos seus dados.</translation>
-<translation id="8353273112634584260">Com a tecnologia da Inteligência Personalizada do Gemini. Suas solicitações, títulos de páginas e URLs podem ser analisados para melhorar o preenchimento automático aprimorado.</translation>
 <translation id="8355270400102541638">Contexto de falha local:</translation>
 <translation id="8362914115861174987">Traduzir para </translation>
 <translation id="8363502534493474904">Desativar o modo avião</translation>
@@ -4576,7 +4571,6 @@ Mais detalhes:
 <translation id="8699041776323235191">Dispositivo HID</translation>
 <translation id="8699985386408839112">Envelope Kaku 1</translation>
 <translation id="8702965365666568344">Fita dupla face</translation>
-<translation id="8703242769654966101">Ativar o Pix na Carteira</translation>
 <translation id="8703372953981978786">Este link não funciona</translation>
 <translation id="8703575177326907206">Sua conexão com <ph name="DOMAIN" /> não está criptografada.</translation>
 <translation id="8705331520020532516">Número de série</translation>
@@ -4744,7 +4738,6 @@ Mais detalhes:
 <translation id="9001074447101275817">O proxy <ph name="DOMAIN" /> exige um nome de usuário e uma senha.</translation>
 <translation id="9001963517402879850">Pule!</translation>
 <translation id="9002677862950442746">Código de verificação: <ph name="OTP" /></translation>
-<translation id="9003263770394939629">Sugerido pelo Gemini. Gerencie o preenchimento automático aprimorado nas configurações.</translation>
 <translation id="9003639428623471314">Envelope Kahu</translation>
 <translation id="9004367719664099443">Sessão de RV em andamento</translation>
 <translation id="9005998258318286617">Falha ao carregar documento PDF.</translation>
@@ -4763,7 +4756,6 @@ Mais detalhes:
 <translation id="9027531288681624875">Para sair do modo tela cheia, toque em |<ph name="ACCELERATOR" />| e pressione</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Erro de segurança</translation>
-<translation id="9035699147763101514">Com a tecnologia da Inteligência Personalizada do Gemini. Gerencie suas escolhas nas configurações.</translation>
 <translation id="9035824888276246493">Salvar códigos de segurança</translation>
 <translation id="9036306139374661733">Permitir acesso ao microfone?</translation>
 <translation id="9036484080057916082">Lista de carimbos de data/hora do certificado assinado</translation>
