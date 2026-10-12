@@ -1,0 +1,8 @@
+[document web]
+++[section]
+++++[push button] name='Show Menu' label-for=[list]
+++++[list] name='Show Menu' labelled-by=[push button] setsize:2
+++++++[push button] name='Invalid' posinset:1 setsize:2
+++++++[panel]
+++++++++[list item] posinset:2 setsize:2
+++++++++++[static] name='Plain'

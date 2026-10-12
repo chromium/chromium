@@ -1,0 +1,20 @@
+<!--
+@BLINK-ALLOW:setSize*
+@BLINK-ALLOW:posInSet*
+@AURALINUX-ALLOW:setsize*
+@AURALINUX-ALLOW:posinset*
+-->
+<!DOCTYPE html>
+<button id="button" popovertarget="menu">Show Menu</button>
+<menulist id="menu">
+  <button>Invalid</button>
+  <fieldset>
+    <menuitem>Plain</menuitem>
+  </fieldset>
+</menulist>
+
+<script>
+  window.addEventListener('load', () => {
+    button.click();
+  });
+</script>

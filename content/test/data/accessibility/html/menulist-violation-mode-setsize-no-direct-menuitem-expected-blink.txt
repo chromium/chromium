@@ -1,0 +1,14 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++popUpButton name='Show Menu'
+++++++++staticText name='Show Menu'
+++++++++++inlineTextBox name='Show Menu'
+++++++list name='Show Menu' setSize=2 ispopup=auto
+++++++++button name='Invalid' setSize=2 posInSet=1
+++++++++++staticText name='Invalid'
+++++++++++++inlineTextBox name='Invalid'
+++++++++group
+++++++++++listItem setSize=2 posInSet=2
+++++++++++++staticText name='Plain'
+++++++++++++++inlineTextBox name='Plain'

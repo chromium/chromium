@@ -1643,6 +1643,13 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("menulist-violation-mode-setsize.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(
+    DumpAccessibilityTreeTest,
+    AccessibilityMenuListViolationModeSetsizeNoDirectMenuitem) {
+  RunHtmlTest(FILE_PATH_LITERAL(
+      "menulist-violation-mode-setsize-no-direct-menuitem.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityAriaMismatchedTableAttr) {
   RunAriaTest(FILE_PATH_LITERAL("aria-mismatched-table-attr.html"));

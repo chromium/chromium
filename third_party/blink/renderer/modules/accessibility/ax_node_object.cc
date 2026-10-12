@@ -2597,31 +2597,36 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
   }
 
   if (auto* menu_item = DynamicTo<HTMLMenuItemElement>(*GetNode())) {
+    // When the content model is violated, the whole menu tree drops its menu
+    // semantics. Checkable items become plain checkboxes and radios rather
+    // than list items, because a list item cannot carry a checked state and
+    // the item's checkability would otherwise be lost entirely.
+    const HTMLMenuOwnerElement* owner = menu_item->OwningMenuElement();
+    const bool is_in_violation_mode = owner && owner->IsInViolationMode();
     switch (menu_item->CheckableState()) {
       case HTMLFieldSetElement::Checkable::Single:
-        return ax::mojom::blink::Role::kMenuItemRadio;
+        return is_in_violation_mode ? ax::mojom::blink::Role::kRadioButton
+                                    : ax::mojom::blink::Role::kMenuItemRadio;
       case HTMLFieldSetElement::Checkable::Multiple:
-        return ax::mojom::blink::Role::kMenuItemCheckBox;
+        return is_in_violation_mode ? ax::mojom::blink::Role::kCheckBox
+                                    : ax::mojom::blink::Role::kMenuItemCheckBox;
       case HTMLFieldSetElement::Checkable::None:
-        return ax::mojom::blink::Role::kMenuItem;
+        return is_in_violation_mode ? ax::mojom::blink::Role::kListItem
+                                    : ax::mojom::blink::Role::kMenuItem;
     }
     NOTREACHED();
   }
 
   if (auto* menu_bar = DynamicTo<HTMLMenuBarElement>(GetNode())) {
     if (menu_bar->IsInViolationMode()) {
-      return menu_bar->IsTopLevelOwnerForContentModelViolation()
-                 ? ax::mojom::blink::Role::kDialog
-                 : ax::mojom::blink::Role::kList;
+      return ax::mojom::blink::Role::kList;
     }
     return ax::mojom::blink::Role::kMenuBar;
   }
 
   if (auto* menu_list = DynamicTo<HTMLMenuListElement>(GetNode())) {
     if (menu_list->IsInViolationMode()) {
-      return menu_list->IsTopLevelOwnerForContentModelViolation()
-                 ? ax::mojom::blink::Role::kDialog
-                 : ax::mojom::blink::Role::kList;
+      return ax::mojom::blink::Role::kList;
     }
     return ax::mojom::blink::Role::kMenu;
   }
@@ -6712,8 +6717,16 @@ bool AXNodeObject::CanHaveChildren() const {
       // model in the HTML spec.
       break;
     case ax::mojom::blink::Role::kCheckBox:
-    case ax::mojom::blink::Role::kProgressIndicator:
     case ax::mojom::blink::Role::kRadioButton:
+      // A checkable <menuitem> maps to checkbox/radio when its menu violates
+      // its content model. Unlike <input type=checkbox>, it holds its label in
+      // DOM children, which must stay exposed so that the name can be computed
+      // from contents.
+      if (IsA<HTMLMenuItemElement>(GetElement())) {
+        break;
+      }
+      [[fallthrough]];
+    case ax::mojom::blink::Role::kProgressIndicator:
     case ax::mojom::blink::Role::kScrollBar:
     case ax::mojom::blink::Role::kSlider:
     case ax::mojom::blink::Role::kSplitter:

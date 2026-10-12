@@ -26,6 +26,7 @@
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/browser_test.h"
@@ -3976,5 +3977,94 @@ IN_PROC_BROWSER_TEST_F(CanvasAccessibilityBrowserTest,
 #endif
 }
 #endif  // BUILDFLAG(HAS_NATIVE_ACCESSIBILITY) || BUILDFLAG(IS_ANDROID)
+
+class MenuElementsAccessibilityBrowserTest
+    : public CrossPlatformAccessibilityBrowserTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    CrossPlatformAccessibilityBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "MenuElements");
+  }
+
+  // A <menulist> that violates its content model (because of the <button>),
+  // so its radio <menuitem>s are exposed as kRadioButton inside a kList.
+  // The menu's items are Copy, Invalid, Radio A, Radio B, Paste.
+  static constexpr char kViolatedMenuWithRadiosHtml[] = R"HTML(
+      <!DOCTYPE html>
+      <menulist id="menu">
+        <menuitem>Copy</menuitem>
+        <button>Invalid</button>
+        <fieldset checkable="single">
+          <menuitem>Radio A</menuitem>
+          <menuitem>Radio B</menuitem>
+        </fieldset>
+        <menuitem>Paste</menuitem>
+      </menulist>)HTML";
+
+  void LoadAndOpenViolatedMenuWithRadios() {
+    LoadInitialAccessibilityTreeFromHtml(kViolatedMenuWithRadiosHtml);
+    ExecuteScript("document.getElementById('menu').showPopover();");
+    WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
+                                                  "Radio B");
+  }
+};
+
+// Query a radio's PosInSet/SetSize before anything else in the menu, the way a
+// screen reader does when focus lands on the radio. The radio must be counted
+// among all of the menu's items, with the same values as in
+// ViolatedMenuListSetSizeQueriedFirst.
+IN_PROC_BROWSER_TEST_F(MenuElementsAccessibilityBrowserTest,
+                       ViolatedMenuRadioPosInSetQueriedFirst) {
+  LoadAndOpenViolatedMenuWithRadios();
+
+  ui::BrowserAccessibility* root = GetManager()->GetBrowserAccessibilityRoot();
+  ui::BrowserAccessibility* radio_a =
+      FindFirstAccessibilityNodeWithRoleAndNameOrValue(
+          *root, ax::mojom::Role::kRadioButton, "Radio A");
+  ASSERT_NE(nullptr, radio_a);
+  ui::BrowserAccessibility* radio_b =
+      FindFirstAccessibilityNodeWithRoleAndNameOrValue(
+          *root, ax::mojom::Role::kRadioButton, "Radio B");
+  ASSERT_NE(nullptr, radio_b);
+  ui::BrowserAccessibility* list =
+      FindFirstNodeWithRole(ax::mojom::Role::kList);
+  ASSERT_NE(nullptr, list);
+
+  EXPECT_EQ(std::optional<int>(3), radio_a->GetPosInSet());
+  EXPECT_EQ(std::optional<int>(5), radio_a->GetSetSize());
+  EXPECT_EQ(std::optional<int>(4), radio_b->GetPosInSet());
+  EXPECT_EQ(std::optional<int>(5), radio_b->GetSetSize());
+  EXPECT_EQ(std::optional<int>(5), list->GetSetSize());
+}
+
+// Same as ViolatedMenuRadioPosInSetQueriedFirst, but query the list before the
+// radios. The radios must get the same values as they do in
+// ViolatedMenuRadioPosInSetQueriedFirst.
+IN_PROC_BROWSER_TEST_F(MenuElementsAccessibilityBrowserTest,
+                       ViolatedMenuListSetSizeQueriedFirst) {
+  LoadAndOpenViolatedMenuWithRadios();
+
+  ui::BrowserAccessibility* list =
+      FindFirstNodeWithRole(ax::mojom::Role::kList);
+  ASSERT_NE(nullptr, list);
+
+  EXPECT_EQ(std::optional<int>(5), list->GetSetSize());
+
+  ui::BrowserAccessibility* root = GetManager()->GetBrowserAccessibilityRoot();
+  ui::BrowserAccessibility* radio_a =
+      FindFirstAccessibilityNodeWithRoleAndNameOrValue(
+          *root, ax::mojom::Role::kRadioButton, "Radio A");
+  ASSERT_NE(nullptr, radio_a);
+  ui::BrowserAccessibility* radio_b =
+      FindFirstAccessibilityNodeWithRoleAndNameOrValue(
+          *root, ax::mojom::Role::kRadioButton, "Radio B");
+  ASSERT_NE(nullptr, radio_b);
+
+  EXPECT_EQ(std::optional<int>(3), radio_a->GetPosInSet());
+  EXPECT_EQ(std::optional<int>(5), radio_a->GetSetSize());
+  EXPECT_EQ(std::optional<int>(4), radio_b->GetPosInSet());
+  EXPECT_EQ(std::optional<int>(5), radio_b->GetSetSize());
+}
 
 }  // namespace content

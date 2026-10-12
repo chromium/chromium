@@ -455,6 +455,10 @@ class AX_EXPORT AXNode final {
   std::optional<int> GetPosInSet() const;
   std::optional<int> GetSetSize() const;
 
+  // Returns true if this node is a <menubar> or <menulist> that was given the
+  // list role because its contents violate the menu content model.
+  bool IsContentViolatedMenu() const;
+
   // Helpers for GetPosInSet and GetSetSize.
   // Returns true if the role of ordered set matches the role of item.
   // Returns false otherwise.

@@ -26,20 +26,14 @@
 namespace blink {
 
 namespace {
-const HTMLMenuOwnerElement* FindMenuRoot(const Node* node) {
-  const HTMLMenuOwnerElement* root = nullptr;
-  for (const Node* ancestor = node; ancestor;
-       ancestor = ancestor->parentNode()) {
+HTMLMenuOwnerElement* FindMenuRoot(Node* node) {
+  HTMLMenuOwnerElement* root = nullptr;
+  for (Node* ancestor = node; ancestor; ancestor = ancestor->parentNode()) {
     if (auto* menu = DynamicTo<HTMLMenuOwnerElement>(ancestor)) {
       root = menu;
     }
   }
   return root;
-}
-
-HTMLMenuOwnerElement* FindMenuRoot(Node* node) {
-  return const_cast<HTMLMenuOwnerElement*>(
-      FindMenuRoot(static_cast<const Node*>(node)));
 }
 }  // namespace
 
@@ -195,10 +189,6 @@ bool HTMLMenuOwnerElement::IsTopLevelOwnerForClickHandling() const {
   return IsA<HTMLMenuBarElement>(this) ||
          (IsA<HTMLMenuListElement>(this) &&
           !IsA<HTMLSubMenuElement>(parentNode()));
-}
-
-bool HTMLMenuOwnerElement::IsTopLevelOwnerForContentModelViolation() const {
-  return FindMenuRoot(this) == this;
 }
 
 void HTMLMenuOwnerElement::DefaultEventHandler(Event& event) {
