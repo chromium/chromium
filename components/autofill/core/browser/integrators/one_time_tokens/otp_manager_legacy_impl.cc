@@ -73,8 +73,7 @@ void OtpManagerLegacyImpl::GetOtpSuggestions(
     const FormFieldData& field,
     OtpManagerLegacyImpl::GetOtpSuggestionsCallback callback) {
   if (!one_time_token_service_ || owner_->driver().IsEmbedded() ||
-      !OtpFieldDetector::IsOtpField(form, field) ||
-      !OtpFieldDetector::IsOtpForm(form)) {
+      field.origin().opaque() || !OtpFieldDetector::IsOtpForm(form)) {
     std::move(callback).Run({});
     return;
   }
@@ -159,7 +158,7 @@ void OtpManagerLegacyImpl::OnFieldTypesDetermined(
 
   std::vector<FieldGlobalId> otp_field_ids;
   for (const auto& field : form->fields()) {
-    if (OtpFieldDetector::IsOtpField(*form, *field)) {
+    if (field->Type().GetTypes().contains(ONE_TIME_CODE)) {
       otp_field_ids.push_back(field->global_id());
     }
   }
