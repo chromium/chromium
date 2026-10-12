@@ -328,18 +328,11 @@ constexpr char kAppleManufacturer[] = "Apple Inc.";
 constexpr char kIPhone13MarketingName[] = "iPhone 13";
 constexpr char kIPhone13Model[] = "iPhone14,5";
 
-class DeviceNameUtilUseServerDeterminedDeviceNameTest : public Test {
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      kSyncUseServerDeterminedDeviceName};
-};
-
 // Tests that if a server-determined marketing name is available, it is used as
 // the display name, bypassing platform-specific fallback rules (such as
 // Android's generic `"Manufacturer Phone"` fallback and iOS's model-prefix
 // parsing).
-TEST_F(DeviceNameUtilUseServerDeterminedDeviceNameTest,
-       GetDeviceDisplayName_WithServerDeterminedName) {
+TEST_F(DeviceNameUtilTest, GetDeviceDisplayName_WithServerDeterminedName) {
   // Case 1: Android Phone where model differs from marketing name.
   {
     TestDeviceInfoBuilder builder(DeviceInfo::OsType::kAndroid);
@@ -382,7 +375,7 @@ TEST_F(DeviceNameUtilUseServerDeterminedDeviceNameTest,
 
 // Tests that server-determined marketing names always take precedence over
 // user-defined custom names (high quality client names).
-TEST_F(DeviceNameUtilUseServerDeterminedDeviceNameTest,
+TEST_F(DeviceNameUtilTest,
        GetDeviceDisplayName_ServerDeterminedNameOverridesCustomName) {
   TestDeviceInfoBuilder builder(DeviceInfo::OsType::kAndroid);
   builder.WithGuid("guid1")
@@ -395,11 +388,9 @@ TEST_F(DeviceNameUtilUseServerDeterminedDeviceNameTest,
   EXPECT_EQ(kGalaxyS22UltraMarketingName, GetDeviceDisplayName(device.get()));
 }
 
-// Tests that if `kSyncUseServerDeterminedDeviceName` is enabled but the
-// server-determined name is missing (`std::nullopt`), `GetDeviceDisplayName()`
-// falls back to the standard naming logic.
-TEST_F(DeviceNameUtilUseServerDeterminedDeviceNameTest,
-       GetDeviceDisplayName_FeatureEnabled_NoServerDeterminedName) {
+// Tests that if the server-determined name is missing (`std::nullopt`),
+// `GetDeviceDisplayName()` falls back to the standard naming logic.
+TEST_F(DeviceNameUtilTest, GetDeviceDisplayName_NoServerDeterminedName) {
   TestDeviceInfoBuilder builder(DeviceInfo::OsType::kAndroid);
   builder.WithGuid("guid1")
       .WithClientName(kGalaxyS22UltraModel)
@@ -410,36 +401,15 @@ TEST_F(DeviceNameUtilUseServerDeterminedDeviceNameTest,
   EXPECT_EQ("Samsung Phone", GetDeviceDisplayName(device.get()));
 }
 
-// Tests that if `kSyncUseServerDeterminedDeviceName` is enabled but the
-// server-determined name is empty, `GetDeviceDisplayName()` safely falls back
-// to the standard naming logic.
-TEST_F(DeviceNameUtilUseServerDeterminedDeviceNameTest,
-       GetDeviceDisplayName_FeatureEnabled_EmptyServerDeterminedName) {
+// Tests that if the server-determined name is empty, `GetDeviceDisplayName()`
+// safely falls back to the standard naming logic.
+TEST_F(DeviceNameUtilTest, GetDeviceDisplayName_EmptyServerDeterminedName) {
   TestDeviceInfoBuilder builder(DeviceInfo::OsType::kAndroid);
   builder.WithGuid("guid1")
       .WithClientName(kGalaxyS22UltraModel)
       .WithManufacturerName(kSamsungManufacturer)
       .WithModelName(kGalaxyS22UltraModel)
       .WithServerDeterminedModelName("");
-  std::unique_ptr<DeviceInfo> device = builder.Build();
-
-  EXPECT_EQ("Samsung Phone", GetDeviceDisplayName(device.get()));
-}
-
-// Tests that if `kSyncUseServerDeterminedDeviceName` is disabled,
-// `GetDeviceDisplayName()` falls back to the standard naming logic even if a
-// server-determined name is available.
-TEST_F(DeviceNameUtilTest,
-       GetDeviceDisplayName_ServerDeterminedName_FeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kSyncUseServerDeterminedDeviceName);
-
-  TestDeviceInfoBuilder builder(DeviceInfo::OsType::kAndroid);
-  builder.WithGuid("guid1")
-      .WithClientName(kGalaxyS22UltraModel)
-      .WithManufacturerName(kSamsungManufacturer)
-      .WithModelName(kGalaxyS22UltraModel)
-      .WithServerDeterminedModelName(kGalaxyS22UltraMarketingName);
   std::unique_ptr<DeviceInfo> device = builder.Build();
 
   EXPECT_EQ("Samsung Phone", GetDeviceDisplayName(device.get()));

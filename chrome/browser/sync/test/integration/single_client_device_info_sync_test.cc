@@ -376,23 +376,12 @@ IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTest, DownloadRemoteDevices) {
                            ModelEntryHasCacheGuid(CacheGuidForSuffix(2))));
 }
 
-class SingleClientDeviceInfoSyncTestWithServerDeterminedName
-    : public SingleClientDeviceInfoSyncTest {
- public:
-  SingleClientDeviceInfoSyncTestWithServerDeterminedName() {
-    feature_list_.InitAndEnableFeature(
-        syncer::kSyncUseServerDeterminedDeviceName);
-  }
-
- protected:
-  static constexpr char kServerDeterminedModelName[] = "Galaxy S22 Ultra";
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTestWithServerDeterminedName,
+// Verifies that a remote device's `server_determined_model_name` is synced and
+// used as its display name by `syncer::GetDeviceDisplayName()`.
+IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTest,
                        UseServerDeterminedDeviceName) {
+  constexpr char kServerDeterminedModelName[] = "Galaxy S22 Ultra";
+
   // Inject a remote Android device with a server-determined model name.
   sync_pb::DeviceInfoSpecifics specifics = CreateSpecifics(/*suffix=*/1);
   specifics.set_os_type(sync_pb::SyncEnums_OsType_OS_TYPE_ANDROID);
@@ -420,11 +409,6 @@ IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTestWithServerDeterminedName,
   EXPECT_EQ(syncer::GetDeviceDisplayName(remote_device),
             kServerDeterminedModelName);
 }
-
-INSTANTIATE_TEST_SUITE_P(,
-                         SingleClientDeviceInfoSyncTestWithServerDeterminedName,
-                         GetSyncTestModes(),
-                         testing::PrintToStringParamName());
 
 class SingleClientDeviceInfoSyncTestWithPersonalContext
     : public SingleClientDeviceInfoSyncTest {

@@ -226,8 +226,7 @@ std::string GetDeviceDisplayName(const DeviceInfo* device) {
   DCHECK(device);
 
   if (device->server_determined_model_name().has_value() &&
-      !device->server_determined_model_name()->empty() &&
-      base::FeatureList::IsEnabled(kSyncUseServerDeterminedDeviceName)) {
+      !device->server_determined_model_name()->empty()) {
     return *device->server_determined_model_name();
   }
 
