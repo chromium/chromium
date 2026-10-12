@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CONTEXTUAL_TASKS_COPY_SEARCH_JOURNEY_TRACKER_H_
-#define CHROME_BROWSER_CONTEXTUAL_TASKS_COPY_SEARCH_JOURNEY_TRACKER_H_
+#ifndef CHROME_BROWSER_CONTEXTUAL_TASKS_SEARCH_JOURNEY_TRACKER_H_
+#define CHROME_BROWSER_CONTEXTUAL_TASKS_SEARCH_JOURNEY_TRACKER_H_
 
 #include <cstddef>
 #include <cstdint>
@@ -32,24 +32,24 @@ struct CopyRecord {
   uint64_t nonce = 0;
 };
 
-// Correlated state of a cross-tab copy-to-search journey, keyed by the
-// originating tab's SessionID.
+// Correlated state of a cross-tab search journey, keyed by the originating
+// tab's SessionID.
 struct JourneyState {
   CopyRecord copy_record;
   SessionID search_tab_id = SessionID::InvalidValue();
   base::TimeTicks search_committed_time;
 };
 
-// Profile-keyed service that keeps a bounded volatile ring buffer of recent
-// text copy hashes and correlates them with Google default-search-provider
-// queries committed in other tabs.
-class CopySearchJourneyTracker : public KeyedService,
-                                 public TemplateURLServiceObserver {
+// Profile-keyed service that tracks cross-tab search journeys and keeps a
+// bounded volatile ring buffer of recent text copy hashes correlated with
+// Google default-search-provider queries committed in other tabs.
+class SearchJourneyTracker : public KeyedService,
+                             public TemplateURLServiceObserver {
  public:
-  explicit CopySearchJourneyTracker(TemplateURLService* template_url_service);
-  CopySearchJourneyTracker(const CopySearchJourneyTracker&) = delete;
-  CopySearchJourneyTracker& operator=(const CopySearchJourneyTracker&) = delete;
-  ~CopySearchJourneyTracker() override;
+  explicit SearchJourneyTracker(TemplateURLService* template_url_service);
+  SearchJourneyTracker(const SearchJourneyTracker&) = delete;
+  SearchJourneyTracker& operator=(const SearchJourneyTracker&) = delete;
+  ~SearchJourneyTracker() override;
 
   // KeyedService:
   void Shutdown() override;
@@ -62,7 +62,7 @@ class CopySearchJourneyTracker : public KeyedService,
   // (`omnibox::SanitizeTextForPaste`), collapses remaining whitespace runs,
   // lower-cases the result, and returns its `base::FastHash`. Returns
   // `std::nullopt` if the feature is disabled or the normalized string is
-  // shorter than `GetCopyTextJourneysMinQueryMatchLength()`.
+  // shorter than `GetABASearchJourneysMinQueryMatchLength()`.
   static std::optional<size_t> NormalizeForJourneyMatch(
       std::u16string_view text);
 
@@ -104,4 +104,4 @@ class CopySearchJourneyTracker : public KeyedService,
 
 }  // namespace contextual_tasks
 
-#endif  // CHROME_BROWSER_CONTEXTUAL_TASKS_COPY_SEARCH_JOURNEY_TRACKER_H_
+#endif  // CHROME_BROWSER_CONTEXTUAL_TASKS_SEARCH_JOURNEY_TRACKER_H_

@@ -193,10 +193,10 @@ class ContextualSearchCueTabState;
 
 namespace contextual_tasks {
 class ContextualTasksTabVisitTracker;
-class CopySearchJourneyTabFeature;
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 class SearchAiModePromoTabHelper;
 #endif
+class SearchJourneyTabFeature;
 }  // namespace contextual_tasks
 
 namespace customize_chrome {
@@ -863,8 +863,8 @@ class TabFeatures {
 
   std::unique_ptr<contextual_tasks::ContextualTasksTabVisitTracker>
       contextual_tasks_tab_visit_tracker_;
-  std::unique_ptr<contextual_tasks::CopySearchJourneyTabFeature>
-      copy_search_journey_tab_feature_;
+  std::unique_ptr<contextual_tasks::SearchJourneyTabFeature>
+      search_journey_tab_feature_;
 
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<skills::SkillsUpdateObserver> skills_update_observer_;

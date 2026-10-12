@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CONTEXTUAL_TASKS_COPY_SEARCH_JOURNEY_TAB_FEATURE_H_
-#define CHROME_BROWSER_CONTEXTUAL_TASKS_COPY_SEARCH_JOURNEY_TAB_FEATURE_H_
+#ifndef CHROME_BROWSER_CONTEXTUAL_TASKS_SEARCH_JOURNEY_TAB_FEATURE_H_
+#define CHROME_BROWSER_CONTEXTUAL_TASKS_SEARCH_JOURNEY_TAB_FEATURE_H_
 
 #include <string>
 
@@ -26,22 +26,21 @@ class TabInterface;
 
 namespace contextual_tasks {
 
-class CopySearchJourneyTracker;
+class SearchJourneyTracker;
 
 // Per-tab observer that forwards clipboard copy events, committed default
 // search provider navigations, and tab destruction/discard events to the
-// profile's `CopySearchJourneyTracker`.
-class CopySearchJourneyTabFeature : public content::WebContentsObserver {
+// profile's `SearchJourneyTracker`.
+class SearchJourneyTabFeature : public content::WebContentsObserver {
  public:
-  DECLARE_USER_DATA(CopySearchJourneyTabFeature);
+  DECLARE_USER_DATA(SearchJourneyTabFeature);
 
-  explicit CopySearchJourneyTabFeature(tabs::TabInterface& tab);
-  CopySearchJourneyTabFeature(const CopySearchJourneyTabFeature&) = delete;
-  CopySearchJourneyTabFeature& operator=(const CopySearchJourneyTabFeature&) =
-      delete;
-  ~CopySearchJourneyTabFeature() override;
+  explicit SearchJourneyTabFeature(tabs::TabInterface& tab);
+  SearchJourneyTabFeature(const SearchJourneyTabFeature&) = delete;
+  SearchJourneyTabFeature& operator=(const SearchJourneyTabFeature&) = delete;
+  ~SearchJourneyTabFeature() override;
 
-  static CopySearchJourneyTabFeature* From(tabs::TabInterface* tab);
+  static SearchJourneyTabFeature* From(tabs::TabInterface* tab);
 
   // content::WebContentsObserver:
   void OnTextCopiedToClipboard(content::RenderFrameHost* render_frame_host,
@@ -55,13 +54,12 @@ class CopySearchJourneyTabFeature : public content::WebContentsObserver {
                              content::WebContents* new_contents);
   void NotifyTabDestroyed(content::WebContents* contents);
 
-  raw_ptr<CopySearchJourneyTracker> tracker_ = nullptr;
+  raw_ptr<SearchJourneyTracker> tracker_ = nullptr;
   raw_ptr<TemplateURLService> template_url_service_ = nullptr;
   base::CallbackListSubscription will_discard_contents_subscription_;
-  ui::ScopedUnownedUserData<CopySearchJourneyTabFeature>
-      scoped_unowned_user_data_;
+  ui::ScopedUnownedUserData<SearchJourneyTabFeature> scoped_unowned_user_data_;
 };
 
 }  // namespace contextual_tasks
 
-#endif  // CHROME_BROWSER_CONTEXTUAL_TASKS_COPY_SEARCH_JOURNEY_TAB_FEATURE_H_
+#endif  // CHROME_BROWSER_CONTEXTUAL_TASKS_SEARCH_JOURNEY_TAB_FEATURE_H_

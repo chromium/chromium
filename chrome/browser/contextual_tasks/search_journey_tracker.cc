@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/contextual_tasks/copy_search_journey_tracker.h"
+#include "chrome/browser/contextual_tasks/search_journey_tracker.h"
 
 #include <string>
 #include <utility>
@@ -18,7 +18,7 @@
 
 namespace contextual_tasks {
 
-CopySearchJourneyTracker::CopySearchJourneyTracker(
+SearchJourneyTracker::SearchJourneyTracker(
     TemplateURLService* template_url_service)
     : template_url_service_(template_url_service) {
   if (template_url_service_) {
@@ -26,45 +26,45 @@ CopySearchJourneyTracker::CopySearchJourneyTracker(
   }
 }
 
-CopySearchJourneyTracker::~CopySearchJourneyTracker() = default;
+SearchJourneyTracker::~SearchJourneyTracker() = default;
 
-void CopySearchJourneyTracker::Shutdown() {
+void SearchJourneyTracker::Shutdown() {
   template_url_service_observation_.Reset();
   template_url_service_ = nullptr;
   ClearState();
 }
 
-void CopySearchJourneyTracker::OnTemplateURLServiceChanged() {
+void SearchJourneyTracker::OnTemplateURLServiceChanged() {
   if (!search::DefaultSearchProviderIsGoogle(template_url_service_)) {
     ClearState();
   }
 }
 
-void CopySearchJourneyTracker::OnTemplateURLServiceShuttingDown() {
+void SearchJourneyTracker::OnTemplateURLServiceShuttingDown() {
   template_url_service_observation_.Reset();
   template_url_service_ = nullptr;
   ClearState();
 }
 
 // static
-std::optional<size_t> CopySearchJourneyTracker::NormalizeForJourneyMatch(
+std::optional<size_t> SearchJourneyTracker::NormalizeForJourneyMatch(
     std::u16string_view text) {
-  if (!IsCopyTextJourneysEnabled()) {
+  if (!IsABASearchJourneysEnabled()) {
     return std::nullopt;
   }
   const std::u16string normalized =
       base::i18n::ToLower(base::CollapseWhitespace(
           omnibox::SanitizeTextForPaste(std::u16string(text)),
           /*trim_sequences_with_line_breaks=*/false));
-  if (normalized.size() < GetCopyTextJourneysMinQueryMatchLength()) {
+  if (normalized.size() < GetABASearchJourneysMinQueryMatchLength()) {
     return std::nullopt;
   }
   return base::FastHash(base::as_byte_span(normalized));
 }
 
-void CopySearchJourneyTracker::OnCopyRecorded(SessionID source_tab_id,
-                                              int source_nav_entry_id,
-                                              std::u16string_view copied_text) {
+void SearchJourneyTracker::OnCopyRecorded(SessionID source_tab_id,
+                                          int source_nav_entry_id,
+                                          std::u16string_view copied_text) {
   if (!search::DefaultSearchProviderIsGoogle(template_url_service_) ||
       !source_tab_id.is_valid()) {
     return;
@@ -84,13 +84,13 @@ void CopySearchJourneyTracker::OnCopyRecorded(SessionID source_tab_id,
   record.nonce = base::RandUint64();
 
   ring_buffer_.push_back(std::move(record));
-  const size_t max_ring_buffer_size = GetCopyTextJourneysMaxRingBufferSize();
+  const size_t max_ring_buffer_size = GetABASearchJourneysMaxRingBufferSize();
   while (ring_buffer_.size() > max_ring_buffer_size) {
     ring_buffer_.pop_front();
   }
 }
 
-void CopySearchJourneyTracker::OnSearchNavigationCommitted(
+void SearchJourneyTracker::OnSearchNavigationCommitted(
     SessionID search_tab_id,
     std::u16string_view search_terms) {
   if (!search::DefaultSearchProviderIsGoogle(template_url_service_) ||
@@ -121,7 +121,7 @@ void CopySearchJourneyTracker::OnSearchNavigationCommitted(
   }
 }
 
-void CopySearchJourneyTracker::OnTabDestroyed(SessionID tab_id) {
+void SearchJourneyTracker::OnTabDestroyed(SessionID tab_id) {
   std::erase_if(ring_buffer_, [tab_id](const CopyRecord& record) {
     return record.source_tab_id == tab_id;
   });
@@ -131,14 +131,14 @@ void CopySearchJourneyTracker::OnTabDestroyed(SessionID tab_id) {
   });
 }
 
-void CopySearchJourneyTracker::ClearState() {
+void SearchJourneyTracker::ClearState() {
   ring_buffer_.clear();
   active_journeys_.clear();
 }
 
-void CopySearchJourneyTracker::EvictExpiredRecords() {
+void SearchJourneyTracker::EvictExpiredRecords() {
   const base::TimeTicks now = base::TimeTicks::Now();
-  const base::TimeDelta ttl = GetCopyTextJourneysTtl();
+  const base::TimeDelta ttl = GetABASearchJourneysTtl();
   while (!ring_buffer_.empty() && now - ring_buffer_.front().timestamp > ttl) {
     ring_buffer_.pop_front();
   }

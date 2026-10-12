@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/contextual_tasks/copy_search_journey_tracker.h"
+#include "chrome/browser/contextual_tasks/search_journey_tracker.h"
 
 #include <memory>
 #include <optional>
@@ -12,7 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chrome/browser/contextual_tasks/copy_search_journey_tracker_factory.h"
+#include "chrome/browser/contextual_tasks/search_journey_tracker_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/search_engines/search_engines_test_environment.h"
@@ -46,7 +46,7 @@ void SetNonGoogleDefaultSearchProvider(
 
 }  // namespace
 
-class CopySearchJourneyTrackerTest : public testing::Test {
+class SearchJourneyTrackerTest : public testing::Test {
  protected:
   void SetUp() override {
     search_engines_test_environment_.template_url_service()->Load();
@@ -54,74 +54,70 @@ class CopySearchJourneyTrackerTest : public testing::Test {
 
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::test::ScopedFeatureList feature_list_{kCopyTextJourneys};
+  base::test::ScopedFeatureList feature_list_{kABASearchJourneys};
   search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
-  CopySearchJourneyTracker tracker_{
+  SearchJourneyTracker tracker_{
       search_engines_test_environment_.template_url_service()};
 };
 
-TEST_F(CopySearchJourneyTrackerTest,
-       NormalizeForJourneyMatchMultiLineNoSpaces) {
+TEST_F(SearchJourneyTrackerTest, NormalizeForJourneyMatchMultiLineNoSpaces) {
   // Omnibox StripJavascriptSchemas strips raw \r and \n before collapsing
   // whitespace when no space precedes the line break.
   const std::optional<size_t> copied =
-      CopySearchJourneyTracker::NormalizeForJourneyMatch(
+      SearchJourneyTracker::NormalizeForJourneyMatch(
           u"apple\nbanana\r\ncherry");
   const std::optional<size_t> omnibox =
-      CopySearchJourneyTracker::NormalizeForJourneyMatch(u"applebananacherry");
+      SearchJourneyTracker::NormalizeForJourneyMatch(u"applebananacherry");
   ASSERT_TRUE(copied.has_value());
   ASSERT_TRUE(omnibox.has_value());
   EXPECT_EQ(*copied, *omnibox);
 }
 
-TEST_F(CopySearchJourneyTrackerTest,
-       NormalizeForJourneyMatchMultiLineWithSpaces) {
+TEST_F(SearchJourneyTrackerTest, NormalizeForJourneyMatchMultiLineWithSpaces) {
   const std::optional<size_t> copied =
-      CopySearchJourneyTracker::NormalizeForJourneyMatch(
+      SearchJourneyTracker::NormalizeForJourneyMatch(
           u"what is \n photosynthesis");
   const std::optional<size_t> google_web =
-      CopySearchJourneyTracker::NormalizeForJourneyMatch(
-          u"what is photosynthesis");
+      SearchJourneyTracker::NormalizeForJourneyMatch(u"what is photosynthesis");
   ASSERT_TRUE(copied.has_value());
   ASSERT_TRUE(google_web.has_value());
   EXPECT_EQ(*copied, *google_web);
 }
 
-TEST_F(CopySearchJourneyTrackerTest,
-       NormalizeForJourneyMatchWhitespaceAndCase) {
+TEST_F(SearchJourneyTrackerTest, NormalizeForJourneyMatchWhitespaceAndCase) {
   const std::optional<size_t> padded =
-      CopySearchJourneyTracker::NormalizeForJourneyMatch(
+      SearchJourneyTracker::NormalizeForJourneyMatch(
           u"  \t  RÉSUMÉ   TIPS  \n ");
   const std::optional<size_t> canonical =
-      CopySearchJourneyTracker::NormalizeForJourneyMatch(u"résumé tips");
+      SearchJourneyTracker::NormalizeForJourneyMatch(u"résumé tips");
   ASSERT_TRUE(padded.has_value());
   ASSERT_TRUE(canonical.has_value());
   EXPECT_EQ(*padded, *canonical);
 }
 
-TEST_F(CopySearchJourneyTrackerTest, NormalizeForJourneyMatchShortStrings) {
+TEST_F(SearchJourneyTrackerTest, NormalizeForJourneyMatchShortStrings) {
+  EXPECT_FALSE(SearchJourneyTracker::NormalizeForJourneyMatch(u"").has_value());
   EXPECT_FALSE(
-      CopySearchJourneyTracker::NormalizeForJourneyMatch(u"").has_value());
+      SearchJourneyTracker::NormalizeForJourneyMatch(u"abcd").has_value());
   EXPECT_FALSE(
-      CopySearchJourneyTracker::NormalizeForJourneyMatch(u"abcd").has_value());
-  EXPECT_FALSE(CopySearchJourneyTracker::NormalizeForJourneyMatch(u"  a\nb  ")
-                   .has_value());
-  EXPECT_FALSE(CopySearchJourneyTracker::NormalizeForJourneyMatch(u"ab   c")
-                   .has_value());
+      SearchJourneyTracker::NormalizeForJourneyMatch(u"  a\nb  ").has_value());
+  EXPECT_FALSE(
+      SearchJourneyTracker::NormalizeForJourneyMatch(u"ab   c").has_value());
   EXPECT_TRUE(
-      CopySearchJourneyTracker::NormalizeForJourneyMatch(u"abcde").has_value());
+      SearchJourneyTracker::NormalizeForJourneyMatch(u"abcde").has_value());
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      kCopyTextJourneys, {{"copy_text_journeys_min_query_match_length", "8"}});
-  EXPECT_EQ(GetCopyTextJourneysMinQueryMatchLength(), 8u);
-  EXPECT_FALSE(CopySearchJourneyTracker::NormalizeForJourneyMatch(u"abcdefg")
-                   .has_value());
-  EXPECT_TRUE(CopySearchJourneyTracker::NormalizeForJourneyMatch(u"abcdefgh")
-                  .has_value());
+      kABASearchJourneys,
+      {{"aba_search_journeys_min_query_match_length", "8"}});
+  EXPECT_EQ(GetABASearchJourneysMinQueryMatchLength(), 8u);
+  EXPECT_FALSE(
+      SearchJourneyTracker::NormalizeForJourneyMatch(u"abcdefg").has_value());
+  EXPECT_TRUE(
+      SearchJourneyTracker::NormalizeForJourneyMatch(u"abcdefgh").has_value());
 }
 
-TEST_F(CopySearchJourneyTrackerTest, StandardCrossTabCorrelation) {
+TEST_F(SearchJourneyTrackerTest, StandardCrossTabCorrelation) {
   const std::u16string kQuery = u"quantum computing basics";
   tracker_.OnCopyRecorded(kSourceTab1, kNavEntryId, kQuery);
   EXPECT_EQ(tracker_.GetRingBufferSizeForTesting(), 1u);
@@ -135,10 +131,10 @@ TEST_F(CopySearchJourneyTrackerTest, StandardCrossTabCorrelation) {
   EXPECT_EQ(it->second.copy_record.source_nav_entry_id, kNavEntryId);
   EXPECT_EQ(it->second.search_tab_id, kSearchTab1);
   EXPECT_EQ(it->second.copy_record.normalized_query_hash,
-            *CopySearchJourneyTracker::NormalizeForJourneyMatch(kQuery));
+            *SearchJourneyTracker::NormalizeForJourneyMatch(kQuery));
 }
 
-TEST_F(CopySearchJourneyTrackerTest, SameTabSearchIgnored) {
+TEST_F(SearchJourneyTrackerTest, SameTabSearchIgnored) {
   const std::u16string kQuery = u"quantum computing basics";
   tracker_.OnCopyRecorded(kSourceTab1, kNavEntryId, kQuery);
   tracker_.OnSearchNavigationCommitted(kSourceTab1, kQuery);
@@ -146,7 +142,7 @@ TEST_F(CopySearchJourneyTrackerTest, SameTabSearchIgnored) {
   EXPECT_TRUE(tracker_.GetActiveJourneysForTesting().empty());
 }
 
-TEST_F(CopySearchJourneyTrackerTest, NewestMatchingCopyWins) {
+TEST_F(SearchJourneyTrackerTest, NewestMatchingCopyWins) {
   const std::u16string kQuery = u"shared query text";
   tracker_.OnCopyRecorded(kSourceTab1, kNavEntryId, kQuery);
   task_environment_.AdvanceClock(base::Seconds(5));
@@ -162,11 +158,11 @@ TEST_F(CopySearchJourneyTrackerTest, NewestMatchingCopyWins) {
   EXPECT_EQ(it->second.search_tab_id, kSearchTab1);
 }
 
-TEST_F(CopySearchJourneyTrackerTest, RingBufferBoundedCapacity) {
+TEST_F(SearchJourneyTrackerTest, RingBufferBoundedCapacity) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      kCopyTextJourneys, {{"copy_text_journeys_max_ring_buffer_size", "3"}});
-  EXPECT_EQ(GetCopyTextJourneysMaxRingBufferSize(), 3u);
+      kABASearchJourneys, {{"aba_search_journeys_max_ring_buffer_size", "3"}});
+  EXPECT_EQ(GetABASearchJourneysMaxRingBufferSize(), 3u);
 
   for (int i = 0; i < 4; ++i) {
     tracker_.OnCopyRecorded(
@@ -175,7 +171,7 @@ TEST_F(CopySearchJourneyTrackerTest, RingBufferBoundedCapacity) {
   }
 
   EXPECT_EQ(tracker_.GetRingBufferSizeForTesting(),
-            GetCopyTextJourneysMaxRingBufferSize());
+            GetABASearchJourneysMaxRingBufferSize());
 
   // Entry 0 was evicted; entry 3 is still present.
   tracker_.OnSearchNavigationCommitted(kSearchTab1, u"copied query number 0");
@@ -185,11 +181,11 @@ TEST_F(CopySearchJourneyTrackerTest, RingBufferBoundedCapacity) {
   EXPECT_TRUE(tracker_.GetActiveJourneysForTesting().contains(kSourceTab1));
 }
 
-TEST_F(CopySearchJourneyTrackerTest, RingBufferTtlExpiry) {
+TEST_F(SearchJourneyTrackerTest, RingBufferTtlExpiry) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      kCopyTextJourneys, {{"copy_text_journeys_ttl", "5m"}});
-  EXPECT_EQ(GetCopyTextJourneysTtl(), base::Minutes(5));
+      kABASearchJourneys, {{"aba_search_journeys_ttl", "5m"}});
+  EXPECT_EQ(GetABASearchJourneysTtl(), base::Minutes(5));
 
   const std::u16string kQuery = u"expiring query text";
   tracker_.OnCopyRecorded(kSourceTab1, kNavEntryId, kQuery);
@@ -200,18 +196,17 @@ TEST_F(CopySearchJourneyTrackerTest, RingBufferTtlExpiry) {
   EXPECT_EQ(tracker_.GetRingBufferSizeForTesting(), 0u);
 }
 
-TEST_F(CopySearchJourneyTrackerTest, FeatureParamsZeroWhenFeatureDisabled) {
+TEST_F(SearchJourneyTrackerTest, FeatureParamsZeroWhenFeatureDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kCopyTextJourneys);
-  EXPECT_EQ(GetCopyTextJourneysTtl(), base::TimeDelta());
-  EXPECT_EQ(GetCopyTextJourneysMaxRingBufferSize(), 0u);
-  EXPECT_EQ(GetCopyTextJourneysMinQueryMatchLength(), 0u);
-  EXPECT_FALSE(
-      CopySearchJourneyTracker::NormalizeForJourneyMatch(u"valid query")
-          .has_value());
+  feature_list.InitAndDisableFeature(kABASearchJourneys);
+  EXPECT_EQ(GetABASearchJourneysTtl(), base::TimeDelta());
+  EXPECT_EQ(GetABASearchJourneysMaxRingBufferSize(), 0u);
+  EXPECT_EQ(GetABASearchJourneysMinQueryMatchLength(), 0u);
+  EXPECT_FALSE(SearchJourneyTracker::NormalizeForJourneyMatch(u"valid query")
+                   .has_value());
 }
 
-TEST_F(CopySearchJourneyTrackerTest, NonGoogleDseDoesNotRecordOrCorrelate) {
+TEST_F(SearchJourneyTrackerTest, NonGoogleDseDoesNotRecordOrCorrelate) {
   SetNonGoogleDefaultSearchProvider(
       search_engines_test_environment_.template_url_service());
 
@@ -223,8 +218,7 @@ TEST_F(CopySearchJourneyTrackerTest, NonGoogleDseDoesNotRecordOrCorrelate) {
   EXPECT_TRUE(tracker_.GetActiveJourneysForTesting().empty());
 }
 
-TEST_F(CopySearchJourneyTrackerTest,
-       SwitchingToNonGoogleDseClearsTrackedState) {
+TEST_F(SearchJourneyTrackerTest, SwitchingToNonGoogleDseClearsTrackedState) {
   const std::u16string kQuery = u"query before dse switch";
   tracker_.OnCopyRecorded(kSourceTab1, kNavEntryId, kQuery);
   tracker_.OnSearchNavigationCommitted(kSearchTab1, kQuery);
@@ -238,7 +232,7 @@ TEST_F(CopySearchJourneyTrackerTest,
   EXPECT_TRUE(tracker_.GetActiveJourneysForTesting().empty());
 }
 
-TEST_F(CopySearchJourneyTrackerTest, TabDestructionCleansUpSourceAndSearchTab) {
+TEST_F(SearchJourneyTrackerTest, TabDestructionCleansUpSourceAndSearchTab) {
   const std::u16string kQuery1 = u"first copied query";
   const std::u16string kQuery2 = u"second copied query";
 
@@ -260,7 +254,7 @@ TEST_F(CopySearchJourneyTrackerTest, TabDestructionCleansUpSourceAndSearchTab) {
   EXPECT_FALSE(tracker_.GetActiveJourneysForTesting().contains(kSourceTab2));
 }
 
-TEST_F(CopySearchJourneyTrackerTest, ShutdownClearsAllState) {
+TEST_F(SearchJourneyTrackerTest, ShutdownClearsAllState) {
   const std::u16string kQuery = u"query before shutdown";
   tracker_.OnCopyRecorded(kSourceTab1, kNavEntryId, kQuery);
   tracker_.OnSearchNavigationCommitted(kSearchTab1, kQuery);
@@ -271,27 +265,25 @@ TEST_F(CopySearchJourneyTrackerTest, ShutdownClearsAllState) {
   EXPECT_TRUE(tracker_.GetActiveJourneysForTesting().empty());
 }
 
-TEST(CopySearchJourneyTrackerFactoryTest, FeatureDisabled) {
+TEST(SearchJourneyTrackerFactoryTest, FeatureDisabled) {
   content::BrowserTaskEnvironment task_environment;
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kCopyTextJourneys);
+  feature_list.InitAndDisableFeature(kABASearchJourneys);
 
   TestingProfile profile;
-  EXPECT_EQ(CopySearchJourneyTrackerFactory::GetForProfile(&profile), nullptr);
+  EXPECT_EQ(SearchJourneyTrackerFactory::GetForProfile(&profile), nullptr);
 }
 
-TEST(CopySearchJourneyTrackerFactoryTest,
-     EnabledForRegularProfileNotIncognito) {
+TEST(SearchJourneyTrackerFactoryTest, EnabledForRegularProfileNotIncognito) {
   content::BrowserTaskEnvironment task_environment;
-  base::test::ScopedFeatureList feature_list(kCopyTextJourneys);
+  base::test::ScopedFeatureList feature_list(kABASearchJourneys);
 
   TestingProfile profile;
-  EXPECT_NE(CopySearchJourneyTrackerFactory::GetForProfile(&profile), nullptr);
+  EXPECT_NE(SearchJourneyTrackerFactory::GetForProfile(&profile), nullptr);
 
   Profile* otr_profile =
       profile.GetPrimaryOTRProfile(/*create_if_needed=*/true);
-  EXPECT_EQ(CopySearchJourneyTrackerFactory::GetForProfile(otr_profile),
-            nullptr);
+  EXPECT_EQ(SearchJourneyTrackerFactory::GetForProfile(otr_profile), nullptr);
 }
 
 }  // namespace contextual_tasks

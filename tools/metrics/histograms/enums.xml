@@ -12215,6 +12215,7 @@ from previous Chrome versions.
   <int value="-835487878" label="FedCmDelegation:enabled"/>
   <int value="-835331907" label="TabOutlinesInLowContrastThemes:disabled"/>
   <int value="-835242361" label="OmniboxAdaptiveSuggestionsCount:enabled"/>
+  <int value="-834896087" label="ABASearchJourneys:enabled"/>
   <int value="-834682002" label="WebUIOmniboxSimplification:enabled"/>
   <int value="-834661509" label="ModalPermissionPrompts:disabled"/>
   <int value="-834268572" label="GlicToolbarButtonLocation:disabled"/>
@@ -12434,6 +12435,7 @@ from previous Chrome versions.
   <int value="-767460914"
       label="ExperimentalAccessibilityDictationCommands:disabled"/>
   <int value="-766805224" label="MirroringService:enabled"/>
+  <int value="-766730573" label="ABASearchJourneys:disabled"/>
   <int value="-766199617" label="ReadAloudInOverflowMenuInCCT:enabled"/>
   <int value="-765669184" label="LauncherNudgeShortInterval:disabled"/>
   <int value="-765531607"

@@ -163,17 +163,19 @@ BASE_DECLARE_FEATURE(kAllowSignedOutUserInDesktopAndroid);
 // Desktop Android.
 bool IsAllowSignedOutUserInDesktopAndroidEnabled();
 
-BASE_DECLARE_FEATURE(kCopyTextJourneys);
+// When enabled, tracks cross-tab ABA search journeys (Tab A -> Search in Tab B
+// -> Return to Tab A) to trigger an in-product help promo for Contextual Tasks.
+BASE_DECLARE_FEATURE(kABASearchJourneys);
 
-extern const base::FeatureParam<base::TimeDelta> kCopyTextJourneysTtl;
-extern const base::FeatureParam<size_t> kCopyTextJourneysMaxRingBufferSize;
-extern const base::FeatureParam<size_t> kCopyTextJourneysMinQueryMatchLength;
+extern const base::FeatureParam<base::TimeDelta> kABASearchJourneysTtl;
+extern const base::FeatureParam<size_t> kABASearchJourneysMaxRingBufferSize;
+extern const base::FeatureParam<size_t> kABASearchJourneysMinQueryMatchLength;
 
-bool IsCopyTextJourneysEnabled();
+bool IsABASearchJourneysEnabled();
 
-base::TimeDelta GetCopyTextJourneysTtl();
-size_t GetCopyTextJourneysMaxRingBufferSize();
-size_t GetCopyTextJourneysMinQueryMatchLength();
+base::TimeDelta GetABASearchJourneysTtl();
+size_t GetABASearchJourneysMaxRingBufferSize();
+size_t GetABASearchJourneysMinQueryMatchLength();
 
 BASE_DECLARE_FEATURE(kContextualTasksEnableSpatialModelToolbarLayout);
 
@@ -596,8 +598,8 @@ extern const char kEphemeralPinningVisibleWhenPermanentlyPinnedName[];
 extern const char kEphemeralPinningVisibleWhenPermanentlyPinnedDescription[];
 extern const char kContextualTasksEphemeralButtonContextMenuName[];
 extern const char kContextualTasksEphemeralButtonContextMenuDescription[];
-extern const char kCopyTextJourneysName[];
-extern const char kCopyTextJourneysDescription[];
+extern const char kABASearchJourneysName[];
+extern const char kABASearchJourneysDescription[];
 extern const char kAllowSignedOutUserInDesktopAndroidName[];
 extern const char kAllowSignedOutUserInDesktopAndroidDescription[];
 

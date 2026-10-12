@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/contextual_tasks/copy_search_journey_tab_feature.h"
+#include "chrome/browser/contextual_tasks/search_journey_tab_feature.h"
 
 #include <memory>
 #include <string>
@@ -11,8 +11,8 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/contextual_tasks/copy_search_journey_tracker.h"
-#include "chrome/browser/contextual_tasks/copy_search_journey_tracker_factory.h"
+#include "chrome/browser/contextual_tasks/search_journey_tracker.h"
+#include "chrome/browser/contextual_tasks/search_journey_tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
@@ -66,10 +66,10 @@ class ClipboardObserverWaiter : public content::WebContentsObserver {
 
 }  // namespace
 
-class CopySearchJourneyTabFeatureBrowserTest : public InProcessBrowserTest {
+class SearchJourneyTabFeatureBrowserTest : public InProcessBrowserTest {
  public:
-  CopySearchJourneyTabFeatureBrowserTest() {
-    feature_list_.InitAndEnableFeature(kCopyTextJourneys);
+  SearchJourneyTabFeatureBrowserTest() {
+    feature_list_.InitAndEnableFeature(kABASearchJourneys);
   }
 
   void SetUpOnMainThread() override {
@@ -121,8 +121,8 @@ class CopySearchJourneyTabFeatureBrowserTest : public InProcessBrowserTest {
     return TemplateURLServiceFactory::GetForProfile(GetProfile());
   }
 
-  CopySearchJourneyTracker* tracker() {
-    return CopySearchJourneyTrackerFactory::GetForProfile(GetProfile());
+  SearchJourneyTracker* tracker() {
+    return SearchJourneyTrackerFactory::GetForProfile(GetProfile());
   }
 
   TabListInterface* tab_list() { return TabListInterface::From(browser()); }
@@ -131,14 +131,14 @@ class CopySearchJourneyTabFeatureBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
 };
 
-IN_PROC_BROWSER_TEST_F(CopySearchJourneyTabFeatureBrowserTest,
+IN_PROC_BROWSER_TEST_F(SearchJourneyTabFeatureBrowserTest,
                        RecordsCopyAndCorrelatesCrossTabSearchNavigation) {
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL("https://example.com/doc")));
 
   tabs::TabInterface* source_tab = tab_list()->GetActiveTab();
   ASSERT_TRUE(source_tab);
-  ASSERT_NE(CopySearchJourneyTabFeature::From(source_tab), nullptr);
+  ASSERT_NE(SearchJourneyTabFeature::From(source_tab), nullptr);
 
   content::WebContents* source_contents = source_tab->GetContents();
   const SessionID source_tab_id =
@@ -175,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(CopySearchJourneyTabFeatureBrowserTest,
   EXPECT_EQ(it->second.search_tab_id, search_tab_id);
 }
 
-IN_PROC_BROWSER_TEST_F(CopySearchJourneyTabFeatureBrowserTest,
+IN_PROC_BROWSER_TEST_F(SearchJourneyTabFeatureBrowserTest,
                        IgnoresSameTabSearchNavigation) {
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL("https://example.com/doc")));
@@ -194,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(CopySearchJourneyTabFeatureBrowserTest,
   EXPECT_TRUE(tracker()->GetActiveJourneysForTesting().empty());
 }
 
-IN_PROC_BROWSER_TEST_F(CopySearchJourneyTabFeatureBrowserTest,
+IN_PROC_BROWSER_TEST_F(SearchJourneyTabFeatureBrowserTest,
                        IgnoresNonSearchNavigation) {
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL("https://example.com/doc")));
@@ -213,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(CopySearchJourneyTabFeatureBrowserTest,
   EXPECT_TRUE(tracker()->GetActiveJourneysForTesting().empty());
 }
 
-IN_PROC_BROWSER_TEST_F(CopySearchJourneyTabFeatureBrowserTest,
+IN_PROC_BROWSER_TEST_F(SearchJourneyTabFeatureBrowserTest,
                        ClearsStateWhenTabClosed) {
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL("https://example.com/doc")));
@@ -238,22 +238,21 @@ IN_PROC_BROWSER_TEST_F(CopySearchJourneyTabFeatureBrowserTest,
   EXPECT_TRUE(tracker()->GetActiveJourneysForTesting().empty());
 }
 
-class CopySearchJourneyTabFeatureDisabledBrowserTest
-    : public InProcessBrowserTest {
+class SearchJourneyTabFeatureDisabledBrowserTest : public InProcessBrowserTest {
  public:
-  CopySearchJourneyTabFeatureDisabledBrowserTest() {
-    feature_list_.InitAndDisableFeature(kCopyTextJourneys);
+  SearchJourneyTabFeatureDisabledBrowserTest() {
+    feature_list_.InitAndDisableFeature(kABASearchJourneys);
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(CopySearchJourneyTabFeatureDisabledBrowserTest,
+IN_PROC_BROWSER_TEST_F(SearchJourneyTabFeatureDisabledBrowserTest,
                        NotCreatedWhenFeatureDisabled) {
   tabs::TabInterface* tab = TabListInterface::From(browser())->GetActiveTab();
   ASSERT_TRUE(tab);
-  EXPECT_EQ(CopySearchJourneyTabFeature::From(tab), nullptr);
+  EXPECT_EQ(SearchJourneyTabFeature::From(tab), nullptr);
 }
 
 }  // namespace contextual_tasks

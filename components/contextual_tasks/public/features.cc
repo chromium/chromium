@@ -193,46 +193,46 @@ BASE_FEATURE(kContextualTasksUploadChunking, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kContextualTasksWebUiVoiceSearchDesktopAndroid,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCopyTextJourneys, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kABASearchJourneys, base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<base::TimeDelta> kCopyTextJourneysTtl(
-    &kCopyTextJourneys,
-    "copy_text_journeys_ttl",
+const base::FeatureParam<base::TimeDelta> kABASearchJourneysTtl(
+    &kABASearchJourneys,
+    "aba_search_journeys_ttl",
     base::Minutes(30));
 
-const base::FeatureParam<size_t> kCopyTextJourneysMaxRingBufferSize(
-    &kCopyTextJourneys,
-    "copy_text_journeys_max_ring_buffer_size",
+const base::FeatureParam<size_t> kABASearchJourneysMaxRingBufferSize(
+    &kABASearchJourneys,
+    "aba_search_journeys_max_ring_buffer_size",
     10);
 
-const base::FeatureParam<size_t> kCopyTextJourneysMinQueryMatchLength(
-    &kCopyTextJourneys,
-    "copy_text_journeys_min_query_match_length",
+const base::FeatureParam<size_t> kABASearchJourneysMinQueryMatchLength(
+    &kABASearchJourneys,
+    "aba_search_journeys_min_query_match_length",
     5);
 
-bool IsCopyTextJourneysEnabled() {
-  return base::FeatureList::IsEnabled(kCopyTextJourneys);
+bool IsABASearchJourneysEnabled() {
+  return base::FeatureList::IsEnabled(kABASearchJourneys);
 }
 
-base::TimeDelta GetCopyTextJourneysTtl() {
-  if (!IsCopyTextJourneysEnabled()) {
+base::TimeDelta GetABASearchJourneysTtl() {
+  if (!IsABASearchJourneysEnabled()) {
     return base::TimeDelta();
   }
-  return kCopyTextJourneysTtl.Get();
+  return kABASearchJourneysTtl.Get();
 }
 
-size_t GetCopyTextJourneysMaxRingBufferSize() {
-  if (!IsCopyTextJourneysEnabled()) {
+size_t GetABASearchJourneysMaxRingBufferSize() {
+  if (!IsABASearchJourneysEnabled()) {
     return 0;
   }
-  return kCopyTextJourneysMaxRingBufferSize.Get();
+  return kABASearchJourneysMaxRingBufferSize.Get();
 }
 
-size_t GetCopyTextJourneysMinQueryMatchLength() {
-  if (!IsCopyTextJourneysEnabled()) {
+size_t GetABASearchJourneysMinQueryMatchLength() {
+  if (!IsABASearchJourneysEnabled()) {
     return 0;
   }
-  return kCopyTextJourneysMinQueryMatchLength.Get();
+  return kABASearchJourneysMinQueryMatchLength.Get();
 }
 
 BASE_FEATURE(kContextualTasksEnableSpatialModelToolbarLayout,
@@ -1107,8 +1107,8 @@ const char kContextualTasksEphemeralButtonContextMenuDescription[] =
     "Enables a context menu on the ephemeral contextual tasks toolbar button "
     "to remove it from the toolbar.";
 
-const char kCopyTextJourneysName[] = "Copy-Text Journeys";
-const char kCopyTextJourneysDescription[] =
+const char kABASearchJourneysName[] = "ABA Search Journeys";
+const char kABASearchJourneysDescription[] =
     "Enables offering to reopen a search answer in the Contextual Tasks side "
     "panel.";
 

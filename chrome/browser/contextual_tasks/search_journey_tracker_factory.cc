@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/contextual_tasks/copy_search_journey_tracker_factory.h"
+#include "chrome/browser/contextual_tasks/search_journey_tracker_factory.h"
 
 #include <memory>
 
-#include "chrome/browser/contextual_tasks/copy_search_journey_tracker.h"
+#include "chrome/browser/contextual_tasks/search_journey_tracker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -15,22 +15,21 @@
 namespace contextual_tasks {
 
 // static
-CopySearchJourneyTracker* CopySearchJourneyTrackerFactory::GetForProfile(
+SearchJourneyTracker* SearchJourneyTrackerFactory::GetForProfile(
     Profile* profile) {
-  return static_cast<CopySearchJourneyTracker*>(
+  return static_cast<SearchJourneyTracker*>(
       GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
 }
 
 // static
-CopySearchJourneyTrackerFactory*
-CopySearchJourneyTrackerFactory::GetInstance() {
-  static base::NoDestructor<CopySearchJourneyTrackerFactory> instance;
+SearchJourneyTrackerFactory* SearchJourneyTrackerFactory::GetInstance() {
+  static base::NoDestructor<SearchJourneyTrackerFactory> instance;
   return instance.get();
 }
 
-CopySearchJourneyTrackerFactory::CopySearchJourneyTrackerFactory()
+SearchJourneyTrackerFactory::SearchJourneyTrackerFactory()
     : ProfileKeyedServiceFactory(
-          "CopySearchJourneyTracker",
+          "SearchJourneyTracker",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
               .WithGuest(ProfileSelection::kNone)
@@ -39,16 +38,16 @@ CopySearchJourneyTrackerFactory::CopySearchJourneyTrackerFactory()
   DependsOn(TemplateURLServiceFactory::GetInstance());
 }
 
-CopySearchJourneyTrackerFactory::~CopySearchJourneyTrackerFactory() = default;
+SearchJourneyTrackerFactory::~SearchJourneyTrackerFactory() = default;
 
 std::unique_ptr<KeyedService>
-CopySearchJourneyTrackerFactory::BuildServiceInstanceForBrowserContext(
+SearchJourneyTrackerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  if (!IsCopyTextJourneysEnabled()) {
+  if (!IsABASearchJourneysEnabled()) {
     return nullptr;
   }
   Profile* profile = Profile::FromBrowserContext(context);
-  return std::make_unique<CopySearchJourneyTracker>(
+  return std::make_unique<SearchJourneyTracker>(
       TemplateURLServiceFactory::GetForProfile(profile));
 }
 

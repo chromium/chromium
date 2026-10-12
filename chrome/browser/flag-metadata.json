@@ -33,6 +33,11 @@
     "expiry_milestone": 155
   },
   {
+    "name": "aba-search-journeys",
+    "owners": [ "juanmojica@google.com", "chrome-contextual-tasks-eng@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "account-picker-dialog",
     "owners": [ "adelm@google.com" ],
     "expiry_milestone": 170
@@ -2469,11 +2474,6 @@
   {
     "name": "controls-in-browser-toolbar-swipe-mock",
     "owners": [ "peilinwang@google.com" ],
-    "expiry_milestone": 160
-  },
-  {
-    "name": "copy-text-journeys",
-    "owners": [ "juanmojica@google.com", "chrome-contextual-tasks-eng@google.com" ],
     "expiry_milestone": 160
   },
   {

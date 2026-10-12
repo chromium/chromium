@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/contextual_tasks/copy_search_journey_tab_feature.h"
+#include "chrome/browser/contextual_tasks/search_journey_tab_feature.h"
 
 #include <string>
 
 #include "base/functional/bind.h"
-#include "chrome/browser/contextual_tasks/copy_search_journey_tracker.h"
-#include "chrome/browser/contextual_tasks/copy_search_journey_tracker_factory.h"
+#include "chrome/browser/contextual_tasks/search_journey_tracker.h"
+#include "chrome/browser/contextual_tasks/search_journey_tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/google/core/common/google_util.h"
@@ -24,35 +24,33 @@
 
 namespace contextual_tasks {
 
-DEFINE_USER_DATA(CopySearchJourneyTabFeature);
+DEFINE_USER_DATA(SearchJourneyTabFeature);
 
-CopySearchJourneyTabFeature::CopySearchJourneyTabFeature(
-    tabs::TabInterface& tab)
+SearchJourneyTabFeature::SearchJourneyTabFeature(tabs::TabInterface& tab)
     : content::WebContentsObserver(tab.GetContents()),
-      will_discard_contents_subscription_(
-          tab.RegisterWillDiscardContents(base::BindRepeating(
-              &CopySearchJourneyTabFeature::OnWillDiscardContents,
-              base::Unretained(this)))),
+      will_discard_contents_subscription_(tab.RegisterWillDiscardContents(
+          base::BindRepeating(&SearchJourneyTabFeature::OnWillDiscardContents,
+                              base::Unretained(this)))),
       scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {
   if (content::WebContents* contents = tab.GetContents()) {
     Profile* profile =
         Profile::FromBrowserContext(contents->GetBrowserContext());
-    tracker_ = CopySearchJourneyTrackerFactory::GetForProfile(profile);
+    tracker_ = SearchJourneyTrackerFactory::GetForProfile(profile);
     template_url_service_ = TemplateURLServiceFactory::GetForProfile(profile);
   }
 }
 
-CopySearchJourneyTabFeature::~CopySearchJourneyTabFeature() {
+SearchJourneyTabFeature::~SearchJourneyTabFeature() {
   NotifyTabDestroyed(web_contents());
 }
 
 // static
-CopySearchJourneyTabFeature* CopySearchJourneyTabFeature::From(
+SearchJourneyTabFeature* SearchJourneyTabFeature::From(
     tabs::TabInterface* tab) {
   return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
 }
 
-void CopySearchJourneyTabFeature::OnTextCopiedToClipboard(
+void SearchJourneyTabFeature::OnTextCopiedToClipboard(
     content::RenderFrameHost* render_frame_host,
     const std::u16string& copied_text) {
   if (!tracker_ || !web_contents()) {
@@ -67,7 +65,7 @@ void CopySearchJourneyTabFeature::OnTextCopiedToClipboard(
                            entry->GetUniqueID(), copied_text);
 }
 
-void CopySearchJourneyTabFeature::DidFinishNavigation(
+void SearchJourneyTabFeature::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!tracker_ || !template_url_service_ ||
       !navigation_handle->IsInPrimaryMainFrame() ||
@@ -91,7 +89,7 @@ void CopySearchJourneyTabFeature::DidFinishNavigation(
       sessions::SessionTabHelper::IdForTab(web_contents()), search_terms);
 }
 
-void CopySearchJourneyTabFeature::OnWillDiscardContents(
+void SearchJourneyTabFeature::OnWillDiscardContents(
     tabs::TabInterface* tab,
     content::WebContents* old_contents,
     content::WebContents* new_contents) {
@@ -99,7 +97,7 @@ void CopySearchJourneyTabFeature::OnWillDiscardContents(
   Observe(new_contents);
 }
 
-void CopySearchJourneyTabFeature::NotifyTabDestroyed(
+void SearchJourneyTabFeature::NotifyTabDestroyed(
     content::WebContents* contents) {
   const SessionID tab_id = sessions::SessionTabHelper::IdForTab(contents);
   if (tracker_ && tab_id.is_valid()) {

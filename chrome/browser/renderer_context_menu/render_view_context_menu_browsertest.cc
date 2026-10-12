@@ -44,8 +44,8 @@
 #include "chrome/browser/context_hub/context_hub_service_factory.h"
 #include "chrome/browser/context_hub/features.h"
 #include "chrome/browser/context_hub/memory_bank/memory_bank.h"
-#include "chrome/browser/contextual_tasks/copy_search_journey_tracker.h"
-#include "chrome/browser/contextual_tasks/copy_search_journey_tracker_factory.h"
+#include "chrome/browser/contextual_tasks/search_journey_tracker.h"
+#include "chrome/browser/contextual_tasks/search_journey_tracker_factory.h"
 #include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog_test_helper.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -4950,11 +4950,11 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextMenuSubmenuBrowserTest,
             ask_google_item->first->GetIconAt(ask_google_item->second));
 }
 
-class CopyTextJourneysContextMenuBrowserTest : public ContextMenuBrowserTest {
+class ABASearchJourneysContextMenuBrowserTest : public ContextMenuBrowserTest {
  public:
-  CopyTextJourneysContextMenuBrowserTest() {
+  ABASearchJourneysContextMenuBrowserTest() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{contextual_tasks::kCopyTextJourneys,
+        /*enabled_features=*/{contextual_tasks::kABASearchJourneys,
                               data_controls::kDataControlsSearchWith},
         /*disabled_features=*/{
             lens::features::kLensOverlayTextSelectionContextMenuEntrypoint});
@@ -4989,8 +4989,8 @@ class CopyTextJourneysContextMenuBrowserTest : public ContextMenuBrowserTest {
     return menu;
   }
 
-  contextual_tasks::CopySearchJourneyTracker* tracker() {
-    return contextual_tasks::CopySearchJourneyTrackerFactory::GetForProfile(
+  contextual_tasks::SearchJourneyTracker* tracker() {
+    return contextual_tasks::SearchJourneyTrackerFactory::GetForProfile(
         browser()->GetProfile());
   }
 
@@ -4999,11 +4999,11 @@ class CopyTextJourneysContextMenuBrowserTest : public ContextMenuBrowserTest {
 };
 
 // Verifies that executing "Search Google for…" records the selected text in
-// `CopySearchJourneyTracker` with the source tab's SessionID and committed
+// `SearchJourneyTracker` with the source tab's SessionID and committed
 // NavigationEntry ID, and that `NormalizeForJourneyMatch` produces the same
 // hash as the committed SRP's `q` parameter even when the selection contains
 // `AutocompleteInput::kInvalidChars`.
-IN_PROC_BROWSER_TEST_F(CopyTextJourneysContextMenuBrowserTest,
+IN_PROC_BROWSER_TEST_F(ABASearchJourneysContextMenuBrowserTest,
                        SearchWebForRecordsCopyMatchingCommittedSrpQuery) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL source_url = embedded_test_server()->GetURL("/title1.html");
@@ -5058,11 +5058,10 @@ IN_PROC_BROWSER_TEST_F(CopyTextJourneysContextMenuBrowserTest,
   ASSERT_TRUE(default_provider->ExtractSearchTermsFromURL(
       search_web_contents->GetVisibleURL(),
       template_url_service->search_terms_data(), &extracted_search_terms));
-  EXPECT_EQ(
-      contextual_tasks::CopySearchJourneyTracker::NormalizeForJourneyMatch(
-          kRawSelection),
-      contextual_tasks::CopySearchJourneyTracker::NormalizeForJourneyMatch(
-          extracted_search_terms));
+  EXPECT_EQ(contextual_tasks::SearchJourneyTracker::NormalizeForJourneyMatch(
+                kRawSelection),
+            contextual_tasks::SearchJourneyTracker::NormalizeForJourneyMatch(
+                extracted_search_terms));
 
   tracker()->OnSearchNavigationCommitted(search_tab_id, extracted_search_terms);
   const auto& journeys = tracker()->GetActiveJourneysForTesting();
@@ -5074,8 +5073,8 @@ IN_PROC_BROWSER_TEST_F(CopyTextJourneysContextMenuBrowserTest,
 }
 
 // Verifies that if Enterprise Data Controls cancels the context-menu search,
-// `CopySearchJourneyTracker` does not record the selection.
-IN_PROC_BROWSER_TEST_F(CopyTextJourneysContextMenuBrowserTest,
+// `SearchJourneyTracker` does not record the selection.
+IN_PROC_BROWSER_TEST_F(ABASearchJourneysContextMenuBrowserTest,
                        SearchWebForBlockedByDataControlsDoesNotRecordCopy) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL source_url = embedded_test_server()->GetURL("/title1.html");

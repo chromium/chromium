@@ -14055,10 +14055,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kImmersiveReadAnythingPrint)},
 #endif
 
-    {"copy-text-journeys",
-     contextual_tasks::flag_descriptions::kCopyTextJourneysName,
-     contextual_tasks::flag_descriptions::kCopyTextJourneysDescription,
-     kOsDesktop, FEATURE_VALUE_TYPE(contextual_tasks::kCopyTextJourneys)},
+    {"aba-search-journeys",
+     contextual_tasks::flag_descriptions::kABASearchJourneysName,
+     contextual_tasks::flag_descriptions::kABASearchJourneysDescription,
+     kOsDesktop, FEATURE_VALUE_TYPE(contextual_tasks::kABASearchJourneys)},
 
 #if BUILDFLAG(IS_ANDROID)
     {"use-new-etc1-decoder", flag_descriptions::kUseNewEtc1DecoderName,

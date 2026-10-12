@@ -39,9 +39,9 @@ source_set("contextual_tasks") {
     "contextual_tasks_url_loader_throttle.cc",
     "contextual_tasks_url_loader_throttle.h",
     "contextual_tasks_utils.h",
-    "copy_search_journey_tab_feature.h",
-    "copy_search_journey_tracker.h",
-    "copy_search_journey_tracker_factory.h",
+    "search_journey_tab_feature.h",
+    "search_journey_tracker.h",
+    "search_journey_tracker_factory.h",
     "smart_tab_sharing_metrics.h",
     "smart_tab_sharing_settings_policy_handler.h",
     "task_info_delegate.h",
@@ -129,9 +129,9 @@ source_set("impl") {
     "contextual_tasks_context_signal_utils.h",
     "contextual_tasks_service_factory.cc",
     "contextual_tasks_utils.cc",
-    "copy_search_journey_tab_feature.cc",
-    "copy_search_journey_tracker.cc",
-    "copy_search_journey_tracker_factory.cc",
+    "search_journey_tab_feature.cc",
+    "search_journey_tracker.cc",
+    "search_journey_tracker_factory.cc",
     "site_exclusion_detail.cc",
     "site_exclusion_detail.h",
     "smart_tab_sharing_metrics.cc",
@@ -645,7 +645,7 @@ if (!is_android) {
       "contextual_tasks_ui_service_browsertest.cc",
       "contextual_tasks_ui_service_pdf_browsertest.cc",
       "contextual_tasks_url_loader_factory_interceptor_browsertest.cc",
-      "copy_search_journey_tab_feature_browsertest.cc",
+      "search_journey_tab_feature_browsertest.cc",
     ]
 
     deps = [
@@ -739,8 +739,8 @@ source_set("unit_tests") {
     "contextual_tasks_ui_unittest.cc",
     "contextual_tasks_window_tracker_manager_unittest.cc",
     "contextual_tasks_window_tracker_unittest.cc",
-    "copy_search_journey_tracker_unittest.cc",
     "entry_point_eligibility_manager_unittest.cc",
+    "search_journey_tracker_unittest.cc",
   ]
 
   if (is_android) {

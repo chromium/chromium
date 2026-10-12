@@ -53,8 +53,8 @@
 #include "chrome/browser/context_hub/memory_bank/memory_bank.h"
 #include "chrome/browser/context_hub/memory_bank/memory_bank_entry.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
-#include "chrome/browser/contextual_tasks/copy_search_journey_tracker.h"
-#include "chrome/browser/contextual_tasks/copy_search_journey_tracker_factory.h"
+#include "chrome/browser/contextual_tasks/search_journey_tracker.h"
+#include "chrome/browser/contextual_tasks/search_journey_tracker_factory.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/dictation/features.h"
@@ -4297,9 +4297,9 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
                 if (!web_contents) {
                   return;
                 }
-                if (contextual_tasks::IsCopyTextJourneysEnabled()) {
+                if (contextual_tasks::IsABASearchJourneysEnabled()) {
                   if (auto* tracker =
-                          contextual_tasks::CopySearchJourneyTrackerFactory::
+                          contextual_tasks::SearchJourneyTrackerFactory::
                               GetForProfile(Profile::FromBrowserContext(
                                   web_contents->GetBrowserContext()))) {
                     const SessionID tab_id =
