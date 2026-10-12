@@ -955,15 +955,17 @@ class SimulatorTestRunner(TestRunner):
     # we can compare and fetch crash reports from this run later on.
     self.start_time = time.strftime('%Y-%m-%d-%H%M%S', time.localtime())
 
-  def extract_test_data(self):
+  def extract_test_data(self, bundle_id: str | None = None):
     """Extracts data emitted by the test."""
     if hasattr(self, 'use_clang_coverage') and self.use_clang_coverage:
       file_util.move_raw_coverage_data(self.udid, self.out_dir)
 
+    target_bundle_id = bundle_id or self.cfbundleid
+    homedir = self.homedir or self.get_home_directory()
     # Find the Documents directory of the test app. The app directory names
     # don't correspond with any known information, so we have to examine them
     # all until we find one with a matching CFBundleIdentifier.
-    apps_dir = os.path.join(self.homedir, 'Containers', 'Data', 'Application')
+    apps_dir = os.path.join(homedir, 'Containers', 'Data', 'Application')
     if os.path.exists(apps_dir):
       for appid_dir in os.listdir(apps_dir):
         docs_dir = os.path.join(apps_dir, appid_dir, 'Documents')
@@ -985,8 +987,12 @@ class SimulatorTestRunner(TestRunner):
             .decode('utf-8')
             .rstrip()
           )
-          if cfbundleid == self.cfbundleid:
-            shutil.copytree(docs_dir, os.path.join(self.out_dir, 'Documents'))
+          if cfbundleid == target_bundle_id:
+            shutil.copytree(
+              docs_dir,
+              os.path.join(self.out_dir, 'Documents'),
+              dirs_exist_ok=True,
+            )
             return
 
   def retrieve_crash_reports(self):
@@ -1189,14 +1195,15 @@ class DeviceTestRunner(TestRunner):
     self.wipe_derived_data()
     self.install_app()
 
-  def extract_test_data(self):
+  def extract_test_data(self, bundle_id: str | None = None):
     """Extracts data emitted by the test."""
+    target_bundle_id = bundle_id or self.cfbundleid
     cmd = [
       'idevicefs',
       '--udid',
       self.udid,
       'pull',
-      f'@{self.cfbundleid}/Documents',
+      f'@{target_bundle_id}/Documents',
       os.path.join(self.out_dir, 'Documents'),
     ]
     try:

@@ -5,10 +5,12 @@
 """Test runner for running tests using xcodebuild."""
 
 import collections
+import glob
 import json
 import logging
 import os
 import plistlib
+import shutil
 import subprocess
 import sys
 import time
@@ -332,6 +334,7 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
 
     self.record_video_option = kwargs.get('record_video_option')
     self.skip_enumerate_tests = kwargs.get('skip_enumerate_tests') or False
+    self.benchmark_name = kwargs.get('benchmark_name')
 
     self.all_eg_test_names = []
     if not self._should_skip_enumerate_tests():
@@ -570,6 +573,9 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
             test_log='Test disabled.',
           )
 
+      if self.benchmark_name:
+        self._collect_perf_artifacts()
+
       # Deletes simulator used in the tests after tests end.
       if iossim_util.is_device_with_udid_simulator(self.udid):
         iossim_util.delete_simulator_by_udid(self.udid)
@@ -609,6 +615,18 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
       )
       self.logs.update(overall_result.test_runner_logs())
 
+      if self.benchmark_name:
+        root_perf_results = os.path.join(self.out_dir, 'perf_results.json')
+        sub_perf_results = os.path.join(self.out_dir, '*', 'perf_results.json')
+        has_root_results = os.path.isfile(root_perf_results)
+        has_sub_results = any(glob.iglob(sub_perf_results))
+        if not (has_root_results or has_sub_results):
+          LOGGER.error(
+            'Benchmark %s completed without producing perf_results.json.',
+            self.benchmark_name,
+          )
+          return False
+
       # Return False when:
       # - There are unexpected tests (all results of the tests are unexpected),
       # or
@@ -619,6 +637,77 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
       )
     finally:
       self.tear_down()
+
+  @staticmethod
+  def _convert_samples_to_histogram_sets(
+    samples_json_path: str, out_dir: str
+  ) -> None:
+    """Converts raw sample dicts into Catapult HistogramSet JSON files."""
+    repo_root = os.path.abspath(
+      os.path.join(os.path.dirname(__file__), '..', '..', '..', '..')
+    )
+    catapult_tracing = os.path.join(
+      repo_root, 'third_party', 'catapult', 'tracing'
+    )
+    if catapult_tracing not in sys.path:
+      sys.path.insert(0, catapult_tracing)
+    import tracing_project
+
+    tracing_project.UpdateSysPathIfNeeded()
+    from tracing.value import histogram as catapult_histogram
+    from tracing.value import histogram_set as catapult_histogram_set
+
+    with open(samples_json_path, 'r') as f:
+      raw_entries = json.load(f)
+
+    grouped_histograms = collections.defaultdict(
+      catapult_histogram_set.HistogramSet
+    )
+    for entry in raw_entries:
+      name = entry.get('name')
+      unit = entry.get('unit')
+      samples = entry.get('samples') or []
+      if not name or not unit or not samples:
+        continue
+      hist = catapult_histogram.Histogram(name, unit)
+      for value in samples:
+        hist.AddSample(float(value))
+      benchmark = entry.get('benchmark') or ''
+      grouped_histograms[benchmark].AddHistogram(hist)
+
+    for benchmark, histograms in grouped_histograms.items():
+      if benchmark:
+        dest_dir = os.path.join(out_dir, benchmark)
+        os.makedirs(dest_dir, exist_ok=True)
+      else:
+        dest_dir = out_dir
+      perf_results_path = os.path.join(dest_dir, 'perf_results.json')
+      with open(perf_results_path, 'w') as f:
+        json.dump(histograms.AsDicts(), f, indent=2)
+
+  def _collect_perf_artifacts(self):
+    """Pulls perf_samples.json and converts it to HistogramSet JSON."""
+    os.makedirs(self.out_dir, exist_ok=True)
+    extracted_samples = os.path.join(
+      self.out_dir, 'Documents', 'perf_samples.json'
+    )
+    if not os.path.isfile(extracted_samples):
+      target_app_path = self.host_app_path or self.app_path
+      if target_app_path and os.path.exists(target_app_path):
+        try:
+          bundle_id = test_apps.get_bundle_id(target_app_path)
+          if bundle_id:
+            self.extract_test_data(bundle_id=bundle_id)
+        except Exception as err:  # pylint: disable=broad-except
+          LOGGER.warning('Perf artifact collection failed: %s', err)
+
+    if os.path.isfile(extracted_samples):
+      raw_samples_dest = os.path.join(self.out_dir, 'perf_samples.json')
+      shutil.copyfile(extracted_samples, raw_samples_dest)
+      try:
+        self._convert_samples_to_histogram_sets(raw_samples_dest, self.out_dir)
+      except Exception as err:  # pylint: disable=broad-except
+        LOGGER.warning('Perf artifact conversion failed: %s', err)
 
   def ensure_fresh_simulator_state(self) -> str:
     """Ensures that the simulator is in a fresh state.
@@ -701,6 +790,7 @@ class DeviceXcodeTestRunner(
     self.test_results['path_delimiter'] = '/'
     self.record_video_option = kwargs.get('record_video_option')
     self.skip_enumerate_tests = kwargs.get('skip_enumerate_tests') or False
+    self.benchmark_name = kwargs.get('benchmark_name')
     self.test_plugin_service = None
     self.all_eg_test_names = []
     if not self._should_skip_enumerate_tests():
@@ -716,6 +806,10 @@ class DeviceXcodeTestRunner(
     self.uninstall_apps()
     self.wipe_derived_data()
     self.restart_usbmuxd()
+
+  def extract_test_data(self, bundle_id: str | None = None):
+    """Extracts data emitted by the test."""
+    test_runner.DeviceTestRunner.extract_test_data(self, bundle_id=bundle_id)
 
   def tear_down(self):
     """Performs cleanup actions which must occur after every test launch."""

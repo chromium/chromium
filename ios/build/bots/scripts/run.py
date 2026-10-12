@@ -68,6 +68,36 @@ def use_xcodebuild_runner(args):
   return args.xcodebuild_sim_runner or args.xcodebuild_device_runner
 
 
+def write_perf_json_results(
+  out_dir, test_results, benchmark_name, perf_output_path
+):
+  """Writes side-by-side test_results.json and copies perf output."""
+  perf_json_paths = []
+  if os.path.isdir(out_dir):
+    sub_perf_pattern = os.path.join(out_dir, '*', 'perf_results.json')
+    for entry_perf in sorted(glob.glob(sub_perf_pattern)):
+      entry_dir = os.path.dirname(entry_perf)
+      with open(os.path.join(entry_dir, 'test_results.json'), 'w') as f:
+        json.dump(test_results, f)
+      perf_json_paths.append(entry_perf)
+
+  src_perf_json = os.path.join(out_dir, 'perf_results.json')
+  if os.path.exists(src_perf_json):
+    perf_json_paths.insert(0, src_perf_json)
+    if benchmark_name:
+      benchmark_dir = os.path.join(out_dir, benchmark_name)
+      os.makedirs(benchmark_dir, exist_ok=True)
+      with open(os.path.join(benchmark_dir, 'test_results.json'), 'w') as f:
+        json.dump(test_results, f)
+      shutil.copyfile(
+        src_perf_json, os.path.join(benchmark_dir, 'perf_results.json')
+      )
+
+  if perf_output_path and perf_json_paths:
+    if os.path.abspath(perf_json_paths[0]) != os.path.abspath(perf_output_path):
+      shutil.copyfile(perf_json_paths[0], perf_output_path)
+
+
 class Runner:
   """
   Object to encapsulate iOS test runner execution coordination. Parses
@@ -166,6 +196,7 @@ class Runner:
           output_disabled_tests=self.args.output_disabled_tests,
           use_simulator_cache=self.args.use_simulator_cache,
           skip_enumerate_tests=self.args.skip_enumerate_tests,
+          benchmark_name=self.args.benchmark_name,
         )
       elif self.args.variations_seed_path != 'NO_PATH':
         tr = variations_runner.VariationsSimulatorParallelTestRunner(
@@ -182,6 +213,7 @@ class Runner:
           env_vars=env_vars,
           use_simulator_cache=self.args.use_simulator_cache,
           skip_enumerate_tests=self.args.skip_enumerate_tests,
+          benchmark_name=self.args.benchmark_name,
         )
       elif self.args.platform and self.args.version:
         tr = test_runner.SimulatorTestRunner(
@@ -216,6 +248,7 @@ class Runner:
           record_video_option=self.args.record_video,
           output_disabled_tests=self.args.output_disabled_tests,
           skip_enumerate_tests=self.args.skip_enumerate_tests,
+          benchmark_name=self.args.benchmark_name,
         )
       else:
         tr = test_runner.DeviceTestRunner(
@@ -280,11 +313,20 @@ class Runner:
       # work with Chromium recipe because we use the noop_merge merge script,
       # but will require structural changes to support the default gtest
       # merge script (ref: //testing/merge_scripts/standard_gtest_merge.py)
-      output_json_path = self.args.test_launcher_summary_output or os.path.join(
-        self.args.out_dir, 'output.json'
+      output_json_path = (
+        self.args.test_launcher_summary_output
+        or self.args.isolated_script_test_output
+        or os.path.join(self.args.out_dir, 'output.json')
       )
       with open(output_json_path, 'w') as f:
         json.dump(test_results, f)
+
+      write_perf_json_results(
+        self.args.out_dir,
+        test_results,
+        self.args.benchmark_name,
+        self.args.isolated_script_test_perf_output,
+      )
 
       if self.should_delete_xcode_cache and os.path.exists(
         self.args.xcode_path
@@ -521,6 +563,24 @@ class Runner:
       default=None,
       help='Full path to output.json file. output.json is consumed by both '
       'collect_task.py and merge scripts.',
+    )
+    parser.add_argument(
+      '--isolated-script-test-output',
+      default=None,
+      help='Full path to isolated script test output.json file.',
+    )
+    parser.add_argument(
+      '--isolated-script-test-perf-output',
+      default=None,
+      help='Full path to isolated script perf_results.json file.',
+    )
+    parser.add_argument(
+      '--benchmark-name',
+      default=None,
+      help=(
+        'Fallback perf benchmark subdirectory name under out-dir for untagged '
+        'samples; when set, fails the run if no perf_results.json is produced.'
+      ),
     )
     parser.add_argument(
       '--record-video',

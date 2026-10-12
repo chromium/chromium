@@ -5,11 +5,14 @@
 
 """Unittests for xcodebuild_runner.py."""
 
+import json
 import logging
 import mock
 import os
-import unittest
+import subprocess
 import sys
+import tempfile
+import unittest
 
 import constants
 import mac_util
@@ -443,7 +446,7 @@ class DeviceXcodeTestRunnerTest(test_runner_test.TestCase):
     self.mock(
       test_runner,
       'print_process_output',
-      lambda _, timeout, exception_checker: [],
+      lambda _, timeout=None, exception_checker=None: [],
     )
     self.mock(test_runner.TestRunner, 'start_proc', lambda self, cmd: 0)
     self.mock(
@@ -735,6 +738,192 @@ class SimulatorParallelTestRunnerTest(test_runner_test.SimulatorTestRunnerTest):
       skip_enumerate_tests=True,
     )
     self.assertEqual(tr.clones, 1)
+
+
+class PerfArtifactsCollectionTest(unittest.TestCase):
+  """Tests container perf artifact pulling and HistogramSet conversion."""
+
+  @mock.patch.object(xcodebuild_runner.SimulatorParallelTestRunner, 'set_up')
+  @mock.patch(
+    'test_runner.get_current_xcode_info',
+    return_value={'version': '27.0', 'build': '27A266A', 'path': '/Xcode.app'},
+  )
+  @mock.patch(
+    'iossim_util.get_platform_type_by_platform',
+    return_value=constants.IOSPlatformType.IPHONEOS,
+  )
+  @mock.patch('test_apps.get_bundle_id', return_value='org.chromium.gtest')
+  @mock.patch('iossim_util.is_device_with_udid_simulator', return_value=True)
+  @mock.patch('iossim_util.get_simulator', return_value='sim-UUID')
+  def test_collect_perf_artifacts_simulator(
+    self,
+    mock_udid,
+    mock_is_sim,
+    mock_bundle_id,
+    mock_platform_type,
+    mock_xcode_info,
+    mock_set_up,
+  ):
+    with tempfile.TemporaryDirectory() as tmpdir:
+      host_app = os.path.join(tmpdir, 'Runner.app')
+      os.makedirs(host_app)
+      container_dir = os.path.join(tmpdir, 'sim_container')
+      docs_dir = os.path.join(container_dir, 'Documents')
+      os.makedirs(docs_dir)
+      out_dir = os.path.join(tmpdir, 'out')
+
+      samples_payload = [
+        {
+          'benchmark': 'bling.startup',
+          'name': 'Startup.ColdStartFromMain',
+          'unit': 'ms_smallerIsBetter',
+          'samples': [210.5, 198.2],
+        }
+      ]
+      with open(os.path.join(docs_dir, 'perf_samples.json'), 'w') as f:
+        json.dump(samples_payload, f)
+
+      tr = xcodebuild_runner.SimulatorParallelTestRunner(
+        host_app,
+        host_app,
+        'fake-version',
+        'iPhone 15 Pro',
+        out_dir,
+        skip_enumerate_tests=True,
+      )
+
+      def fake_extract(bundle_id=None):
+        self.assertEqual(bundle_id, 'org.chromium.gtest')
+        dest_docs = os.path.join(out_dir, 'Documents')
+        os.makedirs(dest_docs, exist_ok=True)
+        with open(os.path.join(dest_docs, 'perf_samples.json'), 'w') as f:
+          json.dump(samples_payload, f)
+
+      with mock.patch.object(tr, 'extract_test_data', side_effect=fake_extract):
+        tr._collect_perf_artifacts()
+
+      perf_results_path = os.path.join(
+        out_dir, 'bling.startup', 'perf_results.json'
+      )
+      self.assertTrue(os.path.exists(perf_results_path))
+      with open(perf_results_path, 'r') as f:
+        histograms = json.load(f)
+      self.assertEqual(len(histograms), 1)
+      self.assertEqual(histograms[0]['name'], 'Startup.ColdStartFromMain')
+      self.assertEqual(histograms[0]['unit'], 'ms_smallerIsBetter')
+      self.assertEqual(histograms[0]['sampleValues'], [210.5, 198.2])
+      self.assertIn('running', histograms[0])
+
+  @mock.patch.object(xcodebuild_runner.DeviceXcodeTestRunner, 'set_up')
+  @mock.patch(
+    'test_runner.get_current_xcode_info',
+    return_value={'version': '27.0', 'build': '27A266A', 'path': '/Xcode.app'},
+  )
+  @mock.patch('test_apps.get_bundle_id', return_value='org.chromium.gtest')
+  @mock.patch.object(
+    test_runner.subprocess, 'check_output', return_value=b'device-UUID'
+  )
+  def test_collect_perf_artifacts_device(
+    self,
+    mock_udid,
+    mock_bundle_id,
+    mock_xcode_info,
+    mock_set_up,
+  ):
+    """Tests device artifact collection and HistogramSet conversion."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+      host_app = os.path.join(tmpdir, 'ios_chrome_eg2tests.app')
+      os.makedirs(os.path.join(host_app, 'PlugIns', 'module.xctest'))
+      out_dir = os.path.join(tmpdir, 'out')
+
+      samples_payload = [
+        {
+          'name': 'Memory.PhysFootprint',
+          'unit': 'sizeInBytes_smallerIsBetter',
+          'samples': [104857600.0, 106954752.0],
+        }
+      ]
+
+      def fake_device_extract(runner_self, bundle_id=None):
+        self.assertEqual(bundle_id, 'org.chromium.gtest')
+        docs_dir = os.path.join(runner_self.out_dir, 'Documents')
+        os.makedirs(docs_dir, exist_ok=True)
+        with open(os.path.join(docs_dir, 'perf_samples.json'), 'w') as f:
+          json.dump(samples_payload, f)
+
+      tr = xcodebuild_runner.DeviceXcodeTestRunner(
+        host_app,
+        host_app,
+        out_dir,
+        skip_enumerate_tests=True,
+      )
+      with mock.patch.object(
+        xcodebuild_runner.test_runner.DeviceTestRunner,
+        'extract_test_data',
+        new=fake_device_extract,
+      ):
+        tr._collect_perf_artifacts()
+
+      perf_results_path = os.path.join(out_dir, 'perf_results.json')
+      self.assertTrue(os.path.exists(perf_results_path))
+      with open(perf_results_path, 'r') as f:
+        histograms = json.load(f)
+      self.assertEqual(len(histograms), 1)
+      self.assertEqual(histograms[0]['name'], 'Memory.PhysFootprint')
+      self.assertEqual(histograms[0]['unit'], 'sizeInBytes_smallerIsBetter')
+
+  @mock.patch.object(xcodebuild_runner.SimulatorParallelTestRunner, 'set_up')
+  @mock.patch(
+    'test_runner.get_current_xcode_info',
+    return_value={'version': '27.0', 'build': '27A266A', 'path': '/Xcode.app'},
+  )
+  @mock.patch(
+    'iossim_util.get_platform_type_by_platform',
+    return_value=constants.IOSPlatformType.IPHONEOS,
+  )
+  @mock.patch('test_apps.get_bundle_id', return_value='org.chromium.gtest')
+  @mock.patch('iossim_util.get_simulator', return_value='sim-UUID')
+  def test_collect_perf_artifacts_from_extracted_documents(
+    self,
+    mock_udid,
+    mock_bundle_id,
+    mock_platform_type,
+    mock_xcode_info,
+    mock_set_up,
+  ):
+    """Tests reusing Documents/perf_samples.json already under out_dir."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+      host_app = os.path.join(tmpdir, 'ios_chrome_eg2tests.app')
+      os.makedirs(host_app)
+      out_dir = os.path.join(tmpdir, 'out')
+      docs_dir = os.path.join(out_dir, 'Documents')
+      os.makedirs(docs_dir)
+      with open(os.path.join(docs_dir, 'perf_samples.json'), 'w') as f:
+        json.dump(
+          [
+            {
+              'name': 'Startup.ColdStartFromMain',
+              'unit': 'ms_smallerIsBetter',
+              'samples': [180.0],
+            }
+          ],
+          f,
+        )
+
+      tr = xcodebuild_runner.SimulatorParallelTestRunner(
+        host_app,
+        host_app,
+        'fake-version',
+        'iPhone 15 Pro',
+        out_dir,
+        skip_enumerate_tests=True,
+        benchmark_name='bling.startup',
+      )
+      tr._collect_perf_artifacts()
+
+      self.assertTrue(
+        os.path.exists(os.path.join(out_dir, 'perf_results.json'))
+      )
 
 
 if __name__ == '__main__':
