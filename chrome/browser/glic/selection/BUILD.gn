@@ -59,6 +59,7 @@ source_set("selection") {
     "//components/actor/public/mojom:mojo_bindings",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
+    "//components/input",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/search_engines",

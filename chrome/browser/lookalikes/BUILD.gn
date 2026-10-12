@@ -56,6 +56,8 @@ source_set("impl") {
     "//chrome/browser/preloading/prefetch/no_state_prefetch",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/safe_browsing",
+    "//chrome/common",
+    "//chrome/common:channel_info",
     "//components/lookalikes/core",
     "//components/lookalikes/core:safety_tips",
     "//components/no_state_prefetch/browser",
@@ -73,6 +75,7 @@ source_set("impl") {
   if (is_android) {
     sources += [ "safety_tip_message_delegate_android.cc" ]
     deps += [
+      "//chrome/browser/android:resource_mapper",
       "//chrome/browser/android:tabs_public",
       "//chrome/browser/ui/android/tab_model",
       "//components/messages/android",

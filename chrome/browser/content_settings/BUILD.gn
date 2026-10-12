@@ -87,6 +87,7 @@ source_set("impl") {
     "//chrome/browser/site_protection",
     "//chrome/browser/site_protection:utils",
     "//chrome/browser/ui/tabs:utils",
+    "//chrome/common:constants",
     "//components/content_settings/browser",
     "//components/content_settings/browser/ui",
     "//components/content_settings/core/browser",

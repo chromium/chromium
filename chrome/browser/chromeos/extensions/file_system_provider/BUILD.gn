@@ -13,6 +13,7 @@ static_library("file_system_provider") {
   ]
 
   deps = [
+    "//ash/constants",
     "//base",
     "//chrome/browser/ash/file_system_provider",
     "//chrome/browser/ash/guest_os",

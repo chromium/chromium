@@ -326,8 +326,10 @@ source_set("ui") {
   ]
 
   if (is_android) {
-    public_deps +=
-        [ "//chrome/browser/context_sharing/tab_bottom_sheet/android" ]
+    public_deps += [
+      "//chrome/browser/context_sharing/tab_bottom_sheet/android",
+      "//components/messages/android",
+    ]
   } else {
     public_deps += [
       "//chrome/browser/glic/browser_ui",
@@ -463,6 +465,7 @@ source_set("ui_impl") {
     "//components/contextual_tasks/public:feature_list",
     "//components/embedder_support:user_agent",
     "//components/favicon_base",
+    "//components/input",
     "//components/keyed_service/core",
     "//components/lens",
     "//components/omnibox/browser:mojo_bindings",
@@ -470,6 +473,7 @@ source_set("ui_impl") {
     "//components/sessions",
     "//components/shared_highlighting/core/common",
     "//components/tabs:public",
+    "//components/url_deduplication",
     "//components/zoom",
     "//content/public/browser",
     "//extensions/buildflags",

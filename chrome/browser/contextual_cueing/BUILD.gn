@@ -66,9 +66,11 @@ source_set("impl") {
     "//chrome/browser/page_content_annotations",
     "//chrome/browser/private_insights",
     "//chrome/browser/search_engines",
+    "//chrome/browser/signin",
     "//chrome/browser/sync",
     "//chrome/browser/tab_list",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/hats",
     "//chrome/browser/ui/side_panel",
     "//chrome/browser/ui/side_panel:side_panel_views_dependent",
     "//chrome/browser/ui/tabs:tabs_public",
@@ -95,7 +97,6 @@ source_set("impl") {
     deps += [
       "//chrome/browser/ui:browser_actions",
       "//chrome/browser/ui:chrome_pages",
-      "//chrome/browser/ui/hats",
       "//chrome/browser/ui/page_action",
       "//chrome/browser/ui/user_education",
     ]

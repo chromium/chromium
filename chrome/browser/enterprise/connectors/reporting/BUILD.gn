@@ -89,6 +89,7 @@ source_set("impl") {
     "//chrome/browser/profiles:profile_util",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/signin",
+    "//chrome/common:channel_info",
     "//components/crash/core/app",
     "//components/device_signals/core/browser",
     "//components/device_signals/core/common",

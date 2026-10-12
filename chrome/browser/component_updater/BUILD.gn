@@ -146,6 +146,7 @@ source_set("impl") {
   deps = [
     "//chrome/browser:browser_features",
     "//chrome/browser:browser_process",
+    "//chrome/browser:buildflags",
     "//chrome/browser:global_features",
     "//chrome/browser/accessibility",
     "//chrome/browser/actor:impl",
@@ -153,6 +154,7 @@ source_set("impl") {
     "//chrome/browser/history_embeddings",
     "//chrome/browser/media",
     "//chrome/browser/net",
+    "//chrome/browser/net:key_pinning_proto",
     "//chrome/browser/page_load_metrics",
     "//chrome/browser/permissions",
     "//chrome/browser/private_verification_tokens",
@@ -165,6 +167,7 @@ source_set("impl") {
     "//components/commerce/core:commerce_heuristics_data",
     "//components/commerce/core:feature_list",
     "//components/embedder_support/origin_trials",
+    "//components/on_device_translation/buildflags",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/passage_embeddings/core",

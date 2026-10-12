@@ -89,6 +89,7 @@ source_set("impl") {
       "chromeos/device_authenticator_chromeos.cc",
     ]
     deps += [
+      "//ash/public/cpp",
       "//chrome/browser/ash/auth",
       "//chromeos/ash/components/cryptohome",
       "//chromeos/ash/components/dbus/userdataauth",
@@ -111,7 +112,10 @@ source_set("impl") {
   }
 
   if (is_win) {
-    deps += [ "//chrome/browser/ui:browser_window_header" ]
+    deps += [
+      "//chrome/browser/ui:browser_window_header",
+      "//ui/views",
+    ]
     sources += [
       "win/authenticator_win.cc",
       "win/device_auth_availability_checker_win.cc",

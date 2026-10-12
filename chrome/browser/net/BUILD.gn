@@ -209,6 +209,8 @@ source_set("impl") {
     "//components/enterprise/encryption/cache",
     "//components/language/core/browser",
     "//components/link_header_util",
+    "//chrome/common",
+    "//chrome/common:channel_info",
     "//components/metrics",
     "//components/net_log",
     "//components/no_state_prefetch/browser",

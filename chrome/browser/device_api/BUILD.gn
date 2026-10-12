@@ -53,6 +53,7 @@ source_set("impl") {
     "//components/content_settings/core/common",
     "//components/permissions:permissions_common",
     "//components/pref_registry",
+    "//components/user_manager",
     "//components/value_store",
     "//services/network/public/cpp",
     "//third_party/blink/public:runtime_features_for_public",

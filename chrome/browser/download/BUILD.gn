@@ -197,6 +197,7 @@ source_set("impl") {
     "//chrome/browser/notifications",
     "//chrome/browser/offline_items_collection",
     "//chrome/browser/optimization_guide",
+    "//chrome/browser/plugins",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles/keep_alive",
     "//chrome/browser/safe_browsing",
@@ -263,6 +264,7 @@ source_set("impl") {
       "//chrome/android:jni_headers",
       "//chrome/browser:chrome_content_browser_client",
       "//chrome/browser/android:profile_key_startup_accessor",
+      "//chrome/browser/android:resource_mapper",
       "//chrome/browser/android:tabs_public",
       "//chrome/browser/download/android:jni_headers",
       "//chrome/browser/flags:flags_android",
@@ -327,6 +329,7 @@ source_set("impl") {
     ]
 
     deps += [
+      "//ash/public/cpp",
       "//chrome/browser/apps/app_service",
       "//chrome/browser/ash/drive",
       "//chrome/browser/ash/file_manager",

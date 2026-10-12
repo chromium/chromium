@@ -12,7 +12,10 @@ static_library("user_session_activity") {
     "user_session_activity_reporter_delegate.h",
   ]
 
-  public_deps = [ "//chrome/browser/profiles" ]
+  public_deps = [
+    "//chrome/browser/profiles",
+    "//components/user_manager",
+  ]
 
   deps = [
     "//chrome/browser/ash/policy/core",
@@ -23,7 +26,12 @@ static_library("user_session_activity") {
     "//chrome/browser/policy/messaging_layer/proto:user_session_activity_proto",
     "//chromeos/ash/components/policy/device_local_account",
     "//chromeos/ash/components/settings",
+    "//components/account_id",
+    "//components/reporting/proto:record_constants",
+    "//components/user_manager:common",
     "//components/viz/host",
+    "//ui/aura",
+    "//ui/compositor",
   ]
 
   allow_circular_includes_from = [ "//chrome/browser/ash/policy/core" ]

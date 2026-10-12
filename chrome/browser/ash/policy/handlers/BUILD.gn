@@ -104,6 +104,7 @@ static_library("handlers") {
 
     # TODO(b/354839582): Use targets having headers included from
     # chrome/browser/ash/policy/handlers/system_proxy_handler.cc.
+    "//chrome/browser/policy",
     "//chromeos/ash/components/dbus/system_proxy:system_proxy_proto",
   ]
 

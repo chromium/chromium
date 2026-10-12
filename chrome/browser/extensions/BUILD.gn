@@ -534,6 +534,7 @@ source_set("extensions") {
     "//chrome/browser/password_manager",
     "//chrome/browser/password_manager:impl",
     "//chrome/browser/password_manager/factories",
+    "//chrome/browser/plugins",
     "//chrome/browser/prefetch",
     "//chrome/browser/prefs",
     "//chrome/browser/prefs:util",

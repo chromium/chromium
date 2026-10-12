@@ -412,10 +412,13 @@ source_set("impl") {
 
   deps = [
     ":media_engagement_preload_proto",
+    "//chrome/app:generated_resources",
+    "//chrome/app/theme:theme_resources",
     "//chrome/browser:browser_process",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/history",
     "//chrome/browser/media/webrtc",
+    "//chrome/browser/policy",
     "//chrome/browser/preloading/prefetch/no_state_prefetch",
     "//chrome/browser/ui:recently_audible_helper",
     "//chrome/browser/ui:ui_features",
