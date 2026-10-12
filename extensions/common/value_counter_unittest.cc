@@ -32,9 +32,13 @@ TEST_F(ValueCounterTest, TestRemovingSameValue) {
   base::Value value(base::Value::Type::LIST);
   vc.Add(value);
   vc.Add(value);
+  EXPECT_EQ(2u, vc.total_count());
+  EXPECT_EQ(1u, vc.distinct_count());
   ASSERT_FALSE(vc.Remove(value));
+  EXPECT_EQ(1u, vc.total_count());
   ASSERT_TRUE(vc.Remove(value));
   ASSERT_FALSE(vc.Remove(value));
+  EXPECT_EQ(0u, vc.total_count());
 }
 
 TEST_F(ValueCounterTest, TestReAddingSameValue) {

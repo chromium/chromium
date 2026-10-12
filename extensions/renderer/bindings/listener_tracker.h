@@ -86,6 +86,12 @@ class ListenerTracker {
       mojom::EventFilteringInfoPtr filter,
       int routing_id);
 
+  // Records the total and deduplicated listener counts for each event with
+  // filtered listeners. Called once an extension service worker finishes
+  // running its top-level script, when the tracker holds only that worker's
+  // listeners.
+  void RecordFilteredListenerCounts() const;
+
   EventFilter* event_filter_for_testing() { return &event_filter_; }
 
  private:

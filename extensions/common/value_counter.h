@@ -5,6 +5,8 @@
 #ifndef EXTENSIONS_COMMON_VALUE_COUNTER_H_
 #define EXTENSIONS_COMMON_VALUE_COUNTER_H_
 
+#include <stddef.h>
+
 #include <vector>
 
 namespace base {
@@ -41,9 +43,16 @@ class ValueCounter {
   // Returns true if there are no values of any type being counted.
   bool is_empty() const { return entries_.empty(); }
 
+  // Returns the number of values being counted, including duplicates.
+  size_t total_count() const { return total_count_; }
+
+  // Returns the number of distinct values being counted.
+  size_t distinct_count() const { return entries_.size(); }
+
  private:
   struct Entry;
   std::vector<Entry> entries_;
+  size_t total_count_ = 0;
 };
 
 }  // namespace extensions

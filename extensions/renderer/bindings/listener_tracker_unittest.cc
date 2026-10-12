@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
@@ -48,6 +49,7 @@ TEST(ListenerTrackerTest, FilteredListenersWithMultipleFilters) {
   base::DictValue filter2 =
       DictValueFromString(R"({"url": [{"hostSuffix": "google.com"}]})");
 
+  base::HistogramTester histogram_tester;
   ListenerTracker tracker;
   auto [was_first_of_kind, filter_id1] = tracker.AddFilteredListener(
       kOwner1, kEvent1, std::make_unique<base::DictValue>(filter1.Clone()),
@@ -69,6 +71,12 @@ TEST(ListenerTrackerTest, FilteredListenersWithMultipleFilters) {
       kRoutingId);
   EXPECT_TRUE(was_first_of_kind);
   EXPECT_NE(-1, filter_id3);
+
+  tracker.RecordFilteredListenerCounts();
+  histogram_tester.ExpectUniqueSample(
+      "Extensions.Events.ServiceWorkerStarted.FilteredListenerCount", 3, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Extensions.Events.ServiceWorkerStarted.DeduplicatedListenerCount", 1, 1);
 
   auto [was_last_of_kind, removed_filter] =
       tracker.RemoveFilteredListener(kOwner1, kEvent1, filter_id1);
@@ -139,6 +147,13 @@ TEST(ListenerTrackerTest, FilteredListenersWithMultipleEvents) {
   EXPECT_TRUE(was_first_of_kind);
   EXPECT_NE(-1, filter_id2);
   EXPECT_NE(filter_id1, filter_id2);
+
+  base::HistogramTester histogram_tester;
+  tracker.RecordFilteredListenerCounts();
+  histogram_tester.ExpectUniqueSample(
+      "Extensions.Events.ServiceWorkerStarted.FilteredListenerCount", 1, 2);
+  histogram_tester.ExpectUniqueSample(
+      "Extensions.Events.ServiceWorkerStarted.DeduplicatedListenerCount", 0, 2);
 
   auto [was_last_of_kind, removed_filter] =
       tracker.RemoveFilteredListener(kOwner1, kEvent1, filter_id1);

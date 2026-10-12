@@ -1887,6 +1887,39 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
+<histogram
+    name="Extensions.Events.ServiceWorkerStarted.DeduplicatedListenerCount"
+    units="listeners" expires_after="2027-09-01">
+  <owner>andreaorru@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Recorded in the renderer each time an extension service worker finishes
+    evaluating its top-level script, once per filter-supporting event on which
+    it registered at least one listener (alongside
+    Extensions.Events.ServiceWorkerStarted.FilteredListenerCount). Emits how
+    many listeners on the event have the same filter as an earlier listener on
+    that event (total listeners minus distinct filters), or 0 if there are no
+    duplicates. Because identical filters share a single browser registration,
+    this measures how many additional registrations the browser would receive
+    with per-listener registration. Listeners added later, e.g. after an async
+    API call, aren't counted.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.Events.ServiceWorkerStarted.FilteredListenerCount"
+    units="listeners" expires_after="2027-09-01">
+  <owner>andreaorru@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Recorded in the renderer each time an extension service worker finishes
+    evaluating its top-level script, once per filter-supporting event (e.g.
+    chrome.webRequest.*, chrome.webNavigation.*) on which it registered at least
+    one listener. Emits the total number of listeners registered on that event
+    (with or without a filter). Listeners added later, e.g. after an async API
+    call, aren't counted.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.ExtensionAddDisabledRemotelyReason2"
     enum="ExtensionUpdateCheckDataKey" expires_after="2027-05-11">
   <owner>anunoy@chromium.org</owner>

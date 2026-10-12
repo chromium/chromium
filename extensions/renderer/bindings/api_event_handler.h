@@ -116,6 +116,8 @@ class APIEventHandler {
   // (because the associated extension ScriptContext needs to be valid).
   void InvalidateContext(v8::Local<v8::Context> context);
 
+  const ListenerTracker& listener_tracker() const { return listener_tracker_; }
+
  private:
   APIEventListeners::ListenersUpdated listeners_changed_;
 

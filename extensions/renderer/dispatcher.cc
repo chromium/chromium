@@ -70,6 +70,9 @@
 #include "extensions/grit/extensions_renderer_generated_resources.h"
 #include "extensions/grit/extensions_renderer_resources.h"
 #include "extensions/renderer/api/messaging/native_renderer_messaging_service.h"
+#include "extensions/renderer/bindings/api_bindings_system.h"
+#include "extensions/renderer/bindings/api_event_handler.h"
+#include "extensions/renderer/bindings/listener_tracker.h"
 #include "extensions/renderer/content_watcher.h"
 #include "extensions/renderer/dom_activity_logger.h"
 #include "extensions/renderer/extension_frame_helper.h"
@@ -716,6 +719,17 @@ void Dispatcher::DidStartServiceWorkerContextOnWorkerThread(
   const int thread_id = content::WorkerThread::GetCurrentId();
   CHECK_NE(thread_id, kMainThreadId);
   auto* service_worker_data = WorkerThreadDispatcher::GetServiceWorkerData();
+  if (service_worker_data) {
+    // The worker has finished running its top-level script, so every listener
+    // it registers synchronously has been added. Record before notifying the
+    // browser so the counts are in place once the worker is considered started.
+    service_worker_data->bindings_system()
+        ->api_system()
+        ->event_handler()
+        ->listener_tracker()
+        .RecordFilteredListenerCounts();
+  }
+
   if (base::FeatureList::IsEnabled(
           kSpeculativeFixForServiceWorkerDataInDidStartServiceWorkerContext)) {
     // `service_worker_data` can be nullptr if the extension is already unloaded

@@ -5,6 +5,7 @@
 #include "extensions/renderer/bindings/listener_tracker.h"
 
 #include "base/check.h"
+#include "base/metrics/histogram_functions.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/common/value_counter.h"
 
@@ -88,6 +89,18 @@ std::set<int> ListenerTracker::GetMatchingFilteredListeners(
     int routing_id) {
   DCHECK(!filter.is_null());
   return event_filter_.MatchEvent(event_name, *filter, routing_id);
+}
+
+void ListenerTracker::RecordFilteredListenerCounts() const {
+  for (const auto& [key, counts] : filtered_listeners_) {
+    const size_t total = counts->total_count();
+    const size_t deduplicated = total - counts->distinct_count();
+    base::UmaHistogramCounts100(
+        "Extensions.Events.ServiceWorkerStarted.FilteredListenerCount", total);
+    base::UmaHistogramCounts100(
+        "Extensions.Events.ServiceWorkerStarted.DeduplicatedListenerCount",
+        deduplicated);
+  }
 }
 
 }  // namespace extensions

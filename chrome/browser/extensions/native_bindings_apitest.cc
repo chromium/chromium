@@ -17,11 +17,13 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/api/file_system/file_system_api.h"
 #include "extensions/browser/background_script_executor.h"
+#include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
@@ -30,6 +32,7 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/script_result_queue.h"
+#include "extensions/browser/service_worker/service_worker_test_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/mojom/view_type.mojom.h"
@@ -517,6 +520,64 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, PromiseBasedAPI) {
   EXPECT_EQ(2, histogram_tester.GetBucketCount(
                    "Extensions.Functions.ExtensionMV3Calls",
                    functions::HistogramValue::TABS_CREATE));
+}
+
+// Tests that filtered listener counts are recorded once per service worker
+// start.
+IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest,
+                       FilteredListenerCountsRecordedOnServiceWorkerStart) {
+  static constexpr char kFilteredListenerCount[] =
+      "Extensions.Events.ServiceWorkerStarted.FilteredListenerCount";
+  static constexpr char kDeduplicatedListenerCount[] =
+      "Extensions.Events.ServiceWorkerStarted.DeduplicatedListenerCount";
+
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(
+      R"({
+           "name": "Filtered listener counts",
+           "manifest_version": 3,
+           "version": "0.1",
+           "background": {"service_worker": "background.js"},
+           "permissions": ["webNavigation"]
+         })");
+  // Registers three listeners with the same filter and one with a distinct
+  // filter.
+  static constexpr char kBackgroundJs[] =
+      R"(for (let i = 0; i < 3; ++i) {
+           chrome.webNavigation.onCommitted.addListener(
+               () => {}, {url: [{hostContains: 'example'}]});
+         }
+         chrome.webNavigation.onCommitted.addListener(
+             () => {}, {url: [{hostContains: 'google'}]});)";
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+
+  // Waits for the worker to start, which happens after the counts are recorded.
+  const Extension* extension = LoadExtension(
+      test_dir.UnpackedPath(), {.wait_for_registration_stored = true});
+  ASSERT_TRUE(extension);
+
+  // 4 listeners, 2 of which share a filter with an earlier listener.
+  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  histogram_tester.ExpectUniqueSample(kFilteredListenerCount, 4, 1);
+  histogram_tester.ExpectUniqueSample(kDeduplicatedListenerCount, 2, 1);
+
+  // Stop the worker, then restart it by dispatching a filtered event.
+  browsertest_util::StopServiceWorkerForExtensionGlobalScope(profile(),
+                                                             extension->id());
+  service_worker_test_utils::TestServiceWorkerTaskQueueObserver start_observer;
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("example.com", "/empty.html")));
+  start_observer.WaitForWorkerStarted(extension->id());
+
+  // The restarted worker records the same counts again.
+  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  histogram_tester.ExpectUniqueSample(kFilteredListenerCount, 4, 2);
+  histogram_tester.ExpectUniqueSample(kDeduplicatedListenerCount, 2, 2);
 }
 
 class NativeBindingsBrowserNamespaceTest : public NativeBindingsApiTest {
