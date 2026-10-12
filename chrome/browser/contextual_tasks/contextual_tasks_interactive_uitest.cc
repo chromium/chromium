@@ -1058,6 +1058,106 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksPinnedToolbarInteractiveUiTest,
 //  (1) User has a webpage open in a window with a second tab.
 //  (2) User clicks the pinned Contextual Tasks toolbar button.
 //  (3) Contextual Tasks side panel opens with a task for the active tab.
+//  (4) User types a draft query into the composebox without submitting it.
+//  (5) User switches to the second tab. The side panel closes because that
+//      tab has no task.
+//  (6) User switches back to the first tab. The side panel reopens for the
+//      same task.
+//  (7) The unsubmitted draft query is still in the composebox.
+IN_PROC_BROWSER_TEST_P(ContextualTasksPinnedToolbarInteractiveUiTest,
+                       SwitchTabsPreservesComposeboxDraft) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kReopenedSidePanelId);
+
+  const GURL kPageUrl = embedded_test_server()->GetURL("/title1.html");
+  const GURL kOtherPageUrl = embedded_test_server()->GetURL("/title2.html");
+  const DeepQuery kComposebox = {"contextual-tasks-app", "#composebox",
+                                 "#composebox"};
+  constexpr char kDraftQuery[] = "Draft follow-up question";
+
+  PinnedToolbarActionsModel::Get(browser()->GetProfile())
+      ->UpdatePinnedState(kActionSidePanelShowContextualTasks, true);
+
+  // The side panel WebContents for the task, recorded when the panel first
+  // opens.
+  content::WebContents* panel_contents = nullptr;
+
+  auto is_panel_open = [this]() {
+    return ContextualTasksPanelController::From(browser())
+        ->IsPanelOpenForContextualTask();
+  };
+
+  RunTestSequence(
+      // (1) Open a webpage in the first tab, with a second tab in the window.
+      InstrumentTab(kPrimaryTab, 0), NavigateWebContents(kPrimaryTab, kPageUrl),
+      AddInstrumentedTab(kGenericTab, kOtherPageUrl),
+      WaitForWebContentsReady(kGenericTab, kOtherPageUrl),
+      SelectTab(kTabStripElementId, 0),
+
+      // (2) Click the pinned Contextual Tasks toolbar button.
+      WaitForShow(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+      PressButton(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+
+      // (3) The side panel opens with a task for the active tab.
+      WaitForShow(kContextualTasksSidePanelWebViewElementId),
+      NameViewRelative(kContextualTasksSidePanelWebViewElementId,
+                       "DraftSidePanelContents",
+                       [](ContextualTasksWebView* web_view) -> views::View* {
+                         return web_view->content_web_view();
+                       }),
+      InstrumentNonTabWebView(kSidePanelId, "DraftSidePanelContents"),
+      WaitForElementExists(kSidePanelId, kComposebox),
+      // Wait for the thread frame to load. Zero-state init clears the
+      // composebox input before it loads the thread frame, so text typed
+      // earlier would be lost.
+      InstrumentInnerWebContents(kInnerWebContentsId, kSidePanelId, 0),
+      Do([&]() {
+        panel_contents = ContextualTasksPanelController::From(browser())
+                             ->GetActiveWebContents();
+      }),
+      Check([&]() { return panel_contents != nullptr; },
+            "Side panel shows the task's WebContents"),
+
+      // (4) Type a draft query without submitting it.
+      InputText(kSidePanelId, kDraftQuery),
+      WaitForInputValue(kSidePanelId, kDraftQuery),
+      // Stop tracking the side panel contents before the panel hides.
+      UninstrumentWebContents(kInnerWebContentsId),
+      UninstrumentWebContents(kSidePanelId),
+
+      // (5) Switch to the second tab. It has no task, so the side panel
+      // closes.
+      SelectTab(kTabStripElementId, 1),
+      WaitForHide(kContextualTasksSidePanelWebViewElementId),
+      CheckResult(is_panel_open, false),
+
+      // (6) Switch back to the first tab. The side panel reopens for the
+      // same task, reusing its cached WebContents.
+      SelectTab(kTabStripElementId, 0),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId),
+      CheckResult(is_panel_open, true),
+      Check(
+          [&]() {
+            return ContextualTasksPanelController::From(browser())
+                       ->GetActiveWebContents() == panel_contents;
+          },
+          "Side panel shows the same task WebContents"),
+      NameViewRelative(kContextualTasksSidePanelWebViewElementId,
+                       "DraftReopenedSidePanelContents",
+                       [](ContextualTasksWebView* web_view) -> views::View* {
+                         return web_view->content_web_view();
+                       }),
+      InstrumentNonTabWebView(kReopenedSidePanelId,
+                              "DraftReopenedSidePanelContents"),
+
+      // (7) The unsubmitted draft query is still in the composebox.
+      WaitForInputValue(kReopenedSidePanelId, kDraftQuery));
+}
+
+// This tests the following CUJ:
+//  (1) User has a webpage open in a window with a second tab.
+//  (2) User clicks the pinned Contextual Tasks toolbar button.
+//  (3) Contextual Tasks side panel opens with a task for the active tab.
 //  (4) User moves the active tab to a new window.
 //  (5) The tab opens in the new window and keeps its task. The side panel in
 //      the original window closes and does not open in the new window.
