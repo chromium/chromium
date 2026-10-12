@@ -100,9 +100,9 @@ v8::Local<v8::Value> WindowProperties::AnonymousNamedGetter(
   if (!items->IsEmpty()) {
     UseCounter::Count(doc, WebFeature::kDOMClobberedWindowPropertyAccessed);
 
-    // TODO(esprehn): Firefox doesn't return an HTMLCollection here if there's
-    // multiple with the same name, but Chrome and Safari does. What's the
-    // right behavior?
+    // Per spec, return the element if there is exactly one match, otherwise
+    // an HTMLCollection.
+    // https://html.spec.whatwg.org/C/#named-access-on-the-window-object
     if (items->HasExactlyOneItem()) {
       return ToV8Traits<Element>::ToV8(script_state, items->item(0));
     }
