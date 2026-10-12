@@ -11,6 +11,7 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/unguessable_token.h"
 #include "base/uuid.h"
 #include "chrome/browser/extensions/api/mime_handlers/dispatch_mime_handler_event.h"
@@ -99,19 +100,24 @@ void ClearAllButFrameAncestors(network::mojom::URLResponseHead* response_head) {
   csp.swap(cleared);
 }
 
-// Restricts `headers` to the CORS-safelisted response header names, so a
-// generic (third-party) MIME handler extension only sees the response headers
-// that fetch() would expose to script cross-origin. Without this, a
-// zero-permission handler could read arbitrary cross-origin response headers
-// (auth tokens, and similar) off the stream it handles.
+// Restricts `headers` to the CORS-safelisted response header names plus
+// Content-Disposition and Accept-Ranges, so a generic (third-party) MIME
+// handler extension only sees the response headers that fetch() would expose
+// to script cross-origin, plus those two. Without this, a zero-permission
+// handler could read arbitrary cross-origin response headers (auth tokens, and
+// similar) off the stream it handles.
 // https://fetch.spec.whatwg.org/#cors-safelisted-response-header-name
-void FilterToCorsSafelistedResponseHeaders(net::HttpResponseHeaders* headers) {
+void FilterResponseHeadersForHandler(net::HttpResponseHeaders* headers) {
   std::vector<std::string> names_to_remove;
   size_t iter = 0;
   std::string name;
   std::string value;
   while (headers->EnumerateHeaderLines(&iter, &name, &value)) {
-    if (!network::cors::IsCorsSafelistedResponseHeaderName(name)) {
+    // The handler already reads the whole body. These two headers only tell it
+    // how to name the file and whether the server can send parts of it.
+    if (!network::cors::IsCorsSafelistedResponseHeaderName(name) &&
+        !base::EqualsCaseInsensitiveASCII(name, "content-disposition") &&
+        !base::EqualsCaseInsensitiveASCII(name, "accept-ranges")) {
       names_to_remove.emplace_back(name);
     }
   }
@@ -333,13 +339,11 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
 
   // These deep-copied headers are the extension-facing view of the response
   // (read back via getStreamInfo). Restrict a generic (third-party) handler to
-  // the CORS-safelisted response header names so it cannot read cross-origin
-  // response headers it would never see through fetch(). Trusted handlers
-  // (allowlisted plugin extensions) are exempt: their rendering paths
-  // legitimately consume non-safelisted headers, and `response_head` itself is
-  // never filtered.
+  // explicitly allowed response headers. Trusted handlers (allowlisted plugin
+  // extensions) are exempt: their rendering paths legitimately consume
+  // non-safelisted headers, and `response_head` itself is never filtered.
   if (is_for_generic_mime_handler && deep_copied_response->headers) {
-    FilterToCorsSafelistedResponseHeaders(deep_copied_response->headers.get());
+    FilterResponseHeadersForHandler(deep_copied_response->headers.get());
   }
 
   // Save the original MIME type before any overrides. This is passed to

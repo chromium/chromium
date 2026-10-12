@@ -93,6 +93,9 @@ HandlePdfWithExtraResponseHeaders(
   response->AddCustomHeader("Cache-Control", "max-age=0");
   response->AddCustomHeader("Last-Modified", "Wed, 21 Oct 2026 07:28:00 GMT");
   response->AddCustomHeader(kAuthTokenHeaderName, "s3cr3t");
+  response->AddCustomHeader("Content-Disposition",
+                            "inline; filename=\"doc.pdf\"");
+  response->AddCustomHeader("Accept-Ranges", "bytes");
   response->set_content(pdf_body);
   return response;
 }
@@ -215,10 +218,11 @@ IN_PROC_BROWSER_TEST_F(GenericMimeHandlerBrowserTest, GetStreamInfo) {
 }
 
 // A generic (third-party) MIME handler sees exactly the CORS-safelisted
-// response headers fetch() would expose cross-origin: the safelisted
-// Content-Type / Cache-Control / Last-Modified stay visible, while the custom
-// X-Auth-Token is filtered out. handler.js already asserts mimeType and the
-// %PDF- body on this same navigation, so this test covers only responseHeaders.
+// response headers fetch() would expose cross-origin, plus Content-Disposition
+// and Accept-Ranges: the safelisted Content-Type / Cache-Control /
+// Last-Modified stay visible, while the custom X-Auth-Token is filtered out.
+// handler.js already asserts mimeType and the %PDF- body on this same
+// navigation, so this test covers only responseHeaders.
 IN_PROC_BROWSER_TEST_F(GenericMimeHandlerBrowserTest,
                        GetStreamInfoFiltersNonSafelistedResponseHeaders) {
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII(kTestExtensionDir)));
@@ -244,13 +248,16 @@ IN_PROC_BROWSER_TEST_F(GenericMimeHandlerBrowserTest,
             name));
   };
 
-  // Every CORS-safelisted response header the server sent must stay visible.
+  // Every CORS-safelisted response header the server sent, plus
+  // Content-Disposition and Accept-Ranges, must stay visible.
   // These positive checks are also the vacuity guard: were responseHeaders
   // ever empty or getStreamInfo() to fail, they would fail here instead of
   // letting the X-Auth-Token check below pass against an empty object.
   EXPECT_EQ(true, has_header("Content-Type"));
   EXPECT_EQ(true, has_header("Cache-Control"));
   EXPECT_EQ(true, has_header("Last-Modified"));
+  EXPECT_EQ(true, has_header("Content-Disposition"));
+  EXPECT_EQ(true, has_header("Accept-Ranges"));
 
   // The non-safelisted header must be stripped.
   EXPECT_EQ(false, has_header("X-Auth-Token"));
