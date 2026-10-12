@@ -1118,28 +1118,26 @@ TEST_F(TranslateManagerTest, CanManuallyTranslate_PdfTranslatabilityStatus) {
   translate_manager_->GetLanguageState()->LanguageDetermined("de", true);
   driver_.SetPageMimeType(kPdfMimeType);
 
-  // Untranslatable PDF should disable manual translation.
+  // PDF translatability status should not affect manual translation
+  // availability, so that partial translation remains available. Full page
+  // translation of untranslatable PDFs is blocked in TranslatePage().
   translate_manager_->GetLanguageState()->set_pdf_translatability_status(
       LanguageState::PdfTranslatabilityStatus::kUntranslatable);
-  EXPECT_FALSE(translate_manager_->CanManuallyTranslate());
-  EXPECT_FALSE(translate_manager_->CanManuallyTranslate(true));
+  EXPECT_TRUE(translate_manager_->CanManuallyTranslate());
+  EXPECT_TRUE(translate_manager_->CanManuallyTranslate(true));
 
-  // Translatable PDF should allow manual translation.
   translate_manager_->GetLanguageState()->set_pdf_translatability_status(
       LanguageState::PdfTranslatabilityStatus::kTranslatable);
   EXPECT_TRUE(translate_manager_->CanManuallyTranslate());
   EXPECT_TRUE(translate_manager_->CanManuallyTranslate(true));
 
-  // NotChecked PDF should allow manual translation.
   translate_manager_->GetLanguageState()->set_pdf_translatability_status(
       LanguageState::PdfTranslatabilityStatus::kNotChecked);
   EXPECT_TRUE(translate_manager_->CanManuallyTranslate());
   EXPECT_TRUE(translate_manager_->CanManuallyTranslate(true));
 }
 
-TEST_F(TranslateManagerTest, CanManuallyTranslate_PdfTranslatabilityStatus_FeatureDisabled) {
-  scoped_feature_list_.InitAndDisableFeature(translate::kEnableTranslatePdf);
-
+TEST_F(TranslateManagerTest, TranslatePage_UntranslatablePdf) {
   TranslateManager::SetIgnoreMissingKeyForTesting(true);
   translate_manager_ = std::make_unique<TranslateManager>(
       &mock_translate_client_, &mock_translate_ranker_, &mock_language_model_);
@@ -1150,16 +1148,22 @@ TEST_F(TranslateManagerTest, CanManuallyTranslate_PdfTranslatabilityStatus_Featu
 
   translate_manager_->GetLanguageState()->LanguageDetermined("de", true);
   driver_.SetPageMimeType(kPdfMimeType);
+  translate_manager_->GetLanguageState()->set_pdf_translatability_status(
+      LanguageState::PdfTranslatabilityStatus::kUntranslatable);
 
-  // If the feature is disabled, manual translation should be disabled for PDFs
-  // regardless of translatability status.
-  for (auto status : {LanguageState::PdfTranslatabilityStatus::kUntranslatable,
-                      LanguageState::PdfTranslatabilityStatus::kTranslatable,
-                      LanguageState::PdfTranslatabilityStatus::kNotChecked}) {
-    translate_manager_->GetLanguageState()->set_pdf_translatability_status(status);
-    EXPECT_FALSE(translate_manager_->CanManuallyTranslate());
-    EXPECT_FALSE(translate_manager_->CanManuallyTranslate(true));
-  }
+  // Translation should not start; an error should be shown instead.
+  EXPECT_CALL(mock_translate_client_,
+              ShowTranslateUI(translate::TRANSLATE_STEP_TRANSLATING, _, _, _,
+                              _))
+      .Times(0);
+  EXPECT_CALL(mock_translate_client_,
+              ShowTranslateUI(translate::TRANSLATE_STEP_TRANSLATE_ERROR, "de",
+                              "en", TranslateErrors::TRANSLATION_ERROR,
+                              /*triggered_from_menu=*/true))
+      .WillOnce(Return(true));
+  EXPECT_CALL(mock_translate_client_, TriggerPdfTranslation()).Times(0);
+
+  translate_manager_->TranslatePage("de", "en", /*triggered_from_menu=*/true);
 }
 
 TEST_F(TranslateManagerTest,

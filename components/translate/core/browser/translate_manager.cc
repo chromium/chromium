@@ -233,17 +233,6 @@ bool TranslateManager::CanManuallyTranslate(bool menu_logging) {
     can_translate = false;
   }
 
-  if (language_state_.pdf_translatability_status() ==
-      LanguageState::PdfTranslatabilityStatus::kUntranslatable) {
-    if (!menu_logging) {
-      return false;
-    }
-    TranslateBrowserMetrics::ReportMenuTranslationUnavailableReason(
-        TranslateBrowserMetrics::MenuTranslationUnavailableReason::
-            kURLNotTranslatable);
-    can_translate = false;
-  }
-
   const std::string source_language = language_state_.source_language();
   // The source language is empty when language detection has not finished
   // running. In this case, Android queues the translation and waits until the
@@ -386,6 +375,18 @@ void TranslateManager::TranslatePage(std::string_view original_source_lang,
   // should be monitored and investigated if it increases.
   if (!translate_client_->IsTranslatableURL(page_url)) {
     base::debug::DumpWithoutCrashing();
+    return;
+  }
+
+  // Full page translation is not possible for PDFs that were determined to be
+  // untranslatable. This is checked here rather than in CanManuallyTranslate()
+  // so that partial translation remains available for such PDFs.
+  if (language_state_.pdf_translatability_status() ==
+      LanguageState::PdfTranslatabilityStatus::kUntranslatable) {
+    translate_client_->ShowTranslateUI(
+        translate::TRANSLATE_STEP_TRANSLATE_ERROR,
+        std::string(original_source_lang), std::string(target_lang),
+        TranslateErrors::TRANSLATION_ERROR, triggered_from_menu);
     return;
   }
 
