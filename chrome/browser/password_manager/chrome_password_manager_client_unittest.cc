@@ -915,7 +915,7 @@ TEST_F(ChromePasswordManagerClientTest,
           GetClient()->GetPasswordManager())
           ->GetClassifierModelPredictionsForTesting();
   // Check that predictions are available for the form.
-  auto form_key = std::make_pair(password_driver, form.renderer_id());
+  auto form_key = std::make_pair(password_driver->GetId(), form.renderer_id());
   ASSERT_THAT(received_predictions, UnorderedElementsAre(Key(form_key)));
   // Check that predictions are available for all form fields.
   EXPECT_THAT(received_predictions[form_key],
