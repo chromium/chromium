@@ -15,7 +15,6 @@
 #include "build/config/cuttlefish/buildflags.h"  // PLATFORM_CUTTLEFISH
 #include "build/config/squid/buildflags.h"       // PLATFORM_SQUID
 #include "chrome/browser/ash/settings/device_settings_service.h"
-#include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/attestation/attestation_features.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/dbus/anomaly_detector/anomaly_detector_client.h"
@@ -112,7 +111,7 @@ namespace {
 void OverrideStubPathsIfNeeded() {
   base::FilePath user_data_dir;
   if (!base::SysInfo::IsRunningOnChromeOS() &&
-      base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir)) {
+      base::PathService::Get(ash::DIR_USER_DATA, &user_data_dir)) {
     RegisterStubPathOverrides(user_data_dir);
     chromeos::dbus_paths::RegisterStubPathOverrides(user_data_dir);
   }

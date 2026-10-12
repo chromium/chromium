@@ -35,7 +35,6 @@ include_rules = [
   "+chrome/browser/component_updater",
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
-  "+chrome/common/chrome_paths.h",
   "+chrome/common/chrome_switches.h",
   "+chrome/test/base",
 
