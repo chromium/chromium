@@ -1,4 +1,9 @@
 {
+  "android": {
+    "exclusions": [
+      "chrome/android/profiles/newest.txt"
+    ]
+  },
   "android_webview": {
     "exclusions": [
       "android_webview/.*"
@@ -38,7 +43,6 @@
   "chromium": {
     "exclusions": [
       "buildtools/checkdeps/.*",
-      "chrome/android/profiles/newest.txt",
       "chrome/browser/resources/chromeos/about_os_credits.html",
       "chrome/browser/resources/chromeos/arc_overview_tracing/.*(css|html|js)",
       "chrome/browser/resources/chromeos/arc_power_control/.*(css|html|js)",
