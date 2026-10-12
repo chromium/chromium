@@ -68,6 +68,7 @@
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/backoff_entry.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/tab_list/tab_removed_reason.h"
@@ -179,6 +180,25 @@ ThirdPartyData::GroupType ToThirdPartyGroupType(
   }
 }
 
+std::optional<personal_context::proto::Timestamp> TimeToProtoTimestamp(
+    base::Time time) {
+  if (time < base::Time::UnixEpoch() || time.is_inf()) {
+    return std::nullopt;
+  }
+  const base::TimeDelta since_epoch = time - base::Time::UnixEpoch();
+  personal_context::proto::Timestamp timestamp;
+  timestamp.set_seconds(since_epoch.InSeconds());
+  timestamp.set_nanos(
+      static_cast<int32_t>((since_epoch % base::Seconds(1)).InNanoseconds()));
+  return timestamp;
+}
+
+base::Time ProtoTimestampToTime(
+    const personal_context::proto::Timestamp& timestamp) {
+  return base::Time::FromSecondsSinceUnixEpoch(timestamp.seconds()) +
+         base::Nanoseconds(timestamp.nanos());
+}
+
 personal_context::proto::AutoTodoItem ToAutoTodoItemProto(
     const AutoTodoEntry& entry) {
   personal_context::proto::AutoTodoItem proto;
@@ -199,14 +219,35 @@ personal_context::proto::AutoTodoItem ToAutoTodoItemProto(
   }
   if (const FirstPartyData* first_party =
           std::get_if<FirstPartyData>(&entry.data)) {
-    proto.set_actionable_url(first_party->actionable_url.spec());
+    if (first_party->actionable_url.has_value() &&
+        !first_party->actionable_url->is_empty()) {
+      proto.set_actionable_url(first_party->actionable_url->spec());
+    }
     for (const SourceReference& ref : first_party->source_references) {
       personal_context::proto::SourceReference* source_ref =
           proto.add_source_references();
-      personal_context::proto::GmailReference* gmail_ref =
-          source_ref->mutable_gmail();
-      gmail_ref->set_message_url(ref.url.spec());
-      gmail_ref->set_subject(ref.subject);
+      std::visit(
+          absl::Overload{
+              [source_ref](const GmailReference& gmail) {
+                personal_context::proto::GmailReference* gmail_ref =
+                    source_ref->mutable_gmail();
+                gmail_ref->set_message_url(gmail.url.spec());
+                gmail_ref->set_subject(gmail.subject);
+              },
+              [source_ref](const ChromeHistoryEntry& history_entry) {
+                personal_context::proto::ChromeHistoryEntry* history_proto =
+                    source_ref->mutable_chrome_history_entry();
+                history_proto->set_url(history_entry.url.spec());
+                history_proto->set_title(history_entry.title);
+                if (std::optional<personal_context::proto::Timestamp>
+                        visit_timestamp = TimeToProtoTimestamp(
+                            history_entry.visit_timestamp)) {
+                  *history_proto->mutable_visit_timestamp() =
+                      *std::move(visit_timestamp);
+                }
+              },
+          },
+          ref);
     }
   }
   return proto;
@@ -825,12 +866,27 @@ void ContextHubService::OnFirstPartyAutoTodosFetched(
     entry.status = AutoTodoEntry::Status::kActive;
 
     FirstPartyData first_party;
-    first_party.actionable_url = GURL(todo.actionable_url());
-    for (const auto& ref : todo.source_references()) {
+    if (!todo.actionable_url().empty()) {
+      first_party.actionable_url = GURL(todo.actionable_url());
+    }
+    for (const personal_context::proto::SourceReference& ref :
+         todo.source_references()) {
       if (ref.has_gmail()) {
         first_party.source_references.push_back(
-            SourceReference{.url = GURL(ref.gmail().message_url()),
-                            .subject = std::string(ref.gmail().subject())});
+            GmailReference{.url = GURL(ref.gmail().message_url()),
+                           .subject = std::string(ref.gmail().subject())});
+      } else if (ref.has_chrome_history_entry()) {
+        const personal_context::proto::ChromeHistoryEntry& history_proto =
+            ref.chrome_history_entry();
+        ChromeHistoryEntry history_entry{
+            .url = GURL(history_proto.url()),
+            .title = std::string(history_proto.title()),
+        };
+        if (history_proto.has_visit_timestamp()) {
+          history_entry.visit_timestamp =
+              ProtoTimestampToTime(history_proto.visit_timestamp());
+        }
+        first_party.source_references.push_back(std::move(history_entry));
       }
     }
     entry.data = std::move(first_party);

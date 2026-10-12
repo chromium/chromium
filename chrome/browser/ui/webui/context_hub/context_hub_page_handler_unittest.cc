@@ -433,12 +433,14 @@ TEST_F(ContextHubPageHandlerTest,
         EXPECT_EQ(first_party.actionable_url,
                   GURL("https://example.com/action2"));
         ASSERT_EQ(first_party.source_references.size(), 2u);
-        EXPECT_EQ(first_party.source_references[0].url,
-                  GURL("https://mail.google.com/mail/u/0/#inbox/123"));
-        EXPECT_EQ(first_party.source_references[0].subject, "Subject 1");
-        EXPECT_EQ(first_party.source_references[1].url,
-                  GURL("https://mail.google.com/mail/u/0/#inbox/456"));
-        EXPECT_EQ(first_party.source_references[1].subject, "Subject 2");
+        EXPECT_THAT(first_party.source_references[0],
+                    ::testing::VariantWith<GmailReference>(::testing::FieldsAre(
+                        GURL("https://mail.google.com/mail/u/0/#inbox/123"),
+                        "Subject 1")));
+        EXPECT_THAT(first_party.source_references[1],
+                    ::testing::VariantWith<GmailReference>(::testing::FieldsAre(
+                        GURL("https://mail.google.com/mail/u/0/#inbox/456"),
+                        "Subject 2")));
       });
   EXPECT_CALL(mock_page_, OnFirstPartyAutoTodosGenerationStateChanged(false));
 
@@ -566,11 +568,11 @@ TEST(ContextHubMojomTraitsTest, GroupTypeSerialization) {
 }
 
 TEST(ContextHubMojomTraitsTest, GmailReferenceSerialization) {
-  context_hub::SourceReference input{
+  context_hub::GmailReference input{
       .url = GURL("https://mail.google.com/mail/u/0/#inbox/123"),
       .subject = "Test Subject",
   };
-  context_hub::SourceReference output;
+  context_hub::GmailReference output;
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<
               browser::context_hub::mojom::GmailReference>(input, output));
   EXPECT_EQ(output.url, GURL("https://mail.google.com/mail/u/0/#inbox/123"));
@@ -578,15 +580,35 @@ TEST(ContextHubMojomTraitsTest, GmailReferenceSerialization) {
 }
 
 TEST(ContextHubMojomTraitsTest, SourceReferenceSerialization) {
-  context_hub::SourceReference input{
+  context_hub::SourceReference input = context_hub::GmailReference{
       .url = GURL("https://mail.google.com/mail/u/0/#inbox/123"),
       .subject = "Test Subject",
   };
   context_hub::SourceReference output;
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<
               browser::context_hub::mojom::SourceReference>(input, output));
-  EXPECT_EQ(output.url, GURL("https://mail.google.com/mail/u/0/#inbox/123"));
-  EXPECT_EQ(output.subject, "Test Subject");
+  EXPECT_THAT(output,
+              ::testing::VariantWith<GmailReference>(::testing::FieldsAre(
+                  GURL("https://mail.google.com/mail/u/0/#inbox/123"),
+                  "Test Subject")));
+}
+
+TEST(ContextHubMojomTraitsTest,
+     SourceReferenceSerialization_ChromeHistoryEntry) {
+  const base::Time visit_time =
+      base::Time::FromMillisecondsSinceUnixEpoch(1700000000000);
+  context_hub::SourceReference input = context_hub::ChromeHistoryEntry{
+      .url = GURL("https://example.com/history"),
+      .title = "History Page Title",
+      .visit_timestamp = visit_time,
+  };
+  context_hub::SourceReference output;
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<
+              browser::context_hub::mojom::SourceReference>(input, output));
+  EXPECT_THAT(output,
+              ::testing::VariantWith<ChromeHistoryEntry>(
+                  ::testing::FieldsAre(GURL("https://example.com/history"),
+                                       "History Page Title", visit_time)));
 }
 
 TEST(ContextHubMojomTraitsTest, SmartSearchResultSerialization) {
@@ -648,13 +670,47 @@ TEST(ContextHubMojomTraitsTest, SmartSearchResultSerialization_GmailAndPhotos) {
             "https://photos.google.com/photo/789");
 }
 
+TEST(ContextHubMojomTraitsTest,
+     SmartSearchResultSerialization_ChromeHistoryEntry) {
+  personal_context::proto::SmartSearchItem input;
+  input.set_description("Result with Chrome history source.");
+
+  personal_context::proto::ChromeHistoryEntry* history_ref =
+      input.add_source_references()->mutable_chrome_history_entry();
+  history_ref->set_url("https://example.com/history");
+  history_ref->set_title("History Page Title");
+  history_ref->mutable_visit_timestamp()->set_seconds(1700000000);
+  history_ref->mutable_visit_timestamp()->set_nanos(500000000);
+
+  personal_context::proto::SmartSearchItem output;
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<
+              browser::context_hub::mojom::SmartSearchResult>(input, output));
+  EXPECT_EQ(output.description(), "Result with Chrome history source.");
+  ASSERT_EQ(output.source_references_size(), 1);
+  ASSERT_TRUE(output.source_references(0).has_chrome_history_entry());
+  EXPECT_EQ(output.source_references(0).chrome_history_entry().url(),
+            "https://example.com/history");
+  EXPECT_EQ(output.source_references(0).chrome_history_entry().title(),
+            "History Page Title");
+  EXPECT_EQ(output.source_references(0)
+                .chrome_history_entry()
+                .visit_timestamp()
+                .seconds(),
+            1700000000);
+  EXPECT_EQ(output.source_references(0)
+                .chrome_history_entry()
+                .visit_timestamp()
+                .nanos(),
+            500000000);
+}
+
 TEST(ContextHubMojomTraitsTest, FirstPartyDataSerialization) {
   context_hub::FirstPartyData input;
   input.actionable_url = GURL("https://docs.google.com/doc/123");
-  input.source_references.push_back(
-      {GURL("https://mail.google.com/mail/u/0/#inbox/123"), "Email Subject 1"});
-  input.source_references.push_back(
-      {GURL("https://mail.google.com/mail/u/0/#inbox/456"), "Email Subject 2"});
+  input.source_references.push_back(context_hub::GmailReference{
+      GURL("https://mail.google.com/mail/u/0/#inbox/123"), "Email Subject 1"});
+  input.source_references.push_back(context_hub::GmailReference{
+      GURL("https://mail.google.com/mail/u/0/#inbox/456"), "Email Subject 2"});
 
   context_hub::FirstPartyData output;
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<
@@ -662,12 +718,36 @@ TEST(ContextHubMojomTraitsTest, FirstPartyDataSerialization) {
 
   EXPECT_EQ(output.actionable_url, GURL("https://docs.google.com/doc/123"));
   ASSERT_EQ(output.source_references.size(), 2u);
-  EXPECT_EQ(output.source_references[0].url,
-            GURL("https://mail.google.com/mail/u/0/#inbox/123"));
-  EXPECT_EQ(output.source_references[0].subject, "Email Subject 1");
-  EXPECT_EQ(output.source_references[1].url,
-            GURL("https://mail.google.com/mail/u/0/#inbox/456"));
-  EXPECT_EQ(output.source_references[1].subject, "Email Subject 2");
+  EXPECT_THAT(output.source_references[0],
+              ::testing::VariantWith<GmailReference>(::testing::FieldsAre(
+                  GURL("https://mail.google.com/mail/u/0/#inbox/123"),
+                  "Email Subject 1")));
+  EXPECT_THAT(output.source_references[1],
+              ::testing::VariantWith<GmailReference>(::testing::FieldsAre(
+                  GURL("https://mail.google.com/mail/u/0/#inbox/456"),
+                  "Email Subject 2")));
+}
+
+TEST(ContextHubMojomTraitsTest, FirstPartyDataSerialization_NullActionableUrl) {
+  const base::Time visit_time =
+      base::Time::FromMillisecondsSinceUnixEpoch(1700000000000);
+  context_hub::FirstPartyData input;
+  input.source_references.push_back(context_hub::ChromeHistoryEntry{
+      .url = GURL("https://example.com/history"),
+      .title = "History Page Title",
+      .visit_timestamp = visit_time,
+  });
+
+  context_hub::FirstPartyData output;
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<
+              browser::context_hub::mojom::FirstPartyData>(input, output));
+
+  EXPECT_FALSE(output.actionable_url.has_value());
+  ASSERT_EQ(output.source_references.size(), 1u);
+  EXPECT_THAT(output.source_references[0],
+              ::testing::VariantWith<ChromeHistoryEntry>(
+                  ::testing::FieldsAre(GURL("https://example.com/history"),
+                                       "History Page Title", visit_time)));
 }
 
 TEST(ContextHubMojomTraitsTest, ThirdPartyDataSerialization) {
@@ -691,8 +771,8 @@ TEST(ContextHubMojomTraitsTest, ThirdPartyDataSerialization) {
 TEST(ContextHubMojomTraitsTest, AutoTodoDataSerialization_FirstParty) {
   context_hub::FirstPartyData first_party;
   first_party.actionable_url = GURL("https://docs.google.com/doc/123");
-  first_party.source_references.push_back(
-      {GURL("https://mail.google.com/mail/u/0/#inbox/123"), "Email Subject"});
+  first_party.source_references.push_back(context_hub::GmailReference{
+      GURL("https://mail.google.com/mail/u/0/#inbox/123"), "Email Subject"});
   std::variant<context_hub::FirstPartyData, context_hub::ThirdPartyData> input =
       std::move(first_party);
 
@@ -705,9 +785,10 @@ TEST(ContextHubMojomTraitsTest, AutoTodoDataSerialization_FirstParty) {
   EXPECT_EQ(out_first_party.actionable_url,
             GURL("https://docs.google.com/doc/123"));
   ASSERT_EQ(out_first_party.source_references.size(), 1u);
-  EXPECT_EQ(out_first_party.source_references[0].url,
-            GURL("https://mail.google.com/mail/u/0/#inbox/123"));
-  EXPECT_EQ(out_first_party.source_references[0].subject, "Email Subject");
+  EXPECT_THAT(out_first_party.source_references[0],
+              ::testing::VariantWith<GmailReference>(::testing::FieldsAre(
+                  GURL("https://mail.google.com/mail/u/0/#inbox/123"),
+                  "Email Subject")));
 }
 
 TEST(ContextHubMojomTraitsTest, AutoTodoDataSerialization_ThirdParty) {
@@ -742,8 +823,8 @@ TEST(ContextHubMojomTraitsTest, AutoTodoItemSerialization_FirstPartyData) {
 
   context_hub::FirstPartyData first_party;
   first_party.actionable_url = GURL("https://docs.google.com/doc/123");
-  first_party.source_references.push_back(
-      {GURL("https://mail.google.com/mail/u/0/#inbox/123"), "Review Request"});
+  first_party.source_references.push_back(context_hub::GmailReference{
+      GURL("https://mail.google.com/mail/u/0/#inbox/123"), "Review Request"});
   input.data = std::move(first_party);
 
   context_hub::AutoTodoEntry output;
@@ -761,14 +842,11 @@ TEST(ContextHubMojomTraitsTest, AutoTodoItemSerialization_FirstPartyData) {
   ASSERT_EQ(std::get<context_hub::FirstPartyData>(output.data)
                 .source_references.size(),
             1u);
-  EXPECT_EQ(std::get<context_hub::FirstPartyData>(output.data)
-                .source_references[0]
-                .url,
-            GURL("https://mail.google.com/mail/u/0/#inbox/123"));
-  EXPECT_EQ(std::get<context_hub::FirstPartyData>(output.data)
-                .source_references[0]
-                .subject,
-            "Review Request");
+  EXPECT_THAT(
+      std::get<context_hub::FirstPartyData>(output.data).source_references[0],
+      ::testing::VariantWith<GmailReference>(::testing::FieldsAre(
+          GURL("https://mail.google.com/mail/u/0/#inbox/123"),
+          "Review Request")));
 }
 
 TEST(ContextHubMojomTraitsTest, AutoTodoItemSerialization_ThirdPartyData) {
@@ -874,7 +952,7 @@ TEST_F(ContextHubPageHandlerTest, GetAutoTodos_WithTodos) {
   FirstPartyData fp_data;
   fp_data.actionable_url = GURL("https://example.com/action");
   fp_data.source_references = {
-      {GURL("https://mail.google.com/123"), "Email Subject 1"}};
+      GmailReference{GURL("https://mail.google.com/123"), "Email Subject 1"}};
   fp_entry.data = std::move(fp_data);
 
   base::test::TestFuture<bool> fp_future;
@@ -913,9 +991,9 @@ TEST_F(ContextHubPageHandlerTest, GetAutoTodos_WithTodos) {
   const auto& fp_res_data = std::get<FirstPartyData>(first_party.at(0).data);
   EXPECT_EQ(fp_res_data.actionable_url, GURL("https://example.com/action"));
   ASSERT_EQ(fp_res_data.source_references.size(), 1u);
-  EXPECT_EQ(fp_res_data.source_references[0].url,
-            GURL("https://mail.google.com/123"));
-  EXPECT_EQ(fp_res_data.source_references[0].subject, "Email Subject 1");
+  EXPECT_THAT(fp_res_data.source_references[0],
+              ::testing::VariantWith<GmailReference>(::testing::FieldsAre(
+                  GURL("https://mail.google.com/123"), "Email Subject 1")));
 
   ASSERT_EQ(third_party.size(), 1u);
   EXPECT_EQ(third_party.at(0).id, "tp_1");
@@ -1133,8 +1211,8 @@ TEST_F(ContextHubPageHandlerTest, UpdateAutoTodo_Success) {
   todo.importance_score = 0.75f;
   FirstPartyData fp_data;
   fp_data.actionable_url = GURL("https://example.com/start");
-  fp_data.source_references = {
-      {GURL("https://mail.google.com/mail/u/0/#inbox/abc"), "ABC Subject"}};
+  fp_data.source_references = {GmailReference{
+      GURL("https://mail.google.com/mail/u/0/#inbox/abc"), "ABC Subject"}};
   todo.data = std::move(fp_data);
 
   base::test::TestFuture<bool> replace_future;
@@ -1153,9 +1231,10 @@ TEST_F(ContextHubPageHandlerTest, UpdateAutoTodo_Success) {
   const auto& stored_fp_data = std::get<FirstPartyData>(entries[0].data);
   EXPECT_EQ(stored_fp_data.actionable_url, GURL("https://example.com/start"));
   ASSERT_EQ(stored_fp_data.source_references.size(), 1u);
-  EXPECT_EQ(stored_fp_data.source_references[0].url,
-            GURL("https://mail.google.com/mail/u/0/#inbox/abc"));
-  EXPECT_EQ(stored_fp_data.source_references[0].subject, "ABC Subject");
+  EXPECT_THAT(
+      stored_fp_data.source_references[0],
+      ::testing::VariantWith<GmailReference>(::testing::FieldsAre(
+          GURL("https://mail.google.com/mail/u/0/#inbox/abc"), "ABC Subject")));
 }
 
 TEST_F(ContextHubPageHandlerTest, UpdateAutoTodo_ThirdParty_Success) {
@@ -1392,6 +1471,106 @@ TEST_F(ContextHubPageHandlerTest, OnAutoTodosChanged_IncludesDismissedTodos) {
   ASSERT_EQ(cached_items.size(), 1u);
   EXPECT_EQ(cached_items[0].id, "todo_1");
   EXPECT_EQ(cached_items[0].status, AutoTodoEntry::Status::kDismissed);
+}
+
+TEST_F(ContextHubPageHandlerTest, GetAutoTodos_FiltersOutChromeHistoryTodos) {
+  ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(&profile_);
+  ASSERT_TRUE(service);
+
+  AutoTodoEntry gmail_entry;
+  gmail_entry.id = "gmail_1";
+  gmail_entry.title = "Gmail Todo";
+  gmail_entry.data = FirstPartyData{
+      .source_references = {GmailReference{
+          GURL("https://mail.google.com/mail/u/0/#inbox/123"), "Subject"}},
+      .actionable_url = GURL("https://example.com/action"),
+  };
+
+  AutoTodoEntry history_entry;
+  history_entry.id = "history_1";
+  history_entry.title = "History Todo";
+  history_entry.data = FirstPartyData{
+      .source_references = {ChromeHistoryEntry{
+          GURL("https://example.com/history"), "History Title",
+          base::Time::FromMillisecondsSinceUnixEpoch(1700000000000)}},
+  };
+
+  base::test::TestFuture<bool> gmail_future;
+  service->UpdateAutoTodo(std::move(gmail_entry), gmail_future.GetCallback());
+  ASSERT_TRUE(gmail_future.Get());
+
+  base::test::TestFuture<bool> history_future;
+  service->UpdateAutoTodo(std::move(history_entry),
+                          history_future.GetCallback());
+  ASSERT_TRUE(history_future.Get());
+
+  // Verify that `GetAutoTodos()` filters out the Chrome history todo.
+  base::test::TestFuture<const std::vector<context_hub::AutoTodoEntry>&,
+                         const std::vector<context_hub::AutoTodoEntry>&,
+                         const context_hub::AutoTodosGenerationMetadata&,
+                         const context_hub::AutoTodosGenerationMetadata&>
+      get_future;
+  handler_->GetAutoTodos(get_future.GetCallback());
+
+  auto [first_party, third_party, first_party_metadata, third_party_metadata] =
+      get_future.Take();
+  ASSERT_EQ(first_party.size(), 1u);
+  EXPECT_EQ(first_party[0].id, "gmail_1");
+  EXPECT_TRUE(third_party.empty());
+
+  // Verify both items are still in the underlying store.
+  base::test::TestFuture<std::vector<AutoTodoEntry>> service_get_future;
+  service->GetAutoTodos(service_get_future.GetCallback());
+  EXPECT_EQ(service_get_future.Get().size(), 2u);
+}
+
+TEST_F(ContextHubPageHandlerTest,
+       OnAutoTodosChanged_FiltersOutChromeHistoryTodos) {
+  personal_context::proto::AutoTodosResponse response;
+
+  personal_context::proto::AutoTodoItem* gmail_todo = response.add_todos();
+  gmail_todo->set_title("Gmail Todo");
+  gmail_todo->set_actionable_url("https://example.com/action");
+  personal_context::proto::SourceReference* gmail_ref =
+      gmail_todo->add_source_references();
+  gmail_ref->mutable_gmail()->set_message_url(
+      "https://mail.google.com/mail/u/0/#inbox/123");
+  gmail_ref->mutable_gmail()->set_subject("Subject");
+
+  personal_context::proto::AutoTodoItem* history_todo = response.add_todos();
+  history_todo->set_title("History Todo");
+  personal_context::proto::SourceReference* history_ref =
+      history_todo->add_source_references();
+  history_ref->mutable_chrome_history_entry()->set_url(
+      "https://example.com/history");
+  history_ref->mutable_chrome_history_entry()->set_title("History Page");
+  history_ref->mutable_chrome_history_entry()
+      ->mutable_visit_timestamp()
+      ->set_seconds(1700000000);
+
+  personal_context::proto::Any any_response;
+  response.SerializeToString(any_response.mutable_value());
+
+  EXPECT_CALL(
+      *GetMockService(),
+      FetchContext(personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,
+                   _, _, _))
+      .WillOnce(RunOnceCallback<3>(personal_context::FetchContextResult(
+          base::ok(std::move(any_response)))));
+
+  EXPECT_CALL(mock_page_, OnFirstPartyAutoTodosGenerationStateChanged(true));
+  EXPECT_CALL(mock_page_, OnAutoTodosChanged(Not(IsEmpty())))
+      .WillOnce([](const std::vector<context_hub::AutoTodoEntry>& todos) {
+        ASSERT_EQ(todos.size(), 1u);
+        EXPECT_EQ(todos[0].title, "Gmail Todo");
+      });
+  EXPECT_CALL(mock_page_, OnFirstPartyAutoTodosGenerationStateChanged(false));
+
+  base::test::TestFuture<bool> future;
+  handler_->GenerateFirstPartyAutoTodos(future.GetCallback());
+  EXPECT_TRUE(future.Get());
+  mock_page_.Flush();
 }
 
 TEST_F(ContextHubPageHandlerTest, GetAllMemoryBankEntries_Empty) {

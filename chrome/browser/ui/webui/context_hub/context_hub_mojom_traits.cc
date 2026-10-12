@@ -4,14 +4,18 @@
 
 #include "chrome/browser/ui/webui/context_hub/context_hub_mojom_traits.h"
 
+#include <cstdint>
+#include <string>
 #include <string_view>
 #include <utility>
 #include <variant>
 #include <vector>
 
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "url/gurl.h"
 #include "url/mojom/url_gurl_mojom_traits.h"
 
@@ -91,10 +95,35 @@ EnumTraits<browser::context_hub::mojom::AutoTodoGroup,
 
 // static
 bool StructTraits<browser::context_hub::mojom::GmailReferenceDataView,
-                  context_hub::SourceReference>::
+                  context_hub::GmailReference>::
     Read(browser::context_hub::mojom::GmailReferenceDataView data,
-         context_hub::SourceReference* out) {
+         context_hub::GmailReference* out) {
   return data.ReadMessageUrl(&out->url) && data.ReadSubject(&out->subject);
+}
+
+// static
+bool StructTraits<browser::context_hub::mojom::ChromeHistoryEntryDataView,
+                  context_hub::ChromeHistoryEntry>::
+    Read(browser::context_hub::mojom::ChromeHistoryEntryDataView data,
+         context_hub::ChromeHistoryEntry* out) {
+  return data.ReadUrl(&out->url) && data.ReadTitle(&out->title) &&
+         data.ReadVisitTimestamp(&out->visit_timestamp);
+}
+
+// static
+browser::context_hub::mojom::SourceReferenceDataView::Tag UnionTraits<
+    browser::context_hub::mojom::SourceReferenceDataView,
+    context_hub::SourceReference>::GetTag(const context_hub::SourceReference&
+                                              ref) {
+  using Tag = browser::context_hub::mojom::SourceReferenceDataView::Tag;
+  return std::visit(
+      absl::Overload{
+          [](const context_hub::GmailReference&) { return Tag::kGmail; },
+          [](const context_hub::ChromeHistoryEntry&) {
+            return Tag::kChromeHistoryEntry;
+          },
+      },
+      ref);
 }
 
 // static
@@ -119,8 +148,23 @@ bool UnionTraits<browser::context_hub::mojom::SourceReferenceDataView,
     Read(browser::context_hub::mojom::SourceReferenceDataView data,
          context_hub::SourceReference* out) {
   switch (data.tag()) {
-    case browser::context_hub::mojom::SourceReferenceDataView::Tag::kGmail:
-      return data.ReadGmail(out);
+    case browser::context_hub::mojom::SourceReferenceDataView::Tag::kGmail: {
+      context_hub::GmailReference gmail;
+      if (!data.ReadGmail(&gmail)) {
+        return false;
+      }
+      *out = std::move(gmail);
+      return true;
+    }
+    case browser::context_hub::mojom::SourceReferenceDataView::Tag::
+        kChromeHistoryEntry: {
+      context_hub::ChromeHistoryEntry history_entry;
+      if (!data.ReadChromeHistoryEntry(&history_entry)) {
+        return false;
+      }
+      *out = std::move(history_entry);
+      return true;
+    }
     case browser::context_hub::mojom::SourceReferenceDataView::Tag::kPhotos:
     case browser::context_hub::mojom::SourceReferenceDataView::Tag::kDrive:
       return false;
@@ -251,17 +295,19 @@ UnionTraits<browser::context_hub::mojom::SourceReferenceDataView,
     case personal_context::proto::SourceReference::kPhotos:
       return browser::context_hub::mojom::SourceReferenceDataView::Tag::kPhotos;
     case personal_context::proto::SourceReference::kChromeHistoryEntry:
+      return browser::context_hub::mojom::SourceReferenceDataView::Tag::
+          kChromeHistoryEntry;
     case personal_context::proto::SourceReference::SOURCE_REFERENCE_NOT_SET:
       NOTREACHED();
   }
 }
 
 // static
-context_hub::SourceReference UnionTraits<
-    browser::context_hub::mojom::SourceReferenceDataView,
-    personal_context::proto::SourceReference>::
+context_hub::GmailReference
+UnionTraits<browser::context_hub::mojom::SourceReferenceDataView,
+            personal_context::proto::SourceReference>::
     gmail(const personal_context::proto::SourceReference& ref) {
-  return context_hub::SourceReference{
+  return context_hub::GmailReference{
       .url = GURL(ref.gmail().message_url()),
       .subject = std::string(ref.gmail().subject()),
   };
@@ -275,6 +321,26 @@ browser::context_hub::mojom::PhotosReferencePtr UnionTraits<
   auto photos = browser::context_hub::mojom::PhotosReference::New();
   photos->photos_url = GURL(ref.photos().photos_url());
   return photos;
+}
+
+// static
+context_hub::ChromeHistoryEntry
+UnionTraits<browser::context_hub::mojom::SourceReferenceDataView,
+            personal_context::proto::SourceReference>::
+    chrome_history_entry(const personal_context::proto::SourceReference& ref) {
+  const personal_context::proto::ChromeHistoryEntry& entry =
+      ref.chrome_history_entry();
+  base::Time visit_timestamp;
+  if (entry.has_visit_timestamp()) {
+    visit_timestamp = base::Time::FromSecondsSinceUnixEpoch(
+                          entry.visit_timestamp().seconds()) +
+                      base::Nanoseconds(entry.visit_timestamp().nanos());
+  }
+  return context_hub::ChromeHistoryEntry{
+      .url = GURL(entry.url()),
+      .title = std::string(entry.title()),
+      .visit_timestamp = visit_timestamp,
+  };
 }
 
 // static
@@ -305,7 +371,7 @@ bool UnionTraits<browser::context_hub::mojom::SourceReferenceDataView,
     case browser::context_hub::mojom::SourceReferenceDataView::Tag::kDrive:
       return data.ReadDrive(out->mutable_drive());
     case browser::context_hub::mojom::SourceReferenceDataView::Tag::kGmail: {
-      context_hub::SourceReference gmail_ref;
+      context_hub::GmailReference gmail_ref;
       if (!data.ReadGmail(&gmail_ref)) {
         return false;
       }
@@ -319,6 +385,28 @@ bool UnionTraits<browser::context_hub::mojom::SourceReferenceDataView,
         return false;
       }
       out->mutable_photos()->set_photos_url(photos_ref->photos_url.spec());
+      return true;
+    }
+    case browser::context_hub::mojom::SourceReferenceDataView::Tag::
+        kChromeHistoryEntry: {
+      context_hub::ChromeHistoryEntry history_entry;
+      if (!data.ReadChromeHistoryEntry(&history_entry)) {
+        return false;
+      }
+      personal_context::proto::ChromeHistoryEntry* history_proto =
+          out->mutable_chrome_history_entry();
+      history_proto->set_url(history_entry.url.spec());
+      history_proto->set_title(history_entry.title);
+      if (history_entry.visit_timestamp >= base::Time::UnixEpoch() &&
+          !history_entry.visit_timestamp.is_inf()) {
+        const base::TimeDelta since_epoch =
+            history_entry.visit_timestamp - base::Time::UnixEpoch();
+        personal_context::proto::Timestamp* timestamp =
+            history_proto->mutable_visit_timestamp();
+        timestamp->set_seconds(since_epoch.InSeconds());
+        timestamp->set_nanos(static_cast<int32_t>(
+            (since_epoch % base::Seconds(1)).InNanoseconds()));
+      }
       return true;
     }
   }

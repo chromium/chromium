@@ -66,18 +66,26 @@ struct DriveFile {
   string name;
 };
 
+struct ChromeHistoryEntry {
+  url.mojom.Url url;
+  string title;
+  mojo_base.mojom.Time visit_timestamp;
+};
+
 union SourceReference {
   GmailReference gmail;
   PhotosReference photos;
   DriveFile drive;
+  ChromeHistoryEntry chrome_history_entry;
 };
 
-// Data for Gmail-based AutoTodos.
+// Data for first-party AutoTodos.
 struct FirstPartyData {
-  // Source URLs where the AutoTodo was generated from.
+  // Source references where the AutoTodo was generated from.
   array<SourceReference> source_references;
-  // The URL to navigate to when the user clicks to start the item.
-  url.mojom.Url actionable_url;
+  // The URL to navigate to when the user clicks to start the item. Null if
+  // using source references instead.
+  url.mojom.Url? actionable_url;
 };
 
 // Data for Browser tab-based AutoTodos.

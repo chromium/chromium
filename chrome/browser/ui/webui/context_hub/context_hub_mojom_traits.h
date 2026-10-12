@@ -48,30 +48,49 @@ struct EnumTraits<browser::context_hub::mojom::AutoTodoGroup,
 
 template <>
 struct StructTraits<browser::context_hub::mojom::GmailReferenceDataView,
-                    context_hub::SourceReference> {
-  static const GURL& message_url(const context_hub::SourceReference& ref) {
+                    context_hub::GmailReference> {
+  static const GURL& message_url(const context_hub::GmailReference& ref) {
     return ref.url;
   }
 
-  static const std::string& subject(const context_hub::SourceReference& ref) {
+  static const std::string& subject(const context_hub::GmailReference& ref) {
     return ref.subject;
   }
 
   static bool Read(browser::context_hub::mojom::GmailReferenceDataView data,
-                   context_hub::SourceReference* out);
+                   context_hub::GmailReference* out);
+};
+
+template <>
+struct StructTraits<browser::context_hub::mojom::ChromeHistoryEntryDataView,
+                    context_hub::ChromeHistoryEntry> {
+  static const GURL& url(const context_hub::ChromeHistoryEntry& entry) {
+    return entry.url;
+  }
+
+  static const std::string& title(
+      const context_hub::ChromeHistoryEntry& entry) {
+    return entry.title;
+  }
+
+  static base::Time visit_timestamp(
+      const context_hub::ChromeHistoryEntry& entry) {
+    return entry.visit_timestamp;
+  }
+
+  static bool Read(browser::context_hub::mojom::ChromeHistoryEntryDataView data,
+                   context_hub::ChromeHistoryEntry* out);
 };
 
 template <>
 struct UnionTraits<browser::context_hub::mojom::SourceReferenceDataView,
                    context_hub::SourceReference> {
   static browser::context_hub::mojom::SourceReferenceDataView::Tag GetTag(
-      const context_hub::SourceReference& ref) {
-    return browser::context_hub::mojom::SourceReferenceDataView::Tag::kGmail;
-  }
+      const context_hub::SourceReference& ref);
 
-  static const context_hub::SourceReference& gmail(
+  static const context_hub::GmailReference& gmail(
       const context_hub::SourceReference& ref) {
-    return ref;
+    return std::get<context_hub::GmailReference>(ref);
   }
 
   static browser::context_hub::mojom::PhotosReferencePtr photos(
@@ -79,6 +98,11 @@ struct UnionTraits<browser::context_hub::mojom::SourceReferenceDataView,
 
   static browser::context_hub::mojom::DriveFilePtr drive(
       const context_hub::SourceReference& ref);
+
+  static const context_hub::ChromeHistoryEntry& chrome_history_entry(
+      const context_hub::SourceReference& ref) {
+    return std::get<context_hub::ChromeHistoryEntry>(ref);
+  }
 
   static bool Read(browser::context_hub::mojom::SourceReferenceDataView data,
                    context_hub::SourceReference* out);
@@ -92,7 +116,7 @@ struct StructTraits<browser::context_hub::mojom::FirstPartyDataDataView,
     return first_party.source_references;
   }
 
-  static const GURL& actionable_url(
+  static const std::optional<GURL>& actionable_url(
       const context_hub::FirstPartyData& first_party) {
     return first_party.actionable_url;
   }
@@ -276,7 +300,7 @@ struct UnionTraits<browser::context_hub::mojom::SourceReferenceDataView,
   static browser::context_hub::mojom::SourceReferenceDataView::Tag GetTag(
       const personal_context::proto::SourceReference& ref);
 
-  static context_hub::SourceReference gmail(
+  static context_hub::GmailReference gmail(
       const personal_context::proto::SourceReference& ref);
 
   static browser::context_hub::mojom::PhotosReferencePtr photos(
@@ -286,6 +310,9 @@ struct UnionTraits<browser::context_hub::mojom::SourceReferenceDataView,
       const personal_context::proto::SourceReference& ref) {
     return ref.drive();
   }
+
+  static context_hub::ChromeHistoryEntry chrome_history_entry(
+      const personal_context::proto::SourceReference& ref);
 
   static bool Read(browser::context_hub::mojom::SourceReferenceDataView data,
                    personal_context::proto::SourceReference* out);

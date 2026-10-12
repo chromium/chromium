@@ -400,7 +400,15 @@ GURL ContextHubPageHandler::TabProvider::ResolveTopicUrl(
 
 void ContextHubPageHandler::OnAutoTodosChanged(
     base::span<const context_hub::AutoTodoEntry> entries) {
-  page_->OnAutoTodosChanged(base::ToVector(entries));
+  std::vector<context_hub::AutoTodoEntry> filtered_entries;
+  filtered_entries.reserve(entries.size());
+  // Filter out entries with chrome history references for now.
+  for (const context_hub::AutoTodoEntry& entry : entries) {
+    if (!entry.HasChromeHistoryReferences()) {
+      filtered_entries.push_back(entry);
+    }
+  }
+  page_->OnAutoTodosChanged(std::move(filtered_entries));
 }
 
 void ContextHubPageHandler::OnFirstPartyAutoTodosGenerationStateChanged(
@@ -469,9 +477,12 @@ void ContextHubPageHandler::GetAutoTodos(GetAutoTodosCallback callback) {
          std::vector<context_hub::AutoTodoEntry> entries) {
         std::vector<context_hub::AutoTodoEntry> first_party_todos;
         std::vector<context_hub::AutoTodoEntry> third_party_todos;
-        for (auto& entry : entries) {
+        for (context_hub::AutoTodoEntry& entry : entries) {
           if (entry.is_first_party()) {
-            first_party_todos.push_back(std::move(entry));
+            // Filter out entries with chrome history references for now.
+            if (!entry.HasChromeHistoryReferences()) {
+              first_party_todos.push_back(std::move(entry));
+            }
           } else if (entry.is_third_party()) {
             third_party_todos.push_back(std::move(entry));
           }

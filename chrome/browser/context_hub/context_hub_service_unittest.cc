@@ -424,10 +424,11 @@ TEST_F(ContextHubServiceTest,
   first_party_entry.description = "Existing Description";
   first_party_entry.importance_score = 0.85f;
   first_party_entry.status = AutoTodoEntry::Status::kCompleted;
-  first_party_entry.data = FirstPartyData{
-      .source_references = {{.url = GURL("https://mail.google.com/123"),
-                             .subject = "Test Subject"}},
-      .actionable_url = GURL("https://example.com/action")};
+  first_party_entry.data =
+      FirstPartyData{.source_references = {GmailReference{
+                         .url = GURL("https://mail.google.com/123"),
+                         .subject = "Test Subject"}},
+                     .actionable_url = GURL("https://example.com/action")};
 
   base::test::TestFuture<bool> add_fp_future;
   service_.UpdateAutoTodo(std::move(first_party_entry),
@@ -546,12 +547,145 @@ TEST_F(ContextHubServiceTest,
   ASSERT_TRUE(fp_data);
   EXPECT_EQ(fp_data->actionable_url, GURL("https://example.com/action"));
   ASSERT_EQ(fp_data->source_references.size(), 2u);
-  EXPECT_EQ(fp_data->source_references[0].url,
+  ASSERT_TRUE(
+      std::holds_alternative<GmailReference>(fp_data->source_references[0]));
+  EXPECT_EQ(std::get<GmailReference>(fp_data->source_references[0]).url,
             GURL("https://mail.google.com/123"));
-  EXPECT_EQ(fp_data->source_references[0].subject, "Test Subject");
-  EXPECT_EQ(fp_data->source_references[1].url,
+  EXPECT_EQ(std::get<GmailReference>(fp_data->source_references[0]).subject,
+            "Test Subject");
+  ASSERT_TRUE(
+      std::holds_alternative<GmailReference>(fp_data->source_references[1]));
+  EXPECT_EQ(std::get<GmailReference>(fp_data->source_references[1]).url,
             GURL("https://mail.google.com/456"));
-  EXPECT_EQ(fp_data->source_references[1].subject, "Additional Subject");
+  EXPECT_EQ(std::get<GmailReference>(fp_data->source_references[1]).subject,
+            "Additional Subject");
+}
+
+TEST_F(ContextHubServiceTest,
+       GenerateFirstPartyAutoTodos_ChromeHistoryReferences) {
+  const base::Time visit_time =
+      base::Time::FromSecondsSinceUnixEpoch(1700000000) +
+      base::Nanoseconds(500000000);
+
+  // Add an existing first-party Chrome History todo to the cache.
+  AutoTodoEntry existing_history_entry;
+  existing_history_entry.id = "todo_history_1";
+  existing_history_entry.title = "Existing History Todo";
+  existing_history_entry.description = "History Description";
+  existing_history_entry.importance_score = 0.75f;
+  existing_history_entry.status = AutoTodoEntry::Status::kActive;
+  existing_history_entry.data = FirstPartyData{
+      .source_references = {
+          ChromeHistoryEntry{
+              .url = GURL("https://example.com/history1"),
+              .title = "History Page 1",
+              .visit_timestamp = visit_time,
+          },
+          ChromeHistoryEntry{
+              .url = GURL("https://example.com/history_pre_epoch"),
+              .title = "Corrupted Pre-Epoch Page",
+              .visit_timestamp = base::Time::UnixEpoch() - base::Seconds(10),
+          },
+      }};
+
+  base::test::TestFuture<bool> add_future;
+  service_.UpdateAutoTodo(std::move(existing_history_entry),
+                          add_future.GetCallback());
+  EXPECT_TRUE(add_future.Get());
+
+  // Prepare a mock response.
+  personal_context::proto::AutoTodosResponse expected_response;
+  personal_context::proto::AutoTodoItem* todo = expected_response.add_todos();
+  todo->set_id("todo_history_1");
+  todo->set_title("Existing History Todo");
+  todo->set_description("History Description");
+  todo->set_importance_score(0.75f);
+  personal_context::proto::ChromeHistoryEntry* ref1 =
+      todo->add_source_references()->mutable_chrome_history_entry();
+  ref1->set_url("https://example.com/history1");
+  ref1->set_title("History Page 1");
+  ref1->mutable_visit_timestamp()->set_seconds(1700000000);
+  ref1->mutable_visit_timestamp()->set_nanos(500000000);
+  personal_context::proto::ChromeHistoryEntry* ref2 =
+      todo->add_source_references()->mutable_chrome_history_entry();
+  ref2->set_url("https://example.com/history2");
+  ref2->set_title("History Page 2");
+
+  personal_context::proto::Any any_response;
+  expected_response.SerializeToString(any_response.mutable_value());
+
+  EXPECT_CALL(
+      mock_personal_context_service_,
+      FetchContext(personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,
+                   _, _, _))
+      .WillOnce(
+          [&](personal_context::proto::ContextMemoryFeature feature,
+              const google::protobuf::MessageLite& request_metadata,
+              const personal_context::ContextMemoryRequestOptions& options,
+              personal_context::FetchContextCallback callback) {
+            const auto& auto_todos_request =
+                static_cast<const personal_context::proto::AutoTodosRequest&>(
+                    request_metadata);
+            ASSERT_EQ(auto_todos_request.existing_todos_size(), 1);
+            const personal_context::proto::AutoTodoItem& existing =
+                auto_todos_request.existing_todos(0);
+            EXPECT_EQ(existing.id(), "todo_history_1");
+            EXPECT_FALSE(existing.has_actionable_url());
+            ASSERT_EQ(existing.source_references_size(), 2);
+            ASSERT_TRUE(
+                existing.source_references(0).has_chrome_history_entry());
+            const personal_context::proto::ChromeHistoryEntry& history_ref =
+                existing.source_references(0).chrome_history_entry();
+            EXPECT_EQ(history_ref.url(), "https://example.com/history1");
+            EXPECT_EQ(history_ref.title(), "History Page 1");
+            EXPECT_EQ(history_ref.visit_timestamp().seconds(), 1700000000);
+            EXPECT_EQ(history_ref.visit_timestamp().nanos(), 500000000);
+
+            ASSERT_TRUE(
+                existing.source_references(1).has_chrome_history_entry());
+            const personal_context::proto::ChromeHistoryEntry&
+                pre_epoch_history_ref =
+                    existing.source_references(1).chrome_history_entry();
+            EXPECT_EQ(pre_epoch_history_ref.url(),
+                      "https://example.com/history_pre_epoch");
+            EXPECT_EQ(pre_epoch_history_ref.title(),
+                      "Corrupted Pre-Epoch Page");
+            EXPECT_FALSE(pre_epoch_history_ref.has_visit_timestamp());
+
+            std::move(callback).Run(personal_context::FetchContextResult(
+                base::ok(std::move(any_response))));
+          });
+
+  base::test::TestFuture<bool> future;
+  service_.GenerateFirstPartyAutoTodos(future.GetCallback());
+  EXPECT_TRUE(future.Get());
+
+  base::test::TestFuture<std::vector<AutoTodoEntry>> get_future;
+  service_.GetAutoTodos(get_future.GetCallback());
+  const std::vector<AutoTodoEntry>& items = get_future.Get();
+  ASSERT_EQ(items.size(), 1u);
+  EXPECT_EQ(items[0].id, "todo_history_1");
+  EXPECT_TRUE(items[0].is_first_party());
+  EXPECT_TRUE(items[0].HasChromeHistoryReferences());
+  const auto* fp_data = std::get_if<FirstPartyData>(&items[0].data);
+  ASSERT_TRUE(fp_data);
+  EXPECT_FALSE(fp_data->actionable_url.has_value());
+  ASSERT_EQ(fp_data->source_references.size(), 2u);
+  ASSERT_TRUE(std::holds_alternative<ChromeHistoryEntry>(
+      fp_data->source_references[0]));
+  const auto& parsed_ref1 =
+      std::get<ChromeHistoryEntry>(fp_data->source_references[0]);
+  EXPECT_EQ(parsed_ref1.url, GURL("https://example.com/history1"));
+  EXPECT_EQ(parsed_ref1.title, "History Page 1");
+  EXPECT_EQ(parsed_ref1.visit_timestamp, visit_time);
+
+  ASSERT_TRUE(std::holds_alternative<ChromeHistoryEntry>(
+      fp_data->source_references[1]));
+  const auto& parsed_ref2 =
+      std::get<ChromeHistoryEntry>(fp_data->source_references[1]);
+  EXPECT_EQ(parsed_ref2.url, GURL("https://example.com/history2"));
+  EXPECT_EQ(parsed_ref2.title, "History Page 2");
+  EXPECT_TRUE(parsed_ref2.visit_timestamp.is_null());
 }
 
 TEST_F(ContextHubServiceTest,
@@ -2807,8 +2941,8 @@ TEST_F(ContextHubServiceTest, GetAutoTodos) {
   entry1.status = AutoTodoEntry::Status::kActive;
   entry1.importance_score = 0.8f;
   entry1.data = FirstPartyData{
-      .source_references = {{.url = GURL("https://mail.google.com/1"),
-                             .subject = "Subject 1"}},
+      .source_references = {GmailReference{
+          .url = GURL("https://mail.google.com/1"), .subject = "Subject 1"}},
       .actionable_url = GURL("https://example.com/1"),
   };
 
