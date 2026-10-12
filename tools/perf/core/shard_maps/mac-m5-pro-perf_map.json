@@ -176,18 +176,19 @@
             "speedometer3.crossbench": {
                 "crossbench_name": "speedometer_3",
                 "arguments": [
+                    "--network=live",
                     "--enable-field-trials=benchmarking"
                 ]
             }
         }
     },
     "extra_infos": {
-        "num_stories": 1141,
-        "predicted_min_shard_time": 6570.0,
+        "num_stories": 1145,
+        "predicted_min_shard_time": 6610.0,
         "predicted_min_shard_index": 0,
         "predicted_max_shard_time": 6867.0,
         "predicted_max_shard_index": 1,
-        "shard #0": 6570.0,
+        "shard #0": 6610.0,
         "shard #1": 6867.0
     }
 }

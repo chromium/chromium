@@ -4,6 +4,7 @@
             "speedometer3.crossbench": {
                 "crossbench_name": "speedometer_3",
                 "arguments": [
+                    "--network=live",
                     "--enable-field-trials=benchmarking"
                 ]
             },
@@ -21,6 +22,7 @@
             "speedometer3.crossbench": {
                 "crossbench_name": "speedometer_3",
                 "arguments": [
+                    "--network=live",
                     "--enable-field-trials=benchmarking"
                 ]
             },
@@ -39,6 +41,7 @@
             "speedometer3.crossbench": {
                 "crossbench_name": "speedometer_3",
                 "arguments": [
+                    "--network=live",
                     "--enable-field-trials=benchmarking"
                 ]
             },
@@ -56,6 +59,7 @@
             "speedometer3.crossbench": {
                 "crossbench_name": "speedometer_3",
                 "arguments": [
+                    "--network=live",
                     "--enable-field-trials=benchmarking"
                 ]
             },

@@ -1,5 +1,5 @@
 bot,repeat,shard,flags
 linux-r350-perf,1,1,
-mac-m1_mini_2020-perf,1,1,
-mac-m4-mini-perf,1,1,
+mac-m1_mini_2020-perf,1,1,--network=live
+mac-m4-mini-perf,1,1,--network=live
 win-11-perf,1,1,
