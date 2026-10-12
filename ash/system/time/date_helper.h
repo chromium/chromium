@@ -14,7 +14,6 @@
 #include "base/time/time.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
 #include "third_party/icu/source/i18n/unicode/dtitvfmt.h"
-#include "third_party/icu/source/i18n/unicode/dtptngen.h"
 #include "third_party/icu/source/i18n/unicode/gregocal.h"
 #include "third_party/icu/source/i18n/unicode/smpdtfmt.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"

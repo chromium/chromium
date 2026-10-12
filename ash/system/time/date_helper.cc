@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "third_party/icu/source/common/unicode/dtintrv.h"
 #include "third_party/icu/source/i18n/unicode/dtitvfmt.h"
+#include "third_party/icu/source/i18n/unicode/dtptngen.h"
 #include "third_party/icu/source/i18n/unicode/fieldpos.h"
 #include "third_party/icu/source/i18n/unicode/gregocal.h"
 
