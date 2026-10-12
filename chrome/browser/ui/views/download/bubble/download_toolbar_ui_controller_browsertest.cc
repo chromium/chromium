@@ -286,6 +286,15 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
             base::Seconds(5));
 
   {
+    // Non-screen-reader accessibility modes (e.g. kNativeAPIs) should not
+    // disable the auto-close delay.
+    content::ScopedAccessibilityModeOverride ax_mode_override(
+        ui::AXMode::kNativeAPIs);
+    EXPECT_EQ(controller(browser())->GetAutoCloseDelayForTesting(),
+              base::Seconds(5));
+  }
+
+  {
     // Verify the auto-close delay when accessibility mode is enabled.
     content::ScopedAccessibilityModeOverride ax_mode_override(
         ui::AXMode::kScreenReader);

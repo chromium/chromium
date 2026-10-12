@@ -790,12 +790,11 @@ void DownloadToolbarUIController::AutoClosePartialView() {
 }
 
 base::TimeDelta DownloadToolbarUIController::GetAutoCloseDelay() const {
-  // If accessibility mode is enabled (screen reader, screen magnifier, etc.) do
-  // not auto-close on a timer to allow users sufficient time to locate and
-  // interact with it.
-  if (!content::BrowserAccessibilityState::GetInstance()
-           ->GetAccessibilityMode()
-           .is_mode_off()) {
+  // If a screen reader or screen magnifier is enabled, do not auto-close on a
+  // timer to allow users sufficient time to locate and interact with it.
+  if (content::BrowserAccessibilityState::GetInstance()
+          ->GetAccessibilityMode()
+          .has_mode(ui::AXMode::kScreenReader)) {
     return base::TimeDelta::Max();
   }
   return kAutoClosePartialViewDelay;
