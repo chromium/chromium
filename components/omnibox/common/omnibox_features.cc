@@ -457,9 +457,6 @@ BASE_FEATURE(kOmniboxFuseboxAsyncInflation, DISABLED);
 // reaching the C++ side.
 BASE_FEATURE(kOmniboxAimImageDownscaling, DISABLED);
 
-// Use FusedLocationProvider on Android to fetch device location.
-BASE_FEATURE(kUseFusedLocationProvider, ENABLED);
-
 // Updates various NTP/Omnibox assets and descriptions for visual alignment on
 // iOS.
 BASE_FEATURE(kOmniboxMobileParityUpdate, ENABLED);
@@ -674,7 +671,6 @@ static int64_t JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
       &kOmniboxFuseboxAsyncInflation,
       &kRichAutocompletion,
       &kUrlBarWithoutLigatures,
-      &kUseFusedLocationProvider,
       &kJumpStartOmnibox,
       &kPostDelayedTaskFocusTab,
       &kOmniboxMobileParityUpdateV2,

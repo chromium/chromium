@@ -26,6 +26,7 @@ import com.google.android.gms.location.Granularity;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.Priority;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -52,7 +53,6 @@ import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJ
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.omnibox.OmniboxFeatureList;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.permissions.PermissionsAndroidFeatureList;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -339,13 +339,6 @@ public class GeolocationHeaderUnitTest {
     }
 
     @Test
-    @DisableFeatures(OmniboxFeatureList.USE_FUSED_LOCATION_PROVIDER)
-    public void testPrimeLocationForGeoHeader() {
-        GeolocationHeader.primeLocationForGeoHeaderIfEnabled(mProfileMock, mTemplateUrlServiceMock);
-        assertEquals(1, mRefreshLastKnownLocationCount);
-    }
-
-    @Test
     public void testPrimeLocationForGeoHeaderPermissionOff() {
         GeolocationHeader.setAppPermissionsForTesting(/* hasCoarse= */ false, /* hasFine= */ false);
         GeolocationHeader.primeLocationForGeoHeaderIfEnabled(mProfileMock, mTemplateUrlServiceMock);
@@ -371,12 +364,8 @@ public class GeolocationHeaderUnitTest {
                         eq(null));
 
         LocationRequest actualRequest = mLocationRequestCaptor.getValue();
-        assertEquals(
-                OmniboxFeatures.sGeolocationRequestMaxLocationAge.getValue(),
-                actualRequest.getMaxUpdateAgeMillis());
-        assertEquals(
-                OmniboxFeatures.sGeolocationRequestPriority.getValue(),
-                actualRequest.getPriority());
+        assertEquals(GeolocationHeader.REFRESH_LOCATION_AGE, actualRequest.getMaxUpdateAgeMillis());
+        assertEquals(Priority.PRIORITY_BALANCED_POWER_ACCURACY, actualRequest.getPriority());
         assertEquals(Granularity.GRANULARITY_PERMISSION_LEVEL, actualRequest.getGranularity());
 
         Location mockLocation = generateMockLocation("network", LOCATION_TIME);

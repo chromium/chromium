@@ -6,11 +6,8 @@ package org.chromium.components.omnibox;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.text.format.DateUtils;
 
 import androidx.annotation.IntDef;
-
-import com.google.android.gms.location.Priority;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
@@ -106,9 +103,6 @@ public class OmniboxFeatures {
     // session.
     public static final int DEFAULT_MAX_PREFETCHES_PER_OMNIBOX_SESSION = 5;
 
-    // Timeout requests after 10 minutes if we somehow fail to remove our listener.
-    private static final int DEFAULT_GEOLOCATION_REQUEST_TIMEOUT_MIN = 10;
-
     // Minimum number of characters required to trigger rich inline autocomplete.
     private static final int DEFAULT_RICH_INLINE_MIN_CHAR = 3;
 
@@ -139,14 +133,6 @@ public class OmniboxFeatures {
 
     public static final CachedFlag sUrlBarWithoutLigatures =
             newFlag(OmniboxFeatureList.URL_BAR_WITHOUT_LIGATURES, FeatureState.ENABLED_IN_PROD);
-
-    /**
-     * Whether GeolocationHeader should use {@link
-     * com.google.android.gms.location.FusedLocationProviderClient} to determine the location sent
-     * in omnibox requests.
-     */
-    public static final CachedFlag sUseFusedLocationProvider =
-            newFlag(OmniboxFeatureList.USE_FUSED_LOCATION_PROVIDER, FeatureState.ENABLED_IN_PROD);
 
     public static final CachedFlag sOmniboxXGeoPermissionGranularity =
             newFlag(
@@ -325,30 +311,6 @@ public class OmniboxFeatures {
             newFlag(
                     OmniboxFeatureList.OMNIBOX_DISABLE_TABS_FOR_CANVAS,
                     FeatureState.ENABLED_IN_PROD);
-
-    public static final IntCachedFeatureParam sGeolocationRequestTimeoutMinutes =
-            newIntParam(
-                    sUseFusedLocationProvider,
-                    "geolocation_request_timeout_minutes",
-                    DEFAULT_GEOLOCATION_REQUEST_TIMEOUT_MIN);
-
-    public static final IntCachedFeatureParam sGeolocationRequestMaxLocationAge =
-            newIntParam(
-                    sUseFusedLocationProvider,
-                    "geolocation_request_max_location_age_millis",
-                    (int) (5 * DateUtils.MINUTE_IN_MILLIS));
-
-    public static final IntCachedFeatureParam sGeolocationRequestUpdateInterval =
-            newIntParam(
-                    sUseFusedLocationProvider,
-                    "geolocation_request_min_update_interval_millis",
-                    (int) (9 * DateUtils.MINUTE_IN_MILLIS));
-
-    public static final IntCachedFeatureParam sGeolocationRequestPriority =
-            newIntParam(
-                    sUseFusedLocationProvider,
-                    "geolocation_request_priority",
-                    Priority.PRIORITY_BALANCED_POWER_ACCURACY);
 
     public static final IntCachedFeatureParam sTouchDownTriggerMaxPrefetchesPerSession =
             newIntParam(

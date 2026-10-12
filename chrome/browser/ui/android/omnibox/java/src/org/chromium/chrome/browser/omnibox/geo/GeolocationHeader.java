@@ -18,6 +18,7 @@ import com.google.android.gms.location.Granularity;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.Priority;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
@@ -47,7 +48,6 @@ import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.time.Duration;
 
 /**
  * Provides methods for building the X-Geo HTTP header, which provides device location to a server
@@ -83,6 +83,12 @@ public class GeolocationHeader {
     /** The maximum age in milliseconds of a location before we'll request a refresh. */
     @VisibleForTesting static final int REFRESH_LOCATION_AGE = 5 * 60 * 1000; // 5 minutes
 
+    /** The minimum interval in milliseconds between location updates. */
+    private static final long UPDATE_INTERVAL_MS = 9 * 60 * 1000; // 9 minutes
+
+    /** The duration in milliseconds for which we listen for location updates before timing out. */
+    private static final long UPDATE_DURATION_MS = 10 * 60 * 1000; // 10 minutes
+
     /** The X-Geo header prefix, preceding any location descriptors. */
     private static final String XGEO_HEADER_PREFIX = "X-Geo:";
 
@@ -111,9 +117,9 @@ public class GeolocationHeader {
     /**
      * Requests a location refresh so that a valid location will be available for constructing an
      * X-Geo header in the near future (i.e. within 5 minutes). Checks whether the header can
-     * actually be sent before requesting the location refresh. If UseFusedLocationProvider is true,
-     * this starts listening for location updates on a regular interval rather than triggering a
-     * single refresh.
+     * actually be sent before requesting the location refresh. Starts listening for location
+     * updates on a regular interval, falling back to triggering a single refresh if
+     * FusedLocationProvider is unavailable.
      */
     public static void primeLocationForGeoHeaderIfEnabled(
             Profile profile, TemplateUrlService templateService) {
@@ -135,10 +141,7 @@ public class GeolocationHeader {
 
         sGeolocationPrimed = true;
 
-        boolean listeningForFusedLocationProviderUpdates =
-                OmniboxFeatures.sUseFusedLocationProvider.isEnabled()
-                        && startListeningForLocationUpdates(useCoarse);
-        if (!listeningForFusedLocationProviderUpdates) {
+        if (!startListeningForLocationUpdates(useCoarse)) {
             GeolocationTracker.refreshLastKnownLocation(
                     ContextUtils.getApplicationContext(), REFRESH_LOCATION_AGE);
         }
@@ -158,28 +161,23 @@ public class GeolocationHeader {
                     LocationServices.getFusedLocationProviderClient(
                             ContextUtils.getApplicationContext());
 
-            long updateDuration =
-                    Duration.ofMinutes(OmniboxFeatures.sGeolocationRequestTimeoutMinutes.getValue())
-                            .toMillis();
             PostTask.postDelayedTask(
                     TaskTraits.UI_DEFAULT,
                     () -> {
                         sCurrentLocationRequested = false;
                     },
-                    updateDuration);
+                    UPDATE_DURATION_MS);
 
             int granularity =
                     requestCoarseLocation
                             ? Granularity.GRANULARITY_COARSE
                             : Granularity.GRANULARITY_PERMISSION_LEVEL;
 
-            var locationRequest =
-                    new LocationRequest.Builder(
-                                    OmniboxFeatures.sGeolocationRequestUpdateInterval.getValue())
-                            .setDurationMillis(updateDuration)
-                            .setMaxUpdateAgeMillis(
-                                    OmniboxFeatures.sGeolocationRequestMaxLocationAge.getValue())
-                            .setPriority(OmniboxFeatures.sGeolocationRequestPriority.getValue())
+            LocationRequest locationRequest =
+                    new LocationRequest.Builder(UPDATE_INTERVAL_MS)
+                            .setDurationMillis(UPDATE_DURATION_MS)
+                            .setMaxUpdateAgeMillis(REFRESH_LOCATION_AGE)
+                            .setPriority(Priority.PRIORITY_BALANCED_POWER_ACCURACY)
                             .setGranularity(granularity)
                             .build();
             fusedLocationClient.requestLocationUpdates(locationRequest, sLocationListener, null);
@@ -369,7 +367,7 @@ public class GeolocationHeader {
 
     @VisibleForTesting
     static @Nullable Location getLastKnownLocation(boolean hasFineSitePermission) {
-        if (OmniboxFeatures.sUseFusedLocationProvider.isEnabled() && sFusedLocation != null) {
+        if (sFusedLocation != null) {
             return sFusedLocation;
         }
 

@@ -3553,9 +3553,7 @@ public class LocationBarMediator
     public void onResumeWithNative() {
         Profile profile = mProfileSupplier.get();
         TemplateUrlService templateUrlService = mTemplateUrlServiceSupplier.get();
-        if (OmniboxFeatures.sUseFusedLocationProvider.isEnabled()
-                && profile != null
-                && templateUrlService != null) {
+        if (profile != null && templateUrlService != null) {
             GeolocationHeader.primeLocationForGeoHeaderIfEnabled(profile, templateUrlService);
         }
     }
@@ -3563,9 +3561,7 @@ public class LocationBarMediator
     @Override
     public void onPauseWithNative() {
         OmniboxFeatures.updateLastExitTimestamp();
-        if (OmniboxFeatures.sUseFusedLocationProvider.isEnabled()) {
-            GeolocationHeader.stopListeningForLocationUpdates();
-        }
+        GeolocationHeader.stopListeningForLocationUpdates();
     }
 
     /* package */ void setLocationBarButtonTranslationForNtpAnimation(float translationX) {

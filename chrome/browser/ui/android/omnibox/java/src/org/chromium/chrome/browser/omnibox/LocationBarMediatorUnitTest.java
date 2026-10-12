@@ -2620,7 +2620,6 @@ public class LocationBarMediatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(OmniboxFeatureList.USE_FUSED_LOCATION_PROVIDER)
     public void testFusedLocationProvider() {
         mProfileSupplier.set(mProfile);
         mMediator.onFinishNativeInitialization();
