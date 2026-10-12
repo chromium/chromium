@@ -5,9 +5,11 @@
 #include "chrome/browser/device_api/managed_configuration_store.h"
 
 #include <utility>
+#include <variant>
 
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/types/expected.h"
 #include "components/value_store/leveldb_value_store.h"
 #include "components/value_store/value_store_change.h"
 
@@ -23,22 +25,20 @@ void ManagedConfigurationStore::Initialize() {
       "OriginManagedConfiguration", path_);
 }
 
-bool ManagedConfigurationStore::SetCurrentPolicy(
+base::expected<bool, std::monostate>
+ManagedConfigurationStore::SetCurrentPolicy(
     const base::DictValue& current_configuration) {
   if (!store_) {
     Initialize();
   }
   // Get the previous policies stored in the database.
-  base::DictValue previous_policy;
   value_store::ValueStore::ReadResult read_result = store_->Get();
   if (!read_result.status().ok()) {
     LOG(WARNING) << "Failed to read managed configuration for origin "
                  << origin_ << ": " << read_result.status().message;
-    // Leave |previous_policy| empty, so that events are generated for every
-    // policy in |current_policy|.
-  } else {
-    std::swap(read_result.settings(), previous_policy);
+    return base::unexpected(std::monostate());
   }
+  base::DictValue previous_policy = std::move(read_result.settings());
 
   std::vector<std::string> removed_keys;
 
@@ -52,20 +52,22 @@ bool ManagedConfigurationStore::SetCurrentPolicy(
   value_store::LeveldbValueStore::WriteResult result =
       store_->Remove(removed_keys);
 
-  if (result.status().ok()) {
-    store_updated |= !result.changes().empty();
+  if (!result.status().ok()) {
+    return base::unexpected(std::monostate());
   }
+  store_updated |= !result.changes().empty();
 
   // IGNORE_QUOTA because these settings aren't writable by the origin, and
   // are configured by the device administrator.
   value_store::ValueStore::WriteOptions options =
       value_store::ValueStore::IGNORE_QUOTA;
   result = store_->Set(options, current_configuration);
-  if (result.status().ok()) {
-    store_updated |= !result.changes().empty();
+  if (!result.status().ok()) {
+    return base::unexpected(std::monostate());
   }
+  store_updated |= !result.changes().empty();
 
-  return store_updated;
+  return base::ok(store_updated);
 }
 
 std::optional<base::DictValue> ManagedConfigurationStore::Get(

@@ -5,21 +5,23 @@
 #ifndef CHROME_BROWSER_DEVICE_API_MANAGED_CONFIGURATION_API_H_
 #define CHROME_BROWSER_DEVICE_API_MANAGED_CONFIGURATION_API_H_
 
+#include <map>
+#include <memory>
 #include <optional>
+#include <set>
 #include <string>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/threading/sequence_bound.h"
 #include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "url/origin.h"
 
 class Profile;
-class ManagedConfigurationStore;
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -87,28 +89,18 @@ class ManagedConfigurationAPI : public KeyedService {
                                   base::DictValue configuration);
 
  private:
-  class ManagedConfigurationDownloader;
+  // Encapsulates the store and active downloader for a single origin so
+  // per-origin resources are managed together.
+  class OriginConfiguration;
 
   // Tries to download the managed configuration stored at the url provided
   // by policy.
   void OnConfigurationPolicyChanged();
-  void UpdateStoredDataForOrigin(const url::Origin& origin,
-                                 const std::string& configuration_url,
-                                 const std::string& configuration_hash);
-
-  // Downloads the data from the data_url in a worker thread, and returns it in
-  // a callback.
-  void DecodeData(const url::Origin& origin,
-                  const std::string& url_hash,
-                  std::optional<std::string> data);
-
-  // Sends an operation to set the configured value on FILE thread.
-  void PostStoreConfiguration(const url::Origin& origin,
-                              base::DictValue configuration);
+  OriginConfiguration& GetOrCreateOriginConfiguration(
+      const url::Origin& origin);
   void InformObserversIfConfigurationChanged(const url::Origin& origin,
                                              bool changed);
 
-  void MaybeCreateStoreForOrigin(const url::Origin& origin);
   base::FilePath GetStoreLocation(const url::Origin& origin);
 
   // Assigns observers from |unmanaged_observers_| to a particular store if
@@ -121,22 +113,19 @@ class ManagedConfigurationAPI : public KeyedService {
   const raw_ptr<Profile> profile_;
 
   const base::FilePath stores_path_;
-  std::map<url::Origin, base::SequenceBound<ManagedConfigurationStore>>
-      store_map_;
-  // Stores current configuration downloading managers.
-  std::map<url::Origin, std::unique_ptr<ManagedConfigurationDownloader>>
-      downloaders_;
+  std::map<url::Origin, std::unique_ptr<OriginConfiguration>> origins_;
   std::map<url::Origin, base::ObserverList<Observer>> observers_;
   base::ObserverList<AnyOriginObserver> any_origin_observers_;
 
-  // Stores the list of orrigins which have a managed configuration(may not yet
-  // loaded).
+  // Stores the list of origins which have a managed configuration (may not yet
+  // be loaded).
   std::set<url::Origin> managed_origins_;
 
   std::set<raw_ptr<Observer, SetExperimental>> unmanaged_observers_;
 
-  // Observes changes to WebAppInstallForceList.
+  // Observes changes to ManagedConfigurationPerOrigin.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
+
   base::WeakPtrFactory<ManagedConfigurationAPI> weak_ptr_factory_{this};
 };
 

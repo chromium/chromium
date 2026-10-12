@@ -7,6 +7,9 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
+#include <variant>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -14,6 +17,8 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/sequence_bound.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/device_api/managed_configuration_store.h"
@@ -70,15 +75,7 @@ std::string GetOriginEncoded(const url::Origin& origin) {
   return base::HexEncode(origin.Serialize());
 }
 
-}  // namespace
-
-const char ManagedConfigurationAPI::kOriginKey[] = "origin";
-const char ManagedConfigurationAPI::kManagedConfigurationUrlKey[] =
-    "managed_configuration_url";
-const char ManagedConfigurationAPI::kManagedConfigurationHashKey[] =
-    "managed_configuration_hash";
-
-class ManagedConfigurationAPI::ManagedConfigurationDownloader {
+class ManagedConfigurationDownloader {
  public:
   explicit ManagedConfigurationDownloader(const std::string& data_hash)
       : data_hash_(data_hash) {}
@@ -113,11 +110,168 @@ class ManagedConfigurationAPI::ManagedConfigurationDownloader {
                                      kMaxConfigurationFileSize);
   }
 
-  std::string hash() const { return data_hash_; }
+  const std::string& hash() const { return data_hash_; }
 
  private:
   std::unique_ptr<network::SimpleURLLoader> simple_loader_;
   const std::string data_hash_;
+};
+
+}  // namespace
+
+const char ManagedConfigurationAPI::kOriginKey[] = "origin";
+const char ManagedConfigurationAPI::kManagedConfigurationUrlKey[] =
+    "managed_configuration_url";
+const char ManagedConfigurationAPI::kManagedConfigurationHashKey[] =
+    "managed_configuration_hash";
+
+class ManagedConfigurationAPI::OriginConfiguration {
+ public:
+  using ConfigurationCallback =
+      base::OnceCallback<void(std::optional<base::DictValue>)>;
+
+  OriginConfiguration(ManagedConfigurationAPI* api,
+                      const url::Origin& origin,
+                      base::FilePath store_path)
+      : api_(api), origin_(origin), store_path_(std::move(store_path)) {}
+
+  ~OriginConfiguration() = default;
+  OriginConfiguration(const OriginConfiguration&) = delete;
+  OriginConfiguration& operator=(const OriginConfiguration&) = delete;
+
+  void GetConfiguration(const std::vector<std::string>& keys,
+                        ConfigurationCallback callback) {
+    if (!store_) {
+      std::move(callback).Run(std::nullopt);
+      return;
+    }
+    store_.AsyncCall(&ManagedConfigurationStore::Get)
+        .WithArgs(keys)
+        .Then(std::move(callback));
+  }
+
+  void GetAllConfiguration(ConfigurationCallback callback) {
+    EnsureStoreCreated();
+    store_.AsyncCall(&ManagedConfigurationStore::GetAll)
+        .Then(std::move(callback));
+  }
+
+  void SetConfigurationForTesting(base::DictValue configuration) {
+    PostStoreConfiguration(std::move(configuration));
+  }
+
+  void UpdateConfiguration(const std::string& configuration_url,
+                           const std::string& configuration_hash) {
+    const std::string* last_hash_value =
+        api_->profile_->GetPrefs()
+            ->GetDict(prefs::kLastManagedConfigurationHashForOrigin)
+            .FindString(GetOriginEncoded(origin_));
+
+    // Nothing to be stored here, the hash value is the same.
+    if (last_hash_value && *last_hash_value == configuration_hash) {
+      return;
+    }
+
+    if (configuration_url.empty()) {
+      ClearConfiguration();
+      return;
+    }
+
+    // Check whether there is already a downloader.
+    if (downloader_) {
+      // If it downloads the same data already, do nothing.
+      if (downloader_->hash() == configuration_hash) {
+        return;
+      }
+      // Cancel it otherwise.
+      downloader_.reset();
+    }
+
+    downloader_ =
+        std::make_unique<ManagedConfigurationDownloader>(configuration_hash);
+    downloader_->Fetch(
+        configuration_url,
+        base::BindOnce(&OriginConfiguration::DecodeData,
+                       weak_ptr_factory_.GetWeakPtr(), configuration_hash));
+  }
+
+  void ClearConfiguration() {
+    downloader_.reset();
+    ScopedDictPrefUpdate update(api_->profile_->GetPrefs(),
+                                prefs::kLastManagedConfigurationHashForOrigin);
+    update->Remove(GetOriginEncoded(origin_));
+    PostStoreConfiguration(base::DictValue());
+  }
+
+  void EnsureStoreCreated() {
+    if (store_) {
+      return;
+    }
+    // Create the store now, and serve the cached policy until the PolicyService
+    // sends updated values.
+    store_ = base::SequenceBound<ManagedConfigurationStore>(
+        base::ThreadPool::CreateSequencedTaskRunner(
+            {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}),
+        origin_, store_path_);
+  }
+
+  bool HasStore() const { return static_cast<bool>(store_); }
+
+ private:
+  void DecodeData(const std::string& url_hash,
+                  std::optional<std::string> data) {
+    downloader_.reset();
+    if (!data) {
+      return;
+    }
+
+    std::optional<base::DictValue> decoding_result =
+        base::JSONReader::ReadDict(*data, base::JSON_PARSE_RFC);
+    if (!decoding_result.has_value()) {
+      VLOG(1) << "Could not fetch managed configuration for app with origin = "
+              << origin_.Serialize();
+      PostStoreConfiguration(base::DictValue());
+      return;
+    }
+    ScopedDictPrefUpdate update(api_->profile_->GetPrefs(),
+                                prefs::kLastManagedConfigurationHashForOrigin);
+    update->Set(GetOriginEncoded(origin_), url_hash);
+
+    // We need to transform each value into a string.
+    base::DictValue result_dict;
+    for (auto item : *decoding_result) {
+      std::string result;
+      JSONStringValueSerializer serializer(&result);
+      serializer.Serialize(item.second);
+      result_dict.SetByDottedPath(item.first, result);
+    }
+
+    PostStoreConfiguration(std::move(result_dict));
+  }
+
+  void PostStoreConfiguration(base::DictValue configuration) {
+    EnsureStoreCreated();
+    store_.AsyncCall(&ManagedConfigurationStore::SetCurrentPolicy)
+        .WithArgs(std::move(configuration))
+        .Then(
+            base::BindOnce(&OriginConfiguration::OnStoreConfigurationCompleted,
+                           weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  void OnStoreConfigurationCompleted(
+      base::expected<bool, std::monostate> changed) {
+    api_->InformObserversIfConfigurationChanged(origin_,
+                                                changed.value_or(false));
+  }
+
+  const raw_ptr<ManagedConfigurationAPI> api_;
+  const url::Origin origin_;
+  const base::FilePath store_path_;
+
+  base::SequenceBound<ManagedConfigurationStore> store_;
+  std::unique_ptr<ManagedConfigurationDownloader> downloader_;
+
+  base::WeakPtrFactory<OriginConfiguration> weak_ptr_factory_{this};
 };
 
 ManagedConfigurationAPI::ManagedConfigurationAPI(Profile* profile)
@@ -152,16 +306,12 @@ void ManagedConfigurationAPI::GetOriginPolicyConfiguration(
     std::move(callback).Run(std::nullopt);
     return;
   }
-
-  if (!store_map_.contains(origin)) {
+  if (!origins_.contains(origin)) {
     std::move(callback).Run(std::nullopt);
     return;
   }
-
-  store_map_[origin]
-      .AsyncCall(&ManagedConfigurationStore::Get)
-      .WithArgs(keys)
-      .Then(std::move(callback));
+  GetOrCreateOriginConfiguration(origin).GetConfiguration(keys,
+                                                          std::move(callback));
 }
 
 void ManagedConfigurationAPI::GetOriginPolicyConfiguration(
@@ -171,17 +321,14 @@ void ManagedConfigurationAPI::GetOriginPolicyConfiguration(
     std::move(callback).Run(std::nullopt);
     return;
   }
-
-  MaybeCreateStoreForOrigin(origin);
-  store_map_[origin]
-      .AsyncCall(&ManagedConfigurationStore::GetAll)
-      .Then(std::move(callback));
+  GetOrCreateOriginConfiguration(origin).GetAllConfiguration(
+      std::move(callback));
 }
 
 void ManagedConfigurationAPI::AddObserver(Observer* observer) {
   url::Origin origin = observer->GetOrigin();
   if (CanHaveManagedStore(origin)) {
-    MaybeCreateStoreForOrigin(origin);
+    GetOrCreateOriginConfiguration(origin).EnsureStoreCreated();
     observers_[origin].AddObserver(observer);
   } else {
     unmanaged_observers_.insert(observer);
@@ -219,7 +366,8 @@ void ManagedConfigurationAPI::SetConfigurationForTesting(
     const url::Origin& origin,
     base::DictValue configuration) {
   managed_origins_.insert(origin);
-  PostStoreConfiguration(origin, std::move(configuration));
+  GetOrCreateOriginConfiguration(origin).SetConfigurationForTesting(
+      std::move(configuration));
 }
 
 void ManagedConfigurationAPI::OnConfigurationPolicyChanged() {
@@ -248,14 +396,14 @@ void ManagedConfigurationAPI::OnConfigurationPolicyChanged() {
     if (!configuration_url || !configuration_hash) {
       continue;
     }
-    UpdateStoredDataForOrigin(origin, *configuration_url, *configuration_hash);
+    GetOrCreateOriginConfiguration(origin).UpdateConfiguration(
+        *configuration_url, *configuration_hash);
   }
 
-  // We need to clean configurations for origins that got their entry removed.
-  for (const auto& store_entry : store_map_) {
-    if (!current_origins.contains(store_entry.first)) {
-      UpdateStoredDataForOrigin(store_entry.first, std::string(),
-                                std::string());
+  // Clean configurations for origins that had their entry removed.
+  for (auto& [origin, origin_configuration] : origins_) {
+    if (!current_origins.contains(origin) && origin_configuration->HasStore()) {
+      origin_configuration->ClearConfiguration();
     }
   }
 
@@ -263,107 +411,20 @@ void ManagedConfigurationAPI::OnConfigurationPolicyChanged() {
   PromoteObservers();
 }
 
-void ManagedConfigurationAPI::MaybeCreateStoreForOrigin(
+ManagedConfigurationAPI::OriginConfiguration&
+ManagedConfigurationAPI::GetOrCreateOriginConfiguration(
     const url::Origin& origin) {
-  if (store_map_.contains(origin)) {
-    return;
+  auto& entry = origins_[origin];
+  if (!entry) {
+    entry = std::make_unique<OriginConfiguration>(this, origin,
+                                                  GetStoreLocation(origin));
   }
-
-  // Create the store now, and serve the cached policy until the PolicyService
-  // sends updated values.
-  store_map_[origin] = base::SequenceBound<ManagedConfigurationStore>(
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}),
-      origin, GetStoreLocation(origin));
+  return *entry;
 }
 
 base::FilePath ManagedConfigurationAPI::GetStoreLocation(
     const url::Origin& origin) {
   return stores_path_.AppendASCII(GetOriginEncoded(origin));
-}
-
-void ManagedConfigurationAPI::UpdateStoredDataForOrigin(
-    const url::Origin& origin,
-    const std::string& configuration_url,
-    const std::string& configuration_hash) {
-  const std::string* last_hash_value =
-      profile_->GetPrefs()
-          ->GetDict(prefs::kLastManagedConfigurationHashForOrigin)
-          .FindString(GetOriginEncoded(origin));
-
-  // Nothing to be stored here, the hash value is the same.
-  if (last_hash_value && *last_hash_value == configuration_hash) {
-    return;
-  }
-
-  if (configuration_url.empty()) {
-    ScopedDictPrefUpdate update(profile_->GetPrefs(),
-                                prefs::kLastManagedConfigurationHashForOrigin);
-    update->Remove(GetOriginEncoded(origin));
-    PostStoreConfiguration(origin, base::DictValue());
-    return;
-  }
-
-  // Check whether there is already a downloader.
-  if (downloaders_[origin]) {
-    // If it downloads the same data already, do nothing.
-    if (downloaders_[origin]->hash() == configuration_hash) {
-      return;
-    }
-    // Cancel it otherwise.
-    downloaders_[origin].reset();
-  }
-
-  downloaders_[origin] =
-      std::make_unique<ManagedConfigurationDownloader>(configuration_hash);
-  downloaders_[origin]->Fetch(
-      configuration_url, base::BindOnce(&ManagedConfigurationAPI::DecodeData,
-                                        weak_ptr_factory_.GetWeakPtr(), origin,
-                                        configuration_hash));
-}
-
-void ManagedConfigurationAPI::DecodeData(const url::Origin& origin,
-                                         const std::string& url_hash,
-                                         std::optional<std::string> data) {
-  downloaders_[origin].reset();
-  if (!data) {
-    return;
-  }
-
-  std::optional<base::DictValue> decoding_result =
-      base::JSONReader::ReadDict(*data, base::JSON_PARSE_RFC);
-  if (!decoding_result.has_value()) {
-    VLOG(1) << "Could not fetch managed configuration for app with origin = "
-            << origin.Serialize();
-    PostStoreConfiguration(origin, base::DictValue());
-    return;
-  }
-  ScopedDictPrefUpdate update(profile_->GetPrefs(),
-                              prefs::kLastManagedConfigurationHashForOrigin);
-  update->Set(GetOriginEncoded(origin), url_hash);
-
-  // We need to transform each value into a string.
-  base::DictValue result_dict;
-  for (auto item : *decoding_result) {
-    std::string result;
-    JSONStringValueSerializer serializer(&result);
-    serializer.Serialize(item.second);
-    result_dict.SetByDottedPath(item.first, result);
-  }
-
-  PostStoreConfiguration(origin, std::move(result_dict));
-}
-
-void ManagedConfigurationAPI::PostStoreConfiguration(
-    const url::Origin& origin,
-    base::DictValue configuration) {
-  MaybeCreateStoreForOrigin(origin);
-  store_map_[origin]
-      .AsyncCall(&ManagedConfigurationStore::SetCurrentPolicy)
-      .WithArgs(std::move(configuration))
-      .Then(base::BindOnce(
-          &ManagedConfigurationAPI::InformObserversIfConfigurationChanged,
-          weak_ptr_factory_.GetWeakPtr(), origin));
 }
 
 void ManagedConfigurationAPI::InformObserversIfConfigurationChanged(

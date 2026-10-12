@@ -8,9 +8,11 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "components/value_store/value_store.h"
 #include "url/origin.h"
@@ -30,9 +32,11 @@ class ManagedConfigurationStore {
   ManagedConfigurationStore& operator=(const ManagedConfigurationStore&) =
       delete;
 
-  // Returns |true| if the new policy is different from the previously set
-  // policy.
-  bool SetCurrentPolicy(const base::DictValue& current_configuration);
+  // Returns an error if reading from or writing to the underlying store failed.
+  // Otherwise returns `true` if the newly stored policy differs from the
+  // previously stored policy, or `false` if it was identical.
+  base::expected<bool, std::monostate> SetCurrentPolicy(
+      const base::DictValue& current_configuration);
   std::optional<base::DictValue> Get(const std::vector<std::string>& keys);
   std::optional<base::DictValue> GetAll();
 
