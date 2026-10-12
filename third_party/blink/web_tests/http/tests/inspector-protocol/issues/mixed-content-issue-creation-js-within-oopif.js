@@ -12,7 +12,8 @@
 
   await dp.Network.enable();
   await dp.Audits.enable();
-  await dp.Target.setAutoAttach({autoAttach: true, waitForDebuggerOnStart: false, flatten: true});
+  await dp.Target.setAutoAttach(
+      {autoAttach: true, waitForDebuggerOnStart: true, flatten: true});
 
   dp.Target.onAttachedToTarget(async e => {
     const dp = session.createChild(e.params.sessionId).protocol;
@@ -33,6 +34,7 @@
 
     await dp.Network.enable();
     await dp.Audits.enable();
+    await dp.Runtime.runIfWaitingForDebugger();
   });
 
   await page.navigate('https://devtools.test:8443/inspector-protocol/resources/mixed-content-within-oopif.html');
