@@ -30,11 +30,17 @@
 // Convenience check for input plate position bottom.
 @property(nonatomic, readonly) BOOL isBottomInputPlate;
 
+// Convenience check for input plate position bottom sheet.
+@property(nonatomic, readonly) BOOL isBottomSheetInputPlate;
+
 // The background color for the composebox;
 @property(nonatomic, readonly) UIColor* composeboxBackgroundColor;
 
 // The background color for the input plate.
 @property(nonatomic, readonly) UIColor* inputPlateBackgroundColor;
+
+// The color of the input plate placeholder text.
+@property(nonatomic, readonly) UIColor* inputPlatePlaceholderColor;
 
 // The background color for the input item.
 @property(nonatomic, readonly) UIColor* inputItemBackgroundColor;

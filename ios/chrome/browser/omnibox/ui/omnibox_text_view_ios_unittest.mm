@@ -111,6 +111,14 @@ TEST_F(OmniboxTextViewIOSTest, PlaceholderHiddenFromAccessibility) {
   EXPECT_FALSE(text_view_.placeholderLabel.isAccessibilityElement);
 }
 
+// Tests that setting placeholderColor updates the placeholder label textColor.
+TEST_F(OmniboxTextViewIOSTest, PlaceholderColor) {
+  UIColor* color = [UIColor colorWithWhite:0.5 alpha:1.0];
+  text_view_.placeholderColor = color;
+  EXPECT_NSEQ(color, text_view_.placeholderColor);
+  EXPECT_NSEQ(color, text_view_.placeholderLabel.textColor);
+}
+
 // Tests that key commands are registered for Composebox.
 TEST_F(OmniboxTextViewIOSTest, KeyCommandsForComposebox) {
   base::test::ScopedFeatureList scoped_feature_list;

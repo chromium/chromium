@@ -185,7 +185,7 @@ const CGFloat kVerticalOffset = 1;
 
 - (void)setPlaceholderLabel:(UILabel*)placeholderLabel {
   placeholderLabel.font = self.font;
-  placeholderLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  placeholderLabel.textColor = self.placeholderColor;
   placeholderLabel.isAccessibilityElement = NO;
   _placeholderLabel = placeholderLabel;
 
@@ -203,6 +203,11 @@ const CGFloat kVerticalOffset = 1;
     [placeholderLabel.trailingAnchor
         constraintEqualToAnchor:self.trailingAnchor],
   ]];
+}
+
+- (void)setPlaceholderColor:(UIColor*)placeholderColor {
+  _placeholderColor = placeholderColor;
+  self.placeholderLabel.textColor = placeholderColor;
 }
 
 - (void)setAllowsReturnKeyWithEmptyText:(BOOL)allowsReturnKeyWithEmptyText {

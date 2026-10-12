@@ -486,6 +486,7 @@ UIImage* SendButtonImage(BOOL highlighted,
   _editView = editView;
   _editView.translatesAutoresizingMaskIntoConstraints = NO;
   _editView.accessibilityIdentifier = kComposeboxAccessibilityIdentifier;
+  [_editView setPlaceholderColor:_theme.inputPlatePlaceholderColor];
 
   if (_entrypoint == ComposeboxEntrypoint::kCobrowse) {
     _editView.minimumHeight = kOmniboxCobrowseMinHeight;
@@ -522,6 +523,7 @@ UIImage* SendButtonImage(BOOL highlighted,
 - (void)updateTheme:(ComposeboxTheme*)theme {
   _theme = theme;
   _inputPlateContainerView.backgroundColor = _theme.inputPlateBackgroundColor;
+  [_editView setPlaceholderColor:_theme.inputPlatePlaceholderColor];
   CGFloat cornerRadius =
       _theme.inputPlatePosition == ComposeboxInputPlatePosition::kiPad
           ? kInputPlateIpadCornerRadius

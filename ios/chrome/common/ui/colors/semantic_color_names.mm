@@ -9,6 +9,10 @@ NSString* const kAimInputItemTopBackgroundColor =
     @"aim_input_item_top_background_color";
 NSString* const kAimComposeboxButtonBackgroundColor =
     @"aim_composebox_button_background_color";
+NSString* const kAimComposeboxInputPlateBackgroundColor =
+    @"aim_composebox_input_plate_background_color";
+NSString* const kAimComposeboxInputPlatePlaceholderColor =
+    @"aim_composebox_input_plate_placeholder_color";
 NSString* const kAppBarColor = @"app_bar";
 NSString* const kAppBarIncognitoColor = @"app_bar_incognito";
 NSString* const kBackgroundColor = @"background_color";

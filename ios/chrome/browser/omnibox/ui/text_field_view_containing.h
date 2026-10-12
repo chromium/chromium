@@ -46,6 +46,9 @@
 // placeholder.
 - (void)setCustomPlaceholderText:(NSString*)customPlaceholderText;
 
+// Sets the color of the placeholder text.
+- (void)setPlaceholderColor:(UIColor*)placeholderColor;
+
 // The minimum height of the text field.
 - (void)setMinimumHeight:(CGFloat)minimumHeight;
 

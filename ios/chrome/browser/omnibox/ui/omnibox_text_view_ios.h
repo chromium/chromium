@@ -39,6 +39,9 @@
 /// The minimum height of the text view.
 @property(nonatomic, assign) CGFloat minimumHeight;
 
+/// The color of the placeholder text.
+@property(nonatomic, strong) UIColor* placeholderColor;
+
 /// Initialize the omnibox with the given `frame`, `textColor`, and `tintColor`.
 - (instancetype)initWithFrame:(CGRect)frame
                     textColor:(UIColor*)textColor

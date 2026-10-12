@@ -541,6 +541,12 @@ UIButton* CreateClearButton(OmniboxPresentationContext presentationContext) {
   }
 }
 
+- (void)setPlaceholderColor:(UIColor*)placeholderColor {
+  if (UseTextView(_presentationContext)) {
+    _textView.placeholderColor = placeholderColor;
+  }
+}
+
 - (UIView*)textFieldView {
   return _textInputView;
 }

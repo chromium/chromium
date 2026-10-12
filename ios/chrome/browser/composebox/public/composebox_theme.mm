@@ -38,6 +38,10 @@
   return _inputPlatePosition == ComposeboxInputPlatePosition::kBottom;
 }
 
+- (BOOL)isBottomSheetInputPlate {
+  return _inputPlatePosition == ComposeboxInputPlatePosition::kBottomSheet;
+}
+
 - (UIColor*)composeboxBackgroundColor {
   return [UIColor colorNamed:kBackgroundColor];
 }
@@ -57,8 +61,22 @@
   if (self.isTopInputPlate) {
     return [UIColor colorNamed:kTextfieldBackgroundColor];
   }
+  if (self.isBottomSheetInputPlate) {
+    // In dark mode, `kPrimaryBackgroundColor` is almost the same color as the
+    // AIM page behind the bottom sheet input plate, which hides the plate.
+    return [UIColor colorNamed:kAimComposeboxInputPlateBackgroundColor];
+  }
 
   return [UIColor colorNamed:kPrimaryBackgroundColor];
+}
+
+- (UIColor*)inputPlatePlaceholderColor {
+  if (self.isBottomSheetInputPlate) {
+    // The default `kTextSecondaryColor` is translucent, so it doesn't reach a
+    // 4.5:1 contrast ratio on the lighter dark mode input plate.
+    return [UIColor colorNamed:kAimComposeboxInputPlatePlaceholderColor];
+  }
+  return [UIColor colorNamed:kTextSecondaryColor];
 }
 
 - (UIColor*)closeButtonBackgroundColor {

@@ -13,6 +13,14 @@
 
 extern NSString* const kAimInputItemTopBackgroundColor;
 extern NSString* const kAimComposeboxButtonBackgroundColor;
+// Background color of the AIM Composebox input plate. Matches
+// `kPrimaryBackgroundColor` in light mode and `kTertiaryBackgroundColor` in
+// dark mode.
+extern NSString* const kAimComposeboxInputPlateBackgroundColor;
+// Placeholder text color of the AIM Composebox input plate. Matches
+// `kTextSecondaryColor` in light mode and `kTextfieldPlaceholderColor` in dark
+// mode.
+extern NSString* const kAimComposeboxInputPlatePlaceholderColor;
 extern NSString* const kAppBarColor;
 extern NSString* const kAppBarIncognitoColor;
 extern NSString* const kBackgroundColor;
