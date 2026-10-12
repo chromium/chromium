@@ -280,9 +280,9 @@ void ClipboardHistoryItemView::HandleMainButtonPressEvent(
   // TODO(https://crbug.com/1144994): Modify this part after the clipboard
   // history menu code is refactored.
 
-  // When an item view is under gesture tap, it may be not under pseudo
-  // focus yet.
-  if (event.type() == ui::EventType::kGestureTap) {
+  // When an item view is under gesture tap or mouse click, it may be not under
+  // pseudo focus yet.
+  if (event.type() == ui::EventType::kGestureTap || event.IsMouseEvent()) {
     pseudo_focus_ = PseudoFocus::kMainButton;
     UpdateAccessiblitySelectionAttribute();
   }

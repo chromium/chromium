@@ -10,6 +10,7 @@
 #include "ash/clipboard/clipboard_history.h"
 #include "ash/clipboard/clipboard_history_controller_impl.h"
 #include "ash/clipboard/clipboard_history_item.h"
+#include "ash/clipboard/clipboard_history_menu_model_adapter.h"
 #include "ash/clipboard/clipboard_history_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -899,6 +900,58 @@ TEST_F(ClipboardHistoryControllerWithTextfieldTest, PasteClipboardItemById) {
         "Ash.ClipboardHistory.ContextMenu.MenuOptionSelected",
         paste_data_index + 1, /*expected_count=*/1);
   }
+}
+
+// Regression test for crbug.com/541925193: verifies that clicking an unselected
+// clipboard history item (whose `pseudo_focus_` is `kEmpty`, e.g. when
+// selection moves away while the cursor remains over the item) pastes the
+// clicked item without crashing.
+TEST_F(ClipboardHistoryControllerWithTextfieldTest,
+       PasteUnselectedItemByMouseClick) {
+  // Clipboard history is ordered most-recent-first, so "first_item" will be at
+  // menu index 1 (`first_item_view`) and "second_item" at menu index 2
+  // (`second_item_view`).
+  WriteTextToClipboardAndConfirm(u"second_item");
+  WriteTextToClipboardAndConfirm(u"first_item");
+
+  base::RunLoop run_loop;
+  GetClipboardHistoryController()->set_initial_item_selected_callback_for_test(
+      run_loop.QuitClosure());
+  ShowMenu();
+  run_loop.Run();
+  ASSERT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
+
+  auto* const adapter =
+      GetClipboardHistoryController()->context_menu_for_test();
+  ASSERT_TRUE(adapter);
+  ASSERT_EQ(adapter->GetMenuItemsCount(), 2u);
+
+  // Index 0 is the header; index 1 is `first_item_view` ("first_item"); index 2
+  // is `second_item_view` ("second_item").
+  const views::MenuItemView* const first_item_view =
+      adapter->GetMenuItemViewAtForTest(1u);
+  const views::MenuItemView* const second_item_view =
+      adapter->GetMenuItemViewAtForTest(2u);
+  ASSERT_TRUE(first_item_view->IsSelected());
+  ASSERT_FALSE(second_item_view->IsSelected());
+
+  // Move the mouse over the second item (which selects it), then press Down to
+  // wrap selection back to the first item while the mouse remains over the
+  // unselected second item.
+  GetEventGenerator()->MoveMouseTo(
+      second_item_view->GetBoundsInScreen().CenterPoint());
+  ASSERT_TRUE(second_item_view->IsSelected());
+  PressAndReleaseKey(ui::VKEY_DOWN);
+  ASSERT_TRUE(first_item_view->IsSelected());
+  ASSERT_FALSE(second_item_view->IsSelected());
+
+  // Click the left mouse button without moving the mouse. The unselected item
+  // under the cursor (`second_item_view`) should be pasted without hitting
+  // NOTREACHED.
+  GetEventGenerator()->ClickLeftButton();
+  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
+  WaitForOperationConfirmed();
+  EXPECT_EQ(textfield_->GetText(), u"second_item");
 }
 
 // Base class for tests that exercise clipboard history controller behavior with
