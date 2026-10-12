@@ -339,6 +339,14 @@ chromium-metrics-reviews@google.com.
   <variant name="WillStartRequest"/>
 </variants>
 
+<variants name="WaitForNewNetworkCause">
+  <variant name="WaitForNewNetworkPostNetworkDisconnected"
+      summary="Triggered by waiting for a new network post network
+               disconnected."/>
+  <variant name="WaitForNewNetworkPostWriteError"
+      summary="Triggered by waiting for a new network post write error."/>
+</variants>
+
 <variants name="WillProcessResponseThrottleNames">
   <variant name="MimeSniffingThrottle"/>
   <variant name="SafeBrowsingBrowserThrottle"/>
@@ -5131,6 +5139,29 @@ chromium-metrics-reviews@google.com.
     explicit outcome set while its associated QuicChromiumClientSession is still
     alive. This should never happen and indicates a bug.
   </summary>
+</histogram>
+
+<histogram name="Net.Quic.Migration.Attempt.WaitForNewNetwork.Duration"
+    units="ms" expires_after="2027-08-01">
+  <owner>stefanoduo@google.com</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    Time elapsed from when a QUIC connection had no alternate network and
+    started waiting for a new network to connect, until a new network connected.
+    Only recorded when a new network connects while waiting.
+  </summary>
+</histogram>
+
+<histogram
+    name="Net.Quic.Migration.Attempt.WaitForNewNetwork.Duration.ByTrigger.{Trigger}"
+    units="ms" expires_after="2027-08-01">
+  <owner>stefanoduo@google.com</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    Same as Net.Quic.Migration.Attempt.WaitForNewNetwork.Duration, but
+    partitioned by the migration cause {Trigger}.
+  </summary>
+  <token key="Trigger" variants="WaitForNewNetworkCause"/>
 </histogram>
 
 <histogram name="Net.QuicActiveSessionCount.{GoingAwayReason}" units="sesions"

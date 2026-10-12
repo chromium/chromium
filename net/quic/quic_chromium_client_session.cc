@@ -107,10 +107,6 @@ const size_t kAdditionalOverheadForIPv6 = 20;
 // IP address changes.
 const size_t kMaxReadersPerQuicSession = 5;
 
-// Time to wait (in seconds) when no networks are available and
-// migrating sessions need to wait for a new network to connect.
-const size_t kWaitTimeForNewNetworkSecs = 10;
-
 const size_t kMinRetryTimeForDefaultNetworkSecs = 1;
 
 // These values are persisted to logs. Entries should not be renumbered,
@@ -2582,6 +2578,12 @@ void QuicChromiumClientSession::OnNoNewNetwork(
     QuicMigrationAttemptCause migration_cause) {
   DCHECK(OneRttKeysAvailable());
   wait_for_new_network_cause_ = migration_cause;
+  // If a previous migration attempt is already waiting for a new network, keep
+  // its start time to measure the true total wait time. The cause is updated to
+  // the most recent signal, matching historical behavior.
+  if (wait_for_new_network_start_time_.is_null()) {
+    wait_for_new_network_start_time_ = tick_clock_->NowTicks();
+  }
   net_log_.AddEvent(
       NetLogEventType::QUIC_CONNECTION_MIGRATION_WAITING_FOR_NEW_NETWORK);
 
@@ -2591,13 +2593,15 @@ void QuicChromiumClientSession::OnNoNewNetwork(
   static_cast<QuicChromiumPacketWriter*>(connection()->writer())
       ->set_force_write_blocked(true);
 
+  base::TimeDelta timeout = features::kQuicWaitForNewNetworkTimeoutParam.Get();
+
   // Post a task to maybe close the session if the alarm fires.
   task_runner_->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&QuicChromiumClientSession::OnMigrationTimeout,
                      weak_factory_.GetWeakPtr(), packet_readers_.size(),
                      migration_cause),
-      base::Seconds(kWaitTimeForNewNetworkSecs));
+      timeout);
 }
 
 void QuicChromiumClientSession::WriteToNewSocket() {
@@ -2624,6 +2628,9 @@ void QuicChromiumClientSession::OnMigrationTimeout(
   if (num_sockets != packet_readers_.size()) {
     return;
   }
+
+  wait_for_new_network_cause_.reset();
+  wait_for_new_network_start_time_ = base::TimeTicks();
 
   net_log_.AddEvent(
       NetLogEventType::QUIC_CONNECTION_MIGRATION_FAILURE_WAITING_FOR_NETWORK);
@@ -2917,6 +2924,12 @@ void QuicChromiumClientSession::OnNetworkConnected(
   if (wait_for_new_network_cause_.has_value()) {
     QuicMigrationAttemptCause migration_cause = *wait_for_new_network_cause_;
     wait_for_new_network_cause_.reset();
+    CHECK(!wait_for_new_network_start_time_.is_null());
+    base::TimeDelta duration =
+        tick_clock_->NowTicks() - wait_for_new_network_start_time_;
+    wait_for_new_network_start_time_ = base::TimeTicks();
+    QuicMigrationAttemptContext::RecordWaitForNewNetworkDuration(
+        migration_cause, duration);
     net_log_.AddEventWithInt64Params(
         NetLogEventType::QUIC_CONNECTION_MIGRATION_SUCCESS_WAITING_FOR_NETWORK,
         "network", network);

@@ -4195,6 +4195,243 @@ TEST_P(QuicSessionPoolTest, MigrationTimeoutWithNoNewNetwork) {
       QuicMigrationAttemptIneligibleReason::kNoAlternateNetwork, 1);
 }
 
+TEST_P(QuicSessionPoolTest, MigrationTimeoutWithCustomWaitTimeForNewNetwork) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kQuicWaitForNewNetworkTimeout, {{"timeout", "3s"}});
+
+  InitializeConnectionMigrationV2Test({kDefaultNetworkForTests});
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  // Using a testing task runner so that we can control time.
+  auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  QuicSessionPoolPeer::SetTaskRunner(pool_.get(), task_runner.get());
+
+  MockQuicData socket_data(version_);
+  socket_data.AddReadPauseForever();
+  socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  // Create request and QuicHttpStream.
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
+  EXPECT_TRUE(stream.get());
+
+  // Cause QUIC stream to be created.
+  HttpRequestInfo request_info;
+  request_info.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(false, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
+
+  // Ensure that session is alive and active.
+  QuicChromiumClientSession* session = GetActiveSession(kDefaultDestination);
+  EXPECT_TRUE(QuicSessionPoolPeer::IsLiveSession(pool_.get(), session));
+  EXPECT_TRUE(HasActiveSession(kDefaultDestination));
+
+  base::HistogramTester histogram_tester;
+
+  // Trigger connection migration. Since there are no networks
+  // to migrate to, this should cause the session to wait for a new network.
+  scoped_mock_network_change_notifier_->mock_network_change_notifier()
+      ->NotifyNetworkDisconnected(kDefaultNetworkForTests);
+
+  // The migration will not fail until the custom migration alarm timeout.
+  EXPECT_TRUE(QuicSessionPoolPeer::IsLiveSession(pool_.get(), session));
+  EXPECT_TRUE(HasActiveSession(kDefaultDestination));
+  EXPECT_EQ(1u, session->GetNumActiveStreams());
+  EXPECT_EQ(ERR_IO_PENDING, stream->ReadResponseHeaders(callback_.callback()));
+  EXPECT_EQ(true, session->connection()->writer()->IsWriteBlocked());
+
+  // Fast forward by 2s (less than custom 3s wait time). Session should still be
+  // alive.
+  task_runner->FastForwardBy(base::Seconds(2));
+  EXPECT_TRUE(QuicSessionPoolPeer::IsLiveSession(pool_.get(), session));
+  EXPECT_TRUE(HasActiveSession(kDefaultDestination));
+
+  // Fast forward by remaining 1s. Now migration times out.
+  task_runner->FastForwardBy(base::Seconds(1));
+
+  // The connection should now be closed.
+  EXPECT_FALSE(QuicSessionPoolPeer::IsLiveSession(pool_.get(), session));
+  EXPECT_FALSE(HasActiveSession(kDefaultDestination));
+  EXPECT_EQ(ERR_INTERNET_DISCONNECTED, callback_.WaitForResult());
+
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+
+  histogram_tester.ExpectBucketCount(
+      "Net.Quic.Migration.Attempt.Ineligible",
+      QuicMigrationAttemptIneligibleReason::kNoAlternateNetwork, 2);
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.Ineligible.ByTrigger.OnNetworkDisconnected",
+      QuicMigrationAttemptIneligibleReason::kNoAlternateNetwork, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.Ineligible.ByTrigger."
+      "WaitForNewNetworkPostNetworkDisconnected",
+      QuicMigrationAttemptIneligibleReason::kNoAlternateNetwork, 1);
+}
+
+TEST_P(QuicSessionPoolTest,
+       MigrationRecoveryPreservesWaitStartTimeAcrossSignals) {
+  InitializeConnectionMigrationV2Test({kDefaultNetworkForTests});
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  client_maker_.set_save_packet_frames(true);
+
+  auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  task_runner->AdvanceMockTickClock(base::Seconds(100));
+  QuicSessionPoolPeer::SetTaskRunner(pool_.get(), task_runner.get());
+  QuicSessionPoolPeer::SetTickClock(pool_.get(),
+                                    task_runner->GetMockTickClock());
+
+  MockQuicData socket_data(version_);
+  socket_data.AddReadPauseForever();
+  int packet_num = 1;
+  socket_data.AddWrite(SYNCHRONOUS,
+                       ConstructInitialSettingsPacket(packet_num++));
+  socket_data.AddWrite(SYNCHRONOUS, ERR_FAILED);  // Write error.
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  // Create request and QuicHttpStream.
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
+  EXPECT_EQ(OK, callback_.WaitForResult());
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
+  EXPECT_TRUE(stream.get());
+
+  // Cause QUIC stream to be created.
+  HttpRequestInfo request_info;
+  request_info.method = "GET";
+  request_info.url = GURL("https://www.example.org/");
+  request_info.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
+
+  // Ensure that session is alive and active.
+  QuicChromiumClientSession* session = GetActiveSession(kDefaultDestination);
+  EXPECT_TRUE(QuicSessionPoolPeer::IsLiveSession(pool_.get(), session));
+  EXPECT_TRUE(HasActiveSession(kDefaultDestination));
+  quic::QuicConnectionId cid_on_new_path =
+      quic::test::TestConnectionId(12345678);
+  MaybeMakeNewConnectionIdAvailableToSession(cid_on_new_path, session);
+
+  base::HistogramTester histogram_tester;
+
+  // Send GET request on stream. This causes a write error, which triggers
+  // connection migration.
+  HttpResponseInfo response;
+  HttpRequestHeaders request_headers;
+  EXPECT_EQ(OK, stream->SendRequest(request_headers, &response,
+                                    callback_.callback()));
+  // Execute the posted task to migrate on write error. Since no alternate
+  // network is available, session enters wait-for-new-network state.
+  task_runner->RunUntilIdle();
+
+  EXPECT_TRUE(QuicSessionPoolPeer::IsLiveSession(pool_.get(), session));
+  EXPECT_TRUE(HasActiveSession(kDefaultDestination));
+  EXPECT_EQ(1u, session->GetNumActiveStreams());
+  EXPECT_EQ(ERR_IO_PENDING, stream->ReadResponseHeaders(callback_.callback()));
+
+  // Advance time by 2 seconds while waiting for a new network.
+  task_runner->FastForwardBy(base::Seconds(2));
+
+  // Set up second socket data provider used after migration.
+  MockQuicData socket_data1(version_);
+  client_maker_.set_connection_id(cid_on_new_path);
+  ConstructGetRequestPacket(packet_num++,
+                            GetNthClientInitiatedBidirectionalStreamId(0),
+                            /*fin=*/true);
+  socket_data1.AddRead(
+      ASYNC, ConstructOkResponsePacket(
+                 1, GetNthClientInitiatedBidirectionalStreamId(0), false));
+  socket_data1.AddReadPauseForever();
+  socket_data1.AddWrite(ASYNC,
+                        client_maker_.Packet(packet_num++)
+                            .AddPacketRetransmission(1)
+                            .AddPacketRetransmission(2)
+                            .AddRetireConnectionIdFrame(/*sequence_number=*/0u)
+                            .Build());
+  socket_data1.AddWrite(
+      SYNCHRONOUS,
+      client_maker_.Packet(packet_num++)
+          .AddStreamFrame(GetQpackDecoderStreamId(), /*fin=*/false,
+                          StreamCancellationQpackDecoderInstruction(0))
+          .AddStopSendingFrame(GetNthClientInitiatedBidirectionalStreamId(0),
+                               quic::QUIC_STREAM_CANCELLED)
+          .AddRstStreamFrame(GetNthClientInitiatedBidirectionalStreamId(0),
+                             quic::QUIC_STREAM_CANCELLED)
+          .Build());
+  socket_data1.AddSocketDataToFactory(socket_factory_.get());
+
+  // Deliver DISCONNECT notification for the default network. No alternate
+  // network is available yet, so session updates the migration cause to
+  // WaitForNewNetworkPostNetworkDisconnected, but preserves the original wait
+  // start time.
+  scoped_mock_network_change_notifier_->mock_network_change_notifier()
+      ->NotifyNetworkDisconnected(kDefaultNetworkForTests);
+
+  // Advance time by another 1 second.
+  task_runner->FastForwardBy(base::Seconds(1));
+
+  // Connect new network to complete migration.
+  scoped_mock_network_change_notifier_->mock_network_change_notifier()
+      ->SetConnectedNetworksList({kNewNetworkForTests});
+  scoped_mock_network_change_notifier_->mock_network_change_notifier()
+      ->NotifyNetworkConnected(kNewNetworkForTests);
+
+  EXPECT_TRUE(QuicSessionPoolPeer::IsLiveSession(pool_.get(), session));
+  EXPECT_TRUE(HasActiveSession(kDefaultDestination));
+  EXPECT_EQ(1u, session->GetNumActiveStreams());
+
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  EXPECT_EQ(200, response.headers->response_code());
+  task_runner->RunUntilIdle();
+
+  // Deliver a MADEDEFAULT notification.
+  scoped_mock_network_change_notifier_->mock_network_change_notifier()
+      ->NotifyNetworkMadeDefault(kNewNetworkForTests);
+
+  RequestBuilder builder2(this);
+  EXPECT_EQ(OK, builder2.CallRequest());
+  std::unique_ptr<HttpStream> stream2 = CreateStream(&builder2.request);
+  EXPECT_TRUE(stream2.get());
+
+  EXPECT_TRUE(HasActiveSession(kDefaultDestination));
+  EXPECT_EQ(session, GetActiveSession(kDefaultDestination));
+
+  stream.reset();
+  stream2.reset();
+
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+  socket_data1.ExpectAllReadDataConsumed();
+  socket_data1.ExpectAllWriteDataConsumed();
+
+  // Duration should reflect the total elapsed wait time (2s + 1s = 3s),
+  // confirming the start time was not reset when the disconnect signal arrived.
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.Quic.Migration.Attempt.WaitForNewNetwork.Duration", base::Seconds(3),
+      1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.Quic.Migration.Attempt.WaitForNewNetwork.Duration.ByTrigger."
+      "WaitForNewNetworkPostNetworkDisconnected",
+      base::Seconds(3), 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.Eligible.ByTrigger."
+      "WaitForNewNetworkPostNetworkDisconnected",
+      true, 1);
+
+  session->CloseSessionOnError(ERR_ABORTED, quic::QUIC_NO_ERROR,
+                               quic::ConnectionCloseBehavior::SILENT_CLOSE);
+}
+
 // This test verifies that connectivity probes will be sent even if there is
 // a non-migratable stream. However, when connection migrates to the
 // successfully probed path, any non-migratable streams will be reset.
@@ -11505,6 +11742,12 @@ void QuicSessionPoolTest::TestMigrationOnWriteErrorPauseBeforeConnected(
       "Net.Quic.Migration.Attempt.Eligible.ByTrigger."
       "WaitForNewNetworkPostNetworkDisconnected",
       true, 1);
+  histogram_tester.ExpectTotalCount(
+      "Net.Quic.Migration.Attempt.WaitForNewNetwork.Duration", 1);
+  histogram_tester.ExpectTotalCount(
+      "Net.Quic.Migration.Attempt.WaitForNewNetwork.Duration.ByTrigger."
+      "WaitForNewNetworkPostNetworkDisconnected",
+      1);
 }
 
 TEST_P(QuicSessionPoolTest,
@@ -13030,6 +13273,12 @@ void QuicSessionPoolTest::TestMigrationOnWriteErrorWithMultipleNotifications(
         "Net.Quic.Migration.Attempt.Eligible.ByTrigger."
         "WaitForNewNetworkPostWriteError",
         true, 1);
+    histogram_tester.ExpectTotalCount(
+        "Net.Quic.Migration.Attempt.WaitForNewNetwork.Duration", 1);
+    histogram_tester.ExpectTotalCount(
+        "Net.Quic.Migration.Attempt.WaitForNewNetwork.Duration.ByTrigger."
+        "WaitForNewNetworkPostWriteError",
+        1);
   }
 }
 

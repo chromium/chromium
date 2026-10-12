@@ -110,6 +110,11 @@ class NET_EXPORT_PRIVATE QuicMigrationAttemptContext {
   static void RecordIneligible(QuicMigrationAttemptCause cause,
                                QuicMigrationAttemptIneligibleReason reason);
 
+  // Records the time elapsed while waiting for a new network when a new network
+  // connects before timing out.
+  static void RecordWaitForNewNetworkDuration(QuicMigrationAttemptCause cause,
+                                              base::TimeDelta duration);
+
   // Note: This does not accept a `self_address` because that is not known until
   // the underlying datagram socket has been configured and connected. This
   // happens later in the connection migration process, at which point, it will

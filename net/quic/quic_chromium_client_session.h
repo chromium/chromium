@@ -1321,6 +1321,8 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // connected to a migration attempt state, into a new manager-like entity for
   // migration attempts.
   std::optional<QuicMigrationAttemptCause> wait_for_new_network_cause_;
+  // Timestamp when the session started waiting for a new network.
+  base::TimeTicks wait_for_new_network_start_time_;
   // True if read errors should be ignored. Set when migration on write error is
   // posted and unset until the first packet is written after migration.
   // TODO(crbug.com/558250723): Consider moving this, and every other field

@@ -863,6 +863,12 @@ NET_EXPORT BASE_DECLARE_FEATURE(kQuicIgnoreRedundantOnNetworkMadeDefault);
 // If enabled, we will use a longer idle timeout.
 NET_EXPORT BASE_DECLARE_FEATURE(kQuicLongerIdleConnectionTimeout);
 
+// Controls the timeout for waiting for a new network to connect before giving
+// up on connection migration.
+NET_EXPORT BASE_DECLARE_FEATURE(kQuicWaitForNewNetworkTimeout);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
+                                      kQuicWaitForNewNetworkTimeoutParam);
+
 // If enabled, we will use QUIC with a smaller MTU.
 NET_EXPORT BASE_DECLARE_FEATURE(kLowerQuicMaxPacketSize);
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(size_t, kQuicMaxPacketSize);

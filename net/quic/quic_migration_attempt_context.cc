@@ -57,6 +57,23 @@ void QuicMigrationAttemptContext::RecordIneligible(
       reason);
 }
 
+// static
+void QuicMigrationAttemptContext::RecordWaitForNewNetworkDuration(
+    QuicMigrationAttemptCause cause,
+    base::TimeDelta duration) {
+  CHECK(cause == QuicMigrationAttemptCause::
+                     kWaitForNewNetworkPostNetworkDisconnected ||
+        cause == QuicMigrationAttemptCause::kWaitForNewNetworkPostWriteError);
+  base::UmaHistogramCustomTimes(
+      "Net.Quic.Migration.Attempt.WaitForNewNetwork.Duration", duration,
+      base::Milliseconds(1), base::Minutes(1), 50);
+  base::UmaHistogramCustomTimes(
+      base::StrCat({"Net.Quic.Migration.Attempt.WaitForNewNetwork.Duration."
+                    "ByTrigger.",
+                    QuicMigrationAttemptCauseToString(cause)}),
+      duration, base::Milliseconds(1), base::Minutes(1), 50);
+}
+
 QuicMigrationAttemptContext::QuicMigrationAttemptContext(
     QuicMigrationAttemptCause cause,
     handles::NetworkHandle from_network,
@@ -113,8 +130,7 @@ QuicMigrationAttemptContext::~QuicMigrationAttemptContext() {
       if (const auto* socket_details =
               std::get_if<SocketConfigFailureDetails>(&outcome_details_)) {
         // General failure reason logging.
-        failure_reason =
-            QuicMigrationAttemptFailureReason::kSocketConfigFailed;
+        failure_reason = QuicMigrationAttemptFailureReason::kSocketConfigFailed;
 
         // Detailed, socket specific, failure logging.
         base::UmaHistogramEnumeration(
@@ -143,9 +159,8 @@ QuicMigrationAttemptContext::~QuicMigrationAttemptContext() {
             std::get<QuicMigrationAttemptFailureReason>(outcome_details_);
       }
 
-      base::UmaHistogramEnumeration(
-          "Net.Quic.Migration.Attempt.FailureReason",
-          failure_reason);
+      base::UmaHistogramEnumeration("Net.Quic.Migration.Attempt.FailureReason",
+                                    failure_reason);
       base::UmaHistogramEnumeration(
           base::StrCat({"Net.Quic.Migration.Attempt.FailureReason.ByTrigger.",
                         trigger_str}),

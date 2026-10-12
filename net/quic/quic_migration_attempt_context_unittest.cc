@@ -467,6 +467,35 @@ TEST_F(QuicMigrationAttemptContextTest, DeferredMigrationCauses) {
                                       true, 2);
 }
 
+TEST_F(QuicMigrationAttemptContextTest, RecordWaitForNewNetworkDuration) {
+  base::HistogramTester histogram_tester;
+
+  QuicMigrationAttemptContext::RecordWaitForNewNetworkDuration(
+      QuicMigrationAttemptCause::kWaitForNewNetworkPostNetworkDisconnected,
+      base::Milliseconds(350));
+  QuicMigrationAttemptContext::RecordWaitForNewNetworkDuration(
+      QuicMigrationAttemptCause::kWaitForNewNetworkPostWriteError,
+      base::Milliseconds(1200));
+
+  histogram_tester.ExpectTotalCount(
+      "Net.Quic.Migration.Attempt.WaitForNewNetwork.Duration", 2);
+  histogram_tester.ExpectTimeBucketCount(
+      "Net.Quic.Migration.Attempt.WaitForNewNetwork.Duration",
+      base::Milliseconds(350), 1);
+  histogram_tester.ExpectTimeBucketCount(
+      "Net.Quic.Migration.Attempt.WaitForNewNetwork.Duration",
+      base::Milliseconds(1200), 1);
+
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.Quic.Migration.Attempt.WaitForNewNetwork.Duration.ByTrigger."
+      "WaitForNewNetworkPostNetworkDisconnected",
+      base::Milliseconds(350), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.Quic.Migration.Attempt.WaitForNewNetwork.Duration.ByTrigger."
+      "WaitForNewNetworkPostWriteError",
+      base::Milliseconds(1200), 1);
+}
+
 #if GTEST_HAS_DEATH_TEST
 TEST_F(QuicMigrationAttemptContextTest, SetFailureSocketConfigFailedCrashes) {
   auto context =
