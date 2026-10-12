@@ -131,17 +131,30 @@ ContextualTasksEligibilityManager::GetForProfile(Profile* profile) {
 }
 
 bool ContextualTasksEligibilityManager::IsSidePanelAvailable() const {
+  if (!contextual_tasks::IsContextualTasksUIEnabled()) {
+    return false;
+  }
+
   if (base::FeatureList::IsEnabled(
           kContextualTasksForceEntryPointEligibility)) {
     return true;
   }
 
-  if (IsEligible()) {
+  // Only check if context sharing is enabled if the panel container is not
+  // being initialized without context (i.e. ContextualTasks feature is
+  // enabled).
+  if (base::FeatureList::IsEnabled(kContextualTasks) && pref_service_ &&
+      !contextual_search::ContextualSearchService::IsContextSharingEnabled(
+          pref_service_)) {
+    return false;
+  }
+
+  if (IsSignedInToBrowserWithValidCredentials(identity_manager_) &&
+      contextual_tasks::CookieJarContainsPrimaryAccount(identity_manager_)) {
     return true;
   }
 
-  return IsEligibleWithoutIdentity() &&
-         lens::features::IsLensSidePanelUnificationAllowSignedOut();
+  return lens::features::IsLensSidePanelUnificationAllowSignedOut();
 }
 
 base::CallbackListSubscription

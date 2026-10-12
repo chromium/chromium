@@ -62,8 +62,8 @@ class ContextualTasksEligibilityManager
   static ContextualTasksEligibilityManager* GetForProfile(Profile* profile);
 
   // Returns true if the Contextual Tasks side panel is available to the user
-  // (either fully eligible for direct entry points, or eligible without
-  // identity when Lens side panel unification is enabled for signed-out users).
+  // (either meeting eligibility criteria without requiring AIM eligibility, or
+  // when Lens side panel unification is enabled for signed-out users).
   virtual bool IsSidePanelAvailable() const;
 
   // Runs `callback` with the eligibility status when the eligibility changes.
