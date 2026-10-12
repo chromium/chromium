@@ -9451,6 +9451,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "tab-bottom-sheet-edge-to-edge",
+    "owners": [ "bbetini@google.com", "clank-tab-dev@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "tab-bottom-sheet-full-height",
     "owners": [ "mfiaz@google.com", "clank-tab-dev@google.com" ],
     "expiry_milestone": 160

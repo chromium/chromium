@@ -311,6 +311,7 @@ BASE_DECLARE_FEATURE(kSuppressAccessibilityOnDeferredContentView);
 BASE_DECLARE_FEATURE(kSyncRestoreOnStartupPref);
 BASE_DECLARE_FEATURE(kTabAndroidGracefulShutdown);
 BASE_DECLARE_FEATURE(kTabBottomSheet);
+BASE_DECLARE_FEATURE(kTabBottomSheetEdgeToEdge);
 BASE_DECLARE_FEATURE(kTabBottomSheetFullHeight);
 BASE_DECLARE_FEATURE(kTabBottomSheetHalfHeight);
 BASE_DECLARE_FEATURE(kTabBottomSheetResizeWebview);

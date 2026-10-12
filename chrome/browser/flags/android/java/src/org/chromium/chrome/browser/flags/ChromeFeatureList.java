@@ -840,6 +840,7 @@ public abstract class ChromeFeatureList {
             "SyncTrustedVaultErrorMessageDuration";
     public static final String TAB_ANDROID_GRACEFUL_SHUTDOWN = "TabAndroidGracefulShutdown";
     public static final String TAB_BOTTOM_SHEET = "TabBottomSheet";
+    public static final String TAB_BOTTOM_SHEET_EDGE_TO_EDGE = "TabBottomSheetEdgeToEdge";
     public static final String TAB_BOTTOM_SHEET_FULL_HEIGHT = "TabBottomSheetFullHeight";
     public static final String TAB_BOTTOM_SHEET_HALF_HEIGHT = "TabBottomSheetHalfHeight";
     public static final String TAB_BOTTOM_SHEET_RESIZE_WEBVIEW = "TabBottomSheetResizeWebview";
@@ -1836,6 +1837,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(TAB_ANDROID_GRACEFUL_SHUTDOWN, true);
     public static final MutableFlagWithSafeDefault sTabBottomSheet =
             newMutableFlagWithSafeDefault(TAB_BOTTOM_SHEET, true);
+    public static final MutableFlagWithSafeDefault sTabBottomSheetEdgeToEdge =
+            newMutableFlagWithSafeDefault(TAB_BOTTOM_SHEET_EDGE_TO_EDGE, false);
     public static final MutableFlagWithSafeDefault sTabBottomSheetFullHeight =
             newMutableFlagWithSafeDefault(TAB_BOTTOM_SHEET_FULL_HEIGHT, false);
     public static final MutableFlagWithSafeDefault sTabBottomSheetHalfHeight =

@@ -10202,6 +10202,11 @@ const FeatureEntry kFeatureEntries[] = {
                                     kTabBottomSheetVariations,
                                     "TabBottomSheet")},
 
+    {"tab-bottom-sheet-edge-to-edge",
+     flag_descriptions::kTabBottomSheetEdgeToEdgeName,
+     flag_descriptions::kTabBottomSheetEdgeToEdgeDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kTabBottomSheetEdgeToEdge)},
+
     {"tab-bottom-sheet-full-height",
      flag_descriptions::kTabBottomSheetFullHeightName,
      flag_descriptions::kTabBottomSheetFullHeightDescription, kOsAndroid,

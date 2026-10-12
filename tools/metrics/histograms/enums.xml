@@ -8144,6 +8144,7 @@ from previous Chrome versions.
       label="CookieDeprecationFacilitatedTesting:disabled"/>
   <int value="-2054612904" label="BuiltInModuleInfra:enabled"/>
   <int value="-2053860791" label="XGEOVisibleNetworks:enabled"/>
+  <int value="-2053467966" label="TabBottomSheetEdgeToEdge:disabled"/>
   <int value="-2053160869"
       label="EnableOAuthMultiloginCookiesBindingServerExperiment:enabled"/>
   <int value="-2053098867" label="AutofillEnableCvcStorageAndFilling:enabled"/>
@@ -8718,6 +8719,7 @@ from previous Chrome versions.
   <int value="-1888578524" label="DisplayIdentification:enabled"/>
   <int value="-1888273969" label="tab-capture-upscale-quality"/>
   <int value="-1887862464" label="SpannableInlineAutocomplete:disabled"/>
+  <int value="-1887221245" label="TabBottomSheetEdgeToEdge:enabled"/>
   <int value="-1887053262"
       label="enable-zero-suggest-most-visited-without-serp"/>
   <int value="-1886997564" label="EnableSwitchAccessPointScanning:enabled"/>

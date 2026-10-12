@@ -6595,6 +6595,12 @@ inline constexpr char kTabBottomSheetName[] = "Tab bottom sheet";
 inline constexpr char kTabBottomSheetDescription[] =
     "Enables the tab bottom sheet feature.";
 
+inline constexpr char kTabBottomSheetEdgeToEdgeName[] =
+    "Tab bottom sheet - Edge to Edge";
+inline constexpr char kTabBottomSheetEdgeToEdgeDescription[] =
+    "Enables edge-to-edge layout and safe area insets for the tab bottom "
+    "sheet.";
+
 inline constexpr char kTabBottomSheetFullHeightName[] =
     "Tab bottom sheet - Full height ratio";
 inline constexpr char kTabBottomSheetFullHeightDescription[] =
