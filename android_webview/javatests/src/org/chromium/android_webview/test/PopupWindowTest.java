@@ -344,6 +344,7 @@ public class PopupWindowTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @DisabledTest(message = "https://crbug.com/572892241")
     public void testPopupWindowTextHandle() throws Throwable {
         final String popupPath = "/popup.html";
         final String parentPageHtml =
