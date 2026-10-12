@@ -363,6 +363,10 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   feature_overrides.EnableFeature(chrome::android::kPdfReuseFragment);
   feature_overrides.EnableFeature(chrome::android::kPdfLauncherActivity);
 
+  // Enables reporting the user agent platform as Android on desktop Android.
+  // TODO(crbug.com/555541268): Remove when rollout is complete.
+  feature_overrides.EnableFeature(blink::features::kAndroidDesktopUAPlatform);
+
   // Enables spoofing the user agent platform as ChromeOS on desktop Android.
   // TODO(crbug.com/556358275): Enablement on tablets is tracked by this bug.
   feature_overrides.EnableFeature(
