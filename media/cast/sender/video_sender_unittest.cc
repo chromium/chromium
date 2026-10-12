@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/containers/heap_array.h"
@@ -135,10 +136,15 @@ class VideoSenderTest : public ::testing::Test, public WithCastEnvironment {
     feedback_closure_ = std::move(closure);
   }
 
-  void HandleVideoCaptureFeedback(const VideoCaptureFeedback&) {
+  void HandleVideoCaptureFeedback(const VideoCaptureFeedback& feedback) {
+    last_feedback_ = feedback;
     if (feedback_closure_) {
       std::move(feedback_closure_).Run();
     }
+  }
+
+  const std::optional<VideoCaptureFeedback>& last_feedback() const {
+    return last_feedback_;
   }
 
   void SetVeaFactoryInitializationWillSucceed(bool will_succeed) {
@@ -263,6 +269,7 @@ class VideoSenderTest : public ::testing::Test, public WithCastEnvironment {
   int last_pixel_value_;
   base::TimeTicks first_frame_timestamp_;
   base::OnceClosure feedback_closure_;
+  std::optional<VideoCaptureFeedback> last_feedback_;
   scoped_refptr<gpu::TestSharedImageInterface> sii_;
   std::unique_ptr<MockGpuVideoAcceleratorFactories> mock_gpu_factories_;
   base::test::ScopedFeatureList feature_list_;
@@ -320,6 +327,53 @@ TEST_F(VideoSenderTest, MAYBE_MockEncoderGoldenCase) {
 
   std::move(callback).Run(std::move(encoded_frame));
   RunUntilQuit();
+}
+
+// When the encoder drops a frame (empty output), the VideoSender should count
+// the drop and report full utilization to the capture pipeline, so that the
+// capture resolution can be reduced.
+TEST_F(VideoSenderTest, EncoderDroppedFrameReportsFeedback) {
+  base::HistogramTester histogram_tester;
+  CreateSender(EncoderType::kMock);
+
+  VideoEncoder::FrameEncodedCallback callback;
+  EXPECT_CALL(mock_encoder(), GenerateKeyFrame());
+  EXPECT_CALL(mock_encoder(), SetBitRate(5000000));
+  EXPECT_CALL(mock_encoder(), EncodeVideoFrame(_, _, _))
+      .WillOnce([&callback](
+                    scoped_refptr<media::VideoFrame> video_frame,
+                    base::TimeTicks reference_time,
+                    VideoEncoder::FrameEncodedCallback frame_encoded_callback) {
+        callback = std::move(frame_encoded_callback);
+        return true;
+      });
+
+  video_sender().InsertRawVideoFrame(GetNewVideoFrame(), NowTicks());
+  SetVideoCaptureFeedbackClosure(task_environment().QuitClosure());
+
+  auto encoded_frame = std::make_unique<SenderEncodedFrame>();
+  encoded_frame->encoder_utilization = 0.3;
+  encoded_frame->encode_completion_time = NowTicks();
+  encoded_frame->frame_id = FrameId::first();
+  encoded_frame->referenced_frame_id = FrameId::first();
+  encoded_frame->rtp_timestamp = RtpTimeTicks(12345);
+  encoded_frame->reference_time = NowTicks();
+  // No data: the encoder dropped the frame.
+
+  std::move(callback).Run(std::move(encoded_frame));
+  RunUntilQuit();
+
+  ASSERT_TRUE(last_feedback());
+  // Full (1.0) utilization, attenuated by the 75% target utilization.
+  EXPECT_DOUBLE_EQ(last_feedback()->resource_utilization, 1.0 / 0.75);
+  EXPECT_DOUBLE_EQ(video_sender().GetEncoderUtilization(), 0.3);
+  // Encoder drops are tracked separately from sender-side drops, which are used
+  // to gate bandwidth reductions.
+  EXPECT_EQ(video_sender().GetFramesDropped(), 0);
+  EXPECT_EQ(video_sender().GetFramesDroppedByEncoder(), 1);
+  histogram_tester.ExpectUniqueSample(
+      "CastStreaming.Sender.Video.FrameDropped",
+      CastStreamingFrameDropReason::kDroppedByEncoder, 1);
 }
 
 // Make sure we properly handle the frame change callback, even if the encoded

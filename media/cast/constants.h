@@ -93,8 +93,12 @@ enum class CastStreamingFrameDropReason {
   // Reported by the OpenscreenFrameSender.
   kInvalidReferencedFrameId = 7,
 
+  // Reported by the VideoSender when the encoder dropped the frame (e.g., due
+  // to rate control) and produced no output.
+  kDroppedByEncoder = 8,
+
   // Should stay updated as the maximum enum value above.
-  kMaxValue = kInvalidReferencedFrameId
+  kMaxValue = kDroppedByEncoder
 };
 
 }  // namespace cast

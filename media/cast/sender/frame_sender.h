@@ -88,6 +88,10 @@ class FrameSender {
   virtual CastStreamingFrameDropReason ShouldDropNextFrame(
       base::TimeDelta frame_duration) = 0;
 
+  // Reports that the encoder dropped the frame with `rtp_timestamp` (e.g., due
+  // to rate control), so that it is included in the sender's statistics.
+  virtual void ReportFrameDroppedByEncoder(RtpTimeTicks rtp_timestamp) = 0;
+
   // Returns the RTP timestamp on the frame associated with |frame_id|.
   // In practice this should be implemented as a ring buffer using the lower
   // eight bits of the FrameId, so timestamps older than 256 frames will be

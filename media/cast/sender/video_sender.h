@@ -70,7 +70,11 @@ class VideoSender : public FrameSender::Client {
   virtual double GetEncoderUtilization() const;
   virtual double GetLossiness() const;
   virtual int GetFramesInserted() const;
+  // Frames dropped by the sender before or after encoding, e.g. due to network
+  // or receiver backpressure.
   virtual int GetFramesDropped() const;
+  // Frames dropped by the encoder itself, e.g. due to rate control.
+  virtual int GetFramesDroppedByEncoder() const;
 
   base::WeakPtr<VideoSender> AsWeakPtr();
 
@@ -87,6 +91,17 @@ class VideoSender : public FrameSender::Client {
   void OnEncodedVideoFrame(scoped_refptr<media::VideoFrame> video_frame,
                            const base::TimeTicks reference_time,
                            std::unique_ptr<SenderEncodedFrame> encoded_frame);
+
+  // Handles a frame the encoder dropped (e.g., due to rate control), producing
+  // an empty `encoded_frame`. Records the drop and reports the encoder as at
+  // capacity to the capture pipeline, so that a sustained run of encoder drops
+  // doesn't starve VideoCaptureOracle of feedback.
+  void OnFrameDroppedByEncoder(const SenderEncodedFrame& encoded_frame);
+
+  // Sends `utilization` (the greater of the encoder utilization and lossiness)
+  // to the capture pipeline as VideoCaptureFeedback, after attenuating it
+  // against the target utilization.
+  void ReportResourceUtilization(double utilization, bool is_key_frame);
 
   // The backing frame sender implementation.
   std::unique_ptr<FrameSender> frame_sender_;
@@ -147,6 +162,9 @@ class VideoSender : public FrameSender::Client {
   double encoder_utilization_sum_ = 0.0;
   int encoder_utilization_samples_ = 0;
   int encoder_overutilized_frames_ = 0;
+
+  // The number of frames dropped by the encoder itself (empty outputs).
+  int number_of_frames_dropped_by_encoder_ = 0;
 
   // Used to throttle metrics reporting of the bitrate.
   int frames_since_bitrate_reported_ = 0;

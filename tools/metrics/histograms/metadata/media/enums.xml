@@ -430,6 +430,8 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Payload too large"/>
   <int value="5" label="Reached Frame ID span limit"/>
   <int value="6" label="In flight duration too high (after encoding)"/>
+  <int value="7" label="Invalid referenced frame ID"/>
+  <int value="8" label="Dropped by encoder"/>
 </enum>
 
 <enum name="CastStreamingVideoEncoderType">

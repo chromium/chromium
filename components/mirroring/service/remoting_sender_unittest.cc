@@ -77,24 +77,32 @@ class FakeSender : public media::cast::FrameSender {
  public:
   ~FakeSender() override = default;
 
-  MOCK_METHOD1(SetTargetPlayoutDelay, void(base::TimeDelta));
-  MOCK_CONST_METHOD0(GetTargetPlayoutDelay, base::TimeDelta());
-  MOCK_CONST_METHOD0(NeedsKeyFrame, bool());
-  MOCK_METHOD1(EnqueueFrame,
-               media::cast::CastStreamingFrameDropReason(
-                   std::unique_ptr<media::cast::SenderEncodedFrame>));
-  MOCK_METHOD1(ShouldDropNextFrame,
-               media::cast::CastStreamingFrameDropReason(base::TimeDelta));
-  MOCK_CONST_METHOD1(GetRecordedRtpTimestamp,
-                     media::cast::RtpTimeTicks(media::cast::FrameId));
-  MOCK_CONST_METHOD0(GetUnacknowledgedFrameCount, int());
-  MOCK_METHOD2(GetSuggestedBitrate, int(base::TimeTicks, base::TimeDelta));
-  MOCK_CONST_METHOD0(MaxFrameRate, double());
-  MOCK_METHOD1(SetMaxFrameRate, void(double));
-  MOCK_CONST_METHOD0(TargetPlayoutDelay, base::TimeDelta());
-  MOCK_CONST_METHOD0(CurrentRoundTripTime, base::TimeDelta());
-  MOCK_CONST_METHOD0(LastSendTime, base::TimeTicks());
-  MOCK_CONST_METHOD0(LastAckedFrameId, media::cast::FrameId());
+  MOCK_METHOD(void, SetTargetPlayoutDelay, (base::TimeDelta), (override));
+  MOCK_METHOD(base::TimeDelta, GetTargetPlayoutDelay, (), (const, override));
+  MOCK_METHOD(bool, NeedsKeyFrame, (), (const, override));
+  MOCK_METHOD(media::cast::CastStreamingFrameDropReason,
+              EnqueueFrame,
+              (std::unique_ptr<media::cast::SenderEncodedFrame>),
+              (override));
+  MOCK_METHOD(media::cast::CastStreamingFrameDropReason,
+              ShouldDropNextFrame,
+              (base::TimeDelta),
+              (override));
+  MOCK_METHOD(void,
+              ReportFrameDroppedByEncoder,
+              (media::cast::RtpTimeTicks),
+              (override));
+  MOCK_METHOD(media::cast::RtpTimeTicks,
+              GetRecordedRtpTimestamp,
+              (media::cast::FrameId),
+              (const, override));
+  MOCK_METHOD(int, GetUnacknowledgedFrameCount, (), (const, override));
+  MOCK_METHOD(double, MaxFrameRate, (), (const, override));
+  MOCK_METHOD(void, SetMaxFrameRate, (double), (override));
+  MOCK_METHOD(base::TimeDelta, TargetPlayoutDelay, (), (const, override));
+  MOCK_METHOD(base::TimeDelta, CurrentRoundTripTime, (), (const, override));
+  MOCK_METHOD(base::TimeTicks, LastSendTime, (), (const, override));
+  MOCK_METHOD(media::cast::FrameId, LastAckedFrameId, (), (const, override));
 };
 
 class MojoSenderWrapper {

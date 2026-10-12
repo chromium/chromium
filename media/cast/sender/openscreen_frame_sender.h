@@ -61,6 +61,7 @@ class OpenscreenFrameSender : public FrameSender,
       std::unique_ptr<SenderEncodedFrame> encoded_frame) override;
   CastStreamingFrameDropReason ShouldDropNextFrame(
       base::TimeDelta frame_duration) override;
+  void ReportFrameDroppedByEncoder(RtpTimeTicks rtp_timestamp) override;
   RtpTimeTicks GetRecordedRtpTimestamp(FrameId frame_id) const override;
   int GetUnacknowledgedFrameCount() const override;
   double MaxFrameRate() const override;

@@ -340,6 +340,21 @@ TEST_F(OpenscreenFrameSenderTest, MapsFrameIdsAfterOpenscreenRejectsFrame) {
                                    EnqueuedIds{first + 3, first + 2}));
 }
 
+TEST_F(OpenscreenFrameSenderTest, ReportsFramesDroppedByEncoder) {
+  auto mock_sender = std::make_unique<testing::NiceMock<MockSender>>();
+  MockSender& mock = *mock_sender;
+  constexpr FrameId kNextFrameId = FrameId::first() + 42;
+  ON_CALL(mock, GetNextFrameId()).WillByDefault(testing::Return(kNextFrameId));
+
+  OpenscreenFrameSender sender(cast_environment(), kVideoConfig,
+                               std::move(mock_sender), *this);
+
+  constexpr RtpTimeTicks kRtpTimestamp{1234};
+  EXPECT_CALL(mock, ReportFrameDropEvent(kNextFrameId, kRtpTimestamp,
+                                         ToOpenscreenTimePoint(NowTicks())));
+  sender.ReportFrameDroppedByEncoder(kRtpTimestamp);
+}
+
 TEST_F(OpenscreenFrameSenderTest, ClampsLargePlayoutDelay) {
   FrameSenderConfig large_config = kVideoConfig;
   large_config.min_playout_delay = base::Milliseconds(100);

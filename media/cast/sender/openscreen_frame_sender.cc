@@ -283,6 +283,16 @@ std::optional<FrameId> OpenscreenFrameSender::GetOpenscreenReferencedFrameId(
   return std::nullopt;
 }
 
+void OpenscreenFrameSender::ReportFrameDroppedByEncoder(
+    RtpTimeTicks rtp_timestamp) {
+  DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kMain));
+  // The dropped frame was never assigned an Open Screen frame ID, so use the
+  // one it would have been assigned.
+  sender_->ReportFrameDropEvent(
+      sender_->GetNextFrameId(), rtp_timestamp,
+      ToOpenscreenTimePoint(cast_environment_->NowTicks()));
+}
+
 CastStreamingFrameDropReason OpenscreenFrameSender::ShouldDropNextFrame(
     base::TimeDelta frame_duration) {
   // Check that accepting the next frame won't cause more frames to become

@@ -55,6 +55,11 @@ constexpr int kConstantTimeMs = 75;
 // available to handle the occasional more-complex frames).
 constexpr int kTargetUtilizationPercentage = 75;
 
+// The raw (pre-attenuation) utilization reported when the encoder drops a
+// frame. A drop means the encoder could not fit the frame in its budget, so it
+// is treated as full utilization.
+constexpr double kEncoderDroppedFrameUtilization = 1.0;
+
 // This is the minimum duration that the sender sends key frame to the encoder
 // on receiving Pli messages. This is used to prevent sending multiple requests
 // while the sender is waiting for an encoded key frame or receiving multiple
@@ -369,6 +374,10 @@ int VideoSender::GetFramesDropped() const {
   return number_of_frames_dropped_;
 }
 
+int VideoSender::GetFramesDroppedByEncoder() const {
+  return number_of_frames_dropped_by_encoder_;
+}
+
 base::WeakPtr<VideoSender> VideoSender::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
@@ -399,9 +408,15 @@ void VideoSender::OnEncodedVideoFrame(
   TRACE_EVENT_END("cast.stream", GetTracingTrack(video_frame.get()),
                   "encoder_utilization", last_reported_encoder_utilization_,
                   "lossiness", last_reported_lossiness_);
-  // The encoder drops a frame.
-  if (!encoded_frame || encoded_frame->data.empty()) {
-    DVLOG(3) << "Drop frame";
+  // The encode failed.
+  if (!encoded_frame) {
+    DVLOG(3) << "Encode failed";
+    return;
+  }
+
+  // The encoder dropped the frame, typically due to rate control.
+  if (encoded_frame->data.empty()) {
+    OnFrameDroppedByEncoder(*encoded_frame);
     return;
   }
 
@@ -416,24 +431,10 @@ void VideoSender::OnEncodedVideoFrame(
     }
   }
 
-  // Report the resource utilization for processing this frame.  Take the
-  // greater of the two utilization values and attenuate them such that the
-  // target utilization is reported as the maximum sustainable amount.
-  const double attenuated_utilization =
-      std::max(last_reported_encoder_utilization_, last_reported_lossiness_) /
-      (kTargetUtilizationPercentage / 100.0);
-  if (attenuated_utilization >= 0.0) {
-    // Key frames are artificially capped to 1.0 because their actual
-    // utilization is atypical compared to the other frames in the stream, and
-    // this can misguide the producer of the input video frames.
-    VideoCaptureFeedback feedback;
-    feedback.resource_utilization = encoded_frame->is_key_frame
-                                        ? std::min(1.0, attenuated_utilization)
-                                        : attenuated_utilization;
-    if (feedback_cb_) {
-      feedback_cb_.Run(feedback);
-    }
-  }
+  // Report the resource utilization for processing this frame.
+  ReportResourceUtilization(
+      std::max(last_reported_encoder_utilization_, last_reported_lossiness_),
+      encoded_frame->is_key_frame);
 
   const RtpTimeTicks rtp_timestamp = encoded_frame->rtp_timestamp;
   const CastStreamingFrameDropReason reason =
@@ -445,6 +446,51 @@ void VideoSender::OnEncodedVideoFrame(
     TRACE_EVENT_INSTANT("cast.stream", "Video Frame Drop (already encoded)",
                         "rtp_timestamp", rtp_timestamp.lower_32_bits(),
                         "reason", reason);
+  }
+}
+
+void VideoSender::OnFrameDroppedByEncoder(
+    const SenderEncodedFrame& encoded_frame) {
+  DVLOG(3) << "Frame dropped by encoder";
+  // Counted separately from `number_of_frames_dropped_`, which tracks
+  // sender-side (network or receiver) drops and is used to gate bandwidth
+  // reductions in the session.
+  number_of_frames_dropped_by_encoder_++;
+  frame_sender_->ReportFrameDroppedByEncoder(encoded_frame.rtp_timestamp);
+  base::UmaHistogramEnumeration(
+      kHistogramFrameDropped, CastStreamingFrameDropReason::kDroppedByEncoder);
+  TRACE_EVENT_INSTANT("cast.stream", "Video Frame Drop (encoder)",
+                      "rtp_timestamp",
+                      encoded_frame.rtp_timestamp.lower_32_bits());
+
+  // The encoder utilization is still measured for dropped frames, but
+  // lossiness is not meaningful for an empty output.
+  last_reported_encoder_utilization_ = encoded_frame.encoder_utilization;
+  ReportResourceUtilization(
+      std::max({last_reported_encoder_utilization_, last_reported_lossiness_,
+                kEncoderDroppedFrameUtilization}),
+      /*is_key_frame=*/false);
+}
+
+void VideoSender::ReportResourceUtilization(double utilization,
+                                            bool is_key_frame) {
+  // Attenuate the utilization such that the target utilization is reported as
+  // the maximum sustainable amount.
+  const double attenuated_utilization =
+      utilization / (kTargetUtilizationPercentage / 100.0);
+  if (attenuated_utilization < 0.0) {
+    return;
+  }
+
+  // Key frames are artificially capped to 1.0 because their actual
+  // utilization is atypical compared to the other frames in the stream, and
+  // this can misguide the producer of the input video frames.
+  VideoCaptureFeedback feedback;
+  feedback.resource_utilization = is_key_frame
+                                      ? std::min(1.0, attenuated_utilization)
+                                      : attenuated_utilization;
+  if (feedback_cb_) {
+    feedback_cb_.Run(feedback);
   }
 }
 
