@@ -43,6 +43,16 @@ found in the LICENSE file.
         android:layout_width="wrap_content"
         android:layout_marginEnd="8dp" />
 
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/reset_history_filters_button"
+        style="@style/TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="-8dp"
+        android:layout_marginEnd="8dp"
+        android:text="@string/history_reset_filters"
+        android:visibility="gone" />
+
   </LinearLayout>
 
 </HorizontalScrollView>

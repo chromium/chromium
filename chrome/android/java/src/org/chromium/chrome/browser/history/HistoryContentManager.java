@@ -171,6 +171,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     private final HistoryFilterChip mClientFilter;
     private final HistoryFilterChip mActorFilter;
     private final List<HistoryFilterChip> mFilterChips;
+    private @Nullable View mResetFiltersButton;
     private boolean mHostInfoListInitialized;
 
     private final @Nullable Supplier<BottomSheetController> mBottomSheetControllerSupplier;
@@ -461,21 +462,21 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
                         R.id.app_history_filter_chip,
                         R.string.history_filter_by_app,
                         showAppFilter(),
-                        mHistoryAdapter::updateAppFilter,
+                        this::onAppFilterUpdated,
                         mUmaRecorder::recordAppFilterSheetOpened);
         mHostFilter =
                 new HistoryFilterChip(
                         R.id.host_history_filter_chip,
                         R.string.history_filter_by_host,
                         showHostFilter(),
-                        mHistoryAdapter::updateHostFilter,
+                        this::onHostFilterUpdated,
                         /* onSheetOpened= */ null);
         mClientFilter =
                 new HistoryFilterChip(
                         R.id.client_history_filter_chip,
                         R.string.history_filter_by_client,
                         showClientFilter(),
-                        mHistoryAdapter::updateClientFilter,
+                        this::onClientFilterUpdated,
                         /* onSheetOpened= */ null);
         mActorFilter =
                 new HistoryFilterChip(
@@ -483,7 +484,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
                         /* chipTextResId= */ R.string.history_actor_filter_chip_text,
                         /* sheetHeaderResId= */ R.string.history_actor_filter_sheet_header,
                         showActorFilter(),
-                        mHistoryAdapter::updateActorFilter,
+                        this::onActorFilterUpdated,
                         /* onSheetOpened= */ null);
         mFilterChips = List.of(mAppFilter, mHostFilter, mClientFilter, mActorFilter);
         // The actor filter offers a fixed set of options, so no query is needed to populate it.
@@ -973,12 +974,58 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         for (HistoryFilterChip chip : mFilterChips) {
             chip.bindView(container, mActivity, mBottomSheetControllerSupplier, mHideSoftKeyboard);
         }
+        mResetFiltersButton = container.findViewById(R.id.reset_history_filters_button);
+        mResetFiltersButton.setOnClickListener(_ -> resetFilters());
+        updateResetFiltersButtonVisibility();
     }
 
     void setFilterChipsEnabled(boolean enabled) {
         for (HistoryFilterChip chip : mFilterChips) {
             chip.setChipEnabled(enabled);
         }
+        if (mResetFiltersButton != null) {
+            mResetFiltersButton.setEnabled(enabled);
+        }
+    }
+
+    private void onAppFilterUpdated(@Nullable FilterItem appInfo) {
+        updateResetFiltersButtonVisibility();
+        mHistoryAdapter.updateAppFilter(appInfo);
+    }
+
+    private void onHostFilterUpdated(@Nullable FilterItem hostInfo) {
+        updateResetFiltersButtonVisibility();
+        mHistoryAdapter.updateHostFilter(hostInfo);
+    }
+
+    private void onClientFilterUpdated(@Nullable FilterItem clientInfo) {
+        updateResetFiltersButtonVisibility();
+        mHistoryAdapter.updateClientFilter(clientInfo);
+    }
+
+    private void onActorFilterUpdated(@Nullable FilterItem actorInfo) {
+        updateResetFiltersButtonVisibility();
+        mHistoryAdapter.updateActorFilter(actorInfo);
+    }
+
+    private void resetFilters() {
+        for (HistoryFilterChip chip : mFilterChips) {
+            chip.reset();
+        }
+        updateResetFiltersButtonVisibility();
+        mHistoryAdapter.resetFilters();
+    }
+
+    private boolean hasAppliedFilter() {
+        for (HistoryFilterChip chip : mFilterChips) {
+            if (chip.isSelected()) return true;
+        }
+        return false;
+    }
+
+    private void updateResetFiltersButtonVisibility() {
+        if (mResetFiltersButton == null) return;
+        mResetFiltersButton.setVisibility(hasAppliedFilter() ? View.VISIBLE : View.GONE);
     }
 
     /**
@@ -995,6 +1042,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         for (HistoryFilterChip chip : mFilterChips) {
             chip.reset();
         }
+        updateResetFiltersButtonVisibility();
         mHistoryAdapter.onEndSearch();
     }
 
@@ -1159,5 +1207,9 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
 
     HistoryFilterChip getActorFilterForTesting() {
         return mActorFilter;
+    }
+
+    View getResetFiltersButtonForTesting() {
+        return assumeNonNull(mResetFiltersButton);
     }
 }

@@ -248,14 +248,25 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     public void onEndSearch() {
         mQueryText = EMPTY_QUERY;
         mIsSearching = false;
+        clearFilters();
+
+        // Re-initialize the data in the adapter.
+        startLoadingItems();
+    }
+
+    /** Clears all applied filters and re-queries for history. */
+    public void resetFilters() {
+        clearFilters();
+        search(mQueryText);
+    }
+
+    /** Clears all applied filters but does not re-query for history. */
+    private void clearFilters() {
         if (mManager.showAppFilter()) setAppId(null);
         if (mManager.showHostFilter()) setHostName(null);
         if (mManager.showClientFilter()) setClientIds(Collections.emptyList());
         if (mManager.showActorFilter()) setActorFilter(ActorFilter.ANY);
         mShowSourceApp = mManager.showAppFilter();
-
-        // Re-initialize the data in the adapter.
-        startLoadingItems();
     }
 
     /**

@@ -133,6 +133,11 @@ class HistoryFilterChip {
         }
     }
 
+    /** Returns whether an item is currently selected for this filter chip. */
+    boolean isSelected() {
+        return mSelectedItem != null;
+    }
+
     /** Returns whether this filter chip should be visible. */
     boolean isVisible() {
         return mCanShow && (hasItems() || mSelectedItem != null);

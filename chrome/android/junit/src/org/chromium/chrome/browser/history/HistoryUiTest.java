@@ -1008,6 +1008,48 @@ public class HistoryUiTest {
                 contentManager.getActorFilterForTesting().getChipViewForTesting().getVisibility());
     }
 
+    @EnableFeatures({
+        ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_DOMAIN,
+        ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_DEVICE
+    })
+    @Test
+    public void testSearch_ResetFiltersButton() {
+        HistoryFilterChip hostFilter = mContentManager.getHostFilterForTesting();
+        HistoryFilterChip clientFilter = mContentManager.getClientFilterForTesting();
+        View resetButton = mContentManager.getResetFiltersButtonForTesting();
+
+        performMenuAction(R.id.search_menu_id);
+        Assert.assertEquals(View.GONE, resetButton.getVisibility());
+
+        FilterItem selectedHost = new FilterItem("www.google.com", null, "www.google.com");
+        hostFilter.onItemSelected(selectedHost);
+        Assert.assertEquals(View.VISIBLE, resetButton.getVisibility());
+
+        FilterItem selectedClient = new FilterItem(List.of("client_1"), null, "Pixel 8");
+        clientFilter.onItemSelected(selectedClient);
+        Assert.assertEquals(View.VISIBLE, resetButton.getVisibility());
+
+        // Deselecting one filter while another is still active keeps the reset button visible.
+        hostFilter.onItemSelected(null);
+        Assert.assertEquals(View.VISIBLE, resetButton.getVisibility());
+
+        // Deselecting the last active filter hides the reset button.
+        clientFilter.onItemSelected(null);
+        Assert.assertEquals(View.GONE, resetButton.getVisibility());
+
+        // Clicking the reset button clears all active filters and hides the button.
+        hostFilter.onItemSelected(selectedHost);
+        clientFilter.onItemSelected(selectedClient);
+        Assert.assertEquals(View.VISIBLE, resetButton.getVisibility());
+
+        resetButton.performClick();
+        Assert.assertEquals(View.GONE, resetButton.getVisibility());
+        Assert.assertNull(hostFilter.getSelectedItemForTesting());
+        Assert.assertNull(clientFilter.getSelectedItemForTesting());
+        Assert.assertNull(mAdapter.getHostNameForTest());
+        Assert.assertTrue(mAdapter.getClientIdsForTest().isEmpty());
+    }
+
     @EnableFeatures(ChromeFeatureList.APP_SPECIFIC_HISTORY)
     @Config(sdk = VERSION_CODES.UPSIDE_DOWN_CAKE)
     @Test
