@@ -9637,6 +9637,24 @@
             ]
         }
     ],
+    "IOSAimCobrowse": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AimCobrowse",
+                        "AimCobrowseWebSelectionSearch",
+                        "ContextManagementInComposebox",
+                        "ContextualTasks"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSAppSwitcherAISummarization": [
         {
             "platforms": [
