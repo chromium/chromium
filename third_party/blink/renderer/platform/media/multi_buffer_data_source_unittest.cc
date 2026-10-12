@@ -580,6 +580,16 @@ TEST_F(MultiBufferDataSourceTest, Range_NotSatisfiable) {
   Stop();
 }
 
+TEST_F(MultiBufferDataSourceTest, Range_NotSatisfiableOpaque) {
+  Initialize(kHttpUrl, false);
+  WebURLResponse response = response_generator_->GenerateResponse(416);
+  response.SetType(network::mojom::blink::FetchResponseType::kOpaque);
+  Respond(response);
+  EXPECT_TRUE(data_source_->WouldTaintOrigin());
+  EXPECT_FALSE(loading());
+  Stop();
+}
+
 // Special carve-out for Apache versions that choose to return a 200 for
 // Range:0- ("because it's more efficient" than a 206)
 TEST_F(MultiBufferDataSourceTest, Range_SupportedButReturned200) {
