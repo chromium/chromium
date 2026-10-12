@@ -5,6 +5,8 @@
 #ifndef EXTENSIONS_BROWSER_MIME_HANDLER_MIME_HANDLER_STREAM_DELEGATE_H_
 #define EXTENSIONS_BROWSER_MIME_HANDLER_MIME_HANDLER_STREAM_DELEGATE_H_
 
+#include <string_view>
+
 namespace content {
 class NavigationHandle;
 class RenderFrameHost;
@@ -65,14 +67,22 @@ class MimeHandlerStreamDelegate {
   virtual void SetPluginCanSave(bool plugin_can_save);
 
   // Returns true if this handler is allowed to see only the CORS-safelisted
-  // response header names. True by default; a handler that needs the full,
-  // unfiltered header set must override this to return false explicitly.
+  // response header names plus Content-Disposition and Accept-Ranges. True by
+  // default; a handler that needs the full, unfiltered header set must
+  // override this to return false explicitly.
   virtual bool ShouldFilterResponseHeadersForHandler() const;
 
   // Returns true if each navigation through this delegate must run in its
   // own process, isolated from other instances.
   virtual bool RequiresPerInstanceProcessIsolation() const;
 };
+
+// Returns true if a handler whose ShouldFilterResponseHeadersForHandler()
+// returns true may see the response header `name`. Allowed are the response
+// headers that fetch() would expose to script cross-origin, plus
+// Content-Disposition and Accept-Ranges.
+// https://fetch.spec.whatwg.org/#cors-safelisted-response-header-name
+bool IsResponseHeaderAllowedForHandler(std::string_view name);
 
 }  // namespace extensions
 
