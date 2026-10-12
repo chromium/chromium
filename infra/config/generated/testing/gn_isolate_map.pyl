@@ -1310,6 +1310,11 @@
     "module_scheme": "xctest",
     "skip_usage_check": True,
   },
+  "ios_chrome_perf_benchmarks_eg2tests_module": {
+    "label": "//ios/chrome/test/earl_grey2:ios_chrome_perf_benchmarks_eg2tests_module",
+    "type": "generated_script",
+    "module_scheme": "xctest",
+  },
   "ios_chrome_settings_eg2tests_module": {
     "label": "//ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module",
     "type": "generated_script",

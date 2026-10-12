@@ -176,6 +176,63 @@
       }
     ]
   },
+  "ios-iphone15pro-perf-fyi": {
+    "isolated_scripts": [
+      {
+        "args": [
+          "--benchmark-name=bling",
+          "--xcode-build-version=27a266a",
+          "--out-dir=${ISOLATED_OUTDIR}",
+          "--xcodebuild-device-runner"
+        ],
+        "merge": {
+          "args": [
+            "--upload-skia-json"
+          ],
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "ios_chrome_perf_benchmarks_eg2tests_module",
+        "resultdb": {
+          "enable": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:ed58ac9443fe1754e84d596bdaf9961cbaa6e85b"
+            }
+          ],
+          "dimensions": {
+            "device": "iPhone16,1",
+            "os": "iOS-26",
+            "pool": "chrome.tests"
+          },
+          "expiration": 7200,
+          "hard_timeout": 3600,
+          "io_timeout": 3600,
+          "named_caches": [
+            {
+              "name": "xcode_ios_27a266a",
+              "path": "Xcode.app"
+            }
+          ],
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 1
+        },
+        "test": "ios_chrome_perf_benchmarks_eg2tests_module",
+        "trigger_script": {
+          "args": [
+            "--multiple-dimension-script-verbose",
+            "True"
+          ],
+          "requires_simultaneous_shard_dispatch": true,
+          "script": "//testing/trigger_scripts/perf_device_trigger.py"
+        }
+      }
+    ]
+  },
   "linux-perf-fyi": {
     "isolated_scripts": [
       {

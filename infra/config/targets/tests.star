@@ -1561,6 +1561,10 @@ targets.tests.isolated_script_test(
 )
 
 targets.tests.isolated_script_test(
+    name = "ios_chrome_perf_benchmarks_eg2tests_module",
+)
+
+targets.tests.isolated_script_test(
     name = "ios_chrome_signin_eg2tests_module",
 )
 

@@ -156,6 +156,7 @@ UPLOAD_SKIA_JSON_BUILDERS = frozenset(
     'android-pixel10_webview-perf-pgo',
     'android-pixel10_webview-perf-pgo-heapdump',
     'android-brya-kano-i5-8gb-perf',
+    'ios-iphone15pro-perf-fyi',
     'linux-arm-builder-perf',
     'linux-builder-perf',
     'linux-falcon-rak-5070-perf',
@@ -270,6 +271,40 @@ FYI_BUILDERS = {
       'push_apps_to_background_apk',
       'system_webview_apk',
       'system_webview_shell_apk',
+    ],
+  },
+  'ios-iphone15pro-perf-fyi': {
+    'tests': [
+      {
+        'isolate': 'ios_chrome_perf_benchmarks_eg2tests_module',
+        'type': TEST_TYPES.GENERIC,
+        'num_shards': 1,
+        'timeout': 3600,
+        'extra_args': [
+          '--benchmark-name=bling',
+          # TODO(crbug.com/570775933): Keep synced with xcode.ios.xcode_default.
+          '--xcode-build-version=27a266a',
+          '--out-dir=${ISOLATED_OUTDIR}',
+          '--xcodebuild-device-runner',
+        ],
+      }
+    ],
+    'platform': 'ios',
+    'dimension': {
+      'device': 'iPhone16,1',
+      'os': 'iOS-26',
+      'pool': 'chrome.tests',
+    },
+    'cipd': {
+      'cipd_package': 'infra/tools/mac_toolchain/${platform}',
+      'location': '.',
+      'revision': 'git_revision:ed58ac9443fe1754e84d596bdaf9961cbaa6e85b',
+    },
+    'named_caches': [
+      {
+        'name': 'xcode_ios_27a266a',
+        'path': 'Xcode.app',
+      },
     ],
   },
   'linux-perf-fyi': {
@@ -2097,6 +2132,8 @@ def generate_performance_test(tester_config, test, builder_name):
     result['swarming']['shards'] = shards
   if tester_config.get('cipd'):
     result['swarming']['cipd_packages'] = [tester_config['cipd']]
+  if tester_config.get('named_caches'):
+    result['swarming']['named_caches'] = tester_config['named_caches']
   return result
 
 
