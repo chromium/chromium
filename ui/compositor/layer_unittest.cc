@@ -1265,11 +1265,20 @@ TEST_P(LayerWithNullDelegateTest, LayerContentOpaqueness_SolidColor) {
   EXPECT_FALSE(layer->fills_bounds_opaquely());
   EXPECT_FALSE(layer_test_api.cc_layer()->contents_opaque());
 
+  // SetFillsBoundsOpaquely is a no-op for LayerSolidColor.
+  layer->SetFillsBoundsOpaquely(true);
+  EXPECT_FALSE(layer->fills_bounds_opaquely());
+  EXPECT_FALSE(layer_test_api.cc_layer()->contents_opaque());
+
   // Set an opaque color.
   layer->SetColor(SkColors::kRed);
   EXPECT_EQ(layer_test_api.cc_layer()->background_color(), SkColors::kRed);
   EXPECT_EQ(layer_test_api.cc_layer()->SafeOpaqueBackgroundColor(),
             SkColors::kRed);
+  EXPECT_TRUE(layer->fills_bounds_opaquely());
+  EXPECT_TRUE(layer_test_api.cc_layer()->contents_opaque());
+
+  layer->SetFillsBoundsOpaquely(false);
   EXPECT_TRUE(layer->fills_bounds_opaquely());
   EXPECT_TRUE(layer_test_api.cc_layer()->contents_opaque());
 

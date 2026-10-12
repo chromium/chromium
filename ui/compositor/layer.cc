@@ -303,11 +303,7 @@ std::unique_ptr<Layer> Layer::Clone() const {
   clone->SetGradientMask(gradient_mask());
   clone->SetIsFastRoundedCorner(is_fast_rounded_corner());
   clone->SetName(name_);
-
-  // TODO(crbug.com/522627357): Move to LayerSolidColor.
-  if (!AsSolidColor()) {
-    clone->SetFillsBoundsOpaquely(fills_bounds_opaquely_);
-  }
+  clone->SetFillsBoundsOpaquely(fills_bounds_opaquely_);
 
   // the |damaged_region_| will be sent to cc later in SendDamagedRects().
   clone->damaged_region_ = damaged_region_;
@@ -928,7 +924,6 @@ void Layer::ConvertPointToLayer(const Layer* source,
 }
 
 void Layer::SetFillsBoundsOpaquely(bool fills_bounds_opaquely) {
-  CHECK_NE(type_, LayerType::LAYER_SOLID_COLOR);
   SetFillsBoundsOpaquelyWithReason(fills_bounds_opaquely,
                                    PropertyChangeReason::NOT_FROM_ANIMATION);
 }

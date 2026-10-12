@@ -43,6 +43,8 @@ std::unique_ptr<Layer> LayerSolidColor::Clone() const {
   return clone;
 }
 
+void LayerSolidColor::SetFillsBoundsOpaquely(bool fills_bounds_opaquely) {}
+
 bool LayerSolidColor::ShouldSchedulePaint() const {
   return false;
 }

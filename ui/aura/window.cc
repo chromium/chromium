@@ -402,9 +402,7 @@ void Window::SetTransparent(bool transparent) {
     return;
   transparent_ = transparent;
 
-  if (!layer()->AsSolidColor()) {
-    layer()->SetFillsBoundsOpaquely(!transparent_);
-  }
+  layer()->SetFillsBoundsOpaquely(!transparent_);
   TriggerChangedCallback(&transparent_);
 }
 

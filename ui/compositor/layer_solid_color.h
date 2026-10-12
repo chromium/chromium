@@ -53,6 +53,7 @@ class COMPOSITOR_EXPORT LayerSolidColor : public Layer {
 
   // Layer:
   std::unique_ptr<Layer> Clone() const override;
+  void SetFillsBoundsOpaquely(bool fills_bounds_opaquely) override;
   bool ShouldSchedulePaint() const override;
 
  protected:

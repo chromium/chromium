@@ -438,9 +438,9 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // Note: Setting a layer non-opaque has significant performance impact,
   // especially on low-end Chrome OS devices. Please ensure you are not
   // adding unnecessary overdraw. When in doubt, talk to the graphics team.
-  // NOTE: Opacity of SOLID_COLOR layer is determined by the color's alpha
-  // channel. Calling this on SOLID_COLOR results in check failure.
-  void SetFillsBoundsOpaquely(bool fills_bounds_opaquely);
+  // NOTE: Opacity of LayerSolidColor is determined by the color's alpha
+  // channel, and calling this on LayerSolidColor is a no-op.
+  virtual void SetFillsBoundsOpaquely(bool fills_bounds_opaquely);
   bool fills_bounds_opaquely() const { return fills_bounds_opaquely_; }
 
   const std::string& name() const { return name_; }
@@ -669,7 +669,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // rooted from |this|.
   void GetFlattenedWeakList(std::vector<base::WeakPtr<Layer>>* flattened_list);
 
-  // Same as SetFillsBoundsOpaque but with a reason how it's changed.
+  // Same as SetFillsBoundsOpaquely() but with a reason how it's changed.
   void SetFillsBoundsOpaquelyWithReason(bool fills_bounds_opaquely,
                                         PropertyChangeReason reason);
 

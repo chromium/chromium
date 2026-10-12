@@ -2771,9 +2771,7 @@ void View::AddLayerToRegionImpl(
 
   CreateOrDestroyLayer();
 
-  if (!layer()->AsSolidColor()) {
-    layer()->SetFillsBoundsOpaquely(false);
-  }
+  layer()->SetFillsBoundsOpaquely(false);
 }
 
 void View::SetLayerParent(ui::Layer* parent_layer) {
