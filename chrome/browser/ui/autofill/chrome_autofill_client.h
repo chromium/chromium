@@ -424,9 +424,6 @@ class ChromeAutofillClient : public ContentAutofillClient {
   // Returns the ToastController for the current tab, if it exists.
   ToastController* GetToastController();
 
-#if !BUILDFLAG(IS_ANDROID)
-  EmailVerificationController* GetEmailVerificationController();
-#endif
 
   bool SupportsConsentlessExecution(const url::Origin& origin);
   void ShowAutofillSuggestionsImpl(

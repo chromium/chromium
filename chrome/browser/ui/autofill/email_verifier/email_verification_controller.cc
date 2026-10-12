@@ -4,11 +4,13 @@
 
 #include "chrome/browser/ui/autofill/email_verifier/email_verification_controller.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/check_deref.h"
+#include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ui/autofill/email_verifier/email_verification_popup_controller.h"
 #include "chrome/browser/ui/autofill/email_verifier/email_verified_toast_menu_model.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
@@ -21,7 +23,8 @@ namespace autofill {
 
 EmailVerificationController::EmailVerificationController(
     content::WebContents* web_contents)
-    : web_contents_(CHECK_DEREF(web_contents)) {}
+    : web_contents_(CHECK_DEREF(web_contents)),
+      popup_controller_(web_contents) {}
 
 EmailVerificationController::~EmailVerificationController() = default;
 
@@ -32,19 +35,14 @@ void EmailVerificationController::ShowPopup(
     base::OnceCallback<
         void(AutofillClient::EmailVerificationPermissionUiStatus)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!popup_controller_ || !popup_controller_->is_loading() ||
-      hide_popup_timer_.IsRunning()) {
+  if (!popup_controller_.is_loading() || hide_popup_timer_.IsRunning()) {
     DismissPopup();
     hide_popup_timer_.Stop();
     toast_timer_.Stop();
     loading_start_time_.reset();
   }
 
-  if (!popup_controller_) {
-    popup_controller_ =
-        std::make_unique<EmailVerificationPopupController>(&*web_contents_);
-  }
-  popup_controller_->Show(
+  popup_controller_.Show(
       element_bounds_in_screen_space, issuer_site, email,
       base::BindOnce(
           [](base::WeakPtr<EmailVerificationController> self,
@@ -75,10 +73,7 @@ void EmailVerificationController::ShowPopup(
 
 void EmailVerificationController::HidePopup() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!popup_controller_) {
-    return;
-  }
-  if (popup_controller_->is_loading()) {
+  if (popup_controller_.is_loading()) {
     base::TimeDelta delay = GetRemainingLoadingDuration();
     if (!delay.is_zero()) {
       if (!hide_popup_timer_.IsRunning()) {
@@ -91,7 +86,7 @@ void EmailVerificationController::HidePopup() {
     }
   }
   hide_popup_timer_.Stop();
-  const bool was_loading = popup_controller_->is_loading();
+  const bool was_loading = popup_controller_.is_loading();
   DismissPopup();
   if (was_loading && !toast_timer_.IsRunning()) {
     loading_start_time_.reset();
@@ -180,11 +175,8 @@ void EmailVerificationController::ShowVerifiedToastImpl(const GURL& url) {
 
 void EmailVerificationController::DismissPopup() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!popup_controller_) {
-    return;
-  }
-  const bool was_loading = popup_controller_->is_loading();
-  popup_controller_->Dismiss();
+  const bool was_loading = popup_controller_.is_loading();
+  popup_controller_.Dismiss();
   if (was_loading && IsWebContentsVisible()) {
     // The popup is activatable and took focus when the user clicked "Verify".
     // Once it closes, give focus back to the page so it returns to the form

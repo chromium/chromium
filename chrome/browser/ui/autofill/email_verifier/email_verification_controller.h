@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_EMAIL_VERIFIER_EMAIL_VERIFICATION_CONTROLLER_H_
 #define CHROME_BROWSER_UI_AUTOFILL_EMAIL_VERIFIER_EMAIL_VERIFICATION_CONTROLLER_H_
 
-#include <memory>
 #include <optional>
 #include <string>
 
@@ -15,6 +14,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ui/autofill/email_verifier/email_verification_popup_controller.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "net/base/schemeful_site.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -28,8 +28,6 @@ class WebContents;
 }  // namespace content
 
 namespace autofill {
-
-class EmailVerificationPopupController;
 
 // Coordinates the Email Verification Protocol (EVP) UI flows on Desktop,
 // including the first-run permission prompt popup, the subsequent-run loading
@@ -104,7 +102,7 @@ class EmailVerificationController {
   const raw_ref<content::WebContents> web_contents_;
 
   // Controller for the first-run permission popup.
-  std::unique_ptr<EmailVerificationPopupController> popup_controller_;
+  EmailVerificationPopupController popup_controller_;
 
   // Start timestamp when the loading state was initiated (either when the user
   // confirmed the first-run prompt or when the subsequent-run loading toast was

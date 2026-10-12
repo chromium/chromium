@@ -1344,6 +1344,9 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
           this, GetAutofillMessageController());
   touch_to_fill_autofill_controller_ =
       TouchToFillAutofillController::Create(this);
+#else
+  email_verification_controller_ =
+      std::make_unique<EmailVerificationController>(web_contents);
 #endif
 
   if (actor::ActorKeyedService* actor_service =
@@ -1404,17 +1407,6 @@ tabs::TabInterface* ChromeAutofillClient::GetTabInterface() {
   return tabs::TabInterface::MaybeGetFromContents(web_contents());
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-EmailVerificationController*
-ChromeAutofillClient::GetEmailVerificationController() {
-  if (!email_verification_controller_) {
-    email_verification_controller_ =
-        std::make_unique<EmailVerificationController>(web_contents());
-  }
-  return email_verification_controller_.get();
-}
-#endif
-
 void ChromeAutofillClient::ShowEmailVerifiedToast(const GURL& issuer) {
 #if BUILDFLAG(IS_ANDROID)
   GetAutofillMessageController()->Show(
@@ -1422,7 +1414,7 @@ void ChromeAutofillClient::ShowEmailVerifiedToast(const GURL& issuer) {
           issuer,
           base::BindOnce(&ShowAutofillProfileSettings, web_contents())));
 #else
-  GetEmailVerificationController()->ShowVerifiedToast(issuer);
+  email_verification_controller_->ShowVerifiedToast(issuer);
 #endif
 }
 
@@ -1478,7 +1470,7 @@ void ChromeAutofillClient::ShowEmailVerificationPopup(
   const gfx::RectF element_bounds_in_screen_space =
       element_bounds + client_area.OffsetFromOrigin();
 
-  GetEmailVerificationController()->ShowPopup(
+  email_verification_controller_->ShowPopup(
       element_bounds_in_screen_space, issuer_site, email, std::move(callback));
 #endif
 }
@@ -1489,21 +1481,19 @@ void ChromeAutofillClient::HideEmailVerificationPopup() {
     email_verification_bottom_sheet_bridge_->Hide();
   }
 #else
-  if (email_verification_controller_) {
-    email_verification_controller_->HidePopup();
-  }
+  email_verification_controller_->HidePopup();
 #endif
 }
 
 void ChromeAutofillClient::ShowEmailVerificationLoadingToast() {
 #if !BUILDFLAG(IS_ANDROID)
-  GetEmailVerificationController()->ShowLoadingToast();
+  email_verification_controller_->ShowLoadingToast();
 #endif
 }
 
 void ChromeAutofillClient::ShowEmailVerificationErrorToast() {
 #if !BUILDFLAG(IS_ANDROID)
-  GetEmailVerificationController()->ShowErrorToast();
+  email_verification_controller_->ShowErrorToast();
 #endif
 }
 
