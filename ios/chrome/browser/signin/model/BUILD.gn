@@ -444,6 +444,28 @@ source_set("signin_util_internal_unit_tests") {
   ]
 }
 
+source_set("signin_disabled_browser_agent") {
+  sources = [
+    "signin_disabled_browser_agent.h",
+    "signin_disabled_browser_agent.mm",
+  ]
+  deps = [
+    ":authentication_service",
+    ":authentication_service_factory",
+    "//base",
+    "//components/prefs",
+    "//components/signin/public/base",
+    "//ios/chrome/app:change_profile_commands",
+    "//ios/chrome/app:change_profile_continuation",
+    "//ios/chrome/browser/authentication/ui_bundled/change_profile",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:utils",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -457,6 +479,7 @@ source_set("unit_tests") {
     "gaia_auth_fetcher_ios_ns_url_session_bridge_unittest.mm",
     "gaia_auth_fetcher_ios_unittest.mm",
     "pattern_account_restriction_unittest.mm",
+    "signin_disabled_browser_agent_unittest.mm",
     "signin_profile_info_updater_unittest.mm",
     "signin_util_unittest.mm",
     "system_account_updater_unittest.mm",
@@ -469,6 +492,7 @@ source_set("unit_tests") {
     ":fake_system_identity",
     ":fake_system_identity_manager",
     ":model",
+    ":signin_disabled_browser_agent",
     ":system_identity",
     ":system_identity_manager",
     ":test_support",

@@ -24,6 +24,11 @@ specific_include_rules = {
     "+ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h",
     "+ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h",
   ],
+  "^signin_disabled_browser_agent.mm": [
+    "+ios/chrome/app/change_profile_commands.h",
+    "+ios/chrome/app/change_profile_continuation.h",
+    "+ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_signout_continuation.h",
+  ],
   "^system_account_updater.mm": [
     "+ios/chrome/browser/widget_kit/model/features.h",
     "+ios/chrome/browser/widget_kit/model/model_swift.h",

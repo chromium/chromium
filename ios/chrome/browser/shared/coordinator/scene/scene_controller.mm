@@ -150,7 +150,6 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/model/authentication_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/constants.h"
@@ -318,8 +317,7 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
 
 // TODO(crbug.com/429354805): Add method comments(!)
 
-@interface SceneController () <AuthenticationServiceObserving,
-                               ProfileStateObserver,
+@interface SceneController () <ProfileStateObserver,
                                SceneUIBlockerStateObserver,
                                SceneUIHandler,
                                SceneURLLoadingServiceDelegate,
@@ -347,9 +345,6 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
   // This is used to ensure that the image search is only triggered when the BVC
   // is active.
   NSData* _imageSearchData;
-  // Observer for auth service status changes.
-  std::unique_ptr<AuthenticationServiceObserverBridge>
-      _authServiceObserverBridge;
   BOOL _handleExternalIntentsInProgress;
 }
 
@@ -498,7 +493,6 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
 #pragma mark - NSObject
 
 - (void)dealloc {
-  CHECK(!_authServiceObserverBridge);
   CHECK(!self.browserLifecycleManager, base::NotFatalUntil::M152);
 }
 
@@ -886,12 +880,6 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
   }
 
   return browser->GetWebStateList()->empty();
-}
-
-#pragma mark - AuthenticationServiceObserving
-
-- (void)onServiceStatusChanged {
-  [self signoutIfNeeded];
 }
 
 #pragma mark - ProfileStateObserver
@@ -1296,38 +1284,6 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
   }
 }
 
-// If sign-in is disabled, switch to the personal profile and sign-out.
-- (void)signoutIfNeeded {
-  AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForProfile(
-          self.sceneState.profileState.profile);
-  if (authenticationService->GetServiceStatus() !=
-      AuthenticationService::ServiceStatus::SigninDisabledByUser) {
-    // If sign-in becomes disabled because of a policy change, the
-    // PolicyWatcherBrowserAgent does the sign-out. Sign-in can’t become
-    // disabled due to Internal, so this method only needs to consider
-    // SigninDisabledByUser
-    return;
-  }
-  // If sign-in is disabled, switch to personal profile and sign-out.
-  if (!IsPersonalProfile(self.profile)) {
-    auto signoutSource = signin_metrics::ProfileSignout::kPrefChanged;
-    ChangeProfileContinuation continuation =
-        CreateChangeProfileSignoutContinuation(
-            signoutSource, /*force_snackbar_over_toolbar=*/false,
-            /*should_record_metrics=*/false,
-            /*snackbar_message_builder=*/{}, base::DoNothing());
-    signin::SwitchToPersonalProfile(self.sceneState,
-                                    ChangeProfileReason::kManagedAccountSignOut,
-                                    std::move(continuation));
-    return;
-  }
-  if ([self isSignedIn]) {
-    authenticationService->SignOut(
-        signin_metrics::ProfileSignout::kPrefChanged);
-  }
-}
-
 // Changes profile to handle `context` if needed.
 // `context.context` must belong to `contexts`.
 // `openURL`: Whether the URLs in `contexts` should be scheduled to open in the
@@ -1559,16 +1515,6 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
       [sceneHandler openURLInNewTab:command];
       [self finishActivatingBrowserDismissingTabSwitcher];
     }
-
-    AuthenticationService* authenticationService =
-        AuthenticationServiceFactory::GetForProfile(
-            self.sceneState.profileState.profile);
-    _authServiceObserverBridge =
-        std::make_unique<AuthenticationServiceObserverBridge>(
-            authenticationService, self);
-    // The user may be signed-in while sign-in is disabled. In which case,
-    // we must sign the user out, potentially switching profile.
-    [self signoutIfNeeded];
   }
   if (level == SceneActivationLevelBackground) {
     [self recordWindowCreationForSceneState:self.sceneState];
@@ -1796,7 +1742,6 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
 
   _incognitoWebStateObserver.reset();
   _mainWebStateObserver.reset();
-  _authServiceObserverBridge.reset();
 
   // TODO(crbug.com/40778288): Consider moving this at the beginning of
   // teardownUI to indicate that the UI is about to be torn down and that the

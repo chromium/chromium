@@ -62,9 +62,12 @@ class PolicyWatcherBrowserAgent
 
   explicit PolicyWatcherBrowserAgent(Browser* browser);
 
-  // Handler for changes to kSigninAllowed. When the pref changes to `false`,
-  // sends a command to the SceneController to dismiss any in-progress sign-in
-  // UI.
+  // Handler for changes to `prefs::kBrowserSigninPolicy`. When sign-in is
+  // disabled by enterprise policy, signs out the user and sends a command to
+  // dismiss any in-progress sign-in UI.
+  // Note: Sign-out due to local policy (`prefs::kSigninAllowedOnDevice`) is
+  // handled by `SigninDisabledBrowserAgent`
+  // (`ios/chrome/browser/signin/model/signin_disabled_browser_agent.h`).
   void ForceSignOutIfSigninDisabled();
 
   // Handler for change to kSyncManaged. When the pref changes to `true`,
