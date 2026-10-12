@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.device_dialog;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.view.View;
 import android.widget.Button;
@@ -47,7 +46,6 @@ import java.lang.ref.WeakReference;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class UsbChooserDialogTest {
     @Rule
     public final AutoResetCtaTransitTestRule mActivityTestRule =
@@ -204,9 +202,9 @@ public class UsbChooserDialogTest {
                 .thenReturn(true);
         when(mockModalDialogManager.isSuspended(ModalDialogManager.ModalDialogType.TAB))
                 .thenReturn(true);
-        Activity mockActivity = mock(Activity.class);
         WindowAndroid mockWindowAndroid = mock(WindowAndroid.class);
-        when(mockWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mockActivity));
+        when(mockWindowAndroid.getActivity())
+                .thenReturn(new WeakReference<>(mActivityTestRule.getActivity()));
         when(mockWindowAndroid.getModalDialogManager()).thenReturn(mockModalDialogManager);
 
         UsbChooserDialog dialog;

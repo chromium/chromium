@@ -8,7 +8,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -68,7 +67,6 @@ import java.util.concurrent.Callable;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class BluetoothChooserDialogTest {
     public static final String DEVICE_DIALOG_BATCH_NAME = "device_dialog";
 
@@ -584,9 +582,9 @@ public class BluetoothChooserDialogTest {
                 .thenReturn(true);
         when(mockModalDialogManager.isSuspended(ModalDialogManager.ModalDialogType.TAB))
                 .thenReturn(true);
-        Activity mockActivity = mock(Activity.class);
         WindowAndroid mockWindowAndroid = mock(WindowAndroid.class);
-        when(mockWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mockActivity));
+        when(mockWindowAndroid.getActivity())
+                .thenReturn(new WeakReference<>(mActivityTestRule.getActivity()));
         when(mockWindowAndroid.getModalDialogManager()).thenReturn(mockModalDialogManager);
         when(mockWindowAndroid.hasPermission(Manifest.permission.BLUETOOTH_SCAN)).thenReturn(true);
         when(mockWindowAndroid.hasPermission(Manifest.permission.BLUETOOTH_CONNECT))
