@@ -30,9 +30,18 @@
     // "desktop_android" is not supported.
     "platforms": ["chromeos", "linux", "mac", "win"],
     "allowlist": [
-      "2FC374607C2DF285634B67C64A2E356C607091C3",  // Quickoffice
-      "3727DD3E564B6055387425027AD74C58784ACC15",  // Quickoffice internal
-      "12E618C3C6E97495AAECF2AC12DEB082353241C6"   // QO component extension
+      // Quickoffice
+      "2FC374607C2DF285634B67C64A2E356C607091C3",
+      // Quickoffice (SHA-256)
+      "5F81F9FE1F4F499490466BC3861653FE72DE22E2BA8E4E5769DED9FB2C7EE2D0",
+      // Quickoffice internal
+      "3727DD3E564B6055387425027AD74C58784ACC15",
+      // Quickoffice internal (SHA-256)
+      "04C5C683BDBBDA3120FDD1043E96E551185C57F38BE14EE17B5993F6AD4C592F",
+      // QO component extension
+      "12E618C3C6E97495AAECF2AC12DEB082353241C6",
+      // QO component extension (SHA-256)
+      "0EEEFAA87E292CD986DD0528E90F9128A936B1C4E1C53E7FAA0244594C69DF94"
     ]
   }],
   "app.window": [{
@@ -233,9 +242,19 @@
     "contexts": ["privileged_extension"],
     "extension_types": ["extension"],
     "allowlist": [
-      "2FC374607C2DF285634B67C64A2E356C607091C3",  // http://crbug.com/1352358
-      "3727DD3E564B6055387425027AD74C58784ACC15",  // http://crbug.com/1352358
-      "12E618C3C6E97495AAECF2AC12DEB082353241C6"   // http://crbug.com/1352358
+      // https://crbug.com/1352358
+      // Quickoffice
+      "2FC374607C2DF285634B67C64A2E356C607091C3",
+      // Quickoffice (SHA-256)
+      "5F81F9FE1F4F499490466BC3861653FE72DE22E2BA8E4E5769DED9FB2C7EE2D0",
+      // Quickoffice internal
+      "3727DD3E564B6055387425027AD74C58784ACC15",
+      // Quickoffice internal (SHA-256)
+      "04C5C683BDBBDA3120FDD1043E96E551185C57F38BE14EE17B5993F6AD4C592F",
+      // QO component extension
+      "12E618C3C6E97495AAECF2AC12DEB082353241C6",
+      // QO component extension (SHA-256)
+      "0EEEFAA87E292CD986DD0528E90F9128A936B1C4E1C53E7FAA0244594C69DF94"
     ]
   },
   "feedbackPrivate.readLogSource": [
