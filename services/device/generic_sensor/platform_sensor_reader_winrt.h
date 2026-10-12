@@ -58,8 +58,9 @@ class PlatformSensorReaderWinrtBase : public PlatformSensorReaderWinBase {
   using GetSensorFactoryFunctor =
       base::RepeatingCallback<HRESULT(ISensorWinrtStatics**)>;
 
-  // Sets the client to notify changes about. The consumer should always
-  // ensure the lifetime of the client surpasses the lifetime of this class.
+  // Sets the client to notify changes about. The consumer must ensure the
+  // client remains valid until SetClient(nullptr) is called or this object is
+  // destroyed.
   void SetClient(Client* client) override;
 
   // Allows tests to specify their own implementation of the underlying sensor.
@@ -109,7 +110,7 @@ class PlatformSensorReaderWinrtBase : public PlatformSensorReaderWinBase {
   // |lock_| because SetClient() and StartSensor() are called from the main
   // task runner rather than the thread where this object is created, and
   // StopSensor() may be called from the main task runner too.
-  raw_ptr<Client, DanglingUntriaged> client_ GUARDED_BY(lock_);
+  raw_ptr<Client> client_ GUARDED_BY(lock_);
 
   // Always report the first sample received after starting the sensor.
   bool has_received_first_sample_ = false;

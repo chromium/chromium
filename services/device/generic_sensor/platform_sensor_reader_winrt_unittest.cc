@@ -583,8 +583,15 @@ class PlatformSensorReaderTestWinrt : public testing::Test {
       const Microsoft::WRL::ComPtr<
           FakeSensorFactoryWinrt<ISensorStatics, OtherFactoryTypes...>>&
           fake_sensor_factory) {
-    std::unique_ptr<SensorReader, base::OnTaskRunnerDeleter> reader(
-        nullptr, base::OnTaskRunnerDeleter(com_sta_task_runner_));
+    // Mirror ~PlatformSensorWin(): clear the client on the main thread before
+    // posting deletion to the COM STA task runner.
+    auto deleter = [task_runner = com_sta_task_runner_](SensorReader* ptr) {
+      if (ptr) {
+        ptr->SetClient(nullptr);
+        task_runner->DeleteSoon(FROM_HERE, ptr);
+      }
+    };
+    std::unique_ptr<SensorReader, decltype(deleter)> reader(nullptr, deleter);
 
     base::RunLoop run_loop;
     com_sta_task_runner_->PostTaskAndReply(
@@ -603,6 +610,8 @@ class PlatformSensorReaderTestWinrt : public testing::Test {
   }
 
  protected:
+  std::unique_ptr<testing::NiceMock<MockClient>> mock_client_ =
+      std::make_unique<testing::NiceMock<MockClient>>();
   scoped_refptr<base::SingleThreadTaskRunner> com_sta_task_runner_;
 
   base::test::TaskEnvironment task_environment_;
@@ -774,8 +783,7 @@ TEST_F(PlatformSensorReaderTestWinrt, SensorTimestampConversion) {
       fake_sensor_factory);
   ASSERT_TRUE(sensor);
 
-  auto mock_client = std::make_unique<testing::NiceMock<MockClient>>();
-  sensor->SetClient(mock_client.get());
+  sensor->SetClient(mock_client_.get());
 
   PlatformSensorConfiguration sensor_config(kExpectedReportFrequencySet);
   EXPECT_TRUE(sensor->StartSensor(sensor_config));
@@ -787,7 +795,7 @@ TEST_F(PlatformSensorReaderTestWinrt, SensorTimestampConversion) {
           ABI::Windows::Foundation::DateTime{}, 0.0f);
   {
     base::RunLoop run_loop;
-    EXPECT_CALL(*mock_client, OnReadingUpdated(::testing::_))
+    EXPECT_CALL(*mock_client_, OnReadingUpdated(::testing::_))
         .WillOnce([&](const SensorReading& reading) {
           EXPECT_EQ(reading.als.timestamp, 0.0);
           EXPECT_EQ(reading.als.value, 0.0f);
@@ -805,7 +813,7 @@ TEST_F(PlatformSensorReaderTestWinrt, SensorTimestampConversion) {
       Microsoft::WRL::Make<FakeLightSensorReadingWinrt>(second_timestamp, 0.0f);
   {
     base::RunLoop run_loop;
-    EXPECT_CALL(*mock_client, OnReadingUpdated(::testing::_))
+    EXPECT_CALL(*mock_client_, OnReadingUpdated(::testing::_))
         .WillOnce([&](const SensorReading& reading) {
           EXPECT_EQ(reading.als.timestamp, expectedTimestampDeltaSecs);
           EXPECT_EQ(reading.als.value, 0.0f);
@@ -943,12 +951,10 @@ TEST_F(PlatformSensorReaderTestWinrt, FailedLightSensorSampleParse) {
       fake_sensor_factory);
   ASSERT_TRUE(sensor);
 
-  auto mock_client = std::make_unique<testing::NiceMock<MockClient>>();
-
   // This test relies on the NiceMock to work, if the sensor notifies
   // the client despite not being able to parse the sensor sample then
   // the NiceMock will throw an error as no EXPECT_CALL has been set.
-  sensor->SetClient(mock_client.get());
+  sensor->SetClient(mock_client_.get());
 
   PlatformSensorConfiguration sensor_config(kExpectedReportFrequencySet);
   EXPECT_TRUE(sensor->StartSensor(sensor_config));
@@ -987,8 +993,7 @@ TEST_F(PlatformSensorReaderTestWinrt, SensorClientNotification) {
       fake_sensor_factory);
   ASSERT_TRUE(sensor);
 
-  auto mock_client = std::make_unique<testing::NiceMock<MockClient>>();
-  sensor->SetClient(mock_client.get());
+  sensor->SetClient(mock_client_.get());
 
   PlatformSensorConfiguration sensor_config(kExpectedReportFrequencySet);
   EXPECT_TRUE(sensor->StartSensor(sensor_config));
@@ -997,7 +1002,7 @@ TEST_F(PlatformSensorReaderTestWinrt, SensorClientNotification) {
       ABI::Windows::Foundation::DateTime{}, expected_lux);
   {
     base::RunLoop run_loop;
-    EXPECT_CALL(*mock_client, OnReadingUpdated(::testing::_))
+    EXPECT_CALL(*mock_client_, OnReadingUpdated(::testing::_))
         .WillOnce([&](const SensorReading& reading) {
           EXPECT_EQ(expected_lux, reading.als.value);
           run_loop.Quit();
@@ -1030,8 +1035,7 @@ TEST_F(PlatformSensorReaderTestWinrt, CheckAccelerometerReadingConversion) {
           fake_sensor_factory);
   ASSERT_TRUE(sensor);
 
-  auto mock_client = std::make_unique<testing::NiceMock<MockClient>>();
-  sensor->SetClient(mock_client.get());
+  sensor->SetClient(mock_client_.get());
 
   PlatformSensorConfiguration sensor_config(kExpectedReportFrequencySet);
   EXPECT_TRUE(sensor->StartSensor(sensor_config));
@@ -1040,7 +1044,7 @@ TEST_F(PlatformSensorReaderTestWinrt, CheckAccelerometerReadingConversion) {
       ABI::Windows::Foundation::DateTime{}, expected_x, expected_y, expected_z);
   {
     base::RunLoop run_loop;
-    EXPECT_CALL(*mock_client, OnReadingUpdated(::testing::_))
+    EXPECT_CALL(*mock_client_, OnReadingUpdated(::testing::_))
         .WillOnce([&](const SensorReading& reading) {
           EXPECT_EQ(-expected_x * base::kMeanGravityDouble, reading.accel.x);
           EXPECT_EQ(-expected_y * base::kMeanGravityDouble, reading.accel.y);
@@ -1072,8 +1076,7 @@ TEST_F(PlatformSensorReaderTestWinrt, FailedAccelerometerSampleParse) {
           fake_sensor_factory);
   ASSERT_TRUE(sensor);
 
-  auto mock_client = std::make_unique<testing::NiceMock<MockClient>>();
-  sensor->SetClient(mock_client.get());
+  sensor->SetClient(mock_client_.get());
 
   PlatformSensorConfiguration sensor_config(kExpectedReportFrequencySet);
   EXPECT_TRUE(sensor->StartSensor(sensor_config));
@@ -1122,8 +1125,7 @@ TEST_F(PlatformSensorReaderTestWinrt, CheckGyrometerReadingConversion) {
       fake_sensor_factory);
   ASSERT_TRUE(sensor);
 
-  auto mock_client = std::make_unique<testing::NiceMock<MockClient>>();
-  sensor->SetClient(mock_client.get());
+  sensor->SetClient(mock_client_.get());
 
   PlatformSensorConfiguration sensor_config(kExpectedReportFrequencySet);
   EXPECT_TRUE(sensor->StartSensor(sensor_config));
@@ -1132,7 +1134,7 @@ TEST_F(PlatformSensorReaderTestWinrt, CheckGyrometerReadingConversion) {
       ABI::Windows::Foundation::DateTime{}, expected_x, expected_y, expected_z);
   {
     base::RunLoop run_loop;
-    EXPECT_CALL(*mock_client, OnReadingUpdated(::testing::_))
+    EXPECT_CALL(*mock_client_, OnReadingUpdated(::testing::_))
         .WillOnce([&](const SensorReading& reading) {
           EXPECT_EQ(base::DegToRad(expected_x), reading.gyro.x);
           EXPECT_EQ(base::DegToRad(expected_y), reading.gyro.y);
@@ -1162,8 +1164,7 @@ TEST_F(PlatformSensorReaderTestWinrt, FailedGyrometerSampleParse) {
       fake_sensor_factory);
   ASSERT_TRUE(sensor);
 
-  auto mock_client = std::make_unique<testing::NiceMock<MockClient>>();
-  sensor->SetClient(mock_client.get());
+  sensor->SetClient(mock_client_.get());
 
   PlatformSensorConfiguration sensor_config(kExpectedReportFrequencySet);
   EXPECT_TRUE(sensor->StartSensor(sensor_config));
@@ -1213,8 +1214,7 @@ TEST_F(PlatformSensorReaderTestWinrt, CheckMagnetometerReadingConversion) {
           fake_sensor_factory);
   ASSERT_TRUE(sensor);
 
-  auto mock_client = std::make_unique<testing::NiceMock<MockClient>>();
-  sensor->SetClient(mock_client.get());
+  sensor->SetClient(mock_client_.get());
 
   PlatformSensorConfiguration sensor_config(kExpectedReportFrequencySet);
   EXPECT_TRUE(sensor->StartSensor(sensor_config));
@@ -1223,7 +1223,7 @@ TEST_F(PlatformSensorReaderTestWinrt, CheckMagnetometerReadingConversion) {
       ABI::Windows::Foundation::DateTime{}, expected_x, expected_y, expected_z);
   {
     base::RunLoop run_loop;
-    EXPECT_CALL(*mock_client, OnReadingUpdated(::testing::_))
+    EXPECT_CALL(*mock_client_, OnReadingUpdated(::testing::_))
         .WillOnce([&](const SensorReading& reading) {
           EXPECT_EQ(expected_x, reading.magn.x);
           EXPECT_EQ(expected_y, reading.magn.y);
@@ -1254,8 +1254,7 @@ TEST_F(PlatformSensorReaderTestWinrt, FailedMagnetometerSampleParse) {
           fake_sensor_factory);
   ASSERT_TRUE(sensor);
 
-  auto mock_client = std::make_unique<testing::NiceMock<MockClient>>();
-  sensor->SetClient(mock_client.get());
+  sensor->SetClient(mock_client_.get());
 
   PlatformSensorConfiguration sensor_config(kExpectedReportFrequencySet);
   EXPECT_TRUE(sensor->StartSensor(sensor_config));
@@ -1304,8 +1303,7 @@ TEST_F(PlatformSensorReaderTestWinrt, CheckInclinometerReadingConversion) {
       PlatformSensorReaderWinrtAbsOrientationEulerAngles>(fake_sensor_factory);
   ASSERT_TRUE(sensor);
 
-  auto mock_client = std::make_unique<testing::NiceMock<MockClient>>();
-  sensor->SetClient(mock_client.get());
+  sensor->SetClient(mock_client_.get());
 
   PlatformSensorConfiguration sensor_config(kExpectedReportFrequencySet);
   EXPECT_TRUE(sensor->StartSensor(sensor_config));
@@ -1314,7 +1312,7 @@ TEST_F(PlatformSensorReaderTestWinrt, CheckInclinometerReadingConversion) {
       ABI::Windows::Foundation::DateTime{}, expected_x, expected_y, expected_z);
   {
     base::RunLoop run_loop;
-    EXPECT_CALL(*mock_client, OnReadingUpdated(::testing::_))
+    EXPECT_CALL(*mock_client_, OnReadingUpdated(::testing::_))
         .WillOnce([&](const SensorReading& reading) {
           EXPECT_EQ(expected_x, reading.orientation_euler.x);
           EXPECT_EQ(expected_y, reading.orientation_euler.y);
@@ -1344,8 +1342,7 @@ TEST_F(PlatformSensorReaderTestWinrt, FailedInclinometerSampleParse) {
       PlatformSensorReaderWinrtAbsOrientationEulerAngles>(fake_sensor_factory);
   ASSERT_TRUE(sensor);
 
-  auto mock_client = std::make_unique<testing::NiceMock<MockClient>>();
-  sensor->SetClient(mock_client.get());
+  sensor->SetClient(mock_client_.get());
 
   PlatformSensorConfiguration sensor_config(kExpectedReportFrequencySet);
   EXPECT_TRUE(sensor->StartSensor(sensor_config));
@@ -1396,8 +1393,7 @@ TEST_F(PlatformSensorReaderTestWinrt, CheckOrientationSensorReadingConversion) {
       PlatformSensorReaderWinrtAbsOrientationQuaternion>(fake_sensor_factory);
   ASSERT_TRUE(sensor);
 
-  auto mock_client = std::make_unique<testing::NiceMock<MockClient>>();
-  sensor->SetClient(mock_client.get());
+  sensor->SetClient(mock_client_.get());
 
   PlatformSensorConfiguration sensor_config(kExpectedReportFrequencySet);
   EXPECT_TRUE(sensor->StartSensor(sensor_config));
@@ -1407,7 +1403,7 @@ TEST_F(PlatformSensorReaderTestWinrt, CheckOrientationSensorReadingConversion) {
       expected_z);
   {
     base::RunLoop run_loop;
-    EXPECT_CALL(*mock_client, OnReadingUpdated(::testing::_))
+    EXPECT_CALL(*mock_client_, OnReadingUpdated(::testing::_))
         .WillOnce([&](const SensorReading& reading) {
           EXPECT_EQ(expected_w, reading.orientation_quat.w);
           EXPECT_EQ(expected_x, reading.orientation_quat.x);
@@ -1439,8 +1435,7 @@ TEST_F(PlatformSensorReaderTestWinrt, FailedOrientationSampleParse) {
       PlatformSensorReaderWinrtAbsOrientationQuaternion>(fake_sensor_factory);
   ASSERT_TRUE(sensor);
 
-  auto mock_client = std::make_unique<testing::NiceMock<MockClient>>();
-  sensor->SetClient(mock_client.get());
+  sensor->SetClient(mock_client_.get());
 
   PlatformSensorConfiguration sensor_config(kExpectedReportFrequencySet);
   EXPECT_TRUE(sensor->StartSensor(sensor_config));
@@ -1475,8 +1470,7 @@ TEST_F(PlatformSensorReaderTestWinrt, LightSensorThresholding) {
       fake_sensor_factory);
   ASSERT_TRUE(sensor);
 
-  auto mock_client = std::make_unique<testing::NiceMock<MockClient>>();
-  sensor->SetClient(mock_client.get());
+  sensor->SetClient(mock_client_.get());
 
   PlatformSensorConfiguration sensor_config(kExpectedReportFrequencySet);
   EXPECT_TRUE(sensor->StartSensor(sensor_config));
@@ -1487,7 +1481,7 @@ TEST_F(PlatformSensorReaderTestWinrt, LightSensorThresholding) {
         ABI::Windows::Foundation::DateTime{}, last_sent_lux);
     if (expect_callback) {
       base::RunLoop run_loop;
-      EXPECT_CALL(*mock_client, OnReadingUpdated(::testing::_))
+      EXPECT_CALL(*mock_client_, OnReadingUpdated(::testing::_))
           .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
       fake_sensor->TriggerFakeSensorReading(reading);
       run_loop.Run();
@@ -1529,8 +1523,7 @@ TEST_F(PlatformSensorReaderTestWinrt, AccelerometerThresholding) {
           fake_sensor_factory);
   ASSERT_TRUE(sensor);
 
-  auto mock_client = std::make_unique<testing::NiceMock<MockClient>>();
-  sensor->SetClient(mock_client.get());
+  sensor->SetClient(mock_client_.get());
 
   PlatformSensorConfiguration sensor_config(kExpectedReportFrequencySet);
   EXPECT_TRUE(sensor->StartSensor(sensor_config));
@@ -1544,7 +1537,7 @@ TEST_F(PlatformSensorReaderTestWinrt, AccelerometerThresholding) {
         last_sent_z);
     if (expect_callback) {
       base::RunLoop run_loop;
-      EXPECT_CALL(*mock_client, OnReadingUpdated(::testing::_))
+      EXPECT_CALL(*mock_client_, OnReadingUpdated(::testing::_))
           .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
       fake_sensor->TriggerFakeSensorReading(reading);
       run_loop.Run();
@@ -1590,8 +1583,7 @@ TEST_F(PlatformSensorReaderTestWinrt, GyrometerThresholding) {
       fake_sensor_factory);
   ASSERT_TRUE(sensor);
 
-  auto mock_client = std::make_unique<testing::NiceMock<MockClient>>();
-  sensor->SetClient(mock_client.get());
+  sensor->SetClient(mock_client_.get());
 
   PlatformSensorConfiguration sensor_config(kExpectedReportFrequencySet);
   EXPECT_TRUE(sensor->StartSensor(sensor_config));
@@ -1605,7 +1597,7 @@ TEST_F(PlatformSensorReaderTestWinrt, GyrometerThresholding) {
         last_sent_z);
     if (expect_callback) {
       base::RunLoop run_loop;
-      EXPECT_CALL(*mock_client, OnReadingUpdated(::testing::_))
+      EXPECT_CALL(*mock_client_, OnReadingUpdated(::testing::_))
           .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
       fake_sensor->TriggerFakeSensorReading(reading);
       run_loop.Run();
@@ -1652,8 +1644,7 @@ TEST_F(PlatformSensorReaderTestWinrt, MagnetometerThresholding) {
           fake_sensor_factory);
   ASSERT_TRUE(sensor);
 
-  auto mock_client = std::make_unique<testing::NiceMock<MockClient>>();
-  sensor->SetClient(mock_client.get());
+  sensor->SetClient(mock_client_.get());
 
   PlatformSensorConfiguration sensor_config(kExpectedReportFrequencySet);
   EXPECT_TRUE(sensor->StartSensor(sensor_config));
@@ -1667,7 +1658,7 @@ TEST_F(PlatformSensorReaderTestWinrt, MagnetometerThresholding) {
         last_sent_z);
     if (expect_callback) {
       base::RunLoop run_loop;
-      EXPECT_CALL(*mock_client, OnReadingUpdated(::testing::_))
+      EXPECT_CALL(*mock_client_, OnReadingUpdated(::testing::_))
           .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
       fake_sensor->TriggerFakeSensorReading(reading);
       run_loop.Run();
@@ -1719,8 +1710,7 @@ TEST_F(PlatformSensorReaderTestWinrt, AbsOrientationEulerThresholding) {
       PlatformSensorReaderWinrtAbsOrientationEulerAngles>(fake_sensor_factory);
   ASSERT_TRUE(sensor);
 
-  auto mock_client = std::make_unique<testing::NiceMock<MockClient>>();
-  sensor->SetClient(mock_client.get());
+  sensor->SetClient(mock_client_.get());
 
   PlatformSensorConfiguration sensor_config(kExpectedReportFrequencySet);
   EXPECT_TRUE(sensor->StartSensor(sensor_config));
@@ -1734,7 +1724,7 @@ TEST_F(PlatformSensorReaderTestWinrt, AbsOrientationEulerThresholding) {
         last_sent_z);
     if (expect_callback) {
       base::RunLoop run_loop;
-      EXPECT_CALL(*mock_client, OnReadingUpdated(::testing::_))
+      EXPECT_CALL(*mock_client_, OnReadingUpdated(::testing::_))
           .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
       fake_sensor->TriggerFakeSensorReading(reading);
       run_loop.Run();
@@ -1793,8 +1783,7 @@ TEST_F(PlatformSensorReaderTestWinrt, AbsOrientationQuatThresholding) {
       PlatformSensorReaderWinrtAbsOrientationQuaternion>(fake_sensor_factory);
   ASSERT_TRUE(sensor);
 
-  auto mock_client = std::make_unique<testing::NiceMock<MockClient>>();
-  sensor->SetClient(mock_client.get());
+  sensor->SetClient(mock_client_.get());
 
   PlatformSensorConfiguration sensor_config(kExpectedReportFrequencySet);
   EXPECT_TRUE(sensor->StartSensor(sensor_config));
@@ -1807,7 +1796,7 @@ TEST_F(PlatformSensorReaderTestWinrt, AbsOrientationQuatThresholding) {
         quat.z());
     if (expect_callback) {
       base::RunLoop run_loop;
-      EXPECT_CALL(*mock_client, OnReadingUpdated(::testing::_))
+      EXPECT_CALL(*mock_client_, OnReadingUpdated(::testing::_))
           .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
       fake_sensor->TriggerFakeSensorReading(reading);
       run_loop.Run();
