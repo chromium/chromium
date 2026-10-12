@@ -104,13 +104,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.Install.InstallResult" enum="WebApkInstallResult"
-    expires_after="2026-05-24">
-  <owner>eirage@chromium.org</owner>
+    expires_after="2027-09-30">
+  <owner>dmurph@chromium.org</owner>
   <owner>hartmanng@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
     Record whether installing a WebAPK succeeded. If not record the reason that
     the install failed.
+
+    Warning: this histogram was expired from 2026-05-24 to 2026-10-07; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -346,7 +349,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.UniversalInstall.DialogAction"
-    enum="UniversalInstallDialogActions" expires_after="2026-12-27">
+    enum="UniversalInstallDialogActions" expires_after="2027-09-30">
   <owner>finnur@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
@@ -357,7 +360,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.UniversalInstall.DialogShownForAppType"
-    enum="WebApkAppType" expires_after="2026-08-23">
+    enum="WebApkAppType" expires_after="2027-09-30">
   <owner>finnur@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
@@ -366,6 +369,9 @@ chromium-metrics-reviews@google.com.
     versions prior to 125 this metric overcounted app types in scenarios where
     the dialog redirects to the install dialog (instead of showing) because we
     detect that only one action was meaningful to the user.
+
+    Warning: this histogram was expired from 2026-08-23 to 2026-10-07; data may
+    be missing.
   </summary>
 </histogram>
 
