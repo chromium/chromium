@@ -5,15 +5,12 @@
 #include "components/variations/metrics.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "build/build_config.h"
 
 namespace variations {
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 void RecordFirstRunSeedImportResult(FirstRunSeedImportResult result) {
   base::UmaHistogramEnumeration("Variations.FirstRunResult", result);
 }
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 void RecordLoadSeedResult(LoadSeedResult state) {
   base::UmaHistogramEnumeration("Variations.SeedLoadResult", state);

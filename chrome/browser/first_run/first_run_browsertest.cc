@@ -79,10 +79,10 @@ std::unique_ptr<KeyedService> BuildHistoryServiceAndRegisterCallback(
 }
 
 // A generic test class to be subclassed by test classes testing specific
-// master_preferences. All subclasses must call SetInitialPreferencesForTest()
+// initial_preferences. All subclasses must call SetInitialPreferencesForTest()
 // from their SetUp() method before deferring the remainder of Setup() to this
 // class.
-class FirstRunMasterPrefsBrowserTestBase : public InProcessBrowserTest {
+class FirstRunInitialPrefsBrowserTestBase : public InProcessBrowserTest {
  protected:
   void SetUp() override {
     // All users of this test class need to call SetInitialPreferencesForTest()
@@ -139,12 +139,12 @@ class FirstRunMasterPrefsBrowserTestBase : public InProcessBrowserTest {
 };
 
 template <const char text[]>
-class FirstRunMasterPrefsBrowserTestT
-    : public FirstRunMasterPrefsBrowserTestBase {
+class FirstRunInitialPrefsBrowserTestT
+    : public FirstRunInitialPrefsBrowserTestBase {
  protected:
   void SetUp() override {
     SetInitialPreferencesForTest(text);
-    FirstRunMasterPrefsBrowserTestBase::SetUp();
+    FirstRunInitialPrefsBrowserTestBase::SetUp();
   }
 };
 
@@ -176,10 +176,10 @@ int MaskExpectedImportState(int expected_import_state) {
 const char kImportDefault[] =
     "{\n"
     "}\n";
-typedef FirstRunMasterPrefsBrowserTestT<kImportDefault>
-    FirstRunMasterPrefsImportDefault;
+typedef FirstRunInitialPrefsBrowserTestT<kImportDefault>
+    FirstRunInitialPrefsImportDefault;
 // No items are imported by default.
-IN_PROC_BROWSER_TEST_F(FirstRunMasterPrefsImportDefault, ImportDefault) {
+IN_PROC_BROWSER_TEST_F(FirstRunInitialPrefsImportDefault, ImportDefault) {
   EXPECT_EQ(MaskExpectedImportState(AUTO_IMPORT_CALLED), auto_import_state());
 }
 
@@ -192,9 +192,9 @@ const char kImportAll[] =
     "    \"import_search_engine\": true\n"
     "  }\n"
     "}\n";
-typedef FirstRunMasterPrefsBrowserTestT<kImportAll>
-    FirstRunMasterPrefsImportAll;
-IN_PROC_BROWSER_TEST_F(FirstRunMasterPrefsImportAll, ImportAll) {
+typedef FirstRunInitialPrefsBrowserTestT<kImportAll>
+    FirstRunInitialPrefsImportAll;
+IN_PROC_BROWSER_TEST_F(FirstRunInitialPrefsImportAll, ImportAll) {
   EXPECT_EQ(MaskExpectedImportState(AUTO_IMPORT_CALLED |
                                     AUTO_IMPORT_PROFILE_IMPORTED),
             auto_import_state());
@@ -208,9 +208,9 @@ const char kImportBookmarksFile[] =
     "     \"import_bookmarks_from_file\": \"/foo/doesntexists.wtv\"\n"
     "  }\n"
     "}\n";
-typedef FirstRunMasterPrefsBrowserTestT<kImportBookmarksFile>
-    FirstRunMasterPrefsImportBookmarksFile;
-IN_PROC_BROWSER_TEST_F(FirstRunMasterPrefsImportBookmarksFile,
+typedef FirstRunInitialPrefsBrowserTestT<kImportBookmarksFile>
+    FirstRunInitialPrefsImportBookmarksFile;
+IN_PROC_BROWSER_TEST_F(FirstRunInitialPrefsImportBookmarksFile,
                        ImportBookmarksFile) {
   EXPECT_EQ(MaskExpectedImportState(AUTO_IMPORT_CALLED |
                                     AUTO_IMPORT_BOOKMARKS_FILE_IMPORTED),
@@ -229,9 +229,9 @@ const char kImportNothing[] =
     "    \"import_search_engine\": false\n"
     "  }\n"
     "}\n";
-typedef FirstRunMasterPrefsBrowserTestT<kImportNothing>
-    FirstRunMasterPrefsImportNothing;
-IN_PROC_BROWSER_TEST_F(FirstRunMasterPrefsImportNothing,
+typedef FirstRunInitialPrefsBrowserTestT<kImportNothing>
+    FirstRunInitialPrefsImportNothing;
+IN_PROC_BROWSER_TEST_F(FirstRunInitialPrefsImportNothing,
                        ImportNothingAndShowNewTabPage) {
   EXPECT_EQ(AUTO_IMPORT_CALLED, auto_import_state());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
@@ -246,13 +246,13 @@ const char kWithTrackedPrefs[] =
     "  \"homepage\": \"example.com\",\n"
     "  \"homepage_is_newtabpage\": false\n"
     "}\n";
-// A test fixture that will run in a first run scenario with master_preferences
+// A test fixture that will run in a first run scenario with initial_preferences
 // set to kWithTrackedPrefs.
-class FirstRunMasterPrefsWithTrackedPreferences
-    : public FirstRunMasterPrefsBrowserTestT<kWithTrackedPrefs> {
+class FirstRunInitialPrefsWithTrackedPreferences
+    : public FirstRunInitialPrefsBrowserTestT<kWithTrackedPrefs> {
  protected:
   void SetUpInProcessBrowserTestFixture() override {
-    FirstRunMasterPrefsBrowserTestT::SetUpInProcessBrowserTestFixture();
+    FirstRunInitialPrefsBrowserTestT::SetUpInProcessBrowserTestFixture();
 
     // Bots are on a domain, turn off the domain check for settings hardening in
     // order to be able to test all SettingsEnforcement groups.
@@ -260,7 +260,7 @@ class FirstRunMasterPrefsWithTrackedPreferences
   }
 };
 
-IN_PROC_BROWSER_TEST_F(FirstRunMasterPrefsWithTrackedPreferences,
+IN_PROC_BROWSER_TEST_F(FirstRunInitialPrefsWithTrackedPreferences,
                        TrackedPreferencesSurviveFirstRun) {
   const PrefService* user_prefs = browser()->GetProfile()->GetPrefs();
   EXPECT_EQ("example.com", user_prefs->GetString(prefs::kHomePage));
@@ -284,7 +284,6 @@ IN_PROC_BROWSER_TEST_F(FirstRunMasterPrefsWithTrackedPreferences,
   "MEUCIQCo4D8Ad0pMlFoLT4mMrv7/ZK7PqyEmJlW5jciua6mluAIgQQKcj352r/sjq8b98W+jRk" \
   "dwyDZn3ocgV01juWKx3u0="
 
-constexpr char kCompressedSeedTestValue[] = COMPRESSED_SEED_TEST_VALUE;
 constexpr char kSignatureValue[] = SEED_SIGNATURE_TEST_VALUE;
 
 const char kWithVariationsPrefs[] =
@@ -300,11 +299,11 @@ const char kWithVariationsPrefs[] =
 
 // Note: This test is parametrized on metrics consent state, since that affects
 // field trial randomization.
-class FirstRunMasterPrefsVariationsSeedTest
-    : public FirstRunMasterPrefsBrowserTestT<kWithVariationsPrefs>,
+class FirstRunInitialPrefsVariationsSeedTest
+    : public FirstRunInitialPrefsBrowserTestT<kWithVariationsPrefs>,
       public testing::WithParamInterface<bool> {
  public:
-  FirstRunMasterPrefsVariationsSeedTest() : metrics_consent_(GetParam()) {
+  FirstRunInitialPrefsVariationsSeedTest() : metrics_consent_(GetParam()) {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         variations::switches::kDisableFieldTrialTestingConfig);
     // TODO(https://crbug.com/564792943): Update tests so they work with the
@@ -313,12 +312,12 @@ class FirstRunMasterPrefsVariationsSeedTest
                                            variations::kControlGroup);
   }
 
-  FirstRunMasterPrefsVariationsSeedTest(
-      const FirstRunMasterPrefsVariationsSeedTest&) = delete;
-  FirstRunMasterPrefsVariationsSeedTest& operator=(
-      const FirstRunMasterPrefsVariationsSeedTest&) = delete;
+  FirstRunInitialPrefsVariationsSeedTest(
+      const FirstRunInitialPrefsVariationsSeedTest&) = delete;
+  FirstRunInitialPrefsVariationsSeedTest& operator=(
+      const FirstRunInitialPrefsVariationsSeedTest&) = delete;
 
-  ~FirstRunMasterPrefsVariationsSeedTest() override = default;
+  ~FirstRunInitialPrefsVariationsSeedTest() override = default;
 
   void SetUp() override {
     // Make metrics reporting work same as in Chrome branded builds, for test
@@ -328,7 +327,7 @@ class FirstRunMasterPrefsVariationsSeedTest
     // Based on GetParam(), either enable or disable metrics reporting.
     ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(
         &metrics_consent_);
-    FirstRunMasterPrefsBrowserTestT::SetUp();
+    FirstRunInitialPrefsBrowserTestT::SetUp();
   }
 
   // Writes the trial group to the temporary file.
@@ -358,19 +357,25 @@ class FirstRunMasterPrefsVariationsSeedTest
   base::FilePath GetTestFilePath() {
     base::FilePath user_data_dir;
     EXPECT_TRUE(base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir));
-    return user_data_dir.AppendASCII("FirstRunMasterPrefsVariationsSeedTest");
+    return user_data_dir.AppendASCII("FirstRunInitialPrefsVariationsSeedTest");
   }
 };
 
-IN_PROC_BROWSER_TEST_P(FirstRunMasterPrefsVariationsSeedTest, Test) {
-  // Tests variation migration from master_preferences to local_state.
-  EXPECT_EQ(kCompressedSeedTestValue,
-            g_browser_process->local_state()->GetString(
-                variations::prefs::kVariationsCompressedSeed));
+IN_PROC_BROWSER_TEST_P(FirstRunInitialPrefsVariationsSeedTest, Test) {
+  // Tests variation migration from initial_preferences to local_state.
+  // The seed store compresses the seed again, so the stored value is not the
+  // same as the installer value. The Variations.LoadSeedSignature check below
+  // verifies the stored seed data.
+  EXPECT_FALSE(g_browser_process->local_state()
+                   ->GetString(variations::prefs::kVariationsCompressedSeed)
+                   .empty());
   EXPECT_EQ(kSignatureValue, g_browser_process->local_state()->GetString(
                                  variations::prefs::kVariationsSeedSignature));
 
   // Verify variations loaded in VariationsService by metrics.
+  histogram_tester_.ExpectUniqueSample(
+      "Variations.FirstRunResult",
+      variations::FirstRunSeedImportResult::kSuccess, 1);
   histogram_tester_.ExpectUniqueSample(
       "Variations.SeedLoadResult", variations::StoreSeedResult::kSuccess, 1);
   histogram_tester_.ExpectUniqueSample(
@@ -379,7 +384,7 @@ IN_PROC_BROWSER_TEST_P(FirstRunMasterPrefsVariationsSeedTest, Test) {
 }
 
 // The following tests are only enabled on Windows, since it is the only
-// platform where master prefs is used to deliver first run variations. The
+// platform where initial prefs is used to deliver first run variations. The
 // tests do not pass on other platforms due to the provisional client id logic
 // in metrics_state_manager.cc. See the comment there for details.
 
@@ -391,10 +396,10 @@ constexpr const char* kTrialGroups[] = {
     "default",  "group_01", "group_02", "group_03", "group_04",
     "group_05", "group_06", "group_07", "group_08", "group_09"};
 
-IN_PROC_BROWSER_TEST_P(FirstRunMasterPrefsVariationsSeedTest, PRE_SecondRun) {
+IN_PROC_BROWSER_TEST_P(FirstRunInitialPrefsVariationsSeedTest, PRE_SecondRun) {
   // Check that the trial from the seed exists and is in one of the expected
   // states. Persist the state so that we can verify its randomization persists
-  // in FirstRunMasterPrefsVariationsSeedTest.SecondRun.
+  // in FirstRunInitialPrefsVariationsSeedTest.SecondRun.
   const std::string group_name = base::FieldTrialList::FindFullName(kTrialName);
   ASSERT_TRUE(std::ranges::contains(kTrialGroups, group_name)) << group_name;
   // Ensure trial is active (not disabled).
@@ -402,7 +407,7 @@ IN_PROC_BROWSER_TEST_P(FirstRunMasterPrefsVariationsSeedTest, PRE_SecondRun) {
   WriteTrialGroupToTestFile(group_name);
 }
 
-IN_PROC_BROWSER_TEST_P(FirstRunMasterPrefsVariationsSeedTest, SecondRun) {
+IN_PROC_BROWSER_TEST_P(FirstRunInitialPrefsVariationsSeedTest, SecondRun) {
   // This test runs after PRE_SecondRun and verifies that the trial state on
   // the second run matches what was seen in the PRE_ test.
   const std::string group_name = base::FieldTrialList::FindFullName(kTrialName);
@@ -415,24 +420,24 @@ IN_PROC_BROWSER_TEST_P(FirstRunMasterPrefsVariationsSeedTest, SecondRun) {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-INSTANTIATE_TEST_SUITE_P(FirstRunMasterPrefsVariationsSeedTests,
-                         FirstRunMasterPrefsVariationsSeedTest,
+INSTANTIATE_TEST_SUITE_P(FirstRunInitialPrefsVariationsSeedTests,
+                         FirstRunInitialPrefsVariationsSeedTest,
                          testing::Bool());
 
-struct FirstRunMasterPrefsImportBookmarkFaviconBrowserTestParams {
+struct FirstRunInitialPrefsImportBookmarkFaviconBrowserTestParams {
   const char* initial_prefs;
   bool valid;
   const char* test_name;
 };
 
-class FirstRunMasterPrefsImportBookmarkFaviconBrowserTest
-    : public FirstRunMasterPrefsBrowserTestBase,
+class FirstRunInitialPrefsImportBookmarkFaviconBrowserTest
+    : public FirstRunInitialPrefsBrowserTestBase,
       public ::testing::WithParamInterface<
-          FirstRunMasterPrefsImportBookmarkFaviconBrowserTestParams> {
+          FirstRunInitialPrefsImportBookmarkFaviconBrowserTestParams> {
  protected:
   void SetUp() override {
     SetInitialPreferencesForTest(GetParam().initial_prefs);
-    FirstRunMasterPrefsBrowserTestBase::SetUp();
+    FirstRunInitialPrefsBrowserTestBase::SetUp();
   }
 
   void SetUpBrowserContextKeyedServices(
@@ -440,7 +445,7 @@ class FirstRunMasterPrefsImportBookmarkFaviconBrowserTest
     InProcessBrowserTest::SetUpBrowserContextKeyedServices(context);
 
     history::HistoryService::FaviconsChangedCallback cb = base::BindRepeating(
-        &FirstRunMasterPrefsImportBookmarkFaviconBrowserTest::OnFaviconChanged,
+        &FirstRunInitialPrefsImportBookmarkFaviconBrowserTest::OnFaviconChanged,
         base::Unretained(this));
 
     HistoryServiceFactory::GetInstance()->SetTestingFactory(
@@ -460,7 +465,7 @@ class FirstRunMasterPrefsImportBookmarkFaviconBrowserTest
   base::CallbackListSubscription favicon_changed_subscription_;
 };
 
-IN_PROC_BROWSER_TEST_P(FirstRunMasterPrefsImportBookmarkFaviconBrowserTest,
+IN_PROC_BROWSER_TEST_P(FirstRunInitialPrefsImportBookmarkFaviconBrowserTest,
                        ImportBookmarksDict) {
   Profile* profile = browser()->GetProfile();
   bookmarks::BookmarkModel* bookmark_model =
@@ -569,32 +574,31 @@ constexpr char kImportBookmarksDictBadFaviconUrlScheme[] = R"({
 
 INSTANTIATE_TEST_SUITE_P(
     ,
-    FirstRunMasterPrefsImportBookmarkFaviconBrowserTest,
+    FirstRunInitialPrefsImportBookmarkFaviconBrowserTest,
     ::testing::Values(
-        FirstRunMasterPrefsImportBookmarkFaviconBrowserTestParams{
+        FirstRunInitialPrefsImportBookmarkFaviconBrowserTestParams{
             .initial_prefs = kImportBookmarksDictValidFaviconData,
             .valid = true,
             .test_name = "ValidFaviconData",
         },
-        FirstRunMasterPrefsImportBookmarkFaviconBrowserTestParams{
+        FirstRunInitialPrefsImportBookmarkFaviconBrowserTestParams{
             .initial_prefs = kImportBookmarksDictNoFaviconData,
             .valid = false,
             .test_name = "NoFaviconData",
         },
-        FirstRunMasterPrefsImportBookmarkFaviconBrowserTestParams{
+        FirstRunInitialPrefsImportBookmarkFaviconBrowserTestParams{
             .initial_prefs = kImportBookmarksDictMalformedFaviconData,
             .valid = false,
             .test_name = "MalformedFaviconData",
         },
-        FirstRunMasterPrefsImportBookmarkFaviconBrowserTestParams{
+        FirstRunInitialPrefsImportBookmarkFaviconBrowserTestParams{
             .initial_prefs = kImportBookmarksDictBadFaviconUrlScheme,
             .valid = false,
             .test_name = "BadFaviconUrlScheme",
         }),
     [](const ::testing::TestParamInfo<
-        FirstRunMasterPrefsImportBookmarkFaviconBrowserTest::ParamType>& info) {
-      return info.param.test_name;
-    });
+        FirstRunInitialPrefsImportBookmarkFaviconBrowserTest::ParamType>&
+           info) { return info.param.test_name; });
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 

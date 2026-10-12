@@ -30,6 +30,10 @@ namespace network_time {
 class NetworkTimeTracker;
 }  // namespace network_time
 
+namespace variations {
+struct SeedResponse;
+}  // namespace variations
+
 class ChromeMetricsServicesManagerClient;
 
 // The ChromeFeatureListCreator creates the FeatureList and classes required for
@@ -80,6 +84,10 @@ class ChromeFeatureListCreator {
   std::unique_ptr<installer::InitialPreferences> TakeInitialPrefs();
 #endif
 
+  // Passes ownership of the initial variations seed to the caller. Returns
+  // nullptr if there is no seed.
+  std::unique_ptr<variations::SeedResponse> TakeInitialSeed();
+
   PrefService* local_state() { return local_state_.get(); }
   policy::ChromeBrowserPolicyConnector* browser_policy_connector() {
     return browser_policy_connector_.get();
@@ -118,9 +126,8 @@ class ChromeFeatureListCreator {
 
   void CreateMetricsServices();
 
-  // Imports variations initial preference any preferences (to local state)
-  // needed for first run. This is always called and early outs if not
-  // first-run.
+  // Loads the initial preferences and the initial variations seed needed for
+  // first run. This is always called and early outs if not first-run.
   void SetupInitialPrefs();
 
   // Must be destroyed after |local_state_|.
@@ -149,6 +156,7 @@ class ChromeFeatureListCreator {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<installer::InitialPreferences> installer_initial_prefs_;
 #endif
+  std::unique_ptr<variations::SeedResponse> initial_seed_;
 
 #if BUILDFLAG(IS_CHROMEOS)
   // On ChromeOS, the platform needs to be able to access the

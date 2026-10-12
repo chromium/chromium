@@ -901,12 +901,9 @@ void SeedReaderWriter::ReadSeedFile() {
     stored_seed_info_.set_data("");
   } else if (MigrateFromLocalStateToSeedFile()) {
     // Export seed data from Local State to a seed file in the following cases.
-    // 1. Seed file does not exist because this is the first run. For Windows,
-    // the first run seed may be stored in Local State, see
-    // https://crsrc.org/s?q=file:chrome_feature_list_creator.cc+symbol:SetupInitialPrefs.
-    // 2. Seed file does not exist because this is the first time a client is
+    // 1. Seed file does not exist because this is the first time a client is
     // in the seed file experiment's treatment group.
-    // 3. Seed file exists and read failed.
+    // 2. Seed file exists and read failed.
     seed_source = SeedSource::kLocalState;
   }
 

@@ -54,7 +54,7 @@ class GlicPrivateInvokeFunction;
 }  // namespace extensions
 
 namespace first_run {
-class FirstRunMasterPrefsVariationsSeedTest;
+class FirstRunInitialPrefsVariationsSeedTest;
 }
 
 namespace glic {
@@ -201,7 +201,7 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Testing related friends.
-  friend class first_run::FirstRunMasterPrefsVariationsSeedTest;
+  friend class first_run::FirstRunInitialPrefsVariationsSeedTest;
   friend class ForceFieldTrialsBrowserTest;
   friend class MetricsReportingStateTest;
   friend class metrics::UkmConsentParamBrowserTest;

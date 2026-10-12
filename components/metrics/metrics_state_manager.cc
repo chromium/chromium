@@ -626,8 +626,8 @@ bool MetricsStateManager::ShouldGenerateProvisionalClientId(bool is_first_run) {
   // that via settings page after they unchecked it on the download page.
   //
   // Note: Windows first run is covered by browser tests
-  // FirstRunMasterPrefsVariationsSeedTest.PRE_SecondRun and
-  // FirstRunMasterPrefsVariationsSeedTest.SecondRun. If the platform ifdef
+  // FirstRunInitialPrefsVariationsSeedTest.PRE_SecondRun and
+  // FirstRunInitialPrefsVariationsSeedTest.SecondRun. If the platform ifdef
   // for this logic changes, the tests should be updated as well.
   return false;
 #else

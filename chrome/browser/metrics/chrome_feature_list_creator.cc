@@ -4,8 +4,11 @@
 
 #include "chrome/browser/metrics/chrome_feature_list_creator.h"
 
+#include <memory>
+#include <utility>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
@@ -30,7 +33,7 @@
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
-#include "components/variations/pref_names.h"
+#include "components/variations/seed_response.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/variations_switches.h"
 #include "components/webui/flags/pref_service_flags_storage.h"
@@ -39,6 +42,10 @@
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/resource/resource_bundle.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "components/variations/android/variations_seed_bridge.h"
+#endif
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/installer/util/google_update_settings.h"
@@ -103,6 +110,18 @@ ChromeFeatureListCreator::TakeInitialPrefs() {
   return std::move(installer_initial_prefs_);
 }
 #endif
+
+std::unique_ptr<variations::SeedResponse>
+ChromeFeatureListCreator::TakeInitialSeed() {
+#if BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<variations::SeedResponse> seed =
+      variations::android::GetVariationsFirstRunSeed();
+  variations::android::ClearJavaFirstRunPrefs();
+  return seed;
+#else
+  return std::move(initial_seed_);
+#endif
+}
 
 ChromeFeatureListCreator::ChromeFeatureListCreator() {
   CreateNetworkTimeTracker();
@@ -242,6 +261,8 @@ void ChromeFeatureListCreator::SetUpFieldTrials() {
       content::GetSwitchDependentFeatureOverrides(
           *base::CommandLine::ForCurrentProcess()),
       std::move(feature_list), browser_field_trials_.get());
+
+  initial_seed_.reset();
 }
 
 void ChromeFeatureListCreator::CreateMetricsServices() {
@@ -272,29 +293,27 @@ void ChromeFeatureListCreator::SetupInitialPrefs() {
     return;
   }
 
-  // Store the initial VariationsService seed in local state, if it exists
-  // in master prefs. Note: The getters we call remove them from the installer
-  // master prefs, which is why both the seed and signature are retrieved here
-  // and not within the ifs below.
+  // Keep the initial VariationsService seed for the seed store, if it exists
+  // in initial prefs. Note: The getters we call remove them from the installer
+  // initial prefs, which is why both the seed and signature are retrieved here
+  // and not within the if below.
   std::string compressed_variations_seed =
       installer_initial_prefs_->GetCompressedVariationsSeed();
   std::string variations_seed_signature =
       installer_initial_prefs_->GetVariationsSeedSignature();
 
-  if (!compressed_variations_seed.empty()) {
-    local_state_->SetString(variations::prefs::kVariationsCompressedSeed,
-                            compressed_variations_seed);
-
-    if (!variations_seed_signature.empty()) {
-      local_state_->SetString(variations::prefs::kVariationsSeedSignature,
-                              variations_seed_signature);
-    }
+  std::string seed_data;
+  if (!compressed_variations_seed.empty() &&
+      base::Base64Decode(compressed_variations_seed, &seed_data)) {
+    initial_seed_ = std::make_unique<variations::SeedResponse>();
+    initial_seed_->data = std::move(seed_data);
+    initial_seed_->signature = std::move(variations_seed_signature);
     // Set the variation seed date to the current system time. If the user's
     // clock is incorrect, this may cause some field trial expiry checks to
     // not do the right thing until the next seed update from the server,
     // when this value will be updated.
-    local_state_->SetTime(variations::prefs::kVariationsSeedDate,
-                          base::Time::Now());
+    initial_seed_->date = base::Time::Now();
+    initial_seed_->is_gzip_compressed = true;
   }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 }

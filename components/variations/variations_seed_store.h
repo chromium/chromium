@@ -16,7 +16,6 @@
 #include "base/metrics/field_trial.h"
 #include "base/time/time.h"
 #include "base/version_info/channel.h"
-#include "build/build_config.h"
 #include "components/variations/entropy_provider.h"
 #include "components/variations/metrics.h"
 #include "components/variations/proto/variations_seed.pb.h"
@@ -67,8 +66,8 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
 
   // |local_state| provides access to Local State prefs. Must not be null.
   // |initial_seed|, if not null, is stored in this seed store. It is used (A)
-  // by Android Chrome and iOS to supply a first-run seed and (B) by Android
-  // WebView to supply a seed on every run.
+  // on first run by Android, Desktop, and iOS Chrome to supply a first-run seed
+  // and (B) by Android WebView to supply a seed on every run.
   // |signature_verification_enabled_on_load| and
   // |signature_verification_enabled_on_receive| can be used to disable
   // signature checks on the seed when loading the seed from disk or receiving
@@ -368,14 +367,12 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   // type.
   void ClearPrefs(SeedType seed_type);
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  // Imports the variations seed from the Java/iOS side. Logs UMA on failure.
-  // Android and iOS Chrome uses this on first run; WebView uses this on every
-  // startup. In Chrome's case, it's important to set the first run seed as soon
-  // as possible, because some clients query the seed store prefs directly
-  // rather than accessing them via the seed store API: https://crbug.com/829527
+  // Imports the initial variations seed. Logs UMA on failure. Android, Desktop,
+  // and iOS Chrome use this on first run; WebView uses this on every startup.
+  // In Chrome's case, it's important to set the first run seed as soon as
+  // possible, because some clients query the seed store prefs directly rather
+  // than accessing them via the seed store API: https://crbug.com/829527
   void ImportInitialSeed(std::unique_ptr<SeedResponse> initial_seed);
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
   // Reads the variations seed data from SeedReaderWriter into |seed_data|, and
   // returns the result of the load. If a pointer for the signature is provided,

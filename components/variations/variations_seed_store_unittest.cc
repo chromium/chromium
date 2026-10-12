@@ -3605,6 +3605,92 @@ TEST_P(VariationsSeedStoreTestAllGroupsDates, UpdateSeedDateAndLogDayChange) {
                                       params.expected_result, 1);
 }
 
+// Verifies that ImportInitialSeed() stores a valid gzip-compressed seed.
+TEST_F(VariationsSeedStoreTest, ImportInitialSeed_Success) {
+  const VariationsSeed test_seed = CreateTestSeed();
+  auto initial_seed = std::make_unique<SeedResponse>();
+  initial_seed->data = Gzip(SerializeSeed(test_seed));
+  initial_seed->date = base::Time::Now();
+  initial_seed->is_gzip_compressed = true;
+
+  TestingPrefServiceSimple prefs;
+  VariationsSeedStore::RegisterPrefs(prefs.registry());
+  base::HistogramTester histogram_tester;
+  TestVariationsSeedStore seed_store(&prefs,
+                                     /*seed_file_dir=*/base::FilePath(),
+                                     /*signature_verification_needed=*/false,
+                                     /*initial_seed=*/std::move(initial_seed),
+                                     /*use_first_run_prefs=*/false);
+
+  EXPECT_EQ(SerializeSeedBase64(test_seed),
+            prefs.GetString(prefs::kVariationsCompressedSeed));
+  histogram_tester.ExpectUniqueSample("Variations.FirstRunResult",
+                                      FirstRunSeedImportResult::kSuccess, 1);
+}
+
+// Verifies that ImportInitialSeed() does not store a seed without data.
+TEST_F(VariationsSeedStoreTest, ImportInitialSeed_EmptyData) {
+  auto initial_seed = std::make_unique<SeedResponse>();
+  initial_seed->date = base::Time::Now();
+
+  TestingPrefServiceSimple prefs;
+  VariationsSeedStore::RegisterPrefs(prefs.registry());
+  base::HistogramTester histogram_tester;
+  TestVariationsSeedStore seed_store(&prefs,
+                                     /*seed_file_dir=*/base::FilePath(),
+                                     /*signature_verification_needed=*/false,
+                                     /*initial_seed=*/std::move(initial_seed),
+                                     /*use_first_run_prefs=*/false);
+
+  EXPECT_TRUE(PrefHasDefaultValue(prefs, prefs::kVariationsCompressedSeed));
+  histogram_tester.ExpectUniqueSample(
+      "Variations.FirstRunResult",
+      FirstRunSeedImportResult::kFailNoFirstRunSeed, 1);
+}
+
+// Verifies that ImportInitialSeed() does not store a seed without a date.
+TEST_F(VariationsSeedStoreTest, ImportInitialSeed_NullDate) {
+  auto initial_seed = std::make_unique<SeedResponse>();
+  initial_seed->data = SerializeSeed(CreateTestSeed());
+
+  TestingPrefServiceSimple prefs;
+  VariationsSeedStore::RegisterPrefs(prefs.registry());
+  base::HistogramTester histogram_tester;
+  TestVariationsSeedStore seed_store(&prefs,
+                                     /*seed_file_dir=*/base::FilePath(),
+                                     /*signature_verification_needed=*/false,
+                                     /*initial_seed=*/std::move(initial_seed),
+                                     /*use_first_run_prefs=*/false);
+
+  EXPECT_TRUE(PrefHasDefaultValue(prefs, prefs::kVariationsCompressedSeed));
+  histogram_tester.ExpectUniqueSample(
+      "Variations.FirstRunResult",
+      FirstRunSeedImportResult::kFailInvalidResponseDate, 1);
+}
+
+// Verifies that ImportInitialSeed() does not store a seed with an invalid
+// signature when signature verification is enabled.
+TEST_F(VariationsSeedStoreTest, ImportInitialSeed_InvalidSignature) {
+  auto initial_seed = std::make_unique<SeedResponse>();
+  initial_seed->data = SerializeSeed(CreateTestSeed());
+  initial_seed->signature = "invalid signature";
+  initial_seed->date = base::Time::Now();
+
+  TestingPrefServiceSimple prefs;
+  VariationsSeedStore::RegisterPrefs(prefs.registry());
+  base::HistogramTester histogram_tester;
+  TestVariationsSeedStore seed_store(&prefs,
+                                     /*seed_file_dir=*/base::FilePath(),
+                                     /*signature_verification_needed=*/true,
+                                     /*initial_seed=*/std::move(initial_seed),
+                                     /*use_first_run_prefs=*/false);
+
+  EXPECT_TRUE(PrefHasDefaultValue(prefs, prefs::kVariationsCompressedSeed));
+  histogram_tester.ExpectUniqueSample(
+      "Variations.FirstRunResult", FirstRunSeedImportResult::kFailStoreFailed,
+      1);
+}
+
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(VariationsSeedStoreTest, ImportFirstRunJavaSeed) {
   const std::string test_seed_data = "raw_seed_data_test";

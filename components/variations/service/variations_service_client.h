@@ -65,7 +65,8 @@ class VariationsServiceClient {
   // server is implemented, returns the SeedResponse from the native variations
   // seed store, and removes the seed from the native storage given that we can
   // assume that the returned seed would be stored into Chrome Prefs. Otherwise,
-  // returns nullptr.
+  // returns nullptr. On first run, Desktop Chrome returns the seed from the
+  // installer initial preferences.
   virtual std::unique_ptr<SeedResponse> TakeSeedFromNativeVariationsSeedStore();
 
   // If an invalid command-line was specified by the user, flag an error to the

@@ -262,15 +262,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.FirstRunResult" enum="VariationsFirstRunResult"
-    expires_after="2026-03-22">
+    expires_after="2027-10-01">
   <owner>asvitkine@chromium.org</owner>
   <owner>rkaplow@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
-    The result of attempting to import an initial variations seed during Android
-    and iOS Chrome first run. Logged from VariationsSeedStore::LoadSeed when
-    seed prefs do not exist. For non-first run launches, this value is expected
-    to be &quot;failed - no first run seed.&quot;
+    The result of attempting to import an initial variations seed during
+    Android, Desktop, and iOS Chrome first run. Logged from
+    VariationsSeedStore::LoadSeed when seed prefs do not exist. For non-first
+    run launches, this value is expected to be &quot;failed - no first run
+    seed.&quot;
 
     Supported for iOS Chrome since M135.
   </summary>

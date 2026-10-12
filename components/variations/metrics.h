@@ -6,11 +6,10 @@
 #define COMPONENTS_VARIATIONS_METRICS_H_
 
 #include "base/component_export.h"
-#include "build/build_config.h"
 
 namespace variations {
 
-// The result of importing a seed during Android or iOS first run.
+// The result of importing a seed during first run.
 // Note: UMA histogram enum - don't re-order or remove entries.
 enum class FirstRunSeedImportResult {
   kSuccess = 0,
@@ -149,11 +148,9 @@ struct InstanceManipulations {
   const bool delta_compressed;
 };
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-// Records the result of importing a seed during Android first run.
+// Records the result of importing a seed during first run.
 COMPONENT_EXPORT(VARIATIONS)
 void RecordFirstRunSeedImportResult(FirstRunSeedImportResult result);
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 // Records the result of attempting to load the latest variations seed on
 // startup.

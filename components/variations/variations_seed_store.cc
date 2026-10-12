@@ -283,11 +283,9 @@ VariationsSeedStore::VariationsSeedStore(
                                              channel,
                                              entropy_providers,
                                              /*histogram_suffix=*/"Latest")) {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   if (initial_seed) {
     ImportInitialSeed(std::move(initial_seed));
   }
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
 VariationsSeedStore::~VariationsSeedStore() = default;
@@ -646,7 +644,6 @@ void VariationsSeedStore::ClearPrefs(SeedType seed_type) {
   safe_seed_store_->ClearState();
 }
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 void VariationsSeedStore::ImportInitialSeed(
     std::unique_ptr<SeedResponse> initial_seed) {
   if (initial_seed->data.empty()) {
@@ -680,7 +677,6 @@ void VariationsSeedStore::ImportInitialSeed(
                 /*is_delta_compressed=*/false, initial_seed->is_gzip_compressed,
                 /*require_synchronous=*/true);
 }
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 // static
 std::optional<std::string> VariationsSeedStore::SeedBytesToCompressedBase64Seed(
