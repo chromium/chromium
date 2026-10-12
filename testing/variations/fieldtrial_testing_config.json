@@ -15002,6 +15002,24 @@
             ]
         }
     ],
+    "RemoveHangoutsExtension": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20261012",
+                    "enable_features": [
+                        "RemoveHangoutsExtension"
+                    ]
+                }
+            ]
+        }
+    ],
     "RendererProcessLimitOnAndroid": [
         {
             "platforms": [
