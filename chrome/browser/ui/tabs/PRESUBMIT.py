@@ -116,6 +116,12 @@ _ALLOWED_CREATE_FOR_CALLS = (
   # WebContentsDestroyed() after TabFeatures is destroyed, so the
   # the WebContents must own it.
   'SafetyTipWebContentsObserver::CreateForWebContents',
+  # AsyncCheckTracker lives in //components/safe_browsing/content/browser and
+  # is looked up on WebContents by BrowserURLLoaderThrottle and
+  # BaseUIManager::DisplayBlockingPage, and notifies observers in
+  # WebContentsDestroyed() after TabFeatures is destroyed, so WebContents must
+  # own it.
+  'safe_browsing::AsyncCheckTracker::CreateForWebContents',
   # SafeBrowsingNavigationObserver lives in
   # //components/safe_browsing/content/browser, is looked up on WebContents by
   # BrowserURLLoaderThrottle::WillRedirectRequest and

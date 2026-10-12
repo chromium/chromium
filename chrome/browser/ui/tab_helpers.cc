@@ -50,9 +50,6 @@
 #include "components/page_content_annotations/core/page_content_extraction_types.h"
 #include "components/page_info/core/features.h"
 #include "components/password_manager/core/browser/password_manager.h"
-#include "components/safe_browsing/content/browser/async_check_tracker.h"
-#include "components/safe_browsing/content/browser/ui_manager.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "components/search/ntp_features.h"
 #include "components/search/search.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -78,10 +75,6 @@
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "content/public/common/content_features.h"
 #endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-#include "chrome/browser/safe_browsing/safe_browsing_service.h"
-#endif
 
 using content::WebContents;
 
@@ -189,15 +182,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
     }
   }
   InitializePageLoadMetricsForWebContents(web_contents);
-
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-  if (g_browser_process->safe_browsing_service()) {
-    safe_browsing::AsyncCheckTracker::CreateForWebContents(
-        web_contents, g_browser_process->safe_browsing_service()->ui_manager(),
-        safe_browsing::AsyncCheckTracker::
-            IsPlatformEligibleForSyncCheckerCheckAllowlist());
-  }
-#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
   // NO! Do not just add your tab helper here. This is a large alphabetized
   // block; please insert your tab helper above in alphabetical order.

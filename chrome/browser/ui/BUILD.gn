@@ -1375,7 +1375,6 @@ source_set("tab_helpers_impl") {
     "//chrome/browser/preloading/prefetch/no_state_prefetch",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/safe_browsing",
     "//chrome/browser/search_engines",
     "//chrome/browser/sessions",
     "//chrome/browser/ssl",
@@ -1423,8 +1422,6 @@ source_set("tab_helpers_impl") {
     "//components/page_info/core",
     "//components/password_manager/core/browser",
     "//components/permissions:permissions_common",
-    "//components/safe_browsing/content/browser",
-    "//components/safe_browsing/core/common:features",
     "//components/search",
     "//components/sessions",
     "//components/sessions:session_id",
@@ -1467,13 +1464,6 @@ source_set("tab_helpers_impl") {
 
   if (enable_offline_pages) {
     deps += [ "//chrome/browser/offline_pages" ]
-  }
-
-  if (safe_browsing_mode > 0) {
-    deps += [
-      "//components/safe_browsing/content/browser:client_side_detection",
-      "//components/safe_browsing/content/browser:safe_browsing_blocking_page",
-    ]
   }
 }
 

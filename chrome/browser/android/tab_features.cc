@@ -198,8 +198,10 @@
 #include "chrome/browser/safe_browsing/tailored_security/tailored_security_service_factory.h"
 #include "chrome/browser/safe_browsing/tailored_security/tailored_security_url_observer.h"
 #include "chrome/browser/safe_browsing/trigger_creator.h"
+#include "components/safe_browsing/content/browser/async_check_tracker.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer.h"
 #include "components/safe_browsing/content/browser/safe_browsing_tab_observer.h"
+#include "components/safe_browsing/content/browser/ui_manager.h"
 #include "components/safe_browsing/core/common/features.h"
 #endif
 
@@ -433,6 +435,12 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
           GetForBrowserContext(profile),
       profile->GetPrefs(), g_browser_process->safe_browsing_service(),
       enterprise_connectors::IsReferrerChainNeededForEnterprise(profile));
+  if (g_browser_process->safe_browsing_service()) {
+    safe_browsing::AsyncCheckTracker::CreateForWebContents(
+        web_contents, g_browser_process->safe_browsing_service()->ui_manager(),
+        safe_browsing::AsyncCheckTracker::
+            IsPlatformEligibleForSyncCheckerCheckAllowlist());
+  }
   if (autofill::ContentAutofillClient::FromWebContents(web_contents)) {
     // Attach password reuse detection client when Autofill is present.
     ChromePasswordReuseDetectionManagerClient::CreateForWebContents(
