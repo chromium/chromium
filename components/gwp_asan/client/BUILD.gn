@@ -89,9 +89,10 @@ component("client") {
     "//build/config/compiler:wglobal_constructors",
   ]
 
+  public_deps = [ ":features" ]
+
   deps = [
     ":export",
-    ":features",
     "//base",
     "//base/allocator:buildflags",
     "//components/crash/core/common:crash_key",

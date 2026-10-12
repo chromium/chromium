@@ -46,8 +46,13 @@
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC)
 #include "components/gwp_asan/client/lightweight_detector/partitionalloc_shims.h"
-#include "components/gwp_asan/client/sampling_partitionalloc_shims.h"
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC)
+
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC) && \
+    !PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
+#include "components/gwp_asan/client/sampling_partitionalloc_shims.h"
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC) &&
+        // !PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
 namespace gwp_asan {
 
@@ -542,7 +547,14 @@ void EnableForMalloc(bool boost_sampling, std::string_view process_type) {
 
 void EnableForPartitionAlloc(bool boost_sampling,
                              std::string_view process_type) {
-#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
+// When a memory tool (ASan, MSan, ...) replaces the allocator, PartitionAlloc
+// forwards every allocation to it so that the tool instruments all memory.
+// GWP-ASan's override hook would instead serve sampled allocations from its
+// own guarded pages, which the tool does not instrument and which
+// LeakSanitizer does not scan, so anything owned only by a sampled allocation
+// is reported as a leak (crbug.com/567811557).
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC) && \
+    !PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
   static bool init_once = [&]() -> bool {
     const auto settings = internal::GetAllocatorSettings(
         internal::kGwpAsanPartitionAlloc, boost_sampling, process_type);
@@ -560,8 +572,9 @@ void EnableForPartitionAlloc(bool boost_sampling,
   std::ignore = init_once;
 #else
   std::ignore = internal::kGwpAsanPartitionAlloc;
-  DLOG(WARNING) << "PartitionAlloc hooks are unavailable for GWP-ASan.";
-#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC)
+  DLOG(WARNING) << "GWP-ASan for PartitionAlloc is disabled in this build.";
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC) &&
+        // !PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
 }
 
 void MaybeEnableLightweightDetector(bool boost_sampling,

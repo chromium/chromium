@@ -13,10 +13,17 @@
 
 #include "base/metrics/field_trial_params.h"
 #include "base/test/gtest_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "components/gwp_asan/client/gwp_asan_features.h"
+#include "partition_alloc/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
+#include "partition_alloc/partition_alloc_hooks.h"
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC)
 
 namespace gwp_asan {
 namespace internal {
@@ -253,6 +260,24 @@ TEST(GwpAsanTest, GetProcessSpecificAllocationSamplingRange) {
   EXPECT_TRUE(browser_settings.has_value());
   EXPECT_EQ(browser_settings->sampling_frequency, 1ul);
 }
+
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC) && \
+    PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
+TEST(GwpAsanTest, EnableForPartitionAllocIsNoOpUnderMemoryTools) {
+  base::test::ScopedFeatureList scoped_feature;
+  scoped_feature.InitAndEnableFeatureWithParameters(
+      kGwpAsanPartitionAlloc, {{"ProcessSamplingProbability", "1.0"}});
+
+  base::HistogramTester histogram_tester;
+  EnableForPartitionAlloc(/*boost_sampling=*/true, "renderer");
+
+  EXPECT_FALSE(
+      partition_alloc::PartitionAllocHooks::IsAllocationOverrideHookEnabled());
+  histogram_tester.ExpectTotalCount(
+      "Security.GwpAsan.Activated.PartitionAlloc.Renderer", 0);
+}
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC) &&
+        // PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
 }  // namespace internal
 }  // namespace gwp_asan
