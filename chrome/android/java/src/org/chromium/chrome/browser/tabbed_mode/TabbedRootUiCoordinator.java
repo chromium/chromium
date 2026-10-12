@@ -92,7 +92,6 @@ import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.overlays.strip.GlicButtonContextMenuCoordinator;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelper.LeadingButtonDelegate;
-import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabContextMenuCoordinator.TabStripLayoutType;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulatorFactory;
@@ -3229,15 +3228,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mKeyboardFocusRowManager.onKeyboardFocusRowSwitch(/* forward= */ false);
             return true;
         } else if (id == R.id.open_tab_strip_context_menu) {
-            if (mVerticalTabsSideUiCoordinator != null
-                    && mVerticalTabsSideUiCoordinator.openKeyboardFocusedContextMenu()) {
-                return true;
-            }
-            assumeNonNull(mLayoutManager);
-            @Nullable StripLayoutHelperManager stripLayoutHelperManager =
-                    mLayoutManager.getStripLayoutHelperManager();
-            if (stripLayoutHelperManager == null) return false;
-            return stripLayoutHelperManager.openKeyboardFocusedContextMenu();
+            return mVerticalTabsSideUiCoordinator != null
+                    && mVerticalTabsSideUiCoordinator.openKeyboardFocusedContextMenu();
         } else if (id == R.id.focus_bookmarks) {
             if (mBookmarkBarCoordinator != null && mBookmarkBarCoordinator.isVisible()) {
                 mBookmarkBarCoordinator.requestFocus();

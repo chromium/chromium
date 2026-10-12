@@ -15,7 +15,6 @@ import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.description;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -27,7 +26,6 @@ import android.util.Pair;
 import android.view.KeyEvent;
 import android.view.KeyboardShortcutGroup;
 import android.view.KeyboardShortcutInfo;
-import android.view.View;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
@@ -61,7 +59,6 @@ import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
-import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.content_public.browser.ContentFeatureList;
@@ -96,7 +93,6 @@ public class KeyboardShortcutsTest {
     @Mock private TabModel mTabModel;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabRemover mTabRemover;
-    @Mock private ToolbarManager mToolbarManager;
     @Mock private WebContents mWebContents;
     @Mock private Profile mProfile;
 
@@ -519,8 +515,7 @@ public class KeyboardShortcutsTest {
                         /* isCurrentTabVisible= */ true,
                         /* tabSwitchingEnabled= */ true,
                         mTabModelSelector,
-                        mMenuOrKeyboardActionController,
-                        mToolbarManager));
+                        mMenuOrKeyboardActionController));
 
         verify(mMenuOrKeyboardActionController, expectHandled ? times(1) : never())
                 .onMenuOrKeyboardAction(
@@ -639,7 +634,9 @@ public class KeyboardShortcutsTest {
     public void testGoToToolbar() {
         assertTrue(
                 keyDown(KeyEvent.KEYCODE_T, KeyEvent.META_ALT_ON | KeyEvent.META_SHIFT_ON, true));
-        verify(mToolbarManager, times(1)).requestFocus();
+        verify(mMenuOrKeyboardActionController, times(1))
+                .onMenuOrKeyboardAction(
+                        /* id= */ eq(R.id.focus_toolbar), /* fromMenu= */ eq(false));
     }
 
     @Test
@@ -739,12 +736,14 @@ public class KeyboardShortcutsTest {
     @Test
     @SmallTest
     public void testFocusAppMenuButton() {
-        View mockMenuButton = mock(View.class);
-        when(mToolbarManager.getMenuButtonView()).thenReturn(mockMenuButton);
+        when(mMenuOrKeyboardActionController.onMenuOrKeyboardAction(
+                        eq(R.id.focus_app_menu_button), eq(false)))
+                .thenReturn(true);
 
         assertTrue(keyDown(KeyEvent.KEYCODE_F10, 0, true));
-        verify(mToolbarManager, times(1)).getMenuButtonView();
-        verify(mockMenuButton, times(1)).requestFocus();
+        verify(mMenuOrKeyboardActionController, times(1))
+                .onMenuOrKeyboardAction(
+                        /* id= */ eq(R.id.focus_app_menu_button), /* fromMenu= */ eq(false));
     }
 
     /** Tests that F7 is not consumed before reaching web content. */
@@ -923,8 +922,7 @@ public class KeyboardShortcutsTest {
                 isCurrentTabVisible,
                 /* tabSwitchingEnabled= */ true,
                 mTabModelSelector,
-                mMenuOrKeyboardActionController,
-                mToolbarManager);
+                mMenuOrKeyboardActionController);
     }
 
     private Boolean dispatchKeyEvent(int keyCode, int metaState) {

@@ -44,7 +44,9 @@ found in the LICENSE file.
     <item type="id" name="esc_key" />
     <item type="id" name="feedback_form" />
     <item type="id" name="focus_and_clear_url_bar" />
+    <item type="id" name="focus_app_menu_button" />
     <item type="id" name="focus_bookmarks" />
+    <item type="id" name="focus_toolbar" />
     <item type="id" name="focus_url_bar" />
     <item type="id" name="open_home_page" />
     <item type="id" name="open_recently_closed_tab" />
@@ -52,6 +54,8 @@ found in the LICENSE file.
     <item type="id" name="print_id" />
     <item type="id" name="quit_chrome" />
     <item type="id" name="reload_ignoring_cache" />
+    <item type="id" name="reorder_tab_strip_item_left" />
+    <item type="id" name="reorder_tab_strip_item_right" />
     <item type="id" name="select_next_tab" />
     <item type="id" name="select_previous_tab" />
     <item type="id" name="show_menu" />
@@ -61,6 +65,7 @@ found in the LICENSE file.
     <item type="id" name="tab_search_side_ui" />
     <item type="id" name="task_manager" />
     <item type="id" name="toggle_bookmark_bar" />
+    <item type="id" name="toggle_tab_strip_multiselect" />
     <item type="id" name="view_source" />
     <item type="id" name="zoom_in" />
     <item type="id" name="zoom_out" />

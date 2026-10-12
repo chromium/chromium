@@ -113,6 +113,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager.AppHeaderObserver;
+import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
+import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController.MenuOrKeyboardActionHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.tabs.TabAlert;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -144,7 +146,8 @@ public class StripLayoutHelperManager
                 TopResumedActivityChangedObserver,
                 AppHeaderObserver,
                 TabObscuringHandler.Observer,
-                MultiWindowModeObserver {
+                MultiWindowModeObserver,
+                MenuOrKeyboardActionHandler {
     /**
      * POD type that contains the necessary tab model info on startup. Used in the startup flicker
      * fix experiment where we create a placeholder tab strip on startup to mitigate jank as tabs
@@ -204,6 +207,7 @@ public class StripLayoutHelperManager
     private final LayoutUpdateHost mUpdateHost;
     private final LayoutRenderHost mRenderHost;
     private final TabObscuringHandler mTabObscuringHandler;
+    private final MenuOrKeyboardActionController mMenuOrKeyboardActionController;
     private @Nullable ResourceManager mResourceManager;
 
     // Event Filters
@@ -485,6 +489,8 @@ public class StripLayoutHelperManager
      * @param sideUiStateProviderSupplier Supplier of the {@link SideUiStateProvider}.
      * @param tabObscuringHandler The {@link TabObscuringHandler} to manage tab obscuring.
      * @param canActivateTabLayoutToggleMenuSupplier Whether the tab layout toggle menu can open.
+     * @param menuOrKeyboardActionController The {@link MenuOrKeyboardActionController} for
+     *     registering menu or keyboard action handlers.
      */
     // TODO(crbug.com/484116872): Suppressing to observe SharedPreferences, which is discouraged;
     // should use another messaging channel instead.
@@ -522,7 +528,8 @@ public class StripLayoutHelperManager
             LeadingButtonDelegate leadingButtonDelegate,
             OneshotSupplier<SideUiStateProvider> sideUiStateProviderSupplier,
             TabObscuringHandler tabObscuringHandler,
-            @Nullable BooleanSupplier canActivateTabLayoutToggleMenuSupplier) {
+            @Nullable BooleanSupplier canActivateTabLayoutToggleMenuSupplier,
+            MenuOrKeyboardActionController menuOrKeyboardActionController) {
         mContext = context;
         mWindowAndroid = windowAndroid;
         Resources res = context.getResources();
@@ -544,6 +551,8 @@ public class StripLayoutHelperManager
         mTabSwitcherLayoutObserver = new TabSwitcherLayoutObserver();
         mLifecycleDispatcher = lifecycleDispatcher;
         mLifecycleDispatcher.register(this);
+        mMenuOrKeyboardActionController = menuOrKeyboardActionController;
+        mMenuOrKeyboardActionController.registerMenuOrKeyboardActionHandler(this);
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mDefaultTitle = context.getString(R.string.tab_loading_default_title);
         mControlContainer = controlContainerView;
@@ -845,6 +854,7 @@ public class StripLayoutHelperManager
         }
         mTrailingButtonsCoordinator.destroy();
         mLifecycleDispatcher.unregister(this);
+        mMenuOrKeyboardActionController.unregisterMenuOrKeyboardActionHandler(this);
         mBrowserControlsStateProvider.removeObserver(mBrowserControlsObserver);
         // Remove the observer to prevent any updates on a destroyed EventFilter.
         mStripVisibilityStateSupplier.removeObserver(mStripVisibilityStateObserver);
@@ -1934,12 +1944,21 @@ public class StripLayoutHelperManager
         return mManagerHost.containsKeyboardFocus(this);
     }
 
-    /**
-     * Opens the context menu for the currently keyboard-focused item, if applicable.
-     *
-     * @return Whether the context menu was successfully opened.
-     */
-    public boolean openKeyboardFocusedContextMenu() {
+    @Override
+    public boolean handleMenuOrKeyboardAction(int id, boolean fromMenu) {
+        if (id == R.id.open_tab_strip_context_menu) {
+            return openKeyboardFocusedContextMenu();
+        } else if (id == R.id.reorder_tab_strip_item_left) {
+            return reorderKeyboardFocusedItem(/* toLeft= */ true);
+        } else if (id == R.id.reorder_tab_strip_item_right) {
+            return reorderKeyboardFocusedItem(/* toLeft= */ false);
+        } else if (id == R.id.toggle_tab_strip_multiselect) {
+            return multiselectKeyboardFocusedItem();
+        }
+        return false;
+    }
+
+    private boolean openKeyboardFocusedContextMenu() {
         if (getActiveStripLayoutHelper().openKeyboardFocusedContextMenu()) {
             return true;
         }
@@ -1947,23 +1966,11 @@ public class StripLayoutHelperManager
         return mTrailingButtonsCoordinator.openKeyboardFocusedContextMenu(activity);
     }
 
-    /**
-     * Reorders the currently keyboard-focused item, if applicable.
-     *
-     * @param toLeft Whether the focused item should be reordered to the left (note: this is still
-     *     left in RTL).
-     * @return Whether the item was successfully reordered.
-     */
-    public boolean reorderKeyboardFocusedItem(boolean toLeft) {
+    private boolean reorderKeyboardFocusedItem(boolean toLeft) {
         return getActiveStripLayoutHelper().moveSelectedStripView(toLeft);
     }
 
-    /**
-     * Toggles multiselection on the keyboard focused tab.
-     *
-     * @return Whether the multiselect action was successfully performed.
-     */
-    public boolean multiselectKeyboardFocusedItem() {
+    private boolean multiselectKeyboardFocusedItem() {
         return getActiveStripLayoutHelper().multiselectKeyboardFocusedItem();
     }
 

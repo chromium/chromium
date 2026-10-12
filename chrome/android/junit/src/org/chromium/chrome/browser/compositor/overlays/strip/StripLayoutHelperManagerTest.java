@@ -114,6 +114,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.feature_engagement.Tracker;
@@ -190,6 +191,7 @@ public class StripLayoutHelperManagerTest {
     @Mock private PrefService mPrefService;
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
     @Mock private PrefChangeRegistrar.Natives mPrefChangeRegistrarJniMock;
+    @Mock private MenuOrKeyboardActionController mMenuOrKeyboardActionController;
     private final OneshotSupplierImpl<SideUiStateProvider> mSideUiStateProviderSupplier =
             new OneshotSupplierImpl<>();
 
@@ -311,7 +313,8 @@ public class StripLayoutHelperManagerTest {
                         mLeadingButtonDelegate,
                         mSideUiStateProviderSupplier,
                         mTabObscuringHandler,
-                        /* canActivateTabLayoutToggleMenuSupplier= */ null);
+                        /* canActivateTabLayoutToggleMenuSupplier= */ null,
+                        mMenuOrKeyboardActionController);
         ShadowLooper.idleMainLooper();
         mStripLayoutHelperManager.setTabStripTreeProviderForTesting(mTabStripTreeProvider);
         mStripLayoutHelperManager.setTabModelSelector(mTabModelSelector, mTabCreatorManager);
@@ -1492,5 +1495,66 @@ public class StripLayoutHelperManagerTest {
         // Closing a tab should update the trailing buttons.
         tabModel.removeTab(tab);
         verify(trailingButtonsCoordinator).updateTrailingButtons();
+    }
+
+    @Test
+    public void testHandleMenuOrKeyboardAction() {
+        verify(mMenuOrKeyboardActionController)
+                .registerMenuOrKeyboardActionHandler(mStripLayoutHelperManager);
+
+        StripLayoutHelper activeStripLayoutHelper = mock(StripLayoutHelper.class);
+        StripLayoutTrailingButtonsCoordinator trailingButtonsCoordinator =
+                mock(StripLayoutTrailingButtonsCoordinator.class);
+        mStripLayoutHelperManager.setTrailingButtonsCoordinatorForTesting(
+                trailingButtonsCoordinator);
+        StripLayoutHelperManager spyManager = Mockito.spy(mStripLayoutHelperManager);
+        doReturn(activeStripLayoutHelper).when(spyManager).getActiveStripLayoutHelper();
+
+        // 1. Open context menu handled by active StripLayoutHelper.
+        when(activeStripLayoutHelper.openKeyboardFocusedContextMenu()).thenReturn(true);
+        assertTrue(
+                spyManager.handleMenuOrKeyboardAction(
+                        R.id.open_tab_strip_context_menu, /* fromMenu= */ false));
+        verify(activeStripLayoutHelper).openKeyboardFocusedContextMenu();
+        verify(trailingButtonsCoordinator, never()).openKeyboardFocusedContextMenu(any());
+
+        // 2. Open context menu falls back to trailing buttons coordinator.
+        when(activeStripLayoutHelper.openKeyboardFocusedContextMenu()).thenReturn(false);
+        when(trailingButtonsCoordinator.openKeyboardFocusedContextMenu(mActivity)).thenReturn(true);
+        assertTrue(
+                spyManager.handleMenuOrKeyboardAction(
+                        R.id.open_tab_strip_context_menu, /* fromMenu= */ false));
+        verify(trailingButtonsCoordinator).openKeyboardFocusedContextMenu(mActivity);
+
+        // 3. Reorder item left.
+        when(activeStripLayoutHelper.moveSelectedStripView(/* toLeft= */ true)).thenReturn(true);
+        assertTrue(
+                spyManager.handleMenuOrKeyboardAction(
+                        R.id.reorder_tab_strip_item_left, /* fromMenu= */ false));
+        verify(activeStripLayoutHelper).moveSelectedStripView(/* toLeft= */ true);
+
+        // 4. Reorder item right.
+        when(activeStripLayoutHelper.moveSelectedStripView(/* toLeft= */ false)).thenReturn(true);
+        assertTrue(
+                spyManager.handleMenuOrKeyboardAction(
+                        R.id.reorder_tab_strip_item_right, /* fromMenu= */ false));
+        verify(activeStripLayoutHelper).moveSelectedStripView(/* toLeft= */ false);
+
+        // 5. Toggle multiselect.
+        when(activeStripLayoutHelper.multiselectKeyboardFocusedItem()).thenReturn(true);
+        assertTrue(
+                spyManager.handleMenuOrKeyboardAction(
+                        R.id.toggle_tab_strip_multiselect, /* fromMenu= */ false));
+        verify(activeStripLayoutHelper).multiselectKeyboardFocusedItem();
+
+        // 6. Unhandled action returns false.
+        assertFalse(
+                spyManager.handleMenuOrKeyboardAction(R.id.focus_toolbar, /* fromMenu= */ false));
+
+        // 7. Destroy unregisters handler.
+        mStripLayoutHelperManager.destroy();
+        verify(mMenuOrKeyboardActionController)
+                .unregisterMenuOrKeyboardActionHandler(mStripLayoutHelperManager);
+        mStripLayoutHelperManager = null;
     }
 }

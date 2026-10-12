@@ -2022,6 +2022,18 @@ public class RootUiCoordinator
                     return result != null && result;
                 }
             }
+        } else if (id == R.id.focus_app_menu_button || id == R.id.focus_toolbar) {
+            if (mToolbarManager == null) return false;
+            if (id == R.id.focus_app_menu_button) {
+                View menuButtonView = mToolbarManager.getMenuButtonView();
+                if (menuButtonView != null) {
+                    menuButtonView.requestFocus();
+                    return true;
+                }
+                return false;
+            }
+            mToolbarManager.requestFocus();
+            return true;
         }
         return false;
     }

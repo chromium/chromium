@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
+import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
@@ -118,6 +119,8 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
      * @param tabObscuringHandler The {@link TabObscuringHandler} to manage tab obscuring.
      * @param canActivateTabLayoutToggleMenuSupplier Supplier indicating if tab layout toggle can be
      *     activated.
+     * @param menuOrKeyboardActionController The {@link MenuOrKeyboardActionController} for
+     *     registering menu or keyboard action handlers.
      */
     public LayoutManagerChromeTablet(
             LayoutManagerHost host,
@@ -151,7 +154,8 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
             LeadingButtonDelegate leadingButtonDelegate,
             OneshotSupplier<SideUiStateProvider> sideUiStateProviderSupplier,
             TabObscuringHandler tabObscuringHandler,
-            @Nullable BooleanSupplier canActivateTabLayoutToggleMenuSupplier) {
+            @Nullable BooleanSupplier canActivateTabLayoutToggleMenuSupplier,
+            MenuOrKeyboardActionController menuOrKeyboardActionController) {
         super(
                 host,
                 contentContainer,
@@ -199,7 +203,8 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
                         leadingButtonDelegate,
                         sideUiStateProviderSupplier,
                         tabObscuringHandler,
-                        canActivateTabLayoutToggleMenuSupplier);
+                        canActivateTabLayoutToggleMenuSupplier,
+                        menuOrKeyboardActionController);
         addSceneOverlay(mTabStripLayoutHelperManager);
         addObserver(mTabStripLayoutHelperManager.getTabSwitcherObserver());
         mDesktopWindowStateManager = desktopWindowStateManager;

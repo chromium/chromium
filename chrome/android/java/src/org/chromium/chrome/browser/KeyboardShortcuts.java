@@ -14,7 +14,6 @@ import android.content.res.Resources;
 import android.view.KeyEvent;
 import android.view.KeyboardShortcutGroup;
 import android.view.KeyboardShortcutInfo;
-import android.view.View;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
@@ -40,7 +39,6 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.task_manager.TaskManager;
-import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.device.gamepad.GamepadList;
 import org.chromium.ui.accessibility.AccessibilityState;
@@ -1075,7 +1073,6 @@ public class KeyboardShortcuts {
      *     Ctrl+Tab, Ctrl+3).
      * @param tabModelSelector The current tab modelSelector.
      * @param menuOrKeyboardActionController Controls keyboard actions.
-     * @param toolbarManager Manages the toolbar.
      * @return Whether the key event was handled.
      */
     public static boolean onKeyDown(
@@ -1083,8 +1080,7 @@ public class KeyboardShortcuts {
             boolean isCurrentTabVisible,
             boolean tabSwitchingEnabled,
             TabModelSelector tabModelSelector,
-            MenuOrKeyboardActionController menuOrKeyboardActionController,
-            ToolbarManager toolbarManager) {
+            MenuOrKeyboardActionController menuOrKeyboardActionController) {
         int keyCode = event.getKeyCode();
         if (event.getRepeatCount() != 0 || KeyEvent.isModifierKey(keyCode)) {
             return false;
@@ -1332,27 +1328,26 @@ public class KeyboardShortcuts {
                     }
                     return false;
                 case KeyboardShortcutsSemanticMeaning.FOCUS_APP_MENU_BUTTON:
-                    View menuButtonView = toolbarManager.getMenuButtonView();
-                    if (menuButtonView != null) {
-                        menuButtonView.requestFocus();
-                        return true;
-                    }
-                    return false;
+                    return menuOrKeyboardActionController.onMenuOrKeyboardAction(
+                            R.id.focus_app_menu_button, /* fromMenu= */ false);
                 case KeyboardShortcutsSemanticMeaning.FOCUSED_TAB_STRIP_ITEM_OPEN_CONTEXT_MENU:
                     return menuOrKeyboardActionController.onMenuOrKeyboardAction(
                             R.id.open_tab_strip_context_menu, /* fromMenu= */ false);
                 case KeyboardShortcutsSemanticMeaning.FOCUSED_TAB_STRIP_ITEM_REORDER_LEFT:
-                    return toolbarManager.reorderKeyboardFocusedItem(/* toLeft= */ true);
+                    return menuOrKeyboardActionController.onMenuOrKeyboardAction(
+                            R.id.reorder_tab_strip_item_left, /* fromMenu= */ false);
                 case KeyboardShortcutsSemanticMeaning.FOCUSED_TAB_STRIP_ITEM_REORDER_RIGHT:
-                    return toolbarManager.reorderKeyboardFocusedItem(/* toLeft= */ false);
+                    return menuOrKeyboardActionController.onMenuOrKeyboardAction(
+                            R.id.reorder_tab_strip_item_right, /* fromMenu= */ false);
                 case KeyboardShortcutsSemanticMeaning.KEYBOARD_FOCUS_TOOLBAR:
-                    toolbarManager.requestFocus();
-                    return true;
+                    return menuOrKeyboardActionController.onMenuOrKeyboardAction(
+                            R.id.focus_toolbar, /* fromMenu= */ false);
                 case KeyboardShortcutsSemanticMeaning.KEYBOARD_FOCUS_BOOKMARKS:
                     return menuOrKeyboardActionController.onMenuOrKeyboardAction(
                             R.id.focus_bookmarks, /* fromMenu= */ false);
                 case KeyboardShortcutsSemanticMeaning.TOGGLE_MULTISELECT:
-                    return toolbarManager.multiselectKeyboardFocusedItem();
+                    return menuOrKeyboardActionController.onMenuOrKeyboardAction(
+                            R.id.toggle_tab_strip_multiselect, /* fromMenu= */ false);
             }
         }
 

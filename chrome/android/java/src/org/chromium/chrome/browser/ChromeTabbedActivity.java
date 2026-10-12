@@ -1252,7 +1252,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                     tabbedRootUiCoordinator.getLeadingButtonDelegate(),
                     tabbedRootUiCoordinator.getSideUiStateProviderSupplier(),
                     mRootUiCoordinator.getTabObscuringHandler(),
-                    tabbedRootUiCoordinator.canActivateTabLayoutToggleMenu());
+                    tabbedRootUiCoordinator.canActivateTabLayoutToggleMenu(),
+                    getMenuOrKeyboardActionController());
         }
     }
 
@@ -5649,8 +5650,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                         isCurrentTabVisible,
                         true,
                         getTabModelSelector(),
-                        /* menuOrKeyboardActionController= */ this,
-                        getToolbarManager());
+                        /* menuOrKeyboardActionController= */ this);
         if (keyboardShortcutHandled) {
             RecordUserAction.record("MobileKeyboardShortcutUsed");
         }

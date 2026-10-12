@@ -4069,28 +4069,6 @@ public class ToolbarManager
         return mToolbar.containsKeyboardFocus();
     }
 
-    /**
-     * Reorders the focused item, if there is one.
-     *
-     * @param toLeft Whether the focused item should be reordered to the left (note: this is still
-     *     left in RTL).
-     * @return Whether the item was reordered.
-     */
-    public boolean reorderKeyboardFocusedItem(boolean toLeft) {
-        if (mStripLayoutHelperManager == null) return false;
-        return mStripLayoutHelperManager.reorderKeyboardFocusedItem(toLeft);
-    }
-
-    /**
-     * Toggles multiselection on the keyboard focused tab.
-     *
-     * @return Whether a multiselect action was performed.
-     */
-    public boolean multiselectKeyboardFocusedItem() {
-        if (mStripLayoutHelperManager == null) return false;
-        return mStripLayoutHelperManager.multiselectKeyboardFocusedItem();
-    }
-
     public void onXrSpaceModeChanged(Boolean fullSpaceMode) {
         mIsXrFsm = Boolean.TRUE.equals(fullSpaceMode);
         updateToolbarSceneLayerSuppression();

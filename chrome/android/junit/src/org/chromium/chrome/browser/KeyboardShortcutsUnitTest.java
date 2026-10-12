@@ -42,7 +42,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
-import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.device.gamepad.GamepadList;
 
@@ -54,7 +53,6 @@ public class KeyboardShortcutsUnitTest {
     @Mock private MenuOrKeyboardActionController mController;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabModel mTabModel;
-    @Mock private ToolbarManager mToolbarManager;
     @Mock private Profile mProfile;
     @Mock private IncognitoUtils.Natives mIncognitoUtilsJniMock;
 
@@ -109,9 +107,7 @@ public class KeyboardShortcutsUnitTest {
                         0,
                         KeyEvent.META_CTRL_ON);
 
-        assertTrue(
-                KeyboardShortcuts.onKeyDown(
-                        event, true, true, mTabModelSelector, mController, mToolbarManager));
+        assertTrue(KeyboardShortcuts.onKeyDown(event, true, true, mTabModelSelector, mController));
 
         verify(mController).onMenuOrKeyboardAction(eq(R.id.open_file_id), eq(false));
     }
@@ -202,7 +198,6 @@ public class KeyboardShortcutsUnitTest {
                 /* isCurrentTabVisible= */ true,
                 /* tabSwitchingEnabled= */ true,
                 mTabModelSelector,
-                mController,
-                mToolbarManager);
+                mController);
     }
 }

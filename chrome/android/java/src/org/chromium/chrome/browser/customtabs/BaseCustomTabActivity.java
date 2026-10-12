@@ -1478,8 +1478,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
                         true,
                         false,
                         getTabModelSelector(),
-                        /* menuOrKeyboardActionController= */ this,
-                        getToolbarManager());
+                        /* menuOrKeyboardActionController= */ this);
         if (keyboardShortcutHandled) {
             RecordUserAction.record("MobileKeyboardShortcutUsed");
         }
