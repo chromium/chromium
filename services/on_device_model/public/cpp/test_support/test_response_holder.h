@@ -74,6 +74,7 @@ class TestResponseHolder
   // Accumulated responses so far from whoever controls the remote
   // StreamingResponder endpoint.
   const std::vector<std::string>& responses() const { return responses_; }
+  const std::vector<std::string>& thoughts() const { return thoughts_; }
   uint32_t output_token_count() const { return output_token_count_; }
   bool terminated() const { return disconnected_ || complete_; }
   bool complete() const { return complete_; }
@@ -93,6 +94,7 @@ class TestResponseHolder
 
  private:
   std::vector<std::string> responses_;
+  std::vector<std::string> thoughts_;
   std::vector<mojom::ToolCallPtr> tool_calls_;
   uint32_t output_token_count_ = 0;
   bool complete_ = false;

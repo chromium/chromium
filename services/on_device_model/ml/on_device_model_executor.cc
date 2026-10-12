@@ -201,6 +201,7 @@ class Responder final {
             task_runner = base::SequencedTaskRunner::GetCurrentDefault()](
                const ChromeMLExecutionOutput* output) {
       std::optional<std::string> text;
+      std::optional<std::string> thought;
       switch (output->status) {
         case ChromeMLExecutionStatus::kInProgress:
           if (output->tool_calls_size > 0) {
@@ -208,8 +209,13 @@ class Responder final {
             HandleToolCallOutput(weak_ptr, task_runner.get(), output);
             return;
           }
-          CHECK(output->text);
-          text.emplace(output->text);
+          if (output->thought) {
+            thought.emplace(output->thought);
+          }
+          if (output->text) {
+            text.emplace(output->text);
+          }
+          CHECK(text.has_value() || thought.has_value());
           break;
         case ChromeMLExecutionStatus::kComplete:
           DCHECK(!output->text);
@@ -225,8 +231,9 @@ class Responder final {
       }
 
       task_runner->PostTask(
-          FROM_HERE, base::BindOnce(&Responder::OnOutput, weak_ptr,
-                                    std::move(text), output->tokens_decoded));
+          FROM_HERE,
+          base::BindOnce(&Responder::OnOutput, weak_ptr, std::move(text),
+                         std::move(thought), output->tokens_decoded));
     };
   }
 
@@ -252,20 +259,30 @@ class Responder final {
     on_tool_calls_emitted_.Run();
   }
 
-  void OnOutput(std::optional<std::string> text, int tokens_decoded) {
-    if (text) {
-      num_output_tokens_++;
-      output_so_far_ += *text;
-      if (first_token_time_ == base::TimeTicks()) {
-        // Ends the `TTFT` trace.
-        TRACE_EVENT_END("optimization_guide", perfetto_id());
-        first_token_time_ = base::TimeTicks::Now();
-      }
-
+  void OnOutput(std::optional<std::string> text,
+                std::optional<std::string> thought,
+                int tokens_decoded) {
+    if (text || thought) {
       auto chunk = on_device_model::mojom::ResponseChunk::New();
-      chunk->text = *text;
+      if (text) {
+        if (first_token_time_ == base::TimeTicks()) {
+          // Ends the `TTFT` trace.
+          TRACE_EVENT_END("optimization_guide", perfetto_id());
+          first_token_time_ = base::TimeTicks::Now();
+        }
+        num_output_tokens_++;
+        output_so_far_ += *text;
+        chunk->text = *text;
+      }
+      if (thought) {
+        chunk->thought = *thought;
+      }
       responder_->OnResponse(std::move(chunk));
     } else if (session_) {
+      if (first_token_time_ == base::TimeTicks()) {
+        // Ends the `TTFT` trace if no visible text token was ever emitted.
+        TRACE_EVENT_END("optimization_guide", perfetto_id());
+      }
       // Ends the `Decode` trace.
       TRACE_EVENT_END("optimization_guide", perfetto_id());
 
@@ -290,7 +307,8 @@ class Responder final {
 
       base::UmaHistogramCounts10000("OnDeviceModel.TokenCount.Output",
                                     summary->output_token_count);
-      if (summary->output_token_count > 1) {
+      if (summary->output_token_count > 1 &&
+          first_token_time_ != base::TimeTicks()) {
         // Time starts at the first token to avoid counting input processing
         // time, so calculate using summary->output_token_count - 1.
         base::UmaHistogramCounts1000(

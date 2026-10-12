@@ -346,6 +346,13 @@ void FakeOnDeviceSession::GenerateImpl(
     remote->OnResponse(std::move(chunk));
   }
 
+  if (options->enable_thinking) {
+    auto chunk = mojom::ResponseChunk::New();
+    chunk->thought = "Thinking (budget=" +
+                     base::NumberToString(options->thinking_token_budget) + ")";
+    remote->OnResponse(std::move(chunk));
+  }
+
   uint32_t output_token_count = 0;
   if (settings_->model_execute_result.empty()) {
     for (const auto& context : context_) {

@@ -1911,5 +1911,24 @@ TEST_F(OnDeviceModelServiceTest, AsrStreamInitializationFailure) {
   EXPECT_THAT(response.responses(), ElementsAre("test"));
 }
 
+TEST_F(OnDeviceModelServiceTest, GenerateWithThinking) {
+  auto model = LoadModel();
+  mojo::Remote<mojom::Session> session;
+  model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
+  session->Append(MakeInput("solve"), {});
+
+  TestResponseHolder response;
+  auto options = mojom::GenerateOptions::New();
+  options->enable_thinking = true;
+  options->thinking_token_budget = 512;
+  session->Generate(std::move(options), response.BindRemote());
+  response.WaitForCompletion();
+
+  EXPECT_THAT(response.thoughts(), ElementsAre("Thinking (budget=512)"));
+  EXPECT_THAT(response.responses(), ElementsAre("solve"));
+  // 1 visible text chunk + 1 EOS token; the thought chunk is excluded.
+  EXPECT_EQ(response.output_token_count(), 2u);
+}
+
 }  // namespace
 }  // namespace on_device_model

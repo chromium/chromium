@@ -469,6 +469,8 @@ void SessionAccessor::GenerateInternal(
       .max_output_tokens = generate_options->max_output_tokens,
       .constraint = constraint,
       .output_fn = &output_fn,
+      .enable_thinking = generate_options->enable_thinking,
+      .thinking_token_budget = generate_options->thinking_token_budget,
   };
   chrome_ml_->SessionGenerate(session_, &options, canceler->get());
 }

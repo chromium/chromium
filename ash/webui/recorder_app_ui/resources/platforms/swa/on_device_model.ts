@@ -158,6 +158,8 @@ abstract class OnDeviceModel<T> implements Model<T> {
         maxOutputTokens: 0,
         constraint: null,
         addOutputTokensToContext: false,
+        enableThinking: false,
+        thinkingTokenBudget: 0,
       },
       responseRouter.$.bindNewPipeAndPassRemote(),
     );

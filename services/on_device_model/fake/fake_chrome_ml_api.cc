@@ -370,6 +370,16 @@ bool SessionGenerate(ChromeMLSession session,
     OutputChunk("SpeculativeDecodingAllowed");
   }
 
+  if (options->enable_thinking) {
+    std::string thought_str =
+        "Thinking (budget=" +
+        base::NumberToString(options->thinking_token_budget) + ")";
+    ChromeMLExecutionOutput thought_output = {};
+    thought_output.status = ChromeMLExecutionStatus::kInProgress;
+    thought_output.thought = thought_str.c_str();
+    (*options->output_fn)(&thought_output);
+  }
+
   if (!instance->context.empty()) {
     for (const std::string& context : instance->context) {
       OutputChunk(context);
@@ -421,6 +431,8 @@ bool SessionExecuteModel(ChromeMLSession session,
       .max_output_tokens = options->max_output_tokens,
       .constraint = options->constraint,
       .output_fn = options->execution_output_fn,
+      .enable_thinking = options->enable_thinking,
+      .thinking_token_budget = options->thinking_token_budget,
   };
   return SessionGenerate(session, &gen_opts, cancel);
 }

@@ -57,6 +57,10 @@ struct ResponseChunk {
   // Optional safety information computed against the full response so far, up
   // to and including `text`.
   SafetyInfo? safety_info;
+
+  // Optional thought/reasoning text for this chunk of the response.
+  [MinVersion=9]
+  string? thought;
 };
 
 // Information pertaining to a complete response that was streamed by a
@@ -285,6 +289,15 @@ struct GenerateOptions {
   // cancelled, no tokens will be added to the session context.
   [MinVersion=3]
   bool add_output_tokens_to_context = false;
+
+  // Whether thinking mode is enabled for this generation call.
+  [MinVersion=9]
+  bool enable_thinking = false;
+
+  // The maximum number of thinking tokens allowed before forcing transition to
+  // the final response.
+  [MinVersion=9]
+  uint32 thinking_token_budget = 0;
 };
 
 // Priorities which determine how requests to a session are scheduled.

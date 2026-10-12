@@ -13,7 +13,12 @@ TestResponseHolder::TestResponseHolder() = default;
 TestResponseHolder::~TestResponseHolder() = default;
 
 void TestResponseHolder::OnResponse(mojom::ResponseChunkPtr chunk) {
-  responses_.push_back(chunk->text);
+  if (chunk->thought.has_value()) {
+    thoughts_.push_back(*chunk->thought);
+  }
+  if (!chunk->text.empty() || !chunk->thought.has_value()) {
+    responses_.push_back(chunk->text);
+  }
   if (disconnect_on_message_) {
     Disconnect();
   }
