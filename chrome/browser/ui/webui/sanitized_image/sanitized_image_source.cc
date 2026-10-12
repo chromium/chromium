@@ -10,6 +10,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -51,17 +52,18 @@ constexpr char kIsGooglePhotosKey[] = "isGooglePhotos";
 constexpr char kStaticEncodeKey[] = "staticEncode";
 constexpr char kUrlKey[] = "url";
 
-std::map<std::string, std::string> ParseParams(std::string_view param_string) {
+base::flat_map<std::string_view, std::string> ParseParams(
+    std::string_view param_string) {
   url::Component query(param_string);
   url::Component key;
   url::Component value;
   constexpr int kMaxUriDecodeLen = 2048;
-  std::map<std::string, std::string> params;
+  base::flat_map<std::string_view, std::string> params;
   while (url::ExtractQueryKeyValue(param_string, &query, &key, &value)) {
     url::UrlEscapeDecoder<kMaxUriDecodeLen> output(
         value.AsViewOn(param_string), url::DecodeUrlMode::kUtf8OrIsomorphic);
-    params.insert({std::string(key.AsViewOn(param_string)),
-                   base::UTF16ToUTF8(output.view())});
+    params.insert(
+        {key.AsViewOn(param_string), base::UTF16ToUTF8(output.view())});
   }
   return params;
 }
@@ -129,7 +131,7 @@ void SanitizedImageSource::StartDataRequest(
     content::URLDataSource::GotDataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::string image_url_or_params = url.GetQuery();
+  std::string_view image_url_or_params = url.query();
   if (url != GURL(base::StrCat(
                  {chrome::kChromeUIImageURL, "?", image_url_or_params}))) {
     std::move(callback).Run(nullptr);
@@ -234,7 +236,7 @@ void SanitizedImageSource::StartImageDownload(
   if (request_attributes.access_token_info) {
     request->headers.SetHeader(
         net::HttpRequestHeaders::kAuthorization,
-        "Bearer " + request_attributes.access_token_info->token);
+        base::StrCat({"Bearer ", request_attributes.access_token_info->token}));
   }
 
   std::unique_ptr<network::SimpleURLLoader> loader;

@@ -344,7 +344,6 @@ void AddPrintPreviewFlags(content::WebUIDataSource* source, Profile* profile) {
       "isEnterpriseManaged",
       policy::ManagementServiceFactory::GetForPlatform()->IsManaged());
 
-
 #if BUILDFLAG(IS_CHROMEOS)
   source->AddBoolean("isBorderlessPrintingEnabled", true);
   source->AddBoolean("isUseManagedPrintJobOptionsInPrintPreviewEnabled",
@@ -1145,9 +1144,9 @@ void PrintPreviewUI::MetafileReadyForPrinting(
       // Page metafile is used to composite into the document at same time.
       // Need to provide particulars of how many pages are required before
       // document will be completed.
-      client->FinishDocumentComposition(
-          params->document_cookie, params->expected_pages_count,
-          std::move(wrapped_callback));
+      client->FinishDocumentComposition(params->document_cookie,
+                                        params->expected_pages_count,
+                                        std::move(wrapped_callback));
     } else {
       content::RenderFrameHost* render_frame_host =
           PrintViewManager::FromWebContents(web_contents)->print_preview_rfh();
@@ -1155,8 +1154,7 @@ void PrintPreviewUI::MetafileReadyForPrinting(
         return;
       }
       if (!LooksLikePdf(
-              metafile
-                  .MapAt(0, std::min<size_t>(1024, metafile.GetSize()))
+              metafile.MapAt(0, std::min<size_t>(1024, metafile.GetSize()))
                   .GetMemoryAsSpan<const uint8_t>())) {
         return;
       }

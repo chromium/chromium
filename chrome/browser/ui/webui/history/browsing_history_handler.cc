@@ -19,6 +19,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -270,8 +271,8 @@ history::mojom::HistoryEntryPtr HistoryEntryToMojom(
   auto result_mojom = history::mojom::HistoryEntry::New();
   base::DictValue dictionary;
   auto url_and_title = SetHistoryEntryUrlAndTitle(entry);
-  result_mojom->url = url_and_title.first;
-  result_mojom->title = url_and_title.second;
+  result_mojom->url = std::move(url_and_title.first);
+  result_mojom->title = std::move(url_and_title.second);
 
   // UrlIdentity holds a user-identifiable string for a URL. We will display
   // this string to the user.
@@ -283,7 +284,7 @@ history::mojom::HistoryEntryPtr HistoryEntryToMojom(
   // When the domain is empty, use the scheme instead. This allows for a
   // sensible treatment of e.g. file: URLs when group by domain is on.
   if (domain.empty()) {
-    domain = base::UTF8ToUTF16(entry.url.GetScheme() + ":");
+    domain = base::UTF8ToUTF16(base::StrCat({entry.url.scheme(), ":"}));
   }
 
   // The items which are to be written into result are also described in
@@ -344,8 +345,8 @@ history::mojom::HistoryEntryPtr HistoryEntryToMojom(
     GetDeviceNameAndType(tracker, entry.client_id, &device_name, &device_type);
   }
 
-  result_mojom->device_name = device_name;
-  result_mojom->device_type = device_type;
+  result_mojom->device_name = std::move(device_name);
+  result_mojom->device_type = std::move(device_type);
 
   supervised_user::FilteringBehavior filtering_behavior;
   if (profile.IsChild()) {
@@ -641,8 +642,8 @@ void BrowsingHistoryHandler::RemoveVisits(
   std::vector<BrowsingHistoryService::HistoryEntry> items_to_remove;
   items_to_remove.reserve(items.size());
   for (const auto& item : items) {
-    const std::string url = item->url;
-    const std::vector<double> timestamps = item->timestamps;
+    const std::string& url = item->url;
+    const std::vector<double>& timestamps = item->timestamps;
     if (url.empty()) {
       NOTREACHED() << "Unable to extract arguments";
     }

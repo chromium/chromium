@@ -67,8 +67,8 @@ GURL GetUnsafeRequestOrigin(const content::WebContents::Getter& wc_getter) {
 
 bool IsOriginAllowedServerFallback(const GURL& url) {
   // Allow chrome-untrusted://data-sharing to use Google server fallback.
-  if (url.GetScheme() == content::kChromeUIUntrustedScheme &&
-      url.GetHost() == chrome::kChromeUIUntrustedDataSharingHost) {
+  if (url.scheme() == content::kChromeUIUntrustedScheme &&
+      url.host() == chrome::kChromeUIUntrustedDataSharingHost) {
     return true;
   }
   GURL history_url(chrome::kChromeUIHistoryURL);
@@ -377,8 +377,9 @@ void FaviconSource::LogFaviconResult(
 
   constexpr char kGoogleLogoURL[] =
       "https://www.gstatic.com/images/branding/searchlogo/ico/favicon.ico";
+  GURL parsed_page_url(parsed.page_url);
   if (bitmap_result.icon_url != GURL(kGoogleLogoURL) ||
-      google_util::IsGoogleAssociatedDomainUrl(GURL(parsed.page_url))) {
+      google_util::IsGoogleAssociatedDomainUrl(parsed_page_url)) {
     return;
   }
 
@@ -388,9 +389,8 @@ void FaviconSource::LogFaviconResult(
   if (template_url_service && template_url_service->loaded()) {
     const TemplateURL* default_provider =
         template_url_service->GetDefaultSearchProvider();
-    if (default_provider &&
-        default_provider->url_ref().GetHost(SearchTermsData()) ==
-            GURL(parsed.page_url).host()) {
+    if (default_provider && default_provider->url_ref().GetHost(
+                                SearchTermsData()) == parsed_page_url.host()) {
       is_dse = true;
     }
   }

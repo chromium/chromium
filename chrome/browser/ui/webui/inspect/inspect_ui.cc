@@ -723,7 +723,7 @@ void InspectUI::InspectBrowserWithCustomFrontend(const std::string& source_id,
                                                  const GURL& frontend_url) {
   if (!frontend_url.SchemeIs(content::kChromeUIScheme) &&
       !frontend_url.SchemeIs(content::kChromeDevToolsScheme) &&
-      frontend_url.GetHost() != kInspectUiLocalHost) {
+      frontend_url.host() != kInspectUiLocalHost) {
     return;
   }
 

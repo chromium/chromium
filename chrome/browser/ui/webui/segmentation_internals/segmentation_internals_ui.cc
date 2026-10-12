@@ -23,7 +23,7 @@ SegmentationInternalsUI::SegmentationInternalsUI(content::WebUI* web_ui)
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
       chrome::kChromeUISegmentationInternalsHost);
-  std::string path = web_ui->GetWebContents()->GetURL().GetPath();
+  std::string_view path = web_ui->GetWebContents()->GetURL().path();
   if (path.starts_with("/survey")) {
     if (base::FeatureList::IsEnabled(
             segmentation_platform::features::kSegmentationSurveyPage) &&

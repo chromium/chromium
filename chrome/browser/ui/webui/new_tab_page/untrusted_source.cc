@@ -172,12 +172,12 @@ void UntrustedSource::StartDataRequest(
     const GURL& url,
     const content::WebContents::Getter& wc_getter,
     content::URLDataSource::GotDataCallback callback) {
-  GURL url_param = GURL(url.GetQuery());
+  GURL url_param = GURL(url.query());
   if (url_param.is_valid() && IsURLBlockedByPolicy(url_param)) {
     std::move(callback).Run(base::MakeRefCounted<base::RefCountedString>());
     return;
   }
-  const std::string path = url.has_path() ? url.GetPath().substr(1) : "";
+  std::string_view path = url.has_path() ? url.path().substr(1) : "";
   if (path == "one-google-bar" && one_google_bar_service_) {
     std::map<std::string, std::string> params;
 
@@ -339,7 +339,7 @@ bool UntrustedSource::ShouldServiceRequest(
   if (!url.SchemeIs(content::kChromeUIUntrustedScheme) || !url.has_path()) {
     return false;
   }
-  const std::string path = url.GetPath().substr(1);
+  std::string_view path = url.path().substr(1);
   return path == "one-google-bar" || path == "one_google_bar.js" ||
          path == "one_google_bar_api.js" || path == "image" ||
          path == "expanded-lhs" || path == "background_image" ||

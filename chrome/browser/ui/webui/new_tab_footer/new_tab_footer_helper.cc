@@ -31,7 +31,7 @@ bool IsExtensionNtp(const GURL& url, Profile* profile) {
     return false;
   }
 
-  return extension_managing_ntp->id() == url.GetHost();
+  return extension_managing_ntp->id() == url.host();
 }
 
 bool IsNtp(const GURL& url,
