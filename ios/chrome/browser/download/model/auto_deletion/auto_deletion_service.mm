@@ -44,13 +44,8 @@ base::FilePath GetFilePathForScheduledFile(
 }
 
 std::optional<base::File::Info> GetFileInfo(base::FilePath path) {
-  base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
-  if (!file.IsValid()) {
-    return std::nullopt;
-  }
-
   base::File::Info info;
-  if (!file.GetInfo(&info)) {
+  if (!base::GetFileInfo(path, &info)) {
     return std::nullopt;
   }
 
