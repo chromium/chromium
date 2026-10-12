@@ -18,9 +18,10 @@ class BrowserContext;
 // consulted directly by feature code. It only answers "how is GEiC
 // configured?", not "should this profile run in GEiC mode?". The latter is
 // owned by GLiC's enablement utilities (see
-// GlicEnabling::GetProviderForProfile), which layer profile eligibility on
-// top of these helpers. These helpers resolve and latch the result on the first
-// call for a profile. In particular, GEiC is unavailable whenever GLiC
+// GlicKeyedService::provider_spec() / GlicProviderSpec), which layer profile
+// eligibility on top of these helpers. These helpers resolve and latch the
+// result on the first call for a profile. In particular, GEiC is unavailable
+// whenever GLiC
 // itself is disabled or ineligible for the profile, and that is not reflected
 // here.
 //

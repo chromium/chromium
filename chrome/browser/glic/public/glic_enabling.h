@@ -271,10 +271,6 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
   // feature into account.
   static bool IsLikelyDogfoodClient();
 
-  // Returns the provider that powers Glic for `profile` at the time of the
-  // call.
-  static GlicProvider GetProviderForProfile(Profile* profile);
-
   // Returns true if a profile is eligible for Glic. Some profiles - such as
   // incognito, guest, system profile, etc. - are never eligible. An eligible
   // profile is one where Glic could potentially be enabled, regardless of
