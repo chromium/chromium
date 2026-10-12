@@ -293,7 +293,6 @@ private let MojoPropertyRetrievalGenerator = CodeGenerator(
 private let mojoObjectGroups: [ObjectGroup] = [
     .blinkMojomSpeculationHostRemote,
     .blinkMojomSpeculationHostRemoteWrapper,
-    .blinkMojomSpeculationHostPendingReceiver,
     .blinkMojomSpeculationCandidate,
     .blinkMojomReferrer,
     .networkMojomNoVarySearch,

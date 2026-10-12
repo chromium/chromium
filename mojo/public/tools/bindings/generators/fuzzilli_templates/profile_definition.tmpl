@@ -4,14 +4,25 @@ private let mojoObjectGroups: [ObjectGroup] = [
 {%- for remote in interface_remotes %}
     .{{remote|format_unique_name|to_camel(True)}}Remote,
     .{{remote|format_unique_name|to_camel(True)}}RemoteWrapper,
+{%- if remote|uses_non_associated_endpoints %}
     .{{remote|format_unique_name|to_camel(True)}}PendingReceiver,
+{%- endif %}
+{%- if remote|uses_associated_endpoints %}
+    .{{remote|format_unique_name|to_camel(True)}}PendingAssociatedReceiver,
+{%- endif %}
 {%- endfor %}
 {%- for receiver in interface_receivers %}
     .{{receiver|format_unique_name|to_camel(True)}}CallbackRouter,
     .{{receiver|format_unique_name|to_camel(True)}}CallbackRouterReceiverHelper,
-    .{{receiver|format_unique_name|to_camel(True)}}Remote,
-    .{{receiver|format_unique_name|to_camel(True)}}RemoteWrapper,
+{%- if receiver|uses_non_associated_endpoints %}
+    .{{receiver|format_unique_name|to_camel(True)}}PendingRemote,
     .{{receiver|format_unique_name|to_camel(True)}}PendingReceiver,
+{%- endif %}
+{%- if receiver|uses_associated_endpoints %}
+    .{{receiver|format_unique_name|to_camel(True)}}PendingAssociatedRemote,
+    .{{receiver|format_unique_name|to_camel(True)}}PendingAssociatedReceiver,
+{%- endif %}
+    .{{receiver|format_unique_name|to_camel(True)}}RemoteWrapper,
     {%- for method in receiver.methods %}
     .{{(method|callback_receiver_name)|to_camel(True)}},
     {%- endfor %}

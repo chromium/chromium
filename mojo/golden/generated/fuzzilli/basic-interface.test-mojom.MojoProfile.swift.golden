@@ -181,7 +181,6 @@ private let MojoPropertyRetrievalGenerator = CodeGenerator(
 private let mojoObjectGroups: [ObjectGroup] = [
     .goldenPrimaryRemote,
     .goldenPrimaryRemoteWrapper,
-    .goldenPrimaryPendingReceiver,
     .goldenPrimaryMethodResponseParams,
     .goldenPrimaryMethodWithEmptyReponseResponseParams,
     .goldenPrimarySyncMethodResponseParams,

@@ -237,7 +237,6 @@ private let MojoPropertyRetrievalGenerator = CodeGenerator(
 private let mojoObjectGroups: [ObjectGroup] = [
     .blinkMojomCredentialManagerRemote,
     .blinkMojomCredentialManagerRemoteWrapper,
-    .blinkMojomCredentialManagerPendingReceiver,
     .blinkMojomCredentialInfo,
     .blinkMojomCredentialManagerStoreResponseParams,
     .blinkMojomCredentialManagerPreventSilentAccessResponseParams,
