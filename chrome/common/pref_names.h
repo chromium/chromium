@@ -1206,7 +1206,7 @@ inline constexpr char kSuppressDifferentOriginSubframeJSDialogs[] =
     "suppress_different_origin_subframe_js_dialogs";
 
 // Enum indicating if the user agent reduction feature should be forced enabled
-// or disabled. Defaults to blink::features::kReduceUserAgent field trial.
+// or disabled.
 inline constexpr char kUserAgentReduction[] = "user_agent_reduction";
 
 #if !BUILDFLAG(IS_ANDROID)
