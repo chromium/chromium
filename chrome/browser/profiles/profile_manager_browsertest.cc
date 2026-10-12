@@ -18,7 +18,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
@@ -704,39 +703,23 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, EphemeralProfile) {
   EXPECT_EQ(initial_profile_count + 1U, storage.GetNumberOfProfiles());
 
   // The second should though.
+  // `ProfileDeletionObserver` waits for the profile entry to be removed from
+  // `ProfileAttributesStorage`, while `ProfileDestructionWaiter` waits for the
+  // in-memory `Profile` object to be destroyed (which happens later, after
+  // async browsing data removal releases its keep-alive, when
+  // `kDestroyProfileOnBrowserClose` is enabled).
   ProfileDeletionObserver observer;
-  bool watch_started = false;
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  base::FilePathWatcher watcher;
-  base::RunLoop run_loop;
-
-  if (base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose)) {
-    watch_started = watcher.Watch(
-        path_profile2, base::FilePathWatcher::Type::kNonRecursive,
-        base::BindLambdaForTesting([&run_loop, &path_profile2](
-                                       const base::FilePath& path, bool error) {
-          if (path != path_profile2)
-            return;
-          EXPECT_FALSE(error);
-          if (!base::PathExists(path))
-            run_loop.Quit();
-        }));
-    ASSERT_TRUE(watch_started);
-  }
-
+  ProfileDestructionWaiter destruction_waiter(browser_profile2->GetProfile());
   CloseBrowserSynchronously(browser_profile2);
   observer.Wait();
 
   EXPECT_EQ(1U, GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_EQ(initial_profile_count, storage.GetNumberOfProfiles());
 
-  if (watch_started) {
-    if (base::PathExists(path_profile2)) {
-      run_loop.Run();
-    }
-    // It is not possible to check the non-existence of the file here, as it may
-    // have been recreated by pending file tasks after being deleted.
-    // See crbug.com/40756611.
+  if (base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose)) {
+    destruction_waiter.Wait();
+  } else {
+    EXPECT_FALSE(destruction_waiter.destroyed());
   }
 }
 
