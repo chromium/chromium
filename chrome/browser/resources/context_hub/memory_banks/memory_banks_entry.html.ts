@@ -41,15 +41,7 @@ export function getHtml(
           <div class="meta-text">
             <span class="card-title" title="${entry.tabTitle}">${
       entry.tabTitle}</span>
-            <span class="card-date">
-              ${
-      this.convertMojoTimeToDate(entry.timestamp)
-          .toLocaleDateString(undefined, {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric',
-          })}
-            </span>
+            <span class="card-date">${this.formatDate_(entry.timestamp)}</span>
           </div>
         </div>
         ${

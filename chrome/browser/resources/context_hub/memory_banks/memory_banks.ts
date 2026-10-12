@@ -17,13 +17,14 @@ import type {CrSearchFieldElement} from '//resources/cr_elements/cr_search_field
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {browserProxyFactory, EntryType} from '../context_hub.mojom-webui.js';
+import {browserProxyFactory} from '../context_hub.mojom-webui.js';
 import type {MemoryBankEntry, MemoryBankEntryAnnotations} from '../context_hub.mojom-webui.js';
 
 import {getCss} from './memory_banks.css.js';
 import {getHtml} from './memory_banks.html.js';
 import {computeSuggestions, matchesMemoryBankEntry, parseSearchQuery} from './memory_banks_search.js';
 import type {SearchSuggestion} from './memory_banks_search.js';
+import {convertMojoTimeToDate, formatEntriesAsMarkdown} from './memory_banks_utils.js';
 
 function downloadFile(
     filename: string, content: string,
@@ -396,8 +397,12 @@ export class MemoryBanksElement extends CrLitElement {
     }
   }
 
-  protected formatDate_(mojoTime: {internalValue: bigint}): string {
-    return this.convertMojoTimeToDate(mojoTime).toLocaleDateString(undefined, {
+  protected formatDate_(mojoTime?: {internalValue: bigint}|null): string {
+    const date = convertMojoTimeToDate(mojoTime);
+    if (!date) {
+      return '';
+    }
+    return date.toLocaleDateString(undefined, {
       month: 'short',
       day: 'numeric',
       year: 'numeric',
@@ -445,17 +450,6 @@ export class MemoryBanksElement extends CrLitElement {
 
   protected onEditDialogClose_() {
     this.editingEntry_ = null;
-  }
-
-  convertMojoTimeToDate(mojoTime: {internalValue: bigint}): Date {
-    // Mojo Time represents microseconds since the Windows epoch (January 1,
-    // 1601). JavaScript Date expects milliseconds since the Unix epoch (January
-    // 1, 1970).
-
-    // 11,644,473,600,000,000n is the Windows-to-Unix epoch delta in
-    // microseconds.
-    const unixEpochUs = mojoTime.internalValue - 11644473600000000n;
-    return new Date(Number(unixEpochUs / 1000n));
   }
 
   isSelected(id: bigint): boolean {
@@ -675,37 +669,9 @@ export class MemoryBanksElement extends CrLitElement {
   }
 
   private getSelectedEntriesAsMarkdown_(): string {
-    return this.entries.filter(entry => this.selectedIds.has(entry.id))
-        .map(entry => {
-          const dateStr =
-              this.convertMojoTimeToDate(entry.timestamp).toLocaleString();
-          const typeStr = entry.type === EntryType.kTextSelection ?
-              'Saved Text Selection' :
-              'Saved Tab';
-          const lines = [
-            `## [${typeStr}]`,
-            `- **Title:** ${entry.tabTitle}`,
-            `- **URL:** ${entry.url}`,
-          ];
-          if (entry.collection) {
-            lines.push(`- **Collection:** ${entry.collection}`);
-          }
-          if (entry.tags && entry.tags.length > 0) {
-            lines.push(`- **Tags:** ${entry.tags.join(', ')}`);
-          }
-          lines.push(`- **Saved Date:** ${dateStr}`);
-          if (entry.note) {
-            const formattedNote = entry.note.replace(/\r?\n/g, '\n  > ');
-            lines.push(`- **Note:**\n  > ${formattedNote}`);
-          }
-          if (entry.selectedText) {
-            const formattedContent =
-                entry.selectedText.replace(/\r?\n/g, '\n  > ');
-            lines.push(`- **Content:**\n  > ${formattedContent}`);
-          }
-          return lines.join('\n');
-        })
-        .join('\n\n---\n\n');
+    const selected =
+        this.entries.filter(entry => this.selectedIds.has(entry.id));
+    return formatEntriesAsMarkdown(selected);
   }
 }
 
