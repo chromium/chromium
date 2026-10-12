@@ -123,4 +123,7 @@ enum ChromeAimEntryPoint {
 
   // AIM is entered from the Lens homework action chip.
   DESKTOP_CHROME_CHROMNIENT_HOMEWORK_ACTION_CHIP = 226;
+
+  // AIM is entered from a contextual cue in Desktop Chrome.
+  DESKTOP_CHROME_CONTEXTUAL_CUE = 227;
 }
