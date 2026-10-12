@@ -2418,6 +2418,9 @@ ExtensionFunction::ResponseAction TabsUnsplitFunction::Run() {
   if (!ExtensionTabUtil::IsTabStripEditable(*window->profile())) {
     return RespondNow(Error(ExtensionTabUtil::kTabStripNotEditableError));
   }
+  // `ExtensionTabUtil::GetSplitById()` skips `WindowController`s without a
+  // `BrowserWindowInterface` or `TabListInterface` (such as standalone
+  // Document Picture-in-Picture windows), so both are guaranteed non-null here.
   BrowserWindowInterface* browser = window->GetBrowserWindowInterface();
   CHECK(browser);
   TabListInterface* tab_list = TabListInterface::From(browser);
