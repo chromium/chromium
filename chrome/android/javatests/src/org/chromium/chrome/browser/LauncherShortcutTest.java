@@ -173,51 +173,62 @@ public class LauncherShortcutTest {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         InstrumentationRegistry.getInstrumentation().startActivitySync(intent);
         if (incognito && IncognitoUtils.shouldOpenIncognitoAsWindow()) {
-            List<Activity> runningActivities = ApplicationStatus.getRunningActivities();
-            Assert.assertEquals(
-                    "Incorrect number of running activities.", 2, runningActivities.size());
-            Assert.assertTrue(
-                    "Running activities should contain a regular ChromeTabbedActivity.",
-                    runningActivities.stream()
-                            .anyMatch(
-                                    activity ->
-                                            activity instanceof ChromeTabbedActivity cta
-                                                    && !cta.isIncognitoWindow()));
-            Assert.assertTrue(
-                    "Running activities should contain an incognito ChromeTabbedActivity.",
-                    runningActivities.stream()
-                            .anyMatch(
-                                    activity ->
-                                            activity instanceof ChromeTabbedActivity cta
-                                                    && cta.isIncognitoWindow()));
+            CriteriaHelper.pollUiThread(
+                    () -> {
+                        List<Activity> runningActivities = ApplicationStatus.getRunningActivities();
+                        Criteria.checkThat(
+                                "Incorrect number of running activities.",
+                                runningActivities.size(),
+                                Matchers.is(2));
+                        Criteria.checkThat(
+                                "Running activities should contain a regular"
+                                        + " ChromeTabbedActivity.",
+                                runningActivities.stream()
+                                        .anyMatch(
+                                                activity ->
+                                                        activity instanceof ChromeTabbedActivity cta
+                                                                && !cta.isIncognitoWindow()),
+                                Matchers.is(true));
+                        Criteria.checkThat(
+                                "Running activities should contain an incognito"
+                                        + " ChromeTabbedActivity.",
+                                runningActivities.stream()
+                                        .anyMatch(
+                                                activity ->
+                                                        activity instanceof ChromeTabbedActivity cta
+                                                                && cta.isIncognitoWindow()),
+                                Matchers.is(true));
+                    });
         } else {
-        mTabAddedCallback.waitForCallback(0);
-        // Verify NTP was created.
-        Tab activityTab = mActivityTestRule.getActivityTab();
-        Assert.assertEquals(
-                "Incorrect tab launch type.",
-                TabLaunchType.FROM_LAUNCHER_SHORTCUT,
-                activityTab.getLaunchType());
+            mTabAddedCallback.waitForCallback(0);
+            // Verify NTP was created.
+            Tab activityTab = mActivityTestRule.getActivityTab();
+            Assert.assertEquals(
+                    "Incorrect tab launch type.",
+                    TabLaunchType.FROM_LAUNCHER_SHORTCUT,
+                    activityTab.getLaunchType());
 
-        Assert.assertTrue(
-                "Tab should be an NTP. Tab url: " + ChromeTabUtils.getUrlOnUiThread(activityTab),
-                UrlUtilities.isNtpUrl(ChromeTabUtils.getUrlOnUiThread(activityTab)));
+            Assert.assertTrue(
+                    "Tab should be an NTP. Tab url: "
+                            + ChromeTabUtils.getUrlOnUiThread(activityTab),
+                    UrlUtilities.isNtpUrl(ChromeTabUtils.getUrlOnUiThread(activityTab)));
 
-        // Verify tab model.
-        Assert.assertEquals(
-                "Incorrect tab model selected.",
-                incognito,
-                mTabModelSelector.isIncognitoSelected());
-        int tabCount = ThreadUtils.runOnUiThreadBlocking(() -> mTabModelSelector.getTotalTabCount());
-        Assert.assertEquals("Incorrect total tab count.", initialTabCount + 1, tabCount);
-        Assert.assertEquals(
-                "Incorrect normal tab count.",
-                incognito ? initialTabCount : initialTabCount + 1,
-                mActivityTestRule.tabsCount(false));
-        Assert.assertEquals(
-                "Incorrect incognito tab count.",
-                incognito ? 1 : 0,
-                mActivityTestRule.tabsCount(true));
+            // Verify tab model.
+            Assert.assertEquals(
+                    "Incorrect tab model selected.",
+                    incognito,
+                    mTabModelSelector.isIncognitoSelected());
+            int tabCount =
+                    ThreadUtils.runOnUiThreadBlocking(() -> mTabModelSelector.getTotalTabCount());
+            Assert.assertEquals("Incorrect total tab count.", initialTabCount + 1, tabCount);
+            Assert.assertEquals(
+                    "Incorrect normal tab count.",
+                    incognito ? initialTabCount : initialTabCount + 1,
+                    mActivityTestRule.tabsCount(false));
+            Assert.assertEquals(
+                    "Incorrect incognito tab count.",
+                    incognito ? 1 : 0,
+                    mActivityTestRule.tabsCount(true));
         }
     }
 
