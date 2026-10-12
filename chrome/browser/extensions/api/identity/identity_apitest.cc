@@ -673,15 +673,15 @@ class IdentityTestWithSignin : public AsyncExtensionBrowserTest {
   }
 
  protected:
-  // Signs in and returns the account ID of the primary account. Tests that
-  // specifically exercise the "account isn't in the cookie jar" path should
-  // pass `set_cookie=false`.
-  CoreAccountId SignIn(const std::string& email, const bool set_cookie = true) {
+  // Signs in and returns the account ID of the primary account. The account is
+  // also added to the Gaia cookie jar, as it would be in production.
+  CoreAccountId SignIn(
+      const std::string& email,
+      signin::ConsentLevel consent_level = signin::ConsentLevel::kSignin) {
     auto account_info = identity_test_env()->MakeAccountAvailable(
-        email, {.primary_account_consent_level = signin::ConsentLevel::kSignin,
-                .set_cookie = set_cookie});
-    EXPECT_TRUE(identity_test_env()->identity_manager()->HasPrimaryAccount(
-        signin::ConsentLevel::kSignin));
+        email,
+        {.primary_account_consent_level = consent_level, .set_cookie = true});
+    EXPECT_TRUE(identity_manager()->HasPrimaryAccount(consent_level));
     return account_info.GetAccountId();
   }
 
@@ -692,15 +692,97 @@ class IdentityTestWithSignin : public AsyncExtensionBrowserTest {
         email, {.set_cookie = set_cookie});
   }
 
+  // Creates a `FakeGetAuthTokenFunction` set up for this test. Accounts signed
+  // in during the flow are also added to the Gaia cookie jar, as they would be
+  // in production. Prefer this over constructing `FakeGetAuthTokenFunction`
+  // directly.
+  scoped_refptr<FakeGetAuthTokenFunction> CreateFakeGetAuthTokenFunction() {
+    return base::MakeRefCounted<FakeGetAuthTokenFunction>(
+        identity_test_env()->GetWeakPtr());
+  }
+
   IdentityAPI* id_api() {
     return IdentityAPI::GetFactoryInstance()->Get(profile());
   }
 
-  signin::IdentityTestEnvironment* identity_test_env() {
-    return identity_test_env_profile_adaptor_->identity_test_env();
+  signin::IdentityManager* identity_manager() {
+    return identity_test_env()->identity_manager();
   }
 
+  // Wrappers around `signin::IdentityTestEnvironment`. Tests should go through
+  // the fixture rather than using the environment directly, so that account
+  // setup stays consistent across tests (e.g. accounts are added to the Gaia
+  // cookie jar, as they would be in production).
+  void SetRefreshTokenForPrimaryAccount() {
+    identity_test_env()->SetRefreshTokenForPrimaryAccount();
+  }
+
+  void SetInvalidRefreshTokenForPrimaryAccount() {
+    identity_test_env()->SetInvalidRefreshTokenForPrimaryAccount();
+  }
+
+  void SetInvalidRefreshTokenForAccount(const CoreAccountId& account_id) {
+    identity_test_env()->SetInvalidRefreshTokenForAccount(account_id);
+  }
+
+  void RemoveRefreshTokenForAccount(const CoreAccountId& account_id) {
+    identity_test_env()->RemoveRefreshTokenForAccount(account_id);
+  }
+
+  void ClearPrimaryAccount() { identity_test_env()->ClearPrimaryAccount(); }
+
+  void SetCookieAccounts(
+      const std::vector<signin::CookieParamsForTest>& cookie_accounts) {
+    identity_test_env()->SetCookieAccounts(cookie_accounts);
+  }
+
+  void ResetToAccountsNotYetLoadedFromDiskState() {
+    identity_test_env()->ResetToAccountsNotYetLoadedFromDiskState();
+  }
+
+  void ReloadAccountsFromDisk() {
+    identity_test_env()->ReloadAccountsFromDisk();
+  }
+
+  void WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      const CoreAccountId& account_id,
+      const std::string& token,
+      const base::Time& expiration) {
+    identity_test_env()
+        ->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+            account_id, token, expiration);
+  }
+
+  void WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+      const CoreAccountId& account_id,
+      const GoogleServiceAuthError& error) {
+    identity_test_env()
+        ->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(account_id,
+                                                                  error);
+  }
+
+  // Destroys the identity test environment ahead of `TearDownOnMainThread()`,
+  // e.g. to simulate the profile shutting down. After this call,
+  // `identity_manager()` and the wrappers above must not be used; use
+  // `HasIdentityTestEnvironment()` to check whether the environment is alive.
+  void DestroyIdentityTestEnvironment() {
+    identity_test_env_profile_adaptor_.reset();
+  }
+
+  bool HasIdentityTestEnvironment() const {
+    return !!identity_test_env_profile_adaptor_;
+  }
+
+  // Must be declared before `identity_test_env_profile_adaptor_` so that it
+  // outlives the IdentityTestEnvironment, which keeps a raw pointer to it.
   network::TestURLLoaderFactory test_url_loader_factory_;
+
+ private:
+  signin::IdentityTestEnvironment* identity_test_env() {
+    CHECK(identity_test_env_profile_adaptor_)
+        << "IdentityTestEnvironment was already destroyed.";
+    return identity_test_env_profile_adaptor_->identity_test_env();
+  }
 
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_profile_adaptor_;
@@ -792,14 +874,14 @@ IN_PROC_BROWSER_TEST_F(IdentityGetAccountsFunctionTest, NoneSignedIn) {
 }
 
 IN_PROC_BROWSER_TEST_F(IdentityGetAccountsFunctionTest, NoPrimaryAccount) {
-  identity_test_env()->MakeAccountAvailable("secondary@example.com");
+  MakeAccountAvailable("secondary@example.com", /*set_cookie=*/false);
   EXPECT_TRUE(ExpectGetAccounts({}));
 }
 
 IN_PROC_BROWSER_TEST_F(IdentityGetAccountsFunctionTest,
                        PrimaryAccountHasInvalidRefreshToken) {
   CoreAccountId primary_account_id = SignIn("primary@example.com");
-  identity_test_env()->SetInvalidRefreshTokenForPrimaryAccount();
+  SetInvalidRefreshTokenForPrimaryAccount();
   EXPECT_TRUE(ExpectGetAccounts({"gaia_id_for_primary_example.com"}));
 }
 
@@ -811,7 +893,7 @@ IN_PROC_BROWSER_TEST_F(IdentityGetAccountsFunctionTest,
 
 IN_PROC_BROWSER_TEST_F(IdentityGetAccountsFunctionTest, TwoAccountsSignedIn) {
   SignIn("primary@example.com");
-  identity_test_env()->MakeAccountAvailable("secondary@example.com");
+  MakeAccountAvailable("secondary@example.com", /*set_cookie=*/false);
   if (!id_api()->AreExtensionsRestrictedToPrimaryAccount()) {
     EXPECT_TRUE(ExpectGetAccounts({"gaia_id_for_primary_example.com",
                                    "gaia_id_for_secondary_example.com"}));
@@ -821,7 +903,7 @@ IN_PROC_BROWSER_TEST_F(IdentityGetAccountsFunctionTest, TwoAccountsSignedIn) {
 }
 
 IN_PROC_BROWSER_TEST_F(IdentityGetAccountsFunctionTest, SignedInOnTheWeb) {
-  identity_test_env()->MakeAccountAvailable("secondary@example.com");
+  MakeAccountAvailable("secondary@example.com", /*set_cookie=*/false);
   EXPECT_TRUE(ExpectGetAccounts({}));
 
   SignIn("primary@example.com");
@@ -866,8 +948,7 @@ IN_PROC_BROWSER_TEST_F(IdentityGetProfileUserInfoFunctionTest, NotSignedIn) {
 IN_PROC_BROWSER_TEST_F(IdentityGetProfileUserInfoFunctionTest, ExtensionSync) {
   constexpr char kEmail[] = "president@example.com";
 #if BUILDFLAG(IS_CHROMEOS)
-  identity_test_env()->MakePrimaryAccountAvailable(kEmail,
-                                                   signin::ConsentLevel::kSync);
+  SignIn(kEmail, signin::ConsentLevel::kSync);
 #else
   SignIn(kEmail);
   SyncServiceFactory::GetForProfile(profile())
@@ -884,8 +965,7 @@ IN_PROC_BROWSER_TEST_F(IdentityGetProfileUserInfoFunctionTest, ExtensionSync) {
 
 IN_PROC_BROWSER_TEST_F(IdentityGetProfileUserInfoFunctionTest,
                        SignedInUnconsented) {
-  identity_test_env()->MakePrimaryAccountAvailable(
-      "test@example.com", signin::ConsentLevel::kSignin);
+  SignIn("test@example.com");
   std::optional<api::identity::ProfileUserInfo> info =
       RunGetProfileUserInfoWithEmail();
   // The account is only returned if extensions are syncing. Whether or not
@@ -936,8 +1016,7 @@ IN_PROC_BROWSER_TEST_F(IdentityGetProfileUserInfoFunctionNoSyncServiceTest,
   // SyncService is not created.
   ASSERT_EQ(nullptr, SyncServiceFactory::GetForProfile(profile()));
 
-  identity_test_env()->MakePrimaryAccountAvailable(
-      "test@example.com", signin::ConsentLevel::kSignin);
+  SignIn("test@example.com");
 
   // This should not crash.
   std::optional<api::identity::ProfileUserInfo> profile_user_info =
@@ -984,8 +1063,7 @@ IN_PROC_BROWSER_TEST_P(
     ExtensionSync) {
   constexpr char kEmail[] = "test@example.com";
 #if BUILDFLAG(IS_CHROMEOS)
-  identity_test_env()->MakePrimaryAccountAvailable(kEmail,
-                                                   signin::ConsentLevel::kSync);
+  SignIn(kEmail, signin::ConsentLevel::kSync);
 #else
   SignIn(kEmail);
   SyncServiceFactory::GetForProfile(profile())
@@ -1003,8 +1081,7 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     IdentityGetProfileUserInfoFunctionTestWithAccountStatusParam,
     SignedInUnconsented) {
-  identity_test_env()->MakePrimaryAccountAvailable(
-      "test@example.com", signin::ConsentLevel::kSignin);
+  SignIn("test@example.com");
   std::optional<api::identity::ProfileUserInfo> info =
       RunGetProfileUserInfoWithAccountStatus();
 
@@ -1037,9 +1114,8 @@ class GetAuthTokenFunctionTest
 
   std::string IssueLoginAccessTokenForAccount(const CoreAccountId& account_id) {
     std::string access_token = "access_token-" + account_id.ToString();
-    identity_test_env()
-        ->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-            account_id, access_token, base::Time::Now() + base::Seconds(3600));
+    WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+        account_id, access_token, base::Time::Now() + base::Seconds(3600));
     return access_token;
   }
 
@@ -1048,17 +1124,17 @@ class GetAuthTokenFunctionTest
 
   void SetUpOnMainThread() override {
     IdentityTestWithSignin::SetUpOnMainThread();
-    identity_test_env()->identity_manager()->AddDiagnosticsObserver(this);
+    identity_manager()->AddDiagnosticsObserver(this);
     signin::SetListAccountsResponseNoAccounts(&test_url_loader_factory_);
   }
 
   void TearDownOnMainThread() override {
-    if (!identity_test_env_profile_adaptor_) {
+    if (!HasIdentityTestEnvironment()) {
       // In some tests, we have released the profile early and removed the
       // observer, so do nothing
       return;
     }
-    identity_test_env()->identity_manager()->RemoveDiagnosticsObserver(this);
+    identity_manager()->RemoveDiagnosticsObserver(this);
     IdentityTestWithSignin::TearDownOnMainThread();
   }
 
@@ -1098,12 +1174,12 @@ class GetAuthTokenFunctionTest
   }
 
   CoreAccountInfo GetPrimaryAccountInfo() {
-    return identity_test_env()->identity_manager()->GetPrimaryAccountInfo(
+    return identity_manager()->GetPrimaryAccountInfo(
         signin::ConsentLevel::kSignin);
   }
 
   CoreAccountId GetPrimaryAccountId() {
-    return identity_test_env()->identity_manager()->GetPrimaryAccountId(
+    return identity_manager()->GetPrimaryAccountId(
         signin::ConsentLevel::kSignin);
   }
 
@@ -1218,15 +1294,6 @@ class GetAuthTokenFunctionTest
       return;
     }
     user_gesture_.reset();
-  }
-
-  // Creates a `FakeGetAuthTokenFunction` set up for this test. Accounts signed
-  // in during the flow are also added to the Gaia cookie jar, as they would be
-  // in production. Prefer this over constructing `FakeGetAuthTokenFunction`
-  // directly.
-  scoped_refptr<FakeGetAuthTokenFunction> CreateFakeGetAuthTokenFunction() {
-    return base::MakeRefCounted<FakeGetAuthTokenFunction>(
-        identity_test_env()->GetWeakPtr());
   }
 
  private:
@@ -1507,12 +1574,12 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
   func->set_extension(extension.get());
   func->push_mint_token_result(TestOAuth2MintTokenFlow::MINT_TOKEN_SUCCESS);
 
-  identity_test_env()->ResetToAccountsNotYetLoadedFromDiskState();
+  ResetToAccountsNotYetLoadedFromDiskState();
   RunFunctionAsync(func.get(), "[{\"interactive\": true}]");
 
   // Allow the function to start asynchronously.
   base::RunLoop().RunUntilIdle();
-  identity_test_env()->ReloadAccountsFromDisk();
+  ReloadAccountsFromDisk();
 
   std::string access_token;
   std::set<std::string> granted_scopes;
@@ -1691,10 +1758,7 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
   // on to the remote consent step, where it should block on the cookies.
   ASSERT_TRUE(base::test::RunUntil([&]() { return func->login_ui_shown(); }));
 
-  signin::IdentityManager* identity_manager =
-      identity_test_env()->identity_manager();
-  CoreAccountInfo primary_account =
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  CoreAccountInfo primary_account = GetPrimaryAccountInfo();
   ASSERT_FALSE(primary_account.IsEmpty());
 
   // The account is signed in, but its cookies aren't in the jar yet, so the
@@ -1705,7 +1769,7 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
   cookie_params.email = primary_account.email;
   cookie_params.gaia_id = primary_account.gaia;
 
-  identity_test_env()->SetCookieAccounts({cookie_params});
+  SetCookieAccounts({cookie_params});
 
   // The cookies landed, so the consent dialog is shown.
   scope_ui_run_loop.Run();
@@ -1762,14 +1826,10 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest, SignedInWebOnlyAcceptPrompt) {
-  identity_test_env()->MakeAccountAvailable("account@gmail.com",
-                                            {.set_cookie = true});
-  ASSERT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount(
-      signin::ConsentLevel::kSignin));
-  ASSERT_FALSE(identity_test_env()
-                   ->identity_manager()
-                   ->GetAccountsWithRefreshTokens()
-                   .empty());
+  MakeAccountAvailable("account@gmail.com");
+  ASSERT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(identity_manager()->GetAccountsWithRefreshTokens().empty());
 
   scoped_refptr<const Extension> extension(CreateExtension(CLIENT_ID | SCOPES));
   scoped_refptr<FakeGetAuthTokenFunction> func =
@@ -1802,14 +1862,10 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest, SignedInWebOnlyAcceptPrompt) {
 }
 
 IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest, SignedInWebOnlyDeclinePrompt) {
-  identity_test_env()->MakeAccountAvailable("account@gmail.com",
-                                            {.set_cookie = true});
-  ASSERT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount(
-      signin::ConsentLevel::kSignin));
-  ASSERT_FALSE(identity_test_env()
-                   ->identity_manager()
-                   ->GetAccountsWithRefreshTokens()
-                   .empty());
+  MakeAccountAvailable("account@gmail.com");
+  ASSERT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(identity_manager()->GetAccountsWithRefreshTokens().empty());
 
   scoped_refptr<const Extension> extension(CreateExtension(CLIENT_ID | SCOPES));
   scoped_refptr<FakeGetAuthTokenFunction> func =
@@ -1839,14 +1895,10 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest, SignedInWebOnlyDeclinePrompt) {
 
 IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
                        SignedInWebOnlyNonInteractiveWithAccount) {
-  const AccountInfo account_info = identity_test_env()->MakeAccountAvailable(
-      "account@gmail.com", {.set_cookie = true});
-  ASSERT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount(
-      signin::ConsentLevel::kSignin));
-  ASSERT_FALSE(identity_test_env()
-                   ->identity_manager()
-                   ->GetAccountsWithRefreshTokens()
-                   .empty());
+  const AccountInfo account_info = MakeAccountAvailable("account@gmail.com");
+  ASSERT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(identity_manager()->GetAccountsWithRefreshTokens().empty());
 
   scoped_refptr<const Extension> extension(CreateExtension(CLIENT_ID | SCOPES));
   scoped_refptr<FakeGetAuthTokenFunction> func =
@@ -1859,8 +1911,8 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
   const std::string error =
       utils::RunFunctionAndReturnError(func.get(), args, profile());
   EXPECT_EQ(error, std::string(errors::kUserNotSignedIn));
-  EXPECT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount(
-      signin::ConsentLevel::kSignin));
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
   EXPECT_FALSE(func->login_ui_shown());
   EXPECT_FALSE(func->scope_ui_shown());
@@ -1871,14 +1923,10 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
 
 IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
                        SignedInWebOnlyAcceptPromptWithAccount) {
-  const AccountInfo account_info = identity_test_env()->MakeAccountAvailable(
-      "account@gmail.com", {.set_cookie = true});
-  ASSERT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount(
-      signin::ConsentLevel::kSignin));
-  ASSERT_FALSE(identity_test_env()
-                   ->identity_manager()
-                   ->GetAccountsWithRefreshTokens()
-                   .empty());
+  const AccountInfo account_info = MakeAccountAvailable("account@gmail.com");
+  ASSERT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(identity_manager()->GetAccountsWithRefreshTokens().empty());
 
   scoped_refptr<const Extension> extension(CreateExtension(CLIENT_ID | SCOPES));
   scoped_refptr<FakeGetAuthTokenFunction> func =
@@ -1906,9 +1954,9 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
   WaitForGetAuthTokenResults(func.get(), &access_token, &granted_scopes);
   EXPECT_EQ(access_token, std::string(kAccessToken));
   EXPECT_EQ(granted_scopes, func->GetExtensionTokenKeyForTest()->scopes);
-  EXPECT_EQ(account_info.GetAccountId(),
-            identity_test_env()->identity_manager()->GetPrimaryAccountId(
-                signin::ConsentLevel::kSignin));
+  EXPECT_EQ(
+      account_info.GetAccountId(),
+      identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSignin));
 
   EXPECT_FALSE(func->login_ui_shown());
   EXPECT_FALSE(func->scope_ui_shown());
@@ -1919,14 +1967,10 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
 
 IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
                        SignedInWebOnlyDeclinePromptWithAccount) {
-  const AccountInfo account_info = identity_test_env()->MakeAccountAvailable(
-      "account@gmail.com", {.set_cookie = true});
-  ASSERT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount(
-      signin::ConsentLevel::kSignin));
-  ASSERT_FALSE(identity_test_env()
-                   ->identity_manager()
-                   ->GetAccountsWithRefreshTokens()
-                   .empty());
+  const AccountInfo account_info = MakeAccountAvailable("account@gmail.com");
+  ASSERT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(identity_manager()->GetAccountsWithRefreshTokens().empty());
 
   scoped_refptr<const Extension> extension(CreateExtension(CLIENT_ID | SCOPES));
   scoped_refptr<FakeGetAuthTokenFunction> func =
@@ -1950,8 +1994,8 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
   dialog_delegate->CancelDialog();
 
   EXPECT_EQ(WaitForError(func.get()), std::string(errors::kUserNotSignedIn));
-  EXPECT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount(
-      signin::ConsentLevel::kSignin));
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
   EXPECT_FALSE(func->login_ui_shown());
   EXPECT_FALSE(func->scope_ui_shown());
@@ -1962,14 +2006,10 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
 
 IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
                        SignedInWebOnlyAcceptPromptMultipleFunctions) {
-  identity_test_env()->MakeAccountAvailable("account@gmail.com",
-                                            {.set_cookie = true});
-  ASSERT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount(
-      signin::ConsentLevel::kSignin));
-  ASSERT_FALSE(identity_test_env()
-                   ->identity_manager()
-                   ->GetAccountsWithRefreshTokens()
-                   .empty());
+  MakeAccountAvailable("account@gmail.com");
+  ASSERT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(identity_manager()->GetAccountsWithRefreshTokens().empty());
 
   scoped_refptr<const Extension> extension(CreateExtension(CLIENT_ID | SCOPES));
   scoped_refptr<FakeGetAuthTokenFunction> func1 =
@@ -2369,8 +2409,8 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
   func->set_auto_login_access_token(false);
 
   RunFunctionAsync(func.get(), "[{\"interactive\": true}]");
-  identity_test_env()->identity_manager()->RemoveDiagnosticsObserver(this);
-  identity_test_env_profile_adaptor_.reset();
+  identity_manager()->RemoveDiagnosticsObserver(this);
+  DestroyIdentityTestEnvironment();
   CloseBrowserSynchronously(browser());
   EXPECT_FALSE(func->scope_ui_shown());
 
@@ -2580,8 +2620,7 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest, NonInteractiveCacheHit) {
 
 IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
                        NonInteractiveCacheHitSecondary) {
-  AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
-      "email@example.com", signin::ConsentLevel::kSignin);
+  SignIn("email@example.com");
 
   scoped_refptr<const Extension> extension(CreateExtension(CLIENT_ID | SCOPES));
   scoped_refptr<FakeGetAuthTokenFunction> func =
@@ -2591,7 +2630,7 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
   // Pre-populate the cache with a token.
   IdentityTokenCacheValue token =
       CreateToken(kAccessToken, base::Seconds(3600));
-  SetCachedTokenForAccount(account_info.GetCoreAccountInfo(), token);
+  SetCachedTokenForAccount(GetPrimaryAccountInfo(), token);
 
   std::string access_token;
   std::set<std::string> granted_scopes;
@@ -2884,8 +2923,8 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest, ManuallyIssueTokenFailure) {
 
   GoogleServiceAuthError error =
       GoogleServiceAuthError::FromServiceUnavailable("");
-  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      primary_account_id, error);
+  WaitForAccessTokenRequestIfNecessaryAndRespondWithError(primary_account_id,
+                                                          error);
 
   EXPECT_EQ(std::string(errors::kAuthFailure) + error.ToString(),
             WaitForError(func.get()));
@@ -3438,8 +3477,7 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
   // auth token for it.
   SignIn("primary@example.com");
   AccountInfo secondary_account = MakeAccountAvailable("secondary@example.com");
-  identity_test_env()->SetInvalidRefreshTokenForAccount(
-      secondary_account.GetAccountId());
+  SetInvalidRefreshTokenForAccount(secondary_account.GetAccountId());
 
   scoped_refptr<const Extension> extension(CreateExtension(CLIENT_ID | SCOPES));
   scoped_refptr<FakeGetAuthTokenFunction> func =
@@ -4930,7 +4968,7 @@ IN_PROC_BROWSER_TEST_F(OnSignInChangedEventTest, FireOnPrimaryAccountSignOut) {
   AddExpectedEvent(api::identity::OnSignInChanged::Create(account_info, false));
 
   // Sign out and verify that the callback fires.
-  identity_test_env()->ClearPrimaryAccount();
+  ClearPrimaryAccount();
 
   EXPECT_FALSE(HasExpectedEvent());
 }
@@ -4949,7 +4987,7 @@ IN_PROC_BROWSER_TEST_F(OnSignInChangedEventTest,
   AddExpectedEvent(api::identity::OnSignInChanged::Create(account_info, true));
 
   // Revoke the refresh token and verify that the callback fires.
-  identity_test_env()->SetInvalidRefreshTokenForPrimaryAccount();
+  SetInvalidRefreshTokenForPrimaryAccount();
 
   EXPECT_FALSE(HasExpectedEvent());
 }
@@ -4965,13 +5003,13 @@ IN_PROC_BROWSER_TEST_F(OnSignInChangedEventTest,
   CoreAccountId primary_account_id = SignIn("primary@example.com");
 
   AddExpectedEvent(api::identity::OnSignInChanged::Create(account_info, true));
-  identity_test_env()->SetInvalidRefreshTokenForPrimaryAccount();
+  SetInvalidRefreshTokenForPrimaryAccount();
 
   account_info.id = "gaia_id_for_primary_example.com";
   AddExpectedEvent(api::identity::OnSignInChanged::Create(account_info, true));
 
   // Make the primary account available again and check that the callback fires.
-  identity_test_env()->SetRefreshTokenForPrimaryAccount();
+  SetRefreshTokenForPrimaryAccount();
   EXPECT_FALSE(HasExpectedEvent());
 }
 
@@ -4987,8 +5025,7 @@ IN_PROC_BROWSER_TEST_F(OnSignInChangedEventTest, FireForSecondaryAccount) {
 
   // Make a secondary account available again and check that the callback fires.
   CoreAccountId secondary_account_id =
-      identity_test_env()
-          ->MakeAccountAvailable("secondary@example.com")
+      MakeAccountAvailable("secondary@example.com", /*set_cookie=*/false)
           .GetAccountId();
   EXPECT_FALSE(HasExpectedEvent());
 
@@ -4996,7 +5033,7 @@ IN_PROC_BROWSER_TEST_F(OnSignInChangedEventTest, FireForSecondaryAccount) {
   // fires.
   AddExpectedEvent(api::identity::OnSignInChanged::Create(account_info, false));
 
-  identity_test_env()->RemoveRefreshTokenForAccount(secondary_account_id);
+  RemoveRefreshTokenForAccount(secondary_account_id);
   EXPECT_FALSE(HasExpectedEvent());
 }
 
