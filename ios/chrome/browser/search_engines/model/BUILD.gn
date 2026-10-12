@@ -134,6 +134,7 @@ source_set("template_url_service_factory") {
   sources = [ "template_url_service_factory.h" ]
   deps = [
     "//base",
+    "//components/search_engines",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
   ]

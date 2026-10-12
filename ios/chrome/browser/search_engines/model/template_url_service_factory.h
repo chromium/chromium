@@ -8,10 +8,10 @@
 #import <memory>
 
 #import "base/no_destructor.h"
+#import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class ProfileIOS;
-class TemplateURLService;
 
 namespace ios {
 // Singleton that owns all TemplateURLServices and associates them with
