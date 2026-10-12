@@ -923,13 +923,11 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
   }
 
   setMicrophonePermissionState(enabled: boolean): Promise<void> {
-    return this.clientRemote.requestWithResponse(
-        'setMicrophonePermissionState', {enabled});
+    return this.handler.setMicrophonePermissionState(enabled);
   }
 
   setLocationPermissionState(enabled: boolean): Promise<void> {
-    return this.clientRemote.requestWithResponse(
-        'setLocationPermissionState', {enabled});
+    return this.handler.setLocationPermissionState(enabled);
   }
 
   setTabContextPermissionState(enabled: boolean): Promise<void> {
@@ -937,13 +935,11 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
       this.permissionStateTabContext.assignAndSignal(enabled);
       return Promise.resolve();
     }
-    return this.clientRemote.requestWithResponse(
-        'setTabContextPermissionState', {enabled});
+    return this.handler.setTabContextPermissionState(enabled);
   }
 
   setClosedCaptioningSetting?(enabled: boolean): Promise<void> {
-    return this.clientRemote.requestWithResponse(
-        'setClosedCaptioningSetting', {enabled});
+    return this.handler.setClosedCaptioningSetting(enabled);
   }
 
   setContextAccessIndicator(show: boolean): void {
@@ -951,8 +947,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
   }
 
   setActuationOnWebSetting?(enabled: boolean): Promise<void> {
-    return this.clientRemote.requestWithResponse(
-        'setActuationOnWebSetting', {enabled});
+    return this.handler.setActuationOnWebSetting(enabled);
   }
 
   async getUserProfileInfo?(): Promise<UserProfileInfo> {
@@ -1022,7 +1017,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
   }
 
   setAudioDucking?(enabled: boolean): void {
-    this.clientRemote.requestNoResponse('setAudioDucking', {enabled});
+    this.handler.setAudioDucking(enabled);
   }
 
   getMetrics(): GlicBrowserHostMetrics {
@@ -1035,8 +1030,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
 
 
   setSyntheticExperimentState(trialName: string, groupName: string): void {
-    this.clientRemote.requestNoResponse(
-        'setSyntheticExperimentState', {trialName, groupName});
+    this.handler.setSyntheticExperimentState(trialName, groupName);
   }
 
   openOsPermissionSettingsMenu?(permission: string): void {
@@ -1060,9 +1054,8 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
   }
 
   async getOsMicrophonePermissionStatus(): Promise<boolean> {
-    return (await this.clientRemote.requestWithResponse(
-                'getOsMicrophonePermissionStatus', undefined))
-        .enabled;
+    const {enabled} = await this.handler.getOsMicrophonePermissionStatus();
+    return enabled;
   }
 
   isManuallyResizing(): ObservableValueImpl<boolean> {

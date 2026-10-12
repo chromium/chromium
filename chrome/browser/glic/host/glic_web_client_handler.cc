@@ -1097,6 +1097,7 @@ class GlicWebClientHandler
 
   void SetAudioDucking(bool enabled,
                        SetAudioDuckingCallback callback) override {
+    LogApiRequest(GlicHostApiRequestId::kSetAudioDucking);
     // NEEDS_ANDROID_IMPL: AudioDucking not in android build.
 #if !BUILDFLAG(IS_ANDROID)
     content::RenderFrameHost* guest_frame = host_->GetGuestMainFrame();
@@ -1124,6 +1125,7 @@ class GlicWebClientHandler
   void SetMicrophonePermissionState(
       bool enabled,
       SetMicrophonePermissionStateCallback callback) override {
+    LogApiRequest(GlicHostApiRequestId::kSetMicrophonePermissionState);
     pref_service_->SetBoolean(prefs::kGlicMicrophoneEnabled, enabled);
     if (enabled) {
       base::RecordAction(
@@ -1138,6 +1140,7 @@ class GlicWebClientHandler
   void SetLocationPermissionState(
       bool enabled,
       SetLocationPermissionStateCallback callback) override {
+    LogApiRequest(GlicHostApiRequestId::kSetLocationPermissionState);
     pref_service_->SetBoolean(prefs::kGlicGeolocationEnabled, enabled);
     if (enabled) {
       base::RecordAction(
@@ -1152,6 +1155,7 @@ class GlicWebClientHandler
   void SetTabContextPermissionState(
       bool enabled,
       SetTabContextPermissionStateCallback callback) override {
+    LogApiRequest(GlicHostApiRequestId::kSetTabContextPermissionState);
     pref_service_->SetBoolean(prefs::kGlicTabContextEnabled, enabled);
     if (enabled) {
       base::RecordAction(
@@ -1166,6 +1170,7 @@ class GlicWebClientHandler
   void SetClosedCaptioningSetting(
       bool enabled,
       SetClosedCaptioningSettingCallback callback) override {
+    LogApiRequest(GlicHostApiRequestId::kSetClosedCaptioningSetting);
     pref_service_->SetBoolean(prefs::kGlicClosedCaptioningEnabled, enabled);
     if (enabled) {
       base::RecordAction(
@@ -1180,6 +1185,7 @@ class GlicWebClientHandler
   void SetActuationOnWebSetting(
       bool enabled,
       SetActuationOnWebSettingCallback callback) override {
+    LogApiRequest(GlicHostApiRequestId::kSetActuationOnWebSetting);
     glic_service_->enabling().SetUserEnabledActuationOnWeb(enabled);
     base::RecordAction(
         enabled ? base::UserMetricsAction("GlicUserEnabledActuationOnWeb")
@@ -1476,6 +1482,7 @@ class GlicWebClientHandler
 
   void SetSyntheticExperimentState(const std::string& trial_name,
                                    const std::string& group_name) override {
+    LogApiRequest(GlicHostApiRequestId::kSetSyntheticExperimentState);
     g_browser_process->GetFeatures()
         ->glic_synthetic_trial_manager()
         ->SetSyntheticExperimentState(trial_name, group_name);
@@ -1497,6 +1504,7 @@ class GlicWebClientHandler
 
   void GetOsMicrophonePermissionStatus(
       GetOsMicrophonePermissionStatusCallback callback) override {
+    LogApiRequest(GlicHostApiRequestId::kGetOsMicrophonePermissionStatus);
     std::move(callback).Run(system_permission_settings::IsAllowed(
         ContentSettingsType::MEDIASTREAM_MIC));
   }

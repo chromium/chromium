@@ -209,26 +209,6 @@ export class HostMessageHandler implements PostMessageHandler<WebClientHost> {
     return this.handler.setMinimumPanelSize(request.size);
   }
 
-  setMicrophonePermissionState(request: {enabled: boolean}) {
-    return this.handler.setMicrophonePermissionState(request.enabled);
-  }
-
-  setLocationPermissionState(request: {enabled: boolean}) {
-    return this.handler.setLocationPermissionState(request.enabled);
-  }
-
-  setTabContextPermissionState(request: {enabled: boolean}) {
-    return this.handler.setTabContextPermissionState(request.enabled);
-  }
-
-  setClosedCaptioningSetting(request: {enabled: boolean}) {
-    return this.handler.setClosedCaptioningSetting(request.enabled);
-  }
-
-  setActuationOnWebSetting(request: {enabled: boolean}) {
-    return this.handler.setActuationOnWebSetting(request.enabled);
-  }
-
   async getUserProfileInfo(_request: void, extras: ResponseExtras) {
     const {profileInfo: mojoProfileInfo} =
         await this.handler.getUserProfileInfo();
@@ -249,26 +229,6 @@ export class HostMessageHandler implements PostMessageHandler<WebClientHost> {
 
   refreshSignInCookies(): Promise<{success: boolean}> {
     return this.handler.syncCookies();
-  }
-
-
-  setAudioDucking(request: {enabled: boolean}): void {
-    this.handler.setAudioDucking(request.enabled);
-  }
-
-
-
-  setSyntheticExperimentState(request: {
-    trialName: string,
-    groupName: string,
-  }) {
-    return this.handler.setSyntheticExperimentState(
-        request.trialName, request.groupName);
-  }
-
-
-  getOsMicrophonePermissionStatus(): Promise<{enabled: boolean}> {
-    return this.handler.getOsMicrophonePermissionStatus();
   }
 
   pinTabs(request: {tabIds: string[], options?: PinTabsOptions}):

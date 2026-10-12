@@ -158,41 +158,6 @@ export const WebClientHostDef = defInterface({
       histogram: {id: 20},
     },
     {
-      name: 'setMicrophonePermissionState',
-      request: defMessage<{
-        enabled: boolean,
-      }>(),
-      histogram: {id: 21},
-    },
-    {
-      name: 'setLocationPermissionState',
-      request: defMessage<{
-        enabled: boolean,
-      }>(),
-      histogram: {id: 22},
-    },
-    {
-      name: 'setTabContextPermissionState',
-      request: defMessage<{
-        enabled: boolean,
-      }>(),
-      histogram: {id: 23},
-    },
-    {
-      name: 'setClosedCaptioningSetting',
-      request: defMessage<{
-        enabled: boolean,
-      }>(),
-      histogram: {id: 56},
-    },
-    {
-      name: 'setActuationOnWebSetting',
-      request: defMessage<{
-        enabled: boolean,
-      }>(),
-      histogram: {id: 69},
-    },
-    {
       name: 'getUserProfileInfo',
       response: defMessage<{
         profileInfo?: UserProfileInfoPrivate,
@@ -205,29 +170,6 @@ export const WebClientHostDef = defInterface({
         success: boolean,
       }>(),
       histogram: {id: 26},
-    },
-    {
-      name: 'setAudioDucking',
-      request: defMessage<{
-        enabled: boolean,
-      }>(),
-      histogram: {id: 29},
-    },
-
-    {
-      name: 'setSyntheticExperimentState',
-      request: defMessage<{
-        trialName: string,
-        groupName: string,
-      }>(),
-      histogram: {id: 46},
-    },
-    {
-      name: 'getOsMicrophonePermissionStatus',
-      response: defMessage<{
-        enabled: boolean,
-      }>(),
-      histogram: {id: 48},
     },
     {
       name: 'pinTabs',
@@ -385,15 +327,15 @@ export const RECORDED_REQUEST_IDS = {
   EnableDragResize: 18,
   // Do not reuse deleted request ID: 19,
   SetMinimumWidgetSize: 20,
-  SetMicrophonePermissionState: 21,
-  SetLocationPermissionState: 22,
-  SetTabContextPermissionState: 23,
+  // Do not reuse deleted request ID: 21,
+  // Do not reuse deleted request ID: 22,
+  // Do not reuse deleted request ID: 23,
   // Do not reuse deleted request ID: 24,
   GetUserProfileInfo: 25,
   RefreshSignInCookies: 26,
   // Do not reuse deleted request ID: 27,
   // Do not reuse deleted request ID: 28,
-  SetAudioDucking: 29,
+  // Do not reuse deleted request ID: 29,
   // Do not reuse deleted request ID: 30,
   // Do not reuse deleted request ID: 31,
   // Do not reuse deleted request ID: 32,
@@ -410,9 +352,9 @@ export const RECORDED_REQUEST_IDS = {
   // Do not reuse deleted request ID: 43,
   // Do not reuse deleted request ID: 44,
   // Do not reuse deleted request ID: 45,
-  SetSyntheticExperimentState: 46,
+  // Do not reuse deleted request ID: 46,
   // Do not reuse deleted request ID: 47,
-  GetOsMicrophonePermissionStatus: 48,
+  // Do not reuse deleted request ID: 48,
   PinTabs: 49,
   UnpinTabs: 50,
   UnpinAllTabs: 51,
@@ -420,7 +362,7 @@ export const RECORDED_REQUEST_IDS = {
   // Do not reuse deleted request ID: 53,
   GetZeroStateSuggestionsForFocusedTab: 54,
   // Do not reuse deleted request ID: 55,
-  SetClosedCaptioningSetting: 56,
+  // Do not reuse deleted request ID: 56,
   // Do not reuse deleted request ID: 57,
   MaybeRefreshUserStatus: 58,
   // Do not reuse deleted request ID: 59,
@@ -433,7 +375,7 @@ export const RECORDED_REQUEST_IDS = {
   // Do not reuse deleted request ID: 66,
   // Do not reuse deleted request ID: 67,
   // Do not reuse deleted request ID: 68,
-  SetActuationOnWebSetting: 69,
+  // Do not reuse deleted request ID: 69,
   OnModeChange: 70,
   // Do not reuse deleted request ID: 71,
   // Do not reuse deleted request ID: 72,
