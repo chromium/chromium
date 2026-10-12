@@ -835,7 +835,14 @@ bool CSPDirectiveListAllowEval(
     ContentSecurityPolicy::ExceptionStatus exception_status,
     const String& content,
     const Vector<network::IntegrityMetadata>& script_hash_values,
-    bool csp_extended_script_src_hashes_enabled) {
+    bool csp_extended_script_src_hashes_enabled,
+    bool trusted_types_enforced) {
+  // https://w3c.github.io/webappsec-csp/#can-compile-strings: If Trusted Types
+  // are enforced and this policy's source list contains 'trusted-types-eval',
+  // this policy does not block (nor report) the evaluation.
+  if (trusted_types_enforced && CheckTrustedTypesEval(csp, policy)) {
+    return true;
+  }
   CSPOperativeDirective directive =
       OperativeDirective(csp, CSPDirectiveName::ScriptSrc);
   if (reporting_disposition == ReportingDisposition::kReport) {
@@ -904,16 +911,6 @@ bool CSPDirectiveListAllowWasmCodeGeneration(
         exception_status, content);
   }
   return CSPDirectiveListIsReportOnly(csp) || CheckWasmEval(csp, policy);
-}
-
-CORE_EXPORT
-bool CSPDirectiveListAllowTrustedTypesEval(
-    const network::mojom::blink::ContentSecurityPolicy& csp,
-    ContentSecurityPolicy* policy,
-    ReportingDisposition reporting_disposition,
-    ContentSecurityPolicy::ExceptionStatus exception_status) {
-  return !CSPDirectiveListIsReportOnly(csp) &&
-         CheckTrustedTypesEval(csp, policy);
 }
 
 bool CSPDirectiveListShouldDisableEval(

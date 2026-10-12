@@ -92,6 +92,10 @@ CORE_EXPORT
 bool CSPDirectiveListShouldCheckEval(
     const network::mojom::blink::ContentSecurityPolicy& csp);
 
+// Returns whether this policy allows evaluating `content` as script. When
+// `trusted_types_enforced` is true (i.e. some enforced policy of the global
+// requires Trusted Types for 'script'), a 'trusted-types-eval' keyword in this
+// policy's script-src also allows eval.
 CORE_EXPORT
 bool CSPDirectiveListAllowEval(
     const network::mojom::blink::ContentSecurityPolicy& csp,
@@ -100,7 +104,8 @@ bool CSPDirectiveListAllowEval(
     ContentSecurityPolicy::ExceptionStatus exception_status,
     const String& content,
     const Vector<network::IntegrityMetadata>& script_hash_values,
-    bool csp_extended_script_src_hashes_enabled);
+    bool csp_extended_script_src_hashes_enabled,
+    bool trusted_types_enforced);
 
 CORE_EXPORT
 bool CSPDirectiveListAllowWasmCodeGeneration(
@@ -109,13 +114,6 @@ bool CSPDirectiveListAllowWasmCodeGeneration(
     ReportingDisposition reporting_disposition,
     ContentSecurityPolicy::ExceptionStatus exception_status,
     const String& content);
-
-CORE_EXPORT
-bool CSPDirectiveListAllowTrustedTypesEval(
-    const network::mojom::blink::ContentSecurityPolicy& csp,
-    ContentSecurityPolicy* policy,
-    ReportingDisposition reporting_disposition,
-    ContentSecurityPolicy::ExceptionStatus exception_status);
 
 CORE_EXPORT
 bool CSPDirectiveListShouldDisableEval(

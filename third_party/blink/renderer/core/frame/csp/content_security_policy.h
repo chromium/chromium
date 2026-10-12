@@ -258,7 +258,6 @@ class CORE_EXPORT ContentSecurityPolicy final
   bool AllowWasmCodeGeneration(ReportingDisposition,
                                ExceptionStatus,
                                const String& script_content);
-  bool AllowTrustedTypesEval(ReportingDisposition, ExceptionStatus);
 
   HashSet<HashAlgorithm> HashesToReport() const;
   void AddHashReportIfNeeded(
