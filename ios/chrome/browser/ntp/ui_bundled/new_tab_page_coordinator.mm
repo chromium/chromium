@@ -1401,6 +1401,16 @@ using ntp_tiles::AimButtonRefactorArm;
   [_safariDataImportExportCoordinator start];
 }
 
+- (void)openNTPBackgroundPhotoPicker {
+  UIViewController* baseVC = [self activeViewController];
+  _customizationCoordinator = [[HomeCustomizationCoordinator alloc]
+      initWithBaseViewController:baseVC
+                         browser:self.browser];
+  _customizationCoordinator.delegate = self;
+  [_customizationCoordinator start];
+  [_customizationCoordinator presentPhotoPicker];
+}
+
 #pragma mark - FeedSignInPromoDelegate
 
 - (void)showSignInUIFromSource:(FeedSignInPromoSource)source {

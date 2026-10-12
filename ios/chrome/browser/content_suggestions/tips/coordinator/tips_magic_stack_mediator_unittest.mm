@@ -16,7 +16,9 @@
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/content_suggestions/tips/coordinator/tips_magic_stack_mediator_delegate.h"
+#import "ios/chrome/browser/content_suggestions/tips/ui/tips_module_audience.h"
 #import "ios/chrome/browser/content_suggestions/tips/ui/tips_module_config.h"
+#import "ios/chrome/browser/content_suggestions/ui/content_suggestions_view_controller_audience.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -96,4 +98,15 @@ TEST_F(TipsMagicStackMediatorTest, CallsRemoveModuleOnDelegate) {
 
   // Verify that the delegate method was called.
   EXPECT_OCMOCK_VERIFY(delegate);
+}
+
+// Tests that the mediator forwards `-didSelectNTPThemePhotoPicker` to its
+// `presentationAudience`.
+TEST_F(TipsMagicStackMediatorTest, ForwardsDidSelectNTPThemePhotoPicker) {
+  id audience = OCMStrictProtocolMock(
+      @protocol(ContentSuggestionsViewControllerAudience));
+  mediator_.presentationAudience = audience;
+  OCMExpect([audience didSelectNTPThemePhotoPicker]);
+  [(id<TipsModuleAudience>)mediator_ didSelectNTPThemePhotoPicker];
+  EXPECT_OCMOCK_VERIFY(audience);
 }

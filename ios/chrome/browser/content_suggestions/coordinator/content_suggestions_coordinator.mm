@@ -866,6 +866,17 @@ using segmentation_platform::TipIdentifier;
   }
 }
 
+- (void)didSelectNTPThemePhotoPicker {
+  [self.delegate openNTPBackgroundPhotoPicker];
+  [self.NTPActionsDelegate tipsOpened];
+  segmentation_platform::home_modules::HomeModulesCardRegistry* registry =
+      segmentation_platform::SegmentationPlatformServiceFactory::
+          GetHomeCardRegistryForProfile(self.profile);
+  CHECK(registry);
+  registry->NotifyCardInteracted(
+      segmentation_platform::kNTPThemeEphemeralModule);
+}
+
 #pragma mark - MagicStackCollectionViewAudience
 
 - (void)didTapMagicStackEditButton {

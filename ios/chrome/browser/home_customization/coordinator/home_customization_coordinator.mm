@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/google/model/google_logo_service_factory.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_background_configuration_mediator.h"
+#import "ios/chrome/browser/home_customization/coordinator/home_customization_background_photo_picker_coordinator.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_background_picker_action_sheet_coordinator.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_delegate.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_mediator.h"
@@ -65,10 +66,14 @@ CGFloat const kSheetCornerRadius = 30;
     HomeCustomizationBackgroundPickerPresentationDelegate,
     HomeCustomizationMainViewControllerDelegate,
     HomeCustomizationSearchEngineLogoMediatorProvider,
+    HomeCustomizationBackgroundPhotoPickerCoordinatorDelegate,
     UISheetPresentationControllerDelegate> {
   // Displays the background picker action sheet.
   HomeCustomizationBackgroundPickerActionSheetCoordinator*
       _backgroundPickerActionSheetCoordinator;
+
+  // Displays the photo picker for user-uploaded backgrounds.
+  HomeCustomizationBackgroundPhotoPickerCoordinator* _photoPickerCoordinator;
 
   // Holds strong references to all active SearchEngineLogoMediator instances.
   // This ensures that each mediator remains alive long enough to complete its
@@ -212,6 +217,8 @@ CGFloat const kSheetCornerRadius = 30;
   }
 
   [self dismissBackgroundPickerActionSheet];
+  [_photoPickerCoordinator stop];
+  _photoPickerCoordinator = nil;
 
   for (SearchEngineLogoMediator* mediator in _activeSearchEngineLogoMediator
            .allValues) {
@@ -267,6 +274,19 @@ CGFloat const kSheetCornerRadius = 30;
 
 - (void)scrollMainPageToBottom {
   self.mainViewController.shouldScrollToBottomOnPresentation = YES;
+}
+
+- (void)presentPhotoPicker {
+  if (_photoPickerCoordinator) {
+    [_photoPickerCoordinator stop];
+  }
+  _photoPickerCoordinator =
+      [[HomeCustomizationBackgroundPhotoPickerCoordinator alloc]
+          initWithBaseViewController:self.currentPageViewController
+                             browser:self.browser];
+  _photoPickerCoordinator.delegate = self;
+  _photoPickerCoordinator.searchEngineLogoMediatorProvider = self;
+  [_photoPickerCoordinator start];
 }
 
 #pragma mark - HomeCustomizationNavigationDelegate
@@ -647,6 +667,25 @@ CGFloat const kSheetCornerRadius = 30;
   // largest could have changed activation state.
   viewController.sheetPresentationController.largestUndimmedDetentIdentifier =
       [self currentLargestUndimmedDetentIdentifier];
+}
+
+#pragma mark - HomeCustomizationBackgroundPhotoPickerCoordinatorDelegate
+
+- (void)photoPickerCoordinatorDidCancel:
+    (HomeCustomizationBackgroundPhotoPickerCoordinator*)coordinator {
+  [_photoPickerCoordinator stop];
+  _photoPickerCoordinator = nil;
+  [self.delegate dismissCustomizationMenu];
+}
+
+- (void)photoPickerCoordinatorDidFinish:
+    (HomeCustomizationBackgroundPhotoPickerCoordinator*)coordinator {
+  [_photoPickerCoordinator stop];
+  _photoPickerCoordinator = nil;
+  if (_backgroundConfigurationMediator.themeHasChanged) {
+    [self schedulePhotoNotSyncedSnackbarOnDismiss];
+  }
+  [self.delegate dismissCustomizationMenu];
 }
 
 @end

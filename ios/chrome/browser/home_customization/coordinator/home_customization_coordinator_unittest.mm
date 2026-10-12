@@ -13,7 +13,9 @@
 #import "components/sync/test/fake_sync_change_processor.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/home_customization/coordinator/home_customization_background_photo_picker_coordinator.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_coordinator+Testing.h"
+#import "ios/chrome/browser/home_customization/coordinator/home_customization_delegate.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service_factory.h"
 #import "ios/chrome/browser/home_customization/model/home_customization_seed_colors.h"
@@ -211,4 +213,27 @@ TEST_F(HomeCustomizationCoordinatorUnitTest,
   [coordinator_ stop];
   EXPECT_FALSE(tips_manager->WasSignalFired(
       segmentation_platform::tips_manager::signals::kNTPBackgroundSelected));
+}
+
+// Tests that presenting and finishing or canceling the photo picker notifies
+// the delegate to dismiss the customization menu.
+TEST_F(HomeCustomizationCoordinatorUnitTest, TestPresentPhotoPicker) {
+  id mock_delegate =
+      OCMStrictProtocolMock(@protocol(HomeCustomizationDelegate));
+  coordinator_.delegate = mock_delegate;
+  [coordinator_ start];
+  [coordinator_ presentPhotoPicker];
+  id<HomeCustomizationBackgroundPhotoPickerCoordinatorDelegate>
+      photo_picker_delegate = static_cast<
+          id<HomeCustomizationBackgroundPhotoPickerCoordinatorDelegate>>(
+          coordinator_);
+  OCMExpect([mock_delegate dismissCustomizationMenu]);
+  [photo_picker_delegate photoPickerCoordinatorDidFinish:nil];
+  EXPECT_OCMOCK_VERIFY(mock_delegate);
+  [coordinator_ presentPhotoPicker];
+  OCMExpect([mock_delegate dismissCustomizationMenu]);
+  [photo_picker_delegate photoPickerCoordinatorDidCancel:nil];
+  EXPECT_OCMOCK_VERIFY(mock_delegate);
+  OCMExpect([mock_snackbar_commands_handler_ dismissAllSnackbars]);
+  [coordinator_ stop];
 }

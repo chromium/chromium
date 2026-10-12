@@ -32,6 +32,10 @@ class GURL;
 // Opens the Safari Data import instructions.
 - (void)openSafariDataImport;
 
+// Opens the photo picker for selecting a custom NTP background from the
+// device's photo library.
+- (void)openNTPBackgroundPhotoPicker;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_COORDINATOR_CONTENT_SUGGESTIONS_DELEGATE_H_

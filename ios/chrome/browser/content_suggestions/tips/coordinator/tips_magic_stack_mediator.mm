@@ -131,6 +131,10 @@ using segmentation_platform::TipIdentifier;
   [self.presentationAudience didSelectTip:tip];
 }
 
+- (void)didSelectNTPThemePhotoPicker {
+  [self.presentationAudience didSelectNTPThemePhotoPicker];
+}
+
 #pragma mark - Private
 
 // Fetches the product image for the most recently subscribed product from
