@@ -37,22 +37,22 @@
 #rail {
   align-items: center;
   box-sizing: border-box;
-  display: flex;
+  display: inline-flex;
   flex-direction: column;
-  gap: 61px;
+  gap: 12px;
   height: 100%;
-  padding: 30px 18px 0 18px;
-  width: var(--threads-rail-width, 76px);
+  padding: 24px 12px 20px 12px;
 }
 
 cr-icon-button {
   --cr-icon-button-icon-size: 24px;
-  --cr-icon-button-size: 48px;
+  --cr-icon-button-size: 40px;
   --cr-icon-button-focus-outline-color: var(--threads-rail-focus-outline-color);
   --cr-icon-button-fill-color:
     var(--color-new-tab-page-threads-rail-icon-button);
+  align-items: center;
+  border-radius: 12px;
   display: flex;
   justify-content: center;
-  align-items: center;
   margin: 0;
 }

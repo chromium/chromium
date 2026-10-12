@@ -504,7 +504,7 @@ void AddNewTabPageColorMixer(ui::ColorProvider* provider,
   mixer[kColorNewTabFooterLogoBackground] = {SK_ColorWHITE};
 
   /* NewTabPageThreadsRail */
-  mixer[kColorNewTabPageThreadsRailBackground] = {kColorToolbar};
+  mixer[kColorNewTabPageThreadsRailBackground] = {ui::kColorSysBaseContainer};
   mixer[kColorNewTabPageThreadsRailIconButton] = {ui::kColorSysOnSurfaceSubtle};
 }
 
