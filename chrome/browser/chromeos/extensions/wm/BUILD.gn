@@ -20,12 +20,11 @@ source_set("wm") {
     "wm_desks_private_feature_ash.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//ash",
     "//base",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/common/extensions/api",
     "//components/keyed_service/content",
     "//content/public/browser",

@@ -15,15 +15,15 @@ static_library("wallpaper_handlers") {
     "wallpaper_prefs.cc",
     "wallpaper_prefs.h",
   ]
-
+  public_deps = [ "//components/signin/public/identity_manager" ]
   deps = [
     "//ash",
     "//ash/webui/personalization_app/mojom",
     "//base",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles",
     "//chromeos/ash/components/signin:identity_manager_provider",
     "//components/application_locale_storage",
+    "//components/signin/public/base",
     "//content/public/browser",
     "//services/network/public/cpp",
   ]

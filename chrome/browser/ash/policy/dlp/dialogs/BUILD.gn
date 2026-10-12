@@ -15,9 +15,7 @@ static_library("dialogs") {
     "files_policy_warn_dialog.cc",
     "files_policy_warn_dialog.h",
   ]
-
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
+  public_deps = [ "//chrome/browser/enterprise" ]
   deps = [
     "//ash",
     "//ash/public/cpp",
@@ -27,8 +25,13 @@ static_library("dialogs") {
     "//chrome/browser/chromeos/policy/dlp",
     "//chrome/browser/chromeos/policy/dlp/dialogs",
     "//chrome/common:chrome_features",
+    "//components/enterprise/common/proto:connectors_proto",
     "//components/enterprise/data_controls/core/browser",
+    "//components/services/quarantine/public/mojom",
+    "//components/services/storage/public/mojom",
     "//components/strings:components_strings",
+    "//content/common:buildflags",
+    "//content/public/common:interfaces",
     "//ui/base",
     "//ui/base:types",
     "//ui/base/metadata",
@@ -37,13 +40,6 @@ static_library("dialogs") {
     "//ui/gfx/geometry",
     "//ui/views",
     "//url",
-
-    # TODO: Use //chrome/browser instead after fixing cyclic dependency.
-    "//components/enterprise/common/proto:connectors_proto",
-    "//components/services/quarantine/public/mojom",
-    "//components/services/storage/public/mojom",
-    "//content/common:buildflags",
-    "//content/public/common:interfaces",
   ]
 }
 

@@ -77,7 +77,6 @@ static_library("apps") {
     "//ash/webui/shimless_rma",
     "//ash/webui/shortcut_customization_ui:url_constants",
     "//base",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/policy:policy_util",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications",

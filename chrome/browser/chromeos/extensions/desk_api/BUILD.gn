@@ -12,12 +12,11 @@ static_library("desk_api") {
     "desk_api_extension_manager_factory.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//ash/constants",
     "//base",
     "//chrome/browser:resources",
+    "//chrome/browser/enterprise",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chrome/common:constants",

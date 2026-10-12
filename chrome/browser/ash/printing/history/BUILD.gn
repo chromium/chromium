@@ -30,6 +30,7 @@ static_library("history") {
 
   deps = [
     ":print_job_info_proto",
+    "//ash/constants",
     "//chrome/browser/printing",
     "//chrome/browser/profiles",
     "//chrome/common:constants",
@@ -51,10 +52,7 @@ static_library("history") {
     deps += [ "//chrome/browser/chromeos/printing" ]
   }
 
-  public_deps = [
-    "//chrome/browser:browser_public_dependencies",
-    "//printing",
-  ]
+  public_deps = [ "//printing" ]
 }
 
 source_set("unit_tests") {

@@ -17,13 +17,13 @@ static_library("uploading") {
     "upload_job_impl.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
+    "//ash/constants",
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/device_identity",
+    "//chrome/browser/policy",
     "//chrome/browser/profiles:profile_manager",
     "//chrome/common",
     "//chrome/common:non_code_constants",

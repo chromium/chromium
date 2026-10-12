@@ -13,15 +13,17 @@ static_library("component_extension_content_settings") {
     "component_extension_content_settings_provider.cc",
     "component_extension_content_settings_provider.h",
   ]
-
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
+  public_deps = [
+    "//components/content_settings/core/browser",
+    "//extensions/browser",
+  ]
   deps = [
     "//base",
     "//chrome/browser/profiles:profile",
     "//components/content_settings/core/common",
     "//components/keyed_service/content",
     "//components/keyed_service/core",
+    "//content/public/browser",
     "//extensions/common",
     "//url",
   ]

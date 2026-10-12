@@ -14,7 +14,6 @@ static_library("release_notes") {
 
   public_deps = [
     "//base",
-    "//chrome/browser:browser_public_dependencies",
     "//chromeos/ash/components/network",
     "//components/session_manager/core",
   ]
@@ -28,6 +27,7 @@ static_library("release_notes") {
     "//chrome/app:generated_resources",
     "//chrome/app:generated_resources_grit",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/policy",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:chrome_pages",
     "//chrome/common:constants",

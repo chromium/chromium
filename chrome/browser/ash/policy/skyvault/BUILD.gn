@@ -41,14 +41,13 @@ static_library("skyvault") {
     "waitable_scoped_temp_dir.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//ash/constants",
     "//ash/public/cpp",
     "//ash/resources/vector_icons",
     "//ash/strings",
     "//base",
+    "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/file_manager",

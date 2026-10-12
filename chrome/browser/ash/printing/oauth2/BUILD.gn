@@ -37,6 +37,7 @@ static_library("oauth2") {
   ]
 
   deps = [
+    "//ash/constants",
     "//chrome/browser:browser_process",
     "//chrome/browser/sync:factories",
     "//chrome/browser/ui:chrome_web_modal_dialog_manager_delegate",
@@ -51,7 +52,6 @@ static_library("oauth2") {
   ]
 
   public_deps = [
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser:primitives",
     "//chrome/browser/profiles:profile",
     "//components/sync/model",

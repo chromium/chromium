@@ -9,7 +9,7 @@ static_library("power_ui") {
     "power_ui.cc",
     "power_ui.h",
   ]
-
+  public_deps = [ "//ash/constants" ]
   deps = [
     "//ash/strings",
     "//base",
