@@ -725,16 +725,6 @@ public abstract class BrowserServicesIntentDataProvider {
         return ACTIVITY_SIDE_SHEET_POSITION_END;
     }
 
-    /** Return whether omnibox is allowed to be displayed in the CCT. */
-    public boolean isInteractiveOmniboxAllowed() {
-        return false;
-    }
-
-    /** Return whether omnibox should be enabled for the calling package. */
-    public boolean isInteractiveOmniboxEnabled() {
-        return false;
-    }
-
     /**
      * Return the target network handle {@link android.net.Network#getNetworkHandle} that loads
      * associated with this intent must use. Defaults to {@code NetId.INVALID}, in which case we let
