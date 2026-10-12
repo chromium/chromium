@@ -37,6 +37,7 @@ import type {InputState} from '//resources/mojo/components/omnibox/composebox/co
 import {OmniboxEverywhereBrowserProxyImpl} from './browser_proxy.js';
 import {getCss} from './omnibox.css.js';
 import {getHtml} from './omnibox.html.js';
+import type {OmniboxEverywhereProfileIconElement} from './profile_icon.js';
 
 
 export interface OmniboxEverywhereOmniboxElement {
@@ -44,6 +45,7 @@ export interface OmniboxEverywhereOmniboxElement {
     input: SearchboxInputElement,
     inputWrapper: HTMLElement,
     matches: SearchboxDropdownElement,
+    profileIcon: OmniboxEverywhereProfileIconElement,
   };
 }
 
@@ -614,7 +616,7 @@ export class OmniboxEverywhereOmniboxElement extends
   }
 
   override onInputWrapperFocusout(e: FocusEvent) {
-    if (this.isContextMenuOpen) {
+    if (this.isContextMenuOpen || this.$.profileIcon.isMenuOpen) {
       return;
     }
     super.onInputWrapperFocusout(e);

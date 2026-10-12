@@ -1223,15 +1223,18 @@ IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest,
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kAvatarUpdatedEvent);
 
   // 2. Compute the initial placeholder avatar data URL.
-  gfx::Image initial_icon =
-      profiles::GetSizedAvatarIcon(entry->GetAvatarIcon(), 48, 48);
+  gfx::Image initial_icon = profiles::GetSizedAvatarIcon(
+      entry->GetAvatarIcon(OmniboxEverywhereUI::kProfileAvatarSizePx),
+      OmniboxEverywhereUI::kProfileAvatarSizePx,
+      OmniboxEverywhereUI::kProfileAvatarSizePx);
   const std::string initial_avatar_data_url =
       webui::GetBitmapDataUrl(initial_icon.AsBitmap());
 
-  // 3. Create a unique 48x48 GAIA avatar image (solid red) that will be
+  // 3. Create a unique GAIA avatar image (solid red) that will be
   // delivered when disk loading finishes.
   SkBitmap gaia_bitmap;
-  gaia_bitmap.allocN32Pixels(48, 48);
+  gaia_bitmap.allocN32Pixels(OmniboxEverywhereUI::kProfileAvatarSizePx,
+                             OmniboxEverywhereUI::kProfileAvatarSizePx);
   gaia_bitmap.eraseColor(SK_ColorRED);
   gfx::Image gaia_image = gfx::Image::CreateFrom1xBitmap(gaia_bitmap);
   const std::string expected_gaia_avatar_data_url =

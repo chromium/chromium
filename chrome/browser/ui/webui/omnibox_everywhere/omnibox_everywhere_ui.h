@@ -74,6 +74,8 @@ class OmniboxEverywhereUI
       public ContextualSearchboxScreenshareController::Delegate,
       public ui::SimpleMenuModel::Delegate {
  public:
+  static constexpr int kProfileAvatarSizePx = 96;
+
   explicit OmniboxEverywhereUI(content::WebUI* web_ui);
   OmniboxEverywhereUI(const OmniboxEverywhereUI&) = delete;
   OmniboxEverywhereUI& operator=(const OmniboxEverywhereUI&) = delete;

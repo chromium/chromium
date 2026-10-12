@@ -117,7 +117,7 @@ const base::FeatureParam<bool>
 // Controls showing the profile picker menu on profile avatar click in
 // OmniboxEverywhere.
 const base::FeatureParam<bool> kOmniboxEverywhereProfilePickerParam{
-    &kOmniboxEverywhere, "ProfilePicker", false};
+    &kOmniboxEverywhere, "ProfilePicker", true};
 // Controls showing most visited tiles in OmniboxEverywhere.
 const base::FeatureParam<bool> kOmniboxEverywhereMostVisitedParam{
     &kOmniboxEverywhere, "MostVisited", true};

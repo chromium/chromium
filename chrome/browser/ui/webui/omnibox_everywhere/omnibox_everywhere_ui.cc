@@ -255,8 +255,9 @@ OmniboxEverywhereUI::OmniboxEverywhereUI(content::WebUI* web_ui)
             ->GetProfileAttributesStorage()
             .GetProfileAttributesWithPath(profile_->GetPath());
     if (entry) {
-      gfx::Image icon =
-          profiles::GetSizedAvatarIcon(entry->GetAvatarIcon(), 48, 48);
+      gfx::Image icon = profiles::GetSizedAvatarIcon(
+          entry->GetAvatarIcon(kProfileAvatarSizePx), kProfileAvatarSizePx,
+          kProfileAvatarSizePx);
       profile_avatar_url = webui::GetBitmapDataUrl(icon.AsBitmap());
 
       std::u16string gaia_name = entry->GetGAIANameToDisplay();
@@ -304,6 +305,7 @@ OmniboxEverywhereUI::OmniboxEverywhereUI(content::WebUI* web_ui)
       {"screenshotWindowLabel", IDS_OMNIBOX_EVERYWHERE_WINDOW},
       {"searchBoxHintAskOrType", IDS_NTP_SEARCH_BOX_PLACEHOLDER_ASK_OR_TYPE},
       {"shareScreenshotLabel", IDS_OMNIBOX_EVERYWHERE_SHARE_SCREENSHOT},
+      {"switchProfileLabel", IDS_OMNIBOX_EVERYWHERE_SWITCH_PROFILE},
   };
   source->AddLocalizedStrings(kStrings);
 

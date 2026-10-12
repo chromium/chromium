@@ -35,9 +35,12 @@ export function getHtml(this: OmniboxEverywhereProfileIconElement) {
           </div>
         </div>
         <div class="profile-card-divider"></div>
-        <button class="dropdown-item profile-card-switch-button" @click="${this.onSwitchProfileClick_}">
+        <button class="dropdown-item profile-card-switch-button"
+            @click="${this.onSwitchProfileClick_}">
           <div class="profile-card-switch-icon" aria-hidden="true"></div>
-          <span class="profile-card-switch-label">Switch Profile</span>
+          <span class="profile-card-switch-label">
+            ${this.i18n('switchProfileLabel')}
+          </span>
         </button>
       </div>
     </cr-action-menu>

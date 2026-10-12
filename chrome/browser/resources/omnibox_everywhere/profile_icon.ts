@@ -20,6 +20,7 @@ import {getHtml} from './profile_icon.html.js';
 
 export interface OmniboxEverywhereProfileIconElement {
   $: {
+    profileContainer: HTMLButtonElement,
     profileMenu: CrActionMenuElement,
   };
 }
@@ -70,6 +71,19 @@ export class OmniboxEverywhereProfileIconElement extends
   private callbackRouter_: PageCallbackRouter =
       SearchboxBrowserProxy.getInstance().callbackRouter;
   private updateProfileInfoListenerId_: number|null = null;
+  private isOpeningMenu_: boolean = false;
+
+  get isMenuOpen(): boolean {
+    return this.isOpeningMenu_ || this.$.profileMenu.open;
+  }
+
+  // Closes the unbounded menu when Loomnibox hides in place (keeping the DOM
+  // connected without firing disconnectedCallback).
+  private onVisibilityChange_ = () => {
+    if (document.hidden && this.isMenuOpen) {
+      this.$.profileMenu.close();
+    }
+  };
 
   override connectedCallback() {
     super.connectedCallback();
@@ -80,14 +94,21 @@ export class OmniboxEverywhereProfileIconElement extends
               this.profileName_ = name;
               this.profileEmail_ = email;
             });
+    document.addEventListener('visibilitychange', this.onVisibilityChange_);
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+    // Closes the unbounded menu when <omnibox-everywhere-omnibox> unmounts
+    // while the document remains visible (e.g. switching to Composebox).
+    if (this.isMenuOpen) {
+      this.$.profileMenu.close();
+    }
     if (this.updateProfileInfoListenerId_ !== null) {
       this.callbackRouter_.removeListener(this.updateProfileInfoListenerId_);
       this.updateProfileInfoListenerId_ = null;
     }
+    document.removeEventListener('visibilitychange', this.onVisibilityChange_);
   }
 
   protected getProfileTooltip_(): string {
@@ -108,25 +129,32 @@ export class OmniboxEverywhereProfileIconElement extends
         .join(' ');
   }
 
-  protected onProfileIconClick_() {
+  protected async onProfileIconClick_() {
     if (!this.profilePickerEnabled_) {
       return;
     }
-    const anchor =
-        this.shadowRoot?.querySelector<HTMLElement>('#profileContainer');
-    if (anchor && this.$.profileMenu) {
-      this.$.profileMenu.showAt(anchor, {
+    if (this.isMenuOpen) {
+      this.$.profileMenu.close();
+      return;
+    }
+    await this.$.profileMenu.setUnbounded();
+    if (!this.isConnected || this.isMenuOpen) {
+      return;
+    }
+    this.isOpeningMenu_ = true;
+    try {
+      this.$.profileMenu.showAt(this.$.profileContainer, {
         anchorAlignmentX: AnchorAlignment.BEFORE_END,
         anchorAlignmentY: AnchorAlignment.AFTER_END,
       });
+    } finally {
+      this.isOpeningMenu_ = false;
     }
   }
 
   protected onSwitchProfileClick_() {
-    if (this.$.profileMenu) {
-      this.$.profileMenu.close();
-    }
     this.searchboxHandler_.openProfilePicker();
+    this.$.profileMenu.close();
   }
 }
 

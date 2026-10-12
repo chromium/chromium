@@ -531,8 +531,10 @@ void OmniboxEverywhereHandler::PushProfileInfo() {
     return;
   }
 
-  gfx::Image icon =
-      profiles::GetSizedAvatarIcon(entry->GetAvatarIcon(), 48, 48);
+  gfx::Image icon = profiles::GetSizedAvatarIcon(
+      entry->GetAvatarIcon(OmniboxEverywhereUI::kProfileAvatarSizePx),
+      OmniboxEverywhereUI::kProfileAvatarSizePx,
+      OmniboxEverywhereUI::kProfileAvatarSizePx);
   std::string profile_avatar_url = webui::GetBitmapDataUrl(icon.AsBitmap());
 
   std::u16string gaia_name = entry->GetGAIAName();

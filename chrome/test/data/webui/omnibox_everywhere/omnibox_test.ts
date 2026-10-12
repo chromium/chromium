@@ -3176,6 +3176,25 @@ suite('OmniboxEverywhereAppTest', () => {
 suite('OmniboxEverywhereProfileIconTest', () => {
   let profileIcon: OmniboxEverywhereProfileIconElement;
   let testProxy: TestSearchboxBrowserProxy;
+  let addedUnboundedStubs = false;
+
+  setup(() => {
+    if (!('showUnboundedElement' in HTMLElement.prototype)) {
+      addedUnboundedStubs = true;
+      Object.assign(HTMLElement.prototype, {
+        showUnboundedElement() {},
+        hideUnboundedElement() {},
+      });
+    }
+  });
+
+  teardown(() => {
+    if (addedUnboundedStubs) {
+      Reflect.deleteProperty(HTMLElement.prototype, 'showUnboundedElement');
+      Reflect.deleteProperty(HTMLElement.prototype, 'hideUnboundedElement');
+      addedUnboundedStubs = false;
+    }
+  });
 
   async function createProfileIcon(profilePickerEnabled: boolean) {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -3184,6 +3203,7 @@ suite('OmniboxEverywhereProfileIconTest', () => {
       profileName: 'Test Profile',
       profileEmail: 'test@example.com',
       profileTooltipHeader: 'Chrome profile',
+      switchProfileLabel: 'Switch Profile',
       omniboxEverywhereProfilePickerEnabled: profilePickerEnabled,
       isEnterpriseProfile: false,
     });
@@ -3253,6 +3273,99 @@ suite('OmniboxEverywhereProfileIconTest', () => {
         profileIcon.shadowRoot.querySelector<HTMLElement>('#enterpriseBadge');
     assertTrue(!!enterpriseBadge);
   });
+
+  test(
+      'opens profile menu in unbounded mode and switches profile', async () => {
+        await createProfileIcon(true);
+        const container = profileIcon.$.profileContainer;
+
+        container.click();
+        await microtasksFinished();
+
+        assertTrue(profileIcon.$.profileMenu.open);
+        assertTrue(
+            profileIcon.$.profileMenu.getDialog().hasAttribute('unbounded'));
+
+        const switchButton =
+            profileIcon.shadowRoot.querySelector<HTMLButtonElement>(
+                '.profile-card-switch-button');
+        assertTrue(!!switchButton);
+
+        switchButton.click();
+        await microtasksFinished();
+
+        assertFalse(profileIcon.$.profileMenu.open);
+        assertEquals(1, testProxy.handler.getCallCount('openProfilePicker'));
+      });
+
+  test('clicking profile icon again closes open profile menu', async () => {
+    await createProfileIcon(true);
+    const container = profileIcon.$.profileContainer;
+
+    container.click();
+    await microtasksFinished();
+    assertTrue(profileIcon.$.profileMenu.open);
+
+    container.click();
+    await microtasksFinished();
+    assertFalse(profileIcon.$.profileMenu.open);
+  });
+
+  test('closes profile menu when document becomes hidden', async () => {
+    await createProfileIcon(true);
+    const container = profileIcon.$.profileContainer;
+
+    container.click();
+    await microtasksFinished();
+    assertTrue(profileIcon.$.profileMenu.open);
+
+    Object.defineProperty(
+        document, 'hidden', {value: true, configurable: true});
+    try {
+      document.dispatchEvent(new Event('visibilitychange'));
+      await microtasksFinished();
+      assertFalse(profileIcon.$.profileMenu.open);
+    } finally {
+      Object.defineProperty(
+          document, 'hidden', {value: false, configurable: true});
+    }
+  });
+
+  test(
+      'does not open profile menu if disconnected while awaiting setUnbounded',
+      async () => {
+        await createProfileIcon(true);
+        const container = profileIcon.$.profileContainer;
+
+        container.click();
+        profileIcon.remove();
+        await microtasksFinished();
+
+        assertFalse(profileIcon.$.profileMenu.open);
+      });
+
+  test(
+      'clicking profile icon keeps dropdown open and opens profile menu',
+      async () => {
+        loadTimeData.overrideValues(
+            {omniboxEverywhereProfilePickerEnabled: true});
+        const omnibox = document.createElement('omnibox-everywhere-omnibox');
+        document.body.appendChild(omnibox);
+        await microtasksFinished();
+
+        omnibox.dropdownIsVisible = true;
+        const embeddedIcon = omnibox.$.profileIcon;
+        const container = embeddedIcon.$.profileContainer;
+
+        container.click();
+        await microtasksFinished();
+
+        assertTrue(omnibox.dropdownIsVisible);
+        assertTrue(embeddedIcon.$.profileMenu.open);
+
+        embeddedIcon.$.profileMenu.close();
+        omnibox.remove();
+      });
 });
 
 suite('OmniboxEverywhereContextMenuTest', () => {
