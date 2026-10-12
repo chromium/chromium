@@ -59,6 +59,7 @@
 #include "third_party/blink/renderer/core/inspector/dev_tools_emulator.h"
 #include "third_party/blink/renderer/core/inspector/devtools_agent.h"
 #include "third_party/blink/renderer/core/inspector/devtools_session.h"
+#include "third_party/blink/renderer/core/inspector/input_visualizer.h"
 #include "third_party/blink/renderer/core/inspector/inspected_frames.h"
 #include "third_party/blink/renderer/core/inspector/inspector_ads_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_animation_agent.h"
@@ -89,6 +90,7 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
@@ -363,7 +365,7 @@ void WebDevToolsAgentImpl::AttachSession(DevToolsSession* session,
   session->CreateAndAppend<InspectorMemoryAgent>(inspected_frames);
   session->CreateAndAppend<InspectorWebMCPAgent>(inspected_frames);
 
-  session->CreateAndAppend<InspectorPageAgent>(
+  InspectorPageAgent* page_agent = session->CreateAndAppend<InspectorPageAgent>(
       inspected_frames, this, resource_content_loader_.Get(),
       session->script_to_evaluate_on_load(), session->InjectedScriptManager());
 
@@ -412,6 +414,8 @@ void WebDevToolsAgentImpl::AttachSession(DevToolsSession* session,
 
   network_agents_.insert(session, network_agent);
   overlay_agents_.insert(session, overlay_agent);
+  page_agents_.insert(session, page_agent);
+  UpdateInputVisualizationState();
 }
 
 // static
@@ -444,6 +448,8 @@ void WebDevToolsAgentImpl::Trace(Visitor* visitor) const {
   visitor->Trace(agent_);
   visitor->Trace(network_agents_);
   visitor->Trace(overlay_agents_);
+  visitor->Trace(page_agents_);
+  visitor->Trace(input_visualizer_);
   visitor->Trace(web_local_frame_impl_);
   visitor->Trace(probe_sink_);
   visitor->Trace(resource_content_loader_);
@@ -457,6 +463,10 @@ void WebDevToolsAgentImpl::WillBeDestroyed() {
   DCHECK(web_local_frame_impl_->GetFrame());
   DCHECK(inspected_frames_->Root()->View());
   agent_->Dispose();
+  if (input_visualizer_) {
+    input_visualizer_->Shutdown();
+    input_visualizer_ = nullptr;
+  }
   resource_content_loader_->Dispose();
 }
 
@@ -471,6 +481,8 @@ void WebDevToolsAgentImpl::BindReceiver(
 void WebDevToolsAgentImpl::DetachSession(DevToolsSession* session) {
   network_agents_.erase(session);
   overlay_agents_.erase(session);
+  page_agents_.erase(session);
+  UpdateInputVisualizationState();
   if (!network_agents_.size()) {
     Thread::Current()->RemoveTaskObserver(this);
     web_local_frame_impl_->OnDevToolsSessionConnectionChanged(
@@ -560,6 +572,29 @@ bool WebDevToolsAgentImpl::IsPausedForNewWindow() {
   return is_paused_for_new_window_shown_;
 }
 
+void WebDevToolsAgentImpl::UpdateInputVisualizationState() {
+  bool clicks_enabled = false;
+  for (auto& it : page_agents_) {
+    if (it.value->IsInputVisualizationClicksEnabled()) {
+      clicks_enabled = true;
+      break;
+    }
+  }
+  if (clicks_enabled) {
+    if (!input_visualizer_) {
+      if (LocalFrame* frame = inspected_frames_->Root()) {
+        input_visualizer_ = MakeGarbageCollected<InputVisualizer>(*frame);
+      }
+    }
+    if (input_visualizer_) {
+      input_visualizer_->SetClicksEnabled(true);
+    }
+  } else if (input_visualizer_) {
+    input_visualizer_->Shutdown();
+    input_visualizer_ = nullptr;
+  }
+}
+
 bool WebDevToolsAgentImpl::IsInspectorLayer(const cc::Layer* layer) {
   for (auto& it : overlay_agents_) {
     if (it.value->IsInspectorLayer(layer))
@@ -578,11 +613,27 @@ String WebDevToolsAgentImpl::EvaluateInOverlayForTesting(const String& script) {
 void WebDevToolsAgentImpl::UpdateOverlaysPrePaint() {
   for (auto& it : overlay_agents_)
     it.value->UpdatePrePaint();
+  if (input_visualizer_) {
+    base::TimeTicks frame_time;
+    if (LocalFrame* frame = inspected_frames_->Root()) {
+      if (Page* page = frame->GetPage()) {
+        frame_time = page->Animator().Clock().CurrentTime();
+      }
+    }
+    if (frame_time.is_null()) {
+      frame_time = base::TimeTicks::Now();
+    }
+    input_visualizer_->ServiceScriptedAnimations(frame_time);
+    input_visualizer_->UpdatePrePaint();
+  }
 }
 
 void WebDevToolsAgentImpl::PaintOverlays(GraphicsContext& context) {
   for (auto& it : overlay_agents_)
     it.value->PaintOverlay(context);
+  if (input_visualizer_) {
+    input_visualizer_->Paint(context);
+  }
 }
 
 void WebDevToolsAgentImpl::DispatchBufferedTouchEvents() {
@@ -601,6 +652,9 @@ WebInputEventResult WebDevToolsAgentImpl::HandleInputEvent(
     auto result = it.value->HandleInputEvent(event);
     if (result != WebInputEventResult::kNotHandled)
       return result;
+  }
+  if (input_visualizer_) {
+    input_visualizer_->HandleInputEvent(event);
   }
   return WebInputEventResult::kNotHandled;
 }

@@ -512,6 +512,8 @@ InspectorPageAgent::InspectorPageAgent(
                                         /*default_value=*/false),
       lifecycle_events_enabled_(&agent_state_, /*default_value=*/false),
       bypass_csp_enabled_(&agent_state_, /*default_value=*/false),
+      input_visualization_clicks_enabled_(&agent_state_,
+                                          /*default_value=*/false),
       standard_font_size_(&agent_state_, /*default_value=*/0),
       fixed_font_size_(&agent_state_, /*default_value=*/0),
       script_font_families_cbor_(&agent_state_, std::vector<uint8_t>()),
@@ -524,6 +526,9 @@ void InspectorPageAgent::Restore() {
   }
   if (bypass_csp_enabled_.Get()) {
     setBypassCSP(true);
+  }
+  if (input_visualization_clicks_enabled_.Get()) {
+    setInputVisualization(/*clicks=*/true);
   }
   LocalFrame* frame = inspected_frames_->Root();
   auto* settings = frame->GetSettings();
@@ -560,6 +565,9 @@ protocol::Response InspectorPageAgent::enable(
 }
 
 protocol::Response InspectorPageAgent::disable() {
+  if (input_visualization_clicks_enabled_.Get()) {
+    setInputVisualization(/*clicks=*/false);
+  }
   agent_state_.ClearAllFields();
   pending_isolated_worlds_.clear();
   script_injection_on_load_once_ = {};
@@ -891,6 +899,15 @@ protocol::Response InspectorPageAgent::setBypassCSP(bool enabled) {
   LocalFrame* frame = inspected_frames_->Root();
   frame->GetSettings()->SetBypassCSP(enabled);
   bypass_csp_enabled_.Set(enabled);
+  return protocol::Response::Success();
+}
+
+protocol::Response InspectorPageAgent::setInputVisualization(
+    std::optional<bool> clicks) {
+  input_visualization_clicks_enabled_.Set(clicks.value_or(false));
+  if (client_) {
+    client_->UpdateInputVisualizationState();
+  }
   return protocol::Response::Success();
 }
 
@@ -2003,6 +2020,9 @@ void InspectorPageAgent::Trace(Visitor* visitor) const {
 }
 
 void InspectorPageAgent::Dispose() {
+  if (input_visualization_clicks_enabled_.Get()) {
+    setInputVisualization(/*clicks=*/false);
+  }
   InspectorBaseAgent::Dispose();
   injected_script_manager_ = nullptr;
 }

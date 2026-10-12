@@ -76,6 +76,7 @@ class CORE_EXPORT InspectorPageAgent final
     virtual void PageLayoutInvalidated(bool resized) {}
     virtual void WaitForDebugger() {}
     virtual bool IsPausedForNewWindow() { return false; }
+    virtual void UpdateInputVisualizationState() {}
   };
 
   enum ResourceType {
@@ -165,6 +166,10 @@ class CORE_EXPORT InspectorPageAgent final
   protocol::Response setDocumentContent(const String& frame_id,
                                         const String& html) override;
   protocol::Response setBypassCSP(bool enabled) override;
+  protocol::Response setInputVisualization(std::optional<bool> clicks) override;
+  bool IsInputVisualizationClicksEnabled() const {
+    return input_visualization_clicks_enabled_.Get();
+  }
 
   protocol::Response getPermissionsPolicyState(
       const String& frame_id,
@@ -339,6 +344,7 @@ class CORE_EXPORT InspectorPageAgent final
   InspectorAgentState::Boolean enable_file_chooser_opened_event_;
   InspectorAgentState::Boolean lifecycle_events_enabled_;
   InspectorAgentState::Boolean bypass_csp_enabled_;
+  InspectorAgentState::Boolean input_visualization_clicks_enabled_;
   InspectorAgentState::Integer standard_font_size_;
   InspectorAgentState::Integer fixed_font_size_;
   InspectorAgentState::Bytes script_font_families_cbor_;

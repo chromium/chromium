@@ -48,6 +48,7 @@ namespace blink {
 
 class ClientMessageLoopAdapter;
 class GraphicsContext;
+class InputVisualizer;
 class InspectedFrames;
 class InspectorNetworkAgent;
 class InspectorOverlayAgent;
@@ -76,7 +77,9 @@ class CORE_EXPORT WebDevToolsAgentImpl final
   void MainThreadDebuggerPaused();
   void MainThreadDebuggerResumed();
 
-  bool HasOverlays() const { return !overlay_agents_.empty(); }
+  bool HasOverlays() const {
+    return !overlay_agents_.empty() || input_visualizer_;
+  }
   void UpdateOverlaysPrePaint();
   void PaintOverlays(GraphicsContext&);
 
@@ -113,6 +116,7 @@ class CORE_EXPORT WebDevToolsAgentImpl final
   void PageLayoutInvalidated(bool resized) override;
   void WaitForDebugger() override;
   bool IsPausedForNewWindow() override;
+  void UpdateInputVisualizationState() override;
 
   // InspectorLayerTreeAgent::Client implementation.
   bool IsInspectorLayer(const cc::Layer*) override;
@@ -126,6 +130,8 @@ class CORE_EXPORT WebDevToolsAgentImpl final
       network_agents_;
   HeapHashMap<Member<DevToolsSession>, Member<InspectorOverlayAgent>>
       overlay_agents_;
+  HeapHashMap<Member<DevToolsSession>, Member<InspectorPageAgent>> page_agents_;
+  Member<InputVisualizer> input_visualizer_;
   Member<WebLocalFrameImpl> web_local_frame_impl_;
   Member<CoreProbeSink> probe_sink_;
   Member<InspectorResourceContentLoader> resource_content_loader_;
