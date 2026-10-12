@@ -5356,6 +5356,7 @@ enum WebFeature {
   kOpaqueRangeDisconnect = 6039,
   kHTMLSelectedContentElement = 6040,
   kWebTransportExportKeyingMaterial = 6041,
+  kOfflineAudioContextClose = 6042,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

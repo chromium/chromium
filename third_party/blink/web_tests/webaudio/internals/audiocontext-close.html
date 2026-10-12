@@ -207,13 +207,13 @@
             description: 'Test offline context'
           },
           function(task, should) {
-            // For an offline context, verify that close is not defined.
             should(
                 () => offline = new OfflineAudioContext(1, 1000, 48000),
                 'offline = new OfflineAudioContext(1, 1000, 48000)')
                 .notThrow();
             should(offline.state, 'offline.state').beEqualTo('suspended');
-            should(offline.close, 'offline.close').beEqualTo(undefined);
+            should(typeof offline.close, 'typeof offline.close')
+                .beEqualTo('function');
             task.done();
           });
 

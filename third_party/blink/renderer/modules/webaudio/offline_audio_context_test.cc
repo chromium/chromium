@@ -238,6 +238,60 @@ TEST_F(OfflineAudioContextTest, IndefiniteChunkSizeRoundingOverflow) {
             "The requested chunk size is too large.");
 }
 
+TEST_F(OfflineAudioContextTest, CloseBeforeRendering) {
+  ScopedOfflineAudioContextIncrementalRenderingForTest scoped_feature(true);
+  V8TestingScope scope;
+
+  OfflineAudioContextOptions* options = OfflineAudioContextOptions::Create();
+  options->setNumberOfChannels(1);
+  options->setSampleRate(44100.0f);
+  OfflineAudioContext* context = OfflineAudioContext::Create(
+      GetFrame().DomWindow(), options, ASSERT_NO_EXCEPTION);
+  ASSERT_TRUE(context);
+
+  ScriptPromiseTester close_tester(
+      scope.GetScriptState(),
+      context->closeContext(scope.GetScriptState(), ASSERT_NO_EXCEPTION));
+  close_tester.WaitUntilSettled();
+
+  EXPECT_TRUE(close_tester.IsFulfilled());
+  EXPECT_EQ(context->ContextState(), V8AudioContextState::Enum::kClosed);
+}
+
+TEST_F(OfflineAudioContextTest, CloseWhileRenderingIsSuspended) {
+  ScopedOfflineAudioContextIncrementalRenderingForTest scoped_feature(true);
+  V8TestingScope scope;
+
+  OfflineAudioContextOptions* options = OfflineAudioContextOptions::Create();
+  options->setNumberOfChannels(1);
+  options->setSampleRate(44100.0f);
+  OfflineAudioContext* context = OfflineAudioContext::Create(
+      GetFrame().DomWindow(), options, ASSERT_NO_EXCEPTION);
+  ASSERT_TRUE(context);
+
+  ScriptPromiseTester suspend_tester(
+      scope.GetScriptState(),
+      context->suspendContext(scope.GetScriptState(), 0.0,
+                              ASSERT_NO_EXCEPTION));
+  ScriptPromiseTester render_tester(
+      scope.GetScriptState(),
+      context->startOfflineRendering(scope.GetScriptState(), 128,
+                                     ASSERT_NO_EXCEPTION));
+  suspend_tester.WaitUntilSettled();
+  ASSERT_TRUE(suspend_tester.IsFulfilled());
+  ASSERT_EQ(context->ContextState(), V8AudioContextState::Enum::kSuspended);
+
+  ScriptPromiseTester close_tester(
+      scope.GetScriptState(),
+      context->closeContext(scope.GetScriptState(), ASSERT_NO_EXCEPTION));
+  close_tester.WaitUntilSettled();
+  render_tester.WaitUntilSettled();
+
+  EXPECT_TRUE(close_tester.IsFulfilled());
+  EXPECT_TRUE(render_tester.IsRejected());
+  EXPECT_EQ(context->ContextState(), V8AudioContextState::Enum::kClosed);
+}
+
 TEST_F(OfflineAudioContextTest, MissingLengthWhenIncrementalRenderingDisabled) {
   ScopedOfflineAudioContextIncrementalRenderingForTest scoped_feature(false);
   OfflineAudioContextOptions* options = OfflineAudioContextOptions::Create();

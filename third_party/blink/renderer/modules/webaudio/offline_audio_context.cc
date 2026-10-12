@@ -211,6 +211,7 @@ OfflineAudioContext::~OfflineAudioContext() {
 
 void OfflineAudioContext::Trace(Visitor* visitor) const {
   visitor->Trace(start_rendering_resolvers_);
+  visitor->Trace(close_resolver_);
   visitor->Trace(pending_render_targets_);
   visitor->Trace(scheduled_suspends_);
   BaseAudioContext::Trace(visitor);
@@ -398,8 +399,9 @@ ScriptPromise<IDLUndefined> OfflineAudioContext::suspendContext(
     ExceptionState& exception_state) {
   DCHECK(IsMainThread());
 
-  // If the rendering is finished, reject the promise.
-  if (ContextState() == V8AudioContextState::Enum::kClosed) {
+  // If the rendering is finished or close is in progress, reject the promise.
+  if (IsContextCleared() ||
+      ContextState() == V8AudioContextState::Enum::kClosed) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "the rendering is already finished");
     return EmptyPromise();
@@ -543,8 +545,35 @@ ScriptPromise<IDLUndefined> OfflineAudioContext::resumeContext(
   return ToResolvedUndefinedPromise(script_state);
 }
 
+ScriptPromise<IDLUndefined> OfflineAudioContext::closeContext(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
+  DCHECK(IsMainThread());
+
+  if (IsContextCleared() ||
+      ContextState() == V8AudioContextState::Enum::kClosed) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "cannot close a closed offline context");
+    return EmptyPromise();
+  }
+
+  close_resolver_ = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+      script_state, exception_state.GetContext());
+  close_resolver_->SuppressDetachCheck();
+  ScriptPromise<IDLUndefined> promise = close_resolver_->Promise();
+
+  DestinationHandler().RequestRenderStop();
+  return promise;
+}
+
 void OfflineAudioContext::OnChunkRendered() {
   DCHECK(IsMainThread());
+
+  if (IsContextCleared() ||
+      ContextState() == V8AudioContextState::Enum::kClosed) {
+    return;
+  }
+
   CHECK(GetExecutionContext());
   DCHECK(!start_rendering_resolvers_.empty());
   DCHECK(!pending_render_targets_.empty());
@@ -562,6 +591,15 @@ void OfflineAudioContext::OnChunkRendered() {
   } else if (!pending_render_targets_.empty()) {
     StartNextRender();
   }
+}
+
+void OfflineAudioContext::OnRenderStopped() {
+  DCHECK(IsMainThread());
+  DCHECK(close_resolver_);
+
+  CloseInternal();
+  RejectPendingRenderingResolvers();
+  close_resolver_->Resolve();
 }
 
 bool OfflineAudioContext::IsRenderComplete() const {
@@ -653,6 +691,11 @@ OfflineAudioDestinationHandler& OfflineAudioContext::DestinationHandler() {
 void OfflineAudioContext::ResolveSuspendOnMainThread(size_t frame) {
   DCHECK(IsMainThread());
 
+  if (IsContextCleared() ||
+      ContextState() == V8AudioContextState::Enum::kClosed) {
+    return;
+  }
+
   // Suspend the context first. This will fire onstatechange event.
   SetContextState(V8AudioContextState::Enum::kSuspended);
 
@@ -682,10 +725,16 @@ void OfflineAudioContext::ResolveSuspendOnMainThread(size_t frame) {
 
 void OfflineAudioContext::RejectPendingResolvers() {
   DCHECK(IsMainThread());
+  RejectPendingRenderingResolvers();
+  BaseAudioContext::RejectPendingResolvers();
+}
+
+void OfflineAudioContext::RejectPendingRenderingResolvers() {
+  DCHECK(IsMainThread());
 
   for (auto& resolver : start_rendering_resolvers_) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError, "Audio context is going away"));
+        DOMExceptionCode::kAbortError, "Audio context is going away"));
   }
 
   start_rendering_resolvers_.clear();
@@ -710,8 +759,6 @@ void OfflineAudioContext::RejectPendingResolvers() {
 
     scheduled_suspends_.clear();
   }
-
-  BaseAudioContext::RejectPendingResolvers();
 }
 
 void OfflineAudioContext::DetachPendingResolvers() {
@@ -733,6 +780,10 @@ void OfflineAudioContext::DetachPendingResolvers() {
   start_rendering_resolvers_.clear();
   pending_render_targets_.clear();
 
+  if (close_resolver_) {
+    close_resolver_->SuppressDetachCheck();
+  }
+
   BaseAudioContext::DetachPendingResolvers();
 }
 
@@ -753,7 +804,16 @@ bool OfflineAudioContext::ShouldSuspend() {
 }
 
 bool OfflineAudioContext::HasPendingActivity() const {
-  return !pending_render_targets_.empty();
+  if (ContextState() == V8AudioContextState::Enum::kClosed) {
+    return false;
+  }
+
+  return BaseAudioContext::HasPendingActivity() &&
+         (!pending_render_targets_.empty() || close_resolver_);
+}
+
+bool OfflineAudioContext::IsContextCleared() const {
+  return close_resolver_ || BaseAudioContext::IsContextCleared();
 }
 
 }  // namespace blink

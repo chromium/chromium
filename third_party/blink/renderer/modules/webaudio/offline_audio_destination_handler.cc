@@ -146,6 +146,23 @@ void OfflineAudioDestinationHandler::EnsureOfflineRenderThreadInitialized() {
   PrepareTaskRunnerForRendering();
 }
 
+void OfflineAudioDestinationHandler::RequestRenderStop() {
+  DCHECK(IsMainThread());
+
+  stop_requested_.store(true, std::memory_order_relaxed);
+
+  if (!render_thread_task_runner_) {
+    NotifyRenderStopped();
+    return;
+  }
+
+  PostCrossThreadTask(
+      *render_thread_task_runner_, FROM_HERE,
+      CrossThreadBindOnce(
+          &OfflineAudioDestinationHandler::AcknowledgeRenderStop,
+          WrapRefCounted(this)));
+}
+
 void OfflineAudioDestinationHandler::StopRenderThread() {
   DCHECK(IsMainThread());
 
@@ -197,6 +214,10 @@ void OfflineAudioDestinationHandler::DoOfflineRendering() {
   // do continue to render quanta. Then calling OfflineAudioContext.resume()
   // will pick up the render loop again from where it was suspended.
   while (frames_to_process_ > 0) {
+    if (WasStopRequested()) {
+      return;
+    }
+
     if (Context()->HasAllocationFailed()) {
       FinishOfflineRendering();
       return;
@@ -261,6 +282,16 @@ void OfflineAudioDestinationHandler::FinishOfflineRendering() {
                           GetWeakPtr()));
 }
 
+void OfflineAudioDestinationHandler::AcknowledgeRenderStop() {
+  DCHECK(!IsMainThread());
+  DCHECK(WasStopRequested());
+
+  PostCrossThreadTask(
+      *main_thread_task_runner_, FROM_HERE,
+      CrossThreadBindOnce(&OfflineAudioDestinationHandler::NotifyRenderStopped,
+                          GetWeakPtr()));
+}
+
 void OfflineAudioDestinationHandler::NotifySuspend(size_t frame) {
   DCHECK(IsMainThread());
 
@@ -286,6 +317,15 @@ void OfflineAudioDestinationHandler::NotifyComplete() {
   if (Context() && Context()->GetExecutionContext()) {
     auto* offline_context = static_cast<OfflineAudioContext*>(Context());
     offline_context->OnChunkRendered();
+  }
+}
+
+void OfflineAudioDestinationHandler::NotifyRenderStopped() {
+  DCHECK(IsMainThread());
+
+  if (!IsExecutionContextDestroyed() && Context()) {
+    auto* offline_context = static_cast<OfflineAudioContext*>(Context());
+    offline_context->OnRenderStopped();
   }
 }
 

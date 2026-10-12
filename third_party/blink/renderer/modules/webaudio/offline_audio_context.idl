@@ -37,4 +37,5 @@
     [RuntimeEnabled=OfflineAudioContextIncrementalRendering, CallWith=ScriptState, RaisesException, ImplementedAs=startOfflineRendering, MeasureAs=OfflineAudioContextStartRendering] Promise<AudioBuffer> startRendering(unsigned long? chunkSize);
     [RaisesException, CallWith=ScriptState, ImplementedAs=suspendContext, MeasureAs=OfflineAudioContextSuspend] Promise<undefined> suspend(double suspendTime);
     [RaisesException, MeasureAs=OfflineAudioContextResume, CallWith=ScriptState, ImplementedAs=resumeContext] Promise<undefined> resume();
+    [RuntimeEnabled=OfflineAudioContextIncrementalRendering, RaisesException, CallWith=ScriptState, ImplementedAs=closeContext, MeasureAs=OfflineAudioContextClose] Promise<undefined> close();
 };

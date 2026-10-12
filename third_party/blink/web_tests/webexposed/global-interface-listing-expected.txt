@@ -7331,6 +7331,7 @@ interface OfflineAudioContext : BaseAudioContext
     attribute @@toStringTag
     getter length
     getter oncomplete
+    method close
     method constructor
     method resume
     method startRendering

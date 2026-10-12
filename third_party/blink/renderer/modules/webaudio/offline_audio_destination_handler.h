@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_OFFLINE_AUDIO_DESTINATION_HANDLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_OFFLINE_AUDIO_DESTINATION_HANDLER_H_
 
+#include <atomic>
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
@@ -56,6 +57,10 @@ class OfflineAudioDestinationHandler final : public AudioDestinationHandler {
   // flight. `render_target` must have `number_of_channels_` channels.
   void SetSharedRenderTarget(AudioBuffer* render_target);
 
+  // Requests that rendering stop at the next render quantum boundary and
+  // notifies the context after all previously posted render tasks return.
+  void RequestRenderStop();
+
   void StopRenderThread();
 
   unsigned NumberOfChannels() const { return number_of_channels_; }
@@ -82,9 +87,17 @@ class OfflineAudioDestinationHandler final : public AudioDestinationHandler {
   // promise with the rendered buffer.
   void FinishOfflineRendering();
 
-  // Suspend/completion callbacks for the main thread.
+  // Runs on the render sequence after all previously posted render tasks.
+  void AcknowledgeRenderStop();
+
+  bool WasStopRequested() const {
+    return stop_requested_.load(std::memory_order_relaxed);
+  }
+
+  // Suspend/completion/stop callbacks for the main thread.
   void NotifySuspend(size_t);
   void NotifyComplete();
+  void NotifyRenderStopped();
 
   // The offline version of render() method. If the rendering needs to be
   // suspended after checking, this stops the rendering and returns true.
@@ -125,6 +138,10 @@ class OfflineAudioDestinationHandler final : public AudioDestinationHandler {
   // 'created' and 'suspended'. If this flag is false and the current state
   // is 'suspended', it means the context is created and have not started yet.
   bool is_rendering_started_ = false;
+
+  // Set by the main thread and checked by the render thread between render
+  // quanta. Cleanup still waits for the render-sequence acknowledgment.
+  std::atomic<bool> stop_requested_{false};
 
   unsigned number_of_channels_;
   float sample_rate_;

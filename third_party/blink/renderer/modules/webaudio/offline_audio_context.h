@@ -86,8 +86,11 @@ class MODULES_EXPORT OfflineAudioContext final : public BaseAudioContext {
                                              double,
                                              ExceptionState&);
   ScriptPromise<IDLUndefined> resumeContext(ScriptState*, ExceptionState&);
+  ScriptPromise<IDLUndefined> closeContext(ScriptState*, ExceptionState&);
 
   void RejectPendingResolvers() override;
+
+  bool IsContextCleared() const override;
 
   bool HasRealtimeConstraint() final { return false; }
 
@@ -98,6 +101,9 @@ class MODULES_EXPORT OfflineAudioContext final : public BaseAudioContext {
   // Called by OfflineAudioDestinationHandler::NotifyComplete when rendering
   // finishes.
   void OnChunkRendered();
+
+  // Called after the render sequence acknowledges an explicit close request.
+  void OnRenderStopped();
 
   bool HandlePreRenderTasks(uint32_t frames_to_process,
                             const AudioIOPosition* output_position,
@@ -125,6 +131,10 @@ class MODULES_EXPORT OfflineAudioContext final : public BaseAudioContext {
  private:
   void DetachPendingResolvers() override;
 
+  // Rejects promises associated with offline rendering without affecting
+  // independent BaseAudioContext operations such as decodeAudioData().
+  void RejectPendingRenderingResolvers();
+
   // Performs terminal context cleanup.
   void CloseInternal();
 
@@ -132,7 +142,8 @@ class MODULES_EXPORT OfflineAudioContext final : public BaseAudioContext {
   void FireCompletionEvent(AudioBuffer* rendered_buffer);
 
   // Returns true if the finite render length has been committed and all
-  // queued render targets have completed.
+  // queued render targets have completed. Also return true if the context has
+  // been closed.
   bool IsRenderComplete() const;
 
   // Fetch directly the destination handler.
@@ -170,6 +181,8 @@ class MODULES_EXPORT OfflineAudioContext final : public BaseAudioContext {
 
   HeapDeque<Member<ScriptPromiseResolver<AudioBuffer>>>
       start_rendering_resolvers_;
+
+  Member<ScriptPromiseResolver<IDLUndefined>> close_resolver_;
 
   // Queue of render targets corresponding to each queued startRendering call.
   // Directly represents the specification's [[rendered buffers]] internal
