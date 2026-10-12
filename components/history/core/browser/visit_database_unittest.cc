@@ -10,9 +10,7 @@
 #include <vector>
 
 #include "base/strings/string_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "components/history/core/browser/features.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_database.h"
 #include "components/history/core/browser/visit_annotations_database.h"
@@ -2452,28 +2450,17 @@ TEST_F(VisitDatabaseTest, ShouldFilterUserAndActorVisits) {
 
   struct TestCase {
     std::string name;
-    bool m3_enabled;
     bool include_user;
     bool include_actor;
     size_t expected_count;
   } cases[] = {
-      {"All History", true, true, true, 2},
-      {"User Only", true, true, false, 1},
-      {"Agent Only", true, false, true, 1},
-      {"M3 Disabled", false, false, true, 2},
+      {"All History", true, true, 2},
+      {"User Only", true, false, 1},
+      {"Agent Only", false, true, 1},
   };
 
   for (const auto& c : cases) {
     SCOPED_TRACE(c.name);
-    base::test::ScopedFeatureList feature_list;
-
-    if (c.m3_enabled) {
-      feature_list.InitAndEnableFeature(
-          history::kBrowsingHistoryActorIntegrationM3);
-    } else {
-      feature_list.InitAndDisableFeature(
-          history::kBrowsingHistoryActorIntegrationM3);
-    }
 
     QueryOptions options;
     options.include_user_visits = c.include_user;

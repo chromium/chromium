@@ -1203,10 +1203,6 @@ TEST_F(BrowsingHistoryServiceTest, GroupSimilarVisits) {
 }
 
 TEST_F(BrowsingHistoryServiceTest, ShouldQueryActorVisitsOnly) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      history::kBrowsingHistoryActorIntegrationM3);
-
   AddHistory({{kUrl1, 1, kRemote, ""},
               {kUrl2, 2, kLocal, "", VisitSource::SOURCE_BROWSED,
                true /*is_actor_visit*/}});

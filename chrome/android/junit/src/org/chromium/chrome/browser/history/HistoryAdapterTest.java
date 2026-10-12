@@ -27,10 +27,8 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.history.FilterSheetCoordinator.FilterItem;
 import org.chromium.chrome.browser.history.HistoryContentManager.ActorFilter;
 import org.chromium.chrome.browser.ui.signin.signin_promo.SigninPromoCoordinator;
@@ -183,7 +181,7 @@ public class HistoryAdapterTest {
                         "www.google.com",
                         Collections.emptyList(),
                         /* includeUserVisits= */ true,
-                        /* includeActorVisits= */ false),
+                        /* includeActorVisits= */ true),
                 mHistoryProvider.getLastQueryOptions());
 
         mAdapter.updateClientFilter(
@@ -195,7 +193,7 @@ public class HistoryAdapterTest {
                         "www.google.com",
                         List.of("client_123", "client_456"),
                         /* includeUserVisits= */ true,
-                        /* includeActorVisits= */ false),
+                        /* includeActorVisits= */ true),
                 mHistoryProvider.getLastQueryOptions());
 
         mAdapter.onEndSearch();
@@ -204,7 +202,6 @@ public class HistoryAdapterTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.BROWSING_HISTORY_ACTOR_INTEGRATION_M3)
     public void testSearch_ActorFilter() {
         doReturn(true).when(mContentManager).showActorFilter();
         mAdapter =
@@ -743,7 +740,7 @@ public class HistoryAdapterTest {
                                 null,
                                 Collections.emptyList(),
                                 /* includeUserVisits= */ true,
-                                /* includeActorVisits= */ false));
+                                /* includeActorVisits= */ true));
         // While the query is ongoing, no more items can be loaded.
         Assert.assertFalse(mAdapter.canLoadMoreItems());
 
@@ -963,7 +960,6 @@ public class HistoryAdapterTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.BROWSING_HISTORY_ACTOR_INTEGRATION_M3)
     public void testCombinedFilters() {
         HistoryProvider mockProvider = Mockito.mock(HistoryProvider.class);
         mAdapter =

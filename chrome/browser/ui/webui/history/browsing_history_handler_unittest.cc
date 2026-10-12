@@ -455,10 +455,6 @@ TEST_F(BrowsingHistoryHandlerTest, IncludeActorVisits) {
 
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(BrowsingHistoryHandlerTest, QueryHistoryMojoOptionMapping) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      history::kBrowsingHistoryActorIntegrationM3);
-
   EXPECT_CALL(
       *handler()->mock_service(),
       QueryHistory(
@@ -473,10 +469,6 @@ TEST_F(BrowsingHistoryHandlerTest, QueryHistoryMojoOptionMapping) {
 #endif
 
 TEST_F(BrowsingHistoryHandlerTest, QueryHistoryWithActorOnly) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      history::kBrowsingHistoryActorIntegrationM3);
-
   EXPECT_CALL(*handler()->mock_service(),
               QueryHistory(
                   testing::Eq(u"test_query"),
@@ -493,10 +485,6 @@ TEST_F(BrowsingHistoryHandlerTest, QueryHistoryWithActorOnly) {
 }
 
 TEST_F(BrowsingHistoryHandlerTest, QueryHistoryWithUserOnly) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      history::kBrowsingHistoryActorIntegrationM3);
-
   EXPECT_CALL(
       *handler()->mock_service(),
       QueryHistory(
@@ -513,10 +501,6 @@ TEST_F(BrowsingHistoryHandlerTest, QueryHistoryWithUserOnly) {
 }
 
 TEST_F(BrowsingHistoryHandlerTest, QueryHistoryWithBothVisits) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      history::kBrowsingHistoryActorIntegrationM3);
-
   EXPECT_CALL(
       *handler()->mock_service(),
       QueryHistory(
@@ -822,9 +806,6 @@ TEST_F(BrowsingHistoryHandlerCriticalActionsTest,
 
 TEST_F(BrowsingHistoryHandlerCriticalActionsTest,
        CriticalActionsAttachedToAggregatedActorVisits) {
-  base::test::ScopedFeatureList local_features(
-      history::kBrowsingHistoryActorIntegrationM3);
-
   base::Time visit_time1 = base::Time::Now() - base::Minutes(20);
   base::Time visit_time2 = base::Time::Now();
 
@@ -1067,10 +1048,8 @@ TEST_F(BrowsingHistoryHandlerCriticalActionsTest,
 TEST_F(BrowsingHistoryHandlerTest,
        OpenCriticalActionConversationInvalidAction) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {critical_actions::features::kCriticalActionHistory,
-       history::kBrowsingHistoryActorIntegrationM3},
-      {});
+  feature_list.InitAndEnableFeature(
+      critical_actions::features::kCriticalActionHistory);
 
   base::HistogramTester histogram_tester;
   base::test::TestFuture<history::mojom::OpenConversationResult> future;
@@ -1086,10 +1065,8 @@ TEST_F(BrowsingHistoryHandlerTest,
 TEST_F(BrowsingHistoryHandlerTest,
        OpenCriticalActionConversationCallsLinkoutHandler) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {critical_actions::features::kCriticalActionHistory,
-       history::kBrowsingHistoryActorIntegrationM3},
-      {});
+  feature_list.InitAndEnableFeature(
+      critical_actions::features::kCriticalActionHistory);
 
   critical_actions::CriticalActionService* critical_action_service =
       critical_actions::CriticalActionFactory::GetForProfile(profile());
@@ -1129,11 +1106,9 @@ class BrowsingHistoryHandlerHatsSurveyTest
     std::vector<base::test::FeatureRef> disabled_features;
 
     if (history_page_improvements_enabled_) {
-      enabled_features.push_back(history::kBrowsingHistoryActorIntegrationM3);
       enabled_features.push_back(
           history::kBrowsingHistorySimilarVisitsGrouping);
     } else {
-      disabled_features.push_back(history::kBrowsingHistoryActorIntegrationM3);
       disabled_features.push_back(
           history::kBrowsingHistorySimilarVisitsGrouping);
     }

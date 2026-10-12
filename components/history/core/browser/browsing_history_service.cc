@@ -528,8 +528,7 @@ bool BrowsingHistoryService::ShouldQueryRemote(const QueryHistoryState& state) {
 
 #if !BUILDFLAG(IS_IOS)
   // Actor visits are local-only and user visits should not be queried.
-  if (IsBrowsingHistoryActorIntegrationM3Enabled() &&
-      !state.original_options.include_user_visits) {
+  if (!state.original_options.include_user_visits) {
     return false;
   }
 #endif

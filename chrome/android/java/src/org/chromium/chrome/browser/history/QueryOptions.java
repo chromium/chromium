@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.history;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 import java.util.Collections;
 import java.util.List;
@@ -45,9 +44,7 @@ public class QueryOptions {
         this.hostName = hostName;
         this.clientIds = List.copyOf(clientIds);
         this.includeUserVisits = includeUserVisits;
-        this.includeActorVisits =
-                includeActorVisits
-                        && ChromeFeatureList.sBrowsingHistoryActorIntegrationM3.isEnabled();
+        this.includeActorVisits = includeActorVisits;
     }
 
     @Override

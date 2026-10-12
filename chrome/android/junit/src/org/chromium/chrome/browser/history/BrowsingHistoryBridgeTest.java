@@ -22,9 +22,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.signin.signin_promo.SigninPromoCoordinator;
 import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
@@ -192,7 +190,6 @@ public class BrowsingHistoryBridgeTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.BROWSING_HISTORY_ACTOR_INTEGRATION_M3)
     public void testQueryHistoryWithOptions() {
         // Test all combinations of `includeUserVisits` and `includeActorVisits` bits.
         boolean[] vals = {true, true, false, false, true};

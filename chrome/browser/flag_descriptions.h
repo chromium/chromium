@@ -353,11 +353,6 @@ inline constexpr char kBlockingFocusWithoutUserActivationDescription[] =
     "(element.focus(), window.focus(), autofocus) from iframes unless "
     "triggered by a user gesture.";
 
-inline constexpr char kBrowsingHistoryActorIntegrationM3Name[] =
-    "Browsing History Actor Integration M3";
-inline constexpr char kBrowsingHistoryActorIntegrationM3Description[] =
-    "Enables the browsing history glic actor integration M3.";
-
 inline constexpr char kBrowsingHistoryImprovedHostnameSuffixMatchingName[] =
     "Browsing History Improved Hostname Suffix Matching";
 inline constexpr char

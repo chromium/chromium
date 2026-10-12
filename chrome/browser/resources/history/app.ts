@@ -179,7 +179,6 @@ export class HistoryAppElement extends HistoryAppElementBase {
       devices_: {type: Array},
       includeActorVisits_: {type: Boolean},
       includeUserVisits_: {type: Boolean},
-      isBrowsingHistoryActorIntegrationM3Enabled_: {type: Boolean},
       isGlicWebActuationAvailable_: {type: Boolean},
       isBrowsingHistoryFilterByDeviceEnabled_: {type: Boolean},
     };
@@ -255,8 +254,6 @@ export class HistoryAppElement extends HistoryAppElementBase {
       [{name: 'device 1'}, {name: 'device 2'}];
   protected accessor includeActorVisits_: boolean = true;
   protected accessor includeUserVisits_: boolean = true;
-  protected accessor isBrowsingHistoryActorIntegrationM3Enabled_: boolean =
-      loadTimeData.getBoolean('isBrowsingHistoryActorIntegrationM3Enabled');
   protected accessor isGlicWebActuationAvailable_: boolean =
       loadTimeData.getBoolean('isGlicWebActuationAvailable');
   protected accessor isBrowsingHistoryFilterByDeviceEnabled_: boolean =
@@ -998,8 +995,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
   }
 
   protected showActorFilter_(): boolean {
-    return this.isBrowsingHistoryActorIntegrationM3Enabled_ &&
-        this.isGlicWebActuationAvailable_;
+    return this.isGlicWebActuationAvailable_;
   }
 
   protected showDeviceFilter_(): boolean {

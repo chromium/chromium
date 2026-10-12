@@ -489,9 +489,8 @@ void BrowsingHistoryHandler::SetPage(
   // feature is enabled and any of the history improvement features is enabled.
   // Check the HaTS feature last, so that clients are only counted as active if
   // one of the other feature is enabled.
-  if ((history::IsBrowsingHistoryActorIntegrationM3Enabled() ||
-       base::FeatureList::IsEnabled(
-           history::kBrowsingHistorySimilarVisitsGrouping)) &&
+  if (base::FeatureList::IsEnabled(
+          history::kBrowsingHistorySimilarVisitsGrouping) &&
       base::FeatureList::IsEnabled(
           features::kHappinessTrackingSurveysForDesktopHistoryPageExperiment)) {
     hats_service->LaunchDelayedSurveyForWebContents(
@@ -505,8 +504,7 @@ void BrowsingHistoryHandler::SetPage(
   // is enabled and none of the history improvement features is enabled.
   // Check the HaTS feature last, so that clients are only counted as active if
   // all of the other features are disabled.
-  if (!history::IsBrowsingHistoryActorIntegrationM3Enabled() &&
-      !base::FeatureList::IsEnabled(
+  if (!base::FeatureList::IsEnabled(
           history::kBrowsingHistorySimilarVisitsGrouping) &&
       base::FeatureList::IsEnabled(
           features::kHappinessTrackingSurveysForDesktopHistoryPageControl)) {

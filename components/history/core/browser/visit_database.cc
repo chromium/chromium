@@ -22,7 +22,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "components/google/core/common/google_util.h"
-#include "components/history/core/browser/features.h"
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_database.h"
@@ -612,20 +611,14 @@ bool VisitDatabase::PrepareVisibleVisitsQuery(
   sql += ", IFNULL(visit_source.source, 1)";
   joins += " LEFT JOIN visit_source ON visits.id = visit_source.id";
 
-  if (history::IsBrowsingHistoryActorIntegrationM3Enabled()) {
-    CHECK(options.include_user_visits || options.include_actor_visits);
+  CHECK(options.include_user_visits || options.include_actor_visits);
 
-    if (options.include_user_visits && !options.include_actor_visits) {
-      where_clauses.push_back(
-          "(visit_source.source IS NULL OR visit_source.source != ?)");
-      binding_values.push_back(SOURCE_ACTOR);
-    } else if (!options.include_user_visits && options.include_actor_visits) {
-      where_clauses.push_back("visit_source.source = ?");
-      binding_values.push_back(SOURCE_ACTOR);
-    }
-  } else if (!options.include_actor_visits) {
+  if (options.include_user_visits && !options.include_actor_visits) {
     where_clauses.push_back(
         "(visit_source.source IS NULL OR visit_source.source != ?)");
+    binding_values.push_back(SOURCE_ACTOR);
+  } else if (!options.include_user_visits && options.include_actor_visits) {
+    where_clauses.push_back("visit_source.source = ?");
     binding_values.push_back(SOURCE_ACTOR);
   }
 #endif

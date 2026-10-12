@@ -11934,14 +11934,6 @@ const FeatureEntry kFeatureEntries[] = {
          features::kAndroidBlockGrammarSuggestionSpanInCompositionMode)},
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
-    {"browsing-history-actor-integration-M3",
-     flag_descriptions::kBrowsingHistoryActorIntegrationM3Name,
-     flag_descriptions::kBrowsingHistoryActorIntegrationM3Description,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(history::kBrowsingHistoryActorIntegrationM3)},
-#endif  // !BUILDFLAG(IS_ANDROID)
-
     {"browsing-history-similar-visits-grouping",
      flag_descriptions::kBrowsingHistorySimilarVisitsGroupingName,
      flag_descriptions::kBrowsingHistorySimilarVisitsGroupingDescription,
