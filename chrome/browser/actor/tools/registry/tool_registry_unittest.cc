@@ -258,6 +258,17 @@ TEST(ToolRegistryTest, EnterFullscreenToolDefinition) {
               base::test::DictionaryHasValue("properties",
                                              base::Value(base::DictValue())));
 }
+
+TEST(ToolRegistryTest, CreateTabToolDefinition) {
+  const std::optional<ToolDefinition> definition =
+      CreateTabToolRequest::GetToolDefinition();
+  ASSERT_TRUE(definition.has_value());
+  EXPECT_EQ(definition->id, ToolId::kCreateTab);
+  EXPECT_EQ(definition->name, CreateTabToolRequest::kModelFacingName);
+  EXPECT_THAT(definition->parameters_json_schema,
+              base::test::DictionaryHasValue("properties",
+                                             base::Value(base::DictValue())));
+}
 #endif
 
 TEST(ToolRegistryTest, FindAndHighlightToolDefinition) {
@@ -531,6 +542,17 @@ TEST(ToolRegistryTest, GetAllToolsContainsEnterFullscreenTool) {
   EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
                                     ToolId::kEnterFullscreen,
                                     &ToolDefinition::id));
+}
+
+TEST(ToolRegistryTest, GetAllToolsContainsCreateTabTool) {
+  base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  ActorKeyedService* service = ActorKeyedService::Get(&profile);
+  CHECK(service);
+
+  EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
+                                    ToolId::kCreateTab, &ToolDefinition::id));
 }
 #endif
 

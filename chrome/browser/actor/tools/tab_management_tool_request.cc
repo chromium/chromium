@@ -24,8 +24,11 @@ namespace {
 constexpr std::string_view kCloseTabToolDescription =
     "Close the current browser tab.";
 
-}  // namespace
+// Default description for the `create_tab` tool.
+constexpr std::string_view kCreateTabToolDescription =
+    "Opens a new tab in the browser.";
 
+}  // namespace
 using tabs::TabInterface;
 
 CreateTabToolRequest::CreateTabToolRequest(int32_t window_id,
@@ -33,6 +36,13 @@ CreateTabToolRequest::CreateTabToolRequest(int32_t window_id,
     : window_id_(window_id), disposition_(disposition) {}
 
 CreateTabToolRequest::~CreateTabToolRequest() = default;
+
+// static
+std::optional<ToolDefinition> CreateTabToolRequest::GetToolDefinition() {
+  return ToolDefinitionBuilder(ToolId::kCreateTab, kModelFacingName,
+                               kCreateTabToolDescription)
+      .Build();
+}
 
 bool CreateTabToolRequest::AddsTabToObservationSet() const {
   return true;

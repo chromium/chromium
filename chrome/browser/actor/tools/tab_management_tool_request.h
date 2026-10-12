@@ -19,9 +19,13 @@ class ToolRequestVisitorFunctor;
 class CreateTabToolRequest : public ToolRequest {
  public:
   static constexpr char kName[] = "CreateTab";
+  static constexpr std::string_view kModelFacingName = "create_tab";
 
   CreateTabToolRequest(int32_t window_id, WindowOpenDisposition disposition);
   ~CreateTabToolRequest() override;
+
+  // Returns the `ToolId::kCreateTab` tool schema definition.
+  static std::optional<ToolDefinition> GetToolDefinition();
 
   bool AddsTabToObservationSet() const override;
 

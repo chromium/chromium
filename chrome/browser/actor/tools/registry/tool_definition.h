@@ -59,7 +59,9 @@ enum class ToolId {
   kCloseTab = 19,
   // Uploads files through a file input or file chooser on the page.
   kFileUpload = 20,
-  kMaxValue = kFileUpload,
+  // Creates a new tab.
+  kCreateTab = 21,
+  kMaxValue = kCreateTab,
 };
 
 // In-memory metadata and parameter schema for a shared browser tool. Prefer
