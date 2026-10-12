@@ -56,11 +56,16 @@ export class OrganizerListSectionHeaderElement extends
         notify: true,
         reflect: true,
       },
+      menuOpen_: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
   accessor disabled: boolean = false;
   accessor expanded: boolean = false;
+  protected accessor menuOpen_: boolean = false;
 
   override firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
@@ -80,6 +85,10 @@ export class OrganizerListSectionHeaderElement extends
       anchorAlignmentY: AnchorAlignment.AFTER_END,
       noOffset: true,
     });
+  }
+
+  protected onMenuOpenChanged_(e: CustomEvent<{value: boolean}>) {
+    this.menuOpen_ = e.detail.value;
   }
 
   protected onShowSomeClick_() {

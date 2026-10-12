@@ -96,6 +96,49 @@ suite('OrganizerListSectionHeaderTest', () => {
         assertFalse(isVisible(menuButton));
       });
 
+  test(
+      'shows menu button on keyboard focus only when expanded and enabled',
+      async () => {
+        const expandIcon = header.$.expandButton.$.icon;
+        const menuButton = header.$.menuButton;
+
+        assertFalse(isVisible(menuButton));
+
+        document.dispatchEvent(new KeyboardEvent('keydown', {key: 'Tab'}));
+        expandIcon.focus();
+        assertTrue(isVisible(menuButton));
+
+        menuButton.focus();
+        assertTrue(isVisible(menuButton));
+
+        menuButton.click();
+        await microtasksFinished();
+        assertTrue(header.$.menu.open);
+        assertTrue(isVisible(menuButton));
+
+        header.$.menu.close();
+        await microtasksFinished();
+        assertFalse(header.$.menu.open);
+        assertTrue(isVisible(menuButton));
+
+        header.expanded = false;
+        await microtasksFinished();
+        assertFalse(isVisible(menuButton));
+
+        header.expanded = true;
+        header.disabled = true;
+        await microtasksFinished();
+        assertFalse(isVisible(menuButton));
+
+        header.disabled = false;
+        await microtasksFinished();
+        expandIcon.focus();
+        assertTrue(isVisible(menuButton));
+
+        document.dispatchEvent(new MouseEvent('mousedown'));
+        assertFalse(isVisible(menuButton));
+      });
+
   test('opens menu with show some and show all options', async () => {
     const menu = header.$.menu;
     const menuButton = header.$.menuButton;

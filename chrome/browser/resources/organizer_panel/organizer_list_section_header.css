@@ -14,7 +14,9 @@
 }
 
 :host(:not([disabled]):hover),
-:host(.hovered:not([disabled])) {
+:host(.hovered:not([disabled])),
+:host([menu-open_]:not([disabled])),
+:host-context(html.focus-outline-visible):host(:not([disabled]):focus-within) {
   background-color: var(--cr-hover-background-color);
 }
 
@@ -60,7 +62,10 @@
 }
 
 :host([expanded]:not([disabled]):hover) #menuButton,
-:host([expanded]:not([disabled]).hovered) #menuButton {
+:host([expanded]:not([disabled]).hovered) #menuButton,
+:host([expanded][menu-open_]:not([disabled])) #menuButton,
+:host-context(html.focus-outline-visible):host(
+    [expanded]:not([disabled]):focus-within) #menuButton {
   display: inline-flex;
 }
 
