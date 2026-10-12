@@ -1967,7 +1967,6 @@ if (!is_android) {
         "//chrome/app:chrome_dll_resources",
         "//chrome/browser/ui/color:browser_tests",
         "//chrome/browser/win/isolated_browser:browser_tests",
-        "//ui/resources",
       ]
     }
 
@@ -2077,7 +2076,6 @@ if (!is_android) {
         ]
       }
       deps += [
-        ":test_support_ui",
         "//chrome/browser/ui/actions:browser_tests",
         "//chrome/browser/ui/animation:browser_tests",
         "//chrome/browser/ui/file_system_access:browser_tests",
@@ -2181,7 +2179,6 @@ if (!is_android) {
       }
 
       deps += [
-        ":test_support_ui",
         "//ash/webui/boca_ui:browser_tests",
         "//ash/webui/eche_app_ui:browser_tests",
         "//ash/webui/file_manager/resources:file_manager_swa_resources_grit",
@@ -2231,7 +2228,6 @@ if (!is_android) {
         "//chromeos/ash/components/dbus/attestation",
         "//chromeos/ash/components/dbus/attestation:attestation_proto",
         "//chromeos/strings",
-        "//components/live_caption:constants",
         "//components/reporting/util:test_callbacks_support",
         "//third_party/liblouis:browser_tests",
         "//ui/display:display_manager_test_api",
@@ -3182,7 +3178,6 @@ test("unit_tests") {
       "//chrome/browser/auxiliary_search:unit_tests",
       "//chrome/browser/commerce/merchant_viewer:unit_tests",
       "//chrome/browser/content_settings:unit_tests",
-      "//chrome/browser/digital_credentials:unit_tests",
       "//chrome/browser/facilitated_payments:unit_tests",
       "//chrome/browser/facilitated_payments/ui/android:unit_tests",
       "//chrome/browser/finds/core:unit_tests",
@@ -3190,7 +3185,6 @@ test("unit_tests") {
       "//chrome/browser/keyboard_accessory/test_utils/android",
       "//chrome/browser/long_screenshots:unit_tests",
       "//chrome/browser/lookalikes:unit_tests",
-      "//chrome/browser/memory:unit_tests",
       "//chrome/browser/ntp_customization:unit_tests",
       "//chrome/browser/optimization_guide/android:native_j_unittests_jni_headers",
       "//chrome/browser/optimization_guide/android:native_java_unittests",
@@ -3224,7 +3218,6 @@ test("unit_tests") {
       "//chrome/browser/ui/android/tab_contents:unit_tests",
       "//chrome/browser/ui/android/tab_model:unit_tests",
       "//chrome/browser/ui/android/toolbar:unit_tests",
-      "//chrome/browser/ui/browser_window/internal:unit_tests",
       "//chrome/browser/ui/browser_window/test:native_unit_test_support_java",
       "//chrome/browser/ui/side_panel/internal/android:unit_tests",
       "//chrome/browser/ui/side_panel/test/android:native_unit_test_support_java",
@@ -3289,7 +3282,6 @@ test("unit_tests") {
       "//chrome/browser/device_api:unit_tests",
       "//chrome/browser/device_identity:unit_tests",
       "//chrome/browser/device_notifications:unit_tests",
-      "//chrome/browser/engagement:unit_tests",
       "//chrome/browser/first_run:unit_tests",
       "//chrome/browser/geolocation:unit_tests",
       "//chrome/browser/glic/browser_ui/activity_list_bubble:unit_tests",
@@ -3475,7 +3467,6 @@ test("unit_tests") {
       "//components/lens:buildflags",
       "//components/services/app_service/public/cpp:unit_tests",
       "//components/signin/public/base:signin_buildflags",
-      "//components/user_education/test",
       "//third_party/lzma_sdk/google:unit_tests",
       "//ui/web_dialogs:web_dialogs_unittests",
       "//ui/webui/tracked_element:unit_tests",
@@ -3520,7 +3511,6 @@ test("unit_tests") {
       "//chrome/browser/apps/intent_helper:unit_tests",
       "//chrome/browser/ui/contextual_search:unit_tests",
       "//chrome/browser/ui/passwords/settings:unit_tests",
-      "//chrome/browser/ui/webui/context_hub:unit_tests",
       "//chrome/browser/ui/webui/settings:unit_tests",
     ]
   }
@@ -3589,7 +3579,6 @@ test("unit_tests") {
       "//chrome/services/sharing/public/cpp:unit_tests",
       "//chromeos/ash/experiences/isolated_web_app:unit_tests",
       "//components/app_restore:unit_tests",
-      "//components/sharing_message:unit_tests",
       "//ui/webui/resources/cr_components/app_management:unit_tests",
     ]
 
@@ -4737,10 +4726,7 @@ if (!is_android && !is_chromeos_device) {
     }
 
     if (enable_print_preview) {
-      deps += [
-        "//chrome/browser/webapps:interactive_ui_tests",
-        "//chrome/browser/window_management:interactive_ui_tests",
-      ]
+      deps += [ "//chrome/browser/window_management:interactive_ui_tests" ]
     }
 
     deps += [
