@@ -310,6 +310,11 @@ BASE_FEATURE(kWebViewNavigateDrainPrefetch, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kWebViewNonBlockingCookieStoreHandoff,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Kill switch for using the low entropy source provided by the nonembedded
+// WebView service.
+BASE_FEATURE(kWebViewNonembeddedLowEntropySourceKillSwitch,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, opts in WebView to GMSCore's bindService optimizations.
 BASE_FEATURE(kWebViewOptInToGmsBindServiceOptimization,
              base::FEATURE_DISABLED_BY_DEFAULT);

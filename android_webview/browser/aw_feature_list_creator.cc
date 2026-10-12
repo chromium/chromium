@@ -276,9 +276,14 @@ void AwFeatureListCreator::SetUpFieldTrials() {
     seed->country = seed_proto->country();
     seed->date = seed_date;
     seed->is_gzip_compressed = seed_proto->is_gzip_compressed();
-    // Reading without checking for presence would result in a default value of
-    // 0, which would be indistinguishable from a valid low entropy source.
-    if (seed_proto->has_low_entropy_source()) {
+
+    // Use the cached flag as a kill switch to gate the nonembedded low entropy
+    // source logic. Reading without checking for presence would result in a
+    // default value of 0, which would be indistinguishable from a valid low
+    // entropy source.
+    if (!CachedFlags::IsEnabled(
+            features::kWebViewNonembeddedLowEntropySourceKillSwitch) &&
+        seed_proto->has_low_entropy_source()) {
       nonembedded_low_entropy_source = seed_proto->low_entropy_source();
     }
     LimitedEntropySourceState limited_source_state;

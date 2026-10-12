@@ -154,6 +154,9 @@ public class WebViewCachedFlags {
                     Map.entry(
                             AwFeatures.WEBVIEW_COOKIE_MANAGER_SIMPLER_URL_FIXUPS,
                             DefaultState.DISABLED),
+                    Map.entry(
+                            AwFeatures.WEBVIEW_NONEMBEDDED_LOW_ENTROPY_SOURCE_KILL_SWITCH,
+                            DefaultState.DISABLED),
                     Map.entry(AwFeatures.WEBVIEW_CROSS_ORIGIN_ALLOWLIST_API, DefaultState.ENABLED),
                     Map.entry(AwFeatures.WEBVIEW_INIT_IN_CONSTRUCTOR, DefaultState.DISABLED),
                     Map.entry(AwFeatures.WEBVIEW_RELAX_DATA_DIR_LOCKING, DefaultState.DISABLED));
