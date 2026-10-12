@@ -20,6 +20,7 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/process/process.h"
 #include "base/sequence_checker.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -41,6 +42,7 @@
 #include "chrome/updater/util/posix_util.h"
 #include "components/named_mojo_ipc_server/named_mojo_ipc_server_client_util.h"
 #include "components/policy/core/common/policy_types.h"
+#include "mojo/public/c/system/invitation.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -406,13 +408,45 @@ void UpdateServiceProxyMojoImpl::OnConnected(
     return;
   }
 
+  // A system install's server is at least as privileged as this process - it
+  // runs as SYSTEM while callers may be any authenticated user. Saying so here
+  // keeps handles this process sends owned by this process, for the server to
+  // duplicate out of it, rather than pre-duplicated into the server. If this
+  // process cannot open the server (it runs below High integrity) that is
+  // what happens anyway. If it can (it is elevated, or SYSTEM) the server
+  // would still accept pre-duplicated handles from it, since the server only
+  // declares callers below High integrity untrusted; the flag keeps the more
+  // privileged side doing the duplication regardless, and keeps this client
+  // working should the server's classification ever be tightened. A user
+  // install's server runs as this same user, so no flag is passed there. See
+  // `CreateServerEndpointOptions()` in chrome/updater/ipc/ipc_security_win.cc
+  // and `Transport::CanAcceptReceiverOwnedHandles()`.
+  //
+  // This also grants trust in the other direction: the flag sets
+  // `is_peer_trusted` on this end, so this process will accept pre-duplicated
+  // handles and broker-destined transports from whatever is on the far end of
+  // the pipe. That is only safe because `ConnectToUpdateService()` in
+  // update_service_dialer_win.cc connects with `verify_server_privilege` and
+  // rejects the endpoint unless `IsServerElevated()` holds for system scope.
+  // Do not relax that check without revisiting this flag.
+  //
+  // Handle ownership is a Windows-only concept; elsewhere the flag is rejected.
+  MojoSendInvitationFlags invitation_flags = MOJO_SEND_INVITATION_FLAG_NONE;
+#if BUILDFLAG(IS_WIN)
+  if (IsSystemInstall(scope_)) {
+    invitation_flags = MOJO_SEND_INVITATION_FLAG_ELEVATED;
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
   auto connection = std::make_unique<mojo::IsolatedConnection>();
   // Connect `remote_` to the RPC server by fusing its message pipe to the one
   // created by `IsolatedConnection::Connect`.
   if (!mojo::FusePipes(
           std::move(pending_receiver),
           mojo::PendingRemote<mojom::UpdateService>(
-              connection->Connect(std::move(endpoint.value())), 0))) {
+              connection->Connect(std::move(endpoint.value()), base::Process(),
+                                  invitation_flags),
+              0))) {
     LOG(ERROR) << "Failed to fuse Mojo pipes for RPC.";
     remote_.reset();
     return;
