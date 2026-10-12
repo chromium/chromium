@@ -720,11 +720,11 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
     }
 
     /**
-     * @see TabListMediator#resetWithListOfTabs(List, boolean)
+     * @see TabListMediator#resetWithListOfTabs(List, List, boolean)
      */
-    boolean resetWithListOfTabs(
+    void resetWithListOfTabs(
             @Nullable List<Tab> tabs, @Nullable List<String> tabGroupSyncIds, boolean quickMode) {
-        return mMediator.resetWithListOfTabs(tabs, tabGroupSyncIds, quickMode);
+        mMediator.resetWithListOfTabs(tabs, tabGroupSyncIds, quickMode);
     }
 
     void softCleanup() {

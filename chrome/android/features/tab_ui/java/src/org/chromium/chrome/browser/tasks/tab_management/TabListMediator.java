@@ -1118,9 +1118,8 @@ public class TabListMediator implements TabListNotificationHandler {
      * @param tabs The list of tabs to be shown.
      * @param tabGroupSyncIds The list of syncIds tied to {@link SavedTabGroup}s to be shown.
      * @param quickMode Whether to skip capturing the selected live tab for the thumbnail.
-     * @return Whether the {@link TabListRecyclerView} can be shown quickly.
      */
-    public boolean resetWithListOfTabs(
+    public void resetWithListOfTabs(
             @Nullable List<Tab> tabs, @Nullable List<String> tabGroupSyncIds, boolean quickMode) {
         mTrackingTabs = tabs != null;
         TabModel tabModel = mCurrentTabModelSupplier.get();
@@ -1135,7 +1134,7 @@ public class TabListMediator implements TabListNotificationHandler {
         }
         // Only update tabs in place if there are no saved tab groups to be shown.
         if (tabGroupSyncIds == null && areTabsUnchanged(tabs)) {
-            if (tabs == null) return true;
+            if (tabs == null) return;
 
             for (int i = 0; i < tabs.size(); i++) {
                 Tab tab = tabs.get(i);
@@ -1147,14 +1146,14 @@ public class TabListMediator implements TabListNotificationHandler {
                 updateTab(index, tab, updateId, quickMode);
             }
             mLastSelectedTabListModelIndex = TabList.INVALID_TAB_INDEX;
-            return true;
+            return;
         }
         mModelList.clear();
         mTabListLayoutDelegate.reset();
         mLastSelectedTabListModelIndex = TabList.INVALID_TAB_INDEX;
 
         if (tabs == null && tabGroupSyncIds == null) {
-            return true;
+            return;
         }
 
         if (tabs != null) {
@@ -1187,8 +1186,6 @@ public class TabListMediator implements TabListNotificationHandler {
                 addSavedTabGroupInfoToModel(savedTabGroup, i);
             }
         }
-
-        return false;
     }
 
     /**
