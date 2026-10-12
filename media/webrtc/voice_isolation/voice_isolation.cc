@@ -50,15 +50,16 @@ CreateVoiceIsolation(const tflite::FlatBufferModel* model) {
 
   // Create the TfLite inference component (expects two 16kHz DFTs of 160
   // complex bins each).
-  ASSIGN_OR_RETURN(std::unique_ptr<VoiceIsolationComponent> tflite,
+  ASSIGN_OR_RETURN(std::unique_ptr<TfLiteVoiceIsolation> tflite,
                    TfLiteVoiceIsolation::MaybeCreate(model));
 
   // Wrap TfLite with BandSplitVoiceIsolation, which CHECKs the model layout,
-  // to split 48kHz DFTs down to 16kHz and zero-pad high bands on
-  // reconstruction. StftVoiceIsolation performs the 48kHz STFT and iSTFT on
-  // 20 ms frames, and BufferedVoiceIsolation lets the pipeline consume the
-  // 10 ms frames delivered by APM. The VoiceIsolationImpl constructor CHECKs
-  // the layout of the returned component.
+  // to split 48kHz DFTs down to 16kHz and, on reconstruction, to scale the
+  // high bands with the speech mask of the model. StftVoiceIsolation performs
+  // the 48kHz STFT and iSTFT on 20 ms frames, and BufferedVoiceIsolation lets
+  // the pipeline consume the 10 ms frames delivered by APM. The
+  // VoiceIsolationImpl constructor CHECKs the layout of the returned
+  // component.
   return std::make_unique<BufferedVoiceIsolation>(
       std::make_unique<StftVoiceIsolation>(
           std::make_unique<BandSplitVoiceIsolation>(std::move(tflite))));

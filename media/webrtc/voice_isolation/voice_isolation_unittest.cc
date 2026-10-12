@@ -5,8 +5,10 @@
 #include "media/webrtc/voice_isolation/voice_isolation.h"
 
 #include <algorithm>
+#include <cmath>
 #include <cstddef>
 #include <memory>
+#include <numbers>
 #include <numeric>
 #include <utility>
 
@@ -207,6 +209,64 @@ TEST(VoiceIsolationTest, TwoStageCreationSucceedsAndProcessesAudio) {
       output_bus->channel(0).begin(), output_bus->channel(0).end(),
       output_bus->channel(0).begin(), 0.0f);
   EXPECT_GT(output_energy, 0.0f);
+}
+
+// The denoising-only output of the test model equals its input, so its speech
+// mask is 1 and the band split must keep the band above 8 kHz: the output
+// carries the energy of both a 7 kHz tone and a 16 kHz tone.
+TEST(VoiceIsolationTest, KeepsHighBandWithIdentityModel) {
+  constexpr int kSampleRate = kComponentFrameSize * kComponentFramesPerSecond;
+  AudioParameters params(AudioParameters::AUDIO_PCM_LINEAR,
+                         ChannelLayoutConfig::Stereo(), kSampleRate,
+                         kComponentFrameSize);
+
+  std::unique_ptr<tflite::FlatBufferModel> model =
+      LoadVoiceIsolationTestModel();
+  std::unique_ptr<VoiceIsolation> voice_isolation =
+      VoiceIsolation::Create(model.get(), params);
+  ASSERT_NE(voice_isolation, nullptr);
+
+  // Fill both channels with a 7 kHz tone, which sets the high band gain, plus
+  // a 16 kHz tone in the high band. Both tones repeat every frame, so the
+  // energy of an output frame does not depend on the processing delay.
+  constexpr float kGainToneHz = 7000.0f;
+  constexpr float kHighBandToneHz = 16000.0f;
+  constexpr float kToneAmplitude = 0.25f;
+  constexpr float kTwoPi = 2.0f * std::numbers::pi_v<float>;
+  std::unique_ptr<AudioBus> input_bus =
+      AudioBus::Create(2, kComponentFrameSize);
+  std::unique_ptr<AudioBus> output_bus =
+      AudioBus::Create(2, kComponentFrameSize);
+  for (size_t i = 0; i < kComponentFrameSize; ++i) {
+    const float time_s = static_cast<float>(i) / kSampleRate;
+    const float sample =
+        kToneAmplitude * (std::sin(kTwoPi * kGainToneHz * time_s) +
+                          std::sin(kTwoPi * kHighBandToneHz * time_s));
+    input_bus->channel(0)[i] = sample;
+    input_bus->channel(1)[i] = sample;
+  }
+  const float input_energy = std::inner_product(
+      input_bus->channel(0).begin(), input_bus->channel(0).end(),
+      input_bus->channel(0).begin(), 0.0f);
+
+  // Let the FIFOs, the STFT and the speech mask reach steady state.
+  constexpr int kNumWarmUpFrames = 5;
+  for (int frame = 0; frame < kNumWarmUpFrames; ++frame) {
+    voice_isolation->ProcessAudio(*input_bus, *output_bus);
+  }
+
+  // Each output frame must keep the energy of both tones. Without the high
+  // band, it would only keep half of it.
+  constexpr int kNumCheckedFrames = 5;
+  constexpr float kEnergyRatioTolerance = 0.1f;
+  for (int frame = 0; frame < kNumCheckedFrames; ++frame) {
+    voice_isolation->ProcessAudio(*input_bus, *output_bus);
+    const float output_energy = std::inner_product(
+        output_bus->channel(0).begin(), output_bus->channel(0).end(),
+        output_bus->channel(0).begin(), 0.0f);
+    EXPECT_NEAR(output_energy / input_energy, 1.0f, kEnergyRatioTolerance)
+        << "Frame " << frame;
+  }
 }
 
 TEST(VoiceIsolationTest, ClearBuffersPurgesStaleLookaheadAudio) {

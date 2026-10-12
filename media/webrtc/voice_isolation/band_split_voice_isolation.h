@@ -16,9 +16,14 @@
 
 namespace media {
 
+class SpectralVoiceIsolationComponent;
+
 // Receives two concatenated FFTs of the same size from a 48kHz signal and
 // performs a band split to extract the 16kHz low band for the internal
-// component, then reconstructs the 48kHz FFTs by zero-padding the high bands.
+// component. It then rebuilds the 48kHz FFTs from the denoised low band and
+// the input high band (above 8kHz), scaled by a gain derived from the speech
+// mask that the internal component reports, and crossfades the two bands
+// between 7.5 and 8kHz.
 // The internal component must be the 16kHz model: two concatenated DFTs of
 // 20 ms (320 samples) per call, 50 calls per second. The constructor CHECKs
 // this layout.
@@ -37,7 +42,8 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) BandSplitVoiceIsolation
   static constexpr size_t kFrameSize = kBandRatio * kInnerFrameSize;
 
   explicit BandSplitVoiceIsolation(
-      std::unique_ptr<VoiceIsolationComponent> internal_voice_isolation);
+      std::unique_ptr<SpectralVoiceIsolationComponent>
+          internal_voice_isolation);
   ~BandSplitVoiceIsolation() override;
 
   BandSplitVoiceIsolation(const BandSplitVoiceIsolation&) = delete;
@@ -57,7 +63,8 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) BandSplitVoiceIsolation
   base::TimeDelta AlgorithmicDelay() const override;
 
  private:
-  const std::unique_ptr<VoiceIsolationComponent> internal_voice_isolation_;
+  const std::unique_ptr<SpectralVoiceIsolationComponent>
+      internal_voice_isolation_;
   std::array<float, kInnerFrameSize> internal_input_buffer_{};
   std::array<float, kInnerFrameSize> internal_output_buffer_{};
 };

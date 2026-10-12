@@ -10,6 +10,7 @@
 #include "base/containers/span.h"
 #include "base/time/time.h"
 #include "media/base/audio_bus.h"
+#include "media/webrtc/voice_isolation/spectral_voice_isolation_component.h"
 #include "media/webrtc/voice_isolation/voice_isolation.h"
 #include "media/webrtc/voice_isolation/voice_isolation_component.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -29,7 +30,7 @@ class MockVoiceIsolation : public VoiceIsolation {
   MOCK_METHOD(base::TimeDelta, AlgorithmicDelay, (), (const, override));
 };
 
-class MockVoiceIsolationComponent : public VoiceIsolationComponent {
+class MockVoiceIsolationComponent : public SpectralVoiceIsolationComponent {
  public:
   MockVoiceIsolationComponent();
   ~MockVoiceIsolationComponent() override;
@@ -42,6 +43,7 @@ class MockVoiceIsolationComponent : public VoiceIsolationComponent {
   MOCK_METHOD(size_t, FramesPerSecond, (), (const, override));
   MOCK_METHOD(void, ClearBuffers, (), (override));
   MOCK_METHOD(base::TimeDelta, AlgorithmicDelay, (), (const, override));
+  MOCK_METHOD(base::span<const float>, SpeechMask, (), (const, override));
 };
 
 }  // namespace media
