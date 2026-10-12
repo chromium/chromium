@@ -69,8 +69,7 @@ RendererSandboxedProcessLauncherDelegateWin::
       is_pdf_renderer_(is_pdf_renderer),
       restrict_core_sharing_(
           GetContentClient()->browser()->ShouldRestrictCoreSharingOnRenderer()),
-      child_module_version_(
-          GetContentClient()->browser()->GetChildModuleVersion()) {
+      child_module_(GetContentClient()->browser()->GetChildModule()) {
   // PDF renderers must be jitless.
   CHECK(!is_pdf_renderer || is_jit_disabled);
   if (is_jit_disabled) {
@@ -103,15 +102,15 @@ std::string RendererSandboxedProcessLauncherDelegateWin::GetSandboxTag() {
   //   enabling ACG (MITIGATION_DYNAMIC_CODE_DISABLE) and CET.
   // - "renderer-pdfium": PDF renderer (always jitless, enforced at
   //   construction).
-  // Any of these may run with a specific `child_module_version_`, which is
+  // Any of these may run with a specific `child_module_`, whose version is
   // appended so each (configuration, version) pair caches a distinct
   // TargetConfig in InitializeConfig().
   std::string prefix =
       is_pdf_renderer_
           ? "renderer-pdfium"
           : (dynamic_code_can_be_disabled_ ? "renderer-jitless" : "renderer");
-  if (child_module_version_.has_value()) {
-    base::StrAppend(&prefix, {"-", child_module_version_->GetString()});
+  if (child_module_.has_value()) {
+    base::StrAppend(&prefix, {"-", child_module_->version.GetString()});
   }
   return sandbox::policy::SandboxWin::GetSandboxTagForDelegate(
       prefix, GetSandboxType());
@@ -151,7 +150,7 @@ bool RendererSandboxedProcessLauncherDelegateWin::InitializeConfig(
   ContentBrowserClient::ChildSpawnFlags flags(
       ContentBrowserClient::ChildSpawnFlags::kChildSpawnFlagNone);
   return GetContentClient()->browser()->PreSpawnChild(
-      config, sandbox::mojom::Sandbox::kRenderer, flags, child_module_version_);
+      config, sandbox::mojom::Sandbox::kRenderer, flags, child_module_);
 }
 
 void RendererSandboxedProcessLauncherDelegateWin::PostSpawnTarget(

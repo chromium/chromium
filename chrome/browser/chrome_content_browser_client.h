@@ -26,7 +26,6 @@
 #include "base/timer/timer.h"
 #include "base/types/optional_ref.h"
 #include "base/values.h"
-#include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/browser/startup_data.h"
 #include "chrome/common/renderer_configuration.mojom.h"
@@ -582,8 +581,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       sandbox::TargetConfig* config,
       sandbox::mojom::Sandbox sandbox_type,
       ChildSpawnFlags flags,
-      base::optional_ref<const base::Version> child_module_version) override;
-  std::optional<base::Version> GetChildModuleVersion() override;
+      base::optional_ref<const ChildModule> child_module) override;
+  std::optional<ChildModule> GetChildModule() override;
   std::wstring GetAppContainerSidForSandboxType(
       sandbox::mojom::Sandbox sandbox_type,
       AppContainerFlags flags) override;

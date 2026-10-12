@@ -28,6 +28,17 @@ class ChildModuleWatcher;
 // thread.
 class ChildModuleManager {
  public:
+  // A child module that is available for use.
+  struct Module {
+    // The version number of the child module.
+    base::Version version;
+
+    // The full path to the renderer binary within the child module.
+    base::FilePath renderer_binary_path;
+
+    friend bool operator==(const Module&, const Module&) = default;
+  };
+
   // Registers local-state preferences used by ChildModuleManager.
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
@@ -40,14 +51,10 @@ class ChildModuleManager {
   ChildModuleManager& operator=(const ChildModuleManager&) = delete;
   ~ChildModuleManager();
 
-  // Returns the latest available child module version, or std::nullopt if
-  // dynamic patching is disabled by policy or if no valid patched version is
-  // currently available.
-  std::optional<base::Version> GetLatestVersion() const;
-
-  // Returns the path to the renderer binary for `version` if that version is
-  // currently available; otherwise returns an empty FilePath.
-  base::FilePath GetRendererBinaryPath(const base::Version& version) const;
+  // Returns the latest available child module, or std::nullopt if dynamic
+  // patching is disabled by policy or if no valid patched version is currently
+  // available.
+  std::optional<Module> GetLatestModule() const;
 
   // Returns the set of all currently discovered versions, sorted descending.
   const VersionSet& GetAvailableVersionsForTesting() const;

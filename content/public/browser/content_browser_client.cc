@@ -1004,11 +1004,12 @@ bool ContentBrowserClient::PreSpawnChild(
     sandbox::TargetConfig* config,
     sandbox::mojom::Sandbox sandbox_type,
     ChildSpawnFlags flags,
-    base::optional_ref<const base::Version> child_module_version) {
+    base::optional_ref<const ChildModule> child_module) {
   return true;
 }
 
-std::optional<base::Version> ContentBrowserClient::GetChildModuleVersion() {
+std::optional<ContentBrowserClient::ChildModule>
+ContentBrowserClient::GetChildModule() {
   return std::nullopt;
 }
 

@@ -250,6 +250,7 @@ using ::testing::_;
 using ::testing::IsFalse;
 using ::testing::IsTrue;
 using ::testing::NotNull;
+using ::testing::Optional;
 
 #if BUILDFLAG(ENABLE_PDF)
 using ::testing::NiceMock;
@@ -3105,6 +3106,9 @@ class ChromeContentBrowserClientDynamicPatchTest : public testing::Test {
   // `version` synchronously as the latest available version, and returns the
   // expected renderer binary path.
   base::FilePath StagePatch(const base::Version& version) {
+    const child_module::ChildModuleManager::Module expected = {
+        .version = version,
+        .renderer_binary_path = child_module::GetRendererBinaryPath(version)};
     auto* features = TestingBrowserProcess::GetGlobal()->GetFeatures();
     features->PostMainMessageLoopRun();
     WritePatchFiles(version);
@@ -3113,9 +3117,9 @@ class ChromeContentBrowserClientDynamicPatchTest : public testing::Test {
     EXPECT_NE(manager, nullptr);
     if (manager) {
       manager->WaitForInitialScanForTesting();
-      EXPECT_EQ(manager->GetLatestVersion(), version);
+      EXPECT_EQ(manager->GetLatestModule(), expected);
     }
-    return child_module::GetRendererBinaryPath(version);
+    return expected.renderer_binary_path;
   }
 
   // TODO(crbug.com/558598893): Enable GetChildProcessPath tests on macOS once
@@ -3222,6 +3226,17 @@ TEST_F(ChromeContentBrowserClientDynamicPatchTest,
   cmd.AppendSwitchASCII(switches::kProcessType, switches::kUtilityProcess);
   client.AppendExtraCommandLineSwitches(&cmd, /*child_process_id=*/1);
   EXPECT_FALSE(cmd.HasSwitch(switches::kChildModuleVersion));
+}
+
+TEST_F(ChromeContentBrowserClientDynamicPatchTest, GetChildModule) {
+  ChromeContentBrowserClient client;
+  EXPECT_EQ(client.GetChildModule(), std::nullopt);
+
+  const base::Version version("9999.0.0.1");
+  base::FilePath patched_binary = StagePatch(version);
+  EXPECT_THAT(client.GetChildModule(),
+              Optional(content::ContentBrowserClient::ChildModule{
+                  .version = version, .path = patched_binary}));
 }
 #endif  // BUILDFLAG(IS_WIN)
 

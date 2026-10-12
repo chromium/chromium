@@ -471,13 +471,13 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/files/file_util.h"
 #include "base/strings/string_tokenizer.h"
+#include "base/version.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/performance_manager/public/dll_pre_read_policy_win.h"
 #include "chrome/browser/tracing/tracing_features.h"
 #include "chrome/browser/tracing/windows_system_tracing_client_win.h"
-#include "chrome/common/child_module/child_module_helper.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/util/isolation_support.h"
 #include "chrome/services/util_win/public/mojom/util_win.mojom.h"
@@ -1382,18 +1382,18 @@ void MaybeAppendSecureOriginsAllowlistSwitch(base::CommandLine* cmdline) {
 
 #if BUILDFLAG(IS_WIN) && !defined(COMPONENT_BUILD) && \
     !defined(ADDRESS_SANITIZER)
-// Returns the full path to |module_name|. If |module_name| is the renderer DLL
-// and |child_module_version| is present, returns the path to the patched
-// renderer binary for that version. Otherwise, both dev builds (where
-// |module_name| is in the current executable's directory) and proper installs
-// (where |module_name| is in a versioned sub-directory of the current
-// executable's directory) are supported. The identified file is not guaranteed
-// to exist.
-base::FilePath GetModulePath(std::wstring_view module_name,
-                             base::optional_ref<const base::Version>
-                                 child_module_version = std::nullopt) {
-  if (module_name == chrome::kRendererDll && child_module_version.has_value()) {
-    return child_module::GetRendererBinaryPath(*child_module_version);
+// Returns the full path to `module_name`. If `module_name` is the renderer DLL
+// and `child_module` is present, returns the path to the child module's
+// binary. Otherwise, both dev builds (where `module_name` is in the current
+// executable's directory) and proper installs (where `module_name` is in a
+// versioned sub-directory of the current executable's directory) are
+// supported. The identified file is not guaranteed to exist.
+base::FilePath GetModulePath(
+    std::wstring_view module_name,
+    base::optional_ref<const content::ContentBrowserClient::ChildModule>
+        child_module = std::nullopt) {
+  if (module_name == chrome::kRendererDll && child_module.has_value()) {
+    return child_module->path;
   }
 
   base::FilePath exe_dir;
@@ -3169,9 +3169,9 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
 #endif
 
 #if BUILDFLAG(IS_WIN)
-    if (auto patch_version = GetChildModuleVersion()) {
+    if (auto child_module = GetChildModule()) {
       command_line->AppendSwitchASCII(switches::kChildModuleVersion,
-                                      patch_version->GetString());
+                                      child_module->version.GetString());
     }
 #endif
 
@@ -5457,7 +5457,7 @@ bool ChromeContentBrowserClient::PreSpawnChild(
     sandbox::TargetConfig* config,
     sandbox::mojom::Sandbox sandbox_type,
     ChildSpawnFlags flags,
-    base::optional_ref<const base::Version> child_module_version) {
+    base::optional_ref<const ChildModule> child_module) {
   DCHECK(!config->IsConfigured());
 // Does not work under component build because all the component DLLs would need
 // to be manually added and maintained. Does not work under ASAN build because
@@ -5548,12 +5548,11 @@ bool ChromeContentBrowserClient::PreSpawnChild(
 #else
   const bool use_renderer_dll =
       sandbox_type == sandbox::mojom::Sandbox::kRenderer &&
-      child_module_version.has_value();
+      child_module.has_value();
 #endif
   const auto& extra_dlls = use_renderer_dll ? kRendererDlls : kChildDlls;
   for (const auto* dll : extra_dlls) {
-    result =
-        config->AllowExtraDll(GetModulePath(dll, child_module_version).value());
+    result = config->AllowExtraDll(GetModulePath(dll, child_module).value());
     if (result != sandbox::SBOX_ALL_OK) {
       return false;
     }
@@ -5579,14 +5578,18 @@ bool ChromeContentBrowserClient::PreSpawnChild(
   return true;
 }
 
-std::optional<base::Version>
-ChromeContentBrowserClient::GetChildModuleVersion() {
+std::optional<content::ContentBrowserClient::ChildModule>
+ChromeContentBrowserClient::GetChildModule() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (auto* manager =
-          g_browser_process->GetFeatures()->child_module_manager()) {
-    return manager->GetLatestVersion();
+  auto* manager = g_browser_process->GetFeatures()->child_module_manager();
+  if (!manager) {
+    return std::nullopt;
   }
-  return std::nullopt;
+  return manager->GetLatestModule().transform(
+      [](child_module::ChildModuleManager::Module&& module) {
+        return ChildModule{.version = std::move(module.version),
+                           .path = std::move(module.renderer_binary_path)};
+      });
 }
 
 // Note: Only use sparingly to add Chrome specific sandbox functionality here.
@@ -9030,11 +9033,11 @@ base::FilePath ChromeContentBrowserClient::GetChildProcessPath(int flags) {
     if (no_zygote) {
       if (auto* child_module_manager =
               g_browser_process->GetFeatures()->child_module_manager()) {
-        if (auto patch_version = child_module_manager->GetLatestVersion()) {
+        if (auto latest = child_module_manager->GetLatestModule()) {
           // TODO(crbug.com/558598893): If a dynamic patch updates preloaded
           // assets (such as v8_context_snapshot.bin), resolve them from the
           // patched module directory instead of the browser's DIR_ASSETS.
-          return child_module_manager->GetRendererBinaryPath(*patch_version);
+          return std::move(latest->renderer_binary_path);
         }
       }
     }

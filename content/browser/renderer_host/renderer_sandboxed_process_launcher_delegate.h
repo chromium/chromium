@@ -8,11 +8,14 @@
 #include <optional>
 
 #include "base/command_line.h"
-#include "base/version.h"
 #include "build/build_config.h"
 #include "content/browser/sandboxed_process_launcher_delegate.h"
 #include "content/common/content_export.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "content/public/browser/content_browser_client.h"
+#endif
 
 namespace content {
 // NOTE: changes to this class need to be reviewed by the security team.
@@ -60,9 +63,9 @@ class CONTENT_EXPORT RendererSandboxedProcessLauncherDelegateWin
   const bool is_pdf_renderer_ = false;
   const bool restrict_core_sharing_ = false;
   bool dynamic_code_can_be_disabled_ = false;
-  // The version of the child module to use if different from the browser
-  // version, or std::nullopt to use the default browser-versioned module.
-  const std::optional<base::Version> child_module_version_;
+  // The child module to use if different from the one that shipped with the
+  // browser, or std::nullopt to use the default browser-versioned module.
+  const std::optional<ContentBrowserClient::ChildModule> child_module_;
 };
 #endif  // BUILDFLAG(IS_WIN)
 

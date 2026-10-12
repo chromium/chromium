@@ -19,6 +19,7 @@
 #include "base/byte_size.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/supports_user_data.h"
@@ -121,7 +122,6 @@ class GURL;
 
 namespace base {
 class CommandLine;
-class FilePath;
 class Location;
 class SequencedTaskRunner;
 class ScopedClosureRunner;
@@ -1670,23 +1670,36 @@ class CONTENT_EXPORT ContentBrowserClient {
     kAppContainerFlagDisableAppContainer = 1 << 0,
   };
 
+  // A child module to use for a child process in place of the one that shipped
+  // with the browser.
+  struct ChildModule {
+    // The version of the child module.
+    base::Version version;
+
+    // The path to the child module's binary. A sandbox configuration created
+    // for one child process may be reused for others that use the same
+    // `version`, so the path for a given version must not change.
+    base::FilePath path;
+
+    friend bool operator==(const ChildModule&, const ChildModule&) = default;
+  };
+
   // This may be called on the PROCESS_LAUNCHER thread before the child process
   // configuration is set. It gives the embedder a chance to modify the sandbox
-  // configuration. `child_module_version`, if present, specifies the child
-  // module version to use for this child process. Returns false if
-  // configuration is invalid and the child should not spawn. Only use this for
-  // embedder-specific policies, as standard sandbox policies are configured by
-  // the content layer.
+  // configuration. `child_module`, if present, specifies the child module to
+  // use for this child process. Returns false if configuration is invalid and
+  // the child should not spawn. Only use this for embedder-specific policies,
+  // as standard sandbox policies are configured by the content layer.
   virtual bool PreSpawnChild(
       sandbox::TargetConfig* config,
       sandbox::mojom::Sandbox sandbox_type,
       ChildSpawnFlags flags,
-      base::optional_ref<const base::Version> child_module_version);
+      base::optional_ref<const ChildModule> child_module);
 
-  // Returns the version of the child module to use for a new child process if
-  // different from the browser version, or std::nullopt otherwise. Called on
+  // Returns the child module to use for a new child process if different from
+  // the one that shipped with the browser, or std::nullopt otherwise. Called on
   // the UI thread.
-  virtual std::optional<base::Version> GetChildModuleVersion();
+  virtual std::optional<ChildModule> GetChildModule();
 
   // This may be called on the PROCESS_LAUNCHER thread before the child process
   // is launched. It gives the embedder a chance to indicate that a process will

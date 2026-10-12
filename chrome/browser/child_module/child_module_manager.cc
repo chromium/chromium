@@ -42,21 +42,15 @@ ChildModuleManager::~ChildModuleManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-std::optional<base::Version> ChildModuleManager::GetLatestVersion() const {
+std::optional<ChildModuleManager::Module> ChildModuleManager::GetLatestModule()
+    const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsDynamicPatchingEnabled() || available_versions_.empty()) {
     return std::nullopt;
   }
-  return *available_versions_.begin();
-}
-
-base::FilePath ChildModuleManager::GetRendererBinaryPath(
-    const base::Version& version) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!available_versions_.contains(version)) {
-    return base::FilePath();
-  }
-  return child_module::GetRendererBinaryPath(version);
+  const base::Version& version = *available_versions_.begin();
+  return Module{.version = version,
+                .renderer_binary_path = GetRendererBinaryPath(version)};
 }
 
 const VersionSet& ChildModuleManager::GetAvailableVersionsForTesting() const {
