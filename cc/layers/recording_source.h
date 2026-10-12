@@ -33,7 +33,8 @@ class CC_EXPORT RecordingSource {
   bool Update(const gfx::Size& layer_size,
               float recording_scale_factor,
               ContentLayerClient& content_layer_client,
-              Region& invalidation);
+              Region& invalidation,
+              int layer_id = 0);
   gfx::Size size() const { return size_; }
   const DisplayItemList* display_list() const { return display_list_.get(); }
   void SetEmptyBounds();
@@ -75,7 +76,7 @@ class CC_EXPORT RecordingSource {
   void UpdateInvalidationForRecordedBounds(const gfx::Rect& old_recorded_bounds,
                                            const gfx::Rect& new_recorded_bounds,
                                            Region& invalidation);
-  void FinishDisplayItemListUpdate();
+  void FinishDisplayItemListUpdate(int layer_id);
 
   friend class RasterSource;
 

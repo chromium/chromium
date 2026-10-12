@@ -138,7 +138,7 @@ bool PictureLayer::Update() {
 
   updated |= recording_source.Update(
       bounds(), layer_tree_host()->recording_scale_factor(), *client_,
-      last_updated_invalidation_.Write(*this));
+      last_updated_invalidation_.Write(*this), id());
 
   if (!updated) {
     return false;

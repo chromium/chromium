@@ -42,10 +42,10 @@ void RecordingSource::UpdateInvalidationForRecordedBounds(
   invalidation.Union(no_longer_exposed_region);
 }
 
-void RecordingSource::FinishDisplayItemListUpdate() {
+void RecordingSource::FinishDisplayItemListUpdate(int layer_id) {
   TRACE_EVENT0("cc", "RecordingSource::FinishDisplayItemListUpdate");
   DetermineIfSolidColor();
-  display_list_->EmitTraceSnapshot();
+  display_list_->EmitTraceSnapshot(layer_id);
 
   directly_composited_image_info_ =
       display_list_->GetDirectlyCompositedImageInfo();
@@ -67,7 +67,8 @@ void RecordingSource::SetNeedsDisplayRect(const gfx::Rect& layer_rect) {
 bool RecordingSource::Update(const gfx::Size& layer_size,
                              float recording_scale_factor,
                              ContentLayerClient& client,
-                             Region& invalidation) {
+                             Region& invalidation,
+                             int layer_id) {
   invalidation_.Swap(&invalidation);
   invalidation_.Clear();
 
@@ -110,7 +111,7 @@ bool RecordingSource::Update(const gfx::Size& layer_size,
 
   recorded_bounds_ = new_recorded_bounds;
   display_list_ = std::move(display_list);
-  FinishDisplayItemListUpdate();
+  FinishDisplayItemListUpdate(layer_id);
   return true;
 }
 

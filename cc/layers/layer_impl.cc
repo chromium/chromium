@@ -4,10 +4,10 @@
 
 #include "cc/layers/layer_impl.h"
 
-#include <stddef.h>
-#include <stdint.h>
-
 #include <algorithm>
+#include <cinttypes>
+#include <cstddef>
+#include <cstdint>
 #include <utility>
 
 #include "base/atomic_sequence_num.h"
@@ -15,6 +15,7 @@
 #include "base/json/json_writer.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/base/math_util.h"
@@ -123,9 +124,13 @@ LayerImpl::LayerImpl(LayerTreeImpl* tree_impl, int id)
 }
 
 LayerImpl::~LayerImpl() {
+  // Emit both the pointer-based "id" (used by Catapult's ObjectCollection to
+  // match the implicit snapshot id in AsValueInto) and "layer_id".
   TRACE_EVENT_INSTANT(
       TRACE_DISABLED_BY_DEFAULT("cc.debug"), "cc::LayerImpl:deleted",
-      perfetto::TerminatingFlow::FromPointer(this, "LayerImpl"));
+      perfetto::TerminatingFlow::FromPointer(this, "LayerImpl"), "id",
+      base::StringPrintf("0x%" PRIxPTR, reinterpret_cast<uintptr_t>(this)),
+      "layer_id", layer_id_);
 }
 
 mojom::LayerType LayerImpl::GetLayerType() const {

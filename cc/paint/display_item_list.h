@@ -165,7 +165,7 @@ class CC_PAINT_EXPORT DisplayItemList
       DiscardableImageMap::DecodingModeMap* = nullptr,
       DiscardableImageMap::PaintWorkletInputs* = nullptr) const;
 
-  void EmitTraceSnapshot() const;
+  void EmitTraceSnapshot(int layer_id = 0) const;
 
   gfx::Rect VisualRectForTesting(int index) const {
     return visual_rects_[static_cast<size_t>(index)];

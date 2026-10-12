@@ -684,7 +684,8 @@ LayerTreeHostImpl::LayerTreeHostImpl(
 
   TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                       "LayerTreeHostImpl:created",
-                      perfetto::Flow::ProcessScoped(id_, "LayerTreeHostImpl"));
+                      perfetto::Flow::ProcessScoped(id_, "LayerTreeHostImpl"),
+                      "layerTreeId", id_);
 
   browser_controls_offset_manager_ = BrowserControlsOffsetManager::Create(
       this, settings.top_controls_show_threshold,
@@ -717,7 +718,8 @@ LayerTreeHostImpl::~LayerTreeHostImpl() {
   TRACE_EVENT0("cc", "LayerTreeHostImpl::~LayerTreeHostImpl()");
   TRACE_EVENT_INSTANT(
       TRACE_DISABLED_BY_DEFAULT("cc.debug"), "LayerTreeHostImpl:deleted",
-      perfetto::TerminatingFlow::ProcessScoped(id_, "LayerTreeHostImpl"));
+      perfetto::TerminatingFlow::ProcessScoped(id_, "LayerTreeHostImpl"),
+      "layerTreeId", id_);
 
   // The frame sink is released before shutdown, which takes down
   // all the resource and raster structures.

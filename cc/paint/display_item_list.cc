@@ -4,10 +4,13 @@
 
 #include "cc/paint/display_item_list.h"
 
+#include <cinttypes>
+#include <cstdint>
 #include <limits>
 #include <map>
 #include <string>
 
+#include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/base/math_util.h"
@@ -101,6 +104,7 @@ void DisplayItemList::Raster(SkCanvas* canvas,
                     TotalOpCount());
   std::vector<size_t> offsets = OffsetsOfOpsToRaster(canvas);
   if (offsets.empty()) {
+    TRACE_EVENT_END1("cc", "DisplayItemList::Raster", "rastered_op_count", 0);
     return;
   }
   paint_op_buffer_.Playback(canvas, params, /*local_ctm=*/true, &offsets);
@@ -227,17 +231,20 @@ PaintRecord DisplayItemList::FinalizeAndReleaseAsRecordForTesting() {
   return paint_op_buffer_.ReleaseAsRecord();
 }
 
-void DisplayItemList::EmitTraceSnapshot() const {
+void DisplayItemList::EmitTraceSnapshot(int layer_id) const {
   bool include_items;
   TRACE_EVENT_CATEGORY_GROUP_ENABLED(
       TRACE_DISABLED_BY_DEFAULT("cc.debug.display_items"), &include_items);
+  // Emit both the pointer-based "id" (used by Catapult's ObjectCollection to
+  // resolve the id_ref emitted by RasterSource::AsValueInto) and "layer_id".
   TRACE_EVENT_INSTANT(
       TRACE_DISABLED_BY_DEFAULT("cc.debug.display_items") ","
       TRACE_DISABLED_BY_DEFAULT("cc.debug.picture") ","
       TRACE_DISABLED_BY_DEFAULT("devtools.timeline.picture"),
       "cc::DisplayItemList:snapshot",
-      perfetto::Flow::FromPointer(this, "DisplayItemList"),
-      "snapshot", CreateTracedValue(include_items));
+      perfetto::Flow::FromPointer(this, "DisplayItemList"), "id",
+      base::StringPrintf("0x%" PRIxPTR, reinterpret_cast<uintptr_t>(this)),
+      "layer_id", layer_id, "snapshot", CreateTracedValue(include_items));
 }
 
 std::string DisplayItemList::ToString() const {
@@ -281,11 +288,18 @@ void DisplayItemList::AddToValue(base::trace_event::TracedValue* state,
           visual_rects[paint_op_buffer_.GetOpOffsetForTracing(op)], state);
 
       SkPictureRecorder recorder;
-      SkCanvas* canvas = recorder.beginRecording(gfx::RectToSkRect(bounds));
+      SkCanvas* canvas =
+          recorder.beginRecording(bounds.width(), bounds.height());
+      if (!bounds.origin().IsOrigin()) {
+        canvas->translate(-bounds.x(), -bounds.y());
+      }
       op.Raster(canvas, params);
       sk_sp<SkPicture> picture = recorder.finishRecordingAsPicture();
 
-      if (picture->approximateOpCount()) {
+      // `translate` adds 1 op to the recording when `bounds.origin()` is
+      // non-zero.
+      const int initial_op_count = bounds.origin().IsOrigin() ? 0 : 1;
+      if (picture->approximateOpCount() > initial_op_count) {
         std::string b64_picture;
         PictureDebugUtil::SerializeAsBase64(picture.get(), &b64_picture);
         state->SetString("skp64", b64_picture);
@@ -302,7 +316,7 @@ void DisplayItemList::AddToValue(base::trace_event::TracedValue* state,
 
   {
     SkPictureRecorder recorder;
-    SkCanvas* canvas = recorder.beginRecording(gfx::RectToSkRect(bounds));
+    SkCanvas* canvas = recorder.beginRecording(bounds.width(), bounds.height());
     canvas->translate(-bounds.x(), -bounds.y());
     canvas->clipRect(gfx::RectToSkRect(bounds));
     Raster(canvas, /*image_provider=*/nullptr, &zero_scroll_offsets);

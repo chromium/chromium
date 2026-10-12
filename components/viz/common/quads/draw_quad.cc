@@ -60,6 +60,22 @@ void DrawQuad::AsValueInto(
   value->SetInteger("index", it->second);
   value->EndDictionary();
 
+  bool rect_is_clipped;
+  gfx::QuadF rect_as_target_space_quad =
+      cc::MathUtil::MapQuad(shared_quad_state->quad_to_target_transform,
+                            gfx::QuadF(gfx::RectF(rect)), &rect_is_clipped);
+  cc::MathUtil::AddToTracedValue("rect_as_target_space_quad",
+                                 rect_as_target_space_quad, value);
+  value->SetBoolean("rect_is_clipped", rect_is_clipped);
+
+  bool visible_rect_is_clipped;
+  gfx::QuadF visible_rect_as_target_space_quad = cc::MathUtil::MapQuad(
+      shared_quad_state->quad_to_target_transform,
+      gfx::QuadF(gfx::RectF(visible_rect)), &visible_rect_is_clipped);
+  cc::MathUtil::AddToTracedValue("visible_rect_as_target_space_quad",
+                                 visible_rect_as_target_space_quad, value);
+  value->SetBoolean("visible_rect_is_clipped", visible_rect_is_clipped);
+
   if (resource_id != kInvalidResourceId) {
     value->SetInteger("resource_id",
                       ResourceIdIndex(resource_id_to_index_map, resource_id));

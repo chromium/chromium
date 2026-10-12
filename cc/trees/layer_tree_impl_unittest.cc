@@ -5,10 +5,14 @@
 #include "cc/trees/layer_tree_impl.h"
 
 #include <algorithm>
+#include <cinttypes>
 
 #include "base/memory/raw_ptr.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "base/trace_event/traced_value.h"
+#include "base/values.h"
 #include "cc/base/features.h"
 #include "cc/layers/append_quads_context.h"
 #include "cc/layers/append_quads_data.h"
@@ -2823,6 +2827,54 @@ TEST_F(LayerTreeImplTest, TotalScrollOffsetForElement) {
   EXPECT_POINTF_EQ(
       gfx::PointF(0, 0),
       host_impl().active_tree()->TotalMaxScrollOffset(ElementId(999)));
+}
+
+TEST_F(LayerTreeImplTest, AsValueIntoRenderSurfaceLayerList) {
+  LayerImpl* root = root_layer();
+  root->SetBounds(gfx::Size(100, 100));
+  root->SetDrawsContent(true);
+
+  LayerImpl* drawing_child = AddLayerInActiveTree<LayerImpl>();
+  drawing_child->SetBounds(gfx::Size(50, 50));
+  drawing_child->SetDrawsContent(true);
+  CopyProperties(root, drawing_child);
+
+  LayerImpl* non_drawing_child = AddLayerInActiveTree<LayerImpl>();
+  non_drawing_child->SetBounds(gfx::Size(50, 50));
+  non_drawing_child->SetDrawsContent(false);
+  CopyProperties(root, non_drawing_child);
+
+  host_impl().active_tree()->SetDeviceViewportRect(gfx::Rect(root->bounds()));
+  UpdateDrawProperties(host_impl().active_tree());
+
+  ASSERT_TRUE(root->contributes_to_drawn_render_surface());
+  ASSERT_TRUE(drawing_child->contributes_to_drawn_render_surface());
+  ASSERT_FALSE(non_drawing_child->contributes_to_drawn_render_surface());
+
+  base::trace_event::TracedValueJSON state;
+  host_impl().active_tree()->AsValueInto(&state);
+  std::unique_ptr<base::Value> value = state.ToBaseValue();
+  ASSERT_NE(nullptr, value);
+  const base::DictValue* dict = value->GetIfDict();
+  ASSERT_NE(nullptr, dict);
+
+  const base::ListValue* rsl_list = dict->FindList("render_surface_layer_list");
+  ASSERT_NE(nullptr, rsl_list);
+  ASSERT_EQ(2u, rsl_list->size());
+
+  ASSERT_TRUE((*rsl_list)[0].is_dict());
+  const std::string* id_ref_0 = (*rsl_list)[0].GetDict().FindString("id_ref");
+  ASSERT_NE(nullptr, id_ref_0);
+  EXPECT_EQ(base::StringPrintf("0x%" PRIxPTR,
+                               reinterpret_cast<uintptr_t>(drawing_child)),
+            *id_ref_0);
+
+  ASSERT_TRUE((*rsl_list)[1].is_dict());
+  const std::string* id_ref_1 = (*rsl_list)[1].GetDict().FindString("id_ref");
+  ASSERT_NE(nullptr, id_ref_1);
+  EXPECT_EQ(
+      base::StringPrintf("0x%" PRIxPTR, reinterpret_cast<uintptr_t>(root)),
+      *id_ref_1);
 }
 
 }  // namespace

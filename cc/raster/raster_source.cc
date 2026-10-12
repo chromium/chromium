@@ -173,9 +173,9 @@ void RasterSource::AsValueInto(base::trace_event::TracedValue* array) const {
                                   array);
 }
 
-void RasterSource::DidBeginTracing() {
+void RasterSource::DidBeginTracing(int layer_id) {
   if (display_list_.get())
-    display_list_->EmitTraceSnapshot();
+    display_list_->EmitTraceSnapshot(layer_id);
 }
 
 RasterSource::PlaybackSettings::PlaybackSettings() = default;

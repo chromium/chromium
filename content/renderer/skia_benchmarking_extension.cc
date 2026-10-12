@@ -23,6 +23,7 @@
 #include "gin/object_template_builder.h"
 #include "gin/public/wrappable_pointer_tags.h"
 #include "skia/ext/benchmarking_canvas.h"
+#include "skia/ext/font_utils.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/web/web_array_buffer.h"
@@ -30,9 +31,12 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkGraphics.h"
 #include "third_party/skia/include/core/SkPicture.h"
+#include "third_party/skia/include/core/SkSerialProcs.h"
 #include "third_party/skia/include/core/SkStream.h"
+#include "third_party/skia/include/core/SkTypeface.h"
 #include "third_party/skia/include/private/chromium/SkPMColor.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/codec/png_codec.h"
@@ -67,8 +71,12 @@ std::unique_ptr<Picture> CreatePictureFromEncodedString(
     const std::string& encoded) {
   std::string decoded;
   base::Base64Decode(encoded, &decoded);
+  SkDeserialProcs procs{
+      .fTypefaceStreamProc = [](SkStream& stream, void*) -> sk_sp<SkTypeface> {
+        return SkTypeface::MakeDeserialize(&stream, skia::DefaultFontMgr());
+      }};
   sk_sp<SkPicture> skpicture =
-      SkPicture::MakeFromData(decoded.data(), decoded.size());
+      SkPicture::MakeFromData(decoded.data(), decoded.size(), &procs);
   if (!skpicture)
     return nullptr;
 

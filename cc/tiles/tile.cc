@@ -4,12 +4,14 @@
 
 #include "cc/tiles/tile.h"
 
-#include <stddef.h>
-
 #include <algorithm>
+#include <cinttypes>
+#include <cstddef>
+#include <cstdint>
 #include <utility>
 
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/base/math_util.h"
@@ -38,8 +40,14 @@ Tile::Tile(TileManager* tile_manager,
       id_(tile_manager->GetUniqueTileId()) {}
 
 Tile::~Tile() {
-  TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("cc.debug"), "cc::Tile:deleted",
-                      perfetto::TerminatingFlow::FromPointer(this, "Tile"));
+  // Emit both the pointer-based "id" (used by Catapult's ObjectCollection to
+  // match the implicit snapshot id in AsValueInto) and tile coordinates.
+  TRACE_EVENT_INSTANT(
+      TRACE_DISABLED_BY_DEFAULT("cc.debug"), "cc::Tile:deleted",
+      perfetto::TerminatingFlow::FromPointer(this, "Tile"), "id",
+      base::StringPrintf("0x%" PRIxPTR, reinterpret_cast<uintptr_t>(this)),
+      "layer_id", layer_id_, "tiling_i_index", tiling_i_index_,
+      "tiling_j_index", tiling_j_index_);
   deleted_ = true;
   tile_manager_->Release(this);
 }

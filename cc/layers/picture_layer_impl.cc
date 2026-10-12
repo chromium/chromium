@@ -809,7 +809,7 @@ void PictureLayerImpl::ResetChangeTracking() {
 }
 
 void PictureLayerImpl::DidBeginTracing() {
-  raster_source_->DidBeginTracing();
+  raster_source_->DidBeginTracing(id());
 }
 
 void PictureLayerImpl::ReleaseResources() {

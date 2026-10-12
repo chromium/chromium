@@ -2281,8 +2281,9 @@ void LayerTreeImpl::AsValueInto(base::trace_event::TracedValue* state) const {
 
   state->BeginArray("render_surface_layer_list");
   for (auto* layer : base::Reversed(*this)) {
-    if (layer->contributes_to_drawn_render_surface())
+    if (!layer->contributes_to_drawn_render_surface()) {
       continue;
+    }
     viz::TracedValue::AppendIDRef(viz::TracedValue::Id(layer), state);
   }
   state->EndArray();

@@ -123,7 +123,7 @@ class CC_EXPORT RasterSource : public base::RefCountedThreadSafe<RasterSource> {
   }
 
   // Tracing functionality.
-  void DidBeginTracing();
+  void DidBeginTracing(int layer_id = 0);
   void AsValueInto(base::trace_event::TracedValue* array) const;
 
   const scoped_refptr<const DisplayItemList>& GetDisplayItemList() const {

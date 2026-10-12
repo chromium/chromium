@@ -9,6 +9,7 @@
 #include <array>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
@@ -31,8 +32,13 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkFont.h"
+#include "third_party/skia/include/core/SkFontMgr.h"
+#include "third_party/skia/include/core/SkPicture.h"
+#include "third_party/skia/include/core/SkSerialProcs.h"
+#include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
+#include "third_party/skia/include/core/SkTypeface.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -636,6 +642,157 @@ TEST_F(DisplayItemListTest, AsValueWithOps) {
       ASSERT_EQ(nullptr, params_list);
     }
   }
+}
+
+TEST_F(DisplayItemListTest, AsValueWithNonZeroOffsetHasValidSkp) {
+  gfx::Point offset(20, 30);
+  gfx::Size size(8, 9);
+  gfx::Rect bounds(offset, size);
+  auto list = base::MakeRefCounted<DisplayItemList>();
+
+  {
+    list->StartPaint();
+    PaintFlags red_paint;
+    red_paint.setColor(SK_ColorRED);
+    list->push<DrawRectOp>(gfx::RectToSkRect(bounds), red_paint);
+    list->EndPaintOfUnpaired(bounds);
+  }
+  list->Finalize();
+
+  std::unique_ptr<base::Value> root = ToBaseValue(list.get(), true);
+  const base::DictValue* root_dict = root->GetIfDict();
+  ASSERT_NE(nullptr, root_dict);
+
+  auto verify_skp64_draws_red = [&](const std::string* b64_skp) {
+    ASSERT_NE(nullptr, b64_skp);
+    std::string decoded;
+    ASSERT_TRUE(base::Base64Decode(*b64_skp, &decoded));
+    sk_sp<SkPicture> picture =
+        SkPicture::MakeFromData(decoded.data(), decoded.size());
+    ASSERT_NE(nullptr, picture);
+    EXPECT_EQ(SkRect::MakeWH(size.width(), size.height()), picture->cullRect());
+
+    SkBitmap bitmap;
+    ASSERT_TRUE(bitmap.tryAllocN32Pixels(size.width(), size.height()));
+    bitmap.eraseColor(SK_ColorTRANSPARENT);
+    SkCanvas canvas(bitmap, SkSurfaceProps{});
+    picture->playback(&canvas);
+
+    for (int y = 0; y < size.height(); ++y) {
+      for (int x = 0; x < size.width(); ++x) {
+        EXPECT_EQ(SK_ColorRED, bitmap.getColor(x, y));
+      }
+    }
+  };
+
+  verify_skp64_draws_red(root_dict->FindString("skp64"));
+
+  const base::DictValue* params_dict = root_dict->FindDict("params");
+  ASSERT_NE(nullptr, params_dict);
+  const base::ListValue* items = params_dict->FindList("items");
+  ASSERT_NE(nullptr, items);
+  ASSERT_EQ(1u, items->size());
+  ASSERT_TRUE((*items)[0].is_dict());
+  verify_skp64_draws_red((*items)[0].GetDict().FindString("skp64"));
+}
+
+TEST_F(DisplayItemListTest, AsValueWithDrawTextBlobHasValidSkp) {
+  gfx::Point offset(20, 30);
+  gfx::Size size(100, 40);
+  gfx::Rect bounds(offset, size);
+  auto list = base::MakeRefCounted<DisplayItemList>();
+
+  SkFont font = skia::DefaultFont();
+  font.setSize(24.0f);
+  sk_sp<SkTextBlob> text_blob = SkTextBlob::MakeFromString("Hello", font);
+  ASSERT_NE(nullptr, text_blob);
+
+  {
+    list->StartPaint();
+    PaintFlags black_paint;
+    black_paint.setColor(SK_ColorBLACK);
+    list->push<DrawTextBlobOp>(text_blob, static_cast<float>(offset.x()),
+                               static_cast<float>(offset.y() + 28),
+                               black_paint);
+    list->EndPaintOfUnpaired(bounds);
+  }
+  list->Finalize();
+
+  std::unique_ptr<base::Value> root = ToBaseValue(list.get(), true);
+  const base::DictValue* root_dict = root->GetIfDict();
+  ASSERT_NE(nullptr, root_dict);
+
+  auto verify_skp64_draws_text = [&](const std::string* b64_skp) {
+    ASSERT_NE(nullptr, b64_skp);
+    std::string decoded;
+    ASSERT_TRUE(base::Base64Decode(*b64_skp, &decoded));
+
+    // Verify that `kDontIncludeData` omitted embedded font data: deserializing
+    // without an `SkFontMgr` produces an empty typeface (`countGlyphs() == 0`).
+    bool deserialized_empty_without_font_mgr = false;
+    SkDeserialProcs no_font_mgr_procs{
+        .fTypefaceStreamProc = [](SkStream& stream,
+                                  void* ctx) -> sk_sp<SkTypeface> {
+          sk_sp<SkTypeface> tf = SkTypeface::MakeDeserialize(&stream, nullptr);
+          if (tf && tf->countGlyphs() == 0) {
+            *static_cast<bool*>(ctx) = true;
+          }
+          return tf;
+        },
+        .fTypefaceCtx = &deserialized_empty_without_font_mgr,
+    };
+    sk_sp<SkPicture> picture_without_font_mgr = SkPicture::MakeFromData(
+        decoded.data(), decoded.size(), &no_font_mgr_procs);
+    ASSERT_NE(nullptr, picture_without_font_mgr);
+    EXPECT_TRUE(deserialized_empty_without_font_mgr);
+
+    // Deserializing with `skia::DefaultFontMgr()` resolves the typeface and
+    // renders non-transparent text pixels.
+    bool deserialized_non_empty_typeface = false;
+    SkDeserialProcs procs{
+        .fTypefaceStreamProc = [](SkStream& stream,
+                                  void* ctx) -> sk_sp<SkTypeface> {
+          sk_sp<SkTypeface> tf =
+              SkTypeface::MakeDeserialize(&stream, skia::DefaultFontMgr());
+          if (tf && tf->countGlyphs() > 0) {
+            *static_cast<bool*>(ctx) = true;
+          }
+          return tf;
+        },
+        .fTypefaceCtx = &deserialized_non_empty_typeface,
+    };
+    sk_sp<SkPicture> picture =
+        SkPicture::MakeFromData(decoded.data(), decoded.size(), &procs);
+    ASSERT_NE(nullptr, picture);
+    EXPECT_TRUE(deserialized_non_empty_typeface);
+    EXPECT_EQ(SkRect::MakeWH(size.width(), size.height()), picture->cullRect());
+
+    SkBitmap bitmap;
+    ASSERT_TRUE(bitmap.tryAllocN32Pixels(size.width(), size.height()));
+    bitmap.eraseColor(SK_ColorTRANSPARENT);
+    SkCanvas canvas(bitmap, SkSurfaceProps{});
+    picture->playback(&canvas);
+
+    int non_transparent_pixels = 0;
+    for (int y = 0; y < size.height(); ++y) {
+      for (int x = 0; x < size.width(); ++x) {
+        if (bitmap.getColor(x, y) != SK_ColorTRANSPARENT) {
+          ++non_transparent_pixels;
+        }
+      }
+    }
+    EXPECT_GT(non_transparent_pixels, 0);
+  };
+
+  verify_skp64_draws_text(root_dict->FindString("skp64"));
+
+  const base::DictValue* params_dict = root_dict->FindDict("params");
+  ASSERT_NE(nullptr, params_dict);
+  const base::ListValue* items = params_dict->FindList("items");
+  ASSERT_NE(nullptr, items);
+  ASSERT_EQ(1u, items->size());
+  ASSERT_TRUE((*items)[0].is_dict());
+  verify_skp64_draws_text((*items)[0].GetDict().FindString("skp64"));
 }
 
 TEST_F(DisplayItemListTest, SizeEmpty) {

@@ -16,6 +16,7 @@
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkPicture.h"
 #include "third_party/skia/include/core/SkSerialProcs.h"
+#include "third_party/skia/include/core/SkTypeface.h"
 
 namespace cc {
 
@@ -27,6 +28,12 @@ void PictureDebugUtil::SerializeAsBase64(const SkPicture* picture,
         // fail to be read-back and therefore fail to be encoded unless we can
         // thread the correct GrDirectContext through to here.
         return skia::EncodePngAsSkData(nullptr, img);
+      },
+      .fTypefaceProc = [](SkTypeface* typeface, void*) -> SkSerialReturnType {
+        // Do not embed raw font data (~1 MB per typeface) into trace SKPs;
+        // SkiaBenchmarking deserializes typefaces via skia::DefaultFontMgr().
+        return typeface->serialize(
+            SkTypeface::SerializeBehavior::kDontIncludeData);
       }};
   sk_sp<SkData> data = picture->serialize(&procs);
   *output = base::Base64Encode(
