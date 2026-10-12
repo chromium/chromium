@@ -78,6 +78,7 @@
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/ui/extensions/reload_page_dialog_controller.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_entry_view.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/test/test_extension_dir.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/toggle_button.h"
@@ -1692,6 +1693,7 @@ class ContextualTasksExtensionsInteractiveUiTest
     auto enabled = GetDefaultEnabledFeatures();
     enabled.push_back({kContextualTasksRearchitecture, {}});
     enabled.push_back({kContextualTasksSidePanelRearchitecture, {}});
+    enabled.push_back({extensions_features::kExtensionsMenuAccessControl, {}});
     feature_list_.InitWithFeaturesAndParameters(enabled,
                                                 GetDefaultDisabledFeatures());
   }
