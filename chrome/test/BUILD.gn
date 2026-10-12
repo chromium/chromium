@@ -2313,9 +2313,7 @@ if (!is_android) {
     # enable the diagnostic by removing this line.
     configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 
-    if (!is_android) {
-      deps += [ "//chrome/browser/signin:signin_browser_test_base" ]
-    }
+    deps += [ "//chrome/browser/signin:signin_browser_test_base" ]
   }
 }
 
@@ -3068,7 +3066,6 @@ test("unit_tests") {
     ]
 
     deps += [
-      "//chrome//services/util_win:unit_tests",
       "//chrome/app:win_unit_tests",
       "//chrome/browser/install_verification:unit_tests",
       "//chrome/browser/os_crypt:unit_tests",
@@ -3077,6 +3074,7 @@ test("unit_tests") {
       "//chrome/browser/win:unit_tests",
       "//chrome/browser/win/conflicts:unit_tests",
       "//chrome/browser/win/isolated_browser:unit_tests",
+      "//chrome/services/util_win:unit_tests",
     ]
 
     if (enable_media_remoting_redirection) {
@@ -3723,8 +3721,6 @@ test("unit_tests") {
   }
 
   if (is_linux || is_chromeos || is_mac || is_win) {
-    sources += []
-
     deps += [
       "../browser/enterprise/connectors/device_trust:features",
       "../browser/enterprise/connectors/device_trust/signals:test_support",
