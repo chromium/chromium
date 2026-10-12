@@ -27,12 +27,6 @@ class AudioDataS16Converter {
       scoped_refptr<AudioBuffer> buffer,
       bool is_multichannel_supported);
 
-  mojom::AudioDataS16Ptr ConvertToAudioDataS16(
-      std::unique_ptr<AudioBus> audio_bus,
-      int sample_rate,
-      ChannelLayout channel_layout,
-      bool is_multichannel_supported);
-
   mojom::AudioDataS16Ptr ConvertToAudioDataS16(const AudioBus& audio_bus,
                                                int sample_rate,
                                                ChannelLayout channel_layout,

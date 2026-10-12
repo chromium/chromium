@@ -50,17 +50,6 @@ mojom::AudioDataS16Ptr AudioDataS16Converter::ConvertToAudioDataS16(
 }
 
 mojom::AudioDataS16Ptr AudioDataS16Converter::ConvertToAudioDataS16(
-    std::unique_ptr<AudioBus> audio_bus,
-    int sample_rate,
-    ChannelLayout channel_layout,
-    bool is_multichannel_supported) {
-  DCHECK_GT(audio_bus->frames(), 0);
-  DCHECK_GT(audio_bus->channels(), 0);
-  return ConvertToAudioDataS16(*audio_bus, sample_rate, channel_layout,
-                               is_multichannel_supported);
-}
-
-mojom::AudioDataS16Ptr AudioDataS16Converter::ConvertToAudioDataS16(
     const AudioBus& audio_bus,
     int sample_rate,
     ChannelLayout channel_layout,
