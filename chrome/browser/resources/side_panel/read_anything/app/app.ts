@@ -776,8 +776,10 @@ export class AppElement extends AppElementBase implements SpeechListener,
   }
 
   protected onPresentationChange_(event: CustomEvent<{data: number}>) {
-    if (event.detail && event.detail.data !== undefined) {
-      this.presentationState_ = event.detail.data;
+    const presentationState = event.detail.data;
+    if (presentationState !== this.presentationState_) {
+      this.visualBrowserProxy_.togglePresentation();
+      this.presentationState_ = presentationState;
     }
   }
 

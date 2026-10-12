@@ -1021,5 +1021,25 @@ suite('AppReceivesToolbarChanges', () => {
       assertEquals(
           audioBrowserProxy.noHighlighting, app.$.toolbar.highlightGranularity);
     });
+
+    test('presentation', async () => {
+      const immersiveState =
+          visualBrowserProxy.getInImmersiveOverlayPresentationState();
+      emitEvent(
+          app, ToolbarEvent.PRESENTATION_CHANGE,
+          {detail: {data: immersiveState}});
+      await microtasksFinished();
+
+      assertEquals(1, visualBrowserProxy.getCallCount('togglePresentation'));
+      assertEquals(immersiveState, app.$.toolbar.presentationState);
+
+      // Selecting the current state does nothing.
+      emitEvent(
+          app, ToolbarEvent.PRESENTATION_CHANGE,
+          {detail: {data: immersiveState}});
+      await microtasksFinished();
+
+      assertEquals(1, visualBrowserProxy.getCallCount('togglePresentation'));
+    });
   });
 });

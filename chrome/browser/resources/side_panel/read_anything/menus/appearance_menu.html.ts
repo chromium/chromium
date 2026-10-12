@@ -10,8 +10,7 @@ export function getHtml(this: AppearanceMenuElement) {
   return html`<!--_html_template_start_-->
 <grouped-action-menu id="menu" label="$i18n{appearanceTitle}"
     .menuGroups="${this.groups_}" .nonModal="${this.nonModal}"
-    .closeOnClick="${false}"
-    @presentation-change="${this.onPresentationChange_}">
+    .closeOnClick="${false}">
 </grouped-action-menu>
 <!--_html_template_end_-->`;
 }

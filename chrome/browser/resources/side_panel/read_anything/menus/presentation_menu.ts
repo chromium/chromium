@@ -68,10 +68,7 @@ export class PresentationMenuElement extends PresentationMenuElementBase
     this.$.menu.close();
   }
 
-  protected onPresentationChange_(e: CustomEvent<{data: number}>) {
-    if (e.detail.data !== this.presentationState) {
-      this.visualBrowserProxy_.togglePresentation();
-    }
+  protected onPresentationChange_() {
     this.fire(ToolbarEvent.CLOSE_ALL_MENUS);
   }
 }

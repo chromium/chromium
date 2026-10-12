@@ -76,34 +76,21 @@ suite('AppearanceMenuElement', () => {
         appearanceMenu.$.menu.menuGroups[0]!.selectedValue);
   });
 
-  test('on presentation change', async () => {
+  test('on presentation change does not close menus', async () => {
     let closeAllMenusCount = 0;
     document.addEventListener(
         ToolbarEvent.CLOSE_ALL_MENUS, () => closeAllMenusCount += 1);
 
-    const sidePanelState = visualBrowserProxy.getInSidePanelPresentationState();
-    const immersiveState =
-        visualBrowserProxy.getInImmersiveOverlayPresentationState();
-
-    appearanceMenu.presentationState = sidePanelState;
-    await microtasksFinished();
-
-    appearanceMenu.$.menu.dispatchEvent(new CustomEvent(
-        ToolbarEvent.PRESENTATION_CHANGE, {detail: {data: immersiveState}}));
+    appearanceMenu.$.menu.dispatchEvent(
+        new CustomEvent(ToolbarEvent.PRESENTATION_CHANGE, {
+          detail: {
+            data: visualBrowserProxy.getInImmersiveOverlayPresentationState(),
+          },
+        }));
     await microtasksFinished();
 
     assertEquals(0, closeAllMenusCount);
-    assertEquals(1, visualBrowserProxy.getCallCount('togglePresentation'));
-
-    appearanceMenu.presentationState = immersiveState;
-    await microtasksFinished();
-
-    appearanceMenu.$.menu.dispatchEvent(new CustomEvent(
-        ToolbarEvent.PRESENTATION_CHANGE, {detail: {data: sidePanelState}}));
-    await microtasksFinished();
-
-    assertEquals(0, closeAllMenusCount);
-    assertEquals(2, visualBrowserProxy.getCallCount('togglePresentation'));
+    assertEquals(0, visualBrowserProxy.getCallCount('togglePresentation'));
   });
 
   test('can be closed programatically', () => {

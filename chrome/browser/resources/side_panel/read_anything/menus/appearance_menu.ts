@@ -156,13 +156,6 @@ export class AppearanceMenuElement extends AppearanceMenuElementBase implements
   close() {
     this.$.menu.close();
   }
-
-  protected onPresentationChange_(e: CustomEvent<{data: number}>) {
-    const newPresentationState = e.detail.data;
-    if (newPresentationState !== this.presentationState) {
-      this.visualBrowserProxy_.togglePresentation();
-    }
-  }
 }
 
 declare global {
