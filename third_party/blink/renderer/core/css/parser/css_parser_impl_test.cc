@@ -67,6 +67,8 @@ class TestCSSParserObserver : public CSSParserObserver {
     if (IsAtTargetLevel()) {
       property_start_ = start_offset;
       property_end_ = end_offset;
+      property_is_important_ = is_important;
+      property_is_parsed_ = is_parsed;
     }
   }
   void ObserveComment(unsigned start_offset, unsigned end_offset) override {}
@@ -94,6 +96,8 @@ class TestCSSParserObserver : public CSSParserObserver {
   StyleRule::RuleType rule_type_ = StyleRule::RuleType::kStyle;
   unsigned property_start_ = 0;
   unsigned property_end_ = 0;
+  bool property_is_important_ = false;
+  bool property_is_parsed_ = false;
   unsigned rule_header_start_ = 0;
   unsigned rule_header_end_ = 0;
   unsigned rule_body_start_ = 0;
@@ -1708,6 +1712,29 @@ TEST(CSSParserImplTest, CustomMediaQueryValueInvalid) {
   EXPECT_TRUE(stream.AtEnd());
   EXPECT_EQ(rule->GetName(), "--query");
   EXPECT_EQ(rule->GetMediaQueryValue()->MediaText(), "not all");
+}
+
+TEST(CSSParserImplTest, CustomPropertyImportantObserver) {
+  test::TaskEnvironment task_environment;
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(context);
+
+  {
+    TestCSSParserObserver observer;
+    CSSParserImpl::ParseStyleSheetForInspector("div { --foo: bar !important; }",
+                                               context, style_sheet, observer);
+    EXPECT_TRUE(observer.property_is_parsed_);
+    EXPECT_TRUE(observer.property_is_important_);
+  }
+
+  {
+    TestCSSParserObserver observer;
+    CSSParserImpl::ParseStyleSheetForInspector("div { --foo: bar; }", context,
+                                               style_sheet, observer);
+    EXPECT_TRUE(observer.property_is_parsed_);
+    EXPECT_FALSE(observer.property_is_important_);
+  }
 }
 
 }  // namespace blink

@@ -3483,6 +3483,7 @@ bool CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
                                   is_animation_tainted)) {
           return false;
         }
+        important = parsed_properties_.back().IsImportant();
       } else if (unresolved_property != CSSPropertyID::kInvalid) {
         if (observer_) {
           CSSParserTokenStream::State savepoint = stream.Save();
