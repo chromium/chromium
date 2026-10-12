@@ -72,6 +72,9 @@ typedef void (^ProceduralBlock)(void);
 // Height of the content inside this view.
 @property(nonatomic, readonly) CGFloat viewContentHeight;
 
+// Whether the collection view should scroll to the bottom when presented.
+@property(nonatomic, assign) BOOL shouldScrollToBottomOnPresentation;
+
 // Fetches and sets the background image for a preset background cell, handling
 // failures with a snackbar and retry mechanism.
 - (void)fetchPresetImageForCell:(HomeCustomizationBackgroundCell*)cell

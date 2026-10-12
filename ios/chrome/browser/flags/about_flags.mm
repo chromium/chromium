@@ -1378,6 +1378,11 @@ const FeatureEntry::FeatureParam kTipsNotificationTipShowArm[] = {
      segmentation_platform::kTipsNotificationsEphemeralModule},
 };
 
+const FeatureEntry::FeatureParam kNTPCustomizationTipShowArm[] = {
+    {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
+     segmentation_platform::kNTPCustomizationEphemeralModule},
+};
+
 const FeatureEntry::FeatureVariation kEphemeralCardRankerCardOverrideOptions[] =
     {
         {"- Force Show Lens Search Tip", kLensSearchTipShowArm, nullptr},
@@ -1392,6 +1397,8 @@ const FeatureEntry::FeatureVariation kEphemeralCardRankerCardOverrideOptions[] =
          kEnhancedSafeBrowsingTipShowArm, nullptr},
         {"- Force Show NTP Theme Tip", kNTPThemeTipShowArm, nullptr},
         {"- Force Show Tips Notification Tip", kTipsNotificationTipShowArm,
+         nullptr},
+        {"- Force Show NTP Customization Tip", kNTPCustomizationTipShowArm,
          nullptr},
 };
 

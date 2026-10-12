@@ -265,6 +265,10 @@ CGFloat const kSheetCornerRadius = 30;
   }
 }
 
+- (void)scrollMainPageToBottom {
+  self.mainViewController.shouldScrollToBottomOnPresentation = YES;
+}
+
 #pragma mark - HomeCustomizationNavigationDelegate
 
 - (void)presentCustomizationMenuPage:(CustomizationMenuPage)page {

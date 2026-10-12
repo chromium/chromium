@@ -1381,9 +1381,13 @@ using ntp_tiles::AimButtonRefactorArm;
 }
 
 - (void)openMainCustomizationMenuWithIconBubbleOnDismiss:
-    (BOOL)withIconBubbleOnDismiss {
+            (BOOL)withIconBubbleOnDismiss
+                                          scrollToBottom:(BOOL)scrollToBottom {
   _presentCustomizationButtonBubbleOnDismiss = withIconBubbleOnDismiss;
   [self openCustomizationMenuAtPage:CustomizationMenuPage::kMain animated:YES];
+  if (scrollToBottom) {
+    [_customizationCoordinator scrollMainPageToBottom];
+  }
 }
 
 - (void)openSafariDataImport {

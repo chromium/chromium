@@ -23,9 +23,11 @@ class GURL;
 
 // Opens the Home Customization menu at the Main page, optionally presenting an
 // IPH bubble on the customization button when dismissed if
-// `withIconBubbleOnDismiss` is YES.
+// `withIconBubbleOnDismiss` is YES, and scrolling to the bottom of the sheet if
+// `scrollToBottom` is YES.
 - (void)openMainCustomizationMenuWithIconBubbleOnDismiss:
-    (BOOL)withIconBubbleOnDismiss;
+            (BOOL)withIconBubbleOnDismiss
+                                          scrollToBottom:(BOOL)scrollToBottom;
 
 // Opens the Safari Data import instructions.
 - (void)openSafariDataImport;

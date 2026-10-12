@@ -178,6 +178,14 @@
          self.collectionView.contentSize.height;
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
+  if (self.shouldScrollToBottomOnPresentation) {
+    self.shouldScrollToBottomOnPresentation = NO;
+    [self scrollToBottomAnimated:YES];
+  }
+}
+
 #pragma mark - Private
 
 // Registers the different cells used by the collection view.
@@ -259,6 +267,23 @@
   }
 
   return snapshot;
+}
+
+// Scrolls the collection view to the bottom so the toggle cells are visible.
+- (void)scrollToBottomAnimated:(BOOL)animated {
+  NSInteger lastSection = [_collectionView numberOfSections] - 1;
+  if (lastSection < 0) {
+    return;
+  }
+  NSInteger lastItem = [_collectionView numberOfItemsInSection:lastSection] - 1;
+  if (lastItem < 0) {
+    return;
+  }
+  NSIndexPath* lastIndexPath = [NSIndexPath indexPathForItem:lastItem
+                                                   inSection:lastSection];
+  [_collectionView scrollToItemAtIndexPath:lastIndexPath
+                          atScrollPosition:UICollectionViewScrollPositionBottom
+                                  animated:animated];
 }
 
 #pragma mark - HomeCustomizationViewControllerProtocol
