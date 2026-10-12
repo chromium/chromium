@@ -24,6 +24,8 @@ import {isRTL} from 'chrome://resources/js/util.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import {loadTimeData} from '../i18n_setup.js';
+
 import {getCss} from './search_engine_list_dialog.css.js';
 import {getHtml} from './search_engine_list_dialog.html.js';
 import type {SearchEngine, SearchEnginesBrowserProxy} from './search_engines_browser_proxy.js';
@@ -78,6 +80,14 @@ export class SettingsSearchEngineListDialogElement extends
        * checkbox is not displayed.
        */
       saveGuestChoice_: {type: Boolean},
+
+      /**
+       * Whether the "More options" entry point is enabled via feature flag.
+       */
+      pickerWithMoreEnginesEnabled_: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
@@ -85,6 +95,8 @@ export class SettingsSearchEngineListDialogElement extends
   protected accessor selectedEngineId_: string = '';
   protected accessor saveGuestChoice_: boolean|null = null;
   protected accessor showSaveGuestChoice_: boolean = false;
+  protected accessor pickerWithMoreEnginesEnabled_: boolean =
+      loadTimeData.getBoolean('pickerWithMoreEngines');
 
   private browserProxy_: SearchEnginesBrowserProxy =
       SearchEnginesBrowserProxyImpl.getInstance();

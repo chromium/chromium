@@ -59,6 +59,19 @@ cr-dialog::part(body-container) {
   max-height: 360px;
 }
 
+:host([picker-with-more-engines-enabled_]) cr-dialog::part(wrapper) {
+  /* Height selected because in the most common configuration, it ensures
+   * ~6.5 rows of engines are visible and make it clear that there are more
+   * below the fold. */
+  height: 480px;
+}
+
+:host([picker-with-more-engines-enabled_]) cr-dialog::part(body-container) {
+  flex: 1;
+  max-height: none;
+  scrollbar-gutter: stable;
+}
+
 cr-radio-button {
   --cr-radio-button-size: 20px;
   margin: 0 16px;
