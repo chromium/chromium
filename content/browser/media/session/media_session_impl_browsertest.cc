@@ -54,6 +54,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
+#include "url/url_constants.h"
 
 using media_session::mojom::AudioFocusType;
 using media_session::mojom::MediaPlaybackState;
@@ -2812,6 +2813,26 @@ IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
         media_session::mojom::MediaSessionImageType::kSourceIcon,
         expected_images);
   }
+}
+
+// Pages that never report favicons (non-HTTP(S) pages without <link rel=icon>,
+// e.g. WebUIs) must not keep the previous page's favicons as source icons.
+// Regression test for crbug.com/449515858.
+IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
+                       UpdateFaviconURL_ClearOnNavigateToPageWithoutFavicons) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("example.com", "/title1.html")));
+  media_session::MediaImage favicon;
+  favicon.src = embedded_test_server()->GetURL("example.com", "/favicon.ico");
+  favicon.sizes.push_back(kDefaultFaviconSize);
+  media_session::test::MockMediaSessionMojoObserver(*media_session_)
+      .WaitForExpectedImagesOfType(
+          media_session::mojom::MediaSessionImageType::kSourceIcon, {favicon});
+
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
+  media_session::test::MockMediaSessionMojoObserver(*media_session_)
+      .WaitForExpectedImagesOfType(
+          media_session::mojom::MediaSessionImageType::kSourceIcon, {});
 }
 
 IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
