@@ -259,6 +259,7 @@ TEST_F(UntrustedSourceTest, ExpandedLhs_ServesHtmlEmbeddingLhsUrl) {
   ASSERT_TRUE(data);
   EXPECT_THAT(base::as_string_view(*data),
               testing::HasSubstr(
-                  R"(<iframe src="https://www.google.com/search?nem=341">)"));
+                  R"(<iframe src="https://www.google.com/search?nem=341" )"
+                  R"(allow="unbounded-element")"));
   EXPECT_EQ("text/html", untrusted_source_->GetMimeType(url));
 }
