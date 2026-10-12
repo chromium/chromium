@@ -1606,9 +1606,10 @@ public class CrossDeviceSettingImporterUnitTest {
     @EnableFeatures(ChromeFeatureList.XPLAT_SYNCED_SETUP_THEMES)
     public void testGetThemeFromRemoteDevice_NoBestMatchDevice_QueriesNullOsTypeAndFormFactor() {
         SyncedSetUpUtilsBridge.setBestMatchDeviceForTesting(OsType.UNKNOWN, FormFactor.UNKNOWN);
+        when(mNtpCustomizationConfigManager.getSyncedNtpBackgroundData()).thenReturn(null);
         NtpBackgroundDataColor theme =
                 new NtpBackgroundDataColor(
-                        mActivity, PlatformType.ANDROID, NtpThemeColorId.NTP_COLORS_BLUE, false);
+                        mActivity, PlatformType.DESKTOP, NtpThemeColorId.NTP_COLORS_BLUE, false);
         when(mCrossDeviceThemeTracker.getThemeForOsTypeAndFormFactor(any(), isNull(), isNull()))
                 .thenReturn(theme);
 
@@ -1618,6 +1619,82 @@ public class CrossDeviceSettingImporterUnitTest {
 
         assertEquals(theme, result);
         verify(mCrossDeviceThemeTracker).getThemeForOsTypeAndFormFactor(any(), isNull(), isNull());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.XPLAT_SYNCED_SETUP_THEMES)
+    public void
+            testGetThemeFromRemoteDevice_NoBestMatchDevice_ReturnsStagedAndroidThemeBeforeTracker() {
+        SyncedSetUpUtilsBridge.setBestMatchDeviceForTesting(OsType.UNKNOWN, FormFactor.UNKNOWN);
+        NtpBackgroundDataColor stagedAndroidTheme =
+                new NtpBackgroundDataColor(
+                        mActivity, PlatformType.ANDROID, NtpThemeColorId.NTP_COLORS_BLUE, false);
+        when(mNtpCustomizationConfigManager.getSyncedNtpBackgroundData())
+                .thenReturn(stagedAndroidTheme);
+
+        NtpBackgroundDataBase result =
+                initializeCrossDeviceSettingImporter()
+                        .getThemeFromRemoteDevice(mProfile, mCrossDevicePrefTracker);
+
+        assertEquals(stagedAndroidTheme, result);
+        verify(mCrossDeviceThemeTracker, never())
+                .getThemeForOsTypeAndFormFactor(any(), any(), any());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.XPLAT_SYNCED_SETUP_THEMES)
+    public void
+            testGetThemeFromRemoteDevice_BestMatchAndroid_ReturnsStagedAndroidThemeWithoutQueryingTracker() {
+        SyncedSetUpUtilsBridge.setBestMatchDeviceForTesting(OsType.ANDROID, FormFactor.TABLET);
+        NtpBackgroundDataColor stagedAndroidTheme =
+                new NtpBackgroundDataColor(
+                        mActivity, PlatformType.ANDROID, NtpThemeColorId.NTP_COLORS_BLUE, false);
+        when(mNtpCustomizationConfigManager.getSyncedNtpBackgroundData())
+                .thenReturn(stagedAndroidTheme);
+
+        NtpBackgroundDataBase result =
+                initializeCrossDeviceSettingImporter()
+                        .getThemeFromRemoteDevice(mProfile, mCrossDevicePrefTracker);
+
+        assertEquals(stagedAndroidTheme, result);
+        verify(mCrossDeviceThemeTracker, never())
+                .getThemeForOsTypeAndFormFactor(any(), any(), any());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.XPLAT_SYNCED_SETUP_THEMES)
+    public void
+            testGetThemeFromRemoteDevice_BestMatchAndroid_NoStagedTheme_ReturnsNullWithoutQueryingTracker() {
+        SyncedSetUpUtilsBridge.setBestMatchDeviceForTesting(OsType.ANDROID, FormFactor.TABLET);
+        when(mNtpCustomizationConfigManager.getSyncedNtpBackgroundData()).thenReturn(null);
+
+        NtpBackgroundDataBase result =
+                initializeCrossDeviceSettingImporter()
+                        .getThemeFromRemoteDevice(mProfile, mCrossDevicePrefTracker);
+
+        assertNull(result);
+        verify(mCrossDeviceThemeTracker, never())
+                .getThemeForOsTypeAndFormFactor(any(), any(), any());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.XPLAT_SYNCED_SETUP_THEMES)
+    public void testGetThemeFromRemoteDevice_BestMatchAndroid_ThemeSyncDisabled_ReturnsNull() {
+        SyncedSetUpUtilsBridge.setBestMatchDeviceForTesting(OsType.ANDROID, FormFactor.TABLET);
+        NtpBackgroundDataColor stagedAndroidTheme =
+                new NtpBackgroundDataColor(
+                        mActivity, PlatformType.ANDROID, NtpThemeColorId.NTP_COLORS_BLUE, false);
+        when(mNtpCustomizationConfigManager.getSyncedNtpBackgroundData())
+                .thenReturn(stagedAndroidTheme);
+        when(mCrossDeviceThemeTracker.getServiceStatus()).thenReturn(SYNC_DISABLED);
+
+        NtpBackgroundDataBase result =
+                initializeCrossDeviceSettingImporter()
+                        .getThemeFromRemoteDevice(mProfile, mCrossDevicePrefTracker);
+
+        assertNull(result);
+        verify(mCrossDeviceThemeTracker, never())
+                .getThemeForOsTypeAndFormFactor(any(), any(), any());
     }
 
     @Test
@@ -1702,10 +1779,9 @@ public class CrossDeviceSettingImporterUnitTest {
                 new NtpBackgroundDataColor(
                         mActivity, PlatformType.ANDROID, NtpThemeColorId.NTP_COLORS_BLUE, false);
         // Remote and local themes are identical (no theme change).
+        SyncedSetUpUtilsBridge.setBestMatchDeviceForTesting(OsType.ANDROID, FormFactor.TABLET);
         when(mNtpCustomizationConfigManager.getNtpBackgroundData()).thenReturn(theme);
-
-        when(mCrossDeviceThemeTracker.getThemeForOsTypeAndFormFactor(any(), any(), any()))
-                .thenReturn(theme);
+        when(mNtpCustomizationConfigManager.getSyncedNtpBackgroundData()).thenReturn(theme);
         when(mCrossDevicePrefTracker.getServiceStatus()).thenReturn(ServiceStatus.AVAILABLE);
 
         // Include a preference change so that synced set up triggers.
@@ -1715,8 +1791,12 @@ public class CrossDeviceSettingImporterUnitTest {
 
         initializeCrossDeviceSettingImporter().onTabChangeOrGainFocus(mTab);
 
-        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
+        verify(mSnackbarManager, times(1)).showSnackbar(mSnackbarCaptor.capture());
         Snackbar appliedSnackbar = mSnackbarCaptor.getValue();
+
+        // Even if NewTabPage clears mSyncedNtpBackgroundData, Undo and Redo must not re-apply
+        // the unchanged theme or toggle THEMES sync.
+        when(mNtpCustomizationConfigManager.getSyncedNtpBackgroundData()).thenReturn(null);
 
         // Click Undo.
         appliedSnackbar.getController().onAction(null);
@@ -1724,6 +1804,16 @@ public class CrossDeviceSettingImporterUnitTest {
         // Themes sync is NOT disabled because no theme change occurred.
         verify(mSyncService, never()).setSelectedType(UserSelectableType.THEMES, false);
         assertEquals(1, mUserActionTester.getActionCount("Android.CrossDeviceSettingImport.Undo"));
+
+        // Click Redo.
+        verify(mSnackbarManager, times(2)).showSnackbar(mSnackbarCaptor.capture());
+        Snackbar redoSnackbar = mSnackbarCaptor.getValue();
+        redoSnackbar.getController().onAction(null);
+
+        verify(mSyncService, never()).setSelectedType(eq(UserSelectableType.THEMES), anyBoolean());
+        verify(mNtpCustomizationConfigManager, never())
+                .maybeApplyBackgroundUpdateFromDeviceSync(any());
+        verify(mNtpCustomizationConfigManager, never()).onBackgroundDataChanged(any(), any());
     }
 
     @Test
@@ -2438,6 +2528,7 @@ public class CrossDeviceSettingImporterUnitTest {
                         PlatformType.IOS,
                         NtpThemeColorId.NTP_COLORS_BLUE,
                         /* isChromeColorDailyRefreshEnabled= */ false);
+        SyncedSetUpUtilsBridge.setBestMatchDeviceForTesting(OsType.IOS, FormFactor.PHONE);
         when(mCrossDeviceThemeTracker.getThemeForOsTypeAndFormFactor(any(), any(), any()))
                 .thenReturn(crossOsIosColor);
         when(mCrossDevicePrefTracker.getServiceStatus()).thenReturn(ServiceStatus.AVAILABLE);
@@ -2449,6 +2540,9 @@ public class CrossDeviceSettingImporterUnitTest {
         // 1. Cross-OS iOS color theme is applied and Undo snackbar is shown.
         verify(mNtpCustomizationConfigManager)
                 .onBackgroundDataChanged(eq(mActivity), eq(crossOsIosColor));
+        // Simulate onBackgroundDataChanged's clearPendingSyncedBackgroundAndSharedPreference()
+        // clearing the staged synced theme in NtpCustomizationConfigManager.
+        when(mNtpCustomizationConfigManager.getSyncedNtpBackgroundData()).thenReturn(null);
         verify(mSnackbarManager, times(1)).showSnackbar(mSnackbarCaptor.capture());
         Snackbar undoSnackbar = mSnackbarCaptor.getValue();
 
@@ -2479,8 +2573,7 @@ public class CrossDeviceSettingImporterUnitTest {
         when(mNtpCustomizationConfigManager.getSyncedNtpBackgroundData())
                 .thenReturn(incomingAndroidTheme);
 
-        when(mCrossDeviceThemeTracker.getThemeForOsTypeAndFormFactor(any(), any(), any()))
-                .thenReturn(incomingAndroidTheme);
+        SyncedSetUpUtilsBridge.setBestMatchDeviceForTesting(OsType.ANDROID, FormFactor.TABLET);
         when(mCrossDevicePrefTracker.getServiceStatus()).thenReturn(ServiceStatus.AVAILABLE);
 
         // Include a preference change so that Synced Set Up triggers for same-platform.
@@ -2491,6 +2584,14 @@ public class CrossDeviceSettingImporterUnitTest {
         CrossDeviceSettingImporter importer = initializeCrossDeviceSettingImporter();
         importer.onTabChangeOrGainFocus(mTab);
 
+        verify(mCrossDeviceThemeTracker, never())
+                .getThemeForOsTypeAndFormFactor(any(), any(), any());
+        verify(mNtpCustomizationConfigManager)
+                .maybeApplyBackgroundUpdateFromDeviceSync(eq(mActivity));
+        verify(mNtpCustomizationConfigManager, never())
+                .onBackgroundDataChanged(eq(mActivity), eq(incomingAndroidTheme));
+        // Simulate maybeApplyBackgroundUpdateFromDeviceSync clearing the staged synced theme.
+        when(mNtpCustomizationConfigManager.getSyncedNtpBackgroundData()).thenReturn(null);
         verify(mSnackbarManager, times(1)).showSnackbar(mSnackbarCaptor.capture());
         Snackbar undoSnackbar = mSnackbarCaptor.getValue();
 
@@ -2498,6 +2599,54 @@ public class CrossDeviceSettingImporterUnitTest {
         undoSnackbar.getController().onAction(null);
         verify(mNtpCustomizationConfigManager).onBackgroundDataChanged(eq(mActivity), isNull());
         verify(mSyncService).setSelectedType(UserSelectableType.THEMES, false);
+
+        // User clicks Redo -> re-enables THEMES sync and re-applies incomingAndroidTheme via
+        // onBackgroundDataChanged (since mSyncedNtpBackgroundData was cleared).
+        verify(mSnackbarManager, times(2)).showSnackbar(mSnackbarCaptor.capture());
+        Snackbar redoSnackbar = mSnackbarCaptor.getValue();
+        redoSnackbar.getController().onAction(null);
+        verify(mSyncService).setSelectedType(UserSelectableType.THEMES, true);
+        verify(mNtpCustomizationConfigManager)
+                .onBackgroundDataChanged(eq(mActivity), eq(incomingAndroidTheme));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.XPLAT_SYNCED_SETUP_THEMES + ":observation_only/true")
+    public void testUndoSameOsImport_ObservationOnly_DoesNotDisableThemesSync() {
+        NtpBackgroundDataColor incomingAndroidTheme =
+                new NtpBackgroundDataColor(
+                        mActivity,
+                        PlatformType.ANDROID,
+                        NtpThemeColorId.NTP_COLORS_BLUE,
+                        /* isChromeColorDailyRefreshEnabled= */ false);
+
+        when(mNtpCustomizationConfigManager.getNtpBackgroundData()).thenReturn(null);
+        when(mNtpCustomizationConfigManager.getSyncedNtpBackgroundData())
+                .thenReturn(incomingAndroidTheme);
+
+        SyncedSetUpUtilsBridge.setBestMatchDeviceForTesting(OsType.ANDROID, FormFactor.TABLET);
+        when(mCrossDevicePrefTracker.getServiceStatus()).thenReturn(ServiceStatus.AVAILABLE);
+
+        SyncedSetUpUtilsBridge.setCrossDeviceSettingsForTesting(
+                Map.of(Pref.MAGIC_STACK_HOME_MODULE_ENABLED, false));
+        when(mPrefService.getBoolean(Pref.MAGIC_STACK_HOME_MODULE_ENABLED)).thenReturn(true);
+
+        CrossDeviceSettingImporter importer = initializeCrossDeviceSettingImporter();
+        assertTrue(importer.isObservationOnly());
+        importer.onTabChangeOrGainFocus(mTab);
+
+        verify(mHomeModulesConfigManager).setPrefAllCardsEnabled(false);
+        verify(mNtpCustomizationConfigManager, never())
+                .maybeApplyBackgroundUpdateFromDeviceSync(any());
+        verify(mNtpCustomizationConfigManager, never()).onBackgroundDataChanged(any(), any());
+        verify(mSnackbarManager, times(1)).showSnackbar(mSnackbarCaptor.capture());
+        Snackbar undoSnackbar = mSnackbarCaptor.getValue();
+
+        // Clicking Undo reverts the pref without disabling UserSelectableType.THEMES.
+        undoSnackbar.getController().onAction(null);
+        verify(mHomeModulesConfigManager).setPrefAllCardsEnabled(true);
+        verify(mSyncService, never()).setSelectedType(UserSelectableType.THEMES, false);
+        verify(mNtpCustomizationConfigManager, never()).onBackgroundDataChanged(any(), any());
     }
 
     /**

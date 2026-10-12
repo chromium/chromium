@@ -69,6 +69,7 @@ import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
+import org.chromium.components.sync_device_info.OsType;
 import org.chromium.components.sync_preferences.cross_device_pref_tracker.CrossDevicePrefTracker;
 import org.chromium.components.sync_preferences.cross_device_pref_tracker.CrossDevicePrefTracker.CrossDevicePrefTrackerObserver;
 import org.chromium.components.sync_preferences.cross_device_pref_tracker.ServiceStatus;
@@ -987,7 +988,7 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         SyncedSetupSettings currentSettings =
                 getCurrentSettings(profile, settingsToApply.getTheme());
         showOfferUndoSnackbarAfterDialogs(profile, currentSettings, settingsToApply, nonNtp);
-        applySettings(profile, settingsToApply, nonNtp);
+        applySettings(profile, settingsToApply, currentSettings, nonNtp);
     }
 
     /**
@@ -1266,8 +1267,9 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
                     SyncedSetupSettings updatedSettings =
                             maybeUpdateSettingsWithDownloadedTheme(settingsToApply);
                     boolean hadThemeChange =
-                            importedSettingHasThemeChange(
-                                    updatedSettings.getTheme(), currentSettings.getTheme());
+                            isThemeImportSnackbarEnabled()
+                                    && importedSettingHasThemeChange(
+                                            updatedSettings.getTheme(), currentSettings.getTheme());
                     Log.i(
                             TAG,
                             "offerUndoSnackbar onAction: hadThemeChange=%s,"
@@ -1578,10 +1580,14 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
      *
      * @param profile The {@link Profile}.
      * @param settingsToApply The settings to apply.
+     * @param currentSettings The user's current settings prior to applying {@code settingsToApply}.
      * @param nonNtp Whether only settings that affect non-NTP pages should be applied.
      */
     private void applySettings(
-            Profile profile, SyncedSetupSettings settingsToApply, boolean nonNtp) {
+            Profile profile,
+            SyncedSetupSettings settingsToApply,
+            SyncedSetupSettings currentSettings,
+            boolean nonNtp) {
         Log.i(
                 TAG,
                 "applySettings: prefs=%s, theme=%s, nonNtp=%s",
@@ -1592,7 +1598,7 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
             applyUserPrefSettings(profile, settingsToApply.getPrefs());
         }
         applyLocalStateSettings(settingsToApply.getPrefs());
-        if (settingsToApply.getTheme() != null) {
+        if (importedSettingHasThemeChange(settingsToApply.getTheme(), currentSettings.getTheme())) {
             applyThemeSettings(settingsToApply.getTheme());
         }
     }
@@ -1612,18 +1618,23 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
 
         ensureNtpCustomizationConfigManagerInitialized();
         NtpCustomizationConfigManager configManager = NtpCustomizationConfigManager.getInstance();
+        if (themeToApply != null
+                && themeToApply.getPlatformType() == PlatformType.ANDROID
+                && ((themeToApply instanceof NtpBackgroundDataImageBase imageBase
+                                && imageBase.getBitmap() == null)
+                        || themeToApply.hasSameThemeAndColor(
+                                configManager.getSyncedNtpBackgroundData()))) {
+            // Promoting a staged incoming Android theme (or an un-downloaded Android image):
+            // maybeApplyBackgroundUpdateFromDeviceSync checks for mismatch, promotes
+            // mSyncedNtpBackgroundData with shouldNotifyThemeSyncObserver=false (avoiding echoing
+            // the remote theme back to Sync), and clears mSyncedNtpBackgroundData.
+            configManager.maybeApplyBackgroundUpdateFromDeviceSync(mContext);
+            return;
+        }
         if (themeToApply instanceof NtpBackgroundDataImageBase imageBase
                 && imageBase.getBitmap() == null) {
-            // If the bitmap is null (e.g. from CrossDeviceThemeTracker before downloading), do not
-            // write null to configManager. That would clobber the NTP background with null and
-            // break rendering. NtpSyncedThemeManager handles the asynchronous download and
-            // application of the image.
-            if (themeToApply.getPlatformType() == PlatformType.ANDROID) {
-                // On non-NTP pages, NewTabPage is not active to apply synced background
-                // updates. Trigger applying the cached synced theme and recreating the
-                // Activity.
-                configManager.maybeApplyBackgroundUpdateFromDeviceSync(mContext);
-            }
+            // If a cross-OS bitmap is null before downloading, do not write null to configManager.
+            // That would clobber the NTP background with null and break rendering.
             return;
         }
 
@@ -1725,7 +1736,8 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
 
     /**
      * Retrieves the candidate theme from the best-match remote device (e.g. the template device or
-     * most recently active synced device) via {@link CrossDeviceThemeTracker}.
+     * most recently active synced device) via {@link NtpCustomizationConfigManager} for Android or
+     * {@link CrossDeviceThemeTracker} for cross-OS devices.
      */
     @VisibleForTesting
     @Nullable NtpBackgroundDataBase getThemeFromRemoteDevice(
@@ -1735,11 +1747,21 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         }
         @Nullable CrossDeviceThemeTracker themeTracker =
                 CrossDeviceThemeTracker.getForProfile(profile);
-        if (themeTracker == null) {
+        if (themeTracker == null || themeTracker.getServiceStatus() != ACTIVE) {
             return null;
         }
         @Nullable DeviceOsAndFormFactor bestMatch =
                 SyncedSetUpUtilsBridge.getBestMatchDeviceOsTypeAndFormFactor(tracker, profile);
+        if (bestMatch == null
+                || bestMatch.osType == OsType.UNKNOWN
+                || bestMatch.osType == OsType.ANDROID) {
+            ensureNtpCustomizationConfigManagerInitialized();
+            @Nullable NtpBackgroundDataBase androidTheme =
+                    NtpCustomizationConfigManager.getInstance().getSyncedNtpBackgroundData();
+            if (androidTheme != null || (bestMatch != null && bestMatch.osType == OsType.ANDROID)) {
+                return androidTheme;
+            }
+        }
         return themeTracker.getThemeForOsTypeAndFormFactor(
                 mContext,
                 bestMatch == null ? null : bestMatch.osType,
