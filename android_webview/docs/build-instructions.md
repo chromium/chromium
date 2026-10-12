@@ -63,39 +63,11 @@ instructions](/docs/android_build_instructions.md#Figuring-out-target_cpu).
 
 ## Building WebView
 
-[Similarly to
-Chrome](/docs/android_build_instructions.md#Multiple-Chrome-APK-Targets),
-WebView can be compiled with a variety of build targets.
-
-_TODO(crbug.com/41454956): document the differences between each target._
-
-First, you should figure out your device's integer API level, which determines
-which build targets will be compatible with the version of the OS on your
-device:
-
-```shell
-adb shell getprop ro.build.version.sdk
-```
-
-*** promo
-**Tip:** you can convert the API level integer to the release's dessert
-codename with [this
-table](https://developer.android.com/guide/topics/manifest/uses-sdk-element.html#ApiLevels).
-This developer guide uses API integers and release letters interchangeably.
-***
-
-Then you can build one of the following targets:
+You can build WebView with:
 
 ```shell
 autoninja -C out/Default system_webview_apk
 ```
-
-*** promo
-**Note:** We focus on `system_webview_apk` rather than Trichrome because we
-ship WebView separately from Chrome for stability reasons. This reduces start
-up time and reduces ANRs. You may see references to Trichrome but this should
-be considered a historical artefact.
-***
 
 ### Changing package name
 
@@ -119,14 +91,6 @@ name by setting the `system_webview_package_name` GN arg (ex.
 
 See [internal instructions][1] for the Google-internal build targets
 (`system_webview_google_apk`).
-
-*** note
-**Note:** TV/car devices have a bug where the release key signed WebView is
-preinstalled on all Android images, even those signed with dev-keys. Because
-humans cannot access release keys (`use_signing_keys = true` provides "developer
-test keys," not release keys), you must remove the preinstalled WebView (see
-below).
-***
 
 ### Removing preinstalled WebView
 
@@ -174,9 +138,6 @@ start.
 
 Please see the [Troubleshooting](quick-start.md#troubleshooting) section in the
 quick start.
-
-_TODO(ntfschr): document cases here which could arise generally, but wouldn't
-for the quick start._
 
 [1]: http://go/clank-webview/build_instructions.md
 [2]: https://groups.google.com/a/chromium.org/forum/#!forum/android-webview-dev
