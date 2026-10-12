@@ -407,13 +407,25 @@ void TabMenuModel::Build(int index) {
   }
 
   if (tab_strip_->SupportsTabGroups() &&
-      base::FeatureList::IsEnabled(features::kTabGroupsFocusing)) {
+      base::FeatureList::IsEnabled(features::kTabGroupsFocusing) &&
+      std::ranges::none_of(
+          indices, [&](int idx) { return tab_strip_->IsTabPinned(idx); })) {
     if (std::optional<tab_groups::TabGroupId> group =
             tab_strip_->GetCommonGroupForIndices(indices)) {
       const bool is_focused = tab_strip_->GetFocusedGroup() == group;
-      AddItemWithStringId(TabStripModel::CommandToggleFocusGroup,
-                          is_focused ? IDS_TAB_CXMENU_UNFOCUS_TAB_GROUP
-                                     : IDS_TAB_CXMENU_FOCUS_TAB_GROUP);
+      if (tab_strip_->IsEphemeralTabGroup(*group)) {
+        const size_t group_tab_count =
+            tab_strip_->group_model()->GetTabGroup(*group)->ListTabs().length();
+        AddItem(TabStripModel::CommandToggleFocusGroup,
+                l10n_util::GetPluralStringFUTF16(
+                    is_focused ? IDS_TAB_CXMENU_UNFOCUS_TABS
+                               : IDS_TAB_CXMENU_FOCUS_TABS,
+                    group_tab_count));
+      } else {
+        AddItemWithStringId(TabStripModel::CommandToggleFocusGroup,
+                            is_focused ? IDS_TAB_CXMENU_UNFOCUS_TAB_GROUP
+                                       : IDS_TAB_CXMENU_FOCUS_TAB_GROUP);
+      }
       SetElementIdentifierAt(GetItemCount() - 1, kFocusSelectionMenuItem);
     } else if (base::FeatureList::IsEnabled(features::kNonGroupFocus) &&
                tab_strip_->AreAllUngrouped(indices)) {

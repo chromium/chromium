@@ -12314,13 +12314,16 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
           Remove from group
         </message>
         <message name="IDS_TAB_CXMENU_FOCUS_TAB_GROUP" desc="The label of the tab context menu item for focusing the tab group containing the tab.">
-          Focus tab group
+          Focus on tab group
         </message>
         <message name="IDS_TAB_CXMENU_UNFOCUS_TAB_GROUP" desc="The label of the tab context menu item for unfocusing the tab group containing the tab.">
           Unfocus tab group
         </message>
         <message name="IDS_TAB_CXMENU_FOCUS_TABS" desc="The label of the tab context menu item for focusing one or more tabs. [ICU Syntax]">
-          {NUM_TABS, plural, =1 {Focus tab} other {Focus # tabs}}
+          {NUM_TABS, plural, =1 {Focus on tab} other {Focus on tabs}}
+        </message>
+        <message name="IDS_TAB_CXMENU_UNFOCUS_TABS" desc="The label of the tab context menu item for unfocusing one or more tabs. [ICU Syntax]">
+          {NUM_TABS, plural, =1 {Unfocus tab} other {Unfocus tabs}}
         </message>
         <message name="IDS_TAB_CXMENU_PLACEHOLDER_GROUP_TITLE" desc="The descriptive placeholder title of a group used when the user has not explicitly named a group. The plural value refers to the number of tabs in the group other than the one explicitly named. [ICU Syntax]">
           {NUM_OTHER_TABS, plural, =0 {"<ph name="TAB_TITLE">$1<ex>Google News</ex></ph>"} =1 {"<ph name="TAB_TITLE">$1<ex>Google News</ex></ph>" and 1 other tab} other {"<ph name="TAB_TITLE">$1<ex>Google News</ex></ph>" and # other tabs}}
@@ -12439,13 +12442,16 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
           Remove From Group
         </message>
         <message name="IDS_TAB_CXMENU_FOCUS_TAB_GROUP" desc="In Title Case: The label of the tab context menu item for focusing the tab group containing the tab.">
-          Focus Tab Group
+          Focus on Tab Group
         </message>
         <message name="IDS_TAB_CXMENU_UNFOCUS_TAB_GROUP" desc="In Title Case: The label of the tab context menu item for unfocusing the tab group containing the tab.">
           Unfocus Tab Group
         </message>
         <message name="IDS_TAB_CXMENU_FOCUS_TABS" desc="In Title Case: The label of the tab context menu item for focusing one or more tabs. [ICU Syntax]">
-          {NUM_TABS, plural, =1 {Focus Tab} other {Focus # Tabs}}
+          {NUM_TABS, plural, =1 {Focus on Tab} other {Focus on Tabs}}
+        </message>
+        <message name="IDS_TAB_CXMENU_UNFOCUS_TABS" desc="In Title Case: The label of the tab context menu item for unfocusing one or more tabs. [ICU Syntax]">
+          {NUM_TABS, plural, =1 {Unfocus Tab} other {Unfocus Tabs}}
         </message>
         <message name="IDS_TAB_CXMENU_PLACEHOLDER_GROUP_TITLE" desc="In Title Case: The descriptive placeholder title of a group used when the user has not explicitly named a group. The plural value refers to the number of tabs in the group other than the one explicitly named. [ICU Syntax]">
           {NUM_OTHER_TABS, plural, =0 {"<ph name="TAB_TITLE">$1<ex>Google News</ex></ph>"} =1 {"<ph name="TAB_TITLE">$1<ex>Google News</ex></ph>" and 1 Other Tab} other {"<ph name="TAB_TITLE">$1<ex>Google News</ex></ph>" and # Other Tabs}}
@@ -13004,10 +13010,10 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         Ungroup
       </message>
       <message name="IDS_TAB_GROUP_HEADER_CXMENU_FOCUS_GROUP" desc="The label for focus group in the tab group editor bubble.">
-        Focus group
+        Focus on Tab Group
       </message>
       <message name="IDS_TAB_GROUP_HEADER_CXMENU_UNFOCUS_GROUP" desc="The label for unfocus group in the tab group editor bubble.">
-        Unfocus group
+        Unfocus Tab Group
       </message>
       <message name="IDS_TAB_GROUP_HEADER_CXMENU_CREATE_GROUP" desc="The label for create button in the tab group editor bubble when creating a permanent tab group from an ephemeral one.">
         Create

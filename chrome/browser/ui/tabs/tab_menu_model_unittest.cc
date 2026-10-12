@@ -4,22 +4,24 @@
 
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/menu_model_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/context_menu_matcher.h"
 #include "chrome/browser/extensions/menu_manager.h"
 #include "chrome/browser/extensions/menu_manager_factory.h"
@@ -290,4 +292,89 @@ TEST_F(TabMenuModelTest, EphemeralGroupOmitsRemoveFromGroup) {
   EXPECT_FALSE(ephemeral_group_menu
                    .GetIndexOfCommandId(TabStripModel::CommandRemoveFromGroup)
                    .has_value());
+}
+
+TEST_F(TabMenuModelTest, FocusSelectionMenuItem) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kTabGroupsFocusing, features::kNonGroupFocus}, {});
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  extensions::MenuManagerFactory::GetInstance()->SetTestingFactoryAndUse(
+      profile(), base::BindOnce([](content::BrowserContext* context)
+                                    -> std::unique_ptr<KeyedService> {
+        return std::make_unique<extensions::MenuManager>(context, nullptr);
+      }));
+#endif
+
+  TestTabStripModelDelegate delegate;
+  TabStripModel tab_strip_model(&delegate, profile());
+  for (int i = 0; i < 4; ++i) {
+    tab_strip_model.AppendWebContents(
+        content::WebContents::Create(
+            content::WebContents::CreateParams(profile())),
+        i == 0);
+  }
+
+  // Verifying "Focus on Tab" label.
+  {
+    ui::ListSelectionModel selection;
+    selection.SetSelectedIndex(0);
+    tab_strip_model.SetSelectionFromModel(selection);
+    TabMenuModel menu(&delegate_, &menu_model_delegate(), &tab_strip_model, 0);
+    std::optional<size_t> index =
+        menu.GetIndexOfCommandId(TabStripModel::CommandToggleFocusGroup);
+    ASSERT_TRUE(index.has_value());
+    EXPECT_EQ(menu.GetLabelAt(*index),
+              l10n_util::GetPluralStringFUTF16(IDS_TAB_CXMENU_FOCUS_TABS, 1));
+  }
+
+  // Verifying "Focus on Tabs" label.
+  {
+    ui::ListSelectionModel selection;
+    selection.SetSelectedIndex(0);
+    selection.AddIndexToSelection(1);
+    tab_strip_model.SetSelectionFromModel(selection);
+    TabMenuModel menu(&delegate_, &menu_model_delegate(), &tab_strip_model, 0);
+    std::optional<size_t> index =
+        menu.GetIndexOfCommandId(TabStripModel::CommandToggleFocusGroup);
+    ASSERT_TRUE(index.has_value());
+    EXPECT_EQ(menu.GetLabelAt(*index),
+              l10n_util::GetPluralStringFUTF16(IDS_TAB_CXMENU_FOCUS_TABS, 2));
+  }
+
+  // Verifying "Focus on Tab Group" and "Unfocus Tab Group" labels.
+  tab_groups::TabGroupId group1 = tab_strip_model.AddToNewGroup({0, 1});
+  {
+    ui::ListSelectionModel selection;
+    selection.SetSelectedIndex(0);
+    tab_strip_model.SetSelectionFromModel(selection);
+    TabMenuModel single_menu(&delegate_, &menu_model_delegate(),
+                             &tab_strip_model, 0);
+    std::optional<size_t> single_idx =
+        single_menu.GetIndexOfCommandId(TabStripModel::CommandToggleFocusGroup);
+    ASSERT_TRUE(single_idx.has_value());
+    EXPECT_EQ(single_menu.GetLabelAt(*single_idx),
+              l10n_util::GetStringUTF16(IDS_TAB_CXMENU_FOCUS_TAB_GROUP));
+
+    selection.AddIndexToSelection(1);
+    tab_strip_model.SetSelectionFromModel(selection);
+    TabMenuModel multi_menu(&delegate_, &menu_model_delegate(),
+                            &tab_strip_model, 0);
+    std::optional<size_t> multi_idx =
+        multi_menu.GetIndexOfCommandId(TabStripModel::CommandToggleFocusGroup);
+    ASSERT_TRUE(multi_idx.has_value());
+    EXPECT_EQ(multi_menu.GetLabelAt(*multi_idx),
+              l10n_util::GetStringUTF16(IDS_TAB_CXMENU_FOCUS_TAB_GROUP));
+
+    tab_strip_model.EnterFocusMode(group1);
+    TabMenuModel focused_menu(&delegate_, &menu_model_delegate(),
+                              &tab_strip_model, 0);
+    std::optional<size_t> focused_idx = focused_menu.GetIndexOfCommandId(
+        TabStripModel::CommandToggleFocusGroup);
+    ASSERT_TRUE(focused_idx.has_value());
+    EXPECT_EQ(focused_menu.GetLabelAt(*focused_idx),
+              l10n_util::GetStringUTF16(IDS_TAB_CXMENU_UNFOCUS_TAB_GROUP));
+    tab_strip_model.ExitFocusMode();
+  }
 }
