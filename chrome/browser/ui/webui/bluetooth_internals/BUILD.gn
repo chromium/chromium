@@ -16,7 +16,6 @@ source_set("bluetooth_internals") {
 
   public_deps = [
     ":mojo_bindings",
-    "//chrome/browser:browser_public_dependencies",
     "//device/bluetooth:deprecated_experimental_mojo",
   ]
 

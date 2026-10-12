@@ -33,8 +33,6 @@ source_set("announcement_notification") {
 }
 
 source_set("impl") {
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   sources = [
     "announcement_notification_service.cc",
     "announcement_notification_service_factory.cc",

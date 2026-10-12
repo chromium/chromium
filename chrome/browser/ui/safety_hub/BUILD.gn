@@ -78,8 +78,6 @@ source_set("safety_hub") {
 }
 
 source_set("impl") {
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   sources = [
     "abusive_notification_permissions_manager.cc",
     "disruptive_notification_permissions_manager.cc",
@@ -106,6 +104,7 @@ source_set("impl") {
   deps = [
     ":safety_hub",
     "//chrome/app:command_ids",
+    "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/engagement",

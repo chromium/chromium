@@ -11,17 +11,14 @@ source_set("impl") {
 
   deps = [
     ":installable",
+    "//chrome/browser/profiles:profile",
     "//url",
   ]
 
   if (is_android) {
-    deps += [
-      "//chrome/browser:browser_public_dependencies",
-      "//chrome/browser/android:shortcut_helper",
-    ]
+    deps += [ "//chrome/browser/android:shortcut_helper" ]
   } else {
     deps += [
-      "//chrome/browser/profiles:profile",
       "//chrome/browser/web_applications",
       "//chrome/browser/web_applications/proto",
     ]

@@ -129,6 +129,7 @@ source_set("impl") {
   deps = [
     ":hats",
     "//base",
+    "//chrome/browser/android:resource_mapper",
     "//chrome/browser/prefs",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
@@ -140,7 +141,6 @@ source_set("impl") {
     "//ui/android",
     "//ui/base",
   ]
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("unit_tests") {

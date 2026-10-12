@@ -56,10 +56,7 @@ if (!is_android) {
       "autofill_ai_import_data_controller_impl.cc",
       "autofill_ai_import_data_controller_impl.h",
     ]
-    public_deps = [
-      ":autofill_ai",
-      "//chrome/browser:browser_public_dependencies",
-    ]
+    public_deps = [ ":autofill_ai" ]
     deps = [
       ":autofill_ai_ui_utils_impl",
       "//chrome/app/theme:chrome_unscaled_resources",

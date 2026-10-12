@@ -60,8 +60,6 @@ source_set("impl") {
   if (is_chromeos) {
     deps += [ "//ash/constants" ]
   }
-
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("unit_tests") {

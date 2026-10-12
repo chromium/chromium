@@ -54,10 +54,7 @@ source_set("impl") {
     "touch_to_fill_payment_method_delegate_android_impl.h",
   ]
 
-  public_deps = [
-    ":public",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ ":public" ]
 
   deps = [
     "//base",

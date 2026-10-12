@@ -53,7 +53,6 @@ if (is_android) {
     public_deps = [
       ":factory",
       ":public",
-      "//chrome/browser:browser_public_dependencies",
     ]
 
     allow_circular_includes_from = [ "//chrome/browser/password_manager" ]

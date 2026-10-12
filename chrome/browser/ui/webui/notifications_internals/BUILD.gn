@@ -32,7 +32,6 @@ source_set("impl") {
     ":mojo_bindings",
     ":notifications_internals",
     "//base",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/notifications",
     "//chrome/browser/notifications/scheduler/public",
     "//chrome/browser/profiles",

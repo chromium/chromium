@@ -45,7 +45,6 @@ source_set("impl") {
     ":navigator",
     "//base",
     "//chrome/browser:browser_about_handler",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser:primitives",
     "//chrome/browser/picture_in_picture",
     "//chrome/browser/prefs",

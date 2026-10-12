@@ -29,10 +29,7 @@ source_set("impl") {
     "tab_group_trial.cc",
   ]
 
-  public_deps = [
-    ":tab_group_sync",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ ":tab_group_sync" ]
 
   deps = [
     "//chrome/browser/metrics",
@@ -102,8 +99,6 @@ source_set("factories_impl") {
       "//chrome/browser/tab_group_sync:android",
     ]
   }
-
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("utils") {
