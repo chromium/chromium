@@ -111,17 +111,35 @@ void OnWebGpuAdapterRequested(
     webnn::WebGpuContextHelperOnceCallback callback,
     wgpu::Adapter adapter) {
   Vector<wgpu::FeatureName> required_features;
+  // Enable FP16 shader execution.
   if (adapter.HasFeature(wgpu::FeatureName::ShaderF16)) {
     required_features.push_back(wgpu::FeatureName::ShaderF16);
   }
+  // Enable subgroup operations in compute shaders.
   if (adapter.HasFeature(wgpu::FeatureName::Subgroups)) {
     required_features.push_back(wgpu::FeatureName::Subgroups);
+  }
+  // Enable GPU execution timing queries.
+  if (adapter.HasFeature(wgpu::FeatureName::TimestampQuery)) {
+    required_features.push_back(wgpu::FeatureName::TimestampQuery);
+  }
+  // Enable subgroup matrix multiplication acceleration.
+  if (adapter.HasFeature(
+          wgpu::FeatureName::ChromiumExperimentalSubgroupMatrix)) {
+    required_features.push_back(
+        wgpu::FeatureName::ChromiumExperimentalSubgroupMatrix);
   }
 
   wgpu::DeviceDescriptor dawn_desc = {};
   if (!required_features.empty()) {
     dawn_desc.requiredFeatures = required_features.data();
     dawn_desc.requiredFeatureCount = required_features.size();
+  }
+
+  // Request the adapter's maximum supported limits instead of default limits.
+  wgpu::Limits adapter_limits = {};
+  if (adapter.GetLimits(&adapter_limits) == wgpu::Status::Success) {
+    dawn_desc.requiredLimits = &adapter_limits;
   }
 
   auto dawn_control_client_for_device = dawn_control_client;
