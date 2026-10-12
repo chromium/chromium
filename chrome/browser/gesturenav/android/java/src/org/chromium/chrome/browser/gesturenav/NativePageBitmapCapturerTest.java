@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.gesturenav;
 
+import android.view.View;
+import android.view.ViewGroup;
+
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -118,5 +121,36 @@ public class NativePageBitmapCapturerTest {
                 () -> {
                     Assert.assertEquals(0, callbackHelper.getCallCount());
                 });
+    }
+
+    @Test
+    @SmallTest
+    public void testWithNullView() throws TimeoutException {
+        RegularNewTabPageStation ntp = mTabbedActivityTestRule.startOnNtp();
+
+        CallbackHelper callbackHelper = new CallbackHelper();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    var tab = ntp.getTab();
+                    View view = tab.getView();
+                    ((ViewGroup) view.getParent()).removeView(view);
+                    tab.freezeNativePage();
+                    Assert.assertTrue(tab.isNativePage());
+                    Assert.assertNull(tab.getView());
+
+                    Assert.assertNull(
+                            NativePageBitmapCapturer.maybeCaptureNativeViewSync(
+                                    tab, /* topControlsHeight= */ 0));
+                    Assert.assertTrue(
+                            NativePageBitmapCapturer.maybeCaptureNativeView(
+                                    tab,
+                                    (result) -> {
+                                        Assert.assertNull(result);
+                                        callbackHelper.notifyCalled();
+                                    },
+                                    CaptureResult.Destination.BITMAP));
+                });
+
+        callbackHelper.waitForOnly();
     }
 }

@@ -60,7 +60,7 @@ public class NativePageBitmapCapturer {
             return false;
         }
 
-        int result = shouldUseFallbackUx(tab);
+        int result = shouldUseFallbackUx(tab, sIgnoreCurrentUrlCheck);
         BackPressMetrics.recordCaptureNativeViewResult(result);
         if (result != CaptureNativeViewResult.CAPTURE_SCREENSHOT) {
             PostTask.postTask(TaskTraits.UI_USER_VISIBLE, callback.bind(null));
@@ -116,7 +116,9 @@ public class NativePageBitmapCapturer {
      * @return Null if fails; otherwise, a Bitmap object.
      */
     public static @Nullable Bitmap maybeCaptureNativeViewSync(Tab tab, int topControlsHeight) {
-        if (!isCapturable(tab)) {
+        if (!isCapturable(tab)
+                || shouldUseFallbackUx(tab, /* ignoreCurrentUrlCheck= */ true)
+                        != CaptureNativeViewResult.CAPTURE_SCREENSHOT) {
             return null;
         }
 
@@ -132,13 +134,13 @@ public class NativePageBitmapCapturer {
     }
 
     private static boolean isCapturable(Tab tab) {
-        if (!tab.isNativePage()) {
+        var webContents = tab.getWebContents();
+        if (!tab.isNativePage() || webContents == null) {
             return false;
         }
         // The native page, like NTP, is displayed before the url is loaded. Return early to
         // prevent capturing the current NTP as the screenshot of the previous page
-        assumeNonNull(tab.getWebContents());
-        GURL lastCommittedUrl = tab.getWebContents().getLastCommittedUrl();
+        GURL lastCommittedUrl = webContents.getLastCommittedUrl();
         if (!NativePage.isNativePageUrl(lastCommittedUrl, tab.isIncognitoBranded(), false)) {
             return false;
         }
@@ -146,14 +148,15 @@ public class NativePageBitmapCapturer {
         return true;
     }
 
-    private static @CaptureNativeViewResult int shouldUseFallbackUx(Tab tab) {
+    private static @CaptureNativeViewResult int shouldUseFallbackUx(
+            Tab tab, boolean ignoreCurrentUrlCheck) {
         if (tab.getWindowAndroid() == null) {
             return CaptureNativeViewResult.NULL_WINDOW_ANDROID;
         }
 
-        View view = assumeNonNull(tab.getView());
+        View view = tab.getView();
         // The view is not laid out yet.
-        if (view.getWidth() == 0 || view.getHeight() == 0) {
+        if (view == null || view.getWidth() == 0 || view.getHeight() == 0) {
             return CaptureNativeViewResult.VIEW_NOT_LAID_OUT;
         }
         if (tab.getWebContents() == null
@@ -164,7 +167,7 @@ public class NativePageBitmapCapturer {
             return CaptureNativeViewResult.VIEW_NOT_LAID_OUT;
         }
 
-        if (!sIgnoreCurrentUrlCheck) {
+        if (!ignoreCurrentUrlCheck) {
             GURL lastCommittedUrl = tab.getWebContents().getLastCommittedUrl();
             boolean isLastPageNative =
                     NativePage.isNativePageUrl(lastCommittedUrl, tab.isIncognitoBranded(), false);
