@@ -237,7 +237,7 @@ TEST_F(ProxyCallTranslatorTest, TestExternalSetConfig) {
   config.codec = AudioCodec::kCodecPCM;
   config.channel_layout = ChannelLayout::SURROUND_5_1;
   config.sample_format = SampleFormat::kSampleFormatPlanarS16;
-  config.bytes_per_channel = 42;
+  config.bytes_per_channel = 2;
   config.channel_number = 5;
   config.samples_per_second = 5000;
   config.extra_data = {1, 2, 3};
@@ -272,6 +272,43 @@ TEST_F(ProxyCallTranslatorTest, TestExternalSetConfig) {
             config.extra_data[1]);
   EXPECT_EQ(result.value().audio_config().extra_data()[2],
             config.extra_data[2]);
+}
+
+TEST_F(ProxyCallTranslatorTest, TestExternalSetConfigRejectsInvalidConfig) {
+  AudioConfig config;
+  config.codec = AudioCodec::kCodecPCM;
+  config.channel_layout = ChannelLayout::SURROUND_5_1;
+  config.sample_format = SampleFormat::kSampleFormatPlanarS16;
+  config.bytes_per_channel = 42;  // Invalid! (> kMaxBytesPerSample)
+  config.channel_number = 5;
+  config.samples_per_second = 5000;
+  config.extra_data = {1, 2, 3};
+  config.encryption_scheme = EncryptionScheme::kUnencrypted;
+
+  EXPECT_FALSE(translator_.SetConfig(config));
+  EXPECT_FALSE(translator_as_handler_->HasBufferedData());
+}
+
+TEST_F(ProxyCallTranslatorTest, TestExternalSetConfigRejectsUnmappedCodecAndFormat) {
+  AudioConfig config;
+  config.codec = AudioCodec::kCodecDTSXP2;
+  config.channel_layout = ChannelLayout::SURROUND_5_1;
+  config.sample_format = SampleFormat::kSampleFormatPlanarS16;
+  config.bytes_per_channel = 2;
+  config.channel_number = 5;
+  config.samples_per_second = 5000;
+
+  EXPECT_FALSE(translator_.SetConfig(config));
+  EXPECT_FALSE(translator_as_handler_->HasBufferedData());
+
+  config.codec = AudioCodec::kCodecDTSE;
+  EXPECT_FALSE(translator_.SetConfig(config));
+  EXPECT_FALSE(translator_as_handler_->HasBufferedData());
+
+  config.codec = AudioCodec::kCodecPCM;
+  config.sample_format = SampleFormat::kSampleFormatPlanarU8;
+  EXPECT_FALSE(translator_.SetConfig(config));
+  EXPECT_FALSE(translator_as_handler_->HasBufferedData());
 }
 
 TEST_F(ProxyCallTranslatorTest, TestInternalHandleInitializeFailure) {
