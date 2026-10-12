@@ -4,9 +4,11 @@
 
 #include "components/autofill/core/browser/form_qualifiers.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/form_parsing/determine_regex_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_util.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_test_api.h"
@@ -66,6 +68,8 @@ class FormStructureShouldTest : public testing::Test {
   }
 
  private:
+  base::test::ScopedFeatureList feature_list_{
+      features::kAutofillOnlyConsiderSingleFieldFormsAsSearchForms};
   test::AutofillUnitTestEnvironment autofill_test_environment_;
 };
 
@@ -141,8 +145,8 @@ TEST_F(FormShouldBeParsedTest, FalseIfOnlySelectField) {
   EXPECT_TRUE(ShouldBeParsed(form_structure(), {.min_required_fields = 2}));
 }
 
-// Form whose action is a search URL should not be parsed.
-TEST_F(FormShouldBeParsedTest, FalseIfSearchURL) {
+// Single-field forms whose action is a search URL should not be parsed.
+TEST_F(FormShouldBeParsedTest, FalseIfSearchForm) {
   AddTextField();
   EXPECT_TRUE(ShouldBeParsed(form_structure()));
   EXPECT_TRUE(ShouldBeParsed(form_structure(), {.min_required_fields = 1}));
@@ -153,10 +157,16 @@ TEST_F(FormShouldBeParsedTest, FalseIfSearchURL) {
   EXPECT_FALSE(ShouldBeParsed(form_structure()));
   EXPECT_FALSE(ShouldBeParsed(form_structure(), {.min_required_fields = 1}));
 
-  // But search can be in the URL.
+  // Single-field forms where "search" is only in the host should be parsed.
   SetAction(GURL("http://search.com/?q=hello"));
   EXPECT_TRUE(ShouldBeParsed(form_structure()));
   EXPECT_TRUE(ShouldBeParsed(form_structure(), {.min_required_fields = 1}));
+
+  // Multi-field forms with a search URL in the action are not considered
+  // search forms and should be parsed.
+  SetAction(GURL("http://google.com/search?q=hello"));
+  AddTextField();
+  EXPECT_TRUE(ShouldBeParsed(form_structure()));
 }
 
 // Forms with two password fields and no other fields should be parsed.
@@ -369,14 +379,9 @@ TEST_F(FormStructureShouldTest, IsAutofillable) {
 
   EXPECT_TRUE(FormIsAutofillable(form));
 
-  // The target cannot include http(s)://*/search...
+  // Multi-field forms are not considered search forms even if the action URL
+  // matches `kUrlSearchActionRe`.
   form.set_action(GURL("http://google.com/search?q=hello"));
-
-  EXPECT_FALSE(FormIsAutofillable(form));
-
-  // But search can be in the URL.
-  form.set_action(GURL("http://search.com/?q=hello"));
-
   EXPECT_TRUE(FormIsAutofillable(form));
 }
 

@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -20,6 +21,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/common/autofill_constants.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/autofill_regex_constants.h"
@@ -118,6 +120,35 @@ bool AtLeastNumFieldsSatisfy(const T& form, size_t num, Predicate p) {
   return num == 0;
 }
 
+// Returns true if `form` is considered a search form and should be ignored by
+// Autofill.
+template <typename T>
+  requires IsForm<T>
+bool IsSearchForm(const T& form) {
+  // Checking `kUrlSearchActionRe` on the form's `action` URL alone is too
+  // aggressive: when a `<form>` omits the `action` attribute, its `action`
+  // defaults to the document URL, which means any form on a page with "/search"
+  // in its path (e.g., a login or booking lookup form) would match
+  // `kUrlSearchActionRe`.
+  //
+  // To avoid blocking legitimate multi-field forms while still filtering out
+  // common single-input search bars (and avoiding unnecessary server query
+  // traffic for them), we also require `fields(form).size() == 1`.
+  //
+  // Note on unowned forms and form-flattening:
+  // - Unowned forms (`form.renderer_id().is_null()`) have an empty `action`
+  //   URL, so they never match `kUrlSearchActionRe` regardless of field count.
+  // - For an owned `<form>`, `FormForest` only flattens `<iframe>`s that are
+  //   DOM descendants of that `<form>` element (other iframes on the page
+  //   belong to the unowned form or their own enclosing `<form>`), so a search
+  //   `<form>` won't pick up fields from unrelated iframes on the page.
+  return (fields(form).size() == 1 ||
+          !base::FeatureList::IsEnabled(
+              features::kAutofillOnlyConsiderSingleFieldFormsAsSearchForms)) &&
+         MatchesRegex<kUrlSearchActionRe>(
+             base::UTF8ToUTF16(action(form).path()));
+}
+
 template <typename T>
   requires IsForm<T>
 DenseSet<FormParsingPermission> GetFormParsingPermissions(
@@ -143,12 +174,9 @@ DenseSet<FormParsingPermission> GetFormParsingPermissions(
     return {};
   }
 
-  // Rule out search forms.
-  if (MatchesRegex<kUrlSearchActionRe>(
-          base::UTF8ToUTF16(action(form).path()))) {
+  if (IsSearchForm(form)) {
     LOG_AF(log_manager) << LoggingScope::kAbortParsing
-                        << LogMessage::kAbortParsingUrlMatchesSearchRegex
-                        << form;
+                        << LogMessage::kAbortParsingSearchForm << form;
     return {};
   }
 

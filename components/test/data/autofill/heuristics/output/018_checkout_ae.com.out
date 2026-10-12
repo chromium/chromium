@@ -40,6 +40,10 @@ UNKNOWN_TYPE | birthYearBillAddField | Birthday: CLOSEWe'd love to wish you a ha
 
 MERCHANT_PROMO_CODE | CouponCode | Discount Code: CLOSEApplying DiscountsEnter your 8 or 20 digit code into the Discount Code field without any spaces, then click the Apply Discount button.Learn More about how to find and apply discounts |  | CouponCode_1
 
+NAME_FIRST | firstName | Search wish lists by name | First Name | firstName_1
+NAME_LAST | lastName | Last Name | Last Name | firstName_1
+EMAIL_ADDRESS | email | Or search wish lists by email Email CLOSEWe use this to send you an order confirmation and tracking info once your order ships. | Email | firstName_1
+
 UNKNOWN_TYPE | giftNumEntry | Gift Card Number: CLOSEYour 19-digit Gift Card number and four-digit pin number are on the back of your Gift Card. Enter these numbers in the Gift Card fields, then click the Apply button.Learn More about how to use Gift Cards. |  | giftNumEntry_1
 UNKNOWN_TYPE | pinNumEntry | PIN: |  | giftNumEntry_1
 
