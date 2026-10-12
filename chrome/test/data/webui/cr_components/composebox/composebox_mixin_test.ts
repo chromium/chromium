@@ -2721,6 +2721,59 @@ suite('ComposeboxMixinTest', () => {
         assertTrue(toolModel.hasContent());
       });
 
+  test('ComposeboxInputModel derives isLoading from upload status', () => {
+    const pending = ComposeboxFile.createFromTab(
+        'pending-uuid', 1, 'Tab 1', 'https://a.com',
+        {status: ContextUploadStatus.kUploadStarted});
+    const done = ComposeboxFile.createFromTab(
+        'done-uuid', 2, 'Tab 2', 'https://b.com',
+        {status: ContextUploadStatus.kUploadSuccessful});
+    const model = new ComposeboxInputModel({
+      attachedContext: new Map([[pending.uuid, pending], [done.uuid, done]]),
+      tabFaviconChipsToCoinsEnabled: true,
+    });
+
+    const tabs = model.getSharedTabs();
+    assertTrue(tabs.find(t => t.tabId === 1)!.isLoading);
+    assertFalse(tabs.find(t => t.tabId === 2)!.isLoading);
+  });
+
+  test(
+      'shared tab stays loading until upload completes, in sync with submit',
+      async () => {
+        element.tabFaviconChipsToCoinsEnabled = true;
+        await simulateUserTextInput(element.getInputElement(), 'query');
+
+        const token = 'slow-tab-uuid';
+        const tabFile = ComposeboxFile.createFromTab(
+            token, 7, 'Slow Tab', 'https://slow.example.com',
+            {status: ContextUploadStatus.kUploadStarted});
+        element.attachedContext = new Map([[token, tabFile]]);
+        // The tab strip already reports the page as loaded, which is the
+        // scenario from b/568757957: the skeleton used to clear here even
+        // though the upload (and therefore submit) was still pending.
+        element.tabSuggestions = [{
+          tabId: 7,
+          title: 'Slow Tab',
+          url: 'https://slow.example.com',
+          showInCurrentTabChip: false,
+          showInPreviousTabChip: false,
+          isLoading: false,
+          lastActive: {internalValue: 0n},
+        }];
+        await microtasksFinished();
+
+        assertTrue(element.getSharedTabs()[0]!.isLoading);
+        assertFalse(element.canSubmitFilesAndInput);
+
+        element.updateFileStatus(
+            token, ContextUploadStatus.kUploadSuccessful, null);
+        await microtasksFinished();
+
+        assertFalse(element.getSharedTabs()[0]!.isLoading);
+        assertTrue(element.canSubmitFilesAndInput);
+      });
+
   test(
       'getSharedTabs marks a delayed tab loading until its snapshot is ready',
       () => {

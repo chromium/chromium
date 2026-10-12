@@ -3270,20 +3270,15 @@ export const ComposeboxEmbedderMixin =
 
         // Returns all attached tabs in composebox.
         getSharedTabs(): TabInfo[] {
-          // Shared tabs are built from attached files, so pull the live
-          // loading state from the latest tab suggestions.
+          // Shared tabs are built from attached files, which carry the upload
+          // state; also pull the live page loading state from the latest tab
+          // suggestions.
           const suggestions =
               new Map(this.tabSuggestions.map(tab => [tab.tabId, tab]));
-          const awaitingSnapshot =
-              new Set(Array.from(this.attachedContext.values())
-                          .filter(
-                              file => file.delayUpload &&
-                                  !isContextUploadStatusTerminal(file.status))
-                          .map(file => file.tabId));
           return this.inputModel.getSharedTabs().map(
               tab => ({
                 ...tab,
-                isLoading: awaitingSnapshot.has(tab.tabId) ||
+                isLoading: tab.isLoading ||
                     (suggestions.get(tab.tabId)?.isLoading ?? false),
               }));
         }

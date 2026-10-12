@@ -301,9 +301,10 @@ export class ComposeboxInputModel {
                tabId: file.tabId!,
                title: file.name,
                url: file.url!,
-               // Attached files carry no loading state; embedders fill it in
-               // from the latest tab suggestions.
-               isLoading: false,
+               // A tab coin is "loading" while its context upload is still in
+               // flight. This mirrors `pendingUploads`, which gates the submit
+               // button, so the skeleton and the disabled submit button agree.
+               isLoading: !isContextUploadStatusTerminal(file.status),
              } as TabInfo));
   }
 
