@@ -117,10 +117,7 @@ source_set("cocoa") {
     "window_size_autosaver.mm",
   ]
 
-  public_deps = [
-    "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/ui:browser_live_tab_context",
-  ]
+  public_deps = [ "//chrome/browser/ui:browser_live_tab_context" ]
 
   deps = [
     "//chrome/app:command_ids",
@@ -255,6 +252,7 @@ source_set("unit_tests") {
     "//chrome/browser/history",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile_manager",
+    "//chrome/browser/profiles:profile_util",
     "//chrome/browser/search_engines",
     "//chrome/browser/search_engines:test_support",
     "//chrome/browser/sessions",

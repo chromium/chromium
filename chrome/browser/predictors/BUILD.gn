@@ -87,7 +87,6 @@ source_set("impl") {
     "resource_prefetch_predictor.cc",
     "resource_prefetch_predictor_tables.cc",
   ]
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
     ":config",
     ":predictors",
@@ -119,6 +118,9 @@ source_set("impl") {
     "//third_party/blink/public/common:headers",
     "//ui/base",
   ]
+  if (enable_extensions_core) {
+    deps += [ "//extensions/browser" ]
+  }
 }
 
 source_set("test_support") {

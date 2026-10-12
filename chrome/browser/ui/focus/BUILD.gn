@@ -27,10 +27,7 @@ source_set("impl") {
     "browser_focus_controller_webui.cc",
   ]
 
-  public_deps = [
-    ":focus",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ ":focus" ]
 
   deps = [
     "//base",

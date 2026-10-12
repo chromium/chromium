@@ -37,8 +37,6 @@ source_set("impl") {
     "search_engine_choice_service_factory.cc",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     ":search_engine_choice",
     "//chrome/browser:browser_process",

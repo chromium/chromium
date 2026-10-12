@@ -91,6 +91,7 @@ source_set("impl") {
     ":bookmarks",
     "//chrome/app:command_ids",
     "//chrome/app/vector_icons",
+    "//chrome/browser:browser_features",
     "//chrome/browser/bookmarks",
     "//chrome/browser/commerce",
     "//chrome/browser/favicon",
@@ -154,8 +155,6 @@ source_set("impl") {
     "//services/network:network_service",
     "//skia",
   ]
-
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("test_support") {

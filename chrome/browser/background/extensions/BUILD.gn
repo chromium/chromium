@@ -56,12 +56,12 @@ source_set("impl") {
     "//base",
     "//chrome/app/theme:chrome_unscaled_resources_grit",
     "//chrome/browser:browser_process",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/background",
     "//chrome/browser/extensions",
     "//chrome/browser/glic",
     "//chrome/browser/lifetime",
     "//chrome/browser/lifetime:termination_notification",
+    "//chrome/browser/policy",
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/profiles/keep_alive",
     "//chrome/browser/status_icons",
@@ -90,7 +90,10 @@ source_set("impl") {
   }
 
   if (is_win) {
-    deps += [ "//chrome/browser/startup" ]
+    deps += [
+      "//chrome/browser/startup",
+      "//chrome/browser/win",
+    ]
   }
 }
 
