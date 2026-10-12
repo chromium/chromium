@@ -631,21 +631,28 @@ class MenuController::MenuScrollTask {
 // MenuController:SelectByCharDetails ----------------------------------------
 
 struct MenuController::SelectByCharDetails {
+  struct Match {
+    size_t item_index;
+    raw_ptr<Button> button = nullptr;
+
+    friend bool operator==(const Match&, const Match&) = default;
+  };
+
   SelectByCharDetails() = default;
 
-  // Index of the first menu with the specified mnemonic.
-  std::optional<size_t> first_match;
+  // First menu item or child button with the specified mnemonic.
+  std::optional<Match> first_match;
 
-  // If true there are multiple menu items with the same mnemonic.
+  // If true there are multiple menu items or buttons with the same mnemonic.
   bool has_multiple = false;
 
-  // Index of the selected item; may remain nullopt.
-  std::optional<size_t> index_of_item;
+  // Currently selected item / hot-tracked button; may remain nullopt.
+  std::optional<Match> index_of_item;
 
-  // If there are multiple matches this is the index of the item after the
-  // currently selected item whose mnemonic matches. This may remain nullopt
-  // even though there are matches.
-  std::optional<size_t> next_match;
+  // If there are multiple matches this is the match after the currently
+  // selected item/button whose mnemonic matches. This may remain nullopt even
+  // though there are matches.
+  std::optional<Match> next_match;
 };
 
 // MenuController:State ------------------------------------------------------
@@ -3596,22 +3603,49 @@ MenuController::SelectByCharDetails MenuController::FindChildForMnemonic(
   DCHECK(submenu);
   SelectByCharDetails details;
 
+  auto record_candidate = [&](SelectByCharDetails::Match candidate,
+                              bool is_selected, bool is_match) {
+    if (is_selected) {
+      details.index_of_item = candidate;
+    }
+    if (is_match) {
+      if (!details.first_match.has_value()) {
+        details.first_match = candidate;
+      } else {
+        details.has_multiple = true;
+      }
+      if (!details.next_match.has_value() &&
+          details.index_of_item.has_value() &&
+          candidate != *details.index_of_item) {
+        details.next_match = candidate;
+      }
+    }
+  };
+
+  const bool check_button_mnemonics =
+      match_function == &MatchesMnemonic &&
+      parent->GetRootMenuItem()->has_mnemonics() &&
+      MenuConfig::instance().use_mnemonics;
   const auto menu_items = submenu->GetMenuItems();
   for (size_t i = 0; i < menu_items.size(); ++i) {
     MenuItemView* child = menu_items[i];
     if (child->GetEnabled() && child->GetVisible()) {
-      if (child == pending_state_.item) {
-        details.index_of_item = i;
-      }
-      if (match_function(child, key)) {
-        if (!details.first_match.has_value()) {
-          details.first_match = i;
-        } else {
-          details.has_multiple = true;
-        }
-        if (!details.next_match.has_value() &&
-            details.index_of_item.has_value() && i > details.index_of_item) {
-          details.next_match = i;
+      record_candidate({i, nullptr},
+                       child == pending_state_.item && !hot_button_,
+                       match_function(child, key));
+      for (View* v = GetInitialFocusableView(child, /*forward=*/true); v;
+           v = GetNextFocusableView(child, v, /*forward=*/true)) {
+        if (Button* button = Button::AsButton(v)) {
+          const char16_t button_mnemonic =
+              button->GetProperty(kMenuMnemonicKey);
+          const bool button_matches = check_button_mnemonics &&
+                                      button_mnemonic != 0 &&
+                                      base::i18n::ToLower(std::u16string_view(
+                                          &button_mnemonic, 1))[0] == key;
+          record_candidate(
+              {i, button},
+              child == pending_state_.item && hot_button_ == button,
+              button_matches);
         }
       }
     }
@@ -3628,19 +3662,28 @@ void MenuController::AcceptOrSelect(MenuItemView* parent,
   DCHECK(submenu);
   if (!details.has_multiple) {
     // There's only one match, activate it (or open if it has a submenu).
-    if (submenu->GetMenuItemAt(details.first_match.value())->HasSubmenu()) {
-      SetSelection(submenu->GetMenuItemAt(details.first_match.value()),
-                   SELECTION_OPEN_SUBMENU | SELECTION_UPDATE_IMMEDIATELY);
+    const SelectByCharDetails::Match match = details.first_match.value();
+    MenuItemView* item = submenu->GetMenuItemAt(match.item_index);
+    if (match.button) {
+      SetSelection(item, SELECTION_DEFAULT);
+      if (!destroy_pending_) {
+        SetHotTrackedButton(match.button);
+        SendAcceleratorToHotTrackedView(0);
+      }
+    } else if (item->HasSubmenu()) {
+      SetSelection(item, SELECTION_OPEN_SUBMENU | SELECTION_UPDATE_IMMEDIATELY);
     } else {
-      Accept(submenu->GetMenuItemAt(details.first_match.value()), 0);
+      Accept(item, 0);
     }
-  } else if (!details.index_of_item.has_value() ||
-             !details.next_match.has_value()) {
-    SetSelection(submenu->GetMenuItemAt(details.first_match.value()),
-                 SELECTION_DEFAULT);
   } else {
-    SetSelection(submenu->GetMenuItemAt(details.next_match.value()),
-                 SELECTION_DEFAULT);
+    const SelectByCharDetails::Match match =
+        (!details.index_of_item.has_value() || !details.next_match.has_value())
+            ? details.first_match.value()
+            : details.next_match.value();
+    SetSelection(submenu->GetMenuItemAt(match.item_index), SELECTION_DEFAULT);
+    if (!destroy_pending_) {
+      SetHotTrackedButton(match.button);
+    }
   }
 }
 

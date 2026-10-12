@@ -64,6 +64,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/user_education/mock_browser_user_education_interface.h"
@@ -86,6 +87,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/actions/actions.h"
+#include "ui/base/accelerators/menu_label_accelerator_util.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/drop_target_event.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
@@ -105,6 +107,7 @@
 #include "ui/views/controls/button/menu_button_controller.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/menu/menu_config.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -147,6 +150,18 @@ class ActionAppMenuTest : public ActionAppMenuTestBase {
   }
 
  protected:
+  // The fixture's actions have plain text. Sets `action_id`'s text to the
+  // string with mnemonic used in production, and returns its mnemonic.
+  char16_t SetTextWithMnemonic(actions::ActionId action_id, int string_id) {
+    actions::ActionItem* action = actions::ActionManager::Get().FindAction(
+        action_id, browser_actions_->root_action_item());
+    CHECK(action);
+    const std::u16string text = BrowserActions::GetMnemonicTitleText(
+        l10n_util::GetStringUTF16(string_id));
+    action->SetText(text);
+    return ui::GetMnemonic(text);
+  }
+
   std::unique_ptr<views::Widget> widget_;
   raw_ptr<views::MenuButton> button_ = nullptr;
 };
@@ -3656,5 +3671,113 @@ TEST_F(ActionAppMenuTest, PopulatesFooterElementsWithEnterpriseReleaseNotes) {
   menu.CloseMenu();
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+TEST_F(ActionAppMenuTest, BlockButtonsRespondToMnemonics) {
+  if (!views::MenuConfig::instance().use_mnemonics) {
+    GTEST_SKIP() << "Mnemonics are not enabled on this platform";
+  }
+
+  auto test_block_mnemonic = [&](char16_t mnemonic,
+                                 actions::ActionId expected_action_id) {
+    base::MockCallback<base::RepeatingClosure> on_menu_closed;
+    ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+    menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
+    ASSERT_TRUE(menu.IsShowing());
+
+    views::MenuItemView* root = menu.root_menu_item_for_testing();
+    ASSERT_TRUE(root);
+    views::MenuController* controller = root->GetMenuController();
+    ASSERT_TRUE(controller);
+
+    EXPECT_CALL(mock_action_invoked_,
+                Call(expected_action_id, testing::_, testing::_))
+        .Times(1);
+    EXPECT_CALL(on_menu_closed, Run()).Times(1);
+
+    ui::KeyEvent key_event(ui::EventType::kKeyPressed, ui::VKEY_UNKNOWN,
+                           ui::EF_NONE);
+    key_event.set_character(mnemonic);
+    controller->OnWillDispatchKeyEvent(&key_event);
+  };
+
+  test_block_mnemonic(SetTextWithMnemonic(kActionNewTab, IDS_NEW_TAB),
+                      kActionNewTab);
+  test_block_mnemonic(SetTextWithMnemonic(kActionNewWindow, IDS_NEW_WINDOW),
+                      kActionNewWindow);
+  test_block_mnemonic(
+      SetTextWithMnemonic(kActionNewIncognitoWindow, IDS_NEW_INCOGNITO_WINDOW),
+      kActionNewIncognitoWindow);
+}
+
+TEST_F(ActionAppMenuTest, FooterButtonsRespondToMnemonics) {
+  if (!views::MenuConfig::instance().use_mnemonics) {
+    GTEST_SKIP() << "Mnemonics are not enabled on this platform";
+  }
+
+  auto open_menu_and_press = [&](ActionAppMenu& menu, char16_t mnemonic) {
+    menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
+    ASSERT_TRUE(menu.IsShowing());
+    views::MenuItemView* root = menu.root_menu_item_for_testing();
+    ASSERT_TRUE(root);
+    views::MenuController* controller = root->GetMenuController();
+    ASSERT_TRUE(controller);
+
+    ui::KeyEvent key_event(ui::EventType::kKeyPressed, ui::VKEY_UNKNOWN,
+                           ui::EF_NONE);
+    key_event.set_character(mnemonic);
+    controller->OnWillDispatchKeyEvent(&key_event);
+  };
+
+  auto test_footer_action_mnemonic = [&](char16_t mnemonic,
+                                         actions::ActionId expected_action_id) {
+    base::MockCallback<base::RepeatingClosure> on_menu_closed;
+    ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+    EXPECT_CALL(mock_action_invoked_,
+                Call(expected_action_id, testing::_, testing::_))
+        .Times(1);
+    EXPECT_CALL(on_menu_closed, Run()).Times(1);
+    open_menu_and_press(menu, mnemonic);
+  };
+
+  test_footer_action_mnemonic(SetTextWithMnemonic(kActionOptions, IDS_SETTINGS),
+                              kActionOptions);
+
+  if (browser_defaults::kShowExitMenuItem) {
+    test_footer_action_mnemonic(SetTextWithMnemonic(kActionExit, IDS_EXIT),
+                                kActionExit);
+  }
+
+  // Branded builds show a Help button that opens a submenu; other builds show
+  // an About button instead.
+  const char16_t help_mnemonic =
+      SetTextWithMnemonic(kActionHelpSubmenu, IDS_HELP_MENU);
+  const char16_t about_mnemonic = SetTextWithMnemonic(kActionAbout, IDS_ABOUT);
+  bool has_help_submenu = false;
+  {
+    base::MockCallback<base::RepeatingClosure> on_menu_closed;
+    ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+    menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
+    views::MenuItemView* root = menu.root_menu_item_for_testing();
+    ASSERT_TRUE(root);
+    has_help_submenu = root->GetMenuItemByID(kActionHelpSubmenu);
+    EXPECT_CALL(on_menu_closed, Run()).Times(1);
+    menu.CloseMenu();
+  }
+
+  if (!has_help_submenu) {
+    test_footer_action_mnemonic(about_mnemonic, kActionAbout);
+    return;
+  }
+
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+  open_menu_and_press(menu, help_mnemonic);
+  views::MenuItemView* help_item =
+      menu.root_menu_item_for_testing()->GetMenuItemByID(kActionHelpSubmenu);
+  ASSERT_TRUE(help_item);
+  EXPECT_TRUE(help_item->SubmenuIsShowing());
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
 
 }  // namespace

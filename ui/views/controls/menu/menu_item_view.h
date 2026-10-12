@@ -858,6 +858,10 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
 VIEWS_EXPORT extern const ui::ClassProperty<MenuItemView*>* const
     kSubmenuItemKey;
 
+// Property set on a child views::Button inside a container MenuItemView to
+// specify its mnemonic character for keyboard selection in MenuController.
+VIEWS_EXPORT extern const ui::ClassProperty<char16_t>* const kMenuMnemonicKey;
+
 class VIEWS_EXPORT MenuItemActionViewInterface
     : public BaseActionViewInterface {
  public:
@@ -884,6 +888,7 @@ class VIEWS_EXPORT EmptyMenuMenuItem : public MenuItemView {
 
 }  // namespace views
 
+DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, char16_t)
 DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, views::MenuItemView*)
 
 #endif  // UI_VIEWS_CONTROLS_MENU_MENU_ITEM_VIEW_H_

@@ -562,6 +562,10 @@ class MenuControllerTest : public ViewsTestBase,
 
   void DestroyMenuItem();
 
+  void SetHasMnemonics(bool has_mnemonics) {
+    menu_item_->has_mnemonics_ = has_mnemonics;
+  }
+
   Button* hot_button() { return menu_controller_->hot_button_; }
 
   void SetHotTrackedButton(Button* hot_button);
@@ -4425,6 +4429,99 @@ TEST_F(MenuControllerTest, GetForOwnerWidgetAndCancelAllActive) {
 
   MenuController::CancelAllActive();
   EXPECT_EQ(MenuController::ExitType::kAll, menu_controller()->exit_type());
+}
+
+TEST_F(MenuControllerTest, SelectChildButtonViewByMnemonic) {
+  if (!MenuConfig::instance().use_mnemonics) {
+    GTEST_SKIP() << "Mnemonics are not enabled on this platform";
+  }
+
+  CreateMenu();
+  SetHasMnemonics(true);
+  MenuItemView* const buttons_item = AddButtonMenuItems(/*single_child=*/false);
+  SubmenuView* const submenu = menu_item()->GetSubmenu();
+  SubmenuView* const root_submenu = menu_item()->GetSubmenu();
+  root_submenu->GetMenuItemAt(0)->SetTitle(u"&One");
+  const View* const buttons_view = submenu->children()[4];
+  ASSERT_NE(nullptr, buttons_view);
+  GET_CHILD_BUTTON(button1, buttons_view, 0);
+  GET_CHILD_BUTTON(button2, buttons_view, 1);
+  GET_CHILD_BUTTON(button3, buttons_view, 2);
+
+  int button1_clicks = 0;
+  int button2_clicks = 0;
+  int button3_clicks = 0;
+  button1->SetCallback(base::BindRepeating([](int* count) { ++(*count); },
+                                           base::Unretained(&button1_clicks)));
+  button2->SetCallback(base::BindRepeating([](int* count) { ++(*count); },
+                                           base::Unretained(&button2_clicks)));
+  button3->SetCallback(base::BindRepeating([](int* count) { ++(*count); },
+                                           base::Unretained(&button3_clicks)));
+
+  button1->SetProperty(kMenuMnemonicKey, u'z');
+  button2->SetProperty(kMenuMnemonicKey, u'o');
+  button3->SetProperty(kMenuMnemonicKey, u'o');
+
+  // Unique match on button1 via mnemonic 'z' hot-tracks and activates button1.
+  SelectByChar('z');
+  EXPECT_EQ(buttons_item, pending_state_item());
+  EXPECT_EQ(button1, hot_button());
+  EXPECT_EQ(1, button1_clicks);
+
+  // Multiple matches: item 1 has mnemonic 'o', button2 has mnemonic 'o', and
+  // button3 has mnemonic 'o'. Pressing 'o' cycles from the currently
+  // hot-tracked button1 to button2 -> button3 -> item 1 without triggering any
+  // button.
+  SelectByChar('o');
+  EXPECT_EQ(buttons_item, pending_state_item());
+  EXPECT_EQ(button2, hot_button());
+  EXPECT_EQ(0, button2_clicks);
+
+  SelectByChar('o');
+  EXPECT_EQ(buttons_item, pending_state_item());
+  EXPECT_EQ(button3, hot_button());
+  EXPECT_EQ(0, button3_clicks);
+
+  // Wrap around back to item 1.
+  SelectByChar('o');
+  EXPECT_EQ(1, pending_state_item()->GetCommand());
+  EXPECT_EQ(nullptr, hot_button());
+
+  // Next 'o' advances to button2 again.
+  SelectByChar('o');
+  EXPECT_EQ(buttons_item, pending_state_item());
+  EXPECT_EQ(button2, hot_button());
+  EXPECT_EQ(0, button2_clicks);
+}
+
+TEST_F(MenuControllerTest, SelectChildButtonViewWithSubmenuByMnemonic) {
+  if (!MenuConfig::instance().use_mnemonics) {
+    GTEST_SKIP() << "Mnemonics are not enabled on this platform";
+  }
+
+  CreateMenu();
+  SetHasMnemonics(true);
+  MenuItemView* const buttons_item = AddButtonMenuItems(/*single_child=*/true);
+  SubmenuView* const submenu = menu_item()->GetSubmenu();
+  const View* const buttons_view = submenu->children()[4];
+  ASSERT_NE(nullptr, buttons_view);
+  GET_CHILD_BUTTON(button1, buttons_view, 0);
+
+  MenuItemView* const anchored_submenu =
+      menu_item()->AppendSubMenu(6, std::u16string());
+  anchored_submenu->SetVisible(false);
+  MenuItemView* const sub_item = anchored_submenu->AppendMenuItem(7, u"About");
+  anchored_submenu->SetAnchorView(button1);
+
+  button1->SetProperty(kMenuMnemonicKey, u'e');
+
+  // Pressing 'e' should open the anchored submenu and select its first item.
+  SelectByChar('e');
+  EXPECT_TRUE(anchored_submenu->SubmenuIsShowing());
+  EXPECT_EQ(sub_item, pending_state_item());
+  EXPECT_EQ(buttons_item, buttons_item);
+
+  anchored_submenu->SetAnchorView(nullptr);
 }
 
 }  // namespace views

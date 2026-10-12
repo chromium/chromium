@@ -15,11 +15,13 @@
 #include "chrome/browser/ui/views/app_menu/app_menu_block_button.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "ui/actions/actions.h"
+#include "ui/base/accelerators/menu_label_accelerator_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/events/event.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/actions/action_view_controller.h"
+#include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/view_class_properties.h"
 
 AppMenuBlockView::AppMenuBlockView(
@@ -65,6 +67,10 @@ AppMenuBlockView::AppMenuBlockView(
             block_child->GetProperty(AppMenuActionItem::kTextOverrideKey)) {
       button->SetText(*text_override);
     }
+
+    button->SetProperty(views::kMenuMnemonicKey,
+                        ui::GetMnemonic(std::u16string(
+                            block_child_ptr->GetTextWithMnemonic())));
 
     if (ui::ImageModel* icon_override =
             block_child->GetProperty(AppMenuActionItem::kIconOverrideKey)) {

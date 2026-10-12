@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/app_menu/app_menu_footer_button.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "ui/actions/actions.h"
+#include "ui/base/accelerators/menu_label_accelerator_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
@@ -158,6 +159,9 @@ AppMenuFooterView::AppMenuFooterView(
             footer_child->GetProperty(AppMenuActionItem::kTextOverrideKey)) {
       button->SetText(*text_override);
     }
+    button->SetProperty(views::kMenuMnemonicKey,
+                        ui::GetMnemonic(std::u16string(
+                            footer_child_ptr->GetTextWithMnemonic())));
     if (ui::ImageModel* icon_override =
             footer_child->GetProperty(AppMenuActionItem::kIconOverrideKey)) {
       button->SetImageModel(*icon_override);
