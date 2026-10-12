@@ -95,21 +95,17 @@ ActorToolFactory::CreateTool(const ActorToolRequest& request,
           tab_resolution && tab_resolution->has_value()
               ? tab_resolution->value().url_loader
               : nullptr;
-      origin_gating::OriginGatingService* gating_service =
-          profile_context_resolver_.GetOriginGatingService();
-      origin_gating::CheckerId gating_checker_id =
-          tool_delegate ? tool_delegate->GetOriginGatingCheckerId()
-                        : origin_gating::CheckerId();
       return NavigateTool::Create(target_web_state, request.action().navigate(),
-                                  url_loader, gating_service,
-                                  gating_checker_id);
+                                  url_loader, tool_delegate);
     }
     case optimization_guide::proto::Action::kClick:
       return ClickTool::Create(target_web_state, request.action().click());
     case optimization_guide::proto::Action::kBack:
-      return HistoryTool::Create(target_web_state, request.action().back());
+      return HistoryTool::Create(target_web_state, request.action().back(),
+                                 tool_delegate);
     case optimization_guide::proto::Action::kForward:
-      return HistoryTool::Create(target_web_state, request.action().forward());
+      return HistoryTool::Create(target_web_state, request.action().forward(),
+                                 tool_delegate);
     case optimization_guide::proto::Action::kSelect:
       return SelectTool::Create(target_web_state, request.action().select());
     case optimization_guide::proto::Action::kDragAndRelease:

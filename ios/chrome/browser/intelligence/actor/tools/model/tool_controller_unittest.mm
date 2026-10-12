@@ -213,8 +213,10 @@ class ToolControllerTest : public PlatformTest, public ToolDelegate {
   }
   void InterruptFromTool() override {}
   void UninterruptFromTool() override {}
-  origin_gating::CheckerId GetOriginGatingCheckerId() const override {
-    return origin_gating::CheckerId();
+  void IsAcceptableNavigationDestination(
+      const GURL& url,
+      ToolExecutionCallback callback) override {
+    std::move(callback).Run(ToolExecutionResult::Ok());
   }
 
   base::test::TaskEnvironment task_environment_{

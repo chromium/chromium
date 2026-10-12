@@ -4,18 +4,13 @@
 
 #import "ios/chrome/browser/intelligence/actor/tools/model/navigate_tool.h"
 
-#import "base/check.h"
-#import "base/feature_list.h"
+#import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/time/time.h"
-#import "base/types/expected.h"
 #import "components/actor/public/mojom/actor_types.mojom.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
-#import "components/origin_gating/core/origin_gating_checker.h"
-#import "components/origin_gating/core/origin_gating_service.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/tool_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
-#import "ios/chrome/browser/intelligence/features/features.h"
-#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/web/public/navigation/navigation_context.h"
@@ -33,14 +28,13 @@ std::unique_ptr<NavigateTool> NavigateTool::Create(
     base::WeakPtr<web::WebState> web_state,
     const optimization_guide::proto::NavigateAction& action,
     base::WeakPtr<UrlLoadingBrowserAgent> url_loader,
-    origin_gating::OriginGatingService* gating_service,
-    origin_gating::CheckerId gating_checker_id) {
+    ToolDelegate* tool_delegate) {
   std::optional<std::string> url = std::nullopt;
   if (action.has_url()) {
     url = action.url();
   }
-  return std::unique_ptr<NavigateTool>(new NavigateTool(
-      web_state, url, url_loader, gating_service, gating_checker_id));
+  return std::unique_ptr<NavigateTool>(
+      new NavigateTool(web_state, url, url_loader, tool_delegate));
 }
 
 void NavigateTool::Validate(ToolExecutionCallback callback) {
@@ -49,24 +43,32 @@ void NavigateTool::Validate(ToolExecutionCallback callback) {
         InternalToolErrorCode::kCreationMissingRequiredFields));
     return;
   }
-  std::move(callback).Run(ToolExecutionResult::Ok());
+  const GURL destination_url(url_.value());
+  if (!destination_url.is_valid()) {
+    std::move(callback).Run(
+        ToolExecutionResult(mojom::ActionResultCode::kNavigateInvalidUrl));
+    return;
+  }
+  if (!tool_delegate_) {
+    std::move(callback).Run(ToolExecutionResult(
+        InternalToolErrorCode::kExecutionMissingDependencies));
+    return;
+  }
+  tool_delegate_->IsAcceptableNavigationDestination(destination_url,
+                                                    std::move(callback));
 }
 
 NavigateTool::NavigateTool(base::WeakPtr<web::WebState> web_state,
                            std::optional<std::string> url,
                            base::WeakPtr<UrlLoadingBrowserAgent> url_loader,
-                           origin_gating::OriginGatingService* gating_service,
-                           origin_gating::CheckerId gating_checker_id)
+                           ToolDelegate* tool_delegate)
     : url_(url),
       web_state_(web_state),
       url_loader_(url_loader),
-      gating_service_(gating_service),
-      gating_checker_id_(gating_checker_id) {}
+      tool_delegate_(tool_delegate) {}
 
 NavigateTool::~NavigateTool() = default;
 
-// TODO(crbug.com/474383578): Limit what URLs can be navigated to using the
-// ActorService.
 void NavigateTool::Execute(ToolExecutionCallback callback) {
   invoke_callback_ = std::move(callback);
 
@@ -80,7 +82,7 @@ void NavigateTool::Execute(ToolExecutionCallback callback) {
   const GURL destination_url(url_.value_or(""));
   if (!destination_url.is_valid()) {
     std::move(invoke_callback_)
-        .Run(ToolExecutionResult(InternalToolErrorCode::kNavigationInvalidURL));
+        .Run(mojom::ActionResultCode::kNavigateInvalidUrl);
     return;
   }
 
@@ -90,55 +92,6 @@ void NavigateTool::Execute(ToolExecutionCallback callback) {
     std::move(invoke_callback_)
         .Run(ToolExecutionResult(
             InternalToolErrorCode::kNavigationTabNotRealized));
-    return;
-  }
-
-  if (!IsActorOriginGatingForExplicitNavigationEnabled()) {
-    // If the feature is disabled, bypass origin gating.
-    LoadUrl(destination_url);
-    return;
-  }
-
-  // Feature is enabled: checker is required.
-  CHECK(gating_service_);
-  origin_gating::OriginGatingChecker* gating_checker =
-      gating_service_->GetChecker(gating_checker_id_);
-  CHECK(gating_checker);
-
-  const GURL source_url = web_state_->GetLastCommittedURL();
-  auto context = std::make_unique<origin_gating::GatingDecisionContext>();
-  gating_checker->ComputeGatingDecision(
-      std::move(context),
-      origin_gating::GateableEvent(origin_gating::NavigationRequestEvent{
-          .source = source_url, .destination = destination_url}),
-      base::BindOnce(&NavigateTool::OnGatingDecisionComputed,
-                     weak_ptr_factory_.GetWeakPtr(), destination_url));
-  return;
-}
-
-void NavigateTool::OnGatingDecisionComputed(
-    const GURL& destination_url,
-    std::unique_ptr<origin_gating::GatingDecisionContext> context,
-    origin_gating::GatingDecision decision) {
-  if (!invoke_callback_) {
-    return;
-  }
-
-  if (!decision.is_allowed) {
-    std::move(invoke_callback_)
-        .Run(ToolExecutionResult(
-            mojom::ActionResultCode::kTriggeredNavigationBlocked));
-    return;
-  }
-  LoadUrl(destination_url);
-}
-
-void NavigateTool::LoadUrl(const GURL& destination_url) {
-  // Guard dependencies in case they were invalidated during the async check.
-  if (!web_state_ || !url_loader_) {
-    std::move(invoke_callback_)
-        .Run(ToolExecutionResult(
-            InternalToolErrorCode::kExecutionMissingDependencies));
     return;
   }
 

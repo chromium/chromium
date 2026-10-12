@@ -7,7 +7,6 @@
 
 #import <memory>
 
-#import "base/memory/raw_ptr.h"
 #import "base/types/expected.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"

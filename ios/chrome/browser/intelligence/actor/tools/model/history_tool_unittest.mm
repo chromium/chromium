@@ -9,6 +9,7 @@
 #import "base/test/test_future.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/fake_tool_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/chrome/browser/intelligence/actor/util/actor_test_utils.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -67,13 +68,14 @@ class HistoryToolTest : public PlatformTest {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
+  FakeToolDelegate tool_delegate_;
 
   base::expected<std::unique_ptr<HistoryTool>, ToolExecutionResult>
   CreateToolAndValidate(
       const optimization_guide::proto::HistoryBackAction& action,
       web::WebState* web_state) {
     std::unique_ptr<HistoryTool> tool = HistoryTool::Create(
-        web_state ? web_state->GetWeakPtr() : nullptr, action);
+        web_state ? web_state->GetWeakPtr() : nullptr, action, &tool_delegate_);
     CHECK(tool);
     base::test::TestFuture<ToolExecutionResult> validate_future;
     tool->Validate(validate_future.GetCallback());
@@ -88,7 +90,7 @@ class HistoryToolTest : public PlatformTest {
       const optimization_guide::proto::HistoryForwardAction& action,
       web::WebState* web_state) {
     std::unique_ptr<HistoryTool> tool = HistoryTool::Create(
-        web_state ? web_state->GetWeakPtr() : nullptr, action);
+        web_state ? web_state->GetWeakPtr() : nullptr, action, &tool_delegate_);
     CHECK(tool);
     base::test::TestFuture<ToolExecutionResult> validate_future;
     tool->Validate(validate_future.GetCallback());
@@ -98,6 +100,38 @@ class HistoryToolTest : public PlatformTest {
     return tool;
   }
 };
+
+// Tests that back navigation validation fails with
+// kTriggeredNavigationBlocked when the target back item URL is disallowed.
+TEST_F(HistoryToolTest, Validate_Back_BlockedByOriginGating) {
+  tool_delegate_.set_navigation_destination_allowed(false);
+  InsertWebStateWithNavigationManager(/*first_item_active=*/false);
+  web::WebState* web_state = browser_->GetWebStateList()->GetWebStateAt(0);
+  int tab_id = web_state->GetUniqueIdentifier().identifier();
+  optimization_guide::proto::Action action;
+  action.mutable_back()->set_tab_id(tab_id);
+  base::expected<std::unique_ptr<HistoryTool>, ToolExecutionResult> maybe_tool =
+      CreateToolAndValidate(action.back(), web_state);
+  ASSERT_FALSE(maybe_tool.has_value());
+  EXPECT_EQ(mojom::ActionResultCode::kTriggeredNavigationBlocked,
+            maybe_tool.error().code());
+}
+
+// Tests that forward navigation validation fails with
+// kTriggeredNavigationBlocked when the target forward item URL is disallowed.
+TEST_F(HistoryToolTest, Validate_Forward_BlockedByOriginGating) {
+  tool_delegate_.set_navigation_destination_allowed(false);
+  InsertWebStateWithNavigationManager(/*first_item_active=*/true);
+  web::WebState* web_state = browser_->GetWebStateList()->GetWebStateAt(0);
+  int tab_id = web_state->GetUniqueIdentifier().identifier();
+  optimization_guide::proto::Action action;
+  action.mutable_forward()->set_tab_id(tab_id);
+  base::expected<std::unique_ptr<HistoryTool>, ToolExecutionResult> maybe_tool =
+      CreateToolAndValidate(action.forward(), web_state);
+  ASSERT_FALSE(maybe_tool.has_value());
+  EXPECT_EQ(mojom::ActionResultCode::kTriggeredNavigationBlocked,
+            maybe_tool.error().code());
+}
 
 // Tests that the tool could not be created if the tab is removed before the
 // tool is executed.

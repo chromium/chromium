@@ -43,7 +43,6 @@ namespace actor {
 class ActorToolFactory;
 class ActorToolRequest;
 class AggregatedJournal;
-class ActorWebStatePolicyDecider;
 
 // A class representing a task managed by `ActorService`. A task should live for
 // a whole Actor journey and be passed multiple sets of actions to execute

@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_TOOLS_MODEL_HISTORY_TOOL_H_
 #define IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_TOOLS_MODEL_HISTORY_TOOL_H_
 
+#import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/scoped_observation.h"
 #import "base/timer/timer.h"
@@ -25,6 +26,8 @@ class WebState;
 
 namespace actor {
 
+class ToolDelegate;
+
 // Tool to navigate back or forward in a tab's history.
 class HistoryTool : public ActorTool, public web::WebStateObserver {
  public:
@@ -33,12 +36,14 @@ class HistoryTool : public ActorTool, public web::WebStateObserver {
   // Create the tool to handle "go back" action.
   static std::unique_ptr<HistoryTool> Create(
       base::WeakPtr<web::WebState> web_state,
-      const optimization_guide::proto::HistoryBackAction& action);
+      const optimization_guide::proto::HistoryBackAction& action,
+      ToolDelegate* tool_delegate);
 
   // Create the tool to handle "go forward" action.
   static std::unique_ptr<HistoryTool> Create(
       base::WeakPtr<web::WebState> web_state,
-      const optimization_guide::proto::HistoryForwardAction& action);
+      const optimization_guide::proto::HistoryForwardAction& action,
+      ToolDelegate* tool_delegate);
 
   // ActorTool:
   void Validate(ToolExecutionCallback callback) override;
@@ -56,12 +61,15 @@ class HistoryTool : public ActorTool, public web::WebStateObserver {
   void WebStateDestroyed(web::WebState* web_state) override;
 
  private:
-  HistoryTool(base::WeakPtr<web::WebState> web_state, bool is_back_action);
+  HistoryTool(base::WeakPtr<web::WebState> web_state,
+              bool is_back_action,
+              ToolDelegate* tool_delegate);
 
   void OnNavigationTimeout();
 
   bool is_back_action_;
   base::WeakPtr<web::WebState> web_state_;
+  raw_ptr<ToolDelegate> tool_delegate_ = nullptr;
 
   ToolExecutionCallback invoke_callback_;
   std::optional<int64_t> pending_navigation_id_;

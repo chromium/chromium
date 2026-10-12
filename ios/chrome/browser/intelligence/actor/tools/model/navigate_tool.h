@@ -8,33 +8,25 @@
 #import <optional>
 #import <string>
 
-#import "base/feature_list.h"
 #import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/scoped_observation.h"
 #import "base/timer/timer.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
-#import "components/origin_gating/core/checker_id.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 #import "ios/web/public/web_state_observer.h"
 
-class GURL;
 class UrlLoadingBrowserAgent;
-struct UrlLoadParams;
 
 namespace web {
 class NavigationContext;
 class WebState;
 }  // namespace web
 
-namespace origin_gating {
-class GatingDecisionContext;
-class OriginGatingService;
-struct GatingDecision;
-}  // namespace origin_gating
-
 namespace actor {
+
+class ToolDelegate;
 
 // Command to navigate to a URL.
 class NavigateTool : public ActorTool, public web::WebStateObserver {
@@ -43,8 +35,7 @@ class NavigateTool : public ActorTool, public web::WebStateObserver {
       base::WeakPtr<web::WebState> web_state,
       const optimization_guide::proto::NavigateAction& action,
       base::WeakPtr<UrlLoadingBrowserAgent> url_loader,
-      origin_gating::OriginGatingService* gating_service,
-      origin_gating::CheckerId gating_checker_id);
+      ToolDelegate* tool_delegate);
 
   ~NavigateTool() override;
 
@@ -68,21 +59,14 @@ class NavigateTool : public ActorTool, public web::WebStateObserver {
   NavigateTool(base::WeakPtr<web::WebState> web_state,
                std::optional<std::string> url,
                base::WeakPtr<UrlLoadingBrowserAgent> url_loader,
-               origin_gating::OriginGatingService* gating_service,
-               origin_gating::CheckerId gating_checker_id);
+               ToolDelegate* tool_delegate);
 
-  void OnGatingDecisionComputed(
-      const GURL& destination_url,
-      std::unique_ptr<origin_gating::GatingDecisionContext> context,
-      origin_gating::GatingDecision decision);
-  void LoadUrl(const GURL& destination_url);
   void OnNavigationTimeout();
 
   std::optional<std::string> url_;
   base::WeakPtr<web::WebState> web_state_;
   base::WeakPtr<UrlLoadingBrowserAgent> url_loader_;
-  raw_ptr<origin_gating::OriginGatingService> gating_service_ = nullptr;
-  origin_gating::CheckerId gating_checker_id_;
+  raw_ptr<ToolDelegate> tool_delegate_ = nullptr;
 
   ToolExecutionCallback invoke_callback_;
   std::optional<int64_t> pending_navigation_id_;

@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_MODEL_ACTOR_WEB_STATE_POLICY_DECIDER_H_
 #define IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_MODEL_ACTOR_WEB_STATE_POLICY_DECIDER_H_
 
-#import "base/feature_list.h"
 #import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
@@ -26,8 +25,8 @@ namespace actor {
 using NavigationBlockedCallback =
     base::RepeatingCallback<void(mojom::ActionResultCode)>;
 
-// A policy decider that gates implicit navigations (such as link clicks and
-// redirects) on WebStates controlled by the ActorTask.
+// A policy decider that gates navigations on WebStates controlled by the
+// ActorTask
 class ActorWebStatePolicyDecider : public web::WebStatePolicyDecider {
  public:
   ActorWebStatePolicyDecider(

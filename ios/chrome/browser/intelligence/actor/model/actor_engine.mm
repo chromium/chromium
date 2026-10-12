@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/utils/actor_tool_utils.h"
 #import "ios/chrome/browser/intelligence/actor/tools/utils/logging_util.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 
 namespace actor {
 
@@ -274,6 +275,41 @@ ActorEngine::CreateOriginGatingConfig() {
       // Note that none of the predicates above consult the cache, so this
       // parameter is ignored.
       origin_gating::OriginGatingConfiguration::CacheScope::kOrigin);
+}
+
+void ActorEngine::IsAcceptableNavigationDestination(
+    const GURL& url,
+    ToolExecutionCallback callback) {
+  if (!IsActorOriginGatingForExplicitNavigationEnabled()) {
+    std::move(callback).Run(ToolExecutionResult::Ok());
+    return;
+  }
+
+  origin_gating::OriginGatingChecker* checker = GetOriginGatingChecker();
+  if (!checker) {
+    std::move(callback).Run(ToolExecutionResult(
+        InternalToolErrorCode::kExecutionMissingDependencies));
+    return;
+  }
+
+  checker->ComputeGatingDecision(
+      std::make_unique<origin_gating::GatingDecisionContext>(),
+      origin_gating::GateableEvent(origin_gating::NavigationRequestEvent{
+          .source = GURL(), .destination = url}),
+      base::BindOnce(&ActorEngine::OnNavigationDestinationGatingDecision,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ActorEngine::OnNavigationDestinationGatingDecision(
+    ToolExecutionCallback callback,
+    std::unique_ptr<origin_gating::GatingDecisionContext> context,
+    origin_gating::GatingDecision decision) {
+  if (!decision.is_allowed) {
+    std::move(callback).Run(ToolExecutionResult(
+        mojom::ActionResultCode::kTriggeredNavigationBlocked));
+    return;
+  }
+  std::move(callback).Run(ToolExecutionResult::Ok());
 }
 
 void ActorEngine::ExecuteNextAction() {

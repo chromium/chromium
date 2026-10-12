@@ -245,6 +245,69 @@ TEST_F(ActorWebStatePolicyDeciderTest, AllowsExplicitAutoToplevelNavigation) {
   EXPECT_FALSE(blocked_future.IsReady());
 }
 
+// Test that initial FORWARD_BACK navigations bypass origin gating in
+// ShouldAllowRequest since they are validated in HistoryTool::Validate().
+TEST_F(ActorWebStatePolicyDeciderTest, AllowsForwardBackNavigation) {
+  FakeOriginGatingCheckerDelegate delegate(/*is_allowed=*/false);
+  std::unique_ptr<origin_gating::OriginGatingRegistration> registration =
+      CreateCheckerRegistration(delegate);
+
+  base::test::TestFuture<mojom::ActionResultCode> blocked_future;
+  ActorWebStatePolicyDecider decider(web_state_.get(), gating_service_.get(),
+                                     registration->id(), kTestTaskId,
+                                     blocked_future.GetRepeatingCallback());
+
+  NSURLRequest* request = [NSURLRequest
+      requestWithURL:[NSURL URLWithString:@"https://malicious.com"]];
+  base::test::TestFuture<web::WebStatePolicyDecider::PolicyDecision>
+      decision_future;
+
+  const ui::PageTransition forward_back_transition = ui::PageTransitionFromInt(
+      ui::PageTransition::PAGE_TRANSITION_TYPED |
+      ui::PageTransition::PAGE_TRANSITION_FORWARD_BACK);
+
+  decider.ShouldAllowRequest(
+      request,
+      CreateRequestInfo(/*target_frame_is_main=*/true, forward_back_transition),
+      decision_future.GetCallback());
+
+  EXPECT_TRUE(decision_future.Get().ShouldAllowNavigation());
+  EXPECT_FALSE(blocked_future.IsReady());
+}
+
+// Test that redirected FORWARD_BACK navigations are not bypassed and are
+// gated.
+TEST_F(ActorWebStatePolicyDeciderTest, CancelsRedirectedForwardBackNavigation) {
+  FakeOriginGatingCheckerDelegate delegate(/*is_allowed=*/false);
+  std::unique_ptr<origin_gating::OriginGatingRegistration> registration =
+      CreateCheckerRegistration(delegate);
+
+  base::test::TestFuture<mojom::ActionResultCode> blocked_future;
+  ActorWebStatePolicyDecider decider(web_state_.get(), gating_service_.get(),
+                                     registration->id(), kTestTaskId,
+                                     blocked_future.GetRepeatingCallback());
+
+  NSURLRequest* request = [NSURLRequest
+      requestWithURL:[NSURL URLWithString:@"https://malicious.com"]];
+  base::test::TestFuture<web::WebStatePolicyDecider::PolicyDecision>
+      decision_future;
+
+  const ui::PageTransition redirected_forward_back_transition =
+      ui::PageTransitionFromInt(
+          ui::PageTransition::PAGE_TRANSITION_TYPED |
+          ui::PageTransition::PAGE_TRANSITION_FORWARD_BACK |
+          ui::PageTransition::PAGE_TRANSITION_SERVER_REDIRECT);
+
+  decider.ShouldAllowRequest(
+      request,
+      CreateRequestInfo(/*target_frame_is_main=*/true,
+                        redirected_forward_back_transition),
+      decision_future.GetCallback());
+
+  EXPECT_TRUE(decision_future.Get().ShouldCancelNavigation());
+  EXPECT_EQ(blocked_future.Get(),
+            mojom::ActionResultCode::kTriggeredNavigationBlocked);
+}
 // Test that redirected AUTO_TOPLEVEL navigations are not bypassed and are
 // gated.
 TEST_F(ActorWebStatePolicyDeciderTest,

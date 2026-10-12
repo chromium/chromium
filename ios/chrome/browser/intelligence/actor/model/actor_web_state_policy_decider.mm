@@ -3,12 +3,9 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/intelligence/actor/model/actor_web_state_policy_decider.h"
-
-#import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/web/public/web_state.h"
 #import "net/base/apple/url_conversions.h"
-#import "ui/base/page_transition_types.h"
 
 namespace actor {
 
@@ -41,12 +38,15 @@ void ActorWebStatePolicyDecider::ShouldAllowRequest(
     return;
   }
 
-  // Bypass explicit navigations initiated by NavigateTool, but only for the
-  // initial request. If it redirects, we still check the redirected URL.
+  // Bypass explicit navigations initiated by NavigateTool and HistoryTool,
+  // which are already validated in Tool::Validate(), but only for the initial
+  // request. If it redirects, we still check the redirected URL.
   if (!ui::PageTransitionIsRedirect(request_info.transition_type) &&
-      ui::PageTransitionCoreTypeIs(
-          request_info.transition_type,
-          ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL)) {
+      (ui::PageTransitionCoreTypeIs(
+           request_info.transition_type,
+           ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL) ||
+       (request_info.transition_type &
+        ui::PageTransition::PAGE_TRANSITION_FORWARD_BACK))) {
     std::move(callback).Run(PolicyDecision::Allow());
     return;
   }

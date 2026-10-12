@@ -11,6 +11,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "components/actor/public/mojom/actor_types.mojom-forward.h"
+#import "components/origin_gating/core/checker_id.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_origin_gating_checker_delegate_ios.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/tool_delegate.h"
@@ -135,10 +136,17 @@ class ActorEngine : public ToolDelegate {
       int32_t window_id,
       const web::NavigationManager::WebLoadParams& load_params,
       bool in_background) override;
-  origin_gating::CheckerId GetOriginGatingCheckerId() const override;
+
+  // Returns the origin gating checker ID used for evaluating navigation
+  // and actuation policies.
+  origin_gating::CheckerId GetOriginGatingCheckerId() const;
 
   // Returns the OriginGatingChecker instance for gating navigation actions.
   origin_gating::OriginGatingChecker* GetOriginGatingChecker();
+
+  void IsAcceptableNavigationDestination(
+      const GURL& url,
+      ToolExecutionCallback callback) override;
 
  private:
   friend class ActorEngineTest;
@@ -214,6 +222,12 @@ class ActorEngine : public ToolDelegate {
   ActorOriginGatingCheckerDelegateIOS origin_gating_delegate_;
   std::unique_ptr<origin_gating::OriginGatingRegistration>
       origin_gating_registration_;
+
+  // Handles the asynchronous gating decision for navigation destination checks.
+  void OnNavigationDestinationGatingDecision(
+      ToolExecutionCallback callback,
+      std::unique_ptr<origin_gating::GatingDecisionContext> context,
+      origin_gating::GatingDecision decision);
 
   // The handler for form filling and login tasks.
   std::unique_ptr<ActorTaskFormFillingHandler> form_filling_handler_;

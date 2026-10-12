@@ -12,8 +12,10 @@
 #import "base/types/expected.h"
 #import "components/actor/public/mojom/actor_types.mojom.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/tool_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/web/public/navigation/navigation_context.h"
+#import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 
@@ -28,21 +30,55 @@ HistoryTool::~HistoryTool() = default;
 // static
 std::unique_ptr<HistoryTool> HistoryTool::Create(
     base::WeakPtr<web::WebState> web_state,
-    const optimization_guide::proto::HistoryBackAction& action) {
+    const optimization_guide::proto::HistoryBackAction& action,
+    ToolDelegate* tool_delegate) {
   return std::unique_ptr<HistoryTool>(
-      new HistoryTool(web_state, /*is_back_action=*/true));
+      new HistoryTool(web_state, /*is_back_action=*/true, tool_delegate));
 }
 
 // static
 std::unique_ptr<HistoryTool> HistoryTool::Create(
     base::WeakPtr<web::WebState> web_state,
-    const optimization_guide::proto::HistoryForwardAction& action) {
+    const optimization_guide::proto::HistoryForwardAction& action,
+    ToolDelegate* tool_delegate) {
   return std::unique_ptr<HistoryTool>(
-      new HistoryTool(web_state, /*is_back_action=*/false));
+      new HistoryTool(web_state, /*is_back_action=*/false, tool_delegate));
 }
 
 void HistoryTool::Validate(ToolExecutionCallback callback) {
-  std::move(callback).Run(ToolExecutionResult::Ok());
+  if (!tool_delegate_) {
+    std::move(callback).Run(ToolExecutionResult(
+        InternalToolErrorCode::kExecutionMissingDependencies));
+    return;
+  }
+
+  // If the WebState or target history item is unavailable, pass validation now
+  // so Execute() reports the appropriate time-of-use error.
+  if (!web_state_ || !web_state_->IsRealized() ||
+      !web_state_->GetNavigationManager()) {
+    std::move(callback).Run(ToolExecutionResult::Ok());
+    return;
+  }
+
+  web::NavigationManager* navigation_manager =
+      web_state_->GetNavigationManager();
+  if ((is_back_action_ && !navigation_manager->CanGoBack()) ||
+      (!is_back_action_ && !navigation_manager->CanGoForward())) {
+    std::move(callback).Run(ToolExecutionResult::Ok());
+    return;
+  }
+
+  std::vector<web::NavigationItem*> item =
+      is_back_action_ ? navigation_manager->GetBackwardItems()
+                      : navigation_manager->GetForwardItems();
+
+  if (item.empty() || !item.front()) {
+    std::move(callback).Run(ToolExecutionResult::Ok());
+    return;
+  }
+
+  tool_delegate_->IsAcceptableNavigationDestination(item.front()->GetURL(),
+                                                    std::move(callback));
 }
 
 void HistoryTool::Execute(ToolExecutionCallback callback) {
@@ -167,7 +203,10 @@ void HistoryTool::OnNavigationTimeout() {
 }
 
 HistoryTool::HistoryTool(base::WeakPtr<web::WebState> web_state,
-                         bool is_back_action)
-    : is_back_action_(is_back_action), web_state_(web_state) {}
+                         bool is_back_action,
+                         ToolDelegate* tool_delegate)
+    : is_back_action_(is_back_action),
+      web_state_(web_state),
+      tool_delegate_(tool_delegate) {}
 
 }  // namespace actor

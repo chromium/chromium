@@ -43,11 +43,8 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
-#import "ios/web/public/test/fakes/fake_navigation_context.h"
-#import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
-#import "net/base/apple/url_conversions.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
@@ -222,6 +219,11 @@ class ActorEngineTest : public PlatformTest {
 
   void CompleteActions(ActionResult&& result) {
     engine_->CompleteActions(std::move(result));
+  }
+
+  void SetOriginGatingRegistration(
+      std::unique_ptr<origin_gating::OriginGatingRegistration> registration) {
+    engine_->origin_gating_registration_ = std::move(registration);
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -580,6 +582,16 @@ TEST_F(ActorEngineTest, FailCurrentToolWhenNotInToolInvoke) {
   engine_->FailCurrentTool(
       mojom::ActionResultCode::kTriggeredNavigationBlocked);
   EXPECT_EQ(GetState(), ActorEngine::State::kInit);
+}
+
+// Test that IsAcceptableNavigationDestination returns Ok when
+// kActorOriginGating is disabled.
+TEST_F(ActorEngineTest, IsAcceptableNavigationDestination_FeatureDisabled) {
+  base::test::TestFuture<ToolExecutionResult> future;
+  engine_->IsAcceptableNavigationDestination(GURL("https://example.com"),
+                                             future.GetCallback());
+
+  EXPECT_TRUE(future.Get().IsOk());
 }
 
 // Test fixture for `FailCurrentTool()`, driving a tool whose validation and
@@ -1156,5 +1168,41 @@ TEST_F(ActorEngineOriginGatingTest,
   EXPECT_TRUE(response_future.Get().ShouldAllowNavigation());
   // Verify that the task was not stopped.
   EXPECT_EQ(task_->GetState(), ActorTaskState::kInit);
+}
+
+// Test that IsAcceptableNavigationDestination returns Ok when the
+// OriginGatingChecker allows the navigation request.
+TEST_F(ActorEngineOriginGatingTest, IsAcceptableNavigationDestination_Allowed) {
+  base::test::TestFuture<ToolExecutionResult> future;
+  engine_->IsAcceptableNavigationDestination(GURL("https://example.com"),
+                                             future.GetCallback());
+  EXPECT_TRUE(future.Get().IsOk());
+}
+
+// Test that IsAcceptableNavigationDestination returns
+// kTriggeredNavigationBlocked when the OriginGatingChecker blocks the
+// navigation request.
+TEST_F(ActorEngineOriginGatingTest, IsAcceptableNavigationDestination_Blocked) {
+  // Clear `checker_` before replacing `origin_gating_registration_` to avoid a
+  // dangling raw_ptr.
+  checker_ = nullptr;
+
+  FakeOriginGatingCheckerDelegate blocking_delegate(/*is_allowed=*/false);
+  origin_gating::OriginGatingService* gating_service =
+      origin_gating::OriginGatingServiceFactory::GetForProfile(profile_.get());
+  ASSERT_NE(gating_service, nullptr);
+  SetOriginGatingRegistration(gating_service->CreateAndRegisterChecker(
+      blocking_delegate.GetWeakPtr(),
+      origin_gating::OriginGatingConfiguration(
+          /*predicates=*/{},
+          origin_gating::OriginGatingConfiguration::CacheScope::kOrigin)));
+
+  base::test::TestFuture<ToolExecutionResult> future;
+  engine_->IsAcceptableNavigationDestination(GURL("https://malicious.com"),
+                                             future.GetCallback());
+  ToolExecutionResult result = future.Get();
+  ASSERT_FALSE(result.IsOk());
+  EXPECT_EQ(mojom::ActionResultCode::kTriggeredNavigationBlocked,
+            result.code());
 }
 }  // namespace actor
