@@ -53,11 +53,20 @@ class StandaloneTrustedVaultFrontend
       const base::FilePath& base_dir,
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
-
   StandaloneTrustedVaultFrontend(const StandaloneTrustedVaultFrontend&) =
       delete;
   StandaloneTrustedVaultFrontend& operator=(
       const StandaloneTrustedVaultFrontend&) = delete;
+
+  // Creates an uninitialized frontend for testing. Callers must invoke
+  // `InitializeBackendForTesting()` to initialize the backend and flush queued
+  // tasks.
+  static scoped_refptr<StandaloneTrustedVaultFrontend> CreateForTesting(
+#if BUILDFLAG(IS_MAC)
+      const std::string& icloud_keychain_access_group_prefix,
+#endif
+      signin::IdentityManager* identity_manager,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   // Client registration / unregistration on the UI thread.
   void RegisterClient(SecurityDomainId security_domain,
@@ -88,7 +97,9 @@ class StandaloneTrustedVaultFrontend
   void ClearLocalDataForAccount(const CoreAccountInfo& account_info);
 
   // Testing methods.
-  void WaitForIdleForTesting(base::OnceClosure cb) const;
+  void InitializeBackendForTesting(
+      std::unique_ptr<StandaloneTrustedVaultStorage> storage);
+  void WaitForIdleForTesting(base::OnceClosure cb);
   void GetLastAddedRecoveryMethodPublicKeyForTesting(
       base::OnceCallback<void(const std::vector<uint8_t>&)> callback);
   void GetLastKeyVersionForTesting(
@@ -99,15 +110,34 @@ class StandaloneTrustedVaultFrontend
  private:
   friend class base::RefCounted<StandaloneTrustedVaultFrontend>;
 
+  StandaloneTrustedVaultFrontend(
+#if BUILDFLAG(IS_MAC)
+      const std::string& icloud_keychain_access_group_prefix,
+#endif
+      signin::IdentityManager* identity_manager,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
   ~StandaloneTrustedVaultFrontend();
+
+  void InitializeBackend(
+      std::unique_ptr<StandaloneTrustedVaultStorage> storage);
 
   void NotifyTrustedVaultKeysChanged(
       std::optional<TrustedVaultUserActionTriggerForUMA> trigger);
   void NotifyRecoverabilityDegradedChanged(SecurityDomainId security_domain);
 
+#if BUILDFLAG(IS_MAC)
+  const std::string icloud_keychain_access_group_prefix_;
+#endif
+  const raw_ptr<signin::IdentityManager> identity_manager_;
+  const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // Calls received before `InitializeBackend()` is invoked are queued here and
+  // re-invoked in FIFO order once `backend_` is initialized.
+  std::vector<base::OnceClosure> pending_tasks_;
 
   base::flat_map<SecurityDomainId, raw_ptr<StandaloneTrustedVaultClient>>
       clients_;

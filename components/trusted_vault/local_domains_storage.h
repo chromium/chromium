@@ -158,7 +158,8 @@ class LocalDomainsStorage : public StandaloneTrustedVaultStorage {
   void WriteToDisk();
 
   std::unique_ptr<StorageFileAccess> file_access_;
-  trusted_vault_pb::LocalDomainsData data_;
+  // Nullopt until `ReadDataFromDisk()` has been called.
+  std::optional<trusted_vault_pb::LocalDomainsData> data_;
 };
 
 }  // namespace trusted_vault

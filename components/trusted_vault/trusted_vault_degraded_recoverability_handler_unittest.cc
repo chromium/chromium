@@ -69,6 +69,7 @@ class TrustedVaultDegradedRecoverabilityHandlerTest : public ::testing::Test {
     auto file_access = std::make_unique<FakeLocalDomainsStorageFileAccess>();
     file_access_ = file_access.get();
     storage_ = LocalDomainsStorage::CreateForTesting(std::move(file_access));
+    storage_->ReadDataFromDisk();
   }
   ~TrustedVaultDegradedRecoverabilityHandlerTest() override = default;
 

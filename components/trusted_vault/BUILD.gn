@@ -117,6 +117,7 @@ if (!is_android && !is_ios) {
       "securebox_unittest.cc",
       "standalone_trusted_vault_backend_unittest.cc",
       "standalone_trusted_vault_client_unittest.cc",
+      "standalone_trusted_vault_frontend_unittest.cc",
       "standalone_trusted_vault_server_constants_unittest.cc",
       "trusted_vault_access_token_fetcher_frontend_unittest.cc",
       "trusted_vault_connection_impl_unittest.cc",

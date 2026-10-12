@@ -244,12 +244,14 @@ void LocalDomainsStorage::ReadDataFromDisk() {
 }
 
 void LocalDomainsStorage::WriteToDisk() {
-  file_access_->WriteToDisk(data_);
+  CHECK(data_.has_value());
+  file_access_->WriteToDisk(*data_);
 }
 
 trusted_vault_pb::UserDomainData* LocalDomainsStorage::FindUser(
     const GaiaId& gaia_id) {
-  for (auto& user : *data_.mutable_user()) {
+  CHECK(data_.has_value());
+  for (auto& user : *data_->mutable_user()) {
     if (user.gaia_id() == gaia_id.ToString()) {
       return &user;
     }
@@ -259,7 +261,8 @@ trusted_vault_pb::UserDomainData* LocalDomainsStorage::FindUser(
 
 const trusted_vault_pb::UserDomainData* LocalDomainsStorage::FindUser(
     const GaiaId& gaia_id) const {
-  for (const trusted_vault_pb::UserDomainData& user : data_.user()) {
+  CHECK(data_.has_value());
+  for (const trusted_vault_pb::UserDomainData& user : data_->user()) {
     if (user.gaia_id() == gaia_id.ToString()) {
       return &user;
     }
@@ -271,7 +274,7 @@ trusted_vault_pb::UserDomainData* LocalDomainsStorage::GetOrCreateUser(
     const GaiaId& gaia_id) {
   trusted_vault_pb::UserDomainData* user = FindUser(gaia_id);
   if (!user) {
-    user = data_.add_user();
+    user = data_->add_user();
     user->set_gaia_id(gaia_id.ToString());
   }
   return user;
@@ -322,7 +325,8 @@ trusted_vault_pb::DomainData* LocalDomainsStorage::GetOrCreateDomainData(
 void LocalDomainsStorage::RemoveUsers(
     base::FunctionRef<bool(const trusted_vault_pb::UserDomainData&)>
         predicate) {
-  if (google::protobuf::erase_if(*data_.mutable_user(), predicate) > 0) {
+  CHECK(data_.has_value());
+  if (google::protobuf::erase_if(*data_->mutable_user(), predicate) > 0) {
     WriteToDisk();
   }
 }
@@ -355,6 +359,7 @@ void LocalDomainsStorage::ClearDataForUser(const GaiaId& gaia_id) {
 void LocalDomainsStorage::ClearDataForUnknownUsersOrMarkForDeletion(
     const base::flat_set<GaiaId>& known_gaia_ids,
     const std::optional<GaiaId>& primary_account_gaia_id) {
+  CHECK(data_.has_value());
   bool should_write_data = false;
   if (primary_account_gaia_id.has_value() &&
       !known_gaia_ids.contains(*primary_account_gaia_id)) {
@@ -367,7 +372,7 @@ void LocalDomainsStorage::ClearDataForUnknownUsersOrMarkForDeletion(
   }
 
   if (google::protobuf::erase_if(
-          *data_.mutable_user(),
+          *data_->mutable_user(),
           [&](const trusted_vault_pb::UserDomainData& user) {
             const GaiaId gaia_id(user.gaia_id());
             if (primary_account_gaia_id.has_value() &&
