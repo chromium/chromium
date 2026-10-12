@@ -148,7 +148,7 @@ TEST_F(ActionManagerTest, ActionRegisterAndInvoke) {
       },
       &action_invoked_count, text));
   EXPECT_EQ(action_invoked_count, 0);
-  auto* action = manager.FindAction(kActionCut);
+  auto* action = manager.FindAction(kActionCut, nullptr);
   ASSERT_TRUE(action);
   EXPECT_EQ(action->GetText(), text);
   EXPECT_TRUE(action->GetEnabled());
@@ -164,7 +164,7 @@ TEST_F(ActionManagerTest, ActionRegisterAndInvoke) {
 
 TEST_F(ActionManagerTest, ActionNotFound) {
   auto& manager = ActionManager::GetForTesting();
-  auto* action = manager.FindAction(kActionPaste);
+  auto* action = manager.FindAction(kActionPaste, nullptr);
   EXPECT_FALSE(action);
 }
 
@@ -186,7 +186,7 @@ TEST_F(ActionItemTest, ScopedFindActionTest) {
   // clang-format on
   auto& manager = ActionManager::GetForTesting();
   manager.AddAction(std::move(builder).Build());
-  auto* action_test1 = manager.FindAction(kActionTest1);
+  auto* action_test1 = manager.FindAction(kActionTest1, nullptr);
   ASSERT_TRUE(action_test1);
   auto* action_test2 = manager.FindAction(kActionTest2, action_test1);
   ASSERT_TRUE(action_test2);
@@ -285,7 +285,7 @@ TEST_F(ActionItemTest, ActionBuilderTest) {
   auto& manager = ActionManager::GetForTesting();
   manager.AddAction(std::move(builder).Build());
 
-  auto* action = manager.FindAction(actions::kActionCopy);
+  auto* action = manager.FindAction(actions::kActionCopy, nullptr);
   ASSERT_TRUE(action);
   EXPECT_EQ(action->GetText(), text);
   EXPECT_FALSE(action->GetVisible());
@@ -446,7 +446,7 @@ TEST_F(ActionItemTest, TestActionItemPinnableKey) {
   // clang-format on
   auto& manager = ActionManager::GetForTesting();
   manager.AddAction(std::move(builder).Build());
-  auto* action_test1 = manager.FindAction(kActionTest1);
+  auto* action_test1 = manager.FindAction(kActionTest1, nullptr);
   ASSERT_TRUE(action_test1);
   ASSERT_EQ(action_test1->GetProperty(kActionItemPinnableKey),
             std::underlying_type_t<actions::ActionPinnableState>(
@@ -468,7 +468,7 @@ TEST_F(ActionItemTest, TestActionItemPinnableKey) {
           .SetEnabled(true);
 
   manager.AddAction(std::move(builder).Build());
-  auto* action_test2 = manager.FindAction(kActionTest2);
+  auto* action_test2 = manager.FindAction(kActionTest2, nullptr);
   ASSERT_TRUE(action_test2);
   ASSERT_EQ(action_test2->GetProperty(kActionItemPinnableKey),
             std::underlying_type_t<actions::ActionPinnableState>(

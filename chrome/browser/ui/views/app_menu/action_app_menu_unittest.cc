@@ -975,7 +975,7 @@ TEST_F(ActionAppMenuTest, BlockActionsInvocation) {
 
   // Find and invoke the New Tab action item. Verify its callback is triggered.
   actions::ActionItem* new_tab_action =
-      actions::ActionManager::Get().FindAction(kActionNewTab);
+      actions::ActionManager::Get().FindAction(kActionNewTab, nullptr);
   ASSERT_TRUE(new_tab_action);
 
   EXPECT_CALL(mock_action_invoked_, Call(kActionNewTab, testing::_, testing::_))
@@ -986,7 +986,7 @@ TEST_F(ActionAppMenuTest, BlockActionsInvocation) {
   // Find and invoke the New Window action item. Verify its callback is
   // triggered.
   actions::ActionItem* new_window_action =
-      actions::ActionManager::Get().FindAction(kActionNewWindow);
+      actions::ActionManager::Get().FindAction(kActionNewWindow, nullptr);
   ASSERT_TRUE(new_window_action);
 
   EXPECT_CALL(mock_action_invoked_,
@@ -998,7 +998,8 @@ TEST_F(ActionAppMenuTest, BlockActionsInvocation) {
   // Find and invoke the New Incognito Window action item. Verify its callback
   // is triggered.
   actions::ActionItem* incognito_action =
-      actions::ActionManager::Get().FindAction(kActionNewIncognitoWindow);
+      actions::ActionManager::Get().FindAction(kActionNewIncognitoWindow,
+                                               nullptr);
   ASSERT_TRUE(incognito_action);
 
   EXPECT_CALL(mock_action_invoked_,
@@ -1117,7 +1118,7 @@ TEST_F(ActionAppMenuTest, BlockButtonSyncsEnabledStateWithActionItem) {
 
   // Disable the delegate ActionItem.
   actions::ActionItem* new_tab_action =
-      actions::ActionManager::Get().FindAction(kActionNewTab);
+      actions::ActionManager::Get().FindAction(kActionNewTab, nullptr);
   ASSERT_TRUE(new_tab_action);
   new_tab_action->SetEnabled(false);
 
@@ -1167,7 +1168,7 @@ TEST_F(ActionAppMenuTest, ZoomChildActionsInvocation) {
   EXPECT_TRUE(menu.IsShowing());
 
   actions::ActionItem* minus_action =
-      actions::ActionManager::Get().FindAction(kActionZoomMinus);
+      actions::ActionManager::Get().FindAction(kActionZoomMinus, nullptr);
   ASSERT_TRUE(minus_action);
 
   EXPECT_CALL(mock_action_invoked_,
@@ -1177,7 +1178,7 @@ TEST_F(ActionAppMenuTest, ZoomChildActionsInvocation) {
   testing::Mock::VerifyAndClearExpectations(&mock_action_invoked_);
 
   actions::ActionItem* plus_action =
-      actions::ActionManager::Get().FindAction(kActionZoomPlus);
+      actions::ActionManager::Get().FindAction(kActionZoomPlus, nullptr);
   ASSERT_TRUE(plus_action);
 
   EXPECT_CALL(mock_action_invoked_,
@@ -1397,7 +1398,7 @@ TEST_F(ActionAppMenuTest, ZoomLabelUpdatesOnZoomChange) {
 
   // Verify that the label updates when the action item's text changes.
   actions::ActionItem* normal_action =
-      actions::ActionManager::Get().FindAction(kActionZoomNormal);
+      actions::ActionManager::Get().FindAction(kActionZoomNormal, nullptr);
   ASSERT_TRUE(normal_action);
   normal_action->SetText(base::FormatPercent(200));
   EXPECT_EQ(zoom_label->GetText(), base::FormatPercent(200));
@@ -1444,7 +1445,7 @@ TEST_F(ActionAppMenuTest, ZoomLabelAccessibilityAnnouncementOnZoomChange) {
   EXPECT_EQ(zoom_label->GetText(), base::FormatPercent(100));
 
   actions::ActionItem* normal_action =
-      actions::ActionManager::Get().FindAction(kActionZoomNormal);
+      actions::ActionManager::Get().FindAction(kActionZoomNormal, nullptr);
   ASSERT_TRUE(normal_action);
 
   views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
@@ -1487,7 +1488,7 @@ TEST_F(ActionAppMenuTest, FullscreenActionUpdatesAccessibilityName) {
   // Updating the action's tooltip should propagate to the button's accessible
   // name.
   actions::ActionItem* fullscreen_action =
-      actions::ActionManager::Get().FindAction(kActionFullscreen);
+      actions::ActionManager::Get().FindAction(kActionFullscreen, nullptr);
   ASSERT_TRUE(fullscreen_action);
   fullscreen_action->SetTooltipText(u"Exit full screen");
   EXPECT_EQ(fullscreen_button->GetViewAccessibility().GetCachedName(),
@@ -1531,10 +1532,10 @@ TEST_F(ActionAppMenuTest, ZoomButtonsInkDropAtLimits) {
   ASSERT_TRUE(plus_button);
 
   actions::ActionItem* minus_action =
-      actions::ActionManager::Get().FindAction(kActionZoomMinus);
+      actions::ActionManager::Get().FindAction(kActionZoomMinus, nullptr);
   ASSERT_TRUE(minus_action);
   actions::ActionItem* plus_action =
-      actions::ActionManager::Get().FindAction(kActionZoomPlus);
+      actions::ActionManager::Get().FindAction(kActionZoomPlus, nullptr);
   ASSERT_TRUE(plus_action);
 
   // At 100% zoom (default), both buttons are enabled with ink drop ON.
@@ -3609,7 +3610,7 @@ TEST_F(ActionAppMenuTest, PopulatesFooterElementsWithEnterpriseReleaseNotes) {
 
   actions::ActionItem* release_notes_action =
       actions::ActionManager::Get().FindAction(
-          kActionChromeEnterpriseReleaseNotes);
+          kActionChromeEnterpriseReleaseNotes, nullptr);
   ASSERT_NE(release_notes_action, nullptr);
   release_notes_action->SetVisible(true);
 

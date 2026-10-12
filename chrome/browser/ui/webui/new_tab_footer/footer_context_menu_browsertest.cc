@@ -8,6 +8,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/pref_names.h"
@@ -87,8 +88,11 @@ IN_PROC_BROWSER_TEST_F(FooterContextMenuBrowserTest, HidesFooter) {
 }
 
 IN_PROC_BROWSER_TEST_F(FooterContextMenuBrowserTest, OpensCustomizeChrome) {
+  auto* const root_action_item =
+      BrowserActions::From(browser())->root_action_item();
   ASSERT_EQ(actions::ActionManager::Get()
-                .FindAction(kActionSidePanelShowCustomizeChromeFooter)
+                .FindAction(kActionSidePanelShowCustomizeChromeFooter,
+                            root_action_item)
                 ->GetInvokeCount(),
             0);
   histogram_tester()->ExpectTotalCount(kMenuClickHistogram, 0);
@@ -96,7 +100,8 @@ IN_PROC_BROWSER_TEST_F(FooterContextMenuBrowserTest, OpensCustomizeChrome) {
   ExecuteCommand(kCustomizeMenuItem);
 
   ASSERT_EQ(actions::ActionManager::Get()
-                .FindAction(kActionSidePanelShowCustomizeChromeFooter)
+                .FindAction(kActionSidePanelShowCustomizeChromeFooter,
+                            root_action_item)
                 ->GetInvokeCount(),
             1);
   histogram_tester()->ExpectTotalCount(kMenuClickHistogram, 1);

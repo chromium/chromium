@@ -277,8 +277,9 @@ void ActionsExample::CreateExampleView(View* container) {
     pair.first->AddChildView(
         Builder<MdTextButton>().CopyAddressTo(&action_button).Build());
     action_view_controller_.CreateActionViewRelationship(
-        action_button,
-        actions::ActionManager::Get().FindAction(action_id)->GetAsWeakPtr());
+        action_button, actions::ActionManager::Get()
+                           .FindAction(action_id, nullptr)
+                           ->GetAsWeakPtr());
     return pair.second;
   };
 

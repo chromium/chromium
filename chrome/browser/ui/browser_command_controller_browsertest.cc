@@ -1400,25 +1400,31 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestToolbarPinningOnly,
 
   chrome::BrowserCommandController::From(browser())->TabStateChanged();
 
-  EXPECT_FALSE(actions::ActionManager::GetForTesting()
-                   .FindAction(kActionShowTranslate)
-                   ->GetEnabled());
+  EXPECT_FALSE(
+      actions::ActionManager::GetForTesting()
+          .FindAction(kActionShowTranslate,
+                      BrowserActions::From(browser())->root_action_item())
+          ->GetEnabled());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestToolbarPinningOnly,
                        ShowTranslateStatusEnglishPage) {
   LoadAndWaitForLanguage("/english_page.html");
-  EXPECT_TRUE(actions::ActionManager::GetForTesting()
-                  .FindAction(kActionShowTranslate)
-                  ->GetEnabled());
+  EXPECT_TRUE(
+      actions::ActionManager::GetForTesting()
+          .FindAction(kActionShowTranslate,
+                      BrowserActions::From(browser())->root_action_item())
+          ->GetEnabled());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestToolbarPinningOnly,
                        ShowTranslateStatusFrenchPage) {
   LoadAndWaitForLanguage("/french_page.html");
-  EXPECT_TRUE(actions::ActionManager::GetForTesting()
-                  .FindAction(kActionShowTranslate)
-                  ->GetEnabled());
+  EXPECT_TRUE(
+      actions::ActionManager::GetForTesting()
+          .FindAction(kActionShowTranslate,
+                      BrowserActions::From(browser())->root_action_item())
+          ->GetEnabled());
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)

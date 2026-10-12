@@ -22,6 +22,7 @@
 #include "chrome/browser/banners/test_app_banner_manager_desktop.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -264,7 +265,10 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
   }
 
   // Install the app via the menu instead of the banner.
-  actions::ActionManager::Get().FindAction(kActionInstallPwa)->InvokeAction();
+  actions::ActionManager::Get()
+      .FindAction(kActionInstallPwa,
+                  BrowserActions::From(browser())->root_action_item())
+      ->InvokeAction();
 
   manager->AwaitAppInstall();
 

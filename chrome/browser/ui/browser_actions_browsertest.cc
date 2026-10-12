@@ -39,10 +39,13 @@ class BrowserActionsBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(BrowserActionsBrowserTest, ShowAddressesBubbleOrPage) {
   auto& action_manager = actions::ActionManager::GetForTesting();
+  auto* const root_action_item =
+      BrowserActions::From(browser())->root_action_item();
   const GURL addresses_url = GURL("chrome://settings/addresses");
 
   ASSERT_NE(GetActiveWebContents()->GetURL(), addresses_url);
-  action_manager.FindAction(kActionShowAddressesBubbleOrPage)->InvokeAction();
+  action_manager.FindAction(kActionShowAddressesBubbleOrPage, root_action_item)
+      ->InvokeAction();
   EXPECT_EQ(GetActiveWebContents()->GetURL(), addresses_url);
 
   autofill::AddressBubblesController::CreateForWebContents(
@@ -50,23 +53,28 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsBrowserTest, ShowAddressesBubbleOrPage) {
   auto* bubble_controller = autofill::AddressBubblesController::FromWebContents(
       GetActiveWebContents());
   ASSERT_EQ(bubble_controller->GetBubbleView(), nullptr);
-  action_manager.FindAction(kActionShowAddressesBubbleOrPage)->InvokeAction();
+  action_manager.FindAction(kActionShowAddressesBubbleOrPage, root_action_item)
+      ->InvokeAction();
   EXPECT_EQ(bubble_controller->GetBubbleView(), nullptr);
 
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(),
                                      GURL(url::kAboutBlankURL)));
   ASSERT_NE(GetActiveWebContents()->GetURL(), addresses_url);
-  action_manager.FindAction(kActionShowAddressesBubbleOrPage)->InvokeAction();
+  action_manager.FindAction(kActionShowAddressesBubbleOrPage, root_action_item)
+      ->InvokeAction();
   EXPECT_EQ(GetActiveWebContents()->GetURL(), addresses_url);
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserActionsBrowserTest, ShowPaymentsBubbleOrPage) {
   CHECK(ui_test_utils::BringBrowserWindowToFront(browser()));
   auto& action_manager = actions::ActionManager::GetForTesting();
+  auto* const root_action_item =
+      BrowserActions::From(browser())->root_action_item();
   const GURL payments_url = GURL("chrome://settings/payments");
 
   ASSERT_NE(GetActiveWebContents()->GetURL(), payments_url);
-  action_manager.FindAction(kActionShowPaymentsBubbleOrPage)->InvokeAction();
+  action_manager.FindAction(kActionShowPaymentsBubbleOrPage, root_action_item)
+      ->InvokeAction();
   EXPECT_EQ(GetActiveWebContents()->GetURL(), payments_url);
 
   autofill::SaveCardBubbleControllerImpl::CreateForWebContents(
@@ -83,22 +91,27 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsBrowserTest, ShowPaymentsBubbleOrPage) {
           .with_show_prompt(true),
       base::DoNothing());
   ASSERT_NE(bubble_controller->GetPaymentBubbleView(), nullptr);
-  action_manager.FindAction(kActionShowPaymentsBubbleOrPage)->InvokeAction();
+  action_manager.FindAction(kActionShowPaymentsBubbleOrPage, root_action_item)
+      ->InvokeAction();
   EXPECT_EQ(bubble_controller->GetPaymentBubbleView(), nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserActionsBrowserTest,
                        NewIncognitoWindowEnabledState) {
   auto& action_manager = actions::ActionManager::GetForTesting();
+  auto* const root_action_item =
+      BrowserActions::From(browser())->root_action_item();
   EXPECT_TRUE(
-      action_manager.FindAction(kActionNewIncognitoWindow)->GetEnabled());
+      action_manager.FindAction(kActionNewIncognitoWindow, root_action_item)
+          ->GetEnabled());
 
   // Set Incognito to DISABLED and verify the action item is updated.
   IncognitoModePrefs::SetAvailability(
       browser()->GetProfile()->GetPrefs(),
       policy::IncognitoModeAvailability::kDisabled);
   EXPECT_FALSE(
-      action_manager.FindAction(kActionNewIncognitoWindow)->GetEnabled());
+      action_manager.FindAction(kActionNewIncognitoWindow, root_action_item)
+          ->GetEnabled());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserActionsBrowserTest, DidCreateBrowserActions) {
@@ -118,7 +131,9 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsBrowserTest, DidCreateBrowserActions) {
   ASSERT_NE(browser_actions->root_action_item(), nullptr);
 
   for (actions::ActionId action_id : browser_action_ids) {
-    EXPECT_NE(action_manager.FindAction(action_id), nullptr);
+    EXPECT_NE(action_manager.FindAction(action_id,
+                                        browser_actions->root_action_item()),
+              nullptr);
   }
 }
 
@@ -129,10 +144,14 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsBrowserTest, CycleTabs) {
   EXPECT_TRUE(tab_strip->IsTabSelected(1));
 
   auto& action_manager = actions::ActionManager::GetForTesting();
-  action_manager.FindAction(kActionCycleToNextTab)->InvokeAction();
+  auto* const root_action_item =
+      BrowserActions::From(browser())->root_action_item();
+  action_manager.FindAction(kActionCycleToNextTab, root_action_item)
+      ->InvokeAction();
   EXPECT_TRUE(tab_strip->IsTabSelected(0));
 
-  action_manager.FindAction(kActionCycleToPrevTab)->InvokeAction();
+  action_manager.FindAction(kActionCycleToPrevTab, root_action_item)
+      ->InvokeAction();
   EXPECT_TRUE(tab_strip->IsTabSelected(1));
 }
 
@@ -140,24 +159,37 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsBrowserTest,
                        CheckBrowserActionsEnabledState) {
   BrowserActions* browser_actions = BrowserActions::From(browser());
   auto& action_manager = actions::ActionManager::GetForTesting();
+  auto* const root_action_item = browser_actions->root_action_item();
 
-  ASSERT_NE(browser_actions->root_action_item(), nullptr);
+  ASSERT_NE(root_action_item, nullptr);
 
-  EXPECT_EQ(action_manager.FindAction(kActionNewIncognitoWindow)->GetEnabled(),
-            true);
-  EXPECT_EQ(action_manager.FindAction(kActionClearBrowsingData)->GetEnabled(),
-            true);
-  EXPECT_EQ(action_manager.FindAction(kActionTaskManager)->GetEnabled(), true);
-  EXPECT_EQ(action_manager.FindAction(kActionDevTools)->GetEnabled(), true);
-  EXPECT_EQ(action_manager.FindAction(kActionPrint)->GetEnabled(),
-            CanPrint(browser()));
-  EXPECT_EQ(action_manager.FindAction(kActionSendTabToSelf)->GetEnabled(),
-            CanSendTabToSelf(browser()));
-  EXPECT_EQ(action_manager.FindAction(kActionQrCodeGenerator)->GetEnabled(),
-            false);
   EXPECT_EQ(
-      action_manager.FindAction(kActionShowAddressesBubbleOrPage)->GetEnabled(),
+      action_manager.FindAction(kActionNewIncognitoWindow, root_action_item)
+          ->GetEnabled(),
       true);
+  EXPECT_EQ(
+      action_manager.FindAction(kActionClearBrowsingData, root_action_item)
+          ->GetEnabled(),
+      true);
+  EXPECT_EQ(action_manager.FindAction(kActionTaskManager, root_action_item)
+                ->GetEnabled(),
+            true);
+  EXPECT_EQ(action_manager.FindAction(kActionDevTools, root_action_item)
+                ->GetEnabled(),
+            true);
+  EXPECT_EQ(
+      action_manager.FindAction(kActionPrint, root_action_item)->GetEnabled(),
+      CanPrint(browser()));
+  EXPECT_EQ(action_manager.FindAction(kActionSendTabToSelf, root_action_item)
+                ->GetEnabled(),
+            CanSendTabToSelf(browser()));
+  EXPECT_EQ(action_manager.FindAction(kActionQrCodeGenerator, root_action_item)
+                ->GetEnabled(),
+            false);
+  EXPECT_EQ(action_manager
+                .FindAction(kActionShowAddressesBubbleOrPage, root_action_item)
+                ->GetEnabled(),
+            true);
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserActionsBrowserTest, GetCleanTitleAndTooltipText) {
@@ -191,10 +223,12 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsBrowserTest, GetMnemonicTitleText) {
 // GetText() stays clean for other surfaces, such as the toolbar and tooltips.
 IN_PROC_BROWSER_TEST_F(BrowserActionsBrowserTest, MenuActionsKeepMnemonicText) {
   auto& action_manager = actions::ActionManager::GetForTesting();
+  auto* const root_action_item =
+      BrowserActions::From(browser())->root_action_item();
 
   // Built with ChromeMenuAction().
   actions::ActionItem* incognito =
-      action_manager.FindAction(kActionNewIncognitoWindow);
+      action_manager.FindAction(kActionNewIncognitoWindow, root_action_item);
   ASSERT_TRUE(incognito);
   const std::u16string incognito_title =
       l10n_util::GetStringUTF16(IDS_NEW_INCOGNITO_WINDOW);
@@ -203,7 +237,8 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsBrowserTest, MenuActionsKeepMnemonicText) {
             BrowserActions::GetCleanTitleAndTooltipText(incognito_title));
 
   // Built with ActionItem::Builder() directly.
-  actions::ActionItem* new_tab = action_manager.FindAction(kActionNewTab);
+  actions::ActionItem* new_tab =
+      action_manager.FindAction(kActionNewTab, root_action_item);
   ASSERT_TRUE(new_tab);
   const std::u16string new_tab_title = l10n_util::GetStringUTF16(IDS_NEW_TAB);
   EXPECT_EQ(new_tab->GetTextWithMnemonic(), new_tab_title);
@@ -211,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsBrowserTest, MenuActionsKeepMnemonicText) {
             BrowserActions::GetCleanTitleAndTooltipText(new_tab_title));
 
   actions::ActionItem* show_history =
-      action_manager.FindAction(kActionShowHistory);
+      action_manager.FindAction(kActionShowHistory, root_action_item);
   ASSERT_TRUE(show_history);
   const std::u16string history_title =
       l10n_util::GetStringUTF16(IDS_HISTORY_MENU);
@@ -221,7 +256,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsBrowserTest, MenuActionsKeepMnemonicText) {
             BrowserActions::GetCleanTitleAndTooltipText(history_title));
 
   actions::ActionItem* manage_extensions =
-      action_manager.FindAction(kActionManageExtensions);
+      action_manager.FindAction(kActionManageExtensions, root_action_item);
   ASSERT_TRUE(manage_extensions);
   const std::u16string manage_extensions_title =
       l10n_util::GetStringUTF16(IDS_MANAGE_EXTENSIONS);

@@ -422,8 +422,9 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
   PinnedToolbarActionsModel* const actions_model =
       PinnedToolbarActionsModel::Get(browser()->GetProfile());
 
-  actions::ActionItem* action_item =
-      actions::ActionManager::Get().FindAction(kActionShowTranslate);
+  actions::ActionItem* action_item = actions::ActionManager::Get().FindAction(
+      kActionShowTranslate,
+      BrowserActions::From(browser())->root_action_item());
 
   PinnedActionTestAccessor accessor(browser(), kActionShowTranslate);
 

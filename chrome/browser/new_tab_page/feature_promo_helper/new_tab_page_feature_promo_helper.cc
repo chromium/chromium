@@ -71,7 +71,7 @@ void ShowCustomizeChromeSidePanel(Profile* profile) {
           1);
 
   actions::ActionManager::Get()
-      .FindAction(kActionSidePanelShowCustomizeChrome)
+      .FindAction(kActionSidePanelShowCustomizeChrome, nullptr)
       ->InvokeAction(
           actions::ActionInvocationContext::Builder()
               .SetProperty(

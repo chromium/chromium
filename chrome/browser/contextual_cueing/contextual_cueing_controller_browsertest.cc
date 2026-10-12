@@ -1003,8 +1003,9 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest, ShowCueAndClick) {
                                       ContextualCueingDecision::kSuccess, 1);
   VerifyProactiveCueDecision(ukm_recorder, ContextualCueingDecision::kSuccess);
 
-  auto* action =
-      actions::ActionManager::Get().FindAction(kActionAnchoredContextualCue);
+  auto* action = actions::ActionManager::Get().FindAction(
+      kActionAnchoredContextualCue,
+      BrowserActions::From(browser())->root_action_item());
   ASSERT_TRUE(action);
 
   // Expect Clicked event
@@ -1104,8 +1105,9 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
   histogram_tester.ExpectUniqueSample("ContextualCueing.V2.Decision",
                                       ContextualCueingDecision::kSuccess, 1);
 
-  auto* action =
-      actions::ActionManager::Get().FindAction(kActionAnchoredContextualCue);
+  auto* action = actions::ActionManager::Get().FindAction(
+      kActionAnchoredContextualCue,
+      BrowserActions::From(browser())->root_action_item());
   ASSERT_TRUE(action);
   action->InvokeAction();
 
@@ -1157,8 +1159,9 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
                                       ContextualCueingDecision::kSuccess, 1);
   VerifyProactiveCueDecision(ukm_recorder, ContextualCueingDecision::kSuccess);
 
-  auto* action =
-      actions::ActionManager::Get().FindAction(kActionAnchoredContextualCue);
+  auto* action = actions::ActionManager::Get().FindAction(
+      kActionAnchoredContextualCue,
+      BrowserActions::From(browser())->root_action_item());
   ASSERT_TRUE(action);
 
   // Initially, the contextual cue anchored message is shown on the screen.
@@ -1246,8 +1249,9 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
 
   // Invoke/click the page action. It should show the anchored message instead
   // of calling Click handler.
-  auto* action =
-      actions::ActionManager::Get().FindAction(kActionAnchoredContextualCue);
+  auto* action = actions::ActionManager::Get().FindAction(
+      kActionAnchoredContextualCue,
+      BrowserActions::From(browser())->root_action_item());
   ASSERT_TRUE(action);
   action->InvokeAction();
 
@@ -1386,8 +1390,9 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
   EXPECT_EQ(tooltip_observer.tooltip_, u"Action text");
 
   // 6. Click the page action icon to re-show the anchored message.
-  auto* action =
-      actions::ActionManager::Get().FindAction(kActionAnchoredContextualCue);
+  auto* action = actions::ActionManager::Get().FindAction(
+      kActionAnchoredContextualCue,
+      BrowserActions::From(browser())->root_action_item());
   ASSERT_TRUE(action);
   action->InvokeAction();
   ASSERT_TRUE(base::test::RunUntil([&]() {
@@ -1510,8 +1515,9 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerMockOptGuideBrowserTest,
   EXPECT_FALSE(observer.anchored_message_showing_);
 
   // Click the suggestion chip to expand the anchored message.
-  auto* action =
-      actions::ActionManager::Get().FindAction(kActionAnchoredContextualCue);
+  auto* action = actions::ActionManager::Get().FindAction(
+      kActionAnchoredContextualCue,
+      BrowserActions::From(browser())->root_action_item());
   ASSERT_TRUE(action);
   action->InvokeAction();
 
@@ -2247,8 +2253,9 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
   VerifyProactiveCueDecision(ukm_recorder, ContextualCueingDecision::kSuccess);
 
   // 6. Simulate user clicking the cue
-  auto* action =
-      actions::ActionManager::Get().FindAction(kActionAnchoredContextualCue);
+  auto* action = actions::ActionManager::Get().FindAction(
+      kActionAnchoredContextualCue,
+      BrowserActions::From(browser())->root_action_item());
   ASSERT_TRUE(action);
   action->InvokeAction();
 
@@ -2312,8 +2319,9 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
       base::HashMetricName("pdf_cuj_string"), 1);
 
   // 6. Simulate user clicking the cue.
-  auto* action =
-      actions::ActionManager::Get().FindAction(kActionAnchoredContextualCue);
+  auto* action = actions::ActionManager::Get().FindAction(
+      kActionAnchoredContextualCue,
+      BrowserActions::From(browser())->root_action_item());
   ASSERT_TRUE(action);
   action->InvokeAction();
 
@@ -3225,8 +3233,9 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerMultiSourceBrowserTest,
 
   // When clicking the suggestion chip, it should expand out into an anchored
   // message.
-  auto* action =
-      actions::ActionManager::Get().FindAction(kActionAnchoredContextualCue);
+  auto* action = actions::ActionManager::Get().FindAction(
+      kActionAnchoredContextualCue,
+      BrowserActions::From(browser())->root_action_item());
   ASSERT_TRUE(action);
   action->InvokeAction();
 
@@ -3293,8 +3302,9 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerMultiSourceBrowserTest,
 
   // When clicking the suggestion chip, it should expand out into an anchored
   // message.
-  auto* action =
-      actions::ActionManager::Get().FindAction(kActionAnchoredContextualCue);
+  auto* action = actions::ActionManager::Get().FindAction(
+      kActionAnchoredContextualCue,
+      BrowserActions::From(browser())->root_action_item());
   ASSERT_TRUE(action);
   action->InvokeAction();
 

@@ -85,8 +85,8 @@ TEST_F(ActionAppMenuManagerTest, ProxySyncsWithDelegateAndInvokes) {
                                     &mock_drag_and_drop_host_);
   menu_manager.CreateMenuHierarchy();
 
-  actions::ActionItem* delegate =
-      actions::ActionManager::Get().FindAction(kActionShowPasswordManager);
+  actions::ActionItem* delegate = actions::ActionManager::Get().FindAction(
+      kActionShowPasswordManager, nullptr);
   ASSERT_NE(delegate, nullptr);
 
   actions::ActionItem* root = menu_manager.GetAppMenuRoot();
@@ -539,7 +539,7 @@ TEST_F(ActionAppMenuManagerTest, NotificationHeaderUpgradeNotification) {
   }
 
   actions::ActionItem* upgrade_action =
-      actions::ActionManager::Get().FindAction(kActionUpgradeDialog);
+      actions::ActionManager::Get().FindAction(kActionUpgradeDialog, nullptr);
   ASSERT_NE(upgrade_action, nullptr);
   upgrade_action->SetVisible(true);
 
@@ -637,7 +637,7 @@ TEST_F(ActionAppMenuManagerTest, NotificationHeaderSafetyHubNotification) {
 
 TEST_F(ActionAppMenuManagerTest, NotificationHeaderGlobalError) {
   actions::ActionItem* global_error_action =
-      actions::ActionManager::Get().FindAction(kActionGlobalError);
+      actions::ActionManager::Get().FindAction(kActionGlobalError, nullptr);
   ASSERT_NE(global_error_action, nullptr);
   global_error_action->SetVisible(true);
 
@@ -692,7 +692,8 @@ TEST_F(ActionAppMenuManagerTest, ZoomSubmenuHasExpandedHeightProperty) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 TEST_F(ActionAppMenuManagerTest, NotificationHeaderDefaultBrowserPrompt) {
   actions::ActionItem* default_browser_action =
-      actions::ActionManager::Get().FindAction(kActionSetBrowserAsDefault);
+      actions::ActionManager::Get().FindAction(kActionSetBrowserAsDefault,
+                                               nullptr);
   ASSERT_NE(default_browser_action, nullptr);
   default_browser_action->SetVisible(true);
 

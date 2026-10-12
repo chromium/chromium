@@ -10,6 +10,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
@@ -219,7 +220,8 @@ class CookieControlsBubbleViewPixelTest
     views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                          "CookieControlsBubbleViewImpl");
     actions::ActionManager::Get()
-        .FindAction(kActionShowCookieControls)
+        .FindAction(kActionShowCookieControls,
+                    BrowserActions::From(browser())->root_action_item())
         ->InvokeAction();
 
     SetStatus(controls_state_, enforcement_, days_to_expiration_);

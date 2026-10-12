@@ -14,6 +14,7 @@
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -1056,8 +1057,9 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   ASSERT_TRUE(controller);
 
   auto& action_manager = actions::ActionManager::Get();
-  auto* const read_anything_action =
-      action_manager.FindAction(kActionSidePanelShowReadAnything);
+  auto* const read_anything_action = action_manager.FindAction(
+      kActionSidePanelShowReadAnything,
+      BrowserActions::From(browser())->root_action_item());
   ASSERT_TRUE(read_anything_action);
 
   AssertOverlayVisibility(/*visible=*/false);

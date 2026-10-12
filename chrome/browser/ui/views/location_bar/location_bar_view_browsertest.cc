@@ -20,6 +20,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/chrome_security_state_util.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -533,8 +534,9 @@ class LocationBarViewPageActionHideWhileEditingTests
     LocationBarViewBrowserTest::SetUpOnMainThread();
 
     // 1. Ensure the Zoom action is globally visible/enabled.
-    auto* zoom_action =
-        actions::ActionManager::Get().FindAction(kActionShowZoomBubble);
+    auto* zoom_action = actions::ActionManager::Get().FindAction(
+        kActionShowZoomBubble,
+        BrowserActions::From(browser())->root_action_item());
     ASSERT_TRUE(zoom_action);
     zoom_action->SetVisible(true);
     zoom_action->SetEnabled(true);
@@ -727,6 +729,8 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewBrowserTest, OmniboxActionsRegistered) {
 
   auto* action_manager = &actions::ActionManager::Get();
   ASSERT_TRUE(action_manager);
+  auto* const root_action_item =
+      BrowserActions::From(browser())->root_action_item();
 
   struct ExpectedAction {
     actions::ActionId action_id;
@@ -744,15 +748,16 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewBrowserTest, OmniboxActionsRegistered) {
   };
 
   for (const auto& expected : expected_actions) {
-    auto* action = action_manager->FindAction(expected.action_id);
+    auto* action =
+        action_manager->FindAction(expected.action_id, root_action_item);
     ASSERT_TRUE(action) << "Action not found: " << expected.action_id;
     EXPECT_EQ(action->GetText(), l10n_util::GetStringUTF16(expected.string_id));
     EXPECT_FALSE(action->GetImage().IsEmpty());
   }
 
   // kActionOmniboxContextSetModelRegular has no text (only icon).
-  auto* regular_model_action =
-      action_manager->FindAction(kActionOmniboxContextSetModelRegular);
+  auto* regular_model_action = action_manager->FindAction(
+      kActionOmniboxContextSetModelRegular, root_action_item);
   ASSERT_TRUE(regular_model_action);
   EXPECT_TRUE(regular_model_action->GetText().empty());
   EXPECT_FALSE(regular_model_action->GetImage().IsEmpty());
@@ -840,6 +845,8 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewElevatedToolbarBrowserTest,
   ASSERT_TRUE(tab_features);
   auto* controller = tab_features->page_action_controller();
   ASSERT_TRUE(controller);
+  auto* const root_action_item =
+      BrowserActions::From(browser())->root_action_item();
 
   // Hide any default actions to test clean transitions.
   for (views::View* child : location_bar->page_action_container()->children()) {
@@ -855,8 +862,8 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewElevatedToolbarBrowserTest,
   EnsureLayout();
 
   // Make Zoom page action visible (capsule inactive, not a chip).
-  auto* zoom_action =
-      actions::ActionManager::Get().FindAction(kActionShowZoomBubble);
+  auto* zoom_action = actions::ActionManager::Get().FindAction(
+      kActionShowZoomBubble, root_action_item);
   ASSERT_TRUE(zoom_action);
   zoom_action->SetVisible(true);
   zoom_action->SetEnabled(true);
@@ -874,8 +881,8 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewElevatedToolbarBrowserTest,
   EXPECT_FALSE(location_bar->page_action_container()->IsFirstVisibleViewChip());
 
   // Make a second action visible (capsule active).
-  auto* cookie_action =
-      actions::ActionManager::Get().FindAction(kActionShowCookieControls);
+  auto* cookie_action = actions::ActionManager::Get().FindAction(
+      kActionShowCookieControls, root_action_item);
   if (cookie_action) {
     cookie_action->SetVisible(true);
     cookie_action->SetEnabled(true);

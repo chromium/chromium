@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/payments/payments_ui_constants.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -122,7 +123,8 @@ class OfferNotificationBubbleViewsInteractiveUiTest
     EXPECT_TRUE(icon);
     ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
     actions::ActionManager::Get()
-        .FindAction(kActionOffersAndRewardsForPage)
+        .FindAction(kActionOffersAndRewardsForPage,
+                    BrowserActions::From(browser())->root_action_item())
         ->InvokeAction();
     ASSERT_TRUE(WaitForObservedEvent());
     EXPECT_TRUE(IsIconVisible());

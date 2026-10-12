@@ -10,6 +10,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -137,8 +138,9 @@ IN_PROC_BROWSER_TEST_F(CookieControlsBubbleCoordinatorBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(CookieControlsBubbleCoordinatorBrowserTest,
                        ActionItemUpdatedWithBubbleVisibility) {
-  actions::ActionItem* action =
-      actions::ActionManager::Get().FindAction(kActionShowCookieControls);
+  actions::ActionItem* action = actions::ActionManager::Get().FindAction(
+      kActionShowCookieControls,
+      BrowserActions::From(browser())->root_action_item());
   ASSERT_NE(action, nullptr);
 
   EXPECT_EQ(coordinator()->GetBubble(), nullptr);

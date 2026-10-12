@@ -475,8 +475,7 @@ class COMPONENT_EXPORT(ACTIONS) ActionItem : public BaseAction {
   //   A literal "&" must be written as "&&" for it not to be considered a
   //   mnemonic.
   // - GetText() returns the text without the marker for cases that do not need
-  // to
-  //   show mnemonics, like buttons and tooltips. "&Find" becomes "Find".
+  //   to show mnemonics, like buttons and tooltips. "&Find" becomes "Find".
   // - GetTextWithMnemonic() returns the text as it is set.
   std::u16string_view GetText() const;
   std::u16string_view GetTextWithMnemonic() const;
@@ -638,10 +637,9 @@ class COMPONENT_EXPORT(ACTIONS) ActionManager
   static void ResetForTesting();
 
   void IndexActions();
-  ActionItem* FindAction(std::u16string term, ActionItem* scope = nullptr);
-  ActionItem* FindAction(ActionId action_id, ActionItem* scope = nullptr);
-  ActionItem* FindAction(const ui::KeyEvent& key_event,
-                         ActionItem* scope = nullptr);
+  ActionItem* FindAction(std::u16string term, ActionItem* scope);
+  ActionItem* FindAction(ActionId action_id, ActionItem* scope);
+  ActionItem* FindAction(const ui::KeyEvent& key_event, ActionItem* scope);
   void GetActions(ActionItemVector& items, ActionItem* scope = nullptr);
 
   ActionItem* AddAction(std::unique_ptr<ActionItem> action_item);

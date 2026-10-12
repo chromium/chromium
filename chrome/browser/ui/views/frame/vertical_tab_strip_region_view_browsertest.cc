@@ -587,7 +587,9 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, LogsResizeMetrics) {
 IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
                        CancelCollapseAnimationUpdatesCollapseButton) {
   actions::ActionItem* collapse_action =
-      actions::ActionManager::Get().FindAction(kActionToggleCollapseVertical);
+      actions::ActionManager::Get().FindAction(
+          kActionToggleCollapseVertical,
+          BrowserActions::From(browser())->root_action_item());
   const ui::Accelerator accelerator = collapse_action->GetAccelerator();
 
   // Request that the tabstrip collapses. The state controller collapse state
