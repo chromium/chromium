@@ -274,26 +274,6 @@ public class AutofillSettingsSearchTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({
-        ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
-        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
-    })
-    public void testSearchAutofill_autofillAiAndAutofillAndPasswordsDisabled() {
-        var histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Autofill.Settings.AutofillOptionsReferrerAndroid",
-                        AutofillOptionsReferrer.SETTINGS_SEARCH);
-        searchSettings("autofill");
-
-        clickSearchResult(R.string.autofill_options_title);
-
-        onView(withText(R.string.autofill_third_party_filling_default))
-                .check(matches(isDisplayed()));
-        histogramWatcher.assertExpected();
-    }
-
-    @Test
-    @SmallTest
     @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     public void testSearchAutofill_autofillAiDisabled() {
         searchSettings("autofill");
