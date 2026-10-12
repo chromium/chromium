@@ -78,6 +78,24 @@ class TypedRefcountedProfileKeyedServiceFactoryIOS
   // extra parameter `access_type`. If its value is IMPLICIT_ACCESS, then
   // the method will first check whether the profile is off-the-record, and
   // if true, return null unconditionally.
+  //
+  // It is recommended to cache the value returned by this method (in fact the
+  // KeyedService infrastructure will cache the mapping between `profile` and
+  // the value returned by this method). If there is no cached value, it will
+  // created by calling BuildServiceInstanceFor(...) and the result cached for
+  // the whole lifetime of the ProfileIOS object.
+  //
+  // Clients are allowed to omit calling the method and instead store the value
+  // returned (as long as they stop using it is destroyed, i.e. when ProfileIOS
+  // is destroyed).
+  //
+  // This means that KeyedService factories must not check transient conditions,
+  // that depend on a particular state of the ProfileIOS or of attached services
+  // (e.g. whether the profile is managed, or sync is enabled) when creating the
+  // service in BuildInstanceFor(...). Instead should return a service instance,
+  // and this service should adapt its behavior to match the condition (i.e. if
+  // the service should only work when the profile is managed, then it can fail
+  // all request if the profile is currently not managed).
   static scoped_refptr<Service> GetForProfile(ProfileIOS* profile)
     requires(!GetForProfileUseServiceAccess)
   {
