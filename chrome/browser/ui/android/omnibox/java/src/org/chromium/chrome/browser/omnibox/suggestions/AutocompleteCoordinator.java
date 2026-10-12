@@ -23,6 +23,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.TimingMetric;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -129,7 +130,8 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
             LocationBarEmbedderUiOverrides uiOverrides,
             WindowAndroid windowAndroid,
             DeferredIMEWindowInsetApplicationCallback deferredIMEWindowInsetApplicationCallback,
-            FuseboxCoordinator fuseboxCoordinator) {
+            FuseboxCoordinator fuseboxCoordinator,
+            NonNullObservableSupplier<Boolean> urlTextWrappingSupplier) {
         mParent = parent;
         mLocationBarEmbedder = locationBarEmbedder;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
@@ -169,7 +171,8 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
                         windowAndroid,
                         deferredIMEWindowInsetApplicationCallback,
                         fuseboxCoordinator,
-                        uiOverrides);
+                        uiOverrides,
+                        urlTextWrappingSupplier);
 
         mMediator.initDefaultProcessors();
 
