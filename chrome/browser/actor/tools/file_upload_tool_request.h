@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ACTOR_TOOLS_FILE_UPLOAD_TOOL_REQUEST_H_
 
 #include <iosfwd>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -40,6 +41,12 @@ struct FileUploadSource {
 class FileUploadToolRequest : public TabToolRequest {
  public:
   static constexpr char kName[] = "FileUpload";
+  static constexpr std::string_view kModelFacingName = "file_upload";
+  // JSON argument key for the DOM node ID of the file input element, or of the
+  // control that opens the file chooser.
+  static constexpr std::string_view kDomNodeIdParam = "dom_node_id";
+  // JSON argument key for the URLs of the files to upload.
+  static constexpr std::string_view kFileUrlsParam = "file_urls";
 
   FileUploadToolRequest(tabs::TabHandle tab_handle,
                         PageTarget target,
@@ -47,6 +54,9 @@ class FileUploadToolRequest : public TabToolRequest {
   FileUploadToolRequest(const FileUploadToolRequest&);
   FileUploadToolRequest& operator=(const FileUploadToolRequest&);
   ~FileUploadToolRequest() override;
+
+  // Returns the `ToolId::kFileUpload` tool schema definition.
+  static std::optional<ToolDefinition> GetToolDefinition();
 
   // ToolRequest:
   CreateToolResult CreateTool(TaskId task_id,

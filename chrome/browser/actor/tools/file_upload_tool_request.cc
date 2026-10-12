@@ -4,17 +4,37 @@
 
 #include "chrome/browser/actor/tools/file_upload_tool_request.h"
 
+#include <optional>
 #include <ostream>
+#include <string_view>
 #include <utility>
 
 #include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/tools/file_upload_tool.h"
+#include "chrome/browser/actor/tools/registry/tool_definition.h"
+#include "chrome/browser/actor/tools/registry/tool_definition_builder.h"
+#include "chrome/browser/actor/tools/registry/tool_schema_builder.h"
 #include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
 #include "chrome/common/actor/action_result.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "net/base/url_util.h"
 
 namespace actor {
+
+namespace {
+
+constexpr std::string_view kFileUploadToolDescription =
+    "Uploads one or more files to the page through a file input element or a "
+    "control that opens the file chooser. The browser downloads each file "
+    "from its URL before uploading it.";
+constexpr std::string_view kDomNodeIdParamDescription =
+    "The numeric DOM node ID of the file input element, or of the control "
+    "that opens the file chooser (e.g. 101).";
+constexpr std::string_view kFileUrlsParamDescription =
+    "The http or https URLs of the files to upload. Local file paths and "
+    "localhost URLs are not supported.";
+
+}  // namespace
 
 FileUploadSource::FileUploadSource(GURL url, std::string file_name)
     : url(std::move(url)), file_name(std::move(file_name)) {}
@@ -34,6 +54,18 @@ FileUploadToolRequest& FileUploadToolRequest::operator=(
     const FileUploadToolRequest&) = default;
 
 FileUploadToolRequest::~FileUploadToolRequest() = default;
+
+// static
+std::optional<ToolDefinition> FileUploadToolRequest::GetToolDefinition() {
+  return ToolDefinitionBuilder(ToolId::kFileUpload, kModelFacingName,
+                               kFileUploadToolDescription)
+      .SetToolParameterSchema(
+          ToolSchemaBuilder()
+              .AddIntegerProperty(kDomNodeIdParam, kDomNodeIdParamDescription)
+              .AddArrayProperty(kFileUrlsParam, kFileUrlsParamDescription,
+                                ToolSchemaBuilder::ArrayItemType::kString))
+      .Build();
+}
 
 std::string_view FileUploadToolRequest::Name() const {
   return kName;

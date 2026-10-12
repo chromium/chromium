@@ -57,7 +57,9 @@ enum class ToolId {
   kFindAndHighlight = 18,
   // Closes the active tab.
   kCloseTab = 19,
-  kMaxValue = kCloseTab,
+  // Uploads files through a file input or file chooser on the page.
+  kFileUpload = 20,
+  kMaxValue = kFileUpload,
 };
 
 // In-memory metadata and parameter schema for a shared browser tool. Prefer

@@ -18,6 +18,7 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/tools/attempt_otp_filling_tool_request.h"
 #include "chrome/browser/actor/tools/click_tool_request.h"
+#include "chrome/browser/actor/tools/file_upload_tool_request.h"
 #include "chrome/browser/actor/tools/find_and_highlight_tool_request.h"
 #include "chrome/browser/actor/tools/history_tool_request.h"
 #include "chrome/browser/actor/tools/media_control_tool_request.h"
@@ -285,6 +286,23 @@ TEST(ToolRegistryTest, CloseTabToolDefinition) {
 }
 #endif
 
+TEST(ToolRegistryTest, FileUploadToolDefinition) {
+  const std::optional<ToolDefinition> definition =
+      FileUploadToolRequest::GetToolDefinition();
+  ASSERT_TRUE(definition.has_value());
+  EXPECT_EQ(definition->id, ToolId::kFileUpload);
+  EXPECT_EQ(definition->name, FileUploadToolRequest::kModelFacingName);
+  EXPECT_THAT(
+      *definition,
+      HasParamOfType(FileUploadToolRequest::kDomNodeIdParam, "integer"));
+  EXPECT_THAT(*definition,
+              RequiresParam(FileUploadToolRequest::kDomNodeIdParam));
+  EXPECT_THAT(*definition,
+              HasParamOfType(FileUploadToolRequest::kFileUrlsParam, "array"));
+  EXPECT_THAT(*definition,
+              RequiresParam(FileUploadToolRequest::kFileUrlsParam));
+}
+
 TEST(ToolRegistryTest, GetAllToolsContainsNavigateTool) {
   base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
   content::BrowserTaskEnvironment task_environment;
@@ -442,6 +460,17 @@ TEST(ToolRegistryTest, GetAllToolsContainsAttemptOtpFillingTool) {
   EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
                                     ToolId::kAttemptOtpFilling,
                                     &ToolDefinition::id));
+}
+
+TEST(ToolRegistryTest, GetAllToolsContainsFileUploadTool) {
+  base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  ActorKeyedService* service = ActorKeyedService::Get(&profile);
+  CHECK(service);
+
+  EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
+                                    ToolId::kFileUpload, &ToolDefinition::id));
 }
 
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
