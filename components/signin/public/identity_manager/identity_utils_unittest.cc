@@ -4,10 +4,12 @@
 
 #include "components/signin/public/identity_manager/identity_utils.h"
 
+#include "base/containers/flat_set.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/with_feature_override.h"
+#include "build/build_config.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
@@ -222,6 +224,42 @@ TEST_F(IdentityUtilsTest, GetAllGaiaIdsForKeyedPreferences) {
                                          cookie_signed_out_primary_account})),
       testing::UnorderedElementsAre(account_info.GetGaiaId(), GaiaId("0"),
                                     GaiaId("1")));
+}
+
+TEST_F(IdentityUtilsTest,
+       GetAllGaiaIdsForKeyedPreferencesWithSecondaryAccountWithRefreshToken) {
+  AccountInfo primary_account = MakePrimaryAccountAvailable();
+  AccountInfo secondary_account =
+      identity_test_env()->MakeAccountAvailable("secondary@gmail.com");
+
+  gaia::ListedAccount cookie_account;
+  cookie_account.gaia_id = GaiaId("cookie_gaia_id");
+
+  base::flat_set<GaiaId> gaia_ids = GetAllGaiaIdsForKeyedPreferences(
+      identity_manager(), AccountsInCookieJarInfo(true, {cookie_account}));
+
+  // Accounts with refresh tokens are kept even if they are not in the cookie
+  // jar.
+  EXPECT_THAT(gaia_ids,
+              testing::UnorderedElementsAre(primary_account.GetGaiaId(),
+                                            secondary_account.GetGaiaId(),
+                                            GaiaId("cookie_gaia_id")));
+}
+
+TEST_F(IdentityUtilsTest,
+       GetAllGaiaIdsForKeyedPreferencesWhenSignedOutWithRefreshToken) {
+  AccountInfo account =
+      identity_test_env()->MakeAccountAvailable("account@gmail.com");
+  ASSERT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
+
+  EXPECT_THAT(GetAllGaiaIdsForKeyedPreferences(
+                  identity_manager(), AccountsInCookieJarInfo(true, {})),
+              testing::UnorderedElementsAre(account.GetGaiaId()));
+
+  identity_test_env()->RemoveRefreshTokenForAccount(account.GetAccountId());
+  EXPECT_THAT(GetAllGaiaIdsForKeyedPreferences(
+                  identity_manager(), AccountsInCookieJarInfo(true, {})),
+              testing::IsEmpty());
 }
 
 TEST_F(IdentityUtilsTest, GetOrderedAccountsForDisplayNoAccounts) {

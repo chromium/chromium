@@ -43,15 +43,17 @@ void UpdateAccountsPrefs(
     return;
   }
 
+  // The accounts with refresh tokens are also kept. Wait until they are loaded
+  // to avoid removing their prefs.
+  if (!identity_manager.AreRefreshTokensLoaded()) {
+    return;
+  }
+
+  // This includes the accounts in the cookie jar, the primary account and the
+  // accounts with refresh tokens.
   const base::flat_set<GaiaId> account_ids_in_chrome =
       signin::GetAllGaiaIdsForKeyedPreferences(&identity_manager,
                                                accounts_in_cookie_jar_info);
-
-  // TODO(b/331767195): In case the prefs are needed for ChromeOS and Android
-  // (platforms where the account is tied to the OS) in the future, we would
-  // also need to keep the accounts that have an AccountInfo that is still
-  // present in Chrome (accounts that have refresh tokens) in addition to the
-  // above checks on cookies and primary account.
 
   SigninPrefs signin_prefs(pref_service);
   size_t removed_count =
@@ -207,6 +209,21 @@ void GAIAInfoUpdateService::OnAccountsInCookieUpdated(
     const GoogleServiceAuthError& error) {
   UpdateAccountsPrefs(pref_service_.get(), *identity_manager_,
                       accounts_in_cookie_jar_info);
+}
+
+void GAIAInfoUpdateService::OnRefreshTokensLoaded() {
+  // Prefs are not removed until the refresh tokens are loaded, so the prefs of
+  // accounts that were removed in the meantime should be removed now.
+  UpdateAccountsPrefs(pref_service_.get(), *identity_manager_,
+                      identity_manager_->GetAccountsInCookieJar());
+}
+
+void GAIAInfoUpdateService::OnEndBatchOfRefreshTokenStateChanges() {
+  // Prefs of accounts whose refresh token was removed (e.g. on sign-out, or on
+  // Android when the account is removed from the device) should be removed if
+  // the account is not otherwise kept (primary account or in the cookie jar).
+  UpdateAccountsPrefs(pref_service_.get(), *identity_manager_,
+                      identity_manager_->GetAccountsInCookieJar());
 }
 
 bool GAIAInfoUpdateService::ShouldUpdatePrimaryAccount() {

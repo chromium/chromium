@@ -51,6 +51,8 @@ class GAIAInfoUpdateService : public KeyedService,
   void OnAccountsInCookieUpdated(
       const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
       const GoogleServiceAuthError& error) override;
+  void OnRefreshTokensLoaded() override;
+  void OnEndBatchOfRefreshTokenStateChanges() override;
 
   const raw_ptr<Profile> profile_;
   raw_ptr<signin::IdentityManager> identity_manager_;

@@ -106,6 +106,19 @@ base::flat_set<GaiaId> GetAllGaiaIdsForKeyedPreferences(
     gaia_ids.insert(primary_account_gaia_id);
   }
 
+  // Also keep the accounts with refresh tokens, even when they are not the
+  // primary account nor in the cookie jar (e.g. after sign-out on platforms
+  // where accounts are tied to the OS, like Android), so that their preferences
+  // survive until the account is removed from Chrome.
+  if (identity_manager) {
+    for (const CoreAccountInfo& account :
+         identity_manager->GetAccountsWithRefreshTokens()) {
+      if (!account.gaia.empty()) {
+        gaia_ids.insert(account.gaia);
+      }
+    }
+  }
+
   return gaia_ids;
 }
 
