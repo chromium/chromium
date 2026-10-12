@@ -2463,6 +2463,14 @@ inline constexpr char kEnableManagedConfigurationWebApiDescription[] =
     "Allows website to access a managed configuration provided by the device "
     "administrator for the origin.";
 
+inline constexpr char kManagedConfigurationRecoverFromFailedFetchesName[] =
+    "Managed Configuration API recover from failed fetches";
+inline constexpr char
+    kManagedConfigurationRecoverFromFailedFetchesDescription[] =
+        "Enables retry with exponential backoff, network reconnection "
+        "recovery, and in-flight read queuing for the Managed Configuration "
+        "Web API.";
+
 inline constexpr char kEnablePixelCanvasRecordingName[] =
     "Enable pixel canvas recording";
 inline constexpr char kEnablePixelCanvasRecordingDescription[] =

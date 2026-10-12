@@ -11887,6 +11887,8 @@ from previous Chrome versions.
   <int value="-938457958" label="CaptionsOnBrailleDisplay:disabled"/>
   <int value="-938178614" label="enable-suggestions-with-substring-match"/>
   <int value="-937818862" label="ClankStartupTabOptimizations:enabled"/>
+  <int value="-937430930"
+      label="ManagedConfigurationRecoverFromFailedFetches:enabled"/>
   <int value="-937430451" label="IntensiveWakeUpThrottling:disabled"/>
   <int value="-937116841" label="OktaSSO:enabled"/>
   <int value="-936652950"
@@ -16371,6 +16373,8 @@ from previous Chrome versions.
   <int value="420356964" label="OobeJelly:enabled"/>
   <int value="420682005" label="AdaptiveButtonInTopToolbar:enabled"/>
   <int value="420733666" label="EnterpriseRealTimeUrlCheckOnAndroid:disabled"/>
+  <int value="421095077"
+      label="ManagedConfigurationRecoverFromFailedFetches:disabled"/>
   <int value="421986951" label="UseRealColorSpaceForAndroidVideo:disabled"/>
   <int value="422307097" label="PhysicalWeb:disabled"/>
   <int value="422670720" label="ContextualSearchLongpressPanelHelp:disabled"/>

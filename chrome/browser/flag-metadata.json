@@ -6890,6 +6890,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "managed-configuration-recover-from-failed-fetches",
+    "owners": [ "simonha@google.com", "//chrome/browser/device_api/OWNERS" ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "management-promotion-banner-flag",
     "owners": ["austinzzr@google.com"],
     "expiry_milestone": 141

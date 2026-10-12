@@ -4,11 +4,28 @@
 
 #include "chrome/browser/device_api/managed_configuration_api.h"
 
+#include <atomic>
+#include <memory>
 #include <optional>
+#include <string>
 
 #include "base/check.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/functional/bind.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/synchronization/waitable_event.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/test/gtest_tags.h"
+#include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/threading/thread_restrictions.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/device_api/managed_configuration_api_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -103,6 +120,65 @@ bool DictValueEquals(std::optional<base::DictValue> value,
   return actual == expected;
 }
 
+// Blocks `task_runner` until Release() is called or the blocker is destroyed,
+// so that store operations posted in the meantime queue up behind it.
+class StoreSequenceBlocker {
+ public:
+  explicit StoreSequenceBlocker(
+      scoped_refptr<base::SequencedTaskRunner> task_runner)
+      : event_(
+            base::MakeRefCounted<base::RefCountedData<base::WaitableEvent>>()) {
+    task_runner->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](scoped_refptr<base::RefCountedData<base::WaitableEvent>> event) {
+              base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait;
+              event->data.Wait();
+            },
+            event_));
+  }
+  StoreSequenceBlocker(const StoreSequenceBlocker&) = delete;
+  StoreSequenceBlocker& operator=(const StoreSequenceBlocker&) = delete;
+  ~StoreSequenceBlocker() { Release(); }
+
+  void Release() { event_->data.Signal(); }
+
+ private:
+  scoped_refptr<base::RefCountedData<base::WaitableEvent>> event_;
+};
+
+// Thread-safe request counter shared between a test and a request handler that
+// runs on the embedded test server's thread.
+using RequestCounter = base::RefCountedData<std::atomic<int>>;
+
+// Counts requests for `relative_url` on `server`. Must be called before the
+// server is started. The counter is ref-counted and shared with the handler,
+// so requests that arrive after the test body returned never touch freed
+// memory.
+scoped_refptr<RequestCounter> CountRequests(net::EmbeddedTestServer* server,
+                                            const std::string& relative_url) {
+  auto count = base::MakeRefCounted<RequestCounter>(std::in_place, 0);
+  server->RegisterRequestHandler(base::BindRepeating(
+      [](scoped_refptr<RequestCounter> count, const std::string& relative_url,
+         const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url == relative_url) {
+          count->data.fetch_add(1);
+        }
+        return nullptr;
+      },
+      count, relative_url));
+  return count;
+}
+
+// Runs the current message loop for `delay`.
+void RunFor(base::TimeDelta delay) {
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), delay);
+  run_loop.Run();
+}
+
 class ManagedConfigurationAPITestBase : public MixinBasedInProcessBrowserTest {
  protected:
   void EnableTestServer(
@@ -144,6 +220,16 @@ class ManagedConfigurationAPITestBase : public MixinBasedInProcessBrowserTest {
     return value_future.Take();
   }
 
+  // Returns the configuration hash committed for the test origin, if any.
+  std::optional<std::string> GetCommittedHash() {
+    const std::string* hash =
+        profile()
+            ->GetPrefs()
+            ->GetDict(prefs::kLastManagedConfigurationHashForOrigin)
+            .FindString(base::HexEncode(origin_.Serialize()));
+    return hash ? std::make_optional(*hash) : std::nullopt;
+  }
+
   Profile* profile() { return browser()->GetProfile(); }
   const url::Origin& origin() const { return origin_; }
   ManagedConfigurationAPI* api() {
@@ -159,7 +245,11 @@ class ManagedConfigurationAPITestBase : public MixinBasedInProcessBrowserTest {
 class ManagedConfigurationAPITest : public ManagedConfigurationAPITestBase,
                                     public ManagedConfigurationAPI::Observer {
  public:
-  ManagedConfigurationAPITest() = default;
+  explicit ManagedConfigurationAPITest(bool enable_recovery = true) {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kManagedConfigurationRecoverFromFailedFetches,
+        enable_recovery);
+  }
   ManagedConfigurationAPITest(const ManagedConfigurationAPITest&) = delete;
   ManagedConfigurationAPITest& operator=(const ManagedConfigurationAPITest&) =
       delete;
@@ -180,6 +270,7 @@ class ManagedConfigurationAPITest : public ManagedConfigurationAPITestBase,
       loop_update_ = std::make_unique<base::RunLoop>();
       loop_update_->Run();
     }
+    updated_ = false;
   }
 
   void OnManagedConfigurationChanged() override {
@@ -194,6 +285,7 @@ class ManagedConfigurationAPITest : public ManagedConfigurationAPITestBase,
   const url::Origin& GetOrigin() const override { return origin(); }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   bool updated_ = false;
   std::unique_ptr<base::RunLoop> loop_update_;
 };
@@ -353,6 +445,432 @@ IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
 
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}), {}));
+}
+
+// Verifies that when a session starts while the configuration URL cannot be
+// fetched (e.g., transient 404 or network unavailable), the API automatically
+// retries and recovers once the server begins serving valid configuration JSON.
+IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
+                       RecoverAfterInitialDownloadFailure) {
+  std::atomic<bool> fail_requests{true};
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      [](std::atomic<bool>* fail_requests,
+         const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url == kConfigurationUrl1 &&
+            fail_requests->load()) {
+          auto response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          response->set_code(net::HTTP_NOT_FOUND);
+          return response;
+        }
+        return nullptr;
+      },
+      &fail_requests));
+  EnableTestServer({{kConfigurationUrl1, {kConfigurationData1}}});
+
+  // Policy is set while the URL fails to download. `GetValues()` waits for the
+  // initial in-flight attempt to finish and returns `{}`.
+  SetConfiguration(kConfigurationUrl1, kConfigurationHash1);
+  ASSERT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}), {}));
+
+  // Server comes online and serves `kConfigurationData1`; the scheduled retry
+  // automatically fetches and applies the configuration.
+  fail_requests.store(false);
+  WaitForUpdate();
+
+  ASSERT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}),
+                              {{kKey1, kValue1}, {kKey2, kValue2}}));
+}
+
+// Verifies that when a policy update points to a new URL and hash whose initial
+// download fails transiently, the previous configuration remains intact until
+// the retry succeeds and applies the new configuration.
+IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
+                       RecoverAfterPolicyUpdateDownloadFailure) {
+  std::atomic<bool> fail_url2{true};
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      [](std::atomic<bool>* fail_url2,
+         const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url == kConfigurationUrl2 && fail_url2->load()) {
+          auto response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          response->set_code(net::HTTP_NOT_FOUND);
+          return response;
+        }
+        return nullptr;
+      },
+      &fail_url2));
+  EnableTestServer({{kConfigurationUrl1, {kConfigurationData1}},
+                    {kConfigurationUrl2, {kConfigurationData2}}});
+
+  SetConfiguration(kConfigurationUrl1, kConfigurationHash1);
+  WaitForUpdate();
+  ASSERT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}),
+                              {{kKey1, kValue1}, {kKey2, kValue2}}));
+
+  // Policy updates to (url2, hash2), but url2 fails to download initially.
+  // The existing configuration from url1 remains available.
+  SetConfiguration(kConfigurationUrl2, kConfigurationHash2);
+  ASSERT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}),
+                              {{kKey1, kValue1}, {kKey2, kValue2}}));
+
+  // Once url2 becomes reachable, the scheduled retry fetches and applies it.
+  fail_url2.store(false);
+  WaitForUpdate();
+
+  ASSERT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}),
+                              {{kKey1, kValue12}, {kKey2, kValue22}}));
+}
+
+// Verifies that network reconnection immediately triggers a retry without
+// waiting for the exponential backoff timer to expire, and that read requests
+// during the backoff window do not bypass the active backoff timer.
+IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
+                       RecoverOnNetworkReconnectionWithoutBackoffBypass) {
+  // Keep the retry timer from firing during the test (the delay is capped at
+  // the maximum backoff), so that only the simulated reconnection below can
+  // trigger the recovery and the request count cannot race the timer.
+  api()->SetRetryBackoffForTesting(base::Hours(1), 2.0);
+  std::atomic<int> request_count{0};
+  std::atomic<bool> fail_requests{true};
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      [](std::atomic<int>* request_count, std::atomic<bool>* fail_requests,
+         const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url == kConfigurationUrl1) {
+          request_count->fetch_add(1);
+          if (fail_requests->load()) {
+            auto response =
+                std::make_unique<net::test_server::BasicHttpResponse>();
+            response->set_code(net::HTTP_NOT_FOUND);
+            return response;
+          }
+        }
+        return nullptr;
+      },
+      &request_count, &fail_requests));
+  EnableTestServer({{kConfigurationUrl1, {kConfigurationData1}}});
+
+  // Initial fetch fails and schedules the backoff timer.
+  SetConfiguration(kConfigurationUrl1, kConfigurationHash1);
+  ASSERT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}), {}));
+  const int requests_after_initial_failure = request_count.load();
+  ASSERT_GT(requests_after_initial_failure, 0);
+
+  // Calling GetValues() or re-adding an observer while the backoff timer is
+  // active must NOT bypass the timer or trigger extra network requests.
+  ASSERT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}), {}));
+  api()->RemoveObserver(this);
+  api()->AddObserver(this);
+  EXPECT_EQ(request_count.load(), requests_after_initial_failure);
+
+  // Simulating network reconnection resets backoff and immediately fetches.
+  fail_requests.store(false);
+  static_cast<network::NetworkConnectionTracker::NetworkConnectionObserver*>(
+      api())
+      ->OnConnectionChanged(net::NetworkChangeNotifier::CONNECTION_WIFI);
+  WaitForUpdate();
+
+  ASSERT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}),
+                              {{kKey1, kValue1}, {kKey2, kValue2}}));
+}
+
+// Verifies that if `GetOriginPolicyConfiguration()` is called while a
+// configuration download is still in flight, the read waits for the download
+// and store write to complete rather than returning empty data from an
+// unpopulated store.
+IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
+                       GetConfigurationWhileDownloadInFlight) {
+  EnableTestServer(
+      {{kConfigurationUrl1, {kConfigurationData1, true /* post_task */}}});
+  SetConfiguration(kConfigurationUrl1, kConfigurationHash1);
+
+  // Immediately call GetValues() before WaitForUpdate() while the download is
+  // still in flight.
+  ASSERT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}),
+                              {{kKey1, kValue1}, {kKey2, kValue2}}));
+}
+
+// Verifies that if an initial configuration download (url1, hash1) fails and
+// the policy is updated to a different hash (url2, hash2) before url1 ever
+// succeeds, the pending retry for url1 is canceled and (url2, hash2) is
+// downloaded and applied immediately.
+IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
+                       PolicyUpdateAfterInitialDownloadFailure) {
+  std::atomic<bool> fail_url1{true};
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      [](std::atomic<bool>* fail_url1,
+         const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url == kConfigurationUrl1 && fail_url1->load()) {
+          auto response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          response->set_code(net::HTTP_NOT_FOUND);
+          return response;
+        }
+        return nullptr;
+      },
+      &fail_url1));
+  EnableTestServer({{kConfigurationUrl1, {kConfigurationData1}},
+                    {kConfigurationUrl2, {kConfigurationData2}}});
+
+  // Initial configuration (url1, hash1) fails to download.
+  SetConfiguration(kConfigurationUrl1, kConfigurationHash1);
+  ASSERT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}), {}));
+
+  // Before url1 ever succeeds, policy updates to (url2, hash2).
+  SetConfiguration(kConfigurationUrl2, kConfigurationHash2);
+  WaitForUpdate();
+  ASSERT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}),
+                              {{kKey1, kValue12}, {kKey2, kValue22}}));
+}
+
+// Verifies that if an initial download fails because the policy URL had a typo
+// or was unreachable, and the admin updates `managed_configuration_url` while
+// keeping `managed_configuration_hash` identical, the new URL is fetched
+// immediately.
+IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
+                       UrlUpdatedWithSameHashAfterFailure) {
+  std::atomic<bool> fail_url1{true};
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      [](std::atomic<bool>* fail_url1,
+         const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url == kConfigurationUrl1 && fail_url1->load()) {
+          auto response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          response->set_code(net::HTTP_NOT_FOUND);
+          return response;
+        }
+        return nullptr;
+      },
+      &fail_url1));
+  EnableTestServer({{kConfigurationUrl1, {kConfigurationData1}},
+                    {kConfigurationUrl2, {kConfigurationData1}}});
+
+  // Initial configuration (url1, hash1) fails to download.
+  SetConfiguration(kConfigurationUrl1, kConfigurationHash1);
+  ASSERT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}), {}));
+
+  // Policy updates to (url2, hash1) with the same hash.
+  SetConfiguration(kConfigurationUrl2, kConfigurationHash1);
+  WaitForUpdate();
+  ASSERT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}),
+                              {{kKey1, kValue1}, {kKey2, kValue2}}));
+}
+
+// Verifies that configuration keys containing dots (e.g. "a.b.c") are stored
+// and retrieved as literal flat keys rather than expanded into nested
+// dictionaries.
+IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest, DottedConfigurationKeys) {
+  constexpr char kDottedConfigData[] = R"({
+    "a.b.c": "dotted_value",
+    "plain": 42
+  })";
+  EnableTestServer({{kConfigurationUrl1, {kDottedConfigData}}});
+  SetConfiguration(kConfigurationUrl1, kConfigurationHash1);
+  WaitForUpdate();
+
+  ASSERT_TRUE(
+      DictValueEquals(GetValues({"a.b.c", "plain"}),
+                      {{"a.b.c", "\"dotted_value\""}, {"plain", "42"}}));
+}
+
+// Verifies that if an existing origin's policy entry is updated to omit the
+// configuration URL or hash, its previously stored configuration is cleared.
+IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
+                       PolicyEntryMissingUrlOrHashClearsConfiguration) {
+  EnableTestServer({{kConfigurationUrl1, {kConfigurationData1}}});
+  SetConfiguration(kConfigurationUrl1, kConfigurationHash1);
+  WaitForUpdate();
+  ASSERT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}),
+                              {{kKey1, kValue1}, {kKey2, kValue2}}));
+
+  // Update policy entry for `kOrigin` with no URL or hash.
+  base::ListValue trusted_apps;
+  base::DictValue entry;
+  entry.Set(ManagedConfigurationAPI::kOriginKey, kOrigin);
+  trusted_apps.Append(std::move(entry));
+  profile()->GetPrefs()->SetList(prefs::kManagedConfigurationPerOrigin,
+                                 std::move(trusted_apps));
+  WaitForUpdate();
+
+  ASSERT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}), {}));
+}
+
+// Verifies that keeping SKIP_ON_SHUTDOWN on the store task runner is safe: if
+// the browser shuts down before a configuration download and store write have
+// completed (`OnStoreConfigurationCompleted`),
+// `kLastManagedConfigurationHashForOrigin` is not committed prematurely, so the
+// next session startup downloads and applies the configuration cleanly.
+IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
+                       PRE_ShutdownBeforeStoreWriteCompletes) {
+  EnableTestServer(
+      {{kConfigurationUrl1, {kConfigurationData1, true /* post_task */}}});
+  SetConfiguration(kConfigurationUrl1, kConfigurationHash1);
+  // Intentionally exit immediately without waiting for the download or
+  // SKIP_ON_SHUTDOWN store write to complete.
+}
+
+IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
+                       ShutdownBeforeStoreWriteCompletes) {
+  EnableTestServer({{kConfigurationUrl1, {kConfigurationData1}}});
+  SetConfiguration(kConfigurationUrl1, kConfigurationHash1);
+  ASSERT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}),
+                              {{kKey1, kValue1}, {kKey2, kValue2}}));
+}
+
+// Verifies that a stalled configuration download does not hold reads hostage:
+// they are answered from the store after a bounded delay.
+IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
+                       ReadNotBlockedByStalledDownload) {
+  api()->SetMaxPendingReadDelayForTesting(base::Seconds(1));
+  EnableTestServer({});  // Every request receives a HungResponse.
+  SetConfiguration(kConfigurationUrl1, kConfigurationHash1);
+  ASSERT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}), {}));
+}
+
+// Verifies that the retry backoff keeps growing while every store write fails,
+// instead of being reset by each successful download.
+IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
+                       BackoffGrowsWhileStoreWritesKeepFailing) {
+  // The first retry happens after 100ms, the next one only after 100s.
+  api()->SetRetryBackoffForTesting(base::Milliseconds(100), 1000.0);
+  scoped_refptr<RequestCounter> requests =
+      CountRequests(embedded_test_server(), kConfigurationUrl1);
+  EnableTestServer({{kConfigurationUrl1, {kConfigurationData1}}});
+  {
+    // A regular file where the origin's LevelDB directory would be created
+    // ("<profile>/Managed Configuration/<hex-encoded origin>") makes every
+    // store operation fail.
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    const base::FilePath stores_dir =
+        profile()->GetPath().AppendASCII("Managed Configuration");
+    ASSERT_TRUE(base::CreateDirectory(stores_dir));
+    ASSERT_TRUE(base::WriteFile(
+        stores_dir.AppendASCII(base::HexEncode(origin().Serialize())), "x"));
+  }
+
+  SetConfiguration(kConfigurationUrl1, kConfigurationHash1);
+  // Both the initial download and the first retry fail to be stored.
+  ASSERT_TRUE(base::test::RunUntil([&] { return requests->data.load() >= 2; }));
+  // A backoff reset by the successful download would retry ~100ms after the
+  // second failed write; the grown backoff waits 100s instead.
+  RunFor(base::Seconds(5));
+  EXPECT_EQ(requests->data.load(), 2);
+}
+
+// Verifies that if the policy reverts to the stored configuration while the
+// write of a newer configuration is still queued, the store ends up matching
+// the policy again instead of keeping the newer configuration.
+IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
+                       PolicyRevertWhileWriteQueuedRestoresConfiguration) {
+  scoped_refptr<base::SequencedTaskRunner> store_task_runner =
+      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
+  api()->SetStoreTaskRunnerForTesting(store_task_runner);
+  EnableTestServer({{kConfigurationUrl1, {kConfigurationData1}},
+                    {kConfigurationUrl2, {kConfigurationData2}}});
+  SetConfiguration(kConfigurationUrl1, kConfigurationHash1);
+  WaitForUpdate();
+  ASSERT_EQ(GetCommittedHash(), kConfigurationHash1);
+
+  {
+    StoreSequenceBlocker blocker(store_task_runner);
+    // The policy moves to (url2, hash2). Once its download finished, the
+    // committed hash is invalidated and the write is queued behind `blocker`.
+    SetConfiguration(kConfigurationUrl2, kConfigurationHash2);
+    ASSERT_TRUE(base::test::RunUntil([&] { return !GetCommittedHash(); }));
+    // The policy reverts to (url1, hash1) before that write lands.
+    SetConfiguration(kConfigurationUrl1, kConfigurationHash1);
+  }
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return GetCommittedHash() == kConfigurationHash1; }));
+  ASSERT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}),
+                              {{kKey1, kValue1}, {kKey2, kValue2}}));
+}
+
+// Verifies that a read issued while a downloaded configuration is still being
+// written waits for that write instead of downloading the configuration again.
+IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
+                       ReadDuringQueuedWriteDoesNotRedownload) {
+  scoped_refptr<base::SequencedTaskRunner> store_task_runner =
+      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
+  api()->SetStoreTaskRunnerForTesting(store_task_runner);
+  scoped_refptr<RequestCounter> url2_requests =
+      CountRequests(embedded_test_server(), kConfigurationUrl2);
+  EnableTestServer({{kConfigurationUrl1, {kConfigurationData1}},
+                    {kConfigurationUrl2, {kConfigurationData2}}});
+  SetConfiguration(kConfigurationUrl1, kConfigurationHash1);
+  WaitForUpdate();
+
+  base::test::TestFuture<std::optional<base::DictValue>> read;
+  {
+    StoreSequenceBlocker blocker(store_task_runner);
+    // Once the download of (url2, hash2) finished, the committed hash is
+    // invalidated and the write is queued behind `blocker`.
+    SetConfiguration(kConfigurationUrl2, kConfigurationHash2);
+    ASSERT_TRUE(base::test::RunUntil([&] { return !GetCommittedHash(); }));
+    api()->GetOriginPolicyConfiguration(origin(), {kKey1, kKey2},
+                                        read.GetCallback());
+    EXPECT_FALSE(read.IsReady());
+  }
+
+  ASSERT_TRUE(
+      DictValueEquals(read.Take(), {{kKey1, kValue12}, {kKey2, kValue22}}));
+  EXPECT_EQ(url2_requests->data.load(), 1);
+}
+
+class ManagedConfigurationAPIRecoveryDisabledTest
+    : public ManagedConfigurationAPITest {
+ public:
+  ManagedConfigurationAPIRecoveryDisabledTest()
+      : ManagedConfigurationAPITest(/*enable_recovery=*/false) {}
+};
+
+// Verifies that when `kManagedConfigurationRecoverFromFailedFetches` is
+// disabled, the API falls back to the legacy behavior (successful downloads and
+// updates still work, while failed fetches are not automatically retried).
+IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPIRecoveryDisabledTest,
+                       FallbackToLegacyBehaviorWhenFlagDisabled) {
+  base::RunLoop url1_request_loop;
+  std::atomic<bool> fail_url1{true};
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      [](std::atomic<bool>* fail_url1, base::RepeatingClosure on_url1_failed,
+         const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url == kConfigurationUrl1 && fail_url1->load()) {
+          on_url1_failed.Run();
+          auto response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          response->set_code(net::HTTP_NOT_FOUND);
+          return response;
+        }
+        return nullptr;
+      },
+      &fail_url1, url1_request_loop.QuitClosure()));
+  EnableTestServer({{kConfigurationUrl1, {kConfigurationData1}},
+                    {kConfigurationUrl2, {kConfigurationData2}}});
+
+  // Initial fetch of url1 fails; with the recovery flag disabled, re-adding an
+  // observer or calling GetValues() does not trigger a re-sync for the same
+  // hash.
+  SetConfiguration(kConfigurationUrl1, kConfigurationHash1);
+  url1_request_loop.Run();
+  ASSERT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}), {}));
+
+  fail_url1.store(false);
+  api()->RemoveObserver(this);
+  api()->AddObserver(this);
+  ASSERT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}), {}));
+
+  // Updating policy to a new hash (url2, hash2) succeeds normally.
+  SetConfiguration(kConfigurationUrl2, kConfigurationHash2);
+  WaitForUpdate();
+  ASSERT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}),
+                              {{kKey1, kValue12}, {kKey2, kValue22}}));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

@@ -304,6 +304,7 @@
 #include "ui/base/device_form_factor.h"
 #else  // BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/component_updater/iwa_key_distribution_component_installer.h"
+#include "chrome/browser/device_api/managed_configuration_api.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_sink_service.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/password_manager/password_change/features.h"
@@ -14068,6 +14069,16 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillCardScanningBugfixesDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillCardScanningBugfixes)},
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if !BUILDFLAG(IS_ANDROID)
+    {"managed-configuration-recover-from-failed-fetches",
+     flag_descriptions::kManagedConfigurationRecoverFromFailedFetchesName,
+     flag_descriptions::
+         kManagedConfigurationRecoverFromFailedFetchesDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         features::kManagedConfigurationRecoverFromFailedFetches)},
+#endif  // !BUILDFLAG(IS_ANDROID)
 
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

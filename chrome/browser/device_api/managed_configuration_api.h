@@ -12,13 +12,19 @@
 #include <string>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "services/network/public/cpp/network_connection_tracker.h"
 #include "url/origin.h"
 
 class Profile;
@@ -27,10 +33,16 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }
 
+namespace features {
+BASE_DECLARE_FEATURE(kManagedConfigurationRecoverFromFailedFetches);
+}  // namespace features
+
 // A keyed service responsible for the Managed Configuration API. It stores,
 // synchronizes and parses JSON key-value configurations set by the device
 // administration per origin and provides it to the callers.
-class ManagedConfigurationAPI : public KeyedService {
+class ManagedConfigurationAPI
+    : public KeyedService,
+      public network::NetworkConnectionTracker::NetworkConnectionObserver {
  public:
   // Observer interface for configuration changes for a specific origin.
   class Observer : public base::CheckedObserver {
@@ -88,10 +100,24 @@ class ManagedConfigurationAPI : public KeyedService {
   void SetConfigurationForTesting(const url::Origin& origin,
                                   base::DictValue configuration);
 
+  // Test-only overrides. They apply to origins whose state is created
+  // afterwards, so call them before policy or SetConfigurationForTesting()
+  // names the origin.
+  void SetRetryBackoffForTesting(base::TimeDelta initial_delay,
+                                 double multiply_factor);
+  void SetMaxPendingReadDelayForTesting(base::TimeDelta delay);
+  void SetStoreTaskRunnerForTesting(
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
+
  private:
-  // Encapsulates the store and active downloader for a single origin so
-  // per-origin resources are managed together.
+  // Encapsulates the store, active downloader, retry backoff/timer, and queued
+  // read callbacks for a single origin so all per-origin resources are cleaned
+  // up together via RAII.
   class OriginConfiguration;
+
+  // network::NetworkConnectionTracker::NetworkConnectionObserver:
+  void OnConnectionChanged(
+      net::NetworkChangeNotifier::ConnectionType type) override;
 
   // Tries to download the managed configuration stored at the url provided
   // by policy.
@@ -125,6 +151,25 @@ class ManagedConfigurationAPI : public KeyedService {
 
   // Observes changes to ManagedConfigurationPerOrigin.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
+
+  // `content::GetNetworkConnectionTracker()` returns a process-global leaky
+  // singleton (`g_network_connection_tracker` in
+  // `content/browser/network_service_instance_impl.cc`) that is never destroyed
+  // during browser execution and therefore outlives all Profile-keyed services.
+  // `base::ScopedObservation` pins the exact tracker pointer observed at
+  // construction (in case tests swap the global tracker via
+  // `content::SetNetworkConnectionTrackerForTesting()`) and unregisters `this`
+  // when `ManagedConfigurationAPI` is destroyed.
+  base::ScopedObservation<
+      network::NetworkConnectionTracker,
+      network::NetworkConnectionTracker::NetworkConnectionObserver>
+      network_connection_observation_{this};
+
+  // Test-only overrides; see the corresponding setters.
+  std::optional<base::TimeDelta> retry_initial_delay_for_testing_;
+  double retry_multiply_factor_for_testing_ = 0;
+  std::optional<base::TimeDelta> max_pending_read_delay_for_testing_;
+  scoped_refptr<base::SequencedTaskRunner> store_task_runner_for_testing_;
 
   base::WeakPtrFactory<ManagedConfigurationAPI> weak_ptr_factory_{this};
 };
