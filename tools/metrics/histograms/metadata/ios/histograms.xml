@@ -221,6 +221,8 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(PromosManagerPromo) -->
 
 <variants name="PromosManagerPromo">
+  <variant name="AccountSwitching"
+      summary="Smart account switching fullscreen promo."/>
   <variant name="AllTabsDefaultBrowser"
       summary="&quot;All Tabs&quot; default browser promo."/>
   <variant name="AppStoreRating" summary="App Store Rating Prompt"/>

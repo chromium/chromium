@@ -769,6 +769,9 @@ BASE_FEATURE(kIPHiOSPromoLevelUpFeature, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHiOSPromoEphemeralThemeFeature,
              "IPH_iOSPromoEphemeralTheme",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHiOSPromoAccountSwitchingFeature,
+             "IPH_iOSPromoAccountSwitching",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHiOSPromoSigninFullscreenFeature,
              "IPH_iOSPromoSigninFullscreen",
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -280,6 +280,8 @@ DEFINE_VARIATION_PARAM(kIPHiOSPromoEphemeralThemeFeature,
 DEFINE_VARIATION_PARAM(kIPHiOSPromoContextualDefaultBrowserGeminiFeature,
                        "IPH_iOSPromoContextualDefaultBrowserGemini");
 DEFINE_VARIATION_PARAM(kIPHiOSPromoLevelUpFeature, "IPHiOSPromoLevelUpFeature");
+DEFINE_VARIATION_PARAM(kIPHiOSPromoAccountSwitchingFeature,
+                       "IPH_iOSPromoAccountSwitching");
 DEFINE_VARIATION_PARAM(kIPHiOSPromoSigninFullscreenFeature,
                        "IPH_iOSPromoSigninFullscreen");
 DEFINE_VARIATION_PARAM(kIPHiOSPromoPostRestoreFeature,

@@ -194,6 +194,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHiOSPageInfoRevampFeature,
     &kIPHiOSPinMostVisitedSiteFeature,
     &kIPHiOSPostDefaultAbandonmentPromoFeature,
+    &kIPHiOSPromoAccountSwitchingFeature,
     &kIPHiOSPromoAllTabsFeature,
     &kIPHiOSPromoAppStoreFeature,
     &kIPHiOSPromoBackgroundCustomizationFeature,

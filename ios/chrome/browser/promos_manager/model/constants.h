@@ -54,7 +54,8 @@ enum class Promo {
   HomeBackgroundCustomization = 22,  // Home (NTP) background customization.
   LevelUp = 23,                      // Level Up fullscreen opt-in promo.
   EphemeralTheme = 24,               // Home (NTP) ephemeral theme promo.
-  kMaxValue = EphemeralTheme,
+  AccountSwitching = 25,  // Smart account switching fullscreen promo.
+  kMaxValue = AccountSwitching,
 };
 // LINT.ThenChange(
 //   /ios/chrome/browser/promos_manager/model/constants.cc,

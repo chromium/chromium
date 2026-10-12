@@ -104,6 +104,10 @@ std::optional<Promo> PromoForName(std::string_view promo) {
     return promos_manager::Promo::EphemeralTheme;
   }
 
+  if (promo == "promos_manager::Promo::AccountSwitching") {
+    return promos_manager::Promo::AccountSwitching;
+  }
+
   return std::nullopt;
 }
 
@@ -155,6 +159,8 @@ std::string_view ShortNameForPromo(Promo promo) {
       return "LevelUp";
     case promos_manager::Promo::EphemeralTheme:
       return "EphemeralTheme";
+    case promos_manager::Promo::AccountSwitching:
+      return "AccountSwitching";
   }
 }
 

@@ -254,6 +254,16 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
         EventConfig("post_default_abandonment_promo_trigger",
                     Comparator(EQUAL, 0), kMaxStoragePeriod, kMaxStoragePeriod);
     return config;
+  } else if (kIPHiOSPromoAccountSwitchingFeature.name == feature->name) {
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = kAlwaysAvailable;
+    config.session_rate = kNoRestrictions;
+    config.used = EventConfig("account_switching_promo_used", kAlwaysTrue, 0,
+                              kMaxStoragePeriod);
+    config.trigger = EventConfig("account_switching_promo_trigger", kAlwaysTrue,
+                                 0, kMaxStoragePeriod);
+    return config;
   } else if (kIPHiOSPromoSigninFullscreenFeature.name == feature->name) {
     FeatureConfig config;
     config.valid = true;
