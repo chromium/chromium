@@ -102,3 +102,11 @@ BASE_FEATURE(kDefaultBrowserPipTextVideo, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsDefaultBrowserPipTextVideoEnabled() {
   return base::FeatureList::IsEnabled(kDefaultBrowserPipTextVideo);
 }
+
+BASE_FEATURE(kQuerySwitcherInfoSignalForDefaultBrowserMetrics,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsQuerySwitcherInfoSignalForDefaultBrowserMetricsEnabled() {
+  return base::FeatureList::IsEnabled(
+      kQuerySwitcherInfoSignalForDefaultBrowserMetrics);
+}

@@ -5,11 +5,15 @@
 #import "ios/chrome/browser/metrics/model/ios_chrome_default_browser_metrics_provider.h"
 
 #import <algorithm>
+#import <array>
+#import <optional>
 #import <string_view>
 #import <vector>
 
+#import "base/barrier_callback.h"
 #import "base/check.h"
 #import "base/containers/span.h"
+#import "base/functional/bind.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/not_fatal_until.h"
@@ -19,26 +23,35 @@
 #import "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
 #import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
 #import "components/segmentation_platform/public/result.h"
+#import "ios/chrome/browser/default_browser/model/features.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/public/provider/chrome/browser/switcher_info/switcher_info_api.h"
 
 namespace {
 
 constexpr std::string_view kSegmentationPlatformSignalName =
     "SegmentationPlatform";
+constexpr std::string_view kSwitcherInfoSignalName = "SwitcherInfo";
 constexpr std::string_view kAndroidSwitcherStatus = "AndroidSwitcher";
 constexpr std::string_view kNotAndroidSwitcherStatus = "NotAndroidSwitcher";
 constexpr std::string_view kUnknownSignalStatus = "Unknown";
 
-// Represents a segmentation signal and its resolved status for metric slicing.
-struct SegmentationSignal {
-  std::string_view name;
-  std::string_view status;
+// Captures a base Default Browser histogram name and its boolean sample at log
+// creation time.
+struct DefaultBrowserHistogramSample {
+  std::string_view histogram_name;
+  bool is_default_browser;
 };
+
+using DefaultBrowserHistogramSamples =
+    std::array<DefaultBrowserHistogramSample, 8>;
 
 // Returns true if `result` has a valid device switcher classification (i.e.,
 // the prediction succeeded and sync device info did not fail or time out with
@@ -102,46 +115,111 @@ std::string_view GetDeviceSwitcherSignalStatus() {
                                   : kUnknownSignalStatus;
 }
 
-// Returns the list of segmentation signals and their statuses to record
-// alongside default browser metrics.
-std::vector<SegmentationSignal> GetSegmentationSignals() {
-  return {{kSegmentationPlatformSignalName, GetDeviceSwitcherSignalStatus()}};
+// Resolves the aggregated switcher info signal status across profiles.
+std::string_view ResolveSwitcherInfoSignalStatus(
+    const std::vector<std::optional<ios::provider::SwitcherInfoResult>>&
+        results) {
+  bool has_not_android_switcher = false;
+  for (const std::optional<ios::provider::SwitcherInfoResult>& result :
+       results) {
+    if (!result.has_value()) {
+      continue;
+    }
+    switch (result->switcher_status) {
+      case ios::provider::SwitcherStatus::kSwitcher:
+        return kAndroidSwitcherStatus;
+      case ios::provider::SwitcherStatus::kNotSwitcher:
+        has_not_android_switcher = true;
+        break;
+      case ios::provider::SwitcherStatus::kUnknown:
+        break;
+    }
+  }
+  return has_not_android_switcher ? kNotAndroidSwitcherStatus
+                                  : kUnknownSignalStatus;
 }
 
-// Records `is_default_browser` to `histogram_name` and each signal variant
-// `{histogram_name}.{signal.name}.{signal.status}`.
-void RecordDefaultBrowserHistogram(
-    std::string_view histogram_name,
-    bool is_default_browser,
-    base::span<const SegmentationSignal> signals) {
-  base::UmaHistogramBoolean(histogram_name, is_default_browser);
-  for (const SegmentationSignal& signal : signals) {
-    base::UmaHistogramBoolean(
-        base::StrCat({histogram_name, ".", signal.name, ".", signal.status}),
-        is_default_browser);
+// Records `{sample.histogram_name}.{signal_name}.{signal_status}` for each
+// sample in `samples`.
+void RecordSignalHistograms(
+    std::string_view signal_name,
+    std::string_view signal_status,
+    base::span<const DefaultBrowserHistogramSample> samples) {
+  for (const DefaultBrowserHistogramSample& sample : samples) {
+    base::UmaHistogramBoolean(base::StrCat({sample.histogram_name, ".",
+                                            signal_name, ".", signal_status}),
+                              sample.is_default_browser);
+  }
+}
+
+// Callback invoked when all `GetSwitcherInfo` queries across loaded profiles
+// have completed.
+void OnSwitcherInfoResults(
+    DefaultBrowserHistogramSamples samples,
+    std::vector<std::optional<ios::provider::SwitcherInfoResult>> results) {
+  RecordSignalHistograms(kSwitcherInfoSignalName,
+                         ResolveSwitcherInfoSignalStatus(results), samples);
+}
+
+// Queries `ios::provider::GetSwitcherInfo` across signed-in loaded profiles and
+// emits `.SwitcherInfo.{SignalStatus}` histograms upon completion.
+void RecordSwitcherInfoSignalHistograms(
+    const DefaultBrowserHistogramSamples& samples) {
+  std::vector<id<SystemIdentity>> identities;
+  ApplicationContext* application_context = GetApplicationContext();
+  if (application_context && application_context->GetProfileManager()) {
+    for (ProfileIOS* profile :
+         application_context->GetProfileManager()->GetLoadedProfiles()) {
+      AuthenticationService* authentication_service =
+          AuthenticationServiceFactory::GetForProfile(profile);
+      if (!authentication_service) {
+        continue;
+      }
+      id<SystemIdentity> identity =
+          authentication_service->GetPrimaryIdentity();
+      if (identity) {
+        identities.push_back(identity);
+      }
+    }
+  }
+
+  if (identities.empty()) {
+    RecordSignalHistograms(kSwitcherInfoSignalName, kUnknownSignalStatus,
+                           samples);
+    return;
+  }
+
+  base::RepeatingCallback<void(
+      std::optional<ios::provider::SwitcherInfoResult>)>
+      barrier_callback = base::BarrierCallback<
+          std::optional<ios::provider::SwitcherInfoResult>>(
+          identities.size(), base::BindOnce(&OnSwitcherInfoResults, samples));
+  for (id<SystemIdentity> identity : identities) {
+    ios::provider::GetSwitcherInfo(identity, barrier_callback);
   }
 }
 
 void ProvideUmaHistograms() {
-  const std::vector<SegmentationSignal> signals = GetSegmentationSignals();
+  const DefaultBrowserHistogramSamples samples = {{
+      {"IOS.IsDefaultBrowser", IsChromeLikelyDefaultBrowser7Days()},
+      {"IOS.IsDefaultBrowser21", IsChromeLikelyDefaultBrowser()},
+      {"IOS.IsDefaultBrowser1", IsChromeLikelyDefaultBrowserXDays(1)},
+      {"IOS.IsDefaultBrowser3", IsChromeLikelyDefaultBrowserXDays(3)},
+      {"IOS.IsDefaultBrowser14", IsChromeLikelyDefaultBrowserXDays(14)},
+      {"IOS.IsDefaultBrowser28", IsChromeLikelyDefaultBrowserXDays(28)},
+      {"IOS.IsDefaultBrowser35", IsChromeLikelyDefaultBrowserXDays(35)},
+      {"IOS.IsDefaultBrowser42", IsChromeLikelyDefaultBrowserXDays(42)},
+  }};
 
-  RecordDefaultBrowserHistogram("IOS.IsDefaultBrowser",
-                                IsChromeLikelyDefaultBrowser7Days(), signals);
-  RecordDefaultBrowserHistogram("IOS.IsDefaultBrowser21",
-                                IsChromeLikelyDefaultBrowser(), signals);
+  for (const DefaultBrowserHistogramSample& sample : samples) {
+    base::UmaHistogramBoolean(sample.histogram_name, sample.is_default_browser);
+  }
 
-  RecordDefaultBrowserHistogram("IOS.IsDefaultBrowser1",
-                                IsChromeLikelyDefaultBrowserXDays(1), signals);
-  RecordDefaultBrowserHistogram("IOS.IsDefaultBrowser3",
-                                IsChromeLikelyDefaultBrowserXDays(3), signals);
-  RecordDefaultBrowserHistogram("IOS.IsDefaultBrowser14",
-                                IsChromeLikelyDefaultBrowserXDays(14), signals);
-  RecordDefaultBrowserHistogram("IOS.IsDefaultBrowser28",
-                                IsChromeLikelyDefaultBrowserXDays(28), signals);
-  RecordDefaultBrowserHistogram("IOS.IsDefaultBrowser35",
-                                IsChromeLikelyDefaultBrowserXDays(35), signals);
-  RecordDefaultBrowserHistogram("IOS.IsDefaultBrowser42",
-                                IsChromeLikelyDefaultBrowserXDays(42), signals);
+  RecordSignalHistograms(kSegmentationPlatformSignalName,
+                         GetDeviceSwitcherSignalStatus(), samples);
+  if (IsQuerySwitcherInfoSignalForDefaultBrowserMetricsEnabled()) {
+    RecordSwitcherInfoSignalHistograms(samples);
+  }
 
   base::UmaHistogramBoolean("IOS.DefaultBrowserAbandonment21To7",
                             IsChromePotentiallyNoLongerDefaultBrowser(21, 7));

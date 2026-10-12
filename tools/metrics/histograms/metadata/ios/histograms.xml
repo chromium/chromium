@@ -4265,6 +4265,7 @@ chromium-metrics-reviews@google.com.
   <token key="Signal">
     <variant name="SegmentationPlatform"
         summary="segmentation platform device switcher"/>
+    <variant name="SwitcherInfo" summary="switcher info provider API"/>
   </token>
   <token key="SignalStatus">
     <variant name="AndroidSwitcher"
