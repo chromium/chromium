@@ -4309,7 +4309,8 @@ Node::InsertionNotificationRequest Element::InsertedInto(
     const auto* slot = ToHTMLSlotElementIfSupportsAssignmentOrNull(*parent);
     const bool is_inactive_fallback_content =
         slot && !slot->AssignedNodesNoRecalc().empty();
-    if (!IsChildOfShadowHost() && !is_inactive_fallback_content) {
+    if (IsPseudoElement() ||
+        (!IsChildOfShadowHost() && !is_inactive_fallback_content)) {
       SetIsInCanvasSubtree(true);
     }
   } else if (!parent && insertion_point.IsDocumentNode()) {

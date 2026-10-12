@@ -800,4 +800,27 @@ TEST_P(HTMLCanvasElementTest, MoveConnectedHostWithSlottedChildIntoCanvas) {
   EXPECT_TRUE(grandchild->IsInCanvasSubtree());
 }
 
+TEST_P(HTMLCanvasElementTest, PseudoElementChildOfShadowHost) {
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
+    <style>
+      #host::after {
+        content: "Hello, world!";
+      }
+    </style>
+    <div id="host">
+      <template shadowrootmode="open"></template>
+    </div>
+    <canvas id="c"></canvas>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* host = GetDocument().getElementById(AtomicString("host"));
+  EXPECT_FALSE(host->IsInCanvasSubtree());
+  EXPECT_FALSE(host->GetPseudoElement(kPseudoIdAfter)->IsInCanvasSubtree());
+  GetDocument().getElementById(AtomicString("c"))->appendChild(host);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(host->IsInCanvasSubtree());
+  EXPECT_TRUE(host->GetPseudoElement(kPseudoIdAfter)->IsInCanvasSubtree());
+}
+
 }  // namespace blink
