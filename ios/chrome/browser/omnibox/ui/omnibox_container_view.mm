@@ -87,7 +87,7 @@ UIImageView* CreateLeadingImageView(
   leading_image_view.translatesAutoresizingMaskIntoConstraints = NO;
   leading_image_view.tintColor = icon_tint;
   if (presentation_context == OmniboxPresentationContext::kComposebox) {
-    leading_image_view.contentMode = UIViewContentModeScaleAspectFit;
+    leading_image_view.contentMode = UIViewContentModeCenter;
     [NSLayoutConstraint activateConstraints:@[
       [leading_image_view.widthAnchor
           constraintEqualToConstant:kLeadingImageSizeAIM],

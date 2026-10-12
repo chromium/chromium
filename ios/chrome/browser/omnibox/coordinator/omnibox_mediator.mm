@@ -631,9 +631,10 @@ using base::UserMetricsAction;
 
 // Returns the size of the default search engine icon.
 - (PlaceholderService::IconSize)defaultSearchEngineIconSize {
-  if (_presentationContext == OmniboxPresentationContext::kLensOverlay ||
-      _presentationContext == OmniboxPresentationContext::kComposebox) {
+  if (_presentationContext == OmniboxPresentationContext::kLensOverlay) {
     return PlaceholderService::IconSize::k24pt;
+  } else if (_presentationContext == OmniboxPresentationContext::kComposebox) {
+    return PlaceholderService::IconSize::k18pt;
   } else {
     return PlaceholderService::IconSize::k16pt;
   }
