@@ -34,6 +34,7 @@
 #include "chrome/browser/history/history_tab_helper.h"
 #include "chrome/browser/optimization_guide/optimization_guide_web_contents_observer.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
+#include "chrome/browser/subresource_filter/chrome_content_subresource_filter_web_contents_helper_factory.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "extensions/browser/view_type_utils.h"
@@ -85,6 +86,7 @@ void ChromeExtensionHostDelegate::CreateTab(
   // idempotent.
   // TODO(crbug.com/499200457): Add instrumentation test.
   TabAndroid::AttachTabHelpers(web_contents.get());
+  CreateSubresourceFilterWebContentsHelper(web_contents.get());
   content_settings::PageSpecificContentSettings::CreateForWebContents(
       web_contents.get(), std::make_unique<PageSpecificContentSettingsDelegate>(
                               web_contents.get()));

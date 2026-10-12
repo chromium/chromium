@@ -8,6 +8,7 @@
 
 #include "chrome/browser/android/web_contents_theme_client.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
+#include "chrome/browser/subresource_filter/chrome_content_subresource_filter_web_contents_helper_factory.h"
 #include "chrome/browser/ui/android/context_menu_helper.h"
 #include "chrome/browser/ui/tab_helpers.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
@@ -31,6 +32,7 @@ void ChromeThinWebViewInitializer::AttachTabHelpers(
     bool enable_permission_requests,
     bool enable_browser_autofill) {
   TabHelpers::AttachTabHelpers(web_contents, enable_browser_autofill);
+  CreateSubresourceFilterWebContentsHelper(web_contents);
   content_settings::PageSpecificContentSettings::CreateForWebContents(
       web_contents,
       std::make_unique<PageSpecificContentSettingsDelegate>(web_contents));

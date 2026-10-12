@@ -23,7 +23,6 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
-#include "chrome/browser/subresource_filter/chrome_content_subresource_filter_web_contents_helper_factory.h"
 #include "chrome/browser/sync/sessions/sync_sessions_router_tab_helper.h"
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router_factory.h"
 #include "chrome/browser/ui/autofill/autofill_client_provider.h"
@@ -120,7 +119,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
       ChromePasswordManagerClient::CreateForWebContents(web_contents);
     }
   }
-  CreateSubresourceFilterWebContentsHelper(web_contents);
 
   // NO! Do not just add your tab helper here. This is a large alphabetized
   // block; please insert your tab helper above in alphabetical order.
