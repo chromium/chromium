@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -186,6 +187,12 @@ class ContextHubPageHandler : public browser::context_hub::mojom::PageHandler,
       GenerateTopicsFeedbackBundleCallback callback) override;
   void RunTodoTask(const std::string& prompt,
                    RunTodoTaskCallback callback) override;
+  void OpenContextHubPage(OpenContextHubPageCallback callback) override;
+  void OpenWebUrl(const GURL& url, OpenWebUrlCallback callback) override;
+  void CopyAttachmentsToClipboard(
+      std::vector<browser::context_hub::mojom::MemoryBankFileAttachmentPtr>
+          files,
+      CopyAttachmentsToClipboardCallback callback) override;
 
  private:
   // Gathers the Topics, history visits since `window_start`, unresolvable
@@ -195,6 +202,12 @@ class ContextHubPageHandler : public browser::context_hub::mojom::PageHandler,
   void FetchTopicsFeedbackExportData(
       base::Time window_start,
       base::OnceCallback<void(context_hub::TopicsFeedbackExportData)> callback);
+
+#if !BUILDFLAG(IS_ANDROID)
+  void OnCopyAttachmentsToClipboardWritten(
+      CopyAttachmentsToClipboardCallback callback,
+      std::vector<std::pair<std::string, base::FilePath>> written_files);
+#endif
 
   mojo::Remote<browser::context_hub::mojom::Page> page_;
   mojo::Receiver<browser::context_hub::mojom::PageHandler> receiver_;

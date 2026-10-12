@@ -113,10 +113,12 @@ source_set("context_hub_page_handler") {
       "context_hub_tab_provider_desktop.h",
     ]
     deps += [
+      "//base:i18n",
       "//chrome/browser/glic",
       "//chrome/browser/tab_group_sync:factories",
       "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:browser_tabstrip",
+      "//chrome/browser/ui:singleton_tabs",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/tabs/saved_tab_groups",
       "//components/saved_tab_groups/public",
@@ -193,6 +195,7 @@ source_set("unit_tests") {
       "//chrome/browser/ui/tabs:test_support",
       "//components/tabs:test_support",
       "//ui/base:test_support",
+      "//ui/base/clipboard:clipboard_test_support",
     ]
   }
 }

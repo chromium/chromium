@@ -33,6 +33,11 @@ feature kTopics {
   const bool default_state = false;
 };
 
+feature kMemoryBanksSearchPalette {
+  const string name = "MemoryBanksSearchPalette";
+  const bool default_state = false;
+};
+
 enum AutoTodoStatus {
   kActive,
   kCompleted,
@@ -452,6 +457,25 @@ interface PageHandlerFactory {
       pending_remote<Page> page, pending_receiver<PageHandler> handler);
 };
 
+// Result status of staging memory bank file attachments to disk and clipboard.
+enum CopyAttachmentsToClipboardStatus {
+  kSuccess,
+  kFileWriteFailed,
+  // The batch exceeded a documented resource bound (filename length, per-file
+  // content size, or aggregate content size).
+  kInvalidInput,
+};
+
+// Represents a virtual file attachment to be staged to the clipboard, mapping
+// 1:1 to a selected MemoryBankEntry.
+struct MemoryBankFileAttachment {
+  // Target filename (e.g., "Itinerary.md"). Enforced maximum length
+  // (255 bytes).
+  string filename;
+  // Markdown content of the file. Enforced maximum size (10 MB).
+  string content;
+};
+
 // Provides access to context hub features.
 // The WebUI page (caller) uses this to interact with the browser
 // process (callee).
@@ -678,4 +702,20 @@ interface PageHandler {
   // `prompt`.
   [RuntimeFeature=kAutoTodos]
   RunTodoTask(string prompt) => (bool success);
+
+  // Opens the Context Hub debug UI (chrome://context-hub).
+  [RuntimeFeature=kMemoryBanksSearchPalette]
+  OpenContextHubPage() => ();
+
+  // Opens the specified HTTP/HTTPS URL in a browser tab. Used to open memory
+  // bank source URLs.
+  [RuntimeFeature=kMemoryBanksSearchPalette]
+  OpenWebUrl(url.mojom.Url url) => ();
+
+  // Writes the given files as temporary Markdown files and puts them onto the
+  // system clipboard as file attachments (text/uri-list) so that web apps
+  // attach them when pasted.
+  [RuntimeFeature=kMemoryBanksSearchPalette]
+  CopyAttachmentsToClipboard(array<MemoryBankFileAttachment> files)
+      => (CopyAttachmentsToClipboardStatus status);
 };

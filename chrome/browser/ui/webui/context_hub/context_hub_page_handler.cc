@@ -14,13 +14,21 @@
 #include "base/barrier_closure.h"
 #include "base/check.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
+#include "base/files/file_enumerator.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/notreached.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "base/version_info/channel.h"
@@ -46,9 +54,18 @@
 #include "components/page_image_service/mojom/page_image_service.mojom.h"
 #include "components/sessions/core/session_id.h"
 #include "content/public/browser/web_contents.h"
+#include "mojo/public/cpp/bindings/message.h"
+#include "ui/base/clipboard/file_info.h"
+#include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "base/base_paths.h"
+#include "base/i18n/case_conversion.h"
+#include "base/i18n/file_util_icu.h"
+#include "base/path_service.h"
+#include "base/task/lazy_thread_pool_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/glic/host/context/glic_sharing_utils.h"  // nogncheck
 #include "chrome/browser/glic/host/glic.mojom.h"                  // nogncheck
 #include "chrome/browser/glic/public/glic_enabling.h"             // nogncheck
@@ -56,6 +73,10 @@
 #include "chrome/browser/glic/public/glic_invoke_options.h"       // nogncheck
 #include "chrome/browser/glic/public/glic_keyed_service.h"        // nogncheck
 #include "chrome/browser/glic/public/glic_passkeys.h"             // nogncheck
+#include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
+#include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub_tab_provider_desktop.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/tabs/public/tab_interface.h"  // nogncheck
@@ -63,6 +84,243 @@
 #include "net/base/url_util.h"  // nogncheck
 #endif
 #include "components/sessions/content/session_tab_helper.h"  // nogncheck
+
+#if !BUILDFLAG(IS_ANDROID)
+namespace {
+
+// Subdirectory in the system temp directory used to stage clipboard file
+// attachments. Staged batches (>1 hour old) are pruned when the UI opens
+// or on subsequent copy operations, with OS temp cleanup as a fallback.
+constexpr base::FilePath::CharType kMemoryBanksTempDir[] =
+    FILE_PATH_LITERAL("chrome_memory_banks");
+
+// All disk writes and pruning across all browser windows are queued onto a
+// single sequenced task runner to prevent concurrent filesystem races in the
+// shared staging directory.
+base::LazyThreadPoolSequencedTaskRunner g_clipboard_file_task_runner =
+    LAZY_THREAD_POOL_SEQUENCED_TASK_RUNNER_INITIALIZER(
+        base::TaskTraits(base::MayBlock(), base::TaskPriority::USER_VISIBLE));
+
+scoped_refptr<base::SequencedTaskRunner> GetClipboardFileTaskRunner() {
+  return g_clipboard_file_task_runner.Get();
+}
+
+// Resource limits for CopyAttachmentsToClipboard to prevent renderer-induced
+// resource exhaustion.
+constexpr size_t kMaxFilesToCopy = 10;
+constexpr size_t kMaxFileContentBytes = 10 * 1024 * 1024;  // 10 MB
+// Maximum filename length accepted over Mojo (matches filesystem NAME_MAX).
+constexpr size_t kMaxFilenameLength = 255;
+// Truncation limit for staged filenames to ensure full paths remain safely
+// within the Windows MAX_PATH limit across all platforms.
+constexpr size_t kMaxStagedFilenameLength = 128;
+// Maximum aggregate content size across all files in a batch to bound browser
+// memory usage and UI thread validation work.
+constexpr size_t kMaxTotalContentBytes = 10 * 1024 * 1024;  // 10 MB
+
+// Canonicalizes filenames to a standardized folded case for deduplication,
+// ensuring files that differ only by case (e.g., "Notes.md" and "NOTES.md")
+// do not collide on case-insensitive filesystems (such as Windows and macOS).
+std::string CanonicalizeFilenameForDeduplication(const std::string& filename) {
+  return base::UTF16ToUTF8(base::i18n::FoldCase(base::UTF8ToUTF16(filename)));
+}
+
+std::string SanitizeAttachmentFilename(std::string filename) {
+  base::FilePath::StringType sanitized_path =
+      base::FilePath::FromUTF8Unsafe(filename).value();
+
+  // Replace illegal filesystem characters (including OS-reserved characters,
+  // slashes, control chars, and illegal trailing/leading dots/spaces) while
+  // preserving valid international multi-byte UTF-8 code points.
+  base::i18n::ReplaceIllegalCharactersInPath(&sanitized_path, '_');
+
+  std::string sanitized_name =
+      base::FilePath(sanitized_path).BaseName().AsUTF8Unsafe();
+  base::TrimWhitespaceASCII(sanitized_name, base::TRIM_ALL, &sanitized_name);
+
+  // Strip .md extension if present so we can enforce length and re-append it.
+  if (base::EndsWith(sanitized_name, ".md",
+                     base::CompareCase::INSENSITIVE_ASCII)) {
+    sanitized_name.resize(sanitized_name.size() - 3);
+  }
+  base::TrimWhitespaceASCII(sanitized_name, base::TRIM_ALL, &sanitized_name);
+
+  // If empty or purely illegal characters replaced, fall back to "memory".
+  if (sanitized_name.empty()) {
+    sanitized_name = "memory";
+  }
+
+  // Enforce maximum staged filename length including .md suffix.
+  static constexpr size_t kMaxStemLength = kMaxStagedFilenameLength - 3;
+  if (sanitized_name.size() > kMaxStemLength) {
+    base::TruncateUTF8ToByteSize(sanitized_name, kMaxStemLength,
+                                 &sanitized_name);
+    if (sanitized_name.empty()) {
+      sanitized_name = "memory";
+    }
+  }
+
+  sanitized_name += ".md";
+  return sanitized_name;
+}
+
+bool ExceedsAttachmentResourceLimits(
+    base::span<const browser::context_hub::mojom::MemoryBankFileAttachmentPtr>
+        files) {
+  size_t total_content_bytes = 0;
+  for (const auto& file : files) {
+    if (file->filename.size() > kMaxFilenameLength ||
+        file->content.size() > kMaxFileContentBytes) {
+      return true;
+    }
+    total_content_bytes += file->content.size();
+  }
+  return total_content_bytes > kMaxTotalContentBytes;
+}
+
+bool HasValidUtf8Strings(
+    base::span<const browser::context_hub::mojom::MemoryBankFileAttachmentPtr>
+        files) {
+  return std::ranges::all_of(files, [](const auto& file) {
+    return base::IsStringUTF8(file->filename) &&
+           base::IsStringUTF8(file->content);
+  });
+}
+
+// Sanitizes `filename` and ensures it is unique (case-insensitively) within
+// `used_filenames`, appending a numeric suffix (e.g., "_2.md") on collision.
+std::string GetUniqueSanitizedFilename(
+    std::string filename,
+    base::flat_set<std::string>& used_filenames) {
+  std::string clean_name = SanitizeAttachmentFilename(std::move(filename));
+  std::string unique_name = clean_name;
+  bool inserted =
+      used_filenames.insert(CanonicalizeFilenameForDeduplication(unique_name))
+          .second;
+  if (inserted) {
+    return unique_name;
+  }
+
+  std::string stem = base::FilePath::FromUTF8Unsafe(clean_name)
+                         .RemoveExtension()
+                         .AsUTF8Unsafe();
+  int suffix = 2;
+  while (!inserted) {
+    std::string suffix_str = base::StringPrintf("_%d.md", suffix++);
+    size_t max_stem = kMaxStagedFilenameLength > suffix_str.size()
+                          ? kMaxStagedFilenameLength - suffix_str.size()
+                          : 0;
+    unique_name = base::StrCat(
+        {base::TruncateUTF8ToByteSize(stem, max_stem), suffix_str});
+    inserted =
+        used_filenames.insert(CanonicalizeFilenameForDeduplication(unique_name))
+            .second;
+  }
+  return unique_name;
+}
+
+std::vector<std::pair<std::string, std::string>>
+SanitizeAndDeduplicateAttachments(
+    std::vector<browser::context_hub::mojom::MemoryBankFileAttachmentPtr>
+        files) {
+  base::flat_set<std::string> used_filenames;
+  return base::ToVector(files, [&used_filenames](auto& file) {
+    return std::make_pair(
+        GetUniqueSanitizedFilename(std::move(file->filename), used_filenames),
+        std::move(file->content));
+  });
+}
+
+// Returns the clipboard staging root. Uses PathService rather than
+// base::GetTempDir() so tests can redirect it with base::ScopedPathOverride.
+bool GetStagingRootDir(base::FilePath* root_dir) {
+  base::FilePath temp_dir;
+  if (!base::PathService::Get(base::DIR_TEMP, &temp_dir)) {
+    return false;
+  }
+  *root_dir = temp_dir.Append(kMemoryBanksTempDir);
+  return true;
+}
+
+// Deletes batch directories older than 1 hour, bounding how long staged user
+// content remains on disk while preserving recent clipboard operations. Must
+// run on the sequence returned by GetClipboardFileTaskRunner().
+void PruneStaleBatchesIn(const base::FilePath& root_dir) {
+  DCHECK(GetClipboardFileTaskRunner()->RunsTasksInCurrentSequence());
+  const base::Time cutoff_time = base::Time::Now() - base::Hours(1);
+  base::FileEnumerator enumerator(root_dir, /*recursive=*/false,
+                                  base::FileEnumerator::DIRECTORIES);
+  for (base::FilePath entry = enumerator.Next(); !entry.empty();
+       entry = enumerator.Next()) {
+    if (enumerator.GetInfo().GetLastModifiedTime() < cutoff_time) {
+      base::DeletePathRecursively(entry);
+    }
+  }
+}
+
+std::vector<std::pair<std::string, base::FilePath>> WriteAttachmentFilesToDisk(
+    std::vector<std::pair<std::string, std::string>> files_to_write) {
+  base::FilePath root_dir;
+  if (!GetStagingRootDir(&root_dir) || !base::CreateDirectory(root_dir)) {
+    return {};
+  }
+
+  PruneStaleBatchesIn(root_dir);
+
+  // Create a unique subdirectory for this transaction to avoid races
+  // and maintain clipboard persistence across successive copy
+  // operations.
+  base::FilePath target_dir;
+  if (!base::CreateTemporaryDirInDir(root_dir, FILE_PATH_LITERAL("batch_"),
+                                     &target_dir)) {
+    return {};
+  }
+  std::vector<std::pair<std::string, base::FilePath>> written;
+  written.reserve(files_to_write.size());
+  for (const auto& [name, data] : files_to_write) {
+    base::FilePath file_path =
+        target_dir.Append(base::FilePath::FromUTF8Unsafe(name));
+    if (!base::WriteFile(file_path, data)) {
+      base::DeletePathRecursively(target_dir);
+      return {};
+    }
+    written.emplace_back(name, file_path);
+  }
+  return written;
+}
+
+void PruneStaleClipboardBatchDirectories() {
+  base::FilePath root_dir;
+  // Unlike the write path, this must not create the staging root: there is
+  // nothing to prune until the first copy happens.
+  if (!GetStagingRootDir(&root_dir) || !base::DirectoryExists(root_dir)) {
+    return;
+  }
+  PruneStaleBatchesIn(root_dir);
+}
+
+BrowserWindowInterface* GetBrowserWindowInterface(
+    content::WebContents* web_contents,
+    Profile* profile) {
+  if (web_contents) {
+    if (tabs::TabInterface* tab =
+            tabs::TabInterface::MaybeGetFromContents(web_contents)) {
+      if (BrowserWindowInterface* browser = tab->GetBrowserWindowInterface()) {
+        return browser;
+      }
+    }
+  }
+
+  if (ProfileBrowserCollection* collection =
+          ProfileBrowserCollection::GetForProfile(profile)) {
+    return collection->GetLastActiveBrowser();
+  }
+
+  return nullptr;
+}
+
+}  // namespace
+#endif
 
 ContextHubPageHandler::ContextHubPageHandler(
     mojo::PendingRemote<browser::context_hub::mojom::Page> page,
@@ -90,6 +348,13 @@ ContextHubPageHandler::ContextHubPageHandler(
       page_->OnFirstPartyAutoTodosGenerationStateChanged(true);
     }
   }
+#if !BUILDFLAG(IS_ANDROID)
+  // Proactively prune stale clipboard staging directories (>1 hour old)
+  // created during prior sessions so temporary user notes do not linger in
+  // the system temp directory until OS-level cleanup.
+  GetClipboardFileTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce(&PruneStaleClipboardBatchDirectories));
+#endif
 }
 
 ContextHubPageHandler::~ContextHubPageHandler() = default;
@@ -1366,3 +1631,99 @@ void ContextHubPageHandler::RunTodoTask(const std::string& prompt,
   std::move(callback).Run(false);
 #endif
 }
+
+void ContextHubPageHandler::OpenWebUrl(const GURL& url,
+                                       OpenWebUrlCallback callback) {
+#if BUILDFLAG(IS_ANDROID)
+  NOTREACHED();
+#else
+  if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
+    receiver_.ReportBadMessage(
+        "Invalid or disallowed URL scheme in OpenWebUrl");
+    return;
+  }
+
+  if (BrowserWindowInterface* browser =
+          GetBrowserWindowInterface(web_contents_, profile_)) {
+    chrome::AddSelectedTabWithURL(browser, url, ui::PAGE_TRANSITION_LINK);
+  }
+  std::move(callback).Run();
+#endif
+}
+
+void ContextHubPageHandler::OpenContextHubPage(
+    OpenContextHubPageCallback callback) {
+#if BUILDFLAG(IS_ANDROID)
+  NOTREACHED();
+#else
+  if (BrowserWindowInterface* browser =
+          GetBrowserWindowInterface(web_contents_, profile_)) {
+    ShowSingletonTab(browser, GURL(chrome::kChromeUIContextHubURL));
+  }
+  std::move(callback).Run();
+#endif
+}
+
+void ContextHubPageHandler::CopyAttachmentsToClipboard(
+    std::vector<browser::context_hub::mojom::MemoryBankFileAttachmentPtr> files,
+    CopyAttachmentsToClipboardCallback callback) {
+#if BUILDFLAG(IS_ANDROID)
+  NOTREACHED();
+#else
+  if (files.empty() || files.size() > kMaxFilesToCopy) {
+    receiver_.ReportBadMessage(
+        "Invalid files count in CopyAttachmentsToClipboard");
+    return;
+  }
+
+  // Reject oversized inputs with kInvalidInput so the client can retry with
+  // smaller batches, rather than reporting a bad message.
+  if (ExceedsAttachmentResourceLimits(files)) {
+    std::move(callback).Run(
+        browser::context_hub::mojom::CopyAttachmentsToClipboardStatus::
+            kInvalidInput);
+    return;
+  }
+
+  if (!HasValidUtf8Strings(files)) {
+    receiver_.ReportBadMessage("Invalid UTF-8 in CopyAttachmentsToClipboard");
+    return;
+  }
+
+  std::vector<std::pair<std::string, std::string>> sanitized_files =
+      SanitizeAndDeduplicateAttachments(std::move(files));
+  CHECK(!sanitized_files.empty());
+
+  GetClipboardFileTaskRunner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&WriteAttachmentFilesToDisk, std::move(sanitized_files)),
+      base::BindOnce(
+          &ContextHubPageHandler::OnCopyAttachmentsToClipboardWritten,
+          weak_factory_.GetWeakPtr(), std::move(callback)));
+#endif  // !BUILDFLAG(IS_ANDROID)
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+void ContextHubPageHandler::OnCopyAttachmentsToClipboardWritten(
+    CopyAttachmentsToClipboardCallback callback,
+    std::vector<std::pair<std::string, base::FilePath>> written_files) {
+  if (written_files.empty()) {
+    std::move(callback).Run(
+        browser::context_hub::mojom::CopyAttachmentsToClipboardStatus::
+            kFileWriteFailed);
+    return;
+  }
+
+  std::vector<ui::FileInfo> file_infos =
+      base::ToVector(written_files, [](const auto& entry) {
+        return ui::FileInfo(entry.second,
+                            base::FilePath::FromUTF8Unsafe(entry.first));
+      });
+
+  ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
+  scw.WriteFilenames(ui::FileInfosToURIList(file_infos));
+
+  std::move(callback).Run(
+      browser::context_hub::mojom::CopyAttachmentsToClipboardStatus::kSuccess);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
