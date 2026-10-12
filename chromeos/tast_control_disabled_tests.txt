@@ -116,4 +116,10 @@ tast.arc.Print.vm_t
 # TODO(b/569522120): Re-enable tast.shimlessrma.CancelFlow.select_components_none_next_cancel_critical.
 tast.shimlessrma.CancelFlow.select_components_none_next_cancel_critical
 
+# b/572833952
+# TODO(b/572833952): Re-enable tast.camera.CCAUISmoke.fake_hal and
+# tast.camera.CCAUISmoke.vivid.
+tast.camera.CCAUISmoke.fake_hal
+tast.camera.CCAUISmoke.vivid
+
 # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
