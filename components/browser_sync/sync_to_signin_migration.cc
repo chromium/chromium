@@ -30,6 +30,7 @@
 #include "components/sync/base/data_type_histogram.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_feature_status_for_migrations_recorder.h"
 #include "components/sync/service/sync_prefs.h"
 #include "extensions/buildflags/buildflags.h"
@@ -104,6 +105,36 @@ enum class SyncSetupIncompleteMigrationDecision {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncSetupIncompleteMigrationDecision)
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// The state of the Reading List pref migration for a signed-in, non-syncing
+// user, as determined on startup by MaybeFixUpPreviouslyMigratedUser.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(ReadingListPrefMigrationState)
+enum class ReadingListPrefMigrationState {
+  // The user was migrated before the migration handled Reading List, the toggle
+  // was still unset, and the fix-up enabled it.
+  kFixApplied = 0,
+  // The Sync-to-Signin migration itself already carried over the Reading List
+  // toggle, so no fix-up is needed.
+  kHandledBySyncToSigninMigration = 1,
+  // The Reading List toggle already has an explicit value, set either by the
+  // user or by an earlier run of the fix-up.
+  kExplicitlySet = 2,
+  // The Reading List toggle is still unset, but the fix-up feature is disabled,
+  // so nothing was done.
+  kFeatureDisabled = 3,
+  // This profile was never migrated from syncing to signed-in (or the migration
+  // was undone).
+  kNotMigrated = 4,
+  // A different account than the signed-in one was migrated, i.e. the user has
+  // since switched accounts.
+  kDifferentAccountMigrated = 5,
+  kMaxValue = kDifferentAccountMigrated
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncToSigninMigrationReadingListPrefMigrationState)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 // See docs of the kFirstTimeTriedToMigrateSyncFeaturePausedToSignin pref.
 void SetFirstTimeTriedToMigrateSyncPaused(PrefService* pref_service) {
@@ -290,6 +321,75 @@ void UndoSyncToSigninMigration(PrefService* pref_service) {
       syncer::prefs::internal::kMigrateExtensionsFromLocalToAccount);
 }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+void RecordReadingListPrefMigrationState(ReadingListPrefMigrationState state) {
+  base::UmaHistogramEnumeration(
+      "Sync.SyncToSigninMigration.ReadingListPrefMigrationState", state);
+}
+
+// Applies fix-ups for users who were migrated in a previous browser run and
+// are still signed in with the migrated account. Records the resulting state to
+// Sync.SyncToSigninMigration.ReadingListPrefMigrationState in all cases, so
+// that the affected population can be measured independently of the feature
+// flag.
+void MaybeFixUpPreviouslyMigratedUser(PrefService* pref_service) {
+  const std::string& migrated_gaia_id = pref_service->GetString(
+      prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn);
+  if (migrated_gaia_id.empty()) {
+    // This profile was never migrated, or the migration was already undone.
+    RecordReadingListPrefMigrationState(
+        ReadingListPrefMigrationState::kNotMigrated);
+    return;
+  }
+  if (migrated_gaia_id !=
+      pref_service->GetString(prefs::kGoogleServicesAccountId)) {
+    // A different account was migrated, and the user has since switched
+    // accounts.
+    RecordReadingListPrefMigrationState(
+        ReadingListPrefMigrationState::kDifferentAccountMigrated);
+    return;
+  }
+
+  // Before crbug.com/568406887 was fixed, the migration didn't carry over the
+  // Reading List toggle for "Sync everything" users, leaving Reading List
+  // disabled for them. Determine whether this user is affected.
+  if (pref_service->GetBoolean(
+          syncer::prefs::internal::kReadingListPrefMigratedToAccount)) {
+    // The user went through the fixed migration, which handled Reading List.
+    RecordReadingListPrefMigrationState(
+        ReadingListPrefMigrationState::kHandledBySyncToSigninMigration);
+    return;
+  }
+
+  syncer::SyncPrefs sync_prefs(pref_service);
+  const GaiaId gaia_id(migrated_gaia_id);
+  if (!sync_prefs.DoesTypeHaveDefaultValueForAccount(
+          syncer::UserSelectableType::kReadingList, gaia_id)) {
+    // The toggle was set explicitly, either by the user or by a previous run of
+    // this fix-up.
+    RecordReadingListPrefMigrationState(
+        ReadingListPrefMigrationState::kExplicitlySet);
+    return;
+  }
+  if (!base::FeatureList::IsEnabled(
+          switches::kEnableReadingListForMigratedUsers)) {
+    // The fix-up would apply, but the feature is disabled.
+    RecordReadingListPrefMigrationState(
+        ReadingListPrefMigrationState::kFeatureDisabled);
+    return;
+  }
+
+  // The toggle was never set, so enable it now. Note that
+  // kReadingListPrefMigratedToAccount is deliberately NOT set here, so that
+  // users who went through the fixed migration remain distinguishable from
+  // users who were fixed up by this function.
+  sync_prefs.SetSelectedTypeForAccount(syncer::UserSelectableType::kReadingList,
+                                       /*is_type_on=*/true, gaia_id);
+  RecordReadingListPrefMigrationState(
+      ReadingListPrefMigrationState::kFixApplied);
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
 const char* GetHistogramMigratingOrNotInfix(bool doing_migration) {
   return doing_migration ? "Migration." : "DryRun.";
 }
@@ -420,8 +520,14 @@ void MaybeMigrateSyncingUserToSignedInInternal(
       // Undo the migration (if appropriate) and nothing else.
       UndoSyncToSigninMigration(pref_service);
       return;
-    case SyncToSigninMigrationDecision::kDontMigrateNotSignedIn:
     case SyncToSigninMigrationDecision::kDontMigrateNotSyncing:
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+      // No migration needed. But the user may have been migrated in a previous
+      // browser run, in which case some fix-ups may be required.
+      MaybeFixUpPreviouslyMigratedUser(pref_service);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+      return;
+    case SyncToSigninMigrationDecision::kDontMigrateNotSignedIn:
     case SyncToSigninMigrationDecision::kDontMigrateSyncStatusUndefined:
     case SyncToSigninMigrationDecision::kDontMigrateSyncStatusInitializing:
     case SyncToSigninMigrationDecision::kDontMigrateAuthError:

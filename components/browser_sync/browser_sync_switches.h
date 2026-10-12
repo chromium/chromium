@@ -58,6 +58,13 @@ BASE_DECLARE_FEATURE(kForceMigrateNoopForDebugging);
 BASE_DECLARE_FEATURE(kMigrateOutOfSyncSetupIncompleteState);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// If enabled, users who were migrated from syncing to signed-in before the
+// migration carried over the Reading List toggle get Reading List enabled at
+// browser startup (see crbug.com/568406887).
+BASE_DECLARE_FEATURE(kEnableReadingListForMigratedUsers);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
 }  // namespace switches
 
 #endif  // COMPONENTS_BROWSER_SYNC_BROWSER_SYNC_SWITCHES_H_

@@ -1857,6 +1857,25 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/sync/base/data_type_histogram.h:SyncToSigninMigrationExtensionsStep) -->
 
+<!-- LINT.IfChange(SyncToSigninMigrationReadingListPrefMigrationState) -->
+
+<enum name="SyncToSigninMigrationReadingListPrefMigrationState">
+  <summary>
+    The state of the Reading List pref migration for a signed-in, non-syncing
+    user, as determined on startup by the fix-up for users who were migrated
+    from syncing to signed-in before the migration handled Reading List (see
+    crbug.com/568406887).
+  </summary>
+  <int value="0" label="Fix applied: toggle was unset and got enabled"/>
+  <int value="1" label="Handled by the Sync-to-Signin migration"/>
+  <int value="2" label="Toggle already explicitly set"/>
+  <int value="3" label="Fix needed but feature disabled: toggle still unset"/>
+  <int value="4" label="Profile was never migrated"/>
+  <int value="5" label="A different account was migrated"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/browser_sync/sync_to_signin_migration.cc:ReadingListPrefMigrationState) -->
+
 <!-- LINT.IfChange(SyncToSigninMigrationReadingListStep) -->
 
 <enum name="SyncToSigninMigrationReadingListStep">

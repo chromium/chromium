@@ -21,6 +21,7 @@
 #include "components/browser_sync/browser_sync_switches.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/data_type_histogram.h"
@@ -97,6 +98,7 @@ class SyncToSigninMigrationTestBase {
           force_migration_feature_enabled}});
 
     signin::IdentityManager::RegisterProfilePrefs(pref_service_.registry());
+    SigninPrefs::RegisterProfilePrefs(pref_service_.registry());
     syncer::SyncPrefs::RegisterProfilePrefs(pref_service_.registry());
 
     sync_prefs_ = std::make_unique<syncer::SyncPrefs>(&pref_service_);
@@ -282,6 +284,224 @@ TEST_P(SyncToSigninMigrationTest, SyncTransport) {
   // Since the migration didn't actually run, the prefs should be unmodified.
   EXPECT_EQ(pref_service_.user_prefs_store()->GetValues(), all_prefs);
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// Regression test for crbug.com/568406887.
+TEST_P(SyncToSigninMigrationTest, SyncTransport_PreviouslyMigrated) {
+  base::test::ScopedFeatureList feature_list(
+      switches::kEnableReadingListForMigratedUsers);
+
+  // The user was migrated from syncing to signed-in in a previous browser run,
+  // and is still signed in with the same account.
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
+  RecordStateToPrefs();
+  const GaiaId gaia_id = sync_service_.GetAccountInfo().gaia;
+  pref_service_.SetString(prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn,
+                          gaia_id.ToString());
+  // At the time, the migration didn't carry over the Reading List toggle, so
+  // Reading List is still at its default, i.e. off.
+  sync_prefs_->SetSelectedTypeForAccount(syncer::UserSelectableType::kBookmarks,
+                                         /*is_type_on=*/true, gaia_id);
+  ASSERT_TRUE(sync_prefs_->DoesTypeHaveDefaultValueForAccount(
+      syncer::UserSelectableType::kReadingList, gaia_id));
+  ASSERT_FALSE(sync_prefs_->GetSelectedTypesForAccount(gaia_id).Has(
+      syncer::UserSelectableType::kReadingList));
+
+  base::HistogramTester histograms;
+
+  MaybeMigrateSyncingUserToSignedInWrapper(
+      IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
+
+  // The user should still be signed in and not syncing.
+  EXPECT_EQ(pref_service_.GetString(prefs::kGoogleServicesAccountId),
+            gaia_id.ToString());
+  EXPECT_FALSE(pref_service_.GetBoolean(prefs::kGoogleServicesConsentedToSync));
+  // Reading List should have been explicitly enabled.
+  EXPECT_FALSE(sync_prefs_->DoesTypeHaveDefaultValueForAccount(
+      syncer::UserSelectableType::kReadingList, gaia_id));
+  EXPECT_TRUE(sync_prefs_->GetSelectedTypesForAccount(gaia_id).Has(
+      syncer::UserSelectableType::kReadingList));
+  // The fix-up should not pretend that the migration handled Reading List.
+  EXPECT_FALSE(pref_service_.GetBoolean(
+      syncer::prefs::internal::kReadingListPrefMigratedToAccount));
+  histograms.ExpectUniqueSample(
+      "Sync.SyncToSigninMigration.ReadingListPrefMigrationState",
+      /*ReadingListPrefMigrationState::kFixApplied*/ 0, 1);
+
+  // On the next startup, the fix-up should not run again.
+  base::HistogramTester histograms2;
+  MaybeMigrateSyncingUserToSignedInWrapper(
+      IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
+  EXPECT_TRUE(sync_prefs_->GetSelectedTypesForAccount(gaia_id).Has(
+      syncer::UserSelectableType::kReadingList));
+  histograms2.ExpectUniqueSample(
+      "Sync.SyncToSigninMigration.ReadingListPrefMigrationState",
+      /*ReadingListPrefMigrationState::kExplicitlySet*/ 2, 1);
+}
+
+// Regression test for crbug.com/568406887.
+TEST_P(SyncToSigninMigrationTest,
+       SyncTransport_PreviouslyMigratedIncludingReadingList) {
+  base::test::ScopedFeatureList feature_list(
+      switches::kEnableReadingListForMigratedUsers);
+
+  // The user was migrated in a previous browser run, at a time when the
+  // migration already carried over the Reading List toggle.
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
+  RecordStateToPrefs();
+  pref_service_.SetString(prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn,
+                          sync_service_.GetAccountInfo().gaia.ToString());
+  pref_service_.SetBoolean(
+      syncer::prefs::internal::kReadingListPrefMigratedToAccount, true);
+
+  // Take a copy of all current pref values, to verify that nothing modifies
+  // them.
+  const base::DictValue all_prefs =
+      pref_service_.user_prefs_store()->GetValues();
+
+  base::HistogramTester histograms;
+
+  MaybeMigrateSyncingUserToSignedInWrapper(
+      IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
+
+  // No fix-up should have run, but the state should still be recorded.
+  EXPECT_EQ(pref_service_.user_prefs_store()->GetValues(), all_prefs);
+  histograms.ExpectUniqueSample(
+      "Sync.SyncToSigninMigration.ReadingListPrefMigrationState",
+      /*ReadingListPrefMigrationState::kHandledBySyncToSigninMigration*/ 1, 1);
+}
+
+// Regression test for crbug.com/568406887.
+TEST_P(SyncToSigninMigrationTest,
+       SyncTransport_PreviouslyMigratedReadingListDisabled) {
+  base::test::ScopedFeatureList feature_list(
+      switches::kEnableReadingListForMigratedUsers);
+
+  // The user was migrated in a previous browser run, and has explicitly
+  // disabled Reading List since.
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
+  RecordStateToPrefs();
+  const GaiaId gaia_id = sync_service_.GetAccountInfo().gaia;
+  pref_service_.SetString(prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn,
+                          gaia_id.ToString());
+  sync_prefs_->SetSelectedTypeForAccount(
+      syncer::UserSelectableType::kReadingList, /*is_type_on=*/false, gaia_id);
+
+  // Take a copy of all current pref values, to verify that nothing modifies
+  // them.
+  const base::DictValue all_prefs =
+      pref_service_.user_prefs_store()->GetValues();
+
+  base::HistogramTester histograms;
+
+  MaybeMigrateSyncingUserToSignedInWrapper(
+      IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
+
+  // The user's choice should be preserved.
+  EXPECT_EQ(pref_service_.user_prefs_store()->GetValues(), all_prefs);
+  EXPECT_FALSE(sync_prefs_->GetSelectedTypesForAccount(gaia_id).Has(
+      syncer::UserSelectableType::kReadingList));
+  histograms.ExpectUniqueSample(
+      "Sync.SyncToSigninMigration.ReadingListPrefMigrationState",
+      /*ReadingListPrefMigrationState::kExplicitlySet*/ 2, 1);
+}
+
+TEST_P(SyncToSigninMigrationTest,
+       SyncTransport_PreviouslyMigratedFixUpDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      switches::kEnableReadingListForMigratedUsers);
+
+  // Same situation as in SyncTransport_PreviouslyMigrated: the fix-up would
+  // apply, but the feature is disabled.
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
+  RecordStateToPrefs();
+  const GaiaId gaia_id = sync_service_.GetAccountInfo().gaia;
+  pref_service_.SetString(prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn,
+                          gaia_id.ToString());
+  sync_prefs_->SetSelectedTypeForAccount(syncer::UserSelectableType::kBookmarks,
+                                         /*is_type_on=*/true, gaia_id);
+  ASSERT_TRUE(sync_prefs_->DoesTypeHaveDefaultValueForAccount(
+      syncer::UserSelectableType::kReadingList, gaia_id));
+  ASSERT_FALSE(sync_prefs_->GetSelectedTypesForAccount(gaia_id).Has(
+      syncer::UserSelectableType::kReadingList));
+
+  // Take a copy of all current pref values, to verify that nothing modifies
+  // them.
+  const base::DictValue all_prefs =
+      pref_service_.user_prefs_store()->GetValues();
+
+  base::HistogramTester histograms;
+
+  MaybeMigrateSyncingUserToSignedInWrapper(
+      IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
+
+  // No fix-up should have run, but the state should still be recorded, so that
+  // the affected population can be measured before enabling the feature.
+  EXPECT_EQ(pref_service_.user_prefs_store()->GetValues(), all_prefs);
+  histograms.ExpectUniqueSample(
+      "Sync.SyncToSigninMigration.ReadingListPrefMigrationState",
+      /*ReadingListPrefMigrationState::kFeatureDisabled*/ 3, 1);
+}
+
+TEST_P(SyncToSigninMigrationTest, SyncTransport_DifferentAccountMigrated) {
+  base::test::ScopedFeatureList feature_list(
+      switches::kEnableReadingListForMigratedUsers);
+
+  // A different account was migrated in a previous browser run.
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
+  RecordStateToPrefs();
+  pref_service_.SetString(prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn,
+                          "other_gaia_id");
+
+  // Take a copy of all current pref values, to verify that nothing modifies
+  // them.
+  const base::DictValue all_prefs =
+      pref_service_.user_prefs_store()->GetValues();
+
+  base::HistogramTester histograms;
+
+  MaybeMigrateSyncingUserToSignedInWrapper(
+      IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
+
+  // Neither the migration nor any fix-ups should have run, but the state should
+  // still be recorded.
+  EXPECT_EQ(pref_service_.user_prefs_store()->GetValues(), all_prefs);
+  histograms.ExpectUniqueSample(
+      "Sync.SyncToSigninMigration.ReadingListPrefMigrationState",
+      /*ReadingListPrefMigrationState::kDifferentAccountMigrated*/ 5, 1);
+}
+
+TEST_P(SyncToSigninMigrationTest, SyncTransport_NeverMigrated) {
+  base::test::ScopedFeatureList feature_list(
+      switches::kEnableReadingListForMigratedUsers);
+
+  // The user is signed in without Sync consent, and was never migrated.
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
+  RecordStateToPrefs();
+  ASSERT_TRUE(
+      pref_service_
+          .GetString(prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn)
+          .empty());
+
+  // Take a copy of all current pref values, to verify that nothing modifies
+  // them.
+  const base::DictValue all_prefs =
+      pref_service_.user_prefs_store()->GetValues();
+
+  base::HistogramTester histograms;
+
+  MaybeMigrateSyncingUserToSignedInWrapper(
+      IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
+
+  // Neither the migration nor any fix-ups should have run, but the state should
+  // still be recorded.
+  EXPECT_EQ(pref_service_.user_prefs_store()->GetValues(), all_prefs);
+  histograms.ExpectUniqueSample(
+      "Sync.SyncToSigninMigration.ReadingListPrefMigrationState",
+      /*ReadingListPrefMigrationState::kNotMigrated*/ 4, 1);
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 TEST_P(SyncToSigninMigrationTest, SyncDisabledByPolicy) {
   // The user is signed in and opted in to Sync, but Sync is disabled via

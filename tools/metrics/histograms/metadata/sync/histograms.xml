@@ -2655,6 +2655,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.SyncToSigninMigration.ReadingListPrefMigrationState"
+    enum="SyncToSigninMigrationReadingListPrefMigrationState"
+    expires_after="2027-04-05">
+  <owner>mmrashad@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Records the state of the Reading List pref migration for signed-in,
+    non-syncing users. Recorded on every profile startup on desktop,
+    independently of whether the fix-up feature
+    (EnableReadingListForMigratedUsers) is enabled. The fix-up enables Reading
+    List for users who were migrated from syncing to signed-in before the
+    migration carried over the Reading List toggle, see crbug.com/568406887.
+  </summary>
+</histogram>
+
 <histogram name="Sync.SyncToSigninMigration.StatsTableCleanupStep"
     enum="SyncToSigninMigrationStatsTableCleanupStep"
     expires_after="2027-01-28">
