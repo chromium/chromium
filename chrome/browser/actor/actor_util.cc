@@ -8,10 +8,14 @@
 #include <vector>
 
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "components/actor/core/task_source_info.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
@@ -24,6 +28,35 @@
 #include "ui/gfx/codec/png_codec.h"
 
 namespace actor {
+
+glic::GlicInstance* GetGlicInstanceForTask(const ActorTask& task) {
+  glic::GlicKeyedService* glic_service =
+      glic::GlicKeyedService::Get(task.GetProfile());
+  if (!glic_service) {
+    return nullptr;
+  }
+
+  glic::GlicInstanceCoordinator& coordinator =
+      glic_service->instance_coordinator();
+  if (glic::GlicInstance* instance =
+          coordinator.GetInstanceForTaskId(task.id().value())) {
+    return instance;
+  }
+
+  const std::optional<std::string>& source_id = task.source_info().id;
+  if (source_id.has_value() && !source_id->empty()) {
+    if (glic::GlicInstance* instance =
+            coordinator.GetInstanceForConversationId(*source_id)) {
+      return instance;
+    }
+  }
+
+  return nullptr;
+}
+
+bool HasGlicInstanceForTask(const ActorTask& task) {
+  return GetGlicInstanceForTask(task) != nullptr;
+}
 
 bool HaveActiveTaskForContents(content::WebContents* source_contents) {
   if (!source_contents) {
@@ -40,7 +73,15 @@ bool HaveActiveTaskForContents(content::WebContents* source_contents) {
 }
 
 bool IsRunningBackgroundActorTask(content::WebContents& source_contents) {
-  if (!HaveActiveTaskForContents(&source_contents)) {
+  actor::ActorKeyedService* actor_service =
+      actor::ActorKeyedService::Get(source_contents.GetBrowserContext());
+  if (!actor_service) {
+    return false;
+  }
+
+  const ActorTask* task =
+      actor_service->GetActingActorTaskForWebContents(&source_contents);
+  if (!task) {
     return false;
   }
 
@@ -64,12 +105,11 @@ bool IsRunningBackgroundActorTask(content::WebContents& source_contents) {
     return true;
   }
 
-  const glic::GlicInstance* task_instance =
-      glic_service->GetInstanceForTab(task_tab);
+  const glic::GlicInstance* task_instance = GetGlicInstanceForTask(*task);
   if (!task_instance) {
-    // There's no Glic instance for the tab running the task (e.g. something
-    // else is invoking the actor framework). As above, there's no conversation,
-    // so consider the task backgrounded.
+    // There's no Glic instance for the task (e.g. something else is invoking
+    // the actor framework). As above, there's no conversation, so consider the
+    // task backgrounded.
     return true;
   }
   BrowserWindowInterface* task_window = task_tab->GetBrowserWindowInterface();

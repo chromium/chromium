@@ -29,6 +29,11 @@ class MockGlicInstanceCoordinator
               (const std::string&),
               (override));
   MOCK_METHOD(GlicInstance*,
+              GetInstanceForConversationId,
+              (const std::string&),
+              (const, override));
+  MOCK_METHOD(GlicInstance*, GetInstanceForTaskId, (int), (const, override));
+  MOCK_METHOD(GlicInstance*,
               GetInstanceForTab,
               (const tabs::TabInterface*),
               (const, override));

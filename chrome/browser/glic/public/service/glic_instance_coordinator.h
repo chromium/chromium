@@ -68,6 +68,9 @@ class GlicInstanceCoordinator {
       const std::string& conversation_id) const = 0;
   virtual ActivateTabResult ActivateTabWithConversation(
       const std::string& conversation_id) = 0;
+  virtual GlicInstance* GetInstanceForConversationId(
+      const std::string& conversation_id) const = 0;
+  virtual GlicInstance* GetInstanceForTaskId(int task_id) const = 0;
   virtual GlicInstance* GetInstanceForTab(
       const tabs::TabInterface* tab) const = 0;
   virtual GlicInstance* GetInstanceForTabGroup(

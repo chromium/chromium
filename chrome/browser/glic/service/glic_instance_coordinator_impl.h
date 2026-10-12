@@ -134,6 +134,9 @@ class GlicInstanceCoordinatorImpl
   GlicInstanceCoordinator::ActivateTabResult ActivateTabWithConversation(
       const std::string& conversation_id) override;
   // GlicInstanceCoordinator implementation
+  GlicInstance* GetInstanceForConversationId(
+      const std::string& conversation_id) const override;
+  GlicInstance* GetInstanceForTaskId(int task_id) const override;
   GlicInstance* GetInstanceForTab(const tabs::TabInterface* tab) const override;
   GlicInstance* GetInstanceForTabGroup(
       tab_groups::TabGroupId group_id) const override;

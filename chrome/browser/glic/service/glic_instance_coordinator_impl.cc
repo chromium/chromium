@@ -418,6 +418,21 @@ GlicInstanceCoordinatorImpl::ActivateTabWithConversation(
   return GlicInstanceCoordinator::ActivateTabResult::kSuccess;
 }
 
+GlicInstance* GlicInstanceCoordinatorImpl::GetInstanceForConversationId(
+    const std::string& conversation_id) const {
+  return GetInstanceImplForConversationId(conversation_id);
+}
+
+GlicInstance* GlicInstanceCoordinatorImpl::GetInstanceForTaskId(
+    int task_id) const {
+  for (const auto& [id, instance] : instances_) {
+    if (instance->task_id() == task_id) {
+      return instance.get();
+    }
+  }
+  return nullptr;
+}
+
 GlicInstance* GlicInstanceCoordinatorImpl::GetInstanceForTab(
     const tabs::TabInterface* tab) const {
   return GetInstanceImplForTab(tab);

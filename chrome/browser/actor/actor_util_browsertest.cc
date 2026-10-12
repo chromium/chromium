@@ -9,18 +9,30 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task_metadata.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/wait_tool_request.h"
+#include "chrome/browser/glic/actor/glic_actor_task_manager.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/public/glic_instance.h"
+#include "chrome/browser/glic/public/glic_invoke_options.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/actor_webui.mojom.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
+#include "components/actor/core/task_source_info.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/system/message_pipe.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/android_info.h"
@@ -53,8 +65,8 @@ class ActorUtilBrowserTest : public PlatformBrowserTest {
  public:
   ActorUtilBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kGlic,
-                              features::kGlicActor},
+        /*enabled_features=*/{features::kGlic, features::kGlicActor,
+                              features::kGlicActorPolicyControlExemption},
         /*disabled_features=*/{features::kGlicWarming});
   }
 
@@ -85,9 +97,14 @@ class ActorUtilBrowserTest : public PlatformBrowserTest {
     return ActorKeyedService::Get(GetProfile());
   }
 
+  glic::GlicKeyedService* glic_keyed_service() {
+    return glic::GlicKeyedService::Get(GetProfile());
+  }
+
   Profile* GetProfile() { return chrome_test_utils::GetProfile(this); }
 
  private:
+  glic::GlicTestEnvironment glic_test_env_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -172,6 +189,94 @@ IN_PROC_BROWSER_TEST_F(ActorUtilBrowserTest, AllowsNewWebContents) {
 // acting on the tab.
 IN_PROC_BROWSER_TEST_F(ActorUtilBrowserTest, NoTaskNoPrevention) {
   EXPECT_FALSE(actor::HasActorTaskPreventingNewWebContents(main_frame()));
+}
+
+IN_PROC_BROWSER_TEST_F(ActorUtilBrowserTest,
+                       GetGlicInstanceForTaskNoGlicInstance) {
+  TaskId task_id = actor_keyed_service()->CreateTask(
+      TaskSourceInfo(TaskSourceInfo::Client::kBrowserActuator, "session-1"),
+      NoEnterprisePolicyChecker());
+  ActorTask* task = actor_keyed_service()->GetTask(task_id);
+  ASSERT_TRUE(task);
+  actor::AddTabToTask(*active_tab(), *task);
+
+  EXPECT_EQ(GetGlicInstanceForTask(*task), nullptr);
+  EXPECT_FALSE(HasGlicInstanceForTask(*task));
+}
+
+IN_PROC_BROWSER_TEST_F(ActorUtilBrowserTest,
+                       GetGlicInstanceForTaskByConversationId) {
+  glic::GlicInvokeOptions options(
+      glic::Target(*active_tab(), glic::ConversationId("conv-123")),
+      glic::mojom::InvocationSource::kOsButton);
+  options.fre_completion_wait_mode = glic::FreCompletionWaitMode::kNever;
+  base::WeakPtr<glic::GlicInstance> instance =
+      glic_keyed_service()->Invoke(std::move(options));
+  ASSERT_TRUE(instance);
+
+  TaskId task_id = actor_keyed_service()->CreateTask(
+      TaskSourceInfo(TaskSourceInfo::Client::kBrowserActuator, "conv-123"),
+      NoEnterprisePolicyChecker());
+  ActorTask* task = actor_keyed_service()->GetTask(task_id);
+  ASSERT_TRUE(task);
+
+  EXPECT_EQ(GetGlicInstanceForTask(*task), instance.get());
+  EXPECT_TRUE(HasGlicInstanceForTask(*task));
+}
+
+IN_PROC_BROWSER_TEST_F(ActorUtilBrowserTest,
+                       GetGlicInstanceForTaskIgnoresUnrelatedTabInstance) {
+  glic::GlicInvokeOptions options(
+      glic::Target(*active_tab(), glic::ConversationId("conv-456")),
+      glic::mojom::InvocationSource::kOsButton);
+  options.fre_completion_wait_mode = glic::FreCompletionWaitMode::kNever;
+  base::WeakPtr<glic::GlicInstance> instance =
+      glic_keyed_service()->Invoke(std::move(options));
+  ASSERT_TRUE(instance);
+
+  TaskId task_id = actor_keyed_service()->CreateTask(
+      TaskSourceInfo(TaskSourceInfo::Client::kBrowserActuator, "other-conv"),
+      NoEnterprisePolicyChecker());
+  ActorTask* task = actor_keyed_service()->GetTask(task_id);
+  ASSERT_TRUE(task);
+  actor::AddTabToTask(*active_tab(), *task);
+
+  EXPECT_EQ(GetGlicInstanceForTask(*task), nullptr);
+  EXPECT_FALSE(HasGlicInstanceForTask(*task));
+}
+
+IN_PROC_BROWSER_TEST_F(ActorUtilBrowserTest, GetGlicInstanceForTaskByTaskId) {
+  glic::GlicInvokeOptions options(
+      glic::Target(*active_tab(), glic::NewConversation()),
+      glic::mojom::InvocationSource::kOsButton);
+  options.fre_completion_wait_mode = glic::FreCompletionWaitMode::kNever;
+  base::WeakPtr<glic::GlicInstance> instance =
+      glic_keyed_service()->Invoke(std::move(options));
+  ASSERT_TRUE(instance);
+  ASSERT_TRUE(instance->GetActorTaskManager());
+
+  mojo::Remote<glic::mojom::ActorHandler> actor_handler;
+  mojo::MessagePipe client_pipe;
+  instance->GetActorTaskManager()->Bind(
+      actor_handler.BindNewPipeAndPassReceiver(),
+      mojo::PendingRemote<glic::mojom::ActorClient>(
+          std::move(client_pipe.handle0), 0));
+
+  base::test::TestFuture<
+      base::expected<int32_t, glic::mojom::CreateTaskErrorReason>>
+      create_task_future;
+  instance->GetActorTaskManager()->GetClientSessionForTesting()->CreateTask(
+      actor::webui::mojom::TaskOptions::New(),
+      create_task_future.GetCallback());
+  ASSERT_TRUE(create_task_future.Get().has_value());
+
+  ActorTask* task =
+      actor_keyed_service()->GetTask(TaskId(create_task_future.Get().value()));
+  ASSERT_TRUE(task);
+  ASSERT_FALSE(task->source_info().id.has_value());
+
+  EXPECT_EQ(GetGlicInstanceForTask(*task), instance.get());
+  EXPECT_TRUE(HasGlicInstanceForTask(*task));
 }
 
 }  // namespace actor
