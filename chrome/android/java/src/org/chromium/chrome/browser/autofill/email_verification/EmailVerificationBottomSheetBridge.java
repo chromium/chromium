@@ -17,7 +17,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.anchored_dialog.AnchoredDialogCoordinator;
 import org.chromium.chrome.browser.autofill.anchored_dialog.AnchoredDialogCoordinatorProvider;
-import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.autofill.EmailVerificationPermissionUiStatus;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
@@ -39,8 +38,7 @@ public class EmailVerificationBottomSheetBridge
 
     @CalledByNative
     @VisibleForTesting
-    /*package*/ EmailVerificationBottomSheetBridge(
-            long nativeBridge, WindowAndroid window, TabModel tabModel) {
+    /*package*/ EmailVerificationBottomSheetBridge(long nativeBridge, WindowAndroid window) {
         mNativeBridge = nativeBridge;
         mContext = window.getContext().get();
         mBottomSheetController = BottomSheetControllerProvider.from(window);

@@ -213,7 +213,6 @@
 #include "chrome/browser/ui/android/autofill/autofill_ai_save_update_entity_flow_manager.h"
 #include "chrome/browser/ui/android/autofill/email_verification_bottom_sheet_bridge.h"
 #include "chrome/browser/ui/android/autofill/save_update_address_profile_flow_manager.h"
-#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/autofill/autofill_message_controller_impl.h"
 #include "chrome/browser/ui/autofill/autofill_snackbar_type.h"
 #include "chrome/browser/ui/autofill/autofill_tapjacking_protector_impl.h"
@@ -1344,6 +1343,8 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
           this, GetAutofillMessageController());
   touch_to_fill_autofill_controller_ =
       TouchToFillAutofillController::Create(this);
+  email_verification_bottom_sheet_bridge_ =
+      std::make_unique<EmailVerificationBottomSheetBridge>(web_contents);
 #else
   email_verification_controller_ =
       std::make_unique<EmailVerificationController>(web_contents);
@@ -1424,20 +1425,6 @@ void ChromeAutofillClient::ShowEmailVerificationPopup(
     const std::u16string& email,
     base::OnceCallback<void(EmailVerificationPermissionUiStatus)> callback) {
 #if BUILDFLAG(IS_ANDROID)
-  if (!email_verification_bottom_sheet_bridge_) {
-    auto* window_android = web_contents()->GetTopLevelNativeWindow();
-    TabModel* tab_model =
-        TabModelList::GetTabModelForWebContents(web_contents());
-    if (window_android && tab_model) {
-      email_verification_bottom_sheet_bridge_ =
-          std::make_unique<EmailVerificationBottomSheetBridge>(window_android,
-                                                               tab_model);
-    }
-  }
-  if (!email_verification_bottom_sheet_bridge_) {
-    std::move(callback).Run(EmailVerificationPermissionUiStatus::kOther);
-    return;
-  }
   auto decision_callback = base::MakeRefCounted<base::RefCountedData<
       base::OnceCallback<void(EmailVerificationPermissionUiStatus)>>>(
       std::move(callback));
@@ -1477,9 +1464,7 @@ void ChromeAutofillClient::ShowEmailVerificationPopup(
 
 void ChromeAutofillClient::HideEmailVerificationPopup() {
 #if BUILDFLAG(IS_ANDROID)
-  if (email_verification_bottom_sheet_bridge_) {
-    email_verification_bottom_sheet_bridge_->Hide();
-  }
+  email_verification_bottom_sheet_bridge_->Hide();
 #else
   email_verification_controller_->HidePopup();
 #endif

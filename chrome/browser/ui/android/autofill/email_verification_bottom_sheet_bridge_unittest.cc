@@ -6,9 +6,11 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/mock_callback.h"
-#include "chrome/browser/ui/android/tab_model/tab_model_test_helper.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "content/public/browser/web_contents.h"
@@ -21,9 +23,14 @@ namespace autofill {
 class TestEmailVerificationBottomSheetBridge
     : public EmailVerificationBottomSheetBridge {
  public:
-  TestEmailVerificationBottomSheetBridge()
-      : EmailVerificationBottomSheetBridge(
-            base::android::ScopedJavaGlobalRef<jobject>()) {}
+  explicit TestEmailVerificationBottomSheetBridge(
+      content::WebContents* web_contents)
+      : EmailVerificationBottomSheetBridge(web_contents) {}
+
+ protected:
+  // TODO(crbug.com/555673134): Avoid overriding protected methods in tests.
+  void ShowJavaBottomSheet(const std::u16string& title,
+                           const std::u16string& description) override {}
 };
 
 class EmailVerificationBottomSheetBridgeTest
@@ -31,9 +38,19 @@ class EmailVerificationBottomSheetBridgeTest
  protected:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    bridge_ = std::make_unique<TestEmailVerificationBottomSheetBridge>();
+    window_ = ui::WindowAndroid::CreateForTesting();
+    window_->get()->AddChild(web_contents()->GetNativeView());
+    bridge_ = std::make_unique<TestEmailVerificationBottomSheetBridge>(
+        web_contents());
   }
 
+  void TearDown() override {
+    bridge_.reset();
+    window_.reset();
+    ChromeRenderViewHostTestHarness::TearDown();
+  }
+
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window_;
   std::unique_ptr<TestEmailVerificationBottomSheetBridge> bridge_;
 };
 
@@ -136,37 +153,9 @@ TEST_F(EmailVerificationBottomSheetBridgeTest, OnUiDismissedOther) {
           AutofillClient::EmailVerificationPermissionUiStatus::kOther));
 }
 
-// Tests that programmatically hiding the sheet resolves on_dismissed with
-// kOther if not yet accepted.
-TEST_F(EmailVerificationBottomSheetBridgeTest, HideBeforeAccepted) {
-  base::MockCallback<base::OnceClosure> on_accepted;
-  base::MockCallback<base::OnceCallback<void(
-      AutofillClient::EmailVerificationPermissionUiStatus)>>
-      on_dismissed;
-  EXPECT_CALL(on_accepted, Run).Times(0);
-  EXPECT_CALL(on_dismissed,
-              Run(AutofillClient::EmailVerificationPermissionUiStatus::kOther));
-
-  bridge_->RequestShowContent(u"google.com", u"user@example.com",
-                              on_accepted.Get(), on_dismissed.Get());
-  bridge_->Hide();
-}
-
-// Tests that programmatically hiding the sheet resolves on_dismissed with
-// kAllowed if already accepted (e.g. interaction complete).
-TEST_F(EmailVerificationBottomSheetBridgeTest, HideAfterAccepted) {
-  base::MockCallback<base::OnceClosure> on_accepted;
-  base::MockCallback<base::OnceCallback<void(
-      AutofillClient::EmailVerificationPermissionUiStatus)>>
-      on_dismissed;
-  EXPECT_CALL(on_accepted, Run);
-  EXPECT_CALL(
-      on_dismissed,
-      Run(AutofillClient::EmailVerificationPermissionUiStatus::kAllowed));
-
-  bridge_->RequestShowContent(u"google.com", u"user@example.com",
-                              on_accepted.Get(), on_dismissed.Get());
-  bridge_->OnUiAccepted(/*env=*/nullptr);
+// Tests that calling Hide when Java bridge is not created is safe and does not
+// crash.
+TEST_F(EmailVerificationBottomSheetBridgeTest, HideWithoutJavaBridgeIsSafe) {
   bridge_->Hide();
 }
 
@@ -252,16 +241,54 @@ TEST_F(EmailVerificationBottomSheetBridgeTest,
   bridge_.reset();
 }
 
-// Tests that instantiating the bridge with a WindowAndroid and TabModel
-// succeeds.
-TEST_F(EmailVerificationBottomSheetBridgeTest, ConstructorWithWindow) {
-  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window =
-      ui::WindowAndroid::CreateForTesting();
-  window->get()->AddChild(web_contents()->GetNativeView());
-  auto tab_model = std::make_unique<TestTabModel>(profile());
-  auto bridge = std::make_unique<EmailVerificationBottomSheetBridge>(
-      window->get(), tab_model.get());
+// Tests that instantiating the bridge with a WebContents succeeds.
+TEST_F(EmailVerificationBottomSheetBridgeTest, ConstructorWithWebContents) {
+  auto bridge =
+      std::make_unique<EmailVerificationBottomSheetBridge>(web_contents());
   EXPECT_NE(bridge, nullptr);
+}
+
+// Tests that the real bridge lazily constructs the Java bridge on
+// RequestShowContent, handles Hide, and cleans up on destruction when a
+// WindowAndroid is attached.
+TEST_F(EmailVerificationBottomSheetBridgeTest,
+       RequestShowContentAndHideWithWindow) {
+  auto bridge =
+      std::make_unique<EmailVerificationBottomSheetBridge>(web_contents());
+  base::MockCallback<base::OnceCallback<void(
+      AutofillClient::EmailVerificationPermissionUiStatus)>>
+      on_dismissed1;
+  // Since the test WindowAndroid has no BottomSheetController attached, the
+  // Java bridge synchronously dismisses with kOther.
+  EXPECT_CALL(on_dismissed1,
+              Run(AutofillClient::EmailVerificationPermissionUiStatus::kOther));
+  bridge->RequestShowContent(u"google.com", u"user@example.com",
+                             base::DoNothing(), on_dismissed1.Get());
+  bridge->Hide();
+
+  // A second request should reconstruct the Java bridge and invoke it again.
+  base::MockCallback<base::OnceCallback<void(
+      AutofillClient::EmailVerificationPermissionUiStatus)>>
+      on_dismissed2;
+  EXPECT_CALL(on_dismissed2,
+              Run(AutofillClient::EmailVerificationPermissionUiStatus::kOther));
+  bridge->RequestShowContent(u"google.com", u"user@example.com",
+                             base::DoNothing(), on_dismissed2.Get());
+  bridge->Hide();
+}
+
+// Tests that RequestShowContent resolves with kOther when WebContents has no
+// native window.
+TEST_F(EmailVerificationBottomSheetBridgeTest,
+       RequestShowContentWithNoWindowResolvesOther) {
+  window_.reset();
+  base::MockCallback<base::OnceCallback<void(
+      AutofillClient::EmailVerificationPermissionUiStatus)>>
+      on_dismissed;
+  EXPECT_CALL(on_dismissed,
+              Run(AutofillClient::EmailVerificationPermissionUiStatus::kOther));
+  bridge_->RequestShowContent(u"google.com", u"user@example.com",
+                              base::DoNothing(), on_dismissed.Get());
 }
 
 // Tests that OnUiDismissed invokes the dismissal callback passed to
@@ -284,6 +311,43 @@ TEST_F(EmailVerificationBottomSheetBridgeTest, OnUiDismissedAfterAccepted) {
       /*env=*/nullptr,
       static_cast<int>(
           AutofillClient::EmailVerificationPermissionUiStatus::kUserAborted));
+}
+
+// Tests that after dismissal, subsequent RequestShowContent calls succeed.
+TEST_F(EmailVerificationBottomSheetBridgeTest,
+       RequestShowContentAfterDismissalSucceeds) {
+  base::MockCallback<base::OnceClosure> on_accepted1;
+  base::MockCallback<base::OnceCallback<void(
+      AutofillClient::EmailVerificationPermissionUiStatus)>>
+      on_dismissed1;
+  EXPECT_CALL(
+      on_dismissed1,
+      Run(AutofillClient::EmailVerificationPermissionUiStatus::kDeclined));
+
+  bridge_->RequestShowContent(u"google.com", u"user@example.com",
+                              on_accepted1.Get(), on_dismissed1.Get());
+  bridge_->OnUiDismissed(
+      /*env=*/nullptr,
+      static_cast<int>(
+          AutofillClient::EmailVerificationPermissionUiStatus::kDeclined));
+
+  // Second request on the same bridge should succeed.
+  base::MockCallback<base::OnceClosure> on_accepted2;
+  base::MockCallback<base::OnceCallback<void(
+      AutofillClient::EmailVerificationPermissionUiStatus)>>
+      on_dismissed2;
+  EXPECT_CALL(on_accepted2, Run);
+  EXPECT_CALL(
+      on_dismissed2,
+      Run(AutofillClient::EmailVerificationPermissionUiStatus::kAllowed));
+
+  bridge_->RequestShowContent(u"google.com", u"user@example.com",
+                              on_accepted2.Get(), on_dismissed2.Get());
+  bridge_->OnUiAccepted(/*env=*/nullptr);
+  bridge_->OnUiDismissed(
+      /*env=*/nullptr,
+      static_cast<int>(
+          AutofillClient::EmailVerificationPermissionUiStatus::kAllowed));
 }
 
 }  // namespace autofill

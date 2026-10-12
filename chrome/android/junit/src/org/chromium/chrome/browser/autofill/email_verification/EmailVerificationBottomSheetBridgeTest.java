@@ -29,8 +29,6 @@ import org.robolectric.Robolectric;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.autofill.anchored_dialog.AnchoredDialogCoordinator;
 import org.chromium.chrome.browser.autofill.anchored_dialog.AnchoredDialogCoordinatorProvider;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.autofill.EmailVerificationPermissionUiStatus;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
@@ -52,7 +50,6 @@ public final class EmailVerificationBottomSheetBridgeTest {
     @Mock private EmailVerificationBottomSheetBridge.Natives mBridgeNatives;
     @Mock private ManagedBottomSheetController mBottomSheetController;
     @Mock private AnchoredDialogCoordinator mAnchoredDialogCoordinator;
-    @Mock private Profile mProfile;
 
     private EmailVerificationBottomSheetBridge mBridge;
     private WindowAndroid mWindow;
@@ -65,8 +62,7 @@ public final class EmailVerificationBottomSheetBridgeTest {
         mWindow = new WindowAndroid(activity, /* occlusionTrackingAllowed= */ true);
         BottomSheetControllerFactory.attach(mWindow, mBottomSheetController);
         AnchoredDialogCoordinatorProvider.attach(mWindow, mAnchoredDialogCoordinator);
-        MockTabModel tabModel = new MockTabModel(mProfile, /* delegate= */ null);
-        mBridge = new EmailVerificationBottomSheetBridge(MOCK_POINTER, mWindow, tabModel);
+        mBridge = new EmailVerificationBottomSheetBridge(MOCK_POINTER, mWindow);
     }
 
     @After
@@ -103,9 +99,8 @@ public final class EmailVerificationBottomSheetBridgeTest {
                 new WindowAndroid(
                         Robolectric.buildActivity(Activity.class).create().get(),
                         /* occlusionTrackingAllowed= */ true);
-        MockTabModel tabModel = new MockTabModel(mProfile, /* delegate= */ null);
         EmailVerificationBottomSheetBridge bridge =
-                new EmailVerificationBottomSheetBridge(MOCK_POINTER, unattachedWindow, tabModel);
+                new EmailVerificationBottomSheetBridge(MOCK_POINTER, unattachedWindow);
 
         bridge.requestShowContent(TEST_TITLE, TEST_DESCRIPTION);
 
@@ -127,6 +122,22 @@ public final class EmailVerificationBottomSheetBridgeTest {
                         eq(StateChangeReason.INTERACTION_COMPLETE));
         verify(mBridgeNatives)
                 .onUiDismissed(MOCK_POINTER, EmailVerificationPermissionUiStatus.OTHER);
+    }
+
+    @Test
+    public void testHide_afterAccepted() {
+        mBridge.requestShowContent(TEST_TITLE, TEST_DESCRIPTION);
+        mBridge.getCoordinatorForTesting().getMediatorForTesting().onAccepted();
+        clearInvocations(mBridgeNatives);
+        mBridge.hide();
+
+        verify(mBottomSheetController)
+                .hideContent(
+                        any(EmailVerificationBottomSheetContent.class),
+                        /* animate= */ eq(true),
+                        eq(StateChangeReason.INTERACTION_COMPLETE));
+        verify(mBridgeNatives)
+                .onUiDismissed(MOCK_POINTER, EmailVerificationPermissionUiStatus.ALLOWED);
     }
 
     @Test
