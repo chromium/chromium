@@ -5312,7 +5312,6 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
     params->history_list_was_cleared = false;
   }
 
-  bool requires_universal_access = false;
   const bool file_scheme_with_universal_access =
       params->origin.scheme() == url::kFileScheme &&
       GetBlinkPreferences().allow_universal_access_from_file_urls;
@@ -5330,14 +5329,7 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
         SCOPED_CRASH_KEY_STRING256("MakeDCPLParams", "mismatched_origin",
                                    params->origin.GetDebugString());
         NOTREACHED() << " url:" << params->url << " origin:" << params->origin;
-      } else {
-        requires_universal_access = true;
       }
-    }
-    if (file_scheme_with_universal_access) {
-      base::UmaHistogramBoolean(
-          "Android.WebView.UniversalAccess.OriginUrlMismatchInRenderFrame",
-          requires_universal_access);
     }
   }
   params->request_id = document_state->request_id();
