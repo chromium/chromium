@@ -965,9 +965,7 @@ void V4L2Device::EnumerateDevicesForType(Type type) {
         found_valid_device =
             std::all_of(supported_pixelformats_input.begin(),
                         supported_pixelformats_input.end(),
-                        [&](uint32_t fmt) {
-                          return !is_jpeg_format(fmt) && !is_pixel_format(fmt);
-                        }) &&
+                        [&](uint32_t fmt) { return !is_pixel_format(fmt); }) &&
             std::any_of(supported_pixelformats_input.begin(),
                         supported_pixelformats_input.end(), is_video_format) &&
             std::any_of(supported_pixelformats_output.begin(),
