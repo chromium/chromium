@@ -359,6 +359,14 @@ chrome_ios_eg2_test("ios_chrome_web_eg2tests_module") {
   data_deps = [ ":ios_chrome_eg2tests" ]
 }
 
+chrome_ios_eg2_test("ios_chrome_perf_benchmarks_eg2tests_module") {
+  xcode_test_application_name = "ios_chrome_eg2tests"
+
+  deps = [ "//ios/chrome/test/perf:eg2_tests" ]
+  data_deps = [ ":ios_chrome_eg2tests" ]
+  data = [ "//third_party/catapult/tracing/" ]
+}
+
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true

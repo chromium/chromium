@@ -1,0 +1,60 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ios/bundle_data_from_filelist.gni")
+
+bundle_data_from_filelist("speedometer_bundle_data") {
+  testonly = true
+  filelist_name = "speedometer_bundle_data.filelist"
+}
+
+source_set("eg_app_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+
+  sources = [
+    "perf_app_interface.h",
+    "perf_app_interface.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//ios/chrome/app:app_internal",
+    "//ios/chrome/app/application_delegate:startup_information",
+    "//ios/chrome/test/app:test_support",
+  ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+
+  sources = [
+    "perf_app_interface.h",
+    "perf_app_interface_stub.mm",
+  ]
+
+  deps = [ "//ios/testing/earl_grey:eg_test_support+eg2" ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+
+  sources = [ "perf_egtest.mm" ]
+
+  deps = [
+    ":eg_test_support+eg2",
+    ":speedometer_bundle_data",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net:test_support",
+    "//url",
+  ]
+
+  frameworks = [ "UIKit.framework" ]
+}

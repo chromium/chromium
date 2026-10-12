@@ -1,0 +1,19 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+# See build/ios/update_bundle_filelist.py for details on how .globlist
+# files are used to update their .filelist counterparts.
+
+# push(ignore-relative)
+//third_party/speedometer/v3.1/index.html
+//third_party/speedometer/v3.1/about.html
+//third_party/speedometer/v3.1/instructions.html
+//third_party/speedometer/v3.1/resources/**
+-//third_party/speedometer/v3.1/**/.git/**
+-//third_party/speedometer/v3.1/**/.github/**
+-//third_party/speedometer/v3.1/**/tests/**
+-//third_party/speedometer/v3.1/**/*.map
+-//third_party/speedometer/v3.1/**/*.md
+-//third_party/speedometer/v3.1/**/package-lock.json
+# pop(ignore-relative)
