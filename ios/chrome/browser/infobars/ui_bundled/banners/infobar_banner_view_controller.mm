@@ -81,6 +81,7 @@ const CGFloat kHeightCornerRadiusThreshold = 90.0;
 const CGFloat kButtonMaxWidthMultiplier = 0.40;
 const CGFloat kRevampButtonVerticalPadding = 10.0;
 const CGFloat kRevampButtonMinimumScaleFactor = 0.8;
+const CGFloat kRevampButtonFontSize = 15.0;
 }  // namespace
 
 @interface InfobarBannerViewController () <UIGestureRecognizerDelegate>
@@ -448,8 +449,11 @@ const CGFloat kRevampButtonMinimumScaleFactor = 0.8;
     UITraitCollection* traitCollection =
         weakButton.traitCollection
             ?: [UITraitCollection currentTraitCollection];
+    UIFont* baseFont = [UIFont systemFontOfSize:kRevampButtonFontSize
+                                         weight:UIFontWeightSemibold];
     outgoing[NSFontAttributeName] =
-        [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline
+        [[UIFontMetrics metricsForTextStyle:UIFontTextStyleSubheadline]
+                        scaledFontForFont:baseFont
             compatibleWithTraitCollection:traitCollection];
     NSMutableParagraphStyle* paragraphStyle =
         [[NSMutableParagraphStyle alloc] init];
