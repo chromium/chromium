@@ -2695,8 +2695,67 @@ TEST_F(ContextualSearchSessionHandleTest,
   EXPECT_FALSE(attached[1].uploaded);
 }
 
+// Tests that `DeleteFile` removes all tokens and the attached tab entry for a
+// tab when `kContextManagementInComposebox` and
+// `kContextManagementInComposeboxEnableTabDeselection` are enabled.
+TEST_F(ContextualSearchSessionHandleTest,
+       DeleteFile_RemovesAllTokensAndAttachedTab) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kContextManagementInComposebox,
+      {{omnibox::kContextManagementInComposeboxEnableTabDeselection.name,
+        "true"}});
+
+  EXPECT_CALL(*mock_controller_ptr_, StartFileUploadFlow(_, _, _))
+      .Times(testing::AnyNumber());
+
+  base::UnguessableToken old_token = handle_->CreateContextToken();
+  handle_->StartTabContextUploadFlow(old_token, MakeTabInputData(10),
+                                     std::nullopt);
+  handle_->StartTabContextUploadFlow(handle_->CreateContextToken(),
+                                     MakeTabInputData(30), std::nullopt);
+
+  // Re-uploading tab 10 with a new token updates it in place.
+  base::UnguessableToken new_token = handle_->CreateContextToken();
+  handle_->StartTabContextUploadFlow(new_token, MakeTabInputData(10),
+                                     std::nullopt);
+  const auto& attached = handle_->GetTabContextState().attached;
+  ASSERT_EQ(2u, attached.size());
+  EXPECT_EQ(10, attached[0].tab_id);
+  EXPECT_EQ(new_token, attached[0].context_token);
+
+  FileInfo old_info;
+  old_info.file_token = old_token;
+  old_info.tab_session_id = SessionID::FromSerializedValue(10);
+  FileInfo new_info;
+  new_info.file_token = new_token;
+  new_info.tab_session_id = SessionID::FromSerializedValue(10);
+  EXPECT_CALL(*mock_controller_ptr_, GetFileInfo(_))
+      .WillRepeatedly(testing::Return(nullptr));
+  EXPECT_CALL(*mock_controller_ptr_, GetFileInfo(old_token))
+      .WillRepeatedly(testing::Return(&old_info));
+  EXPECT_CALL(*mock_controller_ptr_, GetFileInfo(new_token))
+      .WillRepeatedly(testing::Return(&new_info));
+  EXPECT_CALL(*mock_controller_ptr_, DeleteFile(_))
+      .WillRepeatedly(testing::Return(true));
+
+  // When `kContextManagementInComposebox` and
+  // `kContextManagementInComposeboxEnableTabDeselection` are enabled, deleting
+  // a token for tab 10 cleans up all tokens associated with that tab and
+  // removes it from `attached`, keeping the other tabs in order.
+  EXPECT_TRUE(handle_->DeleteFile(old_token));
+  ASSERT_EQ(1u, attached.size());
+  EXPECT_EQ(30, attached[0].tab_id);
+}
+
+// Tests that `DeleteFile` only removes the attached tab when its current token
+// is deleted when `kContextManagementInComposebox` is disabled.
 TEST_F(ContextualSearchSessionHandleTest,
        DeleteFile_RemovesAttachedTabOnlyForCurrentToken) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndDisableFeature(
+      omnibox::kContextManagementInComposebox);
+
   EXPECT_CALL(*mock_controller_ptr_, StartFileUploadFlow(_, _, _))
       .Times(testing::AnyNumber());
 
