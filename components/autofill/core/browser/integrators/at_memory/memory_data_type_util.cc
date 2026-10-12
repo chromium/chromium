@@ -937,30 +937,6 @@ std::vector<MemorySearchResult> ExtractRemoteResults(
   return remote_results;
 }
 
-AttributeType GetPrimaryAttributeType(EntityType entity_type) {
-  switch (entity_type.name()) {
-    case EntityTypeName::kVehicle:
-      return AttributeType(AttributeTypeName::kVehiclePlateNumber);
-    case EntityTypeName::kPassport:
-      return AttributeType(AttributeTypeName::kPassportNumber);
-    case EntityTypeName::kDriversLicense:
-      return AttributeType(AttributeTypeName::kDriversLicenseNumber);
-    case EntityTypeName::kOrder:
-      return AttributeType(AttributeTypeName::kOrderId);
-    case EntityTypeName::kNationalIdCard:
-      return AttributeType(AttributeTypeName::kNationalIdCardNumber);
-    case EntityTypeName::kKnownTravelerNumber:
-      return AttributeType(AttributeTypeName::kKnownTravelerNumberNumber);
-    case EntityTypeName::kRedressNumber:
-      return AttributeType(AttributeTypeName::kRedressNumberNumber);
-    case EntityTypeName::kFlightReservation:
-      return AttributeType(AttributeTypeName::kFlightReservationFlightNumber);
-    case EntityTypeName::kShipment:
-      return AttributeType(AttributeTypeName::kShipmentTrackingNumber);
-  }
-  NOTREACHED();
-}
-
 std::u16string FormatMemoryDataTypeLabelValue(
     MemoryDataType type,
     std::u16string_view value,

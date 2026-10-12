@@ -118,9 +118,6 @@ std::u16string FormatMemoryDataTypeLabelValue(
     const std::optional<personal_context::proto::TypedValue>& typed_value,
     std::string_view app_locale);
 
-// Returns the primary attribute type for a given entity type.
-AttributeType GetPrimaryAttributeType(EntityType entity_type);
-
 // Returns a suggestion for managing the given `type`. Returns std::nullopt
 // if the type does not support management.
 std::optional<Suggestion> CreateManageSuggestion(MemoryDataType type);
