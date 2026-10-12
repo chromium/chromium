@@ -1004,11 +1004,6 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest, HighlightAndSwitchTab) {
 // Verifies that clicking outside on the webpage body while an active user draft
 // exists keeps the popup open while shifting focus to the webpage.
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest, ActiveUnfocusedDraft) {
-  if (IsWebUIToolbarEnabled()) {
-    GTEST_SKIP() << "TODO(b/568378976): With the WebUI toolbar, a "
-                    "delayed focus request reopens the full popup after a "
-                    "tab switch.";
-  }
   RunTestSequence(
       // Open Tab 1 and focus Omnibox to open WebUI popup.
       OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
@@ -1302,22 +1297,12 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest, ClearAndSwitchTab) {
 // have lingering focus.
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
                        OmniboxFocusDoesNotLingerAcrossTabs) {
-  if (IsWebUIToolbarEnabled()) {
-    GTEST_SKIP() << "TODO(b/568378976): With the WebUI toolbar, a "
-                    "delayed focus request reopens the full popup after a "
-                    "tab switch.";
-  }
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab3);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab4);
 
   RunTestSequence(
       // Tab 1 is the initial NTP.
-      InstrumentTab(kTab1, 0), WaitForWebContentsReady(kTab1),
-      InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),
-      InAnyContext(
-          InstrumentNonTabWebView(kPopupWebView, GetActivePopupWebView())),
-      // Ensure omnibox is focused.
-      WaitForOmniboxFocus(true),
+      FocusOmniboxOnInitialNtp(kTab1),
 
       // Open NTP Tab 2.
       UninstrumentWebContents(kPopupWebView), WaitForPopupTransitionLockout(),

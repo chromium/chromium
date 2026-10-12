@@ -278,6 +278,7 @@ class WebUILocationBar : public LocationBar,
   std::optional<bool> last_is_keyword_selected_;
   toolbar_ui_api::IconHandle keyword_icon_;
 
+  base::WeakPtrFactory<WebUILocationBar> focus_request_weak_ptr_factory_{this};
   base::WeakPtrFactory<WebUILocationBar> weak_ptr_factory_{this};
 };
 

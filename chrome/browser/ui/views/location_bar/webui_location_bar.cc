@@ -238,7 +238,7 @@ void WebUILocationBar::PropagateFocusRequest(
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&WebUILocationBar::HandleFocusRequestForFullPopup,
-                       weak_ptr_factory_.GetWeakPtr(), target));
+                       focus_request_weak_ptr_factory_.GetWeakPtr(), target));
   } else if (toolbar_delegate_) {
     toolbar_delegate_->OnFocusRequested(target);
     if (auto* web_view = toolbar_delegate_->GetInternalWebView();
@@ -564,6 +564,15 @@ void WebUILocationBar::Update(content::WebContents* contents) {
     omnibox_view_->OnTabChanged(contents);
     if (using_full_popup_) {
       omnibox_popup_view_->OnTabChanged(contents);
+      if (!omnibox_controller_->edit_model()->has_focus()) {
+        // During a tab switch, `BrowserView::OnActiveTabChanged` restores focus
+        // (and hiding an active popup widget inside `OnTabChanged` reactivates
+        // the browser widget), which can post an async
+        // `HandleFocusRequestForFullPopup` task before `OnTabChanged` finishes
+        // deciding that this tab should not focus the omnibox. Cancel any such
+        // pending focus tasks so they don't reopen the popup on the next tick.
+        focus_request_weak_ptr_factory_.InvalidateWeakPtrs();
+      }
     }
     if (permission_dashboard_) {
       permission_dashboard_->ResetTabState();

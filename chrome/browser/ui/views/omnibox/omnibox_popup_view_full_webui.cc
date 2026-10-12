@@ -353,6 +353,12 @@ void OmniboxPopupViewFullWebUI::OnTabChanged(content::WebContents* contents) {
     }
   }
 
+  // Keep `focused_` in sync with the tab's target focus state. When switching
+  // to an unfocused tab, `edit_model()->OnKillFocus()` is called directly above
+  // rather than `OmniboxPopupViewFullWebUI::OnBlur()`, which would otherwise
+  // leave `focused_` stale at `true`.
+  focused_ = should_focus_popup;
+
   // Request focus before pushing content state so our `SetInputState` IPC
   // overrides any OS-default focus selection (such as macOS Select-All).
   if (target_popup_state == OmniboxPopupState::kFull) {
