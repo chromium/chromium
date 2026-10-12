@@ -108,6 +108,10 @@ class TransportChannelImpl : public TransportChannel,
   // Closes the underlying stream connection.
   void Disconnect();
 
+  // Disconnects (if connected) and reconnects the underlying stream so a
+  // fresh WatchSessionsRequest is sent with current session resume positions.
+  void ReconnectStream();
+
   // Serializes a WatchSessionsRequest describing every session with a known
   // resume position, plus a fresh idempotency id. Handed to the resume
   // delegate as its body provider, so it runs once per connection attempt.

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_BROWSER_ACTUATOR_INTERNAL_TRANSPORT_SESSION_IMPL_H_
 #define COMPONENTS_BROWSER_ACTUATOR_INTERNAL_TRANSPORT_SESSION_IMPL_H_
 
+#include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <string>
@@ -19,12 +20,12 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "components/browser_actuator/internal/downstream_message_sequencer.h"
 #include "components/browser_actuator/public/common.h"
 #include "components/browser_actuator/public/transport_session.h"
 
 namespace browser_actuator {
 
-class ActuatorDownstreamMessage;
 class ActuatorDownstreamTypedPayload;
 class TransportChannel;
 class TransportHandler;
@@ -33,6 +34,10 @@ class TransportHandler;
 // the server and Chrome instance.
 class TransportSessionImpl : public TransportSession {
  public:
+  // Number of consecutive downstream messages with invalid sequence numbers
+  // before the channel tears down the session.
+  static constexpr size_t kMaxConsecutiveInvalidSequenceNumbers = 3;
+
   // Errors returned from the ProcessPayload method below.
   enum class ProcessPayloadError {
     kChannelDisconnected,
@@ -78,12 +83,13 @@ class TransportSessionImpl : public TransportSession {
       PayloadType payload_type,
       std::string_view serialized_payload);
 
-  // Processes a downstream message from the server by checking sequence numbers
-  // and routing payloads to registered handlers.
-  void ProcessDownstreamMessage(const ActuatorDownstreamMessage& message);
+  // Processes a downstream message from the server by ordering it through the
+  // session's sequencer and routing ready payloads to registered handlers.
+  base::expected<void, DownstreamMessageSequencer::Error>
+  ProcessDownstreamMessage(ActuatorDownstreamMessage message);
 
-  // Last sequence number for the session received from the server, used for
-  // message ordering
+  // Last contiguous sequence number dispatched for the session, used for
+  // resume positions and upstream reply correlation.
   int64_t last_seen_sequence_number() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return last_seen_sequence_number_;
@@ -93,9 +99,10 @@ class TransportSessionImpl : public TransportSession {
     return last_seen_sequence_number_ > 0;
   }
 
-  // Returns true if the sequence number is positive and strictly greater than
-  // the current sequence number and was recorded.
-  [[nodiscard]] bool RecordServerSequenceNumber(int64_t seq);
+  size_t consecutive_invalid_sequence_numbers() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return consecutive_invalid_sequence_numbers_;
+  }
 
   // Increments the sequence number for the next outgoing message.
   int64_t IncrementClientSequenceNumber() {
@@ -130,7 +137,15 @@ class TransportSessionImpl : public TransportSession {
   base::WeakPtr<TransportChannel> channel_;
 
   const base::TimeTicks start_time_;
+  DownstreamMessageSequencer sequencer_ GUARDED_BY_CONTEXT(sequence_checker_);
+  // Tracks the sequence number of the most recently dispatched message.
+  // Unlike `sequencer_.last_seen_sequence_number()` (which advances to the end
+  // of a drained batch at once), this advances message-by-message during a
+  // multi-message drain so synchronous handlers observe the sequence number of
+  // the message currently being handled when sending an upstream reply.
   int64_t last_seen_sequence_number_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
+  size_t consecutive_invalid_sequence_numbers_
+      GUARDED_BY_CONTEXT(sequence_checker_) = 0;
   int64_t client_sequence_number_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
 
   // Map that holds ownership of all active `TransportHandler` instances for

@@ -4,14 +4,19 @@
 
 #include "components/browser_actuator/internal/transport_session_impl.h"
 
+#include <algorithm>
+#include <cstdint>
 #include <optional>
 #include <string>
 #include <string_view>
 #include <tuple>
+#include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/types/expected.h"
 #include "components/browser_actuator/internal/metrics_utils.h"
 #include "components/browser_actuator/internal/proto/transport_messages.pb.h"
 #include "components/browser_actuator/public/payload_type_mapping.h"
@@ -19,8 +24,47 @@
 #include "components/browser_actuator/public/transport_handler.h"
 #include "components/browser_actuator/public/transport_handler_factory.h"
 #include "components/browser_actuator/public/transport_handler_factory_registry.h"
+#include "components/sharing_message/proto/actuator_downstream_message.pb.h"
 
 namespace browser_actuator {
+namespace {
+
+// `Any::Is<T>()` is unavailable for LITE_RUNTIME protos, so `type_url` is
+// compared by hand. An empty value is accepted; the server does not always
+// populate it.
+// TODO(crbug.com/572804026): Require `type_url` once the server always sets
+// it.
+bool HasExpectedTypeUrl(const ActuatorDownstreamTypedPayload& typed_payload,
+                        PayloadType payload_type) {
+  const std::string& type_url = typed_payload.proto_payload().type_url();
+  return type_url.empty() || type_url == ExpectedTypeUrl(payload_type);
+}
+
+// Returns true if `message` carries a `ControlCommand` that tears down the
+// session (`kCloseSession`) or channel (`kCloseChannel`). Although payload
+// deserialization normally belongs to `TransportHandler` implementations,
+// `TransportSessionImpl` intentionally peeks at `ControlCommand` prior to
+// sequencing so that a missing earlier sequence number cannot stall teardown.
+bool HasTerminatingControlCommand(const ActuatorDownstreamMessage& message) {
+  for (const auto& typed_payload : message.typed_payloads()) {
+    if (FromDownstreamProtoPayloadType(typed_payload.payload_type()) !=
+            PayloadType::kControl ||
+        !HasExpectedTypeUrl(typed_payload, PayloadType::kControl)) {
+      continue;
+    }
+    ControlCommand command;
+    if (!command.ParseFromString(typed_payload.proto_payload().value())) {
+      continue;
+    }
+    if (command.command_case() == ControlCommand::kCloseSession ||
+        command.command_case() == ControlCommand::kCloseChannel) {
+      return true;
+    }
+  }
+  return false;
+}
+
+}  // namespace
 
 TransportSessionImpl::TransportSessionImpl(
     std::string_view session_id,
@@ -159,31 +203,56 @@ TransportSessionImpl::ResolveHandlersForType(PayloadType payload_type) {
   return {};
 }
 
-bool TransportSessionImpl::RecordServerSequenceNumber(int64_t seq) {
+base::expected<void, DownstreamMessageSequencer::Error>
+TransportSessionImpl::ProcessDownstreamMessage(
+    ActuatorDownstreamMessage message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Sequence numbers begin at 1 and can only be strictly increasing.
-  if (seq > 0 && seq > last_seen_sequence_number_) {
-    last_seen_sequence_number_ = seq;
-    return true;
-  }
-  return false;
-}
+  const bool is_new_terminating_command =
+      message.sequence_number() > sequencer_.last_seen_sequence_number() &&
+      HasTerminatingControlCommand(message);
 
-void TransportSessionImpl::ProcessDownstreamMessage(
-    const ActuatorDownstreamMessage& message) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!RecordServerSequenceNumber(message.sequence_number())) {
-    return;
+  std::vector<ActuatorDownstreamMessage> deliverable;
+  if (is_new_terminating_command) {
+    consecutive_invalid_sequence_numbers_ = 0;
+    // Flush any buffered messages and bypass capacity-bounded buffering so a
+    // full reorder buffer cannot reject session or channel teardown.
+    deliverable = sequencer_.Flush();
+    auto it = std::upper_bound(
+        deliverable.begin(), deliverable.end(), message.sequence_number(),
+        [](int64_t seq, const ActuatorDownstreamMessage& msg) {
+          return seq < msg.sequence_number();
+        });
+    deliverable.insert(it, std::move(message));
+  } else {
+    base::expected<std::vector<ActuatorDownstreamMessage>,
+                   DownstreamMessageSequencer::Error>
+        ready_messages = sequencer_.AddMessage(std::move(message));
+    if (!ready_messages.has_value()) {
+      if (ready_messages.error() ==
+          DownstreamMessageSequencer::Error::kInvalidSequenceNumber) {
+        ++consecutive_invalid_sequence_numbers_;
+      }
+      return base::unexpected(ready_messages.error());
+    }
+    consecutive_invalid_sequence_numbers_ = 0;
+    deliverable = std::move(*ready_messages);
   }
 
   base::WeakPtr<TransportSessionImpl> weak_this = GetWeakPtr();
-  for (const auto& typed_payload : message.typed_payloads()) {
-    // A handler's OnMessage() may have synchronously destroyed this session.
+  for (const auto& ready_message : deliverable) {
     if (!weak_this) {
       break;
     }
-    ProcessTypedPayload(typed_payload);
+    last_seen_sequence_number_ = ready_message.sequence_number();
+    for (const auto& typed_payload : ready_message.typed_payloads()) {
+      // A handler's OnMessage() may have synchronously destroyed this session.
+      if (!weak_this) {
+        break;
+      }
+      ProcessTypedPayload(typed_payload);
+    }
   }
+  return {};
 }
 
 void TransportSessionImpl::ProcessTypedPayload(
@@ -199,14 +268,9 @@ void TransportSessionImpl::ProcessTypedPayload(
     return;
   }
 
-  // `Any::Is<T>()` is unavailable for LITE_RUNTIME protos, so `type_url` is
-  // compared by hand. An empty value is accepted; the server does not always
-  // populate it.
-  // TODO(crbug.com/560176806): Require `type_url` once the server always sets
-  // it.
-  const std::string& type_url = typed_payload.proto_payload().type_url();
-  if (!type_url.empty() && type_url != ExpectedTypeUrl(*payload_type)) {
-    DLOG(WARNING) << "Ignoring payload with unexpected type_url: " << type_url
+  if (!HasExpectedTypeUrl(typed_payload, *payload_type)) {
+    DLOG(WARNING) << "Ignoring payload with unexpected type_url: "
+                  << typed_payload.proto_payload().type_url()
                   << ", expected: " << ExpectedTypeUrl(*payload_type);
     RecordDownstreamPayloadDropped(
         DownstreamPayloadDropReason::kTypeUrlMismatch);

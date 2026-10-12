@@ -11,8 +11,10 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/types/expected.h"
 #include "base/uuid.h"
 #include "components/browser_actuator/internal/control_transport_handler.h"
+#include "components/browser_actuator/internal/downstream_message_sequencer.h"
 #include "components/browser_actuator/internal/proto/transport_messages.pb.h"
 #include "components/browser_actuator/internal/transport/resume_body_connection_delegate.h"
 #include "components/browser_actuator/internal/transport/stream_connection_delegate.h"
@@ -20,6 +22,7 @@
 #include "components/browser_actuator/internal/transport_handler_factory_registry_impl.h"
 #include "components/browser_actuator/internal/transport_session_impl.h"
 #include "components/browser_actuator/internal/transport_session_registry_impl.h"
+#include "components/sharing_message/proto/actuator_downstream_message.pb.h"
 
 namespace browser_actuator {
 
@@ -105,6 +108,11 @@ void TransportChannelImpl::RemoveObserver(TransportMessageObserver* observer) {
 
 void TransportChannelImpl::OnSessionRegistered(TransportSession*) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ReconnectStream();
+}
+
+void TransportChannelImpl::ReconnectStream() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (stream_client_) {
     if (stream_client_->IsConnected()) {
       stream_client_->Disconnect();
@@ -124,17 +132,51 @@ void TransportChannelImpl::OnStreamMessage(const std::string& message) {
     DLOG(WARNING) << "Failed to parse WatchSessionsResponse from stream";
     return;
   }
-  const ActuatorDownstreamMessage& downstream =
-      response.actuator_downstream_message();
-  if (downstream.session_id().empty()) {
+  ActuatorDownstreamMessage* downstream =
+      response.mutable_actuator_downstream_message();
+  if (downstream->session_id().empty()) {
     DLOG(WARNING) << "Received ActuatorDownstreamMessage with empty session_id";
     return;
   }
 
   TransportSessionImpl* session =
-      session_registry_->GetOrCreateSession(downstream.session_id());
-  if (session) {
-    session->ProcessDownstreamMessage(downstream);
+      session_registry_->GetOrCreateSession(downstream->session_id());
+  if (!session) {
+    return;
+  }
+
+  const int64_t sequence_number = downstream->sequence_number();
+  base::expected<void, DownstreamMessageSequencer::Error> result =
+      session->ProcessDownstreamMessage(std::move(*downstream));
+  if (!result.has_value()) {
+    switch (result.error()) {
+      case DownstreamMessageSequencer::Error::kBufferFull:
+        DVLOG(1) << "Downstream reorder buffer full for session "
+                 << session->GetSessionId()
+                 << "; reconnecting stream to request replay from "
+                 << session->last_seen_sequence_number();
+        ReconnectStream();
+        break;
+      case DownstreamMessageSequencer::Error::kInvalidSequenceNumber:
+        DLOG(WARNING) << "Ignoring downstream message with invalid sequence "
+                         "number "
+                      << sequence_number << " for session "
+                      << session->GetSessionId() << " (consecutive count: "
+                      << session->consecutive_invalid_sequence_numbers() << ")";
+        if (session->consecutive_invalid_sequence_numbers() >=
+            TransportSessionImpl::kMaxConsecutiveInvalidSequenceNumbers) {
+          const std::string session_id(session->GetSessionId());
+          DLOG(WARNING) << "Tearing down session " << session_id
+                        << " after receiving "
+                        << session->consecutive_invalid_sequence_numbers()
+                        << " consecutive invalid sequence numbers";
+          ControlCommand command;
+          command.mutable_close_session();
+          SendUpstreamMessage(session_id, PayloadType::kControl, command);
+          session_registry_->DestroySession(session_id);
+        }
+        break;
+    }
   }
 }
 
@@ -166,6 +208,8 @@ void TransportChannelImpl::SendUpstreamMessage(
 
   int64_t client_sequence_number = session->IncrementClientSequenceNumber();
   std::optional<int64_t> responding_to_sequence_number;
+  // TODO(crbug.com/562572789): Plumb explicit responding_to_sequence_number
+  // from callers instead of reading last_seen_sequence_number().
   if (session->has_last_seen_sequence_number()) {
     responding_to_sequence_number = session->last_seen_sequence_number();
   }
