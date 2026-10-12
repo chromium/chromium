@@ -7,7 +7,9 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/actor/enterprise_policy_checker.h"
+#include "components/policy/core/browser/url_list/url_blocklist_manager.h"
 
 class GURL;
 class Profile;
@@ -34,6 +36,10 @@ class ActorEnterprisePolicyChecker : public EnterprisePolicyChecker {
       content::RenderFrameHost* frame,
       const std::string& content,
       ContentValidationCallback callback) const override;
+
+ private:
+  raw_ptr<Profile> profile_;
+  policy::URLBlocklistManager url_blocklist_manager_;
 };
 
 }  // namespace actor
