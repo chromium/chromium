@@ -5,7 +5,6 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
-import * as ElementsModule from 'devtools/panels/elements/elements.js';
 import * as SDK from 'devtools/core/sdk/sdk.js';
 import * as UIModule from 'devtools/ui/legacy/legacy.js';
 
@@ -35,11 +34,9 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
 
           UIModule.Context.Context.instance().addFlavorChangeListener(
               SDK.DOMModel.DOMNode, (event) => {
-                const treeOutline =
-                    ElementsModule.DOMTreeWidget.ElementsTreeOutline
-                        .forDOMModel(event.data.domModel());
+                const selectedNode = event.data;
                 TestRunner.addResult(`Selected node has text: ${
-                    treeOutline.selectedDOMNode().children()[0].nodeName()}`);
+                    selectedNode.children()[0].nodeName()}`);
                 TestRunner.completeTest();
               });
         }

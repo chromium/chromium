@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
-import {ElementsTestRunner} from 'elements_test_runner';
-
+import * as SDK from 'devtools/core/sdk/sdk.js';
 import * as ElementsModule from 'devtools/panels/elements/elements.js';
+import * as UIModule from 'devtools/ui/legacy/legacy.js';
+import {TestRunner} from 'test_runner';
 
 (async function() {
   TestRunner.addResult(
@@ -15,12 +15,11 @@ import * as ElementsModule from 'devtools/panels/elements/elements.js';
 
   await TestRunner.addIframe('resources/inspect-element-iframe.html');
 
-  ElementsTestRunner.firstElementsTreeOutline().addEventListener(
-      ElementsModule.DOMTreeWidget.ElementsTreeOutline.Events
-          .SelectedNodeChanged,
-      selectedNodeChanged, this);
+  // The Elements panel publishes the selected node as the DOMNode flavor.
+  UIModule.Context.Context.instance().addFlavorChangeListener(
+      SDK.DOMModel.DOMNode, selectedNodeChanged, this);
   function selectedNodeChanged(event) {
-    var node = event.data.node;
+    var node = event.data;
     if (!node)
       return;
     if (node.getAttribute('id') == 'div') {
