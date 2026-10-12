@@ -532,6 +532,19 @@ TEST_F(IconTableTest, PinnedToolbarActionIconsAreMapped) {
         << "Missing mapping for pinned action icon: "
         << (icon->name ? icon->name : "(null)");
   }
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  IconTable audio_spark_table(this);
+  std::optional<toolbar_ui_api::IconHandle> handle =
+      audio_spark_table.RegisterVectorIcon(vector_icons::kAudioSparkIcon);
+  ASSERT_TRUE(handle.has_value());
+  auto expected = toolbar_ui_api::mojom::IconUpdate::New(
+      1u, "internal-icons:audio_spark", IconType::kIconSet,
+      /*color=*/std::nullopt);
+  EXPECT_THAT(
+      audio_spark_table.GetFullState(),
+      testing::UnorderedElementsAre(MatchesIconUpdate(std::ref(expected))));
+#endif
 }
 
 }  // namespace

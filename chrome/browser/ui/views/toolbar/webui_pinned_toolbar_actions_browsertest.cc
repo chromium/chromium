@@ -1137,6 +1137,21 @@ class WebUIPinnedToolbarActionsTtcBrowserTest
 IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsTtcBrowserTest,
                        AutoPinnedOnStartup) {
   EXPECT_TRUE(model_->Contains(kActionTtcToolbar));
+
+  std::string expected_icon;
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  expected_icon = "internal-icons:audio_spark";
+#else
+  expected_icon = "webui-toolbar:mic_filled";
+#endif
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return EvalJsOnPinnedAction(
+               toolbar_ui_api::mojom::PinnedToolbarAction::kTtcToolbar,
+               "return btn?.getAttribute('iron-icon') || '';")
+               .ExtractString() == expected_icon;
+  }));
+
   UnpinAction(kActionTtcToolbar,
               toolbar_ui_api::mojom::PinnedToolbarAction::kTtcToolbar);
   PinAction(kActionTtcToolbar,

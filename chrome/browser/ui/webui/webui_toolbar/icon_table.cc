@@ -348,7 +348,7 @@ const base::flat_map<const gfx::VectorIcon*, IconInfo>& KnownIcons() {
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
           {{&vector_icons::kAudioSparkIcon},
-           {"webui-toolbar:mic_filled", IconType::kIconSet}},
+           {"internal-icons:audio_spark", IconType::kIconSet}},
           {{&vector_icons::kFastForwardCircleSparkIcon},
            {"internal-icons:fast_forward_circle_spark", IconType::kIconSet}},
           {{&vector_icons::kGoogleLensMonochromeLogoIcon},
