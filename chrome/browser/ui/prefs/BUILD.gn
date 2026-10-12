@@ -28,8 +28,6 @@ source_set("prefs") {
 }
 
 source_set("impl") {
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   sources = [
     "pref_watcher.cc",
     "prefs_tab_helper.cc",
@@ -37,6 +35,7 @@ source_set("impl") {
 
   deps = [
     ":prefs",
+    "//build:android_buildflags",
     "//chrome/app/resources:platform_locale_settings",
     "//chrome/browser:browser_process",
     "//chrome/browser:font_pref",
@@ -44,12 +43,21 @@ source_set("impl") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/themes",
     "//chrome/browser/ui/zoom",
+    "//chrome/common",
+    "//chrome/common:chrome_features",
+    "//chrome/common:constants",
+    "//components/autofill/core/common",
     "//components/language/core/browser",
     "//components/live_caption:constants",
     "//components/pref_registry",
     "//components/proxy_config",
+    "//components/strings:components_locale_settings",
     "//components/universal_optout",
   ]
+
+  if (is_chromeos) {
+    deps += [ "//ash/constants" ]
+  }
 
   if (is_android) {
     deps += [

@@ -328,6 +328,7 @@ source_set("card_unmask_prompt_views") {
   ]
   deps = [
     ":payments_view_util",
+    "//chrome/app/vector_icons",
     "//chrome/browser/ui/views:layout_provider",
     "//components/constrained_window",
     "//components/strings:components_strings",
