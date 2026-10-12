@@ -145,6 +145,7 @@ static void JNI_NativeTest_RunTests(
              base::StringPrintf("Redirecting stdout to file: %s\n",
                                 stdout_file_path.value().c_str()));
   dup2(STDOUT_FILENO, STDERR_FILENO);
+  setvbuf(UNSAFE_BUFFERS(stdout), nullptr, _IOLBF, 0);
 
   if (command_line.HasSwitch(switches::kWaitForDebugger)) {
     AndroidLog(ANDROID_LOG_VERBOSE,

@@ -21,17 +21,23 @@ class ScopedMainEntryLogger {
  public:
   ScopedMainEntryLogger() {
     printf(">>ScopedMainEntryLogger\n");
+    Flush();
   }
 
   ~ScopedMainEntryLogger() {
     printf("<<ScopedMainEntryLogger\n");
-    // SAFETY: On Android with __ANDROID_API__ <= 22 (Lollipop MR1), `stdout` is
-    // a macro that accesses a buffer of unknown length, triggering the
-    // `-Wunsafe-buffer-usage` warning. This usage is sound, as it accesses a
-    // fixed position in a system-provided array.
-    // While Lollipop is no longer officially supported by Chromium, Cronet
-    // currently maintains compatibility with this older Android version. Check
-    // for optional bot `android-cronet-arm64-dbg` before removing this.
+    Flush();
+  }
+
+ private:
+  static void Flush() {
+    // SAFETY: On Android with __ANDROID_API__ <= 22 (Lollipop MR1), `stdout`
+    // and `stderr` are macros that access a buffer of unknown length,
+    // triggering the `-Wunsafe-buffer-usage` warning. This usage is sound, as
+    // it accesses a fixed position in a system-provided array. While Lollipop
+    // is no longer officially supported by Chromium, Cronet currently maintains
+    // compatibility with this older Android version. Check for optional bot
+    // `android-cronet-arm64-dbg` before removing this.
     fflush(UNSAFE_BUFFERS(stdout));
     fflush(UNSAFE_BUFFERS(stderr));
   }
