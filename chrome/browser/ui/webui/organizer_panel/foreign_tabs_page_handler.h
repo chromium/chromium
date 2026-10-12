@@ -23,19 +23,17 @@ class ForeignTabsPageHandler
       mojo::PendingReceiver<organizer_panel::mojom::ForeignTabsPageHandler>
           receiver,
       content::WebContents* web_contents);
-  ForeignTabsPageHandler(
-      mojo::PendingReceiver<organizer_panel::mojom::ForeignTabsPageHandler>
-          receiver,
-      Profile* profile);
   ForeignTabsPageHandler(const ForeignTabsPageHandler&) = delete;
   ForeignTabsPageHandler& operator=(const ForeignTabsPageHandler&) = delete;
   ~ForeignTabsPageHandler() override;
 
   // organizer_panel::mojom::ForeignTabsPageHandler:
   void GetForeignTabs(GetForeignTabsCallback callback) override;
+  void OpenTab(const std::string& session_tag, int32_t session_tab_id) override;
 
  private:
   mojo::Receiver<organizer_panel::mojom::ForeignTabsPageHandler> receiver_;
+  raw_ptr<content::WebContents> web_contents_;
   raw_ptr<Profile> profile_;
 };
 

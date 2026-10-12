@@ -147,18 +147,24 @@ IN_PROC_BROWSER_TEST_F(ForeignTabsPageHandlerBrowserTest,
   ASSERT_EQ(3u, tabs.size());
 
   // 1st: YouTube (MacBook Pro, 2 mins ago)
+  EXPECT_EQ("session_laptop", tabs[0]->session_tag);
+  EXPECT_EQ(tab_laptop1->tab_id.id(), tabs[0]->session_tab_id);
   EXPECT_EQ("YouTube", tabs[0]->title);
   EXPECT_EQ("https://www.youtube.com/", tabs[0]->url.spec());
   EXPECT_EQ("MacBook Pro", tabs[0]->device_name);
   EXPECT_FALSE(tabs[0]->last_active_elapsed_text.empty());
 
   // 2nd: Google (Pixel 8, 15 mins ago)
+  EXPECT_EQ("session_phone", tabs[1]->session_tag);
+  EXPECT_EQ(tab_phone->tab_id.id(), tabs[1]->session_tab_id);
   EXPECT_EQ("Google", tabs[1]->title);
   EXPECT_EQ("https://www.google.com/", tabs[1]->url.spec());
   EXPECT_EQ("Pixel 8", tabs[1]->device_name);
   EXPECT_FALSE(tabs[1]->last_active_elapsed_text.empty());
 
   // 3rd: GitHub (MacBook Pro, 30 mins ago)
+  EXPECT_EQ("session_laptop", tabs[2]->session_tag);
+  EXPECT_EQ(tab_laptop2->tab_id.id(), tabs[2]->session_tab_id);
   EXPECT_EQ("GitHub", tabs[2]->title);
   EXPECT_EQ("https://www.github.com/", tabs[2]->url.spec());
   EXPECT_EQ("MacBook Pro", tabs[2]->device_name);
@@ -189,8 +195,58 @@ IN_PROC_BROWSER_TEST_F(ForeignTabsPageHandlerBrowserTest,
 
   auto tabs = future.Take();
   ASSERT_EQ(1u, tabs.size());
+  EXPECT_EQ("session_device", tabs[0]->session_tag);
+  EXPECT_EQ(tab->tab_id.id(), tabs[0]->session_tab_id);
   EXPECT_EQ("https://example.com/page", tabs[0]->title);
   EXPECT_EQ("Chromebook", tabs[0]->device_name);
+}
+
+IN_PROC_BROWSER_TEST_F(ForeignTabsPageHandlerBrowserTest, OpenTab) {
+  auto* open_tabs = session_sync_service()->GetOpenTabsUIDelegate();
+  open_tabs->AddForeignSession("session_laptop", base::Time::Now());
+  const GURL test_url("https://www.example.com/");
+  sessions::SessionTab* session_tab =
+      open_tabs->AddTabToForeignSession("session_laptop", test_url);
+
+  mojo::Remote<organizer_panel::mojom::ForeignTabsPageHandler> remote;
+  ForeignTabsPageHandler handler(
+      remote.BindNewPipeAndPassReceiver(),
+      browser()->GetTabStripModel()->GetActiveWebContents());
+
+  int initial_tab_count = browser()->GetTabStripModel()->count();
+
+  remote->OpenTab("session_laptop", session_tab->tab_id.id());
+  remote.FlushForTesting();
+
+  EXPECT_EQ(initial_tab_count + 1, browser()->GetTabStripModel()->count());
+  EXPECT_EQ(
+      test_url,
+      browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL());
+}
+
+IN_PROC_BROWSER_TEST_F(ForeignTabsPageHandlerBrowserTest,
+                       OpenTabInvalidTabIdDoesNothing) {
+  auto* open_tabs = session_sync_service()->GetOpenTabsUIDelegate();
+  open_tabs->AddForeignSession("session_laptop", base::Time::Now());
+  open_tabs->AddTabToForeignSession("session_laptop",
+                                    GURL("https://www.example.com/"));
+
+  mojo::Remote<organizer_panel::mojom::ForeignTabsPageHandler> remote;
+  ForeignTabsPageHandler handler(
+      remote.BindNewPipeAndPassReceiver(),
+      browser()->GetTabStripModel()->GetActiveWebContents());
+
+  int initial_tab_count = browser()->GetTabStripModel()->count();
+
+  remote->OpenTab("session_laptop", -1);
+  remote.FlushForTesting();
+
+  EXPECT_EQ(initial_tab_count, browser()->GetTabStripModel()->count());
+
+  remote->OpenTab("nonexistent_session", 12345);
+  remote.FlushForTesting();
+
+  EXPECT_EQ(initial_tab_count, browser()->GetTabStripModel()->count());
 }
 
 }  // namespace

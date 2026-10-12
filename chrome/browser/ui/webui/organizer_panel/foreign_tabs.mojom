@@ -8,6 +8,8 @@ import "url/mojom/url.mojom";
 
 // Information about a tab open on another device.
 struct ForeignTab {
+  string session_tag;
+  int32 session_tab_id;
   string title;
   url.mojom.Url url;
   string last_active_elapsed_text;
@@ -19,6 +21,9 @@ interface ForeignTabsPageHandler {
   // Get the list of foreign tabs that should be displayed in the
   // organizer panel, sorted by how recently they were accessed.
   GetForeignTabs() => (array<ForeignTab> tabs);
+
+  // Opens a foreign tab from another device.
+  OpenTab(string session_tag, int32 session_tab_id);
 };
 
 // Factory interface to bootstrap communication between WebUI and browser.

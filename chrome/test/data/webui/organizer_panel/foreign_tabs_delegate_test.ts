@@ -15,18 +15,24 @@ suite('ForeignTabsDelegateTest', () => {
 
   const sampleTabs: ForeignTab[] = [
     {
+      sessionTag: 'session_phone',
+      sessionTabId: 1,
       title: 'Google',
       url: 'https://www.google.com',
       lastActiveElapsedText: '5 mins ago',
       deviceName: 'Pixel 8',
     },
     {
+      sessionTag: 'session_chromebook',
+      sessionTabId: 2,
       title: 'YouTube',
       url: 'https://www.youtube.com',
       lastActiveElapsedText: '1 hour ago',
       deviceName: 'Chromebook',
     },
     {
+      sessionTag: 'session_macbook',
+      sessionTabId: 3,
       title: 'GitHub',
       url: 'https://www.github.com',
       lastActiveElapsedText: 'Yesterday',
@@ -86,4 +92,16 @@ suite('ForeignTabsDelegateTest', () => {
         }
         assertEquals(1, mockHandler.getCallCount('getForeignTabs'));
       });
+
+  test('opens tab when an item is clicked', async () => {
+    const items = await delegate.getItems();
+    assertEquals(3, items.length);
+
+    delegate.onItemClick(items[1]!);
+
+    assertEquals(1, mockHandler.getCallCount('openTab'));
+    const [sessionTag, sessionTabId] = mockHandler.getArgs('openTab')[0];
+    assertEquals(sampleTabs[1]!.sessionTag, sessionTag);
+    assertEquals(sampleTabs[1]!.sessionTabId, sessionTabId);
+  });
 });

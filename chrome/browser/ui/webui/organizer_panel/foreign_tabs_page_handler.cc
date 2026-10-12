@@ -14,13 +14,19 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "components/sessions/core/session_id.h"
 #include "components/sessions/core/session_types.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/sync_sessions/synced_session.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/time_format.h"
+#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 namespace {
@@ -48,19 +54,51 @@ ForeignTabsPageHandler::ForeignTabsPageHandler(
     mojo::PendingReceiver<organizer_panel::mojom::ForeignTabsPageHandler>
         receiver,
     content::WebContents* web_contents)
-    : ForeignTabsPageHandler(
-          std::move(receiver),
-          Profile::FromBrowserContext(web_contents->GetBrowserContext())) {}
-
-ForeignTabsPageHandler::ForeignTabsPageHandler(
-    mojo::PendingReceiver<organizer_panel::mojom::ForeignTabsPageHandler>
-        receiver,
-    Profile* profile)
-    : receiver_(this, std::move(receiver)), profile_(profile) {
+    : receiver_(this, std::move(receiver)),
+      web_contents_(web_contents),
+      profile_(Profile::FromBrowserContext(web_contents->GetBrowserContext())) {
   CHECK(profile_);
 }
 
 ForeignTabsPageHandler::~ForeignTabsPageHandler() = default;
+
+void ForeignTabsPageHandler::OpenTab(const std::string& session_tag,
+                                     int32_t session_tab_id) {
+  BrowserWindowInterface* browser =
+      webui::GetBrowserWindowInterface(web_contents_);
+  if (!browser) {
+    return;
+  }
+  content::WebContents* source_web_contents =
+      browser->GetActiveTabInterface()
+          ? browser->GetActiveTabInterface()->GetContents()
+          : nullptr;
+  if (!source_web_contents) {
+    return;
+  }
+  SessionID tab_id = SessionID::FromSerializedValue(session_tab_id);
+  if (!tab_id.is_valid()) {
+    return;
+  }
+  sync_sessions::SessionSyncService* session_sync_service =
+      SessionSyncServiceFactory::GetInstance()->GetForProfile(profile_);
+  if (!session_sync_service) {
+    return;
+  }
+  sync_sessions::OpenTabsUIDelegate* open_tabs =
+      session_sync_service->GetOpenTabsUIDelegate();
+  if (!open_tabs) {
+    return;
+  }
+  const sessions::SessionTab* session_tab = nullptr;
+  if (!open_tabs->GetForeignTab(session_tag, tab_id, &session_tab) ||
+      !session_tab || session_tab->navigations.empty()) {
+    return;
+  }
+  SessionRestore::RestoreForeignSessionTab(
+      source_web_contents, *session_tab,
+      WindowOpenDisposition::NEW_FOREGROUND_TAB);
+}
 
 void ForeignTabsPageHandler::GetForeignTabs(GetForeignTabsCallback callback) {
   std::vector<organizer_panel::mojom::ForeignTabPtr> result;
@@ -84,6 +122,7 @@ void ForeignTabsPageHandler::GetForeignTabs(GetForeignTabsCallback callback) {
 
   struct TabData {
     raw_ptr<const sessions::SessionTab> tab;
+    std::string session_tag;
     std::string device_name;
   };
 
@@ -100,7 +139,7 @@ void ForeignTabsPageHandler::GetForeignTabs(GetForeignTabsCallback callback) {
       if (session_tab->navigations.empty()) {
         continue;
       }
-      all_tabs.push_back({session_tab, session->GetSessionName()});
+      all_tabs.push_back({session_tab, session_tag, session->GetSessionName()});
     }
   }
 
@@ -115,6 +154,8 @@ void ForeignTabsPageHandler::GetForeignTabs(GetForeignTabsCallback callback) {
         session_tab->navigations.at(session_tab->normalized_navigation_index());
 
     auto tab_mojom = organizer_panel::mojom::ForeignTab::New();
+    tab_mojom->session_tag = data.session_tag;
+    tab_mojom->session_tab_id = session_tab->tab_id.id();
     std::string title = base::UTF16ToUTF8(current_navigation.title());
     if (title.empty()) {
       title = current_navigation.virtual_url().spec();

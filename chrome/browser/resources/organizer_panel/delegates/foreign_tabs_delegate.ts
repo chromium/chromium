@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import type {BrowserProxy, ForeignTab} from '../foreign_tabs.mojom-webui.js';
@@ -39,5 +40,9 @@ export class ForeignTabsDelegate implements
                     }));
   }
 
-  onItemClick(_item: OrganizerListSectionItem<ForeignTab>) {}
+  onItemClick(item: OrganizerListSectionItem<ForeignTab>) {
+    const data = item.data;
+    assert(data);
+    this.browserProxy_.handler.openTab(data.sessionTag, data.sessionTabId);
+  }
 }
