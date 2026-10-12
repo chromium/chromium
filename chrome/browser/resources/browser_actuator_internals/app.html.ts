@@ -10,11 +10,27 @@ import type {BrowserActuatorInternalsAppElement} from './app.js';
 export function getHtml(this: BrowserActuatorInternalsAppElement) {
   return html`
 <header class="page-header">
-  <h1 class="page-title">chrome://browser-actuator-internals</h1>
-  <p class="subtitle session-count">
-    Total Sessions: ${this.sessions_.length}
-  </p>
-  <p class="subtitle hint">Reload the page to see new data.</p>
+  <div class="header-top">
+    <div>
+      <h1 class="page-title">chrome://browser-actuator-internals</h1>
+      <p class="subtitle session-count">
+        Total Sessions: ${this.sessions_.length}
+      </p>
+      <p class="subtitle hint">Reload the page to see new data.</p>
+    </div>
+    <div class="header-actions">
+      <button id="export-btn"
+          ?disabled="${this.sessions_.length === 0}"
+          @click="${this.onExportClick_}">
+        Export JSON
+      </button>
+      <button id="copy-btn"
+          ?disabled="${this.sessions_.length === 0}"
+          @click="${this.onCopyClick_}">
+        Copy JSON
+      </button>
+    </div>
+  </div>
 </header>
 
 ${this.sessions_.length === 0 ? html`
@@ -141,5 +157,9 @@ ${this.sessions_.length === 0 ? html`
       </div>
     `)}
   </div>
-`}`;
+`}
+
+<cr-toast id="copyToast" duration="3000">
+  <div>Copied to clipboard</div>
+</cr-toast>`;
 }

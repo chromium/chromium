@@ -466,6 +466,33 @@ TEST(SessionStreamRecorderFactoryTest, ExportAllSessionsAsJson) {
   EXPECT_EQ(*s2_m1->FindString("responding_to_sequence_number"), "5");
 }
 
+TEST(SessionStreamRecorderFactoryTest,
+     ExportSessionsAsJsonFiltersBySessionIds) {
+  SessionStreamRecorderFactory factory;
+  FakeTransportSession session1("session_1");
+  FakeTransportSession session2("session_2");
+
+  std::unique_ptr<TransportHandler> h1 = factory.OnNewSession(&session1);
+  std::unique_ptr<TransportHandler> h2 = factory.OnNewSession(&session2);
+  h2.reset();  // Moves session_2 to retained_sessions_.
+
+  const std::vector<std::string> filter_ids = {"session_2"};
+  std::string json_str = factory.ExportSessionsAsJson(filter_ids);
+  ASSERT_FALSE(json_str.empty());
+
+  std::optional<base::DictValue> parsed_json =
+      base::JSONReader::ReadDict(json_str, base::JSON_PARSE_RFC);
+  ASSERT_TRUE(parsed_json.has_value());
+
+  const base::ListValue* sessions = parsed_json->FindList("sessions");
+  ASSERT_NE(sessions, nullptr);
+  ASSERT_EQ(sessions->size(), 1u);
+
+  const base::DictValue* s2_dict = (*sessions)[0].GetIfDict();
+  ASSERT_NE(s2_dict, nullptr);
+  EXPECT_EQ(*s2_dict->FindString("session_id"), "session_2");
+}
+
 TEST(SessionStreamRecorderFactoryTest, RetainsDestroyedSessionsForDump) {
   SessionStreamRecorderFactory factory;
   FakeTransportSession session("session_temp");

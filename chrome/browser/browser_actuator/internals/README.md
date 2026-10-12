@@ -44,6 +44,10 @@ for all recorded transport sessions:
   text, with an explanatory note in the expanded message details.
 - If no sessions have been recorded yet, an empty-state message
   indicates no sessions yet.
+- The **Export JSON** and **Copy JSON** buttons in the header fetch
+  the full, uncapped session history from the backend
+  (`BrowserActuatorInternalsUI.ExportSessionHistory`) and either
+  download it as a `.json` file or copy it to the clipboard.
 
 ### Testing
 

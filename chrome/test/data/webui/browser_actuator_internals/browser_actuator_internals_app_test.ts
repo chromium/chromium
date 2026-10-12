@@ -7,7 +7,7 @@ import 'chrome://browser-actuator-internals/app.js';
 import type {BrowserActuatorInternalsAppElement} from 'chrome://browser-actuator-internals/app.js';
 import {browserProxyFactory, MessageDirection} from 'chrome://browser-actuator-internals/browser_actuator_internals.mojom-webui.js';
 import type {RecordedEvent, SessionSummary} from 'chrome://browser-actuator-internals/browser_actuator_internals.mojom-webui.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestBrowserActuatorInternalsUiHandler} from './test_browser_actuator_internals_ui_handler.js';
@@ -205,9 +205,115 @@ suite('BrowserActuatorInternalsAppTest', () => {
         'Total Sessions: 0', getText(app.shadowRoot, '.session-count'));
     assertEquals(0, app.shadowRoot.querySelectorAll('.session-card').length);
 
+    const exportBtn =
+        app.shadowRoot.querySelector<HTMLButtonElement>('#export-btn')!;
+    const copyBtn =
+        app.shadowRoot.querySelector<HTMLButtonElement>('#copy-btn')!;
+    assertTrue(exportBtn.disabled);
+    assertTrue(copyBtn.disabled);
+
     const content = app.shadowRoot.textContent || '';
     assertFalse(content.includes('Disconnected'));
     assertFalse(content.includes('Downstream Transport Connection'));
     assertEquals(null, app.shadowRoot.querySelector('.badge.disconnected'));
+  });
+
+  test('ExportAndCopyJsonButtons', async () => {
+    const expectedJson = '{"sessions":[{"session_id":"session-1"}]}';
+    handler.setExportedJson(expectedJson);
+    await render([makeSession()]);
+
+    const exportBtn =
+        app.shadowRoot.querySelector<HTMLButtonElement>('#export-btn')!;
+    const copyBtn =
+        app.shadowRoot.querySelector<HTMLButtonElement>('#copy-btn')!;
+    assertFalse(exportBtn.disabled);
+    assertFalse(copyBtn.disabled);
+
+    let downloadedFilename = '';
+    let downloadedHref = '';
+    const origClick = HTMLAnchorElement.prototype.click;
+    HTMLAnchorElement.prototype.click = function() {
+      downloadedFilename = this.download;
+      downloadedHref = this.href;
+    };
+
+    try {
+      exportBtn.click();
+      const exportedIds = await handler.whenCalled('exportSessionHistory');
+      await microtasksFinished();
+
+      assertDeepEquals(['session-1'], exportedIds);
+      assertTrue(downloadedFilename.startsWith('browser-actuator-sessions-'));
+      assertTrue(downloadedFilename.endsWith('.json'));
+      assertTrue(downloadedHref.startsWith('blob:'));
+    } finally {
+      HTMLAnchorElement.prototype.click = origClick;
+    }
+
+    handler.resetResolver('exportSessionHistory');
+    const copyToast = app.$.copyToast;
+    assertFalse(copyToast.open);
+
+    let copiedText = '';
+    const origWriteText = navigator.clipboard.writeText;
+    navigator.clipboard.writeText = (text: string) => {
+      copiedText = text;
+      return Promise.resolve();
+    };
+
+    try {
+      copyBtn.click();
+      const copiedIds = await handler.whenCalled('exportSessionHistory');
+      await microtasksFinished();
+
+      assertDeepEquals(['session-1'], copiedIds);
+      assertEquals(expectedJson, copiedText);
+      assertTrue(copyToast.open);
+    } finally {
+      navigator.clipboard.writeText = origWriteText;
+    }
+  });
+
+  test('ExportAndCopyNoOpWhenExportReturnsEmptyJson', async () => {
+    handler.setExportedJson('');
+    await render([makeSession()]);
+
+    const exportBtn =
+        app.shadowRoot.querySelector<HTMLButtonElement>('#export-btn')!;
+    const copyBtn =
+        app.shadowRoot.querySelector<HTMLButtonElement>('#copy-btn')!;
+    const copyToast = app.$.copyToast;
+
+    let downloadClicked = false;
+    const origClick = HTMLAnchorElement.prototype.click;
+    HTMLAnchorElement.prototype.click = () => {
+      downloadClicked = true;
+    };
+    try {
+      exportBtn.click();
+      await handler.whenCalled('exportSessionHistory');
+      await microtasksFinished();
+      assertFalse(downloadClicked);
+    } finally {
+      HTMLAnchorElement.prototype.click = origClick;
+    }
+
+    handler.resetResolver('exportSessionHistory');
+    let clipboardCalled = false;
+    const origWriteText = navigator.clipboard.writeText;
+    navigator.clipboard.writeText = () => {
+      clipboardCalled = true;
+      return Promise.resolve();
+    };
+    try {
+      copyBtn.click();
+      await handler.whenCalled('exportSessionHistory');
+      await microtasksFinished();
+      assertFalse(clipboardCalled);
+      assertFalse(copyToast.open);
+    } finally {
+      navigator.clipboard.writeText = origWriteText;
+    }
   });
 });

@@ -5,6 +5,7 @@
 #include "chrome/browser/browser_actuator/internals/browser_actuator_internals_ui_mojo_impl.h"
 
 #include <cstddef>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -39,11 +40,7 @@ BrowserActuatorInternalsUIMojoImpl::~BrowserActuatorInternalsUIMojoImpl() =
 
 void BrowserActuatorInternalsUIMojoImpl::GetSessionHistory(
     GetSessionHistoryCallback callback) {
-  BrowserActuatorService* service =
-      profile_ ? BrowserActuatorServiceFactory::GetForProfile(profile_)
-               : nullptr;
-  const SessionStreamRecorderFactory* recorder_factory =
-      service ? service->GetStreamRecorderFactory() : nullptr;
+  const SessionStreamRecorderFactory* recorder_factory = GetRecorderFactory();
   if (!recorder_factory) {
     // No service (feature off, or a non-regular profile), or the internals
     // feature did not install the recorder.
@@ -55,6 +52,26 @@ void BrowserActuatorInternalsUIMojoImpl::GetSessionHistory(
   // browser_actuator_internals_mojom_traits.h.
   std::move(callback).Run(
       recorder_factory->GetAllSessions(kMaxEventsPerSession, kMaxMessageBytes));
+}
+
+void BrowserActuatorInternalsUIMojoImpl::ExportSessionHistory(
+    const std::vector<std::string>& session_ids,
+    ExportSessionHistoryCallback callback) {
+  const SessionStreamRecorderFactory* recorder_factory = GetRecorderFactory();
+  if (!recorder_factory) {
+    std::move(callback).Run("");
+    return;
+  }
+
+  std::move(callback).Run(recorder_factory->ExportSessionsAsJson(session_ids));
+}
+
+const SessionStreamRecorderFactory*
+BrowserActuatorInternalsUIMojoImpl::GetRecorderFactory() const {
+  BrowserActuatorService* service =
+      profile_ ? BrowserActuatorServiceFactory::GetForProfile(profile_)
+               : nullptr;
+  return service ? service->GetStreamRecorderFactory() : nullptr;
 }
 
 }  // namespace browser_actuator

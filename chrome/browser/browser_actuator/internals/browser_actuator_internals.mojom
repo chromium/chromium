@@ -64,6 +64,12 @@ interface BrowserActuatorInternalsUI {
   // number of events per session (500) and the byte length of each
   // `message` (8 KB).
   GetSessionHistory() => (array<SessionSummary> sessions);
+
+  // Exports the recorded sessions matching `session_ids` as a
+  // pretty-printed JSON string without event count or message byte caps, for
+  // direct file download or clipboard copy (the page must not parse it).
+  // Returns an empty string if the session recorder is unavailable.
+  ExportSessionHistory(array<string> session_ids) => (string json);
 };
 
 // Factory interface for binding the BrowserActuatorInternalsUI and

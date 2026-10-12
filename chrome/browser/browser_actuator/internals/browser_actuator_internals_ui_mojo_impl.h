@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_BROWSER_ACTUATOR_INTERNALS_BROWSER_ACTUATOR_INTERNALS_UI_MOJO_IMPL_H_
 #define CHROME_BROWSER_BROWSER_ACTUATOR_INTERNALS_BROWSER_ACTUATOR_INTERNALS_UI_MOJO_IMPL_H_
 
+#include <string>
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/browser_actuator/internals/browser_actuator_internals.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -15,6 +18,8 @@
 class Profile;
 
 namespace browser_actuator {
+
+class SessionStreamRecorderFactory;
 
 // Mojo implementation of
 // browser_actuator_internals::mojom::BrowserActuatorInternalsUI.
@@ -36,8 +41,12 @@ class BrowserActuatorInternalsUIMojoImpl
 
   // browser_actuator_internals::mojom::BrowserActuatorInternalsUI:
   void GetSessionHistory(GetSessionHistoryCallback callback) override;
+  void ExportSessionHistory(const std::vector<std::string>& session_ids,
+                            ExportSessionHistoryCallback callback) override;
 
  private:
+  const SessionStreamRecorderFactory* GetRecorderFactory() const;
+
   // Outlives this object; the WebContents is destroyed before the Profile.
   raw_ptr<Profile> profile_;
 

@@ -5,10 +5,15 @@
 #include "chrome/browser/browser_actuator/internals/browser_actuator_internals_ui_mojo_impl.h"
 
 #include <memory>
+#include <optional>
+#include <string>
+#include <string_view>
 #include <vector>
 
+#include "base/json/json_reader.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/values.h"
 #include "chrome/browser/browser_actuator/browser_actuator_service_factory.h"
 #include "chrome/browser/browser_actuator/internals/browser_actuator_internals.mojom.h"
 #include "chrome/browser/browser_actuator/internals/browser_actuator_internals_ui.h"
@@ -72,6 +77,19 @@ class BrowserActuatorInternalsUIMojoImplTest : public testing::Test {
     profile_.reset();
   }
 
+  void RecordStartSessionCommand(std::string_view session_id) {
+    BrowserActuatorService* service =
+        BrowserActuatorServiceFactory::GetForProfile(profile_.get());
+    ASSERT_NE(service, nullptr);
+
+    TransportSession* session = service->GetOrCreateSession(session_id);
+    ASSERT_NE(session, nullptr);
+
+    ControlCommand command;
+    command.mutable_start_session();
+    session->OnMessage(PayloadType::kControl, command);
+  }
+
  protected:
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
@@ -120,16 +138,7 @@ TEST_F(BrowserActuatorInternalsUIMojoImplTest,
 
 TEST_F(BrowserActuatorInternalsUIMojoImplTest,
        GetSessionHistoryReturnsRecordedSession) {
-  BrowserActuatorService* service =
-      BrowserActuatorServiceFactory::GetForProfile(profile_.get());
-  ASSERT_NE(service, nullptr);
-
-  TransportSession* session = service->GetOrCreateSession("test_session_1");
-  ASSERT_NE(session, nullptr);
-
-  ControlCommand command;
-  command.mutable_start_session();
-  session->OnMessage(PayloadType::kControl, command);
+  RecordStartSessionCommand("test_session_1");
 
   base::test::TestFuture<std::vector<SessionSnapshot>> future;
   ui_remote_->GetSessionHistory(
@@ -172,6 +181,69 @@ TEST_F(BrowserActuatorInternalsUIMojoImplTest,
   base::test::TestFuture<std::vector<SessionSnapshot>> future;
   remote->GetSessionHistory(
       future.GetCallback<const std::vector<SessionSnapshot>&>());
+  EXPECT_TRUE(future.Get().empty());
+}
+
+TEST_F(BrowserActuatorInternalsUIMojoImplTest,
+       ExportSessionHistoryReturnsRecordedSessionsJson) {
+  RecordStartSessionCommand("test_session_1");
+  RecordStartSessionCommand("test_session_2");
+
+  base::test::TestFuture<std::string> future;
+  ui_remote_->ExportSessionHistory({"test_session_1"},
+                                   future.GetCallback<const std::string&>());
+  const std::string& json = future.Get();
+  EXPECT_FALSE(json.empty());
+
+  std::optional<base::DictValue> parsed =
+      base::JSONReader::ReadDict(json, base::JSON_PARSE_RFC);
+  ASSERT_TRUE(parsed.has_value());
+  const base::ListValue* sessions = parsed->FindList("sessions");
+  ASSERT_NE(sessions, nullptr);
+  ASSERT_EQ(sessions->size(), 1u);
+  const base::DictValue* session_dict = (*sessions)[0].GetIfDict();
+  ASSERT_NE(session_dict, nullptr);
+  const std::string* session_id = session_dict->FindString("session_id");
+  ASSERT_NE(session_id, nullptr);
+  EXPECT_EQ(*session_id, "test_session_1");
+  const base::ListValue* events = session_dict->FindList("events");
+  ASSERT_NE(events, nullptr);
+  EXPECT_EQ(events->size(), 2u);
+}
+
+TEST_F(BrowserActuatorInternalsUIMojoImplTest,
+       ExportSessionHistoryReturnsEmptyWhenInternalsDisabled) {
+  base::test::ScopedFeatureList disabled_internals;
+  disabled_internals.InitWithFeatures(
+      /*enabled_features=*/{kBrowserActuator},
+      /*disabled_features=*/{kBrowserActuatorInternals});
+  std::unique_ptr<TestingProfile> profile = TestingProfile::Builder().Build();
+
+  mojo::Remote<browser_actuator_internals::mojom::BrowserActuatorInternalsUI>
+      remote;
+  MockBrowserActuatorInternalsPage page;
+  auto impl = std::make_unique<BrowserActuatorInternalsUIMojoImpl>(
+      remote.BindNewPipeAndPassReceiver(), page.BindAndPassRemote(),
+      profile.get());
+
+  base::test::TestFuture<std::string> future;
+  remote->ExportSessionHistory({"test_session_1"},
+                               future.GetCallback<const std::string&>());
+  EXPECT_TRUE(future.Get().empty());
+}
+
+TEST_F(BrowserActuatorInternalsUIMojoImplTest,
+       ExportSessionHistoryReturnsEmptyWhenProfileIsNull) {
+  mojo::Remote<browser_actuator_internals::mojom::BrowserActuatorInternalsUI>
+      remote;
+  MockBrowserActuatorInternalsPage page;
+  auto impl = std::make_unique<BrowserActuatorInternalsUIMojoImpl>(
+      remote.BindNewPipeAndPassReceiver(), page.BindAndPassRemote(),
+      /*profile=*/nullptr);
+
+  base::test::TestFuture<std::string> future;
+  remote->ExportSessionHistory({"test_session_1"},
+                               future.GetCallback<const std::string&>());
   EXPECT_TRUE(future.Get().empty());
 }
 

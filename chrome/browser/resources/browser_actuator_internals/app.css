@@ -20,6 +20,19 @@
   padding-bottom: 12px;
 }
 
+.header-top {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+}
+
 .page-title {
   margin: 0 0 4px 0;
 }
