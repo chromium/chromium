@@ -52,6 +52,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
@@ -180,6 +181,8 @@ public class PrivacyGuideFragmentTest {
         }
         @FragmentType int nextCardType = getNextCardType(cardType);
         onViewWaiting(withText(mTitleNames.get(nextCardType)));
+        CriteriaHelper.pollUiThread(
+                () -> mPrivacyGuideTestRule.getFragment().isViewPagerIdleForTesting());
     }
 
     private void navigateFromCardToPrevious(@FragmentType int cardType) {
@@ -188,6 +191,8 @@ public class PrivacyGuideFragmentTest {
         onViewWaiting(withText(R.string.back)).perform(click());
         @FragmentType int previousCardType = getPreviousCardType(cardType);
         onViewWaiting(withText(mTitleNames.get(previousCardType)));
+        CriteriaHelper.pollUiThread(
+                () -> mPrivacyGuideTestRule.getFragment().isViewPagerIdleForTesting());
     }
 
     private void goToCard(@FragmentType int cardType) {
@@ -265,10 +270,11 @@ public class PrivacyGuideFragmentTest {
     }
 
     private void clickOnArrowNextToRadioButtonWithText(int textId) {
-        onView(
+        onViewWaiting(
                         allOf(
                                 withId(R.id.expand_arrow),
-                                withParent(hasSibling(withChild(withText(textId))))))
+                                withParent(hasSibling(withChild(withText(textId))))),
+                        displayingAtLeastOption(0))
                 .perform(scrollTo(), click());
     }
 

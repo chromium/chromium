@@ -371,6 +371,10 @@ public class PrivacyGuideFragment extends Fragment
         ResettersForTesting.register(() -> mPrivacyGuideMetricsDelegate = oldValue);
     }
 
+    boolean isViewPagerIdleForTesting() {
+        return mViewPager != null && mViewPager.getScrollState() == ViewPager2.SCROLL_STATE_IDLE;
+    }
+
     @Initializer
     @Override
     public void setProfile(Profile profile) {
