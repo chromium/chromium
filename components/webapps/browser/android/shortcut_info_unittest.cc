@@ -329,6 +329,45 @@ TEST_F(ShortcutInfoTest, ShortcutItemsPopulated) {
   EXPECT_FALSE(info_.best_shortcut_icon_urls[2].is_valid());
 }
 
+// Regression test for https://crbug.com/571884672. UpdateFromManifest() may be
+// called more than once on the same ShortcutInfo (WebApkUpdateDataFetcher does
+// so after every in-scope navigation while the WebAPK update check is alive).
+// |best_shortcut_icon_urls| must be rebuilt from scratch each time so that it
+// stays parallel to |shortcut_items|.
+TEST_F(ShortcutInfoTest, UpdateFromManifestTwiceKeepsShortcutVectorsInSync) {
+  WebappsIconUtils::SetIdealShortcutSizeForTesting(192);
+
+  manifest_.shortcuts.push_back(CreateShortcut(
+      "shortcut_1", {CreateImage("/i1.ico", {192, 192}, Purpose::ANY)}));
+  manifest_.shortcuts.push_back(CreateShortcut(
+      "shortcut_2", {CreateImage("/i2.ico", {192, 192}, Purpose::ANY)}));
+  manifest_.shortcuts.push_back(CreateShortcut(
+      "shortcut_3", {CreateImage("/i3.ico", {192, 192}, Purpose::ANY)}));
+
+  info_.UpdateFromManifest(manifest_);
+  ASSERT_EQ(info_.shortcut_items.size(), 3u);
+  ASSERT_EQ(info_.best_shortcut_icon_urls.size(), 3u);
+
+  // The same manifest again, e.g. a second page load inside the WebAPK scope.
+  // Before the fix this produced 3 shortcut items but 6 icon URLs.
+  info_.UpdateFromManifest(manifest_);
+  EXPECT_EQ(info_.shortcut_items.size(), 3u);
+  ASSERT_EQ(info_.best_shortcut_icon_urls.size(), 3u);
+  EXPECT_EQ(info_.best_shortcut_icon_urls[0].GetPath(), "/i1.ico");
+  EXPECT_EQ(info_.best_shortcut_icon_urls[1].GetPath(), "/i2.ico");
+  EXPECT_EQ(info_.best_shortcut_icon_urls[2].GetPath(), "/i3.ico");
+
+  // A changed manifest must replace, not extend, the chosen icon URLs.
+  manifest_.shortcuts.erase(manifest_.shortcuts.begin());
+  manifest_.shortcuts[0].icons = {
+      CreateImage("/i2_new.ico", {192, 192}, Purpose::ANY)};
+  info_.UpdateFromManifest(manifest_);
+  EXPECT_EQ(info_.shortcut_items.size(), 2u);
+  ASSERT_EQ(info_.best_shortcut_icon_urls.size(), 2u);
+  EXPECT_EQ(info_.best_shortcut_icon_urls[0].GetPath(), "/i2_new.ico");
+  EXPECT_EQ(info_.best_shortcut_icon_urls[1].GetPath(), "/i3.ico");
+}
+
 // Tests that if the optional shortcut short_name value is not provided, the
 // required name value is used.
 TEST_F(ShortcutInfoTest, ShortcutShortNameBackfilled) {

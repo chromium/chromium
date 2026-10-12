@@ -179,7 +179,9 @@ struct ShortcutInfo {
   // Id specified in the manifest.
   GURL manifest_id;
 
-  // Both shortcut item related vectors have the same size.
+  // Both shortcut item related vectors have the same size:
+  // |best_shortcut_icon_urls[i]| is the icon chosen for |shortcut_items[i]|
+  // (an empty GURL if none qualified). UpdateFromManifest() replaces both.
   std::vector<blink::Manifest::ShortcutItem> shortcut_items;
   std::vector<GURL> best_shortcut_icon_urls;
 };

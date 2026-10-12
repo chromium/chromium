@@ -251,6 +251,13 @@ void ShortcutInfo::UpdateFromManifest(const blink::mojom::Manifest& manifest) {
       shortcut_item.short_name = shortcut_item.name;
   }
 
+  // |best_shortcut_icon_urls| must stay parallel to |shortcut_items| (see
+  // shortcut_info.h). |shortcut_items| was replaced above, so drop the URLs
+  // chosen by any previous calls as well; otherwise repeated calls (e.g.
+  // WebApkUpdateDataFetcher re-fetching after an in-scope navigation) keep
+  // appending and the two vectors diverge. See https://crbug.com/571884672.
+  best_shortcut_icon_urls.clear();
+
   int ideal_shortcut_icons_size_px =
       WebappsIconUtils::GetIdealShortcutIconSizeInPx();
   for (const auto& manifest_shortcut : shortcut_items) {
