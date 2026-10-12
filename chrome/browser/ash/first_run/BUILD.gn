@@ -19,6 +19,7 @@ static_library("first_run") {
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/system_web_apps",
+    "//chrome/browser/policy",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/signin",

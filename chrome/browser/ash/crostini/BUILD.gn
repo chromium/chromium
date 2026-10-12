@@ -109,6 +109,7 @@ static_library("crostini") {
     "//chrome/browser/ash/guest_os/public",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/extensions/api/terminal:startup_status",
+    "//chrome/browser/policy",
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/ui/select_file_policy",
     "//chrome/browser/ui/webui/ash/system_web_dialog",

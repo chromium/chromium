@@ -20,6 +20,7 @@ static_library("virtual_tasks") {
     "//base",
     "//chrome/browser/ash/fileapi",
     "//chrome/browser/chromeos/upload_office_to_cloud",
+    "//chrome/browser/policy",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications",
     "//content/public/browser",

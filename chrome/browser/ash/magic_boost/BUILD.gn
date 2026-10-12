@@ -38,6 +38,7 @@ static_library("magic_boost") {
     "//chromeos/ash/services/orca/public/mojom",
     "//components/lens:buildflags",
     "//components/paint_preview/buildflags",
+    "//components/signin/public/identity_manager",
     "//components/translate/content/common",
     "//content/common:buildflags",
     "//content/public/common:interfaces",

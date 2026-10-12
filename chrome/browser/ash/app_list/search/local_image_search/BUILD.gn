@@ -35,6 +35,7 @@ static_library("local_image_search") {
   deps = [
     "//ash/public/cpp",
     "//base",
+    "//chrome/browser:browser_process",
     "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/app_list/search/common",
     "//chrome/browser/ash/file_manager",

@@ -73,6 +73,7 @@ static_library("extensions") {
     "//chrome/browser/resources/chromeos:app_icon_resources",
     "//chrome/browser/ui/ash/keyboard",
     "//chrome/browser/ui/ash/multi_user",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/web_applications",
     "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",

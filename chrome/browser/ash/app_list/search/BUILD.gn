@@ -122,6 +122,7 @@ static_library("search") {
     "//ash/webui/eche_app_ui",
     "//chrome/browser/ui/webui/ash/settings/pages/device/display_settings:mojom",
     "//chrome/browser/ui/webui/ash/settings/pages/device/input_device_settings:mojom",
+    "//ui/native_theme",
   ]
 
   if (is_chrome_branded) {

@@ -48,6 +48,7 @@ static_library("osauth") {
     "//chrome/browser/ash/auth",
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/quick_unlock",
+    "//chrome/browser/policy",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/ui/ash/login",

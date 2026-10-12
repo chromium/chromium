@@ -35,6 +35,7 @@ static_library("enrollment") {
   public_deps = [
     "//chrome/browser/ash/policy/server_backed_state",
     "//chrome/browser/ash/settings",
+    "//chrome/browser/policy",
     "//chromeos/ash/components/attestation",
     "//chromeos/ash/components/dbus/attestation:attestation_proto",
     "//chromeos/ash/components/dbus/constants",
@@ -47,6 +48,8 @@ static_library("enrollment") {
   ]
 
   deps = [
+    "//ash/constants",
+    "//build/config/chromebox_for_meetings:buildflags",
     "//build/config/cuttlefish:buildflags",
     "//build/config/squid:buildflags",
     "//chrome/browser:browser_process",

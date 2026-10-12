@@ -33,6 +33,7 @@ static_library("policy") {
     "//chrome/browser/ash/policy/remote_commands",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/chromeos/platform_keys",
+    "//chrome/browser/policy",
     "//chrome/browser/profiles:profile",
     "//chrome/common:constants",
     "//chromeos/ash/components/system",

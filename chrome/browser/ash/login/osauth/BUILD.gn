@@ -45,6 +45,7 @@ static_library("osauth") {
     "//ash/constants",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/policy",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_manager",
     "//chromeos/ash/components/browser_context_helper",

@@ -32,6 +32,7 @@ source_set("impl") {
   ]
   deps = [
     ":certificate_provider",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/views/notifications",
     "//chromeos/ash/components/browser_context_helper",

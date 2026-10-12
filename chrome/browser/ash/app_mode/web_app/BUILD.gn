@@ -33,6 +33,7 @@ static_library("web_app") {
     "//components/services/app_service/public/cpp:app_types",
     "//content/public/browser",
     "//net/traffic_annotation",
+    "//services/data_decoder/public/cpp",
     "//services/network/public/cpp",
     "//skia",
   ]

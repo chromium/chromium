@@ -40,11 +40,13 @@ static_library("cert_provisioning") {
   ]
 
   deps = [
+    "//ash/constants",
     "//chrome/browser/ash/platform_keys",
     "//chrome/browser/ash/platform_keys/key_permissions",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/invalidation",
+    "//chrome/browser/policy",
     "//chrome/common:constants",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus/attestation",

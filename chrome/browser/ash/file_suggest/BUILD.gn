@@ -27,6 +27,7 @@ static_library("file_suggest") {
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
+    "//chrome/browser:browser_process",
     "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_list/search/files",
     "//chrome/browser/ash/app_list/search/ranking",
