@@ -961,7 +961,7 @@ public class TabListMediator implements TabListNotificationHandler {
             PropertyModel newModel = mModelList.get(newIndex).model;
             int newId = newModel.get(TAB_ID);
             newModel.set(TabProperties.IS_SELECTED, true);
-            if (mTabListLayoutDelegate.requiresThumbnailUpdateOnSelect() && mTrackingTabs) {
+            if (mTrackingTabs) {
                 updateThumbnailFetcher(newModel, newId);
             }
         }

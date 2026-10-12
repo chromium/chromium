@@ -63,12 +63,6 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
     abstract boolean requiresThumbnailUpdateOnDeselect();
 
     /**
-     * Whether this layout requires fetching a fresh thumbnail when a tab becomes selected. Should
-     * be false for layouts that do not support thumbnails (like Vertical Tabs).
-     */
-    abstract boolean requiresThumbnailUpdateOnSelect();
-
-    /**
      * Whether a child tab in a tab group is represented by a group card in the UI.
      *
      * @param tab The {@link Tab} to check.

@@ -94,11 +94,6 @@ public class FlatLayoutDelegateUnitTest {
     }
 
     @Test
-    public void testRequiresThumbnailUpdateOnSelect() {
-        assertTrue(mDelegate.requiresThumbnailUpdateOnSelect());
-    }
-
-    @Test
     public void testRecordTabSelection() {
         when(mMediator.getComponentId()).thenReturn(TabComponentId.TAB_GRID_DIALOG_FROM_STRIP);
         when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
