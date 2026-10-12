@@ -103,6 +103,7 @@ source_set("impl") {
     sources += [ "session_restore_android.cc" ]
     deps += [
       "//chrome/browser/android:tabs_public",
+      "//chrome/browser/ui/android/tab_model",
       "//chrome/browser/ui/browser_window:create_browser_window",
     ]
   }

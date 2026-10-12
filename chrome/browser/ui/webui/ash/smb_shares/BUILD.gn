@@ -36,6 +36,7 @@ static_library("smb_shares") {
     "//components/user_manager",
     "//content/public/browser",
     "//content/public/common",
+    "//dbus",
     "//ui/base",
     "//ui/web_dialogs",
     "//ui/webui",
