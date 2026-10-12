@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/tabs/common/tab_group_header_view.h"
 
+#include "base/i18n/rtl.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -180,7 +181,7 @@ TabGroupHeaderView::TabGroupHeaderView(
           &TabGroupHeaderView::OnBubbleClosed, base::Unretained(this)));
 
   SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
-  SetInteriorMargin(gfx::Insets::VH(0, GetHorizontalInset()));
+  SetInteriorMargin(GetHeaderInsets());
   SetDefault(views::kFlexBehaviorKey,
              views::FlexSpecification(
                  views::MinimumFlexSizeRule::kScaleToMinimumSnapToZero,
@@ -259,7 +260,7 @@ gfx::Size TabGroupHeaderView::CalculatePreferredSize(
     non_label_width += attention_indicator_->GetPreferredSize().width() +
                        (margins ? margins->width() : 0);
   }
-  non_label_width += 2 * GetHorizontalInset();
+  non_label_width += GetHeaderInsets().width();
 
   int label_width =
       group_header_label_ ? group_header_label_->GetPreferredSize().width() : 0;
@@ -270,9 +271,11 @@ gfx::Size TabGroupHeaderView::CalculatePreferredSize(
                              sync_icon_width_with_margin;
   label_width = std::min(label_width, text_max_width);
 
-  const int empty_chip_size = TabGroupStyle::GetEmptyChipSize();
-  size.set_width(std::max(empty_chip_size, non_label_width + label_width));
-  size.set_height(empty_chip_size);
+  const int chip_height = delegate_->IsGroupFocused()
+                              ? TabGroupStyle::GetFocusedChipHeight()
+                              : TabGroupStyle::GetEmptyChipSize();
+  size.set_width(std::max(chip_height, non_label_width + label_width));
+  size.set_height(chip_height);
   return size;
 }
 
@@ -552,6 +555,7 @@ void TabGroupHeaderView::OnDataChanged(
     group_header_label_->SetText(tab_group_visual_data_.title());
   }
 
+  SetInteriorMargin(GetHeaderInsets());
   UpdateColors();
   if (GetColorProvider()) {
     UpdateAttentionState(
@@ -687,7 +691,7 @@ void TabGroupHeaderView::UpdateColors() {
 
   // Update background.
   SetBackground(
-      views::CreateRoundedRectBackground(background_color, GetCornerRadius()));
+      views::CreateRoundedRectBackground(background_color, GetCornerRadii()));
 }
 
 void TabGroupHeaderView::UpdateEditorBubbleButtonVisibility() {
@@ -763,8 +767,30 @@ int TabGroupHeaderView::GetCornerRadius() const {
   return TabGroupStyle::GetChipCornerRadius(orientation_);
 }
 
+gfx::RoundedCornersF TabGroupHeaderView::GetCornerRadii() const {
+  const float radius = GetCornerRadius();
+  if (!delegate_->IsGroupFocused()) {
+    return gfx::RoundedCornersF(radius);
+  }
+  constexpr float kFlatRadius = 2.0f;
+  if (orientation_ == TabStripOrientation::kVertical) {
+    return gfx::RoundedCornersF(kFlatRadius, kFlatRadius, radius, radius);
+  }
+  return base::i18n::IsRTL()
+             ? gfx::RoundedCornersF(radius, kFlatRadius, kFlatRadius, radius)
+             : gfx::RoundedCornersF(kFlatRadius, radius, radius, kFlatRadius);
+}
+
 int TabGroupHeaderView::GetHorizontalInset() const {
   return TabGroupStyle::GetInsetsForHeaderChip(orientation_).left();
+}
+
+gfx::Insets TabGroupHeaderView::GetHeaderInsets() const {
+  if (orientation_ == TabStripOrientation::kHorizontal &&
+      delegate_->IsGroupFocused()) {
+    return TabGroupStyle::GetInsetsForFocusedHeaderChip();
+  }
+  return gfx::Insets::VH(0, GetHorizontalInset());
 }
 
 BEGIN_METADATA(TabGroupHeaderView)

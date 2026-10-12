@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/tabs/common/tab_group_view.h"
 
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_header_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_line_view.h"
+#include "chrome/browser/ui/views/tabs/common/tab_group_unfocus_button.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_view_layout.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_collection_controller.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_utils.h"
@@ -72,6 +74,11 @@ TabGroupView::TabGroupView(TabCollectionNode* collection_node)
       collection_node_(collection_node),
       tab_group_visual_data_(
           *GetTabGroupFromNode(collection_node_)->visual_data()),
+      is_ephemeral_(GetTabGroupFromNode(collection_node_)->is_ephemeral()),
+      unfocus_header_(AddChildView(std::make_unique<TabGroupUnfocusButton>(
+          orientation_,
+          base::BindRepeating(&TabGroupView::ExitFocusMode,
+                              base::Unretained(this))))),
       group_header_(AddChildView(std::make_unique<TabGroupHeaderView>(
           *this,
           orientation_,
@@ -306,7 +313,13 @@ void TabGroupView::OnDataChanged() {
 
   const tabs::TabGroupData& tab_group_data =
       tab_group_data_observer_->tab_group_data();
+  is_ephemeral_ = GetTabGroupFromNode(collection_node_)->is_ephemeral();
   tab_group_visual_data_ = tab_group_data.visual_data;
+  if (unfocus_header_) {
+    unfocus_header_->SetVisible(IsGroupFocused());
+    unfocus_header_->SetGroupColorData(tab_group_visual_data_.color(),
+                                       is_ephemeral_);
+  }
   group_header_->OnDataChanged(tab_group_data);
 
   // If the tab group is not collapsed update child visibility immediately. This
@@ -522,6 +535,9 @@ void TabGroupView::ShiftGroupDown() {
 }
 
 bool TabGroupView::IsGroupFocused() const {
+  if (is_ephemeral_) {
+    return true;
+  }
   if (!collection_node_ || !collection_node_->GetController()) {
     return false;
   }
@@ -534,6 +550,18 @@ HorizontalTabClosingHelper* TabGroupView::GetTabClosingHelper() const {
     return collection_node_->GetController()->tab_closing_helper();
   }
   return nullptr;
+}
+
+void TabGroupView::ExitFocusMode() {
+  if (!collection_node_ || !collection_node_->GetController()) {
+    return;
+  }
+  BrowserView* browser_view =
+      collection_node_->GetController()->GetBrowserView();
+  if (browser_view) {
+    chrome::ExitFocusMode(browser_view->browser(),
+                          TabGroupFocusExitReason::kHeaderUnfocusButton);
+  }
 }
 
 BEGIN_METADATA(TabGroupView)
