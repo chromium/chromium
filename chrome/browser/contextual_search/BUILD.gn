@@ -68,10 +68,14 @@ source_set("contextual_cueing") {
     "//components/pdf/common:constants",
     "//components/sync/service",
     "//components/vector_icons",
+    "//third_party/omnibox_proto",
     "//ui/base",
     "//ui/color",
     "//ui/gfx",
   ]
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui/lens" ]
+  }
 }
 
 source_set("unit_tests") {
@@ -86,24 +90,32 @@ source_set("unit_tests") {
     ":contextual_search",
     "//base/test:test_support",
     "//chrome/browser/contextual_cueing",
+    "//chrome/browser/contextual_tasks",
+    "//chrome/browser/contextual_tasks:ui",
     "//chrome/browser/history",
     "//chrome/browser/page_content_annotations",
     "//chrome/browser/signin",
     "//chrome/browser/sync",
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_render_view_host_test_harness",
+    "//components/contextual_search:test_support",
     "//components/contextual_tasks/public:feature_list",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/page_content_annotations/core:test_support",
     "//components/pdf/common:constants",
     "//components/sync:test_support",
     "//components/tabs:test_support",
+    "//components/version_info:channel",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/omnibox_proto",
     "//ui/base/unowned_user_data",
   ]
   if (!is_android) {
-    deps += [ "//chrome/browser/ui/browser_window/test:test_support" ]
+    deps += [
+      "//chrome/browser/ui/browser_window/test:test_support",
+      "//chrome/browser/ui/lens",
+    ]
   }
 }

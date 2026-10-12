@@ -4,6 +4,7 @@
 
 #include "chrome/browser/contextual_search/contextual_search_cue_target.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -22,10 +23,9 @@
 #include "chrome/browser/contextual_search/contextual_search_cue_tab_state.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -48,9 +48,14 @@
 #include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/image/image_skia.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/lens/lens_search_controller.h"
+#endif
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/grit/theme_resources.h"
@@ -175,9 +180,18 @@ bool ContextualSearchCueTarget::IsPageEligible(
 }
 
 bool ContextualSearchCueTarget::IsEligible() const {
+#if BUILDFLAG(IS_ANDROID)
+  return false;
+#else
   auto* window = tab_->GetBrowserWindowInterface();
   if (!window) {
     CUEING_LOG("ContextualSearchCueTarget::IsEligible failed: No window.");
+    return false;
+  }
+  if (!LensSearchController::From(&tab_.get())) {
+    CUEING_LOG(
+        "ContextualSearchCueTarget::IsEligible failed: No "
+        "LensSearchController.");
     return false;
   }
   syncer::SyncService* sync_service =
@@ -196,6 +210,15 @@ bool ContextualSearchCueTarget::IsEligible() const {
         "eligible.");
     return false;
   }
+  auto* eligibility_manager =
+      contextual_tasks::ContextualTasksEligibilityManager::GetForProfile(
+          tab_->GetProfile());
+  if (!eligibility_manager || !eligibility_manager->IsSidePanelAvailable()) {
+    CUEING_LOG(
+        "ContextualSearchCueTarget::IsEligible failed: Side panel not "
+        "available.");
+    return false;
+  }
   auto* panel_controller =
       contextual_tasks::ContextualTasksPanelController::From(window);
   if (panel_controller && panel_controller->IsPanelOpenForContextualTask()) {
@@ -204,6 +227,7 @@ bool ContextualSearchCueTarget::IsEligible() const {
     return false;
   }
   return true;
+#endif
 }
 
 void ContextualSearchCueTarget::OnAnchoredMessageClicked(
@@ -277,6 +301,11 @@ void ContextualSearchCueTarget::OnAnchoredMessageClicked(
     params.tabs_for_contextual_searchbox_first_turn.push_back(
         handle.raw_value());
   }
+  if (!std::ranges::contains(params.tabs_for_contextual_searchbox_first_turn,
+                             tab_->GetHandle().raw_value())) {
+    params.tabs_for_contextual_searchbox_first_turn.push_back(
+        tab_->GetHandle().raw_value());
+  }
   params.on_ineligible_callback = base::DoNothing();
   params.on_processed_callback = base::DoNothing();
   auto on_contextualized_callback =
@@ -323,21 +352,30 @@ void ContextualSearchCueTarget::OnContextualizationComplete(
 }
 
 void ContextualSearchCueTarget::OpenContextualTasksSidePanel(GURL url) {
+#if !BUILDFLAG(IS_ANDROID)
   Profile* profile = tab_->GetProfile();
   BrowserWindowInterface* window = tab_->GetBrowserWindowInterface();
   if (!profile || !window) {
+    session_handle_.reset();
     return;
   }
 
-  auto* ui_service =
-      contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
+  auto* eligibility_manager =
+      contextual_tasks::ContextualTasksEligibilityManager::GetForProfile(
           profile);
-  if (!ui_service) {
+  if (!eligibility_manager || !eligibility_manager->IsSidePanelAvailable()) {
+    session_handle_.reset();
     return;
   }
 
-  ui_service->StartTaskUiInSidePanel(window, &tab_.get(), url,
-                                     std::move(session_handle_));
+  auto* lens_search_controller = LensSearchController::From(&tab_.get());
+  if (!lens_search_controller ||
+      !lens_search_controller->StartContextualAimQueryInSidePanel(
+          url, session_handle_,
+          omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_CONTEXTUAL_CUE)) {
+    session_handle_.reset();
+  }
+#endif
 }
 
 bool ContextualSearchCueTarget::SupportsEditPrompt() const {

@@ -11,12 +11,20 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/contextual_cueing/features.h"
 #include "chrome/browser/contextual_search/contextual_search_cue_tab_state.h"
+#include "chrome/browser/contextual_search/contextual_search_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_delegate.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/contextual_search/mock_contextual_search_service.h"
+#include "components/contextual_search/mock_contextual_search_session_handle.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/optimization_guide/proto/features/contextual_cueing.pb.h"
 #include "components/page_content_annotations/core/page_content_annotations_common.h"
@@ -26,15 +34,18 @@
 #include "components/sync/service/sync_user_settings.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/tabs/public/mock_tab_interface.h"
+#include "components/version_info/channel.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/lens/lens_search_controller.h"
 #endif
 
 namespace contextual_search {
@@ -43,6 +54,24 @@ namespace {
 using ::page_content_annotations::Category;
 using ::page_content_annotations::CategoryType;
 using ::page_content_annotations::PageContentAnnotationsResult;
+
+#if !BUILDFLAG(IS_ANDROID)
+class MockLensSearchController : public LensSearchController {
+ public:
+  explicit MockLensSearchController(tabs::TabInterface* tab)
+      : LensSearchController(tab) {}
+  ~MockLensSearchController() override = default;
+
+  MOCK_METHOD(
+      bool,
+      StartContextualAimQueryInSidePanel,
+      (const GURL& url,
+       std::unique_ptr<contextual_search::ContextualSearchSessionHandle>&
+           session_handle,
+       omnibox::ChromeAimEntryPoint aim_entry_point),
+      (override));
+};
+#endif
 
 class ContextualSearchCueTargetTest : public ChromeRenderViewHostTestHarness {
  public:
@@ -57,6 +86,7 @@ class ContextualSearchCueTargetTest : public ChromeRenderViewHostTestHarness {
             {contextual_tasks::kContextualSearchContextualCuesHandleEdu, {}},
             {contextual_tasks::kContextualSearchContextualCuesHandleShopping,
              {}},
+            {contextual_tasks::kContextualTasksSidePanel, {}},
             {contextual_tasks::kContextualTasksForceEntryPointEligibility, {}},
         },
         {});
@@ -66,11 +96,30 @@ class ContextualSearchCueTargetTest : public ChromeRenderViewHostTestHarness {
     return IdentityTestEnvironmentProfileAdaptor::
         GetIdentityTestEnvironmentFactoriesWithAppendedFactories(
             {TestingProfile::TestingFactory{
-                SyncServiceFactory::GetInstance(),
-                base::BindRepeating([](content::BrowserContext* context)
-                                        -> std::unique_ptr<KeyedService> {
-                  return std::make_unique<syncer::TestSyncService>();
-                })}});
+                 SyncServiceFactory::GetInstance(),
+                 base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+                   return std::make_unique<syncer::TestSyncService>();
+                 })},
+             TestingProfile::TestingFactory{
+                 contextual_tasks::ContextualTasksUiServiceFactory::
+                     GetInstance(),
+                 base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+                   auto* prof = Profile::FromBrowserContext(context);
+                   auto eligibility_manager = std::make_unique<
+                       contextual_tasks::ContextualTasksEligibilityManager>(
+                       prof->GetPrefs(), /*identity_manager=*/nullptr,
+                       /*aim_eligibility_service=*/nullptr);
+                   return std::make_unique<
+                       contextual_tasks::ContextualTasksUiService>(
+                       prof, /*delegate=*/nullptr,
+                       /*contextual_tasks_service=*/nullptr,
+                       /*identity_manager=*/nullptr,
+                       /*aim_eligibility_service=*/nullptr,
+                       std::move(eligibility_manager),
+                       /*cookie_synchronizer=*/nullptr);
+                 })}});
   }
 
   void SetUp() override {
@@ -82,6 +131,8 @@ class ContextualSearchCueTargetTest : public ChromeRenderViewHostTestHarness {
     mock_tab_ = std::make_unique<tabs::MockTabInterface>();
     EXPECT_CALL(*mock_tab_, GetProfile())
         .WillRepeatedly(testing::Return(profile()));
+    ON_CALL(*mock_tab_, GetUnownedUserDataHost())
+        .WillByDefault(testing::ReturnRef(tab_user_data_host_));
 #if !BUILDFLAG(IS_ANDROID)
     mock_browser_window_interface_ =
         std::make_unique<testing::NiceMock<MockBrowserWindowInterface>>();
@@ -89,6 +140,9 @@ class ContextualSearchCueTargetTest : public ChromeRenderViewHostTestHarness {
         .WillByDefault(testing::ReturnRef(window_user_data_host_));
     EXPECT_CALL(*mock_tab_, GetBrowserWindowInterface())
         .WillRepeatedly(testing::Return(mock_browser_window_interface_.get()));
+    mock_lens_search_controller_ =
+        std::make_unique<testing::NiceMock<MockLensSearchController>>(
+            mock_tab_.get());
 #endif
 
     target_ = std::make_unique<ContextualSearchCueTarget>(
@@ -98,6 +152,7 @@ class ContextualSearchCueTargetTest : public ChromeRenderViewHostTestHarness {
   void TearDown() override {
     target_.reset();
 #if !BUILDFLAG(IS_ANDROID)
+    mock_lens_search_controller_.reset();
     mock_browser_window_interface_.reset();
 #endif
     mock_tab_.reset();
@@ -127,10 +182,13 @@ class ContextualSearchCueTargetTest : public ChromeRenderViewHostTestHarness {
       identity_test_env_adaptor_;
 
   ui::UnownedUserDataHost window_user_data_host_;
+  ui::UnownedUserDataHost tab_user_data_host_;
   std::unique_ptr<tabs::MockTabInterface> mock_tab_;
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<testing::NiceMock<MockBrowserWindowInterface>>
       mock_browser_window_interface_;
+  std::unique_ptr<testing::NiceMock<MockLensSearchController>>
+      mock_lens_search_controller_;
 #endif
 
   std::unique_ptr<ContextualSearchCueTarget> target_;
@@ -162,6 +220,34 @@ TEST_F(ContextualSearchCueTargetTest, IsEligible_NoBrowserWindow) {
 
   EXPECT_CALL(*mock_tab_, GetBrowserWindowInterface())
       .WillRepeatedly(testing::Return(nullptr));
+  EXPECT_FALSE(target_->IsEligible());
+}
+
+TEST_F(ContextualSearchCueTargetTest, IsEligible_NoLensSearchController) {
+  auto* sync_service = static_cast<syncer::TestSyncService*>(
+      SyncServiceFactory::GetForProfile(profile()));
+  sync_service->SetSignedIn(signin::ConsentLevel::kSignin);
+  sync_service->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kHistory, true);
+
+  mock_lens_search_controller_.reset();
+  EXPECT_FALSE(target_->IsEligible());
+}
+
+TEST_F(ContextualSearchCueTargetTest, IsEligible_SidePanelNotAvailable) {
+  auto* sync_service = static_cast<syncer::TestSyncService*>(
+      SyncServiceFactory::GetForProfile(profile()));
+  sync_service->SetSignedIn(signin::ConsentLevel::kSignin);
+  sync_service->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kHistory, true);
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{
+          contextual_tasks::kContextualTasks,
+          contextual_tasks::kContextualTasksSidePanel,
+          contextual_tasks::kContextualTasksRearchitecture});
   EXPECT_FALSE(target_->IsEligible());
 }
 #endif
@@ -320,6 +406,114 @@ TEST_F(ContextualSearchCueTargetTest, MetadataAndProperties) {
   EXPECT_FALSE(target_->SupportsIntrusiveness(
       contextual_cueing::CueIntrusiveness::kQuiet));
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(ContextualSearchCueTargetTest,
+       OnAnchoredMessageClicked_StartsContextualAimQueryInSidePanel) {
+  ContextualSearchServiceFactory::GetInstance()->SetTestingFactory(
+      profile(), base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+        return std::make_unique<MockContextualSearchService>(
+            /*identity_manager=*/nullptr,
+            /*url_loader_factory=*/nullptr,
+            /*template_url_service=*/nullptr,
+            /*variations_client=*/nullptr, version_info::Channel::UNKNOWN,
+            /*locale=*/"");
+      }));
+
+  auto* contextual_search_service = static_cast<MockContextualSearchService*>(
+      ContextualSearchServiceFactory::GetForProfile(profile()));
+  ASSERT_TRUE(contextual_search_service);
+
+  const GURL expected_url("https://www.google.com/search?q=compare+headphones");
+  auto session_handle =
+      std::make_unique<testing::NiceMock<MockContextualSearchSessionHandle>>();
+  EXPECT_CALL(*session_handle, NotifySessionStarted()).Times(1);
+  EXPECT_CALL(*session_handle, CreateSearchUrl(testing::_, testing::_))
+      .WillOnce(
+          [&](std::unique_ptr<ContextualSearchContextController::
+                                  CreateSearchUrlRequestInfo> request_info,
+              base::OnceCallback<void(GURL)> callback) {
+            ASSERT_TRUE(request_info);
+            EXPECT_EQ(request_info->query_text, "compare headphones");
+            std::move(callback).Run(expected_url);
+          });
+
+  EXPECT_CALL(*contextual_search_service,
+              CreateSession(testing::_, testing::_, testing::_))
+      .WillOnce(testing::Return(std::move(session_handle)));
+
+  EXPECT_CALL(
+      *mock_lens_search_controller_,
+      StartContextualAimQueryInSidePanel(
+          expected_url, testing::_,
+          omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_CONTEXTUAL_CUE))
+      .WillOnce(
+          [](const GURL&,
+             std::unique_ptr<contextual_search::ContextualSearchSessionHandle>&
+                 handle,
+             omnibox::ChromeAimEntryPoint) {
+            EXPECT_TRUE(handle);
+            handle.reset();
+            return true;
+          });
+
+  contextual_cueing::ContextualSearchCueActionData cs_data;
+  cs_data.query = "compare headphones";
+  target_->OnAnchoredMessageClicked(cs_data);
+}
+
+TEST_F(ContextualSearchCueTargetTest,
+       OnAnchoredMessageClicked_SidePanelNotAvailableDoesNotStartQuery) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{
+          contextual_tasks::kContextualTasks,
+          contextual_tasks::kContextualTasksSidePanel,
+          contextual_tasks::kContextualTasksRearchitecture});
+
+  ContextualSearchServiceFactory::GetInstance()->SetTestingFactory(
+      profile(), base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+        return std::make_unique<MockContextualSearchService>(
+            /*identity_manager=*/nullptr,
+            /*url_loader_factory=*/nullptr,
+            /*template_url_service=*/nullptr,
+            /*variations_client=*/nullptr, version_info::Channel::UNKNOWN,
+            /*locale=*/"");
+      }));
+
+  auto* contextual_search_service = static_cast<MockContextualSearchService*>(
+      ContextualSearchServiceFactory::GetForProfile(profile()));
+  ASSERT_TRUE(contextual_search_service);
+
+  const GURL expected_url("https://www.google.com/search?q=compare+headphones");
+  auto session_handle =
+      std::make_unique<testing::NiceMock<MockContextualSearchSessionHandle>>();
+  EXPECT_CALL(*session_handle, NotifySessionStarted()).Times(1);
+  EXPECT_CALL(*session_handle, CreateSearchUrl(testing::_, testing::_))
+      .WillOnce(
+          [&](std::unique_ptr<ContextualSearchContextController::
+                                  CreateSearchUrlRequestInfo> request_info,
+              base::OnceCallback<void(GURL)> callback) {
+            std::move(callback).Run(expected_url);
+          });
+
+  EXPECT_CALL(*contextual_search_service,
+              CreateSession(testing::_, testing::_, testing::_))
+      .WillOnce(testing::Return(std::move(session_handle)));
+
+  EXPECT_CALL(*mock_lens_search_controller_,
+              StartContextualAimQueryInSidePanel(testing::_, testing::_,
+                                                 testing::_))
+      .Times(0);
+
+  contextual_cueing::ContextualSearchCueActionData cs_data;
+  cs_data.query = "compare headphones";
+  target_->OnAnchoredMessageClicked(cs_data);
+}
+#endif
 
 }  // namespace
 
