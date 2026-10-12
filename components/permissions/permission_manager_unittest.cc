@@ -930,6 +930,34 @@ TEST_F(PermissionManagerTest, StorageAccessPermissionRequestMasksDenied) {
   EXPECT_EQ(PermissionStatus::ASK, callback_result());
 }
 
+// Regression test for https://crbug.com/571195939: an opaque initial empty
+// document must not be able to use the permission grants of the origin it is
+// navigating to while that navigation is still pending.
+TEST_F(PermissionManagerTest,
+       InitialEmptyDocumentDoesNotUseGrantOfPendingNavigation) {
+  SetPermission(PermissionType::GEOLOCATION, PermissionStatus::GRANTED);
+
+  std::unique_ptr<content::WebContents> contents = CreateTestWebContents();
+  content::RenderFrameHost* rfh = contents->GetPrimaryMainFrame();
+  content::RenderFrameHostTester::For(rfh)->InitializeRenderFrameIfNeeded();
+  ASSERT_TRUE(rfh->GetLastCommittedOrigin().opaque());
+
+  // Start, but do not commit, a navigation to an origin with a grant. This
+  // makes the pending URL the visible URL of the WebContents.
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      url(), contents.get());
+  navigation->Start();
+  ASSERT_EQ(url(), contents->GetVisibleURL());
+  ASSERT_EQ(rfh, contents->GetPrimaryMainFrame());
+
+  EXPECT_EQ(PermissionStatus::DENIED, GetPermissionStatusForCurrentDocument(
+                                          PermissionType::GEOLOCATION, rfh));
+
+  RequestPermissionFromCurrentDocument(PermissionType::GEOLOCATION, rfh);
+  EXPECT_TRUE(callback_called());
+  EXPECT_EQ(PermissionStatus::DENIED, callback_result());
+}
+
 class PermissionManagerWithGeolocationTest : public PermissionManagerTest {
  public:
   PermissionManagerWithGeolocationTest() {

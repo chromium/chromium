@@ -1210,8 +1210,7 @@ TEST_F(PermissionContextBaseTests,
           NOTIFICATIONS>(/*enable_app_level_notification_permission=*/
                          false);
   GURL url("https://example.test");
-  controller().LoadURL(url, content::Referrer(), ui::PAGE_TRANSITION_TYPED,
-                       std::string());
+  SetUpUrl(url);
 
   const PermissionRequestID id(
       web_contents()->GetPrimaryMainFrame()->GetGlobalId(),

@@ -71,9 +71,9 @@ GURL PermissionUtil::GetLastCommittedOriginAsURL(
     content::RenderFrameHost* render_frame_host) {
   CHECK(render_frame_host);
 
+#if BUILDFLAG(IS_ANDROID)
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
-#if BUILDFLAG(IS_ANDROID)
   // If `allow_universal_access_from_file_urls` flag is enabled, a file:/// can
   // change its url via history.pushState/replaceState to any other url,
   // including about:blank. To avoid user confusion we should always use a
@@ -88,13 +88,14 @@ GURL PermissionUtil::GetLastCommittedOriginAsURL(
   }
 #endif
 
-  GURL origin = render_frame_host->GetLastCommittedOrigin().GetURL();
-  if (origin.is_empty() && render_frame_host->IsInPrimaryMainFrame()) {
-    if (!web_contents->GetVisibleURL().is_empty()) {
-      origin = web_contents->GetVisibleURL().DeprecatedGetOriginAsURL();
-    }
+  const url::Origin& origin = render_frame_host->GetLastCommittedOrigin();
+  if (origin.opaque() && render_frame_host->IsInPrimaryMainFrame()) {
+    // For historical reasons we are supporting permission grants to sandboxed
+    // documents.
+    // TODO(https://crbug.com/571135408): Revisit this logic.
+    return origin.GetTupleOrPrecursorTupleIfOpaque().GetURL();
   }
-  return origin;
+  return origin.GetURL();
 }
 
 bool PermissionUtil::IsDomainOverride(
