@@ -213,6 +213,7 @@ bool IsGlicNoWebviewEnabled();
 // parameter to the guest URL when NoWebview is enabled.
 BASE_DECLARE_FEATURE(kGlicSetAuthUser);
 BASE_DECLARE_FEATURE(kGlicDisconnectedWebview);
+BASE_DECLARE_FEATURE(kGlicGuestInitialSize);
 
 BASE_DECLARE_FEATURE(kGlicShakeTrigger);
 extern const base::FeatureParam<bool> kGlicShakeTriggerOnlyOnSidePanel;
