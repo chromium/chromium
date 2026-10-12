@@ -42,6 +42,7 @@ import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.identitymanager.IdentityManager.RefreshTokensLoadingState;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.google_apis.gaia.CoreAccountId;
 
@@ -614,7 +615,8 @@ public class ProfileDataCache
 
     private @Nullable List<AccountInfo> getCoreAccountsIfLoaded() {
         if (SigninFeatureMap.isEnabled(SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS)) {
-            if (mIdentityManager.areRefreshTokensLoaded()) {
+            if (mIdentityManager.getRefreshTokensLoadingState()
+                    == RefreshTokensLoadingState.SUCCEEDED) {
                 return mIdentityManager.getExtendedAccountInfoForAccountsWithRefreshToken();
             }
             // TODO(crbug.com/566138426): Refresh tokens are never loaded if the device account
@@ -740,10 +742,12 @@ public class ProfileDataCache
 
         /** Implements {@link IdentityManager.Observer}. */
         @Override
-        public void onRefreshTokensLoaded() {
+        public void onRefreshTokensLoaded(@RefreshTokensLoadingState int state) {
             assert SigninFeatureMap.isEnabled(
                     SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS);
-            updateCache(mIdentityManager.getExtendedAccountInfoForAccountsWithRefreshToken());
+            if (state == RefreshTokensLoadingState.SUCCEEDED) {
+                updateCache(mIdentityManager.getExtendedAccountInfoForAccountsWithRefreshToken());
+            }
         }
 
         /**
@@ -755,7 +759,8 @@ public class ProfileDataCache
         public void onRefreshTokenUpdatedForAccount(CoreAccountInfo coreAccountInfo) {
             assert SigninFeatureMap.isEnabled(
                     SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS);
-            if (mIdentityManager.areRefreshTokensLoaded()) {
+            if (mIdentityManager.getRefreshTokensLoadingState()
+                    == RefreshTokensLoadingState.SUCCEEDED) {
                 updateCache(mIdentityManager.getExtendedAccountInfoForAccountsWithRefreshToken());
             }
         }
@@ -769,7 +774,8 @@ public class ProfileDataCache
         public void onRefreshTokenRemovedForAccount(CoreAccountId accountId) {
             assert SigninFeatureMap.isEnabled(
                     SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS);
-            if (mIdentityManager.areRefreshTokensLoaded()) {
+            if (mIdentityManager.getRefreshTokensLoadingState()
+                    == RefreshTokensLoadingState.SUCCEEDED) {
                 updateCache(mIdentityManager.getExtendedAccountInfoForAccountsWithRefreshToken());
             }
         }

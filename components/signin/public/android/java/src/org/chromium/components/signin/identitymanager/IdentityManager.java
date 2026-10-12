@@ -4,6 +4,7 @@
 
 package org.chromium.components.signin.identitymanager;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.MainThread;
 
 import org.chromium.build.annotations.NullMarked;
@@ -12,19 +13,39 @@ import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.google_apis.gaia.CoreAccountId;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
 /** IdentityManager provides access to native IdentityManager's public API to java components. */
 @NullMarked
 public interface IdentityManager {
+
+    /**
+     * Represents the state of the refresh tokens loading.
+     *
+     * <p>TODO(crbug.com/572579970): Move refresh tokens loading state to native IdentityManager. *
+     */
+    @IntDef({RefreshTokensLoadingState.IN_PROGRESS, RefreshTokensLoadingState.SUCCEEDED})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface RefreshTokensLoadingState {
+        int IN_PROGRESS = 0;
+        int SUCCEEDED = 1;
+    }
+
     /**
      * IdentityManager.Observer is notified when the available account information are updated. This
      * is a subset of native's IdentityManager::Observer.
      */
     interface Observer {
 
-        /** Called when all accounts are loaded. */
-        default void onRefreshTokensLoaded() {}
+        /**
+         * Called when loading of refresh tokens is finished.
+         *
+         * @param state The state of refresh token loading. This state is terminal and will never
+         *     change back to {@link RefreshTokensLoadingState#IN_PROGRESS}.
+         */
+        default void onRefreshTokensLoaded(@RefreshTokensLoadingState int state) {}
 
         /** Called when the given account is updated. */
         default void onRefreshTokenUpdatedForAccount(CoreAccountInfo coreAccountInfo) {}
@@ -81,12 +102,13 @@ public interface IdentityManager {
      * Returns an array of all accounts with refresh tokens.
      *
      * <p>Note: Returns an empty array if refresh tokens are not yet fully loaded. Use {@link
-     * #areRefreshTokensLoaded()} to verify the loading state before calling this method.
+     * #getRefreshTokensLoadingState()} to verify the loading state before calling this method.
      */
     List<AccountInfo> getExtendedAccountInfoForAccountsWithRefreshToken();
 
-    /** Returns true if all accounts are loaded. */
-    boolean areRefreshTokensLoaded();
+    /** Returns the state of the refresh tokens loading. */
+    @RefreshTokensLoadingState
+    int getRefreshTokensLoadingState();
 
     /** Refreshes extended {@link AccountInfo} with image for all accounts with a refresh token. */
     // TODO(crbug.com/365057341): This doesn't need to be exposed in Java. Move this logic to

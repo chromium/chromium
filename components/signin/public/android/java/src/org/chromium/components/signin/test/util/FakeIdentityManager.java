@@ -29,7 +29,8 @@ public class FakeIdentityManager implements IdentityManager {
     private @Nullable CoreAccountInfo mPrimaryAccount;
     private boolean mIsOnExtendedAccountInfoUpdatedBlocked;
     private boolean mIsClearPrimaryAccountAllowed;
-    private boolean mAreRefreshTokensLoaded = true;
+    private @RefreshTokensLoadingState int mRefreshTokensLoadingState =
+            RefreshTokensLoadingState.SUCCEEDED;
 
     @Override
     public void addObserver(Observer observer) {
@@ -89,8 +90,8 @@ public class FakeIdentityManager implements IdentityManager {
     }
 
     @Override
-    public boolean areRefreshTokensLoaded() {
-        return mAreRefreshTokensLoaded;
+    public @RefreshTokensLoadingState int getRefreshTokensLoadingState() {
+        return mRefreshTokensLoadingState;
     }
 
     /**
@@ -102,7 +103,7 @@ public class FakeIdentityManager implements IdentityManager {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mExtendedAccountInfos.put(accountInfo.getId(), accountInfo);
-                    if (mAreRefreshTokensLoaded) {
+                    if (mRefreshTokensLoadingState == RefreshTokensLoadingState.SUCCEEDED) {
                         for (Observer observer : mObservers) {
                             observer.onRefreshTokenUpdatedForAccount(accountInfo);
                         }
@@ -145,7 +146,7 @@ public class FakeIdentityManager implements IdentityManager {
                     if (mPrimaryAccount != null && mPrimaryAccount.getId().equals(accountId)) {
                         mPrimaryAccount = null;
                     }
-                    if (mAreRefreshTokensLoaded) {
+                    if (mRefreshTokensLoadingState == RefreshTokensLoadingState.SUCCEEDED) {
                         for (Observer observer : mObservers) {
                             observer.onRefreshTokenRemovedForAccount(accountId);
                         }
@@ -170,13 +171,22 @@ public class FakeIdentityManager implements IdentityManager {
                 });
     }
 
-    public void setAreRefreshTokensLoaded(boolean areRefreshTokensLoaded) {
-        mAreRefreshTokensLoaded = areRefreshTokensLoaded;
-        if (mAreRefreshTokensLoaded) {
-            for (Observer observer : mObservers) {
-                observer.onRefreshTokensLoaded();
-            }
-        }
+    /**
+     * Sets the refresh tokens loading state.
+     *
+     * @param refreshTokensLoadingState The refresh tokens loading state.
+     */
+    public void setRefreshTokensLoadingState(
+            @RefreshTokensLoadingState int refreshTokensLoadingState) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mRefreshTokensLoadingState = refreshTokensLoadingState;
+                    if (mRefreshTokensLoadingState != RefreshTokensLoadingState.IN_PROGRESS) {
+                        for (Observer observer : mObservers) {
+                            observer.onRefreshTokensLoaded(mRefreshTokensLoadingState);
+                        }
+                    }
+                });
     }
 
     public void setIsClearPrimaryAccountAllowed(boolean isAllowed) {

@@ -125,10 +125,16 @@ public class IdentityManagerImpl implements IdentityManager {
         return Arrays.asList(accounts);
     }
 
-    /** Returns whether all accounts are loaded. */
+    /**
+     * Returns the state of the refresh tokens loading.
+     *
+     * <p>TODO(crbug.com/572579970): Move refresh tokens loading state to native IdentityManager.
+     */
     @Override
-    public boolean areRefreshTokensLoaded() {
-        return IdentityManagerImplJni.get().areRefreshTokensLoaded(mNativeIdentityManager);
+    public @RefreshTokensLoadingState int getRefreshTokensLoadingState() {
+        return IdentityManagerImplJni.get().areRefreshTokensLoaded(mNativeIdentityManager)
+                ? RefreshTokensLoadingState.SUCCEEDED
+                : RefreshTokensLoadingState.IN_PROGRESS;
     }
 
     /**
@@ -146,7 +152,7 @@ public class IdentityManagerImpl implements IdentityManager {
     @CalledByNative
     private void onRefreshTokensLoaded() {
         for (Observer observer : mObservers) {
-            observer.onRefreshTokensLoaded();
+            observer.onRefreshTokensLoaded(RefreshTokensLoadingState.SUCCEEDED);
         }
     }
 

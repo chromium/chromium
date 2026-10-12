@@ -12,6 +12,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.identitymanager.IdentityManager.RefreshTokensLoadingState;
 import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.google_apis.gaia.GaiaId;
 
@@ -48,7 +49,7 @@ public class EnterpriseSignalsDisclaimerAckSyncer implements IdentityManager.Obs
 
     /** Implements {@link IdentityManager.Observer} */
     @Override
-    public void onRefreshTokensLoaded() {
+    public void onRefreshTokensLoaded(@RefreshTokensLoadingState int state) {
         syncAcknowledgmentSet();
     }
 
@@ -59,7 +60,8 @@ public class EnterpriseSignalsDisclaimerAckSyncer implements IdentityManager.Obs
     }
 
     private void syncAcknowledgmentSet() {
-        if (!mIdentityManager.areRefreshTokensLoaded()) {
+        if (mIdentityManager.getRefreshTokensLoadingState()
+                != RefreshTokensLoadingState.SUCCEEDED) {
             return;
         }
 

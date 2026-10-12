@@ -81,13 +81,13 @@ public class EnterpriseSignalsDisclaimerAckSyncerUnitTest {
     @Test
     public void testInitialize_refreshTokensNotLoaded_doesNotSyncUntilLoaded() {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-        mAccountManagerTestRule.getIdentityManager().setAreRefreshTokensLoaded(false);
+        var blocker = mAccountManagerTestRule.blockGetAccountsUpdate();
 
         EnterpriseSignalsDisclaimerAckSyncer.initialize(mProfile);
 
         verify(mBridgeNativesMock, never()).removeUnknownAccounts(any());
 
-        mAccountManagerTestRule.getIdentityManager().setAreRefreshTokensLoaded(true);
+        blocker.close();
 
         verify(mBridgeNativesMock).removeUnknownAccounts(mAccountsCaptor.capture());
         Assert.assertEquals(List.of(TestAccounts.ACCOUNT1.getGaiaId()), mAccountsCaptor.getValue());
@@ -130,7 +130,7 @@ public class EnterpriseSignalsDisclaimerAckSyncerUnitTest {
         verify(mBridgeNativesMock).removeUnknownAccounts(any());
         clearInvocations(mBridgeNativesMock);
 
-        mAccountManagerTestRule.getIdentityManager().setAreRefreshTokensLoaded(false);
+        mAccountManagerTestRule.blockGetAccountsUpdate();
         mAccountManagerTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
 
         verify(mBridgeNativesMock, never()).removeUnknownAccounts(any());

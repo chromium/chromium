@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.subscription_eligibility.SubscriptionEligibil
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
+import org.chromium.components.signin.identitymanager.IdentityManager.RefreshTokensLoadingState;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.FakeIdentityManager;
 import org.chromium.components.signin.test.util.TestAccounts;
@@ -411,7 +412,7 @@ public class ProfileDataCacheUnitTest {
     @Test
     public void givenPrimaryAccountBeforeRefreshTokensLoadedWhenGetByIdThenShouldNotThrow() {
         FakeIdentityManager identityManager = mAccountManagerTestRule.getIdentityManager();
-        identityManager.setAreRefreshTokensLoaded(false);
+        identityManager.setRefreshTokensLoadingState(RefreshTokensLoadingState.IN_PROGRESS);
         identityManager.setPrimaryAccount(TestAccounts.ACCOUNT1);
 
         DisplayableProfileData profileData =

@@ -14,6 +14,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.AccountInfo;
+import org.chromium.components.signin.identitymanager.IdentityManager.RefreshTokensLoadingState;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.FakeIdentityManager;
 import org.chromium.google_apis.gaia.CoreAccountId;
@@ -117,9 +118,13 @@ public class AccountManagerTestRule implements TestRule {
      * FakeAccountManagerFacade#blockGetAccounts()}.
      */
     public FakeAccountManagerFacade.UpdateBlocker blockGetAccountsUpdate() {
-        mFakeIdentityManager.setAreRefreshTokensLoaded(false);
+        // TODO(crbug.com/572039753): Avoid switching RefreshTokensLoadingState from SUCCEEDED back
+        // to IN_PROGRESS.
+        mFakeIdentityManager.setRefreshTokensLoadingState(RefreshTokensLoadingState.IN_PROGRESS);
         return mFakeAccountManagerFacade.blockGetAccounts(
-                () -> mFakeIdentityManager.setAreRefreshTokensLoaded(true));
+                () ->
+                        mFakeIdentityManager.setRefreshTokensLoadingState(
+                                RefreshTokensLoadingState.SUCCEEDED));
     }
 
     /**
@@ -128,9 +133,11 @@ public class AccountManagerTestRule implements TestRule {
      * FakeAccountManagerFacade#blockGetAccountsAndPopulateCache()}.
      */
     public FakeAccountManagerFacade.UpdateBlocker blockGetAccountsUpdateAndPopulateCache() {
-        mFakeIdentityManager.setAreRefreshTokensLoaded(false);
+        mFakeIdentityManager.setRefreshTokensLoadingState(RefreshTokensLoadingState.SUCCEEDED);
         return mFakeAccountManagerFacade.blockGetAccountsAndPopulateCache(
-                () -> mFakeIdentityManager.setAreRefreshTokensLoaded(true));
+                () ->
+                        mFakeIdentityManager.setRefreshTokensLoadingState(
+                                RefreshTokensLoadingState.SUCCEEDED));
     }
 
     /**
