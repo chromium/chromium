@@ -16,6 +16,7 @@ namespace {
 // Array of features exposed through the Java WebappsFeatureMap API.
 const base::Feature* const kFeaturesExposedToJava[] = {
     &webapps::features::kAlwaysShowInstallDisambiguationDialog,
+    &webapps::features::kAndroidInstallAnyPageAsDiyAppStopgap,
 };
 
 // static

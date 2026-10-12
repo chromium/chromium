@@ -69,6 +69,10 @@ class InstallableIconFetcher {
                      const blink::mojom::ManifestImageResource_Purpose purpose,
                      const SkBitmap& bitmap);
 
+  void OnRootFaviconDownloaded(const GURL& icon_url,
+                               InstallableStatusCode code,
+                               const SkBitmap& bitmap);
+
   // Gives a chance for desktop android to generate an icon instead of
   // ending with an error. Other platforms end immediately with an error.
   void MaybeEndWithError(InstallableStatusCode code);
@@ -88,6 +92,7 @@ class InstallableIconFetcher {
       manifest_icons_;
   bool prefer_maskable_;
   const bool fetch_favicon_;
+  bool probed_root_favicon_ = false;
   base::OnceCallback<void(InstallableStatusCode)> finish_callback_;
 
   base::CancelableTaskTracker favicon_task_tracker_;
