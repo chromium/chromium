@@ -56,8 +56,17 @@ found in the LICENSE file.
     <item type="id" name="reload_ignoring_cache" />
     <item type="id" name="reorder_tab_strip_item_left" />
     <item type="id" name="reorder_tab_strip_item_right" />
+    <item type="id" name="select_last_tab" />
     <item type="id" name="select_next_tab" />
     <item type="id" name="select_previous_tab" />
+    <item type="id" name="select_tab_0" />
+    <item type="id" name="select_tab_1" />
+    <item type="id" name="select_tab_2" />
+    <item type="id" name="select_tab_3" />
+    <item type="id" name="select_tab_4" />
+    <item type="id" name="select_tab_5" />
+    <item type="id" name="select_tab_6" />
+    <item type="id" name="select_tab_7" />
     <item type="id" name="show_menu" />
     <item type="id" name="switch_keyboard_focus_row" />
     <item type="id" name="switch_keyboard_focus_row_reverse" />

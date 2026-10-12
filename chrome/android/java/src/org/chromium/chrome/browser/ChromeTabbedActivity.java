@@ -4748,18 +4748,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             getTabCreator(getCurrentTabModel().isIncognito())
                     .createNewTab(params, TabLaunchType.FROM_CHROME_UI, currentTab);
             RecordUserAction.record("MobileMenuChromeWebstore");
-        } else if (id == R.id.close_tab) {
-            // TODO(crbug.com/375468032): use triggeringMotion to decide
-            // TabClosureParams.allowUndo.
-            assert currentTab != null;
-            getCurrentTabModel()
-                    .getTabRemover()
-                    .closeTabs(
-                            TabClosureParams.closeTab(currentTab)
-                                    .tabClosingSource(TabClosingSource.GRID_TAB_SWITCHER)
-                                    .build(),
-                            /* allowDialog= */ true);
-            RecordUserAction.record("MobileTabClosed");
         } else if (id == R.id.close_all_tabs_menu_id) {
             boolean allowUndo = TabClosureParamsUtils.shouldAllowUndo(triggeringMotion);
 
@@ -4862,6 +4850,27 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 TabModelUtils.setIndex(
                         currentTabModel, (currentTabModel.index() + tabCount - 1) % tabCount);
             }
+        } else if (id == R.id.select_tab_0
+                || id == R.id.select_tab_1
+                || id == R.id.select_tab_2
+                || id == R.id.select_tab_3
+                || id == R.id.select_tab_4
+                || id == R.id.select_tab_5
+                || id == R.id.select_tab_6
+                || id == R.id.select_tab_7) {
+            // Note: we always expect (CTRL or ALT) + [1-9] to be a "go to tab" shortcut and return
+            // true from onMenuOrKeyboardAction, even if the tab index is out of range.
+            TabModel currentTabModel = getCurrentTabModel();
+            int targetIndex = getTabIndexForSelectTabAction(id);
+            if (targetIndex >= 0 && targetIndex < currentTabModel.getCount()) {
+                TabModelUtils.setIndex(currentTabModel, targetIndex);
+            }
+        } else if (id == R.id.select_last_tab) {
+            TabModel currentTabModel = getCurrentTabModel();
+            int tabCount = currentTabModel.getCount();
+            if (tabCount > 0) {
+                TabModelUtils.setIndex(currentTabModel, tabCount - 1);
+            }
         } else if (id == R.id.toggle_caret_browsing) {
             var profile = assertNonNull(getCurrentTabModel().getProfile());
             if (CaretBrowsingDialog.shouldShowDialogForKeyboardShortcut(profile)) {
@@ -4924,6 +4933,18 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             return super.onMenuOrKeyboardAction(id, fromMenu, menuItemData, triggeringMotion);
         }
         return true;
+    }
+
+    private static int getTabIndexForSelectTabAction(int id) {
+        if (id == R.id.select_tab_0) return 0;
+        if (id == R.id.select_tab_1) return 1;
+        if (id == R.id.select_tab_2) return 2;
+        if (id == R.id.select_tab_3) return 3;
+        if (id == R.id.select_tab_4) return 4;
+        if (id == R.id.select_tab_5) return 5;
+        if (id == R.id.select_tab_6) return 6;
+        if (id == R.id.select_tab_7) return 7;
+        return TabList.INVALID_TAB_INDEX;
     }
 
     private void openForeignSessionTab(String sessionTag, int tabId) {

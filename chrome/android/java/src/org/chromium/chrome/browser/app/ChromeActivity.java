@@ -209,7 +209,10 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.chrome.browser.tabmodel.PinnedTabClosureManagerFactory;
 import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
+import org.chromium.chrome.browser.tabmodel.TabClosingSource;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -3126,6 +3129,44 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         // All the code below assumes currentTab is not null, so return early if it is null.
         if (currentTab == null) {
             return false;
+        }
+
+        if (id == R.id.close_tab) {
+            if (fromMenu) {
+                // TODO(crbug.com/375468032): use triggeringMotion to decide
+                // TabClosureParams.allowUndo.
+                getCurrentTabModel()
+                        .getTabRemover()
+                        .closeTabs(
+                                TabClosureParams.closeTab(currentTab)
+                                        .tabClosingSource(TabClosingSource.GRID_TAB_SWITCHER)
+                                        .build(),
+                                /* allowDialog= */ true);
+                RecordUserAction.record("MobileTabClosed");
+            } else {
+                TabModel currentTabModel = getCurrentTabModel();
+                List<Tab> tabsToClose = currentTabModel.getOrderedMultiSelectedTabs();
+                Tab tab = TabModelUtils.getCurrentTab(currentTabModel);
+                if (tab != null) {
+                    // Pinned tabs require a second Ctrl+W to confirm closure unless part of a
+                    // bulk selection or already confirmed by the manager.
+                    boolean canClose =
+                            PinnedTabClosureManagerFactory.getInstance()
+                                    .shouldCloseTab(getTabModelSelector(), tab, tabsToClose);
+                    if (canClose) {
+                        currentTabModel
+                                .getTabRemover()
+                                .closeTabs(
+                                        TabClosureParams.closeTabs(tabsToClose)
+                                                .allowUndo(false)
+                                                .tabClosingSource(
+                                                        TabClosingSource.KEYBOARD_SHORTCUT)
+                                                .build(),
+                                        /* allowDialog= */ true);
+                    }
+                }
+            }
+            return true;
         }
 
         if (id == R.id.toggle_bookmarks_bar_menu_id) {

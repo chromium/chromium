@@ -31,13 +31,8 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
-import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.PinnedTabClosureManagerFactory;
-import org.chromium.chrome.browser.tabmodel.TabClosingSource;
-import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.task_manager.TaskManager;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.device.gamepad.GamepadList;
@@ -53,6 +48,17 @@ import java.util.List;
 
 /** Implements app-level keyboard shortcuts for ChromeTabbedActivity and DocumentActivity. */
 public class KeyboardShortcuts {
+
+    private static final int[] SELECT_TAB_ACTION_IDS = {
+        R.id.select_tab_0,
+        R.id.select_tab_1,
+        R.id.select_tab_2,
+        R.id.select_tab_3,
+        R.id.select_tab_4,
+        R.id.select_tab_5,
+        R.id.select_tab_6,
+        R.id.select_tab_7,
+    };
 
     private static final LinkedHashMap<Integer, KeyboardShortcutDefinition>
             KEYBOARD_SHORTCUT_DEFINITION_MAP = new LinkedHashMap<>();
@@ -1104,8 +1110,6 @@ public class KeyboardShortcuts {
 
         TabModel currentTabModel = tabModelSelector.getCurrentModel();
 
-        int tabCount = currentTabModel.getCount();
-
         @KeyboardShortcutsSemanticMeaning int semanticMeaning = getKeyboardSemanticMeaning(event);
 
         RecordHistogram.recordEnumeratedHistogram(
@@ -1214,41 +1218,23 @@ public class KeyboardShortcuts {
                                 (KeyEvent.KEYCODE_1 <= keyCode && keyCode <= KeyEvent.KEYCODE_8)
                                         ? keyCode - KeyEvent.KEYCODE_0
                                         : keyCode - KeyEvent.KEYCODE_NUMPAD_0;
-                        // Keep this condition to make sure that:
-                        // 1) If we're not using keyboard number keys, we're still in the right
-                        // bounds for numpad keys
-                        // 2) We don't try to set the tab model index out of bounds.
-                        if (numCode > 0 && numCode <= Math.min(tabCount, 8)) {
-                            TabModelUtils.setIndex(currentTabModel, numCode - 1);
+                        // Keep this condition to make sure that if we're not using keyboard number
+                        // keys, we're still in the right bounds for numpad keys.
+                        if (numCode > 0 && numCode <= SELECT_TAB_ACTION_IDS.length) {
+                            menuOrKeyboardActionController.onMenuOrKeyboardAction(
+                                    SELECT_TAB_ACTION_IDS[numCode - 1], /* fromMenu= */ false);
                         }
                     }
                     return true;
                 case KeyboardShortcutsSemanticMeaning.MOVE_TO_LAST_TAB:
-                    if (tabSwitchingEnabled && tabCount != 0) {
-                        TabModelUtils.setIndex(currentTabModel, tabCount - 1);
+                    if (tabSwitchingEnabled) {
+                        menuOrKeyboardActionController.onMenuOrKeyboardAction(
+                                R.id.select_last_tab, /* fromMenu= */ false);
                     }
                     return true;
                 case KeyboardShortcutsSemanticMeaning.CLOSE_TAB:
-                    List<Tab> tabsToClose = currentTabModel.getOrderedMultiSelectedTabs();
-                    Tab tab = TabModelUtils.getCurrentTab(currentTabModel);
-                    if (tab != null) {
-                        // Pinned tabs require a second Ctrl+W to confirm closure unless part of a
-                        // bulk selection or already confirmed by the manager.
-                        boolean canClose =
-                                PinnedTabClosureManagerFactory.getInstance()
-                                        .shouldCloseTab(tabModelSelector, tab, tabsToClose);
-                        if (canClose) {
-                            currentTabModel
-                                    .getTabRemover()
-                                    .closeTabs(
-                                            TabClosureParams.closeTabs(tabsToClose)
-                                                    .allowUndo(false)
-                                                    .tabClosingSource(
-                                                            TabClosingSource.KEYBOARD_SHORTCUT)
-                                                    .build(),
-                                            /* allowDialog= */ true);
-                        }
-                    }
+                    menuOrKeyboardActionController.onMenuOrKeyboardAction(
+                            R.id.close_tab, /* fromMenu= */ false);
                     return true;
                 case KeyboardShortcutsSemanticMeaning.FIND_IN_PAGE:
                     menuOrKeyboardActionController.onMenuOrKeyboardAction(

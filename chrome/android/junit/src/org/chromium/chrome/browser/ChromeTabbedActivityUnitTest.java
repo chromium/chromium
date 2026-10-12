@@ -10,8 +10,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -28,12 +31,14 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.educational_tip.EducationTipModuleActionDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHost;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHostRegistry;
 import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
@@ -433,5 +438,42 @@ public class ChromeTabbedActivityUnitTest {
         assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.VERTICAL_TAB_STRIP));
         assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.OPEN_IN_APP));
         assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.UNKNOWN));
+    }
+
+    @Test
+    public void testSelectTabKeyboardAction_boundsChecking() {
+        final int tabCount = 3;
+        final int targetIndex = 1;
+
+        TestChromeTabbedActivity activity = new TestChromeTabbedActivity();
+        activity.setAreTabModelsInitialized(true);
+        TabModelOrchestrator orchestrator = mock(TabModelOrchestrator.class);
+        TabModelSelectorBase tabModelSelector = mock(TabModelSelectorBase.class);
+        TabModel tabModel = mock(TabModel.class);
+        when(orchestrator.getTabModelSelector()).thenReturn(tabModelSelector);
+        when(tabModelSelector.getCurrentModel()).thenReturn(tabModel);
+        when(tabModel.getCount()).thenReturn(tabCount);
+        activity.setTabModelOrchestratorForTesting(orchestrator);
+        activity.setTabModelSelectorForTesting(tabModelSelector);
+
+        // In-bounds tab selection: target index 1 (< 3) should switch tabs.
+        assertTrue(activity.onMenuOrKeyboardAction(R.id.select_tab_1, /* fromMenu= */ false));
+        verify(tabModel).setIndex(targetIndex, TabSelectionType.FROM_USER);
+
+        // Out-of-bounds tab selection: target index 5 (>= 3) should be a no-op.
+        clearInvocations(tabModel);
+        assertTrue(activity.onMenuOrKeyboardAction(R.id.select_tab_5, /* fromMenu= */ false));
+        verify(tabModel, never()).setIndex(anyInt(), anyInt());
+
+        // Select last tab: should select index 2 (count - 1).
+        clearInvocations(tabModel);
+        assertTrue(activity.onMenuOrKeyboardAction(R.id.select_last_tab, /* fromMenu= */ false));
+        verify(tabModel).setIndex(tabCount - 1, TabSelectionType.FROM_USER);
+
+        // Select last tab with 0 tabs: should be a no-op.
+        clearInvocations(tabModel);
+        when(tabModel.getCount()).thenReturn(0);
+        assertTrue(activity.onMenuOrKeyboardAction(R.id.select_last_tab, /* fromMenu= */ false));
+        verify(tabModel, never()).setIndex(anyInt(), anyInt());
     }
 }

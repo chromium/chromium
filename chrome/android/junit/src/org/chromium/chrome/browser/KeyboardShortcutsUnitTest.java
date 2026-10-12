@@ -12,7 +12,6 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -38,10 +37,8 @@ import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.incognito.IncognitoUtilsJni;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.device.gamepad.GamepadList;
 
@@ -156,17 +153,8 @@ public class KeyboardShortcutsUnitTest {
     public void testGamepadButtonB_OnKeyDown_WhenGamepadApiInactive_ClosesTab() {
         GamepadList.setGamepadApiActiveForTesting(false);
 
-        Tab tab = mock(Tab.class);
-        TabRemover tabRemover = mock(TabRemover.class);
-        when(tab.getProfile()).thenReturn(mProfile);
-        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
-        when(mTabModelSelector.getCurrentTab()).thenReturn(tab);
-        when(mTabModel.index()).thenReturn(0);
-        when(mTabModel.getTabAt(0)).thenReturn(tab);
-        when(mTabModel.getTabRemover()).thenReturn(tabRemover);
-
         assertTrue(onKeyDown(KeyEvent.KEYCODE_BUTTON_B));
-        verify(tabRemover).closeTabs(any(), eq(true));
+        verify(mController).onMenuOrKeyboardAction(eq(R.id.close_tab), eq(false));
     }
 
     private static KeyEvent createKeyEvent(int keyCode, int metaState) {
