@@ -67,7 +67,7 @@ bool StubPasswordManagerClient::PromptUserToChooseCredentials(
   return false;
 }
 
-bool StubPasswordManagerClient::IsReauthBeforeFillingRequired(
+bool StubPasswordManagerClient::IsReauthBeforeFillingRequiredLegacy(
     device_reauth::DeviceAuthenticator* authenticator) {
   return false;
 }

@@ -759,7 +759,7 @@ void ChromePasswordManagerClient::ContinueShowKeyboardReplacingSurface(
 }
 #endif
 
-bool ChromePasswordManagerClient::IsReauthBeforeFillingRequired(
+bool ChromePasswordManagerClient::IsReauthBeforeFillingRequiredLegacy(
     device_reauth::DeviceAuthenticator* authenticator) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)

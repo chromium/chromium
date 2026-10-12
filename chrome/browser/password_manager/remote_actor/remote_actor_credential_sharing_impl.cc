@@ -471,7 +471,7 @@ void RemoteActorCredentialSharingImpl::OnDialogResult(
   }
 
   if (device_authenticator_ &&
-      client->IsReauthBeforeFillingRequired(device_authenticator_.get())) {
+      client->IsReauthBeforeFillingRequiredLegacy(device_authenticator_.get())) {
     std::u16string message;
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
     url::Origin domain_origin = url::Origin::Create(

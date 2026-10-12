@@ -125,7 +125,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               (override));
   MOCK_METHOD(bool, IsActorTaskActive, (), (override));
   MOCK_METHOD(bool,
-              IsReauthBeforeFillingRequired,
+              IsReauthBeforeFillingRequiredLegacy,
               (device_reauth::DeviceAuthenticator*),
               (override));
 
@@ -2062,7 +2062,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 TEST_P(CredentialManagerImplTest, ReauthAfterAccountSelection) {
-  ON_CALL(*client_, IsReauthBeforeFillingRequired).WillByDefault(Return(true));
+  ON_CALL(*client_, IsReauthBeforeFillingRequiredLegacy).WillByDefault(Return(true));
 
   store_->AddLogin(password_manager::FromPasswordForm(form_));
 
@@ -2098,7 +2098,7 @@ TEST_P(CredentialManagerImplTest, ReauthAfterAccountSelection) {
 }
 
 TEST_P(CredentialManagerImplTest, ReauthBeforeSilentCredentialRetrieval) {
-  ON_CALL(*client_, IsReauthBeforeFillingRequired).WillByDefault(Return(true));
+  ON_CALL(*client_, IsReauthBeforeFillingRequiredLegacy).WillByDefault(Return(true));
 
   store_->AddLogin(password_manager::FromPasswordForm(form_));
 
@@ -2106,7 +2106,7 @@ TEST_P(CredentialManagerImplTest, ReauthBeforeSilentCredentialRetrieval) {
   // empty.
   EXPECT_CALL(*client_, PromptUserToChooseCredentialsPtr).Times(0);
   EXPECT_CALL(*client_, GetDeviceAuthenticator);
-  EXPECT_CALL(*client_, IsReauthBeforeFillingRequired);
+  EXPECT_CALL(*client_, IsReauthBeforeFillingRequiredLegacy);
 
   bool called = false;
   CredentialManagerError error;
@@ -2123,7 +2123,7 @@ TEST_P(CredentialManagerImplTest, ReauthBeforeSilentCredentialRetrieval) {
 }
 
 TEST_P(CredentialManagerImplTest, DestructionCancelsOngoingReauth) {
-  ON_CALL(*client_, IsReauthBeforeFillingRequired).WillByDefault(Return(true));
+  ON_CALL(*client_, IsReauthBeforeFillingRequiredLegacy).WillByDefault(Return(true));
 
   store_->AddLogin(password_manager::FromPasswordForm(form_));
 

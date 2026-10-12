@@ -260,7 +260,7 @@ class PasswordManagerClient {
 
   // Checks whether user re-authentication should be triggered before password
   // filling.
-  virtual bool IsReauthBeforeFillingRequired(
+  virtual bool IsReauthBeforeFillingRequiredLegacy(
       device_reauth::DeviceAuthenticator* authenticator);
 
   // Returns a pointer to a DeviceAuthenticator. Might be null if

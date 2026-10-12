@@ -165,7 +165,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               (ManagePasswordsReferrer),
               (override));
   MOCK_METHOD(bool,
-              IsReauthBeforeFillingRequired,
+              IsReauthBeforeFillingRequiredLegacy,
               (device_reauth::DeviceAuthenticator*),
               (override));
   MOCK_METHOD(std::unique_ptr<device_reauth::DeviceAuthenticator>,
@@ -951,7 +951,7 @@ TEST_F(PasswordManualFallbackFlowTest,
   flow().RunFlow(username_element_global_id, gfx::RectF{},
                  TextDirection::LEFT_TO_RIGHT);
 
-  EXPECT_CALL(password_manager_client(), IsReauthBeforeFillingRequired)
+  EXPECT_CALL(password_manager_client(), IsReauthBeforeFillingRequiredLegacy)
       .WillOnce(Return(false));
   EXPECT_CALL(
       driver(),
@@ -999,7 +999,7 @@ TEST_F(PasswordManualFallbackFlowTest,
   EXPECT_CALL(*authenticator, AuthenticateWithMessage)
       .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/false));
 
-  EXPECT_CALL(password_manager_client(), IsReauthBeforeFillingRequired)
+  EXPECT_CALL(password_manager_client(), IsReauthBeforeFillingRequiredLegacy)
       .WillOnce(Return(true));
   EXPECT_CALL(password_manager_client(), GetDeviceAuthenticator)
       .WillOnce(Return(testing::ByMove(std::move(authenticator))));
@@ -1055,7 +1055,7 @@ TEST_F(PasswordManualFallbackFlowTest,
   EXPECT_CALL(*authenticator, AuthenticateWithMessage)
       .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/true));
 
-  EXPECT_CALL(password_manager_client(), IsReauthBeforeFillingRequired)
+  EXPECT_CALL(password_manager_client(), IsReauthBeforeFillingRequiredLegacy)
       .WillOnce(Return(true));
   EXPECT_CALL(password_manager_client(), GetDeviceAuthenticator)
       .WillOnce(Return(testing::ByMove(std::move(authenticator))));
@@ -1225,7 +1225,7 @@ TEST_F(PasswordManualFallbackFlowTest, FillsPasswordIfAuthNotAvailable) {
   FieldGlobalId field_id = MakeFieldGlobalId();
   flow().RunFlow(field_id, gfx::RectF{}, TextDirection::LEFT_TO_RIGHT);
 
-  EXPECT_CALL(password_manager_client(), IsReauthBeforeFillingRequired)
+  EXPECT_CALL(password_manager_client(), IsReauthBeforeFillingRequiredLegacy)
       .WillOnce(Return(false));
   EXPECT_CALL(driver(),
               FillField(field_id.renderer_id, std::u16string(u"password"),
@@ -1253,7 +1253,7 @@ TEST_F(PasswordManualFallbackFlowTest, NoFillingIfAuthFails) {
   EXPECT_CALL(*authenticator, AuthenticateWithMessage)
       .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/false));
 
-  EXPECT_CALL(password_manager_client(), IsReauthBeforeFillingRequired)
+  EXPECT_CALL(password_manager_client(), IsReauthBeforeFillingRequiredLegacy)
       .WillOnce(Return(true));
   EXPECT_CALL(password_manager_client(), GetDeviceAuthenticator)
       .WillOnce(Return(testing::ByMove(std::move(authenticator))));
@@ -1347,7 +1347,7 @@ TEST_F(PasswordManualFallbackFlowTest, FillsPasswordIfAuthSucceeds) {
   EXPECT_CALL(*authenticator, AuthenticateWithMessage)
       .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/true));
 
-  EXPECT_CALL(password_manager_client(), IsReauthBeforeFillingRequired)
+  EXPECT_CALL(password_manager_client(), IsReauthBeforeFillingRequiredLegacy)
       .WillOnce(Return(true));
   EXPECT_CALL(password_manager_client(), GetDeviceAuthenticator)
       .WillOnce(Return(testing::ByMove(std::move(authenticator))));
@@ -1392,7 +1392,7 @@ TEST_F(PasswordManualFallbackFlowTest,
   // Note that even when reauth before filling is not required, still asks for
   // authentication when the field is not a password field but the value being
   // filled is a password value.
-  EXPECT_CALL(password_manager_client(), IsReauthBeforeFillingRequired)
+  EXPECT_CALL(password_manager_client(), IsReauthBeforeFillingRequiredLegacy)
       .WillOnce(Return(false));
   EXPECT_CALL(password_manager_client(), GetDeviceAuthenticator)
       .WillOnce(Return(testing::ByMove(std::move(authenticator))));
@@ -1437,7 +1437,7 @@ TEST_F(PasswordManualFallbackFlowTest, CancelsAuthIfPreviousNotFinished) {
       std::make_unique<device_reauth::MockDeviceAuthenticator>();
   EXPECT_CALL(*authenticator2, AuthenticateWithMessage);
 
-  EXPECT_CALL(password_manager_client(), IsReauthBeforeFillingRequired)
+  EXPECT_CALL(password_manager_client(), IsReauthBeforeFillingRequiredLegacy)
       .Times(2)
       .WillRepeatedly(Return(true));
   EXPECT_CALL(password_manager_client(), GetDeviceAuthenticator)
@@ -1474,7 +1474,7 @@ TEST_F(PasswordManualFallbackFlowTest, CancelsAuthOnDestroy) {
   auto authenticator_ptr = authenticator.get();
   EXPECT_CALL(*authenticator, AuthenticateWithMessage);
 
-  EXPECT_CALL(password_manager_client(), IsReauthBeforeFillingRequired)
+  EXPECT_CALL(password_manager_client(), IsReauthBeforeFillingRequiredLegacy)
       .WillOnce(Return(true));
   EXPECT_CALL(password_manager_client(), GetDeviceAuthenticator)
       .WillOnce(Return(testing::ByMove(std::move(authenticator))));

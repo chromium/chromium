@@ -732,7 +732,7 @@ bool PasswordAccessoryControllerImpl::ShouldTriggerBiometricReauth(
     return false;
   }
 
-  return password_client_->IsReauthBeforeFillingRequired(authenticator_.get());
+  return password_client_->IsReauthBeforeFillingRequiredLegacy(authenticator_.get());
 }
 
 void PasswordAccessoryControllerImpl::OnReauthCompleted(

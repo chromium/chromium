@@ -60,7 +60,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               (),
               (const, override));
   MOCK_METHOD(bool,
-              IsReauthBeforeFillingRequired,
+              IsReauthBeforeFillingRequiredLegacy,
               (device_reauth::DeviceAuthenticator * authenticator),
               (override));
   MOCK_METHOD(PrefService*, GetPrefs, (), (const, override));
@@ -334,7 +334,7 @@ TEST_F(CredentialManagerPendingRequestTaskTest,
 
 TEST_F(CredentialManagerPendingRequestTaskTest,
        SilentRequestFailsIfBiometricReauthEnabled) {
-  ON_CALL(*client(), IsReauthBeforeFillingRequired).WillByDefault(Return(true));
+  ON_CALL(*client(), IsReauthBeforeFillingRequiredLegacy).WillByDefault(Return(true));
 
   form_.in_store = PasswordForm::Store::kProfileStore;
   profile_store_->AddLogin(password_manager::FromPasswordForm(form_));
@@ -357,7 +357,7 @@ TEST_F(CredentialManagerPendingRequestTaskTest,
 
 TEST_F(CredentialManagerPendingRequestTaskTest,
        NoAutosigninIfBiometricReauthEnabled) {
-  ON_CALL(*client(), IsReauthBeforeFillingRequired).WillByDefault(Return(true));
+  ON_CALL(*client(), IsReauthBeforeFillingRequiredLegacy).WillByDefault(Return(true));
 
   profile_store_->AddLogin(password_manager::FromPasswordForm(form_));
   RunAllPendingTasks();

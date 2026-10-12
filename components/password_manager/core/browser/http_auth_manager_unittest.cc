@@ -84,7 +84,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
   MOCK_METHOD(void, PromptUserToSaveOrUpdatePasswordPtr, (), ());
   MOCK_METHOD(PrefService*, GetPrefs, (), (const, override));
   MOCK_METHOD(bool,
-              IsReauthBeforeFillingRequired,
+              IsReauthBeforeFillingRequiredLegacy,
               (device_reauth::DeviceAuthenticator*),
               (override));
   MOCK_METHOD(std::unique_ptr<device_reauth::DeviceAuthenticator>,
@@ -176,7 +176,7 @@ class HttpAuthManagerTest : public testing::Test,
 
 TEST_P(HttpAuthManagerTest, HttpAuthFillingReauthNotRequired) {
   EXPECT_CALL(client_, IsFillingEnabled).WillRepeatedly(Return(true));
-  EXPECT_CALL(client_, IsReauthBeforeFillingRequired)
+  EXPECT_CALL(client_, IsReauthBeforeFillingRequiredLegacy)
       .WillRepeatedly(Return(false));
   base::test::TestFuture<void> future;
   EXPECT_CALL(client_, AutofillHttpAuth)
@@ -219,7 +219,7 @@ TEST_P(HttpAuthManagerTest, HttpAuthFillingReauthNotRequired) {
 // Test autofill when biometric re-auth is required and successful.
 TEST_P(HttpAuthManagerTest, HttpAuthFillingReauthSuccess) {
   EXPECT_CALL(client_, IsFillingEnabled).WillRepeatedly(Return(true));
-  EXPECT_CALL(client_, IsReauthBeforeFillingRequired)
+  EXPECT_CALL(client_, IsReauthBeforeFillingRequiredLegacy)
       .WillRepeatedly(Return(true));
   base::MockOnceClosure mock_callback;
   EXPECT_CALL(client_, AutofillHttpAuth)
@@ -268,7 +268,7 @@ TEST_P(HttpAuthManagerTest, HttpAuthFillingReauthSuccess) {
 // Test autofill when biometric re-auth is required and successful.
 TEST_P(HttpAuthManagerTest, HttpAuthFillingReauthFailure) {
   EXPECT_CALL(client_, IsFillingEnabled).WillRepeatedly(Return(true));
-  EXPECT_CALL(client_, IsReauthBeforeFillingRequired)
+  EXPECT_CALL(client_, IsReauthBeforeFillingRequiredLegacy)
       .WillRepeatedly(Return(true));
   base::MockOnceClosure mock_callback;
   EXPECT_CALL(client_, AutofillHttpAuth)
@@ -319,7 +319,7 @@ TEST_P(HttpAuthManagerTest, HttpAuthFillingReauthFailure) {
 // mismatches.
 TEST_P(HttpAuthManagerTest, HttpAuthFillingReauthOriginMismatch) {
   EXPECT_CALL(client_, IsFillingEnabled).WillRepeatedly(Return(true));
-  EXPECT_CALL(client_, IsReauthBeforeFillingRequired)
+  EXPECT_CALL(client_, IsReauthBeforeFillingRequiredLegacy)
       .WillRepeatedly(Return(true));
   base::MockOnceClosure mock_callback;
   EXPECT_CALL(client_, AutofillHttpAuth)
@@ -371,7 +371,7 @@ TEST_P(HttpAuthManagerTest, HttpAuthFillingReauthOriginMismatch) {
 
 TEST_P(HttpAuthManagerTest, CrossOriginLeakViaStaleBiometricObserver) {
   EXPECT_CALL(client_, IsFillingEnabled).WillRepeatedly(Return(true));
-  EXPECT_CALL(client_, IsReauthBeforeFillingRequired)
+  EXPECT_CALL(client_, IsReauthBeforeFillingRequiredLegacy)
       .WillRepeatedly(Return(true));
 
   base::MockOnceClosure mock_filling_complete;
@@ -460,7 +460,7 @@ TEST_P(HttpAuthManagerTest, CrossOriginLeakViaStaleBiometricObserver) {
 // The biometric reauth prompt should name the origin of the challenger.
 TEST_P(HttpAuthManagerTest, HttpAuthFillingReauthMessageUsesChallengerOrigin) {
   EXPECT_CALL(client_, IsFillingEnabled).WillRepeatedly(Return(true));
-  EXPECT_CALL(client_, IsReauthBeforeFillingRequired)
+  EXPECT_CALL(client_, IsReauthBeforeFillingRequiredLegacy)
       .WillRepeatedly(Return(true));
   const GURL main_frame_url("http://embedder.com/");
   ON_CALL(client_, GetLastCommittedURL)

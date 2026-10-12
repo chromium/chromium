@@ -63,7 +63,7 @@ void PasswordManagerClient::ShowKeyboardReplacingSurface(
     const autofill::PasswordSuggestionRequest& request) {}
 #endif
 
-bool PasswordManagerClient::IsReauthBeforeFillingRequired(
+bool PasswordManagerClient::IsReauthBeforeFillingRequiredLegacy(
     device_reauth::DeviceAuthenticator*) {
   return false;
 }

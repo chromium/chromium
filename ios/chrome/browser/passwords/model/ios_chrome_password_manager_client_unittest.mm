@@ -295,7 +295,7 @@ TEST_F(IOSChromePasswordManagerClientTest,
 
   EXPECT_CALL(*authenticator, CanAuthenticateWithBiometricOrScreenLock)
       .WillOnce(Return(true));
-  EXPECT_TRUE(client->IsReauthBeforeFillingRequired(authenticator.get()));
+  EXPECT_TRUE(client->IsReauthBeforeFillingRequiredLegacy(authenticator.get()));
 }
 
 // Tests that `IsReauthBeforeFillingRequired` returns false when the
@@ -308,7 +308,7 @@ TEST_F(IOSChromePasswordManagerClientTest,
 
   EXPECT_CALL(*authenticator, CanAuthenticateWithBiometricOrScreenLock)
       .WillOnce(Return(false));
-  EXPECT_FALSE(client->IsReauthBeforeFillingRequired(authenticator.get()));
+  EXPECT_FALSE(client->IsReauthBeforeFillingRequiredLegacy(authenticator.get()));
 }
 
 // Tests that `GetDeviceAuthenticator` returns a valid device authenticator.

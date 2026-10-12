@@ -92,7 +92,7 @@ class MockPasswordManagerClient
               (const url::Origin&),
               (override));
   MOCK_METHOD(bool,
-              IsReauthBeforeFillingRequired,
+              IsReauthBeforeFillingRequiredLegacy,
               (device_reauth::DeviceAuthenticator*),
               (override));
 };
@@ -137,7 +137,7 @@ class TouchToFillControllerAutofillTest
       : ChromeRenderViewHostTestHarness(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     // By default, disable biometric authentication.
-    ON_CALL(client(), IsReauthBeforeFillingRequired)
+    ON_CALL(client(), IsReauthBeforeFillingRequiredLegacy)
         .WillByDefault(Return(false));
   }
 
@@ -409,7 +409,7 @@ TEST_F(TouchToFillControllerAutofillTest, Show_And_Fill_No_Auth_Available) {
   EXPECT_CALL(*last_mock_filler(),
               FillUsernameAndPassword(std::u16string(u"alice"),
                                       std::u16string(u"p4ssw0rd"), _));
-  ON_CALL(client(), IsReauthBeforeFillingRequired).WillByDefault(Return(false));
+  ON_CALL(client(), IsReauthBeforeFillingRequiredLegacy).WillByDefault(Return(false));
 
   touch_to_fill_controller().OnCredentialSelected(credential);
 
@@ -448,7 +448,7 @@ TEST_F(TouchToFillControllerAutofillTest,
                                       std::u16string(u"p4ssw0rd"), _))
       .WillOnce(RunOnceCallback<2>(/*trigger_submission=*/true));
 
-  ON_CALL(client(), IsReauthBeforeFillingRequired).WillByDefault(Return(true));
+  ON_CALL(client(), IsReauthBeforeFillingRequiredLegacy).WillByDefault(Return(true));
   EXPECT_CALL(*authenticator(), AuthenticateWithMessage)
       .WillOnce(RunOnceCallback<1>(true));
   EXPECT_CALL(client(), StartSubmissionTrackingAfterTouchToFill(Eq(u"alice")));
@@ -475,7 +475,7 @@ TEST_F(TouchToFillControllerAutofillTest,
 
   EXPECT_CALL(*last_mock_filler(), FillUsernameAndPassword(_, _, _)).Times(0);
 
-  ON_CALL(client(), IsReauthBeforeFillingRequired).WillByDefault(Return(true));
+  ON_CALL(client(), IsReauthBeforeFillingRequiredLegacy).WillByDefault(Return(true));
   EXPECT_CALL(*authenticator(), AuthenticateWithMessage)
       .WillOnce(RunOnceCallback<1>(false));
   touch_to_fill_controller().OnCredentialSelected(credential);
@@ -553,7 +553,7 @@ TEST_F(TouchToFillControllerAutofillTest, Show_And_Fill_Android_Credential) {
   EXPECT_CALL(*last_mock_filler(),
               FillUsernameAndPassword(std::u16string(u"bob"),
                                       std::u16string(u"s3cr3t"), _));
-  ON_CALL(client(), IsReauthBeforeFillingRequired).WillByDefault(Return(false));
+  ON_CALL(client(), IsReauthBeforeFillingRequiredLegacy).WillByDefault(Return(false));
   touch_to_fill_controller().OnCredentialSelected(credential2);
 
   auto entries = test_recorder().GetEntriesByName(UkmBuilder::kEntryName);
@@ -708,7 +708,7 @@ TEST_F(TouchToFillControllerAutofillTest, DestroyedWhileAuthRunning) {
                false)),
        /*cred_man_delegate=*/nullptr);
 
-  ON_CALL(client(), IsReauthBeforeFillingRequired).WillByDefault(Return(true));
+  ON_CALL(client(), IsReauthBeforeFillingRequiredLegacy).WillByDefault(Return(true));
   EXPECT_CALL(*authenticator(), AuthenticateWithMessage);
   touch_to_fill_controller().OnCredentialSelected(credential);
 
@@ -866,7 +866,7 @@ TEST_F(TouchToFillControllerAutofillTest,
            TouchToFillPasswordManagerCredentialDelegate::ShowHybridOption(
                false)),
        /*cred_man_delegate=*/nullptr);
-  ON_CALL(client(), IsReauthBeforeFillingRequired).WillByDefault(Return(true));
+  ON_CALL(client(), IsReauthBeforeFillingRequiredLegacy).WillByDefault(Return(true));
 
   EXPECT_CALL(*last_mock_filler(), FillUsernameAndPassword).Times(0);
   EXPECT_CALL(*(acknowledge_grouped_credential_sheet_helper().jni_bridge()),
@@ -901,7 +901,7 @@ TEST_F(TouchToFillControllerAutofillTest,
            TouchToFillPasswordManagerCredentialDelegate::ShowHybridOption(
                false)),
        /*cred_man_delegate=*/nullptr);
-  ON_CALL(client(), IsReauthBeforeFillingRequired).WillByDefault(Return(true));
+  ON_CALL(client(), IsReauthBeforeFillingRequiredLegacy).WillByDefault(Return(true));
 
   EXPECT_CALL(*last_mock_filler(), FillUsernameAndPassword).Times(0);
   EXPECT_CALL(*(acknowledge_grouped_credential_sheet_helper().jni_bridge()),

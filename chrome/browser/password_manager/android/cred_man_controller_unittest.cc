@@ -33,7 +33,7 @@ class MockPasswordManagerClient
     : public password_manager::StubPasswordManagerClient {
  public:
   MOCK_METHOD(bool,
-              IsReauthBeforeFillingRequired,
+              IsReauthBeforeFillingRequiredLegacy,
               (device_reauth::DeviceAuthenticator*),
               (override));
   MOCK_METHOD(std::unique_ptr<device_reauth::DeviceAuthenticator>,
@@ -200,7 +200,7 @@ TEST_F(CredManControllerTest, FillsPasswordIfReauthSuccessfull) {
       /*frame_driver=*/nullptr,
       /*is_webauthn_form=*/true, CredManController::PasskeyDelayCallback()));
 
-  ON_CALL(*password_client(), IsReauthBeforeFillingRequired)
+  ON_CALL(*password_client(), IsReauthBeforeFillingRequiredLegacy)
       .WillByDefault(Return(true));
   EXPECT_CALL(*device_authenticator(), AuthenticateWithMessage)
       .WillOnce(base::test::RunOnceCallback<1>(/*auth_succeeded=*/true));
@@ -225,7 +225,7 @@ TEST_F(CredManControllerTest, DoesNotFillIfReauthFailed) {
       /*frame_driver=*/nullptr,
       /*is_webauthn_form=*/true, CredManController::PasskeyDelayCallback()));
 
-  ON_CALL(*password_client(), IsReauthBeforeFillingRequired)
+  ON_CALL(*password_client(), IsReauthBeforeFillingRequiredLegacy)
       .WillByDefault(Return(true));
   EXPECT_CALL(*device_authenticator(), AuthenticateWithMessage)
       .WillOnce(base::test::RunOnceCallback<1>(/*auth_succeeded=*/false));

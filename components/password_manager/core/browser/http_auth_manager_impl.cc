@@ -100,7 +100,7 @@ void HttpAuthManagerImpl::Autofill(const PasswordForm& preferred_match,
       client_->GetDeviceAuthenticator();
 
   // Biometric filling is disabled, notify observers and invoke callback.
-  if (!client_->IsReauthBeforeFillingRequired(authenticator.get())) {
+  if (!client_->IsReauthBeforeFillingRequiredLegacy(authenticator.get())) {
     observer_->OnAutofillDataAvailable(preferred_match.username_value,
                                        preferred_match.password_value.value());
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

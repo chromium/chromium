@@ -161,7 +161,7 @@ class MockPasswordManagerClient
               (const url::Origin&, base::optional_ref<const GURL>),
               (const, override));
   MOCK_METHOD(bool,
-              IsReauthBeforeFillingRequired,
+              IsReauthBeforeFillingRequiredLegacy,
               (DeviceAuthenticator*),
               (override));
   MOCK_METHOD(std::unique_ptr<DeviceAuthenticator>,
@@ -198,7 +198,7 @@ MockDeviceAuthenticator* SetUpDeviceAuthenticatorToRequireReauth(
   EXPECT_CALL(client, GetDeviceAuthenticator)
       .WillOnce(Return(std::move(mock_device_authenticator)));
 
-  EXPECT_CALL(client, IsReauthBeforeFillingRequired).WillOnce(Return(true));
+  EXPECT_CALL(client, IsReauthBeforeFillingRequiredLegacy).WillOnce(Return(true));
   return weak_device_authenticator;
 }
 
@@ -229,7 +229,7 @@ class ActorLoginCredentialFillerTest : public ::testing::TestWithParam<bool> {
     ON_CALL(mock_password_manager_, GetClient())
         .WillByDefault(Return(&mock_client_));
     ON_CALL(mock_client_, IsFillingEnabled(_, _)).WillByDefault(Return(true));
-    ON_CALL(mock_client_, IsReauthBeforeFillingRequired)
+    ON_CALL(mock_client_, IsReauthBeforeFillingRequiredLegacy)
         .WillByDefault(Return(false));
     ON_CALL(mock_client_, GetAffiliationService)
         .WillByDefault(Return(&mock_affiliation_service_));

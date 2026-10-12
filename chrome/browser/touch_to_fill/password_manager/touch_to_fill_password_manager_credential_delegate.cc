@@ -136,7 +136,7 @@ void TouchToFillPasswordManagerCredentialDelegate::OnCredentialSelected(
       .SetUserAction(static_cast<int64_t>(UserAction::kSelectedCredential))
       .Record(ukm::UkmRecorder::Get());
 
-  if (!password_client_->IsReauthBeforeFillingRequired(authenticator_.get())) {
+  if (!password_client_->IsReauthBeforeFillingRequiredLegacy(authenticator_.get())) {
     FillCredential(credential);
     return;
   }

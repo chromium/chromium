@@ -419,7 +419,7 @@ bool ActorLoginCredentialFiller::DoesStoredCredentialBelongToManager(
 }
 
 bool ActorLoginCredentialFiller::IsReauthBeforeFillingRequired() {
-  return client_->IsReauthBeforeFillingRequired(device_authenticator_.get());
+  return client_->IsReauthBeforeFillingRequiredLegacy(device_authenticator_.get());
 }
 
 void ActorLoginCredentialFiller::ReauthenticateAndFill(

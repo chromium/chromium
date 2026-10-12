@@ -113,7 +113,7 @@ class MockChromePasswordManagerClient : public ChromePasswordManagerClient {
               (),
               (override));
   MOCK_METHOD(bool,
-              IsReauthBeforeFillingRequired,
+              IsReauthBeforeFillingRequiredLegacy,
               (device_reauth::DeviceAuthenticator*),
               (override));
 };
@@ -181,7 +181,7 @@ class RemoteActorCredentialSharingImplTest
     autofill::ChromeAutofillClient::CreateForWebContents(web_contents());
     mock_client_ = MockChromePasswordManagerClient::CreateForWebContentsAndGet(
         web_contents());
-    ON_CALL(*mock_client_, IsReauthBeforeFillingRequired)
+    ON_CALL(*mock_client_, IsReauthBeforeFillingRequiredLegacy)
         .WillByDefault(testing::Return(false));
     mock_match_helper_ = std::make_unique<
         testing::NiceMock<password_manager::MockAffiliatedMatchHelper>>(
@@ -339,7 +339,7 @@ class RemoteActorCredentialSharingImplTest
             [authenticator = std::move(prepared_authenticator)]() mutable {
               return std::move(authenticator);
             });
-    EXPECT_CALL(*mock_client_, IsReauthBeforeFillingRequired)
+    EXPECT_CALL(*mock_client_, IsReauthBeforeFillingRequiredLegacy)
         .WillOnce(testing::Return(reauth_required));
   }
 

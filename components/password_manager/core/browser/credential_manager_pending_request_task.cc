@@ -200,7 +200,7 @@ void CredentialManagerPendingRequestTask::ProcessForms(
   std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator =
       delegate_->client()->GetDeviceAuthenticator();
   const bool is_reauth_before_filling_required =
-      delegate_->client()->IsReauthBeforeFillingRequired(authenticator.get());
+      delegate_->client()->IsReauthBeforeFillingRequiredLegacy(authenticator.get());
 
   if (is_reauth_before_filling_required &&
       mediation_ == CredentialMediationRequirement::kSilent) {

@@ -90,7 +90,7 @@ class FakePasswordManagerClient
               (),
               (override, const));
   MOCK_METHOD(bool,
-              IsReauthBeforeFillingRequired,
+              IsReauthBeforeFillingRequiredLegacy,
               (DeviceAuthenticator*),
               (override));
 
@@ -673,7 +673,7 @@ TEST_F(ActorLoginDelegateImplTest, FillingReauthRequiredWindowNotActive) {
 
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillRepeatedly(Return(base::span(form_managers)));
-  EXPECT_CALL(client_, IsReauthBeforeFillingRequired).WillOnce(Return(true));
+  EXPECT_CALL(client_, IsReauthBeforeFillingRequiredLegacy).WillOnce(Return(true));
 
   base::test::TestFuture<LoginStatusResultOrError> future;
   delegate_->AttemptLogin(

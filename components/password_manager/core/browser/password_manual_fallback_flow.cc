@@ -464,7 +464,7 @@ void PasswordManualFallbackFlow::MaybeAuthenticateBeforeFilling(
   // Authentication is always required if the user is entering their password on
   // a non password field.
   bool authentication_required =
-      password_client_->IsReauthBeforeFillingRequired(authenticator.get()) ||
+      password_client_->IsReauthBeforeFillingRequiredLegacy(authenticator.get()) ||
       is_password_filled_in_non_password_field;
   if (!authenticator || !authentication_required) {
     std::move(fill_fields).Run();

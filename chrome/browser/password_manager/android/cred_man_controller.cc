@@ -86,7 +86,7 @@ void CredManController::TriggerFilling(const std::u16string& username,
     return;
   }
   visibility_controller_->SetShown();
-  if (!password_client_->IsReauthBeforeFillingRequired(authenticator_.get())) {
+  if (!password_client_->IsReauthBeforeFillingRequiredLegacy(authenticator_.get())) {
     FillUsernameAndPassword(username, password);
     return;
   }

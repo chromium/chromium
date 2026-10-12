@@ -258,7 +258,7 @@ void CredentialManagerImpl::SendPasswordForm(
     std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator =
         client_->GetDeviceAuthenticator();
     if (authenticator &&
-        client_->IsReauthBeforeFillingRequired(authenticator.get())) {
+        client_->IsReauthBeforeFillingRequiredLegacy(authenticator.get())) {
       authenticator_ = std::move(authenticator);
       std::u16string message;
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)

@@ -61,7 +61,7 @@ class MockPasswordManagerClient
               (),
               (override));
   MOCK_METHOD(bool,
-              IsReauthBeforeFillingRequired,
+              IsReauthBeforeFillingRequiredLegacy,
               (device_reauth::DeviceAuthenticator*),
               (override));
 };
@@ -387,7 +387,7 @@ TEST_F(TouchToFillPasswordManagerWebAuthnDelegateTest,
 
   EXPECT_CALL(client(), GetDeviceAuthenticator)
       .WillOnce(Return(ByMove(CreateMockAuthenticator())));
-  ON_CALL(client(), IsReauthBeforeFillingRequired).WillByDefault(Return(true));
+  ON_CALL(client(), IsReauthBeforeFillingRequiredLegacy).WillByDefault(Return(true));
   EXPECT_CALL(*authenticator(), AuthenticateWithMessage)
       .WillOnce(RunOnceCallback<1>(true));
 
@@ -410,7 +410,7 @@ TEST_F(TouchToFillPasswordManagerWebAuthnDelegateTest,
 
   EXPECT_CALL(client(), GetDeviceAuthenticator)
       .WillOnce(Return(ByMove(CreateMockAuthenticator())));
-  ON_CALL(client(), IsReauthBeforeFillingRequired).WillByDefault(Return(true));
+  ON_CALL(client(), IsReauthBeforeFillingRequiredLegacy).WillByDefault(Return(true));
   EXPECT_CALL(*authenticator(), AuthenticateWithMessage)
       .WillOnce(RunOnceCallback<1>(false));
 
@@ -433,7 +433,7 @@ TEST_F(TouchToFillPasswordManagerWebAuthnDelegateTest,
 
   EXPECT_CALL(client(), GetDeviceAuthenticator)
       .WillOnce(Return(ByMove(CreateMockAuthenticator())));
-  ON_CALL(client(), IsReauthBeforeFillingRequired).WillByDefault(Return(false));
+  ON_CALL(client(), IsReauthBeforeFillingRequiredLegacy).WillByDefault(Return(false));
   EXPECT_CALL(*authenticator(), AuthenticateWithMessage).Times(0);
 
   PasswordCredentialPair expected = {kUserName2, kPassword};
@@ -455,7 +455,7 @@ TEST_F(TouchToFillPasswordManagerWebAuthnDelegateTest,
 
   EXPECT_CALL(client(), GetDeviceAuthenticator)
       .WillOnce(Return(ByMove(nullptr)));
-  ON_CALL(client(), IsReauthBeforeFillingRequired).WillByDefault(Return(false));
+  ON_CALL(client(), IsReauthBeforeFillingRequiredLegacy).WillByDefault(Return(false));
 
   PasswordCredentialPair expected = {kUserName2, kPassword};
   EXPECT_CALL(request_delegate(), OnPasswordCredentialSelected(expected));
@@ -473,7 +473,7 @@ TEST_F(TouchToFillPasswordManagerWebAuthnDelegateTest,
 
   EXPECT_CALL(client(), GetDeviceAuthenticator)
       .WillOnce(Return(ByMove(CreateMockAuthenticator())));
-  ON_CALL(client(), IsReauthBeforeFillingRequired).WillByDefault(Return(true));
+  ON_CALL(client(), IsReauthBeforeFillingRequiredLegacy).WillByDefault(Return(true));
   base::OnceCallback<void(bool)> auth_callback;
   EXPECT_CALL(*authenticator(), AuthenticateWithMessage)
       .WillOnce([&auth_callback](const std::u16string& message,

@@ -116,7 +116,7 @@ bool IOSChromePasswordManagerClient::PromptUserToChooseCredentials(
   return false;
 }
 
-bool IOSChromePasswordManagerClient::IsReauthBeforeFillingRequired(
+bool IOSChromePasswordManagerClient::IsReauthBeforeFillingRequiredLegacy(
     device_reauth::DeviceAuthenticator* authenticator) {
   CHECK(authenticator);
   return authenticator->CanAuthenticateWithBiometricOrScreenLock();

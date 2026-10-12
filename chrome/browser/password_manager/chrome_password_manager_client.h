@@ -183,7 +183,7 @@ class ChromePasswordManagerClient
       const autofill::PasswordSuggestionRequest& request) override;
 #endif
 
-  bool IsReauthBeforeFillingRequired(
+  bool IsReauthBeforeFillingRequiredLegacy(
       device_reauth::DeviceAuthenticator* authenticator) override;
   // Returns a pointer to the DeviceAuthenticator which is created on demand.
   // This is currently only implemented for Android, Mac and Windows. On all

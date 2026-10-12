@@ -1234,7 +1234,7 @@ TEST_F(ChromePasswordManagerClientTest,
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 // Test that authentication is not possible if the `authenticator` is `nullptr`.
 TEST_F(ChromePasswordManagerClientTest, CanUseBiometricAuthNoAuthenticator) {
-  EXPECT_FALSE(GetClient()->IsReauthBeforeFillingRequired(
+  EXPECT_FALSE(GetClient()->IsReauthBeforeFillingRequiredLegacy(
       /*authenticator=*/nullptr));
 }
 
@@ -1247,7 +1247,7 @@ TEST_F(ChromePasswordManagerClientTest, CanUseBiometricAuthNoBiometrics) {
       password_manager::prefs::kHadBiometricsAvailable, false);
   profile()->GetTestingPrefService()->SetBoolean(
       password_manager::prefs::kBiometricAuthenticationBeforeFilling, true);
-  EXPECT_FALSE(GetClient()->IsReauthBeforeFillingRequired(&authenticator));
+  EXPECT_FALSE(GetClient()->IsReauthBeforeFillingRequiredLegacy(&authenticator));
 }
 
 // Test that authentication is not possible if the user didn't configure the
@@ -1259,7 +1259,7 @@ TEST_F(ChromePasswordManagerClientTest, CanUseBiometricAuthSettingDisabled) {
       password_manager::prefs::kHadBiometricsAvailable, true);
   profile()->GetTestingPrefService()->SetBoolean(
       password_manager::prefs::kBiometricAuthenticationBeforeFilling, false);
-  EXPECT_FALSE(GetClient()->IsReauthBeforeFillingRequired(&authenticator));
+  EXPECT_FALSE(GetClient()->IsReauthBeforeFillingRequiredLegacy(&authenticator));
 }
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 
@@ -1273,7 +1273,7 @@ TEST_F(ChromePasswordManagerClientTest, CanUseBiometricAuthSettingEnabled) {
       password_manager::prefs::kHadBiometricsAvailable, true);
   profile()->GetTestingPrefService()->SetBoolean(
       password_manager::prefs::kBiometricAuthenticationBeforeFilling, true);
-  EXPECT_TRUE(GetClient()->IsReauthBeforeFillingRequired(&authenticator));
+  EXPECT_TRUE(GetClient()->IsReauthBeforeFillingRequiredLegacy(&authenticator));
 }
 #endif
 
@@ -1288,7 +1288,7 @@ TEST_F(ChromePasswordManagerClientTest,
       password_manager::prefs::kHadBiometricsAvailable, true);
   profile()->GetTestingPrefService()->SetBoolean(
       password_manager::prefs::kBiometricAuthenticationBeforeFilling, true);
-  EXPECT_TRUE(GetClient()->IsReauthBeforeFillingRequired(&authenticator));
+  EXPECT_TRUE(GetClient()->IsReauthBeforeFillingRequiredLegacy(&authenticator));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -1299,9 +1299,9 @@ TEST_F(ChromePasswordManagerClientTest, CanUseBiometricAuthAndroid) {
     // Authentication is always available for automotive and the `authenticator`
     // is always available.
     device_reauth::MockDeviceAuthenticator authenticator;
-    EXPECT_TRUE(GetClient()->IsReauthBeforeFillingRequired(&authenticator));
+    EXPECT_TRUE(GetClient()->IsReauthBeforeFillingRequiredLegacy(&authenticator));
   } else {
-    EXPECT_FALSE(GetClient()->IsReauthBeforeFillingRequired(
+    EXPECT_FALSE(GetClient()->IsReauthBeforeFillingRequiredLegacy(
         /*authenticator=*/nullptr));
   }
 }
@@ -1317,7 +1317,7 @@ TEST_F(ChromePasswordManagerClientTest,
   device_reauth::MockDeviceAuthenticator authenticator;
   ON_CALL(authenticator, GetBiometricAvailabilityStatus)
       .WillByDefault(Return(BiometricStatus::kBiometricsAvailable));
-  EXPECT_FALSE(GetClient()->IsReauthBeforeFillingRequired(&authenticator));
+  EXPECT_FALSE(GetClient()->IsReauthBeforeFillingRequiredLegacy(&authenticator));
 }
 
 // Test that authentication is not possible if the
@@ -1335,7 +1335,7 @@ TEST_F(ChromePasswordManagerClientTest,
   device_reauth::MockDeviceAuthenticator authenticator;
   ON_CALL(authenticator, GetBiometricAvailabilityStatus)
       .WillByDefault(Return(BiometricStatus::kUnavailable));
-  EXPECT_FALSE(GetClient()->IsReauthBeforeFillingRequired(&authenticator));
+  EXPECT_FALSE(GetClient()->IsReauthBeforeFillingRequiredLegacy(&authenticator));
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.BiometricAuthPwdFillAndroid."
       "CanAuthenticateWithBiometricOrScreenLock",
@@ -1357,7 +1357,7 @@ TEST_F(ChromePasswordManagerClientTest,
   device_reauth::MockDeviceAuthenticator authenticator;
   ON_CALL(authenticator, GetBiometricAvailabilityStatus)
       .WillByDefault(Return(BiometricStatus::kBiometricsAvailable));
-  EXPECT_FALSE(GetClient()->IsReauthBeforeFillingRequired(&authenticator));
+  EXPECT_FALSE(GetClient()->IsReauthBeforeFillingRequiredLegacy(&authenticator));
 }
 
 // Test that authentication is possible if the `GetBiometricAvailabilityStatus`
@@ -1377,7 +1377,7 @@ TEST_F(ChromePasswordManagerClientTest, CanUseBiometricAuthAndroidAuthEnabled) {
       password_manager::prefs::kBiometricAuthenticationBeforeFilling, true);
   ON_CALL(authenticator, GetBiometricAvailabilityStatus)
       .WillByDefault(Return(BiometricStatus::kOnlyLskfAvailable));
-  EXPECT_TRUE(GetClient()->IsReauthBeforeFillingRequired(&authenticator));
+  EXPECT_TRUE(GetClient()->IsReauthBeforeFillingRequiredLegacy(&authenticator));
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.BiometricAuthPwdFillAndroid."
       "CanAuthenticateWithBiometricOrScreenLock",
@@ -1395,14 +1395,14 @@ TEST_F(ChromePasswordManagerClientTest,
   device_reauth::MockDeviceAuthenticator authenticator;
   ON_CALL(authenticator, GetBiometricAvailabilityStatus)
       .WillByDefault(Return(BiometricStatus::kBiometricsAvailable));
-  EXPECT_TRUE(GetClient()->IsReauthBeforeFillingRequired(&authenticator));
+  EXPECT_TRUE(GetClient()->IsReauthBeforeFillingRequiredLegacy(&authenticator));
 }
 
 #else
 // Test that authentication is not possible on other platforms.
 TEST_F(ChromePasswordManagerClientTest, CanUseBiometricAuth) {
   device_reauth::MockDeviceAuthenticator authenticator;
-  EXPECT_FALSE(GetClient()->IsReauthBeforeFillingRequired(&authenticator));
+  EXPECT_FALSE(GetClient()->IsReauthBeforeFillingRequiredLegacy(&authenticator));
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

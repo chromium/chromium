@@ -57,7 +57,7 @@ void TouchToFillPasswordManagerWebAuthnDelegate::OnCredentialSelected(
   std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator =
       password_client_ ? password_client_->GetDeviceAuthenticator() : nullptr;
   if (!password_client_ || !authenticator ||
-      !password_client_->IsReauthBeforeFillingRequired(authenticator.get())) {
+      !password_client_->IsReauthBeforeFillingRequiredLegacy(authenticator.get())) {
     FillCredential(credential);
     std::move(action_complete).Run();
     return;
