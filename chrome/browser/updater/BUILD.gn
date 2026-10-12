@@ -38,6 +38,7 @@ source_set("updater") {
       "//chrome/common:version_header",
       "//chrome/updater:branding_header",
       "//chrome/updater:browser_sources",
+      "//components/version_info",
     ]
 
     if (is_win) {

@@ -60,19 +60,21 @@ source_set("impl") {
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/hats",
     "//chrome/browser/ui/page_info",
+    "//chrome/common:chrome_features",
     "//components/page_info/core",
     "//components/variations/service",
   ]
 
   if (is_android) {
     sources += [ "about_this_site_controller_android.cc" ]
-    deps += [ "//chrome/android:jni_headers" ]
+    deps += [
+      "//chrome/android:jni_headers",
+      "//chrome/browser/android:resource_mapper",
+    ]
   } else {
     sources += [ "web_view_side_panel_throttle.cc" ]
     deps += [ "//components/navigation_interception" ]
   }
-
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("unit_tests") {

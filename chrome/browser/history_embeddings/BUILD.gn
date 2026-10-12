@@ -30,8 +30,6 @@ source_set("impl") {
     "history_embeddings_utils.cc",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     ":history_embeddings",
     "//chrome/app:generated_resources",
@@ -44,6 +42,7 @@ source_set("impl") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_util",
     "//chrome/browser/resource_coordinator",
+    "//chrome/common",
     "//chrome/common:constants",
     "//components/history/core/browser",
     "//components/history_embeddings/content",

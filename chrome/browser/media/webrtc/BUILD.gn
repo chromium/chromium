@@ -109,10 +109,11 @@ source_set("webrtc") {
     "//base",
     "//build:android_buildflags",
     "//build:buildflag_header_h",
-    "//chrome/browser:browser_public_dependencies",
+    "//chrome/app:branded_strings",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/tab_contents",
     "//chrome/common:mojo_bindings",
+    "//chrome/common:non_code_constants",
     "//components/content_settings/core/common",
     "//components/keyed_service/core",
     "//components/permissions",
@@ -136,7 +137,6 @@ source_set("webrtc") {
 
   deps = [
     "//base:i18n",
-    "//chrome/app:branded_strings",
     "//chrome/app:branded_strings_grit",
     "//chrome/app:command_ids",
     "//chrome/app:generated_resources",
@@ -166,7 +166,6 @@ source_set("webrtc") {
     "//chrome/common:channel_info",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",
-    "//chrome/common:non_code_constants",
     "//components/content_settings/browser",
     "//components/content_settings/core/browser",
     "//components/enterprise/buildflags",
@@ -218,6 +217,11 @@ source_set("webrtc") {
       "tab_capture_access_handler.cc",
       "tab_capture_access_handler.h",
     ]
+    public_deps += [ "//chrome/common/extensions/api" ]
+  }
+
+  if (is_android) {
+    public_deps += [ "//ui/android" ]
   }
 
   if (!is_android) {

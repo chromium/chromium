@@ -1271,10 +1271,7 @@ source_set("impl") {
     "webusb_allow_devices_for_urls_policy_handler.cc",
   ]
 
-  public_deps = [
-    ":policy",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ ":policy" ]
 
   deps = [
     ":path_parser",
@@ -1335,6 +1332,8 @@ source_set("impl") {
     "//components/lens:enterprise_policy",
     "//components/live_caption:constants",
     "//components/network_time",
+    "//components/on_device_translation/buildflags",
+    "//components/payments/core",
     "//components/pref_registry",
     "//components/proxy_config",
     "//components/reporting/encryption:primitives",

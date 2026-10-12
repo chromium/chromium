@@ -75,7 +75,6 @@ static_library("router") {
     "presentation/chrome_local_presentation_manager_factory.h",
   ]
   public_deps = [
-    "//chrome/browser:browser_public_dependencies",
     "//components/media_router/browser",
     "//components/media_router/common",
     "//components/media_router/common/mojom:media_router",
@@ -254,7 +253,6 @@ if (!is_android) {
       "//media/cast:common",
       "//services/metrics/public/cpp:ukm_builders",
     ]
-    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   }
 }
 
@@ -266,10 +264,10 @@ if (!is_android) {
     ]
     deps = [
       ":router",
+      "//chrome/app:generated_resources",
       "//chrome/browser/media/router:media_router_feature",
       "//chrome/browser/ui/media_router",
     ]
-    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   }
 }
 

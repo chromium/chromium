@@ -266,14 +266,12 @@ source_set("impl") {
     "variations/google_groups_manager_factory.cc",
   ]
 
-  public_deps = [
-    ":metrics",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ ":metrics" ]
 
   deps = [
     "//build/config/compiler:compiler_buildflags",
     "//chrome/browser:browser_process_platform_part",
+    "//chrome/browser:buildflags",
     "//chrome/browser:chrome_browser_main",
     "//chrome/browser:flags",
     "//chrome/browser/content_settings:content_settings_factory",
@@ -290,6 +288,7 @@ source_set("impl") {
     "//chrome/browser/performance_manager",
     "//chrome/browser/prefs",
     "//chrome/browser/reading_list",
+    "//chrome/browser/regional_capabilities",
     "//chrome/browser/resource_coordinator",
     "//chrome/browser/resource_coordinator:mojo_bindings",
     "//chrome/browser/resource_coordinator:utils",

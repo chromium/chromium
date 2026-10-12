@@ -26,6 +26,7 @@ source_set("media_preview") {
     "scroll_media_preview.cc",
   ]
   deps = [
+    "//chrome/app:generated_resources",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/views:layout_provider",

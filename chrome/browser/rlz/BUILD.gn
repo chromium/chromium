@@ -33,6 +33,7 @@ source_set("rlz") {
     "//chrome/browser/ui/startup",
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
+    "//chrome/installer/util:with_no_strings",
     "//components/google/core/common",
     "//components/pref_registry",
     "//components/prefs",
@@ -40,6 +41,9 @@ source_set("rlz") {
     "//content/public/common",
     "//services/network/public/cpp",
   ]
+  if (is_chromeos) {
+    deps += [ "//ash/constants" ]
+  }
 }
 
 source_set("unit_tests") {

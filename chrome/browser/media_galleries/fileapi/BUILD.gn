@@ -40,7 +40,6 @@ source_set("impl") {
     "supported_image_type_validator.cc",
     "supported_image_type_validator.h",
   ]
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
     ":fileapi",
     "//base",
@@ -48,7 +47,10 @@ source_set("impl") {
     "//chrome/browser/image_decoder",
     "//chrome/browser/media_galleries",
     "//components/media_gallery_util",
+    "//components/prefs",
     "//content/public/browser",
+    "//extensions/browser",
+    "//extensions/common:common_constants",
     "//storage/browser",
   ]
 }

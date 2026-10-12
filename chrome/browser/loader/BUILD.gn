@@ -39,11 +39,11 @@ source_set("impl") {
     ":loader",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/navigator",
+    "//components/keyed_service/content",
     "//components/page_load_metrics/browser",
     "//components/page_load_metrics/google/browser",
     "//services/metrics/public/cpp:metrics_cpp",
   ]
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   # ScopedKeepAlive / ScopedProfileKeepAlive are desktop-only.
   if (!is_android) {

@@ -13,7 +13,7 @@ static_library("storage_selector") {
 
   public_deps = [
     "//base",
-    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/policy",
     "//components/reporting/storage:storage_module_interface",
     "//components/reporting/util:status",
   ]

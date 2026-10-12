@@ -66,7 +66,9 @@ source_set("impl") {
   sources = []
   deps = [
     ":upgrade_detector",
+    "//chrome/browser/enterprise",
     "//chrome/browser/ui:browser_otr_state",
+    "//chrome/installer/util:with_no_strings",
   ]
 
   if (!is_android) {

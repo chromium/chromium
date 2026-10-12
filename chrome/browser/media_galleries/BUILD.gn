@@ -53,12 +53,18 @@ source_set("impl") {
 
   deps = [
     ":media_galleries",
+    "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
     "//chrome/browser/media_galleries/fileapi",
     "//chrome/browser/media_galleries/fileapi:impl",
     "//chrome/browser/ui/select_file_policy",
+    "//chrome/common:constants",
     "//chrome/common/apps/platform_apps",
+    "//components/crx_file",
+    "//components/keyed_service/content",
     "//components/pref_registry",
+    "//extensions/browser/api/file_system",
+    "//extensions/common",
   ]
 }
 

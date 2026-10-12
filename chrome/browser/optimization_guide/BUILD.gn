@@ -68,9 +68,9 @@ source_set("impl") {
     "prediction/chrome_profile_download_service_tracker.cc",
     "prediction/prediction_model_download_client.cc",
   ]
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
     ":optimization_guide",
+    ":optimization_guide_on_device_model_installer",
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
     "//chrome/browser/download",

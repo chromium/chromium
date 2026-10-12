@@ -40,10 +40,7 @@ source_set("impl") {
     "top_sites_factory.cc",
     "web_history_service_factory.cc",
   ]
-  public_deps = [
-    ":history",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ ":history" ]
   deps = [
     "//base",
     "//chrome/browser:after_startup_task_utils",

@@ -64,7 +64,6 @@ source_set("permissions") {
   ]
 
   public_deps = [
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/permissions/system",
     "//chrome/browser/ui/navigator",
@@ -174,7 +173,6 @@ source_set("permissions") {
       deps += [ "//device/vr/public/cpp:features" ]
     }
   }
-  allow_circular_includes_from = []
 
   if (enable_extensions_core) {
     deps += [ "//extensions/common" ]

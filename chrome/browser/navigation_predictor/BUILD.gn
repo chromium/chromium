@@ -46,7 +46,6 @@ source_set("impl") {
     "search_engine_preconnector.cc",
     "search_engine_preconnector_keyed_service_factory.cc",
   ]
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
     ":navigation_predictor",
     "//chrome/browser/battery",

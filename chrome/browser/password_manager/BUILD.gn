@@ -144,10 +144,7 @@ source_set("impl") {
     "password_manager_critical_action_logger.cc",
   ]
 
-  public_deps = [
-    ":password_manager",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ ":password_manager" ]
 
   deps = [
     "//chrome/browser/actor",

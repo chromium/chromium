@@ -24,6 +24,7 @@ source_set("system") {
 
   public_deps = [
     "//base",
+    "//chrome/browser/ui/browser_window",
     "//components/content_settings/core/common",
   ]
 
@@ -41,7 +42,6 @@ source_set("system") {
       "system_media_permission_cache.cc",
       "system_media_permission_cache.h",
     ]
-    deps += [ "//chrome/browser:browser_public_dependencies" ]
   }
 
   if (is_mac) {
@@ -59,7 +59,6 @@ source_set("system") {
   } else if (is_chromeos) {
     sources += [ "system_permission_settings_chromeos.cc" ]
     deps += [
-      "//chrome/browser:browser_public_dependencies",
       "//chrome/browser/ash/privacy_hub",
       "//chrome/browser/web_applications",
     ]
@@ -70,7 +69,6 @@ source_set("system") {
       "system_media_source_win.h",
       "system_permission_settings_win.cc",
     ]
-    deps += [ "//chrome/browser:browser_public_dependencies" ]
   } else {
     sources += [ "system_permission_settings_default.cc" ]
   }

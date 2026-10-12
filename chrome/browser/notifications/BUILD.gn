@@ -190,10 +190,7 @@ source_set("impl") {
     "scheduler/notification_schedule_service_factory.cc",
   ]
 
-  public_deps = [
-    ":notifications",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ ":notifications" ]
 
   deps = [
     "//chrome/browser:browser_features",
@@ -382,7 +379,6 @@ source_set("system_notification_helper_impl") {
   deps = [
     ":notifications",
     ":system_notification_helper",
-    "//chrome/browser:browser_public_dependencies",
     "//ui/message_center/public/cpp",
   ]
 }

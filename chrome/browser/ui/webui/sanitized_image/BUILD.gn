@@ -22,6 +22,7 @@ source_set("sanitized_image_source") {
     "//chrome/browser/image_fetcher",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/signin",
+    "//chrome/common",
     "//chrome/common:constants",
     "//google_apis",
     "//ipc",

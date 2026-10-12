@@ -14,7 +14,7 @@ source_set("google") {
     "google_update_policy_fetcher.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  public_deps = [ "//chrome/installer/util:with_no_strings" ]
 
   deps = [
     "//base",
@@ -60,7 +60,6 @@ source_set("google") {
       "//chrome/browser/component_updater",
       "//chrome/common",
       "//chrome/install_static:install_static_util",
-      "//chrome/installer/util:with_no_strings",
       "//chrome/updater/app/server/win:updater_legacy_idl",
       "//components/activity_reporter:buildflags",
       "//components/policy/core/browser",
