@@ -183,10 +183,7 @@ source_set("base") {
     "weighted_samples.h",
   ]
 
-  configs += [
-    "//build/config/compiler:wexit_time_destructors",
-    "//remoting/build/config:version",
-  ]
+  configs += [ "//remoting/build/config:version" ]
 
   public_deps = [
     ":authentication_method",
@@ -309,10 +306,7 @@ source_set("authorization") {
     "passthrough_oauth_token_getter.h",
   ]
 
-  configs += [
-    "//build/config/compiler:wexit_time_destructors",
-    "//remoting/build/config:version",
-  ]
+  configs += [ "//remoting/build/config:version" ]
 
   deps = [
     ":logging",

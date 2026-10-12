@@ -135,7 +135,6 @@ if (enable_me2me_host && (is_linux || is_win)) {
       ":remote_open_url_main_headers",
       "//remoting/host:remoting_core",
     ]
-    configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
     if (is_win) {
       sources += [ "$root_gen_dir/remoting/version.rc" ]

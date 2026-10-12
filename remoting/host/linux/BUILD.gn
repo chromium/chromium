@@ -449,8 +449,6 @@ if (remoting_use_x11) {
 
 if (!is_chromeos) {
   executable("remoting_native_messaging_host") {
-    configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
     sources =
         [ "//remoting/host/setup/me2me_native_messaging_host_entry_point.cc" ]
 

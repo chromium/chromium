@@ -84,10 +84,7 @@ if (is_win) {
       "crash_reporting_breakpad.h",
     ]
 
-    configs += [
-      "//build/config/compiler:wexit_time_destructors",
-      "//remoting/build/config:host_implementation",
-    ]
+    configs += [ "//remoting/build/config:host_implementation" ]
 
     deps = [
       ":breakpad_utils",

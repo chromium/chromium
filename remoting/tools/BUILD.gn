@@ -22,8 +22,6 @@ if (is_win) {
   executable("remoting_breakpad_tester") {
     sources = [ "breakpad_tester_win.cc" ]
 
-    configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
     deps = [
       "//base",
       "//build/win:default_exe_manifest",

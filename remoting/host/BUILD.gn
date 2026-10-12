@@ -568,10 +568,7 @@ static_library("common") {
 
   libs = []
 
-  configs += [
-    "//build/config/compiler:wexit_time_destructors",
-    "//remoting/build/config:version",
-  ]
+  configs += [ "//remoting/build/config:version" ]
 
   defines = [ "WEBRTC_CHROMIUM_BUILD" ]
 
@@ -1155,8 +1152,6 @@ if (enable_me2me_host) {
       ":remoting_core",
       "//remoting/host/setup:start_host_main_headers",
     ]
-
-    configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
     if (is_win) {
       defines = host_predefines +

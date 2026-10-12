@@ -72,10 +72,7 @@ source_set("common") {
     sources += [ "it2me_confirmation_dialog_win.cc" ]
   }
 
-  configs += [
-    "//build/config/compiler:wexit_time_destructors",
-    "//remoting/build/config:version",
-  ]
+  configs += [ "//remoting/build/config:version" ]
 
   public_deps = [
     ":constants",
@@ -170,7 +167,6 @@ if (!is_chromeos && enable_remoting_host) {
 
   source_set("main") {
     configs += [
-      "//build/config/compiler:wexit_time_destructors",
       "//remoting/build/config:host_implementation",
       "//remoting/build/config:version",
     ]
@@ -208,8 +204,6 @@ if (!is_chromeos && enable_remoting_host) {
 
   if (is_win) {
     executable("remote_assistance_host") {
-      configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
       deps = [
         ":main_headers",
         "//remoting/host/win:dpi_aware_exe_manifest",
@@ -233,8 +227,6 @@ if (!is_chromeos && enable_remoting_host) {
     }
 
     executable("remote_assistance_host_uiaccess") {
-      configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
       deps = [
         ":main_headers",
         "//remoting/host/win:remoting_core",
@@ -309,10 +301,7 @@ if (!is_chromeos && enable_remoting_host) {
           "MACOSX_DEPLOYMENT_TARGET=10.15",
         ]
       }
-      configs += [
-        "//build/config/compiler:wexit_time_destructors",
-        "//remoting/build/config:version",
-      ]
+      configs += [ "//remoting/build/config:version" ]
 
       sources = [ "it2me_native_messaging_host_entry_point.cc" ]
 

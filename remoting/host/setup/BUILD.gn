@@ -27,10 +27,7 @@ source_set("common") {
     "test_util.h",
   ]
 
-  configs += [
-    "//build/config/compiler:wexit_time_destructors",
-    "//remoting/build/config:version",
-  ]
+  configs += [ "//remoting/build/config:version" ]
 
   deps = [
     "//base",
@@ -157,7 +154,6 @@ source_set("start_host_main") {
   }
 
   configs += [
-    "//build/config/compiler:wexit_time_destructors",
     "//remoting/build/config:host_implementation",
     "//remoting/build/config:version",
   ]
@@ -170,7 +166,6 @@ source_set("native_messaging_host_main_headers") {
 
 source_set("native_messaging_host_main") {
   configs += [
-    "//build/config/compiler:wexit_time_destructors",
     "//remoting/build/config:host_implementation",
     "//remoting/build/config:version",
   ]

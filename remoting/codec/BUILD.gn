@@ -19,8 +19,6 @@ source_set("encoder") {
     "webrtc_video_encoder_vpx.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [ "//third_party/libaom" ]
 
   deps = [
@@ -55,8 +53,6 @@ source_set("vpx_codec") {
     "scoped_vpx_codec.cc",
     "scoped_vpx_codec.h",
   ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [ "//third_party/libvpx" ]
 

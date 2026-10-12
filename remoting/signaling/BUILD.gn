@@ -58,10 +58,7 @@ static_library("signaling") {
     "xmpp_constants.h",
   ]
 
-  configs += [
-    "//build/config/compiler:wexit_time_destructors",
-    "//remoting/build/config:version",
-  ]
+  configs += [ "//remoting/build/config:version" ]
 
   public_deps = [
     "//remoting/proto",

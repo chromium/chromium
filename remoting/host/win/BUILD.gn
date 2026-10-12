@@ -181,10 +181,7 @@ source_set("win") {
     "wts_terminal_observer.h",
   ]
 
-  configs += [
-    "//build/config/compiler:wexit_time_destructors",
-    "//remoting/build/config:version",
-  ]
+  configs += [ "//remoting/build/config:version" ]
 
   if (is_clang) {
     # TODO(thakis): Remove this once midl.exe no longer produces nonstandard
@@ -343,8 +340,6 @@ message_compiler("messages") {
 }
 
 executable("remoting_console") {
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   defines = host_predefines + [ "REMOTING_HOST_BINARY=BINARY_HOST_ME2ME" ]
 
   deps = [
@@ -374,7 +369,6 @@ template("remoting_me2me_host_executable") {
     forward_variables_from(invoker, [ "output_name" ])
 
     configs += [
-      "//build/config/compiler:wexit_time_destructors",
       "//build/config/win:windowed",
       "//remoting/build/config:remoting_me2me_host",
     ]
@@ -439,7 +433,6 @@ source_set("chromoting_module") {
   ]
 
   configs += [
-    "//build/config/compiler:wexit_time_destructors",
     "//remoting/build/config:host_implementation",
     "//remoting/build/config:version",
   ]
@@ -460,7 +453,6 @@ source_set("chromoting_module") {
 
 shared_library("remoting_core") {
   configs += [
-    "//build/config/compiler:wexit_time_destructors",
     "//remoting/build/config:host_implementation",
     "//remoting/build/config:version",
   ]
@@ -542,10 +534,7 @@ shared_library("remoting_core") {
 }
 
 executable("remoting_desktop") {
-  configs += [
-    "//build/config/compiler:wexit_time_destructors",
-    "//build/config/win:windowed",
-  ]
+  configs += [ "//build/config/win:windowed" ]
 
   defines = host_predefines + [ "REMOTING_HOST_BINARY=BINARY_DESKTOP" ]
 
@@ -577,8 +566,6 @@ executable("remoting_desktop") {
 }
 
 executable("remoting_native_messaging_host") {
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   defines =
       host_predefines + [ "REMOTING_HOST_BINARY=BINARY_NATIVE_MESSAGING_HOST" ]
 

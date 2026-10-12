@@ -191,10 +191,7 @@ static_library("protocol") {
     "webrtc_video_renderer_adapter.h",
   ]
 
-  configs += [
-    "//build/config:precompiled_headers",
-    "//build/config/compiler:wexit_time_destructors",
-  ]
+  configs += [ "//build/config:precompiled_headers" ]
 
   public_deps = [
     ":errors",
