@@ -128,6 +128,7 @@
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/identity_credential/identity_credential_delegate.h"
+#include "components/autofill/core/browser/integrators/one_time_tokens/gmail_otp_opt_in_coordinator.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/gmail_otp_opt_in_result.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_field_detector.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_metrics_tracker.h"
@@ -1364,6 +1365,11 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
       critical_actions::CriticalActionFactory::GetForProfile(GetProfile()));
 
 #if !BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillShowGmailOtpSuggestions)) {
+    gmail_otp_opt_in_coordinator_ = std::make_unique<GmailOtpOptInCoordinator>(
+        *this, GetOneTimeTokenService());
+  }
   if (OtpMetricsTracker::IsEligibleForGmailOtps(GetIdentityManager())) {
     otp_metrics_tracker_ =
         std::make_unique<OtpMetricsTracker>(GetOneTimeTokenService(), *this);

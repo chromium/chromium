@@ -89,6 +89,7 @@ class AutofillOptimizationGuideDecider;
 class EmailVerificationController;
 class EmailVerifierDelegate;
 class FormFieldData;
+class GmailOtpOptInCoordinator;
 class OtpFieldDetector;
 class OtpMetricsTracker;
 class ChromeOtpPhishGuardDelegate;
@@ -494,6 +495,7 @@ class ChromeAutofillClient : public ContentAutofillClient {
 
   ContentIdentityCredentialDelegate identity_credential_delegate_;
   std::unique_ptr<OtpFieldDetector> otp_field_detector_;
+  std::unique_ptr<GmailOtpOptInCoordinator> gmail_otp_opt_in_coordinator_;
   std::unique_ptr<OtpMetricsTracker> otp_metrics_tracker_;
   std::unique_ptr<EmailVerifierDelegate> email_verifier_delegate_;
   std::unique_ptr<ChromeOtpPhishGuardDelegate> otp_phish_guard_delegate_;
