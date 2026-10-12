@@ -70,6 +70,18 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
       const gfx::HDRMetadata&,
       base::OnceCallback<void(gpu::SharedImageExportResult)> release_callback);
 
+  // The set of read/display SharedImage usages that callers may pass to
+  // CreateFromRaster().
+  static constexpr gpu::SharedImageUsageSet kAllowedReadUsages =
+      gpu::SHARED_IMAGE_USAGE_RASTER_READ | gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+      gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
+
+  // Creates an image initialized by rasterizing the commands recorded by
+  // `draw_callback`. `shared_image_usage_flags` specifies the read/display
+  // usages required by the caller (which must be a subset of
+  // `kAllowedReadUsages`); `SHARED_IMAGE_USAGE_RASTER_READ` and
+  // `SHARED_IMAGE_USAGE_RASTER_WRITE` are added internally.
   static scoped_refptr<StaticBitmapImage> CreateFromRaster(
       const gfx::Size& size,
       viz::SharedImageFormat format,

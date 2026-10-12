@@ -124,13 +124,11 @@ scoped_refptr<StaticBitmapImage> AcceleratedStaticBitmapImage::CreateFromRaster(
     base::FunctionRef<void(cc::PaintCanvas&)> draw_callback,
     scoped_refptr<const cc::AnimatedImageFrameIndexMap>
         animated_image_frame_index_map) {
-  CHECK(!shared_image_usage_flags.Has(
-      gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE));
+  CHECK(kAllowedReadUsages.HasAll(shared_image_usage_flags));
 
   // IsGpuCompositingEnabled can re-create the context if it has been lost, do
   // this up front so that we can fail early and not expose ourselves to
   // use after free bugs (crbug.com/1126424)
-
   const bool is_gpu_compositing_enabled =
       SharedGpuContext::IsGpuCompositingEnabled();
 
