@@ -210,8 +210,8 @@ NamedPropertySetterResult CSSStyleDeclaration::AnonymousNamedSetter(
   // 829408).
   ExceptionState exception_state(script_state->GetIsolate());
   if (value->IsString()) {
-    // NativeValueTraits::ToBlinkStringView() (called implicitly on conversion)
-    // tries fairly hard to make an AtomicString out of the string,
+    // NativeValueTraitsStringAdapter::ToStringView() (called implicitly on
+    // conversion) tries fairly hard to make an AtomicString out of the string,
     // on the basis that we'd probably like cheaper compares down the line.
     // However, for our purposes, we never really use that; we mostly tokenize
     // it or parse it in some other way. So if it's short enough, we try to
