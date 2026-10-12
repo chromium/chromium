@@ -16048,6 +16048,21 @@
             ]
         }
     ],
+    "SigninButtonProfileMenuRefinements": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SigninButtonProfileMenuRefinements"
+                    ]
+                }
+            ]
+        }
+    ],
     "SimdutfBase64Encode": [
         {
             "platforms": [
