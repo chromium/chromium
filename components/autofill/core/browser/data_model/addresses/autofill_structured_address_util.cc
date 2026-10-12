@@ -8,7 +8,6 @@
 
 #include <algorithm>
 #include <initializer_list>
-#include <iterator>
 #include <map>
 #include <memory>
 #include <optional>
@@ -44,17 +43,8 @@
 namespace autofill {
 
 SortedTokenComparisonResult::SortedTokenComparisonResult(
-    SortedTokenComparisonStatus status,
-    std::vector<AddressToken> additional_tokens)
-    : status(status), additional_tokens(additional_tokens) {}
-
-SortedTokenComparisonResult::SortedTokenComparisonResult(
-    SortedTokenComparisonResult&& other) = default;
-
-SortedTokenComparisonResult& SortedTokenComparisonResult::operator=(
-    SortedTokenComparisonResult&& other) = default;
-
-SortedTokenComparisonResult::~SortedTokenComparisonResult() = default;
+    SortedTokenComparisonStatus status)
+    : status(status) {}
 
 bool SortedTokenComparisonResult::OneIsSubset() const {
   return status == SortedTokenComparisonStatus::kSubset ||
@@ -399,21 +389,11 @@ SortedTokenComparisonResult CompareSortedTokens(
     return SortedTokenComparisonResult(SortedTokenComparisonStatus::kDistinct);
   }
 
-  std::vector<AddressToken> additional_tokens;
-
-  // Collect the additional tokens from the superset.
-  // Note, that the superset property is already assured.
-  std::set_symmetric_difference(
-      first.begin(), first.end(), second.begin(), second.end(),
-      std::back_inserter(additional_tokens), cmp_normalized);
-
   if (is_superset) {
-    return SortedTokenComparisonResult(SortedTokenComparisonStatus::kSuperset,
-                                       additional_tokens);
+    return SortedTokenComparisonResult(SortedTokenComparisonStatus::kSuperset);
   }
 
-  return SortedTokenComparisonResult(SortedTokenComparisonStatus::kSubset,
-                                     additional_tokens);
+  return SortedTokenComparisonResult(SortedTokenComparisonStatus::kSubset);
 }
 
 SortedTokenComparisonResult CompareSortedTokens(std::u16string_view first,
