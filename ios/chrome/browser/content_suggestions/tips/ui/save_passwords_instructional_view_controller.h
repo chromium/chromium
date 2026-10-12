@@ -5,12 +5,17 @@
 #ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_TIPS_UI_SAVE_PASSWORDS_INSTRUCTIONAL_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_TIPS_UI_SAVE_PASSWORDS_INSTRUCTIONAL_VIEW_CONTROLLER_H_
 
-#import "ios/chrome/browser/shared/ui/animated_promo/animated_promo_view_controller.h"
+#import "ios/chrome/browser/shared/ui/animated_promo/animated_promo_with_bricks_view_controller.h"
 
 // The view controller for the full-screen, animated Save Passwords
 // instructional tip.
 @interface SavePasswordsInstructionalViewController
-    : AnimatedPromoViewController
+    : AnimatedPromoWithBricksViewController
+
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithConfiguration:(AnimatedPromoConfiguration*)config
+    NS_UNAVAILABLE;
 
 @end
 

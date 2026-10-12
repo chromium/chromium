@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_TIPS_COORDINATOR_TIPS_PASSWORDS_COORDINATOR_H_
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_action_delegate.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 
 @class TipsPasswordsCoordinator;
@@ -26,6 +27,7 @@ enum class TipIdentifier;
 // module.
 @interface TipsPasswordsCoordinator
     : ChromeCoordinator <ConfirmationAlertActionHandler,
+                         ButtonStackActionDelegate,
                          UIAdaptivePresentationControllerDelegate>
 
 // The delegate that receives events from this coordinator.

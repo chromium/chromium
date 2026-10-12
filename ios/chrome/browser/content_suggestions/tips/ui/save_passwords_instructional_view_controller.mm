@@ -4,6 +4,10 @@
 
 #import "ios/chrome/browser/content_suggestions/tips/ui/save_passwords_instructional_view_controller.h"
 
+#import "ios/chrome/browser/shared/ui/animated_promo/animated_promo_configuration.h"
+#import "ios/chrome/browser/shared/ui/brick_configurations/animation_brick_configuration.h"
+#import "ios/chrome/browser/shared/ui/brick_configurations/title_brick_configuration.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -33,16 +37,20 @@ NSString* const kSaveKeypath = @"save";
 // dictionary.
 NSString* const kDoneKeypath = @"done";
 
-}  // namespace
+// Creates the AnimatedPromoConfiguration.
+AnimatedPromoConfiguration* SavePasswordsInstructionalConfig() {
+  ButtonStackConfiguration* buttonStackConfiguration =
+      [[ButtonStackConfiguration alloc] init];
+  buttonStackConfiguration.primaryActionString =
+      l10n_util::GetNSString(IDS_IOS_MAGIC_STACK_TIP_GOT_IT);
+  buttonStackConfiguration.secondaryActionString =
+      l10n_util::GetNSString(IDS_IOS_MAGIC_STACK_TIP_SHOW_ME_HOW);
 
-@implementation SavePasswordsInstructionalViewController
-
-#pragma mark - UIViewController
-
-- (void)viewDidLoad {
-  self.animationName = kAnimationName;
-  self.animationNameDarkMode = kAnimationNameDarkMode;
-  self.animationBackgroundColor =
+  AnimationBrickConfiguration* animationConfiguration =
+      [[AnimationBrickConfiguration alloc] init];
+  animationConfiguration.animationName = kAnimationName;
+  animationConfiguration.darkAnimationName = kAnimationNameDarkMode;
+  animationConfiguration.animationBackgroundColor =
       [UIColor colorNamed:kSecondaryBackgroundColor];
 
   // Set the text localization.
@@ -51,21 +59,39 @@ NSString* const kDoneKeypath = @"done";
   NSString* saveTitle =
       l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER_SAVE_BUTTON);
   NSString* doneTitle = l10n_util::GetNSString(IDS_IOS_SUGGESTIONS_DONE);
-  self.animationTextProvider = @{
+
+  animationConfiguration.animationTextProvider = @{
     kSavePasswordKeypath : savePasswordTitle,
     kSaveKeypath : saveTitle,
     kDoneKeypath : doneTitle,
   };
 
-  self.titleString =
+  TitleBrickConfiguration* titleConfiguration =
+      [[TitleBrickConfiguration alloc] init];
+  titleConfiguration.title =
       l10n_util::GetNSString(IDS_IOS_MAGIC_STACK_TIP_SAVE_PASSWORD_TITLE);
-  self.subtitleString =
+  titleConfiguration.subtitle =
       l10n_util::GetNSString(IDS_IOS_MAGIC_STACK_TIP_SAVE_PASSWORD_DESCRIPTION);
-  self.primaryActionString =
-      l10n_util::GetNSString(IDS_IOS_MAGIC_STACK_TIP_GOT_IT);
-  self.secondaryActionString =
-      l10n_util::GetNSString(IDS_IOS_MAGIC_STACK_TIP_SHOW_ME_HOW);
+  titleConfiguration.titleStyle = UIFontTextStyleTitle2;
 
+  return [[AnimatedPromoConfiguration alloc]
+      initWithAnimationBrickConfiguration:animationConfiguration
+                 buttonStackConfiguration:buttonStackConfiguration
+                  titleBrickConfiguration:titleConfiguration
+                           underTitleView:nil];
+}
+
+}  // namespace
+
+@implementation SavePasswordsInstructionalViewController
+
+- (instancetype)init {
+  return [super initWithConfiguration:SavePasswordsInstructionalConfig()];
+}
+
+#pragma mark - UIViewController
+
+- (void)viewDidLoad {
   [super viewDidLoad];
 
   self.view.accessibilityIdentifier = kSavePasswordsInstructionalAXID;

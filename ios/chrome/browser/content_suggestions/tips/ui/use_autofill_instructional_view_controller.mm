@@ -4,6 +4,10 @@
 
 #import "ios/chrome/browser/content_suggestions/tips/ui/use_autofill_instructional_view_controller.h"
 
+#import "ios/chrome/browser/shared/ui/animated_promo/animated_promo_configuration.h"
+#import "ios/chrome/browser/shared/ui/brick_configurations/animation_brick_configuration.h"
+#import "ios/chrome/browser/shared/ui/brick_configurations/title_brick_configuration.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -42,41 +46,61 @@ NSDictionary<NSString*, UIColor*>* colorProvider() {
   };
 }
 
-}  // namespace
+// Creates the AnimatedPromoConfiguration.
+AnimatedPromoConfiguration* UseAutofillInstructionalConfig() {
+  ButtonStackConfiguration* buttonStackConfiguration =
+      [[ButtonStackConfiguration alloc] init];
+  buttonStackConfiguration.primaryActionString =
+      l10n_util::GetNSString(IDS_IOS_MAGIC_STACK_TIP_GOT_IT);
+  buttonStackConfiguration.secondaryActionString =
+      l10n_util::GetNSString(IDS_IOS_MAGIC_STACK_TIP_SHOW_ME_HOW);
 
-@implementation UseAutofillInstructionalViewController
-
-#pragma mark - UIViewController
-
-- (void)viewDidLoad {
-  self.useLegacyDarkMode = NO;
-  self.animationName = kAnimationName;
-  self.animationBackgroundColor =
+  AnimationBrickConfiguration* animationConfiguration =
+      [[AnimationBrickConfiguration alloc] init];
+  animationConfiguration.animationName = kAnimationName;
+  animationConfiguration.animationBackgroundColor =
       [UIColor colorNamed:kSecondaryBackgroundColor];
-  self.lightModeColorProvider = colorProvider();
-  self.darkModeColorProvider = colorProvider();
+  animationConfiguration.lightModeColorProvider = colorProvider();
+  animationConfiguration.darkModeColorProvider = colorProvider();
+  animationConfiguration.useLegacyDarkMode = NO;
 
-  // Set the text localization.
+  // Set the text localization for the animation.
   NSString* useKeyboardTitle =
       l10n_util::GetNSString(IDS_IOS_CREDENTIAL_BOTTOM_SHEET_USE_KEYBOARD);
   NSString* usePasswordTitle =
       l10n_util::GetNSString(IDS_IOS_CREDENTIAL_BOTTOM_SHEET_USE_PASSWORD);
-  self.animationTextProvider = @{
+  animationConfiguration.animationTextProvider = @{
     kUseKeyboardKeypath : useKeyboardTitle,
     kUsePasswordKeypath : usePasswordTitle,
   };
 
-  self.titleString =
+  TitleBrickConfiguration* titleConfiguration =
+      [[TitleBrickConfiguration alloc] init];
+  titleConfiguration.title =
       l10n_util::GetNSString(IDS_IOS_MAGIC_STACK_TIP_AUTOFILL_PASSWORDS_TITLE);
-  self.subtitleString = l10n_util::GetNSString(
+  titleConfiguration.subtitle = l10n_util::GetNSString(
       IDS_IOS_MAGIC_STACK_TIP_AUTOFILL_PASSWORDS_DESCRIPTION);
-  self.primaryActionString =
-      l10n_util::GetNSString(IDS_IOS_MAGIC_STACK_TIP_GOT_IT);
-  self.secondaryActionString =
-      l10n_util::GetNSString(IDS_IOS_MAGIC_STACK_TIP_SHOW_ME_HOW);
+  titleConfiguration.titleStyle = UIFontTextStyleTitle2;
 
+  return [[AnimatedPromoConfiguration alloc]
+      initWithAnimationBrickConfiguration:animationConfiguration
+                 buttonStackConfiguration:buttonStackConfiguration
+                  titleBrickConfiguration:titleConfiguration
+                           underTitleView:nil];
+}
+
+}  // namespace
+
+@implementation UseAutofillInstructionalViewController
+
+- (instancetype)init {
+  return [super initWithConfiguration:UseAutofillInstructionalConfig()];
+}
+
+#pragma mark - UIViewController
+
+- (void)viewDidLoad {
   [super viewDidLoad];
-
   self.view.accessibilityIdentifier = kUseAutofillInstructionalAXID;
 }
 

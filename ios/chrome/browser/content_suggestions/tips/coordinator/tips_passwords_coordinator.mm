@@ -22,7 +22,7 @@ using segmentation_platform::TipIdentifier;
   segmentation_platform::TipIdentifier _identifier;
 
   // The view controller responsible for displaying the animated promo.
-  AnimatedPromoViewController* _tipsInstructionalViewController;
+  AnimatedPromoWithBricksViewController* _tipsInstructionalViewController;
 
   // The view controller responsible for displaying the instructional overlay.
   InstructionsBottomSheetViewController*
@@ -54,7 +54,7 @@ using segmentation_platform::TipIdentifier;
 
   CHECK(_tipsInstructionalViewController);
 
-  _tipsInstructionalViewController.actionHandler = self;
+  _tipsInstructionalViewController.actionDelegate = self;
 
   UINavigationController* navigationController = [[UINavigationController alloc]
       initWithRootViewController:_tipsInstructionalViewController];
@@ -80,7 +80,7 @@ using segmentation_platform::TipIdentifier;
   _tipsInstructionalOverlayViewController.actionHandler = nil;
   _tipsInstructionalOverlayViewController = nil;
   _instructionsNavigationController = nil;
-  _tipsInstructionalViewController.actionHandler = nil;
+  _tipsInstructionalViewController.actionDelegate = nil;
   _tipsInstructionalViewController = nil;
   _delegate = nil;
 }
@@ -92,15 +92,15 @@ using segmentation_platform::TipIdentifier;
   [self dismissSheet];
 }
 
-#pragma mark - ConfirmationAlertActionHandler
+#pragma mark - ButtonStackActionDelegate
 
-- (void)confirmationAlertPrimaryAction {
+- (void)didTapPrimaryActionButton {
   // TODO(crbug.com/369457289): Track user interactions with the Tips module
   // using new metrics.
   [self dismissSheet];
 }
 
-- (void)confirmationAlertSecondaryAction {
+- (void)didTapSecondaryActionButton {
   // TODO(crbug.com/369457289): Track user interactions with the Tips module
   // using new metrics.
 
@@ -126,6 +126,24 @@ using segmentation_platform::TipIdentifier;
                      animated:YES
                    completion:nil];
   }
+}
+
+- (void)didTapTertiaryActionButton {
+  NOTREACHED();
+}
+
+- (void)didDismissButtonStackViewController {
+  NOTREACHED();
+}
+
+#pragma mark - ConfirmationAlertActionHandler
+
+- (void)confirmationAlertPrimaryAction {
+  [self didTapPrimaryActionButton];
+}
+
+- (void)confirmationAlertSecondaryAction {
+  [self didTapSecondaryActionButton];
 }
 
 #pragma mark - Private
