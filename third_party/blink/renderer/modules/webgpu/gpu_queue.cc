@@ -580,10 +580,13 @@ void GPUQueue::DrawElementImageToTextureInternal(
     return;
   }
 
-  scoped_refptr<StaticBitmapImage> image =
-      context->GetElementImage(source, sx, sy, swidth, sheight, width, height,
-                               gpu::SHARED_IMAGE_USAGE_WEBGPU_READ,
-                               "drawElementImageToTexture()", exception_state);
+  // CopyStaticImageBitmapToWGPUTexture() calls PaintImageForCurrentFrame() on
+  // the returned image (which accesses its SharedImage via the raster
+  // interface) in addition to reading it via WebGPU.
+  scoped_refptr<StaticBitmapImage> image = context->GetElementImage(
+      source, sx, sy, swidth, sheight, width, height,
+      gpu::SHARED_IMAGE_USAGE_WEBGPU_READ | gpu::SHARED_IMAGE_USAGE_RASTER_READ,
+      "drawElementImageToTexture()", exception_state);
   if (!image) {
     return;
   }

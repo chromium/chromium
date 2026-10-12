@@ -7064,10 +7064,13 @@ void WebGLRenderingContextBase::TexElementSubImage2DInternal(
     return;
   }
 
-  scoped_refptr<StaticBitmapImage> image =
-      GetElementImage(element, sx, sy, swidth, sheight, width, height,
-                      gpu::SHARED_IMAGE_USAGE_GLES2_READ,
-                      "texElementSubImage2D()", exception_state);
+  // TexImageStaticBitmapImage() may read the returned image via the raster
+  // interface (for GPU color-space conversion or CPU readback fallback) in
+  // addition to reading via the GL interface.
+  scoped_refptr<StaticBitmapImage> image = GetElementImage(
+      element, sx, sy, swidth, sheight, width, height,
+      gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_RASTER_READ,
+      "texElementSubImage2D()", exception_state);
   if (!image) {
     return;
   }

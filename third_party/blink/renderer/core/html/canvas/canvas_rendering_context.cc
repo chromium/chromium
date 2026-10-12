@@ -275,13 +275,10 @@ scoped_refptr<StaticBitmapImage> CanvasRenderingContext::GetElementImage(
   if (base::FeatureList::IsEnabled(kAllowAcceleratedTexElement) &&
       SharedGpuContext::IsGpuCompositingEnabled()) {
     if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
-      // Both WebGL (for color-space conversion or CPU readback fallback) and
-      // WebGPU (for CPU readback fallback) may read the returned image via the
-      // raster interface in addition to the caller-specified `usage`.
       return AcceleratedStaticBitmapImage::CreateFromRaster(
           dest_size, GetN32FormatForCanvas(), kPremul_SkAlphaType,
-          gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata(), wrapper,
-          usage | gpu::SHARED_IMAGE_USAGE_RASTER_READ, draw_to_canvas,
+          gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata(), wrapper, usage,
+          draw_to_canvas,
           drawable_paint_record->paint_state.animated_image_frame_index_map);
     }
   }
