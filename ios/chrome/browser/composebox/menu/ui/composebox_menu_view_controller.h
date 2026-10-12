@@ -38,12 +38,4 @@
 
 @end
 
-// Represents a page of the composebox menu.
-@interface ComposeboxMenuPageViewController : UIViewController
-
-// The collection view displaying the composebox menu.
-@property(nonatomic, readonly) UICollectionView* collectionView;
-
-@end
-
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_MENU_UI_COMPOSEBOX_MENU_VIEW_CONTROLLER_H_

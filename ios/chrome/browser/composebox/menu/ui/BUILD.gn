@@ -22,6 +22,8 @@ source_set("ui") {
     "composebox_menu_list_cell.h",
     "composebox_menu_list_cell.mm",
     "composebox_menu_mutator.h",
+    "composebox_menu_page_view_controller.h",
+    "composebox_menu_page_view_controller.mm",
     "composebox_menu_section.h",
     "composebox_menu_section.mm",
     "composebox_menu_separator_footer.h",
