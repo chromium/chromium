@@ -28,22 +28,23 @@
 }
 @end
 
-// Test subview that simulates an active first responder (`WKContentView`) and
-// records `reloadInputViews` invocations.
+// Fake first-responder subview that captures its superview's `inputView` when
+// `reloadInputViews` is called.
 @interface CRWTestFirstResponderSubview : UIView
-// Whether this subview reports itself as the active first responder.
-@property(nonatomic, assign) BOOL firstResponder;
-// Number of times `reloadInputViews` has been called on this subview.
+// Number of times `reloadInputViews` was invoked on this view.
 @property(nonatomic, assign) int reloadInputViewsCount;
+// Value of `superview.inputView` captured during the last `reloadInputViews`.
+@property(nonatomic, strong) UIView* observedSuperviewInputView;
 @end
 
 @implementation CRWTestFirstResponderSubview
 - (BOOL)isFirstResponder {
-  return _firstResponder;
+  return YES;
 }
 - (void)reloadInputViews {
-  // Not calling super: this view only pretends to be the first responder.
   _reloadInputViewsCount++;
+  _observedSuperviewInputView = self.superview.inputView;
+  [super reloadInputViews];
 }
 @end
 
@@ -52,9 +53,13 @@ namespace {
 using CRWWebViewTest = PlatformTest;
 
 // Tests that `shouldSuppressInputViews` replaces `inputView` with a zero-sized
-// view when `YES` and restores it to `nil` when `NO`.
+// view when `YES`, restores it to `nil` when `NO`, and reloads first-responder
+// input views on state transitions.
 TEST_F(CRWWebViewTest, SuppressesInputViews) {
   CRWWebView* web_view = [[CRWWebView alloc] initWithFrame:CGRectZero];
+  CRWTestFirstResponderSubview* subview =
+      [[CRWTestFirstResponderSubview alloc] initWithFrame:CGRectZero];
+  [web_view addSubview:subview];
 
   EXPECT_FALSE(web_view.shouldSuppressInputViews);
   EXPECT_EQ(web_view.inputView, nil);
@@ -65,11 +70,23 @@ TEST_F(CRWWebViewTest, SuppressesInputViews) {
   ASSERT_NE(web_view.inputView, nil);
   EXPECT_TRUE(CGRectIsEmpty(web_view.inputView.frame));
   EXPECT_EQ(web_view.inputAccessoryView, nil);
+  EXPECT_EQ(subview.reloadInputViewsCount, 1);
+  EXPECT_EQ(subview.observedSuperviewInputView, web_view.inputView);
+
+  // Setting `YES` again should be a no-op.
+  web_view.shouldSuppressInputViews = YES;
+  EXPECT_EQ(subview.reloadInputViewsCount, 1);
 
   web_view.shouldSuppressInputViews = NO;
   EXPECT_FALSE(web_view.shouldSuppressInputViews);
   EXPECT_EQ(web_view.inputView, nil);
   EXPECT_EQ(web_view.inputAccessoryView, nil);
+  EXPECT_EQ(subview.reloadInputViewsCount, 2);
+  EXPECT_EQ(subview.observedSuperviewInputView, nil);
+
+  // Setting `NO` again should be a no-op.
+  web_view.shouldSuppressInputViews = NO;
+  EXPECT_EQ(subview.reloadInputViewsCount, 2);
 }
 
 // Tests that `shouldSuppressInputViews` overrides views and view controllers
@@ -105,34 +122,6 @@ TEST_F(CRWWebViewTest, OverridesInputViewProvider) {
   EXPECT_EQ(web_view.inputViewController, provider.inputViewController);
   EXPECT_EQ(web_view.inputAccessoryViewController,
             provider.inputAccessoryViewController);
-}
-
-// Tests that changing `shouldSuppressInputViews` calls `reloadInputViews` on
-// the active first responder subview only when the value changes.
-TEST_F(CRWWebViewTest, ReloadsFirstResponderInputViews) {
-  CRWWebView* web_view = [[CRWWebView alloc] initWithFrame:CGRectZero];
-  UIView* container_view = [[UIView alloc] initWithFrame:CGRectZero];
-  CRWTestFirstResponderSubview* subview =
-      [[CRWTestFirstResponderSubview alloc] initWithFrame:CGRectZero];
-  subview.firstResponder = YES;
-  [container_view addSubview:subview];
-  [web_view addSubview:container_view];
-
-  web_view.shouldSuppressInputViews = YES;
-  EXPECT_EQ(subview.reloadInputViewsCount, 1);
-
-  // Setting the same value again is a no-op and should not reload input views.
-  web_view.shouldSuppressInputViews = YES;
-  EXPECT_EQ(subview.reloadInputViewsCount, 1);
-
-  web_view.shouldSuppressInputViews = NO;
-  EXPECT_EQ(subview.reloadInputViewsCount, 2);
-
-  // Toggling when no view in the hierarchy is first responder should not call
-  // `reloadInputViews` on the subview.
-  subview.firstResponder = NO;
-  web_view.shouldSuppressInputViews = YES;
-  EXPECT_EQ(subview.reloadInputViewsCount, 2);
 }
 
 }  // namespace

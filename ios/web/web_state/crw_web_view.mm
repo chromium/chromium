@@ -5,56 +5,44 @@
 #import "ios/web/web_state/crw_web_view.h"
 
 #import "base/feature_list.h"
-#import "base/metrics/histogram_functions.h"
 #import "ios/components/enterprise/data_controls/clipboard_enums.h"
 #import "ios/components/enterprise/data_controls/metrics_utils.h"
 #import "ios/web/common/crw_edit_menu_builder.h"
 #import "ios/web/common/crw_input_view_provider.h"
 #import "ios/web/common/features.h"
 #import "ios/web/web_state/crw_data_controls_delegate.h"
+#import "ios/web/web_state/crw_input_view_suppressor.h"
 
 using data_controls::ClipboardAction;
 using data_controls::ClipboardSource;
 using data_controls::RecordClipboardOutcomeMetrics;
 using data_controls::RecordClipboardSourceMetrics;
 
-namespace {
-
-// Returns the first responder in `view` or its subview hierarchy, or `nil` if
-// no view in the subtree is the first responder.
-UIView* GetFirstResponderSubview(UIView* view) {
-  if ([view isFirstResponder]) {
-    return view;
-  }
-
-  for (UIView* subview in [view subviews]) {
-    UIView* firstResponder = GetFirstResponderSubview(subview);
-    if (firstResponder) {
-      return firstResponder;
-    }
-  }
-
-  return nil;
-}
-
-}  // namespace
-
 @implementation CRWWebView {
-  // Zero-sized view that replaces the system software keyboard and any custom
-  // `inputViewProvider` input view when `shouldSuppressInputViews` is `YES`.
-  UIView* _emptyInputView;
+  // Helper that manages input view suppression for this web view.
+  CRWInputViewSuppressor* _inputViewSuppressor;
 }
 
 #pragma mark - Public Properties
 
+- (BOOL)shouldSuppressInputViews {
+  return _inputViewSuppressor != nil;
+}
+
 - (void)setShouldSuppressInputViews:(BOOL)shouldSuppressInputViews {
-  if (_shouldSuppressInputViews == shouldSuppressInputViews) {
+  if (self.shouldSuppressInputViews == shouldSuppressInputViews) {
     return;
   }
-  _shouldSuppressInputViews = shouldSuppressInputViews;
-  // Call `reloadInputViews` on the active first responder in the hierarchy, as
-  // UIKit ignores it on non-first-responders.
-  [GetFirstResponderSubview(self) reloadInputViews];
+  if (shouldSuppressInputViews) {
+    _inputViewSuppressor = [[CRWInputViewSuppressor alloc] initWithView:self];
+    // Reload input views after `_inputViewSuppressor` is assigned so
+    // synchronous `inputView` queries during `reloadInputViews` see it.
+    [_inputViewSuppressor reloadInputViews];
+  } else {
+    CRWInputViewSuppressor* suppressor = _inputViewSuppressor;
+    _inputViewSuppressor = nil;
+    [suppressor disconnect];
+  }
 }
 
 #pragma mark - UIResponder
@@ -75,13 +63,8 @@ UIView* GetFirstResponderSubview(UIView* view) {
 }
 
 - (UIView*)inputView {
-  if (_shouldSuppressInputViews) {
-    // When `UIResponder.inputView` is `nil`, the system software keyboard is
-    // displayed. Return a zero-sized `UIView` instead to suppress the keyboard.
-    if (!_emptyInputView) {
-      _emptyInputView = [[UIView alloc] initWithFrame:CGRectZero];
-    }
-    return _emptyInputView;
+  if (_inputViewSuppressor) {
+    return [_inputViewSuppressor inputView];
   }
   id<CRWResponderInputView> responderInputView =
       self.inputViewProvider.responderInputView;
@@ -95,8 +78,8 @@ UIView* GetFirstResponderSubview(UIView* view) {
 }
 
 - (UIInputViewController*)inputViewController {
-  if (_shouldSuppressInputViews) {
-    return nil;
+  if (_inputViewSuppressor) {
+    return [_inputViewSuppressor inputViewController];
   }
   id<CRWResponderInputView> responderInputView =
       self.inputViewProvider.responderInputView;
@@ -111,10 +94,8 @@ UIView* GetFirstResponderSubview(UIView* view) {
 }
 
 - (UIView*)inputAccessoryView {
-  if (_shouldSuppressInputViews) {
-    // Returning `nil` hides the form accessory toolbar when a web input element
-    // is focused.
-    return nil;
+  if (_inputViewSuppressor) {
+    return [_inputViewSuppressor inputAccessoryView];
   }
   id<CRWResponderInputView> responderInputView =
       self.inputViewProvider.responderInputView;
@@ -128,8 +109,8 @@ UIView* GetFirstResponderSubview(UIView* view) {
 }
 
 - (UIInputViewController*)inputAccessoryViewController {
-  if (_shouldSuppressInputViews) {
-    return nil;
+  if (_inputViewSuppressor) {
+    return [_inputViewSuppressor inputAccessoryViewController];
   }
   id<CRWResponderInputView> responderInputView =
       self.inputViewProvider.responderInputView;

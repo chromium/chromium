@@ -93,6 +93,8 @@ source_set("web_view_internal_creation_util") {
   ]
 
   sources = [
+    "crw_input_view_suppressor.h",
+    "crw_input_view_suppressor.mm",
     "crw_web_view.h",
     "crw_web_view.mm",
     "web_view_internal_creation_util.h",
