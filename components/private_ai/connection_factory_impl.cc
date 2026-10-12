@@ -4,6 +4,7 @@
 
 #include "components/private_ai/connection_factory_impl.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -46,13 +47,15 @@ std::unique_ptr<Connection> CreateConnectionStack(
     base::RepeatingCallback<void(StatusCode)> on_disconnect,
     base::OnceClosure on_established,
     version_info::Channel channel,
-    network::NetworkContextGetter network_context_getter) {
+    network::NetworkContextGetter network_context_getter,
+    std::optional<bool> has_chrome_proxy = std::nullopt) {
   std::unique_ptr<SecureChannel::Factory> secure_channel_factory;
   if (secure_channel_override) {
     secure_channel_factory = secure_channel_override.Run();
   } else {
     secure_channel_factory = std::make_unique<SecureChannelImpl::FactoryImpl>(
-        url, std::move(network_context_getter), logger, oak_session_driver);
+        url, std::move(network_context_getter), logger, oak_session_driver,
+        has_chrome_proxy);
   }
 
   std::unique_ptr<Connection> connection = std::make_unique<ConnectionBasic>(

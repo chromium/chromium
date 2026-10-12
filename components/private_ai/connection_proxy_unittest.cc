@@ -47,7 +47,9 @@ class ConnectionProxyTest : public testing::Test {
   }
 
   std::unique_ptr<Connection> CreateInnerConnection(
-      network::NetworkContextGetter context_getter) {
+      network::NetworkContextGetter context_getter,
+      std::optional<bool> has_chrome_proxy) {
+    has_chrome_proxy_ = has_chrome_proxy;
     auto connection = std::make_unique<FakeConnection>(base::DoNothing());
     inner_connection_ = connection.get();
     if (on_inner_connection_created_) {
@@ -72,6 +74,7 @@ class ConnectionProxyTest : public testing::Test {
   base::OnceClosure on_inner_connection_created_;
 
   bool on_disconnect_called_ = false;
+  std::optional<bool> has_chrome_proxy_;
 };
 
 TEST_F(ConnectionProxyTest, Success) {
@@ -99,6 +102,7 @@ TEST_F(ConnectionProxyTest, Success) {
   ASSERT_TRUE(inner_connection_);
   ASSERT_EQ(inner_connection_->pending_requests().size(), 1u);
   EXPECT_EQ(inner_connection_->pending_requests()[0].request.request_id(), 1);
+  EXPECT_FALSE(*has_chrome_proxy_);
 
   // Respond to request.
   proto::PrivateAiResponse response;
@@ -267,6 +271,21 @@ TEST_F(ConnectionProxyTest, ProxyConfigExtensionFailure) {
   auto result = future.Get();
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), StatusCode::kProxyConfigFailed);
+}
+
+TEST_F(ConnectionProxyTest, WithProxyConfigured) {
+  network_driver_.set_is_proxy_configured(true);
+  CreateConnectionProxy();
+
+  base::test::TestFuture<void> inner_connection_created_future;
+  on_inner_connection_created_ = inner_connection_created_future.GetCallback();
+  token_manager_.RespondToGetAuthTokenForProxy(phosphor::BlindSignedAuthToken{
+      .token = FakeTokenManager::kFakeProxyToken,
+      .encoded_extensions = "cHJveHlfZXh0ZW5zaW9ucw=="});
+  EXPECT_TRUE(inner_connection_created_future.Wait());
+
+  ASSERT_TRUE(inner_connection_);
+  EXPECT_TRUE(*has_chrome_proxy_);
 }
 
 }  // namespace

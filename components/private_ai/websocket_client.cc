@@ -20,6 +20,7 @@
 #include "components/private_ai/attestation/server_verification_key.h"
 #include "components/private_ai/common/private_ai_logger.h"
 #include "components/private_ai/proto_utils/google_rpc_code.h"
+#include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "third_party/oak/chromium/proto/session/session.pb.h"
 #include "url/gurl.h"
@@ -64,12 +65,14 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 WebSocketClient::WebSocketClient(
     const GURL& service_url,
     network::NetworkContextGetter network_context_getter,
-    PrivateAiLogger* logger)
+    PrivateAiLogger* logger,
+    std::optional<bool> has_chrome_proxy)
     : logger_(logger),
       streaming_client_(service_url,
                         std::move(network_context_getter),
                         kTrafficAnnotation,
-                        /*delegate=*/this) {
+                        /*delegate=*/this),
+      has_chrome_proxy_(has_chrome_proxy) {
   CHECK(logger_);
 }
 
@@ -143,10 +146,16 @@ void WebSocketClient::OnMessage(std::vector<uint8_t> message) {
                                 base::ok(std::move(message))));
 }
 
+void WebSocketClient::OnConnected() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  RecordConnectionResult(net::OK);
+}
+
 void WebSocketClient::OnConnectionError(const std::string& message,
                                         int net_error,
                                         int response_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  RecordConnectionResult(net_error);
   // Called when the WebSocket opening handshake fails, i.e. the connection to
   // the server could not be established. Unrelated to the secure channel
   // handshake.
@@ -232,6 +241,19 @@ void WebSocketClient::ClosePipe(TransportError status) {
       FROM_HERE,
       base::BindOnce(&WebSocketClient::OnResponse,
                      weak_ptr_factory_.GetWeakPtr(), base::unexpected(status)));
+}
+
+void WebSocketClient::RecordConnectionResult(int net_error) {
+  if (has_recorded_connection_result_ || !has_chrome_proxy_.has_value()) {
+    return;
+  }
+  has_recorded_connection_result_ = true;
+  const char* variant = *has_chrome_proxy_ ? "WithProxy" : "WithoutProxy";
+  // Net error codes are negative, while the NetErrorCodes enum used for
+  // histogram contains their absolute values. net::OK is 0.
+  base::UmaHistogramSparse(
+      base::StrCat({"PrivateAi.Client.ConnectionResult.", variant}),
+      net_error == net::OK ? net::OK : -net_error);
 }
 
 }  // namespace private_ai

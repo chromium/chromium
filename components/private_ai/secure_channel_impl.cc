@@ -38,19 +38,21 @@ SecureChannelImpl::FactoryImpl::FactoryImpl(
     const GURL& url,
     network::NetworkContextGetter network_context_getter,
     PrivateAiLogger* logger,
-    PrivateAiOakSessionDriver* oak_session_driver)
+    PrivateAiOakSessionDriver* oak_session_driver,
+    std::optional<bool> has_chrome_proxy)
     : url_(url),
       network_context_getter_(std::move(network_context_getter)),
       logger_(logger),
-      oak_session_driver_(oak_session_driver) {}
+      oak_session_driver_(oak_session_driver),
+      has_chrome_proxy_(has_chrome_proxy) {}
 
 SecureChannelImpl::FactoryImpl::~FactoryImpl() = default;
 
 std::unique_ptr<SecureChannel> SecureChannelImpl::FactoryImpl::Create(
     base::OnceClosure on_established,
     ResponseCallback callback) {
-  auto transport =
-      std::make_unique<WebSocketClient>(url_, network_context_getter_, logger_);
+  auto transport = std::make_unique<WebSocketClient>(
+      url_, network_context_getter_, logger_, has_chrome_proxy_);
   auto secure_session =
       std::make_unique<SecureSessionAsyncImpl>(oak_session_driver_);
   auto attestation_handler =

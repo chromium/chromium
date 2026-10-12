@@ -5,6 +5,7 @@
 #include "chrome/browser/net/profile_network_context_service.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -1180,6 +1181,13 @@ void ProfileNetworkContextService::FlushCachedClientCertIfNeeded(
         storage_partition->GetNetworkContext()->FlushCachedClientCertIfNeeded(
             host, certificate);
       });
+}
+
+std::optional<bool> ProfileNetworkContextService::IsProxyConfigured() const {
+  if (!proxy_config_monitor_) {
+    return std::nullopt;
+  }
+  return proxy_config_monitor_->IsProxyConfigured();
 }
 
 void ProfileNetworkContextService::FlushProxyConfigMonitorForTesting() {

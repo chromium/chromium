@@ -96,4 +96,8 @@ void PrivateAiNetworkDriverIOS::CreateNetworkContext(
                                 std::move(receiver), std::move(params)));
 }
 
+std::optional<bool> PrivateAiNetworkDriverIOS::IsProxyConfigured() const {
+  return std::nullopt;
+}
+
 }  // namespace private_ai

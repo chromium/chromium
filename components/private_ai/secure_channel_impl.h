@@ -39,7 +39,8 @@ class SecureChannelImpl : public SecureChannel {
     FactoryImpl(const GURL& url,
                 network::NetworkContextGetter network_context_getter,
                 PrivateAiLogger* logger,
-                PrivateAiOakSessionDriver* oak_session_driver);
+                PrivateAiOakSessionDriver* oak_session_driver,
+                std::optional<bool> has_chrome_proxy = std::nullopt);
     ~FactoryImpl() override;
 
     std::unique_ptr<SecureChannel> Create(base::OnceClosure on_established,
@@ -50,6 +51,7 @@ class SecureChannelImpl : public SecureChannel {
     network::NetworkContextGetter network_context_getter_;
     raw_ptr<PrivateAiLogger> logger_;
     raw_ptr<PrivateAiOakSessionDriver> oak_session_driver_;
+    const std::optional<bool> has_chrome_proxy_;
   };
 
   SecureChannelImpl(base::OnceClosure on_established,

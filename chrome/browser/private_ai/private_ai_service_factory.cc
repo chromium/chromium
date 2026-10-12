@@ -4,7 +4,11 @@
 
 #include "chrome/browser/private_ai/private_ai_service_factory.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
+#include "chrome/browser/net/profile_network_context_service.h"
+#include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -46,6 +50,7 @@ PrivateAiServiceFactory::PrivateAiServiceFactory()
     : ProfileKeyedServiceFactory("private_ai::PrivateAiService",
                                  ProfileSelections::BuildForRegularProfile()) {
   DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(ProfileNetworkContextServiceFactory::GetInstance());
 }
 
 PrivateAiServiceFactory::~PrivateAiServiceFactory() = default;
@@ -60,7 +65,21 @@ PrivateAiServiceFactory::BuildServiceInstanceForBrowserContext(
 
   Profile* profile = Profile::FromBrowserContext(context);
 
-  auto network_driver = std::make_unique<PrivateAiNetworkDriverContent>();
+  auto network_driver =
+      std::make_unique<PrivateAiNetworkDriverContent>(base::BindRepeating(
+          [](base::WeakPtr<Profile> profile) -> std::optional<bool> {
+            if (!profile) {
+              return std::nullopt;
+            }
+            auto* pnc_service =
+                ProfileNetworkContextServiceFactory::GetForContext(
+                    profile.get());
+            if (!pnc_service) {
+              return std::nullopt;
+            }
+            return pnc_service->IsProxyConfigured();
+          },
+          profile->GetWeakPtr()));
   auto oak_session_driver =
       std::make_unique<PrivateAiOakSessionDriverContent>();
 

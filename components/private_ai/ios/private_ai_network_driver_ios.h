@@ -27,6 +27,8 @@ class PrivateAiNetworkDriverIOS : public PrivateAiNetworkDriver {
   void CreateNetworkContext(
       mojo::PendingReceiver<network::mojom::NetworkContext> receiver,
       network::mojom::NetworkContextParamsPtr params) override;
+
+  std::optional<bool> IsProxyConfigured() const override;
 };
 
 }  // namespace private_ai

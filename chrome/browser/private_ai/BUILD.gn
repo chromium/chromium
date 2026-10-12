@@ -16,6 +16,7 @@ source_set("private_ai") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/glic/suggestions",
+    "//chrome/browser/net",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/signin",
     "//components/keyed_service/core",

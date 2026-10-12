@@ -19,6 +19,13 @@ reviewer.
 
 <histograms>
 
+<variants name="PrivateAiChromeProxyStatus">
+  <variant name="WithoutProxy"
+      summary="the Chrome profile does not have a proxy configured"/>
+  <variant name="WithProxy"
+      summary="the Chrome profile has a proxy configured"/>
+</variants>
+
 <!-- LINT.IfChange(PrivateAiFeatures) -->
 
 <variants name="PrivateAiFeatures">
@@ -43,6 +50,21 @@ reviewer.
     metric, and this histogram tracks the original failure reason of the
     request.
   </summary>
+</histogram>
+
+<histogram name="PrivateAi.Client.ConnectionResult.{ChromeProxyStatus}"
+    enum="NetErrorCodes" expires_after="2027-03-28">
+  <owner>georgeseb@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <owner>lamzin@google.com</owner>
+  <summary>
+    Records the net error code (or net::OK on success) when establishing the
+    transport WebSocket connection for Private AI via ConnectionProxy through an
+    isolated NetworkContext. Recorded once per connection attempt when
+    {ChromeProxyStatus}. Direct connections without ConnectionProxy are not
+    recorded.
+  </summary>
+  <token key="ChromeProxyStatus" variants="PrivateAiChromeProxyStatus"/>
 </histogram>
 
 <histogram name="PrivateAi.Client.FeatureName" enum="PrivateAiFeatureName"

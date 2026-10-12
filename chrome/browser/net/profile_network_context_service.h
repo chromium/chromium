@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_NET_PROFILE_NETWORK_CONTEXT_SERVICE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -123,6 +124,10 @@ class ProfileNetworkContextService
   void FlushCachedClientCertIfNeeded(
       const net::HostPortPair& host,
       const scoped_refptr<net::X509Certificate>& certificate);
+
+  // Returns true if a proxy is configured for this profile, false if direct,
+  // or std::nullopt if the proxy configuration is pending/unknown.
+  std::optional<bool> IsProxyConfigured() const;
 
   // Flushes all pending proxy configuration changes.
   void FlushProxyConfigMonitorForTesting();

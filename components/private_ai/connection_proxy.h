@@ -43,9 +43,11 @@ network::mojom::CustomProxyConfigPtr CreateCustomProxyConfig(
 // the inner connection using the provided `InnerConnectionFactory`.
 class ConnectionProxy : public Connection {
  public:
-  // Factory for creating the inner connection given a NetworkContextGetter.
+  // Factory for creating the inner connection given a NetworkContextGetter
+  // and whether Chrome's profile has a proxy configured.
   using InnerConnectionFactory = base::OnceCallback<std::unique_ptr<Connection>(
-      network::NetworkContextGetter)>;
+      network::NetworkContextGetter,
+      std::optional<bool> has_chrome_proxy)>;
 
   ConnectionProxy(const GURL& proxy_url,
                   PrivateAiLogger* logger,

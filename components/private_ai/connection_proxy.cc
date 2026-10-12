@@ -201,14 +201,17 @@ void ConnectionProxy::OnProxyToken(
   network_driver_->CreateNetworkContext(
       proxied_context_.BindNewPipeAndPassReceiver(), std::move(context_params));
 
+  std::optional<bool> has_chrome_proxy = network_driver_->IsProxyConfigured();
+
   inner_connection_ =
       std::move(inner_connection_factory_)
           .Run(base::BindRepeating(
-              [](base::WeakPtr<ConnectionProxy> self)
-                  -> network::mojom::NetworkContext* {
-                return self ? self->proxied_context_.get() : nullptr;
-              },
-              weak_factory_.GetWeakPtr()));
+                   [](base::WeakPtr<ConnectionProxy> self)
+                       -> network::mojom::NetworkContext* {
+                     return self ? self->proxied_context_.get() : nullptr;
+                   },
+                   weak_factory_.GetWeakPtr()),
+               has_chrome_proxy);
 
   for (auto& pending : pending_requests_) {
     inner_connection_->Send(std::move(pending.request), pending.timeout,

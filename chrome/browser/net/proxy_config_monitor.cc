@@ -4,6 +4,7 @@
 
 #include "chrome/browser/net/proxy_config_monitor.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/strings/utf_string_conversions.h"
@@ -117,6 +118,26 @@ void ProxyConfigMonitor::AddToNetworkContextParams(
       proxy_config_service_->GetLatestProxyConfig(&proxy_config);
   if (availability != net::ProxyConfigService::CONFIG_PENDING)
     network_context_params->initial_proxy_config = proxy_config;
+}
+
+std::optional<bool> ProxyConfigMonitor::IsProxyConfigured() const {
+  DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI) ||
+         !BrowserThread::IsThreadInitialized(BrowserThread::UI));
+  net::ProxyConfigWithAnnotation proxy_config;
+  net::ProxyConfigService::ConfigAvailability availability =
+      proxy_config_service_->GetLatestProxyConfig(&proxy_config);
+  switch (availability) {
+    case net::ProxyConfigService::CONFIG_VALID: {
+      const net::ProxyConfig& config = proxy_config.value();
+      return !config.proxy_rules().empty() || config.HasAutomaticSettings() ||
+             !config.proxy_override_rules().empty() ||
+             !config.dynamic_routing_config().routing_rules.empty();
+    }
+    case net::ProxyConfigService::CONFIG_UNSET:
+      return false;
+    case net::ProxyConfigService::CONFIG_PENDING:
+      return std::nullopt;
+  }
 }
 
 void ProxyConfigMonitor::FlushForTesting() {

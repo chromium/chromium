@@ -22,6 +22,14 @@ class FakePrivateAiNetworkDriver : public PrivateAiNetworkDriver {
   void CreateNetworkContext(
       mojo::PendingReceiver<network::mojom::NetworkContext> receiver,
       network::mojom::NetworkContextParamsPtr params) override;
+
+  std::optional<bool> IsProxyConfigured() const override;
+  void set_is_proxy_configured(std::optional<bool> is_proxy_configured) {
+    is_proxy_configured_ = is_proxy_configured;
+  }
+
+ private:
+  std::optional<bool> is_proxy_configured_ = false;
 };
 
 }  // namespace private_ai
