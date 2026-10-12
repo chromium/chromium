@@ -159,7 +159,7 @@ TEST(SymphoniaAudioDecoderTest, PlanarF32ZeroCopyAudioBusAlignment) {
   // Verify that every channel plane pointer is 32-byte aligned despite the odd
   // frame count.
   for (int ch = 0; ch < decoded->channel_count(); ++ch) {
-    EXPECT_TRUE(AudioBus::IsAligned(decoded->channel_data()[ch]));
+    EXPECT_TRUE(AudioBus::IsAligned(decoded->planar_channel_cast<float>(ch)));
   }
 
   // Verify that WrapOrCopyToAudioBus wraps zero-copy instead of falling back
@@ -167,9 +167,9 @@ TEST(SymphoniaAudioDecoderTest, PlanarF32ZeroCopyAudioBusAlignment) {
   std::unique_ptr<AudioBus> bus = AudioBuffer::WrapOrCopyToAudioBus(decoded);
   ASSERT_TRUE(bus);
   EXPECT_EQ(bus->channel(0).data(),
-            reinterpret_cast<const float*>(decoded->channel_data()[0].get()));
+            decoded->planar_channel_cast<const float>(0).data());
   EXPECT_EQ(bus->channel(1).data(),
-            reinterpret_cast<const float*>(decoded->channel_data()[1].get()));
+            decoded->planar_channel_cast<const float>(1).data());
 
   EXPECT_THAT(bus->channel(0), testing::ElementsAre(0.1f, 0.2f, 0.3f));
   EXPECT_THAT(bus->channel(1), testing::ElementsAre(-0.1f, -0.2f, -0.3f));
