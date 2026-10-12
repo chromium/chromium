@@ -344,12 +344,6 @@ void BrowserWebContentsDelegate::LostPointerLock() {
       ->ExitExclusiveAccessToPreviousState();
 }
 
-bool BrowserWebContentsDelegate::IsWaitingForPointerLockPrompt(
-    content::WebContents* web_contents) {
-  return exclusive_access_manager_->pointer_lock_controller()
-      ->IsWaitingForPointerLockPrompt(web_contents);
-}
-
 bool BrowserWebContentsDelegate::AllowKeyboardLockForInnerContents(
     content::WebContents* web_contents) {
   return capabilities_->AllowKeyboardLockForInnerContents(web_contents);

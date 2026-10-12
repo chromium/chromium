@@ -84,9 +84,3 @@ void WebUIBrowserWebContentsDelegate::RequestPointerLock(
 void WebUIBrowserWebContentsDelegate::LostPointerLock() {
   BrowserWebContentsDelegate::From(window_->browser())->LostPointerLock();
 }
-
-bool WebUIBrowserWebContentsDelegate::IsWaitingForPointerLockPrompt(
-    content::WebContents* web_contents) {
-  return BrowserWebContentsDelegate::From(window_->browser())
-      ->IsWaitingForPointerLockPrompt(web_contents);
-}

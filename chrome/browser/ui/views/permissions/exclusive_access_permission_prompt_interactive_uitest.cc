@@ -6,7 +6,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_web_contents_delegate/browser_web_contents_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/permissions/exclusive_access_permission_prompt_view.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -26,8 +25,6 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContents);
 
 enum class TestContentSettings {
   kKeyboardLock,
-  kPointerLock,
-  kKeyboardAndPointerLock,
 };
 
 }  // namespace
@@ -71,17 +68,9 @@ class ExclusiveAccessPermissionPromptInteractiveTest
  protected:
   void TestPermissionPrompt(TestContentSettings test_content_settings,
                             ContentSetting expected_value) {
-    if (test_content_settings == TestContentSettings::kPointerLock) {
-      RunTestSequence(CheckPointerLockPrompt(/*displayed=*/false),
-                      ShowPrompt(test_content_settings),
-                      CheckPointerLockPrompt(/*displayed=*/true),
-                      PressPromptButton(GetButtonViewId(expected_value)),
-                      CheckOutcome(test_content_settings, expected_value));
-    } else {
-      RunTestSequence(ShowPrompt(test_content_settings),
-                      PressPromptButton(GetButtonViewId(expected_value)),
-                      CheckOutcome(test_content_settings, expected_value));
-    }
+    RunTestSequence(ShowPrompt(test_content_settings),
+                    PressPromptButton(GetButtonViewId(expected_value)),
+                    CheckOutcome(test_content_settings, expected_value));
   }
 
   MultiStep ShowPrompt(TestContentSettings test_content_settings) {
@@ -121,17 +110,6 @@ class ExclusiveAccessPermissionPromptInteractiveTest
         true));
   }
 
-  // Adds a Step to validate that the pointer lock prompt is displayed.
-  MultiStep CheckPointerLockPrompt(bool displayed) {
-    return Steps(CheckResult(
-        [=, this]() {
-          return BrowserWebContentsDelegate::From(browser())
-              ->IsWaitingForPointerLockPrompt(
-                  browser()->GetTabStripModel()->GetActiveWebContents());
-        },
-        displayed));
-  }
-
   ui::ElementIdentifier GetButtonViewId(ContentSetting expected_value) {
     switch (expected_value) {
       case CONTENT_SETTING_ALLOW:
@@ -162,10 +140,6 @@ class ExclusiveAccessPermissionPromptInteractiveTest
     switch (test_content_settings) {
       case TestContentSettings::kKeyboardLock:
         return "#keyboard-lock";
-      case TestContentSettings::kPointerLock:
-        return "#pointer-lock";
-      case TestContentSettings::kKeyboardAndPointerLock:
-        return "#keyboard-and-pointer-lock";
     }
   }
 
@@ -174,11 +148,6 @@ class ExclusiveAccessPermissionPromptInteractiveTest
     switch (test_content_settings) {
       case TestContentSettings::kKeyboardLock:
         return {ContentSettingsType::KEYBOARD_LOCK};
-      case TestContentSettings::kPointerLock:
-        return {ContentSettingsType::POINTER_LOCK};
-      case TestContentSettings::kKeyboardAndPointerLock:
-        return {ContentSettingsType::KEYBOARD_LOCK,
-                ContentSettingsType::POINTER_LOCK};
     }
   }
 
