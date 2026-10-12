@@ -304,3 +304,47 @@ TEST_F(VerticalTabStripTopContainerTest,
   EXPECT_FALSE(segmented_control()->GetVisible());
   EXPECT_TRUE(combo_button()->GetVisible());
 }
+
+TEST_F(VerticalTabStripTopContainerTest,
+       CollapsedExpandOnHoverWithCaptionButtonsExclusionZone) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(organizer_panel::kOrganizerPanel);
+  ResetTopContainer();
+
+  constexpr int kCaptionButtonWidth = 50;
+  top_container()->SetCaptionButtonWidthForLayout(kCaptionButtonWidth);
+  pref_service()->SetBoolean(prefs::kTabSearchPinnedToTabstrip, true);
+  controller()->SetUncollapsedWidth(300);
+  controller()->SetExpandOnHoverEnabled(true);
+  controller()->RequestCollapse(true);
+  EXPECT_TRUE(controller()->IsCollapsed());
+
+  top_container()->UpdateControlsVisibility();
+  ASSERT_NE(segmented_control(), nullptr);
+  EXPECT_TRUE(segmented_control()->GetVisible());
+
+  // In collapsed mode with expand on hover enabled, the collapse button should
+  // not be shifted over by the caption buttons exclusion zone width.
+  top_container()->SetSize(
+      gfx::Size(tabs::kVerticalTabStripCollapseSnapWidth - 10, 40));
+  views::ProposedLayout layout = top_container()->CalculateProposedLayout(
+      views::SizeBounds(top_container()->size()));
+  auto collapse_it = std::ranges::find(layout.child_layouts, collapse_button(),
+                                       &views::ChildLayout::child_view);
+  ASSERT_NE(collapse_it, layout.child_layouts.end());
+  EXPECT_TRUE(collapse_it->visible);
+  EXPECT_EQ(collapse_it->bounds.x(), 0);
+
+  // When uncollapsed, the collapse button should be shifted over by the
+  // caption buttons exclusion width (if it fits on the same line).
+  controller()->RequestCollapse(false);
+  EXPECT_FALSE(controller()->IsCollapsed());
+  top_container()->SetSize(gfx::Size(300, 40));
+  layout = top_container()->CalculateProposedLayout(
+      views::SizeBounds(top_container()->size()));
+  collapse_it = std::ranges::find(layout.child_layouts, collapse_button(),
+                                  &views::ChildLayout::child_view);
+  ASSERT_NE(collapse_it, layout.child_layouts.end());
+  EXPECT_TRUE(collapse_it->visible);
+  EXPECT_EQ(collapse_it->bounds.x(), kCaptionButtonWidth);
+}

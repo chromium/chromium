@@ -260,8 +260,12 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
                                          size_bounds.width().is_bounded() &&
                                          WillWrapDueToOverflow(available_width);
 
+    // In collapsed mode with expand on hover, the vertical tab strip is
+    // positioned below the caption buttons exclusion zone, so the collapse
+    // button does not need to be shifted over.
     const int left_alignment =
-        (wrapped_due_to_overflow || is_exiting_expand_on_hover_)
+        (wrapped_due_to_overflow || is_exiting_expand_on_hover_ ||
+         (is_collapsed && is_expand_on_hover))
             ? 0
             : caption_button_width_;
 
