@@ -45,7 +45,9 @@ import java.util.Optional;
  *
  * <ul>
  *   <li>All FuseboxSessionState members should be considered `final` from the moment the session is
- *       fully activated to the moment the session is deactivated.
+ *       fully activated to the moment the session is deactivated. The one exception is the page
+ *       classification, URL and title of the {@link AutocompleteInput}, which are refreshed from
+ *       the current page each time the session is activated, see {@link #activate}.
  *   <li>Consumers of FuseboxSessionState can cache individual fields of the FuseboxSessionState
  *       between beginInput() and endInput() for easier access to relevant controllers and data.
  *   <li>It is illegal to change reported instances or values once `onFullyActivated` callback has
@@ -97,15 +99,26 @@ public class FuseboxSessionState implements UserData {
      */
     public static @Nullable FuseboxSessionState from(LocationBarDataProvider dataProvider) {
         if (sInstanceForTesting != null) return sInstanceForTesting.orElse(null);
+        return dataProvider.getFuseboxSessionState();
+    }
 
-        var state = dataProvider.getFuseboxSessionState();
-        if (state == null) return null;
-
-        // Re-apply page metadata in case of ephemeral session, background reload etc.
-        state.mAutocompleteInput.setPageClassification(dataProvider.getPageClassification(false));
-        state.mAutocompleteInput.setPageUrl(dataProvider.getCurrentGurl());
-        state.mAutocompleteInput.setPageTitle(dataProvider.getTitle());
-        return state;
+    /**
+     * Apply the page classification, URL and title of the current page to the given input.
+     *
+     * <p>Used when an input session is begun or activated. The metadata is then retained for the
+     * lifetime of the session, even if the tab navigates while the session is active. In
+     * particular, it must not be refreshed while a session is being torn down, as the current page
+     * may already be the navigation target and session end metrics must be attributed to the page
+     * the session was started on.
+     *
+     * @param input The {@link AutocompleteInput} to update.
+     * @param dataProvider The {@link LocationBarDataProvider} describing the current page.
+     */
+    /* package */ static void applyPageMetadata(
+            AutocompleteInput input, LocationBarDataProvider dataProvider) {
+        input.setPageClassification(dataProvider.getPageClassification(/* prefetch= */ false));
+        input.setPageUrl(dataProvider.getCurrentGurl());
+        input.setPageTitle(dataProvider.getTitle());
     }
 
     /** Constructs a new, empty FuseboxSessionState. */
@@ -130,18 +143,28 @@ public class FuseboxSessionState implements UserData {
      * initialize all required session controllers. The caller may supply an optional {@link
      * Runnable} to be notified when the session is fully set up.
      *
+     * <p>Activation applies the page classification, URL and title of the current page to the
+     * session input, see {@link #applyPageMetadata}. Re-activating an already active session
+     * applies them again, for example after the tab navigated in the background while the session
+     * stayed active. Only this page metadata is refreshed on re-activation. The initial user text
+     * and preview match URL, which are derived from the page URL below, are computed once on the
+     * first activation and are left as they are.
+     *
      * @param context The context appropriate for the current Activity window.
      * @param webContents The WebContents of the contextual tasks WebUI.
      * @param profileSupplier The supplier for the {@link Profile} object.
+     * @param dataProvider The {@link LocationBarDataProvider} describing the current page.
      * @param onFullyActivated Optional runnable to be invoked when the session is fully activated.
      */
     public void activate(
             Context context,
             @Nullable WebContents webContents,
             MonotonicObservableSupplier<Profile> profileSupplier,
+            LocationBarDataProvider dataProvider,
             @Nullable Runnable onFullyActivated) {
         mWebContents = webContents;
         mProfileSupplier = profileSupplier;
+        applyPageMetadata(mAutocompleteInput, dataProvider);
         if (mIsActive) {
             // This session is being re-activated. It has already been fully initialized so simply
             // emit the event.

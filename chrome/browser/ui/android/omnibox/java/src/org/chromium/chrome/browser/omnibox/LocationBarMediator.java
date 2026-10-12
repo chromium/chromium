@@ -1476,6 +1476,7 @@ public class LocationBarMediator
                 mContext,
                 mLocationBarDataProvider.getWebContents(),
                 mProfileSupplier,
+                mLocationBarDataProvider,
                 () -> {
                     if (mAutocompleteCoordinator == null || mCurrentInput == null) return;
 
@@ -3079,9 +3080,10 @@ public class LocationBarMediator
      */
     @Override
     public void beginInput(AutocompleteInput input) {
-        input.setPageClassification(mLocationBarDataProvider.getPageClassification(false));
-        input.setPageUrl(mLocationBarDataProvider.getCurrentGurl());
-        input.setPageTitle(mLocationBarDataProvider.getTitle());
+        // Stamp the request with the current page so that applying it to the session below never
+        // leaves the session with stale page metadata. FuseboxSessionState.activate() stamps the
+        // session again, which also covers sessions begun without a request, e.g. on focus.
+        FuseboxSessionState.applyPageMetadata(input, mLocationBarDataProvider);
         if (input.getDisplayState() == DisplayState.WEBSITE) {
             input.setDisplayState(DisplayState.DRAFTING);
         }

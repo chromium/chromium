@@ -80,6 +80,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.banners.AppMenuVerbiage;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
@@ -164,6 +165,8 @@ import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
 
 /** Unit tests for LocationBarMediator. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -417,6 +420,7 @@ public class LocationBarMediatorUnitTest {
                 .when(mLocationBarDataProvider)
                 .getNewTabPageDelegate();
         lenient().doReturn(JUnitTestGURLs.BLUE_1).when(mLocationBarDataProvider).getCurrentGurl();
+        lenient().doReturn("").when(mLocationBarDataProvider).getTitle();
         lenient().doReturn(mWebContents).when(mTab).getWebContents();
         lenient().doReturn(JUnitTestGURLs.BLUE_1).when(mTab).getUrl();
         lenient().doReturn(mRootView).when(mLocationBarLayout).getRootView();
@@ -660,6 +664,15 @@ public class LocationBarMediatorUnitTest {
         assertFalse(mediator.isUrlBarFocused());
     }
 
+    private void activateSessionState(@Nullable WebContents webContents) {
+        mSessionState.activate(
+                mContext,
+                webContents,
+                mProfileSupplier,
+                mLocationBarDataProvider,
+                /* onFullyActivated= */ null);
+    }
+
     private void beginInput(AutocompleteInput input) {
         beginInput(mMediator, input);
     }
@@ -732,6 +745,99 @@ public class LocationBarMediatorUnitTest {
         assertFalse(mSessionState.isSessionActive());
         mSessionState.destroy();
         assertFalse(input.getRequestTypeSupplier().hasObservers());
+    }
+
+    @Test
+    public void testEndInput_retainsPageClassificationFromSessionStart() {
+        doReturn(PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS)
+                .when(mLocationBarDataProvider)
+                .getPageClassification(anyBoolean());
+        AutocompleteInput input = mSessionState.getAutocompleteInput();
+        beginInput(input);
+        assertEquals(
+                PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS,
+                input.getPageClassification());
+
+        // The tab has already navigated to the search results page by the time the session is
+        // torn down. Session end metrics must still be attributed to the page the session was
+        // started on, so capture what the autocomplete component observes when it is told to end
+        // the session.
+        lenient()
+                .doReturn(PageClassification.SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT)
+                .when(mLocationBarDataProvider)
+                .getPageClassification(anyBoolean());
+        List<Integer> observedPageClassifications = new ArrayList<>();
+        doAnswer(
+                        invocation -> {
+                            observedPageClassifications.add(input.getPageClassification());
+                            return null;
+                        })
+                .when(mAutocompleteCoordinator)
+                .endInput();
+
+        mMediator.endInput();
+
+        assertFalse(mSessionState.isSessionActive());
+        // Only the first observation matters. It is the call made while the session is still
+        // active, which is when session end metrics are recorded. The test harness in setUp()
+        // re-invokes endInput() when the input is reset and disabled during deactivation.
+        assertFalse(observedPageClassifications.isEmpty());
+        assertEquals(
+                PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS,
+                (int) observedPageClassifications.get(0));
+    }
+
+    @Test
+    public void testBeginOrResumeInput_refreshesPageMetadata() {
+        doReturn(PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS)
+                .when(mLocationBarDataProvider)
+                .getPageClassification(anyBoolean());
+        doReturn(JUnitTestGURLs.NTP_URL).when(mLocationBarDataProvider).getCurrentGurl();
+        doReturn("New tab").when(mLocationBarDataProvider).getTitle();
+        AutocompleteInput input = mSessionState.getAutocompleteInput();
+        beginInput(input);
+        assertEquals(
+                PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS,
+                input.getPageClassification());
+        assertEquals(JUnitTestGURLs.NTP_URL, input.getPageUrl());
+        assertEquals("New tab", input.getPageTitle());
+
+        // Resuming the session on a different page picks up that page's metadata.
+        doReturn(PageClassification.OTHER)
+                .when(mLocationBarDataProvider)
+                .getPageClassification(anyBoolean());
+        doReturn(JUnitTestGURLs.BLUE_1).when(mLocationBarDataProvider).getCurrentGurl();
+        doReturn("Blue").when(mLocationBarDataProvider).getTitle();
+        mMediator.beginOrResumeInput(/* activateNewSession= */ false);
+
+        assertEquals(PageClassification.OTHER, input.getPageClassification());
+        assertEquals(JUnitTestGURLs.BLUE_1, input.getPageUrl());
+        assertEquals("Blue", input.getPageTitle());
+    }
+
+    @Test
+    public void testBeginInput_appliesPageMetadataToRequest() {
+        doReturn(PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS)
+                .when(mLocationBarDataProvider)
+                .getPageClassification(anyBoolean());
+        doReturn(JUnitTestGURLs.NTP_URL).when(mLocationBarDataProvider).getCurrentGurl();
+        doReturn("New tab").when(mLocationBarDataProvider).getTitle();
+
+        // A fresh request carries no page metadata of its own.
+        AutocompleteInput request = new AutocompleteInput(OmniboxFocusReason.OMNIBOX_TAP);
+        beginInput(request);
+
+        assertEquals(
+                PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS,
+                request.getPageClassification());
+        assertEquals(JUnitTestGURLs.NTP_URL, request.getPageUrl());
+        assertEquals("New tab", request.getPageTitle());
+        AutocompleteInput sessionInput = mSessionState.getAutocompleteInput();
+        assertEquals(
+                PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS,
+                sessionInput.getPageClassification());
+        assertEquals(JUnitTestGURLs.NTP_URL, sessionInput.getPageUrl());
+        assertEquals("New tab", sessionInput.getPageTitle());
     }
 
     @Test
@@ -2757,7 +2863,7 @@ public class LocationBarMediatorUnitTest {
         newState.getAutocompleteInput().setUserText(newText);
         newState.getAutocompleteInput()
                 .setSelection(new TextSelection(newSelectionStart, newSelectionEnd));
-        newState.activate(mContext, null, mProfileSupplier, null);
+        activateSessionState(/* webContents= */ null);
 
         FuseboxSessionState previousState = new FuseboxSessionState();
         doReturn(previousState).when(mLocationBarDataProvider).getFuseboxSessionState();
@@ -3821,7 +3927,7 @@ public class LocationBarMediatorUnitTest {
         doReturn(placeholderIndex).when(mLocationBarLayout).indexOfChild(mPlaceholder);
 
         mSessionState.getAutocompleteInput().setDisplayState(DisplayState.SUGGESTIONS);
-        mSessionState.activate(mContext, mWebContents, mProfileSupplier, null);
+        activateSessionState(mWebContents);
         mMediator.beginInput(mSessionState.getAutocompleteInput());
         assertTrue(mMediator.isParentedToSuggestionsContainer());
         verify(mUrlCoordinator).finishReparenting(true);
@@ -4664,7 +4770,7 @@ public class LocationBarMediatorUnitTest {
         OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
         OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
         mSessionState.getAutocompleteInput().setUserText("active text", TextSelection.SELECT_END);
-        mSessionState.activate(mContext, mWebContents, mProfileSupplier, null);
+        activateSessionState(mWebContents);
         assertTrue(mSessionState.isSessionActive());
 
         mMediator.showUrlBarCursorWithoutFocusAnimations();
@@ -4679,7 +4785,7 @@ public class LocationBarMediatorUnitTest {
         OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
         OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
         mSessionState.getAutocompleteInput().setUserText("active text", TextSelection.SELECT_END);
-        mSessionState.activate(mContext, mWebContents, mProfileSupplier, null);
+        activateSessionState(mWebContents);
         assertTrue(mSessionState.isSessionActive());
         clearInvocations(mUrlCoordinator);
 
@@ -4725,7 +4831,7 @@ public class LocationBarMediatorUnitTest {
     @Test
     public void testOnTabChanged_enabledState_transitionsToStandby() {
         mSessionState.getAutocompleteInput().setAutocompleteState(AutocompleteState.ENABLED);
-        mSessionState.activate(mContext, mWebContents, mProfileSupplier, null);
+        activateSessionState(mWebContents);
         mMediator.beginInput(mSessionState.getAutocompleteInput());
         assertTrue(mSessionState.isSessionActive());
 
@@ -4761,7 +4867,7 @@ public class LocationBarMediatorUnitTest {
         OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
 
         mSessionState.getAutocompleteInput().setAutocompleteState(AutocompleteState.ENABLED);
-        mSessionState.activate(mContext, mWebContents, mProfileSupplier, null);
+        activateSessionState(mWebContents);
         mMediator.beginInput(mSessionState.getAutocompleteInput());
         assertTrue(mSessionState.isSessionActive());
 
@@ -4788,7 +4894,7 @@ public class LocationBarMediatorUnitTest {
 
         mSessionState.getAutocompleteInput().setAutocompleteState(AutocompleteState.ENABLED);
         mSessionState.getAutocompleteInput().setDisplayState(DisplayState.SUGGESTIONS);
-        mSessionState.activate(mContext, mWebContents, mProfileSupplier, null);
+        activateSessionState(mWebContents);
         mMediator.beginInput(mSessionState.getAutocompleteInput());
         assertTrue(mSessionState.isSessionActive());
 
@@ -4831,7 +4937,7 @@ public class LocationBarMediatorUnitTest {
 
         mSessionState.getAutocompleteInput().setAutocompleteState(AutocompleteState.ENABLED);
         mSessionState.getAutocompleteInput().setDisplayState(DisplayState.SUGGESTIONS);
-        mSessionState.activate(mContext, mWebContents, mProfileSupplier, null);
+        activateSessionState(mWebContents);
         mMediator.beginInput(mSessionState.getAutocompleteInput());
         assertTrue(mSessionState.isSessionActive());
 
@@ -4863,7 +4969,7 @@ public class LocationBarMediatorUnitTest {
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
         mSessionState.getAutocompleteInput().setAutocompleteState(AutocompleteState.ENABLED);
-        mSessionState.activate(mContext, mWebContents, mProfileSupplier, null);
+        activateSessionState(mWebContents);
         mMediator.beginInput(mSessionState.getAutocompleteInput());
         assertTrue(mSessionState.isSessionActive());
 
@@ -4916,7 +5022,7 @@ public class LocationBarMediatorUnitTest {
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
         mSessionState.getAutocompleteInput().setAutocompleteState(AutocompleteState.ENABLED);
-        mSessionState.activate(mContext, mWebContents, mProfileSupplier, null);
+        activateSessionState(mWebContents);
         mMediator.beginInput(mSessionState.getAutocompleteInput());
         assertTrue(mSessionState.isSessionActive());
 
@@ -4947,7 +5053,7 @@ public class LocationBarMediatorUnitTest {
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
         mSessionState.getAutocompleteInput().setAutocompleteState(AutocompleteState.ENABLED);
-        mSessionState.activate(mContext, mWebContents, mProfileSupplier, null);
+        activateSessionState(mWebContents);
         mSessionState.getAutocompleteInput().setUserText("google.com");
         mSessionState.getAutocompleteInput().setSelection(TextSelection.SELECT_ALL);
         mMediator.beginInput(mSessionState.getAutocompleteInput());
@@ -4972,7 +5078,7 @@ public class LocationBarMediatorUnitTest {
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
         mSessionState.getAutocompleteInput().setAutocompleteState(AutocompleteState.ENABLED);
-        mSessionState.activate(mContext, mWebContents, mProfileSupplier, null);
+        activateSessionState(mWebContents);
         mSessionState.getAutocompleteInput().setUserText("t");
         mSessionState
                 .getAutocompleteInput()
@@ -5011,7 +5117,7 @@ public class LocationBarMediatorUnitTest {
     public void testOnWindowFocusChanged_updatesFocusRing() {
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
-        mSessionState.activate(mContext, mWebContents, mProfileSupplier, null);
+        activateSessionState(mWebContents);
 
         clearInvocations(mLocationBarLayout);
         AutocompleteInput input = mSessionState.getAutocompleteInput();
