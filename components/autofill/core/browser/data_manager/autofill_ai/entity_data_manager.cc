@@ -147,6 +147,9 @@ void EntityDataManager::LoadEntitiesFromDatabase() {
       [](base::WeakPtr<EntityDataManager> self,
          WebDataServiceBase::Handle handle,
          std::unique_ptr<WDTypedResult> typed_result) {
+        if (!self) {
+          return;
+        }
         CHECK_EQ(handle, self->pending_query_);
         self->pending_query_ = {};
         if (typed_result) {
