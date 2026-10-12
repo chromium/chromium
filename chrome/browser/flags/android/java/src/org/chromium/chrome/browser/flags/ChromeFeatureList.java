@@ -1375,9 +1375,6 @@ public abstract class ChromeFeatureList {
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sSafetyHubWeakAndReusedPasswords =
             newCachedFlag(SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS, false);
-    public static final CachedFlag sSearchInCCT =
-            newCachedFlag(
-                    SEARCH_IN_CCT, /* defaultValue= */ false, /* defaultValueInTests= */ true);
     public static final CachedFlag sSearchInCCTIfEnabledByEmbedder =
             newCachedFlag(SEARCH_IN_CCT_IF_ENABLED_BY_EMBEDDER, true);
     public static final CachedFlag sSendTabToSelfExtraEntryPoints =
@@ -1659,7 +1656,6 @@ public abstract class ChromeFeatureList {
                     sQueuedCompositorWebContentsUpdates,
                     sReportNotificationContentDetectionData,
                     sSafetyHubWeakAndReusedPasswords,
-                    sSearchInCCT,
                     sSearchInCCTIfEnabledByEmbedder,
                     sSendTabToSelfExtraEntryPoints,
                     sSessionRestoreAfterCrash,
@@ -2338,10 +2334,6 @@ public abstract class ChromeFeatureList {
     public static final IntCachedFeatureParam sSafetyFrePromoArm =
             newIntCachedFeatureParam(SAFETY_FRE_PROMO, "safety_fre_promo_arm", 4);
 
-    /** Controls whether Referrer App ID is passed to Search Results Page via client= param. */
-    public static final BooleanCachedFeatureParam sSearchinCctApplyReferrerId =
-            newBooleanCachedFeatureParam(SEARCH_IN_CCT, "apply_referrer_id", false);
-
     public static final IntCachedFeatureParam sStartSurfaceReturnTimeTabletSecs =
             newIntCachedFeatureParam(
                     START_SURFACE_RETURN_TIME,
@@ -2479,7 +2471,6 @@ public abstract class ChromeFeatureList {
                     sReadAloudAudioOverviewsSpeedAdditionPercentage,
                     sReadAloudAudioOverviewsSupportedLanguages,
                     sSafetyFrePromoArm,
-                    sSearchinCctApplyReferrerId,
                     sShouldConsiderLanguageInOverviewReadability,
                     sStartSurfaceReturnTimeTabletSecs,
                     sTabStorageSqlitePrototypePhase,

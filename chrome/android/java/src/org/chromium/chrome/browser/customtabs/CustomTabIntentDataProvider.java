@@ -754,21 +754,14 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         // change when the Activity is recreated (e.g. when the system dark/light theme changes).
         mColorProvider = new CustomTabColorProviderImpl(intent, context, colorScheme);
 
-        // TODO(crbug.com/472661732): Move mShareState into CustomTabIntentDataHolder. Currently it
-        // must be computed after mDataHolder is initialized because shouldEnableOmniboxForIntent()
-        // calls methods on `this` that depend on mDataHolder.
         if (getUiType() == CustomTabsUiType.POPUP) {
             mShareState = CustomTabsIntent.SHARE_STATE_OFF;
         } else {
-            boolean usingInteractiveOmnibox =
-                    CustomTabsConnection.getInstance().shouldEnableOmniboxForIntent(this);
-            int defState =
-                    usingInteractiveOmnibox
-                            ? CustomTabsIntent.SHARE_STATE_OFF
-                            : CustomTabsIntent.SHARE_STATE_DEFAULT;
             mShareState =
                     IntentUtils.safeGetIntExtra(
-                            intent, CustomTabsIntent.EXTRA_SHARE_STATE, defState);
+                            intent,
+                            CustomTabsIntent.EXTRA_SHARE_STATE,
+                            CustomTabsIntent.SHARE_STATE_DEFAULT);
         }
 
         if (isCloseButtonEnabled()) {
@@ -1073,9 +1066,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     private int adjustOpenInBrowserOption(Intent intent) {
-        boolean usingInteractiveOmnibox =
-                CustomTabsConnection.getInstance().shouldEnableOmniboxForIntent(this);
-
         int openInBrowserState = getOpenInBrowserButtonState();
 
         if (openInBrowserState == CustomTabsButtonState.BUTTON_STATE_ON
@@ -1084,9 +1074,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         }
 
         if (openInBrowserState == CustomTabsButtonState.BUTTON_STATE_DEFAULT) {
-            if (usingInteractiveOmnibox) {
-                openInBrowserState = CustomTabsButtonState.BUTTON_STATE_ON;
-            } else if (ChromeFeatureList.sCctOpenInBrowserButtonIfAllowedByEmbedder.isEnabled()
+            if (ChromeFeatureList.sCctOpenInBrowserButtonIfAllowedByEmbedder.isEnabled()
                     && IntentUtils.safeGetBooleanExtra(
                             intent, EXTRA_OPEN_IN_BROWSER_BUTTON_ALLOWED, false)) {
                 openInBrowserState = CustomTabsButtonState.BUTTON_STATE_ON;
@@ -1850,20 +1838,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         return position == ACTIVITY_SIDE_SHEET_POSITION_DEFAULT
                 ? ACTIVITY_SIDE_SHEET_POSITION_END
                 : position;
-    }
-
-    @Override
-    public boolean isInteractiveOmniboxAllowed() {
-        if (isOffTheRecord()) return false;
-        if (isPartialCustomTab()) return false;
-        if (DeviceInfo.isAutomotive()) return false;
-
-        return true;
-    }
-
-    @Override
-    public boolean isInteractiveOmniboxEnabled() {
-        return ChromeFeatureList.sSearchInCCT.isEnabled();
     }
 
     @Override

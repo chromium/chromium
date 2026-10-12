@@ -12,7 +12,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.verify;
 
-import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.OMNIBOX_ENABLED;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.TITLE_VISIBLE;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.TOOLBAR_WIDTH;
 import static org.chromium.chrome.browser.ui.theme.BrandedColorScheme.APP_DEFAULT;
@@ -95,7 +94,6 @@ public class CustomTabToolbarButtonsViewBinderUnitTest {
                         /* menuButtonVisible= */ true,
                         /* optionalButtonVisible= */ false,
                         /* toolbarWidth= */ ViewUtils.dpToPx(mActivity, 500),
-                        /* omniboxEnabled= */ false,
                         /* titleVisible= */ false,
                         /* isIncognito= */ false,
                         /* tint= */ ThemeUtils.getThemedToolbarIconTint(mActivity, APP_DEFAULT));
@@ -391,9 +389,7 @@ public class CustomTabToolbarButtonsViewBinderUnitTest {
     private void setToolbarWidthForMaxButtons(int maxButtons) {
         int locationBarMinWidth =
                 CustomTabToolbarButtonsViewBinder.getLocationBarMinWidth(
-                        mActivity.getResources(),
-                        mModel.get(OMNIBOX_ENABLED),
-                        mModel.get(TITLE_VISIBLE));
+                        mActivity.getResources(), mModel.get(TITLE_VISIBLE));
         int buttonWidth =
                 mActivity.getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
         int startWidth =

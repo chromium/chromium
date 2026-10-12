@@ -154,10 +154,6 @@ public class CustomTabToolbarButtonsProperties {
     /** Property key for the toolbar width. */
     public static final WritableIntPropertyKey TOOLBAR_WIDTH = new WritableIntPropertyKey();
 
-    /** Property key for whether the omnibox is enabled. */
-    public static final ReadableBooleanPropertyKey OMNIBOX_ENABLED =
-            new ReadableBooleanPropertyKey();
-
     /** Property key for whether the title is visible. */
     public static final ReadableBooleanPropertyKey TITLE_VISIBLE = new ReadableBooleanPropertyKey();
 
@@ -176,7 +172,6 @@ public class CustomTabToolbarButtonsProperties {
             boolean menuButtonVisible,
             boolean optionalButtonVisible,
             @Px int toolbarWidth,
-            boolean omniboxEnabled,
             boolean titleVisible,
             boolean isIncognito,
             ColorStateList tint) {
@@ -189,7 +184,6 @@ public class CustomTabToolbarButtonsProperties {
                         MENU_BUTTON_VISIBLE,
                         OPTIONAL_BUTTON_VISIBLE,
                         TOOLBAR_WIDTH,
-                        OMNIBOX_ENABLED,
                         TITLE_VISIBLE,
                         IS_INCOGNITO,
                         TINT)
@@ -201,7 +195,6 @@ public class CustomTabToolbarButtonsProperties {
                 .with(MENU_BUTTON_VISIBLE, menuButtonVisible)
                 .with(OPTIONAL_BUTTON_VISIBLE, optionalButtonVisible)
                 .with(TOOLBAR_WIDTH, toolbarWidth)
-                .with(OMNIBOX_ENABLED, omniboxEnabled)
                 .with(TITLE_VISIBLE, titleVisible)
                 .with(IS_INCOGNITO, isIncognito)
                 .with(TINT, tint)

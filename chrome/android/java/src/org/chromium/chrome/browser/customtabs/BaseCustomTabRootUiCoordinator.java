@@ -26,7 +26,6 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.base.Callback;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.TimeUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
@@ -87,7 +86,6 @@ import org.chromium.chrome.browser.pdf.PdfPageIphController;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.ReadAloudIphController;
 import org.chromium.chrome.browser.reengagement.ReengagementNotificationController;
-import org.chromium.chrome.browser.searchwidget.SearchActivityClientImpl;
 import org.chromium.chrome.browser.segmentation_platform.ContextualPageActionController;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
@@ -115,8 +113,6 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.NoOpTopInsetProvider;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarCoordinator;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
-import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarColorProvider;
 import org.chromium.chrome.browser.ui.web_app_header.WebAppHeaderLayoutCoordinator;
 import org.chromium.chrome.browser.ui.web_app_header.WebAppHeaderUtils;
@@ -145,7 +141,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     private final Supplier<BrowserServicesIntentDataProvider> mIntentDataProvider;
     private final Supplier<CustomTabActivityTabController> mTabController;
     private final Supplier<@Nullable CustomTabMinimizeDelegate> mMinimizeDelegateSupplier;
-    private final SearchActivityClient mCustomTabSearchClient;
 
     private @MonotonicNonNull CustomTabHeightStrategy mCustomTabHeightStrategy;
 
@@ -309,7 +304,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         mCustomTabProvider = customTabProvider;
         mToolbarCoordinator = customTabToolbarCoordinator;
         mIntentDataProvider = intentDataProvider;
-        mCustomTabSearchClient = new SearchActivityClientImpl(activity, IntentOrigin.CUSTOM_TAB);
         mWebAppThemeColorProvider = webAppThemeColorProvider;
         mClientPackageName = clientPackageName;
 
@@ -433,18 +427,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     @Override
     @EnsuresNonNull("mToolbarManager")
     protected void initializeToolbar() {
-        CustomTabsConnection connection = CustomTabsConnection.getInstance();
-        boolean shouldEnableOmnibox =
-                connection.shouldEnableOmniboxForIntent(mIntentDataProvider.get());
-        RecordHistogram.recordBooleanHistogram(
-                "CustomTabs.Omnibox.EnabledState", shouldEnableOmnibox);
-        var omniboxParams =
-                shouldEnableOmnibox
-                        ? new CustomTabToolbar.OmniboxParams(
-                                mCustomTabSearchClient,
-                                mIntentDataProvider.get().getClientPackageName())
-                        : null;
-
         Supplier<@Nullable AppMenuHandler> appMenuHandler =
                 () -> mAppMenuCoordinator != null ? mAppMenuCoordinator.getAppMenuHandler() : null;
 
@@ -454,13 +436,9 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                         mActivity,
                         toolbar,
                         mIntentDataProvider.get(),
-                        params ->
-                                mToolbarCoordinator
-                                        .get()
-                                        .onCustomButtonClick(mActivity, params),
+                        params -> mToolbarCoordinator.get().onCustomButtonClick(mActivity, params),
                         mMinimizeDelegateSupplier.get(),
                         appMenuHandler,
-                        omniboxParams,
                         mActivityLifecycleDispatcher,
                         mActivityTabProvider);
 
@@ -496,10 +474,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                             }
                         });
             }
-        }
-
-        if (omniboxParams != null) {
-            toolbar.setOmniboxParams(omniboxParams);
         }
     }
 
@@ -1140,11 +1114,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
 
     @Nullable CustomTabHeightStrategy getCustomTabSizeStrategyForTesting() {
         return mCustomTabHeightStrategy;
-    }
-
-    /** Returns SearchActivityClient instance used by Search in CCT. */
-    /* package */ SearchActivityClient getCustomTabSearchClient() {
-        return mCustomTabSearchClient;
     }
 
     @VisibleForTesting

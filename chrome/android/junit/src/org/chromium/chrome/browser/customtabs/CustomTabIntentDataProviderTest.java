@@ -26,7 +26,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.app.tab_activity_glue.PopupCreatorImpl.EXTRA_REQUESTED_WINDOW_FEATURES;
@@ -37,7 +36,6 @@ import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Network;
 import android.net.Uri;
@@ -68,10 +66,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.robolectric.Robolectric;
-import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.DeviceInfo;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -1261,84 +1257,9 @@ public class CustomTabIntentDataProviderTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
-    public void isInteractiveOmniboxEnabled_flagEnabled() {
-        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
-        CustomTabsConnection.setInstanceForTesting(connection);
-
-        Intent intent = new CustomTabsIntent.Builder().build().intent;
-        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
-
-        when(connection.getClientPackageNameForSession(any())).thenReturn("com.a.b.c");
-        assertTrue(dataProvider.isInteractiveOmniboxEnabled());
-
-        when(connection.getClientPackageNameForSession(any())).thenReturn(null);
-        assertTrue(dataProvider.isInteractiveOmniboxEnabled());
-    }
-
-    @Test
-    @DisableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
-    public void isInteractiveOmniboxEnabled_flagDisabled() {
-        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
-        CustomTabsConnection.setInstanceForTesting(connection);
-
-        Intent intent = new CustomTabsIntent.Builder().build().intent;
-        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
-
-        when(connection.getClientPackageNameForSession(any())).thenReturn("com.a.b.c");
-        assertFalse(dataProvider.isInteractiveOmniboxEnabled());
-
-        when(connection.getClientPackageNameForSession(any())).thenReturn(null);
-        assertFalse(dataProvider.isInteractiveOmniboxEnabled());
-    }
-
-    @Test
-    public void searchInCct_notAllowedInOffTheRecordMode() {
-        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
-        CustomTabsConnection.setInstanceForTesting(connection);
-
-        Intent intent = new CustomTabsIntent.Builder().build().intent;
-        var dataProvider =
-                spy(new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT));
-        when(dataProvider.isOffTheRecord()).thenReturn(true);
-
-        assertFalse(dataProvider.isInteractiveOmniboxAllowed());
-    }
-
-    @Test
-    public void searchInCct_notAllowedOnPartialCcts() {
-        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
-        CustomTabsConnection.setInstanceForTesting(connection);
-
-        Intent intent = new CustomTabsIntent.Builder().build().intent;
-        var dataProvider =
-                spy(new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT));
-        when(dataProvider.isPartialCustomTab()).thenReturn(true);
-
-        assertFalse(dataProvider.isInteractiveOmniboxAllowed());
-    }
-
-    @Test
-    public void searchInCct_notAllowedOnAutomotive() {
-        var shadowPkgMgr = Shadows.shadowOf(mContext.getPackageManager());
-        shadowPkgMgr.setSystemFeature(PackageManager.FEATURE_AUTOMOTIVE, /* supported= */ true);
-        assertTrue(DeviceInfo.isAutomotive());
-
-        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
-        CustomTabsConnection.setInstanceForTesting(connection);
-
-        Intent intent = new CustomTabsIntent.Builder().build().intent;
-        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
-
-        assertFalse(dataProvider.isInteractiveOmniboxAllowed());
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
     public void addShareOption_conventionalCct_defaultState() {
         CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
         CustomTabsConnection.setInstanceForTesting(connection);
-        when(connection.shouldEnableOmniboxForIntent(any())).thenReturn(false);
         when(connection.getClientPackageNameForSession(any())).thenReturn("com.a.b.c");
 
         Intent intent = new CustomTabsIntent.Builder().build().intent;
@@ -1353,11 +1274,9 @@ public class CustomTabIntentDataProviderTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
     public void addShareOption_conventionalCct_disabledState() {
         CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
         CustomTabsConnection.setInstanceForTesting(connection);
-        when(connection.shouldEnableOmniboxForIntent(any())).thenReturn(false);
         when(connection.getClientPackageNameForSession(any())).thenReturn("com.a.b.c");
 
         Intent intent = new CustomTabsIntent.Builder().build().intent;
@@ -1371,75 +1290,9 @@ public class CustomTabIntentDataProviderTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
-    public void addShareOption_searchInCct_enabledState() {
-        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
-        CustomTabsConnection.setInstanceForTesting(connection);
-        when(connection.shouldEnableOmniboxForIntent(any())).thenReturn(true);
-        when(connection.getClientPackageNameForSession(any())).thenReturn("com.a.b.c");
-
-        Intent intent = new CustomTabsIntent.Builder().build().intent;
-        intent.putExtra(CustomTabsIntent.EXTRA_SHARE_STATE, CustomTabsIntent.SHARE_STATE_ON);
-
-        // Buttons are initialized as part of the Constructor logic.
-        // Expect both the Open in Browser button and the Share button on the toolbar.
-        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
-        var buttons = dataProvider.getCustomButtonsOnToolbar();
-        assertEquals(2, buttons.size());
-        assertEquals(
-                CustomButtonParams.ButtonType.CCT_OPEN_IN_BROWSER_BUTTON, buttons.get(0).getType());
-        assertEquals(CustomButtonParams.ButtonType.CCT_SHARE_BUTTON, buttons.get(1).getType());
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
-    public void addOpenInBrowserOption_searchInCct_defaultState() {
-        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
-        CustomTabsConnection.setInstanceForTesting(connection);
-        when(connection.shouldEnableOmniboxForIntent(any())).thenReturn(true);
-        when(connection.getClientPackageNameForSession(any())).thenReturn("com.a.b.c");
-
-        Intent intent = new CustomTabsIntent.Builder().build().intent;
-
-        // Buttons are initialized as part of the Constructor logic.
-        // Since we're simulating an Omnibox-enabled CCT, expect the default button to be the Open
-        // in Browser.
-        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
-        var buttons = dataProvider.getCustomButtonsOnToolbar();
-        assertEquals(1, buttons.size());
-        var button = buttons.get(0);
-        assertEquals(CustomButtonParams.ButtonType.CCT_OPEN_IN_BROWSER_BUTTON, button.getType());
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
-    public void addOpenInBrowserOption_searchInCct_disabledState() {
-        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
-        CustomTabsConnection.setInstanceForTesting(connection);
-        when(connection.shouldEnableOmniboxForIntent(any())).thenReturn(true);
-        when(connection.getClientPackageNameForSession(any())).thenReturn("com.a.b.c");
-
-        Intent intent = new CustomTabsIntent.Builder().build().intent;
-        intent.putExtra(
-                CustomTabIntentDataProvider.EXTRA_OPEN_IN_BROWSER_STATE,
-                CustomTabIntentDataProvider.CustomTabsButtonState.BUTTON_STATE_OFF);
-
-        // Buttons are initialized as part of the Constructor logic.
-        // Since we explicitly disabled the Open in Browser button, we should pick the implicitly
-        // added Share button.
-        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
-        var buttons = dataProvider.getCustomButtonsOnToolbar();
-        assertEquals(1, buttons.size());
-        var button = buttons.get(0);
-        assertEquals(CustomButtonParams.ButtonType.CCT_SHARE_BUTTON, button.getType());
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
     public void addOpenInBrowserOption_conventionalCct_enabledState() {
         CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
         CustomTabsConnection.setInstanceForTesting(connection);
-        when(connection.shouldEnableOmniboxForIntent(any())).thenReturn(false);
         when(connection.getClientPackageNameForSession(any())).thenReturn("com.a.b.c");
 
         Intent intent = new CustomTabsIntent.Builder().build().intent;
@@ -1485,37 +1338,6 @@ public class CustomTabIntentDataProviderTest {
         assertEquals(
                 CustomTabIntentDataProvider.CustomTabsButtonState.BUTTON_STATE_OFF,
                 dataProvider.getOpenInBrowserButtonState());
-    }
-
-    /**
-     * The interactive omnibox is not allowed in a partial Custom Tab, so the share state keeps its
-     * regular default instead of the omnibox-specific one.
-     *
-     * <p>Regression test: the partial Custom Tab dimensions used to be parsed after the share state
-     * was resolved, so {@link CustomTabIntentDataProvider#isPartialCustomTab()} reported {@code
-     * false} while the constructor asked whether the interactive omnibox was allowed, and the share
-     * button was defaulted off.
-     */
-    @Test
-    public void shareState_partialCustomTab_omniboxNotAllowedDuringConstruction() {
-        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
-        CustomTabsConnection.setInstanceForTesting(connection);
-        when(connection.isFirstParty(any())).thenReturn(true);
-        // Mirror ChromeCustomTabsConnection#shouldEnableOmniboxForIntent, which consults the
-        // provider instead of looking at the intent alone.
-        when(connection.shouldEnableOmniboxForIntent(any()))
-                .thenAnswer(
-                        invocation ->
-                                ((BrowserServicesIntentDataProvider) invocation.getArgument(0))
-                                        .isInteractiveOmniboxAllowed());
-
-        Intent intent =
-                new Intent().putExtra(CustomTabsIntent.EXTRA_INITIAL_ACTIVITY_HEIGHT_PX, 50);
-
-        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
-
-        assertTrue(dataProvider.isPartialCustomTab());
-        assertEquals(CustomTabsIntent.SHARE_STATE_DEFAULT, dataProvider.getShareButtonState());
     }
 
     @Test

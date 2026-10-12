@@ -143,7 +143,6 @@ public class MainActivity extends AppCompatActivity
     private static final String SHARED_PREF_SHARE_STATE = "ShareStateToggle";
     private static final String SHARED_PREF_SIDE_SHEET_ROUNDED_CORNER = "RoundedCorner";
     private static final String SHARED_PREF_CONTENT_SCROLL = "ContentScrollMayResizeTab";
-    private static final String SHARED_PREF_SEARCH_IN_CCT = "SearchInCCT";
     private static final String SHARED_PREF_SEND_TO_EXTERNAL_APP = "SendToExternalApp";
     private static final String SHARED_PREF_SHARE_IDENTITY = "ShareIdentity";
     private static final String SHARED_PREF_CONNECT_BUTTON = "ConnectButton";
@@ -223,7 +222,6 @@ public class MainActivity extends AppCompatActivity
     private CheckBox mEphemeralCctCheckbox;
     private CheckBox mSideSheetRoundedCornerCheckbox;
     private CheckBox mContentScrollCheckbox;
-    private CheckBox mSearchInCctCheckbox;
     private CheckBox mSendToExternalAppCheckbox;
     private CheckBox mShareIdentityCheckbox;
     private CheckBox mUseSeparateTaskCheckbox;
@@ -248,8 +246,6 @@ public class MainActivity extends AppCompatActivity
 
     public static final String EXTRA_ACTIVITY_SCROLL_CONTENT_RESIZE =
             "androidx.browser.customtabs.extra.ACTIVITY_SCROLL_CONTENT_RESIZE";
-    private static final String EXTRA_OMNIBOX_ENABLED =
-            "org.chromium.chrome.browser.customtabs.OMNIBOX_ENABLED";
     private static final String EXTRA_TRANSLUCENT_BACKGROUND =
             "androidx.browser.customtabs.extra.TRANSLUCENT_BACKGROUND";
 
@@ -877,8 +873,6 @@ public class MainActivity extends AppCompatActivity
         mContentScrollCheckbox = findViewById(R.id.content_scroll_checkbox);
         mContentScrollCheckbox.setChecked(
                 mSharedPref.getInt(SHARED_PREF_CONTENT_SCROLL, UNCHECKED) == CHECKED);
-        mSearchInCctCheckbox = findViewById(R.id.search_in_cct_checkbox);
-        mSearchInCctCheckbox.setChecked(mSharedPref.getBoolean(SHARED_PREF_SEARCH_IN_CCT, false));
         mShareIdentityCheckbox = findViewById(R.id.share_identity_checkbox);
         mShareIdentityCheckbox.setChecked(
                 mSharedPref.getInt(SHARED_PREF_SHARE_IDENTITY, UNCHECKED) == CHECKED);
@@ -1098,7 +1092,6 @@ public class MainActivity extends AppCompatActivity
             editor.putBoolean(SHARED_PREF_MAY_LAUNCH_BUTTON, mMayLaunchButton.isEnabled());
             editor.putBoolean(
                     SHARED_PREF_ENGAGEMENT_SIGNALS_BUTTON, mEngagementSignalsButton.isEnabled());
-            editor.putBoolean(SHARED_PREF_SEARCH_IN_CCT, mSearchInCctCheckbox.isChecked());
             editor.putInt(
                     SHARED_PREF_EPHEMERAL_BROWSING,
                     mEphemeralCctCheckbox.isChecked() ? CHECKED : UNCHECKED);
@@ -1310,7 +1303,6 @@ public class MainActivity extends AppCompatActivity
             customTabsIntent.intent.putExtra(EXTRA_CLOSE_BUTTON_POSITION, closeButtonPosition);
         }
 
-        customTabsIntent.intent.putExtra(EXTRA_OMNIBOX_ENABLED, mSearchInCctCheckbox.isChecked());
         CheckBox bgAlpha = findViewById(R.id.bgalpha_checkbox);
         if (bgAlpha.isChecked()) {
             EditText bgAlphaText = findViewById(R.id.bgalpha_text);

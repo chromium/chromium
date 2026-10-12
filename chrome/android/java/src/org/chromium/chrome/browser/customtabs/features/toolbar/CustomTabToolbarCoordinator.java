@@ -138,8 +138,7 @@ public class CustomTabToolbarCoordinator {
     private void updateTitleBarVisibility() {
         if (mToolbarManager == null) return;
 
-        int titleVisibilityState =
-                CustomTabsConnection.getInstance().getTitleVisibilityState(mIntentDataProvider);
+        int titleVisibilityState = mIntentDataProvider.getTitleVisibilityState();
         switch (titleVisibilityState) {
             case TitleVisibility.HIDDEN:
                 mToolbarManager.setShowTitle(false);

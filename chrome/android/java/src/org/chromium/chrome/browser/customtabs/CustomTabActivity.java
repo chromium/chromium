@@ -32,11 +32,8 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TimeUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.SupplierUtils;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -87,7 +84,6 @@ public class CustomTabActivity extends BaseCustomTabActivity {
     private @Nullable SessionHolder mSession;
 
     private final CustomTabsConnection mConnection = CustomTabsConnection.getInstance();
-    private int mNumOmniboxNavigationEventsPerSession;
 
     private CustomTabsOpenTimeRecorder mOpenTimeRecorder;
 
@@ -529,13 +525,6 @@ public class CustomTabActivity extends BaseCustomTabActivity {
     public void finish() {
         if (sOnFinishCallbackForTesting != null) sOnFinishCallbackForTesting.run();
 
-        RecordHistogram.recordLinearCountHistogram(
-                "CustomTabs.Omnibox.NumNavigationsPerSession",
-                mNumOmniboxNavigationEventsPerSession,
-                1,
-                10,
-                10);
-
         super.finish();
     }
 
@@ -606,25 +595,6 @@ public class CustomTabActivity extends BaseCustomTabActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode != Activity.RESULT_OK) return;
-
-        var searchClient = getBaseCustomTabRootUiCoordinator().getCustomTabSearchClient();
-        if (searchClient.isOmniboxResult(requestCode, data)) {
-            LoadUrlParams params = searchClient.getOmniboxResult(requestCode, resultCode, data);
-
-            RecordHistogram.recordBooleanHistogram(
-                    "CustomTabs.Omnibox.FocusResultedInNavigation", params != null);
-
-            if (params == null) return;
-
-            mNumOmniboxNavigationEventsPerSession++;
-            // Yield to give the called activity time to close.
-            // Loading URL directly will result in Activity closing after URL loading completes.
-            PostTask.postTask(
-                    TaskTraits.UI_DEFAULT,
-                    () ->
-                            assumeNonNull(getCustomTabActivityTabProvider().getTab())
-                                    .loadUrl(params));
-        }
 
         if (HistoryManager.isAppSpecificHistoryEnabled()
                 && requestCode == HistoryManagerUtils.HISTORY_REQUEST_CODE) {

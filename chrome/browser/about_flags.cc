@@ -7788,10 +7788,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kInAppWindowManagerDeprecationDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kInAppWindowManagerDeprecation)},
 
-    {"search-in-cct", flag_descriptions::kSearchInCCTName,
-     flag_descriptions::kSearchInCCTDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kSearchInCCT)},
-
     {"session-restore-after-crash",
      flag_descriptions::kSessionRestoreAfterCrashName,
      flag_descriptions::kSessionRestoreAfterCrashDescription, kOsAndroid,

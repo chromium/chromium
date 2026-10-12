@@ -12,7 +12,6 @@ import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabT
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.ICON;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.MINIMIZE_BUTTON;
-import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.OMNIBOX_ENABLED;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.OPTIONAL_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.TINT;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.TOOLBAR_WIDTH;
@@ -162,8 +161,6 @@ class CustomTabToolbarButtonsMediator
     // Display a (blue) dot on the overflow menu icon for the optional button that cannot be
     // shown on the toolbar to indicate that the action is available through the menu.
     private void maybeShowActionMenuIndicator(@AdaptiveToolbarButtonVariant int buttonVariant) {
-        if (mModel.get(OMNIBOX_ENABLED)) return;
-
         mView.setUpOptionalButtonFallbackUi(buttonVariant);
     }
 
@@ -211,13 +208,6 @@ class CustomTabToolbarButtonsMediator
             RecordHistogram.recordEnumeratedHistogram(
                     "CustomTabs.AdaptiveToolbarButton.HiddenReason",
                     CustomTabMtbHiddenReason.NO_BUTTON_SPACE,
-                    CustomTabMtbHiddenReason.COUNT);
-            return false;
-        }
-        if (mModel.get(OMNIBOX_ENABLED)) {
-            RecordHistogram.recordEnumeratedHistogram(
-                    "CustomTabs.AdaptiveToolbarButton.HiddenReason",
-                    CustomTabMtbHiddenReason.OMNIBOX_ENABLED,
                     CustomTabMtbHiddenReason.COUNT);
             return false;
         }

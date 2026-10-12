@@ -69,8 +69,6 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browserservices.PostMessageHandler;
 import org.chromium.chrome.browser.browserservices.SessionDataHolder;
 import org.chromium.chrome.browser.browserservices.SessionHandler;
@@ -78,7 +76,6 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.trustedwebactivity.SplashImageHolder;
 import org.chromium.chrome.browser.customtabs.content.EngagementSignalsHandler;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.tab.Tab;
 
@@ -243,21 +240,6 @@ public class CustomTabsConnectionUnitTest {
                 mPostMessageHandler,
                 mPostMessageServiceConnection,
                 handler);
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.SEARCH_IN_CCT)
-    public void shouldEnableOmniboxForIntent_featureDisabled() {
-        // The logic is currently expected to not even peek in the intent.
-        assertFalse(mConnection.shouldEnableOmniboxForIntent(null));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.SEARCH_IN_CCT)
-    public void shouldEnableOmniboxForIntent_featureEnabled() {
-        // The logic is currently expected to not even peek in the intent.
-        // Omnibox must remain disabled even if the feature flag is on.
-        assertFalse(mConnection.shouldEnableOmniboxForIntent(null));
     }
 
     @Test

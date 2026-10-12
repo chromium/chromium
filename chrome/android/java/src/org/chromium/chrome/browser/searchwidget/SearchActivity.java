@@ -66,7 +66,6 @@ import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
-import org.chromium.chrome.browser.rlz.RevenueStats;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabwindow.TabWindowInfo;
@@ -135,10 +134,6 @@ public class SearchActivity extends AsyncInitializationActivity
             "Android.Omnibox.SearchActivity.ActivityPresent";
 
     @VisibleForTesting
-    /* package */ static final String HISTOGRAM_INTENT_REFERRER_VALID =
-            "Android.Omnibox.SearchActivity.ReferrerValid";
-
-    @VisibleForTesting
     /* package */ static final String HISTOGRAM_NAVIGATION_TARGET_TYPE =
             "Android.Omnibox.SearchActivity.NavigationTargetType";
 
@@ -195,8 +190,6 @@ public class SearchActivity extends AsyncInitializationActivity
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:SearchActivityTerminationReason)
-
-    @VisibleForTesting /* package */ static final String CCT_CLIENT_PACKAGE_PREFIX = "app-cct-";
 
     /** Notified about events happening inside a SearchActivity. */
     public static class SearchActivityDelegate {
@@ -547,7 +540,6 @@ public class SearchActivity extends AsyncInitializationActivity
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.UMA_SESSION_CORRECTNESS_FIXES)) {
             umaSessionEnd();
         }
-        RevenueStats.setCustomTabSearchClient(null);
         super.onPauseWithNative();
     }
 
@@ -563,14 +555,6 @@ public class SearchActivity extends AsyncInitializationActivity
     public void onResumeWithNative() {
         // Start a new UMA session for the new activity.
         umaSessionResume();
-        if (mCurrentSession.intentOrigin == IntentOrigin.CUSTOM_TAB
-                && ChromeFeatureList.sSearchinCctApplyReferrerId.getValue()) {
-            var referrer = SearchActivityUtils.getReferrer(getIntent());
-            var referrerValid = !TextUtils.isEmpty(referrer);
-            RecordHistogram.recordBooleanHistogram(HISTOGRAM_INTENT_REFERRER_VALID, referrerValid);
-            RevenueStats.setCustomTabSearchClient(
-                    referrerValid ? CCT_CLIENT_PACKAGE_PREFIX + referrer : null);
-        }
 
         // Inform the actity lifecycle observers. Among other things, the observers record
         // metrics pertaining to the "resumed" activity. This needs to happens after

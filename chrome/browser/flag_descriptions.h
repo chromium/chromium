@@ -1460,11 +1460,6 @@ inline constexpr char kInAppWindowManagerDeprecationName[] =
 inline constexpr char kInAppWindowManagerDeprecationDescription[] =
     "Enables the deprecation of the in-app window manager on Android.";
 
-inline constexpr char kSearchInCCTName[] = "Search in Chrome Custom Tabs";
-inline constexpr char kSearchInCCTDescription[] =
-    "Permits apps to create searchable and "
-    "navigable custom tabs.";
-
 inline constexpr char kSessionRestoreAfterCrashName[] =
     "Session Restore After Crash";
 inline constexpr char kSessionRestoreAfterCrashDescription[] =

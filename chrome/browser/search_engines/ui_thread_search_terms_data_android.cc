@@ -21,13 +21,6 @@ std::string& SearchTermsDataAndroid::GetSearchClient() {
   return *search_client;
 }
 
-// static
-std::optional<std::string>& SearchTermsDataAndroid::GetCustomTabSearchClient() {
-  static base::NoDestructor<std::optional<std::string>>
-      custom_tab_search_client;
-  return *custom_tab_search_client;
-}
-
 std::u16string UIThreadSearchTermsData::GetRlzParameterValue(
     bool from_app_list) const {
   DCHECK(!content::BrowserThread::IsThreadInitialized(
@@ -42,8 +35,7 @@ std::string UIThreadSearchTermsData::GetSearchClient() const {
   DCHECK(!content::BrowserThread::IsThreadInitialized(
              content::BrowserThread::UI) ||
          content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-  return SearchTermsDataAndroid::GetCustomTabSearchClient().value_or(
-      SearchTermsDataAndroid::GetSearchClient());
+  return SearchTermsDataAndroid::GetSearchClient();
 }
 
 std::string UIThreadSearchTermsData::GetYandexReferralID() const {

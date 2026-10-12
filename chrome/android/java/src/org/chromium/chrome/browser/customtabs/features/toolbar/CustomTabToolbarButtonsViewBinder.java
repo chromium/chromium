@@ -17,7 +17,6 @@ import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabT
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.MENU_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.MINIMIZE_BUTTON;
-import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.OMNIBOX_ENABLED;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.OPTIONAL_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.SIDE_SHEET_MAXIMIZE_BUTTON;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.TINT;
@@ -183,8 +182,7 @@ public class CustomTabToolbarButtonsViewBinder
         int toolbarHorizontalPadding =
                 resources.getDimensionPixelSize(R.dimen.custom_tabs_toolbar_horizontal_padding);
         int locationBarMinWidth =
-                getLocationBarMinWidth(
-                        view.getResources(), model.get(OMNIBOX_ENABLED), model.get(TITLE_VISIBLE));
+                getLocationBarMinWidth(view.getResources(), model.get(TITLE_VISIBLE));
         var posParams = new ButtonPositioningParams();
         posParams.availableWidth = model.get(TOOLBAR_WIDTH);
         posParams.availableWidth -= 2 * toolbarHorizontalPadding;
@@ -446,7 +444,6 @@ public class CustomTabToolbarButtonsViewBinder
         var titleUrlContainer = view.findViewById(R.id.title_url_container);
         var titleUrlLp = ((ViewGroup.MarginLayoutParams) titleUrlContainer.getLayoutParams());
         titleUrlLp.leftMargin = 0;
-        boolean omniboxEnabled = model.get(OMNIBOX_ENABLED);
         if (model.get(IS_INCOGNITO)) {
             int incognitoIconWidth =
                     resources.getDimensionPixelSize(R.dimen.custom_tabs_incognito_icon_width);
@@ -455,20 +452,16 @@ public class CustomTabToolbarButtonsViewBinder
         titleUrlContainer.setLayoutParams(titleUrlLp);
 
         // Ensure correct spacing between the last start aligned button and the location bar.
-        if (omniboxEnabled) {
-            setHorizontalPadding(locationBar, 0, 0);
-        } else {
-            int desiredSpace =
-                    resources.getDimensionPixelSize(R.dimen.custom_tabs_location_bar_start_spacing);
-            int remainingSpace =
-                    Math.max(0, desiredSpace - posParams.spacingFromLastStartAlignedButton);
-            int endPadding =
-                    model.get(IS_INCOGNITO)
-                            ? 0
-                            : resources.getDimensionPixelSize(
-                                    R.dimen.custom_tabs_location_bar_horizontal_padding);
-            setHorizontalPadding(locationBar, remainingSpace, endPadding);
-        }
+        int desiredSpace =
+                resources.getDimensionPixelSize(R.dimen.custom_tabs_location_bar_start_spacing);
+        int remainingSpace =
+                Math.max(0, desiredSpace - posParams.spacingFromLastStartAlignedButton);
+        int endPadding =
+                model.get(IS_INCOGNITO)
+                        ? 0
+                        : resources.getDimensionPixelSize(
+                                R.dimen.custom_tabs_location_bar_horizontal_padding);
+        setHorizontalPadding(locationBar, remainingSpace, endPadding);
     }
 
     /**
@@ -566,11 +559,10 @@ public class CustomTabToolbarButtonsViewBinder
     }
 
     @Px
-    static int getLocationBarMinWidth(
-            Resources resources, boolean omniboxEnabled, boolean titleVisible) {
+    static int getLocationBarMinWidth(Resources resources, boolean titleVisible) {
         int locationBarMinWidth =
                 resources.getDimensionPixelSize(R.dimen.location_bar_min_url_width);
-        if (omniboxEnabled || !titleVisible) {
+        if (!titleVisible) {
             locationBarMinWidth +=
                     resources.getDimensionPixelSize(R.dimen.custom_tabs_security_icon_width);
         }

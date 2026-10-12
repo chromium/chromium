@@ -57,7 +57,6 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.content.WebContentsFactory;
@@ -76,7 +75,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
-import org.chromium.chrome.browser.rlz.RevenueStats;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactoryJni;
 import org.chromium.chrome.browser.searchwidget.SearchActivity.TerminationReason;
@@ -113,7 +111,6 @@ public class SearchActivityUnitTest {
     }
 
     private static final String TEST_URL = "https://abc.xyz/";
-    private static final String TEST_REFERRER = "com.package.name";
     private static final OmniboxLoadUrlParams LOAD_URL_PARAMS_SIMPLE =
             new OmniboxLoadUrlParams.Builder(TEST_URL, PageTransition.TYPED).build();
     private static final String HISTOGRAM_SUFFIX_SEARCH_WIDGET = ".SearchWidget";
@@ -133,7 +130,6 @@ public class SearchActivityUnitTest {
     private @Mock AutocompleteCoordinator mAutocompleteCoordinator;
     private @Mock TopResumedActivityChangedObserver mTopResumedObserver;
     private @Mock UmaActivityObserver mUmaObserver;
-    private @Mock Callback<@Nullable String> mSetCustomTabSearchClient;
     private @Mock LocationBarBackgroundDrawable mSearchBoxBackground;
     private @Mock LocationBarCoordinator mLocationBarCoordinator;
     private @Mock UrlBarCoordinator mUrlCoordinator;
@@ -210,7 +206,6 @@ public class SearchActivityUnitTest {
         SearchActivityUtils.setDelegateForTesting(mUtils);
         WebContentsFactory.setWebContentsForTesting(mWebContents);
         TabBuilder.setTabForTesting(mTab);
-        RevenueStats.setCustomTabSearchClientHookForTesting(mSetCustomTabSearchClient);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
     }
 
@@ -989,7 +984,7 @@ public class SearchActivityUnitTest {
         mActivity.onResumeWithNative();
 
         verify(mUmaObserver).startUmaSession(eq(null), any());
-        verifyNoMoreInteractions(mUmaObserver, mSetCustomTabSearchClient);
+        verifyNoMoreInteractions(mUmaObserver);
     }
 
     @Test
@@ -999,71 +994,7 @@ public class SearchActivityUnitTest {
         mActivity.onResumeWithNative();
 
         verify(mUmaObserver).startUmaSession(eq(null), any());
-        verifyNoMoreInteractions(mUmaObserver, mSetCustomTabSearchClient);
-    }
-
-    @Test
-    public void onResumeWithNative_fromCustomTabs_withoutPackage() {
-        ChromeFeatureList.sSearchinCctApplyReferrerId.setForTesting(true);
-        mActivity.onNewIntent(buildTestServiceIntent(IntentOrigin.CUSTOM_TAB));
-        mActivity.setUmaActivityObserverForTesting(mUmaObserver);
-
-        try (var watcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        SearchActivity.HISTOGRAM_INTENT_REFERRER_VALID, false)) {
-            mActivity.onResumeWithNative();
-        }
-
-        verify(mUmaObserver).startUmaSession(eq(null), any());
-        verify(mSetCustomTabSearchClient).onResult(null);
-        verifyNoMoreInteractions(mUmaObserver, mSetCustomTabSearchClient);
-    }
-
-    @Test
-    public void onResumeWithNative_fromCustomTabs_withPackage() {
-        ChromeFeatureList.sSearchinCctApplyReferrerId.setForTesting(true);
-        mActivity.onNewIntent(
-                newIntentBuilder(IntentOrigin.CUSTOM_TAB, TEST_URL)
-                        .setReferrer(TEST_REFERRER)
-                        .setResolutionType(ResolutionType.SEND_TO_CALLER)
-                        .build());
-        mActivity.setUmaActivityObserverForTesting(mUmaObserver);
-
-        try (var watcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        SearchActivity.HISTOGRAM_INTENT_REFERRER_VALID, true)) {
-            mActivity.onResumeWithNative();
-        }
-
-        verify(mUmaObserver).startUmaSession(eq(null), any());
-        verify(mSetCustomTabSearchClient).onResult("app-cct-" + TEST_REFERRER);
-        verifyNoMoreInteractions(mUmaObserver, mSetCustomTabSearchClient);
-    }
-
-    @Test
-    public void onResumeWithNative_fromCustomTabs_propagationDisabled() {
-        ChromeFeatureList.sSearchinCctApplyReferrerId.setForTesting(false);
-        mActivity.onNewIntent(buildTestServiceIntent(IntentOrigin.CUSTOM_TAB));
-        mActivity.setUmaActivityObserverForTesting(mUmaObserver);
-
-        try (var watcher =
-                HistogramWatcher.newBuilder()
-                        .expectNoRecords(SearchActivity.HISTOGRAM_INTENT_REFERRER_VALID)
-                        .build()) {
-            mActivity.onResumeWithNative();
-        }
-
-        verify(mUmaObserver).startUmaSession(eq(null), any());
-        verify(mSetCustomTabSearchClient, never()).onResult(any());
-        verifyNoMoreInteractions(mUmaObserver, mSetCustomTabSearchClient);
-    }
-
-    @Test
-    public void onPauseWithNative() {
-        mActivity.onPauseWithNative();
-
-        verify(mSetCustomTabSearchClient).onResult(null);
-        verifyNoMoreInteractions(mSetCustomTabSearchClient);
+        verifyNoMoreInteractions(mUmaObserver);
     }
 
     @Test

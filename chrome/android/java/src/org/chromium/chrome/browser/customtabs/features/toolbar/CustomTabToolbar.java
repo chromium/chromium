@@ -48,7 +48,6 @@ import androidx.annotation.ColorRes;
 import androidx.annotation.DimenRes;
 import androidx.annotation.Dimension;
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.base.Callback;
@@ -57,7 +56,6 @@ import org.chromium.base.CallbackUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -103,8 +101,6 @@ import org.chromium.chrome.browser.toolbar.top.ToolbarSnapshotDifference;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.ToolbarColorObserver;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuObserver;
-import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
-import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.ResolutionType;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -197,20 +193,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     }
 
     private @Nullable OnColorSchemeChangedObserver mOnColorSchemeChangedObserver;
-
-    public static final class OmniboxParams {
-        /** The {@link SearchActivityClient} instance used to request Omnibox. */
-        public SearchActivityClient searchClient;
-
-        /** The package name of the Custom Tabs embedder. */
-        public @Nullable String clientPackageName;
-
-        public OmniboxParams(
-                SearchActivityClient searchClient, @Nullable String clientPackageName) {
-            this.searchClient = searchClient;
-            this.clientPackageName = clientPackageName;
-        }
-    }
 
     /** Whether to use the toolbar as handle to resize the Window height. */
     public interface HandleStrategy {
@@ -598,15 +580,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 actionModeCallback);
         mBrowserControlsVisibilityDelegate = controlsVisibilityDelegate;
         return mLocationBar;
-    }
-
-    /**
-     * Sets params for the interactive Omnibox in CCT.
-     *
-     * @param omniboxParams The {@link OmniboxParams} to be used.
-     */
-    public void setOmniboxParams(OmniboxParams omniboxParams) {
-        mLocationBar.setOmniboxParams(omniboxParams);
     }
 
     /** Resets optional button internal state. */
@@ -997,22 +970,12 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 new Runnable[TOTAL_POST_BRANDING_KEYS];
         private boolean mCurrentlyShowingBranding;
         private boolean mBrandingStarted;
-        private boolean mOmniboxEnabled;
-        private @Nullable Drawable mOmniboxBackground;
         private @Nullable CallbackController mCallbackController = new CallbackController();
         // Cached the state before branding start so we can reset to the state when its done.
         private @Nullable Integer mPreBandingState;
         private @Nullable PageInfoIphController mPageInfoIphController;
         private int mTouchTargetSize;
         private @Nullable ToolbarBrandingOverlayCoordinator mBrandingOverlayCoordinator;
-
-        private @ColorInt int getBackgroundColor() {
-            return ThemeUtils.getTextBoxColorForToolbarBackgroundInNonNativePage(
-                    getContext(),
-                    getBackground().getColor(),
-                    mBrandedColorScheme == BrandedColorScheme.INCOGNITO,
-                    /* isCustomTab= */ true);
-        }
 
         /**
          * Resets optional button internal state regarding the fallback UI indicator for CPA.
@@ -1258,14 +1221,12 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
         public void onNativeLibraryReady() {
             mSecurityButton.setOnClickListener(v -> showPageInfo());
-            if (!mOmniboxEnabled) {
-                mTitleUrlContainer.setOnClickListener(v -> showPageInfo());
-                // The title and url are independently focusable for accessibility. Set
-                // AccessibilityNodeInfo on each to indicate they respond to clicks / long clicks
-                // via the listeners set on mTitleUrlContainer.
-                setTitleUrlBarAccessibilityDelegate(mTitleBar);
-                setTitleUrlBarAccessibilityDelegate(mUrlBar);
-            }
+            mTitleUrlContainer.setOnClickListener(v -> showPageInfo());
+            // The title and url are independently focusable for accessibility. Set
+            // AccessibilityNodeInfo on each to indicate they respond to clicks / long clicks
+            // via the listeners set on mTitleUrlContainer.
+            setTitleUrlBarAccessibilityDelegate(mTitleBar);
+            setTitleUrlBarAccessibilityDelegate(mUrlBar);
         }
 
         private void setTitleUrlBarAccessibilityDelegate(View view) {
@@ -1443,7 +1404,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             if (mState == STATE_TITLE_ONLY || mCurrentlyShowingBranding) return;
 
             int securityIconResource = 0;
-            if (mOmniboxEnabled || !isSecureOrNeutralLevel()) {
+            if (!isSecureOrNeutralLevel()) {
                 securityIconResource =
                         mLocationBarDataProvider.getSecurityIconResource(
                                 DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext()));
@@ -1542,7 +1503,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             final CharSequence displayText;
             final int originStart;
             final int originEnd;
-            if (!mOmniboxEnabled && publisherUrl != null) {
+            if (publisherUrl != null) {
                 String plainDisplayText =
                         getContext()
                                 .getString(
@@ -1564,10 +1525,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             } else {
                 UrlBarData urlBarData = mLocationBarDataProvider.getUrlBarData();
                 originStart = 0;
-                if (mOmniboxEnabled) {
-                    displayText = urlBarData.displayText;
-                    originEnd = urlBarData.originEndIndex;
-                } else if (urlBarData.displayText.length() != 0) {
+                if (urlBarData.displayText.length() != 0) {
                     displayText =
                             urlBarData.displayText.subSequence(
                                     urlBarData.originStartIndex, urlBarData.originEndIndex);
@@ -1614,17 +1572,11 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
 
         private void updateColors() {
-            updateOmniboxBackground();
             updateButtonsTint();
             mUrlCoordinator.setBrandedColorScheme(mBrandedColorScheme);
             mTitleBar.setTextColor(
                     OmniboxResourceProvider.getUrlBarPrimaryTextColor(
                             getContext(), mBrandedColorScheme));
-        }
-
-        private void updateOmniboxBackground() {
-            if (mOmniboxBackground == null) return;
-            mOmniboxBackground.setTint(getBackgroundColor());
         }
 
         @Override
@@ -1638,7 +1590,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
 
         private void setShowTitleIgnoreBranding(boolean showTitle) {
-            showTitle = !mOmniboxEnabled && showTitle;
             if (showTitle) {
                 if (mState == STATE_EMPTY) {
                     mState = STATE_TITLE_ONLY;
@@ -1687,7 +1638,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                         mSecurityButton.getPaddingTop(),
                         paddingRight,
                         mSecurityButton.getPaddingBottom());
-                mAnimDelegate.setSecurityButtonWidth(mOmniboxEnabled ? 0 : width);
+                mAnimDelegate.setSecurityButtonWidth(width);
 
                 // URL bar height should be as big as the touch target size when shown alone.
                 // Update its minHeight and center it vertically.
@@ -1788,80 +1739,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
         void setIphControllerForTesting(PageInfoIphController pageInfoIphController) {
             mPageInfoIphController = pageInfoIphController;
-        }
-
-        void setOmniboxParams(OmniboxParams omniboxParams) {
-            assert omniboxParams != null;
-            mOmniboxEnabled = true;
-            mOmniboxBackground =
-                    AppCompatResources.getDrawable(
-                            getContext(), R.drawable.custom_tabs_url_bar_omnibox_bg);
-            mOmniboxBackground.mutate();
-            updateOmniboxBackground();
-            mLocationBarFrameLayout.setBackground(mOmniboxBackground);
-            var lp = mLocationBarFrameLayout.getLayoutParams();
-            lp.height =
-                    getResources()
-                            .getDimensionPixelSize(R.dimen.custom_tabs_location_bar_active_height);
-            mLocationBarFrameLayout.setLayoutParams(lp);
-
-            lp = mUrlBar.getLayoutParams();
-            lp.height =
-                    getResources().getDimensionPixelSize(R.dimen.custom_tabs_url_bar_active_height);
-            mUrlBar.setLayoutParams(lp);
-
-            View urlBarWrapper = findViewById(R.id.url_bar_wrapper);
-            FrameLayout.LayoutParams locationBarLayoutParams =
-                    (FrameLayout.LayoutParams) urlBarWrapper.getLayoutParams();
-            locationBarLayoutParams.gravity = Gravity.CENTER_VERTICAL;
-            urlBarWrapper.setLayoutParams(locationBarLayoutParams);
-
-            int horizontalPadding =
-                    getResources()
-                            .getDimensionPixelSize(
-                                    R.dimen.custom_tabs_location_bar_horizontal_padding);
-            int edgePadding = getResources().getDimensionPixelSize(R.dimen.toolbar_edge_padding);
-            mTitleUrlContainer.setPaddingRelative(
-                    horizontalPadding,
-                    mTitleUrlContainer.getPaddingTop(),
-                    horizontalPadding + edgePadding,
-                    mTitleUrlContainer.getPaddingBottom());
-
-            mTitleUrlContainer.setOnClickListener(
-                    v -> {
-                        RecordUserAction.record("CustomTabs.OmniboxClicked");
-                        var tab = assumeNonNull(getCurrentTab());
-                        var intent =
-                                omniboxParams
-                                        .searchClient
-                                        .newIntentBuilder()
-                                        .setPageUrl(tab.getUrl())
-                                        .setReferrer(omniboxParams.clientPackageName)
-                                        .setIncognito(tab.isIncognitoBranded())
-                                        .setResolutionType(ResolutionType.SEND_TO_CALLER)
-                                        .build();
-                        omniboxParams.searchClient.requestOmniboxForResult(intent);
-                    });
-
-            mUrlBar.setAccessibilityDelegate(
-                    new View.AccessibilityDelegate() {
-                        @Override
-                        public void onInitializeAccessibilityNodeInfo(
-                                View host, AccessibilityNodeInfo info) {
-                            super.onInitializeAccessibilityNodeInfo(host, info);
-                            info.setClickable(true);
-                            info.setLongClickable(true);
-                            info.setEnabled(true);
-                            info.setEditable(false);
-                        }
-                    });
-            updateAnimationsForOmnibox();
-            updateSecurityIcon();
-        }
-
-        private void updateAnimationsForOmnibox() {
-            mSecurityButton.setVisibility(VISIBLE);
-            mAnimDelegate.setSecurityButtonWidth(0);
         }
     }
 

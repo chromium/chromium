@@ -70,7 +70,6 @@ public class CustomTabToolbarButtonsCoordinator
             Callback<CustomButtonParams> customButtonClickCallback,
             @Nullable CustomTabMinimizeDelegate minimizeDelegate,
             Supplier<@Nullable AppMenuHandler> appMenuHandler,
-            CustomTabToolbar.@Nullable OmniboxParams omniboxParams,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             ActivityTabProvider tabProvider) {
         var customActionButtons =
@@ -92,7 +91,6 @@ public class CustomTabToolbarButtonsCoordinator
 
         mIsOptionalButtonSupported = intentDataProvider.isOptionalButtonSupported();
         int toolbarWidth = CustomTabDimensionUtils.getInitialWidth(activity, intentDataProvider);
-        boolean omniboxEnabled = omniboxParams != null;
         boolean titleVisible =
                 intentDataProvider.getTitleVisibilityState() == TitleVisibility.VISIBLE;
         boolean isIncognito =
@@ -108,7 +106,6 @@ public class CustomTabToolbarButtonsCoordinator
                         /* menuButtonVisible= */ true,
                         /* optionalButtonVisible= */ false,
                         toolbarWidth,
-                        omniboxEnabled,
                         titleVisible,
                         isIncognito,
                         tint);

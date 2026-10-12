@@ -62,7 +62,6 @@
     <string name="pcct_initial_width_text">PCCT Initial Width</string>
     <string name="px_template">%dpx</string>
     <string name="result_launch_button_text">(Launch) startActivityForResult</string>
-    <string name="search_in_cct_text">Interactive Omnibox</string>
     <string name="send_to_external_app_text">External Intent Handler</string>
     <string name="share_identity_text">Share Identity</string>
     <string name="share_state_default_text">Default</string>
