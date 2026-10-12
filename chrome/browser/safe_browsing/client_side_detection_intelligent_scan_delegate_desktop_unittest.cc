@@ -214,8 +214,8 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   EXPECT_FALSE(delegate_->ShouldShowScamWarning(
       IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_TELEMETRY));
   // Undefined verdict doesn't show warning.
-  EXPECT_FALSE(
-      delegate_->ShouldShowScamWarning(static_cast<IntelligentScanVerdict>(6)));
+  EXPECT_FALSE(delegate_->ShouldShowScamWarning(
+      static_cast<IntelligentScanVerdict>(99)));
   // Do not show warnings if the enum value is unknown.
   EXPECT_FALSE(delegate_->ShouldShowScamWarning(
       static_cast<IntelligentScanVerdict>(12345)));

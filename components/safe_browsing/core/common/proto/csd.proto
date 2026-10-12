@@ -388,6 +388,7 @@ message ClipboardExtractedData {
 }
 
 // Verdict based on IntelligentScanInfo included in ClientPhishingRequest
+// LINT.IfChange(IntelligentScanVerdict)
 enum IntelligentScanVerdict {
   INTELLIGENT_SCAN_VERDICT_UNSPECIFIED = 0;
   INTELLIGENT_SCAN_VERDICT_SAFE = 1;
@@ -395,9 +396,11 @@ enum IntelligentScanVerdict {
   SCAM_EXPERIMENT_VERDICT_2 = 3;
   SCAM_EXPERIMENT_VERDICT_3 = 4;
   SCAM_EXPERIMENT_VERDICT_4 = 5;
+  SCAM_EXPERIMENT_VERDICT_BILLING = 6;
   SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT = 999;
   SCAM_EXPERIMENT_CATCH_ALL_TELEMETRY = 1000;
 }
+// LINT.ThenChange(//tools/metrics/histograms/metadata/sb_client/enums.xml:IntelligentScanVerdict)
 
 message ClientPhishingResponse {
   required bool phishy = 1;
