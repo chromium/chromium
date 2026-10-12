@@ -14,6 +14,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "components/facilitated_payments/content/browser/facilitated_payments_api_client_factory.h"
 #include "components/facilitated_payments/core/browser/account_linking_result.h"
@@ -158,6 +159,26 @@ TEST_F(
 
   std::unique_ptr<FacilitatedPaymentsApiClient> api_client = creator.Run();
   EXPECT_NE(nullptr, api_client);
+}
+
+TEST_F(FacilitatedPaymentsApiClientAndroidTest,
+       InvokeInstrumentManager_AfterNavigation_UpdatesBridge) {
+  NavigateAndCommit(GURL("https://merchant.example.test/page1"));
+  content::GlobalRenderFrameHostId initial_rfh_id = main_rfh()->GetGlobalId();
+  FacilitatedPaymentsApiClientAndroid api_client(main_rfh());
+  EXPECT_EQ(api_client.GetRenderFrameHostIdForTesting(), initial_rfh_id);
+
+  NavigateAndCommit(GURL("https://merchant.example.test/page2"));
+  ASSERT_NE(initial_rfh_id, main_rfh()->GetGlobalId());
+
+  signin::IdentityTestEnvironment identity_test_environment;
+  api_client.InvokeInstrumentManager(
+      identity_test_environment.MakeAccountAvailable("test@example.test")
+          .GetCoreAccountInfo(),
+      /*action_token=*/{'A', 'c', 't', 'i', 'o', 'n'}, base::DoNothing());
+
+  EXPECT_EQ(api_client.GetRenderFrameHostIdForTesting(),
+            main_rfh()->GetGlobalId());
 }
 
 TEST_F(FacilitatedPaymentsApiClientAndroidTest,

@@ -13,11 +13,14 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_utils.h"
+#include "content/public/browser/global_routing_id.h"
 
 namespace content {
 class RenderFrameHost;
+class WebContents;
 }  // namespace content
 
 namespace payments::facilitated {
@@ -62,9 +65,15 @@ class FacilitatedPaymentsApiClientAndroid
       JNIEnv* env,
       const base::android::JavaRef<jobject>& jaccount_linking_result);
 
+  content::GlobalRenderFrameHostId GetRenderFrameHostIdForTesting() const {
+    return render_frame_host_id_;
+  }
+
  private:
   bool IsAnyCallbackPending() const;
 
+  base::WeakPtr<content::WebContents> web_contents_;
+  content::GlobalRenderFrameHostId render_frame_host_id_;
   base::android::ScopedJavaGlobalRef<jobject> java_bridge_;
   base::OnceCallback<void(bool)> is_available_callback_;
   base::OnceCallback<void(std::vector<uint8_t>)> get_client_token_callback_;
