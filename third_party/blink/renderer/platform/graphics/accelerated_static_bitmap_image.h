@@ -80,8 +80,8 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
   // Creates an image initialized by rasterizing the commands recorded by
   // `draw_callback`. `shared_image_usage_flags` specifies the read/display
   // usages required by the caller (which must be a subset of
-  // `kAllowedReadUsages`); `SHARED_IMAGE_USAGE_RASTER_READ` and
-  // `SHARED_IMAGE_USAGE_RASTER_WRITE` are added internally.
+  // `kAllowedReadUsages`); `SHARED_IMAGE_USAGE_RASTER_WRITE` is added
+  // internally.
   static scoped_refptr<StaticBitmapImage> CreateFromRaster(
       const gfx::Size& size,
       viz::SharedImageFormat format,

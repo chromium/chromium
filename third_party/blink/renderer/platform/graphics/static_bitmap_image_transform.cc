@@ -273,8 +273,10 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
             gfx::Size(dest_size.width(), dest_size.height()), dest_format,
             dest_alpha_type, dest_color_space, dest_hdr_metadata,
             source->ContextProviderWrapper(),
-            gpu::Intersection(source->GetSharedImage()->usage(),
-                              AcceleratedStaticBitmapImage::kAllowedReadUsages),
+            gpu::Intersection(
+                source->GetSharedImage()->usage(),
+                AcceleratedStaticBitmapImage::kAllowedReadUsages) |
+                gpu::SHARED_IMAGE_USAGE_RASTER_READ,
             [&](cc::PaintCanvas& canvas) {
               BlitToCanvas(canvas, source_paint_image, source_orientation,
                            SkRect::Make(source_rect), dest_size, options);
