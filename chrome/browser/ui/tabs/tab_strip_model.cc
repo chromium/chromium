@@ -2225,7 +2225,8 @@ void TabStripModel::EnterFocusMode(const tab_groups::TabGroupId& group) {
     tabs::TabStripModelSelectionState new_selection_model = selection_model_;
     new_selection_model.set_focused_group(group);
 
-    CHECK(group_model_->GetTabGroup(group)->tab_count() > 0);
+    TabGroup* const tab_group = group_model_->GetTabGroup(group);
+    CHECK(tab_group->tab_count() > 0);
 
     // Copy the previous selection model, but remove tabs not part of the
     // tab_group in the list of selected tabs.
@@ -2244,8 +2245,7 @@ void TabStripModel::EnterFocusMode(const tab_groups::TabGroupId& group) {
     if (!new_selection_model.active_tab() ||
         (new_selection_model.active_tab() &&
          new_selection_model.active_tab()->GetGroup() != group)) {
-      tabs::TabInterface* first_in_group =
-          group_model_->GetTabGroup(group)->GetFirstTab();
+      tabs::TabInterface* first_in_group = tab_group->GetFirstTab();
       if (first_in_group->IsSplit()) {
         for (tabs::TabInterface* split_tab :
              GetSplitData(first_in_group->GetSplit().value())->ListTabs()) {
@@ -2266,6 +2266,14 @@ void TabStripModel::EnterFocusMode(const tab_groups::TabGroupId& group) {
     SetSelection(new_selection_model, TabStripModelObserver::CHANGE_REASON_NONE,
                  /*triggered_by_other_operation=*/false);
     NotifyTabGroupFocusChanged(old_focused_group);
+
+    // Ephemeral tab groups do not trigger a browser theme change upon entering
+    // focus mode, so we manually update the visual data here to ensure
+    // correctness.
+    if (tab_group->is_ephemeral()) {
+      tab_group->SetVisualData(*tab_group->visual_data(),
+                               tab_group->IsCustomized());
+    }
   }
 }
 

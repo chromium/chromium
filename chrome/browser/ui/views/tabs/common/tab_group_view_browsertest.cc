@@ -537,6 +537,33 @@ IN_PROC_BROWSER_TEST_F(TabGroupViewTest,
   EXPECT_EQ(tab->x(), TabGroupView::kTabLeadingPadding);
 }
 
+IN_PROC_BROWSER_TEST_F(TabGroupViewTest, HeaderVisibilityInNonGroupFocusMode) {
+  AppendTab();
+  AppendTab();
+
+  // Create an ephemeral tab group and enter focus mode (simulating non-group
+  // focus mode).
+  tab_groups::TabGroupId ephemeral_group_id =
+      browser()->GetTabStripModel()->AddToNewGroup({1}, /*is_ephemeral=*/true);
+  browser()->GetTabStripModel()->EnterFocusMode(ephemeral_group_id);
+  RunScheduledLayouts();
+
+  TabCollectionNode* group_node =
+      unpinned_collection_node()->GetChildNodeOfType(
+          TabCollectionNode::Type::GROUP);
+  ASSERT_TRUE(group_node);
+  TabGroupView* group_view =
+      views::AsViewClass<TabGroupView>(group_node->view());
+  ASSERT_TRUE(group_view);
+  TabGroupHeaderView* group_header = group_view->group_header();
+  ASSERT_TRUE(group_header);
+
+  // In non-group focus mode, the collapse (caret) icon should be hidden and
+  // the 3-dot editor bubble button should be visible.
+  EXPECT_FALSE(group_header->collapse_icon_for_testing()->GetVisible());
+  EXPECT_TRUE(group_header->editor_bubble_button()->GetVisible());
+}
+
 class HorizontalTabGroupViewBrowserTest : public InProcessBrowserTest {
  public:
   HorizontalTabGroupViewBrowserTest()
