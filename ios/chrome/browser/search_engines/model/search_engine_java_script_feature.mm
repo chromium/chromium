@@ -48,25 +48,26 @@ SearchEngineJavaScriptFeature::GetScriptMessageHandlerName() const {
 void SearchEngineJavaScriptFeature::ScriptMessageReceived(
     web::WebState* web_state,
     const web::ScriptMessage& script_message) {
-  if (!delegate_ || !script_message.legacy_body()) {
+  if (!delegate_) {
     return;
   }
-  const auto* dict = script_message.legacy_body()->GetIfDict();
-  if (!dict) {
+  const web::ScriptMessageValue& body = script_message.body();
+  if (body.type() != base::Value::Type::DICT) {
     return;
   }
+  const web::ScriptMessageDictValue& dict = body.GetDict();
 
-  const std::string* command =
-      dict->FindString(kScriptMessageResponseCommandKey);
+  std::optional<std::string> command =
+      dict.FindString(kScriptMessageResponseCommandKey);
   if (!command) {
     return;
   }
 
   if (*command == kOpenSearchCommand) {
-    const std::string* document_url =
-        dict->FindString(kOpenSearchCommandPageUrlKey);
-    const std::string* osdd_url =
-        dict->FindString(kOpenSearchCommandOsddUrlKey);
+    std::optional<std::string> document_url =
+        dict.FindString(kOpenSearchCommandPageUrlKey);
+    std::optional<std::string> osdd_url =
+        dict.FindString(kOpenSearchCommandOsddUrlKey);
     if (!document_url || !osdd_url) {
       return;
     }
@@ -74,7 +75,8 @@ void SearchEngineJavaScriptFeature::ScriptMessageReceived(
     delegate_->AddTemplateURLByOSDD(web_state, GURL(*document_url),
                                     GURL(*osdd_url));
   } else if (*command == kSearchableUrlCommand) {
-    const std::string* url = dict->FindString(kSearchableUrlCommandUrlKey);
+    std::optional<std::string> url =
+        dict.FindString(kSearchableUrlCommandUrlKey);
     if (!url) {
       return;
     }
