@@ -2992,6 +2992,8 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderMainFrameTimeoutBrowserTest,
   LoadPage(https_server()->GetURL("a.com", "/simple.html"),
            /*options=*/nullptr);
 
+  base::HistogramTester histogram_tester;
+
   // Make the main frame non-responsive.
   NoResponseAIPageContentAgent no_response_agent(
       web_contents()->GetPrimaryMainFrame());
@@ -3008,6 +3010,9 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderMainFrameTimeoutBrowserTest,
 
   // The APC should have timed out.
   EXPECT_TRUE(loading_run_loop.AnyQuitCalled());
+  histogram_tester.ExpectUniqueSample(
+      kAIPageContentExtractionStatusHistogram,
+      AIPageContentExtractionStatus::kMainFrameTimeout, 1);
 }
 
 // Regression test for crbug.com/497815610.
@@ -3123,6 +3128,8 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestNoTimeouts,
                        MainFrameMojoDisconnect) {
   LoadPage(https_server()->GetURL("/simple.html"), /*options=*/nullptr);
 
+  base::HistogramTester histogram_tester;
+
   // Hold the main-frame APC response so the request is still pending when the
   // pipe closes.
   NoResponseAIPageContentAgent no_response_agent(
@@ -3141,6 +3148,37 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestNoTimeouts,
 
   // A missing main-frame APC response makes the whole extraction fail.
   EXPECT_FALSE(has_page_content());
+  histogram_tester.ExpectUniqueSample(
+      kAIPageContentExtractionStatusHistogram,
+      AIPageContentExtractionStatus::
+          kMainFrameEmptyOrDisconnectedRendererResponse,
+      1);
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
+                       ExtractionStatusSuccessAndMainFrameNotLive) {
+  base::HistogramTester histogram_tester;
+  LoadPage(https_server()->GetURL("/simple.html"));
+  histogram_tester.ExpectUniqueSample(
+      kAIPageContentExtractionStatusHistogram,
+      AIPageContentExtractionStatus::kSuccess, 1);
+
+  content::RenderProcessHost* child_process =
+      web_contents()->GetPrimaryMainFrame()->GetProcess();
+  content::RenderProcessHostWatcher crash_observer(
+      child_process, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  ASSERT_TRUE(child_process->Shutdown(0));
+  crash_observer.Wait();
+
+  base::test::TestFuture<AIPageContentResultOrError> future;
+  GetAIPageContent(web_contents(), GetAIPageContentOptions(),
+                   future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  EXPECT_FALSE(future.Get().has_value());
+  histogram_tester.ExpectBucketCount(
+      kAIPageContentExtractionStatusHistogram,
+      AIPageContentExtractionStatus::kMainFrameNotLive, 1);
+  histogram_tester.ExpectTotalCount(kAIPageContentExtractionStatusHistogram, 2);
 }
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestNoTimeouts,

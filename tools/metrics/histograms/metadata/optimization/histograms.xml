@@ -777,6 +777,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OptimizationGuide.AIPageContent.ExtractionStatus"
+    enum="AIPageContentExtractionStatus" expires_after="2027-04-09">
+  <owner>linnan@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the status (success or failure reason) of an Annotated Page Content
+    (APC) extraction request via GetAIPageContent(). Recorded once per request
+    when the extraction completes or fails.
+  </summary>
+</histogram>
+
 <histogram name="OptimizationGuide.AIPageContent.GetImageBytes.Latency"
     units="ms" expires_after="2027-06-08">
   <owner>linnan@chromium.org</owner>

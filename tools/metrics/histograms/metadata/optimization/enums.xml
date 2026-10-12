@@ -36,6 +36,27 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/optimization_guide/content/browser/page_content_proto_provider.cc:AIPageContentExtractionConcurrency) -->
 
+<!-- LINT.IfChange(AIPageContentExtractionStatus) -->
+
+<enum name="AIPageContentExtractionStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Main frame not live"/>
+  <int value="2" label="Main frame timeout"/>
+  <int value="3" label="Main frame empty or disconnected renderer response"/>
+  <int value="4" label="Main frame redacted"/>
+  <int value="5" label="Main frame torn down"/>
+  <int value="6" label="Attribute type mismatch"/>
+  <int value="7" label="Missing iframe data"/>
+  <int value="8" label="Subframe torn down"/>
+  <int value="9" label="Iframe not child of current frame"/>
+  <int value="10" label="Remote frame has child nodes"/>
+  <int value="11" label="Remote frame has inline content"/>
+  <int value="12" label="Local frame missing content"/>
+  <int value="13" label="Unexpected iframe in popup"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/optimization_guide/content/browser/page_content_proto_provider.h:AIPageContentExtractionStatus) -->
+
 <!-- LINT.IfChange(AIPageContentGetImageBytesStatus) -->
 
 <enum name="AIPageContentGetImageBytesStatus">

@@ -100,6 +100,34 @@ class AIPageContentMetricsLogger
   base::WeakPtrFactory<AIPageContentMetricsLogger> weak_ptr_factory_{this};
 };
 
+inline constexpr char kAIPageContentExtractionStatusHistogram[] =
+    "OptimizationGuide.AIPageContent.ExtractionStatus";
+
+// Tracks the outcome of a `GetAIPageContent()` extraction request.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(AIPageContentExtractionStatus)
+enum class AIPageContentExtractionStatus {
+  kSuccess = 0,
+  kMainFrameNotLive = 1,
+  kMainFrameTimeout = 2,
+  kMainFrameEmptyOrDisconnectedRendererResponse = 3,
+  kMainFrameRedacted = 4,
+  kMainFrameTornDown = 5,
+  kAttributeTypeMismatch = 6,
+  kMissingIframeData = 7,
+  kSubframeTornDown = 8,
+  kIframeNotChildOfCurrentFrame = 9,
+  kRemoteFrameHasChildNodes = 10,
+  kRemoteFrameHasInlineContent = 11,
+  kLocalFrameMissingContent = 12,
+  kUnexpectedIframeInPopup = 13,
+  kMaxValue = kUnexpectedIframeInPopup,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/optimization/enums.xml:AIPageContentExtractionStatus)
+
 // The result of a call to GetAIPageContent.  It contains the
 // AnnotatedPageContent proto and metadata about the page content.
 struct AIPageContentResult {
