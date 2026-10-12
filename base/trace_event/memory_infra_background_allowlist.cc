@@ -95,8 +95,7 @@ constexpr auto kDumpProviderAllowlist =
         "Skia",
         "Sql",
         "TabRestoreServiceHelper",
-        "TextureOwner"
-        "URLRequestContext",
+        "TextureOwner",
         "V8Isolate",
         "viz::SkiaRenderer",
         "WebGL",
