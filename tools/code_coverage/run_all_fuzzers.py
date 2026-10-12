@@ -1133,15 +1133,16 @@ def main():
       json.dump(list(verified_fuzzer_targets) + list(failed_targets), fp)
 
   logging.info(
-    'Finished getting coverage information. Copying to %s', args.profdata_outdir
+    'Finished getting coverage information. Moving to %s', args.profdata_outdir
   )
   for fuzzer in verified_fuzzer_targets:
     src_profdata = os.path.join(REPORT_DIR, fuzzer + '.profdata')
-    logging.info('Copying %s to %s', src_profdata, args.profdata_outdir)
+    dst_profdata = os.path.join(args.profdata_outdir, fuzzer + '.profdata')
+    logging.info('Moving %s to %s', src_profdata, dst_profdata)
     try:
-      shutil.copy(src_profdata, args.profdata_outdir)
+      shutil.move(src_profdata, dst_profdata)
     except Exception as e:
-      logging.warning('Warning: failed to copy profdata for %s: %s', fuzzer, e)
+      logging.warning('Warning: failed to move profdata for %s: %s', fuzzer, e)
 
 
 if __name__ == '__main__':
