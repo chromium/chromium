@@ -20,6 +20,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/field_trial.h"
 #include "base/metrics/runtime_field_trial_overrides.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -44,14 +45,17 @@
 #include "components/metrics/test/test_enabled_state_provider.h"
 #include "components/network_time/network_time_tracker.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/variations/active_field_trials.h"
 #include "components/variations/hashing.h"
 #include "components/variations/metrics.h"
+#include "components/variations/platform_field_trials.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/proto/variations_seed.pb.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "components/variations/study_filtering.h"
 #include "components/variations/variations_associated_data.h"
+#include "components/variations/variations_crash_keys.h"
 #include "components/variations/variations_seed_simulator.h"
 #include "components/variations/variations_switches.h"
 #include "components/version_info/channel.h"
@@ -666,6 +670,37 @@ TEST_F(VariationsServiceTest, RequestsInitiallyAllowed) {
   raw_notifier->SetRequestsAllowedOverride(true);
   test_service.StartRepeatedVariationsSeedFetch();
   EXPECT_TRUE(test_service.fetch_attempted());
+}
+
+// Verifies that SetUpFieldTrials() starts the variations crash keys.
+TEST_F(VariationsServiceTest, SetUpFieldTrialsStartsCrashKeys) {
+  // Do not use the field trial testing config.
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      switches::kDisableFieldTrialTestingConfig);
+  // Clear the FeatureList and the FieldTrialList to simulate a new startup.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithNullFeatureAndFieldTrialLists();
+
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), /*use_secure_url=*/true);
+  PlatformFieldTrials platform_field_trials;
+  service.SetUpFieldTrials(/*variation_ids=*/{}, /*extra_overrides=*/{},
+                           std::make_unique<base::FeatureList>(),
+                           &platform_field_trials);
+  // At the end of the test, remove the crash keys that SetUpFieldTrials()
+  // creates.
+  base::ScopedClosureRunner clear_crash_keys(
+      base::BindOnce(&ClearCrashKeysInstanceForTesting));
+
+  // The crash keys must show a trial that becomes active after the setup.
+  base::FieldTrialList::CreateFieldTrial("CrashKeysTrial", "CrashKeysGroup")
+      ->Activate();
+  EXPECT_THAT(GetExperimentListInfo().experiment_list,
+              ::testing::HasSubstr(ActiveGroupToString(
+                  MakeActiveGroupId("CrashKeysTrial", "CrashKeysGroup"))));
 }
 
 TEST_F(VariationsServiceTest, SeedStoredWhenOKStatus) {

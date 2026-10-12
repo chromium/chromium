@@ -52,7 +52,6 @@
 #import "components/variations/synthetic_trial_registry.h"
 #import "components/variations/synthetic_trials.h"
 #import "components/variations/synthetic_trials_active_group_id_provider.h"
-#import "components/variations/variations_crash_keys.h"
 #import "components/variations/variations_ids_provider.h"
 #import "components/variations/variations_switches.h"
 #import "components/webui/flags/pref_service_flags_storage.h"
@@ -283,8 +282,6 @@ void IOSChromeMainParts::PreCreateThreads() {
                                    AllocationTraceRecorderInclusion::kIgnore,
                                "")
       .Initialize(memory_system_);
-
-  variations::InitCrashKeys();
 
   metrics::EnableExpiryChecker(::kExpiredHistogramsHashes);
 

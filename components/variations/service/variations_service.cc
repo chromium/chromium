@@ -63,6 +63,7 @@
 #include "components/variations/sticky_activation_manager.h"
 #include "components/variations/study_filtering.h"
 #include "components/variations/variations_associated_data.h"
+#include "components/variations/variations_crash_keys.h"
 #include "components/variations/variations_safe_seed_store.h"
 #include "components/variations/variations_seed_processor.h"
 #include "components/variations/variations_seed_simulator.h"
@@ -1652,10 +1653,12 @@ bool VariationsService::SetUpFieldTrials(
     PlatformFieldTrials* platform_field_trials) {
   ForceTrialsAtStartup(*local_state_);
 
-  return field_trial_creator_.SetUpFieldTrials(
+  const bool result = field_trial_creator_.SetUpFieldTrials(
       variation_ids, extra_overrides, std::move(feature_list), state_manager_,
       platform_field_trials, &safe_seed_manager_,
       /*add_entropy_source_to_variations_ids=*/false, *entropy_providers_);
+  InitCrashKeys();
+  return result;
 }
 
 void VariationsService::GetStudiesAvailableToForce(

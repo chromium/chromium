@@ -32,7 +32,6 @@
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/service/variations_service.h"
-#include "components/variations/variations_crash_keys.h"
 #include "components/variations/variations_switches.h"
 #include "components/webui/flags/pref_service_flags_storage.h"
 #include "content/public/common/content_switch_dependent_feature_overrides.h"
@@ -243,7 +242,6 @@ void ChromeFeatureListCreator::SetUpFieldTrials() {
       content::GetSwitchDependentFeatureOverrides(
           *base::CommandLine::ForCurrentProcess()),
       std::move(feature_list), browser_field_trials_.get());
-  variations::InitCrashKeys();
 }
 
 void ChromeFeatureListCreator::CreateMetricsServices() {

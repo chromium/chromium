@@ -38,12 +38,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/variations/android/variations_seed_bridge.h"
-#include "components/variations/metrics.h"
 #endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_IOS)
-#include "components/variations/metrics.h"
-#endif  // BUILDFLAG(IS_IOS)
 
 namespace variations {
 namespace {

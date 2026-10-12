@@ -258,6 +258,7 @@ class VariationsService
   }
 
   // Wrapper around VariationsFieldTrialCreator::SetUpFieldTrials().
+  // Also starts the variations crash keys.
   bool SetUpFieldTrials(
       const std::vector<std::string>& variation_ids,
       const std::vector<base::FeatureList::FeatureOverrideInfo>&
