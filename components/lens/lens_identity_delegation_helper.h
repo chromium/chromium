@@ -37,6 +37,34 @@ enum class LensIdentityDelegationFetchStatus {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensIdentityDelegationFetchStatus)
 
+// The reason a fetch resolved to `LensIdentityDelegationFetchStatus::
+// kAccountError`. These values are persisted to logs. Entries should not be
+// renumbered and numeric values should never be reused.
+//
+// Recorded only when an authuser index is supplied (always the case in
+// production). Each reason describes the cookie jar account at that index.
+// When several apply, the first in this order is recorded:
+// kAuthUserIndexOutOfRange, kCookieAccountSignedOut, kInvalidSession,
+// kPersistentAuthError.
+//
+// LINT.IfChange(LensIdentityDelegationAccountErrorReason)
+enum class LensIdentityDelegationAccountErrorReason {
+  // The requested authuser index is past the end of the cookie jar.
+  kAuthUserIndexOutOfRange = 0,
+  // The selected cookie jar account is signed out. Distinct from
+  // `LensIdentityDelegationFetchStatus::kSignedOut`, which means there are no
+  // valid signed-in cookie jar accounts at all.
+  kCookieAccountSignedOut = 1,
+  // The selected cookie jar account's session is invalid (requires reauth).
+  kInvalidSession = 2,
+  // Chrome holds a refresh token for the selected account and it is in a
+  // persistent error state. This is the only reason that depends on Chrome's
+  // token state rather than the cookie jar.
+  kPersistentAuthError = 3,
+  kMaxValue = kPersistentAuthError,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensIdentityDelegationAccountErrorReason)
+
 using GenerateSapisidHashCallback =
     base::RepeatingCallback<std::optional<std::string>(
         const std::string& email,

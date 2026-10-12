@@ -313,6 +313,66 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Lens.IdentityDelegation.AccountErrorReason"
+    enum="LensIdentityDelegationAccountErrorReason" expires_after="2027-09-01">
+  <owner>hujasonx@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded when FetchIdentityDelegationHeaders resolves to Account Error (i.e.
+    alongside Lens.IdentityDelegation.FetchHeadersStatus = Account Error).
+    Recorded only when an authuser index is supplied (always the case in
+    production). Records why the cookie jar account at that index could not be
+    used. When several reasons apply, the first in this order is recorded:
+    Authuser Index Out Of Range, Cookie Account Signed Out, Invalid Session,
+    Persistent Auth Error. Persistent Auth Error is the only reason that depends
+    on Chrome's refresh token state rather than the cookie jar. Recorded per
+    fetch, so clients that fetch often are weighted more heavily.
+  </summary>
+</histogram>
+
+<histogram
+    name="Lens.IdentityDelegation.AccountErrorReason.{CookieJarFreshness}"
+    enum="LensIdentityDelegationAccountErrorReason" expires_after="2027-09-01">
+  <owner>hujasonx@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded alongside Lens.IdentityDelegation.AccountErrorReason, split by
+    whether the cached list of cookie jar accounts was fresh:
+    {CookieJarFreshness}. Helps identify errors caused by stale ListAccounts
+    data.
+  </summary>
+  <token key="CookieJarFreshness">
+    <variant name="CookieJarFresh"
+        summary="The cached cookie jar accounts were fresh."/>
+    <variant name="CookieJarStale"
+        summary="The cached cookie jar accounts were stale."/>
+  </token>
+</histogram>
+
+<histogram name="Lens.IdentityDelegation.CookieJarAccountCount"
+    units="accounts" expires_after="2027-09-01">
+  <owner>hujasonx@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded each time FetchIdentityDelegationHeaders reads the Gaia cookie jar.
+    Counts every account in the cookie jar, including signed-out accounts and
+    accounts with invalid sessions. Recorded per fetch, so clients that fetch
+    often are weighted more heavily.
+  </summary>
+</histogram>
+
+<histogram name="Lens.IdentityDelegation.CookieJarAccountsFresh" enum="Boolean"
+    expires_after="2027-09-01">
+  <owner>hujasonx@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded each time FetchIdentityDelegationHeaders reads the Gaia cookie jar.
+    Records whether the cached list of cookie jar accounts was fresh, as opposed
+    to stale data that may not reflect the current cookies. Recorded per fetch,
+    so clients that fetch often are weighted more heavily.
+  </summary>
+</histogram>
+
 <histogram name="Lens.IdentityDelegation.FetchHeadersStatus"
     enum="LensIdentityDelegationFetchStatus" expires_after="2027-09-01">
   <owner>hujasonx@chromium.org</owner>
@@ -321,6 +381,26 @@ chromium-metrics-reviews@google.com.
     Recorded when FetchIdentityDelegationHeaders completes. Tracks the overall
     resolution status of the identity delegation header fetch.
   </summary>
+</histogram>
+
+<histogram
+    name="Lens.IdentityDelegation.FetchHeadersStatus.{ChromeSignInState}"
+    enum="LensIdentityDelegationFetchStatus" expires_after="2027-09-01">
+  <owner>hujasonx@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded when FetchIdentityDelegationHeaders completes, alongside
+    Lens.IdentityDelegation.FetchHeadersStatus, split by whether the profile has
+    a Chrome primary account: {ChromeSignInState}. Not recorded when no
+    IdentityManager is available.
+  </summary>
+  <token key="ChromeSignInState">
+    <variant name="ChromeSignedIn"
+        summary="The profile has a Chrome primary account."/>
+    <variant name="ChromeSignedOut"
+        summary="The profile has no Chrome primary account (e.g. the user may
+                 be signed in to Google only on the web)."/>
+  </token>
 </histogram>
 
 <histogram name="Lens.IdentityDelegation.TimeToFetchCookies" units="ms"

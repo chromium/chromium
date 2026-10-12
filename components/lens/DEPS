@@ -34,6 +34,9 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  "lens_identity_delegation_helper_unittest.cc": [
+    "+components/signin/public/base/list_accounts_test_utils.h",
+  ],
   "tab_contextualization_controller.cc": [
     "+third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h",
   ],

@@ -85,6 +85,21 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/lens/lens_overlay_metrics.h:LensContextualTasksQueryEligibility) -->
 
+<!-- LINT.IfChange(LensIdentityDelegationAccountErrorReason) -->
+
+<enum name="LensIdentityDelegationAccountErrorReason">
+  <summary>
+    The reason an identity delegation header fetch for Lens/Composebox requests
+    resolved to Account Error.
+  </summary>
+  <int value="0" label="Authuser Index Out Of Range"/>
+  <int value="1" label="Cookie Account Signed Out"/>
+  <int value="2" label="Invalid Session"/>
+  <int value="3" label="Persistent Auth Error"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/lens/lens_identity_delegation_helper.h:LensIdentityDelegationAccountErrorReason) -->
+
 <!-- LINT.IfChange(LensIdentityDelegationFetchStatus) -->
 
 <enum name="LensIdentityDelegationFetchStatus">

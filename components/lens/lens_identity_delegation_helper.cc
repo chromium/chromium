@@ -28,9 +28,20 @@
 namespace {
 
 void RecordFetchHeadersMetrics(lens::LensIdentityDelegationFetchStatus status,
-                               base::TimeDelta duration) {
+                               base::TimeDelta duration,
+                               std::optional<bool> has_primary_account) {
   base::UmaHistogramEnumeration("Lens.IdentityDelegation.FetchHeadersStatus",
                                 status);
+  // Split by whether the profile is signed into Chrome, to separately measure
+  // web-only (Chrome signed-out) users. Not recorded when there is no
+  // IdentityManager to query.
+  if (has_primary_account.has_value()) {
+    base::UmaHistogramEnumeration(
+        base::StrCat({"Lens.IdentityDelegation.FetchHeadersStatus.",
+                      has_primary_account.value() ? "ChromeSignedIn"
+                                                  : "ChromeSignedOut"}),
+        status);
+  }
   base::UmaHistogramTimes("Lens.IdentityDelegation.TimeToFetchHeaders",
                           duration);
   std::string_view status_str;
@@ -59,6 +70,39 @@ void RecordFetchHeadersMetrics(lens::LensIdentityDelegationFetchStatus status,
       duration);
 }
 
+void RecordAccountErrorReason(
+    lens::LensIdentityDelegationAccountErrorReason reason,
+    bool cookie_jar_accounts_fresh) {
+  base::UmaHistogramEnumeration("Lens.IdentityDelegation.AccountErrorReason",
+                                reason);
+  // Split by cookie jar freshness, since reasons like
+  // kAuthUserIndexOutOfRange may be caused by stale ListAccounts data.
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"Lens.IdentityDelegation.AccountErrorReason.",
+           cookie_jar_accounts_fresh ? "CookieJarFresh" : "CookieJarStale"}),
+      reason);
+}
+
+// Returns the reason `account` cannot be used for identity delegation, or
+// std::nullopt if it is usable.
+std::optional<lens::LensIdentityDelegationAccountErrorReason>
+GetCookieJarAccountErrorReason(signin::IdentityManager* identity_manager,
+                               const gaia::ListedAccount& account) {
+  if (account.signed_out) {
+    return lens::LensIdentityDelegationAccountErrorReason::
+        kCookieAccountSignedOut;
+  }
+  if (!account.valid) {
+    return lens::LensIdentityDelegationAccountErrorReason::kInvalidSession;
+  }
+  if (identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+          account.id)) {
+    return lens::LensIdentityDelegationAccountErrorReason::kPersistentAuthError;
+  }
+  return std::nullopt;
+}
+
 // Helper to find a cookie by name in the CookieAccessResultList.
 std::optional<net::CanonicalCookie> GetCookie(
     const net::CookieAccessResultList& cookie_list,
@@ -81,6 +125,7 @@ void OnCookiesFetched(
     const std::string& email,
     const std::string& origin,
     size_t account_index,
+    bool has_primary_account,
     base::TimeTicks fetch_start_time,
     base::TimeTicks cookie_fetch_start_time,
     lens::GenerateSapisidHashCallback generate_sapisid_hash_callback,
@@ -106,7 +151,7 @@ void OnCookiesFetched(
     // behavior).
     RecordFetchHeadersMetrics(
         lens::LensIdentityDelegationFetchStatus::kNoSapisidCookie,
-        fetch_duration);
+        fetch_duration, has_primary_account);
     std::move(callback).Run(headers);
     return;
   }
@@ -122,10 +167,11 @@ void OnCookiesFetched(
     headers.push_back("X-Goog-AuthUser");
     headers.push_back(base::NumberToString(account_index));
     RecordFetchHeadersMetrics(lens::LensIdentityDelegationFetchStatus::kSuccess,
-                              fetch_duration);
+                              fetch_duration, has_primary_account);
   } else {
     RecordFetchHeadersMetrics(
-        lens::LensIdentityDelegationFetchStatus::kHashFailed, fetch_duration);
+        lens::LensIdentityDelegationFetchStatus::kHashFailed, fetch_duration,
+        has_primary_account);
   }
 
   std::move(callback).Run(headers);
@@ -147,11 +193,20 @@ void FetchIdentityDelegationHeaders(
   std::string canonical_origin =
       origin.empty() ? "" : url::Origin::Create(GURL(origin)).Serialize();
 
+  // Whether the profile is signed into Chrome. Unknown if there is no
+  // IdentityManager.
+  std::optional<bool> has_primary_account;
+  if (identity_manager) {
+    has_primary_account =
+        identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+  }
+
   auto return_signed_out_headers =
-      [&canonical_origin, &callback,
-       fetch_start_time](LensIdentityDelegationFetchStatus status) {
+      [&canonical_origin, &callback, fetch_start_time,
+       has_primary_account](LensIdentityDelegationFetchStatus status) {
         RecordFetchHeadersMetrics(status,
-                                  base::TimeTicks::Now() - fetch_start_time);
+                                  base::TimeTicks::Now() - fetch_start_time,
+                                  has_primary_account);
         std::vector<std::string> headers;
         if (!canonical_origin.empty()) {
           headers.push_back("Origin");
@@ -174,6 +229,14 @@ void FetchIdentityDelegationHeaders(
   signin::AccountsInCookieJarInfo cookie_jar_info =
       identity_manager->GetAccountsInCookieJar();
 
+  const std::vector<gaia::ListedAccount>& all_accounts =
+      cookie_jar_info.GetAllAccounts();
+  const bool cookie_jar_accounts_fresh = cookie_jar_info.AreAccountsFresh();
+  base::UmaHistogramCounts100("Lens.IdentityDelegation.CookieJarAccountCount",
+                              all_accounts.size());
+  base::UmaHistogramBoolean("Lens.IdentityDelegation.CookieJarAccountsFresh",
+                            cookie_jar_accounts_fresh);
+
   // Find a valid signed-in account.
   const std::vector<gaia::ListedAccount>& accounts =
       cookie_jar_info.GetValidSignedInAccounts();
@@ -183,21 +246,26 @@ void FetchIdentityDelegationHeaders(
     return;
   }
 
-  const std::vector<gaia::ListedAccount>& all_accounts =
-      cookie_jar_info.GetAllAccounts();
-
   size_t true_authuser_index = 0;
   bool found_account = false;
   if (authuser_index.has_value()) {
+    // Account error reasons are only recorded on this path, which is the one
+    // used by all production callers.
+    std::optional<LensIdentityDelegationAccountErrorReason>
+        account_error_reason;
     if (authuser_index.value() < all_accounts.size()) {
-      const gaia::ListedAccount& candidate =
-          all_accounts[authuser_index.value()];
-      if (candidate.valid && !candidate.signed_out &&
-          !identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
-              candidate.id)) {
-        true_authuser_index = authuser_index.value();
-        found_account = true;
-      }
+      account_error_reason = GetCookieJarAccountErrorReason(
+          identity_manager, all_accounts[authuser_index.value()]);
+    } else {
+      account_error_reason =
+          LensIdentityDelegationAccountErrorReason::kAuthUserIndexOutOfRange;
+    }
+    if (account_error_reason.has_value()) {
+      RecordAccountErrorReason(account_error_reason.value(),
+                               cookie_jar_accounts_fresh);
+    } else {
+      true_authuser_index = authuser_index.value();
+      found_account = true;
     }
   } else {
     CoreAccountInfo primary_account =
@@ -237,8 +305,9 @@ void FetchIdentityDelegationHeaders(
       net::CookiePartitionKeyCollection(),
       base::BindOnce(
           &OnCookiesFetched, selected_account.raw_email, canonical_origin,
-          true_authuser_index, fetch_start_time, cookie_fetch_start_time,
-          std::move(generate_sapisid_hash_callback), std::move(callback)));
+          true_authuser_index, has_primary_account.value(), fetch_start_time,
+          cookie_fetch_start_time, std::move(generate_sapisid_hash_callback),
+          std::move(callback)));
 }
 
 }  // namespace lens
