@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<title>A non-snap-to-lines cue that would extend past the video rendering area moves back inside it.</title>
+<script src="../media-controls.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<style>
+video { width: 640px; height: 360px; }
+video::cue { font-family: Ahem; font-size: 20px; }
+</style>
+<video></video>
+<script>
+// The video is 640x360 and a two-line cue box is 40px along the line axis.
+function addCue(track, start, line, vertical) {
+    var cue = new VTTCue(start, start + 1, 'First line\nSecond line');
+    cue.snapToLines = false;
+    cue.line = line;
+    cue.vertical = vertical;
+    track.addCue(cue);
+}
+
+function cueBoxRect(video) {
+    var container = textTrackContainerElement(video).getBoundingClientRect();
+    var rect = textTrackCueElementByIndex(video, 0).getBoundingClientRect();
+    return { left: rect.left - container.left, top: rect.top - container.top,
+             width: rect.width, height: rect.height };
+}
+
+async_test(function(t) {
+    var video = document.querySelector('video');
+    var track = video.addTextTrack('captions');
+    track.mode = 'showing';
+
+    // Case 1 (t=1): line:95% would end at 382px; the box moves up to 320px.
+    addCue(track, 0.5, 95, '');
+
+    // Case 2 (t=3): line:0% fits and stays put.
+    addCue(track, 2.5, 0, '');
+
+    // Case 3 (t=5): vertical-lr at line:95% would end at 648px; moves to 600px.
+    addCue(track, 4.5, 95, 'lr');
+
+    // Percentage positions quantize to 1/64px.
+    var checks = [
+        [1, function() {
+            var box = cueBoxRect(video);
+            assert_equals(box.height, 40, 'case 1: two 20px lines');
+            assert_approx_equals(box.top, 320, 0.1,
+                                 'case 1: flush with the bottom edge');
+            assert_less_than_equal(box.top + box.height, 360,
+                                   'case 1: inside the video');
+        }],
+        [3, function() {
+            var box = cueBoxRect(video);
+            assert_equals(box.height, 40, 'case 2: two 20px lines');
+            assert_equals(box.top, 0, 'case 2: stays at the top edge');
+        }],
+        [5, function() {
+            var box = cueBoxRect(video);
+            assert_equals(box.width, 40, 'case 3: two 20px lines');
+            assert_approx_equals(box.left, 600, 0.1,
+                                 'case 3: flush with the right edge');
+            assert_less_than_equal(box.left + box.width, 640,
+                                   'case 3: inside the video');
+        }],
+    ];
+
+    function next() {
+        if (!checks.length) {
+            t.done();
+            return;
+        }
+        var check = checks.shift();
+        video.onseeked = t.step_func(function() {
+            requestAnimationFrame(t.step_func(function() {
+                requestAnimationFrame(t.step_func(function() {
+                    check[1]();
+                    next();
+                }));
+            }));
+        });
+        video.currentTime = check[0];
+    }
+
+    video.oncanplaythrough = t.step_func(function() {
+        video.oncanplaythrough = null;
+        next();
+    });
+    video.src = '../content/test.ogv';
+});
+</script>
