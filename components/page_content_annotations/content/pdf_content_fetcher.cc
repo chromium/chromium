@@ -147,8 +147,6 @@ pdf::PDFDocumentHelper* GetPDFExtractionCandidate(
   return first_in_viewport ? first_in_viewport : first_found;
 }
 
-// TODO(b/562581431): This function should handle the
-// `GetPdfBytesStatus::kFailed` extraction status.
 void OnReceivedPdfBytes(scoped_refptr<PdfExtractionState> state,
                         url::Origin pdf_origin,
                         bool is_top_level_pdf,
@@ -163,6 +161,13 @@ void OnReceivedPdfBytes(scoped_refptr<PdfExtractionState> state,
     return;
   }
   FetchPdfContentResultCallback callback = std::move(state->callback);
+
+  if (status == pdf::mojom::PdfListener::GetPdfBytesStatus::kFailed) {
+    // This status code indicates extraction failed because the Mojo remote is
+    // unbound or the PDF has not finished loading.
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
 
   // The sample is recorded in milliseconds.
   base::UmaHistogramTimes(is_top_level_pdf ? kPdfBytesTopLevelLatencyHistogram
@@ -248,6 +253,10 @@ void OnReceivedPdfText(scoped_refptr<PdfExtractionState> state,
                             size_limit_exceeded);
 
   // Move construct the PDF result.
+  // Note: For text extraction, if the size limit is exceeded, the text is
+  // truncated to be within the limit and still returned as the result. This is
+  // different from PDF bytes extraction, where the result is set to an empty
+  // vector when the extraction size exceeds the limit.
   PdfResult result(std::move(pdf_origin), std::move(utf8_text));
   result.size_exceeded = size_limit_exceeded;
   std::move(callback).Run(std::move(result));

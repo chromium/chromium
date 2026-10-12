@@ -586,6 +586,31 @@ TEST_P(PageContextFetcherPdfBytesExtractionTest,
   EXPECT_TRUE(bytes->empty());
 }
 
+// Verify the PDF extraction failure status is handled properly.
+TEST_P(PageContextFetcherPdfBytesExtractionTest, ReceivedPdfBytesFailed) {
+  base::HistogramTester histograms;
+  ReceivedPdfBytes(/*pdf_size_limit=*/1024,
+                   pdf::mojom::PdfListener::GetPdfBytesStatus::kFailed,
+                   /*pdf_bytes=*/{1, 2, 3});
+
+  auto result = GetFuture().Take();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_FALSE((*result)->pdf_result.has_value());
+
+  // None of these metrics are recorded because the extraction is incomplete.
+  histograms.ExpectTotalCount(IsTopLevelPDF()
+                                  ? kPdfBytesTopLevelLatencyHistogram
+                                  : kPdfBytesEmbeddedLatencyHistogram,
+                              0);
+  histograms.ExpectTotalCount(IsTopLevelPDF() ? kPdfBytesTopLevelSizeHistogram
+                                              : kPdfBytesEmbeddedSizeHistogram,
+                              0);
+  histograms.ExpectTotalCount(IsTopLevelPDF()
+                                  ? kPdfBytesTopLevelSizeLimitExceededHistogram
+                                  : kPdfBytesEmbeddedSizeLimitExceededHistogram,
+                              0);
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          PageContextFetcherPdfBytesExtractionTest,
                          testing::Bool(),
