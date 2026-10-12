@@ -20,6 +20,14 @@
       background: var(--color-side-panel-content-background);
       overflow: hidden;
     }
+
+    @media print {
+      html,
+      body {
+        height: auto;
+        overflow: visible;
+      }
+    }
   </style>
 </head>
 <body>

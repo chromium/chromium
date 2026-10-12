@@ -13,10 +13,16 @@
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/tabs/public/tab_interface.h"
+#include "printing/buildflags/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/fill_layout.h"
+
+#if BUILDFLAG(ENABLE_PRINTING)
+#include "chrome/browser/printing/scoped_tab_print_target_override.h"
+#include "ui/accessibility/accessibility_features.h"
+#endif
 
 ReadAnythingImmersiveOverlayView::ReadAnythingImmersiveOverlayView(
     ContentsWebView* contents_web_view)
@@ -152,6 +158,19 @@ void ReadAnythingImmersiveOverlayView::OnShowUI(
     scoped_tab_modal_ui_ = tab->ShowModalUI();
   }
 
+#if BUILDFLAG(ENABLE_PRINTING)
+  // Print the IRM contents instead of the hidden main page while IRM is open.
+  // TODO(crbug.com/481315131): Attribute these print jobs to the tab's page
+  // (enterprise policy checks, title and URL) before enabling
+  // kImmersiveReadAnythingPrint.
+  if (features::IsImmersiveReadAnythingPrintEnabled() && tab &&
+      immersive_web_view_ && immersive_web_view_->GetWebContents()) {
+    scoped_print_target_override_ =
+        std::make_unique<printing::ScopedTabPrintTargetOverride>(
+            *tab, *immersive_web_view_->GetWebContents());
+  }
+#endif
+
   GetViewAccessibility().AnnouncePolitely(l10n_util::GetStringUTF16(
       IDS_IMMERSIVE_READING_MODE_OPENED_ANNOUNCEMENT));
 
@@ -175,6 +194,14 @@ ReadAnythingContentsWrapper ReadAnythingImmersiveOverlayView::CloseUI() {
   scoped_accessibility_disconnecter_.reset();
 
   scoped_tab_modal_ui_.reset();
+
+#if BUILDFLAG(ENABLE_PRINTING)
+  // Restore normal tab printing so subsequent print commands target the main
+  // webpage once IRM is closed.
+  if (features::IsImmersiveReadAnythingPrintEnabled()) {
+    scoped_print_target_override_.reset();
+  }
+#endif
 
   CHECK(immersive_web_view_);
   std::unique_ptr<ReadAnythingImmersiveWebView> web_view =

@@ -45,6 +45,8 @@ class ReadAnythingImmersiveWebView : public views::WebView,
       const content::OpenURLParams& params,
       base::OnceCallback<void(content::NavigationHandle&)>
           navigation_handle_callback) override;
+  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost(
+      content::WebContents* web_contents) override;
 
  private:
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;

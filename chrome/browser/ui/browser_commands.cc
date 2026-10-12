@@ -2455,8 +2455,8 @@ bool CanSavePage(const BrowserWindowInterface* browser) {
 
 void Print(BrowserWindowInterface* browser) {
 #if BUILDFLAG(ENABLE_PRINTING)
-  auto* const web_contents =
-      browser->GetTabStripModel()->GetActiveWebContents();
+  auto* const web_contents = printing::GetWebContentsToPrint(
+      browser->GetTabStripModel()->GetActiveTab());
 
   printing::StartPrint(web_contents,
 #if BUILDFLAG(IS_CHROMEOS)
@@ -2491,8 +2491,8 @@ bool CanPrint(BrowserWindowInterface* browser) {
 
 #if BUILDFLAG(ENABLE_PRINTING)
 void BasicPrint(BrowserWindowInterface* browser) {
-  printing::StartBasicPrint(
-      browser->GetTabStripModel()->GetActiveWebContents());
+  printing::StartBasicPrint(printing::GetWebContentsToPrint(
+      browser->GetTabStripModel()->GetActiveTab()));
 }
 
 bool CanBasicPrint(BrowserWindowInterface* browser) {

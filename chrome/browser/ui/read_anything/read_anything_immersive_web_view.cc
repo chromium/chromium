@@ -6,12 +6,17 @@
 
 #include <utility>
 
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "components/find_in_page/find_tab_helper.h"
 #include "components/input/native_web_keyboard_event.h"
+#include "components/tabs/public/tab_interface.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 
 ReadAnythingImmersiveWebView::ReadAnythingImmersiveWebView(
@@ -65,6 +70,15 @@ bool ReadAnythingImmersiveWebView::HandleKeyboardEvent(
 
 std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
 ReadAnythingImmersiveWebView::TakeContentsWrapper() {
+  // Close tab-modal dialogs (e.g. Print Preview) anchored through this view
+  // before it stops hosting them.
+  if (features::IsImmersiveReadAnythingPrintEnabled()) {
+    auto* manager = web_modal::WebContentsModalDialogManager::FromWebContents(
+        contents_wrapper_->web_contents());
+    if (manager) {
+      manager->CloseAllDialogs();
+    }
+  }
   SetWebContents(nullptr);  // This is necessary to reset the web contents.
   contents_wrapper_->SetHost(nullptr);
   SetVisible(false);
@@ -89,6 +103,20 @@ void ReadAnythingImmersiveWebView::CloseUI() {
   // This currently does not do anything and is never called because the
   // ReadAnythingController is currently the one that owns the WebUI by the time
   // it is closed.
+}
+
+// Tab-modal dialogs initiated from IRM (e.g. Print Preview) are hosted over
+// the tab's contents area in the browser window.
+web_modal::WebContentsModalDialogHost*
+ReadAnythingImmersiveWebView::GetWebContentsModalDialogHost(
+    content::WebContents* web_contents) {
+  if (!features::IsImmersiveReadAnythingPrintEnabled()) {
+    return nullptr;
+  }
+  tabs::TabInterface* tab = webui::GetTabInterface(web_contents);
+  BrowserWindowInterface* browser =
+      tab ? tab->GetBrowserWindowInterface() : nullptr;
+  return browser ? browser->GetWebContentsModalDialogHostForTab(tab) : nullptr;
 }
 
 BEGIN_METADATA(ReadAnythingImmersiveWebView)

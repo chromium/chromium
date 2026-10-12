@@ -8,6 +8,7 @@ import("//build/config/compiler/compiler.gni")
 import("//chrome/common/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//pdf/features.gni")
+import("//printing/buildflags/buildflags.gni")
 import("//testing/test.gni")
 
 source_set("prefs") {
@@ -56,6 +57,7 @@ source_set("read_anything") {
     "//components/user_education/common",
     "//content/public/browser",
     "//pdf:buildflags",
+    "//printing/buildflags",
     "//ui/base",
     "//ui/views",
     "//ui/views/controls/webview",
@@ -128,6 +130,7 @@ source_set("impl") {
     "//components/page_load_metrics/browser",
     "//components/translate/content/browser",
     "//pdf:buildflags",
+    "//printing/buildflags",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
   ]
@@ -137,6 +140,9 @@ source_set("impl") {
       "//chrome/browser/pdf",
       "//components/pdf/browser",
     ]
+  }
+  if (enable_printing) {
+    deps += [ "//chrome/browser/printing" ]
   }
 }
 
@@ -193,6 +199,18 @@ source_set("browser_tests") {
     "//ui/accessibility",
     "//ui/views",
   ]
+
+  if (enable_print_preview) {
+    sources += [ "read_anything_printing_browsertest.cc" ]
+    deps += [
+      "//chrome/browser/printing",
+      "//chrome/browser/printing:test_support",
+      "//chrome/browser/ui/webui/print_preview",
+      "//components/web_modal",
+      "//printing",
+      "//printing/backend:test_support",
+    ]
+  }
 }
 
 source_set("interactive_ui_tests") {

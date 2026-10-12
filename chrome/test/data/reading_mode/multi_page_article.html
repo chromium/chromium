@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- Multi-page article for read_anything_printing_browsertest.cc. -->
+<head>
+  <meta charset="utf-8">
+  <title>Multi-Page Reading Mode Test Article</title>
+</head>
+<body>
+  <article id="article">
+    <h1>Multi-Page Reading Mode Test Article</h1>
+    <p>TOP_SENTINEL_ALPHA_12345</p>
+  </article>
+  <script>
+    const article = document.getElementById('article');
+    const text = 'This paragraph contains generic sample text for a ' +
+        'printing test. It has several ordinary sentences so that the ' +
+        'article is long enough. The words carry no special meaning and ' +
+        'exist only to fill the page. Each paragraph is similar in length, ' +
+        'which keeps the layout predictable. Together, the paragraphs ' +
+        'make the printed output span more than one page.';
+    for (let i = 1; i <= 20; ++i) {
+      const p = document.createElement('p');
+      p.textContent = `Paragraph ${i}. ${text}`;
+      article.appendChild(p);
+    }
+    const bottom = document.createElement('p');
+    bottom.textContent = 'BOTTOM_SENTINEL_OMEGA_67890';
+    article.appendChild(bottom);
+  </script>
+</body>
+</html>

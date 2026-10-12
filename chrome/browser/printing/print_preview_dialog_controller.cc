@@ -25,6 +25,8 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
+#include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -180,6 +182,17 @@ bool PrintPreviewDialogDelegate::ShouldShowDialogTitle() const {
   return false;
 }
 
+// Returns whether `initiator` currently has somewhere to show a tab-modal
+// dialog.
+bool HasWebContentsModalDialogHost(WebContents* initiator) {
+  WebContents* top_level = guest_view::GuestViewBase::GetTopLevelWebContents(
+      initiator->GetResponsibleWebContents());
+  auto* manager =
+      web_modal::WebContentsModalDialogManager::FromWebContents(top_level);
+  return manager && manager->delegate() &&
+         manager->delegate()->GetWebContentsModalDialogHost(top_level);
+}
+
 }  // namespace
 
 // PrintPreviewDialogController ------------------------------------------------
@@ -252,6 +265,12 @@ WebContents* PrintPreviewDialogController::GetOrCreatePreviewDialog(
   // these through. In the future we may want to restrict printing to tabs.
   tabs::TabInterface* tab = tabs::TabInterface::MaybeGetFromContents(initiator);
   if (tab && !tab->CanShowModalUI()) {
+    return nullptr;
+  }
+
+  // Do nothing if a non-tab initiator has no WebContentsModalDialogHost to
+  // host the print preview dialog.
+  if (!tab && !HasWebContentsModalDialogHost(initiator)) {
     return nullptr;
   }
 

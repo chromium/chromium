@@ -18,6 +18,7 @@ if (enable_printing) {
       "printer_manager_dialog.h",
       "printer_query.h",
       "printing_init.h",
+      "scoped_tab_print_target_override.h",
     ]
 
     public_deps = [
@@ -40,6 +41,7 @@ if (enable_printing) {
       "//printing/mojom",
       "//services/data_decoder/public/cpp",
       "//ui/accessibility",
+      "//ui/base/unowned_user_data",
       "//ui/gfx/geometry",
     ]
 
@@ -111,6 +113,7 @@ if (enable_printing) {
       "print_view_manager_common.cc",
       "printer_query.cc",
       "printing_init.cc",
+      "scoped_tab_print_target_override.cc",
     ]
 
     public_deps = [ ":printing" ]

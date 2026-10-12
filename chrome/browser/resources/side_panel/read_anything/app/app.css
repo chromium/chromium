@@ -380,3 +380,47 @@ img.possibly-transparent-img {
   z-index: 9998;
   display: none;
 }
+
+@media print {
+  #toolbar-container,
+  #lineFocus,
+  #empty-state-container,
+  language-toast,
+  .settings-overlay {
+    display: none;
+  }
+
+  :host {
+    height: auto;
+    overflow: visible;
+    print-color-adjust: exact;
+    background-color: var(--background-color);
+    color: var(--foreground-color);
+  }
+
+  /* Expand the scrollers so that all content prints, not just one page. */
+  #appFlexParent,
+  #containerParent,
+  #containerScroller {
+    display: block !important;
+    height: auto !important;
+    max-height: none;
+    overflow: visible !important;
+  }
+
+  .sp-scroller.fade {
+    mask-image: none;
+  }
+
+  #container {
+    height: auto;
+    overflow: visible;
+    max-width: 100% !important;
+  }
+
+  .current-read-highlight,
+  .previous-read-highlight {
+    background: transparent !important;
+    color: inherit !important;
+  }
+}

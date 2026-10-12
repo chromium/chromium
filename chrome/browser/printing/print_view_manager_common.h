@@ -15,6 +15,10 @@ class RenderFrameHost;
 class WebContents;
 }
 
+namespace tabs {
+class TabInterface;
+}
+
 namespace printing {
 
 // Start printing using the appropriate PrintViewManagerBase subclass.
@@ -43,6 +47,12 @@ content::RenderFrameHost* GetFrameToPrint(content::WebContents* contents);
 // If we have a single full-page embedded mime handler view guest, print the
 // guest view instead.
 content::RenderFrameHost* GetFullPagePlugin(content::WebContents* contents);
+
+// Returns the WebContents that print commands for `tab` should target: the
+// target of `tab`'s ScopedTabPrintTargetOverride if there is one and its
+// target still exists, otherwise `tab->GetContents()`. Returns null if `tab`
+// is null or has no WebContents.
+content::WebContents* GetWebContentsToPrint(tabs::TabInterface* tab);
 
 }  // namespace printing
 

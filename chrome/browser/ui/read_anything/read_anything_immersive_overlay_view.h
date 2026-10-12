@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
 #include "chrome/browser/ui/read_anything/read_anything_immersive_activation_observer.h"
 #include "chrome/browser/ui/read_anything/read_anything_lifecycle_observer.h"
+#include "printing/buildflags/buildflags.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view.h"
@@ -20,6 +21,10 @@ using read_anything::mojom::ReadAnythingOpenTrigger;
 
 class ContentsWebView;
 class ReadAnythingImmersiveWebView;
+
+namespace printing {
+class ScopedTabPrintTargetOverride;
+}
 
 // This view is an overlay that sits on top of the main web contents. It's
 // used to house the UI for the Immersive Reading Mode feature, which provides
@@ -104,6 +109,13 @@ class ReadAnythingImmersiveOverlayView
   // Used to hide tab modal UIs (like the FedCM identity popup) while IRM is
   // open.
   std::unique_ptr<tabs::ScopedTabModalUI> scoped_tab_modal_ui_;
+
+#if BUILDFLAG(ENABLE_PRINTING)
+  // Used to route print commands for the tab to the IRM WebContents while IRM
+  // is open.
+  std::unique_ptr<printing::ScopedTabPrintTargetOverride>
+      scoped_print_target_override_;
+#endif
 };
 
 #endif  // CHROME_BROWSER_UI_READ_ANYTHING_READ_ANYTHING_IMMERSIVE_OVERLAY_VIEW_H_

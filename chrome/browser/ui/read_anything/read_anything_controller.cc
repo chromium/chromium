@@ -43,6 +43,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "pdf/buildflags.h"
+#include "printing/buildflags/buildflags.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -59,6 +60,10 @@
 #include "chrome/browser/pdf/pdf_extension_util.h"
 #include "components/translate/content/browser/content_translate_driver.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
+
+#if BUILDFLAG(ENABLE_PRINTING)
+#include "chrome/browser/printing/printing_init.h"
+#endif
 
 #if BUILDFLAG(ENABLE_PDF)
 GURL GetPdfUrlWithFitToWidth(const GURL& pdf_url) {
@@ -407,6 +412,14 @@ ReadAnythingContentsWrapper ReadAnythingController::GetOrCreateWebUIWrapper(
     webui::SetTabInterface(web_ui_wrapper_->web_contents(), tab_);
     find_in_page::FindTabHelper::CreateForWebContents(
         web_ui_wrapper_->web_contents());
+#if BUILDFLAG(ENABLE_PRINTING)
+    // Lets Immersive Reading Mode print this WebContents. Printing is attached
+    // once, for the WebContents' whole lifetime.
+    if (features::IsImmersiveReadAnythingPrintEnabled()) {
+      printing::InitializePrintingForWebContents(
+          web_ui_wrapper_->web_contents());
+    }
+#endif
   }
   return std::move(web_ui_wrapper_);
 }
