@@ -30,6 +30,8 @@ blink_core_sources_inspector = [
   "inspect_tools.h",
   "exception_metadata.h",
   "exception_metadata.cc",
+  "input_visualizer.cc",
+  "input_visualizer.h",
   "inspected_frames.cc",
   "inspected_frames.h",
   "inspector_animation_agent.cc",
@@ -153,6 +155,7 @@ blink_core_sources_inspector = [
 
 blink_core_tests_inspector = [
   "agent_registry_test.cc",
+  "input_visualizer_test.cc",
   "inspected_frames_test.cc",
   "inspector_contrast_test.cc",
   "inspector_css_agent_test.cc",
