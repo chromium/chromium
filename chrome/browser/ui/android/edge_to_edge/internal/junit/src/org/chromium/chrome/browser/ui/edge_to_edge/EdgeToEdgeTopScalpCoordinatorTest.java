@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.ui.edge_to_edge;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
@@ -16,7 +15,6 @@ import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeTopScalpProp
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeTopScalpProperties.Y_OFFSET;
 
 import android.os.Build;
-import android.view.View;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -27,7 +25,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
@@ -50,7 +47,6 @@ public class EdgeToEdgeTopScalpCoordinatorTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private View mView;
     @Mock private LayoutManager mLayoutManager;
     @Mock private TopControlsStacker mTopControlsStacker;
     @Mock private EdgeToEdgeController mEdgeToEdgeController;
@@ -70,10 +66,8 @@ public class EdgeToEdgeTopScalpCoordinatorTest {
 
     @Test
     public void testEdgeToEdgeTopScalpCoordinator() {
-        mView = new View(ContextUtils.getApplicationContext());
         EdgeToEdgeTopScalpCoordinator coordinator =
                 new EdgeToEdgeTopScalpCoordinator(
-                        mView,
                         mLayoutManager,
                         mTopControlsStacker,
                         mEdgeToEdgeController,
@@ -81,44 +75,11 @@ public class EdgeToEdgeTopScalpCoordinatorTest {
                         mFullscreenManager,
                         mTopUiThemeColorProvider);
 
-        assertEquals(View.VISIBLE, mView.getVisibility());
         verify(mSceneLayer).setHeight(100);
         verify(mSceneLayer).setIsVisible(true);
         verify(mLayoutManager)
                 .createCompositorMCPWithExclusions(
                         any(), eq(mSceneLayer), any(), eq(EXPECTED_EXCLUSIONS));
-        verify(mLayoutManager).addSceneOverlay(eq(mSceneLayer));
-        verify(mTopControlsStacker).addControl(any());
-        verify(mEdgeToEdgeController).registerObserver(any());
-        verify(mLayoutManager).addObserver(any());
-        verify(mFullscreenManager).addObserver(any());
-        verify(mTopUiThemeColorProvider).addThemeColorObserver(any());
-        clearInvocations(mSceneLayer);
-
-        coordinator.destroy();
-        verify(mTopControlsStacker).removeControl(any());
-        verify(mEdgeToEdgeController).unregisterObserver(any());
-        verify(mLayoutManager).removeObserver(any());
-        verify(mFullscreenManager).removeObserver(any());
-        verify(mTopUiThemeColorProvider).removeThemeColorObserver(any());
-        verify(mCompositorMCP).destroy();
-        verify(mSceneLayer).destroy();
-    }
-
-    @Test
-    public void testEdgeToEdgeTopScalpCoordinator_NullView() {
-        EdgeToEdgeTopScalpCoordinator coordinator =
-                new EdgeToEdgeTopScalpCoordinator(
-                        /* scalpView= */ null,
-                        mLayoutManager,
-                        mTopControlsStacker,
-                        mEdgeToEdgeController,
-                        mSceneLayer,
-                        mFullscreenManager,
-                        mTopUiThemeColorProvider);
-
-        verify(mSceneLayer).setHeight(100);
-        verify(mSceneLayer).setIsVisible(true);
         verify(mLayoutManager).addSceneOverlay(eq(mSceneLayer));
         verify(mTopControlsStacker).addControl(any());
         verify(mEdgeToEdgeController).registerObserver(any());

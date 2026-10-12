@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.ui.edge_to_edge;
 
-import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeTopScalpProperties.CAN_SHOW;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeTopScalpProperties.COLOR;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeTopScalpProperties.HEIGHT;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeTopScalpProperties.IS_VISIBLE;
@@ -47,6 +46,7 @@ class EdgeToEdgeTopScalpMediator
     private final LayoutManager mLayoutManager;
     private final FullscreenManager mFullscreenManager;
     private final TopUiThemeColorProvider mTopUiThemeColorProvider;
+    private boolean mCanShow;
 
     /**
      * Creates an {@link EdgeToEdgeTopScalpMediator}.
@@ -102,30 +102,28 @@ class EdgeToEdgeTopScalpMediator
 
     /** Updates the height and visibility of the top scalp based on the current window state. */
     private void updateHeightAndVisibility() {
-        // We should check isTopEdgeToEdgeEnabled() rather than isEdgeToEdgeRefactorEnabled()
-        // because
-        // isEdgeToEdgeRefactorEnabled only unifies edgeless native page
-        // inset consumption, it doesn't include creating and using the top scalp UI.
-        // Check FullscreenManager directly in addition to EdgeToEdgeController#isDrawingToTopEdge()
-        // so entering fullscreen immediately hides the scalp regardless of observer notification
-        // order (LayoutManager layout-type checks will be added in a follow up
-        // crbug.com/505803562).
+        // Check isTopEdgeToEdgeEnabled() rather than isEdgeToEdgeRefactorEnabled() because
+        // isEdgeToEdgeRefactorEnabled only unifies edgeless native page inset consumption without
+        // using the top scalp UI. Under isTopEdgeToEdgeEnabled(), the top scalp is always used
+        // (except in fullscreen), and EdgeToEdgeController#isDrawingToTopEdge() will determine how
+        // the top scalp behaves (LayoutManager layout-type and isDrawingToTopEdge() behavior will
+        // be added in a follow-up crbug.com/505803562).
         boolean isTopE2eEnabled = EdgeToEdgeUtils.isTopEdgeToEdgeEnabled();
         boolean isFullscreen = mFullscreenManager.getPersistentFullscreenMode();
         int newHeight =
-                (isTopE2eEnabled && !isFullscreen && mEdgeToEdgeController.isDrawingToTopEdge())
+                (isTopE2eEnabled && !isFullscreen)
                         ? mEdgeToEdgeController.getSystemTopInsetPx()
                         : 0;
         boolean newCanShow = newHeight > 0;
 
         boolean heightChanged = mModel.get(HEIGHT) != newHeight;
-        boolean visibilityChanged = mModel.get(CAN_SHOW) != newCanShow;
+        boolean visibilityChanged = mCanShow != newCanShow;
 
         if (heightChanged) {
             mModel.set(HEIGHT, newHeight);
         }
         if (visibilityChanged) {
-            mModel.set(CAN_SHOW, newCanShow);
+            mCanShow = newCanShow;
         }
         // TODO(crbug.com/505803562): Handle Y_OFFSET updates on height and visibility changes.
         mModel.set(IS_VISIBLE, isVisible());
@@ -161,7 +159,7 @@ class EdgeToEdgeTopScalpMediator
 
     @Override
     public @TopControlVisibility int getTopControlVisibility() {
-        return mModel.get(CAN_SHOW) ? TopControlVisibility.VISIBLE : TopControlVisibility.HIDDEN;
+        return mCanShow ? TopControlVisibility.VISIBLE : TopControlVisibility.HIDDEN;
     }
 
     @Override
@@ -194,7 +192,7 @@ class EdgeToEdgeTopScalpMediator
     }
 
     private boolean isVisible() {
-        return mModel.get(CAN_SHOW) && (mModel.get(Y_OFFSET) + mModel.get(HEIGHT) > 0);
+        return mCanShow && (mModel.get(Y_OFFSET) + mModel.get(HEIGHT) > 0);
     }
 
     @Override

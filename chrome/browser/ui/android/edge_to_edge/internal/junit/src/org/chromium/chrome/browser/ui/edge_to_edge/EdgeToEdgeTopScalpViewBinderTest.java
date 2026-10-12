@@ -4,15 +4,12 @@
 
 package org.chromium.chrome.browser.ui.edge_to_edge;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeTopScalpProperties.ALL_KEYS;
-import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeTopScalpProperties.CAN_SHOW;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeTopScalpProperties.COLOR;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeTopScalpProperties.HEIGHT;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeTopScalpProperties.IS_VISIBLE;
@@ -20,8 +17,6 @@ import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeTopScalpProp
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeTopScalpProperties.Y_OFFSET;
 
 import android.graphics.Color;
-import android.view.View;
-import android.view.ViewGroup;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -31,7 +26,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.cc.input.OffsetTag;
@@ -40,73 +34,46 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class EdgeToEdgeTopScalpViewBinderTest {
+    private static final int INITIAL_Y_OFFSET = 0;
+    private static final int UPDATED_Y_OFFSET = -30;
+    private static final int INITIAL_HEIGHT = 60;
+    private static final int UPDATED_HEIGHT = 80;
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private View mAndroidView;
     @Mock private EdgeToEdgeTopScalpSceneLayer mSceneLayer;
 
     private PropertyModel mModel;
 
     @Before
     public void setUp() {
-        mAndroidView = new View(ContextUtils.getApplicationContext());
-        mAndroidView.setLayoutParams(new ViewGroup.LayoutParams(100, 0));
-
         mModel =
                 new PropertyModel.Builder(ALL_KEYS)
-                        .with(CAN_SHOW, true)
-                        .with(Y_OFFSET, 0)
-                        .with(HEIGHT, 60)
+                        .with(Y_OFFSET, INITIAL_Y_OFFSET)
+                        .with(HEIGHT, INITIAL_HEIGHT)
                         .with(IS_VISIBLE, true)
                         .build();
         PropertyModelChangeProcessor.create(
-                mModel,
-                new EdgeToEdgeTopScalpViewBinder.ViewHolder(mAndroidView, mSceneLayer),
-                EdgeToEdgeTopScalpViewBinder::bind);
+                mModel, mSceneLayer, EdgeToEdgeTopScalpViewBinder::bind);
 
         verify(mSceneLayer, atLeastOnce()).setIsVisible(eq(true));
-        assertEquals(View.VISIBLE, mAndroidView.getVisibility());
-        assertEquals(60, mAndroidView.getLayoutParams().height);
+        verify(mSceneLayer).setHeight(INITIAL_HEIGHT);
         clearInvocations(mSceneLayer);
     }
 
     @Test
     public void testUpdate_YOffset() {
-        mModel.set(Y_OFFSET, -30);
-        verify(mSceneLayer).setYOffset(-30);
-        assertEquals(-30f, mAndroidView.getTranslationY(), 0.01f);
+        mModel.set(Y_OFFSET, UPDATED_Y_OFFSET);
+        verify(mSceneLayer).setYOffset(UPDATED_Y_OFFSET);
 
-        mModel.set(Y_OFFSET, 0);
-        verify(mSceneLayer).setYOffset(0);
-        assertEquals(0f, mAndroidView.getTranslationY(), 0.01f);
+        mModel.set(Y_OFFSET, INITIAL_Y_OFFSET);
+        verify(mSceneLayer).setYOffset(INITIAL_Y_OFFSET);
     }
 
     @Test
     public void testUpdate_Height() {
-        mModel.set(HEIGHT, 80);
-        verify(mSceneLayer).setHeight(80);
-        assertEquals(80, mAndroidView.getLayoutParams().height);
-        clearInvocations(mSceneLayer);
-
-        // When LayoutParams is null (e.g. a View before layout attachment), binding height still
-        // updates SceneLayer without crashing.
-        View unattachedView = new View(ContextUtils.getApplicationContext());
-        assertNull(unattachedView.getLayoutParams());
-        EdgeToEdgeTopScalpViewBinder.bind(
-                mModel,
-                new EdgeToEdgeTopScalpViewBinder.ViewHolder(unattachedView, mSceneLayer),
-                HEIGHT);
-        assertNull(unattachedView.getLayoutParams());
-        verify(mSceneLayer).setHeight(80);
-    }
-
-    @Test
-    public void testUpdate_CanShow() {
-        mModel.set(CAN_SHOW, false);
-        assertEquals(View.GONE, mAndroidView.getVisibility());
-
-        mModel.set(CAN_SHOW, true);
-        assertEquals(View.VISIBLE, mAndroidView.getVisibility());
+        mModel.set(HEIGHT, UPDATED_HEIGHT);
+        verify(mSceneLayer).setHeight(UPDATED_HEIGHT);
     }
 
     @Test
@@ -129,24 +96,6 @@ public class EdgeToEdgeTopScalpViewBinderTest {
 
         mModel.set(IS_VISIBLE, true);
         verify(mSceneLayer).setIsVisible(true);
-    }
-
-    @Test
-    public void testUpdate_NullAndroidView() {
-        PropertyModel model = new PropertyModel.Builder(ALL_KEYS).build();
-        PropertyModelChangeProcessor.create(
-                model,
-                new EdgeToEdgeTopScalpViewBinder.ViewHolder(/* androidView= */ null, mSceneLayer),
-                EdgeToEdgeTopScalpViewBinder::bind);
-        clearInvocations(mSceneLayer);
-
-        model.set(Y_OFFSET, -20);
-        verify(mSceneLayer).setYOffset(-20);
-
-        model.set(HEIGHT, 40);
-        verify(mSceneLayer).setHeight(40);
-
-        model.set(CAN_SHOW, true);
     }
 
     @Test

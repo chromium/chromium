@@ -429,6 +429,7 @@ public class RootUiCoordinator
     protected final SettableMonotonicObservableSupplier<EdgeToEdgeController>
             mEdgeToEdgeControllerSupplier;
     protected @Nullable Destroyable mEdgeToEdgeBottomChin;
+    protected @Nullable Destroyable mEdgeToEdgeTopScalp;
     protected final @ActivityType int mActivityType;
     protected final Supplier<Boolean> mIsInOverviewModeSupplier;
     private final AppMenuDelegate mAppMenuDelegate;
@@ -1178,6 +1179,12 @@ public class RootUiCoordinator
 
         if (mEdgeToEdgeBottomChin != null) {
             mEdgeToEdgeBottomChin.destroy();
+            mEdgeToEdgeBottomChin = null;
+        }
+
+        if (mEdgeToEdgeTopScalp != null) {
+            mEdgeToEdgeTopScalp.destroy();
+            mEdgeToEdgeTopScalp = null;
         }
 
         mTopInsetProvider.destroy();
@@ -2691,6 +2698,7 @@ public class RootUiCoordinator
                 // false positives when initialized solely for top edge-to-edge (e.g. 3-button nav).
                 recordIfMissingNavigationBar();
             }
+            mEdgeToEdgeTopScalp = createEdgeToEdgeTopScalp();
         }
     }
 
@@ -2731,6 +2739,11 @@ public class RootUiCoordinator
 
     /** Create a bottom chin for Edge-to-Edge. */
     protected @Nullable Destroyable createEdgeToEdgeBottomChin() {
+        return null;
+    }
+
+    /** Create a top scalp for Edge-to-Edge. */
+    protected @Nullable Destroyable createEdgeToEdgeTopScalp() {
         return null;
     }
 

@@ -129,6 +129,8 @@ public class EdgeToEdgeControllerTest {
     private static final Insets IME_INSETS_NO_KEYBOARD = Insets.of(0, 0, 0, 0);
     private static final Insets IME_INSETS_KEYBOARD = Insets.of(0, 0, 0, BOTTOM_KEYBOARD_INSET);
     private static final int EDGE_TO_EDGE_STATUS_TOKEN = 12345;
+    private static final String EDGE_TO_EDGE_TOP_INSET_REFACTOR_ONLY =
+            ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET + ":enable_top_edge_to_edge/false";
 
     private static final WindowInsetsCompat SYSTEM_BARS_WINDOW_INSETS =
             new WindowInsetsCompat.Builder()
@@ -313,11 +315,14 @@ public class EdgeToEdgeControllerTest {
         verify(mEdgeToEdgeStateProvider, times(1)).acquireEdgeToEdgeToken();
 
         if (!EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()) {
+            boolean topConsumed =
+                    EdgeToEdgeUtils.isTopEdgeToEdgeEnabled()
+                            && EdgeToEdgeUtils.isEdgelessTopInsetSupported(mActivity);
             verify(mOsWrapper, times(1))
                     .setPadding(
                             any(),
                             eq(0),
-                            intThat(Matchers.greaterThan(0)),
+                            topConsumed ? eq(0) : intThat(Matchers.greaterThan(0)),
                             eq(0),
                             intThat(Matchers.greaterThan(0)));
         }
@@ -1580,7 +1585,7 @@ public class EdgeToEdgeControllerTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET + ":enable_top_edge_to_edge/false"})
+    @EnableFeatures({EDGE_TO_EDGE_TOP_INSET_REFACTOR_ONLY})
     public void testIsTopEdgeToEdgeEnabled_RefactorOnly() {
         assertTrue(EdgeToEdgeUtils.isEdgeToEdgeRefactorEnabled());
         assertFalse(EdgeToEdgeUtils.isTopEdgeToEdgeEnabled());
@@ -1811,7 +1816,7 @@ public class EdgeToEdgeControllerTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+    @EnableFeatures(EDGE_TO_EDGE_TOP_INSET_REFACTOR_ONLY)
     public void
             testOnContentChanged_NavigateFromNtpToWebPage_WithThreeButtonNav_RestoresTopInsets() {
         EdgeToEdgeUtils.setHas3ButtonNavBarForTesting(true);
@@ -1845,7 +1850,7 @@ public class EdgeToEdgeControllerTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+    @EnableFeatures(EDGE_TO_EDGE_TOP_INSET_REFACTOR_ONLY)
     public void testOnContentChanged_NavigateFromWebPageToNtp_WithThreeButtonNav_DrawsTopEdge() {
         EdgeToEdgeUtils.setHas3ButtonNavBarForTesting(true);
 
@@ -1903,7 +1908,7 @@ public class EdgeToEdgeControllerTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+    @EnableFeatures(EDGE_TO_EDGE_TOP_INSET_REFACTOR_ONLY)
     public void testOnTabSwitched_FromWebPageToNtp_WithThreeButtonNav_DrawsTopEdge() {
         EdgeToEdgeUtils.setHas3ButtonNavBarForTesting(true);
 
@@ -2085,7 +2090,7 @@ public class EdgeToEdgeControllerTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+    @EnableFeatures(EDGE_TO_EDGE_TOP_INSET_REFACTOR_ONLY)
     public void testTopInset_WebPage_PreservesStatusBars() {
         Tab tab =
                 createMockTab(
@@ -2098,6 +2103,25 @@ public class EdgeToEdgeControllerTest {
         WindowInsetsCompat result =
                 mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
         assertNotEquals(Insets.NONE, result.getInsets(WindowInsetsCompat.Type.statusBars()));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+    public void testTopEdgeToEdge_AlwaysConsumesTopInsets() {
+        Tab webTab =
+                createMockTab(
+                        JUnitTestGURLs.URL_1,
+                        /* isNativePage= */ false,
+                        /* supportsTopEdgeToEdge= */ false);
+        mTabProvider.set(webTab);
+        assertFalse(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+        assertEquals(TOP_INSET, mEdgeToEdgeControllerImpl.getSystemTopInsetPx());
+
+        WindowInsetsCompat result =
+                mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
+        assertEquals(Insets.NONE, result.getInsets(WindowInsetsCompat.Type.statusBars()));
+        assertEquals(Insets.NONE, result.getInsets(WindowInsetsCompat.Type.captionBar()));
+        verify(mOsWrapper, atLeastOnce()).setPadding(any(), anyInt(), eq(0), anyInt(), anyInt());
     }
 
     @Test
@@ -2126,7 +2150,7 @@ public class EdgeToEdgeControllerTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+    @EnableFeatures(EDGE_TO_EDGE_TOP_INSET_REFACTOR_ONLY)
     public void testTopInset_Transition_NtpToWebPage_RetriggersAndPreservesInsets() {
         // Custom theme NTP: draws to top edge & consumes top insets.
         Tab ntpTab =
@@ -2167,7 +2191,7 @@ public class EdgeToEdgeControllerTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+    @EnableFeatures(EDGE_TO_EDGE_TOP_INSET_REFACTOR_ONLY)
     public void testTopInset_Transition_WebPageToNtp_RetriggersAndConsumesInsets() {
         // Regular web page: does not consume top insets
         Tab webTab =
@@ -2206,7 +2230,7 @@ public class EdgeToEdgeControllerTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+    @EnableFeatures(EDGE_TO_EDGE_TOP_INSET_REFACTOR_ONLY)
     public void testTopInset_Transition_NtpDefaultToCustomized_RetriggersAndConsumesInsets() {
         // Default NTP: does not consume top insets.
         Tab defaultNtpTab =
@@ -2242,7 +2266,7 @@ public class EdgeToEdgeControllerTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+    @EnableFeatures(EDGE_TO_EDGE_TOP_INSET_REFACTOR_ONLY)
     public void testTopInset_Transition_NtpCustomizedToDefault_RetriggersAndPreservesInsets() {
         // Custom theme NTP: draws to top edge & consumes top insets.
         Tab customNtpTab =
@@ -2276,7 +2300,7 @@ public class EdgeToEdgeControllerTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+    @EnableFeatures(EDGE_TO_EDGE_TOP_INSET_REFACTOR_ONLY)
     public void testTopInset_TabSwitcher_PreservesStatusBars() {
         mEdgeToEdgeControllerImpl.onFinishedShowing(LayoutType.HUB);
         assertFalse(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());

@@ -20,9 +20,6 @@ class EdgeToEdgeTopScalpProperties {
     /** The height of the top scalp layer in px. */
     static final WritableIntPropertyKey HEIGHT = new WritableIntPropertyKey();
 
-    /** Whether the top scalp component can be shown. */
-    static final WritableBooleanPropertyKey CAN_SHOW = new WritableBooleanPropertyKey();
-
     /** The {@link androidx.annotation.ColorInt} color of the top scalp layer. */
     static final WritableIntPropertyKey COLOR = new WritableIntPropertyKey();
 
@@ -34,7 +31,7 @@ class EdgeToEdgeTopScalpProperties {
     static final WritableBooleanPropertyKey IS_VISIBLE = new WritableBooleanPropertyKey();
 
     static final PropertyKey[] ALL_KEYS =
-            new PropertyKey[] {Y_OFFSET, HEIGHT, CAN_SHOW, COLOR, OFFSET_TAG, IS_VISIBLE};
+            new PropertyKey[] {Y_OFFSET, HEIGHT, COLOR, OFFSET_TAG, IS_VISIBLE};
 
     private EdgeToEdgeTopScalpProperties() {}
 }

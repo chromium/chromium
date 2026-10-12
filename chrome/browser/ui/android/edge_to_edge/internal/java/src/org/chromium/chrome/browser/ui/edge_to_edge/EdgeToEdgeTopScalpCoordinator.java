@@ -5,13 +5,11 @@
 package org.chromium.chrome.browser.ui.edge_to_edge;
 
 import android.graphics.Color;
-import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.CompositorModelChangeProcessor;
@@ -34,16 +32,13 @@ public class EdgeToEdgeTopScalpCoordinator implements Destroyable {
     private final EdgeToEdgeTopScalpMediator mMediator;
     private final EdgeToEdgeTopScalpSceneLayer mSceneLayer;
     private final PropertyModelChangeProcessor<
-                    PropertyModel, EdgeToEdgeTopScalpViewBinder.ViewHolder, PropertyKey>
+                    PropertyModel, EdgeToEdgeTopScalpSceneLayer, PropertyKey>
             mModelChangeProcessor;
     private final CompositorModelChangeProcessor<EdgeToEdgeTopScalpSceneLayer> mCompositorMCP;
 
     /**
      * Creates an {@link EdgeToEdgeTopScalpCoordinator} component.
      *
-     * @param scalpView The optional transparent placeholder {@link View} defined in XML (wired in
-     *     {@code main.xml} in a follow-up CL) that mirrors the top scalp's height and position in
-     *     the Android view hierarchy, similar to {@code R.id.edge_to_edge_bottom_chin}.
      * @param layoutManager The {@link LayoutManager} for adding new scene overlays.
      * @param topControlsStacker The {@link TopControlsStacker} to register this layer with.
      * @param edgeToEdgeController The {@link EdgeToEdgeController} for edge-to-edge state.
@@ -51,14 +46,12 @@ public class EdgeToEdgeTopScalpCoordinator implements Destroyable {
      * @param topUiThemeColorProvider The {@link TopUiThemeColorProvider} providing theme colors.
      */
     public EdgeToEdgeTopScalpCoordinator(
-            @Nullable View scalpView,
             LayoutManager layoutManager,
             TopControlsStacker topControlsStacker,
             EdgeToEdgeController edgeToEdgeController,
             FullscreenManager fullscreenManager,
             TopUiThemeColorProvider topUiThemeColorProvider) {
         this(
-                scalpView,
                 layoutManager,
                 topControlsStacker,
                 edgeToEdgeController,
@@ -71,7 +64,6 @@ public class EdgeToEdgeTopScalpCoordinator implements Destroyable {
 
     @VisibleForTesting
     EdgeToEdgeTopScalpCoordinator(
-            @Nullable View scalpView,
             LayoutManager layoutManager,
             TopControlsStacker topControlsStacker,
             EdgeToEdgeController edgeToEdgeController,
@@ -84,16 +76,13 @@ public class EdgeToEdgeTopScalpCoordinator implements Destroyable {
                 new PropertyModel.Builder(EdgeToEdgeTopScalpProperties.ALL_KEYS)
                         .with(EdgeToEdgeTopScalpProperties.HEIGHT, 0)
                         .with(EdgeToEdgeTopScalpProperties.COLOR, Color.TRANSPARENT)
-                        .with(EdgeToEdgeTopScalpProperties.CAN_SHOW, false)
                         .with(EdgeToEdgeTopScalpProperties.Y_OFFSET, 0)
                         .with(EdgeToEdgeTopScalpProperties.IS_VISIBLE, false)
                         .build();
 
         mModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
-                        model,
-                        new EdgeToEdgeTopScalpViewBinder.ViewHolder(scalpView, sceneLayer),
-                        EdgeToEdgeTopScalpViewBinder::bind);
+                        model, sceneLayer, EdgeToEdgeTopScalpViewBinder::bind);
 
         Set<PropertyKey> exclusions =
                 Set.of(

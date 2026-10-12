@@ -487,6 +487,11 @@ public class EdgeToEdgeControllerImpl
     }
 
     @Override
+    public int getSystemTopInsetPx() {
+        return mSystemInsets.top;
+    }
+
+    @Override
     public boolean isDrawingToEdge() {
         return mIsDrawingToBottomEdge;
     }
@@ -782,17 +787,26 @@ public class EdgeToEdgeControllerImpl
                     originalSystemInsets, newInsets, mAppliedContentViewPadding);
         }
 
-        // TODO(crbug.com/498302496): In the unified top scalp architecture, top window insets will
-        // be consumed at the root view level and managed by top controls.
-        // Consume top insets when in persistent fullscreen or for top e2e.
         boolean consumeTopInsets =
                 mIsEdgeToEdgeRefactorEnabled
-                        ? ((mFullscreenManager != null
-                                        && mFullscreenManager.getPersistentFullscreenMode())
-                                || isDrawingToTopEdge())
+                        ? shouldConsumeTopInsets()
                         : (mAppliedContentViewPadding.top == 0);
         boolean consumeBottomInsets = mAppliedContentViewPadding.bottom == 0;
         return consumeWindowInsets(windowInsets, consumeTopInsets, consumeBottomInsets);
+    }
+
+    // Consume top insets when in persistent fullscreen, when top edge-to-edge is enabled
+    // (so the top scalp always manages the top inset), or under the refactor when drawing to
+    // the top edge.
+    private boolean shouldConsumeTopInsets() {
+        if (mFullscreenManager != null && mFullscreenManager.getPersistentFullscreenMode()) {
+            return true;
+        }
+        if (EdgeToEdgeUtils.isTopEdgeToEdgeEnabled()
+                && EdgeToEdgeUtils.isEdgelessTopInsetSupported(mActivity)) {
+            return true;
+        }
+        return isDrawingToTopEdge();
     }
 
     private boolean updateVisibilityRects(View rootView) {
@@ -875,7 +889,7 @@ public class EdgeToEdgeControllerImpl
         // Adjust the top and bottom padding to reflect whether ToEdge or ToNormal for the Status
         // Bar and Gesture Nav Bar. All the other edges need to be padded to prevent drawing under
         // an edge that we don't want drawn ToEdge.
-        int topPadding = isDrawingToTopEdge() ? 0 : mSystemInsets.top;
+        int topPadding = shouldConsumeTopInsets() ? 0 : mSystemInsets.top;
         int bottomPadding = mIsDrawingToBottomEdge ? 0 : mSystemInsets.bottom;
         // If the keyboard is taller than the navigation bar, pad content to account for it.
         if (isKeyboardInsetTallerThanNavBar()) {

@@ -2136,6 +2136,23 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         return bottomChinColorHelper;
     }
 
+    @Override
+    protected @Nullable Destroyable createEdgeToEdgeTopScalp() {
+        if (!EdgeToEdgeUtils.isTopEdgeToEdgeEnabled()
+                || !EdgeToEdgeUtils.isEdgelessTopInsetSupported(mActivity)) {
+            return null;
+        }
+        assert mLayoutManager != null;
+        EdgeToEdgeController edgeToEdgeController = mEdgeToEdgeControllerSupplier.get();
+        assert edgeToEdgeController != null;
+        return EdgeToEdgeControllerFactory.createTopScalp(
+                mLayoutManager,
+                mTopControlsStacker,
+                edgeToEdgeController,
+                mFullscreenManager,
+                getTopUiThemeColorProvider());
+    }
+
     /**
      * Initializes the CoBrowseViewFactory. This is called early during Activity initialization to
      * ensure the factory is available before any reparented tabs are inserted and trigger view
