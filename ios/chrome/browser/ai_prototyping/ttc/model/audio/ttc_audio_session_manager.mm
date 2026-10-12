@@ -37,11 +37,11 @@ bool IsExternalPortType(NSString* const port_type) {
          [port_type isEqualToString:AVAudioSessionPortUSBAudio];
 }
 
-// Configures PlayAndRecord category, VideoChat mode, DefaultToSpeaker +
+// Configures PlayAndRecord category, Default mode, DefaultToSpeaker +
 // Bluetooth/AirPlay options, and activates the shared AVAudioSession instance.
 NSError* ConfigureAndActivateAudioSession() {
   AVAudioSession* session = [AVAudioSession sharedInstance];
-  AVAudioSessionMode mode = AVAudioSessionModeVideoChat;
+  AVAudioSessionMode mode = AVAudioSessionModeDefault;
   AVAudioSessionCategoryOptions options =
       AVAudioSessionCategoryOptionAllowAirPlay |
       AVAudioSessionCategoryOptionAllowBluetoothA2DP |

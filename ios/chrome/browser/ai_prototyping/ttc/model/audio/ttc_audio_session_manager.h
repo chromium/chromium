@@ -48,7 +48,7 @@ enum class TTCAudioSessionManagerErrorCode : NSInteger {
     BOOL outputRoutedToSpeaker;
 
 // Configures and activates the AVAudioSession synchronously on the caller's
-// thread with PlayAndRecord category, VideoChat mode, and DefaultToSpeaker +
+// thread with PlayAndRecord category, Default mode, and DefaultToSpeaker +
 // Bluetooth/AirPlay options. Returns nil on success or the NSError encountered.
 // NOTE: This call performs synchronous CoreAudio IPC; prefer
 // `configureAudioSessionWithCompletion:` on UI threads to prevent frame drops.

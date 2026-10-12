@@ -121,8 +121,9 @@ class TTCAudioSessionManagerTest : public PlatformTest {
   FakeTTCAudioSessionManagerDelegate* delegate_ = nil;
 };
 
-// Test that configureAudioSession configures PlayAndRecord and VideoChat mode
-// synchronously on the UI thread, and notifies delegate of initial route.
+// Test that configureAudioSession configures PlayAndRecord and Default mode
+// with DefaultToSpeaker synchronously on the UI thread, and notifies delegate
+// of initial route.
 TEST_F(TTCAudioSessionManagerTest, TestConfigureAudioSessionSynchronous) {
   base::test::TestFuture<NSString*, BOOL> route_future;
   delegate_.onRouteChange =
@@ -133,7 +134,10 @@ TEST_F(TTCAudioSessionManagerTest, TestConfigureAudioSessionSynchronous) {
 
   AVAudioSession* session = [AVAudioSession sharedInstance];
   EXPECT_NSEQ(session.category, AVAudioSessionCategoryPlayAndRecord);
-  EXPECT_NSEQ(session.mode, AVAudioSessionModeVideoChat);
+  EXPECT_NSEQ(session.mode, AVAudioSessionModeDefault);
+  EXPECT_NE(session.categoryOptions &
+                AVAudioSessionCategoryOptionDefaultToSpeaker,
+            0u);
 
   auto [route_desc, has_aec] = route_future.Take();
   EXPECT_TRUE(delegate_.didChangeRouteCalled);
@@ -156,7 +160,10 @@ TEST_F(TTCAudioSessionManagerTest, TestConfigureAudioSessionWithCompletion) {
 
   AVAudioSession* session = [AVAudioSession sharedInstance];
   EXPECT_NSEQ(session.category, AVAudioSessionCategoryPlayAndRecord);
-  EXPECT_NSEQ(session.mode, AVAudioSessionModeVideoChat);
+  EXPECT_NSEQ(session.mode, AVAudioSessionModeDefault);
+  EXPECT_NE(session.categoryOptions &
+                AVAudioSessionCategoryOptionDefaultToSpeaker,
+            0u);
 
   auto [route_desc, has_aec] = route_future.Take();
   EXPECT_TRUE(delegate_.didChangeRouteCalled);
