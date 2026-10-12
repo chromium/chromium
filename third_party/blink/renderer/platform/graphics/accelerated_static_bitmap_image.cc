@@ -166,26 +166,27 @@ scoped_refptr<StaticBitmapImage> AcceleratedStaticBitmapImage::CreateFromRaster(
     format = viz::SinglePlaneFormat::kRGBA_8888;
   }
 
-  const bool is_scanout_supported =
-      is_gpu_compositing_enabled &&
-      IsScanoutSupportedForCanvasWithFormat(format, capabilities) &&
-      context_provider_wrapper->ContextProvider()
-          .SharedImageInterface()
-          ->GetCapabilities()
-          .supports_scanout_shared_images;
+  if (shared_image_usage_flags.Has(gpu::SHARED_IMAGE_USAGE_SCANOUT)) {
+    const bool is_scanout_supported =
+        is_gpu_compositing_enabled &&
+        IsScanoutSupportedForCanvasWithFormat(format, capabilities) &&
+        context_provider_wrapper->ContextProvider()
+            .SharedImageInterface()
+            ->GetCapabilities()
+            .supports_scanout_shared_images;
 
-  if (!is_scanout_supported) {
-    shared_image_usage_flags.RemoveAll(gpu::SHARED_IMAGE_USAGE_SCANOUT);
-  }
-
+    if (!is_scanout_supported) {
+      shared_image_usage_flags.RemoveAll(gpu::SHARED_IMAGE_USAGE_SCANOUT);
+    }
 #if BUILDFLAG(IS_MAC)
-  if (shared_image_usage_flags.Has(gpu::SHARED_IMAGE_USAGE_SCANOUT) &&
-      format == viz::SinglePlaneFormat::kRGBA_8888) {
-    // GPU-accelerated scannout usage on Mac uses IOSurface.  Must switch from
-    // RGBA_8888 to BGRA_8888 in that case.
-    format = viz::SinglePlaneFormat::kBGRA_8888;
-  }
+    if (shared_image_usage_flags.Has(gpu::SHARED_IMAGE_USAGE_SCANOUT) &&
+        format == viz::SinglePlaneFormat::kRGBA_8888) {
+      // GPU-accelerated scanout usage on Mac uses IOSurface. Must switch from
+      // RGBA_8888 to BGRA_8888 in that case.
+      format = viz::SinglePlaneFormat::kBGRA_8888;
+    }
 #endif
+  }
 
   // These SharedImages are both read and written by the raster interface
   // (both occur, for example, when copying canvas resources between
