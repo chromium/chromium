@@ -62,6 +62,7 @@ class WebApkSingleIconHasher {
                               std::optional<std::string> response_body);
 
   void OnImageDownloaded(std::optional<std::string> response_body,
+                         int ideal_icon_size,
                          int id,
                          int http_status_code,
                          const GURL& url,
