@@ -2465,7 +2465,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         anchorContainerParent,
                         sideUiStartAnchorContainerStub,
                         sideUiEndAnchorContainerStub,
-                        mIncognitoStateProvider,
                         mTabModelSelectorSupplier.asNonNull().get());
 
         if (mSideUiCoordinator == null) {
@@ -2477,7 +2476,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mWindowAndroid,
                         mSideUiCoordinator,
                         mTabModelSelectorSupplier.asNonNull().get(),
-                        mTopControlsStacker);
+                        mTopControlsStacker,
+                        mIncognitoStateProvider);
         if (mSidePanelContainerCoordinator != null) {
             mSidePanelContainerCoordinator.init();
 

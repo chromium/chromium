@@ -183,17 +183,18 @@ public class SidePanelContainerCoordinatorImplUnitTest {
     }
 
     @Test
-    public void getContainerBackgroundResId_returnsExpectedDrawableForHeightType() {
+    public void getInnerContainerBackgroundResId_returnsExpectedDrawableForHeightType() {
         assertEquals(
                 R.drawable.side_panel_container_toolbar_height_bg,
-                SidePanelContainerCoordinatorImpl.getContainerBackgroundResId(HeightType.TOOLBAR));
+                SidePanelContainerCoordinatorImpl.getInnerContainerBackgroundResId(
+                        HeightType.TOOLBAR));
         assertEquals(
                 R.drawable.side_panel_container_webcontent_height_bg,
-                SidePanelContainerCoordinatorImpl.getContainerBackgroundResId(
+                SidePanelContainerCoordinatorImpl.getInnerContainerBackgroundResId(
                         HeightType.WEB_CONTENTS));
         assertEquals(
                 Resources.ID_NULL,
-                SidePanelContainerCoordinatorImpl.getContainerBackgroundResId(
+                SidePanelContainerCoordinatorImpl.getInnerContainerBackgroundResId(
                         HeightType.NOT_APPLICABLE));
     }
 }

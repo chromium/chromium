@@ -20,7 +20,6 @@ import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewParent;
 import android.view.ViewStub;
 
-import androidx.annotation.ColorInt;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.animation.PathInterpolatorCompat;
@@ -47,12 +46,9 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
-import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider.IncognitoStateObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs.SideUiSize;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest.UpdateReason;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.util.TokenHolder;
 
@@ -68,8 +64,7 @@ final class SideUiCoordinatorImpl
         implements SideUiCoordinator,
                 ConfigurationChangedObserver,
                 BrowserControlsStateProvider.Observer,
-                FullscreenManager.Observer,
-                IncognitoStateObserver {
+                FullscreenManager.Observer {
 
     private static final long TRANSITION_DURATION_MS = 350L;
 
@@ -79,7 +74,6 @@ final class SideUiCoordinatorImpl
     private final BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
     private final BrowserStateBrowserControlsVisibilityDelegate mBrowserControlsVisibilityDelegate;
     private final FullscreenManager mFullscreenManager;
-    private final IncognitoStateProvider mIncognitoStateProvider;
 
     private final ViewGroup mAnchorContainerParent;
 
@@ -89,9 +83,6 @@ final class SideUiCoordinatorImpl
 
     /** Maps {@link AnchorSide} to {@link ViewGroup} where {@link SideUiContainer} is attached. */
     private final Map<@AnchorSide Integer, ViewGroup> mAnchorContainers = new ArrayMap<>();
-
-    /** The default background color of the anchor containers, which depends on incognito. */
-    private @ColorInt int mAnchorContainerBackgroundColor;
 
     /**
      * The {@link SideUiSpecs} that were last committed, i.e. the specs the browser UI is currently
@@ -162,7 +153,6 @@ final class SideUiCoordinatorImpl
      *     containers.
      * @param leftAnchorContainerStub The {@link ViewStub} for the left-anchored container.
      * @param rightAnchorContainerStub The {@link ViewStub} for the right-anchored container.
-     * @param incognitoStateProvider The {@link IncognitoStateProvider} to observe incognito state.
      * @param tabModelSelector The {@link TabModelSelector} to query tabs.
      */
     /* package */ SideUiCoordinatorImpl(
@@ -175,7 +165,6 @@ final class SideUiCoordinatorImpl
             ViewGroup anchorContainerParent,
             ViewStub leftAnchorContainerStub,
             ViewStub rightAnchorContainerStub,
-            IncognitoStateProvider incognitoStateProvider,
             TabModelSelector tabModelSelector) {
         mParentActivity = parentActivity;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
@@ -183,11 +172,7 @@ final class SideUiCoordinatorImpl
         mFullscreenManager = fullscreenManager;
         mTopControlsStacker = topControlsStacker;
         mAnchorContainerParent = anchorContainerParent;
-        mIncognitoStateProvider = incognitoStateProvider;
         mTabModelSelector = tabModelSelector;
-        // Matches the anchor container layout; updated by onIncognitoStateChanged().
-        mAnchorContainerBackgroundColor =
-                ChromeColors.getDefaultBgColor(parentActivity, /* isIncognito= */ false);
 
         mBrowserControlsVisibilityDelegate =
                 browserControlVisibilityManager.getBrowserVisibilityDelegate();
@@ -210,7 +195,6 @@ final class SideUiCoordinatorImpl
                 mCallbackController.makeCancelable(this::onLayoutStateProviderAvailable));
         browserControlVisibilityManager.addObserver(this);
         mFullscreenManager.addObserver(this);
-        mIncognitoStateProvider.addIncognitoStateObserverAndTrigger(this);
         mActivityLifecycleDispatcher.register(this);
     }
 
@@ -335,7 +319,6 @@ final class SideUiCoordinatorImpl
         mCurrentSideUiSpecs = new SideUiSpecs(Map.of());
         mBrowserControlsVisibilityManager.removeObserver(this);
         mFullscreenManager.removeObserver(this);
-        mIncognitoStateProvider.removeObserver(this);
         mActivityLifecycleDispatcher.unregister(this);
     }
 
@@ -477,33 +460,6 @@ final class SideUiCoordinatorImpl
                         /* sideUiId= */ null,
                         /* suppressAnimations= */ true,
                         UpdateReason.FULL_SCREEN_MODE_EXITED));
-    }
-
-    // IncognitoStateObserver implementation:
-    @Override
-    public void onIncognitoStateChanged(boolean isIncognito) {
-        ThreadUtils.assertOnUiThread();
-
-        mAnchorContainerBackgroundColor =
-                ChromeColors.getDefaultBgColor(mParentActivity, isIncognito);
-        for (@AnchorSide int anchorSide : mAnchorContainers.keySet()) {
-            updateAnchorContainerBackground(anchorSide);
-        }
-    }
-
-    /**
-     * Fills the anchor container on {@code anchorSide} with the default background color, unless
-     * the {@link SideUiContainer} anchored there opts out, see {@link
-     * SideUiContainer#shouldDrawAnchorContainerBackground()}.
-     */
-    private void updateAnchorContainerBackground(@AnchorSide int anchorSide) {
-        ViewGroup anchorContainer = assumeNonNull(mAnchorContainers.get(anchorSide));
-        SideUiContainer sideUiContainer = getSideUiContainerBySide(anchorSide);
-        if (sideUiContainer != null && !sideUiContainer.shouldDrawAnchorContainerBackground()) {
-            anchorContainer.setBackground(null);
-        } else {
-            anchorContainer.setBackgroundColor(mAnchorContainerBackgroundColor);
-        }
     }
 
     @VisibleForTesting
@@ -1128,7 +1084,6 @@ final class SideUiCoordinatorImpl
         ViewGroup anchorContainer = mAnchorContainers.get(anchorSide);
         assert anchorContainer != null : "AnchorContainer is not available on the request side.";
         attachSideUiContainerView(sideUiContainer, anchorContainer);
-        updateAnchorContainerBackground(anchorSide);
     }
 
     /**

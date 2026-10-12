@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
+import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -55,6 +56,7 @@ import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.RenderTestRule;
@@ -711,7 +713,11 @@ public class SidePanelContainerCoordinatorIntegrationTest {
 
         // Act & Assert.
         showPanel(incognitoTab);
-        waitForContainerViewOpen(coordinator);
+        ViewGroup containerView = waitForContainerViewOpen(coordinator);
+        assertEquals(
+                ChromeColors.getDefaultBgColor(
+                        mFreshCtaTransitTestRule.getActivity(), /* isIncognito= */ true),
+                ((ColorDrawable) containerView.getBackground()).getColor());
         closePanel(incognitoTab);
         waitForContainerViewClose(coordinator);
     }
@@ -730,7 +736,11 @@ public class SidePanelContainerCoordinatorIntegrationTest {
 
         // Act & Assert.
         showPanel(regularTab);
-        waitForContainerViewOpen(coordinator);
+        ViewGroup containerView = waitForContainerViewOpen(coordinator);
+        assertEquals(
+                ChromeColors.getDefaultBgColor(
+                        mFreshCtaTransitTestRule.getActivity(), /* isIncognito= */ false),
+                ((ColorDrawable) containerView.getBackground()).getColor());
         closePanel(regularTab);
         waitForContainerViewClose(coordinator);
     }

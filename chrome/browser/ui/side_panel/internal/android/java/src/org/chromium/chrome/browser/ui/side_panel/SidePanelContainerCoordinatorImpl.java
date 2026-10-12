@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -32,6 +33,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlType;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
+import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider.IncognitoStateObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.side_ui.SideUiContainer;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator;
@@ -40,6 +43,7 @@ import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.HeightType;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiId;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs.SideUiSize;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.ActivityWindowAndroid;
@@ -48,15 +52,17 @@ import org.chromium.ui.base.ViewUtils;
 /** Implementation of {@link SidePanelContainerCoordinator}. */
 @NullMarked
 final class SidePanelContainerCoordinatorImpl
-        implements SidePanelContainerCoordinator, SideUiContainer {
+        implements SidePanelContainerCoordinator, SideUiContainer, IncognitoStateObserver {
     private static final String TAG = "SidePanelContainerCoordinatorImpl";
 
     private static final @AnchorSide int SIDE_PANEL_DEFAULT_ANCHOR_SIDE = AnchorSide.RIGHT;
 
-    private final LinearLayout mContainerView;
+    private final FrameLayout mContainerView;
+    private final LinearLayout mInnerContainerView;
     private final SidePanelNativeBridgeSelector mNativeBridgeSelector;
     private final SideUiCoordinator mSideUiCoordinator;
     private final TopControlsStacker mTopControlsStacker;
+    private final IncognitoStateProvider mIncognitoStateProvider;
 
     private @Nullable SidePanelContent mCurrentContent;
 
@@ -124,20 +130,23 @@ final class SidePanelContainerCoordinatorImpl
             ActivityWindowAndroid windowAndroid,
             SideUiCoordinator sideUiCoordinator,
             TabModelSelector tabModelSelector,
-            TopControlsStacker topControlsStacker) {
+            TopControlsStacker topControlsStacker,
+            IncognitoStateProvider incognitoStateProvider) {
         log(TAG, "constructor");
 
         var activity = assertNonNull(windowAndroid.getActivity().get());
         mContainerView =
-                (LinearLayout)
+                (FrameLayout)
                         LayoutInflater.from(activity)
                                 .inflate(R.layout.side_panel_container, /* root= */ null);
+        mInnerContainerView = mContainerView.findViewById(R.id.side_panel_inner_container);
 
         mNativeBridgeSelector =
                 new SidePanelNativeBridgeSelector(
                         windowAndroid, /* sidePanelContainerCoordinator= */ this, tabModelSelector);
         mSideUiCoordinator = sideUiCoordinator;
         mTopControlsStacker = topControlsStacker;
+        mIncognitoStateProvider = incognitoStateProvider;
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -149,6 +158,7 @@ final class SidePanelContainerCoordinatorImpl
         log(TAG, "init");
         ThreadUtils.assertOnUiThread();
         mSideUiCoordinator.registerSideUiContainer(this);
+        mIncognitoStateProvider.addIncognitoStateObserverAndTrigger(this);
         mNativeBridgeSelector.init();
     }
 
@@ -322,6 +332,7 @@ final class SidePanelContainerCoordinatorImpl
     public void destroy() {
         log(TAG, "destroy");
         ThreadUtils.assertOnUiThread();
+        mIncognitoStateProvider.removeObserver(this);
         mSideUiCoordinator.unregisterSideUiContainer(this);
 
         // Detach the side panel content View.
@@ -520,7 +531,7 @@ final class SidePanelContainerCoordinatorImpl
             @Px int newReservedWidth,
             @HeightType int oldHeightType,
             @HeightType int newHeightType) {
-        updateContainerBackground(newHeightType);
+        updateInnerContainerBackground(newHeightType);
     }
 
     @Override
@@ -642,6 +653,14 @@ final class SidePanelContainerCoordinatorImpl
     //              End of SideUiContainer Implementation                                        //
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
+    // IncognitoStateObserver implementation:
+    @Override
+    public void onIncognitoStateChanged(boolean isIncognito) {
+        ThreadUtils.assertOnUiThread();
+        mContainerView.setBackgroundColor(
+                ChromeColors.getDefaultBgColor(mContainerView.getContext(), isIncognito));
+    }
+
     /**
      * Returns the final width (in dp) of the side panel container given the available width in the
      * window, the window width, and the minimum side panel container width.
@@ -716,13 +735,14 @@ final class SidePanelContainerCoordinatorImpl
     }
 
     private int getMinSidePanelContainerWidthDp() {
-        // TODO(crbug.com/571631909): This can be called before updateContainerBackground() sets
-        // the container's padding, in which case the padding is 0 and the minimum width is too
-        // small.
+        // TODO(crbug.com/571631909): This can be called before updateInnerContainerBackground()
+        // sets the inner container's padding, in which case the padding is 0 and the minimum width
+        // is too small.
         int horizontalPaddingDp =
                 ViewUtils.pxToDp(
                         mContainerView.getContext(),
-                        mContainerView.getPaddingLeft() + mContainerView.getPaddingRight());
+                        mInnerContainerView.getPaddingLeft()
+                                + mInnerContainerView.getPaddingRight());
         return horizontalPaddingDp + MIN_SIDE_PANEL_CONTENT_WIDTH_DP;
     }
 
@@ -746,7 +766,7 @@ final class SidePanelContainerCoordinatorImpl
     }
 
     @VisibleForTesting
-    static @DrawableRes int getContainerBackgroundResId(@HeightType int heightType) {
+    static @DrawableRes int getInnerContainerBackgroundResId(@HeightType int heightType) {
         return switch (heightType) {
             case HeightType.TOOLBAR -> R.drawable.side_panel_container_toolbar_height_bg;
             case HeightType.WEB_CONTENTS -> R.drawable.side_panel_container_webcontent_height_bg;
@@ -757,12 +777,12 @@ final class SidePanelContainerCoordinatorImpl
         };
     }
 
-    private void updateContainerBackground(@HeightType int heightType) {
-        @DrawableRes int bgResId = getContainerBackgroundResId(heightType);
+    private void updateInnerContainerBackground(@HeightType int heightType) {
+        @DrawableRes int bgResId = getInnerContainerBackgroundResId(heightType);
         // Expected if the container is hiding. In that case, no-op.
         if (bgResId == Resources.ID_NULL) return;
 
-        mContainerView.setBackgroundResource(bgResId);
+        mInnerContainerView.setBackgroundResource(bgResId);
     }
 
     private @Nullable ThinWebView findThinWebView(View view) {

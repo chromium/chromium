@@ -24,7 +24,6 @@ import static org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.MIN_WEB_C
 
 import android.app.Activity;
 import android.content.res.Configuration;
-import android.graphics.drawable.ColorDrawable;
 import android.util.Size;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,7 +32,6 @@ import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
 
-import androidx.annotation.ColorInt;
 import androidx.annotation.Px;
 
 import org.junit.Before;
@@ -62,7 +60,6 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserv
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.HeightType;
@@ -71,7 +68,6 @@ import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiShowabilit
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest.UpdateReason;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.ViewUtils;
 
@@ -96,7 +92,6 @@ public class SideUiCoordinatorImplTest {
     @Mock private FullscreenManager mFullscreenManager;
     @Mock private LayoutStateProvider mLayoutStateProvider;
     @Mock private TopControlsStacker mTopControlsStacker;
-    @Mock private IncognitoStateProvider mIncognitoStateProvider;
     @Mock private SideUiObserver mSideUiObserver;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private Tab mTab;
@@ -155,7 +150,6 @@ public class SideUiCoordinatorImplTest {
                         anchorContainerParent,
                         leftAnchorContainerStub,
                         rightAnchorContainerStub,
-                        mIncognitoStateProvider,
                         mTabModelSelector);
         mLeftAnchorContainer = (ViewGroup) anchorContainerParent.getChildAt(0);
         mRightAnchorContainer = (ViewGroup) anchorContainerParent.getChildAt(1);
@@ -177,7 +171,6 @@ public class SideUiCoordinatorImplTest {
 
         verify(mActivityLifecycleDispatcher).register(mCoordinator);
         verify(mFullscreenManager).addObserver(mCoordinator);
-        verify(mIncognitoStateProvider).addIncognitoStateObserverAndTrigger(mCoordinator);
     }
 
     @Test
@@ -189,54 +182,6 @@ public class SideUiCoordinatorImplTest {
         verify(mActivityLifecycleDispatcher).unregister(mCoordinator);
         verify(mFullscreenManager).removeObserver(mCoordinator);
         verify(mLayoutStateProvider).removeObserver(any());
-        verify(mIncognitoStateProvider).removeObserver(mCoordinator);
-    }
-
-    @Test
-    public void testOnIncognitoStateChanged_UpdatesAnchorContainersBackgroundColor() {
-        mCoordinator.onIncognitoStateChanged(/* isIncognito= */ true);
-        @ColorInt int incognitoBgColor = ChromeColors.getDefaultBgColor(mTestActivity, true);
-        assertEquals(
-                incognitoBgColor,
-                ((ColorDrawable) mLeftAnchorContainer.getBackground()).getColor());
-        assertEquals(
-                incognitoBgColor,
-                ((ColorDrawable) mRightAnchorContainer.getBackground()).getColor());
-
-        mCoordinator.onIncognitoStateChanged(/* isIncognito= */ false);
-        @ColorInt int regularBgColor = ChromeColors.getDefaultBgColor(mTestActivity, false);
-        assertEquals(
-                regularBgColor, ((ColorDrawable) mLeftAnchorContainer.getBackground()).getColor());
-        assertEquals(
-                regularBgColor, ((ColorDrawable) mRightAnchorContainer.getBackground()).getColor());
-    }
-
-    @Test
-    public void testAnchorContainerBackground_ContainerOptsOut_NoBackground() {
-        var sideUiContainer =
-                new TestSideUiContainer(
-                        mCoordinator,
-                        mSideUiContainerView,
-                        SideUiId.VERTICAL_TABS,
-                        AnchorSide.LEFT);
-        sideUiContainer.mShouldDrawAnchorContainerBackground = false;
-        mCoordinator.registerSideUiContainer(sideUiContainer);
-
-        // Attaching the container clears its anchor container's background.
-        mCoordinator.updateUi(
-                new UiUpdateRequest(
-                        sideUiContainer.getSideUiId(),
-                        /* suppressAnimations= */ true,
-                        UpdateReason.SIDE_UI_REQUEST));
-        assertEquals(mLeftAnchorContainer, mSideUiContainerView.getParent());
-        assertNull(mLeftAnchorContainer.getBackground());
-
-        // An incognito change keeps it clear, and only fills the other anchor container.
-        mCoordinator.onIncognitoStateChanged(/* isIncognito= */ true);
-        assertNull(mLeftAnchorContainer.getBackground());
-        assertEquals(
-                ChromeColors.getDefaultBgColor(mTestActivity, true),
-                ((ColorDrawable) mRightAnchorContainer.getBackground()).getColor());
     }
 
     @Test
