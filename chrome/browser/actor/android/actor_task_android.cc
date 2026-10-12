@@ -49,9 +49,9 @@ ActorTaskAndroid::ActorTaskAndroid(ActorTask* task) : task_(task) {
 }
 
 ActorTaskAndroid::~ActorTaskAndroid() {
-  task_ = nullptr;
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_ActorTask_clearNativePtr(env, java_obj_);
+  task_ = nullptr;
 }
 
 ScopedJavaLocalRef<jobject> ActorTaskAndroid::GetJavaObject() {

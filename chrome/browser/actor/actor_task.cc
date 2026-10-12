@@ -181,6 +181,7 @@ ActorTask::~ActorTask() {
   // The owner of the ActorTasks (ActorKeyedService) should have stopped all
   // tasks already.
   CHECK(IsCompleted());
+  ClearAllUserData();
 }
 
 // static
