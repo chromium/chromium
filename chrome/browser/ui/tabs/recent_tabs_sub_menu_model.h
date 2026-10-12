@@ -201,11 +201,6 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
   // for all items whose parent is the RecentTabsSubMenuModel itself.
   int GetParentCommandId(int command_id) const;
 
-  // Add the favicon for the device section header.
-  void AddDeviceFavicon(SimpleMenuModel* containing_model,
-                        size_t index_in_menu,
-                        syncer::DeviceInfo::FormFactor device_form_factor);
-
   // Add the favicon for a local or other devices' tab asynchronously,
   // OnFaviconDataAvailable() will be invoked when the favicon is ready.
   void AddTabFavicon(int command_id,
