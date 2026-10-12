@@ -799,6 +799,21 @@
             ]
         }
     ],
+    "AndroidInstallAnyPageAsDiyAppStopgap": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidInstallAnyPageAsDiyAppStopgap"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidMediaInsertion": [
         {
             "platforms": [

@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/check_is_test.h"
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
@@ -22,6 +23,7 @@
 #include "components/favicon_base/favicon_types.h"
 #include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_evaluator.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/manifest_icon_downloader.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/manifest/manifest_icon_selector.h"
@@ -29,6 +31,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 #include "url/url_constants.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -356,6 +359,14 @@ void InstallableIconFetcher::OnFaviconCandidateDownloaded(
     const GURL& icon_url,
     const SkBitmap& bitmap) {
   if (bitmap.drawsNothing()) {
+    if (web_contents_) {
+      const GURL page_url = web_contents_->GetLastCommittedURL();
+      if (page_url.SchemeIsHTTPOrHTTPS() &&
+          icon_url ==
+              url::Origin::Create(page_url).GetURL().Resolve("favicon.ico")) {
+        probed_root_favicon_ = true;
+      }
+    }
     MaybeEndWithError(InstallableStatusCode::NO_ACCEPTABLE_ICON);
     return;
   }
@@ -371,12 +382,38 @@ void InstallableIconFetcher::OnIconFetched(const GURL& icon_url,
 }
 
 void InstallableIconFetcher::MaybeEndWithError(InstallableStatusCode code) {
-#if BUILDFLAG(IS_DESKTOP_ANDROID)
-  // Desktop android will generate an icon if none is available.
   if (!web_contents_) {
     EndWithError(code);
     return;
   }
+  // Root-favicon fallback: every linked candidate has been evaluated and
+  // rejected by now. Blink never reports <origin>/favicon.ico when the page
+  // links any icon, so try it once before giving up / generating.
+  if (fetch_favicon_ && !probed_root_favicon_ &&
+      base::FeatureList::IsEnabled(features::kInstallableRootFaviconFallback)) {
+    probed_root_favicon_ = true;
+    const GURL page_url = web_contents_->GetLastCommittedURL();
+    if (page_url.SchemeIsHTTPOrHTTPS()) {
+      const GURL favicon_url =
+          url::Origin::Create(page_url).GetURL().Resolve("favicon.ico");
+      // 48 px on Android.
+      const int min_size = GetMinimumFaviconForPrimaryIconSizeInPx();
+      const int ideal_size =
+          std::max(GetIdealPrimaryIconSizeInPx(IconPurpose::ANY), min_size);
+      if (content::ManifestIconDownloader::Download(
+              web_contents_.get(), favicon_url, ideal_size, min_size,
+              std::max(InstallableEvaluator::kMaximumIconSizeInPx, ideal_size),
+              base::BindOnce(&InstallableIconFetcher::OnRootFaviconDownloaded,
+                             weak_ptr_factory_.GetWeakPtr(), favicon_url, code),
+              /*square_only=*/true,
+              /*initiator_frame_routing_id=*/content::GlobalRenderFrameHostId(),
+              /*suppress_warnings=*/true)) {
+        return;  // continues in OnRootFaviconDownloaded
+      }
+    }
+  }
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+  // Desktop android will generate an icon if none is available.
   base::ThreadPool::PostTask(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
@@ -392,6 +429,16 @@ void InstallableIconFetcher::MaybeEndWithError(InstallableStatusCode code) {
   // Other platforms report an error if no icon is available.
   EndWithError(code);
 #endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
+}
+
+void InstallableIconFetcher::OnRootFaviconDownloaded(const GURL& icon_url,
+                                                     InstallableStatusCode code,
+                                                     const SkBitmap& bitmap) {
+  if (bitmap.drawsNothing()) {
+    MaybeEndWithError(code);  // probed_root_favicon_ prevents a second probe
+    return;
+  }
+  OnIconFetched(icon_url, IconPurpose::ANY, bitmap);
 }
 
 void InstallableIconFetcher::EndWithError(InstallableStatusCode code) {

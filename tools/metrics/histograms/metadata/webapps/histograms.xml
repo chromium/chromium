@@ -267,6 +267,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Webapp.AddToHomescreen.AnyPage.Decision"
+    enum="WebappAddToHomescreenAnyPageDecision" expires_after="2027-10-07">
+  <owner>dmurph@chromium.org</owner>
+  <owner>src/chrome/android/webapk/OWNERS</owner>
+  <summary>
+    Records the decision rationale when AddToHomescreenDataFetcher classifies a
+    page for add-to-homescreen / install, for both the stopgap flag-enabled and
+    flag-disabled arms. Logged once per fetch operation.
+  </summary>
+</histogram>
+
+<histogram name="Webapp.AddToHomescreen.AnyPage.PrimaryIconSource"
+    enum="WebappAddToHomescreenAnyPagePrimaryIconSource"
+    expires_after="2027-10-07">
+  <owner>dmurph@chromium.org</owner>
+  <owner>src/chrome/android/webapk/OWNERS</owner>
+  <summary>
+    Records whether the primary icon for an installable web app (WEBAPK,
+    WEBAPK_DIY, or TWA) was downloaded from the site (manifest icon or favicon)
+    or generated as a monogram. On Android Desktop the icon fetcher generates
+    the monogram itself and reports it with the page URL as the icon URL; that
+    case is counted as generated too. Logged once per non-SHORTCUT install
+    result.
+  </summary>
+</histogram>
+
 <histogram name="Webapp.AddToHomescreenDialog.Timeout" units="ms"
     expires_after="2027-07-05">
   <owner>dominickn@chromium.org</owner>

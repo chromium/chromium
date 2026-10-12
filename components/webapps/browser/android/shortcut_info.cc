@@ -7,6 +7,7 @@
 #include <optional>
 #include <string>
 
+#include "base/android/device_info.h"
 #include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -310,6 +311,26 @@ void ShortcutInfo::UpdateDisplayMode(bool webapk_compatible) {
     } else {
       display = DisplayMode::kBrowser;
     }
+  }
+}
+
+void ShortcutInfo::UpdateDisplayMode(AddToHomescreenParams::AppType app_type) {
+  switch (app_type) {
+    case AddToHomescreenParams::AppType::WEBAPK_DIY:
+      if (!IsWebApkDisplayMode(display)) {
+        display = base::android::device_info::is_desktop()
+                      ? DisplayMode::kMinimalUi
+                      : DisplayMode::kStandalone;
+      }
+      break;
+    case AddToHomescreenParams::AppType::WEBAPK:
+    case AddToHomescreenParams::AppType::TWA:
+      UpdateDisplayMode(/*webapk_compatible=*/true);
+      break;
+    case AddToHomescreenParams::AppType::SHORTCUT:
+    case AddToHomescreenParams::AppType::NATIVE:
+      UpdateDisplayMode(/*webapk_compatible=*/false);
+      break;
   }
 }
 

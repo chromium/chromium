@@ -5573,6 +5573,12 @@ inline constexpr char kAndroidGrammarCheckDescription[] =
     "When typing, allows spellcheckers to highlight grammar errors and suggest "
     "corrections on browser text input.";
 
+inline constexpr char kAndroidInstallAnyPageAsDiyAppStopgapName[] =
+    "Install any page as DIY app (stopgap)";
+inline constexpr char kAndroidInstallAnyPageAsDiyAppStopgapDescription[] =
+    "When enabled, Android installs any eligible page as a DIY WebAPK "
+    "instead of downgrading to a shortcut.";
+
 inline constexpr char kAndroidKeyboardShortcutOpenFileName[] =
     "Android Keyboard Shortcut Open File";
 inline constexpr char kAndroidKeyboardShortcutOpenFileDescription[] =
