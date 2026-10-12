@@ -158,7 +158,7 @@ public class SupportLibWebViewChromiumFactory
                 Features.DOWNLOAD_FAVICONS_ENABLED,
                 Features.HTTP_CACHE_MANAGER,
                 Features.WEB_VIEW_NAVIGATION_LISTENER_NAVIGATION_VISIBLE,
-                Features.NAVIGATION_GET_RESPONSE_HEADERS + Features.DEV_SUFFIX,
+                Features.NAVIGATION_GET_RESPONSE_HEADERS,
                 WebFeatures.WEB_CONTENT,
                 Features.WEBVIEW_NAVIGATE_DRAIN_PREFETCH,
                 Features.NAVIGATION_GET_NAVIGATION_START_UPTIME_MILLIS,
