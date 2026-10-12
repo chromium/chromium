@@ -146,6 +146,7 @@ class OrganizerPanelUiTest : public InteractiveBrowserTest {
                     tabs::VerticalTabStripStateController::From(browser());
                 controller->SetVerticalTabsEnabled(vertical_tabs_enabled);
                 controller->SetExpandOnHoverEnabled(expand_on_hover_enabled);
+                animation_subscriptions_ = SubscribeToAnimations(browser());
                 RunScheduledLayouts();
               }),
               WaitForShow(vertical_tabs_enabled
@@ -157,7 +158,8 @@ class OrganizerPanelUiTest : public InteractiveBrowserTest {
 
   auto CollapseTabStrip() {
     auto steps = Steps(PressButton(kVerticalTabStripCollapseButtonElementId),
-                       WaitForEvent(kBrowserViewElementId, kCollapseComplete));
+                       WaitForEvent(kBrowserViewElementId, kCollapseComplete),
+                       Do([this]() { RunScheduledLayouts(); }));
     AddDescriptionPrefix(steps, "CollapseTabStrip()");
     return steps;
   }
@@ -174,7 +176,8 @@ class OrganizerPanelUiTest : public InteractiveBrowserTest {
                     return is_eoh;
                   },
                   true)
-                  .SetDescription("Check and lock expand-on-hover."));
+                  .SetDescription("Check and lock expand-on-hover."),
+              Do([this]() { RunScheduledLayouts(); }));
     AddDescriptionPrefix(steps, "WaitForExpandOnHover()");
     return steps;
   }
@@ -306,6 +309,9 @@ class OrganizerPanelUiTest : public InteractiveBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  gfx::AnimationTestApi::RenderModeResetter rich_animation_lock_ =
+      gfx::AnimationTestApi::SetRichAnimationRenderMode(
+          gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
   std::vector<base::CallbackListSubscription> animation_subscriptions_;
   std::unique_ptr<ExpandOnHoverLock> expand_on_hover_lock_;
 };
@@ -487,8 +493,10 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelUiTest,
                        AppearsInTabStripWhenVerticalTabsExpandOnHover) {
   RunTestSequence(
       SetVerticalTabsEnabled(true, /*expand_on_hover_enabled=*/true),
-      CollapseTabStrip(), MoveMouseTo(kTabStripRegionElementId),
-      WaitForExpandOnHover(), OpenOrganizerPanel(),
+      MoveMouseTo(kOmniboxElementId), CollapseTabStrip(),
+      InParallel(RunSubsequence(MoveMouseTo(kTabStripElementId)),
+                 RunSubsequence(WaitForExpandOnHover())),
+      OpenOrganizerPanel(),
       ExpectPanelLocation(OrganizerPanelLocation::kVerticalTabStrip),
       CheckPanelVisuals(tabs::kVerticalTabStripDefaultUncollapsedWidth, false));
 }
