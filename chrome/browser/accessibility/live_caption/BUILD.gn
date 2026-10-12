@@ -73,7 +73,7 @@ source_set("impl") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = []
+  sources = [ "live_caption_speech_recognition_host_unittest.cc" ]
 
   if (is_win) {
     sources += [ "live_caption_unavailability_notifier_unittest.cc" ]
@@ -84,12 +84,14 @@ source_set("unit_tests") {
     ":live_caption",
     "//base/test:test_support",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
+    "//components/live_caption",
+    "//components/live_caption:constants",
+    "//components/live_caption:live_translate",
+    "//content/test:test_support",
+    "//media/mojo/mojom",
     "//testing/gtest",
   ]
-
-  if (is_win) {
-    deps += [ "//chrome/test/base:chrome_render_view_host_test_harness" ]
-  }
 }
 
 source_set("browser_tests") {

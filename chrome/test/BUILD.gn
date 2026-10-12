@@ -3083,6 +3083,7 @@ test("unit_tests") {
 
   if (is_win || is_mac || is_linux || is_chromeos) {
     deps += [
+      "//chrome/browser/accessibility/live_caption:unit_tests",
       "//chrome/browser/multistep_filter:unit_tests",
       "//chrome/browser/skills:unit_tests",
       "//chrome/browser/ui/read_anything:unit_tests",
@@ -3105,7 +3106,6 @@ test("unit_tests") {
     deps += [
       "//chrome//services/util_win:unit_tests",
       "//chrome/app:win_unit_tests",
-      "//chrome/browser/accessibility/live_caption:unit_tests",
       "//chrome/browser/install_verification:unit_tests",
       "//chrome/browser/os_crypt:unit_tests",
       "//chrome/browser/ui/search_promotion:unit_tests",
