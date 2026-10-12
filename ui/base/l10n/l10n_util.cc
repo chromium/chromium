@@ -241,9 +241,7 @@ std::string GetApplicationLocaleInternalNonMac(std::string_view pref_locale) {
     }
   }
 
-  std::vector<LanguageTag> candidates = GetCandidates();
-  std::optional<LanguageTag> matched_candidate;
-  for (const LanguageTag& candidate : candidates) {
+  for (const LanguageTag& candidate : GetCandidates()) {
     // If an exact match is found and resource-bundle data on-disk is found, it
     // is returned immediately.
     if (ui_l10n::GetPlatformLanguageMatcher().HasExactMatch(candidate) &&
@@ -251,21 +249,14 @@ std::string GetApplicationLocaleInternalNonMac(std::string_view pref_locale) {
       return std::string(candidate.tag_string());
     }
 
-    if (matched_candidate) {
-      continue;
-    }
     // If there was a match using `CheckAndResolveLocale`, it is stored but not
     // returned yet because the priority is to find a candidate that has an
     // exact match with a `ResourceBundle` locale.
     if (std::optional<LanguageTag> resolved = CheckAndResolveLocale(
             candidate, CheckLocaleMode::kVerifyLocalizationDataExists);
         resolved) {
-      matched_candidate = *resolved;
+      return std::string(resolved->tag_string());
     }
-  }
-
-  if (matched_candidate) {
-    return std::string(matched_candidate->tag_string());
   }
 
   // Fallback to "en-US"
