@@ -97,6 +97,9 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSafeSeedStore {
   // will cause next reads to potentially have to read from disk.
   void AllowToPurgeSeedDataFromMemory();
 
+  // Commits any pending write to disk immediately.
+  void CommitPendingWrite();
+
   // Calls `done_callback` with the stored seed info for debugging.
   void GetStoredSeedInfoForDebugging(
       base::OnceCallback<void(StoredSeedInfo)> done_callback);

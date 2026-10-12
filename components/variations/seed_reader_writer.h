@@ -224,6 +224,9 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // should only be used if the result is `LoadSeedResult::kSuccess`.
   void ReadSeedData(ReadSeedDataCallback done_callback);
 
+  // Commits any pending write to disk immediately.
+  void CommitPendingWrite();
+
   // Stores the seed without applying any extra processing or validation. This
   // is used to store invalid data for testing.
   void StoreRawSeedForTesting(std::string seed_data);

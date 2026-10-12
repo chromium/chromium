@@ -452,9 +452,7 @@ SeedReaderWriter::SeedReaderWriter(
 
 SeedReaderWriter::~SeedReaderWriter() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (HasPendingWrite()) {
-    seed_writer_->DoScheduledWrite();
-  }
+  CommitPendingWrite();
 }
 
 StoreSeedResult SeedReaderWriter::StoreValidatedSeedInfo(
@@ -611,6 +609,13 @@ void SeedReaderWriter::ReadSeedData(
     GetSeedDataFromLocalState(base::BindOnce(
         &SeedReaderWriter::ProcessStoredSeedDataAndRunCallback,
         weak_ptr_factory_.GetWeakPtr(), std::move(done_callback)));
+  }
+}
+
+void SeedReaderWriter::CommitPendingWrite() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (HasPendingWrite()) {
+    seed_writer_->DoScheduledWrite();
   }
 }
 

@@ -695,6 +695,13 @@ void VariationsService::RegisterProfilePrefs(
                                std::string());
 }
 
+void VariationsService::CommitPendingWrite() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (field_trial_creator_.seed_store()) {
+    field_trial_creator_.seed_store()->CommitPendingWrite();
+  }
+}
+
 // static
 std::unique_ptr<VariationsService> VariationsService::Create(
     std::unique_ptr<VariationsServiceClient> client,

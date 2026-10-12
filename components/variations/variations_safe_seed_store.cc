@@ -107,6 +107,10 @@ void VariationsSafeSeedStore::AllowToPurgeSeedDataFromMemory() {
   seed_reader_writer_->AllowToPurgeSeedDataFromMemory();
 }
 
+void VariationsSafeSeedStore::CommitPendingWrite() {
+  seed_reader_writer_->CommitPendingWrite();
+}
+
 void VariationsSafeSeedStore::GetStoredSeedInfoForDebugging(
     base::OnceCallback<void(StoredSeedInfo)> done_callback) {
   seed_reader_writer_->GetStoredSeedInfoForDebugging(std::move(done_callback));

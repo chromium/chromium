@@ -294,6 +294,9 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   // from disk.
   void AllowToPurgeSeedsDataFromMemory();
 
+  // Commits any pending writes to disk immediately.
+  void CommitPendingWrite();
+
   // Calls `done_callback` with the stored seed info for debugging. Reads either
   // the latest or the safe seed, according to the specified `seed_type`.
   void GetStoredSeedInfoForDebugging(

@@ -1183,6 +1183,11 @@ void VariationsSeedStore::AllowToPurgeSeedsDataFromMemory() {
   safe_seed_store_->AllowToPurgeSeedDataFromMemory();
 }
 
+void VariationsSeedStore::CommitPendingWrite() {
+  seed_reader_writer_->CommitPendingWrite();
+  safe_seed_store_->CommitPendingWrite();
+}
+
 void VariationsSeedStore::GetStoredSeedInfoForDebugging(
     base::OnceCallback<void(StoredSeedInfo)> done_callback,
     SeedType seed_type) {

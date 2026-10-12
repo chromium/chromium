@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/prefs/pref_service.h"
+#include "components/variations/service/variations_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -54,8 +55,13 @@ static void JNI_ProfileManagerUtils_FlushPersistentDataForAllProfiles(
       g_browser_process->profile_manager()->GetLoadedProfiles(),
       CommitPendingWritesForProfile);
 
-  if (g_browser_process->local_state())
+  if (g_browser_process->local_state()) {
     g_browser_process->local_state()->CommitPendingWrite();
+  }
+
+  if (g_browser_process->variations_service()) {
+    g_browser_process->variations_service()->CommitPendingWrite();
+  }
 }
 
 static void JNI_ProfileManagerUtils_RemoveSessionCookiesForAllProfiles(

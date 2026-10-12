@@ -1980,6 +1980,64 @@ TEST_P(SeedReaderWriterAllGroupsTest, NullSeedDatePreservesExistingSeedDate) {
   }
 }
 
+TEST_P(SeedReaderWriterSeedFilesGroupTest, CommitPendingWrite) {
+  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
+            GetParam().field_trial_group);
+  // Initialize seed_reader_writer with test thread and timer.
+  SeedReaderWriter seed_reader_writer(
+      &local_state_, /*seed_file_dir=*/temp_dir_.GetPath(), kSeedFilename,
+      GetParam().seed_fields_prefs, GetParam().channel,
+      entropy_providers_.get(), GetHistogramSuffix(),
+      file_writer_thread_.task_runner());
+  seed_reader_writer.SetTimerForTesting(&timer_);
+
+  // Calling CommitPendingWrite() when there is no pending write should be safe.
+  seed_reader_writer.CommitPendingWrite();
+
+  std::string seed_data = CreateVariationsSeed();
+  std::string signature = "seed signature";
+
+  // Store a seed. This should schedule a write with a delay.
+  ASSERT_EQ(seed_reader_writer.StoreValidatedSeedInfo(ValidatedSeedInfo{
+                .seed_data = seed_data,
+                .signature = signature,
+            }),
+            StoreSeedResult::kSuccess);
+
+  // Verify that the write is scheduled (timer is running) and file doesn't
+  // exist yet.
+  EXPECT_TRUE(timer_.IsRunning());
+  EXPECT_FALSE(base::PathExists(temp_dir_.GetPath().Append(kSeedFilename)));
+
+  // Call CommitPendingWrite() to write immediately.
+  seed_reader_writer.CommitPendingWrite();
+
+  // Verify that the timer is no longer running (cancelled).
+  EXPECT_FALSE(timer_.IsRunning());
+
+  // Wait for the background write to complete.
+  file_writer_thread_.FlushForTesting();
+
+  // Verify that the file was written.
+  EXPECT_TRUE(base::PathExists(temp_dir_.GetPath().Append(kSeedFilename)));
+
+  // Verify by reading it back via SeedReaderWriter.
+  {
+    base::RunLoop run_loop;
+    SeedReaderWriter::ReadSeedDataResult read_result;
+    auto lambda_cb = base::BindLambdaForTesting(
+        [&read_result, &run_loop](SeedReaderWriter::ReadSeedDataResult result) {
+          read_result = std::move(result);
+          run_loop.Quit();
+        });
+    seed_reader_writer.ReadSeedData(lambda_cb);
+    run_loop.Run();
+    EXPECT_EQ(read_result.result, LoadSeedResult::kSuccess);
+    EXPECT_EQ(read_result.seed_data, seed_data);
+    EXPECT_EQ(read_result.signature, signature);
+  }
+}
+
 TEST_P(SeedReaderWriterSeedFilesGroupTest,
        ReadSeedDataAfterAllowToPurgeSeedDataFromMemory) {
   ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),

@@ -216,6 +216,9 @@ class VariationsService
   // Register Variations related prefs in the Profile prefs.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
+  // Commits any pending variations seed writes to disk immediately.
+  void CommitPendingWrite();
+
   // Creates a VariationsService instance. Does not take ownership of
   // |state_manager|, so callers should ensure that |state_manager| is valid for
   // the lifetime of this class.
