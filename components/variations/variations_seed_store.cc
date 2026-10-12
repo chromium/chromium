@@ -945,6 +945,12 @@ void VariationsSeedStore::StoreValidatedSeed(
       });
   if (result == StoreSeedResult::kSuccess) {
     StoreLatestSerialNumber(seed.parsed.serial_number());
+    if (require_synchronous) {
+      // Synchronous stores happen during startup (e.g. importing the initial
+      // seed). Commit the write now instead of waiting for the scheduled write,
+      // which could be lost if the app is killed shortly after startup.
+      seed_reader_writer_->CommitPendingWrite();
+    }
   }
   RecordStoreSeedResult(result);
   std::move(done_callback).Run(true, std::move(seed.parsed));

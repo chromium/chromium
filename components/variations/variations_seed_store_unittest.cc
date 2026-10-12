@@ -1541,12 +1541,56 @@ TEST_P(StoreSeedDataSeedFilesGroupTest, StoreSeedData) {
   // Store seed and force write for SeedReaderWriter.
   const std::string serialized_seed = SerializeSeed(CreateTestSeed());
   ASSERT_TRUE(StoreSeedData(seed_store, serialized_seed));
-  timer_.Fire();
+  // Synchronous stores commit the write immediately, so only asynchronous
+  // stores leave a scheduled write behind.
+  EXPECT_EQ(timer_.IsRunning(), !RequireSynchronousStores());
+  if (timer_.IsRunning()) {
+    timer_.Fire();
+  }
   file_writer_thread_.FlushForTesting();
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(GetStoredSeed().SerializeAsString(), serialized_seed);
 }
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+// Verifies that an imported initial seed is committed to the seed file without
+// waiting for the scheduled write.
+TEST_P(StoreSeedDataSeedFilesGroupTest, ImportInitialSeedCommitsPendingWrite) {
+  // The fixture's SeedReaderWriter writes an empty seed file on construction
+  // because no seed file exists yet. Wait for that write to land so that it
+  // can't race with the writes below.
+  file_writer_thread_.FlushForTesting();
+
+  const std::string serialized_seed = SerializeSeed(CreateTestSeed());
+  auto initial_seed = std::make_unique<SeedResponse>();
+  initial_seed->data = serialized_seed;
+  initial_seed->signature = "signature";
+  initial_seed->country = "us";
+  initial_seed->date = base::Time::Now();
+  initial_seed->is_gzip_compressed = false;
+
+  TestVariationsSeedStore seed_store(&prefs_, temp_dir_.GetPath(),
+                                     /*signature_verification_needed=*/false,
+                                     std::move(initial_seed));
+  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
+            GetParam().field_trial_group);
+
+  // Run only the tasks that are ready, which excludes the delayed write timer.
+  task_environment_.RunUntilIdle();
+
+  // The seed file must contain the imported seed, not the empty seed written
+  // when the seed file was first created.
+  std::string seed_file_data;
+  ASSERT_TRUE(base::ReadFileToString(temp_seed_file_path_, &seed_file_data));
+  std::string uncompressed_contents;
+  ASSERT_TRUE(SeedReaderWriter::UncompressFromSeedFileForTesting(
+      seed_file_data, &uncompressed_contents));
+  StoredSeedInfo stored_seed_info;
+  ASSERT_TRUE(stored_seed_info.ParseFromString(uncompressed_contents));
+  EXPECT_EQ(stored_seed_info.data(), serialized_seed);
+}
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 INSTANTIATE_TEST_SUITE_P(
     All,
