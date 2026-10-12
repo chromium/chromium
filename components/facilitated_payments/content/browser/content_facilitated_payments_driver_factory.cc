@@ -4,14 +4,21 @@
 
 #include "components/facilitated_payments/content/browser/content_facilitated_payments_driver_factory.h"
 
+#include <algorithm>
+#include <utility>
+
 #include "base/check_deref.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
+#include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "components/facilitated_payments/content/browser/security_checker.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
 #include "components/facilitated_payments/core/features/features.h"
 #include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decider.h"
+#include "components/wallet/content/browser/walletable_pass_barcode_detector_impl.h"
+#include "components/wallet/content/common/mojom/image_extractor.mojom.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -40,6 +47,8 @@ ContentFacilitatedPaymentsDriverFactory::
     ContentFacilitatedPaymentsDriverFactory(content::WebContents* web_contents,
                                             FacilitatedPaymentsClient* client)
     : content::WebContentsObserver(web_contents),
+      barcode_detector_(
+          std::make_unique<wallet::WalletablePassBarcodeDetectorImpl>()),
       client_(CHECK_DEREF(client)) {}
 
 ContentFacilitatedPaymentsDriverFactory::
@@ -79,9 +88,50 @@ void ContentFacilitatedPaymentsDriverFactory::OnHeuristicSignalsReported(
   }
 
   is_evaluating_qr_code_ = true;
-  // TODO(crbug.com/556832672): Extract images from `render_frame_host` and
-  // decode them, then clear `is_evaluating_qr_code_` and set
-  // `has_detected_qr_code_` from the result.
+  // Uses the same Finch limits as the renderer's square image signal, so that
+  // only the images that made the page qualify are decoded.
+  barcode_detector_->Detect(
+      web_contents(),
+      wallet::mojom::ImageExtractionOptions::New(
+          base::saturated_cast<uint32_t>(kQrCodeDetectionMinImageSize.Get()),
+          kQrCodeDetectionMaxAspectRatio.Get(), /*include_canvas=*/true),
+      base::BindOnce(
+          &ContentFacilitatedPaymentsDriverFactory::OnBarcodesDetected,
+          weak_ptr_factory_.GetWeakPtr(),
+          render_frame_host->GetWeakDocumentPtr()));
+}
+
+void ContentFacilitatedPaymentsDriverFactory::OnBarcodesDetected(
+    content::WeakDocumentPtr document,
+    std::vector<wallet::WalletBarcode> barcodes) {
+  is_evaluating_qr_code_ = false;
+
+  // Drops the result if the scanned page is no longer the active page, since
+  // decoding is asynchronous.
+  content::RenderFrameHost* render_frame_host =
+      document.AsRenderFrameHostIfValid();
+  if (!render_frame_host || !render_frame_host->IsActive() ||
+      !render_frame_host->IsInPrimaryMainFrame()) {
+    return;
+  }
+
+  // The detector decodes every barcode format, so only QR codes count.
+  if (std::ranges::none_of(barcodes, [](const wallet::WalletBarcode& barcode) {
+        return barcode.format == wallet::WalletBarcodeFormat::QR_CODE;
+      })) {
+    return;
+  }
+
+  has_detected_qr_code_ = true;
+  // Turns off the renderer's heuristic scans, since this page already has a
+  // QR code and no further signals are needed.
+  const mojo::AssociatedRemote<mojom::FacilitatedPaymentsAgent>& agent =
+      GetOrCreateForFrame(render_frame_host).GetFacilitatedPaymentsAgent();
+  if (agent.is_bound()) {
+    agent->SetQrCodeDetectionEnabled(false);
+  }
+  // TODO(crbug.com/556832672): Validate the decoded QR codes and forward them
+  // to the frame's driver.
 }
 
 void ContentFacilitatedPaymentsDriverFactory::RenderFrameDeleted(

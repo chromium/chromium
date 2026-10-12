@@ -5,9 +5,13 @@
 #include "components/facilitated_payments/content/browser/content_facilitated_payments_driver_factory.h"
 
 #include <tuple>
+#include <utility>
+#include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "components/facilitated_payments/core/browser/mock_facilitated_payments_client.h"
 #include "components/facilitated_payments/core/features/features.h"
@@ -15,9 +19,14 @@
 #include "components/facilitated_payments/core/mojom/facilitated_payments_agent.mojom.h"
 #include "components/optimization_guide/core/hints/mock_optimization_guide_decider.h"
 #include "components/optimization_guide/core/hints/test_optimization_guide_decider.h"
+#include "components/wallet/content/browser/walletable_pass_barcode_detector.h"
+#include "components/wallet/content/common/mojom/image_extractor.mojom.h"
+#include "components/wallet/core/browser/data_models/wallet_barcode.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -56,6 +65,43 @@ class MockContentFacilitatedPaymentsDriver
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 
+namespace {
+
+// Records each `Detect()` request so that tests can inspect the options and
+// finish the detection when they choose.
+class FakeBarcodeDetector : public wallet::WalletablePassBarcodeDetector {
+ public:
+  void Detect(content::WebContents* web_contents,
+              wallet::mojom::ImageExtractionOptionsPtr extraction_options,
+              WalletBarcodeDetectionDetectCallback callback) override {
+    ++detect_count_;
+    last_options_ = std::move(extraction_options);
+    callback_ = std::move(callback);
+  }
+
+  // Finishes the pending detection with `barcodes`.
+  void Finish(std::vector<wallet::WalletBarcode> barcodes) {
+    std::move(callback_).Run(std::move(barcodes));
+  }
+
+  int detect_count() const { return detect_count_; }
+  const wallet::mojom::ImageExtractionOptionsPtr& last_options() const {
+    return last_options_;
+  }
+
+ private:
+  int detect_count_ = 0;
+  wallet::mojom::ImageExtractionOptionsPtr last_options_;
+  WalletBarcodeDetectionDetectCallback callback_;
+};
+
+class MockFacilitatedPaymentsAgent : public mojom::FacilitatedPaymentsAgent {
+ public:
+  MOCK_METHOD(void, SetQrCodeDetectionEnabled, (bool enabled), (override));
+};
+
+}  // namespace
+
 class ContentFacilitatedPaymentsDriverFactoryTest
     : public content::RenderViewHostTestHarness {
  public:
@@ -70,11 +116,15 @@ class ContentFacilitatedPaymentsDriverFactoryTest
         .WillByDefault(testing::Return(decider_.get()));
     factory_ = std::make_unique<ContentFacilitatedPaymentsDriverFactory>(
         web_contents(), client_.get());
+    auto barcode_detector = std::make_unique<FakeBarcodeDetector>();
+    barcode_detector_ = barcode_detector.get();
+    factory_->set_barcode_detector_for_testing(std::move(barcode_detector));
   }
 
   void TearDown() override {
     SetContents(nullptr);
 
+    barcode_detector_ = nullptr;
     factory_.reset();
     client_.reset();
     decider_.reset();
@@ -86,6 +136,8 @@ class ContentFacilitatedPaymentsDriverFactoryTest
   optimization_guide::MockOptimizationGuideDecider mock_decider_;
   std::unique_ptr<MockFacilitatedPaymentsClient> client_;
   std::unique_ptr<ContentFacilitatedPaymentsDriverFactory> factory_;
+  // Owned by `factory_`.
+  raw_ptr<FakeBarcodeDetector> barcode_detector_ = nullptr;
 };
 
 #if BUILDFLAG(IS_ANDROID)
@@ -322,6 +374,94 @@ TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,
   NavigateAndCommit(GURL("https://merchant.example/order"));
 
   EXPECT_FALSE(factory_->is_evaluating_qr_code_for_testing());
+}
+
+// Tests that qualifying signals request images with the QR code size and
+// aspect ratio limits from Finch rather than Wallet's.
+TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,
+       OnHeuristicSignalsReported_DetectsWithQrCodeExtractionOptions) {
+  static constexpr uint32_t kMinImageSize = 80;
+  static constexpr double kMaxAspectRatio = 1.5;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kEnableDesktopQrCodeDetection,
+      {{"min_image_size", "80"}, {"max_aspect_ratio", "1.5"}});
+  NavigateAndCommit(GURL("https://merchant.example/checkout"));
+
+  factory_->OnHeuristicSignalsReported(main_rfh(), *MakeQualifyingSignals());
+
+  ASSERT_EQ(barcode_detector_->detect_count(), 1);
+  ASSERT_TRUE(barcode_detector_->last_options());
+  EXPECT_EQ(barcode_detector_->last_options()->min_image_size, kMinImageSize);
+  EXPECT_EQ(barcode_detector_->last_options()->max_aspect_ratio,
+            kMaxAspectRatio);
+  EXPECT_TRUE(barcode_detector_->last_options()->include_canvas);
+}
+
+// Tests that signals that fail the rule never start a detection.
+TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,
+       OnHeuristicSignalsReported_NonQualifyingSignals_DoesNotDetect) {
+  NavigateAndCommit(GURL("https://merchant.example/checkout"));
+
+  factory_->OnHeuristicSignalsReported(main_rfh(), mojom::HeuristicSignals());
+
+  EXPECT_EQ(barcode_detector_->detect_count(), 0);
+}
+
+// Tests that a decoded QR code ends the evaluation, latches the page as
+// detected and stops the renderer from rescanning.
+TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,
+       OnBarcodesDetected_QrCode_StopsDetectionForPage) {
+  NavigateAndCommit(GURL("https://merchant.example/checkout"));
+  mojo::AssociatedRemote<mojom::FacilitatedPaymentsAgent> remote;
+  MockFacilitatedPaymentsAgent mock_agent;
+  mojo::AssociatedReceiver<mojom::FacilitatedPaymentsAgent> receiver(
+      &mock_agent, remote.BindNewEndpointAndPassDedicatedReceiver());
+  factory_->GetOrCreateForFrame(main_rfh())
+      .SetFacilitatedPaymentsAgentForTesting(std::move(remote));
+  factory_->OnHeuristicSignalsReported(main_rfh(), *MakeQualifyingSignals());
+
+  base::test::TestFuture<void> future;
+  EXPECT_CALL(mock_agent, SetQrCodeDetectionEnabled(false))
+      .WillOnce(base::test::RunOnceClosure(future.GetCallback()));
+  barcode_detector_->Finish({{.raw_value = "payload",
+                              .format = wallet::WalletBarcodeFormat::QR_CODE}});
+
+  EXPECT_TRUE(future.Wait());
+  EXPECT_FALSE(factory_->is_evaluating_qr_code_for_testing());
+  EXPECT_TRUE(factory_->has_detected_qr_code_for_testing());
+}
+
+// Tests that an evaluation without a QR code ends without latching the page,
+// so that a later report can try again.
+TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,
+       OnBarcodesDetected_NoQrCode_AllowsAnotherEvaluation) {
+  NavigateAndCommit(GURL("https://merchant.example/checkout"));
+  factory_->OnHeuristicSignalsReported(main_rfh(), *MakeQualifyingSignals());
+
+  barcode_detector_->Finish({{.raw_value = "012345678905",
+                              .format = wallet::WalletBarcodeFormat::UPC_A}});
+
+  EXPECT_FALSE(factory_->is_evaluating_qr_code_for_testing());
+  EXPECT_FALSE(factory_->has_detected_qr_code_for_testing());
+
+  factory_->OnHeuristicSignalsReported(main_rfh(), *MakeQualifyingSignals());
+
+  EXPECT_EQ(barcode_detector_->detect_count(), 2);
+}
+
+// Tests that barcodes decoded for a page that has since been navigated away
+// from are dropped.
+TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,
+       OnBarcodesDetected_AfterNavigation_IsIgnored) {
+  NavigateAndCommit(GURL("https://merchant.example/checkout"));
+  factory_->OnHeuristicSignalsReported(main_rfh(), *MakeQualifyingSignals());
+  NavigateAndCommit(GURL("https://merchant.example/order"));
+
+  barcode_detector_->Finish({{.raw_value = "payload",
+                              .format = wallet::WalletBarcodeFormat::QR_CODE}});
+
+  EXPECT_FALSE(factory_->has_detected_qr_code_for_testing());
 }
 
 // Parameters: `has_facilitated_payment_link`, `has_square_candidate`,

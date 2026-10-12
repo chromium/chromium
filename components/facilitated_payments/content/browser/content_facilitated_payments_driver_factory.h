@@ -6,13 +6,18 @@
 #define COMPONENTS_FACILITATED_PAYMENTS_CONTENT_BROWSER_CONTENT_FACILITATED_PAYMENTS_DRIVER_FACTORY_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "components/facilitated_payments/content/browser/content_facilitated_payments_driver.h"
 #include "components/facilitated_payments/core/mojom/facilitated_payments_agent.mojom.h"
+#include "components/wallet/content/browser/walletable_pass_barcode_detector.h"
+#include "components/wallet/core/browser/data_models/wallet_barcode.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 
 class GURL;
@@ -57,8 +62,15 @@ class ContentFacilitatedPaymentsDriverFactory
   bool is_evaluating_qr_code_for_testing() const {
     return is_evaluating_qr_code_;
   }
+  bool has_detected_qr_code_for_testing() const {
+    return has_detected_qr_code_;
+  }
   void set_has_detected_qr_code_for_testing(bool has_detected_qr_code) {
     has_detected_qr_code_ = has_detected_qr_code;
+  }
+  void set_barcode_detector_for_testing(
+      std::unique_ptr<wallet::WalletablePassBarcodeDetector> barcode_detector) {
+    barcode_detector_ = std::move(barcode_detector);
   }
 
  private:
@@ -110,6 +122,12 @@ class ContentFacilitatedPaymentsDriverFactory
   // merchant on the Optimization Guide allowlist.
   bool IsEligibleForQrCodeDetection(const GURL& url) const;
 
+  // Handles the `barcodes` decoded from the images of `document`. Ends the
+  // current evaluation, and if a QR code was found, stops detection for the
+  // rest of the page.
+  void OnBarcodesDetected(content::WeakDocumentPtr document,
+                          std::vector<wallet::WalletBarcode> barcodes);
+
   // Owns the drivers, one for each render frame host. Elements are erased in
   // RenderFrameDeleted(), or destroyed with `this` when the owning
   // `TabFeatures` is torn down before `WebContents`.
@@ -126,8 +144,14 @@ class ContentFacilitatedPaymentsDriverFactory
   // page.
   bool has_detected_qr_code_ = false;
 
+  // Extracts the page images and decodes the barcodes in them.
+  std::unique_ptr<wallet::WalletablePassBarcodeDetector> barcode_detector_;
+
   // Owner.
   const raw_ref<FacilitatedPaymentsClient> client_;
+
+  base::WeakPtrFactory<ContentFacilitatedPaymentsDriverFactory>
+      weak_ptr_factory_{this};
 };
 
 }  // namespace payments::facilitated
