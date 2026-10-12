@@ -196,7 +196,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   bool IsValid() const;
   virtual scoped_refptr<StaticBitmapImage> Snapshot(
       ImageOrientation = ImageOrientationEnum::kDefault);
-  void ReleaseImageProviderImages();
 
   void SetAnimatedImageFrameIndexes(
       scoped_refptr<const cc::AnimatedImageFrameIndexMap>);

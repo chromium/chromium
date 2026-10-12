@@ -1127,7 +1127,6 @@ std::optional<cc::PaintRecord> BaseRenderingContext2D::FlushCanvasInternal(
             &BaseRenderingContext2D::ApplyAnimatedImageFrameIndexesForId,
             WrapWeakPersistent(this));
     shared_image_provider_->RasterRecord(recording, std::move(custom_callback));
-    shared_image_provider_->ReleaseImageProviderImages();
   } else if (surface_) {
     ScopedRasterTimer timer(nullptr, nullptr);
     RasterRecordToSoftwareSurface(recording);

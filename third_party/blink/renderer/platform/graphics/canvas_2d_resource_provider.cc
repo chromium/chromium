@@ -451,13 +451,6 @@ scoped_refptr<StaticBitmapImage> Canvas2DResourceProvider::Snapshot(
   return cached_snapshot_;
 }
 
-void Canvas2DResourceProvider::ReleaseImageProviderImages() {
-  if (canvas_image_provider_) {
-    canvas_image_provider_->ReleaseLockedImages();
-    canvas_image_provider_->UnbindTextureBackedImages();
-  }
-}
-
 scoped_refptr<UnacceleratedStaticBitmapImage>
 Canvas2DResourceProvider::UnacceleratedSnapshot(ImageOrientation orientation) {
   if (!IsValid()) {
@@ -540,25 +533,25 @@ void Canvas2DResourceProvider::RasterRecord(
                                     GetOrCreateSWCanvasImageProvider());
     skia_canvas.drawPicture(std::move(last_recording),
                             std::move(custom_callback));
-    return;
+  } else if (!IsGpuContextLost()) {
+    EnsureResourceReadyForDraw();
+    EnsureWriteAccess();
+
+    const bool needs_clear = !is_cleared_;
+    is_cleared_ = true;
+    auto* image_provider = GetOrCreateCanvasImageProvider();
+
+    gpu::SyncToken sync_token = RasterInterface()->RasterSharedImage(
+        resource()->GetSharedImage(), resource()->acquire_sync_token(),
+        std::move(last_recording), image_provider, needs_clear,
+        std::move(custom_callback));
+    resource()->SetReleaseSyncToken(sync_token);
   }
 
-  if (IsGpuContextLost()) {
-    return;
+  if (canvas_image_provider_) {
+    canvas_image_provider_->ReleaseLockedImages();
+    canvas_image_provider_->UnbindTextureBackedImages();
   }
-
-  EnsureResourceReadyForDraw();
-  EnsureWriteAccess();
-
-  const bool needs_clear = !is_cleared_;
-  is_cleared_ = true;
-  auto* image_provider = GetOrCreateCanvasImageProvider();
-
-  gpu::SyncToken sync_token = RasterInterface()->RasterSharedImage(
-      resource()->GetSharedImage(), resource()->acquire_sync_token(),
-      std::move(last_recording), image_provider, needs_clear,
-      std::move(custom_callback));
-  resource()->SetReleaseSyncToken(sync_token);
 }
 
 void Canvas2DResourceProvider::OnFlushForImage(
