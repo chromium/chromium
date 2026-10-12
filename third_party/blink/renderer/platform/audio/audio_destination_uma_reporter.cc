@@ -121,6 +121,7 @@ void AudioDestinationUmaReporter::AddFifoDelay(base::TimeDelta fifo_delay) {
 void AudioDestinationUmaReporter::AddTotalPlayoutDelay(
     base::TimeDelta total_playout_delay) {
   total_playout_delay_sum_ += total_playout_delay;
+  total_playout_delay_count_++;
 }
 
 void AudioDestinationUmaReporter::IncreaseFifoUnderrunCount() {
@@ -144,19 +145,22 @@ void AudioDestinationUmaReporter::Report() {
                                   kMetricsReportCycle),
         1, 1000, 50);
 
-    base::UmaHistogramCustomCounts(
-        total_playout_delay_histogram_name_,
-        base::saturated_cast<int>(total_playout_delay_sum_.InMilliseconds() /
-                                  kMetricsReportCycle),
-        1, 1000, 50);
-    base::UmaHistogramCustomCounts(
-        total_playout_delay_histogram_name_with_latency_tag_,
-        base::saturated_cast<int>(total_playout_delay_sum_.InMilliseconds() /
-                                  kMetricsReportCycle),
-        1, 1000, 50);
+    if (total_playout_delay_count_ > 0) {
+      base::UmaHistogramCustomCounts(
+          total_playout_delay_histogram_name_,
+          base::saturated_cast<int>(total_playout_delay_sum_.InMilliseconds() /
+                                    total_playout_delay_count_),
+          1, 1000, 50);
+      base::UmaHistogramCustomCounts(
+          total_playout_delay_histogram_name_with_latency_tag_,
+          base::saturated_cast<int>(total_playout_delay_sum_.InMilliseconds() /
+                                    total_playout_delay_count_),
+          1, 1000, 50);
+    }
 
     fifo_delay_sum_ = base::TimeDelta();
     total_playout_delay_sum_ = base::TimeDelta();
+    total_playout_delay_count_ = 0;
 
     base::UmaHistogramCustomCounts(fifo_underrun_histogram_name_,
                                    fifo_underrun_count_, 1, 1000, 50);

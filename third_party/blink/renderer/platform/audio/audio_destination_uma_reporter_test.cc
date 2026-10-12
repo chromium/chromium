@@ -17,7 +17,7 @@ namespace blink {
 namespace {
 
 constexpr std::string_view kFifoDelayBase = "FIFODelay";
-constexpr std::string_view kTotalPlayoutDelayBase = "TotalPlayoutDelay";
+constexpr std::string_view kTotalPlayoutDelayBase = "TotalPlayoutDelay2";
 constexpr std::string_view kFifoUnderrunCountShortBase =
     "FIFOUnderrunCount.Short";
 constexpr std::string_view kFifoUnderrunCountIntervalsBase =
@@ -89,7 +89,11 @@ TEST_P(AudioDestinationUmaReporterTest, BasicTest) {
     base::TimeDelta fifo_delay = base::Milliseconds(50);
     uma_reporter_->AddFifoDelay(fifo_delay);
     base::TimeDelta infra_delay = base::Milliseconds(20);
-    uma_reporter_->AddTotalPlayoutDelay(fifo_delay + infra_delay);
+    // `kFakeBufferSize` (256 frames) holds 2 render quanta per callback.
+    constexpr int kQuantaPerCallback = 2;
+    for (int q = 0; q < kQuantaPerCallback; q++) {
+      uma_reporter_->AddTotalPlayoutDelay(fifo_delay + infra_delay);
+    }
     uma_reporter_->AddRenderDuration(fake_render_duration);
     uma_reporter_->AddRequestRenderDuration(fake_request_render_duration);
     uma_reporter_->AddRequestRenderGapDuration(

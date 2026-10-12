@@ -398,7 +398,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="WebAudio.AudioDestination.{ModeTag}.TotalPlayoutDelay{LatencyTag}"
+    name="WebAudio.AudioDestination.{ModeTag}.TotalPlayoutDelay2{LatencyTag}"
     units="ms" expires_after="2027-08-23">
   <owner>mjwilson@chromium.org</owner>
   <owner>hongchan@chromium.org</owner>
@@ -408,8 +408,10 @@ chromium-metrics-reviews@google.com.
     WebAudio graph to the speaker. This metric is categorized by
     &quot;ModeTag&quot;, which indicates the rendering mode: DualThread, used
     when audio worklet is involved. Or SingleThread, used when audio worklet is
-    not involved. The metric is averaged and reported at every 1000 render
-    callbacks.
+    not involved. The metric is averaged over all render quanta and reported at
+    every 1000 render callbacks. Replaces TotalPlayoutDelay, which was inflated
+    by the number of render quanta per callback (e.g. 4X for 512-frame
+    callbacks).
   </summary>
   <token key="ModeTag" variants="RenderMode"/>
   <token key="LatencyTag" variants="WebAudioLatencyTag"/>

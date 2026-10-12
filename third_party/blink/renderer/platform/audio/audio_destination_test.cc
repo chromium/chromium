@@ -6,6 +6,7 @@
 
 #include <array>
 #include <memory>
+#include <vector>
 
 #include "base/run_loop.h"
 #include "base/synchronization/lock.h"
@@ -147,7 +148,7 @@ class AudioCallback : public AudioIOCallback {
               const media::AudioGlitchInfo& glitch_info) override {
     audio_bus->Zero();
     frames_processed_ += frames_to_process;
-    last_latency_ = delay;
+    latencies_.push_back(delay);
     glitch_accumulator_.Add(glitch_info);
     render_call_count_++;
   }
@@ -158,7 +159,8 @@ class AudioCallback : public AudioIOCallback {
   int frames_processed_ = 0;
   int render_call_count_ = 0;
   media::AudioGlitchInfo::Accumulator glitch_accumulator_;
-  base::TimeDelta last_latency_;
+  // Playout delay of each rendered quantum, in render order.
+  std::vector<base::TimeDelta> latencies_;
 };
 
 // A custom TaskRunner that intercepts posted tasks and allows the test to
@@ -351,8 +353,12 @@ TEST_P(AudioDestinationTest, GlitchAndDelay) {
   // delay.
   const int priming_frames = RoundUpToRenderQuantum(requested_frames);
 #endif
-  base::TimeDelta priming_delay = media::AudioTimestampHelper::FramesToTime(
-      priming_frames, Platform::Current()->AudioHardwareSampleRate());
+  const double hardware_sample_rate =
+      Platform::Current()->AudioHardwareSampleRate();
+  const auto priming_delay = media::AudioTimestampHelper::FramesToTime(
+      priming_frames, hardware_sample_rate);
+  const auto buffer_duration = media::AudioTimestampHelper::FramesToTime(
+      requested_frames, hardware_sample_rate);
 
   auto audio_bus = media::AudioBus::Create(kDefaultHardwareOutputChannelNumber,
                                            requested_frames);
@@ -360,19 +366,30 @@ TEST_P(AudioDestinationTest, GlitchAndDelay) {
   audio_destination->Start();
 
   for (int i = 0; i < kRenderCount; ++i) {
+    callback_.latencies_.clear();
     audio_destination->Render(delays[i], base::TimeTicks::Now(), glitches[i],
                               audio_bus.get());
 
     EXPECT_EQ(callback_.glitch_accumulator_.GetAndReset(), glitches[i]);
 
-    if (audio_destination->SampleRate() !=
-        Platform::Current()->AudioHardwareSampleRate()) {
-      // Resampler kernel adds a bit of a delay.
-      EXPECT_GE(callback_.last_latency_, delays[i] + priming_delay);
-      EXPECT_LE(callback_.last_latency_,
-                delays[i] + base::Milliseconds(1) + priming_delay);
+    ASSERT_FALSE(callback_.latencies_.empty());
+    if (audio_destination->SampleRate() != hardware_sample_rate) {
+      // The resampler can pull during any quantum in the callback buffer, and
+      // its kernel adds a bit of delay.
+      for (const auto latency : callback_.latencies_) {
+        EXPECT_GE(latency, delays[i] + priming_delay);
+        EXPECT_LE(latency, delays[i] + priming_delay + buffer_duration +
+                               base::Milliseconds(1));
+      }
     } else {
-      EXPECT_EQ(callback_.last_latency_, delays[i] + priming_delay);
+      ASSERT_EQ(callback_.latencies_.size(),
+                static_cast<size_t>(requested_frames / kWebAudioRenderQuantum));
+      for (size_t q = 0; q < callback_.latencies_.size(); ++q) {
+        const auto quantum_offset = media::AudioTimestampHelper::FramesToTime(
+            q * kWebAudioRenderQuantum, hardware_sample_rate);
+        EXPECT_EQ(callback_.latencies_[q],
+                  delays[i] + priming_delay + quantum_offset);
+      }
     }
   }
 

@@ -733,7 +733,7 @@ bool AudioDestination::RequestRender(
     uma_reporter_.IncreaseFifoUnderrunCount();
   }
 
-  delay_to_report_ = delay + fifo_delay;
+  const base::TimeDelta first_quantum_delay = delay + fifo_delay;
   glitch_info_to_report_.Add(glitch_info);
 
   output_position_.position =
@@ -762,6 +762,12 @@ bool AudioDestination::RequestRender(
     if (output_position_.position < 0.0) {
       output_position_.position = 0.0;
     }
+
+    // Later quanta are pushed behind earlier ones, so they play out later. We
+    // compute this from `pushed_frames` to avoid accumulating rounding errors.
+    delay_to_report_ = first_quantum_delay +
+                       media::AudioTimestampHelper::FramesToTime(
+                           pushed_frames, web_audio_device_->SampleRate());
 
     // Process WebAudio graph and push the rendered output to FIFO.
     if (resampler_) {

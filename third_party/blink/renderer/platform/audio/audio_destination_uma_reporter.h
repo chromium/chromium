@@ -50,7 +50,7 @@ class PLATFORM_EXPORT AudioDestinationUmaReporter final {
   static constexpr std::string_view kUnexpectedFifoUnderrunHistogramNameBase =
       "UnexpectedFIFOUnderrunCount";
   static constexpr std::string_view kTotalPlayoutDelayHistogramNameBase =
-      "TotalPlayoutDelay";
+      "TotalPlayoutDelay2";
   static constexpr std::string_view kRenderTimeRatioHistogramNameBase =
       "RenderTimeRatio";
   static constexpr std::string_view kRequestRenderTimeRatioHistogramNameBase =
@@ -83,6 +83,9 @@ class PLATFORM_EXPORT AudioDestinationUmaReporter final {
   // the speaker. Averaged, reported and reset at every 'kMetricsReportCycle'
   // audio callbacks.
   base::TimeDelta total_playout_delay_sum_;
+  // Number of delays in `total_playout_delay_sum_`. We add one per render
+  // quantum, so there can be several per callback.
+  int total_playout_delay_count_ = 0;
 
   // Histogram names for metrics reported by `AudioDestinationUmaReporter`.
   // These names are constructed during initialization (or updated in
