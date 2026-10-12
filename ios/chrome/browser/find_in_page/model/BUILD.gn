@@ -74,3 +74,20 @@ source_set("eg_test_support+eg2") {
   ]
   deps = [ "//ios/testing/earl_grey:eg_test_support+eg2" ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "find_tab_helper_unittest.mm" ]
+  deps = [
+    ":model",
+    "//base/test:test_support",
+    "//components/ukm:test_support",
+    "//components/ukm/ios:ukm_url_recorder",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//testing/gtest",
+  ]
+}

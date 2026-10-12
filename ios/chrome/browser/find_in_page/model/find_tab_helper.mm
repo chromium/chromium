@@ -25,6 +25,9 @@ FindTabHelper::~FindTabHelper() {
 }
 
 void FindTabHelper::DismissFindNavigator() {
+  if (!IsFindUIActive()) {
+    return;
+  }
   // Same as `StopFinding()` except the UI is not marked as inactive so it can
   // be set back up if needed later.
   if (IsFullscreenRefactoringEnabled()) {
