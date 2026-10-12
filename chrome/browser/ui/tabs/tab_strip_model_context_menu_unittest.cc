@@ -539,3 +539,17 @@ TEST_F(NonGroupFocusDissolutionTest,
   EXPECT_EQ(tab_strip_model()->GetTabGroupForTab(1), std::nullopt);
   EXPECT_EQ(tab_strip_model()->GetTabGroupForTab(2), std::nullopt);
 }
+
+TEST_F(NonGroupFocusDissolutionTest,
+       UngroupingFocusedEphemeralGroupDissolvesIt) {
+  const tab_groups::TabGroupId ephemeral_group =
+      StartNonGroupFocus(/*tab_count=*/2, /*focused_tab_count=*/2);
+
+  tab_strip_model()->RemoveFromGroup({0, 1});
+
+  EXPECT_EQ(tab_strip_model()->GetFocusedGroup(), std::nullopt);
+  EXPECT_FALSE(
+      tab_strip_model()->group_model()->ContainsTabGroup(ephemeral_group));
+  EXPECT_EQ(tab_strip_model()->GetTabGroupForTab(0), std::nullopt);
+  EXPECT_EQ(tab_strip_model()->GetTabGroupForTab(1), std::nullopt);
+}
