@@ -227,7 +227,7 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
   SkColorType color_type_ = kRGBA_8888_SkColorType;
 
   static NotShared<DOMArrayBufferView> AllocateAndValidateDataArray(
-      const unsigned&,
+      size_t length,
       SkColorType,
       bool initialize,
       ExceptionState&);
