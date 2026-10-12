@@ -15,6 +15,7 @@ enum class ComposeboxMenuSectionIdentifier {
   kTools,
   kModels,
   kMoreOptionsSubmenu,
+  kCurrentTab,
 };
 
 // Represents a section in the Composebox menu.

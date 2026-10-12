@@ -1713,6 +1713,13 @@ inline constexpr char kPlusButtonMenuStringUpdatesDescription[] =
     "When enabled, the updated strings and subtitles are shown in the plus "
     "button menu";
 
+inline constexpr char kPlusButtonMenuVerticalListViewName[] =
+    "Show the vertical list design for the attachment options in plus button "
+    "bottom sheet menu.";
+inline constexpr char kPlusButtonMenuVerticalListViewDescription[] =
+    "When enabled the vertical list design for the attachment options is used "
+    "in the plus button bottom sheet menu.";
+
 inline constexpr char kPriceTrackingPromoName[] =
     "Enables price tracking notification promo card";
 inline constexpr char kPriceTrackingPromoDescription[] =

@@ -856,6 +856,12 @@ BASE_DECLARE_FEATURE(kPlusButtonMenuStringUpdates);
 // Returns true if the string updates in the plus button menu.
 bool IsPlusButtonMenuStringUpdatesEnabled();
 
+// Enables the string updates in the plus button menu.
+BASE_DECLARE_FEATURE(kPlusButtonMenuVerticalListView);
+
+// Returns true if the vertical list view is enabled in the plus button menu.
+bool IsPlusButtonMenuVerticalListView();
+
 // Enables the `AssistantAimMinimizedState` feature.
 BASE_DECLARE_FEATURE(kAssistantAimMinimizedState);
 

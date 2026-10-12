@@ -40,6 +40,7 @@ const CGFloat kAttachmentGroupEstimatedLargeHeight = 100.0f;
 
 // The top padding for the collection view.
 const CGFloat kCollectionViewTopPadding = 20.0f;
+const CGFloat kCollectionViewSectionVerticalInset = 20.0f;
 
 // Spacing between attachment items.
 const CGFloat kAttachmentItemSpacing = 6.0f;
@@ -51,7 +52,8 @@ const CGFloat kAttachmentItemMinimumWidth = 60.0f;
 const CGFloat kAttachmentItemLargeMinimumWidth = 80.0f;
 
 // Insets for the model and tools sections.
-const NSDirectionalEdgeInsets kListSectionInsets = {0, 16.0, 20.0, 16.0};
+const NSDirectionalEdgeInsets kListSectionInsets = {
+    0, 16.0, kCollectionViewSectionVerticalInset, 16.0};
 
 // Insets for the attachments section.
 const NSDirectionalEdgeInsets kAttachmentSectionInsets = {6.0, 16.0, 8.0, 16.0};
@@ -89,6 +91,19 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
 
 }  // namespace
 
+// Container view with safe area insets overridden.
+@interface ComposeboxMenuPageView : UIView
+
+@end
+
+@implementation ComposeboxMenuPageView
+
+- (UIEdgeInsets)safeAreaInsets {
+  return UIEdgeInsetsZero;
+}
+
+@end
+
 @implementation ComposeboxMenuPageViewController {
   // The diffable data source for the collection view.
   UICollectionViewDiffableDataSource<NSNumber*, ComposeboxMenuItem*>*
@@ -97,6 +112,7 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
   NSArray<ComposeboxMenuSection*>* _sections;
   // The UI input state for the composebox.
   ComposeboxUIInputState* _inputState;
+  UIView* _containerView;
 }
 
 - (instancetype)initWithPageType:(ComposeboxMenuPageType)menuPageType {
@@ -116,7 +132,7 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  self.view.backgroundColor =
+  _containerView.backgroundColor =
       [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
 
   [self setUpCollectionView];
@@ -142,6 +158,10 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
   CHECK(_inputState);
   NSMutableArray<ComposeboxMenuSection*>* sections =
       [[NSMutableArray alloc] init];
+
+  if (ComposeboxMenuSection* currentTabSection = [self currentTabSection]) {
+    [sections addObject:currentTabSection];
+  }
   if (ComposeboxMenuSection* attachmentsSection = [self attachmentsSection]) {
     [sections addObject:attachmentsSection];
   }
@@ -161,9 +181,18 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
   _sections = sections;
 }
 
+- (void)loadView {
+  [super loadView];
+
+  _containerView = [[ComposeboxMenuPageView alloc] init];
+  _containerView.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.view addSubview:_containerView];
+  AddSameConstraints(self.view, _containerView);
+}
+
 - (void)setUpCollectionView {
   _collectionView =
-      [[UICollectionView alloc] initWithFrame:self.view.bounds
+      [[UICollectionView alloc] initWithFrame:_containerView.bounds
                          collectionViewLayout:[self createLayout]];
   _collectionView.translatesAutoresizingMaskIntoConstraints = NO;
   _collectionView.delegate = self;
@@ -172,11 +201,16 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
   _collectionView.showsVerticalScrollIndicator = NO;
   _collectionView.showsHorizontalScrollIndicator = NO;
   _collectionView.contentInsetAdjustmentBehavior =
-      UIScrollViewContentInsetAdjustmentNever;
-  _collectionView.contentInset =
-      UIEdgeInsetsMake(kCollectionViewTopPadding, 0, 0, 0);
+      UIScrollViewContentInsetAdjustmentAlways;
 
-  [self.view addSubview:_collectionView];
+  CGFloat topPadding = kCollectionViewTopPadding;
+  if (_menuPageType != ComposeboxMenuPageType::kSecondaryPage &&
+      IsPlusButtonMenuVerticalListView()) {
+    topPadding += kCollectionViewSectionVerticalInset;
+  }
+  _collectionView.contentInset = UIEdgeInsetsMake(topPadding, 0, 0, 0);
+  _collectionView.insetsLayoutMarginsFromSafeArea = NO;
+  [_containerView addSubview:_collectionView];
 
   if (_menuPageType == ComposeboxMenuPageType::kSecondaryPage) {
     AddSameConstraints(_collectionView, self.view.safeAreaLayoutGuide);
@@ -203,20 +237,18 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
 - (NSCollectionLayoutSection*)
     layoutSectionForIndex:(NSInteger)sectionIndex
         layoutEnvironment:(id<NSCollectionLayoutEnvironment>)layoutEnvironment {
-  ComposeboxMenuSectionIdentifier identifier =
-      ComposeboxMenuSectionIdentifier::kAttachments;
-  if (sectionIndex < (NSInteger)_sections.count) {
-    identifier = _sections[sectionIndex].identifier;
-  }
+  //  ComposeboxMenuSectionIdentifier identifier =
+  //      ComposeboxMenuSectionIdentifier::kAttachments;
+  //  if (sectionIndex < (NSInteger)_sections.count) {
+  //    identifier = _sections[sectionIndex].identifier;
+  //  }
 
   NSString* sectionTitle = nil;
   if (sectionIndex < (NSInteger)_sections.count) {
     sectionTitle = _sections[sectionIndex].title;
   }
 
-  BOOL useCarousel =
-      identifier == ComposeboxMenuSectionIdentifier::kAttachments &&
-      _menuPageType != ComposeboxMenuPageType::kSecondaryPage;
+  BOOL useCarousel = [self showHorizontalCarouselAtSection:sectionIndex];
   if (useCarousel) {
     CGFloat itemsCount = 1.0;
     if (sectionIndex < (NSInteger)_sections.count) {
@@ -501,7 +533,8 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
                 cellProvider:^UICollectionViewCell*(
                     UICollectionView* collectionView, NSIndexPath* indexPath,
                     ComposeboxMenuItem* item) {
-                  if ([weakSelf showHorizontalCarouselAtIndexPath:indexPath]) {
+                  if ([weakSelf
+                          showHorizontalCarouselAtSection:indexPath.section]) {
                     return [collectionView
                         dequeueConfiguredReusableCellWithRegistration:
                             attachmentCellRegistration
@@ -562,8 +595,8 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
 
 #pragma mark - Private Configuration Helpers
 // Whether to show a horizontal carousel for the section at index path.
-- (BOOL)showHorizontalCarouselAtIndexPath:(NSIndexPath*)indexPath {
-  return _sections[indexPath.section].showAsHorizontalCarousel;
+- (BOOL)showHorizontalCarouselAtSection:(NSInteger)section {
+  return _sections[section].showAsHorizontalCarousel;
 }
 
 - (void)configureListCell:(ComposeboxMenuListCell*)cell
@@ -675,9 +708,11 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
     return nil;
   }
 
-  BOOL showAsHorizontalCarousel =
+  BOOL pageEligibleForCarouselView =
       _menuPageType == ComposeboxMenuPageType::kFullMenu ||
       _menuPageType == ComposeboxMenuPageType::kMainPage;
+  BOOL showAsHorizontalCarousel =
+      !IsPlusButtonMenuVerticalListView() && pageEligibleForCarouselView;
 
   BOOL showSectionTitle = IsPlusButtonMenuStringUpdatesEnabled() &&
                           _menuPageType == ComposeboxMenuPageType::kMainPage;
@@ -813,19 +848,12 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
   NSMutableArray<ComposeboxMenuItem*>* moreOptionsItems =
       [[NSMutableArray alloc] init];
 
-  if (![_inputState
+  if (!IsPlusButtonMenuVerticalListView() &&
+      ![_inputState
           isAttachmentHidden:ComposeboxAttachmentOption::kCurrentTab]) {
-    UIImage* icon =
-        ResizeImage(_inputState.currentTabFavicon,
-                    CGSizeMake(kSymbolActionPointSize, kSymbolActionPointSize),
-                    ProjectionMode::kAspectFill);
-    if (!icon) {
-      icon = SymbolWithPointSize(SymbolGlobe, kSymbolActionPointSize);
-    }
-
     ComposeboxMenuItem* currentTabItem = [[ComposeboxMenuItem alloc]
         initWithTitle:[self currentTabTitle]
-                image:icon
+                image:[self currentTabIcon]
                  type:ComposeboxMenuItemType::kCurrentTab
              disabled:[_inputState
                           isAttachmentDisabled:ComposeboxAttachmentOption::
@@ -857,6 +885,32 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
          identifier:ComposeboxMenuSectionIdentifier::kMoreOptionsSubmenu];
 }
 
+// Returns the section containing only the current tab section, as a separate
+// item.
+- (ComposeboxMenuSection*)currentTabSection {
+  BOOL currentTabHidden =
+      [_inputState isAttachmentHidden:ComposeboxAttachmentOption::kCurrentTab];
+  if (!IsPlusButtonMenuVerticalListView() || currentTabHidden ||
+      _menuPageType != ComposeboxMenuPageType::kMainPage) {
+    return nil;
+  }
+
+  NSArray<ComposeboxMenuItem*>* items = @[
+
+    [[ComposeboxMenuItem alloc]
+        initWithTitle:[self currentTabTitle]
+                image:[self currentTabIcon]
+                 type:ComposeboxMenuItemType::kCurrentTab
+             disabled:[_inputState isAttachmentDisabled:
+                                       ComposeboxAttachmentOption::kCurrentTab]]
+  ];
+
+  return [[ComposeboxMenuSection alloc]
+      initWithTitle:nil
+              items:items
+         identifier:ComposeboxMenuSectionIdentifier::kCurrentTab];
+}
+
 // The title used for the current tab item.
 - (NSString*)currentTabTitle {
   return IsPlusButtonMenuStringUpdatesEnabled()
@@ -864,6 +918,19 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
                    IDS_IOS_COMPOSEBOX_ASK_ABOUT_THIS_PAGE_ACTION)
              : l10n_util::GetNSString(
                    IDS_IOS_COMPOSEBOX_MENU_ADD_CURRENT_TAB_ACTION);
+}
+
+// The icon for the current tab.
+- (UIImage*)currentTabIcon {
+  UIImage* icon =
+      ResizeImage(_inputState.currentTabFavicon,
+                  CGSizeMake(kSymbolActionPointSize, kSymbolActionPointSize),
+                  ProjectionMode::kAspectFill);
+  if (icon) {
+    return icon;
+  }
+
+  return SymbolWithPointSize(SymbolGlobe, kSymbolActionPointSize);
 }
 
 @end

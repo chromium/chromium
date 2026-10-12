@@ -1072,6 +1072,15 @@ bool IsPlusButtonMenuStringUpdatesEnabled() {
   return base::FeatureList::IsEnabled(kPlusButtonMenuStringUpdates);
 }
 
+// Enables the string updates in the plus button menu.
+BASE_FEATURE(kPlusButtonMenuVerticalListView,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Returns true if the vertical list view is enabled in the plus button menu.
+bool IsPlusButtonMenuVerticalListView() {
+  return base::FeatureList::IsEnabled(kPlusButtonMenuVerticalListView);
+}
+
 BASE_FEATURE(kAssistantAimMinimizedState, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsAssistantAimMinimizedStateEnabled() {

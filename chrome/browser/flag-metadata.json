@@ -8281,6 +8281,11 @@
     "expiry_milestone": 168
   },
   {
+    "name": "plus-button-menu-vertical-list-view",
+    "owners": [ "radunitescu@google.com", "bling-search@google.com" ],
+    "expiry_milestone": 168
+  },
+  {
     "name": "policy-registration-delay",
     "owners": ["ydago@chromium.org", "zmin@google.com"],
     "expiry_milestone": 148
