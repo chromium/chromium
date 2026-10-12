@@ -2874,15 +2874,8 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
 // focused the omnibox. On Aura, switching tabs while the popup holds activation
 // makes the browser window restore the tab's stored focus when it's next
 // activated, which focusing the find bar does.
-// TODO(b/571201192): Enable on macOS once `BrowserView` no longer restores the
-// tab's focus over the find bar's pending focus request.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_FindBarAfterNewTabKeepsFocus DISABLED_FindBarAfterNewTabKeepsFocus
-#else
-#define MAYBE_FindBarAfterNewTabKeepsFocus FindBarAfterNewTabKeepsFocus
-#endif
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
-                       MAYBE_FindBarAfterNewTabKeepsFocus) {
+                       FindBarAfterNewTabKeepsFocus) {
   base::AutoReset<bool> disable_animations =
       FindBarHost::SetEnableAnimationsForTesting(false);
 
