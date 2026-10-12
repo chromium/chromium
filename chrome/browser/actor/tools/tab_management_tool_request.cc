@@ -5,7 +5,11 @@
 #include "chrome/browser/actor/tools/tab_management_tool_request.h"
 
 #include <memory>
+#include <optional>
+#include <string_view>
 
+#include "chrome/browser/actor/tools/registry/tool_definition.h"
+#include "chrome/browser/actor/tools/registry/tool_definition_builder.h"
 #include "chrome/browser/actor/tools/tab_management_tool.h"
 #include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
 #include "chrome/common/actor/action_result.h"
@@ -13,6 +17,14 @@
 #include "ui/base/window_open_disposition.h"
 
 namespace actor {
+
+namespace {
+
+// Default description for the `close_current_tab` tool.
+constexpr std::string_view kCloseTabToolDescription =
+    "Close the current browser tab.";
+
+}  // namespace
 
 using tabs::TabInterface;
 
@@ -74,6 +86,13 @@ CloseTabToolRequest::CloseTabToolRequest(tabs::TabHandle tab_handle)
     : TabToolRequest(tab_handle) {}
 
 CloseTabToolRequest::~CloseTabToolRequest() = default;
+
+// static
+std::optional<ToolDefinition> CloseTabToolRequest::GetToolDefinition() {
+  return ToolDefinitionBuilder(ToolId::kCloseTab, kModelFacingName,
+                               kCloseTabToolDescription)
+      .Build();
+}
 
 ToolRequest::CreateToolResult CloseTabToolRequest::CreateTool(
     TaskId task_id,

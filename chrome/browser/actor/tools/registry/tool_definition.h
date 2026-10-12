@@ -55,7 +55,9 @@ enum class ToolId {
   kEnterFullscreen = 17,
   // Highlights matching text in the active tab and scrolls it into view.
   kFindAndHighlight = 18,
-  kMaxValue = kFindAndHighlight,
+  // Closes the active tab.
+  kCloseTab = 19,
+  kMaxValue = kCloseTab,
 };
 
 // In-memory metadata and parameter schema for a shared browser tool. Prefer

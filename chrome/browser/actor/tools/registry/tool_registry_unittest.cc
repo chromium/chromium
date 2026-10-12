@@ -40,6 +40,7 @@
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 #include "chrome/browser/actor/tools/open_known_page_tool_request.h"
 #include "chrome/browser/actor/tools/switch_tab_tool_request.h"
+#include "chrome/browser/actor/tools/tab_management_tool_request.h"
 #include "chrome/browser/actor/tools/window_management_tool_request.h"
 #endif
 
@@ -270,6 +271,19 @@ TEST(ToolRegistryTest, FindAndHighlightToolDefinition) {
   EXPECT_THAT(*definition,
               RequiresParam(FindAndHighlightToolRequest::kQueryParam));
 }
+
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+TEST(ToolRegistryTest, CloseTabToolDefinition) {
+  const std::optional<ToolDefinition> definition =
+      CloseTabToolRequest::GetToolDefinition();
+  ASSERT_TRUE(definition.has_value());
+  EXPECT_EQ(definition->id, ToolId::kCloseTab);
+  EXPECT_EQ(definition->name, CloseTabToolRequest::kModelFacingName);
+  EXPECT_THAT(definition->parameters_json_schema,
+              base::test::DictionaryHasValue("properties",
+                                             base::Value(base::DictValue())));
+}
+#endif
 
 TEST(ToolRegistryTest, GetAllToolsContainsNavigateTool) {
   base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
@@ -502,6 +516,19 @@ TEST(ToolRegistryTest, GetAllToolsContainsFindAndHighlightTool) {
                                     ToolId::kFindAndHighlight,
                                     &ToolDefinition::id));
 }
+
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+TEST(ToolRegistryTest, GetAllToolsContainsCloseTabTool) {
+  base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  ActorKeyedService* service = ActorKeyedService::Get(&profile);
+  CHECK(service);
+
+  EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
+                                    ToolId::kCloseTab, &ToolDefinition::id));
+}
+#endif
 
 TEST(ToolRegistryTest, ToolIdToNameReturnsEmptyForUnrecognizedId) {
   EXPECT_TRUE(ToolRegistry::ToolIdToName(kUnrecognizedToolId).empty());
