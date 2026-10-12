@@ -62,6 +62,7 @@ class DEVICE_VR_EXPORT OpenXrGraphicsBindingVulkan
   // OpenXrGraphicsBinding:
   bool WaitOnFence(OpenXrCompositionLayer& layer,
                    gfx::GpuFence& gpu_fence) override;
+  bool WaitOnImplicitFence(OpenXrCompositionLayer& layer) override;
   bool RenderLayer(
       OpenXrCompositionLayer& layer,
       const scoped_refptr<viz::ContextProvider>& context_provider) override;

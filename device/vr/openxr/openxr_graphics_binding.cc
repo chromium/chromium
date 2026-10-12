@@ -301,6 +301,22 @@ bool OpenXrGraphicsBinding::WaitOnBaseLayerFence(gfx::GpuFence& gpu_fence) {
   return WaitOnFence(*base_layer_, gpu_fence);
 }
 
+#if BUILDFLAG(IS_LINUX)
+bool OpenXrGraphicsBinding::WaitOnImplicitFences(
+    const std::vector<LayerId>& updated_layers) {
+  if (layers_sequence_.empty()) {
+    return base_layer_ && WaitOnImplicitFence(*base_layer_);
+  }
+  for (LayerId layer_id : updated_layers) {
+    auto layer_it = layers_.find(layer_id);
+    if (layer_it != layers_.end() && !WaitOnImplicitFence(*layer_it->second)) {
+      return false;
+    }
+  }
+  return true;
+}
+#endif  // BUILDFLAG(IS_LINUX)
+
 void OpenXrGraphicsBinding::UpdateProjectionLayerActiveSwapchainImageSize(
     gpu::SharedImageInterface* sii) {
   CHECK(base_layer_);

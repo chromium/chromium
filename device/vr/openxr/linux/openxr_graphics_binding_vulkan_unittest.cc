@@ -232,4 +232,11 @@ TEST_F(OpenXrGraphicsBindingVulkanTest, CanCreateSession) {
   EXPECT_NE(xr_session_, XR_NULL_HANDLE);
 }
 
+TEST(OpenXrVulkanContextTest, WaitOnWriteFenceNeedsExternalFenceFd) {
+  // A context that was not initialized cannot import fences.
+  OpenXrVulkanContext context;
+  OpenXrVulkanContext::IntermediateImage image;
+  EXPECT_FALSE(context.WaitOnWriteFence(image));
+}
+
 }  // namespace device

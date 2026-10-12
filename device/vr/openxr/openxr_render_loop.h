@@ -282,6 +282,10 @@ class OpenXrRenderLoop : public XRThread,
   void OnWebXrTokenSignaled(int16_t frame_index,
                             std::vector<LayerId> updated_layers,
                             std::unique_ptr<gfx::GpuFence> gpu_fence);
+#if BUILDFLAG(IS_LINUX)
+  void OnWebXrWritesFlushed(int16_t frame_index,
+                            std::vector<LayerId> updated_layers);
+#endif
 
   void MaybeRejectSessionCallback();
 

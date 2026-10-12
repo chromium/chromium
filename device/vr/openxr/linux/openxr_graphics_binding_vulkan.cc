@@ -311,6 +311,20 @@ bool OpenXrGraphicsBindingVulkan::WaitOnFence(OpenXrCompositionLayer& layer,
   return vulkan_->WaitOnSyncFd(fence_fd);
 }
 
+bool OpenXrGraphicsBindingVulkan::WaitOnImplicitFence(
+    OpenXrCompositionLayer& layer) {
+  OpenXrSwapchainInfo* active_info = layer.GetActiveSwapchainImage();
+  if (!active_info) {
+    return false;
+  }
+  const size_t active_index =
+      static_cast<size_t>(active_info - layer.GetSwapchainImages().data());
+  if (active_index >= intermediate_images_.size()) {
+    return false;
+  }
+  return vulkan_->WaitOnWriteFence(intermediate_images_[active_index]);
+}
+
 bool OpenXrGraphicsBindingVulkan::RenderLayer(
     OpenXrCompositionLayer& layer,
     const scoped_refptr<viz::ContextProvider>& context_provider) {

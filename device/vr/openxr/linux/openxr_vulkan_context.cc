@@ -4,10 +4,12 @@
 
 #include "device/vr/openxr/linux/openxr_vulkan_context.h"
 
+#include <sys/ioctl.h>
 #include <unistd.h>
 
 #include <algorithm>
 #include <string_view>
+#include <tuple>
 #include <vector>
 
 #include "base/check.h"
@@ -20,6 +22,7 @@
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 #include "ui/gfx/extension_set.h"
+#include "ui/gfx/linux/dmabuf_uapi.h"
 #include "ui/gfx/native_pixmap_handle.h"
 
 namespace device {
@@ -247,7 +250,8 @@ bool OpenXrVulkanContext::Initialize(XrInstance instance, XrSystemId system) {
   has_external_semaphore_fd_ =
       MaybeAdd(VK_KHR_EXTERNAL_SEMAPHORE_FD_EXTENSION_NAME);
   MaybeAdd(VK_KHR_EXTERNAL_FENCE_EXTENSION_NAME);
-  MaybeAdd(VK_KHR_EXTERNAL_FENCE_FD_EXTENSION_NAME);
+  const bool has_external_fence_fd =
+      MaybeAdd(VK_KHR_EXTERNAL_FENCE_FD_EXTENSION_NAME);
 
   float queue_priority = 1.0f;
   VkDeviceQueueCreateInfo queue_ci{};
@@ -294,6 +298,10 @@ bool OpenXrVulkanContext::Initialize(XrInstance instance, XrSystemId system) {
     DVLOG(1) << __func__ << " Failed to bind Vulkan device entry points";
     DestroyVulkanState();
     return false;
+  }
+  if (has_external_fence_fd) {
+    import_fence_fd_ = reinterpret_cast<PFN_vkImportFenceFdKHR>(
+        vkGetDeviceProcAddr(vk_device_, "vkImportFenceFdKHR"));
   }
 
   // --- Step 8: Retrieve the VkQueue and create a command pool ---------------
@@ -447,6 +455,7 @@ bool OpenXrVulkanContext::CreateExportableImage(const gfx::Size& size,
   out_image->stride = static_cast<uint32_t>(layout.rowPitch);
   out_image->offset = static_cast<uint32_t>(layout.offset);
   out_image->allocation_size = layout.size;
+  out_image->dma_buf_fd = ExportImageMemoryFd(*out_image);
   return true;
 }
 
@@ -587,6 +596,7 @@ bool OpenXrVulkanContext::ImportDmaBufImage(
   out_image->stride = handle.planes[0].stride;
   out_image->offset = handle.planes[0].offset;
   out_image->allocation_size = mem_reqs.size;
+  out_image->dma_buf_fd.reset(HANDLE_EINTR(dup(handle.planes[0].fd.get())));
   return true;
 }
 
@@ -615,6 +625,49 @@ void OpenXrVulkanContext::DestroyIntermediateImage(IntermediateImage& image) {
     vkFreeMemory(vk_device_, image.memory, nullptr);
     image.memory = VK_NULL_HANDLE;
   }
+  image.dma_buf_fd.reset();
+}
+
+bool OpenXrVulkanContext::WaitOnWriteFence(const IntermediateImage& image) {
+  if (!import_fence_fd_) {
+    return false;
+  }
+
+  // What a reader has to wait for is the writes.
+  struct dma_buf_export_sync_file request;
+  request.flags = DMA_BUF_SYNC_READ;
+  request.fd = -1;
+  if (HANDLE_EINTR(ioctl(image.dma_buf_fd.get(), DMA_BUF_IOCTL_EXPORT_SYNC_FILE,
+                         &request)) < 0) {
+    return false;
+  }
+  base::ScopedFD sync_file(request.fd);
+
+  VkFence fence = VK_NULL_HANDLE;
+  VkFenceCreateInfo fence_ci{VK_STRUCTURE_TYPE_FENCE_CREATE_INFO};
+  if (vkCreateFence(vk_device_, &fence_ci, nullptr, &fence) != VK_SUCCESS) {
+    return false;
+  }
+  VkImportFenceFdInfoKHR import_info{
+      VK_STRUCTURE_TYPE_IMPORT_FENCE_FD_INFO_KHR};
+  import_info.fence = fence;
+  import_info.flags = VK_FENCE_IMPORT_TEMPORARY_BIT;
+  import_info.handleType = VK_EXTERNAL_FENCE_HANDLE_TYPE_SYNC_FD_BIT;
+  import_info.fd = sync_file.get();
+
+  // A signaled fence says nothing: the writes may be done, or their driver may
+  // not attach its fences to the DMA-BUF at all.
+  bool pending = false;
+  if (import_fence_fd_(vk_device_, &import_info) == VK_SUCCESS) {
+    // The import took ownership of the FD.
+    std::ignore = sync_file.release();
+    pending = vkGetFenceStatus(vk_device_, fence) == VK_NOT_READY;
+    if (pending) {
+      vkWaitForFences(vk_device_, 1, &fence, VK_TRUE, UINT64_MAX);
+    }
+  }
+  vkDestroyFence(vk_device_, fence, nullptr);
+  return pending;
 }
 
 bool OpenXrVulkanContext::WaitOnSyncFd(int fence_fd) {

@@ -35,6 +35,8 @@ class DEVICE_VR_EXPORT OpenXrVulkanContext {
     // Tracks the current Vulkan image layout so CopyToSwapchainImage can
     // supply the correct oldLayout in pipeline barriers across frames.
     VkImageLayout current_layout = VK_IMAGE_LAYOUT_UNDEFINED;
+    // The image's DMA-BUF, kept for WaitOnWriteFence().
+    base::ScopedFD dma_buf_fd;
   };
 
   OpenXrVulkanContext();
@@ -90,6 +92,11 @@ class DEVICE_VR_EXPORT OpenXrVulkanContext {
   // when there is nothing to wait on (no semaphore-FD extension).
   bool WaitOnSyncFd(int fence_fd);
 
+  // Waits on the fence of the writes pending on the image's DMA-BUF. Returns
+  // false if it shows none pending, or if the fence cannot be exported (before
+  // Linux 6.0) or imported (no VK_KHR_external_fence_fd).
+  bool WaitOnWriteFence(const IntermediateImage& image);
+
   // Records and submits the src -> dst blit and waits for it. dst must be an
   // OpenXR swapchain image: it is left in COLOR_ATTACHMENT_OPTIMAL as
   // xrReleaseSwapchainImage expects; src returns to GENERAL for the next frame.
@@ -121,6 +128,9 @@ class DEVICE_VR_EXPORT OpenXrVulkanContext {
   // True if VK_KHR_external_semaphore_fd was successfully enabled at VkDevice
   // creation.
   bool has_external_semaphore_fd_ = false;
+
+  // From VK_KHR_external_fence_fd; null without it.
+  PFN_vkImportFenceFdKHR import_fence_fd_ = nullptr;
 
   // Queue, command pool, command buffer, and submit fence for
   // CopyToSwapchainImage blits.

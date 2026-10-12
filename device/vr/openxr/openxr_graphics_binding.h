@@ -208,6 +208,12 @@ class OpenXrGraphicsBinding {
   // able to successfully schedule and perform the wait, and false otherwise.
   bool WaitOnBaseLayerFence(gfx::GpuFence& gpu_fence);
 
+#if BUILDFLAG(IS_LINUX)
+  // Waits on the fences that the shared images of `updated_layers` carry for
+  // the writes to them. Returns false if there are none.
+  bool WaitOnImplicitFences(const std::vector<LayerId>& updated_layers);
+#endif
+
   // Updates the active swapchain image size if the transfer size has changed.
   // No-ops if there is currently no active swapchain image.
   void UpdateProjectionLayerActiveSwapchainImageSize(
@@ -274,6 +280,11 @@ class OpenXrGraphicsBinding {
   // able to successfully schedule and perform the wait, and false otherwise.
   virtual bool WaitOnFence(OpenXrCompositionLayer& layer,
                            gfx::GpuFence& gpu_fence) = 0;
+
+#if BUILDFLAG(IS_LINUX)
+  // As WaitOnImplicitFences(), for `layer`'s active shared image.
+  virtual bool WaitOnImplicitFence(OpenXrCompositionLayer& layer) = 0;
+#endif
 
   // Render a single layer.
   virtual bool RenderLayer(
