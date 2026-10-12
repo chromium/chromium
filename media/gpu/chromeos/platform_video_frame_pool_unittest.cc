@@ -26,15 +26,15 @@ namespace media {
 namespace {
 
 template <uint64_t modifier>
-CroStatus::Or<scoped_refptr<FrameResource>> CreateGpuMemoryBufferFrameResource(
-    VideoPixelFormat format,
-    const gfx::Size& coded_size,
-    const gfx::Rect& visible_rect,
-    const gfx::Size& natural_size,
-    bool use_protected,
-    bool use_linear_buffers,
-    bool needs_detiling,
-    base::TimeDelta timestamp) {
+base::expected<scoped_refptr<FrameResource>, CroStatus>
+CreateGpuMemoryBufferFrameResource(VideoPixelFormat format,
+                                   const gfx::Size& coded_size,
+                                   const gfx::Rect& visible_rect,
+                                   const gfx::Size& natural_size,
+                                   bool use_protected,
+                                   bool use_linear_buffers,
+                                   bool needs_detiling,
+                                   base::TimeDelta timestamp) {
   constexpr gfx::BufferUsage kBufferUsage = gfx::BufferUsage::GPU_READ;
 
   DCHECK(VideoPixelFormatToSharedImageFormat(format));
@@ -298,15 +298,14 @@ TEST_P(PlatformVideoFramePoolTest, InitializeFail) {
   const auto fourcc = Fourcc::FromVideoPixelFormat(GetParam());
   ASSERT_TRUE(fourcc.has_value());
   pool_->SetCustomFrameAllocator(
-      base::BindRepeating([](VideoPixelFormat format,
-                             const gfx::Size& coded_size,
-                             const gfx::Rect& visible_rect,
-                             const gfx::Size& natural_size, bool use_protected,
-                             bool use_linear_buffers, bool needs_detiling,
-                             base::TimeDelta timestamp) {
-        return CroStatus::Or<scoped_refptr<FrameResource>>(
-            CroStatus::Codes::kFailedToCreateVideoFrame);
-      }),
+      base::BindRepeating(
+          [](VideoPixelFormat format, const gfx::Size& coded_size,
+             const gfx::Rect& visible_rect, const gfx::Size& natural_size,
+             bool use_protected, bool use_linear_buffers, bool needs_detiling,
+             base::TimeDelta timestamp) {
+            return base::expected<scoped_refptr<FrameResource>, CroStatus>(
+                base::unexpected(CroStatus::Codes::kFailedToCreateVideoFrame));
+          }),
       VideoFrame::STORAGE_DMABUFS);
 
   EXPECT_FALSE(Initialize(fourcc.value()));

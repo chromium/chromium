@@ -464,7 +464,7 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   // Implementations of the pixmap exporter for both types of VASurface.
   // See ExportVASurfaceAsNativePixmapDmaBufUnwrapped() for further
   // documentation.
-  VaapiStatus::Or<std::unique_ptr<NativePixmapAndSizeInfo>>
+  base::expected<std::unique_ptr<NativePixmapAndSizeInfo>, VaapiStatus>
   ExportVASurfaceAsNativePixmapDmaBuf(const ScopedVASurface& scoped_va_surface);
 
   // Synchronize the VASurface explicitly. This is useful when sharing a surface
@@ -663,7 +663,7 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   //
   // Returns nullptr on failure, or if the exported surface can't contain
   // |va_surface_size|.
-  VaapiStatus::Or<std::unique_ptr<NativePixmapAndSizeInfo>>
+  base::expected<std::unique_ptr<NativePixmapAndSizeInfo>, VaapiStatus>
   ExportVASurfaceAsNativePixmapDmaBufUnwrapped(
       VASurfaceID va_surface_id,
       const gfx::Size& va_surface_size);

@@ -10,6 +10,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "media/base/status.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/chromeos/chromeos_status.h"
@@ -33,16 +34,15 @@ class PlatformVideoFramePool;
 // different thread. The implementation must be thread-safe.
 class MEDIA_GPU_EXPORT DmabufVideoFramePool {
  public:
-  using CreateFrameCB =
-      base::RepeatingCallback<CroStatus::Or<scoped_refptr<FrameResource>>(
-          VideoPixelFormat,
-          const gfx::Size&,
-          const gfx::Rect&,
-          const gfx::Size&,
-          bool,
-          bool,
-          bool,
-          base::TimeDelta)>;
+  using CreateFrameCB = base::RepeatingCallback<
+      base::expected<scoped_refptr<FrameResource>, CroStatus>(VideoPixelFormat,
+                                                              const gfx::Size&,
+                                                              const gfx::Rect&,
+                                                              const gfx::Size&,
+                                                              bool,
+                                                              bool,
+                                                              bool,
+                                                              base::TimeDelta)>;
 
   DmabufVideoFramePool();
   virtual ~DmabufVideoFramePool();
@@ -62,7 +62,7 @@ class MEDIA_GPU_EXPORT DmabufVideoFramePool {
   // which can be allocated.
   // Returns a valid GpuBufferLayout if the initialization is successful,
   // otherwise returns any given error from the set of CroStatus::Codes.
-  virtual CroStatus::Or<GpuBufferLayout> Initialize(
+  virtual base::expected<GpuBufferLayout, CroStatus> Initialize(
       const Fourcc& fourcc,
       const gfx::Size& coded_size,
       const gfx::Rect& visible_rect,

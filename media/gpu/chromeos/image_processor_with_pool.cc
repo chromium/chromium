@@ -15,7 +15,7 @@
 namespace media {
 
 // static
-CroStatus::Or<std::unique_ptr<ImageProcessorWithPool>>
+base::expected<std::unique_ptr<ImageProcessorWithPool>, CroStatus>
 ImageProcessorWithPool::Create(
     std::unique_ptr<ImageProcessor> image_processor,
     DmabufVideoFramePool* const frame_pool,
@@ -28,21 +28,22 @@ ImageProcessorWithPool::Create(
   DCHECK(gfx::Rect(coded_size).Contains(config.visible_rect));
   const gfx::Size natural_size = config.visible_rect.size();
 
-  CroStatus::Or<GpuBufferLayout> status_or_layout = frame_pool->Initialize(
-      config.fourcc, coded_size, config.visible_rect, natural_size, num_frames,
-      use_protected, image_processor->needs_linear_output_buffers());
+  base::expected<GpuBufferLayout, CroStatus> status_or_layout =
+      frame_pool->Initialize(config.fourcc, coded_size, config.visible_rect,
+                             natural_size, num_frames, use_protected,
+                             image_processor->needs_linear_output_buffers());
   if (!status_or_layout.has_value()) {
     VLOGF(1) << "Failed to initialize the pool.";
-    return std::move(status_or_layout).error();
+    return base::unexpected(std::move(status_or_layout).error());
   }
 
   const GpuBufferLayout layout = std::move(status_or_layout).value();
   if (layout.size() != config.size) {
     VLOGF(1) << "Failed to request frame with correct size. "
              << config.size.ToString() << " != " << layout.size().ToString();
-    return CroStatus(CroStatus::Codes::kInvalidLayoutSize)
-        .WithData("expected_size", config.size)
-        .WithData("actual_size", layout.size());
+    return base::unexpected(CroStatus(CroStatus::Codes::kInvalidLayoutSize)
+                                .WithData("expected_size", config.size)
+                                .WithData("actual_size", layout.size()));
   }
 
   return base::WrapUnique<ImageProcessorWithPool>(new ImageProcessorWithPool(

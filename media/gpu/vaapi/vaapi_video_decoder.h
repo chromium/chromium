@@ -159,11 +159,12 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
   void ResetDone(base::OnceClosure reset_cb);
 
   // Create codec-specific AcceleratedVideoDecoder and reset related variables.
-  VaapiStatus::Or<std::monostate> CreateAcceleratedVideoDecoder();
+  base::expected<std::monostate, VaapiStatus> CreateAcceleratedVideoDecoder();
 
   // Change the current `state_` to the specified `state`. Iff the new state is
   // an error, report the error to all pending decode and init tasks.
-  void SetState(DecoderStatus::Or<State> state);
+  void SetState(DecoderStatus error);
+  void SetState(State state);
 
   // Callback for the CDM to notify |this|.
   void OnCdmContextEvent(CdmContext::Event event);
@@ -174,21 +175,21 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
       const std::vector<gfx::Size>& screen_resolution);
 
   // Private static helper to allow using weak ptr instead of an unretained ptr.
-  static CroStatus::Or<scoped_refptr<FrameResource>> AllocateCustomFrameProxy(
-      base::WeakPtr<VaapiVideoDecoder> decoder,
-      VideoPixelFormat format,
-      const gfx::Size& coded_size,
-      const gfx::Rect& visible_rect,
-      const gfx::Size& natural_size,
-      bool use_protected,
-      bool use_linear_buffers,
-      bool needs_detiling,
-      base::TimeDelta timestamp);
+  static base::expected<scoped_refptr<FrameResource>, CroStatus>
+  AllocateCustomFrameProxy(base::WeakPtr<VaapiVideoDecoder> decoder,
+                           VideoPixelFormat format,
+                           const gfx::Size& coded_size,
+                           const gfx::Rect& visible_rect,
+                           const gfx::Size& natural_size,
+                           bool use_protected,
+                           bool use_linear_buffers,
+                           bool needs_detiling,
+                           base::TimeDelta timestamp);
 
   // Allocates a new FrameResource using a new VASurface directly. Since this is
   // only used on linux, it also sets the required YCbCr information for the
   // frame it creates.
-  CroStatus::Or<scoped_refptr<FrameResource>> AllocateCustomFrame(
+  base::expected<scoped_refptr<FrameResource>, CroStatus> AllocateCustomFrame(
       VideoPixelFormat format,
       const gfx::Size& coded_size,
       const gfx::Rect& visible_rect,

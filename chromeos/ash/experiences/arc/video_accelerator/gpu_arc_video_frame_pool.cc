@@ -92,7 +92,8 @@ GpuArcVideoFramePool::~GpuArcVideoFramePool() {
   // need to make sure to call it before destroying.
   if (notify_layout_changed_cb_) {
     std::move(notify_layout_changed_cb_)
-        .Run(media::CroStatus::Codes::kFailedToGetFrameLayout);
+        .Run(
+            base::unexpected(media::CroStatus::Codes::kFailedToGetFrameLayout));
   }
 }
 
@@ -216,7 +217,8 @@ void GpuArcVideoFramePool::AddVideoFrame(mojom::VideoFramePtr video_frame,
     if (!gb_layout) {
       VLOGF(1) << "Failed to create GpuBufferLayout";
       std::move(notify_layout_changed_cb_)
-          .Run(media::CroStatus::Codes::kFailedToChangeResolution);
+          .Run(base::unexpected(
+              media::CroStatus::Codes::kFailedToChangeResolution));
       std::move(callback).Run(false);
       return;
     }
@@ -275,7 +277,7 @@ void GpuArcVideoFramePool::WillResetDecoder() {
     // |notify_layout_changed_cb_| with kResetRequired thus aborting the request
     // for frames.
     std::move(notify_layout_changed_cb_)
-        .Run(media::CroStatus::Codes::kResetRequired);
+        .Run(base::unexpected(media::CroStatus::Codes::kResetRequired));
     import_frame_cb_.Reset();
   }
 }
@@ -308,7 +310,8 @@ void GpuArcVideoFramePool::RequestFrames(
 
   if (has_error_ || !pool_client_version_) {
     std::move(notify_layout_changed_cb)
-        .Run(media::CroStatus::Codes::kFailedToGetFrameLayout);
+        .Run(
+            base::unexpected(media::CroStatus::Codes::kFailedToGetFrameLayout));
     return;
   }
 
@@ -321,7 +324,7 @@ void GpuArcVideoFramePool::RequestFrames(
     // blocked waiting on a call to |notify_layout_changed_cb_|. Therefore, we
     // call it here with kResetRequired thus aborting the request for frames.
     std::move(notify_layout_changed_cb_)
-        .Run(media::CroStatus::Codes::kResetRequired);
+        .Run(base::unexpected(media::CroStatus::Codes::kResetRequired));
     import_frame_cb_.Reset();
     return;
   }
@@ -540,7 +543,8 @@ void GpuArcVideoFramePool::Stop() {
 
   if (notify_layout_changed_cb_) {
     std::move(notify_layout_changed_cb_)
-        .Run(media::CroStatus::Codes::kFailedToGetFrameLayout);
+        .Run(
+            base::unexpected(media::CroStatus::Codes::kFailedToGetFrameLayout));
   }
 }
 

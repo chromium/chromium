@@ -490,7 +490,7 @@ class MEDIA_GPU_EXPORT V4L2Queue
   // as having its handle claimed. It expects another call later to
   // ReleaseSecureHandle to return control of the secure handle back to the
   // queue.
-  [[nodiscard]] CroStatus::Or<uint64_t> GetFreeSecureHandle();
+  [[nodiscard]] base::expected<uint64_t, CroStatus> GetFreeSecureHandle();
   void ReleaseSecureHandle(uint64_t secure_handle);
 
   // Return a reference to a free buffer for the caller to prepare and submit,

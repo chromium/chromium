@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/types/expected.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
 #include "media/gpu/chromeos/image_processor.h"
@@ -30,12 +31,12 @@ class ImageProcessorWithPool {
   // |num_frames| is the number of frames requested from |frame_pool|.
   // Returns a valid ImageProcessorWithPool instance if successful
   // otherwise returns any given error from the set of CroStatus::Codes.
-  static CroStatus::Or<std::unique_ptr<ImageProcessorWithPool>> Create(
-      std::unique_ptr<ImageProcessor> image_processor,
-      DmabufVideoFramePool* const frame_pool,
-      size_t num_frames,
-      bool use_protected,
-      const scoped_refptr<base::SequencedTaskRunner> task_runner);
+  static base::expected<std::unique_ptr<ImageProcessorWithPool>, CroStatus>
+  Create(std::unique_ptr<ImageProcessor> image_processor,
+         DmabufVideoFramePool* const frame_pool,
+         size_t num_frames,
+         bool use_protected,
+         const scoped_refptr<base::SequencedTaskRunner> task_runner);
   ~ImageProcessorWithPool();
 
   // Processes |frame| by |image_processor_|. The processed output frame will be

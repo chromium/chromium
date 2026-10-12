@@ -1312,7 +1312,7 @@ class V4L2BufferRefFactory {
   }
 };
 
-CroStatus::Or<uint64_t> V4L2Queue::GetFreeSecureHandle() {
+base::expected<uint64_t, CroStatus> V4L2Queue::GetFreeSecureHandle() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Go through the list of secure buffers and find one that is not owned or
   // queued.
@@ -1322,7 +1322,7 @@ CroStatus::Or<uint64_t> V4L2Queue::GetFreeSecureHandle() {
       return buf.secure_handle;
     }
   }
-  return CroStatus::Codes::kSecureBufferPoolEmpty;
+  return base::unexpected(CroStatus::Codes::kSecureBufferPoolEmpty);
 }
 
 void V4L2Queue::ReleaseSecureHandle(uint64_t secure_handle) {

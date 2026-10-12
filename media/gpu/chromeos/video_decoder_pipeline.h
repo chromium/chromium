@@ -96,7 +96,7 @@ class MEDIA_GPU_EXPORT VideoDecoderMixin : public VideoDecoder {
     //
     // Note: after a call to this method, callers should assume that a pointer
     // returned by a prior call to GetVideoFramePool() is no longer valid.
-    virtual CroStatus::Or<ImageProcessor::PixelLayoutCandidate>
+    virtual base::expected<ImageProcessor::PixelLayoutCandidate, CroStatus>
     PickDecoderOutputFormat(
         const std::vector<ImageProcessor::PixelLayoutCandidate>& candidates,
         const gfx::Rect& decoder_visible_rect,
@@ -260,7 +260,8 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
   DmabufVideoFramePool* GetVideoFramePool() const override;
   void PrepareChangeResolution() override;
   void NotifyEstimatedMaxDecodeRequests(int num) override;
-  CroStatus::Or<ImageProcessor::PixelLayoutCandidate> PickDecoderOutputFormat(
+  base::expected<ImageProcessor::PixelLayoutCandidate, CroStatus>
+  PickDecoderOutputFormat(
       const std::vector<ImageProcessor::PixelLayoutCandidate>& candidates,
       const gfx::Rect& decoder_visible_rect,
       const gfx::Size& decoder_natural_size,

@@ -44,13 +44,14 @@ class MEDIA_GPU_EXPORT PlatformVideoFramePool : public DmabufVideoFramePool {
 
   // DmabufVideoFramePool implementation.
   PlatformVideoFramePool* AsPlatformVideoFramePool() override;
-  CroStatus::Or<GpuBufferLayout> Initialize(const Fourcc& fourcc,
-                                            const gfx::Size& coded_size,
-                                            const gfx::Rect& visible_rect,
-                                            const gfx::Size& natural_size,
-                                            size_t max_num_frames,
-                                            bool use_protected,
-                                            bool use_linear_buffers) override;
+  base::expected<GpuBufferLayout, CroStatus> Initialize(
+      const Fourcc& fourcc,
+      const gfx::Size& coded_size,
+      const gfx::Rect& visible_rect,
+      const gfx::Size& natural_size,
+      size_t max_num_frames,
+      bool use_protected,
+      bool use_linear_buffers) override;
   scoped_refptr<FrameResource> GetFrame() override;
   VideoFrame::StorageType GetFrameStorageType() const override;
   bool IsExhausted() override;

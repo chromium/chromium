@@ -219,9 +219,10 @@ void VdVideoDecodeAccelerator::Destroy() {
 
   // Because VdaVideoFramePool is blocked for this callback, we must call the
   // callback before destroying.
-  if (notify_layout_changed_cb_)
+  if (notify_layout_changed_cb_) {
     std::move(notify_layout_changed_cb_)
-        .Run(CroStatus::Codes::kFailedToGetFrameLayout);
+        .Run(base::unexpected(CroStatus::Codes::kFailedToGetFrameLayout));
+  }
   client_ = nullptr;
   vd_.reset();
 
@@ -426,7 +427,8 @@ void VdVideoDecodeAccelerator::Reset() {
   is_resetting_ = true;
 
   if (notify_layout_changed_cb_) {
-    std::move(notify_layout_changed_cb_).Run(CroStatus::Codes::kResetRequired);
+    std::move(notify_layout_changed_cb_)
+        .Run(base::unexpected(CroStatus::Codes::kResetRequired));
     import_frame_cb_.Reset();
   }
 
@@ -467,7 +469,8 @@ void VdVideoDecodeAccelerator::RequestFrames(
   // We need to check if Reset() was received before RequestFrames() so that we
   // can unblock the frame pool in that case.
   if (is_resetting_) {
-    std::move(notify_layout_changed_cb_).Run(CroStatus::Codes::kResetRequired);
+    std::move(notify_layout_changed_cb_)
+        .Run(base::unexpected(CroStatus::Codes::kResetRequired));
     import_frame_cb_.Reset();
     return;
   }
@@ -515,7 +518,7 @@ void VdVideoDecodeAccelerator::ImportBufferForPicture(
       VLOGF(1) << "Failed to convert to Fourcc.";
       import_frame_cb_.Reset();
       std::move(notify_layout_changed_cb_)
-          .Run(CroStatus::Codes::kFailedToChangeResolution);
+          .Run(base::unexpected(CroStatus::Codes::kFailedToChangeResolution));
       return;
     }
 
@@ -537,7 +540,7 @@ void VdVideoDecodeAccelerator::ImportBufferForPicture(
                << ", modifier: " << std::hex << modifier;
       import_frame_cb_.Reset();
       std::move(notify_layout_changed_cb_)
-          .Run(CroStatus::Codes::kFailedToChangeResolution);
+          .Run(base::unexpected(CroStatus::Codes::kFailedToChangeResolution));
       return;
     }
 
@@ -552,7 +555,7 @@ void VdVideoDecodeAccelerator::ImportBufferForPicture(
       layout_ = std::nullopt;
       import_frame_cb_.Reset();
       std::move(notify_layout_changed_cb_)
-          .Run(CroStatus::Codes::kFailedToChangeResolution);
+          .Run(base::unexpected(CroStatus::Codes::kFailedToChangeResolution));
       return;
     }
     std::move(notify_layout_changed_cb_).Run(*gb_layout);

@@ -30,7 +30,7 @@ constexpr VideoFrame::StorageType kDefaultFrameStorageType =
     VideoFrame::STORAGE_DMABUFS;
 
 // The default method to create frames.
-CroStatus::Or<scoped_refptr<FrameResource>> DefaultCreateFrame(
+base::expected<scoped_refptr<FrameResource>, CroStatus> DefaultCreateFrame(
     VideoPixelFormat format,
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
@@ -41,7 +41,7 @@ CroStatus::Or<scoped_refptr<FrameResource>> DefaultCreateFrame(
     base::TimeDelta timestamp) {
   if (use_protected && use_linear_buffers) {
     VLOGF(1) << "Linear buffers are unsupported when |use_protected| is true.";
-    return CroStatus::Codes::kFailedToCreateVideoFrame;
+    return base::unexpected(CroStatus::Codes::kFailedToCreateVideoFrame);
   }
 
   scoped_refptr<FrameResource> frame = NativePixmapFrameResource::Create(
@@ -52,7 +52,7 @@ CroStatus::Or<scoped_refptr<FrameResource>> DefaultCreateFrame(
                                 : gfx::BufferUsage::SCANOUT_VDA_WRITE));
 
   if (!frame)
-    return CroStatus::Codes::kFailedToCreateVideoFrame;
+    return base::unexpected(CroStatus::Codes::kFailedToCreateVideoFrame);
 
   frame->metadata().protected_video = use_protected;
   frame->metadata().hw_protected = use_protected;
@@ -120,7 +120,7 @@ scoped_refptr<FrameResource> PlatformVideoFramePool::GetFrame() {
     // implies that we can create |new_frame| using gfx::Rect(coded_size) as
     // the visible rectangle.
     CHECK(use_linear_buffers_.has_value());
-    CroStatus::Or<scoped_refptr<FrameResource>> new_frame =
+    base::expected<scoped_refptr<FrameResource>, CroStatus> new_frame =
         create_frame_cb_.Run(
             format, coded_size, gfx::Rect(GetRectSizeFromOrigin(visible_rect_)),
             coded_size, use_protected_, *use_linear_buffers_,
@@ -143,7 +143,8 @@ scoped_refptr<FrameResource> PlatformVideoFramePool::GetFrame() {
     CHECK_EQ((*new_frame)->storage_type(), frame_storage_type_);
 
     // Sets and/or registers the frame's |tracking_token|.
-    frame_tracking_token_helper_.SetUniqueTrackingToken(new_frame->metadata());
+    frame_tracking_token_helper_.SetUniqueTrackingToken(
+        (*new_frame)->metadata());
 
     InsertFreeFrame_Locked(std::move(new_frame).value());
   }
@@ -177,7 +178,7 @@ PlatformVideoFramePool* PlatformVideoFramePool::AsPlatformVideoFramePool() {
   return this;
 }
 
-CroStatus::Or<GpuBufferLayout> PlatformVideoFramePool::Initialize(
+base::expected<GpuBufferLayout, CroStatus> PlatformVideoFramePool::Initialize(
     const Fourcc& fourcc,
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
@@ -192,13 +193,13 @@ CroStatus::Or<GpuBufferLayout> PlatformVideoFramePool::Initialize(
   VideoPixelFormat format = fourcc.ToVideoPixelFormat();
   if (format == PIXEL_FORMAT_UNKNOWN) {
     VLOGF(1) << "Unsupported fourcc: " << fourcc.ToString();
-    return CroStatus::Codes::kFourccUnknownFormat;
+    return base::unexpected(CroStatus::Codes::kFourccUnknownFormat);
   }
 
 #if !BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
   if (use_protected) {
     VLOGF(1) << "Protected buffers unsupported";
-    return CroStatus::Codes::kProtectedContentUnsupported;
+    return base::unexpected(CroStatus::Codes::kProtectedContentUnsupported);
   }
 #endif
 
@@ -240,13 +241,13 @@ CroStatus::Or<GpuBufferLayout> PlatformVideoFramePool::Initialize(
         fourcc == Fourcc(Fourcc::MM21) || fourcc == Fourcc(Fourcc::MT2T),
         base::TimeDelta());
     if (!maybe_frame.has_value())
-      return std::move(maybe_frame).error();
+      return base::unexpected(std::move(maybe_frame).error());
     auto frame = std::move(maybe_frame).value();
     frame_layout_ = GpuBufferLayout::Create(fourcc, frame->coded_size(),
                                             frame->layout().planes(),
                                             frame->layout().modifier());
     if (!frame_layout_)
-      return CroStatus::Codes::kFailedToGetFrameLayout;
+      return base::unexpected(CroStatus::Codes::kFailedToGetFrameLayout);
   }
 
   DCHECK(frame_layout_);

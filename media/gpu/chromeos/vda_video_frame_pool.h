@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/types/expected.h"
 #include "media/gpu/chromeos/chromeos_status.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
 #include "media/gpu/chromeos/fourcc.h"
@@ -39,7 +40,7 @@ class VdaVideoFramePool : public DmabufVideoFramePool {
    public:
     // Callback for returning the layout of requested buffer.
     using NotifyLayoutChangedCb =
-        base::OnceCallback<void(CroStatus::Or<GpuBufferLayout>)>;
+        base::OnceCallback<void(base::expected<GpuBufferLayout, CroStatus>)>;
     // Callback for importing available frames to this pool.
     using ImportFrameCb =
         base::RepeatingCallback<void(scoped_refptr<FrameResource>)>;
@@ -64,13 +65,14 @@ class VdaVideoFramePool : public DmabufVideoFramePool {
   ~VdaVideoFramePool() override;
 
   // DmabufVideoFramePool implementation.
-  CroStatus::Or<GpuBufferLayout> Initialize(const Fourcc& fourcc,
-                                            const gfx::Size& coded_size,
-                                            const gfx::Rect& visible_rect,
-                                            const gfx::Size& natural_size,
-                                            size_t max_num_frames,
-                                            bool use_protected,
-                                            bool use_linear_buffers) override;
+  base::expected<GpuBufferLayout, CroStatus> Initialize(
+      const Fourcc& fourcc,
+      const gfx::Size& coded_size,
+      const gfx::Rect& visible_rect,
+      const gfx::Size& natural_size,
+      size_t max_num_frames,
+      bool use_protected,
+      bool use_linear_buffers) override;
   scoped_refptr<FrameResource> GetFrame() override;
   VideoFrame::StorageType GetFrameStorageType() const override;
   bool IsExhausted() override;
@@ -81,9 +83,10 @@ class VdaVideoFramePool : public DmabufVideoFramePool {
  private:
   // Update the layout of the buffers. |vda_| calls this as
   // NotifyLayoutChangedCb.
-  static void OnRequestFramesDone(base::WaitableEvent* done,
-                                  CroStatus::Or<GpuBufferLayout>* layout,
-                                  CroStatus::Or<GpuBufferLayout> layout_value);
+  static void OnRequestFramesDone(
+      base::WaitableEvent* done,
+      base::expected<GpuBufferLayout, CroStatus>* layout,
+      base::expected<GpuBufferLayout, CroStatus> layout_value);
 
   // Thunk to post ImportFrame() to |task_runner|.
   // Because this thunk may be called in any thread, We don't want to

@@ -75,7 +75,7 @@ class MockVideoDecoderMixinClient : public VideoDecoderMixin::Client {
   MOCK_METHOD(DmabufVideoFramePool*, GetVideoFramePool, (), (const, override));
   MOCK_METHOD(void, PrepareChangeResolution, (), (override));
   MOCK_METHOD(void, NotifyEstimatedMaxDecodeRequests, (int), (override));
-  MOCK_METHOD(CroStatus::Or<ImageProcessor::PixelLayoutCandidate>,
+  MOCK_METHOD((base::expected<ImageProcessor::PixelLayoutCandidate, CroStatus>),
               PickDecoderOutputFormat,
               (const std::vector<ImageProcessor::PixelLayoutCandidate>&,
                const gfx::Rect&,

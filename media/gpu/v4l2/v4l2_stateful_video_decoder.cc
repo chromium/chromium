@@ -728,13 +728,12 @@ bool V4L2StatefulVideoDecoder::InitializeCAPTUREQueue() {
 
   // Ask the pipeline to pick the output format from |CAPTURE_queue_|'s
   // |candidates|. If needed, it will try to instantiate an ImageProcessor.
-  CroStatus::Or<ImageProcessor::PixelLayoutCandidate> status_or_output_format =
-      client_->PickDecoderOutputFormat(
-          candidates, *visible_rect,
-          config_.aspect_ratio().GetNaturalSize(*visible_rect),
-          /*output_size=*/std::nullopt, num_codec_reference_frames,
-          /*use_protected=*/false, /*need_aux_frame_pool=*/false,
-          /*allocator=*/std::nullopt);
+  auto status_or_output_format = client_->PickDecoderOutputFormat(
+      candidates, *visible_rect,
+      config_.aspect_ratio().GetNaturalSize(*visible_rect),
+      /*output_size=*/std::nullopt, num_codec_reference_frames,
+      /*use_protected=*/false, /*need_aux_frame_pool=*/false,
+      /*allocator=*/std::nullopt);
   if (!status_or_output_format.has_value()) {
     return false;
   }

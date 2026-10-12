@@ -687,7 +687,7 @@ CroStatus V4L2VideoDecoder::SetupOutputFormat(const gfx::Size& size,
   }
 
   // Ask the pipeline to pick the output format.
-  CroStatus::Or<PixelLayoutCandidate> status_or_output_format =
+  base::expected<PixelLayoutCandidate, CroStatus> status_or_output_format =
       client_->PickDecoderOutputFormat(
           candidates, visible_rect, aspect_ratio_.GetNaturalSize(visible_rect),
           /*output_size=*/std::nullopt, num_codec_reference_frames,

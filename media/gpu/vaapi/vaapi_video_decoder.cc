@@ -847,7 +847,7 @@ void VaapiVideoDecoder::ApplyResolutionChangeWithScreenSizes(
       /*need_aux_frame_pool=*/true, std::move(allocator));
 
   if (!status_or_layout.has_value()) {
-    if (status_or_layout == CroStatus::Codes::kResetRequired) {
+    if (status_or_layout.error() == CroStatus::Codes::kResetRequired) {
       DVLOGF(2) << "The frame pool initialization is aborted";
       SetState(State::kExpectingReset);
     } else {
@@ -866,7 +866,7 @@ void VaapiVideoDecoder::ApplyResolutionChangeWithScreenSizes(
 }
 
 // Static
-CroStatus::Or<scoped_refptr<FrameResource>>
+base::expected<scoped_refptr<FrameResource>, CroStatus>
 VaapiVideoDecoder::AllocateCustomFrameProxy(
     base::WeakPtr<VaapiVideoDecoder> decoder,
     VideoPixelFormat format,
@@ -878,13 +878,13 @@ VaapiVideoDecoder::AllocateCustomFrameProxy(
     bool needs_detiling,
     base::TimeDelta timestamp) {
   if (!decoder)
-    return CroStatus::Codes::kFailedToCreateVideoFrame;
+    return base::unexpected(CroStatus::Codes::kFailedToCreateVideoFrame);
   return decoder->AllocateCustomFrame(
       format, coded_size, visible_rect, natural_size, use_protected,
       use_linear_buffers, needs_detiling, timestamp);
 }
 
-CroStatus::Or<scoped_refptr<FrameResource>>
+base::expected<scoped_refptr<FrameResource>, CroStatus>
 VaapiVideoDecoder::AllocateCustomFrame(VideoPixelFormat format,
                                        const gfx::Size& coded_size,
                                        const gfx::Rect& visible_rect,
@@ -920,17 +920,18 @@ VaapiVideoDecoder::AllocateCustomFrame(VideoPixelFormat format,
       break;
     }
     default: {
-      return CroStatus::Codes::kFailedToCreateVideoFrame;
+      return base::unexpected(CroStatus::Codes::kFailedToCreateVideoFrame);
     }
   }
 
   if (!surface)
-    return CroStatus::Codes::kFailedToCreateVideoFrame;
+    return base::unexpected(CroStatus::Codes::kFailedToCreateVideoFrame);
   auto maybe_pixmap_and_info =
       vaapi_wrapper_->ExportVASurfaceAsNativePixmapDmaBuf(*surface.get());
   if (!maybe_pixmap_and_info.has_value()) {
-    return {CroStatus::Codes::kFailedToCreateVideoFrame,
-            std::move(maybe_pixmap_and_info).error()};
+    return base::unexpected(
+        CroStatus(CroStatus::Codes::kFailedToCreateVideoFrame,
+                  std::move(maybe_pixmap_and_info).error()));
   }
 
   auto pixmap_and_info = std::move(maybe_pixmap_and_info).value();
@@ -938,7 +939,7 @@ VaapiVideoDecoder::AllocateCustomFrame(VideoPixelFormat format,
       visible_rect, natural_size, timestamp,
       gfx::BufferUsage::SCANOUT_VDA_WRITE, std::move(pixmap_and_info->pixmap));
   if (!frame) {
-    return CroStatus::Codes::kFailedToCreateVideoFrame;
+    return base::unexpected(CroStatus::Codes::kFailedToCreateVideoFrame);
   }
 
   allocated_va_surfaces_.insert_or_assign(frame->tracking_token(),
@@ -1107,7 +1108,7 @@ void VaapiVideoDecoder::Reset(base::OnceClosure reset_cb) {
                                 std::move(reset_cb)));
 }
 
-VaapiStatus::Or<std::monostate>
+base::expected<std::monostate, VaapiStatus>
 VaapiVideoDecoder::CreateAcceleratedVideoDecoder() {
   DVLOGF(2);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1174,7 +1175,7 @@ VaapiVideoDecoder::CreateAcceleratedVideoDecoder() {
   } else {
     VaapiStatus status = {VaapiStatus::Codes::kUnsupportedProfile,
                           "unsupported configuration", "profile", profile_};
-    return status;
+    return base::unexpected(status);
   }
 
   std::monostate nothing;
@@ -1195,21 +1196,9 @@ void VaapiVideoDecoder::ResetDone(base::OnceClosure reset_cb) {
   SetState(State::kWaitingForInput);
 }
 
-void VaapiVideoDecoder::SetState(DecoderStatus::Or<State> state_or_error) {
+void VaapiVideoDecoder::SetState(State state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!state_or_error.has_value()) {
-    state_ = State::kError;
-    auto error = std::move(state_or_error).error();
-    if (current_decode_task_ || !decode_task_queue_.empty()) {
-      ClearDecodeTaskQueue(error);
-    }
-    if (pending_init_cb_) {
-      std::move(pending_init_cb_).Run(std::move(error));
-    }
-    return;
-  }
 
-  State state = std::move(state_or_error).value();
   DVLOGF(3) << "Vaapi State change {" << static_cast<int>(state_) << "} => {"
             << static_cast<int>(state) << "}";
 
@@ -1257,6 +1246,17 @@ void VaapiVideoDecoder::SetState(DecoderStatus::Or<State> state_or_error) {
   }
 
   state_ = state;
+}
+
+void VaapiVideoDecoder::SetState(DecoderStatus error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  state_ = State::kError;
+  if (current_decode_task_ || !decode_task_queue_.empty()) {
+    ClearDecodeTaskQueue(error);
+  }
+  if (pending_init_cb_) {
+    std::move(pending_init_cb_).Run(std::move(error));
+  }
 }
 
 }  // namespace media

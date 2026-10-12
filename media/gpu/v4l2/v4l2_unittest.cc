@@ -244,10 +244,15 @@ class MockVideoDecoderMixinClient : public VideoDecoderMixin::Client {
  public:
   MockVideoDecoderMixinClient() : weak_ptr_factory_(this) {}
 
+  // The MOCK_METHOD macro does not allow for the use of a comma in the return
+  // type definition, which base::expected requires.
+  using PickDecoderOutputFormatReturn =
+      base::expected<ImageProcessor::PixelLayoutCandidate, CroStatus>;
+
   MOCK_METHOD(DmabufVideoFramePool*, GetVideoFramePool, (), (const, override));
   MOCK_METHOD(void, PrepareChangeResolution, (), (override));
   MOCK_METHOD(void, NotifyEstimatedMaxDecodeRequests, (int), (override));
-  MOCK_METHOD(CroStatus::Or<ImageProcessor::PixelLayoutCandidate>,
+  MOCK_METHOD(PickDecoderOutputFormatReturn,
               PickDecoderOutputFormat,
               (const std::vector<ImageProcessor::PixelLayoutCandidate>&,
                const gfx::Rect&,

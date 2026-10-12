@@ -33,7 +33,7 @@ VdaVideoFramePool::~VdaVideoFramePool() {
   weak_this_factory_.InvalidateWeakPtrs();
 }
 
-CroStatus::Or<GpuBufferLayout> VdaVideoFramePool::Initialize(
+base::expected<GpuBufferLayout, CroStatus> VdaVideoFramePool::Initialize(
     const Fourcc& fourcc,
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
@@ -47,7 +47,7 @@ CroStatus::Or<GpuBufferLayout> VdaVideoFramePool::Initialize(
 #if !BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
   if (use_protected) {
     LOG(ERROR) << "Cannot allocated protected buffers for VDA";
-    return CroStatus::Codes::kProtectedContentUnsupported;
+    return base::unexpected(CroStatus::Codes::kProtectedContentUnsupported);
   }
 #endif  // !BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
 
@@ -73,8 +73,8 @@ CroStatus::Or<GpuBufferLayout> VdaVideoFramePool::Initialize(
   fourcc_ = std::nullopt;
   coded_size_ = gfx::Size();
 
-  CroStatus::Or<GpuBufferLayout> status_or_layout =
-      CroStatus::Codes::kResetRequired;
+  base::expected<GpuBufferLayout, CroStatus> status_or_layout =
+      base::unexpected(CroStatus::Codes::kResetRequired);
   base::WaitableEvent done;
   vda_task_runner_->PostTask(
       FROM_HERE,
@@ -93,7 +93,7 @@ CroStatus::Or<GpuBufferLayout> VdaVideoFramePool::Initialize(
   if (layout.fourcc() != fourcc ||
       layout.size().height() < coded_size.height() ||
       layout.size().width() < coded_size.width()) {
-    return CroStatus::Codes::kFailedToGetFrameLayout;
+    return base::unexpected(CroStatus::Codes::kFailedToGetFrameLayout);
   }
 
   max_num_frames_ = max_num_frames;
@@ -106,8 +106,8 @@ CroStatus::Or<GpuBufferLayout> VdaVideoFramePool::Initialize(
 // static
 void VdaVideoFramePool::OnRequestFramesDone(
     base::WaitableEvent* done,
-    CroStatus::Or<GpuBufferLayout>* layout,
-    CroStatus::Or<GpuBufferLayout> layout_value) {
+    base::expected<GpuBufferLayout, CroStatus>* layout,
+    base::expected<GpuBufferLayout, CroStatus> layout_value) {
   DVLOGF(3);
 
   *layout = std::move(layout_value);
