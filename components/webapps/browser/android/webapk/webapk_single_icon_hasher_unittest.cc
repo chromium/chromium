@@ -15,8 +15,11 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
+#include "base/test/test_future.h"
 #include "components/webapps/browser/android/webapk/webapk_icons_hasher.h"
 #include "components/webapps/browser/android/webapp_icon.h"
+#include "components/webapps/browser/android/webapps_icon_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
@@ -29,6 +32,7 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/codec/png_codec.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -278,6 +282,78 @@ TEST_F(WebApkSingleIconHasherTest, Favicon) {
 
   EXPECT_EQ("14576046868078225019", icon->hash());
   EXPECT_FALSE(icon->unsafe_data().empty());
+}
+
+TEST_F(WebApkSingleIconHasherTest, MultiFrameFaviconPicksBestBitmap) {
+  GURL icon_url("http://www.google.com/chrome/test/data/android/favicon_1.ico");
+  base::FilePath source_path;
+  base::FilePath icon_path;
+  ASSERT_TRUE(
+      base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_path));
+  icon_path = source_path.AppendASCII("components")
+                  .AppendASCII("test")
+                  .AppendASCII("data")
+                  .AppendASCII("webapps")
+                  .AppendASCII("favicon_1.ico");
+  std::string icon_data;
+  ASSERT_TRUE(base::ReadFileToString(icon_path, &icon_data));
+  auto head = network::mojom::URLResponseHead::New();
+  std::string headers(
+      "HTTP/1.1 200 OK\nContent-type: image/vnd.microsoft.icon\n\n");
+  head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      net::HttpUtil::AssembleRawHeaders(headers));
+  head->mime_type = "image/vnd.microsoft.icon";
+  network::URLLoaderCompletionStatus status;
+  status.decoded_body_length = base::ByteSize(icon_data.size());
+  test_url_loader_factory()->AddResponse(icon_url, std::move(head), icon_data,
+                                         status);
+
+  WebappsIconUtils::SetIconSizesForTesting({144, 48, 256, 48, 48, 192, 96});
+
+  auto icon = std::make_unique<WebappIcon>(icon_url, /*is_maskable=*/false,
+                                           webapk::Image::PRIMARY_ICON);
+  base::test::TestFuture<void> done;
+  auto hasher = std::make_unique<WebApkSingleIconHasher>(
+      WebApkIconsHasher::PassKeyForTesting(), test_url_loader_factory(),
+      web_contents()->GetWeakPtr(), url::Origin::Create(icon_url),
+      /*timeout_ms=*/300, icon.get(), done.GetCallback());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return content::WebContentsTester::For(web_contents())
+        ->HasPendingDownloadImage(icon_url);
+  }));
+
+  auto make_bitmap = [](int size, SkColor color) {
+    SkBitmap bitmap;
+    bitmap.allocN32Pixels(size, size);
+    bitmap.eraseColor(color);
+    bitmap.setImmutable();
+    return bitmap;
+  };
+  // Blink's ImageDownloaderImpl reverses decoded .ico frames into
+  // smallest-first order (e.g., [16x16, 32x32, 48x48, 256x256]).
+  std::vector<SkBitmap> bitmaps = {
+      make_bitmap(16, SK_ColorRED),
+      make_bitmap(32, SK_ColorGREEN),
+      make_bitmap(48, SK_ColorBLUE),
+      make_bitmap(256, SK_ColorYELLOW),
+  };
+  std::vector<gfx::Size> sizes = {
+      gfx::Size(16, 16),
+      gfx::Size(32, 32),
+      gfx::Size(48, 48),
+      gfx::Size(256, 256),
+  };
+  EXPECT_TRUE(content::WebContentsTester::For(web_contents())
+                  ->TestDidDownloadImage(icon_url, 200, bitmaps, sizes));
+  ASSERT_TRUE(done.Wait());
+
+  EXPECT_EQ("14576046868078225019", icon->hash());
+  ASSERT_FALSE(icon->unsafe_data().empty());
+  SkBitmap decoded =
+      gfx::PNGCodec::Decode(base::as_byte_span(icon->unsafe_data()));
+  ASSERT_FALSE(decoded.isNull());
+  EXPECT_EQ(256, decoded.width());
+  EXPECT_EQ(256, decoded.height());
 }
 
 TEST_F(WebApkSingleIconHasherTest, DataUriInvalid) {
