@@ -37,14 +37,12 @@ namespace {
 // On POSIX, the unique ID is read from the ELF binary located at |module_addr|.
 // The age field is always 0.
 std::string GetUniqueBuildId(const void* module_addr) {
-  debug::ElfBuildIdBuffer build_id;
-  size_t build_id_length = debug::ReadElfBuildId(module_addr, true, build_id);
-  if (!build_id_length) {
-    return std::string();
+  std::string build_id = debug::ReadElfBuildId(module_addr, true);
+  if (!build_id.empty()) {
+    // Append 0 for the age value.
+    build_id += '0';
   }
-
-  // Append 0 for the age value.
-  return std::string(build_id.data(), build_id_length) + "0";
+  return build_id;
 }
 
 // Returns the offset from |module_addr| to the first byte following the last

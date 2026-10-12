@@ -11,7 +11,6 @@
 
 #include <algorithm>
 #include <ostream>
-#include <string_view>
 
 #include "base/compiler_specific.h"
 #include "base/debug/debugging_buildflags.h"
@@ -176,12 +175,10 @@ void StackTrace::OutputToStreamWithPrefixImpl(
     }
 
     if (dl_info_found) {
-      ElfBuildIdBuffer build_id;
-      size_t build_id_len =
-          ReadElfBuildId(dl_info.dli_fbase, /*uppercase=*/false, build_id);
-      if (build_id_len > 0) {
-        *os << " (BuildId: " << std::string_view(build_id.data(), build_id_len)
-            << ")";
+      std::string build_id =
+          ReadElfBuildId(dl_info.dli_fbase, /*uppercase=*/false);
+      if (!build_id.empty()) {
+        *os << " (BuildId: " << build_id << ")";
       }
     }
 

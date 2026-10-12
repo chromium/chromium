@@ -53,10 +53,7 @@ TEST_P(ElfReaderTest, ReadElfBuildIdUppercase) {
           .AddNoteSegment(NT_GNU_BUILD_ID, "GNU", kBuildIdBytes)
           .Build();
 
-  ElfBuildIdBuffer build_id;
-  size_t build_id_size = ReadElfBuildId(image.elf_start(), true, build_id);
-  EXPECT_EQ(8u, build_id_size);
-  EXPECT_EQ(kBuildIdHexString, std::string_view(&build_id[0], build_id_size));
+  EXPECT_EQ(kBuildIdHexString, ReadElfBuildId(image.elf_start(), true));
 }
 
 TEST_P(ElfReaderTest, ReadElfBuildIdLowercase) {
@@ -66,11 +63,8 @@ TEST_P(ElfReaderTest, ReadElfBuildIdLowercase) {
           .AddNoteSegment(NT_GNU_BUILD_ID, "GNU", kBuildIdBytes)
           .Build();
 
-  ElfBuildIdBuffer build_id;
-  size_t build_id_size = ReadElfBuildId(image.elf_start(), false, build_id);
-  EXPECT_EQ(8u, build_id_size);
   EXPECT_EQ(ToLowerASCII(kBuildIdHexStringLower),
-            std::string_view(&build_id[0], build_id_size));
+            ReadElfBuildId(image.elf_start(), false));
 }
 
 TEST_P(ElfReaderTest, ReadElfBuildIdMultipleNotes) {
@@ -83,10 +77,7 @@ TEST_P(ElfReaderTest, ReadElfBuildIdMultipleNotes) {
           .AddNoteSegment(NT_GNU_BUILD_ID, "GNU", kBuildIdBytes)
           .Build();
 
-  ElfBuildIdBuffer build_id;
-  size_t build_id_size = ReadElfBuildId(image.elf_start(), true, build_id);
-  EXPECT_EQ(8u, build_id_size);
-  EXPECT_EQ(kBuildIdHexString, std::string_view(&build_id[0], build_id_size));
+  EXPECT_EQ(kBuildIdHexString, ReadElfBuildId(image.elf_start(), true));
 }
 
 TEST_P(ElfReaderTest, ReadElfBuildIdWrongName) {
@@ -96,9 +87,7 @@ TEST_P(ElfReaderTest, ReadElfBuildIdWrongName) {
           .AddNoteSegment(NT_GNU_BUILD_ID, "ABC", kBuildIdBytes)
           .Build();
 
-  ElfBuildIdBuffer build_id;
-  size_t build_id_size = ReadElfBuildId(image.elf_start(), true, build_id);
-  EXPECT_EQ(0u, build_id_size);
+  EXPECT_EQ("", ReadElfBuildId(image.elf_start(), true));
 }
 
 TEST_P(ElfReaderTest, ReadElfBuildIdWrongType) {
@@ -108,9 +97,7 @@ TEST_P(ElfReaderTest, ReadElfBuildIdWrongType) {
           .AddNoteSegment(NT_GNU_BUILD_ID + 1, "GNU", kBuildIdBytes)
           .Build();
 
-  ElfBuildIdBuffer build_id;
-  size_t build_id_size = ReadElfBuildId(image.elf_start(), true, build_id);
-  EXPECT_EQ(0u, build_id_size);
+  EXPECT_EQ("", ReadElfBuildId(image.elf_start(), true));
 }
 
 TEST_P(ElfReaderTest, ReadElfBuildIdNoBuildId) {
@@ -118,9 +105,7 @@ TEST_P(ElfReaderTest, ReadElfBuildIdNoBuildId) {
                            .AddLoadSegment(PF_R | PF_X, /* size = */ 2000)
                            .Build();
 
-  ElfBuildIdBuffer build_id;
-  size_t build_id_size = ReadElfBuildId(image.elf_start(), true, build_id);
-  EXPECT_EQ(0u, build_id_size);
+  EXPECT_EQ("", ReadElfBuildId(image.elf_start(), true));
 }
 
 TEST_P(ElfReaderTest, ReadElfLibraryName) {
@@ -177,21 +162,20 @@ INSTANTIATE_TEST_SUITE_P(
     &ParamInfoToString);
 
 TEST(ElfReaderTestWithCurrentElfImage, ReadElfBuildId) {
-  ElfBuildIdBuffer build_id;
-  size_t build_id_size = ReadElfBuildId(&__executable_start, true, build_id);
-  ASSERT_NE(build_id_size, 0u);
+  std::string build_id = ReadElfBuildId(&__executable_start, true);
+  ASSERT_FALSE(build_id.empty());
 
 #if defined(OFFICIAL_BUILD)
-  EXPECT_EQ(40, build_id_size);  // SHA1 hash in hex.
+  EXPECT_EQ(40u, build_id.size());  // SHA1 hash in hex.
 #else
   // Allow any common BuildId hash, since it depends on linker settings.
-  if (build_id_size != 16 && build_id_size != 40 && build_id_size != 64) {
+  if (build_id.size() != 16 && build_id.size() != 40 && build_id.size() != 64) {
     // LLD's "fast", or sha1, or sha256.
-    EXPECT_EQ(16, build_id_size);
+    EXPECT_EQ(16u, build_id.size());
   }
 #endif
 
-  for (char c : base::span(build_id).first(build_id_size)) {
+  for (char c : build_id) {
     EXPECT_TRUE(IsHexDigit(c));
     EXPECT_FALSE(IsAsciiLower(c));
   }

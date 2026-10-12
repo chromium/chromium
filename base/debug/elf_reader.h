@@ -7,16 +7,15 @@
 
 #include <elf.h>
 
-#include <array>
 #include <optional>
+#include <string>
 #include <string_view>
 
 #include "base/base_export.h"
 #include "base/containers/span.h"
-#include "base/hash/sha1.h"
 
-// Functions for querying metadata from ELF binaries. All functions are signal
-// safe and require that the file be fully memory mapped.
+// Functions for querying metadata from ELF binaries. All functions require that
+// the file be fully memory mapped.
 
 #if __SIZEOF_POINTER__ == 4
 using Phdr = Elf32_Phdr;
@@ -27,19 +26,12 @@ using Phdr = Elf64_Phdr;
 namespace base {
 namespace debug {
 
-// Release builds use SHA1 (40 bytes), but other linkers may use other methods.
-// Support up to 64 (for blake3 & SHA256).
-constexpr size_t kMaxBuildIdStringLength = 64;
-using ElfBuildIdBuffer = std::array<char, kMaxBuildIdStringLength + 1>;
-
 // Hex-encodes the build ID from the ELF binary located at |elf_mapped_base|.
-// Returns the length of the build ID in bytes, or zero if the build ID couldn't
-// be read.
+// Returns the build ID, or an empty string if the build ID couldn't be read.
 // When |uppercase| is |true|, the output string is written using uppercase hex
 // characters. Otherwise, the output is lowercased.
-size_t BASE_EXPORT ReadElfBuildId(const void* elf_mapped_base,
-                                  bool uppercase,
-                                  ElfBuildIdBuffer& build_id);
+std::string BASE_EXPORT ReadElfBuildId(const void* elf_mapped_base,
+                                       bool uppercase);
 
 // Returns the library name from the ELF file mapped at |elf_mapped_base|.
 // Returns an empty result if the name could not be read.

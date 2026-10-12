@@ -9,18 +9,14 @@
 #include <string.h>
 
 #include <optional>
+#include <string>
 #include <string_view>
 
 #include "base/bits.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
-#include "base/hash/sha1.h"
-#include "base/strings/safe_sprintf.h"
+#include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
-
-// NOTE: This code may be used in crash handling code, so the implementation
-// must avoid dynamic memory allocation or using data structures which rely on
-// dynamic allocation.
 
 namespace base::debug {
 namespace {
@@ -45,6 +41,10 @@ using Xword = Elf64_Xword;
 
 constexpr char kGnuNoteName[] = "GNU";
 
+// Release builds use SHA1 (20 bytes), but other linkers may use other methods.
+// Support up to 32 bytes (for blake3 & SHA256).
+constexpr size_t kMaxBuildIdByteLength = 32;
+
 // Returns a pointer to the header of the ELF binary mapped into memory, or a
 // null pointer if the header is invalid. Here and below |elf_mapped_base| is a
 // pointer to the start of the ELF image.
@@ -59,14 +59,10 @@ const Ehdr* GetElfHeader(const void* elf_mapped_base) {
 
 }  // namespace
 
-size_t ReadElfBuildId(const void* elf_mapped_base,
-                      bool uppercase,
-                      ElfBuildIdBuffer& build_id) {
-  // NOTE: Function should use async signal safe calls only.
-
+std::string ReadElfBuildId(const void* elf_mapped_base, bool uppercase) {
   const Ehdr* elf_header = GetElfHeader(elf_mapped_base);
   if (!elf_header) {
-    return 0;
+    return "";
   }
 
   const size_t relocation_offset = GetRelocationOffset(elf_mapped_base);
@@ -98,7 +94,7 @@ size_t ReadElfBuildId(const void* elf_mapped_base,
           bits::AlignUp(current_note->n_descsz, static_cast<Word>(4)) +
           sizeof(Nhdr);
       if (section_size > static_cast<size_t>(section_end - current_section)) {
-        return 0;
+        return "";
       }
       UNSAFE_TODO(current_section += section_size);
     }
@@ -107,34 +103,26 @@ size_t ReadElfBuildId(const void* elf_mapped_base,
       continue;
     }
 
-    // Validate that the serialized build ID will fit inside |build_id|.
+    // Validate that the build ID is reasonably sized.
     size_t note_size = current_note->n_descsz;
-    if ((note_size * 2) >= build_id.size()) {
+    if (note_size > kMaxBuildIdByteLength) {
       continue;
     }
 
-    // Write out the build ID as a null-terminated hex string.
-    const uint8_t* build_id_raw = UNSAFE_TODO(
-        reinterpret_cast<const uint8_t*>(current_note) + sizeof(Nhdr) +
-        bits::AlignUp(current_note->n_namesz, static_cast<Word>(4)));
-    size_t i = 0;
-    for (i = 0; i < current_note->n_descsz; ++i) {
-      strings::SafeSNPrintf(&build_id[i * 2], 3, (uppercase ? "%02X" : "%02x"),
-                            UNSAFE_TODO(build_id_raw[i]));
-    }
-    build_id[i * 2] = '\0';
-
-    // Return the length of the string.
-    return i * 2;
+    // Return the build ID as a hex string.
+    span<const uint8_t> build_id_bytes = UNSAFE_TODO(
+        span(reinterpret_cast<const uint8_t*>(current_note) + sizeof(Nhdr) +
+                 bits::AlignUp(current_note->n_namesz, static_cast<Word>(4)),
+             note_size));
+    return uppercase ? HexEncode(build_id_bytes)
+                     : HexEncodeLower(build_id_bytes);
   }
 
-  return 0;
+  return "";
 }
 
 std::optional<std::string_view> ReadElfLibraryName(
     const void* elf_mapped_base) {
-  // NOTE: Function should use async signal safe calls only.
-
   const Ehdr* elf_header = GetElfHeader(elf_mapped_base);
   if (!elf_header) {
     return {};
@@ -185,8 +173,6 @@ std::optional<std::string_view> ReadElfLibraryName(
 }
 
 span<const Phdr> GetElfProgramHeaders(const void* elf_mapped_base) {
-  // NOTE: Function should use async signal safe calls only.
-
   const Ehdr* elf_header = GetElfHeader(elf_mapped_base);
   if (!elf_header) {
     return {};

@@ -228,12 +228,9 @@ struct FrameDetails {
     static const std::optional<std::string_view> library_name =
         base::debug::ReadElfLibraryName(
             reinterpret_cast<void*>(executable_start_addr()));
-    static const base::NoDestructor<std::string> chrome_debug_id([] {
-      base::debug::ElfBuildIdBuffer build_id;
-      size_t build_id_length = base::debug::ReadElfBuildId(
-          reinterpret_cast<void*>(executable_start_addr()), true, build_id);
-      return std::string(build_id.data(), build_id_length);
-    }());
+    static const base::NoDestructor<std::string> chrome_debug_id(
+        base::debug::ReadElfBuildId(
+            reinterpret_cast<void*>(executable_start_addr()), true));
     if (library_name) {
       module_name = std::string(*library_name);
     }

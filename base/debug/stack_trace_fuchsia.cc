@@ -91,7 +91,7 @@ class SymbolMap {
     std::array<Segment, kMaxSegmentCount> segments;
     size_t segment_count = 0;
     char name[ZX_MAX_NAME_LEN + 1] = {};
-    ElfBuildIdBuffer build_id = {};
+    std::string build_id;
   };
 
   SymbolMap();
@@ -200,7 +200,8 @@ void SymbolMap::Populate() {
                           link_map_name.size() + 1));
     }
 
-    if (!ReadElfBuildId(next_entry.addr, false, next_entry.build_id)) {
+    next_entry.build_id = ReadElfBuildId(next_entry.addr, false);
+    if (next_entry.build_id.empty()) {
       LOG(WARNING) << "Couldn't read build ID.";
       continue;
     }
@@ -276,7 +277,7 @@ void StackTrace::OutputToStreamWithPrefixImpl(
     }
 
     *os << "{{{module:" << module_id << ":" << module_entry.name
-        << ":elf:" << module_entry.build_id.data() << "}}}\n";
+        << ":elf:" << module_entry.build_id << "}}}\n";
 
     for (size_t i = 0; i < module_entry.segment_count; ++i) {
       const SymbolMap::Segment& segment = module_entry.segments[i];
