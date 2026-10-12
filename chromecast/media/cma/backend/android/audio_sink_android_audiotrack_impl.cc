@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chromecast/media/api/decoder_buffer_base.h"
@@ -289,8 +290,10 @@ int AudioSinkAndroidAudioTrackImpl::ReformatData() {
   // AudioTrack needs interleaved format -> "LRLRLRLRLRLRLRLRLRLRLRLRLRLRLRLR").
   DCHECK(direct_pcm_buffer_address_);
   DCHECK_EQ(0u, pending_data_->data_size() % sizeof(float));
-  CHECK_LT(static_cast<int>(pending_data_->data_size()), kDirectBufferSize);
-  int num_of_samples = pending_data_->data_size() / sizeof(float);
+  CHECK_LT(pending_data_->data_size(),
+           base::checked_cast<size_t>(kDirectBufferSize));
+  int num_of_samples =
+      base::checked_cast<int>(pending_data_->data_size() / sizeof(float));
   int num_of_frames = num_of_samples / num_channels_;
   std::vector<const float*> src(num_channels_);
   for (int c = 0; c < num_channels_; c++) {
@@ -306,7 +309,7 @@ int AudioSinkAndroidAudioTrackImpl::ReformatData() {
         *UNSAFE_TODO(dst++) = *UNSAFE_TODO(src[c]++);
       }
     }
-    return static_cast<int>(pending_data_->data_size()) /
+    return base::checked_cast<int>(pending_data_->data_size()) /
            (sizeof(float) / sizeof(int16_t));
   } else {
     float* dst = reinterpret_cast<float*>(direct_pcm_buffer_address_);
@@ -315,7 +318,7 @@ int AudioSinkAndroidAudioTrackImpl::ReformatData() {
         *UNSAFE_TODO(dst++) = *UNSAFE_TODO(src[c]++);
       }
     }
-    return static_cast<int>(pending_data_->data_size());
+    return base::checked_cast<int>(pending_data_->data_size());
   }
 }
 
