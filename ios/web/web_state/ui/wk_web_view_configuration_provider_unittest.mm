@@ -35,8 +35,7 @@ namespace web {
 class WKWebViewConfigurationProviderTest : public PlatformTest {
  public:
   WKWebViewConfigurationProviderTest()
-      : web_client_(std::make_unique<FakeWebClient>()),
-        browser_state_(std::make_unique<FakeBrowserState>()) {}
+      : web_client_(std::make_unique<FakeWebClient>()) {}
 
  protected:
   // Helper to create a WKWebViewConfigurationProvider with a mock rule list
@@ -50,10 +49,6 @@ class WKWebViewConfigurationProviderTest : public PlatformTest {
         browser_state, std::move(rule_list_provider)));
   }
 
-  // Returns WKWebViewConfigurationProvider associated with `browser_state_`.
-  WKWebViewConfigurationProvider& GetProvider() {
-    return GetProvider(browser_state_.get());
-  }
   // Returns WKWebViewConfigurationProvider for given `browser_state`.
   WKWebViewConfigurationProvider& GetProvider(
       BrowserState* browser_state) const {
@@ -66,22 +61,23 @@ class WKWebViewConfigurationProviderTest : public PlatformTest {
 
   web::ScopedTestingWebClient web_client_;
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<FakeBrowserState> browser_state_;
 };
 
 namespace {
 
 // Tests Non-OffTheRecord configuration.
 TEST_F(WKWebViewConfigurationProviderTest, NoneOffTheRecordConfiguration) {
-  browser_state_->SetOffTheRecord(false);
-  WKWebViewConfigurationProvider& provider = GetProvider();
+  FakeBrowserState browser_state(/*use_unique_storage_uuid=*/true);
+  browser_state.SetOffTheRecord(false);
+  WKWebViewConfigurationProvider& provider = GetProvider(&browser_state);
   EXPECT_TRUE(provider.GetWebViewConfiguration().websiteDataStore.persistent);
 }
 
 // Tests OffTheRecord configuration.
 TEST_F(WKWebViewConfigurationProviderTest, OffTheRecordConfiguration) {
-  browser_state_->SetOffTheRecord(true);
-  WKWebViewConfigurationProvider& provider = GetProvider(browser_state_.get());
+  FakeBrowserState browser_state(/*use_unique_storage_uuid=*/true);
+  browser_state.SetOffTheRecord(true);
+  WKWebViewConfigurationProvider& provider = GetProvider(&browser_state);
   WKWebViewConfiguration* config = provider.GetWebViewConfiguration();
   ASSERT_TRUE(config);
   EXPECT_FALSE(config.websiteDataStore.persistent);
@@ -93,7 +89,8 @@ TEST_F(WKWebViewConfigurationProviderTest, OffTheRecordConfiguration) {
 TEST_F(WKWebViewConfigurationProviderTest, UniversalOptOutConfiguration)
 API_AVAILABLE(ios(27)) {
   if (@available(iOS 27, *)) {
-    WKWebViewConfigurationProvider& provider = GetProvider();
+    FakeBrowserState browser_state(/*use_unique_storage_uuid=*/true);
+    WKWebViewConfigurationProvider& provider = GetProvider(&browser_state);
     provider.SetUniversalOptOutEnabled(false);
     EXPECT_FALSE(provider.GetWebViewConfiguration()
                      .defaultWebpagePreferences.globalPrivacyControlEnabled);
@@ -110,8 +107,9 @@ TEST_F(WKWebViewConfigurationProviderTest,
        ResetWithWebViewConfigurationUniversalOptOut)
 API_AVAILABLE(ios(27)) {
   if (@available(iOS 27, *)) {
+    FakeBrowserState browser_state(/*use_unique_storage_uuid=*/true);
     GetWebClient()->SetUniversalOptOutState(UniversalOptOutState::kNotEligible);
-    WKWebViewConfigurationProvider& provider = GetProvider();
+    WKWebViewConfigurationProvider& provider = GetProvider(&browser_state);
     provider.ResetWithWebViewConfiguration(nil);
     EXPECT_FALSE(provider.GetWebViewConfiguration()
                      .defaultWebpagePreferences.globalPrivacyControlEnabled);
@@ -131,14 +129,15 @@ API_AVAILABLE(ios(27)) {
 
 // Tests that internal configuration object can not be changed by clients.
 TEST_F(WKWebViewConfigurationProviderTest, ConfigurationProtection) {
-  WKWebViewConfigurationProvider& provider = GetProvider();
+  FakeBrowserState browser_state(/*use_unique_storage_uuid=*/false);
+  WKWebViewConfigurationProvider& provider = GetProvider(&browser_state);
   WKWebViewConfiguration* config = provider.GetWebViewConfiguration();
   WKPreferences* prefs = [config preferences];
   WKUserContentController* userContentController =
       [config userContentController];
 
   // Change the properties of returned configuration object.
-  FakeBrowserState other_browser_state;
+  FakeBrowserState other_browser_state(/*use_unique_storage_uuid=*/false);
   WKWebViewConfiguration* other_wk_web_view_configuration =
       GetProvider(&other_browser_state).GetWebViewConfiguration();
   ASSERT_TRUE(other_wk_web_view_configuration);
@@ -156,15 +155,17 @@ TEST_F(WKWebViewConfigurationProviderTest, ConfigurationProtection) {
 
 // Tests that the configuration are deallocated after `Purge` call.
 TEST_F(WKWebViewConfigurationProviderTest, Purge) {
+  FakeBrowserState browser_state(/*use_unique_storage_uuid=*/true);
+
   __weak id config;
   @autoreleasepool {  // Make sure that resulting copy is deallocated.
-    id strong_config = GetProvider().GetWebViewConfiguration();
+    id strong_config = GetProvider(&browser_state).GetWebViewConfiguration();
     config = strong_config;
     ASSERT_TRUE(config);
   }
 
   // No configuration after `Purge` call.
-  GetProvider().Purge();
+  GetProvider(&browser_state).Purge();
   EXPECT_FALSE(config);
 }
 
@@ -188,9 +189,10 @@ class MockWKContentRuleListProvider : public WKContentRuleListProvider {
 
 // Tests that the static content rule lists are created on initialization.
 TEST_F(WKWebViewConfigurationProviderTest, StaticContentRuleListsAreCreated) {
+  FakeBrowserState browser_state(/*use_unique_storage_uuid=*/true);
   auto rule_list_provider =
       std::make_unique<testing::StrictMock<MockWKContentRuleListProvider>>(
-          browser_state_->GetStatePath());
+          browser_state.GetStatePath());
   EXPECT_CALL(
       *rule_list_provider,
       UpdateRuleList(kBlockLocalResourcesRuleListKey, testing::_, testing::_));
@@ -199,7 +201,7 @@ TEST_F(WKWebViewConfigurationProviderTest, StaticContentRuleListsAreCreated) {
       UpdateRuleList(kMixedContentUpgradeRuleListKey, testing::_, testing::_));
 
   auto provider = CreateProviderWithMockRuleListProvider(
-      browser_state_.get(), std::move(rule_list_provider));
+      &browser_state, std::move(rule_list_provider));
 }
 
 // Tests that configuration's userContentController has additional scripts
@@ -207,8 +209,11 @@ TEST_F(WKWebViewConfigurationProviderTest, StaticContentRuleListsAreCreated) {
 TEST_F(WKWebViewConfigurationProviderTest, JavaScriptFeatureInjection) {
   FakeWebClient* client = GetWebClient();
 
+  FakeBrowserState browser_state(/*use_unique_storage_uuid=*/true);
   WKUserContentController* user_content_controller =
-      GetProvider().GetWebViewConfiguration().userContentController;
+      GetProvider(&browser_state)
+          .GetWebViewConfiguration()
+          .userContentController;
   ASSERT_NE(nil, user_content_controller)
       << "UserContentController should not be nil initially.";
   unsigned long original_script_count =
@@ -225,11 +230,12 @@ TEST_F(WKWebViewConfigurationProviderTest, JavaScriptFeatureInjection) {
           web::ContentWorld::kPageContentWorld, feature_scripts);
 
   client->SetJavaScriptFeatures({feature.get()});
-  GetProvider().UpdateScripts();
+  GetProvider(&browser_state).UpdateScripts();
 
   // Re-fetch userContentController to ensure we're checking the updated state.
-  user_content_controller =
-      GetProvider().GetWebViewConfiguration().userContentController;
+  user_content_controller = GetProvider(&browser_state)
+                                .GetWebViewConfiguration()
+                                .userContentController;
   ASSERT_NE(nil, user_content_controller)
       << "UserContentController should not be nil after update.";
   EXPECT_GT([user_content_controller.userScripts count], original_script_count);
@@ -238,10 +244,8 @@ TEST_F(WKWebViewConfigurationProviderTest, JavaScriptFeatureInjection) {
 // Tests that observers methods are correctly triggered when observing the
 // WKWebViewConfigurationProvider
 TEST_F(WKWebViewConfigurationProviderTest, Observers) {
-  // Use a separate browser_state for this test to avoid interference if
-  // GetProvider() has side effects
-  auto browser_state = std::make_unique<FakeBrowserState>();
-  WKWebViewConfigurationProvider* provider = &GetProvider(browser_state.get());
+  FakeBrowserState browser_state(/*use_unique_storage_uuid=*/true);
+  WKWebViewConfigurationProvider* provider = &GetProvider(&browser_state);
 
   // Register a callback to be notified when website data store is
   // updated and check that it is not invoked as part of the registration.
@@ -279,8 +283,8 @@ TEST_F(WKWebViewConfigurationProviderTest, Observers) {
 // Tests that if -[ResetWithWebViewConfiguration:] copies and applies Chrome's
 // initialization logic to the `config` that passed into that method
 TEST_F(WKWebViewConfigurationProviderTest, ResetConfiguration) {
-  auto browser_state = std::make_unique<FakeBrowserState>();
-  WKWebViewConfigurationProvider* provider = &GetProvider(browser_state.get());
+  FakeBrowserState browser_state(/*use_unique_storage_uuid=*/true);
+  WKWebViewConfigurationProvider* provider = &GetProvider(&browser_state);
 
   WKWebViewConfiguration* config = [[WKWebViewConfiguration alloc] init];
   config.allowsInlineMediaPlayback = NO;
@@ -312,20 +316,16 @@ TEST_F(WKWebViewConfigurationProviderTest, ResetConfiguration) {
 // Tests that WKWebViewConfiguration has a different data store if browser state
 // returns a different storage ID.
 TEST_F(WKWebViewConfigurationProviderTest, DifferentDataStore) {
-  // Create a configuration with an identifier.
-  auto browser_state1 = std::make_unique<FakeBrowserState>();
-  browser_state1->SetWebKitStorageID(base::Uuid::GenerateRandomV4());
-  WKWebViewConfigurationProvider* provider1 =
-      &GetProvider(browser_state1.get());
+  // Create a configuration with unique storage identifier.
+  FakeBrowserState browser_state1(/*use_unique_storage_uuid=*/true);
+  WKWebViewConfigurationProvider* provider1 = &GetProvider(&browser_state1);
   WKWebViewConfiguration* config1 = provider1->GetWebViewConfiguration();
   EXPECT_TRUE(config1.websiteDataStore);
   EXPECT_TRUE(config1.websiteDataStore.persistent);
 
-  // Create another configuration with another identifier.
-  auto browser_state2 = std::make_unique<FakeBrowserState>();
-  browser_state2->SetWebKitStorageID(base::Uuid::GenerateRandomV4());
-  WKWebViewConfigurationProvider* provider2 =
-      &GetProvider(browser_state2.get());
+  // Create another configuration with a different unique storage identifier.
+  FakeBrowserState browser_state2(/*use_unique_storage_uuid=*/true);
+  WKWebViewConfigurationProvider* provider2 = &GetProvider(&browser_state2);
   WKWebViewConfiguration* config2 = provider2->GetWebViewConfiguration();
   EXPECT_TRUE(config2.websiteDataStore);
   EXPECT_TRUE(config2.websiteDataStore.persistent);
@@ -350,19 +350,17 @@ TEST_F(WKWebViewConfigurationProviderTest, SameDataStoreForSameID) {
   const base::Uuid uuid = base::Uuid::GenerateRandomV4();
 
   // Create a configuration with an identifier.
-  auto browser_state1 = std::make_unique<FakeBrowserState>();
-  browser_state1->SetWebKitStorageID(uuid);
-  WKWebViewConfigurationProvider* provider1 =
-      &GetProvider(browser_state1.get());
+  FakeBrowserState browser_state1(/*use_unique_storage_uuid=*/false);
+  browser_state1.SetWebKitStorageID(uuid);
+  WKWebViewConfigurationProvider* provider1 = &GetProvider(&browser_state1);
   WKWebViewConfiguration* config1 = provider1->GetWebViewConfiguration();
   EXPECT_TRUE(config1.websiteDataStore);
   EXPECT_TRUE(config1.websiteDataStore.persistent);
 
   // Create another configuration with the same identifier.
-  auto browser_state2 = std::make_unique<FakeBrowserState>();
-  browser_state2->SetWebKitStorageID(uuid);
-  WKWebViewConfigurationProvider* provider2 =
-      &GetProvider(browser_state2.get());
+  FakeBrowserState browser_state2(/*use_unique_storage_uuid=*/false);
+  browser_state2.SetWebKitStorageID(uuid);
+  WKWebViewConfigurationProvider* provider2 = &GetProvider(&browser_state2);
   WKWebViewConfiguration* config2 = provider2->GetWebViewConfiguration();
   EXPECT_TRUE(config2.websiteDataStore);
   EXPECT_TRUE(config2.websiteDataStore.persistent);
@@ -377,11 +375,10 @@ TEST_F(WKWebViewConfigurationProviderTest, SameDataStoreForSameID) {
 TEST_F(WKWebViewConfigurationProviderTest,
        GetWebSiteDataStore_NoneOffTheRecord) {
   // Explicitly use default data store.
-  browser_state_ =
-      std::make_unique<FakeBrowserState>(/*use_unique_storage_uuid=*/false);
+  FakeBrowserState browser_state(/*use_unique_storage_uuid=*/false);
 
-  browser_state_->SetOffTheRecord(false);
-  WKWebViewConfigurationProvider& provider = GetProvider();
+  browser_state.SetOffTheRecord(false);
+  WKWebViewConfigurationProvider& provider = GetProvider(&browser_state);
   WKWebsiteDataStore* data_store = provider.GetWebsiteDataStore();
   EXPECT_TRUE(data_store.isPersistent);
   // Default data store shares same pointer.
@@ -390,8 +387,9 @@ TEST_F(WKWebViewConfigurationProviderTest,
 
 // Tests `GetWebSiteDataStore()` for OffTheRecord browser.
 TEST_F(WKWebViewConfigurationProviderTest, GetWebSiteDataStore_OffTheRecord) {
-  browser_state_->SetOffTheRecord(true);
-  WKWebViewConfigurationProvider& provider = GetProvider();
+  FakeBrowserState browser_state(/*use_unique_storage_uuid=*/true);
+  browser_state.SetOffTheRecord(true);
+  WKWebViewConfigurationProvider& provider = GetProvider(&browser_state);
   WKWebsiteDataStore* data_store = provider.GetWebsiteDataStore();
   ASSERT_TRUE(data_store);
   EXPECT_FALSE(data_store.isPersistent);
@@ -401,20 +399,16 @@ TEST_F(WKWebViewConfigurationProviderTest, GetWebSiteDataStore_OffTheRecord) {
 // returns a different storage ID.
 TEST_F(WKWebViewConfigurationProviderTest,
        GetWebSiteDataStore_DifferentDataStore) {
-  // Create a data store with an identifier.
-  auto browser_state1 = std::make_unique<FakeBrowserState>();
-  browser_state1->SetWebKitStorageID(base::Uuid::GenerateRandomV4());
-  WKWebViewConfigurationProvider* provider1 =
-      &GetProvider(browser_state1.get());
+  // Create a data store with unique storage identifier.
+  FakeBrowserState browser_state1(/*use_unique_storage_uuid=*/true);
+  WKWebViewConfigurationProvider* provider1 = &GetProvider(&browser_state1);
   WKWebsiteDataStore* data_store1 = provider1->GetWebsiteDataStore();
   EXPECT_TRUE(data_store1);
   EXPECT_TRUE(data_store1.isPersistent);
 
   // Create another data store with another identifier.
-  auto browser_state2 = std::make_unique<FakeBrowserState>();
-  browser_state2->SetWebKitStorageID(base::Uuid::GenerateRandomV4());
-  WKWebViewConfigurationProvider* provider2 =
-      &GetProvider(browser_state2.get());
+  FakeBrowserState browser_state2(/*use_unique_storage_uuid=*/true);
+  WKWebViewConfigurationProvider* provider2 = &GetProvider(&browser_state2);
   WKWebsiteDataStore* data_store2 = provider2->GetWebsiteDataStore();
   EXPECT_TRUE(data_store2);
   EXPECT_TRUE(data_store2.isPersistent);
@@ -438,19 +432,17 @@ TEST_F(WKWebViewConfigurationProviderTest,
   const base::Uuid uuid = base::Uuid::GenerateRandomV4();
 
   // Create a data store with an identifier.
-  auto browser_state1 = std::make_unique<FakeBrowserState>();
-  browser_state1->SetWebKitStorageID(uuid);
-  WKWebViewConfigurationProvider* provider1 =
-      &GetProvider(browser_state1.get());
+  FakeBrowserState browser_state1(/*use_unique_storage_uuid=*/false);
+  browser_state1.SetWebKitStorageID(uuid);
+  WKWebViewConfigurationProvider* provider1 = &GetProvider(&browser_state1);
   WKWebsiteDataStore* data_store1 = provider1->GetWebsiteDataStore();
   EXPECT_TRUE(data_store1);
   EXPECT_TRUE(data_store1.persistent);
 
   // Create another data store with the same identifier.
-  auto browser_state2 = std::make_unique<FakeBrowserState>();
-  browser_state2->SetWebKitStorageID(uuid);
-  WKWebViewConfigurationProvider* provider2 =
-      &GetProvider(browser_state2.get());
+  FakeBrowserState browser_state2(/*use_unique_storage_uuid=*/false);
+  browser_state2.SetWebKitStorageID(uuid);
+  WKWebViewConfigurationProvider* provider2 = &GetProvider(&browser_state2);
   WKWebsiteDataStore* data_store2 = provider2->GetWebsiteDataStore();
   EXPECT_TRUE(data_store2);
   EXPECT_TRUE(data_store2.persistent);
@@ -465,10 +457,8 @@ TEST_F(WKWebViewConfigurationProviderTest,
 TEST_F(WKWebViewConfigurationProviderTest,
        GetWebSiteDataStore_SameConfigurationDataStore) {
   // Explicitly use default data store.
-  browser_state_ =
-      std::make_unique<FakeBrowserState>(/*use_unique_storage_uuid=*/false);
-
-  WKWebViewConfigurationProvider& provider = GetProvider();
+  FakeBrowserState browser_state(/*use_unique_storage_uuid=*/false);
+  WKWebViewConfigurationProvider& provider = GetProvider(&browser_state);
 
   WKWebsiteDataStore* data_store = provider.GetWebsiteDataStore();
   EXPECT_TRUE(data_store.isPersistent);
@@ -483,10 +473,9 @@ TEST_F(WKWebViewConfigurationProviderTest,
 TEST_F(WKWebViewConfigurationProviderTest,
        GetWebSiteDataStore_ResetConfiguration) {
   // Explicitly use default data store.
-  browser_state_ =
-      std::make_unique<FakeBrowserState>(/*use_unique_storage_uuid=*/false);
+  FakeBrowserState browser_state(/*use_unique_storage_uuid=*/false);
 
-  WKWebViewConfigurationProvider& provider = GetProvider();
+  WKWebViewConfigurationProvider& provider = GetProvider(&browser_state);
 
   WKWebsiteDataStore* data_store = provider.GetWebsiteDataStore();
   EXPECT_TRUE(data_store.isPersistent);
@@ -527,8 +516,9 @@ TEST_F(WKWebViewConfigurationProviderTest,
 // OffTheRecord browser.
 TEST_F(WKWebViewConfigurationProviderTest,
        GetWebSiteDataStore_OffTheRecordResetConfiguration) {
-  browser_state_->SetOffTheRecord(true);
-  WKWebViewConfigurationProvider& provider = GetProvider(browser_state_.get());
+  FakeBrowserState browser_state(/*use_unique_storage_uuid=*/true);
+  browser_state.SetOffTheRecord(true);
+  WKWebViewConfigurationProvider& provider = GetProvider(&browser_state);
 
   WKWebsiteDataStore* data_store = provider.GetWebsiteDataStore();
   EXPECT_FALSE(data_store.isPersistent);
@@ -570,7 +560,8 @@ TEST_F(WKWebViewConfigurationProviderTest,
 // ExtensionController, and nil when it does not.
 TEST_F(WKWebViewConfigurationProviderTest, WebExtensionControllerConfigured)
 API_AVAILABLE(ios(18.4)) {
-  WKWebViewConfigurationProvider& provider = GetProvider();
+  FakeBrowserState browser_state(/*use_unique_storage_uuid=*/true);
+  WKWebViewConfigurationProvider& provider = GetProvider(&browser_state);
 
   // ExtensionController is not provided: webExtensionController is not
   // configured.

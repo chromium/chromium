@@ -108,9 +108,7 @@ ProxyRule ProxyRuleFor(
 class ProxyConfigurationProviderTest : public PlatformTest {
  public:
   ProxyConfigurationProviderTest()
-      : web_client_(std::make_unique<FakeWebClient>()) {
-    browser_state_.SetWebKitStorageID(base::Uuid::GenerateRandomV4());
-  }
+      : web_client_(std::make_unique<FakeWebClient>()) {}
   ~ProxyConfigurationProviderTest() override = default;
 
   void SetUp() override {
@@ -124,7 +122,9 @@ class ProxyConfigurationProviderTest : public PlatformTest {
     // Ensure no proxyConfigurations outlive these tests to avoid flake of
     // unrelated tests.
     if (@available(iOS 17.0, *)) {
-      WKWebsiteDataStore* data_store = [WKWebsiteDataStore defaultDataStore];
+      WKWebViewConfigurationProvider& config_provider =
+          WKWebViewConfigurationProvider::FromBrowserState(&browser_state_);
+      WKWebsiteDataStore* data_store = config_provider.GetWebsiteDataStore();
       data_store.proxyConfigurations = @[];
     }
 

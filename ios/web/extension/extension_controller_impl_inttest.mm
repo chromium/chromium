@@ -31,6 +31,19 @@ class ExtensionControllerImplIntTest : public WebTestWithWebState {
   ~ExtensionControllerImplIntTest() override = default;
 
  protected:
+  void TearDown() override {
+    if (@available(iOS 18.4, *)) {
+      if (controller_ &&
+          controller_->IsBuiltInExtensionLoaded(BuiltInExtension::kGPC)) {
+        base::test::TestFuture<bool> unload_future;
+        controller_->UnloadBuiltInExtension(BuiltInExtension::kGPC,
+                                            unload_future.GetCallback());
+        EXPECT_TRUE(unload_future.Get());
+      }
+    }
+    WebTestWithWebState::TearDown();
+  }
+
   std::unique_ptr<BrowserState> CreateBrowserState() override {
     auto browser_state = std::make_unique<FakeBrowserState>();
     if (@available(iOS 18.4, *)) {
@@ -38,10 +51,12 @@ class ExtensionControllerImplIntTest : public WebTestWithWebState {
       ExtensionControllerImpl* impl =
           static_cast<ExtensionControllerImpl*>(controller_.get());
 
+      WKWebViewConfigurationProvider& config_provider =
+          WKWebViewConfigurationProvider::FromBrowserState(browser_state.get());
       WKWebViewConfiguration* config = [[WKWebViewConfiguration alloc] init];
+      config.websiteDataStore = config_provider.GetWebsiteDataStore();
       config.webExtensionController = impl->GetWKWebExtensionController();
-      WKWebViewConfigurationProvider::FromBrowserState(browser_state.get())
-          .ResetWithWebViewConfiguration(config);
+      config_provider.ResetWithWebViewConfiguration(config);
     }
     return browser_state;
   }
