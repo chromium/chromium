@@ -12,6 +12,7 @@
 #import <utility>
 #import <vector>
 
+#import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/run_loop.h"
@@ -32,6 +33,7 @@
 #import "ios/web/public/js_messaging/content_world.h"
 #import "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/js_test_util.h"
@@ -513,8 +515,40 @@ class DeviceTrustJavaScriptFeatureWebStateTest
         {});
   }
 
+  // The tab helper holds a raw pointer to `mock_service_`, which is destroyed
+  // before the base fixture destroys the WebState.
+  void TearDown() override {
+    DeviceTrustChallengeTabHelper::RemoveFromWebState(web_state());
+    IOSChromeTestWithWebState::TearDown();
+  }
+
   DeviceTrustJavaScriptFeature* feature() {
     return DeviceTrustJavaScriptFeature::GetInstance();
+  }
+
+  enterprise_connectors::test::MockDeviceTrustService* mock_service() {
+    return &mock_service_;
+  }
+
+  // Loads an empty page and returns its main frame once available.
+  web::WebFrame* LoadEmptyPage() {
+    LoadHtml(@"<html><body></body></html>");
+    return WaitForMainFrame(feature());
+  }
+
+  // Loads an empty page and installs the API in its main frame. Returns
+  // whether the API became available.
+  [[nodiscard]] bool InstallDeviceTrustAPI() {
+    web::WebFrame* main_frame = LoadEmptyPage();
+    if (!main_frame || !feature()->SetupDeviceTrustAPI(main_frame)) {
+      return false;
+    }
+    return WaitForDeviceTrustAPI();
+  }
+
+  // Returns the main frame of the current page without navigating.
+  web::WebFrame* MainFrame() {
+    return feature()->GetWebFramesManager(web_state())->GetMainWebFrame();
   }
 
   // Returns the result of evaluating `script` in the page content world.
@@ -538,15 +572,58 @@ class DeviceTrustJavaScriptFeatureWebStateTest
         });
   }
 
+  // Returns a JavaScript string literal holding `kChallenge`.
+  NSString* ChallengeExpression() {
+    return [NSString stringWithFormat:@"'%s'", kChallenge];
+  }
+
+  // Calls `getAttestation()` with the JavaScript expression
+  // `challenge_expression` and stores the settled promise value in
+  // `window.deviceTrustResult`: `{payload}` on success and `{code, message}`
+  // on rejection.
+  void CallGetAttestation(NSString* challenge_expression) {
+    NSString* script = [NSString
+        stringWithFormat:
+            @"(function() {"
+             "  window.deviceTrustResult = null;"
+             "  window.chrome.enterprise.deviceTrust.getAttestation(%@).then("
+             "      (payload) => { window.deviceTrustResult = {payload}; },"
+             "      (error) => {"
+             "        window.deviceTrustResult = {"
+             "          code: error.code, message: error.message"
+             "        };"
+             "      });"
+             "  return true;"
+             "})()",
+            challenge_expression];
+    EXPECT_NSEQ(@YES, EvaluateInPage(script));
+  }
+
+  // Waits for the promise returned by `getAttestation()` to settle and returns
+  // the value stored by CallGetAttestation(), or nil on timeout.
+  NSDictionary* WaitForAttestationResult() {
+    bool settled = base::test::ios::WaitUntilConditionOrTimeout(
+        base::test::ios::kWaitForJSCompletionTimeout, ^bool {
+          return
+              [EvaluateInPage(@"window.deviceTrustResult !== null") boolValue];
+        });
+    if (!settled) {
+      return nil;
+    }
+    return base::apple::ObjCCast<NSDictionary>(
+        EvaluateInPage(@"window.deviceTrustResult"));
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  testing::NiceMock<enterprise_connectors::test::MockDeviceTrustService>
+      mock_service_;
 };
 
 // Verifies that the API is not present in a page until SetupDeviceTrustAPI()
 // executes the script in its main frame, and that the script installs it.
 TEST_F(DeviceTrustJavaScriptFeatureWebStateTest, SetupDeviceTrustAPI) {
-  LoadHtml(@"<html><body></body></html>");
-  web::WebFrame* main_frame = WaitForMainFrame(feature());
+  web::WebFrame* main_frame = LoadEmptyPage();
   ASSERT_TRUE(main_frame);
   ASSERT_FALSE(IsDeviceTrustAPIInstalled());
   EXPECT_TRUE(feature()->SetupDeviceTrustAPI(main_frame));
@@ -554,6 +631,173 @@ TEST_F(DeviceTrustJavaScriptFeatureWebStateTest, SetupDeviceTrustAPI) {
   EXPECT_NSEQ(@"function",
               EvaluateInPage(@"typeof window.chrome.enterprise.deviceTrust."
                              @"getAttestation"));
+}
+
+// Verifies that SetupDeviceTrustAPI() refuses to execute the script in a child
+// frame.
+TEST_F(DeviceTrustJavaScriptFeatureWebStateTest,
+       SetupDeviceTrustAPIIgnoresChildFrame) {
+  LoadHtml(@"<html><body><iframe src=\"about:blank\"></iframe></body></html>");
+  ASSERT_TRUE(WaitForMainFrame(feature()));
+  ASSERT_TRUE(WaitForFrameCount(feature(), 2));
+  web::WebFrame* child_frame = nullptr;
+  for (web::WebFrame* frame :
+       feature()->GetWebFramesManager(web_state())->GetAllWebFrames()) {
+    if (!frame->IsMainFrame()) {
+      child_frame = frame;
+    }
+  }
+  ASSERT_TRUE(child_frame);
+  EXPECT_FALSE(feature()->SetupDeviceTrustAPI(child_frame));
+  EXPECT_FALSE(IsDeviceTrustAPIInstalled());
+}
+
+// Verifies that a second setup attempt keeps the API object that was installed
+// first.
+TEST_F(DeviceTrustJavaScriptFeatureWebStateTest,
+       SetupDeviceTrustAPIKeepsInstalledAPI) {
+  ASSERT_TRUE(InstallDeviceTrustAPI());
+  EXPECT_NSEQ(@YES,
+              EvaluateInPage(@"(function() {"
+                              "  window.installedDeviceTrustAPI ="
+                              "      window.chrome.enterprise.deviceTrust;"
+                              "  return true;"
+                              "})()"));
+  // Submit the feature script again in the same document. Loading a new page
+  // via InstallDeviceTrustAPI() would discard the API reference being compared.
+  // WKWebView evaluates scripts targeting the same frame in submission order.
+  web::WebFrame* main_frame = MainFrame();
+  ASSERT_TRUE(main_frame);
+  EXPECT_TRUE(feature()->SetupDeviceTrustAPI(main_frame));
+  EXPECT_NSEQ(@YES, EvaluateInPage(@"window.chrome.enterprise.deviceTrust === "
+                                    "window.installedDeviceTrustAPI"));
+}
+
+// Verifies that the script adds `deviceTrust` to a `window.chrome.enterprise`
+// object already defined by the page instead of replacing it.
+TEST_F(DeviceTrustJavaScriptFeatureWebStateTest,
+       SetupDeviceTrustAPIReusesExistingChromeObject) {
+  web::WebFrame* main_frame = LoadEmptyPage();
+  ASSERT_TRUE(main_frame);
+  EXPECT_NSEQ(@YES, EvaluateInPage(@"(function() {"
+                                    "  window.chrome = {enterprise: {}};"
+                                    "  window.chrome.enterprise.pageProperty ="
+                                    "      'kept';"
+                                    "  return true;"
+                                    "})()"));
+  EXPECT_TRUE(feature()->SetupDeviceTrustAPI(main_frame));
+  EXPECT_TRUE(WaitForDeviceTrustAPI());
+  EXPECT_NSEQ(@"kept",
+              EvaluateInPage(@"window.chrome.enterprise.pageProperty"));
+}
+
+// Verifies that the API object is frozen so that the page cannot replace
+// `getAttestation()`. A write to a frozen object is silently ignored in sloppy
+// mode and throws a TypeError in strict mode; check the latter so a regression
+// is observable.
+TEST_F(DeviceTrustJavaScriptFeatureWebStateTest, APIObjectIsFrozen) {
+  ASSERT_TRUE(InstallDeviceTrustAPI());
+  EXPECT_NSEQ(@YES, EvaluateInPage(@"Object.isFrozen("
+                                    "window.chrome.enterprise.deviceTrust)"));
+  EXPECT_NSEQ(@"TypeError", EvaluateInPage(@"(function() {"
+                                            "  'use strict';"
+                                            "  try {"
+                                            "    window.chrome.enterprise."
+                                            "deviceTrust.getAttestation ="
+                                            "        function() {};"
+                                            "    return 'no-throw';"
+                                            "  } catch (error) {"
+                                            "    return error.name;"
+                                            "  }"
+                                            "})()"));
+}
+
+// Verifies that the properties leading to the API are neither writable nor
+// configurable so that the page cannot replace or delete them.
+TEST_F(DeviceTrustJavaScriptFeatureWebStateTest, APIPropertiesAreReadOnly) {
+  ASSERT_TRUE(InstallDeviceTrustAPI());
+  EXPECT_NSEQ(@YES, EvaluateInPage(@"(function() {"
+                                    "  const descriptors = ["
+                                    "    Object.getOwnPropertyDescriptor("
+                                    "        window, 'chrome'),"
+                                    "    Object.getOwnPropertyDescriptor("
+                                    "        window.chrome, 'enterprise'),"
+                                    "    Object.getOwnPropertyDescriptor("
+                                    "        window.chrome.enterprise,"
+                                    "        'deviceTrust'),"
+                                    "  ];"
+                                    "  return descriptors.every((descriptor) =>"
+                                    "      !descriptor.writable &&"
+                                    "      !descriptor.configurable);"
+                                    "})()"));
+  EXPECT_NSEQ(@YES, EvaluateInPage(@"(function() {"
+                                    "  const api = window.chrome.enterprise."
+                                    "deviceTrust;"
+                                    "  window.chrome.enterprise.deviceTrust ="
+                                    "      null;"
+                                    "  delete window.chrome.enterprise."
+                                    "deviceTrust;"
+                                    "  delete window.chrome;"
+                                    "  return window.chrome.enterprise."
+                                    "deviceTrust === api;"
+                                    "})()"));
+}
+
+// Verifies that the script validates the challenge before messaging the
+// browser: a non-string challenge is rejected with INVALID_CHALLENGE_REQUEST.
+TEST_F(DeviceTrustJavaScriptFeatureWebStateTest,
+       GetAttestationRejectsNonStringChallenge) {
+  ASSERT_TRUE(InstallDeviceTrustAPI());
+  CallGetAttestation(@"12345");
+  NSDictionary* result = WaitForAttestationResult();
+  ASSERT_TRUE(result);
+  EXPECT_NSEQ(@"INVALID_CHALLENGE_REQUEST", result[@"code"]);
+  EXPECT_NSEQ(@"challengeRequest must be a string.", result[@"message"]);
+}
+
+// Verifies that a challenge sent through the script message handler is
+// rejected with SERVICE_UNAVAILABLE when the WebState has no
+// DeviceTrustChallengeTabHelper.
+TEST_F(DeviceTrustJavaScriptFeatureWebStateTest,
+       GetAttestationRejectsWithoutTabHelper) {
+  ASSERT_TRUE(InstallDeviceTrustAPI());
+  CallGetAttestation(ChallengeExpression());
+  NSDictionary* result = WaitForAttestationResult();
+  ASSERT_TRUE(result);
+  EXPECT_NSEQ(@"SERVICE_UNAVAILABLE", result[@"code"]);
+  EXPECT_NSEQ(@"Device attestation is not available.", result[@"message"]);
+}
+
+// Verifies the end-to-end flow in a real WebState: the tab helper installs the
+// API for an allowlisted page, and a challenge sent through the script message
+// handler resolves with the payload returned by the service.
+TEST_F(DeviceTrustJavaScriptFeatureWebStateTest,
+       GetAttestationResolvesSignedPayload) {
+  const GURL page_url("https://chromium.test/");
+  const std::set<enterprise_connectors::DTCPolicyLevel> levels = {
+      enterprise_connectors::DTCPolicyLevel::kUser};
+  ON_CALL(*mock_service(), IsEnabled()).WillByDefault(testing::Return(true));
+  ON_CALL(*mock_service(), Watches(page_url))
+      .WillByDefault(testing::Return(levels));
+  EXPECT_CALL(*mock_service(),
+              BuildChallengeResponse(kChallenge, levels, testing::_))
+      .WillOnce(
+          [](const std::string&,
+             const std::set<enterprise_connectors::DTCPolicyLevel>&,
+             enterprise_connectors::DeviceTrustService::DeviceTrustCallback
+                 callback) {
+            enterprise_connectors::DeviceTrustResponse response;
+            response.challenge_response = "signed_payload_abc";
+            std::move(callback).Run(response);
+          });
+  ASSERT_TRUE(LoadEmptyPage());
+  DeviceTrustChallengeTabHelper::CreateForWebState(web_state(), mock_service());
+  ASSERT_TRUE(WaitForDeviceTrustAPI());
+  CallGetAttestation(ChallengeExpression());
+  NSDictionary* result = WaitForAttestationResult();
+  ASSERT_TRUE(result);
+  EXPECT_NSEQ(@"signed_payload_abc", result[@"payload"]);
+  EXPECT_EQ(result[@"code"], nil);
 }
 
 }  // namespace
