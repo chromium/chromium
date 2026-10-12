@@ -311,7 +311,17 @@ public class WebappLauncherActivity extends Activity {
         WarmupManager.getInstance()
                 .maybePrefetchDnsForUrlInBackground(launchingActivity, launchData.url);
 
-        IntentUtils.safeStartActivity(launchingActivity, launchIntent);
+        int reparentTabId = IntentHandler.getTabId(launchIntent);
+        boolean started = IntentUtils.safeStartActivity(launchingActivity, launchIntent);
+        if (launchData.isForWebApk && reparentTabId != Tab.INVALID_TAB_ID) {
+            // Only detach the tab once the WebappActivity that adopts it has been started, so the
+            // tab stays in its window if the launch fails.
+            if (started) {
+                WebApkReparentingHandler.getInstance().detachAndRegisterTabAndClear(reparentTabId);
+            } else {
+                WebApkReparentingHandler.getInstance().clear();
+            }
+        }
         if (IntentUtils.isIntentForNewTaskOrNewDocument(launchIntent)) {
             launchingActivity.finishAndRemoveTask();
         } else {
@@ -404,11 +414,19 @@ public class WebappLauncherActivity extends Activity {
         if (launchData.isForWebApk) {
             WebappIntentUtils.copyWebApkLaunchIntentExtras(intent, launchIntent);
             int reparentTabId =
-                    WebApkReparentingHandler.getInstance().detachAndRegisterTabAndClear(intent);
+                    WebApkReparentingHandler.getInstance().getTabIdForReparenting(intent);
             if (reparentTabId != Tab.INVALID_TAB_ID) {
-                IntentHandler.setTabId(launchIntent, reparentTabId);
-                launchIntent.putExtra(IntentHandler.EXTRA_SKIP_LOAD_ON_REPARENTING, true);
-                IntentUtils.addTrustedIntentExtras(launchIntent);
+                // WebAPK launches always have an ID, see extractLaunchData().
+                assert launchData.id != null;
+                if (CustomTabLocator.findRunningWebappActivityWithId(launchData.id) != null) {
+                    // A running WebappActivity may receive this launch in onNewIntent(), which
+                    // doesn't adopt reparented tabs, so launch it without reparenting instead.
+                    WebApkReparentingHandler.getInstance().clear();
+                } else {
+                    IntentHandler.setTabId(launchIntent, reparentTabId);
+                    launchIntent.putExtra(IntentHandler.EXTRA_SKIP_LOAD_ON_REPARENTING, true);
+                    IntentUtils.addTrustedIntentExtras(launchIntent);
+                }
             }
         } else {
             WebappIntentUtils.copyWebappLaunchIntentExtras(intent, launchIntent);

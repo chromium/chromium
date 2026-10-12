@@ -15,13 +15,18 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
+import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.chrome.browser.tabmodel.TabCreatorUtil;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabReparentingParams;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.webapps.WebappsUtils;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 import org.chromium.webapk.lib.common.WebApkConstants;
 
@@ -46,6 +51,21 @@ public class WebApkReparentingHandler {
             new TabObserver() {
                 @Override
                 public void onDestroyed(Tab tab) {
+                    clear();
+                }
+
+                @Override
+                public void onClosingStateChanged(Tab tab, boolean closing) {
+                    if (closing) clear();
+                }
+
+                @Override
+                public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
+                    if (window == null) clear();
+                }
+
+                @Override
+                public void onCrash(Tab tab) {
                     clear();
                 }
             };
@@ -73,12 +93,15 @@ public class WebApkReparentingHandler {
      * @param tab The tab to reparent.
      * @param webApkPackage The WebAPK package name.
      * @param url The start URL for the WebAPK.
-     * @param scope The manifest scope of the WebAPK, as known at install time.
+     * @param scope The manifest scope of the WebAPK, as known at install time. If empty, the
+     *     default scope derived from {@code url} is used.
      */
     public void prepareIntentForReparenting(
             Intent intent, Tab tab, String webApkPackage, String url, String scope) {
         ThreadUtils.assertOnUiThread();
         clear();
+        // Don't attach a token for tabs that can't be reparented, so the WebAPK launches normally.
+        if (!canReparentTab(tab)) return;
 
         mIntentToken = new byte[32];
         mSecureRandom.nextBytes(mIntentToken);
@@ -86,29 +109,29 @@ public class WebApkReparentingHandler {
         mTab = tab;
         mPackageName = webApkPackage;
         mUrl = url;
-        mScope = scope;
+        mScope = TextUtils.isEmpty(scope) ? ShortcutHelper.getScopeFromUrl(url) : scope;
 
         mTab.addObserver(mTabObserver);
     }
 
     /**
-     * Validates the token and metadata from the incoming intent, returns the tab ID, and clears
-     * state if reparenting succeeded.
+     * Validates the token and metadata from the incoming intent and returns the ID of the tab to
+     * reparent, without detaching it yet. Clears the stored state if the token matches but the tab
+     * can't be reparented, so the token remains one-shot.
      *
      * @param intent The intent received by Chrome from the WebAPK launcher bounce.
      * @return The tab ID to reparent, or {@link Tab#INVALID_TAB_ID} if invalid or not found.
      */
-    public int detachAndRegisterTabAndClear(Intent intent) {
+    public int getTabIdForReparenting(Intent intent) {
         ThreadUtils.assertOnUiThread();
         if (mIntentToken == null || mTab == null) {
             return Tab.INVALID_TAB_ID;
         }
         byte[] tokenFromIntent =
                 IntentUtils.safeGetByteArrayExtra(intent, EXTRA_WEBAPK_REPARENT_TOKEN);
-        if (tokenFromIntent == null) {
+        if (tokenFromIntent == null || !Arrays.equals(tokenFromIntent, mIntentToken)) {
             return Tab.INVALID_TAB_ID;
         }
-        int result = Tab.INVALID_TAB_ID;
 
         String webApkPackage =
                 IntentUtils.safeGetStringExtra(intent, WebApkConstants.EXTRA_WEBAPK_PACKAGE_NAME);
@@ -121,33 +144,77 @@ public class WebApkReparentingHandler {
             url = IntentHandler.getUrlFromIntent(intent);
         }
 
-        if (Arrays.equals(tokenFromIntent, mIntentToken)
-                && (mPackageName == null || mPackageName.equals(webApkPackage))
-                && (mUrl == null || mUrl.equals(url))
-                && !mTab.isDestroyed()) {
-            String scopeUrl = mScope;
-            if (TextUtils.isEmpty(scopeUrl) && mUrl != null) {
-                scopeUrl = ShortcutHelper.getScopeFromUrl(mUrl);
-            }
-            GURL tabUrl = mTab.getUrl();
-            if (!GURL.isEmptyOrInvalid(tabUrl)
-                    && !TextUtils.isEmpty(scopeUrl)
-                    && UrlUtilities.isUrlWithinScope(tabUrl.getSpec(), scopeUrl)) {
-                WebContents webContents = mTab.getWebContents();
-                if (webContents != null) {
-                    WebappsUtils.prunePreScopeNavigationHistory(webContents, new GURL(scopeUrl));
-                }
-                result = mTab.getId();
-                AsyncTabParamsManagerSingleton.getInstance()
-                        .add(result, new TabReparentingParams(mTab, null));
+        // Set together with mIntentToken in prepareIntentForReparenting().
+        assert mPackageName != null && mUrl != null && mScope != null;
+        GURL tabUrl = mTab.getUrl();
+        if (mPackageName.equals(webApkPackage)
+                && mUrl.equals(url)
+                && canReparentTab(mTab)
+                && !GURL.isEmptyOrInvalid(tabUrl)
+                && !TextUtils.isEmpty(mScope)
+                && UrlUtilities.isUrlWithinScope(tabUrl.getSpec(), mScope)) {
+            return mTab.getId();
+        }
+        clear();
+        return Tab.INVALID_TAB_ID;
+    }
 
-                // Detach tab from old window
-                ReparentingTask.from(mTab).detach();
-            }
-            clear();
+    /**
+     * Detaches the tab returned by {@link #getTabIdForReparenting(Intent)} so the WebappActivity
+     * started for it can adopt it, and clears the stored state. Must only be called once that
+     * WebappActivity has been started, in the same UI thread task.
+     *
+     * @param tabId The tab ID returned by {@link #getTabIdForReparenting(Intent)}.
+     */
+    public void detachAndRegisterTabAndClear(int tabId) {
+        ThreadUtils.assertOnUiThread();
+        Tab tab = mTab;
+        String scopeUrl = mScope;
+        // Validated by getTabIdForReparenting() in the same UI thread task.
+        assert tab != null && scopeUrl != null && tab.getId() == tabId;
+        // Clear before detaching, so mTabObserver isn't notified of the detach.
+        clear();
+
+        WebContents webContents = tab.getWebContents();
+        // Checked by canReparentTab() in getTabIdForReparenting().
+        assert webContents != null;
+        WebappsUtils.prunePreScopeNavigationHistory(webContents, new GURL(scopeUrl));
+
+        // Avoid leaving the originating browser window with zero tabs when reparenting its last
+        // tab (matching Desktop Chrome's ReparentWebContentsIntoAppBrowser). Open the replacement
+        // NTP before detaching so the TabModel never transiently drops to zero tabs.
+        TabModel sourceTabModel = TabWindowManagerSingleton.getInstance().getTabModelForTab(tab);
+        if (sourceTabModel != null && sourceTabModel.getCount() == 1) {
+            TabCreatorUtil.launchNtp(sourceTabModel.getTabCreator());
         }
 
-        return result;
+        AsyncTabParamsManagerSingleton.getInstance()
+                .add(tabId, new TabReparentingParams(tab, null));
+
+        // Detach tab from old window
+        ReparentingTask.from(tab).detach();
+    }
+
+    /**
+     * Returns whether {@code tab} can be adopted by WebappActivity as is. Only tabs in the main
+     * browser app qualify: Custom Tab, TWA and WebappActivity tabs are managed by their own
+     * activity (which can't host a replacement NTP), and WebappActivity always uses a regular
+     * profile. Note that {@link Tab#isCustomTab()} is false for WebappActivity tabs, so {@link
+     * Tab#isTabInBrowser()} is used instead. Since WebappActivity skips the initial load for a
+     * reparented tab, the tab must also still be attached and loaded, rather than discarded,
+     * crashed or showing an error page.
+     */
+    private static boolean canReparentTab(Tab tab) {
+        return !tab.isDestroyed()
+                && !tab.isClosing()
+                && tab.isTabInBrowser()
+                && !tab.isOffTheRecord()
+                && !tab.isDetachedFromActivity()
+                && !tab.isFrozen()
+                && !tab.needsReload()
+                && !tab.isShowingErrorPage()
+                && !SadTab.isShowing(tab)
+                && tab.getWebContents() != null;
     }
 
     /** Clears the stored token and metadata. */

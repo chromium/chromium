@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.customtabs.content;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.clearInvocations;
@@ -30,6 +32,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.IntentUtils;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ExternalIntentUrlChecker;
@@ -216,6 +219,48 @@ public class CustomTabActivityUrlLoadingTest {
         mNavigationController.navigate(params, new Intent());
 
         assertEquals(appOrigin, params.getInitiatorOrigin());
+    }
+
+    @Test
+    public void skipsInitialLoad_WhenReparentingWithSkipLoadExtra() {
+        Tab transferredTab = env.prepareTransferredTab();
+        env.mIntent.putExtra(IntentHandler.EXTRA_SKIP_LOAD_ON_REPARENTING, true);
+
+        mTabController.setUpInitialTab(null);
+        mTabController.finishNativeInitialization();
+
+        assertTrue(
+                IntentUtils.safeGetBooleanExtra(
+                        env.mIntent, IntentHandler.EXTRA_SKIP_LOAD_ON_REPARENTING, false));
+        verify(transferredTab, never()).loadUrl(any());
+    }
+
+    @Test
+    public void loadsInitialUrl_WhenSkipLoadOnReparentingHasNoReparentingParams() {
+        env.mIntent.putExtra(IntentHandler.EXTRA_SKIP_LOAD_ON_REPARENTING, true);
+
+        mTabController.setUpInitialTab(null);
+        mTabController.finishNativeInitialization();
+
+        assertFalse(
+                IntentUtils.safeGetBooleanExtra(
+                        env.mIntent, IntentHandler.EXTRA_SKIP_LOAD_ON_REPARENTING, false));
+        verify(env.tabFromFactory).loadUrl(argThat(params -> INITIAL_URL.equals(params.getUrl())));
+    }
+
+    @Test
+    public void loadsUrlInHiddenTab_WithStaleSkipLoadOnReparentingExtra() {
+        Tab hiddenTab = env.prepareHiddenTab();
+        when(env.webContents.getLastCommittedUrl()).thenReturn(GURL.emptyGURL());
+        env.mIntent.putExtra(IntentHandler.EXTRA_SKIP_LOAD_ON_REPARENTING, true);
+
+        mTabController.setUpInitialTab(hiddenTab);
+        mTabController.finishNativeInitialization();
+
+        assertFalse(
+                IntentUtils.safeGetBooleanExtra(
+                        env.mIntent, IntentHandler.EXTRA_SKIP_LOAD_ON_REPARENTING, false));
+        verify(hiddenTab).loadUrl(any());
     }
 
     private CustomTabIntentDataProvider createDataProviderForNewIntent() {

@@ -17,6 +17,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.chromium.base.Callback;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -255,6 +256,9 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
                 Tab tab = createTab();
                 mTabProvider.setInitialTab(tab, getTabCreationMode(tab, TabCreationMode.EARLY));
             } else {
+                // A speculated hidden tab is never a reparented tab, so clear any stale
+                // EXTRA_SKIP_LOAD_ON_REPARENTING to make sure the initial URL still loads.
+                IntentUtils.safeRemoveExtra(mIntent, IntentHandler.EXTRA_SKIP_LOAD_ON_REPARENTING);
                 mTabProvider.setInitialTab(hiddenTab, TabCreationMode.HIDDEN);
                 initializeTab(hiddenTab, true);
             }
@@ -433,8 +437,16 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
                 CustomTabsConnection.getInstance().getClientPackageNameForSession(mSession);
         Tab tab = appId != null ? maybeRestoreTab(profile, appId) : null;
 
+        boolean isReparenting = tab == null && checkIfTabReparentingParamsExistForIntent(mIntent);
+        if (!isReparenting) {
+            // Clear any stale EXTRA_SKIP_LOAD_ON_REPARENTING (e.g. when a task is cold-relaunched
+            // from Android Recents after the process was killed) so a newly created tab still
+            // loads its initial URL.
+            IntentUtils.safeRemoveExtra(mIntent, IntentHandler.EXTRA_SKIP_LOAD_ON_REPARENTING);
+        }
+
         if (tab == null) {
-            if (checkIfTabReparentingParamsExistForIntent(mIntent)) {
+            if (isReparenting) {
                 int reparentingTabIdFromIntent = IntentHandler.getTabId(mIntent);
                 AsyncTabParams params =
                         AsyncTabParamsManagerSingleton.getInstance()
