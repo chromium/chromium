@@ -377,19 +377,23 @@ VerticalTabStripTopContainer::GetSegmentedControl() {
 
 bool VerticalTabStripTopContainer::IsPositionInWindowCaption(
     const gfx::Point& point) {
-  if (segmented_control_ && IsHitInView(segmented_control_, point)) {
+  if (segmented_control_ && segmented_control_->GetVisible() &&
+      IsHitInView(segmented_control_, point)) {
     return false;
   }
 
-  if (combo_button_ && IsHitInView(combo_button_, point)) {
+  if (combo_button_ && combo_button_->GetVisible() &&
+      IsHitInView(combo_button_, point)) {
     return false;
   }
 
-  if (collapse_button_ && IsHitInView(collapse_button_, point)) {
+  if (collapse_button_ && collapse_button_->GetVisible() &&
+      IsHitInView(collapse_button_, point)) {
     return false;
   }
 
-  if (unfocus_button_ && IsHitInView(unfocus_button_, point)) {
+  if (unfocus_button_ && unfocus_button_->GetVisible() &&
+      IsHitInView(unfocus_button_, point)) {
     return false;
   }
 

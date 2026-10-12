@@ -243,13 +243,19 @@ TEST_F(VerticalTabStripTopContainerTest, ShowsSegmentedControlWhenEligible) {
 
   ASSERT_NE(segmented_control(), nullptr);
   EXPECT_TRUE(segmented_control()->GetVisible());
-  EXPECT_FALSE(combo_button()->GetVisible());
+  const gfx::Point segmented_control_center =
+      segmented_control()->bounds().CenterPoint();
+  EXPECT_FALSE(
+      top_container()->IsPositionInWindowCaption(segmented_control_center));
 
   // Unpin tab search: segmented control should hide completely.
   pref_service()->SetBoolean(prefs::kTabSearchPinnedToTabstrip, false);
   top_container()->UpdateControlsVisibility();
+  LayoutView();
   EXPECT_FALSE(segmented_control()->GetVisible());
   EXPECT_TRUE(combo_button()->GetVisible());
+  EXPECT_TRUE(
+      top_container()->IsPositionInWindowCaption(segmented_control_center));
 }
 
 TEST_F(VerticalTabStripTopContainerTest,
