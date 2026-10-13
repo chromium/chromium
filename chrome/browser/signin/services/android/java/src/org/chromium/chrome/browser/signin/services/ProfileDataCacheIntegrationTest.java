@@ -337,6 +337,40 @@ public class ProfileDataCacheIntegrationTest {
         assertProfileDataUpdatedCount(0);
     }
 
+    @Test
+    @MediumTest
+    @SigninTestRule.BlockGetAccounts
+    @DisableFeatures(SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS)
+    public void
+            testAccountFetchFailsBeforeInitializationShouldFulfillAccountsPromise_withAmfSourceOfTruth() {
+        mSigninTestRule.setAccountFetchFailed();
+        mSigninTestRule.unblockGetAccounts();
+
+        createProfileDataCache();
+
+        waitForCachedAccounts(List.of());
+        assertAccountsUpdatedCount(0);
+        assertProfileDataUpdatedCount(0);
+    }
+
+    @Test
+    @MediumTest
+    @SigninTestRule.BlockGetAccounts
+    @DisableFeatures(SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS)
+    public void
+            testAccountFetchFailsAfterInitializationShouldNotifyEmptyAccountsList_withAmfSourceOfTruth() {
+        createProfileDataCache();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> assertFalse(mProfileDataCache.getAccounts().isFulfilled()));
+
+        mSigninTestRule.setAccountFetchFailed();
+        mSigninTestRule.unblockGetAccounts();
+
+        waitForCachedAccounts(List.of());
+        assertAccountsUpdatedCount(1);
+        assertProfileDataUpdatedCount(0);
+    }
+
     /** Creates a list of distinct accounts, see {@link #createAccount(int)}. */
     private static List<AccountInfo> createAccountsList(int size) {
         List<AccountInfo> accounts = new ArrayList<>();

@@ -109,22 +109,46 @@ public class AccountManagerTestRule implements TestRule {
                 });
     }
 
+    /**
+     * Sets the account fetch to failed in {@link FakeAccountManagerFacade} and the refresh tokens
+     * loading state to failed in {@link FakeIdentityManager}.
+     *
+     * <p>If account updates are currently blocked via {@link #blockGetAccountsUpdate()}, {@link
+     * FakeIdentityManager} remains in {@link RefreshTokensLoadingState#IN_PROGRESS} and transitions
+     * to {@link RefreshTokensLoadingState#FAILED} only when the returned {@link
+     * FakeAccountManagerFacade.UpdateBlocker} is closed.
+     */
     public void setAccountFetchFailed() {
         mFakeAccountManagerFacade.setAccountFetchFailed();
+        if (mFakeAccountManagerFacade.getAccounts().isFulfilled()) {
+            mFakeIdentityManager.setRefreshTokensLoadingState(RefreshTokensLoadingState.FAILED);
+        }
     }
 
     /**
-     * Block updates from {@link FakeAccountManagerFacade}. See {@link
-     * FakeAccountManagerFacade#blockGetAccounts()}.
+     * Blocks account updates in {@link FakeAccountManagerFacade} and sets {@link
+     * FakeIdentityManager}'s refresh tokens loading state to {@link
+     * RefreshTokensLoadingState#IN_PROGRESS}.
+     *
+     * <p>When the returned {@link FakeAccountManagerFacade.UpdateBlocker} is closed, {@link
+     * FakeIdentityManager}'s refresh tokens loading state is updated to {@link
+     * RefreshTokensLoadingState#SUCCEEDED} (or {@link RefreshTokensLoadingState#FAILED} if {@link
+     * #setAccountFetchFailed()} was called). See {@link
+     * FakeAccountManagerFacade#blockGetAccounts(Runnable)}.
      */
     public FakeAccountManagerFacade.UpdateBlocker blockGetAccountsUpdate() {
         // TODO(crbug.com/572039753): Avoid switching RefreshTokensLoadingState from SUCCEEDED back
         // to IN_PROGRESS.
         mFakeIdentityManager.setRefreshTokensLoadingState(RefreshTokensLoadingState.IN_PROGRESS);
         return mFakeAccountManagerFacade.blockGetAccounts(
-                () ->
-                        mFakeIdentityManager.setRefreshTokensLoadingState(
-                                RefreshTokensLoadingState.SUCCEEDED));
+                () -> {
+                    @RefreshTokensLoadingState
+                    int state =
+                            mFakeAccountManagerFacade.didAccountFetchSucceed()
+                                    ? RefreshTokensLoadingState.SUCCEEDED
+                                    : RefreshTokensLoadingState.FAILED;
+                    mFakeIdentityManager.setRefreshTokensLoadingState(state);
+                });
     }
 
     /**

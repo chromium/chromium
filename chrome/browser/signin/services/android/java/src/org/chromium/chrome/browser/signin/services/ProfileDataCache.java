@@ -615,13 +615,14 @@ public class ProfileDataCache
 
     private @Nullable List<AccountInfo> getCoreAccountsIfLoaded() {
         if (SigninFeatureMap.isEnabled(SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS)) {
-            if (mIdentityManager.getRefreshTokensLoadingState()
-                    == RefreshTokensLoadingState.SUCCEEDED) {
-                return mIdentityManager.getExtendedAccountInfoForAccountsWithRefreshToken();
+            switch (mIdentityManager.getRefreshTokensLoadingState()) {
+                case RefreshTokensLoadingState.SUCCEEDED:
+                    return mIdentityManager.getExtendedAccountInfoForAccountsWithRefreshToken();
+                case RefreshTokensLoadingState.FAILED:
+                    return List.of();
+                default:
+                    return null;
             }
-            // TODO(crbug.com/566138426): Refresh tokens are never loaded if the device account
-            // fetch fails, so the getAccounts() Promise stays pending indefinitely.
-            return null;
         } else {
             var accounts = mAccountManagerFacade.getAccounts();
             if (accounts.isFulfilled()) {
@@ -745,9 +746,7 @@ public class ProfileDataCache
         public void onRefreshTokensLoaded(@RefreshTokensLoadingState int state) {
             assert SigninFeatureMap.isEnabled(
                     SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS);
-            if (state == RefreshTokensLoadingState.SUCCEEDED) {
-                updateCache(mIdentityManager.getExtendedAccountInfoForAccountsWithRefreshToken());
-            }
+            updateCache();
         }
 
         /**
