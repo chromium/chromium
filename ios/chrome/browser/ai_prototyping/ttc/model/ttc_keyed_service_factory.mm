@@ -14,9 +14,6 @@
 
 // static
 TTCKeyedService* TTCKeyedServiceFactory::GetForProfile(ProfileIOS* profile) {
-  if (!IsTTCEnabled()) {
-    return nullptr;
-  }
   return GetInstance()->GetServiceForProfileAs<TTCKeyedService>(
       profile, /*create=*/true);
 }
