@@ -215,7 +215,14 @@ class Responder final {
           if (output->text) {
             text.emplace(output->text);
           }
-          CHECK(text.has_value() || thought.has_value());
+          if (!text && !thought) {
+            // Notification for non-text output (e.g. the 2nd token of a tool
+            // call streamed via the tool call channel) to record TTFT.
+            task_runner->PostTask(
+                FROM_HERE,
+                base::BindOnce(&Responder::RecordFirstToken, weak_ptr));
+            return;
+          }
           break;
         case ChromeMLExecutionStatus::kComplete:
           DCHECK(!output->text);
@@ -247,6 +254,14 @@ class Responder final {
   }
 
  private:
+  void RecordFirstToken() {
+    if (first_token_time_ == base::TimeTicks()) {
+      // Ends the `TTFT` trace.
+      TRACE_EVENT_END("optimization_guide", perfetto_id());
+      first_token_time_ = base::TimeTicks::Now();
+    }
+  }
+
   // Forwards tool calls and notifies that tool responses are now expected.
   void OnToolCalls(
       std::vector<on_device_model::mojom::ToolCallPtr> tool_calls) {
@@ -255,6 +270,7 @@ class Responder final {
       Cancel();
       return;
     }
+    RecordFirstToken();
     responder_->OnToolCalls(std::move(tool_calls));
     on_tool_calls_emitted_.Run();
   }
@@ -265,11 +281,7 @@ class Responder final {
     if (text || thought) {
       auto chunk = on_device_model::mojom::ResponseChunk::New();
       if (text) {
-        if (first_token_time_ == base::TimeTicks()) {
-          // Ends the `TTFT` trace.
-          TRACE_EVENT_END("optimization_guide", perfetto_id());
-          first_token_time_ = base::TimeTicks::Now();
-        }
+        RecordFirstToken();
         num_output_tokens_++;
         output_so_far_ += *text;
         chunk->text = *text;
@@ -280,7 +292,8 @@ class Responder final {
       responder_->OnResponse(std::move(chunk));
     } else if (session_) {
       if (first_token_time_ == base::TimeTicks()) {
-        // Ends the `TTFT` trace if no visible text token was ever emitted.
+        // Ends the `TTFT` trace if no visible text or tool call token was ever
+        // emitted.
         TRACE_EVENT_END("optimization_guide", perfetto_id());
       }
       // Ends the `Decode` trace.
