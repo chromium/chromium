@@ -119,14 +119,17 @@ void AudioThreadHangMonitor::CheckIfAudioThreadIsAlive() {
 
   const base::TimeDelta time_since_last_check =
       clock_->NowTicks() - last_check_time_;
+  const bool audio_thread_responded_to_last_ping = alive_flag_->flag_;
 
   // An unexpected |time_since_last_check| may indicate that the system has been
   // in sleep mode, in which case the audio thread may have had insufficient
   // time to respond to the ping. In such a case, skip the check for now.
-  if (time_since_last_check > ping_interval_ + base::Seconds(1))
+  if (!audio_thread_responded_to_last_ping &&
+      time_since_last_check > ping_interval_ + base::Seconds(1)) {
+    PingAudioThread();
     return;
+  }
 
-  const bool audio_thread_responded_to_last_ping = alive_flag_->flag_;
   if (audio_thread_responded_to_last_ping) {
     recent_ping_state_ = std::max(recent_ping_state_, 0) + 1;
 
@@ -164,13 +167,20 @@ void AudioThreadHangMonitor::CheckIfAudioThreadIsAlive() {
     }
   }
 
-  alive_flag_->flag_ = false;
+  PingAudioThread();
+}
+
+void AudioThreadHangMonitor::PingAudioThread() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(monitor_sequence_);
+
   last_check_time_ = clock_->NowTicks();
-  audio_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](scoped_refptr<SharedAtomicFlag> flag) { flag->flag_ = true; },
-          alive_flag_));
+  if (alive_flag_->flag_.exchange(false)) {
+    audio_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](scoped_refptr<SharedAtomicFlag> flag) { flag->flag_ = true; },
+            alive_flag_));
+  }
 }
 
 void AudioThreadHangMonitor::LogHistogramThreadStatus() {

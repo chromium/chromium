@@ -114,6 +114,11 @@ class MEDIA_EXPORT AudioThreadHangMonitor final {
   // its value to a histogram.
   void CheckIfAudioThreadIsAlive();
 
+  // Updates |last_check_time_| and, if |alive_flag_| was set, clears it and
+  // posts a task to the audio thread that sets |alive_flag_| again. The next
+  // CheckIfAudioThreadIsAlive() call checks whether that task has run.
+  void PingAudioThread();
+
   // LogHistogramThreadStatus logs |thread_status_| to a histogram.
   void LogHistogramThreadStatus();
 
