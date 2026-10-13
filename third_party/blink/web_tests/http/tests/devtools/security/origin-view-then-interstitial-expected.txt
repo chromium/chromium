@@ -51,7 +51,7 @@ Security overview
     </DIV>
 </DIV>
 Panel on origin view before interstitial:
-<DIV jslog=Pane; context: security.origin-view class=widget vbox security-origin-view slot=main >
+<DIV class=widget vbox security-origin-view jslog=Pane; context: security.origin-view slot=main >
     <STYLE >
     </STYLE>
     <STYLE >
