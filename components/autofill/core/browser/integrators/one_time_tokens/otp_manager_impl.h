@@ -174,11 +174,9 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
   raw_ptr<one_time_tokens::OneTimeTokenService> one_time_token_service_ =
       nullptr;
 
-  // Manages single retrieval of Gmail OTP for the target origin.
-  // A retrieval is started when we detect an OTP field present on the page
-  // and the user focuses it.
-  // Do not overwrite this retriever in other cases, e.g. for retrieving an OTP
-  // proactively in response to tickles.
+  // Manages retrieval of a Gmail OTP for the target origin, started either when
+  // an OTP field is detected on the page or in response to an incoming Gmail
+  // OTP tickle notification.
   std::unique_ptr<one_time_tokens::GmailOtpRetriever> gmail_otp_retriever_;
 
   // Subscriptions to a `OneTimeTokenService`.
