@@ -339,6 +339,14 @@ inline bool IsModalRequest(UIPresentation ui_presentation) {
          ui_presentation == UIPresentation::kModalImmediate;
 }
 
+// Returns true for presentations that run in the background without a modal
+// dialog (conditional/autofill and ambient). Such requests should never surface
+// a page-modal sheet before the user has chosen to interact with them.
+inline bool IsPassiveRequest(UIPresentation ui_presentation) {
+  return ui_presentation == UIPresentation::kAutofill ||
+         ui_presentation == UIPresentation::kAmbient;
+}
+
 // Returns the vector icon associated with the given mechanism type.
 // For Mechanism::WindowsAPI, the effective transport must be provided.
 const gfx::VectorIcon& GetMechanismIcon(
@@ -616,8 +624,9 @@ void AuthenticatorRequestDialogController::CancelAuthenticatorRequest() {
     ChangePinControllerImpl::RecordHistogram(
         EnclaveChangePinEvent::kNewPinCancelled);
   }
-  if (ui_presentation() == UIPresentation::kAutofill) {
-    // Conditional UI requests are never cancelled, they restart silently.
+  if (IsPassiveRequest(ui_presentation())) {
+    // Conditional and ambient UI requests are never cancelled, they restart
+    // silently.
     ResetEphemeralState();
     for (auto& observer : model_->observers) {
       observer.OnStartOver();
@@ -1278,9 +1287,9 @@ void AuthenticatorRequestDialogController::OnAuthenticatorStorageFull() {
 }
 
 void AuthenticatorRequestDialogController::OnUserConsentDenied() {
-  if (ui_presentation() == UIPresentation::kAutofill) {
+  if (IsPassiveRequest(ui_presentation())) {
     // Do not show a page-modal retry error sheet if the user cancelled out of
-    // their platform authenticator during a conditional UI request.
+    // their platform authenticator during a conditional or ambient UI request.
     // Instead, retry silently.
     CancelAuthenticatorRequest();
     return;
@@ -1334,9 +1343,9 @@ void AuthenticatorRequestDialogController::OnUserConsentDenied() {
 
 bool AuthenticatorRequestDialogController::OnWinUserCancelled() {
 #if BUILDFLAG(IS_WIN)
-  if (ui_presentation() == UIPresentation::kAutofill) {
+  if (IsPassiveRequest(ui_presentation())) {
     // Do not show a page-modal retry error sheet if the user cancelled out of
-    // their platform authenticator during a conditional UI request.
+    // their platform authenticator during a conditional or ambient UI request.
     // Instead, retry silently.
     CancelAuthenticatorRequest();
     return true;

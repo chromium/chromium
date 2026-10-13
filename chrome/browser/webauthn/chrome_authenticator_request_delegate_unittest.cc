@@ -63,12 +63,14 @@
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/discoverable_credential_metadata.h"
+#include "device/fido/fido_device_authenticator.h"
 #include "device/fido/fido_discovery_factory.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/public/features.h"
 #include "device/fido/public/fido_constants.h"
 #include "device/fido/public/fido_types.h"
 #include "device/fido/public/public_key_credential_user_entity.h"
+#include "device/fido/virtual_ctap2_device.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -362,6 +364,43 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, ConditionalUI) {
     EXPECT_EQ(observer.last_step() ==
                   AuthenticatorRequestDialogModel::Step::kPasskeyAutofill,
               conditional_ui);
+  }
+}
+
+// Conditional and ambient requests must not dispatch to external authenticators
+// (e.g. USB security keys) before the user selects an option. Otherwise, an
+// authenticator that cannot satisfy the request can end it with a page-modal
+// error.
+TEST_F(ChromeAuthenticatorRequestDelegateTest,
+       PassiveRequestsDeferExternalAuthenticatorDispatch) {
+  content::WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL("https://example.com"));
+  ChromeWebAuthnCredentialsDelegateFactory::CreateForWebContents(
+      web_contents());
+
+  device::FidoDeviceAuthenticator usb_authenticator(
+      std::make_unique<device::VirtualCtap2Device>());
+  ASSERT_EQ(usb_authenticator.AuthenticatorTransport(),
+            device::FidoTransportProtocol::kUsbHumanInterfaceDevice);
+
+  const struct {
+    UIPresentation ui_presentation;
+    bool expect_embedder_controls_dispatch;
+  } kTests[] = {
+      {UIPresentation::kAutofill, true},
+      {UIPresentation::kAmbient, true},
+      {UIPresentation::kModal, false},
+  };
+  for (const auto& test : kTests) {
+    SCOPED_TRACE(static_cast<int>(test.ui_presentation));
+    ChromeAuthenticatorRequestDelegate delegate(main_rfh());
+    delegate.SetUIPresentation(test.ui_presentation);
+    delegate.SetRelyingPartyId(kRpId);
+    TransportAvailabilityInfo transports_info;
+    transports_info.request_type = device::FidoRequestType::kGetAssertion;
+    delegate.OnTransportAvailabilityEnumerated(std::move(transports_info));
+    EXPECT_EQ(delegate.EmbedderControlsAuthenticatorDispatch(usb_authenticator),
+              test.expect_embedder_controls_dispatch);
   }
 }
 

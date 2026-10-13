@@ -937,7 +937,9 @@ bool ChromeAuthenticatorRequestDelegate::EmbedderControlsAuthenticatorDispatch(
     return false;
   }
 
-  if (dialog_controller_->ui_presentation() == UIPresentation::kAutofill &&
+  const UIPresentation ui_presentation = dialog_controller_->ui_presentation();
+  if ((ui_presentation == UIPresentation::kAutofill ||
+       ui_presentation == UIPresentation::kAmbient) &&
       (dialog_model_->step() ==
            AuthenticatorRequestDialogModel::Step::kPasskeyAutofill ||
        dialog_model_->step() ==
@@ -957,9 +959,9 @@ bool ChromeAuthenticatorRequestDelegate::EmbedderControlsAuthenticatorDispatch(
       return false;
     }
 #endif
-    // There is an active conditional request that is not showing any UI. The UI
-    // will dispatch to any plugged in authenticators after the user selects an
-    // option.
+    // There is an active conditional or ambient request that is not showing any
+    // modal UI. The UI will dispatch to any plugged in authenticators after the
+    // user selects an option.
     return true;
   }
   auto transport = authenticator.AuthenticatorTransport();
