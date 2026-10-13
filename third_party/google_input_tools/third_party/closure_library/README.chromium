@@ -8,6 +8,8 @@ License: Apache-2.0
 License File: LICENSE
 Security Critical: Yes
 Shipped: yes
+Mitigated: CVE-2020-8910
+CVE-2020-8910: Fixed by https://crbug.com/357737761 (removed unused closure/goog/uri/utils.js).
 
 Description:
 Closure Library is a powerful, low level JavaScript library designed
