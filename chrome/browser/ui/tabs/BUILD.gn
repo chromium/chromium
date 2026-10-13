@@ -165,6 +165,8 @@ if (!is_android) {
   }
 
   source_set("tab_menu_impl") {
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
     sources = [
       "glic_tab_sub_menu_model.cc",
       "tab_menu_model.cc",
@@ -218,6 +220,8 @@ if (!is_android) {
   }
 
   source_set("tab_group_impl") {
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
     sources = [
       "shared_tab_group_version_upgrade_modal.cc",
       "tab_group_attention_indicator.cc",
@@ -294,6 +298,8 @@ if (!is_android) {
   }
 
   source_set("tab_model_impl") {
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
     sources = [
       "existing_base_sub_menu_model.cc",
       "existing_tab_group_sub_menu_model.cc",
@@ -365,6 +371,8 @@ if (!is_android) {
   }
 
   source_set("tab_strip_impl") {
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
     sources = [
       "tab_close_types_data.cc",
       "tab_strip_model.cc",
@@ -489,6 +497,7 @@ if (!is_android) {
   source_set("impl") {
     public_deps = [
       ":page_context_eligibility_helper",
+      "//chrome/browser:browser_public_dependencies",
       "//chrome/browser/loader",
     ]
 
@@ -853,6 +862,7 @@ if (!is_android) {
 
   source_set("tab_strip_model_observer_impl") {
     sources = [ "tab_strip_model_observer.cc" ]
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
     deps = [
       ":tab_strip",
       ":tab_strip_model_observer",

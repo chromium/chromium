@@ -70,12 +70,10 @@ if (!is_android) {
       "//chrome/browser/ui:browser_actions",
       "//chrome/browser/ui:browser_element_identifiers",
       "//chrome/browser/ui:ui_features",
-      "//chrome/browser/ui/browser_window",
       "//chrome/browser/user_education",
       "//components/user_education/product_messaging",
       "//content/public/browser",
       "//ui/gfx",
-      "//ui/menus",
     ]
   }
 

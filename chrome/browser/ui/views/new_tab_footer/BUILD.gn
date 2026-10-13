@@ -14,7 +14,6 @@ source_set("new_tab_footer") {
   ]
   deps = [
     "//base",
-    "//chrome/browser/enterprise",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/new_tab_footer:resources_grit",
     "//chrome/browser/ui:browser_element_identifiers",
@@ -34,7 +33,10 @@ source_set("new_tab_footer") {
     "//ui/views",
     "//ui/views/controls/webview",
   ]
-  public_deps = [ "//ui/base/unowned_user_data" ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//ui/base/unowned_user_data",
+  ]
 }
 
 source_set("browser_tests") {

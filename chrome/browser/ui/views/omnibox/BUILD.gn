@@ -77,10 +77,6 @@ source_set("omnibox") {
     "//ui/views",
     "//ui/views/controls/webview",
   ]
-
-  if (is_chromeos) {
-    public_deps += [ "//ui/base/ime/ash" ]
-  }
 }
 
 source_set("impl") {
@@ -184,6 +180,7 @@ source_set("impl") {
   # views/frame/contents_web_view.h and views/theme_copying_widget.h. Reach
   # them via browser_public_dependencies; the reverse edge is the
   # allow_circular_includes_from entry on //chrome/browser/ui:ui.
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   if (is_mac) {
     deps += [ ":native_widget_mac" ]

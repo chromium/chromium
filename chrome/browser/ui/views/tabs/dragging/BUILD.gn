@@ -31,7 +31,6 @@ source_set("dragging") {
     "//chrome/browser/ui/views/tabs:base",
     "//components/saved_tab_groups/public",
     "//components/tab_groups",
-    "//components/tabs:public",
     "//components/webapps/common",
     "//content/public/browser",
     "//ui/base",
@@ -116,6 +115,8 @@ source_set("impl") {
   if (is_mac) {
     deps += [ "//components/remote_cocoa/browser" ]
   }
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 if (!is_android) {
