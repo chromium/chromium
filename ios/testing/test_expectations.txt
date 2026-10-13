@@ -242,3 +242,5 @@ crbug.com/572663823 [ Simulator ] BubblePresenterTestCase/testSendTabToSelfOmnib
 
 # Gardening suppression 2026-10-13
 crbug.com/565749273 GeminiAppSwitchingTestCase/testAppSwitchingAISummarizationFloatyInvoked [ Pass Failure ]
+crbug.com/573145552 [ Simulator ] AutofillEditCreditCardCvcMetricTestCase/testMetricCvcLeftBlank [ Pass Failure ]
+crbug.com/573145112 [ Simulator ] AutofillCreditCardSettingsTestCase/testToolbarDeleteButtonWithAddPaymentMethodFeatureEnabled [ Pass Failure ]
