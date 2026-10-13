@@ -204,10 +204,10 @@ static void JNI_SendTabToSelfAndroidBridge_MarkEntryOpened(
     JNIEnv* env,
     Profile* profile,
     const std::string& guid) {
+  auto* service = SendTabToSelfSyncServiceFactory::GetForProfile(profile);
   SendTabToSelfModel* model =
-      SendTabToSelfSyncServiceFactory::GetForProfile(profile)
-          ->GetSendTabToSelfModel();
-  if (model->IsReady()) {
+      service ? service->GetSendTabToSelfModel() : nullptr;
+  if (model) {
     model->MarkEntryOpened(guid);
   }
 }

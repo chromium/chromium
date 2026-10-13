@@ -629,8 +629,10 @@ void SendTabToSelfBridge::MarkEntryOpened(std::string_view guid) {
 void SendTabToSelfBridge::MarkEntryOpenedImpl(std::string_view guid,
                                               base::Time opened_time) {
   SendTabToSelfEntry* entry = GetMutableEntryByGUID(guid);
-  // Assure that an entry with that guid exists.
-  if (!entry) {
+  // Queue the open if the entry is not in the model yet, or if it was loaded
+  // from disk but metadata is not loaded yet so the change can't be committed.
+  // Queued opens are applied once the entry is received or metadata is loaded.
+  if (!entry || !change_processor()->IsTrackingMetadata()) {
     // Keep the first opened time, consistent with known entries, which ignore
     // repeated opens.
     unknown_opened_entries_.try_emplace(guid, opened_time);
@@ -647,8 +649,6 @@ void SendTabToSelfBridge::MarkEntryOpenedImpl(std::string_view guid,
   if (entry->IsOpened()) {
     return;
   }
-
-  DCHECK(change_processor()->IsTrackingMetadata());
 
   entry->MarkOpened(opened_time);
 
@@ -667,10 +667,11 @@ void SendTabToSelfBridge::MarkEntryActivatedImpl(
     ShareActivatedEntryPoint entry_point,
     base::Time activated_time) {
   SendTabToSelfEntry* entry = GetMutableEntryByGUID(guid);
-  if (!entry) {
+  if (!entry || !change_processor()->IsTrackingMetadata()) {
     // If the entry is not yet in the model (because it has not loaded yet or
-    // has not been received from the server yet), store the activated time and
-    // entry point and apply it when the entry is added to the model.
+    // has not been received from the server yet), or metadata is not loaded
+    // yet so the change can't be committed, store the activated time and entry
+    // point and apply it once the entry is received or metadata is loaded.
     unknown_activated_entries_.try_emplace(guid, activated_time, entry_point);
     return;
   }

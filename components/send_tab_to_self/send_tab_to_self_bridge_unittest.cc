@@ -937,6 +937,117 @@ TEST_F(SendTabToSelfBridgeTest, MarkEntryOpenedBeforeLoad) {
   histogram_tester.ExpectTotalCount(kTimeSentToOpenedHistogram, 1);
 }
 
+// Verifies that calling `MarkEntryOpened` after the entries were loaded from
+// disk but before metadata is loaded queues the open instead of applying it,
+// and applies it once metadata is loaded.
+TEST_F(SendTabToSelfBridgeTest,
+       MarkEntryOpenedAfterDataLoadBeforeMetadataLoad) {
+  InitializeBridge();
+
+  SendTabToSelfEntry entry("guid", GURL("http://g.com/"), "title",
+                           AdvanceAndGetTime(), "remote", "remote",
+                           PageContext(), NavigationHistory());
+  syncer::EntityChangeList remote_data;
+  remote_data.push_back(
+      syncer::EntityChange::CreateAdd("guid", MakeEntityData(entry)));
+  bridge()->MergeFullSyncData(bridge()->CreateMetadataChangeList(),
+                              std::move(remote_data));
+
+  // Shutdown bridge to persist data to store_.
+  ShutdownBridge();
+
+  // Re-create bridge but do NOT run the loop yet.
+  InitializeBridgeWithoutRunningLoop();
+  SetIsTrackingMetadata(false);
+
+  base::HistogramTester histogram_tester;
+
+  // `ModelReadyToSync()` is called once the entries are loaded, but before
+  // the bridge starts tracking metadata.
+  EXPECT_CALL(*processor(), ModelReadyToSync(_)).WillOnce([&]() {
+    ASSERT_TRUE(bridge()->GetEntryByGUID("guid"));
+
+    bridge()->MarkEntryOpened("guid");
+
+    EXPECT_FALSE(bridge()->GetEntryByGUID("guid")->IsOpened());
+    histogram_tester.ExpectTotalCount(kTimeSentToOpenedHistogram, 0);
+
+    SetIsTrackingMetadata(true);
+  });
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*mock_observer(), OnModelReady()).WillOnce([&run_loop]() {
+    run_loop.Quit();
+  });
+
+  // Now run the loop to load the store and process the queued open.
+  EXPECT_CALL(*processor(), Put("guid", _, _)).Times(1);
+  run_loop.Run();
+
+  EXPECT_TRUE(bridge()->GetEntryByGUID("guid")->IsOpened());
+  histogram_tester.ExpectTotalCount(kTimeSentToOpenedHistogram, 1);
+}
+
+// Verifies that calling `MarkEntryOpened` and `MarkEntryActivated` after the
+// entries were loaded from disk but before metadata is loaded queues both, and
+// applies them in order once metadata is loaded.
+TEST_F(SendTabToSelfBridgeTest,
+       MarkEntryOpenedAndActivatedAfterDataLoadBeforeMetadataLoad) {
+  InitializeBridge();
+
+  SendTabToSelfEntry entry("guid", GURL("http://g.com/"), "title",
+                           AdvanceAndGetTime(), "remote", "remote",
+                           PageContext(), NavigationHistory());
+  syncer::EntityChangeList remote_data;
+  remote_data.push_back(
+      syncer::EntityChange::CreateAdd("guid", MakeEntityData(entry)));
+  bridge()->MergeFullSyncData(bridge()->CreateMetadataChangeList(),
+                              std::move(remote_data));
+
+  // Shutdown bridge to persist data to store_.
+  ShutdownBridge();
+
+  // Re-create bridge but do NOT run the loop yet.
+  InitializeBridgeWithoutRunningLoop();
+  SetIsTrackingMetadata(false);
+
+  base::HistogramTester histogram_tester;
+
+  // `ModelReadyToSync()` is called once the entries are loaded, but before
+  // the bridge starts tracking metadata.
+  EXPECT_CALL(*processor(), ModelReadyToSync(_)).WillOnce([&]() {
+    ASSERT_TRUE(bridge()->GetEntryByGUID("guid"));
+
+    bridge()->MarkEntryOpened("guid");
+    bridge()->MarkEntryActivated("guid",
+                                 ShareActivatedEntryPoint::kDesktopToast);
+
+    EXPECT_FALSE(bridge()->GetEntryByGUID("guid")->IsOpened());
+    EXPECT_FALSE(bridge()->GetEntryByGUID("guid")->IsActivated());
+    histogram_tester.ExpectTotalCount(
+        "Sharing.SendTabToSelf.TimeOpenedToActivated", 0);
+
+    SetIsTrackingMetadata(true);
+  });
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*mock_observer(), OnModelReady()).WillOnce([&run_loop]() {
+    run_loop.Quit();
+  });
+
+  // Now run the loop to load the store and process the queued open and
+  // activation.
+  EXPECT_CALL(*processor(), Put("guid", _, _)).Times(2);
+  run_loop.Run();
+
+  EXPECT_TRUE(bridge()->GetEntryByGUID("guid")->IsOpened());
+  EXPECT_TRUE(bridge()->GetEntryByGUID("guid")->IsActivated());
+  // Opened and activated at the same time, so the open is applied before the
+  // activation.
+  histogram_tester.ExpectUniqueTimeSample(
+      "Sharing.SendTabToSelf.TimeOpenedToActivated", base::TimeDelta(), 1);
+}
+
 TEST_F(SendTabToSelfBridgeTest, PreserveDissmissalAfterRestartBridge) {
   InitializeBridge();
 
