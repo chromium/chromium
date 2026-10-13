@@ -630,6 +630,27 @@ public class TileGroup implements MostVisitedSites.Observer {
         return true;
     }
 
+    /**
+     * Counts the number of custom links in {@code tiles} that appear before the given {@code
+     * screenIndex}. Used to translate visual screen positions [0..8] to native custom link indices
+     * [0..7] expected by C++ CustomLinksManager.
+     *
+     * @param tiles The list of tiles to inspect.
+     * @param screenIndex The visual screen position threshold.
+     * @return The number of custom links before {@code screenIndex}.
+     */
+    public static int countCustomLinksBeforeIndex(List<Tile> tiles, int screenIndex) {
+        int count = 0;
+        int limit = Math.max(0, Math.min(screenIndex, tiles.size()));
+        for (int i = 0; i < limit; ++i) {
+            Tile tile = tiles.get(i);
+            if (tile.getSource() == TileSource.CUSTOM_LINKS) {
+                count++;
+            }
+        }
+        return count;
+    }
+
     /** Called before this instance is abandoned to the garbage collector. */
     public void destroy() {
         // The mOfflineModelObserver which implements SuggestionsOfflineModelObserver adds itself

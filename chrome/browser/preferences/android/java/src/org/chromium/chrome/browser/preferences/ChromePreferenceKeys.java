@@ -282,6 +282,12 @@ public final class ChromePreferenceKeys {
     public static final String NTP_CUSTOMIZATION_BACKGROUND_INFO_FOR_DAILY_REFRESH =
             "Chrome.NtpCustomization.BackgroundInfoForDailyRefresh";
 
+    /**
+     * The position index of the NTP AI Mode tile. Holds 0 for slot 0 by default, N (> 0) after user
+     * reorder among custom shortcuts, or -1 when removed.
+     */
+    public static final String NTP_MVT_AI_MODE_TILE_INDEX = "Chrome.NtpAurora.AiModeTileIndex";
+
     public static final String CRASH_UPLOAD_FAILURE_BROWSER = "browser_crash_failure_upload";
     public static final String CRASH_UPLOAD_FAILURE_GPU = "gpu_crash_failure_upload";
     public static final String CRASH_UPLOAD_FAILURE_OTHER = "other_crash_failure_upload";
@@ -1218,6 +1224,7 @@ public final class ChromePreferenceKeys {
                 NTP_BACKGROUND_IMAGE_PORTRAIT_INFO_FOR_DAILY_REFRESH,
                 NTP_BACKGROUND_IMAGE_LANDSCAPE_INFO_FOR_DAILY_REFRESH,
                 NTP_CUSTOMIZATION_BACKGROUND_INFO_FOR_DAILY_REFRESH,
+                NTP_MVT_AI_MODE_TILE_INDEX,
                 CUSTOM_TABS_ALWAYS_OPEN_IN_BROWSER,
                 CUSTOM_TABS_LAST_CLIENT_PACKAGE,
                 CUSTOM_TABS_LAST_CLOSE_TAB_INTERACTION,

@@ -79,7 +79,20 @@ public class Tile implements OfflinableSuggestion {
     }
 
     /**
-     * @return The index of this tile in the list of tiles.
+     * Returns the 0-based visual screen index of this tile on the New Tab Page.
+     *
+     * <p>This index is used by the Java presentation layer for layout, drag-and-drop animations,
+     * and view scrolling. Normally, the index ranges from [0..7]. When the NTP Aurora V2 feature
+     * flag and AI Mode tile (Arm 4) are enabled, an additional virtual tile slot is supported,
+     * extending the range to [0..8].
+     *
+     * <p>Note that the native C++ {@code CustomLinksManager} does not account for the virtual AI
+     * Mode tile and operates strictly on native custom link indices [0..7]. When translating visual
+     * screen positions to native indices (e.g. for reordering or restoring shortcuts), use {@link
+     * TileGroup#countCustomLinksBeforeIndex}.
+     *
+     * @return The 0-based visual screen index ([0..8] when NTP Aurora V2 and Arm 4 are enabled,
+     *     otherwise [0..7]).
      */
     public int getIndex() {
         return mIndex;

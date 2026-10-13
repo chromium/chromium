@@ -23,6 +23,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites.createCustomLinkSiteSuggestion;
 import static org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites.createSiteSuggestion;
 
 import android.content.Context;
@@ -57,6 +58,7 @@ import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVis
 import org.chromium.components.favicon.IconType;
 import org.chromium.components.favicon.LargeIconBridge.LargeIconCallback;
 import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -613,6 +615,53 @@ public class TileGroupUnitTest {
         reset(mTileGroupObserver);
         reset(mTileGroupDelegate);
         return tileGroup;
+    }
+
+    @Test
+    public void testCountCustomLinksBeforeIndex() {
+        List<Tile> tiles = new ArrayList<>();
+        assertEquals(0, TileGroup.countCustomLinksBeforeIndex(tiles, 0));
+        assertEquals(0, TileGroup.countCustomLinksBeforeIndex(tiles, 5));
+
+        Tile customTile1 =
+                new Tile(
+                        createCustomLinkSiteSuggestion("Custom 1", JUnitTestGURLs.URL_1.getSpec()),
+                        0);
+        Tile aiModeTile =
+                new Tile(createSiteSuggestion("AI Mode", JUnitTestGURLs.URL_2.getSpec()), 1);
+        Tile customTile2 =
+                new Tile(
+                        createCustomLinkSiteSuggestion("Custom 2", JUnitTestGURLs.URL_3.getSpec()),
+                        2);
+        Tile customTile3 =
+                new Tile(
+                        createCustomLinkSiteSuggestion("Custom 3", JUnitTestGURLs.RED_1.getSpec()),
+                        3);
+        Tile topSitesTile =
+                new Tile(createSiteSuggestion("Top 1", JUnitTestGURLs.BLUE_1.getSpec()), 4);
+
+        // Mix AI Mode tile between custom tiles: [Custom 1, AI Mode, Custom 2, Custom 3, Top 1].
+        tiles.add(customTile1);
+        tiles.add(aiModeTile);
+        tiles.add(customTile2);
+        tiles.add(customTile3);
+        tiles.add(topSitesTile);
+
+        // Before index 0: no tiles.
+        assertEquals(0, TileGroup.countCustomLinksBeforeIndex(tiles, -1));
+        assertEquals(0, TileGroup.countCustomLinksBeforeIndex(tiles, 0));
+
+        // Before index 1 (AI Mode): customTile1 -> 1 custom link.
+        assertEquals(1, TileGroup.countCustomLinksBeforeIndex(tiles, 1));
+
+        // Before index 2 (Custom 2, immediately after AI Mode): customTile1 -> still 1 custom link.
+        assertEquals(1, TileGroup.countCustomLinksBeforeIndex(tiles, 2));
+
+        // Before index 3 (Custom 3): customTile1, customTile2 -> 2 custom links.
+        assertEquals(2, TileGroup.countCustomLinksBeforeIndex(tiles, 3));
+
+        // Before index 4 (Top 1): customTile1, customTile2, customTile3 -> 3 custom links.
+        assertEquals(3, TileGroup.countCustomLinksBeforeIndex(tiles, 4));
     }
 
     private boolean isAddNewButton(View view) {
