@@ -124,6 +124,14 @@ std::u16string ToRTL(const std::string& ascii) {
   return rtl;
 }
 
+// Returns whether `elided` is a strict prefix of `text` followed by an
+// ellipsis.
+bool IsElidedFrom(std::u16string_view elided, std::u16string_view text) {
+  return elided.ends_with(gfx::kEllipsisUTF16) &&
+         elided.size() <= text.size() &&
+         text.starts_with(elided.substr(0, elided.size() - 1));
+}
+
 }  // namespace
 
 class LabelTest : public test::BaseControlTestWidget {
@@ -665,6 +673,33 @@ TEST_F(LabelTest, TooltipProperty) {
   EXPECT_EQ(tooltip_text, label()->GetTooltipText());
   // Clear out the tooltip.
   label()->SetCustomTooltipText(std::u16string());
+}
+
+// Tests the default tooltip of labels whose displayed text differs from their
+// text.
+TEST_F(LabelTest, DefaultTooltipText) {
+  const std::u16string kLongText =
+      u"A string that's long enough to exceed the maximum width";
+  label()->SetMaximumWidthSingleLine(50);
+  label()->SetText(kLongText);
+
+  // Not laid out yet: the tooltip is elided.
+  ASSERT_TRUE(label()->bounds().IsEmpty());
+  EXPECT_TRUE(IsElidedFrom(label()->GetTooltipText(), kLongText));
+
+  // Laid out narrower than the text: the tooltip is elided.
+  label()->SetBounds(0, 0, 20, 20);
+  EXPECT_TRUE(IsElidedFrom(label()->GetTooltipText(), kLongText));
+
+  // Changing the text doesn't update the tooltip.
+  const std::u16string old_tooltip = label()->GetTooltipText();
+  label()->SetText(
+      u"Another string that's long enough to exceed the maximum width");
+  EXPECT_EQ(old_tooltip, label()->GetTooltipText());
+
+  // Control characters are replaced (a line feed with a space).
+  Label label_with_newline(u"Line 1\nLine 2");
+  EXPECT_EQ(u"Line 1 Line 2", label_with_newline.GetTooltipText());
 }
 
 TEST_F(LabelTest, TooltipPropertyAccessibility) {
