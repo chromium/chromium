@@ -89,8 +89,7 @@ class BrowserInfoBarManager : public BrowserCollectionObserver,
   // if the infobar is already closing.
   void Hide(infobars::InfoBar* infobar);
 
-  // Hides the infobar. For kTab scope this only reaches the last-active
-  // browser's active tab; prefer the WebContents overload.
+  // Hides the global infobar in every browser window.
   void Hide(infobars::InfoBarDelegate::InfoBarIdentifier identifier);
 
   // BrowserCollectionObserver:

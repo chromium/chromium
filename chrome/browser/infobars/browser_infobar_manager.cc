@@ -22,7 +22,6 @@
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/infobars/infobar_spec.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
@@ -448,22 +447,6 @@ std::unique_ptr<infobars::InfoBar> CreateInfoBarForSpec(
                               std::move(custom_view));
 }
 
-content::WebContents* GetActiveWebContents() {
-  // TODO(crbug.com/512825363): Derivation of browser will be changed to
-  // accommodate profile.
-  auto* browser = GetLastActiveBrowserWindowInterfaceWithAnyProfile();
-  if (!browser) {
-    return nullptr;
-  }
-
-  auto* tab = browser->GetActiveTabInterface();
-  if (!tab) {
-    return nullptr;
-  }
-
-  return tab->GetContents();
-}
-
 // Removes `infobar` without reporting a result.
 void RemoveInfoBarWithoutResult(infobars::InfoBarManager* manager,
                                 infobars::InfoBar* infobar) {
@@ -682,30 +665,20 @@ void BrowserInfoBarManager::Hide(
   if (it == registered_specs_.end()) {
     return;
   }
+  CHECK(it->second.scope() == InfoBarScope::kGlobal);
 
-  const InfoBarSpec& spec = it->second;
+  auto active_it = active_global_infobars_.find(identifier);
+  if (active_it != active_global_infobars_.end()) {
+    auto& manager_map = active_it->second.active_instances;
+    while (!manager_map.empty()) {
+      auto map_it = manager_map.begin();
+      infobars::InfoBarManager* manager = map_it->first;
+      infobars::InfoBar* infobar = map_it->second;
 
-  if (spec.scope() == InfoBarScope::kTab) {
-    content::WebContents* active_contents = GetActiveWebContents();
-    if (!active_contents) {
-      return;
+      manager_map.erase(map_it);  // Erase first to signal programmatic removal.
+      RemoveInfoBarWithoutResult(manager, infobar);
     }
-    Hide(active_contents, identifier);
-  } else if (spec.scope() == InfoBarScope::kGlobal) {
-    auto active_it = active_global_infobars_.find(identifier);
-    if (active_it != active_global_infobars_.end()) {
-      auto& manager_map = active_it->second.active_instances;
-      while (!manager_map.empty()) {
-        auto map_it = manager_map.begin();
-        infobars::InfoBarManager* manager = map_it->first;
-        infobars::InfoBar* infobar = map_it->second;
-
-        manager_map.erase(
-            map_it);  // Erase first to signal programmatic removal.
-        RemoveInfoBarWithoutResult(manager, infobar);
-      }
-      active_global_infobars_.erase(active_it);
-    }
+    active_global_infobars_.erase(active_it);
   }
 }
 

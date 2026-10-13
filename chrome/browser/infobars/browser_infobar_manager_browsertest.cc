@@ -131,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
   manager()->Show(tab, identifier);
   EXPECT_EQ(1u, infobar_manager->infobars().size());
 
-  manager()->Hide(identifier);
+  manager()->Hide(tab->GetContents(), identifier);
   EXPECT_EQ(0u, infobar_manager->infobars().size());
 }
 

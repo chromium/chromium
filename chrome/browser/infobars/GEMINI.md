@@ -200,9 +200,9 @@ manager->Hide(
 The `Hide(web_contents, identifier)` overload skips globally tracked
 instances. It must not be used to dismiss a global InfoBar.
 
-The identifier-only overload has different behavior for tab-scoped
-InfoBars: it targets the last-active browser's active tab. Prefer the
-`WebContents` overload when dismissing a particular tab's InfoBar.
+The identifier-only `Hide(identifier)` overload is only for global
+InfoBars (`InfoBarScope::kGlobal`). Use `Hide(web_contents, identifier)`
+or `Hide(infobar)` when dismissing a tab-scoped InfoBar.
 
 ## Callback and Ownership Rules
 
