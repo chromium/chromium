@@ -162,7 +162,7 @@ class TabStyleViewDelegateImpl : public TabStyleViewDelegate {
            TabStyle::TabSelectionState::kSelected;
   }
 
-  bool IsHovering() const override { return tab_view_->IsMouseHovered(); }
+  bool IsHovering() const override { return tab_view_->IsHovering(); }
 
   bool IsClosing() const override { return tab_view_->IsClosing(); }
   bool IsDragging() const override { return tab_view_->IsDragging(); }

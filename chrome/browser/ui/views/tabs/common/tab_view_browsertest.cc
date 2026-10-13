@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/tab_view_horizontal_layout.h"
 #include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_bubble_view.h"
+#include "chrome/browser/ui/views/tabs/tab/glow_hover_controller.h"
 #include "chrome/browser/ui/views/tabs/tab/tab_close_button.h"
 #include "chrome/browser/ui/views/tabs/tab/tab_icon.h"
 #include "chrome/browser/ui/views/tabs/tab/tab_title.h"
@@ -161,6 +162,28 @@ class TabViewTest : public VerticalTabsBrowserTestMixin<InProcessBrowserTest> {
     }
     return views::AsViewClass<TabView>(
         region_view->GetTabAnchorView(tab->GetHandle()));
+  }
+
+  void ResetTabHoverStates() {
+    for (int i = 0; i < tab_strip_model()->count(); ++i) {
+      if (TabView* tab_view = GetTabView(i)) {
+        tab_view->UpdateHovered(false);
+        if (GlowHoverController* hover_controller =
+                tab_view->GetHoverControllerForTesting()) {
+          hover_controller->Hide(TabStyle::HideHoverStyle::kImmediate);
+        }
+      }
+    }
+  }
+
+  void AppendTab() {
+    VerticalTabsBrowserTestMixin<InProcessBrowserTest>::AppendTab();
+    ResetTabHoverStates();
+  }
+
+  void AppendPinnedTab() {
+    VerticalTabsBrowserTestMixin<InProcessBrowserTest>::AppendPinnedTab();
+    ResetTabHoverStates();
   }
 
  private:
@@ -1156,6 +1179,7 @@ class HorizontalTabViewTest : public TabViewTest {
   void SetUpOnMainThread() override {
     VerticalTabsBrowserTestMixin<InProcessBrowserTest>::SetUpOnMainThread();
     ExitVerticalTabsMode();
+    ResetTabHoverStates();
   }
 };
 
@@ -1204,12 +1228,7 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabViewTest, TitleAnimation) {
   }));
 }
 
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_HorizontalSeparators DISABLED_HorizontalSeparators
-#else
-#define MAYBE_HorizontalSeparators HorizontalSeparators
-#endif
-IN_PROC_BROWSER_TEST_F(HorizontalTabViewTest, MAYBE_HorizontalSeparators) {
+IN_PROC_BROWSER_TEST_F(HorizontalTabViewTest, HorizontalSeparators) {
   AppendTab();
   AppendTab();
   AppendTab();

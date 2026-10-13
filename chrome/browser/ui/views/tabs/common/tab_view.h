@@ -104,6 +104,7 @@ class TabView : public views::View,
   float radial_highlight_opacity() { return radial_highlight_opacity_; }
   const tabs::TabData& data() const { return tab_data_; }
   bool IsActive() const { return active_; }
+  bool IsHovering() const { return hovered_; }
   bool IsClosing() const { return !collection_node_; }
   bool split() const { return split_; }
   bool pinned() const { return pinned_; }
