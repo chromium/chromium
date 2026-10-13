@@ -96,6 +96,7 @@
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
@@ -3168,8 +3169,11 @@ void ExecAskGoogleAboutThisPage(
     user_education->NotifyNewBadgeFeatureUsed(
         contextual_tasks::kContextualTasksUpdatedEntryPoints);
   }
-  if (contextual_tasks::ShouldRouteAskGoogleToOmnibox(
-          browser ? browser->GetProfile() : nullptr)) {
+  // Only route to the omnibox if the window has an AIM popup to show;
+  // otherwise the popup state becomes kAim with nothing shown. Fall back to
+  // the side panel.
+  if (contextual_tasks::ShouldRouteAskGoogleToOmnibox(browser->GetProfile()) &&
+      omnibox::ShouldCreateAimPopupPresenter(browser->GetProfile())) {
     BrowserWindow* window = BrowserWindow::FromBrowser(browser);
     LocationBar* location_bar = window ? window->GetLocationBar() : nullptr;
     OmniboxController* omnibox_controller =

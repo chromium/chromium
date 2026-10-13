@@ -40,6 +40,7 @@
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -1483,9 +1484,15 @@ class LensSearchControllerAskGoogleOmniboxRoutingTest
     : public LensSearchControllerStartZeroStateSessionTest {
  public:
   LensSearchControllerAskGoogleOmniboxRoutingTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        contextual_tasks::kContextualTasksUpdatedEntryPoints,
-        {{"ContextualTasksContextMenuRouteAskGoogleToOmnibox", "true"}});
+    // Ask Google opens the omnibox only for profiles that get the AIM popup,
+    // which requires fusebox eligibility. Use local eligibility since tests
+    // get no server response. Bots disable the AIM popup by default.
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{contextual_tasks::kContextualTasksUpdatedEntryPoints,
+          {{"ContextualTasksContextMenuRouteAskGoogleToOmnibox", "true"}}},
+         {omnibox::internal::kWebUIOmniboxAimPopup, {}}},
+        /*disabled_features=*/{omnibox::kAimServerEligibilityEnabled});
   }
 
  private:
@@ -1539,5 +1546,41 @@ IN_PROC_BROWSER_TEST_F(LensSearchControllerAskGoogleOmniboxRoutingTest,
   OmniboxController* omnibox_controller = location_bar->GetOmniboxController();
   ASSERT_TRUE(omnibox_controller);
   EXPECT_EQ(omnibox_controller->popup_state_manager()->popup_state(),
+            OmniboxPopupState::kAim);
+}
+
+// The profile is AIM eligible, but the AIM popup feature is off (as on some
+// bots), so the window has no AIM popup.
+class LensSearchControllerAskGoogleNoAimPopupTest
+    : public LensSearchControllerStartZeroStateSessionTest {
+ public:
+  LensSearchControllerAskGoogleNoAimPopupTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{contextual_tasks::kContextualTasksUpdatedEntryPoints,
+          {{"ContextualTasksContextMenuRouteAskGoogleToOmnibox", "true"}}}},
+        /*disabled_features=*/{omnibox::internal::kWebUIOmniboxAimPopup});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(LensSearchControllerAskGoogleNoAimPopupTest,
+                       ExecAskGoogleAboutThisPageFallsBackToSidePanel) {
+  ASSERT_TRUE(browser()->tab_strip_model()->GetActiveWebContents());
+  chrome::ExecAskGoogleAboutThisPage(
+      browser()->GetActiveTabInterface()->GetBrowserWindowInterface(),
+      lens::LensOverlayInvocationSource::kContentAreaContextMenuPage,
+      omnibox::ChromeAimEntryPoint::
+          DESKTOP_CHROME_PAGE_CONTEXT_MENU_ASK_GOOGLE);
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return IsContextualTasksSidePanelOpen(); }));
+  OmniboxController* omnibox_controller = BrowserWindow::FromBrowser(browser())
+                                              ->GetLocationBar()
+                                              ->GetOmniboxController();
+  ASSERT_TRUE(omnibox_controller);
+  EXPECT_NE(omnibox_controller->popup_state_manager()->popup_state(),
             OmniboxPopupState::kAim);
 }

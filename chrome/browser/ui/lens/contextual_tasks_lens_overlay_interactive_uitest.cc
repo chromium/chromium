@@ -1805,14 +1805,26 @@ class ContextualTasksContextMenuRouteOmniboxInteractiveUiTest
         context, base::BindRepeating([](content::BrowserContext* context)
                                          -> std::unique_ptr<KeyedService> {
           Profile* profile = Profile::FromBrowserContext(context);
-          return std::make_unique<TestingAimEligibilityService>(
-              /*is_aim_eligible=*/true,
-              /*is_cobrowse_eligible=*/true, *profile->GetPrefs(),
-              /*template_url_service=*/nullptr);
+          return std::make_unique<AimPopupEligibleAimEligibilityService>(
+              *profile->GetPrefs());
         }));
   }
 
  private:
+  // Ask Google opens the omnibox only for profiles that get the AIM popup,
+  // which also requires fusebox eligibility.
+  class AimPopupEligibleAimEligibilityService
+      : public TestingAimEligibilityService {
+   public:
+    explicit AimPopupEligibleAimEligibilityService(PrefService& prefs)
+        : TestingAimEligibilityService(/*is_aim_eligible=*/true,
+                                       /*is_cobrowse_eligible=*/true,
+                                       prefs,
+                                       /*template_url_service=*/nullptr) {}
+
+    bool IsFuseboxEligible() const override { return true; }
+  };
+
   base::CallbackListSubscription create_services_subscription_;
 };
 
