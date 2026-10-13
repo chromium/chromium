@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/containers/fixed_flat_set.h"
+#include "base/containers/span.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -847,7 +848,7 @@ bool AXPlatformNodeDelegate::HasStringListAttribute(
   return GetData().HasStringListAttribute(attribute);
 }
 
-const std::vector<std::string>& AXPlatformNodeDelegate::GetStringListAttribute(
+base::span<const std::string> AXPlatformNodeDelegate::GetStringListAttribute(
     ax::mojom::StringListAttribute attribute) const {
   if (node_)
     return node_->GetStringListAttribute(attribute);
@@ -859,7 +860,9 @@ bool AXPlatformNodeDelegate::GetStringListAttribute(
     std::vector<std::string>* value) const {
   bool found = HasStringListAttribute(attribute);
   if (found) {
-    *value = GetStringListAttribute(attribute);
+    base::span<const std::string> string_list =
+        GetStringListAttribute(attribute);
+    value->assign(string_list.begin(), string_list.end());
   }
   return found;
 }

@@ -7,6 +7,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -1183,7 +1184,7 @@ void AutomationV8Bindings::AddV8Routes() {
               return;
             }
 
-            const std::vector<std::string>& custom_action_descriptions =
+            base::span<const std::string> custom_action_descriptions =
                 node->GetStringListAttribute(
                     ax::mojom::StringListAttribute::kCustomActionDescriptions);
             if (custom_action_ids.size() != custom_action_descriptions.size()) {

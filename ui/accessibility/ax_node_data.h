@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -111,7 +112,7 @@ struct AX_BASE_EXPORT AXNodeData final {
   bool HasStringListAttribute(ax::mojom::StringListAttribute attribute) const {
     return stringlist_attributes.Has(attribute);
   }
-  const std::vector<std::string>& GetStringListAttribute(
+  base::span<const std::string> GetStringListAttribute(
       ax::mojom::StringListAttribute attribute) const {
     return stringlist_attributes.Get(attribute);
   }

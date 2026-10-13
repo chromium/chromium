@@ -97,4 +97,50 @@ TEST(AXAttributesObjectTest, Do) {
   ASSERT_FALSE(a.Has(ax::mojom::StringAttribute::kAccessKey));
 }
 
+// Test general operations with a list type.
+TEST(AXAttributesListTest, Do) {
+  AXStringListAttributes a;
+
+  // Initially empty.
+  ASSERT_EQ(a.size(), 0U);
+  ASSERT_FALSE(
+      a.Has(ax::mojom::StringListAttribute::kAriaNotificationAnnouncements));
+  ASSERT_TRUE(
+      a.Get(ax::mojom::StringListAttribute::kAriaNotificationAnnouncements)
+          .empty());
+
+  // Set adds a value.
+  a.Set(ax::mojom::StringListAttribute::kAriaNotificationAnnouncements,
+        std::vector<std::string>{"hi"});
+  ASSERT_EQ(a.size(), 1U);
+  ASSERT_TRUE(
+      a.Has(ax::mojom::StringListAttribute::kAriaNotificationAnnouncements));
+  ASSERT_EQ(
+      a.Get(ax::mojom::StringListAttribute::kAriaNotificationAnnouncements),
+      std::vector<std::string>{"hi"});
+
+  // Get returns a span over the underlying storage rather than a copy.
+  {
+    base::span<const std::string> s1 =
+        a.Get(ax::mojom::StringListAttribute::kAriaNotificationAnnouncements);
+    base::span<const std::string> s2 =
+        a.Get(ax::mojom::StringListAttribute::kAriaNotificationAnnouncements);
+    ASSERT_EQ(s1.data(), s2.data());
+  }
+
+  // Set overwrites a previous value.
+  a.Set(ax::mojom::StringListAttribute::kAriaNotificationAnnouncements,
+        std::vector<std::string>{"there"});
+  ASSERT_EQ(a.size(), 1U);
+  ASSERT_EQ(
+      a.Get(ax::mojom::StringListAttribute::kAriaNotificationAnnouncements),
+      std::vector<std::string>{"there"});
+
+  // Remove, well, removes a value.
+  a.Remove(ax::mojom::StringListAttribute::kAriaNotificationAnnouncements);
+  ASSERT_EQ(a.size(), 0U);
+  ASSERT_FALSE(
+      a.Has(ax::mojom::StringListAttribute::kAriaNotificationAnnouncements));
+}
+
 }  // namespace ui

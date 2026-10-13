@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/to_vector.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/notimplemented.h"
@@ -1808,14 +1809,14 @@ void ViewAccessibility::Announce(std::u16string_view text,
 void ViewAccessibility::AddAriaNotification(
     std::u16string_view text,
     ax::mojom::AriaNotificationPriority priority) {
-  auto announcements = data_.GetStringListAttribute(
-      ax::mojom::StringListAttribute::kAriaNotificationAnnouncements);
+  auto announcements = base::ToVector(data_.GetStringListAttribute(
+      ax::mojom::StringListAttribute::kAriaNotificationAnnouncements));
   auto priority_properties = data_.GetIntListAttribute(
       ax::mojom::IntListAttribute::kAriaNotificationPriorityProperties);
   auto interrupt_properties = data_.GetIntListAttribute(
       ax::mojom::IntListAttribute::kAriaNotificationInterruptProperties);
-  auto types = data_.GetStringListAttribute(
-      ax::mojom::StringListAttribute::kAriaNotificationTypes);
+  auto types = base::ToVector(data_.GetStringListAttribute(
+      ax::mojom::StringListAttribute::kAriaNotificationTypes));
 
   announcements.push_back(base::UTF16ToUTF8(text));
   priority_properties.push_back(static_cast<int32_t>(priority));

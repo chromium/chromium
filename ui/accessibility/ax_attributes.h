@@ -13,6 +13,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/map_util.h"
+#include "base/containers/span.h"
 #include "ui/accessibility/ax_base_export.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 
@@ -25,8 +26,8 @@ class AX_BASE_EXPORT AXAttributes {
   // The type of a value in the collection.
   using ValueType = Traits::ValueType;
 
-  // The type returned by `Get` -- either a value for fundamental types or a
-  // const-ref to an empty value for complex types.
+  // The type returned by `Get` -- either a value for fundamental types, a span
+  // for list types, or a const-ref to an empty value for other complex types.
   using ReturnType = Traits::ReturnType;
 
   // The type of the underlying sorted container.
@@ -37,8 +38,8 @@ class AX_BASE_EXPORT AXAttributes {
 
   // Returns the attribute `id` if it is in the collection, or the collection's
   // default value if it is not present. In the case of a collection holding
-  // complex objects (e.g., std::string), the returned reference is valid only
-  // until the collection is modified.
+  // complex objects (e.g., std::string), the returned reference or view is
+  // valid only until the collection is modified.
   ReturnType Get(Identifier id) const {
     if (auto iter = attributes_.find(id); iter != attributes_.end()) {
       return iter->second;
@@ -91,6 +92,15 @@ struct AX_BASE_EXPORT ObjectAttributeTraits {
   static ReturnType GetDefault();
 };
 
+// Traits for list value types (i.e., std::vector<T>). An empty span is
+// returned when an attribute is not present in a collection.
+template <typename T>
+struct ListAttributeTraits {
+  using ValueType = std::vector<T>;
+  using ReturnType = base::span<const T>;
+  static constexpr ReturnType GetDefault() { return {}; }
+};
+
 // The various collection types.
 using AXIntAttributes =
     AXAttributes<ax::mojom::IntAttribute, FundamentalAttributeTraits<int32_t>>;
@@ -103,9 +113,8 @@ using AXBoolAttributes =
 using AXIntListAttributes =
     AXAttributes<ax::mojom::IntListAttribute,
                  ObjectAttributeTraits<std::vector<int32_t>>>;
-using AXStringListAttributes =
-    AXAttributes<ax::mojom::StringListAttribute,
-                 ObjectAttributeTraits<std::vector<std::string>>>;
+using AXStringListAttributes = AXAttributes<ax::mojom::StringListAttribute,
+                                            ListAttributeTraits<std::string>>;
 
 // Getters for the (global) default values returned for complex collections.
 
@@ -115,10 +124,6 @@ const std::string& ObjectAttributeTraits<std::string>::GetDefault();
 template <>
 const std::vector<int32_t>&
 ObjectAttributeTraits<std::vector<int32_t>>::GetDefault();
-
-template <>
-const std::vector<std::string>&
-ObjectAttributeTraits<std::vector<std::string>>::GetDefault();
 
 }  // namespace ui
 

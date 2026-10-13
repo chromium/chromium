@@ -14,6 +14,7 @@
 
 #include "base/auto_reset.h"
 #include "base/check_deref.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/safety_checks.h"
 #include "base/metrics/histogram_functions.h"
@@ -309,14 +310,15 @@ void BrowserAccessibilityManager::FireGeneratedEvent(
 
   const auto& node_data = wrapper->GetData();
 
-  const auto& announcements = node_data.GetStringListAttribute(
-      ax::mojom::StringListAttribute::kAriaNotificationAnnouncements);
+  base::span<const std::string> announcements =
+      node_data.GetStringListAttribute(
+          ax::mojom::StringListAttribute::kAriaNotificationAnnouncements);
   const auto& priority_properties = node_data.GetIntListAttribute(
       ax::mojom::IntListAttribute::kAriaNotificationPriorityProperties);
   const std::vector<std::int32_t> interrupt_properties =
       node_data.GetIntListAttribute(
           ax::mojom::IntListAttribute::kAriaNotificationInterruptProperties);
-  const std::vector<std::string> types = node_data.GetStringListAttribute(
+  base::span<const std::string> types = node_data.GetStringListAttribute(
       ax::mojom::StringListAttribute::kAriaNotificationTypes);
 
   DCHECK_EQ(announcements.size(), priority_properties.size());

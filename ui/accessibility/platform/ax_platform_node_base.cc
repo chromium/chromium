@@ -14,6 +14,7 @@
 
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/numerics/checked_math.h"
@@ -747,7 +748,7 @@ bool AXPlatformNodeBase::HasStringListAttribute(
   return GetDelegate()->HasStringListAttribute(attribute);
 }
 
-const std::vector<std::string>& AXPlatformNodeBase::GetStringListAttribute(
+base::span<const std::string> AXPlatformNodeBase::GetStringListAttribute(
     ax::mojom::StringListAttribute attribute) const {
   return GetDelegate()->GetStringListAttribute(attribute);
 }

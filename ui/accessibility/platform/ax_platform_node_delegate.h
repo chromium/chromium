@@ -18,6 +18,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "base/strings/string_split.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_clipping_behavior.h"
@@ -163,7 +164,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   bool GetIntListAttribute(ax::mojom::IntListAttribute attribute,
                            std::vector<int32_t>* value) const;
   bool HasStringListAttribute(ax::mojom::StringListAttribute attribute) const;
-  const std::vector<std::string>& GetStringListAttribute(
+  base::span<const std::string> GetStringListAttribute(
       ax::mojom::StringListAttribute attribute) const;
   // TODO(accessibility): Deprecate this method in favor of separate calls to
   // Has and Get. This version forces a copy of the list, which is inefficient

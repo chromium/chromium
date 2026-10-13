@@ -8237,7 +8237,7 @@ bool AXObject::RequestReplaceRangesAction(const ui::AXActionData& action_data) {
       ax::mojom::blink::IntListAttribute::kTextOperationEndAnchorIds);
   std::vector<int32_t> end_offsets = action_data.GetIntListAttribute(
       ax::mojom::blink::IntListAttribute::kTextOperationEndOffsets);
-  std::vector<std::string> replacement_strings =
+  base::span<const std::string> replacement_strings =
       action_data.GetStringListAttribute(ax::mojom::blink::StringListAttribute::
                                              kTextOperationReplacementStrings);
 

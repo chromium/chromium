@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "ui/accessibility/ax_attributes.h"
 #include "ui/accessibility/ax_base_export.h"
 #include "ui/accessibility/ax_constants.mojom.h"
@@ -57,7 +58,6 @@ struct AX_BASE_EXPORT AXActionData {
 
   // The request id of this action tracked by the client.
   int request_id = -1;
-
 
   // For an action that creates a selection, the selection anchor and focus
   // (see ax_tree_data.h for definitions).
@@ -137,7 +137,7 @@ struct AX_BASE_EXPORT AXActionData {
     return stringlist_attributes.Has(attribute);
   }
 
-  const std::vector<std::string>& GetStringListAttribute(
+  base::span<const std::string> GetStringListAttribute(
       ax::mojom::StringListAttribute attribute) const {
     return stringlist_attributes.Get(attribute);
   }
