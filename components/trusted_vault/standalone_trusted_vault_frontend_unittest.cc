@@ -9,11 +9,13 @@
 #include <utility>
 #include <vector>
 
+#include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/trusted_vault/features.h"
@@ -55,8 +57,6 @@ class StandaloneTrustedVaultFrontendTest : public testing::Test {
 #if BUILDFLAG(IS_MAC)
   crypto::apple::ScopedFakeKeychainV2 fake_keychain_{kKeychainAccessGroup};
 #endif
-  base::test::ScopedFeatureList scoped_feature_list_{
-      kTrustedVaultSharedRecoveryFactorsAndEncryption};
   base::test::TaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   signin::IdentityTestEnvironment identity_test_env_;
@@ -95,6 +95,75 @@ TEST_F(StandaloneTrustedVaultFrontendTest,
   // FetchKeys tasks should now run in FIFO order.
   frontend->InitializeBackendForTesting(LocalDomainsStorage::CreateForTesting(
       std::make_unique<FakeLocalDomainsStorageFileAccess>()));
+  EXPECT_THAT(fetch_keys_future.Get(), ElementsAre(kKey));
+}
+
+TEST_F(StandaloneTrustedVaultFrontendTest,
+       ShouldInitializeBackendAndExecutePendingTasksOnceOSCryptAsyncIsReady) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      kTrustedVaultSharedRecoveryFactorsAndEncryption};
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async =
+      os_crypt_async::GetTestOSCryptAsyncForTesting();
+  const std::vector<uint8_t> kKey = {5, 6, 7, 8};
+  const CoreAccountInfo account_info =
+      identity_test_env_
+          .MakePrimaryAccountAvailable(kTestEmail,
+                                       signin::ConsentLevel::kSignin)
+          .GetCoreAccountInfo();
+
+  scoped_refptr<StandaloneTrustedVaultFrontend> frontend =
+      base::MakeRefCounted<StandaloneTrustedVaultFrontend>(
+          os_crypt_async.get(),
+#if BUILDFLAG(IS_MAC)
+          kKeychainAccessGroupPrefix,
+#endif
+          temp_dir.GetPath(), identity_test_env_.identity_manager(),
+          test_url_loader_factory_.GetSafeWeakWrapper());
+
+  frontend->StoreKeys(account_info.gaia, SecurityDomainId::kChromeSync, {kKey},
+                      /*last_key_version=*/2);
+  base::test::TestFuture<const std::vector<std::vector<uint8_t>>&>
+      fetch_keys_future;
+  frontend->FetchKeys(account_info, SecurityDomainId::kChromeSync,
+                      fetch_keys_future.GetCallback());
+
+  EXPECT_THAT(fetch_keys_future.Get(), ElementsAre(kKey));
+}
+
+TEST_F(StandaloneTrustedVaultFrontendTest,
+       ShouldInitializeBackendWhenFeatureDisabledAndOSCryptIsNull) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      kTrustedVaultSharedRecoveryFactorsAndEncryption);
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  const std::vector<uint8_t> kKey = {5, 6, 7, 8};
+  const CoreAccountInfo account_info =
+      identity_test_env_
+          .MakePrimaryAccountAvailable(kTestEmail,
+                                       signin::ConsentLevel::kSignin)
+          .GetCoreAccountInfo();
+
+  scoped_refptr<StandaloneTrustedVaultFrontend> frontend =
+      base::MakeRefCounted<StandaloneTrustedVaultFrontend>(
+          /*os_crypt_async=*/nullptr,
+#if BUILDFLAG(IS_MAC)
+          kKeychainAccessGroupPrefix,
+#endif
+          temp_dir.GetPath(), identity_test_env_.identity_manager(),
+          test_url_loader_factory_.GetSafeWeakWrapper());
+
+  frontend->StoreKeys(account_info.gaia, SecurityDomainId::kChromeSync, {kKey},
+                      /*last_key_version=*/2);
+  base::test::TestFuture<const std::vector<std::vector<uint8_t>>&>
+      fetch_keys_future;
+  frontend->FetchKeys(account_info, SecurityDomainId::kChromeSync,
+                      fetch_keys_future.GetCallback());
+
   EXPECT_THAT(fetch_keys_future.Get(), ElementsAre(kKey));
 }
 

@@ -4,6 +4,7 @@ include_rules = [
   "+chromeos/ash/components/dbus/userdataauth",
   "+components/account_id",
   "+components/keyed_service/core",
+  "+components/os_crypt/async",
   "+components/signin/public",
   "+crypto",
   "+google_apis",

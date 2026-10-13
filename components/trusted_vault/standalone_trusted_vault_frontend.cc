@@ -15,6 +15,8 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "components/os_crypt/async/browser/os_crypt_async.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/trusted_vault/command_line_switches.h"
@@ -244,6 +246,7 @@ class BackendDelegate : public StandaloneTrustedVaultBackend::Delegate {
 }  // namespace
 
 StandaloneTrustedVaultFrontend::StandaloneTrustedVaultFrontend(
+    os_crypt_async::OSCryptAsync* os_crypt_async,
 #if BUILDFLAG(IS_MAC)
     const std::string& icloud_keychain_access_group_prefix,
 #endif
@@ -256,16 +259,18 @@ StandaloneTrustedVaultFrontend::StandaloneTrustedVaultFrontend(
 #endif
           identity_manager,
           std::move(url_loader_factory)) {
-  std::unique_ptr<StandaloneTrustedVaultStorage> storage;
   if (base::FeatureList::IsEnabled(
           kTrustedVaultSharedRecoveryFactorsAndEncryption)) {
-    storage = LocalDomainsStorage::Create(base_dir);
+    CHECK(os_crypt_async);
+    os_crypt_async->GetInstance(
+        base::BindOnce(&StandaloneTrustedVaultFrontend::OnEncryptorReady,
+                       weak_ptr_factory_.GetWeakPtr(), base_dir));
   } else {
-    storage = std::make_unique<LegacyStandaloneTrustedVaultStorageAdapter>(
-        std::make_unique<LegacyStandaloneTrustedVaultStorage>(
-            base_dir, SecurityDomainId::kChromeSync));
+    InitializeBackend(
+        std::make_unique<LegacyStandaloneTrustedVaultStorageAdapter>(
+            std::make_unique<LegacyStandaloneTrustedVaultStorage>(
+                base_dir, SecurityDomainId::kChromeSync)));
   }
-  InitializeBackend(std::move(storage));
 }
 
 // static
@@ -304,6 +309,15 @@ StandaloneTrustedVaultFrontend::StandaloneTrustedVaultFrontend(
 StandaloneTrustedVaultFrontend::~StandaloneTrustedVaultFrontend() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(clients_.empty());
+}
+
+void StandaloneTrustedVaultFrontend::OnEncryptorReady(
+    const base::FilePath& base_dir,
+    scoped_refptr<os_crypt_async::Encryptor> encryptor) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // TODO(crbug.com/542895033): Pass `encryptor` to
+  // `LocalDomainsStorage::Create`.
+  InitializeBackend(LocalDomainsStorage::Create(base_dir));
 }
 
 void StandaloneTrustedVaultFrontend::InitializeBackend(

@@ -19,7 +19,10 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/trusted_vault/android/trusted_vault_client_android.h"
 #else
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "chrome/browser/browser_process.h"
+#include "components/trusted_vault/features.h"
 #include "components/trusted_vault/standalone_trusted_vault_client.h"
 #include "components/trusted_vault/standalone_trusted_vault_frontend.h"
 #include "content/public/browser/storage_partition.h"
@@ -58,6 +61,10 @@ std::unique_ptr<trusted_vault::TrustedVaultService> CreateTrustedVaultService(
     Profile* profile) {
   auto frontend =
       base::MakeRefCounted<trusted_vault::StandaloneTrustedVaultFrontend>(
+          base::FeatureList::IsEnabled(
+              trusted_vault::kTrustedVaultSharedRecoveryFactorsAndEncryption)
+              ? g_browser_process->os_crypt_async()
+              : nullptr,
 #if BUILDFLAG(IS_MAC)
           kICloudKeychainAccessGroupPrefix,
 #endif

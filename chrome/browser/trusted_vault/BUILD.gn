@@ -23,6 +23,7 @@ source_set("impl") {
   ]
   public_deps = [ ":trusted_vault" ]
   deps = [
+    "//chrome/browser:browser_process",
     "//chrome/browser/signin",
     "//chrome/browser/signin:google_accounts_private_api",
     "//chrome/browser/webauthn",

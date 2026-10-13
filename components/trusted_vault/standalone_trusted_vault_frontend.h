@@ -35,6 +35,11 @@ namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
 
+namespace os_crypt_async {
+class Encryptor;
+class OSCryptAsync;
+}  // namespace os_crypt_async
+
 namespace trusted_vault {
 
 class StandaloneTrustedVaultClient;
@@ -47,6 +52,7 @@ class StandaloneTrustedVaultFrontend
     : public base::RefCounted<StandaloneTrustedVaultFrontend> {
  public:
   StandaloneTrustedVaultFrontend(
+      os_crypt_async::OSCryptAsync* os_crypt_async,
 #if BUILDFLAG(IS_MAC)
       const std::string& icloud_keychain_access_group_prefix,
 #endif
@@ -118,6 +124,9 @@ class StandaloneTrustedVaultFrontend
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   ~StandaloneTrustedVaultFrontend();
+
+  void OnEncryptorReady(const base::FilePath& base_dir,
+                        scoped_refptr<os_crypt_async::Encryptor> encryptor);
 
   void InitializeBackend(
       std::unique_ptr<StandaloneTrustedVaultStorage> storage);

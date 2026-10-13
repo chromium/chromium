@@ -27,6 +27,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/trusted_vault/command_line_switches.h"
@@ -138,6 +139,7 @@ class StandaloneTrustedVaultClientTest : public testing::Test {
 
   scoped_refptr<StandaloneTrustedVaultFrontend> CreateFrontend() {
     return base::MakeRefCounted<StandaloneTrustedVaultFrontend>(
+        os_crypt_async_.get(),
 #if BUILDFLAG(IS_MAC)
         kKeychainAccessGroupPrefix,
 #endif
@@ -214,6 +216,8 @@ class StandaloneTrustedVaultClientTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::ScopedTempDir temp_dir_;
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_ =
+      os_crypt_async::GetTestOSCryptAsyncForTesting();
   std::unique_ptr<FakeSecurityDomainsServer> fake_security_domains_server_;
   scoped_refptr<FakeSecurityDomainsURLLoaderFactory> url_loader_factory_;
   signin::IdentityTestEnvironment identity_test_env_;
