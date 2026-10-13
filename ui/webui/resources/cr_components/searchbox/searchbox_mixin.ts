@@ -126,15 +126,16 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       return (this.result?.matches?.[0]?.allowedToBeDefaultMatch) ? 0 : -1;
     }
     accessor inputAriaLive: string = '';
+    accessor inputKeywordModel: InputKeywordModel|null = null;
     accessor searchboxIcon: string = '';
     accessor showThumbnail: boolean = false;
 
-    private keywordModeManager_: KeywordModeManager = new KeywordModeManager({
-      onKeywordModelChanged: () => {
-        this.requestUpdate('inputKeywordModel');
-      },
-      onKeywordCleared:
-          (event) => {
+    private keywordModeManager_: KeywordModeManager =
+        new KeywordModeManager({
+          onKeywordModelChanged: () => {
+            this.inputKeywordModel = this.keywordModeManager_.inputKeywordModel;
+          },
+          onKeywordCleared: (event) => {
             this.getInputElement().setInput({
               text: event.restoredText,
               inline: '',
@@ -146,19 +147,10 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
                 event.restoredText, /*preventInlineAutocomplete=*/ true,
                 /*isOnFocus=*/ false);
           },
-      onKeywordEntered:
-          () => {
+          onKeywordEntered: () => {
             this.getInputElement().setInputText('');
           },
-    });
-
-    get inputKeywordModel(): InputKeywordModel|null {
-      return this.keywordModeManager_.inputKeywordModel;
-    }
-
-    set inputKeywordModel(model: InputKeywordModel|null) {
-      this.keywordModeManager_.inputKeywordModel = model;
-    }
+        });
 
     get keywordModeManager(): KeywordModeManager {
       return this.keywordModeManager_;
@@ -1302,7 +1294,7 @@ export interface SearchboxMixinInterface extends
   searchboxAriaDescription: string;
   selectedMatch: AutocompleteMatch|null;
   selectedMatchIndex: number;
-  inputKeywordModel: InputKeywordModel|null;
+  readonly inputKeywordModel: InputKeywordModel|null;
   keywordModeManager: KeywordModeManager;
   showThumbnail: boolean;
 
