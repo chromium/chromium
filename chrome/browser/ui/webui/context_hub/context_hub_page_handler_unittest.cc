@@ -3561,6 +3561,30 @@ TEST_F(ContextHubPageHandlerGlicTest, KeepsZeroStateSuggestionsWhenNoPrompts) {
   EXPECT_FALSE(captured_options_->disable_zss);
 }
 
+TEST_F(ContextHubPageHandlerGlicTest, KeepsZeroStateSuggestionsWithOnePrompt) {
+  AttachWebContentsToTab();
+  ExpectInvokeCapturingOptions();
+
+  // A single prompt is too few to replace ZSS, so ZSS stays on alongside it.
+  handler_->OpenGlicPanel({"Catch me up on Topic"});
+
+  ASSERT_TRUE(captured_options_.has_value());
+  EXPECT_THAT(captured_options_->prompts,
+              testing::ElementsAre("Catch me up on Topic"));
+  EXPECT_FALSE(captured_options_->disable_zss);
+}
+
+TEST_F(ContextHubPageHandlerGlicTest,
+       DisablesZeroStateSuggestionsWithTwoPrompts) {
+  AttachWebContentsToTab();
+  ExpectInvokeCapturingOptions();
+
+  handler_->OpenGlicPanel({"Catch me up on Topic", "What should I do next?"});
+
+  ASSERT_TRUE(captured_options_.has_value());
+  EXPECT_TRUE(captured_options_->disable_zss);
+}
+
 TEST_F(ContextHubPageHandlerGlicTest, FocusesPanelWhenNotAlreadyShowing) {
   AttachWebContentsToTab();
   ExpectInvokeCapturingOptions();

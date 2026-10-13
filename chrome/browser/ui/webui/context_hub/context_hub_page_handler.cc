@@ -1353,15 +1353,17 @@ void ContextHubPageHandler::OpenGlicPanel(
   base::span<const std::string> capped_prompts =
       base::span(prompts).first(std::min(prompts.size(), kMaxPrompts));
   options.prompts.assign(capped_prompts.begin(), capped_prompts.end());
-  // The page supplies its own topic-specific prompts, so ask the web client to
-  // suppress the generic Zero State Suggestions in favor of them. If the page
-  // had none to offer (e.g. a topic with no title), fall back to ZSS rather
-  // than asking for a panel with no suggestions at all.
+  // With two or more topic-specific prompts the page has enough of its own
+  // suggestions, so ask the web client to suppress the generic Zero State
+  // Suggestions in favor of them. With fewer than two (e.g. a topic with no
+  // title, or a single prompt), keep ZSS so the panel still has a useful set
+  // of suggestions to offer.
   //
   // TODO(crbug.com/567878517): The web client doesn't support this yet. It
   // ignores `disable_zss`, and with more than one prompt it shows the generic
   // ZSS rather than these prompts.
-  options.disable_zss = !options.prompts.empty();
+  constexpr size_t kMinPromptsToDisableZss = 2;
+  options.disable_zss = options.prompts.size() >= kMinPromptsToDisableZss;
 
   if (already_showing) {
     // The invoke is still delivered to the web client, so it can replace its
