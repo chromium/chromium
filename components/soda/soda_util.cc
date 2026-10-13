@@ -23,7 +23,7 @@
 #include "base/win/windows_version.h"
 #endif
 
-#if defined(ARCH_CPU_X86_FAMILY)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)) && defined(ARCH_CPU_X86_FAMILY)
 #include "base/cpu.h"
 #endif
 
@@ -43,9 +43,9 @@ bool IsSupportedChromeOS() {
 bool IsSupportedLinux() {
 #if defined(ARCH_CPU_X86_FAMILY)
   // Check if the CPU has the required instruction set to run the Speech
-  // On-Device API (SODA) library. SODA requires AVX support on x86.
-  static bool has_avx = base::CPU().has_avx();
-  return has_avx;
+  // On-Device API (SODA) library.
+  static bool has_sse41 = base::CPU().has_sse41();
+  return has_sse41;
 #else
   // Other architectures are not supported.
   return false;
@@ -57,10 +57,10 @@ bool IsSupportedLinux() {
 bool IsSupportedMac() {
 #if defined(ARCH_CPU_X86_FAMILY)
   // Check if the CPU has the required instruction set to run the Speech
-  // On-Device API (SODA) library. SODA requires AVX support on x86.
+  // On-Device API (SODA) library. SODA requires AVX support on macOS x86_64.
   // Pre-2011 Intel Macs (e.g. Penryn, Nehalem, Westmere) running modern
   // macOS via OpenCore Legacy Patcher lack AVX. Without AVX, SODA falls
-  // back to a gemmlowp kernel that crashes.
+  // back to a gemmlowp SSE4.1 kernel that crashes on macOS x86_64.
   static bool has_avx = base::CPU().has_avx();
   return has_avx;
 #elif defined(ARCH_CPU_ARM_FAMILY)
@@ -73,13 +73,7 @@ bool IsSupportedMac() {
 
 #if BUILDFLAG(IS_WIN)
 bool IsSupportedWin() {
-#if defined(ARCH_CPU_X86_FAMILY)
-  // SODA requires AVX support on x86.
-  static bool has_avx = base::CPU().has_avx();
-  return has_avx;
-#else
   return true;
-#endif  // defined(ARCH_CPU_X86_FAMILY)
 }
 #endif  // BUILDFLAG(IS_WIN)
 
