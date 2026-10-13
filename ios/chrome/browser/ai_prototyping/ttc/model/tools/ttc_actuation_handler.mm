@@ -15,32 +15,21 @@
 #import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
 #import "base/sequence_checker.h"
-#import "base/strings/sys_string_conversions.h"
 #import "components/actor/core/task_source_info.h"
 #import "components/actor/public/mojom/actor_types.mojom.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "components/sessions/core/session_id.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/tools/ttc_actuation_data_types.h"
-#import "ios/chrome/browser/ai_prototyping/ttc/model/tools/ttc_actuation_handler+Testing.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
-#import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_intervention_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_id.h"
 
 namespace {
-
-using ActuationCallback = base::OnceCallback<void(const TtcActuationResponse&)>;
-
-struct ActiveActuation {
-  ActuationCallback callback;
-  std::string call_id;
-};
 
 // Message constants for internal actuation error reporting.
 constexpr char kActuationHandlerDisconnectedMessage[] =
@@ -127,70 +116,50 @@ void InjectDataIntoAction(optimization_guide::proto::Action& action,
 
 }  // namespace
 
-@interface TTCActuationHandler () <ActorTaskInterventionDelegate>
+// Default intervention delegate for TTC tasks.
+@interface TtcTaskInterventionHandler : NSObject <ActorTaskInterventionDelegate>
 @end
-
-@implementation TTCActuationHandler {
-  SEQUENCE_CHECKER(_sequenceChecker);
-
-  // The Profile associated with the browser session.
-  raw_ptr<ProfileIOS> _profile;
-
-  // The WebStateList associated with the active browser.
-  raw_ptr<WebStateList> _webStateList;
-
-  // The SessionID of the browser window.
-  std::optional<SessionID> _browserID;
-
-  // Testing override for ActorService.
-  raw_ptr<actor::ActorService> _actorServiceForTesting;
-
-  // Map from active Actor task IDs to their controlled WebState IDs.
-  std::map<actor::ActorTaskId, web::WebStateID> _taskToWebStateIDMap;
-
-  // Active actuation callbacks awaiting completion, keyed by task ID.
-  std::map<actor::ActorTaskId, ActiveActuation> _activeCallbacks;
-}
 
 #pragma mark - Initializers
 
-- (instancetype)initWithProfile:(ProfileIOS*)profile
-                   webStateList:(WebStateList*)webStateList
-                      browserID:(SessionID)browserID {
-  self = [super init];
-  if (self) {
-    if (!profile || !webStateList || !browserID.is_valid()) {
-      return nil;
-    }
-    _profile = profile;
-    _webStateList = webStateList;
-    _browserID = browserID;
+TtcActuationHandler::TtcActuationHandler(actor::ActorService* actor_service,
+                                         WebStateList* web_state_list,
+                                         SessionID browser_id)
+    : intervention_delegate_([[TtcTaskInterventionHandler alloc] init]) {
+  if (actor_service && web_state_list && browser_id.is_valid()) {
+    actor_service_ = actor_service;
+    web_state_list_ = web_state_list;
+    browser_id_ = browser_id;
   }
-  return self;
+}
+
+TtcActuationHandler::~TtcActuationHandler() {
+  Disconnect();
 }
 
 #pragma mark - Teardown
 
-- (void)disconnect {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+void TtcActuationHandler::Disconnect() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  _webStateList = nullptr;
-  _browserID.reset();
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  web_state_list_ = nullptr;
+  browser_id_.reset();
+  intervention_delegate_ = nil;
 
-  actor::ActorService* actorService = [self actorService];
-  if (actorService) {
-    for (const auto& [taskID, _] : _taskToWebStateIDMap) {
-      actorService->StopTask(taskID, actor::ActorTaskStoppedReason::kShutdown);
+  if (actor_service_) {
+    for (const auto& [task_id, _] : task_to_web_state_id_map_) {
+      actor_service_->StopTask(task_id,
+                               actor::ActorTaskStoppedReason::kShutdown);
     }
+    actor_service_ = nullptr;
   }
 
-  _taskToWebStateIDMap.clear();
-  _profile = nullptr;
-  _actorServiceForTesting = nullptr;
+  task_to_web_state_id_map_.clear();
 
   std::map<actor::ActorTaskId, ActiveActuation> callbacks =
-      std::exchange(_activeCallbacks, {});
-  for (auto& [taskID, actuation] : callbacks) {
+      std::exchange(active_callbacks_, {});
+  for (auto& [task_id, actuation] : callbacks) {
     if (actuation.callback) {
       std::move(actuation.callback)
           .Run(TtcActuationResponse(
@@ -203,113 +172,107 @@ void InjectDataIntoAction(optimization_guide::proto::Action& action,
 
 #pragma mark - Public Actuation
 
-- (actor::ActorTaskId)createTaskWithTitle:(NSString*)title {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+actor::ActorTaskId TtcActuationHandler::CreateTask(const std::string& title) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  actor::ActorTaskId taskID = actor::ActorTaskId();
-  actor::ActorService* actorService = [self actorService];
-  if (!_webStateList || !actorService) {
-    return taskID;
+  actor::ActorTaskId task_id = actor::ActorTaskId();
+  if (!web_state_list_ || !browser_id_.has_value() || !actor_service_) {
+    return task_id;
   }
 
-  web::WebState* activeWebState = _webStateList->GetActiveWebState();
-  if (!activeWebState) {
-    return taskID;
+  web::WebState* active_web_state = web_state_list_->GetActiveWebState();
+  if (!active_web_state) {
+    return task_id;
   }
 
-  if (activeWebState->GetBrowserState() &&
-      activeWebState->GetBrowserState()->IsOffTheRecord()) {
-    return taskID;
+  if (active_web_state->GetBrowserState() &&
+      active_web_state->GetBrowserState()->IsOffTheRecord()) {
+    return task_id;
   }
 
-  taskID = actorService->CreateTask(
-      base::SysNSStringToUTF8(title),
+  task_id = actor_service_->CreateTask(
+      title,
       actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kTtc,
                             /*id=*/std::nullopt),
       /*allow_incognito_web_states=*/false);
-  actorService->AddControlledWebState(taskID, activeWebState);
-  actorService->SetTaskInterventionDelegate(taskID, self);
-  _taskToWebStateIDMap[taskID] = activeWebState->GetUniqueIdentifier();
-  return taskID;
+  actor_service_->AddControlledWebState(task_id, active_web_state);
+  actor_service_->SetTaskInterventionDelegate(task_id, intervention_delegate_);
+  task_to_web_state_id_map_[task_id] = active_web_state->GetUniqueIdentifier();
+  return task_id;
 }
 
-- (void)dispatchActuationRequest:(const TtcActuationRequest&)request
-                       forTaskID:(actor::ActorTaskId)taskID
-                 completionBlock:
-                     (void (^)(const TtcActuationResponse& response))
-                         completionBlock {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  CHECK(completionBlock);
+void TtcActuationHandler::DispatchActuationRequest(
+    const TtcActuationRequest& request,
+    actor::ActorTaskId task_id,
+    ActuationCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(callback);
 
-  std::string callId = request.call_id().value_or(std::string());
-  actor::ActorService* actorService = [self actorService];
-  auto taskIt = _taskToWebStateIDMap.find(taskID);
-  if (!actorService || taskIt == _taskToWebStateIDMap.end()) {
-    completionBlock(TtcActuationResponse(
+  std::string call_id = request.call_id().value_or(std::string());
+  auto task_it = task_to_web_state_id_map_.find(task_id);
+  if (!actor_service_ || task_it == task_to_web_state_id_map_.end()) {
+    std::move(callback).Run(TtcActuationResponse(
         actor::mojom::ActionResultCode::kTaskWentAway,
-        kTaskNotActiveOrStoppedMessage, std::move(callId)));
+        kTaskNotActiveOrStoppedMessage, std::move(call_id)));
     return;
   }
 
   if (request.action_protos.empty()) {
-    completionBlock(TtcActuationResponse(
+    std::move(callback).Run(TtcActuationResponse(
         actor::mojom::ActionResultCode::kEmptyActionSequence,
-        kEmptyActionSequenceMessage, std::move(callId)));
+        kEmptyActionSequenceMessage, std::move(call_id)));
     return;
   }
 
-  if (_activeCallbacks.find(taskID) != _activeCallbacks.end()) {
-    completionBlock(TtcActuationResponse(
+  if (active_callbacks_.find(task_id) != active_callbacks_.end()) {
+    std::move(callback).Run(TtcActuationResponse(
         actor::mojom::ActionResultCode::kExecutionEngineExistingAction,
-        kConcurrentActionSequenceMessage, std::move(callId)));
+        kConcurrentActionSequenceMessage, std::move(call_id)));
     return;
   }
 
-  web::WebStateID webStateId = taskIt->second;
+  web::WebStateID web_state_id = task_it->second;
   std::vector<optimization_guide::proto::Action> actions;
   actions.reserve(request.action_protos.size());
 
-  for (const std::string& protoBytes : request.action_protos) {
+  for (const std::string& proto_bytes : request.action_protos) {
     optimization_guide::proto::Action action;
-    if (!action.ParseFromString(protoBytes)) {
-      completionBlock(TtcActuationResponse(
+    if (!action.ParseFromString(proto_bytes)) {
+      std::move(callback).Run(TtcActuationResponse(
           actor::mojom::ActionResultCode::kArgumentsInvalid,
-          kFailedToParseActionProtoMessage, std::move(callId)));
+          kFailedToParseActionProtoMessage, std::move(call_id)));
       return;
     }
-    InjectDataIntoAction(action, webStateId,
-                         _browserID.value_or(SessionID::InvalidValue()));
+    InjectDataIntoAction(action, web_state_id,
+                         browser_id_.value_or(SessionID::InvalidValue()));
     actions.push_back(std::move(action));
   }
 
-  _activeCallbacks[taskID] = {
-      base::BindOnce(completionBlock),
-      std::move(callId),
+  active_callbacks_[task_id] = {
+      std::move(callback),
+      std::move(call_id),
   };
 
-  __weak __typeof(self) weakSelf = self;
-
-  actorService->PerformActions(
-      taskID, actions, request.task_update,
-      base::BindOnce(^(actor::PerformActionsResult result) {
-        [weakSelf handlePerformActionsResult:result taskID:taskID];
-      }));
+  actor_service_->PerformActions(
+      task_id, actions, request.task_update,
+      base::BindOnce(&TtcActuationHandler::OnPerformActionsFinished,
+                     weak_ptr_factory_.GetWeakPtr(), task_id));
 }
 
-- (void)stopTask:(actor::ActorTaskId)taskID
-      withReason:(actor::ActorTaskStoppedReason)reason {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+void TtcActuationHandler::StopTask(actor::ActorTaskId task_id,
+                                   actor::ActorTaskStoppedReason reason) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto taskIt = _taskToWebStateIDMap.find(taskID);
-  if (taskIt == _taskToWebStateIDMap.end()) {
+  auto task_it = task_to_web_state_id_map_.find(task_id);
+  if (task_it == task_to_web_state_id_map_.end()) {
     return;
   }
-  _taskToWebStateIDMap.erase(taskIt);
+  task_to_web_state_id_map_.erase(task_it);
 
-  auto callbackIt = _activeCallbacks.find(taskID);
-  if (callbackIt != _activeCallbacks.end()) {
-    ActiveActuation actuation = std::move(callbackIt->second);
-    _activeCallbacks.erase(callbackIt);
+  auto callback_it = active_callbacks_.find(task_id);
+  if (callback_it != active_callbacks_.end()) {
+    ActiveActuation actuation = std::move(callback_it->second);
+    active_callbacks_.erase(callback_it);
     if (actuation.callback) {
       std::move(actuation.callback)
           .Run(TtcActuationResponse(
@@ -318,59 +281,46 @@ void InjectDataIntoAction(optimization_guide::proto::Action& action,
     }
   }
 
-  actor::ActorService* actorService = [self actorService];
-  if (actorService) {
-    actorService->StopTask(taskID, reason);
+  if (actor_service_) {
+    actor_service_->StopTask(task_id, reason);
   }
-}
-
-- (void)stopTask:(actor::ActorTaskId)taskID {
-  [self stopTask:taskID
-      withReason:actor::ActorTaskStoppedReason::kTaskComplete];
 }
 
 #pragma mark - Private
 
-- (actor::ActorService*)actorService {
-  if (_actorServiceForTesting) {
-    return _actorServiceForTesting;
-  }
-  if (!_profile) {
-    return nullptr;
-  }
-  return actor::ActorServiceFactory::GetForProfile(_profile);
-}
+void TtcActuationHandler::OnPerformActionsFinished(
+    actor::ActorTaskId task_id,
+    actor::PerformActionsResult result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-- (void)handlePerformActionsResult:(const actor::PerformActionsResult&)result
-                            taskID:(actor::ActorTaskId)taskID {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-
-  auto it = _activeCallbacks.find(taskID);
-  if (it == _activeCallbacks.end()) {
+  auto it = active_callbacks_.find(task_id);
+  if (it == active_callbacks_.end()) {
     return;
   }
   ActiveActuation actuation = std::move(it->second);
-  _activeCallbacks.erase(it);
+  active_callbacks_.erase(it);
 
-  actor::mojom::ActionResultCode resultCode =
+  actor::mojom::ActionResultCode result_code =
       actor::mojom::ActionResultCode::kOk;
-  std::string errorMessage;
+  std::string error_message;
 
-  for (const auto& actionResult : result.action_results) {
-    if (!actionResult.tool_result.IsOk()) {
-      resultCode = actionResult.tool_result.code();
-      errorMessage =
-          actor::GetToolExecutionResultMessage(actionResult.tool_result);
+  for (const auto& action_result : result.action_results) {
+    if (!action_result.tool_result.IsOk()) {
+      result_code = action_result.tool_result.code();
+      error_message =
+          actor::GetToolExecutionResultMessage(action_result.tool_result);
       break;
     }
   }
 
   if (actuation.callback) {
     std::move(actuation.callback)
-        .Run(TtcActuationResponse(resultCode, std::move(errorMessage),
+        .Run(TtcActuationResponse(result_code, std::move(error_message),
                                   std::move(actuation.call_id)));
   }
 }
+
+@implementation TtcTaskInterventionHandler
 
 #pragma mark - ActorTaskInterventionDelegate
 
@@ -390,14 +340,6 @@ void InjectDataIntoAction(optimization_guide::proto::Action& action,
   if (completionHandler) {
     completionHandler();
   }
-}
-
-@end
-
-@implementation TTCActuationHandler (Testing)
-
-- (void)setActorServiceForTesting:(actor::ActorService*)actorService {
-  _actorServiceForTesting = actorService;
 }
 
 @end

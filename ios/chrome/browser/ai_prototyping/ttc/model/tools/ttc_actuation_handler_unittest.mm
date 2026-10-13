@@ -7,7 +7,6 @@
 #import <memory>
 #import <string>
 
-#import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
@@ -17,7 +16,6 @@
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "components/sessions/core/session_id.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/tools/ttc_actuation_data_types.h"
-#import "ios/chrome/browser/ai_prototyping/ttc/model/tools/ttc_actuation_handler+Testing.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/tools/ttc_tool_definitions.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/tools/ttc_tool_validator.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_browser_agent.h"
@@ -35,7 +33,6 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
-#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
 namespace {
@@ -44,12 +41,12 @@ base::DictValue CreateUrlArgs(const std::string& url) {
   return base::DictValue().Set("url", url);
 }
 
-class TTCActuationHandlerTest : public PlatformTest {
+class TtcActuationHandlerTest : public PlatformTest {
  public:
-  TTCActuationHandlerTest() {
+  TtcActuationHandlerTest() {
     scoped_feature_list_.InitAndEnableFeature(kActorTools);
     profile_ = TestProfileIOS::Builder().Build();
-    actor::ActorServiceFactory::GetForProfile(profile_.get());
+    actor_service_ = actor::ActorServiceFactory::GetForProfile(profile_.get());
 
     browser_ = std::make_unique<TestBrowser>(profile_.get());
     BrowserList* browser_list =
@@ -77,151 +74,123 @@ class TTCActuationHandlerTest : public PlatformTest {
     return fake_web_state;
   }
 
-  TTCActuationHandler* CreateHandler() {
+  std::unique_ptr<TtcActuationHandler> CreateHandler() {
     SessionID browserID =
         ActorBrowserAgent::FromBrowser(browser_.get())->browser_id();
-    return
-        [[TTCActuationHandler alloc] initWithProfile:profile_.get()
-                                        webStateList:browser_->GetWebStateList()
-                                           browserID:browserID];
+    return std::make_unique<TtcActuationHandler>(
+        actor_service_, browser_->GetWebStateList(), browserID);
   }
 
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestProfileIOS> profile_;
+  raw_ptr<actor::ActorService> actor_service_ = nullptr;
   std::unique_ptr<TestBrowser> browser_;
 };
 
 // Tests initialization.
-TEST_F(TTCActuationHandlerTest, TestInitialization) {
-  TTCActuationHandler* handler = CreateHandler();
-  EXPECT_NE(handler, nil);
-  [handler disconnect];
+TEST_F(TtcActuationHandlerTest, TestInitialization) {
+  std::unique_ptr<TtcActuationHandler> handler = CreateHandler();
+  EXPECT_TRUE(handler->CreateTask("Valid Task"));
+  handler->Disconnect();
 
   SessionID browserID =
       ActorBrowserAgent::FromBrowser(browser_.get())->browser_id();
-  TTCActuationHandler* nilProfileHandler =
-      [[TTCActuationHandler alloc] initWithProfile:nullptr
-                                      webStateList:browser_->GetWebStateList()
-                                         browserID:browserID];
-  EXPECT_EQ(nilProfileHandler, nil);
+  TtcActuationHandler null_service_handler(nullptr, browser_->GetWebStateList(),
+                                           browserID);
+  EXPECT_FALSE(null_service_handler.CreateTask("Null Service"));
 
-  TTCActuationHandler* nilWebStateListHandler =
-      [[TTCActuationHandler alloc] initWithProfile:profile_.get()
-                                      webStateList:nullptr
-                                         browserID:browserID];
-  EXPECT_EQ(nilWebStateListHandler, nil);
+  TtcActuationHandler null_web_state_list_handler(actor_service_, nullptr,
+                                                  browserID);
+  EXPECT_FALSE(null_web_state_list_handler.CreateTask("Null WebStateList"));
 
-  TTCActuationHandler* invalidBrowserIDHandler =
-      [[TTCActuationHandler alloc] initWithProfile:profile_.get()
-                                      webStateList:browser_->GetWebStateList()
-                                         browserID:SessionID::InvalidValue()];
-  EXPECT_EQ(invalidBrowserIDHandler, nil);
+  TtcActuationHandler invalid_browser_id_handler(
+      actor_service_, browser_->GetWebStateList(), SessionID::InvalidValue());
+  EXPECT_FALSE(invalid_browser_id_handler.CreateTask("Invalid Browser ID"));
 }
 
-// Tests setting actor service for testing.
-TEST_F(TTCActuationHandlerTest, TestSetActorServiceForTesting) {
-  actor::ActorService* actor_service =
-      actor::ActorServiceFactory::GetForProfile(profile_.get());
-  ASSERT_TRUE(actor_service);
-
-  TTCActuationHandler* handler = CreateHandler();
-  [handler setActorServiceForTesting:actor_service];
-  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
-  EXPECT_FALSE(task_id.is_null());
-  [handler disconnect];
-}
-
-// Tests designated initializer with Profile, WebStateList, and Browser ID.
-TEST_F(TTCActuationHandlerTest, TestDesignatedInitializer) {
-  TTCActuationHandler* handler = [[TTCActuationHandler alloc]
-      initWithProfile:profile_.get()
-         webStateList:browser_->GetWebStateList()
-            browserID:SessionID::FromSerializedValue(42)];
-  EXPECT_NE(handler, nil);
-  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Init Task"];
-  EXPECT_FALSE(task_id.is_null());
-  [handler disconnect];
+// Tests constructor with ActorService, WebStateList, and Browser ID.
+TEST_F(TtcActuationHandlerTest, TestDesignatedInitializer) {
+  TtcActuationHandler handler(actor_service_, browser_->GetWebStateList(),
+                              SessionID::FromSerializedValue(42));
+  actor::ActorTaskId task_id = handler.CreateTask("Init Task");
+  EXPECT_TRUE(task_id);
+  handler.Disconnect();
 }
 
 // Tests task creation with an active WebState.
-TEST_F(TTCActuationHandlerTest, TestCreateTask) {
-  TTCActuationHandler* handler = CreateHandler();
-  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"TTC Task"];
-  EXPECT_FALSE(task_id.is_null());
-  [handler disconnect];
+TEST_F(TtcActuationHandlerTest, TestCreateTask) {
+  std::unique_ptr<TtcActuationHandler> handler = CreateHandler();
+  actor::ActorTaskId task_id = handler->CreateTask("TTC Task");
+  EXPECT_TRUE(task_id);
+  handler->Disconnect();
 }
 
 // Tests task creation when no active WebState exists.
-TEST_F(TTCActuationHandlerTest, TestCreateTaskWithNoActiveWebState) {
+TEST_F(TtcActuationHandlerTest, TestCreateTaskWithNoActiveWebState) {
   browser_->GetWebStateList()->CloseWebStateAt(
       0, WebStateList::ClosingReason::kDefault);
-  TTCActuationHandler* handler = CreateHandler();
-  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"TTC Task"];
-  EXPECT_TRUE(task_id.is_null());
-  [handler disconnect];
+  std::unique_ptr<TtcActuationHandler> handler = CreateHandler();
+  actor::ActorTaskId task_id = handler->CreateTask("TTC Task");
+  EXPECT_FALSE(task_id);
+  handler->Disconnect();
 }
 
 // Tests that task creation returns a null ActorTaskId if the active WebState is
 // off-the-record (incognito).
-TEST_F(TTCActuationHandlerTest, TestCreateTaskWithIncognitoWebState) {
+TEST_F(TtcActuationHandlerTest, TestCreateTaskWithIncognitoWebState) {
   browser_->GetWebStateList()->InsertWebState(
       CreateFakeWebState(456, profile_->GetOffTheRecordProfile()),
       WebStateList::InsertionParams::AtIndex(1).Activate());
 
-  TTCActuationHandler* handler = CreateHandler();
-  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Incognito Task"];
-  EXPECT_TRUE(task_id.is_null());
-  [handler disconnect];
+  std::unique_ptr<TtcActuationHandler> handler = CreateHandler();
+  actor::ActorTaskId task_id = handler->CreateTask("Incognito Task");
+  EXPECT_FALSE(task_id);
+  handler->Disconnect();
 }
 
 // Tests dispatching an actuation request when the task has gone away.
-TEST_F(TTCActuationHandlerTest, TestDispatchActuationRequestTaskWentAway) {
-  TTCActuationHandler* handler = CreateHandler();
+TEST_F(TtcActuationHandlerTest, TestDispatchActuationRequestTaskWentAway) {
+  std::unique_ptr<TtcActuationHandler> handler = CreateHandler();
   auto request_result = TtcToolValidator::CreateActuationRequest(
       ttc::kToolOpenUrl, CreateUrlArgs("https://example.com"), "call_123");
   ASSERT_TRUE(request_result.has_value());
 
   base::test::TestFuture<const TtcActuationResponse&> future;
-  [handler
-      dispatchActuationRequest:request_result.value()
-                     forTaskID:actor::ActorTaskId(99999)
-               completionBlock:base::CallbackToBlock(future.GetCallback())];
+  handler->DispatchActuationRequest(
+      request_result.value(), actor::ActorTaskId(99999), future.GetCallback());
 
   const TtcActuationResponse& response = future.Get();
   EXPECT_EQ(actor::mojom::ActionResultCode::kTaskWentAway,
             response.result_code);
   EXPECT_EQ(response.call_id, "call_123");
-  [handler disconnect];
+  handler->Disconnect();
 }
 
 // Tests dispatching an actuation request with empty action protos.
-TEST_F(TTCActuationHandlerTest, TestDispatchActuationRequestEmptyActionProtos) {
-  TTCActuationHandler* handler = CreateHandler();
-  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"TTC Task"];
-  ASSERT_FALSE(task_id.is_null());
+TEST_F(TtcActuationHandlerTest, TestDispatchActuationRequestEmptyActionProtos) {
+  std::unique_ptr<TtcActuationHandler> handler = CreateHandler();
+  actor::ActorTaskId task_id = handler->CreateTask("TTC Task");
+  ASSERT_TRUE(task_id);
 
   TtcActuationRequest request({}, "Empty actions", "call_empty");
 
   base::test::TestFuture<const TtcActuationResponse&> future;
-  [handler
-      dispatchActuationRequest:request
-                     forTaskID:task_id
-               completionBlock:base::CallbackToBlock(future.GetCallback())];
+  handler->DispatchActuationRequest(request, task_id, future.GetCallback());
 
   const TtcActuationResponse& response = future.Get();
   EXPECT_EQ(actor::mojom::ActionResultCode::kEmptyActionSequence,
             response.result_code);
   EXPECT_EQ(response.call_id, "call_empty");
-  [handler disconnect];
+  handler->Disconnect();
 }
 
 // Tests that concurrent actuation requests on the same task are rejected.
-TEST_F(TTCActuationHandlerTest,
+TEST_F(TtcActuationHandlerTest,
        TestDispatchActuationRequestConcurrentRejection) {
-  TTCActuationHandler* handler = CreateHandler();
-  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"TTC Task"];
-  ASSERT_FALSE(task_id.is_null());
+  std::unique_ptr<TtcActuationHandler> handler = CreateHandler();
+  actor::ActorTaskId task_id = handler->CreateTask("TTC Task");
+  ASSERT_TRUE(task_id);
 
   auto request_result_1 = TtcToolValidator::CreateActuationRequest(
       ttc::kToolOpenUrl, CreateUrlArgs("https://example.com"), "call_1");
@@ -231,16 +200,12 @@ TEST_F(TTCActuationHandlerTest,
   ASSERT_TRUE(request_result_2.has_value());
 
   base::test::TestFuture<const TtcActuationResponse&> future1;
-  [handler
-      dispatchActuationRequest:request_result_1.value()
-                     forTaskID:task_id
-               completionBlock:base::CallbackToBlock(future1.GetCallback())];
+  handler->DispatchActuationRequest(request_result_1.value(), task_id,
+                                    future1.GetCallback());
 
   base::test::TestFuture<const TtcActuationResponse&> future2;
-  [handler
-      dispatchActuationRequest:request_result_2.value()
-                     forTaskID:task_id
-               completionBlock:base::CallbackToBlock(future2.GetCallback())];
+  handler->DispatchActuationRequest(request_result_2.value(), task_id,
+                                    future2.GetCallback());
 
   const TtcActuationResponse& response2 = future2.Get();
   EXPECT_EQ(actor::mojom::ActionResultCode::kExecutionEngineExistingAction,
@@ -250,70 +215,63 @@ TEST_F(TTCActuationHandlerTest,
   const TtcActuationResponse& response1 = future1.Get();
   EXPECT_EQ(actor::mojom::ActionResultCode::kOk, response1.result_code);
   EXPECT_EQ(response1.call_id, "call_1");
-  [handler disconnect];
+  handler->Disconnect();
 }
 
 // Tests dispatching an actuation request containing a malformed proto.
-TEST_F(TTCActuationHandlerTest, TestDispatchActuationRequestMalformedProto) {
-  TTCActuationHandler* handler = CreateHandler();
-  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"TTC Task"];
-  ASSERT_FALSE(task_id.is_null());
+TEST_F(TtcActuationHandlerTest, TestDispatchActuationRequestMalformedProto) {
+  std::unique_ptr<TtcActuationHandler> handler = CreateHandler();
+  actor::ActorTaskId task_id = handler->CreateTask("TTC Task");
+  ASSERT_TRUE(task_id);
 
   TtcActuationRequest request({"corrupt_proto_data"}, "Executing tool",
                               "call_malformed");
 
   base::test::TestFuture<const TtcActuationResponse&> future;
-  [handler
-      dispatchActuationRequest:request
-                     forTaskID:task_id
-               completionBlock:base::CallbackToBlock(future.GetCallback())];
+  handler->DispatchActuationRequest(request, task_id, future.GetCallback());
 
   const TtcActuationResponse& response = future.Get();
   EXPECT_EQ(actor::mojom::ActionResultCode::kArgumentsInvalid,
             response.result_code);
   EXPECT_EQ(response.call_id, "call_malformed");
-  [handler disconnect];
+  handler->Disconnect();
 }
 
 // Tests successful execution of a navigation action request.
-TEST_F(TTCActuationHandlerTest, TestDispatchActuationRequestSuccess) {
-  TTCActuationHandler* handler = CreateHandler();
-  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"TTC Task"];
-  ASSERT_FALSE(task_id.is_null());
+TEST_F(TtcActuationHandlerTest, TestDispatchActuationRequestSuccess) {
+  std::unique_ptr<TtcActuationHandler> handler = CreateHandler();
+  actor::ActorTaskId task_id = handler->CreateTask("TTC Task");
+  ASSERT_TRUE(task_id);
 
   auto request_result = TtcToolValidator::CreateActuationRequest(
       ttc::kToolOpenUrl, CreateUrlArgs("https://example.com"), "call_ok");
   ASSERT_TRUE(request_result.has_value());
 
   base::test::TestFuture<const TtcActuationResponse&> future;
-  [handler
-      dispatchActuationRequest:request_result.value()
-                     forTaskID:task_id
-               completionBlock:base::CallbackToBlock(future.GetCallback())];
+  handler->DispatchActuationRequest(request_result.value(), task_id,
+                                    future.GetCallback());
 
   const TtcActuationResponse& response = future.Get();
   EXPECT_EQ(actor::mojom::ActionResultCode::kOk, response.result_code);
   EXPECT_EQ(response.call_id, "call_ok");
-  [handler disconnect];
+  handler->Disconnect();
 }
 
 // Tests that multiple sequential actuation requests can be dispatched
 // on the same task ID without premature task termination.
-TEST_F(TTCActuationHandlerTest,
+TEST_F(TtcActuationHandlerTest,
        TestDispatchActuationRequestMultipleSequentialCallsOnSameTask) {
-  TTCActuationHandler* handler = CreateHandler();
-  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"TTC Task"];
-  ASSERT_FALSE(task_id.is_null());
+  std::unique_ptr<TtcActuationHandler> handler = CreateHandler();
+  actor::ActorTaskId task_id = handler->CreateTask("TTC Task");
+  ASSERT_TRUE(task_id);
 
   auto first_request_result = TtcToolValidator::CreateActuationRequest(
       ttc::kToolOpenUrl, CreateUrlArgs("https://example.com/1"), "call_seq_1");
   ASSERT_TRUE(first_request_result.has_value());
 
   base::test::TestFuture<const TtcActuationResponse&> first_future;
-  [handler dispatchActuationRequest:first_request_result.value()
-                          forTaskID:task_id
-                    completionBlock:base::CallbackToBlock(
-                                        first_future.GetCallback())];
+  handler->DispatchActuationRequest(first_request_result.value(), task_id,
+                                    first_future.GetCallback());
 
   const TtcActuationResponse& first_response = first_future.Get();
   EXPECT_EQ(actor::mojom::ActionResultCode::kOk, first_response.result_code);
@@ -325,27 +283,24 @@ TEST_F(TTCActuationHandlerTest,
   ASSERT_TRUE(second_request_result.has_value());
 
   base::test::TestFuture<const TtcActuationResponse&> second_future;
-  [handler dispatchActuationRequest:second_request_result.value()
-                          forTaskID:task_id
-                    completionBlock:base::CallbackToBlock(
-                                        second_future.GetCallback())];
+  handler->DispatchActuationRequest(second_request_result.value(), task_id,
+                                    second_future.GetCallback());
 
   const TtcActuationResponse& second_response = second_future.Get();
   EXPECT_EQ(actor::mojom::ActionResultCode::kOk, second_response.result_code);
   EXPECT_EQ(second_response.call_id, "call_seq_2");
 
-  [handler disconnect];
+  handler->Disconnect();
 }
 
-// Tests that stopTask removes the task and rejects subsequent dispatch requests
+// Tests that StopTask removes the task and rejects subsequent dispatch requests
 // with kTaskWentAway.
-TEST_F(TTCActuationHandlerTest, TestStopTask) {
-  TTCActuationHandler* handler = CreateHandler();
-  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"TTC Task"];
-  ASSERT_FALSE(task_id.is_null());
+TEST_F(TtcActuationHandlerTest, TestStopTask) {
+  std::unique_ptr<TtcActuationHandler> handler = CreateHandler();
+  actor::ActorTaskId task_id = handler->CreateTask("TTC Task");
+  ASSERT_TRUE(task_id);
 
-  [handler stopTask:task_id
-         withReason:actor::ActorTaskStoppedReason::kTaskComplete];
+  handler->StopTask(task_id, actor::ActorTaskStoppedReason::kTaskComplete);
 
   auto request_result = TtcToolValidator::CreateActuationRequest(
       ttc::kToolOpenUrl, CreateUrlArgs("https://example.com"),
@@ -353,25 +308,23 @@ TEST_F(TTCActuationHandlerTest, TestStopTask) {
   ASSERT_TRUE(request_result.has_value());
 
   base::test::TestFuture<const TtcActuationResponse&> future;
-  [handler
-      dispatchActuationRequest:request_result.value()
-                     forTaskID:task_id
-               completionBlock:base::CallbackToBlock(future.GetCallback())];
+  handler->DispatchActuationRequest(request_result.value(), task_id,
+                                    future.GetCallback());
 
   const TtcActuationResponse& response = future.Get();
   EXPECT_EQ(actor::mojom::ActionResultCode::kTaskWentAway,
             response.result_code);
   EXPECT_EQ(response.call_id, "call_after_stop");
 
-  [handler disconnect];
+  handler->Disconnect();
 }
 
-// Tests that stopTask while an actuation request is in-flight fails the pending
+// Tests that StopTask while an actuation request is in-flight fails the pending
 // callback with kTaskWentAway.
-TEST_F(TTCActuationHandlerTest, TestStopTaskCancelsActiveActuation) {
-  TTCActuationHandler* handler = CreateHandler();
-  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"TTC Task"];
-  ASSERT_FALSE(task_id.is_null());
+TEST_F(TtcActuationHandlerTest, TestStopTaskCancelsActiveActuation) {
+  std::unique_ptr<TtcActuationHandler> handler = CreateHandler();
+  actor::ActorTaskId task_id = handler->CreateTask("TTC Task");
+  ASSERT_TRUE(task_id);
 
   auto request_result = TtcToolValidator::CreateActuationRequest(
       ttc::kToolOpenUrl, CreateUrlArgs("https://example.com"),
@@ -379,25 +332,23 @@ TEST_F(TTCActuationHandlerTest, TestStopTaskCancelsActiveActuation) {
   ASSERT_TRUE(request_result.has_value());
 
   base::test::TestFuture<const TtcActuationResponse&> future;
-  [handler
-      dispatchActuationRequest:request_result.value()
-                     forTaskID:task_id
-               completionBlock:base::CallbackToBlock(future.GetCallback())];
+  handler->DispatchActuationRequest(request_result.value(), task_id,
+                                    future.GetCallback());
 
-  [handler stopTask:task_id];
+  handler->StopTask(task_id);
 
   const TtcActuationResponse& response = future.Get();
   EXPECT_EQ(actor::mojom::ActionResultCode::kTaskWentAway,
             response.result_code);
   EXPECT_EQ(response.call_id, "call_inflight_stop");
 
-  [handler disconnect];
+  handler->Disconnect();
 }
 
 // Tests that an action with an explicitly pre-populated `tab_id` preserves that
 // target tab rather than overwriting it with the active tab, allowing actions
 // to target background tabs (e.g. closing an inactive tab).
-TEST_F(TTCActuationHandlerTest,
+TEST_F(TtcActuationHandlerTest,
        TestDispatchActuationRequestPreservesExplicitTabIdForCloseTab) {
   // Insert a background WebState with ID 456 (active tab remains 123).
   browser_->GetWebStateList()->InsertWebState(
@@ -405,9 +356,9 @@ TEST_F(TTCActuationHandlerTest,
       WebStateList::InsertionParams::AtIndex(1));
   ASSERT_EQ(2, browser_->GetWebStateList()->count());
 
-  TTCActuationHandler* handler = CreateHandler();
-  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"TTC Task"];
-  ASSERT_FALSE(task_id.is_null());
+  std::unique_ptr<TtcActuationHandler> handler = CreateHandler();
+  actor::ActorTaskId task_id = handler->CreateTask("TTC Task");
+  ASSERT_TRUE(task_id);
 
   // Construct a `kCloseTab` action explicitly targeting background tab 456.
   optimization_guide::proto::Action action;
@@ -418,10 +369,7 @@ TEST_F(TTCActuationHandlerTest,
                               "call_close_bg_tab");
 
   base::test::TestFuture<const TtcActuationResponse&> future;
-  [handler
-      dispatchActuationRequest:request
-                     forTaskID:task_id
-               completionBlock:base::CallbackToBlock(future.GetCallback())];
+  handler->DispatchActuationRequest(request, task_id, future.GetCallback());
 
   const TtcActuationResponse& response = future.Get();
   EXPECT_EQ(actor::mojom::ActionResultCode::kOk, response.result_code);
@@ -434,30 +382,30 @@ TEST_F(TTCActuationHandlerTest,
                      ->GetUniqueIdentifier()
                      .identifier());
 
-  [handler disconnect];
+  handler->Disconnect();
 }
 
 // Tests that disconnecting cleans up state safely, stops active tasks, and
 // fails subsequent dispatch requests.
-TEST_F(TTCActuationHandlerTest, TestDisconnectCancelsActiveTasks) {
+TEST_F(TtcActuationHandlerTest, TestDisconnectCancelsActiveTasks) {
   actor::ActorService* actor_service =
       actor::ActorServiceFactory::GetForProfile(profile_.get());
   ASSERT_TRUE(actor_service);
 
-  TTCActuationHandler* handler = CreateHandler();
-  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"TTC Task"];
-  ASSERT_FALSE(task_id.is_null());
+  std::unique_ptr<TtcActuationHandler> handler = CreateHandler();
+  actor::ActorTaskId task_id = handler->CreateTask("TTC Task");
+  ASSERT_TRUE(task_id);
   EXPECT_TRUE(actor_service->GetActiveTaskState().has_value());
 
-  [handler disconnect];
+  handler->Disconnect();
 
   // Verify task is stopped in ActorService.
   EXPECT_FALSE(actor_service->GetActiveTaskState().has_value());
 
   // Post-disconnect task creation fails since WebStateList is cleared.
   actor::ActorTaskId post_disconnect_id =
-      [handler createTaskWithTitle:@"Post-disconnect Task"];
-  EXPECT_TRUE(post_disconnect_id.is_null());
+      handler->CreateTask("Post-disconnect Task");
+  EXPECT_FALSE(post_disconnect_id);
 
   // Attempting to dispatch to disconnected handler or closed task fails.
   base::DictValue empty_args;
@@ -466,10 +414,8 @@ TEST_F(TTCActuationHandlerTest, TestDisconnectCancelsActiveTasks) {
   ASSERT_TRUE(request_result.has_value());
 
   base::test::TestFuture<const TtcActuationResponse&> future;
-  [handler
-      dispatchActuationRequest:request_result.value()
-                     forTaskID:task_id
-               completionBlock:base::CallbackToBlock(future.GetCallback())];
+  handler->DispatchActuationRequest(request_result.value(), task_id,
+                                    future.GetCallback());
 
   const TtcActuationResponse& response = future.Get();
   EXPECT_EQ(actor::mojom::ActionResultCode::kTaskWentAway,
@@ -478,11 +424,11 @@ TEST_F(TTCActuationHandlerTest, TestDisconnectCancelsActiveTasks) {
 
 // Tests that disconnecting while an actuation is in-flight fails the pending
 // callback with kExecutorDestroyed and preserves call_id.
-TEST_F(TTCActuationHandlerTest,
+TEST_F(TtcActuationHandlerTest,
        TestDisconnectDuringInFlightActuationFailsCallback) {
-  TTCActuationHandler* handler = CreateHandler();
-  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"TTC Task"];
-  ASSERT_FALSE(task_id.is_null());
+  std::unique_ptr<TtcActuationHandler> handler = CreateHandler();
+  actor::ActorTaskId task_id = handler->CreateTask("TTC Task");
+  ASSERT_TRUE(task_id);
 
   auto request_result = TtcToolValidator::CreateActuationRequest(
       ttc::kToolOpenUrl, CreateUrlArgs("https://example.com"),
@@ -490,12 +436,10 @@ TEST_F(TTCActuationHandlerTest,
   ASSERT_TRUE(request_result.has_value());
 
   base::test::TestFuture<const TtcActuationResponse&> future;
-  [handler
-      dispatchActuationRequest:request_result.value()
-                     forTaskID:task_id
-               completionBlock:base::CallbackToBlock(future.GetCallback())];
+  handler->DispatchActuationRequest(request_result.value(), task_id,
+                                    future.GetCallback());
 
-  [handler disconnect];
+  handler->Disconnect();
 
   const TtcActuationResponse& response = future.Get();
   EXPECT_EQ(actor::mojom::ActionResultCode::kExecutorDestroyed,
@@ -503,11 +447,11 @@ TEST_F(TTCActuationHandlerTest,
   EXPECT_EQ(response.call_id, "call_inflight_disconnect");
 }
 
-// Tests that multiple disconnect calls are idempotent and safe.
-TEST_F(TTCActuationHandlerTest, TestMultipleDisconnectCallsAreIdempotent) {
-  TTCActuationHandler* handler = CreateHandler();
-  [handler disconnect];
-  EXPECT_NO_FATAL_FAILURE([handler disconnect]);
+// Tests that multiple Disconnect calls are idempotent and safe.
+TEST_F(TtcActuationHandlerTest, TestMultipleDisconnectCallsAreIdempotent) {
+  std::unique_ptr<TtcActuationHandler> handler = CreateHandler();
+  handler->Disconnect();
+  EXPECT_NO_FATAL_FAILURE(handler->Disconnect());
 }
 
 }  // namespace
