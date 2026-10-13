@@ -12,6 +12,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.robolectric.Shadows.shadowOf;
@@ -20,6 +21,7 @@ import android.content.Context;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnLayoutChangeListener;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
@@ -36,6 +38,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -524,7 +527,7 @@ public class MiniOriginBarControllerTest {
         animationListener.onEnd(mImeAnimation);
         assertEquals(MiniOriginState.READY, mMiniOriginBarController.getCurrentStateForTesting());
         assertEquals(0, (int) mControlContainerTranslationSupplier.get());
-        assertLocationBarTransform(locationBarStartPosition, 1.0f);
+        assertLocationBarTransform(0.0f, 1.0f);
     }
 
     @Test
@@ -691,7 +694,7 @@ public class MiniOriginBarControllerTest {
             assertEquals(
                     MiniOriginState.READY, mMiniOriginBarController.getCurrentStateForTesting());
             assertEquals(0, (int) mControlContainerTranslationSupplier.get());
-            assertLocationBarTransform(startX, 1.0f);
+            assertLocationBarTransform(0.0f, 1.0f);
 
         } finally {
             // Ensure we reset the RTL state so other tests are not affected
@@ -941,6 +944,85 @@ public class MiniOriginBarControllerTest {
                 mContext.getResources().getDimensionPixelSize(R.dimen.mini_origin_bar_height);
         assertEquals(newWidth, mLocationBarView.getMeasuredWidth());
         assertEquals(newLocationBarHeight, mLocationBarView.getMeasuredHeight());
+    }
+
+    @Test
+    public void testHideMiniOriginBar_resetsTranslationAndRestoresLayoutBeforeSyncLayout() {
+        doReturn(ControlsPosition.BOTTOM).when(mBrowserControlsSizer).getControlsPosition();
+        mMiniOriginBarController.onControlsPositionChanged(ControlsPosition.BOTTOM);
+        mIsFormFieldFocused.onNodeAttributeUpdated(true, false);
+        mKeyboardVisibilityDelegate.setVisibilityForTests(true);
+
+        assertEquals(MiniOriginState.SHOWING, mMiniOriginBarController.getCurrentStateForTesting());
+
+        // Modify translation and scale during showing state.
+        mLocationBarView.setTranslationX(123.0f);
+        mLocationBarView.setScaleX(0.75f);
+        mLocationBarView.setScaleY(0.75f);
+
+        clearInvocations(mControlContainer);
+        clearInvocations(mLocationBar);
+
+        // Hide mini origin bar.
+        mKeyboardVisibilityDelegate.setVisibilityForTests(false);
+
+        assertEquals(MiniOriginState.READY, mMiniOriginBarController.getCurrentStateForTesting());
+        // Verify translationX, scaleX, scaleY reset to default.
+        assertEquals(0.0f, mLocationBarView.getTranslationX(), DELTA);
+        assertEquals(1.0f, mLocationBarView.getScaleX(), DELTA);
+        assertEquals(1.0f, mLocationBarView.getScaleY(), DELTA);
+        assertSame(mLocationBarLayoutParams, mLocationBarView.getLayoutParams());
+
+        // Verify child UrlBar text size is restored before synchronous layout.
+        InOrder inOrder = inOrder(mLocationBar, mControlContainer);
+        inOrder.verify(mLocationBar).setUrlBarUsesSmallText(false);
+        inOrder.verify(mControlContainer).doSynchronousLayout(false);
+    }
+
+    @Test
+    public void testRecomputeLayouts_narrowOrZeroWidthControlContainer() {
+        OnLayoutChangeListener listener =
+                shadowOf(mControlContainerView).getOnLayoutChangeListeners().iterator().next();
+
+        doReturn(ControlsPosition.BOTTOM).when(mBrowserControlsSizer).getControlsPosition();
+        mMiniOriginBarController.onControlsPositionChanged(ControlsPosition.BOTTOM);
+        mIsFormFieldFocused.onNodeAttributeUpdated(true, false);
+        mKeyboardVisibilityDelegate.setVisibilityForTests(true);
+
+        assertEquals(MiniOriginState.SHOWING, mMiniOriginBarController.getCurrentStateForTesting());
+
+        final int narrowWidth = 50;
+        final int measuredLocationBarWidth = 100;
+        FrameLayout customLocationBarView =
+                new FrameLayout(mContext) {
+                    @Override
+                    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+                        setMeasuredDimension(measuredLocationBarWidth, 50);
+                    }
+                };
+        customLocationBarView.setLayoutParams(mLocationBarLayoutParams);
+        doReturn(customLocationBarView).when(mLocationBar).getContainerView();
+
+        // When control container width is 0, recomputeLayouts measures and updates without crash.
+        mControlContainerView.layout(0, 0, 0, 100);
+        listener.onLayoutChange(
+                mControlContainerView, 0, 0, 0, 100, 0, 0, CONTROL_CONTAINER_WIDTH, 100);
+
+        // When control container width is narrower than measured location bar width,
+        // recomputeLayouts updates cleanly without crashing.
+        mControlContainerView.layout(0, 0, narrowWidth, 100);
+        listener.onLayoutChange(mControlContainerView, 0, 0, narrowWidth, 100, 0, 0, 0, 100);
+
+        // In RTL, verify recomputeLayouts updates cleanly without crashing.
+        LocalizationUtils.setRtlForTesting(true);
+        try {
+            final int rtlWidth = narrowWidth + 1;
+            mControlContainerView.layout(0, 0, rtlWidth, 100);
+            listener.onLayoutChange(
+                    mControlContainerView, 0, 0, rtlWidth, 100, 0, 0, narrowWidth, 100);
+        } finally {
+            LocalizationUtils.setRtlForTesting(false);
+        }
     }
 
     private void assertLocationBarTransform(float translationX, float scale) {
