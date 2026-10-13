@@ -57,12 +57,6 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
     }
 
     /**
-     * Whether this layout requires a thumbnail cache invalidation fetch when a tab is deselected.
-     * Often required for multi-thumbnail cluster views (like Grouped layouts).
-     */
-    abstract boolean requiresThumbnailUpdateOnDeselect();
-
-    /**
      * Whether a child tab in a tab group is represented by a group card in the UI.
      *
      * @param tab The {@link Tab} to check.

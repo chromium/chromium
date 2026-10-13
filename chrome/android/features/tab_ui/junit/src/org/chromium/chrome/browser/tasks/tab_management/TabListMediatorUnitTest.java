@@ -7182,6 +7182,10 @@ public class TabListMediatorUnitTest {
                 hasMatchingConfig
                         ? mTabListConfig.supportsTabContextClick
                         : (type != TabListMediatorType.VERTICAL_TABS);
+        boolean requiresThumbnailUpdateOnDeselect =
+                hasMatchingConfig
+                        ? mTabListConfig.requiresThumbnailUpdateOnDeselect
+                        : (layoutType == TabListLayoutType.GROUPED);
         @TabClosingSource
         int tabClosingSource =
                 hasMatchingConfig
@@ -7207,6 +7211,7 @@ public class TabListMediatorUnitTest {
                         .setSupportsTabLoadingState(supportsTabLoadingState)
                         .setSupportsShrinkCloseAnimation(supportsShrinkCloseAnimation)
                         .setSupportsTabContextClick(supportsTabContextClick)
+                        .setRequiresThumbnailUpdateOnDeselect(requiresThumbnailUpdateOnDeselect)
                         .setTabClosingSource(tabClosingSource)
                         .setRailCollapseStateSupplier(railCollapseStateSupplier)
                         .setTabHoverListener(tabHoverListener)

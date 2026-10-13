@@ -952,7 +952,7 @@ public class TabListMediator implements TabListNotificationHandler {
             PropertyModel oldModel = mModelList.get(oldIndex).model;
             int lastId = oldModel.get(TAB_ID);
             oldModel.set(TabProperties.IS_SELECTED, false);
-            if (mTabListLayoutDelegate.requiresThumbnailUpdateOnDeselect() && mTrackingTabs) {
+            if (mTabListConfig.requiresThumbnailUpdateOnDeselect && mTrackingTabs) {
                 updateThumbnailFetcher(oldModel, lastId);
             }
         }
@@ -1286,7 +1286,7 @@ public class TabListMediator implements TabListNotificationHandler {
 
         boolean forceUpdate = model.get(TabProperties.IS_SELECTED) && !quickMode;
         boolean forceUpdateLastSelected =
-                mTabListLayoutDelegate.requiresThumbnailUpdateOnDeselect()
+                mTabListConfig.requiresThumbnailUpdateOnDeselect
                         && index == mLastSelectedTabListModelIndex
                         && !quickMode;
         // TODO(crbug.com/40273706): Fetching thumbnail for group is expensive, we should consider

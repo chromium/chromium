@@ -58,6 +58,12 @@ public class TabListConfig {
      */
     public final boolean supportsTabContextClick;
 
+    /**
+     * Whether this layout requires a thumbnail cache invalidation fetch when a tab is deselected.
+     * Often required for multi-thumbnail cluster views (like Grouped layouts).
+     */
+    public final boolean requiresThumbnailUpdateOnDeselect;
+
     /** The {@link TabClosingSource} to attribute when tabs or tab groups are closed. */
     public final @TabClosingSource int tabClosingSource;
 
@@ -82,6 +88,7 @@ public class TabListConfig {
         supportsTabLoadingState = builder.mSupportsTabLoadingState;
         supportsShrinkCloseAnimation = builder.mSupportsShrinkCloseAnimation;
         supportsTabContextClick = builder.mSupportsTabContextClick;
+        requiresThumbnailUpdateOnDeselect = builder.mRequiresThumbnailUpdateOnDeselect;
         tabClosingSource = builder.mTabClosingSource;
         railCollapseStateSupplier = builder.mRailCollapseStateSupplier;
         tabHoverListener = builder.mTabHoverListener;
@@ -98,6 +105,7 @@ public class TabListConfig {
         private boolean mSupportsTabLoadingState;
         private boolean mSupportsShrinkCloseAnimation;
         private boolean mSupportsTabContextClick;
+        private boolean mRequiresThumbnailUpdateOnDeselect;
         private @TabClosingSource int mTabClosingSource;
         private @Nullable NonNullObservableSupplier<@RailCollapseState Integer>
                 mRailCollapseStateSupplier;
@@ -176,6 +184,17 @@ public class TabListConfig {
          */
         public Builder setSupportsTabContextClick(boolean supportsTabContextClick) {
             mSupportsTabContextClick = supportsTabContextClick;
+            return this;
+        }
+
+        /**
+         * @param requiresThumbnailUpdateOnDeselect Whether the tab list requires a thumbnail cache
+         *     invalidation fetch when a tab is deselected.
+         * @return The {@link Builder} instance.
+         */
+        public Builder setRequiresThumbnailUpdateOnDeselect(
+                boolean requiresThumbnailUpdateOnDeselect) {
+            mRequiresThumbnailUpdateOnDeselect = requiresThumbnailUpdateOnDeselect;
             return this;
         }
 

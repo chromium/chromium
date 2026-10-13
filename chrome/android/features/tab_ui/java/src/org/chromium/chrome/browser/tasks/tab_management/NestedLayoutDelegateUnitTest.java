@@ -96,11 +96,6 @@ public class NestedLayoutDelegateUnitTest {
     }
 
     @Test
-    public void testRequiresThumbnailUpdateOnDeselect() {
-        assertFalse(mDelegate.requiresThumbnailUpdateOnDeselect());
-    }
-
-    @Test
     public void testRecordTabSelection_Vertical_StandardTab() {
         when(mMediator.getComponentId()).thenReturn(TabComponentId.VERTICAL_TABS);
         when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);

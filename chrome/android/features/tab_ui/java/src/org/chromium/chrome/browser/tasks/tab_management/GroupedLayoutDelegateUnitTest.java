@@ -103,11 +103,6 @@ public class GroupedLayoutDelegateUnitTest {
     }
 
     @Test
-    public void testRequiresThumbnailUpdateOnDeselect() {
-        assertTrue(mDelegate.requiresThumbnailUpdateOnDeselect());
-    }
-
-    @Test
     public void testRecordTabSelection_NoOp() {
         when(mMediator.getComponentId()).thenReturn(TabComponentId.GRID_TAB_SWITCHER);
         when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
