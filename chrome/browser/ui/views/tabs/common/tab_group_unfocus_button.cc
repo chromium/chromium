@@ -32,6 +32,7 @@ TabGroupUnfocusButton::TabGroupUnfocusButton(TabStripOrientation orientation,
           std::move(callback),
           l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_UNFOCUS_BUTTON)),
       orientation_(orientation) {
+  SetAppearDisabledInInactiveWidget(false);
   SetProperty(views::kElementIdentifierKey, kUnfocusTabGroupButtonElementId);
   SetHorizontalAlignment(gfx::ALIGN_LEFT);
   const gfx::Insets insets =
