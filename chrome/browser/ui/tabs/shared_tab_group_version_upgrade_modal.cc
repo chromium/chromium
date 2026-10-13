@@ -10,11 +10,13 @@
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/versioning_message_controller.h"
@@ -35,7 +37,8 @@ class SharedTabGroupVersionDialogDelegate : public ui::DialogModelDelegate {
 
   // Called when the "Update Chrome" button is clicked.
   void OnUpdateChromeClicked() {
-    NavigateParams params(browser_, GURL("chrome://settings/help"),
+    NavigateParams params(browser_,
+                          chrome::GetSettingsUrl(chrome::kHelpSubPage),
                           ui::PAGE_TRANSITION_LINK);
     params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
     Navigate(&params);
