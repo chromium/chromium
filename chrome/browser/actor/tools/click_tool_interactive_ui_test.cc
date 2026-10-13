@@ -12,7 +12,9 @@
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/view_ids.h"
+#include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "components/actor/core/actor_features.h"
@@ -148,9 +150,13 @@ IN_PROC_BROWSER_TEST_F(ActorClickToolInteractiveUiTest,
                        ClickDoesNotStealFocus) {
   const GURL url = embedded_https_test_server().GetURL(
       "example.com", "/actor/page_with_clickable_element.html");
+  WaitForInitialWebUIToolbar(browser());
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
-  ui_test_utils::FocusView(browser(), VIEW_ID_OMNIBOX);
+  // Use the browser command rather than focusing a views::View directly, since
+  // the WebUI toolbar's omnibox is not a views::View with VIEW_ID_OMNIBOX.
+  chrome::FocusLocationBar(browser());
+  ui_test_utils::WaitForViewFocus(browser(), VIEW_ID_OMNIBOX, true);
   ASSERT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
 
   std::optional<int> button_id =
@@ -162,6 +168,12 @@ IN_PROC_BROWSER_TEST_F(ActorClickToolInteractiveUiTest,
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
 
+  // The WebUI omnibox reports its focus state over the toolbar's own Mojo
+  // pipes, which are not ordered against the click IPC. Settle them so a focus
+  // change caused by the click is observed before checking.
+  if (GetWebUIToolbarWebView(browser())) {
+    ASSERT_TRUE(FlushWebUIToolbarPipes(browser()));
+  }
   EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
 }
 
