@@ -82,6 +82,7 @@ source_set("impl") {
   ]
   deps = [
     "//base",
+    "//chrome/browser/actor/tools/registry",
     "//chrome/browser/actor/ui",
     "//chrome/browser/page_content_annotations:extraction_service",
     "//chrome/browser/profiles:profile",
@@ -239,6 +240,7 @@ if (!is_android) {
       "//base",
       "//base/test:test_support",
       "//chrome/browser/actor",
+      "//chrome/browser/actor/tools/registry",
       "//chrome/browser/actor/ui",
       "//chrome/browser/bookmarks",
       "//chrome/browser/profiles:profile",

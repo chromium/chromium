@@ -75,8 +75,7 @@ class ToolController {
                  ToolResponseCallback callback);
   void OpenKnownPage(const base::DictValue& arguments,
                      ToolResponseCallback callback);
-  void SetFullscreen(const base::DictValue& arguments,
-                     ToolResponseCallback callback);
+  void SetFullscreen(bool fullscreen, ToolResponseCallback callback);
 #endif
 
   // Runs the tool request returned by `create_action` against the contents

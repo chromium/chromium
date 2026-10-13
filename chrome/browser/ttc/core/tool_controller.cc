@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <set>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -14,6 +15,7 @@
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
+#include "base/no_destructor.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -25,6 +27,8 @@
 #include "chrome/browser/actor/tools/media_control_tool_request.h"
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
 #include "chrome/browser/actor/tools/perform_search_tool_request.h"
+#include "chrome/browser/actor/tools/registry/tool_definition.h"
+#include "chrome/browser/actor/tools/registry/tool_registry.h"
 #include "chrome/browser/actor/tools/select_tool_request.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/translate_page_tool_request.h"
@@ -173,12 +177,19 @@ void ToolController::ProcessToolCall(const ToolRequest& tool_request,
   }
 
 #if !BUILDFLAG(IS_ANDROID)
-  if (tool_request.name == "set_fullscreen") {
-    SetFullscreen(tool_request.arguments, std::move(callback));
+  if (tool_request.name == "enter_fullscreen") {
+    SetFullscreen(/*fullscreen=*/true, std::move(callback));
+    return;
+  }
+  if (tool_request.name == "exit_fullscreen") {
+    SetFullscreen(/*fullscreen=*/false, std::move(callback));
     return;
   }
 #endif
 
+  // TODO(b/573150754): Migrate click_element, set_text, and
+  // select_option to kClick, kType, and kSelectOption once MES supports
+  // rewriting dom_node_id for TOCTOU checks.
   if (tool_request.name == "click_element") {
     ClickElement(tool_request.arguments, std::move(callback));
     return;
@@ -199,8 +210,55 @@ void ToolController::ProcessToolCall(const ToolRequest& tool_request,
 }
 
 std::vector<ToolDefinition> ToolController::GetToolDefinitions() {
-  std::vector<ToolDefinition> tools;
+  actor::ActorKeyedService* actor_service =
+      actor::ActorKeyedService::Get(GetProfile());
+  CHECK(actor_service);
 
+  // TODO(b/573158576): Add a dedicated open_url tool to ToolRegistry and
+  // include its ToolId here.
+  // TODO(b/573150754): Add kClick, kType, and kSelectOption once MES supports
+  // rewriting dom_node_id for TOCTOU checks and ProcessToolCall() dispatches
+  // their registry names.
+  static const base::NoDestructor<std::set<actor::ToolId>> kSupportedToolIds({
+      actor::ToolId::kPerformSearch,
+      actor::ToolId::kGoBack,
+      actor::ToolId::kGoForward,
+      actor::ToolId::kReloadPage,
+      actor::ToolId::kFindAndHighlight,
+      actor::ToolId::kPlayVideo,
+      actor::ToolId::kPauseVideo,
+      actor::ToolId::kSeekToTimestamp,
+      actor::ToolId::kTranslatePage,
+#if !BUILDFLAG(IS_ANDROID)
+      actor::ToolId::kSwitchTab,
+      actor::ToolId::kOpenKnownPage,
+      actor::ToolId::kCloseTab,
+      actor::ToolId::kEnterFullscreen,
+      actor::ToolId::kExitFullscreen,
+#endif
+  });
+
+  std::vector<const actor::ToolDefinition*> actor_tools =
+      actor_service->tool_registry().GetToolsByIds(*kSupportedToolIds);
+
+  // Legacy tools defined below: open_url, click_element, set_text, and
+  // select_option.
+  constexpr size_t kNumLegacyTools = 4;
+  std::vector<ToolDefinition> tools;
+  tools.reserve(actor_tools.size() + kNumLegacyTools);
+  for (const actor::ToolDefinition* actor_tool : actor_tools) {
+    ToolDefinition tool;
+    tool.name = actor_tool->name;
+    tool.description = actor_tool->description;
+    tool.parameters_json_schema = actor_tool->parameters_json_schema.Clone();
+    tool.behavior = ToolDefinition::Behavior::kBlocking;
+    tool.verbalization = ToolDefinition::Verbalization::kSilentAction;
+    tools.push_back(std::move(tool));
+  }
+
+  // TODO(b/573158576): Remove legacy open_url definition once a dedicated
+  // open_url tool is registered in ToolRegistry and dispatched in
+  // ProcessToolCall().
   ToolDefinition open_url;
   open_url.name = "open_url";
   open_url.description = "Opens a URL in the browser.";
@@ -225,207 +283,10 @@ std::vector<ToolDefinition> ToolController::GetToolDefinitions() {
   open_url.verbalization = ToolDefinition::Verbalization::kSilentAction;
   tools.push_back(std::move(open_url));
 
-  ToolDefinition perform_search;
-  perform_search.name = "perform_search";
-  perform_search.description = "Search using the default search engine.";
-  perform_search.parameters_json_schema =
-      base::DictValue()
-          .Set("type", "object")
-          .Set("properties",
-               base::DictValue()
-                   .Set("query",
-                        base::DictValue()
-                            .Set("type", "string")
-                            .Set("description", "The terms to search for."))
-                   .Set("new_tab",
-                        base::DictValue()
-                            .Set("type", "boolean")
-                            .Set("description",
-                                 "If true, performs the search in a new tab; "
-                                 "otherwise, navigates the current tab.")))
-          .Set("required", base::ListValue().Append("query").Append("new_tab"));
-  perform_search.behavior = ToolDefinition::Behavior::kBlocking;
-  perform_search.verbalization = ToolDefinition::Verbalization::kSilentAction;
-  tools.push_back(std::move(perform_search));
-
-#if !BUILDFLAG(IS_ANDROID)
-  ToolDefinition close_current_tab;
-  close_current_tab.name = "close_current_tab";
-  close_current_tab.description = "Close the current browser tab.";
-  // The tool takes no arguments, so its schema is left empty.
-  close_current_tab.behavior = ToolDefinition::Behavior::kBlocking;
-  close_current_tab.verbalization =
-      ToolDefinition::Verbalization::kSilentAction;
-  tools.push_back(std::move(close_current_tab));
-#endif
-
-  ToolDefinition go_back;
-  go_back.name = "go_back";
-  go_back.description = "Go back to the previous page in history.";
-  // The tool takes no arguments, so its schema is left empty.
-  go_back.behavior = ToolDefinition::Behavior::kBlocking;
-  go_back.verbalization = ToolDefinition::Verbalization::kSilentAction;
-  tools.push_back(std::move(go_back));
-
-  ToolDefinition go_forward;
-  go_forward.name = "go_forward";
-  go_forward.description = "Go forward to the next page in history.";
-  // The tool takes no arguments, so its schema is left empty.
-  go_forward.behavior = ToolDefinition::Behavior::kBlocking;
-  go_forward.verbalization = ToolDefinition::Verbalization::kSilentAction;
-  tools.push_back(std::move(go_forward));
-
-  ToolDefinition reload_page;
-  reload_page.name = "reload_page";
-  reload_page.description = "Reload the current page.";
-  // The tool takes no arguments, so its schema is left empty.
-  reload_page.behavior = ToolDefinition::Behavior::kBlocking;
-  reload_page.verbalization = ToolDefinition::Verbalization::kSilentAction;
-  tools.push_back(std::move(reload_page));
-
-#if !BUILDFLAG(IS_ANDROID)
-  ToolDefinition switch_tab;
-  switch_tab.name = "switch_tab";
-  switch_tab.description =
-      "Switches to an open tab in the current browser window matching the "
-      "query.";
-  switch_tab.parameters_json_schema =
-      base::DictValue()
-          .Set("type", "object")
-          .Set("properties",
-               base::DictValue().Set(
-                   "query",
-                   base::DictValue()
-                       .Set("type", "string")
-                       .Set("description",
-                            "The search query to match against open tab "
-                            "titles and URLs.")))
-          .Set("required", base::ListValue().Append("query"));
-  switch_tab.behavior = ToolDefinition::Behavior::kBlocking;
-  switch_tab.verbalization = ToolDefinition::Verbalization::kSilentAction;
-  tools.push_back(std::move(switch_tab));
-
-  ToolDefinition open_known_page;
-  open_known_page.name = "open_known_page";
-  open_known_page.description =
-      "Opens a known page matching the query by searching open tabs, "
-      "browsing history, and bookmarks.";
-  open_known_page.parameters_json_schema =
-      base::DictValue()
-          .Set("type", "object")
-          .Set("properties",
-               base::DictValue().Set(
-                   "query",
-                   base::DictValue()
-                       .Set("type", "string")
-                       .Set("description",
-                            "The search query to match against open tabs, "
-                            "browsing history, and bookmarks.")))
-          .Set("required", base::ListValue().Append("query"));
-  open_known_page.behavior = ToolDefinition::Behavior::kBlocking;
-  open_known_page.verbalization = ToolDefinition::Verbalization::kSilentAction;
-  tools.push_back(std::move(open_known_page));
-#endif
-
-  ToolDefinition find_and_highlight;
-  find_and_highlight.name = "find_and_highlight";
-  find_and_highlight.description =
-      "Highlight and scroll to specific text on the page.";
-  find_and_highlight.parameters_json_schema =
-      base::DictValue()
-          .Set("type", "object")
-          .Set("properties",
-               base::DictValue().Set(
-                   "query", base::DictValue()
-                                .Set("type", "string")
-                                .Set("description",
-                                     "A short phrase copied exactly as it "
-                                     "appears in the page content.")))
-          .Set("required", base::ListValue().Append("query"));
-  find_and_highlight.behavior = ToolDefinition::Behavior::kBlocking;
-  find_and_highlight.verbalization =
-      ToolDefinition::Verbalization::kSilentAction;
-  tools.push_back(std::move(find_and_highlight));
-
-  ToolDefinition play_video;
-  play_video.name = "play_video";
-  play_video.description = "Resume video playback.";
-  // The tool takes no arguments, so its schema is left empty.
-  play_video.behavior = ToolDefinition::Behavior::kBlocking;
-  play_video.verbalization = ToolDefinition::Verbalization::kSilentAction;
-  tools.push_back(std::move(play_video));
-
-  ToolDefinition pause_video;
-  pause_video.name = "pause_video";
-  pause_video.description = "Pause video playback.";
-  // The tool takes no arguments, so its schema is left empty.
-  pause_video.behavior = ToolDefinition::Behavior::kBlocking;
-  pause_video.verbalization = ToolDefinition::Verbalization::kSilentAction;
-  tools.push_back(std::move(pause_video));
-
-  ToolDefinition seek_to_timestamp;
-  seek_to_timestamp.name = "seek_to_timestamp";
-  seek_to_timestamp.description = "Jump the video to a specific timecode.";
-  seek_to_timestamp.parameters_json_schema =
-      base::DictValue()
-          .Set("type", "object")
-          .Set("properties",
-               base::DictValue().Set(
-                   "timecode",
-                   base::DictValue()
-                       .Set("type", "string")
-                       .Set("description",
-                            "The timecode to seek to, from the video "
-                            "transcript. Format: \"1:45\", \"0:30\", "
-                            "\"1:02:15\".")))
-          .Set("required", base::ListValue().Append("timecode"));
-  seek_to_timestamp.behavior = ToolDefinition::Behavior::kBlocking;
-  seek_to_timestamp.verbalization =
-      ToolDefinition::Verbalization::kSilentAction;
-  tools.push_back(std::move(seek_to_timestamp));
-
-  ToolDefinition translate_page;
-  translate_page.name = "translate_page";
-  translate_page.description = "Translate the current page.";
-  translate_page.parameters_json_schema =
-      base::DictValue()
-          .Set("type", "object")
-          .Set("properties",
-               base::DictValue().Set(
-                   "target_language",
-                   base::DictValue()
-                       .Set("type", "string")
-                       .Set("description",
-                            "Target language code (e.g. \"en\", \"es\", "
-                            "\"fr\"). If empty, translates to the user's "
-                            "default language.")))
-          .Set("required", base::ListValue().Append("target_language"));
-  translate_page.behavior = ToolDefinition::Behavior::kBlocking;
-  translate_page.verbalization = ToolDefinition::Verbalization::kSilentAction;
-  tools.push_back(std::move(translate_page));
-
-#if !BUILDFLAG(IS_ANDROID)
-  ToolDefinition set_fullscreen;
-  set_fullscreen.name = "set_fullscreen";
-  set_fullscreen.description =
-      "Set or exit full screen mode for the active browser window.";
-  set_fullscreen.parameters_json_schema =
-      base::DictValue()
-          .Set("type", "object")
-          .Set("properties",
-               base::DictValue().Set(
-                   "fullscreen",
-                   base::DictValue()
-                       .Set("type", "boolean")
-                       .Set("description",
-                            "Set to true to enter full screen, false to exit "
-                            "full screen.")))
-          .Set("required", base::ListValue().Append("fullscreen"));
-  set_fullscreen.behavior = ToolDefinition::Behavior::kBlocking;
-  set_fullscreen.verbalization = ToolDefinition::Verbalization::kSilentAction;
-  tools.push_back(std::move(set_fullscreen));
-#endif
-
+  // TODO(b/570042394): Remove legacy click_element, set_text, and
+  // select_option definitions once MES supports rewriting dom_node_id for
+  // TOCTOU checks and ProcessToolCall() dispatches kClick, kType, and
+  // kSelectOption.
   ToolDefinition click_element;
   click_element.name = "click_element";
   click_element.description =
@@ -790,24 +651,16 @@ void ToolController::SelectOption(const base::DictValue& arguments,
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-void ToolController::SetFullscreen(const base::DictValue& arguments,
+void ToolController::SetFullscreen(bool fullscreen,
                                    ToolResponseCallback callback) {
-  std::optional<bool> fullscreen = arguments.FindBool("fullscreen");
-  if (!fullscreen) {
-    std::move(callback).Run(
-        ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
-                            "Missing fullscreen argument"));
-    return;
-  }
-
   PerformActionOnTrackedContents(
-      [&fullscreen](
+      [fullscreen](
           tabs::TabHandle tab_handle) -> std::unique_ptr<actor::ToolRequest> {
         // The tracked tab is always in a window, so this can't be null.
         const BrowserWindowInterface& browser =
             CHECK_DEREF(tab_handle.Get()->GetBrowserWindowInterface());
         const int32_t window_id = browser.GetSessionID().id();
-        if (*fullscreen) {
+        if (fullscreen) {
           return std::make_unique<actor::EnterFullscreenToolRequest>(window_id);
         }
         return std::make_unique<actor::ExitFullscreenToolRequest>(window_id);
