@@ -1991,6 +1991,8 @@ crbug.com/1156408 [ Release Win11-arm64 ] external/wpt/webrtc/RTCPeerConnection-
 
 crbug.com/1074547 external/wpt/css/css-transitions/transitioncancel-002.html [ Timeout ]
 
+crbug.com/572877175 external/wpt/css/css-viewport/zoom/translate-matrix-zoom-anim-accumulate.html [ Failure ]
+
 # Was failing only on Mac15, but then found the confidence to fail more broadly.
 crbug.com/419116790 external/wpt/webrtc/RTCDataChannel-close.html [ Crash Failure Pass Timeout ]
 
@@ -2516,7 +2518,6 @@ crbug.com/567625057 external/wpt/html/rendering/non-replaced-elements/form-contr
 crbug.com/573055465 external/wpt/webdriver/tests/bidi/emulation/set_media_features_override/invalid.py [ Failure ]
 crbug.com/573052731 [ Linux ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_descriptor_response/invalid.py [ Timeout ]
 crbug.com/567295007 external/wpt/css/css-inline/text-box-trim/text-box-trim-fieldset-001.html [ Failure ]
-crbug.com/567170334 external/wpt/css/css-viewport/zoom/translate-matrix-zoom-anim-accumulate.html [ Failure ]
 crbug.com/567281537 external/wpt/html/semantics/embedded-content/the-iframe-element/sandbox-top-close.tentative.sub.window.html [ Failure ]
 crbug.com/567247688 external/wpt/html/semantics/forms/the-select-element/customizable-select/select-picker-option-hover-while-dragging.optional.html [ Failure ]
 crbug.com/567285529 external/wpt/svg/styling/css-linked-parameters/link-parameters-currentcolor-typed.html [ Failure ]
