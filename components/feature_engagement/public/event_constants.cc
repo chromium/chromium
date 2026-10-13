@@ -245,8 +245,6 @@ const char kPwaInstallMenuSelected[] = "pwa_install_menu_clicked";
 
 const char kSendTabToSelfOmniboxUsed[] = "send_tab_to_self_omnibox_used";
 
-const char kTabSearchComboButtonUsed[] = "tab_search_combo_button_used";
-
 }  // namespace events
 
 }  // namespace feature_engagement

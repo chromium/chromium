@@ -20,16 +20,12 @@
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
-#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tab_search_bubble_host.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_flat_edge_button.h"
-#include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/feature_engagement/public/event_constants.h"
-#include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/vector_icons/vector_icons.h"
@@ -145,20 +141,6 @@ void TabStripComboButton::UpdateButtonsVisibility() {
 
   update_button_visibility(GetEndButtonActionItem(), end_button_animation_,
                            IsTabSearchPinned() || show_tab_search_ephemerally_);
-}
-
-void TabStripComboButton::OnTabSearchBubbleShown() {
-  if (auto* const user_education =
-          BrowserUserEducationInterface::From(browser_)) {
-    user_education->NotifyAdditionalConditionEvent(
-        feature_engagement::events::kTabSearchComboButtonUsed);
-    user_education->NotifyFeaturePromoFeatureUsed(
-        feature_engagement::kIPHTabSearchComboButtonFeature,
-        FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
-  }
-
-  base::RecordAction(
-      base::UserMetricsAction("TabStripComboButton.TabSearch.BubbleShown"));
 }
 
 void TabStripComboButton::SetOrientation(views::LayoutOrientation orientation) {
@@ -360,7 +342,8 @@ void TabStripComboButton::OnBubbleInitializing() {
   expand_on_hover_lock_ = browser_view->tab_strip_view()->GetExpandOnHoverLock(
       ExpandOnHoverLockType::kKeepCurrentState);
 
-  OnTabSearchBubbleShown();
+  base::RecordAction(
+      base::UserMetricsAction("TabStripComboButton.TabSearch.BubbleShown"));
 
   if (IsTabSearchPinned()) {
     return;
@@ -400,18 +383,6 @@ void TabStripComboButton::SetTabSearchBubbleHost(TabSearchBubbleHost* host) {
             : (features::IsRoundedIconsEnabled()
                    ? vector_icons::kKeyboardArrowDownIcon
                    : vector_icons::kExpandMoreOldIcon)));
-  }
-}
-
-void TabStripComboButton::MaybeShowIPH() {
-  PrefService* prefs = browser_->GetProfile()->GetPrefs();
-  if (IsTabSearchPinned() &&
-      prefs->GetBoolean(tab_search_prefs::kTabSearchUsed)) {
-    if (auto* const user_education =
-            BrowserUserEducationInterface::From(browser_)) {
-      user_education->MaybeShowStartupFeaturePromo(
-          feature_engagement::kIPHTabSearchComboButtonFeature);
-    }
   }
 }
 

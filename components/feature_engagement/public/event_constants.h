@@ -481,8 +481,6 @@ extern const char kPwaInstallMenuSelected[];
 // long-press menu.
 extern const char kSendTabToSelfOmniboxUsed[];
 
-extern const char kTabSearchComboButtonUsed[];
-
 }  // namespace events
 
 }  // namespace feature_engagement

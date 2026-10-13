@@ -178,7 +178,6 @@ HorizontalTabStripRegionViewOld::HorizontalTabStripRegionViewOld(
     // does not set visibility of the combo button to false. This can happen
     // when it reports a preferred size of 0. See b/567198990.
     combo_button_->SetProperty(views::kViewIgnoredByLayoutKey, true);
-    combo_button_->MaybeShowIPH();
   }
 
 

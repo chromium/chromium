@@ -228,8 +228,6 @@ void TabSearchPageHandler::CloseTab(int32_t tab_id) {
 
   ++num_tabs_closed_;
 
-  profile_->GetPrefs()->SetBoolean(tab_search_prefs::kTabSearchUsed, true);
-
   // CloseTab() can target the WebContents hosting Tab Search if the Tab Search
   // WebUI is open in a chrome browser tab rather than its bubble. In this case
   // CloseWebContentsAt() closes the WebContents hosting this
@@ -276,7 +274,6 @@ void TabSearchPageHandler::CloseTabs(const std::vector<int32_t>& tab_ids) {
   }
 
   num_tabs_closed_ += nodes.size();
-  profile_->GetPrefs()->SetBoolean(tab_search_prefs::kTabSearchUsed, true);
 
   if (split_id.has_value()) {
     BrowserWindowInterface* browser = valid_tab->GetBrowserWindowInterface();
@@ -370,8 +367,6 @@ void TabSearchPageHandler::SwitchToTab(
                 ? TabSearchCloseAction::kSwitchTabAndCloseTab
                 : TabSearchCloseAction::kSwitchTab;
 
-  profile_->GetPrefs()->SetBoolean(tab_search_prefs::kTabSearchUsed, true);
-
   tabs_api::TabStripService* const service =
       GetTabStripService(tab->GetBrowserWindowInterface());
   const auto result =
@@ -403,8 +398,6 @@ void TabSearchPageHandler::OpenRecentlyClosedEntry(int32_t session_id) {
   action_ = action_ == TabSearchCloseAction::kCloseTab
                 ? TabSearchCloseAction::kOpenRecentTabAndCloseTab
                 : TabSearchCloseAction::kOpenRecentTab;
-
-  profile_->GetPrefs()->SetBoolean(tab_search_prefs::kTabSearchUsed, true);
 
   tab_restore_service->RestoreEntryById(
       BrowserLiveTabContext::FindContextForWebContents(

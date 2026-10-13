@@ -1157,6 +1157,9 @@ constexpr char kSupervisedUserSafeSites[] = "profile.managed.safe_sites";
 constexpr char kSupervisedUserManualHosts[] = "profile.managed.manual_hosts";
 constexpr char kSupervisedUserManualUrls[] = "profile.managed.manual_urls";
 
+// Deprecated 10/2026.
+inline constexpr char kTabSearchUsed[] = "tab_search.used";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1644,6 +1647,9 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kSupervisedUserSafeSites, false);
   registry->RegisterDictionaryPref(kSupervisedUserManualHosts);
   registry->RegisterDictionaryPref(kSupervisedUserManualUrls);
+
+  // Deprecated 10/2026.
+  registry->RegisterBooleanPref(kTabSearchUsed, false);
 }
 
 }  // namespace
@@ -3083,6 +3089,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kSupervisedUserSafeSites);
   profile_prefs->ClearPref(kSupervisedUserManualHosts);
   profile_prefs->ClearPref(kSupervisedUserManualUrls);
+
+  // Added 10/2026.
+  profile_prefs->ClearPref(kTabSearchUsed);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

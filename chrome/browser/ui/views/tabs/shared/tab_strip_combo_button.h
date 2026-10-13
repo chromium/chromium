@@ -79,7 +79,6 @@ class TabStripComboButton : public views::View,
   void OnHostDestroying() override;
 
   void SetTabSearchBubbleHost(TabSearchBubbleHost* host);
-  void MaybeShowIPH();
 
   // gfx::AnimationDelegate:
   void AnimationProgressed(const gfx::Animation* animation) override;
@@ -96,8 +95,6 @@ class TabStripComboButton : public views::View,
   void ShowEverythingMenu();
 
   void UpdateButtonsVisibility();
-
-  void OnTabSearchBubbleShown();
 
   std::unique_ptr<TabStripFlatEdgeButton> CreateFlatEdgeButtonFor(
       ui::ElementIdentifier element_id);

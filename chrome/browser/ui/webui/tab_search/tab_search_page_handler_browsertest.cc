@@ -49,7 +49,6 @@
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
 #include "chrome/browser/ui/webui/metrics_reporter/mock_metrics_reporter.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom-forward.h"
-#include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_ui.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
@@ -57,7 +56,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/os_crypt/async/browser/test_utils.h"
-#include "components/prefs/pref_service.h"
 #include "components/sessions/core/tab_restore_service_impl.h"
 #include "components/split_tabs/split_tab_id.h"
 #include "components/split_tabs/split_tab_visual_data.h"
@@ -1395,91 +1393,6 @@ IN_PROC_BROWSER_TEST_P(TabSearchPageHandlerTest, ReplaceActiveSplitTab) {
             tabs_in_split_after_replacement[0]->GetContents()->GetURL().spec());
   EXPECT_EQ(tab_url2_.spec(),
             tabs_in_split_after_replacement[1]->GetContents()->GetURL().spec());
-}
-
-IN_PROC_BROWSER_TEST_P(TabSearchPageHandlerTest, TabSearchUsedPref) {
-  AddTabWithTitle(browser1(), tab_url1_, kTabName1);
-  AddTabWithTitle(browser1(), tab_url2_, kTabName2);
-
-  PrefService* prefs = profile1()->GetPrefs();
-  EXPECT_FALSE(prefs->GetBoolean(tab_search_prefs::kTabSearchUsed));
-
-  ClearSetupExpectations();
-
-  // 1. SwitchToTab (switch from index 0 (active) to index 1 (inactive))
-  EXPECT_CALL(page_, TabUpdated(_)).Times(0);
-  EXPECT_CALL(page_, TabsRemoved(_)).Times(0);
-
-  const int32_t tab_id1 =
-      browser1()->tab_strip_model()->GetTabAtIndex(1)->GetHandle().raw_value();
-  auto switch_to_tab_info = tab_search::mojom::SwitchToTabInfo::New();
-  switch_to_tab_info->tab_id = tab_id1;
-  handler()->SwitchToTab(std::move(switch_to_tab_info));
-  ASSERT_TRUE(WaitForActiveTab(browser1(), tab_url1_));
-
-  EXPECT_TRUE(prefs->GetBoolean(tab_search_prefs::kTabSearchUsed));
-  prefs->SetBoolean(tab_search_prefs::kTabSearchUsed, false);
-
-  ClearSetupExpectations();
-
-  // 2. CloseTab (close active tab)
-  EXPECT_CALL(page_, TabsRemoved(_)).Times(1);
-  EXPECT_CALL(page_, TabUpdated(_)).Times(0);
-
-  handler()->CloseTab(tab_id1);
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return browser1()->tab_strip_model()->count() == 2; }));
-
-  EXPECT_TRUE(prefs->GetBoolean(tab_search_prefs::kTabSearchUsed));
-  prefs->SetBoolean(tab_search_prefs::kTabSearchUsed, false);
-
-  // 3. Setup for OpenRecentlyClosedEntry
-  EXPECT_CALL(page_, TabUpdated(_)).Times(testing::AnyNumber());
-  EXPECT_CALL(page_, TabsRemoved(_)).Times(testing::AnyNumber());
-
-  AddTabWithTitle(browser1(), tab_url3_, kTabName3);
-  const int32_t tab_id3 =
-      browser1()->tab_strip_model()->GetTabAtIndex(0)->GetHandle().raw_value();
-  handler()->CloseTab(tab_id3);
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return browser1()->tab_strip_model()->count() == 2; }));
-
-  sessions::TabRestoreService* tab_restore_service =
-      TabRestoreServiceFactory::GetForProfile(profile1());
-  ASSERT_TRUE(tab_restore_service);
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return tab_restore_service->entries().size() >= 1u; }));
-
-  EXPECT_TRUE(prefs->GetBoolean(tab_search_prefs::kTabSearchUsed));
-  prefs->SetBoolean(tab_search_prefs::kTabSearchUsed, false);
-
-  ClearSetupExpectations();
-
-  // 4. OpenRecentlyClosedEntry
-  EXPECT_CALL(page_, TabsRemoved(_)).Times(0);
-  EXPECT_CALL(page_, TabUpdated(_)).Times(testing::AnyNumber());
-
-  int32_t session_id = -1;
-  tab_search::mojom::PageHandler::GetProfileDataCallback callback =
-      base::BindLambdaForTesting(
-          [&](tab_search::mojom::ProfileDataPtr profile_tabs) {
-            auto& recently_closed_tabs = profile_tabs->recently_closed_tabs;
-            ASSERT_GE(recently_closed_tabs.size(), 1u);
-            for (const auto& tab : recently_closed_tabs) {
-              if (tab->url == tab_url3_) {
-                session_id = tab->tab_id;
-                break;
-              }
-            }
-          });
-  handler()->GetProfileData(std::move(callback));
-  ASSERT_TRUE(base::test::RunUntil([&]() { return session_id != -1; }));
-
-  handler()->OpenRecentlyClosedEntry(session_id);
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return browser1()->tab_strip_model()->count() == 3; }));
-
-  EXPECT_TRUE(prefs->GetBoolean(tab_search_prefs::kTabSearchUsed));
 }
 
 IN_PROC_BROWSER_TEST_P(TabSearchPageHandlerTest, RemoveSplit_NTP) {
