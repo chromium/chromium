@@ -314,7 +314,10 @@ export class PageActionIconElement extends PageActionIconElementBase {
     return this.state.accessibleName;
   }
 
-  protected onClick_(e: Event) {
+  protected onClick_(e: PointerEvent) {
+    if (this.highlightTracker.shouldSkipClick(e)) {
+      return;
+    }
     TrackedElementManager.getInstance().notifyElementActivated(this);
     this.browserProxy_.toolbarUIHandler.onPageActionClick(
         this.state.pageActionId, this.getPageActionTrigger_(e));
@@ -334,9 +337,8 @@ export class PageActionIconElement extends PageActionIconElementBase {
     }
   }
 
-  protected onPointerdown_(e: Event) {
-    this.browserProxy_.toolbarUIHandler.onPageActionPointerDown(
-        this.state.pageActionId);
+  protected onPointerdown_(e: PointerEvent) {
+    this.highlightTracker.onPointerdown(e);
     // Prevent us from taking focus, since that may cause the omnibox popup
     // to close, and disable the AIM button in turn.
     e.preventDefault();
@@ -345,7 +347,6 @@ export class PageActionIconElement extends PageActionIconElementBase {
   protected getTooltip_(): string {
     return this.adjustTooltipForHelpBubble(this.state.tooltipText);
   }
-
   protected onPointerenter_() {
     this.fire('chip-pointerenter');
   }

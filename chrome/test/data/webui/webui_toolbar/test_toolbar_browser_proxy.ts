@@ -42,7 +42,6 @@ export class TestToolbarUiHandler extends TestBrowserProxy implements
       'onOmniboxAction',
       'onPageActionChipShowingChanged',
       'onPageActionClick',
-      'onPageActionPointerDown',
       'onPageInitialized',
       'onPerformanceInterventionButtonClicked',
       'onToolbarDropFile',
@@ -93,10 +92,6 @@ export class TestToolbarUiHandler extends TestBrowserProxy implements
     this.methodCalled(
         'showContentSettingsBubble', [type, isPointerInteraction]);
     return Promise.resolve({result: {}});
-  }
-
-  onPageActionPointerDown(actionId: PageActionId) {
-    this.methodCalled('onPageActionPointerDown', actionId);
   }
 
   onPageActionClick(actionId: PageActionId, trigger: PageActionTrigger) {

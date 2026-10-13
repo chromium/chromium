@@ -175,12 +175,6 @@ void ToolbarUIService::OnContentSettingImagePointerDown(
   }
 }
 
-void ToolbarUIService::OnPageActionPointerDown(
-    ::toolbar_ui_api::mojom::PageActionId action_id) {
-  if (delegate_) {
-    delegate_->OnPageActionPointerDown(action_id);
-  }
-}
 
 void ToolbarUIService::OnPageActionClick(
     ::toolbar_ui_api::mojom::PageActionId action_id,

@@ -948,7 +948,6 @@ void WebUILocationBar::SetSuppressionThresholdForTesting(
       threshold);
   content_setting_image_control_.SetSuppressionThresholdForTesting(  // IN-TEST
       threshold);
-  page_action_control_.SetSuppressionThresholdForTesting(threshold);  // IN-TEST
   if (permission_dashboard_controller_) {
     permission_dashboard_controller_
         ->SetSuppressionThresholdForTesting(  // IN-TEST

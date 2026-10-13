@@ -26,7 +26,6 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/bubble/webui_bubble_reopen_suppressor.h"
 #include "chrome/browser/ui/views/page_action/anchored_message_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view_util.h"
 #include "chrome/browser/ui/views/page_action/webui_page_action_view.h"
@@ -131,7 +130,6 @@ class WebUIPageActionControl::WebUIPageActionDelegate
   // Returns the current mojo state for this page action to be sent to WebUI, or
   // nullptr if the action is not visible.
   toolbar_ui_api::mojom::PageActionStatePtr GetState();
-  void OnPointerDown();
 
   // Handles a user click on the page action from WebUI, triggering registered
   // click callbacks and invoking the underlying ActionItem.
@@ -140,11 +138,6 @@ class WebUIPageActionControl::WebUIPageActionDelegate
   // Routes a suggestion chip visibility state change notification from WebUI to
   // the controller callback.
   void NotifyChipShowingChanged(bool is_showing);
-
-  void SetSuppressionThresholdForTesting(base::TimeDelta threshold) {
-    bubble_reopen_suppressor_.SetSuppressionThresholdForTesting(  // IN-TEST
-        threshold);
-  }
 
   // Returns the currently observed PageActionModel, or nullptr if not
   // observing.
@@ -225,10 +218,7 @@ class WebUIPageActionControl::WebUIPageActionDelegate
   // The last state sent to the WebUI. Null if the action was not visible.
   toolbar_ui_api::mojom::PageActionStatePtr old_state_;
   bool was_chip_visible_ = false;
-  bool was_showing_bubble_ = false;
   bool was_anchored_message_showing_ = false;
-
-  WebUIBubbleReopenSuppressor bubble_reopen_suppressor_;
 
   toolbar_ui_api::IconHandle cached_icon_;
   toolbar_ui_api::IconHandle cached_trailing_icon_;
@@ -265,7 +255,6 @@ void WebUIPageActionControl::WebUIPageActionDelegate::SetController(
   action_item_subscription_ = {};
   controller_ = controller;
   was_chip_visible_ = false;
-  was_showing_bubble_ = false;
   was_anchored_message_showing_ = false;
 
   if (controller_) {
@@ -305,12 +294,6 @@ void WebUIPageActionControl::WebUIPageActionDelegate::UpdateStateAndNotify() {
 void WebUIPageActionControl::WebUIPageActionDelegate::OnPageActionModelChanged(
     const page_actions::PageActionModelInterface& model) {
   const bool visible = model.GetVisible();
-  const bool is_showing_bubble = model.GetActionItemIsShowingBubble();
-  if (was_showing_bubble_ && !is_showing_bubble) {
-    bubble_reopen_suppressor_.RecordBubbleClosed();
-  }
-  was_showing_bubble_ = is_showing_bubble;
-
   const bool is_chip_visible = visible && model.ShouldShowSuggestionChip();
 
   if (model.GetShouldAnnounceChip() && !was_chip_visible_ && is_chip_visible) {
@@ -363,7 +346,6 @@ void WebUIPageActionControl::WebUIPageActionDelegate::
   action_item_subscription_ = {};
   controller_ = nullptr;
   was_chip_visible_ = false;
-  was_showing_bubble_ = false;
   was_anchored_message_showing_ = false;
   ResetCachedState();
 }
@@ -479,24 +461,10 @@ WebUIPageActionControl::WebUIPageActionDelegate::GetState() {
   return state;
 }
 
-void WebUIPageActionControl::WebUIPageActionDelegate::OnPointerDown() {
-  const bool is_showing_bubble =
-      observation_.IsObserving() &&
-      observation_.GetSource()->GetActionItemIsShowingBubble();
-  bubble_reopen_suppressor_.OnMousePressed(is_showing_bubble);
-}
-
 void WebUIPageActionControl::WebUIPageActionDelegate::NotifyClick(
     PageActionTrigger trigger) {
   // Ignore clicks received during shutdown.
   if (!observation_.IsObserving() || !observation_.GetSource()->GetVisible()) {
-    return;
-  }
-
-  const bool is_pointer_interaction = (trigger == PageActionTrigger::kMouse ||
-                                       trigger == PageActionTrigger::kGesture);
-  if (bubble_reopen_suppressor_.ShouldSuppressBubbleShow(
-          is_pointer_interaction)) {
     return;
   }
 
@@ -826,15 +794,6 @@ WebUIPageActionControl::GetPageActionStates() {
   return states;
 }
 
-void WebUIPageActionControl::OnPageActionPointerDown(
-    toolbar_ui_api::mojom::PageActionId action_id) {
-  auto it =
-      delegates_.find(webui_toolbar::MojomPageActionIdToActionId(action_id));
-  if (it != delegates_.end()) {
-    it->second->OnPointerDown();
-  }
-}
-
 void WebUIPageActionControl::OnPageActionClick(
     toolbar_ui_api::mojom::PageActionId action_id,
     PageActionTrigger trigger,
@@ -850,13 +809,6 @@ void WebUIPageActionControl::OnPageActionClick(
 
   it->second->NotifyClick(trigger);
   std::move(callback).Run(std::monostate());
-}
-
-void WebUIPageActionControl::SetSuppressionThresholdForTesting(
-    base::TimeDelta threshold) {
-  for (auto& [action_id, delegate] : delegates_) {
-    delegate->SetSuppressionThresholdForTesting(threshold);  // IN-TEST
-  }
 }
 
 void WebUIPageActionControl::OnPageActionChipShowingChanged(

@@ -349,19 +349,6 @@ suite('PageActionIconTest', function() {
         assertFalse(icon.$.button.hasAttribute('animates-label'));
         assertFalse(icon.$.button.hasAttribute('has-label'));
       });
-
-  test('Pointer down triggers onPageActionPointerDown', async function() {
-    const button = icon.$.button;
-    button.dispatchEvent(new PointerEvent('pointerdown', {
-      bubbles: true,
-      composed: true,
-    }));
-
-    const actionId =
-        await toolbarUiHandler.whenCalled('onPageActionPointerDown');
-    assertEquals(PageActionId.kActionShowTranslate, actionId);
-  });
-
   test('Start tracking when identifier is set', async () => {
     icon.state = {
       ...icon.state,
@@ -468,6 +455,56 @@ suite('PageActionIconTest', function() {
     options.onHighlightChanged(false);
     await microtasksFinished();
     assertFalse(icon.$.button.hasAttribute('is-menu-open'));
+  });
+
+  test('Click suppression when bubble is open or recently closed', async () => {
+    icon.state = {
+      ...icon.state,
+      identifier: {
+        nativeIdentifier: 'test-id',
+        secondaryIdentifier: '',
+      },
+    };
+    await microtasksFinished();
+    assertEquals(1, startTrackingCalls.length);
+    const options = startTrackingCalls[0]!.options;
+    assertTrue(!!options?.onHighlightChanged);
+
+    const button = icon.$.button;
+    const dispatchMouseClick = () => {
+      button.dispatchEvent(new PointerEvent(
+          'pointerdown', {bubbles: true, button: 0, pointerType: 'mouse'}));
+      button.dispatchEvent(new PointerEvent(
+          'click', {bubbles: true, button: 0, pointerType: 'mouse'}));
+    };
+
+    // 1. Normal click when not highlighted triggers the action.
+    dispatchMouseClick();
+    assertEquals(1, toolbarUiHandler.getCallCount('onPageActionClick'));
+
+    // 2. Click while highlighted (bubble open) is suppressed.
+    options.onHighlightChanged(true);
+    dispatchMouseClick();
+    assertEquals(1, toolbarUiHandler.getCallCount('onPageActionClick'));
+
+    // 3. Click right after unhighlighting (< 100ms) is suppressed.
+    options.onHighlightChanged(false);
+    icon.highlightTracker.lastUnhighlightedTime = performance.now() + 10000;
+    dispatchMouseClick();
+    assertEquals(1, toolbarUiHandler.getCallCount('onPageActionClick'));
+
+    // 4. Keyboard activation (empty pointerType) is not suppressed even after
+    // a pointerdown that armed click skipping.
+    button.dispatchEvent(new PointerEvent(
+        'pointerdown', {bubbles: true, button: 0, pointerType: 'mouse'}));
+    button.dispatchEvent(
+        new PointerEvent('click', {bubbles: true, button: 0, pointerType: ''}));
+    assertEquals(2, toolbarUiHandler.getCallCount('onPageActionClick'));
+
+    // 5. Click after >= 100ms since bubble closed triggers the action.
+    icon.highlightTracker.lastUnhighlightedTime = performance.now() - 200;
+    dispatchMouseClick();
+    assertEquals(3, toolbarUiHandler.getCallCount('onPageActionClick'));
   });
 
   test('Help bubble callbacks update hasHelpBubble and tooltip', async () => {

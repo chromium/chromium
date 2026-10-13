@@ -64,16 +64,13 @@ bool WebUIBubbleReopenSuppressor::IsTimeWithinSuppressionWindow() const {
 }
 
 void WebUIBubbleReopenSuppressor::OnWidgetDestroying(views::Widget* widget) {
-  RecordBubbleClosed();
-}
-
-void WebUIBubbleReopenSuppressor::RecordBubbleClosed() {
   last_close_time_ = base::TimeTicks::Now();
   observation_.Reset();
 }
 
 void WebUIBubbleReopenSuppressor::CloseForTesting() {
-  RecordBubbleClosed();
+  last_close_time_ = base::TimeTicks::Now();
+  observation_.Reset();
 }
 
 void WebUIBubbleReopenSuppressor::SetSuppressionThresholdForTesting(  // IN-TEST

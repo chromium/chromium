@@ -710,10 +710,6 @@ void PageActionTestAccessor::Click(page_actions::PageActionTrigger trigger) {
 }
 
 void PageActionTestAccessor::SetSuppressionThreshold(
-    base::TimeDelta threshold) {
-  if (auto* const control = GetWebUIPageActionControl()) {
-    control->SetSuppressionThresholdForTesting(threshold);
-  }
-}
+    base::TimeDelta /*threshold*/) {}
 
 }  // namespace page_actions
