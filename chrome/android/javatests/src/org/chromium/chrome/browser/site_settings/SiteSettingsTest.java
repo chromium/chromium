@@ -1417,6 +1417,7 @@ public class SiteSettingsTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
+    @DisabledTest(message = "https://crbug.com/564443226")
     public void testProtectedContentAskAllow() throws Exception {
         SiteSettingsTestHelper.setGlobalTriStateToggleForCategory(
                 SiteSettingsCategory.Type.PROTECTED_MEDIA, ContentSetting.ASK);
@@ -1433,6 +1434,7 @@ public class SiteSettingsTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
+    @DisabledTest(message = "https://crbug.com/564443226")
     public void testProtectedContentAskBlocked() throws Exception {
         SiteSettingsTestHelper.setGlobalTriStateToggleForCategory(
                 SiteSettingsCategory.Type.PROTECTED_MEDIA, ContentSetting.ASK);
