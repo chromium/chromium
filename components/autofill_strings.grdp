@@ -546,8 +546,8 @@
     <message name="IDS_AUTOFILL_ADDRESS_SHEET_EMPTY_MESSAGE" desc="Message indicating that no addresses are available for filling.">
       No saved addresses
     </message>
-    <message name="IDS_AUTOFILL_ADDRESS_SHEET_ALL_ADDRESSES_LINK" desc="The text of the link in the address sheet that opens the address management section.">
-      Manage addresses
+    <message name="IDS_AUTOFILL_ADDRESS_SHEET_ALL_ADDRESSES_LINK" desc="The text of the link in the address sheet that opens the contact info management section.">
+      Manage contact info
     </message>
     <message name="IDS_AUTOFILL_LOYALTY_CARDS_ALL_YOUR_CARDS_SUGGESTION" desc="The keyboard accessory suggestion to open the loyalty cards bottom sheet containing all the user loyalty cards.">
       Your loyalty cards
