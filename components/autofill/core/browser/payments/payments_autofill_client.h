@@ -240,6 +240,9 @@ class PaymentsAutofillClient : public RiskDataLoader {
       return *this;
     }
 
+    // Only used for the cardholder name fix flow during account creation, not
+    // for the separate cardholder name update flow
+    // (`kCardholderNameUpdateOnly`).
     bool should_request_name_from_user = false;
     bool should_request_expiration_date_from_user = false;
     bool show_prompt = false;

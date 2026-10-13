@@ -73,20 +73,6 @@ class SaveCardBubbleControllerImplTest : public DialogBrowserTest {
     controller_ = SaveCardBubbleControllerImpl::FromWebContents(web_contents);
     CHECK(controller_);
 
-    payments::PaymentsAutofillClient::SaveCreditCardOptions options =
-        payments::PaymentsAutofillClient::SaveCreditCardOptions()
-            .with_should_request_name_from_user(
-                name.find("WithCardholderNameTextfield") != std::string::npos)
-            .with_should_request_expiration_date_from_user(
-                name.find("WithCardExpirationDateDropDownBox") !=
-                std::string::npos)
-            .with_card_save_type(name.find("CvcSave") != std::string::npos
-                                     ? payments::PaymentsAutofillClient::
-                                           CardSaveType::kCvcSaveOnly
-                                     : payments::PaymentsAutofillClient::
-                                           CardSaveType::kCardSaveOnly)
-            .with_show_prompt(true);
-
     PaymentsBubbleType bubble_type = PaymentsBubbleType::kInactive;
     if (name.find("LocalSave") != std::string::npos) {
       bubble_type = PaymentsBubbleType::kLocalSave;
@@ -100,9 +86,44 @@ class SaveCardBubbleControllerImplTest : public DialogBrowserTest {
     if (name.find("ServerCvcSave") != std::string::npos) {
       bubble_type = PaymentsBubbleType::kUploadCvcSave;
     }
+    if (name.find("ServerCardholderNameUpdate") != std::string::npos) {
+      bubble_type = PaymentsBubbleType::kUploadCardholderNameUpdate;
+    }
     if (name.find("Manage") != std::string::npos) {
       bubble_type = PaymentsBubbleType::kManageCards;
     }
+
+    payments::PaymentsAutofillClient::CardSaveType card_save_type;
+    switch (bubble_type) {
+      case PaymentsBubbleType::kLocalCvcSave:
+      case PaymentsBubbleType::kUploadCvcSave:
+        card_save_type =
+            payments::PaymentsAutofillClient::CardSaveType::kCvcSaveOnly;
+        break;
+      case PaymentsBubbleType::kUploadCardholderNameUpdate:
+        card_save_type = payments::PaymentsAutofillClient::CardSaveType::
+            kCardholderNameUpdateOnly;
+        break;
+      case PaymentsBubbleType::kLocalSave:
+      case PaymentsBubbleType::kUploadSave:
+      case PaymentsBubbleType::kManageCards:
+      case PaymentsBubbleType::kUploadInProgress:
+      case PaymentsBubbleType::kUploadComplete:
+      case PaymentsBubbleType::kInactive:
+        card_save_type =
+            payments::PaymentsAutofillClient::CardSaveType::kCardSaveOnly;
+        break;
+    }
+
+    payments::PaymentsAutofillClient::SaveCreditCardOptions options =
+        payments::PaymentsAutofillClient::SaveCreditCardOptions()
+            .with_should_request_name_from_user(
+                name.find("WithCardholderNameTextfield") != std::string::npos)
+            .with_should_request_expiration_date_from_user(
+                name.find("WithCardExpirationDateDropDownBox") !=
+                std::string::npos)
+            .with_card_save_type(card_save_type)
+            .with_show_prompt(true);
 
     switch (bubble_type) {
       case PaymentsBubbleType::kLocalSave:
@@ -123,10 +144,16 @@ class SaveCardBubbleControllerImplTest : public DialogBrowserTest {
                                      GetTestLegalMessage(), options,
                                      base::DoNothing());
         break;
+      case PaymentsBubbleType::kUploadCardholderNameUpdate: {
+        CreditCard card = test::GetMaskedServerCard();
+        card.SetRawInfo(CREDIT_CARD_NAME_FULL, u"Elisa B. Lee");
+        controller_->OfferUploadSave(card, /*legal_message_lines=*/{}, options,
+                                     base::DoNothing());
+        break;
+      }
       case PaymentsBubbleType::kManageCards:
         controller_->ShowBubbleForManageCardsForTesting(test::GetCreditCard());
         break;
-      case PaymentsBubbleType::kUploadCardholderNameUpdate:
       case PaymentsBubbleType::kUploadInProgress:
       case PaymentsBubbleType::kUploadComplete:
       case PaymentsBubbleType::kInactive:
@@ -167,6 +194,13 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleControllerImplTest, InvokeUi_ServerSave) {
 // card to Google Payments.
 IN_PROC_BROWSER_TEST_F(SaveCardBubbleControllerImplTest,
                        InvokeUi_ServerCvcSave) {
+  ShowAndVerifyUi();
+}
+
+// Invokes a bubble asking the user if they want to save the cardholder name for
+// a credit card to Google Wallet.
+IN_PROC_BROWSER_TEST_F(SaveCardBubbleControllerImplTest,
+                       InvokeUi_ServerCardholderNameUpdate) {
   ShowAndVerifyUi();
 }
 

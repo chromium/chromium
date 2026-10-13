@@ -71,6 +71,8 @@ void SaveCardOfferBubbleViews::Init() {
   if (controller() && (controller()->GetPaymentsBubbleType() ==
                            PaymentsBubbleType::kUploadSave ||
                        controller()->GetPaymentsBubbleType() ==
+                           PaymentsBubbleType::kUploadCardholderNameUpdate ||
+                       controller()->GetPaymentsBubbleType() ==
                            PaymentsBubbleType::kUploadInProgress)) {
     loading_row_ = AddChildView(CreateLoadingRow());
     if (controller()->GetPaymentsBubbleType() ==
@@ -83,8 +85,11 @@ void SaveCardOfferBubbleViews::Init() {
 }
 
 bool SaveCardOfferBubbleViews::Accept() {
-  bool show_throbber = controller() && controller()->GetPaymentsBubbleType() ==
-                                           PaymentsBubbleType::kUploadSave;
+  bool show_throbber =
+      controller() && (controller()->GetPaymentsBubbleType() ==
+                           PaymentsBubbleType::kUploadSave ||
+                       controller()->GetPaymentsBubbleType() ==
+                           PaymentsBubbleType::kUploadCardholderNameUpdate);
 
   if (show_throbber) {
     ShowThrobber();
@@ -160,6 +165,7 @@ void SaveCardOfferBubbleViews::AddedToWidget() {
   int lottie_resource_id;
   switch (controller()->GetPaymentsBubbleType()) {
     case PaymentsBubbleType::kUploadSave:
+    case PaymentsBubbleType::kUploadCardholderNameUpdate:
     case PaymentsBubbleType::kUploadInProgress:
     case PaymentsBubbleType::kUploadComplete:
       lottie_resource_id = base::FeatureList::IsEnabled(
@@ -199,6 +205,30 @@ std::unique_ptr<views::View> SaveCardOfferBubbleViews::CreateMainContentView() {
                   ? DialogViewId::MAIN_CONTENT_VIEW_UPLOAD
                   : DialogViewId::MAIN_CONTENT_VIEW_LOCAL);
 
+  if (controller()->GetPaymentsBubbleType() ==
+      PaymentsBubbleType::kUploadCardholderNameUpdate) {
+    // SaveCardBubbleViews::CreateMainContentView() adds the explanation label
+    // (index 0) and the card description view (index 1). Insert the cardholder
+    // name textfield at index 1 so it appears above the card description view.
+    view->AddChildViewAt(
+        CreateCardholderNameTextfield(
+            controller()->GetCard().GetRawInfo(CREDIT_CARD_NAME_FULL)),
+        1);
+
+    if (!base::FeatureList::IsEnabled(
+            features::kAutofillEnableWalletBrandingV2)) {
+      std::u16string user_email =
+          base::UTF8ToUTF16(controller()->GetAccountInfo().GetEmail());
+      ui::ImageModel user_avatar =
+          GetProfileAvatar(controller()->GetAccountInfo());
+      if (!user_email.empty() && !user_avatar.IsEmpty()) {
+        view->AddChildView(
+            CreateUserAvatarAndEmailView(user_email, user_avatar));
+      }
+    }
+    return view;
+  }
+
   // If necessary, add the cardholder name label and textfield to the upload
   // save dialog.
   if (controller()->ShouldRequestNameFromUser()) {
@@ -218,8 +248,8 @@ std::unique_ptr<views::View> SaveCardOfferBubbleViews::CreateMainContentView() {
   return view;
 }
 
-std::unique_ptr<views::View> SaveCardOfferBubbleViews::
-    CreateRequestCardholderNameForAccountCreationView() {
+std::unique_ptr<views::View>
+SaveCardOfferBubbleViews::CreateRequestCardholderNameForAccountCreationView() {
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
   std::unique_ptr<views::View> cardholder_name_label_row =
       std::make_unique<views::View>();

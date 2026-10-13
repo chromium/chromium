@@ -2291,7 +2291,6 @@ TEST_F(SaveCardBubbleControllerImplTest,
   ShowUploadBubble(
       /*options=*/SaveCreditCardOptions()
           .with_card_save_type(CardSaveType::kCardholderNameUpdateOnly)
-          .with_should_request_name_from_user(true)
           .with_show_prompt(true));
 
   ASSERT_EQ(PaymentsBubbleType::kUploadCardholderNameUpdate,
@@ -2322,20 +2321,18 @@ TEST_F(SaveCardBubbleControllerImplTest,
       autofill::test::GetMaskedServerCard(), LegalMessageLines(),
       SaveCreditCardOptions()
           .with_card_save_type(CardSaveType::kCardholderNameUpdateOnly)
-          .with_should_request_name_from_user(true)
           .with_show_prompt(true),
       callback.Get());
 
   ASSERT_EQ(PaymentsBubbleType::kUploadCardholderNameUpdate,
             controller()->GetPaymentsBubbleType());
 
-  EXPECT_CALL(
-      callback,
-      Run(payments::PaymentsAutofillClient::SaveCardOfferUserDecision::
-              kAccepted,
-          testing::Field(&payments::PaymentsAutofillClient::
-                             UserProvidedCardDetails::cardholder_name,
-                         u"John Doe")));
+  EXPECT_CALL(callback,
+              Run(payments::PaymentsAutofillClient::SaveCardOfferUserDecision::
+                      kAccepted,
+                  testing::Field(&payments::PaymentsAutofillClient::
+                                     UserProvidedCardDetails::cardholder_name,
+                                 u"John Doe")));
 
   payments::PaymentsAutofillClient::UserProvidedCardDetails details;
   details.cardholder_name = u"  John Doe  ";
@@ -2361,17 +2358,15 @@ TEST_F(SaveCardBubbleControllerImplTest,
       autofill::test::GetMaskedServerCard(), LegalMessageLines(),
       SaveCreditCardOptions()
           .with_card_save_type(CardSaveType::kCardholderNameUpdateOnly)
-          .with_should_request_name_from_user(true)
           .with_show_prompt(true),
       callback.Get());
 
-  EXPECT_CALL(
-      callback,
-      Run(payments::PaymentsAutofillClient::SaveCardOfferUserDecision::
-              kDeclined,
-          testing::Field(&payments::PaymentsAutofillClient::
-                             UserProvidedCardDetails::cardholder_name,
-                         u"")));
+  EXPECT_CALL(callback,
+              Run(payments::PaymentsAutofillClient::SaveCardOfferUserDecision::
+                      kDeclined,
+                  testing::Field(&payments::PaymentsAutofillClient::
+                                     UserProvidedCardDetails::cardholder_name,
+                                 u"")));
 
   CloseBubble(PaymentsUiClosedReason::kCancelled);
 
