@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import android.os.Build;
 import android.widget.TextView;
 
 import androidx.test.filters.SmallTest;
@@ -257,7 +258,8 @@ public class UndoBarControllerTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/477995172
+    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.R)
+    // TODO(crbug.com/477995172, crbug.com/571360557): Re-enable.
     public void testCloseTabGroup_Undo() throws Exception {
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
@@ -309,6 +311,8 @@ public class UndoBarControllerTest {
     @Test
     @SmallTest
     @Restriction(DeviceFormFactor.PHONE_OR_TABLET)
+    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.R)
+    // TODO(crbug.com/571360557): Re-enable.
     public void testCloseTabGroup_EmptyTitle_Undo() throws Exception {
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
@@ -360,6 +364,8 @@ public class UndoBarControllerTest {
     @Test
     @SmallTest
     @Restriction(DeviceFormFactor.PHONE_OR_TABLET)
+    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.R)
+    // TODO(crbug.com/571360557): Re-enable.
     public void testDeleteTabGroup_Undo() throws Exception {
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
@@ -404,6 +410,8 @@ public class UndoBarControllerTest {
     @Test
     @SmallTest
     @Restriction(DeviceFormFactor.PHONE_OR_TABLET)
+    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.R)
+    // TODO(crbug.com/571360557): Re-enable.
     public void testDeleteTabGroup_WithOtherTab_Undo() throws Exception {
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
@@ -450,6 +458,8 @@ public class UndoBarControllerTest {
     @Test
     @SmallTest
     @Restriction(DeviceFormFactor.PHONE_OR_TABLET)
+    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.R)
+    // TODO(crbug.com/571360557): Re-enable.
     public void testCloseTabGroup_WithOtherTabs_Undo() throws Exception {
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
@@ -545,6 +555,8 @@ public class UndoBarControllerTest {
 
     @Test
     @SmallTest
+    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.R)
+    // TODO(crbug.com/571360557): Re-enable.
     public void testDeleteTabGroups_Undo() throws Exception {
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
@@ -665,6 +677,8 @@ public class UndoBarControllerTest {
     @Test
     @SmallTest
     @Restriction(DeviceFormFactor.PHONE_OR_TABLET)
+    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.R)
+    // TODO(crbug.com/571360557): Re-enable.
     public void testCloseTabGroups_Undo() throws Exception {
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
@@ -701,6 +715,8 @@ public class UndoBarControllerTest {
 
     @Test
     @SmallTest
+    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.R)
+    // TODO(crbug.com/571360557): Re-enable.
     public void testThrottleUndo() throws Exception {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         UndoBarController undoBarController = cta.getUndoBarControllerForTesting();
@@ -746,6 +762,8 @@ public class UndoBarControllerTest {
 
     @Test
     @SmallTest
+    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.R)
+    // TODO(crbug.com/571360557): Re-enable.
     public void testThrottleUndo_CommitSubset() throws Exception {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         UndoBarController undoBarController = cta.getUndoBarControllerForTesting();
@@ -795,6 +813,8 @@ public class UndoBarControllerTest {
 
     @Test
     @SmallTest
+    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.R)
+    // TODO(crbug.com/571360557): Re-enable.
     public void testThrottleUndo_CommitAll() throws Exception {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         UndoBarController undoBarController = cta.getUndoBarControllerForTesting();
@@ -837,6 +857,8 @@ public class UndoBarControllerTest {
     @Test
     @SmallTest
     @Restriction(DeviceFormFactor.PHONE_OR_TABLET)
+    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.R)
+    // TODO(crbug.com/571360557): Re-enable.
     public void testThrottleUndo_UndoNotViaSnackbar() throws Exception {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         UndoBarController undoBarController = cta.getUndoBarControllerForTesting();
