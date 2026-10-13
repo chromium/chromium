@@ -44,6 +44,7 @@ class AndroidBidirectionalStreamCallbackWrapper
     public void onResponseHeadersReceived(
             android.net.http.BidirectionalStream bidirectionalStream,
             android.net.http.UrlResponseInfo urlResponseInfo) {
+        mWrappedStream.recordResponseHeadersReceived();
         AndroidUrlResponseInfoWrapper specializedResponseInfo =
                 AndroidUrlResponseInfoWrapper.createForBidirectionalStream(urlResponseInfo);
         mBackend.onResponseHeadersReceived(mWrappedStream, specializedResponseInfo);

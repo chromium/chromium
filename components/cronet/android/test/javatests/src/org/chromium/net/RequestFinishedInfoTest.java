@@ -26,6 +26,7 @@ import org.chromium.net.CronetTestFramework.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.CronetTestRule.RequiresMinApi;
 import org.chromium.net.MetricsTestUtil.TestExecutor;
+import org.chromium.net.impl.AndroidRequestFinishedInfoWrapper;
 import org.chromium.net.impl.CronetMetrics;
 
 import java.util.ArrayList;
@@ -277,8 +278,10 @@ public class RequestFinishedInfoTest {
                 .isNotNull();
 
         // RequestFinishedInfoListener HttpEngineWrapper implementation has placeholder ie null
-        // metrics. Don't bother checking timing metrics for AOSP whether it passes or not.
-        if (mImplementationUnderTest != CronetImplementation.AOSP_PLATFORM) {
+        // metrics when FinishedRequestTimings is unsupported. Don't bother checking timing metrics
+        // for AOSP whether it passes or not.
+        if (mImplementationUnderTest != CronetImplementation.AOSP_PLATFORM
+                || AndroidRequestFinishedInfoWrapper.isFinishedRequestTimingsSupported()) {
             // The failure is occasionally fast enough that time reported is 0, so just check for
             // null
             assertThat(metrics.getTotalTimeMs()).isNotNull();

@@ -42,6 +42,7 @@ import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
 import org.chromium.net.CronetTestRule.RequiresMinApi;
 import org.chromium.net.TestBidirectionalStreamCallback.FailureType;
 import org.chromium.net.TestBidirectionalStreamCallback.ResponseStep;
+import org.chromium.net.impl.AndroidRequestFinishedInfoWrapper;
 import org.chromium.net.impl.BidirectionalStreamNetworkException;
 import org.chromium.net.impl.CronetBidirectionalStream;
 import org.chromium.net.impl.CronetExceptionImpl;
@@ -104,8 +105,11 @@ public class BidirectionalStreamTest {
         mTestLogger = mLoggerTestRule.mTestLogger;
         mDropConnectionPackets = false;
         mCronetEngine = mTestRule.getTestFramework().startEngine();
-        assertThat(Http2TestServer.startHttp2TestServer(new Http2TestServer.ServerStartOptions(mTestRule.getTestFramework().getContext())
-                        .setPreTlsPacketHandler(new DroppingPacketHandler())))
+        assertThat(
+                        Http2TestServer.startHttp2TestServer(
+                                new Http2TestServer.ServerStartOptions(
+                                                mTestRule.getTestFramework().getContext())
+                                        .setPreTlsPacketHandler(new DroppingPacketHandler())))
                 .isTrue();
     }
 
@@ -1679,8 +1683,9 @@ public class BidirectionalStreamTest {
         }
         CronetImplementation implementationUnderTest = mTestRule.implementationUnderTest();
         // RequestFinishedInfoListener HttpEngineWrapper implementation has placeholder ie null
-        // metrics. Don't bother checking timing metrics for AOSP whether it passes or not.
-        if (implementationUnderTest != CronetImplementation.AOSP_PLATFORM) {
+        // metrics when FinishedRequestTimings is unsupported.
+        if (implementationUnderTest != CronetImplementation.AOSP_PLATFORM
+                || AndroidRequestFinishedInfoWrapper.isFinishedRequestTimingsSupported()) {
             // Check metrics information.
             if (failureStep == ResponseStep.ON_RESPONSE_STARTED
                     || failureStep == ResponseStep.ON_READ_COMPLETED

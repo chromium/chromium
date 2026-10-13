@@ -16,6 +16,7 @@ import org.chromium.net.RequestFinishedInfo;
 import org.chromium.net.RequestFinishedInfo.Listener;
 
 import java.nio.ByteBuffer;
+import java.time.Duration;
 import java.util.Collection;
 
 // Note we specify both RequiresApi and RequiresExtension because some older linters may only
@@ -28,6 +29,8 @@ class AndroidUrlRequestWrapper extends org.chromium.net.ExperimentalUrlRequest {
     private final String mInitialUrl;
     private final Collection<Object> mAnnotations;
     private final VersionSafeCallbacks.RequestFinishedInfoListener mRequestFinishedInfoListener;
+    private volatile long mRequestStartTimeNanos;
+    private volatile Duration mTimeToResponseStart;
 
     AndroidUrlRequestWrapper(
             android.net.http.UrlRequest backend,
@@ -48,11 +51,13 @@ class AndroidUrlRequestWrapper extends org.chromium.net.ExperimentalUrlRequest {
 
     @Override
     public void start() {
+        mRequestStartTimeNanos = System.nanoTime();
         mBackend.start();
     }
 
     @Override
     public void followRedirect() {
+        mRequestStartTimeNanos = System.nanoTime();
         mBackend.followRedirect();
     }
 
@@ -105,12 +110,15 @@ class AndroidUrlRequestWrapper extends org.chromium.net.ExperimentalUrlRequest {
         return wrappedRequest;
     }
 
+    void recordResponseHeadersReceived() {
+        mTimeToResponseStart = Duration.ofNanos(System.nanoTime() - mRequestStartTimeNanos);
+    }
+
     /**
      * HttpEngine does not support {@link CronetEngine#addRequestFinishedListener(Listener)}). To
      * preserve compatibility with Cronet users who use that method, we reimplement the
-     * functionality with a placeholder CronetMetric object. This reimplementation allows for {@link
-     * RequestFinishedInfo.Listener#onRequestFinished(RequestFinishedInfo)} to be called so as not
-     * to unknowingly block users who might be depending on that API call.
+     * functionality using {@link android.net.http.UrlRequest#getFinishedRequestTimings()} when
+     * available (or a placeholder CronetMetrics object on older SDK extensions).
      */
     void maybeReportMetrics(
             @RequestFinishedInfoImpl.FinishedReason int finishedReason,
@@ -123,6 +131,10 @@ class AndroidUrlRequestWrapper extends org.chromium.net.ExperimentalUrlRequest {
                 mRequestFinishedInfoListener,
                 finishedReason,
                 responseInfo,
-                exception);
+                exception,
+                AndroidRequestFinishedInfoWrapper.isFinishedRequestTimingsSupported()
+                        ? mBackend.getFinishedRequestTimings()
+                        : null,
+                mTimeToResponseStart);
     }
 }

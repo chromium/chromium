@@ -8,6 +8,7 @@ import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
 
 import org.chromium.net.CronetTestFramework.CronetImplementation;
+import org.chromium.net.impl.AndroidRequestFinishedInfoWrapper;
 
 import java.util.ArrayDeque;
 import java.util.Date;
@@ -60,9 +61,11 @@ public class MetricsTestUtil {
             RequestFinishedInfo.Metrics metrics,
             Date startTime,
             Date endTime) {
-        if (implementationUnderTest == CronetImplementation.AOSP_PLATFORM) {
+        if (implementationUnderTest == CronetImplementation.AOSP_PLATFORM
+                && !AndroidRequestFinishedInfoWrapper.isFinishedRequestTimingsSupported()) {
             // RequestFinishedInfoListener HttpEngineWrapper implementation has placeholder ie null
-            // metrics. Don't bother checking timing metrics for AOSP whether it passes or not.
+            // metrics when FinishedRequestTimings is unsupported. Don't bother checking timing
+            // metrics for AOSP whether it passes or not.
             return;
         }
         assertThat(metrics.getRequestStart()).isNotNull();
@@ -88,9 +91,11 @@ public class MetricsTestUtil {
             Date startTime,
             Date endTime,
             boolean isSsl) {
-        if (implementationUnderTest == CronetImplementation.AOSP_PLATFORM) {
+        if (implementationUnderTest == CronetImplementation.AOSP_PLATFORM
+                && !AndroidRequestFinishedInfoWrapper.isFinishedRequestTimingsSupported()) {
             // RequestFinishedInfoListener HttpEngineWrapper implementation has placeholder ie null
-            // metrics. Don't bother checking timing metrics for AOSP whether it passes or not.
+            // metrics when FinishedRequestTimings is unsupported. Don't bother checking timing
+            // metrics for AOSP whether it passes or not.
             return;
         }
         assertThat(metrics.getDnsStart()).isNotNull();
@@ -115,10 +120,12 @@ public class MetricsTestUtil {
     /** Check that the timing metrics from net::LoadTimingInfo::ConnectTiming don't exist. */
     public static void checkNoConnectTiming(
             CronetImplementation implementationUnderTest, RequestFinishedInfo.Metrics metrics) {
-        if (implementationUnderTest == CronetImplementation.AOSP_PLATFORM) {
+        if (implementationUnderTest == CronetImplementation.AOSP_PLATFORM
+                && !AndroidRequestFinishedInfoWrapper.isFinishedRequestTimingsSupported()) {
             // RequestFinishedInfoListener HttpEngineWrapper implementation has placeholder ie null
-            // metrics. Although the checks below would pass, generally, don't bother checking
-            // timing metrics for AOSP whether it passes or not.
+            // metrics when FinishedRequestTimings is unsupported. Although the checks below would
+            // pass, generally, don't bother checking timing metrics for AOSP whether it passes or
+            // not.
             return;
         }
         assertThat(metrics.getDnsStart()).isNull();
@@ -147,9 +154,8 @@ public class MetricsTestUtil {
                 .that(metrics)
                 .isNotNull();
 
-        // RequestFinishedInfoListener HttpEngineWrapper implementation has placeholder ie null
-        // metrics. Don't bother checking timing metrics for AOSP whether it passes or not.
-        if (implementationUnderTest != CronetImplementation.AOSP_PLATFORM) {
+        if (implementationUnderTest != CronetImplementation.AOSP_PLATFORM
+                || AndroidRequestFinishedInfoWrapper.isFinishedRequestTimingsSupported()) {
             // Check old (deprecated) timing metrics
             assertThat(metrics.getTotalTimeMs()).isAtLeast(0L);
             assertThat(metrics.getTotalTimeMs()).isAtLeast(metrics.getTtfbMs());

@@ -59,6 +59,7 @@ class AndroidUrlRequestCallbackWrapper implements android.net.http.UrlRequest.Ca
     public void onResponseStarted(
             android.net.http.UrlRequest request, android.net.http.UrlResponseInfo info)
             throws Exception {
+        mWrappedRequest.recordResponseHeadersReceived();
         CronetExceptionTranslationUtils.executeTranslatingCronetExceptions(
                 () -> {
                     AndroidUrlResponseInfoWrapper specializedResponseInfo =
