@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/actor/tools/change_password_tool_request.h"
+#include "chrome/browser/actor/tools/password_manager/change_password/change_password_tool_request.h"
 
 #include <memory>
 #include <variant>
