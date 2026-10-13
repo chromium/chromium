@@ -2,7 +2,7 @@ Name: The USB ID Repository
 Short Name: usb-ids
 URL: http://www.linux-usb.org/usb-ids.html
      https://packages.debian.org/testing/usb.ids
-Version: 2026.06.26
+Version: 2026.06.26-1
 Update Mechanism: Manual
 License: BSD-3-Clause
 License File: LICENSE

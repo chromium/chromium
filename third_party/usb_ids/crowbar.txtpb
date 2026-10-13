@@ -1,22 +1,23 @@
 upstream {
+  version: "2026.06.26-1"
   artifacts {
-    name: "usb.ids"
-    http: {
-      url: "https://sources.debian.org/data/main/u/usb.ids/2026.06.26-1/usb.ids"
-      digest: "sha256:271973050dc55ea7a558b1f693d41bebe20ba6425c1b593ba144aa2eef6824fc"
+    name: "usb.ids_2026.06.26-1_all.deb"
+    http {
+      url: "https://snapshot.debian.org/file/3ddb32f1a58bc5f968a3075e4af92b16e8253bd0"
+      digest: "sha1:3ddb32f1a58bc5f968a3075e4af92b16e8253bd0"
     }
   }
 }
 stages {
   input {
-    patch { copybara: {} }
+    unpack {}
+    patch { copybara {} }
   }
-  output {
-    update { git {} }
+  update { git {} }
+}
+latest {
+  debian {
+    binary: "usb.ids"
+    architectures: "all"
   }
 }
-
-# LATEST: Check debian index for latest version.
-#
-# We can use sources.debian.org API:
-# https://sources.debian.org/api/src/usb.ids/testing/
