@@ -34,6 +34,7 @@
 #include "ui/events/event_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/native/native_view_host.h"
+#include "ui/views/test/mock_activation_controller.h"
 #include "ui/views/test/native_widget_factory.h"
 #include "ui/views/test/test_views.h"
 #include "ui/views/test/test_views_delegate.h"
@@ -41,8 +42,11 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_constants_aura.h"
 #include "ui/views/views_features.h"
+#include "ui/views/widget/native_widget_aura.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
+#include "ui/wm/core/window_util.h"
+#include "ui/wm/public/activation_client.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -128,6 +132,54 @@ TEST_F(DesktopNativeWidgetAuraTest, NativeViewNoActivate) {
   EXPECT_FALSE(widget.CanActivate());
   EXPECT_EQ(nullptr, aura::client::GetFocusClient(widget.GetNativeWindow())
                          ->GetFocusedWindow());
+}
+
+// Verifies that when the window tree host deactivates while the content window
+// is active, a visible, activatable child widget in the same host isn't
+// activated in its place. See crbug.com/572976640.
+TEST_F(DesktopNativeWidgetAuraTest, HostDeactivationDoesNotActivateChild) {
+  // Emulate platform activation so that real activation changes, e.g. from
+  // other tests running in parallel, don't affect this test. Must outlive the
+  // widgets.
+  MockActivationController activation_controller;
+
+  Widget top_level;
+  top_level.Init(CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                              Widget::InitParams::TYPE_WINDOW));
+  top_level.Show();
+  top_level.Activate();
+  ASSERT_TRUE(top_level.IsActive());
+
+  // A child widget in the same host, e.g. a bubble. Shown inactive, so the
+  // content window keeps activation.
+  Widget child;
+  Widget::InitParams child_params =
+      CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  child_params.parent = top_level.GetNativeView();
+  child_params.context = top_level.GetNativeWindow();
+  child_params.native_widget = new NativeWidgetAura(&child);
+  child.Init(std::move(child_params));
+  child.ShowInactive();
+
+  aura::Window* root_window = top_level.GetNativeView()->GetRootWindow();
+  ASSERT_EQ(root_window, child.GetNativeView()->GetRootWindow());
+  ASSERT_TRUE(wm::IsActiveWindow(top_level.GetNativeView()));
+  ASSERT_TRUE(child.CanActivate());
+  ASSERT_FALSE(child.IsActive());
+
+  // Deactivates the window tree host, which calls
+  // `DesktopNativeWidgetAura::HandleActivationChanged(false)`.
+  top_level.Deactivate();
+
+  EXPECT_FALSE(top_level.IsActive());
+  EXPECT_FALSE(child.IsActive());
+  EXPECT_EQ(nullptr, wm::GetActivationClient(root_window)->GetActiveWindow());
+  // An active child would keep the top-level widget painting as active.
+  EXPECT_FALSE(top_level.ShouldPaintAsActive());
+
+  child.CloseNow();
+  top_level.CloseNow();
 }
 
 #if BUILDFLAG(IS_WIN)
