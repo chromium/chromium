@@ -2332,6 +2332,7 @@ if (!limit_android_deps) {
       ":androidx_annotation_annotation_java",
       ":androidx_collection_collection_java",
       ":androidx_compose_animation_animation_core_java",
+      ":androidx_compose_animation_animation_java",
       ":androidx_compose_foundation_foundation_java",
       ":androidx_compose_foundation_foundation_layout_java",
       ":androidx_compose_material3_material3_ripple_java",
@@ -2343,6 +2344,7 @@ if (!limit_android_deps) {
       ":androidx_graphics_graphics_shapes_java",
       ":androidx_lifecycle_lifecycle_common_java8_java",
       ":androidx_lifecycle_lifecycle_runtime_java",
+      ":androidx_navigationevent_navigationevent_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
