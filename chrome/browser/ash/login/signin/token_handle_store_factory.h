@@ -18,13 +18,9 @@ class PrefService;
 
 namespace ash {
 
-// Helper class to switch implementation of TokenHandleStore depending
-// on feature flag state.
-// TokenHandleStoreFactory just switches the returned implementation by either
-// creating a TokenHandleUtil or returning the global instance of
-// TokenHandleStoreImpl.
-// This class is temporary, and will be removed once we completely migrate to
-// TokenHandleStoreImpl.
+// Owns the global instance of TokenHandleStoreImpl and hands it out to
+// callers. The instance is created lazily, before profile loading, and lives
+// until the browser shuts down.
 class TokenHandleStoreFactory {
  public:
   // `local_state` must be non-null and must outlive `this`.
