@@ -274,6 +274,39 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreVerticalTabsInteractiveTest,
   ASSERT_TRUE(controller->GetUncollapsedWidth() == kUncollapsedWidth);
 }
 
+// Verify that when SessionService resets and rebuilds its command log from
+// open browsers (e.g. after kWritesPerReset commands), the vertical tab strip's
+// collapsed state and uncollapsed width are still preserved on restore.
+IN_PROC_BROWSER_TEST_F(SessionRestoreVerticalTabsInteractiveTest,
+                       VerifyVerticalTabsSessionRestoreAfterReset) {
+  // Enable vertical tabs.
+  auto* controller = tabs::VerticalTabStripStateController::From(browser());
+  controller->SetVerticalTabsEnabled(true);
+
+  // Set Collapsed State and Uncollapsed Width.
+  controller->RequestCollapse(kIsCollapsed);
+  controller->SetUncollapsedWidth(kUncollapsedWidth);
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->IsCollapsed() == kIsCollapsed; }));
+  ASSERT_EQ(controller->GetUncollapsedWidth(), kUncollapsedWidth);
+
+  // Simulate SessionService resetting and rebuilding commands from current
+  // browsers (which happens every 250 commands during normal usage).
+  SessionService* const session_service =
+      SessionServiceFactory::GetForProfile(browser()->GetProfile());
+  session_service->ResetFromCurrentBrowsers();
+
+  // Quit and restore.
+  BrowserWindowInterface* const restored_browser =
+      QuitBrowserAndRestore(browser());
+  controller = tabs::VerticalTabStripStateController::From(restored_browser);
+
+  // Verify states persist after session restore.
+  EXPECT_EQ(controller->IsCollapsed(), kIsCollapsed);
+  EXPECT_EQ(controller->GetUncollapsedWidth(), kUncollapsedWidth);
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
 class SessionRestoreAshInteractiveTest : public SessionRestoreInteractiveTest {
  protected:
