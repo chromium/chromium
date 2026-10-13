@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <array>
 #include <deque>
 #include <memory>
@@ -253,6 +254,17 @@ const char kDispatchKeyEventShowsAutoFill[] =
     "/devtools/dispatch_key_event_shows_auto_fill.html";
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+// Returns a factor by which the front-end test guard timer (see
+// `TestSuite.takeControl()` in front_end/Tests.js) should be scaled. Slow
+// build configurations (sanitizers, debug, etc.) scale the test action timeouts
+// via TestTimeouts; derive the same multiplier from the default 10 sec action
+// timeout so that the fixed 20 sec front-end timeout is scaled consistently.
+int GetFrontendTimeoutMultiplier() {
+  constexpr base::TimeDelta kDefaultActionTimeout = base::Seconds(10);
+  return std::max(1, static_cast<int>(TestTimeouts::action_timeout() /
+                                      kDefaultActionTimeout));
+}
+
 template <typename... T>
 void DispatchOnTestSuiteSkipCheck(DevToolsWindow* window,
                                   const char* method,
@@ -260,6 +272,22 @@ void DispatchOnTestSuiteSkipCheck(DevToolsWindow* window,
   WebContents* wc = DevToolsWindowTesting::Get(window)->main_web_contents();
   std::array args_array = {method, args...};
   std::ostringstream script;
+  // On slow build configurations the front-end's fixed guard timer fires
+  // before the test completes (crbug.com/572578222). Scale it with the
+  // same multiplier as the C++ test timeouts. The override is installed only
+  // once per front-end instance.
+  if (int multiplier = GetFrontendTimeoutMultiplier(); multiplier > 1) {
+    script << "if (!uiTests.timeoutMultiplierInstalled_) {"
+           << "  uiTests.timeoutMultiplierInstalled_ = true;"
+           << "  const originalTakeControl = uiTests.takeControl;"
+           << "  uiTests.takeControl = function(options) {"
+           << "    const slownessFactor = (options?.slownessFactor ?? 1) * "
+           << multiplier << ";"
+           << "    return originalTakeControl.call("
+           << "        this, {...options, slownessFactor});"
+           << "  };"
+           << "}";
+  }
   script << "uiTests.dispatchOnTestSuite([";
   for (size_t i = 0; i < std::size(args_array); ++i) {
     script << (i ? "," : "") << '\"' << args_array[i] << '\"';
