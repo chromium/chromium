@@ -13,6 +13,7 @@ import android.graphics.Rect;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.task.PostTask;
@@ -185,6 +186,9 @@ public final class ScreenshotTask implements ScreenshotSource {
     @NativeMethods
     interface Natives {
         void grabWindowSnapshotAsync(
-                ScreenshotTask callback, WindowAndroid window, int width, int height);
+                ScreenshotTask callback,
+                @JniType("ui::WindowAndroid*") WindowAndroid window,
+                int width,
+                int height);
     }
 }

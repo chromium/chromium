@@ -41,11 +41,9 @@ static void JNI_ScreenshotTask_SnapshotCallback(
 static void JNI_ScreenshotTask_GrabWindowSnapshotAsync(
     JNIEnv* env,
     const JavaRef<jobject>& jcallback,
-    const JavaRef<jobject>& jwindow_android,
+    ui::WindowAndroid* window_android,
     int32_t window_width,
     int32_t window_height) {
-  ui::WindowAndroid* window_android =
-      ui::WindowAndroid::FromJavaWindowAndroid(jwindow_android);
   gfx::Rect window_bounds(window_width, window_height);
   ui::GrabWindowSnapshotAsPNG(
       window_android, window_bounds,
