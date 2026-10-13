@@ -14,7 +14,6 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_service.h"

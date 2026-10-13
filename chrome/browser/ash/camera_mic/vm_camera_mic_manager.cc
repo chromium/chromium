@@ -25,7 +25,6 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/video_conference/video_conference_ash_feature_client.h"
 #include "chrome/grit/generated_resources.h"

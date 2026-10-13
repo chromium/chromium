@@ -20,7 +20,6 @@
 #include "base/i18n/time_formatting.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/extended_updates/extended_updates_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"

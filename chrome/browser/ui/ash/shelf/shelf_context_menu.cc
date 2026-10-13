@@ -12,7 +12,6 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/metrics/user_metrics.h"
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"

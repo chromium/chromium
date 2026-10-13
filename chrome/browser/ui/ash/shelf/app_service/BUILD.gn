@@ -95,7 +95,6 @@ source_set("browser_tests") {
     "//ash",
     "//ash/constants",
     "//base/test:test_support",
-    "//chrome/app/vector_icons",
     "//chrome/browser",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:app_registry_cache_waiter",

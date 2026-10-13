@@ -15,7 +15,6 @@ static_library("eol") {
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
-    "//chrome/app/vector_icons",
     "//chrome/browser/ash/extended_updates",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/policy/core",
