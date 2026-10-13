@@ -72,8 +72,10 @@ void OtpManagerLegacyImpl::GetOtpSuggestions(
     const FormStructure& form,
     const FormFieldData& field,
     OtpManagerLegacyImpl::GetOtpSuggestionsCallback callback) {
+  // Reject ineligible fields, cross-origin/embedded contexts, or non-OTP forms.
   if (!one_time_token_service_ || owner_->driver().IsEmbedded() ||
-      field.origin().opaque() || !OtpFieldDetector::IsOtpForm(form)) {
+      !OtpFieldDetector::IsOtpField(form, field) ||
+      !OtpFieldDetector::IsOtpForm(form)) {
     std::move(callback).Run({});
     return;
   }
@@ -158,7 +160,7 @@ void OtpManagerLegacyImpl::OnFieldTypesDetermined(
 
   std::vector<FieldGlobalId> otp_field_ids;
   for (const auto& field : form->fields()) {
-    if (field->Type().GetTypes().contains(ONE_TIME_CODE)) {
+    if (OtpFieldDetector::IsOtpField(*form, *field)) {
       otp_field_ids.push_back(field->global_id());
     }
   }
