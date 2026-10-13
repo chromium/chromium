@@ -2238,13 +2238,7 @@ source_set("core") {
 # static_library produces an empty archive, which the Windows librarian
 # (lld-link /lib) rejects with "lib failed".
 source_set("browser") {
-  configs += [ "//build/config:precompiled_headers" ]
-  defines = [ "ZLIB_CONST" ]
-  if (is_chrome_branded || use_official_enterprise_connectors_api_keys) {
-    defines += [ "USE_OFFICIAL_ENTERPRISE_CONNECTORS_API_KEYS=1" ]
-  }
   libs = []
-  ldflags = []
   public_deps = [
     # New dependencies inside of //chrome/browser that generate header files
     # should be added to browser_generated_files.
@@ -2282,7 +2276,6 @@ source_set("browser") {
 
   deps = [
     ":bad_message",
-    ":browser_features",
     ":browser_process",
     ":browser_process_platform_part",
     ":chained_back_navigation_tracker",
@@ -3690,10 +3683,6 @@ source_set("browser") {
       "//components/user_manager:multi_user",
       "//media/capture:capture_lib",
       "//mojo/public/js:resources_grit",
-
-      # Required for adding browser_interop to allow_circular_includes_from.
-      # TODO: crbug.com/395179599 - Remove once //chrome/browser/net has its own
-      # build target.
       "//remoting/host/chromeos:features",
       "//ui/chromeos",
       "//ui/chromeos/resources",
@@ -4566,11 +4555,10 @@ source_set("browser") {
     deps += [ "//chrome/browser/ui/webui/certificate_manager" ]
   }
 
-  # This target intentionally has no sources of its own and no
-  # allow_circular_includes_from; it only aggregates dependencies. Do NOT add
-  # sources here -- new code belongs in a dedicated, properly-scoped target.
-  # Kept last so an accidental `sources += [...]` above is reset to empty and
-  # is easy to catch in review.
+  # This target intentionally has no sources of its own; it only aggregates
+  # dependencies. Do NOT add sources here -- new code belongs in a dedicated,
+  # properly-scoped target. Kept last so an accidental `sources += [...]`
+  # above is reset to empty and is easy to catch in review.
   sources = []
 }
 
