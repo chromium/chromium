@@ -11,10 +11,10 @@
 namespace push_notification {
 
 enum class ClientId {
-  kNearbyPresence,
+  kTest,
 };
 
-static constexpr char kNearbyPresenceClientId[] = "nearby_presence";
+static constexpr char kTestClientId[] = "test";
 
 std::optional<std::string> GetClientIdStr(ClientId id);
 std::optional<ClientId> GetClientIdFromStr(const std::string& id_string);

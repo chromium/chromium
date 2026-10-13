@@ -85,7 +85,7 @@ enum class OAuthConsumerId {
   kPolicyTokenForwarder = 57,
   // kPluginVmLicenseChecker = 58,  // Removed due to deprecation.
   kDrivefsAuth = 59,
-  kNearbyPresenceServerClient = 60,
+  // kNearbyPresenceServerClient = 60,  // Removed due to deprecation.
   kCryptAuthClient = 61,
   kAmbientMode = 62,
   kProfileDownloader = 63,

@@ -8044,10 +8044,6 @@ inline constexpr char kEnableNearbyBleV2ExtendedAdvertisingDescription[] =
     "Enables extended advertising functionality over BLE when using Nearby BLE "
     "v2.";
 
-inline constexpr char kNearbyPresenceName[] = "Nearby Presence";
-inline constexpr char kNearbyPresenceDescription[] =
-    "Enables Nearby Presence for scanning and discovery of nearby devices.";
-
 inline constexpr char kNotificationsIgnoreRequireInteractionName[] =
     "Notifications always timeout";
 inline constexpr char kNotificationsIgnoreRequireInteractionDescription[] =

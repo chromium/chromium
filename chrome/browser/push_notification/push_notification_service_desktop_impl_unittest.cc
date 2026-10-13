@@ -418,12 +418,12 @@ TEST_F(PushNotificationServiceDesktopImplTest, OnMessageReceived) {
       push_notification_service_->GetPushNotificationClientManager();
   auto fake_push_notification_client =
       std::make_unique<FakePushNotificationClient>(
-          push_notification::ClientId::kNearbyPresence);
+          push_notification::ClientId::kTest);
   client_manager->AddPushNotificationClient(
       fake_push_notification_client.get());
   gcm::IncomingMessage message;
   message.data.insert_or_assign(kNotificationTypeIdKey,
-                                push_notification::kNearbyPresenceClientId);
+                                push_notification::kTestClientId);
   message.data.insert_or_assign(kNotificationPayloadKey, kTestMessage);
 
   push_notification_service_->OnMessage(kPushNotificationAppId,

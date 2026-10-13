@@ -132,9 +132,6 @@ constexpr char kMantaOAuth2Scope[] =
 constexpr char kNearbyDevicesOAuth2Scope[] =
     "https://www.googleapis.com/auth/nearbydevices-pa";
 // OAuth2 scope for access to nearby sharing.
-constexpr char kNearbyPresenceOAuth2Scope[] =
-    "https://www.googleapis.com/auth/nearbypresence-pa";
-// OAuth2 scope for access to nearby sharing.
 constexpr char kNearbyShareOAuth2Scope[] =
     "https://www.googleapis.com/auth/nearbysharing-pa";
 // OAuth2 scope for One Time Token Service.
@@ -289,8 +286,6 @@ constexpr char kArcBackgroundAuthCodeFetcherName[] =
 constexpr char kGcmAccountTrackerName[] = "gcm_account_tracker";
 constexpr char kPolicyTokenForwarderName[] = "policy_token_forwarder";
 constexpr char kDrivefsAuthName[] = "drivefs_auth";
-constexpr char kNearbyPresenceServerClientName[] =
-    "nearby_presence_server_client";
 constexpr char kCryptAuthClientName[] = "crypt_auth_client";
 constexpr char kAmbientModeName[] = "ambient_mode";
 constexpr char kProfileDownloaderName[] = "profile_downloader";
@@ -609,10 +604,6 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
           /*scopes=*/{kClientChannelOAuth2Scope,
                       GaiaConstants::kDriveOAuth2Scope,
                       kExperimentsAndConfigsOAuth2Scope});
-    case OAuthConsumerId::kNearbyPresenceServerClient:
-      return OAuthConsumer(
-          /*name=*/kNearbyPresenceServerClientName,
-          /*scopes=*/{kNearbyPresenceOAuth2Scope});
     case OAuthConsumerId::kCryptAuthClient:
       return OAuthConsumer(
           /*name=*/kCryptAuthClientName,

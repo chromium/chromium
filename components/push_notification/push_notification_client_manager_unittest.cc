@@ -60,7 +60,7 @@ class PushNotificationClientManagerTest : public testing::Test {
 TEST_F(PushNotificationClientManagerTest, AddClient) {
   auto fake_push_notification_client =
       std::make_unique<FakePushNotificationClient>(
-          push_notification::ClientId::kNearbyPresence);
+          push_notification::ClientId::kTest);
   push_notification_client_manager_->AddPushNotificationClient(
       fake_push_notification_client.get());
 
@@ -72,14 +72,14 @@ TEST_F(PushNotificationClientManagerTest, AddClient) {
 TEST_F(PushNotificationClientManagerTest, AddThenRemoveClient) {
   auto fake_push_notification_client =
       std::make_unique<FakePushNotificationClient>(
-          push_notification::ClientId::kNearbyPresence);
+          push_notification::ClientId::kTest);
   push_notification_client_manager_->AddPushNotificationClient(
       fake_push_notification_client.get());
   EXPECT_EQ(
       1u,
       push_notification_client_manager_->GetPushNotificationClients().size());
   push_notification_client_manager_->RemovePushNotificationClient(
-      push_notification::ClientId::kNearbyPresence);
+      push_notification::ClientId::kTest);
   EXPECT_EQ(
       0u,
       push_notification_client_manager_->GetPushNotificationClients().size());
@@ -88,7 +88,7 @@ TEST_F(PushNotificationClientManagerTest, AddThenRemoveClient) {
 TEST_F(PushNotificationClientManagerTest, PassPushNotificationMessageToClient) {
   auto fake_push_notification_client =
       std::make_unique<FakePushNotificationClient>(
-          push_notification::ClientId::kNearbyPresence);
+          push_notification::ClientId::kTest);
 
   push_notification_client_manager_->AddPushNotificationClient(
       fake_push_notification_client.get());
@@ -97,8 +97,8 @@ TEST_F(PushNotificationClientManagerTest, PassPushNotificationMessageToClient) {
       push_notification_client_manager_->GetPushNotificationClients().size());
 
   PushNotificationClientManager::PushNotificationMessage test_incoming_message;
-  test_incoming_message.data.insert_or_assign(
-      kNotificationTypeIdKey, push_notification::kNearbyPresenceClientId);
+  test_incoming_message.data.insert_or_assign(kNotificationTypeIdKey,
+                                              push_notification::kTestClientId);
   test_incoming_message.data.insert_or_assign(kNotificationPayloadKey,
                                               kTestMessage);
 
@@ -112,8 +112,8 @@ TEST_F(PushNotificationClientManagerTest, PassPushNotificationMessageToClient) {
 TEST_F(PushNotificationClientManagerTest,
        PassPushNotificationMessageBeforeAddingClient) {
   PushNotificationClientManager::PushNotificationMessage test_incoming_message;
-  test_incoming_message.data.insert_or_assign(
-      kNotificationTypeIdKey, push_notification::kNearbyPresenceClientId);
+  test_incoming_message.data.insert_or_assign(kNotificationTypeIdKey,
+                                              push_notification::kTestClientId);
   test_incoming_message.data.insert_or_assign(kNotificationPayloadKey,
                                               kTestMessage);
 
@@ -122,7 +122,7 @@ TEST_F(PushNotificationClientManagerTest,
 
   auto fake_push_notification_client =
       std::make_unique<FakePushNotificationClient>(
-          push_notification::ClientId::kNearbyPresence);
+          push_notification::ClientId::kTest);
 
   push_notification_client_manager_->AddPushNotificationClient(
       fake_push_notification_client.get());

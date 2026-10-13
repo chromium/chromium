@@ -7095,14 +7095,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "nearby-presence",
-    "owners": [
-      "chromeos-cross-device-eng@google.com",
-      "hansberry@chromium.org"
-    ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "new-content-for-checkerboarded-scrolls",
     "owners": [
       "gastonr@microsoft.com",

@@ -139,8 +139,7 @@ enum Sandbox {
   // new sandbox later in its lifetime.
   [EnableIf=is_chromeos|is_linux] kZygoteIntermediateSandbox,
 
-  // Hosts the shared Nearby library for both Nearby Connections and
-  // Nearby Presence.
+  // Hosts the shared Nearby Connections library.
   [EnableIf=is_chromeos] kNearby,
 
   // Hosts On Device Translation service.

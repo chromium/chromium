@@ -8377,10 +8377,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(features::kEnableNearbyBleV2ExtendedAdvertising)},
 
-    {"nearby-presence", flag_descriptions::kNearbyPresenceName,
-     flag_descriptions::kNearbyPresenceDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kNearbyPresence)},
-
     {"display-alignment-assistance",
      flag_descriptions::kDisplayAlignmentAssistanceName,
      flag_descriptions::kDisplayAlignmentAssistanceDescription, kOsCrOS,

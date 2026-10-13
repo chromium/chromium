@@ -8,16 +8,16 @@ namespace push_notification {
 
 std::optional<std::string> GetClientIdStr(ClientId id) {
   switch (id) {
-    case ClientId::kNearbyPresence:
-      return kNearbyPresenceClientId;
+    case ClientId::kTest:
+      return kTestClientId;
     default:
       return std::nullopt;
   }
 }
 
 std::optional<ClientId> GetClientIdFromStr(const std::string& id_string) {
-  if (id_string == kNearbyPresenceClientId) {
-    return ClientId::kNearbyPresence;
+  if (id_string == kTestClientId) {
+    return ClientId::kTest;
   }
   return std::nullopt;
 }

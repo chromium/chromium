@@ -999,7 +999,6 @@ source_set("profiles_extra_parts_impl") {
       "//chrome/browser/media_galleries",
       "//chrome/browser/nearby_sharing",
       "//chrome/browser/policy:onc",
-      "//chrome/browser/push_notification",
       "//chrome/browser/smart_card",
     ]
   }
