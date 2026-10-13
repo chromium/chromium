@@ -78,5 +78,23 @@
   const crossOriginInjected = await session.evaluate('window.__injected');
   testRunner.log(`window.__injected: ${crossOriginInjected}`);
 
+  // 4. Failed reload (network error)
+  testRunner.log('\n--- Failed reload (network error) ---');
+  helper.onceRequest(/a.test\/failed-start/).fulfill({
+    responseCode: 200,
+    body: btoa('<html><head></head><body>Failed Start</body></html>'),
+  });
+  await dp.Page.navigate({url: 'http://a.test/failed-start'});
+  await dp.Page.onceLoadEventFired();
+
+  helper.onceRequest(/a.test\/failed-start/).fail({
+    errorReason: 'ConnectionReset',
+  });
+  dp.Page.reload(
+      {scriptToEvaluateOnLoad: 'window.__injected = "failed-reload";'});
+  await dp.Page.onceFrameNavigated();
+  const failedInjected = await session.evaluate('window.__injected');
+  testRunner.log(`window.__injected: ${failedInjected}`);
+
   testRunner.completeTest();
 })

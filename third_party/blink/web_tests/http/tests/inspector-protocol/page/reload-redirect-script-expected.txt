@@ -9,3 +9,6 @@ window.__injected: same-origin
 --- Cross-origin redirect ---
 window.__injected: undefined
 
+--- Failed reload (network error) ---
+window.__injected: undefined
+

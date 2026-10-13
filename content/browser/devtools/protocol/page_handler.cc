@@ -2789,9 +2789,13 @@ void PageHandler::ReadyToCommitNavigation(
     have_pending_reload_ = false;
     pending_script_to_evaluate_on_load_.clear();
   } else if (have_pending_reload_) {
-    if (navigation_request->WasServerRedirect() &&
-        !initiating_origin_.IsSameOriginWith(
-            navigation_request->GetOriginToCommit().value_or(url::Origin()))) {
+    // Drop the pending script if the reload encountered an error or if the
+    // navigation was redirected to a different origin.
+    if (navigation_request->DidEncounterError() ||
+        (navigation_request->WasServerRedirect() &&
+         !initiating_origin_.IsSameOriginWith(
+             navigation_request->GetOriginToCommit().value_or(
+                 url::Origin())))) {
       pending_script_to_evaluate_on_load_.clear();
     }
     prepare_for_reload_callback_.Run(
