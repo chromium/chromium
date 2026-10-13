@@ -40,6 +40,7 @@ export class HealthdInternalsInfoElement extends PolymerElement implements
       infoZramOrig: {type: String},
       infoZramCompr: {type: String},
       infoZramComprRatio: {type: String},
+      infoZramSpaceRedu: {type: String},
     };
   }
 
@@ -58,6 +59,7 @@ export class HealthdInternalsInfoElement extends PolymerElement implements
     this.infoZramOrig = '0';
     this.infoZramCompr = '0';
     this.infoZramComprRatio = 'N/A';
+    this.infoZramSpaceRedu = '0.00%';
   }
 
 
@@ -93,7 +95,7 @@ export class HealthdInternalsInfoElement extends PolymerElement implements
   declare private infoZramOrig: string;
   declare private infoZramCompr: string;
   declare private infoZramComprRatio: string;
-  private infoZramSpaceRedu: string = '0.00%';
+  declare private infoZramSpaceRedu: string;
 
   updateTelemetryData(data: HealthdApiTelemetryResult) {
     const isInitilized: boolean = this.healthdData !== undefined;
