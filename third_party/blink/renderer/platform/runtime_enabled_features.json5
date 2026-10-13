@@ -7809,7 +7809,6 @@
       // See XSLTSpecialTrial below.
       // crbug.com/435623334.
       name: "XSLT",
-      status: "stable",
       public: true,
       origin_trial_feature_name: "XSLT",
       origin_trial_type: "deprecation",
