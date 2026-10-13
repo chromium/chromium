@@ -17,9 +17,11 @@
 namespace content {
 
 MediaInterfaceFactory::MediaInterfaceFactory(
-    const blink::BrowserInterfaceBrokerProxy* interface_broker)
-    : interface_broker_(interface_broker) {
-  task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
+    const blink::BrowserInterfaceBrokerProxy* interface_broker,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+    : interface_broker_(interface_broker),
+      task_runner_(std::move(task_runner)) {
+  DCHECK(task_runner_);
   weak_this_ = weak_factory_.GetWeakPtr();
 }
 
@@ -191,7 +193,7 @@ MediaInterfaceFactory::GetMediaInterfaceFactory() {
 
   if (!media_interface_factory_) {
     interface_broker_->GetInterface(
-        media_interface_factory_.BindNewPipeAndPassReceiver());
+        media_interface_factory_.BindNewPipeAndPassReceiver(task_runner_));
     media_interface_factory_.set_disconnect_handler(base::BindOnce(
         &MediaInterfaceFactory::OnConnectionError, base::Unretained(this)));
   }

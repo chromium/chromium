@@ -29,8 +29,9 @@ namespace content {
 // The Create* methods can be called on any thread.
 class MediaInterfaceFactory final : public media::mojom::InterfaceFactory {
  public:
-  explicit MediaInterfaceFactory(
-      const blink::BrowserInterfaceBrokerProxy* interface_broker);
+  MediaInterfaceFactory(
+      const blink::BrowserInterfaceBrokerProxy* interface_broker,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   // This ctor is intended for use by the RenderThread, which doesn't have an
   // interface broker.  This is only necessary for WebRTC, and should be avoided
   // if we can restructure WebRTC to create factories per-frame rather than

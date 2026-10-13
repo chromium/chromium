@@ -11,6 +11,7 @@
 #include "media/mojo/mojom/key_system_support.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "third_party/blink/public/platform/task_type.h"
 
 namespace content {
 
@@ -22,9 +23,10 @@ class KeySystemSupportObserverImpl
  public:
   KeySystemSupportObserverImpl(
       media::KeySystemSupportCB cb,
-      mojo::PendingReceiver<media::mojom::KeySystemSupportObserver> receiver)
+      mojo::PendingReceiver<media::mojom::KeySystemSupportObserver> receiver,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner)
       : key_system_support_cb_(std::move(cb)),
-        receiver_(this, std::move(receiver)) {}
+        receiver_(this, std::move(receiver), std::move(task_runner)) {}
 
   KeySystemSupportObserverImpl(const KeySystemSupportObserverImpl&) = delete;
   KeySystemSupportObserverImpl& operator=(const KeySystemSupportObserverImpl&) =
@@ -53,14 +55,17 @@ ObserveKeySystemSupportUpdate(content::RenderFrame* render_frame,
   // function is not destructed by the caller.
   mojo::Remote<media::mojom::KeySystemSupport> key_system_support;
   RenderFrameImpl* impl = static_cast<RenderFrameImpl*>(render_frame);
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+      impl->GetTaskRunner(blink::TaskType::kInternalMedia);
   impl->GetBrowserInterfaceBroker().GetInterface(
-      key_system_support.BindNewPipeAndPassReceiver());
+      key_system_support.BindNewPipeAndPassReceiver(task_runner));
 
   mojo::PendingRemote<media::mojom::KeySystemSupportObserver> observer_remote;
   std::unique_ptr<media::KeySystemSupportRegistration>
       key_system_support_registration =
           std::make_unique<KeySystemSupportObserverImpl>(
-              std::move(cb), observer_remote.InitWithNewPipeAndPassReceiver());
+              std::move(cb), observer_remote.InitWithNewPipeAndPassReceiver(),
+              std::move(task_runner));
   key_system_support->SetObserver(std::move(observer_remote));
 
   return key_system_support_registration;

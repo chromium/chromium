@@ -831,8 +831,9 @@ media::CdmFactory* MediaFactory::GetCdmFactory() {
 
 media::mojom::InterfaceFactory* MediaFactory::GetMediaInterfaceFactory() {
   if (!media_interface_factory_) {
-    media_interface_factory_ =
-        std::make_unique<MediaInterfaceFactory>(&GetInterfaceBroker());
+    media_interface_factory_ = std::make_unique<MediaInterfaceFactory>(
+        &GetInterfaceBroker(),
+        render_frame_->GetTaskRunner(blink::TaskType::kInternalMedia));
   }
 
   return media_interface_factory_.get();
