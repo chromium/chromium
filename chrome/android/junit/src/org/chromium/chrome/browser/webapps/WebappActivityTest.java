@@ -381,15 +381,18 @@ public class WebappActivityTest {
     @Test
     @Config(sdk = 29)
     @Features.EnableFeatures(ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE)
-    public void shortEdgesCanColorStatusBarWithoutDelegate_Legacy() {
+    public void shortEdgesRequiresEdgeToEdgeEverywhere() {
         TestWebappActivity activity = new TestWebappActivity();
         BrowserServicesIntentDataProvider provider = mock(BrowserServicesIntentDataProvider.class);
         when(provider.getResolvedDisplayMode()).thenReturn(DisplayMode.FULLSCREEN);
         activity.setMockIntentDataProvider(provider);
 
-        assertFalse(activity.callShouldDrawEdgeToEdgeOnCreate());
-        assertTrue(activity.callCanColorStatusBarWithEdgeToEdgeHelper());
-        assertTrue(activity.callCanSetTransparentStatusBarWithoutDelegate());
+        // The coordinated paths withhold insets from the edge-to-edge root layout, which does not
+        // exist without edge-to-edge everywhere.
+        assertFalse(
+                BaseCustomTabActivity.isShortEdgesCutoutModeEnabledForDisplayMode(
+                        DisplayMode.FULLSCREEN));
+        assertFalse(activity.callCanSetTransparentStatusBarWithoutDelegate());
     }
 
     @Test

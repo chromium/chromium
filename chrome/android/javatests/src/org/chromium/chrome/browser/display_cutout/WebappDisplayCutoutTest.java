@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.display_cutout;
 
+import android.os.Build;
 import android.view.WindowManager;
 
 import androidx.test.filters.LargeTest;
@@ -17,6 +18,7 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -84,6 +86,8 @@ public class WebappDisplayCutoutTest {
     @LargeTest
     @WebappDisplayCutoutTestRule.TestConfiguration(displayMode = DisplayMode.STANDALONE)
     @EnableFeatures(SHORT_EDGES_CUTOUT_MODE_STANDALONE)
+    // The coordinated cutout path requires edge-to-edge everywhere, unsupported pre-R.
+    @MinAndroidSdkLevel(Build.VERSION_CODES.R)
     // Tablets and desktop run the webapp in a windowed container where SHORT_EDGES never applies.
     @DisableIf.Device(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testViewportFitWebapp_Standalone() throws TimeoutException {
@@ -120,6 +124,8 @@ public class WebappDisplayCutoutTest {
     @LargeTest
     @WebappDisplayCutoutTestRule.TestConfiguration(displayMode = DisplayMode.STANDALONE)
     @EnableFeatures(SHORT_EDGES_CUTOUT_MODE_STANDALONE)
+    // The coordinated cutout path requires edge-to-edge everywhere, unsupported pre-R.
+    @MinAndroidSdkLevel(Build.VERSION_CODES.R)
     // Tablets and desktop run the webapp in a windowed container where SHORT_EDGES never applies.
     @DisableIf.Device(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testViewportFitWebapp_Standalone_DynamicViewportFit() throws TimeoutException {
@@ -153,6 +159,8 @@ public class WebappDisplayCutoutTest {
             displayMode = DisplayMode.FULLSCREEN,
             useRealBrowserCutoutSupplier = true)
     @EnableFeatures(ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE)
+    // The coordinated cutout path requires edge-to-edge everywhere, unsupported pre-R.
+    @MinAndroidSdkLevel(Build.VERSION_CODES.R)
     // Tablets and desktop run the webapp in a windowed container where SHORT_EDGES never applies.
     @DisableIf.Device(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testViewportFitWebapp_Fullscreen_DefaultViewportFit() throws TimeoutException {

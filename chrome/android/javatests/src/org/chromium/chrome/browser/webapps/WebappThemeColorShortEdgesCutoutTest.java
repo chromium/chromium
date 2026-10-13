@@ -21,9 +21,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.MaxAndroidSdkLevel;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -51,60 +49,6 @@ public class WebappThemeColorShortEdgesCutoutTest {
             ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE + ":enable_standalone/true";
 
     @Rule public final WebappActivityTestRule mActivityTestRule = new WebappActivityTestRule();
-
-    @Test
-    @LargeTest
-    @Feature({"Webapps"})
-    @MaxAndroidSdkLevel(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    @Features.DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
-    @EnableFeatures(SHORT_EDGES_CUTOUT_MODE_STANDALONE)
-    public void testThemeColorTransitionsWithViewportFitChanges() throws Exception {
-        String pageWithThemeColorUrl =
-                mActivityTestRule
-                        .getTestServer()
-                        .getURL("/chrome/test/data/android/theme_color_test.html");
-        mActivityTestRule.startWebappActivity(
-                mActivityTestRule
-                        .createIntent()
-                        .putExtra(WebappConstants.EXTRA_URL, pageWithThemeColorUrl));
-        WebappActivity activity = mActivityTestRule.getActivity();
-
-        // Themed state: status bar uses the page theme-color.
-        ThemeTestUtils.waitForThemeColor(activity, PAGE_THEME_COLOR);
-        waitForStatusBarColor(activity, PAGE_THEME_COLOR);
-        waitForContentFitsWindowInsets(activity, true);
-        waitForLayoutInDisplayCutoutMode(
-                activity, WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT);
-
-        // Opting into viewport-fit=cover makes the window status bar transparent.
-        mActivityTestRule.runJavaScriptCodeInCurrentTab(
-                "var meta = document.createElement('meta');"
-                        + "meta.setAttribute('name', 'viewport');"
-                        + "meta.setAttribute('content', 'viewport-fit=cover');"
-                        + "document.head.appendChild(meta);"
-                        + "window.__viewportMeta = meta;");
-        waitForLayoutInDisplayCutoutMode(
-                activity, WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES);
-        waitForContentFitsWindowInsets(activity, false);
-        waitForWindowStatusBarColor(activity, Color.TRANSPARENT);
-
-        // Changing the theme-color while edge-to-edge keeps the window transparent; the tracked
-        // color follows the theme.
-        mActivityTestRule.runJavaScriptCodeInCurrentTab(
-                "document.querySelector('meta[name=theme-color]')"
-                        + ".setAttribute('content', '#0000ff');");
-        ThemeTestUtils.waitForThemeColor(activity, UPDATED_PAGE_THEME_COLOR);
-        waitForStatusBarColor(activity, UPDATED_PAGE_THEME_COLOR);
-        waitForWindowStatusBarColor(activity, Color.TRANSPARENT);
-
-        // Opting out restores the themed status bar with the updated color.
-        mActivityTestRule.runJavaScriptCodeInCurrentTab(
-                "window.__viewportMeta.setAttribute('content', 'viewport-fit=auto');");
-        waitForLayoutInDisplayCutoutMode(
-                activity, WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT);
-        waitForContentFitsWindowInsets(activity, true);
-        waitForStatusBarColor(activity, UPDATED_PAGE_THEME_COLOR);
-    }
 
     @Test
     @LargeTest

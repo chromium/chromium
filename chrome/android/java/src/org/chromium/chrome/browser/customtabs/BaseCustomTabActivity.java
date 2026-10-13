@@ -132,6 +132,7 @@ import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.ui.browser_window.BrowserWindowType;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderCoordinator;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarCoordinator;
 import org.chromium.chrome.browser.ui.web_app_header.WebAppHeaderLayoutCoordinator;
 import org.chromium.chrome.browser.ui.web_app_header.WebAppHeaderUtils;
@@ -637,10 +638,15 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
      * covered by the feature itself; standalone web apps additionally require the {@code
      * enable_standalone} parameter, since the experiment targets fullscreen web apps. Other display
      * modes keep the pre-feature behavior.
+     *
+     * <p>The coordinated paths withhold system bar and display cutout insets from the edge-to-edge
+     * root layout, so they require an activity that draws edge-to-edge, which excludes pre-Android
+     * 11, blocklisted OEM versions and automotive.
      */
     public static boolean isShortEdgesCutoutModeEnabledForDisplayMode(
             @DisplayMode.EnumType int displayMode) {
         if (!ChromeFeatureList.sWebAppShortEdgesCutoutMode.isEnabled()) return false;
+        if (!EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()) return false;
         if (displayMode == DisplayMode.FULLSCREEN) return true;
         return displayMode == DisplayMode.STANDALONE
                 && ChromeFeatureList.sWebAppShortEdgesCutoutModeStandalone.getValue();

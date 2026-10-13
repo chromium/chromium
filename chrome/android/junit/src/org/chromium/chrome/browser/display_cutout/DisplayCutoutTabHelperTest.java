@@ -7,10 +7,13 @@ package org.chromium.chrome.browser.display_cutout;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.os.Build;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -20,8 +23,10 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
@@ -37,6 +42,9 @@ import java.lang.ref.WeakReference;
 
 /** Tests for {@link DisplayCutoutTabHelper.ChromeDisplayCutoutDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
+// The short-edges cutout paths require edge-to-edge everywhere, which is unsupported before
+// Android 11.
+@Config(sdk = {Build.VERSION_CODES.R, BaseRobolectricTestRunner.MAX_SDK})
 public class DisplayCutoutTabHelperTest {
     // Subclass needed to stub getEdgeToEdgeManager() and getIntentDataProvider() without running
     // full ChromeActivity startup.
@@ -96,6 +104,41 @@ public class DisplayCutoutTabHelperTest {
         mNonCustomTabActivity = Robolectric.buildActivity(Activity.class).get();
         when(mWindowAndroidNonCct.getActivity())
                 .thenReturn(new WeakReference<>(mNonCustomTabActivity));
+    }
+
+    /** Sets up {@code activity} as hosting a fullscreen web app, i.e. in the coordinated path. */
+    private void setUpFullscreenWebapp(TestCustomTabActivity activity) {
+        activity.setIntentDataProviderForTesting(mIntentDataProvider);
+        when(mIntentDataProvider.getActivityType()).thenReturn(ActivityType.WEBAPP);
+        when(mIntentDataProvider.getResolvedDisplayMode()).thenReturn(DisplayMode.FULLSCREEN);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE)
+    // Edge-to-edge everywhere requires R+, so on Q it is disabled regardless of flags.
+    @Config(sdk = Build.VERSION_CODES.Q)
+    public void testShortEdgesRequiresEdgeToEdgeEverywhere() {
+        when(mTab.getWindowAndroid()).thenReturn(mWindowAndroidA);
+        setUpFullscreenWebapp(mActivityA);
+        DisplayCutoutTabHelper.ChromeDisplayCutoutDelegate delegate =
+                new DisplayCutoutTabHelper.ChromeDisplayCutoutDelegate(mTab);
+
+        assertFalse(delegate.isShortEdgesCutoutModeEnabled());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE)
+    public void testEdgeToEdgeStateUntouchedWhenShortEdgesInactive() {
+        when(mTab.getWindowAndroid()).thenReturn(mWindowAndroidA);
+        setUpFullscreenWebapp(mActivityA);
+        DisplayCutoutTabHelper.ChromeDisplayCutoutDelegate delegate =
+                new DisplayCutoutTabHelper.ChromeDisplayCutoutDelegate(mTab);
+
+        delegate.setEdgeToEdgeState(false);
+        delegate.setEdgeToEdgeState(true);
+
+        verify(mProviderA, never()).acquireEdgeToEdgeToken();
+        verify(mManagerA, never()).setContentFitsWindowInsets(anyBoolean());
     }
 
     @Test
@@ -177,8 +220,11 @@ public class DisplayCutoutTabHelperTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE)
     public void testEdgeToEdgeTokenRebindsAfterActivityReparenting() {
         when(mTab.getWindowAndroid()).thenReturn(mWindowAndroidA);
+        setUpFullscreenWebapp(mActivityA);
+        setUpFullscreenWebapp(mActivityB);
         DisplayCutoutTabHelper.ChromeDisplayCutoutDelegate delegate =
                 new DisplayCutoutTabHelper.ChromeDisplayCutoutDelegate(mTab);
 
@@ -199,8 +245,10 @@ public class DisplayCutoutTabHelperTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE)
     public void testEdgeToEdgeTokenReleasedWhenReparentedToNonCustomTabActivity() {
         when(mTab.getWindowAndroid()).thenReturn(mWindowAndroidA);
+        setUpFullscreenWebapp(mActivityA);
         DisplayCutoutTabHelper.ChromeDisplayCutoutDelegate delegate =
                 new DisplayCutoutTabHelper.ChromeDisplayCutoutDelegate(mTab);
 

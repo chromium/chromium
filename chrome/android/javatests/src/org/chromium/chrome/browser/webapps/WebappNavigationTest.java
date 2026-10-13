@@ -44,9 +44,7 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.MaxAndroidSdkLevel;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.blink.mojom.DisplayMode;
@@ -202,27 +200,12 @@ public class WebappNavigationTest {
         assertEquals(Color.CYAN, activity.getToolbarManager().getPrimaryColor());
     }
 
-    /**
-     * Test that navigating off-origin while the short-edges cutout feature is enabled and the page
-     * is drawing edge-to-edge (viewport-fit=cover): - Shows a CCT-like webapp toolbar. - Restores
-     * the default cutout mode and releases the page-driven edge-to-edge state.
-     */
     @Test
     @SmallTest
     @Feature({"Webapps"})
     @Restriction(DeviceFormFactor.PHONE)
-    // Keep testing this flow without E2E everywhere after its feature flag is cleaned up.
-    @MaxAndroidSdkLevel(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    @Features.DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
-    @EnableFeatures(SHORT_EDGES_CUTOUT_MODE_STANDALONE)
-    public void testRegularLinkOffOriginShortEdgesCutoutMode() throws Exception {
-        runOffOriginShortEdgesCutoutModeTest(DisplayMode.STANDALONE);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Webapps"})
-    @Restriction(DeviceFormFactor.PHONE)
+    // The coordinated cutout path requires edge-to-edge everywhere, unsupported pre-R.
+    @MinAndroidSdkLevel(Build.VERSION_CODES.R)
     @EnableFeatures(ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE)
     public void testRegularLinkOffOriginFullscreenShortEdgesCutoutMode() throws Exception {
         runOffOriginShortEdgesCutoutModeTest(DisplayMode.FULLSCREEN);

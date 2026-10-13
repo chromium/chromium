@@ -168,6 +168,11 @@ public class DisplayCutoutTabHelper implements UserData {
 
         @Override
         public void setEdgeToEdgeState(boolean drawEdgeToEdge) {
+            // Activities outside the coordinated paths (regular Custom Tabs, TWAs, web apps whose
+            // display mode is not opted in) must not have their window state touched, while a
+            // held token still has to be released after the feature stops applying.
+            if (!isShortEdgesCutoutModeEnabled() && mEdgeToEdgeTokenHolder == null) return;
+
             EdgeToEdgeManager edgeToEdgeManager = getEdgeToEdgeManagerOrNull();
             // currentProvider is null whenever the currently attached activity isn't a
             // BaseCustomTabActivity at all (e.g. the tab was reparented into the regular tabbed
