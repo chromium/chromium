@@ -16,7 +16,7 @@ import {SuggestStyle} from '//resources/mojo/components/omnibox/browser/searchbo
 import type {Action, AutocompleteMatch, AutocompleteResult, InputKeywordModel, MatchKeywordModel, PageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {KeywordType, PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {SecondaryTextPlacement} from '//resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
-import type {SuggestTemplateInfo} from '//resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
+import type {FormattedString, FormattedStringFragment, SuggestTemplateInfo} from '//resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
 
 export function createAutocompleteMatch(
     modifiers: Partial<AutocompleteMatch> = {}): AutocompleteMatch {
@@ -49,12 +49,18 @@ export function createAutocompleteMatch(
   return Object.assign(base, modifiers);
 }
 
+export function createFormattedString(
+    text: string = '',
+    fragments: FormattedStringFragment[] = []): FormattedString {
+  return {text, fragments, a11yText: null};
+}
+
 export function createSuggestTemplateInfo(
     modifiers: Partial<SuggestTemplateInfo> = {}): SuggestTemplateInfo {
   const base: SuggestTemplateInfo = {
-    primaryText: '',
+    primaryText: createFormattedString(),
     primaryTextClass: [{offset: 0, style: 0}],
-    secondaryText: '',
+    secondaryText: createFormattedString(),
     secondaryTextClass: [{offset: 0, style: 0}],
     secondaryTextPlacement: SecondaryTextPlacement.kUnspecified,
     image: null,
@@ -86,8 +92,8 @@ export function createSearchMatchForTesting(
     fillIntoEdit: 'hello world',
     type: 'search-what-you-typed',
     suggestTemplate: createSuggestTemplateInfo({
-      primaryText: 'hello world',
-      secondaryText: 'Google search',
+      primaryText: createFormattedString('hello world'),
+      secondaryText: createFormattedString('Google search'),
       secondaryTextClass: [{offset: 0, style: 4}],
     }),
   });

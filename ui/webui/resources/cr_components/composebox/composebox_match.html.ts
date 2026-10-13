@@ -19,10 +19,10 @@ export function getHtml(this: ComposeboxMatchElement) {
   </div>
   <div id="textContainer" part="match-text-container">
     <span id="primaryText" part="match-primary-text">${
-        this.match.suggestTemplate.primaryText}</span>
+        this.match.suggestTemplate.primaryText.text}</span>
     ${this.secondaryTextPlacement === 'below-primary-text' ? html`
       <span id="secondaryText" part="match-secondary-text">
-        ${this.match.suggestTemplate.secondaryText}
+        ${this.match.suggestTemplate.secondaryText.text}
       </span>
     ` : ''}
   </div>

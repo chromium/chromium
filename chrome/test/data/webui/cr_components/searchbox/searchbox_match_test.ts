@@ -6,12 +6,13 @@ import 'chrome://new-tab-page/new_tab_page.js';
 
 import {SearchboxBrowserProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import type {SearchboxMatchElement} from 'chrome://new-tab-page/new_tab_page.js';
-import {createAutocompleteMatch, createMatchKeywordModelForTesting, createSuggestTemplateInfo} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
+import {createAutocompleteMatch, createFormattedString, createMatchKeywordModelForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {NavigationPredictor} from 'chrome://resources/mojo/components/omnibox/browser/omnibox.mojom-webui.js';
 import {KeywordActivationMethod, KeywordType, SelectionLineState} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertArrayEquals, assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
+import {createSuggestTemplateInfo} from './searchbox_test_utils.js';
 import {TestSearchboxBrowserProxy} from './test_searchbox_browser_proxy.js';
 
 suite('CrComponentsRealboxMatchTest', () => {
@@ -266,10 +267,11 @@ suite('CrComponentsRealboxMatchTest', () => {
 
   test('PrimaryAndSecondaryTextWithClassifications', async () => {
     const match = createAutocompleteMatch();
-    match.suggestTemplate.primaryText = 'test content';
+    match.suggestTemplate.primaryText = createFormattedString('test content');
     match.suggestTemplate.primaryTextClass =
         [{offset: 0, style: 0}, {offset: 5, style: 2}];
-    match.suggestTemplate.secondaryText = 'test description';
+    match.suggestTemplate.secondaryText =
+        createFormattedString('test description');
     match.suggestTemplate.secondaryTextClass =
         [{offset: 0, style: 0}, {offset: 5, style: 2}];
     matchEl.match = match;
@@ -291,7 +293,7 @@ suite('CrComponentsRealboxMatchTest', () => {
 
   test('ClassificationsNotStartingAtZeroIndex', async () => {
     const match = createAutocompleteMatch();
-    match.suggestTemplate.primaryText = 'prefix content';
+    match.suggestTemplate.primaryText = createFormattedString('prefix content');
     match.suggestTemplate.primaryTextClass = [{offset: 7, style: 2}];
     matchEl.match = match;
     await microtasksFinished();
@@ -308,10 +310,10 @@ suite('CrComponentsRealboxMatchTest', () => {
   test('EscapesPrimaryAndSecondaryText', async () => {
     const match = createAutocompleteMatch();
     match.suggestTemplate.primaryText =
-        '<script>alert("xss")</script>Safe Content';
+        createFormattedString('<script>alert("xss")</script>Safe Content');
     match.suggestTemplate.primaryTextClass = [{offset: 0, style: 0}];
     match.suggestTemplate.secondaryText =
-        '<img src=x onerror=alert(1)>Safe Description';
+        createFormattedString('<img src=x onerror=alert(1)>Safe Description');
     match.suggestTemplate.secondaryTextClass = [{offset: 0, style: 0}];
     matchEl.match = match;
     await microtasksFinished();
@@ -337,7 +339,7 @@ suite('CrComponentsRealboxMatchTest', () => {
     matchEl.virtualFocusEnabled = true;
     const match = createAutocompleteMatch();
     match.a11yLabel = 'Search Google';
-    match.suggestTemplate.secondaryText = 'Google';
+    match.suggestTemplate.secondaryText = createFormattedString('Google');
     match.keywordModel = createMatchKeywordModelForTesting(
         {chipA11y: 'Search Google in Keyword Mode'});
     match.actions = [

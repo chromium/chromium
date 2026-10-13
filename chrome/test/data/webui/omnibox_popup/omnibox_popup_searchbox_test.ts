@@ -6,11 +6,12 @@ import {isMac} from '//resources/js/platform.js';
 import {OmniboxEscapeAction, omniboxPopupBrowserProxyFactory, OmniboxPopupPageHandlerRemote, sanitizeTextForPaste, SearchboxBrowserProxy, stripJavascriptSchemas, UrlDeemphasisMode} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 import type {OmniboxInputState, OmniboxPopupContextualEntrypointButtonElement, OmniboxPopupPageRemote, OmniboxPopupSearchboxElement, UrlEmphasis} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 import {KeywordModeEntryMethod} from 'chrome://resources/cr_components/searchbox/keyword_mode_manager.js';
-import {createAutocompleteResultForTesting, createMatchKeywordModelForTesting, createSearchMatchForTesting, createSuggestTemplateInfo} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
+import {createAutocompleteResultForTesting, createMatchKeywordModelForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {KeywordType, RenderType, SelectionDirection, SelectionLineState, SelectionStep, SideType} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {createSuggestTemplateInfo} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {$$, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -3386,7 +3387,7 @@ suite('OmniboxPopupSearchboxTest', function() {
          searchbox.result!.matches[1], searchbox.$.input.selectedMatch);
      assertEquals(
          'example query',
-         searchbox.$.input.selectedMatch?.suggestTemplate.primaryText);
+         searchbox.$.input.selectedMatch?.suggestTemplate.primaryText.text);
 
      // When navigating to match 0, input's selectedMatch should be match 0.
      searchbox.selectedMatchIndex = 0;
@@ -3395,7 +3396,7 @@ suite('OmniboxPopupSearchboxTest', function() {
          searchbox.result!.matches[0], searchbox.$.input.selectedMatch);
      assertEquals(
          'example.com',
-         searchbox.$.input.selectedMatch?.suggestTemplate.primaryText);
+         searchbox.$.input.selectedMatch?.suggestTemplate.primaryText.text);
 
      // When navigating back to unselected, input's selectedMatch should return
      // to null.
@@ -3440,7 +3441,7 @@ suite('OmniboxPopupSearchboxTest', function() {
          searchbox.result!.matches[0], searchbox.$.input.selectedMatch);
      assertEquals(
          'example.com',
-         searchbox.$.input.selectedMatch?.suggestTemplate.primaryText);
+         searchbox.$.input.selectedMatch?.suggestTemplate.primaryText.text);
 
      searchbox.clearAutocompleteMatches();  // Closes the popup, as Esc does.
      await microtasksFinished();
@@ -3493,7 +3494,7 @@ suite('OmniboxPopupSearchboxTest', function() {
          await microtasksFinished();
          assertEquals(
              'example.com',
-             searchbox.$.input.selectedMatch?.suggestTemplate.primaryText);
+             searchbox.$.input.selectedMatch?.suggestTemplate.primaryText.text);
 
          // Defocus / blur the omnibox (handleFocusLost_ clears autocomplete
          // matches).
@@ -3509,7 +3510,7 @@ suite('OmniboxPopupSearchboxTest', function() {
          // user input is still in progress.
          assertEquals(
              'example.com',
-             searchbox.$.input.selectedMatch?.suggestTemplate.primaryText);
+             searchbox.$.input.selectedMatch?.suggestTemplate.primaryText.text);
 
          // When reverting (user input is no longer in progress), selectedMatch
          // for input is cleared.
