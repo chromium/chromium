@@ -388,7 +388,7 @@ chromium-metrics-reviews@google.com.
       summary="Snackbar shown when saving an entity to Wallet fails."/>
   <variant name="AutofillAiSuppressionUndo"
       summary="Snackbar shown after an Autofill AI suggestion is removed,
-               offering an undo action."/>
+               offering an undo action. Emitted on Android and iOS."/>
   <variant name="BnplVirtualCard"
       summary="Snackbar shown after BNPL virtual card is autofilled."/>
   <variant name="CardInfoRetrievalEnrolled"
