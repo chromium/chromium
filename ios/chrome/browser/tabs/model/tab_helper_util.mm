@@ -438,8 +438,12 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
   attacher.Create<NetExportTabHelper>();
   attacher.Create<TranslatePDFMetricLogger>();
 
+  // Exclude embedded WebStates used by Lens, Reader mode, Assistant AIM and
+  // Gemini. Keep prerender WebStates because their document can start API
+  // discovery before it is promoted to a regular tab.
   attacher
       .CreateDeferredWhen<DeviceTrustChallengeTabHelper>(
+          attacher.IsForStandardNavigation() &&
           ShouldRegisterDeviceTrust(profile))
       .WithFactory<DeviceTrustServiceFactoryIOS>(profile);
 

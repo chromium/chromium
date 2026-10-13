@@ -271,6 +271,8 @@ source_set("unit_tests") {
     "//components/tab_groups",
     "//ios/chrome/browser/cobrowse/model",
     "//ios/chrome/browser/download/model",
+    "//ios/chrome/browser/enterprise/connectors/device_trust:features",
+    "//ios/chrome/browser/enterprise/connectors/device_trust/model",
     "//ios/chrome/browser/infobars/model:badge",
     "//ios/chrome/browser/lens/model",
     "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
