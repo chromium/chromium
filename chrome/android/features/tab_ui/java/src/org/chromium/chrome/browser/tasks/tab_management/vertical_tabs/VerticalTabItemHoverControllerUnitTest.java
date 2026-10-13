@@ -9,27 +9,22 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyFloat;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.clearInvocations;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.view.InputDevice;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
+import android.widget.FrameLayout.LayoutParams;
+import android.widget.TextView;
 
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.junit.Before;
@@ -37,9 +32,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InOrder;
+import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
@@ -47,7 +41,10 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Token;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
@@ -56,16 +53,18 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupHoverCardView;
 import org.chromium.chrome.browser.tasks.tab_management.TabHoverCardView;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabItemHoverController.TabHoverListener;
+import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.url.JUnitTestGURLs;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 /** Unit tests for {@link VerticalTabItemHoverController}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class VerticalTabItemHoverControllerUnitTest {
 
     private static final int TAB_ID_1 = 1;
@@ -86,30 +85,31 @@ public class VerticalTabItemHoverControllerUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private VerticalTabRailLayout mContainerView;
-    @Mock private VerticalTabListRecyclerView mRecyclerView;
-    @Mock private VerticalPinnedTabListRecyclerView mPinnedTabsRecyclerView;
-    @Mock private GridLayoutManager mPinnedLayoutManager;
-    @Mock private ViewGroup mRootView;
-    @Mock private View mTabView1;
-    @Mock private View mTabView2;
-    @Mock private View mPinnedTabView;
-    @Mock private View mGroupHeaderView;
-    @Mock private View mGroupHeaderView2;
-    @Mock private ViewGroup mViewStubParent;
-    @Mock private ViewStub mTabHoverCardViewStub;
-    @Mock private ViewStub mTabGroupHoverCardViewStub;
-    @Mock private TabHoverCardView mTabHoverCardView;
-    @Mock private TabGroupHoverCardView mTabGroupHoverCardView;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabModel mTabModel;
     @Mock private Supplier<TabContentManager> mTabContentManagerSupplier;
+    @Mock private TabContentManager mTabContentManager;
     @Mock private Tab mTab1;
     @Mock private Tab mTab2;
     @Mock private Tab mPinnedTab;
 
-    private VerticalTabItemHoverController mController;
+    @Captor private ArgumentCaptor<Callback<Long>> mMemoryUsageCallbackCaptor;
 
+    private final SettableMonotonicObservableSupplier<TabModel> mTabModelSupplier =
+            ObservableSuppliers.createMonotonic();
+
+    private VerticalTabRailLayout mContainerView;
+    private VerticalTabListRecyclerView mRecyclerView;
+    private GridLayoutManager mPinnedLayoutManager;
+    private ViewGroup mRootView;
+    private View mTabView1;
+    private View mTabView2;
+    private View mPinnedTabView;
+    private View mGroupHeaderView;
+    private View mGroupHeaderView2;
+    private ViewStub mTabHoverCardViewStub;
+    private ViewStub mTabGroupHoverCardViewStub;
+    private VerticalTabItemHoverController mController;
     private float mCardShadowOffset;
     private float mBackgroundInset;
     private float mHoverCardMarginToRail;
@@ -117,6 +117,7 @@ public class VerticalTabItemHoverControllerUnitTest {
     @Before
     public void setUp() {
         Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        activity.setTheme(R.style.Theme_BrowserUI_DayNight);
         mCardShadowOffset = activity.getResources().getDimension(R.dimen.popup_menu_shadow_length);
         mBackgroundInset =
                 activity.getResources().getDimension(R.dimen.vertical_tab_item_touch_target_inset);
@@ -124,86 +125,62 @@ public class VerticalTabItemHoverControllerUnitTest {
                 activity.getResources()
                         .getDimension(R.dimen.vertical_tab_hover_card_margin_to_rail);
 
-        when(mContainerView.getContext()).thenReturn(activity);
-        when(mContainerView.getRecyclerView()).thenReturn(mRecyclerView);
-        when(mContainerView.getPinnedTabsRecyclerView()).thenReturn(mPinnedTabsRecyclerView);
-        when(mPinnedTabsRecyclerView.getLayoutManager()).thenReturn(mPinnedLayoutManager);
-        when(mPinnedLayoutManager.getSpanCount()).thenReturn(2);
-        when(mContainerView.getRootView()).thenReturn(mRootView);
-        when(mRootView.getHeight()).thenReturn(ROOT_VIEW_HEIGHT_PX);
-        when(mTabHoverCardView.getContext()).thenReturn(activity);
-        when(mTabHoverCardView.getParent()).thenReturn(mRootView);
-        when(mTabHoverCardView.getMeasuredHeight()).thenReturn(HOVER_CARD_VIEW_HEIGHT_PX);
-        when(mTabGroupHoverCardView.getContext()).thenReturn(activity);
-        when(mTabGroupHoverCardView.getMeasuredHeight()).thenReturn(HOVER_CARD_VIEW_HEIGHT_PX);
-        when(mTabHoverCardViewStub.getParent()).thenReturn(mViewStubParent);
-        when(mTabGroupHoverCardViewStub.getParent()).thenReturn(mViewStubParent);
-        when(mTabView1.getHeight()).thenReturn(REGULAR_TAB_VIEW_HEIGHT_PX);
-        doAnswer(
-                        invocation -> {
-                            int[] array = invocation.getArgument(0);
-                            array[0] = 0;
-                            array[1] = TAB_VIEW_Y_PX;
-                            return null;
-                        })
-                .when(mTabView1)
-                .getLocationOnScreen(any());
+        // The hover cards are inflated into the root view, so it is their parent view.
+        mRootView = new FrameLayout(activity);
+        activity.setContentView(
+                mRootView, new LayoutParams(LayoutParams.MATCH_PARENT, ROOT_VIEW_HEIGHT_PX));
+        mContainerView =
+                (VerticalTabRailLayout)
+                        LayoutInflater.from(activity)
+                                .inflate(
+                                        R.layout.vertical_tab_layout,
+                                        mRootView,
+                                        /* attachToRoot= */ false);
+        mRootView.addView(
+                mContainerView,
+                new LayoutParams(COLLAPSED_CONTAINER_WIDTH_PX, LayoutParams.MATCH_PARENT));
+        mRecyclerView = mContainerView.getRecyclerView();
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(activity));
+        mPinnedLayoutManager = new GridLayoutManager(activity, /* spanCount= */ 2);
+        mContainerView.getPinnedTabsRecyclerView().setLayoutManager(mPinnedLayoutManager);
+        mTabView1 = addItemView(/* x= */ 0, TAB_VIEW_Y_PX, REGULAR_TAB_VIEW_HEIGHT_PX);
+        mTabView2 =
+                addItemView(
+                        /* x= */ 0,
+                        TAB_VIEW_Y_PX + REGULAR_TAB_VIEW_HEIGHT_PX,
+                        REGULAR_TAB_VIEW_HEIGHT_PX);
+        mPinnedTabView =
+                addItemView(PINNED_TAB_VIEW_X_PX, PINNED_TAB_VIEW_Y_PX, PINNED_TAB_VIEW_HEIGHT_PX);
+        mGroupHeaderView =
+                addItemView(
+                        /* x= */ 0,
+                        TAB_VIEW_Y_PX + 2 * REGULAR_TAB_VIEW_HEIGHT_PX,
+                        REGULAR_TAB_VIEW_HEIGHT_PX);
+        mGroupHeaderView2 =
+                addItemView(
+                        /* x= */ 0,
+                        TAB_VIEW_Y_PX + 3 * REGULAR_TAB_VIEW_HEIGHT_PX,
+                        REGULAR_TAB_VIEW_HEIGHT_PX);
+        mTabHoverCardViewStub = new ViewStub(activity, R.layout.tab_hover_card_holder);
+        mRootView.addView(
+                mTabHoverCardViewStub,
+                new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+        mTabGroupHoverCardViewStub = new ViewStub(activity, R.layout.tab_group_hover_card_holder);
+        mRootView.addView(
+                mTabGroupHoverCardViewStub,
+                new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+        RobolectricUtil.runAllBackgroundAndUi();
 
-        when(mPinnedTabView.getHeight()).thenReturn(PINNED_TAB_VIEW_HEIGHT_PX);
-        doAnswer(
-                        invocation -> {
-                            int[] array = invocation.getArgument(0);
-                            array[0] = PINNED_TAB_VIEW_X_PX;
-                            array[1] = PINNED_TAB_VIEW_Y_PX;
-                            return null;
-                        })
-                .when(mPinnedTabView)
-                .getLocationOnScreen(any());
-
-        doAnswer(
-                        (InvocationOnMock invocation) -> {
-                            ViewStub.OnInflateListener listener = invocation.getArgument(0);
-                            doAnswer(
-                                            inflateInvocation -> {
-                                                if (listener != null) {
-                                                    listener.onInflate(
-                                                            mTabHoverCardViewStub,
-                                                            mTabHoverCardView);
-                                                }
-                                                return mTabHoverCardView;
-                                            })
-                                    .when(mTabHoverCardViewStub)
-                                    .inflate();
-                            return null;
-                        })
-                .when(mTabHoverCardViewStub)
-                .setOnInflateListener(any());
-
-        doAnswer(
-                        (InvocationOnMock invocation) -> {
-                            ViewStub.OnInflateListener listener = invocation.getArgument(0);
-                            doAnswer(
-                                            inflateInvocation -> {
-                                                if (listener != null) {
-                                                    listener.onInflate(
-                                                            mTabGroupHoverCardViewStub,
-                                                            mTabGroupHoverCardView);
-                                                }
-                                                return mTabGroupHoverCardView;
-                                            })
-                                    .when(mTabGroupHoverCardViewStub)
-                                    .inflate();
-                            return null;
-                        })
-                .when(mTabGroupHoverCardViewStub)
-                .setOnInflateListener(any());
-
+        when(mTabModelSelector.getCurrentTabModelSupplier()).thenReturn(mTabModelSupplier);
+        when(mTabContentManagerSupplier.get()).thenReturn(mTabContentManager);
         when(mTab1.getId()).thenReturn(TAB_ID_1);
         when(mTab2.getId()).thenReturn(TAB_ID_2);
         when(mPinnedTab.getId()).thenReturn(PINNED_TAB_ID);
         when(mPinnedTab.getIsPinned()).thenReturn(true);
         when(mTab1.getTitle()).thenReturn("Tab 1");
         when(mTab2.getTitle()).thenReturn("Tab 2");
+        when(mTab1.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+        when(mTab2.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         when(mTabModelSelector.getTabById(TAB_ID_1)).thenReturn(mTab1);
         when(mTabModelSelector.getTabById(TAB_ID_2)).thenReturn(mTab2);
         when(mTabModelSelector.getTabById(PINNED_TAB_ID)).thenReturn(mPinnedTab);
@@ -237,15 +214,10 @@ public class VerticalTabItemHoverControllerUnitTest {
         listener.onTabHoverStateChanged(TAB_ID_1, mTabView1, /* isHovered= */ true);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
-        verify(mTabHoverCardViewStub).inflate();
-
-        InOrder inOrder = inOrder(mTabHoverCardView);
-        inOrder.verify(mTabHoverCardView).hide();
-        inOrder.verify(mTabHoverCardView).bindTab(eq(mTab1));
-        inOrder.verify(mTabHoverCardView).show(anyFloat(), anyFloat());
+        assertTabHoverCardShowing("Tab 1");
 
         listener.onTabHoverStateChanged(TAB_ID_1, mTabView1, /* isHovered= */ false);
-        inOrder.verify(mTabHoverCardView).hide();
+        assertEquals(View.GONE, getTabHoverCardView().getVisibility());
     }
 
     @Test
@@ -258,8 +230,7 @@ public class VerticalTabItemHoverControllerUnitTest {
         listener.onTabHoverStateChanged(TAB_ID_1, mTabView1, /* isHovered= */ true);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
-        verify(mTabHoverCardViewStub, never()).inflate();
-        verify(mTabHoverCardView, never()).show(anyFloat(), anyFloat());
+        assertNull(getTabHoverCardView());
     }
 
     @Test
@@ -280,7 +251,7 @@ public class VerticalTabItemHoverControllerUnitTest {
         listener.onTabHoverStateChanged(TAB_ID_1, mTabView1, /* isHovered= */ true);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
-        verify(mTabHoverCardViewStub, never()).inflate();
+        assertNull(getTabHoverCardView());
     }
 
     // =========================================================================================
@@ -290,12 +261,11 @@ public class VerticalTabItemHoverControllerUnitTest {
     @Test
     public void testGetHoverCardDelay() {
         // Collapsed rail width (76dp) -> 300ms
-        when(mContainerView.getWidth())
-                .thenReturn(VerticalTabUtils.SIDE_UI_CONTAINER_COLLAPSED_WIDTH_DP);
+        setContainerWidth(VerticalTabUtils.SIDE_UI_CONTAINER_COLLAPSED_WIDTH_DP);
         assertEquals(TabHoverCardView.MIN_HOVER_CARD_DELAY_MS, mController.getHoverCardDelay());
 
         // Expanded rail width (240dp) -> 800ms
-        when(mContainerView.getWidth()).thenReturn(VerticalTabUtils.SIDE_UI_CONTAINER_WIDTH_DP);
+        setContainerWidth(VerticalTabUtils.SIDE_UI_CONTAINER_WIDTH_DP);
         assertEquals(TabHoverCardView.MAX_HOVER_CARD_DELAY_MS, mController.getHoverCardDelay());
     }
 
@@ -310,11 +280,11 @@ public class VerticalTabItemHoverControllerUnitTest {
         // Before delay elapses (200 ms), show should not be called yet.
         ShadowLooper.idleMainLooper(
                 TabHoverCardView.MIN_HOVER_CARD_DELAY_MS - 100, TimeUnit.MILLISECONDS);
-        verify(mTabHoverCardView, never()).show(anyFloat(), anyFloat());
+        assertNull(getTabHoverCardView());
 
         // After full delay (300 ms), show is called.
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        verify(mTabHoverCardView).show(anyFloat(), anyFloat());
+        assertTabHoverCardShowing("Tab 1");
     }
 
     @Test
@@ -331,7 +301,7 @@ public class VerticalTabItemHoverControllerUnitTest {
 
         // Running remaining delayed tasks should not trigger show()
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        verify(mTabHoverCardView, never()).show(anyFloat(), anyFloat());
+        assertNull(getTabHoverCardView());
     }
 
     // =========================================================================================
@@ -341,16 +311,13 @@ public class VerticalTabItemHoverControllerUnitTest {
     @Test
     public void testScrubbing_ShowsImmediately() {
         when(mTabModelSelector.getCurrentTabId()).thenReturn(TAB_ID_3);
-        when(mTabHoverCardView.isShown()).thenReturn(true);
 
         TabHoverListener listener = mController.getTabHoverListener();
 
         // Hover tab 1 and wait for delay
         listener.onTabHoverStateChanged(TAB_ID_1, mTabView1, /* isHovered= */ true);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        verify(mTabHoverCardView).show(anyFloat(), anyFloat());
-
-        clearInvocations(mTabHoverCardView);
+        assertTabHoverCardShowing("Tab 1");
 
         // Exit tab 1 hover (records exit time)
         listener.onTabHoverStateChanged(TAB_ID_1, mTabView1, /* isHovered= */ false);
@@ -359,13 +326,12 @@ public class VerticalTabItemHoverControllerUnitTest {
         listener.onTabHoverStateChanged(TAB_ID_2, mTabView2, /* isHovered= */ true);
 
         // Should show tab 2 immediately without needing ShadowLooper delay task flush
-        verify(mTabHoverCardView).show(anyFloat(), anyFloat());
+        assertTabHoverCardShowing("Tab 2");
     }
 
     @Test
     public void testScrubbing_EnterBeforeExit_HidesBeforeShowingTab2() {
         when(mTabModelSelector.getCurrentTabId()).thenReturn(TAB_ID_3);
-        when(mTabHoverCardView.isShown()).thenReturn(true);
 
         TabHoverListener listener = mController.getTabHoverListener();
 
@@ -373,24 +339,17 @@ public class VerticalTabItemHoverControllerUnitTest {
         listener.onTabHoverStateChanged(TAB_ID_1, mTabView1, /* isHovered= */ true);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
-        InOrder inOrder = inOrder(mTabHoverCardView);
-        inOrder.verify(mTabHoverCardView).bindTab(eq(mTab1));
-        inOrder.verify(mTabHoverCardView).show(anyFloat(), anyFloat());
+        assertTabHoverCardShowing("Tab 1");
 
         // Scrubbing: Tab 2 enters BEFORE Tab 1 exits (due to ViewGroup dispatch order).
         listener.onTabHoverStateChanged(TAB_ID_2, mTabView2, /* isHovered= */ true);
-        inOrder.verify(mTabHoverCardView).hide();
-        inOrder.verify(mTabHoverCardView).bindTab(eq(mTab2));
-        inOrder.verify(mTabHoverCardView).show(anyFloat(), anyFloat());
-
-        // Clear previous invocations to accurately verify the exit behavior.
-        clearInvocations(mTabHoverCardView);
+        assertTabHoverCardShowing("Tab 2");
 
         // Tab 1 exits subsequently.
         listener.onTabHoverStateChanged(TAB_ID_1, mTabView1, /* isHovered= */ false);
 
-        // Tab 2 should still be showing and hide() should NOT be called again.
-        verify(mTabHoverCardView, never()).hide();
+        // Tab 2 should still be showing.
+        assertTabHoverCardShowing("Tab 2");
     }
 
     // =========================================================================================
@@ -400,7 +359,7 @@ public class VerticalTabItemHoverControllerUnitTest {
     @Test
     public void testKeyboardFocus_ShowsImmediately() {
         when(mTabModelSelector.getCurrentTabId()).thenReturn(TAB_ID_3);
-        when(mTabView1.hasFocus()).thenReturn(true);
+        focusView(mTabView1);
 
         TabHoverListener listener = mController.getTabHoverListener();
         assertNotNull(listener);
@@ -408,43 +367,36 @@ public class VerticalTabItemHoverControllerUnitTest {
         listener.onTabHoverStateChanged(TAB_ID_1, mTabView1, /* isHovered= */ true);
 
         // Should show immediately for keyboard focus without needing ShadowLooper delay task flush.
-        verify(mTabHoverCardViewStub).inflate();
-        verify(mTabHoverCardView).show(anyFloat(), anyFloat());
+        assertTabHoverCardShowing("Tab 1");
     }
 
     @Test
     public void testKeyboardFocus_FocusLost_HidesHoverCard() {
         when(mTabModelSelector.getCurrentTabId()).thenReturn(TAB_ID_3);
-        when(mTabView1.hasFocus()).thenReturn(true);
+        focusView(mTabView1);
 
         TabHoverListener listener = mController.getTabHoverListener();
         assertNotNull(listener);
 
         listener.onTabHoverStateChanged(TAB_ID_1, mTabView1, /* isHovered= */ true);
-
-        // Inflation initializes and hides the view before showing.
-        InOrder inOrder = inOrder(mTabHoverCardView);
-        inOrder.verify(mTabHoverCardView).hide();
-        inOrder.verify(mTabHoverCardView).bindTab(eq(mTab1));
-        inOrder.verify(mTabHoverCardView).show(anyFloat(), anyFloat());
+        assertTabHoverCardShowing("Tab 1");
 
         // Focus lost triggers hide.
         listener.onTabHoverStateChanged(TAB_ID_1, mTabView1, /* isHovered= */ false);
-        inOrder.verify(mTabHoverCardView).hide();
+        assertEquals(View.GONE, getTabHoverCardView().getVisibility());
     }
 
     @Test
     public void testKeyboardFocus_SelectedTab_DoNotShowHoverCard() {
         when(mTabModelSelector.getCurrentTabId()).thenReturn(TAB_ID_1);
-        when(mTabView1.hasFocus()).thenReturn(true);
+        focusView(mTabView1);
 
         TabHoverListener listener = mController.getTabHoverListener();
         assertNotNull(listener);
 
         listener.onTabHoverStateChanged(TAB_ID_1, mTabView1, /* isHovered= */ true);
 
-        verify(mTabHoverCardViewStub, never()).inflate();
-        verify(mTabHoverCardView, never()).show(anyFloat(), anyFloat());
+        assertNull(getTabHoverCardView());
     }
 
     // =========================================================================================
@@ -454,24 +406,29 @@ public class VerticalTabItemHoverControllerUnitTest {
     @Test
     public void testCardHeightChange_RepositionsHoverCard() {
         when(mTabModelSelector.getCurrentTabId()).thenReturn(TAB_ID_3);
-        when(mTabHoverCardView.isShown()).thenReturn(true);
-        when(mContainerView.getWidth()).thenReturn(EXPANDED_CONTAINER_WIDTH_PX);
+        setContainerWidth(EXPANDED_CONTAINER_WIDTH_PX);
 
         TabHoverListener listener = mController.getTabHoverListener();
         listener.onTabHoverStateChanged(TAB_ID_1, mTabView1, /* isHovered= */ true);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
-        ArgumentCaptor<Runnable> callbackCaptor = ArgumentCaptor.forClass(Runnable.class);
-        verify(mTabHoverCardView).setOnCardHeightChangedCallback(callbackCaptor.capture());
-        Runnable heightChangedCallback = callbackCaptor.getValue();
-        assertNotNull(heightChangedCallback);
+        verify(mTab1).getMemoryUsageBytes(mMemoryUsageCallbackCaptor.capture());
+        TabHoverCardView tabHoverCardView = getTabHoverCardView();
+        // Move the card so that repositioning it is observable.
+        tabHoverCardView.setX(0f);
+        tabHoverCardView.setY(0f);
 
-        // When height changes (e.g. from 200 to 250 due to memory usage visibility):
-        when(mTabHoverCardView.getMeasuredHeight()).thenReturn(250);
-        heightChangedCallback.run();
+        // When height changes (e.g. due to memory usage visibility):
+        mMemoryUsageCallbackCaptor.getValue().onResult(1024L);
 
-        verify(mTabHoverCardView).setX(anyFloat());
-        verify(mTabHoverCardView).setY(anyFloat());
+        float[] expectedPosition =
+                VerticalTabItemHoverController.getHoverCardPosition(
+                        mTabView1,
+                        mContainerView,
+                        tabHoverCardView,
+                        /* shouldShowCardBelowTab= */ false);
+        assertEquals(expectedPosition[0], tabHoverCardView.getX(), 0.01f);
+        assertEquals(expectedPosition[1], tabHoverCardView.getY(), 0.01f);
     }
 
     // =========================================================================================
@@ -480,13 +437,13 @@ public class VerticalTabItemHoverControllerUnitTest {
 
     @Test
     public void testGetHoverCardPosition_RegularTab_Collapsed() {
-        when(mContainerView.getWidth()).thenReturn(COLLAPSED_CONTAINER_WIDTH_PX);
+        setContainerWidth(COLLAPSED_CONTAINER_WIDTH_PX);
 
         float[] position =
                 VerticalTabItemHoverController.getHoverCardPosition(
                         mTabView1,
                         mContainerView,
-                        mTabHoverCardView,
+                        inflateTabHoverCardView(),
                         /* shouldShowCardBelowTab= */ false);
 
         assertEquals(2, position.length);
@@ -499,13 +456,13 @@ public class VerticalTabItemHoverControllerUnitTest {
 
     @Test
     public void testGetHoverCardPosition_RegularTab_Expanded() {
-        when(mContainerView.getWidth()).thenReturn(EXPANDED_CONTAINER_WIDTH_PX);
+        setContainerWidth(EXPANDED_CONTAINER_WIDTH_PX);
 
         float[] position =
                 VerticalTabItemHoverController.getHoverCardPosition(
                         mTabView1,
                         mContainerView,
-                        mTabHoverCardView,
+                        inflateTabHoverCardView(),
                         /* shouldShowCardBelowTab= */ false);
 
         assertEquals(2, position.length);
@@ -518,24 +475,16 @@ public class VerticalTabItemHoverControllerUnitTest {
 
     @Test
     public void testGetHoverCardPosition_ExceedsRootHeight_AlignsWithWindowBottom() {
-        when(mContainerView.getWidth()).thenReturn(EXPANDED_CONTAINER_WIDTH_PX);
+        setContainerWidth(EXPANDED_CONTAINER_WIDTH_PX);
         // Position the tab view near the bottom of the window so that the hover card extends
         // beyond the root view height (900 + 188 > 1000 - 4).
-        doAnswer(
-                        invocation -> {
-                            int[] array = invocation.getArgument(0);
-                            array[0] = 0;
-                            array[1] = 900;
-                            return null;
-                        })
-                .when(mTabView1)
-                .getLocationOnScreen(any());
+        moveView(mTabView1, /* x= */ 0, /* y= */ 900);
 
         float[] position =
                 VerticalTabItemHoverController.getHoverCardPosition(
                         mTabView1,
                         mContainerView,
-                        mTabHoverCardView,
+                        inflateTabHoverCardView(),
                         /* shouldShowCardBelowTab= */ false);
 
         assertEquals(2, position.length);
@@ -555,26 +504,18 @@ public class VerticalTabItemHoverControllerUnitTest {
 
     @Test
     public void testGetHoverCardPosition_RegularTab_VerySmallWindow_ClampsToTop() {
-        when(mContainerView.getWidth()).thenReturn(EXPANDED_CONTAINER_WIDTH_PX);
+        setContainerWidth(EXPANDED_CONTAINER_WIDTH_PX);
         // Window height 180, tab at Y = 50:
         // Window bottom alignment shifts visible card top above 0 (180 - 4 - 188 = -12).
         // Clamps visibleY to 0, so hoverCardY = 0 - cardShadowOffset = -cardShadowOffset.
-        when(mRootView.getHeight()).thenReturn(180);
-        doAnswer(
-                        invocation -> {
-                            int[] array = invocation.getArgument(0);
-                            array[0] = 0;
-                            array[1] = 50;
-                            return null;
-                        })
-                .when(mTabView1)
-                .getLocationOnScreen(any());
+        setRootViewHeight(180);
+        moveView(mTabView1, /* x= */ 0, /* y= */ 50);
 
         float[] position =
                 VerticalTabItemHoverController.getHoverCardPosition(
                         mTabView1,
                         mContainerView,
-                        mTabHoverCardView,
+                        inflateTabHoverCardView(),
                         /* shouldShowCardBelowTab= */ false);
 
         assertEquals(2, position.length);
@@ -591,13 +532,13 @@ public class VerticalTabItemHoverControllerUnitTest {
 
     @Test
     public void testGetHoverCardPosition_PinnedTab_Collapsed() {
-        when(mContainerView.getWidth()).thenReturn(COLLAPSED_CONTAINER_WIDTH_PX);
+        setContainerWidth(COLLAPSED_CONTAINER_WIDTH_PX);
 
         float[] position =
                 VerticalTabItemHoverController.getHoverCardPosition(
                         mTabView1,
                         mContainerView,
-                        mTabHoverCardView,
+                        inflateTabHoverCardView(),
                         /* shouldShowCardBelowTab= */ false);
 
         assertEquals(2, position.length);
@@ -614,7 +555,7 @@ public class VerticalTabItemHoverControllerUnitTest {
                 VerticalTabItemHoverController.getHoverCardPosition(
                         mPinnedTabView,
                         mContainerView,
-                        mTabHoverCardView,
+                        inflateTabHoverCardView(),
                         /* shouldShowCardBelowTab= */ true);
 
         assertEquals(2, position.length);
@@ -627,26 +568,18 @@ public class VerticalTabItemHoverControllerUnitTest {
 
     @Test
     public void testGetHoverCardPosition_PinnedTab_Expanded_NotEnoughSpaceBelow_ShowsOnRight() {
-        when(mContainerView.getWidth()).thenReturn(EXPANDED_CONTAINER_WIDTH_PX);
+        setContainerWidth(EXPANDED_CONTAINER_WIDTH_PX);
         // Window height 270:
         // relativeY + tabView.getHeight() + visibleCardHeight > parentHeight
         // (50 + 40 + 188 = 278 > 270), but top-aligned fits (50 + 188 = 238 <= 270 - 4 = 266).
-        when(mRootView.getHeight()).thenReturn(270);
-        doAnswer(
-                        invocation -> {
-                            int[] array = invocation.getArgument(0);
-                            array[0] = PINNED_TAB_VIEW_X_PX;
-                            array[1] = 50;
-                            return null;
-                        })
-                .when(mPinnedTabView)
-                .getLocationOnScreen(any());
+        setRootViewHeight(270);
+        moveView(mPinnedTabView, PINNED_TAB_VIEW_X_PX, /* y= */ 50);
 
         float[] position =
                 VerticalTabItemHoverController.getHoverCardPosition(
                         mPinnedTabView,
                         mContainerView,
-                        mTabHoverCardView,
+                        inflateTabHoverCardView(),
                         /* shouldShowCardBelowTab= */ true);
 
         assertEquals(2, position.length);
@@ -661,25 +594,17 @@ public class VerticalTabItemHoverControllerUnitTest {
     @Test
     public void
             testGetHoverCardPosition_PinnedTab_Expanded_ExceedsRootHeight_AlignsWithWindowBottom() {
-        when(mContainerView.getWidth()).thenReturn(EXPANDED_CONTAINER_WIDTH_PX);
+        setContainerWidth(EXPANDED_CONTAINER_WIDTH_PX);
         // Position pinned tab near bottom so that neither below-tab nor top-aligned fits:
         // relativeY + tabView.getHeight() + visibleCardHeight > parentHeight
         // (900 + 40 + 188 > 1000) and (900 + 188 > 1000 - 4 = 996).
-        doAnswer(
-                        invocation -> {
-                            int[] array = invocation.getArgument(0);
-                            array[0] = PINNED_TAB_VIEW_X_PX;
-                            array[1] = 900;
-                            return null;
-                        })
-                .when(mPinnedTabView)
-                .getLocationOnScreen(any());
+        moveView(mPinnedTabView, PINNED_TAB_VIEW_X_PX, /* y= */ 900);
 
         float[] position =
                 VerticalTabItemHoverController.getHoverCardPosition(
                         mPinnedTabView,
                         mContainerView,
-                        mTabHoverCardView,
+                        inflateTabHoverCardView(),
                         /* shouldShowCardBelowTab= */ true);
 
         assertEquals(2, position.length);
@@ -699,13 +624,13 @@ public class VerticalTabItemHoverControllerUnitTest {
 
     @Test
     public void testShouldShowCardBelowTab() {
-        when(mPinnedLayoutManager.getSpanCount()).thenReturn(2);
+        mPinnedLayoutManager.setSpanCount(2);
         assertTrue(mController.shouldShowCardBelowTab(mPinnedTab));
         assertFalse(mController.shouldShowCardBelowTab(mTab1));
 
         // The pinned grid has a single column while the rail is collapsed or expanded for
         // hovering, so pinned tabs show the card next to the rail like regular tabs.
-        when(mPinnedLayoutManager.getSpanCount()).thenReturn(1);
+        mPinnedLayoutManager.setSpanCount(1);
         assertFalse(mController.shouldShowCardBelowTab(mPinnedTab));
         assertFalse(mController.shouldShowCardBelowTab(mTab1));
     }
@@ -722,13 +647,10 @@ public class VerticalTabItemHoverControllerUnitTest {
         listener.onTabGroupHoverStateChanged(GROUP_ID_1, mGroupHeaderView, /* isHovered= */ true);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
-        verify(mTabGroupHoverCardViewStub).inflate();
-        verify(mTabGroupHoverCardView)
-                .bindData(eq("Group 1"), eq(List.of("• Tab 1", "• Tab 2")), eq(0), eq(false));
-        verify(mTabGroupHoverCardView).show(anyFloat(), anyFloat());
+        assertTabGroupHoverCardShowing("Group 1", "• Tab 1", "• Tab 2");
 
         listener.onTabGroupHoverStateChanged(GROUP_ID_1, mGroupHeaderView, /* isHovered= */ false);
-        verify(mTabGroupHoverCardView).hide();
+        assertEquals(View.GONE, getTabGroupHoverCardView().getVisibility());
     }
 
     @Test
@@ -742,7 +664,7 @@ public class VerticalTabItemHoverControllerUnitTest {
         listener.onTabGroupHoverStateChanged(emptyGroupId, mGroupHeaderView, /* isHovered= */ true);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
-        verify(mTabGroupHoverCardView, never()).show(anyFloat(), anyFloat());
+        assertFalse(getTabGroupHoverCardView().isShown());
     }
 
     @Test
@@ -754,7 +676,7 @@ public class VerticalTabItemHoverControllerUnitTest {
                 /* tabGroupId= */ null, mGroupHeaderView, /* isHovered= */ true);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
-        verify(mTabGroupHoverCardView, never()).show(anyFloat(), anyFloat());
+        assertFalse(getTabGroupHoverCardView().isShown());
     }
 
     @Test
@@ -765,13 +687,11 @@ public class VerticalTabItemHoverControllerUnitTest {
 
         // Before delay elapses (200 ms), show should not be called yet.
         ShadowLooper.idleMainLooper(200, TimeUnit.MILLISECONDS);
-        verify(mTabGroupHoverCardView, never()).show(anyFloat(), anyFloat());
+        assertNull(getTabGroupHoverCardView());
 
         // After full delay (300 ms), show is called.
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        verify(mTabGroupHoverCardView)
-                .bindData(eq("Group 1"), eq(List.of("• Tab 1", "• Tab 2")), eq(0), eq(false));
-        verify(mTabGroupHoverCardView).show(anyFloat(), anyFloat());
+        assertTabGroupHoverCardShowing("Group 1", "• Tab 1", "• Tab 2");
     }
 
     @Test
@@ -786,21 +706,17 @@ public class VerticalTabItemHoverControllerUnitTest {
 
         // Running remaining delayed tasks should not trigger show().
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        verify(mTabGroupHoverCardView, never()).show(anyFloat(), anyFloat());
+        assertNull(getTabGroupHoverCardView());
     }
 
     @Test
     public void testTabGroup_Scrubbing_ShowsImmediately() {
-        when(mTabGroupHoverCardView.isShown()).thenReturn(true);
-
         TabHoverListener listener = mController.getTabHoverListener();
 
         // Hover group 1 and wait for delay.
         listener.onTabGroupHoverStateChanged(GROUP_ID_1, mGroupHeaderView, /* isHovered= */ true);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        verify(mTabGroupHoverCardView)
-                .bindData(eq("Group 1"), eq(List.of("• Tab 1", "• Tab 2")), eq(0), eq(false));
-        verify(mTabGroupHoverCardView).show(anyFloat(), anyFloat());
+        assertTabGroupHoverCardShowing("Group 1", "• Tab 1", "• Tab 2");
 
         // Exit group 1 hover (records exit time).
         listener.onTabGroupHoverStateChanged(GROUP_ID_1, mGroupHeaderView, /* isHovered= */ false);
@@ -809,39 +725,32 @@ public class VerticalTabItemHoverControllerUnitTest {
         listener.onTabGroupHoverStateChanged(GROUP_ID_2, mGroupHeaderView2, /* isHovered= */ true);
 
         // Should show group 2 immediately without needing ShadowLooper delay task flush.
-        verify(mTabGroupHoverCardView)
-                .bindData(eq("Group 2"), eq(List.of("• Tab 1")), eq(0), eq(false));
-        verify(mTabGroupHoverCardView, times(2)).show(anyFloat(), anyFloat());
+        assertTabGroupHoverCardShowing("Group 2", "• Tab 1");
     }
 
     @Test
     public void testScrubbing_FromTabToGroup_ShowsImmediately() {
         when(mTabModelSelector.getCurrentTabId()).thenReturn(TAB_ID_3);
-        when(mTabHoverCardView.isShown()).thenReturn(true);
 
         TabHoverListener listener = mController.getTabHoverListener();
 
         // Hover tab 1 and wait for delay.
         listener.onTabHoverStateChanged(TAB_ID_1, mTabView1, /* isHovered= */ true);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        verify(mTabHoverCardView).bindTab(eq(mTab1));
-        verify(mTabHoverCardView).show(anyFloat(), anyFloat());
+        assertTabHoverCardShowing("Tab 1");
 
         // Scrubbing to group 1: hover group 1 within buffer.
         listener.onTabHoverStateChanged(TAB_ID_1, mTabView1, /* isHovered= */ false);
         listener.onTabGroupHoverStateChanged(GROUP_ID_1, mGroupHeaderView, /* isHovered= */ true);
 
         // Tab hover card should be hidden, and group hover card shown immediately.
-        verify(mTabHoverCardView, atLeastOnce()).hide();
-        verify(mTabGroupHoverCardView)
-                .bindData(eq("Group 1"), eq(List.of("• Tab 1", "• Tab 2")), eq(0), eq(false));
-        verify(mTabGroupHoverCardView).show(anyFloat(), anyFloat());
+        assertEquals(View.GONE, getTabHoverCardView().getVisibility());
+        assertTabGroupHoverCardShowing("Group 1", "• Tab 1", "• Tab 2");
     }
 
     @Test
     public void testScrubbing_FromGroupToTab_ShowsImmediately() {
         when(mTabModelSelector.getCurrentTabId()).thenReturn(TAB_ID_3);
-        when(mTabGroupHoverCardView.isShown()).thenReturn(true);
 
         TabHoverListener listener = mController.getTabHoverListener();
 
@@ -854,15 +763,12 @@ public class VerticalTabItemHoverControllerUnitTest {
         listener.onTabHoverStateChanged(TAB_ID_1, mTabView1, /* isHovered= */ true);
 
         // Group hover card should be hidden, and tab hover card shown immediately.
-        verify(mTabGroupHoverCardView, atLeastOnce()).hide();
-        verify(mTabHoverCardView).bindTab(eq(mTab1));
-        verify(mTabHoverCardView).show(anyFloat(), anyFloat());
+        assertEquals(View.GONE, getTabGroupHoverCardView().getVisibility());
+        assertTabHoverCardShowing("Tab 1");
     }
 
     @Test
     public void testTabGroup_Scrubbing_EnterBeforeExit_DoesNotHideGroup2() {
-        when(mTabGroupHoverCardView.isShown()).thenReturn(true);
-
         TabHoverListener listener = mController.getTabHoverListener();
 
         // Group 1 is currently hovered and showing.
@@ -871,18 +777,13 @@ public class VerticalTabItemHoverControllerUnitTest {
 
         // Scrubbing: Group 2 enters BEFORE Group 1 exits.
         listener.onTabGroupHoverStateChanged(GROUP_ID_2, mGroupHeaderView2, /* isHovered= */ true);
-        verify(mTabGroupHoverCardView)
-                .bindData(eq("Group 2"), eq(List.of("• Tab 1")), eq(0), eq(false));
-        verify(mTabGroupHoverCardView, times(2)).show(anyFloat(), anyFloat());
-
-        // Clear previous invocations to accurately verify the exit behavior.
-        clearInvocations(mTabGroupHoverCardView);
+        assertTabGroupHoverCardShowing("Group 2", "• Tab 1");
 
         // Group 1 exits subsequently.
         listener.onTabGroupHoverStateChanged(GROUP_ID_1, mGroupHeaderView, /* isHovered= */ false);
 
-        // Group 2 should still be showing and hide() should NOT be called.
-        verify(mTabGroupHoverCardView, never()).hide();
+        // Group 2 should still be showing.
+        assertTabGroupHoverCardShowing("Group 2", "• Tab 1");
     }
 
     @Test
@@ -902,40 +803,36 @@ public class VerticalTabItemHoverControllerUnitTest {
         listener.onTabGroupHoverStateChanged(GROUP_ID_1, mGroupHeaderView, /* isHovered= */ true);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
-        verify(mTabGroupHoverCardViewStub, never()).inflate();
+        assertNull(getTabGroupHoverCardView());
     }
 
     @Test
     public void testTabGroup_KeyboardFocus_ShowsImmediately() {
-        when(mGroupHeaderView.hasFocus()).thenReturn(true);
+        focusView(mGroupHeaderView);
 
         TabHoverListener listener = mController.getTabHoverListener();
         assertNotNull(listener);
 
         listener.onTabGroupHoverStateChanged(GROUP_ID_1, mGroupHeaderView, /* isHovered= */ true);
 
-        verify(mTabGroupHoverCardViewStub).inflate();
-        verify(mTabGroupHoverCardView)
-                .bindData(eq("Group 1"), eq(List.of("• Tab 1", "• Tab 2")), eq(0), eq(false));
-        verify(mTabGroupHoverCardView).show(anyFloat(), anyFloat());
+        assertTabGroupHoverCardShowing("Group 1", "• Tab 1", "• Tab 2");
     }
 
     @Test
     public void testTabGroup_HoverActiveTab_HidesGroupHoverCardImmediately() {
         when(mTabModelSelector.getCurrentTabId()).thenReturn(TAB_ID_1);
-        when(mTabGroupHoverCardView.isShown()).thenReturn(true);
 
         TabHoverListener listener = mController.getTabHoverListener();
         listener.onTabGroupHoverStateChanged(GROUP_ID_1, mGroupHeaderView, /* isHovered= */ true);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        verify(mTabGroupHoverCardView).show(anyFloat(), anyFloat());
+        assertTabGroupHoverCardShowing("Group 1", "• Tab 1", "• Tab 2");
 
         // Hover active tab (TAB_ID_1).
         listener.onTabHoverStateChanged(TAB_ID_1, mTabView1, /* isHovered= */ true);
 
         // Group hover card should be hidden immediately, and tab hover card should not show.
-        verify(mTabGroupHoverCardView, atLeastOnce()).hide();
-        verify(mTabHoverCardView, never()).show(anyFloat(), anyFloat());
+        assertEquals(View.GONE, getTabGroupHoverCardView().getVisibility());
+        assertNull(getTabHoverCardView());
     }
 
     @Test
@@ -947,13 +844,14 @@ public class VerticalTabItemHoverControllerUnitTest {
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         listener.onTabGroupHoverStateChanged(GROUP_ID_1, mGroupHeaderView, /* isHovered= */ true);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        // The tab hover card observes the current tab model until it is destroyed.
+        assertTrue(mTabModelSupplier.hasObservers());
 
         mController.destroy();
 
-        verify(mTabHoverCardView, atLeastOnce()).hide();
-        verify(mTabHoverCardView).destroy();
-        verify(mTabGroupHoverCardView, atLeastOnce()).hide();
-        verify(mTabGroupHoverCardView).destroy();
+        assertEquals(View.GONE, getTabHoverCardView().getVisibility());
+        assertFalse(mTabModelSupplier.hasObservers());
+        assertEquals(View.GONE, getTabGroupHoverCardView().getVisibility());
     }
 
     @Test
@@ -961,7 +859,7 @@ public class VerticalTabItemHoverControllerUnitTest {
         when(mTabModelSelector.getCurrentTabId()).thenReturn(TAB_ID_3);
         Boolean[] lastHoverState = new Boolean[] {null};
         Callback<Boolean> hoverStateCallback = isHovered -> lastHoverState[0] = isHovered;
-        when(mTabView1.getTag(R.id.tab_hover_state_listener)).thenReturn(hoverStateCallback);
+        mTabView1.setTag(R.id.tab_hover_state_listener, hoverStateCallback);
 
         TabHoverListener listener = mController.getTabHoverListener();
         listener.onTabHoverStateChanged(TAB_ID_1, mTabView1, /* isHovered= */ true);
@@ -989,21 +887,20 @@ public class VerticalTabItemHoverControllerUnitTest {
         listener.onTabHoverStateChanged(TAB_ID_1, mTabView1, /* isHovered= */ true);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
-        verify(mTabHoverCardView, never()).show(anyFloat(), anyFloat());
+        assertNull(getTabHoverCardView());
         controller.destroy();
     }
 
     @Test
     public void testScrolling_SuppressesHoverCard() {
         when(mTabModelSelector.getCurrentTabId()).thenReturn(TAB_ID_3);
-        when(mRecyclerView.getScrollState())
-                .thenReturn(androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_DRAGGING);
+        startScrolling();
 
         TabHoverListener listener = mController.getTabHoverListener();
         listener.onTabHoverStateChanged(TAB_ID_1, mTabView1, /* isHovered= */ true);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
-        verify(mTabHoverCardView, never()).show(anyFloat(), anyFloat());
+        assertNull(getTabHoverCardView());
     }
 
     @Test
@@ -1108,7 +1005,7 @@ public class VerticalTabItemHoverControllerUnitTest {
         assertFalse(tab1Hovered[0]);
 
         isContextMenuShowing[0] = false;
-        when(mRecyclerView.getScrollState()).thenReturn(RecyclerView.SCROLL_STATE_DRAGGING);
+        startScrolling();
         tabView1.dispatchGenericMotionEvent(enter1);
         assertNull(controller.getCurrentHoveredView());
         assertFalse(tab1Hovered[0]);
@@ -1195,7 +1092,7 @@ public class VerticalTabItemHoverControllerUnitTest {
         assertEquals(tabView1, controller.getCurrentHoveredView());
         assertTrue(tab1Hovered[0]);
 
-        when(mRecyclerView.getScrollState()).thenReturn(RecyclerView.SCROLL_STATE_DRAGGING);
+        startScrolling();
         controller.hideHoverCard();
 
         // Exiting tab 1 while scrolling keeps tab 1 hovered.
@@ -1204,7 +1101,7 @@ public class VerticalTabItemHoverControllerUnitTest {
         assertTrue(tab1Hovered[0]);
 
         // Scroll returning to idle and resetting hover state clears tab 1 hover background.
-        when(mRecyclerView.getScrollState()).thenReturn(RecyclerView.SCROLL_STATE_IDLE);
+        mRecyclerView.stopScroll();
         controller.resetHoverState();
         assertNull(controller.getCurrentHoveredView());
         assertFalse(tab1Hovered[0]);
@@ -1236,7 +1133,7 @@ public class VerticalTabItemHoverControllerUnitTest {
         UserActionTester userActionTester = new UserActionTester();
 
         // Hover enter on group header 1 while rail is expanded -> records GroupHeaderHovered.
-        when(mContainerView.isCollapsed()).thenReturn(false);
+        mContainerView.setCollapseState(RailCollapseState.EXPANDED);
         MotionEvent enter1 =
                 MotionEvent.obtain(
                         /* downTime= */ 0,
@@ -1270,7 +1167,7 @@ public class VerticalTabItemHoverControllerUnitTest {
 
         // Hover enter back on group header 1 while rail is collapsed -> clears tab 1 visual state,
         // does not record GroupHeaderHovered.
-        when(mContainerView.isCollapsed()).thenReturn(true);
+        mContainerView.setCollapseState(RailCollapseState.COLLAPSED);
         groupView1.dispatchGenericMotionEvent(enter1);
         assertEquals(groupView1, mController.getCurrentHoveredView());
         assertTrue(group1Hovered[0]);
@@ -1356,7 +1253,7 @@ public class VerticalTabItemHoverControllerUnitTest {
         assertEquals(groupView1, controller.getCurrentHoveredView());
         assertTrue(group1Hovered[0]);
 
-        when(mRecyclerView.getScrollState()).thenReturn(RecyclerView.SCROLL_STATE_DRAGGING);
+        startScrolling();
         controller.hideHoverCard();
 
         // Exiting group 1 or entering group 2 while scrolling keeps group 1 hovered.
@@ -1367,7 +1264,7 @@ public class VerticalTabItemHoverControllerUnitTest {
         assertFalse(group2Hovered[0]);
 
         // Scroll returning to idle and resetting hover state clears group 1 hover state.
-        when(mRecyclerView.getScrollState()).thenReturn(RecyclerView.SCROLL_STATE_IDLE);
+        mRecyclerView.stopScroll();
         controller.resetHoverState();
         assertNull(controller.getCurrentHoveredView());
         assertFalse(group1Hovered[0]);
@@ -1399,13 +1296,11 @@ public class VerticalTabItemHoverControllerUnitTest {
         tabView1.getOnFocusChangeListener().onFocusChange(tabView1, /* hasFocus= */ true);
 
         assertEquals(tabView1, mController.getCurrentHoveredView());
-        verify(mTabHoverCardViewStub).inflate();
-        verify(mTabHoverCardView).bindTab(eq(mTab1));
-        verify(mTabHoverCardView).show(anyFloat(), anyFloat());
+        assertTabHoverCardShowing("Tab 1");
 
         tabView1.getOnFocusChangeListener().onFocusChange(tabView1, /* hasFocus= */ false);
         assertNull(mController.getCurrentHoveredView());
-        verify(mTabHoverCardView, times(2)).hide();
+        assertEquals(View.GONE, getTabHoverCardView().getVisibility());
     }
 
     @Test
@@ -1431,14 +1326,11 @@ public class VerticalTabItemHoverControllerUnitTest {
         groupView1.getOnFocusChangeListener().onFocusChange(groupView1, /* hasFocus= */ true);
 
         assertEquals(groupView1, mController.getCurrentHoveredView());
-        verify(mTabGroupHoverCardViewStub).inflate();
-        verify(mTabGroupHoverCardView)
-                .bindData(eq("Group 1"), eq(List.of("• Tab 1", "• Tab 2")), eq(0), eq(false));
-        verify(mTabGroupHoverCardView).show(anyFloat(), anyFloat());
+        assertTabGroupHoverCardShowing("Group 1", "• Tab 1", "• Tab 2");
 
         groupView1.getOnFocusChangeListener().onFocusChange(groupView1, /* hasFocus= */ false);
         assertNull(mController.getCurrentHoveredView());
-        verify(mTabGroupHoverCardView).hide();
+        assertEquals(View.GONE, getTabGroupHoverCardView().getVisibility());
     }
 
     @Test
@@ -1619,9 +1511,97 @@ public class VerticalTabItemHoverControllerUnitTest {
         assertEquals(groupView1, mController.getCurrentHoveredView());
 
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        verify(mTabGroupHoverCardViewStub).inflate();
-        verify(mTabGroupHoverCardView)
-                .bindData(eq("Group 1"), eq(List.of("• Tab 1", "• Tab 2")), eq(0), eq(false));
-        verify(mTabGroupHoverCardView).show(anyFloat(), anyFloat());
+        assertTabGroupHoverCardShowing("Group 1", "• Tab 1", "• Tab 2");
+    }
+
+    /** Adds an item view at the given position in the root view. */
+    private View addItemView(int x, int y, int height) {
+        View view = new View(mRootView.getContext());
+        LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, height);
+        params.leftMargin = x;
+        params.topMargin = y;
+        mRootView.addView(view, params);
+        return view;
+    }
+
+    /** Moves the given child of the root view, and runs a layout pass. */
+    private static void moveView(View view, int x, int y) {
+        LayoutParams params = (LayoutParams) view.getLayoutParams();
+        params.leftMargin = x;
+        params.topMargin = y;
+        view.setLayoutParams(params);
+        RobolectricUtil.runAllBackgroundAndUi();
+    }
+
+    private void setContainerWidth(int widthPx) {
+        ViewGroup.LayoutParams params = mContainerView.getLayoutParams();
+        params.width = widthPx;
+        mContainerView.setLayoutParams(params);
+        RobolectricUtil.runAllBackgroundAndUi();
+    }
+
+    private void setRootViewHeight(int heightPx) {
+        ViewGroup.LayoutParams params = mRootView.getLayoutParams();
+        params.height = heightPx;
+        mRootView.setLayoutParams(params);
+        RobolectricUtil.runAllBackgroundAndUi();
+    }
+
+    private static void focusView(View view) {
+        view.setFocusableInTouchMode(true);
+        assertTrue(view.requestFocus());
+    }
+
+    /** Moves the scroll state of the tab list away from {@link RecyclerView#SCROLL_STATE_IDLE}. */
+    private void startScrolling() {
+        mRecyclerView.smoothScrollBy(/* dx= */ 0, /* dy= */ 100);
+        assertEquals(RecyclerView.SCROLL_STATE_SETTLING, mRecyclerView.getScrollState());
+    }
+
+    /** Inflates the tab hover card with a fixed height to test the positioning logic. */
+    private TabHoverCardView inflateTabHoverCardView() {
+        TabHoverCardView tabHoverCardView = (TabHoverCardView) mTabHoverCardViewStub.inflate();
+        tabHoverCardView.setMinimumHeight(HOVER_CARD_VIEW_HEIGHT_PX);
+        return tabHoverCardView;
+    }
+
+    private TabHoverCardView getTabHoverCardView() {
+        return mRootView.findViewById(R.id.tab_hover_card_holder);
+    }
+
+    private TabGroupHoverCardView getTabGroupHoverCardView() {
+        return mRootView.findViewById(R.id.vertical_tab_group_hover_card_holder);
+    }
+
+    private void assertTabHoverCardShowing(String tabTitle) {
+        TabHoverCardView tabHoverCardView = getTabHoverCardView();
+        assertNotNull(tabHoverCardView);
+        assertTrue(tabHoverCardView.isShown());
+        TextView titleView = tabHoverCardView.findViewById(R.id.title);
+        assertEquals(tabTitle, titleView.getText().toString());
+    }
+
+    private void assertTabGroupHoverCardShowing(String groupTitle, String... tabTitles) {
+        TabGroupHoverCardView tabGroupHoverCardView = getTabGroupHoverCardView();
+        assertNotNull(tabGroupHoverCardView);
+        assertTrue(tabGroupHoverCardView.isShown());
+        TextView groupTitleView = tabGroupHoverCardView.findViewById(R.id.group_title);
+        assertEquals(groupTitle, groupTitleView.getText().toString());
+
+        List<String> shownTabTitles = new ArrayList<>();
+        for (int id :
+                new int[] {
+                    R.id.group_child_tab_1,
+                    R.id.group_child_tab_2,
+                    R.id.group_child_tab_3,
+                    R.id.group_child_tab_4,
+                    R.id.group_child_tab_5
+                }) {
+            TextView childTabView = tabGroupHoverCardView.findViewById(id);
+            if (childTabView.getVisibility() == View.VISIBLE) {
+                shownTabTitles.add(childTabView.getText().toString());
+            }
+        }
+        assertEquals(List.of(tabTitles), shownTabTitles);
     }
 }
