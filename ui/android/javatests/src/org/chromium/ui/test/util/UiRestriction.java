@@ -4,7 +4,9 @@
 
 package org.chromium.ui.test.util;
 
+import android.content.Context;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 
 import androidx.test.platform.app.InstrumentationRegistry;
 
@@ -15,6 +17,7 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.RestrictionSkipCheck;
 import org.chromium.build.BuildConfig;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.display.DisplayUtil;
 
 /**
  * UiRestrictions list form factor restrictions, that are usable with the {@link Restriction}
@@ -57,12 +60,21 @@ public final class UiRestriction {
         return sIsDesktopFreeform;
     }
 
+    static boolean isTabletContext(Context context) {
+        if (DeviceInfo.isAutomotive()) {
+            Configuration config = new Configuration();
+            DisplayUtil.scaleUpConfigurationForAutomotive(context, config);
+            context = context.createConfigurationContext(config);
+        }
+        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
+    }
+
     private static boolean isTablet() {
         if (sIsTablet == null) {
             sIsTablet =
                     ThreadUtils.runOnUiThreadBlocking(
                             () ->
-                                    DeviceFormFactor.isNonMultiDisplayContextOnTablet(
+                                    isTabletContext(
                                             InstrumentationRegistry.getInstrumentation()
                                                     .getTargetContext()));
         }
