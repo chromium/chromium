@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/feature_list.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/background_script_executor.h"
@@ -18,7 +15,6 @@
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -29,13 +25,6 @@ namespace {
 
 class ClipboardApiTest : public ExtensionApiTest {
  public:
-  ClipboardApiTest() {
-    // navigator.clipboard is only exposed to extension service workers when
-    // this is on, and it is off by default until it is enabled via Finch.
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kClipboardOnExtensionServiceWorker);
-  }
-
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -53,8 +42,6 @@ class ClipboardApiTest : public ExtensionApiTest {
       const std::string& script,
       int options = content::EXECUTE_SCRIPT_DEFAULT_OPTIONS);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

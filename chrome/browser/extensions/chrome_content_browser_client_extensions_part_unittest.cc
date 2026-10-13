@@ -20,30 +20,19 @@ namespace extensions {
 // eligible, so it needs no extension and no profile. Whether a given extension
 // may write is util::HasClipboardWritePermission, covered in
 // chrome/browser/extensions/extension_util_unittest.cc.
-class ClipboardForServiceWorkerTest : public testing::Test {
- public:
-  ClipboardForServiceWorkerTest() {
-    feature_list_.InitAndEnableFeature(
-        blink::features::kClipboardOnExtensionServiceWorker);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(ClipboardForServiceWorkerTest, AllowedForExtensionOrigin) {
+TEST(ClipboardForServiceWorkerTest, AllowedForExtensionOrigin) {
   EXPECT_TRUE(ChromeContentBrowserClientExtensionsPart::
                   IsClipboardAllowedForServiceWorker(url::Origin::Create(
                       GURL("chrome-extension://abcdefg/"))));
 }
 
-TEST_F(ClipboardForServiceWorkerTest, RefusedForWebOrigin) {
+TEST(ClipboardForServiceWorkerTest, RefusedForWebOrigin) {
   EXPECT_FALSE(ChromeContentBrowserClientExtensionsPart::
                    IsClipboardAllowedForServiceWorker(
                        url::Origin::Create(GURL("https://example.com/"))));
 }
 
-TEST_F(ClipboardForServiceWorkerTest, RefusedWhenFeatureDisabled) {
+TEST(ClipboardForServiceWorkerTest, RefusedWhenFeatureDisabled) {
   base::test::ScopedFeatureList disabled;
   disabled.InitAndDisableFeature(
       blink::features::kClipboardOnExtensionServiceWorker);
