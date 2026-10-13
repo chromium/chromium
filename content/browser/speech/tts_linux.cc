@@ -550,7 +550,9 @@ void TtsPlatformImplLinux::OnSpeakScheduled(
     bool success) {
   CHECK(BrowserThread::CurrentlyOn(content::BrowserThread::UI),
         base::NotFatalUntil::M159);
-  CHECK(is_speaking_, base::NotFatalUntil::M159);
+  // TODO(crbug.com/572669194): CHECK-exclusion: Convert to a CHECK once we
+  // are confident it won't be triggered.
+  DCHECK(is_speaking_);
 
   // If the utterance was not able to be emitted, stop the speaking. There
   // won't be any asynchronous TTS event to confirm the end of the speech.
