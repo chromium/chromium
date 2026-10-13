@@ -888,9 +888,6 @@ void BuildGridSizingSubtree(const LayoutAlgorithmType& algorithm,
         !(style.IsDisplayGridLanes() && grid_item.is_auto_placed);
 
     auto build_subgrid_sizing_tree = [&](const auto& subgrid_algorithm) {
-      // TODO(yanlingwang): Store the filtered line resolver for grid-lanes
-      // subgrids without caching incomplete placement data, so their inherited
-      // line names remain available after sizing-tree construction.
       const auto subgrid_line_resolver =
           subgrid_algorithm.BuildGridLineResolver(
               SubgriddedAreaInParent(subgridded_item), &line_resolver,

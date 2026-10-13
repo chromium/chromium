@@ -809,8 +809,11 @@ LayoutUnit GridLanesRunningPositions::FinalizeItemSpanAndGetMaxPosition(
   // beginning of the grid-lanes container during track sizing (see
   // `GridLanesNode::ComputeSetIndicesForSubgrid`). Reset the span back to
   // indefinite here so the grid lanes placement algorithm places it per the
-  // auto-placement rules.
-  if (grid_lanes_item.IsSubgrid() && grid_lanes_item.is_auto_placed) {
+  // auto-placement rules. When laying out a grid-lanes subgrid, an auto-placed
+  // item that is itself a subgrid may already have an indefinite span and needs
+  // no reset.
+  if (grid_lanes_item.IsSubgrid() && grid_lanes_item.is_auto_placed &&
+      !grid_lanes_item.Span(grid_axis_direction).IsIndefinite()) {
     grid_lanes_item.resolved_position.SetSpan(
         GridSpan::IndefiniteGridSpan(
             grid_lanes_item.SpanSize(grid_axis_direction)),

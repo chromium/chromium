@@ -199,28 +199,44 @@ GridItemData::GridItemData(
   //   https://drafts.csswg.org/css-contain-2/#containment-layout
   //   https://drafts.csswg.org/css-contain-2/#containment-paint
   //
-  // TODO(almaher): Check for grid-lanes here, as well, once we add support
-  // for grid-lanes subgridded to another grid* container.
-  if (node.IsGrid() && !node.ShouldApplyLayoutContainment() &&
+  // TODO(yanlingwang): Allow grid-lanes subgrids inside regular grid
+  // containers once that combination is supported.
+  const bool may_be_grid_lanes_subgrid =
+      node.IsGridLanes() && parent_grid_style.IsDisplayGridLanes();
+  if ((node.IsGrid() || may_be_grid_lanes_subgrid) &&
+      !node.ShouldApplyLayoutContainment() &&
       !node.ShouldApplyPaintContainment() &&
       !style.IsContainerForSizeContainerQueries()) {
-    has_subgridded_columns =
-        is_parallel_with_root_grid
-            ? style.GridTemplateColumns().IsSubgriddedAxis()
-            : style.GridTemplateRows().IsSubgriddedAxis();
-    has_subgridded_rows = is_parallel_with_root_grid
-                              ? style.GridTemplateRows().IsSubgriddedAxis()
-                              : style.GridTemplateColumns().IsSubgriddedAxis();
+    bool allows_subgridded_columns = true;
+    bool allows_subgridded_rows = true;
+    auto restrict_to_grid_lanes_axis =
+        [&](const ComputedStyle& grid_lanes_style) {
+          const bool grid_axis_is_columns_in_root =
+              IsParallelWritingMode(
+                  root_grid_writing_direction.GetWritingMode(),
+                  grid_lanes_style.GetWritingMode()) ==
+              (grid_lanes_style.GridLanesTrackSizingDirection() == kForColumns);
+          allows_subgridded_columns &= grid_axis_is_columns_in_root;
+          allows_subgridded_rows &= !grid_axis_is_columns_in_root;
+        };
 
-    // If the parent grid is a grid-lanes container, then we only consider
-    // subgrids in the grid axis.
-    if (parent_grid_style.IsDisplayGridLanes()) {
-      if (parent_grid_style.GridLanesTrackSizingDirection() == kForColumns) {
-        has_subgridded_rows = false;
-      } else {
-        has_subgridded_columns = false;
-      }
+    if (node.IsGridLanes()) {
+      restrict_to_grid_lanes_axis(style);
     }
+    if (parent_grid_style.IsDisplayGridLanes()) {
+      restrict_to_grid_lanes_axis(parent_grid_style);
+    }
+
+    has_subgridded_columns =
+        allows_subgridded_columns &&
+        (is_parallel_with_root_grid
+             ? style.GridTemplateColumns().IsSubgriddedAxis()
+             : style.GridTemplateRows().IsSubgriddedAxis());
+    has_subgridded_rows =
+        allows_subgridded_rows &&
+        (is_parallel_with_root_grid
+             ? style.GridTemplateRows().IsSubgriddedAxis()
+             : style.GridTemplateColumns().IsSubgriddedAxis());
   }
 
   const bool is_out_of_flow = node.IsOutOfFlowPositioned();

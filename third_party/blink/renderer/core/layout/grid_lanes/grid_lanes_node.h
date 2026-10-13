@@ -52,7 +52,8 @@ class CORE_EXPORT GridLanesNode final : public BlockNode {
   // invalidation into subgrids. A grid-lanes container does not cache its own
   // items' placement (placement happens after track sizing), but a regular-grid
   // subgrid child does cache. When this container's placement-affecting style
-  // changes, we set this flag so the subgrid's cache is invalidated.
+  // changes, we set this flag so the subgrid's cache is invalidated. A
+  // grid-lanes subgrid caches its line resolver for later item reconstruction.
   //
   // `parent_is_auto_placed` is true when this grid is itself an auto-placed
   // subgrid inside a grid-lanes ancestor — i.e. the ancestor resolves its own

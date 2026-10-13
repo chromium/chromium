@@ -67,6 +67,19 @@ class SubgriddedItemData {
                : parent_layout_data_->Columns();
   }
 
+  bool ParentHasTrackCollection(
+      GridTrackSizingDirection track_direction,
+      std::optional<WritingMode> container_writing_mode = std::nullopt) const {
+    DCHECK(parent_layout_data_);
+    const bool is_parallel =
+        !container_writing_mode ||
+        IsParallelWritingMode(*container_writing_mode, parent_writing_mode_);
+    const auto direction_in_parent =
+        is_parallel ? track_direction
+                    : (track_direction == kForColumns ? kForRows : kForColumns);
+    return parent_layout_data_->HasTrackCollection(direction_in_parent);
+  }
+
   const GridLayoutData* ParentLayoutData() const { return parent_layout_data_; }
 
  private:

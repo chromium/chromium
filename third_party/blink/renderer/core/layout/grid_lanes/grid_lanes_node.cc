@@ -130,11 +130,24 @@ GridItems* GridLanesNode::ConstructGridItems(
   const ComputedStyle& style = Style();
   const GridTrackSizingDirection grid_axis_direction =
       style.GridLanesTrackSizingDirection();
-  return ConstructGridItems(
+  GridItems* grid_items = ConstructGridItems(
       line_resolver, /*root_grid_style=*/style, /*parent_grid_style=*/style,
       /*must_consider_for_columns=*/grid_axis_direction == kForColumns,
       must_invalidate_placement_cache, parent_is_auto_placed, opt_oof_children,
       opt_has_nested_subgrid);
+
+  // A grid-lanes subgrid skips `BuildSizingCollection`, so cache its resolver
+  // here for recursive sizing and final item reconstruction.
+  if (!line_resolver.HasStandaloneAxis(grid_axis_direction)) {
+    auto* layout_grid_lanes = To<LayoutGridLanes>(box_.Get());
+    if (!layout_grid_lanes->HasCachedPlacementData() ||
+        &line_resolver !=
+            &layout_grid_lanes->CachedPlacementData().line_resolver) {
+      layout_grid_lanes->SetCachedPlacementData(
+          GridPlacementData(line_resolver));
+    }
+  }
+  return grid_items;
 }
 
 GridItems* GridLanesNode::ConstructGridItems(
@@ -157,7 +170,7 @@ GridItems* GridLanesNode::ConstructGridItems(
   // this container's placement-affecting style changed, that subgrid cache
   // would otherwise go stale. Propagate the invalidation down the subtree.
   CHECK(must_invalidate_placement_cache);
-  *must_invalidate_placement_cache =
+  *must_invalidate_placement_cache |=
       To<LayoutGridLanes>(box_.Get())->IsGridPlacementDirty();
 
   if (opt_has_nested_subgrid) {
@@ -285,10 +298,9 @@ void GridLanesNode::ComputeSetIndicesForSubgrid(
     GridLayoutData& layout_data) const {
   // In grid lanes, placement happens after sizing, so the placement of subgrid
   // items may not be known at this point. Translate definite spans using the
-  // `start_offset` cached by BuildSizingCollection. For items without a known
-  // position, assume they start at the beginning of the explicit grid. This
-  // will be updated to the correct position later before the subgrid itself is
-  // laid out.
+  // cached `start_offset`. For items without a known position, assume they
+  // start at the beginning of the explicit grid. This will be updated to the
+  // correct position later before the subgrid itself is laid out.
   const auto grid_axis = Style().GridLanesTrackSizingDirection();
   const wtf_size_t start_offset = CachedPlacementData().StartOffset(grid_axis);
 

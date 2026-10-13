@@ -27,12 +27,18 @@ class GridLanesLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
     const auto& style = algorithm.Style();
     grid_axis_direction_ = style.GridLanesTrackSizingDirection();
 
-    GridItems* grid_items = nullptr;
     const GridLayoutSubtree* layout_subtree =
-        algorithm.ComputeGridLanesGeometry(
-            SizingConstraint::kLayout,
-            /*should_apply_inline_size_containment=*/false, &grid_items);
-
+        algorithm.GetConstraintSpace().GetGridLayoutSubtree();
+    GridItems* grid_items = nullptr;
+    if (layout_subtree) {
+      algorithm.PrepareGridLanesSubgridItems(
+          /*should_apply_inline_size_containment=*/false);
+    } else {
+      layout_subtree = algorithm.ComputeGridLanesGeometry(
+          SizingConstraint::kLayout,
+          /*should_apply_inline_size_containment=*/false, &grid_items,
+          /*opt_oof_children=*/nullptr);
+    }
     layout_data_ = layout_subtree->LayoutData();
 
     ASSERT_EQ(grid_axis_direction_, TrackCollection().Direction());
@@ -1650,80 +1656,6 @@ TEST_F(GridLanesLayoutAlgorithmTest, AppendSubgriddedItemsColumns) {
             2u);
 }
 
-TEST_F(GridLanesLayoutAlgorithmTest, AppendSubgriddedGridLanesItems) {
-  SetBodyInnerHTML(R"HTML(
-    <style>
-    #grid-lanes {
-      display: grid-lanes;
-      grid-template-columns: 100px 100px;
-    }
-    #subgrid {
-      display: grid-lanes;
-      grid-template-columns: subgrid;
-      grid-column: 1 / 3;
-    }
-    </style>
-    <div id="grid-lanes">
-      <div id="subgrid">
-        <div style="grid-column: 1">A</div>
-        <div style="grid-column: 2">B</div>
-      </div>
-    </div>
-  )HTML");
-
-  GridLanesNode node(GetLayoutBoxByElementId("grid-lanes"));
-  GridLanesNode subgrid_node(GetLayoutBoxByElementId("subgrid"));
-  // TODO(yanlingwang): Use `BuildGridSizingTree` once `GridItemData` recognizes
-  // grid-lanes subgrids, removing this manual algorithm setup.
-  const auto space = ConstructBlockLayoutTestConstraintSpace(
-      {WritingMode::kHorizontalTb, TextDirection::kLtr},
-      LogicalSize(LayoutUnit(200), kIndefiniteSize),
-      /*stretch_inline_size_if_auto=*/true,
-      /*is_new_formatting_context=*/true);
-  const auto fragment_geometry = CalculateInitialFragmentGeometry(
-      space, subgrid_node, /*break_token=*/nullptr);
-  const GridLanesLayoutAlgorithm subgrid_algorithm(
-      {subgrid_node, fragment_geometry, space});
-
-  // TODO(yanlingwang): Create and pass the line resolver through the normal
-  // sizing-tree path once `GridItemData` recognizes grid-lanes subgrids.
-  const GridLineResolver line_resolver(node.Style(), /*auto_repetitions=*/0);
-  bool must_invalidate_placement_cache = false;
-  auto* grid_items =
-      node.ConstructGridItems(line_resolver, &must_invalidate_placement_cache);
-  ASSERT_FALSE(must_invalidate_placement_cache);
-  ASSERT_EQ(grid_items->Size(), 1u);
-
-  auto& subgrid_item = grid_items->At(0);
-  // TODO(yanlingwang): Remove this setup once `GridItemData`
-  // recognizes grid-lanes subgrids.
-  subgrid_item.has_subgridded_columns = true;
-  subgrid_item.must_consider_grid_items_for_column_sizing = true;
-  subgrid_item.MaybeTranslateSpan(/*start_offset=*/0, kForColumns);
-
-  const auto subgrid_line_resolver = subgrid_algorithm.BuildGridLineResolver(
-      subgrid_item.resolved_position, &line_resolver);
-  EXPECT_EQ(subgrid_line_resolver.SubgridSpanSize(kForColumns), 2u);
-  EXPECT_FALSE(subgrid_line_resolver.HasStandaloneAxis(kForColumns));
-  To<LayoutGridLanes>(subgrid_node.GetLayoutBox())
-      ->SetCachedPlacementData(GridPlacementData(subgrid_line_resolver));
-
-  // TODO(yanlingwang): Replace this manual append with `BuildGridSizingTree`
-  // once `GridItemData` recognizes grid lanes subgrids.
-  AppendSubgriddedItems(node, grid_items);
-
-  wtf_size_t total_count = 0;
-  wtf_size_t subgridded_count = 0;
-  for (const auto& item : grid_items->IncludeSubgriddedItems()) {
-    if (item.is_subgridded_to_parent_grid) {
-      ++subgridded_count;
-    }
-    ++total_count;
-  }
-  EXPECT_EQ(total_count, 3u);
-  EXPECT_EQ(subgridded_count, 2u);
-}
-
 TEST_F(GridLanesLayoutAlgorithmTest, AppendSubgriddedItemsRows) {
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -2731,6 +2663,178 @@ TEST_F(GridLanesLayoutAlgorithmTest,
   for (const auto& item : outer_items) {
     EXPECT_TRUE(item.is_auto_placed);
   }
+}
+
+TEST_F(GridLanesLayoutAlgorithmTest, AppendColumnSubgriddedGridLanesItems) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #grid-lanes {
+      display: grid-lanes;
+      grid-template-columns: 100px 100px;
+    }
+    #subgrid {
+      display: grid-lanes;
+      grid-template-columns: subgrid;
+      grid-column: 1 / 3;
+    }
+    </style>
+    <div id="grid-lanes">
+      <div id="subgrid">
+        <div id="child-a" style="grid-column: 1">A</div>
+        <div id="child-b" style="grid-column: 2">B</div>
+      </div>
+    </div>
+  )HTML");
+
+  auto* subgrid = To<LayoutGridLanes>(GetLayoutBoxByElementId("subgrid"));
+  subgrid->SetGridPlacementDirty(true);
+
+  auto sizing_tree = BuildGridLanesSizingTree();
+  ASSERT_EQ(sizing_tree.Size(), 2u);
+
+  const auto& subgrid_item = sizing_tree.GetGridItems().At(0);
+  EXPECT_TRUE(subgrid_item.IsSubgrid());
+  EXPECT_TRUE(subgrid_item.has_subgridded_columns);
+  EXPECT_FALSE(subgrid_item.has_subgridded_rows);
+
+  EXPECT_FALSE(subgrid->IsGridPlacementDirty());
+  EXPECT_EQ(subgrid->CachedPlacementData().SubgridSpanSize(kForColumns), 2u);
+
+  EXPECT_EQ(ItemCount(sizing_tree.GetGridItems().IncludeSubgriddedItems()), 3u);
+  ExpectItemsSubgriddedToParent(
+      sizing_tree.GetGridItems().ItemsSubgriddedToParent(),
+      {"child-a", "child-b"});
+}
+
+TEST_F(GridLanesLayoutAlgorithmTest, AppendRowSubgriddedGridLanesItems) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #grid-lanes {
+      display: grid-lanes;
+      grid-template-rows: 100px 100px;
+    }
+    #subgrid {
+      display: grid-lanes;
+      grid-template-rows: subgrid;
+      grid-row: 1 / 3;
+    }
+    </style>
+    <div id="grid-lanes">
+      <div id="subgrid">
+        <div id="child-a" style="grid-row: 1">A</div>
+        <div id="child-b" style="grid-row: 2">B</div>
+      </div>
+    </div>
+  )HTML");
+
+  auto sizing_tree = BuildGridLanesSizingTree();
+  ASSERT_EQ(sizing_tree.Size(), 2u);
+
+  const auto& subgrid_item = sizing_tree.GetGridItems().At(0);
+  EXPECT_TRUE(subgrid_item.IsSubgrid());
+  EXPECT_FALSE(subgrid_item.has_subgridded_columns);
+  EXPECT_TRUE(subgrid_item.has_subgridded_rows);
+
+  EXPECT_EQ(ItemCount(sizing_tree.GetGridItems().IncludeSubgriddedItems()), 3u);
+  ExpectItemsSubgriddedToParent(
+      sizing_tree.GetGridItems().ItemsSubgriddedToParent(),
+      {"child-a", "child-b"});
+}
+
+TEST_F(GridLanesLayoutAlgorithmTest, GridLanesSubgridIgnoresNonGridAxis) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #grid-lanes {
+      display: grid-lanes;
+      grid-template-columns: 100px 100px;
+    }
+    #subgrid {
+      display: grid-lanes;
+      grid-lanes-direction: column;
+      grid-template-rows: subgrid;
+      grid-column: 1 / 3;
+    }
+    </style>
+    <div id="grid-lanes">
+      <div id="subgrid"><div id="child"></div></div>
+    </div>
+  )HTML");
+
+  const BlockNode subgrid(GetLayoutBoxByElementId("subgrid"));
+  EXPECT_EQ(subgrid.Style().GridLanesTrackSizingDirection(), kForColumns);
+  EXPECT_TRUE(subgrid.Style().GridTemplateRows().IsSubgriddedAxis());
+
+  auto sizing_tree = BuildGridLanesSizingTree();
+  EXPECT_EQ(sizing_tree.Size(), 1u);
+
+  const auto& subgrid_item = sizing_tree.GetGridItems().At(0);
+  EXPECT_FALSE(subgrid_item.IsSubgrid());
+  EXPECT_FALSE(subgrid_item.has_subgridded_columns);
+  EXPECT_FALSE(subgrid_item.has_subgridded_rows);
+  EXPECT_EQ(ItemCount(sizing_tree.GetGridItems().ItemsSubgriddedToParent()),
+            0u);
+}
+
+TEST_F(GridLanesLayoutAlgorithmTest, OrthogonalGridLanesSubgridMapsGridAxis) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #grid-lanes {
+      display: grid-lanes;
+      grid-template-columns: 100px 100px;
+    }
+    #subgrid {
+      display: grid-lanes;
+      writing-mode: vertical-rl;
+      grid-template-rows: subgrid;
+      grid-column: 1 / 3;
+    }
+    </style>
+    <div id="grid-lanes">
+      <div id="subgrid"><div id="child"></div></div>
+    </div>
+  )HTML");
+
+  auto sizing_tree = BuildGridLanesSizingTree();
+  ASSERT_EQ(sizing_tree.Size(), 2u);
+
+  const auto& subgrid_item = sizing_tree.GetGridItems().At(0);
+  EXPECT_TRUE(subgrid_item.IsSubgrid());
+  EXPECT_TRUE(subgrid_item.has_subgridded_columns);
+  EXPECT_FALSE(subgrid_item.has_subgridded_rows);
+  EXPECT_FALSE(subgrid_item.is_parallel_with_root_grid);
+}
+
+TEST_F(GridLanesLayoutAlgorithmTest, BuildsNestedGridLanesSubgrids) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #grid-lanes {
+      display: grid-lanes;
+      grid-template-columns: 100px 200px 300px;
+    }
+    .subgrid {
+      display: grid-lanes;
+      grid-template-columns: subgrid;
+    }
+    #outer-subgrid { grid-column: 2 / 4; }
+    #inner-subgrid { grid-column: 2 / 3; }
+    </style>
+    <div id="grid-lanes">
+      <div id="outer-subgrid" class="subgrid">
+        <div id="inner-subgrid" class="subgrid">
+          <div id="child"></div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+
+  auto sizing_tree = BuildGridLanesSizingTree();
+  ASSERT_EQ(sizing_tree.Size(), 3u);
+
+  const auto outer_index = sizing_tree.LookupSubgridIndex(
+      BlockNode(GetLayoutBoxByElementId("outer-subgrid")));
+  const auto& inner_subgrid_item = sizing_tree.GetGridItems(outer_index).At(0);
+  EXPECT_TRUE(inner_subgrid_item.IsSubgrid());
+  EXPECT_TRUE(inner_subgrid_item.has_subgridded_columns);
 }
 
 // Changing `grid-lanes-direction` changes the grid axis and therefore where
