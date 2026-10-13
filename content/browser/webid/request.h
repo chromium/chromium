@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_WEBID_FEDCM_REQUEST_SPEC_H_
-#define CONTENT_BROWSER_WEBID_FEDCM_REQUEST_SPEC_H_
+#ifndef CONTENT_BROWSER_WEBID_REQUEST_H_
+#define CONTENT_BROWSER_WEBID_REQUEST_H_
 
 #include <vector>
 
@@ -25,13 +25,12 @@ namespace content::webid {
 
 // Encapsulates the immutable input parameters, ambient browser security
 // context, and pre-computed lookup tables for a single FedCM token request.
-class CONTENT_EXPORT FedCmRequestSpec
-    : public base::RefCounted<FedCmRequestSpec> {
+class CONTENT_EXPORT Request : public base::RefCounted<Request> {
  public:
   using MediationRequirement =
       ::password_manager::CredentialMediationRequirement;
 
-  static scoped_refptr<FedCmRequestSpec> Build(
+  static scoped_refptr<Request> Build(
       RenderFrameHost* rfh,
       FederatedIdentityPermissionContextDelegate* permission_delegate,
       blink::mojom::IdentityProviderGetParametersPtr idp_get_params,
@@ -40,9 +39,9 @@ class CONTENT_EXPORT FedCmRequestSpec
       const GURL& intercepted_url = GURL(),
       bool force_allow_redirect_to_for_testing = false);
 
-  FedCmRequestSpec();
-  FedCmRequestSpec(const FedCmRequestSpec&) = delete;
-  FedCmRequestSpec& operator=(const FedCmRequestSpec&) = delete;
+  Request();
+  Request(const Request&) = delete;
+  Request& operator=(const Request&) = delete;
 
   blink::mojom::RpMode rp_mode() const { return rp_mode_; }
 
@@ -70,15 +69,14 @@ class CONTENT_EXPORT FedCmRequestSpec
   }
 
  private:
-  friend class base::RefCounted<FedCmRequestSpec>;
-  ~FedCmRequestSpec();
+  friend class base::RefCounted<Request>;
+  ~Request();
 
-  FedCmRequestSpec(
-      blink::mojom::IdentityProviderGetParametersPtr idp_get_params,
-      MediationRequirement requirement,
-      bool had_transient_user_activation,
-      bool can_accept_redirect_to,
-      const GURL& intercepted_url);
+  Request(blink::mojom::IdentityProviderGetParametersPtr idp_get_params,
+          MediationRequirement requirement,
+          bool had_transient_user_activation,
+          bool can_accept_redirect_to,
+          const GURL& intercepted_url);
 
   void ExtractIdpOrderAndNonceSets();
 
@@ -115,4 +113,4 @@ class CONTENT_EXPORT FedCmRequestSpec
 
 }  // namespace content::webid
 
-#endif  // CONTENT_BROWSER_WEBID_FEDCM_REQUEST_SPEC_H_
+#endif  // CONTENT_BROWSER_WEBID_REQUEST_H_

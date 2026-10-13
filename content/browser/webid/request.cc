@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/webid/fedcm_request_spec.h"
+#include "content/browser/webid/request.h"
 
 #include <algorithm>
 #include <utility>
@@ -20,7 +20,7 @@
 namespace content::webid {
 
 // static
-scoped_refptr<FedCmRequestSpec> FedCmRequestSpec::Build(
+scoped_refptr<Request> Request::Build(
     RenderFrameHost* rfh,
     FederatedIdentityPermissionContextDelegate* permission_delegate,
     blink::mojom::IdentityProviderGetParametersPtr idp_get_params,
@@ -82,19 +82,18 @@ scoped_refptr<FedCmRequestSpec> FedCmRequestSpec::Build(
        DidNavigationHandleHaveActivation(navigation_handle)) ||
       (rfh && rfh->HasTransientUserActivation());
 
-  return base::WrapRefCounted(new FedCmRequestSpec(
+  return base::WrapRefCounted(new Request(
       std::move(idp_get_params), requirement, had_transient_user_activation,
       can_accept_redirect_to, intercepted_url));
 }
 
-FedCmRequestSpec::FedCmRequestSpec() = default;
+Request::Request() = default;
 
-FedCmRequestSpec::FedCmRequestSpec(
-    blink::mojom::IdentityProviderGetParametersPtr idp_get_params,
-    MediationRequirement requirement,
-    bool had_transient_user_activation,
-    bool can_accept_redirect_to,
-    const GURL& intercepted_url)
+Request::Request(blink::mojom::IdentityProviderGetParametersPtr idp_get_params,
+                 MediationRequirement requirement,
+                 bool had_transient_user_activation,
+                 bool can_accept_redirect_to,
+                 const GURL& intercepted_url)
     : providers_(std::move(idp_get_params->providers)),
       mediation_requirement_(requirement),
       rp_mode_(idp_get_params->mode),
@@ -105,9 +104,9 @@ FedCmRequestSpec::FedCmRequestSpec(
   ExtractIdpOrderAndNonceSets();
 }
 
-FedCmRequestSpec::~FedCmRequestSpec() = default;
+Request::~Request() = default;
 
-void FedCmRequestSpec::ExtractIdpOrderAndNonceSets() {
+void Request::ExtractIdpOrderAndNonceSets() {
   for (const auto& idp_ptr : providers_) {
     idp_order_.push_back(idp_ptr->config->config_url);
 

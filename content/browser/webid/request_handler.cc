@@ -196,7 +196,7 @@ RequestHandler::RequestHandler(RenderFrameHost* rfh,
     : render_frame_host_(rfh),
       request_service_(request_service),
       perfetto_track_(CreatePerfettoTrackForFedCM(this)),
-      spec_(base::MakeRefCounted<FedCmRequestSpec>()) {
+      req_(base::MakeRefCounted<Request>()) {
   receivers_.set_disconnect_handler(base::BindRepeating(
       &RequestHandler::OnConnectionError, base::Unretained(this)));
 }
@@ -242,10 +242,10 @@ void RequestHandler::OnConnectionError() {
                            /*should_delay_callback=*/false);
 }
 
-bool RequestHandler::RequestToken(scoped_refptr<FedCmRequestSpec> spec,
+bool RequestHandler::RequestToken(scoped_refptr<Request> req,
                                   RequestTokenCallback callback) {
   CHECK(!HasPendingRequest());
-  spec_ = std::move(spec);
+  req_ = std::move(req);
 
   bool intercept = false;
   bool should_complete_request_immediately = false;
@@ -255,7 +255,7 @@ bool RequestHandler::RequestToken(scoped_refptr<FedCmRequestSpec> spec,
       (intercept && should_complete_request_immediately) ||
       api_permission_delegate()->ShouldCompleteRequestImmediately();
 
-  if (IsIdPRegistrationEnabled() && spec_->providers().empty()) {
+  if (IsIdPRegistrationEnabled() && req_->providers().empty()) {
     render_frame_host().AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kError,
         "No identity providers are registered.");
@@ -302,12 +302,12 @@ bool RequestHandler::RequestToken(scoped_refptr<FedCmRequestSpec> spec,
   if (!fedcm_metrics_) {
     fedcm_metrics_ = CreateFedCmMetrics();
   }
-  fedcm_metrics_->RecordHasNonce(spec_->idps_with_nonce());
+  fedcm_metrics_->RecordHasNonce(req_->idps_with_nonce());
   fedcm_metrics_->RecordHasNonceOutsideParamsOnly(
-      spec_->idps_with_nonce_outside_params_only());
+      req_->idps_with_nonce_outside_params_only());
 
-  if (spec_->rp_mode() == RpMode::kActive &&
-      !spec_->had_transient_user_activation()) {
+  if (req_->rp_mode() == RpMode::kActive &&
+      !req_->had_transient_user_activation()) {
     CompleteRequestWithError(
         FederatedRequestResult::kMissingTransientUserActivation,
         TokenStatus::kMissingTransientUserActivation,
@@ -325,8 +325,8 @@ bool RequestHandler::RequestToken(scoped_refptr<FedCmRequestSpec> spec,
 
   FederatedApiPermissionStatus permission_status = GetApiPermissionStatus();
 
-  if (!CanBypassPermissionStatusCheck(spec_->rp_mode(),
-                                      spec_->mediation_requirement())) {
+  if (!CanBypassPermissionStatusCheck(req_->rp_mode(),
+                                      req_->mediation_requirement())) {
     if (permission_status != FederatedApiPermissionStatus::GRANTED) {
       std::pair<FederatedRequestResult, TokenStatus> resultAndTokenStatus =
           PermissionStatusToRequestResultAndTokenStatus(permission_status);
@@ -340,7 +340,7 @@ bool RequestHandler::RequestToken(scoped_refptr<FedCmRequestSpec> spec,
   request_service_->IncrementNumRequests();
 
   std::set<GURL> unique_idps;
-  for (const auto& idp_ptr : spec_->providers()) {
+  for (const auto& idp_ptr : req_->providers()) {
     // Throw an error if duplicate IDPs are specified.
     const bool is_unique_idp =
         unique_idps.insert(idp_ptr->config->config_url).second;
@@ -363,22 +363,22 @@ bool RequestHandler::RequestToken(scoped_refptr<FedCmRequestSpec> spec,
 
   bool any_idp_has_custom_scopes = false;
   bool any_idp_has_parameters = false;
-  for (const auto& idp_ptr : spec_->providers()) {
+  for (const auto& idp_ptr : req_->providers()) {
     bool has_failing_idp_signin_status =
         ShouldFailAccountsEndpointRequestBecauseNotSignedInWithIdp(
             idp_ptr->config->config_url, permission_delegate());
 
     if (has_failing_idp_signin_status) {
-      if (spec_->rp_mode() == blink::mojom::RpMode::kPassive) {
+      if (req_->rp_mode() == blink::mojom::RpMode::kPassive) {
         // In the multi IDP case, we do not want to complete the request
         // right away as there are other IDPs which may be logged in. But we
         // also do not want to fetch this IDP.
         unique_idps.erase(idp_ptr->config->config_url);
         continue;
-      } else if (spec_->rp_mode() == blink::mojom::RpMode::kActive) {
+      } else if (req_->rp_mode() == blink::mojom::RpMode::kActive) {
         // We fail sooner before, but just to double check, we assert that
         // we are inside a user gesture here again.
-        CHECK(spec_->had_transient_user_activation());
+        CHECK(req_->had_transient_user_activation());
       }
     }
     if (ShouldFailBeforeFetchingAccounts(idp_ptr->config->config_url)) {
@@ -393,8 +393,8 @@ bool RequestHandler::RequestToken(scoped_refptr<FedCmRequestSpec> spec,
                                 GetDisclosureFields(idp_ptr->fields).empty();
     any_idp_has_parameters = any_idp_has_parameters || idp_ptr->params_json;
 
-    blink::mojom::RpContext rp_context = spec_->rp_context();
-    blink::mojom::RpMode rp_mode = spec_->rp_mode();
+    blink::mojom::RpContext rp_context = req_->rp_context();
+    blink::mojom::RpMode rp_mode = req_->rp_mode();
     const GURL& idp_config_url = idp_ptr->config->config_url;
     std::optional<blink::mojom::Format> format =
         IsDelegationEnabled() ? idp_ptr->format : std::nullopt;
@@ -419,12 +419,11 @@ bool RequestHandler::RequestToken(scoped_refptr<FedCmRequestSpec> spec,
   if (unique_idps.empty()) {
     // At this point either all IDPs are signed out or mediation:silent was used
     // and there are no returning accounts.
-    auto result =
-        spec_->mediation_requirement() == MediationRequirement::kSilent
-            ? FederatedRequestResult::kSilentMediationFailure
-            : FederatedRequestResult::kNotSignedInWithIdp;
+    auto result = req_->mediation_requirement() == MediationRequirement::kSilent
+                      ? FederatedRequestResult::kSilentMediationFailure
+                      : FederatedRequestResult::kNotSignedInWithIdp;
     auto token_status =
-        spec_->mediation_requirement() == MediationRequirement::kSilent
+        req_->mediation_requirement() == MediationRequirement::kSilent
             ? TokenStatus::kSilentMediationFailure
             : TokenStatus::kNotSignedInWithIdp;
     CompleteRequestWithError(result, token_status,
@@ -435,19 +434,19 @@ bool RequestHandler::RequestToken(scoped_refptr<FedCmRequestSpec> spec,
   // Show loading dialog while fetching endpoints if it is a active flow. This
   // is needed even if the LoginStatus is "logged-out" because we need to fetch
   // the config file to get the login_url which may take some time.
-  if (spec_->rp_mode() == RpMode::kActive) {
-    CHECK_GT(spec_->idp_order().size(), 0u);
+  if (req_->rp_mode() == RpMode::kActive) {
+    CHECK_GT(req_->idp_order().size(), 0u);
     // If there is more than 1 IDP, do not show the IDP info in the loading
     // dialog.
     std::string idp_for_display =
-        spec_->idp_order().size() == 1u
-            ? FormatOriginForDisplay(url::Origin::Create(spec_->idp_order()[0]))
+        req_->idp_order().size() == 1u
+            ? FormatOriginForDisplay(url::Origin::Create(req_->idp_order()[0]))
             : "";
-    blink::mojom::RpContext rp_context = spec_->rp_context();
+    blink::mojom::RpContext rp_context = req_->rp_context();
     if (!ShowDialog([&]() {
           return GetDialogController()->ShowLoadingDialog(
               CreateRpData(/*client_metadata_received=*/false), idp_for_display,
-              rp_context, spec_->rp_mode(),
+              rp_context, req_->rp_mode(),
               base::BindOnce(&RequestHandler::OnDialogDismissed,
                              weak_ptr_factory_.GetWeakPtr()));
         })) {
@@ -456,10 +455,10 @@ bool RequestHandler::RequestToken(scoped_refptr<FedCmRequestSpec> spec,
     did_show_ui_ = true;
   }
 
-  fedcm_metrics_->RecordIdentityProvidersCount(spec_->idp_order().size());
+  fedcm_metrics_->RecordIdentityProvidersCount(req_->idp_order().size());
 
   CHECK(!unique_idps.empty());
-  if (spec_->rp_mode() == RpMode::kPassive && spec_->idp_order().size() == 1u) {
+  if (req_->rp_mode() == RpMode::kPassive && req_->idp_order().size() == 1u) {
     GetDialogController()->GetPassiveDialogVolume(
         base::BindOnce(&RequestHandler::OnGetPassiveDialogVolume,
                        weak_ptr_factory_.GetWeakPtr(), std::move(unique_idps)));
@@ -496,9 +495,9 @@ bool RequestHandler::HasPendingRequest() const {
 void RequestHandler::FetchEndpointsForIdps(
     const std::set<GURL>& idp_config_urls) {
   int icon_ideal_size =
-      GetDialogController()->GetBrandIconIdealSize(spec_->rp_mode());
+      GetDialogController()->GetBrandIconIdealSize(req_->rp_mode());
   int icon_minimum_size =
-      GetDialogController()->GetBrandIconMinimumSize(spec_->rp_mode());
+      GetDialogController()->GetBrandIconMinimumSize(req_->rp_mode());
   std::set<GURL> pending_idps = std::move(fetch_data_.pending_idps);
   pending_idps.insert(idp_config_urls.begin(), idp_config_urls.end());
   fetch_data_ = FetchData();
@@ -515,9 +514,9 @@ void RequestHandler::FetchEndpointsForIdps(
   fedcm_accounts_fetcher_ = std::make_unique<AccountsFetcher>(
       render_frame_host(), network_manager_.get(), api_permission_delegate(),
       permission_delegate(),
-      AccountsFetcher::FedCmFetchingParams(spec_->rp_mode(), icon_ideal_size,
+      AccountsFetcher::FedCmFetchingParams(req_->rp_mode(), icon_ideal_size,
                                            icon_minimum_size,
-                                           spec_->mediation_requirement()),
+                                           req_->mediation_requirement()),
       base::BindOnce(&RequestHandler::OnAccountsResultsReceived,
                      weak_ptr_factory_.GetWeakPtr()));
 
@@ -628,17 +627,17 @@ void RequestHandler::OnAccountsResultsReceived(
 }
 
 bool RequestHandler::CanShowContinueOnPopup() const {
-  if (spec_->mediation_requirement() == MediationRequirement::kConditional) {
+  if (req_->mediation_requirement() == MediationRequirement::kConditional) {
     // Because conditional mediation always requires a user gesture to sign in,
     // we can always allow the continuation popup.
     return true;
   }
 
-  if (spec_->mediation_requirement() == MediationRequirement::kSilent) {
+  if (req_->mediation_requirement() == MediationRequirement::kSilent) {
     return false;
   }
 
-  if (spec_->mediation_requirement() == MediationRequirement::kRequired) {
+  if (req_->mediation_requirement() == MediationRequirement::kRequired) {
     // In this case, we always have a user gesture (the user had to choose
     // an account), so we can show a popup.
     return true;
@@ -648,7 +647,7 @@ bool RequestHandler::CanShowContinueOnPopup() const {
     return true;
   }
 
-  return spec_->had_transient_user_activation();
+  return req_->had_transient_user_activation();
 }
 
 UseOtherAccountResult RequestHandler::ComputeUseOtherAccountResult(
@@ -739,7 +738,7 @@ RequestHandler::GetAutofillSuggestions() const {
   }
 
   // We only augment autofill when it is a conditional mediation request.
-  if (spec_->mediation_requirement() != MediationRequirement::kConditional) {
+  if (req_->mediation_requirement() != MediationRequirement::kConditional) {
     return std::nullopt;
   }
 
@@ -750,7 +749,7 @@ void RequestHandler::AssembleAndSortAccounts() {
   idp_data_for_display_.clear();
   filtered_accounts_.clear();
 
-  for (const auto& idp : spec_->idp_order()) {
+  for (const auto& idp : req_->idp_order()) {
     auto idp_info_it = idp_infos_.find(idp);
     if (idp_info_it == idp_infos_.end()) {
       continue;
@@ -795,7 +794,7 @@ RequestHandler::AutoReauthnInfo RequestHandler::CheckAutoReauthnEligibility() {
   // TODO(crbug.com/40246099): Handle auto_reauthn_ for multi IDP.
   // TODO(crbug.com/380367784): Handle auto_reauthn_ for delegated IdP.
   bool auto_reauthn_enabled =
-      spec_->mediation_requirement() != MediationRequirement::kRequired;
+      req_->mediation_requirement() != MediationRequirement::kRequired;
 
   if (!auto_reauthn_enabled) {
     return result;
@@ -852,8 +851,8 @@ void RequestHandler::MaybeShowAccountsDialog() {
   // able to disable FedCM API (e.g. via settings or dismissing another FedCM UI
   // on the same RP origin) before the browser receives the accounts response.
   // We should exit early without showing any UI.
-  if (!CanBypassPermissionStatusCheck(spec_->rp_mode(),
-                                      spec_->mediation_requirement()) &&
+  if (!CanBypassPermissionStatusCheck(req_->rp_mode(),
+                                      req_->mediation_requirement()) &&
       GetApiPermissionStatus() != FederatedApiPermissionStatus::GRANTED) {
     CompleteRequestWithError(FederatedRequestResult::kDisabledInSettings,
                              TokenStatus::kDisabledInSettings,
@@ -866,7 +865,7 @@ void RequestHandler::MaybeShowAccountsDialog() {
   // Conditional mediation doesn't display the account chooser when called,
   // it instead waits for another UI surface (say, autofill) to trigger the
   // account chooser.
-  if (spec_->mediation_requirement() == MediationRequirement::kConditional) {
+  if (req_->mediation_requirement() == MediationRequirement::kConditional) {
     GetDialogController()->NotifyAutofillSourceReadyForTesting();
     return;
   }
@@ -874,7 +873,7 @@ void RequestHandler::MaybeShowAccountsDialog() {
   AutoReauthnInfo auto_reauthn = CheckAutoReauthnEligibility();
 
   if (!auto_reauthn.is_eligible &&
-      spec_->mediation_requirement() == MediationRequirement::kSilent) {
+      req_->mediation_requirement() == MediationRequirement::kSilent) {
     // By this moment we know that the user has granted permission in the past
     // for the RP/IdP. Because otherwise we have returned already in
     // `ShouldFailBeforeFetchingAccounts`. It means that we don't need to show
@@ -896,8 +895,8 @@ void RequestHandler::MaybeShowAccountsDialog() {
     accounts_[0]->identity_provider = idp_data_for_display_[0];
 
     identity_selection_type_ =
-        (spec_->rp_mode() == blink::mojom::RpMode::kPassive) ? kAutoPassive
-                                                             : kAutoActive;
+        (req_->rp_mode() == blink::mojom::RpMode::kPassive) ? kAutoPassive
+                                                            : kAutoActive;
   } else {
     dialog_type_ = DialogType::kSelectAccount;
     identity_selection_type_ = kExplicit;
@@ -969,7 +968,7 @@ void RequestHandler::MaybeShowAccountsDialog() {
     shown = ShowDialog([&]() {
       return GetDialogController()->ShowVerifyingDialog(
           CreateRpData(/*client_metadata_received=*/true), auto_reauthn.idp,
-          accounts_[0], SignInMode::kAuto, spec_->rp_mode(),
+          accounts_[0], SignInMode::kAuto, req_->rp_mode(),
           base::BindOnce(&RequestHandler::OnAccountsDisplayed,
                          weak_ptr_factory_.GetWeakPtr()));
     });
@@ -977,8 +976,7 @@ void RequestHandler::MaybeShowAccountsDialog() {
     shown = ShowDialog([&]() {
       return GetDialogController()->ShowAccountsDialog(
           CreateRpData(/*client_metadata_received=*/true),
-          idp_data_for_display_, accounts_, filtered_accounts_,
-          spec_->rp_mode(),
+          idp_data_for_display_, accounts_, filtered_accounts_, req_->rp_mode(),
           base::BindOnce(&RequestHandler::OnAccountSelected,
                          weak_ptr_factory_.GetWeakPtr()),
           base::BindRepeating(&RequestHandler::LoginToIdP,
@@ -1150,7 +1148,7 @@ void RequestHandler::OnIdpMismatch(
     return;
   }
 
-  if (spec_->rp_mode() == RpMode::kActive) {
+  if (req_->rp_mode() == RpMode::kActive) {
     MaybeShowActiveModeModalDialog(idp_config_url, idp_login_url);
     return;
   }
@@ -1191,7 +1189,7 @@ void RequestHandler::ShowSingleIdpFailureDialog() {
         return GetDialogController()->ShowFailureDialog(
             CreateRpData(/*client_metadata_received=*/true),
             FormatOriginForDisplay(idp_origin), idp_info->rp_context,
-            spec_->rp_mode(), idp_info->metadata, filtered_accounts_,
+            req_->rp_mode(), idp_info->metadata, filtered_accounts_,
             base::BindOnce(&RequestHandler::OnDismissFailureDialog,
                            weak_ptr_factory_.GetWeakPtr()),
             base::BindRepeating(&RequestHandler::LoginToIdP,
@@ -1222,8 +1220,8 @@ void RequestHandler::OnAccountSelected(const GURL& idp_config_url,
   // should enforce this check before all requests but users typically won't
   // have time to disable the FedCM API in other types of requests.
   // Note that for the active flow is not affected by the permission status.
-  if (!CanBypassPermissionStatusCheck(spec_->rp_mode(),
-                                      spec_->mediation_requirement()) &&
+  if (!CanBypassPermissionStatusCheck(req_->rp_mode(),
+                                      req_->mediation_requirement()) &&
       GetApiPermissionStatus() != FederatedApiPermissionStatus::GRANTED) {
     CompleteRequestWithError(FederatedRequestResult::kDisabledInSettings,
                              TokenStatus::kDisabledInSettings,
@@ -1268,7 +1266,7 @@ void RequestHandler::OnAccountSelected(const GURL& idp_config_url,
       weak_ptr_factory_.GetWeakPtr(), idp_info.provider->Clone());
 
   IdpNetworkRequestManager::RedirectToCallback redirect_to;
-  if (spec_->can_accept_redirect_to()) {
+  if (req_->can_accept_redirect_to()) {
     redirect_to = base::BindOnce(&RequestHandler::OnRedirectToResponseReceived,
                                  weak_ptr_factory_.GetWeakPtr(),
                                  idp_info.provider->Clone());
@@ -1304,7 +1302,7 @@ void RequestHandler::OnAccountSelected(const GURL& idp_config_url,
     query = ComputeUrlEncodedTokenPostData(
         render_frame_host(), idp_info.provider->config->client_id,
         idp_info.provider->nonce, account_id,
-        identity_selection_type_ != kExplicit, spec_->rp_mode(),
+        identity_selection_type_ != kExplicit, req_->rp_mode(),
         idp_info.provider->fields, disclosure_shown_for,
         idp_info.provider->params_json.value_or(""),
         idp_info.provider->config->type);
@@ -1334,7 +1332,7 @@ void RequestHandler::OnDismissFailureDialog(
       dismiss_reason == IdentityRequestDialogController::DismissReason::kSwipe;
   fedcm_metrics_->RecordCancelReason(dismiss_reason);
 
-  should_embargo &= spec_->rp_mode() == RpMode::kPassive && !IsUsingAmbient();
+  should_embargo &= req_->rp_mode() == RpMode::kPassive && !IsUsingAmbient();
   if (should_embargo) {
     api_permission_delegate()->RecordDismissAndEmbargo(GetEmbeddingOrigin());
   }
@@ -1410,7 +1408,7 @@ void RequestHandler::OnDialogDismissed(
   }
   fedcm_metrics_->RecordCancelReason(dismiss_reason);
 
-  should_embargo &= spec_->rp_mode() == RpMode::kPassive && !IsUsingAmbient();
+  should_embargo &= req_->rp_mode() == RpMode::kPassive && !IsUsingAmbient();
   if (should_embargo) {
     api_permission_delegate()->RecordDismissAndEmbargo(GetEmbeddingOrigin());
   }
@@ -1478,7 +1476,7 @@ void RequestHandler::ShowModalDialog(DialogType dialog_type,
   WebContents* web_contents = nullptr;
   if (!ShowDialog([&]() {
         web_contents = GetDialogController()->ShowModalDialog(
-            url_to_show, spec_->rp_mode(),
+            url_to_show, req_->rp_mode(),
             base::BindOnce(&RequestHandler::OnDialogDismissed,
                            weak_ptr_factory_.GetWeakPtr()),
             base::BindOnce(create_registry_async,
@@ -1573,7 +1571,7 @@ void RequestHandler::RedirectTo(const GURL& idp_config_url,
   // This is done here rather than in the callers of the RequestHandler because
   // that allows us to have a consistent experience regardless of how the token
   // was requested (e.g. via an interception or via the renderer process call).
-  if (!spec_->can_accept_redirect_to() || !redirect_to.SchemeIsHTTPOrHTTPS()) {
+  if (!req_->can_accept_redirect_to() || !redirect_to.SchemeIsHTTPOrHTTPS()) {
     CompleteRequestWithError(FederatedRequestResult::kIdTokenInvalidResponse,
                              TokenStatus::kIdTokenInvalidResponse,
                              /*should_delay_callback=*/false);
@@ -1602,11 +1600,11 @@ void RequestHandler::RedirectTo(const GURL& idp_config_url,
       RenderFrameHostImpl::From(&render_frame_host())
           ->GetCurrentInitiatorNavigationState();
   params.source_site_instance = render_frame_host().GetSiteInstance();
-  params.referrer = Referrer(spec_->intercepted_url(),
+  params.referrer = Referrer(req_->intercepted_url(),
                              network::mojom::ReferrerPolicy::kDefault);
   // Pretend this was renderer initiated like the load we intercepted.
   params.is_renderer_initiated = true;
-  params.has_user_gesture = spec_->had_transient_user_activation();
+  params.has_user_gesture = req_->had_transient_user_activation();
   // This is used for "Request Desktop Site" on Android.
   if (web_contents->ShouldOverrideUserAgentForRendererInitiatedNavigation()) {
     params.override_user_agent = NavigationController::UA_OVERRIDE_TRUE;
@@ -1650,7 +1648,7 @@ void RequestHandler::ShowErrorDialog(const GURL& idp_config_url,
         return GetDialogController()->ShowErrorDialog(
             CreateRpData(/*client_metadata_received=*/true),
             FormatOriginForDisplay(url::Origin::Create(idp_config_url)),
-            idp_info.rp_context, spec_->rp_mode(), idp_info.metadata,
+            idp_info.rp_context, req_->rp_mode(), idp_info.metadata,
             token_error,
             base::BindOnce(&RequestHandler::OnDismissErrorDialog,
                            weak_ptr_factory_.GetWeakPtr(), idp_config_url,
@@ -1701,8 +1699,8 @@ void RequestHandler::OnTokenResponseReceived(
   base::TimeDelta fetch_time =
       id_assertion_response_time_ - select_account_time_;
   if (should_complete_request_immediately_ ||
-      spec_->rp_mode() == RpMode::kActive ||
-      spec_->mediation_requirement() == MediationRequirement::kConditional ||
+      req_->rp_mode() == RpMode::kActive ||
+      req_->mediation_requirement() == MediationRequirement::kConditional ||
       should_show_error_ui || fetch_time >= kTokenRequestDelay) {
     std::move(complete_request_callback).Run();
     return;
@@ -1923,8 +1921,8 @@ void RequestHandler::RecordMetricsAndConsoleError(
     }
 
     fedcm_metrics_->RecordRequestTokenStatus(
-        *token_status, spec_->mediation_requirement(), spec_->idp_order(),
-        num_idps_mismatch, selected_idp_config_url, spec_->rp_mode(),
+        *token_status, req_->mediation_requirement(), req_->idp_order(),
+        num_idps_mismatch, selected_idp_config_url, req_->rp_mode(),
         use_other_account_result, verifying_dialog_result_,
         api_permission_delegate()->AreThirdPartyCookiesEnabledInSettings()
             ? ThirdPartyCookiesStatus::kEnabledInSettings
@@ -2121,7 +2119,7 @@ bool RequestHandler::OnResolve(GURL idp_config_url,
       idp_infos_[idp_config_url]->provider;
   DCHECK(provider);
 
-  if (params->is_redirect_to() && spec_->can_accept_redirect_to()) {
+  if (params->is_redirect_to() && req_->can_accept_redirect_to()) {
     const auto& redirect_to = params->get_redirect_to();
     if (redirect_to->is_get()) {
       RedirectTo(idp_config_url, blink::mojom::RedirectParams::Tag::kGet,
@@ -2403,7 +2401,7 @@ bool RequestHandler::GetAccountForAutoReauthn(
 }
 
 bool RequestHandler::ShouldFailBeforeFetchingAccounts(const GURL& config_url) {
-  if (spec_->mediation_requirement() != MediationRequirement::kSilent) {
+  if (req_->mediation_requirement() != MediationRequirement::kSilent) {
     return false;
   }
 
@@ -2522,7 +2520,7 @@ void RequestHandler::MaybeShowActiveModeModalDialog(const GURL& idp_config_url,
 
   // We fail sooner before, but just to double check, we assert that
   // we are inside a user gesture here again.
-  CHECK(spec_->had_transient_user_activation());
+  CHECK(req_->had_transient_user_activation());
   // TODO(crbug.com/40283219): we should probably make idp_login_url
   // optional instead of empty.
   LoginToIdP(/*can_append_hints=*/false, idp_config_url, idp_login_url);
@@ -2619,7 +2617,7 @@ bool RequestHandler::IsNewlyLoggedIn(const IdentityRequestAccount& account) {
 }
 
 bool RequestHandler::IsUsingAmbient() const {
-  if (spec_->rp_mode() != RpMode::kPassive || spec_->idp_order().size() != 1u) {
+  if (req_->rp_mode() != RpMode::kPassive || req_->idp_order().size() != 1u) {
     return false;
   }
 

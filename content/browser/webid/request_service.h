@@ -34,7 +34,7 @@ class IdentityRequestDialogController;
 
 namespace webid {
 
-class FedCmRequestSpec;
+class Request;
 class RequestHandler;
 class IdentityRegistry;
 class IdpRegistrationHandler;
@@ -200,7 +200,7 @@ class CONTENT_EXPORT RequestService
   void SetActiveRequestHandlerAndResetController(
       std::unique_ptr<RequestHandler> request_handler);
   bool ShouldCancelNewRequest(RequestHandler* new_request_handler,
-                              const FedCmRequestSpec& spec);
+                              const Request& req);
   std::unique_ptr<Metrics> CreateFedCmMetrics();
   std::unique_ptr<IdentityRequestDialogController> CreateDialogController();
 

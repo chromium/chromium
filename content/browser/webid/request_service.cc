@@ -12,10 +12,10 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webid/disconnect_request.h"
 #include "content/browser/webid/fake_identity_request_dialog_controller.h"
-#include "content/browser/webid/fedcm_request_spec.h"
 #include "content/browser/webid/flags.h"
 #include "content/browser/webid/idp_registration_handler.h"
 #include "content/browser/webid/metrics.h"
+#include "content/browser/webid/request.h"
 #include "content/browser/webid/request_handler.h"
 #include "content/browser/webid/request_page_data.h"
 #include "content/browser/webid/user_info_request.h"
@@ -251,12 +251,12 @@ bool RequestService::InitiateTokenRequest(
     const GURL& intercepted_url,
     RequestTokenCallback callback) {
   CHECK_EQ(idp_get_params.size(), 1u);
-  scoped_refptr<FedCmRequestSpec> spec = FedCmRequestSpec::Build(
+  scoped_refptr<Request> req = Request::Build(
       &render_frame_host(), permission_delegate_, std::move(idp_get_params[0]),
       requirement, navigation_handle, intercepted_url,
       force_allow_redirect_to_for_testing_);
 
-  if (ShouldCancelNewRequest(new_request_handler.get(), *spec)) {
+  if (ShouldCancelNewRequest(new_request_handler.get(), *req)) {
     std::move(callback).Run(
         blink::mojom::RequestTokenStatus::kErrorTooManyRequests, std::nullopt,
         std::nullopt, /*error=*/nullptr, /*is_auto_selected=*/false);
@@ -286,7 +286,7 @@ bool RequestService::InitiateTokenRequest(
   SetActiveRequestHandlerAndResetController(std::move(new_request_handler));
 
   // Call RequestToken on the new request.
-  if (active_request_handler_->RequestToken(std::move(spec),
+  if (active_request_handler_->RequestToken(std::move(req),
                                             std::move(wrapper_callback))) {
     // If it started successfully, we keep it as the active request.
     // The `old_request_handler` on the stack will go out of scope and be
@@ -355,20 +355,20 @@ void RequestService::CleanUpCompletedRequestHandler(
 }
 
 bool RequestService::ShouldCancelNewRequest(RequestHandler* new_request_handler,
-                                            const FedCmRequestSpec& spec) {
+                                            const Request& req) {
   RequestHandler* pending_request_handler =
       GetPageData(render_frame_host().GetPage())->PendingRequestHandler();
   if (!pending_request_handler) {
     return false;
   }
 
-  const std::vector<GURL>& new_idp_order = spec.idp_order();
-  bool had_transient_user_activation = spec.had_transient_user_activation();
+  const std::vector<GURL>& new_idp_order = req.idp_order();
+  bool had_transient_user_activation = req.had_transient_user_activation();
 
   std::unique_ptr<Metrics> new_request_metrics = CreateFedCmMetrics();
   blink::mojom::RpMode pending_request_rp_mode =
       pending_request_handler->GetRpMode();
-  blink::mojom::RpMode new_request_rp_mode = spec.rp_mode();
+  blink::mojom::RpMode new_request_rp_mode = req.rp_mode();
   new_request_metrics->RecordMultipleRequestsRpMode(
       pending_request_rp_mode, new_request_rp_mode, new_idp_order);
 
@@ -378,9 +378,9 @@ bool RequestService::ShouldCancelNewRequest(RequestHandler* new_request_handler,
       pending_request_rp_mode != blink::mojom::RpMode::kActive;
   if (!can_replace_pending_request) {
     new_request_metrics->RecordRequestTokenStatus(
-        TokenStatus::kTooManyRequests, spec.mediation_requirement(),
+        TokenStatus::kTooManyRequests, req.mediation_requirement(),
         new_idp_order, /*num_idps_mismatch=*/0,
-        /*selected_idp_config_url=*/std::nullopt, spec.rp_mode(),
+        /*selected_idp_config_url=*/std::nullopt, req.rp_mode(),
         /*use_other_account_result=*/std::nullopt,
         /*verifying_dialog_result=*/std::nullopt,
         api_permission_delegate_->AreThirdPartyCookiesEnabledInSettings()

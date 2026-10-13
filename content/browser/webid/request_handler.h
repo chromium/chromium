@@ -21,13 +21,13 @@
 #include "base/trace_event/trace_event.h"
 #include "content/browser/webid/accounts_fetcher.h"
 #include "content/browser/webid/delegation/federated_sd_jwt_handler.h"
-#include "content/browser/webid/fedcm_request_spec.h"
 #include "content/browser/webid/identity_provider_info.h"
 #include "content/browser/webid/identity_registry.h"
 #include "content/browser/webid/identity_registry_delegate.h"
 #include "content/browser/webid/idp_network_request_manager.h"
 #include "content/browser/webid/idp_registration_handler.h"
 #include "content/browser/webid/metrics.h"
+#include "content/browser/webid/request.h"
 #include "content/browser/webid/url_computations.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_user_data.h"
@@ -94,7 +94,7 @@ class CONTENT_EXPORT RequestHandler
   // interception, so that we can use this handle for user activation checking
   // and setting up parameters for a later redirect. This is virtual so that it
   // can be mocked.
-  virtual bool RequestToken(scoped_refptr<FedCmRequestSpec> spec,
+  virtual bool RequestToken(scoped_refptr<Request> req,
                             RequestTokenCallback callback);
 
   // blink::mojom::FederatedRequest:
@@ -145,7 +145,7 @@ class CONTENT_EXPORT RequestHandler
 
   ::password_manager::CredentialMediationRequirement GetMediationRequirement()
       const {
-    return spec_->mediation_requirement();
+    return req_->mediation_requirement();
   }
 
   // These values are persisted to logs. Entries should not be renumbered and
@@ -250,7 +250,7 @@ class CONTENT_EXPORT RequestHandler
   url::Origin GetEmbeddingOrigin() const;
 
   GURL login_url() { return login_url_; }
-  const std::vector<GURL>& idp_order() const { return spec_->idp_order(); }
+  const std::vector<GURL>& idp_order() const { return req_->idp_order(); }
   bool HadAccountIdBeforeLogin(const std::string& account_id) {
     return account_ids_before_login_.contains(account_id);
   }
@@ -441,7 +441,7 @@ class CONTENT_EXPORT RequestHandler
   // Returns whether we'll be using an ambient UI for a passive call.
   bool IsUsingAmbient() const;
 
-  blink::mojom::RpMode GetRpMode() const { return spec_->rp_mode(); }
+  blink::mojom::RpMode GetRpMode() const { return req_->rp_mode(); }
 
   // Shows a FedCM UI and returns true if it succeeded and the RequestHandler
   // was not destroyed. Showing a FedCM UI may cause the tab to drop fullscreen
@@ -581,7 +581,7 @@ class CONTENT_EXPORT RequestHandler
 
   perfetto::NamedTrack perfetto_track_;
 
-  scoped_refptr<FedCmRequestSpec> spec_;
+  scoped_refptr<Request> req_;
 
   // Whether the callback for the current request has been delayed.
   bool complete_request_delayed_{false};
