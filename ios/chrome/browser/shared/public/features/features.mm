@@ -1128,7 +1128,7 @@ bool IsAiSubscriptionAvatarRingFollowupIOSEnabled() {
   return base::FeatureList::IsEnabled(kAiSubscriptionAvatarRingFollowupIOS);
 }
 
-BASE_FEATURE(kInfobarBannerRevamp, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kInfobarBannerRevamp, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsInfobarBannerRevampEnabled() {
   return base::FeatureList::IsEnabled(kInfobarBannerRevamp);

@@ -66,9 +66,9 @@ TEST_F(InfobarBannerViewControllerTest, TestTextConfiguration) {
   // Add view_controller_ to the UI Hierarchy to make sure views are created and
   // retained correctly.
   [scoped_key_window_.Get() setRootViewController:view_controller_];
-  ASSERT_EQ(view_controller_.titleLabel.text, kTitle);
-  ASSERT_EQ(view_controller_.subTitleLabel.text, kSubtitleText);
-  ASSERT_EQ(view_controller_.infobarButton.titleLabel.text, kButtonText);
+  ASSERT_NSEQ(view_controller_.titleLabel.text, kTitle);
+  ASSERT_NSEQ(view_controller_.subTitleLabel.text, kSubtitleText);
+  ASSERT_NSEQ(view_controller_.infobarButton.titleLabel.text, kButtonText);
 }
 
 TEST_F(InfobarBannerViewControllerTest, TestSubtitleLabelHidden) {
@@ -76,7 +76,7 @@ TEST_F(InfobarBannerViewControllerTest, TestSubtitleLabelHidden) {
   // Add view_controller_ to the UI Hierarchy to make sure views are created and
   // retained correctly.
   [scoped_key_window_.Get() setRootViewController:view_controller_];
-  ASSERT_EQ(view_controller_.titleLabel.text, @"title");
+  ASSERT_NSEQ(view_controller_.titleLabel.text, @"title");
   ASSERT_TRUE(view_controller_.subTitleLabel.hidden);
 }
 
