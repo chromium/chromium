@@ -14045,6 +14045,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBrowsingHistoryFilterByDeviceDescription, kOsAll,
      FEATURE_VALUE_TYPE(history::kBrowsingHistoryFilterByDevice)},
 
+    {"browsing-history-filter-by-time",
+     flag_descriptions::kBrowsingHistoryFilterByTimeName,
+     flag_descriptions::kBrowsingHistoryFilterByTimeDescription, kOsAll,
+     FEATURE_VALUE_TYPE(history::kBrowsingHistoryFilterByTime)},
+
 #if BUILDFLAG(IS_ANDROID)
     {"cct-early-init-power-manager",
      flag_descriptions::kCCTEarlyInitPowerManagerName,

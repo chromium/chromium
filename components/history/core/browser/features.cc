@@ -131,6 +131,9 @@ BASE_FEATURE(kBrowsingHistoryFilterByDevice, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables browser history filtering by domain.
 BASE_FEATURE(kBrowsingHistoryFilterByDomain, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables browser history filtering by time.
+BASE_FEATURE(kBrowsingHistoryFilterByTime, base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if !BUILDFLAG(IS_IOS)
 // Enables browser history filtering by actor on Android. On desktop this
 // changes the existing actor filter UI to dropdown menu.

@@ -9015,6 +9015,7 @@ from previous Chrome versions.
   <int value="-1802905985" label="OmniboxExpandedStateSuggestIcons:enabled"/>
   <int value="-1802559277" label="RunTasksByBatches:disabled"/>
   <int value="-1802502753" label="enable-manual-password-generation:enabled"/>
+  <int value="-1801837400" label="BrowsingHistoryFilterByTime:disabled"/>
   <int value="-1801515363" label="ThreadedPreloadScanner:enabled"/>
   <int value="-1801349476" label="FloatWindow:enabled"/>
   <int value="-1800643694" label="TabStripHeightTransitionGlitchFix:disabled"/>
@@ -11671,6 +11672,7 @@ from previous Chrome versions.
       label="AccessibilitySelectToSpeakPageMigration:disabled"/>
   <int value="-1000671573" label="TemporaryUnexpireFlagsM80:enabled"/>
   <int value="-1000279941" label="WebViewXRequestedWithHeaderControl:enabled"/>
+  <int value="-999103090" label="BrowsingHistoryFilterByTime:enabled"/>
   <int value="-998731974" label="WinUseBrowserSpellChecker:enabled"/>
   <int value="-998310305" label="OmniboxContextMenuShowFullUrls:disabled"/>
   <int value="-998255750" label="ExperimentalKeyboardLockUI:enabled"/>
