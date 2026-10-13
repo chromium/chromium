@@ -1872,6 +1872,12 @@ inline constexpr char kActorObservePageContentDefaultDescription[] =
     "If enabled, the actor framework will capture page content by default when "
     "requested.";
 
+inline constexpr char kActorPageStabilityName[] = "Actor page stability";
+inline constexpr char kActorPageStabilityDescription[] =
+    "Overrides how long the actor waits for the page to stabilize after an "
+    "action: the minimum wait and the initial and subsequent paint timeouts. "
+    "Each defaults to 1s.";
+
 inline constexpr char kActorScriptToolSkipScreenshotName[] =
     "Actor script tool skip screenshot";
 inline constexpr char kActorScriptToolSkipScreenshotDescription[] =
@@ -1887,6 +1893,14 @@ inline constexpr char kActorStepProgressNotificationName[] =
 inline constexpr char kActorStepProgressNotificationDescription[] =
     "Enables streaming Actor task step progress worklog notification updates "
     "on Android.";
+
+inline constexpr char kActorTypeToolObservationStartDelayName[] =
+    "Actor type tool observation start delay";
+inline constexpr char kActorTypeToolObservationStartDelayDescription[] =
+    "Controls how long the actor waits after a type action before it starts "
+    "waiting for the page to stabilize. Defaults to 1s; Disabled removes the "
+    "delay.";
+
 inline constexpr char kGlicCaptureRegionDescription[] =
     "Enables Glic to capture a region of the screen.";
 inline constexpr char kGlicCaptureRegionName[] = "Glic Capture Region";

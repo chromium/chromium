@@ -8722,6 +8722,7 @@ from previous Chrome versions.
       label="AutofillGetPaymentsIdentityFromSync:disabled"/>
   <int value="-1885663926" label="DynamicSafeAreaInsets:disabled"/>
   <int value="-1885548175" label="OmniboxFuzzyUrlSuggestions:enabled"/>
+  <int value="-1885215986" label="ActorTypeToolObservationStartDelay:enabled"/>
   <int value="-1885188914" label="OmniboxAsyncViewInflation:disabled"/>
   <int value="-1885163153" label="SupportOpeningDraggedLinksInSameTab:enabled"/>
   <int value="-1885074774" label="ShelfScrollable:enabled"/>
@@ -15182,6 +15183,7 @@ from previous Chrome versions.
   <int value="61130490" label="WebViewBrotliSupport:enabled"/>
   <int value="61141457" label="DecodeScriptSourceOffThread:enabled"/>
   <int value="61205887" label="enable-text-input-focus-manager"/>
+  <int value="61299850" label="ActorPageStability:disabled"/>
   <int value="61374931" label="GlicButtonAltLabel:enabled"/>
   <int value="61466986" label="AsyncDns:disabled"/>
   <int value="61770125" label="LinkPreview:enabled"/>
@@ -17502,6 +17504,7 @@ from previous Chrome versions.
   <int value="758836002" label="PermissionsAndroidClapperLoud:disabled"/>
   <int value="758845666" label="WebXrInternals:enabled"/>
   <int value="759296601" label="DiscountConsentV2:disabled"/>
+  <int value="760169468" label="ActorTypeToolObservationStartDelay:disabled"/>
   <int value="760542355" label="ServiceWorkerScriptFullCodeCache:enabled"/>
   <int value="761254781" label="SyncPollImmediatelyOnEveryStartup2:enabled"/>
   <int value="761770770"
@@ -20292,6 +20295,7 @@ from previous Chrome versions.
   <int value="1607484807" label="AutofillEnableSupportForLandmark:enabled"/>
   <int value="1607541874" label="SettingsLandingPageRedesign:enabled"/>
   <int value="1609059016" label="CupsIppPrintingBackend:enabled"/>
+  <int value="1609891962" label="ActorPageStability:enabled"/>
   <int value="1610616569"
       label="AutofillEnableSaveCardLocalSaveFallback:enabled"/>
   <int value="1610905768"

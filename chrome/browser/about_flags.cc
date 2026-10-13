@@ -3857,6 +3857,61 @@ const FeatureEntry::FeatureVariation kPdfGlicSummarizeVariations[] = {
      kPdfGlicSummarizeLongButtonText, nullptr}};
 #endif  // BUILDFLAG(ENABLE_PDF)
 
+// The durations match the arms of the
+// GlicActorPageStabilityAndTypeToolObservationStartDelay study.
+const FeatureEntry::FeatureParam kActorPageStability800ms[] = {
+    {"actor-page-stability-min-wait", "800ms"},
+    {"actor-paint-stability-initial-paint-timeout", "800ms"},
+    {"actor-paint-stability-subsequent-paint-timeout", "800ms"}};
+const FeatureEntry::FeatureParam kActorPageStability600ms[] = {
+    {"actor-page-stability-min-wait", "600ms"},
+    {"actor-paint-stability-initial-paint-timeout", "600ms"},
+    {"actor-paint-stability-subsequent-paint-timeout", "600ms"}};
+const FeatureEntry::FeatureParam kActorPageStability400ms[] = {
+    {"actor-page-stability-min-wait", "400ms"},
+    {"actor-paint-stability-initial-paint-timeout", "400ms"},
+    {"actor-paint-stability-subsequent-paint-timeout", "400ms"}};
+const FeatureEntry::FeatureParam kActorPageStability200ms[] = {
+    {"actor-page-stability-min-wait", "200ms"},
+    {"actor-paint-stability-initial-paint-timeout", "200ms"},
+    {"actor-paint-stability-subsequent-paint-timeout", "200ms"}};
+const FeatureEntry::FeatureParam kActorPageStability100ms[] = {
+    {"actor-page-stability-min-wait", "100ms"},
+    {"actor-paint-stability-initial-paint-timeout", "100ms"},
+    {"actor-paint-stability-subsequent-paint-timeout", "100ms"}};
+
+const FeatureEntry::FeatureVariation kActorPageStabilityVariations[] = {
+    {"with 800ms min wait and paint timeouts", kActorPageStability800ms,
+     nullptr},
+    {"with 600ms min wait and paint timeouts", kActorPageStability600ms,
+     nullptr},
+    {"with 400ms min wait and paint timeouts", kActorPageStability400ms,
+     nullptr},
+    {"with 200ms min wait and paint timeouts", kActorPageStability200ms,
+     nullptr},
+    {"with 100ms min wait and paint timeouts", kActorPageStability100ms,
+     nullptr}};
+
+const FeatureEntry::FeatureParam kActorTypeToolObservationStartDelay800ms[] = {
+    {"start_delay", "800ms"}};
+const FeatureEntry::FeatureParam kActorTypeToolObservationStartDelay600ms[] = {
+    {"start_delay", "600ms"}};
+const FeatureEntry::FeatureParam kActorTypeToolObservationStartDelay400ms[] = {
+    {"start_delay", "400ms"}};
+const FeatureEntry::FeatureParam kActorTypeToolObservationStartDelay200ms[] = {
+    {"start_delay", "200ms"}};
+const FeatureEntry::FeatureParam kActorTypeToolObservationStartDelay100ms[] = {
+    {"start_delay", "100ms"}};
+
+const FeatureEntry::FeatureVariation
+    kActorTypeToolObservationStartDelayVariations[] = {
+        {"with 800ms delay", kActorTypeToolObservationStartDelay800ms, nullptr},
+        {"with 600ms delay", kActorTypeToolObservationStartDelay600ms, nullptr},
+        {"with 400ms delay", kActorTypeToolObservationStartDelay400ms, nullptr},
+        {"with 200ms delay", kActorTypeToolObservationStartDelay200ms, nullptr},
+        {"with 100ms delay", kActorTypeToolObservationStartDelay100ms,
+         nullptr}};
+
 const FeatureEntry::FeatureParam kGlicActorTransientTasksForceTransient[] = {
     {"force_transient", "true"}};
 
@@ -11094,6 +11149,19 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kActorScriptToolSkipPageContentName,
      flag_descriptions::kActorScriptToolSkipPageContentDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(actor::kActorScriptToolSkipPageContent)},
+    {"actor-page-stability", flag_descriptions::kActorPageStabilityName,
+     flag_descriptions::kActorPageStabilityDescription, kOsDesktop | kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(actor::kActorPageStability,
+                                    kActorPageStabilityVariations,
+                                    "ActorPageStability")},
+    {"actor-type-tool-observation-start-delay",
+     flag_descriptions::kActorTypeToolObservationStartDelayName,
+     flag_descriptions::kActorTypeToolObservationStartDelayDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         actor::kActorTypeToolObservationStartDelay,
+         kActorTypeToolObservationStartDelayVariations,
+         "ActorTypeToolObservationStartDelay")},
 #if BUILDFLAG(IS_ANDROID)
     {"actor-step-progress-notification",
      flag_descriptions::kActorStepProgressNotificationName,

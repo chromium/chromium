@@ -75,6 +75,16 @@
     "expiry_milestone": 170
   },
   {
+    "name": "actor-page-stability",
+    "owners": [
+      "yuhengh@google.com",
+      "ndestin@google.com",
+      "weiguo@google.com",
+      "//chrome/browser/actor/OWNERS"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "actor-script-tool-skip-page-content",
     "owners": [
       "mfoltz@chromium.org",
@@ -99,6 +109,16 @@
     "name": "actor-step-progress-notification",
     "owners": [
       "bbetini@google.com",
+      "//chrome/browser/actor/OWNERS"
+    ],
+    "expiry_milestone": 160
+  },
+  {
+    "name": "actor-type-tool-observation-start-delay",
+    "owners": [
+      "yuhengh@google.com",
+      "ndestin@google.com",
+      "weiguo@google.com",
       "//chrome/browser/actor/OWNERS"
     ],
     "expiry_milestone": 160
