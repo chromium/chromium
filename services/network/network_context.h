@@ -60,6 +60,7 @@
 #include "services/network/oblivious_http_request_handler.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
+#include "services/network/public/cpp/originating_process_id.h"
 #include "services/network/public/cpp/transferable_directory.h"
 #include "services/network/public/mojom/clear_data_filter.mojom-forward.h"
 #include "services/network/public/mojom/connection_change_observer_client.mojom.h"
@@ -676,6 +677,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
     max_loaders_per_process_ = count;
   }
 
+  uint32_t GetLoaderCountForTesting(
+      const OriginatingProcessId& process_id) const;
+
   size_t GetNumOutstandingResolveHostRequestsForTesting() const;
 
   size_t pending_proxy_lookup_requests_for_testing() const {
@@ -961,6 +965,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       const std::optional<base::UnguessableToken>& reporting_source,
       const std::string& group,
       bool enforced);
+
+  uint32_t GetLoaderCount(const OriginatingProcessId& process_id) const;
 
   const raw_ptr<NetworkService> network_service_;
 

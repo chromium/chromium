@@ -1364,10 +1364,19 @@ void NetworkContext::LoaderDestroyed(const OriginatingProcessId& process_id) {
   }
 }
 
-bool NetworkContext::CanCreateLoader(const OriginatingProcessId& process_id) {
+uint32_t NetworkContext::GetLoaderCount(
+    const OriginatingProcessId& process_id) const {
   auto it = loader_count_per_process_.find(process_id);
-  uint32_t count = (it == loader_count_per_process_.end() ? 0 : it->second);
-  return count < max_loaders_per_process_;
+  return it == loader_count_per_process_.end() ? 0 : it->second;
+}
+
+bool NetworkContext::CanCreateLoader(const OriginatingProcessId& process_id) {
+  return GetLoaderCount(process_id) < max_loaders_per_process_;
+}
+
+uint32_t NetworkContext::GetLoaderCountForTesting(
+    const OriginatingProcessId& process_id) const {
+  return GetLoaderCount(process_id);
 }
 
 size_t NetworkContext::GetNumOutstandingResolveHostRequestsForTesting() const {

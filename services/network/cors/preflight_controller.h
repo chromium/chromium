@@ -42,6 +42,26 @@ namespace cors {
 // its result, and owning a CORS-preflight cache.
 class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightController final {
  public:
+  class PreflightLoader;
+
+  // A handle representing an in-flight preflight check.
+  // When destroyed before the preflight check completes, the underlying
+  // PreflightLoader is immediately cancelled and destroyed.
+  class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightCheckHandle {
+   public:
+    PreflightCheckHandle(const PreflightCheckHandle&) = delete;
+    PreflightCheckHandle& operator=(const PreflightCheckHandle&) = delete;
+    ~PreflightCheckHandle();
+
+   private:
+    friend class PreflightController;
+    friend class PreflightLoader;
+
+    explicit PreflightCheckHandle(base::WeakPtr<PreflightLoader> loader);
+
+    base::WeakPtr<PreflightLoader> loader_;
+  };
+
   // Called with the result of `PerformPreflightCheck()`.
   //
   // `net_error` is the overall result of the operation.
@@ -95,7 +115,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightController final {
   // Determines if a CORS-preflight request is needed, and checks the cache, or
   // makes a preflight request if it is needed. A result will be notified
   // synchronously or asynchronously.
-  void PerformPreflightCheck(
+  // Returns a handle that cancels the in-flight preflight request if
+  // destroyed before completion, or nullptr if the check completed
+  // synchronously (e.g. satisfied from cache).
+  [[nodiscard]] std::unique_ptr<PreflightCheckHandle> PerformPreflightCheck(
       CompletionCallback callback,
       int32_t request_id,
       const ResourceRequest& resource_request,
@@ -118,10 +141,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightController final {
   void ClearCorsPreflightCache(mojom::ClearDataFilterPtr url_filter);
 
   PreflightCache& GetPreflightCacheForTesting() { return cache_; }
+  size_t GetLoaderCountForTesting() const { return loaders_.size(); }
 
  private:
-  class PreflightLoader;
-
   void RemoveLoader(PreflightLoader* loader);
   void AppendToCache(const url::Origin& origin,
                      const GURL& url,

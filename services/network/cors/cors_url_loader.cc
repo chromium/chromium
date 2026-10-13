@@ -518,8 +518,10 @@ CorsURLLoader::CorsURLLoader(
 CorsURLLoader::~CorsURLLoader() {
   TRACE_EVENT("loading", "CorsURLLoader::~CorsURLLoader",
               net::NetLogWithSourceToFlow(net_log_));
-  // Reset pipes first to ignore possible subsequent callback invocations
-  // caused by `network_loader_`
+  // Must cancel an in-flight preflight before disconnecting pipes, then
+  // disconnect `network_client_receiver_` before `network_loader_` is
+  // destroyed to drop any subsequent callbacks.
+  preflight_check_handle_.reset();
   network_client_receiver_.reset();
 }
 
@@ -1303,17 +1305,25 @@ bool CorsURLLoader::CheckPreflightRequired() {
 void CorsURLLoader::StartPreflightCheck() {
   mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver> remote_observer;
 
-  context_->cors_preflight_controller()->PerformPreflightCheck(
-      base::BindOnce(&CorsURLLoader::OnPreflightRequestComplete,
-                     weak_factory_.GetWeakPtr()),
-      request_id_, request_,
-      PreflightController::WithTrustedHeaderClient(
-          options_ & mojom::kURLLoadOptionUseHeaderClient),
-      context_->cors_non_wildcard_request_headers_support(), tainted_,
-      net::NetworkTrafficAnnotationTag(traffic_annotation_),
-      network_loader_factory_, isolation_info_,
-      weak_devtools_observer_factory_.GetWeakPtr(), net_log_,
-      context_->acam_preflight_spec_conformant(), std::move(remote_observer));
+  std::unique_ptr<PreflightController::PreflightCheckHandle> handle =
+      context_->cors_preflight_controller()->PerformPreflightCheck(
+          base::BindOnce(&CorsURLLoader::OnPreflightRequestComplete,
+                         weak_factory_.GetWeakPtr()),
+          request_id_, request_,
+          PreflightController::WithTrustedHeaderClient(
+              options_ & mojom::kURLLoadOptionUseHeaderClient),
+          context_->cors_non_wildcard_request_headers_support(), tainted_,
+          net::NetworkTrafficAnnotationTag(traffic_annotation_),
+          network_loader_factory_, isolation_info_,
+          weak_devtools_observer_factory_.GetWeakPtr(), net_log_,
+          context_->acam_preflight_spec_conformant(),
+          std::move(remote_observer));
+  // On a cache hit, `PerformPreflightCheck()` synchronously runs
+  // `OnPreflightRequestComplete()` (which can destroy `this`), so
+  // `preflight_check_handle_` must only be assigned when `handle` is non-null.
+  if (handle) {
+    preflight_check_handle_ = std::move(handle);
+  }
 }
 
 void CorsURLLoader::ReportCorsErrorToDevTools(const CorsErrorStatus& status,
@@ -1371,6 +1381,8 @@ void CorsURLLoader::OnPreflightRequestComplete(
     int net_error,
     std::optional<CorsErrorStatus> status,
     bool has_authorization_covered_by_wildcard) {
+  preflight_check_handle_.reset();
+
   has_authorization_covered_by_wildcard_ =
       has_authorization_covered_by_wildcard;
 

@@ -7,9 +7,12 @@
 #include <algorithm>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -17,6 +20,7 @@
 #include "base/unguessable_token.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
+#include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/cookies/site_for_cookies.h"
@@ -36,6 +40,7 @@
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
@@ -392,6 +397,17 @@ class PreflightController::PreflightLoader final {
   PreflightLoader(const PreflightLoader&) = delete;
   PreflightLoader& operator=(const PreflightLoader&) = delete;
 
+  ~PreflightLoader() {
+    if (!completion_callback_.is_null() && devtools_observer_ &&
+        *devtools_observer_) {
+      CHECK(devtools_request_id_);
+      (*devtools_observer_)
+          ->OnCorsPreflightRequestCompleted(
+              *devtools_request_id_,
+              network::URLLoaderCompletionStatus(net::ERR_ABORTED));
+    }
+  }
+
   void Request(mojom::URLLoaderFactory* loader_factory) {
     DCHECK(loader_);
 
@@ -407,6 +423,14 @@ class PreflightController::PreflightLoader final {
         0);
   }
 
+  // Removes `this` instance from `controller_`. Once the method returns, `this`
+  // is already removed.
+  void RemoveFromController() { controller_->RemoveLoader(this); }
+
+  base::WeakPtr<PreflightLoader> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
  private:
   void HandleRedirect(const GURL& url_before_redirect,
                       const net::RedirectInfo& redirect_info,
@@ -420,6 +444,7 @@ class PreflightController::PreflightLoader final {
               network::URLLoaderCompletionStatus(net::ERR_INVALID_REDIRECT));
     }
 
+    weak_factory_.InvalidateWeakPtrs();
     std::move(completion_callback_)
         .Run(net::ERR_FAILED,
              CorsErrorStatus(mojom::CorsError::kPreflightDisallowedRedirect),
@@ -451,6 +476,7 @@ class PreflightController::PreflightLoader final {
                               devtools_observer_, &detected_error_status);
 
     if (!result) {
+      weak_factory_.InvalidateWeakPtrs();
       std::move(completion_callback_)
           .Run(net::ERR_FAILED, std::move(detected_error_status), false);
       return;
@@ -480,6 +506,7 @@ class PreflightController::PreflightLoader final {
       }
     }
 
+    weak_factory_.InvalidateWeakPtrs();
     std::move(completion_callback_)
         .Run(net_error, std::move(detected_error_status),
              has_authorization_covered_by_wildcard);
@@ -490,6 +517,7 @@ class PreflightController::PreflightLoader final {
     const std::optional<URLLoaderCompletionStatus>& status =
         loader_->CompletionStatus();
 
+    weak_factory_.InvalidateWeakPtrs();
     if (!completion_callback_.is_null()) {
       // As HandleResponseHeader() isn't called due to a request failure, such
       // as unknown hosts. unreachable remote, reset by peer, and so on, we
@@ -513,10 +541,6 @@ class PreflightController::PreflightLoader final {
     // `this` is deleted here.
   }
 
-  // Removes `this` instance from `controller_`. Once the method returns, `this`
-  // is already removed.
-  void RemoveFromController() { controller_->RemoveLoader(this); }
-
   // PreflightController owns all PreflightLoader instances, and should outlive.
   const raw_ptr<PreflightController> controller_;
 
@@ -536,7 +560,18 @@ class PreflightController::PreflightLoader final {
   const bool acam_preflight_spec_conformant_;
   mojo::Remote<mojom::URLLoaderNetworkServiceObserver>
       url_loader_network_service_observer_;
+  base::WeakPtrFactory<PreflightLoader> weak_factory_{this};
 };
+
+PreflightController::PreflightCheckHandle::PreflightCheckHandle(
+    base::WeakPtr<PreflightLoader> loader)
+    : loader_(std::move(loader)) {}
+
+PreflightController::PreflightCheckHandle::~PreflightCheckHandle() {
+  if (loader_) {
+    loader_->RemoveFromController();
+  }
+}
 
 // static
 std::unique_ptr<ResourceRequest>
@@ -584,7 +619,8 @@ PreflightController::PreflightController(NetworkService* network_service)
 
 PreflightController::~PreflightController() = default;
 
-void PreflightController::PerformPreflightCheck(
+std::unique_ptr<PreflightController::PreflightCheckHandle>
+PreflightController::PerformPreflightCheck(
     CompletionCallback callback,
     int32_t request_id,
     const ResourceRequest& request,
@@ -618,7 +654,7 @@ void PreflightController::PerformPreflightCheck(
           acam_preflight_spec_conformant,
           IsAdAuctionTrustedSignalsRequest(request))) {
     std::move(callback).Run(net::OK, std::nullopt, false);
-    return;
+    return nullptr;
   }
 
   auto emplaced_pair = loaders_.emplace(std::make_unique<PreflightLoader>(
@@ -627,7 +663,11 @@ void PreflightController::PerformPreflightCheck(
       annotation_tag, network_isolation_key, devtools_observer, net_log,
       acam_preflight_spec_conformant,
       std::move(url_loader_network_service_observer)));
-  (*emplaced_pair.first)->Request(loader_factory);
+  PreflightLoader* loader = emplaced_pair.first->get();
+  auto handle =
+      base::WrapUnique(new PreflightCheckHandle(loader->GetWeakPtr()));
+  loader->Request(loader_factory);
+  return handle;
 }
 
 void PreflightController::ClearCorsPreflightCache(

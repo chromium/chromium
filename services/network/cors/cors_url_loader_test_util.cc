@@ -4,6 +4,7 @@
 
 #include "services/network/cors/cors_url_loader_test_util.h"
 
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
@@ -43,7 +44,10 @@ namespace network::cors {
 
 TestURLLoaderFactory::TestURLLoaderImpl::TestURLLoaderImpl(
     mojo::PendingReceiver<mojom::URLLoader> receiver)
-    : receiver_(this, std::move(receiver)) {}
+    : receiver_(this, std::move(receiver)) {
+  receiver_.set_disconnect_handler(base::BindOnce(
+      [](bool* disconnected) { *disconnected = true; }, &is_disconnected_));
+}
 
 TestURLLoaderFactory::TestURLLoaderImpl::~TestURLLoaderImpl() = default;
 
