@@ -8,24 +8,22 @@
 #include <stdint.h>
 
 #include <array>
-#include <memory>
 #include <string>
 #include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
 #include "crypto/hash.h"
+#include "crypto/keypair.h"
 
 namespace client_update_protocol {
-
-class SigningStrategy;
 
 // Client Update Protocol v2 (CUP) is used by Google Update (Omaha) servers to
 // ensure freshness and authenticity of server responses over HTTP, without the
 // overhead of HTTPS -- namely, no PKI, no guarantee of privacy, and no request
 // replay protection.
 //
-// CUP supports single signing operations using ECDSA with SHA-256 or ML-DSA-44.
+// CUP supports single signing operations using ML-DSA-44.
 //
 // Each `Cup` object represents a single network ping in flight -- a call to
 // PrepareRequestParameters() generates internal state that will be used by
@@ -39,10 +37,9 @@ class Cup {
   ~Cup();
 
   // Initializes this instance of `Cup` with a versioned public key.
-  // `key_version` must be non-negative. `public_key` is expected to be a
-  // DER-encoded ASN.1 SubjectPublicKeyInfo containing a public key (ECDSA or
-  // ML-DSA-44).
-  Cup(int key_version, base::span<const uint8_t> public_key);
+  // `key_version` must be positive. `spki` is expected to be a
+  // DER-encoded ASN.1 SubjectPublicKeyInfo containing an ML-DSA-44 public key.
+  Cup(int key_version, base::span<const uint8_t> spki);
 
   // Generates freshness/authentication data for an outgoing ping.
   // `request_body` contains the body of the ping in UTF-8. Returns a set of
@@ -68,16 +65,16 @@ class Cup {
   void OverrideNonceForTesting(int key_version, uint32_t nonce);
 
  private:
-  static std::unique_ptr<const SigningStrategy> CreateSigningStrategy(
-      int key_version,
-      base::span<const uint8_t> public_key);
-
   bool ParseETagHeader(std::string_view etag_header_value_in,
                        std::vector<uint8_t>* signature_out,
                        std::vector<uint8_t>* request_hash_out) const;
 
-  // Strategy instance selected based on the public key algorithm.
-  const std::unique_ptr<const SigningStrategy> strategy_;
+  // The server keeps multiple signing keys; a version must be sent so that
+  // the correct signing key is used to sign the assembled message.
+  const int key_version_;
+
+  // The public key to use for verifying response signatures.
+  const crypto::keypair::PublicKey public_key_;
 
   // The SHA-256 hash of the XML request.  This is modified on each call to
   // PrepareRequestParameters(), and checked by ValidateResponse().

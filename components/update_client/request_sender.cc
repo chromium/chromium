@@ -14,7 +14,6 @@
 
 #include "base/check.h"
 #include "base/containers/span.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -23,7 +22,6 @@
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "components/client_update_protocol/features.h"
 #include "components/update_client/configurator.h"
 #include "components/update_client/network.h"
 #include "components/update_client/update_client_errors.h"
@@ -35,22 +33,9 @@ namespace update_client {
 
 namespace {
 
-// This is an ECDSA prime256v1 named-curve key.
-constexpr int kEcdsaKeyVersion = 16;
-constexpr auto kEcdsaPublicKey = std::to_array<uint8_t>({
-    0x30, 0x59, 0x30, 0x13, 0x06, 0x07, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x02,
-    0x01, 0x06, 0x08, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x03, 0x01, 0x07, 0x03,
-    0x42, 0x00, 0x04, 0x51, 0x95, 0x3b, 0xf4, 0x8c, 0xd4, 0x1b, 0x71, 0x8d,
-    0x23, 0xfd, 0x54, 0x56, 0xb6, 0x18, 0xf0, 0xd0, 0x65, 0x56, 0xe8, 0x56,
-    0xe7, 0x8f, 0x8d, 0x15, 0x18, 0x40, 0x6b, 0xf3, 0x56, 0x5b, 0xc9, 0xfe,
-    0x1e, 0xde, 0x2d, 0xa5, 0x0a, 0xdf, 0x07, 0x81, 0x86, 0x5d, 0x46, 0x46,
-    0xc9, 0x48, 0x21, 0xe2, 0x5c, 0x5e, 0x60, 0x1b, 0x8a, 0x79, 0xf1, 0x9f,
-    0xd3, 0xdc, 0xaf, 0xaa, 0x5a, 0xaa, 0xc4,
-});
-
-// Post-Quantum Crypto (ML-DSA44) SubjectPublicKeyInfo (1334 bytes).
-constexpr int kMldsa44KeyVersion = 16;
-constexpr auto kMldsa44PublicKey = std::to_array<uint8_t>({
+// This is a ML-DSA-44 SubjectPublicKeyInfo.
+constexpr int kCupKeyVersion = 16;
+constexpr auto kCupPublicKey = std::to_array<uint8_t>({
     0x30, 0x82, 0x05, 0x32, 0x30, 0x0b, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01,
     0x65, 0x03, 0x04, 0x03, 0x11, 0x03, 0x82, 0x05, 0x21, 0x00, 0xb3, 0xf5,
     0xbe, 0x7b, 0xdd, 0xa9, 0xcd, 0x0f, 0x8d, 0x71, 0x27, 0xde, 0x63, 0xdf,
@@ -193,12 +178,8 @@ const std::string& SelectCupServerProof(
 }
 
 client_update_protocol::Cup BuildSigner() {
-  return base::FeatureList::IsEnabled(
-             client_update_protocol::features::kPqcCupSigning)
-             ? client_update_protocol::Cup(
-                   kMldsa44KeyVersion, base::as_byte_span(kMldsa44PublicKey))
-             : client_update_protocol::Cup(kEcdsaKeyVersion,
-                                           base::as_byte_span(kEcdsaPublicKey));
+  return client_update_protocol::Cup(kCupKeyVersion,
+                                     base::as_byte_span(kCupPublicKey));
 }
 
 }  // namespace

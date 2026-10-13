@@ -6,8 +6,6 @@ static_library("client_update_protocol") {
   sources = [
     "cup.cc",
     "cup.h",
-    "features.cc",
-    "features.h",
   ]
 
   deps = [

@@ -15,9 +15,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "components/client_update_protocol/features.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/update_client/net/url_loader_post_interceptor.h"
 #include "components/update_client/persisted_data.h"
@@ -45,7 +43,6 @@ class RequestSenderTest : public testing::Test,
 
   // Overrides from testing::Test.
   void SetUp() override;
-  base::test::ScopedFeatureList feature_list_;
 
   void TearDown() override;
 
