@@ -87,6 +87,17 @@ void SelectFileDialog::SetFactory(
   dialog_factory_ = factory.release();
 }
 
+ScopedSetSelectFileDialogFactory::ScopedSetSelectFileDialogFactory(
+    std::unique_ptr<SelectFileDialogFactory> factory)
+    : previous_factory_(dialog_factory_) {
+  dialog_factory_ = factory.release();
+}
+
+ScopedSetSelectFileDialogFactory::~ScopedSetSelectFileDialogFactory() {
+  delete dialog_factory_;
+  dialog_factory_ = previous_factory_.release();
+}
+
 // static
 scoped_refptr<SelectFileDialog> SelectFileDialog::Create(
     Listener* listener,

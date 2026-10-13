@@ -7,8 +7,13 @@
 #include <stddef.h>
 
 #include <array>
+#include <memory>
+#include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/shell_dialogs/select_file_dialog_factory.h"
+#include "ui/shell_dialogs/select_file_policy.h"
 
 TEST(ShellDialogs, ShortenFileNameIfNeeded) {
   struct ShortenFileNameTestCase {
@@ -118,4 +123,61 @@ TEST(ShellDialogs, ShortenFileNameIfNeeded) {
                   .length(),
               255u);
   }
+}
+
+namespace {
+
+class TrackingSelectFileDialogFactory : public ui::SelectFileDialogFactory {
+ public:
+  TrackingSelectFileDialogFactory(int id, int* last_called_id)
+      : id_(id), last_called_id_(last_called_id) {}
+
+  ui::SelectFileDialog* Create(
+      ui::SelectFileDialog::Listener* listener,
+      std::unique_ptr<ui::SelectFilePolicy> policy) override {
+    if (last_called_id_) {
+      *last_called_id_ = id_;
+    }
+    return nullptr;
+  }
+
+ private:
+  int id_;
+  raw_ptr<int> last_called_id_;
+};
+
+}  // namespace
+
+TEST(ShellDialogs, ScopedSetSelectFileDialogFactory) {
+  int last_called_id = 0;
+
+  // Set initial factory.
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<TrackingSelectFileDialogFactory>(100, &last_called_id));
+
+  {
+    ui::ScopedSetSelectFileDialogFactory scoped_factory1(
+        std::make_unique<TrackingSelectFileDialogFactory>(1, &last_called_id));
+    ui::SelectFileDialog::Create(nullptr, nullptr);
+    EXPECT_EQ(last_called_id, 1);
+
+    {
+      ui::ScopedSetSelectFileDialogFactory scoped_factory2(
+          std::make_unique<TrackingSelectFileDialogFactory>(
+              2, &last_called_id));
+      ui::SelectFileDialog::Create(nullptr, nullptr);
+      EXPECT_EQ(last_called_id, 2);
+    }
+
+    // After scoped_factory2 is destroyed, factory1 should be restored.
+    ui::SelectFileDialog::Create(nullptr, nullptr);
+    EXPECT_EQ(last_called_id, 1);
+  }
+
+  // After scoped_factory1 is destroyed, the initial factory should be restored.
+  ui::SelectFileDialog::Create(nullptr, nullptr);
+  EXPECT_EQ(last_called_id, 100);
+
+  // Clean up.
+  ui::SelectFileDialog::SetFactory(nullptr);
 }

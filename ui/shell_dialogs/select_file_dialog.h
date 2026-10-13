@@ -270,6 +270,23 @@ SelectFileDialog* CreateSelectFileDialog(
     SelectFileDialog::Listener* listener,
     std::unique_ptr<SelectFilePolicy> policy);
 
+// Sets ui::SelectFileDialogFactory for the duration of this object's lifetime,
+// restoring the previous factory (if any) upon destruction.
+class SHELL_DIALOGS_EXPORT ScopedSetSelectFileDialogFactory {
+ public:
+  explicit ScopedSetSelectFileDialogFactory(
+      std::unique_ptr<SelectFileDialogFactory> factory);
+  ~ScopedSetSelectFileDialogFactory();
+
+  ScopedSetSelectFileDialogFactory(const ScopedSetSelectFileDialogFactory&) =
+      delete;
+  ScopedSetSelectFileDialogFactory& operator=(
+      const ScopedSetSelectFileDialogFactory&) = delete;
+
+ private:
+  std::unique_ptr<SelectFileDialogFactory> previous_factory_;
+};
+
 }  // namespace ui
 
 #endif  // UI_SHELL_DIALOGS_SELECT_FILE_DIALOG_H_
