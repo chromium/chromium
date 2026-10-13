@@ -32,9 +32,10 @@ class DeviceAttestationServiceIOS : public DeviceAttestationService {
   ~DeviceAttestationServiceIOS() override;
 
   // `DeviceAttestationService`:
-  // Note: `report` is used to construct content bindings for the snapshot.
-  // Other arguments (`flow_name`, `legacy_request_payload`, `timestamp`,
-  // `nonce`) are required by the base interface but are not used on iOS.
+  // Note: `report`, `timestamp`, and `nonce` are used to construct content
+  // bindings for the snapshot.
+  // Other arguments (`flow_name`, `legacy_request_payload`) are required by the
+  // base interface but are not used on iOS.
   // TODO(crbug.com/550216758): Refactor GetAttestationResponse to use a
   // delegate or parameter object to keep the signature uniform without passing
   // unused platform-specific arguments.
