@@ -1438,16 +1438,6 @@ bool ViewTransition::UnsupportedCapture() {
           "Scoped view-transitions require layout containment.");
       return true;
     }
-    const ComputedStyle* style = scope_->GetComputedStyle();
-    if (style && style->HasMask()) {
-      // TODO(crbug.com/429763389): image masks are not currently supported on
-      // the scoped element. This restriction may be resolved by making the
-      // view-transition's layout object a sibling of the scoped element's
-      // layout object. For now, skip the transition.
-      LogMessageToConsole(
-          "Scoped view-transitions do not currently support mask-image.");
-      return true;
-    }
   }
 
   return false;
