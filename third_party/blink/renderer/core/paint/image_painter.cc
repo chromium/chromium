@@ -206,7 +206,7 @@ void ImagePainter::PaintReplaced(const PaintInfo& paint_info,
     gfx::RectF outline_rect(ToPixelSnappedRect(content_rect));
     outline_rect.Inset(0.5f);
     context.StrokeRect(outline_rect,
-                       PaintAutoDarkMode(layout_image_.StyleRef(),
+                       PaintAutoDarkMode(layout_image_.Style(),
                                          DarkModeFilter::ElementRole::kBorder));
     return;
   }
@@ -265,8 +265,8 @@ void ImagePainter::PaintIntoRect(GraphicsContext& context,
       gfx::RectF(dest_rect));
 
   ScopedImageRenderingSettings image_rendering_settings_scope(
-      context, layout_image_.StyleRef().GetInterpolationQuality(),
-      layout_image_.StyleRef().GetDynamicRangeLimit());
+      context, layout_image_.Style().GetInterpolationQuality(),
+      layout_image_.Style().GetDynamicRangeLimit());
 
   Node* node = layout_image_.GetNode();
   auto* image_element = DynamicTo<HTMLImageElement>(node);
@@ -276,7 +276,7 @@ void ImagePainter::PaintIntoRect(GraphicsContext& context,
           : Image::kUnspecifiedDecode;
 
   auto image_auto_dark_mode = ImageClassifierHelper::GetImageAutoDarkMode(
-      *layout_image_.GetFrame(), layout_image_.StyleRef(),
+      *layout_image_.GetFrame(), layout_image_.Style(),
       gfx::RectF(pixel_snapped_dest_rect), src_rect);
 
   // At this point we have all the necessary information to report paint
@@ -285,7 +285,7 @@ void ImagePainter::PaintIntoRect(GraphicsContext& context,
   ImageResourceContent* image_content = image_resource.CachedImage();
   ImageNodeAnimationInfo image_animation =
       CSSImageAnimations::CreateImageNodeAnimationInfo(
-          node, image_content, layout_image_.StyleRef().ImageAnimation());
+          node, image_content, layout_image_.Style().ImageAnimation());
   context.DrawImage(
       *image, decode_mode, image_auto_dark_mode,
       ComputeReportPaintTiming(layout_image_, *image, image_content, context,

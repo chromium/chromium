@@ -100,7 +100,7 @@ void LayoutProgress::AnimationTimerFired(TimerBase*) {
 
 void LayoutProgress::UpdateAnimationState() {
   NOT_DESTROYED();
-  bool animating = !IsDeterminate() && StyleRef().HasEffectiveAppearance();
+  bool animating = !IsDeterminate() && Style().HasEffectiveAppearance();
   if (animating == animating_)
     return;
 

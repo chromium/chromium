@@ -47,7 +47,7 @@ std::optional<gfx::RectF> CSSMaskPainter::MaskBoundingBox(
   if (!object.IsBoxModelObject() && !object.IsSVGChild())
     return std::nullopt;
 
-  const ComputedStyle& style = object.StyleRef();
+  const ComputedStyle& style = object.Style();
   if (!style.HasMask())
     return std::nullopt;
 

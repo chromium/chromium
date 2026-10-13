@@ -1790,9 +1790,9 @@ TEST_F(ComputedStyleTest, ShouldApplyAnyContainment) {
           EXPECT_TRUE(!html->GetComputedStyle());
           continue;
         }
-        EXPECT_EQ(html->GetLayoutObject()->ShouldApplyAnyContainment(),
-                  html->GetLayoutObject()->StyleRef().ShouldApplyAnyContainment(
-                      *html))
+        EXPECT_EQ(
+            html->GetLayoutObject()->ShouldApplyAnyContainment(),
+            html->GetLayoutObject()->Style().ShouldApplyAnyContainment(*html))
             << "html contain:" << GetCSSValueName(contain)
             << " display:" << GetCSSValueName(html_display);
         if (!body->GetLayoutObject()) {
@@ -1803,9 +1803,9 @@ TEST_F(ComputedStyleTest, ShouldApplyAnyContainment) {
           }
           continue;
         }
-        EXPECT_EQ(body->GetLayoutObject()->ShouldApplyAnyContainment(),
-                  body->GetLayoutObject()->StyleRef().ShouldApplyAnyContainment(
-                      *body))
+        EXPECT_EQ(
+            body->GetLayoutObject()->ShouldApplyAnyContainment(),
+            body->GetLayoutObject()->Style().ShouldApplyAnyContainment(*body))
             << "body contain:" << GetCSSValueName(contain)
             << " display:" << GetCSSValueName(body_display);
       }

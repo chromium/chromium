@@ -172,7 +172,7 @@ void LayoutSVGShape::CreatePath() {
 
 float LayoutSVGShape::DashScaleFactor() const {
   NOT_DESTROYED();
-  if (!StyleRef().StrokeDashArray()) {
+  if (!Style().StrokeDashArray()) {
     return 1;
   }
   return To<SVGGeometryElement>(*GetElement()).PathLengthScaleFactor();
@@ -222,7 +222,7 @@ gfx::RectF LayoutSVGShape::ApproximateStrokeBoundingBox(
 
   float delta = stroke_width / 2;
   if (CanHaveMitersOrCaps(geometry_type_)) {
-    const ComputedStyle& style = StyleRef();
+    const ComputedStyle& style = Style();
     if (CanHaveMiters(geometry_type_) && HasMiterJoinStyle(style)) {
       const float miter = style.StrokeMiterLimit();
       if (miter < std::numbers::sqrt2 && HasSquareCapStyle(style)) {
@@ -240,14 +240,15 @@ gfx::RectF LayoutSVGShape::ApproximateStrokeBoundingBox(
 
 gfx::RectF LayoutSVGShape::HitTestStrokeBoundingBox() const {
   NOT_DESTROYED();
-  if (StyleRef().HasStroke())
+  if (Style().HasStroke()) {
     return decorated_bounding_box_;
+  }
   return ApproximateStrokeBoundingBox(fill_bounding_box_);
 }
 
 gfx::RectF LayoutSVGShape::StrokeBoundingBox() const {
   NOT_DESTROYED();
-  if (!StyleRef().HasStroke() || IsShapeEmpty()) {
+  if (!Style().HasStroke() || IsShapeEmpty()) {
     return fill_bounding_box_;
   }
   // If no Path object has been created for the shape, assume that it is
@@ -257,7 +258,7 @@ gfx::RectF LayoutSVGShape::StrokeBoundingBox() const {
     return ApproximateStrokeBoundingBox(fill_bounding_box_);
   }
   StrokeData stroke_data;
-  SVGLayoutSupport::ApplyStrokeStyleToStrokeData(stroke_data, StyleRef(), *this,
+  SVGLayoutSupport::ApplyStrokeStyleToStrokeData(stroke_data, Style(), *this,
                                                  DashScaleFactor());
   // Reset the dash pattern.
   //
@@ -285,7 +286,7 @@ bool LayoutSVGShape::ShapeDependentStrokeContains(
       } else {
         // Un-scale to get back to the root-transform (cheaper than re-computing
         // the root transform from scratch).
-        root_transform.Scale(StyleRef().EffectiveZoom())
+        root_transform.Scale(Style().EffectiveZoom())
             .PreConcat(NonScalingStrokeTransform());
       }
       path = &NonScalingStrokePath();
@@ -294,8 +295,8 @@ bool LayoutSVGShape::ShapeDependentStrokeContains(
     }
 
     StrokeData stroke_data;
-    SVGLayoutSupport::ApplyStrokeStyleToStrokeData(stroke_data, StyleRef(),
-                                                   *this, DashScaleFactor());
+    SVGLayoutSupport::ApplyStrokeStyleToStrokeData(stroke_data, Style(), *this,
+                                                   DashScaleFactor());
 
     stroke_path_cache_ =
         std::make_unique<Path>(path->StrokePath(stroke_data, root_transform));
@@ -339,8 +340,9 @@ bool LayoutSVGShape::FillContains(const HitTestLocation& location,
     return false;
   }
 
-  if (requires_fill && !HasPaintServer(*this, StyleRef().FillPaint()))
+  if (requires_fill && !HasPaintServer(*this, Style().FillPaint())) {
     return false;
+  }
 
   return ShapeDependentFillContains(location, fill_rule);
 }
@@ -349,16 +351,18 @@ bool LayoutSVGShape::StrokeContains(const HitTestLocation& location,
                                     bool requires_stroke) {
   NOT_DESTROYED();
   // "A zero value causes no stroke to be painted."
-  if (StyleRef().StrokeWidth().IsZero())
+  if (Style().StrokeWidth().IsZero()) {
     return false;
+  }
 
   if (requires_stroke) {
     if (!location.Intersects(DecoratedBoundingBox())) {
       return false;
     }
 
-    if (!HasPaintServer(*this, StyleRef().StrokePaint()))
+    if (!HasPaintServer(*this, Style().StrokePaint())) {
       return false;
+    }
   } else if (!location.Intersects(HitTestStrokeBoundingBox())) {
     return false;
   }
@@ -407,7 +411,7 @@ SVGLayoutResult LayoutSVGShape::UpdateSVGLayout(
   const bool has_viewport_dependence =
       geometry_depends_on_viewport_ || stroke_depends_on_viewport_ ||
       (transform_uses_reference_box_ &&
-       StyleRef().TransformBox() == ETransformBox::kViewBox);
+       Style().TransformBox() == ETransformBox::kViewBox);
 
   DCHECK(!needs_shape_update_);
   DCHECK(!needs_boundaries_update_);
@@ -498,7 +502,7 @@ AffineTransform LayoutSVGShape::ComputeNonScalingStrokeTransform(
   // better to apply this effect during rasterization?
   AffineTransform host_transform;
   if (!RuntimeEnabledFeatures::SvgNewZoomEnabled()) {
-    host_transform.Scale(1 / StyleRef().EffectiveZoom())
+    host_transform.Scale(1 / Style().EffectiveZoom())
         .PreConcat(ComputeRootTransform());
   } else {
     host_transform = ComputeRootTransform();
@@ -551,7 +555,7 @@ bool LayoutSVGShape::NodeAtPoint(HitTestResult& result,
     return false;
   if (IsShapeEmpty())
     return false;
-  const ComputedStyle& style = StyleRef();
+  const ComputedStyle& style = Style();
   const PointerEventsHitRules hit_rules(
       PointerEventsHitRules::kSvgGeometryHitTesting, result.GetHitTestRequest(),
       style.UsedPointerEvents());
@@ -608,7 +612,7 @@ bool LayoutSVGShape::HitTestShape(const HitTestRequest& request,
   }
 
   // TODO(chrishtr): support rect-based intersections in the cases below.
-  const ComputedStyle& style = StyleRef();
+  const ComputedStyle& style = Style();
   if (hit_rules.can_hit_stroke &&
       (style.HasStroke() || !hit_rules.require_stroke) &&
       StrokeContains(local_location, hit_rules.require_stroke))
@@ -624,7 +628,7 @@ bool LayoutSVGShape::HitTestShape(const HitTestRequest& request,
 
 gfx::RectF LayoutSVGShape::CalculateStrokeBoundingBox() const {
   NOT_DESTROYED();
-  if (!StyleRef().HasStroke()) {
+  if (!Style().HasStroke()) {
     return fill_bounding_box_;
   }
   if (HasNonScalingStroke())
@@ -635,7 +639,7 @@ gfx::RectF LayoutSVGShape::CalculateStrokeBoundingBox() const {
 gfx::RectF LayoutSVGShape::CalculateNonScalingStrokeBoundingBox() const {
   NOT_DESTROYED();
   DCHECK(path_);
-  DCHECK(StyleRef().HasStroke());
+  DCHECK(Style().HasStroke());
   DCHECK(HasNonScalingStroke());
 
   gfx::RectF stroke_bounding_box = fill_bounding_box_;
@@ -653,8 +657,8 @@ gfx::RectF LayoutSVGShape::CalculateNonScalingStrokeBoundingBox() const {
 float LayoutSVGShape::StrokeWidth() const {
   NOT_DESTROYED();
   const SVGViewportResolver viewport_resolver(*this);
-  return ValueForLength(StyleRef().StrokeWidth(), viewport_resolver,
-                        StyleRef().EffectiveZoom());
+  return ValueForLength(Style().StrokeWidth(), viewport_resolver,
+                        Style().EffectiveZoom());
 }
 
 float LayoutSVGShape::StrokeWidthForMarkerUnits() const {
@@ -672,7 +676,7 @@ float LayoutSVGShape::StrokeWidthForMarkerUnits() const {
     return stroke_width;
   }
 
-  return NoopWillBeInvScaleScalar(stroke_width, StyleRef().EffectiveZoom());
+  return NoopWillBeInvScaleScalar(stroke_width, Style().EffectiveZoom());
 }
 
 LayoutSVGShapeRareData& LayoutSVGShape::EnsureRareData() const {
@@ -685,7 +689,7 @@ LayoutSVGShapeRareData& LayoutSVGShape::EnsureRareData() const {
 RasterEffectOutset LayoutSVGShape::VisualRectOutsetForRasterEffects() const {
   NOT_DESTROYED();
   // Account for raster expansions due to SVG stroke hairline raster effects.
-  const ComputedStyle& style = StyleRef();
+  const ComputedStyle& style = Style();
   if (style.HasVisibleStroke()) {
     if (style.CapStyle() != kButtCap)
       return RasterEffectOutset::kWholePixel;

@@ -489,7 +489,7 @@ mojom::blink::AIPageContentCssPosition ConvertCssPosition(
 mojom::blink::AIPageContentGeometryPtr ComputeNodeGeometry(
     const LayoutObject& object) {
   auto geometry = mojom::blink::AIPageContentGeometry::New();
-  geometry->css_position = ConvertCssPosition(object.StyleRef().GetPosition());
+  geometry->css_position = ConvertCssPosition(object.Style().GetPosition());
 
   gfx::RectF local_bounding_box;
   geometry->visible_bounding_box =
@@ -801,7 +801,7 @@ const LayoutIFrame* GetIFrame(const LayoutObject& object) {
 
 bool IsVisible(const LayoutObject& object) {
   // Don't add content when node is invisible.
-  return object.StyleRef().Visibility() == EVisibility::kVisible;
+  return object.Style().Visibility() == EVisibility::kVisible;
 }
 
 bool HasEmptyGeometry(const mojom::blink::AIPageContentNode* content_node) {
@@ -1174,9 +1174,9 @@ void ProcessTextNode(const LayoutText& layout_text,
   DCHECK(!ShouldRedactSubtree(attributes.redaction_decision));
 
   auto text_style = mojom::blink::AIPageContentTextStyle::New();
-  text_style->text_size = GetTextSize(layout_text.StyleRef(), document_style);
-  text_style->has_emphasis = HasEmphasis(layout_text.StyleRef());
-  text_style->color = GetColor(layout_text.StyleRef());
+  text_style->text_size = GetTextSize(layout_text.Style(), document_style);
+  text_style->has_emphasis = HasEmphasis(layout_text.Style());
+  text_style->color = GetColor(layout_text.Style());
 
   auto text_info = mojom::blink::AIPageContentTextInfo::New();
   text_info->text_content =
@@ -1693,7 +1693,7 @@ uint32_t ComputeDefaultLineHeightPx(const LocalFrame& frame) {
     if (const LayoutObject* layout_object =
             document_element->GetLayoutObject()) {
       // Prefer the <html> style because authors set the frame default there.
-      return ComputeDefaultLineHeightPx(layout_object->StyleRef());
+      return ComputeDefaultLineHeightPx(layout_object->Style());
     }
   }
 
@@ -2464,7 +2464,7 @@ mojom::blink::AIPageContentPtr AIPageContentAgent::ContentBuilder::Build(
   UpdateLifecycle(document);
 
   auto* layout_view = document.GetLayoutView();
-  const auto& document_style = layout_view->StyleRef();
+  const auto& document_style = layout_view->Style();
 
   if (ShouldSkipNonSalientNode(*layout_view, *options_)) {
     return nullptr;
@@ -2592,7 +2592,7 @@ void AIPageContentAgent::ContentBuilder::AddMetaData(
 bool AIPageContentAgent::ContentBuilder::ShouldSkipSingleNode(
     const LayoutObject& object,
     const mojom::blink::AIPageContentAttributes& attributes) const {
-  if (object.StyleRef().GetPosition() == EPosition::kFixed) {
+  if (object.Style().GetPosition() == EPosition::kFixed) {
     // Fixed elements may implement blocking UI such as paywalls, so APC
     // normally preserves them. When enabled, the feature lets
     // pointer-transparent fixed wrappers be skipped via the normal rules for
@@ -2600,13 +2600,13 @@ bool AIPageContentAgent::ContentBuilder::ShouldSkipSingleNode(
     const bool should_preserve_as_fixed_overlay =
         !RuntimeEnabledFeatures::
             AIPageContentSkipUnclickableFixedOverlaysEnabled() ||
-        object.StyleRef().UsedPointerEvents() != EPointerEvents::kNone;
+        object.Style().UsedPointerEvents() != EPointerEvents::kNone;
     if (should_preserve_as_fixed_overlay) {
       return false;
     }
   }
 
-  if (object.StyleRef().GetPosition() == EPosition::kSticky) {
+  if (object.Style().GetPosition() == EPosition::kSticky) {
     return false;
   }
 
@@ -2620,7 +2620,7 @@ bool AIPageContentAgent::ContentBuilder::ShouldSkipSingleNode(
   //    based on the author making it scrollable.
   // TODO(khushalsagar): Consider removing this, no consumer relies on this
   // behaviour.
-  if (object.StyleRef().ScrollsOverflow()) {
+  if (object.Style().ScrollsOverflow()) {
     return false;
   }
 
@@ -2854,7 +2854,7 @@ void AIPageContentAgent::ContentBuilder::ProcessIframe(
 
   auto* child_layout_view = local_frame->ContentLayoutObject();
   if (child_layout_view) {
-    RecursionData child_recursion_data(child_layout_view->StyleRef());
+    RecursionData child_recursion_data(child_layout_view->Style());
     // The aria attribute values don't pierce frame boundaries.
     child_recursion_data.is_aria_disabled = false;
     child_recursion_data.stack_depth = recursion_data.stack_depth + 1;
@@ -3165,7 +3165,7 @@ void AIPageContentAgent::ContentBuilder::PopulateLabelForDomNodeId(
 void AIPageContentAgent::ContentBuilder::AddAnnotatedRoles(
     const LayoutObject& object,
     Vector<mojom::blink::AIPageContentAnnotatedRole>& annotated_roles) const {
-  const auto& style = object.StyleRef();
+  const auto& style = object.Style();
   if (style.ContentVisibility() == EContentVisibility::kHidden) {
     annotated_roles.push_back(
         mojom::blink::AIPageContentAnnotatedRole::kContentHidden);
@@ -3549,10 +3549,10 @@ void AIPageContentAgent::ContentBuilder::MaybeAddPopupData(
   // popups because focus within transient popup windows is not tracked for
   // frame-level interactions.
   auto web_popup_root_node = MaybeGenerateContentNode(
-      *web_popup_layout_view, web_popup_layout_view->StyleRef());
+      *web_popup_layout_view, web_popup_layout_view->Style());
   CHECK(web_popup_root_node);
   WalkChildren(*web_popup_layout_view, *web_popup_root_node,
-               web_popup_layout_view->StyleRef());
+               web_popup_layout_view->Style());
   MaybeRemoveRedundantLabels(*web_popup_root_node);
 
   // Currently the geometry for popup nodes is relative to the popup, offset to
@@ -3612,7 +3612,7 @@ void AIPageContentAgent::ContentBuilder::AddNodeInteractionInfo(
     mojom::blink::AIPageContentAttributes& attributes,
     bool is_aria_disabled,
     bool is_aria_hidden) {
-  const ComputedStyle& style = object.StyleRef();
+  const ComputedStyle& style = object.Style();
   if (style.UsedPointerEvents() == EPointerEvents::kNone) {
     // Treat nodes exposed through pointer-events:none as non-actionable. This
     // includes elements the author explicitly removed from hit testing and

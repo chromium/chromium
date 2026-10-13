@@ -29,7 +29,7 @@ Position CreatePositionForOffsetMapping(const Node& node, unsigned dom_offset) {
     // TODO(crbug.com/750990): Support 'text-transform' to remove this hack.
 #if DCHECK_IS_ON()
     // Ensures that the clamping hack kicks in only with text-transform.
-    if (node.GetLayoutObject()->StyleRef().TextTransform() ==
+    if (node.GetLayoutObject()->Style().TextTransform() ==
         ETextTransform::kNone) {
       DCHECK_LE(dom_offset, text_node->length());
     }

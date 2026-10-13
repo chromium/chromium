@@ -130,7 +130,7 @@ void LayoutSVGText::UpdateFont() {
 }
 
 void LayoutSVGText::UpdateTransformAffectsVectorEffect() {
-  if (StyleRef().VectorEffect() == EVectorEffect::kNonScalingStroke) {
+  if (Style().VectorEffect() == EVectorEffect::kNonScalingStroke) {
     SetTransformAffectsVectorEffect(true);
     return;
   }
@@ -138,7 +138,7 @@ void LayoutSVGText::UpdateTransformAffectsVectorEffect() {
   SetTransformAffectsVectorEffect(false);
   for (LayoutObject* descendant = FirstChild(); descendant;
        descendant = descendant->NextInPreOrder(this)) {
-    if (descendant->IsSVGInline() && descendant->StyleRef().VectorEffect() ==
+    if (descendant->IsSVGInline() && descendant->Style().VectorEffect() ==
                                          EVectorEffect::kNonScalingStroke) {
       SetTransformAffectsVectorEffect(true);
       break;
@@ -209,7 +209,7 @@ SVGLayoutResult LayoutSVGText::UpdateSVGLayout(
 
   const gfx::RectF old_boundaries = ObjectBoundingBox();
 
-  const ComputedStyle& style = StyleRef();
+  const ComputedStyle& style = Style();
   ConstraintSpaceBuilder builder(style.GetWritingMode(),
                                  style.GetWritingDirection(),
                                  /* is_new_fc */ true);

@@ -395,8 +395,7 @@ GetMathMLEmbellishedOperatorProperties(const BlockNode& node) {
   if (!core_operator)
     return std::nullopt;
   DCHECK(core_operator->GetLayoutObject());
-  const auto& core_operator_style =
-      core_operator->GetLayoutObject()->StyleRef();
+  const auto& core_operator_style = core_operator->GetLayoutObject()->Style();
 
   MathMLEmbellishedOperatorProperties properties;
 

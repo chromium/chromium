@@ -177,7 +177,7 @@ void LayoutSVGInline::AddOutlineRects(OutlineRectCollector& collector,
     collector.AddRect(rect);
   }
   if (info)
-    *info = OutlineInfo::GetUnzoomedFromStyle(StyleRef());
+    *info = OutlineInfo::GetUnzoomedFromStyle(Style());
 }
 
 void LayoutSVGInline::Paint(const PaintInfo& paint_info) const {
@@ -248,16 +248,18 @@ void LayoutSVGInline::InsertedIntoTree() {
   LayoutInline::InsertedIntoTree();
   LayoutSVGResourceContainer::MarkForLayoutAndParentResourceInvalidation(*this,
                                                                          false);
-  if (StyleRef().HasSVGEffect())
+  if (Style().HasSVGEffect()) {
     SetNeedsPaintPropertyUpdate();
+  }
 }
 
 void LayoutSVGInline::WillBeRemovedFromTree() {
   NOT_DESTROYED();
   LayoutSVGResourceContainer::MarkForLayoutAndParentResourceInvalidation(*this,
                                                                          false);
-  if (StyleRef().HasSVGEffect())
+  if (Style().HasSVGEffect()) {
     SetNeedsPaintPropertyUpdate();
+  }
   LayoutInline::WillBeRemovedFromTree();
 }
 

@@ -92,7 +92,7 @@ void LayoutSVGModelObject::AddOutlineRects(OutlineRectCollector& collector,
     return;
   collector.AddRect(PhysicalRect::EnclosingRect(visual_rect));
   if (info)
-    *info = OutlineInfo::GetUnzoomedFromStyle(StyleRef());
+    *info = OutlineInfo::GetUnzoomedFromStyle(Style());
 }
 
 gfx::RectF LayoutSVGModelObject::LocalBoundingBoxRectForAccessibility(
@@ -128,7 +128,7 @@ bool LayoutSVGModelObject::CheckForImplicitTransformChange(
   NOT_DESTROYED();
   // If the transform is relative to the reference box, check relevant
   // conditions to see if we need to recompute the transform.
-  switch (StyleRef().TransformBox()) {
+  switch (Style().TransformBox()) {
     case ETransformBox::kViewBox:
       return layout_info.viewport_changed;
     case ETransformBox::kFillBox:
@@ -143,7 +143,7 @@ bool LayoutSVGModelObject::CheckForImplicitTransformChange(
 void LayoutSVGModelObject::ImageChanged(WrappedImagePtr image,
                                         CanDeferInvalidation defer) {
   NOT_DESTROYED();
-  for (const FillLayer* layer = &StyleRef().MaskLayers(); layer;
+  for (const FillLayer* layer = &Style().MaskLayers(); layer;
        layer = layer->NextForUsedValue()) {
     const StyleImage* style_image = layer->GetImage();
     if (style_image && image == style_image->Data()) {
@@ -204,16 +204,18 @@ void LayoutSVGModelObject::InsertedIntoTree() {
   LayoutObject::InsertedIntoTree();
   LayoutSVGResourceContainer::MarkForLayoutAndParentResourceInvalidation(*this,
                                                                          false);
-  if (StyleRef().HasSVGEffect())
+  if (Style().HasSVGEffect()) {
     SetNeedsPaintPropertyUpdate();
+  }
 }
 
 void LayoutSVGModelObject::WillBeRemovedFromTree() {
   NOT_DESTROYED();
   LayoutSVGResourceContainer::MarkForLayoutAndParentResourceInvalidation(*this,
                                                                          false);
-  if (StyleRef().HasSVGEffect())
+  if (Style().HasSVGEffect()) {
     SetNeedsPaintPropertyUpdate();
+  }
   LayoutObject::WillBeRemovedFromTree();
 }
 

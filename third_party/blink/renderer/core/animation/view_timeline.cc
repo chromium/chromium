@@ -61,7 +61,7 @@ TimelineInset ResolveAuto(const TimelineInset& inset,
     return inset;
   }
 
-  const ComputedStyle& style = layout_object->StyleRef();
+  const ComputedStyle& style = layout_object->Style();
   const Length& start = inset.GetStart();
   const Length& end = inset.GetEnd();
 

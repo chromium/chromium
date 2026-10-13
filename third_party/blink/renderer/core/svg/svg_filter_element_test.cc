@@ -45,7 +45,7 @@ TEST_F(SVGFilterElementSimTest,
       GetDocument().getElementById(AtomicString("target"));
   const LayoutObject* target = target_element->GetLayoutObject();
 
-  EXPECT_TRUE(target->StyleRef().HasFilter());
+  EXPECT_TRUE(target->Style().HasFilter());
   ASSERT_FALSE(target->NeedsPaintPropertyUpdate());
   EXPECT_NE(nullptr, target->FirstFragment().PaintProperties()->Filter());
 

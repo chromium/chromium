@@ -214,7 +214,7 @@ TEST_P(ElementTimingTest, BackgroundImageRemoved) {
   SimulateRenderingAndPresentationTime();
   LayoutObject* object = GetLayoutObjectById("target");
   ImageResourceContent* content =
-      object->StyleRef().BackgroundLayers().GetImage()->CachedImage();
+      object->Style().BackgroundLayers().GetImage()->CachedImage();
   EXPECT_EQ(RecordedImagesSize(), 1u);
   EXPECT_TRUE(IsRecorded(object, content));
   EXPECT_THAT(GetElementTimingEntries(), ElementsAre(ForId("target")));
@@ -244,7 +244,7 @@ TEST_P(ElementTimingTest, PseudoElementBackgroundImageRemoved) {
   LayoutObject* object = before->GetLayoutObject();
   ASSERT_TRUE(object);
   ImageResourceContent* content =
-      object->StyleRef().BackgroundLayers().GetImage()->CachedImage();
+      object->Style().BackgroundLayers().GetImage()->CachedImage();
   EXPECT_EQ(RecordedImagesSize(), 1u);
   EXPECT_TRUE(IsRecorded(object, content));
   EXPECT_THAT(GetElementTimingEntries(), ElementsAre(ForId("target")));

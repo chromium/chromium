@@ -62,7 +62,7 @@ TEST_F(TextPainterTest, TextPaintingStyle_Simple) {
   PaintController controller;
   GraphicsContext context(controller);
   TextPaintStyle text_style = TextPainter::TextPaintingStyle(
-      GetLayoutText().GetDocument(), GetLayoutText().StyleRef(),
+      GetLayoutText().GetDocument(), GetLayoutText().Style(),
       CreatePaintInfoForBackground(context));
   EXPECT_EQ(Color(0, 0, 255), text_style.fill_color);
   EXPECT_EQ(Color(0, 0, 255), text_style.stroke_color);
@@ -88,7 +88,7 @@ TEST_F(TextPainterTest, TextPaintingStyle_AllProperties) {
   PaintController controller;
   GraphicsContext context(controller);
   TextPaintStyle text_style = TextPainter::TextPaintingStyle(
-      GetLayoutText().GetDocument(), GetLayoutText().StyleRef(),
+      GetLayoutText().GetDocument(), GetLayoutText().Style(),
       CreatePaintInfoForBackground(context));
   EXPECT_EQ(Color(255, 0, 0), text_style.fill_color);
   EXPECT_EQ(Color(0, 255, 0), text_style.stroke_color);
@@ -120,7 +120,7 @@ TEST_F(TextPainterTest, TextPaintingStyle_UsesTextAsClip) {
   PaintController controller;
   GraphicsContext context(controller);
   TextPaintStyle text_style = TextPainter::TextPaintingStyle(
-      GetLayoutText().GetDocument(), GetLayoutText().StyleRef(),
+      GetLayoutText().GetDocument(), GetLayoutText().Style(),
       CreatePaintInfoForTextClip(context));
   EXPECT_EQ(Color::kBlack, text_style.fill_color);
   EXPECT_EQ(Color::kBlack, text_style.stroke_color);
@@ -150,7 +150,7 @@ TEST_F(TextPainterTest,
   PaintController controller;
   GraphicsContext context(controller);
   TextPaintStyle text_style = TextPainter::TextPaintingStyle(
-      GetLayoutText().GetDocument(), GetLayoutText().StyleRef(),
+      GetLayoutText().GetDocument(), GetLayoutText().Style(),
       CreatePaintInfoForBackground(context));
   EXPECT_EQ(Color(255, 0, 0), text_style.fill_color);
   EXPECT_EQ(Color(0, 255, 0), text_style.stroke_color);
@@ -177,7 +177,7 @@ TEST_F(TextPainterTest, TextPaintingStyle_ForceBackgroundToWhite_Darkened) {
   PaintController controller;
   GraphicsContext context(controller);
   TextPaintStyle text_style = TextPainter::TextPaintingStyle(
-      GetLayoutText().GetDocument(), GetLayoutText().StyleRef(),
+      GetLayoutText().GetDocument(), GetLayoutText().Style(),
       CreatePaintInfoForBackground(context));
   EXPECT_EQ(Color(255, 220, 220).Dark(), text_style.fill_color);
   EXPECT_EQ(Color(220, 255, 220).Dark(), text_style.stroke_color);

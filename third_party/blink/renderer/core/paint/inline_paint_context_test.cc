@@ -118,7 +118,7 @@ TEST_F(InlinePaintContextTest,
   const LayoutObject* target_layout_object =
       GetLayoutObjectByElementId("target");
   ASSERT_TRUE(target_layout_object);
-  const ComputedStyle& style = target_layout_object->StyleRef();
+  const ComputedStyle& style = target_layout_object->Style();
 
   constexpr LayoutUnit kDecorationWidth(40);
   // First and last fragment of the run, but without a line cursor.
@@ -179,7 +179,7 @@ TEST_F(InlinePaintContextTest, DecorationInsetAccumulatesAcrossRun) {
   const LayoutObject* target_layout_object =
       GetLayoutObjectByElementId("target");
   ASSERT_TRUE(target_layout_object);
-  const ComputedStyle& style = target_layout_object->StyleRef();
+  const ComputedStyle& style = target_layout_object->Style();
 
   // The decorated run consists of three 20px fragments. A 40% inset resolves
   // to 24px against the 60px run, consuming each edge fragment and carrying

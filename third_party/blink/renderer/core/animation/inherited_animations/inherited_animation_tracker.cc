@@ -46,7 +46,7 @@ void InheritedAnimationTracker::StyleDidChange(LayoutObject& object,
   if (!element) {
     return;
   }
-  const ComputedStyle& new_style = object.StyleRef();
+  const ComputedStyle& new_style = object.Style();
   if (old_style->IndependentInheritedAnimatedSources() ==
           new_style.IndependentInheritedAnimatedSources() &&
       old_style->InheritedAnimatedSources() ==
@@ -100,7 +100,7 @@ void InheritedAnimationTracker::DowngradeForUnsupportedInheritance(
       }
     }
   };
-  const ComputedStyle& style = object.StyleRef();
+  const ComputedStyle& style = object.Style();
   record(style.IndependentInheritedAnimatedSources());
   record(style.InheritedAnimatedSources());
   record(style.NonInheritedAnimatedSources());

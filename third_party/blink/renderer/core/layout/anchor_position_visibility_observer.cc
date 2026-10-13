@@ -92,7 +92,7 @@ void AnchorPositionVisibilityObserver::UpdateForCssAnchorVisibility() {
   bool invisible = false;
   if (anchor_element_) {
     if (LayoutObject* anchor = anchor_element_->GetLayoutObject()) {
-      invisible = anchor->StyleRef().Visibility() != EVisibility::kVisible;
+      invisible = anchor->Style().Visibility() != EVisibility::kVisible;
     }
   }
   SetLayerInvisible(LayerPositionVisibility::kAnchorsCssVisible, invisible);

@@ -171,7 +171,7 @@ void SelectionEditor::SetSelectionAndEndTyping(
 
 void SelectionEditor::SetContainsSelectionFocusFlag(LayoutObject* style_owner,
                                                     bool value) {
-  if (!style_owner || style_owner->StyleRef().TextOverflow().IsClip() ||
+  if (!style_owner || style_owner->Style().TextOverflow().IsClip() ||
       style_owner->ContainsSelectionFocus() == value) {
     return;
   }

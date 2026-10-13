@@ -250,7 +250,7 @@ PhysicalBoxStrut BoxBackgroundPaintContext::InnerBorderOutsets(
     const PhysicalRect& positioning_area) const {
   gfx::RectF inner_border_rect =
       ContouredBorderGeometry::PixelSnappedContouredInnerBorder(
-          positioning_box_->StyleRef(), positioning_area)
+          positioning_box_->Style(), positioning_area)
           .Rect();
   PhysicalBoxStrut outset;
   // TODO(rendering-core) The LayoutUnit(float) constructor always rounds
@@ -265,7 +265,7 @@ PhysicalBoxStrut BoxBackgroundPaintContext::InnerBorderOutsets(
 SnappedAndUnsnappedOutsets BoxBackgroundPaintContext::ObscuredBorderOutsets(
     const PhysicalRect& dest_rect,
     const PhysicalRect& positioning_area) const {
-  const ComputedStyle& style = positioning_box_->StyleRef();
+  const ComputedStyle& style = positioning_box_->Style();
   gfx::RectF inner_border_rect =
       ContouredBorderGeometry::PixelSnappedContouredInnerBorder(
           style, positioning_area)
@@ -318,9 +318,9 @@ PhysicalRect BoxBackgroundPaintContext::NormalPositioningArea(
 bool BoxBackgroundPaintContext::DisallowBorderDerivedAdjustment() const {
   return painting_view_ || painting_table_cell_ ||
          box_has_multiple_fragments_ ||
-         positioning_box_->StyleRef().HasBorderShape() ||
-         positioning_box_->StyleRef().BorderImage().GetImage() ||
-         positioning_box_->StyleRef().BorderCollapse() ==
+         positioning_box_->Style().HasBorderShape() ||
+         positioning_box_->Style().BorderImage().GetImage() ||
+         positioning_box_->Style().BorderCollapse() ==
              EBorderCollapse::kCollapse;
 }
 
@@ -356,7 +356,7 @@ bool BoxBackgroundPaintContext::HasBackgroundFixedToViewport(
     LayoutObject& ancestor = layer->GetLayoutObject();
     if (ancestor.HasTransformRelatedProperty() &&
         (layer->Transform() ||
-         ancestor.StyleRef().HasWillChangeAnyTransformProperty())) {
+         ancestor.Style().HasWillChangeAnyTransformProperty())) {
       return false;
     }
   }
@@ -389,7 +389,7 @@ PhysicalRect BoxBackgroundPaintContext::FixedAttachmentPositioningArea(
 }
 
 const ComputedStyle& BoxBackgroundPaintContext::Style() const {
-  return box_->StyleRef();
+  return box_->Style();
 }
 
 const ImageResourceObserver& BoxBackgroundPaintContext::ImageClient() const {
@@ -399,7 +399,7 @@ const ImageResourceObserver& BoxBackgroundPaintContext::ImageClient() const {
 const ComputedStyle& BoxBackgroundPaintContext::ImageStyle(
     const ComputedStyle& fragment_style) const {
   if (painting_view_ || cell_using_container_background_) {
-    return positioning_box_->StyleRef();
+    return positioning_box_->Style();
   }
   return fragment_style;
 }

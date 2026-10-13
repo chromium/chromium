@@ -4753,7 +4753,7 @@ WebFrameWidgetImpl::CalculateCursorAnchorInfo(bool update_requested) {
 
   mojom::blink::TextAppearanceInfoPtr text_appearance_info =
       mojom::blink::TextAppearanceInfo::New(
-          layout_object->StyleRef()
+          layout_object->Style()
               .VisitedDependentColor(GetCSSPropertyColor())
               .Rgb());
 

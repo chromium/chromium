@@ -1152,8 +1152,7 @@ TEST_P(PaintAndRasterInvalidationTest,
   EXPECT_FALSE(target->ShouldDelayFullPaintInvalidation());
 
   // Simulate an image change notification on #target.
-  auto* anim_background_image =
-      target->StyleRef().BackgroundLayers().GetImage();
+  auto* anim_background_image = target->Style().BackgroundLayers().GetImage();
   ASSERT_TRUE(anim_background_image);
   auto* anim_image_resource_content = anim_background_image->CachedImage();
   ASSERT_TRUE(anim_image_resource_content);

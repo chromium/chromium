@@ -107,8 +107,7 @@ SVGLengthConversionData::SVGLengthConversionData(const Element& context,
                                 &context) {}
 
 SVGLengthConversionData::SVGLengthConversionData(const LayoutObject& object)
-    : SVGLengthConversionData(To<Element>(*object.GetNode()),
-                              object.StyleRef()) {}
+    : SVGLengthConversionData(To<Element>(*object.GetNode()), object.Style()) {}
 
 SVGLengthContext::SVGLengthContext(const SVGElement* context)
     : context_(context) {}
@@ -118,7 +117,7 @@ const ComputedStyle* SVGLengthContext::ComputedStyleForLengthResolving(
   const ContainerNode* current_context = &context;
   do {
     if (current_context->GetLayoutObject()) {
-      return &current_context->GetLayoutObject()->StyleRef();
+      return &current_context->GetLayoutObject()->Style();
     }
     current_context = current_context->parentNode();
   } while (current_context);

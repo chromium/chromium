@@ -319,7 +319,7 @@ InlineBoxState* LogicalLineBuilder::HandleItemResults(
       // block-level OOF child positions itself based on the direction of its
       // block-level container.
       WritingDirectionMode writing_direction =
-          item.GetLayoutObject()->StyleRef().IsOriginalDisplayInlineType()
+          item.GetLayoutObject()->Style().IsOriginalDisplayInlineType()
               ? WritingDirectionMode(constraint_space_.GetWritingMode(),
                                      item.Direction())
               : constraint_space_.GetWritingDirection();
@@ -489,7 +489,7 @@ InlineBoxState* LogicalLineBuilder::PlaceAtomicInline(
                       box->margins.inline_start + item_result->spacing_before);
   } else {
     // The metrics should be as text instead of atomic inline box.
-    const auto& style = layout_object->Parent()->StyleRef();
+    const auto& style = layout_object->Parent()->Style();
     // TextCombine items are not scaled.
     box->ComputeTextMetrics(style, *style.GetFont(), baseline_type_,
                             TextFitBlockScale::kFixed);

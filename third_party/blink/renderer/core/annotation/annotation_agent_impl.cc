@@ -131,26 +131,26 @@ bool IsValidRangeAndMarkable(const RangeInFlatTree* range) {
     // be programmatically scrolled).
     if (box->HasNonVisibleOverflow()) {
       PhysicalSize size = box->StitchedSize();
-      if (box->StyleRef().OverflowX() != EOverflow::kVisible &&
+      if (box->Style().OverflowX() != EOverflow::kVisible &&
           size.width.RawValue() <= 0) {
         return false;
       }
 
-      if (box->StyleRef().OverflowY() != EOverflow::kVisible &&
+      if (box->Style().OverflowY() != EOverflow::kVisible &&
           size.height.RawValue() <= 0) {
         return false;
       }
     }
 
     // If an ancestor is set to opacity 0, consider the target invisible.
-    if (box->StyleRef().Opacity() == 0) {
+    if (box->Style().Opacity() == 0) {
       return false;
     }
 
     // If the range is in a fixed subtree, scrolling the view won't change its
     // viewport-relative location so report the range as unfindable if its
     // currently offscreen.
-    if (box->StyleRef().GetPosition() == EPosition::kFixed) {
+    if (box->Style().GetPosition() == EPosition::kFixed) {
       PhysicalRect view_rect =
           PhysicalRect::EnclosingRect(box->View()->AbsoluteBoundingBoxRectF());
       if (!view_rect.Intersects(absolute_bounding_box)) {

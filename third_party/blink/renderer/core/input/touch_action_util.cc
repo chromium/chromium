@@ -12,7 +12,7 @@ namespace touch_action_util {
 
 TouchAction ComputeEffectiveTouchAction(const Node& node) {
   if (LayoutObject* layout_object = node.GetLayoutObject()) {
-    return layout_object->StyleRef().EffectiveTouchAction();
+    return layout_object->Style().EffectiveTouchAction();
   }
   return TouchAction::kAuto;
 }

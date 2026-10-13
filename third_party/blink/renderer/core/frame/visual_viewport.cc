@@ -812,7 +812,7 @@ void VisualViewport::InitializeScrollbars() {
 EScrollbarWidth VisualViewport::CSSScrollbarWidth() const {
   DCHECK(IsActiveViewport());
   if (Document* main_document = LocalMainFrame().GetDocument())
-    return main_document->GetLayoutView()->StyleRef().UsedScrollbarWidth();
+    return main_document->GetLayoutView()->Style().UsedScrollbarWidth();
 
   return EScrollbarWidth::kAuto;
 }
@@ -821,7 +821,7 @@ std::optional<blink::Color> VisualViewport::CSSScrollbarThumbColor() const {
   DCHECK(IsActiveViewport());
   if (Document* main_document = LocalMainFrame().GetDocument()) {
     return main_document->GetLayoutView()
-        ->StyleRef()
+        ->Style()
         .ScrollbarThumbColorResolved();
   }
 
@@ -1107,7 +1107,7 @@ scoped_refptr<base::SingleThreadTaskRunner> VisualViewport::GetTimerTaskRunner()
 mojom::blink::ColorScheme VisualViewport::UsedColorSchemeScrollbars() const {
   DCHECK(IsActiveViewport());
   if (Document* main_document = LocalMainFrame().GetDocument())
-    return main_document->GetLayoutView()->StyleRef().UsedColorScheme();
+    return main_document->GetLayoutView()->Style().UsedColorScheme();
 
   return mojom::blink::ColorScheme::kLight;
 }

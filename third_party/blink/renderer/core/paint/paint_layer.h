@@ -211,8 +211,8 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   bool IsSelfPaintingLayer() const { return is_self_painting_layer_; }
 
   bool IsTransparent() const {
-    return GetLayoutObject().StyleRef().HasOpacity() ||
-           GetLayoutObject().StyleRef().HasBlendMode() ||
+    return GetLayoutObject().Style().HasOpacity() ||
+           GetLayoutObject().Style().HasBlendMode() ||
            GetLayoutObject().HasMask();
   }
 

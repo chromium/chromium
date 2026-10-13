@@ -967,7 +967,7 @@ class PaintLayerPainterPaintedOutputInvisibleTest
 
     EXPECT_EQ(expected_invisible_,
               PaintLayerPainter::PaintedOutputInvisible(
-                  target_layer->GetLayoutObject().StyleRef()));
+                  target_layer->GetLayoutObject().Style()));
 
     auto* cc_layer =
         CcLayersByDOMElementId(GetDocument().View()->RootCcLayer(),

@@ -149,7 +149,7 @@ PhysicalFragment::BoxType FragmentBuilder::GetBoxType() const {
   if (layout_object_->IsRenderedLegend()) {
     return PhysicalFragment::BoxType::kRenderedLegend;
   }
-  if (layout_object_->StyleRef().IsPageMarginBox()) {
+  if (layout_object_->Style().IsPageMarginBox()) {
     return PhysicalFragment::BoxType::kPageMargin;
   }
   if (layout_object_->IsAtomicInline()) {

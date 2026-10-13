@@ -2076,7 +2076,7 @@ bool AXNodeObject::IsDataTable() const {
 
   // Store the background color of the table to check against cell's background
   // colors.
-  const ComputedStyle& table_style = GetLayoutObject()->StyleRef();
+  const ComputedStyle& table_style = GetLayoutObject()->Style();
   Color table_bg_color =
       table_style.VisitedDependentColor(GetCSSPropertyBackgroundColor());
   bool has_cell_spacing = table_style.HorizontalBorderSpacing() &&
@@ -2135,7 +2135,7 @@ bool AXNodeObject::IsDataTable() const {
 
       valid_cell_count++;
 
-      const ComputedStyle& computed_style = cell_layout_block->StyleRef();
+      const ComputedStyle& computed_style = cell_layout_block->Style();
 
       // If the empty-cells style is set, we'll call it a data table.
       if (computed_style.EmptyCells() == EEmptyCells::kHide) {
@@ -2189,7 +2189,7 @@ bool AXNodeObject::IsDataTable() const {
             !layout_row->IsTableRow()) {
           continue;
         }
-        const ComputedStyle& row_computed_style = layout_row->StyleRef();
+        const ComputedStyle& row_computed_style = layout_row->Style();
         Color row_color = row_computed_style.VisitedDependentColor(
             GetCSSPropertyBackgroundColor());
         alternating_row_colors[alternating_row_color_count] = row_color;
@@ -3108,7 +3108,7 @@ bool AXNodeObject::IsLineBreakingObject() const {
   // <pre>Line 1
   // Line 2</pre>
   if (const LayoutText* layout_text = DynamicTo<LayoutText>(layout_object)) {
-    const ComputedStyle& style = layout_object->StyleRef();
+    const ComputedStyle& style = layout_object->Style();
     if (layout_text->HasNonCollapsedText() && style.ShouldPreserveBreaks() &&
         layout_text->PlainText().contains('\n')) {
       return true;
@@ -3207,8 +3207,8 @@ bool AXNodeObject::IsLinked() const {
 }
 
 bool AXNodeObject::IsVisited() const {
-  return GetLayoutObject() && GetLayoutObject()->StyleRef().IsLink() &&
-         GetLayoutObject()->StyleRef().InsideLink() ==
+  return GetLayoutObject() && GetLayoutObject()->Style().IsLink() &&
+         GetLayoutObject()->Style().InsideLink() ==
              EInsideLink::kInsideVisitedLink;
 }
 
@@ -3401,7 +3401,7 @@ bool AXNodeObject::IsNotUserSelectable() const {
     return true;
   }
 
-  const ComputedStyle& style = GetLayoutObject()->StyleRef();
+  const ComputedStyle& style = GetLayoutObject()->Style();
   return style.UsedUserSelect() == EUserSelect::kNone;
 }
 
@@ -3875,7 +3875,7 @@ ax::mojom::blink::ListStyle AXNodeObject::GetListStyle() const {
     return AXObject::GetListStyle();
   }
 
-  const ComputedStyle& computed_style = layout_object->StyleRef();
+  const ComputedStyle& computed_style = layout_object->Style();
   const StyleImage* style_image = computed_style.ListStyleImage();
   if (style_image && !style_image->ErrorOccurred()) {
     return ax::mojom::blink::ListStyle::kImage;
@@ -4196,7 +4196,7 @@ ax::mojom::blink::WritingDirection AXNodeObject::GetTextDirection() const {
   if (!GetLayoutObject())
     return AXObject::GetTextDirection();
 
-  const ComputedStyle& style = GetLayoutObject()->StyleRef();
+  const ComputedStyle& style = GetLayoutObject()->Style();
   switch (style.GetWritingDirection().InlineEnd()) {
     case PhysicalDirection::kRight:
       return ax::mojom::blink::WritingDirection::kLtr;
@@ -4246,7 +4246,7 @@ ax::mojom::blink::TextPosition AXNodeObject::GetTextPosition() const {
   if (!GetLayoutObject())
     return AXObject::GetTextPosition();
 
-  const ComputedStyle& style = GetLayoutObject()->StyleRef();
+  const ComputedStyle& style = GetLayoutObject()->Style();
   switch (style.VerticalAlign()) {
     case EVerticalAlign::kBaseline:
     case EVerticalAlign::kMiddle:
@@ -4275,7 +4275,7 @@ void AXNodeObject::GetTextStyleAndTextDecorationStyle(
         text_underline_style);
     return;
   }
-  const ComputedStyle& style = GetLayoutObject()->StyleRef();
+  const ComputedStyle& style = GetLayoutObject()->Style();
   *text_style = 0;
   *text_overline_style = ax::mojom::blink::TextDecorationStyle::kNone;
   *text_strikethrough_style = ax::mojom::blink::TextDecorationStyle::kNone;
@@ -4312,7 +4312,7 @@ ax::mojom::blink::TextAlign AXNodeObject::GetTextAlign() const {
   if (IsTextObject() || !GetLayoutObject())
     return ax::mojom::blink::TextAlign::kNone;
 
-  const ComputedStyle& style = GetLayoutObject()->StyleRef();
+  const ComputedStyle& style = GetLayoutObject()->Style();
   switch (style.GetTextAlign()) {
     case ETextAlign::kLeft:
     case ETextAlign::kWebkitLeft:
@@ -4462,7 +4462,7 @@ RGBA32 AXNodeObject::BackgroundColor() const {
       return Color::kWhite.Rgb();
   }
 
-  const ComputedStyle& style = layout_object->StyleRef();
+  const ComputedStyle& style = layout_object->Style();
   if (style.HasBackground()) {
     return style.VisitedDependentColor(GetCSSPropertyBackgroundColor()).Rgb();
   }
@@ -4481,7 +4481,7 @@ RGBA32 AXNodeObject::BackgroundColor() const {
           ax_ancestor && ax_ancestor->CachedIsIncludedInTree()) {
         break;
       }
-      const ComputedStyle& ancestor_style = ancestor->StyleRef();
+      const ComputedStyle& ancestor_style = ancestor->Style();
       if (ancestor_style.HasBackground()) {
         return ancestor_style
             .VisitedDependentColor(GetCSSPropertyBackgroundColor())
@@ -4497,7 +4497,7 @@ RGBA32 AXNodeObject::GetColor() const {
   if (!GetLayoutObject() || IsColorWell())
     return AXObject::GetColor();
 
-  const ComputedStyle& style = GetLayoutObject()->StyleRef();
+  const ComputedStyle& style = GetLayoutObject()->Style();
   Color color = style.VisitedDependentColor(GetCSSPropertyColor());
   return color.Rgb();
 }
@@ -4506,7 +4506,7 @@ const AtomicString& AXNodeObject::ComputedFontFamily() const {
   if (!GetLayoutObject())
     return AXObject::ComputedFontFamily();
 
-  const ComputedStyle& style = GetLayoutObject()->StyleRef();
+  const ComputedStyle& style = GetLayoutObject()->Style();
   const FontDescription& font_description = style.GetFontDescription();
   return font_description.Family().FamilyName();
 }
@@ -4515,7 +4515,7 @@ String AXNodeObject::FontFamilyForSerialization() const {
   if (!GetLayoutObject())
     return AXObject::FontFamilyForSerialization();
 
-  const ComputedStyle& style = GetLayoutObject()->StyleRef();
+  const ComputedStyle& style = GetLayoutObject()->Style();
   const SimpleFontData* primary_font = style.GetFont()->PrimaryFont();
   if (!primary_font)
     return AXObject::FontFamilyForSerialization();
@@ -4531,7 +4531,7 @@ float AXNodeObject::FontSize() const {
   if (!GetLayoutObject())
     return AXObject::FontSize();
 
-  const ComputedStyle& style = GetLayoutObject()->StyleRef();
+  const ComputedStyle& style = GetLayoutObject()->Style();
 
   // Font size should not be affected by scale transform or page zoom, because
   // users of authoring tools may want to check that their text is formatted
@@ -4545,7 +4545,7 @@ float AXNodeObject::FontWeight() const {
   if (!GetLayoutObject())
     return AXObject::FontWeight();
 
-  const ComputedStyle& style = GetLayoutObject()->StyleRef();
+  const ComputedStyle& style = GetLayoutObject()->Style();
   return style.GetFontWeight();
 }
 
@@ -4979,7 +4979,7 @@ String AXNodeObject::GetValueForControl(AXObjectSet& visited) const {
     if (!GetLayoutObject())
       return inner_text;
 
-    const ComputedStyle& style = GetLayoutObject()->StyleRef();
+    const ComputedStyle& style = GetLayoutObject()->Style();
     UChar mask_character = 0;
     switch (style.TextSecurity()) {
       case ETextSecurity::kNone:
@@ -5315,7 +5315,7 @@ String AXNodeObject::GetName(ax::mojom::blink::NameFrom& name_from,
 
     // If the alt text is not available, return a "Scroll [direction]" name,
     if (const LayoutObject* layout_object = GetLayoutObject()) {
-      const ComputedStyle& style = layout_object->StyleRef();
+      const ComputedStyle& style = layout_object->Style();
       PhysicalDirection physical;
       if (element->IsScrollButtonBlockStartPseudoElement()) {
         physical = style.GetWritingDirection().BlockStart();
@@ -5817,8 +5817,7 @@ bool AXNodeObject::IsRedundantLabel(HTMLLabelElement* label) {
     return false;
 
   if (!input->GetLayoutObject() ||
-      input->GetLayoutObject()->StyleRef().Visibility() !=
-          EVisibility::kVisible) {
+      input->GetLayoutObject()->Style().Visibility() != EVisibility::kVisible) {
     return false;
   }
 

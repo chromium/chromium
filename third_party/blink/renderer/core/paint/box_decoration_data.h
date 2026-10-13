@@ -27,8 +27,8 @@ class BoxDecorationData {
                     const LayoutReplaced& layout_replaced)
       : BoxDecorationData(paint_info,
                           layout_replaced,
-                          layout_replaced.StyleRef(),
-                          layout_replaced.StyleRef().HasBorderDecoration()) {}
+                          layout_replaced.Style(),
+                          layout_replaced.Style().HasBorderDecoration()) {}
 
   BoxDecorationData(const PaintInfo& paint_info,
                     const PhysicalFragment& fragment,

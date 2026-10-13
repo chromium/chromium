@@ -82,7 +82,7 @@ SVGLayoutResult LayoutSVGContainer::UpdateSVGLayout(
   self_has_viewport_dependence_ =
       GetElement()->SelfHasRelativeLengths() ||
       (transform_uses_reference_box_ &&
-       StyleRef().TransformBox() == ETransformBox::kViewBox);
+       Style().TransformBox() == ETransformBox::kViewBox);
 
   const bool has_viewport_dependence =
       content_result.has_viewport_dependence || self_has_viewport_dependence_;
@@ -119,9 +119,9 @@ bool LayoutSVGContainer::UpdateAfterSVGLayout(
     for (auto* child = FirstChild(); child; child = child->NextSibling()) {
       if (child->TransformAffectsVectorEffect())
         SetTransformAffectsVectorEffect(true);
-      if (child->StyleRef().HasCurrentTransformRelatedAnimation() ||
+      if (child->Style().HasCurrentTransformRelatedAnimation() ||
           child->SVGDescendantMayHaveTransformRelatedOperations() ||
-          child->StyleRef().HasNonIdentityTransformOperation()) {
+          child->Style().HasNonIdentityTransformOperation()) {
         SetSVGDescendantMayHaveTransformRelatedOperations();
       }
     }
@@ -136,7 +136,7 @@ void LayoutSVGContainer::AddChild(LayoutObject* child,
   LayoutSVGModelObject::AddChild(child, before_child);
 
   bool should_isolate_descendants =
-      (child->IsBlendingAllowed() && child->StyleRef().HasBlendMode()) ||
+      (child->IsBlendingAllowed() && child->Style().HasBlendMode()) ||
       child->HasNonIsolatedBlendingDescendants();
   if (should_isolate_descendants)
     DescendantIsolationRequirementsChanged(kDescendantIsolationRequired);
@@ -149,7 +149,7 @@ void LayoutSVGContainer::RemoveChild(LayoutObject* child) {
   content_.MarkBoundsDirtyFromRemovedChild();
 
   bool had_non_isolated_descendants =
-      (child->IsBlendingAllowed() && child->StyleRef().HasBlendMode()) ||
+      (child->IsBlendingAllowed() && child->Style().HasBlendMode()) ||
       child->HasNonIsolatedBlendingDescendants();
   if (had_non_isolated_descendants)
     DescendantIsolationRequirementsChanged(kDescendantIsolationNeedsUpdate);
@@ -212,7 +212,7 @@ void LayoutSVGContainer::DescendantIsolationRequirementsChanged(
       break;
   }
   if (!IsSVGHiddenContainer() &&
-      SVGLayoutSupport::WillIsolateBlendingDescendantsForStyle(StyleRef())) {
+      SVGLayoutSupport::WillIsolateBlendingDescendantsForStyle(Style())) {
     SetNeedsPaintPropertyUpdate();
     return;
   }
@@ -253,7 +253,7 @@ bool LayoutSVGContainer::NodeAtPoint(HitTestResult& result,
     // pointer-events: bounding-box makes it possible for containers to be
     // direct targets.
     if ((is_visual_overflow ||
-         StyleRef().UsedPointerEvents() == EPointerEvents::kBoundingBox) &&
+         Style().UsedPointerEvents() == EPointerEvents::kBoundingBox) &&
         local_location->Intersects(bounds)) {
       UpdateHitTestResult(result, PhysicalOffset::FromPointFRound(
                                       local_location->TransformedPoint()));

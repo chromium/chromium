@@ -139,7 +139,7 @@ RespectImageOrientationEnum LayoutImageResource::ImageOrientation() const {
   // Always respect the orientation of opaque origin images to avoid leaking
   // image data. Otherwise pull orientation from the layout object's style.
   return cached_image_->ForceOrientationIfNecessary(
-      layout_object_->StyleRef().ImageOrientation());
+      layout_object_->Style().ImageOrientation());
 }
 
 NaturalSizingInfo LayoutImageResource::GetNaturalDimensions(
@@ -223,7 +223,7 @@ scoped_refptr<Image> LayoutImageResource::GetImage(
   if (!svg_image)
     return image;
 
-  const ComputedStyle& style = layout_object_->StyleRef();
+  const ComputedStyle& style = layout_object_->Style();
   auto preferred_color_scheme = layout_object_->GetDocument()
                                     .GetStyleEngine()
                                     .ResolveColorSchemeForEmbedding(&style);

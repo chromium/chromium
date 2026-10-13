@@ -53,7 +53,7 @@ TEST_F(HighlightOverlayTest, ComputeLayers) {
 
   LayoutSelectionStatus selection{0, 0, SelectSoftLineBreak::kNotSelected};
   DocumentMarkerVector none;
-  const ComputedStyle& style = text->GetLayoutObject()->StyleRef();
+  const ComputedStyle& style = text->GetLayoutObject()->Style();
   TextPaintStyle text_style;
   PaintController controller;
   GraphicsContext context(controller);
@@ -151,8 +151,8 @@ TEST_F(HighlightOverlayTest, ComputeEdges) {
   PaintInfo paint_info(context, CullRect(), PaintPhase::kForeground,
                        /*descendant_painting_blocked=*/false);
 
-  const ComputedStyle& br_style = br->GetLayoutObject()->StyleRef();
-  const ComputedStyle& text_style = text->GetLayoutObject()->StyleRef();
+  const ComputedStyle& br_style = br->GetLayoutObject()->Style();
+  const ComputedStyle& text_style = text->GetLayoutObject()->Style();
   TextPaintStyle paint_style;
 
   TextOffsetRange originating{3, 6};
@@ -340,7 +340,7 @@ TEST_F(HighlightOverlayTest, ComputeParts) {
   PaintInfo paint_info(context, CullRect(), PaintPhase::kForeground,
                        /*descendant_painting_blocked=*/false);
 
-  const ComputedStyle& text_style = text->GetLayoutObject()->StyleRef();
+  const ComputedStyle& text_style = text->GetLayoutObject()->Style();
   TextPaintStyle paint_style;
 
   DocumentMarkerVector none;

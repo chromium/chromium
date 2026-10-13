@@ -60,8 +60,9 @@ PaintRecord LayoutSVGResourceMasker::CreatePaintRecord(PaintFlags paint_flags) {
     if (!layout_object)
       continue;
     if (DisplayLockUtilities::LockedAncestorPreventingLayout(*layout_object) ||
-        layout_object->StyleRef().Display() == EDisplay::kNone)
+        layout_object->Style().Display() == EDisplay::kNone) {
       continue;
+    }
     SVGObjectPainter(*layout_object, nullptr)
         .PaintResourceSubtree(builder.Context(),
                               PaintFlag::kPaintingSVGMask | paint_flags);

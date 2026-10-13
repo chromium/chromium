@@ -1822,7 +1822,7 @@ void BoxFragmentPainter::PaintBackground(
       // If there's no such thing, we have nothing to paint.
       return;
     }
-    style_to_use = &document.GetLayoutView()->StyleRef();
+    style_to_use = &document.GetLayoutView()->Style();
     background_color_to_use =
         style_to_use->VisitedDependentColor(GetCSSPropertyBackgroundColor());
   }

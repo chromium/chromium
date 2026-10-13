@@ -243,7 +243,7 @@ bool ScrollButtonPseudoElement::CalculateEnabledState() const {
   const ScrollOffset current_position = gfx::ToRoundedVector2d(
       scrollable_area->ScrollPosition().OffsetFromOrigin());
   const auto direction = ScrollDirectionForButton(
-      GetPseudoId(), scroller->StyleRef().GetWritingDirection());
+      GetPseudoId(), scroller->Style().GetWritingDirection());
   if (!direction) {
     return enabled_;
   }

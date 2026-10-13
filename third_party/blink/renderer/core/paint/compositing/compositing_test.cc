@@ -818,7 +818,7 @@ TEST_P(CompositingTest, HitTestOpaquenessOnChangeOfUsedPointerEvents) {
   Element* parent = GetElementById("parent");
   Element* target = GetElementById("target");
   const LayoutBox* target_box = target->GetLayoutBox();
-  EXPECT_EQ(EPointerEvents::kAuto, target_box->StyleRef().UsedPointerEvents());
+  EXPECT_EQ(EPointerEvents::kAuto, target_box->Style().UsedPointerEvents());
   ASSERT_FALSE(target_box->Layer()->SelfNeedsRepaint());
   auto* display_item_client = static_cast<const DisplayItemClient*>(target_box);
   ASSERT_TRUE(display_item_client->IsValid());
@@ -831,7 +831,7 @@ TEST_P(CompositingTest, HitTestOpaquenessOnChangeOfUsedPointerEvents) {
   UpdateAllLifecyclePhasesExceptPaint();
   // Change of PointerEvents should not invalidate the painting layer, but not
   // the display item client.
-  EXPECT_EQ(EPointerEvents::kNone, target_box->StyleRef().UsedPointerEvents());
+  EXPECT_EQ(EPointerEvents::kNone, target_box->Style().UsedPointerEvents());
   EXPECT_TRUE(target_box->Layer()->SelfNeedsRepaint());
   EXPECT_TRUE(display_item_client->IsValid());
   UpdateAllLifecyclePhases();
@@ -840,7 +840,7 @@ TEST_P(CompositingTest, HitTestOpaquenessOnChangeOfUsedPointerEvents) {
 
   target->RemoveInlineStyleProperty(CSSPropertyID::kPointerEvents);
   UpdateAllLifecyclePhasesExceptPaint();
-  EXPECT_EQ(EPointerEvents::kAuto, target_box->StyleRef().UsedPointerEvents());
+  EXPECT_EQ(EPointerEvents::kAuto, target_box->Style().UsedPointerEvents());
   EXPECT_TRUE(target_box->Layer()->SelfNeedsRepaint());
   EXPECT_TRUE(display_item_client->IsValid());
   UpdateAllLifecyclePhases();
@@ -849,7 +849,7 @@ TEST_P(CompositingTest, HitTestOpaquenessOnChangeOfUsedPointerEvents) {
 
   parent->setAttribute(html_names::kInertAttr, AtomicString(""));
   UpdateAllLifecyclePhasesExceptPaint();
-  EXPECT_EQ(EPointerEvents::kNone, target_box->StyleRef().UsedPointerEvents());
+  EXPECT_EQ(EPointerEvents::kNone, target_box->Style().UsedPointerEvents());
   // Change of parent inert attribute (affecting target's used pointer events)
   // should invalidate the painting layer but not the display item client.
   EXPECT_TRUE(target_box->Layer()->SelfNeedsRepaint());
@@ -860,7 +860,7 @@ TEST_P(CompositingTest, HitTestOpaquenessOnChangeOfUsedPointerEvents) {
 
   parent->removeAttribute(html_names::kInertAttr);
   UpdateAllLifecyclePhasesExceptPaint();
-  EXPECT_EQ(EPointerEvents::kAuto, target_box->StyleRef().UsedPointerEvents());
+  EXPECT_EQ(EPointerEvents::kAuto, target_box->Style().UsedPointerEvents());
   EXPECT_TRUE(target_box->Layer()->SelfNeedsRepaint());
   EXPECT_TRUE(display_item_client->IsValid());
   UpdateAllLifecyclePhases();

@@ -825,7 +825,7 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
     // container's writing direction. Convert it to physical.
     const PhysicalBoxStrut& insets =
         box->OutOfFlowInsetsForGetComputedStyle().ConvertToPhysical(
-            box->ContainingBlock()->StyleRef().GetWritingDirection());
+            box->ContainingBlock()->Style().GetWritingDirection());
     LayoutUnit inset;
     switch (property.PropertyID()) {
       case CSSPropertyID::kLeft:
@@ -2387,12 +2387,12 @@ std::optional<gfx::SizeF> ComputedStyleUtils::UsedBoxSize(
       // Under SvgNewZoom, ObjectBoundingBox() is already in zoomed CSS pixels
       // (since SVG element layout absorbs EffectiveZoom). Under the old model,
       // the bbox is in CSS pixels, so we must multiply by zoom.
-      size.Scale(layout_object.StyleRef().EffectiveZoom());
+      size.Scale(layout_object.Style().EffectiveZoom());
     }
     return size;
   }
   if (const auto* box = DynamicTo<LayoutBox>(layout_object)) {
-    if (box->StyleRef().BoxSizing() == EBoxSizing::kBorderBox) {
+    if (box->Style().BoxSizing() == EBoxSizing::kBorderBox) {
       return gfx::SizeF(box->PhysicalBorderBoxRect().size);
     }
     // For "content-box", use the "computed" padding, instead of the "used".

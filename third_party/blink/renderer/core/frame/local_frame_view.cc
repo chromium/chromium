@@ -1342,7 +1342,7 @@ std::optional<NaturalSizingInfo> LocalFrameView::GetNaturalDimensions() const {
   const LayoutView* layout_view = GetLayoutView();
   DCHECK(layout_view);
   const gfx::SizeF unscaled_natural_size = AdjustForAbsoluteZoom::AdjustSize(
-      gfx::SizeF{*natural_size_}, layout_view->StyleRef());
+      gfx::SizeF{*natural_size_}, layout_view->Style());
   return NaturalSizingInfo::MakeSize(unscaled_natural_size);
 }
 
@@ -2124,7 +2124,7 @@ Color LocalFrameView::DocumentBackgroundColor() {
 
   Color doc_bg =
       background_source->ResolveColor(GetCSSPropertyBackgroundColor());
-  if (background_source->StyleRef().ColorSchemeForced()) {
+  if (background_source->Style().ColorSchemeForced()) {
     // TODO(https://crbug.com/1351544): The DarkModeFilter operate on SkColor4f,
     // and DocumentBackgroundColor should return an SkColor4f.
     doc_bg = Color::FromSkColor4f(EnsureDarkModeFilter().InvertColorIfNeeded(
@@ -4762,7 +4762,7 @@ bool LocalFrameView::CollectDraggableRegions(
   if (!layout_object.MayContainDraggableRegion()) {
     return false;
   }
-  bool has_region = layout_object.StyleRef().DraggableRegionMode() !=
+  bool has_region = layout_object.Style().DraggableRegionMode() !=
                     EDraggableRegionMode::kNone;
   if (has_region) {
     layout_object.AddDraggableRegions(regions);

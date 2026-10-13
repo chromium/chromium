@@ -333,7 +333,7 @@ PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
     return kFullyPainted;
 
   IgnorePaintTimingScope ignore_paint_timing;
-  if (object.StyleRef().Opacity() == 0.0f) {
+  if (object.Style().Opacity() == 0.0f) {
     IgnorePaintTimingScope::IncrementIgnoreDepth();
   }
   // Explicitly compute opacity of documentElement, as it is special-cased in
@@ -430,7 +430,7 @@ PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
   PaintController& controller = context.GetPaintController();
 
   std::optional<ScopedEffectivelyInvisible> effectively_invisible;
-  if (PaintedOutputInvisible(object.StyleRef())) {
+  if (PaintedOutputInvisible(object.Style())) {
     effectively_invisible.emplace(
         controller,
         ScopedEffectivelyInvisible::Visibility::kEffectivelyInvisible);
@@ -507,7 +507,7 @@ PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
 
   // Outline always needs to be painted even if we have no visible content.
   bool should_paint_self_outline = is_self_painting_layer &&
-                                   object.StyleRef().HasOutline() &&
+                                   object.Style().HasOutline() &&
                                    !is_non_drawable_in_canvas_subtree;
 
   bool is_video = IsA<LayoutVideo>(object);

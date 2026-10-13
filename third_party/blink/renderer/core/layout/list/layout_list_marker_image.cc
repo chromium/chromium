@@ -21,7 +21,7 @@ LayoutListMarkerImage* LayoutListMarkerImage::CreateAnonymous(
 
 PhysicalSize LayoutListMarkerImage::DefaultSize() const {
   NOT_DESTROYED();
-  const SimpleFontData* font_data = StyleRef().GetFont()->PrimaryFont();
+  const SimpleFontData* font_data = Style().GetFont()->PrimaryFont();
   DCHECK(font_data);
   if (!font_data) {
     return PhysicalSize(LayoutUnit(kDefaultWidth), LayoutUnit(kDefaultHeight));
@@ -39,7 +39,7 @@ PhysicalNaturalSizingInfo LayoutListMarkerImage::GetNaturalDimensions() const {
   // object size by using a default object size of (ascent/2 x ascent/2).
   if (sizing_info.size.IsEmpty()) {
     const auto natural_dimensions = PhysicalNaturalSizingInfo::FromSizingInfo(
-        ImageResource()->GetNaturalDimensions(StyleRef().EffectiveZoom()));
+        ImageResource()->GetNaturalDimensions(Style().EffectiveZoom()));
     sizing_info = PhysicalNaturalSizingInfo::MakeFixed(
         ConcreteObjectSize(natural_dimensions, DefaultSize()));
   }

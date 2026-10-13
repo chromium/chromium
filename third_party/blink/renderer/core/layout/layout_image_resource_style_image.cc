@@ -69,8 +69,8 @@ scoped_refptr<Image> LayoutImageResourceStyleImage::GetImage(
   if (!node) {
     node = &layout_object_->GetDocument();
   }
-  return style_image_->GetImage(*layout_object_, *node,
-                                layout_object_->StyleRef(), size);
+  return style_image_->GetImage(*layout_object_, *node, layout_object_->Style(),
+                                size);
 }
 
 bool LayoutImageResourceStyleImage::IsCorsSameOrigin() const {
@@ -89,7 +89,7 @@ RespectImageOrientationEnum LayoutImageResourceStyleImage::ImageOrientation()
   // Always respect the orientation of opaque origin images to avoid leaking
   // image data. Otherwise pull orientation from the layout object's style.
   RespectImageOrientationEnum respect_orientation =
-      layout_object_->StyleRef().ImageOrientation();
+      layout_object_->Style().ImageOrientation();
   return style_image_->ForceOrientationIfNecessary(respect_orientation);
 }
 

@@ -15,23 +15,23 @@ class LayoutQuoteTest : public RenderingTest {
                                           const char* lang,
                                           const char* parent_lang) {
     const LayoutObject* o = GetLayoutObjectByElementId(id);
-    EXPECT_STREQ(o->StyleRef().Locale().Ascii().c_str(), lang);
+    EXPECT_STREQ(o->Style().Locale().Ascii().c_str(), lang);
 
     const LayoutObject* child_before = o->SlowFirstChild();
-    ASSERT_EQ(child_before->StyleRef().StyleType(), PseudoId::kPseudoIdBefore);
+    ASSERT_EQ(child_before->Style().StyleType(), PseudoId::kPseudoIdBefore);
     EXPECT_STREQ(
-        child_before->SlowFirstChild()->StyleRef().Locale().Ascii().c_str(),
+        child_before->SlowFirstChild()->Style().Locale().Ascii().c_str(),
         parent_lang);
 
     const LayoutObject* child_after = o->SlowLastChild();
-    ASSERT_EQ(child_after->StyleRef().StyleType(), PseudoId::kPseudoIdAfter);
+    ASSERT_EQ(child_after->Style().StyleType(), PseudoId::kPseudoIdAfter);
     EXPECT_STREQ(
-        child_after->SlowFirstChild()->StyleRef().Locale().Ascii().c_str(),
+        child_after->SlowFirstChild()->Style().Locale().Ascii().c_str(),
         parent_lang);
 
     const LayoutObject* child_text = child_before->NextSibling();
     ASSERT_TRUE(child_text->IsText());
-    EXPECT_STREQ(child_text->StyleRef().Locale().Ascii().c_str(), lang);
+    EXPECT_STREQ(child_text->Style().Locale().Ascii().c_str(), lang);
   }
 };
 

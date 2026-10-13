@@ -44,14 +44,14 @@ void TableCellPaintInvalidator::InvalidatePaint() {
     const auto& row = *cell_.Parent();
     DCHECK(row.IsTableRow());
     if (!DisplayItemClientIsFullyInvalidated(row) &&
-        row.StyleRef().HasBackground()) {
+        row.Style().HasBackground()) {
       InvalidateContainerForCellGeometryChange(row, *context_.parent_context);
     }
     // Table section background is painted inside cell's geometry.
     const auto& section = *row.Parent();
     DCHECK(section.IsTableSection());
     if (!DisplayItemClientIsFullyInvalidated(section) &&
-        section.StyleRef().HasBackground()) {
+        section.Style().HasBackground()) {
       InvalidateContainerForCellGeometryChange(
           section, *context_.parent_context->parent_context);
     }

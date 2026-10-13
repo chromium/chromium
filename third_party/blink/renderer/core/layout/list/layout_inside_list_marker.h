@@ -35,7 +35,7 @@ class CORE_EXPORT LayoutInsideListMarker final : public LayoutInline {
   void AddChild(LayoutObject* new_child, LayoutObject* before_child) override {
     NOT_DESTROYED();
     // List markers with 'content: normal' should have at most one child.
-    DCHECK(!StyleRef().ContentBehavesAsNormal() || !FirstChild());
+    DCHECK(!Style().ContentBehavesAsNormal() || !FirstChild());
     LayoutInline::AddChild(new_child, before_child);
   }
 #endif

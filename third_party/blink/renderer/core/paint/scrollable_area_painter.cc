@@ -45,7 +45,7 @@ void ScrollableAreaPainter::PaintResizer(const PaintInfo& paint_info,
                                          const CullRect& cull_rect) {
   GraphicsContext& context = paint_info.context;
   const auto* box = scrollable_area_.GetLayoutBox();
-  DCHECK_EQ(box->StyleRef().Visibility(), EVisibility::kVisible);
+  DCHECK_EQ(box->Style().Visibility(), EVisibility::kVisible);
   if (!box->CanResize())
     return;
 
@@ -89,7 +89,7 @@ void ScrollableAreaPainter::PaintResizer(const PaintInfo& paint_info,
     corner_outline.Inset(0.5f);
     context.StrokeRect(
         corner_outline,
-        PaintAutoDarkMode(box->StyleRef(),
+        PaintAutoDarkMode(box->Style(),
                           DarkModeFilter::ElementRole::kBackground));
   }
 }
@@ -187,7 +187,7 @@ void ScrollableAreaPainter::DrawPlatformResizerImage(
   paint_flags.setStrokeWidth(std::ceil(paint_scale));
 
   AutoDarkMode auto_dark_mode(
-      PaintAutoDarkMode(scrollable_area_.GetLayoutBox()->StyleRef(),
+      PaintAutoDarkMode(scrollable_area_.GetLayoutBox()->Style(),
                         DarkModeFilter::ElementRole::kBackground));
 
   // Draw a dark line, to ensure contrast against a light background
@@ -226,7 +226,7 @@ bool ScrollableAreaPainter::PaintOverflowControls(
   // Don't do anything if we have no overflow.
   const auto& box = *scrollable_area_.GetLayoutBox();
   CHECK(box.IsScrollContainer());
-  if (box.StyleRef().Visibility() != EVisibility::kVisible) {
+  if (box.Style().Visibility() != EVisibility::kVisible) {
     return false;
   }
 

@@ -588,7 +588,7 @@ sk_sp<PaintFilter> CanvasRenderingContext2DState::GetFilter(
     // If font_for_filter_ was never set (ie frame-less documents) use base font
     if (!font_for_filter_->GetFontSelector()) [[unlikely]] {
       if (LayoutView* layout_view = document.GetLayoutView()) {
-        font = layout_view->StyleRef().GetFont();
+        font = layout_view->Style().GetFont();
       } else {
         return nullptr;
       }

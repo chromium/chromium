@@ -628,7 +628,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     if (IsScrollContainer())
       return false;
 
-    const auto& style = StyleRef();
+    const auto& style = Style();
     // Nothing to apply if there is no margin.
     if (!style.OverflowClipMarginHasAnEffect()) {
       return false;
@@ -671,7 +671,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   inline bool ShouldApplyPaintContainment() const {
     NOT_DESTROYED();
-    return ShouldApplyPaintContainment(StyleRef());
+    return ShouldApplyPaintContainment(Style());
   }
 
   inline bool ShouldApplyLayoutContainment(const ComputedStyle& style) const {
@@ -681,28 +681,28 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   inline bool ShouldApplyLayoutContainment() const {
     NOT_DESTROYED();
-    return ShouldApplyLayoutContainment(StyleRef());
+    return ShouldApplyLayoutContainment(Style());
   }
 
   inline bool ShouldApplySizeContainment() const {
     NOT_DESTROYED();
-    return StyleRef().ContainsSize() && IsEligibleForSizeContainment();
+    return Style().ContainsSize() && IsEligibleForSizeContainment();
   }
   inline bool ShouldApplyInlineSizeContainment() const {
     NOT_DESTROYED();
-    return StyleRef().ContainsInlineSize() && IsEligibleForSizeContainment();
+    return Style().ContainsInlineSize() && IsEligibleForSizeContainment();
   }
   inline bool ShouldApplyBlockSizeContainment() const {
     NOT_DESTROYED();
-    return StyleRef().ContainsBlockSize() && IsEligibleForSizeContainment();
+    return Style().ContainsBlockSize() && IsEligibleForSizeContainment();
   }
   inline bool ShouldApplyAnySizeContainment() const {
     NOT_DESTROYED();
-    return StyleRef().ContainsAnySize() && IsEligibleForSizeContainment();
+    return Style().ContainsAnySize() && IsEligibleForSizeContainment();
   }
   inline bool ShouldApplyStyleContainment() const {
     NOT_DESTROYED();
-    return StyleRef().ContainsStyle();
+    return Style().ContainsStyle();
   }
   inline bool ShouldApplyContentContainment() const {
     NOT_DESTROYED();
@@ -724,13 +724,13 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   inline bool CanMatchSizeContainerQueries() const {
     NOT_DESTROYED();
     if (Element* element = DynamicTo<Element>(GetNode()))
-      return StyleRef().CanMatchSizeContainerQueries(*element);
+      return Style().CanMatchSizeContainerQueries(*element);
     return false;
   }
 
   inline bool IsStackingContext() const {
     NOT_DESTROYED();
-    return IsStackingContext(StyleRef());
+    return IsStackingContext(Style());
   }
   inline bool IsStackingContext(const ComputedStyle& style) const {
     NOT_DESTROYED();
@@ -754,7 +754,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   inline bool IsStacked() const {
     NOT_DESTROYED();
-    return IsStacked(StyleRef());
+    return IsStacked(Style());
   }
   inline bool IsStacked(const ComputedStyle& style) const {
     NOT_DESTROYED();
@@ -1387,7 +1387,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   bool IsAnonymousBlockFlow() const {
     NOT_DESTROYED();
     return IsAnonymous() && IsLayoutBlockFlow() &&
-           StyleRef().Display() == EDisplay::kBlock;
+           Style().Display() == EDisplay::kBlock;
   }
 
   bool IsFloating() const {
@@ -1416,12 +1416,12 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   bool IsFixedPositioned() const {
     NOT_DESTROYED();
     return IsOutOfFlowPositioned() &&
-           StyleRef().GetPosition() == EPosition::kFixed;
+           Style().GetPosition() == EPosition::kFixed;
   }
   bool IsAbsolutePositioned() const {
     NOT_DESTROYED();
     return IsOutOfFlowPositioned() &&
-           StyleRef().GetPosition() == EPosition::kAbsolute;
+           Style().GetPosition() == EPosition::kAbsolute;
   }
   bool IsPositioned() const {
     NOT_DESTROYED();
@@ -1454,12 +1454,11 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   }
   bool IsHorizontalTypographicMode() const {
     NOT_DESTROYED();
-    return IsHorizontalWritingMode() ||
-           StyleRef().IsHorizontalTypographicMode();
+    return IsHorizontalWritingMode() || Style().IsHorizontalTypographicMode();
   }
   bool HasFlippedBlocksWritingMode() const {
     NOT_DESTROYED();
-    return StyleRef().IsFlippedBlocksWritingMode();
+    return Style().IsFlippedBlocksWritingMode();
   }
 
   bool HasLayer() const {
@@ -1467,7 +1466,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     return has_layer_;
   }
 
-  // This may be different from StyleRef().hasBoxDecorationBackground() because
+  // This may be different from Style().HasBoxDecorationBackground() because
   // some objects may have box decoration background other than from their own
   // style.
   bool HasBoxDecorationBackground() const {
@@ -1571,10 +1570,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   }
 
   // CSS clip only applies when position is absolute or fixed. Prefer this check
-  // over !StyleRef().HasAutoClip().
+  // over !Style().HasAutoClip().
   bool HasCSSClip() const {
     NOT_DESTROYED();
-    return IsOutOfFlowPositioned() && !StyleRef().HasAutoClip();
+    return IsOutOfFlowPositioned() && !Style().HasAutoClip();
   }
   bool HasNonVisibleOverflow() const {
     NOT_DESTROYED();
@@ -1594,13 +1593,13 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     if (IsOverscrollAreaParent()) {
       return true;
     }
-    return StyleRef().EffectiveOverscrollContainerType() !=
+    return Style().EffectiveOverscrollContainerType() !=
            EOverscrollContainerType::kNone;
   }
 
   bool IsContentMovingOverscrollContainer() const {
     NOT_DESTROYED();
-    return IsBox() && StyleRef().IsContentMovingOverscrollContainer();
+    return IsBox() && Style().IsContentMovingOverscrollContainer();
   }
 
   bool IsScrollContainer() const {
@@ -1613,22 +1612,22 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     }
     // Always check HasNonVisibleOverflow() in case the object is not allowed to
     // have non-visible overflow.
-    return HasNonVisibleOverflow() && StyleRef().IsScrollContainer();
+    return HasNonVisibleOverflow() && Style().IsScrollContainer();
   }
 
   bool IsScrollContainerWithScrollMarkerGroup() const {
     NOT_DESTROYED();
     return (IsScrollContainer() || IsDocumentElement()) &&
-           !StyleRef().ScrollMarkerGroupNone();
+           !Style().ScrollMarkerGroupNone();
   }
 
-  // Not returning StyleRef().HasTransformRelatedProperty() because some objects
+  // Not returning Style().HasTransformRelatedProperty() because some objects
   // ignore the transform-related styles (e.g., LayoutInline).
   bool HasTransformRelatedProperty() const {
     NOT_DESTROYED();
     return has_transform_related_property_;
   }
-  // Compared to StyleRef().HasTransform(), this excludes objects that ignore
+  // Compared to Style().HasTransform(), this excludes objects that ignore
   // transform-related styles (e.g. LayoutInline), and includes elements with a
   // canvas transform in a canvas subtree.
   bool HasTransform() const {
@@ -1640,12 +1639,12 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
         }
       }
     }
-    return HasTransformRelatedProperty() && StyleRef().HasTransform();
+    return HasTransformRelatedProperty() && Style().HasTransform();
   }
   // Similar to the above.
   bool Preserves3D() const {
     NOT_DESTROYED();
-    return HasTransformRelatedProperty() && StyleRef().Preserves3D() &&
+    return HasTransformRelatedProperty() && Style().Preserves3D() &&
            !IsSVGChild();
   }
   bool IsTransformApplicable() const {
@@ -1655,38 +1654,38 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   bool HasPerspective() const {
     NOT_DESTROYED();
-    return StyleRef().HasPerspective() && HasLayer() && IsTransformApplicable();
+    return Style().HasPerspective() && HasLayer() && IsTransformApplicable();
   }
 
   bool HasMask() const {
     NOT_DESTROYED();
-    return StyleRef().HasMask();
+    return Style().HasMask();
   }
   bool HasClipPath() const {
     NOT_DESTROYED();
-    return StyleRef().HasClipPath();
+    return Style().HasClipPath();
   }
   bool HasHiddenBackface() const {
     NOT_DESTROYED();
-    return StyleRef().BackfaceVisibility() == EBackfaceVisibility::kHidden;
+    return Style().BackfaceVisibility() == EBackfaceVisibility::kHidden;
   }
   bool HasNonInitialBackdropFilter() const {
     NOT_DESTROYED();
-    return StyleRef().HasNonInitialBackdropFilter();
+    return Style().HasNonInitialBackdropFilter();
   }
 
   // Returns |true| if any property that renders using filter operations is
   // used (including, but not limited to, 'filter' and 'box-reflect').
-  // Not calling StyleRef().HasFilterInducingProperty() because some objects
+  // Not calling Style().HasFilterInducingProperty() because some objects
   // ignore reflection style (e.g. LayoutInline, LayoutSVGBlock).
   bool HasFilterInducingProperty() const {
     NOT_DESTROYED();
-    return StyleRef().HasNonInitialFilter() || HasReflection();
+    return Style().HasNonInitialFilter() || HasReflection();
   }
 
   bool HasShapeOutside() const {
     NOT_DESTROYED();
-    return StyleRef().ShapeOutside();
+    return Style().ShapeOutside();
   }
 
   // Return true if the given object is the effective root scroller in its
@@ -1715,7 +1714,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     // could get set to false, even if the legend's computed style indicates
     // that it is floating.
     const Node* node = GetNode();
-    return !IsOutOfFlowPositioned() && !StyleRef().IsFloating() && node &&
+    return !IsOutOfFlowPositioned() && !Style().IsFloating() && node &&
            node->HasTagName(html_names::kLegendTag);
   }
 
@@ -1808,14 +1807,14 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   bool IsColumnSpanAll() const {
     NOT_DESTROYED();
-    return StyleRef().GetColumnSpan() == EColumnSpan::kAll &&
+    return Style().GetColumnSpan() == EColumnSpan::kAll &&
            IsValidColumnSpannerInTree();
   }
 
   // text-overflow only applies to block containers.
   bool CanApplyTextOverflow() const {
     NOT_DESTROYED();
-    return IsLayoutBlockFlow() && StyleRef().IsDisplayBlockContainer();
+    return IsLayoutBlockFlow() && Style().IsDisplayBlockContainer();
   }
 
   // Returns true if this is a block container that can have ::first-line
@@ -2029,7 +2028,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   }
   PositionedState ToPositionedState() const {
     NOT_DESTROYED();
-    return ToPositionedState(StyleRef().GetPosition());
+    return ToPositionedState(Style().GetPosition());
   }
 
   void SetPositionState(PositionedState position) {
@@ -2557,24 +2556,25 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   }
 #endif
 
-  // style_ can only be nullptr before the first style is set, thus most
-  // callers will never see a nullptr style and should use StyleRef().
-  const ComputedStyle& StyleRef() const {
+  // We only have a nullptr style for a very short period of time (between
+  // construction, and assigning the style). Only some internal uses need to
+  // consider a nullptr style. All external uses should use a reference.
+  const ComputedStyle& Style() const {
     NOT_DESTROYED();
     DCHECK(style_);
     return *style_;
   }
 
-  /* The following methods are inlined in LayoutObjectInlines.h */
+  /* The following methods are inlined in layout_object_inlines.h */
   // If first line style is requested and there is no applicable first line
   // style, the functions will return the style of this object.
   inline const ComputedStyle& FirstLineStyleRef() const;
-  inline const ComputedStyle& StyleRef(bool first_line) const;
+  inline const ComputedStyle& Style(bool first_line) const;
 
   const ComputedStyle& EffectiveStyle(StyleVariant style_variant) const {
     NOT_DESTROYED();
     return style_variant == StyleVariant::kStandard
-               ? StyleRef()
+               ? Style()
                : SlowEffectiveStyle(style_variant);
   }
 
@@ -2585,7 +2585,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   inline Color ResolveColor(const Longhand& color_property) const {
     NOT_DESTROYED();
-    return StyleRef().VisitedDependentColor(color_property);
+    return Style().VisitedDependentColor(color_property);
   }
 
   virtual CursorDirective GetCursor(const PhysicalOffset&, ui::Cursor&) const;
@@ -2658,7 +2658,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     return !IsFloatingOrOutOfFlowPositioned() && !IsLayoutOutsideListMarker();
   }
 
-  // Not returning StyleRef().BoxReflect() because some objects ignore the
+  // Not returning Style().BoxReflect() because some objects ignore the
   // reflection style (e.g. LayoutInline, LayoutSVGBlock).
   bool HasReflection() const {
     NOT_DESTROYED();
@@ -2747,14 +2747,14 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   bool VisibleToHitTestRequest(const HitTestRequest& request) const {
     NOT_DESTROYED();
-    return StyleRef().Visibility() == EVisibility::kVisible &&
+    return Style().Visibility() == EVisibility::kVisible &&
            (request.IgnorePointerEventsNone() ||
-            StyleRef().UsedPointerEvents() != EPointerEvents::kNone);
+            Style().UsedPointerEvents() != EPointerEvents::kNone);
   }
 
   bool VisibleToHitTesting() const {
     NOT_DESTROYED();
-    return StyleRef().VisibleToHitTesting();
+    return Style().VisibleToHitTesting();
   }
 
   // These two functions map points and quads through elements, potentially
@@ -2794,8 +2794,8 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   bool CreatesGroup() const {
     NOT_DESTROYED();
-    // See |HasReflection()| for why |StyleRef().BoxReflect()| is not used.
-    return StyleRef().HasGroupingProperty(HasReflection());
+    // See |HasReflection()| for why |Style().BoxReflect()| is not used.
+    return Style().HasGroupingProperty(HasReflection());
   }
 
   // Return the outline rectangles of the current fragmentainer, as indicated by
@@ -3052,7 +3052,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     if (InsideBlockingTouchEventHandler())
       return TouchAction::kNone;
-    return StyleRef().EffectiveTouchAction();
+    return Style().EffectiveTouchAction();
   }
   bool HasEffectiveAllowedTouchAction() const {
     NOT_DESTROYED();
@@ -3166,7 +3166,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
     void UpdatePreviousVisibilityVisible() {
       layout_object_.previous_visibility_visible_ =
-          layout_object_.StyleRef().Visibility() == EVisibility::kVisible;
+          layout_object_.Style().Visibility() == EVisibility::kVisible;
     }
 
     // Same as LayoutObject::SetNeedsPaintPropertyUpdate(), but does not mark

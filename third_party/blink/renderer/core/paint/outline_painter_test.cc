@@ -46,7 +46,7 @@ TEST_F(OutlinePainterTest, HugeOutlineWidthOffset) {
   LayoutObject::OutlineInfo info;
   GetLayoutObjectByElementId("target")->OutlineRects(
       &info, PhysicalOffset(), OutlineType::kDontIncludeBlockInkOverflow);
-  const auto& style = GetLayoutObjectByElementId("target")->StyleRef();
+  const auto& style = GetLayoutObjectByElementId("target")->Style();
   EXPECT_TRUE(style.HasOutline());
   EXPECT_EQ(LayoutUnit::Max().ToInt() * 2,
             OutlinePainter::OutlineOutsetExtent(style, info));
@@ -56,7 +56,7 @@ TEST_F(OutlinePainterTest, HugeOutlineWidthOffset) {
 // that the style logic OutlinePainter depending on is correct.
 TEST_F(OutlinePainterTest, OutlineWidthLessThanOne) {
   SetBodyInnerHTML("<div id=target style='outline: 0.2px solid black'></div>");
-  const auto& style = GetLayoutObjectByElementId("target")->StyleRef();
+  const auto& style = GetLayoutObjectByElementId("target")->Style();
   EXPECT_TRUE(style.HasOutline());
   EXPECT_EQ(LayoutUnit(1), style.OutlineWidth());
   LayoutObject::OutlineInfo info =
@@ -104,8 +104,7 @@ TEST_F(OutlinePainterTest, FocusRingRespectsExplicitOutlineColorInDarkMode) {
   )HTML");
 
   // An explicit outline-color (e.g. red) must not be overridden.
-  const auto& explicit_style =
-      GetLayoutObjectByElementId("explicit")->StyleRef();
+  const auto& explicit_style = GetLayoutObjectByElementId("explicit")->Style();
   EXPECT_TRUE(explicit_style.DarkColorScheme());
   Color explicit_color =
       explicit_style.VisitedDependentColor(GetCSSPropertyOutlineColor());
@@ -114,7 +113,7 @@ TEST_F(OutlinePainterTest, FocusRingRespectsExplicitOutlineColorInDarkMode) {
   // Even if an explicit author color equals the dark default focus-ring color,
   // it should stay explicit and not be treated as -webkit-focus-ring-color.
   const auto& explicit_match_default_style =
-      GetLayoutObjectByElementId("explicit_match_default")->StyleRef();
+      GetLayoutObjectByElementId("explicit_match_default")->Style();
   EXPECT_TRUE(explicit_match_default_style.DarkColorScheme());
   Color explicit_match_default_color =
       explicit_match_default_style.VisitedDependentColor(
@@ -123,7 +122,7 @@ TEST_F(OutlinePainterTest, FocusRingRespectsExplicitOutlineColorInDarkMode) {
 
   // Default outline-color (currentColor) resolves to the text color,
   // which is white in dark mode.
-  const auto& default_style = GetLayoutObjectByElementId("default")->StyleRef();
+  const auto& default_style = GetLayoutObjectByElementId("default")->Style();
   EXPECT_TRUE(default_style.DarkColorScheme());
   EXPECT_TRUE(default_style.HasOutlineWithCurrentColor());
 
@@ -150,8 +149,7 @@ TEST_F(OutlinePainterTest, FocusRingDarkModeColorFlagCanDisableFix) {
   // With the feature disabled, the legacy behavior applies: the inner focus
   // ring color is forced to white in dark mode, even for an explicit author
   // outline-color.
-  const auto& explicit_style =
-      GetLayoutObjectByElementId("explicit")->StyleRef();
+  const auto& explicit_style = GetLayoutObjectByElementId("explicit")->Style();
   EXPECT_TRUE(explicit_style.DarkColorScheme());
   EXPECT_EQ(Color(0xFF, 0, 0),
             explicit_style.VisitedDependentColor(GetCSSPropertyOutlineColor()));

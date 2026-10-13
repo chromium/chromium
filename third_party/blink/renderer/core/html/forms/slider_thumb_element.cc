@@ -104,7 +104,7 @@ void SliderThumbElement::SetPositionFromPoint(const PhysicalOffset& point) {
     return;
 
   PhysicalOffset point_in_track = track_box->AbsoluteToLocalPoint(point);
-  auto writing_direction = thumb_box->StyleRef().GetWritingDirection();
+  auto writing_direction = thumb_box->Style().GetWritingDirection();
   bool is_flipped = writing_direction.IsFlippedInlines();
   const auto* input_box = To<LayoutBox>(input_object);
   const PhysicalOffset thumb_offset =
@@ -274,7 +274,7 @@ const AtomicString& SliderThumbElement::ShadowPseudoId() const {
   if (!input || !input->GetLayoutObject())
     return shadow_element_names::kPseudoSliderThumb;
 
-  const ComputedStyle& slider_style = input->GetLayoutObject()->StyleRef();
+  const ComputedStyle& slider_style = input->GetLayoutObject()->Style();
   switch (slider_style.EffectiveAppearance()) {
     case AppearanceValue::kMediaSlider:
     case AppearanceValue::kMediaSliderThumb:
@@ -399,8 +399,7 @@ bool SliderContainerElement::CanSlide() {
   if (!HostInput() || !HostInput()->GetLayoutObject()) {
     return false;
   }
-  const ComputedStyle& slider_style =
-      HostInput()->GetLayoutObject()->StyleRef();
+  const ComputedStyle& slider_style = HostInput()->GetLayoutObject()->Style();
   const TransformOperations& transforms = slider_style.Transform();
   int transform_size = transforms.size();
   if (transform_size > 0) {
@@ -428,7 +427,7 @@ const AtomicString& SliderContainerElement::ShadowPseudoId() const {
     return shadow_element_names::kPseudoSliderContainer;
 
   const ComputedStyle& slider_style =
-      OwnerShadowHost()->GetLayoutObject()->StyleRef();
+      OwnerShadowHost()->GetLayoutObject()->Style();
   switch (slider_style.EffectiveAppearance()) {
     case AppearanceValue::kMediaSlider:
     case AppearanceValue::kMediaSliderThumb:

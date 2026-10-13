@@ -63,7 +63,7 @@ void NotifyLoaderPerformanceTimingChanged(Document* document) {
 bool IsDocumentElementInvisible(const Document& document) {
   const Element* element = document.documentElement();
   return element && element->GetLayoutObject() &&
-         element->GetLayoutObject()->StyleRef().Opacity() == 0.0f;
+         element->GetLayoutObject()->Style().Opacity() == 0.0f;
 }
 
 }  // namespace blink::paint_timing

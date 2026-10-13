@@ -295,8 +295,8 @@ std::optional<SkPath> GetFillRequiredByEffect(const AnimationEffect* effect,
     case Timing::FillMode::AUTO:
     case Timing::FillMode::NONE:
     case Timing::FillMode::FORWARDS: {
-      if (obj.StyleRef().HasClipPath()) {
-        ClipPathOperation* static_op = obj.StyleRef().ClipPath();
+      if (obj.Style().HasClipPath()) {
+        ClipPathOperation* static_op = obj.Style().ClipPath();
         Path path;
         switch (static_op->GetType()) {
           case ClipPathOperation::kShape:
@@ -675,7 +675,7 @@ std::optional<gfx::RectF> ComputeKeyframeUnionIncludingExtrapolation(
   gfx::RectF reference_box = ClipPathClipper::CalcLocalReferenceBox(
       obj, ClipPathOperation::OperationType::kShape, GeometryBox::kBorderBox);
   const float zoom = ClipPathClipper::UsesZoomedReferenceBox(obj)
-                         ? obj.StyleRef().EffectiveZoom()
+                         ? obj.Style().EffectiveZoom()
                          : 1.f;
 
   if (effect->SpecifiedTiming().start_delay.time_delay > AnimationTimeDelta()) {
@@ -787,7 +787,7 @@ std::optional<gfx::RectF> ClipPathPaintDefinition::GetAnimationBoundingRect(
   // that we can use.
   if (!obj.HasLayer() ||
       obj.PaintingLayer()->HasDescendantWithTransformAnim() ||
-      obj.StyleRef().HasCurrentTransformRelatedAnimation() ||
+      obj.Style().HasCurrentTransformRelatedAnimation() ||
       rounded_inset_is_empty) {
     return std::nullopt;
   }

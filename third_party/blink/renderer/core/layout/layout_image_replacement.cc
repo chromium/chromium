@@ -55,8 +55,7 @@ void LayoutImageReplacement::PaintReplaced(
                              ToEnclosingRect(content_rect));
     paint_info.context.FillRect(
         ToPixelSnappedRect(content_rect), Color::kTransparent,
-        PaintAutoDarkMode(StyleRef(),
-                          DarkModeFilter::ElementRole::kBackground));
+        PaintAutoDarkMode(Style(), DarkModeFilter::ElementRole::kBackground));
   }
 }
 

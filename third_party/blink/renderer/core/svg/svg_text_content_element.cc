@@ -117,7 +117,7 @@ float SVGTextContentElement::getComputedTextLength() {
     SvgTextQuery query(*layout_object);
     return NoopWillBeInvScaleScalar(
         query.SubStringLength(0, query.NumberOfCharacters()),
-        layout_object->StyleRef().EffectiveZoom());
+        layout_object->Style().EffectiveZoom());
   }
   return 0;
 }
@@ -145,7 +145,7 @@ float SVGTextContentElement::getSubStringLength(
   if (IsNGTextOrInline(layout_object)) {
     return NoopWillBeInvScaleScalar(
         SvgTextQuery(*layout_object).SubStringLength(charnum, nchars),
-        layout_object->StyleRef().EffectiveZoom());
+        layout_object->Style().EffectiveZoom());
   }
   return 0;
 }
@@ -169,7 +169,7 @@ SVGPointTearOff* SVGTextContentElement::getStartPositionOfChar(
   if (IsNGTextOrInline(layout_object)) {
     point = NoopWillBeInvScalePoint(
         SvgTextQuery(*layout_object).StartPositionOfCharacter(charnum),
-        layout_object->StyleRef().EffectiveZoom());
+        layout_object->Style().EffectiveZoom());
   }
   return SVGPointTearOff::CreateDetached(point);
 }
@@ -193,7 +193,7 @@ SVGPointTearOff* SVGTextContentElement::getEndPositionOfChar(
   if (IsNGTextOrInline(layout_object)) {
     point = NoopWillBeInvScalePoint(
         SvgTextQuery(*layout_object).EndPositionOfCharacter(charnum),
-        layout_object->StyleRef().EffectiveZoom());
+        layout_object->Style().EffectiveZoom());
   }
   return SVGPointTearOff::CreateDetached(point);
 }
@@ -217,7 +217,7 @@ SVGRectTearOff* SVGTextContentElement::getExtentOfChar(
   if (IsNGTextOrInline(layout_object)) {
     rect = NoopWillBeInvScaleRect(
         SvgTextQuery(*layout_object).ExtentOfCharacter(charnum),
-        layout_object->StyleRef().EffectiveZoom());
+        layout_object->Style().EffectiveZoom());
   }
   return SVGRectTearOff::CreateDetached(rect);
 }
@@ -255,7 +255,7 @@ int SVGTextContentElement::getCharNumAtPosition(const DOMPointInit* point) {
     const gfx::PointF local_point(ClampTo<float>(point->x()),
                                   ClampTo<float>(point->y()));
     const gfx::PointF query_point = NoopWillBeScalePoint(
-        local_point, layout_object->StyleRef().EffectiveZoom());
+        local_point, layout_object->Style().EffectiveZoom());
     return SvgTextQuery(*layout_object).CharacterNumberAtPosition(query_point);
   }
   return -1;

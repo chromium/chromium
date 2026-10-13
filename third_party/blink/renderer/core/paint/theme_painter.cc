@@ -99,8 +99,8 @@ bool ThemePainter::Paint(const LayoutObject& o,
                          const PaintInfo& paint_info,
                          const gfx::Rect& r) {
   Document& doc = o.GetDocument();
-  const ComputedStyle& style = o.StyleRef();
-  AppearanceValue appearance = o.StyleRef().EffectiveAppearance();
+  const ComputedStyle& style = o.Style();
+  AppearanceValue appearance = o.Style().EffectiveAppearance();
   // LayoutTheme::AdjustAppearanceWithElementType() ensures |node| is a
   // non-null Element.
   DCHECK(o.GetNode());
@@ -330,7 +330,7 @@ void ThemePainter::PaintSliderTicks(const LayoutObject& o,
   if (min >= max)
     return;
 
-  const ComputedStyle& style = o.StyleRef();
+  const ComputedStyle& style = o.Style();
   AppearanceValue appearance = style.EffectiveAppearance();
   // We don't support ticks on alternate sliders like MediaVolumeSliders.
   bool is_slider_vertical =

@@ -223,7 +223,7 @@ TEST_F(SkeletonLoaderTest, PropagateColorScheme) {
   const PseudoElement* pseudo = root->GetPseudoElement(kPseudoIdSkeleton);
   ASSERT_TRUE(pseudo);
   ASSERT_TRUE(pseudo->GetLayoutObject());
-  EXPECT_EQ(pseudo->GetLayoutObject()->StyleRef().UsedColorScheme(),
+  EXPECT_EQ(pseudo->GetLayoutObject()->Style().UsedColorScheme(),
             blink::mojom::ColorScheme::kDark);
 }
 
@@ -237,7 +237,7 @@ TEST_F(SkeletonLoaderTest, PropagateColorSchemeDynamic) {
   const PseudoElement* pseudo = root->GetPseudoElement(kPseudoIdSkeleton);
   ASSERT_TRUE(pseudo);
   ASSERT_TRUE(pseudo->GetLayoutObject());
-  EXPECT_EQ(pseudo->GetLayoutObject()->StyleRef().UsedColorScheme(),
+  EXPECT_EQ(pseudo->GetLayoutObject()->Style().UsedColorScheme(),
             blink::mojom::ColorScheme::kLight);
 
   const ShadowRoot* shadow_root = pseudo->GetShadowRoot();
@@ -246,7 +246,7 @@ TEST_F(SkeletonLoaderTest, PropagateColorSchemeDynamic) {
   skeleton_root->SetInlineStyleProperty(CSSPropertyID::kColorScheme, "dark");
   UpdateAllLifecyclePhasesForTest();
 
-  EXPECT_EQ(pseudo->GetLayoutObject()->StyleRef().UsedColorScheme(),
+  EXPECT_EQ(pseudo->GetLayoutObject()->Style().UsedColorScheme(),
             blink::mojom::ColorScheme::kDark);
 }
 

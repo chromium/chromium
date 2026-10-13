@@ -244,7 +244,7 @@ static bool WriteSVGPaint(StringBuilder& ts,
                           const Longhand& property,
                           const char* paint_name) {
   TextStreamSeparator s(" ");
-  const ComputedStyle& style = object.StyleRef();
+  const ComputedStyle& style = object.Style();
   if (const StyleSVGResource* resource = paint.Resource()) {
     const SVGResource* paint_resource = resource->Resource();
     SVGResourceClient* client = SVGResources::GetClient(object);
@@ -275,7 +275,7 @@ static bool WriteSVGPaint(StringBuilder& ts,
 }
 
 static void WriteStyle(StringBuilder& ts, const LayoutObject& object) {
-  const ComputedStyle& style = object.StyleRef();
+  const ComputedStyle& style = object.Style();
 
   if (!object.LocalSVGTransform().IsIdentity())
     WriteNameValuePair(ts, "transform", object.LocalSVGTransform());
@@ -339,7 +339,7 @@ static StringBuilder& operator<<(StringBuilder& ts,
   SVGElement* svg_element = shape.GetElement();
   DCHECK(svg_element);
   const SVGViewportResolver viewport_resolver(shape);
-  const ComputedStyle& style = shape.StyleRef();
+  const ComputedStyle& style = shape.Style();
 
   if (IsA<SVGRectElement>(*svg_element)) {
     WriteNameValuePair(ts, "x",
@@ -637,7 +637,7 @@ void WriteResources(StringBuilder& ts,
                     const LayoutObject& object,
                     wtf_size_t indent) {
   const gfx::RectF reference_box = object.ObjectBoundingBox();
-  const ComputedStyle& style = object.StyleRef();
+  const ComputedStyle& style = object.Style();
   TreeScope& tree_scope = object.GetDocument();
   SVGResourceClient* client = SVGResources::GetClient(object);
   if (!client)

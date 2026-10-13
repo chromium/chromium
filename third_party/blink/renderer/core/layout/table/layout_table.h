@@ -187,7 +187,7 @@ class CORE_EXPORT LayoutTable : public LayoutBlock {
 
   bool HasCollapsedBorders() const {
     NOT_DESTROYED();
-    return StyleRef().BorderCollapse() == EBorderCollapse::kCollapse;
+    return Style().BorderCollapse() == EBorderCollapse::kCollapse;
   }
 
   unsigned AbsoluteColumnToEffectiveColumn(

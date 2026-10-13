@@ -1624,7 +1624,7 @@ TEST_P(PaintLayerTest, PaintLayerTransformUpdatedOnStyleTransformAnimation) {
       To<LayoutBoxModelObject>(target_object)->Layer();
   EXPECT_EQ(nullptr, target_paint_layer->Transform());
 
-  const ComputedStyle& old_style = target_object->StyleRef();
+  const ComputedStyle& old_style = target_object->Style();
   ComputedStyleBuilder new_style_builder(old_style);
   new_style_builder.SetHasCurrentTransformAnimation(true);
   target_object->SetStyle(*new_style_builder.TakeStyle());

@@ -25,7 +25,7 @@ bool BoxPaintInvalidator::HasEffectiveBackground() {
   // The view can paint background not from the style.
   if (IsA<LayoutView>(box_))
     return true;
-  return box_.StyleRef().HasBackground() && !box_.BackgroundTransfersToView();
+  return box_.Style().HasBackground() && !box_.BackgroundTransfersToView();
 }
 
 // |width| is of the positioning area.
@@ -147,7 +147,7 @@ PaintInvalidationReason BoxPaintInvalidator::ComputePaintInvalidationReason() {
     return reason;
   }
 
-  const ComputedStyle& style = box_.StyleRef();
+  const ComputedStyle& style = box_.Style();
   const bool check_content_box =
       !RuntimeEnabledFeatures::PrePaintBoxInvalidatorUsesFragmentsEnabled() ||
       box_.HavePhysicalFragmentsChanged();
@@ -223,7 +223,7 @@ PaintInvalidationReason BoxPaintInvalidator::ComputePaintInvalidationReason() {
 
 bool BoxPaintInvalidator::BackgroundGeometryDependsOnScrollableOverflowRect() {
   return HasEffectiveBackground() &&
-         box_.StyleRef().BackgroundLayers().AnyLayerHasLocalAttachmentImage();
+         box_.Style().BackgroundLayers().AnyLayerHasLocalAttachmentImage();
 }
 
 bool BoxPaintInvalidator::BackgroundPaintsInContentsSpace() {
@@ -256,7 +256,7 @@ bool BoxPaintInvalidator::
   }
 
   return ShouldFullyInvalidateFillLayersOnSizeChange(
-      box_.StyleRef().BackgroundLayers(), old_scrollable_overflow.size,
+      box_.Style().BackgroundLayers(), old_scrollable_overflow.size,
       new_scrollable_overflow.size);
 }
 
@@ -295,7 +295,7 @@ BoxPaintInvalidator::ComputeViewBackgroundInvalidation() {
         // LayoutView's non-fixed-attachment background is positioned in the
         // root element and needs to invalidate if the size changes.
         // See: https://drafts.csswg.org/css-backgrounds-3/#root-background.
-        const auto& background_layers = box_.StyleRef().BackgroundLayers();
+        const auto& background_layers = box_.Style().BackgroundLayers();
         if (ShouldFullyInvalidateFillLayersOnSizeChange(
                 background_layers, root_box->PreviousSize(),
                 root_box->StitchedSize())) {
@@ -361,7 +361,7 @@ BoxPaintInvalidator::ComputeBackgroundInvalidation(
   if (!HasEffectiveBackground())
     return BackgroundInvalidationType::kNone;
 
-  const auto& background_layers = box_.StyleRef().BackgroundLayers();
+  const auto& background_layers = box_.Style().BackgroundLayers();
   if (background_layers.AnyLayerHasDefaultAttachmentImage() &&
       ShouldFullyInvalidateFillLayersOnSizeChange(
           background_layers, box_.PreviousSize(), box_.StitchedSize())) {
@@ -494,7 +494,7 @@ bool BoxPaintInvalidator::NeedsToSavePreviousContentBoxRect() {
   if (box_.IsLayoutReplaced())
     return true;
 
-  const ComputedStyle& style = box_.StyleRef();
+  const ComputedStyle& style = box_.Style();
 
   // Background and mask layers can depend on other boxes than border box. See
   // crbug.com/490533
@@ -528,8 +528,7 @@ bool BoxPaintInvalidator::NeedsToSavePreviousOverflowData() {
 
 bool BoxPaintInvalidator::NeedsToSavePreviousGapGeometries() {
   DCHECK(!RuntimeEnabledFeatures::PrePaintBoxInvalidatorUsesFragmentsEnabled());
-  if (!box_.StyleRef().IsGapDecorationsContainer() ||
-      !box_.StyleRef().HasGapRule()) {
+  if (!box_.Style().IsGapDecorationsContainer() || !box_.Style().HasGapRule()) {
     return false;
   }
   for (const PhysicalBoxFragment& fragment : box_.PhysicalFragments()) {
@@ -541,8 +540,7 @@ bool BoxPaintInvalidator::NeedsToSavePreviousGapGeometries() {
 }
 
 bool BoxPaintInvalidator::ShouldInvalidateGapDecorations() const {
-  if (!box_.StyleRef().IsGapDecorationsContainer() ||
-      !box_.StyleRef().HasGapRule()) {
+  if (!box_.Style().IsGapDecorationsContainer() || !box_.Style().HasGapRule()) {
     return false;
   }
 

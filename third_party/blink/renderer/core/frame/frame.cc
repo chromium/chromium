@@ -497,7 +497,7 @@ void Frame::UpdateVisibleToHitTesting() {
   if (auto* local_owner = DynamicTo<HTMLFrameOwnerElement>(owner_.Get())) {
     self_visible_to_hit_testing =
         !local_owner->GetLayoutObject() ||
-        local_owner->GetLayoutObject()->StyleRef().VisibleToHitTesting();
+        local_owner->GetLayoutObject()->Style().VisibleToHitTesting();
   }
 
   bool visible_to_hit_testing =

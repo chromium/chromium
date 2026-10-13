@@ -109,7 +109,7 @@ double ComputeTriggerBoundary(std::optional<TimelineOffset> offset,
       TimelineOffset offset_in_physical(
           offset->name,
           offset->offset.Zoom(
-              timeline_source.GetLayoutBox()->StyleRef().EffectiveZoom()),
+              timeline_source.GetLayoutBox()->Style().EffectiveZoom()),
           offset->style_dependent_offset);
 
       double fraction =
@@ -469,8 +469,7 @@ TimelineTriggerRange::ComputeCcBoundaries(cc::AnimationTimeline* cc_timeline) {
   // offsets are in physical pixels. So, scale the blink boundaries into
   // physical pixels.
   // TODO(451238244): Update boundaries whenever zoom factor changes.
-  double zoom_factor =
-      timeline_source->GetLayoutBox()->StyleRef().EffectiveZoom();
+  double zoom_factor = timeline_source->GetLayoutBox()->Style().EffectiveZoom();
   trigger_boundaries->activation_start *= zoom_factor;
   trigger_boundaries->activation_end *= zoom_factor;
   trigger_boundaries->active_start *= zoom_factor;

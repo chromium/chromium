@@ -79,10 +79,10 @@ void LayoutTableColumn::StyleDidChange(
         if (old_style &&
             TableTypes::CreateColumn(*old_style,
                                      /* default_inline_size */ std::nullopt,
-                                     table->StyleRef().IsFixedTableLayout()) !=
-                TableTypes::CreateColumn(
-                    new_style, /* default_inline_size */ std::nullopt,
-                    table->StyleRef().IsFixedTableLayout())) {
+                                     table->Style().IsFixedTableLayout()) !=
+                TableTypes::CreateColumn(new_style,
+                                         /* default_inline_size */ std::nullopt,
+                                         table->Style().IsFixedTableLayout())) {
           table->GridBordersChanged();
         }
       }
@@ -104,8 +104,9 @@ void LayoutTableColumn::InsertedIntoTree() {
   LayoutBox::InsertedIntoTree();
   LayoutTable* table = Table();
   DCHECK(table);
-  if (StyleRef().HasBackground())
+  if (Style().HasBackground()) {
     table->SetBackgroundNeedsFullPaintInvalidation();
+  }
   table->TableGridStructureChanged();
 }
 
@@ -114,8 +115,9 @@ void LayoutTableColumn::WillBeRemovedFromTree() {
   LayoutBox::WillBeRemovedFromTree();
   LayoutTable* table = Table();
   DCHECK(table);
-  if (StyleRef().HasBackground())
+  if (Style().HasBackground()) {
     table->SetBackgroundNeedsFullPaintInvalidation();
+  }
   table->TableGridStructureChanged();
 }
 
@@ -164,7 +166,7 @@ void LayoutTableColumn::UpdateFromElement() {
     SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
         layout_invalidation_reason::kAttributeChanged);
     table->GridBordersChanged();
-    if (StyleRef().HasBackground() || TableHasColumnsWithBackground(table)) {
+    if (Style().HasBackground() || TableHasColumnsWithBackground(table)) {
       table->SetBackgroundNeedsFullPaintInvalidation();
     }
   }
@@ -178,7 +180,7 @@ PhysicalSize LayoutTableColumn::StitchedSize() const {
     return PhysicalSize();
   }
 
-  WritingDirectionMode direction = StyleRef().GetWritingDirection();
+  WritingDirectionMode direction = Style().GetWritingDirection();
 
   LogicalSize size;
   bool found_geometries = false;
@@ -200,7 +202,7 @@ PhysicalSize LayoutTableColumn::StitchedSize() const {
 
       found_geometries = true;
       size.inline_size = geometry.inline_size;
-      size.block_size -= table->StyleRef().TableBorderSpacing().block_size * 2;
+      size.block_size -= table->Style().TableBorderSpacing().block_size * 2;
     }
 
     size.block_size +=
@@ -209,7 +211,7 @@ PhysicalSize LayoutTableColumn::StitchedSize() const {
          fragment.Borders().ConvertToLogical(direction).BlockSum());
   }
 
-  return ToPhysicalSize(size, table->StyleRef().GetWritingMode());
+  return ToPhysicalSize(size, table->Style().GetWritingMode());
 }
 
 PhysicalOffset LayoutTableColumn::PhysicalLocation() const {
@@ -317,7 +319,7 @@ void LayoutTableColumn::ForAllSynthesizedFragments(
   DCHECK(table);
   DCHECK_GT(table->PhysicalFragmentCount(), 0u);
 
-  WritingDirectionMode writing_direction = StyleRef().GetWritingDirection();
+  WritingDirectionMode writing_direction = Style().GetWritingDirection();
   LayoutTableColumn* parent_colgroup = nullptr;
   if (IsColumn()) {
     parent_colgroup = DynamicTo<LayoutTableColumn>(Parent());
@@ -419,7 +421,7 @@ void LayoutTableColumn::ForAllSynthesizedFragments(
                                  .ConvertToLogical(writing_direction);
       logical_rect.offset.inline_offset +=
           decorations.inline_start +
-          table->StyleRef().TableBorderSpacing().inline_size;
+          table->Style().TableBorderSpacing().inline_size;
     }
 
     WritingModeConverter container_converter(writing_direction, container_size);

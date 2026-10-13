@@ -161,10 +161,11 @@ ListMarker::MarkerTextType ListMarker::MarkerText(
     StringBuilder* text,
     MarkerTextFormat format) const {
   DCHECK_EQ(Get(&marker), this);
-  if (!marker.StyleRef().ContentBehavesAsNormal())
+  if (!marker.Style().ContentBehavesAsNormal()) {
     return kNotText;
+  }
   LayoutObject* list_item = ListItem(marker);
-  const ComputedStyle& style = list_item->StyleRef();
+  const ComputedStyle& style = list_item->Style();
   if (style.GeneratesMarkerImage()) {
     if (format == kWithPrefixSuffix)
       text->Append(' ');
@@ -266,7 +267,7 @@ String ListMarker::TextAlternative(const LayoutObject& marker) const {
 
 void ListMarker::UpdateMarkerContentIfNeeded(LayoutObject& marker) {
   DCHECK_EQ(Get(&marker), this);
-  if (!marker.StyleRef().ContentBehavesAsNormal()) {
+  if (!marker.Style().ContentBehavesAsNormal()) {
     marker_text_type_ = kNotText;
     return;
   }
@@ -274,7 +275,7 @@ void ListMarker::UpdateMarkerContentIfNeeded(LayoutObject& marker) {
   // There should be at most one child.
   LayoutObject* child = GetContentChild(marker);
 
-  const ComputedStyle& style = ListItem(marker)->StyleRef();
+  const ComputedStyle& style = ListItem(marker)->Style();
   if (style.GeneratesMarkerImage()) {
     StyleImage* list_style_image = style.ListStyleImage();
     if (child) {
@@ -296,7 +297,7 @@ void ListMarker::UpdateMarkerContentIfNeeded(LayoutObject& marker) {
       const ComputedStyle& image_style =
           marker.GetDocument()
               .GetStyleResolver()
-              .CreateAnonymousStyleWithDisplay(marker.StyleRef(),
+              .CreateAnonymousStyleWithDisplay(marker.Style(),
                                                EDisplay::kInline);
       image->SetStyle(image_style);
       image->SetImageResource(
@@ -320,7 +321,7 @@ void ListMarker::UpdateMarkerContentIfNeeded(LayoutObject& marker) {
   const auto& style_parent = child ? *child->Parent() : marker;
   const ComputedStyle& text_style =
       marker.GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
-          style_parent.StyleRef(), marker.StyleRef().Display());
+          style_parent.Style(), marker.Style().Display());
   if (IsA<LayoutTextFragment>(child))
     return child->SetStyle(text_style);
   if (child) {

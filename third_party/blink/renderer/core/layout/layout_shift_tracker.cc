@@ -57,7 +57,7 @@ gfx::PointF StartingPoint(const PhysicalOffset& paint_offset,
                           const LayoutBox& box,
                           const PhysicalSize& size) {
   PhysicalOffset starting_point = paint_offset;
-  auto writing_direction = box.StyleRef().GetWritingDirection();
+  auto writing_direction = box.Style().GetWritingDirection();
   if (writing_direction.IsFlippedBlocks()) [[unlikely]] {
     starting_point.left += size.width;
   }
@@ -173,7 +173,7 @@ bool LayoutShiftTracker::NeedsToTrack(const LayoutObject& object) const {
   if (object.IsSVGChild())
     return false;
 
-  if (object.StyleRef().Visibility() != EVisibility::kVisible) {
+  if (object.Style().Visibility() != EVisibility::kVisible) {
     return false;
   }
 
@@ -182,7 +182,7 @@ bool LayoutShiftTracker::NeedsToTrack(const LayoutObject& object) const {
       return false;
     if (object.IsBR())
       return false;
-    if (object.StyleRef().GetFont()->ShouldSkipDrawing()) {
+    if (object.Style().GetFont()->ShouldSkipDrawing()) {
       return false;
     }
     return true;
@@ -231,7 +231,7 @@ bool LayoutShiftTracker::NeedsToTrack(const LayoutObject& object) const {
       return true;
     }
     if (box->HasBoxDecorationBackground() || box->GetScrollableArea() ||
-        box->StyleRef().HasVisualOverflowingEffect()) {
+        box->Style().HasVisualOverflowingEffect()) {
       return true;
     }
     return false;
@@ -255,7 +255,7 @@ void LayoutShiftTracker::ObjectShifted(
   DCHECK(!new_rect.IsEmpty());
 
   float threshold_physical_px =
-      kMovementThreshold * object.StyleRef().EffectiveZoom();
+      kMovementThreshold * object.Style().EffectiveZoom();
 
   // Check shift of starting point, including 2d-translation and scroll
   // deltas.
@@ -467,7 +467,7 @@ void LayoutShiftTracker::NotifyTextPrePaint(
   auto* block = ContainingBlockScope::top_;
   DCHECK(block);
 
-  auto writing_direction = text.StyleRef().GetWritingDirection();
+  auto writing_direction = text.Style().GetWritingDirection();
   PhysicalOffset old_physical_starting_point =
       old_paint_offset + old_starting_point.ConvertToPhysical(writing_direction,
                                                               block->old_size_,

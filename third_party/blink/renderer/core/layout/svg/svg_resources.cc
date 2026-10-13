@@ -94,7 +94,7 @@ gfx::RectF SVGResources::ReferenceBoxForEffects(
     // This simple approach only works because foreign objects do not support
     // strokes.
     box.set_origin(gfx::PointF());
-    box.Scale(obb_layout_object->StyleRef().EffectiveZoom());
+    box.Scale(obb_layout_object->Style().EffectiveZoom());
   }
 
   return box;
@@ -104,7 +104,7 @@ void SVGResources::UpdateEffects(LayoutObject& object,
                                  StyleDifference diff,
                                  const ComputedStyle* old_style) {
   const bool had_client = GetClient(object);
-  const ComputedStyle& style = object.StyleRef();
+  const ComputedStyle& style = object.Style();
   if (auto* reference_clip =
           DynamicTo<ReferenceClipPathOperation>(style.ClipPath())) {
     reference_clip->AddClient(EnsureClient(object));
@@ -178,7 +178,7 @@ void SVGResources::ClearPaints(const LayoutObject& object,
 void SVGResources::UpdateMarkers(const LayoutObject& object,
                                  const ComputedStyle* old_style) {
   const bool had_client = GetClient(object);
-  const ComputedStyle& style = object.StyleRef();
+  const ComputedStyle& style = object.Style();
   if (StyleSVGResource* marker_resource = style.MarkerStartResource())
     marker_resource->AddClient(EnsureClient(object));
   if (StyleSVGResource* marker_resource = style.MarkerMidResource())
@@ -281,7 +281,7 @@ void SVGElementResourceClient::ResourceContentChanged(SVGResource* resource) {
   if (!layout_object)
     return;
 
-  const ComputedStyle& style = layout_object->StyleRef();
+  const ComputedStyle& style = layout_object->Style();
   if (style.HasFilter() && ContainsResource(style.Filter(), resource)) {
     InvalidateFilterData();
     layout_object->SetShouldDoFullPaintInvalidation();
@@ -376,7 +376,7 @@ void SVGElementResourceClient::UpdateFilterData(
   if (!operations.IsEmpty() && !filter_data_dirty_ &&
       reference_box == operations.ReferenceBox())
     return;
-  const ComputedStyle& style = object.StyleRef();
+  const ComputedStyle& style = object.Style();
   FilterEffectBuilder builder(
       reference_box, SVGViewportResolver(object).ResolveViewport(), 1,
       style.VisitedDependentColor(GetCSSPropertyColor()),
@@ -452,7 +452,7 @@ SVGResourceInvalidator::SVGResourceInvalidator(LayoutObject& object)
     : object_(object) {}
 
 void SVGResourceInvalidator::InvalidateEffects() {
-  const ComputedStyle& style = object_.StyleRef();
+  const ComputedStyle& style = object_.Style();
   if (style.HasFilter()) {
     if (SVGElementResourceClient* client = SVGResources::GetClient(object_))
       client->InvalidateFilterData();
@@ -485,7 +485,7 @@ void SVGResourceInvalidator::InvalidatePaints() {
   if (!client)
     return;
   bool needs_invalidation = false;
-  const ComputedStyle& style = object_.StyleRef();
+  const ComputedStyle& style = object_.Style();
   if (auto* fill = GetPaintServerResource(style.FillPaint())) {
     fill->RemoveClientFromCache(*client);
     needs_invalidation = true;

@@ -269,7 +269,7 @@ AffineTransform SVGElement::CalculateTransform(
     const gfx::RectF reference_box =
         TransformHelper::ComputeReferenceBox(*layout_object);
     matrix = TransformHelper::ComputeTransform(
-        GetDocument(), layout_object->StyleRef(), reference_box,
+        GetDocument(), layout_object->Style(), reference_box,
         ComputedStyle::kIncludeTransformOrigin);
   }
 

@@ -50,11 +50,11 @@ void TextPaintTimingDetector::RecordAggregatedText(
     const LayoutBoxModelObject& aggregator,
     const gfx::Rect& aggregated_visual_rect,
     const PropertyTreeStateOrAlias& property_tree_state) {
-  bool is_color_transparent = aggregator.StyleRef()
+  bool is_color_transparent = aggregator.Style()
                                   .VisitedDependentColor(GetCSSPropertyColor())
                                   .IsFullyTransparent();
-  bool has_shadow = !!aggregator.StyleRef().TextShadow();
-  bool has_text_stroke = aggregator.StyleRef().TextStrokeWidth();
+  bool has_shadow = !!aggregator.Style().TextShadow();
+  bool has_text_stroke = aggregator.Style().TextStrokeWidth();
 
   if (is_color_transparent && !has_shadow && !has_text_stroke) {
     return;

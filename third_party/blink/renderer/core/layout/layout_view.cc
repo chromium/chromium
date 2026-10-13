@@ -220,7 +220,7 @@ void LayoutView::ClearHitTestCache() {
 
 LayoutUnit LayoutView::ComputeMinimumWidth() {
   NOT_DESTROYED();
-  const ComputedStyle& style = StyleRef();
+  const ComputedStyle& style = Style();
   WritingMode mode = style.GetWritingMode();
   ConstraintSpaceBuilder builder(mode, style.GetWritingDirection(),
                                  /* is_new_fc */ true);
@@ -234,7 +234,7 @@ LayoutUnit LayoutView::ComputeMinimumWidth() {
 
 void LayoutView::AddChild(LayoutObject* new_child, LayoutObject* before_child) {
   NOT_DESTROYED();
-  if (new_child->StyleRef().StyleType() == kPseudoIdViewTransition) {
+  if (new_child->Style().StyleType() == kPseudoIdViewTransition) {
     // The view-transition pseudo tree is needs to be laid out within the
     // "snapshot containing block". This is implemented by inserting an
     // anonymous LayoutViewTransitionRoot between the ::view-transition and
@@ -300,7 +300,7 @@ bool LayoutView::ShouldPlaceBlockDirectionScrollbarOnLogicalLeft() const {
   // sufficient.
   if (Element* body = GetDocument().body()) {
     if (LayoutObject* body_layout_object = body->GetLayoutObject()) {
-      return body_layout_object->StyleRef()
+      return body_layout_object->Style()
           .ShouldPlaceBlockDirectionScrollbarOnLogicalLeft();
     }
   }
@@ -741,7 +741,7 @@ void LayoutView::CalculateScrollbarModes(
       }
     }
 
-    const ComputedStyle& style = viewport->StyleRef();
+    const ComputedStyle& style = viewport->Style();
     overflow_x = style.OverflowX();
     overflow_y = style.OverflowY();
   }
@@ -855,7 +855,7 @@ void LayoutView::LayoutRoot() {
       chrome_client.GetScreenInfo(frame).device_scale_factor);
 #endif
 
-  const ComputedStyle& style = StyleRef();
+  const ComputedStyle& style = Style();
   const WritingMode writing_mode = style.GetWritingMode();
   const WritingDirectionMode writing_direction = style.GetWritingDirection();
   const LogicalSize original_size =

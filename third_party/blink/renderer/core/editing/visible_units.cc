@@ -763,7 +763,7 @@ static PositionTemplate<Strategy> MostBackwardCaretPosition(
         IsA<Text>(current_node) ? current_pos.OffsetInTextNode() : 0,
         LayoutObjectSide::kFirstLetterIfOnBoundary);
     if (!layout_object ||
-        layout_object->StyleRef().Visibility() != EVisibility::kVisible) {
+        layout_object->Style().Visibility() != EVisibility::kVisible) {
       if (boundary_crossed && rule == kCannotCrossEditingBoundary)
         break;
       continue;
@@ -776,8 +776,8 @@ static PositionTemplate<Strategy> MostBackwardCaretPosition(
     }
 
     if (!writing_mode.has_value()) {
-      writing_mode.emplace(layout_object->StyleRef().GetWritingMode());
-    } else if (*writing_mode != layout_object->StyleRef().GetWritingMode()) {
+      writing_mode.emplace(layout_object->Style().GetWritingMode());
+    } else if (*writing_mode != layout_object->Style().GetWritingMode()) {
       return last_visible.ComputePosition();
     }
 
@@ -871,7 +871,7 @@ bool HasInvisibleFirstLetter(const Node* node) {
       DynamicTo<LayoutTextFragment>(AssociatedLayoutObjectOf(*node, 0));
   if (!first_letter || first_letter == remaining_text)
     return false;
-  return first_letter->StyleRef().Visibility() != EVisibility::kVisible ||
+  return first_letter->Style().Visibility() != EVisibility::kVisible ||
          DisplayLockUtilities::LockedAncestorPreventingPaint(*first_letter);
 }
 }  // namespace
@@ -956,7 +956,7 @@ PositionTemplate<Strategy> MostForwardCaretPosition(
         *current_node,
         IsA<Text>(current_node) ? current_pos.OffsetInTextNode() : 0);
     if (!layout_object ||
-        layout_object->StyleRef().Visibility() != EVisibility::kVisible) {
+        layout_object->Style().Visibility() != EVisibility::kVisible) {
       if (boundary_crossed && rule == kCannotCrossEditingBoundary)
         break;
       continue;
@@ -969,8 +969,8 @@ PositionTemplate<Strategy> MostForwardCaretPosition(
     }
 
     if (!writing_mode.has_value()) {
-      writing_mode.emplace(layout_object->StyleRef().GetWritingMode());
-    } else if (*writing_mode != layout_object->StyleRef().GetWritingMode()) {
+      writing_mode.emplace(layout_object->Style().GetWritingMode());
+    } else if (*writing_mode != layout_object->Style().GetWritingMode()) {
       return last_visible.ComputePosition();
     }
 
@@ -1078,7 +1078,7 @@ static bool IsVisuallyEquivalentCandidateAlgorithm(
   if (!layout_object)
     return false;
 
-  if (layout_object->StyleRef().Visibility() != EVisibility::kVisible) {
+  if (layout_object->Style().Visibility() != EVisibility::kVisible) {
     return false;
   }
 

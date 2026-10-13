@@ -57,7 +57,7 @@ void LinkHighlight::SetTapHighlight(Node* node) {
   DCHECK(!node->IsTextNode());
 
   Color highlight_color =
-      node->GetLayoutObject()->StyleRef().VisitedDependentColor(
+      node->GetLayoutObject()->Style().VisitedDependentColor(
           GetCSSPropertyWebkitTapHighlightColor());
   // Safari documentation for -webkit-tap-highlight-color says if the
   // specified color has 0 alpha, then tap highlighting is disabled.

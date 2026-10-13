@@ -270,7 +270,7 @@ LayoutObject* FirstInFlowInlineDescendantForFirstLetter(LayoutObject& parent) {
       // Buttons do not accept the first-letter.
       return nullptr;
     }
-    if (first_inline->StyleRef().HasPseudoElementStyle(kPseudoIdFirstLetter)) {
+    if (first_inline->Style().HasPseudoElementStyle(kPseudoIdFirstLetter)) {
       // Applying ::first-letter styles from multiple nested containers is not
       // supported. ::first-letter styles from the inner-most container is
       // applied - bail out.
@@ -297,7 +297,7 @@ LayoutText* FirstLetterPseudoElement::FirstLetterTextLayoutObject(
   }
 
   if (!parent_layout_object ||
-      !parent_layout_object->StyleRef().HasPseudoElementStyle(
+      !parent_layout_object->Style().HasPseudoElementStyle(
           kPseudoIdFirstLetter) ||
       !CanHaveGeneratedChildren(*parent_layout_object) ||
       !parent_layout_object->CanHaveFirstLineOrLetter()) {
@@ -317,7 +317,7 @@ LayoutText* FirstLetterPseudoElement::FirstLetterTextLayoutObject(
       LeadingPunctuationState::kNotStarted;
 
   while (inline_child) {
-    if (inline_child->StyleRef().StyleType() == kPseudoIdFirstLetter) {
+    if (inline_child->Style().StyleType() == kPseudoIdFirstLetter) {
       // This can be called when the ::first-letter LayoutObject is already in
       // the tree. We do not want to consider that LayoutObject for our text
       // LayoutObject so we go to the sibling (which is the LayoutTextFragment
@@ -339,8 +339,8 @@ LayoutText* FirstLetterPseudoElement::FirstLetterTextLayoutObject(
         String str = layout_text->IsTextFragment()
                          ? To<LayoutTextFragment>(inline_child)->CompleteText()
                          : layout_text->OriginalText();
-        bool preserve_breaks = ShouldPreserveBreaks(
-            inline_child->StyleRef().GetWhiteSpaceCollapse());
+        bool preserve_breaks =
+            ShouldPreserveBreaks(inline_child->Style().GetWhiteSpaceCollapse());
 
         if (FirstLetterLength(str, preserve_breaks, punctuation_state)) {
           // A prefix, or the whole text for the current layout_text is
@@ -378,7 +378,7 @@ LayoutText* FirstLetterPseudoElement::FirstLetterTextLayoutObject(
       }
       inline_child = inline_child->NextInPreOrder(stay_inside);
     } else if (inline_child->IsFloatingOrOutOfFlowPositioned()) {
-      if (inline_child->StyleRef().StyleType() == kPseudoIdFirstLetter) {
+      if (inline_child->Style().StyleType() == kPseudoIdFirstLetter) {
         inline_child = inline_child->SlowFirstChild();
       } else {
         inline_child = inline_child->NextInPreOrderAfterChildren(stay_inside);
@@ -403,7 +403,7 @@ void FirstLetterPseudoElement::UpdateTextFragments() {
   DCHECK(old_text.Impl());
 
   bool preserve_breaks = ShouldPreserveBreaks(
-      remaining_text_layout_object_->StyleRef().GetWhiteSpaceCollapse());
+      remaining_text_layout_object_->Style().GetWhiteSpaceCollapse());
   FirstLetterPseudoElement::LeadingPunctuationState punctuation =
       FirstLetterPseudoElement::LeadingPunctuationState::kNotStarted;
   unsigned length = FirstLetterPseudoElement::FirstLetterLength(
@@ -528,8 +528,8 @@ void FirstLetterPseudoElement::AttachFirstLetterTextLayoutObjects(
 
   // FIXME: This would already have been calculated in firstLetterLayoutObject.
   // Can we pass the length through?
-  bool preserve_breaks = ShouldPreserveBreaks(
-      first_letter_text->StyleRef().GetWhiteSpaceCollapse());
+  bool preserve_breaks =
+      ShouldPreserveBreaks(first_letter_text->Style().GetWhiteSpaceCollapse());
   FirstLetterPseudoElement::LeadingPunctuationState punctuation =
       FirstLetterPseudoElement::LeadingPunctuationState::kNotStarted;
   unsigned length = FirstLetterPseudoElement::FirstLetterLength(
@@ -559,7 +559,7 @@ void FirstLetterPseudoElement::AttachFirstLetterTextLayoutObjects(
 
   remaining_text->SetFirstLetterPseudoElement(this);
   remaining_text->SetIsRemainingTextLayoutObject(true);
-  remaining_text->SetStyle(first_letter_text->StyleRef());
+  remaining_text->SetStyle(first_letter_text->Style());
 
   if (remaining_text->GetNode())
     remaining_text->GetNode()->SetLayoutObject(remaining_text);

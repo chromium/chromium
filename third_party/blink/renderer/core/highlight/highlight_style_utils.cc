@@ -601,7 +601,7 @@ bool HighlightStyleUtils::ShouldInvalidateVisualOverflow(
     return false;
   }
   const ComputedStyle* pseudo_style =
-      layout_object.StyleRef().HighlightData().TargetText();
+      layout_object.Style().HighlightData().TargetText();
   if (!pseudo_style) {
     return false;
   }
@@ -617,7 +617,7 @@ bool HighlightStyleUtils::CustomHighlightHasVisualOverflow(
     return false;
   }
   const ComputedStyle* pseudo_style =
-      layout_object->StyleRef().HighlightData().CustomHighlightOrUniversal(
+      layout_object->Style().HighlightData().CustomHighlightOrUniversal(
           pseudo_argument);
   if (!pseudo_style) {
     return false;

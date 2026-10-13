@@ -3623,7 +3623,7 @@ bool StyleResolver::ShouldStopBodyPropagation(const Element& body_or_html) {
                                          : WebFeature::kHTMLBodyContained);
   }
   DCHECK_EQ(contained,
-            layout_object->StyleRef().ShouldApplyAnyContainment(body_or_html))
+            layout_object->Style().ShouldApplyAnyContainment(body_or_html))
       << "Applied containment must give the same result from LayoutObject and "
          "ComputedStyle";
   return contained;
@@ -3644,8 +3644,7 @@ void StyleResolver::PropagateStyleToViewport() {
     }
   }
 
-  const ComputedStyle& viewport_style =
-      GetDocument().GetLayoutView()->StyleRef();
+  const ComputedStyle& viewport_style = GetDocument().GetLayoutView()->Style();
   ComputedStyleBuilder new_viewport_style_builder(viewport_style);
   bool changed = false;
   bool update_scrollbar_style = false;

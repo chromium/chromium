@@ -527,7 +527,7 @@ PseudoElement::AttachLayoutTreeScope::AttachLayoutTreeScope(
     return;
   }
   if (const ComputedStyle* adjusted_style =
-          element->AdjustedLayoutStyle(*style, parent->StyleRef())) {
+          element->AdjustedLayoutStyle(*style, parent->Style())) {
     original_style_ = style;
     element->SetComputedStyle(adjusted_style);
   }
@@ -600,7 +600,7 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
   DCHECK(layout_object->Parent());
   DCHECK(CanHaveGeneratedChildren(*layout_object->Parent()));
 
-  const ComputedStyle& style = layout_object->StyleRef();
+  const ComputedStyle& style = layout_object->Style();
   switch (GetPseudoId()) {
     case kPseudoIdMarker: {
       if (ListMarker* marker = ListMarker::Get(layout_object))

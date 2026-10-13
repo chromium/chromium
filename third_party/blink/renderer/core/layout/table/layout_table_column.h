@@ -23,12 +23,12 @@ class CORE_EXPORT LayoutTableColumn : public LayoutBox {
 
   bool IsColumn() const {
     NOT_DESTROYED();
-    return StyleRef().Display() == EDisplay::kTableColumn;
+    return Style().Display() == EDisplay::kTableColumn;
   }
 
   bool IsColumnGroup() const {
     NOT_DESTROYED();
-    return StyleRef().Display() == EDisplay::kTableColumnGroup;
+    return Style().Display() == EDisplay::kTableColumnGroup;
   }
 
   unsigned Span() const {

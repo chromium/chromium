@@ -61,8 +61,9 @@ void LayoutSVGInlineText::TextDidChange() {
   LayoutSVGText::NotifySubtreeStructureChanged(
       this, layout_invalidation_reason::kTextChanged);
 
-  if (StyleRef().UsedUserModify() != EUserModify::kReadOnly)
+  if (Style().UsedUserModify() != EUserModify::kReadOnly) {
     UseCounter::Count(GetDocument(), WebFeature::kSVGTextEdited);
+  }
 }
 
 void LayoutSVGInlineText::StyleDidChange(
@@ -171,7 +172,7 @@ void LayoutSVGInlineText::UpdateScaledFont() {
 }
 
 float LayoutSVGInlineText::ComputeFontScale(const LayoutObject& layout_object) {
-  const ComputedStyle& style = layout_object.StyleRef();
+  const ComputedStyle& style = layout_object.Style();
   if (style.GetFontDescription().TextRendering() == kGeometricPrecision) {
     return 1;
   }
@@ -183,7 +184,7 @@ float LayoutSVGInlineText::ComputeFontScale(const LayoutObject& layout_object) {
 const Font* LayoutSVGInlineText::ComputeNewScaledFontForStyle(
     const LayoutObject& layout_object,
     float& scaling_factor) {
-  const ComputedStyle& style = layout_object.StyleRef();
+  const ComputedStyle& style = layout_object.Style();
 
   // Alter font-size to the right on-screen value to avoid scaling the glyphs
   // themselves, except when GeometricPrecision is specified.

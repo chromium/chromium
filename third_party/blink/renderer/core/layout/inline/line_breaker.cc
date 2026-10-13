@@ -3384,7 +3384,7 @@ bool LineBreaker::HandleRuby(LineInfo* line_info, LayoutUnit retry_size) {
         data.start, data.end_item_index, LineBreakerMode::kMaxContent,
         kIndefiniteSize, WhitespaceState::kLeading));
     annotation_line_list.back().OverrideLineStyle(
-        Items()[data.start_item_index]->GetLayoutObject()->StyleRef());
+        Items()[data.start_item_index]->GetLayoutObject()->Style());
   }
 
   LayoutUnit ruby_size = MaxLineWidth(base_line_info, annotation_line_list);
@@ -3622,14 +3622,13 @@ InlineItemResult* LineBreaker::AddRubyColumnResult(
   for (wtf_size_t i = 0; i < annotation_line_list.size(); ++i) {
     LayoutObject& annotation_object =
         *Items()[annotation_data_list[i].start_item_index]->GetLayoutObject();
-    data->annotation_line_list[i].OverrideLineStyle(
-        annotation_object.StyleRef());
+    data->annotation_line_list[i].OverrideLineStyle(annotation_object.Style());
     data->annotation_line_list[i].SetIsRubyText();
     data->annotation_line_list[i].UpdateTextAlign();
     const LayoutObject* parent = annotation_object.Parent();
     data->position_list.push_back(
         parent->IsInlineRuby()
-            ? parent->StyleRef(use_first_line_style_).GetRubyPosition()
+            ? parent->Style(use_first_line_style_).GetRubyPosition()
             : RubyPosition::kOver);
   }
   DCHECK_EQ(data->annotation_line_list.size(), data->position_list.size());
@@ -4046,7 +4045,7 @@ void LineBreaker::HandleCloseTag(const InlineItem& item, LineInfo* line_info) {
   }
   DCHECK(item.GetLayoutObject() && item.GetLayoutObject()->Parent());
   bool was_auto_wrap = auto_wrap_;
-  SetCurrentStyle(item.GetLayoutObject()->Parent()->StyleRef());
+  SetCurrentStyle(item.GetLayoutObject()->Parent()->Style());
   MoveToNextOf(item);
 
   // If the line can break after the previous item, prohibit it and allow break
@@ -4538,7 +4537,7 @@ const ComputedStyle& LineBreaker::ComputeCurrentStyle(
       return *item->Style();
     }
     if (item->Type() == InlineItem::kCloseTag) {
-      return item->GetLayoutObject()->Parent()->StyleRef();
+      return item->GetLayoutObject()->Parent()->Style();
     }
   }
 

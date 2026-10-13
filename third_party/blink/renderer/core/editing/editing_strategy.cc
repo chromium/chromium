@@ -22,7 +22,7 @@ EUserSelect UsedValueOfUserSelect(const Node& node) {
   if (!node.GetLayoutObject())
     return EUserSelect::kNone;
 
-  const ComputedStyle& style = node.GetLayoutObject()->StyleRef();
+  const ComputedStyle& style = node.GetLayoutObject()->Style();
   if (style.UsedUserModify() != EUserModify::kReadOnly) {
     return EUserSelect::kText;
   }

@@ -288,7 +288,7 @@ void LinkHighlightImpl::Paint(GraphicsContext& context) {
   DCHECK(object->GetFrameView());
   DCHECK(!object->GetFrameView()->ShouldThrottleRendering());
 
-  auto color = object->StyleRef().VisitedDependentColor(
+  auto color = object->Style().VisitedDependentColor(
       GetCSSPropertyWebkitTapHighlightColor());
 
   // For now, we'll only use rounded rects if we have a single rect because

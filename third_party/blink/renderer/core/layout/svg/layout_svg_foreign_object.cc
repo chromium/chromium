@@ -72,7 +72,7 @@ AffineTransform LayoutSVGForeignObject::LocalToSVGParentTransform() const {
   // have that removed when moving into the <fO> ancestors chain (the SVG root
   // will then reapply the zoom again if that boundary is crossed).
   AffineTransform transform = local_transform_;
-  transform.Scale(1 / StyleRef().EffectiveZoom());
+  transform.Scale(1 / Style().EffectiveZoom());
   return transform;
 }
 
@@ -112,7 +112,7 @@ SVGLayoutResult LayoutSVGForeignObject::UpdateSVGLayout(
   // Resolve the viewport in the local coordinate space - this does not include
   // zoom.
   const SVGViewportResolver viewport_resolver(*this);
-  const ComputedStyle& style = StyleRef();
+  const ComputedStyle& style = Style();
   viewport_.set_origin(
       PointForLengthPair(style.X(), style.Y(), viewport_resolver, style));
   gfx::Vector2dF size = VectorForLengthPair(style.Width(), style.Height(),

@@ -179,7 +179,7 @@ Path HTMLAreaElement::GetPath(const LayoutObject* container_object,
   }
 
   // Zoom/offset the path into coordinates of the container object.
-  float zoom_factor = container_object->StyleRef().EffectiveZoom();
+  float zoom_factor = container_object->Style().EffectiveZoom();
   if (zoom_factor != 1.0f || !path_offset.IsZero()) {
     const auto transform =
         AffineTransform::Translation(path_offset.x(), path_offset.y())
@@ -218,7 +218,7 @@ bool HTMLAreaElement::IsFocusableStyle(UpdateBehavior update_behavior) const {
   if (!layout_object) {
     return false;
   }
-  const ComputedStyle& style = layout_object->StyleRef();
+  const ComputedStyle& style = layout_object->Style();
   // TODO(crbug.com/40911863): Why is this not just image->IsFocusableStyle()?
   return !style.IsInert() && style.Visibility() == EVisibility::kVisible &&
          Element::tabIndex() >= 0 &&

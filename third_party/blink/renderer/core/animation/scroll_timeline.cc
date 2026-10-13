@@ -159,7 +159,7 @@ ScrollTimeline::TimelineState ScrollTimeline::ComputeTimelineState() const {
     return state;
   }
 
-  state.zoom = scroll_container->StyleRef().EffectiveZoom();
+  state.zoom = scroll_container->Style().EffectiveZoom();
   // Timeline is inactive unless the scroll offset range is positive.
   // github.com/w3c/csswg-drafts/issues/7401
   if (state.scroll_offsets->end - state.scroll_offsets->start > 0) {
@@ -281,7 +281,7 @@ Element* ScrollTimeline::ComputeSourceNoLayout() const {
     // The content scroller for a FieldSet is an anonymous block.  In this case,
     // the parent's node is the fieldset element.
     const LayoutBox* parent = DynamicTo<LayoutBox>(source_object->Parent());
-    if (parent && parent->StyleRef().IsScrollContainer()) {
+    if (parent && parent->Style().IsScrollContainer()) {
       node = parent->GetNode();
     }
   }
@@ -408,7 +408,7 @@ ScrollTimeline::ComputeWritingDirectionNoLayout() const {
   if (!writing_direction_object) {
     return std::nullopt;
   }
-  return writing_direction_object->StyleRef().GetWritingDirection();
+  return writing_direction_object->Style().GetWritingDirection();
 }
 
 // static

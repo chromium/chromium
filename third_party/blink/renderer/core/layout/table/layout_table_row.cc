@@ -19,7 +19,7 @@ LayoutTableRow* LayoutTableRow::CreateAnonymousWithParent(
     const LayoutObject& parent) {
   const ComputedStyle& new_style =
       parent.GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
-          parent.StyleRef(), EDisplay::kTableRow);
+          parent.Style(), EDisplay::kTableRow);
   auto* new_row = MakeGarbageCollected<LayoutTableRow>(nullptr);
   new_row->SetDocumentForAnonymous(parent.GetDocument());
   new_row->SetStyle(new_style);
@@ -122,7 +122,7 @@ void LayoutTableRow::RemoveChild(LayoutObject* child) {
   }
   // Invalidate background in case this doesn't need layout which would
   // trigger the invalidation, e.g. when the last child is removed.
-  if (StyleRef().HasBackground()) {
+  if (Style().HasBackground()) {
     SetBackgroundNeedsFullPaintInvalidation();
   }
 

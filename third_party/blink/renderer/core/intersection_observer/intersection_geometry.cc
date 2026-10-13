@@ -228,7 +228,7 @@ IntersectionGeometry::RootGeometry::RootGeometry(const LayoutObject* root,
       !root->IsBox()) {
     return;
   }
-  zoom = root->StyleRef().EffectiveZoom();
+  zoom = root->Style().EffectiveZoom();
   pre_margin_local_root_rect = InitializeRootRect(root);
   UpdateMargin(margin);
   root_to_view_transform = ObjectToViewTransform(*root);
@@ -809,7 +809,7 @@ bool IntersectionGeometry::ApplyClip(const LayoutObject* target,
         // If the root is scrollable, apply the scroll margin to inflate the
         // root_clip_rect.
         ApplyMargin(root_clip_rect, scroll_margin,
-                    root->StyleRef().EffectiveZoom(), root_clip_rect.size());
+                    root->Style().EffectiveZoom(), root_clip_rect.size());
       }
 
       intersection_rect = unclipped_intersection_rect;

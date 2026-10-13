@@ -101,7 +101,7 @@ PhysicalNaturalSizingInfo LayoutVideo::GetNaturalDimensions() const {
         gfx::Size video_size = player->NaturalSize();
         if (!video_size.IsEmpty()) {
           PhysicalSize natural_size(video_size);
-          natural_size.Scale(StyleRef().EffectiveZoom());
+          natural_size.Scale(Style().EffectiveZoom());
           return PhysicalNaturalSizingInfo::MakeFixed(natural_size);
         }
       }

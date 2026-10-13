@@ -59,7 +59,7 @@ std::optional<std::pair<unsigned, int>> DetermineCounterTypeAndValue(
   if (layout_object.IsText() && !layout_object.IsBR()) {
     return std::nullopt;
   }
-  const ComputedStyle& style = layout_object.StyleRef();
+  const ComputedStyle& style = layout_object.Style();
   if (IsForbiddenForCounter(style.StyleType())) {
     return std::nullopt;
   }
@@ -210,7 +210,7 @@ void CountersAttachmentContext::EnterObject(const LayoutObject& layout_object,
   if (!attachment_root_is_document_element_) {
     return;
   }
-  const ComputedStyle& style = layout_object.StyleRef();
+  const ComputedStyle& style = layout_object.Style();
   const CounterDirectiveMap* counter_directives = style.GetCounterDirectives();
   if (counter_directives) {
     for (auto& [counter_name, directives] : *counter_directives) {
@@ -261,7 +261,7 @@ void CountersAttachmentContext::LeaveObject(const LayoutObject& layout_object,
   if (!attachment_root_is_document_element_) {
     return;
   }
-  const ComputedStyle& style = layout_object.StyleRef();
+  const ComputedStyle& style = layout_object.Style();
   // Remove style containment boundary if the element has contains style.
   // Doing it here as reverse to EnterObject().
   if (style.ContainsStyle()) {

@@ -45,7 +45,7 @@ void SVGImagePainter::Paint(const PaintInfo& paint_info) {
 
   auto paint_behavior = ScopedSVGPaintState::ComputePaintBehavior(
       layout_svg_image_, paint_info,
-      layout_svg_image_.StyleRef().Visibility() == EVisibility::kVisible);
+      layout_svg_image_.Style().Visibility() == EVisibility::kVisible);
 
   if (paint_behavior.empty()) {
     return;
@@ -56,7 +56,7 @@ void SVGImagePainter::Paint(const PaintInfo& paint_info) {
     return;
   }
 
-  if (SVGModelObjectPainter::CanUseCullRect(layout_svg_image_.StyleRef())) {
+  if (SVGModelObjectPainter::CanUseCullRect(layout_svg_image_.Style())) {
     // CanUseCullRect returns false if there is a pixel moving filter, which
     // includes reference filters. So execution should never reach here if
     // painting only due to a reference filter.
@@ -123,13 +123,12 @@ void SVGImagePainter::PaintForeground(const PaintInfo& paint_info) {
   timing.MarkFirstContentfulPaint();
 
   ScopedImageRenderingSettings image_rendering_settings_scope(
-      paint_info.context,
-      layout_svg_image_.StyleRef().GetInterpolationQuality(),
-      layout_svg_image_.StyleRef().GetDynamicRangeLimit());
+      paint_info.context, layout_svg_image_.Style().GetInterpolationQuality(),
+      layout_svg_image_.Style().GetDynamicRangeLimit());
   Image::ImageDecodingMode decode_mode =
       image_element->GetDecodingModeForPainting(image->paint_image_id());
   auto image_auto_dark_mode = ImageClassifierHelper::GetImageAutoDarkMode(
-      *layout_svg_image_.GetFrame(), layout_svg_image_.StyleRef(), dest_rect,
+      *layout_svg_image_.GetFrame(), layout_svg_image_.Style(), dest_rect,
       src_rect);
   paint_info.context.DrawImage(
       *image, decode_mode, image_auto_dark_mode,
@@ -142,7 +141,7 @@ void SVGImagePainter::PaintForeground(const PaintInfo& paint_info) {
 gfx::SizeF SVGImagePainter::ComputeImageViewportSize() const {
   DCHECK(layout_svg_image_.ImageResource()->HasImage());
 
-  const float zoom = layout_svg_image_.StyleRef().EffectiveZoom();
+  const float zoom = layout_svg_image_.Style().EffectiveZoom();
   const gfx::SizeF default_object_size =
       gfx::ScaleSize(layout_svg_image_.ObjectBoundingBox().size(), zoom);
 

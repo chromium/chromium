@@ -41,8 +41,7 @@ namespace {
 
 bool NodeIsUserSelectAll(const Node* node) {
   return node && node->GetLayoutObject() &&
-         node->GetLayoutObject()->StyleRef().UsedUserSelect() ==
-             EUserSelect::kAll;
+         node->GetLayoutObject()->Style().UsedUserSelect() == EUserSelect::kAll;
 }
 
 template <typename Strategy>
@@ -114,7 +113,7 @@ PositionTemplate<Strategy> StartOfParagraphAlgorithm(
       previous_node_iterator = previousNode();
       continue;
     }
-    const ComputedStyle& style = layout_object->StyleRef();
+    const ComputedStyle& style = layout_object->Style();
     if (style.Visibility() != EVisibility::kVisible) {
       previous_node_iterator = previousNode();
       continue;
@@ -230,7 +229,7 @@ PositionTemplate<Strategy> EndOfParagraphAlgorithm(
       next_node_iterator = nextNode();
       continue;
     }
-    const ComputedStyle& style = layout_object->StyleRef();
+    const ComputedStyle& style = layout_object->Style();
     if (style.Visibility() != EVisibility::kVisible) {
       // We should skip the children of hidden elements and
       // place the position immediately after the anchor.

@@ -161,7 +161,7 @@ static void AppendServerMapMousePosition(StringBuilder& url, Event* event) {
       To<LayoutBox>(layout_object)->PhysicalContentBoxRect().offset);
 
   // CSS zoom is not reflected in the map coordinates.
-  float scale_factor = 1 / layout_object->StyleRef().EffectiveZoom();
+  float scale_factor = 1 / layout_object->Style().EffectiveZoom();
   map_point.Scale(scale_factor, scale_factor);
 
   // Negative coordinates are clamped to 0 such that clicks in the left and

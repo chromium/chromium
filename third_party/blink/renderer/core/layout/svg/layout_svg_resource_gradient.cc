@@ -133,7 +133,7 @@ std::unique_ptr<GradientData> LayoutSVGResourceGradient::BuildGradientData(
   // Create gradient object
   gradient_data->gradient = BuildGradient();
   gradient_data->gradient->SetColorInterpolationSpace(
-      StyleRef().ColorInterpolation() == EColorInterpolation::kLinearrgb
+      Style().ColorInterpolation() == EColorInterpolation::kLinearrgb
           ? Color::ColorSpace::kSRGBLinear
           : Color::ColorSpace::kNone,
       Color::HueInterpolationMethod::kShorter);
@@ -171,8 +171,7 @@ bool LayoutSVGResourceGradient::ApplyShader(
   if (additional_transform)
     transform = *additional_transform * transform;
   ImageDrawOptions draw_options;
-  draw_options.apply_dark_mode =
-      auto_dark_mode.enabled && StyleRef().ForceDark();
+  draw_options.apply_dark_mode = auto_dark_mode.enabled && Style().ForceDark();
   gradient_data->gradient->ApplyToFlags(flags, transform.ToSkMatrix(),
                                         draw_options);
   return true;

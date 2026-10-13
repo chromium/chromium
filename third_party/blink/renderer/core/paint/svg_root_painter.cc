@@ -87,7 +87,7 @@ void SVGRootPainter::PaintReplaced(const PaintInfo& paint_info,
 
   std::optional<GraphicsContext::ScopedAutoDarkModeState> dark_mode_state;
   if (RuntimeEnabledFeatures::AutoDarkModeSVGSizeThresholdEnabled() &&
-      layout_svg_root_.StyleRef().ForceDark()) {
+      layout_svg_root_.Style().ForceDark()) {
     // Only treat icon/separator-sized SVG documents as candidates for dark
     // mode inversion. Larger SVGs are likely content (illustrations/photos)
     // and should not be force-darkened. This mirrors the size-based image

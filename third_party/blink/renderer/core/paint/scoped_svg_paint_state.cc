@@ -201,7 +201,7 @@ ScopedSVGPaintState::PaintBehavior ScopedSVGPaintState::ComputePaintBehavior(
   if (paint_info.phase == PaintPhase::kForeground &&
       RuntimeEnabledFeatures::SvgFilterPaintsForHiddenContentEnabled() &&
       !paint_info.IsRenderingClipPathAsMaskImage() &&
-      object.StyleRef().Filter().HasReferenceFilter()) {
+      object.Style().Filter().HasReferenceFilter()) {
     return {PaintComponent::kReferenceFilter};
   }
 

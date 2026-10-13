@@ -236,7 +236,7 @@ bool MediaValues::CalculateInvertedColors(LocalFrame* frame) {
 float MediaValues::CalculateEmSize(LocalFrame* frame) {
   CHECK(frame);
   CHECK(frame->ContentLayoutObject());
-  const ComputedStyle& style = frame->ContentLayoutObject()->StyleRef();
+  const ComputedStyle& style = frame->ContentLayoutObject()->Style();
   return CSSToLengthConversionData::FontSizes(style.GetFontSizeStyle(), &style)
       .Em(/* zoom */ 1.0f);
 }
@@ -244,7 +244,7 @@ float MediaValues::CalculateEmSize(LocalFrame* frame) {
 float MediaValues::CalculateExSize(LocalFrame* frame) {
   CHECK(frame);
   CHECK(frame->ContentLayoutObject());
-  const ComputedStyle& style = frame->ContentLayoutObject()->StyleRef();
+  const ComputedStyle& style = frame->ContentLayoutObject()->Style();
   return CSSToLengthConversionData::FontSizes(style.GetFontSizeStyle(), &style)
       .Ex(/* zoom */ 1.0f);
 }
@@ -252,7 +252,7 @@ float MediaValues::CalculateExSize(LocalFrame* frame) {
 float MediaValues::CalculateChSize(LocalFrame* frame) {
   CHECK(frame);
   CHECK(frame->ContentLayoutObject());
-  const ComputedStyle& style = frame->ContentLayoutObject()->StyleRef();
+  const ComputedStyle& style = frame->ContentLayoutObject()->Style();
   return CSSToLengthConversionData::FontSizes(style.GetFontSizeStyle(), &style)
       .Ch(/* zoom */ 1.0f);
 }
@@ -260,7 +260,7 @@ float MediaValues::CalculateChSize(LocalFrame* frame) {
 float MediaValues::CalculateIcSize(LocalFrame* frame) {
   CHECK(frame);
   CHECK(frame->ContentLayoutObject());
-  const ComputedStyle& style = frame->ContentLayoutObject()->StyleRef();
+  const ComputedStyle& style = frame->ContentLayoutObject()->Style();
   return CSSToLengthConversionData::FontSizes(style.GetFontSizeStyle(), &style)
       .Ic(/* zoom */ 1.0f);
 }
@@ -268,7 +268,7 @@ float MediaValues::CalculateIcSize(LocalFrame* frame) {
 float MediaValues::CalculateCapSize(LocalFrame* frame) {
   CHECK(frame);
   CHECK(frame->ContentLayoutObject());
-  const ComputedStyle& style = frame->ContentLayoutObject()->StyleRef();
+  const ComputedStyle& style = frame->ContentLayoutObject()->Style();
   return CSSToLengthConversionData::FontSizes(style.GetFontSizeStyle(), &style)
       .Cap(/* zoom */ 1.0f);
 }
@@ -276,7 +276,7 @@ float MediaValues::CalculateCapSize(LocalFrame* frame) {
 float MediaValues::CalculateLineHeight(LocalFrame* frame) {
   CHECK(frame);
   CHECK(frame->ContentLayoutObject());
-  const ComputedStyle& style = frame->ContentLayoutObject()->StyleRef();
+  const ComputedStyle& style = frame->ContentLayoutObject()->Style();
   return AdjustForAbsoluteZoom::AdjustFloat(style.ComputedLineHeight(), style);
 }
 

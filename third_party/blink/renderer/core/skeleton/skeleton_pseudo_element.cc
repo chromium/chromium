@@ -60,8 +60,8 @@ mojom::blink::ColorScheme SkeletonPseudoElement::SkeletonUsedColorScheme() {
 void SkeletonPseudoElement::DidRecalcStyle(const StyleRecalcChange) {
   if (LayoutObject* layout_object = GetLayoutObject()) {
     mojom::blink::ColorScheme used_color_scheme = SkeletonUsedColorScheme();
-    if (used_color_scheme != layout_object->StyleRef().UsedColorScheme()) {
-      ComputedStyleBuilder builder(layout_object->StyleRef());
+    if (used_color_scheme != layout_object->Style().UsedColorScheme()) {
+      ComputedStyleBuilder builder(layout_object->Style());
       // TODO(crbug.com/513276602): <meta> color-scheme elements do not have
       // an effect as the hosting document's page color-scheme is currently
       // used.

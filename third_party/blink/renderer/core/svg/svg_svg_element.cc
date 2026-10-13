@@ -271,7 +271,7 @@ HeapVector<Member<Element>> ComputeIntersectionList(
   }
 
   const gfx::RectF rect = NoopWillBeScaleRect(
-      user_unit_rect, layout_object->StyleRef().EffectiveZoom());
+      user_unit_rect, layout_object->Style().EffectiveZoom());
   HitTestRequest request(HitTestRequest::kReadOnly | HitTestRequest::kActive |
                          HitTestRequest::kListBased |
                          HitTestRequest::kPenetratingList);
@@ -367,7 +367,7 @@ bool SVGSVGElement::checkIntersection(SVGElement* element,
 // rect, text and use.
 static bool IsEnclosureTarget(const LayoutObject* layout_object) {
   if (!layout_object ||
-      layout_object->StyleRef().UsedPointerEvents() == EPointerEvents::kNone) {
+      layout_object->Style().UsedPointerEvents() == EPointerEvents::kNone) {
     return false;
   }
   return layout_object->IsSVGShape() || layout_object->IsSVGText() ||
@@ -399,7 +399,7 @@ StaticNodeList* SVGSVGElement::getEnclosureList(
 
   const LayoutObject* layout_object = GetLayoutObject();
   const float zoom =
-      layout_object ? layout_object->StyleRef().EffectiveZoom() : 1.f;
+      layout_object ? layout_object->Style().EffectiveZoom() : 1.f;
   const gfx::RectF rect =
       NoopWillBeScaleRect(query_rect->Target()->Rect(), zoom);
   HeapVector<Member<Node>> nodes;
@@ -423,7 +423,7 @@ bool SVGSVGElement::checkEnclosure(SVGElement* element,
 
   const LayoutObject* layout_object = GetLayoutObject();
   const float zoom =
-      layout_object ? layout_object->StyleRef().EffectiveZoom() : 1.f;
+      layout_object ? layout_object->Style().EffectiveZoom() : 1.f;
   return CheckEnclosure(*element,
                         NoopWillBeScaleRect(rect->Target()->Rect(), zoom));
 }
@@ -496,7 +496,7 @@ AffineTransform SVGSVGElement::LocalCoordinateSpaceTransform(
       // svg/zoom/zoomed-inline-svg-getscreenctm.html).
       // Adjust for the zoom level factored into CSS coordinates (WK bug
       // #96361).
-      matrix.Scale(1.0 / layout_object->View()->StyleRef().EffectiveZoom());
+      matrix.Scale(1.0 / layout_object->View()->Style().EffectiveZoom());
 
       // Apply transforms from our ancestor coordinate space, including any
       // non-SVG ancestor transforms.
@@ -509,7 +509,7 @@ AffineTransform SVGSVGElement::LocalCoordinateSpaceTransform(
                            ->LocalToBorderBoxTransform()
                            .ToTransform());
       if (RuntimeEnabledFeatures::SvgNewZoomEnabled()) {
-        const float zoom = layout_object->StyleRef().EffectiveZoom();
+        const float zoom = layout_object->Style().EffectiveZoom();
         if (zoom != 1.0f) {
           matrix.Scale(zoom, zoom);
         }
@@ -523,8 +523,7 @@ AffineTransform SVGSVGElement::LocalCoordinateSpaceTransform(
   }
   if (!HasEmptyViewBox()) {
     const float zoom =
-        layout_object ? NoZoomWillBeSvgObjectZoom(layout_object->StyleRef())
-                      : 1;
+        layout_object ? NoZoomWillBeSvgObjectZoom(layout_object->Style()) : 1;
     transform.PreConcat(ViewBoxToViewTransform(viewport_size, zoom));
   }
   return transform;

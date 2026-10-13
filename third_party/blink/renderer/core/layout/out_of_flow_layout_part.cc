@@ -120,7 +120,7 @@ class OOFCandidateStyleIterator {
       WritingDirectionMode container_writing_direction,
       const OutOfFlowData::RememberedScrollOffsets* remembered_scroll_offsets)
       : element_(DynamicTo<Element>(object.GetNode())),
-        original_style_(object.StyleRef()),
+        original_style_(object.Style()),
         anchor_evaluator_(anchor_evaluator),
         container_writing_direction_(container_writing_direction) {
     anchor_evaluator_.SetRememberedScrollOffsets(remembered_scroll_offsets);
@@ -340,7 +340,7 @@ class OOFCandidateStyleIterator {
       // Returns LayoutObject ComputedStyle instead of element style for layout
       // purposes. The style may be different, in particular for body -> html
       // propagation of writing modes.
-      style_ = &layout_object->StyleRef();
+      style_ = &layout_object->Style();
       layout_object->SetNeedsLayout(
           layout_invalidation_reason::kAnchorPositioning, kMarkOnlyThis);
     }
@@ -348,7 +348,7 @@ class OOFCandidateStyleIterator {
 
   void ActivateStyle(const ComputedStyle& new_style) {
     LayoutObject* layout_object = element_->GetLayoutObject();
-    if (new_style != layout_object->StyleRef()) {
+    if (new_style != layout_object->Style()) {
       layout_object->SetStyle(new_style, LayoutObject::ApplyStyleChanges::kNo);
       // We need to invalidate layout in order to avoid invalid cache hits, as
       // our style isn't part of the LayoutResult cache key.
@@ -824,7 +824,7 @@ OutOfFlowLayoutPart::GetContainingBlockInfo(
       }
 
       const auto writing_direction =
-          containing_block->StyleRef().GetWritingDirection();
+          containing_block->Style().GetWritingDirection();
       LogicalRect padding_box_rect;
       padding_box_rect.size = ToLogicalSize(containing_block_fragment->Size(),
                                             writing_direction.GetWritingMode());
@@ -952,14 +952,14 @@ void OutOfFlowLayoutPart::ComputeInlineContainingBlocksForFragmentainer(
     LogicalSize size(BoxInlineSize(*containing_block),
                      BoxTotalBlockSize(*containing_block));
     PhysicalSize container_builder_physical_size =
-        ToPhysicalSize(size, containing_block->StyleRef().GetWritingMode());
+        ToPhysicalSize(size, containing_block->Style().GetWritingMode());
 
     // Fetch the inline start/end fragment geometry.
     ComputeInlineContainerGeometryForFragmentainer(
         containing_block, container_builder_physical_size, &inline_info.map);
 
     AddInlineContainingBlockInfo(
-        inline_info.map, containing_block->StyleRef().GetWritingDirection(),
+        inline_info.map, containing_block->Style().GetWritingDirection(),
         container_builder_physical_size, inline_info.relative_offset,
         inline_info.offset_to_fragmentation_context,
         /* adjust_for_fragmentation */ true);
@@ -1030,7 +1030,7 @@ void OutOfFlowLayoutPart::AddInlineContainingBlockInfo(
     //
     // Note in cases [2a, 2b] we don't allow a "negative" containing block size,
     // we clamp negative sizes to zero.
-    const ComputedStyle& inline_cb_style = block_info.key->StyleRef();
+    const ComputedStyle& inline_cb_style = block_info.key->Style();
     const WritingDirectionMode inline_writing_direction =
         inline_cb_style.GetWritingDirection();
     DCHECK_EQ(container_writing_direction.GetWritingMode(),
@@ -1784,7 +1784,7 @@ AnchorEvaluatorImpl OutOfFlowLayoutPart::CreateAnchorEvaluator(
           container_builder_.GetLayoutObject();
       CHECK(container_object);
       WritingDirectionMode writing_direction =
-          container_object->StyleRef().GetWritingDirection();
+          container_object->Style().GetWritingDirection();
 
       FragmentBuilder::PropagateChildAnchors(
           fragment, stitched_offset, *container_object, writing_direction,

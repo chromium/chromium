@@ -3147,7 +3147,7 @@ class FrameColorOverlay final : public FrameOverlay::Delegate {
                              DisplayItem::kFrameOverlay, view_rect);
     graphics_context.FillRect(
         view_rect, Color::FromSkColor(color_),
-        PaintAutoDarkMode(layout_view->StyleRef(),
+        PaintAutoDarkMode(layout_view->Style(),
                           DarkModeFilter::ElementRole::kBackground));
   }
 

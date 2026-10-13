@@ -127,14 +127,14 @@ int LayoutCustomScrollbarPart::ComputeSize(
   }
 
   return CustomScrollbarTheme::GetCustomScrollbarTheme()->ScrollbarThickness(
-      scrollbar_->ScaleFromDIP(), StyleRef().UsedScrollbarWidth());
+      scrollbar_->ScaleFromDIP(), Style().UsedScrollbarWidth());
 }
 
 int LayoutCustomScrollbarPart::ComputeWidth(
     int container_width,
     ScrollbarSizeComputeMode compute_mode) const {
   NOT_DESTROYED();
-  const auto& style = StyleRef();
+  const auto& style = Style();
   if (style.Display() == EDisplay::kNone) {
     return 0;
   }
@@ -155,7 +155,7 @@ int LayoutCustomScrollbarPart::ComputeHeight(
     int container_height,
     ScrollbarSizeComputeMode compute_mode) const {
   NOT_DESTROYED();
-  const auto& style = StyleRef();
+  const auto& style = Style();
   if (style.Display() == EDisplay::kNone) {
     return 0;
   }
@@ -224,11 +224,10 @@ PhysicalBoxStrut LayoutCustomScrollbarPart::MarginOutsets() const {
   const bool is_vertical =
       scrollbar_ && scrollbar_->Orientation() == kVerticalScrollbar;
 
-  return {
-      is_horizontal ? LayoutUnit() : ComputeMargin(StyleRef().MarginTop()),
-      is_vertical ? LayoutUnit() : ComputeMargin(StyleRef().MarginRight()),
-      is_horizontal ? LayoutUnit() : ComputeMargin(StyleRef().MarginBottom()),
-      is_vertical ? LayoutUnit() : ComputeMargin(StyleRef().MarginLeft())};
+  return {is_horizontal ? LayoutUnit() : ComputeMargin(Style().MarginTop()),
+          is_vertical ? LayoutUnit() : ComputeMargin(Style().MarginRight()),
+          is_horizontal ? LayoutUnit() : ComputeMargin(Style().MarginBottom()),
+          is_vertical ? LayoutUnit() : ComputeMargin(Style().MarginLeft())};
 }
 
 void LayoutCustomScrollbarPart::UpdateFromStyle() {

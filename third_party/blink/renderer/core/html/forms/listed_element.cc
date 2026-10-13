@@ -557,7 +557,7 @@ void ListedElement::FindCustomValidationMessageTextDirection(
     TextDirection& sub_message_dir) {
   message_dir = BidiParagraph::BaseDirectionForStringOrLtr(message);
   if (!sub_message.empty()) {
-    sub_message_dir = ToHTMLElement().GetLayoutObject()->StyleRef().Direction();
+    sub_message_dir = ToHTMLElement().GetLayoutObject()->Style().Direction();
   }
 }
 

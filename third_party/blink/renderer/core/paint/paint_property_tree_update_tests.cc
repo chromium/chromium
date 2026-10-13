@@ -1645,7 +1645,7 @@ TEST_P(PaintPropertyTreeUpdateTest, ChangeDuringAnimation) {
   )HTML");
 
   auto* target = GetLayoutObjectByElementId("target");
-  ComputedStyleBuilder builder(target->StyleRef());
+  ComputedStyleBuilder builder(target->Style());
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
   // Simulates starting a composite animation.
   builder.SetHasCurrentTransformAnimation(true);
@@ -1672,7 +1672,7 @@ TEST_P(PaintPropertyTreeUpdateTest, ChangeDuringAnimation) {
 
   // Simulates changing transform and transform-origin during an animation.
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
-  builder = ComputedStyleBuilder(target->StyleRef());
+  builder = ComputedStyleBuilder(target->Style());
   TransformOperations transform;
   transform.Operations().push_back(
       MakeGarbageCollected<RotateTransformOperation>(
@@ -1705,7 +1705,7 @@ TEST_P(PaintPropertyTreeUpdateTest, ChangeDuringAnimation) {
 
   // Simulates changing backface visibility during animation.
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
-  builder = ComputedStyleBuilder(target->StyleRef());
+  builder = ComputedStyleBuilder(target->Style());
   builder.SetBackfaceVisibility(EBackfaceVisibility::kHidden);
   target->SetStyle(*builder.TakeStyle());
   EXPECT_TRUE(target->NeedsPaintPropertyUpdate());

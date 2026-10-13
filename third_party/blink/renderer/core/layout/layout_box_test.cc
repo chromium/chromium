@@ -861,8 +861,7 @@ TEST_F(LayoutBoxTest, DelayedInvalidationLayoutViewScrolled) {
 
   // The background-image will be painted by the LayoutView. Get a reference to
   // it from there.
-  auto* background_image =
-      layout_view->StyleRef().BackgroundLayers().GetImage();
+  auto* background_image = layout_view->Style().BackgroundLayers().GetImage();
   ASSERT_TRUE(background_image);
   auto* image_resource_content = background_image->CachedImage();
   ASSERT_TRUE(image_resource_content);

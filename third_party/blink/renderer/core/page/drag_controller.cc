@@ -988,7 +988,7 @@ Node* DragController::DraggableNode(const LocalFrame* src,
       return nullptr;
     }
     if (node->IsElementNode()) {
-      const EUserDrag drag_mode = layout_object->StyleRef().UserDrag();
+      const EUserDrag drag_mode = layout_object->Style().UserDrag();
       if (drag_mode == EUserDrag::kNone) {
         continue;
       }
@@ -1139,10 +1139,8 @@ std::unique_ptr<DragImage> DragImageForImage(
   }
 
   InterpolationQuality interpolation_quality = GetDefaultInterpolationQuality();
-  if (layout_image->StyleRef().ImageRendering() ==
-          EImageRendering::kPixelated ||
-      layout_image->StyleRef().ImageRendering() ==
-          EImageRendering::kCrispEdges) {
+  if (layout_image->Style().ImageRendering() == EImageRendering::kPixelated ||
+      layout_image->Style().ImageRendering() == EImageRendering::kCrispEdges) {
     interpolation_quality = kInterpolationNone;
   }
 

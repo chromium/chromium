@@ -893,9 +893,9 @@ void TableCellPainter::PaintBackgroundForTablePart(
   if (layout_table_cell.BackgroundTransfersToView())
     return;  // cargo-culted from other painters.
 
-  Color color = table_part.StyleRef().VisitedDependentColor(
-      GetCSSPropertyBackgroundColor());
-  const FillLayer& background_layers = table_part.StyleRef().BackgroundLayers();
+  Color color =
+      table_part.Style().VisitedDependentColor(GetCSSPropertyBackgroundColor());
+  const FillLayer& background_layers = table_part.Style().BackgroundLayers();
   if (background_layers.AnyLayerHasImage() || !color.IsFullyTransparent()) {
     PhysicalRect cell_paint_rect(table_cell_paint_offset, fragment_.Size());
     TableCellBackgroundClipper clipper(paint_info.context, layout_table_cell,

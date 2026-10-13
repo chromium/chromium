@@ -324,7 +324,7 @@ const Font& ScaledFont(const LayoutText& layout_text) {
   if (const auto* svg_text = DynamicTo<LayoutSVGInlineText>(layout_text)) {
     return svg_text->ScaledFont();
   }
-  return *layout_text.StyleRef().GetFont();
+  return *layout_text.Style().GetFont();
 }
 
 // The function is templated to indicate the purpose of collected inlines:
@@ -341,7 +341,7 @@ template <typename ItemsBuilder>
 void CollectInlinesInternal(ItemsBuilder* builder,
                             const InlineNodeData* previous_data) {
   LayoutBlockFlow* const block = builder->GetLayoutBlockFlow();
-  builder->EnterBlock(&block->StyleRef());
+  builder->EnterBlock(&block->Style());
   LayoutObject* node = block->FirstChild();
 
   const LayoutObject* symbol =
@@ -350,7 +350,7 @@ void CollectInlinesInternal(ItemsBuilder* builder,
   while (node) {
     if (auto* counter = DynamicTo<LayoutCounter>(node)) {
       // TODO(crbug.com/561873): PrimaryFont should not be nullptr.
-      if (counter->StyleRef().GetFont()->PrimaryFont()) {
+      if (counter->Style().GetFont()->PrimaryFont()) {
         // According to
         // https://w3c.github.io/csswg-drafts/css-counter-styles/#simple-symbolic,
         // disclosure-* should have special rendering paths.
@@ -718,8 +718,9 @@ class InlineNodeDataEditor final {
     // Because of current text content has secured text, e.g. whole text is
     // "***", all characters including collapsed white spaces are marker, and
     // new text is original text, we can't reuse shape result.
-    if (layout_text_.StyleRef().TextSecurity() != ETextSecurity::kNone)
+    if (layout_text_.Style().TextSecurity() != ETextSecurity::kNone) {
       return nullptr;
+    }
 
     // It is hard to figure differences of bidi control codes before/after
     // editing. See http://crbug.com/1039143
@@ -1791,7 +1792,7 @@ void InlineNode::ShapeTextForFirstLineIfNeeded(InlineNodeData* data) const {
     return;
 
   // Check if :first-line rules make any differences in the style.
-  const ComputedStyle& block_style = layout_object->StyleRef();
+  const ComputedStyle& block_style = layout_object->Style();
   const ComputedStyle& first_line_style = layout_object->FirstLineStyleRef();
   if (block_style == first_line_style)
     return;
@@ -2353,7 +2354,7 @@ void InlineNode::CheckConsistency() const {
   for (const Member<InlineItem>& item_ptr : items) {
     const InlineItem& item = *item_ptr;
     DCHECK(!item.GetLayoutObject() || !item.Style() ||
-           item.Style() == &item.GetLayoutObject()->StyleRef());
+           item.Style() == &item.GetLayoutObject()->Style());
   }
 #endif
 }

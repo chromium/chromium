@@ -22,7 +22,7 @@ LayoutViewTransitionRoot::LayoutViewTransitionRoot(Document& document)
   // UpdateSnapshotStyle is called.
   ComputedStyleBuilder new_style_builder =
       GetDocument().GetStyleResolver().CreateAnonymousStyleBuilderWithDisplay(
-          GetDocument().GetLayoutView()->StyleRef(), EDisplay::kBlock);
+          GetDocument().GetLayoutView()->Style(), EDisplay::kBlock);
   SetStyle(*new_style_builder.TakeStyle());
 }
 
@@ -36,7 +36,7 @@ void LayoutViewTransitionRoot::UpdateSnapshotStyle(
 
   ComputedStyleBuilder new_style_builder =
       GetDocument().GetStyleResolver().CreateAnonymousStyleBuilderWithDisplay(
-          GetDocument().GetLayoutView()->StyleRef(), EDisplay::kBlock);
+          GetDocument().GetLayoutView()->Style(), EDisplay::kBlock);
   new_style_builder.SetPosition(EPosition::kFixed);
   new_style_builder.SetLeft(Length::Fixed(snapshot_containing_block_rect.X()));
   new_style_builder.SetTop(Length::Fixed(snapshot_containing_block_rect.Y()));

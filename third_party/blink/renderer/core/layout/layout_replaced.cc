@@ -108,8 +108,7 @@ bool HitTestClippedOutByBorderShape(const LayoutBox& box,
   if (box.ShouldApplyOverflowClipMargin()) {
     border_rect.Expand(box.BorderOutsetsForClipping());
   }
-  Path hit_shape =
-      ComputeBorderShapeOuterPath(box.StyleRef(), border_rect, &box);
+  Path hit_shape = ComputeBorderShapeOuterPath(box.Style(), border_rect, &box);
   return !hit_test_location.Intersects(hit_shape);
 }
 
@@ -122,7 +121,7 @@ bool LayoutReplaced::HitTestClippedOutByBorder(
   PhysicalRect border_rect = PhysicalBorderBoxRect();
   border_rect.Move(border_box_location);
   return !hit_test_location.Intersects(
-      ContouredBorderGeometry::PixelSnappedContouredBorder(StyleRef(),
+      ContouredBorderGeometry::PixelSnappedContouredBorder(Style(),
                                                            border_rect));
 }
 
@@ -154,14 +153,14 @@ bool LayoutReplaced::NodeAtPoint(HitTestResult& result,
         skip_children = true;
       }
     }
-    if (!skip_children && StyleRef().HasBorderShape()) {
+    if (!skip_children && Style().HasBorderShape()) {
       skip_children = HitTestClippedOutByBorderShape(*this, hit_test_location,
                                                      accumulated_offset);
-    } else if (!skip_children && StyleRef().HasBorderRadius()) {
+    } else if (!skip_children && Style().HasBorderRadius()) {
       PhysicalRect bounds_rect(accumulated_offset, StitchedSize());
       skip_children = !hit_test_location.Intersects(
           ContouredBorderGeometry::PixelSnappedContouredInnerBorder(
-              StyleRef(), bounds_rect));
+              Style(), bounds_rect));
     }
   }
 
@@ -172,12 +171,12 @@ bool LayoutReplaced::NodeAtPoint(HitTestResult& result,
 
   if (!result.GetHitTestRequest().IsHitTestVisualOverflow()) {
     // Check if the location is outside any border-shape or border-radius.
-    if (StyleRef().HasBorderShape()) {
+    if (Style().HasBorderShape()) {
       if (HitTestClippedOutByBorderShape(*this, hit_test_location,
                                          accumulated_offset)) {
         return false;
       }
-    } else if (StyleRef().HasBorderRadius()) {
+    } else if (Style().HasBorderRadius()) {
       if (HitTestClippedOutByBorder(hit_test_location, accumulated_offset)) {
         return false;
       }
@@ -242,7 +241,7 @@ void LayoutReplaced::Paint(const PaintInfo& paint_info) const {
 
 PhysicalRect LayoutReplaced::ComputeSelfVisualOverflow() const {
   NOT_DESTROYED();
-  const ComputedStyle& style = StyleRef();
+  const ComputedStyle& style = Style();
   if (!style.HasVisualOverflowingEffect()) {
     return PhysicalRect();
   }
@@ -306,7 +305,7 @@ void LayoutReplaced::RecalcVisualOverflow() {
 std::optional<PhysicalRect> LayoutReplaced::ComputeObjectViewBoxRect(
     const PhysicalNaturalSizingInfo& sizing_info) const {
   NOT_DESTROYED();
-  const BasicShape* object_view_box = StyleRef().ObjectViewBox();
+  const BasicShape* object_view_box = Style().ObjectViewBox();
   if (!object_view_box) [[likely]] {
     return std::nullopt;
   }
@@ -412,10 +411,10 @@ PhysicalRect LayoutReplaced::ComputeObjectFitAndPositionRect(
     const PhysicalRect& base_content_rect,
     const PhysicalNaturalSizingInfo& sizing_info) const {
   NOT_DESTROYED();
-  EObjectFit object_fit = StyleRef().GetObjectFit();
+  EObjectFit object_fit = Style().GetObjectFit();
 
   if (object_fit == EObjectFit::kFill &&
-      StyleRef().ObjectPosition() ==
+      Style().ObjectPosition() ==
           ComputedStyleInitialValues::InitialObjectPosition()) {
     return base_content_rect;
   }
@@ -464,9 +463,9 @@ PhysicalRect LayoutReplaced::ComputeObjectFitAndPositionRect(
   }
 
   const PhysicalOffset object_position(
-      MinimumValueForLength(StyleRef().ObjectPosition().X(),
+      MinimumValueForLength(Style().ObjectPosition().X(),
                             base_content_rect.Width() - object_size.width),
-      MinimumValueForLength(StyleRef().ObjectPosition().Y(),
+      MinimumValueForLength(Style().ObjectPosition().Y(),
                             base_content_rect.Height() - object_size.height));
 
   return {base_content_rect.offset + object_position, object_size};
@@ -620,7 +619,7 @@ bool LayoutReplaced::ClipsToContentBox() const {
   // TODO(khushalsagar): There can be more cases where the content clips to
   // content box. For instance, when padding is 0 and the reference box is the
   // padding box.
-  const auto& overflow_clip_margin = StyleRef().OverflowClipMargin();
+  const auto& overflow_clip_margin = Style().OverflowClipMargin();
   return GetOverflowClipAxes() == kOverflowClipBothAxis &&
          overflow_clip_margin &&
          overflow_clip_margin->GetReferenceBox() ==

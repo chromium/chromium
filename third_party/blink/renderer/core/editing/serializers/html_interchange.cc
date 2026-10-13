@@ -41,7 +41,7 @@ String ConvertHtmlTextToInterchangeFormat(
     IsAtSelectionEnd is_at_selection_end) {
   // Assume all the text comes from node.
   if (node.GetLayoutObject() &&
-      node.GetLayoutObject()->StyleRef().ShouldPreserveBreaks()) {
+      node.GetLayoutObject()->Style().ShouldPreserveBreaks()) {
     return in;
   }
 

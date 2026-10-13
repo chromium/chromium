@@ -930,7 +930,7 @@ const PositionWithAffinity AXPosition::ToPositionWithAffinity(
   // Return directly without further offset mapping.
   if (adjusted_position.container_object_->RoleValue() ==
           ax::mojom::blink::Role::kStaticText &&
-      layout_object && layout_object->StyleRef().ShouldPreserveWhiteSpaces()) {
+      layout_object && layout_object->Style().ShouldPreserveWhiteSpaces()) {
     return PositionWithAffinity(
         Position(*container_node, adjusted_position.TextOffset()), affinity_);
   }

@@ -21,12 +21,12 @@ bool ShouldSkipInvisibleTextAt(const Text& text,
   const LayoutObject* layout_object = AssociatedLayoutObjectOf(text, offset);
   if (!layout_object)
     return true;
-  if (layout_object->StyleRef().Display() == EDisplay::kNone) {
+  if (layout_object->Style().Display() == EDisplay::kNone) {
     return true;
   }
   if (ignores_visibility)
     return false;
-  return layout_object->StyleRef().Visibility() != EVisibility::kVisible;
+  return layout_object->Style().Visibility() != EVisibility::kVisible;
 }
 
 String TextIgnoringCssTextTransforms(const LayoutText& layout_text,
@@ -46,7 +46,7 @@ String TextIgnoringCssTextTransforms(const LayoutText& layout_text,
   // Preserved whitespaces can be represented as-is.
   // Non-preserved newline or tab characters should be converted into a space
   // to reflect what the user sees on the screen
-  if (!layout_text.StyleRef().ShouldPreserveBreaks()) {
+  if (!layout_text.Style().ShouldPreserveBreaks()) {
     text.Replace(uchar::kLineFeed, uchar::kSpace);
     text.Replace(uchar::kTab, uchar::kSpace);
   }

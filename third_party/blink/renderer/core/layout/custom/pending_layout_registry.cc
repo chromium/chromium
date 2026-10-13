@@ -23,7 +23,7 @@ void PendingLayoutRegistry::NotifyLayoutReady(const AtomicString& name) {
       // layout, its display value may have changed to something (block) which
       // doesn't need a layout tree reattachment.
       if (node && node->GetLayoutObject()) {
-        const ComputedStyle& style = node->GetLayoutObject()->StyleRef();
+        const ComputedStyle& style = node->GetLayoutObject()->Style();
         if (style.IsDisplayLayoutCustom() &&
             style.DisplayLayoutCustomName() == name) {
           node->SetForceReattachLayoutTree();

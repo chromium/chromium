@@ -49,14 +49,14 @@ bool IsOverlayCandidate(Element* element) {
 
   // 'style' is now the ComputedStyle for the object whose position depends
   // on the document.
-  const ComputedStyle& style = candidate->StyleRef();
+  const ComputedStyle& style = candidate->Style();
   if (style.GetPosition() == EPosition::kFixed ||
       style.HasStickyConstrainedPosition()) {
     return true;
   }
 
   if (style.GetPosition() == EPosition::kAbsolute) {
-    return !layout_view->StyleRef().ScrollsOverflow();
+    return !layout_view->Style().ScrollsOverflow();
   }
 
   return false;

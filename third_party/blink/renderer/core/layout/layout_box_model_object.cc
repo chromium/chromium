@@ -305,7 +305,7 @@ void LayoutBoxModelObject::StyleDidChange(
         bool old_body_background_transfers =
             old_style && body_object->BackgroundTransfersToView(old_style);
         if (new_body_background_transfers != old_body_background_transfers &&
-            body_object->StyleRef().HasBackground()) {
+            body_object->Style().HasBackground()) {
           body_object->SetBackgroundNeedsFullPaintInvalidation();
         }
       }
@@ -476,7 +476,7 @@ bool LayoutBoxModelObject::ShouldBeHandledAsInline(
 void LayoutBoxModelObject::ImageChanged(WrappedImagePtr image,
                                         CanDeferInvalidation) {
   NOT_DESTROYED();
-  for (const FillLayer* layer = &StyleRef().MaskLayers(); layer;
+  for (const FillLayer* layer = &Style().MaskLayers(); layer;
        layer = layer->NextForUsedValue()) {
     if (layer->GetImage() && image == layer->GetImage()->Data()) {
       // Since an invalid <mask> reference does not yield a paint property
@@ -492,7 +492,7 @@ void LayoutBoxModelObject::ImageChanged(WrappedImagePtr image,
 
 void LayoutBoxModelObject::UpdateFromStyle() {
   NOT_DESTROYED();
-  const ComputedStyle& style = StyleRef();
+  const ComputedStyle& style = Style();
   SetHasBoxDecorationBackground(style.HasBoxDecorationBackground());
   SetInline(ShouldBeHandledAsInline(style));
   SetPositionState(ToPositionedState(style.GetPosition()));
@@ -504,7 +504,7 @@ void LayoutBoxModelObject::UpdateFromStyle() {
       ComputeIsAbsoluteContainer(style, is_fixed_container));
   SetIsBackgroundAttachmentFixedObject(
       !BackgroundTransfersToView() &&
-      StyleRef().HasFixedAttachmentBackgroundImage());
+      Style().HasFixedAttachmentBackgroundImage());
 }
 
 void LayoutBoxModelObject::UpdateCanCompositeBackgroundAttachmentFixed(
@@ -523,7 +523,7 @@ PhysicalRect LayoutBoxModelObject::VisualOverflowRectIncludingFilters() const {
 PhysicalRect LayoutBoxModelObject::ApplyFiltersToRect(
     const PhysicalRect& rect) const {
   NOT_DESTROYED();
-  if (!HasReflection() && !StyleRef().HasFilter()) {
+  if (!HasReflection() && !Style().HasFilter()) {
     return rect;
   }
   gfx::RectF float_rect(rect);
@@ -549,7 +549,7 @@ StickyConstraintsData LayoutBoxModelObject::ComputeStickyPositionConstraints(
     const PaintLayer& scroll_container_layer,
     PhysicalAxes scroll_axes) const {
   NOT_DESTROYED();
-  DCHECK(StyleRef().HasStickyConstrainedPosition());
+  DCHECK(Style().HasStickyConstrainedPosition());
 
   bool is_fixed_to_view = false;
   {
@@ -618,10 +618,10 @@ StickyConstraintsData LayoutBoxModelObject::ComputeStickyPositionConstraints(
       // allowed to move.
       LayoutUnit max_width = sticky_container->ContentLogicalWidth();
       scroll_container_relative_containing_block_rect.ContractEdges(
-          MinimumValueForLength(StyleRef().MarginTop(), max_width),
-          MinimumValueForLength(StyleRef().MarginRight(), max_width),
-          MinimumValueForLength(StyleRef().MarginBottom(), max_width),
-          MinimumValueForLength(StyleRef().MarginLeft(), max_width));
+          MinimumValueForLength(Style().MarginTop(), max_width),
+          MinimumValueForLength(Style().MarginRight(), max_width),
+          MinimumValueForLength(Style().MarginBottom(), max_width),
+          MinimumValueForLength(Style().MarginLeft(), max_width));
     }
   }
 
@@ -704,9 +704,9 @@ StickyConstraintsData LayoutBoxModelObject::ComputeStickyPositionConstraints(
         max_inset_for_get_computed_style);
   };
 
-  const auto& style = StyleRef();
+  const auto& style = Style();
   const WritingDirectionMode sticky_container_writing_direction =
-      sticky_container->StyleRef().GetWritingDirection();
+      sticky_container->Style().GetWritingDirection();
 
   return StickyConstraintsData{
       compute_axis_data(PhysicalAxis::kHorizontal, style.Left(), style.Right(),
@@ -843,7 +843,7 @@ PhysicalOffset LayoutBoxModelObject::AdjustedPositionRelativeTo(
 PhysicalBoxStrut LayoutBoxModelObject::ComputedPaddingOutsets() const {
   NOT_DESTROYED();
 
-  const ComputedStyle& style = StyleRef();
+  const ComputedStyle& style = Style();
   if (!style.MayHavePadding()) {
     return PhysicalBoxStrut();
   }
@@ -871,7 +871,7 @@ LogicalRect LayoutBoxModelObject::LocalCaretRectForEmptyElement(
   NOT_DESTROYED();
   DCHECK(!SlowFirstChild() || SlowFirstChild()->IsPseudoElement());
 
-  const SimpleFontData* font_data = StyleRef().GetFont()->PrimaryFont();
+  const SimpleFontData* font_data = Style().GetFont()->PrimaryFont();
   const Node* node = GetNode();
 
   // Caret-shape only applies to text or elements that accept text input.
@@ -896,8 +896,8 @@ LogicalRect LayoutBoxModelObject::LocalCaretRectForEmptyElement(
     if (!Parent()) {
       reference_align = ETextAlign::kStart;
     } else {
-      reference_align = Parent()->StyleRef().GetTextAlign();
-      reference_style = &Parent()->StyleRef();
+      reference_align = Parent()->Style().GetTextAlign();
+      reference_style = &Parent()->Style();
     }
   }
 
@@ -1145,8 +1145,9 @@ bool LayoutBoxModelObject::BackgroundTransfersToView(
     return false;
   if (document_element_style->ShouldApplyAnyContainment(*document_element))
     return false;
-  if (StyleRef().ShouldApplyAnyContainment(*To<Element>(GetNode())))
+  if (Style().ShouldApplyAnyContainment(*To<Element>(GetNode()))) {
     return false;
+  }
   return true;
 }
 

@@ -1799,7 +1799,7 @@ bool BoxPainterBase::ShouldSkipPaintUnderInvalidationChecking(
 
   // We always paint a MediaSliderPart using the latest data (buffered ranges,
   // current time and duration) which may be different from the cached data.
-  if (box.StyleRef().EffectiveAppearance() == AppearanceValue::kMediaSlider) {
+  if (box.Style().EffectiveAppearance() == AppearanceValue::kMediaSlider) {
     return true;
   }
 

@@ -108,7 +108,7 @@ PhysicalNaturalSizingInfo LayoutEmbeddedObject::GetNaturalDimensions() const {
             frame_view->GetNaturalDimensions()) {
       // Scale based on our zoom as the embedded document doesn't have that
       // info.
-      sizing_info->size.Scale(StyleRef().EffectiveZoom());
+      sizing_info->size.Scale(Style().EffectiveZoom());
       return PhysicalNaturalSizingInfo::FromSizingInfo(*sizing_info);
     }
   }

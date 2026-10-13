@@ -33,7 +33,7 @@ gfx::SizeF ComputeZoomAdjustedSVGBox(ResizeObserverBoxOptions box_option,
     case ResizeObserverBoxOptions::kContentBox:
       return bounding_box_size;
     case ResizeObserverBoxOptions::kDevicePixelContentBox: {
-      const ComputedStyle& style = layout_object.StyleRef();
+      const ComputedStyle& style = layout_object.Style();
       const gfx::SizeF scaled_bounding_box_size(
           gfx::ScaleSize(bounding_box_size, style.EffectiveZoom()));
       return gfx::SizeF(
@@ -121,7 +121,7 @@ LogicalSize ResizeObservation::ComputeTargetSize() const {
   }
   if (const auto* layout_box = DynamicTo<LayoutBox>(layout_object)) {
     gfx::SizeF size = ResizeObserverUtilities::ComputeZoomAdjustedBox(
-        observed_box_, *layout_box, layout_box->StyleRef());
+        observed_box_, *layout_box, layout_box->Style());
     return LogicalSize(LayoutUnit(size.width()), LayoutUnit(size.height()));
   }
   return LogicalSize();

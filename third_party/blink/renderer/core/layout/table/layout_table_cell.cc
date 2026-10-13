@@ -28,7 +28,7 @@ LayoutTableCell* LayoutTableCell::CreateAnonymousWithParent(
     const LayoutObject& parent) {
   const ComputedStyle& new_style =
       parent.GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
-          parent.StyleRef(), EDisplay::kTableCell);
+          parent.Style(), EDisplay::kTableCell);
   auto* new_cell = MakeGarbageCollected<LayoutTableCell>(nullptr);
   new_cell->SetDocumentForAnonymous(parent.GetDocument());
   new_cell->SetStyle(new_style);

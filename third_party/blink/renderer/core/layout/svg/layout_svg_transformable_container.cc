@@ -82,7 +82,7 @@ SVGTransformChange LayoutSVGTransformableContainer::UpdateLocalTransform(
   // respect the translations induced by their corresponding use elements x/y
   // attributes.
   if (IsA<SVGUseElement>(element)) {
-    const ComputedStyle& style = StyleRef();
+    const ComputedStyle& style = Style();
     const SVGViewportResolver viewport_resolver(*this);
     additional_translation_ =
         VectorForLengthPair(style.X(), style.Y(), viewport_resolver, style);

@@ -125,14 +125,14 @@ const StylePath* LayoutSVGPath::GetStylePath() const {
   NOT_DESTROYED();
   if (!IsA<SVGPathElement>(*GetElement()))
     return nullptr;
-  return StyleRef().D();
+  return Style().D();
 }
 
 void LayoutSVGPath::UpdateMarkerPositions() {
   NOT_DESTROYED();
   marker_positions_.clear();
 
-  const ComputedStyle& style = StyleRef();
+  const ComputedStyle& style = Style();
   if (!style.HasMarkers()) {
     return;
   }
@@ -156,7 +156,7 @@ void LayoutSVGPath::UpdateMarkerBounds() {
   SVGElementResourceClient* client = SVGResources::GetClient(*this);
   CHECK(client);
 
-  const ComputedStyle& style = StyleRef();
+  const ComputedStyle& style = Style();
   auto* marker_start = GetSVGResourceAsType<LayoutSVGResourceMarker>(
       *client, style.MarkerStartResource());
   auto* marker_mid = GetSVGResourceAsType<LayoutSVGResourceMarker>(

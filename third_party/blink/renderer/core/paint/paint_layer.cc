@@ -227,7 +227,7 @@ void PaintLayer::Destroy() {
   DCHECK(!is_destroyed_);
 #endif
   if (resource_info_) {
-    const ComputedStyle& style = GetLayoutObject().StyleRef();
+    const ComputedStyle& style = GetLayoutObject().Style();
     if (style.HasFilter())
       style.Filter().RemoveClient(*resource_info_);
     if (style.HasBackdropFilter()) {
@@ -305,7 +305,7 @@ void PaintLayer::UpdateTransform() {
   if (const auto* element = DynamicTo<Element>(box_model.GetNode())) {
     if (const auto* canvas_transform = element->GetUsedCanvasTransform()) {
       gfx::Transform transform = *canvas_transform;
-      float zoom = GetLayoutObject().StyleRef().EffectiveZoom();
+      float zoom = GetLayoutObject().Style().EffectiveZoom();
       if (zoom != 1.f) {
         transform.Zoom(zoom);
       }
@@ -314,7 +314,7 @@ void PaintLayer::UpdateTransform() {
   }
   if (const auto* box = DynamicTo<LayoutBox>(&box_model)) {
     const PhysicalRect reference_box = ComputeReferenceBox(*box);
-    box->StyleRef().ApplyTransform(
+    box->Style().ApplyTransform(
         *transform_, box, reference_box,
         ComputedStyle::kIncludeTransformOperations,
         ComputedStyle::kIncludeTransformOrigin,
@@ -416,7 +416,7 @@ void PaintLayer::UpdateDescendantDependentFlags() {
     }();
 
     for (PaintLayer* child = first_child; child; child = child->NextSibling()) {
-      const ComputedStyle& child_style = child->GetLayoutObject().StyleRef();
+      const ComputedStyle& child_style = child->GetLayoutObject().Style();
 
       child->UpdateDescendantDependentFlags();
 
@@ -457,13 +457,13 @@ void PaintLayer::UpdateDescendantDependentFlags() {
       has_backdrop_filter_descendant_ =
           has_backdrop_filter_descendant_ ||
           child->HasBackdropFilterDescendant() ||
-          child->GetLayoutObject().StyleRef().HasNonInitialBackdropFilter();
+          child->GetLayoutObject().Style().HasNonInitialBackdropFilter();
 
       has_descendant_with_transform_anim_ =
           has_descendant_with_transform_anim_ ||
           child->HasDescendantWithTransformAnim() ||
           child->GetLayoutObject()
-              .StyleRef()
+              .Style()
               .HasCurrentTransformRelatedAnimation();
     }
 
@@ -523,8 +523,8 @@ void PaintLayer::UpdateHasVisibleContent() {
   bool previously_has_visible_content = has_visible_content_;
 
   const LayoutObject& object = GetLayoutObject();
-  if (object.StyleRef().Visibility() == EVisibility::kVisible ||
-      (object.StyleRef().HasReferenceFilter() &&
+  if (object.Style().Visibility() == EVisibility::kVisible ||
+      (object.Style().HasReferenceFilter() &&
        RuntimeEnabledFeatures::SvgFilterPaintsForHiddenContentEnabled())) {
     has_visible_content_ = true;
   } else {
@@ -537,8 +537,8 @@ void PaintLayer::UpdateHasVisibleContent() {
         r = r->NextInPreOrderAfterChildren(&object);
         continue;
       }
-      if (r->StyleRef().Visibility() == EVisibility::kVisible ||
-          (r->StyleRef().HasReferenceFilter() &&
+      if (r->Style().Visibility() == EVisibility::kVisible ||
+          (r->Style().HasReferenceFilter() &&
            RuntimeEnabledFeatures::SvgFilterPaintsForHiddenContentEnabled())) {
         has_visible_content_ = true;
         break;
@@ -780,7 +780,7 @@ void PaintLayer::RemoveChild(PaintLayer* old_child) {
   old_child->DirtyStackingContextZOrderLists();
   MarkAncestorChainForFlagsUpdate();
 
-  if (GetLayoutObject().StyleRef().Visibility() != EVisibility::kVisible) {
+  if (GetLayoutObject().Style().Visibility() != EVisibility::kVisible) {
     DirtyVisibleContentStatus();
   }
 
@@ -909,7 +909,7 @@ void PaintLayer::UpdateScrollableArea() {
 
   if (!scrollable_area_) {
     scrollable_area_ = MakeGarbageCollected<PaintLayerScrollableArea>(*this);
-    const ComputedStyle& style = GetLayoutObject().StyleRef();
+    const ComputedStyle& style = GetLayoutObject().Style();
     // A newly created snap container may need to be made aware of snap areas
     // within it which are targeted or contain a targeted element. Such a
     // container may also change the snap areas associated with snap containers
@@ -1421,7 +1421,7 @@ PaintLayer* PaintLayer::HitTestLayer(
     return nullptr;
   }
 
-  if (!is_occlusion_test && layout_object.StyleRef().HasBorderShape() &&
+  if (!is_occlusion_test && layout_object.Style().HasBorderShape() &&
       layout_object.ShouldClipOverflowAlongBothAxis() &&
       HitTestClippedOutByBorderShape(transform_container,
                                      recursion_data.location)) {
@@ -1474,7 +1474,7 @@ PaintLayer* PaintLayer::HitTestLayer(
 
   // Check for hit test on backface if backface-visibility is 'hidden'
   if (local_transform_state &&
-      layout_object.StyleRef().BackfaceVisibility() ==
+      layout_object.Style().BackfaceVisibility() ==
           EBackfaceVisibility::kHidden &&
       local_transform_state->AccumulatedTransform().IsBackFaceVisible()) {
     return nullptr;
@@ -1898,7 +1898,7 @@ bool PaintLayer::IsReplacedNormalFlowStackingContext() const {
   }
 
   return GetLayoutObject().IsReplacedNormalFlowStackingContext(
-      GetLayoutObject().StyleRef());
+      GetLayoutObject().Style());
 }
 
 bool PaintLayer::ShouldPaintReplacedNormalFlowInline() const {
@@ -2100,7 +2100,7 @@ gfx::RectF PaintLayer::BackdropFilterReferenceBox() const {
 
 SkPath PaintLayer::BackdropFilterBounds() const {
   return ContouredBorderGeometry::PixelSnappedContouredBorder(
-             GetLayoutObject().StyleRef(),
+             GetLayoutObject().Style(),
              PhysicalRect::EnclosingRect(BackdropFilterReferenceBox()))
       .GetPath()
       .GetSkPath();
@@ -2123,7 +2123,7 @@ bool PaintLayer::HitTestClippedOutByClipPath(
 bool PaintLayer::HitTestClippedOutByBorderShape(
     const PaintLayer& transform_container,
     const HitTestLocation& hit_test_location) const {
-  DCHECK(GetLayoutObject().StyleRef().HasBorderShape());
+  DCHECK(GetLayoutObject().Style().HasBorderShape());
   DCHECK(GetLayoutObject().ShouldClipOverflowAlongBothAxis());
 
   const LayoutBox* layout_box = GetLayoutBox();
@@ -2143,13 +2143,13 @@ bool PaintLayer::HitTestClippedOutByBorderShape(
     border_rect.Expand(layout_box->BorderOutsetsForClipping());
   }
   std::optional<BorderShapeReferenceRects> border_shape_rects =
-      ComputeBorderShapeReferenceRects(border_rect, layout_box->StyleRef(),
+      ComputeBorderShapeReferenceRects(border_rect, layout_box->Style(),
                                        *layout_box);
   if (!border_shape_rects) {
     return false;
   }
   const Path outer_path = BorderShapePainter::OuterPath(
-      layout_box->StyleRef(), border_shape_rects->outer);
+      layout_box->Style(), border_shape_rects->outer);
   return !location_in_layer.Intersects(outer_path);
 }
 
@@ -2261,8 +2261,9 @@ bool PaintLayer::KnownToClipSubtreeToPaddingBox() const {
       return false;
     if (HasFixedPositionDescendant() && !box->CanContainFixedPositionObjects())
       return false;
-    if (box->StyleRef().OverflowClipMargin())
+    if (box->Style().OverflowClipMargin()) {
       return false;
+    }
     // The root frame's clip is special at least in Android WebView.
     if (is_root_layer_ && box->GetFrame()->IsLocalRoot())
       return false;
@@ -2498,7 +2499,7 @@ void PaintLayer::StyleDidChange(StyleDifference diff,
   }
 
   // HasNonContainedAbsolutePositionDescendant depends on position changes.
-  const ComputedStyle& new_style = GetLayoutObject().StyleRef();
+  const ComputedStyle& new_style = GetLayoutObject().Style();
   if (!old_style || old_style->GetPosition() != new_style.GetPosition())
     MarkAncestorChainForFlagsUpdate();
 
@@ -2549,7 +2550,7 @@ PaintLayerClipper PaintLayer::Clipper() const {
 }
 
 FilterOperations PaintLayer::FilterOperationsIncludingReflection() const {
-  const auto& style = GetLayoutObject().StyleRef();
+  const auto& style = GetLayoutObject().Style();
   FilterOperations filter_operations = style.Filter();
   if (GetLayoutObject().HasReflection() && GetLayoutObject().IsBox()) {
     BoxReflection reflection = BoxReflectionForPaintLayer(*this, style);
@@ -2579,7 +2580,7 @@ void PaintLayer::UpdateCompositorFilterOperationsForFilter(
   gfx::RectF reference_box = FilterReferenceBox();
 
   // CompositorFilter needs the reference box to be unzoomed.
-  const ComputedStyle& style = GetLayoutObject().StyleRef();
+  const ComputedStyle& style = GetLayoutObject().Style();
   float zoom = style.EffectiveZoom();
   if (zoom != 1)
     reference_box.Scale(1 / zoom);
@@ -2600,7 +2601,7 @@ void PaintLayer::UpdateCompositorFilterOperationsForFilter(
 void PaintLayer::UpdateCompositorFilterOperationsForBackdropFilter(
     CompositorFilterOperations& operations,
     SkPath& backdrop_filter_bounds) {
-  const auto& style = GetLayoutObject().StyleRef();
+  const auto& style = GetLayoutObject().Style();
   if (style.BackdropFilter().IsEmpty()) {
     operations.Clear();
     backdrop_filter_on_effect_node_dirty_ = false;
@@ -2673,7 +2674,7 @@ PhysicalRect PaintLayer::MapRectForFilter(const PhysicalRect& rect) const {
 bool PaintLayer::ComputeHasFilterThatMovesPixels() const {
   if (!HasFilterInducingProperty())
     return false;
-  const ComputedStyle& style = GetLayoutObject().StyleRef();
+  const ComputedStyle& style = GetLayoutObject().Style();
   if (style.HasFilter() && style.Filter().HasFilterThatMovesPixels())
     return true;
   if (GetLayoutObject().HasReflection())
@@ -2685,7 +2686,7 @@ bool PaintLayer::ComputeHasReferenceFilter() const {
   if (!HasFilterInducingProperty()) {
     return false;
   }
-  const ComputedStyle& style = GetLayoutObject().StyleRef();
+  const ComputedStyle& style = GetLayoutObject().Style();
   return style.HasFilter() && style.Filter().HasReferenceFilter();
 }
 

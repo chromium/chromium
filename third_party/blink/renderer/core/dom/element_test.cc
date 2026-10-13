@@ -393,12 +393,12 @@ TEST_F(ElementTest, StickySubtreesAreTrackedCorrectly) {
       document.getElementById(AtomicString("greatGrandchild"))
           ->GetLayoutObject();
 
-  EXPECT_FALSE(ancestor->StyleRef().SubtreeIsSticky());
-  EXPECT_TRUE(outer_sticky->StyleRef().SubtreeIsSticky());
-  EXPECT_TRUE(child->StyleRef().SubtreeIsSticky());
-  EXPECT_TRUE(grandchild->StyleRef().SubtreeIsSticky());
-  EXPECT_TRUE(inner_sticky->StyleRef().SubtreeIsSticky());
-  EXPECT_TRUE(great_grandchild->StyleRef().SubtreeIsSticky());
+  EXPECT_FALSE(ancestor->Style().SubtreeIsSticky());
+  EXPECT_TRUE(outer_sticky->Style().SubtreeIsSticky());
+  EXPECT_TRUE(child->Style().SubtreeIsSticky());
+  EXPECT_TRUE(grandchild->Style().SubtreeIsSticky());
+  EXPECT_TRUE(inner_sticky->Style().SubtreeIsSticky());
+  EXPECT_TRUE(great_grandchild->Style().SubtreeIsSticky());
 
   // This forces 'child' to fork it's StyleRareInheritedData, so that we can
   // ensure that the sticky subtree update behavior survives forking.
@@ -408,19 +408,18 @@ TEST_F(ElementTest, StickySubtreesAreTrackedCorrectly) {
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(DocumentLifecycle::kPaintClean, document.Lifecycle().GetState());
 
-  EXPECT_EQ(RubyPosition::kOver, outer_sticky->StyleRef().GetRubyPosition());
-  EXPECT_EQ(RubyPosition::kUnder, child->StyleRef().GetRubyPosition());
-  EXPECT_EQ(RubyPosition::kUnder, grandchild->StyleRef().GetRubyPosition());
-  EXPECT_EQ(RubyPosition::kUnder, inner_sticky->StyleRef().GetRubyPosition());
-  EXPECT_EQ(RubyPosition::kUnder,
-            great_grandchild->StyleRef().GetRubyPosition());
+  EXPECT_EQ(RubyPosition::kOver, outer_sticky->Style().GetRubyPosition());
+  EXPECT_EQ(RubyPosition::kUnder, child->Style().GetRubyPosition());
+  EXPECT_EQ(RubyPosition::kUnder, grandchild->Style().GetRubyPosition());
+  EXPECT_EQ(RubyPosition::kUnder, inner_sticky->Style().GetRubyPosition());
+  EXPECT_EQ(RubyPosition::kUnder, great_grandchild->Style().GetRubyPosition());
 
   // Setting -webkit-ruby value shouldn't have affected the sticky subtree bit.
-  EXPECT_TRUE(outer_sticky->StyleRef().SubtreeIsSticky());
-  EXPECT_TRUE(child->StyleRef().SubtreeIsSticky());
-  EXPECT_TRUE(grandchild->StyleRef().SubtreeIsSticky());
-  EXPECT_TRUE(inner_sticky->StyleRef().SubtreeIsSticky());
-  EXPECT_TRUE(great_grandchild->StyleRef().SubtreeIsSticky());
+  EXPECT_TRUE(outer_sticky->Style().SubtreeIsSticky());
+  EXPECT_TRUE(child->Style().SubtreeIsSticky());
+  EXPECT_TRUE(grandchild->Style().SubtreeIsSticky());
+  EXPECT_TRUE(inner_sticky->Style().SubtreeIsSticky());
+  EXPECT_TRUE(great_grandchild->Style().SubtreeIsSticky());
 
   // Now switch 'outerSticky' back to being non-sticky - all descendents between
   // it and the 'innerSticky' should be updated, and the 'innerSticky' should
@@ -430,11 +429,11 @@ TEST_F(ElementTest, StickySubtreesAreTrackedCorrectly) {
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(DocumentLifecycle::kPaintClean, document.Lifecycle().GetState());
 
-  EXPECT_FALSE(outer_sticky->StyleRef().SubtreeIsSticky());
-  EXPECT_FALSE(child->StyleRef().SubtreeIsSticky());
-  EXPECT_FALSE(grandchild->StyleRef().SubtreeIsSticky());
-  EXPECT_TRUE(inner_sticky->StyleRef().SubtreeIsSticky());
-  EXPECT_TRUE(great_grandchild->StyleRef().SubtreeIsSticky());
+  EXPECT_FALSE(outer_sticky->Style().SubtreeIsSticky());
+  EXPECT_FALSE(child->Style().SubtreeIsSticky());
+  EXPECT_FALSE(grandchild->Style().SubtreeIsSticky());
+  EXPECT_TRUE(inner_sticky->Style().SubtreeIsSticky());
+  EXPECT_TRUE(great_grandchild->Style().SubtreeIsSticky());
 }
 
 TEST_F(ElementTest, GetElementsByClassNameCrash) {
@@ -754,11 +753,11 @@ TEST_F(ElementTest, IsFocusableForInertInContentVisibility) {
   // Mark the element as inert. Due to content-visibility, the LayoutObject
   // will still think that it's not inert.
   target->SetBooleanAttribute(html_names::kInertAttr, true);
-  ASSERT_FALSE(target->GetLayoutObject()->StyleRef().IsInert());
+  ASSERT_FALSE(target->GetLayoutObject()->Style().IsInert());
 
   // IsFocusable() should update the LayoutObject and notice that it's inert.
   ASSERT_FALSE(target->IsFocusable());
-  ASSERT_TRUE(target->GetLayoutObject()->StyleRef().IsInert());
+  ASSERT_TRUE(target->GetLayoutObject()->Style().IsInert());
 }
 
 TEST_F(ElementTest, ParseFocusgroupAttrDefaultValuesWhenEmptyValue) {

@@ -150,7 +150,7 @@ const ComputedStyle* CustomScrollbar::GetScrollbarPseudoElementStyle(
     // scrollbar styles.
     document.GetStyleEngine().UpdateActiveStyle();
   }
-  const ComputedStyle& source_style = layout_object->StyleRef();
+  const ComputedStyle& source_style = layout_object->Style();
   const ComputedStyle* part_style =
       layout_object->GetUncachedPseudoElementStyle(
           StyleRequest(pseudo_id, this, part_type, &source_style));
@@ -427,7 +427,7 @@ const ComputedStyle* CustomScrollbar::GetScrollbarPartStyleForCursor(
     ScrollbarPart part_type) const {
   const LayoutCustomScrollbarPart* part_layout_object = GetPart(part_type);
   if (part_layout_object) {
-    return &part_layout_object->StyleRef();
+    return &part_layout_object->Style();
   }
   switch (part_type) {
     case kBackButtonStartPart:

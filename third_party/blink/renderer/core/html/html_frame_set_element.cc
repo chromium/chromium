@@ -504,7 +504,7 @@ int HTMLFrameSetElement::SplitPosition(const Vector<LayoutUnit>& sizes,
   if (GetLayoutObject()->NeedsLayout())
     return 0;
 
-  int border_thickness = Border(GetLayoutObject()->StyleRef());
+  int border_thickness = Border(GetLayoutObject()->Style());
 
   int size = sizes.size();
   if (!size)
@@ -533,7 +533,7 @@ int HTMLFrameSetElement::HitTestSplit(const Vector<LayoutUnit>& sizes,
   if (GetLayoutObject()->NeedsLayout())
     return ResizeAxis::kNoSplit;
 
-  int border_thickness = Border(GetLayoutObject()->StyleRef());
+  int border_thickness = Border(GetLayoutObject()->Style());
   if (border_thickness <= 0)
     return ResizeAxis::kNoSplit;
 

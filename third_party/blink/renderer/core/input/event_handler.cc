@@ -235,7 +235,7 @@ const ComputedStyle* GetComputedStyleFromScrollbar(
 
     if (const LayoutCustomScrollbarPart* scroll_corner_layout_object =
             scrollable_area->ScrollCorner()) {
-      return &scroll_corner_layout_object->StyleRef();
+      return &scroll_corner_layout_object->Style();
     }
   }
 
@@ -615,7 +615,7 @@ std::optional<ui::Cursor> EventHandler::SelectCursor(
   const LayoutObject& layout_object = *hit_layout_object;
   if (!area_style && ShouldShowResizeForNode(layout_object, location)) {
     const LayoutBox* box = layout_object.EnclosingLayer()->GetLayoutBox();
-    EResize resize = box->StyleRef().UsedResize();
+    EResize resize = box->Style().UsedResize();
     switch (resize) {
       case EResize::kVertical:
         return NorthSouthResizeCursor();
@@ -649,7 +649,7 @@ std::optional<ui::Cursor> EventHandler::SelectCursor(
 
   const ComputedStyle& style = area_style        ? *area_style
                                : scrollbar_style ? *scrollbar_style
-                                                 : layout_object.StyleRef();
+                                                 : layout_object.Style();
 
   if (const CursorList* cursors = style.Cursors()) {
     for (const auto& cursor : *cursors) {

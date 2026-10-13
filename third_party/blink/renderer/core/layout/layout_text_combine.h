@@ -127,10 +127,10 @@ class CORE_EXPORT LayoutTextCombine final : public LayoutBlockFlow {
   bool UsingSyntheticOblique() const;
 
   // |scale_x_| holds scale factor to width of text content to 1em. When we
-  // use |scale_x_|, we use |StyleRef().GetFont()| instead of compressed font.
+  // use |scale_x_|, we use |Style().GetFont()| instead of compressed font.
   std::optional<float> scale_x_;
 
-  // |compressed_font_| hold width variant of |StyleRef().GetFont()|.
+  // |compressed_font_| hold width variant of |Style().GetFont()|.
   Member<const Font> compressed_font_;
 };
 
@@ -141,11 +141,11 @@ inline bool LayoutTextCombine::IsSupportedMode(WritingMode mode) {
 // static
 inline bool LayoutTextCombine::ShouldBeParentOf(
     const LayoutObject& layout_object) {
-  if (!IsSupportedMode(layout_object.StyleRef().GetWritingMode()) ||
+  if (!IsSupportedMode(layout_object.Style().GetWritingMode()) ||
       !layout_object.IsText() || layout_object.IsSVGInlineText()) [[likely]] {
     return false;
   }
-  return layout_object.StyleRef().HasTextCombine();
+  return layout_object.Style().HasTextCombine();
 }
 
 template <>

@@ -52,7 +52,7 @@ ObjectPaintInvalidatorWithContext::ComputePaintInvalidationReason() {
   bool previous_visibility_visible = object_.PreviousVisibilityVisible();
   object_.GetMutableForPainting().UpdatePreviousVisibilityVisible();
   if (object_.VisualRectRespectsVisibility() && !previous_visibility_visible &&
-      object_.StyleRef().Visibility() != EVisibility::kVisible) {
+      object_.Style().Visibility() != EVisibility::kVisible) {
     return PaintInvalidationReason::kNone;
   }
 
@@ -77,8 +77,8 @@ ObjectPaintInvalidatorWithContext::ComputePaintInvalidationReason() {
 
   // Force full paint invalidation if the object has background-clip:text to
   // update the background on any change in the subtree.
-  if (object_.StyleRef().BackgroundClip() == EFillBox::kText ||
-      object_.StyleRef().BackgroundClip() == EFillBox::kBorderAreaText) {
+  if (object_.Style().BackgroundClip() == EFillBox::kText ||
+      object_.Style().BackgroundClip() == EFillBox::kBorderAreaText) {
     return PaintInvalidationReason::kBackground;
   }
 

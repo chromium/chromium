@@ -226,7 +226,7 @@ void ChromeClient::ElementFocusedFromKeypress(LocalFrame& frame,
 
   LayoutObject* layout_object = element->GetLayoutObject();
   if (layout_object) {
-    TextDirection tooltip_direction = layout_object->StyleRef().Direction();
+    TextDirection tooltip_direction = layout_object->Style().Direction();
     UpdateTooltipFromKeyboard(frame, tooltip_text, tooltip_direction,
                               element->BoundsInWidget());
   }

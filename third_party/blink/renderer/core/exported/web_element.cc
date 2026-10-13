@@ -676,7 +676,7 @@ void WebElement::ScrollIntoViewIfNeeded() {
 }
 
 bool WebElement::HasScrollBehaviorSmooth() const {
-  return GetScrollingBox()->StyleRef().GetScrollBehavior() ==
+  return GetScrollingBox()->Style().GetScrollBehavior() ==
          mojom::blink::ScrollBehavior::kSmooth;
 }
 
@@ -701,7 +701,7 @@ bool WebElement::IsUserScrollableY() const {
 float WebElement::GetEffectiveZoom() const {
   const Element* element = ConstUnwrap<Element>();
   if (const auto* layout_object = element->GetLayoutObject()) {
-    return layout_object->StyleRef().EffectiveZoom();
+    return layout_object->Style().EffectiveZoom();
   }
   return 1.0f;
 }

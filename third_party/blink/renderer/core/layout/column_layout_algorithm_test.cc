@@ -2760,7 +2760,7 @@ TEST_F(ColumnLayoutAlgorithmTest, MinMax) {
   // (which is the only thing resembling spec that we currently have); in
   // particular, if column-width is non-auto, we ignore column-count for min
   // inline-size, and also clamp it down to the specified column-width.
-  ComputedStyleBuilder builder(layout_object->StyleRef());
+  ComputedStyleBuilder builder(layout_object->Style());
   builder.SetColumnCount(3);
   builder.SetColumnWidth(80);
   layout_object->SetStyle(*builder.TakeStyle(),
@@ -2771,7 +2771,7 @@ TEST_F(ColumnLayoutAlgorithmTest, MinMax) {
   EXPECT_EQ(LayoutUnit(320), sizes->max_size);
 
   // Only column-count set.
-  builder = ComputedStyleBuilder(layout_object->StyleRef());
+  builder = ComputedStyleBuilder(layout_object->Style());
   builder.SetHasAutoColumnWidth();
   layout_object->SetStyle(*builder.TakeStyle(),
                           LayoutObject::ApplyStyleChanges::kNo);
@@ -2781,7 +2781,7 @@ TEST_F(ColumnLayoutAlgorithmTest, MinMax) {
   EXPECT_EQ(LayoutUnit(320), sizes->max_size);
 
   // Only column-width set.
-  builder = ComputedStyleBuilder(layout_object->StyleRef());
+  builder = ComputedStyleBuilder(layout_object->Style());
   builder.SetColumnWidth(80);
   builder.SetHasAutoColumnCount();
   layout_object->SetStyle(*builder.TakeStyle(),

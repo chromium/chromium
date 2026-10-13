@@ -83,7 +83,7 @@ TEST_F(ScrollMarkerPseudoElementTest, InertOriginatingNonInertGroup) {
   PseudoElement* scroll_marker = GetDocument()
                                      .getElementById(AtomicString("marker"))
                                      ->GetPseudoElement(kPseudoIdScrollMarker);
-  EXPECT_FALSE(scroll_marker->GetLayoutObject()->StyleRef().IsInert());
+  EXPECT_FALSE(scroll_marker->GetLayoutObject()->Style().IsInert());
 }
 
 TEST_F(ScrollMarkerPseudoElementTest, InertScrollMarkerNonInertGroup) {
@@ -109,7 +109,7 @@ TEST_F(ScrollMarkerPseudoElementTest, InertScrollMarkerNonInertGroup) {
   PseudoElement* scroll_marker = GetDocument()
                                      .getElementById(AtomicString("marker"))
                                      ->GetPseudoElement(kPseudoIdScrollMarker);
-  EXPECT_TRUE(scroll_marker->GetLayoutObject()->StyleRef().IsInert());
+  EXPECT_TRUE(scroll_marker->GetLayoutObject()->Style().IsInert());
 }
 
 TEST_F(ScrollMarkerPseudoElementTest, InertScroller) {
@@ -135,7 +135,7 @@ TEST_F(ScrollMarkerPseudoElementTest, InertScroller) {
   PseudoElement* scroll_marker = GetDocument()
                                      .getElementById(AtomicString("marker"))
                                      ->GetPseudoElement(kPseudoIdScrollMarker);
-  EXPECT_TRUE(scroll_marker->GetLayoutObject()->StyleRef().IsInert());
+  EXPECT_TRUE(scroll_marker->GetLayoutObject()->Style().IsInert());
 }
 
 TEST_F(ScrollMarkerPseudoElementTest, InertScrollMarkerGroupNonInertMarker) {
@@ -163,7 +163,7 @@ TEST_F(ScrollMarkerPseudoElementTest, InertScrollMarkerGroupNonInertMarker) {
   PseudoElement* scroll_marker = GetDocument()
                                      .getElementById(AtomicString("marker"))
                                      ->GetPseudoElement(kPseudoIdScrollMarker);
-  EXPECT_TRUE(scroll_marker->GetLayoutObject()->StyleRef().IsInert());
+  EXPECT_TRUE(scroll_marker->GetLayoutObject()->Style().IsInert());
 }
 
 }  // namespace blink

@@ -3364,7 +3364,7 @@ TEST_P(PaintPropertyTreeBuilderTest, FlatTransformStyleEndsRenderingContext) {
   LayoutObject* b = GetLayoutObjectByElementId("b");
   const ObjectPaintProperties* b_properties =
       b->FirstFragment().PaintProperties();
-  ASSERT_FALSE(a->StyleRef().Preserves3D());
+  ASSERT_FALSE(a->Style().Preserves3D());
 
   ASSERT_TRUE(a_properties->Transform() && b_properties->Transform());
 
@@ -3399,7 +3399,7 @@ TEST_P(PaintPropertyTreeBuilderTest, NestedRenderingContexts) {
   LayoutObject* b = GetLayoutObjectByElementId("b");
   const ObjectPaintProperties* b_properties =
       b->FirstFragment().PaintProperties();
-  ASSERT_FALSE(a->StyleRef().Preserves3D());
+  ASSERT_FALSE(a->Style().Preserves3D());
   ASSERT_TRUE(a_properties->Transform() && b_properties->Transform());
 
   // #a should participate in a rendering context (due to its parent). Its child

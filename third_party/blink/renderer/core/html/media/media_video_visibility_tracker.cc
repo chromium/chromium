@@ -270,7 +270,7 @@ bool IsPerceptuallyVisible(const LayoutObject* layout) {
   // invisible. HasNonZeroEffectiveOpacity() is a pre-calculated check
   // performed during the PrePaint lifecycle phase.
   return layout && layout->HasNonZeroEffectiveOpacity() &&
-         layout->StyleRef().Visibility() == EVisibility::kVisible;
+         layout->Style().Visibility() == EVisibility::kVisible;
 }
 
 void RecordVideoOcclusionState(

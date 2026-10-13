@@ -50,13 +50,13 @@ void SVGShapePainter::Paint(const PaintInfo& paint_info) {
 
   auto paint_behavior = ScopedSVGPaintState::ComputePaintBehavior(
       layout_svg_shape_, paint_info,
-      layout_svg_shape_.StyleRef().Visibility() == EVisibility::kVisible);
+      layout_svg_shape_.Style().Visibility() == EVisibility::kVisible);
 
   if (paint_behavior.empty()) {
     return;
   }
 
-  if (SVGModelObjectPainter::CanUseCullRect(layout_svg_shape_.StyleRef())) {
+  if (SVGModelObjectPainter::CanUseCullRect(layout_svg_shape_.Style())) {
     // CanUseCullRect returns false if there is a pixel moving filter, which
     // includes reference filters. So execution should never reach here if
     // painting only due to a reference filter.
@@ -96,7 +96,7 @@ void SVGShapePainter::Paint(const PaintInfo& paint_info) {
 }
 
 void SVGShapePainter::PaintShape(const PaintInfo& paint_info) {
-  const ComputedStyle& style = layout_svg_shape_.StyleRef();
+  const ComputedStyle& style = layout_svg_shape_.Style();
   const bool should_anti_alias =
       style.ShapeRendering() != EShapeRendering::kCrispedges &&
       style.ShapeRendering() != EShapeRendering::kOptimizespeed;
@@ -194,7 +194,7 @@ void SVGShapePainter::FillShape(GraphicsContext& context,
                                 WindRule wind_rule) {
   const SkPathFillType sk_fill_type = WebCoreWindRuleToSkFillType(wind_rule);
   AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
-      layout_svg_shape_.StyleRef(), DarkModeFilter::ElementRole::kSVG));
+      layout_svg_shape_.Style(), DarkModeFilter::ElementRole::kSVG));
   switch (layout_svg_shape_.GetGeometryType()) {
     case LayoutSVGShape::GeometryType::kRectangle:
       context.DrawRect(
@@ -221,7 +221,7 @@ void SVGShapePainter::FillShape(GraphicsContext& context,
 void SVGShapePainter::StrokeShape(GraphicsContext& context,
                                   const cc::PaintFlags& flags) {
   AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
-      layout_svg_shape_.StyleRef(), DarkModeFilter::ElementRole::kSVG));
+      layout_svg_shape_.Style(), DarkModeFilter::ElementRole::kSVG));
 
   // Remap all geometry types to 'path' when non-scaling-stroke is in effect.
   LayoutSVGShape::GeometryType geometry_type =
@@ -259,7 +259,7 @@ void SVGShapePainter::PaintMarkers(const PaintInfo& paint_info) {
   if (!marker_positions || marker_positions->empty())
     return;
   SVGResourceClient* client = SVGResources::GetClient(layout_svg_shape_);
-  const ComputedStyle& style = layout_svg_shape_.StyleRef();
+  const ComputedStyle& style = layout_svg_shape_.Style();
   auto* marker_start = GetSVGResourceAsType<LayoutSVGResourceMarker>(
       *client, style.MarkerStartResource());
   auto* marker_mid = GetSVGResourceAsType<LayoutSVGResourceMarker>(
@@ -321,10 +321,9 @@ void SVGShapePainter::PaintMarker(const PaintInfo& paint_info,
   }
   SVGObjectPainter object_painter(layout_svg_shape_, context_paints);
   SvgContextPaints marker_context_paints(
+      object_painter.ResolveContextPaint(layout_svg_shape_.Style().FillPaint()),
       object_painter.ResolveContextPaint(
-          layout_svg_shape_.StyleRef().FillPaint()),
-      object_painter.ResolveContextPaint(
-          layout_svg_shape_.StyleRef().StrokePaint()),
+          layout_svg_shape_.Style().StrokePaint()),
       transform);
   PaintInfo marker_paint_info(
       builder.Context(), CullRect::Infinite(), paint_info.phase,

@@ -165,7 +165,7 @@ TEST_F(LayoutSVGForeignObjectTest, HitTestZoomedForeignObject) {
   EXPECT_EQ(gfx::RectF(10, 10, 100, 150), foreign_object.ObjectBoundingBox());
   EXPECT_EQ(AffineTransform(), foreign_object.LocalSVGTransform());
   AffineTransform zoom;
-  zoom.Scale(1 / foreign_object.StyleRef().EffectiveZoom());
+  zoom.Scale(1 / foreign_object.Style().EffectiveZoom());
   EXPECT_EQ(zoom, foreign_object.LocalToSVGParentTransform());
 
   // MapToVisualRectInAncestorSpace
@@ -398,7 +398,7 @@ TEST_F(LayoutSVGForeignObjectTest, BBoxPropagationZoomed) {
   UpdateAllLifecyclePhasesForTest();
 
   const auto& target = *GetLayoutObjectByElementId("target");
-  ASSERT_EQ(target.StyleRef().EffectiveZoom(), 2);
+  ASSERT_EQ(target.Style().EffectiveZoom(), 2);
 
   EXPECT_EQ(target.ObjectBoundingBox(), gfx::RectF(6, 5, 100, 50));
   EXPECT_EQ(target.DecoratedBoundingBox(), gfx::RectF(12, 10, 200, 100));

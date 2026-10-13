@@ -168,10 +168,8 @@ wtf_size_t InlinePaintContext::SyncDecoratingBox(
         const auto* layout_inline = To<LayoutInline>(parent);
         // Except when |AppliedTextDecorations| is duplicated instead of
         // shared, see above.
-        if (!(parent_decorations.size() == parent->Parent()
-                                               ->StyleRef()
-                                               .AppliedTextDecorations()
-                                               .size() &&
+        if (!(parent_decorations.size() ==
+                  parent->Parent()->Style().AppliedTextDecorations().size() &&
               parent_style.GetTextDecorationLine() ==
                   TextDecorationLine::kNone) &&
             !IsA<LayoutText>(layout_object)) {

@@ -71,7 +71,7 @@ void LayoutFieldset::InsertedIntoTree() {
   // TODO(crbug.com/875235): Consider other display types not mentioned in the
   // spec (ex. EDisplay::kLayoutCustom).
   EDisplay display = EDisplay::kFlowRoot;
-  switch (StyleRef().Display()) {
+  switch (Style().Display()) {
     case EDisplay::kFlex:
     case EDisplay::kInlineFlex:
       display = EDisplay::kFlex;
@@ -94,7 +94,7 @@ void LayoutFieldset::InsertedIntoTree() {
   // Update CanContain*PositionObjects flag again though
   // CreateAnonymousWithParentAndDisplay() already called them because
   // ComputeIs*Container() depends on Parent().
-  const auto& content_style = fieldset_content->StyleRef();
+  const auto& content_style = fieldset_content->Style();
   const bool is_fixed_container =
       fieldset_content->ComputeIsFixedContainer(content_style);
   fieldset_content->SetCanContainFixedPositionObjects(is_fixed_container);
@@ -109,96 +109,91 @@ void LayoutFieldset::UpdateAnonymousChildStyle(
   // Inherit all properties listed here:
   // https://html.spec.whatwg.org/C/#anonymous-fieldset-content-box
 
-  child_style_builder.SetAlignContent(StyleRef().AlignContent());
-  child_style_builder.SetAlignItems(StyleRef().AlignItems());
+  child_style_builder.SetAlignContent(Style().AlignContent());
+  child_style_builder.SetAlignItems(Style().AlignItems());
 
   child_style_builder.SetBorderBottomLeftRadius(
-      StyleRef().BorderBottomLeftRadius());
+      Style().BorderBottomLeftRadius());
   child_style_builder.SetBorderBottomRightRadius(
-      StyleRef().BorderBottomRightRadius());
-  child_style_builder.SetBorderTopLeftRadius(StyleRef().BorderTopLeftRadius());
-  child_style_builder.SetBorderTopRightRadius(
-      StyleRef().BorderTopRightRadius());
+      Style().BorderBottomRightRadius());
+  child_style_builder.SetBorderTopLeftRadius(Style().BorderTopLeftRadius());
+  child_style_builder.SetBorderTopRightRadius(Style().BorderTopRightRadius());
 
-  child_style_builder.SetPaddingTop(StyleRef().PaddingTop());
-  child_style_builder.SetPaddingRight(StyleRef().PaddingRight());
-  child_style_builder.SetPaddingBottom(StyleRef().PaddingBottom());
-  child_style_builder.SetPaddingLeft(StyleRef().PaddingLeft());
+  child_style_builder.SetPaddingTop(Style().PaddingTop());
+  child_style_builder.SetPaddingRight(Style().PaddingRight());
+  child_style_builder.SetPaddingBottom(Style().PaddingBottom());
+  child_style_builder.SetPaddingLeft(Style().PaddingLeft());
 
-  child_style_builder.SetBoxDecorationBreak(StyleRef().BoxDecorationBreak());
+  child_style_builder.SetBoxDecorationBreak(Style().BoxDecorationBreak());
 
-  if (StyleRef().SpecifiesColumns() && AllowsColumns()) {
-    if (!StyleRef().HasAutoColumnCount()) {
-      child_style_builder.SetColumnCount(StyleRef().ColumnCount());
+  if (Style().SpecifiesColumns() && AllowsColumns()) {
+    if (!Style().HasAutoColumnCount()) {
+      child_style_builder.SetColumnCount(Style().ColumnCount());
     }
-    if (!StyleRef().HasAutoColumnWidth()) {
-      child_style_builder.SetColumnWidth(StyleRef().ColumnWidth());
+    if (!Style().HasAutoColumnWidth()) {
+      child_style_builder.SetColumnWidth(Style().ColumnWidth());
     }
-    if (!StyleRef().HasAutoColumnHeight()) {
-      child_style_builder.SetColumnHeight(StyleRef().ColumnHeight());
+    if (!Style().HasAutoColumnHeight()) {
+      child_style_builder.SetColumnHeight(Style().ColumnHeight());
     }
-    child_style_builder.SetColumnWrap(StyleRef().ColumnWrap());
+    child_style_builder.SetColumnWrap(Style().ColumnWrap());
   }
-  child_style_builder.SetColumnGap(StyleRef().ColumnGap());
-  child_style_builder.SetColumnFill(StyleRef().GetColumnFill());
-  child_style_builder.SetColumnRuleColor(StyleRef().ColumnRuleColor());
-  child_style_builder.SetRowRuleColor(StyleRef().RowRuleColor());
-  child_style_builder.SetColumnRuleStyle(StyleRef().ColumnRuleStyle());
-  child_style_builder.SetRowRuleStyle(StyleRef().RowRuleStyle());
+  child_style_builder.SetColumnGap(Style().ColumnGap());
+  child_style_builder.SetColumnFill(Style().GetColumnFill());
+  child_style_builder.SetColumnRuleColor(Style().ColumnRuleColor());
+  child_style_builder.SetRowRuleColor(Style().RowRuleColor());
+  child_style_builder.SetColumnRuleStyle(Style().ColumnRuleStyle());
+  child_style_builder.SetRowRuleStyle(Style().RowRuleStyle());
   child_style_builder.SetColumnRuleWidth(
-      GapDataList<int>(StyleRef().ColumnRuleWidth()));
-  child_style_builder.SetRowRuleWidth(
-      GapDataList<int>(StyleRef().RowRuleWidth()));
+      GapDataList<int>(Style().ColumnRuleWidth()));
+  child_style_builder.SetRowRuleWidth(GapDataList<int>(Style().RowRuleWidth()));
 
-  child_style_builder.SetColumnRuleBreak(StyleRef().ColumnRuleBreak());
-  child_style_builder.SetRowRuleBreak(StyleRef().RowRuleBreak());
-  child_style_builder.SetRuleOverlap(StyleRef().RuleOverlap());
+  child_style_builder.SetColumnRuleBreak(Style().ColumnRuleBreak());
+  child_style_builder.SetRowRuleBreak(Style().RowRuleBreak());
+  child_style_builder.SetRuleOverlap(Style().RuleOverlap());
   child_style_builder.SetColumnRuleVisibilityItems(
-      StyleRef().ColumnRuleVisibilityItems());
+      Style().ColumnRuleVisibilityItems());
   child_style_builder.SetRowRuleVisibilityItems(
-      StyleRef().RowRuleVisibilityItems());
+      Style().RowRuleVisibilityItems());
   child_style_builder.SetColumnRuleInsetCapStart(
-      StyleRef().ColumnRuleInsetCapStart());
-  child_style_builder.SetColumnRuleInsetCapEnd(
-      StyleRef().ColumnRuleInsetCapEnd());
+      Style().ColumnRuleInsetCapStart());
+  child_style_builder.SetColumnRuleInsetCapEnd(Style().ColumnRuleInsetCapEnd());
   child_style_builder.SetColumnRuleInsetJunctionStart(
-      StyleRef().ColumnRuleInsetJunctionStart());
+      Style().ColumnRuleInsetJunctionStart());
   child_style_builder.SetColumnRuleInsetJunctionEnd(
-      StyleRef().ColumnRuleInsetJunctionEnd());
-  child_style_builder.SetRowRuleInsetCapStart(
-      StyleRef().RowRuleInsetCapStart());
-  child_style_builder.SetRowRuleInsetCapEnd(StyleRef().RowRuleInsetCapEnd());
+      Style().ColumnRuleInsetJunctionEnd());
+  child_style_builder.SetRowRuleInsetCapStart(Style().RowRuleInsetCapStart());
+  child_style_builder.SetRowRuleInsetCapEnd(Style().RowRuleInsetCapEnd());
   child_style_builder.SetRowRuleInsetJunctionStart(
-      StyleRef().RowRuleInsetJunctionStart());
+      Style().RowRuleInsetJunctionStart());
   child_style_builder.SetRowRuleInsetJunctionEnd(
-      StyleRef().RowRuleInsetJunctionEnd());
+      Style().RowRuleInsetJunctionEnd());
 
-  child_style_builder.SetFlexDirection(StyleRef().FlexDirection());
-  child_style_builder.SetFlexWrap(StyleRef().FlexWrap());
+  child_style_builder.SetFlexDirection(Style().FlexDirection());
+  child_style_builder.SetFlexWrap(Style().FlexWrap());
 
-  child_style_builder.SetGridAutoColumns(StyleRef().GridAutoColumns());
-  child_style_builder.SetGridAutoFlow(StyleRef().GetGridAutoFlow());
-  child_style_builder.SetGridAutoRows(StyleRef().GridAutoRows());
-  child_style_builder.SetGridColumnEnd(StyleRef().GridColumnEnd());
-  child_style_builder.SetGridColumnStart(StyleRef().GridColumnStart());
-  child_style_builder.SetGridRowEnd(StyleRef().GridRowEnd());
-  child_style_builder.SetGridRowStart(StyleRef().GridRowStart());
+  child_style_builder.SetGridAutoColumns(Style().GridAutoColumns());
+  child_style_builder.SetGridAutoFlow(Style().GetGridAutoFlow());
+  child_style_builder.SetGridAutoRows(Style().GridAutoRows());
+  child_style_builder.SetGridColumnEnd(Style().GridColumnEnd());
+  child_style_builder.SetGridColumnStart(Style().GridColumnStart());
+  child_style_builder.SetGridRowEnd(Style().GridRowEnd());
+  child_style_builder.SetGridRowStart(Style().GridRowStart());
 
   // grid-template-columns, grid-template-rows, grid-template-areas
   child_style_builder.SetGridTemplateColumns(
-      StyleRef().SpecifiedGridTemplateColumns());
-  child_style_builder.SetGridTemplateRows(
-      StyleRef().SpecifiedGridTemplateRows());
-  child_style_builder.SetGridTemplateAreas(StyleRef().GridTemplateAreas());
+      Style().SpecifiedGridTemplateColumns());
+  child_style_builder.SetGridTemplateRows(Style().SpecifiedGridTemplateRows());
+  child_style_builder.SetGridTemplateAreas(Style().GridTemplateAreas());
 
-  child_style_builder.SetRowGap(StyleRef().RowGap());
+  child_style_builder.SetRowGap(Style().RowGap());
 
-  child_style_builder.SetJustifyContent(StyleRef().JustifyContent());
-  child_style_builder.SetJustifyItems(StyleRef().JustifyItems());
-  child_style_builder.SetOverflowX(StyleRef().OverflowX());
-  child_style_builder.SetOverflowY(StyleRef().OverflowY());
-  child_style_builder.SetScrollbarGutter(StyleRef().ScrollbarGutter());
-  child_style_builder.SetUnicodeBidi(StyleRef().GetUnicodeBidi());
+  child_style_builder.SetJustifyContent(Style().JustifyContent());
+  child_style_builder.SetJustifyItems(Style().JustifyItems());
+  child_style_builder.SetOverflowX(Style().OverflowX());
+  child_style_builder.SetOverflowY(Style().OverflowY());
+  child_style_builder.SetScrollbarGutter(Style().ScrollbarGutter());
+  child_style_builder.SetUnicodeBidi(Style().GetUnicodeBidi());
 }
 
 void LayoutFieldset::InvalidatePaint(

@@ -45,7 +45,7 @@ class AdjustForAbsoluteZoom {
         return frame->LayoutZoomFactor();
       }
     }
-    return layout_object.StyleRef().EffectiveZoom();
+    return layout_object.Style().EffectiveZoom();
   }
 
   // FIXME: Reduce/remove the dependency on zoom adjusted int values.
@@ -72,7 +72,7 @@ class AdjustForAbsoluteZoom {
   }
   inline static int AdjustInt(int value, LayoutObject* layout_object) {
     DCHECK(layout_object);
-    return AdjustInt(value, layout_object->StyleRef());
+    return AdjustInt(value, layout_object->Style());
   }
 
   inline static float AdjustFloat(float value, const ComputedStyle& style) {
@@ -80,7 +80,7 @@ class AdjustForAbsoluteZoom {
   }
   inline static float AdjustFloat(float value,
                                   const LayoutObject& layout_object) {
-    return AdjustFloat(value, layout_object.StyleRef());
+    return AdjustFloat(value, layout_object.Style());
   }
 
   inline static double AdjustDouble(double value, const ComputedStyle& style) {
@@ -93,7 +93,7 @@ class AdjustForAbsoluteZoom {
   }
   inline static LayoutUnit AdjustLayoutUnit(LayoutUnit value,
                                             LayoutObject& layout_object) {
-    return AdjustLayoutUnit(value, layout_object.StyleRef());
+    return AdjustLayoutUnit(value, layout_object.Style());
   }
   inline static PhysicalSize AdjustPhysicalSize(PhysicalSize size,
                                                 const ComputedStyle& style) {
@@ -131,7 +131,7 @@ class AdjustForAbsoluteZoom {
     return AdjustScroll(scroll_offset, style.EffectiveZoom());
   }
   inline static double AdjustScroll(double value, LayoutObject& layout_object) {
-    return AdjustScroll(value, layout_object.StyleRef());
+    return AdjustScroll(value, layout_object.Style());
   }
 };
 

@@ -70,7 +70,7 @@ bool InsertLineBreakCommand::ShouldUseBreakElement(
     return true;
   }
   return IsRichlyEditablePosition(p) && p.AnchorNode()->GetLayoutObject() &&
-         p.AnchorNode()->GetLayoutObject()->StyleRef().ShouldCollapseBreaks();
+         p.AnchorNode()->GetLayoutObject()->Style().ShouldCollapseBreaks();
 }
 
 void InsertLineBreakCommand::DoApply(EditingState* editing_state) {

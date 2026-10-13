@@ -467,7 +467,7 @@ float CalculateOverflowShrinkForPrinting(const LayoutView& view,
         // Check the inline axis overflow on each individual page, to find the
         // largest relative overflow.
         float page_scale_factor;
-        if (view.StyleRef().IsHorizontalWritingMode()) {
+        if (view.Style().IsHorizontalWritingMode()) {
           page_scale_factor = page.ScrollableOverflow().Right().ToFloat() /
                               page.Size().width.ToFloat();
         } else {

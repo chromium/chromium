@@ -1703,7 +1703,7 @@ void Node::FocusabilityLost() {
 
 LinkHighlightCandidate Node::IsLinkHighlightCandidate() const {
   if (const LayoutObject* layout_object = GetLayoutObject()) {
-    const ECursor cursor = layout_object->StyleRef().Cursor();
+    const ECursor cursor = layout_object->Style().Cursor();
     if (cursor == ECursor::kPointer)
       return LinkHighlightCandidate::kYes;
     if (cursor != ECursor::kAuto)
@@ -2005,7 +2005,7 @@ bool Node::CanStartSelection() const {
   }
 
   if (GetLayoutObject()) {
-    const ComputedStyle& style = GetLayoutObject()->StyleRef();
+    const ComputedStyle& style = GetLayoutObject()->Style();
     EUserSelect user_select = style.UsedUserSelect();
     if (user_select == EUserSelect::kNone)
       return false;
@@ -2564,8 +2564,9 @@ void Node::InvalidateIfHasEffectiveAppearance() const {
   if (!layout_object)
     return;
 
-  if (!layout_object->StyleRef().HasEffectiveAppearance())
+  if (!layout_object->Style().HasEffectiveAppearance()) {
     return;
+  }
 
   layout_object->SetSubtreeShouldDoFullPaintInvalidation();
 }

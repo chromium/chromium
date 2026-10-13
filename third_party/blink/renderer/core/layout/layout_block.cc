@@ -220,11 +220,12 @@ void LayoutBlock::ImageChanged(WrappedImagePtr image,
   NOT_DESTROYED();
   LayoutBox::ImageChanged(image, defer);
 
-  if (!StyleRef().HasPseudoElementStyle(kPseudoIdFirstLine))
+  if (!Style().HasPseudoElementStyle(kPseudoIdFirstLine)) {
     return;
+  }
 
   const auto* first_line_style =
-      StyleRef().GetCachedPseudoElementStyle(kPseudoIdFirstLine);
+      Style().GetCachedPseudoElementStyle(kPseudoIdFirstLine);
   if (!first_line_style)
     return;
   if (auto* first_line_container = NearestInnerBlockWithFirstLine()) {
@@ -240,7 +241,7 @@ void LayoutBlock::ImageChanged(WrappedImagePtr image,
 
 LayoutUnit LayoutBlock::TextIndentOffset() const {
   NOT_DESTROYED();
-  const ComputedStyle& style = StyleRef();
+  const ComputedStyle& style = Style();
   const Length& length = style.TextIndent();
   if (length.IsZero() || style.IsTextIndentHanging()) {
     return LayoutUnit();
@@ -304,7 +305,7 @@ PositionWithAffinity LayoutBlock::PositionForPointIfOutsideAtomicInlineLevel(
   NOT_DESTROYED();
   DCHECK(IsInline());
   LogicalOffset logical_offset =
-      WritingModeConverter({StyleRef().GetWritingMode(), ResolvedDirection()},
+      WritingModeConverter({Style().GetWritingMode(), ResolvedDirection()},
                            StitchedSize())
           .ToLogical(point, PhysicalSize());
 
@@ -437,7 +438,7 @@ PhysicalRect LayoutBlock::LocalCaretRect(int caret_offset,
     return LayoutBox::LocalCaretRect(caret_offset, caret_shape);
   }
 
-  const ComputedStyle& style = StyleRef();
+  const ComputedStyle& style = Style();
   const bool is_horizontal = style.IsHorizontalWritingMode();
 
   PhysicalSize stitched_size = StitchedSize();
@@ -473,13 +474,13 @@ void LayoutBlock::AddOutlineRects(OutlineRectCollector& collector,
                                      include_block_overflows);
   }
   if (info)
-    *info = OutlineInfo::GetFromStyle(StyleRef());
+    *info = OutlineInfo::GetFromStyle(Style());
 }
 
 LayoutBox* LayoutBlock::CreateAnonymousBoxWithSameTypeAs(
     const LayoutObject* parent) const {
   NOT_DESTROYED();
-  return CreateAnonymousWithParentAndDisplay(parent, StyleRef().Display());
+  return CreateAnonymousWithParentAndDisplay(parent, Style().Display());
 }
 
 const char* LayoutBlock::GetName() const {
@@ -519,8 +520,7 @@ LayoutBlock* LayoutBlock::CreateAnonymousWithParentAndDisplay(
   ComputedStyleBuilder new_style_builder =
       parent->GetDocument()
           .GetStyleResolver()
-          .CreateAnonymousStyleBuilderWithDisplay(parent->StyleRef(),
-                                                  new_display);
+          .CreateAnonymousStyleBuilderWithDisplay(parent->Style(), new_display);
 
   parent->UpdateAnonymousChildStyle(nullptr, new_style_builder);
   const ComputedStyle& new_style = *new_style_builder.TakeStyle();

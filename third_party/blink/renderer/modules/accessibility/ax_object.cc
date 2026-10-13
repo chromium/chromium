@@ -5043,7 +5043,7 @@ const ComputedStyle* AXObject::GetComputedStyle() const {
 
   // For elements with layout objects we can get their style directly.
   if (GetLayoutObject()) {
-    return &GetLayoutObject()->StyleRef();
+    return &GetLayoutObject()->Style();
   }
   if (const Element* element = GetElement()) {
     return element->GetComputedStyle();
@@ -5087,8 +5087,7 @@ bool AXObject::ComputeIsHiddenViaStyle(const ComputedStyle* style) {
       const LayoutObject* image_layout_object =
           image ? image->GetLayoutObject() : nullptr;
       return !image_layout_object ||
-             image_layout_object->StyleRef().Visibility() !=
-                 EVisibility::kVisible;
+             image_layout_object->Style().Visibility() != EVisibility::kVisible;
     }
 
     // TODO(crbug.com/1286465): It's not consistent to only check
@@ -8386,7 +8385,7 @@ bool AXObject::RequestShowTooltipAction() {
   }
 
   // Trigger the tooltip via ChromeClient, anchoring it to the element's bounds.
-  TextDirection tooltip_direction = layout_object->StyleRef().Direction();
+  TextDirection tooltip_direction = layout_object->Style().Direction();
   document->GetPage()->GetChromeClient().UpdateTooltipFromKeyboard(
       *document->GetFrame(), tooltip_text, tooltip_direction,
       element->BoundsInWidget());

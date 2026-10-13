@@ -94,7 +94,7 @@ bool TransformHelper::CheckReferenceBoxDependencies(
 
 gfx::RectF TransformHelper::ComputeReferenceBox(
     const LayoutObject& layout_object) {
-  const ComputedStyle& style = layout_object.StyleRef();
+  const ComputedStyle& style = layout_object.Style();
   gfx::RectF reference_box;
   switch (style.UsedTransformBox(ComputedStyle::TransformBoxContext::kSvg)) {
     case ETransformBox::kFillBox:
@@ -130,7 +130,7 @@ bool TransformHelper::HasCss3DTransform(const LayoutObject& object) {
       !object.IsSVGTransformableContainer()) {
     return false;
   }
-  const ComputedStyle& style = object.StyleRef();
+  const ComputedStyle& style = object.Style();
   // Unlike ComputedStyle::Has3DTransformOperation(), a perspective()
   // operation in the transform list also requires the 3D path.
   return style.Has3DTransformOperation() || style.Transform().Has3DOperation();
@@ -206,7 +206,7 @@ gfx::Transform TransformHelper::ComputeTransformIncludingMotion3D(
   const LayoutObject& layout_object = *element.GetLayoutObject();
   gfx::Transform matrix;
   if (layout_object.HasTransform() || element.HasMotionTransform()) {
-    matrix = ComputeTransform3D(element.GetDocument(), layout_object.StyleRef(),
+    matrix = ComputeTransform3D(element.GetDocument(), layout_object.Style(),
                                 reference_box,
                                 ComputedStyle::kIncludeTransformOrigin);
     AffineTransform motion;

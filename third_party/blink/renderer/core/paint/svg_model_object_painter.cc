@@ -55,12 +55,12 @@ void SVGModelObjectPainter::RecordRegionCaptureData(
 void SVGModelObjectPainter::PaintOutline(const PaintInfo& paint_info) {
   if (paint_info.phase != PaintPhase::kForeground)
     return;
-  if (layout_svg_model_object_.StyleRef().Visibility() !=
-      EVisibility::kVisible) {
+  if (layout_svg_model_object_.Style().Visibility() != EVisibility::kVisible) {
     return;
   }
-  if (!layout_svg_model_object_.StyleRef().HasOutline())
+  if (!layout_svg_model_object_.Style().HasOutline()) {
     return;
+  }
 
   PaintInfo outline_paint_info(paint_info);
   outline_paint_info.phase = PaintPhase::kSelfOutlineOnly;

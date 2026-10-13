@@ -80,7 +80,7 @@ struct SearchCandidate {
 
 gfx::RectF SVGLayoutSupport::ApplyFiltersToRect(const LayoutObject& object,
                                                 const gfx::RectF& rect) {
-  if (!object.StyleRef().HasFilter()) {
+  if (!object.Style().HasFilter()) {
     return rect;
   }
   if (object.NeedsPaintPropertyUpdate()) {
@@ -93,7 +93,7 @@ gfx::RectF SVGLayoutSupport::ApplyFiltersToRect(const LayoutObject& object,
   const gfx::RectF filter_reference_box =
       SVGResources::ReferenceBoxForEffects(object);
   float_rect.UnionEvenIfEmpty(filter_reference_box);
-  return object.StyleRef().Filter().MapRect(float_rect);
+  return object.Style().Filter().MapRect(float_rect);
 }
 
 static gfx::RectF MapToSVGRootIncludingFilter(
@@ -121,8 +121,9 @@ static const LayoutSVGRoot& ComputeTransformToSVGRoot(
 
   const LayoutObject* parent = &object;
   for (; !parent->IsSVGRoot(); parent = parent->Parent()) {
-    if (filter_skipped && parent->StyleRef().HasFilter())
+    if (filter_skipped && parent->Style().HasFilter()) {
       *filter_skipped = true;
+    }
     root_border_box_transform.PostConcat(
         TransformHelper::LocalToSVGParentTransform3D(*parent));
   }
@@ -198,7 +199,7 @@ void SVGLayoutSupport::MapLocalToAncestor(const LayoutObject* object,
   // transform-style determines whether 3D is preserved across this boundary.
   const bool preserves_3d =
       RuntimeEnabledFeatures::SvgCss3dTransformsEnabled() &&
-      parent->StyleRef().Preserves3D();
+      parent->Style().Preserves3D();
   transform_state.ApplyTransform(
       transform, preserves_3d ? TransformState::kAccumulateTransform
                               : TransformState::kFlattenTransform);
@@ -231,7 +232,7 @@ bool SVGLayoutSupport::IsOverflowHidden(const LayoutObject& object) {
   // LayoutSVGRoot should never query for overflow state - it should always clip
   // itself to the initial viewport size.
   DCHECK(!object.IsDocumentElement());
-  return IsOverflowHidden(object.StyleRef());
+  return IsOverflowHidden(object.Style());
 }
 
 bool SVGLayoutSupport::IsOverflowHidden(const ComputedStyle& style) {
@@ -247,7 +248,7 @@ void SVGLayoutSupport::AdjustWithClipPathAndMask(
   SVGResourceClient* client = SVGResources::GetClient(layout_object);
   if (!client)
     return;
-  const ComputedStyle& style = layout_object.StyleRef();
+  const ComputedStyle& style = layout_object.Style();
   if (LayoutSVGResourceClipper* clipper =
           GetSVGResourceAsType(*client, style.ClipPath()))
     visual_rect.Intersect(clipper->ResourceBoundingBox(object_bounding_box));
@@ -262,7 +263,7 @@ gfx::RectF SVGLayoutSupport::ExtendTextBBoxWithStroke(
     const gfx::RectF& text_bounds) {
   DCHECK(layout_object.IsSVGText() || layout_object.IsSVGInline());
   gfx::RectF bounds = text_bounds;
-  const ComputedStyle& style = layout_object.StyleRef();
+  const ComputedStyle& style = layout_object.Style();
   if (style.HasStroke()) {
     const SVGViewportResolver viewport_resolver(layout_object);
     // TODO(fs): This approximation doesn't appear to be conservative enough
@@ -279,8 +280,9 @@ gfx::RectF SVGLayoutSupport::ComputeVisualRectForText(
     const gfx::RectF& text_bounds) {
   DCHECK(layout_object.IsSVGText() || layout_object.IsSVGInline());
   gfx::RectF visual_rect = ExtendTextBBoxWithStroke(layout_object, text_bounds);
-  if (const ShadowList* text_shadow = layout_object.StyleRef().TextShadow())
+  if (const ShadowList* text_shadow = layout_object.Style().TextShadow()) {
     text_shadow->AdjustRectForShadow(visual_rect);
+  }
   return visual_rect;
 }
 
@@ -344,7 +346,7 @@ bool SVGLayoutSupport::WillIsolateBlendingDescendantsForObject(
     return false;
   if (!object->IsSVGRoot() && !object->IsSVGContainer())
     return false;
-  return WillIsolateBlendingDescendantsForStyle(object->StyleRef());
+  return WillIsolateBlendingDescendantsForStyle(object->Style());
 }
 
 bool SVGLayoutSupport::IsIsolationRequired(const LayoutObject* object) {

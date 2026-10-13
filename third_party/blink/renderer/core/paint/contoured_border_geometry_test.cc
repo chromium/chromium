@@ -22,7 +22,7 @@ TEST_F(ContouredBorderGeometryTest, NearlyTouchingNotchCorners) {
          border-top-right-radius: 184.1px"></div>
   )HTML");
 
-  const ComputedStyle& style = GetLayoutObjectByElementId("target")->StyleRef();
+  const ComputedStyle& style = GetLayoutObjectByElementId("target")->Style();
   const ContouredRect border = ContouredBorderGeometry::ContouredBorder(
       style, PhysicalRect(0, 0, 304, 304));
 

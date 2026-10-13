@@ -1059,7 +1059,7 @@ bool TextControlElement::IsPlaceholderBreakElement(const Node* node) {
 void TextControlElement::AdjustPlaceholderBreakElement() {
   HTMLElement* inner_editor = InnerEditorElement();
   if (inner_editor->GetLayoutObject() &&
-      inner_editor->GetLayoutObject()->StyleRef().ShouldCollapseBreaks()) {
+      inner_editor->GetLayoutObject()->Style().ShouldCollapseBreaks()) {
     return;
   }
   Node* last_child = inner_editor->lastChild();

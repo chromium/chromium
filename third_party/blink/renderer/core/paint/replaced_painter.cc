@@ -198,7 +198,7 @@ void ReplacedPainter::Paint(const PaintInfo& paint_info) {
     }
   }
 
-  if (layout_replaced_.StyleRef().Visibility() == EVisibility::kVisible &&
+  if (layout_replaced_.Style().Visibility() == EVisibility::kVisible &&
       layout_replaced_.CanResize()) {
     auto* scrollable_area = layout_replaced_.GetScrollableArea();
     DCHECK(scrollable_area);
@@ -239,7 +239,7 @@ void ReplacedPainter::Paint(const PaintInfo& paint_info) {
                                                      selection_state)) {
     PhysicalRect selection_rect = layout_replaced_.LocalSelectionVisualRect();
     selection_rect.Move(paint_offset);
-    const ComputedStyle& style = layout_replaced_.StyleRef();
+    const ComputedStyle& style = layout_replaced_.Style();
     selection_recorder.emplace(selection_state, selection_rect,
                                local_paint_info.context.GetPaintController(),
                                style.Direction(), style.GetWritingMode());
@@ -258,12 +258,12 @@ void ReplacedPainter::Paint(const PaintInfo& paint_info) {
                              DisplayItem::kSelectionTint,
                              selection_painting_int_rect);
     Color selection_bg = HighlightStyleUtils::HighlightBackgroundColor(
-        layout_replaced_.GetDocument(), layout_replaced_.StyleRef(),
+        layout_replaced_.GetDocument(), layout_replaced_.Style(),
         layout_replaced_.GetNode(), std::nullopt, kPseudoIdSelection,
         paint_info.IsReadBackAllowedRendering(), SearchTextIsActiveMatch::kNo);
     local_paint_info.context.FillRect(
         selection_painting_int_rect, selection_bg,
-        PaintAutoDarkMode(layout_replaced_.StyleRef(),
+        PaintAutoDarkMode(layout_replaced_.Style(),
                           DarkModeFilter::ElementRole::kBackground));
   }
 }
@@ -274,7 +274,7 @@ void ReplacedPainter::PaintCustomHighlights(
   // The caller only invokes this in the foreground phase and not while
   // printing (see the shared gate in Paint()).
   DCHECK_EQ(paint_info.phase, PaintPhase::kForeground);
-  if (layout_replaced_.StyleRef().Visibility() != EVisibility::kVisible) {
+  if (layout_replaced_.Style().Visibility() != EVisibility::kVisible) {
     return;
   }
   auto* element = DynamicTo<Element>(layout_replaced_.GetNode());
@@ -338,7 +338,7 @@ void ReplacedPainter::PaintCustomHighlights(
                            DisplayItem::kCustomHighlightTint,
                            snapped_content_rect);
   const auto auto_dark_mode = PaintAutoDarkMode(
-      layout_replaced_.StyleRef(), DarkModeFilter::ElementRole::kBackground);
+      layout_replaced_.Style(), DarkModeFilter::ElementRole::kBackground);
   for (const Color& background : backgrounds) {
     paint_info.context.FillRect(snapped_content_rect, background,
                                 auto_dark_mode);
@@ -359,7 +359,7 @@ Vector<Color> ReplacedPainter::ResolveStackedCustomHighlightBackgrounds(
   // current color forward so a higher-priority layer with
   // `background-color: currentColor` reflects the lower layer's color,
   // not the host's.
-  const ComputedStyle& style = replaced.StyleRef();
+  const ComputedStyle& style = replaced.Style();
   Node* node = replaced.GetNode();
   HighlightStyleUtils::HighlightTextPaintStyle previous_layer_style;
   previous_layer_style.style =
@@ -404,7 +404,7 @@ bool ReplacedPainter::ShouldPaint(const ScopedPaintState& paint_state) const {
   // But if it's an SVG root, there can be children, so we'll check visibility
   // later.
   if (!layout_replaced_.IsSVGRoot() &&
-      layout_replaced_.StyleRef().Visibility() != EVisibility::kVisible) {
+      layout_replaced_.Style().Visibility() != EVisibility::kVisible) {
     return false;
   }
 
@@ -419,7 +419,7 @@ bool ReplacedPainter::ShouldPaint(const ScopedPaintState& paint_state) const {
 void ReplacedPainter::PaintBoxDecorationBackground(
     const PaintInfo& paint_info,
     const PhysicalOffset& paint_offset) {
-  const ComputedStyle& style = layout_replaced_.StyleRef();
+  const ComputedStyle& style = layout_replaced_.Style();
   if (style.Visibility() != EVisibility::kVisible) {
     return;
   }
@@ -485,7 +485,7 @@ void ReplacedPainter::PaintBoxDecorationBackgroundWithRect(
     const gfx::Rect& visual_rect,
     const PhysicalRect& paint_rect,
     const DisplayItemClient& background_client) {
-  const ComputedStyle& style = layout_replaced_.StyleRef();
+  const ComputedStyle& style = layout_replaced_.Style();
 
   std::optional<DisplayItemCacheSkipper> cache_skipper;
   if (RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled() &&
@@ -603,9 +603,8 @@ void ReplacedPainter::PaintBackground(
   BoxModelObjectPainter box_model_painter(layout_replaced_);
   BoxBackgroundPaintContext bg_paint_context(layout_replaced_);
   box_model_painter.PaintFillLayers(
-      paint_info, background_color,
-      layout_replaced_.StyleRef().BackgroundLayers(), paint_rect,
-      bg_paint_context, bleed_avoidance);
+      paint_info, background_color, layout_replaced_.Style().BackgroundLayers(),
+      paint_rect, bg_paint_context, bleed_avoidance);
 }
 
 void ReplacedPainter::PaintMask(const PaintInfo& paint_info,
@@ -613,7 +612,7 @@ void ReplacedPainter::PaintMask(const PaintInfo& paint_info,
   DCHECK_EQ(PaintPhase::kMask, paint_info.phase);
 
   if (!layout_replaced_.HasMask() ||
-      layout_replaced_.StyleRef().Visibility() != EVisibility::kVisible) {
+      layout_replaced_.Style().Visibility() != EVisibility::kVisible) {
     return;
   }
 

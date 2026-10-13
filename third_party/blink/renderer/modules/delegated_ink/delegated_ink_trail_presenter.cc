@@ -130,7 +130,7 @@ void DelegatedInkTrailPresenter::updateInkTrailStartPoint(
       !(evt->GetModifiers() & WebInputEvent::Modifiers::kLeftButtonDown);
 
   const double diameter_in_physical_pixels =
-      style->diameter() * layout_view->StyleRef().EffectiveZoom() *
+      style->diameter() * layout_view->Style().EffectiveZoom() *
       local_frame_->GetPage()->PageScaleFactor();
   std::unique_ptr<gfx::DelegatedInkMetadata> metadata =
       std::make_unique<gfx::DelegatedInkMetadata>(

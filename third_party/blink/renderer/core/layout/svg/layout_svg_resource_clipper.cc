@@ -51,7 +51,7 @@ ClipStrategy ModifyStrategyForClipPath(const LayoutObject& layout_object,
     return strategy;
   }
   // The shape in the clip-path gets clipped too.
-  if (layout_object.StyleRef().HasClipPath()) {
+  if (layout_object.Style().HasClipPath()) {
     return ClipStrategy::kMask;
   }
   // PathFromElement() would flatten a 3D transform.
@@ -68,7 +68,7 @@ ClipStrategy DetermineClipStrategy(const SVGGraphicsElement& element) {
     return ClipStrategy::kNone;
   if (DisplayLockUtilities::LockedAncestorPreventingLayout(*layout_object))
     return ClipStrategy::kNone;
-  const ComputedStyle& style = layout_object->StyleRef();
+  const ComputedStyle& style = layout_object->Style();
   if (style.Display() == EDisplay::kNone ||
       style.Visibility() != EVisibility::kVisible) {
     return ClipStrategy::kNone;
@@ -94,8 +94,9 @@ ClipStrategy DetermineClipStrategy(const SVGElement& element) {
     if (DisplayLockUtilities::LockedAncestorPreventingLayout(
             *use_layout_object))
       return ClipStrategy::kNone;
-    if (use_layout_object->StyleRef().Display() == EDisplay::kNone)
+    if (use_layout_object->Style().Display() == EDisplay::kNone) {
       return ClipStrategy::kNone;
+    }
     const SVGGraphicsElement* shape_element =
         svg_use_element->VisibleTargetGraphicsElementForClipping();
     if (!shape_element)
@@ -305,7 +306,7 @@ bool LayoutSVGResourceClipper::FindCycleFromSelf() const {
   NOT_DESTROYED();
   // Check nested clip-path.
   if (auto* reference_clip =
-          DynamicTo<ReferenceClipPathOperation>(StyleRef().ClipPath())) {
+          DynamicTo<ReferenceClipPathOperation>(Style().ClipPath())) {
     // The resource can be null if the reference is external but external
     // references are not allowed.
     if (SVGResource* resource = reference_clip->Resource()) {

@@ -226,7 +226,7 @@ void ElementInnerTextCollector::ProcessLayoutText(
   if (layout_text.HasEmptyText()) {
     return;
   }
-  if (layout_text.StyleRef().Visibility() != EVisibility::kVisible) {
+  if (layout_text.Style().Visibility() != EVisibility::kVisible) {
     // TODO(editing-dev): Once we make ::first-letter don't apply "visibility",
     // we should get rid of this if-statement. http://crbug.com/866744
     return;
@@ -234,7 +234,7 @@ void ElementInnerTextCollector::ProcessLayoutText(
 
   // LayoutText::PlainText() gives the rendered text after the application
   // of white-space processing and text-transform rules
-  const ComputedStyle& block_style = layout_text.StyleRef();
+  const ComputedStyle& block_style = layout_text.Style();
   const ComputedStyle& first_line_style = layout_text.FirstLineStyleRef();
 
   // first_line_offset is the first character of the text that is not part of

@@ -55,16 +55,18 @@ void LayoutSVGBlock::InsertedIntoTree() {
   LayoutBlockFlow::InsertedIntoTree();
   LayoutSVGResourceContainer::MarkForLayoutAndParentResourceInvalidation(*this,
                                                                          false);
-  if (StyleRef().HasSVGEffect())
+  if (Style().HasSVGEffect()) {
     SetNeedsPaintPropertyUpdate();
+  }
 }
 
 void LayoutSVGBlock::WillBeRemovedFromTree() {
   NOT_DESTROYED();
   LayoutSVGResourceContainer::MarkForLayoutAndParentResourceInvalidation(*this,
                                                                          false);
-  if (StyleRef().HasSVGEffect())
+  if (Style().HasSVGEffect()) {
     SetNeedsPaintPropertyUpdate();
+  }
   LayoutBlockFlow::WillBeRemovedFromTree();
 }
 
@@ -74,7 +76,7 @@ bool LayoutSVGBlock::CheckForImplicitTransformChange(
   NOT_DESTROYED();
   // If the transform is relative to the reference box, check relevant
   // conditions to see if we need to recompute the transform.
-  switch (StyleRef().TransformBox()) {
+  switch (Style().TransformBox()) {
     case ETransformBox::kViewBox:
       return layout_info.viewport_changed;
     case ETransformBox::kFillBox:

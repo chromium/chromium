@@ -38,7 +38,7 @@ LayoutFrame::LayoutFrame(HTMLFrameElement* frame)
 
 void LayoutFrame::ImageChanged(WrappedImagePtr image, CanDeferInvalidation) {
   NOT_DESTROYED();
-  if (const CursorList* cursors = StyleRef().Cursors()) {
+  if (const CursorList* cursors = Style().Cursors()) {
     for (const CursorData& cursor : *cursors) {
       if (cursor.GetImage() && cursor.GetImage()->CachedImage() == image) {
         if (LocalFrame* frame = GetFrame()) {

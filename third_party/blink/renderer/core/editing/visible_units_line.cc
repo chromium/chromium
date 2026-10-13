@@ -75,9 +75,10 @@ static PositionWithAffinity AdjustForSoftLineWrap(
     return position;
   if (!adjusted_position.AnchorNode()
            ->GetLayoutObject()
-           ->StyleRef()
-           .IsCollapsibleWhiteSpace(mapping->GetText()[*offset]))
+           ->Style()
+           .IsCollapsibleWhiteSpace(mapping->GetText()[*offset])) {
     return position;
+  }
   // See |TryResolveCaretPositionInTextFragment()| to locate upstream position
   // of caret after soft line wrap space.
   return PositionWithAffinity(adjusted_position,
@@ -255,7 +256,7 @@ bool IsInlineBlock(const LayoutBlockFlow* block_flow) {
   if (!block_flow) {
     return false;
   }
-  return block_flow->StyleRef().Display() == EDisplay::kInlineBlock;
+  return block_flow->Style().Display() == EDisplay::kInlineBlock;
 }
 
 }  // namespace

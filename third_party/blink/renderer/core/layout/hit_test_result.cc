@@ -412,7 +412,7 @@ String HitTestResult::Title(TextDirection& dir) const {
       String title = element->title();
       if (!title.IsNull()) {
         if (LayoutObject* layout_object = title_node->GetLayoutObject())
-          dir = layout_object->StyleRef().Direction();
+          dir = layout_object->Style().Direction();
         return title;
       }
     }

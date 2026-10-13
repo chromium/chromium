@@ -60,7 +60,7 @@ bool LayoutMarkerResourcesIfNeeded(LayoutObject& layout_object,
   if (!client)
     return false;
   bool has_viewport_dependence = false;
-  const ComputedStyle& style = layout_object.StyleRef();
+  const ComputedStyle& style = layout_object.Style();
   if (auto* marker = GetSVGResourceAsType<LayoutSVGResourceMarker>(
           *client, style.MarkerStartResource()))
     has_viewport_dependence |= UpdateSVGLayoutIfNeeded(marker, layout_info);
@@ -112,7 +112,7 @@ gfx::RectF ObjectBoundsForPropagation(const LayoutObject& object) {
   // so we need to apply zoom to the bounding box that we use for propagation to
   // be in the correct coordinate space.
   if (object.IsSVGForeignObject()) {
-    bounds.Scale(object.StyleRef().EffectiveZoom());
+    bounds.Scale(object.Style().EffectiveZoom());
   }
   return bounds;
 }
@@ -245,8 +245,9 @@ gfx::RectF SVGContentContainer::ComputeVisualOverflowRectIncludingFilters()
 bool SVGContentContainer::ComputeHasNonIsolatedBlendingDescendants() const {
   for (LayoutObject* child = children_.FirstChild(); child;
        child = child->NextSibling()) {
-    if (child->IsBlendingAllowed() && child->StyleRef().HasBlendMode())
+    if (child->IsBlendingAllowed() && child->Style().HasBlendMode()) {
       return true;
+    }
     if (child->HasNonIsolatedBlendingDescendants() &&
         !SVGLayoutSupport::WillIsolateBlendingDescendantsForObject(child))
       return true;

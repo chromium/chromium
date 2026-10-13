@@ -21,7 +21,7 @@ namespace blink::paint_timing {
 // otherwise.
 inline bool CORE_EXPORT IsImageType(const LayoutObject& object) {
   return object.IsImage() || object.IsSVGImage() || object.IsVideo() ||
-         object.StyleRef().HasBackgroundImage();
+         object.Style().HasBackgroundImage();
 }
 
 // Returns true if `node` is considered text, and false otherwise.

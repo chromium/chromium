@@ -233,14 +233,14 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   LayoutUnit LogicalWidth() const {
     NOT_DESTROYED();
     PhysicalSize size = StitchedSize();
-    return StyleRef().IsHorizontalWritingMode() ? size.width : size.height;
+    return Style().IsHorizontalWritingMode() ? size.width : size.height;
   }
   // Returns the block-size for this box's writing-mode.  It might be
   // different from container's writing-mode.
   LayoutUnit LogicalHeight() const {
     NOT_DESTROYED();
     PhysicalSize size = StitchedSize();
-    return StyleRef().IsHorizontalWritingMode() ? size.height : size.width;
+    return Style().IsHorizontalWritingMode() ? size.height : size.width;
   }
 
   LayoutUnit StitchedBlockSize() const;
@@ -294,13 +294,13 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // Get the padding box rectangle.
   PhysicalRect PhysicalPaddingBoxRect() const {
     NOT_DESTROYED();
-    return PhysicalContractedBoxRect(kContractToPaddingEdge, StyleRef(),
+    return PhysicalContractedBoxRect(kContractToPaddingEdge, Style(),
                                      PhysicalFragments(), StitchedSize());
   }
   // Get the content box rectangle.
   PhysicalRect PhysicalContentBoxRect() const {
     NOT_DESTROYED();
-    return PhysicalContractedBoxRect(kContractToContentEdge, StyleRef(),
+    return PhysicalContractedBoxRect(kContractToContentEdge, Style(),
                                      PhysicalFragments(), StitchedSize());
   }
 
@@ -618,7 +618,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   bool IsValidColumnSpannerInTree() const final {
     NOT_DESTROYED();
-    return IsValidColumnSpannerInTree(StyleRef());
+    return IsValidColumnSpannerInTree(Style());
   }
 
   // Provide a ComputedStyle argument, so that this function may be used
@@ -632,7 +632,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   bool IsSelfValidColumnSpanner(const ComputedStyle&) const;
   bool IsSelfValidColumnSpanner() const {
     NOT_DESTROYED();
-    return IsSelfValidColumnSpanner(StyleRef());
+    return IsSelfValidColumnSpanner(Style());
   }
 
   // Return true if the ancestry between this box and the nearest multicol
@@ -644,7 +644,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   bool DoesAncestryAllowColumnSpanner(const ComputedStyle&) const;
   bool DoesAncestryAllowColumnSpanner() const {
     NOT_DESTROYED();
-    return DoesAncestryAllowColumnSpanner(StyleRef());
+    return DoesAncestryAllowColumnSpanner(Style());
   }
 
   // Return true if this box prevents descendants from becoming column spanners.
@@ -686,7 +686,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       return BoxStrut();
     } else {
       return ComputeScrollbarsInternal().ConvertToLogical(
-          StyleRef().GetWritingDirection());
+          Style().GetWritingDirection());
     }
   }
 
@@ -702,15 +702,15 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   DISABLE_CFI_PERF bool HasAutoVerticalScrollbar() const {
     NOT_DESTROYED();
-    return HasNonVisibleOverflow() && StyleRef().HasAutoVerticalScroll();
+    return HasNonVisibleOverflow() && Style().HasAutoVerticalScroll();
   }
   DISABLE_CFI_PERF bool HasAutoHorizontalScrollbar() const {
     NOT_DESTROYED();
-    return HasNonVisibleOverflow() && StyleRef().HasAutoHorizontalScroll();
+    return HasNonVisibleOverflow() && Style().HasAutoHorizontalScroll();
   }
   DISABLE_CFI_PERF bool ScrollsOverflow() const {
     NOT_DESTROYED();
-    return HasNonVisibleOverflow() && StyleRef().ScrollsOverflow();
+    return HasNonVisibleOverflow() && Style().ScrollsOverflow();
   }
   // We place block-direction scrollbar on the left only if the writing-mode
   // is horizontal, so ShouldPlaceVerticalScrollbarOnLeft() is the same as
@@ -723,7 +723,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   }
   virtual bool ShouldPlaceBlockDirectionScrollbarOnLogicalLeft() const {
     NOT_DESTROYED();
-    return StyleRef().ShouldPlaceBlockDirectionScrollbarOnLogicalLeft();
+    return Style().ShouldPlaceBlockDirectionScrollbarOnLogicalLeft();
   }
 
   bool HasScrollableOverflowX() const {
@@ -738,11 +738,11 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   }
   bool ScrollsOverflowX() const {
     NOT_DESTROYED();
-    return HasNonVisibleOverflow() && StyleRef().ScrollsOverflowX();
+    return HasNonVisibleOverflow() && Style().ScrollsOverflowX();
   }
   bool ScrollsOverflowY() const {
     NOT_DESTROYED();
-    return HasNonVisibleOverflow() && StyleRef().ScrollsOverflowY();
+    return HasNonVisibleOverflow() && Style().ScrollsOverflowY();
   }
 
   // Return true if this box is monolithic, i.e. unbreakable in a fragmentation
@@ -795,7 +795,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   bool IsWritingModeRoot() const {
     NOT_DESTROYED();
     return !Parent() ||
-           Parent()->StyleRef().GetWritingMode() != StyleRef().GetWritingMode();
+           Parent()->Style().GetWritingMode() != Style().GetWritingMode();
   }
 
   bool IsCustomItem() const;
@@ -1002,7 +1002,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   PhysicalRect PreviousPhysicalContentBoxRect() const {
     NOT_DESTROYED();
     if (RuntimeEnabledFeatures::PrePaintBoxInvalidatorUsesFragmentsEnabled()) {
-      return PhysicalContractedBoxRect(kContractToContentEdge, StyleRef(),
+      return PhysicalContractedBoxRect(kContractToContentEdge, Style(),
                                        PreviousPhysicalFragments(),
                                        PreviousSize());
     }
@@ -1211,7 +1211,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   virtual bool ShouldBeHandledAsFloating(const ComputedStyle& style) const;
   bool ShouldBeHandledAsFloating() const {
     NOT_DESTROYED();
-    return ShouldBeHandledAsFloating(StyleRef());
+    return ShouldBeHandledAsFloating(Style());
   }
   void UpdateFromStyle() override;
 
@@ -1297,12 +1297,12 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   inline bool CanSkipComputeScrollbars() const {
     NOT_DESTROYED();
-    return (StyleRef().IsOverflowVisibleAlongBothAxes() ||
+    return (Style().IsOverflowVisibleAlongBothAxes() ||
             !HasNonVisibleOverflow() ||
             (GetScrollableArea() &&
              !GetScrollableArea()->HasHorizontalScrollbar() &&
              !GetScrollableArea()->HasVerticalScrollbar())) &&
-           StyleRef().IsScrollbarGutterAuto();
+           Style().IsScrollbarGutterAuto();
   }
 
   PhysicalBoxStrut ComputeScrollbarsInternal(

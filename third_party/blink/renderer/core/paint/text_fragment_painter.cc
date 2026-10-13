@@ -655,7 +655,7 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
         PhysicalRect clipped_rect = PhysicalRect(visual_rect);
         clipped_rect.Intersect(PhysicalRect(paint_info.GetCullRect().Rect()));
         mf_checker->NotifyPaintTextFragment(
-            clipped_rect, text->StyleRef().FontSize(),
+            clipped_rect, text->Style().FontSize(),
             paint_info.context.GetPaintController()
                 .CurrentPaintChunkProperties()
                 .Transform());
@@ -835,7 +835,7 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
       paint_info.phase != PaintPhase::kTextClip &&
       RuntimeEnabledFeatures::CSSCaretColorWithOptionalSecondValueEnabled(
           layout_object->GetDocument().GetExecutionContext()) &&
-      !layout_object->StyleRef().IsCaretTextColorAuto()) [[unlikely]] {
+      !layout_object->Style().IsCaretTextColorAuto()) [[unlikely]] {
     if (LocalFrame* frame = layout_object->GetDocument().GetFrame()) {
       block_caret_char_offset =
           frame->Selection().ComputeBlockCaretCharacterOffset(cursor_);
@@ -843,7 +843,7 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
   }
   if (block_caret_char_offset) [[unlikely]] {
     std::optional<Color> block_text_color =
-        layout_object->StyleRef().ResolvedCaretTextColor();
+        layout_object->Style().ResolvedCaretTextColor();
     if (block_text_color) {
       TextPaintStyle block_style = text_style;
       block_style.fill_color = *block_text_color;

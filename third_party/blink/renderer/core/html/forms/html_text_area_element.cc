@@ -204,8 +204,7 @@ int HTMLTextAreaElement::scrollWidth() {
     return TextControlElement::scrollWidth();
   const LayoutUnit width = editor_box->PhysicalPaddingBoxRect().Width() +
                            box->PaddingOutsets().HorizontalSum();
-  return AdjustForAbsoluteZoom::AdjustLayoutUnit(width, box->StyleRef())
-      .Round();
+  return AdjustForAbsoluteZoom::AdjustLayoutUnit(width, box->Style()).Round();
 }
 
 int HTMLTextAreaElement::scrollHeight() {
@@ -222,8 +221,7 @@ int HTMLTextAreaElement::scrollHeight() {
     return TextControlElement::scrollHeight();
   const LayoutUnit height = editor_box->PhysicalPaddingBoxRect().Height() +
                             box->PaddingOutsets().VerticalSum();
-  return AdjustForAbsoluteZoom::AdjustLayoutUnit(height, box->StyleRef())
-      .Round();
+  return AdjustForAbsoluteZoom::AdjustLayoutUnit(height, box->Style()).Round();
 }
 
 double HTMLTextAreaElement::scrollLeft() {
@@ -967,9 +965,9 @@ WebFormControlElement::TextInfo HTMLTextAreaElement::GetTextInfo() const {
   }
 
   WebFormControlElement::TextInfo results;
-  results.effective_zoom = inner_layout->StyleRef().EffectiveZoom();
+  results.effective_zoom = inner_layout->Style().EffectiveZoom();
   results.primary_ascent =
-      inner_layout->StyleRef().GetFontHeight().ascent.ToFloat();
+      inner_layout->Style().GetFontHeight().ascent.ToFloat();
   for (LayoutObject* child = inner_layout->FirstChild(); child;
        child = child->NextSibling()) {
     const auto* paragraph_block = DynamicTo<LayoutBlockFlow>(child);

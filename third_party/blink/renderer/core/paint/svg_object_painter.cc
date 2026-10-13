@@ -37,7 +37,7 @@ bool ApplyPaintResource(
   }
 
   AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
-      context_paint.object.StyleRef(), DarkModeFilter::ElementRole::kSVG));
+      context_paint.object.Style(), DarkModeFilter::ElementRole::kSVG));
   if (!uri_resource->ApplyShader(
           *client, SVGResources::ReferenceBoxForEffects(context_paint.object),
           additional_paint_server_transform, auto_dark_mode, flags,
@@ -172,10 +172,10 @@ bool SVGObjectPainter::PreparePaint(
     Color flag_color;
     if (initial_paint.type == SVGPaintType::kContextFill) {
       flag_color = style.VisitedDependentContextFill(
-          paint, context_paint.object.StyleRef());
+          paint, context_paint.object.Style());
     } else if (initial_paint.type == SVGPaintType::kContextStroke) {
       flag_color = style.VisitedDependentContextStroke(
-          paint, context_paint.object.StyleRef());
+          paint, context_paint.object.Style());
     } else {
       const Longhand& property =
           apply_to_fill ? static_cast<const Longhand&>(GetCSSPropertyFill())

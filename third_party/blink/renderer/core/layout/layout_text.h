@@ -236,12 +236,12 @@ class CORE_EXPORT LayoutText : public LayoutObject {
 
   bool IsSecure() const {
     NOT_DESTROYED();
-    return StyleRef().TextSecurity() != ETextSecurity::kNone;
+    return Style().TextSecurity() != ETextSecurity::kNone;
   }
 
   bool HasTextTransform() const {
     NOT_DESTROYED();
-    return StyleRef().TextTransform() != ETextTransform::kNone;
+    return Style().TextTransform() != ETextTransform::kNone;
   }
 
   void MomentarilyRevealLastTypedCharacter(

@@ -28,7 +28,7 @@ bool LayoutBox::HasHitTestableOverflow() const {
     return true;
   }
   return ShouldApplyOverflowClipMargin() &&
-         StyleRef().OverflowClipMargin()->GetMargin() > 0;
+         Style().OverflowClipMargin()->GetMargin() > 0;
 }
 
 // Hit Testing

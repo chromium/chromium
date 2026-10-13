@@ -22,7 +22,7 @@ TEST_F(LayoutReplacedTest, InvalidateAfterAddingBorderRadius) {
   )HTML");
   Element* target_element = GetElementById("target");
   LayoutObject* layout_object = target_element->GetLayoutObject();
-  ASSERT_FALSE(layout_object->StyleRef().HasBorderRadius());
+  ASSERT_FALSE(layout_object->Style().HasBorderRadius());
 
   target_element->setAttribute(html_names::kStyleAttr,
                                AtomicString("border-radius: 10px"));

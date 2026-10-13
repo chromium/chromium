@@ -884,14 +884,14 @@ float Scrollbar::ScaleFromDIP() const {
 
 float Scrollbar::EffectiveZoom() const {
   if (style_source_) {
-    return style_source_->StyleRef().EffectiveZoom();
+    return style_source_->Style().EffectiveZoom();
   }
   return 1.0;
 }
 
 bool Scrollbar::ContainerIsRightToLeft() const {
   if (style_source_) {
-    TextDirection dir = style_source_->StyleRef().Direction();
+    TextDirection dir = style_source_->Style().Direction();
     return IsRtl(dir);
   }
   return false;
@@ -909,7 +909,7 @@ bool Scrollbar::ContainerIsFormControl() const {
 
 EScrollbarWidth Scrollbar::CSSScrollbarWidth() const {
   if (style_source_) {
-    return style_source_->StyleRef().UsedScrollbarWidth();
+    return style_source_->Style().UsedScrollbarWidth();
   }
   return EScrollbarWidth::kAuto;
 }
@@ -929,9 +929,8 @@ std::optional<blink::Color> Scrollbar::RootScrollbarThemeColor() const {
 }
 
 std::optional<blink::Color> Scrollbar::ScrollbarThumbColor() const {
-  if (style_source_ &&
-      style_source_->StyleRef().ScrollbarThumbColorResolved()) {
-    return style_source_->StyleRef().ScrollbarThumbColorResolved();
+  if (style_source_ && style_source_->Style().ScrollbarThumbColorResolved()) {
+    return style_source_->Style().ScrollbarThumbColorResolved();
   }
   if (theme_->UsesFluentScrollbars() && !InForcedColorsMode() &&
       !ScrollbarTrackColor().has_value()) {
@@ -942,7 +941,7 @@ std::optional<blink::Color> Scrollbar::ScrollbarThumbColor() const {
 
 std::optional<blink::Color> Scrollbar::ScrollbarTrackColor() const {
   if (style_source_) {
-    return style_source_->StyleRef().ScrollbarTrackColorResolved();
+    return style_source_->Style().ScrollbarTrackColorResolved();
   }
   return std::nullopt;
 }

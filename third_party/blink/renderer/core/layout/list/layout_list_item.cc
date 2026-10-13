@@ -63,8 +63,8 @@ void LayoutListItem::StyleDidChange(
 }
 
 void LayoutListItem::UpdateCounterStyle() {
-  if (!StyleRef().ListStyleType() ||
-      StyleRef().ListStyleType()->IsCounterStyleReferenceValid(GetDocument())) {
+  if (!Style().ListStyleType() ||
+      Style().ListStyleType()->IsCounterStyleReferenceValid(GetDocument())) {
     return;
   }
 

@@ -655,7 +655,7 @@ LayoutUnit TranslateRTLCoordinate(const LayoutObject* layout_object,
                                   const Vector<LayoutUnit>& column_positions) {
   // This should only be called on grid or grid-lanes layout objects.
   DCHECK(layout_object->IsLayoutGridOrGridLanes());
-  DCHECK(!layout_object->StyleRef().IsLeftToRightDirection());
+  DCHECK(!layout_object->Style().IsLeftToRightDirection());
 
   LayoutUnit alignment_offset = column_positions.front();
   LayoutUnit right_grid_edge_position = column_positions.back();
@@ -671,7 +671,7 @@ LayoutUnit GetPositionForTrackAt(const LayoutObject* layout_object,
     return positions.at(index);
 
   LayoutUnit position = positions.at(index);
-  return layout_object->StyleRef().IsLeftToRightDirection()
+  return layout_object->Style().IsLeftToRightDirection()
              ? position
              : TranslateRTLCoordinate(layout_object, position, positions);
 }
@@ -794,7 +794,7 @@ std::unique_ptr<protocol::ListValue> BuildGridTrackSizes(
       main_axis_pos = *rtl_offset + prev_position - width / 2;
     }
     auto adjusted_size = AdjustForAbsoluteZoom::AdjustFloat(
-        width.ToFloat(), layout_box->StyleRef());
+        width.ToFloat(), layout_box->Style());
     PhysicalOffset track_size_pos(main_axis_pos, *alt_axis_pos);
     if (direction == kForRows)
       track_size_pos = Transpose(track_size_pos);
@@ -954,8 +954,7 @@ std::unique_ptr<protocol::ListValue> BuildGridNegativeLineNumberPositions(
 }
 
 bool IsLayoutNGFlexibleBox(const LayoutObject& layout_object) {
-  return layout_object.StyleRef().IsDisplayFlex() &&
-         layout_object.IsFlexibleBox();
+  return layout_object.Style().IsDisplayFlex() && layout_object.IsFlexibleBox();
 }
 
 bool IsLayoutNGFlexItem(const LayoutObject& layout_object) {
@@ -972,12 +971,12 @@ std::unique_ptr<protocol::DictionaryValue> BuildAreaNamePaths(
     std::optional<LayoutUnit> rtl_offset) {
   const auto* grid = To<LayoutGrid>(ContentLayoutBoxFromNode(node));
   LocalFrameView* containing_view = node->GetDocument().View();
-  bool is_rtl = !grid->StyleRef().IsLeftToRightDirection();
+  bool is_rtl = !grid->Style().IsLeftToRightDirection();
 
   std::unique_ptr<protocol::DictionaryValue> area_paths =
       protocol::DictionaryValue::create();
 
-  if (!grid->StyleRef().GridTemplateAreas()) {
+  if (!grid->Style().GridTemplateAreas()) {
     return area_paths;
   }
 
@@ -1050,7 +1049,7 @@ std::unique_ptr<protocol::DictionaryValue> BuildAreaNamePathsForGridLanes(
   std::unique_ptr<protocol::DictionaryValue> area_paths =
       protocol::DictionaryValue::create();
 
-  if (!grid_lanes->StyleRef().GridTemplateAreas()) {
+  if (!grid_lanes->Style().GridTemplateAreas()) {
     return area_paths;
   }
 
@@ -1088,7 +1087,7 @@ std::unique_ptr<protocol::DictionaryValue> BuildAreaNamePathsForGridLanes(
               ? LayoutUnit()
               : gap;
 
-      if (is_for_columns && !grid_lanes->StyleRef().IsLeftToRightDirection()) {
+      if (is_for_columns && !grid_lanes->Style().IsLeftToRightDirection()) {
         const LayoutUnit rtl_offset_val = rtl_offset.value_or(LayoutUnit());
         grid_lanes_start_offset += rtl_offset_val;
         grid_lanes_end_offset += rtl_offset_val + gap_offset;
@@ -1188,7 +1187,7 @@ std::unique_ptr<protocol::ListValue> BuildGridLineNamesForGrid(
     const Vector<LayoutUnit>& alt_axis_positions) {
   auto* grid = To<LayoutGrid>(ContentLayoutBoxFromNode(node));
   const bool is_rtl =
-      (direction == kForColumns) && !grid->StyleRef().IsLeftToRightDirection();
+      (direction == kForColumns) && !grid->Style().IsLeftToRightDirection();
 
   if (alt_axis_positions.size() == 0) {
     return protocol::ListValue::create();
@@ -1218,7 +1217,7 @@ std::unique_ptr<protocol::ListValue> BuildGridLineNamesForGridLanes(
     LayoutUnit alt_axis_pos) {
   auto* grid_lanes = To<LayoutGridLanes>(ContentLayoutBoxFromNode(node));
   const bool is_rtl = (direction == kForColumns) &&
-                      !grid_lanes->StyleRef().IsLeftToRightDirection();
+                      !grid_lanes->Style().IsLeftToRightDirection();
   const LayoutUnit gap = grid_lanes->GridGap(direction);
 
   const NamedGridLinesMap& explicit_lines_map =
@@ -1325,8 +1324,8 @@ Vector<String> GetAuthoredGridTrackSizes(const CSSValue* value,
 }
 
 bool IsHorizontalFlex(LayoutObject* layout_flex) {
-  return layout_flex->StyleRef().IsHorizontalWritingMode() !=
-         layout_flex->StyleRef().ResolvedIsColumnFlexDirection();
+  return layout_flex->Style().IsHorizontalWritingMode() !=
+         layout_flex->Style().ResolvedIsColumnFlexDirection();
 }
 
 const DevtoolsFlexInfo* GetFlexLinesAndItems(LayoutBox* layout_box,
@@ -1359,12 +1358,11 @@ const DevtoolsFlexInfo* GetFlexLinesAndItems(LayoutBox* layout_box,
       const PhysicalBoxStrut margins = box->MarginOutsets();
 
       const LayoutUnit baseline =
-          LogicalBoxFragment(layout_box->StyleRef().GetWritingDirection(),
+          LogicalBoxFragment(layout_box->Style().GetWritingDirection(),
                              *To<PhysicalBoxFragment>(child_fragment))
-              .FirstBaselineOrSynthesize(
-                  layout_box->StyleRef().GetFontBaseline());
+              .FirstBaselineOrSynthesize(layout_box->Style().GetFontBaseline());
       float adjusted_baseline = AdjustForAbsoluteZoom::AdjustFloat(
-          baseline + margins.top, box->StyleRef());
+          baseline + margins.top, box->Style());
 
       PhysicalRect item_rect =
           PhysicalRect(fragment_offset.left, fragment_offset.top,
@@ -1400,7 +1398,7 @@ std::unique_ptr<protocol::DictionaryValue> BuildFlexContainerInfo(
   LocalFrameView* containing_view = element->GetDocument().View();
   auto* layout_box = ContentLayoutBoxFromNode(element);
   bool is_horizontal = IsHorizontalFlex(layout_box);
-  bool is_reverse = layout_box->StyleRef().ResolvedIsReverseFlexDirection();
+  bool is_reverse = layout_box->Style().ResolvedIsReverseFlexDirection();
 
   std::unique_ptr<protocol::DictionaryValue> flex_info =
       protocol::DictionaryValue::create();
@@ -1485,9 +1483,9 @@ std::unique_ptr<protocol::DictionaryValue> BuildFlexItemInfo(
   bool is_horizontal = IsHorizontalFlex(layout_object->Parent());
   Length base_size = Length::Auto();
 
-  const Length& flex_basis = layout_object->StyleRef().FlexBasis();
-  const Length& size = is_horizontal ? layout_object->StyleRef().Width()
-                                     : layout_object->StyleRef().Height();
+  const Length& flex_basis = layout_object->Style().FlexBasis();
+  const Length& size = is_horizontal ? layout_object->Style().Width()
+                                     : layout_object->Style().Height();
 
   if (flex_basis.IsFixed()) {
     base_size = flex_basis;
@@ -1499,7 +1497,7 @@ std::unique_ptr<protocol::DictionaryValue> BuildFlexItemInfo(
   if (base_size.IsFixed()) {
     flex_info->setDouble("baseSize", base_size.Pixels() * scale);
     flex_info->setBoolean("isHorizontalFlow", is_horizontal);
-    auto box_sizing = layout_object->StyleRef().BoxSizing();
+    auto box_sizing = layout_object->Style().BoxSizing();
     flex_info->setString("boxSizing", box_sizing == EBoxSizing::kBorderBox
                                           ? "border"
                                           : "content");
@@ -1613,7 +1611,7 @@ std::unique_ptr<protocol::DictionaryValue> BuildGridInfoForGridLanes(
   LocalFrameView* containing_view = element->GetDocument().View();
   const auto* grid_lanes =
       To<LayoutGridLanes>(ContentLayoutBoxFromNode(element));
-  const auto& style = grid_lanes->StyleRef();
+  const auto& style = grid_lanes->Style();
   std::unique_ptr<protocol::DictionaryValue> grid_info =
       protocol::DictionaryValue::create();
 
@@ -1786,7 +1784,7 @@ std::unique_ptr<protocol::DictionaryValue> BuildGridInfoForGrid(
   std::unique_ptr<protocol::DictionaryValue> grid_info =
       protocol::DictionaryValue::create();
   const auto* grid = To<LayoutGrid>(ContentLayoutBoxFromNode(element));
-  const auto& style = grid->StyleRef();
+  const auto& style = grid->Style();
   const Vector<LayoutUnit> rows = grid->GridTrackPositions(kForRows);
   const Vector<LayoutUnit> columns = grid->GridTrackPositions(kForColumns);
 
@@ -3025,11 +3023,11 @@ std::unique_ptr<protocol::DictionaryValue> BuildImcbInfo(
 
   // 3. Referenced target anchor element(s) and 4. Position-area grid
   // (only when element is anchor positioned).
-  bool is_anchor_positioned =
-      box->StyleRef().GetDefaultAnchorData().GetType() !=
-          StylePositionAnchor::Type::kNone ||
-      !box->StyleRef().GetPositionArea().IsNone() ||
-      box->StyleRef().HasAnchorFunctions() || box->AcceptableImplicitAnchor();
+  bool is_anchor_positioned = box->Style().GetDefaultAnchorData().GetType() !=
+                                  StylePositionAnchor::Type::kNone ||
+                              !box->Style().GetPositionArea().IsNone() ||
+                              box->Style().HasAnchorFunctions() ||
+                              box->AcceptableImplicitAnchor();
 
   gfx::QuadF target_quad;
   gfx::QuadF target_abs_quad;
@@ -3039,14 +3037,14 @@ std::unique_ptr<protocol::DictionaryValue> BuildImcbInfo(
     String anchor_name;
     if (target) {
       const DefaultAnchorData default_anchor =
-          box->StyleRef().GetDefaultAnchorData();
+          box->Style().GetDefaultAnchorData();
       if (default_anchor.GetType() == StylePositionAnchor::Type::kName) {
         anchor_name = default_anchor.GetName().GetName().GetString();
       }
       if (anchor_name.empty()) {
-        if (target->StyleRef().AnchorName() &&
-            !target->StyleRef().AnchorName()->GetNames().empty()) {
-          anchor_name = target->StyleRef()
+        if (target->Style().AnchorName() &&
+            !target->Style().AnchorName()->GetNames().empty()) {
+          anchor_name = target->Style()
                             .AnchorName()
                             ->GetNames()
                             .front()
@@ -3095,7 +3093,7 @@ std::unique_ptr<protocol::DictionaryValue> BuildImcbInfo(
 
     // 4. 9-Cell position-area grid.
     if (config.show_position_area_grid &&
-        !box->StyleRef().GetPositionArea().IsNone() && has_target_quad) {
+        !box->Style().GetPositionArea().IsNone() && has_target_quad) {
       auto position_area_grid = protocol::DictionaryValue::create();
 
       // Grid border is the containing block bounds.
@@ -3150,7 +3148,7 @@ std::unique_ptr<protocol::DictionaryValue> BuildImcbInfo(
       position_area_grid->setArray("gridLines", std::move(grid_lines));
 
       // Active region calculation.
-      if (const auto& offsets = box->StyleRef().PositionAreaOffsets()) {
+      if (const auto& offsets = box->Style().PositionAreaOffsets()) {
         PhysicalRect active_rect = cb_rect;
         active_rect.Contract(offsets->insets);
         gfx::QuadF active_quad =

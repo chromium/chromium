@@ -162,7 +162,7 @@ class ClipPathPaintDefinitionTest : public PageTestBase {
     if (status != CompositedPaintStatus::kNoAnimation &&
         status != CompositedPaintStatus::kNotComposited) {
       // PaintLayer is required to paint a mask clip path.
-      EXPECT_TRUE(lo->StyleRef().HasCurrentClipPathAnimation());
+      EXPECT_TRUE(lo->Style().HasCurrentClipPathAnimation());
       EXPECT_TRUE(lo->HasLayer() || lo->IsSVG());
     }
 

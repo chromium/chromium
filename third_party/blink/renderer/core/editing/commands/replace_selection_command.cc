@@ -1365,13 +1365,13 @@ void ReplaceSelectionCommand::SetUpStyle(const VisibleSelection& selection) {
        selection.Start()
                .AnchorNode()
                ->GetLayoutObject()
-               ->StyleRef()
+               ->Style()
                .UsedUserModify() == EUserModify::kReadWritePlaintextOnly) &&
       (selection.End().AnchorNode()->GetLayoutObject() &&
        selection.End()
                .AnchorNode()
                ->GetLayoutObject()
-               ->StyleRef()
+               ->Style()
                .UsedUserModify() == EUserModify::kReadWritePlaintextOnly)) {
     match_style_ = false;
   }
@@ -2157,7 +2157,7 @@ void ReplaceSelectionCommand::AddSpacesForSmartReplace(
   if (needs_trailing_space && end_node) {
     bool collapse_white_space =
         !end_node->GetLayoutObject() ||
-        end_node->GetLayoutObject()->StyleRef().ShouldCollapseWhiteSpaces();
+        end_node->GetLayoutObject()->Style().ShouldCollapseWhiteSpaces();
     end_text_node = DynamicTo<Text>(end_node);
     if (end_text_node) {
       InsertTextIntoNode(end_text_node, end_offset,
@@ -2199,7 +2199,7 @@ void ReplaceSelectionCommand::AddSpacesForSmartReplace(
   if (needs_leading_space && start_node) {
     bool collapse_white_space =
         !start_node->GetLayoutObject() ||
-        start_node->GetLayoutObject()->StyleRef().ShouldCollapseWhiteSpaces();
+        start_node->GetLayoutObject()->Style().ShouldCollapseWhiteSpaces();
     if (auto* start_text_node = DynamicTo<Text>(start_node)) {
       InsertTextIntoNode(start_text_node, start_offset,
                          collapse_white_space ? NonBreakingSpaceString() : " ",
@@ -2446,7 +2446,7 @@ void ReplaceSelectionCommand::NormalizeNbspInInsertedContent(
     if (!layout_object) {
       continue;
     }
-    const ComputedStyle& style = layout_object->StyleRef();
+    const ComputedStyle& style = layout_object->Style();
     if (style.ShouldPreserveWhiteSpaces() &&
         style.UsedUserModify() != EUserModify::kReadWritePlaintextOnly) {
       continue;

@@ -308,7 +308,7 @@ bool RootScrollerController::IsValidImplicit(const Element& element) const {
     return false;
 
   // Do not implicitly promote things that are partially or fully invisible.
-  const ComputedStyle& style = element.GetLayoutObject()->StyleRef();
+  const ComputedStyle& style = element.GetLayoutObject()->Style();
   if (style.HasOpacity() || !style.VisibleToHitTesting()) {
     return false;
   }
@@ -329,7 +329,7 @@ bool RootScrollerController::IsValidImplicit(const Element& element) const {
     // the URL bar movement). Test it for scrolling so that we only promote if
     // we know we won't block scrolling the main document.
     if (IsA<LayoutView>(ancestor)) {
-      const ComputedStyle& ancestor_style = ancestor->StyleRef();
+      const ComputedStyle& ancestor_style = ancestor->Style();
       PaintLayerScrollableArea* area = ancestor->GetScrollableArea();
       DCHECK(area);
 

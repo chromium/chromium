@@ -78,7 +78,7 @@ class BlockLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
   template <typename UpdateFunc>
   void UpdateStyleForElement(Element* element, const UpdateFunc& update) {
     auto* layout_object = element->GetLayoutObject();
-    ComputedStyleBuilder builder(layout_object->StyleRef());
+    ComputedStyleBuilder builder(layout_object->Style());
     update(builder);
     layout_object->SetStyle(*builder.TakeStyle(),
                             LayoutObject::ApplyStyleChanges::kNo);

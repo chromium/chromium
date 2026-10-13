@@ -103,7 +103,7 @@ NSAttributedString* AttributedSubstringFromRange(LocalFrame* frame,
     // device scale factor must be divided out from the font size and the page
     // scale factor must be multiplied in.
 
-    const ComputedStyle& style = layout_object->StyleRef();
+    const ComputedStyle& style = layout_object->Style();
     const SimpleFontData* primaryFont = style.GetFont()->PrimaryFont();
     const FontPlatformData& font_platform_data = primaryFont->PlatformData();
 

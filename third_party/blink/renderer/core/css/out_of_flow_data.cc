@@ -63,7 +63,7 @@ bool OutOfFlowData::ApplyPendingSuccessfulPositionFallbackAndAnchorScrollShift(
   if (!last_successful_position_fallback_.IsEmpty() &&
       !base::ValuesEquivalent(
           last_successful_position_fallback_.position_try_fallbacks_.Get(),
-          layout_object->StyleRef().GetPositionTryFallbacks().Get())) {
+          layout_object->Style().GetPositionTryFallbacks().Get())) {
     // position-try-fallbacks changed which means the last successful fallback
     // is no longer valid. Clear and return true for a re-layout.
     ResetAnchorData();
@@ -95,7 +95,7 @@ bool OutOfFlowData::HasStaleFallbackData(const LayoutBox& box) const {
   return !last_successful_position_fallback_.IsEmpty() &&
          !base::ValuesEquivalent(
              last_successful_position_fallback_.position_try_fallbacks_.Get(),
-             box.StyleRef().GetPositionTryFallbacks().Get());
+             box.Style().GetPositionTryFallbacks().Get());
 }
 
 const OutOfFlowData::RememberedScrollOffsets*

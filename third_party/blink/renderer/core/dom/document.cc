@@ -2639,7 +2639,7 @@ static void AssertLayoutTreeUpdated(
     if (auto* element = DynamicTo<Element>(node)) {
       if (element->ChildStyleRecalcBlockedByDisplayLock() ||
           (allow_dirty_container_subtrees && element->GetLayoutObject() &&
-           element->GetLayoutObject()->StyleRef().CanMatchSizeContainerQueries(
+           element->GetLayoutObject()->Style().CanMatchSizeContainerQueries(
                *element))) {
         node = FlatTreeTraversal::NextSkippingChildren(*node);
         continue;

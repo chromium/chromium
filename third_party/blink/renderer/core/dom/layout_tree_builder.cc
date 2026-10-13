@@ -159,14 +159,14 @@ LayoutTreeBuilderForText::CreateInlineWrapperStyleForDisplayContentsIfNeeded()
     const {
   // If the parent element is not a display:contents element, the style and the
   // parent style will be the same ComputedStyle object. Early out here.
-  if (&style_ == &context_.parent->StyleRef()) {
+  if (&style_ == &context_.parent->Style()) {
     return nullptr;
   }
 
   return node_->GetDocument()
       .GetStyleResolver()
       .CreateInheritedDisplayContentsStyleIfNeeded(style_,
-                                                   context_.parent->StyleRef());
+                                                   context_.parent->Style());
 }
 
 LayoutObject*

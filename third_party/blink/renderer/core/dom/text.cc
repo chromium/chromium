@@ -382,7 +382,7 @@ void Text::AttachLayoutTree(AttachContext& context) {
             LayoutTreeBuilderTraversal::ParentElement(*this)) {
       const ComputedStyle& style =
           IsA<HTMLHtmlElement>(style_parent) && style_parent->GetLayoutObject()
-              ? style_parent->GetLayoutObject()->StyleRef()
+              ? style_parent->GetLayoutObject()->Style()
               : style_parent->ComputedStyleRef();
       if (TextLayoutObjectIsNeeded(context, style)) {
         LayoutTreeBuilderForText(*this, context, style).CreateLayoutObject();
@@ -431,7 +431,7 @@ void Text::RecalcTextStyle(const StyleRecalcChange change) {
       GetDocument().GetStyleResolver().StyleForText(this);
   if (LayoutText* layout_text = GetLayoutObject()) {
     const ComputedStyle& layout_parent_style =
-        GetLayoutObject()->Parent()->StyleRef();
+        GetLayoutObject()->Parent()->Style();
     if (!new_style || GetForceReattachLayoutTree() ||
         (*new_style != layout_parent_style &&
          !new_style->InheritedEqual(layout_parent_style))) {
@@ -473,7 +473,7 @@ static bool ShouldUpdateLayoutByReattaching(const Text& text_node,
   Node::AttachContext context;
   context.parent = text_layout_object->Parent();
   if (!text_node.TextLayoutObjectIsNeeded(context,
-                                          text_layout_object->StyleRef())) {
+                                          text_layout_object->Style())) {
     return true;
   }
   if (text_layout_object->IsTextFragment()) {
@@ -502,8 +502,8 @@ static bool ShouldUpdateLayoutByReattaching(const Text& text_node,
       FirstLetterPseudoElement::LeadingPunctuationState::kNotStarted;
   FirstLetterPseudoElement::LeadingPunctuationState punctuation2 =
       FirstLetterPseudoElement::LeadingPunctuationState::kNotStarted;
-  bool preserve_breaks = ShouldPreserveBreaks(
-      text_layout_object->StyleRef().GetWhiteSpaceCollapse());
+  bool preserve_breaks =
+      ShouldPreserveBreaks(text_layout_object->Style().GetWhiteSpaceCollapse());
   if (!FirstLetterPseudoElement::FirstLetterLength(
           text_layout_object->TransformedText(), preserve_breaks,
           punctuation1) &&

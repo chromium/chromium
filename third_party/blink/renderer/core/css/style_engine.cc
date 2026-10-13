@@ -3822,7 +3822,7 @@ bool ContainerStyleChangesAllowed(Element& container,
   // the highlight styles hangs off the originating element's ComputedStyle.
   const ComputedStyle* new_element_style = container.GetComputedStyle();
   const ComputedStyle* new_layout_style =
-      container.GetLayoutObject() ? &container.GetLayoutObject()->StyleRef()
+      container.GetLayoutObject() ? &container.GetLayoutObject()->Style()
                                   : nullptr;
 
   if (!new_element_style || !old_element_style) {
@@ -3866,7 +3866,7 @@ void StyleEngine::RecalcStyleForSizeContainer(Element& container,
 #if DCHECK_IS_ON()
   const ComputedStyle* old_element_style = container.GetComputedStyle();
   const ComputedStyle* old_layout_style =
-      container.GetLayoutObject() ? &container.GetLayoutObject()->StyleRef()
+      container.GetLayoutObject() ? &container.GetLayoutObject()->Style()
                                   : nullptr;
 #endif  // DCHECK_IS_ON()
 
@@ -3960,7 +3960,7 @@ void StyleEngine::UpdateStyleAndLayoutTreeForSizeContainer(
       std::in_place, &in_container_query_style_recalc_, true);
 
   DCHECK(container.GetLayoutObject()) << "Containers must have a LayoutObject";
-  const ComputedStyle& style = container.GetLayoutObject()->StyleRef();
+  const ComputedStyle& style = container.GetLayoutObject()->Style();
   DCHECK(style.IsContainerForSizeContainerQueries());
   WritingMode writing_mode = style.GetWritingMode();
   PhysicalSize physical_size = ToPhysicalSize(logical_size, writing_mode);
@@ -4349,7 +4349,7 @@ void StyleEngine::ViewportDefiningElementDidChange() {
     // This update is also necessary if the first body element changes because
     // another body element is inserted or removed.
     layout_object->SetStyle(
-        *ComputedStyleBuilder(layout_object->StyleRef()).TakeStyle());
+        *ComputedStyleBuilder(layout_object->Style()).TakeStyle());
   }
 }
 
@@ -4838,7 +4838,7 @@ void StyleEngine::UpdateViewportStyle() {
 
   const ComputedStyle& viewport_style = resolver_->StyleForViewport();
   if (ComputedStyle::ComputeDifference(
-          &viewport_style, &GetDocument().GetLayoutView()->StyleRef()) !=
+          &viewport_style, &GetDocument().GetLayoutView()->Style()) !=
       ComputedStyle::Difference::kEqual) {
     GetDocument().GetLayoutView()->SetStyle(viewport_style);
   }

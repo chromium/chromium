@@ -377,7 +377,7 @@ std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchor(
   if (std::optional<LayoutUnit> result = ResolveAnchorValue(
           anchor_rect, anchor_value, percentage, axis_size,
           container_writing_direction_,
-          query_box_->StyleRef().GetWritingDirection(),
+          query_box_->Style().GetWritingDirection(),
           containing_block_rect.offset, is_y_axis, IsRightOrBottom())) {
     bool& needs_scroll_adjustment = is_y_axis ? needs_scroll_adjustment_in_y_
                                               : needs_scroll_adjustment_in_x_;
@@ -419,7 +419,7 @@ std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchorSize(
       CalculateAnchorRectWithScrollOffset(*anchor_reference);
   return ResolveAnchorSizeValue(anchor_rect.size, anchor_size_value,
                                 container_writing_direction_.GetWritingMode(),
-                                query_box_->StyleRef().GetWritingMode());
+                                query_box_->Style().GetWritingMode());
 }
 
 const PhysicalAnchorReference* AnchorEvaluatorImpl::ResolveAnchorForEvaluation(
@@ -562,9 +562,8 @@ AnchorEvaluatorImpl::ComputePositionAreaOffsetsForLayout(
   if (!DefaultAnchor(default_anchor_data)) {
     return std::nullopt;
   }
-  const PositionArea physical_position_area =
-      position_area.ToPhysical(container_writing_direction_,
-                               query_box_->StyleRef().GetWritingDirection());
+  const PositionArea physical_position_area = position_area.ToPhysical(
+      container_writing_direction_, query_box_->Style().GetWritingDirection());
   CHECK(!position_area.ContainsAny())
       << "The 'any' keyword can only be used for anchored(fallback) container "
          "queries";
@@ -662,7 +661,7 @@ LogicalRect AnchorEvaluatorImpl::AdjustedContainingBlockRect(
       has_default_anchor && scroll_rect_ ? *scroll_rect_ : container_rect_;
 
   // Apply the grid/grid-lanes area if needed.
-  const ComputedStyle& style = containing_block_->StyleRef();
+  const ComputedStyle& style = containing_block_->Style();
   if (const auto* grid = DynamicTo<LayoutGrid>(containing_block_)) {
     rect = GridLayoutAlgorithm::ComputeOutOfFlowItemContainingRect(
         grid->CachedPlacementData(),

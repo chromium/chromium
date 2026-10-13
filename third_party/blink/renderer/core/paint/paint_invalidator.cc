@@ -47,7 +47,7 @@ void PaintInvalidator::UpdatePaintingLayer(const LayoutObject& object,
 
   if (!context.painting_layer->NeedsPaintPhaseDescendantOutlines() &&
       ((object != context.painting_layer->GetLayoutObject() &&
-        object.StyleRef().HasOutline()))) {
+        object.Style().HasOutline()))) {
     context.painting_layer->SetNeedsPaintPhaseDescendantOutlines();
   }
 }
@@ -280,7 +280,7 @@ bool PaintInvalidator::InvalidatePaint(
        reason == PaintInvalidationReason::kJustCreated ||
        // We don't invalidate paint of visibility:hidden objects, but observe
        // intersection for them.
-       object.StyleRef().Visibility() != EVisibility::kVisible)) {
+       object.Style().Visibility() != EVisibility::kVisible)) {
     object.GetFrameView()->SetIntersectionObservationState(
         LocalFrameView::kDesired);
   }

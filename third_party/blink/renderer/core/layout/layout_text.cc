@@ -702,7 +702,7 @@ bool LayoutText::IsAllCollapsibleWhitespace() const {
     return true;
   }
 
-  const ComputedStyle& style = StyleRef();
+  const ComputedStyle& style = Style();
   return VisitCharacters(text_, [&style](auto chars) {
     return std::ranges::all_of(
         chars, [&style](auto ch) { return style.IsCollapsibleWhiteSpace(ch); });
@@ -765,7 +765,7 @@ void LayoutText::LogicalStartingPointAndHeight(
       return;
     PhysicalOffset physical_offset =
         cursor.Current().OffsetInContainerFragment();
-    if (StyleRef().GetWritingDirection().IsHorizontalLtr()) {
+    if (Style().GetWritingDirection().IsHorizontalLtr()) {
       cursor.MoveToLastForSameLayoutObject();
       logical_height = cursor.Current().RectInContainerFragment().Bottom() -
                        physical_offset.top;
@@ -774,13 +774,13 @@ void LayoutText::LogicalStartingPointAndHeight(
     }
     PhysicalSize outer_size = ContainingBlock()->StitchedSize();
     logical_starting_point =
-        WritingModeConverter(StyleRef().GetWritingDirection(), outer_size)
+        WritingModeConverter(Style().GetWritingDirection(), outer_size)
             .ToLogical(physical_offset, cursor.Current().Size());
     cursor.MoveToLastForSameLayoutObject();
     PhysicalRect last_physical_rect =
         cursor.Current().RectInContainerFragment();
     LogicalOffset logical_ending_point =
-        WritingModeConverter(StyleRef().GetWritingDirection(), outer_size)
+        WritingModeConverter(Style().GetWritingDirection(), outer_size)
             .ToLogical(last_physical_rect)
             .EndOffset();
     logical_height =
@@ -876,7 +876,7 @@ String LayoutText::TransformAndSecureText(const String& original,
                                           TextOffsetMap& offset_map) const {
   NOT_DESTROYED();
 
-  const ComputedStyle& style = StyleRef();
+  const ComputedStyle& style = Style();
   String transformed =
       style.ApplyTextTransform(original, PreviousCharacter(), &offset_map);
 
@@ -1167,8 +1167,9 @@ Position LayoutText::PositionForCaretOffset(unsigned offset) const {
   // TODO(layout-dev): Support offset change due to text-transform.
 #if DCHECK_IS_ON()
   // Ensures that the clamping hack kicks in only with text-transform.
-  if (StyleRef().TextTransform() == ETextTransform::kNone)
+  if (Style().TextTransform() == ETextTransform::kNone) {
     DCHECK_LE(offset, text_node->length());
+  }
 #endif
   const unsigned clamped_offset = std::min(offset, text_node->length());
   return Position(node, clamped_offset);

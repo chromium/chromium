@@ -43,7 +43,7 @@ LayoutTable* LayoutTable::CreateAnonymousWithParent(
       parent.IsLayoutInline() ? EDisplay::kInlineTable : EDisplay::kTable;
   const ComputedStyle& new_style =
       parent.GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
-          parent.StyleRef(), display);
+          parent.Style(), display);
   auto* new_table = MakeGarbageCollected<LayoutTable>(nullptr);
   new_table->SetDocumentForAnonymous(parent.GetDocument());
   new_table->SetStyle(new_style);
@@ -174,7 +174,7 @@ void LayoutTable::SetCachedTableColumnConstraints(
 void LayoutTable::GridBordersChanged() {
   NOT_DESTROYED();
   InvalidateCachedTableBorders();
-  if (StyleRef().BorderCollapse() == EBorderCollapse::kCollapse) {
+  if (Style().BorderCollapse() == EBorderCollapse::kCollapse) {
     SetShouldDoFullPaintInvalidationWithoutLayoutChange(
         PaintInvalidationReason::kStyle);
     // If borders change, table fragment must be regenerated.
@@ -187,14 +187,16 @@ void LayoutTable::TableGridStructureChanged() {
   NOT_DESTROYED();
   // Callers must ensure table layout gets invalidated.
   InvalidateCachedTableBorders();
-  if (StyleRef().BorderCollapse() == EBorderCollapse::kCollapse)
+  if (Style().BorderCollapse() == EBorderCollapse::kCollapse) {
     SetShouldDoFullPaintInvalidation();
+  }
 }
 
 bool LayoutTable::HasBackgroundForPaint() const {
   NOT_DESTROYED();
-  if (StyleRef().HasBackground())
+  if (Style().HasBackground()) {
     return true;
+  }
   DCHECK_GT(PhysicalFragmentCount(), 0u);
   const GCedTableColumnGeometries* column_geometries =
       GetPhysicalFragment(0)->TableColumnGeometries();
@@ -303,7 +305,7 @@ PhysicalRect LayoutTable::OverflowClipRect(
     OverlayScrollbarClipBehavior overlay_scrollbar_clip_behavior) const {
   NOT_DESTROYED();
   PhysicalRect clip_rect;
-  if (StyleRef().BorderCollapse() == EBorderCollapse::kCollapse) {
+  if (Style().BorderCollapse() == EBorderCollapse::kCollapse) {
     clip_rect = PhysicalRect(PhysicalOffset(), StitchedSize());
     const auto overflow_clip = GetOverflowClipAxes();
     gfx::Rect infinite_rect = InfiniteIntRect();
@@ -344,7 +346,7 @@ PhysicalBoxStrut LayoutTable::BorderOutsets() const {
   // ScrollAnchoring fails this DCHECK.
   if (HasCollapsedBorders() && cached_table_borders_) {
     return cached_table_borders_->TableBorder().ConvertToPhysical(
-        StyleRef().GetWritingDirection());
+        Style().GetWritingDirection());
   }
   return LayoutBlock::BorderOutsets();
 }

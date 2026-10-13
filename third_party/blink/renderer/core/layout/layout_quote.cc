@@ -105,12 +105,12 @@ void LayoutQuote::UpdateText() {
   LayoutTextFragment* fragment = FindFragmentChild();
   if (fragment) {
     fragment->SetStyle(IsA<LayoutTextCombine>(fragment->Parent())
-                           ? fragment->Parent()->StyleRef()
-                           : StyleRef());
+                           ? fragment->Parent()->Style()
+                           : Style());
     fragment->SetContentString(text_.Impl());
   } else {
     fragment = LayoutTextFragment::CreateAnonymous(GetDocument(), text_.Impl());
-    fragment->SetStyle(StyleRef());
+    fragment->SetStyle(Style());
     AddChild(fragment);
   }
 }
@@ -144,10 +144,11 @@ String LayoutQuote::ComputeText() const {
 
 scoped_refptr<const QuotesData> LayoutQuote::GetQuotesData() const {
   NOT_DESTROYED();
-  if (scoped_refptr<const QuotesData> custom_quotes = StyleRef().Quotes())
+  if (scoped_refptr<const QuotesData> custom_quotes = Style().Quotes()) {
     return custom_quotes;
+  }
 
-  if (const LayoutLocale* locale = StyleRef().GetFontDescription().Locale()) {
+  if (const LayoutLocale* locale = Style().GetFontDescription().Locale()) {
     if (scoped_refptr<const QuotesData> custom_quotes = locale->GetQuotesData())
       return custom_quotes;
   }

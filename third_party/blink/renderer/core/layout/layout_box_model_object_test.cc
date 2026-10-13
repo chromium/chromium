@@ -632,7 +632,7 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionStatusChange) {
   sticky->setAttribute(html_names::kStyleAttr, AtomicString("top: auto"));
   GetDocument().View()->UpdateLifecycleToLayoutClean(
       DocumentUpdateReason::kTest);
-  EXPECT_FALSE(sticky_box->StyleRef().HasStickyConstrainedPosition());
+  EXPECT_FALSE(sticky_box->Style().HasStickyConstrainedPosition());
   ASSERT_EQ(sticky_layer, sticky_box->Layer());
   EXPECT_FALSE(HasStickyLayer(scrollable_area, sticky_box));
   EXPECT_FALSE(sticky_box->StickyConstraints().HasAnyConstraint());
@@ -641,7 +641,7 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionStatusChange) {
   sticky->setAttribute(html_names::kStyleAttr, g_empty_atom);
   GetDocument().View()->UpdateLifecycleToLayoutClean(
       DocumentUpdateReason::kTest);
-  EXPECT_TRUE(sticky_box->StyleRef().HasStickyConstrainedPosition());
+  EXPECT_TRUE(sticky_box->Style().HasStickyConstrainedPosition());
   ASSERT_EQ(sticky_layer, sticky_box->Layer());
   EXPECT_TRUE(HasStickyLayer(scrollable_area, sticky_box));
   EXPECT_TRUE(sticky_box->StickyConstraints().HasAnyConstraint());
@@ -1583,7 +1583,7 @@ TEST_P(LayoutBoxModelObjectTest, UpdateStackingContextForOption) {
   auto* option_layout = option_element->GetLayoutObject();
   ASSERT_TRUE(option_layout);
   EXPECT_TRUE(option_layout->IsStackingContext());
-  EXPECT_TRUE(option_layout->StyleRef().HasCurrentOpacityAnimation());
+  EXPECT_TRUE(option_layout->Style().HasCurrentOpacityAnimation());
 }
 
 TEST_P(LayoutBoxModelObjectTest,

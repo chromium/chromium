@@ -8291,7 +8291,7 @@ TEST_F(AIPageContentAgentTest, TableTextClippedByScrollerBeforeScroll) {
 
   const auto& geometry = *text_node->content_attributes->geometry;
   const auto& fragments = geometry.fragment_visible_bounding_boxes;
-  const ComputedStyle& before_style = text->GetLayoutObject()->StyleRef();
+  const ComputedStyle& before_style = text->GetLayoutObject()->Style();
   LocalFrame* local_frame = document->GetFrame();
   ASSERT_TRUE(local_frame);
   EXPECT_NEAR(before_style.ComputedFontSize(), 10.0f, 0.01f);
@@ -8376,7 +8376,7 @@ TEST_F(AIPageContentAgentTest, TableTextClippedByScrollerAfterScroll) {
 
   const auto& geometry = *text_node->content_attributes->geometry;
   const auto& fragments = geometry.fragment_visible_bounding_boxes;
-  const ComputedStyle& after_style = text->GetLayoutObject()->StyleRef();
+  const ComputedStyle& after_style = text->GetLayoutObject()->Style();
   std::string fragments_trace;
   for (wtf_size_t i = 0; i < fragments.size(); ++i) {
     if (!fragments_trace.empty()) {
@@ -8471,7 +8471,7 @@ TEST_F(AIPageContentAgentTest, IframeInlineTextClippedWhenViewportScrolled) {
 
   const auto& geometry = *text_node->content_attributes->geometry;
   const auto& fragments = geometry.fragment_visible_bounding_boxes;
-  const ComputedStyle& iframe_style = inner_text->GetLayoutObject()->StyleRef();
+  const ComputedStyle& iframe_style = inner_text->GetLayoutObject()->Style();
   std::string fragments_trace;
   for (wtf_size_t i = 0; i < fragments.size(); ++i) {
     if (!fragments_trace.empty()) {

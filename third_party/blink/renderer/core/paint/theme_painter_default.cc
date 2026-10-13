@@ -185,7 +185,7 @@ DirectionFlippingScope::DirectionFlippingScope(
     const gfx::Rect& rect)
     : paint_info_(paint_info) {
   PhysicalDirection inline_end =
-      layout_object.StyleRef().GetWritingDirection().InlineEnd();
+      layout_object.Style().GetWritingDirection().InlineEnd();
   needs_horizontal_flipping_ = inline_end == PhysicalDirection::kLeft;
   needs_vertical_flipping_ = inline_end == PhysicalDirection::kUp;
   if (needs_horizontal_flipping_) {
@@ -884,7 +884,7 @@ bool ThemePainterDefault::PaintSearchFieldCancelButton(
     // with a .png, it can't be colored dynamically so currently our only
     // choices are black and white.
     Color search_field_text_color =
-        cancel_button_object.StyleRef().VisitedDependentColor(
+        cancel_button_object.Style().VisitedDependentColor(
             GetCSSPropertyColor());
     bool text_is_dark = color_utils::GetRelativeLuminance4f(
                             search_field_text_color.toSkColor4f()) < 0.5;
@@ -896,7 +896,7 @@ bool ThemePainterDefault::PaintSearchFieldCancelButton(
                          : cancel_pressed_image_dark_mode;
   } else {
     mojom::blink::ColorScheme color_scheme =
-        cancel_button_object.StyleRef().UsedColorScheme();
+        cancel_button_object.Style().UsedColorScheme();
     color_scheme_adjusted_cancel_image =
         color_scheme == mojom::blink::ColorScheme::kLight
             ? cancel_image

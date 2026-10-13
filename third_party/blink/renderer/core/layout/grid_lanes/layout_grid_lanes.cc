@@ -99,12 +99,12 @@ void LayoutGridLanes::StyleDidChange(
 
 bool LayoutGridLanes::HasTopOverflow() const {
   NOT_DESTROYED();
-  return GetOverflowConverter(StyleRef()).Top();
+  return GetOverflowConverter(Style()).Top();
 }
 
 bool LayoutGridLanes::HasLeftOverflow() const {
   NOT_DESTROYED();
-  return GetOverflowConverter(StyleRef()).Left();
+  return GetOverflowConverter(Style()).Left();
 }
 
 const GridLayoutData* LayoutGridLanes::LayoutData() const {
@@ -114,7 +114,7 @@ const GridLayoutData* LayoutGridLanes::LayoutData() const {
 Vector<LayoutUnit> LayoutGridLanes::GridTrackPositions(
     GridTrackSizingDirection track_direction) const {
   NOT_DESTROYED();
-  if (track_direction != StyleRef().GridLanesTrackSizingDirection()) {
+  if (track_direction != Style().GridLanesTrackSizingDirection()) {
     return {};
   }
   return LayoutGrid::ComputeExpandedPositions(track_direction == kForColumns
@@ -183,7 +183,7 @@ wtf_size_t LayoutGridLanes::ExplicitGridEndForDirection(
 Vector<LayoutUnit, 1> LayoutGridLanes::TrackSizesForComputedStyle(
     GridTrackSizingDirection track_direction) const {
   NOT_DESTROYED();
-  if (track_direction != StyleRef().GridLanesTrackSizingDirection()) {
+  if (track_direction != Style().GridLanesTrackSizingDirection()) {
     return {};
   }
   return LayoutGrid::CollectTrackSizesForComputedStyle(LayoutData(),

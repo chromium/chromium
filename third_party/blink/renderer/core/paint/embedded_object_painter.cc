@@ -94,7 +94,7 @@ void EmbeddedObjectPainter::PaintReplaced(const PaintInfo& paint_info,
       gfx::RectF(ToPixelSnappedRect(background_rect)),
       kReplacementTextRoundedRectRadius);
   AutoDarkMode auto_dark_mode(
-      PaintAutoDarkMode(layout_embedded_object_.StyleRef(),
+      PaintAutoDarkMode(layout_embedded_object_.Style(),
                         DarkModeFilter::ElementRole::kBackground));
   context.FillRoundedRect(rounded_background_rect,
                           kReplacementTextRoundedRectColor, auto_dark_mode);

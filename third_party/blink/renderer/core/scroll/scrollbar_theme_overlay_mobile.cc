@@ -61,7 +61,7 @@ void ScrollbarThemeOverlayMobile::PaintThumb(const PaintInfo& paint_info,
 
   Color color = Color::FromSkColor4f(ThumbColor(scrollbar));
   AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
-      box->StyleRef(), DarkModeFilter::ElementRole::kBackground));
+      box->Style(), DarkModeFilter::ElementRole::kBackground));
   context.FillRect(rect, color, auto_dark_mode);
 }
 

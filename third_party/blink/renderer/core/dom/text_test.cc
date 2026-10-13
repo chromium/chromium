@@ -66,7 +66,7 @@ TEST_F(TextTest, TextLayoutObjectIsNeeded_CannotHaveChildren) {
 
   LayoutObject* img_layout = img->GetLayoutObject();
   ASSERT_TRUE(img_layout);
-  const ComputedStyle& style = img_layout->StyleRef();
+  const ComputedStyle& style = img_layout->Style();
 
   Text* text = Text::Create(GetDocument(), "dummy");
 
@@ -87,7 +87,7 @@ TEST_F(TextTest, TextLayoutObjectIsNeeded_EditingText) {
 
   LayoutObject* parent_layout = parent->GetLayoutObject();
   ASSERT_TRUE(parent_layout);
-  const ComputedStyle& style = parent_layout->StyleRef();
+  const ComputedStyle& style = parent_layout->Style();
 
   Text* text_empty = Text::CreateEditingText(GetDocument(), "");
   Text* text_whitespace = Text::CreateEditingText(GetDocument(), " ");
@@ -114,7 +114,7 @@ TEST_F(TextTest, TextLayoutObjectIsNeeded_Empty) {
 
   LayoutObject* parent_layout = parent->GetLayoutObject();
   ASSERT_TRUE(parent_layout);
-  const ComputedStyle& style = parent_layout->StyleRef();
+  const ComputedStyle& style = parent_layout->Style();
 
   Text* text = Text::Create(GetDocument(), "");
 
@@ -154,57 +154,45 @@ TEST_F(TextTest, TextLayoutObjectIsNeeded_Whitespace) {
   Text* whitespace = Text::Create(GetDocument(), "   ");
   Node::AttachContext context;
   context.parent = block;
-  EXPECT_FALSE(
-      whitespace->TextLayoutObjectIsNeeded(context, block->StyleRef()));
+  EXPECT_FALSE(whitespace->TextLayoutObjectIsNeeded(context, block->Style()));
   context.parent = in_line;
-  EXPECT_FALSE(
-      whitespace->TextLayoutObjectIsNeeded(context, in_line->StyleRef()));
+  EXPECT_FALSE(whitespace->TextLayoutObjectIsNeeded(context, in_line->Style()));
 
   context.use_previous_in_flow = true;
   context.parent = block;
-  EXPECT_FALSE(
-      whitespace->TextLayoutObjectIsNeeded(context, block->StyleRef()));
+  EXPECT_FALSE(whitespace->TextLayoutObjectIsNeeded(context, block->Style()));
   context.parent = in_line;
-  EXPECT_TRUE(
-      whitespace->TextLayoutObjectIsNeeded(context, in_line->StyleRef()));
+  EXPECT_TRUE(whitespace->TextLayoutObjectIsNeeded(context, in_line->Style()));
 
   context.previous_in_flow = in_line;
   context.parent = block;
-  EXPECT_TRUE(whitespace->TextLayoutObjectIsNeeded(context, block->StyleRef()));
+  EXPECT_TRUE(whitespace->TextLayoutObjectIsNeeded(context, block->Style()));
   context.parent = in_line;
-  EXPECT_TRUE(
-      whitespace->TextLayoutObjectIsNeeded(context, in_line->StyleRef()));
+  EXPECT_TRUE(whitespace->TextLayoutObjectIsNeeded(context, in_line->Style()));
 
   context.previous_in_flow = space_at_end;
   context.parent = block;
-  EXPECT_FALSE(
-      whitespace->TextLayoutObjectIsNeeded(context, block->StyleRef()));
+  EXPECT_FALSE(whitespace->TextLayoutObjectIsNeeded(context, block->Style()));
   context.parent = in_line;
-  EXPECT_FALSE(
-      whitespace->TextLayoutObjectIsNeeded(context, in_line->StyleRef()));
+  EXPECT_FALSE(whitespace->TextLayoutObjectIsNeeded(context, in_line->Style()));
 
   context.previous_in_flow = no_space;
   context.parent = block;
-  EXPECT_TRUE(whitespace->TextLayoutObjectIsNeeded(context, block->StyleRef()));
+  EXPECT_TRUE(whitespace->TextLayoutObjectIsNeeded(context, block->Style()));
   context.parent = in_line;
-  EXPECT_TRUE(
-      whitespace->TextLayoutObjectIsNeeded(context, in_line->StyleRef()));
+  EXPECT_TRUE(whitespace->TextLayoutObjectIsNeeded(context, in_line->Style()));
 
   context.previous_in_flow = block;
   context.parent = block;
-  EXPECT_FALSE(
-      whitespace->TextLayoutObjectIsNeeded(context, block->StyleRef()));
+  EXPECT_FALSE(whitespace->TextLayoutObjectIsNeeded(context, block->Style()));
   context.parent = in_line;
-  EXPECT_FALSE(
-      whitespace->TextLayoutObjectIsNeeded(context, in_line->StyleRef()));
+  EXPECT_FALSE(whitespace->TextLayoutObjectIsNeeded(context, in_line->Style()));
 
   context.previous_in_flow = br;
   context.parent = block;
-  EXPECT_FALSE(
-      whitespace->TextLayoutObjectIsNeeded(context, block->StyleRef()));
+  EXPECT_FALSE(whitespace->TextLayoutObjectIsNeeded(context, block->Style()));
   context.parent = in_line;
-  EXPECT_FALSE(
-      whitespace->TextLayoutObjectIsNeeded(context, in_line->StyleRef()));
+  EXPECT_FALSE(whitespace->TextLayoutObjectIsNeeded(context, in_line->Style()));
 }
 
 TEST_F(TextTest, TextLayoutObjectIsNeeded_PreserveNewLine) {
@@ -222,21 +210,21 @@ TEST_F(TextTest, TextLayoutObjectIsNeeded_PreserveNewLine) {
   ASSERT_TRUE(pre);
   context.parent = pre->GetLayoutObject();
   ASSERT_TRUE(context.parent);
-  const ComputedStyle& pre_style = context.parent->StyleRef();
+  const ComputedStyle& pre_style = context.parent->Style();
   EXPECT_TRUE(text->TextLayoutObjectIsNeeded(context, pre_style));
 
   Element* pre_line = GetDocument().getElementById(AtomicString("pre-line"));
   ASSERT_TRUE(pre_line);
   context.parent = pre_line->GetLayoutObject();
   ASSERT_TRUE(context.parent);
-  const ComputedStyle& pre_line_style = context.parent->StyleRef();
+  const ComputedStyle& pre_line_style = context.parent->Style();
   EXPECT_TRUE(text->TextLayoutObjectIsNeeded(context, pre_line_style));
 
   Element* pre_wrap = GetDocument().getElementById(AtomicString("pre-wrap"));
   ASSERT_TRUE(pre_wrap);
   context.parent = pre_wrap->GetLayoutObject();
   ASSERT_TRUE(context.parent);
-  const ComputedStyle& pre_wrap_style = context.parent->StyleRef();
+  const ComputedStyle& pre_wrap_style = context.parent->Style();
   EXPECT_TRUE(text->TextLayoutObjectIsNeeded(context, pre_wrap_style));
 }
 

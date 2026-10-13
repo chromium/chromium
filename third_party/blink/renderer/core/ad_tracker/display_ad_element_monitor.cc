@@ -132,9 +132,8 @@ AdPositioning ComputeAdPositioning(Element* element) {
 
   // 'candidate' is the outermost object whose position depends on the
   // document (e.g., <html> for in-flow content, or a fixed/absolute element).
-  return {
-      .is_in_flow = candidate->StyleRef().GetPosition() == EPosition::kStatic,
-      .viewport_sticky_offset_y = viewport_sticky_offset_y.Round()};
+  return {.is_in_flow = candidate->Style().GetPosition() == EPosition::kStatic,
+          .viewport_sticky_offset_y = viewport_sticky_offset_y.Round()};
 }
 
 // Returns whether `hit_element`, the front-most element at a sample point, is

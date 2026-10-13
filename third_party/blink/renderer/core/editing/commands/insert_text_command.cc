@@ -59,7 +59,7 @@ Position ReanchorIntoSiblingText(const Position& caret, bool look_before) {
   }
   if (text->ContainsOnlyWhitespaceOrEmpty()) {
     LayoutText* layout_text = text->GetLayoutObject();
-    if (!layout_text || !layout_text->StyleRef().ShouldPreserveWhiteSpaces()) {
+    if (!layout_text || !layout_text->Style().ShouldPreserveWhiteSpaces()) {
       return Position();
     }
   }
@@ -78,7 +78,7 @@ Position BounceOutOfWhitespaceText(const Position& caret) {
     return Position();
   }
   LayoutText* layout_text = text->GetLayoutObject();
-  if (layout_text && layout_text->StyleRef().ShouldPreserveWhiteSpaces()) {
+  if (layout_text && layout_text->Style().ShouldPreserveWhiteSpaces()) {
     return Position();
   }
   return caret.ComputeOffsetInContainerNode() == 0

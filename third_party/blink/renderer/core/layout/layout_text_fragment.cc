@@ -254,8 +254,9 @@ Position LayoutTextFragment::PositionForCaretOffset(unsigned offset) const {
   // TODO(layout-dev): Make the following DCHECK always enabled after we
   // properly support 'text-transform' changing text length.
 #if DCHECK_IS_ON()
-  if (StyleRef().TextTransform() == ETextTransform::kNone)
+  if (Style().TextTransform() == ETextTransform::kNone) {
     DCHECK_LE(offset, FragmentLength());
+  }
 #endif
   const Text* node = AssociatedTextNode();
   if (!node)

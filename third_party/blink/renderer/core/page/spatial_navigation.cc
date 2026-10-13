@@ -408,7 +408,7 @@ bool CanScrollInDirection(const Node* container,
     return false;
 
   DCHECK(container->GetLayoutObject());
-  const ComputedStyle& style = container->GetLayoutObject()->StyleRef();
+  const ComputedStyle& style = container->GetLayoutObject()->Style();
   switch (direction) {
     case SpatialNavigationDirection::kLeft:
       return (style.OverflowX() != EOverflow::kHidden &&
@@ -481,10 +481,10 @@ PhysicalRect NodeRectInRootFrame(const Node* node) {
   // Inset the bounding box by the border.
   // TODO(bokan): As far as I can tell, this is to work around empty iframes
   // that have a border. It's unclear if that's still useful.
-  rect.ContractEdges(LayoutUnit(object->StyleRef().BorderTopWidth()),
-                     LayoutUnit(object->StyleRef().BorderRightWidth()),
-                     LayoutUnit(object->StyleRef().BorderBottomWidth()),
-                     LayoutUnit(object->StyleRef().BorderLeftWidth()));
+  rect.ContractEdges(LayoutUnit(object->Style().BorderTopWidth()),
+                     LayoutUnit(object->Style().BorderRightWidth()),
+                     LayoutUnit(object->Style().BorderBottomWidth()),
+                     LayoutUnit(object->Style().BorderLeftWidth()));
 
   object->MapToVisualRectInAncestorSpace(/*ancestor=*/nullptr, rect);
   return rect;
@@ -838,7 +838,7 @@ PhysicalRect ShrinkInlineBoxToLineBox(const LayoutObject& layout_object,
   // anything. This is, for example, needed to not break
   // snav-stay-in-overflow-div.html where the link's inline box doesn't fill
   // the entire line box vertically.
-  LayoutUnit line_height = layout_object.StyleRef().ComputedLineHeightAsFixed();
+  LayoutUnit line_height = layout_object.Style().ComputedLineHeightAsFixed();
   LayoutUnit current_height = GetLogicalHeight(node_rect, layout_object);
   if (line_height >= current_height)
     return node_rect;

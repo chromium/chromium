@@ -151,7 +151,7 @@ LayoutBlockFlow* LayoutBlockFlow::CreateAnonymous(Document& document,
 bool LayoutBlockFlow::IsInitialLetterBox() const {
   NOT_DESTROYED();
   return IsA<FirstLetterPseudoElement>(GetNode()) &&
-         !StyleRef().InitialLetter().IsNormal();
+         !Style().InitialLetter().IsNormal();
 }
 
 bool LayoutBlockFlow::CanContainFirstFormattedLine() const {
@@ -551,7 +551,7 @@ bool LayoutBlockFlow::ShouldTruncateOverflowingText() const {
   }
   const LayoutObject* scroll_object = style_object->ScrollerForTextOverflow();
   if (!scroll_object->HasNonVisibleOverflow() ||
-      style_object->StyleRef().TextOverflow().IsClip()) {
+      style_object->Style().TextOverflow().IsClip()) {
     return false;
   }
   // If selection focus is inside this element, don't truncate (show full text).
@@ -632,7 +632,7 @@ bool LayoutBlockFlow::AllowsColumns() const {
   // We don't allow custom layout and multicol on the same object. This is
   // similar to not allowing it for flexbox, grids and tables (although those
   // don't create LayoutBlockFlow, so we don't need to check for those here).
-  if (StyleRef().IsDisplayLayoutCustom()) {
+  if (Style().IsDisplayLayoutCustom()) {
     return false;
   }
 
@@ -652,7 +652,7 @@ bool LayoutBlockFlow::AllowsColumns() const {
 void LayoutBlockFlow::UpdateForMulticol() {
   NOT_DESTROYED();
   auto ShouldBeMulticol = [this]() -> bool {
-    if (!StyleRef().SpecifiesColumns() || !AllowsColumns()) {
+    if (!Style().SpecifiesColumns() || !AllowsColumns()) {
       return false;
     }
 
@@ -734,11 +734,11 @@ void LayoutBlockFlow::SetShouldDoFullPaintInvalidationForFirstLine() {
         }
         LayoutObject* layout_object = item->GetMutableLayoutObject();
         DCHECK(layout_object);
-        layout_object->StyleRef().ClearCachedPseudoElementStyles();
+        layout_object->Style().ClearCachedPseudoElementStyles();
         item->GetMutableForPainting().InvalidateInkOverflow();
         layout_object->SetShouldDoFullPaintInvalidation();
       }
-      StyleRef().ClearCachedPseudoElementStyles();
+      Style().ClearCachedPseudoElementStyles();
       SetShouldDoFullPaintInvalidation();
       return;
     }

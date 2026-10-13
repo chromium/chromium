@@ -26,7 +26,7 @@ void LayoutRubyAsBlock::AddChild(LayoutObject* child,
     inline_ruby->SetDocumentForAnonymous(GetDocument());
     ComputedStyleBuilder new_style_builder =
         GetDocument().GetStyleResolver().CreateAnonymousStyleBuilderWithDisplay(
-            StyleRef(), EDisplay::kRuby);
+            Style(), EDisplay::kRuby);
     inline_ruby->SetStyle(*new_style_builder.TakeStyle());
     LayoutBlockFlow::AddChild(inline_ruby);
   } else if (before_child == inline_ruby) {
@@ -52,7 +52,7 @@ void LayoutRubyAsBlock::StyleDidChange(
   if (auto* inline_ruby = FirstChild()) {
     ComputedStyleBuilder new_style_builder =
         GetDocument().GetStyleResolver().CreateAnonymousStyleBuilderWithDisplay(
-            new_style, inline_ruby->StyleRef().Display());
+            new_style, inline_ruby->Style().Display());
     UpdateAnonymousChildStyle(inline_ruby, new_style_builder);
     inline_ruby->SetStyle(*new_style_builder.TakeStyle());
   }

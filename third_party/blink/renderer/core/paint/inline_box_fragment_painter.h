@@ -249,7 +249,7 @@ class LineBoxFragmentPainter : public InlineBoxFragmentPainterBase {
             // is a copy at the time of the last layout to reflect the line
             // direction, and its paint properties may have been changed.
             // TODO(kojii): Reconsider |line_fragment.Style()|.
-            layout_block_flow.StyleRef(),
+            layout_block_flow.Style(),
             layout_block_flow.FirstLineStyleRef(),
             /* inline_context */ nullptr),
         block_fragment_(block_fragment) {

@@ -734,7 +734,7 @@ void LogNodeDataSizeDistribution(
 // InlineCursor.
 static bool IsAllCollapsedWhiteSpace(const LayoutObject& layout_object) {
   if (const auto* layout_text = DynamicTo<LayoutText>(&layout_object)) {
-    if (layout_text->StyleRef().ShouldCollapseWhiteSpaces() &&
+    if (layout_text->Style().ShouldCollapseWhiteSpaces() &&
         layout_text->TransformedText()
             .IsAllSpecialCharacters<Character::IsCollapsibleSpace>()) {
       return true;
@@ -1381,7 +1381,7 @@ bool AXObjectCacheImpl::IsRelevantPseudoElement(const Node& node) {
         node.parentNode()->GetLayoutObject()->IsInline()) {
       return true;  // Parent inline: not a clearfix hack.
     }
-    const ComputedStyle& style = node.GetLayoutObject()->StyleRef();
+    const ComputedStyle& style = node.GetLayoutObject()->Style();
     ContentData* content_data = style.GetContentData();
     if (!content_data)
       return true;

@@ -1033,7 +1033,7 @@ bool Element::IsFocusableStyle(UpdateBehavior update_behavior) const {
       << *this;
 
   if (LayoutObject* layout_object = GetLayoutObject()) {
-    return layout_object->StyleRef().IsFocusable();
+    return layout_object->Style().IsFocusable();
   }
 
   if (HasDisplayContentsStyle() &&
@@ -1069,8 +1069,7 @@ bool Element::IsFocusableStyle(UpdateBehavior update_behavior) const {
     }
     DCHECK(canvas);
     if (LayoutObject* layout_object = canvas->GetLayoutObject()) {
-      return layout_object->IsCanvas() &&
-             layout_object->StyleRef().IsFocusable();
+      return layout_object->IsCanvas() && layout_object->Style().IsFocusable();
     }
   }
 
@@ -2473,7 +2472,7 @@ int Element::OffsetLeft() {
   if (const auto* layout_object = GetLayoutBoxModelObject()) {
     return AdjustForAbsoluteZoom::AdjustLayoutUnit(
                layout_object->OffsetPoint(OffsetParent()).left,
-               layout_object->StyleRef())
+               layout_object->Style())
         .Round();
   }
   return 0;
@@ -2485,7 +2484,7 @@ int Element::OffsetTop() {
   if (const auto* layout_object = GetLayoutBoxModelObject()) {
     return AdjustForAbsoluteZoom::AdjustLayoutUnit(
                layout_object->OffsetPoint(OffsetParent()).top,
-               layout_object->StyleRef())
+               layout_object->Style())
         .Round();
   }
   return 0;
@@ -2496,7 +2495,7 @@ int Element::OffsetWidth() {
                                             DocumentUpdateReason::kJavaScript);
   if (const auto* layout_object = GetLayoutBoxModelObject()) {
     return AdjustForAbsoluteZoom::AdjustLayoutUnit(layout_object->OffsetWidth(),
-                                                   layout_object->StyleRef())
+                                                   layout_object->Style())
         .Round();
   }
   return 0;
@@ -2507,7 +2506,7 @@ int Element::OffsetHeight() {
                                             DocumentUpdateReason::kJavaScript);
   if (const auto* layout_object = GetLayoutBoxModelObject()) {
     return AdjustForAbsoluteZoom::AdjustLayoutUnit(
-               layout_object->OffsetHeight(), layout_object->StyleRef())
+               layout_object->OffsetHeight(), layout_object->Style())
         .Round();
   }
   return 0;
@@ -2561,7 +2560,7 @@ int Element::ClientLeftNoLayout() const {
   if (const auto* layout_object = GetLayoutBox()) {
     return AdjustForAbsoluteZoom::AdjustLayoutUnit(
                PhysicalClientRect(*layout_object).offset.left,
-               layout_object->StyleRef())
+               layout_object->Style())
         .Round();
   }
   return 0;
@@ -2571,7 +2570,7 @@ int Element::ClientTopNoLayout() const {
   if (const auto* layout_object = GetLayoutBox()) {
     return AdjustForAbsoluteZoom::AdjustLayoutUnit(
                PhysicalClientRect(*layout_object).offset.top,
-               layout_object->StyleRef())
+               layout_object->Style())
         .Round();
   }
   return 0;
@@ -2665,12 +2664,12 @@ int Element::clientWidth() {
         DCHECK(layout_view->IsScrollContainer());
         return AdjustForAbsoluteZoom::AdjustLayoutUnit(
                    layout_view->OverflowClipRect().Width(),
-                   layout_view->StyleRef())
+                   layout_view->Style())
             .Round();
       }
       return AdjustForAbsoluteZoom::AdjustInt(
           layout_view->GetLayoutSize(kExcludeScrollbars).width(),
-          layout_view->StyleRef());
+          layout_view->Style());
     }
   }
 
@@ -2682,7 +2681,7 @@ int Element::clientWidth() {
     return AdjustForAbsoluteZoom::AdjustLayoutUnit(
                box->IsTable() ? box->StitchedSize().width
                               : PhysicalClientRect(*box).Width(),
-               box->StyleRef())
+               box->Style())
         .Round();
   }
   return 0;
@@ -2708,12 +2707,12 @@ int Element::clientHeight() {
         DCHECK(layout_view->IsScrollContainer());
         return AdjustForAbsoluteZoom::AdjustLayoutUnit(
                    layout_view->OverflowClipRect().Height(),
-                   layout_view->StyleRef())
+                   layout_view->Style())
             .Round();
       }
       return AdjustForAbsoluteZoom::AdjustInt(
           layout_view->GetLayoutSize(kExcludeScrollbars).height(),
-          layout_view->StyleRef());
+          layout_view->Style());
     }
   }
 
@@ -2726,7 +2725,7 @@ int Element::clientHeight() {
     return AdjustForAbsoluteZoom::AdjustLayoutUnit(
                box->IsTable() ? box->StitchedSize().height
                               : PhysicalClientRect(*box).Height(),
-               box->StyleRef())
+               box->Style())
         .Round();
   }
   return 0;
@@ -2736,7 +2735,7 @@ double Element::currentCSSZoom() {
   GetDocument().UpdateStyleAndLayoutTreeForElement(
       this, DocumentUpdateReason::kComputedStyle);
   if (const auto* layout_object = GetLayoutObject()) {
-    return layout_object->StyleRef().EffectiveZoom() /
+    return layout_object->Style().EffectiveZoom() /
            GetDocument().GetStyleEngine().GetStyleResolver().InitialZoom();
   }
   return 1.0;
@@ -2863,7 +2862,7 @@ void Element::setScrollLeft(double new_left) {
       }
     }
 
-    ScrollOffset end_offset(new_left * box->StyleRef().EffectiveZoom(),
+    ScrollOffset end_offset(new_left * box->Style().EffectiveZoom(),
                             scrollable_area->GetScrollOffset().y());
     std::unique_ptr<cc::SnapSelectionStrategy> strategy =
         cc::SnapSelectionStrategy::CreateForEndPosition(
@@ -2921,7 +2920,7 @@ void Element::setScrollTop(double new_top) {
     }
 
     ScrollOffset end_offset(scrollable_area->GetScrollOffset().x(),
-                            new_top * box->StyleRef().EffectiveZoom());
+                            new_top * box->Style().EffectiveZoom());
     std::unique_ptr<cc::SnapSelectionStrategy> strategy =
         cc::SnapSelectionStrategy::CreateForEndPosition(
             scrollable_area->ScrollOffsetToPosition(end_offset), false, true);
@@ -3104,7 +3103,7 @@ bool Element::ScrollLayoutBoxBy(const ScrollToOptions* scroll_to_options,
 
   gfx::PointF current_position(scrollable_area->ScrollPosition().x(),
                                scrollable_area->ScrollPosition().y());
-  displacement.Scale(box->StyleRef().EffectiveZoom());
+  displacement.Scale(box->Style().EffectiveZoom());
   gfx::PointF new_position = current_position + displacement;
 
   std::unique_ptr<cc::SnapSelectionStrategy> strategy =
@@ -3164,12 +3163,12 @@ bool Element::ScrollLayoutBoxTo(const ScrollToOptions* scroll_to_options,
   if (scroll_to_options->hasLeft()) {
     new_offset.set_x(
         ScrollableArea::NormalizeNonFiniteScroll(scroll_to_options->left()) *
-        box->StyleRef().EffectiveZoom());
+        box->Style().EffectiveZoom());
   }
   if (scroll_to_options->hasTop()) {
     new_offset.set_y(
         ScrollableArea::NormalizeNonFiniteScroll(scroll_to_options->top()) *
-        box->StyleRef().EffectiveZoom());
+        box->Style().EffectiveZoom());
   }
 
   new_offset = SnapScrollOffsetToPhysicalPixels(new_offset);
@@ -3289,7 +3288,7 @@ bool Element::HandleScrollByPageCommand(CommandEventType command) {
   }
 
   ScrollDirectionPhysical physical_direction =
-      GetPhysicalDirectionForCommand(command, box->StyleRef());
+      GetPhysicalDirectionForCommand(command, box->Style());
 
   return scrollable_area->ScrollByPageWithSnap(physical_direction);
 }
@@ -3357,7 +3356,7 @@ Vector<gfx::Rect> Element::OutlineRectsInWidget(
 
   Vector<PhysicalRect> outline_rects = layout_object->OutlineRects(
       nullptr, PhysicalOffset(),
-      layout_object->StyleRef().OutlineRectsShouldIncludeBlockInkOverflow());
+      layout_object->Style().OutlineRectsShouldIncludeBlockInkOverflow());
   for (auto& r : outline_rects) {
     PhysicalRect physical_rect = layout_object->LocalToAbsoluteRect(r);
     gfx::Rect absolute_rect =
@@ -6180,7 +6179,7 @@ StyleRecalcChange Element::RecalcOwnStyle(
     if (auto* pseudo_element = DynamicTo<PseudoElement>(this)) {
       if (const ComputedStyle* adjusted_style =
               pseudo_element->AdjustedLayoutStyle(
-                  *layout_style, layout_object->Parent()->StyleRef())) {
+                  *layout_style, layout_object->Parent()->Style())) {
         layout_style = adjusted_style;
       }
     } else if (auto* html_element = DynamicTo<HTMLHtmlElement>(this)) {
@@ -7191,7 +7190,7 @@ void Element::SetTargetedSnapAreaIdsForSnapContainers() {
   std::optional<cc::ElementId> targeted_area_id = std::nullopt;
   const LayoutBox* box = GetLayoutBox();
   while (box) {
-    const ComputedStyle& style = box->StyleRef();
+    const ComputedStyle& style = box->Style();
     // If this is a snap area, associate it with the first snap area we
     // encountered, if any, since the previous snap container.
     if (box->IsScrollContainer() && !style.GetScrollSnapType().is_none) {
@@ -7225,8 +7224,7 @@ void Element::SetTargetedSnapAreaIdsForSnapContainers() {
 void Element::ClearTargetedSnapAreaIdsForSnapContainers() {
   const LayoutBox* box = GetLayoutBox();
   while (box) {
-    if (box->IsScrollContainer() &&
-        !box->StyleRef().GetScrollSnapType().is_none) {
+    if (box->IsScrollContainer() && !box->Style().GetScrollSnapType().is_none) {
       if (auto* scrollable_area = box->GetScrollableArea()) {
         scrollable_area->SetTargetedSnapAreaId(std::nullopt);
       }
@@ -9401,7 +9399,7 @@ void Element::SetHasFocusWithinUpToAncestor(bool has_focus_within,
     // focus even if its own HasFocusWithin state has not changed.
     if (element != this && need_snap_container_search) {
       if (const LayoutBox* box = element->GetLayoutBoxForScrolling()) {
-        if (!box->StyleRef().GetScrollSnapType().is_none) {
+        if (!box->Style().GetScrollSnapType().is_none) {
           // TODO(crbug.com/340983092): We should be able to just call
           // LocalFrameView::AddPendingSnapUpdate, but that results in a snap
           // which cancels ongoing scroll animations.
@@ -10699,7 +10697,7 @@ const ComputedStyle* Element::EnsureOwnComputedStyle(
     LayoutObject* parent_layout_object =
         LayoutTreeBuilderTraversal::ParentLayoutObject(*this);
     if (parent_layout_object) {
-      layout_parent_style = &parent_layout_object->StyleRef();
+      layout_parent_style = &parent_layout_object->Style();
     }
   }
 

@@ -139,7 +139,7 @@ bool SVGGeometryElement::isPointInFill(const DOMPointInit* point) const {
   const LayoutObject* layout_object = GetLayoutObject();
   if (!layout_object)
     return false;
-  const ComputedStyle& style = layout_object->StyleRef();
+  const ComputedStyle& style = layout_object->Style();
 
   // Path::Contains will reject points with a non-finite component.
   gfx::PointF local_point(ClampTo<float>(point->x()),
@@ -163,7 +163,7 @@ bool SVGGeometryElement::isPointInStroke(const DOMPointInit* point) const {
   if (!layout_object)
     return false;
   const auto& layout_shape = To<LayoutSVGShape>(*layout_object);
-  const ComputedStyle& style = layout_shape.StyleRef();
+  const ComputedStyle& style = layout_shape.Style();
 
   PathBuilder path = AsMutablePath();
   gfx::PointF local_point(ClampTo<float>(point->x()),

@@ -619,7 +619,7 @@ gfx::RectF SVGUseElement::GetBBox() {
   gfx::RectF bbox = transformable_container.ObjectBoundingBox();
   bbox.Offset(transformable_container.AdditionalTranslation());
   return NoopWillBeInvScaleRect(
-      bbox, transformable_container.StyleRef().EffectiveZoom());
+      bbox, transformable_container.Style().EffectiveZoom());
 }
 
 void SVGUseElement::QueueOrDispatchPendingEvent(

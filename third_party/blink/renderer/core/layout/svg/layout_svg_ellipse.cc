@@ -75,7 +75,7 @@ void LayoutSVGEllipse::StyleDidChange(
 }
 
 bool LayoutSVGEllipse::CalculateGeometryDependsOnViewport() const {
-  const ComputedStyle& style = StyleRef();
+  const ComputedStyle& style = Style();
   if (style.Cx().HasPercent() || style.Cy().HasPercent()) {
     return true;
   }
@@ -112,7 +112,7 @@ void LayoutSVGEllipse::CalculateRadiiAndCenter() {
   NOT_DESTROYED();
   DCHECK(GetElement());
   const SVGViewportResolver viewport_resolver(*this);
-  const ComputedStyle& style = StyleRef();
+  const ComputedStyle& style = Style();
   center_ =
       PointForLengthPair(style.Cx(), style.Cy(), viewport_resolver, style);
 
@@ -174,7 +174,7 @@ bool LayoutSVGEllipse::ShapeDependentFillContains(
 
 bool LayoutSVGEllipse::HasContinuousStroke() const {
   NOT_DESTROYED();
-  return !StyleRef().StrokeDashArray();
+  return !Style().StrokeDashArray();
 }
 
 }  // namespace blink

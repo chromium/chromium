@@ -1723,8 +1723,7 @@ TEST_F(InlineNodeTest, TextCombineWordSpacing) {
   SetBodyInnerHTML("<div id=t1>ab</div>");
   const auto& text =
       *To<Text>(GetElementById("t1")->firstChild())->GetLayoutObject();
-  const auto& font_description =
-      text.StyleRef().GetFont()->GetFontDescription();
+  const auto& font_description = text.Style().GetFont()->GetFontDescription();
 
   EXPECT_EQ(0, font_description.LetterSpacing());
   EXPECT_EQ(0, font_description.WordSpacing());

@@ -85,14 +85,14 @@ void PaintLayerStackingNode::DirtyZOrderLists() {
 static bool ZIndexLessThan(const PaintLayer* first, const PaintLayer* second) {
   DCHECK(first->GetLayoutObject().IsStacked());
   DCHECK(second->GetLayoutObject().IsStacked());
-  return first->GetLayoutObject().StyleRef().EffectiveZIndex() <
-         second->GetLayoutObject().StyleRef().EffectiveZIndex();
+  return first->GetLayoutObject().Style().EffectiveZIndex() <
+         second->GetLayoutObject().Style().EffectiveZIndex();
 }
 
 static bool SetIfHigher(const PaintLayer*& first, const PaintLayer* second) {
   if (!second)
     return false;
-  DCHECK_GE(second->GetLayoutObject().StyleRef().EffectiveZIndex(), 0);
+  DCHECK_GE(second->GetLayoutObject().Style().EffectiveZIndex(), 0);
   // |second| appears later in the tree, so it's higher than |first| if its
   // z-index >= |first|'s z-index.
   if (!first || !ZIndexLessThan(second, first)) {
@@ -136,7 +136,7 @@ struct PaintLayerStackingNode::HighestLayers {
 
   static LayerType GetLayerType(const PaintLayer& layer) {
     DCHECK(layer.GetLayoutObject().IsStacked());
-    const auto& style = layer.GetLayoutObject().StyleRef();
+    const auto& style = layer.GetLayoutObject().Style();
     if (style.GetPosition() == EPosition::kAbsolute)
       return kAbsolutePosition;
     if (style.GetPosition() == EPosition::kFixed)
@@ -145,7 +145,7 @@ struct PaintLayerStackingNode::HighestLayers {
   }
 
   void Update(const PaintLayer& layer) {
-    const auto& style = layer.GetLayoutObject().StyleRef();
+    const auto& style = layer.GetLayoutObject().Style();
     // We only need to consider zero or positive z-index stacked child for
     // candidates of causing reparent of overlay scrollbars of ancestors.
     // A negative z-index child will not cause reparent of overlay scrollbars
@@ -219,8 +219,8 @@ static bool OrderLessThan(const PaintLayer* first, const PaintLayer* second) {
     return false;
   }
 
-  auto& first_style = first_ancestor->StyleRef();
-  auto& second_style = second_ancestor->StyleRef();
+  auto& first_style = first_ancestor->Style();
+  auto& second_style = second_ancestor->Style();
   int first_order = 0;
   int second_order = 0;
   // Out of flow flexbox direct children paint as if order was 0:
@@ -246,7 +246,7 @@ static bool ChildrenMayBeAffectedByOrder(const PaintLayer& layer) {
   for (; child; child = child->NextSibling()) {
     auto* ancestor = ChildOfFlexboxOrGridOrGridLanesParentOrGrandparent(child);
     // This is the only case where `OrderLessThan` can return true;
-    if (ancestor && ancestor->StyleRef().Order()) {
+    if (ancestor && ancestor->Style().Order()) {
       return true;
     }
   }
@@ -346,7 +346,7 @@ void PaintLayerStackingNode::CollectLayers(
     highest_layers->Update(paint_layer);
 
   const auto& object = paint_layer.GetLayoutObject();
-  const auto& style = object.StyleRef();
+  const auto& style = object.Style();
 
   if (object.IsStacked()) {
     if (paint_layer.IsZOrderListVisible()) {
@@ -415,7 +415,7 @@ bool PaintLayerStackingNode::StyleDidChange(PaintLayer& paint_layer,
     was_stacked = paint_layer.GetLayoutObject().IsStacked(*old_style);
   }
 
-  const ComputedStyle& new_style = paint_layer.GetLayoutObject().StyleRef();
+  const ComputedStyle& new_style = paint_layer.GetLayoutObject().Style();
 
   bool should_be_stacking_context =
       paint_layer.GetLayoutObject().IsStackingContext();

@@ -238,7 +238,7 @@ PhysicalRect RootFrameViewport::VisibleScrollSnapportRect(
   if (!LayoutViewport().GetLayoutBox())
     return visible_scroll_snapport;
 
-  const ComputedStyle& style = LayoutViewport().GetLayoutBox()->StyleRef();
+  const ComputedStyle& style = LayoutViewport().GetLayoutBox()->Style();
   visible_scroll_snapport.ContractEdges(
       MinimumValueForLength(style.ScrollPaddingTop(),
                             visible_scroll_snapport.Height()),
@@ -401,7 +401,7 @@ PhysicalRect RootFrameViewport::ScrollIntoView(
         mojom::blink::ScrollBehavior::kInstant;
     if (params->is_for_scroll_sequence) {
       behavior = DetermineScrollBehavior(
-          params->behavior, GetLayoutBox()->StyleRef().GetScrollBehavior());
+          params->behavior, GetLayoutBox()->Style().GetScrollBehavior());
     }
     SetScrollOffsetInternal(
         new_scroll_offset, params->type, cc::ScrollSourceType::kAbsoluteScroll,

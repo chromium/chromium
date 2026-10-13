@@ -74,11 +74,11 @@ wtf_size_t GapIndexWithinColumnFlexLine(const GapGeometry& gap_geometry,
 }  // namespace
 
 bool LayoutFlexibleBox::HasTopOverflow() const {
-  return GetOverflowConverter(StyleRef()).Top();
+  return GetOverflowConverter(Style()).Top();
 }
 
 bool LayoutFlexibleBox::HasLeftOverflow() const {
-  return GetOverflowConverter(StyleRef()).Left();
+  return GetOverflowConverter(Style()).Left();
 }
 
 // TODO(crbug.com/364348901): We should be able to remove this method entirely

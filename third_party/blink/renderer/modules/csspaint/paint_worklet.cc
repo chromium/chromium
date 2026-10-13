@@ -118,11 +118,11 @@ scoped_refptr<Image> PaintWorklet::Paint(const String& name,
   // TODO(crbug.com/946515): Break dependency on LayoutObject.
   const LayoutObject& layout_object =
       static_cast<const LayoutObject&>(observer);
-  float zoom = layout_object.StyleRef().EffectiveZoom();
+  float zoom = layout_object.Style().EffectiveZoom();
 
   StylePropertyMapReadOnly* style_map =
       MakeGarbageCollected<PrepopulatedComputedStylePropertyMap>(
-          layout_object.GetDocument(), layout_object.StyleRef(),
+          layout_object.GetDocument(), layout_object.Style(),
           paint_definition->NativeInvalidationProperties(),
           paint_definition->CustomInvalidationProperties());
   // The PaintWorkletGlobalScope is sufficiently isolated that it is safe to

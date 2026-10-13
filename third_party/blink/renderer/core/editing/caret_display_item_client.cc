@@ -392,7 +392,7 @@ void CaretDisplayItemClient::PaintCaret(
 
   gfx::Rect paint_rect = ToPixelSnappedRect(drawing_rect);
   context.FillRect(paint_rect, color_,
-                   PaintAutoDarkMode(layout_block_->StyleRef(),
+                   PaintAutoDarkMode(layout_block_->Style(),
                                      DarkModeFilter::ElementRole::kForeground));
 }
 

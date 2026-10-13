@@ -135,10 +135,10 @@ TEST_F(PaintWorkletTest, PaintWithNullPaintArguments) {
   const gfx::SizeF container_size(100, 100);
   const LayoutObject& layout_object =
       static_cast<const LayoutObject&>(*observer);
-  float zoom = layout_object.StyleRef().EffectiveZoom();
+  float zoom = layout_object.Style().EffectiveZoom();
   StylePropertyMapReadOnly* style_map =
       MakeGarbageCollected<PrepopulatedComputedStylePropertyMap>(
-          layout_object.GetDocument(), layout_object.StyleRef(),
+          layout_object.GetDocument(), layout_object.Style(),
           definition->NativeInvalidationProperties(),
           definition->CustomInvalidationProperties());
   scoped_refptr<Image> image = PaintGeneratedImage::Create(

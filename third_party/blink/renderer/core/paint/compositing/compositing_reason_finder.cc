@@ -64,9 +64,8 @@ CompositingReasons BackfaceInvisibility3DAncestorReason(
     const PaintLayer& layer) {
   if (RuntimeEnabledFeatures::BackfaceVisibilityInteropEnabled()) {
     if (auto* painting_container = layer.PaintingContainer()) {
-      if (painting_container->GetLayoutObject()
-              .StyleRef()
-              .BackfaceVisibility() == EBackfaceVisibility::kHidden) {
+      if (painting_container->GetLayoutObject().Style().BackfaceVisibility() ==
+          EBackfaceVisibility::kHidden) {
         return {CompositingReason::kBackfaceInvisibility3DAncestor};
       }
     }
@@ -150,7 +149,7 @@ CompositingReasons CompositingReasonsFor3DTransform(
     return {};
   }
 
-  const ComputedStyle& style = layout_object.StyleRef();
+  const ComputedStyle& style = layout_object.Style();
   CompositingReasons reasons =
       CompositingReasonFinder::PotentialCompositingReasonsFor3DTransform(style);
 
@@ -204,10 +203,10 @@ CompositingReasons CompositingReasonsFor3DSceneLeaf(
     return {};
   }
 
-  if (!layout_object.IsAnonymous() && !layout_object.StyleRef().Preserves3D()) {
+  if (!layout_object.IsAnonymous() && !layout_object.Style().Preserves3D()) {
     const LayoutObject* parent_object =
         layout_object.NearestAncestorForElement();
-    if (parent_object && parent_object->StyleRef().Preserves3D()) {
+    if (parent_object && parent_object->Style().Preserves3D()) {
       return {CompositingReason::kTransform3DSceneLeaf};
     }
   }
@@ -226,7 +225,7 @@ CompositingReasons DirectReasonsForSVGChildPaintProperties(
   // scene that contains it.
   auto reasons = CompositingReasonsFor3DSceneLeaf(object);
 
-  const ComputedStyle& style = object.StyleRef();
+  const ComputedStyle& style = object.Style();
   reasons.PutAll(
       CompositingReasonFinder::CompositingReasonsForAnimation(object));
   reasons.PutAll(CompositingReasonsForWillChange(style));
@@ -289,11 +288,11 @@ CompositingReasons CompositingReasonsForViewportScrollEffect(
   // safe-area-inset-relative positioning) are mirrored in
   // LayoutBox::StyleDidChange() to invalidate paint properties on the next
   // document lifecycle update. Keep the two in sync.
-  if (layout_object.StyleRef().IsFixedToBottom()) {
+  if (layout_object.Style().IsFixedToBottom()) {
     reasons.Put(CompositingReason::kFixedPosition);
     reasons.Put(CompositingReason::kAffectedByOuterViewportBoundsDelta);
 
-    if (layout_object.StyleRef().IsBottomRelativeToSafeAreaInset()) {
+    if (layout_object.Style().IsBottomRelativeToSafeAreaInset()) {
       reasons.Put(CompositingReason::kAffectedBySafeAreaBottom);
     }
   }
@@ -395,7 +394,7 @@ CompositingReasons CompositingReasonFinder::DirectReasonsForPaintProperties(
       for (auto* ancestor = &object; ancestor != canvas;
            ancestor = ancestor->Parent()) {
         if (auto* ancestor_element = DynamicTo<Element>(ancestor->GetNode())) {
-          if (ancestor->StyleRef().IsRenderedInTopLayer(*ancestor_element)) {
+          if (ancestor->Style().IsRenderedInTopLayer(*ancestor_element)) {
             top_layer = true;
             break;
           }
@@ -415,10 +414,10 @@ CompositingReasons CompositingReasonFinder::DirectReasonsForPaintProperties(
 
   reasons.PutAll(CompositingReasonsFor3DSceneLeaf(object));
 
-  if (object.StyleRef().IsUnboundedElementActive()) {
+  if (object.Style().IsUnboundedElementActive()) {
     DCHECK(RuntimeEnabledFeatures::UnboundedElementEnabled());
     auto* html_element = DynamicTo<HTMLElement>(element);
-    DCHECK(!html_element || object.StyleRef().IsUnboundedElementActive() ==
+    DCHECK(!html_element || object.Style().IsUnboundedElementActive() ==
                                 html_element->IsUnboundedElementActive());
     reasons.Put(CompositingReason::kUnboundedElement);
   }
@@ -434,7 +433,7 @@ CompositingReasons CompositingReasonFinder::DirectReasonsForPaintProperties(
     return reasons;
   }
 
-  const ComputedStyle& style = object.StyleRef();
+  const ComputedStyle& style = object.Style();
   reasons.PutAll(CompositingReasonsForAnimation(object));
   reasons.PutAll(CompositingReasonsForWillChange(style));
 
@@ -524,15 +523,16 @@ bool CompositingReasonFinder::ShouldForcePreferCompositingToLCDText(
     return true;
   }
 
-  if (object.StyleRef().HasWillChangeScrollPosition()) {
+  if (object.Style().HasWillChangeScrollPosition()) {
     return true;
   }
 
   // Though we don't treat hidden backface as a direct compositing reason, it's
   // very likely that the object will be composited, and it also indicates
   // preference of compositing, so we prefer composited scrolling here.
-  if (object.StyleRef().BackfaceVisibility() == EBackfaceVisibility::kHidden)
+  if (object.Style().BackfaceVisibility() == EBackfaceVisibility::kHidden) {
     return true;
+  }
 
   if (auto* layout_view = DynamicTo<LayoutView>(object))
     return ShouldPreferCompositingForLayoutView(*layout_view);
@@ -572,7 +572,7 @@ CompositingReasonFinder::PotentialCompositingReasonsFor3DTransform(
 CompositingReasons CompositingReasonFinder::CompositingReasonsForAnimation(
     const LayoutObject& object) {
   CompositingReasons reasons;
-  const auto& style = object.StyleRef();
+  const auto& style = object.Style();
   if (style.SubtreeWillChangeContents())
     return reasons;
 

@@ -172,7 +172,7 @@ TEST_F(LayoutTextTest, PrewarmFamily) {
   )HTML");
   EXPECT_THAT(prewarmer.PrewarmedFamilyNames(), ElementsAre("testfont"));
   LayoutObject* container = GetLayoutObjectByElementId("container");
-  EXPECT_TRUE(container->StyleRef()
+  EXPECT_TRUE(container->Style()
                   .GetFont()
                   ->GetFontDescription()
                   .Family()
@@ -201,7 +201,7 @@ TEST_F(LayoutTextTest, PrewarmFontFace) {
   )HTML");
   EXPECT_THAT(prewarmer.PrewarmedFamilyNames(), ElementsAre());
   LayoutObject* container = GetLayoutObjectByElementId("container");
-  EXPECT_FALSE(container->StyleRef()
+  EXPECT_FALSE(container->Style()
                    .GetFont()
                    ->GetFontDescription()
                    .Family()
@@ -219,7 +219,7 @@ TEST_F(LayoutTextTest, PrewarmGenericFamily) {
   // No prewarms because |GenericFontFamilySettings| is empty.
   EXPECT_THAT(prewarmer.PrewarmedFamilyNames(), ElementsAre());
   LayoutObject* container = GetLayoutObjectByElementId("container");
-  EXPECT_TRUE(container->StyleRef()
+  EXPECT_TRUE(container->Style()
                   .GetFont()
                   ->GetFontDescription()
                   .Family()

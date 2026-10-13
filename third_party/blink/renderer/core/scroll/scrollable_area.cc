@@ -446,7 +446,7 @@ void ScrollableArea::ScrollToScrollInitialTarget(
     return;
   }
   cc::ScrollSnapAlign snap_alignment =
-      scroll_initial_target->StyleRef().GetScrollSnapAlign();
+      scroll_initial_target->Style().GetScrollSnapAlign();
   switch (snap_alignment.alignment_block) {
     case cc::SnapAlignment::kStart:
       align_y = ScrollAlignment::TopAlways();
@@ -769,7 +769,7 @@ void ScrollableArea::RecalculateOverlayScrollbarColorScheme() {
   // If there is a background color set on the scroller, use the lightness of
   // the background color for the scrollbar overlay color theme.
   if (GetLayoutBox()) {
-    Color background_color = GetLayoutBox()->StyleRef().VisitedDependentColor(
+    Color background_color = GetLayoutBox()->Style().VisitedDependentColor(
         GetCSSPropertyBackgroundColor());
     if (!background_color.IsFullyTransparent()) {
       const float lightness =

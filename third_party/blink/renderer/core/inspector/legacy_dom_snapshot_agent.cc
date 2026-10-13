@@ -450,7 +450,7 @@ const ComputedStyle* ComputedStyleForNode(Node& node) {
     return nullptr;
   }
   if (LayoutObject* layout_object = node.GetLayoutObject()) {
-    return &layout_object->StyleRef();
+    return &layout_object->Style();
   }
   if (Element* parent_element = FlatTreeTraversal::ParentElement(node)) {
     return parent_element->EnsureComputedStyle();

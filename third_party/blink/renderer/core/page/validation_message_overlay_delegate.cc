@@ -177,7 +177,7 @@ void ValidationMessageOverlayDelegate::CreatePage(const FrameOverlay& overlay) {
   LayoutObject* anchor_layout = anchor_->GetLayoutObject();
   page_->GetSettings().SetPreferredColorScheme(
       !in_forced_colors_mode && anchor_layout &&
-              anchor_layout->StyleRef().UsedColorScheme() ==
+              anchor_layout->Style().UsedColorScheme() ==
                   mojom::blink::ColorScheme::kDark
           ? mojom::blink::PreferredColorScheme::kDark
           : mojom::blink::PreferredColorScheme::kLight);

@@ -99,8 +99,8 @@ void HTMLCanvasPainter::PaintReplaced(const PaintInfo& paint_info,
   BoxDrawingRecorder recorder(context, layout_html_canvas_, paint_info.phase,
                               paint_offset);
   ScopedImageRenderingSettings image_rendering_settings_scope(
-      context, InterpolationQualityForCanvas(layout_html_canvas_.StyleRef()),
-      layout_html_canvas_.StyleRef().GetDynamicRangeLimit());
+      context, InterpolationQualityForCanvas(layout_html_canvas_.Style()),
+      layout_html_canvas_.Style().GetDynamicRangeLimit());
   canvas->Paint(context, paint_rect, paint_info.ShouldOmitCompositingInfo());
 }
 

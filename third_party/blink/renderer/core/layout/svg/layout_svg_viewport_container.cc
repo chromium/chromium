@@ -88,7 +88,7 @@ SVGTransformChange LayoutSVGViewportContainer::UpdateLocalTransform(
 
 gfx::RectF LayoutSVGViewportContainer::ViewBoxRect() const {
   return To<SVGViewportContainerElement>(*GetElement())
-      .CurrentViewBoxRect(NoZoomWillBeSvgObjectZoom(StyleRef()));
+      .CurrentViewBoxRect(NoZoomWillBeSvgObjectZoom(Style()));
 }
 
 bool LayoutSVGViewportContainer::NodeAtPoint(
@@ -124,7 +124,7 @@ AffineTransform LayoutSVGViewportContainer::ComputeViewboxTransform() const {
 
   return AffineTransform::Translation(viewport_.x(), viewport_.y()) *
          svg->ViewBoxToViewTransform(viewport_.size(),
-                                     NoZoomWillBeSvgObjectZoom(StyleRef()));
+                                     NoZoomWillBeSvgObjectZoom(Style()));
 }
 
 void LayoutSVGViewportContainer::StyleDidChange(

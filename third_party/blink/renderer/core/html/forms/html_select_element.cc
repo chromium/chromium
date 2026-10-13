@@ -1634,7 +1634,7 @@ String HTMLSelectElement::ItemText(const Element& element) const {
     item_string = option->TextIndentedToRespectGroupLabel();
 
   if (const auto* layout_object = GetLayoutObject()) {
-    return layout_object->StyleRef().ApplyTextTransform(item_string);
+    return layout_object->Style().ApplyTextTransform(item_string);
   }
   return item_string;
 }
@@ -1659,7 +1659,7 @@ LayoutUnit HTMLSelectElement::ClientPaddingLeft() const {
     return LayoutUnit();
   }
   LayoutTheme& theme = LayoutTheme::GetTheme();
-  const ComputedStyle& style = this_box->StyleRef();
+  const ComputedStyle& style = this_box->Style();
   int inner_padding =
       style.IsLeftToRightDirection()
           ? theme.PopupInternalPaddingStart(style)
@@ -1674,7 +1674,7 @@ LayoutUnit HTMLSelectElement::ClientPaddingRight() const {
     return LayoutUnit();
   }
   LayoutTheme& theme = LayoutTheme::GetTheme();
-  const ComputedStyle& style = this_box->StyleRef();
+  const ComputedStyle& style = this_box->Style();
   int inner_padding =
       style.IsLeftToRightDirection()
           ? theme.PopupInternalPaddingEnd(GetDocument().GetFrame(), style)

@@ -55,8 +55,7 @@ void LayoutTextControlInnerEditor::AddChild(LayoutObject* new_child,
       last_anonymous->AddChild(new_child);
       return;
     }
-    auto* anonymous =
-        LayoutBlockFlow::CreateAnonymous(GetDocument(), StyleRef());
+    auto* anonymous = LayoutBlockFlow::CreateAnonymous(GetDocument(), Style());
     LayoutBlockFlow::AddChild(anonymous);
     anonymous->AddChild(new_child);
     return;
@@ -76,8 +75,7 @@ void LayoutTextControlInnerEditor::AddChild(LayoutObject* new_child,
         return;
       }
     }
-    auto* anonymous =
-        LayoutBlockFlow::CreateAnonymous(GetDocument(), StyleRef());
+    auto* anonymous = LayoutBlockFlow::CreateAnonymous(GetDocument(), Style());
     LayoutBlockFlow::AddChild(anonymous, before_child);
     anonymous->AddChild(new_child);
     return;
@@ -87,7 +85,7 @@ void LayoutTextControlInnerEditor::AddChild(LayoutObject* new_child,
     before_parent->AddChild(new_child, before_child);
     return;
   }
-  auto* anonymous = LayoutBlockFlow::CreateAnonymous(GetDocument(), StyleRef());
+  auto* anonymous = LayoutBlockFlow::CreateAnonymous(GetDocument(), Style());
   LayoutBlockFlow::AddChild(anonymous, before_parent);
   before_parent->MoveChildrenTo(anonymous, before_parent->FirstChild(),
                                 before_child, /* full_remove_insert */ true);
@@ -116,7 +114,7 @@ void LayoutTextControlInnerEditor::UpdateAnonymousChildStyle(
       RuntimeEnabledFeatures::TextOverflowInTextareaEnabled()) {
     // The anonymous blocks are the textarea's lines. text-overflow is not
     // inherited, so hand it to them explicitly.
-    child_style_builder.SetTextOverflow(StyleRef().TextOverflow());
+    child_style_builder.SetTextOverflow(Style().TextOverflow());
   }
 }
 

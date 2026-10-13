@@ -731,8 +731,7 @@ LayoutObject* LayoutTreeBuilderTraversal::NextInTopLayer(
     // not re-attached and not in the top layer yet, thus we can not use it as a
     // sibling LayoutObject.
     if (layout_object &&
-        layout_object->StyleRef().IsRenderedInTopLayer(
-            *top_layer_elements[i]) &&
+        layout_object->Style().IsRenderedInTopLayer(*top_layer_elements[i]) &&
         IsA<LayoutView>(layout_object->Parent())) {
       return layout_object;
     }

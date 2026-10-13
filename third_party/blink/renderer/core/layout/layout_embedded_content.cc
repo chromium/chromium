@@ -421,8 +421,8 @@ void LayoutEmbeddedContent::UpdateOnEmbeddedContentViewChange() {
     if (!NeedsLayout()) {
       UpdateGeometry(*embedded_content_view);
     }
-    PropagateZoomFactor(StyleRef().EffectiveZoom());
-    if (StyleRef().Visibility() != EVisibility::kVisible) {
+    PropagateZoomFactor(Style().EffectiveZoom());
+    if (Style().Visibility() != EVisibility::kVisible) {
       embedded_content_view->Hide();
     } else {
       embedded_content_view->Show();
@@ -512,7 +512,7 @@ void LayoutEmbeddedContent::CountSvgFilterPaint() const {
   // content is rare enough that we do not expect this to be a problem.
   const LayoutObject* target = this;
   while (target) {
-    if (target->StyleRef().HasReferenceFilter()) {
+    if (target->Style().HasReferenceFilter()) {
       UseCounter::Count(GetDocument(),
                         GetEmbeddedContentView()->SvgFilterPaintedCounter());
       return;

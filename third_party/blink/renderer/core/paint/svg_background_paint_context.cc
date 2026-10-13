@@ -35,7 +35,7 @@ gfx::RectF SVGBackgroundPaintContext::VisualOverflowRect() const {
 }
 
 const ComputedStyle& SVGBackgroundPaintContext::Style() const {
-  return object_.StyleRef();
+  return object_.Style();
 }
 
 }  // namespace blink

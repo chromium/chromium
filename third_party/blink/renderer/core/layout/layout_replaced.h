@@ -84,7 +84,7 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
 
   bool HasObjectFit() const {
     NOT_DESTROYED();
-    return StyleRef().GetObjectFit() !=
+    return Style().GetObjectFit() !=
            ComputedStyleInitialValues::InitialObjectFit();
   }
 

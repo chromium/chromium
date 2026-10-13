@@ -543,7 +543,7 @@ TextOffsetRange AXBlockFlowIterator::TextOffset() const {
 
 PhysicalDirection AXBlockFlowIterator::GetDirection() const {
   auto* layout_text = To<LayoutText>(layout_object_);
-  return WritingDirectionMode(layout_text->StyleRef().GetWritingMode(),
+  return WritingDirectionMode(layout_text->Style().GetWritingMode(),
                               block_flow_data_->ItemAt(current_index_.value())
                                   ->ResolvedDirection())
       .InlineEnd();

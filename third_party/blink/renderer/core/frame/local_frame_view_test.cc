@@ -603,7 +603,7 @@ TEST_F(LocalFrameViewDraggableRegionsTest, CollapsedAnonymousBlock) {
   }
   ASSERT_TRUE(anonymous_block);
   EXPECT_EQ(EDraggableRegionMode::kMove,
-            anonymous_block->StyleRef().DraggableRegionMode());
+            anonymous_block->Style().DraggableRegionMode());
   EXPECT_LT(1u, GetDocument().DraggableRegions().size());
 
   multicol->SetInlineStyleProperty(CSSPropertyID::kColumns, "auto");

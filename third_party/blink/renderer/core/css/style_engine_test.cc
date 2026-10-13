@@ -6517,7 +6517,7 @@ TEST_F(StyleEngineTest, ScrollbarStyleNoExcessiveCaching) {
   UpdateAllLifecyclePhases();
   EXPECT_FALSE(container->GetComputedStyle()->GetPseudoElementStyleCache());
   EXPECT_EQ("rgb(255, 0, 0)", custom_scrollbar->GetPart(kThumbPart)
-                                  ->StyleRef()
+                                  ->Style()
                                   .BackgroundColor()
                                   .GetColor()
                                   .SerializeAsCSSColor());
@@ -6526,7 +6526,7 @@ TEST_F(StyleEngineTest, ScrollbarStyleNoExcessiveCaching) {
   UpdateAllLifecyclePhases();
   EXPECT_FALSE(container->GetComputedStyle()->GetPseudoElementStyleCache());
   EXPECT_EQ("rgb(0, 128, 0)", custom_scrollbar->GetPart(kThumbPart)
-                                  ->StyleRef()
+                                  ->Style()
                                   .BackgroundColor()
                                   .GetColor()
                                   .SerializeAsCSSColor());
@@ -6992,7 +6992,7 @@ TEST_F(StyleEngineTest, RemovedBodyToHTMLPropagation) {
   ASSERT_TRUE(root);
   EXPECT_TRUE(root->ComputedStyleRef().IsHorizontalWritingMode())
       << "body to html propagation does not affect computed value";
-  EXPECT_FALSE(root->GetLayoutObject()->StyleRef().IsHorizontalWritingMode())
+  EXPECT_FALSE(root->GetLayoutObject()->Style().IsHorizontalWritingMode())
       << "body to html propagation affects used value";
 
   // Make sure that recalculating style for the root element does not trigger a
@@ -7004,7 +7004,7 @@ TEST_F(StyleEngineTest, RemovedBodyToHTMLPropagation) {
   UpdateAllLifecyclePhases();
   EXPECT_TRUE(root->ComputedStyleRef().IsHorizontalWritingMode())
       << "body to html propagation does not affect computed value";
-  EXPECT_TRUE(root->GetLayoutObject()->StyleRef().IsHorizontalWritingMode())
+  EXPECT_TRUE(root->GetLayoutObject()->Style().IsHorizontalWritingMode())
       << "No propagation from removed body";
 }
 

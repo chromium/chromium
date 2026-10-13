@@ -22,7 +22,7 @@ TEST_F(LayoutRubyBaseTest, AddChildNoBlockChildren) {
   // Adding a table-cell should not move the prior Text to an anonymous block.
   EXPECT_TRUE(first_child->IsText());
   EXPECT_EQ(EDisplay::kInlineTable,
-            first_child->NextSibling()->StyleRef().Display());
+            first_child->NextSibling()->Style().Display());
 }
 
 // crbug.com/1510269
@@ -43,7 +43,7 @@ TEST_F(LayoutRubyBaseTest, AddImageNoBlockChildren) {
   LayoutObject* caption_box = first_child->NextSibling();
   ASSERT_TRUE(caption_box);
   EXPECT_TRUE(caption_box->IsImage());
-  EXPECT_EQ(EDisplay::kTableCaption, caption_box->StyleRef().Display());
+  EXPECT_EQ(EDisplay::kTableCaption, caption_box->Style().Display());
   EXPECT_TRUE(caption_box->IsInline());
 }
 
@@ -64,7 +64,7 @@ TEST_F(LayoutRubyBaseTest, AddSpecialWithTableInternalDisplayNoBlockChildren) {
   // display:table-column.
   auto* layout_special = first_child->NextSibling();
   ASSERT_TRUE(layout_special);
-  EXPECT_EQ(EDisplay::kTableColumn, layout_special->StyleRef().Display());
+  EXPECT_EQ(EDisplay::kTableColumn, layout_special->Style().Display());
   EXPECT_TRUE(layout_special->IsInline());
 }
 

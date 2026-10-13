@@ -179,8 +179,8 @@ void WriteLayoutObject(StringBuilder& ts,
   if (behavior & kLayoutAsTextShowAddresses)
     FormatTo(ts, " {}", &o);
 
-  if (o.StyleRef().ZIndex()) {
-    ts << " zI: " << o.StyleRef().ZIndex();
+  if (o.Style().ZIndex()) {
+    ts << " zI: " << o.Style().ZIndex();
   }
 
   if (o.GetNode()) {
@@ -220,10 +220,11 @@ void WriteLayoutObject(StringBuilder& ts,
           text_stroke_color != color && text_stroke_color.Rgb())
         ts << " [textStrokeColor=" << text_stroke_color << "]";
 
-      if (o.Parent()->StyleRef().TextStrokeWidth() !=
-              o.StyleRef().TextStrokeWidth() &&
-          o.StyleRef().TextStrokeWidth() > 0)
-        ts << " [textStrokeWidth=" << o.StyleRef().TextStrokeWidth() << "]";
+      if (o.Parent()->Style().TextStrokeWidth() !=
+              o.Style().TextStrokeWidth() &&
+          o.Style().TextStrokeWidth() > 0) {
+        ts << " [textStrokeWidth=" << o.Style().TextStrokeWidth() << "]";
+      }
     }
 
     if (!o.IsBoxModelObject())
@@ -237,7 +238,7 @@ void WriteLayoutObject(StringBuilder& ts,
         ts << " none";
       } else {
         ts << " (" << border.top << "px ";
-        PrintBorderStyle(ts, o.StyleRef().BorderTopStyle());
+        PrintBorderStyle(ts, o.Style().BorderTopStyle());
         ts << o.ResolveColor(GetCSSPropertyBorderTopColor()) << ")";
       }
 
@@ -245,7 +246,7 @@ void WriteLayoutObject(StringBuilder& ts,
         ts << " none";
       } else {
         ts << " (" << border.right << "px ";
-        PrintBorderStyle(ts, o.StyleRef().BorderRightStyle());
+        PrintBorderStyle(ts, o.Style().BorderRightStyle());
         ts << o.ResolveColor(GetCSSPropertyBorderRightColor()) << ")";
       }
 
@@ -253,7 +254,7 @@ void WriteLayoutObject(StringBuilder& ts,
         ts << " none";
       } else {
         ts << " (" << border.bottom << "px ";
-        PrintBorderStyle(ts, o.StyleRef().BorderBottomStyle());
+        PrintBorderStyle(ts, o.Style().BorderBottomStyle());
         ts << o.ResolveColor(GetCSSPropertyBorderBottomColor()) << ")";
       }
 
@@ -261,7 +262,7 @@ void WriteLayoutObject(StringBuilder& ts,
         ts << " none";
       } else {
         ts << " (" << border.left << "px ";
-        PrintBorderStyle(ts, o.StyleRef().BorderLeftStyle());
+        PrintBorderStyle(ts, o.Style().BorderLeftStyle());
         ts << o.ResolveColor(GetCSSPropertyBorderLeftColor()) << ")";
       }
 
@@ -472,7 +473,7 @@ static void Write(StringBuilder& ts,
 
   WriteIndent(ts, indent);
 
-  if (layer.GetLayoutObject().StyleRef().Visibility() == EVisibility::kHidden) {
+  if (layer.GetLayoutObject().Style().Visibility() == EVisibility::kHidden) {
     ts << "hidden ";
   }
 
@@ -509,9 +510,9 @@ static void Write(StringBuilder& ts,
   else if (paint_phase == kLayerPaintPhaseForeground)
     ts << " layerType: foreground only";
 
-  if (layer.GetLayoutObject().StyleRef().HasBlendMode()) {
+  if (layer.GetLayoutObject().Style().HasBlendMode()) {
     ts << " blendMode: "
-       << BlendModeToString(layer.GetLayoutObject().StyleRef().GetBlendMode());
+       << BlendModeToString(layer.GetLayoutObject().Style().GetBlendMode());
   }
 
   if (behavior & kLayoutAsTextShowPaintProperties) {

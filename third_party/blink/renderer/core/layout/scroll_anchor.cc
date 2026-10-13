@@ -108,7 +108,7 @@ LayoutObject* ScrollAnchor::AnchorObject() const {
 // adjust only on the block flow axis.  This could probably be refactored to
 // simply measure the movement of the block-start edge.
 static Corner CornerToAnchor(const ScrollableArea* scroller) {
-  auto writing_mode = ScrollerLayoutBox(scroller)->StyleRef().GetWritingMode();
+  auto writing_mode = ScrollerLayoutBox(scroller)->Style().GetWritingMode();
   if (IsFlippedBlocksWritingMode(writing_mode)) {
     return Corner::kTopRight;
   }
@@ -202,8 +202,9 @@ static LogicalOffset ComputeRelativeOffsetForSerialization(
 static bool CandidateMayMoveWithScroller(const LayoutObject* candidate,
                                          const ScrollableArea* scroller) {
   if (candidate->IsFixedPositioned() ||
-      candidate->StyleRef().HasStickyConstrainedPosition())
+      candidate->Style().HasStickyConstrainedPosition()) {
     return false;
+  }
 
   LayoutObject::AncestorSkipInfo skip_info(ScrollerLayoutBox(scroller));
   candidate->Container(&skip_info);
@@ -347,7 +348,7 @@ static const String ComputeUniqueSelector(LayoutObject* anchor_object) {
 static PhysicalRect GetVisibleRect(ScrollableArea* scroller) {
   auto visible_rect = ScrollerLayoutBox(scroller)->OverflowClipRect();
 
-  const ComputedStyle& style = ScrollerLayoutBox(scroller)->StyleRef();
+  const ComputedStyle& style = ScrollerLayoutBox(scroller)->Style();
   visible_rect.ContractEdges(
       MinimumValueForLength(style.ScrollPaddingTop(), visible_rect.Height()),
       MinimumValueForLength(style.ScrollPaddingRight(), visible_rect.Width()),
@@ -361,8 +362,9 @@ ScrollAnchor::ExamineResult ScrollAnchor::Examine(
   if (candidate == ScrollerLayoutBox(scroller_))
     return ExamineResult(kContinue);
 
-  if (candidate->StyleRef().OverflowAnchor() == EOverflowAnchor::kNone)
+  if (candidate->Style().OverflowAnchor() == EOverflowAnchor::kNone) {
     return ExamineResult(kSkip);
+  }
 
   if (candidate->IsLayoutInline())
     return ExamineResult(kContinue);
@@ -478,8 +480,9 @@ ScrollAnchor::ExamineResult ScrollAnchor::ExaminePriorityCandidate(
   auto* ancestor = candidate;
   auto* scroller_box = ScrollerLayoutBox(scroller_);
   while (ancestor && ancestor != scroller_box) {
-    if (ancestor->StyleRef().OverflowAnchor() == EOverflowAnchor::kNone)
+    if (ancestor->Style().OverflowAnchor() == EOverflowAnchor::kNone) {
       return ExamineResult(kSkip);
+    }
 
     if (!CandidateMayMoveWithScroller(ancestor, scroller_))
       return ExamineResult(kSkip);
@@ -809,7 +812,7 @@ bool ScrollAnchor::RestoreAnchor(const SerializedAnchor& serialized_anchor) {
     // roughly the same.
     ScrollOffset current_offset = scroller_->GetScrollOffset();
     gfx::RectF bounding_box = anchor_object->AbsoluteBoundingBoxRectF();
-    WritingMode writing_mode = anchor_object->StyleRef().GetWritingMode();
+    WritingMode writing_mode = anchor_object->Style().GetWritingMode();
     gfx::PointF location_point =
         IsFlippedBlocksWritingMode(writing_mode)   ? bounding_box.top_right()
         : writing_mode == WritingMode::kSidewaysLr ? bounding_box.bottom_left()

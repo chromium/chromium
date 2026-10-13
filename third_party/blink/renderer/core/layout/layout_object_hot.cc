@@ -89,14 +89,15 @@ void LayoutObject::PropagateStyleToAnonymousChildren() {
   // properties.
   for (LayoutObject* child = SlowFirstChild(); child;
        child = child->NextSibling()) {
-    if (!child->IsAnonymous() || child->StyleRef().StyleType() != kPseudoIdNone)
+    if (!child->IsAnonymous() || child->Style().StyleType() != kPseudoIdNone) {
       continue;
+    }
     if (child->AnonymousHasStylePropagationOverride())
       continue;
 
     ComputedStyleBuilder new_style_builder =
         GetDocument().GetStyleResolver().CreateAnonymousStyleBuilderWithDisplay(
-            StyleRef(), child->StyleRef().Display());
+            Style(), child->Style().Display());
 
     if (IsA<LayoutTextCombine>(child)) [[unlikely]] {
       if (!LayoutTextCombine::IsSupportedMode(
@@ -119,14 +120,15 @@ void LayoutObject::PropagateStyleToAnonymousChildren() {
     child->SetStyle(*new_style_builder.TakeStyle());
   }
 
-  PseudoId pseudo_id = StyleRef().StyleType();
+  PseudoId pseudo_id = Style().StyleType();
   if (pseudo_id == kPseudoIdNone)
     return;
 
   // Don't propagate style from markers with 'content: normal' because it's not
   // needed and it would be slow.
-  if (pseudo_id == kPseudoIdMarker && StyleRef().ContentBehavesAsNormal())
+  if (pseudo_id == kPseudoIdMarker && Style().ContentBehavesAsNormal()) {
     return;
+  }
 
   // Propagate style from pseudo-elements to generated content. We skip children
   // with pseudo-element StyleType() in the for-loop above and skip over

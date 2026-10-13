@@ -75,26 +75,19 @@ bool ScrollManager::CanPropagate(const LayoutBox* layout_box,
       !scrollable_area->UserInputScrollable(kVerticalScrollbar))
     return true;
 
+  const ComputedStyle& style = layout_box->Style();
   switch (direction) {
     case ScrollPropagationDirection::kBoth:
-      return ((layout_box->StyleRef().OverscrollBehaviorX() ==
-                   EOverscrollBehavior::kAuto ||
-               layout_box->StyleRef().OverscrollBehaviorX() ==
-                   EOverscrollBehavior::kChain) &&
-              (layout_box->StyleRef().OverscrollBehaviorY() ==
-                   EOverscrollBehavior::kAuto ||
-               layout_box->StyleRef().OverscrollBehaviorY() ==
-                   EOverscrollBehavior::kChain));
+      return ((style.OverscrollBehaviorX() == EOverscrollBehavior::kAuto ||
+               style.OverscrollBehaviorX() == EOverscrollBehavior::kChain) &&
+              (style.OverscrollBehaviorY() == EOverscrollBehavior::kAuto ||
+               style.OverscrollBehaviorY() == EOverscrollBehavior::kChain));
     case ScrollPropagationDirection::kVertical:
-      return layout_box->StyleRef().OverscrollBehaviorY() ==
-                 EOverscrollBehavior::kAuto ||
-             layout_box->StyleRef().OverscrollBehaviorY() ==
-                 EOverscrollBehavior::kChain;
+      return style.OverscrollBehaviorY() == EOverscrollBehavior::kAuto ||
+             style.OverscrollBehaviorY() == EOverscrollBehavior::kChain;
     case ScrollPropagationDirection::kHorizontal:
-      return layout_box->StyleRef().OverscrollBehaviorX() ==
-                 EOverscrollBehavior::kAuto ||
-             layout_box->StyleRef().OverscrollBehaviorX() ==
-                 EOverscrollBehavior::kChain;
+      return style.OverscrollBehaviorX() == EOverscrollBehavior::kAuto ||
+             style.OverscrollBehaviorX() == EOverscrollBehavior::kChain;
     case ScrollPropagationDirection::kNone:
       return true;
     default:
@@ -118,7 +111,7 @@ ScrollManager::ScrollChainResult ScrollManager::RecomputeScrollChain(
     if (cur_node) {
       ScrollDirectionPhysical physical_direction =
           ToPhysicalDirection(direction, cur_box->IsHorizontalWritingMode(),
-                              cur_box->StyleRef().IsFlippedBlocksWritingMode());
+                              cur_box->Style().IsFlippedBlocksWritingMode());
       bool is_vertical =
           physical_direction == ScrollDirectionPhysical::kScrollUp ||
           physical_direction == ScrollDirectionPhysical::kScrollDown;
@@ -133,8 +126,8 @@ ScrollManager::ScrollChainResult ScrollManager::RecomputeScrollChain(
         if (RuntimeEnabledFeatures::
                 RespectOverscrollBehaviorForScrollBubblingEnabled()) {
           EOverscrollBehavior behavior =
-              is_vertical ? cur_box->StyleRef().OverscrollBehaviorY()
-                          : cur_box->StyleRef().OverscrollBehaviorX();
+              is_vertical ? cur_box->Style().OverscrollBehaviorY()
+                          : cur_box->Style().OverscrollBehaviorX();
           if (behavior != EOverscrollBehavior::kAuto &&
               behavior != EOverscrollBehavior::kChain) {
             result.can_bubble = false;
@@ -236,7 +229,7 @@ LogicalScrollResult ScrollManager::LogicalScroll(
 
     ScrollDirectionPhysical physical_direction =
         ToPhysicalDirection(direction, box->IsHorizontalWritingMode(),
-                            box->StyleRef().IsFlippedBlocksWritingMode());
+                            box->Style().IsFlippedBlocksWritingMode());
 
     ScrollableArea* scrollable_area = ScrollableArea::GetForScrolling(box);
     DCHECK(scrollable_area);

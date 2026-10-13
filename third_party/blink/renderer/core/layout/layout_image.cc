@@ -195,10 +195,10 @@ void LayoutImage::ImageChanged(WrappedImagePtr new_image,
   if (!did_increment_visually_non_empty_pixel_count_) {
     PhysicalSize default_object_size{LayoutUnit(kDefaultWidth),
                                      LayoutUnit(kDefaultHeight)};
-    default_object_size.Scale(StyleRef().EffectiveZoom());
+    default_object_size.Scale(Style().EffectiveZoom());
     PhysicalSize concrete_object_size =
         ConcreteObjectSize(natural_dimensions_, default_object_size);
-    concrete_object_size.Scale(1 / StyleRef().EffectiveZoom());
+    concrete_object_size.Scale(1 / Style().EffectiveZoom());
     View()->GetFrameView()->IncrementVisuallyNonEmptyPixelCount(
         ToFlooredSize(concrete_object_size));
     did_increment_visually_non_empty_pixel_count_ = true;
@@ -212,7 +212,7 @@ bool LayoutImage::UpdateNaturalSizeIfNeeded() {
   // dimensions of 0x0 ("represents nothing" per HTML spec).
   if (image_resource_->IsSizeAvailable()) {
     new_natural_dimensions = PhysicalNaturalSizingInfo::FromSizingInfo(
-        image_resource_->GetNaturalDimensions(StyleRef().EffectiveZoom()));
+        image_resource_->GetNaturalDimensions(Style().EffectiveZoom()));
   }
   const bool dimensions_changed = natural_dimensions_ != new_natural_dimensions;
   if (!image_resource_->ErrorOccurred()) {
@@ -229,7 +229,7 @@ bool LayoutImage::NeedsLayoutOnNaturalSizeChange() const {
     return true;
   }
 
-  const auto& style = StyleRef();
+  const auto& style = Style();
   // TODO(https://crbug.com/313072): Should this test min/max-height as well?
   bool is_fixed_sized =
       style.LogicalWidth().IsFixed() && style.LogicalHeight().IsFixed() &&
@@ -336,27 +336,30 @@ bool LayoutImage::ForegroundIsKnownToBeOpaqueInRect(
     return false;
   if (!PhysicalContentBoxRect().Contains(local_rect))
     return false;
-  EFillBox background_clip = StyleRef().BackgroundClip();
+  EFillBox background_clip = Style().BackgroundClip();
   // Background paints under borders.
-  if (background_clip == EFillBox::kBorder && StyleRef().HasBorder() &&
-      !StyleRef().BorderObscuresBackground())
+  if (background_clip == EFillBox::kBorder && Style().HasBorder() &&
+      !Style().BorderObscuresBackground()) {
     return false;
+  }
   // Background shows in padding area.
   if ((background_clip == EFillBox::kBorder ||
        background_clip == EFillBox::kPadding) &&
-      StyleRef().MayHavePadding())
+      Style().MayHavePadding()) {
     return false;
+  }
   // Object-position may leave parts of the content box empty, regardless of the
   // value of object-fit.
-  if (StyleRef().ObjectPosition() !=
-      ComputedStyleInitialValues::InitialObjectPosition())
+  if (Style().ObjectPosition() !=
+      ComputedStyleInitialValues::InitialObjectPosition()) {
     return false;
+  }
   // Object-fit may leave parts of the content box empty.
-  EObjectFit object_fit = StyleRef().GetObjectFit();
+  EObjectFit object_fit = Style().GetObjectFit();
   if (object_fit != EObjectFit::kFill && object_fit != EObjectFit::kCover)
     return false;
   // Object-view-box may leave parts of the content box empty.
-  if (StyleRef().ObjectViewBox()) {
+  if (Style().ObjectViewBox()) {
     return false;
   }
   // Check for image with alpha.
@@ -368,8 +371,9 @@ bool LayoutImage::ForegroundIsKnownToBeOpaqueInRect(
 
 bool LayoutImage::ComputeBackgroundIsKnownToBeObscured() const {
   NOT_DESTROYED();
-  if (!StyleRef().HasBackground())
+  if (!Style().HasBackground()) {
     return false;
+  }
 
   return ForegroundIsKnownToBeOpaqueInRect(BackgroundPaintedExtent(), 0);
 }
@@ -397,7 +401,7 @@ PhysicalNaturalSizingInfo LayoutImage::GetNaturalDimensions() const {
 
 bool LayoutImage::IsUnsizedImage() const {
   NOT_DESTROYED();
-  const ComputedStyle& style = this->StyleRef();
+  const ComputedStyle& style = this->Style();
   const auto explicit_width = style.LogicalWidth().HasOnlyFixedAndPercent();
   const auto explicit_height = style.LogicalHeight().HasOnlyFixedAndPercent();
   bool has_aspect_ratio =

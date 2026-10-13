@@ -189,10 +189,10 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
 
   virtual PhysicalBoxStrut BorderOutsets() const {
     NOT_DESTROYED();
-    return {LayoutUnit(StyleRef().BorderTopWidth()),
-            LayoutUnit(StyleRef().BorderRightWidth()),
-            LayoutUnit(StyleRef().BorderBottomWidth()),
-            LayoutUnit(StyleRef().BorderLeftWidth())};
+    return {LayoutUnit(Style().BorderTopWidth()),
+            LayoutUnit(Style().BorderRightWidth()),
+            LayoutUnit(Style().BorderBottomWidth()),
+            LayoutUnit(Style().BorderLeftWidth())};
   }
 
   LayoutUnit BorderPaddingBlockSize() const {
@@ -263,7 +263,7 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   virtual bool ShouldBeHandledAsInline(const ComputedStyle&) const;
   bool ShouldBeHandledAsInline() const {
     NOT_DESTROYED();
-    return ShouldBeHandledAsInline(StyleRef());
+    return ShouldBeHandledAsInline(Style());
   }
   void StyleWillChange(StyleDifference,
                        const ComputedStyle* old_style,

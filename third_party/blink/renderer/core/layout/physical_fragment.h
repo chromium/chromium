@@ -211,15 +211,14 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
     return false;
   }
   bool HasStickyConstrainedPosition() const {
-    return IsCSSBox() &&
-           layout_object_->StyleRef().HasStickyConstrainedPosition();
+    return IsCSSBox() && layout_object_->Style().HasStickyConstrainedPosition();
   }
   bool IsInitialLetterBox() const {
     return IsCSSBox() && layout_object_->IsInitialLetterBox();
   }
   bool IsSnapArea() const {
     return IsCSSBox() && IsA<LayoutBox>(layout_object_.Get()) &&
-           layout_object_->StyleRef().GetScrollSnapAlign() !=
+           layout_object_->Style().GetScrollSnapAlign() !=
                cc::ScrollSnapAlign();
   }
   // Return true if this is the legend child of a fieldset that gets special

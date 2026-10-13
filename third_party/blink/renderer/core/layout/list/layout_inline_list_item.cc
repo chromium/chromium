@@ -79,8 +79,8 @@ void LayoutInlineListItem::StyleDidChange(
 }
 
 void LayoutInlineListItem::UpdateCounterStyle() {
-  if (!StyleRef().ListStyleType() ||
-      StyleRef().ListStyleType()->IsCounterStyleReferenceValid(GetDocument())) {
+  if (!Style().ListStyleType() ||
+      Style().ListStyleType()->IsCounterStyleReferenceValid(GetDocument())) {
     return;
   }
 

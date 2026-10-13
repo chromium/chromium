@@ -93,7 +93,7 @@ TEST_F(HTMLFormControlElementTest, customValidationMessageTextDirection) {
   EXPECT_EQ(TextDirection::kRtl, message_dir);
   EXPECT_EQ(TextDirection::kLtr, sub_message_dir);
 
-  ComputedStyleBuilder rtl_style_builder(input->GetLayoutObject()->StyleRef());
+  ComputedStyleBuilder rtl_style_builder(input->GetLayoutObject()->Style());
   rtl_style_builder.SetDirection(TextDirection::kRtl);
   input->GetLayoutObject()->SetStyle(*rtl_style_builder.TakeStyle());
   input->FindCustomValidationMessageTextDirection(message, message_dir,

@@ -89,7 +89,7 @@ void UpdateTransformState(const PhysicalFragment& child_fragment,
                           PhysicalSize container_size,
                           TransformState* transform_state) {
   TransformState::TransformAccumulation accumulation =
-      container_object.StyleRef().Preserves3D()
+      container_object.Style().Preserves3D()
           ? TransformState::kAccumulateTransform
           : TransformState::kFlattenTransform;
 

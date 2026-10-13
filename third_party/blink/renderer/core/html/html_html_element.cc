@@ -133,9 +133,9 @@ void HTMLHtmlElement::PropagateWritingModeAndDirectionFromBody() {
   if (!layout_object)
     return;
 
-  const ComputedStyle& old_style = layout_object->StyleRef();
+  const ComputedStyle& old_style = layout_object->Style();
   const ComputedStyle& new_style =
-      LayoutStyleForElement(layout_object->StyleRef());
+      LayoutStyleForElement(layout_object->Style());
 
   if (&old_style == &new_style) {
     return;
@@ -163,7 +163,7 @@ void HTMLHtmlElement::PropagateWritingModeAndDirectionFromBody() {
     auto* const text_combine =
         DynamicTo<LayoutTextCombine>(layout_text->Parent());
     if (text_combine) [[unlikely]] {
-      layout_text->SetStyle(text_combine->StyleRef());
+      layout_text->SetStyle(text_combine->Style());
       continue;
     }
     layout_text->SetStyle(new_style);

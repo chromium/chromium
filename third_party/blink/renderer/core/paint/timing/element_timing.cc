@@ -243,7 +243,7 @@ void ElementTiming::QueueElementTimingInfoForReportingIfNeeded(
   CHECK(!generating_node.IsInShadowTree());
 
   RespectImageOrientationEnum respect_orientation =
-      image_layout_object.StyleRef().ImageOrientation();
+      image_layout_object.Style().ImageOrientation();
 
   gfx::RectF intersection_rect = ComputeIntersectionRect(
       frame, image_border, current_paint_chunk_properties);

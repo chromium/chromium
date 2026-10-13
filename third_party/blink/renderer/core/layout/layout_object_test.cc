@@ -200,18 +200,18 @@ TEST_F(LayoutObjectTest, BackdropFilterAsGroupingProperty) {
     <div id=target3 style="position: relative"></div>
   )HTML");
   EXPECT_TRUE(GetLayoutObjectByElementId("target1")
-                  ->StyleRef()
+                  ->Style()
                   .HasGroupingPropertyForUsedTransformStyle3D());
   EXPECT_TRUE(GetLayoutObjectByElementId("target2")
-                  ->StyleRef()
+                  ->Style()
                   .HasGroupingPropertyForUsedTransformStyle3D());
-  EXPECT_FALSE(GetLayoutObjectByElementId("target1")->StyleRef().Preserves3D());
-  EXPECT_FALSE(GetLayoutObjectByElementId("target2")->StyleRef().Preserves3D());
+  EXPECT_FALSE(GetLayoutObjectByElementId("target1")->Style().Preserves3D());
+  EXPECT_FALSE(GetLayoutObjectByElementId("target2")->Style().Preserves3D());
 
   EXPECT_FALSE(GetLayoutObjectByElementId("target3")
-                   ->StyleRef()
+                   ->Style()
                    .HasGroupingPropertyForUsedTransformStyle3D());
-  EXPECT_TRUE(GetLayoutObjectByElementId("target3")->StyleRef().Preserves3D());
+  EXPECT_TRUE(GetLayoutObjectByElementId("target3")->Style().Preserves3D());
 }
 
 TEST_F(LayoutObjectTest, BlendModeAsGroupingProperty) {
@@ -221,14 +221,14 @@ TEST_F(LayoutObjectTest, BlendModeAsGroupingProperty) {
     <div id=target2 style="position: relative"></div>
   )HTML");
   EXPECT_TRUE(GetLayoutObjectByElementId("target1")
-                  ->StyleRef()
+                  ->Style()
                   .HasGroupingPropertyForUsedTransformStyle3D());
-  EXPECT_FALSE(GetLayoutObjectByElementId("target1")->StyleRef().Preserves3D());
+  EXPECT_FALSE(GetLayoutObjectByElementId("target1")->Style().Preserves3D());
 
   EXPECT_FALSE(GetLayoutObjectByElementId("target2")
-                   ->StyleRef()
+                   ->Style()
                    .HasGroupingPropertyForUsedTransformStyle3D());
-  EXPECT_TRUE(GetLayoutObjectByElementId("target2")->StyleRef().Preserves3D());
+  EXPECT_TRUE(GetLayoutObjectByElementId("target2")->Style().Preserves3D());
 }
 
 TEST_F(LayoutObjectTest, CSSClipAsGroupingProperty) {
@@ -240,18 +240,18 @@ TEST_F(LayoutObjectTest, CSSClipAsGroupingProperty) {
     <div id=target3 style="position: relative"></div>
   )HTML");
   EXPECT_FALSE(GetLayoutObjectByElementId("target1")
-                   ->StyleRef()
+                   ->Style()
                    .HasGroupingPropertyForUsedTransformStyle3D());
-  EXPECT_TRUE(GetLayoutObjectByElementId("target1")->StyleRef().Preserves3D());
+  EXPECT_TRUE(GetLayoutObjectByElementId("target1")->Style().Preserves3D());
   EXPECT_TRUE(GetLayoutObjectByElementId("target2")
-                  ->StyleRef()
+                  ->Style()
                   .HasGroupingPropertyForUsedTransformStyle3D());
-  EXPECT_FALSE(GetLayoutObjectByElementId("target2")->StyleRef().Preserves3D());
+  EXPECT_FALSE(GetLayoutObjectByElementId("target2")->Style().Preserves3D());
 
   EXPECT_FALSE(GetLayoutObjectByElementId("target3")
-                   ->StyleRef()
+                   ->Style()
                    .HasGroupingPropertyForUsedTransformStyle3D());
-  EXPECT_TRUE(GetLayoutObjectByElementId("target3")->StyleRef().Preserves3D());
+  EXPECT_TRUE(GetLayoutObjectByElementId("target3")->Style().Preserves3D());
 }
 
 TEST_F(LayoutObjectTest, ClipPathAsGroupingProperty) {
@@ -261,14 +261,14 @@ TEST_F(LayoutObjectTest, ClipPathAsGroupingProperty) {
     <div id=target2 style="position: relative"></div>
   )HTML");
   EXPECT_TRUE(GetLayoutObjectByElementId("target1")
-                  ->StyleRef()
+                  ->Style()
                   .HasGroupingPropertyForUsedTransformStyle3D());
-  EXPECT_FALSE(GetLayoutObjectByElementId("target1")->StyleRef().Preserves3D());
+  EXPECT_FALSE(GetLayoutObjectByElementId("target1")->Style().Preserves3D());
 
   EXPECT_FALSE(GetLayoutObjectByElementId("target2")
-                   ->StyleRef()
+                   ->Style()
                    .HasGroupingPropertyForUsedTransformStyle3D());
-  EXPECT_TRUE(GetLayoutObjectByElementId("target2")->StyleRef().Preserves3D());
+  EXPECT_TRUE(GetLayoutObjectByElementId("target2")->Style().Preserves3D());
 }
 
 TEST_F(LayoutObjectTest, IsolationAsGroupingProperty) {
@@ -278,14 +278,14 @@ TEST_F(LayoutObjectTest, IsolationAsGroupingProperty) {
     <div id=target2 style="position: relative"></div>
   )HTML");
   EXPECT_TRUE(GetLayoutObjectByElementId("target1")
-                  ->StyleRef()
+                  ->Style()
                   .HasGroupingPropertyForUsedTransformStyle3D());
-  EXPECT_FALSE(GetLayoutObjectByElementId("target1")->StyleRef().Preserves3D());
+  EXPECT_FALSE(GetLayoutObjectByElementId("target1")->Style().Preserves3D());
 
   EXPECT_FALSE(GetLayoutObjectByElementId("target2")
-                   ->StyleRef()
+                   ->Style()
                    .HasGroupingPropertyForUsedTransformStyle3D());
-  EXPECT_TRUE(GetLayoutObjectByElementId("target2")->StyleRef().Preserves3D());
+  EXPECT_TRUE(GetLayoutObjectByElementId("target2")->Style().Preserves3D());
 }
 
 TEST_F(LayoutObjectTest, MaskAsGroupingProperty) {
@@ -296,14 +296,14 @@ TEST_F(LayoutObjectTest, MaskAsGroupingProperty) {
     <div id=target2 style="position: relative"></div>
   )HTML");
   EXPECT_TRUE(GetLayoutObjectByElementId("target1")
-                  ->StyleRef()
+                  ->Style()
                   .HasGroupingPropertyForUsedTransformStyle3D());
-  EXPECT_FALSE(GetLayoutObjectByElementId("target1")->StyleRef().Preserves3D());
+  EXPECT_FALSE(GetLayoutObjectByElementId("target1")->Style().Preserves3D());
 
   EXPECT_FALSE(GetLayoutObjectByElementId("target2")
-                   ->StyleRef()
+                   ->Style()
                    .HasGroupingPropertyForUsedTransformStyle3D());
-  EXPECT_TRUE(GetLayoutObjectByElementId("target2")->StyleRef().Preserves3D());
+  EXPECT_TRUE(GetLayoutObjectByElementId("target2")->Style().Preserves3D());
 }
 
 TEST_F(LayoutObjectTest, UseCountContainWithoutContentVisibility) {

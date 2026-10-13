@@ -43,8 +43,7 @@ bool SVGContainerPainter::CanUseCullRect() const {
     return false;
   }
 
-  return SVGModelObjectPainter::CanUseCullRect(
-      layout_svg_container_.StyleRef());
+  return SVGModelObjectPainter::CanUseCullRect(layout_svg_container_.Style());
 }
 
 void SVGContainerPainter::Paint(const PaintInfo& paint_info) {
@@ -126,9 +125,9 @@ void SVGContainerPainter::Paint(const PaintInfo& paint_info) {
         // coordinate space for context paints.
         child_context_paints.emplace(
             object_painter.ResolveContextPaint(
-                layout_svg_container_.StyleRef().FillPaint()),
+                layout_svg_container_.Style().FillPaint()),
             object_painter.ResolveContextPaint(
-                layout_svg_container_.StyleRef().StrokePaint()));
+                layout_svg_container_.Style().StrokePaint()));
         child_paint_info.SetSvgContextPaints(&(*child_context_paints));
       }
 

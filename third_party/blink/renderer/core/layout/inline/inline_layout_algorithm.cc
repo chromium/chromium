@@ -802,7 +802,7 @@ void InlineLayoutAlgorithm::PlaceOutOfFlowObjects(
     // All children within the linebox are positioned relative to the baseline,
     // then shifted later using LineBoxFragmentBuilder::MoveInBlockDirection.
     LogicalOffset static_offset(LayoutUnit(), -metrics.ascent);
-    if (box->StyleRef().IsOriginalDisplayInlineType()) {
+    if (box->Style().IsOriginalDisplayInlineType()) {
       // An inline-level OOF element positions itself within the line, at the
       // position it would have been if it was in-flow.
       static_offset.inline_offset = child.rect.offset.inline_offset;
@@ -841,7 +841,7 @@ void InlineLayoutAlgorithm::PlaceOutOfFlowObjects(
         continue;
       }
       if (has_preceding_inline_level_content &&
-          !box->StyleRef().IsOriginalDisplayInlineType()) {
+          !box->Style().IsOriginalDisplayInlineType()) {
         child.rect.offset.block_offset += metrics.LineHeight();
       }
     }
@@ -1752,7 +1752,7 @@ void InlineLayoutAlgorithm::PositionLeadingFloats(
     }
 
     container_builder_.AddAdjoiningObjectTypes(
-        item.GetLayoutObject()->StyleRef().Floating(
+        item.GetLayoutObject()->Style().Floating(
             GetConstraintSpace().Direction()) == EFloat::kLeft
             ? kAdjoiningFloatLeft
             : kAdjoiningFloatRight);

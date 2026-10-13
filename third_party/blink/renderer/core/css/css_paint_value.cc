@@ -143,7 +143,7 @@ scoped_refptr<Image> CSSPaintValue::GetImage(
         generator.NativeInvalidationProperties();
     const Vector<AtomicString>& custom_properties =
         generator.CustomInvalidationProperties();
-    float zoom = layout_object.StyleRef().EffectiveZoom();
+    float zoom = layout_object.Style().EffectiveZoom();
     CompositorPaintWorkletInput::PropertyKeys input_property_keys;
     auto style_data = PaintWorkletStylePropertyMap::BuildCrossThreadData(
         document, layout_object.UniqueId(), style, native_properties,

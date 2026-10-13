@@ -55,7 +55,7 @@ void LayoutHTMLCanvas::CanvasSizeChanged() {
   NOT_DESTROYED();
   gfx::Size canvas_size = To<HTMLCanvasElement>(GetNode())->Size();
   PhysicalSize zoomed_size = PhysicalSize(canvas_size);
-  zoomed_size.Scale(StyleRef().EffectiveZoom());
+  zoomed_size.Scale(Style().EffectiveZoom());
 
   if (zoomed_size == natural_size_) {
     return;
@@ -86,11 +86,13 @@ bool LayoutHTMLCanvas::DrawsBackgroundOntoContentLayer() const {
   CanvasRenderingContext* context = canvas->RenderingContext();
   if (!context || !context->IsComposited() || !context->CcLayer())
     return false;
-  if (StyleRef().HasBoxDecorations() || StyleRef().HasBackgroundImage())
+  if (Style().HasBoxDecorations() || Style().HasBackgroundImage()) {
     return false;
+  }
   // If there is no background, there is nothing to support.
-  if (!StyleRef().HasBackground())
+  if (!Style().HasBackground()) {
     return true;
+  }
   // Simple background that is contained within the contents rect.
   return ReplacedContentRect().Contains(
       PhysicalBackgroundRect(kBackgroundPaintedExtent));

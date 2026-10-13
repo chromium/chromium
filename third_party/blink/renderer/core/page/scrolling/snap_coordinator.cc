@@ -55,16 +55,16 @@ cc::SnapAlignment AdjustForRtlWritingMode(cc::SnapAlignment align) {
 // https://drafts.csswg.org/css-scroll-snap-1/#snap-axis
 cc::ScrollSnapType GetPhysicalSnapType(const LayoutBox& snap_container) {
   cc::ScrollSnapType scroll_snap_type =
-      snap_container.StyleRef().GetScrollSnapType();
+      snap_container.Style().GetScrollSnapType();
   if (scroll_snap_type.axis == cc::SnapAxis::kInline) {
-    if (snap_container.StyleRef().IsHorizontalWritingMode()) {
+    if (snap_container.Style().IsHorizontalWritingMode()) {
       scroll_snap_type.axis = cc::SnapAxis::kX;
     } else {
       scroll_snap_type.axis = cc::SnapAxis::kY;
     }
   }
   if (scroll_snap_type.axis == cc::SnapAxis::kBlock) {
-    if (snap_container.StyleRef().IsHorizontalWritingMode()) {
+    if (snap_container.Style().IsHorizontalWritingMode()) {
       scroll_snap_type.axis = cc::SnapAxis::kY;
     } else {
       scroll_snap_type.axis = cc::SnapAxis::kX;
@@ -120,7 +120,7 @@ bool SnapCoordinator::UpdateSnapContainerData(LayoutBox& snap_container) {
   // container's border box.
   PhysicalRect container_rect = snap_container.OverflowClipRect();
 
-  const ComputedStyle& container_style = snap_container.StyleRef();
+  const ComputedStyle& container_style = snap_container.Style();
   // The percentage of scroll-padding is different from that of normal
   // padding, as scroll-padding resolves the percentage against corresponding
   // dimension of the scrollport[1], while the normal padding resolves that
@@ -361,7 +361,7 @@ cc::SnapAreaData SnapCoordinator::CalculateSnapAreaData(
   PhysicalRect container_rect = snap_container.PhysicalBorderBoxRect();
 
   cc::ScrollSnapAlign alignment = GetPhysicalAlignment(
-      *area_style, snap_container.StyleRef(), area_rect, container_rect,
+      *area_style, snap_container.Style(), area_rect, container_rect,
       snap_container_writing_mode_direction);
 
   // Note: After GetPhysicalAlignment(), physical ScrollSnapAlign fields map as:

@@ -278,7 +278,7 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
   // Elements with subtrees containing will-change: contents are not
   // composited for animations as if the contents change the tiles
   // would need to be rerastered anyways.
-  if (layout_object && layout_object->StyleRef().SubtreeWillChangeContents()) {
+  if (layout_object && layout_object->Style().SubtreeWillChangeContents()) {
     state.disposition |= kTargetHasInvalidCompositingState;
   }
 
@@ -433,7 +433,7 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
             // If a custom property is not used by CSS Paint, then we should not
             // support that on the compositor thread.
             if (layout_object &&
-                !layout_object->StyleRef().HasCSSPaintImagesUsingCustomProperty(
+                !layout_object->Style().HasCSSPaintImagesUsingCustomProperty(
                     property.CustomPropertyName(),
                     layout_object->GetDocument())) {
               DefaultToUnsupportedProperty(state, property);
@@ -523,7 +523,7 @@ bool CompositorAnimations::CompositorPropertyAnimationsHaveNoEffect(
     return false;
   }
 
-  if (layout_object && layout_object->StyleRef().SubtreeWillChangeContents()) {
+  if (layout_object && layout_object->Style().SubtreeWillChangeContents()) {
     // If the element has will-change: contents, then this function cannot
     // return a meaningful result, as we decline to generate layers in this
     // case. See also crbug.com/40061259 - some assumptions made in the below
@@ -1207,7 +1207,7 @@ CompositorAnimations::CheckCanStartTransformAnimationOnCompositorForSVG(
     const SVGElement& svg_element) {
   FailureReasons reasons = kNoFailure;
   if (const auto* layout_object = svg_element.GetLayoutObject()) {
-    if (layout_object->StyleRef().EffectiveZoom() != 1) {
+    if (layout_object->Style().EffectiveZoom() != 1) {
       // TODO(crbug.com/1186312): Composited transform animation with non-1
       // effective zoom is incorrectly scaled for now.
       // TODO(crbug.com/1134775): If a foreignObject's effect zoom is not 1,

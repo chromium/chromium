@@ -214,7 +214,7 @@ bool LayoutSVGResourceContainer::FindCycle() const {
 
 static HeapVector<Member<SVGResource>> CollectResources(
     const LayoutObject& layout_object) {
-  const ComputedStyle& style = layout_object.StyleRef();
+  const ComputedStyle& style = layout_object.Style();
   HeapVector<Member<SVGResource>> resources;
   if (auto* reference_clip =
           DynamicTo<ReferenceClipPathOperation>(style.ClipPath())) {
@@ -256,7 +256,7 @@ bool LayoutSVGResourceContainer::FindCycleInResources(
       }
     }
   }
-  for (const FillLayer* layer = &layout_object.StyleRef().MaskLayers(); layer;
+  for (const FillLayer* layer = &layout_object.Style().MaskLayers(); layer;
        layer = layer->NextForUsedValue()) {
     const auto* mask_source =
         DynamicTo<StyleMaskSourceImage>(layer->GetImage());

@@ -257,8 +257,7 @@ gfx::RectF SVGGraphicsElement::GetBBox() {
     }
   }
 
-  return NoopWillBeInvScaleRect(bbox,
-                                layout_object->StyleRef().EffectiveZoom());
+  return NoopWillBeInvScaleRect(bbox, layout_object->Style().EffectiveZoom());
 }
 
 SVGRectTearOff* SVGGraphicsElement::getBBoxFromJavascript() {

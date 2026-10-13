@@ -271,11 +271,10 @@ void PrepareSvgPaints(const TextPainter::SvgTextPaintState& state,
   }
 
   std::optional<SelectionStyleScope> paint_resource_scope;
-  const ComputedStyle& style = layout_parent.StyleRef();
+  const ComputedStyle& style = layout_parent.Style();
   const ComputedStyle* pseudo_selection_style = nullptr;
   if (state.IsPaintingSelection()) {
-    pseudo_selection_style =
-        layout_parent.StyleRef().HighlightData().Selection();
+    pseudo_selection_style = layout_parent.Style().HighlightData().Selection();
     if (pseudo_selection_style) {
       paint_resource_scope.emplace(layout_parent, style,
                                    *pseudo_selection_style);
@@ -743,8 +742,7 @@ const LayoutObject& TextPainter::SvgTextPaintState::TextDecorationObject()
         break;
       }
     }
-    if (result->StyleRef().GetTextDecorationLine() !=
-        TextDecorationLine::kNone) {
+    if (result->Style().GetTextDecorationLine() != TextDecorationLine::kNone) {
       break;
     }
 

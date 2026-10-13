@@ -18,7 +18,7 @@ class HyphenResultTest : public RenderingTest {
  protected:
   void ExpectGlyphRotation(CanvasRotationInVertical expected) {
     HyphenResult hyphen;
-    hyphen.Shape(GetLayoutObjectByElementId("target")->StyleRef());
+    hyphen.Shape(GetLayoutObjectByElementId("target")->Style());
 
     Vector<CanvasRotationInVertical> rotations;
     hyphen.GetShapeResult().ForEachGlyph(

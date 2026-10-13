@@ -168,8 +168,7 @@ void ComputeInlineContainerGeometryForFragmentainer(
   DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
   DCHECK(!inline_containing_block_map->empty());
 
-  WritingDirectionMode writing_direction =
-      box->StyleRef().GetWritingDirection();
+  WritingDirectionMode writing_direction = box->Style().GetWritingDirection();
   WritingModeConverter containing_block_converter = WritingModeConverter(
       writing_direction, accumulated_containing_block_size);
 

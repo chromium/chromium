@@ -686,10 +686,10 @@ void PrePaintTreeWalk::WalkInternal(const LayoutObject& object,
     property_tree_builder->UpdateForSelf();
     InheritedAnimationTracker::DowngradeForUnsupportedInheritance(object);
   }
-  if (object.StyleRef().IsUnboundedElementActive()) {
+  if (object.Style().IsUnboundedElementActive()) {
     DCHECK(RuntimeEnabledFeatures::UnboundedElementEnabled());
     auto* html_element = DynamicTo<HTMLElement>(object.GetNode());
-    DCHECK(!html_element || object.StyleRef().IsUnboundedElementActive() ==
+    DCHECK(!html_element || object.Style().IsUnboundedElementActive() ==
                                 html_element->IsUnboundedElementActive());
     context.inside_active_unbounded = true;
     gfx::Rect current_bounds =
