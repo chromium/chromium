@@ -96,7 +96,6 @@ import org.chromium.components.embedder_support.application.ClassLoaderContextWr
 import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.content_public.browser.NavigationHistory;
 import org.chromium.content_public.browser.SmartClipProvider;
-import org.chromium.url.GURL;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -664,14 +663,12 @@ class WebViewChromium
     @UiThread
     public WebBackForwardList saveState(final Bundle outState) {
         forbidBuilderConfiguration();
-        mStartupController.triggerAndWaitForChromiumStarted(
-                StartupCallSite.WEBVIEW_INSTANCE_SAVE_STATE);
         checkThread();
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.SAVE_STATE")) {
             ApiCallLogger.recordWebViewApiCall(
                     ApiCall.SAVE_STATE, ApiCallUserAction.WEBVIEW_INSTANCE_SAVE_STATE);
             if (outState == null) return null;
-            if (!mAwContents.saveState(outState)) return null;
+            if (!mAwWebContent.saveState(outState)) return null;
             return copyBackForwardList();
         }
     }
@@ -698,14 +695,12 @@ class WebViewChromium
     @UiThread
     public WebBackForwardList restoreState(final Bundle inState) {
         forbidBuilderConfiguration();
-        mStartupController.triggerAndWaitForChromiumStarted(
-                StartupCallSite.WEBVIEW_INSTANCE_RESTORE_STATE);
         checkThread();
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.RESTORE_STATE")) {
             ApiCallLogger.recordWebViewApiCall(
                     ApiCall.RESTORE_STATE, ApiCallUserAction.WEBVIEW_INSTANCE_RESTORE_STATE);
             if (inState == null) return null;
-            if (!mAwContents.restoreState(inState)) return null;
+            if (!mAwWebContent.restoreState(inState)) return null;
             return copyBackForwardList();
         }
     }
@@ -907,13 +902,11 @@ class WebViewChromium
     @UiThread
     public boolean canGoBack() {
         forbidBuilderConfiguration();
-        mStartupController.triggerAndWaitForChromiumStarted(
-                StartupCallSite.WEBVIEW_INSTANCE_CAN_GO_BACK);
         checkThread();
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.CAN_GO_BACK")) {
             ApiCallLogger.recordWebViewApiCall(
                     ApiCall.CAN_GO_BACK, ApiCallUserAction.WEBVIEW_INSTANCE_CAN_GO_BACK);
-            return mAwContents.canGoBack();
+            return mAwWebContent.canGoBack();
         }
     }
 
@@ -942,13 +935,11 @@ class WebViewChromium
     @UiThread
     public boolean canGoForward() {
         forbidBuilderConfiguration();
-        mStartupController.triggerAndWaitForChromiumStarted(
-                StartupCallSite.WEBVIEW_INSTANCE_CAN_GO_FORWARD);
         checkThread();
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.CAN_GO_FORWARD")) {
             ApiCallLogger.recordWebViewApiCall(
                     ApiCall.CAN_GO_FORWARD, ApiCallUserAction.WEBVIEW_INSTANCE_CAN_GO_FORWARD);
-            return mAwContents.canGoForward();
+            return mAwWebContent.canGoForward();
         }
     }
 
@@ -977,15 +968,13 @@ class WebViewChromium
     @UiThread
     public boolean canGoBackOrForward(final int steps) {
         forbidBuilderConfiguration();
-        mStartupController.triggerAndWaitForChromiumStarted(
-                StartupCallSite.WEBVIEW_INSTANCE_CAN_GO_BACK_OR_FORWARD);
         checkThread();
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.CAN_GO_BACK_OR_FORWARD")) {
             ApiCallLogger.recordWebViewApiCall(
                     ApiCall.CAN_GO_BACK_OR_FORWARD,
                     ApiCallUserAction.WEBVIEW_INSTANCE_CAN_GO_BACK_OR_FORWARD);
-            return mAwContents.canGoBackOrForward(steps);
+            return mAwWebContent.canGoBackOrForward(steps);
         }
     }
 
@@ -1030,13 +1019,11 @@ class WebViewChromium
     @UiThread
     public boolean pageUp(final boolean top) {
         forbidBuilderConfiguration();
-        mStartupController.triggerAndWaitForChromiumStarted(
-                StartupCallSite.WEBVIEW_INSTANCE_PAGE_UP);
         checkThread();
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.PAGE_UP")) {
             ApiCallLogger.recordWebViewApiCall(
                     ApiCall.PAGE_UP, ApiCallUserAction.WEBVIEW_INSTANCE_PAGE_UP);
-            return mAwContents.pageUp(top);
+            return mAwWebContent.pageUp(top);
         }
     }
 
@@ -1044,13 +1031,11 @@ class WebViewChromium
     @UiThread
     public boolean pageDown(final boolean bottom) {
         forbidBuilderConfiguration();
-        mStartupController.triggerAndWaitForChromiumStarted(
-                StartupCallSite.WEBVIEW_INSTANCE_PAGE_DOWN);
         checkThread();
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.PAGE_DOWN")) {
             ApiCallLogger.recordWebViewApiCall(
                     ApiCall.PAGE_DOWN, ApiCallUserAction.WEBVIEW_INSTANCE_PAGE_DOWN);
-            return mAwContents.pageDown(bottom);
+            return mAwWebContent.pageDown(bottom);
         }
     }
 
@@ -1103,13 +1088,11 @@ class WebViewChromium
     @UiThread
     public Picture capturePicture() {
         forbidBuilderConfiguration();
-        mStartupController.triggerAndWaitForChromiumStarted(
-                StartupCallSite.WEBVIEW_INSTANCE_CAPTURE_PICTURE);
         checkThread();
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.CAPTURE_PICTURE")) {
             ApiCallLogger.recordWebViewApiCall(
                     ApiCall.CAPTURE_PICTURE, ApiCallUserAction.WEBVIEW_INSTANCE_CAPTURE_PICTURE);
-            return mAwContents.capturePicture();
+            return mAwWebContent.capturePicture();
         }
     }
 
@@ -1118,12 +1101,10 @@ class WebViewChromium
     public float getScale() {
         checkThread();
         // This is a ViewDebug exported property - don't forbid builder.
-        mStartupController.triggerAndWaitForChromiumStarted(
-                StartupCallSite.WEBVIEW_INSTANCE_GET_SCALE);
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.GET_SCALE")) {
             ApiCallLogger.recordWebViewApiCall(
                     ApiCall.GET_SCALE, ApiCallUserAction.WEBVIEW_INSTANCE_GET_SCALE);
-            return mAwContents.getScale();
+            return mAwWebContent.getScale();
         }
     }
 
@@ -1169,15 +1150,13 @@ class WebViewChromium
     @UiThread
     public WebView.HitTestResult getHitTestResult() {
         forbidBuilderConfiguration();
-        mStartupController.triggerAndWaitForChromiumStarted(
-                StartupCallSite.WEBVIEW_INSTANCE_GET_HIT_TEST_RESULT);
         checkThread();
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.GET_HIT_TEST_RESULT")) {
             ApiCallLogger.recordWebViewApiCall(
                     ApiCall.GET_HIT_TEST_RESULT,
                     ApiCallUserAction.WEBVIEW_INSTANCE_GET_HIT_TEST_RESULT);
-            AwContents.HitTestData data = mAwContents.getLastHitTestResult();
+            AwContents.HitTestData data = mAwWebContent.getLastHitTestResult();
             mHitTestResult.setType(data.hitTestResultType);
             mHitTestResult.setExtra(data.hitTestResultExtraData);
             return mHitTestResult;
@@ -1233,14 +1212,11 @@ class WebViewChromium
     @UiThread
     public String getUrl() {
         // This is an inspectable property and a ViewDebug exported property - don't forbid builder.
-        mStartupController.triggerAndWaitForChromiumStarted(
-                StartupCallSite.WEBVIEW_INSTANCE_GET_URL);
         checkThread();
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.GET_URL")) {
             ApiCallLogger.recordWebViewApiCall(
                     ApiCall.GET_URL, ApiCallUserAction.WEBVIEW_INSTANCE_GET_URL);
-            GURL url = mAwContents.getUrl();
-            return url == null ? null : url.getSpec();
+            return mAwWebContent.getUrl();
         }
     }
 
@@ -1248,13 +1224,11 @@ class WebViewChromium
     @UiThread
     public String getOriginalUrl() {
         // This is an inspectable property and a ViewDebug exported property - don't forbid builder.
-        mStartupController.triggerAndWaitForChromiumStarted(
-                StartupCallSite.WEBVIEW_INSTANCE_GET_ORIGINAL_URL);
         checkThread();
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.GET_ORIGINAL_URL")) {
             ApiCallLogger.recordWebViewApiCall(
                     ApiCall.GET_ORIGINAL_URL, ApiCallUserAction.WEBVIEW_INSTANCE_GET_ORIGINAL_URL);
-            return mAwContents.getOriginalUrl();
+            return mAwWebContent.getOriginalUrl();
         }
     }
 
@@ -1262,13 +1236,11 @@ class WebViewChromium
     @UiThread
     public String getTitle() {
         // This is an inspectable property and a ViewDebug exported property - don't forbid builder.
-        mStartupController.triggerAndWaitForChromiumStarted(
-                StartupCallSite.WEBVIEW_INSTANCE_GET_TITLE);
         checkThread();
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.GET_TITLE")) {
             ApiCallLogger.recordWebViewApiCall(
                     ApiCall.GET_TITLE, ApiCallUserAction.WEBVIEW_INSTANCE_GET_TITLE);
-            return mAwContents.getTitle();
+            return mAwWebContent.getTitle();
         }
     }
 
@@ -1276,13 +1248,11 @@ class WebViewChromium
     @UiThread
     public Bitmap getFavicon() {
         // This is an inspectable property - don't forbid builder.
-        mStartupController.triggerAndWaitForChromiumStarted(
-                StartupCallSite.WEBVIEW_INSTANCE_GET_FAVICON);
         checkThread();
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.GET_FAVICON")) {
             ApiCallLogger.recordWebViewApiCall(
                     ApiCall.GET_FAVICON, ApiCallUserAction.WEBVIEW_INSTANCE_GET_FAVICON);
-            return mAwContents.getFavicon();
+            return mAwWebContent.getFavicon();
         }
     }
 
@@ -1541,18 +1511,16 @@ class WebViewChromium
     @UiThread
     public WebBackForwardList copyBackForwardList() {
         forbidBuilderConfiguration();
-        mStartupController.triggerAndWaitForChromiumStarted(
-                StartupCallSite.WEBVIEW_INSTANCE_COPY_BACK_FORWARD_LIST);
         checkThread();
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.COPY_BACK_FORWARD_LIST")) {
             ApiCallLogger.recordWebViewApiCall(
                     ApiCall.COPY_BACK_FORWARD_LIST,
                     ApiCallUserAction.WEBVIEW_INSTANCE_COPY_BACK_FORWARD_LIST);
-            // mAwContents.getNavigationHistory() can be null here if mAwContents has been
-            // destroyed, and we do not handle passing null to the WebBackForwardListChromium
-            // constructor.
-            NavigationHistory navHistory = mAwContents.getNavigationHistory();
+            // mAwWebContent.getNavigationHistory() can be null here if the underlying AwContents
+            // has been destroyed, and we do not handle passing null to the
+            // WebBackForwardListChromium constructor.
+            NavigationHistory navHistory = mAwWebContent.getNavigationHistory();
             if (navHistory == null) navHistory = new NavigationHistory();
             return new WebBackForwardListChromium(navHistory);
         }
@@ -2113,13 +2081,11 @@ class WebViewChromium
     @UiThread
     public boolean zoomIn() {
         forbidBuilderConfiguration();
-        mStartupController.triggerAndWaitForChromiumStarted(
-                StartupCallSite.WEBVIEW_INSTANCE_ZOOM_IN);
         checkThread();
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.ZOOM_IN")) {
             ApiCallLogger.recordWebViewApiCall(
                     ApiCall.ZOOM_IN, ApiCallUserAction.WEBVIEW_INSTANCE_ZOOM_IN);
-            return mAwContents.zoomIn();
+            return mAwWebContent.zoomIn();
         }
     }
 
@@ -2127,13 +2093,11 @@ class WebViewChromium
     @UiThread
     public boolean zoomOut() {
         forbidBuilderConfiguration();
-        mStartupController.triggerAndWaitForChromiumStarted(
-                StartupCallSite.WEBVIEW_INSTANCE_ZOOM_OUT);
         checkThread();
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.ZOOM_OUT")) {
             ApiCallLogger.recordWebViewApiCall(
                     ApiCall.ZOOM_OUT, ApiCallUserAction.WEBVIEW_INSTANCE_ZOOM_OUT);
-            return mAwContents.zoomOut();
+            return mAwWebContent.zoomOut();
         }
     }
 
@@ -2146,10 +2110,8 @@ class WebViewChromium
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.ZOOM_BY")) {
             ApiCallLogger.recordWebViewApiCall(
                     ApiCall.ZOOM_BY, ApiCallUserAction.WEBVIEW_INSTANCE_ZOOM_BY);
-            mStartupController.triggerAndWaitForChromiumStarted(
-                    StartupCallSite.WEBVIEW_INSTANCE_ZOOM_BY);
             checkThread();
-            mAwContents.zoomBy(factor);
+            mAwWebContent.zoomBy(factor);
             return true;
         }
     }

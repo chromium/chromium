@@ -224,7 +224,7 @@ public class NavigationListenerTest extends AwParameterizedTest {
         assertNavigationId(data, navigationId);
         assertNavigationCompletedMessage(
                 data,
-                mAwContents.getUrl().getSpec(),
+                mAwContents.getUrl(),
                 /* isSameDocument= */ false,
                 /* isReload= */ false,
                 /* isHistory= */ false,

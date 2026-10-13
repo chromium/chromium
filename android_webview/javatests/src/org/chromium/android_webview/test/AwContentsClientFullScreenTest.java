@@ -35,7 +35,6 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
-import org.chromium.url.GURL;
 
 import java.util.concurrent.TimeoutException;
 
@@ -359,9 +358,8 @@ public class AwContentsClientFullScreenTest extends AwParameterizedTest {
     }
 
     private boolean shouldPlayOnFullScreenView() throws Exception {
-        GURL testUrl = mTestContainerView.getAwContents().getUrl();
-        return new GURL(VIDEO_TEST_URL).equals(testUrl)
-                && DOMUtils.isFullscreen(getWebContentsOnUiThread());
+        String testUrl = mTestContainerView.getAwContents().getUrl();
+        return VIDEO_TEST_URL.equals(testUrl) && DOMUtils.isFullscreen(getWebContentsOnUiThread());
     }
 
     private void playVideo() throws Exception {

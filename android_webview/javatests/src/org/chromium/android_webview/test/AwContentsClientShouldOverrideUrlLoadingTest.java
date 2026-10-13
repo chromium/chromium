@@ -49,7 +49,6 @@ import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageStartedHelper;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.test.util.TestWebServer;
-import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1102,7 +1101,7 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
         Assert.assertEquals(
                 linkUrl, mShouldOverrideUrlLoadingHelper.getShouldOverrideUrlLoadingUrl());
 
-        Assert.assertEquals(new GURL(linkUrl), mAwContents.getUrl());
+        Assert.assertEquals(linkUrl, mAwContents.getUrl());
         Assert.assertTrue("Should have a navigation history", mAwContents.canGoBack());
         NavigationHistory navHistory = mAwContents.getNavigationHistory();
         Assert.assertEquals(2, navHistory.getEntryCount());
@@ -1120,7 +1119,7 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
                 mShouldOverrideUrlLoadingHelper.getCallCount());
 
         Assert.assertFalse("Should not be able to navigate backward", mAwContents.canGoBack());
-        Assert.assertEquals(new GURL(firstUrl), mAwContents.getUrl());
+        Assert.assertEquals(firstUrl, mAwContents.getUrl());
         navHistory = mAwContents.getNavigationHistory();
         Assert.assertEquals(2, navHistory.getEntryCount());
         Assert.assertEquals(0, navHistory.getCurrentEntryIndex());
@@ -1287,8 +1286,7 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
                     .getOnPageFinishedHelper()
                     .waitForCallback(currentCallCount, 1, WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
 
-            Assert.assertEquals(
-                    new GURL(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL), mAwContents.getUrl());
+            Assert.assertEquals(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL, mAwContents.getUrl());
         } finally {
             mActivityTestRule.getActivity().setIgnoreStartActivity(false);
         }

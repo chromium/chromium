@@ -275,7 +275,7 @@ public class WebAuthnTest {
     }
 
     private boolean hasWebAuthnJavaScriptInterfaces() throws Throwable {
-        if (!isSecureDomain(mAwContents.getUrl())) {
+        if (!isSecureDomain(new GURL(mAwContents.getUrl()))) {
             throw new Exception(
                     "This web URL ("
                             + mAwContents.getUrl()

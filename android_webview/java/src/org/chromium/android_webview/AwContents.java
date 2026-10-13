@@ -2853,12 +2853,12 @@ public class AwContents implements SmartClipProvider {
      *
      * @return The URL of the current page or null if it's empty.
      */
-    public GURL getUrl() {
+    public String getUrl() {
         if (TRACE) Log.i(TAG, "%s getUrl", this);
         if (isDestroyed(WARN)) return null;
         GURL url = mWebContents.getVisibleUrl();
         if (url == null || url.getSpec().trim().isEmpty()) return null;
-        return url;
+        return url.getSpec();
     }
 
     /**
