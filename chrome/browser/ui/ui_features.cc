@@ -85,6 +85,10 @@ BASE_FEATURE(kWebuiRefresh2026, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAppMenuGlowUp, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables the redesigned Settings 2026 refresh features and search UX.
 BASE_FEATURE(kSettingsRefresh2026, base::FEATURE_DISABLED_BY_DEFAULT);
+// Enables the new chrome://settings search: the native (C++) search backend
+// and the search WebUI that consumes it. Only takes effect when
+// kSettingsRefresh2026 is also enabled.
+BASE_FEATURE(kSettingsSearch2026, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables search in the app Chrome menu.
 BASE_FEATURE(kChroMenuSearch, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(std::string,
@@ -134,6 +138,11 @@ bool IsSettingsRefresh2026Enabled() {
   return (base::FeatureList::IsEnabled(kDesktopGlowUp) ||
           base::FeatureList::IsEnabled(kWebuiRefresh2026)) &&
          base::FeatureList::IsEnabled(kSettingsRefresh2026);
+}
+
+bool IsSettingsSearch2026Enabled() {
+  return IsSettingsRefresh2026Enabled() &&
+         base::FeatureList::IsEnabled(kSettingsSearch2026);
 }
 
 bool ShouldUseActionsForBrowserCommands() {
