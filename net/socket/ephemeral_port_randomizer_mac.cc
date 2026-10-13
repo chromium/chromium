@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
+#include "base/threading/thread_local.h"
 #include "net/base/features.h"
 
 namespace net {
@@ -203,8 +204,13 @@ void EphemeralPortRandomizer::OnCleanupTimer() {
 
 // static
 EphemeralPortRandomizer& EphemeralPortRandomizer::GetInstance() {
-  static base::NoDestructor<EphemeralPortRandomizer> instance;
-  return *instance;
+  static base::NoDestructor<
+      base::ThreadLocalOwnedPointer<EphemeralPortRandomizer>>
+      slot;
+  if (!slot->Get()) {
+    slot->Set(base::WrapUnique(new EphemeralPortRandomizer()));
+  }
+  return *slot->Get();
 }
 
 }  // namespace net

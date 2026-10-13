@@ -12,7 +12,6 @@
 
 #include "base/containers/hashing_lru_cache.h"
 #include "base/functional/callback.h"
-#include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -24,8 +23,7 @@
 namespace net {
 
 // Randomizes ephemeral source ports for TCP connections on macOS to work
-// around the lack of OS-level port randomization. Must be used on a single
-// thread (the network service IO thread).
+// around the lack of OS-level port randomization.
 class NET_EXPORT_PRIVATE EphemeralPortRandomizer {
  public:
   // Inclusive range [first, last] of ephemeral ports.
@@ -38,7 +36,7 @@ class NET_EXPORT_PRIVATE EphemeralPortRandomizer {
   using RandIntCallback =
       base::RepeatingCallback<uint16_t(uint16_t first, uint16_t last)>;
 
-  // Returns the singleton instance.
+  // Returns the thread-owned-storage instance.
   static EphemeralPortRandomizer& GetInstance();
 
   // Creates an instance for testing with custom parameters. In tests, use
@@ -61,8 +59,6 @@ class NET_EXPORT_PRIVATE EphemeralPortRandomizer {
       int attempt_number);
 
  private:
-  friend class base::NoDestructor<EphemeralPortRandomizer>;
-
   // Uses the OS ephemeral port range from sysctl (net.inet.ip.portrange),
   // falling back to 49152-65535 if the sysctl read fails.
   EphemeralPortRandomizer();
