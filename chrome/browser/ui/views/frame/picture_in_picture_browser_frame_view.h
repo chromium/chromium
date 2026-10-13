@@ -181,6 +181,7 @@ class PictureInPictureBrowserFrameView
   bool HasAnyVisibleContentSettingViews() const;
 
   // Helper functions for testing.
+  bool IsTopBarActiveForTesting() const;
   std::vector<raw_ptr<gfx::Animation>> GetRenderActiveAnimationsForTesting();
   std::vector<raw_ptr<gfx::Animation>> GetRenderInactiveAnimationsForTesting();
   views::View* GetBackToTabButtonForTesting();

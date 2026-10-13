@@ -635,6 +635,14 @@ class PictureInPictureFrameControlsTestBase
     }
   }
 
+  bool WaitForTopBarActiveStatus(bool active) {
+    return base::test::RunUntil([&] {
+      return (UseStandaloneDocumentPip()
+                  ? GetStandaloneAnimationController()->is_top_bar_active()
+                  : pip_frame_view()->IsTopBarActiveForTesting()) == active;
+    });
+  }
+
   std::vector<raw_ptr<gfx::Animation>> GetTopBarAnimations(bool active) {
     if (!UseStandaloneDocumentPip()) {
       return active ? pip_frame_view()->GetRenderActiveAnimationsForTesting()
@@ -693,6 +701,7 @@ IN_PROC_BROWSER_TEST_P(PictureInPictureTitleActivationTest,
   gfx::Point center = GetPipFrameView()->GetLocalBounds().CenterPoint();
   views::View::ConvertPointToScreen(GetPipFrameView(), &center);
   ASSERT_TRUE(ui_test_utils::SendMouseMoveSync(center));
+  ASSERT_TRUE(WaitForTopBarActiveStatus(/*active=*/true));
   WaitForTopBarAnimations(GetTopBarAnimations(/*active=*/true));
   ASSERT_TRUE(IsButtonVisible(GetBackToTabButton()));
   ASSERT_TRUE(IsButtonVisible(GetCloseButton()));
@@ -704,12 +713,14 @@ IN_PROC_BROWSER_TEST_P(PictureInPictureTitleActivationTest,
       BrowserView::GetBrowserViewForBrowser(browser()), &outside);
   ASSERT_FALSE(IsPointInPIPFrameView(outside));
   ASSERT_TRUE(ui_test_utils::SendMouseMoveSync(outside));
+  ASSERT_TRUE(WaitForTopBarActiveStatus(/*active=*/false));
   WaitForTopBarAnimations(GetTopBarAnimations(/*active=*/false));
   ASSERT_FALSE(IsButtonVisible(GetBackToTabButton()));
   ASSERT_FALSE(IsButtonVisible(GetCloseButton()));
 
   // Move mouse back in pip window should activate title.
   ASSERT_TRUE(ui_test_utils::SendMouseMoveSync(center));
+  ASSERT_TRUE(WaitForTopBarActiveStatus(/*active=*/true));
   WaitForTopBarAnimations(GetTopBarAnimations(/*active=*/true));
   ASSERT_TRUE(IsButtonVisible(GetBackToTabButton()));
   ASSERT_TRUE(IsButtonVisible(GetCloseButton()));

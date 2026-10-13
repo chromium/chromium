@@ -1036,6 +1036,10 @@ bool PictureInPictureBrowserFrameView::HasAnyVisibleContentSettingViews()
 }
 
 // Helper functions for testing.
+bool PictureInPictureBrowserFrameView::IsTopBarActiveForTesting() const {
+  return animation_controller_->is_top_bar_active();
+}
+
 std::vector<raw_ptr<gfx::Animation>>
 PictureInPictureBrowserFrameView::GetRenderActiveAnimationsForTesting() {
   return base::ToVector(
