@@ -396,10 +396,6 @@ BASE_FEATURE(kLocalListsUseSBv5,
              "SafeBrowsingLocalListsUseSBv5",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLocalListsUseSBv5WebUI,
-             "SafeBrowsingLocalListsUseSBv5WebUI",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kMaliciousApkDownloadCheck, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(bool,
@@ -509,6 +505,9 @@ BASE_FEATURE(kSavePasswordHashFromProfilePicker,
 BASE_FEATURE(kShowManualNotificationRevocationsSafetyHub,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kShowUrlsInV5GetHashLookupsWebUI,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kShowWarningsForSuspiciousNotifications,
 #if BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT
@@ -588,7 +587,6 @@ base::ListValue GetFeatureStatusList() {
       &kExtensionBlocklistSkipNetworkQuery,
       &kHashPrefixRealTimeLookups,
       &kLocalListsUseSBv5,
-      &kLocalListsUseSBv5WebUI,
       &kMigrateEnhancedSbUserToEnhancedBundle,
       &kProactivePasswordProtection,
       &kReportNotificationContentDetectionData,
@@ -596,6 +594,7 @@ base::ListValue GetFeatureStatusList() {
       &kSafeBrowsingNoProtectionSuppressWarnings,
       &kSafeBrowsingWaitForDnsForRealTimeLookup,
       &kShowManualNotificationRevocationsSafetyHub,
+      &kShowUrlsInV5GetHashLookupsWebUI,
       &kShowWarningsForSuspiciousNotifications,
       &kSuspiciousSiteTriggerQuotaFeature,
       &kTailoredSecurityIntegration,

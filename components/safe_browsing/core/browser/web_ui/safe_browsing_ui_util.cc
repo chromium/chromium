@@ -6,6 +6,7 @@
 
 #include "base/base64.h"
 #include "base/base64url.h"
+#include "base/feature_list.h"
 #include "base/i18n/number_formatting.h"
 #include "base/i18n/time_formatting.h"
 #include "base/json/json_writer.h"
@@ -17,6 +18,7 @@
 #include "components/enterprise/connectors/core/reporting_event_mappings.h"
 #include "components/safe_browsing/core/browser/referring_app_info.h"
 #include "components/safe_browsing/core/browser/web_ui/web_ui_info_singleton_event_observer.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.to_value.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.to_value.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5.to_value.h"
@@ -581,7 +583,8 @@ base::DictValue SerializeV5GetHashLookup(
   AddKeyValue(request_key_values, "Local threat types",
               base::JoinString(local_threat_types, ", "));
 
-  if (!lookup.urls.empty()) {
+  if (!lookup.urls.empty() &&
+      base::FeatureList::IsEnabled(kShowUrlsInV5GetHashLookupsWebUI)) {
     std::vector<std::string> urls;
     urls.reserve(lookup.urls.size());
     for (const auto& url : lookup.urls) {

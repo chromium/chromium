@@ -25,7 +25,6 @@ source_set("info_singleton") {
 
   deps = [
     ":event_observer",
-    "//components/safe_browsing/core/common:features",
     "//components/sync/protocol",
   ]
 }
@@ -105,6 +104,7 @@ source_set("util") {
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/core/browser:download_check_result",
     "//components/safe_browsing/core/browser/db:v5_get_hash_protocol_manager",
+    "//components/safe_browsing/core/common:features",
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/safe_browsing/core/common/proto:realtimeapi_proto",
     "//components/safe_browsing/core/common/proto:safebrowsingv5_proto",

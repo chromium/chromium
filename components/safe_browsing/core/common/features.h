@@ -378,10 +378,6 @@ extern const base::FeatureParam<int> kHashPrefixRealTimeLookupsSampleRate;
 // how often the checks are triggered (they are still not in real time).
 BASE_DECLARE_FEATURE(kLocalListsUseSBv5);
 
-// If enabled, V5 GetHash lookups are logged to WebUIInfoSingleton for display
-// on the chrome://safe-browsing debugging page.
-BASE_DECLARE_FEATURE(kLocalListsUseSBv5WebUI);
-
 #if BUILDFLAG(IS_ANDROID)
 // Enables ClientDownloadRequests for APK downloads on Android.
 BASE_DECLARE_FEATURE(kMaliciousApkDownloadCheck);
@@ -511,6 +507,12 @@ BASE_DECLARE_FEATURE(kSavePasswordHashFromProfilePicker);
 // Enables showing manual notification auto-revocations in Safety Hub, allowing
 // users to review and manage the revoked permissions.
 BASE_DECLARE_FEATURE(kShowManualNotificationRevocationsSafetyHub);
+
+// Controls whether the checked URLs are displayed for V5 GetHash lookups on
+// the chrome://safe-browsing debugging page.
+// TODO(crbug.com/564637472): enabling this is blocked on making the debugging
+// page chrome://safe-browsing be profile-specific to avoid regressing privacy.
+BASE_DECLARE_FEATURE(kShowUrlsInV5GetHashLookupsWebUI);
 
 // Enables replacing notification contents with a Chrome warning when the
 // on-device model returns a sufficiently suspicious verdict.
