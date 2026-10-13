@@ -314,15 +314,14 @@ class DedicatedWebTransportHttp3ClientSession
 
   bool OnFrameAcked(const quic::QuicFrame& frame,
                     quic::QuicTime::Delta ack_delay_time,
-                    quic::QuicTime receive_timestamp,
                     bool is_retransmission) override {
     if (frame.type == quic::STREAM_FRAME) {
       send_stats_tracker_.RecordAcknowledged(frame.stream_frame.stream_id,
                                              frame.stream_frame.offset,
                                              frame.stream_frame.data_length);
     }
-    return quic::QuicSpdyClientSession::OnFrameAcked(
-        frame, ack_delay_time, receive_timestamp, is_retransmission);
+    return quic::QuicSpdyClientSession::OnFrameAcked(frame, ack_delay_time,
+                                                     is_retransmission);
   }
 
   void RegisterSendStream(quic::QuicStreamId stream_id) {
