@@ -122,13 +122,6 @@ source_set("enterprise") {
     ]
   }
 
-  # Circular deps: //chrome/browser/safe_browsing, //chrome/browser/extensions,
-  # //chrome/browser/ui, //chrome/browser/ui/webui/signin, and
-  # //chrome/browser/ash/policy/core all depend on :enterprise via
-  # browser_public_dependencies. Unconditional includes from those targets are
-  # handled via allow_circular_includes_from on the respective owning targets.
-  # Conditional includes guarded by #if BUILDFLAG() use nogncheck.
-
   if (is_android) {
     public += [
       "platform_auth/entra_provider_android.h",

@@ -179,12 +179,6 @@ source_set("impl") {
     "//ui/strings:ui_strings_grit",
   ]
 
-  # These .cc files include headers still compiled in //chrome/browser/ui:ui:
-  # browser.h, view_ids.h, views/frame/browser_view.h,
-  # views/frame/contents_web_view.h and views/theme_copying_widget.h. Reach
-  # them via browser_public_dependencies; the reverse edge is the
-  # allow_circular_includes_from entry on //chrome/browser/ui:ui.
-
   if (is_mac) {
     deps += [ ":native_widget_mac" ]
   }

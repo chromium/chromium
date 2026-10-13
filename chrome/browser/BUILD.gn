@@ -1054,7 +1054,7 @@ source_set("core") {
     ":browser_process",
     ":browser_process_impl",
     ":browser_process_platform_part",
-    ":browser_public_dependencies",
+    ":buildflags",
     ":chained_back_navigation_tracker",
     ":child_process_host_flags",
     ":chrome_browser_field_trials",
@@ -1166,6 +1166,7 @@ source_set("core") {
     "//chrome/browser/permissions",
     "//chrome/browser/permissions/system",
     "//chrome/browser/picture_in_picture",
+    "//chrome/browser/plugins",
     "//chrome/browser/policy:path_parser",
     "//chrome/browser/policy:policy_util",
     "//chrome/browser/predictors",
@@ -1250,6 +1251,7 @@ source_set("core") {
     "//chrome/browser/ui/webui/content_settings",
     "//chrome/browser/ui/webui/context_hub",
     "//chrome/browser/ui/webui/data_sharing_internals",
+    "//chrome/browser/ui/webui/discards:mojo_bindings",
     "//chrome/browser/ui/webui/engagement",
     "//chrome/browser/ui/webui/flags",
     "//chrome/browser/ui/webui/internal_debug_pages_disabled",
@@ -1259,10 +1261,12 @@ source_set("core") {
     "//chrome/browser/ui/webui/omnibox/aim_eligibility:mojo_bindings",
     "//chrome/browser/ui/webui/policy",
     "//chrome/browser/ui/webui/private_ai_internals",
+    "//chrome/browser/ui/webui/reset_password:mojo_bindings",
     "//chrome/browser/ui/webui/segmentation_internals",
     "//chrome/browser/ui/webui/signin/batch_upload:mojo_bindings",
     "//chrome/browser/ui/webui/subresource_filter",
     "//chrome/browser/ui/webui/suggest_internals",
+    "//chrome/browser/ui/webui/suggest_internals:mojo_bindings",
     "//chrome/browser/ui/webui/usb_internals",
     "//chrome/browser/update_client",
     "//chrome/browser/updater",
@@ -1274,11 +1278,13 @@ source_set("core") {
     "//chrome/browser/webauthn:chrome_web_authentication_delegate",
     "//chrome/browser/webid",
     "//chrome/common:version_header",
+    "//chrome/common/compose:mojo_bindings",
     "//chrome/services/speech/buildflags",
     "//components/activity_reporter",
     "//components/actor/core",
     "//components/actor/public/mojom:mojo_bindings",
     "//components/application_locale_storage",
+    "//components/autofill/content/browser",
     "//components/blocked_content",
     "//components/breadcrumbs/core",
     "//components/breadcrumbs/core:status",
@@ -1309,6 +1315,7 @@ source_set("core") {
     "//components/embedder_support",
     "//components/embedder_support:content_settings",
     "//components/embedder_support:user_agent",
+    "//components/enterprise/connectors:mojom",
     "//components/enterprise/data_controls/content/browser",
     "//components/enterprise/data_controls/core/browser:features",
     "//components/enterprise/net",
@@ -1326,6 +1333,7 @@ source_set("core") {
     "//components/history_clusters/core",
     "//components/history_clusters/history_clusters_internals/webui",
     "//components/history_embeddings/core",
+    "//components/input",
     "//components/javascript_dialogs",
     "//components/language/content/browser",
     "//components/language/core/browser",
@@ -1350,6 +1358,7 @@ source_set("core") {
     "//components/notebooks/internals/webui:mojo_bindings",
     "//components/notebooks/public",
     "//components/omnibox/common:features",
+    "//components/on_device_translation/buildflags",
     "//components/open_from_clipboard:feature_flags",
     "//components/page_content_annotations/core:features",
     "//components/page_load_metrics/browser",
@@ -1360,6 +1369,7 @@ source_set("core") {
     "//components/password_manager/core/browser:password_switches",
     "//components/password_manager/core/browser/features:password_features",
     "//components/payments/content",
+    "//components/payments/core",
     "//components/pdf/common:constants",
     "//components/pdf/common:util",
     "//components/performance_manager",
@@ -1387,6 +1397,7 @@ source_set("core") {
     "//components/security_state/content",
     "//components/segmentation_platform/embedder/home_modules:constants",
     "//components/send_tab_to_self:features",
+    "//components/services/storage:storage_features",
     "//components/sessions",
     "//components/site_engagement/core/mojom:mojo_bindings",
     "//components/site_isolation",
@@ -1413,6 +1424,7 @@ source_set("core") {
     "//components/update_client:network_impl",
     "//components/variations/service",
     "//components/visited_url_ranking/public",
+    "//components/wallet/core/common:features",
     "//components/web_resource",
     "//components/webui/chrome_urls",
     "//device/base",
@@ -2197,6 +2209,24 @@ source_set("core") {
   if (enable_webui_tabstrip_ntb) {
     deps += [ "//chrome/browser/ui/webui/tabstrip_ntb" ]
   }
+  if (is_android) {
+    deps += [ "//chrome/android/features/dev_ui:buildflags" ]
+  } else {
+    deps += [
+      "//chrome/browser/ui/webui/skills:mojo_bindings",
+      "//chrome/browser/ui/webui/webnn_internals:mojo_bindings",
+      "//components/record_replay/core/common:mojom",
+    ]
+  }
+  if (is_chromeos) {
+    deps += [ "//chromeos/ash/components/mojo_service_manager:mojo_service_manager_connection" ]
+  }
+  if (is_win) {
+    deps += [ "//chrome/browser/win" ]
+  }
+  if (chrome_root_store_cert_management_ui) {
+    deps += [ "//chrome/browser/resources/certificate_manager:mojom" ]
+  }
 }
 
 # This target no longer has any sources of its own; it only aggregates
@@ -2212,13 +2242,10 @@ source_set("browser") {
   libs = []
   ldflags = []
   public_deps = [
-    # WARNING WARNING WARNING
-    # New dependencies outside of //chrome/browser should be added to
-    # browser_public_dependencies.
     # New dependencies inside of //chrome/browser that generate header files
     # should be added to browser_generated_files.
-    ":browser_public_dependencies",
-    ":core",
+    ":browser_features",
+    ":browser_generated_files",
     "//chrome/browser/accessibility/accessibility_prefs",
     "//chrome/browser/browsing_data",
     "//chrome/browser/download",
@@ -2233,9 +2260,22 @@ source_set("browser") {
     "//chrome/browser/interstitials",
     "//chrome/browser/ntp_tiles",
     "//chrome/browser/obsolete_system",
+    "//chrome/browser/plugins",
     "//chrome/browser/privacy_sandbox:headers",
     "//chrome/browser/tab_contents",
+    "//chrome/common",
+    "//components/input",
+    "//components/payments/core",
+    "//components/payments/core:error_strings",
+    "//components/wallet/core/common:features",
+    "//components/webapps/browser",
   ]
+
+  # :core must appear after //chrome/common in public_deps so that on Windows,
+  # //chrome/common/win:delay_load_hooks is linked before
+  # chrome_browser_main_win.obj (which pulls in delayimp.lib).
+  public_deps += [ ":core" ]
+
   deps = [
     ":bad_message",
     ":browser_features",
@@ -2895,7 +2935,11 @@ source_set("browser") {
     ]
     deps -= [ "//components/storage_monitor" ]
   } else {
-    public_deps += [ "//chrome/browser/accessibility/phrase_segmentation" ]
+    public_deps += [
+      "//chrome/browser/accessibility/phrase_segmentation",
+      "//chrome/browser/record_replay",
+      "//components/record_replay/core/common:mojom",
+    ]
     deps += [
       ":certificate_viewer",
       ":chrome_browser_interface_binders_webui_parts",
@@ -3295,6 +3339,11 @@ source_set("browser") {
     assert(enable_extensions)
     assert(enable_supervised_users)
     assert(toolkit_views)
+    public_deps += [
+      "//chrome/common/extensions/api",
+      "//chromeos/ash/components/dbus/seneschal:seneschal_proto",
+      "//chromeos/ash/components/nearby/common/connections_manager",
+    ]
     deps += [
       ":browser_process_platform_part_ash",
       ":chrome_browser_interface_binders_webui_parts_chromeos",

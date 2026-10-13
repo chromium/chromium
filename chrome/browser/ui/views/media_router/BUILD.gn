@@ -106,11 +106,6 @@ source_set("impl") {
     "//ui/views",
   ]
 
-  # These .cc files include headers still compiled in //chrome/browser/ui:ui:
-  # views/frame/browser_view.h and tab_dialogs.h. Reach them via
-  # browser_public_dependencies; the reverse
-  # edge is the allow_circular_includes_from entry on //chrome/browser/ui:ui.
-
   if (is_mac) {
     deps += [ "//chrome/browser:global_keyboard_shortcuts_mac" ]
   }

@@ -111,12 +111,6 @@ source_set("impl") {
     "//components/tabs:public",
     "//components/variations/service",
   ]
-
-  # payment_handler_web_flow_view_controller.cc and
-  # payment_sheet_view_controller.cc include headers still built as part of
-  # //chrome/browser/ui:ui (browser_tabstrip.h). Reach them via
-  # browser_public_dependencies; the reverse edge is expressed by the
-  # allow_circular_includes_from entry on //chrome/browser/ui:ui.
 }
 
 source_set("test_support") {

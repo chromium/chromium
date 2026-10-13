@@ -95,7 +95,6 @@ source_set("impl") {
     "foo.cc",
     "foo_factory.cc",
   ]
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
     ":<subfolder>",
     "//base",
@@ -253,10 +252,6 @@ Run build verification first (Phase 6), then resolve any errors.
 Add an explicit dep to the failing target:
 `gn deps += [ "//chrome/browser/<subfolder>" ]`
 
-Or, if `//chrome/browser:browser` already depends on `::impl` and the cycle is
-intentional, use `allow_circular_includes_from` on `::impl`:
-`gn allow_circular_includes_from = [ "//chrome/browser:browser_public_dependencies" ]`
-
 ### Error type 2: "Can't include this header from here" — reachable only via private dep
 
 Add the dep directly to the failing target, or promote it to `public_deps` on
@@ -269,8 +264,6 @@ the target that owns the header.
 - The dep cycle must already exist in the dep graph.
 - It only covers headers in that target's own `sources`, not headers from its
   transitive deps.
-- Standard pattern: `::impl` sets
-  `allow_circular_includes_from = ["//chrome/browser:browser_public_dependencies"]`.
 
 ## Phase 6: Format, verify, and commit
 

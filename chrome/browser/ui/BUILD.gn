@@ -1629,12 +1629,7 @@ if (!is_android) {
   }
 }
 
-# These are the dependencies for the "ui" target that are outside of
-# //chrome/browser. These are semantically a part of
-# //chrome/browser:browser_public_dependencies since //chrome/browser and
-# //chrome/browser/ui allow circular dependencies.
 group("ui_public_dependencies") {
-  visibility = [ "//chrome/browser:browser_public_dependencies" ]
   public_deps = [
     "//components/cross_device/logging",
     "//components/dom_distiller/core",

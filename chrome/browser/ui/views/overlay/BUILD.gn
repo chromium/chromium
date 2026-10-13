@@ -84,12 +84,6 @@ source_set("impl") {
     "//components/live_caption:constants",
   ]
 
-  # video_overlay_window_views.cc includes chrome/browser/ui/browser.h to read
-  # Browser::app_name() (no BrowserWindowInterface accessor exists yet), which
-  # is a circular include against //chrome/browser/ui:ui. Reach it via
-  # browser_public_dependencies; the reverse edge is the
-  # allow_circular_includes_from entry on //chrome/browser/ui:ui.
-
   if (is_mac) {
     sources += [ "video_overlay_window_native_widget_mac.mm" ]
     deps += [ "//components/remote_cocoa/common:mojo" ]
