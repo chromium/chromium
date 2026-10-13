@@ -6,20 +6,20 @@ package org.chromium.chrome.browser.multiwindow;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.app.ActivityManager;
 import android.app.ActivityManager.AppTask;
 import android.app.ActivityManager.RecentTaskInfo;
 import android.app.ApplicationExitInfo;
-import android.content.Context;
 
 import org.junit.After;
 import org.junit.Before;
@@ -29,9 +29,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -71,12 +71,9 @@ import java.util.concurrent.TimeUnit;
     ChromeFeatureList.SESSION_RESTORE_AFTER_CRASH,
     ChromeFeatureList.SYNC_RESTORE_ON_STARTUP_PREF
 })
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabbedStartupWindowPolicyDelegateUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private ActivityManager mActivityManager;
-    @Mock private ChromeTabbedActivity mTabbedActivity;
     @Mock private Profile mProfile;
     @Mock private PrefService mPrefService;
     @Mock private SyncService mSyncService;
@@ -84,6 +81,7 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
     @Mock private TabbedStartupWindowPolicyDelegate.Natives mMockDelegateNatives;
 
     private TabbedStartupWindowPolicyDelegate mDelegate;
+    private ChromeTabbedActivity mTabbedActivity;
 
     @Before
     public void setUp() {
@@ -99,10 +97,8 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
         ChromeMultiInstancePersistentStore.ensureInitialized();
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
         DeviceInfo.setIsDesktopForTesting(true);
-        doReturn(mActivityManager).when(mTabbedActivity).getSystemService(Context.ACTIVITY_SERVICE);
-        doReturn(ContextUtils.getApplicationContext().getPackageName())
-                .when(mTabbedActivity)
-                .getPackageName();
+        // The activity is not created, so getWindowId() returns 0.
+        mTabbedActivity = Robolectric.buildActivity(ChromeTabbedActivity.class).get();
         mDelegate = TabbedStartupWindowPolicyDelegate.getInstance();
     }
 
@@ -124,23 +120,13 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.MultiWindow.StartupRestorationWindowCount", /* value= */ 1);
         var userActionTester = new UserActionTester();
-        doAnswer(
-                        invocation -> {
-                            assertTrue(
-                                    userActionTester
-                                            .getActions()
-                                            .contains(
-                                                    "Android.MultiWindow.StartupRestorationInitiated"));
-                            return null;
-                        })
-                .when(mTabbedActivity)
-                .startActivity(any());
 
         // Act.
         mDelegate.applyPolicy(mTabbedActivity);
 
         // Verify.
-        verify(mTabbedActivity).startActivity(any());
+        assertNotNull(shadowOf(mTabbedActivity).getNextStartedActivity());
+        assertNull(shadowOf(mTabbedActivity).getNextStartedActivity());
         histogramWatcher.assertExpected();
         assertTrue(
                 userActionTester
@@ -174,7 +160,8 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
         mDelegate.applyPolicy(mTabbedActivity);
 
         // Verify: Window 1 is restored.
-        verify(mTabbedActivity).startActivity(any());
+        assertNotNull(shadowOf(mTabbedActivity).getNextStartedActivity());
+        assertNull(shadowOf(mTabbedActivity).getNextStartedActivity());
         assertEquals(
                 SessionStartupPolicy.DEFAULT,
                 ChromeMultiInstancePersistentStore.readSessionStartupPolicy());
@@ -193,7 +180,7 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
         mDelegate.applyPolicy(mTabbedActivity);
 
         // Verify.
-        verify(mTabbedActivity, never()).startActivity(any());
+        assertNull(shadowOf(mTabbedActivity).getNextStartedActivity());
         assertTrue(
                 "isRecoverable should remain true when startup policy is default.",
                 ChromeMultiInstancePersistentStore.readIsRecoverable(1));
@@ -210,7 +197,7 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
         mDelegate.applyPolicy(mTabbedActivity);
 
         // Verify.
-        verify(mTabbedActivity, never()).startActivity(any());
+        assertNull(shadowOf(mTabbedActivity).getNextStartedActivity());
         assertEquals(
                 SessionStartupPolicy.RESTORE_ALL,
                 ChromeMultiInstancePersistentStore.readSessionStartupPolicy());
@@ -222,7 +209,7 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
         setupRecoverableInstances(SessionStartupPolicy.RESTORE_ALL);
         mDelegate.claimStartupPolicy(/* isIncognito= */ false, StartupMode.UNMAPPED_TASK);
         setupAppTasks(1);
-        doReturn(false).when(mTabbedActivity).isInMultiWindowMode();
+        shadowOf(mTabbedActivity).setInMultiWindowMode(false);
         var histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.MultiWindow.StartupRestorationWindowCount", /* value= */ 1);
@@ -232,7 +219,7 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
         mDelegate.applyPolicy(mTabbedActivity);
 
         // Verify.
-        verify(mTabbedActivity, never()).startActivity(any());
+        assertNull(shadowOf(mTabbedActivity).getNextStartedActivity());
         histogramWatcher.assertExpected();
         assertFalse(
                 userActionTester
@@ -250,14 +237,15 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
         setupRecoverableInstances(SessionStartupPolicy.RESTORE_ALL);
         mDelegate.claimStartupPolicy(/* isIncognito= */ false, StartupMode.UNMAPPED_TASK);
         List<AppTask> appTasks = setupAppTasks(1);
-        doReturn(true).when(mTabbedActivity).isInMultiWindowMode();
+        shadowOf(mTabbedActivity).setInMultiWindowMode(true);
 
         // Act.
         mDelegate.applyPolicy(mTabbedActivity);
 
         // Verify.
         verify(appTasks.get(0)).finishAndRemoveTask();
-        verify(mTabbedActivity).startActivity(any());
+        assertNotNull(shadowOf(mTabbedActivity).getNextStartedActivity());
+        assertNull(shadowOf(mTabbedActivity).getNextStartedActivity());
         assertFalse(
                 "isRecoverable should be cleared when restoring window in multi-window mode.",
                 ChromeMultiInstancePersistentStore.readIsRecoverable(1));
@@ -269,13 +257,14 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
         setupRecoverableInstances(SessionStartupPolicy.RESTORE_ALL);
         mDelegate.claimStartupPolicy(/* isIncognito= */ false, StartupMode.UNMAPPED_TASK);
         // Do not add app task ID 1 so it is treated as killed/not alive.
-        doReturn(false).when(mTabbedActivity).isInMultiWindowMode();
+        shadowOf(mTabbedActivity).setInMultiWindowMode(false);
 
         // Act.
         mDelegate.applyPolicy(mTabbedActivity);
 
         // Verify.
-        verify(mTabbedActivity).startActivity(any());
+        assertNotNull(shadowOf(mTabbedActivity).getNextStartedActivity());
+        assertNull(shadowOf(mTabbedActivity).getNextStartedActivity());
         assertFalse(
                 "isRecoverable should be cleared when restoring a killed task.",
                 ChromeMultiInstancePersistentStore.readIsRecoverable(1));
@@ -291,14 +280,13 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
         ChromeMultiInstancePersistentStore.writeIsRecoverable(1, false);
         ChromeMultiInstancePersistentStore.writeSessionStartupPolicy(
                 SessionStartupPolicy.RESTORE_ALL);
-        doReturn(0).when(mTabbedActivity).getWindowId();
         mDelegate.claimStartupPolicy(/* isIncognito= */ false, StartupMode.UNMAPPED_TASK);
 
         // Act.
         mDelegate.applyPolicy(mTabbedActivity);
 
         // Verify.
-        verify(mTabbedActivity, never()).startActivity(any());
+        assertNull(shadowOf(mTabbedActivity).getNextStartedActivity());
         assertFalse(
                 "isRecoverable should remain false for unrecoverable window.",
                 ChromeMultiInstancePersistentStore.readIsRecoverable(1));
@@ -330,7 +318,7 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
 
         // Verify: Window restoration is skipped for an incognito launch, and startup policy is
         // cleared.
-        verify(mTabbedActivity, never()).startActivity(any());
+        assertNull(shadowOf(mTabbedActivity).getNextStartedActivity());
         assertEquals(
                 SessionStartupPolicy.DEFAULT,
                 ChromeMultiInstancePersistentStore.readSessionStartupPolicy());
@@ -350,7 +338,7 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
 
         // Verify: Window restoration is skipped when window restoration is disallowed, and
         // startup policy is cleared.
-        verify(mTabbedActivity, never()).startActivity(any());
+        assertNull(shadowOf(mTabbedActivity).getNextStartedActivity());
         assertEquals(
                 SessionStartupPolicy.DEFAULT,
                 ChromeMultiInstancePersistentStore.readSessionStartupPolicy());
@@ -366,7 +354,7 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
         mDelegate.applyPolicy(mTabbedActivity);
 
         // Verify: Window restoration is skipped for explicit instance selection.
-        verify(mTabbedActivity, never()).startActivity(any());
+        assertNull(shadowOf(mTabbedActivity).getNextStartedActivity());
         assertEquals(
                 SessionStartupPolicy.DEFAULT,
                 ChromeMultiInstancePersistentStore.readSessionStartupPolicy());
@@ -383,7 +371,7 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
 
         // Verify: Window restoration is skipped when startup policy has not been claimed, as
         // window restoration is disallowed by default.
-        verify(mTabbedActivity, never()).startActivity(any());
+        assertNull(shadowOf(mTabbedActivity).getNextStartedActivity());
         assertEquals(
                 SessionStartupPolicy.DEFAULT,
                 ChromeMultiInstancePersistentStore.readSessionStartupPolicy());
@@ -1168,8 +1156,6 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
         MultiWindowTestUtils.createInstance(
                 /* instanceId= */ 1, "https://www.google.com", /* tabCount= */ 1, /* taskId= */ 1);
         ChromeMultiInstancePersistentStore.writeSessionStartupPolicy(startupPolicy);
-
-        doReturn(0).when(mTabbedActivity).getWindowId();
     }
 
     private List<AppTask> setupAppTasks(Integer... taskIds) {
@@ -1181,7 +1167,7 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
             when(appTask.getTaskInfo()).thenReturn(appTaskInfo);
             appTasks.add(appTask);
         }
-        doReturn(appTasks).when(mActivityManager).getAppTasks();
+        shadowOf(mTabbedActivity.getSystemService(ActivityManager.class)).setAppTasks(appTasks);
         return appTasks;
     }
 }

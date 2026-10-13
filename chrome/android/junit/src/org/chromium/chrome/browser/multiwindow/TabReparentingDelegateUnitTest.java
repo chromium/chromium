@@ -30,10 +30,10 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
@@ -64,15 +64,26 @@ import java.util.Map.Entry;
 /** Unit tests for {@link TabReparentingDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = 31)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabReparentingDelegateUnitTest {
+    /**
+     * Records intents passed to {@link #onNewIntent}, since the real implementation requires native
+     * initialization.
+     */
+    private static class TestChromeTabbedActivity extends ChromeTabbedActivity {
+        final List<Intent> mNewIntents = new ArrayList<>();
+
+        @Override
+        @SuppressWarnings("MissingSuperCall") // super requires native initialization.
+        public void onNewIntent(Intent intent) {
+            mNewIntents.add(intent);
+        }
+    }
+
     private static final int SOURCE_WINDOW_ID = 1;
     private static final int DEST_WINDOW_ID = 2;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private ChromeTabbedActivity mCurrentActivity;
-    @Mock private ChromeTabbedActivity mDestActivity;
     @Mock private MismatchedIndicesHandler mMismatchedIndicesHandler;
     @Mock private TabGroupSyncFeatures.Natives mTabGroupSyncFeaturesJniMock;
     @Mock private TabGroupSyncService mTabGroupSyncService;
@@ -87,6 +98,8 @@ public class TabReparentingDelegateUnitTest {
     @Captor private ArgumentCaptor<Runnable> mOnSaveTabListRunnableCaptor;
 
     private TabReparentingDelegate mDelegate;
+    private TestChromeTabbedActivity mCurrentActivity;
+    private TestChromeTabbedActivity mDestActivity;
 
     @Before
     public void setup() {
@@ -98,8 +111,8 @@ public class TabReparentingDelegateUnitTest {
         mDelegate = new TabReparentingDelegate();
         TabReparentingDelegate.setPersistentStoreForTesting(mTabPersistentStore);
 
-        when(mCurrentActivity.getPackageName())
-                .thenReturn(ContextUtils.getApplicationContext().getPackageName());
+        mCurrentActivity = Robolectric.buildActivity(TestChromeTabbedActivity.class).get();
+        mDestActivity = Robolectric.buildActivity(TestChromeTabbedActivity.class).get();
 
         MultiWindowTestUtils.setupTabModelSelectorFactory(mock(Profile.class), mock(Profile.class));
         TabWindowManagerSingleton.getInstance()
@@ -260,7 +273,7 @@ public class TabReparentingDelegateUnitTest {
                 /* destGroupTabId= */ Tab.INVALID_TAB_ID,
                 /* bringToFront= */ true);
 
-        verify(mDestActivity, never()).onNewIntent(any());
+        assertTrue(mDestActivity.mNewIntents.isEmpty());
         verify(mReparentingTabsTask, never()).setupIntent(any(), any());
     }
 
@@ -279,16 +292,15 @@ public class TabReparentingDelegateUnitTest {
 
         // Verify that the reparenting task is initiated.
         var setupIntentCaptor = ArgumentCaptor.forClass(Intent.class);
-        var onNewIntentCaptor = ArgumentCaptor.forClass(Intent.class);
         verify(mReparentingTabsTask).setupIntent(setupIntentCaptor.capture(), eq(null));
-        verify(mDestActivity).onNewIntent(onNewIntentCaptor.capture());
+        assertEquals(1, mDestActivity.mNewIntents.size());
 
         // Verify the intent used in the reparenting task.
         assertEquals(
                 "Intents passed to setup reparenting task and sent to the activity should be the"
                         + " same.",
                 setupIntentCaptor.getValue(),
-                onNewIntentCaptor.getValue());
+                mDestActivity.mNewIntents.get(0));
         assertTrue(
                 "EXTRA_TAB_INDEX is not set.",
                 setupIntentCaptor.getValue().hasExtra(IntentHandler.EXTRA_TAB_INDEX));
@@ -309,16 +321,15 @@ public class TabReparentingDelegateUnitTest {
 
         // Verify that the reparenting task is initiated.
         var setupIntentCaptor = ArgumentCaptor.forClass(Intent.class);
-        var onNewIntentCaptor = ArgumentCaptor.forClass(Intent.class);
         verify(mReparentingTabsTask).setupIntent(setupIntentCaptor.capture(), eq(null));
-        verify(mDestActivity).onNewIntent(onNewIntentCaptor.capture());
+        assertEquals(1, mDestActivity.mNewIntents.size());
 
         // Verify the intent used in the reparenting task.
         assertEquals(
                 "Intents passed to setup reparenting task and sent to the activity should be the"
                         + " same.",
                 setupIntentCaptor.getValue(),
-                onNewIntentCaptor.getValue());
+                mDestActivity.mNewIntents.get(0));
         assertTrue(
                 "EXTRA_DEST_TAB_ID is not set.",
                 setupIntentCaptor.getValue().hasExtra(IntentHandler.EXTRA_DEST_TAB_ID));
@@ -340,7 +351,7 @@ public class TabReparentingDelegateUnitTest {
 
     @Test
     public void testReparentTabsToExistingWindow_targetActivityFinishingOrDestroyed() {
-        when(mDestActivity.isActivityFinishingOrDestroyed()).thenReturn(true);
+        mDestActivity.finish();
         List<Tab> tabs = List.of(mTab1, mTab2);
 
         mDelegate.reparentTabsToExistingWindow(
@@ -350,19 +361,19 @@ public class TabReparentingDelegateUnitTest {
                 /* destGroupTabId= */ Tab.INVALID_TAB_ID,
                 /* bringToFront= */ true);
 
-        verify(mDestActivity, never()).onNewIntent(any());
+        assertTrue(mDestActivity.mNewIntents.isEmpty());
         verify(mReparentingTabsTask, never()).setupIntent(any(), any());
     }
 
     @Test
     public void testReparentTabGroupToExistingWindow_targetActivityFinishingOrDestroyed() {
-        when(mDestActivity.isActivityFinishingOrDestroyed()).thenReturn(true);
+        mDestActivity.finish();
         TabGroupMetadata tabGroupMetadata = getTestTabGroupMetadata();
 
         mDelegate.reparentTabGroupToExistingWindow(
                 mDestActivity, tabGroupMetadata, /* destTabIndex= */ 3, /* bringToFront= */ true);
 
-        verify(mDestActivity, never()).onNewIntent(any());
+        assertTrue(mDestActivity.mNewIntents.isEmpty());
         verify(mReparentingTabGroupTask, never()).setupIntent(any(), any());
         verify(mTabPersistentStore, never()).pauseSaveTabList();
     }
@@ -378,11 +389,11 @@ public class TabReparentingDelegateUnitTest {
         verify(mTabPersistentStore).resumeSaveTabList(mOnSaveTabListRunnableCaptor.capture());
 
         // Target activity is destroyed before resumeSaveTabList callback executes.
-        when(mDestActivity.isActivityFinishingOrDestroyed()).thenReturn(true);
+        mDestActivity.finish();
         mOnSaveTabListRunnableCaptor.getValue().run();
 
         // onNewIntent is NOT called, but sync service observation is resumed.
-        verify(mDestActivity, never()).onNewIntent(any());
+        assertTrue(mDestActivity.mNewIntents.isEmpty());
         verify(mTabGroupSyncService).setLocalObservationMode(/* observeLocalChanges= */ true);
     }
 
@@ -503,20 +514,19 @@ public class TabReparentingDelegateUnitTest {
         }
 
         var setupIntentCaptor = ArgumentCaptor.forClass(Intent.class);
-        var onNewIntentCaptor = ArgumentCaptor.forClass(Intent.class);
         verify(mReparentingTabGroupTask).setupIntent(setupIntentCaptor.capture(), eq(null));
         if (pauseResumeTabGroupSyncService) {
             // Verify that we only send the reparent intent after the Runnable runs.
-            verify(mDestActivity, never()).onNewIntent(any());
+            assertTrue(mDestActivity.mNewIntents.isEmpty());
             mOnSaveTabListRunnableCaptor.getValue().run();
         }
-        verify(mDestActivity).onNewIntent(onNewIntentCaptor.capture());
+        assertEquals(1, mDestActivity.mNewIntents.size());
 
         assertEquals(
                 "Intents passed to setup reparenting task and sent to the activity should be the"
                         + " same.",
                 setupIntentCaptor.getValue(),
-                onNewIntentCaptor.getValue());
+                mDestActivity.mNewIntents.get(0));
         assertTrue(
                 "FLAG_ACTIVITY_LAUNCH_ADJACENT is not set.",
                 (setupIntentCaptor.getValue().getFlags() & Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT)
