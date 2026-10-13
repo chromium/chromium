@@ -50,6 +50,8 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/platform/browser_accessibility.h"
+#include "ui/base/window_open_disposition.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view.h"
 
@@ -83,6 +85,23 @@ std::optional<uint32_t> GetTextColor(content::WebContents* preview_dialog,
   }
   return static_cast<uint32_t>(
       inline_text_box->GetIntAttribute(ax::mojom::IntAttribute::kColor));
+}
+
+// Returns the top of the line whose PDF accessibility node is named `name`, in
+// pixels from the top of the PDF, or nullopt if the line is not found.
+std::optional<float> GetLineTop(content::WebContents* preview_dialog,
+                                std::string_view name) {
+  content::FindAccessibilityNodeCriteria criteria;
+  criteria.role = ax::mojom::Role::kStaticText;
+  criteria.name = std::string(name);
+  auto* line = ui::BrowserAccessibility::FromAXPlatformNodeDelegate(
+      content::FindAccessibilityNode(preview_dialog, criteria));
+  if (!line) {
+    return std::nullopt;
+  }
+  // PDF nodes are placed relative to the PDF root, whose transform holds the
+  // viewer's zoom and scroll, so the result doesn't change with them.
+  return line->GetLocation().y();
 }
 
 }  // namespace
@@ -140,6 +159,13 @@ class ReadAnythingPrintingTestBase : public InProcessBrowserTest {
         browser(), embedded_test_server()->GetURL(kArticlePath)));
   }
 
+  void NavigateToArticleInNewTab() {
+    ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+        browser(), embedded_test_server()->GetURL(kArticlePath),
+        WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  }
+
   tabs::TabInterface* GetActiveTab() {
     return browser()->GetTabStripModel()->GetActiveTab();
   }
@@ -184,6 +210,19 @@ class ReadAnythingPrintingTestBase : public InProcessBrowserTest {
                                  "?.shadowRoot?.querySelector('#container')"
                                  "?.innerText.includes($1) ?? false",
                                  kBottomSentinel))
+          .ExtractBool();
+    }));
+  }
+
+  // Waits until line focus pads the IRM content so that its first and last
+  // lines can scroll to the middle of the screen.
+  void WaitForLineFocusPadding(content::WebContents* irm_contents) {
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return content::EvalJs(irm_contents,
+                             "parseFloat(getComputedStyle("
+                             "document.querySelector('read-anything-app')"
+                             ".shadowRoot.querySelector('#container'))"
+                             ".paddingTop) > 0")
           .ExtractBool();
     }));
   }
@@ -316,6 +355,77 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingPrintingBrowserTest,
   EXPECT_GE(r, 0xC0u);
   EXPECT_GE(g, 0xC0u);
   EXPECT_GE(b, 0xC0u);
+}
+
+// Static line focus pads the IRM content so that the first and last lines can
+// scroll to the middle of the screen. Printing leaves the padding out, so the
+// printout is laid out the same as with line focus off.
+IN_PROC_BROWSER_TEST_F(ReadAnythingPrintingBrowserTest,
+                       LineFocusPaddingIsNotPrinted) {
+  content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
+  auto* dialog_controller =
+      printing::PrintPreviewDialogController::GetInstance();
+  ASSERT_TRUE(dialog_controller);
+  NavigateToArticle();
+  content::WebContents* irm_contents = OpenIRM();
+  ASSERT_TRUE(irm_contents);
+  WaitForDistillation(irm_contents);
+
+  uint32_t off_page_count = 0;
+  {
+    printing::TestPrintPreviewObserver observer(/*wait_for_loaded=*/false);
+    chrome::ExecuteCommand(browser(), IDC_PRINT);
+    observer.WaitUntilPreviewIsReady();
+    off_page_count = observer.rendered_page_count();
+  }
+  content::WebContents* preview =
+      dialog_controller->GetPrintPreviewForContents(irm_contents);
+  ASSERT_TRUE(preview);
+  content::WaitForAccessibilityTreeToContainNodeWithName(
+      preview, LineNodeName(kTopSentinel));
+  std::optional<float> off_top_sentinel =
+      GetLineTop(preview, LineNodeName(kTopSentinel));
+  ASSERT_TRUE(off_top_sentinel.has_value());
+
+  // Close IRM, which closes the preview. Wait until the preview is destroyed
+  // so that its callbacks can't reach the next observer.
+  content::WebContentsDestroyedWatcher watcher(preview);
+  ReadAnythingController::From(GetActiveTab())
+      ->CloseImmersiveUI(ReadAnythingCloseReason::kClosedByUser);
+  watcher.Wait();
+
+  // IRM reads the line focus prefs only when it loads. Each tab loads its own
+  // IRM, so turn on line focus and then open IRM in a new tab. IRM takes the
+  // mode from the last non-disabled pref, and whether it is on from the other.
+  constexpr int kLineFocus =
+      static_cast<int>(read_anything::mojom::LineFocus::kMediumStaticWindow);
+  PrefService* pref_service = browser()->GetProfile()->GetPrefs();
+  pref_service->SetInteger(prefs::kAccessibilityReadAnythingLineFocus,
+                           kLineFocus);
+  pref_service->SetInteger(
+      prefs::kAccessibilityReadAnythingLastNonDisabledLineFocus, kLineFocus);
+  NavigateToArticleInNewTab();
+  content::WebContents* line_focus_irm_contents = OpenIRM();
+  ASSERT_TRUE(line_focus_irm_contents);
+  ASSERT_NE(line_focus_irm_contents, irm_contents);
+  WaitForDistillation(line_focus_irm_contents);
+  WaitForLineFocusPadding(line_focus_irm_contents);
+
+  printing::TestPrintPreviewObserver observer(/*wait_for_loaded=*/false);
+  chrome::ExecuteCommand(browser(), IDC_PRINT);
+  observer.WaitUntilPreviewIsReady();
+
+  EXPECT_EQ(observer.rendered_page_count(), off_page_count);
+  content::WebContents* line_focus_preview =
+      dialog_controller->GetPrintPreviewForContents(line_focus_irm_contents);
+  ASSERT_TRUE(line_focus_preview);
+  content::WaitForAccessibilityTreeToContainNodeWithName(
+      line_focus_preview, LineNodeName(kTopSentinel));
+  std::optional<float> top_sentinel =
+      GetLineTop(line_focus_preview, LineNodeName(kTopSentinel));
+  ASSERT_TRUE(top_sentinel.has_value());
+  // The PDF viewer rounds text boxes to whole points, which are 4/3 px.
+  EXPECT_NEAR(*top_sentinel, *off_top_sentinel, 2);
 }
 
 // Closing IRM with a preview open closes the preview and restores the print

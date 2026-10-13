@@ -412,10 +412,15 @@ img.possibly-transparent-img {
     mask-image: none;
   }
 
-  #container {
+  #appFlexParent #container {
     height: auto;
     overflow: visible;
-    max-width: 100% !important;
+    max-width: 100%;
+    /* Override the line focus padding set by the #appFlexParent #container
+     * rule above. It only exists so the first and last lines can scroll to
+     * the middle of the screen, and would print as blank space. */
+    padding-top: 0;
+    padding-bottom: 0;
   }
 
   .current-read-highlight,
