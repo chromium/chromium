@@ -179,7 +179,7 @@ public class CafMessageHandler {
             }
             return handleSessionMessageFromClient(jsonMessage);
         } catch (JSONException e) {
-            Log.e(TAG, "JSONException while handling internal message: " + e);
+            Log.e(TAG, "JSONException while handling internal message:", e);
         }
         return false;
     }
@@ -357,7 +357,7 @@ public class CafMessageHandler {
                 }
             }
         } catch (IOException | IllegalStateException e) {
-            Log.e(TAG, "Failed to send volume command: " + e);
+            Log.e(TAG, "Failed to send volume command:", e);
             return false;
         }
 
@@ -372,13 +372,7 @@ public class CafMessageHandler {
         } else {
             // It's usually bad to have request and response on the same call stack so post the
             // response to the Android message loop.
-            mHandler.post(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            onVolumeChanged(clientId, sequenceNumber);
-                        }
-                    });
+            mHandler.post(() -> onVolumeChanged(clientId, sequenceNumber));
         }
         return true;
     }
@@ -665,7 +659,7 @@ public class CafMessageHandler {
                 json.put("message", jsonMessage);
             }
         } catch (JSONException e) {
-            Log.e(TAG, "Failed to build the reply: " + e);
+            Log.e(TAG, "Failed to build the reply:", e);
         }
 
         return json.toString();
@@ -762,15 +756,12 @@ public class CafMessageHandler {
 
     /**
      * Remove 'null' fields from a JSONObject. This method calls itself recursively until all the
-     * fields have been looked at.
-     * TODO(mlamouri): move to some util class?
+     * fields have been looked at. TODO(mlamouri): move to some util class?
      */
     private static void removeNullFields(Object object) throws JSONException {
-        if (object instanceof JSONArray) {
-            JSONArray array = (JSONArray) object;
+        if (object instanceof JSONArray array) {
             for (int i = 0; i < array.length(); ++i) removeNullFields(array.get(i));
-        } else if (object instanceof JSONObject) {
-            JSONObject json = (JSONObject) object;
+        } else if (object instanceof JSONObject json) {
             JSONArray names = json.names();
             if (names == null) return;
             for (int i = 0; i < names.length(); ++i) {
@@ -826,7 +817,7 @@ public class CafMessageHandler {
         if (!result.isSuccess()) {
             // TODO(avayvod): should actually report back to the page.
             // See https://crbug.com/550445.
-            Log.e(TAG, "Failed to send the message: " + result);
+            Log.e(TAG, "Failed to send the message: %s", result);
             return;
         }
 

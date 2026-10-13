@@ -149,8 +149,8 @@ public class CafExpandedControllerActivity extends FragmentActivity
         View castButtonView =
                 getLayoutInflater()
                         .inflate(R.layout.caf_controller_media_route_button, rootView, false);
-        if (castButtonView instanceof MediaRouteButton) {
-            mMediaRouteButton = (MediaRouteButton) castButtonView;
+        if (castButtonView instanceof MediaRouteButton mediaRouteButton) {
+            mMediaRouteButton = mediaRouteButton;
             rootView.addView(mMediaRouteButton);
             mMediaRouteButton.bringToFront();
             var routeSelector = assumeNonNull(mSessionController.getSource()).buildRouteSelector();

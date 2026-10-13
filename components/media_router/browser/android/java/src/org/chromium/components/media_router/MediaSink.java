@@ -54,8 +54,7 @@ public class MediaSink {
     @Override
     public boolean equals(Object o) {
         if (o == this) return true;
-        if (o instanceof MediaSink) {
-            MediaSink other = (MediaSink) o;
+        if (o instanceof MediaSink other) {
             return mId.equals(other.getId()) && mName.equals(other.getName());
         }
         return false;

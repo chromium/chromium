@@ -43,13 +43,7 @@ public class MediaRouteChooserDialogManager extends BaseMediaRouteDialogManager 
         private boolean mIsSinkSelected;
 
         public Fragment() {
-            mHandler.post(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            Fragment.this.dismiss();
-                        }
-                    });
+            mHandler.post(Fragment.this::dismiss);
         }
 
         public Fragment(BaseMediaRouteDialogManager manager) {
@@ -106,14 +100,11 @@ public class MediaRouteChooserDialogManager extends BaseMediaRouteDialogManager 
             private void recordSinkCountWithDelay() {
                 Handler handler = new Handler();
                 handler.postDelayed(
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                ListView listView = findViewById(R.id.mr_chooser_list);
-                                if (listView != null) {
-                                    MediaRouteUmaRecorder.recordDeviceCountWithDelay(
-                                            listView.getCount());
-                                }
+                        () -> {
+                            ListView listView = findViewById(R.id.mr_chooser_list);
+                            if (listView != null) {
+                                MediaRouteUmaRecorder.recordDeviceCountWithDelay(
+                                        listView.getCount());
                             }
                         },
                         3000);
