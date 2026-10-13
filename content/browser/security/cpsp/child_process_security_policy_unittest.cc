@@ -3408,16 +3408,25 @@ TEST_P(ChildProcessSecurityPolicyTest, CannotLockUsedProcessToSite) {
   p->SetProcessIsUsed(kRendererProcess);
   EXPECT_FALSE(p->GetProcessLock(kRendererProcess).is_unused());
 
+#if defined(OFFICIAL_BUILD)
+  // In official builds, Rust is compiled with `-Cpanic=immediate-abort` even
+  // when `DCHECK_IS_ON()` is true, so Rust `panic!` aborts immediately without
+  // logging a message.
+  [[maybe_unused]] constexpr char kExpectedRustDeathMessage[] = "";
+#else
+  // Ensure that the Rust implementation caused the CHECK failure when Rust is
+  // enabled.
+  [[maybe_unused]] constexpr char kExpectedRustDeathMessage[] =
+      "process_lock\\.rs[\\s\\S]*Cannot lock an already used process to "
+      ".*bar\\.com";
+#endif
   EXPECT_CHECK_DEATH_WITH(
       {
         p->LockProcess(bar_instance->GetIsolationContext(), kRendererProcess,
                        ProcessLock::FromSiteInfo(bar_instance->GetSiteInfo()));
       },
-      // Ensure that the Rust implementation caused the CHECK failure when
-      // Rust is enabled.
       IsRustProcessStateEnabled()
-          ? "process_lock\\.rs[\\s\\S]*Cannot lock an already used process to "
-            ".*bar\\.com"
+          ? kExpectedRustDeathMessage
           : "Cannot lock an already used process to .*bar\\.com");
 
   // We need to remove it otherwise other tests may fail.
