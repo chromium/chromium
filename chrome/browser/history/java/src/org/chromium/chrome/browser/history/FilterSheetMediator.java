@@ -16,31 +16,35 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
 
-/** Mediator class for history filter sheet. */
+/**
+ * Mediator class for history filter sheet.
+ *
+ * @param <T> Type of the filter item's identifier.
+ */
 @NullMarked
-class FilterSheetMediator {
+class FilterSheetMediator<T> {
     private final ModelList mModelList;
-    private final CloseCallback mCloseCallback;
+    private final CloseCallback<T> mCloseCallback;
 
     private @Nullable PropertyModel mSelectedModel;
 
     FilterSheetMediator(
-            ModelList modelList, List<FilterItem> itemInfoList, CloseCallback closeCallback) {
+            ModelList modelList, List<FilterItem<T>> itemInfoList, CloseCallback<T> closeCallback) {
         mModelList = modelList;
         mCloseCallback = closeCallback;
         updateItems(itemInfoList);
     }
 
-    void updateItems(List<FilterItem> itemInfoList) {
+    void updateItems(List<FilterItem<T>> itemInfoList) {
         mModelList.clear();
         mSelectedModel = null;
-        for (FilterItem info : itemInfoList) {
+        for (FilterItem<T> info : itemInfoList) {
             PropertyModel item = generateListItem(info);
             mModelList.add(new MVCListAdapter.ListItem(0, item));
         }
     }
 
-    private PropertyModel generateListItem(FilterItem info) {
+    private PropertyModel generateListItem(FilterItem<T> info) {
         PropertyModel model =
                 new PropertyModel.Builder(FilterSheetProperties.LIST_ITEM_KEYS)
                         .with(FilterSheetProperties.ITEM, info)
@@ -50,7 +54,7 @@ class FilterSheetMediator {
         return model;
     }
 
-    void resetState(@Nullable FilterItem currentItem) {
+    void resetState(@Nullable FilterItem<T> currentItem) {
         if (mSelectedModel != null) {
             mSelectedModel.set(FilterSheetProperties.SELECTED, false);
             mSelectedModel = null;
@@ -74,11 +78,19 @@ class FilterSheetMediator {
         } else {
             mSelectedModel = model;
             mSelectedModel.set(FilterSheetProperties.SELECTED, true);
-            mCloseCallback.onFilterItemUpdated(model.get(FilterSheetProperties.ITEM));
+            mCloseCallback.onFilterItemUpdated(getItem(model));
         }
     }
 
-    private @Nullable PropertyModel getModelForItem(FilterItem filterItem) {
+    // FilterSheetProperties.ITEM is a static key and cannot be parameterized with <T>, so it uses
+    // a wildcard FilterItem<?>. All models in this mediator are populated with FilterItem<T> in
+    // generateListItem(), making this cast safe.
+    @SuppressWarnings("unchecked")
+    private FilterItem<T> getItem(PropertyModel model) {
+        return (FilterItem<T>) model.get(FilterSheetProperties.ITEM);
+    }
+
+    private @Nullable PropertyModel getModelForItem(FilterItem<T> filterItem) {
         for (MVCListAdapter.ListItem item : mModelList) {
             if (filterItem.equals(item.model.get(FilterSheetProperties.ITEM))) {
                 return item.model;
@@ -87,11 +99,11 @@ class FilterSheetMediator {
         return null;
     }
 
-    void clickItemForTesting(FilterItem item) {
+    void clickItemForTesting(FilterItem<T> item) {
         handleClick(assertNonNull(getModelForItem(item)));
     }
 
-    @Nullable FilterItem getCurrentItemForTesting() {
-        return mSelectedModel != null ? mSelectedModel.get(FilterSheetProperties.ITEM) : null;
+    @Nullable FilterItem<T> getCurrentItemForTesting() {
+        return mSelectedModel != null ? getItem(mSelectedModel) : null;
     }
 }

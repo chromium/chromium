@@ -29,7 +29,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.history.FilterSheetCoordinator.FilterItem;
 import org.chromium.chrome.browser.history.HistoryContentManager.ActorFilter;
 import org.chromium.chrome.browser.ui.signin.signin_promo.SigninPromoCoordinator;
 import org.chromium.components.browser_ui.widget.MoreProgressButton;
@@ -138,7 +137,7 @@ public class HistoryAdapterTest {
         mAdapter.onSearchStart();
         Assert.assertTrue("Source app should remain on when entering search", showSourceApp());
 
-        mAdapter.updateAppFilter(new FilterItem("org.great.app", null, "Great App"));
+        mAdapter.updateAppFilter("org.great.app");
         Assert.assertFalse("No source app when app filter is on", showSourceApp());
         Assert.assertEquals("App id should switch to greatapp", "org.great.app", getAppId());
 
@@ -146,7 +145,7 @@ public class HistoryAdapterTest {
         Assert.assertTrue("Source app when app filter is reset", showSourceApp());
         Assert.assertEquals("App id should switch to null", null, getAppId());
 
-        mAdapter.updateAppFilter(new FilterItem("org.awesome.app", null, "Awesome App"));
+        mAdapter.updateAppFilter("org.awesome.app");
         Assert.assertFalse("No source app when app filter is on again", showSourceApp());
         Assert.assertEquals("App id should switch to awesomeapp", "org.awesome.app", getAppId());
 
@@ -173,7 +172,7 @@ public class HistoryAdapterTest {
         Assert.assertNull(mAdapter.getHostNameForTest());
         Assert.assertTrue(mAdapter.getClientIdsForTest().isEmpty());
 
-        mAdapter.updateHostFilter(new FilterItem("www.google.com", null, "www.google.com"));
+        mAdapter.updateHostFilter("www.google.com");
         Assert.assertEquals("www.google.com", mAdapter.getHostNameForTest());
         Assert.assertEquals(
                 new QueryOptions(
@@ -184,8 +183,7 @@ public class HistoryAdapterTest {
                         /* includeActorVisits= */ true),
                 mHistoryProvider.getLastQueryOptions());
 
-        mAdapter.updateClientFilter(
-                new FilterItem(List.of("client_123", "client_456"), null, "Pixel 8"));
+        mAdapter.updateClientFilter(List.of("client_123", "client_456"));
         Assert.assertEquals(List.of("client_123", "client_456"), mAdapter.getClientIdsForTest());
         Assert.assertEquals(
                 new QueryOptions(
@@ -218,7 +216,7 @@ public class HistoryAdapterTest {
 
         @ActorFilter String[] actorFilters = {ActorFilter.USER, ActorFilter.ACTOR, ActorFilter.ANY};
         for (String filter : actorFilters) {
-            mAdapter.updateActorFilter(new FilterItem(filter, null, filter));
+            mAdapter.updateActorFilter(filter);
             Assert.assertEquals(filter, mAdapter.getActorFilterForTest());
             Assert.assertEquals(
                     new QueryOptions(
@@ -231,7 +229,7 @@ public class HistoryAdapterTest {
         }
 
         // Clearing the filter resets to ANY and includes both again.
-        mAdapter.updateActorFilter(new FilterItem(ActorFilter.USER, null, "You"));
+        mAdapter.updateActorFilter(ActorFilter.USER);
         mAdapter.updateActorFilter(null);
         Assert.assertEquals(ActorFilter.ANY, mAdapter.getActorFilterForTest());
         Assert.assertEquals(
@@ -244,7 +242,7 @@ public class HistoryAdapterTest {
                 mHistoryProvider.getLastQueryOptions());
 
         // Ending the search resets the filter.
-        mAdapter.updateActorFilter(new FilterItem(ActorFilter.USER, null, "You"));
+        mAdapter.updateActorFilter(ActorFilter.USER);
         mAdapter.onEndSearch();
         Assert.assertEquals(ActorFilter.ANY, mAdapter.getActorFilterForTest());
     }

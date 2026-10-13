@@ -30,29 +30,31 @@ import java.util.function.Supplier;
 /**
  * Manages a single filter chip in the history UI and its associated {@link FilterSheetCoordinator}
  * bottom sheet.
+ *
+ * @param <T> Type of the filter item's identifier.
  */
 @NullMarked
-class HistoryFilterChip {
+class HistoryFilterChip<T> {
     private static final int MIN_ITEMS_TO_SHOW = 2;
 
     private final @IdRes int mChipViewId;
     private final @StringRes int mChipTextResId;
     private final @StringRes int mSheetHeaderResId;
     private final boolean mCanShow;
-    private final Callback<@Nullable FilterItem> mOnSelectionChanged;
+    private final Callback<@Nullable T> mOnSelectionChanged;
     private final @Nullable Runnable mOnSheetOpened;
-    private final List<FilterItem> mItems = new ArrayList<>();
+    private final List<FilterItem<T>> mItems = new ArrayList<>();
 
     private @Nullable ChipView mChipView;
-    private @Nullable FilterSheetCoordinator mFilterSheet;
-    private @Nullable FilterItem mSelectedItem;
+    private @Nullable FilterSheetCoordinator<T> mFilterSheet;
+    private @Nullable FilterItem<T> mSelectedItem;
     private boolean mEnabled = true;
 
     HistoryFilterChip(
             @IdRes int chipViewId,
             @StringRes int chipTextResId,
             boolean canShow,
-            Callback<@Nullable FilterItem> onSelectionChanged,
+            Callback<@Nullable T> onSelectionChanged,
             @Nullable Runnable onSheetOpened) {
         this(
                 chipViewId,
@@ -68,7 +70,7 @@ class HistoryFilterChip {
             @StringRes int chipTextResId,
             @StringRes int sheetHeaderResId,
             boolean canShow,
-            Callback<@Nullable FilterItem> onSelectionChanged,
+            Callback<@Nullable T> onSelectionChanged,
             @Nullable Runnable onSheetOpened) {
         mChipViewId = chipViewId;
         mChipTextResId = chipTextResId;
@@ -100,7 +102,7 @@ class HistoryFilterChip {
     }
 
     /** Replaces the items displayed in the filter sheet. */
-    void setItems(List<FilterItem> items) {
+    void setItems(List<FilterItem<T>> items) {
         assert mCanShow;
         mItems.clear();
         mItems.addAll(items);
@@ -112,11 +114,11 @@ class HistoryFilterChip {
 
     /** Callback invoked when the filter sheet closes with a new selection. */
     @VisibleForTesting
-    void onItemSelected(@Nullable FilterItem item) {
+    void onItemSelected(@Nullable FilterItem<T> item) {
         if (Objects.equals(mSelectedItem, item)) return;
         mSelectedItem = item;
         updateChipView();
-        mOnSelectionChanged.onResult(mSelectedItem);
+        mOnSelectionChanged.onResult(mSelectedItem == null ? null : mSelectedItem.id);
     }
 
     /** Clears the current selection and resets the chip view to its default state. */
@@ -152,7 +154,7 @@ class HistoryFilterChip {
         hideSoftKeyboard.run();
         if (mFilterSheet == null) {
             mFilterSheet =
-                    new FilterSheetCoordinator(
+                    new FilterSheetCoordinator<>(
                             activity,
                             activity.getWindow().getDecorView(),
                             bottomSheetControllerSupplier.get(),
@@ -193,15 +195,15 @@ class HistoryFilterChip {
         return assumeNonNull(mChipView);
     }
 
-    void setFilterSheetForTesting(FilterSheetCoordinator filterSheet) {
+    void setFilterSheetForTesting(FilterSheetCoordinator<T> filterSheet) {
         mFilterSheet = filterSheet;
     }
 
-    @Nullable FilterItem getSelectedItemForTesting() {
+    @Nullable FilterItem<T> getSelectedItemForTesting() {
         return mSelectedItem;
     }
 
-    List<FilterItem> getItemsForTesting() {
+    List<FilterItem<T>> getItemsForTesting() {
         return mItems;
     }
 }

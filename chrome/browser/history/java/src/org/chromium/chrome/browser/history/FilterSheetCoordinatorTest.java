@@ -42,14 +42,14 @@ public class FilterSheetCoordinatorTest {
     private static final CharSequence APPLABEL_CALENDAR = "Calendar";
     private static final CharSequence APPLABEL_MESSAGE = "Message";
 
-    private static final FilterItem ITEM_YOUTUBE =
-            new FilterItem(APPID_YOUTUBE, null, APPLABEL_YOUTUBE);
-    private static final FilterItem ITEM_CHROME =
-            new FilterItem(APPID_CHROME, null, APPLABEL_CHROME);
-    private static final FilterItem ITEM_CALENDAR =
-            new FilterItem(APPID_CALENDAR, null, APPLABEL_CALENDAR);
-    private static final FilterItem ITEM_MESSAGE =
-            new FilterItem(APPID_MESSAGE, null, APPLABEL_MESSAGE);
+    private static final FilterItem<String> ITEM_YOUTUBE =
+            new FilterItem<>(APPID_YOUTUBE, null, APPLABEL_YOUTUBE);
+    private static final FilterItem<String> ITEM_CHROME =
+            new FilterItem<>(APPID_CHROME, null, APPLABEL_CHROME);
+    private static final FilterItem<String> ITEM_CALENDAR =
+            new FilterItem<>(APPID_CALENDAR, null, APPLABEL_CALENDAR);
+    private static final FilterItem<String> ITEM_MESSAGE =
+            new FilterItem<>(APPID_MESSAGE, null, APPLABEL_MESSAGE);
 
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
@@ -58,8 +58,9 @@ public class FilterSheetCoordinatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private BottomSheetController mBottomSheetController;
-    private FilterSheetCoordinator mFilterSheet;
-    private FilterItem mCurrentItem;
+    private TestActivity mActivity;
+    private FilterSheetCoordinator<String> mFilterSheet;
+    private FilterItem<String> mCurrentItem;
 
     @Before
     public void setUp() {
@@ -67,15 +68,16 @@ public class FilterSheetCoordinatorTest {
                 .getScenario()
                 .onActivity(
                         activity -> {
+                            mActivity = activity;
                             Drawable icon =
                                     activity.getResources().getDrawable(R.drawable.ic_devices_16dp);
-                            List<FilterItem> items = new ArrayList<>();
-                            items.add(new FilterItem(APPID_YOUTUBE, icon, APPLABEL_YOUTUBE));
-                            items.add(new FilterItem(APPID_CHROME, icon, APPLABEL_CHROME));
-                            items.add(new FilterItem(APPID_CALENDAR, icon, APPLABEL_CALENDAR));
-                            items.add(new FilterItem(APPID_MESSAGE, icon, APPLABEL_MESSAGE));
+                            List<FilterItem<String>> items = new ArrayList<>();
+                            items.add(new FilterItem<>(APPID_YOUTUBE, icon, APPLABEL_YOUTUBE));
+                            items.add(new FilterItem<>(APPID_CHROME, icon, APPLABEL_CHROME));
+                            items.add(new FilterItem<>(APPID_CALENDAR, icon, APPLABEL_CALENDAR));
+                            items.add(new FilterItem<>(APPID_MESSAGE, icon, APPLABEL_MESSAGE));
                             mFilterSheet =
-                                    new FilterSheetCoordinator(
+                                    new FilterSheetCoordinator<>(
                                             activity,
                                             activity.getWindow().getDecorView(),
                                             mBottomSheetController,
@@ -85,12 +87,12 @@ public class FilterSheetCoordinatorTest {
                         });
     }
 
-    private void onFilterItemUpdated(FilterItem filterItem) {
+    private void onFilterItemUpdated(FilterItem<String> filterItem) {
         mCurrentItem = filterItem;
     }
 
     private void setCurrentFilterItem(String id, CharSequence label) {
-        mCurrentItem = id == null ? null : new FilterItem(id, null, label);
+        mCurrentItem = id == null ? null : new FilterItem<>(id, null, label);
     }
 
     private int calcSheetHeight(int rowHeight, int baseViewHeight, int rowCount) {
@@ -139,26 +141,26 @@ public class FilterSheetCoordinatorTest {
         mFilterSheet.clickItemForTesting(ITEM_MESSAGE);
 
         // Tapping an app selects it.
-        assertEquals("Chosen app is not correct.", APPID_MESSAGE, mCurrentItem.getId());
+        assertEquals("Chosen app is not correct.", APPID_MESSAGE, mCurrentItem.id);
         assertEquals("Chosen label is not correct.", APPLABEL_MESSAGE, mCurrentItem.label);
     }
 
     @Test
     public void testSelectNewApp() {
         setCurrentFilterItem(APPID_CALENDAR, APPLABEL_CALENDAR);
-        assertEquals("Selected app is not correct.", APPID_CALENDAR, mCurrentItem.getId());
+        assertEquals("Selected app is not correct.", APPID_CALENDAR, mCurrentItem.id);
         mFilterSheet.openSheet(mCurrentItem);
         mFilterSheet.clickItemForTesting(ITEM_CHROME);
 
         // Tapping an app makes it a newly selected one.
-        assertEquals("Chosen app is not correct.", APPID_CHROME, mCurrentItem.getId());
+        assertEquals("Chosen app is not correct.", APPID_CHROME, mCurrentItem.id);
         assertEquals("Chosen label is not correct.", APPLABEL_CHROME, mCurrentItem.label);
     }
 
     @Test
     public void testUnselectApp() {
         setCurrentFilterItem(APPID_CALENDAR, APPLABEL_CALENDAR);
-        assertEquals("Selected app is not correct.", APPID_CALENDAR, mCurrentItem.getId());
+        assertEquals("Selected app is not correct.", APPID_CALENDAR, mCurrentItem.id);
 
         mFilterSheet.openSheet(mCurrentItem);
         mFilterSheet.clickItemForTesting(ITEM_CALENDAR);
@@ -169,7 +171,7 @@ public class FilterSheetCoordinatorTest {
         // Open the sheet once more and select the app that was unselected right before.
         mFilterSheet.openSheet(mCurrentItem);
         mFilterSheet.clickItemForTesting(ITEM_CALENDAR);
-        assertEquals("Chosen app is not correct.", APPID_CALENDAR, mCurrentItem.getId());
+        assertEquals("Chosen app is not correct.", APPID_CALENDAR, mCurrentItem.id);
         assertEquals("Chosen label is not correct.", APPLABEL_CALENDAR, mCurrentItem.label);
     }
 
@@ -179,7 +181,7 @@ public class FilterSheetCoordinatorTest {
 
         mFilterSheet.openSheet(mCurrentItem);
         mFilterSheet.clickItemForTesting(ITEM_CALENDAR);
-        assertEquals("Chosen app should be Calendar.", APPID_CALENDAR, mCurrentItem.getId());
+        assertEquals("Chosen app should be Calendar.", APPID_CALENDAR, mCurrentItem.id);
 
         // Caller resets its state and opens the sheet again. The sheet should be reset in sync.
         setCurrentFilterItem(null, null);
@@ -196,41 +198,49 @@ public class FilterSheetCoordinatorTest {
     @Test
     public void testCloseSheetWithoutSelection() {
         setCurrentFilterItem(APPID_CALENDAR, APPLABEL_CALENDAR);
-        assertEquals("Selected app is not correct.", APPID_CALENDAR, mCurrentItem.getId());
+        assertEquals("Selected app is not correct.", APPID_CALENDAR, mCurrentItem.id);
 
         mFilterSheet.openSheet(mCurrentItem);
         mFilterSheet.clickCloseButtonForTesting();
 
         // Closing the sheet preserves the previously selected app.
-        assertEquals("Chosen app is not correct.", APPID_CALENDAR, mCurrentItem.getId());
+        assertEquals("Chosen app is not correct.", APPID_CALENDAR, mCurrentItem.id);
         assertEquals("Chosen label is not correct.", APPLABEL_CALENDAR, mCurrentItem.label);
     }
 
     @Test
     public void testUpdateItems() {
-        FilterItem newApp = new FilterItem("com.example.newapp", null, "New App");
-        List<FilterItem> updatedApps = List.of(newApp);
+        var newApp = new FilterItem<>("com.example.newapp", null, "New App");
+        var updatedApps = List.of(newApp);
 
         mFilterSheet.updateItems(updatedApps);
         mFilterSheet.openSheet(null);
         mFilterSheet.clickItemForTesting(newApp);
 
-        assertEquals("Chosen app is not correct.", "com.example.newapp", mCurrentItem.getId());
+        assertEquals("Chosen app is not correct.", "com.example.newapp", mCurrentItem.id);
         assertEquals("Chosen label is not correct.", "New App", mCurrentItem.label);
     }
 
     @Test
     public void testItemWithMultipleIds() {
-        FilterItem item = new FilterItem(List.of("client_1", "client_2"), null, "Pixel 8");
-        List<FilterItem> updatedItems = List.of(item);
+        var item = new FilterItem<>(List.of("client_1", "client_2"), null, "Pixel 8");
+        var items = List.of(item);
+        var selectedItems = new ArrayList<FilterItem<List<String>>>();
+        var clientSheet =
+                new FilterSheetCoordinator<>(
+                        mActivity,
+                        mActivity.getWindow().getDecorView(),
+                        mBottomSheetController,
+                        selectedItems::add,
+                        items,
+                        R.string.history_filter_by_client);
 
-        mFilterSheet.updateItems(updatedItems);
-        mFilterSheet.openSheet(null);
-        mFilterSheet.clickItemForTesting(item);
+        clientSheet.openSheet(null);
+        clientSheet.clickItemForTesting(item);
 
         assertEquals(
                 "Chosen ids are not correct.",
                 List.of("client_1", "client_2"),
-                mCurrentItem.getIds());
+                selectedItems.get(0).id);
     }
 }

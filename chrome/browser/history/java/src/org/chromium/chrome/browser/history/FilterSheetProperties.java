@@ -15,7 +15,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 /** Property model properties for filter sheet UI. */
 @NullMarked
 class FilterSheetProperties {
-    public static final ReadableObjectPropertyKey<FilterSheetCoordinator.FilterItem> ITEM =
+    public static final ReadableObjectPropertyKey<FilterSheetCoordinator.FilterItem<?>> ITEM =
             new ReadableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<View.OnClickListener> CLICK_LISTENER =
             new WritableObjectPropertyKey<>();

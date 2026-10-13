@@ -23,13 +23,16 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-/** Coordinator class of the filter bottom sheet UI for history page. */
+/**
+ * Coordinator class of the filter bottom sheet UI for history page.
+ *
+ * @param <T> Type of the filter item's identifier.
+ */
 @NullMarked
-class FilterSheetCoordinator implements View.OnLayoutChangeListener {
+class FilterSheetCoordinator<T> implements View.OnLayoutChangeListener {
     // Maximum number of filter items shown on the sheet at once if screen dimension allows.
     static final int MAX_VISIBLE_ITEM_COUNT = 5;
 
@@ -38,7 +41,7 @@ class FilterSheetCoordinator implements View.OnLayoutChangeListener {
 
     private final Context mContext;
     private final BottomSheetController mBottomSheetController;
-    private final FilterSheetMediator mMediator;
+    private final FilterSheetMediator<T> mMediator;
     private final RecyclerView mItemListView;
     private final BottomSheetContent mSheetContent;
     private final PropertyModel mCloseButtonModel;
@@ -46,74 +49,46 @@ class FilterSheetCoordinator implements View.OnLayoutChangeListener {
     private final View mContentView;
     private final View mBaseView;
 
-    private final CloseCallback mCloseCallback;
+    private final CloseCallback<T> mCloseCallback;
     private int mItemCount;
 
     private int mBaseViewHeight;
 
-    /** Data class for individual item in the filter list. */
-    public static class FilterItem {
-        private final List<String> mIds;
+    /**
+     * Data class for individual item in the filter list.
+     *
+     * @param <T> Type of the item's identifier.
+     */
+    public static class FilterItem<T> {
+        public final T id;
         public final @Nullable Drawable icon;
         public final CharSequence label;
 
-        public static final FilterItem INVALID_ITEM = new FilterItem();
-
-        /** Creates an invalid empty item. */
-        private FilterItem() {
-            mIds = Collections.emptyList();
-            this.icon = null;
-            this.label = "";
-        }
-
-        /** Creates an item representing a single ID. */
-        public FilterItem(String id, @Nullable Drawable icon, CharSequence label) {
-            this(List.of(id), icon, label);
-        }
-
-        /** Creates an item representing a list of one or more IDs. */
-        public FilterItem(List<String> ids, @Nullable Drawable icon, CharSequence label) {
-            assert !ids.isEmpty() : "Filter item needs at least one id.";
-            mIds = List.copyOf(ids);
+        /** Creates an item with the given ID, icon, and label. */
+        public FilterItem(T id, @Nullable Drawable icon, CharSequence label) {
+            this.id = id;
             this.icon = icon;
             this.label = label;
         }
 
-        /** Returns the ID for a single-ID item. */
-        public String getId() {
-            assert mIds.size() == 1 : "Use getIds() for multi-id items.";
-            return mIds.get(0);
-        }
-
-        /** Returns the IDs for an item. */
-        public List<String> getIds() {
-            assert !mIds.isEmpty();
-            return mIds;
-        }
-
-        /** Return whether the filter item object is valid. */
-        public boolean isValid() {
-            return !mIds.isEmpty();
-        }
-
         @Override
         public boolean equals(Object o) {
-            return o instanceof FilterItem other && Objects.equals(mIds, other.mIds);
+            return o instanceof FilterItem<?> other && Objects.equals(id, other.id);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hashCode(mIds);
+            return Objects.hashCode(id);
         }
     }
 
     /** Callback to be invoked when the sheet gets closed with updated filter item. */
-    public interface CloseCallback {
+    public interface CloseCallback<T> {
         /**
          * @param filterItem {@link FilterItem} containing the item information. May be {@code null}
          *     if no item is selected.
          */
-        void onFilterItemUpdated(@Nullable FilterItem filterItem);
+        void onFilterItemUpdated(@Nullable FilterItem<T> filterItem);
     }
 
     /**
@@ -130,8 +105,8 @@ class FilterSheetCoordinator implements View.OnLayoutChangeListener {
             Context context,
             View baseView,
             BottomSheetController bottomSheetController,
-            CloseCallback closeCallback,
-            List<FilterItem> filterItemList,
+            CloseCallback<T> closeCallback,
+            List<FilterItem<T>> filterItemList,
             @StringRes int titleResId) {
         mContext = context;
         mBaseView = baseView;
@@ -166,12 +141,12 @@ class FilterSheetCoordinator implements View.OnLayoutChangeListener {
         PropertyModelChangeProcessor.create(
                 mCloseButtonModel, closeButton, FilterSheetViewBinder::bind);
 
-        mMediator = new FilterSheetMediator(listItems, filterItemList, this::closeSheet);
+        mMediator = new FilterSheetMediator<>(listItems, filterItemList, this::closeSheet);
         mItemCount = listItems.size();
     }
 
     /** Updates the items displayed in the filter sheet. */
-    public void updateItems(List<FilterItem> filterItemList) {
+    public void updateItems(List<FilterItem<T>> filterItemList) {
         mMediator.updateItems(filterItemList);
         mItemCount = filterItemList.size();
     }
@@ -200,7 +175,7 @@ class FilterSheetCoordinator implements View.OnLayoutChangeListener {
      * @param currentItem Initial item to be selected at the beginning. If {@code null}, no item
      *     will be selected.
      */
-    public void openSheet(@Nullable FilterItem currentItem) {
+    public void openSheet(@Nullable FilterItem<T> currentItem) {
         updateSheetHeight();
         mMediator.resetState(currentItem);
         mBottomSheetController.requestShowContent(mSheetContent, true);
@@ -229,7 +204,7 @@ class FilterSheetCoordinator implements View.OnLayoutChangeListener {
         return Math.min(visibleRowCount * rowHeight, maxHeight);
     }
 
-    private void closeSheet(@Nullable FilterItem filterItem) {
+    private void closeSheet(@Nullable FilterItem<T> filterItem) {
         mBottomSheetController.hideContent(mSheetContent, true);
         mCloseCallback.onFilterItemUpdated(filterItem);
     }
@@ -238,7 +213,7 @@ class FilterSheetCoordinator implements View.OnLayoutChangeListener {
         mBaseView.removeOnLayoutChangeListener(this);
     }
 
-    void clickItemForTesting(FilterItem item) {
+    void clickItemForTesting(FilterItem<T> item) {
         mMediator.clickItemForTesting(item); // IN-TEST
     }
 
@@ -246,7 +221,7 @@ class FilterSheetCoordinator implements View.OnLayoutChangeListener {
         mCloseButtonModel.get(FilterSheetProperties.CLOSE_BUTTON_CALLBACK).onClick(null); // IN-TEST
     }
 
-    @Nullable FilterItem getCurrentItemForTesting() {
+    @Nullable FilterItem<T> getCurrentItemForTesting() {
         return mMediator.getCurrentItemForTesting(); // IN-TEST
     }
 }

@@ -18,7 +18,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 class FilterSheetViewBinder {
     static void bind(PropertyModel model, View view, PropertyKey key) {
         if (FilterSheetProperties.ITEM == key) {
-            FilterItem item = model.get(FilterSheetProperties.ITEM);
+            FilterItem<?> item = model.get(FilterSheetProperties.ITEM);
             ImageView icon = view.findViewById(R.id.start_icon);
             icon.setImageDrawable(item.icon);
             icon.setVisibility(item.icon != null ? View.VISIBLE : View.GONE);

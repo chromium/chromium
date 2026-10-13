@@ -32,6 +32,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.history.FilterSheetCoordinator.FilterItem;
 import org.chromium.chrome.browser.history.HistoryManagerToolbar.InfoHeaderPref;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -348,10 +349,11 @@ public class HistoryManager
         if (mLaunchedForApp) {
             assert mAppId != null;
             assumeNonNull(mContentManager);
+            FilterItem<String> appInfo = mContentManager.getAppInfoCache().get(mAppId);
             descText =
                     res.getString(
                             R.string.history_manager_app_specific_empty_state_description,
-                            mContentManager.getAppInfoCache().get(mAppId).label);
+                            appInfo != null ? appInfo.label : "");
         } else {
             descText =
                     res.getString(R.string.history_manager_empty_state_view_or_clear_page_visited);

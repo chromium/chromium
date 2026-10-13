@@ -27,7 +27,6 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.history.FilterSheetCoordinator.FilterItem;
 import org.chromium.chrome.browser.history.HistoryContentManager.ActorFilter;
 import org.chromium.chrome.browser.history.HistoryProvider.BrowsingHistoryObserver;
 import org.chromium.chrome.browser.history.HistoryProvider.ClientInfo;
@@ -589,30 +588,29 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         return promoView;
     }
 
-    void updateAppFilter(@Nullable FilterItem appInfo) {
-        setAppId(appInfo == null ? null : appInfo.getId());
-        mShowSourceApp = appInfo == null && mManager.showAppFilter();
+    void updateAppFilter(@Nullable String appId) {
+        setAppId(appId);
+        mShowSourceApp = appId == null && mManager.showAppFilter();
         search(mQueryText);
     }
 
-    void updateHostFilter(@Nullable FilterItem hostInfo) {
-        setHostName(hostInfo == null ? null : hostInfo.getId());
+    void updateHostFilter(@Nullable String hostName) {
+        setHostName(hostName);
         search(mQueryText);
     }
 
     /**
      * Updates the client filter.
      *
-     * @param clientInfo The selected client, or null if the filter was cleared. All of its {@link
-     *     FilterItem#getIds()} are used for querying history.
+     * @param clientIds The selected client IDs, or null if the filter was cleared.
      */
-    void updateClientFilter(@Nullable FilterItem clientInfo) {
-        setClientIds(clientInfo == null ? Collections.emptyList() : clientInfo.getIds());
+    void updateClientFilter(@Nullable List<String> clientIds) {
+        setClientIds(clientIds == null ? Collections.emptyList() : clientIds);
         search(mQueryText);
     }
 
-    void updateActorFilter(@Nullable FilterItem actorInfo) {
-        setActorFilter(actorInfo == null ? ActorFilter.ANY : actorInfo.getId());
+    void updateActorFilter(@Nullable @ActorFilter String actorFilter) {
+        setActorFilter(actorFilter == null ? ActorFilter.ANY : actorFilter);
         search(mQueryText);
     }
 

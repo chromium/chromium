@@ -198,8 +198,8 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> {
         if (mShowSourceApp.getAsBoolean()) {
             String appId = item.getAppId();
             if (appId != null) {
-                FilterItem appInfo = mAppInfoCache.get(appId);
-                if (appInfo.isValid()) {
+                FilterItem<String> appInfo = mAppInfoCache.get(appId);
+                if (appInfo != null) {
                     var sourceApp =
                             getResources()
                                     .getString(R.string.history_app_attribution, appInfo.label);
