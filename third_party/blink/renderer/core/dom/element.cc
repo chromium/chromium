@@ -4579,6 +4579,11 @@ void Element::DidChangeIsInCanvasSubtree() {
   if (auto* layout_object = GetLayoutObject()) {
     layout_object->SetNeedsPaintPropertyUpdate();
     layout_object->SetSubtreeShouldDoFullPaintInvalidation();
+    if (layout_object->HasLayer()) {
+      To<LayoutBoxModelObject>(layout_object)
+          ->Layer()
+          ->SetFilterOnEffectNodeDirty();
+    }
   }
 }
 
