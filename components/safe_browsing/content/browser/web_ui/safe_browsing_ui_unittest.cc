@@ -79,7 +79,7 @@ class SafeBrowsingUITest : public testing::Test {
     full_hash->set_full_hash("test_hash");
     full_hash->add_full_hash_details()->set_threat_type(
         V5::ThreatType::SOCIAL_ENGINEERING);
-    log.response_proto = response;
+    log.response_proto = std::move(response);
     return log;
   }
 
@@ -160,7 +160,8 @@ class SafeBrowsingUITest : public testing::Test {
     failed_log.request_proto.add_hash_prefixes("fail");
     failed_log.net_error = net::ERR_FAILED;
 
-    WebUIContentInfoSingleton::GetInstance()->AddToV5GetHashLookups(failed_log);
+    WebUIContentInfoSingleton::GetInstance()->AddToV5GetHashLookups(
+        std::move(failed_log));
 
     ASSERT_EQ(2u, web_ui_.call_data().size());
     EXPECT_EQ(web_ui_.call_data()[1]->arg1()->GetString(),

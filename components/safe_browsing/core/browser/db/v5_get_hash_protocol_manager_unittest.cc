@@ -40,8 +40,8 @@ class FakeWebUIDelegate : public V5GetHashProtocolManager::WebUIDelegate {
   void set_has_listener(bool has_listener) { has_listener_ = has_listener; }
 
   void AddToV5GetHashLookups(
-      const V5GetHashProtocolManager::V5GetHashLookup& lookup) override {
-    logged_lookups_.push_back(lookup);
+      V5GetHashProtocolManager::V5GetHashLookup lookup) override {
+    logged_lookups_.push_back(std::move(lookup));
   }
 
   const std::vector<V5GetHashProtocolManager::V5GetHashLookup>& logged_lookups()

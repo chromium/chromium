@@ -133,7 +133,7 @@ class V5GetHashProtocolManager : public KeyedService {
 
     // Adds a completed V5 get-hash network check to WebUI.
     //  - `lookup`: the details of the network check and its outcome.
-    virtual void AddToV5GetHashLookups(const V5GetHashLookup& lookup) = 0;
+    virtual void AddToV5GetHashLookups(V5GetHashLookup lookup) = 0;
   };
 
   // Callback when GetFullHashes completes.

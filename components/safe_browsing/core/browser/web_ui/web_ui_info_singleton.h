@@ -141,7 +141,7 @@ class WebUIInfoSingleton : public RealTimeUrlLookupServiceBase::WebUIDelegate,
   // chrome://safe-browsing tabs.
   //  - `lookup`: the details of the network check and its outcome.
   void AddToV5GetHashLookups(
-      const V5GetHashProtocolManager::V5GetHashLookup& lookup) override;
+      V5GetHashProtocolManager::V5GetHashLookup lookup) override;
 
   // Clear `v5_get_hash_lookups_`.
   void ClearV5GetHashLookups();

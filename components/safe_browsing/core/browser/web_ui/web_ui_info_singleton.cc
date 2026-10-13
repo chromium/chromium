@@ -298,7 +298,7 @@ void WebUIInfoSingleton::ClearHPRTLookupPings() {
 }
 
 void WebUIInfoSingleton::AddToV5GetHashLookups(
-    const V5GetHashProtocolManager::V5GetHashLookup& lookup) {
+    V5GetHashProtocolManager::V5GetHashLookup lookup) {
   if (!HasListener()) {
     return;
   }
@@ -308,7 +308,7 @@ void WebUIInfoSingleton::AddToV5GetHashLookups(
     webui_listener->NotifyV5GetHashLookupJsListener(lookup);
   }
 
-  v5_get_hash_lookups_.push_back(lookup);
+  v5_get_hash_lookups_.push_back(std::move(lookup));
 }
 
 void WebUIInfoSingleton::ClearV5GetHashLookups() {

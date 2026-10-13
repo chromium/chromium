@@ -541,7 +541,7 @@ void V5GetHashProtocolManager::MaybeLogLookupToWebUI(
     lookup.metadata = result->metadata;
   }
 
-  webui_delegate_->AddToV5GetHashLookups(lookup);
+  webui_delegate_->AddToV5GetHashLookups(std::move(lookup));
 }
 
 }  // namespace safe_browsing
