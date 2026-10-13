@@ -590,6 +590,14 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
         FragmentData processed = processPendingFragmentIntent();
         if (processed != null && processed.fragment != null) {
             showDetailFragment(processed.fragment, processed.addToBackStack, processed.tag);
+        } else if (processed != null) {
+            // Main settings was requested while the state was saved. See
+            // SettingsHostFragment.showFragment().
+            SettingsHostFragment hostFragment = SettingsHostFragment.get(this);
+            if (hostFragment != null) {
+                hostFragment.showFragment(
+                        /* fragment= */ null, /* addToBackStack= */ false, /* tag= */ null);
+            }
         }
 
         super.onResume();

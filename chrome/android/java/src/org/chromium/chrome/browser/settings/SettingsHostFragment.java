@@ -535,6 +535,18 @@ public class SettingsHostFragment extends Fragment
         Fragment activeFragment = getActiveFragment();
         if (activeFragment instanceof MultiColumnSettings multiColumnSettings) {
             if (fragment == null || fragment instanceof MainSettings) {
+                // Showing main settings can pop the detail back stack (see
+                // MultiColumnSettings.onCreateInitialDetailFragment()), which FragmentManager
+                // refuses once its state is saved. Defer the request until onResume(), as
+                // MultiColumnSettings.showDetailFragment() does for detail pages.
+                if (multiColumnSettings.getChildFragmentManager().isStateSaved()) {
+                    Intent intent = new Intent();
+                    intent.putExtra(
+                            SettingsIntentUtil.EXTRA_SHOW_FRAGMENT, MainSettings.class.getName());
+                    multiColumnSettings.setPendingFragmentIntent(intent);
+                    return true;
+                }
+
                 var slidingPane = multiColumnSettings.getSlidingPaneLayoutOrNull();
                 if (slidingPane != null && slidingPane.isSlideable()) {
                     slidingPane.closePane();
