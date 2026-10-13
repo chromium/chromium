@@ -1,0 +1,7 @@
+This is a wdspec test.
+[ERROR] test_multiple_contexts
+  setup error: webdriver.bidi.modules.script.ScriptEvaluateResultException: TypeError: Failed to fetch
+[ERROR] test_locale_override_applies_to_existing_sandbox
+  setup error: webdriver.bidi.modules.script.ScriptEvaluateResultException: TypeError: Failed to fetch
+Harness: the test ran to completion.
+

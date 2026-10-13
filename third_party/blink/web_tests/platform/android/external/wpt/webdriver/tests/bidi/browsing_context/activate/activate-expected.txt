@@ -1,7 +1,5 @@
 This is a wdspec test.
-[FAIL] test_switch_between_contexts[tab]
-  AssertionError
 [FAIL] test_switch_between_contexts[window]
-  AssertionError
+  assert True is False
 Harness: the test ran to completion.
 

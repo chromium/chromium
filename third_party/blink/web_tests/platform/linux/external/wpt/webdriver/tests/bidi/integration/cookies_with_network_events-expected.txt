@@ -1,7 +1,7 @@
 This is a wdspec test.
 [FAIL] test_iframe[cross_origin]
-  AssertionError
+  AssertionError: assert 1 == 0
 [FAIL] test_image[same_origin]
-  AssertionError
+  AssertionError: assert 0 == 1
 Harness: the test ran to completion.
 

@@ -1,5 +1,0 @@
-This is a wdspec test.
-[FAIL] test_grapheme_cluster[\\U0001f937\\U0001f3fd\\u200d\\u2640\\ufe0f]
-  webdriver.bidi.error.UnknownErrorException: unknown error (Invalid 'text' parameter)
-Harness: the test ran to completion.
-

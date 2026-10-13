@@ -15,5 +15,13 @@ This is a wdspec test.
   AssertionError: assert 'en-US' == 'de-DE'
 [FAIL] test_existing_service_worker[navigator]
   AssertionError: assert 'en-US' == 'de-DE'
+[FAIL] test_new_dedicated_worker_accept_language[fetch]
+  AssertionError: assert 'en-US,en;q=0.9' == 'de-DE'
+[FAIL] test_new_dedicated_worker_accept_language[xhr]
+  AssertionError: assert 'en-US,en;q=0.9' == 'de-DE'
+[FAIL] test_existing_dedicated_worker_accept_language[fetch]
+  AssertionError: assert 'en-US,en;q=0.9' == 'de-DE'
+[FAIL] test_existing_dedicated_worker_accept_language[xhr]
+  AssertionError: assert 'en-US,en;q=0.9' == 'de-DE'
 Harness: the test ran to completion.
 

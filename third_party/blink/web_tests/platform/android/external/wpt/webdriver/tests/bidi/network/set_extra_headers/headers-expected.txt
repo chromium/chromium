@@ -1,5 +1,0 @@
-This is a wdspec test.
-[ERROR] test_headers_merged[Custom user context]
-  setup error: webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
-Harness: the test ran to completion.
-

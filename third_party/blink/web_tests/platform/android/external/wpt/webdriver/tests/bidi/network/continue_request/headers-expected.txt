@@ -1,5 +1,0 @@
-This is a wdspec test.
-[FAIL] test_override_cookies
-  AssertionError: assert 1 == 0
-Harness: the test ran to completion.
-

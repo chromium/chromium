@@ -1,4 +1,7 @@
 This is a wdspec test.
 [FAIL] test_subscribe_status
-  webdriver.bidi.error.UnknownErrorException: unknown error (net::ERR_INVALID_AUTH_CREDENTIALS)
+  asyncio.exceptions.CancelledError
+[FAIL] test_request_timing_info
+  asyncio.exceptions.CancelledError
 Harness: the test ran to completion.
+
