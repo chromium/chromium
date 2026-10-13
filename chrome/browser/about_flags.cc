@@ -3851,6 +3851,17 @@ const FeatureEntry::FeatureParam kGlicActorTransientTasksForceTransient[] = {
 const FeatureEntry::FeatureVariation kGlicActorTransientTasksVariations[] = {
     {"(force transient)", kGlicActorTransientTasksForceTransient, nullptr}};
 
+// Makes cursor movement effectively instant. Uses 1ms rather than 0ms because
+// the actor overlay waits for `transitionend`, which zero-length CSS
+// transitions don't fire.
+const FeatureEntry::FeatureParam kGlicActorUiMagicCursorNoAnimation[] = {
+    {"magic-cursor-min-duration-ms", "1"},
+    {"magic-cursor-max-duration-ms", "1"}};
+
+const FeatureEntry::FeatureVariation kGlicActorUiMagicCursorVariations[] = {
+    {"(no cursor movement animation)", kGlicActorUiMagicCursorNoAnimation,
+     nullptr}};
+
 const FeatureEntry::FeatureParam kGlicToolbarButtonLocation_LeftOfProfile[] = {
     {"glic-toolbar-button-location", "LeftOfProfileChip"}};
 const FeatureEntry::FeatureParam kGlicToolbarButtonLocation_RightOfOmnibox[] = {
@@ -10989,7 +11000,9 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kGlicActorAutofillPreClick)},
     {"glic-actor-cursor", flag_descriptions::kGlicActorCursorName,
      flag_descriptions::kGlicActorCursorDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kGlicActorUiMagicCursor)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kGlicActorUiMagicCursor,
+                                    kGlicActorUiMagicCursorVariations,
+                                    "GlicActorUiMagicCursor")},
     {"glic-actor-localhost-is-sensitive",
      flag_descriptions::kGlicActorLocalhostIsSensitiveName,
      flag_descriptions::kGlicActorLocalhostIsSensitiveDescription,
