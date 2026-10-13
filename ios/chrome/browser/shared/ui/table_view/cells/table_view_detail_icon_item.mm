@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/shared/ui/elements/new_feature_badge_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/colorful_symbol_content_configuration.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/image_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -28,6 +29,9 @@ constexpr CGFloat kNewIPHBadgeFontSize = 10.0;
 // kDotSize represents the size of the dot (i.e. its height and width).
 constexpr CGFloat kDotSize = 10.f;
 
+// The size of the warning badge.
+constexpr CGFloat kWarningBadgeSize = 22.0;
+
 // By default, the maximum number of lines to be displayed for the title is 2,
 // subtitle 1.
 const NSInteger kDefaultNumberOfLinesTitle = 2;
@@ -42,6 +46,7 @@ const NSInteger kDefaultNumberOfLinesSubtitle = 1;
   if (self) {
     self.cellClass = [LegacyTableViewCell class];
     self.badgeType = BadgeType::kNone;
+    self.badgeLayout = BadgeLayout::kInline;
     _textNumberOfLines = kDefaultNumberOfLinesTitle;
     _detailTextNumberOfLines = kDefaultNumberOfLinesSubtitle;
     _textLineBreakMode = NSLineBreakByTruncatingTail;
@@ -58,43 +63,17 @@ const NSInteger kDefaultNumberOfLinesSubtitle = 1;
 
   TableViewCellContentConfiguration* contentConfiguration =
       [[TableViewCellContentConfiguration alloc] init];
-  switch (self.badgeType) {
-    case BadgeType::kNone:
-      if (self.textFont || self.textColor) {
-        contentConfiguration.attributedTitle = [self createAttributedTitle];
-      } else {
-        contentConfiguration.title = self.text;
-      }
-      break;
-    case BadgeType::kNew: {
-      NewFeatureBadgeView* newIPHBadgeView =
-          [[NewFeatureBadgeView alloc] initWithBadgeSize:kNewIPHBadgeSize
-                                                fontSize:kNewIPHBadgeFontSize];
-      newIPHBadgeView.frame =
-          CGRectMake(0, 0, kNewIPHBadgeSize, kNewIPHBadgeSize);
-      [newIPHBadgeView setNeedsLayout];
-      [newIPHBadgeView layoutIfNeeded];
-      UIGraphicsImageRenderer* renderer = [[UIGraphicsImageRenderer alloc]
-          initWithBounds:newIPHBadgeView.bounds];
-      UIImage* newBadgeImage = [renderer
-          imageWithActions:^(UIGraphicsImageRendererContext* rendererContext) {
-            [newIPHBadgeView.layer renderInContext:rendererContext.CGContext];
-          }];
 
-      contentConfiguration.attributedTitle =
-          [self createAttributedTitleWithImage:newBadgeImage];
-      break;
-    }
-    case BadgeType::kNotificationDot: {
-      UIImage* dot = [SymbolWithPointSize(SymbolCircleFill, kDotSize)
-          imageWithTintColor:[UIColor colorNamed:kBlueColor]];
-
-      contentConfiguration.attributedTitle =
-          [self createAttributedTitleWithImage:dot];
-
-      break;
-    }
+  UIImage* badgeImage = [self createBadgeImage];
+  if (badgeImage && self.badgeLayout == BadgeLayout::kInline) {
+    contentConfiguration.attributedTitle =
+        [self createAttributedTitleWithImage:badgeImage];
+  } else if (self.textFont || self.textColor) {
+    contentConfiguration.attributedTitle = [self createAttributedTitle];
+  } else {
+    contentConfiguration.title = self.text;
   }
+
   contentConfiguration.titleNumberOfLines = self.textNumberOfLines;
   if (self.textLayoutConstraintAxis == UILayoutConstraintAxisVertical) {
     contentConfiguration.subtitle = self.detailText;
@@ -108,6 +87,15 @@ const NSInteger kDefaultNumberOfLinesSubtitle = 1;
   contentConfiguration.subtitleLineBreakMode = self.detailTextLineBreakMode;
   contentConfiguration.verticalAlignment = self.verticalAlignment;
   contentConfiguration.reservesLeadingSpace = self.reservesLeadingSpace;
+
+  if (badgeImage && self.badgeLayout == BadgeLayout::kTrailing) {
+    ImageContentConfiguration* trailingImageConfiguration =
+        [[ImageContentConfiguration alloc] init];
+    trailingImageConfiguration.image = badgeImage;
+    trailingImageConfiguration.imageSize =
+        CGSizeMake(kTableViewIconImageSize, kTableViewIconImageSize);
+    contentConfiguration.trailingConfiguration = trailingImageConfiguration;
+  }
 
   if (self.iconImage) {
     ColorfulSymbolContentConfiguration* symbolConfiguration =
@@ -133,6 +121,13 @@ const NSInteger kDefaultNumberOfLinesSubtitle = 1;
                            l10n_util::GetNSString(
                                IDS_IOS_NEW_FEATURE_ACCESSIBILITY_HINT)];
       break;
+    case BadgeType::kWarning: {
+      NSString* warningHint =
+          l10n_util::GetNSString(IDS_IOS_ITEM_WARNING_BADGE_ACCESSIBILITY_HINT);
+      accessibilityLabel = [NSString
+          stringWithFormat:@"%@, %@", accessibilityLabel, warningHint];
+      break;
+    }
     case BadgeType::kNone:
       break;
   }
@@ -150,6 +145,49 @@ const NSInteger kDefaultNumberOfLinesSubtitle = 1;
 }
 
 #pragma mark - Private
+
+// Returns the tint color for the current `badgeType`.
+- (UIColor*)badgeTintColor {
+  switch (self.badgeType) {
+    case BadgeType::kNone:
+    case BadgeType::kNew:
+      return nil;
+    case BadgeType::kNotificationDot:
+      return [UIColor colorNamed:kBlueColor];
+    case BadgeType::kWarning:
+      return [UIColor colorNamed:kYellow500Color];
+  }
+}
+
+// Returns the image for the current `badgeType`.
+- (UIImage*)createBadgeImage {
+  switch (self.badgeType) {
+    case BadgeType::kNone:
+      return nil;
+    case BadgeType::kNew: {
+      NewFeatureBadgeView* newIPHBadgeView =
+          [[NewFeatureBadgeView alloc] initWithBadgeSize:kNewIPHBadgeSize
+                                                fontSize:kNewIPHBadgeFontSize];
+      newIPHBadgeView.frame =
+          CGRectMake(0, 0, kNewIPHBadgeSize, kNewIPHBadgeSize);
+      [newIPHBadgeView setNeedsLayout];
+      [newIPHBadgeView layoutIfNeeded];
+      UIGraphicsImageRenderer* renderer = [[UIGraphicsImageRenderer alloc]
+          initWithBounds:newIPHBadgeView.bounds];
+      return [renderer
+          imageWithActions:^(UIGraphicsImageRendererContext* rendererContext) {
+            [newIPHBadgeView.layer renderInContext:rendererContext.CGContext];
+          }];
+    }
+    case BadgeType::kNotificationDot:
+      return [SymbolWithPointSize(SymbolCircleFill, kDotSize)
+          imageWithTintColor:[self badgeTintColor]];
+    case BadgeType::kWarning:
+      return [SymbolWithPointSize(SymbolErrorCircleFill, kWarningBadgeSize)
+          imageWithTintColor:[self badgeTintColor]
+               renderingMode:UIImageRenderingModeAlwaysOriginal];
+  }
+}
 
 // Returns an attributed string for the title.
 - (NSMutableAttributedString*)createAttributedTitle {
