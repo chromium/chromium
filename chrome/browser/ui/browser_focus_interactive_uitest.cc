@@ -17,6 +17,7 @@
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
@@ -80,6 +81,10 @@
 
 #if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
+#endif
+
+#if BUILDFLAG(IS_WIN)
+#include "ui/base/ime/win/tsf_input_scope.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -475,6 +480,95 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, TabsRememberFocus) {
     }
   }
 }
+
+#if BUILDFLAG(IS_WIN)
+// Leaves `browser` with two tabs of `url`. The second one is active and has a
+// focused, selected contenteditable in an about:blank iframe, like the editing
+// iframe Google Slides uses.
+void OpenTabWithFocusedEditable(BrowserWindowInterface* browser,
+                                const GURL& url,
+                                content::WebContents** tab) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, url));
+  chrome::AddSelectedTabWithURL(browser, url, ui::PAGE_TRANSITION_TYPED);
+  *tab = browser->GetTabStripModel()->GetActiveWebContents();
+  ASSERT_TRUE(content::WaitForLoadStop(*tab));
+  ASSERT_TRUE(content::ExecJs(*tab, R"(
+    const frame = document.createElement('iframe');
+    document.body.appendChild(frame);
+    const doc = frame.contentDocument;
+    doc.body.contentEditable = 'true';
+    doc.body.textContent = 'hello';
+    frame.contentWindow.focus();
+    doc.body.focus();
+    frame.contentWindow.getSelection().setBaseAndExtent(
+        doc.body.firstChild, 1, doc.body.firstChild, 3);
+  )"));
+  ASSERT_EQ(true, content::EvalJs(*tab, R"(
+    (() => {
+      const doc = document.querySelector('iframe').contentDocument;
+      return doc.hasFocus() && doc.activeElement === doc.body;
+    })()
+  )"));
+}
+
+// The param is whether the test runs in an incognito window.
+class BrowserFocusInputScopeTest : public BrowserFocusTest,
+                                   public testing::WithParamInterface<bool> {};
+
+// Regression test for crbug.com/344961539. Slides keeps its editing state in
+// an about:blank iframe. SetInputScope() makes TSF request a lock on the
+// focused text store. With Slides' braille support on, calling it every time a
+// tab was shown changed the page's selection and made Slides flip between
+// slides. A TSF client that reacts like that can't be attached in a test, so
+// check the cause instead: showing a tab with a focused editable must not call
+// SetInputScope().
+IN_PROC_BROWSER_TEST_P(BrowserFocusInputScopeTest,
+                       ShowingTabDoesNotCallSetInputScopeWithFocusedEditable) {
+  BrowserWindowInterface* browser_window = browser();
+  if (GetParam()) {
+    browser_window = CreateIncognitoBrowser();
+    ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser_window));
+  }
+  content::WebContents* tab = nullptr;
+  ASSERT_NO_FATAL_FAILURE(OpenTabWithFocusedEditable(
+      browser_window, embedded_test_server()->GetURL(kSimplePage), &tab));
+
+  int set_input_scope_calls = 0;
+  ui::tsf_inputscope::ScopedSetInputScopeCallbackForTesting scoped_callback(
+      base::BindLambdaForTesting(
+          [&](HWND, InputScope) { ++set_input_scope_calls; }));
+
+  // Switch away from and back to the tab several times.
+  TabStripModel* tab_strip = browser_window->GetTabStripModel();
+  for (int i = 0; i < 5; ++i) {
+    for (int index : {0, 1}) {
+      tab_strip->ActivateTabAt(
+          index, TabStripUserGestureDetails(
+                     TabStripUserGestureDetails::GestureType::kOther));
+    }
+  }
+
+  // Guard against passing vacuously: the tab must be showing again, with the
+  // editable focused.
+  ASSERT_EQ(tab, tab_strip->GetActiveWebContents());
+  ASSERT_EQ("visible", content::EvalJs(tab, "document.visibilityState"));
+  ASSERT_TRUE(tab->GetRenderWidgetHostView()->HasFocus());
+  ASSERT_EQ(true, content::EvalJs(tab, R"(
+    (() => {
+      const doc = document.querySelector('iframe').contentDocument;
+      return doc.activeElement === doc.body;
+    })()
+  )"));
+  EXPECT_EQ(0, set_input_scope_calls);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         BrowserFocusInputScopeTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "Incognito" : "Regular";
+                         });
+#endif  // BUILDFLAG(IS_WIN)
 
 // Tabs remember focus with find-in-page box.
 #if BUILDFLAG(IS_MAC)

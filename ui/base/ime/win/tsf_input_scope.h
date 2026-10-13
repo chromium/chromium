@@ -6,9 +6,11 @@
 #define UI_BASE_IME_WIN_TSF_INPUT_SCOPE_H_
 
 #include <InputScope.h>
+
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "base/win/windows_types.h"
 #include "ui/base/ime/text_input_mode.h"
 #include "ui/base/ime/text_input_type.h"
@@ -37,6 +39,23 @@ ITfInputScope* CreateInputScope(TextInputType text_input_type,
 // A wrapper of the SetInputScope API exported by msctf.dll.
 COMPONENT_EXPORT(UI_BASE_IME_WIN)
 void SetInputScope(HWND window_handle, InputScope input_scope);
+
+using SetInputScopeCallbackForTesting =
+    base::RepeatingCallback<void(HWND, InputScope)>;
+
+// While an instance is alive, SetInputScope() invokes `callback` instead of
+// calling into msctf.dll, so tests can observe when and how often it is called
+// without starting a TSF lock session.
+class COMPONENT_EXPORT(UI_BASE_IME_WIN) ScopedSetInputScopeCallbackForTesting {
+ public:
+  explicit ScopedSetInputScopeCallbackForTesting(
+      SetInputScopeCallbackForTesting callback);
+  ScopedSetInputScopeCallbackForTesting(
+      const ScopedSetInputScopeCallbackForTesting&) = delete;
+  ScopedSetInputScopeCallbackForTesting& operator=(
+      const ScopedSetInputScopeCallbackForTesting&) = delete;
+  ~ScopedSetInputScopeCallbackForTesting();
+};
 
 }  // namespace tsf_inputscope
 }  // namespace ui

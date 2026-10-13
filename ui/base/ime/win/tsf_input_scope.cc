@@ -12,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/no_destructor.h"
 #include "base/task/current_thread.h"
 #include "base/trace_event/trace_event.h"
 
@@ -181,8 +182,32 @@ typedef HRESULT(WINAPI* SetInputScopeFunc)(HWND window_handle,
 SetInputScopeFunc g_set_input_scope = NULL;
 bool g_get_set_input_scope_done = false;
 
+namespace {
+
+SetInputScopeCallbackForTesting& GetTestingCallback() {
+  static base::NoDestructor<SetInputScopeCallbackForTesting> callback;
+  return *callback;
+}
+
+}  // namespace
+
+ScopedSetInputScopeCallbackForTesting::ScopedSetInputScopeCallbackForTesting(
+    SetInputScopeCallbackForTesting callback) {
+  CHECK(GetTestingCallback().is_null());
+  GetTestingCallback() = std::move(callback);
+}
+
+ScopedSetInputScopeCallbackForTesting::
+    ~ScopedSetInputScopeCallbackForTesting() {
+  GetTestingCallback().Reset();
+}
+
 void SetInputScope(HWND window_handle, InputScope input_scope) {
   CHECK(base::CurrentUIThread::IsSet());
+  if (!GetTestingCallback().is_null()) {
+    GetTestingCallback().Run(window_handle, input_scope);
+    return;
+  }
   // Thread safety is not required because this function is under UI thread.
   if (!g_get_set_input_scope_done) {
     g_get_set_input_scope_done = true;

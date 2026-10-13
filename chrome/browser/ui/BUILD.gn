@@ -2326,6 +2326,7 @@ if (!is_android && !is_chromeos_device) {
 
     if (is_win) {
       sources += [ "send_mouse_move_uitest_win.cc" ]
+      deps += [ "//ui/base/ime/win" ]
     }
   }
 }
