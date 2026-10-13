@@ -297,6 +297,7 @@ found in the LICENSE file.
     <item type="id" name="recent_tabs_header_menu_id" />
     <item type="id" name="recent_tabs_menu_id" />
     <item type="id" name="reload_menu_id" />
+    <item type="id" name="report_issue_menu_id" />
     <item type="id" name="request_desktop_site_check_id" />
     <item type="id" name="request_desktop_site_id" />
     <item type="id" name="save_and_share_parent_menu_id" />

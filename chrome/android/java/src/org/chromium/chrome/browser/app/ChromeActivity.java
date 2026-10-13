@@ -3097,7 +3097,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             return true;
         }
 
-        if (id == R.id.feedback_form) {
+        if (id == R.id.feedback_form || id == R.id.report_issue_menu_id) {
             if (!FeedbackPolicyManager.getInstance().isUserFeedbackAllowed()) {
                 return true;
             }
@@ -3107,6 +3107,9 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                             this, url, getCurrentTabModel().isIncognitoBranded());
             HelpAndFeedbackLauncherImpl.getForProfile(currentProfile)
                     .showFeedback(this, url, helpContextId);
+            if (fromMenu) {
+                RecordUserAction.record("MobileMenuReportAnIssue");
+            }
             return true;
         }
 
