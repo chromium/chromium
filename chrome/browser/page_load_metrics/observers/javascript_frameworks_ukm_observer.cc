@@ -75,6 +75,8 @@ void JavascriptFrameworksUkmObserver::RecordJavascriptFrameworkPageLoad() {
   detect_framework_builder
       .SetAngularPageLoad(is_detected(JavaScriptFramework::kAngular))
       .SetGatsbyPageLoad(is_detected(JavaScriptFramework::kGatsby))
+      .SetLiteRTLMPageLoad(is_detected(JavaScriptFramework::kLiteRTLM))
+      .SetLiteRTPageLoad(is_detected(JavaScriptFramework::kLiteRT))
       .SetMediaPipePageLoad(is_detected(JavaScriptFramework::kMediaPipe))
       .SetNextJSPageLoad(is_detected(JavaScriptFramework::kNext))
       .SetNuxtJSPageLoad(is_detected(JavaScriptFramework::kNuxt))

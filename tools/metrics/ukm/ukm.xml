@@ -12340,6 +12340,18 @@ be describing additional metrics about the same event.
       framework.
     </summary>
   </metric>
+  <metric name="LiteRTLMPageLoad" enum="Boolean">
+    <summary>
+      True if the page loaded in the main frame uses the LiteRT-LM JavaScript
+      framework.
+    </summary>
+  </metric>
+  <metric name="LiteRTPageLoad" enum="Boolean">
+    <summary>
+      True if the page loaded in the main frame uses the LiteRT.js JavaScript
+      framework.
+    </summary>
+  </metric>
   <metric name="MediaPipePageLoad" enum="Boolean">
     <summary>
       True if the page loaded in the main frame uses the MediaPipe JavaScript

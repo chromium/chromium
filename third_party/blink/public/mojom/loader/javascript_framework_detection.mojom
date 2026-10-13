@@ -31,6 +31,8 @@ enum JavaScriptFramework {
   kTFJS = 16,
   kTransformersJS = 17,
   kMediaPipe = 18,
+  kLiteRT = 19,
+  kLiteRTLM = 20,
 };
 
 // This struct is typemapped to blink::JavaScriptFrameworkDetectionResult.

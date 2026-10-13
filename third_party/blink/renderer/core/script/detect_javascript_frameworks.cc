@@ -199,6 +199,10 @@ inline void CheckGlobalStringMatches(
       v8::String::NewFromUtf8Literal(isolate, "transformers.js_config");
   v8::Local<v8::String> media_pipe_string = v8::String::NewFromUtf8Literal(
       isolate, "addStringVectorToInputSidePacket");
+  v8::Local<v8::String> litert_string =
+      v8::String::NewFromUtf8Literal(isolate, "litert_wasm_internal.js");
+  v8::Local<v8::String> litert_lm_string =
+      v8::String::NewFromUtf8Literal(isolate, "liteRtLmWasm");
   if (tfjs_string->IsInStringTable(isolate)) {
     result.detected_versions[JavaScriptFramework::kTFJS] =
         kNoFrameworkVersionDetected;
@@ -209,6 +213,14 @@ inline void CheckGlobalStringMatches(
   }
   if (media_pipe_string->IsInStringTable(isolate)) {
     result.detected_versions[JavaScriptFramework::kMediaPipe] =
+        kNoFrameworkVersionDetected;
+  }
+  if (litert_string->IsInStringTable(isolate)) {
+    result.detected_versions[JavaScriptFramework::kLiteRT] =
+        kNoFrameworkVersionDetected;
+  }
+  if (litert_lm_string->IsInStringTable(isolate)) {
+    result.detected_versions[JavaScriptFramework::kLiteRTLM] =
         kNoFrameworkVersionDetected;
   }
 }
