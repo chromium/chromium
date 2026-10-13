@@ -215,12 +215,13 @@ void DeviceTrustChallengeTabHelper::MaybeSetupDeviceTrustAPI(
     return;
   }
 
-  const url::Origin security_origin = web_frame->GetSecurityOrigin();
-  if (security_origin.opaque()) {
+  if (!device_trust_service_ || !device_trust_service_->IsEnabled()) {
     return;
   }
 
-  if (!device_trust_service_ || !device_trust_service_->IsEnabled()) {
+  // Opaque origins have no authority to request device attestation.
+  const url::Origin security_origin = web_frame->GetSecurityOrigin();
+  if (security_origin.opaque()) {
     return;
   }
 
