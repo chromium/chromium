@@ -280,7 +280,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContextualSearch.DuplicateTabTitlesShownCount.{ContextualSearchSource}"
-    units="count" expires_after="2027-02-07">
+    units="count" expires_after="2027-04-11">
   <owner>hujasonx@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -305,7 +305,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContextualSearch.ErrorPageShown.{ContextualSearchSource}"
-    enum="ContextualSearchErrorPage" expires_after="2027-02-07">
+    enum="ContextualSearchErrorPage" expires_after="2027-04-11">
   <owner>nguyenbryan@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -402,7 +402,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContextualSearch.Inputs.TypeOnSubmission.{ContextualSearchSource}"
-    enum="ContextualSearchAimInputType" expires_after="2027-02-07">
+    enum="ContextualSearchAimInputType" expires_after="2027-04-11">
   <owner>khalidpeer@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -520,7 +520,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContextualSearch.Query.Modality.V2.FunnelMetrics.{ContextualSearchFunnel}.{ContextualSearchSource}"
-    enum="ContextualSearchMultimodalState" expires_after="2027-02-07">
+    enum="ContextualSearchMultimodalState" expires_after="2027-04-11">
   <owner>hujasonx@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -533,7 +533,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContextualSearch.Query.Modality.V2.{ContextualSearchSource}"
-    enum="ContextualSearchMultimodalState" expires_after="2027-02-07">
+    enum="ContextualSearchMultimodalState" expires_after="2027-04-11">
   <owner>hujaosonx@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -605,7 +605,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContextualSearch.Session.Duration.{Status}.{ContextualSearchSource}"
-    units="ms" expires_after="2027-02-07">
+    units="ms" expires_after="2027-04-11">
   <owner>hujasonx@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -880,7 +880,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContextualSearch.Session.File.DeletedCount.{ContextualSearchFileTypes}.{FileState}.{ContextualSearchSource}"
-    units="count" expires_after="2027-01-20">
+    units="count" expires_after="2027-04-11">
   <owner>hujasonx@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -1222,7 +1222,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContextualSearch.TypedSuggestNavigation.IsVerbatim.{ContextualSearchSource}"
-    enum="Boolean" expires_after="2027-02-07">
+    enum="Boolean" expires_after="2027-04-11">
   <owner>niharm@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>

@@ -125,7 +125,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Skills.Invoke.Action" enum="SkillsInvokeAction"
-    expires_after="2027-02-01">
+    expires_after="2027-04-11">
   <owner>michelleabreo@google.com</owner>
   <owner>skills-eng@google.com</owner>
   <summary>
@@ -134,7 +134,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Skills.Invoke.Result" enum="SkillsInvokeResult"
-    expires_after="2027-02-01">
+    expires_after="2027-04-11">
   <owner>michelleabreo@google.com</owner>
   <owner>skills-eng@google.com</owner>
   <summary>
@@ -202,7 +202,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Skills.Save.DerivedSource" enum="SkillsDerivedSource"
-    expires_after="2027-02-01">
+    expires_after="2027-04-11">
   <owner>esalma@google.com</owner>
   <owner>austinzzr@google.com</owner>
   <owner>cbe-productivity-eng@google.com</owner>

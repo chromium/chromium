@@ -195,7 +195,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="RegionalCapabilities.FunnelStage.RegionalPresence"
-    enum="RegionalProgramAndLocationMatch" expires_after="2027-02-07">
+    enum="RegionalProgramAndLocationMatch" expires_after="2027-04-11">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
   <summary>

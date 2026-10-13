@@ -35,7 +35,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PaymentRequest.Camera.AccessRequested" enum="Boolean"
-    expires_after="2027-01-31">
+    expires_after="2027-04-11">
   <owner>luisantunes@google.com</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
@@ -46,7 +46,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PaymentRequest.Camera.PromptAction" enum="PermissionAction"
-    expires_after="2027-01-31">
+    expires_after="2027-04-11">
   <owner>luisantunes@google.com</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
@@ -57,7 +57,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PaymentRequest.Camera.RequestOutcome"
-    enum="MediaStreamRequestResult" expires_after="2027-01-31">
+    enum="MediaStreamRequestResult" expires_after="2027-04-11">
   <owner>luisantunes@google.com</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
@@ -158,7 +158,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PaymentRequest.IsCanMakePaymentAllowedByPref.PaymentRequestConstruction.Once"
-    enum="Boolean" expires_after="2027-02-07">
+    enum="Boolean" expires_after="2027-04-11">
   <owner>smcgruer@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
@@ -195,7 +195,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PaymentRequest.IsCanMakePaymentAllowedByPref.Startup"
-    enum="Boolean" expires_after="2027-02-07">
+    enum="Boolean" expires_after="2027-04-11">
   <owner>smcgruer@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>

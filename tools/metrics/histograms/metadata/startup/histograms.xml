@@ -427,7 +427,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Startup.Android.Cold.WithPersistentState.TimeToFirstContentfulPaint3.{StartActivityType}"
-    units="ms" expires_after="2027-02-07">
+    units="ms" expires_after="2027-04-11">
   <owner>pasko@chromium.org</owner>
   <owner>nafisabedin@google.com</owner>
   <owner>clhager@google.com</owner>
@@ -537,7 +537,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Android.Cold.{FirstDrawSurface}.TimeToFirstDraw"
-    units="ms" expires_after="2027-02-07">
+    units="ms" expires_after="2027-04-11">
   <owner>nafisabedin@google.com</owner>
   <owner>yfriedman@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -561,7 +561,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Android.Cold.{StartupType}.TimeSpentInBinder"
-    units="ms" expires_after="2027-02-07">
+    units="ms" expires_after="2027-04-11">
   <owner>nafisabedin@google.com</owner>
   <owner>yfriedman@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -580,7 +580,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Android.Cold.{StartupType}.TotalBinderTransactions"
-    units="counts" expires_after="2027-02-07">
+    units="counts" expires_after="2027-04-11">
   <owner>nafisabedin@google.com</owner>
   <owner>yfriedman@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -635,7 +635,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Android.InitializeFeatureListTime" units="ms"
-    expires_after="2027-02-07">
+    expires_after="2027-04-11">
   <owner>martinkong@google.com</owner>
   <owner>agrieve@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -731,7 +731,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Android.Temperature" enum="AndroidStartupTemperature"
-    expires_after="2027-02-07">
+    expires_after="2027-04-11">
   <owner>nafisabedin@google.com</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
@@ -753,7 +753,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.BringToForegroundReason"
-    enum="BooleanBringToForegroundReason" expires_after="2027-02-07">
+    enum="BooleanBringToForegroundReason" expires_after="2027-04-11">
   <owner>peter@chromium.org</owner>
   <summary>
     Records the cause, each time Chrome is brought to the foreground. Currently
@@ -1485,7 +1485,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Launch.InfoBar.{StartupLaunchInfoBarType}.Interaction"
-    enum="StartupLaunchInfoBarInteraction" expires_after="2027-02-05">
+    enum="StartupLaunchInfoBarInteraction" expires_after="2027-04-11">
   <owner>atharvmaan@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -1494,7 +1494,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Launch.InfoBar.{StartupLaunchInfoBarType}.Shown"
-    units="times" expires_after="2027-02-05">
+    units="times" expires_after="2027-04-11">
   <owner>atharvmaan@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -1504,7 +1504,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Launch.{StartupLaunchMode}.PreferenceChanged"
-    enum="BooleanEnabled" expires_after="2027-02-05">
+    enum="BooleanEnabled" expires_after="2027-04-11">
   <owner>atharvmaan@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -1574,7 +1574,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.MobileSessionStartFromApps"
-    enum="MobileSessionCallerApp" expires_after="2027-02-07">
+    enum="MobileSessionCallerApp" expires_after="2027-04-11">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>The calling application (if any).</summary>
@@ -1615,7 +1615,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Renderer.LoadTime.ChromeMainToRendererStartRunLoop"
-    units="ms" expires_after="2027-02-07">
+    units="ms" expires_after="2027-04-11">
   <owner>spvm@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>

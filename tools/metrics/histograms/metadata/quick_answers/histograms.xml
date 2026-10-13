@@ -37,7 +37,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="QuickAnswers.ActiveImpression" enum="QuickAnswersResultType"
-    expires_after="2027-02-07">
+    expires_after="2027-04-11">
   <owner>yawano@google.com</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
@@ -62,7 +62,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickAnswers.Click" enum="QuickAnswersResultType"
-    expires_after="2027-02-07">
+    expires_after="2027-04-11">
   <owner>yawano@google.com</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
