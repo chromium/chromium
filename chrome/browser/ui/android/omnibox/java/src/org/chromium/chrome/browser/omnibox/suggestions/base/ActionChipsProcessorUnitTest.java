@@ -5,6 +5,10 @@
 package org.chromium.chrome.browser.omnibox.suggestions.base;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.verify;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -18,13 +22,17 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
+import org.chromium.chrome.browser.omnibox.suggestions.action.SiteSearchAction;
 import org.chromium.components.browser_ui.widget.chips.ChipProperties;
+import org.chromium.components.omnibox.AutocompleteInput.SiteSearchData;
+import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.action.ActionPresentationMode;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.components.omnibox.action.OmniboxActionId;
+import org.chromium.components.search_engines.StarterPackId;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.mojom.WindowOpenDisposition;
@@ -52,7 +60,8 @@ public class ActionChipsProcessorUnitTest {
         mModel = new PropertyModel(ActionChipsProperties.ALL_UNIQUE_KEYS);
     }
 
-    private OmniboxAction actionWithHandleAndTextAppearance(long handle, int textAppearance) {
+    private OmniboxAction createAction(
+            long handle, int textAppearance, @ActionPresentationMode int presentationMode) {
         return new OmniboxAction(
                 OmniboxActionId.ACTION_IN_SUGGEST,
                 handle,
@@ -60,7 +69,7 @@ public class ActionChipsProcessorUnitTest {
                 "accessibility hint",
                 OmniboxAction.DEFAULT_ICON,
                 textAppearance,
-                ActionPresentationMode.CHIP,
+                presentationMode,
                 WindowOpenDisposition.CURRENT_TAB) {
             @Override
             public boolean execute(OmniboxActionDelegate delegate) {
@@ -69,9 +78,13 @@ public class ActionChipsProcessorUnitTest {
         };
     }
 
+    private OmniboxAction actionWithHandleAndTextAppearance(long handle, int textAppearance) {
+        return createAction(handle, textAppearance, ActionPresentationMode.CHIP);
+    }
+
     /** Create a suggestion with supplied OmniboxActions (if any) and populate model. */
     private void populateModelForActions(OmniboxAction... actions) {
-        var match =
+        AutocompleteMatch match =
                 AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED)
                         .setActions(List.of(actions))
                         .build();
@@ -80,18 +93,86 @@ public class ActionChipsProcessorUnitTest {
     }
 
     @Test
-    public void chipTextAppearance() {
+    public void populateModel_noActions_setsNull() {
+        populateModelForActions();
+        assertNull(mActionModel);
+    }
+
+    @Test
+    public void populateModel_skipsButtonPresentationMode() {
+        OmniboxAction buttonAction =
+                createAction(1, R.style.TextAppearance_ChipText, ActionPresentationMode.BUTTON);
+        populateModelForActions(buttonAction);
+        assertNull(mActionModel);
+
+        OmniboxAction chipAction =
+                createAction(2, R.style.TextAppearance_ChipText, ActionPresentationMode.CHIP);
+        populateModelForActions(buttonAction, chipAction);
+        assertNotNull(mActionModel);
+        assertEquals(1, mActionModel.size());
+    }
+
+    @Test
+    public void chipPropertiesAndTextAppearance() {
         populateModelForActions(
                 actionWithHandleAndTextAppearance(1, R.style.TextAppearance_ChipText),
                 actionWithHandleAndTextAppearance(
                         2, R.style.TextAppearance_TextMediumThick_Primary_Baseline));
 
-        ModelList chipModel = mModel.get(ActionChipsProperties.ACTION_CHIPS);
+        PropertyModel firstChip = mActionModel.get(0).model;
+        assertEquals("hint", firstChip.get(ChipProperties.TEXT));
+        assertEquals("accessibility hint", firstChip.get(ChipProperties.CONTENT_DESCRIPTION));
+        assertTrue(firstChip.get(ChipProperties.ENABLED));
+        assertEquals(OmniboxAction.DEFAULT_ICON.chipIconRes, firstChip.get(ChipProperties.ICON));
+        assertEquals(
+                OmniboxAction.DEFAULT_ICON.tintWithTextColor,
+                firstChip.get(ChipProperties.APPLY_ICON_TINT));
         assertEquals(
                 R.style.TextAppearance_ChipText,
-                chipModel.get(0).model.get(ChipProperties.PRIMARY_TEXT_APPEARANCE));
+                firstChip.get(ChipProperties.PRIMARY_TEXT_APPEARANCE));
         assertEquals(
                 R.style.TextAppearance_TextMediumThick_Primary_Baseline,
-                chipModel.get(1).model.get(ChipProperties.PRIMARY_TEXT_APPEARANCE));
+                mActionModel.get(1).model.get(ChipProperties.PRIMARY_TEXT_APPEARANCE));
+    }
+
+    @Test
+    public void chipClick_invokesSuggestionHostForFirstAndNthAction() {
+        OmniboxAction action1 =
+                actionWithHandleAndTextAppearance(1, R.style.TextAppearance_ChipText);
+        OmniboxAction action2 =
+                actionWithHandleAndTextAppearance(2, R.style.TextAppearance_ChipText);
+        OmniboxAction action3 =
+                actionWithHandleAndTextAppearance(3, R.style.TextAppearance_ChipText);
+        populateModelForActions(action1, action2, action3);
+
+        PropertyModel firstChip = mActionModel.get(0).model;
+        firstChip.get(ChipProperties.CLICK_HANDLER).onResult(firstChip);
+        verify(mSuggestionHost).onOmniboxActionClicked(action1, MATCH_POS);
+
+        PropertyModel thirdChip = mActionModel.get(2).model;
+        thirdChip.get(ChipProperties.CLICK_HANDLER).onResult(thirdChip);
+        verify(mSuggestionHost).onOmniboxActionClicked(action3, MATCH_POS);
+    }
+
+    @Test
+    public void chipSelect_notifiesAction() {
+        SiteSearchAction action =
+                new SiteSearchAction(
+                        /* nativeInstance= */ 1,
+                        "hint",
+                        "accessibility hint",
+                        "keyword",
+                        StarterPackId.TABS);
+        populateModelForActions(action);
+
+        PropertyModel chipModel = mActionModel.get(0).model;
+        chipModel.get(ChipProperties.SELECT_HANDLER).onResult(true);
+        verify(mActionDelegate)
+                .setSiteSearchData(
+                        new SiteSearchData(
+                                "keyword",
+                                "hint",
+                                /* enteredViaSpace= */ false,
+                                StarterPackId.TABS));
     }
 }

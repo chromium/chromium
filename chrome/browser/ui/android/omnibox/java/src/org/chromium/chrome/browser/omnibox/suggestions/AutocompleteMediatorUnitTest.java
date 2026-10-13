@@ -84,6 +84,8 @@ import org.chromium.chrome.browser.omnibox.suggestions.SelectionController.Trave
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties.RoundSides;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionInSuggest;
+import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxPedal;
+import org.chromium.chrome.browser.omnibox.suggestions.action.SiteSearchAction;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preloading.PreloadingFeatureMap;
@@ -113,6 +115,7 @@ import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
+import org.chromium.components.omnibox.action.OmniboxPedalId;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.StarterPackId;
@@ -3572,5 +3575,36 @@ public class AutocompleteMediatorUnitTest {
         verify(mAutocompleteController)
                 .start(any(), mAutocompleteInputCaptor.capture(), anyInt(), anyBoolean());
         assertEquals("incognito search query", mAutocompleteInputCaptor.getValue().getUserText());
+    }
+
+    @Test
+    public void onOmniboxActionClicked_executesActionAndFinishesInteractionWhenHandled() {
+        mMediator.onSuggestionsReceived(mAutocompleteResult, /* isFinal= */ true);
+        SiteSearchAction siteSearchAction =
+                new SiteSearchAction(
+                        /* nativeInstance= */ 1,
+                        "hint",
+                        "accessibility",
+                        "keyword",
+                        StarterPackId.TABS);
+        mMediator.onOmniboxActionClicked(siteSearchAction, 0);
+        verify(mOmniboxActionDelegate)
+                .setSiteSearchData(
+                        new SiteSearchData(
+                                "keyword",
+                                "hint",
+                                /* enteredViaSpace= */ false,
+                                StarterPackId.TABS));
+        verify(mAutocompleteDelegate, never()).clearOmniboxFocus();
+
+        OmniboxPedal pedalAction =
+                new OmniboxPedal(
+                        /* nativeInstance= */ 2,
+                        "hint",
+                        "accessibility",
+                        OmniboxPedalId.LAUNCH_INCOGNITO);
+        mMediator.onOmniboxActionClicked(pedalAction, 0);
+        verify(mOmniboxActionDelegate).openIncognitoTab();
+        verify(mAutocompleteDelegate).clearOmniboxFocus();
     }
 }
