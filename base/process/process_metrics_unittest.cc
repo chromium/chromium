@@ -858,6 +858,13 @@ TEST(SystemMetrics2Test, GetSystemMemoryInfo) {
 
 #if BUILDFLAG(IS_APPLE)
   EXPECT_GT(info.file_backed, ByteSize(0));
+  EXPECT_GT(info.wired, ByteSize(0));
+  EXPECT_LT(info.wired, info.total);
+  EXPECT_LE(info.compressor, info.total);
+  // The swapped-out part of the compressor's contents cannot exceed the whole.
+  // No positivity checks: the compressor is legitimately empty on an idle
+  // machine.
+  EXPECT_LE(info.compressor_swapped, info.compressor_uncompressed);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

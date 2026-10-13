@@ -319,6 +319,15 @@ bool GetSystemMemoryInfo(SystemMemoryInfo* meminfo) {
   meminfo->speculative = ByteSize(PAGE_SIZE * vm_info.speculative_count);
   meminfo->file_backed = ByteSize(PAGE_SIZE * vm_info.external_page_count);
   meminfo->purgeable = ByteSize(PAGE_SIZE * vm_info.purgeable_count);
+  meminfo->compressor = ByteSize(PAGE_SIZE * vm_info.compressor_page_count);
+  meminfo->compressor_uncompressed =
+      ByteSize(PAGE_SIZE * vm_info.total_uncompressed_pages_in_compressor);
+  meminfo->wired = ByteSize(PAGE_SIZE * vm_info.wire_count);
+  // `swapped_count` was added in rev2 of vm_statistics64; only trust it if the
+  // kernel filled in at least through rev2.
+  if (count >= HOST_VM_INFO64_REV2_COUNT) {
+    meminfo->compressor_swapped = ByteSize(PAGE_SIZE * vm_info.swapped_count);
+  }
 
   return true;
 }

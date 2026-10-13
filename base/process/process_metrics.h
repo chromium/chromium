@@ -323,8 +323,9 @@ BASE_EXPORT void IncreaseFdLimitTo(unsigned int max_descriptors);
 // except on Mac. Buffers/cached/active_anon/inactive_anon/active_file/
 // inactive_file/dirty/reclaimable/pswpin/pswpout/pgmajfault are available on
 // Linux/Android/Chrome OS. Shmem/slab are Chrome OS only.
-// Speculative/file_backed/purgeable are Mac and iOS only. Free is absent on
-// Windows (see "avail_phys" below).
+// Speculative/file_backed/purgeable/compressor/compressor_uncompressed/
+// compressor_swapped/wired are Mac and iOS only. Free is absent on Windows (see
+// "avail_phys" below).
 struct BASE_EXPORT SystemMemoryInfo {
   SystemMemoryInfo();
   SystemMemoryInfo(const SystemMemoryInfo& other);
@@ -382,6 +383,22 @@ struct BASE_EXPORT SystemMemoryInfo {
   ByteSize speculative;
   ByteSize file_backed;
   ByteSize purgeable;
+  // Physical memory occupied by the kernel's compressed pager to hold
+  // compressed data (vm_statistics64::compressor_page_count).
+  ByteSize compressor;
+  // Uncompressed size of the data held by the compressor
+  // (vm_statistics64::total_uncompressed_pages_in_compressor). The ratio
+  // compressor_uncompressed / compressor is the achieved compression ratio.
+  // Note that this may also account for compressed data that has since been
+  // swapped out to disk; see `compressor_swapped`.
+  ByteSize compressor_uncompressed;
+  // Compressor-held data currently stored in swap rather than in physical
+  // memory (vm_statistics64::swapped_count). Zero if the kernel does not
+  // report this field.
+  ByteSize compressor_swapped;
+  // Memory wired down by the kernel; it can neither be paged out nor compressed
+  // (vm_statistics64::wire_count).
+  ByteSize wired;
 #endif  // BUILDFLAG(IS_APPLE)
 
   // Returns a cross-platform estimation of available physical memory.
