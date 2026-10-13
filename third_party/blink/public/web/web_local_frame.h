@@ -117,6 +117,7 @@ struct FramePolicy;
 struct WebAssociatedURLLoaderOptions;
 struct WebConsoleMessage;
 struct WebIsolatedWorldInfo;
+struct WebPerformanceTimings;
 struct WebPolicyContainer;
 struct WebPrintPageDescription;
 struct WebPrintParams;
@@ -908,6 +909,7 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
       const = 0;
   virtual WebPerformanceMetricsForNestedContexts
   PerformanceMetricsForNestedContexts() const = 0;
+  virtual WebPerformanceTimings PerformanceTimings() const = 0;
 
   // Ad Tagging ---------------------------------------------------------
 

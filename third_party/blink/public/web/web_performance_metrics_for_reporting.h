@@ -82,8 +82,9 @@ struct SoftNavigationMetricsForReporting {
   base::UnguessableToken same_document_metrics_token;
 };
 
-// This class is used for reporting purposes (e.g. ukm) of non-web-exposed
-// metrics.
+// This class is used for reporting purposes (e.g. ukm) of performance metrics,
+// including non-web-exposed metrics. Do not use this class to expose values to
+// the web; use `WebPerformanceTimings` instead.
 class BLINK_EXPORT WebPerformanceMetricsForReporting {
  public:
   // The count to record the times on requestAnimationFrame after the page is
@@ -139,9 +140,7 @@ class BLINK_EXPORT WebPerformanceMetricsForReporting {
   double ConnectEnd() const;
   double ResponseStart() const;
   double DomContentLoadedEventStart() const;
-  double DomContentLoadedEventEnd() const;
   double LoadEventStart() const;
-  double LoadEventEnd() const;
   double FirstPaint() const;
   base::TimeTicks FirstPaintAsMonotonicTime() const;
   double FirstImagePaint() const;

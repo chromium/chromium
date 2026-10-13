@@ -144,6 +144,7 @@
 #include "third_party/blink/public/web/web_node.h"
 #include "third_party/blink/public/web/web_performance_metrics_for_nested_contexts.h"
 #include "third_party/blink/public/web/web_performance_metrics_for_reporting.h"
+#include "third_party/blink/public/web/web_performance_timings.h"
 #include "third_party/blink/public/web/web_plugin.h"
 #include "third_party/blink/public/web/web_print_client.h"
 #include "third_party/blink/public/web/web_print_page_description.h"
@@ -1034,6 +1035,14 @@ WebLocalFrameImpl::PerformanceMetricsForNestedContexts() const {
   if (!GetFrame())
     return WebPerformanceMetricsForNestedContexts();
   return WebPerformanceMetricsForNestedContexts(
+      DOMWindowPerformance::performance(*(GetFrame()->DomWindow())));
+}
+
+WebPerformanceTimings WebLocalFrameImpl::PerformanceTimings() const {
+  if (!GetFrame()) {
+    return WebPerformanceTimings();
+  }
+  return WebPerformanceTimings(
       DOMWindowPerformance::performance(*(GetFrame()->DomWindow())));
 }
 

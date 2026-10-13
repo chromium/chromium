@@ -122,17 +122,8 @@ double WebPerformanceMetricsForReporting::DomContentLoadedEventStart() const {
       .InSecondsF();
 }
 
-double WebPerformanceMetricsForReporting::DomContentLoadedEventEnd() const {
-  return base::Milliseconds(private_->timing()->domContentLoadedEventEnd())
-      .InSecondsF();
-}
-
 double WebPerformanceMetricsForReporting::LoadEventStart() const {
   return base::Milliseconds(private_->timing()->loadEventStart()).InSecondsF();
-}
-
-double WebPerformanceMetricsForReporting::LoadEventEnd() const {
-  return base::Milliseconds(private_->timing()->loadEventEnd()).InSecondsF();
 }
 
 double WebPerformanceMetricsForReporting::FirstPaint() const {
