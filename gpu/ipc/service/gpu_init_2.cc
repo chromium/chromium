@@ -61,21 +61,8 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/ipc/service/gpu_init_win.h"
-#include "services/on_device_model/ml_internal_buildflags.h"
-#include "ui/gl/dc_surface_solid_color_pool.h"
 #include "ui/gl/direct_composition_support.h"
-#include "ui/gl/gl_angle_util_win.h"
-#include "ui/gl/gl_surface_egl.h"
-
-#if BUILDFLAG(SKIA_USE_DAWN)
-#include "gpu/ipc/service/dawn_texture_solid_color_pool.h"
-#endif
-
-#if BUILDFLAG(ENABLE_ML_INTERNAL)
-#include "services/webnn/public/mojom/features.mojom-features.h"  // nogncheck
-#endif
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -266,95 +253,6 @@ bool MatchGLInfo(const std::string& field, const std::string& patterns) {
   return false;
 }
 #endif  // BUILDFLAG(ENABLE_VULKAN)
-
-#if BUILDFLAG(IS_WIN)
-uint64_t CHROME_LUID_to_uint64_t(const CHROME_LUID& luid) {
-  uint64_t id64 = static_cast<uint32_t>(luid.HighPart);
-  return (id64 << 32) | (luid.LowPart & 0xFFFFFFFF);
-}
-
-const GPUInfo::GPUDevice* GetDefaultGPU(
-    const GPUInfo& gpu_info,
-    const GpuFeatureInfo& gpu_feature_info) {
-  if (!gpu_feature_info.IsWorkaroundEnabled(FORCE_PHYSICAL_GPU_FOR_TESTING)) {
-    // If no preference is set, return the default GPU.
-    return &(gpu_info.gpu);
-  }
-
-  // Ensure default GPU is not a software renderer.
-  if (!gpu_info.gpu.IsSoftwareRenderer()) {
-    return &(gpu_info.gpu);
-  } else if (auto it =
-                 std::ranges::find_if(gpu_info.secondary_gpus,
-                                      [](const GPUInfo::GPUDevice& device) {
-                                        return !device.IsSoftwareRenderer();
-                                      });
-             it != gpu_info.secondary_gpus.end()) {
-    return &(*it);
-  } else {
-    LOG(FATAL) << "No non-software renderer device available.";
-  }
-}
-
-// GPU picking is only effective on Windows.
-// Returns the default GPU's system_device_id.
-void SetupGLDisplayManagerEGL(const GPUInfo& gpu_info,
-                              const GpuFeatureInfo& gpu_feature_info) {
-  TRACE_EVENT("gpu,startup", "gpu_init::SetupGLDisplayManagerEGL");
-  const GPUInfo::GPUDevice* gpu_high_perf =
-      gpu_info.GetGpuByPreference(gl::GpuPreference::kHighPerformance);
-  const GPUInfo::GPUDevice* gpu_low_power =
-      gpu_info.GetGpuByPreference(gl::GpuPreference::kLowPower);
-
-  // On Windows the default GPU may not be the low power GPU.
-  const GPUInfo::GPUDevice* gpu_default =
-      GetDefaultGPU(gpu_info, gpu_feature_info);
-  uint64_t system_device_id_high_perf =
-      gpu_high_perf ? CHROME_LUID_to_uint64_t(gpu_high_perf->luid) : 0;
-  uint64_t system_device_id_low_power =
-      gpu_low_power ? CHROME_LUID_to_uint64_t(gpu_low_power->luid) : 0;
-  uint64_t system_device_id_default =
-      CHROME_LUID_to_uint64_t(gpu_default->luid);
-
-  if (gpu_info.GpuCount() <= 1) {
-    gl::SetGpuPreferenceEGL(gl::GpuPreference::kDefault,
-                            system_device_id_default);
-    return;
-  }
-  if (gpu_feature_info.IsWorkaroundEnabled(FORCE_LOW_POWER_GPU) &&
-      system_device_id_low_power) {
-    gl::SetGpuPreferenceEGL(gl::GpuPreference::kDefault,
-                            system_device_id_low_power);
-    return;
-  }
-  if (gpu_feature_info.IsWorkaroundEnabled(FORCE_HIGH_PERFORMANCE_GPU) &&
-      system_device_id_high_perf) {
-    gl::SetGpuPreferenceEGL(gl::GpuPreference::kDefault,
-                            system_device_id_high_perf);
-    return;
-  }
-
-  if (gpu_default == gpu_high_perf) {
-    // If the default GPU is already the high performance GPU, then it's better
-    // for Chrome to always use this GPU.
-    gl::SetGpuPreferenceEGL(gl::GpuPreference::kDefault,
-                            system_device_id_high_perf);
-    return;
-  }
-
-  // Chrome uses the default GPU for internal rendering and the high
-  // performance GPU for WebGL/WebGPU contexts that prefer high performance.
-  // At this moment, a low power GPU different from the default GPU is not
-  // supported.
-  gl::SetGpuPreferenceEGL(gl::GpuPreference::kDefault,
-                          system_device_id_default);
-  if (system_device_id_high_perf) {
-    gl::SetGpuPreferenceEGL(gl::GpuPreference::kHighPerformance,
-                            system_device_id_high_perf);
-  }
-  return;
-}
-#endif  // IS_WIN
 
 }  // namespace
 
@@ -1050,7 +948,7 @@ bool GpuInit2::CollectBasicInfoAndComputeFeatures(InitState& state) {
 
 void GpuInit2::ConfigureGpuSelection(InitState& state) {
 #if BUILDFLAG(IS_WIN)
-  SetupGLDisplayManagerEGL(gpu_info_, gpu_feature_info_);
+  gpu_init_internal::SetupGLDisplayManagerEGL(gpu_info_, gpu_feature_info_);
 #endif  // BUILDFLAG(IS_WIN)
 
   CHECK_EQ(gl::GetGLImplementation(), gl::kGLImplementationNone);
@@ -1247,19 +1145,9 @@ bool GpuInit2::ResolveGrContextType(InitState& state) {
       features::IsSkiaGraphitePrecompilationEnabled(state.command_line);
 
 #if BUILDFLAG(IS_WIN)
-  if (gpu_preferences_.gr_context_type == GrContextType::kGraphiteDawn &&
-      features::SkiaGraphiteDawnBackendValidation()) {
-    // Enable ANGLE debug layer for Graphite backend validation, sharing the
-    // D3D11 device between ANGLE and Dawn. Requires GL reinit.
-    gl::init::ShutdownGL(state.gl_display, true);
-    gl::GLDisplayEGL::EnableANGLEDebugLayer();
-    state.gl_display = gl::init::InitializeGLNoExtensionsOneOff(
-        /*init_bindings=*/true, gl::GpuPreference::kDefault);
-    if (!state.gl_display) {
-      VLOG(1) << "gl::init::InitializeGLNoExtensionsOneOff failed "
-                 "after enabling ANGLE debug layer";
-      return false;
-    }
+  if (!gpu_init_internal::MaybeEnableANGLEDebugLayer(
+          gpu_preferences_.gr_context_type, state.gl_display)) {
+    return false;
   }
 #endif  // BUILDFLAG(IS_WIN)
   return true;
