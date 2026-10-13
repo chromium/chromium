@@ -5,7 +5,7 @@
 import type {ExtensionPageInterface} from 'chrome://contextual-tasks/contextual_tasks.mojom-webui.js';
 import {ExtensionBrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
 import type {ExtensionBrowserProxy} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
-import {getArrayBufferFromBigBuffer, HANDSHAKE_INTERVAL_MS, MAX_HANDSHAKE_ATTEMPTS} from 'chrome://contextual-tasks/utils.js';
+import {getArrayBufferFromBigBuffer, HANDSHAKE_INTERVAL_MS, HANDSHAKE_TIMEOUT_MS} from 'chrome://contextual-tasks/utils.js';
 
 type ProtoWrapper = Parameters<ExtensionPageInterface['postSearchMessage']>[0];
 
@@ -33,6 +33,12 @@ export function urlMatchesAllowList(origin: string): boolean {
 
 export class ExtensionPostMessageHandler {
   private browserProxy_: ExtensionBrowserProxy;
+  // Injectable so tests can control time; MockTimer doesn't mock
+  // performance.now().
+  private now_: () => number;
+  // Start of the handshake, captured before the browser-side message fetch.
+  // The HANDSHAKE_TIMEOUT_MS deadline is measured from here.
+  private handshakeStartTime_: number = 0;
   private targetOrigin_: string|null = null;
   private pendingSearchMessages_: Uint8Array[] = [];
   private handshakeIntervalId_: number|null = null;
@@ -43,9 +49,10 @@ export class ExtensionPostMessageHandler {
   private postSearchMessageListenerId_: number|null = null;
   private isDestroyed_: boolean = false;
 
-  constructor(browserProxy?: ExtensionBrowserProxy) {
+  constructor(browserProxy?: ExtensionBrowserProxy, now?: () => number) {
     this.browserProxy_ =
         browserProxy || ExtensionBrowserProxyImpl.getInstance();
+    this.now_ = now || (() => performance.now());
     this.initMojoListeners_();
     this.initWindowListener_();
     this.initHandshake();
@@ -61,6 +68,10 @@ export class ExtensionPostMessageHandler {
 
   get isDestroyed(): boolean {
     return this.isDestroyed_;
+  }
+
+  private elapsedSinceHandshakeStartMs_(): number {
+    return this.now_() - this.handshakeStartTime_;
   }
 
   private setTargetOrigin_(origin: string) {
@@ -83,6 +94,8 @@ export class ExtensionPostMessageHandler {
   }
 
   async initHandshake(): Promise<void> {
+    this.handshakeStartTime_ = this.now_();
+
     let messageArray: Uint8Array;
     try {
       const {message} = await this.browserProxy_.handler.getHandshakeMessage();
@@ -107,27 +120,23 @@ export class ExtensionPostMessageHandler {
       }
     }
 
-    let handshakeAttempts = 0;
-
     if (this.isDestroyed_) {
       return;
     }
 
-    // Start sending handshake ping on interval
+    // Start sending handshake ping on interval. The timeout is a wall-clock
+    // deadline rather than a count of ticks or pings: pings are suppressed
+    // until a target origin resolves, so a ping count can stall indefinitely,
+    // and intervals in hidden frames are throttled, so a tick count can
+    // stretch far past HANDSHAKE_TIMEOUT_MS.
     this.handshakeIntervalId_ = window.setInterval(() => {
       if (this.isDestroyed_ || this.handshakeCompleted_) {
-        if (this.handshakeIntervalId_ !== null) {
-          clearInterval(this.handshakeIntervalId_);
-          this.handshakeIntervalId_ = null;
-        }
+        this.stopHandshakeInterval_();
         return;
       }
-      if (handshakeAttempts >= MAX_HANDSHAKE_ATTEMPTS) {
-        console.warn('Max handshake attempts reached. Stopping.');
-        if (this.handshakeIntervalId_ !== null) {
-          clearInterval(this.handshakeIntervalId_);
-          this.handshakeIntervalId_ = null;
-        }
+      if (this.elapsedSinceHandshakeStartMs_() >= HANDSHAKE_TIMEOUT_MS) {
+        console.warn('Handshake timed out. Stopping.');
+        this.stopHandshakeInterval_();
         return;
       }
       if (!this.targetOrigin_) {
@@ -135,9 +144,15 @@ export class ExtensionPostMessageHandler {
         // be authoritatively determined from referrer.
         return;
       }
-      handshakeAttempts++;
       window.parent.postMessage(messageArray, this.targetOrigin_);
     }, HANDSHAKE_INTERVAL_MS);
+  }
+
+  private stopHandshakeInterval_() {
+    if (this.handshakeIntervalId_ !== null) {
+      clearInterval(this.handshakeIntervalId_);
+      this.handshakeIntervalId_ = null;
+    }
   }
 
   private initWindowListener_() {
@@ -192,10 +207,7 @@ export class ExtensionPostMessageHandler {
         this.browserProxy_.callbackRouter.onHandshakeComplete.addListener(
             () => {
               this.handshakeCompleted_ = true;
-              if (this.handshakeIntervalId_ !== null) {
-                clearInterval(this.handshakeIntervalId_);
-                this.handshakeIntervalId_ = null;
-              }
+              this.stopHandshakeInterval_();
             });
 
     this.postAimMessageListenerId_ =
@@ -226,10 +238,7 @@ export class ExtensionPostMessageHandler {
   destroy() {
     this.isDestroyed_ = true;
     this.pendingSearchMessages_ = [];
-    if (this.handshakeIntervalId_ !== null) {
-      clearInterval(this.handshakeIntervalId_);
-      this.handshakeIntervalId_ = null;
-    }
+    this.stopHandshakeInterval_();
     if (this.messageListener_) {
       window.removeEventListener('message', this.messageListener_);
       this.messageListener_ = null;

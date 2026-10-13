@@ -4,11 +4,23 @@
 
 import {ExtensionBrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
 import {ExtensionPostMessageHandler, resetExtensionPostMessagingForTesting, urlMatchesAllowList} from 'chrome://contextual-tasks/contextual_tasks_extension/post_message_handler.js';
+import {HANDSHAKE_INTERVAL_MS, HANDSHAKE_TIMEOUT_MS} from 'chrome://contextual-tasks/utils.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestExtensionBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
+
+// Cache the real setTimeout before any MockTimer overrides it.
+const realSetTimeout = window.setTimeout;
+
+// microtasksFinished() is backed by setTimeout, which never resolves while
+// MockTimer is installed. This flushes pending promises using the real timer
+// instead.
+function flushTasks(): Promise<void> {
+  return new Promise(resolve => realSetTimeout(resolve, 0));
+}
 
 suite('ExtensionPostMessageHandlerTest', () => {
   let handler: ExtensionPostMessageHandler;
@@ -16,10 +28,16 @@ suite('ExtensionPostMessageHandlerTest', () => {
   let postedMessages: Array<{message: Uint8Array, targetOrigin: string}>;
   let originalPostMessage: typeof window.parent.postMessage;
   let messageResolver: PromiseResolver<void>;
+  let mockTimer: MockTimer|null = null;
+  // MockTimer drives setInterval but not performance.now(), so handlers that
+  // need a controllable clock are constructed with `fakeClock`.
+  let fakeNow = 0;
+  const fakeClock = () => fakeNow;
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     resetExtensionPostMessagingForTesting();
+    fakeNow = 0;
 
     Object.defineProperty(document, 'referrer', {
       value: 'https://www.google.com',
@@ -48,10 +66,30 @@ suite('ExtensionPostMessageHandlerTest', () => {
   });
 
   teardown(() => {
+    // Uninstall first and unconditionally: if an assertion fails before a test
+    // can clean up its own timer, leaving setTimeout mocked would hang every
+    // subsequent test in the suite.
+    if (mockTimer) {
+      mockTimer.uninstall();
+      mockTimer = null;
+    }
     handler.destroy();
     resetExtensionPostMessagingForTesting();
     window.parent.postMessage = originalPostMessage;
   });
+
+  // Replaces the setup() handler with one driven by MockTimer and fakeClock.
+  async function createClockedHandler(): Promise<ExtensionPostMessageHandler> {
+    handler.destroy();
+    mockTimer = new MockTimer();
+    mockTimer.install();
+    const proxy = new TestExtensionBrowserProxy();
+    const clockedHandler = new ExtensionPostMessageHandler(proxy, fakeClock);
+    await proxy.handler.whenCalled('getHandshakeMessage');
+    await flushTasks();
+    postedMessages = [];
+    return clockedHandler;
+  }
 
   test('Initializes handshake and sends ping to parent', async () => {
     await messageResolver.promise;
@@ -321,4 +359,58 @@ suite('ExtensionPostMessageHandlerTest', () => {
           mojoGlobal.bindInterface = originalBindInterface;
         }
       });
+
+  test('Stops pinging at the handshake deadline', async () => {
+    const clockedHandler = await createClockedHandler();
+
+    mockTimer!.tick(HANDSHAKE_INTERVAL_MS * 3);
+    assertEquals(3, postedMessages.length);
+
+    fakeNow = HANDSHAKE_TIMEOUT_MS;
+    mockTimer!.tick(HANDSHAKE_INTERVAL_MS * 5);
+    assertEquals(3, postedMessages.length);
+
+    clockedHandler.destroy();
+  });
+
+  test(
+      'Stops the handshake at the deadline even if no origin resolves',
+      async () => {
+        // With no usable referrer no ping is ever sent, which is the case a
+        // ping-count cap never terminated.
+        Object.defineProperty(document, 'referrer', {
+          value: 'https://not-allowed.example',
+          configurable: true,
+        });
+        const clockedHandler = await createClockedHandler();
+
+        fakeNow = HANDSHAKE_TIMEOUT_MS;
+        mockTimer!.tick(HANDSHAKE_INTERVAL_MS);
+
+        // An origin resolving after the deadline must not restart pinging,
+        // which proves the interval was actually stopped.
+        clockedHandler.setTargetOriginForTesting('https://www.google.com');
+        mockTimer!.tick(HANDSHAKE_INTERVAL_MS * 5);
+        assertEquals(0, postedMessages.length);
+
+        clockedHandler.destroy();
+      });
+
+  test('Times out by elapsed time, not by number of ticks', async () => {
+    const clockedHandler = await createClockedHandler();
+
+    // Far more ticks than fit in the timeout at the nominal interval, as
+    // happens when a hidden frame's timers are throttled, but the clock has
+    // not reached the deadline, so pinging continues.
+    fakeNow = HANDSHAKE_TIMEOUT_MS - 1;
+    const ticks = HANDSHAKE_TIMEOUT_MS / HANDSHAKE_INTERVAL_MS + 10;
+    mockTimer!.tick(HANDSHAKE_INTERVAL_MS * ticks);
+    assertEquals(ticks, postedMessages.length);
+
+    fakeNow = HANDSHAKE_TIMEOUT_MS;
+    mockTimer!.tick(HANDSHAKE_INTERVAL_MS * 5);
+    assertEquals(ticks, postedMessages.length);
+
+    clockedHandler.destroy();
+  });
 });
