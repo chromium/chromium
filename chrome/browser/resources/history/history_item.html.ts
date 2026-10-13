@@ -150,7 +150,8 @@ export function getHtml(this: HistoryItemElement) {
         </div>
       </div>
     ` : ''}
-    <div id="time-gap-separator" ?hidden="${!this.hasTimeGap}"></div>
+    <div id="time-gap-separator"
+        ?hidden="${!this.hasTimeGap || this.isExpanded_}"></div>
   </div>
 </div>
 <!--_html_template_end_-->`;

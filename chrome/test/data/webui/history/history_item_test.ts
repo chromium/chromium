@@ -285,6 +285,9 @@ suite('<history-item> integration test', function() {
         items[1]!.shadowRoot.querySelector<HTMLElement>('#collapse');
     assertTrue(!!collapse);
     assertFalse(collapse.hasAttribute('opened'));
+    const timeGapSeparator =
+        items[1]!.shadowRoot.querySelector<HTMLElement>('#time-gap-separator');
+    assertTrue(isVisible(timeGapSeparator));
 
     actorExpandBtn!.click();
     await microtasksFinished();
@@ -292,6 +295,7 @@ suite('<history-item> integration test', function() {
     assertEquals(
         'cr:keyboard-arrow-up', actorExpandBtn!.getAttribute('iron-icon'));
     assertTrue(collapse.hasAttribute('opened'));
+    assertFalse(isVisible(timeGapSeparator));
     assertEquals(1, testProxy.actionMap['HistoryPage_CriticalActionsExpanded']);
 
     const criticalActionsTitle =
@@ -353,8 +357,11 @@ suite('<history-item> integration test', function() {
       window.open = originalOpen;
     }
 
+    // Collapsing the item should restore the time gap separator.
     actorExpandBtn!.click();
     await microtasksFinished();
+    assertFalse(collapse.hasAttribute('opened'));
+    assertTrue(isVisible(timeGapSeparator));
     assertEquals(
         1, testProxy.actionMap['HistoryPage_CriticalActionsCollapsed']);
   });
