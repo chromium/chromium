@@ -72,13 +72,35 @@ if (enable_cast_receiver || is_cast_android || is_castos) {
 # Build-time WebUI code caching is only used in optimize_webui builds. When the
 # host and current toolchains are the same there are issues instrumenting the
 # code_cache_generator msan binaries, see crbug.com/40055221#comment17.
-# TODO(crbug.com/399764218): Enable this build-step on cross-compiled builds.
-# This is necessary for universalized mac builds that produce x64 / arm64 chrome
-# builds in the same package.
+# Mac builds on Mac hosts generate the cache for either target CPU, including
+# the x64 half of a universal build cross-compiled on an arm64 host. The
+# generator runs from the V8 snapshot toolchain, which already builds Blink
+# for v8_context_snapshot_generator there, and loads the target's snapshot.
+# Mac builds on Linux hosts stay off: they skip the context snapshot to avoid
+# building Blink twice (see v8_context_snapshot.gni), and the generator would
+# bring that cost back. See //tools/code_cache_generator/README.md.
+# TODO(crbug.com/399764218): Enable this build-step on other cross-compiled
+# builds.
 if (enable_webui_generate_code_cache) {
   enable_webui_generate_code_cache =
-      optimize_webui && host_toolchain == current_toolchain && !is_msan &&
-      (is_linux || is_win)
+      optimize_webui && !is_msan &&
+      ((host_toolchain == current_toolchain && (is_linux || is_win)) ||
+       (is_mac && host_os == "mac" && current_toolchain == default_toolchain))
+}
+
+# The generated code cache is only valid for the V8 snapshot of the target
+# architecture. Universal Mac builds merge x64 and arm64 builds into one bundle
+# that shares a single resources.pak, so on Mac the cache ships in its own
+# per-architecture pak, named like v8_context_snapshot.<arch>.bin.
+webui_code_cache_pak_filename = ""
+if (is_mac && enable_webui_generate_code_cache) {
+  if (current_cpu == "x64") {
+    webui_code_cache_pak_filename = "webui_code_cache.x86_64.pak"
+  } else if (current_cpu == "arm64") {
+    webui_code_cache_pak_filename = "webui_code_cache.arm64.pak"
+  } else {
+    assert(false, "Unsupported Mac CPU for the WebUI code cache pak")
+  }
 }
 
 if (load_webui_from_disk) {

@@ -92,7 +92,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/scoped_startup_resource_bundle.h"
 #include "ui/base/ui_base_switches.h"
-
+#include "ui/webui/buildflags.h"
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_MAC)
@@ -1694,6 +1694,18 @@ void ChromeMainDelegate::PreSandboxStartup() {
     base::PathService::Get(chrome::FILE_RESOURCES_PACK, &resources_pack_path);
     ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
         resources_pack_path, ui::kScaleFactorNone);
+#if BUILDFLAG(IS_MAC) && BUILDFLAG(ENABLE_WEBUI_GENERATE_CODE_CACHE)
+    // Only renderers read the bundled WebUI code cache. The browser maps URLs
+    // to resource IDs and never reads the bytes. See
+    // tools/code_cache_generator/README.md.
+    base::FilePath code_cache_pack_path;
+    if (process_type == switches::kRendererProcess &&
+        base::PathService::Get(chrome::FILE_WEBUI_CODE_CACHE_PACK,
+                               &code_cache_pack_path)) {
+      ui::ResourceBundle::GetSharedInstance().AddOptionalDataPackFromPath(
+          code_cache_pack_path, ui::kScaleFactorNone);
+    }
+#endif  // BUILDFLAG(IS_MAC) && BUILDFLAG(ENABLE_WEBUI_GENERATE_CODE_CACHE)
 #endif  // BUILDFLAG(IS_ANDROID)
     CHECK(!loaded_locale.empty()) << "Locale could not be found for " << locale;
   }

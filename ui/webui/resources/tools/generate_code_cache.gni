@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
+import("//v8/gni/snapshot_toolchain.gni")
 
 template("generate_code_cache") {
   action(target_name) {
@@ -16,16 +17,44 @@ template("generate_code_cache") {
                              "out_folder",
                              "out_manifest",
                            ])
-    deps = [ "//tools/code_cache_generator" ]
+
+    # The generator runs on the build host. When cross-compiling, it is built
+    # in the V8 snapshot toolchain, like v8_context_snapshot_generator.
+    _generator_target = "//tools/code_cache_generator($v8_snapshot_toolchain)"
+    _generator_path = get_label_info(_generator_target, "root_out_dir") +
+                      "/code_cache_generator"
+    deps = [ _generator_target ]
+
+    # Without external startup data the snapshot is built into the generator,
+    # which would then carry the host toolchain's snapshot.
+    assert(v8_use_external_startup_data ||
+               v8_snapshot_toolchain == current_toolchain,
+           "Cross-toolchain code cache generation needs external startup data")
     inputs = []
+
+    # Pass the target's snapshot explicitly. The code cache embeds the
+    # snapshot's read-only checksum, and a cross-toolchain generator would
+    # otherwise load the snapshot next to itself.
+    snapshot_args = []
     if (v8_use_external_startup_data) {
       if (use_v8_context_snapshot) {
         deps += [ "//tools/v8_context_snapshot" ]
         inputs += [ "$root_out_dir/$v8_context_snapshot_filename" ]
+        snapshot_args = [
+          "--context_snapshot",
+          rebase_path("$root_out_dir/$v8_context_snapshot_filename",
+                      root_build_dir),
+        ]
       }
       if (!use_v8_context_snapshot || include_both_v8_snapshots) {
         deps += [ "//v8:run_mksnapshot_default" ]
         inputs += [ "$root_out_dir/snapshot_blob.bin" ]
+      }
+      if (!use_v8_context_snapshot) {
+        snapshot_args = [
+          "--snapshot_blob",
+          rebase_path("$root_out_dir/snapshot_blob.bin", root_build_dir),
+        ]
       }
     }
 
@@ -47,14 +76,13 @@ template("generate_code_cache") {
 
     args = [
              "--util_path",
-             "./code_cache_generator",
+             rebase_path(_generator_path, root_build_dir),
              "--in_folder",
              rebase_path(in_folder, root_build_dir),
              "--out_folder",
              rebase_path(out_folder, root_build_dir),
              "--out_manifest",
              rebase_path(out_manifest, root_build_dir),
-             "--in_files",
-           ] + in_files_filtered
+           ] + snapshot_args + [ "--in_files" ] + in_files_filtered
   }
 }

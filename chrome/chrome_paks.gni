@@ -18,6 +18,21 @@ import("chrome_repack_locales.gni")
 
 assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
 
+# WebUI code cache paks. They are merged into resources.pak, except on Mac
+# where they form the per-architecture `webui_code_cache_pak_filename`.
+_webui_code_cache_paks = [
+  "$root_gen_dir/chrome/side_panel_bookmarks_code_cache_resources.pak",
+  "$root_gen_dir/chrome/side_panel_customize_chrome_code_cache_resources.pak",
+  "$root_gen_dir/chrome/side_panel_reading_list_code_cache_resources.pak",
+  "$root_gen_dir/chrome/side_panel_shared_code_cache_resources.pak",
+  "$root_gen_dir/chrome/webui_toolbar_code_cache_resources.pak",
+  "$root_gen_dir/ui/webui/resources/webui_code_cache_resources.pak",
+]
+_webui_code_cache_pak_deps = [
+  "//chrome/browser/resources:code_cache_resources",
+  "//ui/webui/resources:code_cache_resources",
+]
+
 # Generates a rule to repack a set of resources, substituting a given string
 # in for the percentage (e.g. "100", "200"). It generates the repacked files in
 # the "gen" directory, and then introduces a copy rule to copy it to the root
@@ -611,19 +626,11 @@ template("chrome_extra_paks") {
       ]
     }
 
-    if (enable_webui_generate_code_cache) {
-      sources += [
-        "$root_gen_dir/chrome/side_panel_bookmarks_code_cache_resources.pak",
-        "$root_gen_dir/chrome/side_panel_customize_chrome_code_cache_resources.pak",
-        "$root_gen_dir/chrome/side_panel_reading_list_code_cache_resources.pak",
-        "$root_gen_dir/chrome/side_panel_shared_code_cache_resources.pak",
-        "$root_gen_dir/chrome/webui_toolbar_code_cache_resources.pak",
-        "$root_gen_dir/ui/webui/resources/webui_code_cache_resources.pak",
-      ]
-      deps += [
-        "//chrome/browser/resources:code_cache_resources",
-        "//ui/webui/resources:code_cache_resources",
-      ]
+    # On Mac the code cache goes into its own per-architecture pak, see
+    # `webui_code_cache_pak_filename`.
+    if (enable_webui_generate_code_cache && !is_mac) {
+      sources += _webui_code_cache_paks
+      deps += _webui_code_cache_pak_deps
     }
 
     if (is_mac) {
@@ -735,6 +742,24 @@ template("chrome_paks") {
     }
   }
 
+  if (enable_webui_generate_code_cache && is_mac) {
+    repack("${target_name}_webui_code_cache") {
+      forward_variables_from(invoker,
+                             [
+                               "copy_data_to_bundle",
+                               "mark_as_data",
+                               "repack_allowlist",
+                               "visibility",
+                             ])
+      sources = _webui_code_cache_paks
+      deps = _webui_code_cache_pak_deps
+      if (defined(invoker.deps)) {
+        deps += invoker.deps
+      }
+      output = "${invoker.output_dir}/$webui_code_cache_pak_filename"
+    }
+  }
+
   group(target_name) {
     forward_variables_from(invoker, [ "deps" ])
     public_deps = [
@@ -744,6 +769,9 @@ template("chrome_paks") {
     ]
     if (enable_hidpi) {
       public_deps += [ ":${target_name}_200_percent" ]
+    }
+    if (enable_webui_generate_code_cache && is_mac) {
+      public_deps += [ ":${target_name}_webui_code_cache" ]
     }
     if (defined(invoker.public_deps)) {
       public_deps += invoker.public_deps

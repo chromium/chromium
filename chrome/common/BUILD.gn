@@ -573,6 +573,7 @@ static_library("constants") {
     "//pdf:buildflags",
     "//rlz/buildflags",
     "//third_party/widevine/cdm:buildflags",
+    "//ui/webui:buildflags",
   ]
 
   deps = [

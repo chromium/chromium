@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "extensions/buildflags/buildflags.h"
 #include "third_party/widevine/cdm/buildflags.h"
+#include "ui/webui/buildflags.h"
 
 namespace base {
 class FilePath;
@@ -93,6 +94,10 @@ enum {
   FILE_DEV_UI_RESOURCES_PACK,  // Full path to the .pak file containing
                                // binary data for internal pages (e.g., html
                                // files and images).
+#if BUILDFLAG(IS_MAC) && BUILDFLAG(ENABLE_WEBUI_GENERATE_CODE_CACHE)
+  FILE_WEBUI_CODE_CACHE_PACK,  // Full path to the per-architecture .pak file
+                               // with the bundled WebUI code cache.
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
   DIR_CHROMEOS_CRD_DATA,  // Directory where Chrome Remote Desktop can store

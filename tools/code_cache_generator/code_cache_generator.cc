@@ -4,6 +4,7 @@
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
+#include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
@@ -87,6 +88,25 @@ int main(int argc, char** argv) {
   mojo::core::Init();
 
 #ifdef V8_USE_EXTERNAL_STARTUP_DATA
+  // When cross-compiling, this binary is built for the build host and the
+  // build passes the target's snapshot explicitly. The code cache embeds the
+  // snapshot's read-only checksum, so it must match the target's snapshot.
+  static constexpr char kContextSnapshotSwitch[] = "context_snapshot";
+  static constexpr char kSnapshotBlobSwitch[] = "snapshot_blob";
+  const base::CommandLine& command_line =
+      *base::CommandLine::ForCurrentProcess();
+  if (command_line.HasSwitch(kContextSnapshotSwitch)) {
+    gin::V8Initializer::LoadV8SnapshotFromFile(
+        base::File(command_line.GetSwitchValuePath(kContextSnapshotSwitch),
+                   base::File::FLAG_OPEN | base::File::FLAG_READ),
+        nullptr, gin::V8SnapshotFileType::kWithAdditionalContext);
+  } else if (command_line.HasSwitch(kSnapshotBlobSwitch)) {
+    gin::V8Initializer::LoadV8SnapshotFromFile(
+        base::File(command_line.GetSwitchValuePath(kSnapshotBlobSwitch),
+                   base::File::FLAG_OPEN | base::File::FLAG_READ),
+        nullptr, gin::V8SnapshotFileType::kDefault);
+  }
+  // No-op if a snapshot was already loaded above.
 #if BUILDFLAG(USE_V8_CONTEXT_SNAPSHOT)
   gin::V8Initializer::LoadV8Snapshot(
       gin::V8SnapshotFileType::kWithAdditionalContext);

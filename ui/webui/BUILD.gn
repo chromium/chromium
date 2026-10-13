@@ -87,5 +87,6 @@ buildflag_header("buildflags") {
     "ENABLE_WEBUI_NTP=$enable_webui_ntp",
     "ENABLE_WEBUI_TABSTRIP_NTB=$enable_webui_tabstrip_ntb",
     "ENABLE_WEBUI_CONTEXTUAL_TASKS_COMPOSEBOX=$enable_webui_contextual_tasks_composebox",
+    "WEBUI_CODE_CACHE_PAK_FILENAME=\"$webui_code_cache_pak_filename\"",
   ]
 }
