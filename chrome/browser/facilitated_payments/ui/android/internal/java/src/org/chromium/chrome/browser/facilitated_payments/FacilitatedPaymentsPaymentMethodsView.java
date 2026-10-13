@@ -11,7 +11,6 @@ import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 
 import androidx.annotation.StringRes;
 
@@ -39,10 +38,8 @@ class FacilitatedPaymentsPaymentMethodsView implements BottomSheetContent {
                     .setUserCritical(UserCriticalFeature.FACILITATED_PAYMENTS_PAYMENT_METHODS)
                     .build();
 
-    // Contains everything to be shown in the bottom sheet. Includes the drag handler.
-    private final LinearLayout mView;
     // Holds the screens to be displayed in the bottom sheet. To show different screens, simply swap
-    // the view contained. Does not include the drag handler.
+    // the view contained.
     private final FrameLayout mScreenHolder;
     private final BottomSheetController mBottomSheetController;
     // The screen currently being shown.
@@ -87,18 +84,17 @@ class FacilitatedPaymentsPaymentMethodsView implements BottomSheetContent {
     FacilitatedPaymentsPaymentMethodsView(
             Context context, BottomSheetController bottomSheetController) {
         mBottomSheetController = bottomSheetController;
-        mView =
-                (LinearLayout)
+        mScreenHolder =
+                (FrameLayout)
                         LayoutInflater.from(context)
                                 .inflate(R.layout.facilitated_payments_sequence_view, null);
-        mScreenHolder = (FrameLayout) mView.findViewById(R.id.screen_holder);
 
         // Apply RTL layout changes.
         int layoutDirection =
                 LocalizationUtils.isLayoutRtl()
                         ? View.LAYOUT_DIRECTION_RTL
                         : View.LAYOUT_DIRECTION_LTR;
-        mView.setLayoutDirection(layoutDirection);
+        mScreenHolder.setLayoutDirection(layoutDirection);
     }
 
     /**
@@ -173,7 +169,7 @@ class FacilitatedPaymentsPaymentMethodsView implements BottomSheetContent {
 
     @Override
     public View getContentView() {
-        return mView;
+        return mScreenHolder;
     }
 
     @Override
@@ -194,6 +190,11 @@ class FacilitatedPaymentsPaymentMethodsView implements BottomSheetContent {
     @Override
     public boolean swipeToDismissEnabled() {
         return false;
+    }
+
+    @Override
+    public boolean showHandlebar() {
+        return true;
     }
 
     @Override
