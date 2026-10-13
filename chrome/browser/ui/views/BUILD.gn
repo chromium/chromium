@@ -232,6 +232,20 @@ source_set("file_system_access_test_support") {
   ]
 }
 
+source_set("create_application_shortcut_view_test_support") {
+  testonly = true
+  sources = [
+    "create_application_shortcut_view_test_support.cc",
+    "create_application_shortcut_view_test_support.h",
+  ]
+  public_deps = [ "//ui/views" ]
+  deps = [
+    "//base",
+    "//ui/base",
+    "//ui/views:test_support",
+  ]
+}
+
 source_set("confirm_bubble") {
   sources = [
     "confirm_bubble_views.cc",
