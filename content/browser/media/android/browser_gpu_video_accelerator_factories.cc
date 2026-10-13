@@ -82,10 +82,12 @@ void BrowserGpuVideoAcceleratorFactories::GetChannelToken(
   bool request_channel_token = channel_token_callbacks_.empty();
   channel_token_callbacks_.AddUnsafe(std::move(cb));
   if (request_channel_token) {
+    // The GpuChannel remote belongs to the shared GpuChannelHost and can
+    // outlive this object, so the reply must not assume `this` is alive.
     context_provider_->GetCommandBufferProxy()->GetGpuChannel().GetChannelToken(
         base::BindOnce(
             &BrowserGpuVideoAcceleratorFactories::OnChannelTokenReady,
-            base::Unretained(this)));
+            weak_factory_.GetWeakPtr()));
   }
 }
 
