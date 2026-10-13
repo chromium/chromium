@@ -37,6 +37,8 @@ class DlpInternalsUi extends PolymerElement {
       clipboardSourceUrl_: String,
       reportingEvents_: Array,
       webContentsElements_: Array,
+      filesEntries_: Array,
+      selectedFileInode_: Object,
     };
   }
 
@@ -76,10 +78,10 @@ class DlpInternalsUi extends PolymerElement {
   declare private webContentsElements_: WebContentsElement[];
 
   // Files Database Entries.
-  private filesEntries_: FileDatabaseEntry[] = [];
+  declare private filesEntries_: FileDatabaseEntry[];
 
   // Selected file inode number.
-  private selectedFileInode_: bigint = 0n;
+  declare private selectedFileInode_: bigint;
 
   private readonly pageHandler_: PageHandlerInterface;
   private readonly reportingObserver_: ReportingObserverReceiver;
@@ -98,6 +100,8 @@ class DlpInternalsUi extends PolymerElement {
     this.selectedTabIdx_ = 0;
     this.reportingEvents_ = [];
     this.webContentsElements_ = [];
+    this.filesEntries_ = [];
+    this.selectedFileInode_ = 0n;
 
     if (loadTimeData.valueExists('isOtr')) {
       this.isOtr_ = loadTimeData.getBoolean('isOtr');
