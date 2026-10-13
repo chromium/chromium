@@ -32,6 +32,10 @@ BASE_FEATURE(kCertificateCollectionEnabled, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kContentBindingVersioningEnabled,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables the versioned content bindings in signal reports on iOS.
+BASE_FEATURE(kContentBindingVersioningEnabledIOS,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether a signals-only profile report will be triggered when a valid
 // cookie change is observed.
 constexpr base::FeatureParam<bool> kTriggerOnCookieChange{
@@ -66,6 +70,10 @@ bool IsCertificateCollectionEnabled() {
 
 bool IsContentBindingVersioningEnabled() {
   return base::FeatureList::IsEnabled(kContentBindingVersioningEnabled);
+}
+
+bool IsContentBindingVersioningEnabledIOS() {
+  return base::FeatureList::IsEnabled(kContentBindingVersioningEnabledIOS);
 }
 
 BASE_FEATURE(kNewEvSignalsUnaffiliatedEnabled,

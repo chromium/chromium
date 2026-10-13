@@ -192,7 +192,7 @@ TEST_F(DeviceAttestationServiceIOSTest,
   // reflected on the server.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
-      enterprise_signals::features::kContentBindingVersioningEnabled);
+      enterprise_signals::features::kContentBindingVersioningEnabledIOS);
 
   // Populate the report the way the shared profile report generator does on
   // iOS. Some of these fields (e.g. disk encryption, screen lock,
@@ -284,7 +284,7 @@ TEST_F(DeviceAttestationServiceIOSTest,
        GetAttestationResponse_WithoutContentBindingVersioning) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
-      enterprise_signals::features::kContentBindingVersioningEnabled);
+      enterprise_signals::features::kContentBindingVersioningEnabledIOS);
 
   enterprise_management::ChromeProfileReportRequest report;
   enterprise_management::BrowserReport* browser_report =
@@ -318,7 +318,7 @@ TEST_F(DeviceAttestationServiceIOSTest,
        GetAttestationResponse_HashesChangeWhenInputsChange) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
-      enterprise_signals::features::kContentBindingVersioningEnabled);
+      enterprise_signals::features::kContentBindingVersioningEnabledIOS);
 
   enterprise_management::ChromeProfileReportRequest report;
   report.mutable_os_report()->set_version("17.4");

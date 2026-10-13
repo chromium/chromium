@@ -57,7 +57,7 @@ constexpr int kContentBindingVersionV1 = 1;
 constexpr int kContentBindingVersionV0 = 0;
 
 int GetCurrentContentBindingsVersion() {
-  return enterprise_signals::features::IsContentBindingVersioningEnabled()
+  return enterprise_signals::features::IsContentBindingVersioningEnabledIOS()
              ? kContentBindingVersionV1
              : kContentBindingVersionV0;
 }
@@ -200,7 +200,7 @@ void DeviceAttestationServiceIOS::GetAttestationResponse(
   }
 
   AttestationServiceIOS::ContentBinding content_binding;
-  if (enterprise_signals::features::IsContentBindingVersioningEnabled()) {
+  if (enterprise_signals::features::IsContentBindingVersioningEnabledIOS()) {
     content_binding = CreateAttestationHashes(
         GenerateV1ContentBindingString(report), timestamp, nonce);
   } else {
