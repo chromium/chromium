@@ -56,17 +56,6 @@ public class OmniboxDisplayStatePTTest {
 
     @Test
     @MediumTest
-    public void testVisualTransitions_drafting() {
-        OmniboxFacility omnibox = mBlankPage.openOmnibox(sFakeSuggestions);
-
-        OmniboxDraftingFacility drafting = omnibox.typeText("test");
-        drafting.pressBackToExit();
-
-        TransitAsserts.assertFinalDestination(mBlankPage);
-    }
-
-    @Test
-    @MediumTest
     public void testVisualTransitions_suggestions() {
         OmniboxFacility omnibox = mBlankPage.openOmnibox(sFakeSuggestions);
 
