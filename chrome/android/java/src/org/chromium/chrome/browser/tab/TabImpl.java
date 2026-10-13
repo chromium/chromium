@@ -155,10 +155,6 @@ class TabImpl implements Tab, TabInternal {
     // ScopedGlobalRef tables are finite.
     private static final LongSparseArray<TabImpl> sTabMap = new LongSparseArray<>();
 
-    private static final String BACKGROUND_COLOR_CHANGE_PRE_OPTIMIZATION_HISTOGRAM =
-            "Android.Tab.BackgroundColorChange.PreOptimization";
-    private static final String BACKGROUND_COLOR_CHANGE_HISTOGRAM =
-            "Android.Tab.BackgroundColorChange";
     private static final String UMA_AUTOFILL_THIRD_PARTY_MODE_DISABLED_PROVIDER =
             "Autofill.ThirdPartyModeDisabled.Provider";
 
@@ -405,22 +401,6 @@ class TabImpl implements Tab, TabInternal {
      */
     private SensitiveContentClient.@Nullable Observer mSensitiveContentClientObserver;
 
-    /** Tracks the origin of a background color change. */
-    @IntDef({
-        BackgroundColorChangeOrigin.WEB_BACKGROUND_COLOR_CHANGE,
-        BackgroundColorChangeOrigin.CUSTOM_VIEW_SET,
-        BackgroundColorChangeOrigin.NATIVE_PAGE_SHOWN,
-        BackgroundColorChangeOrigin.BG_COLOR_UPDATE_AFTER_HIDING_NATIVE_PAGE
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface BackgroundColorChangeOrigin {
-        int WEB_BACKGROUND_COLOR_CHANGE = 0;
-        int CUSTOM_VIEW_SET = 1;
-        int NATIVE_PAGE_SHOWN = 2;
-        int BG_COLOR_UPDATE_AFTER_HIDING_NATIVE_PAGE = 3;
-        int NUM_ENTRIES = 4;
-    }
-
     /**
      * Creates an instance of a {@link TabImpl}. Package-private. Use {@link TabBuilder} to create
      * an instance.
@@ -651,7 +631,7 @@ class TabImpl implements Tab, TabInternal {
         mCustomView = view;
         mCustomViewBackgroundColor = backgroundColor;
         notifyContentChanged();
-        onBackgroundColorChanged(BackgroundColorChangeOrigin.CUSTOM_VIEW_SET);
+        onBackgroundColorChanged();
     }
 
     @Override
@@ -2468,41 +2448,25 @@ class TabImpl implements Tab, TabInternal {
      */
     void changeWebContentBackgroundColor(int color) {
         mWebContentBackgroundColor = color;
-        onBackgroundColorChanged(BackgroundColorChangeOrigin.WEB_BACKGROUND_COLOR_CHANGE);
+        onBackgroundColorChanged();
         mWaitingOnBgColorAfterHidingNativePage = false;
     }
 
     /** Called to notify when the page had painted something non-empty. */
     void notifyDidFirstVisuallyNonEmptyPaint() {
         if (mWaitingOnBgColorAfterHidingNativePage) {
-            onBackgroundColorChanged(
-                    BackgroundColorChangeOrigin.BG_COLOR_UPDATE_AFTER_HIDING_NATIVE_PAGE);
+            onBackgroundColorChanged();
         }
         mWaitingOnBgColorAfterHidingNativePage = false;
     }
 
-    /**
-     * @param backgroundColorChangeOrigin The origin of the background color change update. This is
-     *     used to track the number of color changes and the potential performance impact those
-     *     entail.
-     */
-    private void onBackgroundColorChanged(
-            @BackgroundColorChangeOrigin int backgroundColorChangeOrigin) {
-        RecordHistogram.recordEnumeratedHistogram(
-                BACKGROUND_COLOR_CHANGE_PRE_OPTIMIZATION_HISTOGRAM,
-                backgroundColorChangeOrigin,
-                BackgroundColorChangeOrigin.NUM_ENTRIES);
-
+    private void onBackgroundColorChanged() {
         int newBackgroundColor = getBackgroundColor();
         // Avoid notifying the observers if the background color hasn't actually changed.
         if (mTabBackgroundColor == newBackgroundColor) return;
 
         mTabBackgroundColor = newBackgroundColor;
 
-        RecordHistogram.recordEnumeratedHistogram(
-                BACKGROUND_COLOR_CHANGE_HISTOGRAM,
-                backgroundColorChangeOrigin,
-                BackgroundColorChangeOrigin.NUM_ENTRIES);
         for (TabObserver observer : mObservers) {
             observer.onBackgroundColorChanged(this, mTabBackgroundColor);
         }
@@ -2744,7 +2708,7 @@ class TabImpl implements Tab, TabInternal {
                         mNativePageSmoothTransitionDelegate.prepare();
                     }
                     pushNativePageStateToNavigationEntry();
-                    onBackgroundColorChanged(BackgroundColorChangeOrigin.NATIVE_PAGE_SHOWN);
+                    onBackgroundColorChanged();
                     updateThemeColor(TabState.UNSPECIFIED_THEME_COLOR);
                 });
     }
