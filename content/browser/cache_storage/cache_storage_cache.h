@@ -170,11 +170,6 @@ class CONTENT_EXPORT CacheStorageCache {
             int64_t trace_id,
             RequestsCallback callback);
 
-  // Closes the backend. Future operations that require the backend
-  // will exit early, even while the close is pending. Close should only be
-  // called once per CacheStorageCache.
-  void Close(base::OnceClosure callback);
-
   // The size of the cache's contents.  The callback reports the padded
   // size.  If you want the unpadded size you may call the cache_size()
   // getter method on the cache object when the callback is invoked; the
@@ -185,15 +180,6 @@ class CONTENT_EXPORT CacheStorageCache {
   // the cache's size.  As per the comment for Size(), this also returns the
   // padded size.
   void GetSizeThenClose(SizeCallback callback);
-
-  // Puts the request/response pair in the cache. This is a public member to
-  // directly bypass the batch operations and write into the cache. This is used
-  // by non-CacheAPI owners. The Cache Storage API uses batch operations defined
-  // in the dispatcher.
-  void Put(blink::mojom::FetchAPIRequestPtr request,
-           blink::mojom::FetchAPIResponsePtr response,
-           int64_t trace_id,
-           ErrorCallback callback);
 
   // Similar to MatchAll, but returns the associated requests as well.
   void GetAllMatchedEntries(blink::mojom::FetchAPIRequestPtr request,
@@ -439,10 +425,10 @@ class CONTENT_EXPORT CacheStorageCache {
                              int64_t side_data_padding,
                              blink::mojom::CacheStorageError error);
 
-  // Puts the request and response object in the cache. The response body (if
-  // present) is stored in the cache, but not the request body. Returns OK on
-  // success.
-  void Put(blink::mojom::BatchOperationPtr operation,
+  // Puts the request and response in the cache. The response body, if present,
+  // is stored in the cache, but the request body is not.
+  void Put(blink::mojom::FetchAPIRequestPtr request,
+           blink::mojom::FetchAPIResponsePtr response,
            int64_t trace_id,
            ErrorCallback callback);
   void PutImpl(std::unique_ptr<PutContext> put_context);
@@ -523,8 +509,6 @@ class CONTENT_EXPORT CacheStorageCache {
   bool IsClosingOrClosed() const {
     return close_requested_ || backend_state_ == BACKEND_CLOSED;
   }
-
-  void CloseImpl(base::OnceClosure callback);
 
   void SizeImpl(SizeCallback callback);
 
@@ -640,8 +624,8 @@ class CONTENT_EXPORT CacheStorageCache {
   // Whether or not to store data in disk or memory.
   const bool memory_only_;
 
-  // Active while waiting for the backend to finish its closing up, and contains
-  // the callback passed to CloseImpl.
+  // Active while waiting for the backend to finish closing and contains the
+  // callback passed to GetSizeThenClose().
   base::OnceClosure post_backend_closed_callback_;
 
   SEQUENCE_CHECKER(sequence_checker_);

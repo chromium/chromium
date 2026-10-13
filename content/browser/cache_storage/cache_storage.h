@@ -156,13 +156,6 @@ class CONTENT_EXPORT CacheStorage : public CacheStorageCacheObserver {
                       int64_t trace_id,
                       CacheStorageCache::ResponseCallback callback);
 
-  // Puts the request/response pair in the cache.
-  void WriteToCache(const std::u16string& cache_name,
-                    blink::mojom::FetchAPIRequestPtr request,
-                    blink::mojom::FetchAPIResponsePtr response,
-                    int64_t trace_id,
-                    ErrorCallback callback);
-
   // Sums the sizes of each cache and closes them. Runs |callback| with the
   // size. The sizes include any doomed caches and will also force close all
   // caches even if there are existing handles to them.
@@ -218,9 +211,6 @@ class CONTENT_EXPORT CacheStorage : public CacheStorageCacheObserver {
   struct CacheMatchResponse;
 
   typedef std::map<std::u16string, std::unique_ptr<CacheStorageCache>> CacheMap;
-
-  // Generate a new padding key. For testing only and *not thread safe*.
-  static void GenerateNewKeyForTesting();
 
   // Returns a CacheStorageCacheHandle for the given name if the name is known.
   // If the CacheStorageCache has been deleted, creates a new one.
@@ -295,13 +285,6 @@ class CONTENT_EXPORT CacheStorage : public CacheStorageCacheObserver {
       std::unique_ptr<std::vector<CacheMatchResponse>> match_responses,
       int64_t trace_id,
       CacheStorageCache::ResponseCallback callback);
-
-  // WriteToCache callbacks.
-  void WriteToCacheImpl(const std::u16string& cache_name,
-                        blink::mojom::FetchAPIRequestPtr request,
-                        blink::mojom::FetchAPIResponsePtr response,
-                        int64_t trace_id,
-                        ErrorCallback callback);
 
   void GetSizeThenCloseAllCachesImpl(SizeCallback callback);
 

@@ -855,32 +855,6 @@ void CacheStorage::MatchAllCaches(
           scheduler_->WrapCallbackToRunNext(id, std::move(callback))));
 }
 
-void CacheStorage::WriteToCache(const std::u16string& cache_name,
-                                blink::mojom::FetchAPIRequestPtr request,
-                                blink::mojom::FetchAPIResponsePtr response,
-                                int64_t trace_id,
-                                CacheStorage::ErrorCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!initialized_)
-    LazyInit();
-
-  quota_manager_proxy_->NotifyBucketAccessed(bucket_locator_,
-                                             base::Time::Now());
-
-  // Note, this is a shared operation since it only reads CacheStorage data.
-  // The CacheStorageCache is responsible for making its put operation
-  // exclusive.
-  auto id = scheduler_->CreateId();
-  scheduler_->ScheduleOperation(
-      id, CacheStorageSchedulerMode::kShared, CacheStorageSchedulerOp::kPut,
-      CacheStorageSchedulerPriority::kNormal,
-      base::BindOnce(
-          &CacheStorage::WriteToCacheImpl, weak_factory_.GetWeakPtr(),
-          cache_name, std::move(request), std::move(response), trace_id,
-          scheduler_->WrapCallbackToRunNext(id, std::move(callback))));
-}
-
 void CacheStorage::GetSizeThenCloseAllCaches(SizeCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -1361,29 +1335,6 @@ void CacheStorage::MatchAllCachesDidMatchAll(
     return;
   }
   std::move(callback).Run(CacheStorageError::kErrorNotFound, nullptr);
-}
-
-void CacheStorage::WriteToCacheImpl(const std::u16string& cache_name,
-                                    blink::mojom::FetchAPIRequestPtr request,
-                                    blink::mojom::FetchAPIResponsePtr response,
-                                    int64_t trace_id,
-                                    CacheStorage::ErrorCallback callback) {
-  TRACE_EVENT("CacheStorage", "CacheStorage::WriteToCacheImpl",
-              perfetto::Flow::Global(trace_id), "cache_name", cache_name,
-              "request", CacheStorageTracedValue(request));
-
-  CacheStorageCacheHandle cache_handle = GetLoadedCache(cache_name);
-
-  if (!cache_handle.value()) {
-    std::move(callback).Run(CacheStorageError::kErrorCacheNameNotFound);
-    return;
-  }
-
-  CacheStorageCache* cache_ptr = cache_handle.value();
-  CHECK(cache_ptr, base::NotFatalUntil::M158);
-
-  cache_ptr->Put(std::move(request), std::move(response), trace_id,
-                 std::move(callback));
 }
 
 CacheStorageCacheHandle CacheStorage::GetLoadedCache(

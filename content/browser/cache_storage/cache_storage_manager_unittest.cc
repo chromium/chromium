@@ -601,25 +601,6 @@ class CacheStorageManagerTest : public testing::Test {
     return callback_error_ == CacheStorageError::kSuccess;
   }
 
-  bool Write(const storage::BucketLocator& bucket_locator,
-             storage::mojom::CacheStorageOwner owner,
-             const std::u16string& cache_name,
-             const std::string& request_url) {
-    auto request = blink::mojom::FetchAPIRequest::New();
-    request->url = GURL(request_url);
-
-    base::RunLoop loop;
-    CacheStorageHandle cache_storage =
-        cache_manager_->OpenCacheStorage(bucket_locator, owner);
-    cache_storage.value()->WriteToCache(
-        cache_name, std::move(request), blink::mojom::FetchAPIResponse::New(),
-        /* trace_id = */ 0,
-        base::BindOnce(&CacheStorageManagerTest::ErrorCallback,
-                       base::Unretained(this), base::Unretained(&loop)));
-    loop.Run();
-    return callback_bool_;
-  }
-
   bool CachePut(CacheStorageCache* cache,
                 const GURL& url,
                 FetchResponseType response_type = FetchResponseType::kDefault) {
@@ -2502,37 +2483,6 @@ TEST_P(CacheStorageManagerTestP, StorageMatchAll_IgnoreVary) {
                                          std::move(match_options)));
 }
 
-TEST_P(CacheStorageManagerTestP, StorageWriteToCache) {
-  EXPECT_TRUE(Open(bucket_locator1_, u"foo",
-                   storage::mojom::CacheStorageOwner::kBackgroundFetch));
-
-  EXPECT_TRUE(Write(bucket_locator1_,
-                    storage::mojom::CacheStorageOwner::kBackgroundFetch, u"foo",
-                    "http://example.com/foo"));
-
-  // Match request we just wrote.
-  EXPECT_TRUE(StorageMatch(
-      bucket_locator1_, u"foo", GURL("http://example.com/foo"), nullptr,
-      storage::mojom::CacheStorageOwner::kBackgroundFetch));
-
-  // Don't match with different origin.
-  EXPECT_FALSE(StorageMatch(
-      bucket_locator2_, u"foo", GURL("http://example.com/foo"), nullptr,
-      storage::mojom::CacheStorageOwner::kBackgroundFetch));
-  // Don't match with different cache name.
-  EXPECT_FALSE(StorageMatch(
-      bucket_locator1_, u"bar", GURL("http://example.com/foo"), nullptr,
-      storage::mojom::CacheStorageOwner::kBackgroundFetch));
-  // Don't match with different request.
-  EXPECT_FALSE(StorageMatch(
-      bucket_locator1_, u"foo", GURL("http://example.com/bar"), nullptr,
-      storage::mojom::CacheStorageOwner::kBackgroundFetch));
-  // Don't match with different owner.
-  EXPECT_FALSE(StorageMatch(bucket_locator1_, u"foo",
-                            GURL("http://example.com/foo"), nullptr,
-                            storage::mojom::CacheStorageOwner::kCacheAPI));
-}
-
 TEST_F(CacheStorageManagerTest, WriteIndexOnlyScheduledWhenValueChanges) {
   const char16_t* kCacheName = u"WriteIndexOnlyScheduledWhenValueChanges";
 
@@ -2913,7 +2863,7 @@ TEST_F(CacheStorageQuotaClientDiskOnlyTest, QuotaDeleteUnloadedKeyData) {
   // Close the cache backend so that it writes out its index to disk.
   base::RunLoop run_loop;
   CacheStorageCache::From(callback_cache_handle_)
-      ->Close(run_loop.QuitClosure());
+      ->GetSizeThenClose(base::IgnoreArgs<int64_t>(run_loop.QuitClosure()));
   run_loop.Run();
 
   // Create a new CacheStorageManager that hasn't yet loaded the origin.

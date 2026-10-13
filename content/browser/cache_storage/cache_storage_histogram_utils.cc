@@ -52,8 +52,6 @@ bool ShouldRecordOpUMA(CacheStorageSchedulerOp op_type) {
 
 std::string_view OpToName(CacheStorageSchedulerOp op_type) {
   switch (op_type) {
-    case CacheStorageSchedulerOp::kClose:
-      RETURN_LITERAL_STRING_PIECE("Close");
     case CacheStorageSchedulerOp::kDelete:
       RETURN_LITERAL_STRING_PIECE("Delete");
     case CacheStorageSchedulerOp::kGetAllMatched:

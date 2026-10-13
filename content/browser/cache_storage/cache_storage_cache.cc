@@ -1019,10 +1019,9 @@ void CacheStorageCache::BatchDidGetBucketSpaceRemaining(
       case blink::mojom::OperationType::kPut:
         if (skip_side_data) {
           operation->response->side_data_for_cache_put.reset();
-          Put(std::move(operation), trace_id, completion_callback);
-        } else {
-          Put(std::move(operation), trace_id, completion_callback);
         }
+        Put(std::move(operation->request), std::move(operation->response),
+            trace_id, completion_callback);
         break;
       case blink::mojom::OperationType::kDelete:
         CHECK_EQ(1u, operations.size(), base::NotFatalUntil::M158);
@@ -1077,21 +1076,6 @@ void CacheStorageCache::Keys(blink::mojom::FetchAPIRequestPtr request,
       base::BindOnce(
           &CacheStorageCache::KeysImpl, weak_ptr_factory_.GetWeakPtr(),
           std::move(request), std::move(options), trace_id,
-          scheduler_->WrapCallbackToRunNext(id, std::move(callback))));
-}
-
-void CacheStorageCache::Close(base::OnceClosure callback) {
-  DCHECK(!close_requested_);
-  DCHECK_NE(BACKEND_CLOSED, backend_state_)
-      << "Was CacheStorageCache::Close() called twice?";
-  close_requested_ = true;
-
-  auto id = scheduler_->CreateId();
-  scheduler_->ScheduleOperation(
-      id, CacheStorageSchedulerMode::kExclusive,
-      CacheStorageSchedulerOp::kClose, CacheStorageSchedulerPriority::kNormal,
-      base::BindOnce(
-          &CacheStorageCache::CloseImpl, weak_ptr_factory_.GetWeakPtr(),
           scheduler_->WrapCallbackToRunNext(id, std::move(callback))));
 }
 
@@ -1882,15 +1866,6 @@ void CacheStorageCache::WriteSideDataComplete(
   UpdateCacheSize(std::move(callback));
 }
 
-void CacheStorageCache::Put(blink::mojom::BatchOperationPtr operation,
-                            int64_t trace_id,
-                            ErrorCallback callback) {
-  CHECK_EQ(blink::mojom::OperationType::kPut, operation->operation_type,
-           base::NotFatalUntil::M158);
-  Put(std::move(operation->request), std::move(operation->response), trace_id,
-      std::move(callback));
-}
-
 void CacheStorageCache::Put(blink::mojom::FetchAPIRequestPtr request,
                             blink::mojom::FetchAPIResponsePtr response,
                             int64_t trace_id,
@@ -2618,18 +2593,6 @@ void CacheStorageCache::KeysDidQueryCache(
   std::move(callback).Run(CacheStorageError::kSuccess, std::move(out_requests));
 }
 
-void CacheStorageCache::CloseImpl(base::OnceClosure callback) {
-  CHECK(scheduler_->IsRunningExclusiveOperation(), base::NotFatalUntil::M158);
-  InvalidateSideDataWriters();
-
-  if (backend_state_ != BACKEND_OPEN) {
-    std::move(callback).Run();
-    return;
-  }
-  backend_.reset();
-  post_backend_closed_callback_ = std::move(callback);
-}
-
 void CacheStorageCache::DeleteBackendCompletedIO() {
   if (!post_backend_closed_callback_.is_null()) {
     // TODO(crbug.com/555074520): CHECK-exclusion: Convert to a CHECK once we
@@ -2651,7 +2614,15 @@ void CacheStorageCache::SizeImpl(SizeCallback callback) {
 void CacheStorageCache::GetSizeThenCloseDidGetSize(SizeCallback callback,
                                                    int64_t cache_size) {
   cache_entry_handler_->InvalidateDiskCacheBlobEntrys();
-  CloseImpl(base::BindOnce(std::move(callback), cache_size));
+  InvalidateSideDataWriters();
+
+  if (backend_state_ != BACKEND_OPEN) {
+    std::move(callback).Run(cache_size);
+    return;
+  }
+  backend_.reset();
+  post_backend_closed_callback_ =
+      base::BindOnce(std::move(callback), cache_size);
 }
 
 void CacheStorageCache::CreateBackend(ErrorCallback callback) {
