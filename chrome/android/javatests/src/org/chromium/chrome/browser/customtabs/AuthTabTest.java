@@ -5,7 +5,10 @@
 package org.chromium.chrome.browser.customtabs;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
 import android.content.Intent;
@@ -28,7 +31,12 @@ import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
+import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.flags.CustomTabProfileType;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.ClickUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
@@ -94,7 +102,59 @@ public class AuthTabTest {
         assertNull(mLastAuthResult.resultUri);
     }
 
+    @Test
+    @MediumTest
+    public void testActivityRecreation() throws TimeoutException {
+        doTestActivityRecreation(/* ephemeral= */ false);
+    }
+
+    @Test
+    @MediumTest
+    public void testActivityRecreation_ephemeral() throws TimeoutException {
+        doTestActivityRecreation(/* ephemeral= */ true);
+    }
+
+    private void doTestActivityRecreation(boolean ephemeral) throws TimeoutException {
+        launchAuthTab(ephemeral);
+        int initialTabId = mCustomTabActivityTestRule.getActivity().getActivityTab().getId();
+
+        mCustomTabActivityTestRule.recreateActivity();
+        mCustomTabActivityTestRule.waitForActivityCompletelyLoaded();
+
+        CustomTabActivity recreatedActivity = mCustomTabActivityTestRule.getActivity();
+        BrowserServicesIntentDataProvider dataProvider = recreatedActivity.getIntentDataProvider();
+        assertNotNull(dataProvider);
+        assertTrue(dataProvider.isAuthTab());
+        assertEquals(ActivityType.AUTH_TAB, dataProvider.getActivityType());
+        assertEquals(CustomTabsUiType.AUTH_TAB, dataProvider.getUiType());
+        assertEquals(
+                ephemeral ? CustomTabProfileType.EPHEMERAL : CustomTabProfileType.REGULAR,
+                dataProvider.getCustomTabMode());
+        assertEquals(ephemeral, dataProvider.isOffTheRecord());
+        assertEquals(SCHEME, dataProvider.getAuthRedirectScheme());
+        assertEquals(initialTabId, recreatedActivity.getActivityTab().getId());
+
+        Profile profile =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> recreatedActivity.getActivityTab().getProfile());
+        assertEquals(ephemeral, profile.isOffTheRecord());
+        if (ephemeral) {
+            assertFalse(profile.isIncognitoBranded());
+            assertFalse(profile.isPrimaryOtrProfile());
+        }
+
+        JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                mCustomTabActivityTestRule.getWebContents(), JS_CLICK_AUTH_BUTTON);
+        mAuthResultCallbackHelper.waitForNext();
+        assertEquals(AuthTabIntent.RESULT_OK, mLastAuthResult.resultCode);
+        assertEquals("sometoken", mLastAuthResult.resultUri.getQueryParameter("token"));
+    }
+
     private void launchAuthTab() {
+        launchAuthTab(/* ephemeral= */ false);
+    }
+
+    private void launchAuthTab(boolean ephemeral) {
         BlankAuthTabLauncherTestActivity launcherActivity = startLauncherActivity();
         Callback<AuthTabIntent.AuthResult> authCallback =
                 result -> {
@@ -110,6 +170,7 @@ public class AuthTabTest {
                                         mApplicationContext.getPackageName(),
                                         mTestPage,
                                         SCHEME,
+                                        ephemeral,
                                         authCallback));
         mCustomTabActivityTestRule.setActivity(cctActivity);
         mCustomTabActivityTestRule.waitForActivityCompletelyLoaded();

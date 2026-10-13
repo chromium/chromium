@@ -25,14 +25,34 @@ public class BlankAuthTabLauncherTestActivity extends BlankUiTestActivity {
      * @param packageName The package name of the browser to launch.
      * @param url The URL to load in the Auth Tab.
      * @param redirectScheme The redirect scheme to use for the Auth Tab.
+     * @param callback Callback to receive the {@link AuthTabIntent.AuthResult}.
      */
     public void launchAuthTab(
             String packageName,
             String url,
             String redirectScheme,
             Callback<AuthTabIntent.AuthResult> callback) {
+        launchAuthTab(packageName, url, redirectScheme, /* ephemeral= */ false, callback);
+    }
+
+    /**
+     * Launches an Auth Tab with optional ephemeral browsing.
+     *
+     * @param packageName The package name of the browser to launch.
+     * @param url The URL to load in the Auth Tab.
+     * @param redirectScheme The redirect scheme to use for the Auth Tab.
+     * @param ephemeral Whether to enable ephemeral browsing.
+     * @param callback Callback to receive the {@link AuthTabIntent.AuthResult}.
+     */
+    public void launchAuthTab(
+            String packageName,
+            String url,
+            String redirectScheme,
+            boolean ephemeral,
+            Callback<AuthTabIntent.AuthResult> callback) {
         mAuthCallback = callback;
-        AuthTabIntent intent = new AuthTabIntent.Builder().build();
+        AuthTabIntent intent =
+                new AuthTabIntent.Builder().setEphemeralBrowsingEnabled(ephemeral).build();
         intent.intent.setPackage(packageName);
         intent.launch(mLauncher, Uri.parse(url), redirectScheme);
     }

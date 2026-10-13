@@ -62,8 +62,10 @@ import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
+import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.flags.CustomTabProfileType;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthSettingUtils;
@@ -77,6 +79,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.OverrideContextWrapperTestRule;
+import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.WebContents;
@@ -438,5 +441,48 @@ public class CustomTabActivityEphemeralTest {
                 });
 
         ApplicationTestUtils.finishActivity(activity);
+    }
+
+    @Test
+    @MediumTest
+    public void testActivityRecreation() {
+        CustomTabActivity activity = launchEphemeralCustomTabActivity();
+        int initialTabId = activity.getActivityTab().getId();
+
+        mCustomTabActivityTestRule.recreateActivity();
+        mCustomTabActivityTestRule.waitForActivityCompletelyLoaded();
+
+        CustomTabActivity recreatedActivity = mCustomTabActivityTestRule.getActivity();
+        BrowserServicesIntentDataProvider dataProvider = recreatedActivity.getIntentDataProvider();
+        assertNotNull(dataProvider);
+        assertEquals(ActivityType.CUSTOM_TAB, dataProvider.getActivityType());
+        assertEquals(CustomTabProfileType.EPHEMERAL, dataProvider.getCustomTabMode());
+        assertTrue(dataProvider.isOffTheRecord());
+        assertFalse(dataProvider.shouldShowDownloadButton());
+        assertEquals(initialTabId, recreatedActivity.getActivityTab().getId());
+        assertEquals(
+                mTestPage,
+                ChromeTabUtils.getUrlStringOnUiThread(recreatedActivity.getActivityTab()));
+        assertEquals(getThemeColor(recreatedActivity), getToolbarColor(recreatedActivity));
+
+        Profile profile =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> recreatedActivity.getActivityTab().getProfile());
+        assertTrue(profile.isOffTheRecord());
+        assertFalse(profile.isIncognitoBranded());
+        assertFalse(profile.isPrimaryOtrProfile());
+
+        onView(allOf(withId(R.id.incognito_cct_logo_image_view), isDisplayed()))
+                .check(doesNotExist());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    CustomTabToolbar customTabToolbar =
+                            recreatedActivity.findViewById(R.id.toolbar);
+                    ToolbarDataProvider toolbarDataProvider =
+                            customTabToolbar.getToolbarDataProvider();
+                    assertTrue(toolbarDataProvider.isOffTheRecord());
+                    assertFalse(toolbarDataProvider.isIncognitoBranded());
+                });
     }
 }
