@@ -71,7 +71,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CriticalActions.Database.SqliteError"
-    enum="SqliteLoggedResultCode" expires_after="2026-11-01">
+    enum="SqliteLoggedResultCode" expires_after="2027-11-01">
   <owner>kalinino@google.com</owner>
   <owner>polonium@google.com</owner>
   <summary>
@@ -84,7 +84,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CriticalActions.EventLogged.{ActionSource}"
-    enum="CriticalActionType" expires_after="2026-11-01">
+    enum="CriticalActionType" expires_after="2027-11-01">
   <owner>kalinino@google.com</owner>
   <owner>polonium@google.com</owner>
   <summary>
@@ -97,7 +97,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CriticalActions.OpenConversationResult"
-    enum="OpenConversationResult" expires_after="2026-11-01">
+    enum="OpenConversationResult" expires_after="2027-11-01">
   <owner>heychirag@google.com</owner>
   <owner>polonium@google.com</owner>
   <summary>
@@ -109,7 +109,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CriticalActions.VisitIdResolutionOutcome.{ActionSource}"
-    enum="CriticalActionVisitIdResolutionOutcome" expires_after="2026-11-01">
+    enum="CriticalActionVisitIdResolutionOutcome" expires_after="2027-11-01">
   <owner>kutylbeky@google.com</owner>
   <owner>polonium@google.com</owner>
   <summary>
