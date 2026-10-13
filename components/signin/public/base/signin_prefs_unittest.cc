@@ -17,6 +17,7 @@
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
@@ -317,6 +318,37 @@ TEST_F(SigninPrefsTest, BatchUploadLastUploadRemainingLocalDataCount) {
       signin_prefs().GetBatchUploadLastUploadRemainingLocalDataCount(gaia_id_1),
       0);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(SigninPrefsTest, DeviceSignalsPermanentConsentReceived) {
+  const GaiaId gaia_id_1("gaia_id_1");
+  const GaiaId gaia_id_2("gaia_id_2");
+
+  // Defaults to false and reading does not create the account dictionary.
+  EXPECT_FALSE(
+      signin_prefs().GetDeviceSignalsPermanentConsentReceived(gaia_id_1));
+  EXPECT_FALSE(HasAccountPrefs(gaia_id_1));
+
+  signin_prefs().SetDeviceSignalsPermanentConsentReceived(gaia_id_1, true);
+  EXPECT_TRUE(
+      signin_prefs().GetDeviceSignalsPermanentConsentReceived(gaia_id_1));
+  EXPECT_FALSE(
+      signin_prefs().GetDeviceSignalsPermanentConsentReceived(gaia_id_2));
+
+  signin_prefs().SetDeviceSignalsPermanentConsentReceived(gaia_id_1, false);
+  EXPECT_FALSE(
+      signin_prefs().GetDeviceSignalsPermanentConsentReceived(gaia_id_1));
+
+  // The consent is removed together with the account prefs.
+  signin_prefs().SetDeviceSignalsPermanentConsentReceived(gaia_id_1, true);
+  signin_prefs().SetDeviceSignalsPermanentConsentReceived(gaia_id_2, true);
+  EXPECT_EQ(signin_prefs().RemoveAllAccountPrefsExcept({gaia_id_2}), 1u);
+  EXPECT_FALSE(
+      signin_prefs().GetDeviceSignalsPermanentConsentReceived(gaia_id_1));
+  EXPECT_TRUE(
+      signin_prefs().GetDeviceSignalsPermanentConsentReceived(gaia_id_2));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(SigninPrefsTest, DeprecatingPrefsInAccountDict) {
   const GaiaId gaia_id("gaia_id_1");
@@ -1068,6 +1100,9 @@ TEST_F(SigninPrefsTest, AllWrittenPrefsAreRegisteredWithMatchingType) {
   signin_prefs().IncrementSearchAIModeSigninPromoDismissCount(gaia_id);
   signin_prefs().SetExtensionsExplicitBrowserSignin(gaia_id, true);
   signin_prefs().SetBookmarksExplicitBrowserSignin(gaia_id, true);
+#if BUILDFLAG(IS_ANDROID)
+  signin_prefs().SetDeviceSignalsPermanentConsentReceived(gaia_id, true);
+#endif  // BUILDFLAG(IS_ANDROID)
   signin_prefs().SetPolicyDisclaimerLastRegistrationFailureTime(gaia_id, now);
   signin_prefs().SetSearchAIModeSigninPromoLastImpressionTime(gaia_id, now);
   signin_prefs().IncrementHistoryPageHistorySyncPromoShownCount(gaia_id);
@@ -1126,6 +1161,9 @@ TEST_F(SigninPrefsTest, AllWrittenPrefsAreRegisteredWithMatchingType) {
   EXPECT_EQ(signin_prefs().GetSearchAIModeSigninPromoDismissCount(gaia_id), 1);
   EXPECT_TRUE(signin_prefs().GetExtensionsExplicitBrowserSignin(gaia_id));
   EXPECT_TRUE(signin_prefs().GetBookmarksExplicitBrowserSignin(gaia_id));
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_TRUE(signin_prefs().GetDeviceSignalsPermanentConsentReceived(gaia_id));
+#endif  // BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(
       signin_prefs().GetPolicyDisclaimerLastRegistrationFailureTime(gaia_id),
       now);

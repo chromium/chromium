@@ -41,7 +41,10 @@ source_set("signin_prefs_internal") {
     "signin_prefs_registry.cc",
     "signin_prefs_registry.h",
   ]
-  public_deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//components/device_signals/core/browser:pref_names",
+  ]
   deps = [
     "//components/prefs",
     "//google_apis",

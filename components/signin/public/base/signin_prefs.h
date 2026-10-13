@@ -12,6 +12,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "build/build_config.h"
 #include "components/signin/public/base/signin_prefs_accessor.h"
 
 namespace base {
@@ -155,6 +156,14 @@ class SigninPrefs {
 
   void SetBookmarksExplicitBrowserSignin(const GaiaId& gaia_id, bool enabled);
   bool GetBookmarksExplicitBrowserSignin(const GaiaId& gaia_id) const;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Per-account Android counterpart of the profile pref
+  // `device_signals::prefs::kDeviceSignalsPermanentConsentReceived`.
+  void SetDeviceSignalsPermanentConsentReceived(const GaiaId& gaia_id,
+                                                bool received);
+  bool GetDeviceSignalsPermanentConsentReceived(const GaiaId& gaia_id) const;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   void SetPolicyDisclaimerLastRegistrationFailureTime(
       const GaiaId& gaia_id,

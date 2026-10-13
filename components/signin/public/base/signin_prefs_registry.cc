@@ -11,6 +11,7 @@
 #include "base/json/values_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/signin/public/base/signin_prefs_keys.h"
 
 namespace {
@@ -87,6 +88,10 @@ constexpr PrefDescriptor kRegisteredSigninPrefs[] = {
      .type = base::Value::Type::BOOLEAN},
     {.key = signin::internal::kBookmarksExplicitBrowserSigninEnabled,
      .type = base::Value::Type::BOOLEAN},
+#if BUILDFLAG(IS_ANDROID)
+    {.key = signin::internal::kDeviceSignalsPermanentConsentReceived,
+     .type = base::Value::Type::BOOLEAN},
+#endif  // BUILDFLAG(IS_ANDROID)
     {.key = signin::internal::kBookmarkBatchUploadPromoDismissCount,
      .type = base::Value::Type::INTEGER},
     {.key = signin::internal::kBookmarkBatchUploadPromoLastDismissTime,

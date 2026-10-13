@@ -297,6 +297,22 @@ bool SigninPrefs::GetBookmarksExplicitBrowserSignin(
       gaia_id, signin::internal::kBookmarksExplicitBrowserSigninEnabled);
 }
 
+#if BUILDFLAG(IS_ANDROID)
+void SigninPrefs::SetDeviceSignalsPermanentConsentReceived(
+    const GaiaId& gaia_id,
+    bool received) {
+  accessor_.SetBooleanPref(
+      gaia_id, signin::internal::kDeviceSignalsPermanentConsentReceived,
+      received);
+}
+
+bool SigninPrefs::GetDeviceSignalsPermanentConsentReceived(
+    const GaiaId& gaia_id) const {
+  return accessor_.GetBooleanPref(
+      gaia_id, signin::internal::kDeviceSignalsPermanentConsentReceived);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 void SigninPrefs::SetPolicyDisclaimerLastRegistrationFailureTime(
     const GaiaId& gaia_id,
     base::Time last_registration_failure_time) {

@@ -3,6 +3,7 @@ include_rules = [
   "+third_party/re2/src/re2/re2.h",
   "+components/account_manager_core/account.h",
   "+components/contextual_tasks/public/features.h",
+  "+components/device_signals/core/browser/pref_names.h",
   "+components/signin/public/android/jni_headers/SigninFeatureMap_jni.h",
   "+components/signin/public/android/jni_headers/SigninDeepLinkPayload_jni.h",
   #TODO(b/309104936): Remove this unwanted include rule.
