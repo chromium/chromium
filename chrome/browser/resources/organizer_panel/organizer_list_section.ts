@@ -136,8 +136,8 @@ export class OrganizerListSectionElement extends CrLitElement implements
       this.updateSectionState_();
     }
 
-    if (changedProperties.has('items') ||
-        changedProperties.has('searchQuery')) {
+    if (changedProperties.has('searchQuery') ||
+        (changedProperties.has('items') && !this.isSearching_())) {
       this.updateFilteredItems_();
     }
 

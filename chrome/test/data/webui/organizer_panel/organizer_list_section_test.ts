@@ -478,6 +478,59 @@ suite('OrganizerListSectionTest', () => {
     assertFalse(listSection.hidden);
   });
 
+  test(
+      'ignores item updates while searching until searchQuery changes',
+      async () => {
+        const delegateItems: Array<OrganizerListSectionItem<unknown>> = [
+          {title: ['Google'], description: [{text: 'google.com'}]},
+          {title: ['YouTube'], description: [{text: 'youtube.com'}]},
+        ];
+        listSection.delegate =
+            new TestSectionDelegate('Open Tabs', delegateItems);
+        await microtasksFinished();
+
+        listSection.searchQuery = 'You';
+        await microtasksFinished();
+
+        let listItems = listSection.shadowRoot.querySelectorAll(
+            'organizer-list-section-item');
+        assertEquals(1, listItems.length);
+        assertDeepEquals(['YouTube'], listItems[0]!.item.title);
+
+        listSection.onItemsChanged([
+          {title: ['Google'], description: [{text: 'google.com'}]},
+          {title: ['Updated Title'], description: [{text: 'example.com'}]},
+          {
+            title: ['YouTube Music'],
+            description: [{text: 'music.youtube.com'}],
+          },
+        ]);
+        await microtasksFinished();
+
+        listItems = listSection.shadowRoot.querySelectorAll(
+            'organizer-list-section-item');
+        assertEquals(1, listItems.length);
+        assertDeepEquals(['YouTube'], listItems[0]!.item.title);
+
+        listSection.searchQuery = 'YouTube';
+        await microtasksFinished();
+
+        listItems = listSection.shadowRoot.querySelectorAll(
+            'organizer-list-section-item');
+        assertEquals(1, listItems.length);
+        assertDeepEquals(['YouTube Music'], listItems[0]!.item.title);
+
+        listSection.searchQuery = '';
+        await microtasksFinished();
+
+        listItems = listSection.shadowRoot.querySelectorAll(
+            'organizer-list-section-item');
+        assertEquals(3, listItems.length);
+        assertDeepEquals(['Google'], listItems[0]!.item.title);
+        assertDeepEquals(['Updated Title'], listItems[1]!.item.title);
+        assertDeepEquals(['YouTube Music'], listItems[2]!.item.title);
+      });
+
   test('hides section only when search query has no matches', async () => {
     listSection.delegate = new TestSectionDelegate('Open Tabs', []);
     await microtasksFinished();
