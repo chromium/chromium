@@ -598,32 +598,19 @@ void ProfileMenuView::SetMenuTitleForAccessibility() {
   }
 
   if (ShouldShowAvatarGradientRing(&profile())) {
-    ProfileAttributesEntry* entry =
-        g_browser_process->profile_manager()
-            ->GetProfileAttributesStorage()
-            .GetProfileAttributesWithPath(profile().GetPath());
-    if (entry) {
-      switch (entry->GetAiSubscriptionTier()) {
-        case 1:
-          menu_title_ = l10n_util::GetStringFUTF16(
-              IDS_PROFILE_MENU_PROFILE_IDENTIFIER_WITH_TIER, menu_title_,
-              std::u16string(kAvatarFullMembershipTier1));
-          break;
-        case 2:
-          menu_title_ = l10n_util::GetStringFUTF16(
-              IDS_PROFILE_MENU_PROFILE_IDENTIFIER_WITH_TIER, menu_title_,
-              std::u16string(kAvatarFullMembershipTier2));
-          break;
-        case 3:
-          menu_title_ = l10n_util::GetStringFUTF16(
-              IDS_PROFILE_MENU_PROFILE_IDENTIFIER_WITH_TIER, menu_title_,
-              std::u16string(kAvatarFullMembershipTier3));
-          break;
-        default:
-          menu_title_ = l10n_util::GetStringFUTF16(
-              IDS_PROFILE_AVATAR_NAME_WITH_AI_MEMBERSHIP, menu_title_);
-          break;
-      }
+    subscription_eligibility::SubscriptionEligibilityService*
+        subscription_service = subscription_eligibility::
+            SubscriptionEligibilityServiceFactory::GetForProfile(&profile());
+    if (subscription_service) {
+      const std::u16string tier_name = AvatarBadgeView::GetAvatarA11yTierName(
+          subscription_service->GetAiSubscriptionTier());
+      menu_title_ =
+          tier_name.empty()
+              ? l10n_util::GetStringFUTF16(
+                    IDS_PROFILE_AVATAR_NAME_WITH_AI_MEMBERSHIP, menu_title_)
+              : l10n_util::GetStringFUTF16(
+                    IDS_PROFILE_MENU_PROFILE_IDENTIFIER_WITH_TIER, menu_title_,
+                    tier_name);
     }
   }
 

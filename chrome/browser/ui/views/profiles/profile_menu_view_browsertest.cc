@@ -75,6 +75,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/profiles/avatar_badge_view.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_view_base.h"
 #include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
@@ -96,6 +97,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
@@ -119,6 +121,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/identity_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "components/subscription_eligibility/subscription_eligibility_prefs.h"
 #include "components/supervised_user/core/browser/family_link_user_capabilities.h"
 #include "components/supervised_user/test_support/supervised_user_signin_test_utils.h"
 #include "components/sync/service/sync_service.h"
@@ -149,8 +152,10 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/events/event_utils.h"
+#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
@@ -458,6 +463,39 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewBrowserTest,
   batch_upload_test_helper().FireReturnDescriptionRequest();
   // Profile menu should still be shown.
   EXPECT_TRUE(coordinator->IsShowing());
+}
+
+class ProfileMenuViewAiSubscriptionTierOverrideTest
+    : public ProfileMenuViewBrowserTest {
+ public:
+  ProfileMenuViewAiSubscriptionTierOverrideTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{switches::kEnableAiSubscriptionAvatarRing, {}},
+         {kEnabledAiSubscriptionTierNameOverride,
+          {{"ai_tier_override_mapping", R"({"1": "Super Tier 1"})"}}}},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// A renamed badge must not announce the outdated built-in tier name.
+IN_PROC_BROWSER_TEST_F(ProfileMenuViewAiSubscriptionTierOverrideTest,
+                       BadgeOverrideUsesGenericAnnouncement) {
+  browser()->GetProfile()->GetPrefs()->SetInteger(
+      subscription_eligibility::prefs::kAiSubscriptionTier, 1);
+
+  ASSERT_NO_FATAL_FAILURE(OpenProfileMenu());
+  EXPECT_EQ(
+      profile_menu_view()->GetAccessibleWindowTitle(),
+      l10n_util::GetStringFUTF16(
+          IDS_CONCAT_TWO_STRINGS_WITH_COMMA,
+          l10n_util::GetStringUTF16(
+              IDS_PROFILES_PROFILE_BUBBLE_ACCESSIBLE_TITLE),
+          l10n_util::GetStringFUTF16(
+              IDS_PROFILE_AVATAR_NAME_WITH_AI_MEMBERSHIP,
+              l10n_util::GetStringUTF16(IDS_PROFILES_LOCAL_PROFILE_STATE))));
 }
 
 class ProfileMenuViewExtensionsTest : public ProfileMenuViewTestBase,

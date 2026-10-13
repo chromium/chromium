@@ -1309,6 +1309,7 @@ source_set("browser_tests") {
       "signin_view_controller_delegate_views_browsertest.cc",
     ]
     deps += [
+      ":avatar_badge_view",
       ":signin_view_controller_delegate_views",
       "//chrome/browser/profiles/batch_upload:test_support",
       "//chrome/browser/sync/test/integration:sync_integration_test_support",

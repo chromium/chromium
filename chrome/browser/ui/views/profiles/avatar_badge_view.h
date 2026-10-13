@@ -30,6 +30,12 @@ class AvatarBadgeView : public views::View {
   // or an empty string if the tier is not recognized.
   static std::u16string GetAvatarBadgeLabel(int tier);
 
+  // Returns the tier name announced by screen readers, or an empty string if
+  // the generic membership announcement should be used. Empty when the badge
+  // label is overridden, to avoid announcing an outdated built-in name.
+  // TODO(crbug.com/572810504): Support A11y tier name overriding.
+  static std::u16string GetAvatarA11yTierName(int tier);
+
   // Constructs an AvatarBadgeView with the specified `label_text` and optional
   // decorative `wave_path`.
   explicit AvatarBadgeView(const std::u16string& label_text,

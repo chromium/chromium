@@ -87,3 +87,41 @@ TEST_F(AvatarBadgeViewTest, InvalidJsonFallback) {
   EXPECT_EQ(AvatarBadgeView::GetAvatarBadgeLabel(3),
             std::u16string(kAvatarBadgeLabelTier3));
 }
+
+TEST_F(AvatarBadgeViewTest, A11yTierNameDefaults) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kEnabledAiSubscriptionTierNameOverride);
+
+  EXPECT_EQ(AvatarBadgeView::GetAvatarA11yTierName(1),
+            std::u16string(kAvatarFullMembershipTier1));
+  EXPECT_EQ(AvatarBadgeView::GetAvatarA11yTierName(2),
+            std::u16string(kAvatarFullMembershipTier2));
+  EXPECT_EQ(AvatarBadgeView::GetAvatarA11yTierName(3),
+            std::u16string(kAvatarFullMembershipTier3));
+  EXPECT_EQ(AvatarBadgeView::GetAvatarA11yTierName(99), std::u16string());
+}
+
+TEST_F(AvatarBadgeViewTest, A11yTierNameGenericWhenOnlyBadgeOverridden) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kEnabledAiSubscriptionTierNameOverride,
+      {{"ai_tier_override_mapping", R"({"1": "", "2": "Advanced"})"}});
+
+  // Overridden badges fall back to the generic announcement.
+  EXPECT_EQ(AvatarBadgeView::GetAvatarA11yTierName(1), std::u16string());
+  EXPECT_EQ(AvatarBadgeView::GetAvatarA11yTierName(2), std::u16string());
+  // Untouched tiers keep their built-in name.
+  EXPECT_EQ(AvatarBadgeView::GetAvatarA11yTierName(3),
+            std::u16string(kAvatarFullMembershipTier3));
+}
+
+TEST_F(AvatarBadgeViewTest, A11yTierNameInvalidJsonFallback) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kEnabledAiSubscriptionTierNameOverride,
+      {{"ai_tier_override_mapping", "{not-valid-json"}});
+
+  // A malformed mapping overrides nothing: keep the built-in name.
+  EXPECT_EQ(AvatarBadgeView::GetAvatarA11yTierName(1),
+            std::u16string(kAvatarFullMembershipTier1));
+}
