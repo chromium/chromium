@@ -568,6 +568,7 @@ class EucJpDecoder : public TextCodecCjk::Decoder {
           return SawError::kNo;
         }
       }
+      jis0212_ = false;
       if (IsAscii(byte)) {
         prepended_byte_ = byte;
       }
