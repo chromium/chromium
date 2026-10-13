@@ -462,7 +462,8 @@ class SendTabToSelfIphInteractiveUiTest : public InteractiveFeaturePromoTest {
     syncer::RemoteDeviceInfo target_device(
         kTargetDeviceName, kTargetDeviceCacheGuid,
         syncer::DeviceInfo::FormFactor::kPhone,
-        syncer::DeviceInfo::OsType::kAndroid, base::Time::Now());
+        syncer::DeviceInfo::OsType::kAndroid, base::Time::Now(),
+        /*has_high_precision_timestamp=*/false);
     model->SetTargetDeviceInfoSortedList({target_device});
     model->SetHasValidTargetDevice(true);
     model->SetIsReady(true);

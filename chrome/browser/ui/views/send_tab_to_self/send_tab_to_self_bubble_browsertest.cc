@@ -63,17 +63,17 @@ class StubSendTabToSelfBubbleController : public SendTabToSelfBubbleController {
   std::vector<RemoteDeviceInfo> GetValidDevices() override {
     const auto now = base::Time::Now();
     return {{"Device_1", "device_guid_1", FormFactor::kDesktop, OsType::kLinux,
-             now - base::Days(0)},
+             now - base::Days(0), /*has_high_precision_timestamp=*/false},
             {"Device_2", "device_guid_2", FormFactor::kPhone, OsType::kAndroid,
-             now - base::Days(0)},
+             now - base::Days(0), /*has_high_precision_timestamp=*/false},
             {"Device_3", "device_guid_3", FormFactor::kDesktop, OsType::kLinux,
-             now - base::Days(1)},
+             now - base::Days(1), /*has_high_precision_timestamp=*/false},
             {"Device_4", "device_guid_4", FormFactor::kPhone, OsType::kAndroid,
-             now - base::Days(1)},
+             now - base::Days(1), /*has_high_precision_timestamp=*/false},
             {"Device_5", "device_guid_5", FormFactor::kDesktop, OsType::kLinux,
-             now - base::Days(5)},
+             now - base::Days(5), /*has_high_precision_timestamp=*/false},
             {"Device_6", "device_guid_6", FormFactor::kPhone, OsType::kAndroid,
-             now - base::Days(5)}};
+             now - base::Days(5), /*has_high_precision_timestamp=*/false}};
   }
 
   AccountInfo GetSharingAccountInfo() override {

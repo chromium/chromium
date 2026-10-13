@@ -20,7 +20,7 @@ struct RemoteDeviceInfo {
                    DeviceInfo::FormFactor form_factor,
                    DeviceInfo::OsType os_type,
                    base::Time last_updated_timestamp,
-                   bool has_high_precision_timestamp = false);
+                   bool has_high_precision_timestamp);
   RemoteDeviceInfo(const RemoteDeviceInfo& other);
   ~RemoteDeviceInfo();
 

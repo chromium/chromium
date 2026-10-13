@@ -424,7 +424,8 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
   void AddMockTargetDevice(syncer::DeviceInfo::FormFactor form_factor) {
     send_tab_to_self_model()->AddTargetDevice(syncer::RemoteDeviceInfo(
         kTargetDeviceFullName, kTargetDeviceCacheGuid, form_factor,
-        syncer::DeviceInfo::OsType::kChromeOsAsh, base::Time::Now()));
+        syncer::DeviceInfo::OsType::kChromeOsAsh, base::Time::Now(),
+        /*has_high_precision_timestamp=*/false));
   }
 
   TestMediaController* media_controller() const {

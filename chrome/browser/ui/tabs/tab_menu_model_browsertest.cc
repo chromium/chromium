@@ -1048,7 +1048,8 @@ IN_PROC_BROWSER_TEST_F(TabMenuModelSendTabToSelfBrowserTest,
   std::vector<syncer::RemoteDeviceInfo> devices;
   devices.emplace_back("Device 0", "guid0",
                        syncer::DeviceInfo::FormFactor::kDesktop,
-                       syncer::DeviceInfo::OsType::kLinux, base::Time::Now());
+                       syncer::DeviceInfo::OsType::kLinux, base::Time::Now(),
+                       /*has_high_precision_timestamp=*/false);
   model()->SetTargetDeviceInfoSortedList(devices);
 
   ASSERT_TRUE(embedded_test_server()->Start());

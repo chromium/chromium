@@ -140,7 +140,8 @@ class SendTabToSelfInteractiveUiTest : public InteractiveBrowserTest {
   auto SetUpSingleDeviceAndShowBubble() {
     return SetUpTargetDevicesAndShowBubble(
         {RemoteDeviceInfo("device_1", "device_1", FormFactor::kDesktop,
-                          OsType::kLinux, base::Time::Now())});
+                          OsType::kLinux, base::Time::Now(),
+                          /*has_high_precision_timestamp=*/false)});
   }
 
  protected:
@@ -213,9 +214,11 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfDeviceSelectionInteractiveUiTest,
   RunTestSequence(
       SetUpTargetDevicesAndShowBubble(
           {RemoteDeviceInfo("device_1", "device_1", FormFactor::kDesktop,
-                            OsType::kLinux, base::Time::Now()),
+                            OsType::kLinux, base::Time::Now(),
+                            /*has_high_precision_timestamp=*/false),
            RemoteDeviceInfo("device_2", "device_2", FormFactor::kPhone,
-                            OsType::kAndroid, base::Time::Now())}),
+                            OsType::kAndroid, base::Time::Now(),
+                            /*has_high_precision_timestamp=*/false)}),
       NameDescendantViewByType<SendTabToSelfBubbleDeviceButton>(
           SendTabToSelfDevicePickerBubbleView::
               kSendTabToSelfDevicePickerBubbleId,

@@ -54,7 +54,8 @@ void StubSendTabToSelfSyncService::UpdateTargetDevicesForDisplayReason() {
     if (model_.GetTargetDeviceInfoSortedList().empty()) {
       model_.SetTargetDeviceInfoSortedList({syncer::RemoteDeviceInfo(
           "Device", "guid", syncer::DeviceInfo::FormFactor::kDesktop,
-          syncer::DeviceInfo::OsType::kLinux, base::Time::Now())});
+          syncer::DeviceInfo::OsType::kLinux, base::Time::Now(),
+          /*has_high_precision_timestamp=*/false)});
     }
   } else {
     model_.SetTargetDeviceInfoSortedList({});

@@ -48,11 +48,14 @@ class SendTabToSelfBubbleControllerMock : public SendTabToSelfBubbleController {
   std::vector<RemoteDeviceInfo> GetValidDevices() override {
     base::SimpleTestClock clock;
     return {{"Device_1", "device_guid_1", FormFactor::kDesktop, OsType::kLinux,
-             clock.Now() - base::Days(0)},
+             clock.Now() - base::Days(0),
+             /*has_high_precision_timestamp=*/false},
             {"Device_2", "device_guid_2", FormFactor::kDesktop, OsType::kLinux,
-             clock.Now() - base::Days(1)},
+             clock.Now() - base::Days(1),
+             /*has_high_precision_timestamp=*/false},
             {kDeviceName3, kDeviceGuid3, FormFactor::kPhone, OsType::kAndroid,
-             clock.Now() - base::Days(5)}};
+             clock.Now() - base::Days(5),
+             /*has_high_precision_timestamp=*/false}};
   }
 
   MOCK_METHOD(void,

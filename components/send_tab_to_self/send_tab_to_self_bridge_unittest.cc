@@ -1615,13 +1615,16 @@ TEST_F(SendTabToSelfBridgeTest,
   // All devices should be returned without deduplication, sorted by recency.
   RemoteDeviceInfo target_device_info1(
       kDeviceName, recent_device->guid(), recent_device->form_factor(),
-      recent_device->os_type(), recent_device->last_updated_timestamp());
+      recent_device->os_type(), recent_device->last_updated_timestamp(),
+      /*has_high_precision_timestamp=*/false);
   RemoteDeviceInfo target_device_info2(
       kDeviceName, old_device->guid(), old_device->form_factor(),
-      old_device->os_type(), old_device->last_updated_timestamp());
+      old_device->os_type(), old_device->last_updated_timestamp(),
+      /*has_high_precision_timestamp=*/false);
   RemoteDeviceInfo target_device_info3(
       kDeviceName, older_device->guid(), older_device->form_factor(),
-      older_device->os_type(), older_device->last_updated_timestamp());
+      older_device->os_type(), older_device->last_updated_timestamp(),
+      /*has_high_precision_timestamp=*/false);
 
   EXPECT_THAT(bridge()->GetTargetDeviceInfoSortedList(),
               ElementsAre(target_device_info1, target_device_info2,
@@ -1646,7 +1649,8 @@ TEST_F(SendTabToSelfBridgeTest,
   RemoteDeviceInfo target_device_info(
       enabled_device->client_name(), enabled_device->guid(),
       enabled_device->form_factor(), enabled_device->os_type(),
-      enabled_device->last_updated_timestamp());
+      enabled_device->last_updated_timestamp(),
+      /*has_high_precision_timestamp=*/false);
 
   EXPECT_THAT(bridge()->GetTargetDeviceInfoSortedList(),
               ElementsAre(target_device_info));
@@ -1668,7 +1672,8 @@ TEST_F(SendTabToSelfBridgeTest,
   RemoteDeviceInfo target_device_info(
       valid_device->client_name(), valid_device->guid(),
       valid_device->form_factor(), valid_device->os_type(),
-      valid_device->last_updated_timestamp());
+      valid_device->last_updated_timestamp(),
+      /*has_high_precision_timestamp=*/false);
 
   EXPECT_THAT(bridge()->GetTargetDeviceInfoSortedList(),
               ElementsAre(target_device_info));
@@ -1694,11 +1699,13 @@ TEST_F(SendTabToSelfBridgeTest, GetTargetDeviceInfoSortedList_NoLocalDevice) {
   RemoteDeviceInfo other_local_target_info(
       other_local_device->client_name(), other_local_device->guid(),
       other_local_device->form_factor(), other_local_device->os_type(),
-      other_local_device->last_updated_timestamp());
+      other_local_device->last_updated_timestamp(),
+      /*has_high_precision_timestamp=*/false);
   RemoteDeviceInfo other_target_info(
       other_device->client_name(), other_device->guid(),
       other_device->form_factor(), other_device->os_type(),
-      other_device->last_updated_timestamp());
+      other_device->last_updated_timestamp(),
+      /*has_high_precision_timestamp=*/false);
 
   EXPECT_THAT(bridge()->GetTargetDeviceInfoSortedList(),
               ElementsAre(other_local_target_info, other_target_info));
@@ -1721,11 +1728,13 @@ TEST_F(SendTabToSelfBridgeTest,
   RemoteDeviceInfo older_device_info(
       older_device->client_name(), older_device->guid(),
       older_device->form_factor(), older_device->os_type(),
-      older_device->last_updated_timestamp());
+      older_device->last_updated_timestamp(),
+      /*has_high_precision_timestamp=*/false);
   RemoteDeviceInfo recent_device_info(
       recent_device->client_name(), recent_device->guid(),
       recent_device->form_factor(), recent_device->os_type(),
-      recent_device->last_updated_timestamp());
+      recent_device->last_updated_timestamp(),
+      /*has_high_precision_timestamp=*/false);
 
   // Make sure the list has the 2 devices.
   EXPECT_THAT(bridge()->GetTargetDeviceInfoSortedList(),
@@ -1752,7 +1761,8 @@ TEST_F(SendTabToSelfBridgeTest,
   // Make sure the list has the device.
   RemoteDeviceInfo device_info(device->client_name(), device->guid(),
                                device->form_factor(), device->os_type(),
-                               device->last_updated_timestamp());
+                               device->last_updated_timestamp(),
+                               /*has_high_precision_timestamp=*/false);
 
   EXPECT_THAT(bridge()->GetTargetDeviceInfoSortedList(),
               ElementsAre(device_info));
@@ -1765,7 +1775,8 @@ TEST_F(SendTabToSelfBridgeTest,
   // Make sure both devices are in the list.
   RemoteDeviceInfo new_device_info(
       new_device->client_name(), new_device->guid(), new_device->form_factor(),
-      new_device->os_type(), new_device->last_updated_timestamp());
+      new_device->os_type(), new_device->last_updated_timestamp(),
+      /*has_high_precision_timestamp=*/false);
 
   EXPECT_THAT(bridge()->GetTargetDeviceInfoSortedList(),
               ElementsAre(device_info, new_device_info));
@@ -1789,10 +1800,12 @@ TEST_F(SendTabToSelfBridgeTest,
       ElementsAre(
           RemoteDeviceInfo(device1->client_name(), device1->guid(),
                            device1->form_factor(), device1->os_type(),
-                           device1->last_updated_timestamp()),
+                           device1->last_updated_timestamp(),
+                           /*has_high_precision_timestamp=*/false),
           RemoteDeviceInfo(device2_old->client_name(), device2_old->guid(),
                            device2_old->form_factor(), device2_old->os_type(),
-                           device2_old->last_updated_timestamp())));
+                           device2_old->last_updated_timestamp(),
+                           /*has_high_precision_timestamp=*/false)));
 
   // Simulate device 2 being used today.
   std::unique_ptr<syncer::DeviceInfo> device2_new = CreateDevice(
@@ -1805,10 +1818,12 @@ TEST_F(SendTabToSelfBridgeTest,
       ElementsAre(
           RemoteDeviceInfo(device2_new->client_name(), device2_new->guid(),
                            device2_new->form_factor(), device2_new->os_type(),
-                           device2_new->last_updated_timestamp()),
+                           device2_new->last_updated_timestamp(),
+                           /*has_high_precision_timestamp=*/false),
           RemoteDeviceInfo(device1->client_name(), device1->guid(),
                            device1->form_factor(), device1->os_type(),
-                           device1->last_updated_timestamp())));
+                           device1->last_updated_timestamp(),
+                           /*has_high_precision_timestamp=*/false)));
 }
 
 TEST_F(SendTabToSelfBridgeTest, NotifyRemoteSendTabToSelfEntryOpened) {

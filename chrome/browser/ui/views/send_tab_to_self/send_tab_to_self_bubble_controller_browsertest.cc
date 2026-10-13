@@ -219,8 +219,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
 
   sync_service->GetFakeSendTabToSelfModel()->SetTargetDeviceInfoSortedList(
       {RemoteDeviceInfo(kTargetDeviceName, kTargetDeviceId,
-                        FormFactor::kDesktop, OsType::kLinux,
-                        base::Time::Now())});
+                        FormFactor::kDesktop, OsType::kLinux, base::Time::Now(),
+                        /*has_high_precision_timestamp=*/false)});
 
   controller->OnDeviceSelected(kTargetDeviceId, kTargetDeviceName);
   observer.WaitForNextEntry();
@@ -247,7 +247,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
 
   sync_service->GetFakeSendTabToSelfModel()->SetTargetDeviceInfoSortedList(
       {RemoteDeviceInfo(kTargetDeviceName, kTargetDeviceId, FormFactor::kPhone,
-                        OsType::kAndroid, base::Time::Now())});
+                        OsType::kAndroid, base::Time::Now(),
+                        /*has_high_precision_timestamp=*/false)});
 
   controller->OnDeviceSelected(kTargetDeviceId, kTargetDeviceName);
   observer.WaitForNextEntry();
@@ -274,7 +275,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
 
   sync_service->GetFakeSendTabToSelfModel()->SetTargetDeviceInfoSortedList(
       {RemoteDeviceInfo(kTargetDeviceName, kTargetDeviceId, FormFactor::kTablet,
-                        OsType::kAndroid, base::Time::Now())});
+                        OsType::kAndroid, base::Time::Now(),
+                        /*has_high_precision_timestamp=*/false)});
 
   controller->OnDeviceSelected(kTargetDeviceId, kTargetDeviceName);
   observer.WaitForNextEntry();
@@ -300,8 +302,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
 
   sync_service->GetFakeSendTabToSelfModel()->SetTargetDeviceInfoSortedList(
       {RemoteDeviceInfo(kTargetDeviceName, kTargetDeviceId,
-                        FormFactor::kDesktop, OsType::kLinux,
-                        base::Time::Now())});
+                        FormFactor::kDesktop, OsType::kLinux, base::Time::Now(),
+                        /*has_high_precision_timestamp=*/false)});
   sync_service->GetFakeSendTabToSelfModel()->SetSendResult(
       SendTabToSelfResult::kSuccessThrottled);
 
@@ -326,8 +328,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
 
   sync_service->GetFakeSendTabToSelfModel()->SetTargetDeviceInfoSortedList(
       {RemoteDeviceInfo(kTargetDeviceName, kTargetDeviceId,
-                        FormFactor::kDesktop, OsType::kLinux,
-                        base::Time::Now())});
+                        FormFactor::kDesktop, OsType::kLinux, base::Time::Now(),
+                        /*has_high_precision_timestamp=*/false)});
 
   TestSendTabToSelfModelObserver observer(
       sync_service->GetSendTabToSelfModel());
@@ -693,11 +695,11 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
   // Set up 2 target devices.
   sync_service->GetFakeSendTabToSelfModel()->SetTargetDeviceInfoSortedList(
       {RemoteDeviceInfo(kSecondDeviceName, kSecondDeviceId,
-                        FormFactor::kDesktop, OsType::kLinux,
-                        base::Time::Now()),
+                        FormFactor::kDesktop, OsType::kLinux, base::Time::Now(),
+                        /*has_high_precision_timestamp=*/false),
        RemoteDeviceInfo(kTargetDeviceName, kTargetDeviceId,
-                        FormFactor::kDesktop, OsType::kLinux,
-                        base::Time::Now())});
+                        FormFactor::kDesktop, OsType::kLinux, base::Time::Now(),
+                        /*has_high_precision_timestamp=*/false)});
 
   base::HistogramTester histogram_tester;
 

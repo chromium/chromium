@@ -210,7 +210,7 @@ TEST_F(SendTabToSelfCoordinatorTest, SendsTabDirectToDeviceSuccessfully) {
   model_->AddTargetDevice(syncer::RemoteDeviceInfo(
       kTargetDeviceName, kTargetDeviceGUID,
       syncer::DeviceInfo::FormFactor::kPhone, syncer::DeviceInfo::OsType::kIOS,
-      base::Time::Now()));
+      base::Time::Now(), /*has_high_precision_timestamp=*/false));
 
   __block base::test::TestFuture<void> stop_future;
   __block base::test::TestFuture<void> snackbar_future;
@@ -281,7 +281,7 @@ TEST_F(SendTabToSelfCoordinatorTest,
   model_->AddTargetDevice(syncer::RemoteDeviceInfo(
       kTargetDeviceName, kTargetDeviceGUID,
       syncer::DeviceInfo::FormFactor::kPhone, syncer::DeviceInfo::OsType::kIOS,
-      base::Time::Now()));
+      base::Time::Now(), /*has_high_precision_timestamp=*/false));
 
   __block base::test::TestFuture<void> stop_future;
   __block base::test::TestFuture<void> snackbar_future;
@@ -332,7 +332,7 @@ TEST_F(SendTabToSelfCoordinatorTest,
   model_->AddTargetDevice(syncer::RemoteDeviceInfo(
       kTargetDeviceName, kTargetDeviceGUID,
       syncer::DeviceInfo::FormFactor::kPhone, syncer::DeviceInfo::OsType::kIOS,
-      base::Time::Now()));
+      base::Time::Now(), /*has_high_precision_timestamp=*/false));
 
   __block base::test::TestFuture<void> stop_future;
   __block base::test::TestFuture<void> snackbar_future;

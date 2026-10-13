@@ -498,13 +498,16 @@ TEST_F(
     std::vector<syncer::RemoteDeviceInfo> devices = {
         syncer::RemoteDeviceInfo(
             "Phone", kPhoneGuid, syncer::DeviceInfo::FormFactor::kPhone,
-            syncer::DeviceInfo::OsType::kIOS, base::Time::Now()),
+            syncer::DeviceInfo::OsType::kIOS, base::Time::Now(),
+            /*has_high_precision_timestamp=*/false),
         syncer::RemoteDeviceInfo(
             "Tablet", kTabletGuid, syncer::DeviceInfo::FormFactor::kTablet,
-            syncer::DeviceInfo::OsType::kIOS, base::Time::Now()),
+            syncer::DeviceInfo::OsType::kIOS, base::Time::Now(),
+            /*has_high_precision_timestamp=*/false),
         syncer::RemoteDeviceInfo(
             "Desktop", kDesktopGuid, syncer::DeviceInfo::FormFactor::kDesktop,
-            syncer::DeviceInfo::OsType::kIOS, base::Time::Now()),
+            syncer::DeviceInfo::OsType::kIOS, base::Time::Now(),
+            /*has_high_precision_timestamp=*/false),
     };
     model->SetTargetDeviceInfoSortedList(devices);
     model->SetIsReady(true);

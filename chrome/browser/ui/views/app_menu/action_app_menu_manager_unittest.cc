@@ -948,7 +948,8 @@ TEST_F(ActionAppMenuManagerTest,
   sync_service->GetFakeSendTabToSelfModel()->SetTargetDeviceInfoSortedList(
       {syncer::RemoteDeviceInfo(
           "My Phone", "guid1", syncer::DeviceInfo::FormFactor::kPhone,
-          syncer::DeviceInfo::OsType::kAndroid, base::Time::Now())});
+          syncer::DeviceInfo::OsType::kAndroid, base::Time::Now(),
+          /*has_high_precision_timestamp=*/false)});
   root->ResetActionList();
   menu_manager.CreateMenuHierarchy();
   stts_action = find_send_tab_to_self();
