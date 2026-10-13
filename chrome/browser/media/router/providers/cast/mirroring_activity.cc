@@ -832,6 +832,7 @@ void MirroringActivity::StartSession(const std::string& destination_id,
   const bool has_video = cast_data_.capabilities.Has(
       cast_channel::CastDeviceCapability::kVideoOut);
   if (!has_audio && !has_video) {
+    StopMirroring();
     return;
   }
   const SessionType session_type = has_audio && has_video

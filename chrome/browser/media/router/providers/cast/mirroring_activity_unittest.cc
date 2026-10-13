@@ -320,6 +320,39 @@ TEST_F(MirroringActivityTest, DidStop) {
   RunUntilIdle();
 }
 
+// An audio-only sink paired with a source that provides no audio yields neither
+// audio nor video, so the activity should stop instead of lingering as a
+// zombie route.
+TEST_F(MirroringActivityTest, StartSessionWithoutAudioOrVideoStopsMirroring) {
+  ON_CALL(mock_debugger_, ShouldFetchMirroringStats)
+      .WillByDefault([](base::OnceCallback<void(bool)> callback) {
+        std::move(callback).Run(false);
+      });
+
+  CastSinkExtraData cast_data;
+  cast_data.cast_channel_id = kChannelId;
+  cast_data.capabilities = {cast_channel::CastDeviceCapability::kAudioOut};
+  cast_data.discovery_type = CastDiscoveryType::kMdns;
+  MediaRoute route(kRouteId,
+                   MediaSource::ForDesktop(kDesktopMediaId,
+                                           /*with_audio=*/false),
+                   kSinkId, kDescription, route_is_local_);
+  route.set_presentation_id(kPresentationId);
+  activity_ = std::make_unique<MirroringActivity>(
+      route, kAppId, &message_handler_, &session_tracker_, logger_, debugger_,
+      kFrameTreeNodeId, cast_data, on_stop_.Get(), on_source_changed_.Get());
+
+  activity_->BindChannelToServiceReceiver();
+  activity_->CreateMirroringServiceHost(&mirroring_service_host_factory_);
+  RunUntilIdle();
+  ASSERT_TRUE(mirroring_service_);
+  EXPECT_CALL(*mirroring_service_, Start).Times(0);
+  EXPECT_CALL(on_stop_, Run());
+
+  activity_->SetOrUpdateSession(*session_, sink_, kHashToken);
+  RunUntilIdle();
+}
+
 TEST_F(MirroringActivityTest, SendWebRtc) {
   MakeActivity();
   static constexpr char kPayload[] = R"({"foo": "bar"})";
