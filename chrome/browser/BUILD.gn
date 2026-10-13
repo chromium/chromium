@@ -1274,6 +1274,7 @@ source_set("core") {
     "//chrome/browser/upgrade_detector",
     "//chrome/browser/usb",
     "//chrome/browser/vr",
+    "//chrome/browser/vr:chrome_xr_integration_client",
     "//chrome/browser/webapps",
     "//chrome/browser/webauthn",
     "//chrome/browser/webauthn:chrome_web_authentication_delegate",
@@ -1451,6 +1452,11 @@ source_set("core") {
 
   if (enable_webui_ntp) {
     deps += [
+      "//chrome/browser/new_tab_page",
+      "//chrome/browser/ui/webui/new_tab_page/action_chips:mojo_bindings",
+      "//chrome/browser/ui/webui/new_tab_page_third_party",
+      "//chrome/browser/ui/webui/ntp_microsoft_auth",
+      "//chrome/browser/ui/webui/side_panel/customize_chrome:customize_chrome_ui",
       "//ui/webui/resources/cr_components/customize_color_scheme_mode:mojom",
       "//ui/webui/resources/cr_components/theme_color_picker:mojom",
     ]
@@ -1503,8 +1509,10 @@ source_set("core") {
       "//chrome/browser/ui/webui/new_tab_page",
       "//chrome/browser/ui/webui/password_manager:password_manager_ui",
       "//chrome/browser/ui/webui/signin/cross_device_signin_qr_bubble:mojo_bindings",
+      "//chrome/browser/ui/webui/skills:mojo_bindings",
       "//chrome/browser/ui/webui/user_education_internals",
       "//chrome/browser/ui/webui/webnn_internals",
+      "//chrome/browser/ui/webui/webnn_internals:mojo_bindings",
       "//chrome/browser/ui/webui/whats_new",
       "//chrome/browser/ui/webui_browser",
       "//chrome/browser/web_applications",
@@ -1513,15 +1521,12 @@ source_set("core") {
       "//chrome/browser/web_applications/isolated_web_apps",
       "//chrome/browser/webapps:desktop",
       "//components/keep_alive_registry",
+      "//components/record_replay/core/common:mojom",
       "//components/soda",
       "//components/soda:constants",
       "//components/soda:utils",
       "//components/webapps/isolated_web_apps",
     ]
-  }
-
-  if (enable_webui_ntp) {
-    deps += [ "//chrome/browser/ui/webui/side_panel/customize_chrome:customize_chrome_ui" ]
   }
 
   if (enable_extensions) {
@@ -1582,7 +1587,11 @@ source_set("core") {
   }
 
   if (enable_dice_support) {
-    deps += [ "//chrome/browser/ui/webui/feature_showcase" ]
+    deps += [
+      "//chrome/browser/ui/webui/feature_showcase",
+      "//chrome/browser/ui/webui/signin/signout_confirmation",
+      "//chrome/browser/ui/webui/signin/signout_confirmation:mojo_bindings",
+    ]
   }
 
   if (enable_dice_support || is_chromeos) {
@@ -1598,7 +1607,10 @@ source_set("core") {
   }
 
   if (chrome_root_store_cert_management_ui) {
-    deps += [ "//chrome/browser/ui/webui/certificate_manager" ]
+    deps += [
+      "//chrome/browser/resources/certificate_manager:mojom",
+      "//chrome/browser/ui/webui/certificate_manager",
+    ]
   }
 
   if (!is_android && !is_chromeos) {
@@ -1656,6 +1668,7 @@ source_set("core") {
       "//chrome/browser/web_applications/chrome_pwa_launcher:util",
       "//chrome/browser/webnn",
       "//chrome/browser/webshare:impl",
+      "//chrome/browser/win",
       "//chrome/browser/win:chrome_process_finder",
       "//chrome/browser/win:cloud_synced_folder_checker",
       "//chrome/browser/win:registry_watcher",
@@ -1865,6 +1878,7 @@ source_set("core") {
     ]
     deps += [
       "//chrome/android:jni_headers",
+      "//chrome/android/features/dev_ui:buildflags",
       "//chrome/browser/android",
       "//chrome/browser/android:profile_key_startup_accessor",
       "//chrome/browser/autocomplete",
@@ -2015,6 +2029,7 @@ source_set("core") {
       "//chrome/browser/webshare:impl",
       "//chrome/common/chromeos/extensions",
       "//chromeos/ash/components/memory",
+      "//chromeos/ash/components/mojo_service_manager:mojo_service_manager_connection",
       "//chromeos/ash/components/quickoffice",
       "//chromeos/ash/experiences/isolated_web_app",
       "//chromeos/ash/services/multidevice_setup/public/cpp:first_run_field_trial",
@@ -2024,13 +2039,6 @@ source_set("core") {
       "//components/cross_device/nearby",
       "//components/os_crypt/browser:posix_key_provider",
       "//remoting/host/chromeos:features",
-    ]
-  }
-
-  if (enable_dice_support) {
-    deps += [
-      "//chrome/browser/ui/webui/signin/signout_confirmation",
-      "//chrome/browser/ui/webui/signin/signout_confirmation:mojo_bindings",
     ]
   }
 
@@ -2046,14 +2054,6 @@ source_set("core") {
 
   if (enable_session_service) {
     deps += [ "//chrome/browser/ui/webui/tab_strip_internals" ]
-  }
-
-  if (enable_webui_ntp) {
-    deps += [
-      "//chrome/browser/new_tab_page",
-      "//chrome/browser/ui/webui/new_tab_page_third_party",
-      "//chrome/browser/ui/webui/ntp_microsoft_auth",
-    ]
   }
 
   if (enable_webui_history) {
@@ -2074,11 +2074,6 @@ source_set("core") {
 
   if (!is_android || enable_webui_ntp || enable_pdf || enable_webui_history) {
     deps += [ "//ui/webui/resources/cr_components/help_bubble:mojo_bindings" ]
-  }
-
-  if (enable_webui_ntp) {
-    deps +=
-        [ "//chrome/browser/ui/webui/new_tab_page/action_chips:mojo_bindings" ]
   }
 
   if ((!is_android || enable_webui_ntp) && toolkit_views) {
@@ -2103,10 +2098,6 @@ source_set("core") {
     sources += [
       "chrome_browser_main_extra_parts_ozone.cc",
       "chrome_browser_main_extra_parts_ozone.h",
-    ]
-    deps += [
-      "//ui/events/ozone",
-      "//ui/ozone",
     ]
     deps += [
       "//ui/events/ozone",
@@ -2146,8 +2137,6 @@ source_set("core") {
       "//third_party/search_engines_data:search_engines_scaled_resources_grit",
     ]
   }
-
-  deps += [ "//chrome/browser/vr:chrome_xr_integration_client" ]
 
   if (enable_vr) {
     sources += [
@@ -2191,10 +2180,6 @@ source_set("core") {
     ]
   }
 
-  if (is_mac) {
-    deps += [ ":chrome_browser_main_mac" ]
-  }
-
   if (is_chrome_for_testing) {
     deps += [ "//chrome/browser/chrome_for_testing:browser" ]
   }
@@ -2212,24 +2197,6 @@ source_set("core") {
 
   if (enable_webui_tabstrip_ntb) {
     deps += [ "//chrome/browser/ui/webui/tabstrip_ntb" ]
-  }
-  if (is_android) {
-    deps += [ "//chrome/android/features/dev_ui:buildflags" ]
-  } else {
-    deps += [
-      "//chrome/browser/ui/webui/skills:mojo_bindings",
-      "//chrome/browser/ui/webui/webnn_internals:mojo_bindings",
-      "//components/record_replay/core/common:mojom",
-    ]
-  }
-  if (is_chromeos) {
-    deps += [ "//chromeos/ash/components/mojo_service_manager:mojo_service_manager_connection" ]
-  }
-  if (is_win) {
-    deps += [ "//chrome/browser/win" ]
-  }
-  if (chrome_root_store_cert_management_ui) {
-    deps += [ "//chrome/browser/resources/certificate_manager:mojom" ]
   }
 }
 
