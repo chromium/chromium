@@ -444,7 +444,7 @@ BASE_FEATURE_PARAM(bool,
                    kPageStabilityEnabled,
                    &kActorTools,
                    kActorToolsPageStabilityParam,
-                   false);
+                   true);
 
 // This mirrors the desktop equivalent at:
 // https://source.chromium.org/chromium/chromium/src/+/main:chrome/common/chrome_features.cc;l=317;drc=b8690fd8da7ae2367f4060dbb4bb35a43adcebed
@@ -487,7 +487,7 @@ bool IsActorEnabled() {
 }
 
 bool IsPageStabilityEnabled() {
-  return kPageStabilityEnabled.Get();
+  return IsActorEnabled() && kPageStabilityEnabled.Get();
 }
 
 base::TimeDelta GetActorObservationDelayTimeout() {

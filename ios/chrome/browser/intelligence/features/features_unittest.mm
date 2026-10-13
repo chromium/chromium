@@ -284,3 +284,26 @@ TEST_F(ActorFeaturesTest, TestGeminiActorBackgroundingKillswitchDisabled) {
       {kEnableBackgroundContinuedProcessing});
   EXPECT_FALSE(IsGeminiActorBackgroundingEnabled());
 }
+
+// Tests that page stability is disabled by default when `kActorTools` is
+// disabled.
+TEST_F(ActorFeaturesTest, IsPageStabilityEnabled_Default) {
+  EXPECT_FALSE(IsPageStabilityEnabled());
+}
+
+// Tests that page stability is enabled by default when `kActorTools` is
+// enabled.
+TEST_F(ActorFeaturesTest, IsPageStabilityEnabled_WithActorTools) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kActorTools);
+  EXPECT_TRUE(IsPageStabilityEnabled());
+}
+
+// Tests that page stability can be disabled via feature parameter when
+// `kActorTools` is enabled.
+TEST_F(ActorFeaturesTest, IsPageStabilityEnabled_FeatureParamDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kActorTools, {{kActorToolsPageStabilityParam, "false"}});
+  EXPECT_FALSE(IsPageStabilityEnabled());
+}
