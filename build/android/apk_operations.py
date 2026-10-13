@@ -1832,7 +1832,8 @@ class _Command:
                         logging.warning(
                             'WARNING: Using a webview that supports only %s on a device '
                             'that supports %s.\nYou may need to use a build target '
-                            'supporting multiple abis (e.g. trichrome_webview_64_32_apk) '
+                            'supporting multiple abis '
+                            '(e.g. system_webview_64_32_apk) '
                             'and set GN arg:\n\n'
                             '    enable_android_secondary_abi=true\n',
                             ','.join(app_abis),
