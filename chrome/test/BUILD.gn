@@ -3009,7 +3009,13 @@ test("unit_tests") {
 
   if (is_win || is_mac || is_linux) {
     deps += [
+      "../browser/enterprise/connectors/test:test_support",
+      "../services/system_signals:unit_tests",
+      "../services/system_signals/public/cpp/browser:unit_tests",
+      "//chrome/browser/sharing_hub:unit_tests",
+      "//chrome/browser/ui/startup/default_browser_prompt:unit_tests",
       "//chrome/browser/ui/views/session_restore_infobar:unit_tests",
+      "//chrome/browser/ui/views/sharing_hub:unit_tests",
       "//chrome/browser/ui/webui/intro:unit_tests",
     ]
   }
@@ -3076,18 +3082,18 @@ test("unit_tests") {
   }
 
   if (is_mac) {
-    deps += [ "//testing/gtest:unit_tests" ]
-
     data_deps += [ "//chrome:chrome_framework" ]
 
     deps += [
       "//chrome/app_shim:unit_tests",
       "//chrome/browser/apps/app_shim:unit_tests",
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/core/mac:unit_tests",
       "//chrome/browser/mac:unit_tests",
       "//chrome/browser/renderer_host:unit_tests",
       "//chrome/browser/ui/cocoa:unit_tests",
       "//chrome/browser/ui/cocoa/test:unit_tests",
       "//chrome/services/mac_notifications:unit_tests",
+      "//testing/gtest:unit_tests",
     ]
 
     # TODO(mark): We really want this for all non-static library targets,
@@ -3114,7 +3120,10 @@ test("unit_tests") {
   }
 
   if (enable_dice_support || is_chromeos) {
-    deps += [ "//chrome/browser/profiles/batch_upload:unit_tests" ]
+    deps += [
+      "//chrome/browser/profiles/batch_upload:unit_tests",
+      "//chrome/browser/ui/webui/batch_upload_promo:unit_tests",
+    ]
   }
 
   if (enable_offline_pages) {
@@ -3465,8 +3474,20 @@ test("unit_tests") {
       "//chrome/browser/ui/download:unit_tests",
     ]
 
+    if (is_linux || is_win || is_mac) {
+      deps += [
+        "//chrome/browser/ui/views/media_preview:unit_tests",
+        "//chrome/browser/ui/views/media_preview/camera_preview:unit_tests",
+        "//chrome/browser/ui/views/media_preview/mic_preview:unit_tests",
+        "//chrome/browser/ui/views/policy:unit_tests",
+      ]
+    }
+
     if (is_win) {
-      deps += [ "//chrome/browser/default_browser/win:unit_tests" ]
+      deps += [
+        "//chrome/browser/default_browser/win:unit_tests",
+        "//chrome/browser/ui/webui/default_browser:unit_tests",
+      ]
     }
   }
 
@@ -3627,15 +3648,13 @@ test("unit_tests") {
   }
 
   if (safe_browsing_mode == 1) {
-    deps +=
-        [ "//components/safe_browsing/content/browser:client_side_detection" ]
-  }
-
-  if (is_win || is_mac || is_linux) {
     deps += [
-      "//chrome/browser/sharing_hub:unit_tests",
-      "//chrome/browser/ui/views/sharing_hub:unit_tests",
+      "//chrome/services/file_util/public/cpp:unit_tests",
+      "//components/safe_browsing/content/browser:client_side_detection",
     ]
+    if (is_mac) {
+      deps += [ "//chrome/utility/safe_browsing/mac:unit_tests" ]
+    }
   }
 
   if (is_linux) {
@@ -3672,13 +3691,6 @@ test("unit_tests") {
       "//chrome/common/safe_browsing:unit_tests",
       "//components/safe_browsing/core/browser:token_fetcher_testing_helper",
     ]
-  }
-
-  if (safe_browsing_mode == 1) {
-    if (is_mac) {
-      deps += [ "//chrome/utility/safe_browsing/mac:unit_tests" ]
-    }
-    deps += [ "//chrome/services/file_util/public/cpp:unit_tests" ]
   }
 
   if (enterprise_cloud_content_analysis) {
@@ -3731,21 +3743,6 @@ test("unit_tests") {
     ]
   }
 
-  if (enable_dice_support || is_chromeos) {
-    deps += [ "//chrome/browser/ui/webui/batch_upload_promo:unit_tests" ]
-  }
-
-  if (is_mac) {
-    deps += [ "//chrome/browser/enterprise/connectors/device_trust/key_management/core/mac:unit_tests" ]
-  }
-
-  if (is_win || is_mac || is_linux) {
-    deps += [
-      "../browser/enterprise/connectors/test:test_support",
-      "../services/system_signals:unit_tests",
-      "../services/system_signals/public/cpp/browser:unit_tests",
-    ]
-  }
   if (enable_on_device_translation) {
     deps += [ "//chrome/browser/on_device_translation:unit_tests" ]
   }
@@ -3774,21 +3771,6 @@ test("unit_tests") {
   if (enable_rlz) {
     deps += [ "//chrome/browser/rlz:unit_tests" ]
   }
-  if (!is_android && !is_chromeos) {
-    if (is_linux || is_win || is_mac) {
-      deps += [
-        "//chrome/browser/ui/views/media_preview:unit_tests",
-        "//chrome/browser/ui/views/media_preview/camera_preview:unit_tests",
-        "//chrome/browser/ui/views/media_preview/mic_preview:unit_tests",
-        "//chrome/browser/ui/views/policy:unit_tests",
-      ]
-    }
-
-    if (is_win) {
-      deps += [ "//chrome/browser/ui/webui/default_browser:unit_tests" ]
-    }
-  }
-
   if (toolkit_views) {
     deps += [
       "//chrome/browser/ui/location_bar:unit_tests",
@@ -3863,10 +3845,6 @@ test("unit_tests") {
   }
   if (!is_android) {
     deps += [ "//chrome/browser/desktop_to_mobile_promos:unit_tests" ]
-  }
-
-  if (is_win || is_mac || is_linux) {
-    deps += [ "//chrome/browser/ui/startup/default_browser_prompt:unit_tests" ]
   }
 
   if (is_chrome_for_testing) {
