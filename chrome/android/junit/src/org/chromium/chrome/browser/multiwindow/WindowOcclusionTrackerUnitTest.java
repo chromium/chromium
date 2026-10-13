@@ -12,8 +12,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
+import android.content.Context;
 import android.graphics.Rect;
 import android.util.SparseArray;
+import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.Window;
 
@@ -69,7 +71,18 @@ public class WindowOcclusionTrackerUnitTest {
     }
 
     private View createView(int x, int y, int width, int height) {
-        View view = new View(ContextUtils.getApplicationContext());
+        return createViewWithContext(ContextUtils.getApplicationContext(), x, y, width, height);
+    }
+
+    private View createTranslucentView(int x, int y, int width, int height) {
+        Context translucentContext =
+                new ContextThemeWrapper(
+                        ContextUtils.getApplicationContext(), android.R.style.Theme_Translucent);
+        return createViewWithContext(translucentContext, x, y, width, height);
+    }
+
+    private View createViewWithContext(Context context, int x, int y, int width, int height) {
+        View view = new View(context);
         ShadowView shadowView = shadowOf(view);
         // Set global visible rect relative to the window (root view).
         shadowView.setGlobalVisibleRect(new Rect(x, y, x + width, y + height));
@@ -229,6 +242,59 @@ public class WindowOcclusionTrackerUnitTest {
                         description(
                                 "Bottom window should not be occluded because top window is"
                                         + " stopped"))
+                .setOccluded(eq(false), any(), any());
+    }
+
+    @Test
+    public void testTranslucentWindowDoesNotOcclude() {
+        View bottomView = createView(0, 0, 100, 100);
+        ActivityWindowAndroid bottomWindow = createWindowAndroid(bottomView);
+        // Covers bottomView completely, but is translucent.
+        View topView = createTranslucentView(0, 0, 100, 100);
+        ActivityWindowAndroid topWindow = createWindowAndroid(topView);
+
+        SparseArray<List<ActivityWindowAndroid>> zOrder =
+                createZOrder(DISPLAY_ID, bottomWindow, topWindow);
+        when(mZOrderTracker.getWindowZOrder()).thenReturn(zOrder);
+
+        mOcclusionTracker.calculateOcclusionRateLimited();
+
+        verify(topWindow, description("Top window should not be occluded"))
+                .setOccluded(eq(false), any(), any());
+        verify(
+                        bottomWindow,
+                        description(
+                                "Bottom window should not be occluded because top window is"
+                                        + " translucent"))
+                .setOccluded(eq(false), any(), any());
+    }
+
+    @Test
+    public void testPartiallyOccludedTranslucentWindowDoesNotOcclude() {
+        View bottomView = createView(0, 0, 100, 100);
+        ActivityWindowAndroid bottomWindow = createWindowAndroid(bottomView);
+        // Covers bottomView completely, but is translucent.
+        View middleView = createTranslucentView(0, 0, 100, 100);
+        ActivityWindowAndroid middleWindow = createWindowAndroid(middleView);
+        // Partially covers middleView and bottomView.
+        View topView = createView(0, 0, 50, 100);
+        ActivityWindowAndroid topWindow = createWindowAndroid(topView);
+
+        SparseArray<List<ActivityWindowAndroid>> zOrder =
+                createZOrder(DISPLAY_ID, bottomWindow, middleWindow, topWindow);
+        when(mZOrderTracker.getWindowZOrder()).thenReturn(zOrder);
+
+        mOcclusionTracker.calculateOcclusionRateLimited();
+
+        verify(topWindow, description("Top window should not be occluded"))
+                .setOccluded(eq(false), any(), any());
+        verify(middleWindow, description("Middle translucent window is only partially covered"))
+                .setOccluded(eq(false), any(), any());
+        verify(
+                        bottomWindow,
+                        description(
+                                "Bottom window should not be occluded because middle window is"
+                                        + " translucent and top window only partially covers it"))
                 .setOccluded(eq(false), any(), any());
     }
 

@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.multiwindow;
 
+import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.Region;
 import android.graphics.RegionIterator;
 import android.util.SparseArray;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.Window;
@@ -270,7 +272,9 @@ public class WindowOcclusionTracker implements ViewTreeObserver.OnGlobalLayoutLi
                     Log.i(TAG, "Window: %s is occluded: false", window);
                 }
                 window.setOccluded(false, viewScreenRect, null);
-                cumulativeOccludedRegion.op(viewScreenRect, Region.Op.UNION);
+                if (!isWindowTranslucent(view)) {
+                    cumulativeOccludedRegion.op(viewScreenRect, Region.Op.UNION);
+                }
                 continue;
             }
 
@@ -280,7 +284,9 @@ public class WindowOcclusionTracker implements ViewTreeObserver.OnGlobalLayoutLi
             viewVisibleRegion.op(cumulativeOccludedRegion, Region.Op.DIFFERENCE);
 
             // Add the view to the cumulative occluded region.
-            cumulativeOccludedRegion.op(viewScreenRect, Region.Op.UNION);
+            if (!isWindowTranslucent(view)) {
+                cumulativeOccludedRegion.op(viewScreenRect, Region.Op.UNION);
+            }
 
             boolean isOccluded = !isNoticeablyVisible(viewVisibleRegion);
             if (DEBUG_LOGGING) {
@@ -288,6 +294,19 @@ public class WindowOcclusionTracker implements ViewTreeObserver.OnGlobalLayoutLi
             }
             window.setOccluded(isOccluded, viewScreenRect, viewVisibleRegion);
         }
+    }
+
+    // Note: This inspects the static theme attribute, so activities with a translucent theme that
+    // later call Activity#convertFromTranslucent() (e.g. TranslucentCustomTabActivity) will still
+    // be treated as translucent and not occlude windows behind them.
+    private static boolean isWindowTranslucent(View view) {
+        Context context = view.getContext();
+        if (context == null || context.getTheme() == null) {
+            return false;
+        }
+        TypedValue tv = new TypedValue();
+        return context.getTheme().resolveAttribute(android.R.attr.windowIsTranslucent, tv, true)
+                && tv.data != 0;
     }
 
     private boolean isNoticeablyVisible(Region visibleRegion) {
