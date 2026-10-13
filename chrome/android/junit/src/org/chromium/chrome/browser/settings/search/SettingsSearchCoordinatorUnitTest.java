@@ -43,6 +43,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
@@ -70,6 +71,7 @@ import java.util.concurrent.TimeUnit;
 public class SettingsSearchCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    private ActivityController<FragmentActivity> mActivityController;
     private FragmentActivity mActivity;
     private Toolbar mToolbar;
     @Mock private MultiColumnSettings mMultiColumnSettings;
@@ -83,7 +85,8 @@ public class SettingsSearchCoordinatorUnitTest {
 
     @Before
     public void setUp() {
-        mActivity = Robolectric.buildActivity(FragmentActivity.class).create().get();
+        mActivityController = Robolectric.buildActivity(FragmentActivity.class).create();
+        mActivity = mActivityController.get();
         mActivity.setTheme(R.style.Theme_Chromium_Settings);
 
         FrameLayout rootView = new FrameLayout(mActivity);
@@ -1376,5 +1379,161 @@ public class SettingsSearchCoordinatorUnitTest {
         assertEquals(View.VISIBLE, lensButton.getVisibility());
         mCoordinator.setSearchLensButtonVisible(/* visible= */ false);
         assertEquals(View.GONE, lensButton.getVisibility());
+    }
+
+    /**
+     * Regression test for crbug.com/572594190: exitSearchState() called from onTitleUpdated()
+     * during FragmentLifecycleCallbacks.onFragmentResumed() must not throw
+     * IllegalStateException("FragmentManager is already executing transactions").
+     */
+    @Test
+    public void testOnTitleUpdated_duringFragmentTransaction_doesNotCrash() {
+        SettingsIndexData.createInstance().resetNeedsIndexing();
+        setUpMultiColumnSettings();
+        mUseMultiColumn = false;
+        mActivityController.start().resume();
+
+        FragmentManager fragmentManager = mActivity.getSupportFragmentManager();
+        // Mimic MultiColumnSettings.FragmentTracker calling onTitleUpdated() from
+        // onFragmentResumed() while FragmentManager is executing transactions.
+        fragmentManager.registerFragmentLifecycleCallbacks(
+                new FragmentManager.FragmentLifecycleCallbacks() {
+                    @Override
+                    public void onFragmentResumed(FragmentManager fm, Fragment f) {
+                        mCoordinator.onTitleUpdated();
+                    }
+                },
+                /* recursive= */ false);
+
+        mCoordinator = createCoordinator(/* shownInTab= */ true);
+        mCoordinator.initializeSearchUi(null);
+        ShadowLooper.idleMainLooper();
+
+        // Enter search and display results (un-backstacked RESULT_FRAGMENT replaces EMPTY_FRAGMENT
+        // on back stack entry #0).
+        View searchBox = mActivity.findViewById(R.id.search_box);
+        searchBox.performClick();
+        fragmentManager.executePendingTransactions();
+        ShadowLooper.idleMainLooper();
+
+        var entry =
+                new SettingsIndexData.Entry.Builder(
+                                "sign_out_id", "sign_out_key", "Sign out", "ManageSyncSettings")
+                        .build();
+        var results = new SettingsIndexData.SearchResults();
+        results.addItem(entry, 100);
+        mCoordinator.displayResultsFragment(results);
+        fragmentManager.executePendingTransactions();
+        ShadowLooper.idleMainLooper();
+
+        // Pop the initial search back stack entry so backStackEntryCount becomes 0 while
+        // RESULT_FRAGMENT is still attached, then push and pop a fragment so onFragmentResumed()
+        // fires with backStackEntryCount == 0 while FragmentManager is executing transactions.
+        fragmentManager.popBackStackImmediate();
+        mCoordinator.setFragmentState(SettingsSearchCoordinator.FS_RESULTS);
+        fragmentManager
+                .beginTransaction()
+                .replace(R.id.preferences_detail, new TestDetailFragment())
+                .addToBackStack(SettingsSearchCoordinator.RESULT_BACKSTACK)
+                .setReorderingAllowed(true)
+                .commit();
+        fragmentManager.executePendingTransactions();
+
+        // Popping triggers SearchResultsPreferenceFragment.onFragmentResumed() ->
+        // mCoordinator.onTitleUpdated() -> exitSearchState() while FragmentManager is executing
+        // transactions.
+        fragmentManager.popBackStackImmediate();
+        ShadowLooper.idleMainLooper();
+
+        assertFalse(mCoordinator.isSearchOpen());
+        assertNull(fragmentManager.findFragmentByTag(SettingsSearchCoordinator.RESULT_FRAGMENT));
+    }
+
+    /**
+     * Regression test for crbug.com/572594190: When a result fragment opened from search finishes
+     * itself (e.g. ManageSyncSettings calling finishCurrentSettings() on sign-out) in single-column
+     * mode on a tablet, SettingsSearchCoordinator must return to FS_SEARCH, restore the search
+     * query bar, and cleanly exit search on the next back action.
+     */
+    @Test
+    public void
+            testResultFragmentFinishesItself_inSingleColumnMode_returnsToSearchAndExitsCleanly() {
+        SettingsIndexData.createInstance().resetNeedsIndexing();
+        setUpMultiColumnSettings();
+        mUseMultiColumn = false;
+        mActivityController.start().resume();
+
+        FragmentManager fragmentManager = mActivity.getSupportFragmentManager();
+        fragmentManager.registerFragmentLifecycleCallbacks(
+                new FragmentManager.FragmentLifecycleCallbacks() {
+                    @Override
+                    public void onFragmentResumed(FragmentManager fm, Fragment f) {
+                        mCoordinator.onTitleUpdated();
+                    }
+                },
+                /* recursive= */ false);
+
+        mCoordinator = createCoordinator(/* shownInTab= */ true);
+        mCoordinator.initializeSearchUi(null);
+        ShadowLooper.idleMainLooper();
+
+        // 1. Enter search state and display search results in single-column mode.
+        View searchBox = mActivity.findViewById(R.id.search_box);
+        View queryContainer = mActivity.findViewById(R.id.search_query_container);
+        searchBox.performClick();
+        fragmentManager.executePendingTransactions();
+        ShadowLooper.idleMainLooper();
+
+        var entry =
+                new SettingsIndexData.Entry.Builder(
+                                "sign_out_id",
+                                "sign_out_key",
+                                "Sign out",
+                                TestDetailFragment.class.getName())
+                        .build();
+        var results = new SettingsIndexData.SearchResults();
+        results.addItem(entry, 100);
+        mCoordinator.displayResultsFragment(results);
+        fragmentManager.executePendingTransactions();
+        ShadowLooper.idleMainLooper();
+
+        SearchResultsPreferenceFragment resultsFragment =
+                (SearchResultsPreferenceFragment)
+                        fragmentManager.findFragmentByTag(
+                                SettingsSearchCoordinator.RESULT_FRAGMENT);
+        assertNotNull(resultsFragment);
+
+        // 2. Open the result fragment (simulating tapping "Sign out" in search results).
+        fragmentManager
+                .beginTransaction()
+                .replace(R.id.preferences_detail, new TestDetailFragment())
+                .addToBackStack(SettingsSearchCoordinator.RESULT_BACKSTACK)
+                .setReorderingAllowed(true)
+                .commit();
+        fragmentManager.executePendingTransactions();
+        mCoordinator.setFragmentState(SettingsSearchCoordinator.FS_RESULTS);
+        queryContainer.setVisibility(View.GONE);
+        assertTrue(mCoordinator.shouldShowNavigationIcon());
+
+        // 3. Simulate the result fragment finishing itself (e.g. ManageSyncSettings on sign-out
+        // calling finishCurrentSettings(), which pops the back stack directly).
+        fragmentManager.popBackStack();
+        fragmentManager.executePendingTransactions();
+        ShadowLooper.idleMainLooper();
+
+        // Search UI should return to FS_SEARCH: query container visible and toolbar navigation
+        // back arrow hidden.
+        assertTrue(mCoordinator.isSearchOpen());
+        assertEquals(View.VISIBLE, queryContainer.getVisibility());
+        assertFalse(mCoordinator.shouldShowNavigationIcon());
+
+        // 4. Pressing back now should exit search cleanly and remove RESULT_FRAGMENT.
+        assertTrue(mCoordinator.handleBackAction());
+        fragmentManager.executePendingTransactions();
+        ShadowLooper.idleMainLooper();
+
+        assertFalse(mCoordinator.isSearchOpen());
+        assertEquals(View.GONE, queryContainer.getVisibility());
+        assertNull(fragmentManager.findFragmentByTag(SettingsSearchCoordinator.RESULT_FRAGMENT));
     }
 }

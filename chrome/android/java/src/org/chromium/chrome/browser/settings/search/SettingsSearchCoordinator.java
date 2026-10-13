@@ -662,6 +662,7 @@ public class SettingsSearchCoordinator
                     public void onFragmentResumed(FragmentManager fm, Fragment f) {
                         updateSearchUiWidth();
                         maybeInitSearchResultsFragmentCallback(f);
+                        maybeReturnToSearchState(f);
                     }
                 },
                 false);
@@ -673,6 +674,18 @@ public class SettingsSearchCoordinator
     private void maybeInitSearchResultsFragmentCallback(Fragment f) {
         if (f instanceof SearchResultsPreferenceFragment srpf) {
             srpf.setSelectedCallback(this::onResultSelected);
+        }
+    }
+
+    /**
+     * Restores the search state UI if {@link SearchResultsPreferenceFragment} resumes while in
+     * {@link #FS_RESULTS} (for example, when a result fragment such as {@code ManageSyncSettings}
+     * finishes itself and pops the back stack directly without going through {@link
+     * #stepBackInResultState()}).
+     */
+    private void maybeReturnToSearchState(Fragment f) {
+        if (f instanceof SearchResultsPreferenceFragment && mFragmentState == FS_RESULTS) {
+            returnToSearchStateFromResults();
         }
     }
 
@@ -752,6 +765,7 @@ public class SettingsSearchCoordinator
                                     showUiInSingleColumn(searchBox, false);
                                 }
                                 maybeInitSearchResultsFragmentCallback(f);
+                                maybeReturnToSearchState(f);
                             }
                         },
                         false);
@@ -1118,7 +1132,10 @@ public class SettingsSearchCoordinator
 
         // Remove search fragments before popping the back stack. Otherwise, un-backstacked
         // search results or empty fragments would remain visible in the container behind the
-        // restored detail fragment.
+        // restored detail fragment. Use commitAllowingStateLoss() instead of
+        // commitNowAllowingStateLoss() because exitSearchState() can be invoked from
+        // FragmentLifecycleCallbacks#onFragmentResumed() while FragmentManager is already
+        // executing transactions (crbug.com/572594190).
         FragmentManager fragmentManager = assumeNonNull(getSettingsFragmentManager());
         Fragment resultFragment = fragmentManager.findFragmentByTag(RESULT_FRAGMENT);
         Fragment emptyFragment = fragmentManager.findFragmentByTag(EMPTY_FRAGMENT);
@@ -1126,7 +1143,8 @@ public class SettingsSearchCoordinator
             var transaction = fragmentManager.beginTransaction();
             if (resultFragment != null) transaction.remove(resultFragment);
             if (emptyFragment != null) transaction.remove(emptyFragment);
-            transaction.setReorderingAllowed(true).commitNowAllowingStateLoss();
+            // This is safe because popBackStack() is also asynchronous and ordered after this.
+            transaction.setReorderingAllowed(true).commitAllowingStateLoss();
         }
         fragmentManager.popBackStack();
         if (mMultiColumnSettings != null
@@ -1209,20 +1227,24 @@ public class SettingsSearchCoordinator
             // where we display the search results.
             String topStackEntry = fragmentManager.getBackStackEntryAt(stackCount - 1).getName();
             if (TextUtils.equals(RESULT_BACKSTACK, topStackEntry)) {
-                setFragmentState(FS_SEARCH);
-                requireViewById(R.id.search_query_container).setVisibility(View.VISIBLE);
-                EditText queryEdit = requireViewById(R.id.search_query);
-                queryEdit.requestFocus();
-                // Search again to reflect the changes to the index that might have been made
-                // while browsing results.
-                if (mIndexData.shouldRefreshResult()) {
-                    onQueryUpdated(queryEdit.getText().toString());
-                    mIndexData.setRefreshResult(false);
-                }
-                showBackArrowInSingleColumnMode(false);
+                returnToSearchStateFromResults();
             }
         }
         fragmentManager.popBackStack();
+    }
+
+    private void returnToSearchStateFromResults() {
+        setFragmentState(FS_SEARCH);
+        requireViewById(R.id.search_query_container).setVisibility(View.VISIBLE);
+        EditText queryEdit = requireViewById(R.id.search_query);
+        queryEdit.requestFocus();
+        // Search again to reflect the changes to the index that might have been made
+        // while browsing results.
+        if (mIndexData != null && mIndexData.shouldRefreshResult()) {
+            onQueryUpdated(queryEdit.getText().toString());
+            mIndexData.setRefreshResult(false);
+        }
+        showBackArrowInSingleColumnMode(false);
     }
 
     /**
