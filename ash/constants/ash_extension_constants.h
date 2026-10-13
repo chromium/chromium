@@ -28,17 +28,33 @@ inline constexpr char kCalculatorExtensionId[] =
 inline constexpr char kGoogleKeepExtensionId[] =
     "hmjkmjkepdijhoojdojkdfohbdgmmhki";
 
-// The App ID of the migrated Google Play Books Chrome App.
-inline constexpr char kGooglePlayBooksExtensionId[] =
-    "mmimngoggfoobjdlefbcabngfnmieonb";
-
 // The App ID of the migrated Google Maps Chrome App.
 inline constexpr char kGoogleMapsExtensionId[] =
     "lneaknkopdijkpnocmklfnjbeapigfbh";
 
-// The App ID of the migrated Google Play Movies Chrome App.
-inline constexpr char kGooglePlayMoviesExtensionId[] =
+// The extension id of the Calendar application.
+inline constexpr char kCalendarAppId[] = "ejjicmeblgpmajnghnpcppodonldlgfn";
+
+// The extension id of the Google Photos application.
+inline constexpr char kGooglePhotosAppId[] = "hcglmfcclpfgljeaiahehebeoaiicbko";
+
+// The extension id of the Google Play Books application.
+inline constexpr char kGooglePlayBooksAppId[] =
+    "mmimngoggfoobjdlefbcabngfnmieonb";
+
+// The extension id of the Google Play Movies application.
+inline constexpr char kGooglePlayMoviesAppId[] =
     "gdijeikdkaembjbdobgfkoidjkpbmlkd";
+
+// The extension id of the Google Play Music application.
+inline constexpr char kGooglePlayMusicAppId[] =
+    "icppfcnhkcmnfdhfhphakoifcfokfdhg";
+
+// The extension id of the Google+ application.
+inline constexpr char kGooglePlusAppId[] = "dlppkpafhbajpcmmoheippocdidnckmm";
+
+// The extension id of the Text Editor application.
+inline constexpr char kTextEditorAppId[] = "mmfbcljfglbokpmkimbfghdkjmjhdgbg";
 
 // The extension id of the Desk API chrome component extension.
 inline constexpr char kDeskApiExtensionId[] =

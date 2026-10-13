@@ -17,9 +17,6 @@ inline constexpr char kFileManagerAppId[] = "hhaomjibdihmijegdhdafkllkbggdgoj";
 inline constexpr char kFileManagerSwaAppId[] =
     "fkiggjmkendpmbegkagpmagjepfkpmeb";
 
-// The text editor's app ID.
-inline constexpr char kTextEditorAppId[] = "mmfbcljfglbokpmkimbfghdkjmjhdgbg";
-
 // The image loader extension's ID.
 inline constexpr char kImageLoaderExtensionId[] =
     "pmfjbimdmchhbnneeidfognadeopoehp";

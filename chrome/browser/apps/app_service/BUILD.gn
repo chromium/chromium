@@ -126,6 +126,7 @@ source_set("app_service") {
     ]
 
     deps += [
+      "//ash/constants",
       "//ash/webui/mall:app_id",
       "//ash/webui/projector_app/public/cpp",
       "//chrome/app/theme:chrome_unscaled_resources_grit",

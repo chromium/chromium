@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/constants/ash_extension_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/generative_ai_country_restrictions.h"
@@ -18,7 +19,6 @@
 #include "chrome/browser/ash/input_method/input_methods_by_language.h"
 #include "chrome/browser/ash/input_method/url_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/common/extensions/extension_constants.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_consent_status.h"

@@ -11,7 +11,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/component_extensions_allowlist/allowlist.h"
 #include "chrome/common/buildflags.h"
-#include "chrome/common/extensions/extension_constants.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/forced_extensions/install_stage_tracker.h"

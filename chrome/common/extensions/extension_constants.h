@@ -35,9 +35,6 @@ inline constexpr char kLaunchSourceAppListInfoDialog[] =
 
 namespace extension_misc {
 
-// The extension id of the Calendar application.
-inline constexpr char kCalendarAppId[] = "ejjicmeblgpmajnghnpcppodonldlgfn";
-
 // The extension id of the Data Saver extension.
 inline constexpr char kDataSaverExtensionId[] =
     "pfmgfdlgomnbgkofeojodiodmgpgmkac";
@@ -48,31 +45,6 @@ inline constexpr char kDictationConnectorExtensionId[] =
 
 // The extension id of the Google Maps application.
 inline constexpr char kGoogleMapsAppId[] = "lneaknkopdijkpnocmklfnjbeapigfbh";
-
-// The extension id of the Google Photos application.
-inline constexpr char kGooglePhotosAppId[] = "hcglmfcclpfgljeaiahehebeoaiicbko";
-
-// The extension id of the Google Play Books application.
-inline constexpr char kGooglePlayBooksAppId[] =
-    "mmimngoggfoobjdlefbcabngfnmieonb";
-
-// The extension id of the Google Play Movies application.
-inline constexpr char kGooglePlayMoviesAppId[] =
-    "gdijeikdkaembjbdobgfkoidjkpbmlkd";
-
-// The extension id of the Google Play Music application.
-inline constexpr char kGooglePlayMusicAppId[] =
-    "icppfcnhkcmnfdhfhphakoifcfokfdhg";
-
-// The extension id of the Google+ application.
-inline constexpr char kGooglePlusAppId[] = "dlppkpafhbajpcmmoheippocdidnckmm";
-
-// The extension id of the Text Editor application.
-inline constexpr char kTextEditorAppId[] = "mmfbcljfglbokpmkimbfghdkjmjhdgbg";
-
-// The extension id of the in-app payments support application.
-inline constexpr char kInAppPaymentsSupportAppId[] =
-    "nmmhkkegccagdldgiimedpiccmgmieda";
 
 // The extension id of Perfetto UI extension.
 inline constexpr char kPerfettoUIExtensionId[] =
@@ -221,31 +193,31 @@ inline constexpr char kMediaFileSystemPathPart[] = "_";
 inline constexpr auto kBuiltInFirstPartyExtensionIds =
     std::to_array<const std::string_view>({
         kCalculatorAppId,
-        kCalendarAppId,
         kDataSaverExtensionId,
         kDocsOfflineExtensionId,
         kGoogleDriveAppId,
         kGmailAppId,
         kGoogleDocsAppId,
         kGoogleMapsAppId,
-        kGooglePhotosAppId,
-        kGooglePlayBooksAppId,
-        kGooglePlayMoviesAppId,
-        kGooglePlayMusicAppId,
-        kGooglePlusAppId,
         kGoogleSheetsAppId,
         kGoogleSlidesAppId,
-        kTextEditorAppId,
         kInAppPaymentsSupportAppId,
 #if BUILDFLAG(IS_CHROMEOS)
         kAssessmentAssistantExtensionId,
         kAccessibilityCommonExtensionId,
+        kCalendarAppId,
         kSelectToSpeakExtensionId,
         kSwitchAccessExtensionId,
         kFilesManagerAppId,
         kFirstRunDialogId,
         kEspeakSpeechSynthesisExtensionId,
+        kGooglePhotosAppId,
+        kGooglePlayBooksAppId,
+        kGooglePlayMoviesAppId,
+        kGooglePlayMusicAppId,
+        kGooglePlusAppId,
         kGoogleSpeechSynthesisExtensionId,
+        kTextEditorAppId,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
         kTTSEngineExtensionId,

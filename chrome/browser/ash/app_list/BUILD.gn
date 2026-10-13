@@ -71,6 +71,7 @@ static_library("app_list") {
   deps = [
     "//ash",
     "//ash/app_list",
+    "//ash/constants",
     "//ash/resources/vector_icons",
     "//ash/strings",
     "//ash/webui/mall:app_id",

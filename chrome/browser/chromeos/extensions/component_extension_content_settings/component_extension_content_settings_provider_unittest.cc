@@ -11,7 +11,6 @@
 #include "base/test/gtest_util.h"
 #include "chrome/browser/chromeos/extensions/component_extension_content_settings/component_extension_content_settings_allowlist.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/common/extensions/extension_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"

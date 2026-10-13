@@ -6,13 +6,13 @@
 
 #include <vector>
 
+#include "ash/constants/ash_extension_constants.h"
 #include "base/containers/flat_map.h"
 #include "base/lazy_instance.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
-#include "chrome/common/extensions/extension_constants.h"
 #include "chrome/grit/chromeos_app_icon_resources.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/extension_registry.h"

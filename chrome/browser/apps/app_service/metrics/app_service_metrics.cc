@@ -10,12 +10,12 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "build/branding_buildflags.h"
-#include "chrome/common/extensions/extension_constants.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "extensions/common/constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_extension_constants.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "ash/user_education/user_education_util.h"
 #include "ash/user_education/welcome_tour/welcome_tour_metrics.h"
@@ -242,8 +242,6 @@ std::optional<apps::DefaultAppName> AppIdToName(const std::string& app_id) {
   if (app_id == extension_misc::kCalculatorAppId) {
     // The legacy calculator chrome app.
     return DefaultAppName::kCalculatorChromeApp;
-  } else if (app_id == extension_misc::kTextEditorAppId) {
-    return DefaultAppName::kText;
   } else if (app_id == app_constants::kChromeAppId) {
     return DefaultAppName::kChrome;
   } else if (app_id == extension_misc::kGoogleDocsAppId) {
@@ -251,6 +249,8 @@ std::optional<apps::DefaultAppName> AppIdToName(const std::string& app_id) {
   } else if (app_id == extension_misc::kGoogleDriveAppId) {
     return DefaultAppName::kDrive;
 #if BUILDFLAG(IS_CHROMEOS)
+  } else if (app_id == extension_misc::kTextEditorAppId) {
+    return DefaultAppName::kText;
   } else if (app_id == arc::kGoogleDuoAppId) {
     return DefaultAppName::kDuo;
   } else if (app_id == extension_misc::kFilesManagerAppId) {
