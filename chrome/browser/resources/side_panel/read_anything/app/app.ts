@@ -814,6 +814,8 @@ export class AppElement extends AppElementBase implements SpeechListener,
 
   protected onLineFocusStyleChange_(
       event: CustomEvent<{data: LineFocusStyle}>) {
+    this.logger_.logTextSettingsChange(
+        ReadAnythingSettingsChange.LINE_FOCUS_STYLE_CHANGE);
     if (this.visualBrowserProxy_.isLineFocusEnabled()) {
       this.lineFocusController_.onStyleChange(
           event.detail.data, this.$.container,
@@ -823,6 +825,8 @@ export class AppElement extends AppElementBase implements SpeechListener,
   }
 
   protected onLineFocusToggleChange_(event: CustomEvent<{data: boolean}>) {
+    this.logger_.logTextSettingsChange(
+        ReadAnythingSettingsChange.LINE_FOCUS_TOGGLE);
     if (this.visualBrowserProxy_.isLineFocusEnabled()) {
       this.lineFocusController_.toggle(
           event.detail.data, this.$.container,
@@ -844,6 +848,8 @@ export class AppElement extends AppElementBase implements SpeechListener,
 
   protected onLineFocusMovementChange_(
       event: CustomEvent<{data: LineFocusMovement}>) {
+    this.logger_.logTextSettingsChange(
+        ReadAnythingSettingsChange.LINE_FOCUS_MOVEMENT_CHANGE);
     if (this.visualBrowserProxy_.isLineFocusEnabled()) {
       this.lineFocusController_.onMovementChange(
           event.detail.data, this.$.container,

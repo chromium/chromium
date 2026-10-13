@@ -14,8 +14,6 @@ import type {VisualBrowserProxy} from '../app/visual_browser_proxy.js';
 import {VisualBrowserProxyImpl} from '../app/visual_browser_proxy.js';
 import {LineFocusMovement, LineFocusStyle, ToolbarEvent} from '../content/read_anything_types.js';
 import type {ShowAtConfigPrefs} from '../content/read_anything_types.js';
-import {ReadAnythingSettingsChange} from '../shared/metrics_browser_proxy.js';
-import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
 
 import type {GroupedActionMenuElement} from './grouped_action_menu.js';
 import {getHtml} from './line_focus_menu.html.js';
@@ -142,7 +140,6 @@ export class LineFocusMenuElement extends LineFocusMenuElementBase implements
 
   protected accessor groups_:
       Array<MenuGroup<LineFocusStyle|LineFocusMovement|boolean>> = [];
-  private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
@@ -180,20 +177,6 @@ export class LineFocusMenuElement extends LineFocusMenuElementBase implements
     }
   }
 
-  protected onLineFocusStyleChange_() {
-    this.logger_.logTextSettingsChange(
-        ReadAnythingSettingsChange.LINE_FOCUS_STYLE_CHANGE);
-  }
-
-  protected onLineFocusToggleChange_() {
-    this.logger_.logTextSettingsChange(
-        ReadAnythingSettingsChange.LINE_FOCUS_TOGGLE);
-  }
-
-  protected onLineFocusMovementChange_() {
-    this.logger_.logTextSettingsChange(
-        ReadAnythingSettingsChange.LINE_FOCUS_MOVEMENT_CHANGE);
-  }
 }
 
 declare global {

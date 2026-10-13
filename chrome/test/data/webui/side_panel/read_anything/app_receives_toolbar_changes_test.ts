@@ -1022,6 +1022,25 @@ suite('AppReceivesToolbarChanges', () => {
           audioBrowserProxy.noHighlighting, app.$.toolbar.highlightGranularity);
     });
 
+    test('line focus', async () => {
+      emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: true}});
+      emitEvent(
+          app, ToolbarEvent.LINE_FOCUS_STYLE,
+          {detail: {data: LineFocusStyle.UNDERLINE}});
+      emitEvent(
+          app, ToolbarEvent.LINE_FOCUS_MOVEMENT,
+          {detail: {data: LineFocusMovement.CURSOR}});
+      await microtasksFinished();
+
+      assertArrayEquals(
+          [
+            ReadAnythingSettingsChange.LINE_FOCUS_TOGGLE,
+            ReadAnythingSettingsChange.LINE_FOCUS_STYLE_CHANGE,
+            ReadAnythingSettingsChange.LINE_FOCUS_MOVEMENT_CHANGE,
+          ],
+          metrics.getArgs('recordTextSettingsChange'));
+    });
+
     test('presentation', async () => {
       const immersiveState =
           visualBrowserProxy.getInImmersiveOverlayPresentationState();
