@@ -41,7 +41,6 @@ enum class FooterContainer {
 FooterContainer GetFooterContainerForAction(actions::ActionId action_id) {
   switch (action_id) {
     case kActionShowManagementPage:
-    case kActionChromeEnterpriseReleaseNotes:
       return FooterContainer::kBottom;
 #if BUILDFLAG(IS_MAC)
     case kActionOptions:

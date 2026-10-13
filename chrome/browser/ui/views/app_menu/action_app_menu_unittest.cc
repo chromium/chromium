@@ -3848,12 +3848,8 @@ TEST_F(ActionAppMenuTest, RecentTabsByDateHistoryInSidePanel) {
       "WrenchMenu.TimeToAction.ShowHistoryClustersSidePanel", 1);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS)
-TEST_F(ActionAppMenuTest, PopulatesFooterElementsWithEnterpriseReleaseNotes) {
-  policy::ScopedManagementServiceOverrideForTesting profile_management(
-      policy::ManagementServiceFactory::GetForProfile(profile_.get()),
-      policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
-
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
+TEST_F(ActionAppMenuTest, PopulatesHelpSubmenuWithEnterpriseReleaseNotes) {
   actions::ActionItem* release_notes_action =
       actions::ActionManager::Get().FindAction(
           kActionChromeEnterpriseReleaseNotes, nullptr);
@@ -3869,23 +3865,19 @@ TEST_F(ActionAppMenuTest, PopulatesFooterElementsWithEnterpriseReleaseNotes) {
 
   views::MenuItemView* root = menu.root_menu_item_for_testing();
   ASSERT_NE(root, nullptr);
-  views::SubmenuView* submenu = root->GetSubmenu();
-  ASSERT_NE(submenu, nullptr);
-  views::MenuItemView* footer_item =
-      submenu->GetMenuItemAt(submenu->GetMenuItems().size() - 1);
-  ASSERT_NE(footer_item, nullptr);
+  views::MenuItemView* help_item = root->GetMenuItemByID(kActionHelpSubmenu);
+  ASSERT_NE(help_item, nullptr);
+  views::SubmenuView* help_submenu = help_item->GetSubmenu();
+  ASSERT_NE(help_submenu, nullptr);
 
-  auto* footer_view =
-      views::AsViewClass<AppMenuFooterView>(footer_item->children()[0]);
-  ASSERT_NE(footer_view, nullptr);
-  ASSERT_NE(footer_view->bottom_container_for_testing(), nullptr);
-  EXPECT_EQ(footer_view->bottom_container_for_testing()->GetOrientation(),
-            views::BoxLayout::Orientation::kVertical);
-  ASSERT_EQ(footer_view->bottom_container_for_testing()->children().size(), 2u);
-  EXPECT_TRUE(views::IsViewClass<AppMenuFooterButton>(
-      footer_view->bottom_container_for_testing()->children()[0]));
-  EXPECT_TRUE(views::IsViewClass<AppMenuFooterButton>(
-      footer_view->bottom_container_for_testing()->children()[1]));
+  ASSERT_GE(help_submenu->GetMenuItems().size(), 4u);
+  EXPECT_EQ(help_submenu->GetMenuItemAt(0)->GetCommand(), kActionAbout);
+  EXPECT_EQ(help_submenu->GetMenuItemAt(1)->GetCommand(),
+            kActionChromeWhatsNew);
+  EXPECT_EQ(help_submenu->GetMenuItemAt(2)->GetCommand(),
+            kActionChromeEnterpriseReleaseNotes);
+  EXPECT_EQ(help_submenu->GetMenuItemAt(3)->GetCommand(),
+            kActionHelpPageViaMenu);
 
   EXPECT_CALL(mock_action_invoked_,
               Call(kActionChromeEnterpriseReleaseNotes, testing::_, testing::_))
@@ -3902,6 +3894,7 @@ TEST_F(ActionAppMenuTest, PopulatesFooterElementsWithEnterpriseReleaseNotes) {
   menu.CloseMenu();
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
 TEST_F(ActionAppMenuTest, BlockButtonsRespondToMnemonics) {
   if (!views::MenuConfig::instance().use_mnemonics) {
     GTEST_SKIP() << "Mnemonics are not enabled on this platform";

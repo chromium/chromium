@@ -1156,6 +1156,8 @@ void ActionAppMenuManager::AddFooterActions(actions::ActionItem* root) {
                 sub.AddAction(kActionChromeWhatsNew);
               }
 
+              sub.AddAction(kActionChromeEnterpriseReleaseNotes);
+
 #if BUILDFLAG(IS_CHROMEOS) && defined(OFFICIAL_BUILD)
               sub.AddAction(
                   kActionHelpPageViaMenu,
@@ -1193,8 +1195,6 @@ void ActionAppMenuManager::AddFooterActions(actions::ActionItem* root) {
                .text_override = GetManagedUiMenuItemLabel(profile),
                .icon_override =
                    ui::ImageModel::FromVectorIcon(GetManagedUiIcon(profile))});
-          section.AddAction(kActionChromeEnterpriseReleaseNotes,
-                            {.display_type = DisplayType::kRow});
         }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
       });
