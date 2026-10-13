@@ -12,6 +12,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/test/run_until.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -29,6 +30,7 @@
 #include "chrome/browser/ui/global_error/global_error_service.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/ui/views/toolbar/test_support/app_menu_test_accessor.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "components/crx_file/crx_verifier.h"
@@ -123,6 +125,21 @@ class GlobalErrorBubbleTest : public DialogBrowserTest {
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override;
+
+  bool VerifyUi() override {
+    if (!DialogBrowserTest::VerifyUi()) {
+      return false;
+    }
+    AppMenuTestAccessor app_menu(browser());
+    return base::test::RunUntil([&]() { return app_menu.IsHighlighted(); });
+  }
+
+  void DismissUi() override {
+    DialogBrowserTest::DismissUi();
+    AppMenuTestAccessor app_menu(browser());
+    EXPECT_TRUE(
+        base::test::RunUntil([&]() { return !app_menu.IsHighlighted(); }));
+  }
 };
 
 void GlobalErrorBubbleTest::ShowUi(const std::string& name) {

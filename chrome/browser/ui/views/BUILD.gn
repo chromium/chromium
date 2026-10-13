@@ -1391,6 +1391,7 @@ source_set("global_error_bubble_view") {
     "//chrome/browser/ui:bubble_anchor_util",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/global_error",
+    "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/views/interaction",
     "//chrome/browser/ui/views/toolbar",
     "//ui/base",
@@ -1411,7 +1412,10 @@ source_set("upgrade_notification_controller") {
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/dialogs",
+    "//chrome/browser/ui/views/frame:browser_view_header",
+    "//chrome/browser/ui/views/frame:toolbar_button_provider",
     "//chrome/browser/ui/views/interaction",
+    "//chrome/browser/ui/views/toolbar:app_menu_control",
   ]
   if (is_win) {
     public_deps += [ ":critical_notification_bubble_view" ]

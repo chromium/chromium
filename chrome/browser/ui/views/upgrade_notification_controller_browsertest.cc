@@ -5,11 +5,13 @@
 #include "chrome/browser/ui/views/upgrade_notification_controller.h"
 
 #include "base/i18n/time_formatting.h"
+#include "base/test/run_until.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/critical_notification_bubble_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/toolbar/test_support/app_menu_test_accessor.h"
 #include "content/public/test/browser_test.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
@@ -35,6 +37,21 @@ class OutdatedUpgradeBubbleTest : public DialogBrowserTest {
     } else {
       ADD_FAILURE();
     }
+  }
+
+  bool VerifyUi() override {
+    AppMenuTestAccessor app_menu(browser());
+    if (!base::test::RunUntil([&]() { return app_menu.IsHighlighted(); })) {
+      return false;
+    }
+    return DialogBrowserTest::VerifyUi();
+  }
+
+  void DismissUi() override {
+    DialogBrowserTest::DismissUi();
+    AppMenuTestAccessor app_menu(browser());
+    EXPECT_TRUE(
+        base::test::RunUntil([&]() { return !app_menu.IsHighlighted(); }));
   }
 };
 

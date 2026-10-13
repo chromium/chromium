@@ -20,7 +20,8 @@
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/elevation_icon_setter.h"
-#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "ui/base/buildflags.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -40,15 +41,18 @@
 GlobalErrorBubbleViewBase* GlobalErrorBubbleViewBase::ShowStandardBubbleView(
     BrowserWindowInterface* browser,
     const base::WeakPtr<GlobalErrorWithStandardBubble>& error) {
-  auto* browser_elements = BrowserElementsViews::From(browser);
-  views::View* anchor_view =
-      browser_elements
-          ? browser_elements->GetView(kToolbarAppMenuButtonElementId)
-          : nullptr;
-  views::BubbleAnchor anchor =
-      anchor_view ? views::BubbleAnchor(anchor_view) : views::BubbleAnchor();
+  views::BubbleAnchor anchor;
+  if (auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser)) {
+    if (auto* control =
+            browser_view->toolbar_button_provider()->GetAppMenuControl()) {
+      anchor = control->GetAnchor();
+    }
+  }
   GlobalErrorBubbleView* bubble_view = new GlobalErrorBubbleView(
       anchor, views::BubbleBorder::TOP_RIGHT, browser, error);
+  if (anchor) {
+    bubble_view->SetHighlightedElement(kToolbarAppMenuButtonElementId);
+  }
   views::BubbleDialogDelegateView::CreateBubble(bubble_view);
   bubble_view->GetWidget()->Show();
   return bubble_view;

@@ -5,9 +5,11 @@
 #include "chrome/browser/ui/views/relaunch_notification/relaunch_recommended_bubble_view.h"
 
 #include "base/functional/callback_helpers.h"
+#include "base/test/run_until.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/ui/views/toolbar/test_support/app_menu_test_accessor.h"
 #include "content/public/test/browser_test.h"
 
 class RelaunchRecommendedBubbleViewDialogTest : public DialogBrowserTest {
@@ -25,6 +27,21 @@ class RelaunchRecommendedBubbleViewDialogTest : public DialogBrowserTest {
     base::Time detection_time = base::Time::Now() - base::Days(3);
     RelaunchRecommendedBubbleView::ShowBubble(browser(), detection_time,
                                               base::DoNothing());
+  }
+
+  bool VerifyUi() override {
+    if (!DialogBrowserTest::VerifyUi()) {
+      return false;
+    }
+    AppMenuTestAccessor app_menu(browser());
+    return base::test::RunUntil([&]() { return app_menu.IsHighlighted(); });
+  }
+
+  void DismissUi() override {
+    DialogBrowserTest::DismissUi();
+    AppMenuTestAccessor app_menu(browser());
+    EXPECT_TRUE(
+        base::test::RunUntil([&]() { return !app_menu.IsHighlighted(); }));
   }
 };
 

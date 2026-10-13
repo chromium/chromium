@@ -62,6 +62,10 @@ class AppMenuTestAccessor {
   // Returns the bubble anchor for the app menu.
   views::BubbleAnchor GetAnchor() const;
 
+  // Returns true if the app menu button is currently highlighted (e.g. as a
+  // bubble anchor).
+  bool IsHighlighted() const;
+
   // Returns the underlying AppMenuControl.
   AppMenuControl* GetControl() const { return control_; }
 

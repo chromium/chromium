@@ -45,8 +45,8 @@ CriticalNotificationBubbleView::ScopedSetTimeFormatterForTesting::
     ~ScopedSetTimeFormatterForTesting() = default;
 
 CriticalNotificationBubbleView::CriticalNotificationBubbleView(
-    views::View* anchor_view)
-    : BubbleDialogDelegateView(anchor_view, views::BubbleBorder::TOP_RIGHT) {
+    views::BubbleAnchor anchor)
+    : BubbleDialogDelegateView(anchor, views::BubbleBorder::TOP_RIGHT) {
   SetButtonLabel(ui::mojom::DialogButton::kOk,
                  l10n_util::GetStringUTF16(IDS_CRITICAL_NOTIFICATION_RESTART));
   SetButtonLabel(ui::mojom::DialogButton::kCancel,

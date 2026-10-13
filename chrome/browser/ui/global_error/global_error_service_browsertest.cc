@@ -8,11 +8,13 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/run_until.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/global_error/global_error.h"
 #include "chrome/browser/ui/global_error/global_error_bubble_view_base.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
+#include "chrome/browser/ui/views/toolbar/test_support/app_menu_test_accessor.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -59,6 +61,7 @@ class BubbleViewError final : public GlobalErrorWithStandardBubble {
   base::WeakPtr<GlobalErrorWithStandardBubble> AsWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();
   }
+  bool ShouldCloseOnDeactivate() const override { return false; }
 
  private:
   int bubble_view_close_count_ = 0;
@@ -83,10 +86,13 @@ IN_PROC_BROWSER_TEST_F(GlobalErrorServiceBrowserTest, ShowBubbleView) {
   EXPECT_EQ(0, error->bubble_view_close_count());
 
   // Creating a second browser window should show the bubble view.
-  CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* second_browser =
+      CreateBrowser(browser()->GetProfile());
   EXPECT_EQ(nullptr, service->GetFirstGlobalErrorWithBubbleView());
   EXPECT_TRUE(error->HasShownBubbleView());
   EXPECT_EQ(0, error->bubble_view_close_count());
+  AppMenuTestAccessor app_menu(second_browser);
+  EXPECT_TRUE(base::test::RunUntil([&]() { return app_menu.IsHighlighted(); }));
 }
 
 // Test that GlobalErrorBubbleViewBase::CloseBubbleView correctly closes the
@@ -104,16 +110,21 @@ IN_PROC_BROWSER_TEST_F(GlobalErrorServiceBrowserTest, CloseBubbleView) {
   EXPECT_EQ(0, error->bubble_view_close_count());
 
   // Creating a second browser window should show the bubble view.
-  CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* second_browser =
+      CreateBrowser(browser()->GetProfile());
   EXPECT_EQ(nullptr, service->GetFirstGlobalErrorWithBubbleView());
   EXPECT_TRUE(error->HasShownBubbleView());
   EXPECT_EQ(0, error->bubble_view_close_count());
+  AppMenuTestAccessor app_menu(second_browser);
+  EXPECT_TRUE(base::test::RunUntil([&]() { return app_menu.IsHighlighted(); }));
 
   // Explicitly close the bubble view.
   EXPECT_TRUE(error->GetBubbleView());
   error->GetBubbleView()->CloseBubbleView();
   content::RunAllPendingInMessageLoop();
   EXPECT_EQ(1, error->bubble_view_close_count());
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return !app_menu.IsHighlighted(); }));
 }
 
 // Test that bubble is silently dismissed if it is showing when the GlobalError
@@ -135,10 +146,14 @@ IN_PROC_BROWSER_TEST_F(GlobalErrorServiceBrowserTest,
   content::RunAllPendingInMessageLoop();
   EXPECT_TRUE(error->HasShownBubbleView());
   EXPECT_EQ(0, error->bubble_view_close_count());
+  AppMenuTestAccessor app_menu(browser());
+  EXPECT_TRUE(base::test::RunUntil([&]() { return app_menu.IsHighlighted(); }));
 
   // Removing |error| from profile should dismiss the bubble view without
   // calling |error->BubbleViewDidClose|.
   service->RemoveUnownedGlobalError(error.get());
   content::RunAllPendingInMessageLoop();
   EXPECT_EQ(1, error->bubble_view_close_count());
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return !app_menu.IsHighlighted(); }));
 }

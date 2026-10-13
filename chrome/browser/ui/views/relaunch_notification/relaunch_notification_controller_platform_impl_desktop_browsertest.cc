@@ -8,6 +8,7 @@
 #include "base/test/run_until.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/toolbar/test_support/app_menu_test_accessor.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "ui/views/test/widget_test.h"
@@ -24,27 +25,37 @@ IN_PROC_BROWSER_TEST_F(
   BrowserView::GetBrowserViewForBrowser(browser())->Show();
   // Allow UI tasks to run so that the browser becomes fully active/inactive.
   base::RunLoop().RunUntilIdle();
+  AppMenuTestAccessor app_menu(browser());
   RelaunchNotificationControllerPlatformImpl impl;
   base::Time deadline = base::Time::Now() + base::Hours(1);
 
   impl.NotifyRelaunchRecommended(deadline, false);
+  EXPECT_TRUE(base::test::RunUntil([&]() { return app_menu.IsHighlighted(); }));
   views::test::WidgetDestroyedWaiter first_destroyed_waiter(
       impl.GetWidgetForTesting());
   impl.CloseRelaunchNotification();
   first_destroyed_waiter.Wait();
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return !app_menu.IsHighlighted(); }));
 
   impl.NotifyRelaunchRecommended(deadline, false);
+  EXPECT_TRUE(base::test::RunUntil([&]() { return app_menu.IsHighlighted(); }));
   views::test::WidgetDestroyedWaiter second_destroyed_waiter(
       impl.GetWidgetForTesting());
   // Simulate widget is closed outside of RelaunchNotificationController.
   impl.GetWidgetForTesting()->Close();
   second_destroyed_waiter.Wait();
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return !app_menu.IsHighlighted(); }));
 
   impl.NotifyRelaunchRecommended(deadline, false);
+  EXPECT_TRUE(base::test::RunUntil([&]() { return app_menu.IsHighlighted(); }));
   views::test::WidgetDestroyedWaiter third_destroyed_waiter(
       impl.GetWidgetForTesting());
   impl.CloseRelaunchNotification();
   third_destroyed_waiter.Wait();
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return !app_menu.IsHighlighted(); }));
 
   // Switch to a relaunch required notification.
   impl.NotifyRelaunchRequired(deadline,

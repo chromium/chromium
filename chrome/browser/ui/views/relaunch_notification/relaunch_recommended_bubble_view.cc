@@ -11,6 +11,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -27,7 +28,6 @@
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/text_constants.h"
-#include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -50,6 +50,9 @@ views::Widget* RelaunchRecommendedBubbleView::ShowBubble(
       control ? control->GetAnchor() : views::BubbleAnchor();
   auto* bubble_view = new RelaunchRecommendedBubbleView(anchor, detection_time,
                                                         std::move(on_accept));
+  if (anchor) {
+    bubble_view->SetHighlightedElement(kToolbarAppMenuButtonElementId);
+  }
   bubble_view->SetArrow(views::BubbleBorder::TOP_RIGHT);
 
   views::Widget* bubble_widget =
@@ -116,15 +119,6 @@ void RelaunchRecommendedBubbleView::Init() {
   AddChildView(std::move(label));
 
   base::RecordAction(base::UserMetricsAction("RelaunchRecommendedShown"));
-}
-
-void RelaunchRecommendedBubbleView::VisibilityChanged(
-    views::View* starting_from,
-    bool is_visible) {
-  views::InkDrop::Get(GetAnchorView())
-      ->AnimateToState(is_visible ? views::InkDropState::ACTIVATED
-                                  : views::InkDropState::DEACTIVATED,
-                       nullptr);
 }
 
 // |relaunch_recommended_timer_| automatically starts for the next time the

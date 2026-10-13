@@ -30,7 +30,7 @@ class CriticalNotificationBubbleView : public views::BubbleDialogDelegateView {
     base::AutoReset<TimeFormatter> resetter_;
   };
 
-  explicit CriticalNotificationBubbleView(views::View* anchor_view);
+  explicit CriticalNotificationBubbleView(views::BubbleAnchor anchor);
   CriticalNotificationBubbleView(const CriticalNotificationBubbleView&) =
       delete;
   CriticalNotificationBubbleView& operator=(

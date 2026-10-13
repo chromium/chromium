@@ -21,6 +21,8 @@
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/animation/ink_drop.h"
+#include "ui/views/animation/ink_drop_state.h"
 #include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
@@ -178,4 +180,24 @@ bool AppMenuTestAccessor::HandleAccessibleAction(
 views::BubbleAnchor AppMenuTestAccessor::GetAnchor() const {
   CHECK(control_);
   return control_->GetAnchor();
+}
+
+bool AppMenuTestAccessor::IsHighlighted() const {
+  CHECK(control_);
+  views::View* view = control_->GetFocusablePaneView();
+  if (!view) {
+    return false;
+  }
+  if (views::InkDropHost* ink_drop = views::InkDrop::Get(view)) {
+    return ink_drop->GetInkDrop()->GetTargetInkDropState() ==
+           views::InkDropState::ACTIVATED;
+  }
+  if (content::WebContents* web_contents = GetWebContentsFromView(view)) {
+    return content::EvalJs(web_contents,
+                           "!!document.querySelector('toolbar-app')?.shadowRoot"
+                           "?.querySelector('#app-menu')?.classList.contains("
+                           "'anchor-highlight')")
+        .ExtractBool();
+  }
+  return false;
 }
