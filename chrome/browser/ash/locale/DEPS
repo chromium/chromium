@@ -17,7 +17,6 @@ include_rules = [
   "+chrome/browser/ash/base",
   "+chrome/browser/ash/settings",
   "+chrome/browser/profiles",
-  "+chrome/common",
 ]
 
 specific_include_rules = {

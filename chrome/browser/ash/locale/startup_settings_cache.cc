@@ -6,13 +6,13 @@
 
 #include <string>
 
+#include "ash/constants/ash_paths.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/path_service.h"
 #include "base/values.h"
-#include "chrome/common/chrome_paths.h"
 
 namespace ash::startup_settings_cache {
 namespace {
@@ -25,7 +25,7 @@ const char kAppLocaleKey[] = "app_locale";
 
 bool GetCacheFilePath(base::FilePath* path) {
   base::FilePath user_data_dir;
-  if (!base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir)) {
+  if (!base::PathService::Get(ash::DIR_USER_DATA, &user_data_dir)) {
     return false;
   }
 

@@ -13,13 +13,13 @@ static_library("locale") {
   ]
 
   deps = [
+    "//ash/constants",
     "//ash/public/cpp",
     "//base",
     "//chrome/app:command_ids",
     "//chrome/browser/ash/base",
     "//chrome/browser/ash/settings",
     "//chrome/browser/profiles:profile",
-    "//chrome/common",
     "//components/application_locale_storage",
     "//components/language/core/browser",
     "//components/language/core/common",
@@ -39,9 +39,9 @@ source_set("unit_tests") {
 
   deps = [
     ":locale",
+    "//ash/constants",
     "//base",
     "//base/test:test_support",
-    "//chrome/common",
     "//testing/gtest",
     "//ui/base",
   ]

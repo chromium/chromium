@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ash/locale/startup_settings_cache.h"
 
+#include "ash/constants/ash_paths.h"
 #include "base/path_service.h"
 #include "base/test/scoped_path_override.h"
-#include "chrome/common/chrome_paths.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -17,7 +17,7 @@ class StartupSettingsCacheTest : public testing::Test {
   StartupSettingsCacheTest& operator=(const StartupSettingsCacheTest&) = delete;
 
  protected:
-  StartupSettingsCacheTest() : user_data_dir_override_(chrome::DIR_USER_DATA) {}
+  StartupSettingsCacheTest() : user_data_dir_override_(ash::DIR_USER_DATA) {}
   ~StartupSettingsCacheTest() override = default;
 
  private:
