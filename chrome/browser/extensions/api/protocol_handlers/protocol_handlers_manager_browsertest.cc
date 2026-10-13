@@ -671,7 +671,7 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlersManagerOTRBrowserTest,
 }
 
 // Extension handlers are not available in incognito by default, because
-// ExtensionPrefs::IsIncognitoEnabled() defaults to false.
+// util::IsIncognitoEnabled() defaults to false for regular extensions.
 IN_PROC_BROWSER_TEST_F(ProtocolHandlersManagerBrowserTest,
                        ExtensionHandlerNotAllowedInIncognitoByDefault) {
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII(kExtensionPath)));
