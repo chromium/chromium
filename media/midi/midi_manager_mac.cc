@@ -8,17 +8,16 @@
 #include <stddef.h>
 
 #include <algorithm>
-#include <iterator>
 #include <string>
 
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "media/midi/midi_service.h"
 #include "media/midi/task_service.h"
@@ -138,7 +137,7 @@ MidiManagerMac::~MidiManagerMac() {
     return;
 
   // Finalization steps should be implemented after the UnbindInstance() call.
-  // Do not need to dispose |coremidi_input_| and |coremidi_output_| explicitly.
+  // Do not need to dispose midi_input_ and midi_output_ explicitly.
   // CoreMIDI automatically disposes them on the client disposal.
   base::AutoLock lock(midi_client_lock_);
   if (midi_client_)
@@ -337,9 +336,8 @@ void MidiManagerMac::SendMidiData(MidiManagerClient* client,
   MIDITimeStamp coremidi_timestamp = TimeTicksToMIDITimeStamp(timestamp);
   MIDIEndpointRef destination = destinations_[port_index];
 
-  base::span<const uint8_t> data_span(data);
   std::vector<uint32_t> ump_words;
-  TranslateMidiToUmpWords(data_span, 0, ump_words);
+  TranslateMidiToUmpWords(data, 0, ump_words);
 
   if (ump_words.empty()) {
     return;

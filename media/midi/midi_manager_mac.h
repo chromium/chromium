@@ -10,10 +10,8 @@
 
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
-#include "base/threading/thread.h"
 #include "media/midi/midi_export.h"
 #include "media/midi/midi_manager.h"
 #include "media/midi/midi_service.mojom.h"
@@ -39,8 +37,7 @@ class MIDI_EXPORT MidiManagerMac final : public MidiManager {
                             base::TimeTicks timestamp) override;
 
  private:
-  // Initializes CoreMIDI on |client_thread_| asynchronously. Called from
-  // StartInitialization().
+  // Initializes CoreMIDI asynchronously. Called from StartInitialization().
   void InitializeCoreMIDI();
 
   // Completes CoreMIDI initialization and asks the thread that ran
@@ -59,7 +56,7 @@ class MIDI_EXPORT MidiManagerMac final : public MidiManager {
   void ReceiveMidiEventList(uint32_t port_index,
                             const MIDIEventList* event_list);
 
-  // An internal callback that runs on MidiSendThread.
+  // An internal callback that runs on kClientTaskRunner.
   void SendMidiData(MidiManagerClient* client,
                     uint32_t port_index,
                     const std::vector<uint8_t>& data,
