@@ -118,7 +118,6 @@ external/wpt/dom/events/scrolling/wheel-event-transactions-target-resize.html?in
 external/wpt/dom/events/webkit-animation-iteration-event.html
 external/wpt/dom/nodes/moveBefore/select-option-optgroup.html
 external/wpt/dom/nodes/moveBefore/selection-preserve.html
-external/wpt/dom/nodes/NodeList-static-length-getter-tampered-indexOf-*
 external/wpt/editing/crashtests/contenteditable-will-be-blurred-by-focus-event-listener.html
 external/wpt/editing/crashtests/designMode-document-will-be-blurred-by-focus-event-listener.html
 external/wpt/editing/crashtests/insertorderedlist-in-focused-inline-editing-host.html
