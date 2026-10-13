@@ -20,7 +20,6 @@
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "components/permissions/permission_actions_history.h"
 #include "ui/base/interaction/element_identifier.h"
-#include "ui/base/interaction/element_tracker.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
