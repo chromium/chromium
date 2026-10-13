@@ -11,6 +11,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_paths.h"
 #include "ash/public/cpp/image_downloader.h"
 #include "base/check.h"
 #include "base/check_deref.h"
@@ -35,7 +36,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_downloader.h"
-#include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/signin/identity_manager_provider.h"
 #include "components/policy/policy_constants.h"
@@ -479,7 +479,7 @@ void UserImageManagerImpl::Job::SaveImageAndUpdateLocalState(
   }
 
   base::FilePath user_data_dir;
-  base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
+  base::PathService::Get(ash::DIR_USER_DATA, &user_data_dir);
   // TODO(crbug.com/40496228): Use GetAccountIdKey() instead of GetUserEmail().
   image_path_ =
       user_data_dir.AppendASCII(account_id().GetUserEmail() +
