@@ -28,7 +28,7 @@ std::vector<uint8_t> BuildEncodedResponseData(
   user_map.emplace(kEntitiyIdMapKey, std::move(user_id));
   cbor_map.emplace(kCborTypeArray, std::move(user_map));
   std::optional<std::vector<uint8_t>> cbor_bytes =
-      cbor::Writer::Write(cbor::Value(std::move(cbor_map)));
+      cbor::Writer::Write(cbor_map);
   CHECK(cbor_bytes, base::NotFatalUntil::M161);
   std::vector<uint8_t> response_bytes = std::move(*cbor_bytes);
   // Add the status byte to the beginning of this now fully encoded cbor bytes
