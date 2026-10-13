@@ -693,8 +693,9 @@ void HostResolverDnsTask::OnDnsTransactionComplete(
       break;
   }
 
-  if (base::FeatureList::IsEnabled(features::kUseHostResolverCache) ||
-      delegate_->ShouldSortTransactionsIndividually()) {
+  if (transaction_info->type == DnsQueryType::AAAA &&
+      (base::FeatureList::IsEnabled(features::kUseHostResolverCache) ||
+       delegate_->ShouldSortTransactionsIndividually())) {
     SortTransactionAndHandleResults(std::move(transaction_info),
                                     std::move(results).value());
   } else {
@@ -758,6 +759,8 @@ bool HostResolverDnsTask::IsFatalTransactionFailure(
 void HostResolverDnsTask::SortTransactionAndHandleResults(
     std::unique_ptr<TransactionInfo> transaction_info,
     Results transaction_results) {
+  CHECK_EQ(transaction_info->type, DnsQueryType::AAAA);
+
   // Expect at most 1 data result in an individual transaction.
   CHECK_LE(std::ranges::count_if(
                transaction_results,
@@ -783,6 +786,10 @@ void HostResolverDnsTask::SortTransactionAndHandleResults(
   }
 
   if (!endpoints_to_sort.empty()) {
+    DCHECK(std::ranges::all_of(endpoints_to_sort, [](const IPEndPoint& e) {
+      return e.address().IsIPv6();
+    }));
+
     // More async work to do, so insert `transaction_info` back onto
     // `transactions_in_progress_`.
     base::WeakPtr<TransactionInfo> transaction_info_ptr =

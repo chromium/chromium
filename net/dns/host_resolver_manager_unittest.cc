@@ -13682,14 +13682,12 @@ class MockAddressSorter : public AddressSorter {
 TEST_F(HostResolverManagerDnsTest, ResultsAreSorted) {
   AddScopedFeatureList().InitAndEnableFeature(features::kUseHostResolverCache);
 
-  // Expect sorter to be separately called with A and AAAA results. For the
-  // AAAA, sort to reversed order.
+  // Expect sorter to be called only with AAAA results (not A results). Sort
+  // AAAA to reversed order.
   auto sorter = std::make_unique<testing::StrictMock<MockAddressSorter>>();
   sorter->ExpectCall(
       {CreateExpected("::1", 0), CreateExpected("2001:4860:4860::8888", 0)},
       {CreateExpected("2001:4860:4860::8888", 0), CreateExpected("::1", 0)});
-  sorter->ExpectCall({CreateExpected("127.0.0.1", 0)},
-                     {CreateExpected("127.0.0.1", 0)});
 
   DnsResponse a_response =
       BuildTestDnsAddressResponse("host.test", IPAddress::IPv4Localhost());
@@ -13772,14 +13770,11 @@ TEST_F(HostResolverManagerDnsTest, ResultsAreSortedWithHostCache) {
           CreateExpected("127.0.0.1", 80), CreateExpected("::1", 80)))));
 }
 
-TEST_F(HostResolverManagerDnsTest, Ipv4OnlyResultsAreSorted) {
+TEST_F(HostResolverManagerDnsTest, Ipv4OnlyResultsNotSorted) {
   AddScopedFeatureList().InitAndEnableFeature(features::kUseHostResolverCache);
 
-  // Sort to reversed order.
+  // Expect no sort calls for IPv4-only results.
   auto sorter = std::make_unique<testing::StrictMock<MockAddressSorter>>();
-  sorter->ExpectCall(
-      {CreateExpected("127.0.0.1", 0), CreateExpected("127.0.0.2", 0)},
-      {CreateExpected("127.0.0.2", 0), CreateExpected("127.0.0.1", 0)});
 
   DnsResponse a_response = BuildTestDnsResponse(
       "host.test", dns_protocol::kTypeA,
@@ -13803,11 +13798,11 @@ TEST_F(HostResolverManagerDnsTest, Ipv4OnlyResultsAreSorted) {
 
   EXPECT_THAT(response.result_error(), IsOk());
 
-  // Expect results in the order given by the sorter.
+  // Expect results in original unsorted order.
   EXPECT_THAT(
       response.request()->GetEndpointResults(),
       testing::ElementsAre(ExpectEndpointResult(testing::ElementsAre(
-          CreateExpected("127.0.0.2", 80), CreateExpected("127.0.0.1", 80)))));
+          CreateExpected("127.0.0.1", 80), CreateExpected("127.0.0.2", 80)))));
 }
 
 TEST_F(HostResolverManagerDnsTest, Ipv4OnlyResultsNotSortedWithHostCache) {
@@ -13906,10 +13901,9 @@ TEST_F(HostResolverManagerDnsTest, ResultsSortedAsUnreachable) {
   sorter->ExpectCall(
       {CreateExpected("::1", 0), CreateExpected("2001:4860:4860::8888", 0)},
       {});
-  sorter->ExpectCall({CreateExpected("127.0.0.1", 0)}, {});
 
   DnsResponse a_response =
-      BuildTestDnsAddressResponse("host.test", IPAddress::IPv4Localhost());
+      BuildTestDnsResponse("host.test", dns_protocol::kTypeA, /*answers=*/{});
   DnsResponse aaaa_response = BuildTestDnsResponse(
       "host.test", dns_protocol::kTypeAAAA,
       {BuildTestAddressRecord("host.test", IPAddress::IPv6Localhost()),
@@ -14071,10 +14065,8 @@ TEST_F(HostResolverManagerDnsTest, PartialSortFailure) {
   constexpr std::string_view kHost = "host.test";
   constexpr base::TimeDelta kMinTtl = base::Minutes(3);
 
-  // Successfully sort A. Fail to sort AAAA.
+  // A is not sorted. Fail to sort AAAA.
   auto sorter = std::make_unique<testing::StrictMock<MockAddressSorter>>();
-  sorter->ExpectCall({IPEndPoint(IPAddress::IPv4Localhost(), 0)},
-                     {IPEndPoint(IPAddress::IPv4Localhost(), 0)});
   sorter->ExpectCallAndFailSort({IPEndPoint(IPAddress::IPv6Localhost(), 0),
                                  CreateExpected("2001:4860:4860::8888", 0)});
 

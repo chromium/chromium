@@ -588,19 +588,24 @@ TEST_F(HostResolverDnsTaskTest, HandlesIndividualTransactionSort) {
       /*fallback_available=*/false, HostResolver::HttpsSvcbOptions());
   ASSERT_EQ(task.num_additional_transactions_needed(), 2);
 
-  // Expect sort to be called immediately on completion of first transaction.
+  // Expect sort to be called immediately on completion of first transaction
+  // (AAAA).
   task.StartNextTransaction();
   test_sorter_ptr->WaitForSortCall();
   ASSERT_EQ(task.num_additional_transactions_needed(), 1);
   ASSERT_EQ(task.num_transactions_in_progress(), 1);
   ASSERT_EQ(test_sorter_ptr->NumInProgress(), 1);
 
-  // Expect sort to be called immediately on completion of second transaction.
+  // Second transaction (A) has no IPv6 addresses, so it should complete
+  // without calling Sort().
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_dns_task_delegate_, OnIntermediateTransactionsComplete(_))
+      .WillOnce([&](auto) { run_loop.Quit(); });
   task.StartNextTransaction();
-  test_sorter_ptr->WaitForSortCall();
+  run_loop.Run();
   ASSERT_EQ(task.num_additional_transactions_needed(), 0);
-  ASSERT_EQ(task.num_transactions_in_progress(), 2);
-  ASSERT_EQ(test_sorter_ptr->NumInProgress(), 2);
+  ASSERT_EQ(task.num_transactions_in_progress(), 1);
+  ASSERT_EQ(test_sorter_ptr->NumInProgress(), 1);
 
   Mock::VerifyAndClearExpectations(&mock_dns_task_delegate_);
   EXPECT_CALL(mock_dns_task_delegate_, OnDnsTaskComplete(_, _, _, _));
@@ -657,19 +662,24 @@ TEST_F(HostResolverDnsTaskTest, HandlesIndividualTransactionSortViaDelegate) {
       /*fallback_available=*/false, HostResolver::HttpsSvcbOptions());
   ASSERT_EQ(task.num_additional_transactions_needed(), 2);
 
-  // Expect sort to be called immediately on completion of first transaction.
+  // Expect sort to be called immediately on completion of first transaction
+  // (AAAA).
   task.StartNextTransaction();
   test_sorter_ptr->WaitForSortCall();
   ASSERT_EQ(task.num_additional_transactions_needed(), 1);
   ASSERT_EQ(task.num_transactions_in_progress(), 1);
   ASSERT_EQ(test_sorter_ptr->NumInProgress(), 1);
 
-  // Expect sort to be called immediately on completion of second transaction.
+  // Second transaction (A) has no IPv6 addresses, so it should complete
+  // without calling Sort().
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_dns_task_delegate_, OnIntermediateTransactionsComplete(_))
+      .WillOnce([&](auto) { run_loop.Quit(); });
   task.StartNextTransaction();
-  test_sorter_ptr->WaitForSortCall();
+  run_loop.Run();
   ASSERT_EQ(task.num_additional_transactions_needed(), 0);
-  ASSERT_EQ(task.num_transactions_in_progress(), 2);
-  ASSERT_EQ(test_sorter_ptr->NumInProgress(), 2);
+  ASSERT_EQ(task.num_transactions_in_progress(), 1);
+  ASSERT_EQ(test_sorter_ptr->NumInProgress(), 1);
 
   Mock::VerifyAndClearExpectations(&mock_dns_task_delegate_);
   EXPECT_CALL(mock_dns_task_delegate_, OnDnsTaskComplete(_, _, _, _));

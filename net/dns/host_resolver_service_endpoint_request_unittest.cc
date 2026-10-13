@@ -768,10 +768,12 @@ TEST_F(HostResolverServiceEndpointRequestTest, EndpointsAreSorted) {
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   requester.WaitForFinished();
   EXPECT_THAT(*requester.finished_result(), IsOk());
+  // When sorting transactions individually, AAAA endpoints are sorted by
+  // AddressSorter while A endpoints preserve the DNS response order.
   EXPECT_THAT(requester.finished_endpoints(),
               ElementsAre(ExpectServiceEndpoint(
-                  ElementsAre(MakeIPEndPoint("192.0.2.1", 443),
-                              MakeIPEndPoint("192.0.2.2", 443)),
+                  ElementsAre(MakeIPEndPoint("192.0.2.2", 443),
+                              MakeIPEndPoint("192.0.2.1", 443)),
                   ElementsAre(MakeIPEndPoint("2001:db8::1", 443),
                               MakeIPEndPoint("2001:db8::2", 443)))));
 }
@@ -2192,13 +2194,15 @@ TEST_F(HostResolverServiceEndpointRequestIntermediateResultsOnlyTest,
                                          MakeIPEndPoint("2001:db8::2", 443)))));
 
   // Complete delayed A request, which finishes the request synchronously.
+  // A transactions are not sorted individually, so IPv4 endpoints preserve the
+  // raw DNS response order.
   mock_dns_client_->CompleteDelayedTransactions();
   ASSERT_TRUE(requester.request()->EndpointsCryptoReady());
   EXPECT_THAT(*requester.finished_result(), IsOk());
   EXPECT_THAT(requester.finished_endpoints(),
               ElementsAre(ExpectServiceEndpoint(
-                  ElementsAre(MakeIPEndPoint("192.0.2.1", 443),
-                              MakeIPEndPoint("192.0.2.2", 443)),
+                  ElementsAre(MakeIPEndPoint("192.0.2.2", 443),
+                              MakeIPEndPoint("192.0.2.1", 443)),
                   ElementsAre(MakeIPEndPoint("2001:db8::1", 443),
                               MakeIPEndPoint("2001:db8::2", 443)))));
 }
