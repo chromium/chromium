@@ -565,7 +565,10 @@ void MultiUserWindowManager::RemoveTransientOwnerRecursive(
 
   bool unowned_view_state = visibility_item->second;
   transient_window_to_visibility_.erase(visibility_item);
-  if (unowned_view_state && !window->IsVisible() &&
+  // Don't restore the visibility of a window that is being destroyed, e.g. a
+  // hidden transient window that gets removed from its transient parent as part
+  // of its own destruction. `aura::Window::Show()` must not be called on it.
+  if (unowned_view_state && !window->is_destroying() && !window->IsVisible() &&
       desks_util::BelongsToActiveDesk(window)) {
     // To prevent these commands from being recorded as any other commands, we
     // are suppressing any window entry changes while this is going on.

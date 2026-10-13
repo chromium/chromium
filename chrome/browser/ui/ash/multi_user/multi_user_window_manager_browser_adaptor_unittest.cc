@@ -970,6 +970,31 @@ TEST_F(MultiUserWindowManagerBrowserAdaptorTest, TransientWindows) {
   ::wm::RemoveTransientChild(window(7), window(9));
 }
 
+// Tests that destroying a transient window while its owner is hidden by a user
+// switch doesn't try to show the window that is being destroyed.
+TEST_F(MultiUserWindowManagerBrowserAdaptorTest,
+       DeleteTransientWindowWhileOwnerIsHidden) {
+  AddLoggedInUsers({kAccountIdB, kAccountIdA});
+
+  SetUpForThisManyWindows(2);
+  multi_user_window_manager()->SetWindowOwner(window(0), kAccountIdA);
+  ::wm::AddTransientChild(window(0), window(1));
+  EXPECT_EQ("S[a], S[]", GetStatus());
+
+  // Switching to B hides A's window together with its transient child, while
+  // remembering that the transient child should be shown again for A.
+  SwitchActiveUser(kAccountIdB);
+  EXPECT_EQ("H[a], H[]", GetStatus());
+
+  // Destroying the hidden transient child removes it from its transient parent
+  // during its destruction. Its remembered visibility must not be restored.
+  delete_window_at(1);
+  EXPECT_EQ("H[a], D", GetStatus());
+
+  SwitchActiveUser(kAccountIdA);
+  EXPECT_EQ("S[a], D", GetStatus());
+}
+
 // Verifies duplicate observers are not added for transient dialog windows.
 // https://crbug.com/41444428
 TEST_F(MultiUserWindowManagerBrowserAdaptorTest,
