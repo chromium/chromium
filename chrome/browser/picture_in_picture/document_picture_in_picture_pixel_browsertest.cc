@@ -2,16 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
+#include <string_view>
+
+#include "base/check.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h"
+#include "chrome/browser/ui/views/picture_in_picture/document_pip_frame_view.h"
+#include "chrome/browser/ui/views/picture_in_picture/document_pip_host.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_test_path_utils.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -25,7 +32,10 @@
 #include "third_party/blink/public/common/features.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/test/widget_activation_waiter.h"
+#include "ui/views/test/widget_test.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/window/non_client_view.h"
 
 namespace {
 
@@ -33,8 +43,10 @@ const base::FilePath::CharType kPictureInPictureDocumentPipPage[] =
     FILE_PATH_LITERAL(
         "media/picture-in-picture/documen_picture_in_picture_pixel_test.html");
 
-class DocumentPictureInPicturePixelTest : public UiBrowserTest,
-                                          public content::WebContentsObserver {
+class DocumentPictureInPicturePixelTest
+    : public UiBrowserTest,
+      public content::WebContentsObserver,
+      public testing::WithParamInterface<bool> {
  public:
   DocumentPictureInPicturePixelTest() = default;
 
@@ -56,13 +68,13 @@ class DocumentPictureInPicturePixelTest : public UiBrowserTest,
   }
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{blink::features::kDocumentPictureInPictureAPI},
-        // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox
-        // is enabled and then remove the two omnibox features.
-        /*disabled_features=*/
-        {omnibox::internal::kWebUIOmniboxPopup,
-         omnibox::internal::kWebUIOmniboxAimPopup});
+    scoped_feature_list_.InitWithFeatureStates(
+        {{blink::features::kDocumentPictureInPictureAPI, true},
+         {features::kDocumentPipStandaloneWindow, standalone_enabled()},
+         // TODO(crbug.com/452061489): Fix tests that fail when the WebUI
+         // Omnibox is enabled and then remove the two omnibox features.
+         {omnibox::internal::kWebUIOmniboxPopup, false},
+         {omnibox::internal::kWebUIOmniboxAimPopup, false}});
 
     // Disable animation for stability.
     animation_duration_ =
@@ -136,11 +148,34 @@ class DocumentPictureInPicturePixelTest : public UiBrowserTest,
     EXPECT_TRUE(WaitForRenderFrameReady(contents->GetPrimaryMainFrame()));
   }
 
-  void WaitForPipWidgetActivation(content::WebContents* pip_web_contents) {
+  bool standalone_enabled() const { return GetParam(); }
+
+  views::Widget* GetPipWidget() {
+    return views::Widget::GetWidgetForNativeWindow(
+        window_controller()->GetChildWebContents()->GetTopLevelNativeWindow());
+  }
+
+  // Returns the frame view drawn by the PiP window of the selected backend.
+  views::View* GetPipFrameView() {
+    content::WebContents* pip_web_contents =
+        window_controller()->GetChildWebContents();
+    if (standalone_enabled()) {
+      auto* host = DocumentPipHost::FromChildWebContents(pip_web_contents);
+      CHECK(host);
+      return views::AsViewClass<DocumentPipFrameView>(
+          host->GetWidget()->non_client_view()->frame_view());
+    }
+
     auto* browser_view = BrowserView::GetBrowserViewForNativeWindow(
         pip_web_contents->GetTopLevelNativeWindow());
-    ASSERT_TRUE(browser_view);
-    auto* pip_widget = browser_view->GetWidget();
+    CHECK(browser_view);
+    CHECK(browser_view->GetIsPictureInPictureType());
+    return views::AsViewClass<PictureInPictureBrowserFrameView>(
+        browser_view->browser_widget()->GetFrameView());
+  }
+
+  void WaitForPipWidgetActivation() {
+    auto* pip_widget = GetPipWidget();
     ASSERT_TRUE(pip_widget);
     views::test::WaitForWidgetActive(pip_widget, /*active=*/true);
   }
@@ -155,29 +190,37 @@ class DocumentPictureInPicturePixelTest : public UiBrowserTest,
     ASSERT_TRUE(GetRenderWidgetHostView());
     EXPECT_TRUE(GetRenderWidgetHostView()->IsShowing());
 
-    WaitForPipWidgetActivation(pip_web_contents);
+    WaitForPipWidgetActivation();
     EXPECT_TRUE(GetRenderWidgetHostView()->HasFocus());
   }
 
   bool VerifyUi() override {
-    auto* browser_view = static_cast<BrowserView*>(
-        BrowserWindow::FindBrowserWindowWithWebContents(
-            window_controller()->GetChildWebContents()));
-    auto* pip_frame_view = static_cast<PictureInPictureBrowserFrameView*>(
-        browser_view->browser_widget()->GetFrameView());
+    views::View* pip_frame_view = GetPipFrameView();
+    if (!pip_frame_view) {
+      return false;
+    }
 
+    // Keep the Browser-backed screenshot name from before the backend
+    // parameterization so its existing Skia Gold baseline still applies.
     const auto* const test_info =
         testing::UnitTest::GetInstance()->current_test_info();
-    return VerifyPixelUi(pip_frame_view, test_info->test_suite_name(),
-                         test_info->name()) != ui::test::ActionResult::kFailed;
+    const std::string_view test_suite_name =
+        base::SplitStringPiece(test_info->test_suite_name(), "/",
+                               base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL)
+            .back();
+    const std::string_view test_name =
+        base::SplitStringPiece(test_info->name(), "/", base::KEEP_WHITESPACE,
+                               base::SPLIT_WANT_ALL)
+            .front();
+    const std::string screenshot_name =
+        base::StrCat({test_name, standalone_enabled() ? "_Standalone" : ""});
+    return VerifyPixelUi(pip_frame_view, std::string(test_suite_name),
+                         screenshot_name) != ui::test::ActionResult::kFailed;
   }
 
   void WaitForUserDismissal() override {
-    BrowserWindowInterface* pip_browser =
-        GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
-            window_controller()->GetChildWebContents());
-    if (pip_browser) {
-      ui_test_utils::BrowserDestroyedObserver(pip_browser).Wait();
+    if (auto* pip_widget = GetPipWidget()) {
+      views::test::WidgetDestroyedWaiter(pip_widget).Wait();
     }
   }
 
@@ -195,7 +238,14 @@ class DocumentPictureInPicturePixelTest : public UiBrowserTest,
 
 }  // namespace
 
+INSTANTIATE_TEST_SUITE_P(All,
+                         DocumentPictureInPicturePixelTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "Standalone" : "BrowserBacked";
+                         });
+
 // Shows a blank document Picture-in-Picture window and verifies the UI.
-IN_PROC_BROWSER_TEST_F(DocumentPictureInPicturePixelTest, InvokeUi_default) {
+IN_PROC_BROWSER_TEST_P(DocumentPictureInPicturePixelTest, InvokeUi_default) {
   ShowAndVerifyUi();
 }
