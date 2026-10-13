@@ -321,7 +321,11 @@ TEST_F(StarboardAudioDecoderTest, PopulatesDrmInfoInSamples) {
                                                encryption_pattern);
   CHECK(decrypt_config);
 
-  const std::vector<uint8_t> buffer_data = {1, 2, 3, 4, 5};
+  // The subsamples above account for 1+2+3+4 = 10 bytes, and
+  // DecoderBufferAdapter replaces any buffer whose size does not match its
+  // subsamples with an end-of-stream buffer. The data must therefore be
+  // exactly 10 bytes for this test to exercise the DRM path at all.
+  const std::vector<uint8_t> buffer_data = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
   scoped_refptr<::media::DecoderBuffer> decoder_buffer =
       ::media::DecoderBuffer::CopyFrom(buffer_data);
   CHECK(decoder_buffer);
@@ -412,7 +416,11 @@ TEST_F(StarboardAudioDecoderTest, DoesNotPushToStarboardIfDrmKeyIsUnavailable) {
                                                encryption_pattern);
   CHECK(decrypt_config);
 
-  const std::vector<uint8_t> buffer_data = {1, 2, 3, 4, 5};
+  // The subsamples above account for 1+2+3+4 = 10 bytes, and
+  // DecoderBufferAdapter replaces any buffer whose size does not match its
+  // subsamples with an end-of-stream buffer. The data must therefore be
+  // exactly 10 bytes for this test to exercise the DRM path at all.
+  const std::vector<uint8_t> buffer_data = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
   scoped_refptr<::media::DecoderBuffer> decoder_buffer =
       ::media::DecoderBuffer::CopyFrom(buffer_data);
   CHECK(decoder_buffer);
@@ -455,7 +463,11 @@ TEST_F(StarboardAudioDecoderTest,
                                                encryption_pattern);
   CHECK(decrypt_config);
 
-  const std::vector<uint8_t> buffer_data = {1, 2, 3, 4, 5};
+  // The subsamples above account for 1+2+3+4 = 10 bytes, and
+  // DecoderBufferAdapter replaces any buffer whose size does not match its
+  // subsamples with an end-of-stream buffer. The data must therefore be
+  // exactly 10 bytes for this test to exercise the DRM path at all.
+  const std::vector<uint8_t> buffer_data = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
   scoped_refptr<::media::DecoderBuffer> decoder_buffer =
       ::media::DecoderBuffer::CopyFrom(buffer_data);
   CHECK(decoder_buffer);
