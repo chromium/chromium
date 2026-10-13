@@ -638,6 +638,247 @@ TEST_F(OccludedWidgetInputProtectorTest,
       key_event, *view));
 }
 
+TEST_F(OccludedWidgetInputProtectorTest,
+       ShouldBlockNonLocatedEvent_FullyOccludedByAdjacentWidgets) {
+  constexpr gfx::Rect kAot1WindowBounds(100, 100, 100, 100);
+  auto aot_widget_1 = CreateWidgetWithZOrder(ui::ZOrderLevel::kFloatingWindow);
+  aot_widget_1->SetBounds(kAot1WindowBounds);
+  aot_widget_1->Show();
+  WidgetVisibleWaiter(aot_widget_1.get()).Wait();
+  const gfx::Rect aot1_bounds =
+      aot_widget_1->GetNonDecoratedClientAreaBoundsInScreen();
+
+  // Shift the second AOT window horizontally by the client area width of
+  // `aot_widget_1` (`aot1_bounds.width()`) so their client areas touch edge to
+  // edge without a gap from the window frame borders.
+  const gfx::Rect aot2_window_bounds(
+      gfx::Point(kAot1WindowBounds.x() + aot1_bounds.width(),
+                 kAot1WindowBounds.y()),
+      kAot1WindowBounds.size());
+
+  // Create a normal widget spanning the combined bounds of both AOT widgets so
+  // `aot_widget_1` covers its exact left half.
+  auto normal_widget =
+      CreateWidgetWithZOrder(ui::ZOrderLevel::kNormal, false,
+                             /*use_input_protected_view=*/false);
+  normal_widget->SetBounds(
+      gfx::UnionRects(kAot1WindowBounds, aot2_window_bounds));
+  normal_widget->EnableInputEventActivationProtection();
+  normal_widget->Show();
+  WidgetVisibleWaiter(normal_widget.get()).Wait();
+  View* view = normal_widget->GetClientContentsView();
+  const gfx::Rect view_bounds = view->GetBoundsInScreen();
+
+  ui::KeyEvent key_event(ui::EventType::kKeyPressed, ui::VKEY_A, 0);
+
+  // With only the left half covered, `view` is only partially occluded and key
+  // events are allowed.
+  EXPECT_FALSE(aot1_bounds.Contains(view_bounds));
+  EXPECT_TRUE(aot1_bounds.Intersects(view_bounds));
+  EXPECT_FALSE(OccludedWidgetInputProtector::GetInstance()->ShouldBlockEvent(
+      key_event, *view));
+
+  // Show the second AOT widget covering the right half.
+  auto aot_widget_2 = CreateWidgetWithZOrder(ui::ZOrderLevel::kFloatingWindow);
+  aot_widget_2->SetBounds(aot2_window_bounds);
+  aot_widget_2->Show();
+  WidgetVisibleWaiter(aot_widget_2.get()).Wait();
+  const gfx::Rect aot2_bounds =
+      aot_widget_2->GetNonDecoratedClientAreaBoundsInScreen();
+
+  // Verify geometric assumptions: the two AOT widgets do not overlap each
+  // other, are directly adjacent edge to edge, neither contains `view_bounds`
+  // on its own, and their union equals `view_bounds`.
+  EXPECT_FALSE(aot1_bounds.Intersects(aot2_bounds));
+  EXPECT_EQ(aot1_bounds.right(), aot2_bounds.x());
+  EXPECT_FALSE(aot2_bounds.Contains(view_bounds));
+  EXPECT_TRUE(aot2_bounds.Intersects(view_bounds));
+  EXPECT_EQ(gfx::UnionRects(aot1_bounds, aot2_bounds), view_bounds);
+
+  // Key event is now blocked because the two adjacent AOT widgets jointly
+  // fully occlude `view_bounds`.
+  EXPECT_TRUE(OccludedWidgetInputProtector::GetInstance()->ShouldBlockEvent(
+      key_event, *view));
+}
+
+TEST_F(OccludedWidgetInputProtectorTest,
+       ShouldBlockNonLocatedEvent_FullyOccludedByOverlappingWidgets) {
+  constexpr gfx::Rect kAot1WindowBounds(100, 100, 100, 100);
+  auto aot_widget_1 = CreateWidgetWithZOrder(ui::ZOrderLevel::kFloatingWindow);
+  aot_widget_1->SetBounds(kAot1WindowBounds);
+  aot_widget_1->Show();
+  WidgetVisibleWaiter(aot_widget_1.get()).Wait();
+  const gfx::Rect aot1_bounds =
+      aot_widget_1->GetNonDecoratedClientAreaBoundsInScreen();
+
+  // Shift the second AOT widget by half of `aot1_bounds.width()` so the two
+  // client areas overlap in the middle.
+  const gfx::Rect aot2_window_bounds(
+      gfx::Point(kAot1WindowBounds.x() + aot1_bounds.width() / 2,
+                 kAot1WindowBounds.y()),
+      kAot1WindowBounds.size());
+  auto aot_widget_2 = CreateWidgetWithZOrder(ui::ZOrderLevel::kFloatingWindow);
+  aot_widget_2->SetBounds(aot2_window_bounds);
+  aot_widget_2->Show();
+  WidgetVisibleWaiter(aot_widget_2.get()).Wait();
+  const gfx::Rect aot2_bounds =
+      aot_widget_2->GetNonDecoratedClientAreaBoundsInScreen();
+
+  // Create a normal widget spanning the combined bounds of both AOT widgets.
+  auto normal_widget =
+      CreateWidgetWithZOrder(ui::ZOrderLevel::kNormal, false,
+                             /*use_input_protected_view=*/false);
+  normal_widget->SetBounds(
+      gfx::UnionRects(kAot1WindowBounds, aot2_window_bounds));
+  normal_widget->EnableInputEventActivationProtection();
+  normal_widget->Show();
+  WidgetVisibleWaiter(normal_widget.get()).Wait();
+  View* view = normal_widget->GetClientContentsView();
+  const gfx::Rect view_bounds = view->GetBoundsInScreen();
+
+  // Verify geometric assumptions: the two AOT widgets overlap in the middle,
+  // neither contains `view_bounds` alone, and their union equals `view_bounds`.
+  EXPECT_TRUE(aot1_bounds.Intersects(aot2_bounds));
+  EXPECT_FALSE(aot1_bounds.Contains(view_bounds));
+  EXPECT_FALSE(aot2_bounds.Contains(view_bounds));
+  EXPECT_EQ(gfx::UnionRects(aot1_bounds, aot2_bounds), view_bounds);
+
+  ui::KeyEvent key_event(ui::EventType::kKeyPressed, ui::VKEY_A, 0);
+  EXPECT_TRUE(OccludedWidgetInputProtector::GetInstance()->ShouldBlockEvent(
+      key_event, *view));
+}
+
+TEST_F(OccludedWidgetInputProtectorTest,
+       ShouldNotBlockNonLocatedEvent_GapBetweenWidgets) {
+  constexpr gfx::Rect kAot1WindowBounds(100, 100, 100, 100);
+  auto aot_widget_1 = CreateWidgetWithZOrder(ui::ZOrderLevel::kFloatingWindow);
+  aot_widget_1->SetBounds(kAot1WindowBounds);
+  aot_widget_1->Show();
+  WidgetVisibleWaiter(aot_widget_1.get()).Wait();
+  const gfx::Rect aot1_bounds =
+      aot_widget_1->GetNonDecoratedClientAreaBoundsInScreen();
+
+  // Shift the second AOT widget by `aot1_bounds.width() + 10` so the two AOT
+  // widgets leave a 10px unoccluded gap between their client areas.
+  const gfx::Rect aot2_window_bounds(
+      gfx::Point(kAot1WindowBounds.x() + aot1_bounds.width() + 10,
+                 kAot1WindowBounds.y()),
+      kAot1WindowBounds.size());
+  auto aot_widget_2 = CreateWidgetWithZOrder(ui::ZOrderLevel::kFloatingWindow);
+  aot_widget_2->SetBounds(aot2_window_bounds);
+  aot_widget_2->Show();
+  WidgetVisibleWaiter(aot_widget_2.get()).Wait();
+  const gfx::Rect aot2_bounds =
+      aot_widget_2->GetNonDecoratedClientAreaBoundsInScreen();
+
+  // Create a normal widget spanning the combined bounds of both AOT widgets.
+  auto normal_widget =
+      CreateWidgetWithZOrder(ui::ZOrderLevel::kNormal, false,
+                             /*use_input_protected_view=*/false);
+  normal_widget->SetBounds(
+      gfx::UnionRects(kAot1WindowBounds, aot2_window_bounds));
+  normal_widget->EnableInputEventActivationProtection();
+  normal_widget->Show();
+  WidgetVisibleWaiter(normal_widget.get()).Wait();
+  View* view = normal_widget->GetClientContentsView();
+  const gfx::Rect view_bounds = view->GetBoundsInScreen();
+
+  // Verify geometric assumptions: the two AOT widgets do not intersect and have
+  // a gap between them (`aot1_bounds.right() < aot2_bounds.x()`), even though
+  // their bounding rect (`gfx::UnionRects`) equals `view_bounds`.
+  EXPECT_FALSE(aot1_bounds.Intersects(aot2_bounds));
+  EXPECT_LT(aot1_bounds.right(), aot2_bounds.x());
+  EXPECT_EQ(gfx::UnionRects(aot1_bounds, aot2_bounds), view_bounds);
+
+  ui::KeyEvent key_event(ui::EventType::kKeyPressed, ui::VKEY_A, 0);
+
+  // Not blocked because `view_bounds` is not fully covered by the region union
+  // due to the unoccluded gap between the two AOT widgets.
+  EXPECT_FALSE(OccludedWidgetInputProtector::GetInstance()->ShouldBlockEvent(
+      key_event, *view));
+}
+
+TEST_F(OccludedWidgetInputProtectorTest,
+       ShouldBlockNonLocatedEvent_FullyOccludedByLiveAndHistorical) {
+  constexpr gfx::Rect kAot1WindowBounds(100, 100, 100, 100);
+  auto aot_widget_1 = CreateWidgetWithZOrder(ui::ZOrderLevel::kFloatingWindow);
+  aot_widget_1->SetBounds(kAot1WindowBounds);
+  aot_widget_1->Show();
+  WidgetVisibleWaiter(aot_widget_1.get()).Wait();
+  const gfx::Rect aot1_bounds =
+      aot_widget_1->GetNonDecoratedClientAreaBoundsInScreen();
+
+  // Place `aot_widget_2` shifted horizontally by `aot1_bounds.width()` so the
+  // two AOT client areas sit directly side by side without a gap between their
+  // window frames.
+  const gfx::Rect aot2_window_bounds(
+      gfx::Point(kAot1WindowBounds.x() + aot1_bounds.width(),
+                 kAot1WindowBounds.y()),
+      kAot1WindowBounds.size());
+  auto aot_widget_2 = CreateWidgetWithZOrder(ui::ZOrderLevel::kFloatingWindow);
+  aot_widget_2->SetBounds(aot2_window_bounds);
+  aot_widget_2->Show();
+  WidgetVisibleWaiter(aot_widget_2.get()).Wait();
+  const gfx::Rect aot2_bounds =
+      aot_widget_2->GetNonDecoratedClientAreaBoundsInScreen();
+
+  // Create a normal widget spanning the combined bounds of both AOT widgets so
+  // `aot_widget_1` covers its left half and `aot_widget_2` covers its right
+  // half.
+  auto normal_widget =
+      CreateWidgetWithZOrder(ui::ZOrderLevel::kNormal, false,
+                             /*use_input_protected_view=*/false);
+  normal_widget->SetBounds(
+      gfx::UnionRects(kAot1WindowBounds, aot2_window_bounds));
+  normal_widget->EnableInputEventActivationProtection();
+  normal_widget->Show();
+  WidgetVisibleWaiter(normal_widget.get()).Wait();
+  View* view = normal_widget->GetClientContentsView();
+  const gfx::Rect view_bounds = view->GetBoundsInScreen();
+
+  // Clear any historical records from initial `Show()`.
+  FastForwardBy(GetDoubleClickInterval() + base::Milliseconds(1));
+  PruneCachedOcclusionHistory();
+  ASSERT_TRUE(occlusion_history().empty());
+
+  ui::KeyEvent key_event(ui::EventType::kKeyPressed, ui::VKEY_A, 0);
+  EXPECT_TRUE(OccludedWidgetInputProtector::GetInstance()->ShouldBlockEvent(
+      key_event, *view));
+
+  // Hide only `aot_widget_1` while `aot_widget_2` remains visible.
+  aot_widget_1->Hide();
+  WidgetVisibleWaiter(aot_widget_1.get()).WaitUntilInvisible();
+
+  // Verify assumptions: `aot1_bounds` (left half) is now in
+  // `occlusion_history()` and `aot2_bounds` (right half) remains in
+  // `always_on_top_widgets()`. They do not overlap, are directly adjacent,
+  // neither contains `view_bounds` alone, and their union equals `view_bounds`.
+  ASSERT_EQ(always_on_top_widgets().size(), 1u);
+  ASSERT_EQ(occlusion_history().size(), 1u);
+  const gfx::Rect historical_bounds = occlusion_history().front().bounds;
+  const gfx::Rect live_bounds =
+      aot_widget_2->GetNonDecoratedClientAreaBoundsInScreen();
+  EXPECT_EQ(historical_bounds, aot1_bounds);
+  EXPECT_EQ(live_bounds, aot2_bounds);
+  EXPECT_FALSE(historical_bounds.Intersects(live_bounds));
+  EXPECT_EQ(historical_bounds.right(), live_bounds.x());
+  EXPECT_FALSE(historical_bounds.Contains(view_bounds));
+  EXPECT_FALSE(live_bounds.Contains(view_bounds));
+  EXPECT_EQ(gfx::UnionRects(historical_bounds, live_bounds), view_bounds);
+
+  // During the cooldown after hiding `aot_widget_1`, the historical left half
+  // and live right half jointly cover `view_bounds` in full, so the key event
+  // remains blocked.
+  EXPECT_TRUE(OccludedWidgetInputProtector::GetInstance()->ShouldBlockEvent(
+      key_event, *view));
+
+  // Once the historical record expires, only the live right half remains (half
+  // coverage), so the key event is allowed.
+  FastForwardBy(GetDoubleClickInterval() + base::Milliseconds(1));
+  EXPECT_FALSE(OccludedWidgetInputProtector::GetInstance()->ShouldBlockEvent(
+      key_event, *view));
+}
+
 TEST_F(OccludedWidgetInputProtectorTest, ShouldBlockEvent_TrackedWidget) {
   const gfx::Rect kBounds(0, 0, 100, 100);
   auto aot_widget = CreateWidgetWithZOrder(ui::ZOrderLevel::kFloatingWindow);

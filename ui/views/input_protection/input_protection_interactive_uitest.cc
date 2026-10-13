@@ -423,6 +423,240 @@ TEST_F(InputProtectionInteractiveUiTest, FullyOccludedKeyEventsBlocked) {
                                          primary_click_count()));
 }
 
+// Verifies that when two non overlapping, adjacent Always-On-Top windows
+// jointly cover an entire element (without either window containing the
+// element on its own), key presses are blocked both while the AOT windows are
+// visible and during the historical occlusion cooldown after they are hidden.
+TEST_F(InputProtectionInteractiveUiTest, AdjacentAotWindowsBlockKeyEvents) {
+  const gfx::Rect left_half(0, 0, kButtonSize.width() / 2,
+                            kButtonSize.height());
+  const gfx::Rect right_half(
+      left_half.top_right(),
+      gfx::Size(kButtonSize.width() - left_half.width(), left_half.height()));
+
+  RunTestSequence(
+      EnableInputEventActivationProtection(),
+      AdvancePastInputProtectionInterval(),
+      // Cover only the left half of the button with the first AOT window.
+      OccludeRectWithAotWindow(kPrimaryButtonId, left_half),
+      WithView(kPrimaryButtonId,
+               [this](View* view) {
+                 ASSERT_EQ(aot_widgets_.size(), 1u);
+                 const gfx::Rect view_bounds = view->GetBoundsInScreen();
+                 const gfx::Rect aot1_bounds =
+                     aot_widgets_[0]->GetNonDecoratedClientAreaBoundsInScreen();
+                 // Verify geometric assumptions: the first AOT window only
+                 // partially overlaps `view_bounds` and does not contain it.
+                 EXPECT_TRUE(aot1_bounds.Intersects(view_bounds));
+                 EXPECT_FALSE(aot1_bounds.Contains(view_bounds));
+               }),
+      ActivateSurface(kPrimaryButtonId), FocusElement(kPrimaryButtonId),
+      // With only the left half covered, key events are allowed.
+      KeyPressAndReleaseExpectingAllowed(kPrimaryButtonId, ui::VKEY_SPACE,
+                                         primary_click_count()),
+      AdvancePastInputProtectionInterval(),
+      // Cover the right half of the button with a second, non overlapping
+      // adjacent AOT window.
+      OccludeRectWithAotWindow(kPrimaryButtonId, right_half),
+      WithView(kPrimaryButtonId,
+               [this](View* view) {
+                 ASSERT_EQ(aot_widgets_.size(), 2u);
+                 const gfx::Rect view_bounds = view->GetBoundsInScreen();
+                 const gfx::Rect aot1_bounds =
+                     aot_widgets_[0]->GetNonDecoratedClientAreaBoundsInScreen();
+                 const gfx::Rect aot2_bounds =
+                     aot_widgets_[1]->GetNonDecoratedClientAreaBoundsInScreen();
+                 // Verify geometric assumptions: the two AOT windows do not
+                 // overlap each other, are directly adjacent edge to edge,
+                 // neither contains `view_bounds` alone, and their bounding
+                 // rect (`gfx::UnionRects`) contains `view_bounds`.
+                 EXPECT_FALSE(aot1_bounds.Intersects(aot2_bounds));
+                 EXPECT_EQ(aot1_bounds.right(), aot2_bounds.x());
+                 EXPECT_FALSE(aot1_bounds.Contains(view_bounds));
+                 EXPECT_FALSE(aot2_bounds.Contains(view_bounds));
+                 EXPECT_TRUE(gfx::UnionRects(aot1_bounds, aot2_bounds)
+                                 .Contains(view_bounds));
+               }),
+      ActivateSurface(kPrimaryButtonId), FocusElement(kPrimaryButtonId),
+      // Together the two AOT windows fully cover the button, blocking key
+      // events.
+      KeyPressAndReleaseExpectingBlocked(kPrimaryButtonId, ui::VKEY_SPACE,
+                                         primary_click_count()),
+      HideAotWindows(),
+      // Immediately after dismissal, the two historical occlusion rects still
+      // jointly cover the entire button and block key events.
+      KeyPressAndReleaseExpectingBlocked(kPrimaryButtonId, ui::VKEY_SPACE,
+                                         primary_click_count()),
+      AdvancePastInputProtectionInterval(),
+      // After the historical occlusion cooldown expires, key presses succeed.
+      KeyPressAndReleaseExpectingAllowed(kPrimaryButtonId, ui::VKEY_SPACE,
+                                         primary_click_count()));
+}
+
+// Verifies that when two overlapping Always-On-Top windows jointly cover an
+// entire element (without either window containing the element on its own), key
+// presses are blocked both while the AOT windows are visible and during the
+// historical occlusion cooldown after they are hidden.
+TEST_F(InputProtectionInteractiveUiTest, OverlappingAotWindowsBlockKeyEvents) {
+  const gfx::Rect left_two_thirds(0, 0, kButtonSize.width() * 2 / 3,
+                                  kButtonSize.height());
+  const gfx::Rect right_two_thirds(
+      gfx::Point(kButtonSize.width() - left_two_thirds.width(),
+                 left_two_thirds.y()),
+      left_two_thirds.size());
+
+  RunTestSequence(
+      EnableInputEventActivationProtection(),
+      AdvancePastInputProtectionInterval(),
+      // Cover the left two thirds of the button with the first AOT window.
+      OccludeRectWithAotWindow(kPrimaryButtonId, left_two_thirds),
+      WithView(kPrimaryButtonId,
+               [this](View* view) {
+                 ASSERT_EQ(aot_widgets_.size(), 1u);
+                 const gfx::Rect view_bounds = view->GetBoundsInScreen();
+                 const gfx::Rect aot1_bounds =
+                     aot_widgets_[0]->GetNonDecoratedClientAreaBoundsInScreen();
+                 // Verify geometric assumptions: the first AOT window only
+                 // partially overlaps `view_bounds` and does not contain it.
+                 EXPECT_TRUE(aot1_bounds.Intersects(view_bounds));
+                 EXPECT_FALSE(aot1_bounds.Contains(view_bounds));
+               }),
+      ActivateSurface(kPrimaryButtonId), FocusElement(kPrimaryButtonId),
+      // With only the left two thirds covered, key events are allowed.
+      KeyPressAndReleaseExpectingAllowed(kPrimaryButtonId, ui::VKEY_SPACE,
+                                         primary_click_count()),
+      AdvancePastInputProtectionInterval(),
+      // Cover the right two thirds of the button with a second AOT window that
+      // overlaps the first AOT window in the middle.
+      OccludeRectWithAotWindow(kPrimaryButtonId, right_two_thirds),
+      WithView(kPrimaryButtonId,
+               [this](View* view) {
+                 ASSERT_EQ(aot_widgets_.size(), 2u);
+                 const gfx::Rect view_bounds = view->GetBoundsInScreen();
+                 const gfx::Rect aot1_bounds =
+                     aot_widgets_[0]->GetNonDecoratedClientAreaBoundsInScreen();
+                 const gfx::Rect aot2_bounds =
+                     aot_widgets_[1]->GetNonDecoratedClientAreaBoundsInScreen();
+                 // Verify geometric assumptions: the two AOT windows overlap in
+                 // the middle, neither contains `view_bounds` alone, and their
+                 // bounding rect (`gfx::UnionRects`) contains `view_bounds`.
+                 EXPECT_TRUE(aot1_bounds.Intersects(aot2_bounds));
+                 EXPECT_FALSE(aot1_bounds.Contains(view_bounds));
+                 EXPECT_FALSE(aot2_bounds.Contains(view_bounds));
+                 EXPECT_TRUE(gfx::UnionRects(aot1_bounds, aot2_bounds)
+                                 .Contains(view_bounds));
+               }),
+      ActivateSurface(kPrimaryButtonId), FocusElement(kPrimaryButtonId),
+      // Together the two overlapping AOT windows fully cover the button,
+      // blocking key events.
+      KeyPressAndReleaseExpectingBlocked(kPrimaryButtonId, ui::VKEY_SPACE,
+                                         primary_click_count()),
+      HideAotWindows(),
+      // Immediately after dismissal, the two historical occlusion rects still
+      // jointly cover the entire button and block key events.
+      KeyPressAndReleaseExpectingBlocked(kPrimaryButtonId, ui::VKEY_SPACE,
+                                         primary_click_count()),
+      AdvancePastInputProtectionInterval(),
+      // After the historical occlusion cooldown expires, key presses succeed.
+      KeyPressAndReleaseExpectingAllowed(kPrimaryButtonId, ui::VKEY_SPACE,
+                                         primary_click_count()));
+}
+
+// Verifies that when two Always-On-Top windows cover the left and right sides
+// of an element with an unoccluded gap between them, key presses are allowed
+// (even though the bounding rect of the two AOT windows contains the element).
+TEST_F(InputProtectionInteractiveUiTest, GapBetweenAotWindowsAllowsKeyEvents) {
+  const gfx::Rect left_third(0, 0, kButtonSize.width() / 3,
+                             kButtonSize.height());
+  const gfx::Rect right_third(
+      gfx::Point(kButtonSize.width() - left_third.width(), left_third.y()),
+      left_third.size());
+
+  RunTestSequence(
+      EnableInputEventActivationProtection(),
+      AdvancePastInputProtectionInterval(),
+      OccludeRectWithAotWindow(kPrimaryButtonId, left_third),
+      OccludeRectWithAotWindow(kPrimaryButtonId, right_third),
+      WithView(kPrimaryButtonId,
+               [this](View* view) {
+                 ASSERT_EQ(aot_widgets_.size(), 2u);
+                 const gfx::Rect view_bounds = view->GetBoundsInScreen();
+                 const gfx::Rect aot1_bounds =
+                     aot_widgets_[0]->GetNonDecoratedClientAreaBoundsInScreen();
+                 const gfx::Rect aot2_bounds =
+                     aot_widgets_[1]->GetNonDecoratedClientAreaBoundsInScreen();
+                 // Verify geometric assumptions: the two AOT windows do not
+                 // intersect and leave an unoccluded gap in the middle, even
+                 // though their bounding rect (`gfx::UnionRects`) contains
+                 // `view_bounds`.
+                 EXPECT_FALSE(aot1_bounds.Intersects(aot2_bounds));
+                 EXPECT_LT(aot1_bounds.right(), aot2_bounds.x());
+                 EXPECT_TRUE(gfx::UnionRects(aot1_bounds, aot2_bounds)
+                                 .Contains(view_bounds));
+               }),
+      ActivateSurface(kPrimaryButtonId), FocusElement(kPrimaryButtonId),
+      KeyPressAndReleaseExpectingAllowed(kPrimaryButtonId, ui::VKEY_SPACE,
+                                         primary_click_count()));
+}
+
+// Verifies that when one Always-On-Top window is hidden (recording historical
+// occlusion over half of an element) and a second visible Always-On-Top window
+// covers the remaining half, key presses are blocked during the cooldown of the
+// first window (while historical and visible occlusion jointly cover the
+// element) and are allowed once the cooldown expires (leaving only the
+// partially occluding visible window).
+TEST_F(InputProtectionInteractiveUiTest,
+       VisibleAndHistoricalAotWindowsBlockKeyEvents) {
+  const gfx::Rect left_half(0, 0, kButtonSize.width() / 2,
+                            kButtonSize.height());
+  const gfx::Rect right_half(
+      left_half.top_right(),
+      gfx::Size(kButtonSize.width() - left_half.width(), left_half.height()));
+
+  RunTestSequence(
+      EnableInputEventActivationProtection(),
+      AdvancePastInputProtectionInterval(),
+      // Show and hide the first AOT window so the left half is in historical
+      // occlusion.
+      OccludeRectWithAotWindow(kPrimaryButtonId, left_half), HideAotWindows(),
+      // Show the second AOT window covering the right half while the historical
+      // occlusion cooldown of the first window is still active.
+      OccludeRectWithAotWindow(kPrimaryButtonId, right_half),
+      WithView(kPrimaryButtonId,
+               [this](View* view) {
+                 ASSERT_EQ(aot_widgets_.size(), 2u);
+                 EXPECT_FALSE(aot_widgets_[0]->IsVisible());
+                 EXPECT_TRUE(aot_widgets_[1]->IsVisible());
+                 const gfx::Rect view_bounds = view->GetBoundsInScreen();
+                 const gfx::Rect aot1_bounds =
+                     aot_widgets_[0]->GetNonDecoratedClientAreaBoundsInScreen();
+                 const gfx::Rect aot2_bounds =
+                     aot_widgets_[1]->GetNonDecoratedClientAreaBoundsInScreen();
+                 // Verify geometric assumptions: the two AOT windows do not
+                 // overlap each other, are directly adjacent edge to edge,
+                 // neither contains `view_bounds` alone, and their bounding
+                 // rect (`gfx::UnionRects`) contains `view_bounds`.
+                 EXPECT_FALSE(aot1_bounds.Intersects(aot2_bounds));
+                 EXPECT_EQ(aot1_bounds.right(), aot2_bounds.x());
+                 EXPECT_FALSE(aot1_bounds.Contains(view_bounds));
+                 EXPECT_FALSE(aot2_bounds.Contains(view_bounds));
+                 EXPECT_TRUE(gfx::UnionRects(aot1_bounds, aot2_bounds)
+                                 .Contains(view_bounds));
+               }),
+      ActivateSurface(kPrimaryButtonId), FocusElement(kPrimaryButtonId),
+      // During the cooldown of the first AOT window, its historical occlusion
+      // and the visible second AOT window jointly cover the entire button,
+      // blocking key presses.
+      KeyPressAndReleaseExpectingBlocked(kPrimaryButtonId, ui::VKEY_SPACE,
+                                         primary_click_count()),
+      AdvancePastInputProtectionInterval(),
+      // Once the historical occlusion cooldown of the first AOT window expires,
+      // only the second AOT window remains (covering only the right half), so
+      // key presses are allowed.
+      KeyPressAndReleaseExpectingAllowed(kPrimaryButtonId, ui::VKEY_SPACE,
+                                         primary_click_count()));
+}
+
 // Verifies that partially occluding an element allows key presses by default,
 // but blocks them if an `InputProtectionSpecification` is installed and
 // intersects the occluded region.

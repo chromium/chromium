@@ -7,9 +7,11 @@
 #include <algorithm>
 
 #include "base/check.h"
+#include "third_party/skia/include/core/SkRegion.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/input_protection/input_protection_specification.h"
 #include "ui/views/metrics.h"
 #include "ui/views/view.h"
@@ -42,16 +44,21 @@ bool Occludes(const gfx::Rect& occluding_rect, const gfx::Point& target_point) {
   return occluding_rect.Contains(target_point);
 }
 
-// Returns true if the `occluding_rect` occludes any of the `target_rects`
-// (used for non-located events like keys). If `check_intersection` is true,
-// checks for intersection (partial occlusion); otherwise requires the
-// `occluding_rect` to fully contain the target rect.
+// Returns true if the `occluding_rect` intersects any of the `target_rects`
+// (used for partial occlusion of non-located events like keys).
 bool Occludes(const gfx::Rect& occluding_rect,
-              const std::vector<gfx::Rect>& target_rects,
-              bool check_intersection = true) {
+              const std::vector<gfx::Rect>& target_rects) {
   return std::ranges::any_of(target_rects, [&](const auto& rect) {
-    return check_intersection ? occluding_rect.Intersects(rect)
-                              : occluding_rect.Contains(rect);
+    return occluding_rect.Intersects(rect);
+  });
+}
+
+// Returns true if the `occluding_region` fully contains any of the
+// `target_rects` (used for full occlusion of non-located events like keys).
+bool Occludes(const SkRegion& occluding_region,
+              const std::vector<gfx::Rect>& target_rects) {
+  return std::ranges::any_of(target_rects, [&](const auto& rect) {
+    return occluding_region.contains(gfx::RectToSkIRect(rect));
   });
 }
 
@@ -123,24 +130,43 @@ bool OccludedWidgetInputProtector::CheckPointOcclusion(
 bool OccludedWidgetInputProtector::CheckRectsOcclusion(
     const std::vector<gfx::Rect>& target,
     bool check_intersection) const {
-  // Current (live) Occlusion: Block if any visible always-on-top widget
-  // currently occludes the target area.
+  std::vector<SkIRect> occluding_rects;
+
+  // Current (live) Occlusion: Protects non always-on-top widgets from visible
+  // always-on-top widgets. Block immediately when checking partial occlusion
+  // (`check_intersection`), otherwise collect intersecting bounds for the full
+  // occlusion check below.
   for (const auto& [widget, widget_bounds] : always_on_top_widgets_) {
-    if (Occludes(widget_bounds, target, check_intersection)) {
-      return true;
+    if (Occludes(widget_bounds, target)) {
+      if (check_intersection) {
+        return true;
+      }
+      occluding_rects.push_back(gfx::RectToSkIRect(widget_bounds));
     }
   }
 
   // Historical Occlusion: Protects non always-on-top widgets from programmatic
-  // state changes (e.g. pop-away attacks where an AOT window is hidden).
+  // state changes (e.g. pop-away attacks where an AOT window is hidden). Block
+  // immediately when checking partial occlusion (`check_intersection`),
+  // otherwise collect intersecting bounds for the full occlusion check below.
   for (const auto& record : occlusion_history_) {
-    if (!IsRecordExpired(record) &&
-        Occludes(record.bounds, target, check_intersection)) {
-      return true;
+    if (!IsRecordExpired(record) && Occludes(record.bounds, target)) {
+      if (check_intersection) {
+        return true;
+      }
+      occluding_rects.push_back(gfx::RectToSkIRect(record.bounds));
     }
   }
 
-  return false;
+  if (occluding_rects.empty()) {
+    return false;
+  }
+
+  // Full Occlusion: Block if the combined region of live and historical
+  // occluding bounds completely covers any target rect.
+  SkRegion occluding_region;
+  occluding_region.setRects(occluding_rects);
+  return Occludes(occluding_region, target);
 }
 
 bool OccludedWidgetInputProtector::ShouldBlockEvent(
