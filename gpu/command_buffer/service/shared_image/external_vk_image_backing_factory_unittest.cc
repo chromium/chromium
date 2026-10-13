@@ -302,11 +302,16 @@ TEST_F(ExternalVkImageBackingFactoryDawnTest, SkiaVulkanWrite_DawnRead) {
 
     wgpu::Texture src_texture(dawn_scoped_access->texture());
 
+    // Row pitch of the readback buffer. Dawn requires `bytesPerRow` for
+    // texture-to-buffer copies to be a multiple of 256.
+    constexpr uint32_t kBytesPerRow = 256;
+    const size_t buffer_size = kBytesPerRow * size.height();
+
     // Create a buffer to read back the texture data
     wgpu::BufferDescriptor dst_buffer_desc = {};
     dst_buffer_desc.usage =
         wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::MapRead;
-    dst_buffer_desc.size = 256 * size.height();
+    dst_buffer_desc.size = buffer_size;
     wgpu::Buffer dst_buffer = dawn_device_.CreateBuffer(&dst_buffer_desc);
 
     // Encode the buffer copy
@@ -318,7 +323,7 @@ TEST_F(ExternalVkImageBackingFactoryDawnTest, SkiaVulkanWrite_DawnRead) {
 
       wgpu::TexelCopyBufferInfo dst_copy_view = {};
       dst_copy_view.buffer = dst_buffer;
-      dst_copy_view.layout.bytesPerRow = 256;
+      dst_copy_view.layout.bytesPerRow = kBytesPerRow;
       dst_copy_view.layout.offset = 0;
 
       wgpu::Extent3D copy_extent = {static_cast<uint32_t>(size.width()),
@@ -332,12 +337,11 @@ TEST_F(ExternalVkImageBackingFactoryDawnTest, SkiaVulkanWrite_DawnRead) {
     queue.Submit(1, &commands);
 
     // Map the buffer to read back data
-    wgpu::FutureWaitInfo wait_info{
-        dst_buffer.MapAsync(wgpu::MapMode::Read, 0, 256 * size.height(),
-                            wgpu::CallbackMode::WaitAnyOnly,
-                            [](wgpu::MapAsyncStatus status, wgpu::StringView) {
-                              ASSERT_EQ(status, wgpu::MapAsyncStatus::Success);
-                            })};
+    wgpu::FutureWaitInfo wait_info{dst_buffer.MapAsync(
+        wgpu::MapMode::Read, 0, buffer_size, wgpu::CallbackMode::WaitAnyOnly,
+        [](wgpu::MapAsyncStatus status, wgpu::StringView) {
+          ASSERT_EQ(status, wgpu::MapAsyncStatus::Success);
+        })};
 
     wgpu::WaitStatus status =
         wgpu::Instance(dawn_instance_.Get())
@@ -345,21 +349,27 @@ TEST_F(ExternalVkImageBackingFactoryDawnTest, SkiaVulkanWrite_DawnRead) {
     DCHECK(status == wgpu::WaitStatus::Success);
 
     // Check the pixel data
-    const uint8_t* pixel_data =
-        static_cast<const uint8_t*>(dst_buffer.GetConstMappedRange());
+    const void* mapped_data = dst_buffer.GetConstMappedRange(0, buffer_size);
+    ASSERT_NE(mapped_data, nullptr);
+    // SAFETY: When GetConstMappedRange() is called with an explicit size, a
+    // non-null return value points to at least `buffer_size` bytes of valid
+    // data.
+    base::span<const uint8_t> pixel_data = UNSAFE_BUFFERS(
+        base::span(static_cast<const uint8_t*>(mapped_data), buffer_size));
     for (int h = 0; h < size.height(); ++h) {
       for (int w = 0; w < size.width(); ++w) {
-        const uint8_t* pixel = UNSAFE_TODO((pixel_data + h * 256) + w * 4);
+        base::span<const uint8_t> pixel = pixel_data.subspan(
+            static_cast<size_t>(h * kBytesPerRow + w * 4), 4u);
         if (h < size.height() / 2) {
           EXPECT_EQ(pixel[0], 0);
-          UNSAFE_TODO(EXPECT_EQ(pixel[1], 0));
-          UNSAFE_TODO(EXPECT_EQ(pixel[2], 255));
-          UNSAFE_TODO(EXPECT_EQ(pixel[3], 255));
+          EXPECT_EQ(pixel[1], 0);
+          EXPECT_EQ(pixel[2], 255);
+          EXPECT_EQ(pixel[3], 255);
         } else {
           EXPECT_EQ(pixel[0], 0);
-          UNSAFE_TODO(EXPECT_EQ(pixel[1], 255));
-          UNSAFE_TODO(EXPECT_EQ(pixel[2], 0));
-          UNSAFE_TODO(EXPECT_EQ(pixel[3], 255));
+          EXPECT_EQ(pixel[1], 255);
+          EXPECT_EQ(pixel[2], 0);
+          EXPECT_EQ(pixel[3], 255);
         }
       }
     }
