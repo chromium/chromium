@@ -24,11 +24,14 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** The bottom sheet content for the Restore Tabs promo. */
 @NullMarked
 public class RestoreTabsPromoSheetContent implements BottomSheetContent {
+    private static final BottomSheetType SHEET_TYPE = new BottomSheetType.Builder().build();
+
     private final View mContentView;
     private final PropertyModel mModel;
     private final BottomSheetController mBottomSheetController;
@@ -102,6 +105,11 @@ public class RestoreTabsPromoSheetContent implements BottomSheetContent {
 
     @Override
     public void destroy() {}
+
+    @Override
+    public BottomSheetType getSheetType() {
+        return SHEET_TYPE;
+    }
 
     @Override
     public int getPriority() {
