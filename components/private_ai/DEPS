@@ -16,6 +16,7 @@ include_rules = [
   "+services/network/public/mojom",
   "+third_party/boringssl",
   "+third_party/oak/chromium/proto",
+  "+components/base32",
   "+components/streaming_client",
 ]
 

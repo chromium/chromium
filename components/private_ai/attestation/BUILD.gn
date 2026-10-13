@@ -7,6 +7,8 @@ source_set("attestation") {
     "handler.h",
     "handler_impl.cc",
     "handler_impl.h",
+    "oak_ct_verifier.cc",
+    "oak_ct_verifier.h",
     "server_evidence.cc",
     "server_evidence.h",
     "server_verification_key.cc",
@@ -17,9 +19,13 @@ source_set("attestation") {
   ]
   deps = [
     "//base",
+    "//components/base32",
     "//components/private_ai:features",
     "//components/private_ai/common",
     "//crypto",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//services/network/public/mojom",
     "//third_party/oak:oak_proto",
     "//third_party/oak:oak_proto_extras",
     "//url",
@@ -30,6 +36,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "handler_impl_unittest.cc",
+    "oak_ct_verifier_unittest.cc",
     "server_verification_key_unittest.cc",
     "verification_key_utils_unittest.cc",
   ]
@@ -38,6 +45,10 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/private_ai:features",
     "//components/private_ai/common",
+    "//net",
+    "//net:test_support",
+    "//services/network:test_support",
+    "//services/network/public/mojom",
     "//testing/gtest",
     "//third_party/oak:oak_proto",
     "//third_party/oak:oak_proto_extras",
