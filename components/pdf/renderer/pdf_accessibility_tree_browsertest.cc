@@ -402,12 +402,15 @@ class PdfAccessibilityTreeTest : public content::RenderViewTest {
   // - `char_counts`: If specified, the number of characters in the text run at
   //   index i. Defaults to `kCharsPerWord` per run. Use this to give runs
   //   different weights when the amount of text per run matters.
+  // - `directions`: If specified, the text direction of the run at index i.
   void SetUpHeuristicAccessibilityTreeDetailed(
       const std::vector<float>& font_sizes,
       const std::vector<chrome_pdf::AccessibilityTextStyleInfo>& styles,
       const CustomCharData& custom_chars,
       const std::vector<gfx::RectF>& bounds = {},
-      const std::vector<uint32_t>& char_counts = {}) {
+      const std::vector<uint32_t>& char_counts = {},
+      const std::vector<chrome_pdf::AccessibilityTextDirection>& directions =
+          {}) {
     CreatePdfAccessibilityTree();
     CHECK(text_runs_.empty());
     for (size_t i = 0; i < font_sizes.size(); ++i) {
@@ -427,6 +430,9 @@ class PdfAccessibilityTreeTest : public content::RenderViewTest {
         run.len = char_counts[i];
       } else if (i < custom_chars.char_counts.size()) {
         run.len = custom_chars.char_counts[i];
+      }
+      if (i < directions.size()) {
+        run.direction = directions[i];
       }
       text_runs_.push_back(run);
     }
@@ -4701,6 +4707,100 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicGraphicsIgnoredWhenFlagDisabled) {
   for (size_t i = 0; i < page->GetChildCount(); ++i) {
     EXPECT_EQ(ax::mojom::Role::kParagraph, page->GetChildAtIndex(i)->GetRole());
   }
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicLineHelperRejectsBackwardXJump) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+
+  // Run 0 is in the right column, and Run 1 jumps backward horizontally to the
+  // left column on the same vertical line.
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{10.0f, 10.0f}, {normal_style, normal_style},
+      MakeCharVector({"RightColumnText", "LeftColumnText"}),
+      {gfx::RectF(300.0f, 200.0f, 100.0f, 15.0f),
+       gfx::RectF(50.0f, 200.0f, 100.0f, 15.0f)},
+      /*char_counts=*/{},
+      {chrome_pdf::AccessibilityTextDirection::kLeftToRight,
+       chrome_pdf::AccessibilityTextDirection::kLeftToRight});
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  // The backward-X jump prevents merging onto the same line, and disjoint
+  // column boundaries split them into separate paragraph blocks.
+  ASSERT_EQ(2u, page->GetChildCount());
+
+  const ui::AXNode* first_block = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, first_block);
+  EXPECT_EQ(ax::mojom::Role::kParagraph, first_block->GetRole());
+  ASSERT_EQ(1u, first_block->GetChildCount());
+  EXPECT_EQ("RightColumnText",
+            first_block->GetChildAtIndex(0u)->GetStringAttribute(
+                ax::mojom::StringAttribute::kName));
+
+  const ui::AXNode* second_block = page->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, second_block);
+  EXPECT_EQ(ax::mojom::Role::kParagraph, second_block->GetRole());
+  ASSERT_EQ(1u, second_block->GetChildCount());
+  EXPECT_EQ("LeftColumnText",
+            second_block->GetChildAtIndex(0u)->GetStringAttribute(
+                ax::mojom::StringAttribute::kName));
+}
+
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicLineHelperRejectsBackwardXJumpDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {}, {::features::kPdfAccessibilityHeuristicEnhancements,
+           chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{10.0f, 10.0f}, {normal_style, normal_style},
+      MakeCharVector({"RightColumnText", "LeftColumnText"}),
+      {gfx::RectF(300.0f, 200.0f, 100.0f, 15.0f),
+       gfx::RectF(50.0f, 200.0f, 100.0f, 15.0f)});
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  // Without heuristic enhancements, both runs are merged into a single block.
+  ASSERT_EQ(1u, page->GetChildCount());
+}
+
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicNonLeftToRightRunsKeepLineAndParagraph) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+
+  // Non-LTR runs (e.g. right-to-left) are not split by the left-to-right
+  // backward-X check.
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{10.0f, 10.0f}, {normal_style, normal_style},
+      MakeCharVector({"RtlFirst", "RtlSecond"}),
+      {gfx::RectF(200.0f, 208.0f, 80.0f, 7.0f),
+       gfx::RectF(100.0f, 208.0f, 80.0f, 7.0f)},
+      /*char_counts=*/{},
+      {chrome_pdf::AccessibilityTextDirection::kRightToLeft,
+       chrome_pdf::AccessibilityTextDirection::kRightToLeft});
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
 }
 
 class PdfAccessibilityTreeHeaderFooterRepetitionTest

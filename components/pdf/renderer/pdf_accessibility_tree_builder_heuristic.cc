@@ -213,6 +213,14 @@ bool DoBoundsOverlapOnLine(float top1,
   return coverage > kLineCoverageThreshold;
 }
 
+bool IsLeftToRightRun(const chrome_pdf::AccessibilityTextRunInfo& run) {
+  // `kNone` is assigned to single-character runs, whose direction cannot be
+  // inferred. Treat them as LTR, the default, like `PDFiumPage` does.
+  return run.direction ==
+             chrome_pdf::AccessibilityTextDirection::kLeftToRight ||
+         run.direction == chrome_pdf::AccessibilityTextDirection::kNone;
+}
+
 // This class is used as part of our heuristic to determine which text runs live
 // on the same "line".  As we process runs, we keep a weighted average of the
 // top and bottom coordinates of the line, and if a new run falls within that
@@ -258,6 +266,30 @@ class LineHelper {
     const auto& run_bounds = (*text_runs_)[run_index].bounds;
     return DoBoundsOverlapOnLine(line_top, line_height, run_bounds.y(),
                                  run_bounds.height());
+  }
+
+  // Returns whether the run at `run_index` is on the current line and
+  // continues in reading order from the preceding run.
+  bool ContinuesLineInReadingOrder(size_t run_index) const {
+    if (!IsRunOnSameLine(run_index)) {
+      return false;
+    }
+
+    if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
+      CHECK_GT(run_index, 0u);
+      const auto& run = (*text_runs_)[run_index];
+      const auto& prev_run = (*text_runs_)[run_index - 1];
+
+      // Reject backward-X jumps between left-to-right runs on the same
+      // horizontal band (e.g. across columns or from later authoring layers)
+      // from continuing the line.
+      if (IsLeftToRightRun(prev_run) && IsLeftToRightRun(run) &&
+          run.bounds.right() <= prev_run.bounds.x() + kComparisonEpsilon) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
  private:
@@ -1326,6 +1358,16 @@ bool BreakParagraphByLineSpacing(
     const chrome_pdf::AccessibilityTextRunInfo& current_run,
     const chrome_pdf::AccessibilityTextRunInfo& next_run,
     float paragraph_spacing_threshold) {
+  if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled() &&
+      IsLeftToRightRun(current_run) && IsLeftToRightRun(next_run)) {
+    // A backward X jump on the same vertical line indicates text emitted out
+    // of reading order across side-by-side frames, which breaks the paragraph.
+    if (AreRunsOnSameLine(current_run, next_run) &&
+        next_run.bounds.right() <=
+            current_run.bounds.x() + kComparisonEpsilon) {
+      return true;
+    }
+  }
 
   float line_spacing = fabsf(next_run.bounds.y() - current_run.bounds.y());
   if (paragraph_spacing_threshold > 0) {
@@ -1647,11 +1689,11 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
           inline_text_box_node->relative_bounds.bounds);
 
       if (text_run_index < builder_->text_runs().size() - 1) {
-        if (line_helper.IsRunOnSameLine(text_run_index + 1)) {
-          // The next run is on the same line.
+        if (line_helper.ContinuesLineInReadingOrder(text_run_index + 1)) {
+          // The next run continues on the same line in reading order.
           previous_on_line_node = inline_text_box_node;
         } else {
-          // The next run is on a new line.
+          // The next run is on a new line or out of reading order.
           previous_on_line_node = nullptr;
         }
       }
@@ -1912,11 +1954,11 @@ void PdfAccessibilityTreeBuilderHeuristic::AddTextToAXNode(
     line_helper.ProcessNextRun(text_run_index);
 
     if (text_run_index < builder_->text_runs().size() - 1) {
-      if (line_helper.IsRunOnSameLine(text_run_index + 1)) {
-        // The next run is on the same line.
+      if (line_helper.ContinuesLineInReadingOrder(text_run_index + 1)) {
+        // The next run continues on the same line in reading order.
         *previous_on_line_node = inline_text_box_node;
       } else {
-        // The next run is on a new line.
+        // The next run is on a new line or out of reading order.
         *previous_on_line_node = nullptr;
       }
     }
