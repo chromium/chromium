@@ -138,8 +138,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   // The default pref store should hold values that configure default browsing
   // behavior.
   registry->RegisterStringPref(prefs::kSupervisedUserId, std::string());
-  registry->RegisterDictionaryPref(prefs::kSupervisedUserManualHosts);
-  registry->RegisterDictionaryPref(prefs::kSupervisedUserManualURLs);
   registry->RegisterIntegerPref(prefs::kDefaultSupervisedUserFilteringBehavior,
                                 static_cast<int>(FilteringBehavior::kAllow));
   for (const char* pref : kCustodianInfoPrefs) {

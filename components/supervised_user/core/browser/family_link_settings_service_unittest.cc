@@ -481,21 +481,13 @@ TEST_F(FamilyLinkSettingsServiceTest, CheckDefaultValues) {
       prefs::kSkipParentApprovalToInstallExtensions, &value));
   EXPECT_FALSE(pref_store->GetValue(
       prefs::kDefaultSupervisedUserFilteringBehavior, &value));
-  EXPECT_FALSE(pref_store->GetValue(prefs::kSupervisedUserManualHosts, &value));
-  EXPECT_FALSE(pref_store->GetValue(prefs::kSupervisedUserManualURLs, &value));
 }
 
 class FamilyLinkSettingsServiceValuePropagationTest
     : public FamilyLinkSettingsServiceTest,
       public ::testing::WithParamInterface<ValuePropagationTestParam> {};
 
-using FamilyLinkSettingsServiceSimpleValuePropagationTest =
-    FamilyLinkSettingsServiceValuePropagationTest;
-using FamilyLinkSettingsServiceDictValuePropagationTest =
-    FamilyLinkSettingsServiceValuePropagationTest;
-
-TEST_P(FamilyLinkSettingsServiceSimpleValuePropagationTest,
-       CheckValuePropagation) {
+TEST_P(FamilyLinkSettingsServiceValuePropagationTest, CheckValuePropagation) {
   // Asserts that values are propagated to the pref store (simply copied).
   DeviceParentalControlsNoOpImpl device_parental_controls;
   scoped_refptr<SupervisedUserPrefStore> pref_store =
@@ -518,7 +510,7 @@ TEST_P(FamilyLinkSettingsServiceSimpleValuePropagationTest,
 
 INSTANTIATE_TEST_SUITE_P(
     ,
-    FamilyLinkSettingsServiceSimpleValuePropagationTest,
+    FamilyLinkSettingsServiceValuePropagationTest,
     testing::ValuesIn<ValuePropagationTestParam>({
         {"kSigninAllowed", supervised_user::kSigninAllowed,
          prefs::kSigninAllowed, []() { return base::Value(true); }},
@@ -536,60 +528,7 @@ INSTANTIATE_TEST_SUITE_P(
          []() { return base::Value(0); }},
     }),
     [](const testing::TestParamInfo<
-        FamilyLinkSettingsServiceSimpleValuePropagationTest::ParamType>& info) {
-      return info.param.test_name;
-    });
-
-TEST_P(FamilyLinkSettingsServiceDictValuePropagationTest,
-       CheckDictValuePropagation) {
-  // Asserts that values are propagated to the pref store (simply copied).
-  DeviceParentalControlsNoOpImpl device_parental_controls;
-  scoped_refptr<SupervisedUserPrefStore> pref_store =
-      new SupervisedUserPrefStore(&settings_service_, device_parental_controls);
-  StartSyncing(syncer::SyncDataList());
-
-  settings_service_.SetActive(true);
-
-  syncer::SyncChangeList change_list;
-  base::Value expected_value = GetParam().value_factory();
-  for (auto item : expected_value.GetDict()) {
-    change_list.emplace_back(
-        FROM_HERE, syncer::SyncChange::ACTION_ADD,
-        FamilyLinkSettingsService::CreateSyncDataForSetting(
-            FamilyLinkSettingsService::MakeSplitSettingKey(
-                GetParam().setting_name, item.first),
-            item.second.Clone()));
-  }
-  settings_service_.ProcessSyncChanges(FROM_HERE, change_list);
-
-  const base::Value* value = nullptr;
-  ASSERT_TRUE(pref_store->GetValue(GetParam().pref_name, &value));
-  EXPECT_EQ(*value, expected_value);
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    FamilyLinkSettingsServiceDictValuePropagationTest,
-    testing::ValuesIn<ValuePropagationTestParam>({
-        {"kSupervisedUserManualHosts",
-         supervised_user::kContentPackManualBehaviorHosts,
-         prefs::kSupervisedUserManualHosts,
-         []() {
-           base::DictValue dict;
-           dict.Set("example.com", true);
-           return base::Value(std::move(dict));
-         }},
-        {"kSupervisedUserManualURLs",
-         supervised_user::kContentPackManualBehaviorURLs,
-         prefs::kSupervisedUserManualURLs,
-         []() {
-           base::DictValue dict;
-           dict.Set("example.com", true);
-           return base::Value(std::move(dict));
-         }},
-    }),
-    [](const testing::TestParamInfo<
-        FamilyLinkSettingsServiceDictValuePropagationTest::ParamType>& info) {
+        FamilyLinkSettingsServiceValuePropagationTest::ParamType>& info) {
       return info.param.test_name;
     });
 

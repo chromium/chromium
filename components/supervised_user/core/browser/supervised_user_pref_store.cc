@@ -54,14 +54,6 @@ FamilyLinkSettingsPrefMappingEntry kFamilyLinkWebFilteringPrefMapping[] = {
         supervised_user::kContentPackDefaultFilteringBehavior,
         prefs::kDefaultSupervisedUserFilteringBehavior,
     },
-    {
-        supervised_user::kContentPackManualBehaviorHosts,
-        prefs::kSupervisedUserManualHosts,
-    },
-    {
-        supervised_user::kContentPackManualBehaviorURLs,
-        prefs::kSupervisedUserManualURLs,
-    },
 };
 
 }  // namespace

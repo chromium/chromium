@@ -139,10 +139,6 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
       Optional(static_cast<int>(
           enterprise_isolated_mode::IsolatedModeSetting::kDisabled)));
 
-  // kSupervisedModeManualHosts does not have a hardcoded value.
-  EXPECT_FALSE(fixture.changed_prefs()->FindDictByDottedPath(
-      prefs::kSupervisedUserManualHosts));
-
   EXPECT_FALSE(
       fixture.changed_prefs()
           ->FindBoolByDottedPath(policy::policy_prefs::kForceGoogleSafeSearch)
@@ -172,19 +168,6 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
   fixture.changed_prefs()->clear();
   service_.SetActive(true);
   EXPECT_EQ(0u, fixture.changed_prefs()->size());
-
-  // kSupervisedModeManualHosts can be configured by the custodian.
-  base::DictValue hosts;
-  hosts.Set("example.com", true);
-  hosts.Set("moose.org", false);
-  service_.SetLocalSetting(supervised_user::kContentPackManualBehaviorHosts,
-                           hosts.Clone());
-  EXPECT_EQ(1u, fixture.changed_prefs()->size());
-
-  base::DictValue* manual_hosts = fixture.changed_prefs()->FindDictByDottedPath(
-      prefs::kSupervisedUserManualHosts);
-  ASSERT_TRUE(manual_hosts);
-  EXPECT_TRUE(*manual_hosts == hosts);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // The custodian can allow sites and apps to request permissions.

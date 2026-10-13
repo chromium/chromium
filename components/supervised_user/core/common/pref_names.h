@@ -79,7 +79,7 @@ inline constexpr char kSupervisedUserExtensionsMayRequestPermissions[] =
 // Whether the supervised user may approve extension permission requests, under
 // the updated supervised user extension handling flow.
 // If true extensions can be installed without parental approval, if false
-// the parent must grant approvoal on each installation.
+// the parent must grant approval on each installation.
 //
 // Only valid if supervised_user::
 // IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled() is true.
@@ -96,14 +96,6 @@ inline constexpr char kSupervisedUserApprovedExtensions[] =
 // The supervised user ID.
 // TODO(b/342097235): this pref is being deprecated.
 inline constexpr char kSupervisedUserId[] = "profile.managed_user_id";
-
-// Maps host names to whether the host is manually allowed or blocked.
-inline constexpr char kSupervisedUserManualHosts[] =
-    "profile.managed.manual_hosts";
-
-// Maps URLs to whether the URL is manually allowed or blocked.
-inline constexpr char kSupervisedUserManualURLs[] =
-    "profile.managed.manual_urls";
 
 // Integer pref to record the day id (number of days since origin of time) when
 // supervised user metrics were last recorded.
