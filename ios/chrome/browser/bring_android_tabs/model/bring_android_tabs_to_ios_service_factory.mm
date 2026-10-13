@@ -18,7 +18,6 @@
 // static
 BringAndroidTabsToIOSService*
 BringAndroidTabsToIOSServiceFactory::GetForProfile(ProfileIOS* profile) {
-  DCHECK(!profile->IsOffTheRecord());
   return GetInstance()->GetServiceForProfileAs<BringAndroidTabsToIOSService>(
       profile, /*create=*/true);
 }
@@ -39,14 +38,14 @@ BringAndroidTabsToIOSServiceFactory::GetInstance() {
 }
 
 BringAndroidTabsToIOSServiceFactory::BringAndroidTabsToIOSServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("BringAndroidTabsToIOSService") {}
-
-BringAndroidTabsToIOSServiceFactory::~BringAndroidTabsToIOSServiceFactory() {
+    : ProfileKeyedServiceFactoryIOS("BringAndroidTabsToIOSService") {
   DependsOn(
       segmentation_platform::SegmentationPlatformServiceFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(SessionSyncServiceFactory::GetInstance());
 }
+
+BringAndroidTabsToIOSServiceFactory::~BringAndroidTabsToIOSServiceFactory() {}
 
 void BringAndroidTabsToIOSServiceFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
@@ -57,6 +56,7 @@ void BringAndroidTabsToIOSServiceFactory::RegisterProfilePrefs(
 std::unique_ptr<KeyedService>
 BringAndroidTabsToIOSServiceFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
+  DCHECK(!profile->IsOffTheRecord());
   // SegmentationPlatform is required for BringYourOwnTabsIOS to work.
   if (!base::FeatureList::IsEnabled(
           segmentation_platform::features::kSegmentationPlatformFeature)) {
