@@ -11570,6 +11570,7 @@ from previous Chrome versions.
   <int value="-1030530357" label="PwaInstallUseBottomSheet:disabled"/>
   <int value="-1030513821" label="DetectedSourceLanguageOption:disabled"/>
   <int value="-1030243491" label="ScalableIphDebug:disabled"/>
+  <int value="-1030183141" label="AiSubscriptionAvatarRingFollowup:enabled"/>
   <int value="-1029920490" label="IdleTimeSpellChecking:enabled"/>
   <int value="-1029870247" label="LockTopControlsOnLargeTabletsV2:enabled"/>
   <int value="-1028733699" label="MacViewsWebUIDialogs:disabled"/>
@@ -20515,6 +20516,7 @@ from previous Chrome versions.
   <int value="1673776797"
       label="ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes:disabled"/>
   <int value="1673943701" label="UseSCContentSharingPicker:disabled"/>
+  <int value="1674774651" label="AiSubscriptionAvatarRingFollowup:disabled"/>
   <int value="1674803174"
       label="AddEduAccountFromAccountSettingsForSupervisedUsers:disabled"/>
   <int value="1675683700" label="PartitionVisitedLinkDatabase:enabled"/>

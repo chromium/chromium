@@ -54,6 +54,12 @@ inline constexpr char kAiModeEntryPointAlwaysNavigatesDescription[] =
     "If enabled, clicking aim button in omnibox always navigates directly to "
     "google.com/aimode.";
 
+inline constexpr char kAiSubscriptionAvatarRingFollowupName[] =
+    "AI Subscription Avatar Ring follow-up";
+inline constexpr char kAiSubscriptionAvatarRingFollowupDescription[] =
+    "Shows the AI subscription avatar decorations on more surfaces. Requires "
+    "#enable-ai-subscription-avatar-ring.";
+
 inline constexpr char kDynamicAiModeButtonName[] =
     "Omnibox Dynamic AI Mode Button";
 inline constexpr char kDynamicAiModeButtonDescription[] =

@@ -143,6 +143,11 @@
     "expiry_milestone": 175
   },
   {
+    "name": "ai-subscription-avatar-ring-followup",
+    "owners": [ "quacksort@google.com", "chrome-signin-team@google.com" ],
+    "expiry_milestone": 175
+  },
+  {
     "name": "ai-subscription-avatar-ring-ios",
     "owners": [
       "arthurmilchior@google.com",

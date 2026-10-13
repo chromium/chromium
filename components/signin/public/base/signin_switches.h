@@ -60,6 +60,11 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kAddSessionFallbackToPrimaryAccount);
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// Extends the AI subscription avatar decorations to more surfaces. Has no
+// effect unless `kEnableAiSubscriptionAvatarRing` is also enabled.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kAiSubscriptionAvatarRingFollowup);
+
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kAvoidAutoTriggerListAccountsOnStale);
 

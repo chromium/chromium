@@ -329,6 +329,21 @@
             ]
         }
     ],
+    "AiSubscriptionAvatarRingFollowupAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AiSubscriptionAvatarRingFollowup"
+                    ]
+                }
+            ]
+        }
+    ],
     "AiSubscriptionAvatarRingFollowupIOS": [
         {
             "platforms": [

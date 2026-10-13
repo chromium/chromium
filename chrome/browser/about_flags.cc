@@ -13784,6 +13784,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsMac | kOsWin | kOsLinux | kOsAndroid,
      FEATURE_VALUE_TYPE(switches::kEnableAiSubscriptionAvatarRing)},
 
+    {"ai-subscription-avatar-ring-followup",
+     flag_descriptions::kAiSubscriptionAvatarRingFollowupName,
+     flag_descriptions::kAiSubscriptionAvatarRingFollowupDescription,
+     kOsMac | kOsWin | kOsLinux | kOsAndroid,
+     FEATURE_VALUE_TYPE(switches::kAiSubscriptionAvatarRingFollowup)},
+
     {"force-ai-subscription-tier",
      flag_descriptions::kForceAiSubscriptionTierName,
      flag_descriptions::kForceAiSubscriptionTierDescription,
