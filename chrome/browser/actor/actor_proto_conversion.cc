@@ -1732,6 +1732,8 @@ void BuildActionsResultWithObservations(
     // TODO(crbug.com/434263095): We should probably avoid capturing
     // observations if an action fails with kUrlBlocked. That might be better
     // implemented by not putting the tab into the LastActedTabs set.
+    // TODO(b/565820285): Decide how to handle headless surfaces here: observe
+    // them, or skip them until headless observation is supported.
     TabInterface* tab = handle.Get();
     if (!tab) {
       apc::TabObservation* tab_observation = response->add_tabs();

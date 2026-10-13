@@ -1010,8 +1010,9 @@ TestTabState::TestTabState(content::WebContents* web_contents) {
       .WillByDefault(::testing::ReturnRef(user_data_host));
 
   tab_data = std::make_unique<ActorTabData>(&tab);
-  actor_surface = std::make_unique<ActorSurfaceImpl>(
-      ActorSurfaceHandle::CreateForTesting(), tab.GetHandle());
+  if (web_contents) {
+    actor_surface_tab_helper = std::make_unique<ActorSurfaceTabHelper>(tab);
+  }
 }
 
 TestTabState::~TestTabState() {

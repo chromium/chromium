@@ -21,6 +21,7 @@
 #include "base/unguessable_token.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
+#include "chrome/browser/actor/actor_surface_registry.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/ui/test_support/mock_actor_ui_tab_controller.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
@@ -812,6 +813,9 @@ class GlicExperimentalTriggeringCoordinatorWithTabTest
     ON_CALL(mock_tab_, GetUnownedUserDataHost())
         .WillByDefault(testing::ReturnRef(unowned_user_data_host_));
     instance_helper_ = std::make_unique<GlicInstanceHelper>(&mock_tab_);
+    actor::ActorKeyedServiceFactory::GetActorKeyedService(profile_)
+        ->GetSurfaceRegistry()
+        .OnTabCreated(mock_tab_);
     coordinator_->set_active_tab(&mock_tab_);
   }
 

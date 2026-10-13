@@ -16,6 +16,7 @@
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
+#include "chrome/browser/actor/actor_surface_registry.h"
 #include "chrome/browser/actor/actor_surface_tab_helper.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
@@ -31,6 +32,8 @@
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
@@ -135,10 +138,15 @@ class ActorTaskTest : public testing::Test {
     if (!tab.GetProfile()) {
       ON_CALL(tab, GetProfile).WillByDefault(::testing::Return(profile_.get()));
     }
+    registry().OnTabCreated(tab);
     ExpectTabAddedNotification(tab.GetHandle());
     AddTabToTask(tab, *task_);
     EXPECT_TRUE(task_->HasTab(tab.GetHandle()));
     EXPECT_TRUE(task_->GetTabs().contains(tab.GetHandle()));
+  }
+
+  ActorSurfaceRegistry& registry() {
+    return ActorKeyedService::Get(profile_.get())->GetSurfaceRegistry();
   }
 
   void RemoveTabAndVerify(tabs::TabInterface& tab) {
@@ -859,7 +867,7 @@ TEST_F(ActorTaskTest, AddActorSurface_RejectsNonExistentSurface) {
   EXPECT_EQ(result->code, mojom::ActionResultCode::kTabWentAway);
 }
 
-TEST_F(ActorTaskTest, AddActorSurface_RoutesToAddTabForTabBackedSurface) {
+TEST_F(ActorTaskTest, AddActorSurface_RejectsCrossProfileSurface) {
   std::unique_ptr<tabs::MockTabInterface> cross_profile_tab =
       CreateCrossProfileMockTab();
   ::ui::UnownedUserDataHost user_data_host;
@@ -870,8 +878,7 @@ TEST_F(ActorTaskTest, AddActorSurface_RoutesToAddTabForTabBackedSurface) {
       ActorSurfaceHandle::From(cross_profile_tab->GetHandle());
   ASSERT_FALSE(actor_surface_handle.is_null());
 
-  // AddTab() rejects the cross-profile tab backing the surface, which shows
-  // AddActorSurface() resolved and forwarded the surface's tab.
+  // The surface exists but isn't in this profile's ActorSurfaceRegistry.
   base::test::TestFuture<mojom::ActionResultPtr> add_actor_surface_future;
   task_->AddActorSurface(actor_surface_handle,
                          /*stop_task_on_detach=*/true,
@@ -893,6 +900,77 @@ TEST_F(ActorTaskTest, ObserveTabOnce_RejectsNonExistentAndCrossProfileTab) {
   task_->ObserveTabOnce(cross_profile_tab->GetHandle());
   EXPECT_FALSE(
       task_->GetLastActedTabs().contains(cross_profile_tab->GetHandle()));
+}
+
+// Uses a mock tab that has a real WebContents and a registered surface, as
+// real tabs do.
+class ActorTaskSurfaceTest : public ActorTaskTest {
+ public:
+  void SetUp() override {
+    ActorTaskTest::SetUp();
+    web_contents_ = content::WebContentsTester::CreateTestWebContents(
+        profile_.get(), nullptr);
+    ON_CALL(mock_tab_, GetContents)
+        .WillByDefault(::testing::Return(web_contents_.get()));
+    ON_CALL(mock_tab_, GetProfile)
+        .WillByDefault(::testing::Return(profile_.get()));
+    registry().OnTabCreated(mock_tab_);
+  }
+
+ protected:
+  content::RenderViewHostTestEnabler rvh_test_enabler_;
+  std::unique_ptr<content::WebContents> web_contents_;
+  tabs::MockTabInterface mock_tab_;
+};
+
+TEST_F(ActorTaskSurfaceTest, ControlsPageThroughSurface) {
+  AddTabAndVerify(mock_tab_);
+  EXPECT_TRUE(web_contents_->IsBeingCaptured());
+
+  RemoveTabAndVerify(mock_tab_);
+  EXPECT_FALSE(web_contents_->IsBeingCaptured());
+}
+
+TEST_F(ActorTaskSurfaceTest, SurfaceApis) {
+  const ActorSurfaceHandle actor_surface_handle =
+      ActorSurfaceHandle::From(mock_tab_.GetHandle());
+  ASSERT_FALSE(actor_surface_handle.is_null());
+
+  ExpectTabAddedNotification(mock_tab_.GetHandle());
+  base::test::TestFuture<mojom::ActionResultPtr> add_future;
+  task_->AddActorSurface(actor_surface_handle, /*stop_task_on_detach=*/true,
+                         add_future.GetCallback());
+  ExpectOkResult(add_future);
+  EXPECT_TRUE(task_->HasActorSurface(actor_surface_handle));
+  EXPECT_TRUE(task_->IsActingOnActorSurface(actor_surface_handle));
+  EXPECT_THAT(task_->GetActorSurfaces(),
+              ::testing::UnorderedElementsAre(actor_surface_handle));
+  EXPECT_THAT(task_->GetLastActedActorSurfaces(),
+              ::testing::UnorderedElementsAre(actor_surface_handle));
+  EXPECT_EQ(task_->GetLastActuatedActorSurface(), actor_surface_handle);
+
+  ExpectTabRemovedNotification(mock_tab_.GetHandle());
+  task_->RemoveActorSurface(actor_surface_handle);
+  EXPECT_FALSE(task_->HasActorSurface(actor_surface_handle));
+  EXPECT_FALSE(task_->IsActingOnActorSurface(actor_surface_handle));
+  EXPECT_TRUE(task_->GetActorSurfaces().empty());
+  // The last actuated surface is preserved after removal.
+  EXPECT_EQ(task_->GetLastActuatedActorSurface(), actor_surface_handle);
+
+  // Observing a surface adds it to the last-acted set only.
+  task_->ObserveActorSurfaceOnce(actor_surface_handle);
+  EXPECT_FALSE(task_->HasActorSurface(actor_surface_handle));
+  EXPECT_THAT(task_->GetLastActedActorSurfaces(),
+              ::testing::UnorderedElementsAre(actor_surface_handle));
+}
+
+TEST_F(ActorTaskSurfaceTest, ObserveTabOnceThroughSurface) {
+  task_->ObserveTabOnce(mock_tab_.GetHandle());
+  EXPECT_TRUE(registry().GetForTab(mock_tab_.GetHandle()));
+  EXPECT_TRUE(web_contents_->IsBeingCaptured());
+
+  task_->Pause(/*from_actor=*/false);
+  EXPECT_FALSE(web_contents_->IsBeingCaptured());
 }
 
 }  // namespace

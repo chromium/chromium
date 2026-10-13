@@ -13,6 +13,7 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
+#include "chrome/browser/actor/actor_surface_registry.h"
 #include "chrome/browser/actor/ui/actor_border_view_controller.h"
 #include "chrome/browser/actor/ui/actor_ui_metrics_types.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
@@ -144,6 +145,7 @@ class ActorUiTabControllerTest : public ChromeRenderViewHostTestHarness {
             mock_handoff_button_controller_.get());
 
     // Creates task for testing.
+    actor_keyed_service()->GetSurfaceRegistry().OnTabCreated(mock_tab_);
     task_id_ = actor_keyed_service()->CreateTaskForTesting();
     base::RunLoop loop;
     actor_keyed_service()->GetTask(task_id_)->AddTab(

@@ -45,6 +45,8 @@ void ActorNavigationThrottle::MaybeCreateAndAdd(
 
   content::WebContents* web_contents = navigation_handle.GetWebContents();
 
+  // TODO(b/565820285): Also attach to headless pages: find the task from the
+  // page's surface instead of requiring a tab.
   const auto* tab = tabs::TabInterface::MaybeGetFromContents(web_contents);
   if (!tab) {
     return;
@@ -68,7 +70,8 @@ void ActorNavigationThrottle::MaybeCreateAndAdd(
 
   if (!base::FeatureList::IsEnabled(
           kGlicAttachNavigationThrottleToPausedTasks) &&
-      !task->IsActingOnTab(tab->GetHandle())) {
+      !task->IsActingOnActorSurface(
+          ActorSurfaceHandle::From(tab->GetHandle()))) {
     return;
   }
 

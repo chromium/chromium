@@ -21,6 +21,7 @@
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
 #include "chrome/browser/actor/actor_proto_conversion.h"
+#include "chrome/browser/actor/actor_surface_registry.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
@@ -256,6 +257,8 @@ class GlicPasswordChangeActuatorTest : public ChromeRenderViewHostTestHarness {
         .WillRepeatedly(Return(actuation_web_contents_.get()));
     ON_CALL(mock_actuation_tab_, GetUnownedUserDataHost())
         .WillByDefault(testing::ReturnRef(unowned_user_data_host_));
+    actor::ActorKeyedService::Get(profile())->GetSurfaceRegistry().OnTabCreated(
+        mock_actuation_tab_);
 
     web_contents()->SetDelegate(&mock_web_contents_delegate_);
     ON_CALL(mock_web_contents_delegate_, OpenURLFromTab(web_contents(), _, _))

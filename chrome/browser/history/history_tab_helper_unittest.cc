@@ -19,6 +19,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
+#include "chrome/browser/actor/actor_surface_registry.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/common/chrome_features.h"
@@ -670,6 +671,7 @@ TEST_F(HistoryTabHelperTest,
 
   auto* actor_service = static_cast<actor::ActorKeyedServiceFake*>(
       actor::ActorKeyedService::Get(profile()));
+  actor_service->GetSurfaceRegistry().OnTabCreated(mock_tab);
   actor::TaskId task_id = actor_service->CreateTaskForTesting();
   actor_service->GetTask(task_id)->AddTab(
       mock_tab.GetHandle(), /*stop_task_on_detach=*/true, base::DoNothing());

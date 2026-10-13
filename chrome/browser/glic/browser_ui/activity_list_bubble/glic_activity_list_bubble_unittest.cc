@@ -10,6 +10,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
+#include "chrome/browser/actor/actor_surface_registry.h"
 #include "chrome/browser/actor/resources/grit/actor_browser_resources.h"
 #include "chrome/browser/actor/ui/actor_ui_metrics.h"
 #include "chrome/browser/glic/browser_ui/activity_list_bubble/glic_activity_list_bubble_controller.h"
@@ -92,6 +93,7 @@ class ActorTaskListBubbleTest : public ChromeViewsTestBase {
 
     mock_tab_ = std::make_unique<MockTabInterface>();
     ON_CALL(*mock_tab_, GetProfile()).WillByDefault(testing::Return(profile_));
+    actor_service_->GetSurfaceRegistry().OnTabCreated(*mock_tab_);
 
     browser_window_interface_ = std::make_unique<MockBrowserWindowInterface>();
     ON_CALL(*browser_window_interface_, GetUnownedUserDataHost)

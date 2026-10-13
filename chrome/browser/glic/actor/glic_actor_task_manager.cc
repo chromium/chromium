@@ -480,7 +480,8 @@ void GlicActorClientSession::PauseActorTask(
 
   if (handle != tabs::TabHandle::Null()) {
     // Pausing the task on a tab means we're actuating on it.
-    task->AddTab(handle, /*stop_task_on_detach=*/true, base::DoNothing());
+    task->AddActorSurface(actor::ActorSurfaceHandle::From(handle),
+                          /*stop_task_on_detach=*/true, base::DoNothing());
   }
 
   const bool from_actor =
@@ -527,14 +528,15 @@ void GlicActorClientSession::ResumeActorTask(
   // Reset the takeover result
   execution_engine.set_user_take_over_result(std::nullopt);
 
-  // TODO(crbug.com/420669167): GetLastActedTabs should only ever have 1 tab in
-  // it for now but once we support multi-tab we'll need to grab observations
-  // for all relevant tabs.
-  DCHECK_GT(task->GetLastActedTabs().size(), 0ul);
-  DCHECK_LT(task->GetLastActedTabs().size(), 2ul);
+  // TODO(crbug.com/420669167): GetLastActedActorSurfaces should only ever have
+  // 1 surface in it for now but once we support multi-tab we'll need to grab
+  // observations for all relevant tabs.
+  DCHECK_GT(task->GetLastActedActorSurfaces().size(), 0ul);
+  DCHECK_LT(task->GetLastActedActorSurfaces().size(), 2ul);
   tabs::TabInterface* tab_of_resumed_task = nullptr;
-  for (tabs::TabHandle tab_handle : task->GetLastActedTabs()) {
-    if (tabs::TabInterface* tab = tab_handle.Get()) {
+  for (actor::ActorSurfaceHandle actor_surface_handle :
+       task->GetLastActedActorSurfaces()) {
+    if (tabs::TabInterface* tab = actor_surface_handle.GetTabHandle().Get()) {
       tab_of_resumed_task = tab;
       break;
     }
@@ -641,9 +643,10 @@ std::vector<tabs::TabInterface*> GlicActorTaskManager::GetLastActedTabs()
   if (!task) {
     return target_tabs;
   }
-  actor::ActorTask::TabHandleSet handle_set = task->GetLastActedTabs();
-  for (const auto& handle : handle_set) {
-    if (tabs::TabInterface* tab = handle.Get()) {
+  actor::ActorTask::ActorSurfaceHandleSet actor_surface_handles =
+      task->GetLastActedActorSurfaces();
+  for (const auto& actor_surface_handle : actor_surface_handles) {
+    if (tabs::TabInterface* tab = actor_surface_handle.GetTabHandle().Get()) {
       target_tabs.push_back(tab);
     }
   }

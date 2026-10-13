@@ -18,7 +18,7 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "chrome/browser/actor/actor_proto_conversion.h"
-#include "chrome/browser/actor/actor_surface_impl.h"
+#include "chrome/browser/actor/actor_surface_tab_helper.h"
 #include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_task_delegate.h"
@@ -496,7 +496,9 @@ class ScopedMockTabObservationResult {
 };
 
 // Helper struct for unit tests that require a mock TabInterface and its
-// associated ActorTabData.
+// associated ActorTabData. When `web_contents` is provided, the tab also gets
+// an ActorSurfaceTabHelper so it has a surface in ActorSurfaceRegistry, as
+// real tabs do via TabFeatures.
 struct TestTabState {
   explicit TestTabState(content::WebContents* web_contents = nullptr);
   ~TestTabState();
@@ -507,9 +509,9 @@ struct TestTabState {
   WillDetachCallbackList will_detach_callback_list_;
 
   tabs::MockTabInterface tab;
-  std::unique_ptr<ActorSurfaceImpl> actor_surface;
   ::ui::UnownedUserDataHost user_data_host;
   std::unique_ptr<ActorTabData> tab_data;
+  std::unique_ptr<ActorSurfaceTabHelper> actor_surface_tab_helper;
 };
 
 }  // namespace actor

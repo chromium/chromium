@@ -82,8 +82,8 @@ void OnCreateActorTabComplete(
     actor::AggregatedJournal& journal,
     tabs::TabInterface* tab) {
   if (base::FeatureList::IsEnabled(actor::kActorBindCreatedTabToTask) && tab) {
-    task.AddTab(
-        tab->GetHandle(),
+    task.AddActorSurface(
+        actor::ActorSurfaceHandle::From(tab->GetHandle()),
         /*stop_task_on_detach=*/true,
         base::BindOnce(
             [](actor::ActorKeyedService::CreateActorTabCallback callback,
@@ -237,11 +237,18 @@ ActorKeyedService* ActorKeyedService::Get(content::BrowserContext* context) {
 
 const ActorTask* ActorKeyedService::GetActingActorTaskForWebContents(
     content::WebContents* web_contents) {
-  if (auto* tab_interface =
-          tabs::TabInterface::MaybeGetFromContents(web_contents)) {
-    // There should only be one active task per tab.
+  ActorSurfaceHandle actor_surface_handle;
+  if (ActorSurface* actor_surface =
+          GetSurfaceRegistry().GetForHeadless(web_contents)) {
+    actor_surface_handle = actor_surface->GetHandle();
+  } else if (auto* tab_interface =
+                 tabs::TabInterface::MaybeGetFromContents(web_contents)) {
+    actor_surface_handle = ActorSurfaceHandle::From(tab_interface->GetHandle());
+  }
+  if (!actor_surface_handle.is_null()) {
+    // There should only be one active task per surface.
     for (const auto& [task_id, actor_task] : GetActiveTasks()) {
-      if (actor_task->IsActingOnTab(tab_interface->GetHandle())) {
+      if (actor_task->IsActingOnActorSurface(actor_surface_handle)) {
         return actor_task;
       }
     }
@@ -552,8 +559,9 @@ TaskId ActorKeyedService::CreateTaskImpl(
       allowed_schemes);
 
   if (initial_tab_handle != tabs::TabHandle::Null()) {
-    actor_task->AddTab(initial_tab_handle, /*stop_task_on_detach=*/true,
-                       base::DoNothing());
+    actor_task->AddActorSurface(ActorSurfaceHandle::From(initial_tab_handle),
+                                /*stop_task_on_detach=*/true,
+                                base::DoNothing());
   }
 
   active_tasks_[task_id] = std::move(actor_task);
@@ -884,9 +892,13 @@ ui::ActorUiStateManager* ActorKeyedService::GetActorUiStateManager(
 }
 
 bool ActorKeyedService::IsActiveOnTab(const tabs::TabInterface& tab) const {
-  tabs::TabHandle handle = tab.GetHandle();
+  ActorSurfaceHandle actor_surface_handle =
+      ActorSurfaceHandle::From(tab.GetHandle());
+  if (actor_surface_handle.is_null()) {
+    return false;
+  }
   for (auto [task_id, task] : GetActiveTasks()) {
-    if (task->IsActingOnTab(handle)) {
+    if (task->IsActingOnActorSurface(actor_surface_handle)) {
       return true;
     }
   }
@@ -896,9 +908,13 @@ bool ActorKeyedService::IsActiveOnTab(const tabs::TabInterface& tab) const {
 
 ActorTask* ActorKeyedService::GetTaskFromTab(
     const tabs::TabInterface& tab) const {
-  tabs::TabHandle handle = tab.GetHandle();
+  ActorSurfaceHandle actor_surface_handle =
+      ActorSurfaceHandle::From(tab.GetHandle());
+  if (actor_surface_handle.is_null()) {
+    return nullptr;
+  }
   for (const auto& [task_id, task] : active_tasks_) {
-    if (task->HasTab(handle)) {
+    if (task->HasActorSurface(actor_surface_handle)) {
       return task.get();
     }
   }

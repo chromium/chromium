@@ -435,7 +435,8 @@ void GlicPasswordChangeActuator::OnActorTaskStateChanged(
   tabs::TabInterface* actuation_tab =
       tabs::TabInterface::MaybeGetFromContents(actuation_web_contents_.get());
   // Ignore updates coming from other tabs, then we initiated actuation in.
-  if (!actuation_tab || !task.GetTabs().contains(actuation_tab->GetHandle())) {
+  if (!actuation_tab || !task.HasActorSurface(actor::ActorSurfaceHandle::From(
+                            actuation_tab->GetHandle()))) {
     return;
   }
 

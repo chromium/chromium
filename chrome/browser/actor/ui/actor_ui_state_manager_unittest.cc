@@ -8,6 +8,7 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
+#include "chrome/browser/actor/actor_surface_registry.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/actor/ui/test_support/mock_actor_ui_tab_controller.h"
 #include "chrome/browser/glic/public/features.h"
@@ -71,6 +72,8 @@ class ActorUiStateManagerTest : public testing::Test {
         .WillByDefault(Return(tab_strip_model_.get()));
 
     ON_CALL(mock_tab_, GetProfile).WillByDefault(testing::Return(profile()));
+    ActorKeyedService::Get(profile())->GetSurfaceRegistry().OnTabCreated(
+        mock_tab_);
     MockActorUiTabController::SetupDefaultBrowserWindow(
         mock_tab(), mock_browser_window_interface_, user_data_host_);
     mock_actor_ui_tab_controller_.emplace(mock_tab());

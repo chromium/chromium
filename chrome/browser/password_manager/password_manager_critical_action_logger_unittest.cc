@@ -14,6 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
+#include "chrome/browser/actor/actor_surface_registry.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/critical_actions/critical_action_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -133,6 +134,7 @@ class PasswordManagerCriticalActionLoggerTest
   actor::TaskId StartActorTask() {
     auto* actor_service = static_cast<actor::ActorKeyedServiceFake*>(
         actor::ActorKeyedService::Get(profile()));
+    actor_service->GetSurfaceRegistry().OnTabCreated(mock_tab_);
     actor::TaskId task_id = actor_service->CreateTaskForTesting();
     actor_service->GetTask(task_id)->AddTab(
         mock_tab_.GetHandle(), /*stop_task_on_detach=*/true, base::DoNothing());

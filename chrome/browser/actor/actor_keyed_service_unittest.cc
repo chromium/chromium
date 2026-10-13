@@ -12,6 +12,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_command_line.h"
+#include "chrome/browser/actor/actor_surface_registry.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
@@ -77,6 +78,8 @@ class ActorKeyedServiceTest : public testing::Test {
   std::unique_ptr<tabs::MockTabInterface> CreateMockTab() {
     auto mock_tab = std::make_unique<tabs::MockTabInterface>();
     ON_CALL(*mock_tab, GetProfile).WillByDefault(testing::Return(profile()));
+    ActorKeyedService::Get(profile())->GetSurfaceRegistry().OnTabCreated(
+        *mock_tab);
     return mock_tab;
   }
 

@@ -823,7 +823,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTestWithCustomDelay,
   // Accept the dialog to allow the tab to close.
   dialog->widget_delegate()->AsDialogDelegate()->AcceptDialog();
 
-  // ActorTask::OnTabWillDetach will return kError before renderer tool
+  // ActorTask::OnActorSurfaceWillDetach will return kError before renderer tool
   // completes. The code is kTaskWentAway because removing a tab causes the task
   // to be stopped.
   ExpectErrorResult(result, mojom::ActionResultCode::kTaskWentAway);

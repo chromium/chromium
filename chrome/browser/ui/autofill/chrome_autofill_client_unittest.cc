@@ -102,6 +102,7 @@
 #include "chrome/browser/account_settings/account_setting_service_factory.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
+#include "chrome/browser/actor/actor_surface_registry.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -780,6 +781,7 @@ TEST_F(ChromeAutofillClientTestWithMockWindow,
   ASSERT_TRUE(task);
 
   // Associate the active tab with the task.
+  actor_service->GetSurfaceRegistry().OnTabCreated(mock_tab_interface());
   task->AddTab(mock_tab_interface().GetHandle(),
                /*stop_task_on_detach=*/true, base::DoNothing());
 

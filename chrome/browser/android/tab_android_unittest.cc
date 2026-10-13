@@ -20,6 +20,7 @@
 #include "cc/slim/layer.h"
 #include "chrome/android/chrome_jni_headers/TabAndroidTestHelper_jni.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_surface_registry.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/actor_util.h"
@@ -525,6 +526,7 @@ TEST_F(GlicTabAndroidTest, IsWebContentsCreationOverridden_GlicSandboxCheck) {
 
   // Add the tab to the task.
   actor::ui::MockActorUiTabController mock_controller(*tab);
+  service->GetSurfaceRegistry().OnTabCreated(*tab);
   actor::AddTabToTask(*tab, *task);
 
   // Ensure HasActorTaskPreventingNewWebContents returns true.

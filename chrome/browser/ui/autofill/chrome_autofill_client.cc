@@ -1843,7 +1843,8 @@ void ChromeAutofillClient::OnActorTaskStateChange(actor::ActorTask& task) {
   }
 
   const tabs::TabInterface* tab_interface = GetTabInterface();
-  if (tab_interface && !task.HasTab(tab_interface->GetHandle())) {
+  if (tab_interface && !task.HasActorSurface(actor::ActorSurfaceHandle::From(
+                           tab_interface->GetHandle()))) {
     // The status update is for an actor that isn't interacting with this tab.
     // The value of `is_actor_mode_` shouldn't be updated.
     return;

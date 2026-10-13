@@ -117,7 +117,8 @@ void IdentityDialogController::OnActorTaskStateChanged(actor::ActorTask& task) {
 
   tabs::TabInterface* tab =
       tabs::TabInterface::MaybeGetFromContents(rp_web_contents_);
-  if (!tab || !task.IsActingOnTab(tab->GetHandle())) {
+  if (!tab || !task.IsActingOnActorSurface(
+                  actor::ActorSurfaceHandle::From(tab->GetHandle()))) {
     if (acting_task_id_ == task_id) {
       // The task we thought was acting on this tab is no longer active, so we
       // clear the task ID.
