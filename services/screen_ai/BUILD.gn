@@ -44,11 +44,7 @@ source_set("screen_ai") {
   ]
 
   if (is_linux) {
-    deps += [
-      "//base/allocator/partition_allocator:buildflags",
-      "//base/allocator/partition_allocator/src/partition_alloc:allocator_shim",
-      "//components/crash/core/common:crash_key",
-    ]
+    deps += [ "//components/crash/core/common:crash_key" ]
   }
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]

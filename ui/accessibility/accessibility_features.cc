@@ -456,11 +456,6 @@ bool IsScreenAITestModeEnabled() {
   return base::FeatureList::IsEnabled(::features::kScreenAITestMode);
 }
 
-#if BUILDFLAG(IS_LINUX)
-BASE_FEATURE(kScreenAIPartitionAllocAdvancedChecksEnabled,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC)
