@@ -426,6 +426,7 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 
   autofill::AutofillClientProvider& autofill_client_provider =
       autofill::AutofillClientProviderFactory::GetForProfile(profile);
+  autofill_client_provider.CreateClientForWebContents(tab.GetContents());
   if (!autofill_client_provider.uses_platform_autofill()) {
     ChromePasswordManagerClient::CreateForWebContents(tab.GetContents());
   }
@@ -1466,6 +1467,7 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
 
   autofill::AutofillClientProvider& autofill_client_provider =
       autofill::AutofillClientProviderFactory::GetForProfile(profile);
+  autofill_client_provider.CreateClientForWebContents(new_contents);
   if (!autofill_client_provider.uses_platform_autofill()) {
     ChromePasswordManagerClient::CreateForWebContents(new_contents);
   }

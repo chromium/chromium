@@ -87,8 +87,7 @@ class TabHelpers {
   // all the associated tab helpers that are needed for the WebContents to
   // serve in that role. It is safe to call this on a WebContents that was
   // already adopted.
-  static void AttachTabHelpers(content::WebContents* web_contents,
-                               bool enable_browser_autofill = true);
+  static void AttachTabHelpers(content::WebContents* web_contents);
 };
 
 #endif  // CHROME_BROWSER_UI_TAB_HELPERS_H_

@@ -255,6 +255,7 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
 
   autofill::AutofillClientProvider& autofill_client_provider =
       autofill::AutofillClientProviderFactory::GetForProfile(profile);
+  autofill_client_provider.CreateClientForWebContents(web_contents);
   if (!autofill_client_provider.uses_platform_autofill()) {
     if (autofill::ContentAutofillClient::FromWebContents(web_contents)) {
       ChromePasswordManagerClient::CreateForWebContents(web_contents);

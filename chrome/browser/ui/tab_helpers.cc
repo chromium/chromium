@@ -18,14 +18,11 @@
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
 #include "chrome/browser/sync/sessions/sync_sessions_router_tab_helper.h"
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router_factory.h"
-#include "chrome/browser/ui/autofill/autofill_client_provider.h"
-#include "chrome/browser/ui/autofill/autofill_client_provider_factory.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -69,8 +66,7 @@ const char kTabContentsAttachedTabHelpersUserDataKey[] =
 // WARNING: Do not use this class for desktop chrome. Use TabFeatures instead.
 // See
 // https://chromium.googlesource.com/chromium/src/+/main/docs/chrome_browser_design_principles.md
-void TabHelpers::AttachTabHelpers(WebContents* web_contents,
-                                  bool enable_browser_autofill) {
+void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   // If already adopted, nothing to be done.
   base::SupportsUserData::Data* adoption_tag =
       web_contents->GetUserData(&kTabContentsAttachedTabHelpersUserDataKey);
@@ -96,18 +92,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
   // ChromeSubresourceFilterClient has it as a dependency.
   infobars::ContentInfoBarManager::CreateForWebContents(web_contents);
 
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-
   // --- Section 1: Common tab helpers ---
-  // AutofillClientProvider initializes ContentAutofillClient for web_contents,
-  // which is gated by enable_browser_autofill.
-  if (enable_browser_autofill) {
-    autofill::AutofillClientProvider& autofill_client_provider =
-        autofill::AutofillClientProviderFactory::GetForProfile(profile);
-    autofill_client_provider.CreateClientForWebContents(web_contents);
-  }
-
   // NO! Do not just add your tab helper here. This is a large alphabetized
   // block; please insert your tab helper above in alphabetical order.
 
