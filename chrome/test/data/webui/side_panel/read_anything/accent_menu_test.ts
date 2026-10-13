@@ -168,4 +168,51 @@ suite('AccentMenu', () => {
     assertEquals('', getSearchField().value);
     assertTrue(getAccentButtons().length >= 2);
   });
+
+  test('Tab on last accent item wraps focus to close button', () => {
+    const buttons = getAccentButtons();
+    const lastButton = buttons[buttons.length - 1]!;
+    const closeButton =
+        accentMenu.$.accentMenu.shadowRoot.querySelector<HTMLElement>('#close')!
+        ;
+
+    lastButton.focus();
+    assertEquals(lastButton, accentMenu.shadowRoot.activeElement);
+
+    const tabEvent = new KeyboardEvent('keydown', {
+      key: 'Tab',
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+    });
+    lastButton.dispatchEvent(tabEvent);
+
+    assertTrue(tabEvent.defaultPrevented);
+    assertEquals(accentMenu.$.accentMenu, accentMenu.shadowRoot.activeElement);
+    assertEquals(closeButton, accentMenu.$.accentMenu.shadowRoot.activeElement);
+  });
+
+  test('Shift+Tab on close button wraps focus to last accent item', () => {
+    const buttons = getAccentButtons();
+    const lastButton = buttons[buttons.length - 1]!;
+    const closeButton =
+        accentMenu.$.accentMenu.shadowRoot.querySelector<HTMLElement>('#close')!
+        ;
+
+    closeButton.focus();
+    assertEquals(accentMenu.$.accentMenu, accentMenu.shadowRoot.activeElement);
+    assertEquals(closeButton, accentMenu.$.accentMenu.shadowRoot.activeElement);
+
+    const shiftTabEvent = new KeyboardEvent('keydown', {
+      key: 'Tab',
+      shiftKey: true,
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+    });
+    closeButton.dispatchEvent(shiftTabEvent);
+
+    assertTrue(shiftTabEvent.defaultPrevented);
+    assertEquals(lastButton, accentMenu.shadowRoot.activeElement);
+  });
 });

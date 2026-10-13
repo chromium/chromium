@@ -163,6 +163,38 @@ export class VoiceSelectionDialogElement extends CrLitElement implements
     this.fire('close');
   }
 
+  protected onKeydown_(e: KeyboardEvent) {
+    e.stopPropagation();
+    if (e.key !== 'Tab' || e.ctrlKey || e.altKey || e.metaKey) {
+      return;
+    }
+
+    const cancelButton =
+        this.$.voiceSelectionDialog.querySelector<HTMLElement>('#cancelButton');
+    const saveButton =
+        this.$.voiceSelectionDialog.querySelector<HTMLElement>('#saveButton');
+    if (!cancelButton || !saveButton) {
+      return;
+    }
+
+    const firstFocusable =
+        this.$.voiceSelectionDialog.querySelector<HTMLElement>(
+            '#preview-icon[tabindex="0"]') ??
+        cancelButton;
+    const activeElement = this.shadowRoot.activeElement;
+
+    if (e.shiftKey) {
+      if (activeElement === firstFocusable ||
+          activeElement === this.$.voiceSelectionDialog) {
+        e.preventDefault();
+        saveButton.focus();
+      }
+    } else if (activeElement === saveButton) {
+      e.preventDefault();
+      firstFocusable.focus();
+    }
+  }
+
   private computeVoiceDropdown_(): VoiceDropdownGroup[] {
     const {groups, hasSelectedVoice} = computeVoiceDropdown({
       availableVoices: this.availableVoices,

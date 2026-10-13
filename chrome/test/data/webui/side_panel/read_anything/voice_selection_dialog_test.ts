@@ -626,4 +626,65 @@ suite('VoiceSelectionDialog', () => {
     // The display name is the nature name; the identity is not.
     assertEquals(mappedVoice.name, event.detail.selectedVoice.name);
   });
+
+  test('Tab on Save button wraps focus to active preview button', async () => {
+    await drawDialog();
+    const saveButton =
+        dialog.$.voiceSelectionDialog.querySelector<CrButtonElement>(
+            '#saveButton')!;
+    const activePreview = getPreviewButtonForVoice(googleNaturalVoice);
+
+    saveButton.focus();
+    assertEquals(saveButton, dialog.shadowRoot.activeElement);
+
+    const tabEvent = new KeyboardEvent('keydown', {
+      key: 'Tab',
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+    });
+    saveButton.dispatchEvent(tabEvent);
+
+    assertTrue(tabEvent.defaultPrevented);
+    assertEquals(activePreview, dialog.shadowRoot.activeElement);
+  });
+
+  test(
+      'Shift+Tab on active preview button wraps focus to Save button',
+      async () => {
+        await drawDialog();
+        const saveButton =
+            dialog.$.voiceSelectionDialog.querySelector<CrButtonElement>(
+                '#saveButton')!;
+        const activePreview = getPreviewButtonForVoice(googleNaturalVoice);
+
+        assertEquals(
+            dialog.$.voiceSelectionDialog, dialog.shadowRoot.activeElement);
+        const initialShiftTab = new KeyboardEvent('keydown', {
+          key: 'Tab',
+          shiftKey: true,
+          bubbles: true,
+          cancelable: true,
+          composed: true,
+        });
+        dialog.$.voiceSelectionDialog.dispatchEvent(initialShiftTab);
+
+        assertTrue(initialShiftTab.defaultPrevented);
+        assertEquals(saveButton, dialog.shadowRoot.activeElement);
+
+        activePreview.focus();
+        assertEquals(activePreview, dialog.shadowRoot.activeElement);
+
+        const previewShiftTab = new KeyboardEvent('keydown', {
+          key: 'Tab',
+          shiftKey: true,
+          bubbles: true,
+          cancelable: true,
+          composed: true,
+        });
+        activePreview.dispatchEvent(previewShiftTab);
+
+        assertTrue(previewShiftTab.defaultPrevented);
+        assertEquals(saveButton, dialog.shadowRoot.activeElement);
+      });
 });

@@ -196,6 +196,32 @@ export class AccentMenuElement extends AccentMenuElementBase implements
 
   protected onKeydown_(e: KeyboardEvent) {
     e.stopPropagation();
+    if (e.key !== 'Tab' || e.ctrlKey || e.altKey || e.metaKey) {
+      return;
+    }
+
+    const closeButton =
+        this.$.accentMenu.shadowRoot.querySelector<HTMLElement>('#close');
+    const firstFocusable = closeButton ?? this.$.searchField;
+    const buttons =
+        this.$.accentMenu.querySelectorAll<HTMLElement>('.dropdown-item');
+    const clearButton =
+        this.$.accentMenu.querySelector<HTMLElement>('#clearLanguageSearch');
+    const lastFocusable = buttons.length > 0 ?
+        buttons[buttons.length - 1]! :
+        (clearButton ?? this.$.searchField);
+    const activeElement = this.shadowRoot.activeElement;
+
+    if (e.shiftKey) {
+      if (activeElement === firstFocusable ||
+          activeElement === this.$.accentMenu) {
+        e.preventDefault();
+        lastFocusable.focus();
+      }
+    } else if (activeElement === lastFocusable) {
+      e.preventDefault();
+      firstFocusable.focus();
+    }
   }
 }
 

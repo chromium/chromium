@@ -12,7 +12,8 @@ import type {VoiceSelectionDialogElement} from './voice_selection_dialog.js';
 export function getHtml(this: VoiceSelectionDialogElement) {
   return html`<!--_html_template_start_-->
 <cr-dialog id="voiceSelectionDialog" @close="${this.onDialogClose_}"
-    @cancel="${this.onDialogCancel_}" show-on-attach ignore-popstate>
+    @cancel="${this.onDialogCancel_}" @keydown="${this.onKeydown_}"
+    show-on-attach ignore-popstate>
   <div slot="title" class="voice-menu-title-bar">
     <div class="voice-menu-title">$i18n{voiceSelectionLabel}</div>
   </div>
