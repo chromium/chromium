@@ -3206,8 +3206,9 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
   // process-per-tab model, such as WebUI pages.
 
   // First determine the effective URL of the current RenderFrameHost. This is
-  // the last URL it successfully committed. If it has yet to commit a URL, this
-  // falls back to the Site URL of its SiteInstance.
+  // the last URL it successfully committed. If it has yet to commit a URL, or
+  // if it has committed about:blank, this falls back to the Site URL of its
+  // SiteInstance.
   // Note: the effective URL of the current RenderFrameHost may differ from the
   // URL of the last committed NavigationEntry, which cannot be used to decide
   // whether to use a new SiteInstance. This happens when navigating a subframe,
@@ -3215,10 +3216,11 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
   // navigation to replace a crashed RenderFrameHost.
   BrowserContext* browser_context =
       GetNavigationController().GetBrowserContext();
+  const GURL& last_successful_url = render_frame_host_->last_successful_url();
   const GURL& current_effective_url =
-      !render_frame_host_->last_successful_url().is_empty()
-          ? SiteInstanceImpl::GetEffectiveURL(
-                browser_context, render_frame_host_->last_successful_url())
+      (!last_successful_url.is_empty() && !last_successful_url.IsAboutBlank())
+          ? SiteInstanceImpl::GetEffectiveURL(browser_context,
+                                              last_successful_url)
           : render_frame_host_->GetSiteInstance()->GetSiteInfo().site_url();
 
   // Determine if the current RenderFrameHost is in view source mode.

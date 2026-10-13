@@ -30,6 +30,7 @@
 #include "content/browser/renderer_host/network_restrictions_navigation_throttle.h"
 #include "content/browser/renderer_host/renderer_cancellation_throttle.h"
 #include "content/browser/renderer_host/subframe_history_navigation_throttle.h"
+#include "content/browser/renderer_host/untrusted_web_ui_navigation_throttle.h"
 #include "content/browser/webid/navigation_interceptor.h"
 #include "content/common/features.h"
 #include "content/public/browser/navigation_handle.h"
@@ -137,6 +138,10 @@ void NavigationThrottleRegistryImpl::RegisterNavigationThrottles() {
   // Prevent navigations to/from Isolated Web Apps.
   IsolatedWebAppThrottle::MaybeCreateAndAdd(*this);
 
+  // Prevent unexpected renderer-initiated navigations of chrome-untrusted://
+  // documents.
+  UntrustedWebUINavigationThrottle::MaybeCreateAndAdd(*this);
+
   devtools_instrumentation::CreateAndAddNavigationThrottles(*this);
 
   // Make main frame navigations with error HTTP status code and an empty body
@@ -222,6 +227,10 @@ void NavigationThrottleRegistryImpl::
   // windows.
   DocumentPictureInPictureNavigationThrottle::MaybeCreateAndAdd(*this);
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  // Prevent unexpected renderer-initiated navigations of chrome-untrusted://
+  // documents that commit without a URL loader.
+  UntrustedWebUINavigationThrottle::MaybeCreateAndAdd(*this);
 
   // Insert all testing NavigationThrottles last.
   throttles_.insert(throttles_.end(),
