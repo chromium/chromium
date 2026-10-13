@@ -56,6 +56,7 @@ constexpr int kMaxUriDecodeLen = 2048;
 // Google Search page shown in the NTP's left-hand side (LHS) panel, relative
 // to the Google base URL.
 constexpr char kLhsRelativeUrl[] = "/search?nem=341";
+constexpr char kLhsExpandedParam[] = "&atvm=3";
 
 std::string FormatTemplate(int resource_id,
                            const ui::TemplateReplacements& replacements) {
@@ -247,10 +248,14 @@ void UntrustedSource::StartDataRequest(
   }
   if (path == "expanded-lhs") {
     ui::TemplateReplacements replacements;
+    std::string lhs_relative_url = kLhsRelativeUrl;
+    if (ntp_features::kNtpThreadsRailHybridParam.Get()) {
+      lhs_relative_url += kLhsExpandedParam;
+    }
     GURL lhs_url = GURL(TemplateURLServiceFactory::GetForProfile(profile_)
                             ->search_terms_data()
                             .GoogleBaseURLValue())
-                       .Resolve(kLhsRelativeUrl);
+                       .Resolve(lhs_relative_url);
     if (auto forced_host = contextual_tasks::GetForcedEmbeddedPageHost()) {
       lhs_url = forced_host->ApplyToUrl(lhs_url);
     }

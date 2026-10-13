@@ -263,3 +263,22 @@ TEST_F(UntrustedSourceTest, ExpandedLhs_ServesHtmlEmbeddingLhsUrl) {
                   R"(allow="unbounded-element")"));
   EXPECT_EQ("text/html", untrusted_source_->GetMimeType(url));
 }
+
+TEST_F(UntrustedSourceTest, ExpandedLhs_HybridAppendsExpandedParam) {
+  feature_list_.InitAndEnableFeatureWithParameters(
+      ntp_features::kNtpThreadsRail,
+      {{ntp_features::kNtpThreadsRailHybridParam.name, "true"}});
+  const GURL url("chrome-untrusted://new-tab-page/expanded-lhs");
+  base::test::TestFuture<scoped_refptr<base::RefCountedMemory>> future;
+
+  untrusted_source_->StartDataRequest(url, test_web_contents_getter_,
+                                      future.GetCallback());
+
+  scoped_refptr<base::RefCountedMemory> data = future.Take();
+  ASSERT_TRUE(data);
+  // The URL is HTML-escaped when inserted into the iframe's src attribute.
+  EXPECT_THAT(
+      base::as_string_view(*data),
+      testing::HasSubstr(
+          R"(<iframe src="https://www.google.com/search?nem=341&amp;atvm=3")"));
+}

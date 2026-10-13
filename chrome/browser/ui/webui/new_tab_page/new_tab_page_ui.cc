@@ -755,6 +755,8 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
 
   source->AddBoolean("enableThreadsRail", base::FeatureList::IsEnabled(
                                               ntp_features::kNtpThreadsRail));
+  source->AddBoolean("enableThreadsRailHybrid",
+                     ntp_features::kNtpThreadsRailHybridParam.Get());
 
   // Action Chips LoadTimeData
   const auto* aim_eligibility_service =
