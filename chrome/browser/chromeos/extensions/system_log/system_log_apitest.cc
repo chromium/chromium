@@ -37,6 +37,8 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api/test/test_api.h"
 #include "extensions/common/extension_api.h"
@@ -197,7 +199,12 @@ class SystemLogManagedGuestSessionApitest
   void SetSystemLogPolicy() {
     SetDevicePolicies();
     ash::test::WaitForPrimaryUserSessionStart();
-    Profile* profile = GetActiveUserProfile();
+    const session_manager::Session* active_session =
+        session_manager::SessionManager::Get()->GetActiveSession();
+    CHECK(active_session);
+    Profile* profile = Profile::FromBrowserContext(
+        ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+            active_session->account_id()));
 
     SetUpUserPolicyBuilderForPublicAccount(&user_policy_builder_);
 
@@ -237,13 +244,6 @@ class SystemLogManagedGuestSessionApitest
     policy_data.set_username(kManagedAccountId);
     policy_data.set_settings_entity_id(kManagedAccountId);
     user_policy_builder->SetDefaultSigningKey();
-  }
-
-  Profile* GetActiveUserProfile() {
-    const user_manager::User* active_user =
-        user_manager::UserManager::Get()->GetActiveUser();
-    return Profile::FromBrowserContext(
-        ash::BrowserContextHelper::Get()->GetBrowserContextByUser(active_user));
   }
 
   bool system_logging_enabled() const { return GetParam(); }

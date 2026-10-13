@@ -25,7 +25,6 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/remote_apps/id_generator.h"
 #include "chrome/browser/ash/remote_apps/remote_apps_manager.h"
 #include "chrome/browser/ash/remote_apps/remote_apps_manager_factory.h"
@@ -35,9 +34,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/common/chrome_paths.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
-#include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api/test/test_api.h"
 #include "extensions/common/manifest.h"
@@ -102,9 +102,17 @@ class RemoteAppsApitest : public policy::DevicePolicyCrosBrowserTest,
     SetUpDeviceLocalAccountPolicy();
     ash::SessionStateWaiter(session_manager::SessionState::ACTIVE).Wait();
 
-    user_manager::User* user =
-        user_manager::UserManager::Get()->GetActiveUser();
-    profile_ = ash::ProfileHelper::Get()->GetProfileByUser(user);
+    const session_manager::Session* active_session =
+        session_manager::SessionManager::Get()->GetActiveSession();
+    ASSERT_TRUE(active_session);
+    profile_ = Profile::FromBrowserContext(
+        ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+            active_session->account_id()));
+  }
+
+  void TearDownOnMainThread() override {
+    profile_ = nullptr;
+    policy::DevicePolicyCrosBrowserTest::TearDownOnMainThread();
   }
 
   // TODO(b/239145899): Refactor to not use MGS setup any more.
@@ -207,7 +215,7 @@ class RemoteAppsApitest : public policy::DevicePolicyCrosBrowserTest,
   }
 
  private:
-  raw_ptr<Profile, DanglingUntriaged> profile_;
+  raw_ptr<Profile> profile_ = nullptr;
   base::DictValue config_;
   ash::EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
   base::test::ScopedFeatureList scoped_feature_list_;

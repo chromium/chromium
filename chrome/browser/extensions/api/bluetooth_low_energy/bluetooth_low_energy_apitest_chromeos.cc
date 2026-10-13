@@ -19,7 +19,8 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/components/kiosk/kiosk_test_utils.h"
 #include "components/account_id/account_id.h"
-#include "components/user_manager/user_manager.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -40,9 +41,12 @@ class BluetoothLowEnergyApiTestChromeOs : public PlatformAppBrowserTest {
     PlatformAppBrowserTest::SetUpOnMainThread();
     settings_helper_.ReplaceDeviceSettingsProviderWithStub();
 
+    const session_manager::Session* active_session =
+        session_manager::SessionManager::Get()->GetActiveSession();
+    ASSERT_TRUE(active_session);
     auto* browser_context =
-        ash::BrowserContextHelper::Get()->GetBrowserContextByUser(
-            user_manager::UserManager::Get()->GetActiveUser());
+        ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+            active_session->account_id());
     owner_settings_service_ = settings_helper_.CreateOwnerSettingsService(
         Profile::FromBrowserContext(browser_context));
   }
@@ -65,9 +69,12 @@ class BluetoothLowEnergyApiKioskTestChromeOs
 
  protected:
   Profile* GetProfile() {
-    auto* user = user_manager::UserManager::Get()->GetActiveUser();
+    const session_manager::Session* active_session =
+        session_manager::SessionManager::Get()->GetActiveSession();
+    CHECK(active_session);
     return Profile::FromBrowserContext(
-        ash::BrowserContextHelper::Get()->GetBrowserContextByUser(user));
+        ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+            active_session->account_id()));
   }
 
   // TODO(hidehiko): consider to move this into KioskAppLoggedInBrowserTestMixin

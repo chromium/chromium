@@ -109,16 +109,6 @@ class AuthenticationScreenExtensionsExternalLoaderBrowserTest
 
   void LockSession() { ash::ScreenLockerTester().Lock(); }
 
-  void UnlockSession() {
-    const std::string kPassword = "pass";
-    const AccountId account_id =
-        user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId();
-    ash::ScreenLockerTester screen_locker_tester;
-    screen_locker_tester.SetUnlockPassword(account_id, kPassword);
-    screen_locker_tester.UnlockWithPassword(account_id, kPassword);
-    screen_locker_tester.WaitForUnlock();
-  }
-
   ExtensionForceInstallMixin* extension_force_install_mixin() {
     return &extension_force_install_mixin_;
   }

@@ -39,9 +39,9 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/proxy_config/pref_proxy_config_tracker_impl.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -388,14 +388,14 @@ class NetworkingPrivateChromeOSApiTest
   }
 
   std::string GetSanitizedActiveUsername() override {
-    user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-    user_manager::User* user = user_manager->GetActiveUser();
-    CHECK(user);
+    const session_manager::Session* active_session =
+        session_manager::SessionManager::Get()->GetActiveSession();
+    CHECK(active_session);
     std::string userhash;
     ::user_data_auth::GetSanitizedUsernameRequest request;
-    request.set_username(
-        cryptohome::CreateAccountIdentifierFromAccountId(user->GetAccountId())
-            .account_id());
+    request.set_username(cryptohome::CreateAccountIdentifierFromAccountId(
+                             active_session->account_id())
+                             .account_id());
     ash::CryptohomeMiscClient::Get()->GetSanitizedUsername(
         request,
         base::BindOnce(
