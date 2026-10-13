@@ -9283,6 +9283,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "submenu-type-override",
+    "owners": [ "massan@google.com", "lokeric@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "submenus-in-app-menu",
     "owners": [ "massan@google.com", "nya@google.com", "lokeric@google.com" ],
     "expiry_milestone": 159

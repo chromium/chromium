@@ -6574,6 +6574,12 @@ inline constexpr char kStrictSiteIsolationDescription[] =
     "#site-isolation-trial-opt-out for how to disable site isolation for "
     "testing.";
 
+inline constexpr char kSubmenuTypeOverrideName[] =
+    "Override flyout / drilldown switching logic";
+inline constexpr char kSubmenuTypeOverrideDescription[] =
+    "For testing only. Overrides the pointer and screen space switching logic "
+    "between flyout and drilldown submenus in hierarchical menus.";
+
 inline constexpr char kSubmenusInAppMenuName[] = "Enable submenus in App Menu";
 inline constexpr char kSubmenusInAppMenuDescription[] =
     "Enables displaying submenus in the app menu, using drilldown or flyout "

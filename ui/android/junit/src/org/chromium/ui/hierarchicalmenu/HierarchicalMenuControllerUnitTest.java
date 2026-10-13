@@ -44,6 +44,11 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.ui.base.DeviceInput;
+import org.chromium.ui.base.UiAndroidFeatures;
+import org.chromium.ui.hierarchicalmenu.FlyoutController.FlyoutHandler;
 import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController.SubmenuHeaderFactory;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -70,6 +75,8 @@ public class HierarchicalMenuControllerUnitTest {
     @Mock private OnClickListener mItemClickListener;
     @Mock private Runnable mDismissDialog;
     @Mock private ListObservable.ListObserver<Void> mListObserver;
+    @Mock private FlyoutHandler<Object> mFlyoutHandler;
+    @Mock private Object mMainPopup;
 
     private View mParentView;
     private ListView mHeaderListView;
@@ -641,6 +648,54 @@ public class HierarchicalMenuControllerUnitTest {
                 "Should return true when there is enough space to the right.",
                 HierarchicalMenuController.possibleToFitFlyout(
                         mainPopupRect, windowWidth, minSpacing, minMargin, menuMaxWidth));
+    }
+
+    @Test
+    @EnableFeatures(UiAndroidFeatures.SUBMENU_TYPE_OVERRIDE + ":force_drilldown/false")
+    public void shouldUseDrillDown_forceFlyoutIfSupported_whenSupported() {
+        DeviceInput.setSupportsPrecisionPointerForTesting(false);
+        mController.setupFlyoutController(
+                mFlyoutHandler, mMainPopup, (listener) -> {}, /* drillDownOverrideValue= */ null);
+
+        assertFalse(
+                "Should use flyout when flag forces flyout and component supports flyout.",
+                mController.shouldUseDrillDown());
+    }
+
+    @Test
+    @EnableFeatures(UiAndroidFeatures.SUBMENU_TYPE_OVERRIDE + ":force_drilldown/false")
+    public void shouldUseDrillDown_forceFlyoutIfSupported_whenNotSupported() {
+        DeviceInput.setSupportsPrecisionPointerForTesting(true);
+        // Do not call setupFlyoutController so mFlyoutController remains null.
+
+        assertTrue(
+                "Should still use drilldown when component does not support flyout.",
+                mController.shouldUseDrillDown());
+    }
+
+    @Test
+    @EnableFeatures(UiAndroidFeatures.SUBMENU_TYPE_OVERRIDE + ":force_drilldown/true")
+    public void shouldUseDrillDown_forceDrilldown() {
+        DeviceInput.setSupportsPrecisionPointerForTesting(true);
+        mController.setupFlyoutController(
+                mFlyoutHandler, mMainPopup, (listener) -> {}, /* drillDownOverrideValue= */ null);
+
+        assertTrue(
+                "Should use drilldown when flag forces drilldown.",
+                mController.shouldUseDrillDown());
+    }
+
+    @Test
+    @DisableFeatures(UiAndroidFeatures.SUBMENU_TYPE_OVERRIDE)
+    public void shouldUseDrillDown_defaultFlagUsesPointerCheck() {
+        DeviceInput.setSupportsPrecisionPointerForTesting(false);
+        mController.setupFlyoutController(
+                mFlyoutHandler, mMainPopup, (listener) -> {}, /* drillDownOverrideValue= */ null);
+
+        assertTrue(
+                "Should use drilldown when precision pointer is not supported and flag is"
+                        + " disabled.",
+                mController.shouldUseDrillDown());
     }
 
     private void triggerHoverEnter(ListItem item, int level, List<ListItem> path) {

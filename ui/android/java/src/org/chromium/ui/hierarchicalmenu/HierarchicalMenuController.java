@@ -37,6 +37,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
 import org.chromium.ui.base.DeviceInput;
+import org.chromium.ui.base.UiAndroidFeatureList;
 import org.chromium.ui.display.DisplayAndroidManager;
 import org.chromium.ui.hierarchicalmenu.FlyoutController.FlyoutHandler;
 import org.chromium.ui.modelutil.ListObservable;
@@ -291,6 +292,12 @@ public class HierarchicalMenuController<T> {
      */
     public boolean shouldUseDrillDown() {
         if (sDrillDownOverrideValueForTesting != null) return sDrillDownOverrideValueForTesting;
+
+        if (UiAndroidFeatureList.sSubmenuTypeOverride.isEnabled()) {
+            return mFlyoutController == null
+                    || UiAndroidFeatureList.sSubmenuTypeOverrideForceDrilldown.getValue();
+        }
+
         if (mDrillDownOverrideValue != null) {
             if (!mDrillDownOverrideValue) {
                 assert mFlyoutController != null;

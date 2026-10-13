@@ -825,6 +825,14 @@ const FeatureEntry::Choice kAndroidTabDeclutterArchiveOnDesktopChoices[] = {
      "AndroidTabDeclutterArchiveOnDesktop"},
 };
 
+const FeatureEntry::Choice kSubmenuTypeOverrideChoices[] = {
+    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
+    {"Force flyout (if supported)", switches::kEnableFeatures,
+     "SubmenuTypeOverride:force_drilldown/false"},
+    {"Force drilldown", switches::kEnableFeatures,
+     "SubmenuTypeOverride:force_drilldown/true"},
+};
+
 const FeatureEntry::Choice kReaderModeHeuristicsChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {flag_descriptions::kReaderModeHeuristicsMarkup,
@@ -5735,6 +5743,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"reader-mode-toggle-links", flag_descriptions::kReaderModeToggleLinksName,
      flag_descriptions::kReaderModeToggleLinksDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(dom_distiller::kReaderModeToggleLinks)},
+    {"submenu-type-override", flag_descriptions::kSubmenuTypeOverrideName,
+     flag_descriptions::kSubmenuTypeOverrideDescription, kOsAndroid,
+     MULTI_VALUE_TYPE(kSubmenuTypeOverrideChoices)},
     {"submenus-in-app-menu", flag_descriptions::kSubmenusInAppMenuName,
      flag_descriptions::kSubmenusInAppMenuDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kSubmenusInAppMenu)},

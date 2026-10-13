@@ -101,6 +101,10 @@ UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kRequireLeadingInTextViewWithLeading);
 // Update display for context on configuration changed and activity resumed.
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kAndroidUpdateDisplayForContext);
 
+// Overrides the pointer and screen space switching logic between flyout and
+// drilldown submenus in hierarchical menus for testing.
+UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kSubmenuTypeOverride);
+
 // Kill switch to turn off new supportKeyabord method
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kSupportKeyboard);
 
