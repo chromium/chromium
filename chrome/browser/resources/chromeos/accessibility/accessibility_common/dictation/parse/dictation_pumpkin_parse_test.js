@@ -181,8 +181,13 @@ AX_TEST_F(
     });
 
 // TODO(b/452364395): Test is flaky on ChromiumOS MSAN bots.
+GEN('#if defined(MEMORY_SANITIZER)');
+GEN('#define MAYBE_ChangeLocale DISABLED_ChangeLocale');
+GEN('#else');
+GEN('#define MAYBE_ChangeLocale ChangeLocale');
+GEN('#endif');
 AX_TEST_F(
-    'DictationPumpkinParseTest', 'DISABLED_ChangeLocale', async function() {
+    'DictationPumpkinParseTest', 'MAYBE_ChangeLocale', async function() {
       await this.waitForPumpkinParseStrategy_();
       this.alwaysEnableCommands();
       const testCases = [

@@ -319,7 +319,7 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest, MAYBE_TypeIntoVirtualKeyboard) {
   // js-based tests that have the ability to ask the text field for its value.
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if defined(MEMORY_SANITIZER)
 #define MAYBE_PointScanClickWhenMouseEventsEnabled \
   DISABLED_PointScanClickWhenMouseEventsEnabled
 #else
@@ -358,7 +358,7 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest,
   ASSERT_TRUE(IsMouseEventsEnabled(600, 600));
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if defined(MEMORY_SANITIZER)
 #define MAYBE_PointScanClickWhenMouseEventsDisabled \
   DISABLED_PointScanClickWhenMouseEventsDisabled
 #else
