@@ -311,6 +311,39 @@ public class WebappRegistry {
      * @param targetOrigin The origin to search a WebAPK for.
      */
     public boolean hasAtLeastOneWebApkForOrigin(@Nullable Origin targetOrigin) {
+        return hasAtLeastOneWebApkForOrigin(targetOrigin, true);
+    }
+
+    /**
+     * Returns true if an installed WebAPK is found whose scope has the same origin as |origin|.
+     *
+     * @param origin The origin to search a WebAPK for.
+     */
+    public boolean hasAtLeastOneWebApkForOrigin(@Nullable String origin) {
+        return hasAtLeastOneWebApkForOrigin(origin, true);
+    }
+
+    /**
+     * Returns true if a WebAPK is registered whose scope matches |origin|, without checking whether
+     * the WebAPK package is still installed.
+     *
+     * @param origin The origin to search a WebAPK for.
+     */
+    public boolean hasAtLeastOneWebApkForOriginWithoutPackageCheck(@Nullable String origin) {
+        return hasAtLeastOneWebApkForOrigin(origin, false);
+    }
+
+    private boolean hasAtLeastOneWebApkForOrigin(
+            @Nullable String origin, boolean checkPackageInstalled) {
+        if (TextUtils.isEmpty(origin)) {
+            return false;
+        }
+        return hasAtLeastOneWebApkForOrigin(Origin.create(origin), checkPackageInstalled);
+    }
+
+    private boolean hasAtLeastOneWebApkForOrigin(
+            @Nullable Origin targetOrigin, boolean checkPackageInstalled) {
+        ThreadUtils.assertOnUiThread();
         if (targetOrigin == null) {
             return false;
         }
@@ -322,27 +355,17 @@ public class WebappRegistry {
 
             Origin scopeOrigin = Origin.create(scope);
             if (scopeOrigin == null) continue;
-
             if (!targetOrigin.equals(scopeOrigin)) continue;
 
             String webApkPackageName = storage.getWebApkPackageName();
-            if (webApkPackageName != null && PackageUtils.isPackageInstalled(webApkPackageName)) {
+            if (webApkPackageName == null) continue;
+            if (!checkPackageInstalled) return true;
+
+            if (PackageUtils.isPackageInstalled(webApkPackageName)) {
                 return true;
             }
         }
         return false;
-    }
-
-    /**
-     * Returns true if an installed WebAPK is found whose scope has the same origin as |origin|.
-     *
-     * @param origin The origin to search a WebAPK for.
-     */
-    public boolean hasAtLeastOneWebApkForOrigin(@Nullable String origin) {
-        if (TextUtils.isEmpty(origin)) {
-            return false;
-        }
-        return hasAtLeastOneWebApkForOrigin(Origin.create(origin));
     }
 
     /**
@@ -393,9 +416,9 @@ public class WebappRegistry {
         if (GURL.isEmptyOrInvalid(url)) {
             return false;
         }
-        // This function is called by the ToolbarManager every time a navigation
-        // happens, which means that there can be internal urls like about:blank
-        // that has a null origin. Handle that here.
+        // This function is called by the ToolbarManager every time a navigation happens, which
+        // means that there can be internal urls like about:blank that has a null origin. Handle
+        // that here.
         Origin origin = Origin.create(url.getSpec());
         if (origin == null) {
             return false;
