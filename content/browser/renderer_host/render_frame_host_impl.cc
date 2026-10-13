@@ -198,6 +198,7 @@
 #include "content/common/navigation_params_utils.h"
 #include "content/public/browser/active_url_message_filter.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/child_process_termination_info.h"
 #include "content/public/browser/clipboard_types.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/context_menu_params.h"
@@ -4562,7 +4563,7 @@ void RenderFrameHostImpl::RenderProcessGone(
 
   ++renderer_exit_count_;
 
-  MaybeGenerateCrashReport(info.status, info.exit_code);
+  MaybeGenerateCrashReport(info);
 
   // When a frame's process dies, its RenderFrame no longer exists, which means
   // that its child frames must be cleaned up as well.
@@ -17055,8 +17056,7 @@ void RenderFrameHostImpl::OnSameDocumentCommitProcessed(
 }
 
 void RenderFrameHostImpl::MaybeGenerateCrashReport(
-    base::TerminationStatus status,
-    int exit_code) {
+    const ChildProcessTerminationInfo& info) {
   if (!last_committed_url_.SchemeIsHTTPOrHTTPS()) {
     return;
   }
@@ -17078,6 +17078,7 @@ void RenderFrameHostImpl::MaybeGenerateCrashReport(
   }
   CHECK(is_local_root());
 
+  const int exit_code = info.exit_code;
   auto metrics = GetProcess()->GetCrashMemoryMetrics();
 
   const bool is_oom =
@@ -17104,7 +17105,7 @@ void RenderFrameHostImpl::MaybeGenerateCrashReport(
   // |is_unresponsive| because a renderer exhausting memory often becomes
   // unresponsive prior to termination.
   std::string reason;
-  switch (status) {
+  switch (info.status) {
     case base::TERMINATION_STATUS_ABNORMAL_TERMINATION:
     case base::TERMINATION_STATUS_PROCESS_CRASHED:
 #if BUILDFLAG(IS_WIN)
@@ -17140,11 +17141,35 @@ void RenderFrameHostImpl::MaybeGenerateCrashReport(
       break;
     case base::TERMINATION_STATUS_OOM:
     case base::TERMINATION_STATUS_EVICTED_FOR_MEMORY:
-#if BUILDFLAG(IS_ANDROID)
-    case base::TERMINATION_STATUS_OOM_PROTECTED:
-#endif
       reason = "oom";
       break;
+#if BUILDFLAG(IS_ANDROID)
+    case base::TERMINATION_STATUS_OOM_PROTECTED:
+      // On Android, child processes are spawned from the system Zygote rather
+      // than being direct children of the browser process, so waitpid() does
+      // not work and ChildProcessLauncherHelper::GetTerminationInfo() maps all
+      // foreground process terminations to TERMINATION_STATUS_OOM_PROTECTED
+      // (while background/waived processes—including routine OS memory
+      // evictions—receive TERMINATION_STATUS_NORMAL_TERMINATION and are not
+      // reported).
+      if (GetProcess()->FastShutdownStarted() ||
+          GetProcess()->IsDeletingSoon() || info.clean_exit) {
+        return;
+      }
+      if (is_oom) {
+        reason = "oom";
+      } else if (is_unresponsive) {
+        reason = "unresponsive";
+      } else if (info.was_killed_intentionally_by_browser ||
+                 GetProcess()->ShutdownRequested()) {
+        if (exit_code != RESULT_CODE_KILLED_BAD_MESSAGE) {
+          // An intentional browser-initiated shutdown or Task Manager kill
+          // should not be reported.
+          return;
+        }
+      }
+      break;
+#endif
 #if BUILDFLAG(IS_CHROMEOS)
     case base::TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM:
       // On ChromeOS, GetTerminationStatus() maps any SIGKILL to

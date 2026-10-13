@@ -326,6 +326,7 @@ class UnboundedSurfaceWindow;
 class WebAuthRequestSecurityChecker;
 class WebAuthRequestSecurityCheckerImpl;
 class WebUIImpl;
+struct ChildProcessTerminationInfo;
 struct ResourceTimingInfo;
 
 // To be called when a RenderFrameHostImpl receives an event.
@@ -3939,9 +3940,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const SubresourceLoaderFactoriesConfig& config,
       const base::flat_set<url::Origin>& isolated_world_origins);
 
-  // Based on the termination |status| and |exit_code|, may generate a crash
-  // report to be routed to the Reporting API.
-  void MaybeGenerateCrashReport(base::TerminationStatus status, int exit_code);
+  // Based on the process termination |info|, may generate a crash report to be
+  // routed to the Reporting API.
+  void MaybeGenerateCrashReport(const ChildProcessTerminationInfo& info);
   base::DictValue ReadCrashReportAPIBody();
 
   // Bitfield values for recording navigation frame-type (main or subframe)

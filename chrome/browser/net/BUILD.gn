@@ -365,6 +365,14 @@ if (is_android) {
       "//net:test_support",
       "//testing/gtest",
     ]
+    if (enable_reporting) {
+      sources += [ "reporting_browsertest_android.cc" ]
+      deps += [
+        "//chrome/browser/ssl:cert_verifier_test_support",
+        "//content/test:browsertest_support",
+        "//services/network/public/cpp",
+      ]
+    }
   }
 } else {
   source_set("storage_test_utils") {
