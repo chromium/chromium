@@ -629,6 +629,89 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
             ActionItemProgressRingStatus::kIdle);
 }
 
+IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, BadgeRendering) {
+  actions::ActionId action_id = kActionShowDownloads;
+  toolbar_ui_api::mojom::PinnedToolbarAction mojom_action =
+      toolbar_ui_api::mojom::PinnedToolbarAction::kShowDownloads;
+
+  PinAction(action_id, mojom_action);
+
+  DownloadButton* download_button = GetWebUIToolbarWebView(browser())
+                                        ->GetPinnedToolbarActions()
+                                        ->GetDownloadButton();
+  ASSERT_TRUE(download_button);
+
+  auto verify_badge = [&](std::string_view expected) {
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return EvalJsOnPinnedAction(
+                 mojom_action,
+                 "const badge = "
+                 "    actionEl.shadowRoot.querySelector('.badge'); "
+                 "return badge ? badge.textContent.trim() : 'none';")
+                 .ExtractString() == expected;
+    }));
+  };
+
+  // No badge is rendered initially.
+  verify_badge("none");
+
+  // Inactive button with multiple downloads does not render a badge.
+  download_button->UpdateBadge(/*is_active=*/false,
+                               /*progress_download_count=*/2, SK_ColorBLACK,
+                               SK_ColorWHITE);
+  verify_badge("none");
+
+  // Active button with a single download does not render a badge.
+  download_button->UpdateBadge(/*is_active=*/true,
+                               /*progress_download_count=*/1, SK_ColorBLACK,
+                               SK_ColorWHITE);
+  verify_badge("none");
+
+  // Multiple concurrent downloads render the download count.
+  download_button->UpdateBadge(/*is_active=*/true,
+                               /*progress_download_count=*/2, SK_ColorBLACK,
+                               SK_ColorWHITE);
+  verify_badge("2");
+
+  download_button->UpdateBadge(/*is_active=*/true,
+                               /*progress_download_count=*/5, SK_ColorBLACK,
+                               SK_ColorWHITE);
+  verify_badge("5");
+
+  // More than 9 downloads renders "9+".
+  download_button->UpdateBadge(/*is_active=*/true,
+                               /*progress_download_count=*/10, SK_ColorBLACK,
+                               SK_ColorWHITE);
+  verify_badge("9+");
+
+  // Becoming inactive removes the badge.
+  download_button->UpdateBadge(/*is_active=*/false,
+                               /*progress_download_count=*/10, SK_ColorBLACK,
+                               SK_ColorWHITE);
+  verify_badge("none");
+
+  // Re-activating with multiple downloads restores the badge.
+  download_button->UpdateBadge(/*is_active=*/true,
+                               /*progress_download_count=*/3, SK_ColorBLACK,
+                               SK_ColorWHITE);
+  verify_badge("3");
+
+  // Dropping back to 1 download removes the badge.
+  download_button->UpdateBadge(/*is_active=*/true,
+                               /*progress_download_count=*/1, SK_ColorBLACK,
+                               SK_ColorWHITE);
+  verify_badge("none");
+
+  // Unpinning the downloads button also resets the badge.
+  download_button->UpdateBadge(/*is_active=*/true,
+                               /*progress_download_count=*/2, SK_ColorBLACK,
+                               SK_ColorWHITE);
+  verify_badge("2");
+  UnpinAction(action_id, mojom_action);
+  PinAction(action_id, mojom_action);
+  verify_badge("none");
+}
+
 IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, StateAccessors) {
   PinnedToolbarActions* view =
       GetWebUIToolbarWebView(browser())->GetPinnedToolbarActions();

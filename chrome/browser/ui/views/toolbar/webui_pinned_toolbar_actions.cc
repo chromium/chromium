@@ -99,6 +99,10 @@ class WebUIPinnedToolbarActions::WebUIDownloadButton : public DownloadButton {
         ToMojoProgressRingStatus(ring_status_), progress_percentage);
   }
 
+  // Returns the number to show in the badge sent to the renderer, or nullopt if
+  // no badge should be drawn.
+  std::optional<int32_t> GetBadgeNumber() const { return badge_number_; }
+
   // Clears the progress ring without notifying the renderer. Called when the
   // downloads button stops being displayed so that a stale ring isn't drawn if
   // it's displayed again, matching the Views toolbar, where a re-created
@@ -107,6 +111,12 @@ class WebUIPinnedToolbarActions::WebUIDownloadButton : public DownloadButton {
     ring_status_ = ActionItemProgressRingStatus::kIdle;
     progress_percentage_ = 0;
   }
+
+  // Clears the badge without notifying the renderer. Called when the downloads
+  // button stops being displayed so that a stale badge isn't drawn if it's
+  // displayed again, matching the Views toolbar, where a re-created button
+  // starts without a badge.
+  void ResetBadge() { badge_number_ = std::nullopt; }
 
   // DownloadButton:
   bool IsShowing() const override { return owner_->IsDownloadButtonShowing(); }
@@ -138,8 +148,17 @@ class WebUIPinnedToolbarActions::WebUIDownloadButton : public DownloadButton {
                    int progress_download_count,
                    SkColor text_color,
                    SkColor background_color) override {
-    // TODO(https://crbug.com/474063115): Implement the badge for the WebUI
-    // toolbar.
+    // Only display the badge if there are multiple in-progress downloads and
+    // the button is active, matching DownloadsImageBadge::UpdateImage().
+    std::optional<int32_t> badge_number;
+    if (is_active && progress_download_count >= 2) {
+      badge_number = progress_download_count;
+    }
+    if (badge_number == badge_number_) {
+      return;
+    }
+    badge_number_ = badge_number;
+    owner_->OnActionsChanged();
   }
 
   gfx::Rect GetBoundsInScreen() const override {
@@ -166,6 +185,7 @@ class WebUIPinnedToolbarActions::WebUIDownloadButton : public DownloadButton {
   ActionItemProgressRingStatus ring_status_ =
       ActionItemProgressRingStatus::kIdle;
   int progress_percentage_ = 0;
+  std::optional<int32_t> badge_number_;
 };
 
 WebUIPinnedToolbarActions::WebUIPinnedToolbarActions(
@@ -229,6 +249,7 @@ void WebUIPinnedToolbarActions::OnActionsChanged() {
     }
     if (id == kActionShowDownloads) {
       state->progress_ring = download_button_->GetProgressRingState();
+      state->badge_number = download_button_->GetBadgeNumber();
     }
 
     ui::ImageModel image_model;
@@ -271,6 +292,7 @@ void WebUIPinnedToolbarActions::OnActionsChanged() {
 
   if (!processed_actions.contains(kActionShowDownloads)) {
     download_button_->ResetProgressRing();
+    download_button_->ResetBadge();
   }
 
   int old_width = GetWidth();

@@ -779,6 +779,10 @@ struct PinnedToolbarActionState {
   // The progress ring to draw around the icon, if any. Null if this action
   // never draws a progress ring.
   DownloadProgressRingState? progress_ring;
+
+  // The number to show in the badge drawn over the icon, if any. Null if this
+  // action has no badge.
+  int32? badge_number;
 };
 
 struct LocationBarState {

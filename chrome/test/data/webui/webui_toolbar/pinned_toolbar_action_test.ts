@@ -177,6 +177,51 @@ suite('PinnedToolbarAction', function() {
     assertEquals(null, getRing());
   });
 
+  test('Renders the badge', async () => {
+    const shadowRoot: ShadowRoot = action.shadowRoot;
+    const getBadge = () => shadowRoot.querySelector<HTMLElement>('.badge');
+
+    // No badge rendered by default.
+    assertEquals(null, getBadge());
+
+    action.state = {
+      ...action.state,
+      badgeNumber: 1,
+    };
+    await microtasksFinished();
+    assertEquals('1', getBadge()!.textContent.trim());
+
+    action.state = {
+      ...action.state,
+      badgeNumber: 2,
+    };
+    await microtasksFinished();
+    assertEquals('2', getBadge()!.textContent.trim());
+
+    action.state = {
+      ...action.state,
+      badgeNumber: 5,
+    };
+    await microtasksFinished();
+    assertEquals('5', getBadge()!.textContent.trim());
+
+    // Count greater than 9 renders 9+.
+    action.state = {
+      ...action.state,
+      badgeNumber: 10,
+    };
+    await microtasksFinished();
+    assertEquals('9+', getBadge()!.textContent.trim());
+
+    // Setting badgeNumber to null removes the badge.
+    action.state = {
+      ...action.state,
+      badgeNumber: null,
+    };
+    await microtasksFinished();
+    assertEquals(null, getBadge());
+  });
+
   test('Sets draggable attribute based on poppedOut state', async () => {
     const button = action.shadowRoot!.querySelector('cr-icon-button')!;
     assertEquals('true', button.getAttribute('draggable'));

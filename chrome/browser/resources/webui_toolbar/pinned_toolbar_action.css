@@ -101,3 +101,38 @@
     animation: none;
   }
 }
+
+/* The badge drawn over the button's icon. This mirrors the badge the Views
+ * toolbar paints; see CircleBadgeImageSource in
+ * //chrome/browser/ui/views/toolbar/download_button_views.cc.
+ */
+.badge {
+  align-items: center;
+  background-color: var(--color-toolbar);
+  border-radius: 50%;
+  bottom: 0;
+  box-sizing: border-box;
+  color: var(--color-download-toolbar-button-inactive);
+  display: flex;
+  font-size: calc(var(--button-height) / 2 - 4px);
+  font-weight: 500;
+  height: calc(var(--button-height) / 2);
+  inset-inline-end: 0;
+  justify-content: center;
+  line-height: 1;
+  pointer-events: none;
+  position: absolute;
+  user-select: none;
+  width: calc(var(--button-width) / 2);
+  z-index: 2;
+}
+
+.badge[is-activated] {
+  color: var(--color-download-toolbar-button-active);
+}
+
+/* Dormant buttons, like disabled ones, draw the badge in the inactive color. */
+.badge[disabled],
+.badge[dormant] {
+  color: var(--color-toolbar-button-icon-inactive);
+}

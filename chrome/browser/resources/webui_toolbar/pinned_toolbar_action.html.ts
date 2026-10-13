@@ -34,5 +34,11 @@ ${this.getProgressRingStatus_() ? html`
   </svg>
 ` : nothing}
 <div class="status-indicator" ?hidden="${!this.state.activated}"></div>
+${this.getBadgeText_() ? html`
+  <div class="badge" aria-hidden="true" ?disabled="${!this.state.enabled}"
+      ?dormant="${this.isDormant_()}" ?is-activated="${this.state.activated}">
+    ${this.getBadgeText_()}
+  </div>
+` : nothing}
 <!--_html_template_end_-->`;
 }
