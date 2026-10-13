@@ -12,6 +12,7 @@
 #include "base/timer/timer.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/animation_delegate.h"
+#include "ui/views/view_tracker.h"
 #include "ui/views/views_export.h"
 
 namespace views {
@@ -35,6 +36,21 @@ class SubmenuView;
 class VIEWS_EXPORT MenuClosureAnimationMac final
     : public gfx::AnimationDelegate {
  public:
+  // Disables (or, with `disable` = false, enables) animations for the lifetime
+  // of this object, restoring the previous state on destruction.
+  class VIEWS_EXPORT ScopedDisableAnimationsForTesting {
+   public:
+    explicit ScopedDisableAnimationsForTesting(bool disable = true);
+    ScopedDisableAnimationsForTesting(
+        const ScopedDisableAnimationsForTesting&) = delete;
+    ScopedDisableAnimationsForTesting& operator=(
+        const ScopedDisableAnimationsForTesting&) = delete;
+    ~ScopedDisableAnimationsForTesting();
+
+   private:
+    const bool previous_value_;
+  };
+
   // After this closure animation is done, |callback| is run to finish
   // dismissing the menu. If |item| is given, this will animate the item being
   // accepted before animating the menu closing; if |item| is nullptr, only the
@@ -54,8 +70,9 @@ class VIEWS_EXPORT MenuClosureAnimationMac final
   // Returns the MenuItemView this animation targets.
   MenuItemView* item() { return item_; }
 
-  // Returns the SubmenuView this animation targets.
-  SubmenuView* menu() { return menu_; }
+  // Returns the SubmenuView this animation targets, or null if it has been
+  // destroyed.
+  SubmenuView* menu();
 
   // Causes animations to take no time for testing purposes. Note that this
   // still causes the completion callback to be run asynchronously, so test
@@ -84,7 +101,9 @@ class VIEWS_EXPORT MenuClosureAnimationMac final
   base::OneShotTimer timer_;
   std::unique_ptr<gfx::Animation> fade_animation_;
   raw_ptr<MenuItemView> item_;
-  raw_ptr<SubmenuView> menu_;
+  // Tracked rather than a raw pointer since the submenu may be destroyed while
+  // the fade is running (e.g. when the menu model is rebuilt).
+  ViewTracker menu_;
   AnimationStep step_ = AnimationStep::kStart;
   base::WeakPtrFactory<MenuClosureAnimationMac> weak_ptr_factory_{this};
 };

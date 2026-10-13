@@ -132,8 +132,12 @@ MenuItemView::MenuItemView(MenuDelegate* delegate)
 
 MenuItemView::~MenuItemView() {
   SetAnchorView(nullptr);
-  if (controller_) {
-    NotifyControllerOfDestructionRecursively(this, controller_.get());
+  // Only the root item holds `controller_`, so walk up to the root to also
+  // cover destruction of a non-root subtree (e.g. via RemoveMenuItem()). This
+  // is safe because each item clears its children's `parent_menu_item_` below,
+  // before those children are destroyed.
+  if (MenuController* controller = GetMenuController()) {
+    NotifyControllerOfDestructionRecursively(this, controller);
   }
   if (submenu_) {
     for (auto* item : submenu_->GetMenuItems()) {
