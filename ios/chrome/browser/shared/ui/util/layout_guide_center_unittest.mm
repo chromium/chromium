@@ -205,3 +205,27 @@ TEST_F(LayoutGuideCenterTest, TestReferenceViewNoChangesIfSameView) {
   reference_view.cr_onWindowCoordinatesChanged(view);
   EXPECT_TRUE(windowCoordinatesChangedCalled);
 }
+
+// Checks that alternately referencing two views under the same name doesn't
+// accumulate views or constraints in their window.
+TEST_F(LayoutGuideCenterTest, AlternatingReferencedViewsDoesNotLeak) {
+  UIWindow* window = [[UIWindow alloc]
+      initWithWindowScene:chrome_test_util::GetAnyWindowScene()];
+  UIView* first_view = [[UIView alloc] init];
+  UIView* second_view = [[UIView alloc] init];
+  [window addSubview:first_view];
+  [window addSubview:second_view];
+  [center_ referenceView:first_view underName:@"view"];
+  [center_ referenceView:second_view underName:@"view"];
+  const NSUInteger subviews_count = window.subviews.count;
+  const NSUInteger constraints_count = window.constraints.count;
+
+  for (int i = 0; i < 10; i++) {
+    [center_ referenceView:first_view underName:@"view"];
+    [center_ referenceView:second_view underName:@"view"];
+  }
+
+  EXPECT_EQ(subviews_count, window.subviews.count);
+  EXPECT_EQ(constraints_count, window.constraints.count);
+  EXPECT_EQ([center_ referencedViewUnderName:@"view"], second_view);
+}
