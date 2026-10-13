@@ -41,23 +41,33 @@ BASE_FEATURE(kPageActionMenu, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kGeminiKillSwitch, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Default enabled countries for PageActionMenu in Gemini for Chrome
-// Expansion V3.
-constexpr std::array<std::string_view, 171> kDefaultEnabledCountries = {
-    "ae", "ag", "am", "ao", "aq", "ar", "as", "au", "az", "ba", "bb", "bd",
-    "bf", "bh", "bi", "bj", "bn", "bo", "br", "bs", "bt", "bw", "bz", "ca",
-    "cc", "cd", "cf", "cg", "ci", "ck", "cl", "cm", "co", "cr", "cv", "cx",
-    "dj", "dm", "do", "dz", "ec", "eg", "eh", "er", "et", "fj", "fm", "ga",
-    "gd", "ge", "gh", "gm", "gn", "gq", "gt", "gu", "gw", "gy", "hk", "hm",
-    "hn", "ht", "id", "il", "in", "iq", "jm", "jo", "ke", "kg", "kh", "ki",
-    "km", "kn", "kr", "kw", "kz", "la", "lb", "lc", "lk", "lr", "ls", "ly",
-    "ma", "md", "me", "mg", "mh", "mk", "ml", "mm", "mn", "mo", "mp", "mr",
-    "mu", "mv", "mw", "mx", "my", "mz", "na", "nc", "ne", "nf", "ng", "ni",
-    "np", "nr", "nu", "nz", "om", "pa", "pe", "pf", "pg", "ph", "pk", "pn",
-    "pr", "ps", "pw", "py", "qa", "rs", "rw", "sa", "sb", "sc", "sd", "sg",
-    "sl", "sn", "so", "sr", "ss", "st", "sv", "sz", "td", "tg", "th", "tj",
-    "tk", "tl", "tm", "tn", "to", "tt", "tv", "tw", "tz", "ua", "ug", "um",
-    "us", "uy", "uz", "vc", "ve", "vi", "vn", "vu", "wf", "ws", "xk", "ye",
-    "za", "zm", "zw"};
+// Expansion V4.
+constexpr std::array<std::string_view, 186> kDefaultEnabledCountries = {
+    // Phase 1
+    "us", "ca", "nz", "in",
+
+    // Phase 2
+    "as", "au", "bd", "bn", "bt", "cc", "ck", "cx", "fj", "fm", "gu", "hk",
+    "hm", "id", "kh", "ki", "kr", "la", "lk", "mh", "mm", "mn", "mo", "mp",
+    "mv", "my", "nc", "nf", "np", "nr", "nu", "pf", "pg", "ph", "pk", "pn",
+    "pw", "sb", "sg", "th", "tk", "tl", "to", "tv", "tw", "vn", "vu", "wf",
+    "ws",
+
+    // Phase 3
+    "ag", "ar", "bb", "bo", "br", "bs", "bz", "cl", "co", "cr", "dm", "do",
+    "ec", "gd", "gt", "gy", "hn", "ht", "jm", "kn", "lc", "mx", "ni", "pa",
+    "pe", "py", "sr", "sv", "tt", "uy", "vc", "ve", "ae", "am", "ao", "aq",
+    "az", "ba", "bf", "bh", "bi", "bj", "bw", "cd", "cf", "cg", "ci", "cm",
+    "cv", "dj", "dz", "eg", "eh", "er", "et", "ga", "ge", "gh", "gm", "gn",
+    "gq", "gw", "il", "iq", "jo", "ke", "kg", "km", "kw", "kz", "lb", "lr",
+    "ls", "ly", "ma", "md", "me", "mg", "mk", "ml", "mr", "mu", "mw", "mz",
+    "na", "ne", "ng", "om", "pr", "ps", "qa", "rs", "rw", "sa", "sc", "sd",
+    "sl", "sn", "so", "ss", "st", "sz", "td", "tg", "tj", "tm", "tn", "tz",
+    "ua", "ug", "um", "uz", "vi", "xk", "ye", "za", "zm", "zw",
+
+    // Phase 4
+    "ai", "bm", "fk", "gb", "gg", "gi", "gs", "im", "io", "je", "ky", "ms",
+    "sh", "tc", "vg"};
 
 // Default enabled locales for PageActionMenu. Locales are
 // matching desktop in chrome/browser/glic/public/glic_enabling.cc.
