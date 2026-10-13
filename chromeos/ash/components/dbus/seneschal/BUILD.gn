@@ -8,8 +8,8 @@ assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos/ash")
 
 component("seneschal") {
   defines = [ "IS_SENESCHAL_IMPL" ]
+  public_deps = [ ":seneschal_proto" ]
   deps = [
-    ":seneschal_proto",
     "//base",
     "//chromeos/ash/components/dbus/cicerone",
     "//chromeos/dbus/common",
