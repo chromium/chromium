@@ -11,11 +11,6 @@ namespace password_change::features {
 
 // All features in alphabetical order.
 
-// Controls whether ChangePasswordFormWaiter checks if the new password field
-// is enabled and not readonly before considering a form a valid change
-// password form.
-BASE_DECLARE_FEATURE(kCheckFieldEnabledInChangePasswordFormWaiter);
-
 // Controls whether ChromePasswordChangeService checks whether the password
 // field is focusable (visible).
 BASE_DECLARE_FEATURE(kCheckPasswordFieldFocusableBeforeOffering);

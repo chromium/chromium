@@ -57,10 +57,7 @@ std::optional<FormDiscardReason> GetDiscardReason(
 
   // The new password field must be enabled to be considered a change password
   // form.
-  if (base::FeatureList::IsEnabled(
-          password_change::features::
-              kCheckFieldEnabledInChangePasswordFormWaiter) &&
-      !FieldEnabled(parsed_form->new_password_element_renderer_id,
+  if (!FieldEnabled(parsed_form->new_password_element_renderer_id,
                     parsed_form->form_data)) {
     return FormDiscardReason::kNewPasswordFieldDisabled;
   }
