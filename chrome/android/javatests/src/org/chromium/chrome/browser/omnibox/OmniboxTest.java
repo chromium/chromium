@@ -81,6 +81,7 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.test.util.DeviceRestriction;
 
 import java.util.List;
 
@@ -607,11 +608,11 @@ public class OmniboxTest {
 
     @Test
     @SmallTest
-    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testClickStatusIcon_OnNTPDoesNothing() {
         mActivityTestRule.startOnNtp();
 
-        onView(withId(R.id.location_bar_status_icon)).perform(click());
+        onViewWaiting(withId(R.id.location_bar_status_icon)).perform(click());
         onView(withId(R.id.page_info_url_wrapper)).check(doesNotExist());
     }
 
