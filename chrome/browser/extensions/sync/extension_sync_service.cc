@@ -361,8 +361,9 @@ ExtensionSyncData ExtensionSyncService::CreateSyncData(
   if (it != pending_updates_.end()) {
     const base::Version& version = it->second.version;
     // If we have a pending version, it should be newer than the installed one.
-    CHECK_EQ(-1, extension.version().CompareTo(version),
-             base::NotFatalUntil::M161);
+    // TODO(crbug.com/573016740): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK_EQ(-1, extension.version().CompareTo(version));
     result.set_version(version);
     // If we'll re-enable the extension once it's updated, also send that back
     // to sync.
