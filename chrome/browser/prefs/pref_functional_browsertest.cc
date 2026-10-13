@@ -41,6 +41,7 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/test/test_reg_util_win.h"
 #include "chrome/browser/win/isolated_browser/isolated_browser_support.h"
+#include "chrome/common/chrome_paths_internal.h"
 #include "chrome/install_static/test/scoped_install_details.h"
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -308,6 +309,7 @@ IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, TestProcessIsolationPref) {
   rom.OverrideRegistry(HKEY_CURRENT_USER);
   install_static::ScopedInstallDetails scoped_install_details(
       /*system_level=*/true);
+  chrome::SetUsingDefaultUserDataDirectoryForTesting(true);
 
   PrefService* local_state = g_browser_process->local_state();
 
@@ -323,5 +325,6 @@ IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, TestProcessIsolationPref) {
 
   EXPECT_TRUE(
       base::test::RunUntil([&]() { return chrome::IsIsolationEnabled(); }));
+  chrome::SetUsingDefaultUserDataDirectoryForTesting(std::nullopt);
 }
 #endif  // BUILDFLAG(IS_WIN)

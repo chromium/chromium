@@ -40,6 +40,7 @@
 #include "chrome/browser/os_crypt/app_bound_encryption_provider_win.h"
 #include "chrome/browser/os_crypt/app_bound_encryption_win.h"
 #include "chrome/browser/win/isolated_browser/isolated_browser_test_support.h"
+#include "chrome/common/chrome_paths_internal.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/crash_keys.h"
 #include "chrome/elevation_service/elevation_service_idl.h"
@@ -260,6 +261,26 @@ TEST_F(IsolatedBrowserSupportSystemTest, CommandLine) {
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitch(::switches::kIsolated);
   EXPECT_FALSE(IsIsolationEnabled(&command_line));
+}
+
+TEST_F(IsolatedBrowserSupportSystemTest, NonDefaultUserDataDirPreventsWrites) {
+  install_static::ScopedInstallDetails details(/*system_level=*/true);
+
+  // Simulate a non-default user data directory.
+  chrome::SetUsingDefaultUserDataDirectoryForTesting(false);
+
+  base::test::TestFuture<base::expected<IsolationState, HRESULT>> future;
+  SetIsolationState(IsolationState::kProcessIsolation, &prefs_,
+                    future.GetCallback());
+  const auto result = future.Take();
+
+  // Non-default user data directories must be rejected with E_NOTIMPL and not
+  // modify isolation state.
+  EXPECT_THAT(result, base::test::ErrorIs(E_NOTIMPL));
+  EXPECT_FALSE(IsIsolationEnabled());
+
+  // Restore test override.
+  chrome::SetUsingDefaultUserDataDirectoryForTesting(std::nullopt);
 }
 
 TEST_F(IsolatedBrowserSupportSystemTest, SetIsolationStateTwice) {

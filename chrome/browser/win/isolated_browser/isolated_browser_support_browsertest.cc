@@ -11,6 +11,7 @@
 #include "base/test/test_reg_util_win.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/common/chrome_paths_internal.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/install_static/test/scoped_install_details.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -35,11 +36,19 @@ class IsolatedBrowserSupportBrowserTest : public InProcessBrowserTest {
   ~IsolatedBrowserSupportBrowserTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
+    // Browser tests run with a custom user data directory (--user-data-dir).
+    // Override this for testing so that SetIsolationState allows state writes.
+    chrome::SetUsingDefaultUserDataDirectoryForTesting(true);
     registry_override_.OverrideRegistry(HKEY_CURRENT_USER);
     scoped_install_details_ =
         std::make_unique<install_static::ScopedInstallDetails>(
             /*system_level=*/true);
     InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    InProcessBrowserTest::TearDownInProcessBrowserTestFixture();
+    chrome::SetUsingDefaultUserDataDirectoryForTesting(std::nullopt);
   }
 
  private:

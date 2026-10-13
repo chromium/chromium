@@ -29,6 +29,7 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/test/test_reg_util_win.h"
 #include "chrome/browser/win/isolated_browser/isolated_browser_support.h"
+#include "chrome/common/chrome_paths_internal.h"
 #include "chrome/install_static/test/scoped_install_details.h"
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -233,11 +234,19 @@ IN_PROC_BROWSER_TEST_F(ThemeSettingsInteractiveUiTest,
 class SystemSettingsInteractiveUiTest : public SettingsInteractiveUiTest {
  protected:
   void SetUpInProcessBrowserTestFixture() override {
+    // Isolation state is only written successfully if using a default user data
+    // dir, so override it here.
+    chrome::SetUsingDefaultUserDataDirectoryForTesting(true);
     ASSERT_NO_FATAL_FAILURE(
         registry_override_manager_.OverrideRegistry(HKEY_CURRENT_USER));
     scoped_feature_list_.InitAndEnableFeature(
         features::kProcessIsolationSettings);
     SettingsInteractiveUiTest::SetUpInProcessBrowserTestFixture();
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    SettingsInteractiveUiTest::TearDownInProcessBrowserTestFixture();
+    chrome::SetUsingDefaultUserDataDirectoryForTesting(std::nullopt);
   }
 
   install_static::ScopedInstallDetails scoped_install_details_{

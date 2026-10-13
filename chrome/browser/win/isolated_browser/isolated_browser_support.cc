@@ -30,6 +30,7 @@
 #include "base/win/security_descriptor.h"
 #include "base/win/sid.h"
 #include "chrome/browser/os_crypt/app_bound_encryption_provider_win.h"
+#include "chrome/common/chrome_paths_internal.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/elevation_service/elevation_service_idl.h"
 #include "chrome/elevation_service/elevator.h"
@@ -420,7 +421,12 @@ void SetIsolationState(
     base::OnceCallback<void(base::expected<IsolationState, HRESULT>)>
         completed) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!install_static::IsSystemInstall()) {
+  // Process isolation is only supported when using the default user data
+  // directory. Custom user data directories (e.g. specified via
+  // --user-data-dir) run unisolated, so avoid writing isolation state to
+  // the registry to prevent cross-profile contamination.
+  if (!install_static::IsSystemInstall() ||
+      !chrome::IsUsingDefaultDataDirectory().value_or(false)) {
     if (completed) {
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,

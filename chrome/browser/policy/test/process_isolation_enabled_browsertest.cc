@@ -9,6 +9,7 @@
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/win/isolated_browser/isolated_browser_support.h"
+#include "chrome/common/chrome_paths_internal.h"
 #include "chrome/install_static/test/scoped_install_details.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -23,6 +24,7 @@ namespace policy {
 class ProcessIsolationEnabledBrowserTest : public InProcessBrowserTest {
  public:
   void SetUpInProcessBrowserTestFixture() override {
+    chrome::SetUsingDefaultUserDataDirectoryForTesting(true);
     registry_override_.OverrideRegistry(HKEY_CURRENT_USER);
     scoped_install_details_ =
         std::make_unique<install_static::ScopedInstallDetails>(
@@ -41,6 +43,11 @@ class ProcessIsolationEnabledBrowserTest : public InProcessBrowserTest {
         &policy_provider_);
 
     InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    InProcessBrowserTest::TearDownInProcessBrowserTestFixture();
+    chrome::SetUsingDefaultUserDataDirectoryForTesting(std::nullopt);
   }
 
  private:
