@@ -451,23 +451,4 @@ proto::SolutionConfig BuildSummarizeSolutionConfig() {
   return solution_config;
 }
 
-proto::SolutionConfig BuildAndroidSummarizeSolutionConfig() {
-  proto::SolutionConfig solution_config = BuildSummarizeSolutionConfig();
-  solution_config.clear_safety();
-
-  auto* config = solution_config.mutable_feature();
-  config->set_can_skip_text_safety(true);
-  auto* input_config = config->mutable_input_config();
-  // Replace the desktop context limits because Android sends context and
-  // execution input together in each ML Kit request. Do not require a minimum
-  // context allocation, and record chromium-side input limits for both input
-  // paths.
-  input_config->set_min_context_tokens(0);
-  input_config->set_max_context_tokens(kAndroidMaxExecuteTokens);
-  input_config->set_max_execute_tokens(kAndroidMaxExecuteTokens);
-  config->mutable_output_config()->set_max_output_tokens(
-      kAndroidMaxOutputTokens);
-  return solution_config;
-}
-
 }  // namespace optimization_guide

@@ -9,7 +9,6 @@
 #include "base/task/current_thread.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "components/optimization_guide/core/model_execution/configs/summarize_solution_config.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/on_device_features.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
@@ -22,7 +21,6 @@
 #include "components/optimization_guide/core/model_execution/test/response_holder.h"
 #include "components/optimization_guide/core/model_execution/usage_tracker.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/proto/feature_configs.pb.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -83,13 +81,7 @@ class RequirePersistentModeForScamDetectionEnabledFeatureList {
 
 class ModelBrokerAndroidTest : public testing::Test {
  public:
-  ModelBrokerAndroidTest() {
-    // Most tests explicitly drive a single feature download. Avoid creating
-    // metadata downloaders for every installed AICore model unless a status
-    // test opts into that behavior.
-    fake_broker_.java_helper().settings().SetDefaultStatusCheckResult(
-        ModelStatus::kApiNotAvailable);
-  }
+  ModelBrokerAndroidTest() = default;
   ~ModelBrokerAndroidTest() override = default;
 
   void InstallTestFeatureConfig() {
@@ -366,57 +358,6 @@ TEST_F(ModelBrokerAndroidTest, DownloadProgressObserverAfterDownloadComplete) {
                                 kNormalizedDownloadProgressMax);
 }
 
-TEST_F(ModelBrokerAndroidTest, BuiltinConfigProvidesExpectedTokenLimits) {
-  ModelBrokerClient client(fake_broker_.BindAndPassRemote(), nullptr);
-  auto session =
-      DownloadModelAndCreateSession(client, mojom::OnDeviceFeature::kSummarize);
-  ASSERT_TRUE(session);
-  EXPECT_EQ(session->GetTokenLimits().min_context_tokens, 0u);
-  EXPECT_EQ(session->GetTokenLimits().max_context_tokens,
-            kAndroidMaxExecuteTokens);
-  EXPECT_EQ(session->GetTokenLimits().max_execute_tokens,
-            kAndroidMaxExecuteTokens);
-  EXPECT_EQ(session->GetTokenLimits().max_output_tokens,
-            kAndroidMaxOutputTokens);
-}
-
-TEST_F(ModelBrokerAndroidTest, ManifestConfigDoesNotWaitForAdaptation) {
-  ModelBrokerClient client(fake_broker_.BindAndPassRemote(), nullptr);
-  base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
-  client.CreateSession(mojom::OnDeviceFeature::kSummarize,
-                       SessionConfigParams{}, future.GetCallback());
-
-  fake_broker_.java_helper().TriggerDownloaderOnAvailable(spec_.model_name,
-                                                          spec_.model_version);
-  const auto target =
-      GetOptimizationTargetForFeature(mojom::OnDeviceFeature::kSummarize);
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return fake_broker_.model_provider()
-        .GetRegistrationMetadata(target)
-        .has_value();
-  }));
-
-  EXPECT_TRUE(future.Wait());
-  EXPECT_TRUE(future.Get());
-}
-
-TEST_F(ModelBrokerAndroidTest, ProvidesSummarizerFeatureRoutingConfig) {
-  ModelBrokerClient client(fake_broker_.BindAndPassRemote(), nullptr);
-
-  base::test::TestFuture<std::optional<mojo_base::ProtoWrapper>>
-      summarizer_future;
-  client.GetConfig(mojom::OnDeviceFeature::kSummarize,
-                   summarizer_future.GetCallback());
-  auto summarizer_wrapper = summarizer_future.Take();
-  ASSERT_TRUE(summarizer_wrapper);
-  auto summarizer_any = summarizer_wrapper->As<proto::Any>();
-  ASSERT_TRUE(summarizer_any);
-  proto::SummarizerFeatureConfig summarizer_config;
-  ASSERT_TRUE(summarizer_config.ParseFromString(summarizer_any->value()));
-  EXPECT_EQ(summarizer_config.default_use_case(),
-            ToUseCaseName(mojom::OnDeviceFeature::kSummarize));
-}
-
 // Test fixture for verifying model status check behavior with specific
 // statuses set per test.
 class ModelBrokerAndroidStatusCheckTest : public ModelBrokerAndroidTest {
@@ -537,23 +478,6 @@ TEST_F(ModelBrokerAndroidStatusCheckTest, BarrierWaitsForAllStatusChecks) {
            mojom::ModelUnavailableReason::kPendingAssets;
   });
   EXPECT_FALSE(future.IsReady());
-}
-
-TEST_F(ModelBrokerAndroidStatusCheckTest,
-       AvailableStatusFetchesModelSpecWithoutPriorUsage) {
-  fake_broker_.java_helper().settings().SetDefaultStatusCheckResult(
-      ModelStatus::kAvailable);
-  ModelBrokerClient client(fake_broker_.BindAndPassRemote(), nullptr);
-  // Subscribing does not raise usage priority, so only the kAvailable status
-  // path can start the metadata request that retrieves the model spec.
-  auto& subscriber = client.GetSubscriber(mojom::OnDeviceFeature::kSummarize);
-
-  fake_broker_.java_helper().TriggerDownloaderOnAvailable(spec_.model_name,
-                                                          spec_.model_version);
-
-  // The returned BaseModelSpec makes the summarize solution available.
-  EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return !subscriber.unavailable_reason().has_value(); }));
 }
 
 class ModelBrokerAndroidRequirePersistentModeEnabledTest

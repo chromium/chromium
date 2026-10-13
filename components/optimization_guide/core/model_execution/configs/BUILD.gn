@@ -2,38 +2,23 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-static_library("substitution_builders") {
+static_library("configs") {
   sources = [
+    "manifest_builder.cc",
+    "manifest_builder.h",
     "string_substitution_builder.cc",
     "string_substitution_builder.h",
     "substitution_builder.cc",
     "substitution_builder.h",
-  ]
-  public_deps = [
-    "//base",
-    "//components/optimization_guide/proto:optimization_guide_proto",
-  ]
-}
-
-source_set("summarize_config") {
-  sources = [
     "summarize_solution_config.cc",
     "summarize_solution_config.h",
   ]
   public_deps = [
-    ":substitution_builders",
-    "//components/optimization_guide/proto:optimization_guide_proto",
-  ]
-}
-
-source_set("manifest_builder") {
-  sources = [
-    "manifest_builder.cc",
-    "manifest_builder.h",
-  ]
-  public_deps = [
     "//base",
     "//components/optimization_guide/core:manifest_broker",
+    "//components/optimization_guide/core:model_execution",
+    "//components/optimization_guide/core:ondevice",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/optimization_guide/public/mojom",
   ]
 }

@@ -161,7 +161,6 @@ source_set("unit_tests") {
     "//components/on_device_ai",
     "//components/optimization_guide/core:manifest_broker_test_support",
     "//components/optimization_guide/core:test_support",
-    "//components/optimization_guide/core/model_execution/configs:summarize_config",
     "//components/passage_embeddings/core:test_support",
   ]
 }
