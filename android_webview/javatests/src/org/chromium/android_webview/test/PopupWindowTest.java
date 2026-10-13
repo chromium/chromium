@@ -661,7 +661,9 @@ public class PopupWindowTest extends AwParameterizedTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(controller.isSelectActionBarShowing(), Matchers.is(show));
-                });
+                },
+                AwActivityTestRule.WAIT_TIMEOUT_MS,
+                AwActivityTestRule.CHECK_INTERVAL);
     }
 
     private void hideSelectActionMode(final SelectionPopupController controller) {

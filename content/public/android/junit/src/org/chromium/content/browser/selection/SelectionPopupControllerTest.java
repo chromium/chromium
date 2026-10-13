@@ -1622,4 +1622,32 @@ public class SelectionPopupControllerTest {
         assertEquals(ListItemType.DIVIDER, items.get(1).type);
         assertEquals("Item 2", items.get(2).model.get(TITLE));
     }
+
+    @Test
+    @Feature({"TextInput", "SmartSelection"})
+    public void testOnClassifiedAndOnClassifiedLateIgnoreDestroyedWebContents() {
+        TestSelectionClient client = new SelectionClientOnlyReturnTrue();
+        mController.setSelectionClient(client);
+
+        showSelectionMenu(
+                mController,
+                AMPHITHEATRE,
+                /* selectionStartOffset= */ 5,
+                MenuSourceType.LONG_PRESS);
+        assertTrue(mController.hasSelection());
+
+        when(mWebContents.isDestroyed()).thenReturn(true);
+
+        SelectionClient.Result result = resultForAmphitheatre();
+        result.text = AMPHITHEATRE_FULL;
+        result.start = 0;
+        result.end = AMPHITHEATRE_FULL.length();
+
+        mController.getResultCallback().onClassified(result);
+        assertNull(mController.getClassificationResult());
+
+        mController.getResultCallback().onClassifiedLate(result);
+        assertNull(mController.getClassificationResult());
+        assertNull(mController.getSelectionMenuCachedResultForTesting());
+    }
 }

@@ -2021,8 +2021,9 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     private class SmartSelectionCallback implements SelectionClient.ResultCallback {
         @Override
         public void onClassified(SelectionClient.Result result) {
-            // If the selection does not exist any more, discard |result|.
-            if (!hasSelection()) {
+            // If the selection does not exist any more or the WebContents has been destroyed,
+            // discard |result|.
+            if (!hasSelection() || mWebContents.isDestroyed() || mContext == null) {
                 mClassificationResult = null;
                 return;
             }
@@ -2064,8 +2065,9 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
         @Override
         public void onClassifiedLate(SelectionClient.Result result) {
-            // If the selection does not exist any more, discard |result|.
-            if (!hasSelection()) {
+            // If the selection does not exist any more or the WebContents has been destroyed,
+            // discard |result|.
+            if (!hasSelection() || mWebContents.isDestroyed() || mContext == null) {
                 mClassificationResult = null;
                 return;
             }
@@ -2151,6 +2153,8 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         assert oldValue != null;
         assert oldValue.get() == this;
         mNativeSelectionPopupController = 0;
+        mHasSelection = false;
+        mClassificationResult = null;
     }
 
     @CalledByNative
