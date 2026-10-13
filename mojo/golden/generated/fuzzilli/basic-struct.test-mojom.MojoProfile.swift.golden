@@ -177,7 +177,12 @@ private let MojoInt64MojoArrayGenerator = CodeGenerator(
 ///
 extension ILType {
     fileprivate static let jsGoldenSimpleUnionUnion: ILType = .object(
-        ofGroup: "golden.SimpleUnion")
+        ofGroup: "golden.SimpleUnion",
+        withProperties: [
+            "arr",
+            "val",
+            "flag",
+        ])
     fileprivate static let jsGoldenSimpleUnionUnionArrConstructor: ILType = .constructor(
         [.plain(.jsInt64MojoArray)] => .jsGoldenSimpleUnionUnion)
     fileprivate static let jsGoldenSimpleUnionUnionValConstructor: ILType = .constructor(
@@ -190,7 +195,11 @@ extension ObjectGroup {
     fileprivate static let goldenSimpleUnionUnion = ObjectGroup(
         name: "golden.SimpleUnion",
         instanceType: .jsGoldenSimpleUnionUnion,
-        properties: [:],
+        properties: [
+            "arr": .jsInt64MojoArray,
+            "val": .jsInt16,
+            "flag": .boolean,
+        ],
         methods: [:]
     )
 }

@@ -3,7 +3,12 @@
 extension ILType {
 {%- for union in unions %}
     fileprivate static let {{union|format_il_type}}: ILType = .object(
-        ofGroup: "{{union|fully_qualified_name}}")
+        ofGroup: "{{union|fully_qualified_name}}",
+        withProperties: [
+        {%- for field in union.fields %}
+            "{{field.name}}",
+        {%- endfor %}
+        ])
     {%- for field in union.fields %}
     fileprivate static let {{union|format_il_type}}
         {{- field.name|to_camel}}Constructor: ILType = .constructor(
@@ -17,7 +22,11 @@ extension ObjectGroup {
     fileprivate static let {{union|format_unique_name|to_camel(True)}} = ObjectGroup(
         name: "{{union|fully_qualified_name}}",
         instanceType: .{{union|format_il_type}},
-        properties: [:],
+        properties: [
+            {%- for field in union.fields %}
+            "{{field.name}}": .{{field.kind|format_il_type}},
+            {%- endfor %}
+        ],
         methods: [:]
     )
 {%- endfor %}

@@ -218,7 +218,8 @@ Legend: ✅ supported · ⚠️ partial / approximated · ❌ not supported
     `enable_mojom_fuzzer = true` have bindings with constructors for each union
     variant that output these object literals. Fuzzilli selects a constructor
     uniformly at random when generating the union.
-
+*   Each variant is exposed as a property on the union's `ILType` and
+    `ObjectGroup`, so Fuzzilli can read the value back with type information.
 #### WebIDL dictionaries
 
 *   WebIDL dictionaries, such as `MojoCreateDataPipeOptions`, have no
