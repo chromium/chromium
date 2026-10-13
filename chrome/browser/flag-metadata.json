@@ -2924,6 +2924,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "device-trust-connector-android",
+    "owners": [ "mwalachowski@google.com", "szymonkurek@google.com" ],
+    "expiry_milestone": 162
+  },
+  {
     "name": "devtools-aria-live-recording",
     "owners": [ "migueloruiz@google.com" ],
     "expiry_milestone": 160

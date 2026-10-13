@@ -6171,6 +6171,13 @@ inline constexpr char kDesktopFlingCurveOnAndroidDescription[] =
     "Enables desktop-like fling curve (exponential decay) and scroll wheel "
     "multipliers on Android.";
 
+inline constexpr char kDeviceTrustConnectorAndroidName[] =
+    "Device Trust Connector on Android";
+inline constexpr char kDeviceTrustConnectorAndroidDescription[] =
+    "Enables the Device Trust Connector on Android, allowing managed browsers "
+    "and profiles to share device signals with policy-configured "
+    "identity providers.";
+
 inline constexpr char kEdgeToEdgeTopInsetName[] = "Edge-to-Edge Top Inset";
 inline constexpr char kEdgeToEdgeTopInsetDescription[] =
     "Enables the prototype Edge-to-Edge top inset feature and refactor, which "

@@ -1116,6 +1116,7 @@ source_set("core") {
     "//chrome/browser/devtools",
     "//chrome/browser/digital_credentials",
     "//chrome/browser/dom_distiller",
+    "//chrome/browser/enterprise/connectors/device_trust:features",
     "//chrome/browser/enterprise/network_header_injection",
     "//chrome/browser/enterprise/platform_auth:features",
     "//chrome/browser/external_protocol",

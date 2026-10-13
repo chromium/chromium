@@ -286,6 +286,7 @@
 #include "url/url_features.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #include "chrome/browser/finds/core/finds_features.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/notifications/chime/android/features.h"
@@ -14184,6 +14185,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          features::kManagedConfigurationRecoverFromFailedFetches)},
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+    {"device-trust-connector-android",
+     flag_descriptions::kDeviceTrustConnectorAndroidName,
+     flag_descriptions::kDeviceTrustConnectorAndroidDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(enterprise_connectors::kDeviceTrustConnectorAndroid)},
+#endif  // BUILDFLAG(IS_ANDROID)
 
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
