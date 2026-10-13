@@ -65,7 +65,10 @@ void XRPlaneManager::ProcessPlaneInformation(
     // as-is.
     if (!updated_planes.Contains(plane_id)) {
       auto it = plane_ids_to_planes_.find(plane_id);
-      CHECK(it != plane_ids_to_planes_.end());
+      if (it == plane_ids_to_planes_.end()) {
+        DVLOG(1) << "Ignoring plane ID without cached or updated plane data";
+        continue;
+      }
       updated_planes.insert(plane_id, it->value);
     }
   }
