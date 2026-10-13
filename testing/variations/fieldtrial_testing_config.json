@@ -3473,25 +3473,6 @@
             ]
         }
     ],
-    "CdmServicePriorityElevation": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "ProcessAndThreadPriority_20260716",
-                    "enable_features": [
-                        "CdmProcessPriorityElevation",
-                        "CdmThreadPriorityElevation"
-                    ]
-                }
-            ]
-        }
-    ],
     "CentralizedInfoBarFramework": [
         {
             "platforms": [
