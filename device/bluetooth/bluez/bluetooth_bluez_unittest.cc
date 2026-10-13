@@ -3612,6 +3612,101 @@ TEST_P(BluetoothBlueZTestP, PairingCancelledAtConfirmation) {
   EXPECT_FALSE(device->IsPaired());
 }
 
+TEST_P(BluetoothBlueZTestP, PairingCancelledSynchronouslyAtDisplayPinCode) {
+  fake_bluetooth_device_client_->SetSimulationIntervalMs(10);
+
+  GetAdapter();
+  DiscoverDevices();
+
+  BluetoothDevice* device = adapter_->GetDevice(
+      bluez::FakeBluetoothDeviceClient::kDisplayPinCodeAddress);
+  ASSERT_TRUE(device != nullptr);
+  ASSERT_FALSE(device->IsPaired());
+
+  StrictMock<MockPairingDelegate> pairing_delegate;
+  // Note: Synchronous cancel
+  // The delegate cancels pairing from inside its callout. CancelPairing()
+  // synchronously ends pairing, destroying the BluetoothPairingBlueZ while
+  // the method that called the delegate is still on the stack. That method
+  // must check its WeakPtr before touching members, or it reads freed memory.
+  EXPECT_CALL(pairing_delegate, DisplayPinCode(_, "123456"))
+      .WillOnce([](BluetoothDevice* device, const std::string& pincode) {
+        device->CancelPairing();
+      });
+
+  base::test::TestFuture<std::optional<BluetoothDevice::ConnectErrorCode>>
+      connect_future;
+  PerformConnect(device, &pairing_delegate, connect_future.GetCallback());
+  EXPECT_EQ(BluetoothDevice::ERROR_AUTH_CANCELED, connect_future.Get());
+  EXPECT_FALSE(device->IsConnected());
+  EXPECT_FALSE(device->IsConnecting());
+  EXPECT_FALSE(device->IsPaired());
+}
+
+TEST_P(BluetoothBlueZTestP, PairingCancelledSynchronouslyAtDisplayPasskey) {
+  fake_bluetooth_device_client_->SetSimulationIntervalMs(10);
+
+  GetAdapter();
+  DiscoverDevices();
+
+  BluetoothDevice* device = adapter_->GetDevice(
+      bluez::FakeBluetoothDeviceClient::kDisplayPasskeyAddress);
+  ASSERT_TRUE(device != nullptr);
+  ASSERT_FALSE(device->IsPaired());
+
+  StrictMock<MockPairingDelegate> pairing_delegate;
+  // See "Note: Synchronous cancel" above. Cancelling inside DisplayPasskey()
+  // means BluetoothAdapterBlueZ::DisplayPasskey() must not go on to call
+  // KeysEntered() on the destroyed pairing.
+  EXPECT_CALL(pairing_delegate, DisplayPasskey(_, 123456U))
+      .WillOnce([](BluetoothDevice* device, uint32_t passkey) {
+        device->CancelPairing();
+      });
+  EXPECT_CALL(pairing_delegate, KeysEntered(_, _)).Times(0);
+
+  base::test::TestFuture<std::optional<BluetoothDevice::ConnectErrorCode>>
+      connect_future;
+  PerformConnect(device, &pairing_delegate, connect_future.GetCallback());
+  EXPECT_EQ(BluetoothDevice::ERROR_AUTH_CANCELED, connect_future.Get());
+  EXPECT_FALSE(device->IsConnected());
+  EXPECT_FALSE(device->IsConnecting());
+  EXPECT_FALSE(device->IsPaired());
+}
+
+TEST_P(BluetoothBlueZTestP, PairingCancelledSynchronouslyAtKeysEntered) {
+  fake_bluetooth_device_client_->SetSimulationIntervalMs(10);
+
+  GetAdapter();
+  DiscoverDevices();
+
+  BluetoothDevice* device = adapter_->GetDevice(
+      bluez::FakeBluetoothDeviceClient::kDisplayPasskeyAddress);
+  ASSERT_TRUE(device != nullptr);
+  ASSERT_FALSE(device->IsPaired());
+
+  StrictMock<MockPairingDelegate> pairing_delegate;
+  EXPECT_CALL(pairing_delegate, DisplayPasskey(_, 123456U)).Times(1);
+  // See "Note: Synchronous cancel" above. Cancelling inside the final
+  // KeysEntered() means BluetoothPairingBlueZ::KeysEntered() must not read
+  // `device_` afterwards.
+  testing::InSequence seq;
+  for (int i = 0; i < 7; ++i) {
+    EXPECT_CALL(pairing_delegate, KeysEntered(_, i));
+  }
+  EXPECT_CALL(pairing_delegate, KeysEntered(_, 7))
+      .WillOnce([](BluetoothDevice* device, uint32_t entered) {
+        device->CancelPairing();
+      });
+
+  base::test::TestFuture<std::optional<BluetoothDevice::ConnectErrorCode>>
+      connect_future;
+  PerformConnect(device, &pairing_delegate, connect_future.GetCallback());
+  EXPECT_EQ(BluetoothDevice::ERROR_AUTH_CANCELED, connect_future.Get());
+  EXPECT_FALSE(device->IsConnected());
+  EXPECT_FALSE(device->IsConnecting());
+  EXPECT_FALSE(device->IsPaired());
+}
+
 TEST_P(BluetoothBlueZTestP, PairingCancelledInFlight) {
   fake_bluetooth_device_client_->SetSimulationIntervalMs(10);
 
