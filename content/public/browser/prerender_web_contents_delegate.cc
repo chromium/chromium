@@ -30,8 +30,9 @@ WebContents* PrerenderWebContentsDelegate::AddNewContents(
 }
 
 void PrerenderWebContentsDelegate::ActivateContents(WebContents* contents) {
-  // WebContents should not be activated with this delegate.
-  NOTREACHED();
+  // A prerendered WebContents cannot be activated with this delegate. This is
+  // a no-op rather than a `NOTREACHED()` because it is reachable via DevTools
+  // (e.g. `Target.activateTarget`).
 }
 
 void PrerenderWebContentsDelegate::LoadingStateChanged(
