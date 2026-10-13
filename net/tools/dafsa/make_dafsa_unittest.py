@@ -4,7 +4,7 @@
 # found in the LICENSE file.
 
 
-import sys
+import sys  # noqa: F401
 import unittest
 import make_dafsa
 

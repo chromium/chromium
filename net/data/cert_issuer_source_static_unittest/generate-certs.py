@@ -31,7 +31,7 @@ have the same the name (after normalization).
 E1 and E3 should (attempt to) chain up through both I3 intermediates.
 """
 
-import os
+import os  # noqa: F401
 import sys
 
 sys.path += ['..']

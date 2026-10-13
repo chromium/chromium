@@ -27,11 +27,11 @@ import os
 script_dir = os.path.dirname(os.path.realpath(__file__))
 sys.path += [os.path.join(script_dir, '..')]
 
-import gencerts
+import gencerts  # noqa: E402
 
-import os
-import sys
-import re
+import os  # noqa: E402
+import sys  # noqa: E402
+import re  # noqa: E402
 
 # Regular expression to find the failed errors in test stdout.
 #  * Group 1 of the match is file path (relative to //src) where the

@@ -24,7 +24,7 @@ CHROMIUM_SRC_PATH = pathlib.Path('.')
 sys.path.append(
   str((CHROMIUM_SRC_PATH / 'tools' / 'metrics' / 'histograms').resolve())
 )
-import update_histogram_enum
+import update_histogram_enum  # noqa: E402
 
 # Add pyproto to path. Assume out/Default for now. This could be made an option.
 PYPROTO_DIR = (
@@ -53,9 +53,9 @@ except ImportError as e:
   )
   sys.exit(1)
 
-from google.protobuf import text_format  # type: ignore[import-untyped]
-from cryptography import x509
-from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
+from google.protobuf import text_format  # type: ignore[import-untyped]  # noqa: E402
+from cryptography import x509  # noqa: E402
+from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat  # noqa: E402
 
 ROOT_STORE_TEXTPROTO_PATH = (
   'net/data/ssl/chrome_root_store/root_store.textproto'

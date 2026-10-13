@@ -40,7 +40,7 @@ For example:
 """
 
 import base64
-import collections
+import collections  # noqa: F401
 import hashlib
 import json
 import optparse

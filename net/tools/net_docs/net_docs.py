@@ -25,7 +25,7 @@ SCRIPT_PATH = os.path.abspath(__file__)
 SRC_PATH = nth_parent_directory(SCRIPT_PATH, 4)
 THIRD_PARTY_PATH = os.path.join(SRC_PATH, 'third_party')
 sys.path.insert(0, THIRD_PARTY_PATH)
-import markdown
+import markdown  # noqa: E402
 
 
 def ReadFile(filename):

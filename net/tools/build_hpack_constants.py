@@ -280,7 +280,7 @@ EOS (256)  |11111111|11111111|11111111|111111      3fffffff  [30]
 
 count = 0
 spec_lines = SPEC_DATA_DRAFT_08.splitlines()
-for l in spec_lines:
+for l in spec_lines:  # noqa: E741
   m = re.match(r"^\s*('.+'|EOS)? \( *(\d+)\)  \|([10\|]+) +\w+  \[ ?(\d+)\]", l)
   if m:
     g = m.groups()
