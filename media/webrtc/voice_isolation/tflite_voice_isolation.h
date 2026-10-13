@@ -27,10 +27,11 @@ namespace media {
 
 // Denoiser using a TfLite model internally. Ideally the provided model will
 // remove all noise in the input signal preserving only human speech. The model
-// has two outputs: the dereverberated output (noise and reverberation
-// removed), which ProcessAudio() returns, and the denoising-only output (noise
-// removed, reverberation kept), from which the speech mask that SpeechMask()
-// returns is estimated.
+// has two outputs: the dereverberated output (noise and reverberation removed)
+// and the denoising-only output (noise removed, reverberation kept).
+// ProcessAudio() returns a mix of both that is mostly the dereverberated output
+// and keeps a little of the room reverberation. The speech mask that
+// SpeechMask() returns is estimated from the denoising-only output alone.
 class COMPONENT_EXPORT(MEDIA_WEBRTC) TfLiteVoiceIsolation
     : public SpectralVoiceIsolationComponent {
  public:
@@ -69,8 +70,8 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) TfLiteVoiceIsolation
   std::vector<float> temp_output_;
 
   // Denoising-only output of the last model call, unpacked into two 16-byte
-  // aligned DFTs for SpeechMaskEstimator::Estimate().
-  base::AlignedHeapArray<float> mask_estimation_dfts_;
+  // aligned DFTs for SpeechMaskEstimator::Estimate() and the output mix.
+  base::AlignedHeapArray<float> denoising_only_dfts_;
   SpeechMaskEstimator speech_mask_estimator_;
 };
 }  // namespace media

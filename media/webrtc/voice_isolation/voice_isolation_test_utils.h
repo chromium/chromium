@@ -22,9 +22,16 @@ struct FakeModel {
   std::unique_ptr<tflite::FlatBufferModel> model;
 };
 
-// Loads the Voice Isolation test model shipped with the tests. Returns nullptr
-// if the model cannot be loaded.
+// Loads the stateless identity Voice Isolation test model shipped with the
+// tests, whose two outputs equal its input. Returns nullptr if the model
+// cannot be loaded.
 std::unique_ptr<tflite::FlatBufferModel> LoadVoiceIsolationTestModel();
+
+// Loads the stateful Voice Isolation test model shipped with the tests, whose
+// recurrent state lives in resource variables. Its two outputs differ: after
+// the bias subtraction, the second (denoising-only) output is twice the first
+// (dereverberated) one. Returns nullptr if the model cannot be loaded.
+std::unique_ptr<tflite::FlatBufferModel> LoadStatefulVoiceIsolationTestModel();
 
 // Builds a minimal FlatBuffer model containing a description string but no
 // subgraphs or operators. This passes FlatBuffer schema verification but fails

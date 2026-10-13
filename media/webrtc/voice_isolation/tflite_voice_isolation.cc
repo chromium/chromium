@@ -49,6 +49,13 @@ constexpr int64_t kModelInputSize = static_cast<int64_t>(kFrameSize);
 // denoising-only output.
 constexpr size_t kDenoisingOnlyOutputOffset = 2;
 
+// Weights of the two model outputs in the output of ProcessAudio(). Mostly the
+// dereverberated output, plus a little of the denoising-only output, whose
+// room reverberation makes the speech sound more natural than the fully
+// dereverberated output.
+constexpr float kDereverbWeight = 0.9f;
+constexpr float kDenoisingOnlyWeight = 1.0f - kDereverbWeight;
+
 bool ValidateModelInterpreter(tflite::Interpreter* interpreter) {
   if (!interpreter) {
     return false;
@@ -121,7 +128,7 @@ TfLiteVoiceIsolation::TfLiteVoiceIsolation(
       input_tensor_span_(WrapInputTensor(interpreter_.get(), /*index=*/0)),
       output_tensor_span_(WrapOutputTensor(interpreter_.get(), /*index=*/0)),
       bias_(std::move(bias)),
-      mask_estimation_dfts_(
+      denoising_only_dfts_(
           base::AlignedUninit<float>(kFrameSize,
                                      SpeechMaskEstimator::kDftAlignment)),
       speech_mask_estimator_(/*dft_size=*/kExpectedFftSize) {
@@ -230,23 +237,20 @@ void TfLiteVoiceIsolation::ProcessAudio(base::span<const float> input_dfts,
   const size_t num_output_channels =
       temp_output_.size() / (kNumFfts * kExpectedFftSize);
 
-  const float dereverb_weight = 1.0f;
-
   CHECK_EQ(num_output_channels, 2u);
 
   // The denoising-only output of the model removes noise but keeps
-  // reverberation. Unpack it like the dereverberated output below, with the DC
-  // and Nyquist components of the input, and estimate the speech mask from it,
-  // so that the mask only reflects the noise that the model removes. This runs
-  // before the output loop, which may overwrite `input_dfts` if it aliases
-  // `output_dfts`.
-  const base::span<float> mask_estimation_dfts(mask_estimation_dfts_);
+  // reverberation. Unpack it with the DC and Nyquist components of the input
+  // and estimate the speech mask from it, so that the mask only reflects the
+  // noise that the model removes. This runs before the output loop, which may
+  // overwrite `input_dfts` if it aliases `output_dfts`.
+  const base::span<float> denoising_only_dfts(denoising_only_dfts_);
   for (size_t i = 0; i < kNumFfts; ++i) {
     const size_t frame_index = i * kExpectedFftSize * num_output_channels;
     const base::span<const float> input_slice =
         input_dfts.subspan(i * kExpectedFftSize, kExpectedFftSize);
     const base::span<float> denoising_only_slice =
-        mask_estimation_dfts.subspan(i * kExpectedFftSize, kExpectedFftSize);
+        denoising_only_dfts.subspan(i * kExpectedFftSize, kExpectedFftSize);
 
     denoising_only_slice[0] = input_slice[0];
     denoising_only_slice[1] = input_slice[1];
@@ -258,12 +262,17 @@ void TfLiteVoiceIsolation::ProcessAudio(base::span<const float> input_dfts,
       denoising_only_slice[j + 3] = temp_output_[denoising_only_index + 1];
     }
   }
-  speech_mask_estimator_.Estimate(input_dfts, mask_estimation_dfts);
+  speech_mask_estimator_.Estimate(input_dfts, denoising_only_dfts);
 
+  // Mix the dereverberated output (channel 0 of the model) with the
+  // denoising-only output unpacked above, so that a little of the room
+  // reverberation remains.
   for (size_t i = 0; i < kNumFfts; ++i) {
     const size_t frame_index = i * kExpectedFftSize * num_output_channels;
     const base::span<const float> input_slice =
         input_dfts.subspan(i * kExpectedFftSize, kExpectedFftSize);
+    const base::span<const float> denoising_only_slice =
+        denoising_only_dfts.subspan(i * kExpectedFftSize, kExpectedFftSize);
     const base::span<float> output_slice =
         output_dfts.subspan(i * kExpectedFftSize, kExpectedFftSize);
 
@@ -272,10 +281,11 @@ void TfLiteVoiceIsolation::ProcessAudio(base::span<const float> input_dfts,
     output_slice[1] = input_slice[1];
 
     for (size_t j = 0; j < kExpectedFftSize - 2; j += 2) {
-      // Channel 0 contains the dereverbed and denoised signal.
       const size_t dereverb_index = frame_index + num_output_channels * j;
-      output_slice[j + 2] = dereverb_weight * temp_output_[dereverb_index];
-      output_slice[j + 3] = dereverb_weight * temp_output_[dereverb_index + 1];
+      output_slice[j + 2] = kDereverbWeight * temp_output_[dereverb_index] +
+                            kDenoisingOnlyWeight * denoising_only_slice[j + 2];
+      output_slice[j + 3] = kDereverbWeight * temp_output_[dereverb_index + 1] +
+                            kDenoisingOnlyWeight * denoising_only_slice[j + 3];
     }
   }
 }

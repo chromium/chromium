@@ -6,6 +6,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <string_view>
 #include <vector>
 
 #include "base/base_paths.h"
@@ -24,22 +25,35 @@ namespace media {
 namespace {
 
 constexpr char kTestModelFileName[] = "test_model_1_2_160_2.tflite";
+constexpr char kStatefulTestModelFileName[] =
+    "test_model_stateful_1_2_160_2.tflite";
 
 // WindowedFft::ForwardTransform() returns two DFTs per call.
 constexpr size_t kNumDftsPerCall = 2;
 
-}  // namespace
-
-std::unique_ptr<tflite::FlatBufferModel> LoadVoiceIsolationTestModel() {
+// Loads the test model `file_name` from the Voice Isolation source directory.
+// Returns nullptr if the model cannot be loaded.
+std::unique_ptr<tflite::FlatBufferModel> LoadTestModel(
+    std::string_view file_name) {
   base::FilePath source_root;
   CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root));
 
   const base::FilePath model_path = source_root.AppendASCII("media")
                                         .AppendASCII("webrtc")
                                         .AppendASCII("voice_isolation")
-                                        .AppendASCII(kTestModelFileName);
+                                        .AppendASCII(file_name);
   return tflite::FlatBufferModel::BuildFromFile(
       model_path.AsUTF8Unsafe().c_str());
+}
+
+}  // namespace
+
+std::unique_ptr<tflite::FlatBufferModel> LoadVoiceIsolationTestModel() {
+  return LoadTestModel(kTestModelFileName);
+}
+
+std::unique_ptr<tflite::FlatBufferModel> LoadStatefulVoiceIsolationTestModel() {
+  return LoadTestModel(kStatefulTestModelFileName);
 }
 
 FakeModel BuildBogusModel() {

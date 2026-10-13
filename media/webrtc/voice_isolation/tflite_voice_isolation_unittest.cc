@@ -10,9 +10,12 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/containers/to_vector.h"
+#include "base/memory/aligned_memory.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/time/time.h"
+#include "media/webrtc/voice_isolation/speech_mask_estimator.h"
 #include "media/webrtc/voice_isolation/voice_isolation_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -46,10 +49,18 @@ constexpr size_t kFirstCheckedSpeechMaskCall = 1;
 constexpr uint64_t kFirstNoiseSeed = 1;
 constexpr uint64_t kSecondNoiseSeed = 2;
 
-// Constants of the stateful test model.
+// TfLiteVoiceIsolation::ProcessAudio() returns kDereverbWeight times the
+// dereverberated output of the model plus the rest of its denoising-only
+// output.
+constexpr float kDereverbWeight = 0.9f;
+
+// Constants of the stateful test model. Its second output is
+// kModelDenoisingOnlyGain times the first one plus a constant offset, which the
+// bias subtraction removes.
 constexpr float kModelInputOffset = 1.0f;
 constexpr float kModelConvGain = 0.5f;
 constexpr float kModelLeakyAlpha = 0.5f;
+constexpr float kModelDenoisingOnlyGain = 2.0f;
 
 // Step and period of the deterministic test input. All values are multiples of
 // a power of two so that the model output is exact in float32.
@@ -80,12 +91,14 @@ std::vector<float> MakeTestInput(size_t frame_size, int frame_index) {
 //   y_t = x_t + leaky_relu(0.5 * prev_t)
 //   s <- x_1 + 1
 // The model also outputs a second channel `2 * y_t + 42`, the denoising-only
-// output, which ProcessAudio() must leave out of its output and estimate the
-// speech mask from. It is not a constant offset of `y_t`, so reading the wrong
-// channel changes the output even after the bias subtraction.
+// output. After the bias subtraction it is twice the first channel, so
+// ProcessAudio() returns (0.9 + 0.1 * 2) times the first channel. The second
+// channel is not a constant offset of `y_t`, so reading the wrong channel
+// changes the output even after the bias subtraction.
 class StatefulTestModelReference {
  public:
-  StatefulTestModelReference() : state_(kDftSize, 0.0f) {}
+  StatefulTestModelReference()
+      : state_(kDftSize, 0.0f), denoising_only_(kNumDfts * kDftSize, 0.0f) {}
 
   std::vector<float> ProcessAudio(const std::vector<float>& input) {
     CHECK_EQ(input.size(), kNumDfts * kDftSize);
@@ -100,17 +113,26 @@ class StatefulTestModelReference {
     }
 
     // Evaluate the model and the bias (model output for zero input and zero
-    // state), then write the output in the TfLiteVoiceIsolation layout.
+    // state), then write the mix of both outputs in the TfLiteVoiceIsolation
+    // layout. The denoising-only output keeps the DC and Nyquist components of
+    // the input, as in TfLiteVoiceIsolation.
     std::vector<float> output(input.size());
     for (size_t t = 0; t < kNumDfts; ++t) {
       output[t * kDftSize] = input[t * kDftSize];
       output[t * kDftSize + 1] = input[t * kDftSize + 1];
+      denoising_only_[t * kDftSize] = input[t * kDftSize];
+      denoising_only_[t * kDftSize + 1] = input[t * kDftSize + 1];
       for (size_t k = 0; k < kDftSize - kNumBypassedFloats; ++k) {
         const float prev = t == 0 ? state_[k] : x[0][k] + kModelInputOffset;
         const float bias_prev = t == 0 ? 0.0f : kModelInputOffset;
         const float y = x[t][k] + LeakyRelu(kModelConvGain * prev);
         const float bias = LeakyRelu(kModelConvGain * bias_prev);
-        output[t * kDftSize + kNumBypassedFloats + k] = y - bias;
+        const float dereverberated = y - bias;
+        const float denoising_only = kModelDenoisingOnlyGain * dereverberated;
+        output[t * kDftSize + kNumBypassedFloats + k] =
+            kDereverbWeight * dereverberated +
+            (1.0f - kDereverbWeight) * denoising_only;
+        denoising_only_[t * kDftSize + kNumBypassedFloats + k] = denoising_only;
       }
     }
 
@@ -121,8 +143,12 @@ class StatefulTestModelReference {
     return output;
   }
 
+  // Denoising-only output DFTs of the last ProcessAudio() call.
+  const std::vector<float>& denoising_only() const { return denoising_only_; }
+
  private:
   std::vector<float> state_;
+  std::vector<float> denoising_only_;
 };
 
 // Feeds `voice_isolation` the calls of `input_dfts` and returns the speech
@@ -165,6 +191,48 @@ TEST(TfLiteVoiceIsolation, ProcessAudioWorks) {
 
   for (auto x : output) {
     EXPECT_NE(x, 0.0f);
+  }
+}
+
+// ProcessAudio() returns 0.9 times the dereverberated output plus 0.1 times
+// the denoising-only output. After the bias subtraction, the denoising-only
+// output of the stateful test model is twice its dereverberated output, so the
+// closed form expects 1.1 times the dereverberated output: returning the
+// dereverberated output alone, or unpacking the wrong channel, gives 1.0 and
+// swapped weights give 1.9. DC and Nyquist bypass the model.
+TEST(TfLiteVoiceIsolation,
+     ProcessAudioMixesDereverberatedAndDenoisingOnlyOutputs) {
+  std::unique_ptr<tflite::FlatBufferModel> model =
+      LoadStatefulVoiceIsolationTestModel();
+  ASSERT_NE(model, nullptr);
+
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<TfLiteVoiceIsolation> voice_isolation,
+                       TfLiteVoiceIsolation::MaybeCreate(model.get()));
+
+  // The first call depends on the model state that the bias computation in
+  // MaybeCreate() leaves behind. Every call overwrites the whole state, so
+  // after one priming call the output follows the closed form exactly.
+  // TODO(barrerap): Check from frame 0 without priming and deduplicate with
+  // ProcessAudioMatchesClosedForm once TfLiteVoiceIsolation resets the model
+  // resource variables after computing the bias.
+  StatefulTestModelReference reference;
+  std::vector<float> output(voice_isolation->FrameSize());
+  const std::vector<float> priming_input =
+      MakeTestInput(voice_isolation->FrameSize(), /*frame_index=*/0);
+  reference.ProcessAudio(priming_input);
+  voice_isolation->ProcessAudio(priming_input, output);
+
+  constexpr int kNumCheckedFrames = 3;
+  for (int frame = 1; frame <= kNumCheckedFrames; ++frame) {
+    const std::vector<float> input =
+        MakeTestInput(voice_isolation->FrameSize(), frame);
+    const std::vector<float> expected = reference.ProcessAudio(input);
+
+    voice_isolation->ProcessAudio(input, output);
+
+    // The test model output is exact in float32, and the mix runs the same
+    // float operations as the reference.
+    EXPECT_EQ(output, expected) << "frame " << frame;
   }
 }
 
@@ -237,11 +305,6 @@ TEST(TfLiteVoiceIsolation, SpeechMaskStartsAtOne) {
 
 // Both outputs of the test model equal its input, so the denoising-only output
 // equals the input DFTs and nothing is suppressed.
-// TODO(barrerap): The two outputs are equal, so no test fails if the speech
-// mask is estimated from the dereverberated output. Check the channel with a
-// test model whose outputs differ, such as the stateful one, whose
-// denoising-only output is twice the dereverberated output after the bias
-// subtraction.
 TEST(TfLiteVoiceIsolation, SpeechMaskIsNearOneForIdentityModel) {
   constexpr float kTolerance = 1e-3f;
   std::unique_ptr<tflite::FlatBufferModel> model =
@@ -259,6 +322,60 @@ TEST(TfLiteVoiceIsolation, SpeechMaskIsNearOneForIdentityModel) {
        ++call) {
     EXPECT_THAT(masks[call], Each(FloatNear(1.0f, kTolerance)))
         << "call " << call;
+  }
+}
+
+// The speech mask comes from the denoising-only output alone, not from the
+// output mix: it matches a SpeechMaskEstimator fed the closed-form
+// denoising-only output of the stateful test model, whose mask differs from
+// that of the mix ProcessAudio() returns.
+TEST(TfLiteVoiceIsolation, SpeechMaskIgnoresDereverberatedOutput) {
+  std::unique_ptr<tflite::FlatBufferModel> model =
+      LoadStatefulVoiceIsolationTestModel();
+  ASSERT_NE(model, nullptr);
+
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<TfLiteVoiceIsolation> voice_isolation,
+                       TfLiteVoiceIsolation::MaybeCreate(model.get()));
+
+  // Reference estimators fed the closed-form denoising-only output, which the
+  // mask must come from, and the closed-form mix, which it must not.
+  StatefulTestModelReference reference;
+  SpeechMaskEstimator denoising_only_estimator(/*dft_size=*/kDftSize);
+  SpeechMaskEstimator mix_estimator(/*dft_size=*/kDftSize);
+  base::AlignedHeapArray<float> reference_dfts = base::AlignedUninit<float>(
+      kNumDfts * kDftSize, SpeechMaskEstimator::kDftAlignment);
+  std::vector<float> output(voice_isolation->FrameSize());
+
+  // Feeds one frame to TfLiteVoiceIsolation and to both reference estimators.
+  const auto process_frame = [&](int frame) {
+    const std::vector<float> input =
+        MakeTestInput(voice_isolation->FrameSize(), frame);
+    const std::vector<float> mix = reference.ProcessAudio(input);
+
+    base::span(reference_dfts).copy_from(reference.denoising_only());
+    denoising_only_estimator.Estimate(input, reference_dfts);
+    base::span(reference_dfts).copy_from(mix);
+    mix_estimator.Estimate(input, reference_dfts);
+
+    voice_isolation->ProcessAudio(input, output);
+  };
+
+  // The first DFT of the first call depends on the model state that the bias
+  // computation in MaybeCreate() leaves behind, so the first call only primes
+  // the model and the overlap-add history of the estimators.
+  process_frame(/*frame=*/0);
+
+  constexpr int kNumCheckedFrames = 3;
+  for (int frame = 1; frame <= kNumCheckedFrames; ++frame) {
+    process_frame(frame);
+    const std::vector<float> expected_mask =
+        base::ToVector(denoising_only_estimator.mask());
+
+    // The test input must tell the two sources of the mask apart.
+    ASSERT_NE(expected_mask, base::ToVector(mix_estimator.mask()))
+        << "frame " << frame;
+    EXPECT_EQ(base::ToVector(voice_isolation->SpeechMask()), expected_mask)
+        << "frame " << frame;
   }
 }
 
