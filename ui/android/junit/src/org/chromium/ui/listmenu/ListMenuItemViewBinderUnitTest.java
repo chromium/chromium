@@ -50,8 +50,8 @@ public class ListMenuItemViewBinderUnitTest {
     private TextView mTextView;
     private ImageView mStartIcon;
     private ImageView mEndIcon;
-    private ImageView mSubmenuArrow;
     private TextView mSubtitleView;
+    private TextView mShortcutView;
 
     @Before
     public void setUp() {
@@ -63,7 +63,7 @@ public class ListMenuItemViewBinderUnitTest {
         //      - mTextView (TextView)
         //      - mSubtitleView (TextView)
         //   - mEndIcon (ImageView)
-        //   - mSubmenuArrow (ImageView)
+        //   - mShortcutView (TextView)
         mListItemView = new LinearLayout(mContext);
         mStartIcon = new ImageView(mContext);
         mStartIcon.setId(R.id.menu_item_icon);
@@ -77,8 +77,9 @@ public class ListMenuItemViewBinderUnitTest {
         mEndIcon = new ImageView(mContext);
         mEndIcon.setId(R.id.menu_item_end_icon);
         mEndIcon.setVisibility(View.GONE);
-        mSubmenuArrow = new ImageView(mContext);
-        mSubmenuArrow.setId(R.id.submenu_arrow);
+        mShortcutView = new TextView(mContext);
+        mShortcutView.setId(R.id.menu_item_shortcut);
+        mShortcutView.setVisibility(View.GONE);
 
         innerLayout.addView(mTextView);
         innerLayout.addView(mSubtitleView);
@@ -86,7 +87,7 @@ public class ListMenuItemViewBinderUnitTest {
         mListItemView.addView(mStartIcon);
         mListItemView.addView(innerLayout);
         mListItemView.addView(mEndIcon);
-        mListItemView.addView(mSubmenuArrow);
+        mListItemView.addView(mShortcutView);
     }
 
     @Test
@@ -117,6 +118,31 @@ public class ListMenuItemViewBinderUnitTest {
                 propertyModel, mListItemView, ListMenuItemProperties.SUBTITLE);
         Assert.assertEquals("", mSubtitleView.getText().toString());
         Assert.assertEquals(View.GONE, mSubtitleView.getVisibility());
+    }
+
+    @Test
+    public void testSetShortcutText() {
+        String shortcut = "Ctrl+R";
+        PropertyModel propertyModel =
+                new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                        .with(ListMenuItemProperties.SHORTCUT_TEXT, shortcut)
+                        .build();
+        ListMenuItemViewBinder.binder(
+                propertyModel, mListItemView, ListMenuItemProperties.SHORTCUT_TEXT);
+        Assert.assertEquals(shortcut, mShortcutView.getText().toString());
+        Assert.assertEquals(View.VISIBLE, mShortcutView.getVisibility());
+
+        propertyModel.set(ListMenuItemProperties.SHORTCUT_TEXT, "");
+        ListMenuItemViewBinder.binder(
+                propertyModel, mListItemView, ListMenuItemProperties.SHORTCUT_TEXT);
+        Assert.assertEquals("", mShortcutView.getText().toString());
+        Assert.assertEquals(View.GONE, mShortcutView.getVisibility());
+
+        propertyModel.set(ListMenuItemProperties.SHORTCUT_TEXT, null);
+        ListMenuItemViewBinder.binder(
+                propertyModel, mListItemView, ListMenuItemProperties.SHORTCUT_TEXT);
+        Assert.assertEquals("", mShortcutView.getText().toString());
+        Assert.assertEquals(View.GONE, mShortcutView.getVisibility());
     }
 
     @Test
@@ -245,14 +271,12 @@ public class ListMenuItemViewBinderUnitTest {
                 mContext.getColorStateList(R.color.default_text_color_link_baseline);
         Assert.assertEquals(expectedTint, mStartIcon.getImageTintList());
         Assert.assertEquals(expectedTint, mEndIcon.getImageTintList());
-        Assert.assertEquals(expectedTint, mSubmenuArrow.getImageTintList());
 
         propertyModel.set(ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID, Resources.ID_NULL);
         ListMenuItemViewBinder.binder(
                 propertyModel, mListItemView, ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID);
         Assert.assertNull(mStartIcon.getImageTintList());
         Assert.assertNull(mEndIcon.getImageTintList());
-        Assert.assertNull(mSubmenuArrow.getImageTintList());
     }
 
     @Test
@@ -270,7 +294,6 @@ public class ListMenuItemViewBinderUnitTest {
         ColorStateList expectedTint =
                 mContext.getColorStateList(R.color.default_text_color_link_baseline);
         Assert.assertEquals(expectedTint, mStartIcon.getImageTintList());
-        Assert.assertEquals(expectedTint, mSubmenuArrow.getImageTintList());
         // End icon should have its tint cleared (set to null)
         Assert.assertNull(mEndIcon.getImageTintList());
     }
@@ -362,14 +385,12 @@ public class ListMenuItemViewBinderUnitTest {
                 mContext.getColorStateList(R.color.default_text_color_link_baseline);
         Assert.assertEquals(expectedTint, mStartIcon.getImageTintList());
         Assert.assertEquals(expectedTint, mEndIcon.getImageTintList());
-        Assert.assertEquals(expectedTint, mSubmenuArrow.getImageTintList());
 
         propertyModel.set(ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID, Resources.ID_NULL);
         ListMenuSubmenuHeaderViewBinder.bind(
                 propertyModel, mListItemView, ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID);
         Assert.assertNull(mStartIcon.getImageTintList());
         Assert.assertNull(mEndIcon.getImageTintList());
-        Assert.assertNull(mSubmenuArrow.getImageTintList());
     }
 
     @Test

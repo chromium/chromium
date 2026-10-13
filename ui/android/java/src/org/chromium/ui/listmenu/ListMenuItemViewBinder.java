@@ -36,11 +36,13 @@ import org.chromium.ui.modelutil.PropertyModel;
  */
 @NullMarked
 public class ListMenuItemViewBinder {
+    /** Binds the given property of the model to the view. */
     public static void binder(PropertyModel model, View view, PropertyKey propertyKey) {
         TextView textView =
                 (view instanceof TextView text) ? text : view.findViewById(R.id.menu_item_text);
         @Nullable ImageView startIcon = view.findViewById(R.id.menu_item_icon);
         @Nullable ImageView endIcon = view.findViewById(R.id.menu_item_end_icon);
+        @Nullable TextView shortcutView = view.findViewById(R.id.menu_item_shortcut);
         boolean keepIconSpacing =
                 model.containsKey(ListMenuItemProperties.KEEP_START_ICON_SPACING_WHEN_HIDDEN)
                         && model.get(ListMenuItemProperties.KEEP_START_ICON_SPACING_WHEN_HIDDEN);
@@ -85,6 +87,13 @@ public class ListMenuItemViewBinder {
             } else {
                 subtitleView.setEllipsize(null);
                 subtitleView.setMaxLines(Integer.MAX_VALUE);
+            }
+        } else if (propertyKey == ListMenuItemProperties.SHORTCUT_TEXT) {
+            if (shortcutView != null) {
+                CharSequence shortcutText = model.get(ListMenuItemProperties.SHORTCUT_TEXT);
+                shortcutView.setText(shortcutText);
+                shortcutView.setVisibility(
+                        TextUtils.isEmpty(shortcutText) ? View.GONE : View.VISIBLE);
             }
         } else if (propertyKey == ListMenuItemProperties.CONTENT_DESCRIPTION) {
             textView.setContentDescription(model.get(ListMenuItemProperties.CONTENT_DESCRIPTION));
@@ -181,10 +190,11 @@ public class ListMenuItemViewBinder {
         } else if (propertyKey == ListMenuItemProperties.ENABLED) {
             // Set enabled state on view, textView, and icons (because with some layout files,
             // textView and icons inherit state from view, and sometimes they don't)
-            view.setEnabled(model.get(ListMenuItemProperties.ENABLED));
-            textView.setEnabled(model.get(ListMenuItemProperties.ENABLED));
-            if (startIcon != null) startIcon.setEnabled(model.get(ListMenuItemProperties.ENABLED));
-            if (endIcon != null) endIcon.setEnabled(model.get(ListMenuItemProperties.ENABLED));
+            boolean enabled = model.get(ListMenuItemProperties.ENABLED);
+            view.setEnabled(enabled);
+            textView.setEnabled(enabled);
+            if (startIcon != null) startIcon.setEnabled(enabled);
+            if (endIcon != null) endIcon.setEnabled(enabled);
         } else if (propertyKey == ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID) {
             @ColorRes
             int tintColorId = model.get(ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID);

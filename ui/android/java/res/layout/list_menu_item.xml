@@ -45,4 +45,13 @@ found in the LICENSE file.
       android:visibility="gone"
       android:duplicateParentState="true"
       android:importantForAccessibility="no" />
+  <TextView
+      android:id="@+id/menu_item_shortcut"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:paddingStart="@dimen/list_menu_item_shortcut_padding_start"
+      android:maxLines="1"
+      android:textAppearance="@style/TextAppearance.ListMenuItem.Shortcut"
+      android:duplicateParentState="true"
+      android:visibility="gone" />
 </LinearLayout>

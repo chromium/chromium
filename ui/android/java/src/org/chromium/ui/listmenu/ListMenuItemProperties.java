@@ -37,6 +37,10 @@ public class ListMenuItemProperties {
     public static final ReadableBooleanPropertyKey IS_SUBTITLE_ELLIPSIZED_AT_END =
             new ReadableBooleanPropertyKey();
 
+    /** The keyboard shortcut hint text displayed at the end of the menu item. */
+    public static final WritableObjectPropertyKey<@Nullable CharSequence> SHORTCUT_TEXT =
+            new WritableObjectPropertyKey<>();
+
     // A11y content description of menu item
     public static final WritableObjectPropertyKey<@Nullable String> CONTENT_DESCRIPTION =
             new WritableObjectPropertyKey<>();
@@ -131,6 +135,7 @@ public class ListMenuItemProperties {
         TITLE,
         SUBTITLE,
         IS_SUBTITLE_ELLIPSIZED_AT_END,
+        SHORTCUT_TEXT,
         CONTENT_DESCRIPTION,
         TOOLTIP,
         START_ICON_ID,
