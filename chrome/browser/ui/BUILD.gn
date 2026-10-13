@@ -1629,55 +1629,6 @@ if (!is_android) {
   }
 }
 
-group("ui_public_dependencies") {
-  public_deps = [
-    "//components/cross_device/logging",
-    "//components/dom_distiller/core",
-    "//components/enterprise/buildflags",
-    "//components/paint_preview/buildflags",
-    "//components/safe_browsing:buildflags",
-    "//components/segmentation_platform/public",
-    "//components/sync",
-    "//components/sync_user_events",
-    "//components/translate/content/browser",
-    "//content/public/browser",
-    "//mojo/public/cpp/bindings",
-    "//services/webnn/public/cpp",
-    "//ui/webui/resources",
-  ]
-  if (enable_extensions_core) {
-    public_deps += [ "//extensions/browser" ]
-  }
-  if (!is_android) {
-    public_deps += [
-      "//build:branding_buildflags",
-      "//chrome/browser/ui/record_replay",
-      "//ui/base/dragdrop/mojom:mojom_headers",
-      "//ui/views",
-      "//ui/views/controls/webview",
-      "//ui/webui/resources/cr_components/history_embeddings:mojo_bindings",
-
-      # TODO: Use //chrome/browser after fixing cyclic dependency.
-      "//components/commerce/core:coupon_db_content_proto",
-      "//components/feed/core/proto:proto_ios_shared_v2",
-      "//components/feed/core/proto:proto_v2",
-    ]
-  }
-  if (is_chromeos) {
-    public_deps += [ "//chromeos/ash/services/multidevice_setup/public/mojom" ]
-  }
-  if (is_win) {
-    public_deps += [
-      "//build:branding_buildflags",
-      "//ui/views",
-      "//ui/views/controls/webview",
-    ]
-  }
-  if (chrome_root_store_cert_management_ui) {
-    public_deps += [ "//chrome/browser/resources/certificate_manager:mojom" ]
-  }
-}
-
 # A small standalone model used by confirm bubbles. Kept out of :ui so that
 # targets which cannot depend on :ui (e.g.
 # //chrome/browser/renderer_context_menu:bubble_models) can use it without
