@@ -4,7 +4,13 @@
 
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 
+#import "google_apis/gaia/gaia_id.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/signin/model/account_profile_mapper.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -21,11 +27,39 @@ TEST_F(TestProfileManagerIOSTest, Constructor) {
 }
 
 // Tests that the list of loaded profiles has one element after calling
-// AddProfileWithBuilder(...).
+// `AddProfileWithBuilder(...)`.
 TEST_F(TestProfileManagerIOSTest, AddProfileWithBuilder) {
   web::WebTaskEnvironment task_environment;
   IOSChromeScopedTestingLocalState scoped_testing_local_state;
   TestProfileManagerIOS profile_manager;
   profile_manager.AddProfileWithBuilder(TestProfileIOS::Builder());
   EXPECT_EQ(1U, profile_manager.GetLoadedProfiles().size());
+}
+
+// Tests that `AddManagedProfileForGaiaIDWithBuilder(...)` builds the profile
+// assigned to the managed identity and does not mark it as the personal
+// profile.
+TEST_F(TestProfileManagerIOSTest, AddManagedProfileForGaiaIDWithBuilder) {
+  web::WebTaskEnvironment task_environment;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state;
+  TestProfileManagerIOS profile_manager;
+  profile_manager.AddProfileWithBuilder(TestProfileIOS::Builder());
+
+  FakeSystemIdentity* identity = [FakeSystemIdentity fakeManagedIdentity];
+  FakeSystemIdentityManager::FromSystemIdentityManager(
+      GetApplicationContext()->GetSystemIdentityManager())
+      ->AddIdentity(identity);
+
+  TestProfileIOS* managed_profile =
+      profile_manager.AddManagedProfileForGaiaIDWithBuilder(
+          identity.gaiaId, TestProfileIOS::Builder());
+  ASSERT_TRUE(managed_profile);
+  EXPECT_EQ(2U, profile_manager.GetLoadedProfiles().size());
+  EXPECT_NE(
+      managed_profile->GetProfileName(),
+      profile_manager.GetProfileAttributesStorage()->GetPersonalProfileName());
+  EXPECT_EQ(managed_profile->GetProfileName(),
+            GetApplicationContext()
+                ->GetAccountProfileMapper()
+                ->FindProfileNameForGaiaID(identity.gaiaId));
 }

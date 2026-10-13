@@ -8,8 +8,10 @@
 #import <vector>
 
 #import "base/check.h"
+#import "base/check_op.h"
 #import "base/files/file_path.h"
 #import "base/test/test_file_util.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
 #import "ios/chrome/browser/shared/model/profile/scoped_profile_keep_alive_ios.h"
@@ -228,6 +230,20 @@ TestProfileIOS* TestProfileManagerIOS::AddProfileWithBuilder(
   }
 
   return iterator->second.get();
+}
+
+TestProfileIOS* TestProfileManagerIOS::AddManagedProfileForGaiaIDWithBuilder(
+    const GaiaId& gaia_id,
+    TestProfileIOS::Builder builder) {
+  CHECK(!profile_attributes_storage_->GetPersonalProfileName().empty());
+  std::optional<std::string> profile_name =
+      account_profile_mapper_->FindProfileNameForGaiaID(gaia_id);
+  CHECK(profile_name.has_value());
+  CHECK(!profile_name->empty());
+  CHECK_NE(*profile_name,
+           profile_attributes_storage_->GetPersonalProfileName());
+  builder.SetName(*profile_name);
+  return AddProfileWithBuilder(std::move(builder));
 }
 
 ScopedProfileKeepAliveIOS TestProfileManagerIOS::CreateScopedProfileKeepAlive(
