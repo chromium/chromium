@@ -2512,7 +2512,7 @@ deps = {
       + '@' + '3347a4b86bb914cb565f0cbda19c06e109513300',
 
   'src/third_party/junit/src': {
-      'url': Var('chromium_git') + '/external/junit.git' + '@' + '300468b1efd48d76fac2f7bd6d576846dcbbf5ed',
+      'url': Var('chromium_git') + '/external/junit.git' + '@' + '890f3c972647de378f25e7271d8fbbd9d3456b79',
       'condition': 'checkout_android',
   },
 

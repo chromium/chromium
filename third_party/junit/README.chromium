@@ -1,6 +1,7 @@
 Name: JUnit
 URL: http://junit.org
-Version: 300468b1efd48d76fac2f7bd6d576846dcbbf5ed
+Version: N/A
+Revision: 890f3c972647de378f25e7271d8fbbd9d3456b79
 Update Mechanism: Manual
 CPEPrefix: cpe:/a:junit:junit4:4.13.2:-
 License: CPL-1.0
