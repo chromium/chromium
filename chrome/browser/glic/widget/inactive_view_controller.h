@@ -70,6 +70,9 @@ class InactiveViewController : public views::ViewObserver,
   // Checks if the aspect ratio difference requires blurring the image.
   void CheckForImageDistortion();
 
+  // Creates and returns the card view.
+  std::unique_ptr<views::View> CreateCardView();
+
   base::ScopedObservation<views::View, views::ViewObserver>
       image_view_observation_{this};
   raw_ptr<views::ImageView> image_view_ = nullptr;
@@ -81,9 +84,6 @@ class InactiveViewController : public views::ViewObserver,
   views::ViewTracker card_view_tracker_;
 
   base::WeakPtrFactory<InactiveViewController> weak_ptr_factory_{this};
-
-  // Creates and returns the card view.
-  std::unique_ptr<views::View> CreateCardView();
 };
 
 #endif  // CHROME_BROWSER_GLIC_WIDGET_INACTIVE_VIEW_CONTROLLER_H_

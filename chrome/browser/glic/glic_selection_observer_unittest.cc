@@ -252,12 +252,6 @@ class GlicSelectionObserverTest : public ChromeRenderViewHostTestHarness {
   }
 
  protected:
-  std::unique_ptr<TestGlicSelectionObserver> observer_;
-  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
-      identity_test_env_adaptor_;
-  std::unique_ptr<optimization_guide::PageContextEligibility>
-      test_eligibility_holder_;
-
   TestGlicSelectionObserver* GetObserver() { return observer_.get(); }
 
   content::RenderWidgetHost* GetRenderWidgetHost() {
@@ -290,6 +284,12 @@ class GlicSelectionObserverTest : public ChromeRenderViewHostTestHarness {
     SimulateMouseMove(0.0f, 0.0f);
     SimulateMouseMove(20.0f, 0.0f);
   }
+
+  std::unique_ptr<TestGlicSelectionObserver> observer_;
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_env_adaptor_;
+  std::unique_ptr<optimization_guide::PageContextEligibility>
+      test_eligibility_holder_;
 };
 
 TEST_F(GlicSelectionObserverTest, ObserverDeduplicatesRenderWidgetHosts) {

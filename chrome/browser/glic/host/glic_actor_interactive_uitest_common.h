@@ -282,12 +282,12 @@ class GlicActorUiTest : public test::InteractiveGlicTest {
 
   void EnableScreenshotsInContext() { include_screenshot_ = true; }
 
+  // Label corresponds to the aria-label on the element in the page.
+  int32_t SearchAnnotatedPageContent(std::string_view label);
+
   std::unique_ptr<optimization_guide::proto::AnnotatedPageContent>
       annotated_page_content_;
   mojom::ScreenshotPtr viewport_screenshot_;
-
-  // Label corresponds to the aria-label on the element in the page.
-  int32_t SearchAnnotatedPageContent(std::string_view label);
 
  private:
   bool include_screenshot_ = false;

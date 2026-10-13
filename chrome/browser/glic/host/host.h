@@ -482,6 +482,8 @@ class Host : public GlicSharingManagerProvider {
   // connectivity, notifying observers if it changed.
   void UpdateClientLoadState();
 
+  void OnActiveWebContentsChanged(content::WebContents* new_contents);
+
   raw_ptr<Profile> profile_;
 
   // The instance that owns this host.
@@ -513,8 +515,6 @@ class Host : public GlicSharingManagerProvider {
   bool drag_resize_enabled_ = false;
 
   Metrics metrics_;
-
-  void OnActiveWebContentsChanged(content::WebContents* new_contents);
 
   std::unique_ptr<GlicWebContentsManager> contents_;
   base::CallbackListSubscription contents_changed_subscription_;

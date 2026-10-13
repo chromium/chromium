@@ -71,6 +71,11 @@ class GlicInstanceHelper {
  private:
   void UpdateGlicPinnedToVisibleInstanceProperty();
 
+#if BUILDFLAG(IS_ANDROID)
+  void InitJavaObject();
+  void NotifyJavaInstanceChanged();
+#endif
+
   raw_ptr<Instance> bound_instance_ = nullptr;
   base::flat_set<raw_ptr<Instance>> pinned_instances_;
   raw_ptr<tabs::TabInterface> tab_;
@@ -80,9 +85,6 @@ class GlicInstanceHelper {
       on_destroy_callback_list_;
 
 #if BUILDFLAG(IS_ANDROID)
-  void InitJavaObject();
-  void NotifyJavaInstanceChanged();
-
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
 #endif
 };

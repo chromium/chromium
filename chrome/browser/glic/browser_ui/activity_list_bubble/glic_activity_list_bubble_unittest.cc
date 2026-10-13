@@ -181,8 +181,9 @@ class ActorTaskListBubbleTest : public ChromeViewsTestBase {
   }
 
  protected:
-  raw_ptr<actor::ActorKeyedServiceFake> actor_service_;
   MockTabInterface& mock_tab() { return *mock_tab_; }
+
+  raw_ptr<actor::ActorKeyedServiceFake> actor_service_;
 
  private:
   glic::GlicEnabling::ScopedBypassEnablementChecksForTesting

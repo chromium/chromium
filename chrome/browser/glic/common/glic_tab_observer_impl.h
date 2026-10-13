@@ -43,12 +43,12 @@ class GlicTabObserverImpl : public GlicTabObserver,
                               int index) override;
 
  private:
+  TabCreationType DetermineTabCreationType(tabs::TabInterface* new_tab);
+
   raw_ptr<Profile> profile_;
   EventCallback callback_;
   base::ScopedObservation<BrowserCollection, BrowserCollectionObserver>
       browser_observation_{this};
-
-  TabCreationType DetermineTabCreationType(tabs::TabInterface* new_tab);
 
   base::WeakPtrFactory<GlicTabObserverImpl> weak_ptr_factory_{this};
 };

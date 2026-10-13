@@ -98,8 +98,9 @@ class GlicSidePanelUi
   void OnBrowserWindowDeactivated(BrowserWindowInterface* bwi);
   void SetFocusDelayed();
   GlicSidePanelCoordinator* GetGlicSidePanelCoordinator() const;
-  base::CallbackListSubscription panel_visibility_subscription_;
   std::unique_ptr<views::View> CreateView(Profile* profile);
+
+  base::CallbackListSubscription panel_visibility_subscription_;
   mojom::PanelState panel_state_;
   raw_ptr<Profile> profile_;
   base::WeakPtr<tabs::TabInterface> tab_;

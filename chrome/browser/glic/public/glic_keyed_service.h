@@ -292,6 +292,10 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
 
   void OnExperimentalTriggeringStateChanged();
 
+#if BUILDFLAG(IS_ANDROID)
+  void OnBrowserWindowClosed(BrowserWindowInterface* browser);
+#endif
+
   // List of callbacks to be notified when the client requests a change to the
   // context access indicator status.
   base::RepeatingCallbackList<void(bool)>
@@ -331,8 +335,6 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
   base::CallbackListSubscription experimental_triggering_state_subscription_;
 
 #if BUILDFLAG(IS_ANDROID)
-  void OnBrowserWindowClosed(BrowserWindowInterface* browser);
-
   base::flat_map<BrowserWindowInterface*,
                  std::unique_ptr<class GlicSplitButtonController>>
       button_controllers_;

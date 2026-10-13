@@ -62,12 +62,6 @@ class GlicGeminiEnterpriseManagerUnitTest : public testing::Test {
   }
 
  protected:
-  content::BrowserTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<TestingProfile> profile_;
-  std::unique_ptr<GlicGeminiEnterpriseManager> manager_;
-  mojo::Remote<mojom::GeminiEnterpriseHandler> handler_remote_;
-
   mojom::OpenAuthTabResult OpenAuthTab(mojom::AuthTabPurpose purpose,
                                        const GURL& url) {
     base::test::TestFuture<mojom::OpenAuthTabResponsePtr> future;
@@ -75,6 +69,12 @@ class GlicGeminiEnterpriseManagerUnitTest : public testing::Test {
                                  future.GetCallback());
     return future.Take()->result;
   }
+
+  content::BrowserTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<GlicGeminiEnterpriseManager> manager_;
+  mojo::Remote<mojom::GeminiEnterpriseHandler> handler_remote_;
 };
 
 TEST_F(GlicGeminiEnterpriseManagerUnitTest, BindDropsReceiverWhenGeicDisabled) {
