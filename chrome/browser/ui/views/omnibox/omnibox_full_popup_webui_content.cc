@@ -38,7 +38,8 @@ OmniboxFullPopupWebUIContent::OmniboxFullPopupWebUIContent(
                                location_bar,
                                controller,
                                /*include_location_bar_cutout=*/false,
-                               /*wants_focus=*/true),
+                               /*wants_focus=*/true,
+                               /*set_content_url=*/false),
       OmniboxContextMenuMixin<ui::SimpleMenuModel::Delegate>(location_bar,
                                                              controller) {
   SetContentURL(chrome::kChromeUIOmniboxPopupURL);

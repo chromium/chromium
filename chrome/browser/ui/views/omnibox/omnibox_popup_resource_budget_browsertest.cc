@@ -9,6 +9,7 @@
 // --test-launcher-print-test-stdio=always to see the "OmniboxPopupBudget"
 // lines.
 
+#include <algorithm>
 #include <memory>
 #include <set>
 #include <string_view>
@@ -19,8 +20,10 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
@@ -323,6 +326,27 @@ IN_PROC_BROWSER_TEST_P(OmniboxPopupResourceBudgetBrowserTest,
   EXPECT_EQ(false, content::EvalJs(contents,
                                    "!!customElements.get('omnibox-aim-app') || "
                                    "!!customElements.get('omnibox-full-app')"));
+}
+
+// Each popup must load its WebUI once; a WebContents that is created and then
+// replaced is wasted work on every window open.
+IN_PROC_BROWSER_TEST_P(OmniboxPopupResourceBudgetBrowserTest,
+                       KeepsEveryWebContentsCreatedForWindow) {
+  Profile* profile = browser()->GetProfile();
+  WaitForPopupsToLoad(profile);
+
+  std::vector<base::WeakPtr<content::WebContents>> created;
+  base::CallbackListSubscription subscription =
+      content::RegisterWebContentsCreationCallback(
+          base::BindLambdaForTesting([&](content::WebContents* contents) {
+            created.push_back(contents->GetWeakPtr());
+          }));
+  CreateBrowser(profile);
+  WaitForPopupsToLoad(profile);
+
+  EXPECT_EQ(std::ranges::count_if(
+                created, [](const auto& contents) { return !contents; }),
+            0);
 }
 
 class OmniboxPopupResourceBudgetAimIneligibleBrowserTest

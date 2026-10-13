@@ -28,11 +28,15 @@ class OmniboxPopupWebUIContent : public OmniboxPopupWebUIBaseContent {
 
  public:
   OmniboxPopupWebUIContent() = delete;
+  // Subclasses pass false for `set_content_url` and call `SetContentURL()`
+  // themselves. Loading here would build a WebContents before their overrides
+  // (e.g. `EscClosesUI()`) are in place, only for their own load to replace it.
   OmniboxPopupWebUIContent(OmniboxPopupPresenterBase* presenter,
                            LocationBar* location_bar,
                            OmniboxController* controller,
                            bool include_location_bar_cutout,
-                           bool wants_focus);
+                           bool wants_focus,
+                           bool set_content_url);
   OmniboxPopupWebUIContent(const OmniboxPopupWebUIContent&) = delete;
   OmniboxPopupWebUIContent& operator=(const OmniboxPopupWebUIContent&) = delete;
   ~OmniboxPopupWebUIContent() override;
