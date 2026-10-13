@@ -1141,6 +1141,11 @@ public class ChromeAndroidTaskIntegrationTest {
 
         // Assert.
         var newActivity = waitForNewTabbedActivity(currentTaskIds);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    var task = getChromeAndroidTask(newActivity.getTaskId());
+                    return task != null && task.getState() == ChromeAndroidTaskImpl.State.IDLE;
+                });
 
         // Cleanup.
         newActivity.finishAndRemoveTask();
