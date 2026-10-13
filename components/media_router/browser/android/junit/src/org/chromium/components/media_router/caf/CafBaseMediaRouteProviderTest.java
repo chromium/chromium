@@ -274,6 +274,25 @@ public class CafBaseMediaRouteProviderTest {
     }
 
     @Test
+    public void testOnLocalNetworkPermissionGranted_reRegistersWithRequestDiscoveryFlag() {
+        MediaSource mockSource = mock(MediaSource.class);
+        MediaRouteSelector mockSelector = mock(MediaRouteSelector.class);
+        prepareMediaSource(mockSource, mockSelector, "source-id-1", "app-id-1");
+
+        mProvider.startObservingMediaSinks("source-id-1", "origin");
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        mProvider.onLocalNetworkPermissionGranted();
+
+        verify(mMediaRouterHelper.getShadowImpl()).removeCallback(any(MediaRouter.Callback.class));
+        verify(mMediaRouterHelper.getShadowImpl(), times(2))
+                .addCallback(
+                        eq(mockSelector),
+                        any(MediaRouter.Callback.class),
+                        eq(MediaRouter.CALLBACK_FLAG_REQUEST_DISCOVERY));
+    }
+
+    @Test
     public void testCreateRoute() {
         InOrder inOrder = inOrder(mSessionManager, mSessionController, mManager);
         MediaSource mockSource = mock(MediaSource.class);

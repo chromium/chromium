@@ -63,6 +63,10 @@ public class DiscoveryCallback extends MediaRouter.Callback {
         return mSourceUrns.isEmpty();
     }
 
+    public MediaRouteSelector getRouteSelector() {
+        return mRouteSelector;
+    }
+
     public void setAndUpdateSinks(List<MediaSink> knownSinks) {
         mSinks = knownSinks;
         updateBrowserMediaRouter();

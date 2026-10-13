@@ -6,6 +6,8 @@ package org.chromium.components.media_router;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.content.pm.PackageManager;
+
 import androidx.mediarouter.app.MediaRouteChooserDialogFragment;
 import androidx.mediarouter.app.MediaRouteControllerDialogFragment;
 import androidx.mediarouter.media.MediaRouteSelector;
@@ -19,6 +21,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.components.media_router.caf.CastMediaSource;
 import org.chromium.components.media_router.caf.remoting.RemotingMediaSource;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.permissions.PermissionCallback;
 
 /**
  * Implements the JNI interface called from the C++ Media Router dialog controller implementation on
@@ -31,9 +35,11 @@ public class BrowserMediaRouterDialogController implements MediaRouteDialogDeleg
     private final long mNativeDialogController;
     private @Nullable BaseMediaRouteDialogManager mDialogManager;
     private final WebContents mWebContents;
+    private @Nullable PermissionCallback mPendingPermissionCallback;
 
     /**
      * Returns a new initialized {@link BrowserMediaRouterDialogController}.
+     *
      * @param nativeDialogController the handle of the native object.
      * @param webContents the initiator of the dialog.
      * @return a new dialog controller to use from the native side.
@@ -46,6 +52,7 @@ public class BrowserMediaRouterDialogController implements MediaRouteDialogDeleg
 
     /**
      * Shows the {@link MediaRouteChooserDialogFragment} if it's not shown yet.
+     *
      * @param sourceUrns the URNs identifying the media sources to filter the devices with.
      */
     @CalledByNative
@@ -69,6 +76,51 @@ public class BrowserMediaRouterDialogController implements MediaRouteDialogDeleg
         }
 
         assumeNonNull(source);
+        if (BrowserMediaRouter.needsLocalNetworkPermission()) {
+            WindowAndroid window = mWebContents.getTopLevelNativeWindow();
+            if (window != null
+                    && window.canRequestPermission(
+                            BrowserMediaRouter.ANDROID_PERMISSION_ACCESS_LOCAL_NETWORK)) {
+                final MediaSource finalSource = source;
+                PermissionCallback callback =
+                        new PermissionCallback() {
+                            @Override
+                            public void onRequestPermissionsResult(
+                                    String[] permissions, int[] grantResults) {
+                                if (mPendingPermissionCallback != this) {
+                                    return;
+                                }
+                                mPendingPermissionCallback = null;
+                                boolean granted =
+                                        grantResults.length > 0
+                                                && grantResults[0]
+                                                        == PackageManager.PERMISSION_GRANTED;
+                                BrowserMediaRouter.onLocalNetworkPermissionResult(granted);
+                                if (granted) {
+                                    showRouteChooserDialog(finalSource, routeSelector);
+                                } else {
+                                    BrowserMediaRouterDialogControllerJni.get()
+                                            .onDialogCancelled(mNativeDialogController);
+                                }
+                            }
+                        };
+                mPendingPermissionCallback = callback;
+                window.requestPermissions(
+                        new String[] {BrowserMediaRouter.ANDROID_PERMISSION_ACCESS_LOCAL_NETWORK},
+                        callback);
+            } else {
+                BrowserMediaRouter.onLocalNetworkPermissionResult(false);
+                BrowserMediaRouterDialogControllerJni.get()
+                        .onDialogCancelled(mNativeDialogController);
+            }
+            return;
+        }
+
+        showRouteChooserDialog(source, routeSelector);
+    }
+
+    private void showRouteChooserDialog(MediaSource source, MediaRouteSelector routeSelector) {
+        if (isShowingDialog()) return;
         mDialogManager =
                 new MediaRouteChooserDialogManager(source.getSourceId(), routeSelector, this);
         mDialogManager.openDialog(mWebContents);
@@ -76,6 +128,7 @@ public class BrowserMediaRouterDialogController implements MediaRouteDialogDeleg
 
     /**
      * Shows the {@link MediaRouteControllerDialogFragment} if it's not shown yet.
+     *
      * @param sourceUrn the URN identifying the media source of the current media route.
      * @param mediaRouteId the identifier of the route to be controlled.
      */
@@ -104,16 +157,20 @@ public class BrowserMediaRouterDialogController implements MediaRouteDialogDeleg
     /** Closes the currently open dialog if it's open. */
     @CalledByNative
     public void closeDialog() {
+        mPendingPermissionCallback = null;
         if (mDialogManager == null) return;
 
         mDialogManager.closeDialog();
         mDialogManager = null;
     }
 
-    /** @return if any media route dialog is currently open. */
+    /**
+     * @return if any media route dialog is currently open.
+     */
     @CalledByNative
     public boolean isShowingDialog() {
-        return mDialogManager != null && mDialogManager.isShowingDialog();
+        return mPendingPermissionCallback != null
+                || (mDialogManager != null && mDialogManager.isShowingDialog());
     }
 
     @Override

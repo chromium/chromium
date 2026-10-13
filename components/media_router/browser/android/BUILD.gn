@@ -28,6 +28,7 @@ android_library("java") {
     "//third_party/androidx:androidx_media_media_java",
     "//third_party/androidx:androidx_mediarouter_mediarouter_java",
     "//third_party/jni_zero:jni_zero_java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
   srcjar_deps = [ ":jni_headers" ]
   sources = [
@@ -124,6 +125,7 @@ generate_jni("test_jni_headers") {
 
 robolectric_library("junit") {
   sources = [
+    "junit/src/org/chromium/components/media_router/BrowserMediaRouterDialogControllerTest.java",
     "junit/src/org/chromium/components/media_router/BrowserMediaRouterRouteTest.java",
     "junit/src/org/chromium/components/media_router/BrowserMediaRouterSinkObservationTest.java",
     "junit/src/org/chromium/components/media_router/BrowserMediaRouterTestBase.java",
@@ -160,6 +162,7 @@ robolectric_library("junit") {
     "//third_party/androidx:androidx_mediarouter_mediarouter_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 }
 

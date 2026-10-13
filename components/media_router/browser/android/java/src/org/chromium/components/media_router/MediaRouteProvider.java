@@ -100,4 +100,7 @@ public interface MediaRouteProvider {
      * @param routeId The id of the route.
      */
     @Nullable FlingingController getFlingingController(String routeId);
+
+    /** Called when the local network access permission is granted at runtime. */
+    default void onLocalNetworkPermissionGranted() {}
 }

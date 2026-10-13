@@ -6,6 +6,10 @@ package org.chromium.components.media_router;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.os.Build;
+
 import androidx.annotation.VisibleForTesting;
 import androidx.mediarouter.media.MediaRouter;
 
@@ -34,14 +38,25 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Implements the JNI interface called from the C++ Media Router implementation on Android.
- * Owns a list of {@link MediaRouteProvider} implementations and dispatches native calls to them.
+ * Implements the JNI interface called from the C++ Media Router implementation on Android. Owns a
+ * list of {@link MediaRouteProvider} implementations and dispatches native calls to them.
  */
 @JNINamespace("media_router")
 @NullMarked
 public class BrowserMediaRouter implements MediaRouteManager {
     private static final String TAG = "MediaRouter";
     private static final int MIN_GOOGLE_PLAY_SERVICES_APK_VERSION = 12600000;
+
+    public static final String ANDROID_PERMISSION_ACCESS_LOCAL_NETWORK =
+            "android.permission.ACCESS_LOCAL_NETWORK";
+    private static final String PERMISSION_WAS_DENIED_KEY =
+            "HasRequestedAndroidPermission::" + ANDROID_PERMISSION_ACCESS_LOCAL_NETWORK;
+    private static final String PLACEHOLDER_SINK_URN = "placeholder-urn";
+    private static final String PLACEHOLDER_SINK_NAME = "placeholder-sink";
+
+    private static final List<BrowserMediaRouter> sInstances = new ArrayList<>();
+    private static @Nullable Boolean sNeedsLocalNetworkPermissionForTesting;
+    private static @Nullable Boolean sLocalNetworkPermissionGranted;
 
     private static MediaRouteProvider.Factory sRouteProviderFactory =
             new MediaRouteProvider.Factory() {
@@ -80,6 +95,64 @@ public class BrowserMediaRouter implements MediaRouteManager {
         var oldValue = sRouteProviderFactory;
         sRouteProviderFactory = factory;
         ResettersForTesting.register(() -> sRouteProviderFactory = oldValue);
+    }
+
+    public static void setNeedsLocalNetworkPermissionForTesting(@Nullable Boolean needsPermission) {
+        sNeedsLocalNetworkPermissionForTesting = needsPermission;
+        sLocalNetworkPermissionGranted = null;
+        ResettersForTesting.register(
+                () -> {
+                    sNeedsLocalNetworkPermissionForTesting = null;
+                    sLocalNetworkPermissionGranted = null;
+                });
+    }
+
+    /**
+     * Returns whether Local Network Access permission is required on this device/SDK and not yet
+     * granted.
+     */
+    public static boolean needsLocalNetworkPermission() {
+        if (Boolean.TRUE.equals(sLocalNetworkPermissionGranted)) {
+            return false;
+        }
+        if (sNeedsLocalNetworkPermissionForTesting != null) {
+            return sNeedsLocalNetworkPermissionForTesting;
+        }
+        Context context = ContextUtils.getApplicationContext();
+        return Build.VERSION.SDK_INT >= 37
+                && context.getApplicationInfo().targetSdkVersion >= 37
+                && context.checkSelfPermission(ANDROID_PERMISSION_ACCESS_LOCAL_NETWORK)
+                        != PackageManager.PERMISSION_GRANTED;
+    }
+
+    /**
+     * Returns whether a placeholder sink should be reported to native so the Cast button remains
+     * visible until the user has been prompted for Local Network Access permission.
+     */
+    public static boolean shouldReportPlaceholderSink() {
+        if (!needsLocalNetworkPermission()
+                || Boolean.FALSE.equals(sLocalNetworkPermissionGranted)) {
+            return false;
+        }
+        return !ContextUtils.getAppSharedPreferences().getBoolean(PERMISSION_WAS_DENIED_KEY, false);
+    }
+
+    /**
+     * Updates active {@link BrowserMediaRouter} instances after a runtime Local Network Access
+     * permission prompt completes.
+     */
+    public static void onLocalNetworkPermissionResult(boolean granted) {
+        sLocalNetworkPermissionGranted = granted;
+        for (BrowserMediaRouter router : sInstances) {
+            if (granted) {
+                for (MediaRouteProvider provider : router.mRouteProviders) {
+                    provider.onLocalNetworkPermissionGranted();
+                }
+            }
+            for (Map.Entry<String, List<MediaSink>> entry : router.mSinksPerSource.entrySet()) {
+                router.notifyNativeOnSinksReceived(entry.getKey(), entry.getValue().size());
+            }
+        }
     }
 
     protected List<MediaRouteProvider> getRouteProvidersForTest() {
@@ -129,10 +202,16 @@ public class BrowserMediaRouter implements MediaRouteManager {
         for (List<MediaSink> s : sinksPerProvider.values()) allSinksPerSource.addAll(s);
 
         mSinksPerSource.put(sourceId, allSinksPerSource);
+        notifyNativeOnSinksReceived(sourceId, allSinksPerSource.size());
+    }
+
+    private void notifyNativeOnSinksReceived(String sourceId, int sinkCount) {
         if (mNativeMediaRouterAndroidBridge != 0) {
+            if (sinkCount == 0 && shouldReportPlaceholderSink()) {
+                sinkCount = 1;
+            }
             BrowserMediaRouterJni.get()
-                    .onSinksReceived(
-                            mNativeMediaRouterAndroidBridge, sourceId, allSinksPerSource.size());
+                    .onSinksReceived(mNativeMediaRouterAndroidBridge, sourceId, sinkCount);
         }
     }
 
@@ -209,6 +288,7 @@ public class BrowserMediaRouter implements MediaRouteManager {
 
     /**
      * Initializes the media router and its providers.
+     *
      * @param nativeMediaRouterAndroidBridge the handler for the native counterpart of this instance
      * @return an initialized {@link BrowserMediaRouter} instance
      */
@@ -267,7 +347,11 @@ public class BrowserMediaRouter implements MediaRouteManager {
     @CalledByNative
     public @JniType("std::string") String getSinkUrn(
             @JniType("std::string") String sourceUrn, int index) {
-        return getSink(sourceUrn, index).getUrn();
+        List<MediaSink> sinks = mSinksPerSource.get(sourceUrn);
+        if (sinks == null || sinks.isEmpty()) {
+            return PLACEHOLDER_SINK_URN;
+        }
+        return sinks.get(index).getUrn();
     }
 
     /**
@@ -281,7 +365,11 @@ public class BrowserMediaRouter implements MediaRouteManager {
     @CalledByNative
     public @JniType("std::string") String getSinkName(
             @JniType("std::string") String sourceUrn, int index) {
-        return getSink(sourceUrn, index).getName();
+        List<MediaSink> sinks = mSinksPerSource.get(sourceUrn);
+        if (sinks == null || sinks.isEmpty()) {
+            return PLACEHOLDER_SINK_NAME;
+        }
+        return sinks.get(index).getName();
     }
 
     /**
@@ -423,6 +511,8 @@ public class BrowserMediaRouter implements MediaRouteManager {
     @VisibleForTesting
     protected BrowserMediaRouter(long nativeMediaRouterAndroidBridge) {
         mNativeMediaRouterAndroidBridge = nativeMediaRouterAndroidBridge;
+        sInstances.add(this);
+        ResettersForTesting.register(() -> sInstances.remove(this));
     }
 
     /** Called when the native object is being destroyed. */
@@ -430,11 +520,7 @@ public class BrowserMediaRouter implements MediaRouteManager {
     public void teardown() {
         // The native object has been destroyed.
         mNativeMediaRouterAndroidBridge = 0;
-    }
-
-    private MediaSink getSink(String sourceId, int index) {
-        assert mSinksPerSource.containsKey(sourceId);
-        return mSinksPerSource.get(sourceId).get(index);
+        sInstances.remove(this);
     }
 
     private @Nullable MediaRouteProvider getProviderForSource(String sourceId) {
