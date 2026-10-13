@@ -8,6 +8,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/actor/actor_enterprise_policy_checker.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/common/actor.mojom.h"
@@ -26,13 +27,17 @@ class ActorKeyedServiceAdapterTest : public testing::Test {
   ActorKeyedServiceAdapterTest()
       : profile_(TestingProfile::Builder().Build()),
         actor_service_(ActorKeyedService::Get(profile_.get())),
-        adapter_(actor_service_) {}
+        enterprise_policy_checker_(profile_.get()),
+        adapter_(actor_service_, &enterprise_policy_checker_) {}
   ~ActorKeyedServiceAdapterTest() override = default;
+
+  void TearDown() override { actor_service_->Shutdown(); }
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   raw_ptr<ActorKeyedService> actor_service_;
+  ActorEnterprisePolicyChecker enterprise_policy_checker_;
   ActorKeyedServiceAdapter adapter_;
 };
 
@@ -54,6 +59,7 @@ TEST_F(ActorKeyedServiceAdapterTest, StartTaskCreatesBrowserActuatorTask) {
   EXPECT_EQ(task->source_info().type, TaskSourceInfo::Client::kBrowserActuator);
   ASSERT_TRUE(task->source_info().id.has_value());
   EXPECT_EQ(*task->source_info().id, "session_alpha");
+  EXPECT_EQ(&task->policy_checker(), &enterprise_policy_checker_);
 }
 
 TEST_F(ActorKeyedServiceAdapterTest, StartTaskPropagatesTabId) {

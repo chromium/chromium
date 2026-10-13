@@ -12,7 +12,6 @@
 #include "base/notimplemented.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
-#include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor_webui.mojom.h"
@@ -22,9 +21,12 @@
 namespace actor {
 
 ActorKeyedServiceAdapter::ActorKeyedServiceAdapter(
-    ActorKeyedService* actor_service)
-    : actor_service_(actor_service) {
+    ActorKeyedService* actor_service,
+    const EnterprisePolicyChecker* enterprise_policy_checker)
+    : actor_service_(actor_service),
+      enterprise_policy_checker_(enterprise_policy_checker) {
   CHECK(actor_service_);
+  CHECK(enterprise_policy_checker_);
 }
 
 ActorKeyedServiceAdapter::~ActorKeyedServiceAdapter() = default;
@@ -38,10 +40,9 @@ void ActorKeyedServiceAdapter::StartTask(
     options->actuation_tab_id = request.tab_id();
   }
 
-  // TODO(crbug.com/568105613): Use a non-null enterprise policy checker.
   TaskId task_id = actor_service_->CreateTaskWithOptions(
       TaskSourceInfo(TaskSourceInfo::Client::kBrowserActuator, session_id),
-      GetNullEnterprisePolicyChecker(), std::move(options),
+      enterprise_policy_checker_, std::move(options),
       weak_ptr_factory_.GetWeakPtr(),
       ui::ActorUiStateManager::Get(actor_service_->GetProfile()));
 
