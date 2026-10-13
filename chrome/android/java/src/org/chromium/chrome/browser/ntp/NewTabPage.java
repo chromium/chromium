@@ -1071,6 +1071,7 @@ public class NewTabPage
         SuggestionsMetrics.recordSurfaceVisible();
         GlicHelper.maybeShowGlicTaskInProgressSnackbar(
                 this, mTab.getProfile(), mActivity, GlicHelper.Caller.NEW_TAB_PAGE);
+        mNewTabPageCoordinator.recordNtpShown();
     }
 
     /** Records UMA for the NTP being hidden and the time spent on it. */

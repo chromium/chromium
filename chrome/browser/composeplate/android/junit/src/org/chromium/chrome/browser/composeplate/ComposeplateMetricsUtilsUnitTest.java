@@ -9,6 +9,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.ntp.NewTabPageUtils.ActionChips;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 
 /** Unit tests for {@link ComposeplateMetricsUtils}. */
@@ -56,13 +57,30 @@ public class ComposeplateMetricsUtilsUnitTest {
     }
 
     @Test
-    public void testRecordFakeSearchBoxComposeplateButtonImpression() {
-        String histogramName = "NewTabPage.FakeSearchBox.ComposeplateButton.Impression2";
-        var histogramWatcher = HistogramWatcher.newSingleRecordWatcher(histogramName, true);
-        ComposeplateMetricsUtils.recordFakeSearchBoxComposeplateButtonImpression2(true);
+    public void testRecordComposeplateButtonImpression_aiModeButton() {
+        testRecordComposeplateButtonImpressionImpl(ActionChips.DEFAULT);
+    }
 
-        histogramWatcher = HistogramWatcher.newSingleRecordWatcher(histogramName, false);
-        ComposeplateMetricsUtils.recordFakeSearchBoxComposeplateButtonImpression2(false);
+    @Test
+    public void testRecordComposeplateButtonImpression_incognitoButton() {
+        testRecordComposeplateButtonImpressionImpl(ActionChips.INCOGNITO);
+    }
+
+    @Test
+    public void testRecordComposeplateButtonImpression_createImageButton() {
+        testRecordComposeplateButtonImpressionImpl(ActionChips.CREATE_IMAGE);
+    }
+
+    @Test
+    public void testRecordComposeplateButtonImpression_galleryButton() {
+        testRecordComposeplateButtonImpressionImpl(ActionChips.GALLERY);
+    }
+
+    private void testRecordComposeplateButtonImpressionImpl(@ActionChips int buttonType) {
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "NewTabPage.Composeplate.Buttons.Impression", buttonType);
+        ComposeplateMetricsUtils.recordComposeplateButtonImpression(buttonType);
         histogramWatcher.assertExpected();
     }
 }
