@@ -70,6 +70,7 @@ namespace {
 constexpr char kPdfMimeType[] = "application/pdf";
 constexpr char kTestExtensionDir[] = "generic_mime_handler";
 constexpr char kTestPdfPath[] = "/test.pdf";
+constexpr char kIframeHostPath[] = "/iframe_host.html";
 constexpr char kHeaderProbePdfPath[] = "/header-probe.pdf";
 constexpr char kAuthTokenHeaderName[] = "X-Auth-Token";
 
@@ -487,6 +488,101 @@ IN_PROC_BROWSER_TEST_F(GenericMimeHandlerBrowserTest,
         }
       });
   EXPECT_FALSE(found_extension_frame);
+}
+
+// handler.js turns embedding off through the API. Top-level loads are expected
+// to stay with the extension, and a PDF in an iframe is expected to go to the
+// next handler by precedence.
+IN_PROC_BROWSER_TEST_F(GenericMimeHandlerBrowserTest,
+                       DisablingEmbedViaApiKeepsOnlyTopLevelLoads) {
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII(kTestExtensionDir));
+  ASSERT_TRUE(extension);
+
+  ResultCatcher catcher;
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(
+      web_contents,
+      embedded_test_server()->GetURL("/test.pdf?action=disable-embedded")));
+  ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
+
+  EXPECT_EQ(extension->id(),
+            PluginUtils::GetExtensionIdForMimeType(profile(), kPdfMimeType,
+                                                   /*embedded=*/false));
+  EXPECT_EQ(extension_misc::kPdfExtensionId,
+            PluginUtils::GetExtensionIdForMimeType(profile(), kPdfMimeType,
+                                                   /*embedded=*/true));
+
+  ASSERT_TRUE(NavigateToURL(web_contents,
+                            embedded_test_server()->GetURL(kIframeHostPath)));
+  content::RenderFrameHost* viewer_frame = FindMimeHandlerExtensionFrame();
+  ASSERT_TRUE(viewer_frame);
+  EXPECT_EQ(extension_misc::kPdfExtensionId,
+            viewer_frame->GetLastCommittedOrigin().host());
+}
+
+// An embedded load is expected to go to the highest-precedence handler that may
+// embed, or to the built-in viewer when no handler may embed.
+IN_PROC_BROWSER_TEST_F(GenericMimeHandlerBrowserTest,
+                       EmbeddedLoadFollowsStoredCanEmbedByPrecedence) {
+  const Extension* backup_handler =
+      LoadExtension(test_data_dir_.AppendASCII(kTestExtensionDir));
+  ASSERT_TRUE(backup_handler);
+  // The manifest of the preferred handler says can_embed false.
+  const Extension* preferred_handler = LoadExtension(
+      test_data_dir_.AppendASCII("generic_mime_handler_no_embed"));
+  ASSERT_TRUE(preferred_handler);
+  auto* registry = MimeHandlerRegistry::Get(profile());
+  ASSERT_EQ(preferred_handler->id(), GetHandlerForMimeType(kPdfMimeType));
+
+  {
+    // Both handlers may embed. The preferred handler is expected to take
+    // embedded loads.
+    registry->SetCanEmbedForMimeType(preferred_handler->id(), kPdfMimeType,
+                                     true);
+    registry->SetCanEmbedForMimeType(backup_handler->id(), kPdfMimeType, true);
+    EXPECT_EQ(preferred_handler->id(),
+              PluginUtils::GetExtensionIdForMimeType(profile(), kPdfMimeType,
+                                                     /*embedded=*/true));
+  }
+
+  {
+    // Only the backup handler may embed. It is expected to take embedded
+    // loads.
+    registry->SetCanEmbedForMimeType(preferred_handler->id(), kPdfMimeType,
+                                     false);
+    registry->SetCanEmbedForMimeType(backup_handler->id(), kPdfMimeType, true);
+    EXPECT_EQ(backup_handler->id(),
+              PluginUtils::GetExtensionIdForMimeType(profile(), kPdfMimeType,
+                                                     /*embedded=*/true));
+  }
+
+  {
+    // Neither handler may embed. Embedded loads are expected to go to the
+    // built-in viewer, and top-level loads to stay with the preferred handler.
+    registry->SetCanEmbedForMimeType(preferred_handler->id(), kPdfMimeType,
+                                     false);
+    registry->SetCanEmbedForMimeType(backup_handler->id(), kPdfMimeType, false);
+    EXPECT_EQ(extension_misc::kPdfExtensionId,
+              PluginUtils::GetExtensionIdForMimeType(profile(), kPdfMimeType,
+                                                     /*embedded=*/true));
+    EXPECT_EQ(preferred_handler->id(),
+              PluginUtils::GetExtensionIdForMimeType(profile(), kPdfMimeType,
+                                                     /*embedded=*/false));
+  }
+
+  {
+    // The preferred handler may embed but is disabled. The backup handler is
+    // expected to take embedded loads.
+    registry->SetCanEmbedForMimeType(preferred_handler->id(), kPdfMimeType,
+                                     true);
+    registry->SetEnabledForMimeType(preferred_handler->id(), kPdfMimeType,
+                                    false);
+    registry->SetCanEmbedForMimeType(backup_handler->id(), kPdfMimeType, true);
+    EXPECT_EQ(backup_handler->id(),
+              PluginUtils::GetExtensionIdForMimeType(profile(), kPdfMimeType,
+                                                     /*embedded=*/true));
+  }
 }
 
 // The "Download PDFs instead of automatically opening them in Chrome"

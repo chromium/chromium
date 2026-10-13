@@ -1,0 +1,9 @@
+{
+  "name": "MIME handler options test",
+  "version": "1.0",
+  "manifest_version": 3,
+  "background": {"service_worker": "service_worker.js"},
+  "mime_types_handler": {
+    "application/pdf": {"handler_url": "handler.html"}
+  }
+}

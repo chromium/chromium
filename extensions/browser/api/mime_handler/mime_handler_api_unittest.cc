@@ -355,16 +355,25 @@ TEST_F(MimeHandlerApiTest, GetMimeHandlerOptionsReportsManifestDefault) {
   struct {
     const char* name;
     base::DictValue entry;
-    bool expected_enabled;
+    bool expected_enabled = true;
+    bool expected_can_embed = false;
   } kTestCases[] = {
-      {"Entry without enabled key",
-       base::DictValue().Set("handler_url", kHandlerPage), true},
-      {"Entry with enabled true",
-       base::DictValue().Set("handler_url", kHandlerPage).Set("enabled", true),
-       true},
-      {"Entry with enabled false",
-       base::DictValue().Set("handler_url", kHandlerPage).Set("enabled", false),
-       false},
+      {.name = "Entry without option keys",
+       .entry = base::DictValue().Set("handler_url", kHandlerPage)},
+      {.name = "Entry with enabled true",
+       .entry = base::DictValue()
+                    .Set("handler_url", kHandlerPage)
+                    .Set("enabled", true)},
+      {.name = "Entry with enabled false",
+       .entry = base::DictValue()
+                    .Set("handler_url", kHandlerPage)
+                    .Set("enabled", false),
+       .expected_enabled = false},
+      {.name = "Entry with can_embed true",
+       .entry = base::DictValue()
+                    .Set("handler_url", kHandlerPage)
+                    .Set("can_embed", true),
+       .expected_can_embed = true},
   };
 
   for (auto& test_case : kTestCases) {
@@ -381,8 +390,11 @@ TEST_F(MimeHandlerApiTest, GetMimeHandlerOptionsReportsManifestDefault) {
     std::optional<base::Value> result =
         RunFunctionAndReturnValue(function.get(), R"(["application/pdf"])");
     ASSERT_TRUE(result.has_value());
-    EXPECT_THAT(result.value(), base::test::IsJson(base::DictValue().Set(
-                                    "enabled", test_case.expected_enabled)));
+    EXPECT_THAT(
+        result.value(),
+        base::test::IsJson(base::DictValue()
+                               .Set("enabled", test_case.expected_enabled)
+                               .Set("canEmbed", test_case.expected_can_embed)));
   }
 }
 
@@ -423,7 +435,8 @@ TEST_F(MimeHandlerApiTest, SetThenGetMimeHandlerOptionsRoundTrip) {
     std::optional<base::Value> result =
         RunFunctionAndReturnValue(get_function.get(), R"(["application/pdf"])");
     ASSERT_TRUE(result.has_value());
-    EXPECT_THAT(result.value(), base::test::IsJson(options));
+    EXPECT_THAT(result.value(),
+                base::test::IsJson(options.Clone().Set("canEmbed", false)));
   }
 }
 
@@ -448,7 +461,7 @@ TEST_F(MimeHandlerApiTest,
       get_handled_function.get(), R"(["application/pdf"])");
   ASSERT_TRUE(handled_result.has_value());
   EXPECT_THAT(handled_result.value(),
-              base::test::IsJson(R"({"enabled": false})"));
+              base::test::IsJson(R"({"enabled": false, "canEmbed": false})"));
   auto get_unhandled_function =
       base::MakeRefCounted<MimeHandlerGetMimeHandlerOptionsFunction>();
   EXPECT_EQ(kUnhandledPngMimeTypeError,

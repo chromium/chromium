@@ -24,8 +24,14 @@ dictionary StreamInfo {
 
 // Persisted options for a MIME handler registered for one MIME type.
 dictionary MimeHandlerOptions {
-  // Whether this handler is active for the given MIME type.
-  required boolean enabled;
+  // Whether this handler is enabled. Defaults to the manifest entry's
+  // `enabled` value.
+  boolean enabled;
+
+  // Whether this handler may be used for embedded loads (iframe, embed,
+  // object). Defaults to the manifest entry's `can_embed` value. Has no
+  // effect while `enabled` is false.
+  boolean canEmbed;
 };
 
 // Use the <code>chrome.mimeHandler</code> API to handle MIME type streams
@@ -44,13 +50,13 @@ interface MimeHandler {
   // Sets the configuration options for a specified MIME type.
   // |mimeType|: The MIME type to configure. It must be a MIME type the
   // extension handles through mime_types_handler.
-  // |options|: The new options to use.
+  // |options|: The options to change.
   // |Returns|: Promise resolved when the configuration has been set.
   static Promise<undefined> setMimeHandlerOptions(DOMString mimeType,
                                                   MimeHandlerOptions options);
 
-  // Reads the options for a MIME type. Returns the manifest entry's values
-  // if none have been stored.
+  // Reads the options for a MIME type. Each member is the value the extension
+  // set, or the manifest entry's value if the extension has not set it.
   // |mimeType|: The MIME type whose options to read. It must be a MIME type
   // the extension handles through mime_types_handler.
   // |PromiseValue|: options
