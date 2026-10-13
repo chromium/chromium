@@ -51,14 +51,6 @@
 #include "device/fido/cros/credential_store.h"
 #endif
 
-namespace {
-
-history::WebHistoryService* GetUpdatedWebHistoryService(Profile* profile) {
-  return WebHistoryServiceFactory::GetForProfile(profile);
-}
-
-}  // namespace
-
 // static
 std::unique_ptr<browsing_data::BrowsingDataCounter>
 BrowsingDataCounterFactory::GetForProfileAndPref(Profile* profile,
@@ -67,8 +59,7 @@ BrowsingDataCounterFactory::GetForProfileAndPref(Profile* profile,
     return std::make_unique<browsing_data::HistoryCounter>(
         HistoryServiceFactory::GetForProfile(
             profile, ServiceAccessType::EXPLICIT_ACCESS),
-        base::BindRepeating(&GetUpdatedWebHistoryService,
-                            base::Unretained(profile)),
+        WebHistoryServiceFactory::GetForProfile(profile),
         SyncServiceFactory::GetForProfile(profile));
   }
 

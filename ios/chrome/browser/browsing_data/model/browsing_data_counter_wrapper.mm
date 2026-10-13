@@ -42,8 +42,7 @@ CreateCounterForProfileAndPref(ProfileIOS* profile,
     return std::make_unique<browsing_data::HistoryCounter>(
         ios::HistoryServiceFactory::GetForProfile(
             profile, ServiceAccessType::EXPLICIT_ACCESS),
-        base::BindRepeating(&ios::WebHistoryServiceFactory::GetForProfile,
-                            base::Unretained(profile)),
+        ios::WebHistoryServiceFactory::GetForProfile(profile),
         SyncServiceFactory::GetForProfile(profile));
   }
 

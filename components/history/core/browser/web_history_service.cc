@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -30,6 +31,7 @@
 #include "components/sync/base/features.h"
 #include "components/sync/base/sync_util.h"
 #include "components/sync/protocol/history_status.pb.h"
+#include "components/sync/service/sync_service.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/url_util.h"
@@ -69,6 +71,13 @@ const char kSyncProtoMimeType[] = "application/octet-stream";
 
 // The maximum number of retries for the SimpleURLLoader requests.
 const size_t kMaxRetries = 1;
+
+// Returns whether history sync is enabled.
+bool IsHistorySyncEnabledFromService(syncer::SyncService* sync_service) {
+  return !sync_service->IsLocalSyncEnabled() &&
+         sync_service->GetActiveDataTypes().Has(
+             syncer::HISTORY_DELETE_DIRECTIVES);
+}
 
 class RequestImpl : public WebHistoryService::Request {
  public:
@@ -647,10 +656,16 @@ WebHistoryService::QueryHistoryResult::Visit::Visit(Visit&&) = default;
 WebHistoryService::QueryHistoryResult::Visit::~Visit() = default;
 
 WebHistoryService::WebHistoryService(
+    syncer::SyncService* sync_service,
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : identity_manager_(identity_manager),
-      url_loader_factory_(std::move(url_loader_factory)) {}
+      url_loader_factory_(std::move(url_loader_factory)) {
+  if (sync_service) {
+    sync_service_observation_.Observe(sync_service);
+    is_enabled_ = IsHistorySyncEnabledFromService(sync_service);
+  }
+}
 
 WebHistoryService::~WebHistoryService() = default;
 
@@ -666,6 +681,7 @@ std::unique_ptr<WebHistoryService::Request> WebHistoryService::CreateRequest(
     const GURL& url,
     CompletionCallback callback,
     const net::PartialNetworkTrafficAnnotationTag& partial_traffic_annotation) {
+  CHECK(IsEnabled());
   // Can't use std::make_unique due to private constructor.
   return base::WrapUnique(
       new RequestImpl(identity_manager_, url_loader_factory_, url,
@@ -692,6 +708,7 @@ std::unique_ptr<WebHistoryService::Request> WebHistoryService::QueryHistory(
     const QueryOptions& options,
     WebHistoryService::QueryWebHistoryCallback callback,
     const net::PartialNetworkTrafficAnnotationTag& partial_traffic_annotation) {
+  CHECK(IsEnabled());
   // Wrap the original callback into a generic completion callback.
   CompletionCallback completion_callback = base::BindOnce(
       &WebHistoryService::QueryHistoryCompletionCallback, std::move(callback));
@@ -711,6 +728,7 @@ void WebHistoryService::ExpireHistory(
     const std::vector<ExpireHistoryArgs>& expire_list,
     ExpireWebHistoryCallback callback,
     const net::PartialNetworkTrafficAnnotationTag& partial_traffic_annotation) {
+  CHECK(IsEnabled());
   GURL url = GetDeleteUrl(server_version_info_);
 
   // Wrap the original callback into a generic completion callback.
@@ -732,6 +750,7 @@ void WebHistoryService::ExpireHistoryBetween(
     base::Time end_time,
     ExpireWebHistoryCallback callback,
     const net::PartialNetworkTrafficAnnotationTag& partial_traffic_annotation) {
+  CHECK(IsEnabled());
   std::vector<ExpireHistoryArgs> expire_list(1);
   expire_list.back().urls = restrict_urls;
   expire_list.back().begin_time = begin_time;
@@ -742,6 +761,7 @@ void WebHistoryService::ExpireHistoryBetween(
 void WebHistoryService::QueryWebAndAppActivity(
     QueryWebAndAppActivityCallback callback,
     const net::PartialNetworkTrafficAnnotationTag& partial_traffic_annotation) {
+  CHECK(IsEnabled());
   // Wrap the original callback into a generic completion callback.
   CompletionCallback completion_callback = base::BindOnce(
       &WebHistoryService::QueryWebAndAppActivityCompletionCallback,
@@ -762,6 +782,7 @@ void WebHistoryService::QueryOtherFormsOfBrowsingHistory(
     version_info::Channel channel,
     QueryOtherFormsOfBrowsingHistoryCallback callback,
     const net::PartialNetworkTrafficAnnotationTag& partial_traffic_annotation) {
+  CHECK(IsEnabled());
   // Wrap the original callback into a generic completion callback.
   CompletionCallback completion_callback = base::BindOnce(
       &WebHistoryService::QueryOtherFormsOfBrowsingHistoryCompletionCallback,
@@ -794,6 +815,21 @@ void WebHistoryService::QueryOtherFormsOfBrowsingHistory(
   request_raw->SetPostDataAndType(post_data, kSyncProtoMimeType);
 
   request_raw->Start();
+}
+
+void WebHistoryService::Shutdown() {
+  sync_service_observation_.Reset();
+}
+
+void WebHistoryService::OnStateChanged(syncer::SyncService* sync_service) {
+  is_enabled_ = IsHistorySyncEnabledFromService(sync_service);
+  for (WebHistoryServiceObserver& observer : observer_list_) {
+    observer.OnWebHistoryEnabled(is_enabled_);
+  }
+}
+
+void WebHistoryService::OnSyncShutdown(syncer::SyncService* sync_service) {
+  NOTREACHED();
 }
 
 // static

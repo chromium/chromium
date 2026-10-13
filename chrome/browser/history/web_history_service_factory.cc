@@ -12,17 +12,6 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 
-namespace {
-// Returns true if the user is signed in and full history sync is enabled,
-// and false otherwise.
-bool IsHistorySyncEnabled(Profile* profile) {
-  syncer::SyncService* sync = SyncServiceFactory::GetForProfile(profile);
-  return sync && !sync->IsLocalSyncEnabled() &&
-         sync->GetActiveDataTypes().Has(syncer::HISTORY_DELETE_DIRECTIVES);
-}
-
-}  // namespace
-
 // static
 WebHistoryServiceFactory* WebHistoryServiceFactory::GetInstance() {
   static base::NoDestructor<WebHistoryServiceFactory> instance;
@@ -32,9 +21,6 @@ WebHistoryServiceFactory* WebHistoryServiceFactory::GetInstance() {
 // static
 history::WebHistoryService* WebHistoryServiceFactory::GetForProfile(
       Profile* profile) {
-  if (!IsHistorySyncEnabled(profile))
-    return nullptr;
-
   return static_cast<history::WebHistoryService*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }
@@ -43,12 +29,8 @@ std::unique_ptr<KeyedService>
 WebHistoryServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = static_cast<Profile*>(context);
-  // Ensure that the service is not instantiated or used if the user is not
-  // signed in and has enabled history sync.
-  if (!IsHistorySyncEnabled(profile))
-    return nullptr;
-
   return std::make_unique<history::WebHistoryService>(
+      SyncServiceFactory::GetForProfile(profile),
       IdentityManagerFactory::GetForProfile(profile),
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess());

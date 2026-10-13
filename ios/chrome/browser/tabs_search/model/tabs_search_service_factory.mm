@@ -18,17 +18,6 @@
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/tabs_search/model/tabs_search_service.h"
 
-namespace {
-
-history::WebHistoryService* WebHistoryServiceGetter(
-    base::WeakPtr<ProfileIOS> weak_profile) {
-  DCHECK(weak_profile.get())
-      << "Getter should not be called after ProfileIOS destruction.";
-  return ios::WebHistoryServiceFactory::GetForProfile(weak_profile.get());
-}
-
-}  // namespace
-
 // static
 TabsSearchService* TabsSearchServiceFactory::GetForProfile(
     ProfileIOS* profile) {
@@ -70,9 +59,8 @@ std::unique_ptr<KeyedService> TabsSearchServiceFactory::BuildServiceInstanceFor(
       is_off_the_record ? nullptr
                         : ios::HistoryServiceFactory::GetForProfile(
                               profile, ServiceAccessType::EXPLICIT_ACCESS),
-      is_off_the_record
-          ? TabsSearchService::WebHistoryServiceGetter()
-          : base::BindRepeating(&WebHistoryServiceGetter, profile->AsWeakPtr()),
+      is_off_the_record ? nullptr
+                        : ios::WebHistoryServiceFactory::GetForProfile(profile),
       device_info_service ? device_info_service->GetDeviceInfoTracker()
                           : nullptr);
 }

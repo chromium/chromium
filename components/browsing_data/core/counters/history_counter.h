@@ -23,9 +23,6 @@ namespace browsing_data {
 
 class HistoryCounter : public browsing_data::BrowsingDataCounter {
  public:
-  typedef base::RepeatingCallback<history::WebHistoryService*()>
-      GetUpdatedWebHistoryServiceCallback;
-
   class HistoryResult : public SyncResult {
    public:
     HistoryResult(const HistoryCounter* source,
@@ -47,7 +44,7 @@ class HistoryCounter : public browsing_data::BrowsingDataCounter {
   };
 
   explicit HistoryCounter(history::HistoryService* history_service,
-                          GetUpdatedWebHistoryServiceCallback callback,
+                          history::WebHistoryService* web_history_service,
                           syncer::SyncService* sync_service);
   ~HistoryCounter() override;
 
@@ -69,13 +66,11 @@ class HistoryCounter : public browsing_data::BrowsingDataCounter {
   void OnWebHistoryTimeout();
   void MergeResults();
 
-  history::WebHistoryService* GetWebHistoryService();
-
-  bool IsHistorySyncEnabled(const syncer::SyncService* sync_service);
+  bool IsHistorySyncEnabled() const;
 
   raw_ptr<history::HistoryService, DanglingUntriaged> history_service_;
 
-  GetUpdatedWebHistoryServiceCallback web_history_service_callback_;
+  raw_ptr<history::WebHistoryService> web_history_service_;
 
   SyncTracker sync_tracker_;
 

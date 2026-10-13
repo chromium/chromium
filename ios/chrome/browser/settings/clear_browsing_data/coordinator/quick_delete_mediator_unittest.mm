@@ -183,8 +183,7 @@ class QuickDeleteMediatorTest : public PlatformTest {
     // Add stub counter result for browsing history.
     browsing_data::HistoryCounter history_counter(
         history_service_,
-        browsing_data::HistoryCounter::GetUpdatedWebHistoryServiceCallback(),
-        nullptr);
+        /*web_history_service=*/nullptr, nullptr);
 
     history_counter.Init(prefs(),
                          browsing_data::BrowsingDataCounter::ResultCallback());
@@ -277,30 +276,29 @@ TEST_F(QuickDeleteMediatorTest, TestBrowsingHistorySummary) {
   TriggerUpdateUICallbackForAutofillResults(0, 0, 0);
 
   // clang-format off
-    const struct TestCase {
-        int num_sites;
-        bool sync_enabled;
-        NSString* expected_output;
-    } kTestCases[] = {
-        {0, true, l10n_util::GetNSString(
-                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_NO_DATA)},
-        {0, false, l10n_util::GetNSString(
-                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_NO_DATA)},
-        {1, true, l10n_util::GetPluralNSStringF(
-                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SITES_SYNCED, 1)},
-        {1, false, l10n_util::GetPluralNSStringF(
-                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SITES, 1)},
-        {2, true, l10n_util::GetPluralNSStringF(
-                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SITES_SYNCED, 2)},
-        {2, false, l10n_util::GetPluralNSStringF(
-                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SITES, 2)},
-    };
+  const struct TestCase {
+      int num_sites;
+      bool sync_enabled;
+      NSString* expected_output;
+  } kTestCases[] = {
+      {0, true, l10n_util::GetNSString(
+                 IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_NO_DATA)},
+      {0, false, l10n_util::GetNSString(
+                 IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_NO_DATA)},
+      {1, true, l10n_util::GetPluralNSStringF(
+                 IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SITES_SYNCED, 1)},
+      {1, false, l10n_util::GetPluralNSStringF(
+                 IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SITES, 1)},
+      {2, true, l10n_util::GetPluralNSStringF(
+                 IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SITES_SYNCED, 2)},
+      {2, false, l10n_util::GetPluralNSStringF(
+                 IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SITES, 2)},
+  };
   // clang-format on
 
-  browsing_data::HistoryCounter counter(
-      history_service_,
-      browsing_data::HistoryCounter::GetUpdatedWebHistoryServiceCallback(),
-      nullptr);
+  browsing_data::HistoryCounter counter(history_service_,
+                                        /*web_history_service=*/nullptr,
+                                        nullptr);
 
   counter.Init(prefs(), browsing_data::BrowsingDataCounter::ResultCallback());
 

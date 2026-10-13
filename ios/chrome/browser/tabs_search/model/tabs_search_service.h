@@ -57,9 +57,6 @@ class WebState;
 class TabsSearchService : public IOSBrowsingHistoryDriverDelegate,
                           public KeyedService {
  public:
-  using WebHistoryServiceGetter =
-      base::RepeatingCallback<history::WebHistoryService*()>;
-
   TabsSearchService(bool is_off_the_record,
                     BrowserList* browser_list,
                     signin::IdentityManager* identity_manager,
@@ -67,7 +64,7 @@ class TabsSearchService : public IOSBrowsingHistoryDriverDelegate,
                     sessions::TabRestoreService* restore_service,
                     sync_sessions::SessionSyncService* session_sync_service,
                     history::HistoryService* history_service,
-                    WebHistoryServiceGetter web_history_service_getter,
+                    history::WebHistoryService* web_history_service,
                     syncer::DeviceInfoTracker* device_info_tracker);
   ~TabsSearchService() override;
 
@@ -162,7 +159,7 @@ class TabsSearchService : public IOSBrowsingHistoryDriverDelegate,
   raw_ptr<sessions::TabRestoreService> restore_service_;
   raw_ptr<sync_sessions::SessionSyncService> session_sync_service_;
   raw_ptr<history::HistoryService> history_service_;
-  WebHistoryServiceGetter web_history_service_getter_;
+  raw_ptr<history::WebHistoryService> web_history_service_;
   raw_ptr<syncer::DeviceInfoTracker> device_info_tracker_;
 
   // The most recent search history term.

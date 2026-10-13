@@ -36,7 +36,7 @@ TabsSearchService::TabsSearchService(
     sessions::TabRestoreService* restore_service,
     sync_sessions::SessionSyncService* session_sync_service,
     history::HistoryService* history_service,
-    WebHistoryServiceGetter web_history_service_getter,
+    history::WebHistoryService* web_history_service,
     syncer::DeviceInfoTracker* device_info_tracker)
     : is_off_the_record_(is_off_the_record),
       browser_list_(browser_list),
@@ -45,7 +45,7 @@ TabsSearchService::TabsSearchService(
       restore_service_(restore_service),
       session_sync_service_(session_sync_service),
       history_service_(history_service),
-      web_history_service_getter_(web_history_service_getter),
+      web_history_service_(web_history_service),
       device_info_tracker_(device_info_tracker) {
   DCHECK(browser_list_);
 
@@ -57,7 +57,7 @@ TabsSearchService::TabsSearchService(
     DCHECK(session_sync_service_);
     DCHECK(restore_service_);
     DCHECK(history_service_);
-    DCHECK(!web_history_service_getter_.is_null());
+    DCHECK(web_history_service_);
   }
 }
 
@@ -169,8 +169,8 @@ void TabsSearchService::SearchHistory(
   DCHECK(completion);
 
   if (!browsing_history_service_) {
-    history_driver_ = std::make_unique<IOSBrowsingHistoryDriver>(
-        web_history_service_getter_, this);
+    history_driver_ =
+        std::make_unique<IOSBrowsingHistoryDriver>(web_history_service_, this);
 
     browsing_history_service_ =
         std::make_unique<history::BrowsingHistoryService>(

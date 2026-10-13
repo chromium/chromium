@@ -1756,7 +1756,7 @@ void HistoryService::DeleteLocalAndRemoteHistoryBetween(
     base::CancelableTaskTracker* tracker) {
   // TODO(crbug.com/41439580): This should be factored out into a separate class
   // that dispatches deletions to the proper places.
-  if (web_history) {
+  if (web_history && web_history->IsEnabled()) {
     delete_directive_handler_->CreateTimeRangeDeleteDirective(begin_time,
                                                               end_time);
 
@@ -1802,7 +1802,7 @@ void HistoryService::DeleteLocalAndRemoteUrl(WebHistoryService* web_history,
   DCHECK(url.is_valid());
   // TODO(crbug.com/41439580): This should be factored out into a separate class
   // that dispatches deletions to the proper places.
-  if (web_history) {
+  if (web_history && web_history->IsEnabled()) {
     delete_directive_handler_->CreateUrlDeleteDirective(url);
 
     // Attempt online deletion from the history server, but ignore the result.

@@ -18,13 +18,19 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "base/types/optional_ref.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/sync/service/sync_service_observer.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace base {
 class DictValue;
+}
+
+namespace syncer {
+class SyncService;
 }
 
 namespace signin {
@@ -46,7 +52,8 @@ class WebHistoryServiceObserver;
 // Provides an API for querying Google servers for a signed-in user's
 // synced history visits. It is roughly analogous to HistoryService, and
 // supports a similar API.
-class WebHistoryService : public KeyedService {
+class WebHistoryService : public KeyedService,
+                          public syncer::SyncServiceObserver {
  public:
   // Handles all the work of making an API request. This class encapsulates
   // the entire state of the request. When an instance is destroyed, all
@@ -118,6 +125,7 @@ class WebHistoryService : public KeyedService {
   using CompletionCallback = base::OnceCallback<void(Request*, bool success)>;
 
   WebHistoryService(
+      syncer::SyncService* sync_service,
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
@@ -128,6 +136,13 @@ class WebHistoryService : public KeyedService {
 
   void AddObserver(WebHistoryServiceObserver* observer);
   void RemoveObserver(WebHistoryServiceObserver* observer);
+
+  // Returns whether the history sync is enabled.
+  //
+  // If this is false, then it is an error to call any method on the instance
+  // (except AddObserver/RemoveObserver). The method OnWebHistoryEnabled() on
+  // WebHistoryServiceObserver will be called when this becomes true.
+  bool IsEnabled() const { return is_enabled_; }
 
   // Searches synced history for visits matching `text_query`. The timeframe to
   // search, along with other options, is specified in `options`. If
@@ -171,6 +186,13 @@ class WebHistoryService : public KeyedService {
       QueryOtherFormsOfBrowsingHistoryCallback callback,
       const net::PartialNetworkTrafficAnnotationTag&
           partial_traffic_annotation);
+
+  // KeyedService implementation.
+  void Shutdown() override;
+
+  // SyncServiceObserver implementation.
+  void OnStateChanged(syncer::SyncService* sync_service) override;
+  void OnSyncShutdown(syncer::SyncService* sync_service) override;
 
  protected:
   // LINT.IfChange(WebHistoryRequestOutcome)
@@ -244,6 +266,11 @@ class WebHistoryService : public KeyedService {
     return server_version_info_;
   }
 
+ protected:
+  // Cache whether the WebHistoryService is enabled. Protected to allow
+  // sub-classes to override the value (e.g. test double classes).
+  bool is_enabled_ = false;
+
  private:
   friend class WebHistoryServiceTest;
 
@@ -275,6 +302,10 @@ class WebHistoryService : public KeyedService {
 
   // Observers.
   base::ObserverList<WebHistoryServiceObserver, true>::Unchecked observer_list_;
+
+  // SyncService observation.
+  base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
+      sync_service_observation_{this};
 
   base::WeakPtrFactory<WebHistoryService> weak_ptr_factory_{this};
 };

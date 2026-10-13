@@ -14,6 +14,9 @@ namespace history {
 // change the signatures of HistoryServiceObserver to use it for both classes.
 class WebHistoryServiceObserver {
  public:
+  // Called when the state of the history sync has changed.
+  virtual void OnWebHistoryEnabled(bool enabled) {}
+
   // Called after a successful WebHistoryService deletion request. This could
   // be partial or complete history deletion.
   virtual void OnWebHistoryDeleted() = 0;

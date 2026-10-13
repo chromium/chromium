@@ -19,10 +19,7 @@ class IOSBrowsingHistoryDriverDelegate;
 // IOSBrowsingHistoryDriverDelegate for most actions.
 class IOSBrowsingHistoryDriver : public history::BrowsingHistoryDriver {
  public:
-  using WebHistoryServiceGetter =
-      base::RepeatingCallback<history::WebHistoryService*()>;
-
-  IOSBrowsingHistoryDriver(WebHistoryServiceGetter history_service_getter,
+  IOSBrowsingHistoryDriver(history::WebHistoryService* web_history_service,
                            IOSBrowsingHistoryDriverDelegate* delegate);
 
   IOSBrowsingHistoryDriver(const IOSBrowsingHistoryDriver&) = delete;
@@ -53,7 +50,7 @@ class IOSBrowsingHistoryDriver : public history::BrowsingHistoryDriver {
       base::OnceCallback<void(bool)> callback) override;
 
   // The current web history service.
-  WebHistoryServiceGetter history_service_getter_;
+  raw_ptr<history::WebHistoryService> web_history_service_;
   raw_ptr<IOSBrowsingHistoryDriverDelegate> delegate_;
 };
 

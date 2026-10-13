@@ -61,7 +61,7 @@ void ShouldShowNoticeAboutOtherFormsOfBrowsingHistory(
       !sync_service->GetActiveDataTypes().Has(
           syncer::HISTORY_DELETE_DIRECTIVES) ||
       sync_service->GetUserSettings()->IsUsingExplicitPassphrase() ||
-      !history_service) {
+      !history_service || !history_service->IsEnabled()) {
     std::move(callback).Run(false);
     return;
   }

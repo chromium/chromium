@@ -92,7 +92,10 @@ class TestingWebHistoryService : public WebHistoryService {
       // only usage of this object is to fetch access tokens via RequestImpl,
       // and TestWebHistoryService deliberately replaces this flow with
       // TestRequest.
-      : WebHistoryService(nullptr, url_loader_factory) {}
+      : WebHistoryService(nullptr, nullptr, url_loader_factory) {
+    // TestingWebHistoryService acts as if history sync is always enabled.
+    is_enabled_ = true;
+  }
 
   TestingWebHistoryService(const TestingWebHistoryService&) = delete;
   TestingWebHistoryService& operator=(const TestingWebHistoryService&) = delete;
@@ -110,6 +113,7 @@ class TestingWebHistoryService : public WebHistoryService {
   using WebHistoryService::server_version_info_for_test;
 
  protected:
+  // WebHistoryService implementation.
   std::unique_ptr<Request> CreateRequest(
       const GURL& url,
       CompletionCallback callback,

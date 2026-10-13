@@ -10,6 +10,7 @@
 #include "chrome/browser/history/web_history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/browsing_data/core/history_notice_utils.h"
+#include "components/history/core/browser/web_history_service.h"
 #include "components/history/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
@@ -51,7 +52,11 @@ bool ProfileBasedBrowsingHistoryDriver::ShouldHideWebHistoryUrl(
 
 history::WebHistoryService*
 ProfileBasedBrowsingHistoryDriver::GetWebHistoryService() {
-  return WebHistoryServiceFactory::GetForProfile(GetProfile());
+  // TODO(crbug.com/573042970): BrowsingHistoryDriver::GetWebHistoryService()
+  // should return the service and the client should check IsEnabled().
+  history::WebHistoryService* service =
+      WebHistoryServiceFactory::GetForProfile(GetProfile());
+  return service && service->IsEnabled() ? service : nullptr;
 }
 
 void ProfileBasedBrowsingHistoryDriver::

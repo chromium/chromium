@@ -58,7 +58,7 @@ QuickDeleteBridge::QuickDeleteBridge(const base::android::JavaRef<jobject>& obj,
   history_counter_ = std::make_unique<browsing_data::HistoryCounter>(
       HistoryServiceFactory::GetForProfile(profile_,
                                            ServiceAccessType::EXPLICIT_ACCESS),
-      browsing_data::HistoryCounter::GetUpdatedWebHistoryServiceCallback(),
+      /*web_history_service=*/nullptr,
       SyncServiceFactory::GetForProfile(profile_));
 
   base::Time begin_time =

@@ -73,7 +73,7 @@ void ProfileStatisticsAggregator::StartAggregator() {
   // Initiate history counting.
   AddCounter(std::make_unique<browsing_data::HistoryCounter>(
       history_service_,
-      browsing_data::HistoryCounter::GetUpdatedWebHistoryServiceCallback(),
+      /*web_history_service=*/nullptr,
       /*sync_service=*/nullptr));
 
   // Only count local passwords.

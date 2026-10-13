@@ -51,18 +51,8 @@ class SyncAwareCounterTest : public SyncTest {
   ~SyncAwareCounterTest() override = default;
 
   void SetUpOnMainThread() override {
-    fake_web_history_service_ =
-        std::make_unique<history::FakeWebHistoryService>();
     run_loop_ = std::make_unique<base::RunLoop>();
     SyncTest::SetUpOnMainThread();
-  }
-
-  history::WebHistoryService* GetFakeWebHistoryService(Profile* profile) {
-    // Check if history sync is enabled.
-    if (WebHistoryServiceFactory::GetForProfile(profile)) {
-      return fake_web_history_service_.get();
-    }
-    return nullptr;
   }
 
   // Callback and result retrieval ---------------------------------------------
@@ -96,7 +86,6 @@ class SyncAwareCounterTest : public SyncTest {
 
  private:
   std::unique_ptr<base::RunLoop> run_loop_;
-  std::unique_ptr<history::FakeWebHistoryService> fake_web_history_service_;
 
   bool finished_;
   bool sync_enabled_;
@@ -256,9 +245,7 @@ IN_PROC_BROWSER_TEST_F(SyncAwareCounterTest, HistoryCounter) {
   browsing_data::HistoryCounter counter(
       HistoryServiceFactory::GetForProfileWithoutCreating(
           browser()->GetProfile()),
-      base::BindRepeating(&SyncAwareCounterTest::GetFakeWebHistoryService,
-                          base::Unretained(this), base::Unretained(profile)),
-      sync_service);
+      WebHistoryServiceFactory::GetForProfile(profile), sync_service);
 
   counter.Init(profile->GetPrefs(),
                base::BindRepeating(&SyncAwareCounterTest::OnCounterResult,

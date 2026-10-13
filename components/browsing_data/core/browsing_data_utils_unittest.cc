@@ -251,8 +251,7 @@ TEST_F(BrowsingDataUtilsTest, PasswordsCounterResult) {
 TEST_F(BrowsingDataUtilsTest, HistoryCounterResult) {
   history::HistoryService history_service;
   HistoryCounter counter(&history_service,
-                         HistoryCounter::GetUpdatedWebHistoryServiceCallback(),
-                         nullptr);
+                         /*web_history_service=*/nullptr, nullptr);
   counter.Init(prefs(), base::DoNothing());
 
   const struct TestCase {

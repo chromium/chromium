@@ -291,11 +291,14 @@ FakeWebHistoryService::FakeWebHistoryService()
     // only usage of this object is to fetch access tokens via RequestImpl, and
     // FakeWebHistoryService deliberately replaces this flow with
     // FakeWebHistoryService::FakeRequest.
-    : history::WebHistoryService(nullptr, nullptr),
+    : history::WebHistoryService(nullptr, nullptr, nullptr),
       emulate_success_(true),
       emulate_response_code_(net::HTTP_OK),
       web_and_app_activity_enabled_(false),
-      other_forms_of_browsing_history_present_(false) {}
+      other_forms_of_browsing_history_present_(false) {
+  // FakeWebHistoryService acts as if history sync is always enabled.
+  is_enabled_ = true;
+}
 
 FakeWebHistoryService::~FakeWebHistoryService() = default;
 

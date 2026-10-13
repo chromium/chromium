@@ -28,17 +28,6 @@
 #import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 
-namespace {
-
-history::WebHistoryService* WebHistoryServiceGetter(
-    base::WeakPtr<ProfileIOS> weak_profile) {
-  DCHECK(weak_profile.get())
-      << "Getter should not be called after ProfileIOS destruction.";
-  return ios::WebHistoryServiceFactory::GetForProfile(weak_profile.get());
-}
-
-}  // anonymous namespace
-
 @interface BaseHistoryCoordinator () {
   // Provides delegate bridge instance for `_browsingHistoryDriver`.
   std::unique_ptr<IOSBrowsingHistoryDriverDelegateBridge>
@@ -79,7 +68,7 @@ history::WebHistoryService* WebHistoryServiceGetter(
       std::make_unique<IOSBrowsingHistoryDriverDelegateBridge>(
           self.viewController);
   _browsingHistoryDriver = std::make_unique<IOSBrowsingHistoryDriver>(
-      base::BindRepeating(&WebHistoryServiceGetter, self.profile->AsWeakPtr()),
+      ios::WebHistoryServiceFactory::GetForProfile(self.profile),
       _browsingHistoryDriverDelegate.get());
   auto* device_info_service =
       DeviceInfoSyncServiceFactory::GetForProfile(self.profile);
