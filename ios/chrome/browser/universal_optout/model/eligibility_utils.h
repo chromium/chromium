@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_UNIVERSAL_OPTOUT_MODEL_ELIGIBILITY_UTILS_H_
 
 class PrefService;
+class ProfileIOS;
 
 namespace web {
 enum class UniversalOptOutState;
@@ -21,6 +22,16 @@ class UniversalOptOutService;
 web::UniversalOptOutState GetUniversalOptOutState(
     PrefService* prefs,
     UniversalOptOutService* optout_service = nullptr);
+
+// Returns whether the current OS version supports the GPC extension (between
+// iOS 18.4 and iOS 27).
+bool IsGPCExtensionSupportedOS();
+
+// Returns whether the Universal Opt-Out extension is enabled for `profile`.
+// Returns true only if the current OS is supported (between iOS 18.4 and iOS
+// 27), the user is eligible, the UniversalOptOutService is available, and
+// extension silent mode is not enabled.
+bool IsGPCExtensionEnabled(ProfileIOS* profile);
 
 }  // namespace universal_optout
 

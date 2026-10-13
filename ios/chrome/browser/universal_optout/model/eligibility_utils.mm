@@ -5,15 +5,25 @@
 #import "ios/chrome/browser/universal_optout/model/eligibility_utils.h"
 
 #import "base/feature_list.h"
+#import "base/ios/ios_util.h"
 #import "base/notreached.h"
 #import "components/prefs/pref_service.h"
 #import "components/universal_optout/features.h"
 #import "components/universal_optout/prefs.h"
 #import "components/universal_optout/universal_optout_service.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
+#import "ios/chrome/browser/universal_optout/model/universal_optout_service_factory.h"
 #import "ios/web/public/web_client.h"
 
 namespace universal_optout {
+
+bool IsGPCExtensionSupportedOS() {
+  if (@available(iOS 18.4, *)) {
+    return !base::ios::IsRunningOnIOS27OrLater();
+  }
+  return false;
+}
 
 web::UniversalOptOutState GetUniversalOptOutState(
     PrefService* prefs,
@@ -61,6 +71,29 @@ web::UniversalOptOutState GetUniversalOptOutState(
   }
 
   return web::UniversalOptOutState::kEligible;
+}
+
+bool IsGPCExtensionEnabled(ProfileIOS* profile) {
+  if (!profile) {
+    return false;
+  }
+  if (!IsGPCExtensionSupportedOS()) {
+    return false;
+  }
+  UniversalOptOutService* optout_service =
+      UniversalOptOutServiceFactory::GetForProfile(profile);
+  if (!optout_service) {
+    return false;
+  }
+  const web::UniversalOptOutState opt_out_state =
+      GetUniversalOptOutState(profile->GetPrefs(), optout_service);
+  if (opt_out_state == web::UniversalOptOutState::kNotEligible) {
+    return false;
+  }
+  if (features::IsUniversalOptOutExtensionSilentEnabled()) {
+    return false;
+  }
+  return true;
 }
 
 }  // namespace universal_optout

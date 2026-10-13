@@ -8,7 +8,6 @@
 
 #import "base/check_deref.h"
 #import "base/feature_list.h"
-#import "base/ios/ios_util.h"
 #import "components/prefs/pref_service.h"
 #import "components/universal_optout/features.h"
 #import "ios/chrome/app/tests_hook.h"
@@ -34,15 +33,6 @@ ExtensionServiceFactory* ExtensionServiceFactory::GetInstance() {
 
 namespace {
 
-// Returns whether the current OS version is supported. The GPC extension is
-// only supported on iOS versions between iOS 18.4 and iOS 27.
-bool IsSupportedOS() {
-  if (@available(iOS 18.4, *)) {
-    return !base::ios::IsRunningOnIOS27OrLater();
-  }
-  return false;
-}
-
 std::unique_ptr<KeyedService> BuildExtensionService(ProfileIOS* profile) {
   // Give the opportunity for the test hook to override the factory from
   // the provider (allowing EG tests to use a fake ExtensionService).
@@ -53,7 +43,7 @@ std::unique_ptr<KeyedService> BuildExtensionService(ProfileIOS* profile) {
   const bool is_silent =
       universal_optout::features::IsUniversalOptOutExtensionSilentEnabled();
 
-  if (!is_silent && !IsSupportedOS()) {
+  if (!is_silent && !universal_optout::IsGPCExtensionEnabled(profile)) {
     return nullptr;
   }
 
@@ -63,9 +53,6 @@ std::unique_ptr<KeyedService> BuildExtensionService(ProfileIOS* profile) {
   const web::UniversalOptOutState opt_out_state =
       universal_optout::GetUniversalOptOutState(profile->GetPrefs(),
                                                 optout_service);
-  if (!is_silent && opt_out_state == web::UniversalOptOutState::kNotEligible) {
-    return nullptr;
-  }
 
   if (@available(iOS 18.4, *)) {
     std::unique_ptr<web::ExtensionController> extension_controller =

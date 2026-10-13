@@ -31,10 +31,12 @@ source_set("eligibility_utils") {
     "eligibility_utils.mm",
   ]
   deps = [
+    ":model",
     "//base",
     "//components/prefs",
     "//components/universal_optout",
     "//components/universal_optout:features",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/web/public",
   ]
@@ -45,6 +47,7 @@ source_set("unit_tests") {
   sources = [ "eligibility_utils_unittest.mm" ]
   deps = [
     ":eligibility_utils",
+    ":model",
     "//base",
     "//base/test:test_support",
     "//components/metrics",
@@ -54,8 +57,11 @@ source_set("unit_tests") {
     "//components/universal_optout",
     "//components/universal_optout:features",
     "//components/variations:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/test:test_support",
     "//ios/web/public",
+    "//ios/web/public/test",
     "//testing/gtest",
   ]
 }
