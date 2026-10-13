@@ -574,7 +574,9 @@ std::u16string_view Label::GetComputedTooltip() {
   }
 
   if (ShouldShowDefaultTooltip()) {
-    return full_text_->GetDisplayText();
+    // Not `full_text_->GetDisplayText()`: it is elided when there is a maximum
+    // single-line width, but the tooltip should show the full text.
+    return GetText();
   }
 
   return {};
