@@ -325,6 +325,14 @@ std::string DescriptionForNSEvent(NSEvent* event) {
 }
 
 
+// AppKit calls this after most events, and may activate the input method for
+// the key window's focused view inside it. With an input method such as
+// Japanese, the activation waits on the input method process, so trace it.
+- (void)updateWindows {
+  TRACE_EVENT("ui", "BrowserCrApplication::updateWindows");
+  [super updateWindows];
+}
+
 - (void)sendEvent:(NSEvent*)event {
   TRACE_EVENT0("toplevel", "BrowserCrApplication::sendEvent");
 

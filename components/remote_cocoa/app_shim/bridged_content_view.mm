@@ -11,6 +11,7 @@
 #include "base/check_op.h"
 #include "base/notimplemented.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/trace_event/trace_event.h"
 #import "components/remote_cocoa/app_shim/drag_drop_client.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_host_helper.h"
@@ -268,7 +269,14 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
   // iteration through most runloop modes, it does not call it when running
   // NSEventTrackingRunLoopMode, and not _within_ a run loop iteration, where
   // the inputContext may change before further event processing.
-  NSTextInputContext* current = [NSTextInputContext currentInputContext];
+  NSTextInputContext* current = nil;
+  {
+    // AppKit may activate the input method for a newly focused view inside
+    // this query. With an input method such as Japanese, that waits on the
+    // input method process, so trace it.
+    TRACE_EVENT("ui", "BridgedContentView::CurrentInputContext");
+    current = [NSTextInputContext currentInputContext];
+  }
   if (!current)
     return false;
 
