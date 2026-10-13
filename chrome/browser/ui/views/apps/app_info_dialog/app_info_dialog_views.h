@@ -54,9 +54,6 @@ class AppInfoDialog final : public views::View,
   void StartObservingExtensionRegistry();
   void StopObservingExtensionRegistry();
 
-  // views::View:
-  void OnThemeChanged() override;
-
   // Overridden from extensions::ExtensionRegistryObserver:
   void OnExtensionUnloaded(content::BrowserContext* browser_context,
                            const extensions::Extension* extension,
