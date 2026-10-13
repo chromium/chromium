@@ -17683,27 +17683,6 @@
             ]
         }
     ],
-    "UnoPhase2ChromeOSInfra": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnablePreferencesAccountStorage",
-                        "ReadingListEnableSyncTransportModeUponSignIn",
-                        "ReplaceSyncPromosWithSignInPromos",
-                        "SeparateLocalAndAccountSearchEngines",
-                        "SeparateLocalAndAccountThemes",
-                        "SpellcheckSeparateLocalAndAccountDictionaries",
-                        "SyncEnableBookmarksInTransportMode"
-                    ]
-                }
-            ]
-        }
-    ],
     "UnoPhase2Desktop": [
         {
             "platforms": [
