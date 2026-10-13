@@ -2585,9 +2585,10 @@ void ContextualSearchboxHandler::OpenUrl(
       }
       location_bar->Revert();
     }
+    // Popup queries are omnibox searches, like the AI Mode button and @aimode.
     content::OpenURLParams params =
         content::OpenURLParams::CreateBrowserInitiated(
-            url, disposition, ui::PAGE_TRANSITION_LINK);
+            url, disposition, ui::PAGE_TRANSITION_GENERATED);
     auto* tab_list = TabListInterface::From(browser_window_interface);
     auto* active_tab = tab_list ? tab_list->GetActiveTab() : nullptr;
     auto* active_web_contents =

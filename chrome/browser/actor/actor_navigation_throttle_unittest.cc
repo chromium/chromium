@@ -289,6 +289,31 @@ TEST_F(ActorNavigationThrottleTest, BrowserInitiated_CreateTaskRoutesToTab) {
             throttle.WillStartRequest().action());
 }
 
+// The AI Mode button and the omnibox AI Mode popup navigate with GENERATED and
+// no FROM_ADDRESS_BAR.
+TEST_F(ActorNavigationThrottleTest,
+       BrowserInitiated_DeferForGeneratedWithoutAddressBar) {
+  NavigateAndCommit(GURL("https://source.com"));
+  ActorTask* task = CreateTaskOnMockTab();
+  ASSERT_TRUE(task->navigation_delegate());
+
+  const GURL destination("https://destination.com");
+  testing::NiceMock<content::MockNavigationHandle> handle(destination,
+                                                          main_rfh());
+  handle.set_is_renderer_initiated(false);
+  handle.set_page_transition(::ui::PAGE_TRANSITION_GENERATED);
+
+  content::MockNavigationThrottleRegistry registry(&handle);
+  ActorNavigationThrottle throttle =
+      ActorNavigationThrottle::CreateForTesting(registry, *task);
+
+  EXPECT_CALL(*tab_controller_,
+              MaybeDeferNavigation(&tab_state_->tab, destination, ::testing::_))
+      .WillOnce(Return(true));
+  EXPECT_EQ(content::NavigationThrottle::DEFER,
+            throttle.WillStartRequest().action());
+}
+
 // User UI navigations on a paused task proceed without prompting.
 TEST_F(ActorNavigationThrottleTest,
        BrowserInitiated_PausedTaskProceedsWithoutPrompt) {
