@@ -72,6 +72,8 @@ class MimeHandlerRegistryFactory : public BrowserContextKeyedServiceFactory {
     return std::make_unique<MimeHandlerRegistry>(context);
   }
 
+  bool ServiceIsCreatedWithBrowserContext() const override { return true; }
+
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override {
     return ExtensionsBrowserClient::Get()->GetContextRedirectedToOriginal(
@@ -213,6 +215,32 @@ void MimeHandlerRegistry::SetCanEmbedForMimeType(
   StoreOption(extension_id, mime_type, kMimeHandlerCanEmbedKey, can_embed);
 }
 
+void MimeHandlerRegistry::OnExtensionWillBeInstalled(
+    content::BrowserContext* browser_context,
+    const Extension* extension,
+    bool is_update,
+    const std::string& old_name) {
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(&*browser_context_);
+  const base::DictValue* options =
+      prefs->ReadPrefAsDictionary(extension->id(), kMimeHandlerOptions);
+  if (!options) {
+    return;
+  }
+  // The handler is missing when an update removes every MIME type from the
+  // manifest.
+  const MimeTypesHandler* handler = MimeTypesHandler::Get(*extension);
+  const std::vector<std::string> declared_mime_types =
+      handler ? handler->GetSupportedMimeTypes() : std::vector<std::string>();
+  base::DictValue kept_options = options->Clone();
+  for (const auto [mime_type, _] : *options) {
+    if (!std::ranges::contains(declared_mime_types, mime_type)) {
+      kept_options.Remove(mime_type);
+    }
+  }
+  prefs->SetDictionaryPref(extension->id(), kMimeHandlerOptions,
+                           std::move(kept_options));
+}
+
 void MimeHandlerRegistry::OnExtensionLoaded(
     content::BrowserContext* browser_context,
     const Extension* extension) {
@@ -286,15 +314,10 @@ void MimeHandlerRegistry::StoreOption(const ExtensionId& extension_id,
                                       const std::string& mime_type,
                                       std::string_view key,
                                       bool value) {
-  // TODO(crbug.com/495538206): Define behavior for two cases not yet
-  // covered by the spec:
-  //   1. Persistence across extension updates - prefs are keyed by
-  //      extension id and survive updates, so entries for MIME types
-  //      the new manifest no longer claims become stale.
-  //   2. Split-mode incognito - ExtensionPrefs are not split by
-  //      profile mode, so an incognito-side write here silently
-  //      overwrites the on-record setting. In-memory, profile-keyed
-  //      storage for OTR may be the right answer.
+  // TODO(crbug.com/495538206): Define behavior for split-mode incognito -
+  // ExtensionPrefs are not split by profile mode, so an incognito-side
+  // write here silently overwrites the on-record setting. In-memory,
+  // profile-keyed storage for OTR may be the right answer.
   ExtensionPrefs* prefs = ExtensionPrefs::Get(&*browser_context_);
   base::DictValue options;
   if (const base::DictValue* existing =

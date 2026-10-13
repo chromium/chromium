@@ -100,6 +100,26 @@ class MimeHandlerRegistryTest : public ExtensionsTest {
         ->TriggerOnUnloaded(extension, UnloadedExtensionReason::UNINSTALL);
   }
 
+  // Installs `extension` as an update of an already installed version.
+  void UpdateExtension(const Extension* extension) {
+    ExtensionRegistry* extension_registry =
+        ExtensionRegistry::Get(browser_context());
+    extension_registry->AddEnabled(base::WrapRefCounted(extension));
+    extension_registry->TriggerOnWillBeInstalled(
+        extension, /*is_update=*/true, /*old_name=*/extension->name());
+  }
+
+  void SetStoredOptions(const Extension* extension, const char* options_json) {
+    ExtensionPrefs::Get(browser_context())
+        ->UpdateExtensionPref(extension->id(), "mime_handler_options",
+                              base::test::ParseJson(options_json));
+  }
+
+  const base::DictValue* GetStoredOptions(const Extension* extension) {
+    return ExtensionPrefs::Get(browser_context())
+        ->ReadPrefAsDict(extension->id(), "mime_handler_options");
+  }
+
   MimeHandlerRegistry* registry() {
     return MimeHandlerRegistry::Get(browser_context());
   }
@@ -497,6 +517,60 @@ TEST_F(MimeHandlerRegistryTest, ChoicesForSeveralMimeTypesSurviveReload) {
 
   EXPECT_TRUE(GetHandlerForMimeType(kPdfMimeType).empty());
   EXPECT_TRUE(GetHandlerForMimeType(kDottedMimeType).empty());
+}
+
+// Stored options of a MIME type the new version no longer declares must not
+// come back if a later version declares the type again.
+TEST_F(MimeHandlerRegistryTest, UpdateForgetsOptionsOfUndeclaredMimeTypes) {
+  struct {
+    const char* name;
+    scoped_refptr<const Extension> updated_extension;
+    const char* stored_options_json;
+    const char* expected_options_json;
+  } kTestCases[] = {
+      // New manifest defaults must not reset what the extension stored.
+      {.name = "Type still declared with new manifest defaults",
+       .updated_extension = CreateMimeHandlerExtension(
+           "Kept", kPdfMimeType, kViewerUrl,
+           base::DictValue().Set("enabled", true).Set("can_embed", true)),
+       .stored_options_json =
+           R"({"application/pdf": {"enabled": false, "canEmbed": false}})",
+       .expected_options_json =
+           R"({"application/pdf": {"enabled": false, "canEmbed": false}})"},
+      {.name = "Type dropped",
+       .updated_extension = ExtensionBuilder("Dropped").Build(),
+       .stored_options_json =
+           R"({"application/pdf": {"enabled": false, "canEmbed": true}})",
+       .expected_options_json = "{}"},
+      {.name = "Dotted type dropped",
+       .updated_extension = CreateAllowlistedHandler(
+           extension_misc::kMimeHandlerPrivateTestExtensionId, kPdfMimeType),
+       .stored_options_json = R"({"application/pdf": {"enabled": false},
+           "application/vnd.ms-excel": {"enabled": false}})",
+       .expected_options_json = R"({"application/pdf": {"enabled": false}})"},
+      {.name = "Legacy list",
+       .updated_extension =
+           ExtensionBuilder("Legacy")
+               .SetID(extension_misc::kPdfExtensionId)
+               .AddJSON(R"("mime_types": ["application/pdf"],)"
+                        R"( "mime_types_handler": "index.html")")
+               .Build(),
+       .stored_options_json = R"({"application/pdf": {"enabled": false},
+           "application/msword": {"enabled": false}})",
+       .expected_options_json = R"({"application/pdf": {"enabled": false}})"},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.name);
+    const Extension* extension = test_case.updated_extension.get();
+    SetStoredOptions(extension, test_case.stored_options_json);
+
+    UpdateExtension(extension);
+
+    const base::DictValue* options = GetStoredOptions(extension);
+    ASSERT_TRUE(options);
+    EXPECT_THAT(*options, base::test::IsJson(test_case.expected_options_json));
+  }
 }
 
 }  // namespace
