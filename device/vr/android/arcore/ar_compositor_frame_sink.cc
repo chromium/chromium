@@ -400,6 +400,17 @@ viz::CompositorFrame ArCompositorFrameSink::CreateFrame(WebXrFrame* xr_frame,
         << " Attempting to composite DOMOverlay, can_composite_dom_overlay="
         << can_composite_dom_overlay;
     if (can_composite_dom_overlay) {
+      if (!dom_fallback_surface_id_ ||
+          dom_fallback_surface_id_->frame_sink_id() !=
+              dom_surface_id->frame_sink_id()) {
+        dom_fallback_surface_id_ = *dom_surface_id;
+      }
+      viz::SurfaceRange dom_surface_range(dom_fallback_surface_id_,
+                                          *dom_surface_id);
+      // Viz only references the latest active surface in the range, so this
+      // doesn't keep older DOM surfaces alive.
+      frame.metadata.referenced_surfaces.push_back(dom_surface_range);
+
       viz::SharedQuadState* dom_quad_state =
           render_pass->CreateAndAppendSharedQuadState();
       dom_quad_state->SetAll(
@@ -413,8 +424,7 @@ viz::CompositorFrame ArCompositorFrameSink::CreateFrame(WebXrFrame* xr_frame,
       viz::SurfaceDrawQuad* dom_quad =
           render_pass->CreateAndAppendDrawQuad<viz::SurfaceDrawQuad>();
       dom_quad->SetNew(dom_quad_state, gfx::Rect(output_rect.size()),
-                       gfx::Rect(output_rect.size()),
-                       viz::SurfaceRange(*dom_surface_id),
+                       gfx::Rect(output_rect.size()), dom_surface_range,
                        SkColors::kTransparent,
                        /*stretch_content_to_fill_bounds=*/true);
     }
