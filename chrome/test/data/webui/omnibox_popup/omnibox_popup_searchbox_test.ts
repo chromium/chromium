@@ -3230,6 +3230,127 @@ suite('OmniboxPopupSearchboxTest', function() {
      assertEquals(null, searchbox.$.input.selectedMatch);
    });
 
+   test('InputMatchClearsWhenCutEmptiesInput', async () => {
+     const navMatch = createSearchMatchForTesting({
+       suggestTemplate: createSuggestTemplateInfo({primaryText: 'example.com'}),
+       destinationUrl: 'https://example.com/',
+       isSearchType: false,
+       type: 'history-url',
+     });
+     const searchMatch = createSearchMatchForTesting({
+       suggestTemplate:
+           createSuggestTemplateInfo({primaryText: 'example query'}),
+       destinationUrl: 'https://www.google.com/search?q=example',
+       isSearchType: true,
+       type: 'search-what-you-typed',
+     });
+
+     searchbox.activeQueryId = 0;
+     const result = createAutocompleteResultForTesting({
+       input: 'example',
+       matches: [navMatch, searchMatch],
+       queryId: 0,
+     });
+     testProxy.page.autocompleteResultChanged(result);
+     await microtasksFinished();
+
+     // With selectedMatchIndex === -1 while typing, input's selectedMatch
+     // should be null.
+     assertEquals(-1, searchbox.selectedMatchIndex);
+     assertEquals(null, searchbox.$.input.selectedMatch);
+
+     // When navigating to match 0, input's selectedMatch should be match 0.
+     searchbox.selectedMatchIndex = 0;
+     await microtasksFinished();
+     assertEquals(
+         searchbox.result!.matches[0], searchbox.$.input.selectedMatch);
+     assertEquals(
+         'example.com',
+         searchbox.$.input.selectedMatch?.suggestTemplate.primaryText);
+
+     searchbox.clearAutocompleteMatches();  // Closes the popup, as Esc does.
+     await microtasksFinished();
+
+     const input = searchbox.$.input.inputElement;
+     input.setSelectionRange(0, input.value.length);
+     searchbox.$.input.dispatchEvent(new ClipboardEvent(
+         'cut', {bubbles: true, cancelable: true, composed: true}));
+     await microtasksFinished();
+     assertEquals(null, searchbox.$.input.selectedMatch, 'after cut');
+
+     // Typing again before results arrive shouldn't bring the old match back.
+     input.value = 'g';
+     input.setSelectionRange(1, 1);
+     input.dispatchEvent(
+         new InputEvent('input', {bubbles: true, composed: true}));
+     await microtasksFinished();
+     assertEquals(null, searchbox.$.input.selectedMatch, 'after retyping');
+   });
+
+   test(
+       'SelectedMatchPreservedForInputOnBlurWhenUserInputInProgress',
+       async () => {
+         callbackRouter.setInputState(createDefaultOmniboxInputState({
+           isFocused: true,
+           userInputInProgress: true,
+           text: 'example',
+           permanentDisplayText: 'https://example.com/',
+           fullUrl: 'https://example.com/',
+         }));
+         await microtasksFinished();
+
+         const navMatch = createSearchMatchForTesting({
+           suggestTemplate:
+               createSuggestTemplateInfo({primaryText: 'example.com'}),
+           destinationUrl: 'https://example.com/',
+           allowedToBeDefaultMatch: true,
+           isSearchType: false,
+         });
+         searchbox.activeQueryId = 0;
+         const result = createAutocompleteResultForTesting({
+           input: 'example',
+           matches: [navMatch],
+           queryId: 0,
+         });
+         testProxy.page.autocompleteResultChanged(result);
+         await microtasksFinished();
+
+         searchbox.selectedMatchIndex = 0;
+         await microtasksFinished();
+         assertEquals(
+             'example.com',
+             searchbox.$.input.selectedMatch?.suggestTemplate.primaryText);
+
+         // Defocus / blur the omnibox (handleFocusLost_ clears autocomplete
+         // matches).
+         callbackRouter.setFocus(
+             false, /*queryZps=*/ false, /*selectAll=*/ false);
+         await microtasksFinished();
+
+         // Verify autocomplete result was cleared on the searchbox component.
+         assertEquals(null, searchbox.result);
+         assertEquals(null, searchbox.selectedMatch);
+
+         // But input's selectedMatch should be preserved for the icon because
+         // user input is still in progress.
+         assertEquals(
+             'example.com',
+             searchbox.$.input.selectedMatch?.suggestTemplate.primaryText);
+
+         // When reverting (user input is no longer in progress), selectedMatch
+         // for input is cleared.
+         callbackRouter.setInputState(createDefaultOmniboxInputState({
+           isFocused: false,
+           userInputInProgress: false,
+           text: 'https://example.com/',
+         }));
+         await microtasksFinished();
+         callbackRouter.setInputState(createDefaultOmniboxInputState(
+             {isFocused: true, userInputInProgress: true, text: 'e'}));
+         await microtasksFinished();
+         assertEquals(null, searchbox.$.input.selectedMatch);
+       });
+
    test('UneditedPageUrlProvidesPageUrl', async () => {
      // When input is unedited on a regular webpage URL (e.g. badssl or initial
      // page focus):
