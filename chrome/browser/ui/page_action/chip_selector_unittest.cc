@@ -11,6 +11,7 @@
 
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -247,10 +248,16 @@ class PriorityChipSelectorTest : public testing::Test {
   void ShowChipCallback(actions::ActionId page_action_id,
                         const SuggestionChipConfig& config) {
     calls.emplace_back("show_chip", page_action_id);
+    if (!on_chip_show_.is_null()) {
+      on_chip_show_.Run(page_action_id);
+    }
   }
 
   void HideChipCallback(actions::ActionId page_action_id) {
     calls.emplace_back("hide_chip", page_action_id);
+    if (!on_chip_hide_.is_null()) {
+      on_chip_hide_.Run(page_action_id);
+    }
   }
 
   void ShowAnchoredMessageCallback(actions::ActionId page_action_id,
@@ -265,6 +272,8 @@ class PriorityChipSelectorTest : public testing::Test {
   std::set<actions::ActionId> suppressed_actions_;
   std::unique_ptr<internal::PriorityChipSelector> selector;
   std::vector<std::pair<std::string, actions::ActionId>> calls;
+  base::RepeatingCallback<void(actions::ActionId)> on_chip_show_;
+  base::RepeatingCallback<void(actions::ActionId)> on_chip_hide_;
 };
 
 TEST_F(PriorityChipSelectorTest, ShowSingleChip) {
@@ -329,6 +338,75 @@ TEST_F(PriorityChipSelectorTest, SamePriorityReevalSuppression) {
 
   EXPECT_THAT(calls, ElementsAre(Pair("show_chip", 0), Pair("hide_chip", 0),
                                  Pair("show_chip", 1)));
+}
+
+TEST_F(PriorityChipSelectorTest, ReevalSuppressionReentry) {
+  selector->RequestChipShow(
+      0, SuggestionChipConfig{.priority =
+                                  PageActionPriorityCategory::kContextualCue});
+  selector->RequestChipShow(
+      1, SuggestionChipConfig{.priority =
+                                  PageActionPriorityCategory::kContextualCue});
+
+  EXPECT_THAT(calls, ElementsAre(Pair("show_chip", 0)));
+
+  // Suppress chip 0 and ask to reevaluate priorities; chip 1 should show up.
+  suppressed_actions_.insert(0);
+
+  // ... have a bunch of other chips queued while suppression of 0 is applied.
+  on_chip_hide_ = base::BindLambdaForTesting([&](actions::ActionId id) {
+    if (id == 0) {
+      for (int i = 2; i < 100; ++i) {
+        selector->RequestChipShow(
+            i, SuggestionChipConfig{
+                   .priority = PageActionPriorityCategory::kContextualCue});
+      }
+    }
+  });
+  selector->ReevaluateAfterSuppressionChange();
+
+  EXPECT_THAT(calls, ElementsAre(Pair("show_chip", 0), Pair("hide_chip", 0),
+                                 Pair("show_chip", 1)));
+}
+
+TEST_F(PriorityChipSelectorTest, ReevalSuppressionReentry2) {
+  selector->RequestChipShow(
+      0, SuggestionChipConfig{.priority =
+                                  PageActionPriorityCategory::kContextualCue});
+  selector->RequestChipShow(
+      1, SuggestionChipConfig{.priority =
+                                  PageActionPriorityCategory::kContextualCue});
+  selector->RequestChipShow(
+      2, SuggestionChipConfig{.priority =
+                                  PageActionPriorityCategory::kContextualCue});
+
+  EXPECT_THAT(calls, ElementsAre(Pair("show_chip", 0)));
+
+  // Suppress chip 0 and ask to reevaluate priorities; chip 2 should show up.
+  suppressed_actions_.insert(0);
+  suppressed_actions_.insert(1);
+  calls.clear();
+  selector->ReevaluateAfterSuppressionChange();
+
+  EXPECT_THAT(calls, ElementsAre(Pair("hide_chip", 0), Pair("show_chip", 2)));
+
+  // Now Unsuppress, but when attempt to re-show 0 is made, hide it and 1.
+  suppressed_actions_.clear();
+  calls.clear();
+
+  // ... have a bunch of other chips queued while suppression of 0 is applied.
+  on_chip_show_ = base::BindLambdaForTesting([&](actions::ActionId id) {
+    if (id == 0) {
+      selector->RequestChipHide(0);
+      selector->RequestChipHide(1);
+    }
+  });
+
+  selector->RequestChipHide(2);
+
+  EXPECT_THAT(calls, ElementsAre(Pair("hide_chip", 2), Pair("show_chip", 0),
+                                 Pair("hide_chip", 0), Pair("show_chip", 1),
+                                 Pair("hide_chip", 1)));
 }
 
 TEST_F(PriorityChipSelectorTest, PriorityChangeReevalSuppression) {

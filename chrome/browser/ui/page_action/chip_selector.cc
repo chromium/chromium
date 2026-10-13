@@ -395,18 +395,39 @@ void PriorityChipSelector::ReevaluateAfterSuppressionChange() {
 }
 
 void PriorityChipSelector::ReevaluateAfterChange() {
-  // Hide chips that got suppressed by omnibox popup; iterating over
-  // `requested_chips_` since `active_chips_` may change.
-  for (auto& [id, _] : requested_chips_) {
-    if (active_chips_.contains(id) && is_suppressed_callback_.Run(id)) {
-      HideChip(id);
+  // Hide chips that got suppressed by omnibox popup. This is two-pass
+  // since both we can modify `active_chips_` and because observers from
+  // hiding them can cause re-entry.
+  std::vector<actions::ActionId> suppressed;
+  suppressed.reserve(active_chips_.size());
+  for (auto id : active_chips_) {
+    if (is_suppressed_callback_.Run(id)) {
+      suppressed.push_back(id);
     }
   }
 
+  for (auto id : suppressed) {
+    HideChip(id);
+  }
+
   // Now give other chips a chance to show.
-  for (const auto& [id, config] : requested_chips_) {
+  std::vector<actions::ActionId> unsuppressed;
+  unsuppressed.reserve(requested_chips_.size());
+  for (const auto& [id, _] : requested_chips_) {
     if (!is_suppressed_callback_.Run(id)) {
-      RequestChipShow(id, config);
+      unsuppressed.emplace_back(id);
+    }
+  }
+
+  for (const auto& id : unsuppressed) {
+    // Re-check in case it got cancelled or had config changed by an
+    // observer.
+    for (auto& [requested_id, requested_config] : requested_chips_) {
+      if (id == requested_id) {
+        SuggestionChipConfig config = requested_config;
+        RequestChipShow(id, config);
+        break;  // ensure we stop looking at `requested_chips_`.
+      }
     }
   }
 }
