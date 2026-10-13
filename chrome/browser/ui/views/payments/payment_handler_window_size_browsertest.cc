@@ -50,10 +50,6 @@ class PaymentHandlerWindowSizeTest : public PaymentRequestBrowserTestBase {
     NavigateTo("/payment_handler.html");
   }
 
-  gfx::Size DialogViewSize() {
-    return test_api(dialog_view()).CalculatePreferredSize({});
-  }
-
   const gfx::Size expected_payment_request_dialog_size_;
 
  private:
@@ -80,7 +76,8 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWindowSizeTest, ValidateDialogSize) {
           payment_method),
       /*options=*/content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
   ASSERT_TRUE(WaitForObservedEvent());
-  EXPECT_EQ(expected_payment_request_dialog_size_, DialogViewSize());
+  EXPECT_EQ(expected_payment_request_dialog_size_,
+            dialog_view()->GetPreferredSize());
 
   // Adjust the expected PH window height based on the browser content height.
   int browser_window_content_height =
@@ -97,7 +94,8 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWindowSizeTest, ValidateDialogSize) {
                                DialogEvent::LOADING_VIEW_HIDDEN,
                                DialogEvent::PAYMENT_HANDLER_TITLE_SET});
   ClickOnDialogViewAndWait(DialogViewID::PAY_BUTTON, dialog_view());
-  EXPECT_EQ(expected_payment_handler_dialog_size, DialogViewSize());
+  EXPECT_EQ(expected_payment_handler_dialog_size,
+            dialog_view()->GetPreferredSize());
 
   // The test flakily hangs if we don't close the payment handler dialog.
   ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
@@ -124,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWindowSizeTest, ResizeToPreferredHeight) {
 
   EXPECT_EQ(gfx::Size(kPreferredPaymentHandlerDialogWidth,
                       kPreferredPaymentHandlerDialogHeight),
-            DialogViewSize());
+            dialog_view()->GetPreferredSize());
 }
 
 IN_PROC_BROWSER_TEST_F(PaymentHandlerWindowSizeTest,
@@ -149,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWindowSizeTest,
       BrowserWindow::FromBrowser(browser())->GetContentsSize().height();
   EXPECT_EQ(
       gfx::Size(kPreferredPaymentHandlerDialogWidth, actual_content_height),
-      DialogViewSize());
+      dialog_view()->GetPreferredSize());
 }
 
 IN_PROC_BROWSER_TEST_F(PaymentHandlerWindowSizeTest,
@@ -170,7 +168,7 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWindowSizeTest,
   test_api(dialog_view()).ResizeToPaymentHandlerSize();
 
   EXPECT_EQ(gfx::Size(kPreferredPaymentHandlerDialogWidth, kDialogHeight),
-            DialogViewSize());
+            dialog_view()->GetPreferredSize());
 }
 
 }  // namespace payments

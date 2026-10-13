@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_test_api.h"
+#include "chrome/browser/ui/views/payments/payment_request_views_util.h"
 #include "chrome/test/payments/payment_app_install_util.h"
 #include "components/omnibox/browser/buildflags.h"
 #include "components/payments/content/icon/icon_size.h"
@@ -19,6 +20,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/test/views_test_utils.h"
 
 namespace payments {
 namespace {
@@ -292,6 +294,35 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerHeaderViewUITest, HtmlHeadThemeColor) {
 
   EXPECT_EQ(SK_ColorRED, header_view->background()->color().ResolveToSkColor(
                              header_view->GetColorProvider()));
+}
+
+IN_PROC_BROWSER_TEST_F(PaymentHandlerHeaderViewUITest, HeaderHeight) {
+  std::string method_name;
+  InstallPaymentApp("a.com", "/payment_handler_sw.js", &method_name);
+
+  // Trigger PaymentRequest, and wait until the PaymentHandler has loaded a
+  // web-contents that has set a title.
+  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
+                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
+                               DialogEvent::DIALOG_OPENED,
+                               DialogEvent::LOADING_VIEW_SHOWN,
+                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+                               DialogEvent::LOADING_VIEW_HIDDEN,
+                               DialogEvent::PAYMENT_HANDLER_TITLE_SET});
+  ASSERT_EQ(
+      "success",
+      content::EvalJs(
+          GetActiveWebContents(),
+          content::JsReplace("launchWithoutWaitForResponse($1)", method_name)));
+  ASSERT_TRUE(WaitForObservedEvent());
+
+  ViewStack* view_stack = test_api(dialog_view()).view_stack();
+  views::View* top_view = view_stack->top();
+  views::test::RunScheduledLayout(top_view);
+  EXPECT_EQ(
+      kPaymentHandlerHeaderHeight,
+      top_view->GetViewByID(static_cast<int>(DialogViewID::PAYMENT_APP_HEADER))
+          ->height());
 }
 
 class PaymentHandlerHeaderViewAppIconUITest

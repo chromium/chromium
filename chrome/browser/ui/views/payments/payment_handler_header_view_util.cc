@@ -88,7 +88,7 @@ void AddAppIconView(views::View* container, const SkBitmap* icon_bitmap) {
 }  // namespace
 
 PaymentHandlerProgressBar::PaymentHandlerProgressBar() {
-  SetPreferredHeight(2);
+  SetPreferredHeight(kPaymentHandlerProgressBarHeight);
 }
 
 PaymentHandlerProgressBar::~PaymentHandlerProgressBar() = default;
@@ -363,8 +363,12 @@ PaymentHandlerHeaderViews PopulatePaymentHandlerHeaderView(
                     views::TableLayout::ColumnSize::kFixed, kCloseButtonWidth,
                     /*min_width=*/0);
 
-  // Single header row sized to the preferred height of its views.
-  layout->AddRows(1, views::TableLayout::kFixedSize);
+  // Single header row sized so the header is kPaymentHandlerHeaderHeight tall.
+  // This is a minimum: all current header views are at most 32px tall, but
+  // TableLayout grows the row for taller children. Any header view taller than
+  // 32px needs a discussion of the payment handler size calculation.
+  layout->AddRows(1, views::TableLayout::kFixedSize,
+                  kPaymentHandlerHeaderHeight - 2 * kVerticalInset);
 
   if (icon_view) {
     container->AddChildView(std::move(icon_view));

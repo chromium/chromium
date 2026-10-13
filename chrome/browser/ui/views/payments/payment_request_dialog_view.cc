@@ -87,6 +87,12 @@ std::unique_ptr<views::View> CreateViewAndInstallController(
   return view;
 }
 
+gfx::Size GetDefaultDialogSize() {
+  return gfx::Size(
+      views::LayoutProvider::Get()->GetSnappedDialogWidth(kDialogMinWidth),
+      kDialogHeight);
+}
+
 }  // namespace
 
 // static
@@ -209,14 +215,13 @@ void PaymentRequestDialogView::ShowErrorMessage() {
 
   if (base::FeatureList::IsEnabled(
           features::kPaymentRequestMandatoryPaymentAppUi)) {
-    is_showing_large_payment_handler_window_ = true;
-    int preferred_height =
-        view_stack_->top()->GetHeightForWidth(GetActualDialogWidth());
-
-    payment_handler_window_height_ = std::clamp(
-        preferred_height, kPreferredPaymentHandlerErrorMessageDialogHeight,
-        kPreferredPaymentHandlerDialogHeight);
-    ResizeDialogWindow();
+    int width = views::LayoutProvider::Get()->GetSnappedDialogWidth(
+        kPreferredPaymentHandlerDialogWidth);
+    int preferred_height = view_stack_->top()->GetHeightForWidth(width);
+    int height = std::clamp(preferred_height,
+                            kPreferredPaymentHandlerErrorMessageDialogHeight,
+                            kPreferredPaymentHandlerDialogHeight);
+    ResizeDialogWindow(gfx::Size(width, height));
   }
 
   HideProcessingSpinner();
@@ -317,10 +322,11 @@ void PaymentRequestDialogView::ShowPaymentHandlerScreen(
               weak_ptr_factory_.GetWeakPtr(), request_->web_contents(),
               GetProfile(), url, std::move(callback)),
           &controller_map_),
-      // Do not animate the view when the dialog size changes or payment sheet
-      // is skipped.
-      /* animate = */ !is_showing_large_payment_handler_window_ &&
-          !request_->skipped_payment_request_ui());
+      // Do not animate: the slide animation is for switching between payment
+      // sheets, but the user never sees the payment sheet right before the
+      // Payment Handler window. It is either skipped (single payment app) or
+      // covered by an overlay(loading view) while the payment app is loading.
+      /* animate = */ false);
   request_->OnPaymentHandlerOpenWindowCalled();
   if (base::FeatureList::IsEnabled(
           features::kPaymentRequestMandatoryPaymentAppUi)) {
@@ -445,22 +451,13 @@ void PaymentRequestDialogView::Pay() {
 }
 
 void PaymentRequestDialogView::GoBack() {
-  // If payment request UI is skipped when calling PaymentRequest.show, then
-  // abort payment request when back button is clicked. This only happens for
-  // service worker based payment handler under circumstance.
-  if (request_->skipped_payment_request_ui()) {
-    CloseDialog();
-    return;
-  }
+  // `GoBack()` is only used to navigate back from sub-sheets (e.g. contact
+  // info, shipping, or payment method) to the previous sheet in the Payment
+  // Request flow. The Payment Handler window should never reach here.
+  CHECK_NE(view_stack_->top()->GetID(),
+           static_cast<int>(DialogViewID::PAYMENT_APP_OPENED_WINDOW_SHEET));
+  view_stack_->Pop();
 
-  // Do not animate views when the dialog size changes.
-  view_stack_->Pop(!is_showing_large_payment_handler_window_ /* = animate */);
-
-  // Back navigation from payment handler window should resize the dialog;
-  if (is_showing_large_payment_handler_window_) {
-    is_showing_large_payment_handler_window_ = false;
-    ResizeDialogWindow();
-  }
   if (observer_for_testing_) {
     observer_for_testing_->OnBackNavigation();
   }
@@ -470,15 +467,8 @@ void PaymentRequestDialogView::GoBackToPaymentSheet(bool animate) {
   // This assumes that the Payment Sheet is the first view in the stack. Thus if
   // there is only one view, we are already showing the payment sheet.
   if (view_stack_->GetSize() > 1) {
-    // Do not animate views when the dialog size changes.
-    view_stack_->PopMany(view_stack_->GetSize() - 1,
-                         animate && !is_showing_large_payment_handler_window_);
-
-    // Back navigation from payment handler window should resize the dialog;
-    if (is_showing_large_payment_handler_window_) {
-      ResizeDialogWindow();
-      is_showing_large_payment_handler_window_ = false;
-    }
+    view_stack_->PopMany(view_stack_->GetSize() - 1, animate);
+    ResizeDialogWindow(GetDefaultDialogSize());
   }
   if (observer_for_testing_) {
     observer_for_testing_->OnBackToPaymentSheetNavigation();
@@ -728,6 +718,7 @@ PaymentRequestDialogView::PaymentRequestDialogView(
     observer_for_testing_->OnProcessingSpinnerHidden();
   }
 
+  SetPreferredSize(GetDefaultDialogSize());
   ShowInitialPaymentSheet();
 }
 
@@ -769,29 +760,6 @@ void PaymentRequestDialogView::ShowInitialPaymentSheet() {
   }
 }
 
-gfx::Size PaymentRequestDialogView::CalculatePreferredSize(
-    const views::SizeBounds& /*available_size*/) const {
-  if (is_showing_large_payment_handler_window_) {
-    return gfx::Size(GetActualDialogWidth(),
-                     GetActualPaymentHandlerDialogHeight());
-  }
-  return gfx::Size(GetActualDialogWidth(), kDialogHeight);
-}
-
-int PaymentRequestDialogView::GetActualPaymentHandlerDialogHeight() const {
-  DCHECK_NE(0, payment_handler_window_height_);
-  return payment_handler_window_height_ > 0 ? payment_handler_window_height_
-                                            : kDialogHeight;
-}
-
-int PaymentRequestDialogView::GetActualDialogWidth() const {
-  int actual_width = views::LayoutProvider::Get()->GetSnappedDialogWidth(
-      is_showing_large_payment_handler_window_
-          ? kPreferredPaymentHandlerDialogWidth
-          : kDialogMinWidth);
-  return actual_width;
-}
-
 void PaymentRequestDialogView::OnPaymentHandlerTitleSet() {
   if (observer_for_testing_) {
     observer_for_testing_->OnPaymentHandlerTitleSet();
@@ -828,7 +796,8 @@ void PaymentRequestDialogView::OnOcclusionStateChanged(bool occluded) {
   }
 }
 
-void PaymentRequestDialogView::ResizeDialogWindow() {
+void PaymentRequestDialogView::ResizeDialogWindow(const gfx::Size& size) {
+  SetPreferredSize(size);
   content::WebContents* const web_contents = request_->web_contents();
   if (GetWidget() && web_contents) {
     constrained_window::UpdateWebContentsModalDialogPosition(
@@ -840,20 +809,17 @@ void PaymentRequestDialogView::ResizeDialogWindow() {
 }
 
 void PaymentRequestDialogView::ResizeToPaymentHandlerSize() {
-  // The Payment Handler window is larger than the Payment Request sheet, which
-  // causes us to make different decisions when e.g. animating it.
-  is_showing_large_payment_handler_window_ = true;
-
-  // Calculate |payment_handler_window_height_|
   int browser_window_content_height =
       request_->web_contents()
           ? request_->web_contents()->GetContainerBounds().height()
           : 0;
-  payment_handler_window_height_ =
+  int height =
       std::max(kDialogHeight, std::min(kPreferredPaymentHandlerDialogHeight,
                                        browser_window_content_height));
-
-  ResizeDialogWindow();
+  ResizeDialogWindow(
+      gfx::Size(views::LayoutProvider::Get()->GetSnappedDialogWidth(
+                    kPreferredPaymentHandlerDialogWidth),
+                height));
 }
 
 void PaymentRequestDialogView::CheckIfDialogFitsInBrowserWindow() {
@@ -900,8 +866,7 @@ bool PaymentRequestDialogView::DialogFitsInBrowserWindow() const {
     // in order to avoid a flicker before rejecting the show. In that case, we
     // can only do a rough estimation based on the preferred size. If the widget
     // exists, we can use it directly to do the size calculation.
-    gfx::Size payment_request_size =
-        CalculatePreferredSize(views::SizeBounds());
+    gfx::Size payment_request_size = GetPreferredSize();
     gfx::Point origin_in_browser;
     if (GetWidget()) {
       gfx::Rect dialog_bounds = GetWidget()->GetWindowBoundsInScreen();
@@ -953,8 +918,6 @@ bool PaymentRequestDialogView::DialogFitsInBrowserWindow() const {
 }
 
 BEGIN_METADATA(PaymentRequestDialogView)
-ADD_READONLY_PROPERTY_METADATA(int, ActualPaymentHandlerDialogHeight)
-ADD_READONLY_PROPERTY_METADATA(int, ActualDialogWidth)
 END_METADATA
 
 }  // namespace payments

@@ -321,7 +321,7 @@ std::unique_ptr<views::View> PaymentRequestSheetController::CreateView() {
       views::Builder<views::BoxLayoutView>()
           .CopyAddressTo(&pane_)
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
-          .SetMinimumCrossAxisSize(dialog_->GetActualDialogWidth())
+          .SetMinimumCrossAxisSize(dialog_->GetPreferredSize().width())
           .AddChild(views::Builder<views::View>()
                         .CopyAddressTo(&content_view_)
                         .SetID(static_cast<int>(DialogViewID::CONTENT_VIEW))
@@ -594,12 +594,6 @@ void PaymentRequestSheetController::CloseButtonPressed(const ui::Event& event) {
   if (dialog()->IsInteractive()) {
     dialog()->CloseDialog();
   }
-}
-
-int PaymentRequestSheetController::GetHeaderHeight() {
-  return header_view_
-             ? header_view_->GetHeightForWidth(dialog()->GetActualDialogWidth())
-             : 0;
 }
 
 void PaymentRequestSheetController::AddPrimaryButton(views::View* container) {

@@ -369,10 +369,11 @@ void PaymentHandlerWebFlowViewController::FillContentView(
   // The webview must get an explicitly set height otherwise the layout doesn't
   // make it fill its container. This is likely because it has no content at the
   // time of first layout (nothing has loaded yet). Because of this, set it to
-  // total_dialog_height - header_height. On the other hand, the width will be
-  // properly set so it can be 0 here.
+  // total_dialog_height - header_height - progress_bar_height. On the other
+  // hand, the width will be properly set so it can be 0 here.
   web_view->SetPreferredSize(gfx::Size(
-      0, dialog()->GetActualPaymentHandlerDialogHeight() - GetHeaderHeight()));
+      0, dialog()->GetPreferredSize().height() - kPaymentHandlerHeaderHeight -
+             kPaymentHandlerProgressBarHeight));
 }
 
 bool PaymentHandlerWebFlowViewController::ShouldShowPrimaryButton() {

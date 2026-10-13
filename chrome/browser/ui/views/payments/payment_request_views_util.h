@@ -45,6 +45,8 @@ inline constexpr int kDialogHeight = 450;
 // Preferred dimensions of the payment handler dialog in pixels.
 inline constexpr int kPreferredPaymentHandlerDialogWidth = 608;
 inline constexpr int kPreferredPaymentHandlerDialogHeight = 600;
+inline constexpr int kPaymentHandlerHeaderHeight = 48;
+inline constexpr int kPaymentHandlerProgressBarHeight = 2;
 
 // Preferred dimensions of the payment handler error message dialog in pixels.
 inline constexpr int kPreferredPaymentHandlerErrorMessageDialogHeight = 196;

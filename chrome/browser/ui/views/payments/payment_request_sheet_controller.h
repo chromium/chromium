@@ -173,9 +173,6 @@ class PaymentRequestSheetController {
   // also return true for ShouldShowPrimaryButton.
   virtual bool ShouldAccelerateEnterKey();
 
-  // Returns the height of the active header view.
-  int GetHeaderHeight();
-
   // Returns true if the content view should be placed within a scrollable view
   // that will show a vertical scrollbar if the content is taller than the
   // payment sheet.
