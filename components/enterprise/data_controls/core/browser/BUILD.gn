@@ -116,6 +116,7 @@ source_set("unit_tests") {
     "conditions/attributes_condition_unittest.cc",
     "conditions/not_condition_unittest.cc",
     "conditions/or_condition_unittest.cc",
+    "data_controls_policy_handler_unittest.cc",
     "rule_unittest.cc",
     "rules_service_base_unittest.cc",
     "verdict_unittest.cc",
@@ -123,6 +124,7 @@ source_set("unit_tests") {
 
   deps = [
     ":browser",
+    ":features",
     ":test_support",
     "//base",
     "//base/test:test_support",

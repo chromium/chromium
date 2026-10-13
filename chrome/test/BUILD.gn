@@ -3584,7 +3584,6 @@ test("unit_tests") {
   # TODO(crbug.com/1229899): Clean up and move this to a separate target.
   if (enable_extensions) {
     if (enterprise_data_controls) {
-      sources += [ "../../components/enterprise/data_controls/core/browser/data_controls_policy_handler_unittest.cc" ]
       deps += [
         "//components/enterprise/data_controls/content/browser:unit_tests",
         "//components/enterprise/data_controls/core/browser:features",
