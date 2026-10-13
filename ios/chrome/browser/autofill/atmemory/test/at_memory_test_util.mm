@@ -20,6 +20,15 @@ namespace {
 NSString* const kLinkBeginTag = @"<link>";
 NSString* const kLinkEndTag = @"</link>";
 
+// Accessibility label and class name for the collapsed search bar button in the
+// floating bar on iPhone Duo.
+NSString* const kSearchButtonAccessibilityLabel = @"Search";
+NSString* const kUIButtonBarButtonClassName = @"_UIButtonBarButton";
+
+// Line-height multiplier threshold used to determine if a link wraps across
+// multiple lines.
+const CGFloat kMultilineHeightMultiplier = 1.5;
+
 }  // namespace
 
 @implementation AtMemoryTestUtil
@@ -29,9 +38,25 @@ NSString* const kLinkEndTag = @"</link>";
       kFormInputAccessoryViewAtMemoryButtonAccessibilityID);
 }
 
++ (id<GREYMatcher>)bottomSheetTitle {
+  return grey_allOf(grey_text(l10n_util::GetNSString(
+                        IDS_IOS_AUTOFILL_AI_FIND_AND_FILL_TITLE)),
+                    grey_sufficientlyVisible(), nil);
+}
+
 + (id<GREYMatcher>)searchBar {
   return grey_allOf(
       grey_accessibilityID(kAtMemorySearchBarAccessibilityIdentifier),
+      grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)searchButton {
+  return grey_allOf(
+      grey_anyOf(
+          grey_accessibilityID(kAtMemorySearchBarAccessibilityIdentifier),
+          grey_allOf(grey_accessibilityLabel(kSearchButtonAccessibilityLabel),
+                     grey_kindOfClassName(kUIButtonBarButtonClassName), nil),
+          nil),
       grey_sufficientlyVisible(), nil);
 }
 
@@ -136,6 +161,29 @@ NSString* const kLinkEndTag = @"</link>";
   return grey_allOf(grey_text(disclosureText), grey_sufficientlyVisible(), nil);
 }
 
++ (id<GREYMatcher>)aiDisclosureFooterLink {
+  StringWithTags parsed = ParseStringWithLinks(
+      l10n_util::GetNSString(IDS_IOS_AT_MEMORY_AI_DISCLOSURE));
+  NSString* linkText = [parsed.string substringWithRange:parsed.ranges[0]];
+  return grey_allOf(grey_accessibilityLabel(linkText),
+                    grey_accessibilityTrait(UIAccessibilityTraitLink),
+                    grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)isMultilineLink {
+  GREYMatchesBlock matches = ^BOOL(id element) {
+    CGFloat lineHeight =
+        [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote].lineHeight;
+    return [element accessibilityFrame].size.height >
+           lineHeight * kMultilineHeightMultiplier;
+  };
+  GREYDescribeToBlock describe = ^void(id<GREYDescription> description) {
+    [description appendText:@"is a multiline link"];
+  };
+  return [[GREYElementMatcherBlock alloc] initWithMatchesBlock:matches
+                                              descriptionBlock:describe];
+}
+
 + (id<GREYMatcher>)inlineNoticeSettingsLink {
   StringWithTag parsed =
       ParseStringWithTag(l10n_util::GetNSString(IDS_AT_MEMORY_NOTICE_TEXT),
@@ -144,6 +192,13 @@ NSString* const kLinkEndTag = @"</link>";
   return grey_allOf(grey_accessibilityLabel(linkText),
                     grey_accessibilityTrait(UIAccessibilityTraitLink),
                     grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)helpImproveSettingsPage {
+  return grey_allOf(
+      grey_text(l10n_util::GetNSString(
+          IDS_IOS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_HELPING_IMPROVE_NOTICE_TITLE)),
+      grey_sufficientlyVisible(), nil);
 }
 
 @end

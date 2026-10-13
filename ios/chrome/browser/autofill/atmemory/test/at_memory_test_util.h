@@ -15,8 +15,16 @@
 // Returns a matcher for the AtMemory keyboard accessory button.
 + (id<GREYMatcher>)atMemoryButton;
 
+// Returns a matcher for the title of the AtMemory bottom sheet ("Find and
+// fill").
++ (id<GREYMatcher>)bottomSheetTitle;
+
 // Returns a matcher for the search bar inside the AtMemory bottom sheet.
 + (id<GREYMatcher>)searchBar;
+
+// Returns a matcher for the collapsed search button (on iPhone Duo) or the
+// search bar inside the AtMemory bottom sheet.
++ (id<GREYMatcher>)searchButton;
 
 // Returns a matcher for the close button inside the AtMemory bottom sheet.
 + (id<GREYMatcher>)closeButton;
@@ -62,9 +70,19 @@
 // Returns a matcher for the AI disclosure footer view.
 + (id<GREYMatcher>)aiDisclosureFooter;
 
+// Returns a matcher for the link inside the AI disclosure footer.
++ (id<GREYMatcher>)aiDisclosureFooterLink;
+
+// Returns a matcher for a link element that spans across multiple lines.
++ (id<GREYMatcher>)isMultilineLink;
+
 // Returns a matcher for the "Manage settings" link inside the inline privacy
 // notice.
 + (id<GREYMatcher>)inlineNoticeSettingsLink;
+
+// Returns a matcher for the "Help improve enhanced autofill" settings page
+// title.
++ (id<GREYMatcher>)helpImproveSettingsPage;
 
 @end
 
