@@ -1544,6 +1544,10 @@ public final class ProductionSupportedFlagList {
                         + " the same app process is stuck holding the lock."),
         Flag.baseFeature("useicu4xnormalizer", "Auto-generated flag for useicu4xnormalizer."),
         Flag.baseFeature("AwMetricsLogTrimming", "Auto-generated flag for AwMetricsLogTrimming."),
+        Flag.baseFeature(
+                AccessibilityFeatures.ACCESSIBILITY_ANDROID_MATH,
+                "Enables exposing additional MathML information in"
+                        + " AccessibilityNodeInfoCompat.MathInfoCompat to screen readers."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
