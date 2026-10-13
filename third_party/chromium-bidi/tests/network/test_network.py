@@ -164,7 +164,10 @@ async def test_network_before_request_sent_event_with_cookies_emitted(
         {
             "method": "script.evaluate",
             "params": {
-                "expression": "document.cookie = 'foo=bar'",
+                "expression": (
+                    "document.cookie = 'foo=bar';"
+                    "document.cookie = 'none=value; SameSite=None; Secure';"
+                ),
                 "target": {
                     "context": context_id,
                 },
@@ -185,6 +188,7 @@ async def test_network_before_request_sent_event_with_cookies_emitted(
     )
 
     resp = await wait_for_event(websocket, "network.beforeRequestSent")
+    resp["params"]["request"]["cookies"].sort(key=lambda cookie: cookie["name"])
     assert resp == AnyExtending(
         {
             "type": "event",
@@ -199,23 +203,32 @@ async def test_network_before_request_sent_event_with_cookies_emitted(
                     "url": url_example,
                     "method": "GET",
                     "headers": ANY_LIST,
-                    "cookies": AnyOr(
-                        [
-                            AnyExtending(
-                                {
-                                    "domain": "localhost",
-                                    "httpOnly": False,
-                                    "name": "foo",
-                                    "path": "/",
-                                    "sameSite": "none",
-                                    "secure": False,
-                                    "size": 6,
-                                    "value": {"type": "string", "value": "bar"},
-                                }
-                            )
-                        ],
-                        [],
-                    ),
+                    "cookies": [
+                        AnyExtending(
+                            {
+                                "domain": "localhost",
+                                "httpOnly": False,
+                                "name": "foo",
+                                "path": "/",
+                                "sameSite": "default",
+                                "secure": False,
+                                "size": 6,
+                                "value": {"type": "string", "value": "bar"},
+                            }
+                        ),
+                        AnyExtending(
+                            {
+                                "domain": "localhost",
+                                "httpOnly": False,
+                                "name": "none",
+                                "path": "/",
+                                "sameSite": "none",
+                                "secure": True,
+                                "size": 9,
+                                "value": {"type": "string", "value": "value"},
+                            }
+                        ),
+                    ],
                     "headersSize": ANY_NUMBER,
                     "bodySize": 0,
                     "timings": ANY_DICT,
@@ -240,7 +253,10 @@ async def test_network_before_request_sent_event_with_cookies_intercepted(
         {
             "method": "script.evaluate",
             "params": {
-                "expression": "document.cookie = 'foo=bar'",
+                "expression": (
+                    "document.cookie = 'foo=bar';"
+                    "document.cookie = 'none=value; SameSite=None; Secure';"
+                ),
                 "target": {
                     "context": context_id,
                 },
@@ -277,6 +293,7 @@ async def test_network_before_request_sent_event_with_cookies_intercepted(
     )
 
     resp = await wait_for_event(websocket, "network.beforeRequestSent")
+    resp["params"]["request"]["cookies"].sort(key=lambda cookie: cookie["name"])
     assert resp == AnyExtending(
         {
             "type": "event",
@@ -299,12 +316,24 @@ async def test_network_before_request_sent_event_with_cookies_intercepted(
                                 "httpOnly": False,
                                 "name": "foo",
                                 "path": "/",
-                                "sameSite": "none",
+                                "sameSite": "default",
                                 "secure": False,
                                 "size": 6,
                                 "value": {"type": "string", "value": "bar"},
                             }
-                        )
+                        ),
+                        AnyExtending(
+                            {
+                                "domain": "localhost",
+                                "httpOnly": False,
+                                "name": "none",
+                                "path": "/",
+                                "sameSite": "none",
+                                "secure": True,
+                                "size": 9,
+                                "value": {"type": "string", "value": "value"},
+                            }
+                        ),
                     ],
                     "headersSize": ANY_NUMBER,
                     "bodySize": 0,
@@ -319,7 +348,7 @@ async def test_network_before_request_sent_event_with_cookies_intercepted(
     )
     assert {
         "name": "Cookie",
-        "value": {"type": "string", "value": "foo=bar"},
+        "value": {"type": "string", "value": "foo=bar; none=value"},
     } in resp["params"]["request"]["headers"]
 
 

@@ -23,7 +23,7 @@ def get_bidi_cookie(
     path="/",
     http_only=False,
     secure=True,
-    same_site="none",
+    same_site="default",
     expiry=None,
 ):
     """Return a cookie object with the given parameters."""

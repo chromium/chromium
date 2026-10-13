@@ -20,7 +20,7 @@ import {assert} from 'chai';
 import type {Protocol} from 'devtools-protocol';
 
 import {
-  type Network,
+  Network,
   type Storage,
   UnableToSetCookieException,
 } from '../../../protocol/protocol.js';
@@ -29,6 +29,80 @@ import {NetworkProcessor} from './NetworkProcessor.js';
 import * as networkUtils from './NetworkUtils.js';
 
 describe('NetworkUtils', () => {
+  describe('cookie SameSite conversion', () => {
+    const cdpCookie = {
+      name: 'name',
+      value: 'value',
+      domain: 'example.com',
+      path: '/',
+      expires: -1,
+      size: 9,
+      httpOnly: false,
+      secure: false,
+      session: true,
+      priority: 'Medium',
+      sourceScheme: 'NonSecure',
+      sourcePort: 80,
+    } satisfies Protocol.Network.Cookie;
+
+    const cdpToBiDiCases: [
+      Protocol.Network.CookieSameSite | undefined,
+      Network.SameSite,
+    ][] = [
+      [undefined, Network.SameSite.Default],
+      ['None', Network.SameSite.None],
+      ['Lax', Network.SameSite.Lax],
+      ['Strict', Network.SameSite.Strict],
+    ];
+
+    for (const [cdpSameSite, bidiSameSite] of cdpToBiDiCases) {
+      it(`converts CDP ${String(cdpSameSite)} to BiDi ${bidiSameSite}`, () => {
+        const cookie = {
+          ...cdpCookie,
+          ...(cdpSameSite === undefined ? {} : {sameSite: cdpSameSite}),
+        };
+
+        assert.equal(
+          networkUtils.cdpToBiDiCookie(cookie).sameSite,
+          bidiSameSite,
+        );
+      });
+    }
+
+    const bidiToCdpCases: [
+      Network.SameSite | undefined,
+      Protocol.Network.CookieSameSite | undefined,
+    ][] = [
+      [undefined, undefined],
+      [Network.SameSite.Default, undefined],
+      [Network.SameSite.None, 'None'],
+      [Network.SameSite.Lax, 'Lax'],
+      [Network.SameSite.Strict, 'Strict'],
+    ];
+
+    for (const [bidiSameSite, cdpSameSite] of bidiToCdpCases) {
+      it(`converts BiDi ${String(bidiSameSite)} to CDP ${String(cdpSameSite)}`, () => {
+        const cookie: Storage.PartialCookie = {
+          name: 'name',
+          value: {type: 'string', value: 'value'},
+          domain: 'example.com',
+          ...(bidiSameSite === undefined ? {} : {sameSite: bidiSameSite}),
+        };
+
+        const result = networkUtils.bidiToCdpCookie(
+          {cookie},
+          {userContext: 'default'},
+        );
+
+        if (cdpSameSite === undefined) {
+          assert.notProperty(result, 'sameSite');
+        } else {
+          assert.equal(result.sameSite, cdpSameSite);
+        }
+      });
+    }
+  });
+
   describe('should compute response headers size', () => {
     it('empty', () => {
       const headers: Network.Header[] = [];

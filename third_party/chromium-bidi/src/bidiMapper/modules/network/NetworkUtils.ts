@@ -196,7 +196,7 @@ export function cdpToBiDiCookie(
     secure: cookie.secure,
     sameSite:
       cookie.sameSite === undefined
-        ? Network.SameSite.None
+        ? Network.SameSite.Default
         : sameSiteCdpToBiDi(cookie.sameSite),
     ...(cookie.expires >= 0 ? {expiry: Math.round(cookie.expires)} : undefined),
   };
@@ -248,6 +248,10 @@ export function bidiToCdpCookie(
   }
 
   const deserializedValue = deserializeByteValue(params.cookie.value);
+  const sameSite =
+    params.cookie.sameSite === undefined
+      ? undefined
+      : sameSiteBiDiToCdp(params.cookie.sameSite);
   const result: Protocol.Network.CookieParam = {
     name: params.cookie.name,
     value: deserializedValue,
@@ -268,9 +272,7 @@ export function bidiToCdpCookie(
     ...(params.cookie.expiry !== undefined && {
       expires: params.cookie.expiry,
     }),
-    ...(params.cookie.sameSite !== undefined && {
-      sameSite: sameSiteBiDiToCdp(params.cookie.sameSite),
-    }),
+    ...(sameSite === undefined ? {} : {sameSite}),
   };
 
   // Extending with CDP-specific properties with `goog:` prefix.
@@ -304,23 +306,21 @@ function sameSiteCdpToBiDi(
     case 'Lax':
       return Network.SameSite.Lax;
     default:
-      // Defaults to `Lax`:
-      // https://web.dev/articles/samesite-cookies-explained#samesitelax_by_default
-      return Network.SameSite.Lax;
+      return Network.SameSite.Default;
   }
 }
 
 export function sameSiteBiDiToCdp(
   sameSite: Network.SameSite,
-): Protocol.Network.CookieSameSite {
+): Protocol.Network.CookieSameSite | undefined {
   switch (sameSite) {
     case Network.SameSite.None:
       return 'None';
     case Network.SameSite.Strict:
       return 'Strict';
-    // Defaults to `Lax`:
-    // https://web.dev/articles/samesite-cookies-explained#samesitelax_by_default
     case Network.SameSite.Default:
+      // Omit `sameSite` so CDP stores an unspecified (browser-default) cookie.
+      return undefined;
     case Network.SameSite.Lax:
       return 'Lax';
   }
