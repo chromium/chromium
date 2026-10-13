@@ -116,7 +116,7 @@ void GaiaReauthTokenFetcher::OnSimpleLoaderComplete(
   }
 
   // TODO(b/200782732): Add metrics to record error code.
-  if (response_code == net::HTTP_OK) {
+  if (response_code == net::HTTP_OK && response_body.has_value()) {
     auto message_value = base::JSONReader::Read(
         *response_body, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (message_value && message_value->is_dict()) {
