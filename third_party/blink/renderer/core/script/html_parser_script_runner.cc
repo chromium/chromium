@@ -136,13 +136,8 @@ void TraceParserBlockingScript(const PendingScript* pending_script,
 HTMLParserScriptRunner::HTMLParserScriptRunner(
     HTMLParserReentryPermit* reentry_permit,
     Document* document,
-    HTMLParserScriptRunnerHost* host,
-    bool is_parsing_fragment)
-    : reentry_permit_(reentry_permit),
-      document_(document),
-      host_(host),
-      is_parsing_fragment_(is_parsing_fragment),
-      should_yield_before_executing_deferred_scripts_(is_parsing_fragment) {
+    HTMLParserScriptRunnerHost* host)
+    : reentry_permit_(reentry_permit), document_(document), host_(host) {
   DCHECK(host_);
 }
 
@@ -169,7 +164,7 @@ void HTMLParserScriptRunner::Detach() {
 
 bool HTMLParserScriptRunner::IsParserBlockingScriptReady() {
   DCHECK(ParserBlockingScript());
-  if ((!is_parsing_fragment_ && !document_->IsScriptExecutionReady()) ||
+  if (!document_->IsScriptExecutionReady() ||
       document_->IsScriptBlockedUntilPrerenderActivation()) {
     return false;
   }
@@ -198,7 +193,7 @@ void HTMLParserScriptRunner::
     document_->GetAgent().event_loop()->PerformMicrotaskCheckpoint();
     // The parser cannot be unblocked as a microtask requested another
     // resource
-    if ((!is_parsing_fragment_ && !document_->IsScriptExecutionReady()) ||
+    if (!document_->IsScriptExecutionReady() ||
         document_->IsScriptBlockedUntilPrerenderActivation()) {
       return;
     }
@@ -376,7 +371,7 @@ void HTMLParserScriptRunner::ExecuteParsingBlockingScripts() {
   while (HasParserBlockingScript() && IsParserBlockingScriptReady()) {
     DCHECK(document_);
     DCHECK(!IsExecutingScript());
-    DCHECK(is_parsing_fragment_ || document_->IsScriptExecutionReady());
+    DCHECK(document_->IsScriptExecutionReady());
 
     // <spec step="B.9">Let the insertion point be just before the next input
     // character.</spec>
@@ -435,7 +430,7 @@ PendingScript* HTMLParserScriptRunner::TryTakeReadyScriptWaitingForParsing(
   // scripts that will execute when the document has finished parsing has its
   // ready to be parser-executed set to true and the parser's Document has no
   // style sheet that is blocking scripts.</spec>
-  if ((!is_parsing_fragment_ && !document_->IsScriptExecutionReady()) ||
+  if (!document_->IsScriptExecutionReady() ||
       document_->IsScriptBlockedUntilPrerenderActivation()) {
     return nullptr;
   }
@@ -457,24 +452,6 @@ PendingScript* HTMLParserScriptRunner::TryTakeReadyScriptWaitingForParsing(
   return waiting_scripts->TakeFirst().Get();
 }
 
-void HTMLParserScriptRunner::ScheduleDeferredScriptExecution() {
-  document_->GetTaskRunner(TaskType::kInternalContinueScriptLoading)
-      ->PostTask(FROM_HERE,
-                 blink::BindOnce(
-                     [](HTMLParserScriptRunner* runner) {
-                       if (!runner->document_) {
-                         return;
-                       }
-                       // Continue execution and potentially resume parser
-                       if (runner->ExecuteScriptsWaitingForParsing()) {
-                         // If all scripts are done, need to notify parser
-                         // The parser will be resumed when it tries again
-                         runner->host_->NotifyScriptLoaded();
-                       }
-                     },
-                     WrapPersistent(this)));
-}
-
 // <specdef href="https://html.spec.whatwg.org/C/#stop-parsing">
 //
 // This will run the developer deferred scripts.
@@ -484,19 +461,12 @@ bool HTMLParserScriptRunner::ExecuteScriptsWaitingForParsing() {
 
   // If the feature is enabled, execute scripts one at a time with event loop
   // yields between them to prevent long tasks and improve responsiveness.
-  if (RuntimeEnabledFeatures::SeparateDeferModuleScriptTasksEnabled() ||
-      is_parsing_fragment_) {
+  if (RuntimeEnabledFeatures::SeparateDeferModuleScriptTasksEnabled()) {
     // If we're already executing scripts asynchronously, check if we have more
     // scripts to process.
     if (scripts_to_execute_after_parsing_.empty()) {
       // All scripts completed, allow parsing to complete.
       return true;
-    }
-
-    if (should_yield_before_executing_deferred_scripts_) {
-      should_yield_before_executing_deferred_scripts_ = false;
-      ScheduleDeferredScriptExecution();
-      return false;
     }
 
     DCHECK(!IsExecutingScript());
@@ -527,7 +497,18 @@ bool HTMLParserScriptRunner::ExecuteScriptsWaitingForParsing() {
     // scripts. This achieves the goal of separating script execution into
     // individual tasks.
     if (!scripts_to_execute_after_parsing_.empty()) {
-      ScheduleDeferredScriptExecution();
+      document_->GetTaskRunner(TaskType::kInternalContinueScriptLoading)
+          ->PostTask(FROM_HERE,
+                     blink::BindOnce(
+                         [](HTMLParserScriptRunner* runner) {
+                           // Continue execution and potentially resume parser
+                           if (runner->ExecuteScriptsWaitingForParsing()) {
+                             // If all scripts are done, need to notify parser
+                             // The parser will be resumed when it tries again
+                             runner->host_->NotifyScriptLoaded();
+                           }
+                         },
+                         WrapPersistent(this)));
       // Return false to keep the parser paused until all scripts complete
       return false;
     }
@@ -603,7 +584,7 @@ void HTMLParserScriptRunner::ProcessScriptElementInternal(
     // tokenizer, and might cause the tokenizer to output more tokens, resulting
     // in a reentrant invocation of the parser. ...</spec>
     PendingScript* pending_script = script_loader->PrepareScript(
-        (reentry_permit_->ScriptNestingLevel() == 1u && !is_parsing_fragment_)
+        reentry_permit_->ScriptNestingLevel() == 1u
             ? ScriptLoader::ParserBlockingInlineOption::kAllow
             : ScriptLoader::ParserBlockingInlineOption::kDeny,
         script_start_position);
