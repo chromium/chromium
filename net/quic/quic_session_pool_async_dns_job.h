@@ -83,10 +83,13 @@ class QuicSessionPool::AsyncDnsJob
 
   // One candidate of the job's usable results, with everything an attempt to
   // it needs. Copied out of the results so that it stays valid across the
-  // calls made while starting the attempt. Two candidates are the same only
-  // when all three fields match.
+  // calls made while starting the attempt. Two candidates are the same when
+  // they produce an identical QUIC handshake (`ip_endpoint`, `quic_version`,
+  // `metadata.ech_config_list`, and `metadata.trust_anchor_ids` match;
+  // `metadata.supported_protocol_alpns` and `metadata.target_name` only
+  // participate in `GetUsableEndpoints()` version selection).
   struct Candidate {
-    bool operator==(const Candidate& other) const = default;
+    bool operator==(const Candidate& other) const;
 
     IPEndPoint ip_endpoint;
     ConnectionEndpointMetadata metadata;
@@ -197,9 +200,12 @@ class QuicSessionPool::AsyncDnsJob
   // connector falls back to the other family once resolution finishes and its
   // preferred family is exhausted. Each candidate is handed out at most once
   // per job. The same IP listed under two ServiceEndpoints with different
-  // metadata is two candidates, because the metadata can decide whether the
-  // handshake succeeds. An attempt with a stale ECH config can fail where a
-  // plain A/AAAA endpoint to the same IP works.
+  // handshake-relevant parameters (e.g., ECH config, trust anchor IDs, or
+  // selected QUIC version) is two candidates, because those parameters can
+  // decide whether the handshake succeeds (for example, an attempt with a
+  // stale ECH config can fail where a plain A/AAAA endpoint to the same IP
+  // works). Endpoints that differ only in ALPN list or target name after QUIC
+  // version selection map to the same candidate.
   std::optional<Candidate> TakeNextCandidate(
       const EndpointConnector& connector);
 

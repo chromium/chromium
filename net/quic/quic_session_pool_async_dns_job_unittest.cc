@@ -2046,6 +2046,154 @@ TEST_P(QuicSessionPoolAsyncDnsJobTest, MetadataVariantOfClaimedIpIsAttempted) {
       "Net.QuicSession.AsyncDnsJob.AttemptsPerJob.JobSucceeded", 2, 1);
 }
 
+// When an ALTERNATIVE job (quic_version_ known from Alt-Svc,
+// require_dns_https_alpn == false) resolves a host that also has a DNS HTTPS
+// record without ECH or trust anchor IDs, ServiceEndpointRequest returns both
+// the HTTPS ServiceEndpoint (with ALPN metadata) and the fallback A/AAAA
+// ServiceEndpoint (with empty metadata). Once QUIC version selection produces
+// the same version for both, they produce an identical QUIC handshake, so a
+// fast failure on IPv6 advances directly to IPv4 instead of retrying the same
+// IPv6 address from the fallback endpoint.
+TEST_P(QuicSessionPoolAsyncDnsJobTest,
+       AlternativeJobDeduplicatesHttpsAndFallbackEndpoints) {
+  base::WeakPtr<FakeServiceEndpointRequest> endpoint_request =
+      fake_resolver_.AddFakeRequest();
+  InitializeWithFakeResolver();
+  base::HistogramTester histograms;
+  pool_->set_has_quic_ever_worked_on_current_network(true);
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::ZERO_RTT);
+
+  // The IPv6 attempt fails immediately.
+  MockQuicData failing_v6_socket_data(version_);
+  failing_v6_socket_data.AddConnect(SYNCHRONOUS, ERR_ADDRESS_IN_USE);
+  failing_v6_socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  // The next attempt should be to IPv4 (not a duplicate IPv6 attempt).
+  MockQuicData v4_socket_data(version_);
+  v4_socket_data.AddReadPauseForever();
+  client_maker_.SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
+  v4_socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  v4_socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  RequestBuilder builder(this);
+  EXPECT_THAT(builder.CallRequest(), IsError(ERR_IO_PENDING));
+
+  // First endpoint comes from an HTTPS record (ALPN and target_name metadata,
+  // no ECH).
+  ServiceEndpoint https_endpoint =
+      ServiceEndpointBuilder()
+          .add_v6("2001:db8::1", kDefaultServerPort)
+          .add_v4("192.168.0.1", kDefaultServerPort)
+          .set_alpn(version_)
+          .endpoint();
+  https_endpoint.metadata.target_name = kDefaultServerHostName;
+  // Second endpoint is the fallback non-alternative A/AAAA endpoint with empty
+  // metadata.
+  ServiceEndpoint fallback_endpoint =
+      ServiceEndpointBuilder()
+          .add_v6("2001:db8::1", kDefaultServerPort)
+          .add_v4("192.168.0.1", kDefaultServerPort)
+          .endpoint();
+
+  endpoint_request->add_endpoint(https_endpoint);
+  endpoint_request->add_endpoint(fallback_endpoint);
+  endpoint_request->set_crypto_ready(true);
+  endpoint_request->CallOnServiceEndpointRequestFinished(OK);
+
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  QuicChromiumClientSession* session = GetActiveSession(kDefaultDestination);
+  ASSERT_TRUE(session);
+  IPEndPoint peer_address;
+  EXPECT_THAT(session->GetDefaultSocket()->GetPeerAddress(&peer_address),
+              IsOk());
+  EXPECT_EQ(peer_address, MakeIPEndPoint("192.168.0.1"));
+
+  failing_v6_socket_data.ExpectAllReadDataConsumed();
+  failing_v6_socket_data.ExpectAllWriteDataConsumed();
+  v4_socket_data.ExpectAllReadDataConsumed();
+  v4_socket_data.ExpectAllWriteDataConsumed();
+
+  histograms.ExpectUniqueSample(
+      "Net.QuicSession.AsyncDnsJob.SuccessSource",
+      static_cast<int>(SuccessSource::kInitialConnectorLaterAttempt), 1);
+  histograms.ExpectUniqueSample(
+      "Net.QuicSession.AsyncDnsJob.AttemptsPerJob.JobSucceeded", 2, 1);
+}
+
+// When an ALTERNATIVE job has an in-flight attempt to a single-IP host that
+// resolved both an HTTPS endpoint (without ECH) and a fallback A/AAAA endpoint,
+// firing the slow timer after DNS finishes must not cause the secondary
+// connector to start a duplicate concurrent attempt to the same IP.
+TEST_P(QuicSessionPoolAsyncDnsJobTest,
+       AlternativeJobSlowTimerDoesNotDuplicateInFlightHttpsEndpoint) {
+  base::WeakPtr<FakeServiceEndpointRequest> endpoint_request =
+      fake_resolver_.AddFakeRequest();
+  InitializeWithFakeResolver();
+  base::HistogramTester histograms;
+  pool_->set_has_quic_ever_worked_on_current_network(true);
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::ASYNC_ZERO_RTT);
+
+  MockQuicData socket_data(version_);
+  socket_data.AddReadPauseForever();
+  client_maker_.SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
+  socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  RequestBuilder builder(this);
+  EXPECT_THAT(builder.CallRequest(), IsError(ERR_IO_PENDING));
+
+  TestCompletionCallback creation_callback;
+  if (async_quic_session()) {
+    EXPECT_TRUE(builder.request.WaitForQuicSessionCreation(
+        creation_callback.callback()));
+  }
+
+  // Resolver returns an HTTPS endpoint (ALPN metadata, no ECH) and a fallback
+  // AAAA endpoint (empty metadata) with the same single IPv6 address.
+  endpoint_request->add_endpoint(ServiceEndpointBuilder()
+                                     .add_v6("2001:db8::1", kDefaultServerPort)
+                                     .set_alpn(version_)
+                                     .endpoint());
+  endpoint_request->add_endpoint(ServiceEndpointBuilder()
+                                     .add_v6("2001:db8::1", kDefaultServerPort)
+                                     .endpoint());
+  endpoint_request->set_crypto_ready(true);
+  endpoint_request->CallOnServiceEndpointRequestFinished(OK);
+
+  if (async_quic_session()) {
+    EXPECT_THAT(creation_callback.WaitForResult(), IsError(ERR_IO_PENDING));
+  }
+
+  // The slow timer fires while the primary attempt is still in flight. The
+  // secondary connector must recognize that the fallback endpoint maps to the
+  // already-claimed candidate and must not start a second socket.
+  FastForwardBy(SlowTimerDelay());
+  EXPECT_EQ(
+      net_log_observer_
+          .GetEntriesWithType(
+              NetLogEventType::QUIC_SESSION_POOL_ASYNC_DNS_JOB_ATTEMPT_STARTED)
+          .size(),
+      1u);
+
+  crypto_client_stream_factory_.last_stream()->NotifySessionZeroRttComplete();
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+
+  histograms.ExpectUniqueSample(
+      "Net.QuicSession.AsyncDnsJob.SuccessSource",
+      static_cast<int>(SuccessSource::kInitialConnectorFirstAttempt), 1);
+  histograms.ExpectUniqueSample(
+      "Net.QuicSession.AsyncDnsJob.AttemptsPerJob.JobSucceeded", 1, 1);
+}
+
 // An endpoint that matches an existing session by IP arrives after an attempt
 // started. The job pools to that session instead of attempting the endpoint,
 // and the re-check adds no miss entry to the metric.

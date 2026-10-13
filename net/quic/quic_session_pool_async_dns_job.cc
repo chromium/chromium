@@ -5,6 +5,7 @@
 #include "net/quic/quic_session_pool_async_dns_job.h"
 
 #include <algorithm>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -83,6 +84,15 @@ QuicSessionPool::AsyncDnsJob::UsableEndpoint::UsableEndpoint(UsableEndpoint&&) =
 QuicSessionPool::AsyncDnsJob::UsableEndpoint&
 QuicSessionPool::AsyncDnsJob::UsableEndpoint::operator=(UsableEndpoint&&) =
     default;
+
+bool QuicSessionPool::AsyncDnsJob::Candidate::operator==(
+    const Candidate& other) const {
+  return std::tie(ip_endpoint, quic_version, metadata.ech_config_list,
+                  metadata.trust_anchor_ids) ==
+         std::tie(other.ip_endpoint, other.quic_version,
+                  other.metadata.ech_config_list,
+                  other.metadata.trust_anchor_ids);
+}
 
 QuicSessionPool::AsyncDnsJob::AttemptParams::AttemptParams() = default;
 QuicSessionPool::AsyncDnsJob::AttemptParams::~AttemptParams() = default;
