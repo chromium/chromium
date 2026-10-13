@@ -37,6 +37,7 @@ content::WebUIDataSource* HistoryUtil::PopulateCommonSourceForHistory(
   static constexpr webui::LocalizedString kStrings[] = {
       // Localized strings (alphabetical order).
       {"actionMenuDescription", IDS_HISTORY_ACTION_MENU_DESCRIPTION},
+      {"actorTaskTooltip", IDS_HISTORY_ACTOR_TASK_TOOLTIP},
       {"ariaRoleDescription", IDS_HISTORY_ARIA_ROLE_DESCRIPTION},
       {"bookmarked", IDS_HISTORY_ENTRY_BOOKMARKED},
       {"cancel", IDS_CANCEL},
@@ -94,13 +95,6 @@ content::WebUIDataSource* HistoryUtil::PopulateCommonSourceForHistory(
           critical_actions::features::kCriticalActionHistory)
           ? IDS_HISTORY_SOURCE_FILTER_CHIP_ACTOR_GEMINI
           : IDS_HISTORY_SOURCE_FILTER_CHIP_ACTOR);
-
-  source->AddLocalizedString(
-      "actorTaskTooltip",
-      base::FeatureList::IsEnabled(
-          critical_actions::features::kCriticalActionHistory)
-          ? IDS_HISTORY_ACTOR_TASK_TOOLTIP_GEMINI
-          : IDS_HISTORY_ACTOR_TASK_TOOLTIP);
 
   source->AddString("myActivityGeminiAppsUrl",
                     chrome::kMyActivityGeminiAppsUrl);
