@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static com.google.common.truth.Truth.assertWithMessage;
@@ -18,10 +17,10 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.chrome.browser.tabmodel.TabModelOrderControllerImpl.willOpenInForeground;
 import static org.chromium.chrome.test.util.ChromeTabUtils.getIndexOnUiThread;
 import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -1802,7 +1801,7 @@ public class TabModelImplTest {
 
                     mTabModelJni.pinTab(tab1.getId(), /* showUngroupDialog= */ true);
                 });
-        onViewWaiting(withText(R.string.delete_tab_group_action)).perform(click());
+        waitForView(withText(R.string.delete_tab_group_action)).click();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -1833,7 +1832,7 @@ public class TabModelImplTest {
 
                     mTabModelJni.pinTab(tab1.getId(), /* showUngroupDialog= */ true);
                 });
-        onViewWaiting(withText(R.string.cancel)).perform(click());
+        waitForView(withText(R.string.cancel)).click();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

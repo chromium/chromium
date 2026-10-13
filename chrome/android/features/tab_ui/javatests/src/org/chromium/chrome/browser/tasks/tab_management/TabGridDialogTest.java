@@ -20,7 +20,6 @@ import static androidx.test.espresso.intent.matcher.IntentMatchers.hasExtras;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasType;
 import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
 import static androidx.test.espresso.matcher.ViewMatchers.isClickable;
-import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayingAtLeast;
@@ -43,6 +42,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.base.test.transit.ViewElement.displayingAtLeastOption;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.chrome.R.plurals.bottom_tab_grid_title_placeholder;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.DATA_SHARING;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.DATA_SHARING_JOIN_ONLY;
@@ -65,8 +66,6 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.v
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabStripFaviconCount;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabSwitcherCardCount;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.waitForThumbnailsToFetch;
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
-import static org.chromium.ui.test.util.ViewUtils.waitForVisibleView;
 
 import android.app.Activity;
 import android.app.Instrumentation.ActivityResult;
@@ -169,7 +168,6 @@ import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.NightModeTestUtils;
-import org.chromium.ui.test.util.ViewUtils;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
@@ -803,11 +801,7 @@ public class TabGridDialogTest {
                 .clickToolbarMenuButton()
                 .clickToolbarMenuItem("Bookmark tab");
 
-        onViewWaiting(
-                allOf(
-                        withId(R.id.snackbar_button),
-                        isDescendantOfA(withId(R.id.selectable_list)),
-                        isDisplayed()));
+        waitForView(withId(R.id.snackbar_button), isDescendantOfA(withId(R.id.selectable_list)));
         onView(allOf(withId(R.id.snackbar), isDescendantOfA(withId(R.id.bottom_container))))
                 .check(doesNotExist());
         onView(
@@ -850,11 +844,7 @@ public class TabGridDialogTest {
                 .clickToolbarMenuButton()
                 .clickToolbarMenuItem("Bookmark tabs");
 
-        onViewWaiting(
-                allOf(
-                        withId(R.id.snackbar_button),
-                        isDescendantOfA(withId(R.id.selectable_list)),
-                        isDisplayed()));
+        waitForView(withId(R.id.snackbar_button), isDescendantOfA(withId(R.id.selectable_list)));
         onView(allOf(withId(R.id.snackbar), isDescendantOfA(withId(R.id.bottom_container))))
                 .check(doesNotExist());
         onView(
@@ -1730,8 +1720,7 @@ public class TabGridDialogTest {
                                         .getBrowserControlsManager()
                                         .getBottomControlOffset()
                                 == 0);
-        ViewUtils.waitForVisibleView(
-                allOf(withId(R.id.toolbar_show_group_dialog_button), isCompletelyDisplayed()));
+        waitForView(withId(R.id.toolbar_show_group_dialog_button), displayingAtLeastOption(100));
 
         // Test opening dialog from strip and from tab switcher.
         openDialogFromStripAndVerify(cta, 2, null);
@@ -1788,8 +1777,7 @@ public class TabGridDialogTest {
                                         .getBrowserControlsManager()
                                         .getBottomControlOffset()
                                 == 0);
-        ViewUtils.waitForVisibleView(
-                allOf(withId(R.id.toolbar_show_group_dialog_button), isCompletelyDisplayed()));
+        waitForView(withId(R.id.toolbar_show_group_dialog_button), displayingAtLeastOption(100));
 
         // Test opening dialog from strip and from tab switcher.
         openDialogFromStripAndVerify(cta, 2, null);
@@ -1838,8 +1826,7 @@ public class TabGridDialogTest {
                                         .getBrowserControlsManager()
                                         .getBottomControlOffset()
                                 == 0);
-        ViewUtils.waitForVisibleView(
-                allOf(withId(R.id.toolbar_show_group_dialog_button), isCompletelyDisplayed()));
+        waitForView(withId(R.id.toolbar_show_group_dialog_button), displayingAtLeastOption(100));
 
         // Test opening dialog from strip and from tab switcher.
         openDialogFromStripAndVerify(cta, 1, null);
@@ -2092,16 +2079,15 @@ public class TabGridDialogTest {
 
     private void showDialogFromStrip(ChromeTabbedActivity cta) {
         assertFalse(cta.getLayoutManager().isLayoutVisible(LayoutType.HUB));
-        waitForVisibleView(
+        waitForView(
                 allOf(
                         withId(R.id.tab_list_recycler_view),
-                        isDescendantOfA(withId(R.id.tab_group_ui_container)),
-                        isCompletelyDisplayed()));
-        onViewWaiting(
-                        allOf(
-                                withId(R.id.toolbar_show_group_dialog_button),
-                                isDescendantOfA(withId(R.id.tab_group_ui_container))))
-                .perform(click());
+                        isDescendantOfA(withId(R.id.tab_group_ui_container))),
+                displayingAtLeastOption(100));
+        waitForView(
+                        withId(R.id.toolbar_show_group_dialog_button),
+                        isDescendantOfA(withId(R.id.tab_group_ui_container)))
+                .click();
     }
 
     private static ViewAction relaxedClick() {
@@ -2402,11 +2388,9 @@ public class TabGridDialogTest {
 
     private void verifyDialogUndoBarAndClick() {
         // Verify that the dialog undo bar is showing and the default undo bar is hidden.
-        onViewWaiting(
-                allOf(
-                        withId(R.id.snackbar_button),
-                        isDescendantOfA(withId(R.id.dialog_snack_bar_container_view)),
-                        isDisplayed()));
+        waitForView(
+                withId(R.id.snackbar_button),
+                isDescendantOfA(withId(R.id.dialog_snack_bar_container_view)));
         onView(allOf(withId(R.id.snackbar), isDescendantOfA(withId(R.id.bottom_container))))
                 .check(doesNotExist());
         onView(
@@ -2420,8 +2404,7 @@ public class TabGridDialogTest {
     private void verifyGlobalUndoBarAndClick() {
         // Verify that the dialog undo bar is showing and the default undo bar is hidden.
         Matcher<View> expectedAncestor = instanceOf(HubContainerView.class);
-        onViewWaiting(
-                allOf(withId(R.id.snackbar), isDescendantOfA(expectedAncestor), isDisplayed()));
+        waitForView(withId(R.id.snackbar), isDescendantOfA(expectedAncestor));
         onView(
                         allOf(
                                 withId(R.id.snackbar_button),
@@ -2437,16 +2420,14 @@ public class TabGridDialogTest {
 
     private void verifyDialogBackButtonContentDescription(ChromeTabbedActivity cta, String s) {
         assertTrue(isDialogFullyVisible(cta));
-        onViewWaiting(
-                        allOf(
-                                withId(R.id.toolbar_back_button),
-                                isDescendantOfA(withId(R.id.tab_grid_dialog_toolbar_container))))
+        waitForView(
+                        withId(R.id.toolbar_back_button),
+                        isDescendantOfA(withId(R.id.tab_grid_dialog_toolbar_container)))
                 .check((v, e) -> assertEquals(s, v.getContentDescription()));
     }
 
     private void clickTitleTextToFocus(ChromeTabbedActivity cta) {
-        onViewWaiting(allOf(isDescendantOfA(withId(R.id.main_content)), withId(R.id.title)))
-                .perform(click());
+        waitForView(isDescendantOfA(withId(R.id.main_content)), withId(R.id.title)).click();
     }
 
     private void testTitleTextFocus(ChromeTabbedActivity cta) throws ExecutionException {
@@ -2507,6 +2488,6 @@ public class TabGridDialogTest {
     private void clickThroughConfirmationDialog() {
         CriteriaHelper.pollUiThread(
                 () -> Criteria.checkThat(mModalDialogManager.isShowing(), Matchers.is(true)));
-        onViewWaiting(withText("Delete group")).perform(click());
+        waitForView(withText("Delete group")).click();
     }
 }

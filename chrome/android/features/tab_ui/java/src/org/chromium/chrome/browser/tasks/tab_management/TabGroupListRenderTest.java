@@ -4,12 +4,10 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.chromium.base.test.transit.TransitAsserts.assertFinalDestination;
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.LargeTest;
@@ -103,7 +101,7 @@ public class TabGroupListRenderTest {
                     model.setTabGroupTitle(tab.getTabGroupId(), title);
                 });
         if (wait) {
-            onViewWaiting(withText(title)).check(matches(isDisplayed()));
+            waitForView(withText(title));
             // Despite waiting on the view to be visible for some reason only a blank render is
             // captured. Sleep a bit to let drawing finish.
             Thread.sleep(300);

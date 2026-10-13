@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -15,7 +14,6 @@ import static org.junit.Assert.assertNull;
 
 import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.os.SystemClock;
 import android.view.MotionEvent;
@@ -101,7 +99,7 @@ public class CloseAllTabsDialogTest {
 
         if (mIsIncognito) mActivityTestRule.newIncognitoTabFromMenu();
         navigateToCloseAllTabsDialog(selector);
-        onViewWaiting(withId(R.id.positive_button)).perform(click());
+        waitForView(withId(R.id.positive_button)).click();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -121,7 +119,7 @@ public class CloseAllTabsDialogTest {
         if (mIsIncognito) mActivityTestRule.newIncognitoTabFromMenu();
         navigateToCloseAllTabsDialog(selector);
 
-        onViewWaiting(withId(R.id.negative_button)).perform(click());
+        waitForView(withId(R.id.negative_button)).click();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -145,7 +143,7 @@ public class CloseAllTabsDialogTest {
 
         TabUiTestHelper.createTabs(mActivityTestRule.getActivity(), mIsIncognito, 8);
         navigateToCloseAllTabsDialog(selector);
-        onViewWaiting(withId(R.id.positive_button)).perform(click());
+        waitForView(withId(R.id.positive_button)).click();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> assertUndoSnackbar(/* wasCloseAllTabsConfirmed= */ true));

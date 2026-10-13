@@ -23,10 +23,10 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.not;
 
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.chrome.browser.tasks.tab_management.RecyclerViewMatcherUtils.atPosition;
 import static org.chromium.chrome.browser.tasks.tab_management.RecyclerViewMatcherUtils.atPositionWithViewHolder;
 import static org.chromium.chrome.browser.tasks.tab_management.RecyclerViewMatcherUtils.withItemType;
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.view.InputDevice;
 import android.view.MotionEvent;
@@ -247,7 +247,7 @@ public class TabListEditorTestingRobot {
 
         public TabListEditorTestingRobot.Result verifyToolbarSelectionText(String text) {
             // Text updates are animated. Wait for the right text if animations cannot be disabled.
-            onViewWaiting(inTabListEditor(withText(text))).check(matches(isDisplayed()));
+            waitForView(inTabListEditor(withText(text)));
             return this;
         }
 

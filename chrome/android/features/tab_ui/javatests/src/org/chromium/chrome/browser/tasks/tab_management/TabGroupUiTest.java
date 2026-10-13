@@ -9,7 +9,6 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.INVISIBLE;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.VISIBLE;
-import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -18,6 +17,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertFalse;
 
+import static org.chromium.base.test.transit.ViewElement.displayingAtLeastOption;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.clickFirstCardFromTabSwitcher;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.clickFirstTabInDialog;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.clickNthTabInDialog;
@@ -75,7 +76,6 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.UiSwitches;
 import org.chromium.ui.base.DeviceFormFactor;
-import org.chromium.ui.test.util.ViewUtils;
 
 import java.io.IOException;
 import java.util.List;
@@ -126,11 +126,7 @@ public class TabGroupUiTest {
         clickFirstCardFromTabSwitcher(cta);
         clickFirstTabInDialog(cta);
         assertFalse(cta.getLayoutManager().isLayoutVisible(LayoutType.HUB));
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withId(R.id.tab_list_recycler_view),
-                        isDescendantOfA(withId(R.id.tab_group_ui_container)),
-                        isCompletelyDisplayed()));
+        waitForTabGroupStrip();
         verifyTabStripFaviconCount(cta, 2);
     }
 
@@ -151,11 +147,7 @@ public class TabGroupUiTest {
         clickFirstCardFromTabSwitcher(cta);
         clickNthTabInDialog(cta, 4);
 
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withId(R.id.tab_list_recycler_view),
-                        isDescendantOfA(withId(R.id.tab_group_ui_container)),
-                        isCompletelyDisplayed()));
+        waitForTabGroupStrip();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -184,11 +176,7 @@ public class TabGroupUiTest {
         clickFirstCardFromTabSwitcher(cta);
         clickNthTabInDialog(cta, 9);
 
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withId(R.id.tab_list_recycler_view),
-                        isDescendantOfA(withId(R.id.tab_group_ui_container)),
-                        isCompletelyDisplayed()));
+        waitForTabGroupStrip();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -216,11 +204,7 @@ public class TabGroupUiTest {
         clickFirstCardFromTabSwitcher(cta);
         clickNthTabInDialog(cta, 1);
 
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withId(R.id.tab_list_recycler_view),
-                        isDescendantOfA(withId(R.id.tab_group_ui_container)),
-                        isCompletelyDisplayed()));
+        waitForTabGroupStrip();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -266,11 +250,7 @@ public class TabGroupUiTest {
         // Select the first tab in group and add one new tab to group.
         clickFirstCardFromTabSwitcher(cta);
         clickNthTabInDialog(cta, 0);
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withId(R.id.tab_list_recycler_view),
-                        isDescendantOfA(withId(R.id.tab_group_ui_container)),
-                        isCompletelyDisplayed()));
+        waitForTabGroupStrip();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ViewGroup bottomToolbar = cta.findViewById(R.id.tab_group_ui_container);
@@ -321,11 +301,7 @@ public class TabGroupUiTest {
                             tabModel.getTabAt(0),
                             /* notify= */ TabGroupMergeNotificationType.DONT_NOTIFY);
                 });
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withId(R.id.tab_list_recycler_view),
-                        isDescendantOfA(withId(R.id.tab_group_ui_container)),
-                        isCompletelyDisplayed()));
+        waitForTabGroupStrip();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ViewGroup bottomToolbar = cta.findViewById(R.id.tab_group_ui_container);
@@ -369,11 +345,7 @@ public class TabGroupUiTest {
                             tabModel.getTabAt(0),
                             /* notify= */ TabGroupMergeNotificationType.DONT_NOTIFY);
                 });
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withId(R.id.tab_list_recycler_view),
-                        isDescendantOfA(withId(R.id.tab_group_ui_container)),
-                        isCompletelyDisplayed()));
+        waitForTabGroupStrip();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ViewGroup bottomToolbar = cta.findViewById(R.id.tab_group_ui_container);
@@ -413,11 +385,7 @@ public class TabGroupUiTest {
         mActivityTestRule.restartMainActivityFromLauncher();
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         CriteriaHelper.pollUiThread(cta.getTabModelSelector()::isTabStateInitialized);
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withId(R.id.tab_list_recycler_view),
-                        isDescendantOfA(withId(R.id.tab_group_ui_container)),
-                        isCompletelyDisplayed()));
+        waitForTabGroupStrip();
 
         // The strip should be hidden when omnibox is focused.
         onView(withId(R.id.url_bar)).perform(click());
@@ -456,11 +424,7 @@ public class TabGroupUiTest {
         mActivityTestRule.restartMainActivityFromLauncher();
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         CriteriaHelper.pollUiThread(cta.getTabModelSelector()::isTabStateInitialized);
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withId(R.id.tab_list_recycler_view),
-                        isDescendantOfA(withId(R.id.tab_group_ui_container)),
-                        isCompletelyDisplayed()));
+        waitForTabGroupStrip();
 
         BottomControlsCoordinator coordinator =
                 mActivityTestRule
@@ -484,5 +448,13 @@ public class TabGroupUiTest {
         // Scene overlay should remain visible.
         CriteriaHelper.pollUiThread(
                 () -> coordinator.getSceneLayerForTesting().isSceneOverlayTreeShowing());
+    }
+
+    private void waitForTabGroupStrip() {
+        waitForView(
+                allOf(
+                        withId(R.id.tab_list_recycler_view),
+                        isDescendantOfA(withId(R.id.tab_group_ui_container))),
+                displayingAtLeastOption(100));
     }
 }

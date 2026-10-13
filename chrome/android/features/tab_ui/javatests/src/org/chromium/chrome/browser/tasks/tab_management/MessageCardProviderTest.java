@@ -6,16 +6,14 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.chrome.browser.tasks.tab_management.UiTypeHelper.isMessageCard;
 import static org.chromium.chrome.browser.tasks.tab_management.UiTypeHelper.isValidUiType;
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -171,7 +169,7 @@ public class MessageCardProviderTest {
                     addMessageCards();
                 });
 
-        onViewWaiting(withId(R.id.large_message_card_item)).check(matches(isDisplayed()));
+        waitForView(withId(R.id.large_message_card_item));
     }
 
     @Test
@@ -183,7 +181,7 @@ public class MessageCardProviderTest {
                     addMessageCards();
                 });
 
-        onViewWaiting(withId(R.id.large_message_card_item)).check(matches(isDisplayed()));
+        waitForView(withId(R.id.large_message_card_item));
 
         assertFalse(mReviewed.get());
         onView(withId(R.id.action_button)).perform(click());
@@ -201,7 +199,7 @@ public class MessageCardProviderTest {
                     addMessageCards();
                 });
 
-        onViewWaiting(withId(R.id.large_message_card_item)).check(matches(isDisplayed()));
+        waitForView(withId(R.id.large_message_card_item));
 
         assertFalse(mDismissed.get());
         onView(withId(R.id.close_button)).perform(click());

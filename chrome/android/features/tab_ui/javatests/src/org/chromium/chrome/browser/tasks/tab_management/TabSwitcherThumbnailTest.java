@@ -8,11 +8,10 @@ import static androidx.test.espresso.contrib.RecyclerViewActions.scrollToPositio
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
-import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 
 import android.view.View;
 import android.widget.ImageView;
@@ -27,6 +26,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.transit.ViewPresence;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Restriction;
@@ -114,16 +114,16 @@ public class TabSwitcherThumbnailTest {
         // There is a higher chance for the test to fail with backward counting, because after the
         // view being recycled, its height might have the correct measurement.
         for (int i = tabCounts - 1; i >= 0; i--) {
-            onViewWaiting(
-                            allOf(
-                                    isDescendantOfA(
-                                            withId(
-                                                    TabUiTestHelper.getTabSwitcherAncestorId(
-                                                            mActivityTestRule.getActivity()))),
-                                    withId(R.id.tab_list_recycler_view)))
-                    .perform(scrollToPosition(i))
-                    .check(ThumbnailHeightAssertion.notZeroAt(i))
-                    .check(ThumbnailAspectRatioAssertion.havingAspectRatioAt(ratio, i));
+            ViewPresence<View> recyclerView =
+                    waitForView(
+                            isDescendantOfA(
+                                    withId(
+                                            TabUiTestHelper.getTabSwitcherAncestorId(
+                                                    mActivityTestRule.getActivity()))),
+                            withId(R.id.tab_list_recycler_view));
+            recyclerView.performViewAction(scrollToPosition(i));
+            recyclerView.check(ThumbnailHeightAssertion.notZeroAt(i));
+            recyclerView.check(ThumbnailAspectRatioAssertion.havingAspectRatioAt(ratio, i));
         }
     }
 

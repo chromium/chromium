@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -18,9 +17,9 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils.UNSET_TAB_GROUP_TITLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.clickFirstCardFromTabSwitcher;
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.MediumTest;
@@ -1523,7 +1522,7 @@ public class TabCollectionTabModelImplTest {
                     mCollectionModel.pinTab(tab1.getId(), /* showUngroupDialog= */ true);
                 });
 
-        onViewWaiting(withText(R.string.delete_tab_group_action)).perform(click());
+        waitForView(withText(R.string.delete_tab_group_action)).click();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -1547,7 +1546,7 @@ public class TabCollectionTabModelImplTest {
                     mCollectionModel.pinTab(tab1.getId(), /* showUngroupDialog= */ true);
                 });
 
-        onViewWaiting(withText(R.string.cancel)).perform(click());
+        waitForView(withText(R.string.cancel)).click();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

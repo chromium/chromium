@@ -4,14 +4,13 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 
 import androidx.test.filters.MediumTest;
 
@@ -97,7 +96,7 @@ public class BeforeUnloadTabCloseTest {
 
         closeTabs(List.of(tab), /* listener= */ null);
         waitForDialog(/* shown= */ true);
-        onViewWaiting(withText(R.string.leave)).perform(click());
+        waitForView(withText(R.string.leave)).click();
 
         waitForTabCount(tabCount - 1);
         waitForTabDestroyed(tab);
@@ -112,7 +111,7 @@ public class BeforeUnloadTabCloseTest {
 
         closeTabs(List.of(tab), listener);
         waitForDialog(/* shown= */ true);
-        onViewWaiting(withText(R.string.cancel)).perform(click());
+        waitForView(withText(R.string.cancel)).click();
 
         // TabRemover reports a refusal only once the answer has reached Java.
         listener.mResult.waitForOnly();
@@ -148,7 +147,7 @@ public class BeforeUnloadTabCloseTest {
         closeTabs(List.of(kept, closed), /* listener= */ null);
         waitForDialog(/* shown= */ true);
         JavascriptAppModalDialog firstDialog = getCurrentDialog();
-        onViewWaiting(withText(R.string.cancel)).perform(click());
+        waitForView(withText(R.string.cancel)).click();
         // The second tab is asked on a later task, with a dialog of its own.
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -157,7 +156,7 @@ public class BeforeUnloadTabCloseTest {
                     Criteria.checkThat(dialog, Matchers.notNullValue());
                     Criteria.checkThat(dialog, Matchers.not(Matchers.sameInstance(firstDialog)));
                 });
-        onViewWaiting(withText(R.string.leave)).perform(click());
+        waitForView(withText(R.string.leave)).click();
 
         waitForTabCount(tabCount - 1);
         waitForTabDestroyed(closed);

@@ -12,9 +12,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.GONE;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.VISIBLE;
-import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -27,6 +25,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.base.test.transit.ViewElement.displayingAtLeastOption;
 import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.closeFirstTabGroupInTabSwitcher;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.closeFirstTabInTabSwitcher;
@@ -38,7 +37,6 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.g
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.mergeAllNormalTabsToAGroup;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabModelTabCount;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabSwitcherCardCount;
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
@@ -217,7 +215,7 @@ public class TabSwitcherLayoutTest {
     public void testThumbnailAspectRatio_default() {
         prepareTabs(2, 0, "about:blank");
         enterTabSwitcher(mActivityTestRule.getActivity());
-        onViewWaiting(tabSwitcherViewMatcher())
+        waitForView(tabSwitcherViewMatcher())
                 .check(
                         ThumbnailAspectRatioAssertion.havingAspectRatio(
                                 TabCardThemeUtil.getTabThumbnailAspectRatio(
@@ -244,14 +242,12 @@ public class TabSwitcherLayoutTest {
 
         enterTabSwitcher(mActivityTestRule.getActivity());
 
-        onViewWaiting(
-                        allOf(
-                                isDescendantOfA(
-                                        withId(
-                                                TabUiTestHelper.getTabSwitcherAncestorId(
-                                                        mActivityTestRule.getActivity()))),
-                                withId(R.id.tab_thumbnail)))
-                .check(matches(isDisplayed()));
+        waitForView(
+                isDescendantOfA(
+                        withId(
+                                TabUiTestHelper.getTabSwitcherAncestorId(
+                                        mActivityTestRule.getActivity()))),
+                withId(R.id.tab_thumbnail));
 
         histograms.assertExpected();
     }
@@ -939,7 +935,7 @@ public class TabSwitcherLayoutTest {
         // Merge tab group of 2 at first index with the 3rd tab.
         mergeAllNormalTabsToAGroup(cta);
 
-        onViewWaiting(withId(R.id.snackbar_button)).check(matches(isCompletelyDisplayed()));
+        waitForView(withId(R.id.snackbar_button), displayingAtLeastOption(100));
 
         String ungroupButtonText = cta.getString(R.string.ungroup_tab_group_menu_item);
         onView(withId(R.id.action_button)).perform(click());

@@ -13,7 +13,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.hamcrest.CoreMatchers.allOf;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -22,7 +21,6 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.c
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.enterTabSwitcher;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.getTabSwitcherAncestorId;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.switchTabModel;
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.filters.MediumTest;
@@ -158,11 +156,10 @@ public class TabGridIncognitoReauthPromoTest {
         waitForView(withId(R.id.large_message_card_item));
 
         // Scroll to the position of the promo so that it is completely showing for Espresso click.
-        onViewWaiting(
-                        allOf(
-                                isDescendantOfA(withId(getTabSwitcherAncestorId(cta))),
-                                withId(R.id.tab_list_recycler_view)))
-                .perform(RecyclerViewActions.scrollToPosition(1));
+        waitForView(
+                        isDescendantOfA(withId(getTabSwitcherAncestorId(cta))),
+                        withId(R.id.tab_list_recycler_view))
+                .performViewAction(RecyclerViewActions.scrollToPosition(1));
         onView(withId(R.id.secondary_action_button)).perform(click());
 
         onView(withId(R.id.large_message_card_item)).check(doesNotExist());
