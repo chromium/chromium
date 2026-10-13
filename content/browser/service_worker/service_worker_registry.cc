@@ -698,9 +698,10 @@ void ServiceWorkerRegistry::DeleteRegistration(
 void ServiceWorkerRegistry::NotifyInstallingRegistration(
     ServiceWorkerRegistration* registration) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
-  CHECK(installing_registrations_.find(registration->id()) ==
-            installing_registrations_.end(),
-        base::NotFatalUntil::M159);
+  // TODO(crbug.com/571444417): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(installing_registrations_.find(registration->id()) ==
+         installing_registrations_.end());
   installing_registrations_[registration->id()] = registration;
 }
 
