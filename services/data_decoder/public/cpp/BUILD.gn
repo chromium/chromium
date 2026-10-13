@@ -28,8 +28,6 @@ source_set("cpp") {
 
   sources = [ "data_decoder.cc" ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [
     ":safe_xml_parser",
     ":service_provider",

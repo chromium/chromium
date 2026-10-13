@@ -47,8 +47,6 @@ source_set("geolocation") {
     "wifi_polling_policy.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   deps = [
     "//base",
     "//build/config/linux/dbus:buildflags",

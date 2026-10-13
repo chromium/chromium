@@ -46,8 +46,6 @@ source_set("screen_ai") {
   if (is_linux) {
     deps += [ "//components/crash/core/common:crash_key" ]
   }
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 if (is_chromeos) {
@@ -82,8 +80,6 @@ if (is_linux || is_chromeos) {
     ]
 
     public_deps = [ "//sandbox/policy" ]
-
-    configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
     # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
     # enable the diagnostic by removing this line.

@@ -50,7 +50,6 @@ component("crash_keys") {
     "crash_keys.h",
   ]
   deps = [ "//base" ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   defines = [ "IS_NETWORK_CPP_CRASH_KEYS_IMPL" ]
 }
 
@@ -196,8 +195,6 @@ component("cpp") {
     "x_frame_options_parser.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [
     ":buildflags",
     ":cpp_base",
@@ -255,7 +252,6 @@ component("ip_address_mojom_support") {
     "//net",
     "//services/network/public/mojom:mojom_ip_address_shared",
   ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   defines = [ "IS_NETWORK_CPP_IP_ADDRESS_IMPL" ]
 }
 
@@ -271,7 +267,6 @@ component("host_resolver_mojom_support") {
     "//net",
     "//services/network/public/mojom:mojom_host_resolver_shared",
   ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   defines = [ "IS_NETWORK_CPP_HOST_RESOLVER_IMPL" ]
 }
 
@@ -350,7 +345,6 @@ component("cookies_mojom_support") {
     "//net",
     "//services/network/public/mojom:cookies_mojom_shared",
   ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   defines = [ "IS_NETWORK_CPP_COOKIES_IMPL" ]
 }
 
@@ -391,7 +385,6 @@ component("network_param_mojom_support") {
     "//url/ipc:url_ipc",
     "//url/mojom:url_mojom_origin",
   ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   defines = [ "IS_NETWORK_CPP_NETWORK_PARAM_IMPL" ]
 }
 
@@ -411,7 +404,6 @@ component("proxy_config_mojom_support") {
     "//services/network/public/mojom:mojom_proxy_config_shared",
     "//url/mojom:mojom_traits",
   ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   defines = [ "IS_NETWORK_CPP_PROXY_CONFIG_IMPL" ]
 }
 
@@ -426,7 +418,6 @@ component("structured_headers_mojom_support") {
     "//net",
     "//services/network/public/mojom:mojom_structured_headers_shared",
   ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   defines = [ "IS_NETWORK_CPP_STRUCTURED_HEADERS_IMPL" ]
 }
 
@@ -445,7 +436,6 @@ component("flags_and_switches") {
     "//services/network/public/mojom:mojom_web_sandbox_flags",
     "//url",
   ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   defines = [ "IS_NETWORK_CPP_FLAGS_AND_SWITCHES_IMPL" ]
 }
 
@@ -457,7 +447,6 @@ source_set("is_potentially_trustworthy") {
     "//net",
     "//url",
   ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   defines = [ "IS_NETWORK_CPP_IS_POTENTIALLY_TRUSTWORTHY_IMPL" ]
 }
 
@@ -507,7 +496,6 @@ component("web_platform") {
     "//services/network/public/mojom:url_loader_base_shared",
     "//url",
   ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   defines = [ "IS_NETWORK_CPP_WEB_PLATFORM_IMPL" ]
 }
 
@@ -526,8 +514,6 @@ component("cross_origin_embedder_policy") {
     "//mojo/public/mojom/base",
     "//services/network/public/mojom:url_loader_base_shared",
   ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   defines = [ "IS_NETWORK_CPP_CROSS_ORIGIN_IMPL" ]
 }
@@ -553,8 +539,6 @@ component("document_isolation_policy") {
     "//services/network/public/mojom:url_loader_base_shared",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   defines = [ "IS_NETWORK_CPP_DOCUMENT_ISOLATION_IMPL" ]
 }
 
@@ -577,8 +561,6 @@ source_set("ip_address_space_overrides_test_utils") {
     "//base",
     "//net:test_support",
   ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 # This component is separate from cpp_base as it is a dependency of
@@ -593,7 +575,6 @@ component("schemeful_site_mojom_support") {
     "//services/network/public/mojom:mojom_schemeful_site_shared",
     "//url/mojom:url_mojom_origin",
   ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   defines = [ "IS_NETWORK_CPP_SCHEMEFUL_IMPL" ]
 }
 
@@ -630,7 +611,6 @@ component("http_request_headers_mojom_support") {
     ":crash_keys",
     "//mojo/public/cpp/base:shared_typemap_traits",
   ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   defines = [ "IS_NETWORK_CPP_HTTP_REQUEST_HEADERS_IMPL" ]
 }
 
@@ -699,8 +679,6 @@ component("cpp_base") {
     "web_transport_send_stream_stats_mojom_traits.cc",
     "web_transport_send_stream_stats_mojom_traits.h",
   ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
     ":connection_allowlist",

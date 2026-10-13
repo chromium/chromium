@@ -20,7 +20,6 @@ component("geolocation") {
     "network_location_request_source.h",
   ]
   defines = [ "IS_GEOLOCATION_IMPL=1" ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   output_name = "geolocation_service"
 
   deps = [ "//components/device_event_log" ]

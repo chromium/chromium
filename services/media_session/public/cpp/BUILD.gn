@@ -23,9 +23,6 @@ component("base_cpp") {
     "//url",
   ]
 
-  # TODO: Remove this (http://crbug.com/101600).
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   if (is_android) {
     sources += [
       "media_image_android.cc",
@@ -60,9 +57,6 @@ component("cpp") {
     "//ui/gfx/geometry",
     "//url",
   ]
-
-  # TODO: Remove this (http://crbug.com/101600).
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   defines = [ "IS_MEDIA_SESSION_CPP_IMPL" ]
 }

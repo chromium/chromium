@@ -34,8 +34,6 @@ source_set("hid") {
     "hid_service.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   deps = [
     "//base",
     "//components/device_event_log",

@@ -15,8 +15,6 @@ source_set("hid") {
     "hid_switches.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [ "//services/device/public/cpp:device_features" ]
 
   deps = [

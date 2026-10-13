@@ -87,8 +87,6 @@ source_set("trust_tokens") {
   ]
 
   public_deps = [ ":public_proto" ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("test_support") {
@@ -175,8 +173,6 @@ source_set("tests") {
 # to be exposed to Trust Tokens consumers.
 proto_library("public_proto") {
   sources = [ "proto/public.proto" ]
-
-  extra_configs = [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 # storage.proto contains datatypes internal
@@ -185,6 +181,4 @@ proto_library("public_proto") {
 proto_library("storage_proto") {
   sources = [ "proto/storage.proto" ]
   deps = [ ":public_proto" ]
-
-  extra_configs = [ "//build/config/compiler:wexit_time_destructors" ]
 }

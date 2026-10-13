@@ -34,8 +34,6 @@ component("cpp") {
     "standalone_connector_impl.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [
     ":cpp_types",
     "//base",
@@ -73,8 +71,6 @@ component("cpp_types") {
     "service_filter.h",
     "types_export.h",
   ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [ "//services/service_manager/public/mojom:constants" ]
 

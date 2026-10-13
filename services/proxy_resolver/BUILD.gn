@@ -23,10 +23,7 @@ source_set("lib") {
     "proxy_resolver_v8_tracing.h",
   ]
 
-  configs += [
-    "//build/config/compiler:wexit_time_destructors",
-    "//v8:external_startup_data",
-  ]
+  configs += [ "//v8:external_startup_data" ]
 
   deps = [
     "//base",

@@ -27,8 +27,6 @@ source_set("lib") {
     "memory_instrumentation/switches.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [
     "//base",
     "//mojo/public/cpp/bindings",

@@ -55,8 +55,6 @@ source_set("usb") {
     "usb_utils.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   # ':usb_ids_resources' is public so that dependents (including the
   # unittest) can include the generated grit header for IDR_USB_IDS_DATA.
   public_deps = [ ":usb_ids_resources" ]

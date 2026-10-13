@@ -33,8 +33,6 @@ component("cpp") {
 
   defines = [ "IS_AUDIO_PUBLIC_CPP_IMPL" ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [
     "//base",
     "//media",

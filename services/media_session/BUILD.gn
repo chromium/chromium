@@ -19,8 +19,6 @@ source_set("lib") {
     "media_session_service_impl.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   deps = [
     "//mojo/public/cpp/bindings",
     "//services/media_session/public/cpp",

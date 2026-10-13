@@ -36,8 +36,6 @@ source_set("service_manager") {
     "switches.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   deps = [
     "//components/services/filesystem:lib",
     "//components/services/filesystem/public/mojom",

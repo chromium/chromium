@@ -66,8 +66,6 @@ target("component", "cpp") {
   defines = [ "IS_TRACING_CPP_IMPL" ]
   output_name = "tracing_cpp"
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [
     ":perfetto_interning_index",
     "//base",

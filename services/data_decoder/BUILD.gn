@@ -27,8 +27,6 @@ source_set("lib") {
     "xml_parser.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   deps = [
     "//base",
     "//build:blink_buildflags",

@@ -41,8 +41,6 @@ if (is_win || ((is_linux || is_chromeos) && use_udev) || is_mac || is_android) {
 
     public_configs = [ ":platform_support" ]
 
-    configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
     public_deps = [ "//services/device/public/mojom" ]
 
     deps = [

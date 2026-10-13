@@ -137,7 +137,6 @@ source_set("audio") {
   }
 
   configs += [
-    "//build/config/compiler:wexit_time_destructors",
     "//media:media_config",
     "//media/audio:platform_config",
   ]

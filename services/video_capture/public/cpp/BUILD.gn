@@ -14,8 +14,6 @@ source_set("cpp") {
     "video_frame_access_handler.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [
     "//base",
     "//media",

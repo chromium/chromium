@@ -19,8 +19,6 @@ source_set("vibration") {
     "vibration_manager_impl.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [ "//services/device/public/mojom" ]
 
   deps = [

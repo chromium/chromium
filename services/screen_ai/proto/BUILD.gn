@@ -37,6 +37,4 @@ source_set("proto_convertors") {
     "//services/strings",
     "//ui/accessibility",
   ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }

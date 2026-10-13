@@ -357,8 +357,6 @@ component("network_service") {
     sources += [ "pervasive_resources/shared_resource_checker_patterns.h" ]
   }
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   deps = [
     "//base",
     "//base:build_time",
@@ -462,7 +460,6 @@ if (is_linux || is_chromeos) {
       "//sandbox/linux:sandbox_services",
       "//sandbox/policy",
     ]
-    configs += [ "//build/config/compiler:wexit_time_destructors" ]
   }
 }
 
