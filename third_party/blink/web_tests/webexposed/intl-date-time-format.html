@@ -39,4 +39,11 @@ for (const [locale, { displayName, timeZone }] of Object.entries(locales)) {
 print(`[en] English calender:iso8601`);
 const d = new Date(2026, 11, 15)
 print(`  "${new Intl.DateTimeFormat('en', {month:'long', calendar:'iso8601'}).format(d)}" "${new Intl.DateTimeFormat('en', {month:'long', year:'numeric', calendar:'iso8601'}).format(d)}"`);
+print('');
+
+// crbug.com/567321059
+print(`[en] No standard time in Winnipeg; "CDT" should be shown.`);
+print((new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/Winnipeg', dateStyle: 'medium', timeStyle: 'long'
+})).format(new Date('2026-12-01T08:00:00Z')));
 </script>

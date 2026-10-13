@@ -368,3 +368,6 @@ some common locales.
 [en] English calender:iso8601
   "December" "2026 December"
 
+[en] No standard time in Winnipeg; "CDT" should be shown.
+Dec 1, 2026, 3:00:00 AM CDT
+
