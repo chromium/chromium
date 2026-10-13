@@ -208,9 +208,10 @@ struct WebRtcEventLogPeerConnectionKey {
 
   bool operator<(const WebRtcEventLogPeerConnectionKey& other) const {
     // Each RPH is associated with exactly one BrowserContext.
-    CHECK(render_process_id != other.render_process_id ||
-              browser_context_id == other.browser_context_id,
-          base::NotFatalUntil::M161);
+    // TODO(crbug.com/572678236): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(render_process_id != other.render_process_id ||
+           browser_context_id == other.browser_context_id);
 
     return std::tie(render_process_id, lid, render_frame_id) <
            std::tie(other.render_process_id, other.lid, other.render_frame_id);
