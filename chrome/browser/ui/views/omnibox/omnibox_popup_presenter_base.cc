@@ -194,6 +194,7 @@ void OmniboxPopupPresenterBase::OnVisualStateReady(
 }
 
 void OmniboxPopupPresenterBase::ShowWidget(base::TimeTicks show_request_time) {
+  is_open_ = true;
   if (ShouldPreserveRequestedFocus() &&
       (widget_->IsActive() || focus_requested_)) {
     widget_->Show();
@@ -288,6 +289,11 @@ void OmniboxPopupPresenterBase::Hide() {
 
   // Only close if UI DevTools settings allow.
   if (widget_ && widget_->ShouldHandleNativeWidgetActivationChanged(false)) {
+    // If external code already hid the widget (e.g. ash on a user switch), then
+    // we need to destroy the widget to prevent the external code from
+    // re-showing the widget.
+    const bool hidden_externally = is_open_ && !widget_->IsVisible();
+    is_open_ = false;
     widget_->Hide();
     if (auto* content = GetWebUIContent()) {
       if (base::FeatureList::IsEnabled(
@@ -304,7 +310,7 @@ void OmniboxPopupPresenterBase::Hide() {
     // from this show. `OnWidgetClosed()` extracts the WebUI container before
     // the widget is destroyed, so the WebContents (and the pre-warmed
     // renderer) survives and is re-parented by `EnsureWidgetCreated()`.
-    if (ShouldDestroyWidgetOnHide()) {
+    if (ShouldDestroyWidgetOnHide() || hidden_externally) {
       // Flag the teardown as deliberate so `WidgetDestroyed()` overrides don't
       // mistake it for the widget being closed out from under us (e.g. by the
       // OS) and re-enter the popup state teardown already in progress.
@@ -510,6 +516,7 @@ bool OmniboxPopupPresenterBase::IsDeactivating() const {
 
 void OmniboxPopupPresenterBase::OnWidgetClosed(
     views::Widget::ClosedReason closed_reason) {
+  is_open_ = false;
   is_deferred_ = false;
   // Drop stale visual state callbacks when the widget is closed.
   visual_state_weak_factory_.InvalidateWeakPtrs();

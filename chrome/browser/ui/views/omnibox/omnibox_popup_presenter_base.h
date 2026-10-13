@@ -342,9 +342,15 @@ class OmniboxPopupPresenterBase
   // WebUI has produced a new frame.
   bool is_deferred_ = false;
 
+  // Tracks whether the omnibox considers the popup open. Used by `Hide()` to
+  // detect if external window management (e.g. Ash on a user switch) hid the
+  // widget without the presenter's knowledge. In which case, the widget must be
+  // discarded rather than cached so it is not re-shown later.
+  bool is_open_ = false;
+
   // True only for the duration of the deliberate widget teardown performed by
-  // `Hide()` when `ShouldDestroyWidgetOnHide()` holds. See
-  // `is_destroying_widget()`.
+  // `Hide()` when `ShouldDestroyWidgetOnHide()` holds or the widget was hidden
+  // externally. See `is_destroying_widget()`.
   bool is_destroying_widget_ = false;
 
   // Whether the first content ready metric of the popup has been logged.

@@ -97,6 +97,9 @@ class OmniboxPopupPresenterBaseTest : public views::ViewsTestBase {
     auto test_widget = CreateTestWidget(std::move(params));
 
     widget_ptr_ = test_widget.get();
+    test_widget->MakeCloseSynchronous(
+        base::BindOnce(&OmniboxPopupPresenterBase::OnWidgetClosed,
+                       base::Unretained(presenter_.get())));
     presenter_->set_widget_for_testing(std::move(test_widget));
   }
 
@@ -129,6 +132,8 @@ class OmniboxPopupPresenterBaseTest : public views::ViewsTestBase {
   void CallOnWidgetClosed() {
     presenter_->OnWidgetClosed(views::Widget::ClosedReason::kUnspecified);
   }
+
+  void ShowWidget() { presenter_->ShowWidget(base::TimeTicks::Now()); }
 
   base::WeakPtr<OmniboxPopupPresenterBase> GetVisualStateWeakPtr(
       OmniboxPopupPresenterBase* presenter) {
@@ -394,4 +399,48 @@ TEST_F(OmniboxPopupPresenterBaseTest, ContentHeightClampedBelowShadowMargin) {
   presenter->OnContentHeightChanged(1);
 
   EXPECT_EQ(GetContentHeight(presenter.get()), 1);
+}
+
+// When ash hides the popup on switching users, and the omnibox closes the popup
+// while it is already hidden externally, the widget must be released so ash
+// cannot re-show it on switching back.
+TEST_F(OmniboxPopupPresenterBaseTest, DiscardsWidgetWhenHiddenExternally) {
+  ShowWidget();
+  ASSERT_TRUE(widget_ptr_->IsVisible());
+
+  // Ash hides the popup on switching users.
+  widget_ptr_->Hide();
+
+  // Omnibox closes the popup while it was already hidden externally.
+  presenter_->Hide();
+
+  // The widget should be discarded so external window management cannot
+  // re-show it.
+  EXPECT_EQ(presenter_->GetWidget(), nullptr);
+  EXPECT_FALSE(presenter_->IsShown());
+}
+
+// When closed normally while visible, the widget should be hidden but kept
+// alive for reuse.
+TEST_F(OmniboxPopupPresenterBaseTest, RetainsWidgetWhenHiddenNormally) {
+  ShowWidget();
+  ASSERT_TRUE(widget_ptr_->IsVisible());
+
+  presenter_->Hide();
+
+  EXPECT_NE(presenter_->GetWidget(), nullptr);
+  EXPECT_FALSE(presenter_->GetWidget()->IsVisible());
+  EXPECT_FALSE(presenter_->IsShown());
+}
+
+// A redundant `Hide()` while already closed must not discard the cached widget.
+TEST_F(OmniboxPopupPresenterBaseTest, RedundantHideDoesNotDiscardWidget) {
+  ShowWidget();
+  presenter_->Hide();
+  ASSERT_NE(presenter_->GetWidget(), nullptr);
+
+  presenter_->Hide();
+
+  EXPECT_NE(presenter_->GetWidget(), nullptr);
+  EXPECT_FALSE(presenter_->IsShown());
 }
