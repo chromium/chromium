@@ -22,17 +22,19 @@ cast_source_set("core_runtime_lib_simple") {
   ]
 }
 
-cast_source_set("core_runtime_lib_starboard") {
-  data_deps = [ "//chromecast:cast_shell_pak" ]
+if (is_linux) {
+  cast_source_set("core_runtime_lib_starboard") {
+    data_deps = [ "//chromecast:cast_shell_pak" ]
 
-  deps = [
-    "//chromecast:cast_shell_lib_base",
-    "//chromecast/base:default_create_sys_info",
-    "//chromecast/browser:prefs_simple",
-    "//chromecast/browser:simple_main_parts",
-    "//chromecast/cast_core/runtime/browser:browser_starboard",
-    "//chromecast/cast_core/runtime/renderer:renderer_simple",
-  ]
+    deps = [
+      "//chromecast:cast_shell_lib_base",
+      "//chromecast/base:default_create_sys_info",
+      "//chromecast/browser:prefs_simple",
+      "//chromecast/browser:simple_main_parts",
+      "//chromecast/cast_core/runtime/browser:browser_starboard",
+      "//chromecast/cast_core/runtime/renderer:renderer_simple",
+    ]
+  }
 }
 
 cast_source_set("cast_runtime_main") {
@@ -44,16 +46,22 @@ cast_source_set("cast_runtime_main") {
   ]
 }
 
-cast_source_set("cast_starboard_runtime_main") {
-  sources = [ "cast_starboard_runtime_main.cc" ]
+if (is_linux) {
+  cast_source_set("cast_starboard_runtime_main") {
+    sources = [
+      "cast_starboard_runtime_main.cc",
+      "cast_starboard_runtime_main.h",
+    ]
 
-  deps = [
-    ":child_log_process",
-    "//base",
-    "//chromecast/app",
-    "//content/public/app",
-    "//chromecast/base:chromecast_switches",
-  ]
+    deps = [
+      ":child_log_process",
+      "//base",
+      "//chromecast/app",
+      "//chromecast/base:chromecast_switches",
+      "//chromecast/public",
+      "//content/public/app",
+    ]
+  }
 }
 
 cast_executable("core_runtime_simple") {
@@ -64,20 +72,58 @@ cast_executable("core_runtime_simple") {
   ]
 }
 
-cast_executable("core_runtime_starboard") {
-  deps = [
-    ":cast_starboard_runtime_main",
-    ":core_runtime_lib_starboard",
-    "//chromecast:chromecast_locales_pak",
-  ]
-  if (!use_partition_alloc_as_malloc) {
-    # Makes all symbols local.
-    #
-    # This cannot be done if use_partition_alloc_as_malloc is true, since that
-    # can cause issues with conflicting malloc/free implementations. This
-    # restriction can be removed once https://crbug.com/375680879 is resolved.
-    ldflags = [ "-Wl,--version-script=" +
-                rebase_path("core_runtime_starboard.sym", root_build_dir) ]
+if (is_linux) {
+  cast_shared_library("core_runtime_starboard_lib") {
+    output_name = "core_runtime_starboard"
+    public_deps = [ ":cast_starboard_runtime_main" ]
+    deps = [
+      ":core_runtime_lib_starboard",
+      "//chromecast:chromecast_locales_pak",
+    ]
+    if (!use_partition_alloc_as_malloc) {
+      # Makes all symbols local.
+      #
+      # This cannot be done if use_partition_alloc_as_malloc is true, since that
+      # can cause issues with conflicting malloc/free implementations. This
+      # restriction can be removed once https://crbug.com/375680879 is resolved.
+      ldflags = [ "-Wl,--version-script=" +
+                  rebase_path("core_runtime_starboard.sym", root_build_dir) ]
+    }
+  }
+
+  group("core_runtime_starboard_shared_library") {
+    public_deps = [ ":core_runtime_starboard_lib" ]
+  }
+
+  cast_executable("core_runtime_starboard_loader") {
+    sources = [ "core_runtime_starboard_main.cc" ]
+    deps = [
+      ":core_runtime_starboard_lib",
+      "//chromecast/public",
+    ]
+    ldflags = [
+      "-Wl,--disable-new-dtags",
+      "-Wl,-rpath=\$ORIGIN/oem_lib:\$ORIGIN/lib:\$ORIGIN/../lib",
+    ]
+  }
+
+  cast_executable("core_runtime_starboard") {
+    sources = [ "core_runtime_starboard_main.cc" ]
+    deps = [
+      ":cast_starboard_runtime_main",
+      ":core_runtime_lib_starboard",
+      "//chromecast:chromecast_locales_pak",
+      "//chromecast/public",
+    ]
+    if (!use_partition_alloc_as_malloc) {
+      # Makes all symbols local.
+      #
+      # This cannot be done if use_partition_alloc_as_malloc is true, since that
+      # can cause issues with conflicting malloc/free implementations. This
+      # restriction can be removed once https://crbug.com/375680879 is resolved.
+      ldflags = [ "-Wl,--version-script=" +
+                  rebase_path("core_runtime_starboard.sym", root_build_dir) ]
+    }
   }
 }
 

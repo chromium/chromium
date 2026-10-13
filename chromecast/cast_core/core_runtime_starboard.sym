@@ -1,4 +1,6 @@
 {
+  global:
+    CoreRuntimeStarboardMain;
   local:
     *;
 };

@@ -9,6 +9,8 @@
 // Also contains logic for parsing chromium args passed as JSON (used by some
 // partner platforms).
 
+#include "chromecast/cast_core/cast_starboard_runtime_main.h"
+
 #include <optional>
 #include <string>
 #include <utility>
@@ -101,9 +103,7 @@ class JSONArgsParser {
   std::vector<const char*> argv_;
 };
 
-}  // namespace
-
-int main(int argc, const char** argv) {
+int main_internal(int argc, const char** argv) {
   // SAFETY: required from caller.
   JSONArgsParser args(
       UNSAFE_BUFFERS(base::span<const char*>(argv, static_cast<size_t>(argc))));
@@ -140,4 +140,11 @@ int main(int argc, const char** argv) {
   params.argv = args.argv();
 
   return content::ContentMain(std::move(params));
+}
+
+}  // namespace
+
+extern "C" CHROMECAST_EXPORT int CoreRuntimeStarboardMain(int argc,
+                                                          const char** argv) {
+  return main_internal(argc, argv);
 }
