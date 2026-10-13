@@ -118,7 +118,7 @@ class Project:
 
   A Project is initialized with an XML node representing one project, eg:
 
-    <project name="MyProject" cros_events="true" targets="webui,chromium">
+    <project name="MyProject" cros_events="true" targets="chromium,webui">
       <owner>owner@chromium.org</owner>
       <id>none</id>
       <scope>project</scope>
@@ -198,7 +198,9 @@ class Project:
     else:
       cros_events_attr = ''
     if self.targets:
-      targets = ' targets="' + ','.join(self.targets) + '"'
+      # `targets` is a set; print it in a fixed order so that pretty-printing
+      # is deterministic (set iteration order varies with the hash seed).
+      targets = ' targets="' + ','.join(sorted(self.targets)) + '"'
     else:
       targets = ''
 
