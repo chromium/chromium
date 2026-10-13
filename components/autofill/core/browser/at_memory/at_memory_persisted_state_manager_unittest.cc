@@ -22,11 +22,22 @@
 #include "components/autofill/core/browser/at_memory/at_memory_manager_test_api.h"
 #include "components/autofill/core/browser/at_memory/at_memory_metrics_recorder.h"
 #include "components/autofill/core/browser/at_memory/at_memory_search_state.h"
+#include "components/autofill/core/browser/country_type.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
+#include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_data_type.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_test_helpers.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
+#include "components/autofill/core/browser/test_utils/entity_data_test_util.h"
+#include "components/autofill/core/browser/test_utils/valuables_data_test_util.h"
+#include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
+#include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/history/core/browser/history_types.h"
@@ -65,6 +76,52 @@ url::Origin FieldOrigin() {
 
 url::Origin OtherFieldOrigin() {
   return url::Origin::Create(GURL("https://other.com"));
+}
+
+Suggestion CreateAddressSuggestion(const AutofillProfile& profile) {
+  Suggestion suggestion(u"123 Main St", SuggestionType::kAtMemorySearchResult);
+  Suggestion::AtMemoryPayload payload(u"123 Main St",
+                                      MemoryDataType::kAddressFull);
+  payload.identifier = profile.guid();
+  suggestion.payload = payload;
+  return suggestion;
+}
+
+Suggestion CreateCreditCardSuggestion(const CreditCard& card) {
+  Suggestion suggestion(u"4111", SuggestionType::kAtMemorySearchResult);
+  Suggestion::AtMemoryPayload payload(u"4111",
+                                      MemoryDataType::kCreditCardNumber);
+  payload.identifier = card.guid();
+  suggestion.payload = payload;
+  return suggestion;
+}
+
+Suggestion CreateEntitySuggestion(const EntityInstance& entity) {
+  Suggestion suggestion(u"Passport", SuggestionType::kAtMemorySearchResult);
+  Suggestion::AtMemoryPayload payload(u"Passport",
+                                      MemoryDataType::kPassportNumber);
+  payload.identifier = entity.guid();
+  suggestion.payload = payload;
+  return suggestion;
+}
+
+Suggestion CreateLoyaltyCardSuggestion(const LoyaltyCard& card) {
+  Suggestion suggestion(u"Loyalty Card", SuggestionType::kAtMemorySearchResult);
+  Suggestion::AtMemoryPayload payload(u"Loyalty Card",
+                                      MemoryDataType::kLoyaltyMembershipId);
+  payload.identifier = card.id();
+  suggestion.payload = payload;
+  return suggestion;
+}
+
+Suggestion CreateIbanSuggestion(const Iban& iban) {
+  Suggestion suggestion(u"DE12345678901234567890",
+                        SuggestionType::kAtMemorySearchResult);
+  Suggestion::AtMemoryPayload payload(u"DE12345678901234567890",
+                                      MemoryDataType::kIban);
+  payload.identifier = Iban::Guid(iban.guid());
+  suggestion.payload = payload;
+  return suggestion;
 }
 
 class FakePersonalContextEligibilityService
@@ -127,6 +184,17 @@ class AtMemoryPersistedStateManagerTest
     InitAutofillClient();
     autofill_client().set_personal_context_eligibility_service(
         &eligibility_service_);
+    autofill_client().set_entity_data_manager(
+        std::make_unique<EntityDataManager>(
+            autofill_client().GetPrefs(),
+            autofill_client().GetIdentityManager(),
+            autofill_client().GetSyncService(),
+            webdata_helper_.autofill_webdata_service(),
+            /*history_service=*/nullptr,
+            /*pcontext_manager=*/nullptr,
+            /*strike_database=*/nullptr,
+            /*variation_country_code=*/GeoIpCountryCode("US")));
+    webdata_helper_.WaitUntilIdle();
     // The prefs are already registered by `test::PrefServiceForTesting()`.
     pref_service().SetBoolean(
         personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
@@ -149,6 +217,7 @@ class AtMemoryPersistedStateManagerTest
   const FieldGlobalId& field_id() const { return field_id_; }
   const FieldGlobalId& other_field_id() const { return other_field_id_; }
   base::test::TaskEnvironment& task_environment() { return task_environment_; }
+  AutofillWebDataServiceTestHelper& webdata_helper() { return webdata_helper_; }
   test::AutofillTestingPrefService& pref_service() {
     return CHECK_DEREF(autofill_client().GetPrefs());
   }
@@ -164,6 +233,8 @@ class AtMemoryPersistedStateManagerTest
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   test::AutofillUnitTestEnvironment autofill_test_environment_;
+  AutofillWebDataServiceTestHelper webdata_helper_{
+      std::make_unique<EntityTable>()};
   FakePersonalContextEligibilityService eligibility_service_;
   FieldGlobalId field_id_{test::MakeFieldGlobalId()};
   FieldGlobalId other_field_id_{test::MakeFieldGlobalId()};
@@ -628,8 +699,9 @@ TEST_F(AtMemoryPersistedStateManagerTest,
   ASSERT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
               Not(IsZeroState()));
 
-  state_manager().OnHistoryDeletions(
-      /*history_service=*/nullptr, history::DeletionInfo::ForAllHistory());
+  static_cast<history::HistoryServiceObserver&>(state_manager())
+      .OnHistoryDeletions(
+          /*history_service=*/nullptr, history::DeletionInfo::ForAllHistory());
 
   EXPECT_CHECK_DEATH(state_manager().field_origin());
   EXPECT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
@@ -643,8 +715,9 @@ TEST_F(AtMemoryPersistedStateManagerTest,
   state_manager().OnFilterSubmitted(u"ongoing_query");
   EXPECT_TRUE(state_manager().IsSearching());
 
-  state_manager().OnHistoryDeletions(
-      /*history_service=*/nullptr, history::DeletionInfo::ForAllHistory());
+  static_cast<history::HistoryServiceObserver&>(state_manager())
+      .OnHistoryDeletions(
+          /*history_service=*/nullptr, history::DeletionInfo::ForAllHistory());
 
   EXPECT_FALSE(state_manager().IsSearching());
   EXPECT_CHECK_DEATH(state_manager().field_origin());
@@ -662,8 +735,9 @@ TEST_F(AtMemoryPersistedStateManagerTest,
   state_manager().OnSuggestionAccepted(s1);
   ASSERT_EQ(state_manager().previously_filled_suggestions().size(), 1u);
 
-  state_manager().OnHistoryDeletions(
-      /*history_service=*/nullptr, history::DeletionInfo::ForAllHistory());
+  static_cast<history::HistoryServiceObserver&>(state_manager())
+      .OnHistoryDeletions(
+          /*history_service=*/nullptr, history::DeletionInfo::ForAllHistory());
 
   EXPECT_TRUE(state_manager().previously_filled_suggestions().empty());
 }
@@ -684,13 +758,14 @@ TEST_F(AtMemoryPersistedStateManagerTest,
 
   const base::Time begin = base::Time::Now() - base::Hours(25);
   const base::Time end = base::Time::Now() - base::Hours(24);
-  state_manager().OnHistoryDeletions(
-      /*history_service=*/nullptr,
-      history::DeletionInfo(history::DeletionTimeRange(begin, end),
-                            /*is_from_expiration=*/true,
-                            /*deleted_rows=*/{},
-                            /*favicon_urls=*/{},
-                            /*restrict_urls=*/std::nullopt));
+  static_cast<history::HistoryServiceObserver&>(state_manager())
+      .OnHistoryDeletions(
+          /*history_service=*/nullptr,
+          history::DeletionInfo(history::DeletionTimeRange(begin, end),
+                                /*is_from_expiration=*/true,
+                                /*deleted_rows=*/{},
+                                /*favicon_urls=*/{},
+                                /*restrict_urls=*/std::nullopt));
 
   EXPECT_TRUE(state_manager().IsSearching());
   EXPECT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
@@ -898,6 +973,540 @@ TEST_F(AtMemoryPersistedStateManagerTest, ContextSourceDisabledClearsState) {
               IsZeroState());
   EXPECT_TRUE(state_manager().previously_filled_suggestions().empty());
 }
+// Tests that adding an address profile does not clear persisted search state or
+// previously filled suggestions.
+TEST_F(AtMemoryPersistedStateManagerTest, AddProfileDoesNotClearState) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAtMemoryPreviouslyFilled};
+  AutofillProfile existing_profile = test::GetFullProfile();
+  autofill_client().GetPersonalDataManager().address_data_manager().AddProfile(
+      existing_profile);
+
+  state_manager().OnSuggestionAccepted(
+      CreateAddressSuggestion(existing_profile));
+  state_manager().GetStateForField(field_id(), FieldOrigin());
+  state_manager().OnFilterSubmitted(u"address");
+  state_manager().OnSuggestionsChanged(
+      {CreateAddressSuggestion(existing_profile)});
+  ASSERT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              Not(IsZeroState()));
+  ASSERT_FALSE(state_manager().previously_filled_suggestions().empty());
+
+  AutofillProfile new_profile = test::GetFullProfile2();
+  autofill_client().GetPersonalDataManager().address_data_manager().AddProfile(
+      new_profile);
+
+  EXPECT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              Not(IsZeroState()));
+  EXPECT_FALSE(state_manager().previously_filled_suggestions().empty());
+}
+
+// Tests that recording usage of an address profile does not clear persisted
+// search state or previously filled suggestions.
+TEST_F(AtMemoryPersistedStateManagerTest, RecordUseOfProfileDoesNotClearState) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAtMemoryPreviouslyFilled};
+  AutofillProfile profile = test::GetFullProfile();
+  autofill_client().GetPersonalDataManager().address_data_manager().AddProfile(
+      profile);
+
+  state_manager().OnSuggestionAccepted(CreateAddressSuggestion(profile));
+  state_manager().GetStateForField(field_id(), FieldOrigin());
+  state_manager().OnFilterSubmitted(u"address");
+  state_manager().OnSuggestionsChanged({CreateAddressSuggestion(profile)});
+  ASSERT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              Not(IsZeroState()));
+  ASSERT_FALSE(state_manager().previously_filled_suggestions().empty());
+
+  autofill_client().GetPersonalDataManager().address_data_manager().RecordUseOf(
+      profile);
+
+  EXPECT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              Not(IsZeroState()));
+  EXPECT_FALSE(state_manager().previously_filled_suggestions().empty());
+}
+
+// Tests that removing an address profile prunes suggestions from persisted
+// search state and previously filled suggestions.
+TEST_F(AtMemoryPersistedStateManagerTest,
+       AddressProfileRemovedPrunesSuggestions) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAtMemoryPreviouslyFilled};
+  AutofillProfile profile = test::GetFullProfile();
+  autofill_client().GetPersonalDataManager().address_data_manager().AddProfile(
+      profile);
+
+  state_manager().OnSuggestionAccepted(CreateAddressSuggestion(profile));
+  state_manager().GetStateForField(field_id(), FieldOrigin());
+  state_manager().OnFilterSubmitted(u"address");
+  state_manager().OnSuggestionsChanged({CreateAddressSuggestion(profile)});
+  ASSERT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              Not(IsZeroState()));
+  ASSERT_FALSE(state_manager().previously_filled_suggestions().empty());
+
+  autofill_client()
+      .GetPersonalDataManager()
+      .address_data_manager()
+      .RemoveProfile(profile.guid());
+
+  EXPECT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              Not(IsZeroState()));
+  EXPECT_TRUE(state_manager()
+                  .GetStateForField(field_id(), FieldOrigin())
+                  .suggestions.empty());
+  EXPECT_TRUE(state_manager().previously_filled_suggestions().empty());
+}
+
+// Tests that suggestions without a known GUID/identifier (e.g. CMS contact info
+// suggestions with std::monostate) are not pruned when address data changes.
+TEST_F(AtMemoryPersistedStateManagerTest,
+       SuggestionWithoutGuidNotPrunedOnAddressDataChange) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAtMemoryPreviouslyFilled};
+  AutofillProfile profile = test::GetFullProfile();
+  autofill_client().GetPersonalDataManager().address_data_manager().AddProfile(
+      profile);
+
+  Suggestion suggestion(u"123 Main St", SuggestionType::kAtMemorySearchResult);
+  Suggestion::AtMemoryPayload payload(u"123 Main St",
+                                      MemoryDataType::kAddressFull);
+  // Identifier is default-initialized to std::monostate.
+  suggestion.payload = payload;
+
+  state_manager().OnSuggestionAccepted(suggestion);
+  state_manager().GetStateForField(field_id(), FieldOrigin());
+  state_manager().OnFilterSubmitted(u"address");
+  state_manager().OnSuggestionsChanged({suggestion});
+  ASSERT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              Not(IsZeroState()));
+  ASSERT_FALSE(state_manager().previously_filled_suggestions().empty());
+
+  autofill_client()
+      .GetPersonalDataManager()
+      .address_data_manager()
+      .RemoveProfile(profile.guid());
+
+  EXPECT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              Not(IsZeroState()));
+  EXPECT_EQ(state_manager()
+                .GetStateForField(field_id(), FieldOrigin())
+                .suggestions.size(),
+            1u);
+  EXPECT_EQ(state_manager().previously_filled_suggestions().size(), 1u);
+}
+
+// Tests that non-Autofill sourced suggestions (e.g. from Gmail) are not pruned
+// when local Autofill address data changes.
+TEST_F(AtMemoryPersistedStateManagerTest,
+       NonAutofillSourcedSuggestionNotPrunedOnAddressDataChange) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAtMemoryPreviouslyFilled};
+  AutofillProfile profile = test::GetFullProfile();
+  autofill_client().GetPersonalDataManager().address_data_manager().AddProfile(
+      profile);
+
+  Suggestion suggestion(u"123 Main St", SuggestionType::kAtMemorySearchResult);
+  Suggestion::AtMemoryPayload payload(u"123 Main St",
+                                      MemoryDataType::kAddressFull);
+  payload.identifier = profile.guid();
+  payload.is_personal_context_sourced = true;
+  suggestion.payload = payload;
+
+  state_manager().OnSuggestionAccepted(suggestion);
+  state_manager().GetStateForField(field_id(), FieldOrigin());
+  state_manager().OnFilterSubmitted(u"address");
+  state_manager().OnSuggestionsChanged({suggestion});
+  ASSERT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              Not(IsZeroState()));
+  ASSERT_FALSE(state_manager().previously_filled_suggestions().empty());
+
+  autofill_client()
+      .GetPersonalDataManager()
+      .address_data_manager()
+      .RemoveProfile(profile.guid());
+
+  EXPECT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              Not(IsZeroState()));
+  EXPECT_EQ(state_manager()
+                .GetStateForField(field_id(), FieldOrigin())
+                .suggestions.size(),
+            1u);
+  EXPECT_EQ(state_manager().previously_filled_suggestions().size(), 1u);
+}
+
+// Tests that adding a credit card does not clear persisted search state or
+// previously filled suggestions.
+TEST_F(AtMemoryPersistedStateManagerTest, AddCreditCardDoesNotClearState) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAtMemoryPreviouslyFilled};
+  CreditCard card = test::GetCreditCard();
+  autofill_client()
+      .GetPersonalDataManager()
+      .payments_data_manager()
+      .AddCreditCard(card);
+
+  state_manager().OnSuggestionAccepted(CreateCreditCardSuggestion(card));
+  state_manager().GetStateForField(field_id(), FieldOrigin());
+  state_manager().OnFilterSubmitted(u"card");
+  state_manager().OnSuggestionsChanged({CreateCreditCardSuggestion(card)});
+  ASSERT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              Not(IsZeroState()));
+  ASSERT_FALSE(state_manager().previously_filled_suggestions().empty());
+
+  CreditCard card2 = test::GetCreditCard2();
+  autofill_client()
+      .GetPersonalDataManager()
+      .payments_data_manager()
+      .AddCreditCard(card2);
+
+  EXPECT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              Not(IsZeroState()));
+  EXPECT_FALSE(state_manager().previously_filled_suggestions().empty());
+}
+
+// Tests that recording usage of a credit card does not clear persisted search
+// state or previously filled suggestions.
+TEST_F(AtMemoryPersistedStateManagerTest, RecordUseOfCardDoesNotClearState) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAtMemoryPreviouslyFilled};
+  CreditCard card = test::GetCreditCard();
+  autofill_client()
+      .GetPersonalDataManager()
+      .payments_data_manager()
+      .AddCreditCard(card);
+
+  state_manager().OnSuggestionAccepted(CreateCreditCardSuggestion(card));
+  state_manager().GetStateForField(field_id(), FieldOrigin());
+  state_manager().OnFilterSubmitted(u"card");
+  state_manager().OnSuggestionsChanged({CreateCreditCardSuggestion(card)});
+  ASSERT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              Not(IsZeroState()));
+  ASSERT_FALSE(state_manager().previously_filled_suggestions().empty());
+
+  autofill_client()
+      .GetPersonalDataManager()
+      .payments_data_manager()
+      .RecordUseOfCard(card);
+
+  EXPECT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              Not(IsZeroState()));
+  EXPECT_FALSE(state_manager().previously_filled_suggestions().empty());
+}
+
+// Tests that removing a credit card prunes suggestions from persisted
+// search state and previously filled suggestions.
+TEST_F(AtMemoryPersistedStateManagerTest, CreditCardRemovedPrunesSuggestions) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAtMemoryPreviouslyFilled};
+  CreditCard card = test::GetCreditCard();
+  autofill_client()
+      .GetPersonalDataManager()
+      .payments_data_manager()
+      .AddCreditCard(card);
+
+  state_manager().OnSuggestionAccepted(CreateCreditCardSuggestion(card));
+  state_manager().GetStateForField(field_id(), FieldOrigin());
+  state_manager().OnFilterSubmitted(u"card");
+  state_manager().OnSuggestionsChanged({CreateCreditCardSuggestion(card)});
+  ASSERT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              Not(IsZeroState()));
+  ASSERT_FALSE(state_manager().previously_filled_suggestions().empty());
+
+  autofill_client()
+      .GetPersonalDataManager()
+      .payments_data_manager()
+      .RemoveByGUID(card.guid());
+
+  EXPECT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              Not(IsZeroState()));
+  EXPECT_TRUE(state_manager()
+                  .GetStateForField(field_id(), FieldOrigin())
+                  .suggestions.empty());
+  EXPECT_TRUE(state_manager().previously_filled_suggestions().empty());
+}
+
+// Tests that adding an entity instance does not clear persisted search state or
+// previously filled suggestions.
+TEST_F(AtMemoryPersistedStateManagerTest, AddEntityInstanceDoesNotClearState) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAtMemoryPreviouslyFilled};
+  EntityInstance entity = test::GetPassportEntityInstance();
+  autofill_client().GetEntityDataManager()->AddOrUpdateEntityInstance(entity);
+  webdata_helper().WaitUntilIdle();
+
+  state_manager().OnSuggestionAccepted(CreateEntitySuggestion(entity));
+  state_manager().GetStateForField(field_id(), FieldOrigin());
+  state_manager().OnFilterSubmitted(u"passport");
+  state_manager().OnSuggestionsChanged({CreateEntitySuggestion(entity)});
+  ASSERT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              Not(IsZeroState()));
+  ASSERT_FALSE(state_manager().previously_filled_suggestions().empty());
+
+  EntityInstance entity2 = test::GetDriversLicenseEntityInstance();
+  autofill_client().GetEntityDataManager()->AddOrUpdateEntityInstance(entity2);
+  webdata_helper().WaitUntilIdle();
+
+  EXPECT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              Not(IsZeroState()));
+  EXPECT_FALSE(state_manager().previously_filled_suggestions().empty());
+}
+
+// Tests that recording usage of an entity does not clear persisted search state
+// or previously filled suggestions.
+TEST_F(AtMemoryPersistedStateManagerTest, RecordUseOfEntityDoesNotClearState) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAtMemoryPreviouslyFilled};
+  EntityInstance entity = test::GetPassportEntityInstance();
+  autofill_client().GetEntityDataManager()->AddOrUpdateEntityInstance(entity);
+  webdata_helper().WaitUntilIdle();
+
+  state_manager().OnSuggestionAccepted(CreateEntitySuggestion(entity));
+  state_manager().GetStateForField(field_id(), FieldOrigin());
+  state_manager().OnFilterSubmitted(u"passport");
+  state_manager().OnSuggestionsChanged({CreateEntitySuggestion(entity)});
+  ASSERT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              Not(IsZeroState()));
+  ASSERT_FALSE(state_manager().previously_filled_suggestions().empty());
+
+  autofill_client().GetEntityDataManager()->RecordEntityUsed(entity.guid(),
+                                                             base::Time::Now());
+  webdata_helper().WaitUntilIdle();
+
+  EXPECT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              Not(IsZeroState()));
+  EXPECT_FALSE(state_manager().previously_filled_suggestions().empty());
+}
+
+// Tests that removing an entity instance prunes suggestions from persisted
+// search state and previously filled suggestions.
+TEST_F(AtMemoryPersistedStateManagerTest,
+       EntityInstanceRemovedPrunesSuggestions) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAtMemoryPreviouslyFilled};
+  EntityInstance entity = test::GetPassportEntityInstance();
+  autofill_client().GetEntityDataManager()->AddOrUpdateEntityInstance(entity);
+  webdata_helper().WaitUntilIdle();
+
+  state_manager().OnSuggestionAccepted(CreateEntitySuggestion(entity));
+  state_manager().GetStateForField(field_id(), FieldOrigin());
+  state_manager().OnFilterSubmitted(u"passport");
+  state_manager().OnSuggestionsChanged({CreateEntitySuggestion(entity)});
+  ASSERT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              Not(IsZeroState()));
+  ASSERT_FALSE(state_manager().previously_filled_suggestions().empty());
+
+  autofill_client().GetEntityDataManager()->RemoveEntityInstance(entity.guid());
+  webdata_helper().WaitUntilIdle();
+
+  EXPECT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              Not(IsZeroState()));
+  EXPECT_TRUE(state_manager()
+                  .GetStateForField(field_id(), FieldOrigin())
+                  .suggestions.empty());
+  EXPECT_TRUE(state_manager().previously_filled_suggestions().empty());
+}
+
+// Tests that adding a loyalty card does not clear persisted search state or
+// previously filled suggestions.
+TEST_F(AtMemoryPersistedStateManagerTest, AddLoyaltyCardDoesNotClearState) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAtMemoryPreviouslyFilled};
+  LoyaltyCard card = test::CreateLoyaltyCard();
+  test_api(CHECK_DEREF(autofill_client().GetValuablesDataManager()))
+      .AddLoyaltyCard(card);
+  test_api(CHECK_DEREF(autofill_client().GetValuablesDataManager()))
+      .NotifyObservers();
+
+  state_manager().OnSuggestionAccepted(CreateLoyaltyCardSuggestion(card));
+  state_manager().GetStateForField(field_id(), FieldOrigin());
+  state_manager().OnFilterSubmitted(u"loyalty");
+  state_manager().OnSuggestionsChanged({CreateLoyaltyCardSuggestion(card)});
+  ASSERT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              Not(IsZeroState()));
+  ASSERT_FALSE(state_manager().previously_filled_suggestions().empty());
+
+  LoyaltyCard card2 = test::CreateLoyaltyCard();
+  card2.set_id(ValuableId("loyalty_card_id_2"));
+  test_api(CHECK_DEREF(autofill_client().GetValuablesDataManager()))
+      .AddLoyaltyCard(card2);
+  test_api(CHECK_DEREF(autofill_client().GetValuablesDataManager()))
+      .NotifyObservers();
+
+  EXPECT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              Not(IsZeroState()));
+  EXPECT_FALSE(state_manager().previously_filled_suggestions().empty());
+}
+
+// Tests that recording usage of a loyalty card does not clear persisted search
+// state or previously filled suggestions.
+TEST_F(AtMemoryPersistedStateManagerTest,
+       RecordUseOfLoyaltyCardDoesNotClearState) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAtMemoryPreviouslyFilled};
+  LoyaltyCard card = test::CreateLoyaltyCard();
+  test_api(CHECK_DEREF(autofill_client().GetValuablesDataManager()))
+      .AddLoyaltyCard(card);
+  test_api(CHECK_DEREF(autofill_client().GetValuablesDataManager()))
+      .NotifyObservers();
+
+  state_manager().OnSuggestionAccepted(CreateLoyaltyCardSuggestion(card));
+  state_manager().GetStateForField(field_id(), FieldOrigin());
+  state_manager().OnFilterSubmitted(u"loyalty");
+  state_manager().OnSuggestionsChanged({CreateLoyaltyCardSuggestion(card)});
+  ASSERT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              Not(IsZeroState()));
+  ASSERT_FALSE(state_manager().previously_filled_suggestions().empty());
+
+  autofill_client().GetValuablesDataManager()->RecordLoyaltyCardUsed(
+      card.id(), base::Time::Now());
+  test_api(CHECK_DEREF(autofill_client().GetValuablesDataManager()))
+      .NotifyObservers();
+
+  EXPECT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              Not(IsZeroState()));
+  EXPECT_FALSE(state_manager().previously_filled_suggestions().empty());
+}
+
+// Tests that removing a loyalty card prunes suggestions from persisted
+// search state and previously filled suggestions.
+TEST_F(AtMemoryPersistedStateManagerTest, LoyaltyCardRemovedPrunesSuggestions) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAtMemoryPreviouslyFilled};
+  LoyaltyCard card = test::CreateLoyaltyCard();
+  test_api(CHECK_DEREF(autofill_client().GetValuablesDataManager()))
+      .AddLoyaltyCard(card);
+  test_api(CHECK_DEREF(autofill_client().GetValuablesDataManager()))
+      .NotifyObservers();
+
+  state_manager().OnSuggestionAccepted(CreateLoyaltyCardSuggestion(card));
+  state_manager().GetStateForField(field_id(), FieldOrigin());
+  state_manager().OnFilterSubmitted(u"loyalty");
+  state_manager().OnSuggestionsChanged({CreateLoyaltyCardSuggestion(card)});
+  ASSERT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              Not(IsZeroState()));
+  ASSERT_FALSE(state_manager().previously_filled_suggestions().empty());
+
+  test_api(CHECK_DEREF(autofill_client().GetValuablesDataManager()))
+      .ClearLoyaltyCards();
+  test_api(CHECK_DEREF(autofill_client().GetValuablesDataManager()))
+      .NotifyObservers();
+
+  EXPECT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              Not(IsZeroState()));
+  EXPECT_TRUE(state_manager()
+                  .GetStateForField(field_id(), FieldOrigin())
+                  .suggestions.empty());
+  EXPECT_TRUE(state_manager().previously_filled_suggestions().empty());
+}
+
+// Tests that removing one item prunes only that item's suggestion while
+// retaining suggestions for items that still exist, including suggestions of a
+// different data type.
+TEST_F(AtMemoryPersistedStateManagerTest,
+       RemovingOneItemPrunesOnlyAffectedSuggestion) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAtMemoryPreviouslyFilled};
+  AutofillProfile profile1 = test::GetFullProfile();
+  AutofillProfile profile2 = test::GetFullProfile2();
+  CreditCard card = test::GetCreditCard();
+  autofill_client().GetPersonalDataManager().address_data_manager().AddProfile(
+      profile1);
+  autofill_client().GetPersonalDataManager().address_data_manager().AddProfile(
+      profile2);
+  autofill_client()
+      .GetPersonalDataManager()
+      .payments_data_manager()
+      .AddCreditCard(card);
+
+  state_manager().OnSuggestionAccepted(CreateAddressSuggestion(profile1));
+  state_manager().OnSuggestionAccepted(CreateAddressSuggestion(profile2));
+  state_manager().OnSuggestionAccepted(CreateCreditCardSuggestion(card));
+
+  state_manager().GetStateForField(field_id(), FieldOrigin());
+  state_manager().OnFilterSubmitted(u"address");
+  state_manager().OnSuggestionsChanged({CreateAddressSuggestion(profile1),
+                                        CreateAddressSuggestion(profile2),
+                                        CreateCreditCardSuggestion(card)});
+
+  ASSERT_EQ(state_manager().previously_filled_suggestions().size(), 3u);
+  ASSERT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              Not(IsZeroState()));
+  ASSERT_EQ(state_manager()
+                .GetStateForField(field_id(), FieldOrigin())
+                .suggestions.size(),
+            3u);
+
+  autofill_client()
+      .GetPersonalDataManager()
+      .address_data_manager()
+      .RemoveProfile(profile1.guid());
+
+  EXPECT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              Not(IsZeroState()));
+  ASSERT_EQ(state_manager()
+                .GetStateForField(field_id(), FieldOrigin())
+                .suggestions.size(),
+            2u);
+  EXPECT_EQ(
+      std::get<std::string>(state_manager()
+                                .GetStateForField(field_id(), FieldOrigin())
+                                .suggestions[0]
+                                .GetPayload<Suggestion::AtMemoryPayload>()
+                                .identifier),
+      profile2.guid());
+  EXPECT_EQ(
+      std::get<std::string>(state_manager()
+                                .GetStateForField(field_id(), FieldOrigin())
+                                .suggestions[1]
+                                .GetPayload<Suggestion::AtMemoryPayload>()
+                                .identifier),
+      card.guid());
+  ASSERT_EQ(state_manager().previously_filled_suggestions().size(), 2u);
+  EXPECT_EQ(std::get<std::string>(state_manager()
+                                      .previously_filled_suggestions()[0]
+                                      .GetPayload<Suggestion::AtMemoryPayload>()
+                                      .identifier),
+            profile2.guid());
+  EXPECT_EQ(std::get<std::string>(state_manager()
+                                      .previously_filled_suggestions()[1]
+                                      .GetPayload<Suggestion::AtMemoryPayload>()
+                                      .identifier),
+            card.guid());
+}
+
+// Tests that removing an IBAN prunes suggestions from persisted search state
+// and previously filled suggestions.
+TEST_F(AtMemoryPersistedStateManagerTest, IbanRemovedPrunesSuggestions) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAtMemoryPreviouslyFilled};
+  Iban iban;
+  iban.set_value(u"DE12345678901234567890");
+  const std::string guid = autofill_client()
+                               .GetPersonalDataManager()
+                               .payments_data_manager()
+                               .AddAsLocalIban(iban);
+  iban.set_identifier(Iban::Guid(guid));
+
+  state_manager().OnSuggestionAccepted(CreateIbanSuggestion(iban));
+  state_manager().GetStateForField(field_id(), FieldOrigin());
+  state_manager().OnFilterSubmitted(u"iban");
+  state_manager().OnSuggestionsChanged({CreateIbanSuggestion(iban)});
+  ASSERT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              Not(IsZeroState()));
+  ASSERT_FALSE(state_manager().previously_filled_suggestions().empty());
+
+  autofill_client()
+      .GetPersonalDataManager()
+      .payments_data_manager()
+      .RemoveByGUID(guid);
+
+  EXPECT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              Not(IsZeroState()));
+  EXPECT_TRUE(state_manager()
+                  .GetStateForField(field_id(), FieldOrigin())
+                  .suggestions.empty());
+  EXPECT_TRUE(state_manager().previously_filled_suggestions().empty());
+}
 
 // Tests that the `on_reset_callback` passed to the constructor is called when
 // the state is reset (e.g. by history deletion, settings change, account
@@ -928,6 +1537,30 @@ TEST_F(AtMemoryPersistedStateManagerTest, OnResetCallbackInvokedOnReset) {
       {Suggestion(u"123 Main St", SuggestionType::kAddressEntry)});
   task_environment().FastForwardBy(
       AtMemoryPersistedStateManager::kDefaultTimeToLive);
+}
+
+// Tests that the `on_reset_callback` passed to the constructor is not called
+// when an underlying data item is removed.
+TEST_F(AtMemoryPersistedStateManagerTest,
+       UnderlyingItemRemovedDoesNotInvokeOnResetCallback) {
+  base::MockRepeatingClosure reset_callback;
+  AtMemoryPersistedStateManager custom_state_manager(
+      &autofill_client(), /*history_service=*/nullptr, reset_callback.Get());
+
+  AutofillProfile profile = test::GetFullProfile();
+  autofill_client().GetPersonalDataManager().address_data_manager().AddProfile(
+      profile);
+
+  custom_state_manager.GetStateForField(field_id(), FieldOrigin());
+  custom_state_manager.OnFilterSubmitted(u"address");
+  custom_state_manager.OnSuggestionsChanged({CreateAddressSuggestion(profile)});
+
+  EXPECT_CALL(reset_callback, Run).Times(0);
+  autofill_client()
+      .GetPersonalDataManager()
+      .address_data_manager()
+      .RemoveProfile(profile.guid());
+  testing::Mock::VerifyAndClearExpectations(&reset_callback);
 }
 
 // Tests around resetting the state when the tab navigates. They reuse the

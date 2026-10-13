@@ -13,10 +13,15 @@
 
 #include "base/check.h"
 #include "base/functional/callback.h"
+#include "base/functional/function_ref.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/autofill/core/browser/at_memory/at_memory_search_state.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
@@ -53,7 +58,11 @@ class AutofillClient;
 // entered, or after clearing the filter) is represented by
 // `AtMemorySearchStatus::kZeroState`.
 class AtMemoryPersistedStateManager
-    : public history::HistoryServiceObserver,
+    : public AddressDataManager::Observer,
+      public PaymentsDataManager::Observer,
+      public EntityDataManager::Observer,
+      public ValuablesDataManager::Observer,
+      public history::HistoryServiceObserver,
       public personal_context::PersonalContextEligibilityService::Observer,
       public signin::IdentityManager::Observer,
       public AutofillManager::Observer {
@@ -125,6 +134,19 @@ class AtMemoryPersistedStateManager
     return field_origin_;
   }
 
+ private:
+  // AddressDataManager::Observer:
+  void OnAddressDataChanged() override;
+
+  // PaymentsDataManager::Observer:
+  void OnPaymentsDataChanged() override;
+
+  // EntityDataManager::Observer:
+  void OnEntityInstancesChanged() override;
+
+  // ValuablesDataManager::Observer:
+  void OnValuablesDataChanged() override;
+
   // history::HistoryServiceObserver:
   void OnHistoryDeletions(history::HistoryService* history_service,
                           const history::DeletionInfo& deletion_info) override;
@@ -151,7 +173,6 @@ class AtMemoryPersistedStateManager
       AutofillManager::LifecycleState old_state,
       AutofillManager::LifecycleState new_state) override;
 
- private:
   // Resets the persisted state, clears `previously_filled_suggestions_`, and
   // executes `on_reset_callback_`.
   void Reset();
@@ -162,6 +183,14 @@ class AtMemoryPersistedStateManager
 
   // Removes previously filled suggestions that have exceeded their TTL.
   void RemoveExpiredPreviouslyFilledSuggestions();
+
+  // Removes suggestions from `previously_filled_suggestions_` and
+  // `search_state_` that:
+  // * have AtMemory payload
+  // * are not Personal Context sourced
+  // * `should_prune` returns true for them.
+  void PruneSuggestions(
+      base::FunctionRef<bool(const Suggestion::AtMemoryPayload&)> should_prune);
 
   void OnPrefChanged();
 
@@ -183,6 +212,14 @@ class AtMemoryPersistedStateManager
 
   PrefChangeRegistrar pref_registrar_;
 
+  base::ScopedObservation<AddressDataManager, AddressDataManager::Observer>
+      address_data_manager_observation_{this};
+  base::ScopedObservation<PaymentsDataManager, PaymentsDataManager::Observer>
+      payments_data_manager_observation_{this};
+  base::ScopedObservation<EntityDataManager, EntityDataManager::Observer>
+      entity_data_manager_observation_{this};
+  base::ScopedObservation<ValuablesDataManager, ValuablesDataManager::Observer>
+      valuables_data_manager_observation_{this};
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>
       history_service_observation_{this};

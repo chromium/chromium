@@ -16,9 +16,11 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/at_memory/at_memory_metrics_recorder.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_driver.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
+#include "components/autofill/core/browser/integrators/at_memory/memory_data_type_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/personal_context/core/personal_context_prefs.h"
@@ -102,6 +104,84 @@ AtMemoryStateRestored GetStateRestored(const AtMemorySearchState& state) {
   NOTREACHED();
 }
 
+// Returns true if `payload` is an address suggestion whose underlying profile
+// no longer exists in `adm`. Returns false for non-address suggestions or if
+// the profile identifier is not known.
+bool ShouldPruneSuggestionOnAddressDataChange(
+    const Suggestion::AtMemoryPayload& payload,
+    AddressDataManager& adm) {
+  if (GetMemoryDataTypeCategory(payload.memory_data_type) !=
+      MemoryDataTypeCategory::kContactInfo) {
+    return false;
+  }
+  const std::string* guid = std::get_if<std::string>(&payload.identifier);
+  if (!guid || guid->empty()) {
+    return false;
+  }
+  return adm.GetProfileByGUID(*guid) == nullptr;
+}
+
+// Returns true if `payload` is a payment suggestion (credit card or IBAN) whose
+// underlying data no longer exists in `pdm`. Returns false for non-payment
+// suggestions or if the payment identifier is not known.
+bool ShouldPruneSuggestionOnPaymentsDataChange(
+    const Suggestion::AtMemoryPayload& payload,
+    PaymentsDataManager& pdm) {
+  const MemoryDataTypeCategory category =
+      GetMemoryDataTypeCategory(payload.memory_data_type);
+  if (category == MemoryDataTypeCategory::kCreditCard) {
+    const std::string* guid = std::get_if<std::string>(&payload.identifier);
+    if (!guid || guid->empty()) {
+      return false;
+    }
+    return pdm.GetCreditCardByGUID(*guid) == nullptr;
+  }
+  if (category == MemoryDataTypeCategory::kIban) {
+    if (const Iban::Guid* guid = std::get_if<Iban::Guid>(&payload.identifier)) {
+      return pdm.GetIbanByGUID(guid->value()) == nullptr;
+    }
+    if (const Iban::InstrumentId* instrument_id =
+            std::get_if<Iban::InstrumentId>(&payload.identifier)) {
+      return pdm.GetIbanByInstrumentId(instrument_id->value()) == nullptr;
+    }
+    return false;
+  }
+  return false;
+}
+
+// Returns true if `payload` is an Autofill AI entity suggestion whose
+// underlying entity no longer exists in `edm`. Returns false for non-entity
+// suggestions or if the entity identifier is not known.
+bool ShouldPruneSuggestionOnEntityDataChange(
+    const Suggestion::AtMemoryPayload& payload,
+    EntityDataManager& edm) {
+  if (!ToEntityType(payload.memory_data_type).has_value()) {
+    return false;
+  }
+  const EntityInstance::EntityId* guid =
+      std::get_if<EntityInstance::EntityId>(&payload.identifier);
+  if (!guid || guid->value().empty()) {
+    return false;
+  }
+  return !edm.GetEntityInstance(*guid).has_value();
+}
+
+// Returns true if `payload` is a loyalty card suggestion whose underlying card
+// no longer exists in `vdm`. Returns false for non-loyalty card suggestions or
+// if the card identifier is not known.
+bool ShouldPruneSuggestionOnValuablesDataChange(
+    const Suggestion::AtMemoryPayload& payload,
+    ValuablesDataManager& vdm) {
+  if (GetMemoryDataTypeCategory(payload.memory_data_type) !=
+      MemoryDataTypeCategory::kLoyaltyCard) {
+    return false;
+  }
+  const ValuableId* id = std::get_if<ValuableId>(&payload.identifier);
+  if (!id || id->value().empty()) {
+    return false;
+  }
+  return !vdm.GetLoyaltyCardById(*id).has_value();
+}
 }  // namespace
 
 AtMemoryPersistedStateManager::AtMemoryPersistedStateManager(
@@ -110,14 +190,26 @@ AtMemoryPersistedStateManager::AtMemoryPersistedStateManager(
     base::RepeatingClosure on_reset_callback)
     : on_reset_callback_(std::move(on_reset_callback)) {
   CHECK(client);
+  if (client->HasPersonalDataManager()) {
+    address_data_manager_observation_.Observe(
+        &client->GetPersonalDataManager().address_data_manager());
+    payments_data_manager_observation_.Observe(
+        &client->GetPersonalDataManager().payments_data_manager());
+  }
+  if (EntityDataManager* entity_data_manager = client->GetEntityDataManager()) {
+    entity_data_manager_observation_.Observe(entity_data_manager);
+  }
+  if (ValuablesDataManager* valuables_data_manager =
+          client->GetValuablesDataManager()) {
+    valuables_data_manager_observation_.Observe(valuables_data_manager);
+  }
   if (history_service) {
     history_service_observation_.Observe(history_service);
   }
   if (PrefService* pref_service = client->GetPrefs()) {
     pref_registrar_.Init(pref_service);
     pref_registrar_.Add(
-        personal_context::prefs::
-            kPersonalContextInAutofillSettingsToggleStatus,
+        personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
         base::BindRepeating(&AtMemoryPersistedStateManager::OnPrefChanged,
                             base::Unretained(this)));
   }
@@ -253,6 +345,64 @@ void AtMemoryPersistedStateManager::StopSearching(
   search_state_.status = query_completed.value()
                              ? AtMemorySearchStatus::kResponseReceived
                              : AtMemorySearchStatus::kQueryModified;
+}
+
+void AtMemoryPersistedStateManager::PruneSuggestions(
+    base::FunctionRef<bool(const Suggestion::AtMemoryPayload&)> should_prune) {
+  auto should_prune_suggestion = [&](const Suggestion& suggestion) -> bool {
+    const Suggestion::AtMemoryPayload* payload =
+        std::get_if<Suggestion::AtMemoryPayload>(&suggestion.payload);
+    if (!payload || payload->is_personal_context_sourced) {
+      return false;
+    }
+    return should_prune(*payload);
+  };
+
+  std::erase_if(previously_filled_suggestions_,
+                [&](const ExpiringSuggestion& es) {
+                  return should_prune_suggestion(es.suggestion);
+                });
+  std::erase_if(search_state_.suggestions, should_prune_suggestion);
+}
+
+void AtMemoryPersistedStateManager::OnAddressDataChanged() {
+  AddressDataManager* adm = address_data_manager_observation_.GetSource();
+  if (!adm) {
+    return;
+  }
+  PruneSuggestions([adm](const Suggestion::AtMemoryPayload& payload) {
+    return ShouldPruneSuggestionOnAddressDataChange(payload, *adm);
+  });
+}
+
+void AtMemoryPersistedStateManager::OnPaymentsDataChanged() {
+  PaymentsDataManager* pdm = payments_data_manager_observation_.GetSource();
+  if (!pdm) {
+    return;
+  }
+  PruneSuggestions([pdm](const Suggestion::AtMemoryPayload& payload) {
+    return ShouldPruneSuggestionOnPaymentsDataChange(payload, *pdm);
+  });
+}
+
+void AtMemoryPersistedStateManager::OnEntityInstancesChanged() {
+  EntityDataManager* edm = entity_data_manager_observation_.GetSource();
+  if (!edm) {
+    return;
+  }
+  PruneSuggestions([edm](const Suggestion::AtMemoryPayload& payload) {
+    return ShouldPruneSuggestionOnEntityDataChange(payload, *edm);
+  });
+}
+
+void AtMemoryPersistedStateManager::OnValuablesDataChanged() {
+  ValuablesDataManager* vdm = valuables_data_manager_observation_.GetSource();
+  if (!vdm) {
+    return;
+  }
+  PruneSuggestions([vdm](const Suggestion::AtMemoryPayload& payload) {
+    return ShouldPruneSuggestionOnValuablesDataChange(payload, *vdm);
+  });
 }
 
 void AtMemoryPersistedStateManager::OnHistoryDeletions(

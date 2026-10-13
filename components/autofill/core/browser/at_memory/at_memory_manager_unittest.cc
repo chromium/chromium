@@ -224,6 +224,7 @@ class AtMemoryManagerTestBase : public Test,
             /*pcontext_manager=*/nullptr,
             /*strike_database=*/nullptr,
             /*variation_country_code=*/GeoIpCountryCode("US")));
+    webdata_helper_.WaitUntilIdle();
 
     CreateAutofillDriver();
   }
@@ -3044,8 +3045,10 @@ TEST_F(AtMemoryManagerTestBase, SearchStatefulness_HistoryDeletionResetsState) {
             u"john");
 
   // Delete history.
-  test_api(manager()).state_manager()->OnHistoryDeletions(
-      /*history_service=*/nullptr, history::DeletionInfo::ForAllHistory());
+  static_cast<history::HistoryServiceObserver*>(
+      test_api(manager()).state_manager())
+      ->OnHistoryDeletions(
+          /*history_service=*/nullptr, history::DeletionInfo::ForAllHistory());
 
   // State should now be cleared.
   EXPECT_TRUE(
@@ -3680,6 +3683,98 @@ TEST_F(
   EXPECT_EQ(empty_suggestions[0].type, SuggestionType::kTitle);
   EXPECT_EQ(empty_suggestions[1].main_text.value, u"123 Main St");
   ASSERT_EQ(empty_suggestions[1].children.size(), 1u);
+}
+
+// Tests that when an address suggestion is filled, it is preserved in
+// previously filled suggestions and not pruned by the asynchronous
+// `OnAddressDataChanged` notification triggered by recording profile use.
+TEST_F(AtMemoryManagerTestBase,
+       FillSearchResultPreservesPreviouslyFilledAfterAsyncAddressDataChanged) {
+  base::test::ScopedFeatureList feature_list{
+      {features::kAutofillAtMemoryPreviouslyFilled,
+       features::kAutofillAtMemorySearchStatefulness}};
+
+  AutofillProfile profile = test::GetFullProfile();
+  autofill_client().GetPersonalDataManager().address_data_manager().AddProfile(
+      profile);
+  webdata_helper().WaitUntilIdle();
+
+  const FormGlobalId form_id = test::MakeFormGlobalId();
+  const FieldGlobalId field_id = test::MakeFieldGlobalId();
+
+  Suggestion suggestion(u"123 Main St", SuggestionType::kAtMemorySearchResult);
+  Suggestion::AtMemoryPayload payload(u"123 Main St",
+                                      MemoryDataType::kAddressFull);
+  payload.identifier = profile.guid();
+  suggestion.payload = payload;
+
+  manager().FillSearchResult(autofill_manager(), form_id, field_id, suggestion,
+                             /*metadata=*/std::nullopt);
+
+  // Wait for the asynchronous database write from
+  // `AddressDataManager::RecordUseOf` to complete and fire
+  // `OnAddressDataChanged`.
+  webdata_helper().WaitUntilIdle();
+
+  // Verify that the filled suggestion is preserved in previously filled
+  // suggestions and not cleared by `OnAddressDataChanged`.
+  const std::vector<Suggestion> empty_suggestions =
+      manager().GetEmptyQuerySuggestions(/*on_popup_open=*/false);
+  ASSERT_EQ(empty_suggestions.size(), 2u);
+  EXPECT_EQ(empty_suggestions[0].type, SuggestionType::kTitle);
+  EXPECT_EQ(empty_suggestions[1].main_text.value, u"123 Main St");
+  EXPECT_EQ(test_api(manager())
+                .state_manager()
+                ->previously_filled_suggestions()
+                .size(),
+            1u);
+}
+
+// Tests that when a credit card suggestion is filled, it is preserved in
+// previously filled suggestions and not pruned by the asynchronous
+// `OnPaymentsDataChanged` notification triggered by recording card use.
+TEST_F(AtMemoryManagerTestBase,
+       FillSearchResultPreservesPreviouslyFilledAfterAsyncPaymentsDataChanged) {
+  base::test::ScopedFeatureList feature_list{
+      {features::kAutofillAtMemoryPreviouslyFilled,
+       features::kAutofillAtMemorySearchStatefulness}};
+
+  CreditCard card = test::GetCreditCard();
+  autofill_client()
+      .GetPersonalDataManager()
+      .payments_data_manager()
+      .AddCreditCard(card);
+  webdata_helper().WaitUntilIdle();
+
+  const FormGlobalId form_id = test::MakeFormGlobalId();
+  const FieldGlobalId field_id = test::MakeFieldGlobalId();
+
+  Suggestion suggestion(u"Jane Doe", SuggestionType::kAtMemorySearchResult);
+  Suggestion::AtMemoryPayload payload(u"Jane Doe",
+                                      MemoryDataType::kCreditCardNameOnCard);
+  payload.identifier = card.guid();
+  suggestion.payload = payload;
+
+  manager().FillSearchResult(autofill_manager(), form_id, field_id, suggestion,
+                             /*metadata=*/std::nullopt);
+
+  // Wait for the asynchronous database write from
+  // `PaymentsDataManager::RecordUseOfCard` to complete and fire
+  // `OnPaymentsDataChanged`.
+  webdata_helper().WaitUntilIdle();
+
+  // Verify that the filled suggestion is preserved in previously filled
+  // suggestions and not cleared by `OnPaymentsDataChanged`.
+  const std::vector<Suggestion> empty_suggestions =
+      manager().GetEmptyQuerySuggestions(/*on_popup_open=*/false);
+  ASSERT_EQ(empty_suggestions.size(), 2u);
+  EXPECT_EQ(empty_suggestions[0].type, SuggestionType::kTitle);
+  EXPECT_EQ(empty_suggestions[1].main_text.value, u"Jane Doe");
+  EXPECT_EQ(test_api(manager())
+                .state_manager()
+                ->previously_filled_suggestions()
+                .size(),
+            1u);
 }
 
 // Tests that `TransformResultIntoSuggestion` resolves the primary suggestion
