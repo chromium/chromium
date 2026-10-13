@@ -319,10 +319,38 @@ public class AwWebContent {
         return ensureAwContents(StartupCallSite.WEBVIEW_INSTANCE_PAGE_DOWN).pageDown(bottom);
     }
 
+    public void goBack() {
+        runOrQueueUntilStarted(AwContents::goBack);
+    }
+
     private AwContents ensureAwContents(@StartupCallSite int callSite) {
         StartupController.getInstance().triggerAndWaitForChromiumStarted(callSite);
         assert mAwContents != null;
         return mAwContents;
+    }
+
+    /**
+     * Runs {@code action} with the adopted {@link AwContents} synchronously if Chromium has
+     * started, or queues it to run asynchronously once startup completes. Unlike {@link
+     * #ensureAwContents}, this does not trigger startup.
+     *
+     * <p>Warning: This method may lead to unnecessary allocation and free of an object for the
+     * callable in the non-queue case - which may have non-zero performance penalty. Do not use this
+     * method for performance critical code, e.g. UI rendering.
+     */
+    private void runOrQueueUntilStarted(Callback<AwContents> action) {
+        StartupController startupController = StartupController.getInstance();
+        if (mAwContents != null) {
+            action.onResult(mAwContents);
+            return;
+        }
+        startupController
+                .getRunQueue()
+                .addTask(
+                        () -> {
+                            assert mAwContents != null;
+                            action.onResult(mAwContents);
+                        });
     }
 
     public void destroy() {

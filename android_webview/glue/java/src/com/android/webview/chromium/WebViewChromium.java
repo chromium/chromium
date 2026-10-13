@@ -914,20 +914,11 @@ class WebViewChromium
     @UiThread
     public void goBack() {
         forbidBuilderConfiguration();
-        if (checkUiMethodNeedsPost()) {
-            mFactory.addTask(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            goBack();
-                        }
-                    });
-            return;
-        }
+        checkThread();
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.GO_BACK")) {
             ApiCallLogger.recordWebViewApiCall(
                     ApiCall.GO_BACK, ApiCallUserAction.WEBVIEW_INSTANCE_GO_BACK);
-            mAwContents.goBack();
+            mAwWebContent.goBack();
         }
     }
 
