@@ -1695,17 +1695,20 @@ DevToolsAgentHostImpl* GetDevToolsAgentHostForNetworkOverrides(
   return RenderFrameDevToolsAgentHost::GetFor(frame_tree_node);
 }
 
-void ApplyNetworkRequestOverrides(
-    DevToolsAgentHostImpl* agent_host,
-    net::HttpRequestHeaders* headers,
-    bool* disable_cache,
-    bool* network_instrumentation_enabled,
-    bool* skip_service_worker,
-    bool* devtools_user_agent_overridden,
-    bool* devtools_accept_language_overridden,
-    GURL* referrer_override) {
+void ApplyNetworkRequestOverrides(DevToolsAgentHostImpl* agent_host,
+                                  const GURL& request_url,
+                                  net::HttpRequestHeaders* headers,
+                                  bool* disable_cache,
+                                  bool* network_instrumentation_enabled,
+                                  bool* skip_service_worker,
+                                  bool* devtools_user_agent_overridden,
+                                  bool* devtools_accept_language_overridden,
+                                  GURL* referrer_override) {
   for (auto* network : protocol::NetworkHandler::ForAgentHost(agent_host)) {
     if (!network->enabled()) {
+      continue;
+    }
+    if (!network->MayApplyOverridesTo(request_url)) {
       continue;
     }
     if (network_instrumentation_enabled) {
@@ -1731,16 +1734,17 @@ void ApplyNetworkRequestOverrides(
 void ApplyExtraHeadersForWebSocket(
     const GlobalRenderFrameHostId& frame_id,
     const std::optional<base::UnguessableToken>& devtools_worker_token,
+    const GURL& url,
     net::HttpRequestHeaders* headers) {
-  auto apply_overrides = [headers](DevToolsAgentHostImpl* agent_host) {
+  auto apply_overrides = [&url, headers](DevToolsAgentHostImpl* agent_host) {
     if (!agent_host) {
       return;
     }
     bool disable_cache = false;
     bool skip_service_worker = false;
-    ApplyNetworkRequestOverrides(agent_host, headers, &disable_cache, nullptr,
-                                 &skip_service_worker, nullptr, nullptr,
-                                 nullptr);
+    ApplyNetworkRequestOverrides(agent_host, url, headers, &disable_cache,
+                                 nullptr, &skip_service_worker, nullptr,
+                                 nullptr, nullptr);
   };
   if (RenderFrameHostImpl* frame = RenderFrameHostImpl::FromID(frame_id)) {
     if (FrameTreeNode* ftn = frame->frame_tree_node()) {
@@ -1764,8 +1768,8 @@ void ApplyAuctionNetworkRequestOverrides(
   if (!agent_host) {
     return;
   }
-  ApplyNetworkRequestOverrides(agent_host, &request->headers, &disable_cache,
-                               network_instrumentation_enabled,
+  ApplyNetworkRequestOverrides(agent_host, request->url, &request->headers,
+                               &disable_cache, network_instrumentation_enabled,
                                &request->skip_service_worker, nullptr, nullptr,
                                nullptr);
   if (disable_cache) {
@@ -1775,6 +1779,7 @@ void ApplyAuctionNetworkRequestOverrides(
 
 void ApplyNetworkRequestOverrides(
     FrameTreeNode* frame_tree_node,
+    const GURL& url,
     blink::mojom::BeginNavigationParams* begin_params,
     bool* report_raw_headers,
     bool* devtools_user_agent_overridden,
@@ -1791,7 +1796,7 @@ void ApplyNetworkRequestOverrides(
   net::HttpRequestHeaders headers;
   headers.AddHeadersFromString(begin_params->headers);
   ApplyNetworkRequestOverrides(
-      agent_host, &headers, &disable_cache, report_raw_headers,
+      agent_host, url, &headers, &disable_cache, report_raw_headers,
       &begin_params->skip_service_worker, devtools_user_agent_overridden,
       devtools_accept_language_overridden, referrer_override);
   if (disable_cache) {
@@ -2865,9 +2870,9 @@ void OnWorkerMainScriptRequestWillBeSent(
   // Note: we apply overrides from the owner frame to match the behavior in the
   // renderer.
   bool disable_cache = false;
-  ApplyNetworkRequestOverrides(effective_host, &request.headers, &disable_cache,
-                               nullptr, &request.skip_service_worker, nullptr,
-                               nullptr, nullptr);
+  ApplyNetworkRequestOverrides(
+      effective_host, request.url, &request.headers, &disable_cache, nullptr,
+      &request.skip_service_worker, nullptr, nullptr, nullptr);
   if (disable_cache) {
     request.load_flags &=
         ~(net::LOAD_VALIDATE_CACHE | net::LOAD_SKIP_CACHE_VALIDATION |

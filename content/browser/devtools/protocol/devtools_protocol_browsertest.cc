@@ -5,6 +5,7 @@
 #include <stddef.h>
 
 #include <cstddef>
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -29,6 +30,7 @@
 #include "base/strings/safe_sprintf.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/synchronization/lock.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
@@ -97,6 +99,8 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "net/dns/public/util.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/install_default_websocket_handlers.h"
 #include "net/test/ssl_test_util.h"
 #include "net/test/test_doh_server.h"
 #include "services/network/public/cpp/features.h"
@@ -2226,6 +2230,175 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
   shell()->LoadURL(disallowed_url);
   notification = WaitForNotification("Page.frameStartedNavigating", true);
   EXPECT_EQ("", *notification.FindString("url"));
+}
+
+// Records the request headers received by the embedded test server, keyed by
+// relative URL, to verify which DevTools network overrides reach the network.
+class DevToolsNetworkOverridesPolicyTest : public DevToolsProtocolTest {
+ protected:
+  void SetUpOnMainThread() override {
+    DevToolsProtocolTest::SetUpOnMainThread();
+    net::test_server::InstallDefaultWebSocketHandlers(embedded_test_server());
+    embedded_test_server()->RegisterRequestMonitor(
+        base::BindRepeating(&DevToolsNetworkOverridesPolicyTest::OnRequest,
+                            base::Unretained(this)));
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  // Returns the headers of the last request received for `relative_url`, or
+  // std::nullopt if no such request was received.
+  std::optional<net::test_server::HttpRequest::HeaderMap> GetRequestHeaders(
+      const std::string& relative_url) {
+    base::AutoLock lock(lock_);
+    auto it = request_headers_.find(relative_url);
+    if (it == request_headers_.end()) {
+      return std::nullopt;
+    }
+    return it->second;
+  }
+
+  // Attaches a session that may not attach to disallowed.test and makes it
+  // inject `X-Test: 1` and a `Referer` of `referrer` into requests.
+  void AttachRestrictedSessionWithExtraHeaders(const GURL& referrer) {
+    set_agent_host_can_close();
+    SetNotAttachableHosts({"disallowed.test"});
+    Attach();
+    SendCommandSync("Network.enable");
+    ASSERT_FALSE(error());
+    base::DictValue headers;
+    headers.Set("X-Test", "1");
+    headers.Set("Referer", referrer.spec());
+    base::DictValue params;
+    params.Set("headers", std::move(headers));
+    SendCommandSync("Network.setExtraHTTPHeaders", std::move(params));
+    ASSERT_FALSE(error());
+  }
+
+ private:
+  void OnRequest(const net::test_server::HttpRequest& request) {
+    base::AutoLock lock(lock_);
+    request_headers_[request.relative_url] = request.headers;
+  }
+
+  base::Lock lock_;
+  std::map<std::string, net::test_server::HttpRequest::HeaderMap>
+      request_headers_ GUARDED_BY(lock_);
+};
+
+IN_PROC_BROWSER_TEST_F(DevToolsNetworkOverridesPolicyTest,
+                       ExtraHeadersAppliedToNavigationToAttachableHost) {
+  const GURL start_url =
+      embedded_test_server()->GetURL("a.test", "/title1.html");
+  const GURL injected_referrer =
+      embedded_test_server()->GetURL("a.test", "/injected-referrer");
+  const GURL allowed_url =
+      embedded_test_server()->GetURL("a.test", "/echoall?navigation");
+  ASSERT_TRUE(NavigateToURL(shell(), start_url));
+  AttachRestrictedSessionWithExtraHeaders(injected_referrer);
+
+  EXPECT_TRUE(NavigateToURL(shell(), allowed_url));
+  std::optional<net::test_server::HttpRequest::HeaderMap> headers =
+      GetRequestHeaders("/echoall?navigation");
+  ASSERT_TRUE(headers);
+  ASSERT_TRUE(headers->contains("X-Test"));
+  EXPECT_EQ("1", headers->at("X-Test"));
+  ASSERT_TRUE(headers->contains("Referer"));
+  EXPECT_EQ(injected_referrer.spec(), headers->at("Referer"));
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsNetworkOverridesPolicyTest,
+                       ExtraHeadersNotAppliedToNavigationToNotAttachableHost) {
+  const GURL start_url =
+      embedded_test_server()->GetURL("a.test", "/title1.html");
+  const GURL injected_referrer =
+      embedded_test_server()->GetURL("a.test", "/injected-referrer");
+  const GURL disallowed_url =
+      embedded_test_server()->GetURL("disallowed.test", "/echoall?navigation");
+  ASSERT_TRUE(NavigateToURL(shell(), start_url));
+  AttachRestrictedSessionWithExtraHeaders(injected_referrer);
+
+  EXPECT_TRUE(NavigateToURL(shell(), disallowed_url));
+  std::optional<net::test_server::HttpRequest::HeaderMap> headers =
+      GetRequestHeaders("/echoall?navigation");
+  ASSERT_TRUE(headers);
+  EXPECT_FALSE(headers->contains("X-Test"));
+  if (headers->contains("Referer")) {
+    EXPECT_NE(injected_referrer.spec(), headers->at("Referer"));
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(
+    DevToolsNetworkOverridesPolicyTest,
+    ExtraHeadersNotAppliedToFormPostNavigationToNotAttachableHost) {
+  const GURL start_url =
+      embedded_test_server()->GetURL("a.test", "/title1.html");
+  const GURL injected_referrer =
+      embedded_test_server()->GetURL("a.test", "/injected-referrer");
+  const GURL disallowed_url =
+      embedded_test_server()->GetURL("disallowed.test", "/echoall?form-post");
+  ASSERT_TRUE(NavigateToURL(shell(), start_url));
+  AttachRestrictedSessionWithExtraHeaders(injected_referrer);
+
+  TestNavigationObserver observer(shell()->web_contents(), 1);
+  EXPECT_TRUE(ExecJs(shell()->web_contents(), JsReplace(R"(
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = $1;
+    const input = document.createElement('input');
+    input.name = 'field';
+    input.value = 'value';
+    form.appendChild(input);
+    document.body.appendChild(form);
+    form.submit();
+  )",
+                                                        disallowed_url)));
+  observer.Wait();
+  EXPECT_EQ(disallowed_url, observer.last_navigation_url());
+
+  std::optional<net::test_server::HttpRequest::HeaderMap> headers =
+      GetRequestHeaders("/echoall?form-post");
+  ASSERT_TRUE(headers);
+  EXPECT_FALSE(headers->contains("X-Test"));
+  if (headers->contains("Referer")) {
+    EXPECT_NE(injected_referrer.spec(), headers->at("Referer"));
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsNetworkOverridesPolicyTest,
+                       ExtraHeadersNotAppliedToWebSocketToNotAttachableHost) {
+  const GURL start_url =
+      embedded_test_server()->GetURL("a.test", "/title1.html");
+  const GURL injected_referrer =
+      embedded_test_server()->GetURL("a.test", "/injected-referrer");
+  ASSERT_TRUE(NavigateToURL(shell(), start_url));
+  AttachRestrictedSessionWithExtraHeaders(injected_referrer);
+
+  constexpr char kOpenWebSocket[] = R"(
+    new Promise(resolve => {
+      const ws = new WebSocket($1);
+      ws.onopen = () => { ws.close(); resolve('open'); };
+      ws.onerror = () => resolve('error');
+    });
+  )";
+
+  const GURL allowed_ws_url = net::test_server::GetWebSocketURL(
+      *embedded_test_server(), "a.test", "/echo-request-headers?allowed");
+  EXPECT_EQ("open", EvalJs(shell()->web_contents(),
+                           JsReplace(kOpenWebSocket, allowed_ws_url)));
+  std::optional<net::test_server::HttpRequest::HeaderMap> headers =
+      GetRequestHeaders("/echo-request-headers?allowed");
+  ASSERT_TRUE(headers);
+  ASSERT_TRUE(headers->contains("X-Test"));
+  EXPECT_EQ("1", headers->at("X-Test"));
+
+  const GURL disallowed_ws_url = net::test_server::GetWebSocketURL(
+      *embedded_test_server(), "disallowed.test",
+      "/echo-request-headers?disallowed");
+  EXPECT_EQ("open", EvalJs(shell()->web_contents(),
+                           JsReplace(kOpenWebSocket, disallowed_ws_url)));
+  headers = GetRequestHeaders("/echo-request-headers?disallowed");
+  ASSERT_TRUE(headers);
+  EXPECT_FALSE(headers->contains("X-Test"));
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,

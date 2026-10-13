@@ -333,6 +333,10 @@ class NetworkHandler : public DevToolsDomainHandler,
 
   void OnPolicyContainerHostUpdated();
   bool enabled() const { return enabled_; }
+  // Returns whether this session's client may influence a request to `url`
+  // (extra headers, Referer override, cache / service worker bypass). Mirrors
+  // the attach policy enforced by ForceDetachRestrictedSessions().
+  bool MayApplyOverridesTo(const GURL& url) const;
 
   Network::Frontend* frontend() const { return frontend_.get(); }
 

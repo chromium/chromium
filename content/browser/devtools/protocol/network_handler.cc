@@ -3849,6 +3849,10 @@ NetworkHandler::CreateRequestFromResourceRequest(
   return request_object;
 }
 
+bool NetworkHandler::MayApplyOverridesTo(const GURL& url) const {
+  return client_ && client_->MayAttachToURL(url, host_ && host_->web_ui());
+}
+
 void NetworkHandler::ApplyOverrides(net::HttpRequestHeaders* headers,
                                     bool* skip_service_worker,
                                     bool* disable_cache,

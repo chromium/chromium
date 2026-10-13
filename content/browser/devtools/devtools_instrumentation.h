@@ -118,9 +118,11 @@ void ApplyAuctionNetworkRequestOverrides(FrameTreeNode* frame_tree_node,
 // this function overrides the `Accept-Language` header, it sets
 // `devtools_accept_language_overridden` to true; otherwise, false. If
 // this function overrides the `Referrer` header, it sets `referrer_override` to
-// the new Referrer header value.
+// the new Referrer header value. Network overrides are only applied by sessions
+// whose client may attach to `url`.
 void ApplyNetworkRequestOverrides(
     FrameTreeNode* frame_tree_node,
+    const GURL& url,
     blink::mojom::BeginNavigationParams* begin_params,
     bool* report_raw_headers,
     bool* devtools_user_agent_overridden,
@@ -138,9 +140,11 @@ DevtoolsOverriddenOutputParams ApplyEmulationOverrides(
 // Applies extra headers set via Network.setExtraHTTPHeaders to a WebSocket
 // handshake request. This is needed because WebSocket connections bypass the
 // normal URLLoader path where ApplyNetworkRequestOverrides is called.
+// Headers are only applied by sessions whose client may attach to `url`.
 void ApplyExtraHeadersForWebSocket(
     const GlobalRenderFrameHostId& frame_id,
     const std::optional<base::UnguessableToken>& devtools_worker_token,
+    const GURL& url,
     net::HttpRequestHeaders* headers);
 
 // Returns true if devtools want |*override_out| to be used.

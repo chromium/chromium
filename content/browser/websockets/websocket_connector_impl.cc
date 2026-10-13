@@ -155,7 +155,7 @@ void WebSocketConnectorImpl::Connect(
     headers.SetHeader(net::HttpRequestHeaders::kUserAgent, *user_agent);
   }
   devtools_instrumentation::ApplyExtraHeadersForWebSocket(
-      frame_id_, devtools_worker_token_, &headers);
+      frame_id_, devtools_worker_token_, url, &headers);
 
   std::vector<network::mojom::HttpHeaderPtr> additional_headers;
   for (net::HttpRequestHeaders::Iterator it(headers); it.GetNext();) {
@@ -198,7 +198,7 @@ void WebSocketConnectorImpl::ConnectCalledByContentBrowserClient(
 
   net::HttpRequestHeaders extra_headers;
   devtools_instrumentation::ApplyExtraHeadersForWebSocket(
-      frame_id, devtools_worker_token, &extra_headers);
+      frame_id, devtools_worker_token, url, &extra_headers);
   std::erase_if(additional_headers, [&](const auto& header) {
     return extra_headers.HasHeader(header->name);
   });

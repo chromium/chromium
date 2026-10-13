@@ -6147,9 +6147,9 @@ void NavigationRequest::OnStartChecksComplete(
   bool report_raw_headers = false;
   GURL devtools_referrer_override;
   devtools_instrumentation::ApplyNetworkRequestOverrides(
-      frame_tree_node_, begin_params_.get(), &report_raw_headers,
-      &devtools_user_agent_override_, &devtools_accept_language_override_,
-      &devtools_referrer_override);
+      frame_tree_node_, common_params_->url, begin_params_.get(),
+      &report_raw_headers, &devtools_user_agent_override_,
+      &devtools_accept_language_override_, &devtools_referrer_override);
 
   if (!devtools_referrer_override.is_empty()) {
     // When the `Referer` header is overridden by DevTools (e.g. by CDP command
