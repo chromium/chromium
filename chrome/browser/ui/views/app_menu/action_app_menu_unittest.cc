@@ -16,6 +16,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
 #include "base/values.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
@@ -2628,6 +2629,7 @@ TEST_F(ActionAppMenuTest, MenuItemNewBadgeProperty) {
   menu.CloseMenu();
 }
 
+#if !BUILDFLAG(CHROME_FOR_TESTING)
 TEST_F(ActionAppMenuTest, MenuItemIsAlertedProperty) {
   UserEducationServiceFactory::GetInstance()->SetTestingFactory(
       profile_.get(), base::BindRepeating([](content::BrowserContext* context)
@@ -2667,6 +2669,7 @@ TEST_F(ActionAppMenuTest, MenuItemIsAlertedProperty) {
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();
 }
+#endif  // !BUILDFLAG(CHROME_FOR_TESTING)
 
 TEST_F(ActionAppMenuTest, MenuItemSecondaryTextProperty) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;

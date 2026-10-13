@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/app_menu/action_app_menu_manager.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -816,6 +817,7 @@ TEST_F(ActionAppMenuManagerTest,
             ExtensionsMenuModel::kVisitChromeWebStoreMenuItem);
 }
 
+#if !BUILDFLAG(CHROME_FOR_TESTING)
 TEST_F(ActionAppMenuManagerTest, AlertedElementPropagatesToSubmenu) {
   UserEducationServiceFactory::GetInstance()->SetTestingFactory(
       profile_.get(), base::BindRepeating([](content::BrowserContext* context)
@@ -876,6 +878,7 @@ TEST_F(ActionAppMenuManagerTest, AlertedElementPropagatesToSubmenu) {
   ASSERT_NE(show_downloads, nullptr);
   EXPECT_FALSE(show_downloads->GetProperty(AppMenuActionItem::kIsAlertedKey));
 }
+#endif  // !BUILDFLAG(CHROME_FOR_TESTING)
 
 TEST_F(ActionAppMenuManagerTest,
        SendTabToSelfEnhancedDesktopUIv2SubmenuAndPromos) {

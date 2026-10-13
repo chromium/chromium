@@ -216,6 +216,7 @@ if (toolkit_views) {
       ":impl",
       "//base",
       "//base/test:test_support",
+      "//build:branding_buildflags",
       "//chrome/app:branded_strings",
       "//chrome/app:generated_resources",
       "//chrome/browser",
