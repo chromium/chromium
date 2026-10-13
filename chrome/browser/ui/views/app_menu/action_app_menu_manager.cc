@@ -178,16 +178,19 @@ class AppMenuBuilder {
                  BrowserWindowInterface* browser_window_interface,
                  ui::ElementIdentifier highlighted_menu_identifier,
                  std::optional<ui::ColorId> bg_color = std::nullopt,
+                 std::optional<ui::ColorId> fg_color = std::nullopt,
                  DisplayType default_display_type = DisplayType::kRow)
       : AppMenuBuilder(static_cast<actions::BaseAction*>(parent),
                        browser_window_interface,
                        highlighted_menu_identifier,
                        bg_color,
+                       fg_color,
                        default_display_type) {}
   AppMenuBuilder(actions::BaseAction* parent,
                  BrowserWindowInterface* browser_window_interface,
                  ui::ElementIdentifier highlighted_menu_identifier,
                  std::optional<ui::ColorId> bg_color = std::nullopt,
+                 std::optional<ui::ColorId> fg_color = std::nullopt,
                  DisplayType default_display_type = DisplayType::kRow)
       : parent_(parent),
         browser_window_interface_(browser_window_interface),
@@ -195,6 +198,7 @@ class AppMenuBuilder {
                    ->root_action_item()),
         highlighted_menu_identifier_(highlighted_menu_identifier),
         bg_color_(bg_color),
+        fg_color_(fg_color),
         default_display_type_(default_display_type) {}
   AppMenuBuilder(const AppMenuBuilder&) = delete;
   AppMenuBuilder& operator=(const AppMenuBuilder&) = delete;
@@ -205,6 +209,9 @@ class AppMenuBuilder {
                             AppMenuActionItem::ActionParams params = {}) {
     if (!params.container_color.has_value()) {
       params.container_color = bg_color_;
+    }
+    if (!params.foreground_color.has_value()) {
+      params.foreground_color = fg_color_;
     }
     if (!params.display_type.has_value()) {
       params.display_type = default_display_type_;
@@ -252,6 +259,9 @@ class AppMenuBuilder {
     if (!params.container_color.has_value()) {
       params.container_color = bg_color_;
     }
+    if (!params.foreground_color.has_value()) {
+      params.foreground_color = fg_color_;
+    }
     if (!params.display_type.has_value()) {
       params.display_type = default_display_type_;
     }
@@ -285,23 +295,30 @@ class AppMenuBuilder {
       DisplayType display_type,
       std::optional<base::FunctionRef<void(AppMenuBuilder&)>> build_section =
           std::nullopt,
-      std::optional<ui::ColorId> bg_color = std::nullopt) {
+      std::optional<ui::ColorId> bg_color = std::nullopt,
+      std::optional<ui::ColorId> fg_color = std::nullopt) {
     if (!parent_) {
       return *this;
     }
     const std::optional<ui::ColorId> section_bg_color =
         bg_color.has_value() ? bg_color : bg_color_;
+    const std::optional<ui::ColorId> section_fg_color =
+        fg_color.has_value() ? fg_color : fg_color_;
     auto item = actions::ActionItem::Builder().Build();
     item->SetProperty(AppMenuActionItem::kDisplayTypeKey, display_type);
     if (section_bg_color.has_value()) {
       item->SetProperty(AppMenuActionItem::kContainerColorKey,
                         section_bg_color.value());
     }
+    if (section_fg_color.has_value()) {
+      item->SetProperty(AppMenuActionItem::kForegroundColorKey,
+                        section_fg_color.value());
+    }
     auto* item_ptr = parent_->AddChild(std::move(item));
     if (build_section.has_value()) {
       AppMenuBuilder section_builder(item_ptr, browser_window_interface_,
                                      highlighted_menu_identifier_,
-                                     section_bg_color);
+                                     section_bg_color, section_fg_color);
       (*build_section)(section_builder);
     }
     return *this;
@@ -316,6 +333,9 @@ class AppMenuBuilder {
       AppMenuActionItem::ActionParams params = {}) {
     if (!params.container_color.has_value()) {
       params.container_color = bg_color_;
+    }
+    if (!params.foreground_color.has_value()) {
+      params.foreground_color = fg_color_;
     }
     if (!params.is_alerted.has_value()) {
       params.is_alerted = IsElementIdAlerted(params.element_id);
@@ -406,6 +426,7 @@ class AppMenuBuilder {
   raw_ptr<actions::ActionItem> scope_;
   ui::ElementIdentifier highlighted_menu_identifier_;
   std::optional<ui::ColorId> bg_color_;
+  std::optional<ui::ColorId> fg_color_;
   DisplayType default_display_type_ = DisplayType::kRow;
   // Tracks whether any action or nested submenu added by this builder is
   // alerted, so parent submenu rows can also be highlighted when a child item
@@ -630,7 +651,8 @@ void ActionAppMenuManager::AddBlockHeaderActions(actions::ActionItem* root) {
 
 void ActionAppMenuManager::AddYourChromeActions(actions::ActionItem* root) {
   AppMenuBuilder(root, browser_window_interface_, highlighted_menu_identifier_,
-                 kColorAppMenuYourChromeBackground)
+                 kColorAppMenuYourChromeBackground,
+                 kColorAppMenuYourChromeForeground)
       .AddSection(DisplayType::kSection, [this](AppMenuBuilder& section) {
         section.AddHeader(IDS_APP_MENU_YOUR_CHROME_HEADER);
 
@@ -857,7 +879,8 @@ void ActionAppMenuManager::AddYourChromeActions(actions::ActionItem* root) {
 void ActionAppMenuManager::AddToolsAndActionsActions(
     actions::ActionItem* root) {
   AppMenuBuilder(root, browser_window_interface_, highlighted_menu_identifier_,
-                 kColorAppMenuToolsAndActionsBackground)
+                 kColorAppMenuToolsAndActionsBackground,
+                 kColorAppMenuToolsAndActionsForeground)
       .AddSection(DisplayType::kSection, [this](AppMenuBuilder& section) {
         section.AddHeader(IDS_APP_MENU_TOOLS_AND_ACTIONS_HEADER)
             .AddSubmenu(
@@ -1213,7 +1236,8 @@ void ActionAppMenuManager::AddWebAppActions(actions::ActionItem* root) {
       });
 
   AppMenuBuilder(root, browser_window_interface_, highlighted_menu_identifier_,
-                 kColorAppMenuToolsAndActionsBackground)
+                 kColorAppMenuToolsAndActionsBackground,
+                 kColorAppMenuToolsAndActionsForeground)
       .AddSection(DisplayType::kSection, [this](AppMenuBuilder& section) {
         section.AddAction(kActionCopyUrl);
 

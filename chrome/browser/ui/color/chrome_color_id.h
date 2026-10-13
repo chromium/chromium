@@ -30,7 +30,9 @@
   E_CPONLY(kColorAppMenuChipInkDropHover) \
   E_CPONLY(kColorAppMenuChipInkDropRipple) \
   E_CPONLY(kColorAppMenuYourChromeBackground) \
+  E_CPONLY(kColorAppMenuYourChromeForeground) \
   E_CPONLY(kColorAppMenuToolsAndActionsBackground) \
+  E_CPONLY(kColorAppMenuToolsAndActionsForeground) \
   E_CPONLY(kColorAppMenuBlockButtonBackground) \
   E_CPONLY(kColorAppMenuBlockButtonBackgroundHovered) \
   E_CPONLY(kColorAppMenuBlockButtonBorder) \

@@ -19,18 +19,27 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/color/color_id.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
 namespace {
 
-ui::ImageModel StandardizeMenuIconSize(const ui::ImageModel& icon,
-                                       int icon_size) {
+ui::ImageModel StandardizeMenuIcon(const ui::ImageModel& icon,
+                                   int icon_size,
+                                   std::optional<ui::ColorId> icon_color) {
   if (icon.IsVectorIcon()) {
     const ui::VectorIconModel& vector_model = icon.GetVectorIcon();
-    if (vector_model.icon_size() != icon_size) {
+    const bool is_default_color = vector_model.color() == ui::kColorIcon ||
+                                  vector_model.color() == ui::kColorMenuIcon;
+    const ui::ColorVariant target_color =
+        (icon_color.has_value() && is_default_color)
+            ? ui::ColorVariant(*icon_color)
+            : vector_model.color();
+    if (vector_model.icon_size() != icon_size ||
+        vector_model.color() != target_color) {
       return ui::ImageModel::FromVectorIcon(*vector_model.vector_icon(),
-                                            vector_model.color(), icon_size,
+                                            target_color, icon_size,
                                             vector_model.badge_icon());
     }
   }
@@ -70,15 +79,18 @@ class AppMenuItemActionViewInterface
     }
 
     const int default_icon_size = menu_item->default_icon_size();
+    const std::optional<ui::ColorId> default_icon_color =
+        menu_item->default_icon_color();
     if (menu_item->icon_override().has_value()) {
-      menu_item->SetIcon(
+      const int target_icon_size =
           action_item->GetActionId() == kActionProfileSubmenu
-              ? *menu_item->icon_override()
-              : StandardizeMenuIconSize(*menu_item->icon_override(),
-                                        default_icon_size));
+              ? menu_item->icon_override()->Size().width()
+              : default_icon_size;
+      menu_item->SetIcon(StandardizeMenuIcon(
+          *menu_item->icon_override(), target_icon_size, default_icon_color));
     } else if (!action_item->GetImage().IsEmpty()) {
-      menu_item->SetIcon(
-          StandardizeMenuIconSize(action_item->GetImage(), default_icon_size));
+      menu_item->SetIcon(StandardizeMenuIcon(
+          action_item->GetImage(), default_icon_size, default_icon_color));
     }
 
     // Display shortcut text if the ActionItem has one.
@@ -109,6 +121,12 @@ AppMenuItemView::AppMenuItemView(views::MenuItemView* parent,
   default_icon_size_ = provider->GetDistanceMetric(
       is_notification ? DISTANCE_ACTION_APP_MENU_NOTIFICATION_ICON_SIZE
                       : DISTANCE_ACTION_APP_MENU_DEFAULT_ICON_SIZE);
+
+  const ui::ColorId foreground_color =
+      base_action->GetProperty(AppMenuActionItem::kForegroundColorKey);
+  if (foreground_color != ui::kColorMenuItemForeground) {
+    default_icon_color_ = foreground_color;
+  }
 
   if (std::u16string* text_override =
           base_action->GetProperty(AppMenuActionItem::kTextOverrideKey)) {

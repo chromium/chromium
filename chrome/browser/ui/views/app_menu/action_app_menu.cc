@@ -397,18 +397,26 @@ const gfx::FontList* ActionAppMenu::GetLabelFontList(int id) const {
 
 std::optional<SkColor> ActionAppMenu::GetLabelColor(int id) const {
   auto action_iterator = command_to_action_map_.find(id);
-  if (action_iterator == command_to_action_map_.end()) {
+  if (action_iterator == command_to_action_map_.end() || !root_ ||
+      !root_->GetSubmenu()) {
+    return std::nullopt;
+  }
+
+  const ui::ColorProvider* color_provider =
+      root_->GetSubmenu()->GetColorProvider();
+  if (!color_provider) {
     return std::nullopt;
   }
 
   actions::BaseAction* base_action = action_iterator->second;
-  if (base_action->GetProperty(AppMenuActionItem::kDisplayTypeKey) ==
+  if (base_action->GetProperty(AppMenuActionItem::kDisplayTypeKey) !=
           AppMenuActionItem::DisplayType::kHeader &&
-      root_ && root_->GetSubmenu()->GetColorProvider()) {
-    return root_->GetSubmenu()->GetColorProvider()->GetColor(
-        ui::kColorMenuItemForeground);
+      !base_action->GetActionItem()->GetEnabled()) {
+    return std::nullopt;
   }
-  return std::nullopt;
+
+  return color_provider->GetColor(
+      base_action->GetProperty(AppMenuActionItem::kForegroundColorKey));
 }
 
 int ActionAppMenu::GetMaxWidthForMenu(views::MenuItemView* menu) {
@@ -721,7 +729,9 @@ views::MenuItemView* ActionAppMenu::AppendMenuItem(
       std::make_unique<AppMenuItemView>(parent_menu_item, command_id,
                                         menu_item_type, base_action_item,
                                         browser_window_interface_),
-      index);
+      index, /*submenu_background_color=*/std::nullopt,
+      /*foreground_color=*/std::nullopt, /*selected_color_id=*/std::nullopt,
+      ui::kColorMenuIcon);
 
   action_view_controller_.CreateActionViewRelationship(
       menu_item, action_item->GetAsWeakPtr());

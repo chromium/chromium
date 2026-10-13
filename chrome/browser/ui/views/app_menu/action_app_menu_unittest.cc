@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/global_error/global_error_service.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -370,6 +371,34 @@ TEST_F(ActionAppMenuTest, PopulatesSectionCardsWithStyling) {
             ui::kColorAppMenuRowBackgroundHovered);
   EXPECT_EQ(zoom_item->GetSelectedColorId(),
             ui::kColorAppMenuRowBackgroundHovered);
+
+  const ui::ColorProvider* color_provider =
+      root->GetSubmenu()->GetColorProvider();
+  ASSERT_NE(color_provider, nullptr);
+  EXPECT_EQ(menu.GetLabelColor(password_item->GetCommand()),
+            color_provider->GetColor(kColorAppMenuYourChromeForeground));
+  EXPECT_EQ(menu.GetLabelColor(print_item->GetCommand()),
+            color_provider->GetColor(kColorAppMenuToolsAndActionsForeground));
+
+  actions::ActionItem* password_action =
+      actions::ActionManager::Get().FindAction(
+          kActionPasswordsAndAutofillSubmenu,
+          browser_actions_->root_action_item());
+  ASSERT_NE(password_action, nullptr);
+  password_action->SetImage(
+      ui::ImageModel::FromVectorIcon(kRocketLaunchIcon, ui::kColorIcon));
+  ASSERT_TRUE(password_item->GetIcon().IsVectorIcon());
+  EXPECT_EQ(password_item->GetIcon().GetVectorIcon().color(),
+            ui::ColorVariant(kColorAppMenuYourChromeForeground));
+
+  actions::ActionItem* print_action = actions::ActionManager::Get().FindAction(
+      kActionPrint, browser_actions_->root_action_item());
+  ASSERT_NE(print_action, nullptr);
+  print_action->SetImage(
+      ui::ImageModel::FromVectorIcon(kRocketLaunchIcon, ui::kColorIcon));
+  ASSERT_TRUE(print_item->GetIcon().IsVectorIcon());
+  EXPECT_EQ(print_item->GetIcon().GetVectorIcon().color(),
+            ui::ColorVariant(kColorAppMenuToolsAndActionsForeground));
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();

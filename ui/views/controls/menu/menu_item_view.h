@@ -194,14 +194,22 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
       ui::MenuSeparatorType separator_style,
       std::optional<ui::ColorId> submenu_background_color = std::nullopt,
       std::optional<ui::ColorId> foreground_color = std::nullopt,
-      std::optional<ui::ColorId> selected_color_id = std::nullopt);
+      std::optional<ui::ColorId> selected_color_id = std::nullopt,
+      std::optional<ui::ColorId> submenu_arrow_color_id = std::nullopt);
 
   // Appends `item` to the menu, or inserts it at `index` if specified.
   template <typename T>
     requires(std::derived_from<T, MenuItemView>)
-  T* AddMenuItemView(std::unique_ptr<T> item,
-                     std::optional<size_t> index = std::nullopt) {
-    return static_cast<T*>(AddMenuItemViewImpl(std::move(item), index));
+  T* AddMenuItemView(
+      std::unique_ptr<T> item,
+      std::optional<size_t> index = std::nullopt,
+      std::optional<ui::ColorId> submenu_background_color = std::nullopt,
+      std::optional<ui::ColorId> foreground_color = std::nullopt,
+      std::optional<ui::ColorId> selected_color_id = std::nullopt,
+      std::optional<ui::ColorId> submenu_arrow_color_id = std::nullopt) {
+    return static_cast<T*>(AddMenuItemViewImpl(
+        std::move(item), index, submenu_background_color, foreground_color,
+        selected_color_id, submenu_arrow_color_id));
   }
 
   void SetMenuItemBackground(
@@ -560,7 +568,10 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
   MenuItemView* AddMenuItemViewImpl(
       std::unique_ptr<MenuItemView> item,
       std::optional<size_t> index,
-      std::optional<ui::ColorId> submenu_background_color = std::nullopt);
+      std::optional<ui::ColorId> submenu_background_color = std::nullopt,
+      std::optional<ui::ColorId> foreground_color = std::nullopt,
+      std::optional<ui::ColorId> selected_color_id = std::nullopt,
+      std::optional<ui::ColorId> submenu_arrow_color_id = std::nullopt);
 
   const SubmenuView* GetContainingSubmenu() const {
     return parent_menu_item_->GetSubmenu();
@@ -688,6 +699,11 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
 
   void SetForegroundColorId(std::optional<ui::ColorId> foreground_color_id) {
     foreground_color_id_ = foreground_color_id;
+  }
+
+  void SetSubmenuArrowColorId(
+      std::optional<ui::ColorId> submenu_arrow_color_id) {
+    submenu_arrow_color_id_ = submenu_arrow_color_id;
   }
 
   // Returns the corresponding margin from the `MenuConfig` if
@@ -842,6 +858,7 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
   std::optional<ui::ColorId> foreground_color_id_;
   std::optional<MenuItemBackground> menu_item_background_;
   std::optional<ui::ColorId> selected_color_id_;
+  std::optional<ui::ColorId> submenu_arrow_color_id_;
   std::optional<int> top_margin_;
   std::optional<int> bottom_margin_;
 

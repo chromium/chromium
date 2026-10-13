@@ -60,7 +60,9 @@ constexpr ToolkitPalette kLightToolkit = {
 // toolkit palette doesn't match the color mode.
 constexpr ui::ColorId kAppMenuSurfaceIds[] = {
     kColorAppMenuYourChromeBackground,
+    kColorAppMenuYourChromeForeground,
     kColorAppMenuToolsAndActionsBackground,
+    kColorAppMenuToolsAndActionsForeground,
     kColorAppMenuZoomButtonBackground,
     kColorAppMenuZoomButtonHover,
     kColorAppMenuZoomSeparator,

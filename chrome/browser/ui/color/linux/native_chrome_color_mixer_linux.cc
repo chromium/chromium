@@ -237,8 +237,12 @@ void AddNativeChromeColorMixer(ui::ColorProvider* provider,
   // Cards, rows and pills that sit on the menu background.
   mixer[kColorAppMenuYourChromeBackground] =
       native_if_mismatch(card_background);
+  mixer[kColorAppMenuYourChromeForeground] =
+      native_if_mismatch(ui::kColorMenuItemForeground);
   mixer[kColorAppMenuToolsAndActionsBackground] =
       native_if_mismatch(card_background);
+  mixer[kColorAppMenuToolsAndActionsForeground] =
+      native_if_mismatch(ui::kColorMenuItemForeground);
   mixer[kColorAppMenuZoomButtonBackground] =
       native_if_mismatch(card_background);
   mixer[kColorAppMenuZoomButtonHover] = native_if_mismatch(subtle_hover);

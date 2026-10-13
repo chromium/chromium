@@ -418,7 +418,8 @@ MenuItemView* MenuItemView::AddMenuItemAt(
     ui::MenuSeparatorType separator_style,
     std::optional<ui::ColorId> submenu_background_color,
     std::optional<ui::ColorId> foreground_color,
-    std::optional<ui::ColorId> selected_color_id) {
+    std::optional<ui::ColorId> selected_color_id,
+    std::optional<ui::ColorId> submenu_arrow_color_id) {
   if (type == Type::kSeparator) {
     AddSeparatorAt(index, separator_style);
     return nullptr;
@@ -431,15 +432,18 @@ MenuItemView* MenuItemView::AddMenuItemAt(
   item->SetMinorText(minor_text);
   item->SetMinorIcon(minor_icon);
   item->SetIcon(icon);
-  item->SetForegroundColorId(foreground_color);
-  item->SetSelectedColorId(selected_color_id);
-  return AddMenuItemViewImpl(std::move(item), index, submenu_background_color);
+  return AddMenuItemViewImpl(std::move(item), index, submenu_background_color,
+                             foreground_color, selected_color_id,
+                             submenu_arrow_color_id);
 }
 
 MenuItemView* MenuItemView::AddMenuItemViewImpl(
     std::unique_ptr<MenuItemView> item,
     std::optional<size_t> index,
-    std::optional<ui::ColorId> submenu_background_color) {
+    std::optional<ui::ColorId> submenu_background_color,
+    std::optional<ui::ColorId> foreground_color,
+    std::optional<ui::ColorId> selected_color_id,
+    std::optional<ui::ColorId> submenu_arrow_color_id) {
   CHECK(item);
   const Type type = item->GetType();
   DCHECK_NE(type, Type::kEmpty);
@@ -456,6 +460,10 @@ MenuItemView* MenuItemView::AddMenuItemViewImpl(
   }
   const size_t insert_index = index.value_or(submenu_->children().size());
   DCHECK_LE(insert_index, submenu_->children().size());
+
+  item->SetForegroundColorId(foreground_color);
+  item->SetSelectedColorId(selected_color_id);
+  item->SetSubmenuArrowColorId(submenu_arrow_color_id);
 
   if (type == Type::kSubMenu || type == Type::kActionableSubMenu) {
     item->CreateSubmenu();
@@ -1830,11 +1838,17 @@ void MenuItemView::UpdateSelectionBasedState(bool paint_as_selected) {
   last_paint_as_selected_ = paint_as_selected;
   const Colors colors = CalculateColors(paint_as_selected);
   if (submenu_arrow_image_view_) {
+    const ui::ColorVariant arrow_color =
+        submenu_arrow_color_id_.has_value()
+            ? ui::ColorVariant(GetEnabledInViewsSubtree()
+                                   ? *submenu_arrow_color_id_
+                                   : ui::kColorMenuIconDisabled)
+            : ui::ColorVariant(colors.icon_color);
     submenu_arrow_image_view_->SetImage(ui::ImageModel::FromVectorIcon(
         features::IsRoundedIconsEnabled()
             ? vector_icons::kKeyboardArrowRightFlippableIcon
             : vector_icons::kSubmenuArrowChromeRefreshOldIcon,
-        colors.icon_color));
+        arrow_color));
   }
   MenuDelegate* delegate = GetDelegate();
   if (type_ == Type::kCheckbox && delegate &&
