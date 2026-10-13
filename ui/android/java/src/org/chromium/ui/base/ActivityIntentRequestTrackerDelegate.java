@@ -33,6 +33,7 @@ public class ActivityIntentRequestTrackerDelegate implements Delegate {
 
     @Override
     public boolean startActivityForResult(@Nullable Intent intent, int requestCode) {
+        if (intent == null) return false;
         Activity activity = mActivityWeakRefHolder.get();
         if (activity == null) return false;
         try {
