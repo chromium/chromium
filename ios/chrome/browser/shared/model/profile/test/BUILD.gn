@@ -39,7 +39,7 @@ source_set("test") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "test_profile_manager_ios_unittest.cc" ]
+  sources = [ "test_profile_manager_ios_unittest.mm" ]
   deps = [
     ":test",
     "//base",
