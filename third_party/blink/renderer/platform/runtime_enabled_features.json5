@@ -2932,9 +2932,10 @@
     {
       name: "EyeDropperAPI",
       status: {
-        // EyeDropper UI is available on ChromeOS, Linux (x11), Mac, and Win.
+        // EyeDropper UI is available on Android, ChromeOS, Linux (x11), Mac, and Win.
         // This list should match the supported operating systems for the
         // kEyeDropper base::Feature.
+        "Android": "stable",
         "ChromeOS": "stable",
         "Linux": "stable",
         "Mac": "stable",

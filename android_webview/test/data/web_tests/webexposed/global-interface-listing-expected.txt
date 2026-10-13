@@ -2879,6 +2879,10 @@ interface External
     method AddSearchProvider
     method IsSearchProviderInstalled
     method constructor
+interface EyeDropper
+    attribute @@toStringTag
+    method constructor
+    method open
 interface FaceDetector
     attribute @@toStringTag
     method constructor
