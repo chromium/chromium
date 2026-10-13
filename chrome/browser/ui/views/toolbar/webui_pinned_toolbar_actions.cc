@@ -196,7 +196,7 @@ void WebUIPinnedToolbarActions::OnActionsChanged() {
 
   auto& icon_table = delegate_->GetIconTable();
 
-  auto add_state = [&](actions::ActionId id, bool highlighted) {
+  auto add_state = [&](actions::ActionId id) {
     // Don't add two copies of one button, e.g. if pinned and popped-out.
     if (processed_actions.contains(id)) {
       return;
@@ -218,8 +218,8 @@ void WebUIPinnedToolbarActions::OnActionsChanged() {
     auto state = toolbar_ui_api::mojom::PinnedToolbarActionState::New();
     state->action = *mojo_id;
     state->highlighted =
-        highlighted || (menu_runner_ && menu_runner_->IsRunning() &&
-                        active_context_menu_action_ == id);
+        IsActionHighlighted(id) || (menu_runner_ && menu_runner_->IsRunning() &&
+                                    active_context_menu_action_ == id);
     state->enabled = item->GetEnabled();
     state->activated = item->GetProperty(kActionItemUnderlineIndicatorKey);
     state->tooltip = item->GetTooltipText();
@@ -254,8 +254,7 @@ void WebUIPinnedToolbarActions::OnActionsChanged() {
   };
 
   for (actions::ActionId id : model_->PinnedActionIds()) {
-    add_state(id,
-              /*highlighted=*/std::ranges::contains(active_actions_, id));
+    add_state(id);
   }
 
   if (!states.empty()) {
@@ -267,7 +266,7 @@ void WebUIPinnedToolbarActions::OnActionsChanged() {
   }
 
   for (actions::ActionId id : active_actions_) {
-    add_state(id, /*highlighted=*/true);
+    add_state(id);
   }
 
   if (!processed_actions.contains(kActionShowDownloads)) {
@@ -310,23 +309,45 @@ bool WebUIPinnedToolbarActions::ShouldAnyButtonsOverflow(
 
 void WebUIPinnedToolbarActions::UpdateActionState(actions::ActionId id,
                                                   bool is_active) {
-  ShowActionEphemerallyInToolbar(id, is_active);
+  bool need_update = false;
+  auto it = std::ranges::find(highlighted_actions_, id);
+  if (is_active) {
+    if (it == highlighted_actions_.end()) {
+      highlighted_actions_.push_back(id);
+      need_update = true;
+    }
+  } else {
+    if (it != highlighted_actions_.end()) {
+      highlighted_actions_.erase(it);
+      need_update = true;
+    }
+  }
+  ShowActionEphemerally(id, is_active, need_update);
 }
 
 void WebUIPinnedToolbarActions::ShowActionEphemerallyInToolbar(
     actions::ActionId id,
     bool show) {
+  ShowActionEphemerally(id, show, false);
+}
+
+void WebUIPinnedToolbarActions::ShowActionEphemerally(actions::ActionId id,
+                                                      bool show,
+                                                      bool need_update) {
   auto it = std::ranges::find(active_actions_, id);
   if (show) {
     if (it == active_actions_.end()) {
       active_actions_.push_back(id);
-      OnActionsChanged();
+      need_update = true;
     }
   } else {
     if (it != active_actions_.end()) {
       active_actions_.erase(it);
-      OnActionsChanged();
+      need_update = true;
     }
+  }
+  if (need_update) {
+    OnActionsChanged();
   }
 }
 
@@ -345,9 +366,7 @@ bool WebUIPinnedToolbarActions::IsActionPinnedOrPoppedOut(
 }
 
 bool WebUIPinnedToolbarActions::IsActionHighlighted(actions::ActionId id) {
-  // An action is highlighted whenever it is active (whether pinned or popped
-  // out).
-  return std::ranges::contains(active_actions_, id);
+  return std::ranges::contains(highlighted_actions_, id);
 }
 
 void WebUIPinnedToolbarActions::PostOrQueueActionAfterAnimation(

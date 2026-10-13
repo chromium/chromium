@@ -96,6 +96,10 @@ class WebUIPinnedToolbarActions : public PinnedToolbarActions,
   // Returns whether the downloads button is currently displayed.
   bool IsDownloadButtonShowing();
 
+  // Show `id` action ephemerally if `show`, otherwise hide. `need_update`
+  // indicates if we need to call `OnActionsChanged()` afterwards.
+  void ShowActionEphemerally(actions::ActionId id, bool show, bool need_update);
+
   struct PendingAnchorRequest;
   class WebUIDownloadButton;
 
@@ -107,8 +111,10 @@ class WebUIPinnedToolbarActions : public PinnedToolbarActions,
   base::ScopedObservation<PinnedToolbarActionsModel,
                           PinnedToolbarActionsModel::Observer>
       model_observation_{this};
-  // List of active (highlighted) actions. If unpinned, these actions also
-  // display ephemerally in the toolbar as popped out buttons.
+  // List of highlighted actions.
+  std::vector<actions::ActionId> highlighted_actions_;
+  // List of active actions. If unpinned, these actions also display ephemerally
+  // in the toolbar as popped out buttons.
   std::vector<actions::ActionId> active_actions_;
   // Allow this class to observe actions for currently displaying buttons.
   std::vector<base::CallbackListSubscription> action_subscriptions_;

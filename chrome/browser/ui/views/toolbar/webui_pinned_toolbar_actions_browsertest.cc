@@ -356,16 +356,16 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, EphemeralActions) {
 
   ASSERT_TRUE(WaitForPinnedActionVisible(mojom_action));
 
-  // Verify it's highlighted.
+  // Verify it's not highlighted.
   EXPECT_TRUE(EvalJsOnPinnedAction(mojom_action,
                                    "return !!btn && "
-                                   "btn.hasAttribute('is-menu-open');")
+                                   "!btn.hasAttribute('is-menu-open');")
                   .ExtractBool());
 
-  // Verify it's popped out and prevented from overflowing.
+  // Verify it's popped out and not prevented from overflowing.
   EXPECT_TRUE(EvalJsOnPinnedAction(
                   mojom_action,
-                  "return actionEl.poppedOut && actionEl.preventOverflow;")
+                  "return actionEl.poppedOut && !actionEl.preventOverflow;")
                   .ExtractBool());
 
   // Hide ephemerally.
