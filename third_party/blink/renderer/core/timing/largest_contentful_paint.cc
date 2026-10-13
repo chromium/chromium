@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
+#include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
@@ -43,8 +44,9 @@ PerformanceEntryType LargestContentfulPaint::EntryTypeEnum() const {
 }
 
 Element* LargestContentfulPaint::element() const {
-  if (!element_ || !element_->isConnected() || element_->IsInShadowTree())
+  if (!Performance::CanExposeNode(element_)) {
     return nullptr;
+  }
 
   // Do not expose |element_| when the document is not 'fully active'.
   const Document& document = element_->GetDocument();
