@@ -408,15 +408,28 @@ IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, AutoRemovalToast) {
           "runMochaSuite('NewTabPageAppTest AutoRemovalToast')");
 }
 
-// TODO(crbug.com/527605085): Flaky timeout on Linux debug builds.
-#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
-#define MAYBE_VoiceSearchCoherence DISABLED_VoiceSearchCoherence
-#else
-#define MAYBE_VoiceSearchCoherence VoiceSearchCoherence
-#endif
-IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, MAYBE_VoiceSearchCoherence) {
+// The VoiceSearchCoherence Mocha suite is split into several browser tests so
+// that each of them finishes well within the test launcher timeout on slower
+// (e.g. debug) bots.
+IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, VoiceSearchCoherenceDialog) {
   RunTest("new_tab_page/app_test.js",
-          "runMochaSuite('NewTabPageAppTest VoiceSearchCoherence')");
+          "runMochaSuite('NewTabPageAppTest VoiceSearchCoherence Dialog')");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, VoiceSearchCoherenceEvents) {
+  RunTest("new_tab_page/app_test.js",
+          "runMochaSuite('NewTabPageAppTest VoiceSearchCoherence Events')");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, VoiceSearchCoherenceAnimation) {
+  RunTest("new_tab_page/app_test.js",
+          "runMochaSuite('NewTabPageAppTest VoiceSearchCoherence Animation')");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, VoiceSearchCoherenceLiveTranscript) {
+  RunTest(
+      "new_tab_page/app_test.js",
+      "runMochaSuite('NewTabPageAppTest VoiceSearchCoherence LiveTranscript')");
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, VoiceSearchAndSpeechRecognition) {
