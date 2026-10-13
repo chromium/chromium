@@ -129,6 +129,7 @@ struct AutoTodosGenerationMetadata {
 enum EntryType {
   kTab,
   kTextSelection,
+  kImage,
 };
 
 // Represents an entry stored in the memory bank.
@@ -141,6 +142,10 @@ struct MemoryBankEntry {
   url.mojom.Url url;
   string tab_title;
   string? selected_text;
+  // The source URL of the image when `type` is `kImage` (null otherwise). May
+  // point to untrusted third-party web content; WebUI consumers must render it
+  // via chrome://image (e.g. `<img is="cr-auto-img">`).
+  url.mojom.Url? image_url;
   array<string> tags;
   string? note;
   string? collection;
@@ -182,10 +187,13 @@ struct SaveToMemoryBankContext {
   url.mojom.Url url;
   // The title of the tab where the context originated.
   string tab_title;
-  // The text selected from the page by the user.
+  // The text selected from the page by the user. Null when saving a tab or
+  // image.
   string? selected_text;
-  // Whether the item being saved is a text selection rather than a tab.
-  bool is_text_selection;
+  // The source URL of the image being saved. Null when saving a tab or text
+  // selection. May point to untrusted third-party web content; WebUI consumers
+  // must render it via chrome://image (e.g. `<img is="cr-auto-img">`).
+  url.mojom.Url? image_url;
 };
 
 // User-specified annotations when saving a context item to the memory bank.

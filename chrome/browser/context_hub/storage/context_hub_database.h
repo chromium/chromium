@@ -26,7 +26,7 @@ namespace context_hub {
 class ContextHubDatabase {
  public:
   // Current database schema version.
-  static constexpr int kCurrentVersionNumber = 2;
+  static constexpr int kCurrentVersionNumber = 3;
 
   ContextHubDatabase();
   ContextHubDatabase(const ContextHubDatabase&) = delete;

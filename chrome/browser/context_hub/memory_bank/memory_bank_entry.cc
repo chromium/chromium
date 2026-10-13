@@ -17,11 +17,13 @@ MemoryBankEntry::MemoryBankEntry() = default;
 MemoryBankEntry::MemoryBankEntry(MemoryBankType type,
                                  GURL url,
                                  std::string tab_title,
-                                 std::optional<std::string> selected_text)
+                                 std::optional<std::string> selected_text,
+                                 std::optional<GURL> image_url)
     : type(type),
       url(std::move(url)),
       tab_title(std::move(tab_title)),
-      selected_text(std::move(selected_text)) {}
+      selected_text(std::move(selected_text)),
+      image_url(std::move(image_url)) {}
 
 MemoryBankEntry::MemoryBankEntry(const MemoryBankEntry&) = default;
 MemoryBankEntry& MemoryBankEntry::operator=(const MemoryBankEntry&) = default;

@@ -39,6 +39,7 @@ constexpr std::string_view kSelectedTextColumn = "selected_text";
 constexpr std::string_view kTagsColumn = "tags";
 constexpr std::string_view kNoteColumn = "note";
 constexpr std::string_view kCollectionColumn = "collection";
+constexpr std::string_view kImageUrlColumn = "image_url";
 
 MemoryBankEntry ToMemoryBankEntry(sql::Statement& statement) {
   MemoryBankEntry entry;
@@ -69,6 +70,9 @@ MemoryBankEntry ToMemoryBankEntry(sql::Statement& statement) {
   }
   if (statement.GetColumnType(8) != sql::ColumnType::kNull) {
     entry.collection = statement.ColumnString(8);
+  }
+  if (statement.GetColumnType(9) != sql::ColumnType::kNull) {
+    entry.image_url = GURL(statement.ColumnString(9));
   }
 
   return entry;
@@ -126,6 +130,14 @@ bool MemoryBankTable::MigrateToVersion2AddNoteAndCollectionColumns() {
                         "TEXT");
 }
 
+bool MemoryBankTable::MigrateToVersion3AddImageUrlColumn() {
+  if (!db_) {
+    return false;
+  }
+
+  return sql::AddColumn(*db_, kMemoryBankEntriesTable, kImageUrlColumn, "TEXT");
+}
+
 std::optional<int64_t> MemoryBankTable::AddOrUpdateEntry(
     const MemoryBankEntry& entry) {
   if (!db_) {
@@ -137,7 +149,8 @@ std::optional<int64_t> MemoryBankTable::AddOrUpdateEntry(
       SQL_FROM_HERE, *db_, statement, kMemoryBankEntriesTable,
       /*column_names=*/
       {kIdColumn, kTypeColumn, kTimestampColumn, kUrlColumn, kTabTitleColumn,
-       kSelectedTextColumn, kTagsColumn, kNoteColumn, kCollectionColumn},
+       kSelectedTextColumn, kTagsColumn, kNoteColumn, kCollectionColumn,
+       kImageUrlColumn},
       /*or_replace=*/true);
 
   if (entry.id > 0) {
@@ -173,6 +186,12 @@ std::optional<int64_t> MemoryBankTable::AddOrUpdateEntry(
     statement.BindString(8, *entry.collection);
   } else {
     statement.BindNull(8);
+  }
+  if (entry.image_url.has_value() && entry.image_url->is_valid()) {
+    statement.BindString(9,
+                         database_utils::GurlToDatabaseUrl(*entry.image_url));
+  } else {
+    statement.BindNull(9);
   }
 
   if (!statement.Run()) {
@@ -233,7 +252,8 @@ std::optional<MemoryBankEntry> MemoryBankTable::GetEntry(int64_t id) {
       SQL_FROM_HERE, *db_, statement, kMemoryBankEntriesTable,
       /*columns=*/
       {kIdColumn, kTypeColumn, kTimestampColumn, kUrlColumn, kTabTitleColumn,
-       kSelectedTextColumn, kTagsColumn, kNoteColumn, kCollectionColumn},
+       kSelectedTextColumn, kTagsColumn, kNoteColumn, kCollectionColumn,
+       kImageUrlColumn},
       /*modifiers=*/"WHERE id = ?");
   statement.BindInt64(0, id);
 
@@ -269,7 +289,8 @@ std::vector<MemoryBankEntry> MemoryBankTable::GetAllEntries() {
       SQL_FROM_HERE, *db_, statement, kMemoryBankEntriesTable,
       /*columns=*/
       {kIdColumn, kTypeColumn, kTimestampColumn, kUrlColumn, kTabTitleColumn,
-       kSelectedTextColumn, kTagsColumn, kNoteColumn, kCollectionColumn},
+       kSelectedTextColumn, kTagsColumn, kNoteColumn, kCollectionColumn,
+       kImageUrlColumn},
       /*modifiers=*/"ORDER BY timestamp DESC");
 
   std::vector<MemoryBankEntry> entries;

@@ -887,7 +887,8 @@ TEST(ContextHubMojomTraitsTest, AutoTodoItemSerialization_ThirdPartyData) {
 
 TEST(ContextHubMojomTraitsTest, EntryTypeSerialization) {
   for (auto entry_type : {context_hub::MemoryBankType::kTab,
-                          context_hub::MemoryBankType::kTextSelection}) {
+                          context_hub::MemoryBankType::kTextSelection,
+                          context_hub::MemoryBankType::kImage}) {
     context_hub::MemoryBankType output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<
                 browser::context_hub::mojom::EntryType>(entry_type, output));
@@ -916,9 +917,30 @@ TEST(ContextHubMojomTraitsTest, MemoryBankEntrySerialization) {
   EXPECT_EQ(output.url, GURL("https://example.com/article"));
   EXPECT_EQ(output.tab_title, "Article Title");
   EXPECT_EQ(output.selected_text, "Selected snippet");
+  EXPECT_FALSE(output.image_url.has_value());
   EXPECT_THAT(output.tags, testing::ElementsAre("research", "ai"));
   EXPECT_EQ(output.note, "Important note");
   EXPECT_EQ(output.collection, "Reading");
+}
+
+TEST(ContextHubMojomTraitsTest, MemoryBankEntrySerialization_Image) {
+  context_hub::MemoryBankEntry input(
+      context_hub::MemoryBankType::kImage, GURL("https://example.com/gallery"),
+      "Gallery Title",
+      /*selected_text=*/std::nullopt, GURL("https://example.com/photo.png"));
+  input.id = 43;
+  input.timestamp = base::Time::FromMillisecondsSinceUnixEpoch(1700000000000);
+
+  context_hub::MemoryBankEntry output;
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<
+              browser::context_hub::mojom::MemoryBankEntry>(input, output));
+
+  EXPECT_EQ(output.id, 43);
+  EXPECT_EQ(output.type, context_hub::MemoryBankType::kImage);
+  EXPECT_EQ(output.url, GURL("https://example.com/gallery"));
+  EXPECT_EQ(output.tab_title, "Gallery Title");
+  EXPECT_FALSE(output.selected_text.has_value());
+  EXPECT_EQ(output.image_url, GURL("https://example.com/photo.png"));
 }
 
 TEST_F(ContextHubPageHandlerTest, GetAutoTodos_Empty) {
@@ -1601,33 +1623,53 @@ TEST_F(ContextHubPageHandlerTest, GetAllMemoryBankEntries_Success) {
       save_selection_future.GetCallback());
   ASSERT_TRUE(save_selection_future.Wait());
 
+  base::test::TestFuture<bool> save_image_future;
+  service->SaveMemoryBankEntry(
+      MemoryBankEntry(MemoryBankType::kImage, GURL("https://example.com/image"),
+                      "Image Title", /*selected_text=*/std::nullopt,
+                      GURL("https://example.com/photo.png")),
+      save_image_future.GetCallback());
+  ASSERT_TRUE(save_image_future.Wait());
+
   base::test::TestFuture<const std::vector<MemoryBankEntry>&> future;
   handler_->GetAllMemoryBankEntries(future.GetCallback());
 
   std::vector<MemoryBankEntry> result = future.Take();
 
-  ASSERT_EQ(result.size(), 2u);
+  ASSERT_EQ(result.size(), 3u);
 
   const MemoryBankEntry* tab_entry = nullptr;
   const MemoryBankEntry* text_entry = nullptr;
+  const MemoryBankEntry* image_entry = nullptr;
   for (const auto& entry : result) {
     if (entry.type == MemoryBankType::kTab) {
       tab_entry = &entry;
     } else if (entry.type == MemoryBankType::kTextSelection) {
       text_entry = &entry;
+    } else if (entry.type == MemoryBankType::kImage) {
+      image_entry = &entry;
     }
   }
 
   ASSERT_TRUE(tab_entry);
   EXPECT_EQ(tab_entry->url, GURL("https://example.com/tab"));
   EXPECT_EQ(tab_entry->tab_title, "Tab Title");
+  EXPECT_FALSE(tab_entry->image_url.has_value());
   EXPECT_FALSE(tab_entry->timestamp.is_null());
 
   ASSERT_TRUE(text_entry);
   EXPECT_EQ(text_entry->url, GURL("https://example.com/select"));
   EXPECT_EQ(text_entry->tab_title, "Selection Title");
   EXPECT_EQ(text_entry->selected_text, "Selected Text Detail");
+  EXPECT_FALSE(text_entry->image_url.has_value());
   EXPECT_FALSE(text_entry->timestamp.is_null());
+
+  ASSERT_TRUE(image_entry);
+  EXPECT_EQ(image_entry->url, GURL("https://example.com/image"));
+  EXPECT_EQ(image_entry->tab_title, "Image Title");
+  EXPECT_FALSE(image_entry->selected_text.has_value());
+  EXPECT_EQ(image_entry->image_url, GURL("https://example.com/photo.png"));
+  EXPECT_FALSE(image_entry->timestamp.is_null());
 }
 
 TEST_F(ContextHubPageHandlerTest, DeleteMemoryBankEntries_Success) {
@@ -2707,7 +2749,7 @@ TEST_F(ContextHubPageHandlerTest,
   EXPECT_EQ(context->url, GURL("https://example.com/test"));
   EXPECT_EQ(context->tab_title, "Test Title");
   EXPECT_EQ(context->selected_text, "Test Snippet");
-  EXPECT_TRUE(context->is_text_selection);
+  EXPECT_FALSE(context->image_url.has_value());
 }
 
 TEST_F(ContextHubPageHandlerTest, GetSaveToMemoryBankContext_WithTabContext) {
@@ -2728,7 +2770,29 @@ TEST_F(ContextHubPageHandlerTest, GetSaveToMemoryBankContext_WithTabContext) {
   EXPECT_EQ(context->url, GURL("https://example.com/test"));
   EXPECT_EQ(context->tab_title, "Test Title");
   EXPECT_FALSE(context->selected_text.has_value());
-  EXPECT_FALSE(context->is_text_selection);
+  EXPECT_FALSE(context->image_url.has_value());
+}
+
+TEST_F(ContextHubPageHandlerTest, GetSaveToMemoryBankContext_WithImageContext) {
+  auto* service = ContextHubServiceFactory::GetForProfile(&profile_);
+  ASSERT_TRUE(service);
+  MemoryBankEntry entry(
+      MemoryBankType::kImage, GURL("https://example.com/test"), "Test Title",
+      /*selected_text=*/std::nullopt, GURL("https://example.com/image.png"));
+  service->SetPendingMemoryBankEntry(std::move(entry));
+
+  base::test::TestFuture<
+      browser::context_hub::mojom::SaveToMemoryBankContextPtr>
+      future;
+  handler_->GetSaveToMemoryBankContext(future.GetCallback());
+
+  browser::context_hub::mojom::SaveToMemoryBankContextPtr context =
+      future.Take();
+  ASSERT_TRUE(context);
+  EXPECT_EQ(context->url, GURL("https://example.com/test"));
+  EXPECT_EQ(context->tab_title, "Test Title");
+  EXPECT_FALSE(context->selected_text.has_value());
+  EXPECT_EQ(context->image_url, GURL("https://example.com/image.png"));
 }
 
 TEST_F(ContextHubPageHandlerTest,

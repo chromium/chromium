@@ -94,6 +94,9 @@ optimization_guide::proto::MemoryBankEntry ToMemoryBankEntryProto(
       mb_proto.set_type(optimization_guide::proto::MEMORY_BANK_TYPE_TAB);
       break;
     case MemoryBankType::kTextSelection:
+    // TODO(crbug.com/570703760): Update to MEMORY_BANK_TYPE_IMAGE once the
+    // optimization_guide proto is updated.
+    case MemoryBankType::kImage:
       mb_proto.set_type(
           optimization_guide::proto::MEMORY_BANK_TYPE_TEXT_SELECTION);
       break;

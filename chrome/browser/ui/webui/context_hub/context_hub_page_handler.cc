@@ -587,9 +587,8 @@ void ContextHubPageHandler::GetSaveToMemoryBankContext(
           browser::context_hub::mojom::SaveToMemoryBankContext::New();
       mojo_context->url = pending->url;
       mojo_context->tab_title = pending->tab_title;
-      bool is_text_selection =
-          pending->type == context_hub::MemoryBankType::kTextSelection;
-      if (is_text_selection && pending->selected_text.has_value()) {
+      if (pending->type == context_hub::MemoryBankType::kTextSelection &&
+          pending->selected_text.has_value()) {
         // Truncate the snippet to a reasonable length since we only need a
         // preview in the UI.
         static constexpr size_t kMaxSnippetPreviewLength = 300;
@@ -599,7 +598,7 @@ void ContextHubPageHandler::GetSaveToMemoryBankContext(
         }
         mojo_context->selected_text = std::move(preview);
       }
-      mojo_context->is_text_selection = is_text_selection;
+      mojo_context->image_url = pending->image_url;
       std::move(callback).Run(std::move(mojo_context));
       return;
     }

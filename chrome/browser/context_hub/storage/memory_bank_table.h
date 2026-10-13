@@ -29,7 +29,7 @@ namespace context_hub {
 //   id                                 INTEGER PRIMARY KEY Auto-incremented by
 //                                      SQLite, uniquely identifies each entry.
 //   type                               INTEGER NOT NULL (0: kTab,
-//                                      1: kTextSelection)
+//                                      1: kTextSelection, 2: kImage)
 //   timestamp                          INTEGER NOT NULL The timestamp of the
 //                                      memory bank entry, stored as
 //                                      microseconds since the Windows epoch.
@@ -42,6 +42,8 @@ namespace context_hub {
 //   note                               TEXT User-provided notes for the entry.
 //   collection                         TEXT The collection name the entry
 //                                      belongs to.
+//   image_url                          TEXT The source URL of the image when
+//                                      the entry is of type kImage.
 // -----------------------------------------------------------------------------
 class MemoryBankTable {
  public:
@@ -62,6 +64,10 @@ class MemoryBankTable {
   // Migrates the memory_bank_entries table from version 1 to version 2 by
   // adding the note and collection columns. Returns true on success.
   bool MigrateToVersion2AddNoteAndCollectionColumns();
+
+  // Migrates the memory_bank_entries table from version 2 to version 3 by
+  // adding the image_url column. Returns true on success.
+  bool MigrateToVersion3AddImageUrlColumn();
 
   // Inserts or replaces a record in memory_bank_entries. Returns the entry's
   // ID on success, or std::nullopt on failure.

@@ -261,6 +261,10 @@ struct StructTraits<browser::context_hub::mojom::MemoryBankEntryDataView,
       const context_hub::MemoryBankEntry& entry) {
     return entry.selected_text;
   }
+  static const std::optional<GURL>& image_url(
+      const context_hub::MemoryBankEntry& entry) {
+    return entry.image_url;
+  }
   static const std::vector<std::string>& tags(
       const context_hub::MemoryBankEntry& entry) {
     return entry.tags;

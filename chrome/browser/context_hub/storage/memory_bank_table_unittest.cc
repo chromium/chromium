@@ -27,6 +27,7 @@ class MemoryBankTableTest : public testing::Test {
     ASSERT_TRUE(table_.Init(&db_));
     ASSERT_TRUE(table_.MigrateFromCleanStateToVersion1());
     ASSERT_TRUE(table_.MigrateToVersion2AddNoteAndCollectionColumns());
+    ASSERT_TRUE(table_.MigrateToVersion3AddImageUrlColumn());
   }
 
   sql::Database db_{sql::DatabaseOptions{}, sql::test::kTestTag};
@@ -49,6 +50,7 @@ TEST_F(MemoryBankTableTest, MigrateFromCleanStateToVersion1) {
   EXPECT_TRUE(db.DoesColumnExist("memory_bank_entries", "tags"));
   EXPECT_FALSE(db.DoesColumnExist("memory_bank_entries", "note"));
   EXPECT_FALSE(db.DoesColumnExist("memory_bank_entries", "collection"));
+  EXPECT_FALSE(db.DoesColumnExist("memory_bank_entries", "image_url"));
 }
 
 TEST_F(MemoryBankTableTest, MigrateToVersion2AddNoteAndCollectionColumns) {
@@ -69,26 +71,78 @@ TEST_F(MemoryBankTableTest, MigrateToVersion2AddNoteAndCollectionColumns) {
 
   EXPECT_TRUE(db.DoesColumnExist("memory_bank_entries", "note"));
   EXPECT_TRUE(db.DoesColumnExist("memory_bank_entries", "collection"));
+  EXPECT_FALSE(db.DoesColumnExist("memory_bank_entries", "image_url"));
 
-  // Verify the existing row can be fetched and note/collection are nullopt.
+  // Verify the existing row can be fetched and note/collection are null.
+  {
+    sql::Statement statement(db.GetUniqueStatement(
+        "SELECT tab_title, note, collection FROM memory_bank_entries "
+        "WHERE id = 1"));
+    ASSERT_TRUE(statement.Step());
+    EXPECT_EQ("Title", statement.ColumnString(0));
+    EXPECT_EQ(sql::ColumnType::kNull, statement.GetColumnType(1));
+    EXPECT_EQ(sql::ColumnType::kNull, statement.GetColumnType(2));
+  }
+
+  // Verify new row with note and collection can be added and fetched.
+  ASSERT_TRUE(
+      db.Execute("INSERT INTO memory_bank_entries (id, type, timestamp, url, "
+                 "tab_title, selected_text, tags, note, collection) VALUES "
+                 "(2, 0, 2000, 'https://example2.com', 'Title 2', NULL, "
+                 "NULL, 'Note 2', 'Collection 2')"));
+  {
+    sql::Statement statement(db.GetUniqueStatement(
+        "SELECT tab_title, note, collection FROM memory_bank_entries "
+        "WHERE id = 2"));
+    ASSERT_TRUE(statement.Step());
+    EXPECT_EQ("Title 2", statement.ColumnString(0));
+    EXPECT_EQ("Note 2", statement.ColumnString(1));
+    EXPECT_EQ("Collection 2", statement.ColumnString(2));
+  }
+}
+
+TEST_F(MemoryBankTableTest, MigrateToVersion3AddImageUrlColumn) {
+  sql::Database db(sql::DatabaseOptions{}, sql::test::kTestTag);
+  ASSERT_TRUE(db.OpenInMemory());
+  MemoryBankTable table;
+  ASSERT_TRUE(table.Init(&db));
+  ASSERT_TRUE(table.MigrateFromCleanStateToVersion1());
+  ASSERT_TRUE(table.MigrateToVersion2AddNoteAndCollectionColumns());
+
+  // Insert a row in version 2 schema.
+  ASSERT_TRUE(
+      db.Execute("INSERT INTO memory_bank_entries (id, type, timestamp, url, "
+                 "tab_title, selected_text, tags, note, collection) VALUES "
+                 "(1, 0, 1000, 'https://example.com', 'Title', 'Text', "
+                 "'[\"tag1\"]', 'Note 1', 'Collection 1')"));
+
+  // Run migration to version 3.
+  EXPECT_TRUE(table.MigrateToVersion3AddImageUrlColumn());
+  EXPECT_TRUE(db.DoesColumnExist("memory_bank_entries", "image_url"));
+
+  // Verify the existing row can be fetched and image_url is nullopt.
   auto entry = table.GetEntry(1);
   ASSERT_TRUE(entry.has_value());
   EXPECT_EQ("Title", entry->tab_title);
-  EXPECT_FALSE(entry->note.has_value());
-  EXPECT_FALSE(entry->collection.has_value());
+  EXPECT_EQ("Note 1", entry->note);
+  EXPECT_EQ("Collection 1", entry->collection);
+  EXPECT_FALSE(entry->image_url.has_value());
 
-  // Verify new row with note and collection can be added and fetched.
+  // Verify new row with image_url can be added and fetched.
   MemoryBankEntry new_entry;
-  new_entry.type = MemoryBankType::kTab;
+  new_entry.type = MemoryBankType::kImage;
   new_entry.timestamp = base::Time::FromSecondsSinceUnixEpoch(2000);
   new_entry.url = GURL("https://example2.com");
   new_entry.tab_title = "Title 2";
+  new_entry.image_url = GURL("https://example2.com/image.png");
   new_entry.note = "Note 2";
   new_entry.collection = "Collection 2";
   EXPECT_THAT(table.AddOrUpdateEntry(new_entry), testing::Optional(2));
 
   std::vector<MemoryBankEntry> all = table.GetAllEntries();
-  EXPECT_EQ(2u, all.size());
+  ASSERT_EQ(2u, all.size());
+  EXPECT_EQ(MemoryBankType::kImage, all[0].type);
+  EXPECT_EQ(GURL("https://example2.com/image.png"), all[0].image_url);
 }
 
 TEST_F(MemoryBankTableTest, AddAndGetEntry) {
@@ -118,6 +172,7 @@ TEST_F(MemoryBankTableTest, AddAndGetEntry) {
   EXPECT_EQ(entry.tab_title, entries[0].tab_title);
   ASSERT_TRUE(entries[0].selected_text.has_value());
   EXPECT_EQ("Page content", entries[0].selected_text.value());
+  EXPECT_FALSE(entries[0].image_url.has_value());
   EXPECT_EQ((std::vector<std::string>{"tag1", "tag2"}), entries[0].tags);
   ASSERT_TRUE(entries[0].note.has_value());
   EXPECT_EQ("Test Note", entries[0].note.value());
@@ -128,6 +183,7 @@ TEST_F(MemoryBankTableTest, AddAndGetEntry) {
   ASSERT_TRUE(fetched_entry.has_value());
   EXPECT_EQ(generated_id, fetched_entry->id);
   EXPECT_EQ(entry.url, fetched_entry->url);
+  EXPECT_FALSE(fetched_entry->image_url.has_value());
   EXPECT_EQ("Test Note", fetched_entry->note.value());
   EXPECT_EQ("Research", fetched_entry->collection.value());
 }
@@ -148,6 +204,7 @@ TEST_F(MemoryBankTableTest, UpdateExistingEntry) {
   MemoryBankEntry updated_entry = entries[0];
   updated_entry.tab_title = "Updated Title";
   updated_entry.selected_text = "New Selection";
+  updated_entry.image_url = GURL("https://www.google.com/logo.png");
   updated_entry.tags = {"updated"};
   updated_entry.note = "Updated Note";
   updated_entry.collection = "Updated Collection";
@@ -160,6 +217,9 @@ TEST_F(MemoryBankTableTest, UpdateExistingEntry) {
   ASSERT_TRUE(fetched_entry.has_value());
   EXPECT_EQ("Updated Title", fetched_entry->tab_title);
   EXPECT_EQ("New Selection", fetched_entry->selected_text.value());
+  ASSERT_TRUE(fetched_entry->image_url.has_value());
+  EXPECT_EQ(GURL("https://www.google.com/logo.png"),
+            fetched_entry->image_url.value());
   EXPECT_EQ((std::vector<std::string>{"updated"}), fetched_entry->tags);
   ASSERT_TRUE(fetched_entry->note.has_value());
   EXPECT_EQ("Updated Note", fetched_entry->note.value());
@@ -306,6 +366,7 @@ TEST_F(MemoryBankTableTest, NullOptionalFieldsStoredAsSqlNull) {
   entry.url = GURL("https://example.com");
   entry.tab_title = "Title";
   entry.selected_text = std::nullopt;
+  entry.image_url = std::nullopt;
   entry.tags = {};
   entry.note = std::nullopt;
   entry.collection = std::nullopt;
@@ -313,8 +374,8 @@ TEST_F(MemoryBankTableTest, NullOptionalFieldsStoredAsSqlNull) {
   EXPECT_THAT(table_.AddOrUpdateEntry(entry), testing::Optional(12345));
 
   sql::Statement statement(db_.GetUniqueStatement(
-      "SELECT selected_text, tags, note, collection FROM memory_bank_entries "
-      "WHERE id = ?"));
+      "SELECT selected_text, tags, note, collection, image_url FROM "
+      "memory_bank_entries WHERE id = ?"));
   statement.BindInt64(0, 12345);
   ASSERT_TRUE(statement.Step());
 
@@ -322,6 +383,7 @@ TEST_F(MemoryBankTableTest, NullOptionalFieldsStoredAsSqlNull) {
   EXPECT_EQ(sql::ColumnType::kNull, statement.GetColumnType(1));
   EXPECT_EQ(sql::ColumnType::kNull, statement.GetColumnType(2));
   EXPECT_EQ(sql::ColumnType::kNull, statement.GetColumnType(3));
+  EXPECT_EQ(sql::ColumnType::kNull, statement.GetColumnType(4));
 
   auto fetched = table_.GetEntry(12345);
   ASSERT_TRUE(fetched.has_value());
@@ -329,6 +391,7 @@ TEST_F(MemoryBankTableTest, NullOptionalFieldsStoredAsSqlNull) {
   EXPECT_TRUE(fetched->tags.empty());
   EXPECT_FALSE(fetched->note.has_value());
   EXPECT_FALSE(fetched->collection.has_value());
+  EXPECT_FALSE(fetched->image_url.has_value());
 }
 
 TEST_F(MemoryBankTableTest, GetEntriesByIds) {

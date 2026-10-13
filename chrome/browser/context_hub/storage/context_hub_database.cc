@@ -203,6 +203,8 @@ bool ContextHubDatabase::MigrateToVersion(int version) {
     case 2:
       return memory_bank_table_
           .MigrateToVersion2AddNoteAndCollectionColumns();
+    case 3:
+      return memory_bank_table_.MigrateToVersion3AddImageUrlColumn();
     default:
       return false;
   }

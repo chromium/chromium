@@ -15,14 +15,15 @@
 
 namespace context_hub {
 
-enum class MemoryBankType { kTab, kTextSelection };
+enum class MemoryBankType { kTab, kTextSelection, kImage };
 
 struct MemoryBankEntry {
   MemoryBankEntry();
   MemoryBankEntry(MemoryBankType type,
                   GURL url,
                   std::string tab_title,
-                  std::optional<std::string> selected_text = std::nullopt);
+                  std::optional<std::string> selected_text = std::nullopt,
+                  std::optional<GURL> image_url = std::nullopt);
   MemoryBankEntry(const MemoryBankEntry&);
   MemoryBankEntry& operator=(const MemoryBankEntry&);
   MemoryBankEntry(MemoryBankEntry&&);
@@ -43,6 +44,9 @@ struct MemoryBankEntry {
   // selected_text is empty.
   // The text that the user selected from the page.
   std::optional<std::string> selected_text;
+  // The source URL of the image when the entry is of type kImage (may point to
+  // third-party web content).
+  std::optional<GURL> image_url;
   // Tags associated with the entry for grouping.
   std::vector<std::string> tags;
   // User-provided notes for the entry.

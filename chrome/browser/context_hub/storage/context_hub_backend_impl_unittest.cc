@@ -43,6 +43,7 @@ TEST_F(ContextHubBackendImplTest, SaveTabAndRetrieve) {
   entry.url = GURL("https://example.com");
   entry.tab_title = "Example";
   entry.selected_text = "Page content";
+  entry.image_url = GURL("https://example.com/image.png");
   entry.note = "Test Note";
   entry.collection = "Research";
 
@@ -59,6 +60,9 @@ TEST_F(ContextHubBackendImplTest, SaveTabAndRetrieve) {
   EXPECT_EQ("Example", entries[0].tab_title);
   ASSERT_TRUE(entries[0].selected_text.has_value());
   EXPECT_EQ("Page content", entries[0].selected_text.value());
+  ASSERT_TRUE(entries[0].image_url.has_value());
+  EXPECT_EQ(GURL("https://example.com/image.png"),
+            entries[0].image_url.value());
   ASSERT_TRUE(entries[0].note.has_value());
   EXPECT_EQ("Test Note", entries[0].note.value());
   ASSERT_TRUE(entries[0].collection.has_value());

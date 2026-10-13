@@ -252,6 +252,8 @@ browser::context_hub::mojom::EntryType EnumTraits<
       return browser::context_hub::mojom::EntryType::kTab;
     case context_hub::MemoryBankType::kTextSelection:
       return browser::context_hub::mojom::EntryType::kTextSelection;
+    case context_hub::MemoryBankType::kImage:
+      return browser::context_hub::mojom::EntryType::kImage;
   }
   NOTREACHED();
 }
@@ -265,6 +267,8 @@ context_hub::MemoryBankType EnumTraits<browser::context_hub::mojom::EntryType,
       return context_hub::MemoryBankType::kTab;
     case browser::context_hub::mojom::EntryType::kTextSelection:
       return context_hub::MemoryBankType::kTextSelection;
+    case browser::context_hub::mojom::EntryType::kImage:
+      return context_hub::MemoryBankType::kImage;
   }
   NOTREACHED();
 }
@@ -278,8 +282,8 @@ bool StructTraits<browser::context_hub::mojom::MemoryBankEntryDataView,
   return data.ReadType(&out->type) && data.ReadTimestamp(&out->timestamp) &&
          data.ReadUrl(&out->url) && data.ReadTabTitle(&out->tab_title) &&
          data.ReadSelectedText(&out->selected_text) &&
-         data.ReadTags(&out->tags) && data.ReadNote(&out->note) &&
-         data.ReadCollection(&out->collection);
+         data.ReadImageUrl(&out->image_url) && data.ReadTags(&out->tags) &&
+         data.ReadNote(&out->note) && data.ReadCollection(&out->collection);
 }
 
 // static

@@ -36,6 +36,7 @@ class ContextHubDatabaseTest : public testing::Test {
     data.url = GURL("https://example.com");
     data.tab_title = "Example Title";
     data.selected_text = "Page content";
+    data.image_url = GURL("https://example.com/image.png");
     data.tags = {"tag1", "tag2"};
     data.note = "Test Note";
     data.collection = "Research";
@@ -75,6 +76,7 @@ TEST_F(ContextHubDatabaseTest, InitializeEmptyToCurrent) {
     EXPECT_TRUE(connection.DoesColumnExist("memory_bank_entries", "note"));
     EXPECT_TRUE(
         connection.DoesColumnExist("memory_bank_entries", "collection"));
+    EXPECT_TRUE(connection.DoesColumnExist("memory_bank_entries", "image_url"));
   }
 }
 
@@ -89,9 +91,9 @@ TEST_F(ContextHubDatabaseTest, InitializeWithExistingDatabase) {
   EXPECT_TRUE(db.Init(GetDbPath()));
 }
 
-// Tests that an older database at version 1 (without note/collection) is
-// cleanly migrated to version 2, preserving existing data and adding the new
-// columns.
+// Tests that an older database at version 1 (without note/collection/image_url)
+// is cleanly migrated to the current version, preserving existing data and
+// adding the new columns.
 TEST_F(ContextHubDatabaseTest, MigrateVersion1ToVersion2PreservesData) {
   {
     sql::Database connection(sql::test::kTestTag);
@@ -122,7 +124,7 @@ TEST_F(ContextHubDatabaseTest, MigrateVersion1ToVersion2PreservesData) {
   }
 
   // Initialize with ContextHubDatabase which detects user_version 1 and
-  // migrates to version 2.
+  // migrates to the current version.
   ASSERT_TRUE(db_->Init(GetDbPath()));
 
   // Verify that the pre-existing row survived the migration intact.
@@ -132,6 +134,7 @@ TEST_F(ContextHubDatabaseTest, MigrateVersion1ToVersion2PreservesData) {
   EXPECT_EQ(GURL("https://example.com"), entry->url);
   EXPECT_FALSE(entry->note.has_value());
   EXPECT_FALSE(entry->collection.has_value());
+  EXPECT_FALSE(entry->image_url.has_value());
 
   // Verify adding and reading a new entry with the new fields works.
   EXPECT_THAT(db_->AddOrUpdateMemoryBankEntry(CreateTestData()),
@@ -142,8 +145,8 @@ TEST_F(ContextHubDatabaseTest, MigrateVersion1ToVersion2PreservesData) {
   // to release the exclusive file lock.
   db_.reset();
 
-  // Verify the migrated table has the note and collection columns and is at
-  // version 2.
+  // Verify the migrated table has the new columns and is at the current
+  // version.
   {
     sql::Database connection(sql::test::kTestTag);
     ASSERT_TRUE(connection.Open(GetDbPath()));
@@ -157,6 +160,83 @@ TEST_F(ContextHubDatabaseTest, MigrateVersion1ToVersion2PreservesData) {
     EXPECT_TRUE(connection.DoesColumnExist("memory_bank_entries", "note"));
     EXPECT_TRUE(
         connection.DoesColumnExist("memory_bank_entries", "collection"));
+    EXPECT_TRUE(connection.DoesColumnExist("memory_bank_entries", "image_url"));
+  }
+}
+
+// Tests that an older database at version 2 (without image_url) is cleanly
+// migrated to version 3, preserving existing data and adding the new column.
+TEST_F(ContextHubDatabaseTest, MigrateVersion2ToVersion3PreservesData) {
+  {
+    sql::Database connection(sql::test::kTestTag);
+    ASSERT_TRUE(connection.Open(GetDbPath()));
+
+    ASSERT_TRUE(
+        connection.Execute("CREATE TABLE memory_bank_entries ("
+                           "id INTEGER PRIMARY KEY,"
+                           "type INTEGER NOT NULL,"
+                           "timestamp INTEGER NOT NULL,"
+                           "url TEXT NOT NULL,"
+                           "tab_title TEXT NOT NULL,"
+                           "selected_text TEXT,"
+                           "tags TEXT,"
+                           "note TEXT,"
+                           "collection TEXT)"));
+    ASSERT_TRUE(
+        connection.Execute("CREATE INDEX memory_bank_entries_timestamp ON "
+                           "memory_bank_entries(timestamp)"));
+    ASSERT_TRUE(connection.Execute(
+        "CREATE INDEX memory_bank_entries_url ON memory_bank_entries(url)"));
+    ASSERT_TRUE(connection.Execute("PRAGMA user_version=2"));
+
+    // Insert an existing version 2 row.
+    sql::Statement statement(connection.GetUniqueStatement(
+        "INSERT INTO memory_bank_entries (id, type, timestamp, url, "
+        "tab_title, selected_text, tags, note, collection) VALUES (1, 0, 1000, "
+        "'https://example.com', 'Title', 'Text', '[\"tag1\"]', 'My Note', "
+        "'Work')"));
+    ASSERT_TRUE(statement.Run());
+  }
+
+  // Initialize with ContextHubDatabase which detects user_version 2 and
+  // migrates to version 3.
+  ASSERT_TRUE(db_->Init(GetDbPath()));
+
+  // Verify that the pre-existing row survived the migration intact.
+  std::optional<MemoryBankEntry> entry = db_->GetMemoryBankEntry(1);
+  ASSERT_TRUE(entry.has_value());
+  EXPECT_EQ("Title", entry->tab_title);
+  EXPECT_EQ(GURL("https://example.com"), entry->url);
+  EXPECT_EQ("My Note", entry->note);
+  EXPECT_EQ("Work", entry->collection);
+  EXPECT_FALSE(entry->image_url.has_value());
+
+  // Verify adding and reading a new image entry with the new field works.
+  MemoryBankEntry image_entry = CreateTestData();
+  image_entry.type = MemoryBankType::kImage;
+  EXPECT_THAT(db_->AddOrUpdateMemoryBankEntry(image_entry),
+              testing::Optional(2));
+  std::optional<MemoryBankEntry> retrieved = db_->GetMemoryBankEntry(2);
+  ASSERT_TRUE(retrieved.has_value());
+  EXPECT_EQ(MemoryBankType::kImage, retrieved->type);
+  EXPECT_EQ(image_entry.image_url, retrieved->image_url);
+
+  // Close ContextHubDatabase before opening a direct sql::Database connection
+  // to release the exclusive file lock.
+  db_.reset();
+
+  // Verify the migrated table has the image_url column and is at version 3.
+  {
+    sql::Database connection(sql::test::kTestTag);
+    ASSERT_TRUE(connection.Open(GetDbPath()));
+
+    sql::Statement get_user_version_stm(
+        connection.GetUniqueStatement("PRAGMA user_version"));
+    ASSERT_TRUE(get_user_version_stm.is_valid());
+    ASSERT_TRUE(get_user_version_stm.Step());
+    EXPECT_EQ(ContextHubDatabase::kCurrentVersionNumber,
+              get_user_version_stm.ColumnInt(0));
+    EXPECT_TRUE(connection.DoesColumnExist("memory_bank_entries", "image_url"));
   }
 }
 
@@ -242,6 +322,7 @@ TEST_F(ContextHubDatabaseTest, AddAndGetMemoryBankEntry) {
   EXPECT_EQ(retrieved->url, data.url);
   EXPECT_EQ(retrieved->tab_title, data.tab_title);
   EXPECT_EQ(retrieved->selected_text, data.selected_text);
+  EXPECT_EQ(retrieved->image_url, data.image_url);
   EXPECT_EQ(retrieved->tags, data.tags);
   EXPECT_EQ(retrieved->note, data.note);
   EXPECT_EQ(retrieved->collection, data.collection);
