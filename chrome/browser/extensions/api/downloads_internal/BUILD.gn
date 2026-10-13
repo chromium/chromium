@@ -13,8 +13,6 @@ source_set("downloads_internal") {
     "downloads_internal_api.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   deps = [
     "//base",
     "//chrome/browser/extensions",

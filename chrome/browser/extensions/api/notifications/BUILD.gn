@@ -19,8 +19,6 @@ source_set("notifications") {
     "notifications_api.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [
     "//base",
     "//chrome/browser/notifications",

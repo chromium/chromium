@@ -16,8 +16,6 @@ source_set("quick_unlock_private") {
     "quick_unlock_private_ash_utils.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [
     "//base",
     "//chrome/browser/extensions",

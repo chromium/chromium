@@ -14,8 +14,6 @@ source_set("omnibox") {
     "suggestion_parser.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [
     "//chrome/common/extensions/api",
     "//components/omnibox/browser",

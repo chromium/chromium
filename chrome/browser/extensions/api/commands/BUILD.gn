@@ -13,8 +13,6 @@ source_set("commands") {
     "commands.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   deps = [
     "//chrome/browser/extensions",
     "//extensions/browser",

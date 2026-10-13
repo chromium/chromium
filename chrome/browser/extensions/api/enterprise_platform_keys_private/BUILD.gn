@@ -14,8 +14,6 @@ source_set("enterprise_platform_keys_private") {
     "enterprise_platform_keys_private_api.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [
     "//chrome/browser/ash/attestation",
     "//chromeos/ash/components/dbus/attestation:attestation_proto",

@@ -16,8 +16,6 @@ source_set("input_ime") {
     "input_ime_api_chromeos.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [
     "//base",
     "//build:chromeos_buildflags",

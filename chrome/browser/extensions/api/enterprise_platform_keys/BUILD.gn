@@ -14,8 +14,6 @@ source_set("enterprise_platform_keys") {
     "enterprise_platform_keys_api.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [
     "//build:chromeos_buildflags",
     "//extensions/browser",

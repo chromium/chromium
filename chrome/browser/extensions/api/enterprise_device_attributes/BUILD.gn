@@ -14,8 +14,6 @@ source_set("enterprise_device_attributes") {
     "enterprise_device_attributes_api.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [ "//extensions/browser" ]
 
   deps = [

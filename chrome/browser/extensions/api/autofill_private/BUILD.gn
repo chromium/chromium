@@ -21,8 +21,6 @@ source_set("autofill_private") {
     "autofill_util.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   deps = [
     "//base",
     "//chrome/browser:browser_process",

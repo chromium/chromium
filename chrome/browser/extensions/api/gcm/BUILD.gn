@@ -15,8 +15,6 @@ source_set("gcm") {
     "gcm_api.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   deps = [
     "//base",
     "//chrome/browser/gcm",

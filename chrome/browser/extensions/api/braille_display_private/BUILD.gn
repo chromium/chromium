@@ -27,8 +27,6 @@ source_set("braille_display_private") {
     sources += [ "braille_controller_stub.cc" ]
   }
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [
     ":controller",
     "//base",
@@ -62,8 +60,6 @@ source_set("controller") {
     "stub_braille_controller.cc",
     "stub_braille_controller.h",
   ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [ "//chrome/common/extensions/api" ]
 

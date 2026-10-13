@@ -12,8 +12,6 @@ source_set("font_settings") {
     "font_settings_api.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [
     "//base",
     "//extensions/browser",

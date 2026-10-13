@@ -13,8 +13,6 @@ source_set("content_settings") {
     "content_settings_api.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [
     "//base",
     "//content/public/common:buildflags",

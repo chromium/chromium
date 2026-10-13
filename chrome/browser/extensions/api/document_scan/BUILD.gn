@@ -26,8 +26,6 @@ source_set("document_scan") {
     "start_scan_runner.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [
     "//base",
     "//chrome/common/extensions/api",

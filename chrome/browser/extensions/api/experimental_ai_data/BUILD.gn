@@ -13,8 +13,6 @@ source_set("experimental_ai_data") {
     "experimental_ai_data_api.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [
     "//base",
     "//chrome/browser/ai",

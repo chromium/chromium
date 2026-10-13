@@ -13,8 +13,6 @@ source_set("activity_log_private") {
     "activity_log_private_api.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   deps = [
     "//base",
     "//chrome/browser:browser_process",

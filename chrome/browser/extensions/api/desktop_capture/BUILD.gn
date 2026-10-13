@@ -15,8 +15,6 @@ source_set("desktop_capture") {
     "desktop_capture_base.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   deps = [
     "//base",
     "//chrome/browser/extensions",

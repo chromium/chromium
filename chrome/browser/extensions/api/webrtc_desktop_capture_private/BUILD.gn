@@ -13,8 +13,6 @@ source_set("webrtc_desktop_capture_private") {
     "webrtc_desktop_capture_private_api.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   deps = [
     "//base",
     "//chrome/browser/extensions",

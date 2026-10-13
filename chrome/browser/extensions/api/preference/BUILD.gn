@@ -14,8 +14,6 @@ source_set("preference") {
     "preference_api.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   deps = [
     "//base",
     "//chrome/browser/extensions",

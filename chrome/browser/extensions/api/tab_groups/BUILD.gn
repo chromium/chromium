@@ -16,8 +16,6 @@ source_set("tab_groups") {
     "tab_groups_event_router_factory.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [
     "//extensions/browser",
     "//extensions/buildflags",

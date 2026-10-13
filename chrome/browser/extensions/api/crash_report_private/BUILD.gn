@@ -13,8 +13,6 @@ source_set("crash_report_private") {
     "crash_report_private_api.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   deps = [
     "//base",
     "//chrome/browser/extensions",

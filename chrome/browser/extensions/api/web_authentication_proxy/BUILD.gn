@@ -19,8 +19,6 @@ source_set("web_authentication_proxy") {
     "web_authentication_proxy_service.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [
     "//base",
     "//chrome/browser/profiles:profile",
