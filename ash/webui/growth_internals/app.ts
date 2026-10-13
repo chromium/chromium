@@ -22,6 +22,10 @@ export class GrowthInternalsAppElement extends PolymerElement {
 
   static get properties() {
     return {
+      logs_: {
+        type: Array,
+        value: () => [],
+      },
       filteredLogs_: {
         type: Array,
         value: [],
@@ -35,7 +39,7 @@ export class GrowthInternalsAppElement extends PolymerElement {
   }
 
   private browserProxy_: BrowserProxy|null = null;
-  private logs_: string[] = [];
+  declare private logs_: string[];
   declare private filteredLogs_: string[];
   declare private campaignId_: string;
 
