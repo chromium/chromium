@@ -2394,7 +2394,9 @@ void DevToolsUIBindings::RecordCountHistogram(const std::string& name,
   // because it doesn't really make sense to crash if the histogram is out
   // of range.
   CHECK_GE(sample, min, base::NotFatalUntil::M161);
-  CHECK_LT(sample, exclusive_max, base::NotFatalUntil::M161);
+  // TODO(crbug.com/572218538): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_LT(sample, exclusive_max);
 
   if (sample < min) {
     sample = 0;
