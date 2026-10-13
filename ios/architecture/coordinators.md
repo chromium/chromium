@@ -1,10 +1,9 @@
 # Coordinators
 
-> **Summary:** To decompose the user interface into encapsulated components, iOS
-> Chrome uses a hierarchy of **coordinators**. Coordinators provide an
-> abstraction layer over individual UI features, manage object lifecycles and
-> dependencies, and define one of the fundamental architectural layers of the
-> application.
+> **Core Principle:** To **decompose** the user interface into **encapsulated**
+> components, a **hierarchy** of coordinators is used. Coordinators provide an
+> **abstraction layer** over individual pieces of UI, and define one of the
+> fundamental **layers** of Chrome on iOS.
 
 ---
 
@@ -23,18 +22,18 @@ controllers tend to accrete responsibilities far beyond their intended role:
   they become coupled to the lifecycle, presentation mechanics, and dependencies
   of those child features.
 
-To prevent view controllers from becoming monolithic catch-alls, iOS Chrome
+To prevent view controllers from becoming monolithic catch-alls, Chrome on iOS
 separates these responsibilities across a triad of patterns:
 
 * **Isolated View Controllers** manage views, layout, and user interactions
   without any direct knowledge of the model layer.
-* **Mediators** encapsulate business logic and mediate between **Deep Models**
-  and view controllers.
+* **[Mediators](mediators.md)** encapsulate business logic and mediate between
+  **Deep Models** and view controllers.
 * **Coordinators** encapsulate entire UI features, assemble and own the
   feature's objects, inject their dependencies, and manage interactions with the
   rest of the application.
 
-The user interface of iOS Chrome is decomposed into discrete, focused, and
+The user interface of Chrome on iOS is decomposed into discrete, focused, and
 autonomous **features**—such as the omnibox, the toolbar, the overflow menu, or
 the tab grid. Features compose hierarchically: a browser tab conceptually
 contains toolbars and web content, and a toolbar contains the omnibox. The
@@ -95,6 +94,25 @@ presented or contained—such as modal presentation styles, navigation stacks, o
 custom **transition handlers**—without directly implementing view hierarchy
 manipulations or animation logic themselves.
 
+### Directory Structure and Dependencies
+
+To enforce layering boundaries in the source tree, feature code is organized
+into three subdirectories under `//ios/chrome/browser/<feature_name>/`:
+
+* `model/`: Model-layer classes (such as keyed services, tab helpers, and
+  browser agents).
+* `coordinator/`: Controller-layer classes, including both **coordinators**
+  and **[mediators](mediators.md)**.
+* `ui/`: UI-layer classes, including views and view controllers.
+
+Because the `ui/` directory must not depend on `coordinator/` or `model/`, any
+protocol or data class definitions shared between `coordinator/` and `ui/`—such
+as [consumer, consumer data source, and mutator protocols, composite item
+classes](mediators.md#directory-structure-and-dependencies), and [local command
+protocols](#local-commands)—must be declared in headers located in `ui/`. Both
+the view controller (in `ui/`) and the coordinator or mediator (in
+`coordinator/`) import these headers from `ui/`.
+
 ---
 
 ## Creating and Implementing a Coordinator
@@ -120,13 +138,13 @@ parameters provide the foundational context every browser-scoped coordinator
 requires:
 
 1. **`baseViewController` (`UIViewController*`)**: Held weakly by the
-   coordinator; defines the UI context in which the feature's view controller
-   will be presented or contained.
+  coordinator; defines the UI context in which the feature's view controller
+  will be presented or contained.
 2. **`browser` (`Browser*`)**: An unowned pointer to the backbone container
-   providing access to the `ProfileIOS`, `WebStateList`, browser agents, and
-   `CommandDispatcher`. Because coordinators are owned by the hierarchy and
-   stopped before their `Browser` is destroyed, the `Browser` is guaranteed to
-   outlive its coordinators.
+  providing access to the `ProfileIOS`, `WebStateList`, browser agents, and
+  `CommandDispatcher`. Because coordinators are owned by the hierarchy and
+  stopped before their `Browser` is destroyed, the `Browser` is guaranteed to
+  outlive its coordinators.
 
 A subclass may define a custom designated initializer when it needs
 invocation-specific configuration that cannot be obtained from `Browser` (such
@@ -151,8 +169,8 @@ than the public `.h` header.
 A coordinator typically creates, owns, and connects the following objects:
 
 * **View Controller**: Manages the feature's views and user interactions.
-* **Mediator**: Connects model-layer services and observables to the view
-  controller.
+* **[Mediator](mediators.md)**: Connects model-layer services and observables to
+  the view controller.
 * **Child Coordinators**: Encapsulate sub-features contained within or presented
   by this feature.
 * **Helper Objects**: Transition handlers or other coordinator-layer helpers.
@@ -175,19 +193,23 @@ In the diagram above:
 * **Heavy red arrows** indicate **interactions across abstract protocol
   interfaces**:
   * The mediator observes and mutates the **Model Layer**.
-  * The mediator pushes UI updates to the view controller through a **consumer**
-    protocol (`id<FooConsumer>`).
+  * The mediator pushes UI updates to the view controller through a
+    **[consumer](mediators.md#consumer-protocols)** protocol
+    (`id<FooConsumer>`).
   * The view controller requests model updates from the mediator through a
-    **mutator** protocol (`id<FooMutator>`).
+    **[mutator](mediators.md#model-updates-through-the-mediator)** protocol
+    (`id<FooMutator>`).
   * The view controller (or mediator) triggers application-level or
-    cross-feature UI changes by calling a **command handler**
-    (`id<FooCommands>`) backed by the `CommandDispatcher` (or a **local
-    command** handler for feature-internal UI actions).
+    cross-feature UI changes by calling a **[command
+    handler](commands.md#type-safety-and-command-handlers)**
+    (`id<FooCommands>`) backed by the `CommandDispatcher` (or a **[local
+    command](#local-commands)** handler for feature-internal UI actions).
 
 Notice that once its child objects are initialized and connected, **the
 coordinator does not call methods on the view controller or mediator** to enact
 business logic or UI updates. Its remaining work is mostly presenting and
-dismissing UI, and disconnecting the mediator during teardown (see [Between
+dismissing UI, and [disconnecting the
+mediator](mediators.md#teardown-and-disconnect) during teardown (see [Between
 Start and Stop](#between-start-and-stop)).
 
 ---
@@ -201,15 +223,15 @@ responsible for creating it, owning it, starting it, stopping it, and destroying
 it:
 
 1. Prior to calling `-start`, the parent initializes the child coordinator with
-   its `baseViewController` and `Browser` (and sets any required configuration
-   properties). Initialization must only store parameters; creating objects,
-   registering command handlers, and connecting dependencies all belong in
-   `-start`.
+  its `baseViewController` and `Browser` (and sets any required configuration
+  properties). Initialization must only store parameters; creating objects,
+  registering command handlers, and connecting dependencies all belong in
+  `-start`.
 2. Calling `-start` activates the coordinator's feature in the UI.
 3. Calling `-stop` deactivates the coordinator's feature and tears down its
-   resources.
+  resources.
 4. Immediately after `-stop` returns, the parent clears its reference to the
-   child coordinator so it can be deallocated.
+  child coordinator so it can be deallocated.
 
 Because a coordinator is started once and destroyed after `-stop`, **a
 coordinator must never call `-start` or `-stop` on itself**, and `-start` and
@@ -233,8 +255,8 @@ itself. Instead, the parent coordinator registers as the handler for the command
 that shows and hides the child feature, and the child's view controller invokes
 the hide command via a command handler:
 
-```objc
-// In ParentCoordinator.mm
+```objectivec
+// parent_coordinator.mm
 @interface ParentCoordinator () <ChildCommands>
 @end
 
@@ -277,8 +299,8 @@ the hide command via a command handler:
 Inside the child coordinator, `-start` wires up the mediator, view controller,
 and command handler, and `-stop` performs deterministic cleanup:
 
-```objc
-// In ChildCoordinator.mm
+```objectivec
+// child_coordinator.mm
 @implementation ChildCoordinator {
   ChildViewController* _viewController;
   ChildMediator* _mediator;
@@ -318,14 +340,14 @@ and command handler, and `-stop` performs deterministic cleanup:
 And the child view controller triggers dismissal directly through its command
 handler:
 
-```objc
-// In ChildViewController.h
+```objectivec
+// child_view_controller.h
 @interface ChildViewController : UIViewController
 @property(nonatomic, weak) id<ChildCommands> childHandler;
 @property(nonatomic, weak) id<ChildMutator> mutator;
 @end
 
-// In ChildViewController.mm
+// child_view_controller.mm
 @implementation ChildViewController
 
 - (void)viewDidLoad {
@@ -386,15 +408,15 @@ Every coordinator's `-stop` implementation must deterministically tear down the
 feature:
 
 1. **Stop child coordinators**: Call `-stop` on any active child coordinators
-   and set their instance variables to `nil`.
+  and set their instance variables to `nil`.
 2. **Stop command dispatching**: Unregister any command targets registered by
-   the coordinator on the `CommandDispatcher` (via `-stopDispatchingToTarget:`).
-3. **Disconnect mediators**: Call `-disconnect` (or `-shutdown`) on any
-   mediators owned by the coordinator so they immediately end observation of C++
-   model objects (`WebStateList`, keyed services, `PrefService`), then set their
-   instance variables to `nil`.
+  the coordinator on the `CommandDispatcher` (via `-stopDispatchingToTarget:`).
+3. **[Disconnect mediators](mediators.md#teardown-and-disconnect)**: Call
+  `-disconnect` on any mediators owned by the coordinator so they immediately
+  end observation of C++ model objects (`WebStateList`, keyed services,
+  `PrefService`), then set their instance variables to `nil`.
 4. **Dismiss or remove the view controller**: Dismiss or detach the managed view
-   controller and set its instance variable to `nil`.
+  controller and set its instance variable to `nil`.
 
 ### Handling UIKit-Driven Dismissals
 
@@ -405,23 +427,23 @@ feature. Even when UIKit removes the view controller from the screen, the parent
 coordinator still owns the child coordinator's lifecycle:
 
 1. **Detect the UIKit dismissal**: Configure the appropriate UIKit delegate
-   (such as `UIAdaptivePresentationControllerDelegate` for modal sheets or
-   `UINavigationControllerDelegate` for navigation stacks) to detect when the
-   user finishes dismissing or popping the view controller.
+  (such as `UIAdaptivePresentationControllerDelegate` for modal sheets or
+  `UINavigationControllerDelegate` for navigation stacks) to detect when the
+  user finishes dismissing or popping the view controller.
 2. **Request teardown from the parent**: Never call `[self stop]` in response to
-   a UIKit dismissal. Instead, route the teardown request to the parent
-   coordinator just like an explicit close button—by invoking the feature's hide
-   command via a command handler (or calling a coordinator delegate method for
-   parent-agnostic coordinators) so the parent stops and releases the child
-   coordinator.
+  a UIKit dismissal. Instead, route the teardown request to the parent
+  coordinator just like an explicit close button—by invoking the feature's hide
+  command via a command handler (or calling a coordinator delegate method for
+  parent-agnostic coordinators) so the parent stops and releases the child
+  coordinator.
 3. **Safely handle already-dismissed view controllers in `-stop`**: Because
-   `-stop` runs both when dismissing the feature programmatically and after
-   UIKit has already removed the view controller, view controller dismissal in
-   `-stop` must be a safe no-op if the view controller is no longer presented.
-   (This is why the `ChildCoordinator` example above messages
-   `_viewController.presentingViewController` rather than
-   `self.baseViewController`: if UIKit has already dismissed `_viewController`,
-   `presentingViewController` is `nil` and the call safely does nothing.)
+  `-stop` runs both when dismissing the feature programmatically and after
+  UIKit has already removed the view controller, view controller dismissal in
+  `-stop` must be a safe no-op if the view controller is no longer presented.
+  (This is why the `ChildCoordinator` example above messages
+  `_viewController.presentingViewController` rather than
+  `self.baseViewController`: if UIKit has already dismissed `_viewController`,
+  `presentingViewController` is `nil` and the call safely does nothing.)
 
 ### Coordinator Delegates
 
@@ -431,21 +453,26 @@ A coordinator-specific **delegate protocol** (`ChildCoordinatorDelegate`) is
 appropriate only in the following cases:
 
 1. **Parent-agnostic coordinators**: A *parent-agnostic* coordinator is one that
-   can be started by several different parent coordinators across the app (such
-   as a sign-in or authentication prompt). Because its parent isn't fixed,
-   dispatching a global command would not target the specific parent instance
-   that started it. Instead, the child coordinator can define a delegate
-   protocol that its parent implements to request teardown.
+  can be started by several different parent coordinators across the app (such
+  as a sign-in or authentication prompt). Because its parent isn't fixed,
+  dispatching a global command would not target the specific parent instance
+  that started it. Instead, the child coordinator can define a delegate
+  protocol that its parent implements to request teardown. If the decision to
+  end the flow is made by the child's mediator (for example, because sign-in
+  became disabled while the flow was showing), the mediator invokes a [local
+  command](#local-commands) implemented by the child coordinator, which in
+  turn notifies its delegate. The delegate protocol belongs to the
+  coordinator; the mediator never defines or calls one.
 2. **Returning data to the parent**: When a child coordinator needs to pass data
-   back to its parent coordinator, a delegate method can be used. This data
-   could be a user selection or the outcome of an interactive flow.
+  back to its parent coordinator, a delegate method can be used. This data
+  could be a user selection or the outcome of an interactive flow.
 3. **Synchronizing with asynchronous dismissal**: When stopping a coordinator
-   triggers an animated dismissal, the UI remains visible briefly after `-stop`
-   returns. Usually the parent does not need to care about animation timing. If
-   the parent *must* wait for the dismissal animation to complete before taking
-   an action, the child coordinator can notify its delegate upon completion:
+  triggers an animated dismissal, the UI remains visible briefly after `-stop`
+  returns. Usually the parent does not need to care about animation timing. If
+  the parent *must* wait for the dismissal animation to complete before taking
+  an action, the child coordinator can notify its delegate upon completion:
 
-```objc
+```objectivec
 @protocol ChildCoordinatorDelegate <NSObject>
 - (void)childCoordinatorDidStop:(ChildCoordinator*)coordinator;
 @end
@@ -464,11 +491,11 @@ A coordinator delegate protocol should follow standard Objective-C delegation
 conventions, including passing the delegating coordinator as the first
 argument. It should be limited to the uses above; don't use it to open other
 features (use a dispatched command), to query the parent, or to adjust the
-parent's UI or layout. For internal view-controller-to-coordinator messaging
-within a feature, a delegate is not appropriate; instead, a different type of
-protocol—a
-[local command protocol](commands.md#shared-vs-local-command-protocols)—should
-be used (see [Local Commands](#local-commands)).
+parent's UI or layout. For messaging from a feature's own view controllers or
+mediators to its coordinator, a delegate is not appropriate; instead, a
+different type of protocol—a [local command
+protocol](commands.md#shared-vs-local-command-protocols)—should be used (see
+[Local Commands](#local-commands)).
 
 Adding `-startWithCompletion:` or `-stopWithCompletion:` methods to a
 coordinator is generally **discouraged**:
@@ -505,16 +532,16 @@ dependency.
 This hierarchy serves two primary architectural purposes:
 
 1. **Encapsulating complexity**: Decomposing the application into a tree of
-   self-contained features bounds the scope of each coordinator and normalizes
-   inter-feature interactions. Individual features can be modified, refactored,
-   or replaced without affecting surrounding features.
+  self-contained features bounds the scope of each coordinator and normalizes
+  inter-feature interactions. Individual features can be modified, refactored,
+  or replaced without affecting surrounding features.
 2. **Abstracting UIKit view controller relationships**: UIKit has two distinct
-   mechanisms for composing view controllers:
-   * **Containment**: A parent view controller can contain any number of child
-     view controllers.
-   * **Presentation**: A view controller can present at most one view controller
-     modally (and if a contained child presents a view controller, UIKit routes
-     the presentation through the container ancestor).
+  mechanisms for composing view controllers:
+  * **Containment**: A parent view controller can contain any number of child
+    view controllers.
+  * **Presentation**: A view controller can present at most one view controller
+    modally (and if a contained child presents a view controller, UIKit routes
+    the presentation through the container ancestor).
 
 Because of UIKit's rules, the view controller hierarchy often diverges from the
 logical feature hierarchy. The coordinator hierarchy preserves the logical
@@ -575,21 +602,21 @@ constraints. Instead, the parent container view controller owns the layout slot
 where the child view belongs:
 
 1. **Child coordinator exposes its view controller**: The child coordinator
-   declares a read-only `viewController` property. In `-start`, it creates and
-   wires its `viewController` and `mediator` without inserting the view into a
-   parent view hierarchy.
+  declares a read-only `viewController` property. In `-start`, it creates and
+  wires its `viewController` and `mediator` without inserting the view into a
+  parent view hierarchy.
 2. **Parent coordinator passes the child view controller to the container**:
-   After starting the child coordinator, the parent coordinator assigns
-   `childCoordinator.viewController` to a semantic slot property on its own
-   container view controller.
+  After starting the child coordinator, the parent coordinator assigns
+  `childCoordinator.viewController` to a semantic slot property on its own
+  container view controller.
 3. **Container view controller performs UIKit containment**: The container view
-   controller's setter performs standard `UIViewController` containment
-   (`-addChildViewController:`, subview insertion, constraint activation, and
-   `-didMoveToParentViewController:`) and removes the previous child view
-   controller when replaced or cleared.
+  controller's setter performs standard `UIViewController` containment
+  (`-addChildViewController:`, subview insertion, constraint activation, and
+  `-didMoveToParentViewController:`) and removes the previous child view
+  controller when replaced or cleared.
 
-```objc
-// In ParentCoordinator.mm
+```objectivec
+// parent_coordinator.mm
 - (void)start {
   _viewController = [[ParentContainerViewController alloc] init];
   _childCoordinator = [[ChildCoordinator alloc]
@@ -631,42 +658,22 @@ objects (see [UI Commands and Disintermediated Dispatch](commands.md)).
 ### Providing Command Handlers
 
 Objects that invoke commands (such as view controllers and mediators) must never
-be given the raw `CommandDispatcher` or `Browser`. Instead, the coordinator uses
-`HandlerForProtocol()` to create a runtime-checked command handler and injects
-it into the child object:
-
-```objc
-_viewController.applicationHandler = HandlerForProtocol(
-    self.browser->GetCommandDispatcher(), ApplicationCommands);
-_viewController.browserHandler = HandlerForProtocol(
-    self.browser->GetCommandDispatcher(), BrowserCommands);
-```
-
-See [Naming, Protocol Composition, and Delegation Guidelines](commands.md#naming-protocol-composition-and-delegation-guidelines)
-in the Commands document for conventions on naming and declaring command handler
-properties.
+be given the raw `CommandDispatcher` or `Browser`. Instead, the coordinator
+obtains type-safe command handlers from `self.browser->GetCommandDispatcher()`
+and injects them into its child objects. See [Type Safety and Command
+Handlers](commands.md#type-safety-and-command-handlers) and [Naming Command
+Handlers](commands.md#naming-command-handlers) for details on how handlers are
+created, injected, and named.
 
 ### Local Commands
 
-For internal view-controller-to-coordinator messaging within a single UI
-feature, a delegate is not appropriate; instead, a different type of protocol—a
-**local command protocol** (see
-[Shared vs. Local Command Protocols](commands.md#shared-vs-local-command-protocols))—should
-be used.
-
-If a command protocol is used purely for UI transitions internal to a single
-feature and does not need to be called by other code, it can be a local command
-protocol. Keep the protocol definition inside the feature's `ui/` directory.
-Directly assign the coordinator (which conforms to the local command protocol)
-to the view controller's handler property, without registering it on the shared
-`CommandDispatcher` or typecasting via `HandlerForProtocol()`. (Command passing
-*between* coordinators should always use the `CommandDispatcher`.) Even though
-the `CommandDispatcher` isn't used, a local command protocol must still obey all
-command design restrictions: methods must express imperative, one-way UI
-transitions (`-showNextPage`), return `void`, and never pass UI-layer objects as
-arguments. These restrictions enforce the layering boundary between the UI and
-coordinator and allow a local command protocol to be refactored to a dispatched
-protocol in the future without changing the caller.
+For messaging from a feature's view controllers or mediators to its own
+coordinator, a delegate is not appropriate; instead, define a **local command
+protocol** in the feature's `ui/` directory and assign the coordinator directly
+as the handler (without registering on `CommandDispatcher`). Command passing
+*between* coordinators must always use `CommandDispatcher`. See [Shared vs.
+Local Command Protocols](commands.md#shared-vs-local-command-protocols) for
+the rules governing local command protocols.
 
 ### Sibling and Cross-Feature Communication
 
@@ -686,12 +693,14 @@ move or restructure features later.
 
 * **Keep coordinators focused on coordination.** Do not allow coordinators to
   become catch-all controllers:
-  * Push business logic and model observation/mutation into **mediators**.
+  * Push business logic and model observation/mutation into
+    **[mediators](mediators.md)**.
   * Push layout, view hierarchy setup, and user interaction handling into **view
     controllers and views**.
   * Push domain state and persistence into **model-layer services, browser
     agents, and tab helpers**.
-* **Coordinators are a strict boundary ("line in the sand") for backbone
+* **Coordinators are a strict boundary ("[line in the
+  sand](mediators.md#the-line-in-the-sand-for-dependencies)") for backbone
   containers.**
   * Backbone container objects—`Browser`, `ProfileIOS`, `CommandDispatcher`,
     `SceneState`, `ProfileState`, `AppState`, and `ApplicationContext`—must
@@ -720,10 +729,11 @@ move or restructure features later.
     helper**, not a coordinator.
 * **Do not use the coordinator as a generic delegate for its mediator or view
   controller.**
-  * A **mediator** should almost never delegate to its coordinator. To update
-    the UI, the mediator calls its `consumer` (the view controller). To trigger
-    another UI feature or high-level UI transition, the mediator calls a command
-    handler.
+  * A **mediator** should [almost never delegate to its
+    coordinator](mediators.md#mediators-accessing-other-services-and-commands).
+    To update the UI, the mediator calls its `consumer` (the view controller).
+    To trigger another UI feature or high-level UI transition, the mediator
+    calls a command handler.
   * A **view controller** should not use a generic delegate to talk to its
     coordinator. Generic view controller delegates
     (`-viewControllerDidTapEdit:`) report raw UI events or ask the delegate to
@@ -758,7 +768,7 @@ move or restructure features later.
 
 ## Pattern Context
 
-Coordinators in iOS Chrome draw inspiration from Soroush Khanlou's 2015
+Coordinators in Chrome on iOS draw inspiration from Soroush Khanlou's 2015
 Coordinator pattern and Martin Fowler's Application Controller pattern, as well
 as the **Facade** pattern (*Design Patterns*) and the **Controller** role in
 **Model-View-Controller** (*Pattern-Oriented Software Architecture*).
@@ -807,26 +817,27 @@ boundary.
 ## Connecting Patterns
 
 Coordinators work in concert with several complementary architectural patterns
-across iOS Chrome:
+across Chrome on iOS:
 
-* **Mediators**: Coordinator-owned objects that encapsulate business logic and
-  mediate between the model layer and view controllers, keeping model
-  dependencies out of the UI layer.
+* **[Mediators](mediators.md)**: Coordinator-owned objects that encapsulate
+  business logic and mediate between the model layer and view controllers,
+  keeping model dependencies out of the UI layer.
 * **Deep Models**: Rich model-layer classes (such as C++ keyed services, browser
   agents, and tab helpers) that encapsulate domain state, persistence, and
   operations rather than acting as passive data structures.
 * **Isolated View Controllers**: View controllers that have no direct
   dependencies on the model layer or other UI features, rendering state pushed
   to them and reporting user interactions through abstract protocols.
-* **Mutation-Observation Cycle**: The unidirectional data flow between UI and
-  model: a view controller requests a model change via a **mutator** protocol on
-  its mediator, the mediator updates the underlying model, the model notifies
-  the mediator via an **observer** interface, and the mediator pushes updated UI
-  state back to the view controller.
-* **Idempotent Consumer**: A protocol implemented by a view controller and
-  called by its mediator to push self-contained UI configuration data, designed
-  so that repeated calls with the same state produce the same UI result without
-  unintended side effects.
+* **[Mutation-Observation Cycle](mediators.md#the-mutation-observation-cycle)**:
+  The unidirectional data flow between UI and model: a view controller requests
+  a model change via a **mutator** protocol on its mediator, the mediator
+  updates the underlying model, the model notifies the mediator via an
+  **observer** interface, and the mediator pushes updated UI state back to the
+  view controller.
+* **[State-Independent Consumer](mediators.md#state-independence)**: A protocol
+  implemented by a view controller and called by its mediator to push
+  self-contained UI configuration data, identifying items by stable identifiers
+  so that updates don't depend on the consumer's prior state.
 * **[UI Commands and Disintermediated Dispatch](commands.md)**: Objective-C
   protocols defining UI-level actions that are routed through a central
   `CommandDispatcher` via `HandlerForProtocol()`, allowing callers to trigger UI
