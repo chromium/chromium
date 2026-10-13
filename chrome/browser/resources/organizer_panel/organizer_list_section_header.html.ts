@@ -17,12 +17,18 @@ export function getHtml(this: OrganizerListSectionHeaderElement) {
     aria-label="$i18n{tabGroupMoreOptions}" @click="${this.onMenuButtonClick_}">
 </cr-icon-button>
 <cr-action-menu id="menu" @open-changed="${this.onMenuOpenChanged_}">
-  <button id="showSomeButton" class="dropdown-item"
-      @click="${this.onShowSomeClick_}">
+  <button id="showSomeButton" class="dropdown-item" role="menuitemradio"
+      aria-checked="${!this.showAll}" @click="${this.onShowSomeClick_}">
+    <cr-icon id="showSomeCheck" icon="cr:check" aria-hidden="true"
+        ?invisible="${this.showAll}">
+    </cr-icon>
     $i18n{showSome}
   </button>
-  <button id="showAllButton" class="dropdown-item"
-      @click="${this.onShowAllClick_}">
+  <button id="showAllButton" class="dropdown-item" role="menuitemradio"
+      aria-checked="${this.showAll}" @click="${this.onShowAllClick_}">
+    <cr-icon id="showAllCheck" icon="cr:check" aria-hidden="true"
+        ?invisible="${!this.showAll}">
+    </cr-icon>
     $i18n{showAll}
   </button>
 </cr-action-menu>

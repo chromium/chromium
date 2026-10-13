@@ -10,7 +10,7 @@ export function getHtml(this: OrganizerListSectionElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <organizer-list-section-header id="header" ?expanded="${this.isExpanded_()}"
-    ?disabled="${this.isSearching_()}"
+    ?disabled="${this.isSearching_()}" ?show-all="${this.showAll_}"
     @expanded-changed="${this.onExpandedChanged_}"
     @show-all-changed="${this.onShowAllChanged_}">
   ${this.delegate?.getHeader() || ''}

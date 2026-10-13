@@ -73,3 +73,18 @@
 :host-context(html:not(.focus-outline-visible)) #menuButton {
   --cr-icon-button-focus-outline-color: transparent;
 }
+
+#menu cr-icon {
+  --iron-icon-height: 16px;
+  --iron-icon-width: 16px;
+  margin-inline-start: -16px;
+}
+
+cr-icon[invisible] {
+  visibility: hidden;
+}
+
+.dropdown-item {
+  gap: 8px;
+}
+

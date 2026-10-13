@@ -4,11 +4,14 @@
 
 import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
+import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import '//resources/cr_elements/icons.html.js';
 
 import {AnchorAlignment} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrExpandButtonElement} from '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
+import type {CrIconElement} from '//resources/cr_elements/cr_icon/cr_icon.js';
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {MouseHoverableMixinLit} from '//resources/cr_elements/mouse_hoverable_mixin_lit.js';
 import {FocusOutlineManager} from '//resources/js/focus_outline_manager.js';
@@ -24,7 +27,9 @@ export interface OrganizerListSectionHeaderElement {
     menu: CrActionMenuElement,
     menuButton: CrIconButtonElement,
     showAllButton: HTMLButtonElement,
+    showAllCheck: CrIconElement,
     showSomeButton: HTMLButtonElement,
+    showSomeCheck: CrIconElement,
   };
 }
 
@@ -60,12 +65,18 @@ export class OrganizerListSectionHeaderElement extends
         type: Boolean,
         reflect: true,
       },
+      showAll: {
+        type: Boolean,
+        notify: true,
+        reflect: true,
+      },
     };
   }
 
   accessor disabled: boolean = false;
   accessor expanded: boolean = false;
   protected accessor menuOpen_: boolean = false;
+  accessor showAll: boolean = false;
 
   override firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
@@ -92,16 +103,13 @@ export class OrganizerListSectionHeaderElement extends
   }
 
   protected onShowSomeClick_() {
-    this.setShowAll_(false);
+    this.$.menu.close();
+    this.showAll = false;
   }
 
   protected onShowAllClick_() {
-    this.setShowAll_(true);
-  }
-
-  private setShowAll_(showAll: boolean) {
     this.$.menu.close();
-    this.fire('show-all-changed', {value: showAll});
+    this.showAll = true;
   }
 }
 
