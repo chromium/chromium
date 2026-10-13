@@ -4,8 +4,6 @@
 
 #include "components/live_caption/features.h"
 
-#include "base/feature_list.h"
-
 namespace live_caption {
 
 // Enables the on-device translation model by default.
@@ -15,8 +13,5 @@ BASE_FEATURE(kLiveCaptionOnDeviceTranslation, base::FEATURE_ENABLED_BY_DEFAULT);
 // language pairs that contain English.
 BASE_FEATURE(kLiveCaptionOnDeviceTranslationEnglishOnly,
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Controls time and punctuation gating (debouncing) for Live Translate.
-BASE_FEATURE(kLiveTranslateTimeGating, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace live_caption
