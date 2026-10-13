@@ -343,7 +343,7 @@ class SystemIdentityManager {
   // completes.
   virtual void FetchTokenAuthURL(id<SystemIdentity> identity,
                                  NSURL* target_url,
-                                 AuthenticatedURLCallback callback) = 0;
+                                 AuthenticatedURLCallback callback) {}
 
  protected:
   // Invokes `OnIdentityListChanged(...)` for all observers.

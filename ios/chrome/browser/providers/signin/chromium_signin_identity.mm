@@ -75,9 +75,6 @@ class ChromiumSystemIdentityManager final : public SystemIdentityManager {
                               HandleMDMCallback callback) final;
   bool IsScopeLimitedError(id<RefreshAccessTokenError> error) final;
   bool IsMDMError(id<SystemIdentity> identity, NSError* error) final;
-  void FetchTokenAuthURL(id<SystemIdentity> identity,
-                         NSURL* target_url,
-                         AuthenticatedURLCallback callback) final;
 };
 
 ChromiumSystemIdentityManager::ChromiumSystemIdentityManager() = default;
@@ -233,13 +230,6 @@ bool ChromiumSystemIdentityManager::IsScopeLimitedError(
 
 bool ChromiumSystemIdentityManager::IsMDMError(id<SystemIdentity> identity,
                                                NSError* error) {
-  NOTREACHED();
-}
-
-void ChromiumSystemIdentityManager::FetchTokenAuthURL(
-    id<SystemIdentity> identity,
-    NSURL* target_url,
-    AuthenticatedURLCallback callback) {
   NOTREACHED();
 }
 
