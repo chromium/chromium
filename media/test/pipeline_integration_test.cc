@@ -705,6 +705,14 @@ base::TimeDelta TimestampMs(int milliseconds) {
   return base::Milliseconds(milliseconds);
 }
 
+// Tests using `kNoClockless` play in real time. To keep them fast, they only
+// play briefly before seeking or changing tracks, and they resume close to the
+// end of the file before playing to the end.
+constexpr base::TimeDelta kShortPlaybackTime = base::Milliseconds(100);
+constexpr base::TimeDelta kTimeBeforeEnd = base::Milliseconds(200);
+// Hashed tests resume a bit earlier, so the hash covers more data.
+constexpr base::TimeDelta kHashedTimeBeforeEnd = base::Milliseconds(500);
+
 TEST_F(PipelineIntegrationTest, WaveLayoutChange) {
   ASSERT_EQ(PIPELINE_OK, Start("layout_change.wav"));
   Play();
@@ -738,8 +746,7 @@ TEST_F(PipelineIntegrationTest, PlaybackWithAudioTrackDisabledThenEnabled) {
   ASSERT_TRUE(Seek(base::TimeDelta()));
 
   Play();
-  const base::TimeDelta k500ms = TimestampMs(500);
-  ASSERT_TRUE(WaitUntilCurrentTimeIsAfter(k500ms));
+  ASSERT_TRUE(WaitUntilCurrentTimeIsAfter(kShortPlaybackTime));
   Pause();
 
   // Verify that no audio has been played, since we disabled audio tracks.
@@ -748,13 +755,13 @@ TEST_F(PipelineIntegrationTest, PlaybackWithAudioTrackDisabledThenEnabled) {
   // Re-enable audio.
   OnEnabledAudioTracksChanged(MediaTrack::Id("2"));
 
-  // Restart playback from 500ms position.
-  ASSERT_TRUE(Seek(k500ms));
+  // Restart playback close to the end.
+  ASSERT_TRUE(Seek(pipeline_->GetMediaDuration() - kHashedTimeBeforeEnd));
   Play();
   ASSERT_TRUE(WaitUntilOnEnded());
 
   // Verify that audio has been playing after being enabled.
-  EXPECT_AUDIO_HASH("-1.53,0.21,1.23,1.56,-0.34,-0.94,");
+  EXPECT_AUDIO_HASH("0.30,1.21,3.31,1.08,0.85,-0.81,");
 }
 
 TEST_F(PipelineIntegrationTest, PlaybackWithVideoTrackDisabledThenEnabled) {
@@ -771,8 +778,7 @@ TEST_F(PipelineIntegrationTest, PlaybackWithVideoTrackDisabledThenEnabled) {
   ResetVideoHash();
 
   Play();
-  const base::TimeDelta k500ms = TimestampMs(500);
-  ASSERT_TRUE(WaitUntilCurrentTimeIsAfter(k500ms));
+  ASSERT_TRUE(WaitUntilCurrentTimeIsAfter(kShortPlaybackTime));
   Pause();
 
   // Verify that no video has been rendered, since we disabled video tracks.
@@ -789,13 +795,13 @@ TEST_F(PipelineIntegrationTest, PlaybackWithVideoTrackDisabledThenEnabled) {
   // if some prerolled frames got hashed after enabling video.
   ASSERT_TRUE(Seek(base::TimeDelta()));
 
-  // Restart playback from 500ms position.
-  ASSERT_TRUE(Seek(k500ms));
+  // Restart playback close to the end.
+  ASSERT_TRUE(Seek(pipeline_->GetMediaDuration() - kHashedTimeBeforeEnd));
   Play();
   ASSERT_TRUE(WaitUntilOnEnded());
 
   // Verify that video has been rendered after being enabled.
-  EXPECT_EQ("38b8b5de49e2ada131674f90e4688dfc9309e6d194267e6f11992d25f11ea472",
+  EXPECT_EQ("8aedcd4b9d48da2a40d9b00017af75602295aef9cfdb406eafb39d5696fe41b0",
             GetVideoHash());
 }
 
@@ -847,9 +853,9 @@ TEST_F(PipelineIntegrationTest, TrackStatusChangesWhileSuspended) {
   ASSERT_TRUE(WaitUntilCurrentTimeIsAfter(TimestampMs(400)));
   ASSERT_TRUE(Suspend());
 
-  // Re-enable video track.
+  // Re-enable video track, and resume close to the end.
   OnSelectedVideoTrackChanged(MediaTrack::Id("1"));
-  ASSERT_TRUE(Resume(TimestampMs(400)));
+  ASSERT_TRUE(Resume(pipeline_->GetMediaDuration() - kTimeBeforeEnd));
   ASSERT_TRUE(WaitUntilOnEnded());
 }
 
@@ -2680,8 +2686,8 @@ TEST_F(PipelineIntegrationTest, SeekWhilePaused) {
   ASSERT_EQ(PIPELINE_OK, Start("bear-320x240.webm", kNoClockless));
 
   base::TimeDelta duration(pipeline_->GetMediaDuration());
-  base::TimeDelta start_seek_time(duration / 4);
-  base::TimeDelta seek_time(duration * 3 / 4);
+  base::TimeDelta start_seek_time(kShortPlaybackTime);
+  base::TimeDelta seek_time(duration - kTimeBeforeEnd);
 
   Play();
   ASSERT_TRUE(WaitUntilCurrentTimeIsAfter(start_seek_time));
@@ -2704,8 +2710,8 @@ TEST_F(PipelineIntegrationTest, SeekWhilePlaying) {
   ASSERT_EQ(PIPELINE_OK, Start("bear-320x240.webm", kNoClockless));
 
   base::TimeDelta duration(pipeline_->GetMediaDuration());
-  base::TimeDelta start_seek_time(duration / 4);
-  base::TimeDelta seek_time(duration * 3 / 4);
+  base::TimeDelta start_seek_time(kShortPlaybackTime);
+  base::TimeDelta seek_time(duration - kTimeBeforeEnd);
 
   Play();
   ASSERT_TRUE(WaitUntilCurrentTimeIsAfter(start_seek_time));
