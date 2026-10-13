@@ -241,7 +241,9 @@ void VideoPictureInPictureWindowControllerImpl::Play() {
   // This comes from the window, rather than the renderer, so we must actually
   // have a window at this point.
   CHECK(window_, base::NotFatalUntil::M159);
-  CHECK(active_session_, base::NotFatalUntil::M159);
+  // TODO(crbug.com/572378290): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(active_session_);
 
   PlayInternal();
 }
