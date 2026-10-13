@@ -247,20 +247,22 @@ void SafeBrowsingNavigationObserver::
   if (it != navigation_handle_map_.end() &&
       it->second->navigation_initiation != ReferrerChainEntry::UNDEFINED) {
     nav_event->navigation_initiation = it->second->navigation_initiation;
-  } else {
-    // If this is the first time we see this navigation_handle, decide if it is
-    // triggered by user.
-    if (!navigation_handle->IsRendererInitiated()) {
-      nav_event->navigation_initiation = ReferrerChainEntry::BROWSER_INITIATED;
-    } else if (GetObserverManager()->HasUnexpiredUserGesture(web_contents())) {
-      nav_event->navigation_initiation =
-          ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE;
-    } else {
-      nav_event->navigation_initiation =
-          ReferrerChainEntry::RENDERER_INITIATED_WITHOUT_USER_GESTURE;
-    }
-    GetObserverManager()->OnUserGestureConsumed(web_contents());
+    return;
   }
+
+  // If this is the first time we see this navigation_handle, decide if it is
+  // triggered by user.
+  if (!navigation_handle->IsRendererInitiated()) {
+    nav_event->navigation_initiation = ReferrerChainEntry::BROWSER_INITIATED;
+  } else if (GetObserverManager()->HasUnexpiredUserGesture(web_contents()) ||
+             navigation_handle->HasUserGesture()) {
+    nav_event->navigation_initiation =
+        ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE;
+  } else {
+    nav_event->navigation_initiation =
+        ReferrerChainEntry::RENDERER_INITIATED_WITHOUT_USER_GESTURE;
+  }
+  GetObserverManager()->OnUserGestureConsumed(web_contents());
 }
 
 void SafeBrowsingNavigationObserver::SetNavigationSourceUrl(

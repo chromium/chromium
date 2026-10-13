@@ -440,6 +440,7 @@ TEST_F(SBNavigationObserverTest, BasicNavigationAndCommit) {
 TEST_F(SBNavigationObserverTest, ServerRedirect) {
   auto navigation = content::NavigationSimulator::CreateRendererInitiated(
       GURL("http://foo/3"), web_contents()->GetPrimaryMainFrame());
+  navigation->SetHasUserGesture(false);
   auto* nav_list = navigation_event_list();
   SessionID tab_id = sessions::SessionTabHelper::IdForTab(web_contents());
 
@@ -1220,6 +1221,47 @@ TEST_F(SBNavigationObserverTest,
       /*is_referrer_chain_needed_for_enterprise=*/true);
   EXPECT_FALSE(
       SafeBrowsingNavigationObserver::FromWebContents(test_web_contents.get()));
+}
+
+// Regression test for b/568560137.
+TEST_F(SBNavigationObserverTest,
+       RendererInitiatedNavigationWithHandleUserGesture) {
+  auto navigation = content::NavigationSimulator::CreateRendererInitiated(
+      GURL("http://foo/1"), web_contents()->GetPrimaryMainFrame());
+  navigation->SetHasUserGesture(true);
+  auto* nav_list = navigation_event_list();
+  SessionID tab_id = sessions::SessionTabHelper::IdForTab(web_contents());
+
+  navigation->Start();
+  ASSERT_EQ(1U, nav_list->PendingNavigationEventsSize());
+  NavigationEvent* pending_event =
+      nav_list->FindPendingNavigationEvent(GURL("http://foo/1"));
+  VerifyNavigationEvent(
+      GURL("http://foo/0"),       // source_url
+      GURL("http://foo/0"),       // source_main_frame_url
+      GURL("http://foo/1"),       // original_request_url
+      GURL("http://foo/1"),       // destination_url
+      tab_id,                     // source_tab_id
+      SessionID::InvalidValue(),  // target_tab_id
+      ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE,
+      false,  // has_committed
+      false,  // has_server_redirect
+      pending_event);
+
+  navigation->Commit();
+  ASSERT_EQ(0U, nav_list->PendingNavigationEventsSize());
+  ASSERT_EQ(1U, nav_list->NavigationEventsSize());
+  VerifyNavigationEvent(
+      GURL("http://foo/0"),  // source_url
+      GURL("http://foo/0"),  // source_main_frame_url
+      GURL("http://foo/1"),  // original_request_url
+      GURL("http://foo/1"),  // destination_url
+      tab_id,                // source_tab_id
+      tab_id,                // target_tab_id
+      ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE,
+      true,   // has_committed
+      false,  // has_server_redirect
+      nav_list->GetNavigationEvent(0U));
 }
 
 }  // namespace safe_browsing
