@@ -327,9 +327,11 @@ void WebUIToolbarExtensionsContainer::ShowPinnedByDefaultIPH(
   // Wait for the button to register kExtensionsPinnedByDefaultElementId and,
   // like views, for any animations to finish so that the button is in its
   // final location.
-  NotifyActionPoppedOut(base::BindOnce(
-      &WebUIToolbarExtensionsContainer::ShowPinnedByDefaultIPHNow,
-      weak_ptr_factory_.GetWeakPtr(), extension_id));
+  NotifyActionPoppedOut(
+      extension_id,
+      base::BindOnce(
+          &WebUIToolbarExtensionsContainer::ShowPinnedByDefaultIPHNow,
+          weak_ptr_factory_.GetWeakPtr(), extension_id));
 }
 
 void WebUIToolbarExtensionsContainer::ShowPinnedByDefaultIPHNow(
@@ -469,7 +471,7 @@ void WebUIToolbarExtensionsContainer::PopOutAction(
   CancelPinnedByDefaultIph();
   popped_out_action_ = action_id;
   NotifyOfOneAction(action_id);
-  NotifyActionPoppedOut(std::move(closure));
+  NotifyActionPoppedOut(action_id, std::move(closure));
 }
 
 void WebUIToolbarExtensionsContainer::ShowContextMenuAsFallback(
@@ -690,11 +692,12 @@ views::Widget* WebUIToolbarExtensionsContainer::GetWidget() const {
 }
 
 void WebUIToolbarExtensionsContainer::NotifyActionPoppedOut(
+    const std::string& action_id,
     base::OnceClosure closure) {
   if (page_) {
     page_->ActionPoppedOut(std::move(closure));
   } else if (observer_) {
-    observer_->OnActionPoppedOut(std::move(closure));
+    observer_->OnActionPoppedOut(action_id, std::move(closure));
   } else {
     std::move(closure).Run();
   }

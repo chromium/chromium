@@ -4553,7 +4553,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
   // Showing another extension's button should not run the callback, since the
   // popped out extension's button still hasn't been shown. All extension
   // buttons share an ElementIdentifier, so this does wake up the logic waiting
-  // for all buttons to be shown, which should then resume waiting.
+  // for the popped out extension's button, which should then resume waiting.
   {
     ui::test::TestElement other_element(
         kToolbarActionViewElementId,
@@ -4587,13 +4587,48 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
       ExtensionsContainer::From(*browser()));
   ASSERT_TRUE(container);
   ASSERT_TRUE(container->GetExtensionAnchor(extension_id));
-  // PopOutAction() waits for all extension-related buttons to be shown,
-  // including the extensions menu button, so it must also be shown for the
-  // callback to be run synchronously. LoadAndPinExtension() waits for it.
+  // PopOutAction() also waits for the extensions menu button, so it must be
+  // shown for the callback to be run synchronously.
   ASSERT_TRUE(container->GetExtensionAnchor(""));
 
   base::test::TestFuture<void> future;
   container->PopOutAction(extension_id, future.GetCallback());
+  EXPECT_TRUE(future.IsReady());
+
+  container->UndoPopOut();
+}
+
+// Tests that the callback passed to PopOutAction() doesn't wait for other
+// extensions' buttons to be shown.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
+                       PopOutActionDoesNotWaitForOtherActions) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir1;
+  base::ScopedTempDir temp_dir2;
+  ASSERT_TRUE(temp_dir1.CreateUniqueTempDir());
+  ASSERT_TRUE(temp_dir2.CreateUniqueTempDir());
+  scoped_refptr<const extensions::Extension> extension1 =
+      LoadAndPinExtension(temp_dir1);
+  ASSERT_TRUE(extension1);
+  scoped_refptr<const extensions::Extension> extension2 =
+      LoadExtension(temp_dir2);
+  ASSERT_TRUE(extension2);
+
+  auto* container = static_cast<WebUIToolbarExtensionsContainer*>(
+      ExtensionsContainer::From(*browser()));
+  ASSERT_TRUE(container);
+  ASSERT_TRUE(container->GetExtensionAnchor(extension1->id()));
+
+  // Pin the second extension. Its button is shown asynchronously by the
+  // renderer, so it won't have been registered yet.
+  ToolbarActionsModel::Get(browser()->GetProfile())
+      ->SetActionVisibility(extension2->id(), true);
+  ASSERT_FALSE(container->GetExtensionAnchor(extension2->id()));
+
+  // Popping out the first extension, whose button is already shown, should
+  // run the callback synchronously.
+  base::test::TestFuture<void> future;
+  container->PopOutAction(extension1->id(), future.GetCallback());
   EXPECT_TRUE(future.IsReady());
 
   container->UndoPopOut();

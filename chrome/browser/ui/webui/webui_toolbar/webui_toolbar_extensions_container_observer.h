@@ -31,15 +31,16 @@ class WebUIToolbarExtensionsContainerObserver {
       std::vector<toolbar_ui_api::mojom::IconUpdatePtr> icons,
       const std::string& id) = 0;
 
-  // Called when an action is popped out, either by PopOutAction() or to show
-  // the pinned-by-default IPH. `callback` is expected to be called when it's
-  // safe to anchor things to the newly-visible button, or on cancellation via
-  // OnPopOutCancelled(). A new notification is only sent once the previous
-  // one's `callback` has been run, or it has been cancelled via
+  // Called when the action with `action_id` is popped out, either by
+  // PopOutAction() or to show the pinned-by-default IPH. `callback` is expected
+  // to be called when it's safe to anchor things to the action's button, or on
+  // cancellation via OnPopOutCancelled(). A new notification is only sent once
+  // the previous one's `callback` has been run, or it has been cancelled via
   // OnPopOutCancelled().
   //
   // There will also be an ActionsAddedOrUpdated before this message.
-  virtual void OnActionPoppedOut(base::OnceClosure callback) = 0;
+  virtual void OnActionPoppedOut(const std::string& action_id,
+                                 base::OnceClosure callback) = 0;
 
   // Called when a pending pop out should be cancelled: on UndoPopOut(), on
   // removal of the popped out action, or when the IPH is cancelled or

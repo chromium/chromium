@@ -187,6 +187,7 @@ void WebUIToolbarExtensionsContainerWrapper::OnActionRemoved(
 }
 
 void WebUIToolbarExtensionsContainerWrapper::OnActionPoppedOut(
+    const std::string& action_id,
     base::OnceClosure callback) {
   if (!extensions_container_) {
     std::move(callback).Run();
@@ -195,43 +196,62 @@ void WebUIToolbarExtensionsContainerWrapper::OnActionPoppedOut(
 
   // The container cancels any pending pop out request before starting another,
   // so there should be at most one at a time.
+  CHECK(!pending_pop_out_action_id_);
   CHECK(!pending_pop_out_callback_);
 
-  // Be as conservative as possible and wait for any animations that might be in
-  // progress to complete before running `callback`, that way none of the
-  // button locations might shift after `callback` is run (and potentially
-  // upset any pop-up anchoring that ExtensionActionDelegateDesktop::ShowPopup()
-  // or any other caller might want to display). Also wait for the
-  // pinned-by-default IPH anchor, if any, to be registered.
-  for (const auto& action : delegate_->GetState().extensions_state) {
-    std::optional<ui::ElementIdentifier> missing_element_id;
-    if (!extensions_container_->GetExtensionAnchor(action->id)) {
-      missing_element_id =
-          WebUIToolbarExtensionsContainer::GetElementId(action->id);
-    } else if (action->is_pinned_by_default_iph_anchor &&
-               !extensions_container_->GetExtensionElement(
-                   kExtensionsPinnedByDefaultElementId, action->id)) {
-      missing_element_id = kExtensionsPinnedByDefaultElementId;
-    }
-    if (missing_element_id) {
-      auto subscription =
-          ui::ElementTracker::GetElementTracker()->AddElementShownCallback(
-              *missing_element_id,
-              BrowserElements::From(delegate_->GetBrowser())->GetContext(),
-              base::BindRepeating(
-                  &WebUIToolbarExtensionsContainerWrapper::OnElementShown,
-                  base::Unretained(this)));
-      pending_pop_out_callback_ = std::move(callback);
-      pending_pop_out_subscription_ = std::move(subscription);
-      return;
-    }
+  // Wait for the popped out action's button to be registered. The button waits
+  // for any animations it's running to complete before registering with the
+  // TrackedElementManager, so its location shouldn't shift after `callback` is
+  // run (and potentially upset any pop-up anchoring that
+  // ExtensionActionDelegateDesktop::ShowPopup() or any other caller might want
+  // to display).
+  //
+  // Also wait for the extensions menu button, which is always shown when there
+  // are any extensions. When the first extension is added, both buttons are
+  // animated in, and since the renderer reports each element's visibility
+  // separately, the popped out action's button may be reported before the
+  // menu button has finished animating, which could still affect the popped
+  // out button's location.
+  //
+  // If the action is the pinned-by-default IPH anchor (which only happens for
+  // IPH requests, since PopOutAction() clears the IPH anchor first), also wait
+  // for kExtensionsPinnedByDefaultElementId, which the IPH is anchored to. That
+  // element is registered without waiting for animations, so waiting on it
+  // alone doesn't guarantee the button is in its final location.
+  std::optional<ui::ElementIdentifier> missing_element_id;
+  if (!extensions_container_->GetExtensionAnchor(action_id)) {
+    missing_element_id =
+        WebUIToolbarExtensionsContainer::GetElementId(action_id);
+  } else if (!extensions_container_->GetExtensionAnchor(kExtensionsButtonId)) {
+    missing_element_id =
+        WebUIToolbarExtensionsContainer::GetElementId(kExtensionsButtonId);
+  } else if (auto it = cached_actions_.find(action_id);
+             it != cached_actions_.end() &&
+             it->second->is_pinned_by_default_iph_anchor &&
+             !extensions_container_->GetExtensionElement(
+                 kExtensionsPinnedByDefaultElementId, action_id)) {
+    missing_element_id = kExtensionsPinnedByDefaultElementId;
   }
 
-  std::move(callback).Run();
+  if (!missing_element_id) {
+    std::move(callback).Run();
+    return;
+  }
+
+  pending_pop_out_action_id_ = action_id;
+  pending_pop_out_callback_ = std::move(callback);
+  pending_pop_out_subscription_ =
+      ui::ElementTracker::GetElementTracker()->AddElementShownCallback(
+          *missing_element_id,
+          BrowserElements::From(delegate_->GetBrowser())->GetContext(),
+          base::BindRepeating(
+              &WebUIToolbarExtensionsContainerWrapper::OnElementShown,
+              base::Unretained(this)));
 }
 
 void WebUIToolbarExtensionsContainerWrapper::OnPopOutCancelled() {
   pending_pop_out_subscription_ = {};
+  pending_pop_out_action_id_.reset();
   if (pending_pop_out_callback_) {
     std::exchange(pending_pop_out_callback_, base::OnceClosure()).Run();
   }
@@ -240,10 +260,14 @@ void WebUIToolbarExtensionsContainerWrapper::OnPopOutCancelled() {
 void WebUIToolbarExtensionsContainerWrapper::OnElementShown(
     ui::TrackedElement* element) {
   // Re-dispatch the pending pop out request, which will either run it or wait
-  // for another element to be shown.
+  // for another element to be shown. Since all extension buttons share an
+  // ElementIdentifier, the shown element may belong to another action, in which
+  // case OnActionPoppedOut() will resume waiting.
+  CHECK(pending_pop_out_action_id_);
   CHECK(pending_pop_out_callback_);
   pending_pop_out_subscription_ = {};
   OnActionPoppedOut(
+      std::exchange(pending_pop_out_action_id_, std::nullopt).value(),
       std::exchange(pending_pop_out_callback_, base::OnceClosure()));
 }
 

@@ -171,7 +171,8 @@ class WebUIToolbarExtensionsContainer
   views::Widget* GetWidget() const;
   ui::TrackedElement* GetExtensionsMenuButtonAnchor() const;
 
-  void NotifyActionPoppedOut(base::OnceClosure closure);
+  void NotifyActionPoppedOut(const std::string& action_id,
+                             base::OnceClosure closure);
 
   void CreateActions();
   void CreateActionForId(const ToolbarActionsModel::ActionId& action_id);

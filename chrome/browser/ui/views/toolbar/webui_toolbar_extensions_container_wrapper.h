@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -69,7 +70,8 @@ class WebUIToolbarExtensionsContainerWrapper
       override;
   void OnActionRemoved(std::vector<toolbar_ui_api::mojom::IconUpdatePtr> icons,
                        const std::string& id) override;
-  void OnActionPoppedOut(base::OnceClosure callback) override;
+  void OnActionPoppedOut(const std::string& action_id,
+                         base::OnceClosure callback) override;
   void OnPopOutCancelled() override;
 
   // content::WebContentsObserver:
@@ -106,9 +108,10 @@ class WebUIToolbarExtensionsContainerWrapper
 
   std::vector<std::string> last_sent_extension_ids_;
 
-  // Callback and subscription for the pending OnActionPoppedOut() request, if
-  // any. There's at most one at a time, since the container cancels any
-  // pending pop out before starting a new one.
+  // Action ID, callback, and subscription for the pending OnActionPoppedOut()
+  // request, if any. There's at most one at a time, since the container cancels
+  // any pending pop out before starting a new one.
+  std::optional<std::string> pending_pop_out_action_id_;
   base::OnceClosure pending_pop_out_callback_;
   ui::ElementTracker::Subscription pending_pop_out_subscription_;
 
