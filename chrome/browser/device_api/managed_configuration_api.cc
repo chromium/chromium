@@ -55,11 +55,8 @@ constexpr char kManagedConfigurationDirectoryName[] = "Managed Configuration";
 constexpr int kMaxConfigurationFileSize = 5 * 1024 * 1024;
 // Per-attempt download timeout. SimpleURLLoader restarts it for each internal
 // retry and it covers the whole body, so it is sized for a 5 MB configuration
-// at ~0.7 Mbit/s. Without it, a stalled server blocks reads and all recovery.
+// at ~0.7 Mbit/s. Without it, a stalled server blocks all recovery.
 constexpr base::TimeDelta kDownloadAttemptTimeout = base::Seconds(60);
-// Backstop for how long a read waits for an in-flight sync before it is
-// answered from the (possibly stale) store.
-constexpr base::TimeDelta kMaxPendingReadDelay = base::Seconds(30);
 constexpr net::BackoffEntry::Policy kRetryBackoffPolicy = {
     0,          // Number of initial errors to ignore.
     1000,       // Initial delay in ms (1 second).
@@ -173,11 +170,7 @@ class ManagedConfigurationAPI::OriginConfiguration {
         store_path_(std::move(store_path)),
         retry_policy_(MakeRetryPolicy(*api)) {}
 
-  ~OriginConfiguration() {
-    for (auto& [keys, callback] : pending_reads_) {
-      std::move(callback).Run(std::nullopt);
-    }
-  }
+  ~OriginConfiguration() = default;
 
   OriginConfiguration(const OriginConfiguration&) = delete;
   OriginConfiguration& operator=(const OriginConfiguration&) = delete;
@@ -196,10 +189,6 @@ class ManagedConfigurationAPI::OriginConfiguration {
     }
 
     EnsureSynced();
-    if (IsSyncInProgress()) {
-      QueueRead(keys, std::move(callback));
-      return;
-    }
     EnsureStoreCreated();
     store_.AsyncCall(&ManagedConfigurationStore::Get)
         .WithArgs(keys)
@@ -215,10 +204,6 @@ class ManagedConfigurationAPI::OriginConfiguration {
     }
 
     EnsureSynced();
-    if (IsSyncInProgress()) {
-      QueueRead(std::nullopt, std::move(callback));
-      return;
-    }
     EnsureStoreCreated();
     store_.AsyncCall(&ManagedConfigurationStore::GetAll)
         .Then(std::move(callback));
@@ -272,11 +257,9 @@ class ManagedConfigurationAPI::OriginConfiguration {
   }
 
   bool HasStore() const { return static_cast<bool>(store_); }
+  bool IsFetchInProgress() const { return downloader_ != nullptr; }
 
  private:
-  using PendingRead =
-      std::pair<std::optional<std::vector<std::string>>, ConfigurationCallback>;
-
   // Configuration URL and hash requested by policy.
   struct DesiredConfiguration {
     std::string url;
@@ -284,10 +267,6 @@ class ManagedConfigurationAPI::OriginConfiguration {
     friend bool operator==(const DesiredConfiguration&,
                            const DesiredConfiguration&) = default;
   };
-
-  bool IsSyncInProgress() const {
-    return downloader_ != nullptr || in_flight_store_writes_ > 0;
-  }
 
   static net::BackoffEntry::Policy MakeRetryPolicy(
       const ManagedConfigurationAPI& api) {
@@ -298,22 +277,6 @@ class ManagedConfigurationAPI::OriginConfiguration {
       policy.multiply_factor = api.retry_multiply_factor_for_testing_;
     }
     return policy;
-  }
-
-  // Queues a read until the in-flight sync finishes, but never for longer than
-  // `kMaxPendingReadDelay`; after that the read is answered from the store and
-  // observers are notified once the fresh configuration has been stored.
-  void QueueRead(std::optional<std::vector<std::string>> keys,
-                 ConfigurationCallback callback) {
-    pending_reads_.emplace_back(std::move(keys), std::move(callback));
-    if (!pending_reads_timer_.IsRunning()) {
-      pending_reads_timer_.Start(
-          FROM_HERE,
-          api_->max_pending_read_delay_for_testing_.value_or(
-              kMaxPendingReadDelay),
-          base::BindOnce(&OriginConfiguration::FlushPendingReads,
-                         weak_ptr_factory_.GetWeakPtr()));
-    }
   }
 
   void ScheduleRetry() {
@@ -360,10 +323,6 @@ class ManagedConfigurationAPI::OriginConfiguration {
         downloader_.reset();
         retry_timer_.Stop();
         retry_backoff_.Reset();
-        EnsureStoreCreated();
-        if (!IsSyncInProgress()) {
-          FlushPendingReads();
-        }
       }
       return;
     }
@@ -407,9 +366,6 @@ class ManagedConfigurationAPI::OriginConfiguration {
                   std::optional<std::string> data) {
     downloader_.reset();
     if (!data) {
-      if (IsRecoveryEnabled() && !IsSyncInProgress()) {
-        FlushPendingReads();
-      }
       ScheduleRetry();
       return;
     }
@@ -491,9 +447,6 @@ class ManagedConfigurationAPI::OriginConfiguration {
     }
     const bool is_desired_write = desired_ && hash_to_commit == desired_->hash;
     if (!changed.has_value()) {
-      if (!IsSyncInProgress()) {
-        FlushPendingReads();
-      }
       if (is_desired_write) {
         ScheduleRetry();
       }
@@ -508,37 +461,7 @@ class ManagedConfigurationAPI::OriginConfiguration {
       // earlier would keep the backoff from growing while writes keep failing.
       retry_backoff_.Reset();
     }
-    if (!IsSyncInProgress()) {
-      FlushPendingReads();
-    }
     api_->InformObserversIfConfigurationChanged(origin_, *changed);
-  }
-
-  void FlushPendingReads() {
-    pending_reads_timer_.Stop();
-    if (pending_reads_.empty()) {
-      return;
-    }
-    std::vector<PendingRead> reads = std::exchange(pending_reads_, {});
-
-    if (!api_->CanHaveManagedStore(origin_)) {
-      for (auto& [keys, callback] : reads) {
-        std::move(callback).Run(std::nullopt);
-      }
-      return;
-    }
-
-    EnsureStoreCreated();
-    for (auto& [keys, callback] : reads) {
-      if (keys.has_value()) {
-        store_.AsyncCall(&ManagedConfigurationStore::Get)
-            .WithArgs(std::move(*keys))
-            .Then(std::move(callback));
-      } else {
-        store_.AsyncCall(&ManagedConfigurationStore::GetAll)
-            .Then(std::move(callback));
-      }
-    }
   }
 
   const raw_ptr<ManagedConfigurationAPI> api_;
@@ -557,8 +480,6 @@ class ManagedConfigurationAPI::OriginConfiguration {
   // Hash the most recently queued store write will commit, while any write is
   // in flight. std::nullopt for clears and test writes.
   std::optional<std::string> in_flight_write_hash_;
-  std::vector<PendingRead> pending_reads_;
-  base::OneShotTimer pending_reads_timer_;
 
   base::WeakPtrFactory<OriginConfiguration> weak_ptr_factory_{this};
 };
@@ -671,14 +592,15 @@ void ManagedConfigurationAPI::SetRetryBackoffForTesting(
   retry_multiply_factor_for_testing_ = multiply_factor;
 }
 
-void ManagedConfigurationAPI::SetMaxPendingReadDelayForTesting(
-    base::TimeDelta delay) {
-  max_pending_read_delay_for_testing_ = delay;
-}
-
 void ManagedConfigurationAPI::SetStoreTaskRunnerForTesting(
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
   store_task_runner_for_testing_ = std::move(task_runner);
+}
+
+bool ManagedConfigurationAPI::IsFetchInProgressForTesting(
+    const url::Origin& origin) const {
+  auto it = origins_.find(origin);
+  return it != origins_.end() && it->second->IsFetchInProgress();
 }
 
 void ManagedConfigurationAPI::OnConnectionChanged(

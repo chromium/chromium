@@ -470,9 +470,10 @@ IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
       &fail_requests));
   EnableTestServer({{kConfigurationUrl1, {kConfigurationData1}}});
 
-  // Policy is set while the URL fails to download. `GetValues()` waits for the
-  // initial in-flight attempt to finish and returns `{}`.
+  // Policy is set while the URL fails to download.
   SetConfiguration(kConfigurationUrl1, kConfigurationHash1);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return !api()->IsFetchInProgressForTesting(origin()); }));
   ASSERT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}), {}));
 
   // Server comes online and serves `kConfigurationData1`; the scheduled retry
@@ -514,6 +515,8 @@ IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
   // Policy updates to (url2, hash2), but url2 fails to download initially.
   // The existing configuration from url1 remains available.
   SetConfiguration(kConfigurationUrl2, kConfigurationHash2);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return !api()->IsFetchInProgressForTesting(origin()); }));
   ASSERT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}),
                               {{kKey1, kValue1}, {kKey2, kValue2}}));
 
@@ -556,6 +559,8 @@ IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
 
   // Initial fetch fails and schedules the backoff timer.
   SetConfiguration(kConfigurationUrl1, kConfigurationHash1);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return !api()->IsFetchInProgressForTesting(origin()); }));
   ASSERT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}), {}));
   const int requests_after_initial_failure = request_count.load();
   ASSERT_GT(requests_after_initial_failure, 0);
@@ -565,6 +570,7 @@ IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
   ASSERT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}), {}));
   api()->RemoveObserver(this);
   api()->AddObserver(this);
+  EXPECT_FALSE(api()->IsFetchInProgressForTesting(origin()));
   EXPECT_EQ(request_count.load(), requests_after_initial_failure);
 
   // Simulating network reconnection resets backoff and immediately fetches.
@@ -574,22 +580,6 @@ IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
       ->OnConnectionChanged(net::NetworkChangeNotifier::CONNECTION_WIFI);
   WaitForUpdate();
 
-  ASSERT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}),
-                              {{kKey1, kValue1}, {kKey2, kValue2}}));
-}
-
-// Verifies that if `GetOriginPolicyConfiguration()` is called while a
-// configuration download is still in flight, the read waits for the download
-// and store write to complete rather than returning empty data from an
-// unpopulated store.
-IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
-                       GetConfigurationWhileDownloadInFlight) {
-  EnableTestServer(
-      {{kConfigurationUrl1, {kConfigurationData1, true /* post_task */}}});
-  SetConfiguration(kConfigurationUrl1, kConfigurationHash1);
-
-  // Immediately call GetValues() before WaitForUpdate() while the download is
-  // still in flight.
   ASSERT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}),
                               {{kKey1, kValue1}, {kKey2, kValue2}}));
 }
@@ -619,6 +609,8 @@ IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
 
   // Initial configuration (url1, hash1) fails to download.
   SetConfiguration(kConfigurationUrl1, kConfigurationHash1);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return !api()->IsFetchInProgressForTesting(origin()); }));
   ASSERT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}), {}));
 
   // Before url1 ever succeeds, policy updates to (url2, hash2).
@@ -653,6 +645,8 @@ IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
 
   // Initial configuration (url1, hash1) fails to download.
   SetConfiguration(kConfigurationUrl1, kConfigurationHash1);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return !api()->IsFetchInProgressForTesting(origin()); }));
   ASSERT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}), {}));
 
   // Policy updates to (url2, hash1) with the same hash.
@@ -719,18 +713,37 @@ IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
                        ShutdownBeforeStoreWriteCompletes) {
   EnableTestServer({{kConfigurationUrl1, {kConfigurationData1}}});
   SetConfiguration(kConfigurationUrl1, kConfigurationHash1);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return GetCommittedHash() == kConfigurationHash1; }));
   ASSERT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}),
                               {{kKey1, kValue1}, {kKey2, kValue2}}));
 }
 
-// Verifies that a stalled configuration download does not hold reads hostage:
-// they are answered from the store after a bounded delay.
-IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
-                       ReadNotBlockedByStalledDownload) {
-  api()->SetMaxPendingReadDelayForTesting(base::Seconds(1));
-  EnableTestServer({});  // Every request receives a HungResponse.
+// Verifies that a read is answered from the store right away while a download
+// is in flight, instead of waiting for the download.
+IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest, ReadNotHeldBackByDownload) {
+  scoped_refptr<base::SequencedTaskRunner> store_task_runner =
+      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
+  api()->SetStoreTaskRunnerForTesting(store_task_runner);
+  // Requests for kConfigurationUrl2 never receive a response.
+  EnableTestServer({{kConfigurationUrl1, {kConfigurationData1}}});
   SetConfiguration(kConfigurationUrl1, kConfigurationHash1);
-  ASSERT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}), {}));
+  WaitForUpdate();
+
+  SetConfiguration(kConfigurationUrl2, kConfigurationHash2);
+  ASSERT_TRUE(api()->IsFetchInProgressForTesting(origin()));
+  base::test::TestFuture<std::optional<base::DictValue>> read;
+  api()->GetOriginPolicyConfiguration(origin(), {kKey1, kKey2},
+                                      read.GetCallback());
+  // A read that was sent to the store right away completes before a store task
+  // that is posted afterwards.
+  base::RunLoop run_loop;
+  store_task_runner->PostTaskAndReply(FROM_HERE, base::DoNothing(),
+                                      run_loop.QuitClosure());
+  run_loop.Run();
+  ASSERT_TRUE(read.IsReady());
+  EXPECT_TRUE(
+      DictValueEquals(read.Take(), {{kKey1, kValue1}, {kKey2, kValue2}}));
 }
 
 // Verifies that the retry backoff keeps growing while every store write fails,
@@ -821,6 +834,7 @@ IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
 
   ASSERT_TRUE(
       DictValueEquals(read.Take(), {{kKey1, kValue12}, {kKey2, kValue22}}));
+  EXPECT_FALSE(api()->IsFetchInProgressForTesting(origin()));
   EXPECT_EQ(url2_requests->data.load(), 1);
 }
 
@@ -836,12 +850,13 @@ IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
   WaitForUpdate();
   EXPECT_EQ(GetCommittedHash(), "");
 
-  // A read that started a download would wait for it, so any extra download
-  // would be counted below.
+  // A read starts any download synchronously, so an extra download is either
+  // still in flight or counted below.
   for (int i = 0; i < 3; ++i) {
     ASSERT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}),
                                 {{kKey1, kValue1}, {kKey2, kValue2}}));
   }
+  EXPECT_FALSE(api()->IsFetchInProgressForTesting(origin()));
   EXPECT_EQ(requests->data.load(), 1);
 }
 
@@ -873,9 +888,9 @@ IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
   run_loop.Run();
   EXPECT_FALSE(GetCommittedHash());
 
-  // Re-adding the origin downloads its configuration again; the read waits for
-  // that download.
+  // Re-adding the origin downloads its configuration again.
   SetConfiguration(kConfigurationUrl2, /*conf_hash=*/"");
+  ASSERT_TRUE(base::test::RunUntil([&] { return GetCommittedHash() == ""; }));
   ASSERT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}),
                               {{kKey1, kValue12}, {kKey2, kValue22}}));
 }

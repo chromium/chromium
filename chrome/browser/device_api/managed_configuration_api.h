@@ -105,14 +105,15 @@ class ManagedConfigurationAPI
   // names the origin.
   void SetRetryBackoffForTesting(base::TimeDelta initial_delay,
                                  double multiply_factor);
-  void SetMaxPendingReadDelayForTesting(base::TimeDelta delay);
   void SetStoreTaskRunnerForTesting(
       scoped_refptr<base::SequencedTaskRunner> task_runner);
 
+  // Returns whether a configuration download for `origin` is in flight.
+  bool IsFetchInProgressForTesting(const url::Origin& origin) const;
+
  private:
-  // Encapsulates the store, active downloader, retry backoff/timer, and queued
-  // read callbacks for a single origin so all per-origin resources are cleaned
-  // up together via RAII.
+  // Encapsulates the store, active downloader and retry backoff/timer for a
+  // single origin so all per-origin resources are cleaned up together via RAII.
   class OriginConfiguration;
 
   // network::NetworkConnectionTracker::NetworkConnectionObserver:
@@ -168,7 +169,6 @@ class ManagedConfigurationAPI
   // Test-only overrides; see the corresponding setters.
   std::optional<base::TimeDelta> retry_initial_delay_for_testing_;
   double retry_multiply_factor_for_testing_ = 0;
-  std::optional<base::TimeDelta> max_pending_read_delay_for_testing_;
   scoped_refptr<base::SequencedTaskRunner> store_task_runner_for_testing_;
 
   base::WeakPtrFactory<ManagedConfigurationAPI> weak_ptr_factory_{this};
