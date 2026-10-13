@@ -58,13 +58,6 @@ BASE_DECLARE_FEATURE(kAutoApproveSharedPasswordUpdatesFromSameSender);
 // experience and the perceived trust they have in the features.
 BASE_DECLARE_FEATURE(kAutofillPersonalizationAndTrustPasswordSurvey);
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
-// Waits for the page to reach stability before triggering any password change
-// actions.
-BASE_DECLARE_FEATURE(kAwaitPageStabilityForPasswordChange);
-extern const base::FeatureParam<base::TimeDelta> kAwaitPageStabilityTimeout;
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
 // Enables Biometrics for the Touch To Fill feature. This only effects Android.
 BASE_DECLARE_FEATURE(kBiometricTouchToFill);
 

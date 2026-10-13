@@ -140,7 +140,7 @@ PasswordChangeSubmissionVerifier::PasswordChangeSubmissionVerifier(
       logs_uploader_(logs_uploader),
       callback_(std::move(callback)) {
   capturer_ = AnnotatedPageContentCapturer::Create(
-      web_contents_, client, GetAIPageContentOptions(),
+      web_contents_, GetAIPageContentOptions(),
       base::BindOnce(
           &PasswordChangeSubmissionVerifier::CheckSubmissionSuccessful,
           weak_ptr_factory_.GetWeakPtr()));

@@ -53,15 +53,6 @@ BASE_FEATURE(kAutoApproveSharedPasswordUpdatesFromSameSender,
 BASE_FEATURE(kAutofillPersonalizationAndTrustPasswordSurvey,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
-BASE_FEATURE(kAwaitPageStabilityForPasswordChange,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<base::TimeDelta> kAwaitPageStabilityTimeout = {
-    &kAwaitPageStabilityForPasswordChange, "stability_timeout",
-    base::Seconds(5)};
-
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
 BASE_FEATURE(kBiometricTouchToFill, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCallOnAddPasswordFillDataAsynchronously,

@@ -15,7 +15,6 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/password_manager/core/browser/features/password_features.h"
-#include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,38 +24,23 @@ using ::base::test::RunOnceCallback;
 using ::testing::_;
 
 class AnnotatedPageContentCapturerTest
-    : public ChromeRenderViewHostTestHarness,
-      public ::testing::WithParamInterface<bool> {
+    : public ChromeRenderViewHostTestHarness {
  public:
-  AnnotatedPageContentCapturerTest() {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatureStates(
-        {{password_manager::features::kAwaitPageStabilityForPasswordChange,
-          GetParam()}});
-  }
-
   using MockGetAIPageContentFunction = base::MockCallback<
       AnnotatedPageContentCapturer::GetAIPageContentFunction>;
 
   std::unique_ptr<AnnotatedPageContentCapturerImpl> CreateCapturer(
       optimization_guide::OnAIPageContentDone callback) {
     return std::make_unique<AnnotatedPageContentCapturerImpl>(
-        web_contents(), &stub_client_,
-        blink::mojom::AIPageContentOptions::New(), std::move(callback),
-        mock_get_page_content_.Get());
+        web_contents(), blink::mojom::AIPageContentOptions::New(),
+        std::move(callback), mock_get_page_content_.Get());
   }
 
  protected:
   MockGetAIPageContentFunction mock_get_page_content_;
-  base::test::ScopedFeatureList feature_list_;
-  password_manager::StubPasswordManagerClient stub_client_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         AnnotatedPageContentCapturerTest,
-                         testing::Bool());
-
-TEST_P(AnnotatedPageContentCapturerTest, CaptureEmptyPageContent) {
+TEST_F(AnnotatedPageContentCapturerTest, CaptureEmptyPageContent) {
   base::test::TestFuture<optimization_guide::AIPageContentResultOrError>
       completion_future;
   std::unique_ptr<AnnotatedPageContentCapturerImpl> capturer =
@@ -68,11 +52,11 @@ TEST_P(AnnotatedPageContentCapturerTest, CaptureEmptyPageContent) {
   EXPECT_CALL(mock_get_page_content_, Run)
       .WillOnce(RunOnceCallback<1>(std::move(result)));
   content::WebContentsTester::For(web_contents())->TestSetIsLoading(false);
-  capturer->OnPageStable();
+  capturer->DidStopLoading();
   EXPECT_TRUE(completion_future.IsReady());
 }
 
-TEST_P(AnnotatedPageContentCapturerTest, CaptureSucceedsOnFirstLoad) {
+TEST_F(AnnotatedPageContentCapturerTest, CaptureSucceedsOnFirstLoad) {
   base::HistogramTester histogram_tester;
   base::test::TestFuture<optimization_guide::AIPageContentResultOrError>
       completion_future;
@@ -85,7 +69,7 @@ TEST_P(AnnotatedPageContentCapturerTest, CaptureSucceedsOnFirstLoad) {
   EXPECT_CALL(mock_get_page_content_, Run)
       .WillOnce(RunOnceCallback<1>(std::move(page_content_result)));
   content::WebContentsTester::For(web_contents())->TestSetIsLoading(false);
-  capturer->OnPageStable();
+  capturer->DidStopLoading();
   EXPECT_TRUE(completion_future.IsReady());
 
   histogram_tester.ExpectUniqueSample(
@@ -94,7 +78,7 @@ TEST_P(AnnotatedPageContentCapturerTest, CaptureSucceedsOnFirstLoad) {
       "PasswordManager.PasswordChange.PageContentCaptureDuration", 1);
 }
 
-TEST_P(AnnotatedPageContentCapturerTest, CaptureRetriesOnFailure) {
+TEST_F(AnnotatedPageContentCapturerTest, CaptureRetriesOnFailure) {
   base::test::ScopedFeatureList feature_list{
       password_manager::features::kRetryCapturePageContent};
   base::test::TestFuture<optimization_guide::AIPageContentResultOrError>
@@ -115,13 +99,13 @@ TEST_P(AnnotatedPageContentCapturerTest, CaptureRetriesOnFailure) {
       });
 
   content::WebContentsTester::For(web_contents())->TestSetIsLoading(false);
-  capturer->OnPageStable();
+  capturer->DidStopLoading();
 
   ASSERT_TRUE(completion_future.Wait());
   EXPECT_TRUE(completion_future.Get().has_value());
 }
 
-TEST_P(AnnotatedPageContentCapturerTest, CaptureFailsAfterMaxRetries) {
+TEST_F(AnnotatedPageContentCapturerTest, CaptureFailsAfterMaxRetries) {
   base::test::ScopedFeatureList feature_list{
       password_manager::features::kRetryCapturePageContent};
   base::HistogramTester histogram_tester;
@@ -137,7 +121,7 @@ TEST_P(AnnotatedPageContentCapturerTest, CaptureFailsAfterMaxRetries) {
       .WillOnce(RunOnceCallback<1>(base::unexpected("Error 4")));
 
   content::WebContentsTester::For(web_contents())->TestSetIsLoading(false);
-  capturer->OnPageStable();
+  capturer->DidStopLoading();
 
   ASSERT_TRUE(completion_future.Wait());
   EXPECT_FALSE(completion_future.Get().has_value());
@@ -148,7 +132,7 @@ TEST_P(AnnotatedPageContentCapturerTest, CaptureFailsAfterMaxRetries) {
       "PasswordManager.PasswordChange.PageContentCaptureDuration", 1);
 }
 
-TEST_P(AnnotatedPageContentCapturerTest, CaptureDoesNotRetryWhenDisabled) {
+TEST_F(AnnotatedPageContentCapturerTest, CaptureDoesNotRetryWhenDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
       password_manager::features::kRetryCapturePageContent);
@@ -162,13 +146,13 @@ TEST_P(AnnotatedPageContentCapturerTest, CaptureDoesNotRetryWhenDisabled) {
       .WillOnce(RunOnceCallback<1>(base::unexpected("Error 1")));
 
   content::WebContentsTester::For(web_contents())->TestSetIsLoading(false);
-  capturer->OnPageStable();
+  capturer->DidStopLoading();
 
   ASSERT_TRUE(completion_future.Wait());
   EXPECT_FALSE(completion_future.Get().has_value());
 }
 
-TEST_P(AnnotatedPageContentCapturerTest, NewLoadInvalidatesPreviousRequest) {
+TEST_F(AnnotatedPageContentCapturerTest, NewLoadInvalidatesPreviousRequest) {
   base::test::TestFuture<optimization_guide::AIPageContentResultOrError>
       completion_future;
   std::unique_ptr<AnnotatedPageContentCapturerImpl> capturer =
@@ -187,13 +171,13 @@ TEST_P(AnnotatedPageContentCapturerTest, NewLoadInvalidatesPreviousRequest) {
 
   content::WebContentsTester::For(web_contents())->TestSetIsLoading(false);
 
-  capturer->OnPageStable();
+  capturer->DidStopLoading();
   ASSERT_TRUE(first_request_callback);
 
-  capturer->OnPageStable();
+  capturer->DidStopLoading();
   ASSERT_TRUE(second_request_callback);
 
-  // The second `OnPageStable` should invalidate the
+  // The second `DidStopLoading` should invalidate the
   // first callback from being executed.
   optimization_guide::AIPageContentResult first_page_content_result;
   first_page_content_result.proto.mutable_root_node()

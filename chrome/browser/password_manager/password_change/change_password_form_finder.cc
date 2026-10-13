@@ -6,7 +6,6 @@
 
 #include "base/barrier_closure.h"
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -17,14 +16,12 @@
 #include "chrome/browser/password_manager/password_change/button_click_helper.h"
 #include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
 #include "chrome/browser/password_manager/password_change/password_change_logging_util.h"
-#include "chrome/browser/password_manager/password_change/password_change_page_stability_waiter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"
 #include "components/optimization_guide/proto/features/password_change_submission.pb.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "content/public/browser/web_contents.h"
@@ -97,16 +94,14 @@ ChangePasswordFormFinder::ChangePasswordFormFinder(
       base::BindOnce(&LogFormNotFoundMetric).Then(std::move(failure_callback));
   CHECK(logs_uploader_);
 
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kAwaitPageStabilityForPasswordChange)) {
-    page_stability_waiter_ =
-        std::make_unique<PasswordChangePageStabilityWaiter>(
-            web_contents_, client_,
-            base::BindOnce(&ChangePasswordFormFinder::OnPageStableInitially,
-                           weak_ptr_factory_.GetWeakPtr()));
-  } else {
-    OnPageStableInitially();
-  }
+  form_waiter_ =
+      ChangePasswordFormWaiter::Builder(
+          web_contents_, client_,
+          base::BindOnce(&ChangePasswordFormFinder::OnInitialFormWaitingResult,
+                         weak_ptr_factory_.GetWeakPtr()))
+          .EnableTimeout()
+          .IgnoreHiddenForms()
+          .Build();
 
   timeout_timer_.Start(FROM_HERE, kFormWaitingTimeout,
                        base::BindOnce(&ChangePasswordFormFinder::OnFormNotFound,
@@ -119,18 +114,6 @@ ChangePasswordFormFinder::~ChangePasswordFormFinder() {
   }
   logs_uploader_->SetStepDuration(kOpenFormFlowStep,
                                   base::Time::Now() - creation_time_);
-}
-
-void ChangePasswordFormFinder::OnPageStableInitially() {
-  page_stability_waiter_.reset();
-  form_waiter_ =
-      ChangePasswordFormWaiter::Builder(
-          web_contents_, client_,
-          base::BindOnce(&ChangePasswordFormFinder::OnInitialFormWaitingResult,
-                         weak_ptr_factory_.GetWeakPtr()))
-          .EnableTimeout()
-          .IgnoreHiddenForms()
-          .Build();
 }
 
 void ChangePasswordFormFinder::OnInitialFormWaitingResult(
@@ -149,7 +132,7 @@ void ChangePasswordFormFinder::OnFormNotFoundInitially() {
   LogBoolean(client_,
              Logger::STRING_PASSWORD_CHANGE_INITIAL_FORM_WAITING_RESULT, false);
   capturer_ = AnnotatedPageContentCapturer::Create(
-      web_contents_, client_, GetAIPageContentOptions(),
+      web_contents_, GetAIPageContentOptions(),
       base::BindOnce(&ChangePasswordFormFinder::OnPageContentReceived,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -266,19 +249,6 @@ void ChangePasswordFormFinder::OnButtonClicked(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kAwaitPageStabilityForPasswordChange)) {
-    page_stability_waiter_ =
-        std::make_unique<PasswordChangePageStabilityWaiter>(
-            web_contents_, client_,
-            base::BindOnce(&ChangePasswordFormFinder::OnPageStableAfterClick,
-                           weak_ptr_factory_.GetWeakPtr()));
-  } else {
-    OnPageStableAfterClick();
-  }
-}
-
-void ChangePasswordFormFinder::OnPageStableAfterClick() {
   form_waiter_ =
       ChangePasswordFormWaiter::Builder(
           web_contents_, client_,

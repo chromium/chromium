@@ -34,7 +34,6 @@ class AnnotatedPageContentCapturer;
 class ButtonClickHelper;
 class ModelQualityLogsUploader;
 class OptimizationGuideKeyedService;
-class PasswordChangePageStabilityWaiter;
 
 // Helper class which searches for a change password form, performs actuation
 // when necessary. Invokes a callback with a form when it's found, or nullptr
@@ -76,17 +75,12 @@ class ChangePasswordFormFinder {
     std::move(failure_callback_).Run(ErrorCase::kFormNotFound);
   }
 
-  void TriggerPageStabilityForTesting() { OnPageStableInitially(); }
-
   ChangePasswordFormWaiter* form_waiter() { return form_waiter_.get(); }
   ButtonClickHelper* click_helper() { return click_helper_.get(); }
   AnnotatedPageContentCapturer* capturer() { return capturer_.get(); }
 #endif
 
  private:
-  void OnPageStableInitially();
-  void OnPageStableAfterClick();
-
   void OnInitialFormWaitingResult(ChangePasswordFormWaiter::Result result);
   void OnFormNotFoundInitially();
   void OnFormFoundInitially(
@@ -121,7 +115,6 @@ class ChangePasswordFormFinder {
   std::unique_ptr<AnnotatedPageContentCapturer> capturer_;
 
   std::unique_ptr<ChangePasswordFormWaiter> form_waiter_;
-  std::unique_ptr<PasswordChangePageStabilityWaiter> page_stability_waiter_;
 
   std::unique_ptr<ButtonClickHelper> click_helper_;
 

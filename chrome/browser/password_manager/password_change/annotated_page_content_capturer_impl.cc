@@ -10,7 +10,6 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
-#include "chrome/browser/password_manager/password_change/password_change_page_stability_waiter.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
@@ -33,7 +32,6 @@ optimization_guide::AIPageContentResultOrError LogPageContentCaptureMetrics(
 
 AnnotatedPageContentCapturerImpl::AnnotatedPageContentCapturerImpl(
     content::WebContents* web_contents,
-    password_manager::PasswordManagerClient* client,
     blink::mojom::AIPageContentOptionsPtr options,
     optimization_guide::OnAIPageContentDone callback,
     AnnotatedPageContentCapturer::GetAIPageContentFunction get_page_content)
@@ -43,35 +41,17 @@ AnnotatedPageContentCapturerImpl::AnnotatedPageContentCapturerImpl(
           base::BindOnce(&LogPageContentCaptureMetrics, base::TimeTicks::Now())
               .Then(std::move(callback))),
       get_page_content_(std::move(get_page_content)) {
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kAwaitPageStabilityForPasswordChange)) {
-    page_stability_waiter_ =
-        std::make_unique<PasswordChangePageStabilityWaiter>(
-            web_contents, client,
-            base::BindOnce(&AnnotatedPageContentCapturerImpl::OnPageStable,
-                           weak_ptr_factory_.GetWeakPtr()));
-  } else {
-    if (!web_contents->IsLoading()) {
-      DidStopLoading();
-    }
+  if (!web_contents->IsLoading()) {
+    DidStopLoading();
   }
 }
 
 AnnotatedPageContentCapturerImpl::~AnnotatedPageContentCapturerImpl() = default;
 
 void AnnotatedPageContentCapturerImpl::DidStopLoading() {
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kAwaitPageStabilityForPasswordChange)) {
-    return;
-  }
   if (web_contents()->IsLoading()) {
     return;
   }
-  OnPageStable();
-}
-
-void AnnotatedPageContentCapturerImpl::OnPageStable() {
-  page_stability_waiter_.reset();
   weak_ptr_factory_.InvalidateWeakPtrs();
   get_page_content_.Run(
       options_->Clone(),

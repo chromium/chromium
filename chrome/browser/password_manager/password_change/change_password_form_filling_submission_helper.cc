@@ -138,7 +138,7 @@ void ChangePasswordFormFillingSubmissionHelper::OnFormFilled(
   form_manager_ = std::move(result.value());
 
   capturer_ = AnnotatedPageContentCapturer::Create(
-      web_contents_, client_, GetAIPageContentOptions(),
+      web_contents_, GetAIPageContentOptions(),
       base::BindOnce(
           &ChangePasswordFormFillingSubmissionHelper::OnPageContentReceived,
           weak_ptr_factory_.GetWeakPtr()));

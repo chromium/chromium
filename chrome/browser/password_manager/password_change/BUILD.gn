@@ -28,8 +28,6 @@ source_set("password_change") {
     "model_quality_logs_uploader.h",
     "password_change_logging_util.cc",
     "password_change_logging_util.h",
-    "password_change_page_stability_waiter.cc",
-    "password_change_page_stability_waiter.h",
     "password_change_submission_verifier.cc",
     "password_change_submission_verifier.h",
   ]
@@ -87,7 +85,6 @@ source_set("unit_tests") {
     "fake_annotated_page_content_capturer.h",
     "login_state_checker_unittest.cc",
     "model_quality_logs_uploader_unittest.cc",
-    "password_change_page_stability_waiter_unittest.cc",
     "password_change_submission_verifier_unittest.cc",
   ]
   deps = [
