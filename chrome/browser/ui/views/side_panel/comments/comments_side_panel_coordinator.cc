@@ -48,6 +48,11 @@ CommentsSidePanelCoordinator::CommentsSidePanelCoordinator(
           tab_groups::TabGroupSyncServiceFactory::GetForProfile(
               browser_->GetProfile())),
       scoped_unowned_user_data_(browser->GetUnownedUserDataHost(), *this) {
+  SidePanelRegistry::From(browser)->Register(std::make_unique<SidePanelEntry>(
+      SidePanelEntry::Key(SidePanelEntry::Id::kComments),
+      base::BindRepeating(&CommentsSidePanelCoordinator::CreateCommentsWebView,
+                          base::Unretained(this)),
+      /*default_content_width_callback=*/base::NullCallback()));
   browser_->GetTabStripModel()->AddObserver(this);
   tab_groups::TabGroupSyncServiceFactory::GetForProfile(browser_->GetProfile())
       ->AddObserver(this);
@@ -231,15 +236,6 @@ bool CommentsSidePanelCoordinator::IsSupported() {
 CommentsSidePanelCoordinator* CommentsSidePanelCoordinator::From(
     BrowserWindowInterface* interface) {
   return Get(interface->GetUnownedUserDataHost());
-}
-
-void CommentsSidePanelCoordinator::CreateAndRegisterEntry(
-    SidePanelRegistry* global_registry) {
-  global_registry->Register(std::make_unique<SidePanelEntry>(
-      SidePanelEntry::Key(SidePanelEntry::Id::kComments),
-      base::BindRepeating(&CommentsSidePanelCoordinator::CreateCommentsWebView,
-                          base::Unretained(this)),
-      /*default_content_width_callback=*/base::NullCallback()));
 }
 
 std::unique_ptr<views::View>

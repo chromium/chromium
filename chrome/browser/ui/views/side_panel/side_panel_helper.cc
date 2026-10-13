@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/side_panel/comments/comments_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/history/history_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_coordinator.h"
 #include "chrome/browser/ui/webui_browser/webui_browser.h"
@@ -40,12 +39,6 @@ void SidePanelHelper::PopulateGlobalEntries(
   // Add history.
   if (HistorySidePanelCoordinator::IsSupported()) {
     HistorySidePanelCoordinator::From(browser)->CreateAndRegisterEntry(
-        window_registry);
-  }
-
-  // Add comments.
-  if (CommentsSidePanelCoordinator::IsSupported()) {
-    CommentsSidePanelCoordinator::From(browser)->CreateAndRegisterEntry(
         window_registry);
   }
 }

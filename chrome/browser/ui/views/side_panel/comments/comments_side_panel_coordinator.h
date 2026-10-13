@@ -14,7 +14,6 @@
 
 class BrowserWindowInterface;
 class SidePanelEntryScope;
-class SidePanelRegistry;
 
 class TabStripModel;
 class TabStripModelChange;
@@ -62,9 +61,6 @@ class CommentsSidePanelCoordinator
   // If this returns false, it should not be registered with the side
   // panel registry.
   static bool IsSupported();
-
-  // Creates and registers the comments side panel entry in the global registry.
-  void CreateAndRegisterEntry(SidePanelRegistry* global_registry);
 
  private:
   // Creates the comments web view that will be used as the content of the

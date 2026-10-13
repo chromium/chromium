@@ -372,12 +372,6 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
   call_to_action_lock_ =
       GetUserDataFactory().CreateInstance<CallToActionLock>(*browser, browser);
 
-  if (CommentsSidePanelCoordinator::IsSupported()) {
-    comments_side_panel_coordinator_ =
-        GetUserDataFactory().CreateInstance<CommentsSidePanelCoordinator>(
-            *browser, browser);
-  }
-
   content_setting_bubble_model_delegate_ =
       GetUserDataFactory()
           .CreateInstance<BrowserContentSettingBubbleModelDelegate>(*browser,
@@ -911,6 +905,16 @@ void BrowserWindowFeatures::InitPostWindowConstruction(
       GetUserDataFactory().CreateInstance<BookmarksSidePanelCoordinator>(
           *browser, browser->GetUnownedUserDataHost(), *side_panel_registry_);
 
+  // TODO(webium): Consider supporting additional side panels beyond reading
+  // list and bookmarks.
+  if (!webui_browser::IsWebUIBrowserEnabled()) {
+    if (CommentsSidePanelCoordinator::IsSupported()) {
+      comments_side_panel_coordinator_ =
+          GetUserDataFactory().CreateInstance<CommentsSidePanelCoordinator>(
+              *browser, browser);
+    }
+  }
+
   reading_list_side_panel_coordinator_ =
       GetUserDataFactory().CreateInstance<ReadingListSidePanelCoordinator>(
           *browser, browser, profile, browser->GetTabStripModel());
@@ -1190,6 +1194,7 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   synced_window_delegate_.reset();
   skills_ui_window_controller_.reset();
   reading_list_side_panel_coordinator_.reset();
+  comments_side_panel_coordinator_.reset();
   bookmarks_side_panel_coordinator_.reset();
   // TODO(crbug.com/346148093): This logic should not be gated behind a
   // conditional.
@@ -1263,7 +1268,6 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   find_bar_controller_.reset();
   extension_installed_watcher_.reset();
   context_highlight_window_feature_.reset();
-  comments_side_panel_coordinator_.reset();
   if (auto* const provider = browser_elements_->AsA<BrowserElementsViews>()) {
     provider->TearDown();
   }
