@@ -29,6 +29,10 @@ extern const char kDisableCrashReporter[];
 // between multiple implementations of dumpstate tool.
 extern const char kDumpstateBinPath[];
 
+// Switch to dumpstate log retrieval utility. utility must take no arguments as
+// dumpstate does not forward args.
+extern const char kDumpstateLogRetrievalUtilityPath[];
+
 // Content-implementation switches
 extern const char kEnableLocalFileAccesses[];
 

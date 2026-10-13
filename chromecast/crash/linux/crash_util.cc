@@ -82,6 +82,14 @@ bool CrashUtil::CollectDumpstate(const base::FilePath& minidump_path,
       minidump_path.value() /* dumpstate appends ".txt.gz" to the filename */
   };
 
+  base::FilePath utility_path =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+          switches::kDumpstateLogRetrievalUtilityPath);
+  if (!utility_path.empty()) {
+    argv.push_back("-l");
+    argv.push_back(utility_path.value());
+  }
+
   std::string log;
   if (!chromecast::GetAppOutput(argv, &log)) {
     LOG(ERROR) << "failed to execute dumpstate";

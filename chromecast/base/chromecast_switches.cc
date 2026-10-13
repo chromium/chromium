@@ -35,6 +35,11 @@ const char kDisableCrashReporter[] = "disable-crash-reporter";
 // Switch to dumpstate binary path.
 const char kDumpstateBinPath[] = "dumpstate-path";
 
+// Switch to dumpstate log retrieval utility. utility must take no arguments as
+// dumpstate does not forward args.
+const char kDumpstateLogRetrievalUtilityPath[] =
+    "dumpstate-log-retrieval-utility-path";
+
 // Enable file accesses. It should not be enabled for most Cast devices.
 const char kEnableLocalFileAccesses[] = "enable-local-file-accesses";
 
