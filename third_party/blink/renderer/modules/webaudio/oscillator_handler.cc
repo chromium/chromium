@@ -81,6 +81,8 @@ float DoInterpolation(double virtual_read_index,
     // Increment is fairly large, so we're doing no more than about 3
     // points between each wave table entry. Assume linear
     // interpolation between points is good enough.
+    double interpolation_factor =
+        static_cast<float>(virtual_read_index) - read_index_0;
     unsigned read_index2 = read_index_0 + 1;
 
     // Contain within valid range.
@@ -93,8 +95,6 @@ float DoInterpolation(double virtual_read_index,
     float sample2_higher = higher_wave_data[read_index2];
 
     // Linearly interpolate within each table (lower and higher).
-    double interpolation_factor =
-        static_cast<float>(virtual_read_index) - read_index_0;
     sample_higher = (1 - interpolation_factor) * sample1_higher +
                     interpolation_factor * sample2_higher;
     sample_lower = (1 - interpolation_factor) * sample1_lower +
@@ -384,6 +384,8 @@ double OscillatorHandler::ProcessARateVectorKernel(
     // Increment is fairly large, so we're doing no more than about 3
     // points between each wave table entry. Assume linear
     // interpolation between points is good enough.
+    double interpolation_factor =
+        static_cast<float>(virtual_read_index) - read_index_0;
     unsigned read_index2 = read_index_0 + 1;
 
     // Contain within valid range.
@@ -396,8 +398,6 @@ double OscillatorHandler::ProcessARateVectorKernel(
     float sample2_higher = higher_wave_data[m][read_index2];
 
     // Linearly interpolate within each table (lower and higher).
-    double interpolation_factor =
-        static_cast<float>(virtual_read_index) - read_index_0;
     // Doing linear interpolation via x0 + f*(x1-x0) gives slightly
     // different results from (1-f)*x0 + f*x1, but requires fewer
     // operations.  This causes a very slight decrease in SNR (< 0.05 dB) in
@@ -448,8 +448,10 @@ double OscillatorHandler::ProcessKRateScalar(int start,
   for (int k = start; k < n; ++k) {
     // Get indices for the current and next sample, and contain them within the
     // valid range
-    const unsigned read_index_0 =
-        static_cast<unsigned>(virtual_read_index) & read_index_mask;
+    unsigned read_index_0 = static_cast<unsigned>(virtual_read_index);
+    const float interpolation_factor =
+        static_cast<float>(virtual_read_index) - read_index_0;
+    read_index_0 &= read_index_mask;
     const unsigned read_index_1 = (read_index_0 + 1) & read_index_mask;
 
     const float sample1_lower = lower_wave_data[read_index_0];
@@ -458,8 +460,6 @@ double OscillatorHandler::ProcessKRateScalar(int start,
     const float sample2_higher = higher_wave_data[read_index_1];
 
     // Linearly interpolate within each table (lower and higher).
-    const float interpolation_factor =
-        static_cast<float>(virtual_read_index) - read_index_0;
     const float sample_higher =
         sample1_higher +
         interpolation_factor * (sample2_higher - sample1_higher);

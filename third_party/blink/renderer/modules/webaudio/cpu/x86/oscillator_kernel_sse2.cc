@@ -239,6 +239,11 @@ double OscillatorHandler::ProcessARateVectorKernel(
       reinterpret_cast<__m128>(_mm_cvttpd_epi32(v_read_index_lo)),
       reinterpret_cast<__m128>(_mm_cvttpd_epi32(v_read_index_hi))));
 
+  const __m128 v_factor =
+      _mm_sub_ps(_mm_movelh_ps(_mm_cvtpd_ps(v_read_index_lo),
+                               _mm_cvtpd_ps(v_read_index_hi)),
+                 _mm_cvtepi32_ps(v_read0));
+
   // Get index to next element being sure to wrap the index around if needed.
   __m128i v_read1 = _mm_add_epi32(v_read0, _mm_set1_epi32(1));
 
@@ -270,10 +275,6 @@ double OscillatorHandler::ProcessARateVectorKernel(
     sample2_higher[m] = higher_wave_data[m][read1[m]];
   }
 
-  const __m128 v_factor =
-      _mm_sub_ps(_mm_movelh_ps(_mm_cvtpd_ps(v_read_index_lo),
-                               _mm_cvtpd_ps(v_read_index_hi)),
-                 _mm_cvtepi32_ps(v_read0));
   const __m128 sample_higher = _mm_add_ps(
       _mm_load_ps(sample1_higher.data()),
       _mm_mul_ps(v_factor, _mm_sub_ps(_mm_load_ps(sample2_higher.data()),

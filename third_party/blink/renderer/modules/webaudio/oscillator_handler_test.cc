@@ -51,6 +51,40 @@ TEST(OscillatorHandlerTest, RoundingBug) {
   }
 }
 
+TEST(OscillatorHandlerTest, NegativeIncrementRoundingBug) {
+  test::TaskEnvironment task_environment;
+  auto page = std::make_unique<DummyPageHolder>();
+  OfflineAudioContext* context = OfflineAudioContext::Create(
+      page->GetFrame().DomWindow(), 1, 128, 44100, ASSERT_NO_EXCEPTION);
+
+  OscillatorNode* node =
+      OscillatorNode::Create(*context, "sine", nullptr, ASSERT_NO_EXCEPTION);
+  OscillatorHandler& handler = node->GetOscillatorHandler();
+
+  // After adding phase_increments[0] = -1.0f, the second sample's unwrapped
+  // virtual_read_index is -1e-13, which wraps via
+  // x - floor(x / 4096.0) * 4096.0 to 4096.0 in double precision (testing
+  // ProcessARateVectorKernel on sample 1). With phase_increments[3] = 2.0f,
+  // incr_sum[3] is also -1.0, so ProcessARateVectorKernel returns 4096.0 to
+  // ProcessARateScalar (testing DoInterpolation on sample 4).
+  double virtual_read_index = 1.0 - 1e-13;
+
+  constexpr size_t kSize = 5;
+  std::array<float, kSize> destination;
+  std::array<float, kSize> phase_increments = {-1.0f, -1.0f, -1.0f, 2.0f,
+                                               -1.0f};
+
+  handler.ProcessARate(kSize, destination, virtual_read_index,
+                       phase_increments);
+
+  for (size_t i = 0; i < kSize; ++i) {
+    EXPECT_TRUE(std::isfinite(destination[i]));
+    EXPECT_LE(std::abs(destination[i]), 1.1f)
+        << "Sample " << i << " is too large: " << destination[i]
+        << " (possible rounding bug)";
+  }
+}
+
 TEST(OscillatorHandlerTest, SetInitialType) {
   test::TaskEnvironment task_environment;
   auto page = std::make_unique<DummyPageHolder>();
@@ -119,5 +153,4 @@ TEST(OscillatorHandlerTest, PeriodicWaveOptions) {
   ASSERT_NE(node, nullptr);
   EXPECT_EQ(node->type().AsEnum(), V8OscillatorType::Enum::kCustom);
 }
-
 }  // namespace blink

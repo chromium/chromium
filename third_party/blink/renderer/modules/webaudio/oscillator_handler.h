@@ -26,6 +26,7 @@ class PeriodicWaveHandler;
 class MODULES_EXPORT OscillatorHandler final
     : public AudioScheduledSourceHandler {
   FRIEND_TEST_ALL_PREFIXES(OscillatorHandlerTest, RoundingBug);
+  FRIEND_TEST_ALL_PREFIXES(OscillatorHandlerTest, NegativeIncrementRoundingBug);
 
  public:
   // The waveform type.
