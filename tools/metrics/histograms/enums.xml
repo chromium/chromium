@@ -9441,6 +9441,7 @@ from previous Chrome versions.
   <int value="-1669315560" label="TabGroupAndroidVisualDataCleanup:enabled"/>
   <int value="-1669172326"
       label="AutofillEnableDependentLocalityParsing:disabled"/>
+  <int value="-1668991258" label="EnableIOSDeviceTrustConnector:enabled"/>
   <int value="-1668611354" label="ReadAloudNative:disabled"/>
   <int value="-1668306615" label="CrostiniUseDlc:enabled"/>
   <int value="-1668141399" label="show-spatial-audio-toggle:enabled"/>
@@ -19617,6 +19618,7 @@ from previous Chrome versions.
   <int value="1403792475" label="ShareMenu:enabled"/>
   <int value="1404592684"
       label="LegacyTechReportEnableCookieIssueReports:enabled"/>
+  <int value="1404613554" label="EnableIOSDeviceTrustConnector:disabled"/>
   <int value="1404619211"
       label="PermissionPromiseLifetimeModulationAndroid:enabled"/>
   <int value="1404726271" label="ReduceHorizontalFlingVelocity:enabled"/>
