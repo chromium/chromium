@@ -42,6 +42,7 @@ namespace {
 
 constexpr auto kInsideBorderInsets = gfx::Insets(3);
 constexpr int kBetweenChildSpacing = 4;
+constexpr int kButtonSize = 26;
 
 }  // namespace
 
@@ -55,9 +56,6 @@ VerticalTabStripSegmentedControl::VerticalTabStripSegmentedControl(
     : browser_(browser) {
   CHECK(browser_);
   SetProperty(views::kElementIdentifierKey, kSegmentedControlElementId);
-
-  const int button_size = GetLayoutConstant(
-      LayoutConstant::kVerticalTabStripTopContainerButtonSize);
 
   SetBackground(views::CreatePillBackground(ui::kColorSysSurface));
 
@@ -74,7 +72,7 @@ VerticalTabStripSegmentedControl::VerticalTabStripSegmentedControl(
                             base::Unretained(this), segment));
     button->SetTooltipText(l10n_util::GetStringUTF16(tooltip_id));
     button->SetProperty(views::kElementIdentifierKey, element_id);
-    button->SetPreferredSize(gfx::Size(button_size, button_size));
+    button->SetPreferredSize(gfx::Size(kButtonSize, kButtonSize));
     button->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
     button->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
     button->GetViewAccessibility().SetRole(ax::mojom::Role::kToggleButton);
