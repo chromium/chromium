@@ -2350,6 +2350,38 @@ TEST_F(NativeWidgetMacTest, CloseWindowModalSheetWithoutSheetParent) {
   [native_parent close];
 }
 
+// Regression test for https://crbug.com/572474546. Calling Show() and
+// Activate() on a window-modal sheet before the posted beginSheet: task runs
+// must not invoke -[NSWindow beginSheet:completionHandler:] twice on the same
+// sheet, which would corrupt AppKit's sheet state and leave a dangling sheet
+// with a nil documentWindow after closing.
+TEST_F(NativeWidgetMacTest, ShowAndActivateWindowModalSheet) {
+  NSWindow* native_parent = MakeClosableTitledNativeParent();
+
+  Widget* sheet_widget = views::DialogDelegate::CreateDialogWidget(
+      MakeModalDialog(ui::mojom::ModalType::kWindow), gfx::NativeWindow(),
+      gfx::NativeView(native_parent.contentView));
+  NSWindow* sheet_window = sheet_widget->GetNativeWindow().GetNativeNSWindow();
+
+  WidgetChangeObserver widget_observer(sheet_widget);
+  sheet_widget->Show();
+  sheet_widget->Activate();
+  EXPECT_TRUE(base::test::RunUntil([&]() { return [sheet_window isVisible]; }));
+
+  // Ensure any second task posted by Activate() has also executed.
+  base::RunLoop flush_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, flush_loop.QuitClosure());
+  flush_loop.Run();
+
+  sheet_widget->Close();
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return widget_observer.widget_closed(); }));
+  EXPECT_FALSE([native_parent attachedSheet]);
+
+  [native_parent close];
+}
+
 // Test calls to Widget::ReparentNativeView() that result in a no-op on Mac.
 TEST_F(NativeWidgetMacTest, NoopReparentNativeView) {
   NSWindow* parent = MakeBorderlessNativeParent();

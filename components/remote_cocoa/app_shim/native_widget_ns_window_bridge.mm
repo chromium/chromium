@@ -2369,6 +2369,12 @@ void NativeWidgetNSWindowBridge::ShowAsModalSheet() {
         if (!bridge || !bridge->wants_to_be_visible_) {
           return;
         }
+        // Check again inside the posted task in case ShowAsModalSheet() was
+        // called multiple times before the first task executed
+        // (https://crbug.com/572474546).
+        if (parent_window.attachedSheet == bridge->ns_window()) {
+          return;
+        }
         [parent_window beginSheet:bridge->ns_window()
                 completionHandler:^(NSModalResponse return_code) {
                   // This class, NativeWidgetNSWindowBridge, clears the window's
