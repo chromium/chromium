@@ -73,6 +73,7 @@ public class AddToHomescreenDialogView
     private boolean mCanSubmit;
 
     private final String mInstallTitleText;
+    private final String mInstallDiyTitleText;
     private final String mInstallButtonText;
     private final String mAddTitleText;
     private final String mAddButtonText;
@@ -173,6 +174,7 @@ public class AddToHomescreenDialogView
 
         Resources resources = context.getResources();
         mInstallTitleText = resources.getString(R.string.menu_install_webapp);
+        mInstallDiyTitleText = resources.getString(R.string.pwa_uni_install_option_install_diy);
         mInstallButtonText = resources.getString(R.string.app_banner_install);
         mAddTitleText = resources.getString(R.string.pwa_uni_install_option_shortcut);
         mAddButtonText = resources.getString(R.string.add);
@@ -252,7 +254,6 @@ public class AddToHomescreenDialogView
                 mAppLayout.setVisibility(View.VISIBLE);
                 mHomebrewAppNameInput.setVisibility(View.VISIBLE);
                 mAppOriginView.setVisibility(View.VISIBLE);
-                mAppOriginView.setVisibility(View.VISIBLE);
                 break;
             case AppType.TWA:
                 // This dialog should not be created for auto-minted TWAs.
@@ -262,6 +263,9 @@ public class AddToHomescreenDialogView
         if (mAppType == AppType.SHORTCUT) {
             mDialogModel.set(ModalDialogProperties.TITLE, mAddTitleText);
             mDialogModel.set(ModalDialogProperties.POSITIVE_BUTTON_TEXT, mAddButtonText);
+        } else if (mAppType == AppType.WEBAPK_DIY) {
+            mDialogModel.set(ModalDialogProperties.TITLE, mInstallDiyTitleText);
+            mDialogModel.set(ModalDialogProperties.POSITIVE_BUTTON_TEXT, mInstallButtonText);
         } else {
             mDialogModel.set(ModalDialogProperties.TITLE, mInstallTitleText);
             mDialogModel.set(ModalDialogProperties.POSITIVE_BUTTON_TEXT, mInstallButtonText);

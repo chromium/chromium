@@ -69,7 +69,13 @@ class PwaUniversalInstallBottomSheetViewBinder {
                         model.get(PwaUniversalInstallProperties.OPEN_APP_BUTTON_ON_CLICK_CALLBACK);
                 break;
             case PwaUniversalInstallProperties.ViewState.APP_IS_INSTALLABLE:
-                installText.setText(R.string.pwa_uni_install_option_install);
+            case PwaUniversalInstallProperties.ViewState.APP_IS_INSTALLABLE_DIY:
+                installText.setText(
+                        model.get(PwaUniversalInstallProperties.VIEW_STATE)
+                                        == PwaUniversalInstallProperties.ViewState
+                                                .APP_IS_INSTALLABLE_DIY
+                                ? R.string.pwa_uni_install_option_install_diy
+                                : R.string.pwa_uni_install_option_install);
                 installExplanation.setVisibility(View.GONE);
                 installArrow.setVisibility(View.VISIBLE);
 

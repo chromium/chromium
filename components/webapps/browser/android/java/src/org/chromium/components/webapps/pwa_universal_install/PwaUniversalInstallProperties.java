@@ -26,6 +26,7 @@ public class PwaUniversalInstallProperties {
         ViewState.APP_ALREADY_INSTALLED,
         ViewState.APP_IS_INSTALLABLE,
         ViewState.APP_IS_NOT_INSTALLABLE,
+        ViewState.APP_IS_INSTALLABLE_DIY,
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface ViewState {
@@ -33,6 +34,7 @@ public class PwaUniversalInstallProperties {
         int APP_ALREADY_INSTALLED = 1;
         int APP_IS_INSTALLABLE = 2;
         int APP_IS_NOT_INSTALLABLE = 3;
+        int APP_IS_INSTALLABLE_DIY = 4;
     }
 
     // PropertyKey indicating the view state of the bottom sheet:

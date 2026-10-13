@@ -191,6 +191,11 @@ public class AddToHomescreenDialogViewTest {
 
         Assert.assertEquals(TEST_TITLE, getTextForViewWithId(R.id.app_name));
         Assert.assertEquals(TEST_URL, getTextForViewWithId(R.id.origin));
+
+        PropertyModel shownDialogModel = mModalDialogManager.getShownDialogModel();
+        Assert.assertEquals("Install app", shownDialogModel.get(ModalDialogProperties.TITLE));
+        Assert.assertEquals(
+                "Install", shownDialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT));
     }
 
     /** Tests the view for {@link AppType#WEBAPK_DIY}. */
@@ -213,6 +218,12 @@ public class AddToHomescreenDialogViewTest {
 
         Assert.assertEquals(TEST_TITLE, getTextForViewWithId(R.id.app_name));
         Assert.assertEquals(TEST_URL, getTextForViewWithId(R.id.origin));
+
+        PropertyModel shownDialogModel = mModalDialogManager.getShownDialogModel();
+        Assert.assertEquals(
+                "Install page as app", shownDialogModel.get(ModalDialogProperties.TITLE));
+        Assert.assertEquals(
+                "Install", shownDialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT));
     }
 
     /** Tests the view for {@link AppType#SHORTCUT}. */

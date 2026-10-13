@@ -275,14 +275,20 @@ public class PwaUniversalInstallBottomSheetCoordinator {
         if (!appAlreadyInstalled) {
             // This is guarded by checking if the app is installed, because if it is then the dialog
             // is already showing the right information, and we shouldn't change it.
-            mMediator
-                    .getModel()
-                    .set(
-                            PwaUniversalInstallProperties.VIEW_STATE,
-                            isInstallable(appType)
-                                    ? PwaUniversalInstallProperties.ViewState.APP_IS_INSTALLABLE
-                                    : PwaUniversalInstallProperties.ViewState
-                                            .APP_IS_NOT_INSTALLABLE);
+            @PwaUniversalInstallProperties.ViewState int viewState;
+            switch (appType) {
+                case AppType.WEBAPK:
+                case AppType.TWA:
+                    viewState = PwaUniversalInstallProperties.ViewState.APP_IS_INSTALLABLE;
+                    break;
+                case AppType.WEBAPK_DIY:
+                    viewState = PwaUniversalInstallProperties.ViewState.APP_IS_INSTALLABLE_DIY;
+                    break;
+                default:
+                    viewState = PwaUniversalInstallProperties.ViewState.APP_IS_NOT_INSTALLABLE;
+                    break;
+            }
+            mMediator.getModel().set(PwaUniversalInstallProperties.VIEW_STATE, viewState);
         }
 
         if (!mWaitingToShow) {

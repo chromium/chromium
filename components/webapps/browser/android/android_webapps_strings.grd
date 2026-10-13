@@ -220,6 +220,9 @@
       <message name="IDS_PWA_UNI_INSTALL_OPTION_INSTALL" desc="The label for the Install option in the Universal Install sheet.">
          Install
       </message>
+      <message name="IDS_PWA_UNI_INSTALL_OPTION_INSTALL_DIY" desc="The label for the button that installs the current page as an app, where the page is not actually configured to be installable. Thus this is a manual installation of the page as an app by the user, and this text is presented in the Universal Install sheet and Add to Homescreen dialog. See https://developer.chrome.com/blog/how_chrome_helps_users_install_the_apps_they_value#manual_installation_of_any_app for more information.">
+         Install page as app
+      </message>
       <message name="IDS_PWA_UNI_INSTALL_OPTION_ALREADY_INSTALLED" desc="When the web app is already installed, the label for the Install/Open option (in the Universal Install sheet) should explain that install is not possible, but opening the app is.">
          This app is already installed
       </message>

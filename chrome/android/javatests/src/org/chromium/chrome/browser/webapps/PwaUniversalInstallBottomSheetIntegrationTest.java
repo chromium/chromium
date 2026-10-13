@@ -218,6 +218,19 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
         onView(withId(R.id.arrow_install)).check(matches(isDisplayed()));
     }
 
+    private void assertDialogShowsInstallableDiy() {
+        onView(withText("Install page as app")).check(matches(isDisplayed()));
+        onView(withText("Create shortcut")).check(matches(isDisplayed()));
+        onView(withText("Shortcuts open in Chrome")).check(matches(isDisplayed()));
+
+        // The spinners should not be visible (not waiting on anything).
+        onView(withId(R.id.spinny_install)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.spinny_shortcut)).check(matches(not(isDisplayed())));
+
+        // The arrow should be visible.
+        onView(withId(R.id.arrow_install)).check(matches(isDisplayed()));
+    }
+
     private void assertDialogShowsAlreadyInstalledPreIconCheck() {
         onView(withText("This app is already installed")).check(matches(isDisplayed()));
         onView(withText("Click to open the app instead")).check(matches(isDisplayed()));
@@ -537,6 +550,7 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
         Pair<Bitmap, Boolean> testIcon = constructTestIconData();
         simulateAppCheckComplete(AppType.WEBAPK, testIcon.first, testIcon.second);
         assertDialogShowing(true);
+        assertDialogShowsInstallable();
 
         watcher.assertExpected();
     }
@@ -561,6 +575,7 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
         Pair<Bitmap, Boolean> testIcon = constructTestIconData();
         simulateAppCheckComplete(AppType.WEBAPK_DIY, testIcon.first, testIcon.second);
         assertDialogShowing(true);
+        assertDialogShowsInstallableDiy();
 
         watcher.assertExpected();
     }
@@ -626,6 +641,7 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
         Pair<Bitmap, Boolean> testIcon = constructTestIconData();
         simulateAppCheckComplete(AppType.WEBAPK, testIcon.first, testIcon.second);
         assertDialogShowing(true);
+        assertDialogShowsInstallable();
 
         watcher.assertExpected();
     }
@@ -691,6 +707,7 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
         Pair<Bitmap, Boolean> testIcon = constructTestIconData();
         simulateAppCheckComplete(AppType.WEBAPK_DIY, testIcon.first, testIcon.second);
         assertDialogShowing(true);
+        assertDialogShowsInstallableDiy();
 
         watcher.assertExpected();
     }
@@ -719,7 +736,7 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
         showPwaUniversalInstallBottomSheet(
                 /* showBeforeAppTypeKnown= */ false, /* webAppAlreadyInstalled= */ false);
         assertDialogShowing(true);
-        assertDialogShowsInstallable();
+        assertDialogShowsInstallableDiy();
 
         watcher.assertExpected();
     }
