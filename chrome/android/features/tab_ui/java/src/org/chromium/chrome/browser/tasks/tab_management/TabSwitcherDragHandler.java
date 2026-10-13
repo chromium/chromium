@@ -548,23 +548,17 @@ public class TabSwitcherDragHandler extends TabDragHandlerBase {
         private void updateDragShadow(@Nullable View attachedView) {
             // View#updateDragShadow draws through the drag surface held by the AttachInfo of the
             // window that called startDragAndDrop. Views in any other window silently no-op, so
-            // prefer views that live in the originating window: the drag source view, its root,
-            // and the shadow ImageView inflated into the source window's decor view. The caller's
+            // prefer views that live in the originating window: the drag source view and the
+            // shadow ImageView inflated into the source window's decor view. The caller's
             // attachedView is only a last resort; when the drag hovers a different window it is
             // the wrong window entirely.
             View viewToUse = null;
-            View originalRoot = mOriginalView != null ? mOriginalView.getRootView() : null;
             View shadowView = getView();
-            View shadowRoot = shadowView != null ? shadowView.getRootView() : null;
 
             if (mOriginalView != null && mOriginalView.isAttachedToWindow()) {
                 viewToUse = mOriginalView;
-            } else if (originalRoot != null && originalRoot.isAttachedToWindow()) {
-                viewToUse = originalRoot;
             } else if (shadowView != null && shadowView.isAttachedToWindow()) {
                 viewToUse = shadowView;
-            } else if (shadowRoot != null && shadowRoot.isAttachedToWindow()) {
-                viewToUse = shadowRoot;
             } else if (attachedView != null && attachedView.isAttachedToWindow()) {
                 viewToUse = attachedView;
             }
