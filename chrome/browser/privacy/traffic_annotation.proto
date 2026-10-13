@@ -225,6 +225,19 @@ message NetworkTrafficAnnotation {
     // Date when this annotation was last reviewed
     // in YYYY-MM-DD format.
     string last_reviewed = 9;
+
+    // Unique identifier for API endpoint. This field should be populated
+    // when destination is GOOGLE_OWNED_SERVICE.
+    oneof api_identifier {
+      // The official API Service Name
+      // (https://google.aip.dev/9#api-service-name) This is the identifier of
+      // the backend service (e.g., "pubsub.googleapis.com").
+      string api_service_name = 10;
+      // Endpoint URL for legacy APIs that do not support API service names.
+      // The string should be long enough to uniquely identify the service,
+      // but no longer (e.g. "https://clients4.google.com/chrome-sync").
+      string legacy_api_url = 11;
+    };
   }
 
   TrafficSemantics semantics = 3;

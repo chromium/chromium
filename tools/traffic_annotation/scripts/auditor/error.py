@@ -64,6 +64,10 @@ class ErrorType(Enum):
   INVALID_DATE_FORMAT = auto()
   # Header file should not contain network traffic annotations definition.
   HEADER_ANNOTATION = auto()
+  # API service name should be servicename.googleapis.com
+  INVALID_API_SERVICE_NAME = auto()
+  # Legacy API URL is invalid or uses a googleapis.com subdomain.
+  INVALID_LEGACY_API_URL = auto()
 
 
 class AuditorError:
@@ -91,6 +95,8 @@ class AuditorError:
       ErrorType.INVALID_ADDED_IN,
       ErrorType.INVALID_DATE_FORMAT,
       ErrorType.HEADER_ANNOTATION,
+      ErrorType.INVALID_API_SERVICE_NAME,
+      ErrorType.INVALID_LEGACY_API_URL,
     ]
 
     if message:
@@ -290,6 +296,23 @@ class AuditorError:
         "Network traffic annotations should be defined in .cc files, "
         "not header files. Found annotation in '{}:{}'.".format(
           self.file_path, self.line
+        )
+      )
+
+    if self.type == ErrorType.INVALID_API_SERVICE_NAME:
+      assert self._details
+      return (
+        "Invalid value of api_service_name: '{}' in annotation at {}:{}. "
+        "Should be in the format servicename.googleapis.com.".format(
+          self._details[0], self.file_path, self.line
+        )
+      )
+
+    if self.type == ErrorType.INVALID_LEGACY_API_URL:
+      assert self._details
+      return (
+        "Invalid value of legacy_api_url in annotation at {}:{}: {}".format(
+          self.file_path, self.line, self._details[0]
         )
       )
 

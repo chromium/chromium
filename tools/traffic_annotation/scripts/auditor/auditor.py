@@ -18,6 +18,7 @@ import sys
 import textwrap
 import time
 import traceback
+import urllib.parse
 import xml.etree.ElementTree as ElementTree
 
 from dataclasses import dataclass
@@ -668,6 +669,69 @@ class Annotation:
           self.line,
         )
       ]
+    return []
+
+  def check_api_service_name_format(self) -> List[AuditorError]:
+    """If api_service_name field is populated and does not match
+    servicename.googleapis.com, then return INVALID_API_SERVICE_NAME error."""
+    api_service_name = self.proto.semantics.api_service_name
+    if api_service_name and not re.match(
+      r"^[a-zA-Z0-9_-]+\.googleapis\.com$", api_service_name
+    ):
+      return [
+        AuditorError(
+          ErrorType.INVALID_API_SERVICE_NAME,
+          api_service_name,
+          self.file,
+          self.line,
+        )
+      ]
+    return []
+
+  def check_legacy_api_url_format(self) -> List[AuditorError]:
+    """If legacy_api_url field is populated, checks that it is a valid URL and
+    not in a googleapis.com domain (which should use api_service_name
+    instead)."""
+    legacy_api_url = self.proto.semantics.legacy_api_url
+    if not legacy_api_url:
+      return []
+
+    try:
+      parsed = urllib.parse.urlparse(legacy_api_url)
+    except ValueError:
+      parsed = None
+
+    if (
+      parsed is None
+      or parsed.scheme not in ("http", "https")
+      or not parsed.hostname
+      or any(c.isspace() for c in legacy_api_url)
+      or not re.match(r"^[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+$", parsed.hostname)
+    ):
+      return [
+        AuditorError(
+          ErrorType.INVALID_LEGACY_API_URL,
+          "'{}' is not a valid URL.".format(legacy_api_url),
+          self.file,
+          self.line,
+        )
+      ]
+
+    if parsed.hostname == "googleapis.com" or parsed.hostname.endswith(
+      ".googleapis.com"
+    ):
+      return [
+        AuditorError(
+          ErrorType.INVALID_LEGACY_API_URL,
+          (
+            "'{}' uses a googleapis.com domain; "
+            "use api_service_name instead.".format(legacy_api_url)
+          ),
+          self.file,
+          self.line,
+        )
+      ]
+
     return []
 
   def has_policy(self) -> bool:
@@ -1844,6 +1908,12 @@ class Auditor:
 
     if not errors:
       errors = annotation.check_last_reviewed_date_format()
+
+    if not errors:
+      errors = annotation.check_api_service_name_format()
+
+    if not errors:
+      errors = annotation.check_legacy_api_url_format()
 
     return errors
 

@@ -844,6 +844,7 @@ class AuditorTest(unittest.TestCase):
     test_data/test_sample_annotations.cc"""
     expected = [
       "ok_annotation",
+      "ok_annotation_legacy_api",
       "ok_annotation_only_owner",
       "syntax_error_annotation",
       "incomplete_error_annotation",
@@ -854,6 +855,9 @@ class AuditorTest(unittest.TestCase):
       "missing_new_fields_not_safe_listed",
       "missing_email_not_safe_listed",
       "invalid_userdata_not_safe_listed",
+      "invalid_api_service_name",
+      "invalid_legacy_api_url_googleapis",
+      "invalid_legacy_api_url_format",
     ]
     self.assertCountEqual(expected, self.sample_annotations.keys())
 
@@ -873,10 +877,25 @@ class AuditorTest(unittest.TestCase):
     errors = self.auditor.parse_extractor_output(
       [self.sample_annotations["ok_annotation"]]
     )
+    errors.extend(
+      self.auditor.run_all_checks([], False, Exporter.GROUPING_XML_PATH)
+    )
 
     # Assert that correct annotation has been extracted and is OK (no errors).
-    self.assertTrue(self.auditor.extracted_annotations)
     self.assertFalse(errors)
+    self.assertTrue(self.auditor.extracted_annotations)
+
+  def test_result_ok_legacy_api(self) -> None:
+    errors = self.auditor.parse_extractor_output(
+      [self.sample_annotations["ok_annotation_legacy_api"]]
+    )
+    errors.extend(
+      self.auditor.run_all_checks([], False, Exporter.GROUPING_XML_PATH)
+    )
+
+    # Assert that correct annotation has been extracted and is OK (no errors).
+    self.assertFalse(errors)
+    self.assertTrue(self.auditor.extracted_annotations)
 
   def test_syntax_error(self) -> None:
     errors = self.auditor.parse_extractor_output(
@@ -968,6 +987,41 @@ class AuditorTest(unittest.TestCase):
     errors = self.auditor.run_all_checks([], True, Exporter.GROUPING_XML_PATH)
     self.assertTrue(errors)
     self.assertEqual(ErrorType.INVALID_USER_DATA_TYPE, errors[0].type)
+
+  def test_invalid_api_service_name(self) -> None:
+    """Annotation traffic_semantics::api_service_name contains INVALID value.
+    Annotation Check returns INVALID_API_SERVICE_NAME error."""
+    self.auditor.parse_extractor_output(
+      [self.sample_annotations["invalid_api_service_name"]]
+    )
+    self.assertTrue(self.auditor.extracted_annotations)
+    errors = self.auditor.run_all_checks([], True, Exporter.GROUPING_XML_PATH)
+    self.assertTrue(errors)
+    self.assertEqual(ErrorType.INVALID_API_SERVICE_NAME, errors[0].type)
+
+  def test_invalid_legacy_api_url_googleapis(self) -> None:
+    """Annotation traffic_semantics::legacy_api_url uses a googleapis.com
+    subdomain. Annotation Check returns INVALID_LEGACY_API_URL error."""
+    self.auditor.parse_extractor_output(
+      [self.sample_annotations["invalid_legacy_api_url_googleapis"]]
+    )
+    self.assertTrue(self.auditor.extracted_annotations)
+    errors = self.auditor.run_all_checks([], True, Exporter.GROUPING_XML_PATH)
+    self.assertTrue(errors)
+    self.assertEqual(ErrorType.INVALID_LEGACY_API_URL, errors[0].type)
+    self.assertIn("use api_service_name instead", str(errors[0]))
+
+  def test_invalid_legacy_api_url_format(self) -> None:
+    """Annotation traffic_semantics::legacy_api_url is not a valid URL.
+    Annotation Check returns INVALID_LEGACY_API_URL error."""
+    self.auditor.parse_extractor_output(
+      [self.sample_annotations["invalid_legacy_api_url_format"]]
+    )
+    self.assertTrue(self.auditor.extracted_annotations)
+    errors = self.auditor.run_all_checks([], True, Exporter.GROUPING_XML_PATH)
+    self.assertTrue(errors)
+    self.assertEqual(ErrorType.INVALID_LEGACY_API_URL, errors[0].type)
+    self.assertIn("is not a valid URL", str(errors[0]))
 
   def test_missing_new_fields_safe_listed_file(self) -> None:
     """Check annotation without new fields, related class is

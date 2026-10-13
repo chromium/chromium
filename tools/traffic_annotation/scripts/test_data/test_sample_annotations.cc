@@ -12,6 +12,9 @@ net::NetworkTrafficAnnotationTag traffic_annotation =
     "and custom terms of service."
     trigger:
     "Periodically loaded when a managed user is signed in to Chrome."
+    user_data {
+      type: NONE
+    }
     internal  {
       contacts {
         email: "crmullins@google.com"
@@ -20,10 +23,50 @@ net::NetworkTrafficAnnotationTag traffic_annotation =
         owners: "//tools/traffic_annotation/OWNERS"
       }
     }
+    last_reviewed: "2023-07-25"
     data:
     "This request does not send any data. It loads external resources "
     "by a unique URL provided by the admin."
     destination: GOOGLE_OWNED_SERVICE
+    api_service_name: "cloudpolicy.googleapis.com"
+  }
+  policy {
+    cookies_allowed: NO
+    setting:
+    "This feature cannot be controlled by Chrome settings, but users "
+    "can sign out of Chrome to disable it."
+    policy_exception_justification:
+    "Not implemented, considered not useful. This request is part of "
+    "the policy fetcher itself."
+  })");
+
+// An OK annotation with a legacy API URL
+net::NetworkTrafficAnnotationTag traffic_annotation =
+    net::DefineNetworkTrafficAnnotation("ok_annotation_legacy_api", R"(
+  semantics {
+    sender: "Cloud Policy"
+    description:
+    "Used to fetch policy for extensions, policy-controlled wallpaper, "
+    "and custom terms of service."
+    trigger:
+    "Periodically loaded when a managed user is signed in to Chrome."
+    user_data {
+      type: NONE
+    }
+    internal  {
+      contacts {
+        email: "crmullins@google.com"
+      }
+      contacts {
+        owners: "//tools/traffic_annotation/OWNERS"
+      }
+    }
+    last_reviewed: "2023-07-25"
+    data:
+    "This request does not send any data. It loads external resources "
+    "by a unique URL provided by the admin."
+    destination: GOOGLE_OWNED_SERVICE
+    legacy_api_url: "https://m.google.com/devicemanagement/data/api"
   }
   policy {
     cookies_allowed: NO
@@ -140,6 +183,120 @@ net::NetworkTrafficAnnotationTag traffic_annotation =
       type: NONE
     }
     last_reviewed: "23-12-2022"
+  }
+  policy {
+    cookies_allowed: NO
+    setting:
+    "This feature cannot be controlled by Chrome settings, but users "
+    "can sign out of Chrome to disable it."
+    policy_exception_justification:
+    "Not implemented, considered not useful. This request is part of "
+    "the policy fetcher itself."
+  })");
+
+// An annotation with invalid API data
+net::NetworkTrafficAnnotationTag traffic_annotation =
+    net::DefineNetworkTrafficAnnotation("invalid_api_service_name", R"(
+  semantics {
+    sender: "Cloud Policy"
+    description:
+    "Used to fetch policy for extensions, policy-controlled wallpaper, "
+    "and custom terms of service."
+    trigger:
+    "Periodically loaded when a managed user is signed in to Chrome."
+    user_data {
+      type: NONE
+    }
+    internal  {
+      contacts {
+        email: "crmullins@google.com"
+      }
+      contacts {
+        owners: "//tools/traffic_annotation/OWNERS"
+      }
+    }
+    last_reviewed: "2023-07-25"
+    data:
+    "This request does not send any data. It loads external resources "
+    "by a unique URL provided by the admin."
+    destination: GOOGLE_OWNED_SERVICE
+    api_service_name: "https://random.urls.not.allowed"
+  }
+  policy {
+    cookies_allowed: NO
+    setting:
+    "This feature cannot be controlled by Chrome settings, but users "
+    "can sign out of Chrome to disable it."
+    policy_exception_justification:
+    "Not implemented, considered not useful. This request is part of "
+    "the policy fetcher itself."
+  })");
+
+// An annotation with a googleapis.com subdomain in legacy_api_url
+net::NetworkTrafficAnnotationTag traffic_annotation =
+    net::DefineNetworkTrafficAnnotation("invalid_legacy_api_url_googleapis", R"(
+  semantics {
+    sender: "Cloud Policy"
+    description:
+    "Used to fetch policy for extensions, policy-controlled wallpaper, "
+    "and custom terms of service."
+    trigger:
+    "Periodically loaded when a managed user is signed in to Chrome."
+    user_data {
+      type: NONE
+    }
+    internal  {
+      contacts {
+        email: "crmullins@google.com"
+      }
+      contacts {
+        owners: "//tools/traffic_annotation/OWNERS"
+      }
+    }
+    last_reviewed: "2023-07-25"
+    data:
+    "This request does not send any data. It loads external resources "
+    "by a unique URL provided by the admin."
+    destination: GOOGLE_OWNED_SERVICE
+    legacy_api_url: "https://cloudpolicy.googleapis.com/endpoint"
+  }
+  policy {
+    cookies_allowed: NO
+    setting:
+    "This feature cannot be controlled by Chrome settings, but users "
+    "can sign out of Chrome to disable it."
+    policy_exception_justification:
+    "Not implemented, considered not useful. This request is part of "
+    "the policy fetcher itself."
+  })");
+
+// An annotation with a malformed URL in legacy_api_url
+net::NetworkTrafficAnnotationTag traffic_annotation =
+    net::DefineNetworkTrafficAnnotation("invalid_legacy_api_url_format", R"(
+  semantics {
+    sender: "Cloud Policy"
+    description:
+    "Used to fetch policy for extensions, policy-controlled wallpaper, "
+    "and custom terms of service."
+    trigger:
+    "Periodically loaded when a managed user is signed in to Chrome."
+    user_data {
+      type: NONE
+    }
+    internal  {
+      contacts {
+        email: "crmullins@google.com"
+      }
+      contacts {
+        owners: "//tools/traffic_annotation/OWNERS"
+      }
+    }
+    last_reviewed: "2023-07-25"
+    data:
+    "This request does not send any data. It loads external resources "
+    "by a unique URL provided by the admin."
+    destination: GOOGLE_OWNED_SERVICE
+    legacy_api_url: "not_a_valid_url"
   }
   policy {
     cookies_allowed: NO
