@@ -25,6 +25,7 @@ build_webui("build") {
     "omnibox_composebox.html.ts",
     "omnibox_composebox.ts",
     "omnibox_popup.ts",
+    "omnibox_popup_classic.ts",
     "omnibox_popup_contextual_entrypoint.html.ts",
     "omnibox_popup_contextual_entrypoint.ts",
     "omnibox_popup_contextual_entrypoint_button.html.ts",
@@ -68,7 +69,10 @@ build_webui("build") {
   optimize = optimize_webui
   if (optimize) {
     optimize_webui_host = "omnibox-popup.top-chrome"
-    optimize_webui_in_files = [ "omnibox_popup.js" ]
+    optimize_webui_in_files = [
+      "omnibox_popup.js",
+      "omnibox_popup_classic.js",
+    ]
     optimize_webui_excludes = [
       "chrome://resources/cr_components/color_change_listener/color_change_listener.mojom-webui.js",
       "chrome://resources/js/metrics_reporter/metrics_reporter.mojom-webui.js",

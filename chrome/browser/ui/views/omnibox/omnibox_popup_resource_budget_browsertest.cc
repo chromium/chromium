@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_aim_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
@@ -298,6 +299,30 @@ IN_PROC_BROWSER_TEST_P(OmniboxPopupResourceBudgetBrowserTest, PopupWindow) {
   PopupResources resources = CountPopupResources(profile);
   LogPopupResources("popup_window", 2, resources);
   EXPECT_EQ(before, resources.web_contents.size());
+}
+
+// The classic popup is preloaded for every browser window, so its entry point
+// must register its app without pulling in the AI Mode and full popup apps,
+// which it never renders.
+IN_PROC_BROWSER_TEST_P(OmniboxPopupResourceBudgetBrowserTest,
+                       ClassicPopupLoadsOnlyClassicApp) {
+  if (IsFullWebUI()) {
+    GTEST_SKIP() << "Only the classic popup loads omnibox_popup.html.";
+  }
+  LocationBarView* location_bar = GetLocationBarView(browser());
+  ASSERT_TRUE(location_bar);
+  content::WebContents* contents = location_bar->GetOmniboxPopupView()
+                                       ->presenter()
+                                       ->GetWebUIContent()
+                                       ->GetWrappedWebContents();
+  ASSERT_TRUE(content::WaitForLoadStop(contents));
+
+  EXPECT_EQ(true, content::EvalJs(contents, R"(
+      customElements.whenDefined('omnibox-popup-app').then(
+          () => !!document.querySelector('omnibox-popup-app').shadowRoot))"));
+  EXPECT_EQ(false, content::EvalJs(contents,
+                                   "!!customElements.get('omnibox-aim-app') || "
+                                   "!!customElements.get('omnibox-full-app')"));
 }
 
 class OmniboxPopupResourceBudgetAimIneligibleBrowserTest
