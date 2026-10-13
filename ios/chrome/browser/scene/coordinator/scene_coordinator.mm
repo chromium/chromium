@@ -1727,6 +1727,18 @@ inline LayoutStateScenePassKey PassKey() {
   [_settingsNavigationController showSafeBrowsingSettingsFromPromoInteraction];
 }
 
+- (void)showUniversalOptOutSettings {
+  if (_settingsNavigationController &&
+      !_settingsNavigationController.presentedViewController) {
+    [_settingsNavigationController showUniversalOptOutSettings];
+    return;
+  }
+  __weak SceneCoordinator* weakSelf = self;
+  [self dismissModalDialogsWithCompletion:^{
+    [weakSelf showUniversalOptOutSettingsAfterModalDismiss];
+  }];
+}
+
 - (void)showPasswordSearchPage {
   if (_settingsNavigationController) {
     [_settingsNavigationController showPasswordSearchPage];
@@ -2210,6 +2222,20 @@ inline LayoutStateScenePassKey PassKey() {
                                                        kFillingFlowDropdown
                                       delegate:self];
   [_settingsNavigationController showAutofillSettings];
+  [self.activeViewController presentViewController:_settingsNavigationController
+                                          animated:YES
+                                        completion:nil];
+}
+
+// Shows the Universal Opt-Out settings in the settings UI.
+- (void)showUniversalOptOutSettingsAfterModalDismiss {
+  if (_settingsNavigationController) {
+    [_settingsNavigationController showUniversalOptOutSettings];
+    return;
+  }
+  _settingsNavigationController = [SettingsNavigationController
+      universalOptOutControllerForBrowser:_regularBrowser.get()
+                                 delegate:self];
   [self.activeViewController presentViewController:_settingsNavigationController
                                           animated:YES
                                         completion:nil];

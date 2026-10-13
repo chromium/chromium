@@ -55,6 +55,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/privacy_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/privacy_safe_browsing_coordinator.h"
+#import "ios/chrome/browser/settings/ui_bundled/privacy/universal_opt_out_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/safety_check/safety_check_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/safety_check/safety_check_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/search_engine_table_view_controller.h"
@@ -776,6 +777,22 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
                              browser:browser
                             delegate:delegate];
   [navigationController showNotificationsSettingsAndHighlightClient:clientID];
+  return navigationController;
+}
+
++ (instancetype)
+    universalOptOutControllerForBrowser:(Browser*)browser
+                               delegate:
+                                   (id<SettingsNavigationControllerDelegate>)
+                                       delegate {
+  UniversalOptOutTableViewController* controller =
+      [[UniversalOptOutTableViewController alloc]
+          initWithProfile:browser->GetProfile()];
+  SettingsNavigationController* navigationController =
+      [[SettingsNavigationController alloc]
+          initWithRootViewController:controller
+                             browser:browser
+                            delegate:delegate];
   return navigationController;
 }
 
@@ -1804,6 +1821,19 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   EnhancedAutofillTableViewController* controller =
       [[EnhancedAutofillTableViewController alloc]
           initWithBrowser:self.browser];
+  ConfigureHandlers(controller, self.browser->GetCommandDispatcher());
+  [self pushViewController:controller animated:self.viewControllers.count > 0];
+}
+
+- (void)showUniversalOptOutSettings {
+  if ([self.topViewController
+          isKindOfClass:[UniversalOptOutTableViewController class]]) {
+    // The top view controller is already the Universal Opt-Out panel.
+    return;
+  }
+  UniversalOptOutTableViewController* controller =
+      [[UniversalOptOutTableViewController alloc]
+          initWithProfile:self.browser->GetProfile()];
   ConfigureHandlers(controller, self.browser->GetCommandDispatcher());
   [self pushViewController:controller animated:self.viewControllers.count > 0];
 }
