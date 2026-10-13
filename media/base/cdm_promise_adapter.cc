@@ -93,13 +93,20 @@ void CdmPromiseAdapter::RejectPromise(uint32_t promise_id,
 void CdmPromiseAdapter::Clear(ClearReason reason) {
   // Reject all outstanding promises.
   DCHECK(thread_checker_.CalledOnValidThread());
-  for (auto& [promise_id, promise] : promises_) {
-    TRACE_EVENT_END("media", perfetto::NamedTrack("CdmPromise", promise_id),
-                    "status", "cleared");
-    promise->reject(CdmPromise::Exception::INVALID_STATE_ERROR,
-                    ToSystemCode(reason), "Operation aborted.");
+  // Rejecting a promise runs client code, which may re-enter this class, e.g.
+  // SavePromise() to close a session, or ResolvePromise()/RejectPromise() from
+  // a nested run loop. Move the promises out of `promises_` before rejecting
+  // them so that re-entrant calls cannot invalidate the iteration or settle a
+  // promise twice, and repeat until no new promises were saved.
+  while (!promises_.empty()) {
+    PromiseMap promises = std::exchange(promises_, {});
+    for (auto& [promise_id, promise] : promises) {
+      TRACE_EVENT_END("media", perfetto::NamedTrack("CdmPromise", promise_id),
+                      "status", "cleared");
+      promise->reject(CdmPromise::Exception::INVALID_STATE_ERROR,
+                      ToSystemCode(reason), "Operation aborted.");
+    }
   }
-  promises_.clear();
 }
 
 std::unique_ptr<CdmPromise> CdmPromiseAdapter::TakePromise(
