@@ -75,6 +75,7 @@
 #include "chrome/browser/page_info/about_this_site_tab_helper.h"
 #include "chrome/browser/page_info/page_info_features.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
+#include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/payments/web_payments_observer.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker_helper.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
@@ -111,6 +112,8 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/trusted_vault/trusted_vault_encryption_keys_tab_helper.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/autofill/autofill_client_provider.h"
+#include "chrome/browser/ui/autofill/autofill_client_provider_factory.h"
 #include "chrome/browser/ui/autofill/bubble_manager.h"
 #include "chrome/browser/ui/autofill/one_time_tokens/gmail_otp_opt_in_bubble_controller.h"
 #include "chrome/browser/ui/autofill/payments/omnibox_autofill_bubble_controller.h"
@@ -420,6 +423,12 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
       tab.RegisterWillDiscardContents(base::BindRepeating(
           &TabFeatures::WillDiscardContents, weak_factory_.GetWeakPtr())));
   tab_subscriptions_.push_back(webui::InitEmbeddingContext(&tab));
+
+  autofill::AutofillClientProvider& autofill_client_provider =
+      autofill::AutofillClientProviderFactory::GetForProfile(profile);
+  if (!autofill_client_provider.uses_platform_autofill()) {
+    ChromePasswordManagerClient::CreateForWebContents(tab.GetContents());
+  }
 
   CreateSubresourceFilterWebContentsHelper(tab.GetContents());
 
@@ -1454,6 +1463,12 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   DCHECK_EQ(old_contents, tab->GetContents());
 
   Profile* profile = tab->GetBrowserWindowInterface()->GetProfile();
+
+  autofill::AutofillClientProvider& autofill_client_provider =
+      autofill::AutofillClientProviderFactory::GetForProfile(profile);
+  if (!autofill_client_provider.uses_platform_autofill()) {
+    ChromePasswordManagerClient::CreateForWebContents(new_contents);
+  }
 
   CreateSubresourceFilterWebContentsHelper(new_contents);
 

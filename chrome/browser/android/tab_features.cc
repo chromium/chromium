@@ -79,6 +79,7 @@
 #include "chrome/browser/page_info/about_this_site_tab_helper.h"
 #include "chrome/browser/page_info/page_info_features.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
+#include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/payments/web_payments_observer.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker_helper.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
@@ -110,6 +111,8 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/trusted_vault/trusted_vault_encryption_keys_tab_helper.h"
 #include "chrome/browser/ui/android/context_menu_helper.h"
+#include "chrome/browser/ui/autofill/autofill_client_provider.h"
+#include "chrome/browser/ui/autofill/autofill_client_provider_factory.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/find_bar/find_bar_state.h"
 #include "chrome/browser/ui/javascript_dialogs/javascript_tab_modal_dialog_manager_delegate_android.h"
@@ -250,6 +253,13 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
   CHECK(tab);
   tab_subscription_ = webui::InitEmbeddingContext(tab);
 
+  autofill::AutofillClientProvider& autofill_client_provider =
+      autofill::AutofillClientProviderFactory::GetForProfile(profile);
+  if (!autofill_client_provider.uses_platform_autofill()) {
+    if (autofill::ContentAutofillClient::FromWebContents(web_contents)) {
+      ChromePasswordManagerClient::CreateForWebContents(web_contents);
+    }
+  }
   CreateSubresourceFilterWebContentsHelper(web_contents);
   ChromeTranslateClient::CreateForWebContents(web_contents);
   if (!content_settings::PageSpecificContentSettings::GetDelegateForWebContents(

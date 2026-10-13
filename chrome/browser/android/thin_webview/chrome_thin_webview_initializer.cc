@@ -8,12 +8,17 @@
 
 #include "chrome/browser/android/web_contents_theme_client.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
+#include "chrome/browser/password_manager/chrome_password_manager_client.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/subresource_filter/chrome_content_subresource_filter_web_contents_helper_factory.h"
 #include "chrome/browser/ui/android/context_menu_helper.h"
+#include "chrome/browser/ui/autofill/autofill_client_provider.h"
+#include "chrome/browser/ui/autofill/autofill_client_provider_factory.h"
 #include "chrome/browser/ui/tab_helpers.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/performance_manager/embedder/performance_manager_registry.h"
 #include "components/permissions/permission_request_manager.h"
+#include "content/public/browser/web_contents.h"
 
 namespace thin_webview::android {
 
@@ -32,6 +37,15 @@ void ChromeThinWebViewInitializer::AttachTabHelpers(
     bool enable_permission_requests,
     bool enable_browser_autofill) {
   TabHelpers::AttachTabHelpers(web_contents, enable_browser_autofill);
+  if (enable_browser_autofill) {
+    Profile* profile =
+        Profile::FromBrowserContext(web_contents->GetBrowserContext());
+    autofill::AutofillClientProvider& autofill_client_provider =
+        autofill::AutofillClientProviderFactory::GetForProfile(profile);
+    if (!autofill_client_provider.uses_platform_autofill()) {
+      ChromePasswordManagerClient::CreateForWebContents(web_contents);
+    }
+  }
   CreateSubresourceFilterWebContentsHelper(web_contents);
   content_settings::PageSpecificContentSettings::CreateForWebContents(
       web_contents,

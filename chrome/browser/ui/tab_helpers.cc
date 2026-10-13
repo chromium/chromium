@@ -18,7 +18,6 @@
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -35,7 +34,6 @@
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/page_info/core/features.h"
-#include "components/password_manager/core/browser/password_manager.h"
 #include "components/search/ntp_features.h"
 #include "components/search/search.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -108,16 +106,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
     autofill::AutofillClientProvider& autofill_client_provider =
         autofill::AutofillClientProviderFactory::GetForProfile(profile);
     autofill_client_provider.CreateClientForWebContents(web_contents);
-  }
-
-  // Password manager relies on ChromeAutofillClient initialized by browser
-  // autofill, which is gated by enable_browser_autofill.
-  if (enable_browser_autofill) {
-    autofill::AutofillClientProvider& autofill_client_provider =
-        autofill::AutofillClientProviderFactory::GetForProfile(profile);
-    if (!autofill_client_provider.uses_platform_autofill()) {
-      ChromePasswordManagerClient::CreateForWebContents(web_contents);
-    }
   }
 
   // NO! Do not just add your tab helper here. This is a large alphabetized

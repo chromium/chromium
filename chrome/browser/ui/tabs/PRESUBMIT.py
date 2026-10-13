@@ -36,6 +36,10 @@ _ALLOWED_CREATE_FOR_CALLS = (
   # is also attached to non-tab GuestView WebContents in
   # ChromeGuestViewManagerDelegate, so the WebContents must own it.
   'captive_portal::CaptivePortalTabHelper::CreateForWebContents',
+  # ChromePasswordManagerClient is also attached to non-tab WebContents in
+  # ChromeThinWebViewInitializer and SimpleWebViewDialog, so the WebContents
+  # must own it.
+  'ChromePasswordManagerClient::CreateForWebContents',
   # ChromePasswordReuseDetectionManagerClient is also attached to non-tab
   # WebContents in ChromeWebUILoginView, ProfilePickerSignInProvider,
   # SimpleWebViewDialog, and ChromeSafeBrowsingDelegate, so the WebContents

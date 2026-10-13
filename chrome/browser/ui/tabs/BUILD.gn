@@ -582,6 +582,7 @@ if (!is_android) {
       "//chrome/browser/page_content_annotations:fetcher",
       "//chrome/browser/page_info",
       "//chrome/browser/page_load_metrics",
+      "//chrome/browser/password_manager",
       "//chrome/browser/payments",
       "//chrome/browser/permissions",
       "//chrome/browser/picture_in_picture",

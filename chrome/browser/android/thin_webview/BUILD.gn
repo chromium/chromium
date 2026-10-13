@@ -40,12 +40,16 @@ source_set("initializer") {
   deps = [
     "//chrome/browser/android:web_contents_theme_client",
     "//chrome/browser/content_settings",
+    "//chrome/browser/password_manager",
+    "//chrome/browser/profiles:profile",
     "//chrome/browser/subresource_filter",
     "//chrome/browser/ui:tab_helpers",
     "//chrome/browser/ui/android:context_menu_helper",
+    "//chrome/browser/ui/autofill",
     "//components/content_settings/browser",
     "//components/performance_manager",
     "//components/permissions",
+    "//content/public/browser",
 
     # Link-time only: pulls the ThinWebView implementation into the binary.
     "//components/thin_webview/internal",
