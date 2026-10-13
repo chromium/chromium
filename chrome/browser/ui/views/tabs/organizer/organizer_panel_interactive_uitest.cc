@@ -171,14 +171,28 @@ class OrganizerPanelUiTest : public InteractiveBrowserTest {
                   kTabStripRegionElementId,
                   [this](VerticalTabStripRegionView* region) {
                     const bool is_eoh = region->is_expanded_on_hover();
-                    expand_on_hover_lock_ = region->GetExpandOnHoverLock(
-                        ExpandOnHoverLockType::kKeepExpanded);
+                    if (!expand_on_hover_lock_) {
+                      expand_on_hover_lock_ = region->GetExpandOnHoverLock(
+                          ExpandOnHoverLockType::kKeepExpanded);
+                    }
                     return is_eoh;
                   },
                   true)
                   .SetDescription("Check and lock expand-on-hover."),
               Do([this]() { RunScheduledLayouts(); }));
     AddDescriptionPrefix(steps, "WaitForExpandOnHover()");
+    return steps;
+  }
+
+  auto ExpandOnHover() {
+    auto steps = Steps(WithView(kTabStripRegionElementId,
+                                [this](VerticalTabStripRegionView* region) {
+                                  expand_on_hover_lock_ =
+                                      region->GetExpandOnHoverLock(
+                                          ExpandOnHoverLockType::kKeepExpanded);
+                                }),
+                       WaitForExpandOnHover());
+    AddDescriptionPrefix(steps, "ExpandOnHover()");
     return steps;
   }
 
@@ -493,9 +507,7 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelUiTest,
                        AppearsInTabStripWhenVerticalTabsExpandOnHover) {
   RunTestSequence(
       SetVerticalTabsEnabled(true, /*expand_on_hover_enabled=*/true),
-      MoveMouseTo(kOmniboxElementId), CollapseTabStrip(),
-      InParallel(RunSubsequence(MoveMouseTo(kTabStripElementId)),
-                 RunSubsequence(WaitForExpandOnHover())),
+      MoveMouseTo(kOmniboxElementId), CollapseTabStrip(), ExpandOnHover(),
       OpenOrganizerPanel(),
       ExpectPanelLocation(OrganizerPanelLocation::kVerticalTabStrip),
       CheckPanelVisuals(tabs::kVerticalTabStripDefaultUncollapsedWidth, false));
