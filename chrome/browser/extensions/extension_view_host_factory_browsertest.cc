@@ -11,6 +11,7 @@
 #include "chrome/browser/extensions/extension_view_host.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
@@ -40,6 +41,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionViewHostFactoryTest, CreateExtensionHosts) {
   EXPECT_EQ(extension.get(), host->extension());
   EXPECT_EQ(browser_context, host->browser_context());
   EXPECT_EQ(mojom::ViewType::kExtensionPopup, host->extension_host_type());
+  autofill::ContentAutofillClient* autofill_client =
+      autofill::ContentAutofillClient::FromWebContents(host->host_contents());
+  ASSERT_TRUE(autofill_client);
 }
 
 // TODO(crbug.com/458688998): Desktop Android doesn't support side panel yet.
