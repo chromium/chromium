@@ -3789,6 +3789,10 @@ TEST_P(QuicSessionPoolTest,
       "Net.QuicSession.UnusedConnectionIdsAtMigrationAttempt.GoogleHost", 0);
   histogram_tester.ExpectTotalCount(
       "Net.Quic.Migration.Attempt.FailureReason.GoogleHost", 0);
+  histogram_tester.ExpectTotalCount(
+      "Net.Quic.Migration.Attempt.FailureReason.ByTrigger."
+      "OnNetworkMadeDefault.GoogleHost",
+      0);
 
   session->CloseSessionOnError(ERR_ABORTED, quic::QUIC_INTERNAL_ERROR,
                                quic::ConnectionCloseBehavior::SILENT_CLOSE);
@@ -3917,6 +3921,10 @@ TEST_P(QuicSessionPoolTest,
       QuicMigrationAttemptFailureReason::kNoUnusedConnectionId, 1);
   histogram_tester.ExpectUniqueSample(
       "Net.Quic.Migration.Attempt.FailureReason.GoogleHost",
+      QuicMigrationAttemptFailureReason::kNoUnusedConnectionId, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.FailureReason.ByTrigger."
+      "OnNetworkMadeDefault.GoogleHost",
       QuicMigrationAttemptFailureReason::kNoUnusedConnectionId, 1);
   histogram_tester.ExpectBucketCount("Net.QuicSession.ConnectionMigration",
                                      MIGRATION_STATUS_INTERNAL_ERROR, 1);

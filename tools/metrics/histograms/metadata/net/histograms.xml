@@ -4999,15 +4999,20 @@ chromium-metrics-reviews@google.com.
   <token key="Trigger" variants="QuicMigrationAttemptCause"/>
 </histogram>
 
-<histogram name="Net.Quic.Migration.Attempt.FailureReason.ByTrigger.{Trigger}"
+<histogram
+    name="Net.Quic.Migration.Attempt.FailureReason.ByTrigger.{Trigger}{HostType}"
     enum="QuicMigrationAttemptFailureReason" expires_after="2027-08-01">
   <owner>stefanoduo@google.com</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     Same as Net.Quic.Migration.Attempt.FailureReason, but partitioned by the
-    migration cause {Trigger}.
+    migration cause {Trigger}. {HostType}
   </summary>
   <token key="Trigger" variants="QuicMigrationAttemptCause"/>
+  <token key="HostType">
+    <variant name=""/>
+    <variant name=".GoogleHost" summary="For Google hosts only."/>
+  </token>
 </histogram>
 
 <histogram name="Net.Quic.Migration.Attempt.FailureReason{HostType}"

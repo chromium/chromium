@@ -181,6 +181,10 @@ QuicMigrationAttemptContext::~QuicMigrationAttemptContext() {
         base::UmaHistogramEnumeration(
             "Net.Quic.Migration.Attempt.FailureReason.GoogleHost",
             failure_reason);
+        base::UmaHistogramEnumeration(
+            base::StrCat({"Net.Quic.Migration.Attempt.FailureReason.ByTrigger.",
+                          trigger_str, ".GoogleHost"}),
+            failure_reason);
       }
       break;
     }
