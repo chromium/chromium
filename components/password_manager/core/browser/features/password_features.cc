@@ -201,9 +201,12 @@ const base::FeatureParam<base::TimeDelta> kCapturePageContentDelay = {
 const base::FeatureParam<int> kCapturePageContentRetryCount = {
     &kRetryCapturePageContent, "retry_count", 3};
 
-
 BASE_FEATURE(kShowTabWithPasswordChangeOnSuccess,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kSkipChromeReauthForCredMan, base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kSkipUndecryptablePasswords,
 #if BUILDFLAG(IS_WIN)

@@ -4,10 +4,13 @@
 
 #include "chrome/browser/password_manager/android/cred_man_controller.h"
 
+#include "base/android/device_info.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/content/browser/keyboard_replacing_surface_visibility_controller.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_credential_filler.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
@@ -86,13 +89,31 @@ void CredManController::TriggerFilling(const std::u16string& username,
     return;
   }
   visibility_controller_->SetShown();
-  if (!password_client_->IsReauthBeforeFillingRequiredLegacy(authenticator_.get())) {
-    FillUsernameAndPassword(username, password);
+  if (!base::FeatureList::IsEnabled(features::kSkipChromeReauthForCredMan)) {
+    if (!password_client_->IsReauthBeforeFillingRequiredLegacy(
+            authenticator_.get())) {
+      FillUsernameAndPassword(username, password);
+      return;
+    }
+    authenticator_->AuthenticateWithMessage(
+        u"", base::BindOnce(&CredManController::OnReauthCompleted,
+                            base::Unretained(this), username, password));
     return;
   }
-  authenticator_->AuthenticateWithMessage(
-      u"", base::BindOnce(&CredManController::OnReauthCompleted,
-                          base::Unretained(this), username, password));
+  // CredMan re-authenticates the user based on the "re-auth before filling"
+  // setting, so re-authenticating in Chrome too would prompt the user twice.
+  // That setting doesn't exist on automotive, where re-auth is always required,
+  // so Chrome still re-authenticates there.
+  if (base::android::device_info::is_automotive() &&
+      password_client_->IsReauthBeforeFillingRequiredLegacy(
+          authenticator_.get())) {
+    authenticator_->AuthenticateWithMessage(
+        u"",
+        base::BindOnce(&CredManController::OnReauthCompleted,
+                       weak_ptr_factory_.GetWeakPtr(), username, password));
+  } else {
+    FillUsernameAndPassword(username, password);
+  }
 }
 
 void CredManController::FillUsernameAndPassword(

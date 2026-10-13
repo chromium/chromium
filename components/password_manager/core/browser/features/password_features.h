@@ -122,7 +122,6 @@ extern const base::FeatureParam<int>
 BASE_DECLARE_FEATURE(kIOSProactivePasswordGenerationBottomSheet);
 #endif  // BUILDFLAG(IS_IOS)
 
-
 // Marks all submitted credentials as leaked, useful for testing of a password
 // leak dialog.
 BASE_DECLARE_FEATURE(kMarkAllCredentialsAsLeaked);
@@ -210,10 +209,18 @@ BASE_DECLARE_FEATURE(kRetryCapturePageContent);
 extern const base::FeatureParam<base::TimeDelta> kCapturePageContentDelay;
 extern const base::FeatureParam<int> kCapturePageContentRetryCount;
 
-
 // Shows a tab with password change instead of bubble/settings page after
 // successful password change.
 BASE_DECLARE_FEATURE(kShowTabWithPasswordChangeOnSuccess);
+
+#if BUILDFLAG(IS_ANDROID)
+// When enabled, Chrome doesn't trigger its own biometric re-auth before filling
+// credentials selected in Android Credential Manager, since CredMan already
+// authenticates the user. Disable to restore Chrome's re-auth.
+// Kill switch. TODO(crbug.com/352720504): Clean up once the CredMan re-auth is
+// stable.
+BASE_DECLARE_FEATURE(kSkipChromeReauthForCredMan);
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Displays at least the decryptable and never saved logins in the password
 // manager
