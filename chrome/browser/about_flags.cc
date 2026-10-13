@@ -14019,7 +14019,8 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
     {"enable-desktop-qr-code-detection",
      flag_descriptions::kEnableDesktopQrCodeDetectionName,
-     flag_descriptions::kEnableDesktopQrCodeDetectionDescription, kOsDesktop,
+     flag_descriptions::kEnableDesktopQrCodeDetectionDescription,
+     kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(payments::facilitated::kEnableDesktopQrCodeDetection)},
     {"enable-translate-pdf", flag_descriptions::kTranslatePdfName,
      flag_descriptions::kTranslatePdfDescription, kOsDesktop,

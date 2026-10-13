@@ -2155,10 +2155,10 @@ inline constexpr char kEnableDelegatedCompositingDescription[] =
     "system compositor.";
 
 inline constexpr char kEnableDesktopQrCodeDetectionName[] =
-    "Enable Desktop QR code detection";
+    "Enable payment QR code detection";
 inline constexpr char kEnableDesktopQrCodeDetectionDescription[] =
     "When enabled, QR code detection for facilitated payments will be "
-    "supported on Desktop.";
+    "supported on Desktop and Android.";
 
 inline constexpr char kEnablePixAccountLinkingName[] =
     "Enable Pix account linking";
