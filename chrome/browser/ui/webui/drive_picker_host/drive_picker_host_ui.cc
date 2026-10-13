@@ -14,7 +14,6 @@
 #include "components/contextual_search/consent_kit/consent_kit_result_parser.h"
 #include "components/contextual_search/consent_kit/consent_kit_url_builder.h"
 #include "components/contextual_search/consent_kit/proto/iframe_interface.pb.h"
-#include "components/contextual_search/footprints/public/fpop_service.h"
 #include "components/contextual_search/input_state_model.h"
 #include "components/contextual_search/pref_names.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -27,7 +26,6 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "google_apis/google_api_keys.h"
@@ -363,77 +361,27 @@ void DrivePickerHostUI::HandlePrivacyFlowResult(
   }
 
   if (drive::HasGrantedDriveConsent(result)) {
-    // The PrivacyFlowResult originates from the untrusted renderer, which can
-    // forge it: the expected flow_id is a public constant and the
-    // consent.google.com origin check only runs in untrusted JS. Confirm with
-    // the Footprints backend (the source of truth for this consent) before
-    // recording consent or minting an OAuth token.
-    drive_picker::DriveDisclaimerController* controller =
-        GetDriveDisclaimerController();
-    if (!controller) {
-      OnConsentKitError("Unable to verify Drive consent");
-      return;
+    VLOG(1) << "[DrivePickerHostUI] Handling decision consent. "
+               "Transitioning to Picker.";
+    Profile* profile = Profile::FromWebUI(web_ui());
+    profile->GetPrefs()->SetInteger(
+        contextual_search::kDriveConsentState,
+        static_cast<int>(contextual_search::DriveConsentState::kConsent));
+
+    if (delegate_) {
+      delegate_->OnTransitionToPicker();
     }
-    controller->CheckDisclaimerStatusAsync(base::BindOnce(
-        &DrivePickerHostUI::OnConsentVerified, weak_ptr_factory_.GetWeakPtr()));
+
+    // Transition straight to the Drive Picker UI.
+    if (consent_result_handler_) {
+      FetchTokenAndShowPicker(consent_result_handler_.Unbind());
+    }
   } else {
     if (consent_result_handler_) {
       consent_result_handler_->OnCancel();
       consent_result_handler_.reset();
     }
   }
-}
-
-void DrivePickerHostUI::OnConsentVerified(
-    drive_picker::DriveDisclaimerController::DisclaimerStatus status) {
-  // The flow was cancelled or errored while the verification was outstanding.
-  if (!consent_result_handler_.is_bound()) {
-    return;
-  }
-
-  if (status !=
-      drive_picker::DriveDisclaimerController::DisclaimerStatus::kAccepted) {
-    OnConsentKitError("Drive consent not confirmed by backend");
-    return;
-  }
-
-  VLOG(1) << "[DrivePickerHostUI] Handling decision consent. "
-             "Transitioning to Picker.";
-  Profile* profile = Profile::FromWebUI(web_ui());
-  profile->GetPrefs()->SetInteger(
-      contextual_search::kDriveConsentState,
-      static_cast<int>(contextual_search::DriveConsentState::kConsent));
-
-  if (delegate_) {
-    delegate_->OnTransitionToPicker();
-  }
-
-  // Transition straight to the Drive Picker UI.
-  FetchTokenAndShowPicker(consent_result_handler_.Unbind());
-}
-
-drive_picker::DriveDisclaimerController*
-DrivePickerHostUI::GetDriveDisclaimerController() {
-  if (!drive_disclaimer_controller_) {
-    Profile* profile = Profile::FromWebUI(web_ui());
-    signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(profile);
-    if (!identity_manager) {
-      return nullptr;
-    }
-    drive_disclaimer_controller_ =
-        std::make_unique<drive_picker::DriveDisclaimerController>(
-            contextual_search::FpopService::Create(
-                identity_manager,
-                profile->GetDefaultStoragePartition()
-                    ->GetURLLoaderFactoryForBrowserProcess()));
-  }
-  return drive_disclaimer_controller_.get();
-}
-
-void DrivePickerHostUI::SetDriveDisclaimerControllerForTesting(
-    std::unique_ptr<drive_picker::DriveDisclaimerController> controller) {
-  drive_disclaimer_controller_ = std::move(controller);
 }
 
 void DrivePickerHostUI::ShowConsentKitDialog(

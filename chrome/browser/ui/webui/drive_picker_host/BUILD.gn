@@ -38,7 +38,6 @@ source_set("drive_picker_host") {
     "untrusted",
     "//chrome/browser/ui/views/drive_picker_host:mojo_bindings",
     "//chrome/browser/ui/webui/top_chrome",
-    "//components/contextual_search/footprints/public",
     "//content/public/browser",
     "//mojo/public/cpp/base:protobuf_support",
   ]
@@ -54,7 +53,6 @@ source_set("drive_picker_host") {
     "//components/contextual_search:prefs",
     "//components/contextual_search:public",
     "//components/contextual_search/consent_kit",
-    "//components/contextual_search/footprints/internal",
     "//components/omnibox/common",
     "//ui/webui",
   ]
@@ -72,8 +70,6 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//components/contextual_search:prefs",
     "//components/contextual_search/consent_kit/proto:privacy_primitive_config_proto",
-    "//components/contextual_search/footprints/public",
-    "//components/contextual_search/footprints/public/proto:footprints_oneplatform_proto",
     "//components/omnibox/common",
     "//content/test:test_support",
     "//testing/gmock",
