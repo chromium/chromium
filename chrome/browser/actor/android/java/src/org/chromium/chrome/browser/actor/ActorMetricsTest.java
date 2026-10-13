@@ -26,8 +26,13 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.actor.ActorMetrics.ActorFetchConversationIdStatus;
 import org.chromium.chrome.browser.actor.ActorMetrics.ActorNotificationPermissionState;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.glic.GlicIntentConstants;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -811,6 +816,91 @@ public class ActorMetricsTest {
         ActorMetrics.recordNotificationFetchTabIdStatus(
                 ActorMetrics.ActorFetchTabIdStatus.INVALID_ID);
         ActorMetrics.recordNotificationFetchTabIdStatus(ActorMetrics.ActorFetchTabIdStatus.TIMEOUT);
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testRecordNotificationFetchConversationIdStatus() {
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                ActorMetrics.ACTOR_NOTIFICATION_FETCH_CONVERSATION_ID_STATUS,
+                                ActorFetchConversationIdStatus.SUCCESS,
+                                ActorFetchConversationIdStatus.NOT_FOUND)
+                        .build();
+
+        ActorMetrics.recordNotificationFetchConversationIdStatus(
+                ActorFetchConversationIdStatus.SUCCESS);
+        ActorMetrics.recordNotificationFetchConversationIdStatus(
+                ActorFetchConversationIdStatus.NOT_FOUND);
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ACTOR_NOTIFICATION_INTENT_ROUTING)
+    public void testMaybeRecordMetricsFromIntent_FetchConversationId_Success() {
+        int taskId = 701;
+        Intent intent = new Intent();
+        intent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID, taskId);
+        intent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_STATE, ActorTaskState.ACTING);
+        intent.putExtra(GlicIntentConstants.EXTRA_CONVERSATION_ID, "conv_123");
+
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Actor.Notification.ClickTaskState", ActorTaskState.ACTING)
+                        .expectIntRecord(
+                                ActorMetrics.ACTOR_NOTIFICATION_FETCH_CONVERSATION_ID_STATUS,
+                                ActorFetchConversationIdStatus.SUCCESS)
+                        .build();
+
+        ActorMetrics.maybeRecordMetricsFromIntent(intent, mProfile);
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ACTOR_NOTIFICATION_INTENT_ROUTING)
+    public void testMaybeRecordMetricsFromIntent_FetchConversationId_NotFound() {
+        int taskId = 703;
+        when(mActorService.getTask(taskId)).thenReturn(null);
+
+        Intent intent = new Intent();
+        intent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID, taskId);
+        intent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_STATE, ActorTaskState.FINISHED);
+
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Actor.Notification.ClickTaskState", ActorTaskState.FINISHED)
+                        .expectIntRecord(
+                                ActorMetrics.ACTOR_NOTIFICATION_FETCH_CONVERSATION_ID_STATUS,
+                                ActorFetchConversationIdStatus.NOT_FOUND)
+                        .build();
+
+        ActorMetrics.maybeRecordMetricsFromIntent(intent, mProfile);
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ACTOR_NOTIFICATION_INTENT_ROUTING)
+    public void testMaybeRecordMetricsFromIntent_FetchConversationId_RoutingDisabled() {
+        int taskId = 704;
+        Intent intent = new Intent();
+        intent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID, taskId);
+        intent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_STATE, ActorTaskState.ACTING);
+        intent.putExtra(GlicIntentConstants.EXTRA_CONVERSATION_ID, "conv_123");
+
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Actor.Notification.ClickTaskState", ActorTaskState.ACTING)
+                        .expectNoRecords(
+                                ActorMetrics.ACTOR_NOTIFICATION_FETCH_CONVERSATION_ID_STATUS)
+                        .build();
+
+        ActorMetrics.maybeRecordMetricsFromIntent(intent, mProfile);
 
         watcher.assertExpected();
     }
