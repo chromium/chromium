@@ -995,7 +995,17 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage() {
     if (!external_sync_token) {
       return nullptr;
     }
-    resource_provider->EndExternalWrite(external_sync_token.value());
+    if (resource_provider->IsValid()) {
+      resource_provider->resource()->WaitSyncToken(external_sync_token.value());
+      auto post_write_access = client_si->BeginRasterAccess(
+          raster_interface,
+          resource_provider->resource()->acquire_sync_token(),
+          /*readonly=*/true);
+      sync_token =
+          gpu::RasterScopedAccess::EndAccess(std::move(post_write_access));
+      resource_provider->resource()->SetReleaseSyncToken(sync_token);
+      client_si->UpdateDestructionSyncToken(sync_token);
+    }
     return resource_provider->Snapshot();
   } else {
     // Match the SBI configuration to that produced when using GPU compositing:
