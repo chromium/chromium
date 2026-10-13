@@ -39,9 +39,6 @@ crbug.com/40255790 [ Linux ] http/tests/inspector-protocol/network/navigate-ifra
 # marking them as "Timeout" while crbug.com/729136 is worked out.
 crbug.com/1400717 [ Linux ] webexposed/element-instance-property-listing.html [ Timeout ]
 
-# Tests timing out on Linux MSAN
-crbug.com/760543 [ Linux ] http/tests/devtools/oopif/oopif-performance-cpu-profiles.js [ Pass Timeout ]
-
 # Memory allocation hooks are disabled on ASAN/MSAN
 crbug.com/803276 inspector-protocol/memory/sampling-native-profile.js [ Skip ]
 crbug.com/803276 inspector-protocol/memory/sampling-native-snapshot.js [ Skip ]

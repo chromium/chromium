@@ -748,7 +748,6 @@ crbug.com/1044545 [ Release Win ] http/tests/devtools/service-workers/service-wo
 crbug.com/1044562 [ Release Win ] http/tests/devtools/modify-cross-domain-rule.js [ Slow ]
 crbug.com/1044823 [ Linux ] http/tests/devtools/extensions/extensions-resources.js [ Slow ]
 crbug.com/1044823 [ Release Win ] http/tests/devtools/extensions/extensions-resources.js [ Slow ]
-crbug.com/1044829 [ Release Win ] http/tests/devtools/cache-storage/cache-deletion.js [ Slow ]
 crbug.com/1043901 [ Release Win ] external/wpt/preload/preload-with-type.html [ Slow ]
 crbug.com/1046784 [ Linux ] http/tests/devtools/search/search-in-sourcemap.js [ Slow ]
 crbug.com/1046784 [ Release Win ] http/tests/devtools/search/search-in-sourcemap.js [ Slow ]

@@ -1,7 +1,0 @@
-Tests that resume button in overlay works
-
-Set timer for test function.
-Script execution paused.
-Make a click
-Script execution resumed.
-

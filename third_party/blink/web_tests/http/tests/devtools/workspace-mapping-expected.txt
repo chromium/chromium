@@ -1,9 +1,0 @@
-Tests workspace mappings
-
-uiSourceCode for url http://www.example.com/index.html: EXISTS
-uiSourceCode for url http://localhost/index.html: EXISTS
-uiSourceCode for url http://localhost/foo/index.html: EXISTS
-uiSourceCode for url https://localhost/index.html: EXISTS
-uiSourceCode for url file:///var/www/localhost/index.html: EXISTS
-uiSourceCode for url file:///var/www/localhost/index2.html: null
-

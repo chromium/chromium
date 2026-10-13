@@ -4443,11 +4443,8 @@ crbug.com/874302 external/wpt/wasm/serialization/module/broadcastchannel-success
 crbug.com/1380554 external/wpt/content-security-policy/wasm-unsafe-eval/postMessage-wasm-module.html [ Timeout ]
 
 ## Disable layout tests to land crrev.com/c/8542010 and for crbug.com/562414403
-crbug.com/562414403 http/tests/devtools/security/mixed-content-reload.js [ Failure Pass ]
-crbug.com/407750721 crbug.com/562414403 http/tests/devtools/security/origin-view-ct-compliance.js [ Failure Pass ]
 crbug.com/407750721 crbug.com/562414403 http/tests/devtools/security/origin-view-noncryptographic-secure-origin.js [ Failure Pass ]
 crbug.com/407750721 crbug.com/562414403 http/tests/devtools/security/origin-view-then-interstitial.js [ Failure Pass ]
-crbug.com/407750721 crbug.com/562414403 http/tests/devtools/security/security-details-updated-with-security-state.js [ Failure Pass ]
 crbug.com/562414403 http/tests/devtools/security/security-explanation-ordering.js [ Failure Pass ]
 
 # ====== Random order flaky tests from here ======
@@ -6421,7 +6418,6 @@ crbug.com/432218257 [ Debug Mac13 ] jquery/event.html [ Skip Timeout ]
 [ Debug Mac13 ] fast/dom/shadow/selections-in-shadow.html [ Skip Timeout ]
 [ Debug Mac13 ] virtual/controls-refresh-hc/fast/forms/color-scheme/media/video-playback-speed-menu.html [ Skip Timeout ]
 [ Debug Mac13 ] external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?10-10 [ Failure ]
-[ Debug Mac13 ] http/tests/devtools/console/console-tests.js [ Skip Timeout ]
 [ Debug Mac13 ] external/wpt/speculation-rules/prerender/response-code-successful.https.html?code=202 [ Failure ]
 [ Debug Mac13 ] virtual/threaded/animations/stability/zero-duration-large-start-delay.html [ Skip Timeout ]
 [ Debug Mac13 ] external/wpt/content-security-policy/resource-hints/prefetch-generate-directives.html [ Skip Timeout ]
@@ -6443,7 +6439,6 @@ crbug.com/432218257 [ Debug Mac13 ] jquery/event.html [ Skip Timeout ]
 [ Debug Mac13 ] accessibility/inline-text-word-boundary-causes-crash.html [ Skip Timeout ]
 [ Debug Mac13 ] virtual/controls-refresh-hc/fast/forms/color-scheme/time-picker/time-picker-appearance-after-closing-popup.html [ Skip Timeout ]
 [ Debug Mac13 ] http/tests/devtools/network/oopif-content.js [ Skip Timeout ]
-[ Debug Mac13 ] http/tests/devtools/security/origin-group-names-unique.js [ Skip Timeout ]
 [ Debug Mac13 ] virtual/controls-refresh-hc/fast/forms/color-scheme/suggestion-picker/datetimelocal-suggestion-picker-appearance.html [ Skip Timeout ]
 [ Debug Mac13 ] external/wpt/fetch/metadata/generated/element-iframe.sub.html [ Skip Timeout ]
 [ Debug Mac13 ] animations/unanimated-style.html [ Skip Timeout ]
@@ -8269,7 +8264,6 @@ crbug.com/424918655 [ Mac ] external/wpt/soft-navigation-heuristics/lcp/tentativ
 crbug.com/426391960 external/wpt/soft-navigation-heuristics/lcp/tentative/broken-image-icon.html [ Failure Pass ]
 
 
-crbug.com/414631999 http/tests/devtools/webaudio/audio-context-selector-test.js [ Failure Pass ]
 
 # Gardener 2025-07-16
 crbug.com/431938385 [ Win11-arm64 ] external/wpt/bluetooth/bidi/characteristic/readValue/characteristic-is-removed.https.window.html [ Failure Pass ]
@@ -8351,11 +8345,9 @@ crbug.com/446773671 [ Mac ] external/wpt/editing/other/delete-in-child-of-head.t
 crbug.com/446773671 [ Mac ] external/wpt/editing/other/delete-without-unwrapping-first-line-of-child-block.html?method=DeleteKey&lineBreak=br [ Failure ]
 crbug.com/446773671 [ Mac ] virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/execution-timing/031.html [ Failure ]
 
-crbug.com/414630818 http/tests/devtools/coverage/coverage-repeated.js [ Failure Pass ]
 crbug.com/414630818 http/tests/devtools/coverage/coverage-suspended-per-function.js [ Failure Pass ]
 crbug.com/414630818 http/tests/devtools/coverage/coverage-suspended.js [ Failure Pass ]
 crbug.com/414630818 http/tests/devtools/coverage/coverage-view-css-import.js [ Failure Pass ]
-crbug.com/414630818 http/tests/devtools/coverage/coverage-view-filter.js [ Failure Pass ]
 crbug.com/414630818 http/tests/devtools/coverage/coverage-view-per-function.js [ Failure Pass ]
 crbug.com/414630818 http/tests/devtools/coverage/coverage-view.js [ Failure Pass ]
 

@@ -1,6 +1,0 @@
-Tests selected call frame does not change when pretty-print is toggled.
-
-Set timer for test function.
-Script execution paused.
-Script execution resumed.
-
