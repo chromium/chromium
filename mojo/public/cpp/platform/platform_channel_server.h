@@ -10,10 +10,34 @@
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/task/single_thread_task_runner.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/platform/platform_channel_server_endpoint.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_types.h"
+#endif
+
 namespace mojo {
+
+#if BUILDFLAG(IS_WIN)
+// Issues an overlapped `ConnectNamedPipe` without queuing an I/O completion
+// packet for `overlapped`. Once a client connects, `pipe` is handed to Mojo,
+// which associates it with an I/O completion port. The kernel signals `hEvent`
+// before it inspects the file object's completion port, so the handle can pick
+// up a port while the connect is still completing, and the kernel then queues
+// a packet for `overlapped` to a port owned by someone else. Setting the
+// low-order bit of `hEvent` makes Win32 pass a null APC context to the kernel,
+// which suppresses the completion packet without affecting event signaling.
+// See
+// https://learn.microsoft.com/windows/win32/api/ioapiset/nf-ioapiset-getqueuedcompletionstatus
+//
+// Callers read `GetLastError()` after this returns, so nothing may run between
+// `ConnectNamedPipe` and the return that could overwrite the last error.
+COMPONENT_EXPORT(MOJO_CPP_PLATFORM)
+BOOL ConnectNamedPipeWithoutCompletionPacket(HANDLE pipe,
+                                             OVERLAPPED* overlapped);
+#endif
 
 // PlatformChannelServer takes ownership of a PlatformChannelServerEndpoint
 // and listens for a single incoming client connection.

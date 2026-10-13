@@ -8,7 +8,6 @@
 
 #include <string.h>
 
-#include <cstdint>
 #include <memory>
 #include <utility>
 
@@ -34,40 +33,13 @@
 #include "components/named_mojo_ipc_server/endpoint_options.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
+#include "mojo/public/cpp/platform/platform_channel_server.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 
 namespace named_mojo_ipc_server {
 namespace {
 
 constexpr base::TimeDelta kRetryConnectionTimeout = base::Seconds(3);
-
-// Issues an overlapped `ConnectNamedPipe` without queuing an I/O completion
-// packet for `overlapped`. Once a client connects, `pipe` is handed to Mojo,
-// which associates it with an I/O completion port. The kernel signals `hEvent`
-// before it inspects the file object's completion port, so the handle can pick
-// up a port while the connect is still completing, and the kernel then queues
-// a packet for `overlapped` to a port owned by someone else. Setting the
-// low-order bit of `hEvent` makes Win32 pass a null APC context to the kernel,
-// which suppresses the completion packet without affecting event signaling.
-// See
-// https://learn.microsoft.com/windows/win32/api/ioapiset/nf-ioapiset-getqueuedcompletionstatus
-//
-// Callers read `GetLastError()` after this returns, so nothing may run between
-// `ConnectNamedPipe` and the return that could overwrite the last error.
-BOOL ConnectNamedPipeWithoutCompletionPacket(HANDLE pipe,
-                                             OVERLAPPED* overlapped) {
-  const HANDLE event = overlapped->hEvent;
-  overlapped->hEvent =
-      reinterpret_cast<HANDLE>(reinterpret_cast<uintptr_t>(event) | 1);
-  const BOOL ok = ::ConnectNamedPipe(pipe, overlapped);
-  // The tag only has to be set while `ConnectNamedPipe` reads `hEvent`. The
-  // kernel holds its own reference to the event and writes back only the
-  // `IO_STATUS_BLOCK` fields, so restoring the untagged handle here cannot
-  // race the completion. Restore it so that `GetOverlappedResult` in the
-  // destructor, the only other reader, sees the plain handle.
-  overlapped->hEvent = event;
-  return ok;
-}
 
 class NamedMojoServerEndpointConnectorWin final
     : public NamedMojoServerEndpointConnector {
@@ -164,7 +136,7 @@ void NamedMojoServerEndpointConnectorWin::Connect() {
   // be safe.
   UNSAFE_TODO(memset(&connect_overlapped_, 0, sizeof(connect_overlapped_)));
   connect_overlapped_.hEvent = client_connected_event_.handle();
-  BOOL ok = ConnectNamedPipeWithoutCompletionPacket(
+  BOOL ok = mojo::ConnectNamedPipeWithoutCompletionPacket(
       pending_named_pipe_handle_.Get(), &connect_overlapped_);
   if (ok) {
     PLOG(ERROR) << "Unexpected success while waiting for pipe connection";

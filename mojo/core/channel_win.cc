@@ -209,18 +209,21 @@ class ChannelWin : public Channel,
       return;
     }
 
+    // Keep this alive in case we synchronously run shutdown, via OnError(),
+    // as a result of a ReadFile() failure on the channel.
+    scoped_refptr<ChannelWin> keep_alive(this);
+
     // Now that we have registered our IOHandler, we can start writing.
     {
       base::AutoLock lock(write_lock_);
       if (delay_writes_) {
         delay_writes_ = false;
-        WriteNextNoLock();
+        if (!WriteNextNoLock()) {
+          reject_writes_ = true;
+        }
       }
     }
 
-    // Keep this alive in case we synchronously run shutdown, via OnError(),
-    // as a result of a ReadFile() failure on the channel.
-    scoped_refptr<ChannelWin> keep_alive(this);
     ReadMore(0);
   }
 
@@ -236,7 +239,12 @@ class ChannelWin : public Channel,
     // TODO(crbug.com/40455076): This function is expected to be called
     // once, and |handle_| should be valid at this point.
     CHECK(handle_.is_valid());
-    CancelIo(handle_.get());
+    // Write() may issue an overlapped WriteFile() from any thread, so pending
+    // writes are not necessarily owned by the IO thread. CancelIo() only
+    // cancels I/O issued by the calling thread; use CancelIoEx() with a null
+    // OVERLAPPED to cancel all pending I/O on the handle regardless of which
+    // thread issued it.
+    CancelIoEx(handle_.get(), nullptr);
     if (leak_handle_) {
       std::ignore = handle_.release();
     } else {

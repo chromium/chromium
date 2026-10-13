@@ -36,11 +36,18 @@ namespace {
 constexpr wchar_t kDefaultSecurityDescriptor[] =
     L"D:(A;;GA;;;SY)(A;;GA;;;BA)(A;;GA;;;OW)";
 
-bool VerifyServerPrivilege(HANDLE pipe_handle,
-                           NamedPlatformChannel::PipeNameType pipe_name_type) {
+enum class ServerPrivilegeStatus {
+  kVerified,
+  kRejected,
+  kRetryableError,
+};
+
+ServerPrivilegeStatus VerifyServerPrivilege(
+    HANDLE pipe_handle,
+    NamedPlatformChannel::PipeNameType pipe_name_type) {
   DWORD pid = 0;
   if (!GetNamedPipeServerProcessId(pipe_handle, &pid)) {
-    return false;
+    return ServerPrivilegeStatus::kRetryableError;
   }
 
   base::win::ScopedHandle process(
@@ -49,20 +56,26 @@ bool VerifyServerPrivilege(HANDLE pipe_handle,
     // A medium-integrity client can't OpenProcess a SYSTEM server. The pipe
     // owner identifies the server only if other users can't create instances
     // of the pipe, so require a pipe that only admins could have created.
-    return ::GetLastError() == ERROR_ACCESS_DENIED &&
-           pipe_name_type ==
-               NamedPlatformChannel::PipeNameType::kAdminProtected &&
-           NamedPlatformChannel::IsPipeOwnerPrivileged(pipe_handle);
+    if (::GetLastError() != ERROR_ACCESS_DENIED) {
+      return ServerPrivilegeStatus::kRetryableError;
+    }
+    return pipe_name_type ==
+                       NamedPlatformChannel::PipeNameType::kAdminProtected &&
+                   NamedPlatformChannel::IsPipeOwnerPrivileged(pipe_handle)
+               ? ServerPrivilegeStatus::kVerified
+               : ServerPrivilegeStatus::kRejected;
   }
 
   auto server_token = base::win::AccessToken::FromProcess(process.get());
   auto client_token = base::win::AccessToken::FromCurrentProcess();
 
   if (!server_token || !client_token) {
-    return false;
+    return ServerPrivilegeStatus::kRetryableError;
   }
 
-  return server_token->IntegrityLevel() >= client_token->IntegrityLevel();
+  return server_token->IntegrityLevel() >= client_token->IntegrityLevel()
+             ? ServerPrivilegeStatus::kVerified
+             : ServerPrivilegeStatus::kRejected;
 }
 
 }  // namespace
@@ -191,16 +204,35 @@ PlatformChannelEndpoint NamedPlatformChannel::CreateClientEndpoint(
   // WaitNamedPipe() and CreateFile(). If this occurs, an invalid handle is
   // returned.
   if (!handle.is_valid()) {
+    const DWORD error = ::GetLastError();
     DPLOG(ERROR) << "Named pipe " << pipe_name
                  << " could not be opened after WaitNamedPipe succeeded";
+    ::SetLastError(error);
     return PlatformChannelEndpoint();
   }
 
-  if (options.verify_server_privilege &&
-      !VerifyServerPrivilege(handle.GetHandle().Get(),
-                             options.pipe_name_type)) {
-    DLOG(ERROR) << "Server privilege check failed.";
-    return PlatformChannelEndpoint();
+  if (options.verify_server_privilege) {
+    switch (VerifyServerPrivilege(handle.GetHandle().Get(),
+                                  options.pipe_name_type)) {
+      case ServerPrivilegeStatus::kVerified:
+        break;
+      case ServerPrivilegeStatus::kRejected:
+        DLOG(ERROR) << "Server privilege check failed.";
+        handle.reset();
+        // Callers (such as the updater dialer) inspect `GetLastError()` for
+        // `ERROR_ACCESS_DENIED` to distinguish a rejected server from a
+        // transient connection failure. Close the handle first so
+        // `CloseHandle` cannot overwrite the last error.
+        ::SetLastError(ERROR_ACCESS_DENIED);
+        return PlatformChannelEndpoint();
+      case ServerPrivilegeStatus::kRetryableError:
+        DPLOG(ERROR) << "Failed to query server privilege";
+        handle.reset();
+        // The specific value is arbitrary; what matters is that it is not
+        // `ERROR_ACCESS_DENIED`, so callers treat this as transient and retry.
+        ::SetLastError(ERROR_PIPE_NOT_CONNECTED);
+        return PlatformChannelEndpoint();
+    }
   }
 
   return PlatformChannelEndpoint(std::move(handle));

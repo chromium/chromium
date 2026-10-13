@@ -264,5 +264,29 @@ TEST_F(PlatformChannelServerTest, NoCallbackAfterConnectListenStop) {
   EXPECT_FALSE(callback_invoked);
 }
 
+TEST_F(PlatformChannelServerTest, StopWhileConnectPending) {
+  // Tests that stopping the server (destroying the listener) while an
+  // incoming connection wait is still pending cancels the wait cleanly without
+  // invoking the callback.
+  auto [server_endpoint, name] = CreateRandomChannel();
+  bool callback_invoked = false;
+  bool callback_destroyed = false;
+  base::RunLoop loop;
+  EXPECT_TRUE(server().Listen(
+      std::move(server_endpoint),
+      base::BindOnce(
+          [](RunOnDestruction, bool* callback_invoked,
+             PlatformChannelEndpoint endpoint) { *callback_invoked = true; },
+          RunOnDestruction([&] {
+            callback_destroyed = true;
+            loop.Quit();
+          }),
+          &callback_invoked)));
+  server().Stop();
+  loop.Run();
+  EXPECT_TRUE(callback_destroyed);
+  EXPECT_FALSE(callback_invoked);
+}
+
 }  // namespace
 }  // namespace mojo

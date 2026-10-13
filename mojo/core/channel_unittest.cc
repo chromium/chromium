@@ -6,10 +6,12 @@
 
 #include <atomic>
 #include <optional>
+#include <tuple>
 
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/page_size.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
@@ -415,8 +417,11 @@ TEST(ChannelTest, DeserializeMessage_NonZeroExtraHeaderSize) {
 
 class CountingChannelDelegate : public Channel::Delegate {
  public:
-  explicit CountingChannelDelegate(base::OnceClosure on_final_message)
-      : on_final_message_(std::move(on_final_message)) {}
+  explicit CountingChannelDelegate(
+      base::OnceClosure on_final_message,
+      base::RepeatingClosure on_error = base::DoNothing())
+      : on_final_message_(std::move(on_final_message)),
+        on_error_(std::move(on_error)) {}
   ~CountingChannelDelegate() override = default;
 
   void OnChannelMessage(
@@ -436,13 +441,17 @@ class CountingChannelDelegate : public Channel::Delegate {
     ++message_count_;
   }
 
-  void OnChannelError(Channel::Error error) override { ++error_count_; }
+  void OnChannelError(Channel::Error error) override {
+    ++error_count_;
+    on_error_.Run();
+  }
 
   size_t message_count_ = 0;
   size_t error_count_ = 0;
 
  private:
   base::OnceClosure on_final_message_;
+  base::RepeatingClosure on_error_;
 };
 
 TEST(ChannelTest, PeerStressTest) {
@@ -987,5 +996,51 @@ TEST(ChannelTest, TryDispatchMessageWithEnvelope) {
 
   channel->ShutDown();
 }
+
+#if BUILDFLAG(IS_WIN)
+// Exercises ChannelWin's delayed-write path: a Write() before Start() is queued
+// and issued from StartOnIOThread(). When the peer is already gone that write
+// fails synchronously; ChannelWin must then set reject_writes_ so later
+// messages are dropped rather than queued behind the failed one, and let the
+// initial ReadMore() report the disconnect exactly once. Other platforms issue
+// the write immediately and report errors through different paths, so the
+// single-error expectation is only meaningful on Windows.
+TEST(ChannelTest, WriteBeforeStartOnDisconnectedChannelReportsSingleError) {
+  base::test::SingleThreadTaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::IO);
+  PlatformChannel platform_channel;
+
+  // Close the remote endpoint before starting the channel so that both the
+  // delayed write and initial read in StartOnIOThread() see a disconnected
+  // peer.
+  std::ignore = platform_channel.TakeRemoteEndpoint();
+
+  base::RunLoop error_loop;
+  CountingChannelDelegate delegate(base::DoNothing(), error_loop.QuitClosure());
+  scoped_refptr<Channel> channel = Channel::Create(
+      &delegate, ConnectionParams(platform_channel.TakeLocalEndpoint()),
+      Channel::HandlePolicy::kRejectHandles,
+      base::SingleThreadTaskRunner::GetCurrentDefault());
+
+  channel->Write(CreateDefaultMessage(false));
+  channel->Start();
+  error_loop.Run();
+
+  // Subsequent writes after the initial write failure should be rejected
+  // without reporting additional channel errors. Note that this only guards
+  // against a second OnChannelError(); whether the message was dropped or
+  // merely queued behind the failed one is not observable through the public
+  // Channel interface.
+  channel->Write(CreateDefaultMessage(false));
+  channel->ShutDown();
+
+  base::RunLoop shutdown_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, shutdown_loop.QuitClosure());
+  shutdown_loop.Run();
+
+  EXPECT_EQ(1u, delegate.error_count_);
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace mojo::core

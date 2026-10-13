@@ -19,6 +19,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "base/win/access_token.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/sid.h"
@@ -26,6 +27,7 @@
 #include "chrome/updater/app/server/win/updater_internal_idl.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/ipc/ipc_names.h"
+#include "chrome/updater/ipc/update_service_dialer_win.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/win_util.h"
 #include "components/named_mojo_ipc_server/named_mojo_ipc_server_client_util.h"
@@ -47,9 +49,10 @@ CLSID GetUpdaterInternalClsid(UpdaterScope scope) {
 }
 
 // Start the update service or the update internal service. Returns a valid
-// `Microsoft::WRL::ComPtr<IUnknown>` if the service can be created.
-Microsoft::WRL::ComPtr<IUnknown> DialUpdateService(UpdaterScope scope,
-                                                   bool is_internal_service) {
+// `Microsoft::WRL::ComPtr<IUnknown>` if the service can be created, or the
+// classified activation error otherwise.
+base::expected<Microsoft::WRL::ComPtr<IUnknown>, ConnectToServerError>
+DialUpdateService(UpdaterScope scope, bool is_internal_service) {
   Microsoft::WRL::ComPtr<IUnknown> server;
   const CLSID clsid = is_internal_service ? GetUpdaterInternalClsid(scope)
                                           : GetUpdaterClsid(scope);
@@ -58,65 +61,52 @@ Microsoft::WRL::ComPtr<IUnknown> DialUpdateService(UpdaterScope scope,
   if (FAILED(hr)) {
     VLOG(2) << "::CoCreateInstance failed: " << StringFromGuid(clsid) << ": "
             << std::hex << hr;
-    return {};
+    return base::unexpected(ClassifyDialError(hr));
   }
 
   return server;
 }
 
-bool IsServerElevated(HANDLE pipe_handle,
-                      mojo::NamedPlatformChannel::PipeNameType pipe_name_type) {
+base::expected<void, ConnectToServerError> CheckServerElevated(
+    HANDLE pipe_handle,
+    mojo::NamedPlatformChannel::PipeNameType pipe_name_type) {
   DWORD pid = 0;
   if (!::GetNamedPipeServerProcessId(pipe_handle, &pid)) {
     PLOG(ERROR) << "Failed to get named pipe server process ID";
-    return false;
+    return base::unexpected(ConnectToServerError::kRetryable);
   }
 
   base::win::ScopedHandle process(
       ::OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, pid));
   if (!process.is_valid()) {
+    if (::GetLastError() != ERROR_ACCESS_DENIED) {
+      PLOG(ERROR) << "Failed to open named pipe server process " << pid;
+      return base::unexpected(ConnectToServerError::kRetryable);
+    }
     // Only the protected pipe's DACL denies other users new instances, so only
     // there does the pipe owner identify the server.
-    if (::GetLastError() != ERROR_ACCESS_DENIED ||
-        pipe_name_type !=
-            mojo::NamedPlatformChannel::PipeNameType::kAdminProtected) {
-      PLOG(ERROR) << "Failed to open named pipe server process " << pid;
-      return false;
+    if (pipe_name_type !=
+            mojo::NamedPlatformChannel::PipeNameType::kAdminProtected ||
+        !mojo::NamedPlatformChannel::IsPipeOwnerPrivileged(pipe_handle)) {
+      return base::unexpected(ConnectToServerError::kRejected);
     }
-    return mojo::NamedPlatformChannel::IsPipeOwnerPrivileged(pipe_handle);
+    return base::ok();
   }
 
   std::optional<base::win::AccessToken> server_token =
       base::win::AccessToken::FromProcess(process.get());
   if (!server_token) {
     LOG(ERROR) << "Failed to get access token for server process " << pid;
-    return false;
+    return base::unexpected(ConnectToServerError::kRetryable);
   }
 
   const base::win::Sid owner = server_token->Owner();
-  return owner == base::win::Sid(base::win::WellKnownSid::kLocalSystem) ||
-         owner ==
-             base::win::Sid(base::win::WellKnownSid::kBuiltinAdministrators);
-}
-
-std::optional<mojo::PlatformChannelEndpoint> ConnectToUpdateService(
-    UpdaterScope scope,
-    const mojo::NamedPlatformChannel::ServerName& server_name,
-    mojo::NamedPlatformChannel::PipeNameType pipe_name_type) {
-  mojo::NamedPlatformChannel::Options options;
-  options.server_name = server_name;
-  options.allow_impersonation = true;
-  options.verify_server_privilege = true;
-  options.pipe_name_type = pipe_name_type;
-  mojo::PlatformChannelEndpoint connected_endpoint =
-      named_mojo_ipc_server::ConnectToServer(options);
-  if (!connected_endpoint.is_valid() ||
-      (IsSystemInstall(scope) &&
-       !IsServerElevated(connected_endpoint.platform_handle().GetHandle().get(),
-                         pipe_name_type))) {
-    return std::nullopt;
+  if (owner != base::win::Sid(base::win::WellKnownSid::kLocalSystem) &&
+      owner !=
+          base::win::Sid(base::win::WellKnownSid::kBuiltinAdministrators)) {
+    return base::unexpected(ConnectToServerError::kRejected);
   }
-  return connected_endpoint;
+  return base::ok();
 }
 
 // `::WaitNamedPipeW` reports ERROR_FILE_NOT_FOUND only when NPFS has no pipe
@@ -152,7 +142,9 @@ void ConnectMojoImpl(
     return;
   }
 
-  auto endpoint = [&]() -> std::optional<mojo::PlatformChannelEndpoint> {
+  base::expected<mojo::PlatformChannelEndpoint, ConnectToServerError> result =
+      [&]
+      -> base::expected<mojo::PlatformChannelEndpoint, ConnectToServerError> {
     // Dial once per connect sequence and hold the reference across retries.
     // Releasing it between attempts can drop the server's WRL module object
     // count to zero, at which point the `Module<OutOfProc>` release notifier
@@ -166,10 +158,12 @@ void ConnectMojoImpl(
     // connecting fails this sequence; the proxy reconnects from scratch on
     // the next RPC.
     if (!server) {
-      server = DialUpdateService(scope, is_internal_service);
-      if (!server) {
-        return std::nullopt;
+      base::expected<Microsoft::WRL::ComPtr<IUnknown>, ConnectToServerError>
+          dialed = DialUpdateService(scope, is_internal_service);
+      if (!dialed.has_value()) {
+        return base::unexpected(dialed.error());
       }
+      server = std::move(*dialed);
     }
 
     const mojo::NamedPlatformChannel::ServerName server_name =
@@ -190,16 +184,24 @@ void ConnectMojoImpl(
         scope, server_name, mojo::NamedPlatformChannel::PipeNameType::kDefault);
   }();
 
-  if (endpoint) {
-    std::move(connected_callback).Run(std::move(endpoint), std::move(server));
+  if (result.has_value()) {
+    std::move(connected_callback).Run(std::move(*result), std::move(server));
     return;
   }
 
-  // `server` is still null only if `CoCreateInstance` failed, and every earlier
-  // attempt must have failed the same way, so `tries` counts failed dials. A
-  // failed dial is not waiting for a server that is already starting, so the
-  // time-bounded wait below does not apply; keep the previous limit of two
-  // attempts.
+  if (result.error() == ConnectToServerError::kRejected) {
+    VLOG(1) << "Failed to connect to remote mojo service, is_internal_service: "
+            << is_internal_service << ", scope: " << scope
+            << ", server rejected.";
+    std::move(connected_callback).Run(std::nullopt, {});
+    return;
+  }
+
+  // `server` is still null only if `CoCreateInstance` failed with a retryable
+  // error, and every earlier attempt must have failed the same way, so `tries`
+  // counts failed dials. A failed dial is not waiting for a server that is
+  // already starting, so the time-bounded wait below does not apply; keep the
+  // previous limit of two attempts.
   constexpr int kMaxDialAttempts = 2;
   if (!server && tries + 1 >= kMaxDialAttempts) {
     VLOG(1) << "Failed to activate remote mojo service, is_internal_service: "
@@ -228,18 +230,61 @@ void ConnectMojoImpl(
 
 }  // namespace
 
-std::optional<mojo::PlatformChannelEndpoint> SelectUpdateServiceEndpoint(
-    base::FunctionRef<std::optional<mojo::PlatformChannelEndpoint>(
-        mojo::NamedPlatformChannel::PipeNameType)> connect,
+ConnectToServerError ClassifyDialError(HRESULT hr) {
+  // DCOM reports a caller that lacks launch or activation permission for the
+  // class as `E_ACCESSDENIED`. That is a configuration or identity problem,
+  // not a transient one, so retrying cannot help.
+  return hr == E_ACCESSDENIED ? ConnectToServerError::kRejected
+                              : ConnectToServerError::kRetryable;
+}
+
+base::expected<mojo::PlatformChannelEndpoint, ConnectToServerError>
+ConnectToUpdateService(
+    UpdaterScope scope,
+    const mojo::NamedPlatformChannel::ServerName& server_name,
+    mojo::NamedPlatformChannel::PipeNameType pipe_name_type) {
+  mojo::NamedPlatformChannel::Options options;
+  options.server_name = server_name;
+  options.allow_impersonation = true;
+  options.verify_server_privilege = true;
+  options.pipe_name_type = pipe_name_type;
+  mojo::PlatformChannelEndpoint connected_endpoint =
+      named_mojo_ipc_server::ConnectToServer(options);
+  if (!connected_endpoint.is_valid()) {
+    // `NamedPlatformChannel::ConnectToServer` preserves `ERROR_ACCESS_DENIED`
+    // in `GetLastError()` when either `CreateFileW` is denied by the pipe's
+    // DACL or `VerifyServerPrivilege` rejects the server process.
+    return base::unexpected(::GetLastError() == ERROR_ACCESS_DENIED
+                                ? ConnectToServerError::kRejected
+                                : ConnectToServerError::kRetryable);
+  }
+  if (IsSystemInstall(scope)) {
+    if (base::expected<void, ConnectToServerError> elevated =
+            CheckServerElevated(
+                connected_endpoint.platform_handle().GetHandle().get(),
+                pipe_name_type);
+        !elevated.has_value()) {
+      return base::unexpected(elevated.error());
+    }
+  }
+  return connected_endpoint;
+}
+
+base::expected<mojo::PlatformChannelEndpoint, ConnectToServerError>
+SelectUpdateServiceEndpoint(
+    base::FunctionRef<
+        base::expected<mojo::PlatformChannelEndpoint, ConnectToServerError>(
+            mojo::NamedPlatformChannel::PipeNameType)> connect,
     base::FunctionRef<bool(mojo::NamedPlatformChannel::PipeNameType)>
         is_pipe_missing) {
   constexpr auto kProtected =
       mojo::NamedPlatformChannel::PipeNameType::kAdminProtected;
   constexpr auto kDefault = mojo::NamedPlatformChannel::PipeNameType::kDefault;
 
-  if (std::optional<mojo::PlatformChannelEndpoint> endpoint =
-          connect(kProtected)) {
-    return endpoint;
+  base::expected<mojo::PlatformChannelEndpoint, ConnectToServerError> result =
+      connect(kProtected);
+  if (result.has_value() || result.error() == ConnectToServerError::kRejected) {
+    return result;
   }
 
   // A server serving the legacy pipe but not the protected one either predates
@@ -248,7 +293,7 @@ std::optional<mojo::PlatformChannelEndpoint> SelectUpdateServiceEndpoint(
   if (is_pipe_missing(kProtected) && !is_pipe_missing(kDefault)) {
     return connect(kDefault);
   }
-  return std::nullopt;
+  return base::unexpected(ConnectToServerError::kRetryable);
 }
 
 void ConnectMojo(

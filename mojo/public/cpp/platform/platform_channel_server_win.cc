@@ -6,6 +6,7 @@
 
 #include <windows.h>
 
+#include <cstdint>
 #include <cstring>
 #include <memory>
 #include <utility>
@@ -33,8 +34,8 @@ class ListenerImpl : public PlatformChannelServer::Listener,
 
   ~ListenerImpl() override {
     if (server_.is_valid()) {
-      ::CancelIo(server_.get());
-      // CancelIo is asynchronous; block the destruction on the kernel writing
+      ::CancelIoEx(server_.get(), &connect_overlapped_);
+      // CancelIoEx is asynchronous; block the destruction on the kernel writing
       // status into connect_overlapped_ to avoid a use-after-free.
       DWORD bytes = 0;
       ::GetOverlappedResult(server_.get(), &connect_overlapped_, &bytes, TRUE);
@@ -56,10 +57,13 @@ class ListenerImpl : public PlatformChannelServer::Listener,
 
     base::win::ScopedHandle server =
         server_endpoint.TakePlatformHandle().TakeHandle();
-    BOOL ok = ::ConnectNamedPipe(server.get(), &connect_overlapped_);
+    BOOL ok = ConnectNamedPipeWithoutCompletionPacket(server.get(),
+                                                      &connect_overlapped_);
     if (ok) {
       // This call should always fail with ERROR_IO_PENDING or
       // ERROR_PIPE_CONNECTED.
+      event_watcher_.StopWatching();
+      connect_event_.Close();
       return false;
     }
 
@@ -84,6 +88,7 @@ class ListenerImpl : public PlatformChannelServer::Listener,
 
       default:
         // Fail.
+        event_watcher_.StopWatching();
         connect_event_.Close();
         return false;
     }
@@ -131,6 +136,21 @@ class ListenerImpl : public PlatformChannelServer::Listener,
 };
 
 }  // namespace
+
+BOOL ConnectNamedPipeWithoutCompletionPacket(HANDLE pipe,
+                                             OVERLAPPED* overlapped) {
+  const HANDLE event = overlapped->hEvent;
+  overlapped->hEvent =
+      reinterpret_cast<HANDLE>(reinterpret_cast<uintptr_t>(event) | 1);
+  const BOOL ok = ::ConnectNamedPipe(pipe, overlapped);
+  // The tag only has to be set while `ConnectNamedPipe` reads `hEvent`. The
+  // kernel holds its own reference to the event and writes back only the
+  // `IO_STATUS_BLOCK` fields, so restoring the untagged handle here cannot
+  // race the completion. Restore it so that `GetOverlappedResult` in the
+  // destructor, the only other reader, sees the plain handle.
+  overlapped->hEvent = event;
+  return ok;
+}
 
 std::unique_ptr<PlatformChannelServer::Listener>
 PlatformChannelServer::Listener::Create() {

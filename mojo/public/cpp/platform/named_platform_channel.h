@@ -150,12 +150,15 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) NamedPlatformChannel {
   void PassServerNameOnCommandLine(base::CommandLine* command_line);
 
   // Recovers a functioning client endpoint handle by creating a new endpoint
-  // and connecting it to |server_name| if possible.
+  // and connecting it to |server_name| if possible, using default Options.
   [[nodiscard]] static PlatformChannelEndpoint ConnectToServer(
       const ServerName& server_name);
 
   // Like above, but passing an Options struct instead. |options.server_name|
-  // must be a non-empty string.
+  // must be a non-empty string. On Windows, if the connection is rejected by
+  // the pipe's DACL or fails `Options::verify_server_privilege`, an invalid
+  // endpoint is returned with the calling thread's last error set to
+  // `ERROR_ACCESS_DENIED`; any other failure leaves a different last error.
   [[nodiscard]] static PlatformChannelEndpoint ConnectToServer(
       const Options& options);
 
