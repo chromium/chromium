@@ -62,6 +62,13 @@ void GmailOtpOptInCoordinator::OnTickleReceived(
     return;
   }
 
+  const base::Time dismissal_time =
+      prefs::GetAutofillGmailOtpFillingActivationDismissalTimestamp(prefs);
+  if (!dismissal_time.is_null() &&
+      base::Time::Now() - dismissal_time < kDeclinedCooldownDuration) {
+    return;
+  }
+
   const signin::IdentityManager* identity_manager =
       client_->GetIdentityManager();
   if (!identity_manager) {

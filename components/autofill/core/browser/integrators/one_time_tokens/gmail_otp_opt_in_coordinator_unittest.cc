@@ -278,5 +278,35 @@ TEST_F(GmailOtpOptInCoordinatorTest, DoesNotTriggerWhileBubbleAlreadyShowing) {
   SimulateTickleReceived();
 }
 
+// Gating check: Do not show during the 90-day cool-off period after the user
+// declined the opt-in bubble.
+TEST_F(GmailOtpOptInCoordinatorTest,
+       SuppressesBubbleDuringDeclinedCooldownPeriod) {
+  SignIn();
+  prefs::SetAutofillGmailOtpFillingActivationDismissalTimestamp(
+      client_.GetPrefs(), base::Time::Now());
+  GmailOtpOptInCoordinator coordinator(client_, &mock_ott_service_);
+
+  task_environment_.FastForwardBy(base::Days(89));
+  SimulateOtpFieldDetected();
+  EXPECT_CALL(client_, ShowGmailOtpOptInBubble).Times(0);
+  SimulateTickleReceived();
+}
+
+// Gating check: Allow showing the opt-in bubble again once the 90-day cool-off
+// period has elapsed.
+TEST_F(GmailOtpOptInCoordinatorTest,
+       ShowsBubbleAfterDeclinedCooldownPeriodExpires) {
+  SignIn();
+  prefs::SetAutofillGmailOtpFillingActivationDismissalTimestamp(
+      client_.GetPrefs(), base::Time::Now());
+  GmailOtpOptInCoordinator coordinator(client_, &mock_ott_service_);
+
+  task_environment_.FastForwardBy(base::Days(90));
+  SimulateOtpFieldDetected();
+  EXPECT_CALL(client_, ShowGmailOtpOptInBubble).Times(1);
+  SimulateTickleReceived();
+}
+
 }  // namespace
 }  // namespace autofill

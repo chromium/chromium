@@ -30,6 +30,10 @@ class GmailOtpOptInCoordinator {
   static constexpr base::TimeDelta kTickleSubscriptionDuration =
       base::Minutes(3);
 
+  // Cooldown duration after the user clicks "No thanks" (`kDeclined`) before
+  // the opt-in bubble can be shown again.
+  static constexpr base::TimeDelta kDeclinedCooldownDuration = base::Days(90);
+
   GmailOtpOptInCoordinator(
       AutofillClient& client,
       one_time_tokens::OneTimeTokenService* one_time_token_service);
