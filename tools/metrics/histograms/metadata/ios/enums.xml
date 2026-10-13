@@ -336,6 +336,22 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Fetching Time Out Error"/>
 </enum>
 
+<!-- LINT.IfChange(IOSBackgroundContinuedProcessingTaskRequestResult) -->
+
+<enum name="IOSBackgroundContinuedProcessingTaskRequestResult">
+  <int value="0" label="Rejected: unknown error"/>
+  <int value="1" label="Submitted to BGTaskScheduler"/>
+  <int value="2" label="Failed to register with BGTaskScheduler"/>
+  <int value="3" label="Rejected: BGTaskSchedulerErrorCodeUnavailable"/>
+  <int value="4"
+      label="Rejected: BGTaskSchedulerErrorCodeTooManyPendingTaskRequests"/>
+  <int value="5" label="Rejected: BGTaskSchedulerErrorCodeNotPermitted"/>
+  <int value="6"
+      label="Rejected: BGTaskSchedulerErrorCodeImmediateRunIneligible"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/app/background_task/background_continued_processing_metrics.h:BackgroundContinuedProcessingTaskRequestResult) -->
+
 <!-- LINT.IfChange(IOSBackgroundSelectionOutcome) -->
 
 <enum name="IOSBackgroundSelectionOutcome">

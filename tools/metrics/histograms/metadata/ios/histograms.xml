@@ -578,6 +578,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.BackgroundContinuedProcessing.ProviderRequest.Result"
+    enum="IOSBackgroundContinuedProcessingTaskRequestResult"
+    expires_after="2027-04-01">
+  <owner>nicolasmacbeth@google.com</owner>
+  <owner>marq@chromium.org</owner>
+  <summary>
+    Recorded for each continued processing task request made from a task
+    provider when the app enters the background. Logs whether the request was
+    submitted to BGTaskScheduler, failed task registration, or was rejected by
+    BGTaskScheduler (broken down by BGTaskSchedulerErrorCode). Used to measure
+    whether entering the background is a good moment to submit such requests.
+  </summary>
+</histogram>
+
 <histogram name="IOS.BackgroundRefresh.BGTaskSchedulerError"
     enum="BGTaskSchedulerErrorType" expires_after="2027-02-28">
   <owner>fedegermi@google.com</owner>

@@ -12,9 +12,13 @@
 #import "base/check_op.h"
 #import "base/ios/crb_protocol_observers.h"
 #import "base/logging.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/notreached.h"
 #import "base/sequence_checker.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/types/expected.h"
 #import "ios/chrome/app/background_mode_buildflags.h"
+#import "ios/chrome/app/background_task/background_continued_processing_metrics.h"
 #import "ios/chrome/app/background_task/background_continued_processing_task_configuration.h"
 #import "ios/chrome/app/background_task/background_continued_processing_task_context.h"
 #import "ios/chrome/app/background_task/background_continued_processing_task_provider.h"
@@ -53,6 +57,34 @@ ConvertToBGContinuedProcessingTaskRequestSubmissionStrategy(
     case BackgroundContinuedProcessingSubmissionStrategy::kFail:
       return BGContinuedProcessingTaskRequestSubmissionStrategyFail;
   }
+}
+
+// Maps a `BGTaskScheduler` submission `error` to the corresponding request
+// result.
+BackgroundContinuedProcessingTaskRequestResult RequestResultFromSubmissionError(
+    NSError* error) {
+  if (!error || ![error.domain isEqualToString:BGTaskSchedulerErrorDomain]) {
+    return BackgroundContinuedProcessingTaskRequestResult::
+        kUnknownSubmissionError;
+  }
+
+  switch (static_cast<BGTaskSchedulerErrorCode>(error.code)) {
+    case BGTaskSchedulerErrorCodeUnavailable:
+      return BackgroundContinuedProcessingTaskRequestResult::
+          kBGTaskSchedulerErrorUnavailable;
+    case BGTaskSchedulerErrorCodeTooManyPendingTaskRequests:
+      return BackgroundContinuedProcessingTaskRequestResult::
+          kBGTaskSchedulerErrorTooManyPendingTaskRequests;
+    case BGTaskSchedulerErrorCodeNotPermitted:
+      return BackgroundContinuedProcessingTaskRequestResult::
+          kBGTaskSchedulerErrorNotPermitted;
+    case BGTaskSchedulerErrorCodeImmediateRunIneligible:
+      return BackgroundContinuedProcessingTaskRequestResult::
+          kBGTaskSchedulerErrorImmediateRunIneligible;
+  }
+
+  return BackgroundContinuedProcessingTaskRequestResult::
+      kUnknownSubmissionError;
 }
 
 }  // namespace
@@ -115,6 +147,68 @@ ConvertToBGContinuedProcessingTaskRequestSubmissionStrategy(
     return nil;
   }
 
+  return [self submitTaskRequestWithIdentifier:identifier
+                                 configuration:configuration]
+      .value_or(nil);
+}
+
+#pragma mark - SceneObservingAppAgent
+
+- (void)appDidEnterBackground {
+  [super appDidEnterBackground];
+  if (!IsBackgroundContinuedProcessingEnabled()) {
+    return;
+  }
+
+  [_taskProviders backgroundProcessingBecameAvailable];
+  __weak BackgroundContinuedProcessingAppAgent* weakSelf = self;
+  [_taskProviders executeOnObservers:^(id provider) {
+    [weakSelf requestTasksFromProvider:provider];
+  }];
+}
+
+- (void)appDidEnterForeground {
+  [super appDidEnterForeground];
+  if (!IsBackgroundContinuedProcessingEnabled()) {
+    return;
+  }
+
+  [_taskProviders backgroundProcessingBecameUnnecessary];
+}
+
+#pragma mark - Private
+
+// Requests the tasks of `provider`, records the outcome of each request and
+// passes the task context to each request that was successfully started.
+- (void)requestTasksFromProvider:
+    (id<BackgroundContinuedProcessingTaskProvider>)provider {
+  for (BackgroundContinuedProcessingTaskRequest* request in
+       [provider continuedProcessingTaskRequests]) {
+    base::expected<BackgroundContinuedProcessingTaskContext*,
+                   BackgroundContinuedProcessingTaskRequestResult>
+        result = [self submitTaskRequestWithIdentifier:request.identifier
+                                         configuration:request.configuration];
+
+    base::UmaHistogramEnumeration(
+        kBackgroundContinuedProcessingProviderRequestResultHistogram,
+        result.error_or(
+            BackgroundContinuedProcessingTaskRequestResult::kSubmitted));
+
+    if (result.has_value() && request.startedHandler) {
+      request.startedHandler(result.value());
+    }
+  }
+}
+
+// Submits a task request and returns its context, or the failure reason. Must
+// only be called when background continued processing is enabled.
+- (base::expected<BackgroundContinuedProcessingTaskContext*,
+                  BackgroundContinuedProcessingTaskRequestResult>)
+    submitTaskRequestWithIdentifier:(NSString*)identifier
+                      configuration:
+                          (BackgroundContinuedProcessingTaskConfiguration*)
+                              configuration {
+  CHECK(IsBackgroundContinuedProcessingEnabled());
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   CHECK(identifier.length > 0);
   CHECK(configuration);
@@ -144,7 +238,8 @@ ConvertToBGContinuedProcessingTaskRequestSubmissionStrategy(
     if (!registered) {
       DLOG(ERROR) << "Failed to register background task with identifier: "
                   << base::SysNSStringToUTF8(taskIdentifier);
-      return nil;
+      return base::unexpected(
+          BackgroundContinuedProcessingTaskRequestResult::kRegistrationFailed);
     }
 
     BGContinuedProcessingTaskRequest* request =
@@ -164,7 +259,7 @@ ConvertToBGContinuedProcessingTaskRequestSubmissionStrategy(
       DLOG(ERROR) << "Failed to submit background task: "
                   << (error ? base::SysNSStringToUTF8(error.description)
                             : "unknown error");
-      return nil;
+      return base::unexpected(RequestResultFromSubmissionError(error));
     }
 
     BackgroundContinuedProcessingTaskContext* context =
@@ -179,50 +274,7 @@ ConvertToBGContinuedProcessingTaskRequestSubmissionStrategy(
   }
 #endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 
-  return nil;
-}
-
-#pragma mark - SceneObservingAppAgent
-
-- (void)appDidEnterBackground {
-  [super appDidEnterBackground];
-  if (!IsBackgroundContinuedProcessingEnabled()) {
-    return;
-  }
-
-  [_taskProviders backgroundProcessingBecameAvailable];
-  __weak BackgroundContinuedProcessingAppAgent* weakSelf = self;
-  [_taskProviders executeOnObservers:^(id provider) {
-    [weakSelf requestTasksFromProvider:provider];
-  }];
-}
-
-- (void)appDidEnterForeground {
-  [super appDidEnterForeground];
-  if (!IsBackgroundContinuedProcessingEnabled()) {
-    return;
-  }
-
-  [_taskProviders backgroundProcessingBecameUnnecessary];
-}
-
-#pragma mark - Private
-
-// Requests the tasks of `provider` and hands each request the context of its
-// started task.
-- (void)requestTasksFromProvider:
-    (id<BackgroundContinuedProcessingTaskProvider>)provider {
-  for (BackgroundContinuedProcessingTaskRequest* request in
-       [provider continuedProcessingTaskRequests]) {
-    BackgroundContinuedProcessingTaskContext* context =
-        [self requestTaskWithIdentifier:request.identifier
-                          configuration:request.configuration];
-    // TODO(crbug.com/568387677): Record metrics for failed task requests, to
-    // measure whether entering the background is a good time to request them.
-    if (context && request.startedHandler) {
-      request.startedHandler(context);
-    }
-  }
+  NOTREACHED();
 }
 
 #if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)

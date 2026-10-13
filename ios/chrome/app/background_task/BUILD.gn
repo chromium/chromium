@@ -28,6 +28,7 @@ source_set("background_task") {
   sources = [
     "background_continued_processing_app_agent.h",
     "background_continued_processing_app_agent.mm",
+    "background_continued_processing_metrics.h",
     "background_continued_processing_task_configuration.h",
     "background_continued_processing_task_configuration.mm",
     "background_continued_processing_task_context.h",
@@ -58,6 +59,7 @@ source_set("unit_tests") {
   deps = [
     ":background_task",
     ":features",
+    "//base",
     "//base/test:test_support",
     "//ios/chrome/app:background_mode_buildflags",
     "//ios/chrome/app/application_delegate:app_state",

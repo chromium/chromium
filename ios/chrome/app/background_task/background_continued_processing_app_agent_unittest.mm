@@ -8,11 +8,14 @@
 #import <UIKit/UIKit.h>
 
 #import "base/check.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "base/test/test_future.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/background_mode_buildflags.h"
+#import "ios/chrome/app/background_task/background_continued_processing_metrics.h"
 #import "ios/chrome/app/background_task/background_continued_processing_task_configuration.h"
 #import "ios/chrome/app/background_task/background_continued_processing_task_context.h"
 #import "ios/chrome/app/background_task/background_continued_processing_task_provider.h"
@@ -1093,5 +1096,161 @@ TEST_F(BackgroundContinuedProcessingAppAgentAvailableTest,
   EnterBackground();
 
   EXPECT_NSEQ((@[ @"A.background", @"B.background", @"A.requests" ]), log_);
+}
+
+#pragma mark - Metrics
+
+// Tests that a provider request submitted to `BGTaskScheduler` on background
+// entry is recorded as submitted.
+TEST_F(BackgroundContinuedProcessingAppAgentAvailableTest,
+       TestProviderRequestResultRecordedWhenSubmitted) {
+  if (@available(iOS 26.0, *)) {
+    base::HistogramTester histogram_tester;
+    StubSchedulerForProviders();
+    FakeContinuedProcessingTaskProvider* provider = AddFakeProvider(@"A");
+    provider.requests = @[ CreateTrackedRequest(provider, kFirstTaskId) ];
+
+    EnterBackground();
+
+    histogram_tester.ExpectUniqueSample(
+        kBackgroundContinuedProcessingProviderRequestResultHistogram,
+        BackgroundContinuedProcessingTaskRequestResult::kSubmitted, 1);
+    CompleteStartedTasks(provider);
+  }
+}
+
+// Tests that a provider request rejected by `BGTaskScheduler` without an error
+// is recorded as an unknown submission error, independently of the other
+// requests of the provider.
+TEST_F(BackgroundContinuedProcessingAppAgentAvailableTest,
+       TestProviderRequestResultRecordedWhenSubmissionFails) {
+  if (@available(iOS 26.0, *)) {
+    base::HistogramTester histogram_tester;
+    StubSchedulerForProviders(kFailingTaskId);
+    FakeContinuedProcessingTaskProvider* provider = AddFakeProvider(@"A");
+    provider.requests = @[
+      CreateTrackedRequest(provider, kFirstTaskId),
+      CreateTrackedRequest(provider, kFailingTaskId),
+      CreateTrackedRequest(provider, kSecondTaskId),
+    ];
+
+    EnterBackground();
+
+    histogram_tester.ExpectBucketCount(
+        kBackgroundContinuedProcessingProviderRequestResultHistogram,
+        BackgroundContinuedProcessingTaskRequestResult::kSubmitted, 2);
+    histogram_tester.ExpectBucketCount(
+        kBackgroundContinuedProcessingProviderRequestResultHistogram,
+        BackgroundContinuedProcessingTaskRequestResult::kUnknownSubmissionError,
+        1);
+    histogram_tester.ExpectTotalCount(
+        kBackgroundContinuedProcessingProviderRequestResultHistogram, 3);
+    CompleteStartedTasks(provider);
+  }
+}
+
+// Tests that each `BGTaskSchedulerErrorCode` returned by `BGTaskScheduler` (as
+// well as an unrecognized error domain) is mapped to its corresponding bucket
+// in the provider request result histogram.
+TEST_F(BackgroundContinuedProcessingAppAgentAvailableTest,
+       TestProviderRequestResultRecordedBySubmissionErrorCode) {
+  if (@available(iOS 26.0, *)) {
+    struct ErrorCase {
+      NSError* error;
+      BackgroundContinuedProcessingTaskRequestResult expected_result;
+    };
+    const ErrorCase cases[] = {
+        {[NSError errorWithDomain:BGTaskSchedulerErrorDomain
+                             code:BGTaskSchedulerErrorCodeUnavailable
+                         userInfo:nil],
+         BackgroundContinuedProcessingTaskRequestResult::
+             kBGTaskSchedulerErrorUnavailable},
+        {[NSError
+             errorWithDomain:BGTaskSchedulerErrorDomain
+                        code:BGTaskSchedulerErrorCodeTooManyPendingTaskRequests
+                    userInfo:nil],
+         BackgroundContinuedProcessingTaskRequestResult::
+             kBGTaskSchedulerErrorTooManyPendingTaskRequests},
+        {[NSError errorWithDomain:BGTaskSchedulerErrorDomain
+                             code:BGTaskSchedulerErrorCodeNotPermitted
+                         userInfo:nil],
+         BackgroundContinuedProcessingTaskRequestResult::
+             kBGTaskSchedulerErrorNotPermitted},
+        {[NSError errorWithDomain:BGTaskSchedulerErrorDomain
+                             code:BGTaskSchedulerErrorCodeImmediateRunIneligible
+                         userInfo:nil],
+         BackgroundContinuedProcessingTaskRequestResult::
+             kBGTaskSchedulerErrorImmediateRunIneligible},
+        {[NSError errorWithDomain:BGTaskSchedulerErrorDomain
+                             code:999
+                         userInfo:nil],
+         BackgroundContinuedProcessingTaskRequestResult::
+             kUnknownSubmissionError},
+        {[NSError errorWithDomain:@"org.chromium.test" code:1 userInfo:nil],
+         BackgroundContinuedProcessingTaskRequestResult::
+             kUnknownSubmissionError},
+    };
+
+    FakeContinuedProcessingTaskProvider* provider = AddFakeProvider(@"A");
+    provider.requests = @[ CreateTrackedRequest(provider, kFirstTaskId) ];
+
+    for (const ErrorCase& test_case : cases) {
+      SCOPED_TRACE(base::SysNSStringToUTF8(test_case.error.description));
+      base::HistogramTester histogram_tester;
+      [mock_scheduler_ stopMocking];
+      mock_scheduler_ = OCMStrictClassMock([BGTaskScheduler class]);
+      OCMStub([mock_scheduler_ sharedScheduler]).andReturn(mock_scheduler_);
+      StubScheduler(nullptr, /*registration_success=*/YES,
+                    /*submission_success=*/NO, test_case.error);
+
+      EnterBackground();
+      EnterForeground();
+
+      histogram_tester.ExpectUniqueSample(
+          kBackgroundContinuedProcessingProviderRequestResultHistogram,
+          test_case.expected_result, 1);
+    }
+    EXPECT_EQ(provider.startedContexts.count, 0u);
+  }
+}
+
+// Tests that a provider request whose task cannot be registered with
+// `BGTaskScheduler` is recorded as a failed registration.
+TEST_F(BackgroundContinuedProcessingAppAgentAvailableTest,
+       TestProviderRequestResultRecordedWhenRegistrationFails) {
+  if (@available(iOS 26.0, *)) {
+    base::HistogramTester histogram_tester;
+    StubScheduler(nullptr, /*registration_success=*/NO);
+    FakeContinuedProcessingTaskProvider* provider = AddFakeProvider(@"A");
+    provider.requests = @[ CreateTrackedRequest(provider, kFirstTaskId) ];
+
+    EnterBackground();
+
+    histogram_tester.ExpectUniqueSample(
+        kBackgroundContinuedProcessingProviderRequestResultHistogram,
+        BackgroundContinuedProcessingTaskRequestResult::kRegistrationFailed, 1);
+    EXPECT_EQ(provider.startedContexts.count, 0u);
+  }
+}
+
+// Tests that requests made directly through
+// `requestTaskWithIdentifier:configuration:`, outside of background entry, are
+// not recorded in the provider request histogram.
+TEST_F(BackgroundContinuedProcessingAppAgentAvailableTest,
+       TestDirectRequestDoesNotRecordProviderRequestResult) {
+  if (@available(iOS 26.0, *)) {
+    base::HistogramTester histogram_tester;
+    OCMStub([mock_scheduler_ cancelTaskRequestWithIdentifier:[OCMArg any]]);
+    StubScheduler();
+
+    BackgroundContinuedProcessingTaskContext* context =
+        [agent_ requestTaskWithIdentifier:kTestTaskId
+                            configuration:CreateTestConfiguration()];
+
+    ASSERT_NE(context, nil);
+    histogram_tester.ExpectTotalCount(
+        kBackgroundContinuedProcessingProviderRequestResultHistogram, 0);
+    [context setTaskCompletedWithSuccess:YES];
+  }
 }
 #endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
