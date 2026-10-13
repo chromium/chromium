@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/actor/tools/attempt_form_filling_tool_request.h"
+#include "chrome/browser/actor/tools/autofill/attempt_form_filling/attempt_form_filling_tool_request.h"
 
 #include <ostream>
 #include <variant>
@@ -10,7 +10,7 @@
 #include "base/containers/span.h"
 #include "base/strings/to_string.h"
 #include "chrome/browser/actor/actor_surface.h"
-#include "chrome/browser/actor/tools/attempt_form_filling_tool.h"
+#include "chrome/browser/actor/tools/autofill/attempt_form_filling/attempt_form_filling_tool.h"
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
 #include "chrome/common/actor/action_result.h"

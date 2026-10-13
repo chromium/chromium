@@ -142,7 +142,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Autofill Attention Dialog accepted by the user"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/actor/tools/attempt_form_filling_tool_metrics.h:AttemptFormFillingToolEvent) -->
+<!-- LINT.ThenChange(//chrome/browser/actor/tools/autofill/attempt_form_filling/attempt_form_filling_tool_metrics.h:AttemptFormFillingToolEvent) -->
 
 <enum name="AufofillStructuredTokenVerificationStatus">
   <int value="0" label="No Status"/>

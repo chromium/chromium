@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ACTOR_TOOLS_ATTEMPT_FORM_FILLING_TOOL_METRICS_H_
-#define CHROME_BROWSER_ACTOR_TOOLS_ATTEMPT_FORM_FILLING_TOOL_METRICS_H_
+#ifndef CHROME_BROWSER_ACTOR_TOOLS_AUTOFILL_ATTEMPT_FORM_FILLING_ATTEMPT_FORM_FILLING_TOOL_METRICS_H_
+#define CHROME_BROWSER_ACTOR_TOOLS_AUTOFILL_ATTEMPT_FORM_FILLING_ATTEMPT_FORM_FILLING_TOOL_METRICS_H_
 
-#include "chrome/browser/actor/tools/attempt_form_filling_tool_request.h"
+#include "chrome/browser/actor/tools/autofill/attempt_form_filling/attempt_form_filling_tool_request.h"
 
 namespace actor::form_fill_metrics {
 
@@ -60,4 +60,4 @@ void RecordOnSuggestionConfirmedMetrics(
 
 }  // namespace actor::form_fill_metrics
 
-#endif  // CHROME_BROWSER_ACTOR_TOOLS_ATTEMPT_FORM_FILLING_TOOL_METRICS_H_
+#endif  // CHROME_BROWSER_ACTOR_TOOLS_AUTOFILL_ATTEMPT_FORM_FILLING_ATTEMPT_FORM_FILLING_TOOL_METRICS_H_
