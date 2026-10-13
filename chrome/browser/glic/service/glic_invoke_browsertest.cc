@@ -158,9 +158,40 @@ class GlicInvokeBrowserTest : public GlicBrowserTestMixin<PlatformBrowserTest> {
     // Losing the client makes the host page report a load failure. Waiting for
     // it means the reported state has settled, so the tests below can drive it
     // without racing against that report.
-    return RunUntilEqual([&]() { return instance->host().client_load_state(); },
-                         ClientLoadState::kError,
-                         "DisconnectWebClient: the client did not fail");
+    return WaitForClientLoadState(instance, ClientLoadState::kError);
+  }
+
+  // Waits for `instance`'s host to reach `expected_state` via `Host::Observer`.
+  [[nodiscard]] TestResult<> WaitForClientLoadState(
+      GlicInstanceImpl* instance,
+      ClientLoadState expected_state) {
+    if (instance->host().client_load_state() == expected_state) {
+      return base::ok();
+    }
+    class StateObserver : public Host::Observer {
+     public:
+      StateObserver(Host& host, ClientLoadState target) : target_(target) {
+        observation_.Observe(&host);
+      }
+      void ClientLoadStateChanged(ClientLoadState state) override {
+        if (state == target_) {
+          observation_.Reset();
+          future_.SetValue();
+        }
+      }
+      bool Wait() { return future_.Wait(); }
+
+     private:
+      const ClientLoadState target_;
+      base::ScopedObservation<Host, Host::Observer> observation_{this};
+      base::test::TestFuture<void> future_;
+    };
+    StateObserver observer(instance->host(), expected_state);
+    if (!observer.Wait()) {
+      return base::unexpected(
+          "Timed out waiting for Host::client_load_state()");
+    }
+    return base::ok();
   }
 
  private:
@@ -298,10 +329,17 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
                       /*prevent_close=*/false,
                       mojom::InvocationSource::kTopChromeButton);
 
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return coordinator().IsPanelShowingForBrowser(
-        *tab->GetBrowserWindowInterface());
-  }));
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, WaitForGlicOpen(tab));
+  // The toggle is a regular invocation: the panel opens so the WebUI can show
+  // the ineligibility screen, which it reports as a client load failure, and
+  // the invocation fails fast with kClientLoadError rather than being
+  // rejected up front.
+  ASSERT_OK(WaitForClientLoadState(instance, ClientLoadState::kError));
+  EXPECT_FALSE(instance->IsInvoking());
+  histogram_tester.ExpectUniqueSample("Glic.InvokeResult2.TopChromeButton",
+                                      GlicInvokeError::kClientLoadError, 1);
+  histogram_tester.ExpectUniqueSample("Glic.InvokeResult2",
+                                      GlicInvokeError::kClientLoadError, 1);
   histogram_tester.ExpectBucketCount("Glic.InvokeResult2",
                                      GlicInvokeError::kProfileNotEnabled, 0);
 
@@ -310,10 +348,7 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
                       /*prevent_close=*/false,
                       mojom::InvocationSource::kTopChromeButton);
 
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return !coordinator().IsPanelShowingForBrowser(
-        *tab->GetBrowserWindowInterface());
-  }));
+  ASSERT_OK(WaitForGlicClose(instance));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest, InvokeWithInvalidInstanceId) {
