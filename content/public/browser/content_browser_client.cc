@@ -819,6 +819,12 @@ bool ContentBrowserClient::IsUnboundedElementAllowed(
   return false;
 }
 
+bool ContentBrowserClient::IsUnboundedElementAllowedForSubframesOf(
+    const url::Origin& origin) {
+  // TODO(crbug.com/571879162): Remove this temporary allowlist.
+  return false;
+}
+
 bool ContentBrowserClient::CanCreateWindow(
     RenderFrameHost* opener,
     const GURL& opener_url,

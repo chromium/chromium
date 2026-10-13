@@ -1228,6 +1228,7 @@ class CORE_EXPORT LocalFrameView final
   // Used for tracking the frame's size and replicating it to the browser
   // process when it changes.
   std::optional<gfx::Size> frame_size_;
+  std::optional<gfx::Rect> frame_bounds_in_local_root_;
 
   AtomicString media_type_;
   AtomicString media_type_when_not_printing_;

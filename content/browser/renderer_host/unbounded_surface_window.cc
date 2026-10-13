@@ -133,6 +133,10 @@ void UnboundedSurfaceWindow::DidCancelDismissal() {
     return;
   }
   dismiss_pending_ = false;
+  // TODO(crbug.com/567604594): Browser-initiated dismissal (outside click,
+  // Esc, focus loss) goes through a cancelable beforetoggle event, and
+  // stopping the fallback timer here lets the page keep the window open
+  // indefinitely.
   dismiss_fallback_timer_.Stop();
 }
 

@@ -97,6 +97,11 @@ bool IsPrivacySensitiveFeature(
 // PermissionsPolicyFeature.
 bool DisabledByOriginTrial(const String&, FeatureContext*);
 
+// Returns true if this PermissionsPolicyFeature is currently disabled by
+// execution context restrictions (e.g. requires a privileged context or
+// feature flag enabled for the context).
+CORE_EXPORT bool DisabledByContext(const String&, ExecutionContext*);
+
 // Returns true if this DocumentPolicyFeature is currently disabled by an origin
 // trial (it is origin trial controlled, and the origin trial is not enabled).
 bool DisabledByOriginTrial(mojom::blink::DocumentPolicyFeature,

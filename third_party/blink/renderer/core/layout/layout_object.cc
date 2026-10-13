@@ -37,10 +37,13 @@
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "partition_alloc/partition_alloc.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/animation/inherited_animations/inherited_animation_tracker.h"
+#include "third_party/blink/renderer/core/context_features/context_feature_settings.h"
 #include "third_party/blink/renderer/core/css/counter_style.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/resolver/style_adjuster.h"
@@ -63,7 +66,9 @@
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/editing/text_affinity.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
+#include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/event_handler_registry.h"
+#include "third_party/blink/renderer/core/frame/frame_owner.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -2125,9 +2130,82 @@ gfx::Rect LayoutObject::AbsoluteBoundingBoxRect(
   return gfx::ToEnclosingRect(result);
 }
 
+namespace {
+
+// This mirrors DoesParentAllowUnboundedElementEscape() in
+// render_frame_host_impl.cc. It doesn't just check the child's permissions
+// policy because the escape rules differ from policy inheritance (e.g.
+// sandboxed frames don't get the implicit same-origin grant, even with
+// allow-same-origin). Both copies must be kept in sync.
+// LINT.IfChange(UnboundedElementEscape)
+bool DoesParentFrameAllowUnboundedElementEscape(const Frame* parent,
+                                                const Frame* child) {
+  const auto feature =
+      network::mojom::PermissionsPolicyFeature::kUnboundedElement;
+  const SecurityOrigin* parent_sec_origin =
+      parent->GetSecurityContext()->GetSecurityOrigin();
+  const SecurityOrigin* child_sec_origin =
+      child->GetSecurityContext()->GetSecurityOrigin();
+  if (!parent_sec_origin || !child_sec_origin) {
+    return false;
+  }
+  url::Origin parent_origin = parent_sec_origin->ToUrlOrigin();
+  url::Origin child_origin = child_sec_origin->ToUrlOrigin();
+
+  if (const network::PermissionsPolicy* parent_policy =
+          parent->GetSecurityContext()->GetPermissionsPolicy()) {
+    if (auto header_allowlist =
+            parent_policy->GetHeaderAllowlistForFeatureIfExists(feature)) {
+      if (!header_allowlist->Contains(parent_origin) ||
+          !header_allowlist->Contains(child_origin)) {
+        return false;
+      }
+    }
+  }
+
+  // The child can also opt out via its own Permissions-Policy header.
+  if (const network::PermissionsPolicy* child_policy =
+          child->GetSecurityContext()->GetPermissionsPolicy()) {
+    if (auto header_allowlist =
+            child_policy->GetHeaderAllowlistForFeatureIfExists(feature)) {
+      if (!header_allowlist->Contains(child_origin)) {
+        return false;
+      }
+    }
+  }
+
+  // An explicit allow="unbounded-element" grants escape even to sandboxed
+  // frames. The sandbox check below only blocks the implicit same-origin
+  // grant.
+  if (const FrameOwner* owner = child->Owner()) {
+    // TODO(crbug.com/567606684): GetFramePolicy() returns the live `allow`
+    // value, while the browser uses effective_frame_policy(), which only
+    // changes on the next navigation. If the parent changes `allow` after
+    // load, the renderer and browser clamp differently.
+    const network::ParsedPermissionsPolicy& container_policy =
+        owner->GetFramePolicy().container_policy;
+    for (const auto& decl : container_policy) {
+      if (decl.feature == feature) {
+        return network::PermissionsPolicy::Allowlist::FromDeclaration(decl)
+            .Contains(child_origin);
+      }
+    }
+  }
+
+  if (child->GetSecurityContext()->GetSandboxFlags() !=
+      network::mojom::blink::WebSandboxFlags::kNone) {
+    return false;
+  }
+  return child_origin.IsSameOriginWith(parent_origin);
+}
+// LINT.ThenChange(//content/browser/renderer_host/render_frame_host_impl.cc:UnboundedElementEscape)
+
+}  // namespace
+
 gfx::Rect LayoutObject::AbsoluteBoundingBoxRectForUnboundedElement() const {
   NOT_DESTROYED();
   DCHECK(RuntimeEnabledFeatures::UnboundedElementEnabled());
+  gfx::Rect result;
   if (const auto* box_model = DynamicTo<LayoutBoxModelObject>(this)) {
     PhysicalRect overflow = box_model->VisualOverflowRectIncludingFilters();
     // Intersect with the clip-path bounding box so that the browser-side window
@@ -2138,9 +2216,101 @@ gfx::Rect LayoutObject::AbsoluteBoundingBoxRectForUnboundedElement() const {
             ClipPathClipper::LocalClipPathBoundingBox(*this)) {
       overflow.Intersect(PhysicalRect::EnclosingRect(*clip_path_bounds));
     }
-    return ToEnclosingRect(LocalToAbsoluteRect(overflow));
+    result = ToEnclosingRect(LocalToAbsoluteRect(overflow));
+  } else {
+    result = AbsoluteBoundingBoxRect();
   }
-  return AbsoluteBoundingBoxRect();
+
+  LocalFrame* target_frame = GetFrame();
+  if (!target_frame) {
+    return result;
+  }
+  LocalFrameView* target_view = target_frame->View();
+  if (!target_view) {
+    return result;
+  }
+
+  // An unbounded element inside an iframe is only permitted to escape
+  // ancestor frames that explicitly allow it via Permissions Policy. We walk
+  // up the frame tree from the target frame toward the root; if any ancestor
+  // frame boundary does not permit escape (determined by the iframe container
+  // policy, any declared HTTP Permissions-Policy header, or sandbox
+  // restrictions), we constrain the element to that ancestor frame's bounding
+  // box. Fenced frame roots and the top-level viewport also constrain the
+  // bounds unless privileged or open-web escaping is explicitly enabled.
+  std::optional<gfx::Rect> constraining_bounds;
+  const Frame* current = target_frame;
+  while (current) {
+    const Frame* parent = current->Tree().Parent();
+    const auto* local_current = DynamicTo<LocalFrame>(current);
+    bool is_constrained =
+        (local_current && local_current->IsFencedFrameRoot()) ||
+        (parent &&
+         !DoesParentFrameAllowUnboundedElementEscape(parent, current));
+    if (is_constrained && local_current && local_current->View() &&
+        local_current->GetPage()) {
+      // TODO(crbug.com/567604602): This uses the frame's full rect, ignoring
+      // ancestor overflow clips and ancestor content painted over the frame.
+      // See GetFrameBoundsInScreen() in render_frame_host_impl.cc.
+      gfx::Rect frame_rect_in_root = local_current->View()->ConvertToRootFrame(
+          gfx::Rect(local_current->View()->Size()));
+      gfx::Rect frame_rect_in_target =
+          target_view->ConvertFromRootFrame(frame_rect_in_root);
+      if (constraining_bounds.has_value()) {
+        constraining_bounds->Intersect(frame_rect_in_target);
+      } else {
+        constraining_bounds = frame_rect_in_target;
+      }
+    }
+    if (local_current && local_current->IsFencedFrameRoot()) {
+      break;
+    }
+    current = parent;
+  }
+  ContextFeatureSettings::UnboundedElementAuth auth =
+      ContextFeatureSettings::GetUnboundedElementAuth(
+          GetDocument().GetExecutionContext());
+  bool allow_escaping =
+      (auth ==
+       ContextFeatureSettings::UnboundedElementAuth::kAllowedPrivileged) ||
+      RuntimeEnabledFeatures::
+          UnsafeEscapingUnboundedElementOnTheOpenWebEnabled();
+  if (!allow_escaping) {
+    // TODO(crbug.com/567606684): This clamp only runs when the top frame is
+    // local. In an OOPIF only the browser clamps, so content crossing the
+    // top/left viewport edge is drawn shifted instead of cropped.
+    if (const auto* local_root =
+            DynamicTo<LocalFrame>(&target_frame->Tree().Top())) {
+      if (local_root->View() && local_root->GetPage()) {
+        gfx::Rect root_rect_in_root = local_root->View()->ConvertToRootFrame(
+            local_root->View()->ViewportToFrame(
+                gfx::Rect(local_root->View()->Size())));
+        gfx::Rect root_rect_in_target =
+            target_view->ConvertFromRootFrame(root_rect_in_root);
+        if (constraining_bounds.has_value()) {
+          constraining_bounds->Intersect(root_rect_in_target);
+        } else {
+          constraining_bounds = root_rect_in_target;
+        }
+      }
+    }
+  }
+  if (constraining_bounds.has_value()) {
+    gfx::Rect unconstrained = result;
+    result.Intersect(*constraining_bounds);
+    if (result.IsEmpty()) {
+      int max_x =
+          std::max(constraining_bounds->x(), constraining_bounds->right() - 1);
+      int max_y =
+          std::max(constraining_bounds->y(), constraining_bounds->bottom() - 1);
+      int clamped_x =
+          std::clamp(unconstrained.x(), constraining_bounds->x(), max_x);
+      int clamped_y =
+          std::clamp(unconstrained.y(), constraining_bounds->y(), max_y);
+      result = gfx::Rect(clamped_x, clamped_y, 1, 1);
+    }
+  }
+  return result;
 }
 
 PhysicalRect LayoutObject::AbsoluteBoundingBoxRectHandlingEmptyInline(

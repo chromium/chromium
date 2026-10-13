@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<style>
+  body {
+    margin: 0;
+  }
+  #target {
+    position: absolute;
+    inset: 0;
+    width: 201px;
+    height: 201px;
+    background: green;
+  }
+</style>
+<div id="target" unbounded></div>
+<script>
+  window.onclick = async () => {
+    try {
+      await target.showUnboundedElement();
+    } finally {
+      parent.postMessage('finish', '*');
+    }
+  };
+</script>

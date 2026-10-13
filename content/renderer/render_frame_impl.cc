@@ -4961,11 +4961,30 @@ void RenderFrameImpl::DidCreateScriptContext(v8::Local<v8::Context> context,
          GetWebFrame()->GetSecurityOrigin().IsWebUI() &&
          GetWebFrame()->GetSecurityOrigin().Protocol() !=
              kChromeUIUntrustedScheme) ||
-        GetContentClient()->renderer()->IsUnboundedElementAllowed(this);
+        (GetWebFrame() &&
+         GetContentClient()->renderer()->IsUnboundedElementAllowed(
+             GetWebFrame()->GetSecurityOrigin()));
+    // Frames whose top frame is privileged may use the non-privileged
+    // (open-web) version, subject to permissions policy. The top frame may be
+    // remote, so this is based on its replicated origin. This mirrors
+    // RenderFrameHostImpl::GetUnboundedElementAuth().
+    bool is_root_privileged = false;
+    if (GetWebFrame() && GetWebFrame()->Top()) {
+      WebSecurityOrigin top_origin = GetWebFrame()->Top()->GetSecurityOrigin();
+      if (!top_origin.IsNull()) {
+        is_root_privileged =
+            (top_origin.IsWebUI() &&
+             top_origin.Protocol() != kChromeUIUntrustedScheme) ||
+            GetContentClient()->renderer()->IsUnboundedElementAllowed(
+                top_origin);
+      }
+    }
     bool is_unbounded_allowed =
         base::FeatureList::IsEnabled(
             blink::features::kUnsafeUnboundedElementOnTheOpenWeb) ||
-        is_privileged;
+        base::FeatureList::IsEnabled(
+            blink::features::kUnsafeEscapingUnboundedElementOnTheOpenWeb) ||
+        is_privileged || is_root_privileged;
     if (is_unbounded_allowed) {
       blink::WebV8Features::EnableUnboundedElement(context, is_privileged);
     }

@@ -1302,16 +1302,12 @@ bool ChromeContentRendererClient::AllowPopup() {
 }
 
 bool ChromeContentRendererClient::IsUnboundedElementAllowed(
-    content::RenderFrame* render_frame) {
+    const blink::WebSecurityOrigin& origin) {
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-  if (render_frame && render_frame->GetWebFrame()) {
-    const blink::WebSecurityOrigin origin =
-        render_frame->GetWebFrame()->GetSecurityOrigin();
-    if (!origin.IsNull() &&
-        origin.Protocol().Equals(extensions::kExtensionScheme) &&
-        origin.Host().Equals(extension_misc::kContextualTasksExtensionId)) {
-      return true;
-    }
+  if (!origin.IsNull() &&
+      origin.Protocol().Equals(extensions::kExtensionScheme) &&
+      origin.Host().Equals(extension_misc::kContextualTasksExtensionId)) {
+    return true;
   }
 #endif
   return false;

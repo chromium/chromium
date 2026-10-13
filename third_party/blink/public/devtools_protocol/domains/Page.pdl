@@ -164,6 +164,7 @@ domain Page
       sync-xhr
       tools
       translator
+      unbounded-element
       unload
       usb
       usb-unrestricted

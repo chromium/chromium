@@ -1955,6 +1955,9 @@ void WebFrameWidgetImpl::UpdateVisualProperties(
   }
 
   bool properties_changed = false;
+  // TODO(crbug.com/567606680): After entering or leaving fullscreen, the
+  // unbounded surface window moves correctly but its content stays offset.
+  // The root cause isn't known yet.
   if (unbounded_surface_state_ && unbounded_surface_state_->host_.is_bound()) {
     CHECK(RuntimeEnabledFeatures::UnboundedElementEnabled());
     bool zoom_changed = (zoom_level_ != visual_properties.zoom_level) ||

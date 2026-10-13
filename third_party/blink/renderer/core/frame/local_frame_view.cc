@@ -4238,12 +4238,37 @@ void LocalFrameView::PropagateFrameRectsInternal() {
   }
 
   // To limit the number of Mojo communications, only notify the browser when
-  // the rect's size changes, not when the position changes. The size needs to
+  // the frame's size changes, not when its position changes. The size needs to
   // be replicated if the iframe goes out-of-process.
   gfx::Size frame_size = Size();
   if (!frame_size_ || *frame_size_ != frame_size) {
     frame_size_ = frame_size;
     GetFrame().GetLocalFrameHostRemote().FrameSizeChanged(frame_size);
+  }
+  // Non-local-root frames also send their bounds within the local root
+  // whenever they change (including position), which the browser uses to
+  // constrain unbounded elements. Local roots don't need this, since the
+  // browser uses their view bounds directly.
+  // TODO(crbug.com/567606993): This only runs when layout triggers frame rect
+  // propagation. Scrolling the parent or a transform animation moves the frame
+  // without a relayout, so the browser's copy can go stale. Since these bounds
+  // come from the same renderer, an alternative is to have the browser use the
+  // local root bounds for all subframes and drop this IPC.
+  if (RuntimeEnabledFeatures::UnboundedElementEnabled() &&
+      !GetFrame().IsLocalRoot() && GetPage()) {
+    gfx::Rect frame_bounds_in_local_root =
+        FrameToViewport(gfx::Rect(frame_size));
+    if (auto* local_root_widget = frame_->GetWidgetForLocalRoot()) {
+      frame_bounds_in_local_root =
+          gfx::ToRoundedRect(local_root_widget->BlinkSpaceToDIPs(
+              gfx::RectF(frame_bounds_in_local_root)));
+    }
+    if (!frame_bounds_in_local_root_ ||
+        *frame_bounds_in_local_root_ != frame_bounds_in_local_root) {
+      frame_bounds_in_local_root_ = frame_bounds_in_local_root;
+      GetFrame().GetLocalFrameHostRemote().FrameBoundsInLocalRootChanged(
+          frame_bounds_in_local_root);
+    }
   }
 }
 

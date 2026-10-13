@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<meta charset="utf-8">
+<link rel="author" href="mailto:masonf@chromium.org">
+<link rel="help" href="https://crbug.com/508672616">
+<link rel="match" href="iframe-permissions-policy-chained-ref.html">
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="resources/unbounded-utils.js"></script>
+
+<style>
+  #outer {
+    position: absolute;
+    top: 50px;
+    left: 100px;
+    width: 150px;
+    height: 150px;
+    border: 0;
+    background: red;
+  }
+</style>
+
+<iframe id="outer" sandbox="allow-scripts" srcdoc="
+  <!DOCTYPE html>
+  <style>
+    body {
+      margin: 0;
+      background: red;
+    }
+    #inner {
+      position: absolute;
+      top: 36px;
+      left: 36px;
+      width: 80px;
+      height: 80px;
+      border: 0;
+    }
+  </style>
+  <iframe id='inner' sandbox='allow-scripts' allow='unbounded-element' srcdoc=&quot;
+    <!DOCTYPE html>
+    <style>
+      body {
+        margin: 0;
+      }
+      #target {
+        position: absolute;
+        top: -36px;
+        left: -36px;
+        width: 201px;
+        height: 201px;
+        background: red;
+      }
+      #green {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 150px;
+        height: 150px;
+        background: green;
+      }
+    </style>
+    <div id='target' unbounded>
+      <div id='green'></div>
+    </div>
+    <script>
+      window.onclick = async () => {
+        try {
+          await target.showUnboundedElement();
+        } finally {
+          top.postMessage('finish', '*');
+        }
+      };
+      top.postMessage('ready', '*');
+    </script>
+  &quot;></iframe>
+"></iframe>
+
+<script>
+const innerReady = new Promise((resolve) => {
+  window.addEventListener('message', (e) => {
+    if (e.data === 'ready') {
+      resolve();
+    }
+  });
+});
+
+unbounded_appearance_test(async () => {
+  if (document.readyState !== 'complete') {
+    await new Promise(resolve => window.addEventListener('load', resolve));
+  }
+  await innerReady;
+
+  const gotMessage = new Promise((resolve) => {
+    window.addEventListener('message', (e) => {
+      if (e.data === 'finish') {
+        resolve();
+      }
+    });
+  });
+
+  await test_driver.click(outer);
+  await gotMessage;
+});
+</script>

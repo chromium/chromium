@@ -681,6 +681,10 @@ interface LocalFrameHost {
   // navigation.
   FrameSizeChanged(gfx.mojom.Size size);
 
+  // The frame's bounds in its local root widget's DIP space, used by the
+  // browser process to constrain unbounded elements inside iframes.
+  FrameBoundsInLocalRootChanged(gfx.mojom.Rect bounds);
+
   // Notifies the frame that the document's color scheme has been inferred.
   DidInferColorScheme(PreferredColorScheme color_scheme);
 

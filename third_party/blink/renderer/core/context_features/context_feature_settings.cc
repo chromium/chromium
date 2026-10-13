@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/context_features/context_feature_settings.h"
 
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_feature_checks.h"
@@ -72,9 +73,19 @@ ContextFeatureSettings::GetUnboundedElementAuth(
   if (!settings || !settings->enable_unbounded_element_) {
     return UnboundedElementAuth::kDenied;
   }
-  return settings->enable_unbounded_element_privileged_
-             ? UnboundedElementAuth::kAllowedPrivileged
-             : UnboundedElementAuth::kAllowedOpenWeb;
+  if (settings->enable_unbounded_element_privileged_) {
+    return UnboundedElementAuth::kAllowedPrivileged;
+  }
+  if (RuntimeEnabledFeatures::UnsafeUnboundedElementOnTheOpenWebEnabled() ||
+      RuntimeEnabledFeatures::
+          UnsafeEscapingUnboundedElementOnTheOpenWebEnabled()) {
+    return UnboundedElementAuth::kAllowedOpenWeb;
+  }
+  if (context->IsFeatureEnabled(
+          network::mojom::blink::PermissionsPolicyFeature::kUnboundedElement)) {
+    return UnboundedElementAuth::kAllowedOpenWeb;
+  }
+  return UnboundedElementAuth::kDenied;
 }
 
 bool ContextFeatureSettings::isUnboundedElementEnabled() const {

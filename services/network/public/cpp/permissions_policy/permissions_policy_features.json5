@@ -573,6 +573,15 @@
       visibility: "IsolatedContext",
     },
     {
+      // TODO(crbug.com/508672616): This is currently only usable by
+      // privileged (e.g. WebUI) content. If it is exposed to the open web, add
+      // it to https://github.com/w3c/webappsec-permissions-policy/blob/main/features.md.
+      name: "UnboundedElement",
+      permissions_policy_name: "unbounded-element",
+      depends_on: ["UnboundedElement"],
+      feature_default: "EnableForSelf",
+    },
+    {
       // Unload is special and can default to being disabled by default based
       // on the DeprecateUnload flag.
       name: "Unload",

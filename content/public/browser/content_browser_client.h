@@ -1270,6 +1270,13 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Unbounded Element API (for example, specific component extensions).
   virtual bool IsUnboundedElementAllowed(RenderFrameHost* render_frame_host);
 
+  // Returns true if subframes of a privileged outermost main frame with the
+  // given `origin` may use the non-privileged Unbounded Element API (subject
+  // to permissions policy).
+  // TODO(crbug.com/571879162): Remove this temporary allowlist.
+  virtual bool IsUnboundedElementAllowedForSubframesOf(
+      const url::Origin& origin);
+
   // Returns true if the given page is allowed to open a window of the given
   // type. If true is returned, |no_javascript_access| will indicate whether
   // the window that is created should be scriptable/in the same process.

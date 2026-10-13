@@ -351,6 +351,10 @@ enum PermissionsPolicyFeature {
   // https://w3c.github.io/webauthn/#sctn-remote-client-data-json-extension
   kPublicKeyCredentialsRemoteClientDataJson = 149,
 
+  // Controls whether an unbounded element inside an iframe is allowed to
+  // escape the iframe's bounds.
+  kUnboundedElement = 150,
+
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.
   // Run tools/metrics/histograms/update_permissions_policy_enum.py to update

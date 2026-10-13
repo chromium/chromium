@@ -1783,6 +1783,19 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Returns the current size for this frame.
   const std::optional<gfx::Size>& frame_size() const { return frame_size_; }
 
+  // Returns the current bounds of this frame in its local root widget's DIP
+  // space.
+  const std::optional<gfx::Rect>& frame_bounds_in_local_root() const {
+    return frame_bounds_in_local_root_;
+  }
+
+  // Computes the intersection of screen bounds of all ancestor frames that do
+  // not allow an unbounded element from this frame to escape their bounds.
+  // Returns std::nullopt if the unbounded element is allowed to escape all
+  // ancestor iframes up to the outermost main frame.
+  std::optional<gfx::Rect> GetUnboundedElementConstrainingBoundsInScreen(
+      RenderWidgetHostViewBase* root_view);
+
   // Allow tests to override the timeout used to keep subframe processes alive
   // for unload handler processing.
   void SetSubframeUnloadTimeoutForTesting(const base::TimeDelta& timeout);
@@ -2466,6 +2479,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const std::optional<std::u16string>& source_id,
       const std::optional<std::u16string>& untrusted_stack_trace) override;
   void FrameSizeChanged(const gfx::Size& frame_size) override;
+  void FrameBoundsInLocalRootChanged(const gfx::Rect& bounds) override;
   void DidChangeSrcDoc(const blink::FrameToken& child_frame_token,
                        const std::string& srcdoc_value) override;
   void ReceivedDelegatedCapability(
@@ -4806,6 +4820,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Used for tracking the latest size of the RenderFrame.
   std::optional<gfx::Size> frame_size_;
+
+  // Used for tracking the latest bounds of the RenderFrame in its local root
+  // widget's DIP space.
+  std::optional<gfx::Rect> frame_bounds_in_local_root_;
 
   // This boolean indicates whether the RenderFrame has committed *any*
   // navigation or not. Starts off false and is set to true for the lifetime of

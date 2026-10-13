@@ -4469,6 +4469,14 @@ bool ChromeContentBrowserClient::IsUnboundedElementAllowed(
   return false;
 }
 
+bool ChromeContentBrowserClient::IsUnboundedElementAllowedForSubframesOf(
+    const url::Origin& origin) {
+  // Allowlist of outermost main frames whose subframes may use the Unbounded
+  // Element API.
+  // TODO(crbug.com/571879162): Remove this temporary allowlist.
+  return origin.IsSameOriginWith(GURL(chrome::kChromeUINewTabPageURL));
+}
+
 bool ChromeContentBrowserClient::CanCreateWindow(
     RenderFrameHost* opener,
     const GURL& opener_url,

@@ -7018,6 +7018,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="147" label="WebNN"/>
   <int value="148" label="Haptics"/>
   <int value="149" label="PublicKeyCredentialsRemoteClientDataJson"/>
+  <int value="150" label="UnboundedElement"/>
 </enum>
 
 <!-- LINT.IfChange(FedCmAccountChooserResult) -->

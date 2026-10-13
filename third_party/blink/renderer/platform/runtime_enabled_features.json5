@@ -6884,9 +6884,18 @@
     },
     {
       // The Unbounded Element API. See crbug.com/508672616.
-      // Enable Unbounded Element on the open web without privileged context.
+      // Allows open web content to escape the bounds of the top level window.
+      name: "UnsafeEscapingUnboundedElementOnTheOpenWeb",
+      public: true,
+    },
+    {
+      // The Unbounded Element API. See crbug.com/508672616.
+      // Enable Unbounded Element on the open web, with the bounds of the
+      // unbounded element limited to the topmost main frame bounds. (No
+      // escaping beyond the main frame, including over the Omnibox, etc.)
       name: "UnsafeUnboundedElementOnTheOpenWeb",
       public: true,
+      implied_by: ["UnsafeEscapingUnboundedElementOnTheOpenWeb"],
     },
     // If enabled, notify the associated DisplayCutoutHost of changes in
     // complex safe area constraint usage on the page.

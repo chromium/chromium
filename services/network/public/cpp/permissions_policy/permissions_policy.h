@@ -262,6 +262,12 @@ class COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM) PermissionsPolicy {
   std::optional<const Allowlist> GetAllowlistForFeatureIfExists(
       network::mojom::PermissionsPolicyFeature feature) const;
 
+  // Returns the header allowlist of a given feature if explicitly declared in
+  // the document's HTTP Permissions-Policy header, regardless of inherited
+  // policy.
+  std::optional<Allowlist> GetHeaderAllowlistForFeatureIfExists(
+      network::mojom::PermissionsPolicyFeature feature) const;
+
   // Returns empty string when there is no reporting endpoint.
   std::string GetEndpointForFeature(
       network::mojom::PermissionsPolicyFeature feature) const;

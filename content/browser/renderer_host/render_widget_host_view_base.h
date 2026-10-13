@@ -90,6 +90,7 @@ namespace content {
 
 class DevicePosturePlatformProvider;
 class MouseWheelPhaseHandler;
+class RenderFrameHostImpl;
 class RenderWidgetHostImpl;
 class UnboundedSurfaceWindow;
 class ScopedViewTransitionResources;
@@ -461,6 +462,10 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   virtual void UpdateUnboundedSurfaceBoundsInSubframeContext(
       const gfx::Rect& bounds_in_dips,
       RenderWidgetHostViewBase* subframe_view);
+  void SetUnboundedSurfaceFrame(base::WeakPtr<RenderFrameHostImpl> rfh);
+  gfx::Rect ConvertSubframeBoundsToScreenWithoutConstraints(
+      const gfx::Rect& bounds_in_dips,
+      RenderWidgetHostViewBase* subframe_view);
   gfx::Rect ConvertSubframeBoundsToScreen(
       const gfx::Rect& bounds_in_dips,
       RenderWidgetHostViewBase* subframe_view);
@@ -724,6 +729,7 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   virtual void CancelSuccessfulPresentationTimeRequestForHostAndDelegate() = 0;
 
   std::unique_ptr<UnboundedSurfaceWindow> unbounded_surface_window_;
+  base::WeakPtr<RenderFrameHostImpl> unbounded_surface_rfh_;
 
   // Whether this view is a frame or a popup.
   WidgetType widget_type_ = WidgetType::kFrame;

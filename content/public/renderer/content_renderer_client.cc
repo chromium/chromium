@@ -130,7 +130,7 @@ bool ContentRendererClient::AllowPopup() {
 }
 
 bool ContentRendererClient::IsUnboundedElementAllowed(
-    RenderFrame* render_frame) {
+    const blink::WebSecurityOrigin& origin) {
   return false;
 }
 

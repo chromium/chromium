@@ -7,6 +7,7 @@
 
 #include "third_party/blink/public/mojom/permissions_policy/document_policy_feature.mojom-blink.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
+#include "third_party/blink/renderer/core/context_features/context_feature_settings.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/inspector/protocol/page.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -150,6 +151,16 @@ bool DisabledByOriginTrial(mojom::blink::DocumentPolicyFeature feature,
     {%- endfor %};
   }
   {% endfor %}
+  return false;
+}
+
+bool DisabledByContext(const String& feature_name,
+                       ExecutionContext* execution_context) {
+  if (feature_name == kUnboundedElementPolicyName) {
+    return ContextFeatureSettings::GetUnboundedElementAuth(
+               execution_context) ==
+           ContextFeatureSettings::UnboundedElementAuth::kDenied;
+  }
   return false;
 }
 

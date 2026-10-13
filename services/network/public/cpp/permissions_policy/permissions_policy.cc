@@ -418,6 +418,16 @@ PermissionsPolicy::GetAllowlistForFeatureIfExists(
   return std::nullopt;
 }
 
+std::optional<PermissionsPolicy::Allowlist>
+PermissionsPolicy::GetHeaderAllowlistForFeatureIfExists(
+    network::mojom::PermissionsPolicyFeature feature) const {
+  auto allowlist = allowlists_.find(feature);
+  if (allowlist != allowlists_.end()) {
+    return allowlist->second;
+  }
+  return std::nullopt;
+}
+
 std::string PermissionsPolicy::GetEndpointForFeature(
     network::mojom::PermissionsPolicyFeature feature) const {
   auto endpoint = reporting_endpoints_.find(feature);

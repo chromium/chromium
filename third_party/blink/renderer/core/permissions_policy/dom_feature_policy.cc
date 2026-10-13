@@ -21,6 +21,7 @@ bool FeatureAvailable(const String& feature, ExecutionContext* ec) {
   bool is_isolated_context = ec && ec->IsIsolatedContext();
   return GetDefaultFeatureNameMap(is_isolated_context).Contains(feature) &&
          (!DisabledByOriginTrial(feature, ec)) &&
+         (!DisabledByContext(feature, ec)) &&
          (!IsFeatureForMeasurementOnly(
              GetDefaultFeatureNameMap(is_isolated_context).at(feature)));
 }

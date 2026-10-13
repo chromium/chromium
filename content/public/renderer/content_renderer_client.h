@@ -53,6 +53,7 @@ class WebFrame;
 class WebLocalFrame;
 class WebPlugin;
 class WebPrescientNetworking;
+class WebSecurityOrigin;
 class WebServiceWorkerContextProxy;
 class WebURL;
 class WebURLRequest;
@@ -231,9 +232,12 @@ class CONTENT_EXPORT ContentRendererClient {
   // Returns true if a popup window should be allowed.
   virtual bool AllowPopup();
 
-  // Returns true if the given `render_frame` is allowed to use the Unbounded
-  // Element API (for example, specific component extensions).
-  virtual bool IsUnboundedElementAllowed(RenderFrame* render_frame);
+  // Returns true if documents with the given `origin` are allowed to use the
+  // privileged Unbounded Element API (for example, specific component
+  // extensions). This is called for both the current frame's origin and its
+  // top frame's origin, so it must not depend on the frame being local.
+  virtual bool IsUnboundedElementAllowed(
+      const blink::WebSecurityOrigin& origin);
 
   // Service worker may react on the activity. For example, reset the idle
   // timer.

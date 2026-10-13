@@ -860,6 +860,7 @@ const Vector<String> GetAvailableFeatures(ExecutionContext* execution_context) {
       execution_context && execution_context->IsIsolatedContext();
   for (const auto& feature : GetDefaultFeatureNameMap(is_isolated_context)) {
     if (!DisabledByOriginTrial(feature.key, execution_context) &&
+        !DisabledByContext(feature.key, execution_context) &&
         !IsFeatureForMeasurementOnly(feature.value)) {
       available_features.push_back(feature.key);
     }

@@ -2003,6 +2003,87 @@ constexpr base::MemoryConsumerTraits kRenderFrameHostTraits(
     // Frames are in an out-of-process renderer.
     base::MemoryConsumerTraits::InProcess::kNo);
 
+// LINT.IfChange(UnboundedElementEscape)
+bool DoesParentAllowUnboundedElementEscape(RenderFrameHostImpl* child) {
+  RenderFrameHostImpl* parent = child->GetParent();
+  CHECK(parent);
+  const auto feature =
+      network::mojom::PermissionsPolicyFeature::kUnboundedElement;
+  const url::Origin& parent_origin = parent->GetLastCommittedOrigin();
+  const url::Origin& child_origin = child->GetLastCommittedOrigin();
+
+  if (const network::PermissionsPolicy* parent_policy =
+          parent->GetPermissionsPolicy()) {
+    if (auto header_allowlist =
+            parent_policy->GetHeaderAllowlistForFeatureIfExists(feature)) {
+      if (!header_allowlist->Contains(parent_origin) ||
+          !header_allowlist->Contains(child_origin)) {
+        return false;
+      }
+    }
+  }
+
+  // The child can also opt out via its own Permissions-Policy header.
+  if (const network::PermissionsPolicy* child_policy =
+          child->GetPermissionsPolicy()) {
+    if (auto header_allowlist =
+            child_policy->GetHeaderAllowlistForFeatureIfExists(feature)) {
+      if (!header_allowlist->Contains(child_origin)) {
+        return false;
+      }
+    }
+  }
+
+  // An explicit allow="unbounded-element" grants escape even to sandboxed
+  // frames. The sandbox check below only blocks the implicit same-origin
+  // grant.
+  const network::ParsedPermissionsPolicy& container_policy =
+      child->browsing_context_state()
+          ->effective_frame_policy()
+          .container_policy;
+  for (const auto& decl : container_policy) {
+    if (decl.feature == feature) {
+      return network::PermissionsPolicy::Allowlist::FromDeclaration(decl)
+          .Contains(child_origin);
+    }
+  }
+
+  if (child->active_sandbox_flags() != network::mojom::WebSandboxFlags::kNone) {
+    return false;
+  }
+  // Same origin frames get this permission automatically.
+  return child_origin.IsSameOriginWith(parent_origin);
+}
+// LINT.ThenChange(//third_party/blink/renderer/core/layout/layout_object.cc:UnboundedElementEscape)
+
+// TODO(crbug.com/567604602): This uses the frame's full rect. It ignores the
+// parent's overflow clip and any parent content painted over the iframe, so a
+// clipped iframe can draw over its parent without allow="unbounded-element".
+// Intersecting with ancestor clip rects would partially fix this; ancestor
+// content painted over the iframe can't be accounted for this way. The
+// renderer has the same issue in
+// LayoutObject::AbsoluteBoundingBoxRectForUnboundedElement().
+gfx::Rect GetFrameBoundsInScreen(RenderFrameHostImpl* rfh,
+                                 RenderWidgetHostViewBase* root_view) {
+  auto* view = static_cast<RenderWidgetHostViewBase*>(
+      rfh->GetRenderWidgetHost()->GetView());
+  if (!view || !root_view) {
+    return gfx::Rect();
+  }
+  gfx::Rect bounds_in_local_root;
+  if (rfh->is_local_root()) {
+    bounds_in_local_root = gfx::Rect(view->GetViewBounds().size());
+  } else if (rfh->frame_bounds_in_local_root().has_value()) {
+    bounds_in_local_root = *rfh->frame_bounds_in_local_root();
+  } else {
+    // The frame's position within its local root is not known yet, so fall
+    // back to the full local root bounds.
+    bounds_in_local_root = gfx::Rect(view->GetViewBounds().size());
+  }
+  return root_view->ConvertSubframeBoundsToScreenWithoutConstraints(
+      bounds_in_local_root, view);
+}
+
 }  // namespace
 
 class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
@@ -5189,6 +5270,11 @@ void RenderFrameHostImpl::DidAddMessageToConsole(
 void RenderFrameHostImpl::FrameSizeChanged(const gfx::Size& frame_size) {
   frame_size_ = frame_size;
   delegate_->FrameSizeChanged(this, frame_size);
+}
+
+void RenderFrameHostImpl::FrameBoundsInLocalRootChanged(
+    const gfx::Rect& bounds) {
+  frame_bounds_in_local_root_ = bounds;
 }
 
 void RenderFrameHostImpl::RendererDidActivateForPrerendering() {
@@ -11123,9 +11209,14 @@ void RenderFrameHostImpl::InitializeCrashReportContext(
 //
 // Permissions require UnboundedElement to be enabled AND either:
 // - UnsafeUnboundedElementOnTheOpenWeb is enabled,
+// - UnsafeEscapingUnboundedElementOnTheOpenWeb is enabled,
 // - The context/origin is a privileged WebUI scheme (or has WebUI bindings), or
 // - The embedder explicitly authorizes the frame via
-//   ContentBrowserClient::IsUnboundedElementAllowed.
+//   ContentBrowserClient::IsUnboundedElementAllowed, or
+// - The frame is a subframe allowed by permissions policy, and its outermost
+//   main frame is privileged and listed in
+//   ContentBrowserClient::IsUnboundedElementAllowedForSubframesOf. (See
+//   crbug.com/571879162.)
 RenderFrameHostImpl::UnboundedElementAuth
 RenderFrameHostImpl::GetUnboundedElementAuth() const {
   if (!base::FeatureList::IsEnabled(blink::features::kUnboundedElement)) {
@@ -11138,10 +11229,78 @@ RenderFrameHostImpl::GetUnboundedElementAuth() const {
     return UnboundedElementAuth::kAllowedPrivileged;
   }
   if (base::FeatureList::IsEnabled(
-          blink::features::kUnsafeUnboundedElementOnTheOpenWeb)) {
+          blink::features::kUnsafeUnboundedElementOnTheOpenWeb) ||
+      base::FeatureList::IsEnabled(
+          blink::features::kUnsafeEscapingUnboundedElementOnTheOpenWeb)) {
+    return UnboundedElementAuth::kAllowedOpenWeb;
+  }
+  // TODO(crbug.com/571879162): Remove the temporary
+  // IsUnboundedElementAllowedForSubframesOf() allowlist.
+  if (GetParent() &&
+      const_cast<RenderFrameHostImpl*>(this)
+              ->GetOutermostMainFrame()
+              ->GetUnboundedElementAuth() ==
+          UnboundedElementAuth::kAllowedPrivileged &&
+      GetContentClient()->browser()->IsUnboundedElementAllowedForSubframesOf(
+          const_cast<RenderFrameHostImpl*>(this)
+              ->GetOutermostMainFrame()
+              ->GetLastCommittedOrigin()) &&
+      const_cast<RenderFrameHostImpl*>(this)->IsFeatureEnabled(
+          network::mojom::PermissionsPolicyFeature::kUnboundedElement)) {
     return UnboundedElementAuth::kAllowedOpenWeb;
   }
   return UnboundedElementAuth::kDenied;
+}
+
+std::optional<gfx::Rect>
+RenderFrameHostImpl::GetUnboundedElementConstrainingBoundsInScreen(
+    RenderWidgetHostViewBase* root_view) {
+  std::optional<gfx::Rect> constraining_bounds;
+  RenderFrameHostImpl* current = this;
+  while (current) {
+    if (current->IsFencedFrameRoot()) {
+      gfx::Rect frame_bounds = GetFrameBoundsInScreen(current, root_view);
+      if (constraining_bounds.has_value()) {
+        constraining_bounds->Intersect(frame_bounds);
+      } else {
+        constraining_bounds = frame_bounds;
+      }
+      current = current->GetParentOrOuterDocument();
+      continue;
+    }
+    RenderFrameHostImpl* parent = current->GetParent();
+    if (!parent) {
+      break;
+    }
+    if (!DoesParentAllowUnboundedElementEscape(current)) {
+      gfx::Rect frame_bounds = GetFrameBoundsInScreen(current, root_view);
+      if (constraining_bounds.has_value()) {
+        constraining_bounds->Intersect(frame_bounds);
+      } else {
+        constraining_bounds = frame_bounds;
+      }
+    }
+    current = parent;
+  }
+  bool allow_escaping =
+      (GetUnboundedElementAuth() == UnboundedElementAuth::kAllowedPrivileged &&
+       GetOutermostMainFrame()->GetUnboundedElementAuth() ==
+           UnboundedElementAuth::kAllowedPrivileged) ||
+      base::FeatureList::IsEnabled(
+          blink::features::kUnsafeEscapingUnboundedElementOnTheOpenWeb);
+  if (root_view && !allow_escaping) {
+    // TODO(crbug.com/567605905): Clamping to the root view keeps the surface
+    // within the content area, but browser UI drawn over the content area
+    // (e.g. permission prompts, the fullscreen exit bubble) can still be
+    // covered.
+    gfx::Rect root_bounds = root_view->GetViewBounds();
+    if (constraining_bounds.has_value()) {
+      constraining_bounds->Intersect(root_bounds);
+    } else {
+      constraining_bounds = root_bounds;
+    }
+  }
+  return constraining_bounds;
 }
 
 void RenderFrameHostImpl::RequestUnboundedSurface(
@@ -11183,11 +11342,15 @@ void RenderFrameHostImpl::RequestUnboundedSurface(
   if (auto* root_view = GetUnboundedSurfaceRootView(&parent_view)) {
     // If an unbounded surface is already active, synchronously destroy it
     // first to enforce that only one is active per window.
+    // TODO(crbug.com/567605448): The renderer may have canceled closing the
+    // previous element, but its window is destroyed here anyway, so the
+    // renderer and browser disagree about which element owns the surface.
     if (root_view->HasActiveUnboundedSurface()) {
       root_view->DestroyUnboundedSurface(
           root_view->GetUnboundedSurfaceWindow()->GetWeakPtr());
     }
     CHECK(!root_view->HasActiveUnboundedSurface());
+    root_view->SetUnboundedSurfaceFrame(GetWeakPtr());
     root_view->CreateUnboundedSurface(
         std::move(host), std::move(client), bounds,
         parent_view ? parent_view->GetWeakPtr() : nullptr);
