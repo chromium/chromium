@@ -268,8 +268,6 @@ TEST_F(InitialWebUIPageLoadMetricsObserverTest, WasCached) {
   EXPECT_THAT(entries, Contains(HasMetricWithValue("WasCached", 1)));
 }
 
-
-
 TEST_F(InitialWebUIPageLoadMetricsObserverTest,
        NavigationTiming_StartEarlierThanRequest) {
   NavigateAndCommit(GURL(kTestWebUIUrl));
@@ -409,18 +407,6 @@ TEST_F(InitialWebUIPageLoadMetricsObserverTest,
       "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow."
       "ReloadButton.FirstContentfulPaint.FromConstructor2",
       1);
-
-  DeleteContents();
-
-  histograms.ExpectUniqueSample(
-      "InitialWebUI.Toolbar.WindowMetricsManagerBindingStatus",
-      InitialWebUIPageLoadMetricsObserver::WindowMetricsManagerBindingStatus::
-          kBoundAtStart,
-      1);
-  histograms.ExpectTotalCount(
-      "InitialWebUI.Toolbar.TimeToWindowMetricsManagerBound", 0);
-  histograms.ExpectTotalCount(
-      "InitialWebUI.Toolbar.TimeWithoutWindowMetricsManagerOnDestruction", 0);
 }
 
 // Verifies that when a WebContents is prewarmed without an associated
@@ -472,41 +458,6 @@ TEST_F(InitialWebUIPageLoadMetricsObserverTest,
       "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow."
       "ReloadButton.FirstContentfulPaint.FromConstructor2",
       1);
-
-  DeleteContents();
-
-  histograms.ExpectUniqueSample(
-      "InitialWebUI.Toolbar.WindowMetricsManagerBindingStatus",
-      InitialWebUIPageLoadMetricsObserver::WindowMetricsManagerBindingStatus::
-          kBoundDeferred,
-      1);
-  histograms.ExpectTotalCount(
-      "InitialWebUI.Toolbar.TimeToWindowMetricsManagerBound", 1);
-  histograms.ExpectTotalCount(
-      "InitialWebUI.Toolbar.TimeWithoutWindowMetricsManagerOnDestruction", 0);
-}
-
-// Verifies that when a WebContents is prewarmed but destroyed before ever
-// being attached to a BrowserWindowInterface, WindowMetricsManagerBindingStatus
-// is recorded as NeverBound in the destructor.
-TEST_F(InitialWebUIPageLoadMetricsObserverTest,
-       WindowMetricsManagerNeverBoundWhenNeverAttached) {
-  base::HistogramTester histograms;
-
-  NavigateAndCommit(GURL(kTestWebUIUrl));
-
-  // Destroy WebContents without ever setting BrowserWindowInterface
-  DeleteContents();
-
-  histograms.ExpectUniqueSample(
-      "InitialWebUI.Toolbar.WindowMetricsManagerBindingStatus",
-      InitialWebUIPageLoadMetricsObserver::WindowMetricsManagerBindingStatus::
-          kNeverBound,
-      1);
-  histograms.ExpectTotalCount(
-      "InitialWebUI.Toolbar.TimeToWindowMetricsManagerBound", 0);
-  histograms.ExpectTotalCount(
-      "InitialWebUI.Toolbar.TimeWithoutWindowMetricsManagerOnDestruction", 1);
 }
 
 }  // namespace

@@ -40,15 +40,6 @@ class InitialWebUIPageLoad;
 class InitialWebUIPageLoadMetricsObserver
     : public page_load_metrics::PageLoadMetricsObserver {
  public:
-  // LINT.IfChange(InitialWebUIWindowMetricsManagerBindingStatus)
-  enum class WindowMetricsManagerBindingStatus {
-    kBoundAtStart = 0,
-    kBoundDeferred = 1,
-    kNeverBound = 2,
-    kMaxValue = kNeverBound,
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/ui/enums.xml:InitialWebUIWindowMetricsManagerBindingStatus)
-
   InitialWebUIPageLoadMetricsObserver();
 
   // Not movable or copyable.
@@ -200,13 +191,6 @@ class InitialWebUIPageLoadMetricsObserver
 
   // True if we have already recorded the one-time metrics.
   bool metrics_recorded_ = false;
-
-  // The binding status of the InitialWebUIWindowMetricsManager.
-  WindowMetricsManagerBindingStatus manager_binding_status_ =
-      WindowMetricsManagerBindingStatus::kNeverBound;
-
-  // The timestamp when this observer was constructed.
-  base::TimeTicks creation_time_ = base::TimeTicks::Now();
 
   struct RendererProcessTimes {
     base::TimeTicks init_time;

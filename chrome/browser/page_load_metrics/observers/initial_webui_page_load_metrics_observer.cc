@@ -5,7 +5,6 @@
 #include "chrome/browser/page_load_metrics/observers/initial_webui_page_load_metrics_observer.h"
 
 #include "base/barrier_closure.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -44,17 +43,8 @@ constexpr char kMarkJsCompositionComplete[] = "JsCompositionComplete";
 InitialWebUIPageLoadMetricsObserver::InitialWebUIPageLoadMetricsObserver() =
     default;
 
-InitialWebUIPageLoadMetricsObserver::~InitialWebUIPageLoadMetricsObserver() {
-  base::UmaHistogramEnumeration(
-      "InitialWebUI.Toolbar.WindowMetricsManagerBindingStatus",
-      manager_binding_status_);
-  if (manager_binding_status_ ==
-      WindowMetricsManagerBindingStatus::kNeverBound) {
-    base::UmaHistogramMediumTimes(
-        "InitialWebUI.Toolbar.TimeWithoutWindowMetricsManagerOnDestruction",
-        base::TimeTicks::Now() - creation_time_);
-  }
-}
+InitialWebUIPageLoadMetricsObserver::~InitialWebUIPageLoadMetricsObserver() =
+    default;
 
 const char* InitialWebUIPageLoadMetricsObserver::GetObserverName() const {
   return "InitialWebUIPageLoadMetricsObserver";
@@ -133,9 +123,6 @@ InitialWebUIPageLoadMetricsObserver::OnStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url,
     bool started_in_foreground) {
-  if (GetMetricsManager()) {
-    manager_binding_status_ = WindowMetricsManagerBindingStatus::kBoundAtStart;
-  }
   if (started_in_foreground) {
     last_time_shown_ = navigation_handle->NavigationStart();
   }
@@ -233,14 +220,6 @@ void InitialWebUIPageLoadMetricsObserver::FlushMetricsToManager() {
               weak_factory_.GetWeakPtr()));
     }
     return;
-  }
-
-  if (manager_binding_status_ ==
-      WindowMetricsManagerBindingStatus::kNeverBound) {
-    manager_binding_status_ = WindowMetricsManagerBindingStatus::kBoundDeferred;
-    base::UmaHistogramMediumTimes(
-        "InitialWebUI.Toolbar.TimeToWindowMetricsManagerBound",
-        base::TimeTicks::Now() - creation_time_);
   }
 
   if (renderer_process_times_.has_value()) {
