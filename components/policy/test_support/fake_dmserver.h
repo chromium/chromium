@@ -100,10 +100,11 @@ namespace fakedms {
 void InitLogging(const std::optional<std::string>& log_path,
                  bool log_to_console,
                  int min_log_level);
-void ParseFlags(const base::CommandLine& command_line,
+void PrintHelp();
+bool ParseFlags(const base::CommandLine& command_line,
                 std::string& policy_blob_path,
                 std::string& client_state_path,
-                std::string& grpc_unix_socket_path,
+                std::string& grpc_unix_socket_uri,
                 std::optional<std::string>& log_path,
                 base::ScopedFD& startup_pipe,
                 bool& log_to_console,

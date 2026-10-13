@@ -27,9 +27,12 @@ int main(int argc, char** argv) {
   int port = 0;
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  fakedms::ParseFlags(*command_line, policy_blob_path, client_state_path,
-                      unix_socket_path, log_path, startup_pipe, log_to_console,
-                      min_log_level, port);
+  if (!fakedms::ParseFlags(*command_line, policy_blob_path, client_state_path,
+                           unix_socket_path, log_path, startup_pipe,
+                           log_to_console, min_log_level, port)) {
+    fakedms::PrintHelp();
+    return 0;
+  }
   fakedms::InitLogging(log_path, log_to_console, min_log_level);
 
   base::RunLoop run_loop;

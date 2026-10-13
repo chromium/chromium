@@ -48,8 +48,9 @@ out/Default/fake_dmserver --policy-path=$HOME/dmserver_data/policies.json
 This will create a `state.json` file in the same directory as `policies.json`,
 for `fake_dmserver` to save/load its internal state.
 
-Optionally arguments:
-- `--port=...` to set the server port. Defaults to 6112.
+Optional arguments:
+- `--help`, `-h`: Show help message.
+- `--port=...`: Set the server port (defaults to 6112).
 
 ### Step 3: Launch Chrome
 
