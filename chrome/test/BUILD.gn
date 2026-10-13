@@ -2624,16 +2624,6 @@ test("unit_tests") {
     "../browser/flag-never-expire-list.json",
   ]
 
-  if (!is_android) {
-    inputs += [
-      # These files are analyzed by BrowserUserEducationServiceTest, so this
-      # dependency is needed to re-run unit_tests on changes to that file.
-      "//tools/metrics/actions/actions.xml",
-      "//tools/metrics/histograms/metadata/feature_engagement/histograms.xml",
-      "//tools/metrics/histograms/metadata/user_education/histograms.xml",
-    ]
-  }
-
   sources = []
 
   # Support v8_unwinder_unittest on Android.
@@ -2673,6 +2663,9 @@ test("unit_tests") {
   if (is_android) {
     # Trim data specifically to what is used by unit tests on Android.
     data += [
+      "$root_gen_dir/chrome/android/chrome_apk_paks/chrome_100_percent.pak",
+      "$root_gen_dir/chrome/android/chrome_apk_paks/locales/en-US.pak",
+      "$root_gen_dir/chrome/android/chrome_apk_paks/resources.pak",
       "data/android/google.png",
       "data/file_select_helper/",
       "data/offline_pages/",
@@ -2693,15 +2686,16 @@ test("unit_tests") {
       "//tools/metrics/histograms/metadata/feature_engagement/histograms.xml",
       "//tools/metrics/histograms/metadata/user_education/histograms.xml",
     ]
-  }
 
-  if (is_android) {
-    data += [
-      "$root_gen_dir/chrome/android/chrome_apk_paks/chrome_100_percent.pak",
-      "$root_gen_dir/chrome/android/chrome_apk_paks/locales/en-US.pak",
-      "$root_gen_dir/chrome/android/chrome_apk_paks/resources.pak",
+    inputs += [
+      # These files are analyzed by BrowserUserEducationServiceTest, so this
+      # dependency is needed to re-run unit_tests on changes to that file.
+      "//tools/metrics/actions/actions.xml",
+      "//tools/metrics/histograms/metadata/feature_engagement/histograms.xml",
+      "//tools/metrics/histograms/metadata/user_education/histograms.xml",
     ]
   }
+
   if (is_linux || is_chromeos || is_win) {
     data_deps += [ "//chrome:packed_resources" ]
   }
