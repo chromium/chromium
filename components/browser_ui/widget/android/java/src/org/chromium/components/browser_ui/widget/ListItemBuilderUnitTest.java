@@ -72,6 +72,7 @@ public class ListItemBuilderUnitTest {
 
         assertNull(model.get(ListMenuItemProperties.TITLE));
         assertEquals(0, model.get(ListMenuItemProperties.TITLE_ID));
+        assertNull(model.get(ListMenuItemProperties.SHORTCUT_TEXT));
         assertFalse(model.get(ListMenuItemProperties.IS_TEXT_ELLIPSIZED_AT_END));
         assertNull(model.get(ListMenuItemProperties.CONTENT_DESCRIPTION));
     }
@@ -261,5 +262,12 @@ public class ListItemBuilderUnitTest {
         int width = 12;
         ListItem listItem = new ListItemBuilder().withStartIconWidth(width).build();
         assertEquals(width, (int) listItem.model.get(ListMenuItemProperties.START_ICON_WIDTH));
+    }
+
+    @Test
+    public void testBuild_withShortcutText() {
+        String shortcutText = "Ctrl+T";
+        ListItem listItem = new ListItemBuilder().withShortcutText(shortcutText).build();
+        assertEquals(shortcutText, listItem.model.get(ListMenuItemProperties.SHORTCUT_TEXT));
     }
 }

@@ -53,6 +53,7 @@ public class ListItemBuilder {
     private @Px int mVerticalPaddingPx;
     private @Nullable CharSequence mTitle;
     private @Nullable String mSubtitle;
+    private @Nullable CharSequence mShortcutText;
 
     /** Constructs a new builder for a {@link ListItem}. By default, the item is enabled. */
     public ListItemBuilder() {
@@ -82,6 +83,17 @@ public class ListItemBuilder {
      */
     public ListItemBuilder withSubtitle(String subtitle) {
         mSubtitle = subtitle;
+        return this;
+    }
+
+    /**
+     * Sets the keyboard shortcut hint text on the menu item. By default, this is set to null.
+     *
+     * @param shortcutText The shortcut hint text on the menu item.
+     * @return This {@link ListItemBuilder} instance.
+     */
+    public ListItemBuilder withShortcutText(@Nullable CharSequence shortcutText) {
+        mShortcutText = shortcutText;
         return this;
     }
 
@@ -291,6 +303,9 @@ public class ListItemBuilder {
                 builder.with(
                         ListMenuItemProperties.SUBTITLE_TEXT_APPEARANCE_ID,
                         mSubtitleTextAppearanceStyle);
+            }
+            if (mShortcutText != null) {
+                builder.with(ListMenuItemProperties.SHORTCUT_TEXT, mShortcutText);
             }
             if (mVerticalPaddingPx != 0) {
                 builder.with(ListMenuItemProperties.VERTICAL_PADDING, mVerticalPaddingPx);
