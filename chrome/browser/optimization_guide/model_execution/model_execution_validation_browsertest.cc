@@ -12,6 +12,7 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/optimization_guide/core/model_execution/model_execution_fetcher.h"
 #include "components/optimization_guide/core/model_execution/remote_model_execution_common.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
@@ -173,7 +174,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionValidationBrowserTest,
       "OptimizationGuide.ModelExecution.Result.Test", true, 1);
   histogram_tester_.ExpectUniqueSample(
       "OptimizationGuide.ModelExecutionFetcher.RequestStatus.Test",
-      FetcherRequestStatus::kSuccess, 1);
+      ModelExecutionFetcherRequestStatus::kSuccess, 1);
 }
 
 // TODO(b/318433299, crbug.com/41493189): Flaky on linux-chromeos and win
@@ -198,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionValidationBrowserTest,
       "OptimizationGuide.ModelExecution.Result.Test", false, 1);
   histogram_tester_.ExpectUniqueSample(
       "OptimizationGuide.ModelExecutionFetcher.RequestStatus.Test",
-      FetcherRequestStatus::kResponseError, 1);
+      ModelExecutionFetcherRequestStatus::kResponseError, 1);
 }
 
 }  // namespace optimization_guide

@@ -86,8 +86,7 @@ std::string_view GetStringNameForRequestContext(
 }
 
 void RecordRequestStatusHistogram(proto::RequestContext request_context,
-                                  FetcherRequestStatus status) {
-  DCHECK_NE(status, FetcherRequestStatus::kDeprecatedNetworkOffline);
+                                  HintsFetcherRequestStatus status) {
   base::UmaHistogramEnumeration(
       base::StrCat(
           {"OptimizationGuide.HintsFetcher.GetHintsRequest.RequestStatus.",
@@ -139,7 +138,7 @@ HintsFetcher::~HintsFetcher() {
       std::move(hints_fetched_callback_).Run(std::nullopt);
     }
     RecordRequestStatusHistogram(request_context_,
-                                 FetcherRequestStatus::kRequestCanceled);
+                                 HintsFetcherRequestStatus::kRequestCanceled);
   }
 }
 
@@ -221,7 +220,7 @@ bool HintsFetcher::FetchOptimizationGuideServiceHints(
         optimization_guide_logger_,
         "No hints fetched: HintsFetcher busy in another fetch");
     RecordRequestStatusHistogram(request_context_,
-                                 FetcherRequestStatus::kFetcherBusy);
+                                 HintsFetcherRequestStatus::kFetcherBusy);
     std::move(hints_fetched_callback).Run(std::nullopt);
     return false;
   }
@@ -234,7 +233,7 @@ bool HintsFetcher::FetchOptimizationGuideServiceHints(
                            optimization_guide_logger_,
                            "No hints fetched: No hosts/URLs");
     RecordRequestStatusHistogram(
-        request_context_, FetcherRequestStatus::kNoHostsOrURLsToFetchHints);
+        request_context_, HintsFetcherRequestStatus::kNoHostsOrURLsToFetchHints);
     std::move(hints_fetched_callback).Run(std::nullopt);
     return false;
   }
@@ -248,7 +247,7 @@ bool HintsFetcher::FetchOptimizationGuideServiceHints(
                            "No hints fetched: No supported optimization types");
     RecordRequestStatusHistogram(
         request_context_,
-        FetcherRequestStatus::kNoSupportedOptimizationTypesToFetchHints);
+        HintsFetcherRequestStatus::kNoSupportedOptimizationTypesToFetchHints);
     std::move(hints_fetched_callback).Run(std::nullopt);
     return false;
   }
@@ -395,7 +394,7 @@ void HintsFetcher::HandleResponse(const std::string& get_hints_response_data,
         base::TimeTicks::Now() - hints_fetch_start_time_);
     if (skip_cache) {
       RecordRequestStatusHistogram(request_context_,
-                                   FetcherRequestStatus::kSuccess);
+                                   HintsFetcherRequestStatus::kSuccess);
       std::move(hints_fetched_callback_).Run(std::move(get_hints_response));
 
       return;
@@ -409,12 +408,12 @@ void HintsFetcher::HandleResponse(const std::string& get_hints_response_data,
     }
     UpdateHostsSuccessfullyFetched(valid_duration);
     RecordRequestStatusHistogram(request_context_,
-                                 FetcherRequestStatus::kSuccess);
+                                 HintsFetcherRequestStatus::kSuccess);
     std::move(hints_fetched_callback_).Run(std::move(get_hints_response));
   } else {
     hosts_fetched_.clear();
     RecordRequestStatusHistogram(request_context_,
-                                 FetcherRequestStatus::kResponseError);
+                                 HintsFetcherRequestStatus::kResponseError);
     std::move(hints_fetched_callback_).Run(std::nullopt);
   }
 }

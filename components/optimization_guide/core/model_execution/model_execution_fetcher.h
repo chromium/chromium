@@ -12,7 +12,6 @@
 #include "base/types/expected.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
-#include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 
 namespace signin {
@@ -20,6 +19,40 @@ class IdentityManager;
 }  // namespace signin
 
 namespace optimization_guide {
+
+// Status of a request to fetch model execution from the optimization guide
+// service.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(ModelExecutionFetcherRequestStatus)
+enum class ModelExecutionFetcherRequestStatus {
+  // DEPRECATED: No fetch status known. Used in testing.
+  // kUnknown = 0,
+  // Fetch request was sent and a response received.
+  kSuccess = 1,
+  // Fetch request was sent but no response received.
+  kResponseError = 2,
+  // Legacy value from HintsFetcher: Fetch request not sent because of offline
+  // network status.
+  // kDeprecatedNetworkOffline = 3,
+  // Fetch request not sent because fetcher was busy with another request.
+  kFetcherBusy = 4,
+  // Legacy value from HintsFetcher: Hints fetch request not sent because the
+  // host and URL lists were empty.
+  // kNoHostsOrURLsToFetchHints = 5,
+  // Legacy value from HintsFetcher: Hints fetch request not sent because no
+  // supported optimization types were provided.
+  // kNoSupportedOptimizationTypesToFetchHints = 6,
+  // Fetch request was canceled before completion.
+  kRequestCanceled = 7,
+  // Fetch request was not started because user was not signed-in.
+  kUserNotSignedIn = 8,
+
+  // Insert new values before this line.
+  kMaxValue = kUserNotSignedIn
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/optimization/enums.xml:OptimizationGuideModelExecutionFetcherRequestStatus)
 
 using ModelExecuteResponseCallback = base::OnceCallback<void(
     base::expected<const proto::ExecuteResponse,
@@ -43,8 +76,9 @@ class ModelExecutionFetcher {
 
  protected:
   // Records the request status histogram for the given `feature`.
-  static void RecordRequestStatusHistogram(ModelBasedCapabilityKey feature,
-                                           FetcherRequestStatus status);
+  static void RecordRequestStatusHistogram(
+      ModelBasedCapabilityKey feature,
+      ModelExecutionFetcherRequestStatus status);
 };
 
 }  // namespace optimization_guide

@@ -88,35 +88,6 @@ enum class RaceNavigationFetchAttemptStatus {
       kDeprecatedRaceNavigationFetchNotAttemptedTooManyConcurrentFetches,
 };
 
-// Status of a request to fetch from the optimization guide service.
-// This enum must remain synchronized with the enum
-// |OptimizationGuideFetcherRequestStatus| in
-// tools/metrics/histograms/enums.xml.
-enum class FetcherRequestStatus {
-  // No fetch status known. Used in testing.
-  kUnknown,
-  // Fetch request was sent and a response received.
-  kSuccess,
-  // Fetch request was sent but no response received.
-  kResponseError,
-  // DEPRECATED: Fetch request not sent because of offline network status.
-  kDeprecatedNetworkOffline,
-  // Fetch request not sent because fetcher was busy with another request.
-  kFetcherBusy,
-  // Hints fetch request not sent because the host and URL lists were empty.
-  kNoHostsOrURLsToFetchHints,
-  // Hints fetch request not sent because no supported optimization types were
-  // provided.
-  kNoSupportedOptimizationTypesToFetchHints,
-  // Fetch request was canceled before completion.
-  kRequestCanceled,
-  // Fetch request was not started because user was not signed-in.
-  kUserNotSignedIn,
-
-  // Insert new values before this line.
-  kMaxValue = kUserNotSignedIn
-};
-
 // Performance class of this device.
 //
 // These values are persisted to logs and prefs. Entries should not be

@@ -217,8 +217,17 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="ErrorCancelled"/>
 </enum>
 
-<enum name="OptimizationGuideFetcherRequestStatus">
-  <int value="0" label="Unknown"/>
+<enum name="OptimizationGuideHintCacheLevelDBStoreStatus">
+  <int value="0" label="Unitialized"/>
+  <int value="1" label="Initializing"/>
+  <int value="2" label="Available"/>
+  <int value="3" label="Failed"/>
+</enum>
+
+<!-- LINT.IfChange(OptimizationGuideHintsFetcherRequestStatus) -->
+
+<enum name="OptimizationGuideHintsFetcherRequestStatus">
+  <int value="0" label="DEPRECATED - Unknown"/>
   <int value="1" label="Success">Request sent and received response.</int>
   <int value="2" label="Response Error">
     Request sent but response not received.
@@ -238,17 +247,9 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Fetch was canceled">
     Fetch request was canceled before completion.
   </int>
-  <int value="8" label="User not signed-in">
-    Request was not started because user was not signed-in.
-  </int>
 </enum>
 
-<enum name="OptimizationGuideHintCacheLevelDBStoreStatus">
-  <int value="0" label="Unitialized"/>
-  <int value="1" label="Initializing"/>
-  <int value="2" label="Available"/>
-  <int value="3" label="Failed"/>
-</enum>
+<!-- LINT.ThenChange(//components/optimization_guide/core/hints/hints_fetcher.h:HintsFetcherRequestStatus) -->
 
 <enum name="OptimizationGuideModelDeliveryEvent">
   <int value="0" label="Unknown"/>
@@ -307,6 +308,27 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Response parsing failed"/>
   <int value="13" label="Failed to run safety checks"/>
 </enum>
+
+<!-- LINT.IfChange(OptimizationGuideModelExecutionFetcherRequestStatus) -->
+
+<enum name="OptimizationGuideModelExecutionFetcherRequestStatus">
+  <int value="0" label="DEPRECATED - Unknown"/>
+  <int value="1" label="Success">Request sent and received response.</int>
+  <int value="2" label="Response Error">
+    Request sent but response not received.
+  </int>
+  <int value="4" label="Fetcher Busy">
+    Request not sent because fetcher busy with another request.
+  </int>
+  <int value="7" label="Fetch was canceled">
+    Fetch request was canceled before completion.
+  </int>
+  <int value="8" label="User not signed-in">
+    Request was not started because user was not signed-in.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//components/optimization_guide/core/model_execution/model_execution_fetcher.h:ModelExecutionFetcherRequestStatus) -->
 
 <enum name="OptimizationGuideModelQualityLogsUploadStatus">
   <int value="0" label="Unknown"/>

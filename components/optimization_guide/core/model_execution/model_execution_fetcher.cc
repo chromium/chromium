@@ -14,7 +14,7 @@ namespace optimization_guide {
 // static
 void ModelExecutionFetcher::RecordRequestStatusHistogram(
     ModelBasedCapabilityKey feature,
-    FetcherRequestStatus status) {
+    ModelExecutionFetcherRequestStatus status) {
   base::UmaHistogramEnumeration(
       base::StrCat({"OptimizationGuide.ModelExecutionFetcher.RequestStatus.",
                     GetStringNameForModelExecutionFeature(feature)}),
