@@ -200,9 +200,15 @@ void GCMClientImpl::Start(StartMode start_mode) {
   DCHECK_NE(UNINITIALIZED, state_);
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
 
+  // The delay start behavior will be abandoned when Start has been called
+  // once with IMMEDIATE_START behavior.
+  if (start_mode == IMMEDIATE_START) {
+    start_mode_ = IMMEDIATE_START;
+  }
+
   if (state_ == LOADED) {
     // Start the GCM if not yet.
-    if (start_mode == IMMEDIATE_START) {
+    if (start_mode_ == IMMEDIATE_START) {
       // Give up the scheduling to wipe out the store since now some one starts
       // to use GCM.
       destroying_gcm_store_ptr_factory_.InvalidateWeakPtrs();
@@ -212,11 +218,6 @@ void GCMClientImpl::Start(StartMode start_mode) {
     return;
   }
 
-  // The delay start behavior will be abandoned when Start has been called
-  // once with IMMEDIATE_START behavior.
-  if (start_mode == IMMEDIATE_START)
-    start_mode_ = IMMEDIATE_START;
-
   // Bail out if the loading is not started or completed.
   if (state_ != INITIALIZED)
     return;
@@ -224,8 +225,9 @@ void GCMClientImpl::Start(StartMode start_mode) {
   // Once the loading is completed, the check-in will be initiated.
   // If we're in lazy start mode, don't create a new store since none is really
   // using GCM functionality yet.
-  gcm_store_->Load((start_mode == IMMEDIATE_START) ? GCMStore::CREATE_IF_MISSING
-                                                   : GCMStore::DO_NOT_CREATE,
+  gcm_store_->Load((start_mode_ == IMMEDIATE_START)
+                       ? GCMStore::CREATE_IF_MISSING
+                       : GCMStore::DO_NOT_CREATE,
                    base::BindOnce(&GCMClientImpl::OnLoadCompleted,
                                   weak_ptr_factory_.GetWeakPtr()));
   state_ = LOADING;

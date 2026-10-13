@@ -1390,6 +1390,36 @@ TEST_F(GCMClientImplStartAndStopTest, ImmediateStartAndThenDelayStart) {
   EXPECT_EQ(GCMClientImpl::LOADED, gcm_client_state());
 }
 
+TEST_F(GCMClientImplStartAndStopTest,
+       DelayedStartLoadedThenImmediateStartAndResetStore) {
+  // Populate the store first via an immediate start and checkin.
+  gcm_client()->Start(GCMClient::IMMEDIATE_START);
+  PumpLoopUntilIdle();
+  ASSERT_NO_FATAL_FAILURE(DefaultCompleteCheckin());
+  gcm_client()->Stop();
+  PumpLoopUntilIdle();
+
+  // Restart with DELAYED_START so the existing store is loaded into LOADED
+  // state.
+  BuildGCMClient(gservices_settings().GetCheckinInterval());
+  InitializeGCMClient();
+  gcm_client()->Start(GCMClient::DELAYED_START);
+  PumpLoopUntilIdle();
+  EXPECT_EQ(GCMClientImpl::LOADED, gcm_client_state());
+
+  // Transition from LOADED to READY via IMMEDIATE_START.
+  gcm_client()->Start(GCMClient::IMMEDIATE_START);
+  PumpLoopUntilIdle();
+  EXPECT_EQ(GCMClientImpl::READY, gcm_client_state());
+
+  // Reject the periodic checkin to trigger ResetStore(). Since IMMEDIATE_START
+  // was requested while in LOADED state, the reset store should be recreated
+  // and transition to INITIAL_DEVICE_CHECKIN rather than staying INITIALIZED.
+  ASSERT_NO_FATAL_FAILURE(FailCheckin(net::HTTP_UNAUTHORIZED));
+  PumpLoopUntilIdle();
+  EXPECT_EQ(GCMClientImpl::INITIAL_DEVICE_CHECKIN, gcm_client_state());
+}
+
 TEST_F(GCMClientImplStartAndStopTest, DelayedStartRace) {
   // GCMClientImpl should be in INITIALIZED state at first.
   EXPECT_EQ(GCMClientImpl::INITIALIZED, gcm_client_state());
