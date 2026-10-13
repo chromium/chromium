@@ -29,7 +29,6 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/sync/base/data_type.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/model/data_type_activation_request.h"
@@ -308,13 +307,11 @@ std::unique_ptr<DeviceInfoSpecifics> MakeLocalDeviceSpecifics(
   specifics->set_model(info.model_name());
 
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(kSyncUploadAndroidBuildFingerprintPrefix)) {
-    const std::optional<std::string>& android_os_build_fingerprint_prefix =
-        info.android_os_build_fingerprint_prefix();
-    if (android_os_build_fingerprint_prefix.has_value()) {
-      specifics->set_android_os_build_fingerprint_prefix(
-          *android_os_build_fingerprint_prefix);
-    }
+  const std::optional<std::string>& android_os_build_fingerprint_prefix =
+      info.android_os_build_fingerprint_prefix();
+  if (android_os_build_fingerprint_prefix.has_value()) {
+    specifics->set_android_os_build_fingerprint_prefix(
+        *android_os_build_fingerprint_prefix);
   }
 #endif
 

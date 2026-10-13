@@ -1892,6 +1892,9 @@ TEST_F(DeviceInfoSyncBridgeTest, SendLocalDataTransportOnly) {
   EXPECT_EQ(2, change_count());
 }
 
+// Tests that on Android, the local device's build fingerprint prefix is derived
+// and persisted to `DeviceInfoSpecifics`, whereas on other platforms it remains
+// unset.
 TEST_F(DeviceInfoSyncBridgeTest, ShouldDeriveAndroidBuildFingerprintPrefix) {
   InitializeAndMergeInitialData(SyncMode::kFull);
 
@@ -1904,9 +1907,14 @@ TEST_F(DeviceInfoSyncBridgeTest, ShouldDeriveAndroidBuildFingerprintPrefix) {
       DeriveAndroidBuildFingerprintPrefixForTesting(real_fingerprint);
   EXPECT_EQ(local_device_info->android_os_build_fingerprint_prefix(),
             expected_prefix);
+  EXPECT_EQ(ReadAllFromStore()[local_device_info->guid()]
+                .android_os_build_fingerprint_prefix(),
+            expected_prefix);
 #else
   EXPECT_EQ(local_device_info->android_os_build_fingerprint_prefix(),
             std::nullopt);
+  EXPECT_FALSE(ReadAllFromStore()[local_device_info->guid()]
+                   .has_android_os_build_fingerprint_prefix());
 #endif
 }
 
