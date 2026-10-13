@@ -10284,6 +10284,34 @@
             ]
         }
     ],
+    "IOSSnapshotOptimization": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "All_Enabled",
+                    "enable_features": [
+                        "SnapshotBackgroundDecode",
+                        "SnapshotConcurrentAccess"
+                    ]
+                },
+                {
+                    "name": "BackgroundDecodeEnabled",
+                    "enable_features": [
+                        "SnapshotBackgroundDecode"
+                    ]
+                },
+                {
+                    "name": "ConcurrentAccessEnabled",
+                    "enable_features": [
+                        "SnapshotConcurrentAccess"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSTabResumptionShopCard": [
         {
             "platforms": [
