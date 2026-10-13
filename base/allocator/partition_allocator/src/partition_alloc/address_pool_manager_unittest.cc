@@ -5,6 +5,7 @@
 #include "partition_alloc/address_pool_manager.h"
 
 #include <array>
+#include <atomic>
 #include <cstdint>
 #include <cstring>
 
@@ -280,6 +281,132 @@ TEST_F(PartitionAllocAddressPoolManagerTest, RegularPoolUsageChanges) {
   GetAddressPoolManager()->DumpStats(&dumper);
   ASSERT_EQ(dumper.regular_pool_usage_, 0ull);
   ASSERT_EQ(dumper.regular_pool_largest_reservation_, kPageCnt);
+}
+
+namespace {
+std::atomic<int> g_memory_pressure_notification_count{0};
+void OnMemoryPressureNotification() {
+  g_memory_pressure_notification_count.fetch_add(1, std::memory_order_relaxed);
+}
+}  // namespace
+
+TEST_F(PartitionAllocAddressPoolManagerTest,
+       AsyncSafeMemoryPressureNotification) {
+  g_memory_pressure_notification_count.store(0, std::memory_order_relaxed);
+  GetAddressPoolManager()->SetAsyncSafeMemoryPressureNotification(
+      &OnMemoryPressureNotification);
+
+  EXPECT_FALSE(GetAddressPoolManager()->IsAlmostFull());
+
+  // Reserve just below the default threshold (90%) of the pool.
+  const size_t almost_full_pages =
+      (kPageCnt * AddressPoolManager::kDefaultAlmostFullPercent + 99) / 100;
+  const size_t below_threshold_pages = almost_full_pages - 1;
+  uintptr_t addr1 = GetAddressPoolManager()->Reserve(
+      pool_, 0, below_threshold_pages * kSuperPageSize);
+  ASSERT_NE(addr1, 0u);
+  EXPECT_FALSE(GetAddressPoolManager()->IsAlmostFull());
+  EXPECT_EQ(
+      g_memory_pressure_notification_count.load(std::memory_order_relaxed), 0);
+
+  // Reserve 1 more super page using an explicit requested_address
+  // (`TryReserveChunk`) to reach the 90% threshold -> notifies once.
+  uintptr_t requested_addr2 = addr1 + below_threshold_pages * kSuperPageSize;
+  uintptr_t addr2 =
+      GetAddressPoolManager()->Reserve(pool_, requested_addr2, kSuperPageSize);
+  ASSERT_EQ(addr2, requested_addr2);
+  EXPECT_TRUE(GetAddressPoolManager()->IsAlmostFull());
+  EXPECT_EQ(
+      g_memory_pressure_notification_count.load(std::memory_order_relaxed), 1);
+
+  // Reserve another super page while >= 90% full -> no additional notification.
+  uintptr_t addr3 = GetAddressPoolManager()->Reserve(pool_, 0, kSuperPageSize);
+  ASSERT_NE(addr3, 0u);
+  EXPECT_TRUE(GetAddressPoolManager()->IsAlmostFull());
+  EXPECT_EQ(
+      g_memory_pressure_notification_count.load(std::memory_order_relaxed), 1);
+
+  // Unreserve addr3 and addr2 to drop just below 90% (still above 85% low
+  // watermark) -> state stays almost full and does not notify.
+  GetAddressPoolManager()->UnreserveAndDecommit(pool_, addr3, kSuperPageSize);
+  GetAddressPoolManager()->UnreserveAndDecommit(pool_, addr2, kSuperPageSize);
+  EXPECT_TRUE(GetAddressPoolManager()->IsAlmostFull());
+  EXPECT_EQ(
+      g_memory_pressure_notification_count.load(std::memory_order_relaxed), 1);
+
+  // Unreserve enough pages from addr1 to drop to <= 85% (5% below threshold)
+  // -> state changes to not almost full and notifies once.
+  const size_t low_watermark_pages =
+      (kPageCnt * (AddressPoolManager::kDefaultAlmostFullPercent - 5)) / 100;
+  const size_t pages_to_unreserve = below_threshold_pages - low_watermark_pages;
+  GetAddressPoolManager()->UnreserveAndDecommit(
+      pool_, addr1 + low_watermark_pages * kSuperPageSize,
+      pages_to_unreserve * kSuperPageSize);
+  EXPECT_FALSE(GetAddressPoolManager()->IsAlmostFull());
+  EXPECT_EQ(
+      g_memory_pressure_notification_count.load(std::memory_order_relaxed), 2);
+
+  // Unreserve remaining pages -> already not almost full, no notification.
+  GetAddressPoolManager()->UnreserveAndDecommit(
+      pool_, addr1, low_watermark_pages * kSuperPageSize);
+  EXPECT_FALSE(GetAddressPoolManager()->IsAlmostFull());
+  EXPECT_EQ(
+      g_memory_pressure_notification_count.load(std::memory_order_relaxed), 2);
+  GetAddressPoolManager()->SetAsyncSafeMemoryPressureNotification(nullptr);
+}
+
+TEST_F(PartitionAllocAddressPoolManagerTest,
+       AsyncSafeMemoryPressureNotificationMultiplePools) {
+  static_assert(kNumPools >= 2);
+  constexpr pool_handle kSecondPool = static_cast<pool_handle>(2u);
+  uintptr_t second_base_address =
+      AllocPages(kPoolSize, kSuperPageSize,
+                 PageAccessibilityConfiguration(
+                     PageAccessibilityConfiguration::kInaccessible),
+                 PageTag::kPartitionAlloc);
+  ASSERT_TRUE(second_base_address);
+  GetAddressPoolManager()->Add(kSecondPool, second_base_address, kPoolSize);
+
+  g_memory_pressure_notification_count.store(0, std::memory_order_relaxed);
+  GetAddressPoolManager()->SetAsyncSafeMemoryPressureNotification(
+      &OnMemoryPressureNotification);
+
+  const size_t almost_full_pages =
+      (kPageCnt * AddressPoolManager::kDefaultAlmostFullPercent + 99) / 100;
+
+  // 1. Pool 1 reaches 90% -> count transitions 0 -> 1, notifies once.
+  uintptr_t pool1_addr = GetAddressPoolManager()->Reserve(
+      pool_, 0, almost_full_pages * kSuperPageSize);
+  ASSERT_NE(pool1_addr, 0u);
+  EXPECT_TRUE(GetAddressPoolManager()->IsAlmostFull());
+  EXPECT_EQ(
+      g_memory_pressure_notification_count.load(std::memory_order_relaxed), 1);
+
+  // 2. Pool 2 also reaches 90% -> count transitions 1 -> 2, does not notify.
+  uintptr_t pool2_addr = GetAddressPoolManager()->Reserve(
+      kSecondPool, 0, almost_full_pages * kSuperPageSize);
+  ASSERT_NE(pool2_addr, 0u);
+  EXPECT_TRUE(GetAddressPoolManager()->IsAlmostFull());
+  EXPECT_EQ(
+      g_memory_pressure_notification_count.load(std::memory_order_relaxed), 1);
+
+  // 3. Pool 1 frees all its pages -> count transitions 2 -> 1, manager remains
+  // almost full (due to Pool 2) and does not notify.
+  GetAddressPoolManager()->UnreserveAndDecommit(
+      pool_, pool1_addr, almost_full_pages * kSuperPageSize);
+  EXPECT_TRUE(GetAddressPoolManager()->IsAlmostFull());
+  EXPECT_EQ(
+      g_memory_pressure_notification_count.load(std::memory_order_relaxed), 1);
+
+  // 4. Removing Pool 2 while it is the last almost-full pool -> count
+  // transitions 1 -> 0, manager is no longer almost full and notifies once.
+  GetAddressPoolManager()->Remove(kSecondPool);
+  EXPECT_FALSE(GetAddressPoolManager()->IsAlmostFull());
+  EXPECT_EQ(
+      g_memory_pressure_notification_count.load(std::memory_order_relaxed), 2);
+
+  GetAddressPoolManager()->SetAsyncSafeMemoryPressureNotification(nullptr);
+  FreePages(second_base_address, kPoolSize);
 }
 
 #else  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)

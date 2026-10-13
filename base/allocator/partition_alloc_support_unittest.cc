@@ -11,14 +11,20 @@
 
 #include "base/allocator/partition_alloc_features.h"
 #include "base/command_line.h"
+#include "base/memory/memory_pressure_listener_registry.h"
+#include "base/memory/mock_memory_pressure_listener.h"
+#include "base/run_loop.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "partition_alloc/address_pool_manager.h"
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/dangling_raw_ptr_checks.h"
+#include "partition_alloc/page_allocator.h"
 #include "partition_alloc/partition_alloc_base/cpu.h"
+#include "partition_alloc/partition_alloc_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -388,5 +394,104 @@ TEST(PartitionAllocSupportTest, GetProcessTypeIdentifierUtilitySubType) {
   cl->AppendSwitchASCII("utility-sub-type", "network.mojom.NetworkService");
   EXPECT_EQ("utility.network.mojom.NetworkService", GetProcessTypeIdentifier());
 }
+
+#if PA_BUILDFLAG(HAS_64_BIT_POINTERS) && BUILDFLAG(IS_POSIX)
+class PartitionAllocMemoryPressureTest : public testing::Test {
+ protected:
+  static constexpr size_t kTestPoolPages = 100;
+  static constexpr size_t kTestPoolSize =
+      kTestPoolPages * partition_alloc::internal::kSuperPageSize;
+  static constexpr auto kPoolHandle =
+      partition_alloc::internal::kConfigurablePoolHandle;
+
+  void SetUp() override {
+    base_address_ = partition_alloc::AllocPages(
+        kTestPoolSize, partition_alloc::internal::kSuperPageSize,
+        partition_alloc::PageAccessibilityConfiguration(
+            partition_alloc::PageAccessibilityConfiguration::kInaccessible),
+        partition_alloc::PageTag::kPartitionAlloc);
+    ASSERT_NE(base_address_, 0u);
+    manager().Add(kPoolHandle, base_address_, kTestPoolSize);
+  }
+
+  void TearDown() override {
+    PartitionAllocMemoryPressureMonitor::Instance().ResetForTesting();
+    manager().Remove(kPoolHandle);
+    partition_alloc::FreePages(base_address_, kTestPoolSize);
+  }
+
+  partition_alloc::internal::AddressPoolManager& manager() {
+    return partition_alloc::internal::AddressPoolManager::GetInstance();
+  }
+
+  test::TaskEnvironment task_environment_;
+  uintptr_t base_address_ = 0;
+};
+
+TEST_F(PartitionAllocMemoryPressureTest, MonitorEndToEnd) {
+  MemoryPressureListenerRegistry registry;
+  RegisteredMockMemoryPressureListener listener;
+
+  auto& monitor = PartitionAllocMemoryPressureMonitor::Instance();
+  monitor.Start(task_environment_.GetMainThreadTaskRunner());
+
+  // 1. Transition to CRITICAL pressure (reserve 90 out of 100 pages = 90%).
+  base::RunLoop critical_run_loop;
+  EXPECT_CALL(listener, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL))
+      .WillOnce([&] { critical_run_loop.Quit(); });
+
+  uintptr_t addr1 = manager().Reserve(
+      kPoolHandle, 0, 90 * partition_alloc::internal::kSuperPageSize);
+  ASSERT_NE(addr1, 0u);
+  critical_run_loop.Run();
+
+  // Unreserve 2 pages to 88% (inside (85%, 90%) hysteresis deadband) -> should
+  // not trigger MEMORY_PRESSURE_LEVEL_NONE.
+  manager().UnreserveAndDecommit(
+      kPoolHandle, addr1 + 88 * partition_alloc::internal::kSuperPageSize,
+      2 * partition_alloc::internal::kSuperPageSize);
+  EXPECT_EQ(PartitionAllocSupport::GetMemoryPressureLevel(),
+            PartitionAllocSupport::MemoryPressureLevel::kCriticalPressure);
+
+  // 2. Transition back to NONE pressure (unreserve 3 more pages -> 85% = 90% -
+  // 5%).
+  base::RunLoop none_run_loop;
+  EXPECT_CALL(listener, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_NONE))
+      .WillOnce([&] { none_run_loop.Quit(); });
+
+  manager().UnreserveAndDecommit(
+      kPoolHandle, addr1 + 85 * partition_alloc::internal::kSuperPageSize,
+      3 * partition_alloc::internal::kSuperPageSize);
+  none_run_loop.Run();
+
+  manager().UnreserveAndDecommit(
+      kPoolHandle, addr1, 85 * partition_alloc::internal::kSuperPageSize);
+}
+
+TEST_F(PartitionAllocMemoryPressureTest, MonitorStartupAlreadyCritical) {
+  MemoryPressureListenerRegistry registry;
+  RegisteredMockMemoryPressureListener listener;
+
+  // Allocate 92 out of 100 pages (92% >= 90%) BEFORE starting monitor.
+  uintptr_t addr = manager().Reserve(
+      kPoolHandle, 0, 92 * partition_alloc::internal::kSuperPageSize);
+  ASSERT_NE(addr, 0u);
+  EXPECT_EQ(PartitionAllocSupport::GetMemoryPressureLevel(),
+            PartitionAllocSupport::MemoryPressureLevel::kCriticalPressure);
+
+  // Starting the monitor when already critical should immediately trigger
+  // MEMORY_PRESSURE_LEVEL_CRITICAL.
+  base::RunLoop critical_run_loop;
+  EXPECT_CALL(listener, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL))
+      .WillOnce([&] { critical_run_loop.Quit(); });
+
+  auto& monitor = PartitionAllocMemoryPressureMonitor::Instance();
+  monitor.Start(task_environment_.GetMainThreadTaskRunner());
+  critical_run_loop.Run();
+
+  manager().UnreserveAndDecommit(
+      kPoolHandle, addr, 92 * partition_alloc::internal::kSuperPageSize);
+}
+#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS) && BUILDFLAG(IS_POSIX)
 
 }  // namespace base::allocator

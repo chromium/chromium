@@ -430,4 +430,6 @@ BASE_FEATURE(kPartitionAllocUsePriorityInheritanceLocks,
 BASE_FEATURE(kPartitionAllocTighterAlignedAllocBound,
              FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPartitionAllocMemoryPressureMonitor, FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace base::features

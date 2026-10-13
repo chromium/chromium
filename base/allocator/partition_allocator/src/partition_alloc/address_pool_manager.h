@@ -6,6 +6,7 @@
 #define PARTITION_ALLOC_ADDRESS_POOL_MANAGER_H_
 
 #include <array>
+#include <atomic>
 #include <bitset>
 #include <limits>
 
@@ -69,6 +70,13 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 
   // Return the base address of a pool.
   uintptr_t GetPoolBaseAddress(pool_handle handle);
+
+  using AsyncSafeMemoryPressureNotification = void (*)();
+  void SetAsyncSafeMemoryPressureNotification(
+      AsyncSafeMemoryPressureNotification notification);
+  bool IsAlmostFull();
+
+  static constexpr size_t kDefaultAlmostFullPercent = 90;
 #endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 
   // Reserves address space from the pool.
@@ -120,6 +128,11 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 #endif  // PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
 
 #if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+  void NotifyMemoryPressureIfNeeded(bool should_notify);
+
+  std::atomic<AsyncSafeMemoryPressureNotification>
+      async_safe_memory_pressure_notification_{nullptr};
+  std::atomic<size_t> almost_full_pool_count_{0};
 
   class Pool {
    public:
@@ -131,13 +144,21 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 
     void Initialize(uintptr_t ptr, size_t length) PA_LOCKS_EXCLUDED(lock_);
     bool IsInitialized();
-    void Reset();
-
-    uintptr_t FindChunk(size_t size) PA_LOCKS_EXCLUDED(lock_);
-    void FreeChunk(uintptr_t address, size_t size) PA_LOCKS_EXCLUDED(lock_);
-
-    bool TryReserveChunk(uintptr_t address, size_t size)
+    bool Reset(std::atomic<size_t>& almost_full_pool_count)
         PA_LOCKS_EXCLUDED(lock_);
+
+    uintptr_t FindChunk(size_t size,
+                        std::atomic<size_t>& almost_full_pool_count,
+                        bool& should_notify) PA_LOCKS_EXCLUDED(lock_);
+    bool FreeChunk(uintptr_t address,
+                   size_t size,
+                   std::atomic<size_t>& almost_full_pool_count)
+        PA_LOCKS_EXCLUDED(lock_);
+
+    bool TryReserveChunk(uintptr_t address,
+                         size_t size,
+                         std::atomic<size_t>& almost_full_pool_count,
+                         bool& should_notify) PA_LOCKS_EXCLUDED(lock_);
 
     void GetUsedSuperPages(std::bitset<kMaxSuperPagesInPool>& used)
         PA_LOCKS_EXCLUDED(lock_);
@@ -146,6 +167,10 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC)
     void GetStats(PoolStats* stats) PA_LOCKS_EXCLUDED(lock_);
 
    private:
+    bool UpdateAlmostFullStateLocked(
+        std::atomic<size_t>& almost_full_pool_count)
+        PA_EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
     // The lock needs to be the first field in this class.
     // We write-protect the pool in the ThreadIsolated case, except that the
     // lock can be used without acquiring write-permission first (via
@@ -167,6 +192,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC)
     // of 1s after this index, but at least we know there is no point in
     // starting the search before it.
     size_t bit_hint_ PA_GUARDED_BY(lock_) = 0;
+
+    size_t allocated_bits_ PA_GUARDED_BY(lock_) = 0;
+    bool is_almost_full_ PA_GUARDED_BY(lock_) = false;
 
     size_t total_bits_ = 0;
     uintptr_t address_begin_ = 0;
@@ -201,7 +229,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC)
   char pad_[PA_THREAD_ISOLATED_ARRAY_PAD_SZ_WITH_OFFSET(
       Pool,
       kNumPools,
-      offsetof(Pool, alloc_bitset_))] = {};
+      sizeof(async_safe_memory_pressure_notification_) +
+          sizeof(almost_full_pool_count_) + offsetof(Pool, alloc_bitset_))] =
+      {};
 #if defined(__clang__)
 #pragma clang diagnostic pop
 #endif

@@ -216,6 +216,8 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocUsePriorityInheritanceLocks);
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocTighterAlignedAllocBound);
 
+BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocMemoryPressureMonitor);
+
 }  // namespace base::features
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOC_FEATURES_H_

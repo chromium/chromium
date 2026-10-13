@@ -20,6 +20,7 @@
 #include "partition_alloc/partition_alloc_public_constants.h"
 #include "partition_alloc/reservation_offset_table.h"
 #include "partition_alloc/thread_isolation/alignment.h"
+#include "partition_alloc/thread_isolation/thread_isolation.h"
 
 #if PA_BUILDFLAG(IS_APPLE) || PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
 #include <sys/mman.h>
@@ -54,6 +55,22 @@ void DecommitPages(uintptr_t address, size_t size) {
 
 }  // namespace
 
+void AddressPoolManager::SetAsyncSafeMemoryPressureNotification(
+    AsyncSafeMemoryPressureNotification notification) {
+  async_safe_memory_pressure_notification_.store(notification,
+                                                 std::memory_order_release);
+}
+
+void AddressPoolManager::NotifyMemoryPressureIfNeeded(bool should_notify) {
+  if (!should_notify) [[likely]] {
+    return;
+  }
+  if (auto* notification = async_safe_memory_pressure_notification_.load(
+          std::memory_order_acquire)) {
+    notification();
+  }
+}
+
 void AddressPoolManager::Add(pool_handle handle, uintptr_t ptr, size_t length) {
   PA_DCHECK(!(ptr & kSuperPageOffsetMask));
   PA_DCHECK(!((ptr + length) & kSuperPageOffsetMask));
@@ -86,28 +103,34 @@ uintptr_t AddressPoolManager::GetPoolBaseAddress(pool_handle handle) {
 
 void AddressPoolManager::ResetForTesting() {
   for (auto& pool : pools_) {
-    pool.Reset();
+    pool.Reset(almost_full_pool_count_);
   }
+  PA_DCHECK(almost_full_pool_count_.load(std::memory_order_relaxed) == 0);
+  async_safe_memory_pressure_notification_.store(nullptr,
+                                                 std::memory_order_release);
 }
 
 void AddressPoolManager::Remove(pool_handle handle) {
   Pool* pool = GetPool(handle);
   PA_DCHECK(pool->IsInitialized());
-  pool->Reset();
+  NotifyMemoryPressureIfNeeded(pool->Reset(almost_full_pool_count_));
 }
 
 uintptr_t AddressPoolManager::Reserve(pool_handle handle,
                                       uintptr_t requested_address,
                                       size_t length) {
   Pool* pool = GetPool(handle);
-  if (!requested_address) {
-    return pool->FindChunk(length);
+  bool should_notify = false;
+  uintptr_t address = 0;
+  if (requested_address &&
+      pool->TryReserveChunk(requested_address, length, almost_full_pool_count_,
+                            should_notify)) {
+    address = requested_address;
+  } else {
+    address = pool->FindChunk(length, almost_full_pool_count_, should_notify);
   }
-  const bool is_available = pool->TryReserveChunk(requested_address, length);
-  if (is_available) {
-    return requested_address;
-  }
-  return pool->FindChunk(length);
+  NotifyMemoryPressureIfNeeded(should_notify);
+  return address;
 }
 
 void AddressPoolManager::UnreserveAndDecommit(pool_handle handle,
@@ -117,7 +140,9 @@ void AddressPoolManager::UnreserveAndDecommit(pool_handle handle,
   Pool* pool = GetPool(handle);
   PA_DCHECK(pool->IsInitialized());
   DecommitPages(address, length);
-  pool->FreeChunk(address, length);
+  const bool should_notify =
+      pool->FreeChunk(address, length, almost_full_pool_count_);
+  NotifyMemoryPressureIfNeeded(should_notify);
 }
 
 void AddressPoolManager::Pool::Initialize(uintptr_t ptr, size_t length) {
@@ -136,14 +161,54 @@ void AddressPoolManager::Pool::Initialize(uintptr_t ptr, size_t length) {
   ScopedGuard scoped_lock(lock_);
   alloc_bitset_.reset();
   bit_hint_ = 0;
+  allocated_bits_ = 0;
+  is_almost_full_ = false;
 }
 
 bool AddressPoolManager::Pool::IsInitialized() {
   return address_begin_ != 0;
 }
 
-void AddressPoolManager::Pool::Reset() {
+bool AddressPoolManager::Pool::Reset(
+    std::atomic<size_t>& almost_full_pool_count) {
+  ScopedGuard scoped_lock(lock_);
   address_begin_ = 0;
+  total_bits_ = 0;
+  alloc_bitset_.reset();
+  bit_hint_ = 0;
+  allocated_bits_ = 0;
+  if (!is_almost_full_) {
+    return false;
+  }
+  is_almost_full_ = false;
+  const size_t prev_count =
+      almost_full_pool_count.fetch_sub(1, std::memory_order_relaxed);
+  PA_DCHECK(prev_count > 0);
+  return prev_count == 1;
+}
+
+bool AddressPoolManager::Pool::UpdateAlmostFullStateLocked(
+    std::atomic<size_t>& almost_full_pool_count) {
+  if (total_bits_ == 0) {
+    return false;
+  }
+  if (!is_almost_full_) {
+    if (allocated_bits_ * 100 >= total_bits_ * kDefaultAlmostFullPercent) {
+      is_almost_full_ = true;
+      return almost_full_pool_count.fetch_add(1, std::memory_order_relaxed) ==
+             0;
+    }
+  } else {
+    if (allocated_bits_ * 100 <=
+        total_bits_ * (kDefaultAlmostFullPercent - 5)) {
+      is_almost_full_ = false;
+      const size_t prev_count =
+          almost_full_pool_count.fetch_sub(1, std::memory_order_relaxed);
+      PA_DCHECK(prev_count > 0);
+      return prev_count == 1;
+    }
+  }
+  return false;
 }
 
 void AddressPoolManager::Pool::GetUsedSuperPages(
@@ -159,7 +224,10 @@ uintptr_t AddressPoolManager::Pool::GetBaseAddress() {
   return address_begin_;
 }
 
-uintptr_t AddressPoolManager::Pool::FindChunk(size_t requested_size) {
+uintptr_t AddressPoolManager::Pool::FindChunk(
+    size_t requested_size,
+    std::atomic<size_t>& almost_full_pool_count,
+    bool& should_notify) {
   ScopedGuard scoped_lock(lock_);
 
   PA_DCHECK(!(requested_size & kSuperPageOffsetMask));
@@ -174,6 +242,7 @@ uintptr_t AddressPoolManager::Pool::FindChunk(size_t requested_size) {
     // |total_bits_|, return |nullptr| to signal no free chunk was found.
     size_t end_bit = beg_bit + need_bits;
     if (end_bit > total_bits_) {
+      should_notify = false;
       return 0;
     }
 
@@ -200,9 +269,11 @@ uintptr_t AddressPoolManager::Pool::FindChunk(size_t requested_size) {
         PA_DCHECK(!alloc_bitset_[i]);
         alloc_bitset_[i] = true;
       }
+      allocated_bits_ += need_bits;
       if (bit_hint_ == beg_bit) {
         bit_hint_ = end_bit;
       }
+      should_notify = UpdateAlmostFullStateLocked(almost_full_pool_count);
       uintptr_t address = address_begin_ + beg_bit * kSuperPageSize;
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
       PA_DCHECK(address + requested_size <= address_end_);
@@ -214,8 +285,11 @@ uintptr_t AddressPoolManager::Pool::FindChunk(size_t requested_size) {
   PA_NOTREACHED();
 }
 
-bool AddressPoolManager::Pool::TryReserveChunk(uintptr_t address,
-                                               size_t requested_size) {
+bool AddressPoolManager::Pool::TryReserveChunk(
+    uintptr_t address,
+    size_t requested_size,
+    std::atomic<size_t>& almost_full_pool_count,
+    bool& should_notify) {
   ScopedGuard scoped_lock(lock_);
   PA_DCHECK(!(address & kSuperPageOffsetMask));
   PA_DCHECK(!(requested_size & kSuperPageOffsetMask));
@@ -236,10 +310,15 @@ bool AddressPoolManager::Pool::TryReserveChunk(uintptr_t address,
   for (size_t i = begin_bit; i < end_bit; ++i) {
     alloc_bitset_[i] = true;
   }
+  allocated_bits_ += need_bits;
+  should_notify = UpdateAlmostFullStateLocked(almost_full_pool_count);
   return true;
 }
 
-void AddressPoolManager::Pool::FreeChunk(uintptr_t address, size_t free_size) {
+bool AddressPoolManager::Pool::FreeChunk(
+    uintptr_t address,
+    size_t free_size,
+    std::atomic<size_t>& almost_full_pool_count) {
   ScopedGuard scoped_lock(lock_);
 
   PA_DCHECK(!(address & kSuperPageOffsetMask));
@@ -251,12 +330,16 @@ void AddressPoolManager::Pool::FreeChunk(uintptr_t address, size_t free_size) {
 #endif
 
   const size_t beg_bit = (address - address_begin_) / kSuperPageSize;
-  const size_t end_bit = beg_bit + free_size / kSuperPageSize;
+  const size_t need_bits = free_size / kSuperPageSize;
+  const size_t end_bit = beg_bit + need_bits;
   for (size_t i = beg_bit; i < end_bit; ++i) {
     PA_DCHECK(alloc_bitset_[i]);
     alloc_bitset_[i] = false;
   }
+  PA_DCHECK(allocated_bits_ >= need_bits);
+  allocated_bits_ -= need_bits;
   bit_hint_ = std::min(bit_hint_, beg_bit);
+  return UpdateAlmostFullStateLocked(almost_full_pool_count);
 }
 
 void AddressPoolManager::Pool::GetStats(PoolStats* stats) {
@@ -266,9 +349,9 @@ void AddressPoolManager::Pool::GetStats(PoolStats* stats) {
     ScopedGuard scoped_lock(lock_);
     pages = alloc_bitset_;
     i = bit_hint_;
+    PA_DCHECK(pages.count() == allocated_bits_);
+    stats->usage = allocated_bits_;
   }
-
-  stats->usage = pages.count();
 
   size_t largest_run = 0;
   size_t current_run = 0;
@@ -311,6 +394,10 @@ bool AddressPoolManager::GetStats(AddressSpaceStats* stats) {
   GetPoolStats(kThreadIsolatedPoolHandle, &stats->thread_isolated_pool_stats);
 #endif
   return true;
+}
+
+bool AddressPoolManager::IsAlmostFull() {
+  return almost_full_pool_count_.load(std::memory_order_relaxed) > 0;
 }
 
 #else  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
