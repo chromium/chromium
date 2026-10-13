@@ -48,6 +48,6 @@ public class UiDisableIfSkipCheck extends DisableIfSkipCheck {
     }
 
     private boolean isTablet() {
-        return UiRestriction.isTabletContext(mTargetContext);
+        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(mTargetContext);
     }
 }
