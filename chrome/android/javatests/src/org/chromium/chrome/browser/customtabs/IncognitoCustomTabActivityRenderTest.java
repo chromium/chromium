@@ -22,6 +22,7 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -113,6 +114,7 @@ public class IncognitoCustomTabActivityRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
+    @DisabledTest(message = "https://crbug.com/572917114")
     public void testCctToolbarInLandscapeMode() throws IOException {
         startActivity(
                 "default_incognito_cct_toolbar_in_landscape_with_https" + testIdSuffix(),
