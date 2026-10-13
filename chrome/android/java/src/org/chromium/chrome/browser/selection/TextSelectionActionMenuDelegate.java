@@ -190,15 +190,17 @@ public class TextSelectionActionMenuDelegate implements SelectionActionMenuDeleg
             GlicMetrics.recordEntryPointClick(
                     GlicInvocationSource.WEB_CONTENTS_CONTEXT_MENU, isNtp);
             if (GlicContextMenuUtils.shouldSendSelectedText()) {
-                String text = mSelectedText != null ? mSelectedText : "";
-                boolean sent =
-                        GlicKeyedServiceHandler.invokeWithPrompt(
-                                profile,
-                                mTab,
-                                text,
-                                GlicInvocationSource.WEB_CONTENTS_CONTEXT_MENU);
-                GlicMetrics.recordSendSelectedTextSucceeded(sent);
-                return sent;
+                String text = GlicContextMenuUtils.sanitizeSelectedText(mSelectedText);
+                if (!text.isEmpty()) {
+                    boolean sent =
+                            GlicKeyedServiceHandler.invokeWithPrompt(
+                                    profile,
+                                    mTab,
+                                    text,
+                                    GlicInvocationSource.WEB_CONTENTS_CONTEXT_MENU);
+                    GlicMetrics.recordSendSelectedTextSucceeded(sent);
+                    return sent;
+                }
             }
             return GlicKeyedServiceHandler.invoke(
                     profile, mTab, GlicInvocationSource.WEB_CONTENTS_CONTEXT_MENU);

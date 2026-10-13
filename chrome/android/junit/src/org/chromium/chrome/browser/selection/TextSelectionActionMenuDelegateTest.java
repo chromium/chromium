@@ -522,6 +522,120 @@ public class TextSelectionActionMenuDelegateTest {
     }
 
     @Test
+    public void testAskGemini_sanitizesControlObjectReplacementAndInvisibleChars() {
+        enableAskGeminiForSelection();
+        GlicKeyedServiceFactory.setForTesting(mGlicKeyedService);
+
+        // Include \uFFFC (inline image replacement), C0 control (\u0000, \u0007), bidi override
+        // (\u202E), and invisible Unicode tag character U+E0061 (\uDB40\uDC61), while preserving
+        // standard newlines and tabs.
+        String dirtySelection = "  Hello\uFFFC\u0000\u0007\u202E\uDB40\uDC61\n\tworld!  ";
+        List<SelectionMenuItem> items =
+                mDelegate.getAdditionalMenuItems(
+                        MenuType.FLOATING,
+                        /* isSelectionPassword= */ false,
+                        /* isSelectionReadOnly= */ true,
+                        /* selectedText= */ dirtySelection);
+        SelectionMenuItem askGemini = findItem(items, R.id.contextmenu_ask_gemini);
+        assertNotNull(askGemini);
+
+        when(mGlicKeyedService.invokeWithPrompt(
+                        mTab, "Hello\n\tworld!", GlicInvocationSource.WEB_CONTENTS_CONTEXT_MENU))
+                .thenReturn(true);
+
+        boolean handled =
+                mDelegate.handleMenuItemClick(askGemini, mWebContents, /* containerView= */ null);
+
+        assertTrue(handled);
+        verify(mGlicKeyedService)
+                .invokeWithPrompt(
+                        mTab, "Hello\n\tworld!", GlicInvocationSource.WEB_CONTENTS_CONTEXT_MENU);
+    }
+
+    @Test
+    public void testAskGemini_truncatesOversizedSelectedTextAtDefaultLimit() {
+        enableAskGeminiForSelection();
+        GlicKeyedServiceFactory.setForTesting(mGlicKeyedService);
+
+        String longSelection =
+                "a".repeat(GlicContextMenuUtils.DEFAULT_MAX_SELECTED_TEXT_LENGTH + 5);
+        String expectedTruncated =
+                "a".repeat(GlicContextMenuUtils.DEFAULT_MAX_SELECTED_TEXT_LENGTH) + "…";
+        List<SelectionMenuItem> items =
+                mDelegate.getAdditionalMenuItems(
+                        MenuType.FLOATING,
+                        /* isSelectionPassword= */ false,
+                        /* isSelectionReadOnly= */ true,
+                        /* selectedText= */ longSelection);
+        SelectionMenuItem askGemini = findItem(items, R.id.contextmenu_ask_gemini);
+        assertNotNull(askGemini);
+
+        when(mGlicKeyedService.invokeWithPrompt(
+                        mTab, expectedTruncated, GlicInvocationSource.WEB_CONTENTS_CONTEXT_MENU))
+                .thenReturn(true);
+
+        boolean handled =
+                mDelegate.handleMenuItemClick(askGemini, mWebContents, /* containerView= */ null);
+
+        assertTrue(handled);
+        verify(mGlicKeyedService)
+                .invokeWithPrompt(
+                        mTab, expectedTruncated, GlicInvocationSource.WEB_CONTENTS_CONTEXT_MENU);
+    }
+
+    @Test
+    public void testAskGemini_truncatesOversizedSelectedTextViaParam() {
+        enableAskGeminiForSelection();
+        FeatureOverrides.newBuilder()
+                .enable(ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU)
+                .param(GlicContextMenuUtils.PARAM_MAX_SELECTED_TEXT_LENGTH, "10")
+                .apply();
+        GlicKeyedServiceFactory.setForTesting(mGlicKeyedService);
+
+        List<SelectionMenuItem> items =
+                mDelegate.getAdditionalMenuItems(
+                        MenuType.FLOATING,
+                        /* isSelectionPassword= */ false,
+                        /* isSelectionReadOnly= */ true,
+                        /* selectedText= */ "0123456789abcdef");
+        SelectionMenuItem askGemini = findItem(items, R.id.contextmenu_ask_gemini);
+        assertNotNull(askGemini);
+
+        when(mGlicKeyedService.invokeWithPrompt(
+                        mTab, "0123456789…", GlicInvocationSource.WEB_CONTENTS_CONTEXT_MENU))
+                .thenReturn(true);
+
+        boolean handled =
+                mDelegate.handleMenuItemClick(askGemini, mWebContents, /* containerView= */ null);
+
+        assertTrue(handled);
+        verify(mGlicKeyedService)
+                .invokeWithPrompt(
+                        mTab, "0123456789…", GlicInvocationSource.WEB_CONTENTS_CONTEXT_MENU);
+    }
+
+    @Test
+    public void testAskGemini_fallsBackToInvokeWhenSelectionSanitizesToEmpty() {
+        enableAskGeminiForSelection();
+        GlicKeyedServiceFactory.setForTesting(mGlicKeyedService);
+
+        List<SelectionMenuItem> items =
+                mDelegate.getAdditionalMenuItems(
+                        MenuType.FLOATING,
+                        /* isSelectionPassword= */ false,
+                        /* isSelectionReadOnly= */ true,
+                        /* selectedText= */ "\uFFFC\u202E\uDB40\uDC61");
+        SelectionMenuItem askGemini = findItem(items, R.id.contextmenu_ask_gemini);
+        assertNotNull(askGemini);
+
+        boolean handled =
+                mDelegate.handleMenuItemClick(askGemini, mWebContents, /* containerView= */ null);
+
+        assertTrue(handled);
+        verify(mGlicKeyedService).invoke(mTab, GlicInvocationSource.WEB_CONTENTS_CONTEXT_MENU);
+    }
+
+    @Test
     public void testGetWebSearchMenuItemTitle_valid() {
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         when(mTemplateUrlService.getDefaultSearchEngineTemplateUrl()).thenReturn(mTemplateUrl);

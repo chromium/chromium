@@ -256,7 +256,10 @@ if (is_android) {
   }
 
   android_library("context_menu_utils_java") {
-    sources = [ "public/android/java/src/org/chromium/chrome/browser/glic/GlicContextMenuUtils.java" ]
+    sources = [
+      "public/android/java/src/org/chromium/chrome/browser/glic/GlicContextMenuUtils.java",
+      "public/android/java/src/org/chromium/chrome/browser/glic/SelectedTextSanitizer.java",
+    ]
     deps = [
       ":public_java",
       "//base:build_info_java",
