@@ -1682,10 +1682,6 @@ if (!is_android) {
     allow_circular_includes_from +=
         [ "//chrome/browser/ui/views/passwords:browser_tests" ]
 
-    if (is_mac) {
-      deps += [ "//chrome/app_shim:browser_tests" ]
-    }
-
     # Runtime dependencies
     data_deps = [
       "//chrome:browser_tests_pak",
@@ -1890,10 +1886,13 @@ if (!is_android) {
 
     if (is_win || is_mac || is_linux) {
       deps += [
+        "../browser/enterprise/connectors/test:test_support",
         "//chrome/browser/enterprise/profile_management:browser_tests",
         "//chrome/browser/enterprise/signin:browser_tests",
         "//chrome/browser/ui/startup/default_browser_prompt:browser_tests",
+        "//chrome/browser/ui/supervised_user:browser_tests",
         "//chrome/browser/ui/views/media_preview/mic_preview:browser_tests",
+        "//chrome/browser/ui/views/supervised_user:browser_tests",
       ]
     }
 
@@ -1929,14 +1928,6 @@ if (!is_android) {
       "//third_party/federated_compute:confidential_compute_crypto_test_util",
     ]
 
-    if (is_win) {
-      # encrypted_media_browsertest uses Windows Media Foundation APIs.
-      libs = [
-        "mfuuid.lib",
-        "mfplat.lib",
-      ]
-    }
-
     if (enable_on_device_translation) {
       deps += [ "//chrome/browser/on_device_translation:browser_tests" ]
     }
@@ -1957,7 +1948,10 @@ if (!is_android) {
     }
 
     if (is_win) {
-      data_deps += [ "//chrome/browser/web_applications/chrome_pwa_launcher" ]
+      data_deps += [
+        "//chrome/browser/web_applications/chrome_pwa_launcher",
+        "//media/cdm/win/test:media_foundation_clear_key_cdm",
+      ]
       data += [ "$root_out_dir/chrome_200_percent.pak" ]
       deps += [
         "//chrome:other_version",
@@ -1965,6 +1959,12 @@ if (!is_android) {
         "//chrome/browser/ui/color:browser_tests",
         "//chrome/browser/win/isolated_browser:browser_tests",
         "//chrome/test/delayload:browser_tests",
+      ]
+
+      # encrypted_media_browsertest uses Windows Media Foundation APIs.
+      libs = [
+        "mfuuid.lib",
+        "mfplat.lib",
       ]
     }
 
@@ -1975,6 +1975,7 @@ if (!is_android) {
       ]
 
       deps += [
+        "//chrome/app_shim:browser_tests",
         "//chrome/browser/apps/app_shim:browser_tests",
         "//chrome/browser/mac:browser_tests",
         "//chrome/browser/ui/cocoa:browser_tests",
@@ -1988,7 +1989,10 @@ if (!is_android) {
       deps += [
         "//chrome/browser/default_browser:browser_tests",
         "//chrome/browser/download/bubble:browser_tests",
+        "//chrome/browser/external_protocol:browser_tests",
+        "//chrome/browser/shortcuts:browser_tests",
         "//chrome/browser/ui/views/controls:browser_tests",
+        "//chrome/browser/ui/webui/whats_new:browser_tests",
       ]
     }
 
@@ -2005,13 +2009,6 @@ if (!is_android) {
       if (!is_official_build) {
         deps += [ "//ash/webui/sample_system_web_app_ui:browser_tests" ]
       }
-    }
-
-    if (!is_chromeos) {
-      deps += [
-        "//chrome/browser/external_protocol:browser_tests",
-        "//chrome/browser/shortcuts:browser_tests",
-      ]
     }
 
     if (is_win || is_chromeos || is_mac) {
@@ -2259,10 +2256,6 @@ if (!is_android) {
         "//third_party/widevine/cdm",
       ]
     }
-    if (is_win) {
-      # Runtime dependencies.
-      data_deps += [ "//media/cdm/win/test:media_foundation_clear_key_cdm" ]
-    }
     if (enable_printing) {
       deps += [ "//chrome/browser/printing:browser_tests" ]
     }
@@ -2282,20 +2275,8 @@ if (!is_android) {
       deps += [ "//chrome/browser/spellchecker:browser_tests" ]
     }
 
-    if (is_win || is_mac || is_linux) {
-      deps += [
-        "../browser/enterprise/connectors/test:test_support",
-        "//chrome/browser/ui/supervised_user:browser_tests",
-        "//chrome/browser/ui/views/supervised_user:browser_tests",
-      ]
-    }
-
     if (enterprise_data_controls) {
       deps += [ "//chrome/browser/enterprise/data_controls:browser_tests" ]
-    }
-
-    if (!is_chromeos) {
-      deps += [ "//chrome/browser/ui/webui/whats_new:browser_tests" ]
     }
 
     if (enable_webui_generate_code_cache) {
