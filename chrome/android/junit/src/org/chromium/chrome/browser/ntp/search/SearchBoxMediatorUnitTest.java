@@ -15,6 +15,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
+import android.animation.AnimatorSet;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -42,6 +43,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -80,6 +82,8 @@ import java.util.function.Supplier;
 /** Unit tests for {@link SearchBoxMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class SearchBoxMediatorUnitTest {
+    private static final String DEFAULT_HINT = "Default Hint";
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
@@ -98,6 +102,7 @@ public class SearchBoxMediatorUnitTest {
     @Mock private ComposeplateUtils.Natives mComposeplateUtilsJni;
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private ComposeboxQueryControllerBridge.Natives mComposeboxBridgeJni;
+    @Mock private AnimatorSet mAnimatorSet;
     @Captor private ArgumentCaptor<TemplateUrlServiceObserver> mTemplateUrlServiceObserverCaptor;
     @Captor private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
 
@@ -139,6 +144,14 @@ public class SearchBoxMediatorUnitTest {
                         /* isIncognito= */ false,
                         mWindowAndroid,
                         mProfile);
+    }
+
+    private void assertRestingUIState(String expectedHint) {
+        assertFalse(mMediator.isHintAnimatorActiveForTesting());
+        assertEquals(0f, mPropertyModel.get(SearchBoxProperties.PLUS_BUTTON_ROTATION), 0.001f);
+        assertEquals(1f, mPropertyModel.get(SearchBoxProperties.HINT_TEXT_ALPHA), 0.001f);
+        assertEquals(expectedHint, mPropertyModel.get(SearchBoxProperties.SEARCH_BOX_HINT_TEXT));
+        assertNotNull(mPropertyModel.get(SearchBoxProperties.PLUS_BUTTON_TINT));
     }
 
     @Test
@@ -756,5 +769,74 @@ public class SearchBoxMediatorUnitTest {
         assertFalse(
                 mMediator.isLensEnabled(
                         LensEntryPoint.NEW_TAB_PAGE, /* isIncognito= */ false, /* isLff= */ false));
+    }
+
+    @Test
+    public void testStartHintAnimation_completesAndRestoresRestingState() {
+        mMediator.setSearchBoxHintText(DEFAULT_HINT);
+
+        mMediator.startHintAnimation();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        assertRestingUIState(DEFAULT_HINT);
+    }
+
+    @Test
+    public void testCancelHintAnimation_restoresRestingState() {
+        mMediator.setSearchBoxHintText(DEFAULT_HINT);
+
+        mMediator.startHintAnimation();
+        mMediator.cancelHintAnimation();
+
+        assertRestingUIState(DEFAULT_HINT);
+    }
+
+    @Test
+    public void testOnDestroy_cancelsInFlightAnimation() {
+        mMediator.setSearchBoxHintText(DEFAULT_HINT);
+
+        mMediator.startHintAnimation();
+        mMediator.onDestroy();
+
+        assertRestingUIState(DEFAULT_HINT);
+    }
+
+    @Test
+    public void testHintAnimation_cancelledOnDestroy() {
+        mMediator.setHintAnimatorForTesting(mAnimatorSet);
+
+        mMediator.onDestroy();
+
+        verify(mAnimatorSet).cancel();
+    }
+
+    @Test
+    public void testHintAnimation_cancelledOnDseChange() {
+        mMediator.setHintAnimatorForTesting(mAnimatorSet);
+
+        verify(mTemplateUrlService).addObserver(mTemplateUrlServiceObserverCaptor.capture());
+        mTemplateUrlServiceObserverCaptor.getValue().onTemplateURLServiceChanged();
+
+        verify(mAnimatorSet).cancel();
+    }
+
+    @Test
+    public void testHintAnimation_cancelledOnSetSearchBoxHintText() {
+        mMediator.setHintAnimatorForTesting(mAnimatorSet);
+
+        String newHint = "Search with New Engine";
+        mMediator.setSearchBoxHintText(newHint);
+
+        verify(mAnimatorSet).cancel();
+        assertEquals(newHint, mPropertyModel.get(SearchBoxProperties.SEARCH_BOX_HINT_TEXT));
+    }
+
+    @Test
+    public void testHintAnimation_cancelledOnApplyWhiteBackground() {
+        mMediator.setHintAnimatorForTesting(mAnimatorSet);
+
+        mMediator.applyWhiteBackground(true);
+
+        verify(mAnimatorSet).cancel();
     }
 }

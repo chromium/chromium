@@ -4,6 +4,13 @@
 
 package org.chromium.chrome.browser.ntp.search;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Point;
@@ -11,6 +18,7 @@ import android.graphics.Rect;
 import android.view.View;
 import android.view.View.OnDragListener;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
 
@@ -34,6 +42,7 @@ import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconRes
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFocusReason;
@@ -41,14 +50,23 @@ import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelAnimatorFactory;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.url.GURL;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
 
 @NullMarked
 class SearchBoxMediator implements DestroyObserver {
+    private static final long PLUS_ROTATION_DURATION_MS = 750;
+    private static final long INITIAL_HINT_DELAY_MS = 300;
+    private static final long HINT_HOLD_DURATION_MS = 2500;
+    private static final long FADE_DURATION_MS = 150;
+
     private final Context mContext;
     private final PropertyModel mModel;
     private final SearchBoxContainerView mView;
@@ -62,6 +80,7 @@ class SearchBoxMediator implements DestroyObserver {
     private final TemplateUrlServiceObserver mTemplateUrlServiceObserver =
             this::onTemplateURLServiceChanged;
     private @Nullable StatusIconResource mSearchEngineIcon;
+    private @Nullable AnimatorSet mHintAnimator;
 
     SearchBoxMediator(
             Context context,
@@ -113,6 +132,7 @@ class SearchBoxMediator implements DestroyObserver {
     public void onDestroy() {
         mActivityLifecycleDispatcher.unregister(this);
 
+        cancelHintAnimation();
         mModel.set(SearchBoxProperties.AI_CHIP_CLICK_CALLBACK, null);
         mModel.set(SearchBoxProperties.LENS_CLICK_CALLBACK, null);
         mModel.set(SearchBoxProperties.VOICE_SEARCH_CLICK_CALLBACK, null);
@@ -210,6 +230,7 @@ class SearchBoxMediator implements DestroyObserver {
     }
 
     private void onTemplateURLServiceChanged() {
+        cancelHintAnimation();
         updateStartIcon();
         updateAiChip();
     }
@@ -257,10 +278,12 @@ class SearchBoxMediator implements DestroyObserver {
     }
 
     void setSearchBoxHintText(@Nullable String hint) {
+        cancelHintAnimation();
         mModel.set(SearchBoxProperties.SEARCH_BOX_HINT_TEXT, hint);
     }
 
     void applyWhiteBackground(boolean apply) {
+        cancelHintAnimation();
         ColorStateList colorStateList =
                 ComposeplateUtils.getSearchBoxIconColorTint(mContext, apply);
         mModel.set(SearchBoxProperties.VOICE_SEARCH_COLOR_STATE_LIST, colorStateList);
@@ -420,5 +443,102 @@ class SearchBoxMediator implements DestroyObserver {
         if (url != null) {
             mNewTabPageManager.loadUrl(new LoadUrlParams(url), /* incognito= */ false);
         }
+    }
+
+    void startHintAnimation() {
+        cancelHintAnimation();
+        mHintAnimator = createHintAnimation();
+        mHintAnimator.start();
+    }
+
+    void cancelHintAnimation() {
+        if (mHintAnimator != null) {
+            mHintAnimator.cancel();
+        }
+    }
+
+    private AnimatorSet createHintAnimation() {
+        String initialHint = mModel.get(SearchBoxProperties.SEARCH_BOX_HINT_TEXT);
+        ColorStateList initialTint =
+                assumeNonNull(mModel.get(SearchBoxProperties.PLUS_BUTTON_TINT));
+        @ColorInt int initialColor = initialTint.getDefaultColor();
+        @ColorInt int accentColor = SemanticColorUtils.getDefaultIconColorAccent1(mContext);
+        String makeAPlanHint = mContext.getString(R.string.ntp_search_box_hint_make_a_plan);
+        String askAboutTabHint = mContext.getString(R.string.ntp_search_box_hint_ask_about_tab);
+
+        ObjectAnimator spin =
+                PropertyModelAnimatorFactory.ofFloat(
+                                mModel, SearchBoxProperties.PLUS_BUTTON_ROTATION, 360f)
+                        .setDuration(PLUS_ROTATION_DURATION_MS);
+        spin.setInterpolator(Interpolators.EMPHASIZED);
+
+        Animator tintIn = createTintAnimator(initialColor, accentColor);
+        Animator tintOut = createTintAnimator(accentColor, initialColor);
+
+        List<Animator> sequence = new ArrayList<>();
+        sequence.add(spin);
+        sequence.add(tintOut);
+        addHintCrossfade(sequence, makeAPlanHint, INITIAL_HINT_DELAY_MS);
+        addHintCrossfade(sequence, askAboutTabHint, HINT_HOLD_DURATION_MS);
+        addHintCrossfade(sequence, initialHint, HINT_HOLD_DURATION_MS);
+
+        AnimatorSet animator = new AnimatorSet();
+        animator.playSequentially(sequence);
+        animator.play(spin).with(tintIn);
+        animator.addListener(
+                new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        mHintAnimator = null;
+                        mModel.set(SearchBoxProperties.PLUS_BUTTON_ROTATION, 0f);
+                        mModel.set(SearchBoxProperties.PLUS_BUTTON_TINT, initialTint);
+                        mModel.set(SearchBoxProperties.HINT_TEXT_ALPHA, 1f);
+                        mModel.set(SearchBoxProperties.SEARCH_BOX_HINT_TEXT, initialHint);
+                    }
+                });
+        return animator;
+    }
+
+    private Animator createTintAnimator(@ColorInt int fromColor, @ColorInt int toColor) {
+        ValueAnimator animator =
+                ValueAnimator.ofArgb(fromColor, toColor).setDuration(FADE_DURATION_MS);
+        animator.addUpdateListener(
+                a ->
+                        mModel.set(
+                                SearchBoxProperties.PLUS_BUTTON_TINT,
+                                ColorStateList.valueOf((int) a.getAnimatedValue())));
+        return animator;
+    }
+
+    private void addHintCrossfade(
+            List<Animator> sequence, @Nullable String nextHint, long delayMs) {
+        ObjectAnimator fadeOut =
+                PropertyModelAnimatorFactory.ofFloat(
+                                mModel, SearchBoxProperties.HINT_TEXT_ALPHA, 0f)
+                        .setDuration(FADE_DURATION_MS);
+        fadeOut.setStartDelay(delayMs);
+
+        ObjectAnimator fadeIn =
+                PropertyModelAnimatorFactory.ofFloat(
+                                mModel, SearchBoxProperties.HINT_TEXT_ALPHA, 1f)
+                        .setDuration(FADE_DURATION_MS);
+        fadeIn.addListener(
+                new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+                        mModel.set(SearchBoxProperties.SEARCH_BOX_HINT_TEXT, nextHint);
+                    }
+                });
+
+        sequence.add(fadeOut);
+        sequence.add(fadeIn);
+    }
+
+    boolean isHintAnimatorActiveForTesting() {
+        return mHintAnimator != null;
+    }
+
+    void setHintAnimatorForTesting(@Nullable AnimatorSet animator) {
+        mHintAnimator = animator;
     }
 }
