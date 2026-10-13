@@ -1216,15 +1216,9 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
         base::NumberToString(weakWebState->GetUniqueIdentifier().identifier()),
         base::BindOnce(^(std::optional<std::unique_ptr<
                              optimization_guide::proto::PageContext>> context) {
-          if (context.has_value()) {
-            [weakSelf handlePageContextResponse:std::move(context.value())
-                                       webState:weakWebState.get()
-                                     identifier:identifier];
-          } else {
-            [weakSelf attachWebState:weakWebState.get()
-                          identifier:identifier
-                            isCached:NO];
-          }
+          [weakSelf didFetchCachedPageContext:std::move(context)
+                                     webState:weakWebState.get()
+                                   identifier:identifier];
         }));
     return;
   }
@@ -1239,13 +1233,9 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
                   config:config
       completionCallback:base::BindOnce(^(
                              PageContextWrapperCallbackResponse response) {
-        if (response.has_value()) {
-          [weakSelf handlePageContextResponse:std::move(response.value())
-                                     webState:weakWebState.get()
-                                   identifier:identifier];
-        } else {
-          [weakSelf handleFailedAttachment:identifier];
-        }
+        [weakSelf didExtractPageContext:std::move(response)
+                               webState:weakWebState.get()
+                             identifier:identifier];
       })];
 
   pageContextWrapper.shouldGetAnnotatedPageContent = YES;
@@ -1256,6 +1246,65 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
       populatePageContextFieldsAsyncWithTimeout:kPageContextTimeout];
 
   _pageContextWrappers[webState->GetUniqueIdentifier()] = pageContextWrapper;
+}
+
+// Handles the result of fetching cached page context for `webState`.
+- (void)
+    didFetchCachedPageContext:
+        (std::optional<std::unique_ptr<optimization_guide::proto::PageContext>>)
+            context
+                     webState:(web::WebState*)webState
+                   identifier:(base::UnguessableToken)identifier {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  if (!context.has_value()) {
+    [self attachWebState:webState identifier:identifier isCached:NO];
+    return;
+  }
+
+  if (webState) {
+    [self.debugLogger
+        logEvent:
+            [ComposeboxDebuggerEvent
+                 apcEvent:composebox_debugger::event::APC::kRetrievedFromCache
+                withTitle:base::SysUTF16ToNSString(webState->GetTitle())
+                    tabID:webState->GetUniqueIdentifier().identifier()]];
+  }
+  [self handlePageContextResponse:std::move(context.value())
+                         webState:webState
+                       identifier:identifier];
+}
+
+// Handles the result of extracting page context on the fly for `webState`.
+- (void)didExtractPageContext:(PageContextWrapperCallbackResponse)response
+                     webState:(web::WebState*)webState
+                   identifier:(base::UnguessableToken)identifier {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  if (!response.has_value()) {
+    [self.debugLogger
+        logEvent:
+            [ComposeboxDebuggerEvent
+                 apcEvent:composebox_debugger::event::APC::kExtractionFailed
+                withTitle:webState
+                              ? base::SysUTF16ToNSString(webState->GetTitle())
+                              : @""
+                    tabID:webState
+                              ? webState->GetUniqueIdentifier().identifier()
+                              : 0]];
+    [self handleFailedAttachment:identifier];
+    return;
+  }
+
+  if (webState) {
+    [self.debugLogger
+        logEvent:[ComposeboxDebuggerEvent
+                      apcEvent:composebox_debugger::event::APC::
+                                   kExtractionCompletedSuccessfully
+                     withTitle:base::SysUTF16ToNSString(webState->GetTitle())
+                         tabID:webState->GetUniqueIdentifier().identifier()]];
+  }
+  [self handlePageContextResponse:std::move(response.value())
+                         webState:webState
+                       identifier:identifier];
 }
 
 // Transforms the page context into input data and uploads the data after a
