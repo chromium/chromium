@@ -3930,6 +3930,7 @@ public class WebContentsAccessibilityTest {
         // Set hover state to true so handleHover can process events.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    AccessibilityStateTestHelper.setIsTouchExplorationEnabledForTesting(true);
                     mActivityTestRule.mWcax.onHoverEventNoRenderer(
                             android.view.MotionEvent.obtain(
                                     0, 0, android.view.MotionEvent.ACTION_HOVER_ENTER, 0, 0, 0));
@@ -7489,5 +7490,29 @@ public class WebContentsAccessibilityTest {
                             + " ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY.",
                     nodeInfo.getActionList().contains(ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY));
         }
+    }
+
+    /**
+     * Test that hover events are not consumed by accessibility when an accessibility service is
+     * enabled without touch exploration (e.g. Select to Speak), so standard mouse/trackpad hover
+     * events still reach the renderer.
+     */
+    @Test
+    @SmallTest
+    public void testOnHoverEvent_requiresTouchExplorationEnabled() throws Throwable {
+        setupTestWithHTMLForBasicMode("<button id=\"button1\">Button 1</button>", true);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AccessibilityStateTestHelper.setIsTouchExplorationEnabledForTesting(false);
+                    android.view.MotionEvent hoverEnter =
+                            android.view.MotionEvent.obtain(
+                                    0, 0, android.view.MotionEvent.ACTION_HOVER_ENTER, 0, 0, 0);
+                    Assert.assertFalse(
+                            "Hover events should not be consumed when touch exploration is"
+                                    + " disabled.",
+                            mActivityTestRule.mWcax.onHoverEventNoRenderer(hoverEnter));
+                    hoverEnter.recycle();
+                });
     }
 }
