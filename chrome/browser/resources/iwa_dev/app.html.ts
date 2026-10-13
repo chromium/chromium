@@ -7,14 +7,14 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {IwaDevAppElement} from './app.js';
 
 export function getHtml(this: IwaDevAppElement) {
-  // clang-format off
   return html`
 <h1>Isolated Web App Developer Tool</h1>
 <div id="learn-more" class="subtitle">
   Install and test Isolated Web Apps during development.
-  <a href="https://developer.chrome.com/docs/iwa/introduction"
-      target="_blank" rel="noopener"
-      aria-label="Learn more about Isolated Web Apps">Learn more</a>
+  <a href="https://developer.chrome.com/docs/iwa/introduction" target="_blank"
+      rel="noopener" aria-label="Learn more about Isolated Web Apps">
+    Learn more
+  </a>
 </div>
 ${!this.devModeEnabled_ ? html`
   <div id="feature-disabled-message">
@@ -63,40 +63,37 @@ ${!this.devModeEnabled_ ? html`
         </div>
       ` : html`
         <div id="iwa-list" role="list">
-        ${this.installedApps_.map(item => html`
-          <installed-app-list-item
-              .app="${item}"
-              .isUpdating="${this.updatingAppIds_.includes(item.appId)}"
-              role="listitem"
-              @request-launch="${this.onRequestLaunch_}"
-              @request-update="${this.onRequestUpdate_}"
-              @request-update-options="${this.onRequestUpdateOptions_}"
-              @request-uninstall="${this.onRequestUninstall_}">
-          </installed-app-list-item>
-        `)}
+          ${this.installedApps_.map(item => html`
+            <installed-app-list-item .app="${item}"
+                .isUpdating="${this.updatingAppIds_.includes(item.appId)}"
+                role="listitem" @request-launch="${this.onRequestLaunch_}"
+                @request-update="${this.onRequestUpdate_}"
+                @request-update-options="${this.onRequestUpdateOptions_}"
+                @request-uninstall="${this.onRequestUninstall_}">
+            </installed-app-list-item>
+          `)}
         </div>
       `}
       <iwa-dev-install-dialog id="installDialog"
           @request-install-from-dev-proxy="${
-            this.onRequestInstallFromDevProxy_}"
+              this.onRequestInstallFromDevProxy_}"
           @request-install-from-local-bundle="${
-            this.onRequestInstallFromLocalBundle_}"
+              this.onRequestInstallFromLocalBundle_}"
           @request-parse-update-manifest-from-url="${
-            this.onRequestParseUpdateManifestFromUrl_}"
+              this.onRequestParseUpdateManifestFromUrl_}"
           @request-install-from-update-manifest="${
-            this.onRequestInstallFromUpdateManifest_}">
+              this.onRequestInstallFromUpdateManifest_}">
       </iwa-dev-install-dialog>
       ${this.selectedAppForUpdateOptions_ ? html`
         <iwa-dev-update-options-dialog id="updateOptionsDialog"
             .app="${this.selectedAppForUpdateOptions_}"
-            .currentPinnedVersion="${
-              this.getPinnedVersion_(this.selectedAppForUpdateOptions_.appId)}"
-            .currentAllowDowngrades="${
-              this.getAllowDowngrades_(
-                  this.selectedAppForUpdateOptions_.appId)}"
+            .currentPinnedVersion="${this.getPinnedVersion_(
+                this.selectedAppForUpdateOptions_.appId)}"
+            .currentAllowDowngrades="${this.getAllowDowngrades_(
+                this.selectedAppForUpdateOptions_.appId)}"
             @close="${this.onUpdateOptionsDialogClose_}"
             @request-parse-update-manifest-from-url="${
-              this.onRequestParseUpdateManifestFromUrl_}"
+                this.onRequestParseUpdateManifestFromUrl_}"
             @update-options-saved="${this.onUpdateOptionsSaved_}">
         </iwa-dev-update-options-dialog>
       ` : ''}
@@ -105,6 +102,5 @@ ${!this.devModeEnabled_ ? html`
       </cr-toast>
     ` : ''}
   </div>
-`}
-`;
+`}`;
 }

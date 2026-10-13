@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {FeatureShowcaseGeminiStepElement} from './gemini_step.js';
 
 export function getHtml(this: FeatureShowcaseGeminiStepElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 
 <feature-showcase-step>
@@ -19,26 +18,22 @@ export function getHtml(this: FeatureShowcaseGeminiStepElement) {
     <p>$i18nRaw{geminiDisclosure1}</p>
     <p>$i18nRaw{geminiDisclosure2}</p>
   </div>
-  <if expr="is_win">
-    <cr-button slot="button" id="confirm-button" class="action-button"
-        @click="${this.onConfirmClick_}"
-        ?disabled="${this.buttonsDisabled}">
-      $i18n{geminiYesImIn}
-    </cr-button>
-  </if>
-    <cr-button slot="button" id="skip-button"
-        @click="${this.onSkipClick_}"
-        ?disabled="${this.buttonsDisabled}">
-      $i18n{geminiNotNow}
-    </cr-button>
-  <if expr="not is_win">
-    <cr-button slot="button" id="confirm-button" class="action-button"
-        @click="${this.onConfirmClick_}"
-        ?disabled="${this.buttonsDisabled}">
-      $i18n{geminiYesImIn}
-    </cr-button>
-  </if>
+<if expr="is_win">
+  <cr-button slot="button" id="confirm-button" class="action-button"
+      @click="${this.onConfirmClick_}" ?disabled="${this.buttonsDisabled}">
+    $i18n{geminiYesImIn}
+  </cr-button>
+</if>
+  <cr-button slot="button" id="skip-button" @click="${this.onSkipClick_}"
+      ?disabled="${this.buttonsDisabled}">
+    $i18n{geminiNotNow}
+  </cr-button>
+<if expr="not is_win">
+  <cr-button slot="button" id="confirm-button" class="action-button"
+      @click="${this.onConfirmClick_}" ?disabled="${this.buttonsDisabled}">
+    $i18n{geminiYesImIn}
+  </cr-button>
+</if>
 </feature-showcase-step>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

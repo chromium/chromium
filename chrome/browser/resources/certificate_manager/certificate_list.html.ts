@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {CertificateListElement} from './certificate_list.js';
 
 export function getHtml(this: CertificateListElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div ?hidden="${this.shouldHideEverything_()}">
   <div id="listHeader"
@@ -17,8 +16,8 @@ export function getHtml(this: CertificateListElement) {
     <h3 role="heading">${this.headerText}</h3>
     <div class="header-buttons">
       <cr-button ?hidden="${!this.showImport}" id="importCert"
-          aria-label="${this.i18n('certificateManagerV2ImportButtonAriaLabel',
-              this.headerText)}"
+          aria-label="${this.i18n(
+              'certificateManagerV2ImportButtonAriaLabel', this.headerText)}"
           @click="${this.onImportCertClick_}">
         $i18n{certificateManagerV2ImportButtonLabel}
       </cr-button>
@@ -30,15 +29,15 @@ export function getHtml(this: CertificateListElement) {
         $i18n{certificateManagerV2ImportAndBindButtonLabel}
       </cr-button>
       <cr-button ?hidden="${this.hideExportButton_()}"
-          aria-label="${this.i18n('certificateManagerV2ExportButtonAriaLabel',
-              this.headerText)}"
+          aria-label="${this.i18n(
+              'certificateManagerV2ExportButtonAriaLabel', this.headerText)}"
           id="exportCerts" @click="${this.onExportCertsClick_}">
         $i18n{certificateManagerV2ExportButtonLabel}
       </cr-button>
     </div>
     <cr-expand-button id="expandButton" ?expanded="${this.expanded_}" no-hover
-        aria-label="${this.i18n('certificateManagerV2ListExpandAriaLabel',
-            this.headerText)}"
+        aria-label="${this.i18n(
+            'certificateManagerV2ListExpandAriaLabel', this.headerText)}"
         ?hidden="${this.hideCollapseButton_()}"
         @expanded-changed="${this.onExpandedChanged_}">
     </cr-expand-button>
@@ -47,8 +46,7 @@ export function getHtml(this: CertificateListElement) {
   <cr-collapse id="certs" ?opened="${this.expanded_}" aria-live="polite"
       class="${this.getCertsClass_()}">
     ${this.certificates_.map(item => html`
-      <certificate-entry
-          .certSource="${this.certSource}"
+      <certificate-entry .certSource="${this.certSource}"
           .displayName="${item.displayName}"
           .sha256hashHex="${item.sha256hashHex}"
           ?show-edit-icon="${this.certMetadataEditable}"
@@ -62,5 +60,4 @@ export function getHtml(this: CertificateListElement) {
   </cr-collapse>
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

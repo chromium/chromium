@@ -8,14 +8,14 @@ import type {CertificateInfoDialogElement} from './certificate_info_dialog.js';
 
 export function getHtml(this: CertificateInfoDialogElement) {
   return html`<!--_html_template_start_-->
-    <cr-dialog id="dialog" show-on-attach>
-      <div slot="title">${this.dialogTitle}</div>
-      <div slot="body">${this.dialogMessage}</div>
-      <div slot="button-container">
-        <cr-button class="action-button" @click="${this.onOkClick_}">
-          $i18n{ok}
-        </cr-button>
-      </div>
-    </cr-dialog>
-    <!--_html_template_end_-->`;
+<cr-dialog id="dialog" show-on-attach>
+  <div slot="title">${this.dialogTitle}</div>
+  <div slot="body">${this.dialogMessage}</div>
+  <div slot="button-container">
+    <cr-button class="action-button" @click="${this.onOkClick_}">
+      $i18n{ok}
+    </cr-button>
+  </div>
+</cr-dialog>
+<!--_html_template_end_-->`;
 }

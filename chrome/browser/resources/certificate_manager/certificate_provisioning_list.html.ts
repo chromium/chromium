@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {CertificateProvisioningListElement} from './certificate_provisioning_list.js';
 
 export function getHtml(this: CertificateProvisioningListElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 ${this.showProvisioningDetailsDialog_ ? html`
   <certificate-provisioning-details-dialog
@@ -15,8 +14,7 @@ ${this.showProvisioningDetailsDialog_ ? html`
       @close="${this.onDialogClose_}">
   </certificate-provisioning-details-dialog>
 ` : ''}
-<div class="header-box" role="heading"
-    aria-labelledby="headingLabel"
+<div class="header-box" role="heading" aria-labelledby="headingLabel"
     ?hidden="${!this.hasCertificateProvisioningEntries_()}">
   <span id="headingLabel" class="flex">
     $i18n{certificateProvisioningListHeader}
@@ -27,5 +25,4 @@ ${this.provisioningProcesses_.map(item => html`
   </certificate-provisioning-entry>
 `)}
 <!--_html_template_end_-->`;
-  // clang-format on
 }

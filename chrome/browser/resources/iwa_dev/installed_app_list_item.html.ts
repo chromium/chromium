@@ -7,13 +7,12 @@ import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 import type {InstalledAppListItemElement} from './installed_app_list_item.js';
 
 export function getHtml(this: InstalledAppListItemElement) {
-  // clang-format off
   return html`
 <div id="icon-circle" title="Launch ${this.app.name}"
-     @click="${this.onLaunchClick}">
+    @click="${this.onLaunchClick}">
   ${this.app.name.length > 0 ? html`
     <img id="app-icon" draggable="false"
-         src="chrome://app-icon/${this.app.appId}/48" alt="">
+        src="chrome://app-icon/${this.app.appId}/48" alt="">
   ` : ''}
   <div id="launch-overlay">
     <cr-icon icon="cr:open-in-new"></cr-icon>
@@ -22,7 +21,7 @@ export function getHtml(this: InstalledAppListItemElement) {
 <div id="details">
   <div id="header">
     <span id="name" title="Launch ${this.app.name}"
-          @click="${this.onLaunchClick}">
+        @click="${this.onLaunchClick}">
       ${this.app.name}
       <cr-icon class="icon-16" icon="cr:open-in-new"></cr-icon>
     </span>
@@ -50,10 +49,8 @@ export function getHtml(this: InstalledAppListItemElement) {
           @click="${this.onUpdateClick}">
         Update
       </cr-button>
-      <cr-button id="update-options-btn"
-          aria-label="Update options"
-          title="Update options"
-          ?disabled="${this.isUpdating}"
+      <cr-button id="update-options-btn" aria-label="Update options"
+          title="Update options" ?disabled="${this.isUpdating}"
           @click="${this.onUpdateOptionsClick}">
         <cr-icon class="icon-16" icon="cr:settings-filled"></cr-icon>
       </cr-button>
@@ -67,6 +64,5 @@ export function getHtml(this: InstalledAppListItemElement) {
   <cr-button id="uninstall-btn" @click="${this.onUninstallClick}">
     Uninstall
   </cr-button>
-</div>
-`;
+</div>`;
 }

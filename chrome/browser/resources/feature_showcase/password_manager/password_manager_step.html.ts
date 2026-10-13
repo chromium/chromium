@@ -7,32 +7,28 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {FeatureShowcasePasswordManagerStepElement} from './password_manager_step.js';
 
 export function getHtml(this: FeatureShowcasePasswordManagerStepElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <feature-showcase-step>
   <slot name="stepper" slot="stepper"></slot>
   <img slot="illustration" id="illustration" alt="">
   <span slot="title">$i18n{passwordManagerTitle}</span>
   <span slot="description">$i18n{passwordManagerSubtitle}</span>
-  <if expr="is_win">
-    <cr-button slot="button" id="confirm-button" class="action-button"
-        @click="${this.onConfirmClick_}"
-        ?disabled="${this.buttonsDisabled}">
-      $i18n{passwordManagerAddToToolbar}
-    </cr-button>
-  </if>
-    <cr-button slot="button" id="skip-button" @click="${this.onSkipClick_}"
-        ?disabled="${this.buttonsDisabled}">
-      $i18n{passwordManagerNoThanks}
-    </cr-button>
-  <if expr="not is_win">
-    <cr-button slot="button" id="confirm-button" class="action-button"
-        @click="${this.onConfirmClick_}"
-        ?disabled="${this.buttonsDisabled}">
-      $i18n{passwordManagerAddToToolbar}
-    </cr-button>
-  </if>
+<if expr="is_win">
+  <cr-button slot="button" id="confirm-button" class="action-button"
+      @click="${this.onConfirmClick_}" ?disabled="${this.buttonsDisabled}">
+    $i18n{passwordManagerAddToToolbar}
+  </cr-button>
+</if>
+  <cr-button slot="button" id="skip-button" @click="${this.onSkipClick_}"
+      ?disabled="${this.buttonsDisabled}">
+    $i18n{passwordManagerNoThanks}
+  </cr-button>
+<if expr="not is_win">
+  <cr-button slot="button" id="confirm-button" class="action-button"
+      @click="${this.onConfirmClick_}" ?disabled="${this.buttonsDisabled}">
+    $i18n{passwordManagerAddToToolbar}
+  </cr-button>
+</if>
 </feature-showcase-step>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

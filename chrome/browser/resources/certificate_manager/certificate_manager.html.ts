@@ -9,10 +9,8 @@ import {CertificateSource} from './certificate_manager.mojom-webui.js';
 import {Page} from './navigation.js';
 
 export function getHtml(this: CertificateManagerElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
-<cr-toolbar id="toolbar"
-    page-name="$i18n{certificateManagerV2Title}"
+<cr-toolbar id="toolbar" page-name="$i18n{certificateManagerV2Title}"
     .showSearch="${this.showSearch_}" always-show-logo>
 </cr-toolbar>
 <div id="container" class="cr-scrollable">
@@ -32,9 +30,10 @@ export function getHtml(this: CertificateManagerElement) {
           href="${this.generateHrefForPage_(Page.CLIENT_CERTS)}"
           @click="${this.onMenuItemClick_}">
         <cr-icon
-            icon="${this.webuiRoundedIconsEnabled_
-                ? 'certmanager:id-card'
-                : 'certmanager:card-old'}" class="menu-icon"></cr-icon>
+            icon="${this.webuiRoundedIconsEnabled_ ? 'certmanager:id-card' :
+                                                     'certmanager:card-old'}"
+            class="menu-icon">
+        </cr-icon>
         $i18n{certificateManagerV2ClientCerts}
       </a>
       <a id="crsMenuItem" role="menuitem" class="cr-nav-menu-item"
@@ -54,24 +53,20 @@ export function getHtml(this: CertificateManagerElement) {
       <h2 class="page-title">$i18n{certificateManagerV2ClientCerts}</h2>
       $i18n{certificateManagerV2ClientCertsDescription}
 
-      <if expr="is_win or is_macosx or is_linux">
-        <certificate-list
-            id="provisionedClientCerts"
-            cert-source="${CertificateSource.kProvisionedClientCert}"
-            header-text="$i18n{certificateManagerV2ClientCertsFromAdmin}"
-            hide-export hide-if-empty
-            @hash-copied="${this.onHashCopied_}">
-        </certificate-list>
-      </if>
-      <if expr="is_chromeos">
-        <certificate-list
-            id="extensionsClientCerts"
-            cert-source="${CertificateSource.kExtensionsClientCert}"
-            header-text="$i18n{certificateManagerV2ClientCertsFromExtension}"
-            hide-export hide-if-empty
-            @hash-copied="${this.onHashCopied_}">
-        </certificate-list>
-      </if>
+<if expr="is_win or is_macosx or is_linux">
+      <certificate-list id="provisionedClientCerts"
+          cert-source="${CertificateSource.kProvisionedClientCert}"
+          header-text="$i18n{certificateManagerV2ClientCertsFromAdmin}"
+          hide-export hide-if-empty @hash-copied="${this.onHashCopied_}">
+      </certificate-list>
+</if>
+<if expr="is_chromeos">
+      <certificate-list id="extensionsClientCerts"
+          cert-source="${CertificateSource.kExtensionsClientCert}"
+          header-text="$i18n{certificateManagerV2ClientCertsFromExtension}"
+          hide-export hide-if-empty @hash-copied="${this.onHashCopied_}">
+      </certificate-list>
+</if>
 
       <h3 class="section-title">$i18n{certificateManagerV2Platform}</h3>
 
@@ -81,53 +76,48 @@ export function getHtml(this: CertificateManagerElement) {
             sub-label="${this.numPlatformClientCertsString_}"
             @click="${this.onClientPlatformCertsLinkRowClick_}">
         </cr-link-row>
-        <if expr="is_win or is_macosx">
-          <cr-link-row external id="manageOsImportedClientCerts" class="hr"
-              label="$i18n{certificateManagerV2PlatformCertsManageLink}"
-              button-aria-description="$i18n{certificateManagerV2PlatformCertsManageLinkAriaDescription}"
-              @click="${this.onManageCertsExternalClick_}">
-          </cr-link-row>
-        </if>
+<if expr="is_win or is_macosx">
+        <cr-link-row external id="manageOsImportedClientCerts" class="hr"
+            label="$i18n{certificateManagerV2PlatformCertsManageLink}"
+            button-aria-description="$i18n{certificateManagerV2PlatformCertsManageLinkAriaDescription}"
+            @click="${this.onManageCertsExternalClick_}">
+        </cr-link-row>
+</if>
       </div>
 
-      <if expr="is_chromeos">
-        <certificate-provisioning-list remove-header-padding>
-        </certificate-provisioning-list>
-      </if>
+<if expr="is_chromeos">
+      <certificate-provisioning-list remove-header-padding>
+      </certificate-provisioning-list>
+</if>
     </div>
 
-    <local-certs-section id="localCertSection"
-        path="${Page.LOCAL_CERTS}" @hash-copied="${this.onHashCopied_}">
+    <local-certs-section id="localCertSection" path="${Page.LOCAL_CERTS}"
+        @hash-copied="${this.onHashCopied_}">
     </local-certs-section>
 
     <!-- Chrome Root Store section -->
-    <crs-section id="crsCertSection"
-        path="${Page.CRS_CERTS}" @hash-copied="${this.onHashCopied_}">
+    <crs-section id="crsCertSection" path="${Page.CRS_CERTS}"
+        @hash-copied="${this.onHashCopied_}">
     </crs-section>
 
-    <certificate-subpage id="adminCertsSection"
-        path="${Page.ADMIN_CERTS}"
-        class="cr-centered-card-container"
-        @hash-copied="${this.onHashCopied_}"
+    <certificate-subpage id="adminCertsSection" path="${Page.ADMIN_CERTS}"
+        class="cr-centered-card-container" @hash-copied="${this.onHashCopied_}"
         navigate-back-target="${Page.LOCAL_CERTS}"
         subpage-title="$i18n{certificateManagerV2AdminCertsTitle}"
         .subpageCertLists="${this.enterpriseSubpageLists_}">
     </certificate-subpage>
 
-    <if expr="not is_chromeos">
-      <certificate-subpage id="platformCertsSection"
-          path="${Page.PLATFORM_CERTS}"
-          class="cr-centered-card-container"
-          @hash-copied="${this.onHashCopied_}"
-          navigate-back-target="${Page.LOCAL_CERTS}"
-          subpage-title="$i18n{certificateManagerV2PlatformCertsTitle}"
-          .subpageCertLists="${this.platformSubpageLists_}">
-      </certificate-subpage>
-    </if>
+<if expr="not is_chromeos">
+    <certificate-subpage id="platformCertsSection" path="${Page.PLATFORM_CERTS}"
+        class="cr-centered-card-container" @hash-copied="${this.onHashCopied_}"
+        navigate-back-target="${Page.LOCAL_CERTS}"
+        subpage-title="$i18n{certificateManagerV2PlatformCertsTitle}"
+        .subpageCertLists="${this.platformSubpageLists_}">
+    </certificate-subpage>
+</if>
 
     <certificate-subpage id="platformClientCertsSection"
-        path="${Page.PLATFORM_CLIENT_CERTS}"
-        class="cr-centered-card-container"
+        path="${Page.PLATFORM_CLIENT_CERTS}" class="cr-centered-card-container"
         @hash-copied="${this.onHashCopied_}"
         navigate-back-target="${Page.CLIENT_CERTS}"
         @import-result="${this.onImportResult_}"
@@ -136,10 +126,8 @@ export function getHtml(this: CertificateManagerElement) {
         .subpageCertLists="${this.clientPlatformSubpageLists_}">
     </certificate-subpage>
 
-    <certificate-subpage id="userCertsSection"
-        path="${Page.USER_CERTS}"
-        class="cr-centered-card-container"
-        @hash-copied="${this.onHashCopied_}"
+    <certificate-subpage id="userCertsSection" path="${Page.USER_CERTS}"
+        class="cr-centered-card-container" @hash-copied="${this.onHashCopied_}"
         @import-result="${this.onImportResult_}"
         @delete-result="${this.onDeleteResult_}"
         navigate-back-target="${Page.LOCAL_CERTS}"
@@ -173,5 +161,4 @@ ${this.showConfirmationDialog_ ? html`
   </certificate-confirmation-dialog>
 ` : ''}
 <!--_html_template_end_-->`;
-  // clang-format on
 }

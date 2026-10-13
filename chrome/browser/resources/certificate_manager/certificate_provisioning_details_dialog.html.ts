@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {CertificateProvisioningDetailsDialogElement} from './certificate_provisioning_details_dialog.js';
 
 export function getHtml(this: CertificateProvisioningDetailsDialogElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <cr-dialog id="dialog" show-on-attach show-close-button
     close-text="$i18n{close}">
@@ -60,8 +59,7 @@ export function getHtml(this: CertificateProvisioningDetailsDialogElement) {
         ${this.model.timeSinceLastUpdate}
       </div>
     </div>
-    <div class="two-line"
-        ?hidden="${this.shouldHideLastFailedStatus_()}">
+    <div class="two-line" ?hidden="${this.shouldHideLastFailedStatus_()}">
       <div class="label" aria-describedby="lastFailedStatus">
         $i18n{certificateProvisioningLastUnsuccessfulStatus}
       </div>
@@ -98,5 +96,4 @@ export function getHtml(this: CertificateProvisioningDetailsDialogElement) {
   </div>
 </cr-dialog>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

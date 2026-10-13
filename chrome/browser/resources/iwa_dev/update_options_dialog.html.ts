@@ -7,28 +7,22 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {IwaDevUpdateOptionsDialogElement} from './update_options_dialog.js';
 
 export function getHtml(this: IwaDevUpdateOptionsDialogElement) {
-  // clang-format off
   return html`
 <cr-dialog id="dialog" show-on-attach @cr-dialog-open="${this.onCrDialogOpen_}">
   <div slot="title">
     <img id="app-icon" draggable="false"
-         src="chrome://app-icon/${this.app.appId}/20" alt="">
+        src="chrome://app-icon/${this.app.appId}/20" alt="">
     <span>${this.app.name} • Update Options</span>
   </div>
   <div slot="body">
-    <iwa-dev-combobox id="channelCombobox"
-        label="Update Channel"
-        placeholder="Select or enter channel"
-        match-strategy="contains"
-        .value="${this.selectedChannel_}"
-        .options="${this.channelOptions_}"
+    <iwa-dev-combobox id="channelCombobox" label="Update Channel"
+        placeholder="Select or enter channel" match-strategy="contains"
+        .value="${this.selectedChannel_}" .options="${this.channelOptions_}"
         .errorMessage="${this.channelError_}"
         @value-changed="${this.onChannelValueChanged_}">
     </iwa-dev-combobox>
-    <iwa-dev-combobox id="pinnedVersionCombobox"
-        label="Pinned Version"
-        placeholder="Select or enter version"
-        clearable
+    <iwa-dev-combobox id="pinnedVersionCombobox" label="Pinned Version"
+        placeholder="Select or enter version" clearable
         .value="${this.selectedPinnedVersion_}"
         .options="${this.versionOptions_}"
         .errorMessage="${this.pinnedVersionError_}"
