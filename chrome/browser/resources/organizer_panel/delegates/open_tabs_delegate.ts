@@ -277,7 +277,7 @@ export class OpenTabsDelegate implements
     const description: OrganizerListSectionItemDescriptionPart[] = [];
     const elapsedText = getMostRecentTab(item).lastActiveElapsedText;
     if (elapsedText) {
-      description.push({text: elapsedText});
+      description.push({text: elapsedText, matchable: false});
     }
 
     const tabGroup = this.getTabGroupFromItem_(item);

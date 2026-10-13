@@ -5,7 +5,7 @@
 import {foreignTabsBrowserProxyFactory, ForeignTabsDelegate, ForeignTabsPageHandlerRemote} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import type {ForeignTab} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 
 suite('ForeignTabsDelegateTest', () => {
@@ -86,8 +86,9 @@ suite('ForeignTabsDelegateTest', () => {
           assertEquals(expected.title, item.title[0]);
           assertTrue(!!item.description);
           assertEquals(2, item.description.length);
-          assertEquals(expected.elapsed, item.description[0]!.text);
-          assertEquals(expected.device, item.description[1]!.text);
+          assertDeepEquals(
+              {text: expected.elapsed, matchable: false}, item.description[0]);
+          assertDeepEquals({text: expected.device}, item.description[1]);
           assertEquals(sampleTabs[i]!.url, item.prefixIcon?.url);
         }
         assertEquals(1, mockHandler.getCallCount('getForeignTabs'));

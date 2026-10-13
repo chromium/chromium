@@ -152,8 +152,9 @@ export class RecentTabsDelegate implements
       OrganizerListSectionItem<RecentlyClosedItem> {
     return {
       title: [tab.title],
-      description:
-          tab.lastActiveElapsedText ? [{text: tab.lastActiveElapsedText}] : [],
+      description: tab.lastActiveElapsedText ?
+          [{text: tab.lastActiveElapsedText, matchable: false}] :
+          [],
       prefixIcon: {
         url: tab.url,
       },
@@ -165,7 +166,10 @@ export class RecentTabsDelegate implements
       OrganizerListSectionItem<RecentlyClosedItem> {
     const description: OrganizerListSectionItemDescriptionPart[] = [];
     if (splitView.lastActiveElapsedText) {
-      description.push({text: splitView.lastActiveElapsedText});
+      description.push({
+        text: splitView.lastActiveElapsedText,
+        matchable: false,
+      });
     }
     description.push(
         {text: splitView.tabTitles[0]!}, {text: splitView.tabTitles[1]!});
@@ -185,7 +189,7 @@ export class RecentTabsDelegate implements
     return {
       title: [title],
       description: tabGroup.lastActiveElapsedText ?
-          [{text: tabGroup.lastActiveElapsedText}] :
+          [{text: tabGroup.lastActiveElapsedText, matchable: false}] :
           [],
       data: tabGroup,
     };

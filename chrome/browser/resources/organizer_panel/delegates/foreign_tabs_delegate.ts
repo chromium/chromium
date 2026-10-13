@@ -32,7 +32,7 @@ export class ForeignTabsDelegate implements
     return tabs.map(tab => ({
                       title: [tab.title],
                       description: [
-                        {text: tab.lastActiveElapsedText},
+                        {text: tab.lastActiveElapsedText, matchable: false},
                         {text: tab.deviceName},
                       ],
                       prefixIcon: tab.url ? {url: tab.url} : undefined,
