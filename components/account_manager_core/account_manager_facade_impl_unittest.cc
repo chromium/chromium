@@ -21,6 +21,8 @@
 #include "components/account_manager_core/account_manager_test_util.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/account_manager_core/mock_account_manager_facade.h"
+#include "components/policy/core/common/policy_pref_names.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
@@ -65,7 +67,8 @@ class AccountManagerFacadeImplTest : public testing::Test {
 
  protected:
   void SetUp() override {
-    AccountManager::RegisterPrefs(pref_service_.registry());
+    pref_service_.registry()->RegisterBooleanPref(
+        policy::policy_prefs::kSecondaryGoogleAccountSigninAllowed, true);
     real_account_manager_ = std::make_unique<AccountManager>();
     real_account_manager_->InitializeInEphemeralMode(
         test_url_loader_factory_.GetSafeWeakWrapper());

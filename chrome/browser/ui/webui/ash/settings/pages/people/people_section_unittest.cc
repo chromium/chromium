@@ -21,7 +21,7 @@
 #include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy.h"
 #include "components/account_id/account_id.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
-#include "components/account_manager_core/pref_names.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/test/user_session_test_environment.h"
 #include "components/user_manager/user.h"
@@ -100,7 +100,7 @@ class PeopleSectionTest : public testing::Test {
     ASSERT_TRUE(base::test::RunUntil(
         [&]() { return account_manager_->IsInitialized(); }));
     profile_->GetPrefs()->SetBoolean(
-        ::account_manager::prefs::kSecondaryGoogleAccountSigninAllowed, true);
+        policy::policy_prefs::kSecondaryGoogleAccountSigninAllowed, true);
 
     AddAccount(kPrimaryGaiaId, kPrimaryEmail);
   }

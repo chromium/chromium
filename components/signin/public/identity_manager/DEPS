@@ -3,3 +3,9 @@ include_rules = [
   "+components/signin/public",
   "+pdf/buildflags.h",
 ]
+
+specific_include_rules = {
+  "identity_manager_unittest\\.cc|identity_test_environment\\.cc": [
+    "+components/policy/core/common/policy_pref_names.h",
+  ],
+}

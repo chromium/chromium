@@ -10,9 +10,6 @@
 namespace account_manager::prefs {
 
 COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE)
-extern const char kSecondaryGoogleAccountSigninAllowed[];
-
-COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE)
 extern const char kAccountAppsAvailability[];
 
 COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE)

@@ -40,10 +40,6 @@
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "components/account_manager_core/pref_names.h"
-#endif
-
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 #include "base/containers/flat_set.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service.h"
@@ -184,7 +180,7 @@ void HeaderModificationDelegateImpl::ProcessRequest(
 #if BUILDFLAG(IS_CHROMEOS)
   bool is_secondary_account_addition_allowed = true;
   if (!profile_->GetPrefs()->GetBoolean(
-          ::account_manager::prefs::kSecondaryGoogleAccountSigninAllowed)) {
+          policy::policy_prefs::kSecondaryGoogleAccountSigninAllowed)) {
     is_secondary_account_addition_allowed = false;
   }
 #endif

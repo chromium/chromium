@@ -28,6 +28,7 @@ component("account_manager_core") {
 
   deps = [
     "//base",
+    "//components/policy/core/common:common_constants",
     "//components/prefs",
     "//google_apis",
     "//services/network/public/cpp",
@@ -72,6 +73,7 @@ source_set("unit_tests") {
     ":account_manager_core",
     ":test_support",
     "//base/test:test_support",
+    "//components/policy/core/common:common_constants",
     "//components/prefs:test_support",
     "//google_apis",
     "//services/network:test_support",

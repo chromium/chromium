@@ -27,7 +27,6 @@
 
 class OAuth2AccessTokenFetcher;
 class OAuth2AccessTokenConsumer;
-class PrefRegistrySimple;
 class PrefService;
 
 namespace base {
@@ -100,8 +99,6 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManager {
   AccountManager(const AccountManager&) = delete;
   AccountManager& operator=(const AccountManager&) = delete;
   virtual ~AccountManager();
-
-  static void RegisterPrefs(PrefRegistrySimple* registry);
 
   // Sets a |PrefService|. Account Manager will use this instance to read its
   // policies.

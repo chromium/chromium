@@ -56,7 +56,6 @@
 #include "chromeos/ash/components/growth/growth_metrics.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "components/account_manager_core/pref_names.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/policy/core/common/policy_pref_names.h"
@@ -598,8 +597,7 @@ void DemoSession::OnSessionStateChanged() {
       if (features::IsDemoModeSecondaryGoogleAccountSigninAllowedFalse()) {
         // Prevent users from signing in with their own account.
         ProfileManager::GetActiveUserProfile()->GetPrefs()->SetBoolean(
-            account_manager::prefs::kSecondaryGoogleAccountSigninAllowed,
-            false);
+            policy::policy_prefs::kSecondaryGoogleAccountSigninAllowed, false);
       }
 
       RestoreDefaultLocaleForNextSession();

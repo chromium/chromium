@@ -26,6 +26,7 @@
 #include "components/account_manager_core/account_manager_facade_impl.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/account_manager_core/mock_account_manager_facade.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/mock_profile_oauth2_token_service_observer.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_observer.h"
@@ -216,7 +217,8 @@ class ProfileOAuth2TokenServiceDelegateChromeOSTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(profile_dir_.CreateUniqueTempDir());
     AccountTrackerService::RegisterPrefs(pref_service_.registry());
-    AccountManager::RegisterPrefs(pref_service_.registry());
+    pref_service_.registry()->RegisterBooleanPref(
+        policy::policy_prefs::kSecondaryGoogleAccountSigninAllowed, true);
 
     account_tracker_service_ = std::make_unique<AccountTrackerService>(
         &pref_service_, base::FilePath());
@@ -832,7 +834,8 @@ class ProfileOAuth2TokenServiceDelegateChromeOSObserverTest
     ASSERT_TRUE(profile_dir_.CreateUniqueTempDir());
 
     AccountTrackerService::RegisterPrefs(pref_service_.registry());
-    AccountManager::RegisterPrefs(pref_service_.registry());
+    pref_service_.registry()->RegisterBooleanPref(
+        policy::policy_prefs::kSecondaryGoogleAccountSigninAllowed, true);
 
     client_ = std::make_unique<TestSigninClient>(ProfilePrefs());
     account_tracker_service_ = std::make_unique<AccountTrackerService>(

@@ -17,6 +17,7 @@
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/account_manager_core/pref_names.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/test/user_session_test_environment.h"
@@ -94,7 +95,8 @@ class AccountAppsAvailabilityTest : public testing::Test {
 
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     AccountAppsAvailability::RegisterPrefs(pref_service_->registry());
-    account_manager::AccountManager::RegisterPrefs(pref_service_->registry());
+    pref_service_->registry()->RegisterBooleanPref(
+        policy::policy_prefs::kSecondaryGoogleAccountSigninAllowed, true);
     account_manager_ = std::make_unique<account_manager::AccountManager>();
     InitializeAccountManager();
 

@@ -216,6 +216,7 @@ source_set("unit_tests") {
       "//ash/constants",
       "//chromeos/ash/components/account_manager",
       "//components/account_manager_core:test_support",
+      "//components/policy/core/common:common_constants",
     ]
   }
 

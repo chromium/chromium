@@ -59,7 +59,6 @@
 #include "chrome/grit/gaia_action_buttons_resources_map.h"
 #include "chrome/grit/supervision_resources.h"
 #include "chrome/grit/supervision_resources_map.h"
-#include "components/account_manager_core/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -197,7 +196,7 @@ void CreateAndAddWebUIDataSource(Profile* profile) {
   source->AddBoolean(
       "secondaryGoogleAccountSigninAllowed",
       profile->GetPrefs()->GetBoolean(
-          ::account_manager::prefs::kSecondaryGoogleAccountSigninAllowed));
+          policy::policy_prefs::kSecondaryGoogleAccountSigninAllowed));
   source->AddBoolean("shouldSkipWelcomePage",
                      profile->GetPrefs()->GetBoolean(
                          ash::prefs::kShouldSkipInlineLoginWelcomePage));

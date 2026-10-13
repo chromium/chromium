@@ -25,6 +25,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/account_id/account_id.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/fake_user_manager_delegate.h"
@@ -771,7 +772,8 @@ class TokenHandleStoreHistogramTest
  public:
   void SetUp() override {
     TokenHandleStoreMaybeFetchTokenHandleTest::SetUp();
-    account_manager::AccountManager::RegisterPrefs(user_prefs_.registry());
+    user_prefs_.registry()->RegisterBooleanPref(
+        policy::policy_prefs::kSecondaryGoogleAccountSigninAllowed, true);
   }
 
   void CreateAndInitializeAccountManager() {

@@ -29,8 +29,7 @@
 #include "base/task/thread_pool.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/chromeos/tokens.pb.h"
-#include "components/account_manager_core/pref_names.h"
-#include "components/prefs/pref_registry_simple.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "google_apis/gaia/gaia_access_token_fetcher.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
@@ -285,13 +284,6 @@ AccountManager::Observer::Observer() = default;
 AccountManager::Observer::~Observer() = default;
 
 AccountManager::AccountManager() = default;
-
-// static
-void AccountManager::RegisterPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(
-      ::account_manager::prefs::kSecondaryGoogleAccountSigninAllowed,
-      /*default_value=*/true);
-}
 
 void AccountManager::SetPrefService(PrefService* pref_service) {
   DCHECK(pref_service);
@@ -616,7 +608,7 @@ void AccountManager::UpsertAccountInternal(
     // turn guarantees that |pref_service_| is not null.
     DCHECK(pref_service_);
     if (!pref_service_->GetBoolean(
-            ::account_manager::prefs::kSecondaryGoogleAccountSigninAllowed)) {
+            policy::policy_prefs::kSecondaryGoogleAccountSigninAllowed)) {
       // Secondary Account additions are disabled by policy and all flows for
       // adding a Secondary Account are already blocked.
       CHECK(accounts_.empty());

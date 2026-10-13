@@ -108,7 +108,7 @@
 #include "chromeos/ash/components/timezone/timezone_util.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
-#include "components/account_manager_core/pref_names.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
@@ -686,9 +686,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[ash::kAccountsPrefAllowNewUser] =
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[ash::kAccountsPrefUsers] = settings_api::PrefType::kList;
-  (*s_allowlist)
-      [::account_manager::prefs::kSecondaryGoogleAccountSigninAllowed] =
-          settings_api::PrefType::kBoolean;
+  (*s_allowlist)[policy::policy_prefs::kSecondaryGoogleAccountSigninAllowed] =
+      settings_api::PrefType::kBoolean;
   // kEnableAutoScreenLock is read-only.
   (*s_allowlist)[ash::prefs::kEnableAutoScreenLock] =
       settings_api::PrefType::kBoolean;

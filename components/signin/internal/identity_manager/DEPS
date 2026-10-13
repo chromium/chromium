@@ -12,3 +12,9 @@ include_rules = [
   "+google_apis",
   "+mojo/public",
 ]
+
+specific_include_rules = {
+  "profile_oauth2_token_service_delegate_chromeos_unittest\\.cc": [
+    "+components/policy/core/common/policy_pref_names.h",
+  ],
+}

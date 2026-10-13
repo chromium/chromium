@@ -6,12 +6,6 @@
 
 namespace account_manager::prefs {
 
-// A boolean pref to store if Secondary Google Account additions are allowed on
-// Chrome OS Account Manager. The default value is |true|, i.e. Secondary Google
-// Account additions are allowed by default.
-const char kSecondaryGoogleAccountSigninAllowed[] =
-    "account_manager.secondary_google_account_signin_allowed";
-
 // A boolean pref to store the list of accounts and their availability in ARC in
 // the format: {string gaia_id, bool is_available_in_arc}.
 const char kAccountAppsAvailability[] =
