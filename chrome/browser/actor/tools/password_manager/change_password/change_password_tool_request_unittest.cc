@@ -4,64 +4,85 @@
 
 #include "chrome/browser/actor/tools/password_manager/change_password/change_password_tool_request.h"
 
-#include <memory>
+#include <optional>
 #include <variant>
-#include <vector>
 
-#include "base/test/gmock_expected_support.h"
-#include "base/test/scoped_feature_list.h"
-#include "chrome/browser/actor/actor_proto_conversion.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
+#include "chrome/browser/actor/actor_surface_impl.h"
 #include "chrome/browser/actor/tool_request_variant.h"
+#include "chrome/browser/actor/tools/password_manager/change_password/change_password_tool.h"
+#include "chrome/browser/actor/tools/tools_test_util.h"
 #include "chrome/common/actor.mojom.h"
-#include "components/optimization_guide/proto/features/actions_data.pb.h"
-#include "components/password_manager/core/browser/features/password_features.h"
+#include "components/actor/core/shared_types.h"
+#include "components/actor/core/task_id.h"
+#include "components/tabs/public/mock_tab_interface.h"
 #include "components/tabs/public/tab_interface.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/point.h"
 
 namespace actor {
 namespace {
 
-class ChangePasswordToolRequestTest : public testing::Test {
- public:
-  ChangePasswordToolRequestTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        password_manager::features::kChangePasswordTool);
-  }
-  ~ChangePasswordToolRequestTest() override = default;
+TEST(ChangePasswordToolRequestTest, Properties) {
+  tabs::MockTabInterface mock_tab;
+  PageTarget current_password_field =
+      DomNode{.node_id = 10, .document_identifier = "doc_token_1"};
+  PageTarget new_password_field =
+      DomNode{.node_id = 20, .document_identifier = "doc_token_1"};
+  PageTarget confirm_new_password_field =
+      DomNode{.node_id = 30, .document_identifier = "doc_token_1"};
+  PageTarget confirm_button = gfx::Point(50, 60);
 
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+  ChangePasswordToolRequest request(mock_tab.GetHandle(),
+                                    current_password_field, new_password_field,
+                                    confirm_new_password_field, confirm_button);
 
-TEST_F(ChangePasswordToolRequestTest,
-       BuildToolRequest_ValidProto_ReturnsRequestWithCorrectNameAndTabHandle) {
-  optimization_guide::proto::Actions actions;
-  optimization_guide::proto::ChangePasswordAction* change_password_action =
-      actions.add_actions()->mutable_change_password();
-  change_password_action->set_tab_id(100);
-
-  ASSERT_OK_AND_ASSIGN(std::vector<std::unique_ptr<ToolRequest>> requests,
-                       BuildToolRequest(actions));
-  ASSERT_EQ(requests.size(), 1u);
-
-  ToolRequest& created_request = *requests.front();
-  EXPECT_EQ("ChangePassword", created_request.Name());
-  EXPECT_EQ("ChangePassword", created_request.JournalEvent());
-
-  const ChangePasswordToolRequest& change_password_request =
-      static_cast<const ChangePasswordToolRequest&>(created_request);
-  EXPECT_EQ(100, change_password_request.GetTabHandle().raw_value());
+  EXPECT_EQ(request.Name(), ChangePasswordToolRequest::kName);
+  EXPECT_EQ(request.Name(), "ChangePassword");
+  EXPECT_EQ(request.JournalEvent(), "ChangePassword");
+  EXPECT_EQ(request.GetTabHandle(), mock_tab.GetHandle());
+  EXPECT_EQ(request.GetCurrentPasswordFieldForTesting(),
+            current_password_field);
+  EXPECT_EQ(request.GetNewPasswordFieldForTesting(), new_password_field);
+  EXPECT_EQ(request.GetConfirmNewPasswordFieldForTesting(),
+            confirm_new_password_field);
+  EXPECT_EQ(request.GetConfirmButtonForTesting(), confirm_button);
 }
 
-TEST_F(ChangePasswordToolRequestTest,
-       BuildToolRequest_MissingTabId_ReturnsError) {
-  optimization_guide::proto::Actions actions;
-  actions.add_actions()->mutable_change_password();
+TEST(ChangePasswordToolRequestTest, CreateTool_ValidTab_Succeeds) {
+  MockToolDelegate delegate;
+  tabs::MockTabInterface mock_tab;
+  ActorSurfaceImpl actor_surface(ActorSurfaceHandle::CreateForTesting(),
+                                 mock_tab.GetHandle());
+  ChangePasswordToolRequest request(
+      mock_tab.GetHandle(),
+      /*current_password_field=*/std::nullopt,
+      PageTarget(DomNode{.node_id = 20, .document_identifier = "doc_token_1"}),
+      /*confirm_new_password_field=*/std::nullopt,
+      /*confirm_button=*/std::nullopt);
 
-  EXPECT_THAT(BuildToolRequest(actions),
-              base::test::ErrorIs(testing::Pair(
-                  0u, mojom::ActionResultCode::kArgumentsInvalid)));
+  ToolRequest::CreateToolResult result =
+      request.CreateTool(TaskId(1), delegate);
+  EXPECT_NE(result.tool, nullptr);
+  ASSERT_TRUE(result.result);
+  EXPECT_EQ(result.result->code, mojom::ActionResultCode::kOk);
+}
+
+TEST(ChangePasswordToolRequestTest, CreateTool_NullTab_ReturnsError) {
+  MockToolDelegate delegate;
+  tabs::TabHandle invalid_tab_handle(999);
+  ChangePasswordToolRequest request(
+      invalid_tab_handle,
+      /*current_password_field=*/std::nullopt,
+      PageTarget(DomNode{.node_id = 20, .document_identifier = "doc_token_1"}),
+      /*confirm_new_password_field=*/std::nullopt,
+      /*confirm_button=*/std::nullopt);
+
+  ToolRequest::CreateToolResult result =
+      request.CreateTool(TaskId(1), delegate);
+  EXPECT_EQ(result.tool, nullptr);
+  ASSERT_TRUE(result.result);
+  EXPECT_EQ(result.result->code, mojom::ActionResultCode::kTabWentAway);
 }
 
 }  // namespace

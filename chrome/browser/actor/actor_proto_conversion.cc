@@ -743,7 +743,51 @@ std::unique_ptr<ToolRequest> CreateChangePasswordRequest(
   if (tab_handle == TabHandle::Null()) {
     return nullptr;
   }
-  return std::make_unique<ChangePasswordToolRequest>(tab_handle);
+
+  std::optional<PageTarget> current_password_field;
+  if (action.has_current_password_field()) {
+    current_password_field = ToPageTarget(action.current_password_field());
+    if (!current_password_field) {
+      return nullptr;
+    }
+  }
+
+  std::optional<PageTarget> new_password_field;
+  if (action.has_new_password_field()) {
+    new_password_field = ToPageTarget(action.new_password_field());
+    if (!new_password_field) {
+      return nullptr;
+    }
+  }
+
+  std::optional<PageTarget> confirm_new_password_field;
+  if (action.has_confirm_new_password_field()) {
+    confirm_new_password_field =
+        ToPageTarget(action.confirm_new_password_field());
+    if (!confirm_new_password_field) {
+      return nullptr;
+    }
+  }
+
+  // Require at least one password field target otherwise the tool would
+  // either be a no-op or act as a plain click tool.
+  if (!current_password_field && !new_password_field &&
+      !confirm_new_password_field) {
+    return nullptr;
+  }
+
+  std::optional<PageTarget> confirm_button;
+  if (action.has_confirm_button()) {
+    confirm_button = ToPageTarget(action.confirm_button());
+    if (!confirm_button) {
+      return nullptr;
+    }
+  }
+
+  return std::make_unique<ChangePasswordToolRequest>(
+      tab_handle, std::move(current_password_field),
+      std::move(new_password_field), std::move(confirm_new_password_field),
+      std::move(confirm_button));
 }
 
 std::unique_ptr<ToolRequest> CreateScriptToolRequest(

@@ -5,7 +5,9 @@
 #include "chrome/browser/actor/tools/password_manager/change_password/change_password_tool_request.h"
 
 #include <memory>
+#include <optional>
 #include <string_view>
+#include <utility>
 
 #include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
@@ -18,8 +20,17 @@
 
 namespace actor {
 
-ChangePasswordToolRequest::ChangePasswordToolRequest(tabs::TabHandle tab_handle)
-    : TabToolRequest(tab_handle) {}
+ChangePasswordToolRequest::ChangePasswordToolRequest(
+    tabs::TabHandle tab_handle,
+    std::optional<PageTarget> current_password_field,
+    std::optional<PageTarget> new_password_field,
+    std::optional<PageTarget> confirm_new_password_field,
+    std::optional<PageTarget> confirm_button)
+    : TabToolRequest(tab_handle),
+      current_password_field_(std::move(current_password_field)),
+      new_password_field_(std::move(new_password_field)),
+      confirm_new_password_field_(std::move(confirm_new_password_field)),
+      confirm_button_(std::move(confirm_button)) {}
 
 ChangePasswordToolRequest::ChangePasswordToolRequest(
     const ChangePasswordToolRequest&) = default;
@@ -38,9 +49,11 @@ ToolRequest::CreateToolResult ChangePasswordToolRequest::CreateTool(
                                          /*requires_page_stabilization=*/false,
                                          "The tab is no longer present.")};
   }
-  return {std::make_unique<ChangePasswordTool>(task_id, tool_delegate,
-                                               *actor_surface),
-          MakeOkResult()};
+  return {
+      std::make_unique<ChangePasswordTool>(
+          task_id, tool_delegate, *actor_surface, current_password_field_,
+          new_password_field_, confirm_new_password_field_, confirm_button_),
+      MakeOkResult()};
 }
 
 void ChangePasswordToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
