@@ -2319,6 +2319,30 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.Ai.Suppression.Load.DroppedRecordCount"
+    units="records" expires_after="2027-01-01">
+  <owner>tobson@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the number of stored Autofill AI entity suppression records that
+    were dropped while loading suppressions from disk, e.g. because they could
+    not be decrypted. Emitted once (including zero) when the entity suppression
+    storage finishes loading on startup.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.Ai.Suppression.Load.DropReason"
+    enum="AutofillAiEntitySuppressionLoadDropReason" expires_after="2027-01-01">
+  <owner>tobson@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records why a stored Autofill AI entity suppression record was dropped while
+    loading suppressions from disk. Dropped records are not applied, so the
+    corresponding entities are shown again. Emitted once per dropped record when
+    the entity suppression storage finishes loading on startup.
+  </summary>
+</histogram>
+
 <histogram
     name="Autofill.Ai.TimingInterval.LoadedServerPredictionsToFirstInteraction"
     units="ms" expires_after="2027-03-07">

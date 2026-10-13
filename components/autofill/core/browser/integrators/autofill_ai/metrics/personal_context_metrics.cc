@@ -109,4 +109,15 @@ void LogEntitySuppressionEntitiesFilteredPerPrefetch(size_t count) {
       "Autofill.Ai.Suppression.EntitiesFilteredPerPrefetch", count);
 }
 
+void LogEntitySuppressionLoadDroppedRecordCount(size_t count) {
+  base::UmaHistogramCounts1000(
+      "Autofill.Ai.Suppression.Load.DroppedRecordCount", count);
+}
+
+void LogEntitySuppressionLoadDropReason(
+    EntitySuppressionLoadDropReason reason) {
+  base::UmaHistogramEnumeration("Autofill.Ai.Suppression.Load.DropReason",
+                                reason);
+}
+
 }  // namespace autofill
