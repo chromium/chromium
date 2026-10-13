@@ -20,12 +20,14 @@ import android.view.ViewTreeObserver;
 import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ActivityState;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.intents.BrowserIntentUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
@@ -40,10 +42,12 @@ import org.chromium.content_public.browser.ActionModeCallbackHelper;
 import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.ViewEventSink;
+import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.base.WindowAndroid.ActivityStateObserver;
 import org.chromium.ui.base.WindowAndroid.KeyboardShortcutsDelegate;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -76,6 +80,25 @@ public class TabBottomSheetWebUi {
     // in this state to preserve the highlighted selection, but ensure focus is cleared when the
     // dropdown is dismissed if the window has not regained focus.
     private boolean mIgnoreClearFocusForDropdown;
+
+    // ThinWebView marks the WebContents visible once on attach and never hides it, so the page
+    // would otherwise not get a visibilitychange event when Chrome goes to the background. Mirror
+    // the host activity state the same way TabImpl does for tabs, so the page can release the
+    // microphone and other foreground-only resources. Only used for the Glic client while the
+    // GlicVoice feature is enabled.
+    private final ActivityStateObserver mActivityStateObserver =
+            new ActivityStateObserver() {
+                @Override
+                public void onActivityStopped() {
+                    updateWebContentsVisibility(Visibility.HIDDEN);
+                }
+
+                @Override
+                public void onActivityResumed() {
+                    updateWebContentsVisibility(Visibility.VISIBLE);
+                }
+            };
+    private boolean mIsObservingActivityState;
 
     TabBottomSheetWebUi(
             Context context,
@@ -125,8 +148,18 @@ public class TabBottomSheetWebUi {
 
         mWebContents = webContents;
         if (mWebContents == null) {
+            if (mIsObservingActivityState) {
+                mWindowAndroid.removeActivityStateObserver(mActivityStateObserver);
+                mIsObservingActivityState = false;
+            }
             destroyThinWebView();
             return;
+        }
+        if (!mIsObservingActivityState
+                && mClientType == TabBottomSheetClientType.GLIC
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.GLIC_VOICE)) {
+            mWindowAndroid.addActivityStateObserver(mActivityStateObserver);
+            mIsObservingActivityState = true;
         }
 
         mWebContents.getEventForwarder().setCurrentTouchOffsetX(0.0f);
@@ -139,6 +172,12 @@ public class TabBottomSheetWebUi {
         setupViewAndroidDelegate(contentView);
         setupContextMenuPopulator();
         attachToThinWebView(contentView);
+        // Attaching to ThinWebView marks the WebContents visible. Undo that if the host activity
+        // is already in the background.
+        if (mIsObservingActivityState
+                && mWindowAndroid.getActivityState() == ActivityState.STOPPED) {
+            updateWebContentsVisibility(Visibility.HIDDEN);
+        }
 
         // ThinWebView creates an orphaned WindowAndroid. We explicitly map the host
         // activity's KeyboardShortcutsDelegate to this orphaned window so that
@@ -299,6 +338,11 @@ public class TabBottomSheetWebUi {
 
     @Nullable WebContents getWebContents() {
         return mWebContents;
+    }
+
+    private void updateWebContentsVisibility(@Visibility int visibility) {
+        if (mWebContents == null || mWebContents.isDestroyed()) return;
+        mWebContents.updateWebContentsVisibility(visibility);
     }
 
     void setIgnoreClearFocus(boolean ignoreClearFocus) {
