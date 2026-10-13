@@ -331,9 +331,9 @@ TEST_F(ContextualTasksUiServiceTest,
                   sessions::SessionTabHelper::IdForTab(web_contents.get())))
       .Times(1);
 
-  real_service_->OnNavigationToAiPageIntercepted(intercepted_url,
-                                                 weak_factory.GetWeakPtr(),
-                                                 /*is_to_new_tab=*/false);
+  real_service_->OnNavigationToAiPageIntercepted(
+      intercepted_url, weak_factory.GetWeakPtr(),
+      /*is_to_new_tab=*/false, ui::PAGE_TRANSITION_LINK);
 
   EXPECT_TRUE(identity_test_env_->IsAccessTokenRequestPending());
 }
@@ -365,9 +365,9 @@ TEST_F(ContextualTasksUiServiceTest,
       .Times(1);
 
   base::HistogramTester histogram_tester;
-  real_service_->OnNavigationToAiPageIntercepted(intercepted_url,
-                                                 weak_factory.GetWeakPtr(),
-                                                 /*is_to_new_tab=*/false);
+  real_service_->OnNavigationToAiPageIntercepted(
+      intercepted_url, weak_factory.GetWeakPtr(),
+      /*is_to_new_tab=*/false, ui::PAGE_TRANSITION_LINK);
 
   // No token fetcher is created for a signed-out user, but the attempt is
   // still recorded as an OAuth failure so the dashboards keep reporting
@@ -479,9 +479,9 @@ TEST_F(ContextualTasksUiServiceTestWithMockTime, OAuthMetrics_AimNavigation) {
       .Times(1);
 
   // Trigger early fetch (AimNavigation).
-  real_service_->OnNavigationToAiPageIntercepted(intercepted_url,
-                                                 weak_factory.GetWeakPtr(),
-                                                 /*is_to_new_tab=*/false);
+  real_service_->OnNavigationToAiPageIntercepted(
+      intercepted_url, weak_factory.GetWeakPtr(),
+      /*is_to_new_tab=*/false, ui::PAGE_TRANSITION_LINK);
 
   // Respond with token to complete the fetch.
   identity_test_env_->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
@@ -739,7 +739,8 @@ TEST_F(ContextualTasksUiServiceTest, HandleNavigation_AiPage_ChecksCobrowse) {
       profile_.get(), content::SiteInstance::Create(profile_.get()));
 
   base::RunLoop run_loop;
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(ai_url, _, _))
+  EXPECT_CALL(*service_for_nav_,
+              OnNavigationToAiPageIntercepted(ai_url, _, _, _))
       .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
 
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
@@ -764,7 +765,7 @@ TEST_F(
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
       profile_.get(), content::SiteInstance::Create(profile_.get()));
 
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _, _))
       .Times(0);
 
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
@@ -806,7 +807,8 @@ TEST_F(ContextualTasksUiServiceTest,
                          /*input_state_model=*/nullptr);
 
   base::RunLoop run_loop;
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(ai_url, _, _))
+  EXPECT_CALL(*service_for_nav_,
+              OnNavigationToAiPageIntercepted(ai_url, _, _, _))
       .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
 
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
@@ -850,7 +852,7 @@ TEST_F(
   helper->SetTaskSession(std::nullopt, std::move(mock_session),
                          /*input_state_model=*/nullptr);
 
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _, _))
       .Times(0);
 
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
@@ -901,7 +903,8 @@ TEST_F(
                          /*input_state_model=*/nullptr);
 
   base::RunLoop run_loop;
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(ai_url, _, _))
+  EXPECT_CALL(*service_for_nav_,
+              OnNavigationToAiPageIntercepted(ai_url, _, _, _))
       .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
 
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
@@ -951,7 +954,7 @@ TEST_F(
   helper->SetTaskSession(std::nullopt, std::move(mock_session),
                          /*input_state_model=*/nullptr);
 
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _, _))
       .Times(0);
 
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
@@ -979,7 +982,7 @@ TEST_F(
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
       profile_.get(), content::SiteInstance::Create(profile_.get()));
 
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _, _))
       .Times(0);
 
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
@@ -1014,7 +1017,7 @@ TEST_F(
   content::WebContentsTester::For(web_contents.get())
       ->SetLastCommittedURL(host_url);
 
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _, _))
       .Times(0);
 
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
@@ -1062,7 +1065,7 @@ TEST_F(
   helper->SetTaskSession(std::nullopt, std::move(mock_session),
                          /*input_state_model=*/nullptr);
 
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _, _))
       .Times(0);
 
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
@@ -1083,7 +1086,7 @@ TEST_F(ContextualTasksUiServiceTest,
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
       profile_.get(), content::SiteInstance::Create(profile_.get()));
 
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _, _))
       .Times(0);
 
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
@@ -1100,9 +1103,10 @@ TEST_F(ContextualTasksUiServiceTest,
       profile_.get(), content::SiteInstance::Create(profile_.get()));
 
   base::RunLoop run_loop;
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _, _))
       .WillOnce([&](const GURL& intercepted_url,
-                    base::WeakPtr<tabs::TabInterface> tab, bool is_to_new_tab) {
+                    base::WeakPtr<tabs::TabInterface> tab, bool is_to_new_tab,
+                    ui::PageTransition) {
         std::string value;
         EXPECT_TRUE(net::GetValueForKeyInQuery(intercepted_url, "cru", &value));
         EXPECT_EQ("1", value);
@@ -1126,9 +1130,10 @@ TEST_F(ContextualTasksUiServiceTest,
       profile_.get(), content::SiteInstance::Create(profile_.get()));
 
   base::RunLoop run_loop;
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _, _))
       .WillOnce([&](const GURL& intercepted_url,
-                    base::WeakPtr<tabs::TabInterface> tab, bool is_to_new_tab) {
+                    base::WeakPtr<tabs::TabInterface> tab, bool is_to_new_tab,
+                    ui::PageTransition) {
         std::string value;
         EXPECT_FALSE(
             net::GetValueForKeyInQuery(intercepted_url, "cru", &value));
@@ -1151,7 +1156,7 @@ TEST_F(ContextualTasksUiServiceTest,
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
       profile_.get(), content::SiteInstance::Create(profile_.get()));
 
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _, _))
       .Times(0);
 
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
@@ -1200,7 +1205,7 @@ TEST_F(ContextualTasksUiServiceTest, HandleNavigation_AiPage_DebugParam) {
   ON_CALL(*aim_eligibility_service_, HasNoCobrowseParams(_))
       .WillByDefault(Return(true));
 
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _, _))
       .Times(0);
 
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
@@ -1224,7 +1229,7 @@ TEST_F(ContextualTasksUiServiceTest,
   ON_CALL(*aim_eligibility_service_, HasNoCobrowseParams(_))
       .WillByDefault(Return(true));
 
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _, _))
       .Times(0);
   base::RunLoop run_loop;
   ON_CALL(*service_for_nav_, LoadUrlInWebContents(_, _))
@@ -1266,7 +1271,7 @@ TEST_F(ContextualTasksUiServiceTest, LinkFromWebUiIntercepted) {
   EXPECT_CALL(*service_for_nav_,
               OnNonThreadNavigationInTab(OpenURLParamsHasUrl(navigated_url), _))
       .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _, _))
       .Times(0);
   EXPECT_TRUE(service_for_nav_->HandleNavigationImpl(
       CreateOpenUrlParams(navigated_url, true), web_contents.get(), &tab,
@@ -1289,7 +1294,7 @@ TEST_F(ContextualTasksUiServiceTest, BrowserUiNavigationFromWebUiIgnored) {
       .WillByDefault(Return(false));
 
   EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _, _)).Times(0);
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _, _))
       .Times(0);
 
   // Specifically flag the navigation as not from in-page. This mimics actions
@@ -1318,7 +1323,7 @@ TEST_F(ContextualTasksUiServiceTest, NormalLinkNotIntercepted) {
       .WillByDefault(Return(false));
 
   EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _, _)).Times(0);
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _, _))
       .Times(0);
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(GURL(kTestUrl), true), web_contents.get(),
@@ -1354,7 +1359,7 @@ TEST_F(ContextualTasksUiServiceTest,
       .WillByDefault(Return(false));
 
   EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _, _)).Times(0);
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _, _))
       .Times(0);
 
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
@@ -1488,7 +1493,7 @@ TEST_F(ContextualTasksUiServiceTest,
       .WillByDefault(Return(false));
 
   EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _, _)).Times(0);
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _, _))
       .Times(0);
 
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
@@ -1549,7 +1554,7 @@ TEST_F(ContextualTasksUiServiceTest, AiPageNotIntercepted_NotEligible) {
   service_for_nav_->GetFakeEligibilityManager()->SetIsEligible(false);
 
   EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _, _)).Times(0);
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _, _))
       .Times(0);
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(ai_url, false), web_contents.get(),
@@ -1627,7 +1632,8 @@ TEST_F(ContextualTasksUiServiceTest, AiPageIntercepted_FromTab) {
 
   base::RunLoop run_loop;
   EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _, _)).Times(0);
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(ai_url, _, _))
+  EXPECT_CALL(*service_for_nav_,
+              OnNavigationToAiPageIntercepted(ai_url, _, _, _))
       .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(ai_url, false), web_contents.get(),
@@ -1646,7 +1652,8 @@ TEST_F(ContextualTasksUiServiceTest, AiPageIntercepted_FromOmnibox) {
 
   base::RunLoop run_loop;
   EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _, _)).Times(0);
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(ai_url, _, _))
+  EXPECT_CALL(*service_for_nav_,
+              OnNavigationToAiPageIntercepted(ai_url, _, _, _))
       .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(ai_url, false), web_contents.get(),
@@ -1665,7 +1672,8 @@ TEST_F(ContextualTasksUiServiceTest, AiPageIntercepted_AlreadyViewingUiInTab) {
 
   base::RunLoop run_loop;
   EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _, _)).Times(0);
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(ai_url, _, _))
+  EXPECT_CALL(*service_for_nav_,
+              OnNavigationToAiPageIntercepted(ai_url, _, _, _))
       .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(ai_url, false), web_contents.get(),
@@ -1684,7 +1692,7 @@ TEST_F(ContextualTasksUiServiceTest, AiPageNotIntercepted) {
       ->SetLastCommittedURL(webui_url);
 
   EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _, _)).Times(0);
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _, _))
       .Times(0);
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(GURL(kAiPageUrl), false), web_contents.get(),
@@ -1713,7 +1721,7 @@ TEST_F(ContextualTasksUiServiceTest, AiPageNotIntercepted_AccountMismatch) {
       .WillByDefault(Return(true));
 
   EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _, _)).Times(0);
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _, _))
       .Times(0);
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(ai_url, false), web_contents.get(),
@@ -1741,7 +1749,7 @@ TEST_F(ContextualTasksUiServiceTest, AiPageNotIntercepted_BrowserSignedOut) {
       .WillByDefault(Return(false));
 
   EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _, _)).Times(0);
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _, _))
       .Times(0);
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(ai_url, false), web_contents.get(),
@@ -1776,7 +1784,7 @@ TEST_F(ContextualTasksUiServiceTest, SearchResultsNavigation_ViewedInTab) {
   EXPECT_CALL(*service_for_nav_,
               OnNonThreadNavigationInTab(OpenURLParamsHasUrl(navigated_url), _))
       .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _, _))
       .Times(0);
   EXPECT_TRUE(service_for_nav_->HandleNavigationImpl(
       CreateOpenUrlParams(navigated_url, true), web_contents.get(), &tab,
@@ -1808,7 +1816,7 @@ TEST_F(ContextualTasksUiServiceTest,
   EXPECT_CALL(*service_for_nav_,
               OnNonThreadNavigationInTab(OpenURLParamsHasUrl(navigated_url), _))
       .Times(1);
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _, _))
       .Times(0);
   EXPECT_TRUE(service_for_nav_->HandleNavigationImpl(
       CreateOpenUrlParams(navigated_url, true), web_contents.get(), &tab,
@@ -1841,7 +1849,7 @@ TEST_F(ContextualTasksUiServiceTest, AllowedHostNavigation_ViewedInTab) {
   EXPECT_CALL(*service_for_nav_,
               OnNonThreadNavigationInTab(OpenURLParamsHasUrl(navigated_url), _))
       .Times(1);
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _, _))
       .Times(0);
   EXPECT_TRUE(service_for_nav_->HandleNavigationImpl(
       CreateOpenUrlParams(navigated_url, true), web_contents.get(), &tab,
@@ -1873,7 +1881,7 @@ TEST_F(ContextualTasksUiServiceTest, Navigation_ToNewTab_Allowed) {
   EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(navigated_url, _, _, _, _))
       .Times(0);
   EXPECT_CALL(*service_for_nav_, OnNonThreadNavigationInTab(_, _)).Times(0);
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _, _))
       .Times(0);
   content::Referrer referrer;
   content::OpenURLParams params =
@@ -1920,7 +1928,7 @@ TEST_F(ContextualTasksUiServiceTest, Navigation_ViewedInTab) {
   EXPECT_CALL(*service_for_nav_,
               OnNonThreadNavigationInTab(OpenURLParamsHasUrl(navigated_url), _))
       .Times(1);
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _, _))
       .Times(0);
   EXPECT_TRUE(service_for_nav_->HandleNavigationImpl(
       CreateOpenUrlParams(navigated_url, true), web_contents.get(), &tab,
@@ -1959,7 +1967,7 @@ TEST_F(ContextualTasksUiServiceTest, Navigation_ViewedInSidePanel) {
       OpenUrl(testing::Field(&content::OpenURLParams::url, navigated_url),
               testing::_, testing::_))
       .Times(1);
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _, _))
       .Times(0);
   EXPECT_TRUE(service_for_nav_->HandleNavigationImpl(
       CreateOpenUrlParams(navigated_url, true), web_contents.get(), nullptr,
@@ -1997,7 +2005,7 @@ TEST_F(ContextualTasksUiServiceTest,
   EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _, _)).Times(0);
   EXPECT_CALL(*service_for_nav_, OpenUrl(_, _, _)).Times(0);
   EXPECT_CALL(*service_for_nav_, OnNonThreadNavigationInTab(_, _)).Times(0);
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _, _))
       .Times(0);
 
   // When viewed in a tab with a non-web scheme, HandleNavigationImpl should
@@ -2037,7 +2045,7 @@ TEST_F(ContextualTasksUiServiceTest,
   EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _, _)).Times(0);
   EXPECT_CALL(*service_for_nav_, OpenUrl(_, _, _)).Times(0);
   EXPECT_CALL(*service_for_nav_, OnNonThreadNavigationInTab(_, _)).Times(0);
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _, _))
       .Times(0);
 
   EXPECT_FALSE(service_for_nav_->HandleNavigationImpl(
@@ -2070,7 +2078,7 @@ TEST_F(ContextualTasksUiServiceTest,
         intercepted_params = std::move(url_params);
         run_loop.Quit();
       });
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _, _))
       .Times(0);
   EXPECT_TRUE(service_for_nav_->HandleNavigationImpl(
       CreateOpenUrlParams(navigated_url, true), web_contents.get(), nullptr,
@@ -2104,7 +2112,7 @@ TEST_F(ContextualTasksUiServiceTest, CaptchaNavigation_ViewedInSidePanel) {
   EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _, _)).Times(0);
   EXPECT_CALL(*service_for_nav_, OnSearchResultsNavigationInSidePanel(_, _))
       .Times(0);
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _, _))
       .Times(0);
   EXPECT_FALSE(service_for_nav_->HandleNavigationImpl(
       CreateOpenUrlParams(navigated_url, true), web_contents.get(), nullptr,
@@ -2146,15 +2154,54 @@ TEST_F(ContextualTasksUiServiceTest, OnNavigationToAiPageIntercepted_SameTab) {
   base::WeakPtrFactory weak_factory(&tab);
 
   service.OnNavigationToAiPageIntercepted(intercepted_url,
-                                          weak_factory.GetWeakPtr(), false);
+                                          weak_factory.GetWeakPtr(), false,
+                                          ui::PAGE_TRANSITION_GENERATED);
 
   EXPECT_EQ(
       user_action_tester.GetActionCount("ContextualTasks.AimFullTab.Shown"), 1);
+
+  // The reload keeps the transition of the intercepted navigation.
+  content::NavigationEntry* entry =
+      web_contents->GetController().GetPendingEntry();
+  ASSERT_TRUE(entry);
+  EXPECT_EQ(entry->GetURL().host(), chrome::kChromeUIContextualTasksHost);
+  EXPECT_TRUE(ui::PageTransitionCoreTypeIs(entry->GetTransitionType(),
+                                           ui::PAGE_TRANSITION_GENERATED));
 
   GURL expected_initial_url(
       "https://google.com/search?udm=50&q=test+query&sourceid=chrome&ccb=1");
   EXPECT_EQ(service.GetInitialUrlForTask(task.GetTaskId()),
             expected_initial_url);
+}
+
+// A history navigation reloads with the default transition, so the new entry
+// is not marked FORWARD_BACK.
+TEST_F(ContextualTasksUiServiceTest,
+       OnNavigationToAiPageIntercepted_SameTab_HistoryNavigationUsesLink) {
+  GURL intercepted_url("https://google.com/search?udm=50&q=test+query");
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  sessions::SessionTabHelper::CreateForWebContents(
+      web_contents.get(),
+      base::BindRepeating([](content::WebContents* contents) {
+        return static_cast<sessions::SessionTabHelperDelegate*>(nullptr);
+      }));
+  tabs::MockTabInterface tab;
+  ON_CALL(tab, GetContents).WillByDefault(Return(web_contents.get()));
+  EXPECT_CALL(*contextual_tasks_service_, CreateTaskFromUrl(intercepted_url))
+      .WillOnce(Return(ContextualTask(base::Uuid::GenerateRandomV4())));
+  base::WeakPtrFactory weak_factory(&tab);
+
+  real_service_->OnNavigationToAiPageIntercepted(
+      intercepted_url, weak_factory.GetWeakPtr(), /*is_to_new_tab=*/false,
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
+                                ui::PAGE_TRANSITION_FORWARD_BACK));
+
+  content::NavigationEntry* entry =
+      web_contents->GetController().GetPendingEntry();
+  ASSERT_TRUE(entry);
+  EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
+      entry->GetTransitionType(), ui::PAGE_TRANSITION_LINK));
 }
 
 TEST_F(ContextualTasksUiServiceTest,
@@ -2207,7 +2254,8 @@ TEST_F(ContextualTasksUiServiceTest,
   base::WeakPtrFactory weak_factory(&tab);
 
   service.OnNavigationToAiPageIntercepted(intercepted_url,
-                                          weak_factory.GetWeakPtr(), false);
+                                          weak_factory.GetWeakPtr(), false,
+                                          ui::PAGE_TRANSITION_LINK);
 
   auto* task_session = helper->GetSessionForTask(task.GetTaskId());
   ASSERT_TRUE(task_session);
@@ -2300,7 +2348,8 @@ TEST_F(ContextualTasksUiServiceTest,
 
   base::WeakPtrFactory weak_factory(&tab);
   service.OnNavigationToAiPageIntercepted(intercepted_url,
-                                          weak_factory.GetWeakPtr(), false);
+                                          weak_factory.GetWeakPtr(), false,
+                                          ui::PAGE_TRANSITION_LINK);
 }
 
 TEST_F(ContextualTasksUiServiceTest,
@@ -2332,7 +2381,8 @@ TEST_F(ContextualTasksUiServiceTest,
       .Times(1);
   base::WeakPtrFactory weak_factory(&tab);
   service.OnNavigationToAiPageIntercepted(intercepted_url,
-                                          weak_factory.GetWeakPtr(), false);
+                                          weak_factory.GetWeakPtr(), false,
+                                          ui::PAGE_TRANSITION_LINK);
   GURL expected_initial_url(
       "https://google.com/"
       "search?udm=50&q=test+query&cs=1&sourceid=chrome&ccb=1");
@@ -2392,7 +2442,8 @@ TEST_F(ContextualTasksUiServiceTest,
 
   // Simulate the interception to populate the map.
   service.OnNavigationToAiPageIntercepted(intercepted_url,
-                                          weak_factory.GetWeakPtr(), false);
+                                          weak_factory.GetWeakPtr(), false,
+                                          ui::PAGE_TRANSITION_LINK);
 
   // Get the URL and verify it contains the host parameter.
   GURL url = service.GetContextualTaskUrlForTask(task_id);
@@ -2427,7 +2478,8 @@ TEST_F(ContextualTasksUiServiceTest,
 
   // Simulate the interception to populate the map.
   service.OnNavigationToAiPageIntercepted(intercepted_url,
-                                          weak_factory.GetWeakPtr(), false);
+                                          weak_factory.GetWeakPtr(), false,
+                                          ui::PAGE_TRANSITION_LINK);
 
   // Get the URL and verify it does NOT contain the host parameter.
   GURL url = service.GetContextualTaskUrlForTask(task_id);
@@ -2463,7 +2515,8 @@ TEST_F(ContextualTasksUiServiceTest,
 
   // Simulate the interception to populate the map.
   service.OnNavigationToAiPageIntercepted(intercepted_url,
-                                          weak_factory.GetWeakPtr(), false);
+                                          weak_factory.GetWeakPtr(), false,
+                                          ui::PAGE_TRANSITION_LINK);
 
   // Get the URL and verify it does NOT contain the untrusted host parameter.
   GURL url = service.GetContextualTaskUrlForTask(task_id);
@@ -2493,7 +2546,7 @@ TEST_F(ContextualTasksUiServiceTest, SrpHomepage_Intercepted) {
   base::RunLoop run_loop;
   EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(navigated_url, _, _, _, _))
       .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _, _))
       .Times(0);
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(navigated_url, true), web_contents.get(),
@@ -2515,7 +2568,7 @@ TEST_F(ContextualTasksUiServiceTest, AimHomepage_InTab_NotIntercepted) {
       ->SetLastCommittedURL(webui_url);
 
   EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _, _)).Times(0);
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _, _))
       .Times(0);
   EXPECT_FALSE(service_for_nav_->HandleNavigationImpl(
       CreateOpenUrlParams(nav_url, false), web_contents.get(), &tab,
@@ -2541,7 +2594,7 @@ TEST_F(ContextualTasksUiServiceTest, AimHomepage_InSidePanel_Intercepted) {
 
   base::RunLoop run_loop;
   EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _, _)).Times(0);
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _, _))
       .Times(0);
   EXPECT_CALL(*service_for_nav_, OnSearchResultsNavigationInSidePanel(
                                      OpenURLParamsHasUrl(navigated_url), _))
@@ -2573,7 +2626,7 @@ TEST_F(ContextualTasksUiServiceTest, SrpShoppingMode_InSidePanel_Intercepted) {
   EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _, _))
       .Times(1)
       .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _, _))
       .Times(0);
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(navigated_url, true), web_contents.get(),
@@ -2594,7 +2647,7 @@ TEST_F(ContextualTasksUiServiceTest, AimHomepageThinking_InTab_NotIntercepted) {
   ON_CALL(tab, GetContents).WillByDefault(Return(web_contents.get()));
 
   EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _, _)).Times(0);
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _, _))
       .Times(0);
   EXPECT_FALSE(service_for_nav_->HandleNavigationImpl(
       CreateOpenUrlParams(nav_url, false), web_contents.get(), &tab,
@@ -2621,7 +2674,7 @@ TEST_F(ContextualTasksUiServiceTest,
 
   base::RunLoop run_loop;
   EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _, _)).Times(0);
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _, _))
       .Times(0);
   EXPECT_CALL(*service_for_nav_, OnSearchResultsNavigationInSidePanel(
                                      OpenURLParamsHasUrl(navigated_url), _))
@@ -2648,7 +2701,7 @@ TEST_F(ContextualTasksUiServiceTest, LensQuery_Intercepted) {
   EXPECT_CALL(*service_for_nav_, OnSearchResultsNavigationInSidePanel(
                                      OpenURLParamsHasUrl(navigated_url), _))
       .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _, _))
       .Times(0);
   EXPECT_TRUE(service_for_nav_->HandleNavigationImpl(
       CreateOpenUrlParams(navigated_url, true), web_contents.get(), nullptr,
@@ -2690,7 +2743,8 @@ TEST_F(ContextualTasksUiServiceTest, GetInitialUrlForTask_HasSourceId) {
   base::WeakPtrFactory weak_factory(&tab);
 
   service.OnNavigationToAiPageIntercepted(intercepted_url,
-                                          weak_factory.GetWeakPtr(), false);
+                                          weak_factory.GetWeakPtr(), false,
+                                          ui::PAGE_TRANSITION_LINK);
 
   std::optional<GURL> initial_url =
       service.GetInitialUrlForTask(task.GetTaskId());
@@ -3000,7 +3054,7 @@ TEST_F(ContextualTasksUiServiceTest, SignOutNavigation_OpenedInTab) {
   EXPECT_CALL(*service_for_nav_,
               OnNonThreadNavigationInTab(OpenURLParamsHasUrl(navigated_url), _))
       .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _, _))
       .Times(0);
   EXPECT_TRUE(service_for_nav_->HandleNavigationImpl(
       CreateOpenUrlParams(navigated_url, true), web_contents.get(), &tab,
@@ -3898,9 +3952,9 @@ TEST_F(ContextualTasksUiServiceTest, HandleNavigation_DisplayUrlRewritten) {
       profile_.get(), content::SiteInstance::Create(profile_.get()));
 
   // Expect that the navigation to the virtual URL is intercepted.
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _, _))
       .WillOnce([&](const GURL& url, base::WeakPtr<tabs::TabInterface> tab,
-                    bool is_to_new_tab) {
+                    bool is_to_new_tab, ui::PageTransition) {
         // Check that the base URL has been rewritten to the standard AIM Google
         // URL.
         EXPECT_EQ(url.scheme(), "https");
@@ -4241,7 +4295,7 @@ TEST_F(ContextualTasksUiServiceTest,
   EXPECT_CALL(*aim_eligibility_service_, IsCobrowseEligible())
       .WillRepeatedly(Return(false));
 
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _, _))
       .Times(0);
   EXPECT_CALL(*service_for_nav_, LoadUrlInWebContents(_, _)).Times(0);
 
@@ -4826,7 +4880,7 @@ TEST_F(ContextualTasksUiServiceTest, SearchResultsLink_HandledAsThreadLink) {
       .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
   EXPECT_CALL(*service_for_nav_, OnSearchResultsNavigationInSidePanel(_, _))
       .Times(0);
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _, _))
       .Times(0);
   EXPECT_TRUE(service_for_nav_->HandleNavigationImpl(
       CreateOpenUrlParams(navigated_url, true), outer_contents, nullptr,
@@ -4884,8 +4938,9 @@ TEST_F(ContextualTasksUiServiceTest,
       .WillOnce(Return(task));
 
   base::WeakPtrFactory weak_factory(&tab);
-  real_service_->OnNavigationToAiPageIntercepted(intercepted_url,
-                                                 weak_factory.GetWeakPtr(), false);
+  real_service_->OnNavigationToAiPageIntercepted(
+      intercepted_url, weak_factory.GetWeakPtr(), false,
+      ui::PAGE_TRANSITION_LINK);
 
   // Verify that the entry point was set to
   // DESKTOP_CHROME_COBROWSE_OMNIBOX_TAB_SEARCH.
@@ -4934,8 +4989,9 @@ TEST_F(ContextualTasksUiServiceTest,
       .WillOnce(Return(task));
 
   base::WeakPtrFactory weak_factory(&tab);
-  real_service_->OnNavigationToAiPageIntercepted(intercepted_url,
-                                                 weak_factory.GetWeakPtr(), false);
+  real_service_->OnNavigationToAiPageIntercepted(
+      intercepted_url, weak_factory.GetWeakPtr(), false,
+      ui::PAGE_TRANSITION_LINK);
 
   // Verify that the entry point remains UNKNOWN.
   EXPECT_EQ(real_service_->GetInitialEntryPointForTask(task.GetTaskId()),
@@ -4989,8 +5045,9 @@ TEST_F(ContextualTasksUiServiceTest,
       .WillOnce(Return(task));
 
   base::WeakPtrFactory weak_factory(&tab);
-  real_service_->OnNavigationToAiPageIntercepted(intercepted_url,
-                                                 weak_factory.GetWeakPtr(), false);
+  real_service_->OnNavigationToAiPageIntercepted(
+      intercepted_url, weak_factory.GetWeakPtr(), false,
+      ui::PAGE_TRANSITION_LINK);
 
   // Verify that the entry point remains UNKNOWN because the feature is
   // disabled.

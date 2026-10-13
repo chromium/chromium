@@ -18,6 +18,7 @@
 #include "net/base/url_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
 using testing::_;
@@ -52,9 +53,10 @@ TEST_F(ContextualTasksNavigationThrottleTest,
       registry.throttles().back().get());
 
   base::RunLoop run_loop;
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _, _))
       .WillOnce([&](const GURL& intercepted_url,
-                    base::WeakPtr<tabs::TabInterface> tab, bool is_to_new_tab) {
+                    base::WeakPtr<tabs::TabInterface> tab, bool is_to_new_tab,
+                    ui::PageTransition) {
         std::string value;
         EXPECT_FALSE(
             net::GetValueForKeyInQuery(intercepted_url, "cru", &value));

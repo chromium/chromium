@@ -4,13 +4,17 @@
 
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
 
+#include <memory>
+#include <string>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
@@ -19,7 +23,10 @@
 #include "chrome/browser/actor/ui/actor_task_unload_handler.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager.h"
 #include "chrome/browser/actor/ui/ui_event.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/chrome_signin_client_test_util.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
@@ -41,13 +48,18 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/actor/core/task_id.h"
+#include "components/contextual_tasks/public/features.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/tabs/public/tab_alert.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/views/controls/animated_image_view.h"
@@ -847,6 +859,114 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerNavigationConfirmTest,
   histogram_tester.ExpectUniqueSample(
       "Actor.Task.StoppedReason",
       actor::ActorTask::StoppedReason::kStoppedByUser, 1);
+}
+
+// Enables the legacy contextual tasks flow, which cancels AI Mode navigations
+// and reloads the tab with the contextual tasks WebUI.
+// TODO(crbug.com/533072235): Remove with the legacy flow.
+class ActorUiTabControllerNavigationConfirmLegacyContextualTasksTest
+    : public ActorUiTabControllerNavigationConfirmTest {
+ public:
+  ActorUiTabControllerNavigationConfirmLegacyContextualTasksTest() {
+    contextual_tasks_feature_list_.InitAndEnableFeature(
+        contextual_tasks::kContextualTasks);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    ActorUiTabControllerNavigationConfirmTest::
+        SetUpInProcessBrowserTestFixture();
+    signin_client_with_url_loader_helper_.SetUp();
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(
+                base::BindRepeating(&OnWillCreateBrowserContextServices));
+  }
+
+  void SetUpOnMainThread() override {
+    ActorUiTabControllerNavigationConfirmTest::SetUpOnMainThread();
+    identity_test_environment_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
+            browser()->GetProfile());
+    // The legacy flow intercepts only AI Mode URLs of the signed-in account.
+    signin::IdentityTestEnvironment* identity_test_env =
+        identity_test_environment_adaptor_->identity_test_env();
+    identity_test_env->SetTestURLLoaderFactory(
+        signin_client_with_url_loader_helper_.test_url_loader_factory());
+    AccountInfo account = identity_test_env->MakePrimaryAccountAvailable(
+        "user@gmail.com", signin::ConsentLevel::kSignin);
+    identity_test_env->SetCookieAccounts(
+        {{.email = std::string(account.GetEmail()),
+          .gaia_id = account.GetGaiaId()}});
+  }
+
+  void TearDownOnMainThread() override {
+    identity_test_environment_adaptor_.reset();
+    ActorUiTabControllerNavigationConfirmTest::TearDownOnMainThread();
+  }
+
+ private:
+  static void OnWillCreateBrowserContextServices(
+      content::BrowserContext* context) {
+    IdentityTestEnvironmentProfileAdaptor::
+        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
+    AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(&BuildAimEligibilityService));
+  }
+
+  static std::unique_ptr<KeyedService> BuildAimEligibilityService(
+      content::BrowserContext* context) {
+    auto service =
+        std::make_unique<testing::NiceMock<MockAimEligibilityService>>(
+            *Profile::FromBrowserContext(context)->GetPrefs(),
+            /*template_url_service=*/nullptr, /*url_loader_factory=*/nullptr,
+            /*identity_manager=*/nullptr);
+    // Only www.google.com URLs are AI Mode URLs, so test pages are not
+    // intercepted.
+    ON_CALL(*service, IsAimUrl(testing::_, testing::_))
+        .WillByDefault([](const GURL& url, auto) {
+          return url.host() == "www.google.com";
+        });
+    return service;
+  }
+
+  base::test::ScopedFeatureList contextual_tasks_feature_list_;
+  ChromeSigninClientWithURLLoaderHelper signin_client_with_url_loader_helper_;
+  base::CallbackListSubscription create_services_subscription_;
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_environment_adaptor_;
+};
+
+// The legacy flow cancels an omnibox AI Mode search and reloads the tab with
+// the contextual tasks WebUI. The reload must still be confirmed. Cancelling
+// keeps the page and the task.
+IN_PROC_BROWSER_TEST_F(
+    ActorUiTabControllerNavigationConfirmLegacyContextualTasksTest,
+    AiModeSearch_ConfirmsContextualTasksReload) {
+  tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
+  ActorUiTabController* controller = ActorUiTabController::From(tab);
+  ASSERT_NE(controller, nullptr);
+
+  const GURL initial_url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(content::NavigateToURL(tab->GetContents(), initial_url));
+
+  actor::TaskId task_id = StartTaskOnTabs({tab});
+
+  // The AI Mode button navigates with GENERATED.
+  NavigateViaUserUi(tab, GURL("https://www.google.com/search?udm=50&q=test"),
+                    ::ui::PAGE_TRANSITION_GENERATED);
+  views::Widget* dialog = WaitForConfirmDialog(controller);
+  ASSERT_NE(dialog, nullptr);
+  // The dialog defers the contextual tasks reload. It is browser initiated, so
+  // it is the visible entry.
+  EXPECT_EQ(tab->GetContents()->GetVisibleURL().host(),
+            chrome::kChromeUIContextualTasksHost);
+  dialog->widget_delegate()->AsDialogDelegate()->CancelDialog();
+
+  EXPECT_EQ(tab->GetContents()->GetLastCommittedURL(), initial_url);
+  EXPECT_NE(actor_keyed_service()->GetTask(task_id), nullptr);
+
+  actor_keyed_service()->StopTask(
+      task_id, actor::ActorTask::StoppedReason::kStoppedByUser);
 }
 
 }  // namespace
