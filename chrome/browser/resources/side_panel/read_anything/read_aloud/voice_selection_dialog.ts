@@ -17,8 +17,6 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {ToolbarEvent} from '../content/read_anything_types.js';
 import {spinnerDebounceTimeout} from '../shared/common.js';
-import {ReadAloudSettingsChange} from '../shared/metrics_browser_proxy.js';
-import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
 
 import type {AudioBrowserProxy} from './audio_browser_proxy.js';
 import {AudioBrowserProxyImpl} from './audio_browser_proxy.js';
@@ -84,7 +82,6 @@ export class VoiceSelectionDialogElement extends CrLitElement implements
       AudioBrowserProxyImpl.getInstance();
   private notificationManager_: VoiceNotificationManager =
       VoiceNotificationManager.getInstance();
-  private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
 
   private previewTimer_: number|null = null;
   private previewRequestId_: number = 0;
@@ -267,8 +264,6 @@ export class VoiceSelectionDialogElement extends CrLitElement implements
   protected onSaveClick_() {
     if (this.candidateVoice_ &&
         !areVoicesEqual(this.candidateVoice_, this.selectedVoice)) {
-      this.logger_.logSpeechSettingsChange(
-          ReadAloudSettingsChange.VOICE_NAME_CHANGE);
       this.fire(ToolbarEvent.VOICE, {selectedVoice: this.candidateVoice_});
       this.selectedVoice = this.candidateVoice_;
     }

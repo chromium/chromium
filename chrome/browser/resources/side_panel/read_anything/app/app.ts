@@ -679,18 +679,23 @@ export class AppElement extends AppElementBase implements SpeechListener,
       event: CustomEvent<{selectedVoice: SpeechSynthesisVoice}>) {
     event.preventDefault();
     event.stopPropagation();
+    this.logger_.logSpeechSettingsChange(
+        ReadAloudSettingsChange.VOICE_NAME_CHANGE);
     this.speechController_.onVoiceSelected(event.detail.selectedVoice);
   }
 
   protected onVoiceLanguageToggle_(event: CustomEvent<{language: string}>) {
     event.preventDefault();
     event.stopPropagation();
+    this.logger_.logSpeechSettingsChange(
+        ReadAloudSettingsChange.LANGUAGE_TOGGLE);
     this.voiceLanguageController_.onLanguageToggle(event.detail.language);
   }
 
   protected onVoiceLanguageSelected_(event: CustomEvent<{language: string}>) {
     event.preventDefault();
     event.stopPropagation();
+    this.logger_.logSpeechSettingsChange(ReadAloudSettingsChange.ACCENT_CHANGE);
     this.voiceLanguageController_.onLanguageSelected(event.detail.language);
   }
 

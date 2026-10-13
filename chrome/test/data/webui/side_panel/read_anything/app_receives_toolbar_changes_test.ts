@@ -571,6 +571,13 @@ suite('AppReceivesToolbarChanges', () => {
       assertFalse(audioBrowserProxy.getLanguagesEnabledInPref().includes(
           firstLanguage));
     });
+
+    test('language toggle is logged', async () => {
+      emitLanguageToggle('en-us');
+      assertEquals(
+          ReadAloudSettingsChange.LANGUAGE_TOGGLE,
+          await metrics.whenCalled('recordSpeechSettingsChange'));
+    });
   });
 
   test('on speech rate change speech rate updated', async () => {
@@ -604,10 +611,21 @@ suite('AppReceivesToolbarChanges', () => {
     // </if>
   });
 
-  test('on voice selected, current voice updated', () => {
+  test('on voice selected, current voice updated and logged', async () => {
     const voice = createSpeechSynthesisVoice({lang: 'es-us', name: 'Poodle'});
     emitEvent(app, ToolbarEvent.VOICE, {detail: {selectedVoice: voice}});
     assertEquals(voice, voiceLanguageController.getCurrentVoice());
+    assertEquals(
+        ReadAloudSettingsChange.VOICE_NAME_CHANGE,
+        await metrics.whenCalled('recordSpeechSettingsChange'));
+  });
+
+  test('on language selected, accent change is logged', async () => {
+    emitEvent(
+        app, ToolbarEvent.LANGUAGE_SELECTED, {detail: {language: 'en-us'}});
+    assertEquals(
+        ReadAloudSettingsChange.ACCENT_CHANGE,
+        await metrics.whenCalled('recordSpeechSettingsChange'));
   });
 
   suite('play/pause', () => {

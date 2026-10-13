@@ -20,8 +20,6 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {ToolbarEvent} from '../content/read_anything_types.js';
 import type {LanguageDropdownItem} from '../menus/menu_util.js';
-import {ReadAloudSettingsChange} from '../shared/metrics_browser_proxy.js';
-import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
 
 import {getCss} from './accent_menu.css.js';
 import {getHtml} from './accent_menu.html.js';
@@ -124,7 +122,6 @@ export class AccentMenuElement extends AccentMenuElementBase implements
       {[language: string]: NotificationType} = {};
   private notificationManager_: VoiceNotificationManager =
       VoiceNotificationManager.getInstance();
-  private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
 
   protected onClose_() {
     this.notificationManager_.removeListener(this);
@@ -145,7 +142,6 @@ export class AccentMenuElement extends AccentMenuElementBase implements
       return;
     }
 
-    this.logger_.logSpeechSettingsChange(ReadAloudSettingsChange.ACCENT_CHANGE);
     this.fire(ToolbarEvent.LANGUAGE_SELECTED, {language: item.languageCode});
   }
 

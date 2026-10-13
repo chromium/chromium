@@ -21,8 +21,6 @@ import type {ShowAtConfigPrefs} from '../content/read_anything_types.js';
 import {ToolbarEvent} from '../content/read_anything_types.js';
 import type {ToolbarMenu} from '../menus/menu_util.js';
 import {openMenu, spinnerDebounceTimeout} from '../shared/common.js';
-import {ReadAloudSettingsChange} from '../shared/metrics_browser_proxy.js';
-import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
 
 import type {AudioBrowserProxy} from './audio_browser_proxy.js';
 import {AudioBrowserProxyImpl} from './audio_browser_proxy.js';
@@ -97,7 +95,6 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
       window.getComputedStyle(document.body)
           .getPropertyValue('--sp-body-padding'),
       10);
-  private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
   private notificationManager_ = VoiceNotificationManager.getInstance();
   private audioBrowserProxy_: AudioBrowserProxy =
       AudioBrowserProxyImpl.getInstance();
@@ -191,9 +188,6 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
   }
 
   protected onVoiceSelectClick_(e: Event) {
-    this.logger_.logSpeechSettingsChange(
-        ReadAloudSettingsChange.VOICE_NAME_CHANGE);
-
     const selectedVoice = this.getVoiceItemForEvent_(e).voice;
     this.fire(ToolbarEvent.VOICE, {selectedVoice});
   }
