@@ -73,6 +73,10 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
                     withId(R.id.optional_toolbar_button),
                     withContentDescription(R.string.accessibility_toolbar_btn_mic));
     public static final ViewSpec<View> TAB_SEARCH_BUTTON = viewSpec(withId(R.id.tab_search_button));
+
+    // The first show inflates the whole overlay, which can take several seconds on loaded bots.
+    private static final long TAB_SEARCH_OVERLAY_OPEN_TIMEOUT_MS = 7500L;
+
     public final OptionalViewElement<View> optionalToolbarMicButtonElement;
     public final OptionalViewElement<View> homeButtonElement;
     public final OptionalViewElement<View> tabSearchButtonElement;
@@ -195,7 +199,10 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
         // In vertical tabs mode, the tab search button is an Android View in the hierarchy,
         // so it can be clicked via Espresso.
         if (hasVerticalTabSearchButton) {
-            return tabSearchButtonElement.clickTo().enterFacility(new TabSearchOverlayFacility<>());
+            return tabSearchButtonElement
+                    .clickTo()
+                    .withTimeout(TAB_SEARCH_OVERLAY_OPEN_TIMEOUT_MS)
+                    .enterFacility(new TabSearchOverlayFacility<>());
         }
 
         // In the horizontal tab strip, the tab search button is drawn in the native composited UI
@@ -212,6 +219,7 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
                                     InstrumentationRegistry.getInstrumentation(),
                                     activity);
                         })
+                .withTimeout(TAB_SEARCH_OVERLAY_OPEN_TIMEOUT_MS)
                 .enterFacility(new TabSearchOverlayFacility<>());
     }
 
@@ -241,6 +249,7 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
                                             0,
                                             metaState));
                         })
+                .withTimeout(TAB_SEARCH_OVERLAY_OPEN_TIMEOUT_MS)
                 .enterFacility(new TabSearchOverlayFacility<>());
     }
 
