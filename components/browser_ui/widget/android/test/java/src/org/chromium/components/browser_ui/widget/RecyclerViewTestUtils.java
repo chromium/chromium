@@ -90,6 +90,40 @@ public final class RecyclerViewTestUtils {
     }
 
     /**
+     * Waits for the next hardware-accelerated frame of {@code recyclerView} to be committed and the
+     * following animation frame to start.
+     *
+     * @param recyclerView The {@link RecyclerView} to wait on.
+     */
+    public static void waitForFrameCommitted(final RecyclerView recyclerView) {
+        CallbackHelper frameCommitted = new CallbackHelper();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    if (!recyclerView.isAttachedToWindow()
+                            || !recyclerView.isShown()
+                            || !recyclerView.isHardwareAccelerated()
+                            || !recyclerView.getViewTreeObserver().isAlive()) {
+                        frameCommitted.notifyCalled();
+                        return;
+                    }
+                    recyclerView
+                            .getViewTreeObserver()
+                            .registerFrameCommitCallback(
+                                    () ->
+                                            recyclerView.postOnAnimation(
+                                                    frameCommitted::notifyCalled));
+                    // Force a draw pass in case the layout traversal already ran during polling,
+                    // otherwise registerFrameCommitCallback would not fire.
+                    recyclerView.invalidate();
+                });
+        try {
+            frameCommitted.waitForOnly();
+        } catch (TimeoutException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
      * In addition to the checks in {@link #waitForStableRecyclerView(RecyclerView)}, also checks
      * all of the PropertyModels. This will make sure all of the view binding has completed.
      */

@@ -44,6 +44,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.Root;
 import androidx.test.filters.MediumTest;
@@ -70,7 +71,6 @@ import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
@@ -109,6 +109,7 @@ import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJ
 import org.chromium.components.browser_ui.util.date.CalendarUtils;
 import org.chromium.components.browser_ui.util.date.StringUtils;
 import org.chromium.components.browser_ui.widget.FadingEdgeScrollView;
+import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.CookieControlsMode;
@@ -354,10 +355,17 @@ public class PageInfoViewTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     PageInfoController controller = PageInfoController.getLastPageInfoController();
-                    return controller != null
-                            && !((PageInfoContainer) controller.getPageInfoView())
-                                    .isPageChangeInProgress();
+                    if (controller == null) return false;
+                    PageInfoContainer container = (PageInfoContainer) controller.getPageInfoView();
+                    return !container.isPageChangeInProgress() && !container.isLayoutRequested();
                 });
+        RecyclerView recyclerView = getPageInfoView().findViewById(R.id.recycler_view);
+        if (recyclerView != null) {
+            // Subpages populate their RecyclerView asynchronously after the transition animation,
+            // which grows the Gravity.CENTER dialog and shifts its top coordinate upward.
+            RecyclerViewTestUtils.waitForView(recyclerView, 0);
+            RecyclerViewTestUtils.waitForFrameCommitted(recyclerView);
+        }
     }
 
     private RwsCookieInfo getRwsCookieInfo(String url) {
@@ -1077,7 +1085,6 @@ public class PageInfoViewTest {
     /** Tests clearing cookies on the cookies page of the PageInfo UI. */
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/568493076
     public void clearCookiesOnSubpage() throws Exception {
         mActivityTestRule.loadUrl(mTestServerRule.getServer().getURL(sSiteDataHtml));
         // Create cookies.
@@ -1089,9 +1096,10 @@ public class PageInfoViewTest {
         onView(withId(R.id.page_info_cookies_row)).perform(click());
         // Check that cookies usage is displayed.
         onViewWaiting(allOf(withText(containsString("stored data")), isDisplayed()));
+        waitForPageChangeFinished();
         // Clear cookies in page info.
         onView(withText(containsString("stored data"))).perform(click());
-        onView(withText("Delete")).perform(click());
+        onViewWaiting(allOf(withText("Delete"), isDisplayed())).perform(click());
         // Wait until the UI navigates back and check cookies are deleted.
         onViewWaiting(allOf(withId(R.id.page_info_cookies_row), isDisplayed()));
         expectHasCookies(false);
@@ -1176,7 +1184,6 @@ public class PageInfoViewTest {
     /** Tests resetting permissions on the permissions page of the PageInfo UI. */
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/568493076
     public void testResetPermissionsOnSubpage() throws Exception {
         mActivityTestRule.loadUrl(mTestServerRule.getServer().getURL(sSiteDataHtml));
         String url = mTestServerRule.getServer().getURL("/");
@@ -1207,7 +1214,6 @@ public class PageInfoViewTest {
      */
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/568493076
     public void testClearFederatedIdentityEmbargoOnSubpage() throws Exception {
         String rpUrl = mTestServerRule.getServer().getURL(sSimpleHtml);
         mActivityTestRule.loadUrl(rpUrl);
@@ -1276,7 +1282,6 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     @Features.EnableFeatures(PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION)
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/568493076
     public void testShowLocationPermissionSubpage() throws IOException {
         addSomePermissions(mTestServerRule.getServer().getURL("/"));
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
@@ -1289,7 +1294,10 @@ public class PageInfoViewTest {
 
         onViewWaiting(allOf(withText("Location"), isDisplayed())).perform(click());
         onViewWaiting(
-                allOf(withText(R.string.website_settings_device_location), isDisplayed()),
+                allOf(
+                        withId(R.id.page_info_subpage_title),
+                        withText(R.string.website_settings_device_location),
+                        isDisplayed()),
                 ViewElement.allowDisabledOption());
         waitForPageChangeFinished();
         onViewWaiting(
@@ -1370,7 +1378,10 @@ public class PageInfoViewTest {
         // Open second subpage
         onViewWaiting(allOf(withText("Location"), isDisplayed())).perform(click());
         onViewWaiting(
-                allOf(withText(R.string.website_settings_device_location), isDisplayed()),
+                allOf(
+                        withId(R.id.page_info_subpage_title),
+                        withText(R.string.website_settings_device_location),
+                        isDisplayed()),
                 ViewElement.allowDisabledOption());
         waitForPageChangeFinished();
 
