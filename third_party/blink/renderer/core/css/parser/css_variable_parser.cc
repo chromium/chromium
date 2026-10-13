@@ -570,7 +570,7 @@ static bool ConsumeUnparsedValue(CSSParserTokenStream& stream,
           continue;
         case CSSValueID::kInherit:
           if (!RuntimeEnabledFeatures::CSSInheritFunctionEnabled()) {
-            return false;
+            break;
           }
           [[fallthrough]];
         case CSSValueID::kVar:

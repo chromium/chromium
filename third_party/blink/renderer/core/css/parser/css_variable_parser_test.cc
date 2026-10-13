@@ -509,4 +509,15 @@ TEST_P(CollectDashedFunctionsTest, CollectionTest) {
   EXPECT_EQ(String(param.expected_names), actual_joined.ToString());
 }
 
+TEST(CSSVariableParserTest, ParseDeclarationValueWithInheritDisabled) {
+  ScopedCSSInheritFunctionForTest feature(false);
+
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  CSSUnparsedDeclarationValue* value = CSSVariableParser::ParseDeclarationValue(
+      "inherit(--foo)",
+      /*is_animation_tainted=*/false, *context);
+  EXPECT_TRUE(value);
+}
+
 }  // namespace blink
