@@ -83,6 +83,7 @@ android_resources("java_resources") {
     "java/res/drawable/gpay_pix_logo.xml",
     "java/res/drawable/lock_icon.xml",
     "java/res/drawable/security_check_illustration.xml",
+    "java/res/drawable/security_check_illustration_with_clip_path.xml",
     "java/res/layout/bank_account_item.xml",
     "java/res/layout/ewallet_account_linking_prompt.xml",
     "java/res/layout/ewallet_item.xml",
