@@ -268,8 +268,6 @@ Suggestion CreateNoDataSuggestion() {
   return suggestion;
 }
 
-
-
 std::optional<std::u16string> GetAttributeFillValue(
     const EntityInstance& entity,
     AttributeType attribute_type,
@@ -457,18 +455,33 @@ AtMemorySearchState AtMemoryManager::GetStateForField(
     const FieldGlobalId& field_id,
     const url::Origin& field_origin,
     std::optional<AutofillSuggestionTriggerSource> trigger_source) {
-  if (base::FeatureList::IsEnabled(
+  if (!base::FeatureList::IsEnabled(
           features::kAutofillAtMemorySearchStatefulness)) {
-    if (const AtMemorySearchState& state =
-            state_manager_.GetStateForField(field_id, field_origin);
-        state.status != AtMemorySearchStatus::kZeroState) {
-      return state;
-    }
-  } else {
     target_field_origin_ = field_origin;
+    return {.suggestions = GetEmptyQuerySuggestions(/*on_popup_open=*/true,
+                                                    trigger_source)};
   }
-  return {.suggestions =
-              GetEmptyQuerySuggestions(/*on_popup_open=*/true, trigger_source)};
+
+  const AtMemorySearchState& state =
+      state_manager_.GetStateForField(field_id, field_origin);
+  AtMemorySearchState result_state = state;
+  switch (result_state.status) {
+    case AtMemorySearchStatus::kZeroState:
+      result_state.suggestions =
+          GetEmptyQuerySuggestions(/*on_popup_open=*/true, trigger_source);
+      break;
+    case AtMemorySearchStatus::kQueryModified:
+      result_state.suggestions = GetQueryTypingSuggestions(result_state.filter);
+      break;
+    case AtMemorySearchStatus::kSearching:
+      result_state.suggestions = GetFetchingStateSuggestions();
+      break;
+    case AtMemorySearchStatus::kResponseReceived:
+      result_state.suggestions =
+          GetResultsRetrievedSuggestions(result_state.suggestions);
+      break;
+  }
+  return result_state;
 }
 
 const url::Origin& AtMemoryManager::target_field_origin() const {
@@ -1034,11 +1047,7 @@ void AtMemoryManager::OnStateReset() {
   }
 }
 
-void AtMemoryManager::SendSuggestions(std::vector<Suggestion> suggestions) {
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillAtMemorySearchStatefulness)) {
-    state_manager_.OnSuggestionsChanged(suggestions);
-  }
+void AtMemoryManager::ShowSuggestions(std::vector<Suggestion> suggestions) {
   if (popup_state_ && popup_state_->update_callback) {
     popup_state_->update_callback.Run(std::move(suggestions),
                                       popup_state_->trigger_source);
@@ -1051,18 +1060,24 @@ void AtMemoryManager::AdvanceFetchingSuggestion() {
   ShowFetchingStateSuggestions();
 }
 
-void AtMemoryManager::ShowFetchingStateSuggestions() {
-  CHECK(popup_state_);
+std::vector<Suggestion> AtMemoryManager::GetFetchingStateSuggestions() const {
   std::vector<Suggestion> suggestions;
+  const size_t fetching_string_index =
+      popup_state_ ? popup_state_->fetching_string_index : 0;
   Suggestion fetching_suggestion =
-      CreateFetchingSuggestion(popup_state_->fetching_string_index);
-  if (popup_state_->fetching_string_index == 0) {
+      CreateFetchingSuggestion(fetching_string_index);
+  if (fetching_string_index == 0) {
     fetching_suggestion.a11y_announcement = l10n_util::GetStringUTF16(
         IDS_AUTOFILL_AT_MEMORY_LOADING_A11Y_ANNOUNCEMENT);
   }
   suggestions.emplace_back(std::move(fetching_suggestion));
   MaybeAppendPersonalContextNotice(suggestions);
-  SendSuggestions(std::move(suggestions));
+  return suggestions;
+}
+
+void AtMemoryManager::ShowFetchingStateSuggestions() {
+  CHECK(popup_state_);
+  ShowSuggestions(GetFetchingStateSuggestions());
 }
 
 std::vector<Suggestion> AtMemoryManager::GetEmptyQuerySuggestions(
@@ -1076,10 +1091,11 @@ std::vector<Suggestion> AtMemoryManager::GetEmptyQuerySuggestions(
 }
 
 void AtMemoryManager::ShowEmptyQuerySuggestions() {
-  SendSuggestions(GetEmptyQuerySuggestions(/*on_popup_open=*/false));
+  ShowSuggestions(GetEmptyQuerySuggestions(/*on_popup_open=*/false));
 }
 
-void AtMemoryManager::ShowQueryTypingSuggestions(const std::u16string& query) {
+std::vector<Suggestion> AtMemoryManager::GetQueryTypingSuggestions(
+    const std::u16string& query) const {
   std::vector<Suggestion> suggestions;
   if (net::NetworkChangeNotifier::IsOffline()) {
     suggestions.push_back(CreateNoConnectionSuggestion(query));
@@ -1088,23 +1104,43 @@ void AtMemoryManager::ShowQueryTypingSuggestions(const std::u16string& query) {
   }
   MaybeAppendPersonalContextNotice(suggestions);
   MaybeAppendAiDisclosure(suggestions);
-  SendSuggestions(std::move(suggestions));
+  return suggestions;
+}
+
+void AtMemoryManager::ShowQueryTypingSuggestions(const std::u16string& query) {
+  ShowSuggestions(GetQueryTypingSuggestions(query));
+}
+
+std::vector<Suggestion> AtMemoryManager::GetResultsRetrievedSuggestions(
+    const std::vector<Suggestion>& results) const {
+  std::vector<Suggestion> suggestions = results;
+  if (results.empty()) {
+    suggestions.push_back(CreateNoDataSuggestion());
+  }
+  if (suggestions.front().type == SuggestionType::kAtMemorySearchResult &&
+      std::holds_alternative<Suggestion::AtMemoryPayload>(
+          suggestions.front().payload)) {
+    suggestions.front().a11y_announcement = l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_AT_MEMORY_SEARCH_RESULTS_A11Y_ANNOUNCEMENT);
+    InsertSectionTitles(suggestions);
+  }
+  MaybeAppendPersonalContextNotice(suggestions);
+  return suggestions;
 }
 
 void AtMemoryManager::ShowResultsRetrievedStateSuggestions(
     const MemorySearchResults& result) {
-  std::vector<Suggestion> suggestions;
   const std::string_view app_locale = client_->GetAppLocale();
-  suggestions =
+  std::vector<Suggestion> suggestions =
       base::ToVector(result.entries, [&](const MemorySearchResult& entry) {
         return TransformResultIntoSuggestion(entry, app_locale);
       });
   CHECK(!suggestions.empty());
-  suggestions.front().a11y_announcement = l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_AT_MEMORY_SEARCH_RESULTS_A11Y_ANNOUNCEMENT);
-  InsertSectionTitles(suggestions);
-  MaybeAppendPersonalContextNotice(suggestions);
-  SendSuggestions(std::move(suggestions));
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillAtMemorySearchStatefulness)) {
+    state_manager_.OnSuggestionsChanged(suggestions);
+  }
+  ShowSuggestions(GetResultsRetrievedSuggestions(suggestions));
 }
 
 void AtMemoryManager::ShowNoResultsStateSuggestions(
@@ -1139,8 +1175,11 @@ void AtMemoryManager::ShowNoResultsStateSuggestions(
       result.status == MemorySearchStatus::kNoConnectionFailure
           ? l10n_util::GetStringUTF16(IDS_AUTOFILL_AT_MEMORY_NO_CONNECTION)
           : suggestions.front().main_text.value;
-  MaybeAppendPersonalContextNotice(suggestions);
-  SendSuggestions(std::move(suggestions));
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillAtMemorySearchStatefulness)) {
+    state_manager_.OnSuggestionsChanged(suggestions);
+  }
+  ShowSuggestions(GetResultsRetrievedSuggestions(suggestions));
 }
 
 void AtMemoryManager::OnSearchResultsReceived(const std::u16string& query,

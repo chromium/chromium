@@ -35,6 +35,8 @@ enum class AtMemorySearchStatus {
 
 // Stores search state for AtMemory that persists across popup lifecycles.
 struct AtMemorySearchState {
+  // Suggestions resulting from a search query (e.g. search results or an error
+  // suggestion). Does not include section titles or footer notices.
   std::vector<Suggestion> suggestions;
   std::u16string filter;
   AtMemorySearchStatus status = AtMemorySearchStatus::kZeroState;
