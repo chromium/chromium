@@ -63,9 +63,6 @@ public class PrintingControllerImpl
             new UnownedUserDataKey<PrintingControllerImpl>(
                     PrintingControllerImpl::onDetachedFromHost);
 
-    /** Constant for invalid file descriptor- equivalent to base::kInvalidFd (-1) in C++. */
-    public static final int INVALID_FD = -1;
-
     private final WindowAndroid mWindowAndroid;
     private @Nullable PrintSession mCurrentSession;
 
@@ -141,31 +138,6 @@ public class PrintingControllerImpl
     @Override
     public boolean hasPrintingFinished() {
         return mCurrentSession != null && mCurrentSession.hasPrintingFinished();
-    }
-
-    @Override
-    public int getDpi() {
-        return mCurrentSession != null ? mCurrentSession.getDpi() : 0;
-    }
-
-    @Override
-    public @Nullable ParcelFileDescriptor getParcelFileDescriptor() {
-        return mCurrentSession != null ? mCurrentSession.getFileDescriptor() : null;
-    }
-
-    @Override
-    public int getPageHeight() {
-        return mCurrentSession != null ? mCurrentSession.getPageHeight() : 0;
-    }
-
-    @Override
-    public int getPageWidth() {
-        return mCurrentSession != null ? mCurrentSession.getPageWidth() : 0;
-    }
-
-    @Override
-    public int @Nullable [] getPageNumbers() {
-        return mCurrentSession != null ? mCurrentSession.getPageNumbers() : null;
     }
 
     @Override

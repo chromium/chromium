@@ -155,10 +155,26 @@ public class TabPrinter implements Printable {
     }
 
     @Override
-    public boolean print(int renderProcessId, int renderFrameId) {
-        if (!canPrint() || mWebContentsPrinter == null) return false;
+    public boolean print(
+            int renderProcessId,
+            int renderFrameId,
+            int fd,
+            int dpi,
+            int width,
+            int height,
+            int @Nullable [] pages) {
+        if (!canPrint() || mWebContentsPrinter == null) {
+            Printable.closeFd(fd);
+            return false;
+        }
         return mWebContentsPrinter.print(
-                targetProcessId(renderProcessId), targetFrameId(renderFrameId));
+                targetProcessId(renderProcessId),
+                targetFrameId(renderFrameId),
+                fd,
+                dpi,
+                width,
+                height,
+                pages);
     }
 
     @Override

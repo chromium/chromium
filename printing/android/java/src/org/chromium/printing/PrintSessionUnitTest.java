@@ -59,8 +59,16 @@ public class PrintSessionUnitTest {
         }
 
         @Override
-        public boolean print(int renderProcessId, int renderFrameId) {
+        public boolean print(
+                int renderProcessId,
+                int renderFrameId,
+                int fd,
+                int dpi,
+                int width,
+                int height,
+                int @Nullable [] pages) {
             mPrintCount++;
+            Printable.closeFd(fd);
             return false;
         }
 

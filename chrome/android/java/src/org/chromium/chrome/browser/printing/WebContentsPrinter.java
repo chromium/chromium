@@ -69,13 +69,32 @@ public class WebContentsPrinter implements Printable {
     }
 
     @Override
-    public boolean print(int renderProcessId, int renderFrameId) {
-        if (!canPrint()) return false;
+    public boolean print(
+            int renderProcessId,
+            int renderFrameId,
+            int fd,
+            int dpi,
+            int width,
+            int height,
+            int @Nullable [] pages) {
+        if (!canPrint()) {
+            Printable.closeFd(fd);
+            return false;
+        }
         boolean hasExplicitTarget = renderProcessId >= 0 && renderFrameId >= 0;
         int processId = hasExplicitTarget ? renderProcessId : mRenderProcessId;
         int frameId = hasExplicitTarget ? renderFrameId : mRenderFrameId;
         return WebContentsPrinterJni.get()
-                .print(mWebContents, processId, frameId, mPrintSelectionOnly);
+                .print(
+                        mWebContents,
+                        processId,
+                        frameId,
+                        mPrintSelectionOnly,
+                        fd,
+                        dpi,
+                        width,
+                        height,
+                        pages);
     }
 
     @Override
@@ -129,7 +148,12 @@ public class WebContentsPrinter implements Printable {
                 @Nullable WebContents webContents,
                 int renderProcessId,
                 int renderFrameId,
-                boolean printSelectionOnly);
+                boolean printSelectionOnly,
+                int fd,
+                int dpi,
+                int width,
+                int height,
+                int @Nullable [] pages);
 
         void finishPrint(@Nullable WebContents webContents, int renderProcessId, int renderFrameId);
     }

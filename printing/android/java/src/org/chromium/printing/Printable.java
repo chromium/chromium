@@ -4,9 +4,12 @@
 
 package org.chromium.printing;
 
+import android.os.ParcelFileDescriptor;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -23,8 +26,30 @@ public interface Printable {
      */
     boolean initiatePrint(int renderProcessId, int renderFrameId);
 
-    /** Start the PDF generation process. */
-    boolean print(int renderProcessId, int renderFrameId);
+    /**
+     * Start the PDF generation process.
+     *
+     * <p>Contract: The callee takes ownership of {@code fd} unconditionally upon invocation and is
+     * responsible for closing it on all code paths (success or failure).
+     */
+    boolean print(
+            int renderProcessId,
+            int renderFrameId,
+            int fd,
+            int dpi,
+            int width,
+            int height,
+            int @Nullable [] pages);
+
+    /** Helper for implementations of {@link #print} that need to drop an unused {@code fd}. */
+    static void closeFd(int fd) {
+        if (fd < 0) return;
+        try (ParcelFileDescriptor pfd = ParcelFileDescriptor.adoptFd(fd)) {
+            // Automatically closed by try-with-resources.
+        } catch (IOException e) {
+            /* ignore */
+        }
+    }
 
     /** Finalizes the print session: dispatches afterprint. Called even if printing failed. */
     void finishPrint(int renderProcessId, int renderFrameId);

@@ -156,6 +156,9 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
   bool IsCrashed();
 
   void SetPrintingRFH(content::RenderFrameHost* rfh);
+  bool IsCurrentTargetFramePrintingRFH() {
+    return &CurrentTargetFrame() == printing_rfh_;
+  }
 
   // Helper method to do some common operations and checks when starting to
   // printing.

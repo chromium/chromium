@@ -35,7 +35,15 @@ public class PrintingControllerImplUnitTest {
         }
 
         @Override
-        public boolean print(int renderProcessId, int renderFrameId) {
+        public boolean print(
+                int renderProcessId,
+                int renderFrameId,
+                int fd,
+                int dpi,
+                int width,
+                int height,
+                int @Nullable [] pages) {
+            Printable.closeFd(fd);
             return true;
         }
 

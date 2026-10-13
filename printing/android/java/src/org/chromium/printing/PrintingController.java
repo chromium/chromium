@@ -4,10 +4,7 @@
 
 package org.chromium.printing;
 
-import android.os.ParcelFileDescriptor;
-
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 
 /**
  * This interface describes a class which is responsible of talking to the printing backend.
@@ -20,32 +17,6 @@ import org.chromium.build.annotations.Nullable;
  */
 @NullMarked
 public interface PrintingController {
-    /**
-     * @return Dots Per Inch (DPI) of the currently selected printer.
-     */
-    int getDpi();
-
-    /**
-     * @return The ParcelFileDescriptor of the file into which Chromium will write the PDF.
-     */
-    @Nullable ParcelFileDescriptor getParcelFileDescriptor();
-
-    /**
-     * @return The media height in mils (thousands of an inch).
-     */
-    int getPageHeight();
-
-    /**
-     * @return The media width in mils (thousands of an inch).
-     */
-    int getPageWidth();
-
-    /**
-     * @return The individual page numbers of the document to be printed, of null if all pages are
-     *         to be printed.  The numbers are zero indexed.
-     */
-    int @Nullable [] getPageNumbers();
-
     /**
      * @return If the controller is busy.
      */
