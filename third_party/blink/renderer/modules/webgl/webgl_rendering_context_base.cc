@@ -160,6 +160,7 @@
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/format.h"
@@ -1009,7 +1010,22 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage() {
     if (!resource_provider->IsValid()) {
       return nullptr;
     }
-    return resource_provider->resource()->Bitmap();
+
+    auto release_callback = blink::BindOnce(
+        [](scoped_refptr<gpu::ClientSharedImage> shared_image,
+           const gpu::SyncToken& sync_token, bool is_lost) {
+          if (sync_token.HasData()) {
+            shared_image->UpdateDestructionSyncToken(sync_token);
+          }
+        },
+        client_si);
+
+    return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
+        std::move(client_si), resource_provider->resource()->sync_token(),
+        GetAlphaType(), drawing_buffer_tone_mapping_hdr_metadata_,
+        std::move(shared_context_wrapper), base::PlatformThread::CurrentRef(),
+        ThreadScheduler::Current()->CleanupTaskRunner(),
+        std::move(release_callback));
   } else {
     // Match the SBI configuration to that produced when using GPU compositing:
     // N32 and premul (as set by
