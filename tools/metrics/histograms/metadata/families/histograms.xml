@@ -792,7 +792,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="ManagedUsers.TopLevelFilteringResult2{Context}"
-    enum="SupervisedUserFilterTopLevelResult" expires_after="2027-02-05">
+    enum="SupervisedUserFilterTopLevelResult" expires_after="2027-04-11">
 <!-- Do not extend once expires, migrate to SupervisedUsers.{Component}.TopLevelFilteringResult{Context}-->
 
   <owner>tju@chromium.org</owner>

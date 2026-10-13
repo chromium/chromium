@@ -787,7 +787,7 @@ to monitor/debug fetching OAuth2 Token issues. -->
 </histogram>
 
 <histogram name="Signin.AccountProfileStartupState2"
-    enum="AccountProfileStartupState" expires_after="2027-02-07">
+    enum="AccountProfileStartupState" expires_after="2027-04-11">
   <owner>jood@google.com</owner>
   <owner>treib@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -2387,7 +2387,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.HatsSurveyAndroid.TriedShowing"
-    enum="SigninSurveyTrigger" expires_after="2027-02-07">
+    enum="SigninSurveyTrigger" expires_after="2027-04-11">
   <owner>triploblastic@google.com</owner>
   <owner>bsazonov@chromium.com</owner>
   <owner>chrome-signin-mobile-team@google.com</owner>
@@ -3484,7 +3484,7 @@ Signin.OAuthMultiloginResponseStatus2{PartitionSuffix} one for a long enough tim
 </histogram>
 
 <histogram name="Signin.ProcessMirrorHeaders.Event" enum="MirrorHeaderEvent"
-    expires_after="2027-02-07">
+    expires_after="2027-04-11">
   <owner>mlbipin@google.com</owner>
   <owner>chrome-signin-mobile-team@google.com</owner>
   <summary>
@@ -4502,7 +4502,7 @@ kept as long as profile signout is possible -->
 
 <histogram
     name="Signin.SSOIdentityListRequest.FetchIdentitiesWithCallback.Duration"
-    units="ms" expires_after="2027-02-07">
+    units="ms" expires_after="2027-04-11">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>

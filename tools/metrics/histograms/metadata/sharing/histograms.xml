@@ -317,7 +317,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.ScrollCapture.MemoryPressureOnSearch"
-    enum="MemoryPressureLevel" expires_after="2027-02-07">
+    enum="MemoryPressureLevel" expires_after="2027-04-11">
   <owner>jhimawan@google.com</owner>
   <owner>src/components/paint_preview/OWNERS</owner>
   <summary>
@@ -659,7 +659,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Sharing.ShareSheetLongScreenshots.BitmapGeneratorStatus"
     enum="SharingShareSheetLongScreenshotsBitmapGenerationStatus"
-    expires_after="2027-02-07">
+    expires_after="2027-04-11">
   <owner>jhimawan@google.com</owner>
   <owner>src/components/paint_preview/OWNERS</owner>
   <summary>

@@ -565,7 +565,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HttpCache.NoVarySearch.CacheStorage.CreateAndLoadTime"
-    units="ms" expires_after="2027-02-07">
+    units="ms" expires_after="2027-04-11">
   <owner>yoichio@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1192,7 +1192,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HttpCache.TotalDiskCacheTimePerTransaction.{AccessType}2"
-    units="ms" expires_after="2027-02-07">
+    units="ms" expires_after="2027-04-11">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -1430,7 +1430,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.CachingCertVerifier.CacheHit{HostType}" enum="Boolean"
-    expires_after="2027-02-07">
+    expires_after="2027-04-11">
   <owner>nidhijaju@chromium.org</owner>
   <owner>chrome-network-stack@google.com</owner>
   <summary>
@@ -1828,7 +1828,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DeviceBoundSessions.DeferralResultByOutcome.{Outcome}"
-    enum="DeviceBoundSessionRefreshResult" expires_after="2027-02-07">
+    enum="DeviceBoundSessionRefreshResult" expires_after="2027-04-11">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2205,7 +2205,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DeviceBoundSessions.RegistrationResult{RegistrationType}"
-    enum="DeviceBoundSessionError" expires_after="2027-02-07">
+    enum="DeviceBoundSessionError" expires_after="2027-04-11">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2354,7 +2354,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DeviceBoundSessions.{RequestType}.Network.Result"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2027-02-07">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2027-04-11">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -4385,7 +4385,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.HttpTimeToFirstByte.ServerPaddingFirstConnectionOnly"
-    units="ms" expires_after="2027-02-07">
+    units="ms" expires_after="2027-04-11">
   <owner>davidben@chromium.org</owner>
   <owner>hchao@chromium.org</owner>
   <owner>chrome-secure-web-and-net@chromium.org</owner>
@@ -4793,7 +4793,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.NetworkTransaction.StreamRequestCompleteTime4{HostType}.{SuccessOrFailure}"
-    units="ms" expires_after="2027-02-07">
+    units="ms" expires_after="2027-04-11">
   <owner>bashi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -9485,7 +9485,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SSL.TrustAnchorIDsResult" enum="SSLTrustAnchorIDsResult"
-    expires_after="2027-02-07">
+    expires_after="2027-04-11">
   <owner>davidben@chromium.org</owner>
   <owner>estark@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
@@ -10526,7 +10526,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SimpleCache.{CacheInstance}CreationToIndex" units="ms"
-    expires_after="2027-02-07">
+    expires_after="2027-04-11">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
@@ -10792,7 +10792,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SimpleCache.{CacheInstance}SyncOpenPrefetchMode"
-    enum="SimpleCachePrefetchMode" expires_after="2027-02-07">
+    enum="SimpleCachePrefetchMode" expires_after="2027-04-11">
   <owner>ashleynewson@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>

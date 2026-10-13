@@ -2128,7 +2128,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Storage.{DomStorageType}.{Operation}.{DomStorageBackingStoreLifetime}"
-    enum="DomStorageDbStatusType" expires_after="2027-02-10">
+    enum="DomStorageDbStatusType" expires_after="2027-04-11">
   <owner>leimy@chromium.org</owner>
   <owner>fergal@chromium.org</owner>
   <owner>rahsin@microsoft.com</owner>

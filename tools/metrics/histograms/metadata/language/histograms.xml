@@ -200,7 +200,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageSettings.AppLanguagePrompt.Action"
-    enum="LanguageSettingsAppLanguagePromptAction" expires_after="2027-02-07">
+    enum="LanguageSettingsAppLanguagePromptAction" expires_after="2027-04-11">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>

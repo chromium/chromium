@@ -4265,7 +4265,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.Search.XGeoHeaderAttached" enum="Boolean"
-    expires_after="2027-02-07">
+    expires_after="2027-04-11">
   <owner>andypaicu@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>

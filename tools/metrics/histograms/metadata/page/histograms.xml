@@ -2149,7 +2149,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.GoogleSearch.ActualNavigationStartToAFTEndWithPreNavigationLatency"
-    units="ms" expires_after="2027-02-04">
+    units="ms" expires_after="2027-04-11">
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -2165,7 +2165,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.GoogleSearch.ActualNavigationStartToDOMContentLoadedEventFired"
-    units="ms" expires_after="2027-02-04">
+    units="ms" expires_after="2027-04-11">
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -2211,7 +2211,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.GoogleSearch.ActualNavigationStartToNavigationCommitSent"
-    units="ms" expires_after="2027-02-04">
+    units="ms" expires_after="2027-04-11">
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -2243,7 +2243,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.GoogleSearch.ActualNavigationStartToParseStart"
-    units="ms" expires_after="2027-02-04">
+    units="ms" expires_after="2027-04-11">
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -2258,7 +2258,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.GoogleSearch.AdvertisedAltSvcState{QuicAvailability}{IncognitoSuffix}"
-    enum="AdvertisedAltSvcState" expires_after="2027-02-07">
+    enum="AdvertisedAltSvcState" expires_after="2027-04-11">
   <owner>bashi@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -3603,7 +3603,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.GoogleSearch.SessionSource{ConnectionProtocolType}"
-    enum="NetworkSessionSource" expires_after="2027-02-07">
+    enum="NetworkSessionSource" expires_after="2027-04-11">
   <owner>bashi@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -5901,7 +5901,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.NavigationTiming.ActualNavigationStartToNavigationStart"
-    units="ms" expires_after="2027-02-04">
+    units="ms" expires_after="2027-04-11">
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>

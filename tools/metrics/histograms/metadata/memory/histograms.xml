@@ -1024,7 +1024,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HeapProfiling.InProcess.TotalSampledMemory{Process}"
-    units="MB" expires_after="2027-02-07">
+    units="MB" expires_after="2027-04-11">
   <owner>joenotcharles@google.com</owner>
   <owner>etienneb@chromium.org</owner>
   <owner>chrome-memory@google.com</owner>
@@ -1551,7 +1551,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Memory.Experimental.Browser2.Small{ProcessMemoryAllocatorSmall2}"
-    units="KB" expires_after="2027-02-07">
+    units="KB" expires_after="2027-04-11">
   <owner>erikchen@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <owner>lizeb@chromium.org</owner>
@@ -1582,7 +1582,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Experimental.Browser2{ProcessMemoryAllocator2}"
-    units="MB" expires_after="2027-02-07">
+    units="MB" expires_after="2027-04-11">
   <owner>erikchen@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <owner>lizeb@chromium.org</owner>
@@ -1660,7 +1660,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Memory.Experimental.Gpu2.Custom{ProcessMemoryAllocatorCustom2}"
-    units="bytes" expires_after="2027-02-07">
+    units="bytes" expires_after="2027-04-11">
   <owner>sashamcintosh@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
@@ -1908,7 +1908,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Memory.Experimental.Renderer2.Small{ProcessMemoryAllocatorSmall2}"
-    units="KB" expires_after="2027-02-07">
+    units="KB" expires_after="2027-04-11">
   <owner>erikchen@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <owner>lizeb@chromium.org</owner>
@@ -1923,7 +1923,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Memory.Experimental.Renderer2.Tiny{ProcessMemoryAllocatorTiny2}"
-    units="bytes" expires_after="2027-02-07">
+    units="bytes" expires_after="2027-04-11">
   <owner>sashamcintosh@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>

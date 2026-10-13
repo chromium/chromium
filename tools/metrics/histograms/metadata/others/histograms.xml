@@ -2640,7 +2640,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImportantFile.WriteDuration{ImportantFileClients}" units="ms"
-    expires_after="2027-02-07">
+    expires_after="2027-04-11">
   <owner>wylieb@google.com</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
@@ -2915,7 +2915,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mojo.Channel.WriteToReadLatencyUs" units="microseconds"
-    expires_after="2027-02-07">
+    expires_after="2027-04-11">
   <owner>lizeb@chromium.org</owner>
   <owner>rockot@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>

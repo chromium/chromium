@@ -289,7 +289,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Passkeys.IOSMigration" enum="PasskeysMigrationStatus"
-    expires_after="2027-02-07">
+    expires_after="2027-04-11">
   <owner>rgod@google.com</owner>
   <owner>sugoi@chromium.org</owner>
   <owner>tmartino@chromium.org</owner>
@@ -4607,7 +4607,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram
     name="PasswordManager.{Store}{Metric3}.{PasswordType}{CustomPassphraseStatus}{StoreErrorStatus}"
-    units="units" expires_after="2027-02-07">
+    units="units" expires_after="2027-04-11">
   <owner>kazinova@google.com</owner>
   <owner>mamir@chromium.org</owner>
   <owner>treib@chromium.org</owner>

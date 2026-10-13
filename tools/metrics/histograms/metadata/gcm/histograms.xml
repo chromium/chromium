@@ -83,7 +83,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GCM.DeliveredToAppHandler{AppHandler}" enum="BooleanDelivered"
-    expires_after="2027-02-07">
+    expires_after="2027-04-11">
   <owner>peter@chromium.org</owner>
   <owner>rushans@google.com</owner>
   <summary>

@@ -5957,7 +5957,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="IOS.PageContext.AnnotatedPageContent.{Status}.{Config}.Latency"
-    units="ms" expires_after="2027-02-07">
+    units="ms" expires_after="2027-04-11">
   <owner>nicolasmacbeth@google.com</owner>
   <owner>bling-alchemy-eng@google.com</owner>
   <summary>
@@ -6972,7 +6972,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.ReaderMode.Heuristic.Latency" units="ms"
-    expires_after="2027-02-07">
+    expires_after="2027-04-11">
   <owner>fernandex@google.com</owner>
   <owner>bling-squid-squad@google.com</owner>
   <summary>
