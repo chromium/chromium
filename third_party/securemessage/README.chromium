@@ -2,8 +2,8 @@ Name: Secure Message
 Short Name: Secure Message
 URL: https://github.com/google/securemessage
 Version: N/A
-Revision: fa07beb12babc3b25e0c5b1f38c16aa8cb6b8f84
-Update Mechanism: Manual
+Revision: 69a02984d4563c6c21132ee882d1d3df1981f5a1
+Update Mechanism: Static (https://crbug.com/567756738)
 License: Apache-2.0
 License File: LICENSE
 Security Critical: yes
