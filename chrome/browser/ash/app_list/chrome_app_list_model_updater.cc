@@ -14,7 +14,6 @@
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_controller.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
-#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -29,22 +28,11 @@
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/app_icon_color_cache/app_icon_color_cache.h"
-#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
-#include "chromeos/ash/components/feature_engagement/feature_engagement_tracker_provider.h"
-#include "components/feature_engagement/public/feature_constants.h"
-#include "components/feature_engagement/public/tracker.h"
 #include "extensions/common/constants.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/display/screen.h"
 
 namespace {
-
-// Returns the feature_engagement::Tracker for `profile`'s account, or null if
-// no tracker is available.
-feature_engagement::Tracker* GetTracker(Profile* profile) {
-  return ash::FeatureEngagementTrackerProvider::Get().Find(
-      CHECK_DEREF(ash::AnnotatedAccountId::Get(profile->GetOriginalProfile())));
-}
 
 std::unique_ptr<ash::AppListItem> CreateAppListItem(
     std::unique_ptr<ash::AppListItemMetadata> metadata,
@@ -307,47 +295,6 @@ void ChromeAppListModelUpdater::SetStatus(ash::AppListModelStatus status) {
 void ChromeAppListModelUpdater::SetSearchEngineIsGoogle(bool is_google) {
   search_engine_is_google_ = is_google;
   search_model_.SetSearchEngineIsGoogle(is_google);
-}
-
-void ChromeAppListModelUpdater::RecalculateWouldTriggerLauncherSearchIph() {
-  TRACE_EVENT0(
-      "ui",
-      "ChromeAppListModelUpdater::RecalculateWouldTriggerLauncherSearchIph");
-  raw_ptr<feature_engagement::Tracker> tracker = GetTracker(profile_);
-  if (!tracker) {
-    // Set false as a fail-safe behavior.
-    search_model_.SetWouldTriggerLauncherSearchIph(false);
-    return;
-  }
-
-  // `AddOnInitializedCallback` will call the callback immediately if it's
-  // already initialized.
-  tracker->AddOnInitializedCallback(base::BindOnce(
-      &ChromeAppListModelUpdater::OnFeatureEngagementTrackerInitialized,
-      weak_ptr_factory_.GetWeakPtr()));
-}
-
-void ChromeAppListModelUpdater::OnFeatureEngagementTrackerInitialized(
-    bool success) {
-  TRACE_EVENT0(
-      "ui", "ChromeAppListModelUpdater::OnFeatureEngagementTrackerInitialized");
-  if (!success) {
-    // Set false as a fail-safe behavior.
-    search_model_.SetWouldTriggerLauncherSearchIph(false);
-    return;
-  }
-
-  // To be on a safer side, query tracker instance again to minimize the
-  // duration of holding a tracker object.
-  raw_ptr<feature_engagement::Tracker> tracker = GetTracker(profile_);
-  if (!tracker) {
-    // Set false as a fail-safe behavior.
-    search_model_.SetWouldTriggerLauncherSearchIph(false);
-    return;
-  }
-
-  search_model_.SetWouldTriggerLauncherSearchIph(tracker->WouldTriggerHelpUI(
-      feature_engagement::kIPHLauncherSearchHelpUiFeature));
 }
 
 void ChromeAppListModelUpdater::PublishSearchResults(

@@ -39,13 +39,6 @@ class ASH_PUBLIC_EXPORT AppListViewDelegate {
   // delegate.
   virtual AppListNotifier* GetNotifier() = 0;
 
-  // Creates a `ScopedIphSession` for interacting with LauncherSearchHelpUi
-  // feature. A caller must show an IPH UI after this returns a session. This
-  // returns nullptr if `feature_engagement::Tracker::ShouldTriggerHelpUI`
-  // returns false.
-  virtual std::unique_ptr<ScopedIphSession>
-  CreateLauncherSearchIphSession() = 0;
-
   // Returns the search categories that are available for users to choose if
   // they want to have the results in the categories displayed in launcher
   // search.

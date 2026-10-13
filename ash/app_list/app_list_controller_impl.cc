@@ -379,14 +379,6 @@ AppListNotifier* AppListControllerImpl::GetNotifier() {
   return client_->GetNotifier();
 }
 
-std::unique_ptr<ScopedIphSession>
-AppListControllerImpl::CreateLauncherSearchIphSession() {
-  if (!client_) {
-    return nullptr;
-  }
-  return client_->CreateLauncherSearchIphSession();
-}
-
 void AppListControllerImpl::SetActiveModel(
     int profile_id,
     AppListModel* model,
@@ -1420,10 +1412,6 @@ void AppListControllerImpl::OnVisibilityChanged(bool visible,
   // In the Kiosk session we should never show the app list.
   CHECK(!visible || !IsKioskSession());
 
-  if (client_) {
-    client_->RecalculateWouldTriggerLauncherSearchIph();
-  }
-
   DVLOG(1) << __PRETTY_FUNCTION__ << " visible " << visible << " display_id "
            << display_id;
   // Focus and app visibility changes while finishing home launcher state
@@ -1618,8 +1606,6 @@ void AppListControllerImpl::UpdateSearchBoxUiVisibilities() {
   if (!client_) {
     return;
   }
-
-  client_->RecalculateWouldTriggerLauncherSearchIph();
 
   // Gemini app icon is loaded via `client_` for a dependency reason. This must
   // be after `client_` non-nullptr check.

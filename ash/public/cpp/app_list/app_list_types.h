@@ -887,21 +887,6 @@ struct SearchResultIdWithPositionIndex {
   int position_index;
 };
 
-// `ScopedIphSession` manages an IPH session. A UI must show an IPH once an
-// IPH session gets created. Also the UI must destroy
-// `ScopedIphSession` when it has stopped showing an IPH.
-class ASH_PUBLIC_EXPORT ScopedIphSession {
- public:
-  ScopedIphSession() = default;
-  virtual ~ScopedIphSession() = default;
-
-  ScopedIphSession(const ScopedIphSession&) = delete;
-  ScopedIphSession& operator=(const ScopedIphSession&) = delete;
-
-  // Notify an IPH event with name of `event`.
-  virtual void NotifyEvent(const std::string& event) = 0;
-};
-
 using SearchResultIdWithPositionIndices =
     std::vector<SearchResultIdWithPositionIndex>;
 

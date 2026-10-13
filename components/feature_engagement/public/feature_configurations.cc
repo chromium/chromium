@@ -3294,31 +3294,6 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
 
 #endif  // BUILDFLAG(IS_IOS)
 
-#if BUILDFLAG(IS_CHROMEOS)
-  if (kIPHLauncherSearchHelpUiFeature.name == feature->name) {
-    // A config that allows the ChromeOS Ash Launcher search IPH to be shown.
-    FeatureConfig config;
-    config.valid = true;
-    config.availability = kAlwaysAvailable;
-    config.session_rate = kNoRestrictions;
-    config.session_rate_impact.type = SessionRateImpact::Type::NONE;
-    config.blocked_by.type = BlockedBy::Type::NONE;
-    config.blocking.type = Blocking::Type::NONE;
-
-    // Can be shown any time until the `assistant_click` event is recorded.
-    config.trigger =
-        EventConfig("IPH_LauncherSearchHelpUi_trigger", kAlwaysTrue,
-                    kMaxStoragePeriod, kMaxStoragePeriod);
-    config.used =
-        EventConfig("IPH_LauncherSearchHelpUi_chip_click", kAlwaysTrue,
-                    kMaxStoragePeriod, kMaxStoragePeriod);
-    config.event_configs.insert(EventConfig(
-        "IPH_LauncherSearchHelpUi_assistant_click", Comparator(EQUAL, 0),
-        kMaxStoragePeriod, kMaxStoragePeriod));
-    return config;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
   if (kIPHSendTabToSelfOmnibox.name == feature->name) {

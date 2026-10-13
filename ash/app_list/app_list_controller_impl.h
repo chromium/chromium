@@ -165,8 +165,6 @@ class ASH_EXPORT AppListControllerImpl
 
   // AppListViewDelegate:
   AppListNotifier* GetNotifier() override;
-  std::unique_ptr<ash::ScopedIphSession> CreateLauncherSearchIphSession()
-      override;
   std::vector<AppListSearchControlCategory> GetToggleableCategories()
       const override;
   void StartSearch(const std::u16string& raw_query) override;

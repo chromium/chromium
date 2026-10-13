@@ -45,14 +45,6 @@ void SearchBoxModel::SetSunfishButtonVisibility(
   }
 }
 
-void SearchBoxModel::SetWouldTriggerIph(bool would_trigger_iph) {
-  if (would_trigger_iph_ == would_trigger_iph) {
-    return;
-  }
-
-  would_trigger_iph_ = would_trigger_iph;
-}
-
 void SearchBoxModel::SetSearchEngineIsGoogle(bool is_google) {
   if (is_google == search_engine_is_google_)
     return;

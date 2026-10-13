@@ -7525,10 +7525,6 @@ inline constexpr char kAshSplitKeyboardRefactorName[] =
 inline constexpr char kAshSplitKeyboardRefactorDescription[] =
     "Enable split keyboard refactor on ChromeOS.";
 
-inline constexpr char kAssistantIphName[] = "Assistant IPH";
-inline constexpr char kAssistantIphDescription[] =
-    "Enables showing Assistant IPH on ChromeOS.";
-
 inline constexpr char kAutoFramingOverrideName[] =
     "Auto-framing control override";
 inline constexpr char kAutoFramingOverrideDescription[] =

@@ -73,7 +73,6 @@ class FakeAppListModelUpdater : public AppListModelUpdater {
 
   // For SearchModel:
   bool SearchEngineIsGoogle() override;
-  void RecalculateWouldTriggerLauncherSearchIph() override;
   const std::vector<raw_ptr<ChromeSearchResult, VectorExperimental>>&
   search_results() const {
     return search_results_;

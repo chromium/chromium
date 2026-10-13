@@ -25,7 +25,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_browser_delegate.h"
-#include "components/feature_engagement/public/tracker.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_observer.h"
 #include "components/session_manager/core/session_manager_observer.h"
@@ -98,9 +97,6 @@ class AppListClientImpl
       const std::string& setting_name,
       const std::map<std::string, int>& values) override;
   ash::AppListNotifier* GetNotifier() override;
-  void RecalculateWouldTriggerLauncherSearchIph() override;
-  std::unique_ptr<ash::ScopedIphSession> CreateLauncherSearchIphSession()
-      override;
   void LoadIcon(int profile_id, const std::string& app_id) override;
   ash::AppListSortOrder GetPermanentSortingOrder() const override;
   void RecordAppsDefaultVisibility(

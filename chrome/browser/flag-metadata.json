@@ -916,11 +916,6 @@
     "expiry_milestone": 155
   },
   {
-    "name": "assistant-iph",
-    "owners": ["wutao@chromium.org", "assistive-eng@google.com"],
-    "expiry_milestone": 126
-  },
-  {
     "name": "assistant-side-panel",
     "owners": [ "ewannpv@google.com", "bling-meridian@google.com" ],
     "expiry_milestone": 153

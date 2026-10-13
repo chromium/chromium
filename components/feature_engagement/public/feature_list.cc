@@ -374,7 +374,6 @@ const base::Feature* const kAllFeatures[] = {
     // keep-sorted start case=no
     &kIPHGoogleOneOfferNotificationFeature,
     &kIPHGrowthFramework,
-    &kIPHLauncherSearchHelpUiFeature,
 // keep-sorted end
 
 #endif  // BUILDFLAG(IS_CHROMEOS)

@@ -55,12 +55,9 @@
 #include "chromeos/ash/components/browser_delegate/browser_controller.h"
 #include "chromeos/ash/components/browser_delegate/browser_delegate.h"
 #include "chromeos/ash/components/browser_delegate/browser_type.h"
-#include "chromeos/ash/components/feature_engagement/feature_engagement_tracker_provider.h"
 #include "chromeos/ash/components/search_engines/template_url_service_provider.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_browser_delegate.h"
 #include "components/constrained_window/modal_dialog_host_property.h"
-#include "components/feature_engagement/public/feature_constants.h"
-#include "components/feature_engagement/public/tracker.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -119,25 +116,6 @@ void RecordDefaultAppsForHistogram(const std::string& histogram_name,
     base::UmaHistogramEnumeration(histogram_name, default_app_name.value());
   }
 }
-
-class ScopedIphSessionImpl : public ash::ScopedIphSession {
- public:
-  explicit ScopedIphSessionImpl(feature_engagement::Tracker* tracker,
-                                const base::Feature& iph_feature)
-      : tracker_(tracker), iph_feature_(iph_feature) {
-    CHECK(tracker_);
-  }
-
-  ~ScopedIphSessionImpl() override { tracker_->Dismissed(*iph_feature_); }
-
-  void NotifyEvent(const std::string& event) override {
-    tracker_->NotifyEvent(event);
-  }
-
- private:
-  raw_ptr<feature_engagement::Tracker> tracker_;
-  const raw_ref<const base::Feature> iph_feature_;
-};
 
 }  // namespace
 
@@ -511,7 +489,6 @@ void AppListClientImpl::SetProfile(Profile* new_profile) {
 
   SetUpSearchUI();
   OnTemplateURLServiceChanged();
-  RecalculateWouldTriggerLauncherSearchIph();
 }
 
 void AppListClientImpl::SetUpSearchUI() {
@@ -647,17 +624,6 @@ ash::AppListNotifier* AppListClientImpl::GetNotifier() {
   return app_list_notifier_.get();
 }
 
-void AppListClientImpl::RecalculateWouldTriggerLauncherSearchIph() {
-  // This can be called before a `Profile` is set to `AppListClientImpl`. If a
-  // `Profile` is not set yet, return here. `AppListClientImpl::SetProfile` will
-  // call this method once a `Profile` is set.
-  if (!current_model_updater_) {
-    return;
-  }
-
-  current_model_updater_->RecalculateWouldTriggerLauncherSearchIph();
-}
-
 bool AppListClientImpl::HasReordered() {
   if (!current_model_updater_) {
     return false;
@@ -673,26 +639,6 @@ gfx::Image AppListClientImpl::GetGeminiIcon() {
   int resource_id = IDR_PRODUCT_LOGO_128;
 #endif
   return ui::ImageModel::FromResourceId(resource_id).GetImage();
-}
-
-std::unique_ptr<ash::ScopedIphSession>
-AppListClientImpl::CreateLauncherSearchIphSession() {
-  if (profile_ == nullptr) {
-    return nullptr;
-  }
-
-  feature_engagement::Tracker* tracker =
-      ash::FeatureEngagementTrackerProvider::Get().Find(CHECK_DEREF(
-          ash::AnnotatedAccountId::Get(profile_->GetOriginalProfile())));
-  if (!tracker->ShouldTriggerHelpUI(
-          feature_engagement::kIPHLauncherSearchHelpUiFeature)) {
-    return nullptr;
-  }
-
-  // If we call `ShouldTriggerHelpUI` above, we must show an IPH, i.e. we must
-  // return `ScopedIphSessionImpl`.
-  return std::make_unique<ScopedIphSessionImpl>(
-      tracker, feature_engagement::kIPHLauncherSearchHelpUiFeature);
 }
 
 void AppListClientImpl::LoadIcon(int profile_id, const std::string& app_id) {
