@@ -56,7 +56,8 @@ class MockVideoEncoder : public VideoEncoder {
       : VideoEncoder(script_state, init, exception_state) {}
   ~MockVideoEncoder() override = default;
 
-  MOCK_METHOD((media::EncoderStatus::Or<std::unique_ptr<media::VideoEncoder>>),
+  MOCK_METHOD((base::expected<std::unique_ptr<media::VideoEncoder>,
+                              media::EncoderStatus>),
               CreateMediaVideoEncoder,
               (const ParsedConfig& config,
                media::GpuVideoAcceleratorFactories* gpu_factories,
@@ -620,8 +621,8 @@ TEST_F(VideoEncoderTest, NoAvailableMediaVideoEncoder) {
   auto* encoder = CreateMockEncoder(script_state, init, es);
   auto* config = CreateConfig();
   EXPECT_CALL(*encoder, CreateMediaVideoEncoder(_, _, _))
-      .WillOnce(Return(media::EncoderStatus(
-          media::EncoderStatus::Codes::kEncoderUnsupportedProfile)));
+      .WillOnce(Return(base::unexpected(media::EncoderStatus(
+          media::EncoderStatus::Codes::kEncoderUnsupportedProfile))));
   encoder->configure(config, es);
 }
 

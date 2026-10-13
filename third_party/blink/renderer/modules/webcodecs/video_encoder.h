@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_color_space.h"
 #include "media/base/video_decoder_config.h"
@@ -133,7 +134,8 @@ class MODULES_EXPORT VideoEncoder : public EncoderBase<VideoEncoderTraits> {
                       scoped_refptr<media::VideoFrame> txt_frame,
                       media::VideoEncoder::EncoderStatusCB done_callback,
                       scoped_refptr<media::VideoFrame> result_frame);
-  static media::EncoderStatus::Or<std::unique_ptr<media::VideoEncoder>>
+  static base::expected<std::unique_ptr<media::VideoEncoder>,
+                        media::EncoderStatus>
   CreateSoftwareVideoEncoder(VideoEncoder* self,
                              bool fallback,
                              media::VideoCodec codec);
@@ -144,7 +146,8 @@ class MODULES_EXPORT VideoEncoder : public EncoderBase<VideoEncoderTraits> {
 
   // Virtual for UTs.
   // Returns the VideoEncoder.
-  virtual media::EncoderStatus::Or<std::unique_ptr<media::VideoEncoder>>
+  virtual base::expected<std::unique_ptr<media::VideoEncoder>,
+                         media::EncoderStatus>
   CreateMediaVideoEncoder(const ParsedConfig& config,
                           media::GpuVideoAcceleratorFactories* gpu_factories,
                           bool& is_platform_encoder);
@@ -155,7 +158,7 @@ class MODULES_EXPORT VideoEncoder : public EncoderBase<VideoEncoderTraits> {
       Request* request,
       media::GpuVideoAcceleratorFactories* gpu_factories);
   void ContinueConfigureAfterFlush(Request* request);
-  media::EncoderStatus::Or<std::unique_ptr<media::VideoEncoder>>
+  base::expected<std::unique_ptr<media::VideoEncoder>, media::EncoderStatus>
   CreateAcceleratedVideoEncoder(
       media::VideoCodecProfile profile,
       const media::VideoEncoder::Options& options,

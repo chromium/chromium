@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/sequence_checker.h"
+#include "base/types/expected.h"
 #include "media/base/decoder_status.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -122,11 +123,12 @@ class MODULES_EXPORT DecoderTemplate
   // When |verify_key_frame| is true, clients are expected to verify and set the
   // DecoderBuffer::is_key_frame() value. I.e., they must process the encoded
   // data to ensure the value is actually what the chunk says it is.
-  virtual media::DecoderStatus::Or<scoped_refptr<media::DecoderBuffer>>
+  virtual base::expected<scoped_refptr<media::DecoderBuffer>,
+                         media::DecoderStatus>
   MakeInput(const InputType& chunk, bool verify_key_frame) = 0;
 
   // Convert an output to the WebCodecs type.
-  virtual media::DecoderStatus::Or<OutputType*> MakeOutput(
+  virtual base::expected<OutputType*, media::DecoderStatus> MakeOutput(
       scoped_refptr<MediaOutputType> output,
       ExecutionContext* context) = 0;
 

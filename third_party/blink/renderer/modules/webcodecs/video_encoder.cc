@@ -742,7 +742,7 @@ bool VideoEncoder::VerifyCodecSupport(ParsedConfig* config,
   return VerifyCodecSupportStatic(config, js_error_message);
 }
 
-media::EncoderStatus::Or<std::unique_ptr<media::VideoEncoder>>
+base::expected<std::unique_ptr<media::VideoEncoder>, media::EncoderStatus>
 VideoEncoder::CreateAcceleratedVideoEncoder(
     media::VideoCodecProfile profile,
     const media::VideoEncoder::Options& options,
@@ -752,7 +752,7 @@ VideoEncoder::CreateAcceleratedVideoEncoder(
   if (media::EncoderStatus result = IsAcceleratedConfigurationSupported(
           profile, options, gpu_factories, required_encoder_type);
       !result.is_ok()) {
-    return std::move(result);
+    return base::unexpected(std::move(result));
   }
 
   return std::unique_ptr<media::VideoEncoder>(
@@ -791,13 +791,13 @@ std::unique_ptr<media::VideoEncoder> CreateOpenH264VideoEncoder() {
 
 // This method is static and takes |self| in order to make it possible to use it
 // with a weak |this|. It's needed in to avoid a persistent reference cycle.
-media::EncoderStatus::Or<std::unique_ptr<media::VideoEncoder>>
+base::expected<std::unique_ptr<media::VideoEncoder>, media::EncoderStatus>
 VideoEncoder::CreateSoftwareVideoEncoder(VideoEncoder* self,
                                          bool fallback,
                                          media::VideoCodec codec) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
   if (!self)
-    return media::EncoderStatus::Codes::kEncoderIllegalState;
+    return base::unexpected(media::EncoderStatus::Codes::kEncoderIllegalState);
   std::unique_ptr<media::VideoEncoder> result;
   switch (codec) {
     case media::VideoCodec::kAV1:
@@ -814,7 +814,8 @@ VideoEncoder::CreateSoftwareVideoEncoder(VideoEncoder* self,
       break;
   }
   if (!result) {
-    return media::EncoderStatus::Codes::kEncoderUnsupportedCodec;
+    return base::unexpected(
+        media::EncoderStatus::Codes::kEncoderUnsupportedCodec);
   }
   if (fallback) {
     CHECK(self->encoder_metrics_provider_);
@@ -828,7 +829,7 @@ VideoEncoder::CreateSoftwareVideoEncoder(VideoEncoder* self,
       std::make_unique<media::OffloadingVideoEncoder>(std::move(result)));
 }
 
-media::EncoderStatus::Or<std::unique_ptr<media::VideoEncoder>>
+base::expected<std::unique_ptr<media::VideoEncoder>, media::EncoderStatus>
 VideoEncoder::CreateMediaVideoEncoder(
     const ParsedConfig& config,
     media::GpuVideoAcceleratorFactories* gpu_factories,

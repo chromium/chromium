@@ -374,36 +374,36 @@ std::optional<media::AudioDecoderConfig> AudioDecoder::MakeMediaConfig(
   return MakeMediaAudioDecoderConfig(config, js_error_message /* out */);
 }
 
-media::DecoderStatus::Or<scoped_refptr<media::DecoderBuffer>>
+base::expected<scoped_refptr<media::DecoderBuffer>, media::DecoderStatus>
 AudioDecoder::MakeInput(const InputType& chunk, bool verify_key_frame) {
   if (verify_key_frame && !chunk.buffer()->is_key_frame())
-    return media::DecoderStatus::Codes::kKeyFrameRequired;
+    return base::unexpected(media::DecoderStatus::Codes::kKeyFrameRequired);
   return chunk.buffer();
 }
 
-media::DecoderStatus::Or<AudioDecoder::OutputType*> AudioDecoder::MakeOutput(
-    scoped_refptr<MediaOutputType> output,
-    ExecutionContext* context) {
+base::expected<AudioDecoder::OutputType*, media::DecoderStatus>
+AudioDecoder::MakeOutput(scoped_refptr<MediaOutputType> output,
+                         ExecutionContext* context) {
   if (!blink::audio_utilities::IsValidAudioBufferSampleRate(
           output->sample_rate())) {
-    return media::DecoderStatus(
+    return base::unexpected(media::DecoderStatus(
         media::DecoderStatus::Codes::kInvalidArgument,
         Format("Invalid decoded audio output sample rate. Got {}, which is "
                "outside [{:f}, {:f}]",
                output->sample_rate(),
                blink::audio_utilities::MinAudioBufferSampleRate(),
                blink::audio_utilities::MaxAudioBufferSampleRate())
-            .Ascii());
+            .Ascii()));
   }
 
   if (static_cast<uint32_t>(output->channel_count()) >
       BaseAudioContext::MaxNumberOfChannels()) {
-    return media::DecoderStatus(
+    return base::unexpected(media::DecoderStatus(
         media::DecoderStatus::Codes::kInvalidArgument,
         Format("Invalid decoded audio output channel count. Got {}, which "
                "exceeds {}",
                output->channel_count(), BaseAudioContext::MaxNumberOfChannels())
-            .Ascii());
+            .Ascii()));
   }
 
   return MakeGarbageCollected<AudioDecoderTraits::OutputType>(

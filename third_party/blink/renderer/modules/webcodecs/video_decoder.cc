@@ -606,7 +606,7 @@ std::optional<media::VideoDecoderConfig> VideoDecoder::MakeMediaConfig(
   return media_config;
 }
 
-media::DecoderStatus::Or<scoped_refptr<media::DecoderBuffer>>
+base::expected<scoped_refptr<media::DecoderBuffer>, media::DecoderStatus>
 VideoDecoder::MakeInput(const InputType& chunk, bool verify_key_frame) {
   scoped_refptr<media::DecoderBuffer> decoder_buffer = chunk.buffer();
   if (decoder_specific_data_.decoder_helper) {
@@ -617,18 +617,18 @@ VideoDecoder::MakeInput(const InputType& chunk, bool verify_key_frame) {
         decoder_specific_data_.decoder_helper->CalculateNeededOutputBufferSize(
             decoder_buffer_span, verify_key_frame);
     if (!output_size) {
-      return media::DecoderStatus(
+      return base::unexpected(media::DecoderStatus(
           media::DecoderStatus::Codes::kMalformedBitstream,
-          "Unable to determine size of bitstream buffer.");
+          "Unable to determine size of bitstream buffer."));
     }
 
     std::vector<uint8_t> buf(output_size);
     if (decoder_specific_data_.decoder_helper->ConvertNalUnitStreamToByteStream(
             decoder_buffer_span, buf, &output_size, verify_key_frame) !=
         VideoDecoderHelper::Status::kSucceed) {
-      return media::DecoderStatus(
-          media::DecoderStatus::Codes::kMalformedBitstream,
-          "Unable to convert NALU to byte stream.");
+      return base::unexpected(
+          media::DecoderStatus(media::DecoderStatus::Codes::kMalformedBitstream,
+                               "Unable to convert NALU to byte stream."));
     }
 
     decoder_buffer =
@@ -640,9 +640,9 @@ VideoDecoder::MakeInput(const InputType& chunk, bool verify_key_frame) {
 
   if (verify_key_frame) {
     if (chunk.type() != V8EncodedVideoChunkType::Enum::kKey) {
-      return media::DecoderStatus(
+      return base::unexpected(media::DecoderStatus(
           media::DecoderStatus::Codes::kKeyFrameRequired,
-          "A key frame is required after configure() or flush().");
+          "A key frame is required after configure() or flush()."));
     }
 
     bool is_key_frame = true;
@@ -662,11 +662,11 @@ VideoDecoder::MakeInput(const InputType& chunk, bool verify_key_frame) {
       // to provide a description for AVC H.264. We could try to guess at the
       // NAL unit size and see if a NAL unit parses out, but this seems fine.
       if (!is_key_frame && !decoder_specific_data_.decoder_helper) {
-        return media::DecoderStatus(
+        return base::unexpected(media::DecoderStatus(
             media::DecoderStatus::Codes::kKeyFrameRequired,
             "A key frame is required after configure() or flush(). If you're "
             "using AVC formatted H.264 you must fill out the description field "
-            "in the VideoDecoderConfig.");
+            "in the VideoDecoderConfig."));
       }
 #endif
     } else if (pending_codec_ == media::VideoCodec::kHEVC) {
@@ -675,21 +675,21 @@ VideoDecoder::MakeInput(const InputType& chunk, bool verify_key_frame) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
       if (!is_key_frame && !decoder_specific_data_.decoder_helper) {
-        return media::DecoderStatus(
+        return base::unexpected(media::DecoderStatus(
             media::DecoderStatus::Codes::kKeyFrameRequired,
             "A key frame is required after configure() or flush(). If you're "
             "using HEVC formatted H.265 you must fill out the description "
-            "field in the VideoDecoderConfig.");
+            "field in the VideoDecoderConfig."));
       }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
     }
 
     if (!is_key_frame) {
-      return media::DecoderStatus(
+      return base::unexpected(media::DecoderStatus(
           media::DecoderStatus::Codes::kKeyFrameRequired,
           "An EncodedVideoChunk was marked as type `key` but wasn't a key frame"
-          ". A key frame is required after configure() or flush().");
+          ". A key frame is required after configure() or flush()."));
     }
   }
 
@@ -699,9 +699,9 @@ VideoDecoder::MakeInput(const InputType& chunk, bool verify_key_frame) {
   return decoder_buffer;
 }
 
-media::DecoderStatus::Or<VideoDecoder::OutputType*> VideoDecoder::MakeOutput(
-    scoped_refptr<MediaOutputType> output,
-    ExecutionContext* context) {
+base::expected<VideoDecoder::OutputType*, media::DecoderStatus>
+VideoDecoder::MakeOutput(scoped_refptr<MediaOutputType> output,
+                         ExecutionContext* context) {
   if (output) {
     output->metadata().transformation = active_transform_;
   }

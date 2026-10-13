@@ -100,10 +100,9 @@ class MODULES_EXPORT AudioDecoder : public DecoderTemplate<AudioDecoderTraits> {
   std::optional<media::AudioDecoderConfig> MakeMediaConfig(
       const ConfigType& config,
       String* js_error_message) override;
-  media::DecoderStatus::Or<scoped_refptr<media::DecoderBuffer>> MakeInput(
-      const InputType& chunk,
-      bool verify_key_frame) override;
-  media::DecoderStatus::Or<OutputType*> MakeOutput(
+  base::expected<scoped_refptr<media::DecoderBuffer>, media::DecoderStatus>
+  MakeInput(const InputType& chunk, bool verify_key_frame) override;
+  base::expected<OutputType*, media::DecoderStatus> MakeOutput(
       scoped_refptr<MediaOutputType> output,
       ExecutionContext* context) override;
 };

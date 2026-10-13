@@ -115,10 +115,9 @@ class MODULES_EXPORT VideoDecoder : public DecoderTemplate<VideoDecoderTraits> {
   std::optional<media::VideoDecoderConfig> MakeMediaConfig(
       const ConfigType& config,
       String* js_error_message) override;
-  media::DecoderStatus::Or<scoped_refptr<media::DecoderBuffer>> MakeInput(
-      const InputType& input,
-      bool verify_key_frame) override;
-  media::DecoderStatus::Or<OutputType*> MakeOutput(
+  base::expected<scoped_refptr<media::DecoderBuffer>, media::DecoderStatus>
+  MakeInput(const InputType& input, bool verify_key_frame) override;
+  base::expected<OutputType*, media::DecoderStatus> MakeOutput(
       scoped_refptr<MediaOutputType>,
       ExecutionContext*) override;
   void OnActiveConfigChanged(const MediaConfigType& config) override;
