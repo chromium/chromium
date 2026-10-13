@@ -425,8 +425,9 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
           *browser, browser, browser->GetProfile());
 
   if (HistorySidePanelCoordinator::IsSupported()) {
-    GetUserDataFactory().CreateInstance<HistorySidePanelCoordinator>(*browser,
-                                                                     browser);
+    history_side_panel_coordinator_ =
+        GetUserDataFactory().CreateInstance<HistorySidePanelCoordinator>(
+            *browser, browser);
   }
 
   // Must be after window_feature_controller_.
@@ -1255,6 +1256,7 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   lens_overlay_entry_point_controller_.reset();
   // Must be before window_feature_controller_ (raw pointer).
   immersive_mode_controller_.reset();
+  history_side_panel_coordinator_.reset();
   history_clusters_side_panel_coordinator_.reset();
   find_bar_controller_.reset();
   extension_installed_watcher_.reset();
