@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_WEBID_FEDCM_ACCOUNT_SELECTION_VIEW_DESKTOP_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/function_ref.h"
 #include "base/gtest_prod_util.h"
@@ -446,7 +447,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // fedcm-ambient-bubble flag and is independent of `IsAmbientEnabled()`.
   bool IsAmbientBubbleEnabled() const;
 
-  // Attempts to show the account in the ambient bubble. Returns false if the
+  // Attempts to show the accounts in the ambient bubble. Returns false if the
   // ambient bubble cannot be used for this request, in which case the caller
   // should fall back to the regular UI. If this returns true, `this` may have
   // been deleted.
@@ -454,6 +455,11 @@ class FedCmAccountSelectionView : public AccountSelectionView,
       const std::vector<IdentityProviderDataPtr>& idp_list,
       const std::vector<IdentityRequestAccountPtr>& accounts,
       const std::vector<IdentityRequestAccountPtr>& new_accounts);
+
+  // Called when the user accepts the ambient bubble, right before
+  // `OnAmbientBubbleDecided()`. `index` is the index of the selected account in
+  // `accounts_`.
+  void OnAmbientBubbleAccountSelected(size_t index);
 
   // Called when the user makes a decision on the ambient bubble, or when the
   // bubble is otherwise dismissed.
@@ -463,8 +469,10 @@ class FedCmAccountSelectionView : public AccountSelectionView,
 
   // Handles the ambient bubble decision. Posted from `OnAmbientBubbleDecided()`
   // so that it runs after PermissionRequestManager has finished processing the
-  // decision. `accepted` is true if the user clicked the "Sign in" button.
-  void HandleAmbientBubbleDecision(bool accepted);
+  // decision. `selected_account_index` is the index of the account that the
+  // user selected in `accounts_`, or nullopt if the bubble was dismissed.
+  void HandleAmbientBubbleDecision(
+      std::optional<size_t> selected_account_index);
 
   // Shows the request permission dialog with the disclosure text for `account`
   // in the modal dialog, after the user accepted the ambient bubble. Used for
@@ -729,6 +737,11 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // The controller that the outstanding ambient bubble request was added to.
   base::WeakPtr<ambient_signin::AmbientLoginPermissionController>
       ambient_login_permission_controller_;
+
+  // The index of the account that the user selected in the ambient bubble, in
+  // `accounts_`. Set when the user accepts the bubble, and consumed by
+  // `OnAmbientBubbleDecided()` right after.
+  std::optional<size_t> ambient_bubble_selected_account_index_;
 
   // Used for the callbacks of the ambient bubble request, so that they can be
   // dropped when the bubble is cancelled.

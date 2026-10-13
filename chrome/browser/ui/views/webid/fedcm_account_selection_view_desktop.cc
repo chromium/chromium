@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/webid/fedcm_account_selection_view_desktop.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <tuple>
@@ -1667,13 +1668,16 @@ bool FedCmAccountSelectionView::ShowAmbientBubble(
     const std::vector<IdentityProviderDataPtr>& idp_list,
     const std::vector<IdentityRequestAccountPtr>& accounts,
     const std::vector<IdentityRequestAccountPtr>& new_accounts) {
-  // Only a single account is supported for now. If the account requires
-  // disclosure text (e.g. a new account), the user reviews it in the modal
-  // dialog after accepting the bubble. See HandleAmbientBubbleDecision().
-  // TODO(crbug.com/567563304): Support multiple accounts, multiple IdPs, IdP
-  // login status mismatch and the "use other account" flow.
-  if (idp_list.size() != 1u || accounts.size() != 1u || !new_accounts.empty() ||
-      idp_list[0]->has_login_status_mismatch || accounts[0]->is_filtered_out) {
+  // Only accounts from a single IdP are supported for now. If the selected
+  // account requires disclosure text (e.g. a new account), the user reviews it
+  // in the modal dialog after accepting the bubble. See
+  // HandleAmbientBubbleDecision().
+  // TODO(crbug.com/567563304): Support multiple IdPs, IdP login status mismatch
+  // and the "use other account" flow, which the regular UI offers when accounts
+  // are filtered out.
+  if (idp_list.size() != 1u || accounts.empty() || !new_accounts.empty() ||
+      idp_list[0]->has_login_status_mismatch ||
+      std::ranges::any_of(accounts, &Account::is_filtered_out)) {
     return false;
   }
 
@@ -1706,36 +1710,41 @@ bool FedCmAccountSelectionView::ShowAmbientBubble(
     return false;
   }
 
-  const IdentityRequestAccountPtr& account = accounts[0];
-  ambient_signin::FederatedCredential federated_credential;
-  federated_credential.idp_name =
-      base::UTF8ToUTF16(account->identity_provider->idp_for_display);
-  // The bubble shows the account name (e.g. "John Doe") in the first row and
-  // falls back to the identifier, which may be an email address.
-  federated_credential.account_name = base::UTF8ToUTF16(account->display_name);
-  federated_credential.email = base::UTF8ToUTF16(account->display_identifier);
-  federated_credential.idp_origin =
-      url::Origin::Create(account->identity_provider->idp_metadata.config_url)
-          .GetURL();
-  federated_credential.icon =
-      ui::ImageModel::FromImageSkia(webid::ComputeAccountCircleCroppedPicture(
-          *account, kAmbientBubbleAvatarSize, /*idp_image=*/std::nullopt,
-          /*device_scale_factor=*/1.0f));
+  // The credentials are in the same order as the accounts, so the index of the
+  // selected credential is also the index of the account in `accounts_`.
   std::vector<ambient_signin::FederatedCredential> federated_credentials;
-  federated_credentials.push_back(std::move(federated_credential));
+  federated_credentials.reserve(accounts.size());
+  for (const IdentityRequestAccountPtr& account : accounts) {
+    ambient_signin::FederatedCredential& federated_credential =
+        federated_credentials.emplace_back();
+    federated_credential.idp_name =
+        base::UTF8ToUTF16(account->identity_provider->idp_for_display);
+    // The bubble shows the account name (e.g. "John Doe") in the first row and
+    // falls back to the identifier, which may be an email address.
+    federated_credential.account_name =
+        base::UTF8ToUTF16(account->display_name);
+    federated_credential.email = base::UTF8ToUTF16(account->display_identifier);
+    federated_credential.idp_origin =
+        url::Origin::Create(account->identity_provider->idp_metadata.config_url)
+            .GetURL();
+    federated_credential.icon =
+        ui::ImageModel::FromImageSkia(webid::ComputeAccountCircleCroppedPicture(
+            *account, kAmbientBubbleAvatarSize, /*idp_image=*/std::nullopt,
+            /*device_scale_factor=*/1.0f));
+  }
 
   // TODO(crbug.com/567563304): Use the RP's frame as the requesting frame when
   // FedCM is invoked from an iframe.
   const GURL origin = main_frame->GetLastCommittedOrigin().GetURL();
-  // There is only one account, so the selected index is not needed; the
-  // decision is handled in OnAmbientBubbleDecided().
   auto request =
       std::make_unique<ambient_signin::AmbientLoginPermissionRequest>(
           origin, origin,
           std::vector<ambient_signin::PasskeyOrPasswordCredential>(),
           /*credential_selected_callback=*/base::NullCallback(),
           std::move(federated_credentials),
-          /*federated_selected_callback=*/base::NullCallback(),
+          base::BindOnce(
+              &FedCmAccountSelectionView::OnAmbientBubbleAccountSelected,
+              ambient_bubble_weak_ptr_factory_.GetWeakPtr()),
           base::BindRepeating(
               &FedCmAccountSelectionView::OnAmbientBubbleDecided,
               ambient_bubble_weak_ptr_factory_.GetWeakPtr()));
@@ -1753,7 +1762,8 @@ bool FedCmAccountSelectionView::ShowAmbientBubble(
     return false;
   }
   dialog_type_ = DialogType::AMBIENT_BUBBLE;
-  state_ = State::SINGLE_ACCOUNT_PICKER;
+  state_ = accounts.size() == 1u ? State::SINGLE_ACCOUNT_PICKER
+                                 : State::MULTI_ACCOUNT_PICKER;
 
   // TODO(crbug.com/567563304): Notify the delegate when the bubble is actually
   // shown, since PermissionRequestManager may defer showing it.
@@ -1762,6 +1772,12 @@ bool FedCmAccountSelectionView::ShowAmbientBubble(
     std::move(accounts_widget_shown_callback_).Run();
   }
   return true;
+}
+
+void FedCmAccountSelectionView::OnAmbientBubbleAccountSelected(size_t index) {
+  // The decision is handled in OnAmbientBubbleDecided(), which runs right after
+  // this.
+  ambient_bubble_selected_account_index_ = index;
 }
 
 void FedCmAccountSelectionView::OnAmbientBubbleDecided(
@@ -1773,6 +1789,11 @@ void FedCmAccountSelectionView::OnAmbientBubbleDecided(
   }
   ambient_bubble_request_pending_ = false;
   ambient_login_permission_controller_.reset();
+
+  // Set right before this if the user accepted the bubble. See
+  // OnAmbientBubbleAccountSelected().
+  std::optional<size_t> selected_account_index =
+      std::exchange(ambient_bubble_selected_account_index_, std::nullopt);
 
   bool accepted = false;
   switch (decision.overall_decision) {
@@ -1794,18 +1815,21 @@ void FedCmAccountSelectionView::OnAmbientBubbleDecided(
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&FedCmAccountSelectionView::HandleAmbientBubbleDecision,
-                     ambient_bubble_weak_ptr_factory_.GetWeakPtr(), accepted));
+                     ambient_bubble_weak_ptr_factory_.GetWeakPtr(),
+                     accepted ? selected_account_index : std::nullopt));
 }
 
-void FedCmAccountSelectionView::HandleAmbientBubbleDecision(bool accepted) {
+void FedCmAccountSelectionView::HandleAmbientBubbleDecision(
+    std::optional<size_t> selected_account_index) {
   // Bail out if the request was closed or replaced in the meantime.
   if (!delegate_ || dialog_type_ != DialogType::AMBIENT_BUBBLE ||
-      state_ != State::SINGLE_ACCOUNT_PICKER ||
-      ambient_bubble_request_pending_ || accounts_.size() != 1u) {
+      (state_ != State::SINGLE_ACCOUNT_PICKER &&
+       state_ != State::MULTI_ACCOUNT_PICKER) ||
+      ambient_bubble_request_pending_) {
     return;
   }
 
-  if (!accepted) {
+  if (!selected_account_index) {
     // The bubble was dismissed, e.g. by the user closing it or by the tab
     // navigating away.
     // TODO(crbug.com/567563304): Distinguish between the user explicitly
@@ -1817,7 +1841,9 @@ void FedCmAccountSelectionView::HandleAmbientBubbleDecision(bool accepted) {
     return;
   }
 
-  IdentityRequestAccountPtr account = accounts_[0];
+  // Showing other UI would have cancelled the bubble, so `accounts_` still has
+  // the accounts that the bubble showed.
+  IdentityRequestAccountPtr account = accounts_[*selected_account_index];
   if (!account->fields.empty()) {
     // The ambient bubble does not show the disclosure text, so let the user
     // review it in the modal dialog before continuing.
