@@ -284,30 +284,50 @@ interface ExtensionPageHandlerFactory {
       pending_receiver<ExtensionPageHandler> receiver);
 };
 
-// Browser-side handler for requests from the extension frame.
-// Implemented in C++ (ContextualTasksExtensionHandler) and called from
-// HTML/TS client in the extension context.
-// Provides APIs to bootstrap communication and send messages from the webview
-// back to the browser.
+// Browser-side handler for requests from the built-in Contextual Tasks
+// component extension (`extension_misc::kContextualTasksExtensionId`).
+// Bound either per extension document frame (`ContextualTasksExtensionHandler`)
+// or for the extension's Service Worker
+// (`ContextualTasksExtensionServiceWorkerHandler`). Never exposed to WebUIs or
+// web pages.
 interface ExtensionPageHandler {
   // Fetches the initial handshake ping message.
   // Called by the extension JS during initialization to obtain the handshake
   // message that must be sent to the GWS guest page to establish the channel.
   //
+  // Inputs:
+  // - `document_id`: Optional serialized 32-character hex representation of
+  //   `extensions::ExtensionApiFrameIdMap::DocumentId` (a 128-bit
+  //   `base::UnguessableToken`) exposed to the extension Service Worker as
+  //   `chrome.runtime.MessageSender.documentId`. Ignored when called from a
+  //   document-bound extension frame (`ContextualTasksExtensionHandler`). When
+  //   called from the Service Worker, parsed via
+  //   `ExtensionApiFrameIdMap::DocumentIdFromString()` and validated to belong
+  //   to an active primary main frame in the same Profile; invalid or
+  //   unmatched IDs return an empty message.
+  //
   // Returns:
   // - `message`: A ProtoWrapper containing the serialized
   //   `lens.ClientToAimMessage` which wraps the `HandshakePing`.
-  GetHandshakeMessage() => (mojo_base.mojom.ProtoWrapper message);
+  GetHandshakeMessage(string? document_id)
+      => (mojo_base.mojom.ProtoWrapper message);
 
   // Forwards a message received from the webview guest to the browser.
   // Called by the extension JS when it receives a `message` event from the
-  // embedded <webview> containing data destined for the AIM server.
+  // embedded <webview> containing data destined for the AIM server, or by the
+  // extension Service Worker with `document_id` set to the sender's document
+  // ID.
   //
   // Inputs:
   // - `message`: The raw bytes of the serialized protobuf message from the
   //   guest.
+  // - `document_id`: Optional serialized `ExtensionApiFrameIdMap::DocumentId`
+  //   (`chrome.runtime.MessageSender.documentId`) when called from the
+  //   extension Service Worker. Parsed via
+  //   `ExtensionApiFrameIdMap::DocumentIdFromString()` and dropped if invalid
+  //   or not an active primary main frame in the same Profile.
   // TODO(crbug.com/462788705): Use `ProtoWrapper` instead of `array<uint8>`
-  OnWebviewMessage(array<uint8> message);
+  OnWebviewMessage(array<uint8> message, string? document_id);
 
   // Updates the browser with the current active task ID.
   // Called by the extension JS when the task context changes in the UI.
@@ -331,8 +351,9 @@ interface ExtensionPageHandler {
 
 // Extension-side handler for requests from the browser process.
 // Implemented in HTML/TS and called from C++
-// (ContextualTasksExtensionHandler) to control the extension UI and forward
-// messages from the browser to the webview.
+// (ContextualTasksExtensionHandler or
+// ContextualTasksExtensionServiceWorkerHandler) to control the extension UI and
+// forward messages from the browser to the webview or connected search page.
 interface ExtensionPage {
   // Sends a message from the browser to the extension to be forwarded to GWS.
   // Called by C++ to deliver data (e.g. from the AIM server) to the guest.
@@ -344,8 +365,12 @@ interface ExtensionPage {
 
   // Sends a search communication message (e.g.
   // lens.chrome.ClientToSearchMessage) from the browser to the extension to be
-  // forwarded to the search page.
-  PostSearchMessage(mojo_base.mojom.ProtoWrapper message);
+  // forwarded to the search page. `document_id` is the target frame's
+  // serialized `ExtensionApiFrameIdMap::DocumentId` when routing through the
+  // extension Service Worker, or null when routing to a document-bound
+  // extension frame.
+  PostSearchMessage(
+      mojo_base.mojom.ProtoWrapper message, string? document_id);
 
   // Signals to the extension that the handshake with GWS is complete.
   // Called by C++ after the browser processes the handshake response.

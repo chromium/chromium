@@ -89,6 +89,7 @@ source_set("contextual_tasks") {
       "contextual_tasks_extension_bridge.h",
       "contextual_tasks_extension_bridge_factory.h",
       "contextual_tasks_extension_config_provider.h",
+      "contextual_tasks_extension_service_worker_handler.h",
     ]
     public_deps += [
       "//extensions/browser",
@@ -143,6 +144,7 @@ source_set("impl") {
       "contextual_tasks_extension_bridge.cc",
       "contextual_tasks_extension_bridge_factory.cc",
       "contextual_tasks_extension_config_provider.cc",
+      "contextual_tasks_extension_service_worker_handler.cc",
     ]
     if (!is_android) {
       sources += [

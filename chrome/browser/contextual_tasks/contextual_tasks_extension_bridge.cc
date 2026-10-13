@@ -11,13 +11,17 @@
 
 namespace contextual_tasks {
 
-ContextualTasksExtensionBridge::ContextualTasksExtensionBridge(
-    Profile* profile) {
+ContextualTasksExtensionBridge::ContextualTasksExtensionBridge(Profile* profile)
+    : service_worker_handler_(*profile) {
   ContextualTasksExtensionConfigProvider::Register(profile);
   ContextualTasksExtensionBinderProvider::Register(profile);
 }
 
 ContextualTasksExtensionBridge::~ContextualTasksExtensionBridge() = default;
+
+void ContextualTasksExtensionBridge::Shutdown() {
+  service_worker_handler_.Clear();
+}
 
 // static
 ContextualTasksExtensionBridge* ContextualTasksExtensionBridge::Get(

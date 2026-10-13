@@ -456,7 +456,7 @@ export class TestExtensionPageHandler extends TestBrowserProxy implements
     return Promise.resolve();
   }
 
-  getHandshakeMessage() {
+  getHandshakeMessage(_documentId: string|null = null) {
     this.methodCalled('getHandshakeMessage');
     return Promise.resolve({
       message: {
@@ -468,7 +468,7 @@ export class TestExtensionPageHandler extends TestBrowserProxy implements
     });
   }
 
-  onWebviewMessage(message: number[]) {
+  onWebviewMessage(message: number[], _documentId: string|null = null) {
     this.methodCalled('onWebviewMessage', message);
   }
 

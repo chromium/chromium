@@ -207,6 +207,7 @@ struct ContextualTasksWebContentsUserData::PageSearchState
   ~PageSearchState() override = default;
 
   std::string connected_document_id;
+  ServiceWorkerPostMessageCallback service_worker_post_message_cb;
   bool is_handshake_complete = false;
   std::vector<std::vector<uint8_t>> pending_search_messages;
   bool is_lens_crop_mounted = false;
@@ -443,7 +444,8 @@ bool ContextualTasksWebContentsUserData::HasBoundExtensionFrame() const {
 }
 
 void ContextualTasksWebContentsUserData::OnDocumentConnected(
-    content::RenderFrameHost* main_rfh) {
+    content::RenderFrameHost* main_rfh,
+    ServiceWorkerPostMessageCallback post_message_cb) {
   if (!main_rfh) {
     return;
   }
@@ -453,16 +455,15 @@ void ContextualTasksWebContentsUserData::OnDocumentConnected(
   doc_id =
       extensions::ExtensionApiFrameIdMap::GetDocumentId(main_rfh).ToString();
 #endif
-  if (!page_state.connected_document_id.empty()) {
-    if (page_state.connected_document_id != doc_id) {
-      page_state.pending_search_messages.clear();
-      page_state.last_lens_crop_data_uri.clear();
-    }
-    page_state.is_lens_crop_mounted = false;
-    page_state.context_library_is_active = false;
-    page_state.last_sent_context_state = ContextState::kNone;
+  if (page_state.connected_document_id != doc_id) {
+    page_state.last_lens_crop_data_uri.clear();
   }
+  page_state.pending_search_messages.clear();
+  page_state.is_lens_crop_mounted = false;
+  page_state.context_library_is_active = false;
+  page_state.last_sent_context_state = ContextState::kNone;
   page_state.connected_document_id = doc_id;
+  page_state.service_worker_post_message_cb = std::move(post_message_cb);
   page_state.is_handshake_complete = false;
 }
 
@@ -1495,6 +1496,10 @@ void ContextualTasksWebContentsUserData::DispatchSerializedSearchMessage(
   }
 
   if (IsServiceWorkerPortConnected()) {
+    auto& page_state = GetPrimaryPageSearchState();
+    if (page_state.service_worker_post_message_cb) {
+      page_state.service_worker_post_message_cb.Run(message_bytes);
+    }
     return;
   }
 

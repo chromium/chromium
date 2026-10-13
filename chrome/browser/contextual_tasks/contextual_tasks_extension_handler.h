@@ -97,8 +97,10 @@ class ContextualTasksExtensionHandler
 
   // contextual_tasks::mojom::ExtensionPageHandler:
   void SetTaskId(const base::Uuid& uuid) override;
-  void OnWebviewMessage(const std::vector<uint8_t>& message) override;
-  void GetHandshakeMessage(GetHandshakeMessageCallback callback) override;
+  void OnWebviewMessage(const std::vector<uint8_t>& message,
+                        const std::optional<std::string>& document_id) override;
+  void GetHandshakeMessage(const std::optional<std::string>& document_id,
+                           GetHandshakeMessageCallback callback) override;
   void GetLensCropPreview(GetLensCropPreviewCallback callback) override;
   void RemoveLensCrop() override;
 

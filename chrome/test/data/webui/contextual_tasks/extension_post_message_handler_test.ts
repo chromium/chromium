@@ -222,10 +222,12 @@ suite('ExtensionPostMessageHandlerTest', () => {
         messageResolver = new PromiseResolver<void>();
 
         const testBytes = [10, 4, 1, 2, 3, 4];
-        testProxy.callbackRouterRemote.postSearchMessage({
-          protoName: 'lens.chrome.ClientToSearchMessage',
-          smuggled: {bytes: testBytes},
-        });
+        testProxy.callbackRouterRemote.postSearchMessage(
+            {
+              protoName: 'lens.chrome.ClientToSearchMessage',
+              smuggled: {bytes: testBytes},
+            },
+            null);
         await messageResolver.promise;
 
         assertEquals(1, postedMessages.length);
@@ -242,10 +244,12 @@ suite('ExtensionPostMessageHandlerTest', () => {
         postedMessages = [];
 
         const testBytes = [10, 4, 1, 2, 3, 4];
-        testProxy.callbackRouterRemote.postSearchMessage({
-          protoName: 'lens.chrome.ClientToSearchMessage',
-          smuggled: {bytes: testBytes},
-        });
+        testProxy.callbackRouterRemote.postSearchMessage(
+            {
+              protoName: 'lens.chrome.ClientToSearchMessage',
+              smuggled: {bytes: testBytes},
+            },
+            null);
         await microtasksFinished();
 
         // Message should be queued, not dispatched to wildcard.
@@ -267,10 +271,12 @@ suite('ExtensionPostMessageHandlerTest', () => {
     postedMessages = [];
 
     const testBytes = [10, 4, 1, 2, 3, 4];
-    testProxy.callbackRouterRemote.postSearchMessage({
-      protoName: 'lens.chrome.ClientToSearchMessage',
-      smuggled: {bytes: testBytes},
-    });
+    testProxy.callbackRouterRemote.postSearchMessage(
+        {
+          protoName: 'lens.chrome.ClientToSearchMessage',
+          smuggled: {bytes: testBytes},
+        },
+        null);
     await microtasksFinished();
 
     // Setting an untrusted origin should be rejected by setTargetOrigin_.
@@ -284,10 +290,12 @@ suite('ExtensionPostMessageHandlerTest', () => {
     handler.destroy();
     postedMessages = [];
 
-    testProxy.callbackRouterRemote.postSearchMessage({
-      protoName: 'lens.chrome.ClientToSearchMessage',
-      smuggled: {bytes: [1, 2, 3]},
-    });
+    testProxy.callbackRouterRemote.postSearchMessage(
+        {
+          protoName: 'lens.chrome.ClientToSearchMessage',
+          smuggled: {bytes: [1, 2, 3]},
+        },
+        null);
     await microtasksFinished();
 
     assertEquals(0, postedMessages.length);
