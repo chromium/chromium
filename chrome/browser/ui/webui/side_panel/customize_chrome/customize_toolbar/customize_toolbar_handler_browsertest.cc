@@ -9,8 +9,10 @@
 
 #include "base/test/gmock_move_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/ttc/core/features.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -89,6 +91,9 @@ class CustomizeToolbarHandlerBrowserTest : public InProcessBrowserTest {
  protected:
   testing::NiceMock<MockPage> mock_page_;
   std::unique_ptr<CustomizeToolbarHandler> handler_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{ttc::kTtc};
 };
 
 IN_PROC_BROWSER_TEST_F(CustomizeToolbarHandlerBrowserTest, ListActions) {
@@ -133,6 +138,8 @@ IN_PROC_BROWSER_TEST_F(CustomizeToolbarHandlerBrowserTest, ListActions) {
       side_panel::customize_chrome::mojom::ActionId::kClearBrowsingData));
   EXPECT_TRUE(
       contains_action(side_panel::customize_chrome::mojom::ActionId::kPrint));
+  EXPECT_TRUE(
+      contains_action(side_panel::customize_chrome::mojom::ActionId::kTtc));
   EXPECT_TRUE(contains_action(
       side_panel::customize_chrome::mojom::ActionId::kShowTranslate));
   EXPECT_TRUE(contains_action(

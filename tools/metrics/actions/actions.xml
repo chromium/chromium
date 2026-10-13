@@ -18,7 +18,7 @@ as an attribute to the <action> tag.
 Please run extract_actions.py to add new actions and pretty-print this file.
 
 If a user action is not being used any more, it can now be deleted instead of
-marked osolete..
+marked obsolete..
 
 Please send CLs to chromium-metrics-reviews@google.com rather than to specific
 individuals. These CLs will be automatically reassigned to a reviewer within
@@ -79,6 +79,7 @@ should be able to be added at any place in this file.
   <variant name=".kActionSplitTab" summary="Split view action"/>
   <variant name=".kActionTabSearch" summary="Tab search action"/>
   <variant name=".kActionTaskManager" summary="Task manager action"/>
+  <variant name=".kActionTtcToolbar" summary="TTC toolbar action"/>
 </variants>
 
 <variants name="ChromeOS_Settings_Languages_Type">
@@ -31684,6 +31685,7 @@ should be able to be added at any place in this file.
         summary="Pinned show translate button"/>
     <variant name=".PinnedTaskManagerButton"
         summary="Pinned task manager button"/>
+    <variant name=".PinnedTtcButton" summary="Pinned TTC button"/>
     <variant name=".SharedTabGroupFeedbackButton"
         summary="Feedback button for the shared tab groups feature"/>
     <variant name=".ShowPerformanceSidePanelButton"

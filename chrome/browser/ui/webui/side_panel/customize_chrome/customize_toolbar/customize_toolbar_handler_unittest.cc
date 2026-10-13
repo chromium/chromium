@@ -238,7 +238,6 @@ TEST_F(CustomizeToolbarHandlerTest, PinSplitTab) {
   EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(prefs::kPinSplitTabButton));
 }
 
-
 TEST_F(CustomizeToolbarHandlerTest, ActionsChanged) {
   EXPECT_CALL(mock_page_, NotifyActionsUpdated).Times(1);
 
@@ -299,7 +298,6 @@ TEST_F(CustomizeToolbarHandlerTest, SplitTabPrefUpdated) {
   EXPECT_EQ(id, side_panel::customize_chrome::mojom::ActionId::kSplitTab);
   EXPECT_EQ(pin, true);
 }
-
 
 TEST_F(CustomizeToolbarHandlerTest, ResetToDefault) {
   EXPECT_CALL(mock_pinned_toolbar_actions_model(), ResetToDefault).Times(1);
@@ -363,8 +361,6 @@ TEST_F(CustomizeToolbarHandlerTest, GetIsCustomizedForNonPinnedActions) {
     handler().GetIsCustomized(callback.Get());
   }
 }
-
-
 
 TEST_F(CustomizeToolbarHandlerTest, ChangeBrowserWhileOpen) {
   // Create a second web contents and mock browser interface.

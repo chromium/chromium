@@ -259,6 +259,7 @@ std::string ToolbarController::GetActionNameFromElementIdentifier(
            {kActionSidePanelShowSearchCompanion,
             "PinnedShowSearchCompanionSidePanelButton"},
            {kActionTaskManager, "PinnedTaskManagerButton"},
+           {kActionTtcToolbar, "PinnedTtcButton"},
            {kActionSidePanelShowLensOverlayResults,
             "PinnedShowLensOverlayResultsSidePanelButton"},
            {kActionSendSharedTabGroupFeedback, "SharedTabGroupFeedbackButton"},
