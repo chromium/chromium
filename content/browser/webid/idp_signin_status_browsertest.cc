@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "content/browser/webid/webid_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
@@ -112,8 +113,15 @@ IN_PROC_BROWSER_TEST_F(IdpSigninStatusBrowserTest,
 
 // Test that a same-origin subresource preload via Early Hints CAN set the
 // IdP sign-in status.
+// TODO(crbug.com/572888605): Flaky on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_EarlyHintsSameOriginSubresource \
+  DISABLED_EarlyHintsSameOriginSubresource
+#else
+#define MAYBE_EarlyHintsSameOriginSubresource EarlyHintsSameOriginSubresource
+#endif
 IN_PROC_BROWSER_TEST_F(IdpSigninStatusBrowserTest,
-                       EarlyHintsSameOriginSubresource) {
+                       MAYBE_EarlyHintsSameOriginSubresource) {
   GURL rp_url("https://rp.test/index.html");
   GURL idp_url("https://rp.test/set-login");
   url::Origin idp_origin = url::Origin::Create(idp_url);
