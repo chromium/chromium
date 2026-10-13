@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -821,6 +822,62 @@ IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
   ASSERT_TRUE(
       DictValueEquals(read.Take(), {{kKey1, kValue12}, {kKey2, kValue22}}));
   EXPECT_EQ(url2_requests->data.load(), 1);
+}
+
+// Verifies that an empty configuration hash, which the policy schema allows,
+// is committed like any other hash, so that reads do not download the
+// configuration again.
+IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
+                       EmptyHashIsCommittedAndNotRedownloaded) {
+  scoped_refptr<RequestCounter> requests =
+      CountRequests(embedded_test_server(), kConfigurationUrl1);
+  EnableTestServer({{kConfigurationUrl1, {kConfigurationData1}}});
+  SetConfiguration(kConfigurationUrl1, /*conf_hash=*/"");
+  WaitForUpdate();
+  EXPECT_EQ(GetCommittedHash(), "");
+
+  // A read that started a download would wait for it, so any extra download
+  // would be counted below.
+  for (int i = 0; i < 3; ++i) {
+    ASSERT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}),
+                                {{kKey1, kValue1}, {kKey2, kValue2}}));
+  }
+  EXPECT_EQ(requests->data.load(), 1);
+}
+
+// Verifies that the queued write of a configuration with an empty hash does
+// not commit the hash if the configuration was cleared in the meantime, so
+// that re-adding the origin downloads its configuration again.
+IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
+                       EmptyHashNotCommittedAfterConfigurationCleared) {
+  scoped_refptr<base::SequencedTaskRunner> store_task_runner =
+      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
+  api()->SetStoreTaskRunnerForTesting(store_task_runner);
+  EnableTestServer({{kConfigurationUrl1, {kConfigurationData1}},
+                    {kConfigurationUrl2, {kConfigurationData2}}});
+  SetConfiguration(kConfigurationUrl1, kConfigurationHash1);
+  WaitForUpdate();
+
+  {
+    StoreSequenceBlocker blocker(store_task_runner);
+    // The write of (url2, "") is queued behind `blocker` when the origin is
+    // removed from the policy.
+    SetConfiguration(kConfigurationUrl2, /*conf_hash=*/"");
+    ASSERT_TRUE(base::test::RunUntil([&] { return !GetCommittedHash(); }));
+    ClearConfiguration();
+  }
+  // Wait until both queued writes completed and their replies ran.
+  base::RunLoop run_loop;
+  store_task_runner->PostTaskAndReply(FROM_HERE, base::DoNothing(),
+                                      run_loop.QuitClosure());
+  run_loop.Run();
+  EXPECT_FALSE(GetCommittedHash());
+
+  // Re-adding the origin downloads its configuration again; the read waits for
+  // that download.
+  SetConfiguration(kConfigurationUrl2, /*conf_hash=*/"");
+  ASSERT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}),
+                              {{kKey1, kValue12}, {kKey2, kValue22}}));
 }
 
 class ManagedConfigurationAPIRecoveryDisabledTest
