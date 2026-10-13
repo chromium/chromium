@@ -55,6 +55,12 @@ ActorEnterprisePolicyChecker::ActorEnterprisePolicyChecker(Profile* profile)
 
 ActorEnterprisePolicyChecker::~ActorEnterprisePolicyChecker() = default;
 
+base::CallbackListSubscription
+ActorEnterprisePolicyChecker::AddUrlListsUpdateObserver(
+    base::RepeatingClosure callback) {
+  return url_blocklist_manager_.AddObserver(std::move(callback));
+}
+
 EnterprisePolicyChecker::UrlBlockReason ActorEnterprisePolicyChecker::Evaluate(
     const GURL& url) const {
   const policy::URLBlocklist::URLBlocklistState state =

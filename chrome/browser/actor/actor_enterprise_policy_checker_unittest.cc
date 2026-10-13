@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
@@ -54,6 +53,11 @@ TEST_F(ActorEnterprisePolicyCheckerTest, EvaluateDefaultUnblocked) {
 }
 
 TEST_F(ActorEnterprisePolicyCheckerTest, EvaluateUrlBlocklistAndAllowlist) {
+  base::test::TestFuture<void> on_url_lists_updated;
+  base::CallbackListSubscription subscription =
+      checker_->AddUrlListsUpdateObserver(
+          on_url_lists_updated.GetRepeatingCallback());
+
   base::ListValue blocklist;
   blocklist.Append("blocked.example.com");
   profile_->GetPrefs()->SetList(glic::prefs::kGlicActuationOnWebBlockedForURLs,
@@ -63,11 +67,7 @@ TEST_F(ActorEnterprisePolicyCheckerTest, EvaluateUrlBlocklistAndAllowlist) {
   allowlist.Append("allowed.blocked.example.com");
   profile_->GetPrefs()->SetList(glic::prefs::kGlicActuationOnWebAllowedForURLs,
                                 std::move(allowlist));
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return checker_->Evaluate(
-               GURL("https://allowed.blocked.example.com/path")) ==
-           EnterprisePolicyChecker::UrlBlockReason::kExplicitlyAllowed;
-  }));
+  ASSERT_TRUE(on_url_lists_updated.Wait());
 
   EXPECT_EQ(checker_->Evaluate(GURL("https://blocked.example.com/path")),
             EnterprisePolicyChecker::UrlBlockReason::kExplicitlyBlocked);
@@ -89,14 +89,16 @@ TEST_F(ActorEnterprisePolicyCheckerTest,
       std::to_underlying(
           glic::prefs::GlicActuationOnWebPolicyState::kDisabled));
 
+  base::test::TestFuture<void> on_url_lists_updated;
+  base::CallbackListSubscription subscription =
+      checker_->AddUrlListsUpdateObserver(
+          on_url_lists_updated.GetRepeatingCallback());
+
   base::ListValue allowlist;
   allowlist.Append("allowed.example.com");
   profile_->GetPrefs()->SetList(glic::prefs::kGlicActuationOnWebAllowedForURLs,
                                 std::move(allowlist));
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return checker_->Evaluate(GURL("https://allowed.example.com/path")) ==
-           EnterprisePolicyChecker::UrlBlockReason::kExplicitlyAllowed;
-  }));
+  ASSERT_TRUE(on_url_lists_updated.Wait());
 
   EXPECT_EQ(checker_->Evaluate(GURL("https://unlisted.example.com/path")),
             EnterprisePolicyChecker::UrlBlockReason::kExplicitlyBlocked);

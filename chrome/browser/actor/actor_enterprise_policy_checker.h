@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/callback_list.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "components/policy/core/browser/url_list/url_blocklist_manager.h"
@@ -29,6 +31,11 @@ class ActorEnterprisePolicyChecker : public EnterprisePolicyChecker {
   ActorEnterprisePolicyChecker& operator=(const ActorEnterprisePolicyChecker&) =
       delete;
   ~ActorEnterprisePolicyChecker() override;
+
+  // Registers `callback` to be notified whenever the enterprise URL allowlist
+  // or blocklist policies are updated.
+  base::CallbackListSubscription AddUrlListsUpdateObserver(
+      base::RepeatingClosure callback);
 
   // EnterprisePolicyChecker:
   UrlBlockReason Evaluate(const GURL& url) const override;
