@@ -16,10 +16,9 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.annotation.DrawableRes;
+import androidx.annotation.DimenRes;
 import androidx.annotation.Px;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
@@ -58,7 +57,6 @@ final class SidePanelContainerCoordinatorImpl
     private static final @AnchorSide int SIDE_PANEL_DEFAULT_ANCHOR_SIDE = AnchorSide.RIGHT;
 
     private final FrameLayout mContainerView;
-    private final LinearLayout mInnerContainerView;
     private final SidePanelNativeBridgeSelector mNativeBridgeSelector;
     private final SideUiCoordinator mSideUiCoordinator;
     private final TopControlsStacker mTopControlsStacker;
@@ -139,7 +137,6 @@ final class SidePanelContainerCoordinatorImpl
                 (FrameLayout)
                         LayoutInflater.from(activity)
                                 .inflate(R.layout.side_panel_container, /* root= */ null);
-        mInnerContainerView = mContainerView.findViewById(R.id.side_panel_inner_container);
 
         mNativeBridgeSelector =
                 new SidePanelNativeBridgeSelector(
@@ -531,7 +528,7 @@ final class SidePanelContainerCoordinatorImpl
             @Px int newReservedWidth,
             @HeightType int oldHeightType,
             @HeightType int newHeightType) {
-        updateInnerContainerBackground(newHeightType);
+        updateContainerTopPadding(newHeightType);
     }
 
     @Override
@@ -735,14 +732,10 @@ final class SidePanelContainerCoordinatorImpl
     }
 
     private int getMinSidePanelContainerWidthDp() {
-        // TODO(crbug.com/571631909): This can be called before updateInnerContainerBackground()
-        // sets the inner container's padding, in which case the padding is 0 and the minimum width
-        // is too small.
         int horizontalPaddingDp =
                 ViewUtils.pxToDp(
                         mContainerView.getContext(),
-                        mInnerContainerView.getPaddingLeft()
-                                + mInnerContainerView.getPaddingRight());
+                        mContainerView.getPaddingLeft() + mContainerView.getPaddingRight());
         return horizontalPaddingDp + MIN_SIDE_PANEL_CONTENT_WIDTH_DP;
     }
 
@@ -766,10 +759,11 @@ final class SidePanelContainerCoordinatorImpl
     }
 
     @VisibleForTesting
-    static @DrawableRes int getInnerContainerBackgroundResId(@HeightType int heightType) {
+    static @DimenRes int getContainerTopPaddingResId(@HeightType int heightType) {
         return switch (heightType) {
-            case HeightType.TOOLBAR -> R.drawable.side_panel_container_toolbar_height_bg;
-            case HeightType.WEB_CONTENTS -> R.drawable.side_panel_container_webcontent_height_bg;
+            case HeightType.TOOLBAR -> R.dimen.side_ui_container_padding;
+            case HeightType.WEB_CONTENTS ->
+                    R.dimen.side_ui_container_web_content_height_top_padding;
             default ->
                     // includes HeightType.NOT_APPLICABLE. This is expected to be called even when
                     // the container will be hidden, so do not throw an exception.
@@ -777,12 +771,17 @@ final class SidePanelContainerCoordinatorImpl
         };
     }
 
-    private void updateInnerContainerBackground(@HeightType int heightType) {
-        @DrawableRes int bgResId = getInnerContainerBackgroundResId(heightType);
+    private void updateContainerTopPadding(@HeightType int heightType) {
+        @DimenRes int topPaddingResId = getContainerTopPaddingResId(heightType);
         // Expected if the container is hiding. In that case, no-op.
-        if (bgResId == Resources.ID_NULL) return;
+        if (topPaddingResId == Resources.ID_NULL) return;
 
-        mInnerContainerView.setBackgroundResource(bgResId);
+        @Px int topPaddingPx = mContainerView.getResources().getDimensionPixelSize(topPaddingResId);
+        mContainerView.setPadding(
+                mContainerView.getPaddingLeft(),
+                topPaddingPx,
+                mContainerView.getPaddingRight(),
+                mContainerView.getPaddingBottom());
     }
 
     private @Nullable ThinWebView findThinWebView(View view) {

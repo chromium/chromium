@@ -15,18 +15,17 @@
   The "layout_width" should be set programmatically, so it's 0dp here.
 -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="0dp"
     android:layout_height="match_parent"
+    android:padding="@dimen/side_ui_container_padding"
     android:background="@macro/default_bg_color">
 
     <LinearLayout
-        android:id="@+id/side_panel_inner_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:clipToOutline="true"
-        tools:ignore="UselessParent">
+        android:background="@drawable/side_panel_inner_container_bg"
+        android:clipToOutline="true">
 
         <!-- Header -->
         <LinearLayout

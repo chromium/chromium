@@ -183,18 +183,17 @@ public class SidePanelContainerCoordinatorImplUnitTest {
     }
 
     @Test
-    public void getInnerContainerBackgroundResId_returnsExpectedDrawableForHeightType() {
+    public void getContainerTopPaddingResId_returnsExpectedDimenForHeightType() {
         assertEquals(
-                R.drawable.side_panel_container_toolbar_height_bg,
-                SidePanelContainerCoordinatorImpl.getInnerContainerBackgroundResId(
-                        HeightType.TOOLBAR));
+                R.dimen.side_ui_container_padding,
+                SidePanelContainerCoordinatorImpl.getContainerTopPaddingResId(HeightType.TOOLBAR));
         assertEquals(
-                R.drawable.side_panel_container_webcontent_height_bg,
-                SidePanelContainerCoordinatorImpl.getInnerContainerBackgroundResId(
+                R.dimen.side_ui_container_web_content_height_top_padding,
+                SidePanelContainerCoordinatorImpl.getContainerTopPaddingResId(
                         HeightType.WEB_CONTENTS));
         assertEquals(
                 Resources.ID_NULL,
-                SidePanelContainerCoordinatorImpl.getInnerContainerBackgroundResId(
+                SidePanelContainerCoordinatorImpl.getContainerTopPaddingResId(
                         HeightType.NOT_APPLICABLE));
     }
 }
