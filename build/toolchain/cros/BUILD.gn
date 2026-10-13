@@ -26,6 +26,7 @@ clang_toolchain("host") {
     current_cpu = host_cpu
     current_os = "linux"
     sysroot = cros_host_sysroot
+    use_dbus = false
   }
 
   extra_cflags = cros_host_extra_cflags
@@ -44,6 +45,7 @@ clang_toolchain("v8_snapshot") {
     v8_current_cpu = v8_target_cpu
     current_os = "linux"
     sysroot = cros_v8_snapshot_sysroot
+    use_dbus = false
   }
 
   extra_cflags = cros_v8_snapshot_extra_cflags
