@@ -2646,8 +2646,7 @@ TEST_P(QuicChromiumClientSessionTest,
   quic::test::QuicFlagSaver flags;
   SetQuicReloadableFlag(quic_active_connection_id_limit, true);
   config_.SetActiveConnectionIdLimitToSend(3);
-  quic::QuicConnectionId cid_for_probe =
-      quic::test::TestConnectionId(12345678);
+  quic::QuicConnectionId cid_for_probe = quic::test::TestConnectionId(12345678);
   quic::QuicConnectionId cid_for_commit =
       quic::test::TestConnectionId(87654321);
   MockQuicData quic_data(version_);
@@ -2734,8 +2733,7 @@ TEST_P(QuicChromiumClientSessionTest,
   quic::test::QuicFlagSaver flags;
   SetQuicReloadableFlag(quic_active_connection_id_limit, true);
   config_.SetActiveConnectionIdLimitToSend(3);
-  quic::QuicConnectionId cid_for_probe =
-      quic::test::TestConnectionId(12345678);
+  quic::QuicConnectionId cid_for_probe = quic::test::TestConnectionId(12345678);
   quic::QuicConnectionId cid_for_commit =
       quic::test::TestConnectionId(87654321);
   MockQuicData quic_data(version_);
@@ -2793,7 +2791,8 @@ TEST_P(QuicChromiumClientSessionTest,
   EXPECT_CALL(*session_, UnregisterQuicConnectionClosePayload());
   EXPECT_CALL(*session_, RegisterQuicConnectionClosePayload());
   EXPECT_TRUE(session_->CommitMigration(std::move(commit_context)));
-  // When the feature is disabled, CommitMigration does not cancel the in-flight probe.
+  // When the feature is disabled, CommitMigration does not cancel the in-flight
+  // probe.
   EXPECT_TRUE(session_->connection()->HasPendingPathValidation());
 
   histogram_tester.ExpectTotalCount("Net.Quic.Migration.Attempt.Superseded", 0);

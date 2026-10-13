@@ -110,6 +110,12 @@ class NET_EXPORT_PRIVATE QuicMigrationAttemptContext {
   static void RecordIneligible(QuicMigrationAttemptCause cause,
                                QuicMigrationAttemptIneligibleReason reason);
 
+  // Records a superseded migration attempt when an attempt is superseded
+  // without a context having been created (e.g. while waiting for a new
+  // network).
+  static void RecordSuperseded(QuicMigrationAttemptCause cause,
+                               QuicMigrationAttemptCause superseded_by_cause);
+
   // Records the time elapsed while waiting for a new network when a new network
   // connects before timing out.
   static void RecordWaitForNewNetworkDuration(QuicMigrationAttemptCause cause,

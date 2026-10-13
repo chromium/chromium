@@ -1206,6 +1206,7 @@ QuicChromiumClientSession::QuicChromiumClientSession(
   connection->set_debug_visitor(logger_.get());
   connection->set_creator_debug_delegate(logger_.get());
   migrate_back_to_default_timer_.SetTaskRunner(task_runner_.get());
+  wait_for_new_network_timer_.SetTaskRunner(task_runner_.get());
   net_log_.BeginEvent(NetLogEventType::QUIC_SESSION, [&] {
     return NetLogQuicClientSessionParams(
         net_log, &session_key_, connection_id(),
@@ -2578,13 +2579,6 @@ void QuicChromiumClientSession::FinishMigrateSessionOnWriteError(
 void QuicChromiumClientSession::OnNoNewNetwork(
     QuicMigrationAttemptCause migration_cause) {
   DCHECK(OneRttKeysAvailable());
-  wait_for_new_network_cause_ = migration_cause;
-  // If a previous migration attempt is already waiting for a new network, keep
-  // its start time to measure the true total wait time. The cause is updated to
-  // the most recent signal, matching historical behavior.
-  if (wait_for_new_network_start_time_.is_null()) {
-    wait_for_new_network_start_time_ = tick_clock_->NowTicks();
-  }
   net_log_.AddEvent(
       NetLogEventType::QUIC_CONNECTION_MIGRATION_WAITING_FOR_NEW_NETWORK);
 
@@ -2594,15 +2588,34 @@ void QuicChromiumClientSession::OnNoNewNetwork(
   static_cast<QuicChromiumPacketWriter*>(connection()->writer())
       ->set_force_write_blocked(true);
 
-  base::TimeDelta timeout = features::kQuicWaitForNewNetworkTimeoutParam.Get();
+  // If a previous migration attempt is already waiting for a new network, the
+  // cause is updated to the most recent signal (matching historical behavior),
+  // while keeping its start time and timer to measure the true total wait time.
+  wait_for_new_network_cause_ = migration_cause;
+  if (!wait_for_new_network_timer_.IsRunning()) {
+    CHECK(wait_for_new_network_start_time_.is_null());
+    wait_for_new_network_start_time_ = tick_clock_->NowTicks();
+    base::TimeDelta timeout =
+        features::kQuicWaitForNewNetworkTimeoutParam.Get();
 
-  // Post a task to maybe close the session if the alarm fires.
-  task_runner_->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&QuicChromiumClientSession::OnMigrationTimeout,
-                     weak_factory_.GetWeakPtr(), packet_readers_.size(),
-                     migration_cause),
-      timeout);
+    // Start a timer to maybe close the session if the alarm fires.
+    wait_for_new_network_timer_.Start(
+        FROM_HERE, timeout,
+        base::BindOnce(&QuicChromiumClientSession::OnMigrationTimeout,
+                       weak_factory_.GetWeakPtr()));
+  }
+}
+
+void QuicChromiumClientSession::ResetWaitForNewNetworkState(
+    std::optional<QuicMigrationAttemptCause> superseded_by_cause) {
+  wait_for_new_network_timer_.Stop();
+  if (wait_for_new_network_cause_.has_value() &&
+      superseded_by_cause.has_value()) {
+    QuicMigrationAttemptContext::RecordSuperseded(*wait_for_new_network_cause_,
+                                                  *superseded_by_cause);
+  }
+  wait_for_new_network_cause_.reset();
+  wait_for_new_network_start_time_ = base::TimeTicks();
 }
 
 void QuicChromiumClientSession::WriteToNewSocket() {
@@ -2617,21 +2630,15 @@ void QuicChromiumClientSession::WriteToNewSocket() {
       ->set_force_write_blocked(false);
 }
 
-void QuicChromiumClientSession::OnMigrationTimeout(
-    size_t num_sockets,
-    QuicMigrationAttemptCause migration_cause) {
-  // If number of sockets has changed, this migration task is stale.
-  // TODO(crbug.com/570465677): Stop approximating whether a migration has
-  // happened via `num_sockets`. Instead, control whether OnMigrationTimeout has
-  // become stale by checking `wait_for_new_network_cause_`. This requires
-  // clearing `wait_for_new_network_cause_` whenever we decide to abandon the
-  // "waiting for new network" state.
-  if (num_sockets != packet_readers_.size()) {
-    return;
-  }
+void QuicChromiumClientSession::OnMigrationTimeout() {
+  // `wait_for_new_network_timer_` is only started in `OnNoNewNetwork()` (which
+  // sets `wait_for_new_network_cause_`) and is always stopped in
+  // `ResetWaitForNewNetworkState()` whenever `wait_for_new_network_cause_` is
+  // cleared.
+  CHECK(wait_for_new_network_cause_.has_value());
 
-  wait_for_new_network_cause_.reset();
-  wait_for_new_network_start_time_ = base::TimeTicks();
+  QuicMigrationAttemptCause migration_cause = *wait_for_new_network_cause_;
+  ResetWaitForNewNetworkState(/*superseded_by_cause=*/std::nullopt);
 
   net_log_.AddEvent(
       NetLogEventType::QUIC_CONNECTION_MIGRATION_FAILURE_WAITING_FOR_NETWORK);
@@ -2941,12 +2948,33 @@ void QuicChromiumClientSession::OnNetworkConnected(
         "connected_network", network);
   }
   if (wait_for_new_network_cause_.has_value()) {
+    if (network == GetCurrentNetwork()) {
+      // In theory, `OnNetworkConnected` should only be called for a newly
+      // connected network, which should never have a network_handle that
+      // matches a previously connected network. Having said that, in practice,
+      // histograms data (`kAlreadyOnTargetNetwork` in
+      // `Net.Quic.Migration.Attempt.Ineligible.ByTrigger.*`) show that this can
+      // happen, especially when waiting after a write error (where
+      // `GetCurrentNetwork()` never disconnected and a queued or duplicate
+      // `OnNetworkConnected` notification arrives for it).
+      //
+      // Proceeding here would call `ResetWaitForNewNetworkState()` (stopping
+      // the wait timer) and fail to migrate in `MigrateNetworkImmediately()`.
+      // To err on the safe side, and preserve pre-existing behavior, ignore
+      // notifications for the current network and keep waiting for an alternate
+      // one until the wait timer expires.
+      //
+      // Note: We should take a closer look into why this is really happening.
+      return;
+    }
     QuicMigrationAttemptCause migration_cause = *wait_for_new_network_cause_;
-    wait_for_new_network_cause_.reset();
     CHECK(!wait_for_new_network_start_time_.is_null());
     base::TimeDelta duration =
         tick_clock_->NowTicks() - wait_for_new_network_start_time_;
-    wait_for_new_network_start_time_ = base::TimeTicks();
+    // An alternate network connected while waiting; exit the waiting state
+    // (stopping the timeout timer) without recording it as superseded, as the
+    // waiting attempt itself is now proceeding via `MigrateNetworkImmediately`.
+    ResetWaitForNewNetworkState(/*superseded_by_cause=*/std::nullopt);
     QuicMigrationAttemptContext::RecordWaitForNewNetworkDuration(
         migration_cause, duration);
     net_log_.AddEventWithInt64Params(
@@ -3108,6 +3136,13 @@ void QuicChromiumClientSession::MigrateNetworkImmediately(
 
   DCHECK(migrate_session_on_network_change_v2_);
 
+  // If `MigrateNetworkImmediately` is triggered while already waiting for a new
+  // network (e.g. `OnNetworkDisconnectedV2` found an alternate network while
+  // waiting after a write error), the waiting attempt is superseded by
+  // `migration_cause`. (If called from `OnNetworkConnected`, the waiting state
+  // was already cleared above, making this a no-op.)
+  ResetWaitForNewNetworkState(migration_cause);
+
   if (!migrate_idle_session_ && !HasActiveRequestStreams()) {
     QuicMigrationAttemptContext::RecordIneligible(
         migration_cause, QuicMigrationAttemptIneligibleReason::kIdleSession);
@@ -3141,6 +3176,10 @@ void QuicChromiumClientSession::MigrateNetworkImmediately(
     return;
   }
 
+  // TODO(crbug.com/569907989): Both callers (`OnNetworkConnected` and
+  // `OnNetworkDisconnectedV2`) now guarantee `network != GetCurrentNetwork()`.
+  // Replace this branch with `CHECK_NE(network, GetCurrentNetwork())` once
+  // histograms confirm `kAlreadyOnTargetNetwork` is no longer recorded here.
   if (network == GetCurrentNetwork()) {
     QuicMigrationAttemptContext::RecordIneligible(
         migration_cause,
@@ -3346,6 +3385,8 @@ void QuicChromiumClientSession::CloseSessionOnError(
     int net_error,
     quic::QuicErrorCode quic_error,
     quic::ConnectionCloseBehavior behavior) {
+  // The session is closing; cancel any pending wait-for-new-network timer.
+  ResetWaitForNewNetworkState(/*superseded_by_cause=*/std::nullopt);
   base::UmaHistogramSparse("Net.QuicSession.CloseSessionOnError", -net_error);
 
   if (!callback_.is_null()) {
@@ -3370,6 +3411,11 @@ void QuicChromiumClientSession::CloseSessionOnErrorLater(
     int net_error,
     quic::QuicErrorCode quic_error,
     quic::ConnectionCloseBehavior behavior) {
+  // The session is being closed; clear any wait-for-new-network state and stop
+  // the timer immediately so we don't rely on downstream teardown side effects
+  // (`CloseConnection()` or `NotifyFactoryOfSessionClosedLater()`) to cancel
+  // pending migration.
+  ResetWaitForNewNetworkState(/*superseded_by_cause=*/std::nullopt);
   base::UmaHistogramSparse("Net.QuicSession.CloseSessionOnError", -net_error);
 
   if (!callback_.is_null()) {
@@ -4296,6 +4342,11 @@ void QuicChromiumClientSession::NotifyFactoryOfSessionGoingAway() {
 }
 
 void QuicChromiumClientSession::NotifyFactoryOfSessionClosedLater() {
+  // The underlying connection is already closed; clear any wait-for-new-network
+  // state and stop the timer so neither `OnMigrationTimeout` nor
+  // `OnNetworkConnected` can act on a closed connection before the posted
+  // `NotifyFactoryOfSessionClosed` task destroys the session.
+  ResetWaitForNewNetworkState(/*superseded_by_cause=*/std::nullopt);
   going_away_ = true;
   DCHECK_EQ(0u, GetNumActiveStreams());
   DCHECK(!connection()->connected());
@@ -4626,6 +4677,10 @@ bool QuicChromiumClientSession::CommitMigration(
   task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&QuicChromiumClientSession::WriteToNewSocket,
                                 weak_factory_.GetWeakPtr()));
+  // If another migration (e.g. an in-flight probe or a write-error migration)
+  // commits while the session was waiting for a new network, the waiting
+  // attempt is superseded by `migration_context->cause()`.
+  ResetWaitForNewNetworkState(migration_context->cause());
   migration_context->SetSuccess();
   return true;
 }

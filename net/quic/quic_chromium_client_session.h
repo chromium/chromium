@@ -978,8 +978,13 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
 
   // Called when migration alarm fires. If migration has not occurred
   // since alarm was set, closes session with error.
-  void OnMigrationTimeout(size_t num_sockets,
-                          QuicMigrationAttemptCause migration_cause);
+  void OnMigrationTimeout();
+
+  // Clears the state associated with waiting for a new network. If
+  // `superseded_by_cause` is provided and the session was waiting for a new
+  // network, records the superseded outcome for that waiting attempt.
+  void ResetWaitForNewNetworkState(
+      std::optional<QuicMigrationAttemptCause> superseded_by_cause);
 
   // Populates network error details for this session.
   void PopulateNetErrorDetails(NetErrorDetails* details) const;
@@ -1334,6 +1339,9 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   std::optional<QuicMigrationAttemptCause> wait_for_new_network_cause_;
   // Timestamp when the session started waiting for a new network.
   base::TimeTicks wait_for_new_network_start_time_;
+  // Timer to close the session if no new network connects within the wait
+  // timeout.
+  base::OneShotTimer wait_for_new_network_timer_;
   // True if read errors should be ignored. Set when migration on write error is
   // posted and unset until the first packet is written after migration.
   // TODO(crbug.com/558250723): Consider moving this, and every other field

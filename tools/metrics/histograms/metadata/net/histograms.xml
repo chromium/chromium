@@ -5125,9 +5125,20 @@ chromium-metrics-reviews@google.com.
   <owner>stefanoduo@google.com</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
-    Records the type of migration attempts that superseded an in-flight probe
-    for another QUIC connection migration attempt.
+    Records the type of migration attempts that superseded another QUIC
+    connection migration attempt.
   </summary>
+</histogram>
+
+<histogram name="Net.Quic.Migration.Attempt.Superseded.ByTrigger.{Trigger}"
+    enum="QuicMigrationAttemptCause" expires_after="2027-08-01">
+  <owner>stefanoduo@google.com</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    Same as Net.Quic.Migration.Attempt.Superseded, but partitioned by the
+    migration cause {Trigger} of the superseded attempt.
+  </summary>
+  <token key="Trigger" variants="QuicMigrationAttemptCause"/>
 </histogram>
 
 <histogram name="Net.Quic.Migration.Attempt.UnclassifiedOutcome" enum="Boolean"

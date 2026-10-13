@@ -58,6 +58,18 @@ void QuicMigrationAttemptContext::RecordIneligible(
 }
 
 // static
+void QuicMigrationAttemptContext::RecordSuperseded(
+    QuicMigrationAttemptCause cause,
+    QuicMigrationAttemptCause superseded_by_cause) {
+  base::UmaHistogramEnumeration("Net.Quic.Migration.Attempt.Superseded",
+                                superseded_by_cause);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Net.Quic.Migration.Attempt.Superseded.ByTrigger.",
+                    QuicMigrationAttemptCauseToString(cause)}),
+      superseded_by_cause);
+}
+
+// static
 void QuicMigrationAttemptContext::RecordWaitForNewNetworkDuration(
     QuicMigrationAttemptCause cause,
     base::TimeDelta duration) {
@@ -177,9 +189,8 @@ QuicMigrationAttemptContext::~QuicMigrationAttemptContext() {
                                    outcome_details_));
       break;
     case Outcome::kSuperseded:
-      base::UmaHistogramEnumeration(
-          "Net.Quic.Migration.Attempt.Superseded",
-          std::get<QuicMigrationAttemptCause>(outcome_details_));
+      RecordSuperseded(cause_,
+                       std::get<QuicMigrationAttemptCause>(outcome_details_));
       break;
     case Outcome::kUnknown:
       base::UmaHistogramBoolean(
