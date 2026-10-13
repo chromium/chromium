@@ -171,9 +171,6 @@ message BrowserCollectedInformation {
   // The site engagement information for the user.
   SiteEngagement site_engagement = 10 [features = { field_presence: EXPLICIT }];
 
-  // The recent historical page data.
-  repeated HistoryQueryResult history_query_result = 11;
-
   // Specifies which data is included in this request to the browser.
   // For example, some requests only include foreground tab data,
   // whereas others include all profile data.
@@ -198,50 +195,7 @@ message BrowserCollectedInformation {
   // non-viewport screenshots, this will be a sub-rectangle of the screenshot.
   BoundingRect viewport_rect_in_actor_framework_screenshot = 19 [features = { field_presence: EXPLICIT }];
 
-  reserved 6, 12, 13;
-}
-
-message HistoryQueryResult {
-  // The history data.
-  HistoryVisitData history_data = 1 [features = { field_presence: EXPLICIT }];
-
-  // The query that generated this history data.
-  HistoryQuery query = 2 [features = { field_presence: EXPLICIT }];
-}
-
-// The requested history data.
-message HistoryVisitData {
-  repeated HistoryVisitItem visit_item = 1;
-}
-
-// The data for a single history item.
-message HistoryVisitItem {
-  string page_title = 1 [features = { field_presence: IMPLICIT }];
-
-  string page_url = 2 [features = { field_presence: IMPLICIT }];
-
-  Timestamp visit_time = 3 [features = { field_presence: EXPLICIT }];
-
-  repeated string passages = 4;
-}
-
-message HistoryQuery {
-  // The text used to find matching history items.
-  // If empty returns all entries matching the other query parameters.
-  string query = 1 [features = { field_presence: IMPLICIT }];
-
-  // The number of history items to fetch.
-  int32 num_history_visits = 2 [features = { field_presence: IMPLICIT }];
-
-  // The start and end time to fetch history items.
-  DateTimeRange history_search_time_range = 3 [features = { field_presence: EXPLICIT }];
-}
-
-message DateTimeRange {
-  // Both fields are inclusive.
-  Timestamp start_time = 1 [features = { field_presence: EXPLICIT }];
-
-  Timestamp end_time = 2 [features = { field_presence: EXPLICIT }];
+  reserved 6, 11, 12, 13;
 }
 
 message ModelPrototypingCollectionSpecifier {
@@ -281,8 +235,7 @@ message BrowserDataCollectionSpecifier {
   // Whether to collect the user annotations.
   bool user_annotations = 5 [features = { field_presence: IMPLICIT }];
 
-  // Which history queries to collect data for.
-  HistoryQuerySpecifiers history_query_specifiers = 6 [features = { field_presence: EXPLICIT }];
+  reserved 6;
 }
 
 // Specifies the context to collect for a single page.
@@ -355,10 +308,6 @@ message GeneralTabSpecifier {
   // The maximum number of tabs to collect the context for (collects tab index
   // 0,...,n-1).
   int64 tab_limit = 2 [features = { field_presence: IMPLICIT }];
-}
-
-message HistoryQuerySpecifiers {
-  repeated HistoryQuery history_queries = 1;
 }
 
 // Next ID: 6

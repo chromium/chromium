@@ -1530,7 +1530,7 @@ message RuleMetadata {
 
   // What capabilities the agent has permission for when visiting/actuating on
   // a location.
-  // Next ID: 28
+  // Next ID: 29
 
   enum ActuationCapability {
     CAPABILITY_UNKNOWN = 0;
@@ -1601,6 +1601,11 @@ message RuleMetadata {
     CAPABILITY_TRANSLATE_PAGE = 26;
 
     CAPABILITY_CLICK_TO_UPLOAD = 27;
+
+    // Even though this tool is here, it MUST NOT be used in anything other than
+    // the purpose-made change password flow. It will not work as expected and
+    // could potentially result in password loss.
+    CAPABILITY_CHANGE_PASSWORD = 28;
   }
 }
 

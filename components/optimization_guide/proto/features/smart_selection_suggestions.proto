@@ -89,6 +89,9 @@ message Rectangle {
 // suggestions.
 message SmartSelectionSuggestionsResponse {
   repeated SmartSelectionSuggestion suggestions = 1;
+
+  // Server-side latency metrics for diagnostics.
+  SmartSelectionLatencyMetrics latency_metrics = 2 [features = { field_presence: EXPLICIT }];
 }
 
 // Defines a single suggestion returned to the client.
@@ -98,6 +101,34 @@ message SmartSelectionSuggestion {
 
   // The (already localized) suggestion shown in the suggestions UI.
   string label = 2 [features = { field_presence: EXPLICIT }];
+}
+
+// Server-side latency breakdown for SmartSelectionSuggestions execution.
+//
+// The durations form a hierarchy where parent durations subsume child
+// durations (plus any other overhead at each level):
+//
+//   mes_total_ms                        (total MES request handling)
+//   |-- mes_image_preprocessing_ms      (MES image crop/dim/highlight)
+//   +-- model_execution_ms              (backend GenerateContent RPC)
+//       |-- model_content_processing_ms (multimodal tokenization)
+//       |-- model_queue_wait_ms         (inference queue wait)
+//       |-- model_prefill_ms            (prompt prefill)
+//       +-- model_decode_ms             (output token decoding)
+message SmartSelectionLatencyMetrics {
+  int64 mes_total_ms = 1 [features = { field_presence: EXPLICIT }];
+
+  int64 model_execution_ms = 2 [features = { field_presence: EXPLICIT }];
+
+  int64 mes_image_preprocessing_ms = 3 [features = { field_presence: EXPLICIT }];
+
+  int64 model_content_processing_ms = 4 [features = { field_presence: EXPLICIT }];
+
+  int64 model_queue_wait_ms = 5 [features = { field_presence: EXPLICIT }];
+
+  int64 model_prefill_ms = 6 [features = { field_presence: EXPLICIT }];
+
+  int64 model_decode_ms = 7 [features = { field_presence: EXPLICIT }];
 }
 
 enum SmartSelectionToolId {

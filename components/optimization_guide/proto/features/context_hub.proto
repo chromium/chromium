@@ -88,6 +88,10 @@ message MemoryBankEntry {
 
   // Notes associated with the entry for grouping.
   string notes = 9 [features = { field_presence: EXPLICIT }];
+
+  // Raw PNG-encoded image bytes when the entry is of type
+  // MEMORY_BANK_TYPE_IMAGE.
+  bytes image_bytes = 10 [features = { field_presence: EXPLICIT }];
 }
 
 // A single turn in the conversation history.
@@ -279,4 +283,7 @@ enum MemoryBankType {
 
   // Entry created from text selection.
   MEMORY_BANK_TYPE_TEXT_SELECTION = 2;
+
+  // Entry created from an image.
+  MEMORY_BANK_TYPE_IMAGE = 3;
 }
