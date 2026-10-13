@@ -53,12 +53,20 @@ export class FloatingWorkspace extends FloatingWorkspaceBase {
     return getTemplate();
   }
 
+  static get properties() {
+    return {
+      defaultDialogTitleString: {
+        type: String,
+      },
+    };
+  }
+
   private networkConfig: CrosNetworkConfigRemote =
       CrosNetworkConfig.getRemote();
 
   // Main string of the default dialog. It is expected to change after
   // EXPECTED_LOAD_TIME_MILLISEC of time.
-  private defaultDialogTitleString: string;
+  declare private defaultDialogTitleString: string;
 
   constructor() {
     super();
