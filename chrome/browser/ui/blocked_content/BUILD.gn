@@ -10,6 +10,7 @@ assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 
 source_set("blocked_content") {
   sources = [
+    "ad_script_navigation_throttle.h",
     "blocked_window_params.h",
     "chrome_popup_navigation_delegate.h",
     "tab_under_navigation_throttle.h",
@@ -38,6 +39,7 @@ source_set("blocked_content") {
 
 source_set("impl") {
   sources = [
+    "ad_script_navigation_throttle.cc",
     "blocked_window_params.cc",
     "chrome_popup_navigation_delegate.cc",
     "tab_under_navigation_throttle.cc",
@@ -52,8 +54,11 @@ source_set("impl") {
     "//chrome/common:mojo_bindings",
     "//components/content_settings/core/browser",
     "//components/guest_view/buildflags",
+    "//components/page_load_metrics/browser",
     "//extensions/buildflags",
+    "//net",
     "//services/metrics/public/cpp:ukm_builders",
+    "//third_party/blink/public/mojom:mojom_platform_headers",
   ]
 
   if (!is_android) {
@@ -131,7 +136,10 @@ if (!is_android && !is_chromeos_device) {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "popup_opener_tab_helper_unittest.cc" ]
+  sources = [
+    "ad_script_navigation_throttle_unittest.cc",
+    "popup_opener_tab_helper_unittest.cc",
+  ]
   deps = [
     ":blocked_content",
     "//chrome/browser/content_settings",
@@ -139,6 +147,8 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/content_settings/browser",
+    "//components/page_load_metrics/browser",
+    "//components/page_load_metrics/browser:test_support",
     "//components/tabs:public",
     "//components/tabs:test_support",
     "//components/ukm/content",

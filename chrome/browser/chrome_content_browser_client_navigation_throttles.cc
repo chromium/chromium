@@ -40,6 +40,7 @@
 #include "chrome/browser/ssl/typed_navigation_upgrade_throttle.h"
 #include "chrome/browser/supervised_user/classify_url_navigation_throttle.h"
 #include "chrome/browser/supervised_user/supervised_user_google_auth_navigation_throttle.h"
+#include "chrome/browser/ui/blocked_content/ad_script_navigation_throttle.h"
 #include "chrome/browser/ui/blocked_content/tab_under_navigation_throttle.h"
 #include "chrome/browser/ui/login/login_navigation_throttle.h"
 #include "chrome/browser/ui/passwords/password_manager_navigation_throttle.h"
@@ -420,6 +421,7 @@ void CreateAndAddChromeThrottlesForNavigation(
 #endif  // BUILDFLAG(ENABLE_PDF)
 
   TabUnderNavigationThrottle::MaybeCreateAndAdd(registry);
+  AdScriptNavigationThrottle::MaybeCreateAndAdd(registry);
 
   WellKnownChangePasswordNavigationThrottle::MaybeCreateAndAdd(registry);
 
