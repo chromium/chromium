@@ -169,7 +169,7 @@ void JavaScriptAutofillTracker::HandleMousedown(
                      base::TimeTicks::Now()));
 }
 
-void JavaScriptAutofillTracker::OnJavaScriptChangedValue(
+void JavaScriptAutofillTracker::OnJavaScriptSetValue(
     const blink::WebFormControlElement& element,
     const blink::WebString& old_value) {
   // In order to add a log record to `js_logs_`, the following conditions must
@@ -190,10 +190,9 @@ void JavaScriptAutofillTracker::OnJavaScriptChangedValue(
     return;
   }
 
-  // (3) The element whose value was set by JS should be autofillable and
-  // focusable (which is an approximation of "visible"). Other JS modifications
-  // are not interesting from a JS-autofill dropdown perspective.
-  if (!form_util::IsAutofillableElement(element) || !element.IsFocusable()) {
+  // (3) The element whose value was set by JS should be autofillable. Other JS
+  // modifications are not interesting from a JS-autofill dropdown perspective.
+  if (!form_util::IsAutofillableElement(element)) {
     return;
   }
 
@@ -220,15 +219,16 @@ void JavaScriptAutofillTracker::DetectJavaScriptAutofill(
     return;
   }
 
-  // For simplicity, only modified fields belonging to the same form as the
-  // anchor element are considered, since the browser receives a single form to
-  // analyze for detecting dropdowns.
+  // For simplicity, only modified and visible (focusable) fields belonging to
+  // the same form as the anchor element are considered, since the browser
+  // receives a single form to analyze for detecting dropdowns.
   std::erase_if(
       logs, [target_form = trigger_element.GetOwningFormForAutofill()](
                 const mojom::JavaScriptFieldModificationPtr& record) {
         blink::WebFormControlElement element =
             form_util::GetFormControlByRendererId(record->field_id);
-        return !element || element.GetOwningFormForAutofill() != target_form;
+        return !element || !element.IsFocusable() ||
+               element.GetOwningFormForAutofill() != target_form;
       });
 
   std::vector<mojom::JavaScriptFieldModificationPtr> field_modifications;

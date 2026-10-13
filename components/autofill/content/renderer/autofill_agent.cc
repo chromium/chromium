@@ -2298,13 +2298,9 @@ void AutofillAgent::JavaScriptSetValue(WebFormControlElement element,
                                        const WebString& old_value,
                                        bool was_autofilled,
                                        bool value_changed) {
-  if (!element.IsConnected()) {
-    return;
-  }
+  javascript_autofill_tracker_.OnJavaScriptSetValue(element, old_value);
 
-  javascript_autofill_tracker_.OnJavaScriptChangedValue(element, old_value);
-
-  if (!value_changed) {
+  if (!form_util::IsAccessible(element) || !value_changed) {
     return;
   }
 

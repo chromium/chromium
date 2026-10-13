@@ -15,6 +15,7 @@
 #include "components/autofill/content/renderer/autofill_renderer_test.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/javascript_autofill_tracker_test_api.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_form_control_element.h"
@@ -22,6 +23,11 @@
 namespace autofill {
 
 namespace {
+
+using ::testing::_;
+using ::testing::ElementsAre;
+using ::testing::Field;
+using ::testing::Pointee;
 
 class JavaScriptAutofillTrackerTest : public test::AutofillRendererTest {
  public:
@@ -77,6 +83,11 @@ class JavaScriptAutofillTrackerTest : public test::AutofillRendererTest {
                             const std::string& option_id) {
     Focus(input_id.c_str());
     SimulateElementClickAndWait(option_id.c_str());
+  }
+
+  auto HasFieldId(std::string_view id) {
+    return Pointee(Field(&mojom::JavaScriptFieldModification::field_id,
+                         form_util::GetFieldRendererId(GetWebElementById(id))));
   }
 
   // Loads HTML form with shipping and billing address sections and sets up the
@@ -289,8 +300,8 @@ TEST_F(JavaScriptAutofillTrackerTest, IgnoreCrossFormModifications) {
 }
 
 // Test that if JS copies values to hidden fields (e.g. billing section hidden
-// when "same as shipping" is checked), those hidden fields are ignored and not
-// added to the logs.
+// when "same as shipping" is checked), those hidden fields are filtered out
+// when detecting JS autofill.
 TEST_F(JavaScriptAutofillTrackerTest, IgnoreHiddenFieldsInSameAsShippingForm) {
   LoadBillingAndShippingForm();
 
@@ -308,21 +319,65 @@ TEST_F(JavaScriptAutofillTrackerTest, IgnoreHiddenFieldsInSameAsShippingForm) {
           .js_logs();
 
   // Click shipping address option while same_as_shipping is checked.
-  // JS sets all 8 fields, but only the 4 visible shipping fields should be
-  // logged.
+  // JS sets all 8 fields, which are all initially logged, and only the 4
+  // visible shipping fields are kept when the detection timer fires.
   SelectDropdownOption("shipping_street", "shipping_option");
+  ASSERT_EQ(logs.size(), 8u);
 
-  EXPECT_EQ(logs[0]->field_id, form_util::GetFieldRendererId(
-                                   GetWebElementById("shipping_street")));
-  EXPECT_EQ(logs[1]->field_id,
-            form_util::GetFieldRendererId(GetWebElementById("shipping_city")));
-  EXPECT_EQ(logs[2]->field_id,
-            form_util::GetFieldRendererId(GetWebElementById("shipping_state")));
-  EXPECT_EQ(logs[3]->field_id,
-            form_util::GetFieldRendererId(GetWebElementById("shipping_zip")));
+  EXPECT_CALL(
+      autofill_driver(),
+      DidDetectJavaScriptAutofill(
+          _,
+          form_util::GetFieldRendererId(GetWebElementById("shipping_street")),
+          ElementsAre(HasFieldId("shipping_street"),
+                      HasFieldId("shipping_city"), HasFieldId("shipping_state"),
+                      HasFieldId("shipping_zip")),
+          _));
 
   task_environment_.FastForwardBy(base::Milliseconds(1000));
   EXPECT_TRUE(logs.empty());
+}
+
+// Test that fields dynamically created in JS, populated while still
+// disconnected from the DOM, and then attached to the form are tracked and
+// detected.
+TEST_F(JavaScriptAutofillTrackerTest,
+       DetectDynamicallyCreatedAndPopulatedFields) {
+  LoadHTML(R"(
+      <form id="form_id">
+        <input id="street">
+        <div id="option">Option</div>
+      </form>)");
+
+  ExecuteJavaScriptForTests(R"(
+    document.getElementById('option').addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      document.getElementById('street').value = '1600 Amphitheatre Pkwy';
+
+      const form = document.getElementById('form_id');
+      for (const [id, val] of [
+          ['city', 'Mountain View'],
+          ['state', 'CA'],
+          ['zip', '94043']]) {
+        const input = document.createElement('input');
+        input.id = id;
+        // Set value while the element is still disconnected from the DOM.
+        input.value = val;
+        form.appendChild(input);
+      }
+    });
+  )");
+
+  SelectDropdownOption("street", "option");
+
+  EXPECT_CALL(autofill_driver(),
+              DidDetectJavaScriptAutofill(
+                  _, form_util::GetFieldRendererId(GetWebElementById("street")),
+                  ElementsAre(HasFieldId("street"), HasFieldId("city"),
+                              HasFieldId("state"), HasFieldId("zip")),
+                  _));
+
+  task_environment_.FastForwardBy(base::Milliseconds(1000));
 }
 
 // Test that filling shipping form via dropdown, unticking same_as_shipping to

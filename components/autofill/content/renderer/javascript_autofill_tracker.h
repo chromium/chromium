@@ -47,8 +47,8 @@ class JavaScriptAutofillTracker {
   // mousedown event.
   void HandleMousedown(const blink::WebNode& target_node);
 
-  void OnJavaScriptChangedValue(const blink::WebFormControlElement& element,
-                                const blink::WebString& old_value);
+  void OnJavaScriptSetValue(const blink::WebFormControlElement& element,
+                            const blink::WebString& old_value);
 
   // Clears all recorded changes and stops the detection timer.
   void Reset();
