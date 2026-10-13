@@ -378,6 +378,8 @@ source_set("ondevice") {
     }
     if (is_android) {
       sources += [
+        "model_execution/android/android_manifest.cc",
+        "model_execution/android/android_manifest.h",
         "model_execution/android/model_broker_android.cc",
         "model_execution/android/model_broker_android.h",
         "model_execution/on_device_model_adaptation_loader.cc",
@@ -385,6 +387,7 @@ source_set("ondevice") {
       ]
       deps += [
         "//build:branding_buildflags",
+        "//components/optimization_guide/core/model_execution/configs:summarize_config",
         "//services/on_device_model:on_device_model_service",
         "//services/on_device_model/android",
         "//services/on_device_model/android:mojom",
@@ -446,8 +449,10 @@ if (build_with_model_execution) {
       "model_execution/manifest_broker/test/test_manifest_asset_manager_component_state.cc",
       "model_execution/manifest_broker/test/test_manifest_asset_manager_component_state.h",
     ]
-    public_deps =
-        [ "//components/optimization_guide/core/model_execution/configs" ]
+    public_deps = [
+      "//components/optimization_guide/core/model_execution/configs:manifest_builder",
+      "//components/optimization_guide/core/model_execution/configs:substitution_builders",
+    ]
     deps = [
       ":manifest_broker",
       ":model_execution_test_support",
@@ -659,8 +664,7 @@ static_library("model_execution_test_support") {
       "model_execution/test/response_holder.cc",
       "model_execution/test/response_holder.h",
     ]
-    public_deps =
-        [ "//components/optimization_guide/core/model_execution/configs" ]
+    public_deps = [ "//components/optimization_guide/core/model_execution/configs:substitution_builders" ]
     deps += [
       "//components/component_updater:test_support",
       "//components/optimization_guide/public/mojom",
@@ -695,7 +699,7 @@ group("test_support") {
   if (build_with_model_execution) {
     public_deps += [
       ":manifest_broker_test_support",
-      "//components/optimization_guide/core/model_execution/configs",
+      "//components/optimization_guide/core/model_execution/configs:substitution_builders",
     ]
   }
 }
@@ -838,6 +842,7 @@ source_set("model_execution_unit_tests") {
   if (build_with_model_execution && !is_chrome_for_testing) {
     sources += [
       "model_execution/aqa_response_parser_unittest.cc",
+      "model_execution/configs/summarize_solution_config_unittest.cc",
       "model_execution/fieldwise_response_parser_unittest.cc",
       "model_execution/json_response_parser_unittest.cc",
       "model_execution/manifest_broker/manifest_asset_manager_unittest.cc",
@@ -876,7 +881,9 @@ source_set("model_execution_unit_tests") {
       ":prediction",
       "//components/component_updater",
       "//components/crx_file",
-      "//components/optimization_guide/core/model_execution/configs",
+      "//components/optimization_guide/core/model_execution/configs:manifest_builder",
+      "//components/optimization_guide/core/model_execution/configs:substitution_builders",
+      "//components/optimization_guide/core/model_execution/configs:summarize_config",
       "//components/optimization_guide/public/mojom",
       "//components/signin/public/identity_manager:test_support",
       "//components/sync_preferences:test_support",
