@@ -17,10 +17,13 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.android.whats_new.WhatsNewProperties.ViewState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
 
 /** Bottom sheet content of the What's New Page. */
 @NullMarked
 public class WhatsNewBottomSheetContent implements BottomSheetContent {
+    private static final BottomSheetType SHEET_TYPE = new BottomSheetType.Builder().build();
+
     private final View mContentView;
     private final ViewFlipper mViewFlipperView;
 
@@ -84,6 +87,11 @@ public class WhatsNewBottomSheetContent implements BottomSheetContent {
 
     @Override
     public void destroy() {}
+
+    @Override
+    public BottomSheetType getSheetType() {
+        return SHEET_TYPE;
+    }
 
     @Override
     public int getPriority() {
