@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.Origin;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
@@ -409,6 +410,11 @@ public class WebappRegistry {
     /**
      * Checks whether an installed WebAPK or TWA exists for the specified GURL.
      *
+     * <p>A WebAPK is considered installed for the URL only if the URL is within the WebAPK's scope
+     * (same origin and the scope path is a prefix of the URL path). Multiple WebAPKs with distinct
+     * scopes may coexist on one origin, so origin equality alone is not sufficient (see
+     * crbug.com/568841400).
+     *
      * @param url The page GURL to check.
      * @return True if a WebAPK or TWA is installed for this URL.
      */
@@ -417,16 +423,39 @@ public class WebappRegistry {
             return false;
         }
         // This function is called by the ToolbarManager every time a navigation happens, which
-        // means that there can be internal urls like about:blank that has a null origin. Handle
-        // that here.
-        Origin origin = Origin.create(url.getSpec());
-        if (origin == null) {
+        // includes internal urls like about:blank or chrome://. Only http(s) URLs can have an
+        // installed app, and TwaValidator uses Origin.createOrThrow(), so bail out early for
+        // anything else.
+        if (Origin.create(url.getSpec()) == null) {
             return false;
         }
-        if (hasAtLeastOneWebApkForOrigin(origin)) {
+        if (hasInstalledWebApkForUrl(url)) {
             return true;
         }
         return TwaValidator.isTwaInstalledForUrl(url);
+    }
+
+    /**
+     * Returns true if there is an installed WebAPK whose scope contains {@code url}.
+     *
+     * <p>Unlike {@link #hasAtLeastOneWebApkForOrigin(Origin)}, this matches at scope granularity so
+     * that several WebAPKs installed on the same origin are told apart. Scope matching uses the
+     * same predicate as WebApkVerifier.
+     */
+    private boolean hasInstalledWebApkForUrl(GURL url) {
+        String urlSpec = url.getSpec();
+        for (WebappDataStorage storage : mStorages.values()) {
+            String scope = getWebApkScopeFromStorage(storage);
+            if (scope.isEmpty()) continue;
+            if (storage.getWebApkUninstallTimestamp() > 0) continue;
+            if (!UrlUtilities.isUrlWithinScope(urlSpec, scope)) continue;
+
+            String webApkPackageName = storage.getWebApkPackageName();
+            if (webApkPackageName != null && PackageUtils.isPackageInstalled(webApkPackageName)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /** Returns an array of all origins that have a WebAPK or TWA installed. */
@@ -531,12 +560,17 @@ public class WebappRegistry {
         long newestRegistrationTime = -1;
         for (WebappDataStorage storage : mStorages.values()) {
             if (!storage.getId().startsWith(WebApkConstants.WEBAPK_ID_PREFIX)) continue;
+            if (storage.getWebApkUninstallTimestamp() > 0) continue;
             String registeredManifestId = storage.getWebApkManifestId();
             if (TextUtils.equals(manifestId, registeredManifestId)) {
+                String packageName = storage.getWebApkPackageName();
+                if (packageName == null || !PackageUtils.isPackageInstalled(packageName)) {
+                    continue;
+                }
                 long registrationTime = storage.getLocalRegistrationTimestamp();
                 if (registrationTime > newestRegistrationTime) {
                     newestRegistrationTime = registrationTime;
-                    newestPackageName = storage.getWebApkPackageName();
+                    newestPackageName = packageName;
                 }
             }
         }

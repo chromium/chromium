@@ -250,7 +250,8 @@ public class WebappDataStorage {
         boolean updated = false;
 
         // The URL and scope may have been deleted by the user clearing their history. Check whether
-        // they are present, and update if necessary.
+        // they are present, and update if necessary. Also update the scope if it has changed (e.g.
+        // when a WebAPK's manifest scope is updated and relaunched).
         String url = mPreferences.getString(KEY_URL, URL_INVALID);
         if (url.equals(URL_INVALID)) {
             url = info.url();
@@ -258,7 +259,7 @@ public class WebappDataStorage {
             updated = true;
         }
 
-        if (mPreferences.getString(KEY_SCOPE, URL_INVALID).equals(URL_INVALID)) {
+        if (!mPreferences.getString(KEY_SCOPE, URL_INVALID).equals(info.scopeUrl())) {
             editor.putString(KEY_SCOPE, info.scopeUrl());
             updated = true;
         }
