@@ -283,7 +283,7 @@ std::string_view GetOsDriverVersion(const OrtEpDevice* ep_device) {
   auto [keys, values] = GetKeyValueSpans(ort_api, ep_metadata);
 
   for (auto [key, value] : std::views::zip(keys, values)) {
-    if (key == kOrtEpDevice_EpMetadataKey_OSDriverVersion) {
+    if (std::string_view(key) == kOrtEpDevice_EpMetadataKey_OSDriverVersion) {
       return std::string_view(value);
     }
   }
