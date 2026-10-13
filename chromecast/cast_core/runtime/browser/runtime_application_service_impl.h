@@ -66,7 +66,10 @@ class RuntimeApplicationServiceImpl : public cast_receiver::EmbedderApplication,
             StatusCallback callback);
 
   // Returns current application ID.
-  const std::string& app_id() const { return runtime_application_->GetAppId(); }
+  const std::string& app_id() const {
+    return runtime_application_ ? runtime_application_->GetAppId()
+                                : config_.app_id();
+  }
 
   // Returns RuntimeApplicationService gRPC server endpoint.
   const std::string& endpoint() const {
@@ -169,6 +172,8 @@ class RuntimeApplicationServiceImpl : public cast_receiver::EmbedderApplication,
   void InnerContentsCreated(CastWebContents* inner_contents,
                             CastWebContents* outer_contents) override;
 
+  SEQUENCE_CHECKER(sequence_checker_);
+
   const cast::common::ApplicationConfig config_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
@@ -203,8 +208,6 @@ class RuntimeApplicationServiceImpl : public cast_receiver::EmbedderApplication,
   // NOTE: Must be declared after |cast_web_view_| and |runtime_application_|.
   std::unique_ptr<cast_receiver::ContentWindowControls>
       content_window_controls_;
-
-  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<RuntimeApplicationServiceImpl> weak_factory_{this};
 };

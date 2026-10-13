@@ -186,6 +186,15 @@ RuntimeApplicationServiceImpl::RuntimeApplicationServiceImpl(
 
 RuntimeApplicationServiceImpl::~RuntimeApplicationServiceImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CastWebContents::Observer::Observe(nullptr);
+  core_app_stub_.reset();
+  if (runtime_application_ && runtime_application_->IsApplicationRunning()) {
+    runtime_application_->Stop(base::DoNothing());
+  }
+  if (grpc_server_) {
+    grpc_server_->Stop();
+    grpc_server_.reset();
+  }
   content_window_controls_.reset();
   cast_web_view_.reset();
 }
@@ -333,7 +342,8 @@ void RuntimeApplicationServiceImpl::Launch(
 
 void RuntimeApplicationServiceImpl::NavigateToPage(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!runtime_application_->IsApplicationRunning() || !cast_web_view_) {
+  if (!runtime_application_ || !runtime_application_->IsApplicationRunning() ||
+      !cast_web_view_) {
     return;
   }
 
@@ -608,7 +618,9 @@ void RuntimeApplicationServiceImpl::HandleSetTouchInput(
 
 void RuntimeApplicationServiceImpl::NotifyApplicationStarted() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(core_app_stub_);
+  if (!core_app_stub_ || !runtime_application_) {
+    return;
+  }
 
   LOG(INFO) << "Application is started: " << *runtime_application_;
 
@@ -628,6 +640,9 @@ void RuntimeApplicationServiceImpl::NotifyApplicationStopped(
     ApplicationStopReason stop_reason,
     int32_t net_error_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!runtime_application_) {
+    return;
+  }
 
   LOG(INFO) << "Application is stopped: stop_reason=" << stop_reason << ", "
             << *runtime_application_;
@@ -671,7 +686,9 @@ void RuntimeApplicationServiceImpl::NotifyApplicationStopped(
 
 void RuntimeApplicationServiceImpl::NotifyMediaPlaybackChanged(bool playing) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(core_app_stub_);
+  if (!core_app_stub_ || !runtime_application_) {
+    return;
+  }
 
   DLOG(INFO) << "Media playback changed: playing=" << playing << ", "
              << *runtime_application_;
@@ -736,8 +753,8 @@ RuntimeApplicationServiceImpl::GetContentWindowControls() {
   if (content_window_controls_) {
     return content_window_controls_.get();
   }
-  if (!runtime_application_->IsApplicationRunning() || !cast_web_view_ ||
-      !cast_web_view_->window()) {
+  if (!runtime_application_ || !runtime_application_->IsApplicationRunning() ||
+      !cast_web_view_ || !cast_web_view_->window()) {
     return nullptr;
   }
 
@@ -772,7 +789,8 @@ void RuntimeApplicationServiceImpl::OnAllBindingsReceived(
     GetAllBindingsCallback callback,
     cast::utils::GrpcStatusOr<cast::bindings::GetAllResponse> response_or) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!runtime_application_->IsApplicationRunning() || !cast_web_view_) {
+  if (!runtime_application_ || !runtime_application_->IsApplicationRunning() ||
+      !cast_web_view_) {
     return;
   }
   if (!response_or.ok()) {
@@ -887,7 +905,7 @@ bool RuntimeApplicationServiceImpl::IsFeaturePermissionsEnforced() const {
 void RuntimeApplicationServiceImpl::InnerContentsCreated(
     CastWebContents* inner_contents,
     CastWebContents* outer_contents) {
-  if (!config_.has_cast_web_app_config()) {
+  if (!runtime_application_ || !config_.has_cast_web_app_config()) {
     return;
   }
 
