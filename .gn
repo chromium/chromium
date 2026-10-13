@@ -82,9 +82,26 @@ default_args = {
 
 # These are the targets to skip header checking by default. The files in targets
 # matching these patterns (see "gn help label_pattern" for format) will not have
-# their includes checked for proper dependencies when you run
-# "gn check", "gn check --check-generated", or "gn gen --check".
+# their includes checked for proper dependencies when you run "gn check",
+# "gn check --check-generated", or "gn gen --check". If only the generated files
+# in a target fail the check, add it to no_check_generated_targets instead.
 no_check_targets = [
+  "//chrome/browser/resources/tab_search/shared:resources",
+  "//device/bluetooth/public/mojom:deprecated_experimental_interfaces_blink",
+  "//device/bluetooth/public/mojom:fake_bluetooth_interfaces_blink",
+  "//v8/src/inspector:inspector",  # https://crbug.com/v8/7330
+  "//v8/test/cctest:cctest_sources",  # https://crbug.com/v8/7330
+  "//v8/test/unittests:inspector_unittests_sources",  # https://crbug.com/v8/7330
+  "//v8:cppgc_base",  # https://crbug.com/v8/7330
+  "//v8:v8_internal_headers",  # https://crbug.com/v8/7330
+  "//v8:v8_libplatform",  # https://crbug.com/v8/7330
+]
+
+# These are the targets to skip generated header checking by default. The
+# generated files in targets matching these patterns will not have their
+# includes checked when you run "gn check --check-generated". The other files in
+# these targets are still checked.
+no_check_generated_targets = [
   # TODO(crbug.com/558554239): Eliminate entries as header dependency
   # violations are resolved.
   "//base/logging/rust_logger:rust_logger_cxx_generated",
@@ -198,7 +215,6 @@ no_check_targets = [
   "//chrome/browser/resources/suggest_internals:resources",
   "//chrome/browser/resources/support_tool:resources",
   "//chrome/browser/resources/tab_group_home:resources",
-  "//chrome/browser/resources/tab_search/shared:resources",
   "//chrome/browser/resources/tab_search:resources",
   "//chrome/browser/resources/tab_strip_internals:resources",
   "//chrome/browser/resources/updater:resources",
@@ -284,8 +300,6 @@ no_check_targets = [
   "//content/common:mojo_bindings",
   "//content/test:web_ui_mojo_test_resources",
   "//content:content_resources",
-  "//device/bluetooth/public/mojom:deprecated_experimental_interfaces_blink",
-  "//device/bluetooth/public/mojom:fake_bluetooth_interfaces_blink",
   "//extensions/browser/api:api_registration",
   "//extensions/common/api:api_features",
   "//extensions/common/api:behavior_features",
@@ -369,14 +383,8 @@ no_check_targets = [
   "//ui/webui/resources:resources",
   "//url/mojom:url_mojom_gurl_blink",
   "//url/mojom:url_mojom_scheme_host_port",
-  "//v8/src/inspector:inspector",  # https://crbug.com/v8/7330 (20 errors)
-  "//v8/test/cctest:cctest_sources",  # https://crbug.com/v8/7330 (15 errors)
-  "//v8/test/unittests:inspector_unittests_sources",  # https://crbug.com/v8/7330 (2 errors)
   "//v8/tools/debug_helper:v8_debug_helper_internal",
   "//v8/tools/debug_helper:v8_debug_helper_shared",
-  "//v8:cppgc_base",  # https://crbug.com/v8/7330 (1 error)
-  "//v8:v8_internal_headers",  # https://crbug.com/v8/7330 (11 errors)
-  "//v8:v8_libplatform",  # https://crbug.com/v8/7330 (2 errors)
 ]
 
 # These are the list of GN files that run exec_script. This allowlist exists
