@@ -7,6 +7,7 @@
 #import <algorithm>
 #import <utility>
 
+#import "base/check.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/memory/scoped_refptr.h"
@@ -57,19 +58,16 @@ AttemptLoginTool::AttemptLoginTool(base::WeakPtr<web::WebState> web_state,
           GetApplicationContext()->GetVariationsService(),
           /*mqls_uploader=*/nullptr)) {}
 
-AttemptLoginTool::~AttemptLoginTool() = default;
+AttemptLoginTool::~AttemptLoginTool() {
+  // Unregister here too so that correctness does not depend on the owner
+  // calling `Cancel()` first.
+  StopObservingFormCache();
+  DCHECK(!static_cast<password_manager::PasswordFormManagerObserver*>(this)
+              ->IsInObserverList());
+}
 
 void AttemptLoginTool::Cancel() {
-  if (observing_form_cache_) {
-    if (auto* client =
-            IOSChromeActorLoginDelegateClient::FromWebState(web_state_.get())) {
-      if (password_manager::PasswordFormCache* form_cache =
-              client->GetPasswordFormCache()) {
-        form_cache->RemoveObserver(this);
-      }
-    }
-    observing_form_cache_ = false;
-  }
+  StopObservingFormCache();
   tool_delegate_ = nullptr;
   web_state_observation_.Reset();
   // TODO(crbug.com/472291829): If `selected_credential_` exists, consider
@@ -298,16 +296,7 @@ void AttemptLoginTool::OnAttemptLogin(
 
 void AttemptLoginTool::OnWebStateRescanComplete(bool forms_found) {
   CHECK(web_state_rescan_attempted_);
-  if (observing_form_cache_) {
-    if (auto* client =
-            IOSChromeActorLoginDelegateClient::FromWebState(web_state_.get())) {
-      if (password_manager::PasswordFormCache* form_cache =
-              client->GetPasswordFormCache()) {
-        form_cache->RemoveObserver(this);
-      }
-    }
-    observing_form_cache_ = false;
-  }
+  StopObservingFormCache();
 
   // Early return if this method has already been called once.
   if (!rescan_in_progress_) {
@@ -322,6 +311,25 @@ void AttemptLoginTool::OnWebStateRescanComplete(bool forms_found) {
     std::move(execute_callback_)
         .Run(ToolExecutionResult(actor_login::LoginResultToActorResult(
             LoginStatusResult::kErrorNoSigninForm)));
+  }
+}
+
+void AttemptLoginTool::StopObservingFormCache() {
+  if (!observing_form_cache_) {
+    return;
+  }
+  observing_form_cache_ = false;
+  if (!web_state_) {
+    return;
+  }
+  // Look up the cache rather than storing a pointer to it, since it can be
+  // destroyed before `WebStateDestroyed()` reaches this tool.
+  if (IOSChromeActorLoginDelegateClient* client =
+          IOSChromeActorLoginDelegateClient::FromWebState(web_state_.get())) {
+    if (password_manager::PasswordFormCache* form_cache =
+            client->GetPasswordFormCache()) {
+      form_cache->RemoveObserver(this);
+    }
   }
 }
 
@@ -361,10 +369,9 @@ void AttemptLoginTool::WasShown(web::WebState* web_state) {
 
 void AttemptLoginTool::WebStateDestroyed(web::WebState* web_state) {
   CHECK_EQ(web_state_.get(), web_state);
-  // When `web_state` is destroyed, its attached tab helpers (and thus
-  // `PasswordFormCache`) are destroyed before this observer callback.
-  // Mark that we are no longer observing so `Cancel()` does not attempt to
-  // query or touch the destroyed cache.
+  // Earlier observers (`IOSChromeActorLoginDelegateClient`,
+  // `PasswordTabHelper`) have already released the `WebState` and the
+  // `PasswordFormCache`, so the cache can no longer be looked up.
   observing_form_cache_ = false;
   if (execute_callback_) {
     std::move(execute_callback_)

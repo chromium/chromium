@@ -94,6 +94,9 @@ class AttemptLoginTool : public ActorTool,
   // Retries login with temporarily stored parameters, if available.
   void RetryLoginWithSavedCredentials();
 
+  // Stops observing `web_state_`'s `PasswordFormCache`. No-op if not observing.
+  void StopObservingFormCache();
+
   // The tab and navigation item this tool actuates on.
   base::WeakPtr<web::WebState> web_state_;
   std::optional<int> navigation_item_id_;

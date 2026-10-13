@@ -281,6 +281,14 @@ class AttemptLoginToolTest : public PlatformTest {
 
   int reparse_call_count() const { return reparse_call_count_; }
 
+  // Returns whether `tool` is registered with the `PasswordFormCache` or any of
+  // its `PasswordFormManager`s. The cast disambiguates `IsInObserverList()`,
+  // which is also inherited through `WebStateObserver`.
+  static bool IsObservingFormCache(AttemptLoginTool* tool) {
+    return static_cast<password_manager::PasswordFormManagerObserver*>(tool)
+        ->IsInObserverList();
+  }
+
  private:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
@@ -623,6 +631,8 @@ TEST_F(AttemptLoginToolTest, Execute_NoSigninForm_ReparseSuccess_RetriesLogin) {
   tool->Execute(future.GetCallback());
 
   EXPECT_FALSE(future.IsReady());
+  // The tool observes the `PasswordFormCache` for the rescan result.
+  EXPECT_TRUE(IsObservingFormCache(tool.get()));
 
   // Verifies that WasShown called during an active reparse is ignored and does
   // not trigger a premature login attempt.
@@ -636,6 +646,7 @@ TEST_F(AttemptLoginToolTest, Execute_NoSigninForm_ReparseSuccess_RetriesLogin) {
   EXPECT_EQ(future.Get().code(), mojom::ActionResultCode::kOk);
   EXPECT_EQ(fake_actor_login_service()->attempted_credentials_.size(), 2u);
   EXPECT_EQ(reparse_call_count(), 1);
+  EXPECT_FALSE(IsObservingFormCache(tool.get()));
 }
 
 // Tests that when a reparse returns NO (no forms found), the tool exits with
@@ -670,6 +681,7 @@ TEST_F(AttemptLoginToolTest, Execute_NoSigninForm_ReparseNoFormsFound) {
   EXPECT_EQ(future.Get().code(), mojom::ActionResultCode::kLoginNotLoginPage);
   EXPECT_EQ(fake_actor_login_service()->attempted_credentials_.size(), 1u);
   EXPECT_EQ(reparse_call_count(), 1);
+  EXPECT_FALSE(IsObservingFormCache(tool.get()));
 }
 
 // Tests that when form reparse does not complete within the timeout, the timer
@@ -812,8 +824,10 @@ TEST_F(AttemptLoginToolTest, Execute_NoSigninForm_CancelDuringReparse) {
   tool->Execute(future.GetCallback());
 
   EXPECT_FALSE(future.IsReady());
+  EXPECT_TRUE(IsObservingFormCache(tool.get()));
 
   tool->Cancel();
+  EXPECT_FALSE(IsObservingFormCache(tool.get()));
 
   // Invoke completion after cancellation.
   ASSERT_TRUE(CompleteReparse(YES, tool.get()));
@@ -824,6 +838,37 @@ TEST_F(AttemptLoginToolTest, Execute_NoSigninForm_CancelDuringReparse) {
   // Verify only the 1 initial attempt happened and no crash occurred.
   EXPECT_EQ(fake_actor_login_service()->attempted_credentials_.size(), 1u);
   EXPECT_EQ(reparse_call_count(), 1);
+}
+
+// Tests that destroying the tool while waiting for reparse, without calling
+// `Cancel()`, unregisters it from the `PasswordFormCache`.
+TEST_F(AttemptLoginToolTest, Execute_NoSigninForm_DestroyedDuringReparse) {
+  optimization_guide::proto::AttemptLoginAction action;
+  web::FakeWebState* web_state = CreateAndInsertWebState();
+  action.set_tab_id(web_state->GetUniqueIdentifier().identifier());
+
+  auto result = CreateToolAndValidate(action, web_state);
+  ASSERT_TRUE(result.has_value());
+  std::unique_ptr<AttemptLoginTool> tool = std::move(result.value());
+
+  actor_login::Credential cred;
+  cred.id = actor_login::Credential::Id(123);
+  cred.has_persistent_permission = true;
+  fake_actor_login_service()->credentials_ = {cred};
+
+  fake_actor_login_service()->SetSequentialResults(
+      {actor_login::LoginStatusResult::kErrorNoSigninForm});
+
+  MockReparseForms(web_state);
+
+  base::test::TestFuture<ToolExecutionResult> future;
+  tool->Execute(future.GetCallback());
+
+  EXPECT_FALSE(future.IsReady());
+  ASSERT_TRUE(IsObservingFormCache(tool.get()));
+
+  // `~AttemptLoginTool()` DCHECKs that the tool left every observer list.
+  tool.reset();
 }
 
 // Tests that if the WebState is destroyed while waiting for reparse, execution
