@@ -27,6 +27,7 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/lens/lens_overlay_gen204_controller.h"
@@ -34,12 +35,14 @@
 #include "chrome/browser/ui/lens/lens_preselection_bubble.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/lens/test_lens_search_controller.h"
+#include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
+#include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -70,6 +73,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/views/controls/webview/webview.h"
 
 namespace lens {
 class LensQueryFlowRouterTestApi {
@@ -828,6 +832,75 @@ IN_PROC_BROWSER_TEST_F(LensPreselectionBubbleInteractiveUiTest,
       WaitForShow(lens::LensPreselectionBubble::kExitButtonElementId),
       PressButton(lens::LensPreselectionBubble::kExitButtonElementId),
       WaitForHide(LensOverlayController::kOverlayId));
+}
+
+// Runs with the contextual searchbox disabled so that the omnibox, rather than
+// the overlay searchbox, is what takes focus.
+class LensPreselectionBubbleOmniboxFocusInteractiveUiTest
+    : public LensOverlayInteractiveTestBase {
+ public:
+  LensPreselectionBubbleOmniboxFocusInteractiveUiTest() = default;
+  ~LensPreselectionBubbleOmniboxFocusInteractiveUiTest() override = default;
+
+  void SetUpFeatureList() override {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{lens::features::kLensOverlay},
+        /*disabled_features=*/{
+            contextual_tasks::kContextualTasks,
+            contextual_tasks::kContextualTasksSidePanel,
+            lens::features::kLensOverlayContextualSearchbox,
+            lens::features::kLensOverlayNonBlockingPrivacyNotice,
+            features::kNonBlockingOsClipboardReads});
+  }
+
+  auto FocusLocationBar() {
+    return Do([this]() {
+      BrowserWindow::FromBrowser(browser())->GetLocationBar()->FocusLocation(
+          /*is_user_initiated=*/false, /*clear_focus_if_failed=*/false);
+    });
+  }
+
+  auto FocusOverlayWebView() {
+    return WithElement(LensOverlayController::kOverlayId,
+                       [this](ui::TrackedElement* el) {
+                         AsView<views::WebView>(el)->RequestFocus();
+                       });
+  }
+};
+
+// This tests the following CUJ:
+//  (1) User opens the Lens Overlay; the preselection toast is shown.
+//  (2) Focus moves to the omnibox; the toast is hidden.
+//  (3) Focus moves back to the overlay; the toast is shown again.
+//
+// This depends on the browser window being active, since views only grants
+// focus (and hence the omnibox only reports a focus change) on an active
+// widget, so it must run as an interactive UI test.
+IN_PROC_BROWSER_TEST_F(LensPreselectionBubbleOmniboxFocusInteractiveUiTest,
+                       PreselectionToastOmniboxFocusState) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
+
+  // With WebUILocationBar enabled, the toolbar WebUI initializes
+  // asynchronously; make sure it is ready before changing omnibox focus.
+  WaitForInitialWebUIToolbar(browser());
+
+  RunTestSequence(
+      EnsureNotPresent(kLensPreselectionBubbleElementId), OpenLensOverlay(),
+      InAnyContext(
+          InstrumentNonTabWebView(kOverlayId,
+                                  LensOverlayController::kOverlayId),
+          WaitForWebContentsReady(
+              kOverlayId, GURL(chrome::kChromeUILensOverlayUntrustedURL))),
+      InSameContext(WaitForShow(LensOverlayController::kOverlayId),
+                    WaitForScreenshotRendered(kOverlayId)),
+      // The toast is visible while the overlay is showing.
+      InAnyContext(WaitForShow(kLensPreselectionBubbleElementId)),
+      // The toast is hidden while the omnibox has focus.
+      FocusLocationBar(),
+      InAnyContext(WaitForHide(kLensPreselectionBubbleElementId)),
+      // The toast is shown again once focus returns to the overlay.
+      FocusOverlayWebView(),
+      InAnyContext(WaitForShow(kLensPreselectionBubbleElementId)));
 }
 
 using LensOverlayControllerReturnToPageCUJTest = LensOverlayControllerCUJTest;
