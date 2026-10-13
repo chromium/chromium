@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_UI_LENS_TEST_LENS_SEARCH_CONTROLLER_H_
 #define CHROME_BROWSER_UI_LENS_TEST_LENS_SEARCH_CONTROLLER_H_
 
+#include <memory>
+
+#include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
 #include "chrome/browser/ui/lens/lens_query_flow_router.h"
 #include "chrome/browser/ui/lens/lens_search_contextualization_controller.h"
@@ -85,6 +89,12 @@ class FakeLensQueryFlowRouter : public LensQueryFlowRouter {
       mock_handle_;
   std::unique_ptr<contextual_search::MockContextualSearchContextController>
       mock_context_controller_;
+  base::ObserverList<contextual_search::ContextualSearchContextController::
+                         ContextUploadStatusObserver>
+      context_upload_status_observers_;
+  std::unique_ptr<base::WeakPtrFactory<
+      contextual_search::ContextualSearchContextController>>
+      mock_context_controller_weak_factory_;
   std::unique_ptr<tabs::TabInterface> fake_tab_interface_;
   std::unique_ptr<TabContextualizationController> mock_tab_context_controller_;
   std::unique_ptr<contextual_search::FileInfo> mock_file_info_;
