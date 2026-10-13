@@ -5,6 +5,7 @@
 #include "ash/system/pods_overflow_tray.h"
 
 #include <memory>
+#include <string>
 
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/constants/ash_features.h"
@@ -14,19 +15,17 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/system/tray/tray_background_view.h"
-#include "ash/system/tray/tray_container.h"
+#include "ash/system/tray/imaged_tray_icon.h"
+#include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_utils.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/metadata/view_factory.h"
@@ -48,34 +47,26 @@ ui::ImageModel GetTrayContainerImage(bool is_active) {
 
 }  // namespace
 
+// TODO(b/337965177): Implement pods overflow tray container view.
+// TODO(crbug.com/337963043): Update a11y strings.
 PodsOverflowTray::PodsOverflowTray(Shelf* shelf)
-    : TrayBackgroundView(shelf, TrayBackgroundViewCatalogName::kPodsOverflow) {
+    : ImagedTrayIcon(shelf,
+                     GetTrayContainerImage(/*is_active=*/false),
+                     /*tooltip=*/std::u16string(),
+                     /*accessibility_name=*/u"Pods overflow tray",
+                     TrayBackgroundViewCatalogName::kPodsOverflow) {
   CHECK(features::IsScalableShelfPodsEnabled());
   SetCallback(base::BindRepeating(&PodsOverflowTray::OnTrayButtonPressed,
                                   weak_ptr_factory_.GetWeakPtr()));
 
-  // TODO(b/337965177): Implement pods overflow tray container view.
-  tray_icon_ = tray_container()->AddChildView(
-      views::Builder<views::ImageView>()
-          .SetPreferredSize(gfx::Size(kTrayItemSize, kTrayItemSize))
-          .SetImage(GetTrayContainerImage(is_active()))
-          .Build());
-
   // TODO(b/337925759): Make visible only when pods overflow on the shelf.
-  TrayBackgroundView::SetVisiblePreferred(true);
-
-  // TODO(crbug.com/337963043): Update a11y strings.
-  GetViewAccessibility().SetName(u"Pods overflow tray");
+  SetVisiblePreferred(true);
 }
 
 PodsOverflowTray::~PodsOverflowTray() {
   if (bubble_) {
     bubble_->bubble_view()->ResetDelegate();
   }
-}
-
-void PodsOverflowTray::HandleLocaleChange() {
-  TooltipTextChanged();
 }
 
 void PodsOverflowTray::HideBubbleWithView(const TrayBubbleView* bubble_view) {
@@ -89,7 +80,7 @@ void PodsOverflowTray::ClickedOutsideBubble(const ui::LocatedEvent& event) {
 }
 
 void PodsOverflowTray::UpdateTrayItemColor(bool is_active) {
-  tray_icon_->SetImage(GetTrayContainerImage(is_active));
+  image_view()->SetImage(GetTrayContainerImage(is_active));
 }
 
 void PodsOverflowTray::CloseBubbleInternal() {
