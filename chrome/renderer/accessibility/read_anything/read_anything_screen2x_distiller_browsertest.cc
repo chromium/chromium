@@ -143,3 +143,21 @@ TEST_F(Screen2xDistillerTest, Distill_EmptyContent_CompletesWithEmptyNodeIds) {
   EXPECT_EQ(captured_result->type, DistillationResult::Type::kAXNodeIds);
   EXPECT_TRUE(captured_result->node_ids.empty());
 }
+
+TEST_F(Screen2xDistillerTest, Distill_ScreenAIReady_DefersToScreen2xService) {
+  // When the readiness callback returns true, Screen2xDistiller marks the
+  // underlying AXTreeDistiller ready so it waits for the Screen2x service
+  // instead of finishing synchronously with rules-only distillation.
+  std::optional<DistillationResult> captured_result;
+  Screen2xDistiller distiller(
+      GetRenderFrame(), base::BindRepeating([]() { return true; }),
+      base::BindLambdaForTesting(
+          [&](const DistillationResult& result) { captured_result = result; }));
+
+  ui::AXSerializableTree tree = CreateSimpleTree();
+  DistillationRequest request;
+  request.tree = &tree;
+
+  distiller.Distill(request);
+  EXPECT_FALSE(captured_result.has_value());
+}
