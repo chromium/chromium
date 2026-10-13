@@ -18,6 +18,7 @@ suite('HistoryFilterChipsTest', function() {
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes?.emptyHTML || '';
+    loadTimeData.overrideValues({isCriticalActionsEnabled: false});
 
     browserService = new TestHistoryBrowserProxy();
     BrowserProxyImpl.setInstance(browserService);
