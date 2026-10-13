@@ -4,6 +4,10 @@
 
 // Defines APIs that are specific to Starboard 15. GetStarboardApiWrapper() is
 // the public API; everything else is an implementation detail.
+#if !defined(SB_API_VERSION) || SB_API_VERSION < 15
+#error "starboard_api_wrapper_15.cc must be compiled with SB_API_VERSION >= 15"
+#endif
+
 #include <starboard/drm.h>
 #include <starboard/media.h>
 #include <starboard/player.h>
@@ -179,6 +183,7 @@ class StarboardApiWrapper15 : public StarboardApiWrapperBase {
 
 // Note: declared in starboard_api_wrapper.h.
 std::unique_ptr<StarboardApiWrapper> GetStarboardApiWrapper() {
+  LOG(INFO) << "Created StarboardApiWrapper for SB_API_VERSION 15+";
   return std::make_unique<StarboardApiWrapper15>();
 }
 

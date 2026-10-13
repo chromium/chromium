@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/at_exit.h"
+#include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_timeouts.h"
+#include "base/threading/platform_thread.h"
 #include "chromecast/starboard/chromecast/starboard_adapter/src/cast_starboard_api_adapter_impl.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -15,6 +17,11 @@
 #endif  // SB_API_VERSION >= 15
 
 #include <atomic>
+// <thread> is normally banned by styleguide/c++/c++-features.md, but this test
+// deliberately mirrors the code under test: the adapter is linked into
+// libcast_starboard_adapter.so.V, which carries its own //base, so it starts
+// Starboard with a raw std::thread rather than base::Thread. Do not "fix"
+// these to base::Thread.
 #include <thread>
 
 class MockCastStarboardApi {
@@ -35,31 +42,54 @@ class MockCastStarboardApi {
 
 MockCastStarboardApi* g_mock_cast_starboard_api = nullptr;
 
+// Number of SbRunStarboardMain trampoline invocations that have not returned.
+//
+// The adapter runs SbRunStarboardMain on a detached, unjoinable thread, so a
+// test cannot join it. The counter is incremented before and decremented after
+// the gmock call, i.e. strictly outside the frame in which gmock touches the
+// mock object and its expectations. Waiting for it to drain therefore
+// guarantees no detached thread is still inside gmock when the fixture's mock
+// member is destroyed.
+std::atomic_int g_sb_main_in_flight{0};
+
+extern "C" {
+
 #if SB_API_VERSION >= 15
-int SbRunStarboardMain(int argc, char** argv, SbEventHandleCallback callback) {
-  return g_mock_cast_starboard_api->SbRunStarboardMain(argc, argv, callback);
+__attribute__((visibility("default"))) int
+SbRunStarboardMain(int argc, char** argv, SbEventHandleCallback callback) {
+  g_sb_main_in_flight.fetch_add(1, std::memory_order_acquire);
+  const int result =
+      g_mock_cast_starboard_api->SbRunStarboardMain(argc, argv, callback);
+  g_sb_main_in_flight.fetch_sub(1, std::memory_order_release);
+  return result;
 }
 
-void SbSystemRequestStop(int error_level) {
+__attribute__((visibility("default"))) void SbSystemRequestStop(
+    int error_level) {
   g_mock_cast_starboard_api->SbSystemRequestStop(error_level);
 }
 #else   // SB_API_VERSION >= 15
 
-int CastStarboardApiInitialize(int argc,
-                               char** argv,
-                               SbEventHandleCB callback) {
-  return g_mock_cast_starboard_api->CastStarboardApiInitialize(argc, argv,
-                                                               callback);
+__attribute__((visibility("default"))) int
+CastStarboardApiInitialize(int argc, char** argv, SbEventHandleCB callback) {
+  g_sb_main_in_flight.fetch_add(1, std::memory_order_acquire);
+  const int result = g_mock_cast_starboard_api->CastStarboardApiInitialize(
+      argc, argv, callback);
+  g_sb_main_in_flight.fetch_sub(1, std::memory_order_release);
+  return result;
 }
 
-void CastStarboardApiFinalize() {
+__attribute__((visibility("default"))) void CastStarboardApiFinalize() {
   g_mock_cast_starboard_api->CastStarboardApiFinalize();
 }
 #endif  // SB_API_VERSION >= 15
 
-SbWindow SbWindowCreate(const SbWindowOptions* options) {
+__attribute__((visibility("default"))) SbWindow
+SbWindowCreate(const SbWindowOptions* options) {
   return g_mock_cast_starboard_api->SbWindowCreate(options);
 }
+
+}  // extern "C"
 
 namespace chromecast {
 namespace {
@@ -72,9 +102,37 @@ class CastStarboardApiAdapterTest : public ::testing::Test {
     g_mock_cast_starboard_api = &cast_starboard_api_;
     fake_start_.type = kSbEventTypeStart;
     fake_stop_.type = kSbEventTypeStop;
+
+    // The adapter singleton is intentionally immortal, so its state outlives an
+    // individual test. Normalize it so tests batched into one process by the
+    // unit test launcher do not contaminate each other.
+    ResetAdapterState();
+  }
+
+  ~CastStarboardApiAdapterTest() override {
+    // The detached Starboard-main threads call into `cast_starboard_api_`,
+    // which is a member and is destroyed immediately after this body runs.
+    // Wait for them to leave the trampoline (and therefore gmock) first;
+    // they are unjoinable, so this is the only way to order the two.
+    while (g_sb_main_in_flight.load(std::memory_order_acquire) != 0) {
+      base::PlatformThread::YieldCurrentThread();
+    }
+    g_mock_cast_starboard_api = nullptr;
   }
 
  protected:
+  static CastStarboardApiAdapterImpl* ResetAdapterState() {
+    auto* adapter = CastStarboardApiAdapterImpl::GetInstance();
+    base::AutoLock autolock(adapter->lock_);
+    adapter->subscribers_.clear();
+    adapter->initialized_ = false;
+    adapter->released_ = false;
+    adapter->at_exit_ran_ = false;
+    adapter->starboard_started_.Reset();
+    adapter->starboard_stopped_.Reset();
+    return adapter;
+  }
+
   MockCastStarboardApi cast_starboard_api_;
   SbEvent fake_start_;
   SbEvent fake_stop_;
@@ -140,10 +198,98 @@ TEST_F(CastStarboardApiAdapterTest, ConcurrentGetsAndRelease) {
   for (auto& thread : threads) {
     thread.join();
   }
-  // Force any atexit calls to run now, while we have the mock objects around.
-  // Without a manual call, this will occur outside of the test block.
-  base::AtExitManager::ProcessCallbacksNow();
+  // Run the teardown now, while we have the mock objects around. In production
+  // this is driven by the base::AtExitManager task that StarboardAdapterLoader
+  // registers in the executable; this test links the adapter source_set
+  // directly, so it invokes the same entry point by hand.
+  CastStarboardApiAdapterImpl::GetInstance()->ReleaseForAtExit();
 }
+
+#if SB_API_VERSION >= 15
+// Release() must never discard the kSbEventTypeStart signal of a Starboard
+// instance that is still running: Starboard only emits that event once, so
+// every later EnsureInitialized() caller would block forever.
+TEST_F(CastStarboardApiAdapterTest, ReleaseDoesNotDiscardLiveStartSignal) {
+  auto* adapter = CastStarboardApiAdapterImpl::GetInstance();
+  base::WaitableEvent stop_entered;
+  base::WaitableEvent allow_stop;
+  base::WaitableEvent restarted;
+
+  // Two starts: the initial one, plus the restart that races the in-flight
+  // Release() below.
+  EXPECT_CALL(cast_starboard_api_, SbRunStarboardMain(_, _, _))
+      .Times(2)
+      .WillOnce([&](int, char**, SbEventHandleCallback callback) {
+        callback(&fake_start_);
+        return 0;
+      })
+      .WillOnce([&](int, char**, SbEventHandleCallback callback) {
+        callback(&fake_start_);
+        restarted.Signal();
+        return 0;
+      });
+  // Park inside the stop request so the test controls exactly when Release()
+  // runs its teardown tail.
+  EXPECT_CALL(cast_starboard_api_, SbSystemRequestStop(0))
+      .Times(1)
+      .WillOnce([&](int) {
+        stop_entered.Signal();
+        allow_stop.Wait();
+        CastStarboardApiAdapterImpl::SbEventHandle(&fake_stop_);
+      });
+
+  adapter->EnsureInitialized();
+
+  std::thread releaser([adapter]() { adapter->Release(); });
+  stop_entered.Wait();
+
+  // Starboard is restarted while the Release() above is still in flight, so it
+  // is running (and initialized_ is true) once Release() finishes.
+  adapter->EnsureInitialized();
+  restarted.Wait();
+
+  allow_stop.Signal();
+  releaser.join();
+
+  base::WaitableEvent reinitialized;
+  std::thread waiter([adapter, &reinitialized]() {
+    adapter->EnsureInitialized();
+    reinitialized.Signal();
+  });
+  const bool completed =
+      reinitialized.TimedWait(TestTimeouts::action_timeout());
+  if (!completed) {
+    // Unwedge the thread so the test process can shut down.
+    adapter->starboard_started_.Signal();
+  }
+  waiter.join();
+  EXPECT_TRUE(completed)
+      << "EnsureInitialized() hung: Release() discarded the start signal of a "
+         "Starboard instance that is still running.";
+}
+
+// Once the AtExitManager teardown has run, Starboard must never be restarted:
+// a second SbRunStarboardMain is out of contract for the partner library.
+TEST_F(CastStarboardApiAdapterTest, StarboardIsNotRestartedAfterAtExit) {
+  auto* adapter = CastStarboardApiAdapterImpl::GetInstance();
+  EXPECT_CALL(cast_starboard_api_, SbRunStarboardMain(_, _, _))
+      .Times(1)
+      .WillOnce([&](int, char**, SbEventHandleCallback callback) {
+        callback(&fake_start_);
+        return 0;
+      });
+  EXPECT_CALL(cast_starboard_api_, SbSystemRequestStop(0))
+      .Times(1)
+      .WillOnce([&](int) {
+        CastStarboardApiAdapterImpl::SbEventHandle(&fake_stop_);
+      });
+
+  adapter->EnsureInitialized();
+  adapter->ReleaseForAtExit();
+
+  EXPECT_CHECK_DEATH(adapter->EnsureInitialized());
+}
+#endif  // SB_API_VERSION >= 15
 
 }  // namespace
 }  // namespace chromecast

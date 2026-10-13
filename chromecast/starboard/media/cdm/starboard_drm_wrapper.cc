@@ -344,6 +344,7 @@ void StarboardDrmWrapper::GenerateSessionUpdateRequest(
     const std::string& type,
     const std::vector<uint8_t>& init_data) {
   CHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(drm_system_) << "Failed to create an SbDrmSystem";
 
   const int internal_ticket = GetNextTicket();
   ticket_map_[internal_ticket] = ticket;
@@ -359,6 +360,7 @@ void StarboardDrmWrapper::UpdateSession(Client* client,
                                         const std::string& session_id,
                                         const std::vector<uint8_t>& key) {
   CHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(drm_system_) << "Failed to create an SbDrmSystem";
 
   const int internal_ticket = GetNextTicket();
   ticket_map_[internal_ticket] = ticket;
@@ -373,6 +375,7 @@ void StarboardDrmWrapper::UpdateSession(Client* client,
 void StarboardDrmWrapper::CloseSession(Client* client,
                                        const std::string& session_id) {
   CHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(drm_system_) << "Failed to create an SbDrmSystem";
 
   auto it_and_inserted = session_id_to_client_.insert({session_id, client});
   auto it = it_and_inserted.first;
@@ -397,6 +400,9 @@ void StarboardDrmWrapper::CloseSession(Client* client,
 
 bool StarboardDrmWrapper::IsServerCertificateUpdatable() {
   CHECK(task_runner_->RunsTasksInCurrentSequence());
+  if (!drm_system_) {
+    return false;
+  }
 
   return starboard_->DrmIsServerCertificateUpdatable(drm_system_);
 }
@@ -406,6 +412,7 @@ void StarboardDrmWrapper::UpdateServerCertificate(
     int ticket,
     const std::vector<uint8_t>& certificate_data) {
   CHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(drm_system_) << "Failed to create an SbDrmSystem";
 
   const int internal_ticket = GetNextTicket();
   ticket_map_[internal_ticket] = ticket;
@@ -454,8 +461,12 @@ StarboardDrmWrapper::StarboardDrmWrapper()
   drm_system_ = starboard_->CreateDrmSystem(
       /*key_system=*/"com.widevine.alpha",
       /*callback_handler=*/&callback_handler_);
-  CHECK(drm_system_) << "Failed to create an SbDrmSystem";
-  LOG(INFO) << "Created DRM system with address " << drm_system_;
+  if (!drm_system_) {
+    LOG(WARNING) << "Failed to create an SbDrmSystem (DRM may not be supported "
+                    "on this Starboard platform)";
+  } else {
+    LOG(INFO) << "Created DRM system with address " << drm_system_;
+  }
 }
 
 StarboardDrmWrapper::StarboardDrmWrapper(StarboardApiWrapper* starboard)
@@ -465,8 +476,12 @@ StarboardDrmWrapper::StarboardDrmWrapper(StarboardApiWrapper* starboard)
   drm_system_ = starboard_->CreateDrmSystem(
       /*key_system=*/"com.widevine.alpha",
       /*callback_handler=*/&callback_handler_);
-  CHECK(drm_system_) << "Failed to create an SbDrmSystem";
-  LOG(INFO) << "Created DRM system with address " << drm_system_;
+  if (!drm_system_) {
+    LOG(WARNING) << "Failed to create an SbDrmSystem (DRM may not be supported "
+                    "on this Starboard platform)";
+  } else {
+    LOG(INFO) << "Created DRM system with address " << drm_system_;
+  }
 }
 
 StarboardDrmWrapper::~StarboardDrmWrapper() = default;
@@ -516,8 +531,12 @@ void StarboardDrmWrapper::MaybeDestroySbDrmSystem() {
     return;
   }
 
-  LOG(INFO) << "Destroying SbDrmSystem because core_runtime is shutting down.";
-  starboard_->DrmDestroySystem(drm_system_);
+  if (drm_system_) {
+    LOG(INFO)
+        << "Destroying SbDrmSystem because core_runtime is shutting down.";
+    starboard_->DrmDestroySystem(drm_system_);
+    drm_system_ = nullptr;
+  }
 
   if (auto* starboard_api_adapter =
           chromecast::CastStarboardApiAdapter::GetInstance();

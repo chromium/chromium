@@ -4,21 +4,19 @@
 #ifndef CHROMECAST_STARBOARD_CHROMECAST_STARBOARD_ADAPTER_PUBLIC_CAST_STARBOARD_API_ADAPTER_H_
 #define CHROMECAST_STARBOARD_CHROMECAST_STARBOARD_ADAPTER_PUBLIC_CAST_STARBOARD_API_ADAPTER_H_
 
-#include "chromecast/starboard/starboard_buildflags.h"
-
-#if BUILDFLAG(REMOVE_STARBOARD_HEADERS)
-
-using SbEvent = void;
-using SbWindowOptions = void;
-using SbEglNativeDisplayType = void*;
-using SbWindow = void*;
-
-#else
+#if defined(STARBOARD) || defined(STARBOARD_CONFIGURATION_INCLUDE) || \
+    defined(SB_API_VERSION)
 #include <starboard/egl.h>
 #include <starboard/event.h>
 #include <starboard/export.h>
 #include <starboard/input.h>
-#endif  // BUILDFLAG(REMOVE_STARBOARD_HEADERS)
+#include <starboard/window.h>
+#else
+using SbEvent = void;
+using SbWindowOptions = void;
+using SbEglNativeDisplayType = void*;
+using SbWindow = void*;
+#endif
 
 namespace chromecast {
 
@@ -53,6 +51,15 @@ class __attribute__((visibility("default"))) CastStarboardApiAdapter {
 
   // Gets the window shared between the graphics and media libraries.
   virtual SbWindow GetWindow(const SbWindowOptions* options) = 0;
+
+  // Returns whether the given window is valid.
+  virtual bool SbWindowIsValid(SbWindow window) = 0;
+
+  // Returns the platform handle for the given window.
+  virtual void* SbWindowGetPlatformHandle(SbWindow window) = 0;
+
+  // Queries a Starboard system extension by name.
+  virtual const void* GetExtension(const char* name) = 0;
 };
 
 }  // namespace chromecast

@@ -5,7 +5,6 @@
 #ifndef CHROMECAST_STARBOARD_CHROMECAST_STARBOARD_ADAPTER_SRC_CAST_STARBOARD_API_ADAPTER_IMPL_H_
 #define CHROMECAST_STARBOARD_CHROMECAST_STARBOARD_ADAPTER_SRC_CAST_STARBOARD_API_ADAPTER_IMPL_H_
 
-#include <thread>
 #include <unordered_map>
 
 #include "base/synchronization/lock.h"
@@ -22,17 +21,16 @@ using CastStarboardApiAdapterImplCB = void (*)(void* context,
 // to multiple subscribers.
 class CastStarboardApiAdapterImpl : public CastStarboardApiAdapter {
  public:
+  static CastStarboardApiAdapterImpl* GetInstance();
+
   // SbEventHandle is provided when calling CastStarboardApiInitialize and is
   // expected to be used as the event callback for Starboard events. It routes
   // events to the singleton instance via SbEventHandleInternal.
   static void SbEventHandle(const SbEvent* event);
 
- private:
-  // CastStarboardApiAdapter needs to construct and delete instances of this
-  // class.
-  friend CastStarboardApiAdapter;
-
   CastStarboardApiAdapterImpl();
+  // Never invoked: the singleton is intentionally leaked (see Release()). It is
+  // only declared because the base class destructor is virtual.
   ~CastStarboardApiAdapterImpl() override;
 
   void SbEventHandleInternal(const SbEvent* event);
@@ -40,12 +38,21 @@ class CastStarboardApiAdapterImpl : public CastStarboardApiAdapter {
   // Initializes starboard if necessary, and blocks until starboard has started.
   void EnsureInitialized() LOCKS_EXCLUDED(lock_);
 
-  // Signals that the runtime is shutting down, and that this object should be
-  // destructed if there are no remaining subscribers.
+  // Signals that the runtime is shutting down and stops Starboard, once there
+  // are no remaining subscribers. If subscribers remain, Starboard is stopped
+  // instead by the last Unsubscribe().
   //
-  // If there are remaining subscribers, the object will be destructed once the
-  // last subscriber unsubscribes.
+  // This object is never destructed: late teardown callers (e.g. media_thread_
+  // in CastContentBrowserClient) can outlive the AtExitManager, and destroying
+  // it here is what previously caused a use-after-free.
+  //
+  // Production teardown always arrives via ReleaseForAtExit(); see the comment
+  // in the .cc on why the waitable events are never Reset.
   void Release() LOCKS_EXCLUDED(lock_);
+
+  // Release() variant invoked from the base::AtExitManager task. It latches
+  // `at_exit_ran_` so that Starboard can never be re-initialized afterwards.
+  void ReleaseForAtExit() LOCKS_EXCLUDED(lock_);
 
   // CastStarboardApiAdapter implementation:
   void Subscribe(void* context,
@@ -53,10 +60,10 @@ class CastStarboardApiAdapterImpl : public CastStarboardApiAdapter {
   void Unsubscribe(void* context) override;
   SbEglNativeDisplayType GetEglNativeDisplayType() override;
   SbWindow GetWindow(const SbWindowOptions*) override;
+  bool SbWindowIsValid(SbWindow window) override;
+  void* SbWindowGetPlatformHandle(SbWindow window) override;
+  const void* GetExtension(const char* name) override;
 
-#if SB_API_VERSION >= 15
-  std::unique_ptr<std::thread> sb_main_;
-#endif  // SB_API_VERSION >= 15
   base::WaitableEvent starboard_started_;
   base::WaitableEvent starboard_stopped_;
 
@@ -69,6 +76,10 @@ class CastStarboardApiAdapterImpl : public CastStarboardApiAdapter {
   // Tracks whether Release() has been called (meaning the runtime is shutting
   // down).
   bool released_ GUARDED_BY(lock_) = false;
+
+  // Tracks whether the base::AtExitManager teardown has run. Once it has,
+  // Starboard must never be started again.
+  bool at_exit_ran_ GUARDED_BY(lock_) = false;
 };
 
 }  // namespace chromecast

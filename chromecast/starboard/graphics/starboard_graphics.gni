@@ -1,0 +1,43 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chromecast/starboard/starboard.gni")
+
+template("starboard_graphics_library") {
+  version = invoker.version
+
+  shared_library(target_name) {
+    if (version >= 15) {
+      output_name = "GL_starboard.so.$version"
+      output_extension = ""
+    } else {
+      output_name = "GL_starboard"
+    }
+
+    sources = [
+      "//chromecast/starboard/chromecast/starboard_cast_dummy/cast_starboard_api_dummy.cc",
+      "//chromecast/starboard/graphics/egl_starboard.cc",
+      "//chromecast/starboard/graphics/gles2_starboard.cc",
+    ]
+
+    configs += [
+      "//chromecast/starboard/third_party/starboard/sabi",
+      "//third_party/khronos:khronos_headers",
+    ]
+
+    deps = [
+      "//base:compiler_specific",
+      "//chromecast/public",
+      "//chromecast/starboard/third_party/starboard/public",
+      "//third_party/angle:includes",
+    ]
+
+    # Force the specific SB_API_VERSION for this library, overriding sabi's
+    # default definition which appears later in GN's defines list.
+    cflags = [
+      "-USB_API_VERSION",
+      "-DSB_API_VERSION=$version",
+    ]
+  }
+}

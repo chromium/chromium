@@ -12,7 +12,11 @@ if (!remove_starboard_headers) {
       "STARBOARD_IMPLEMENTATION",
       "SB_IS_EVERGREEN",
     ]
-    deps = [ "//chromecast/starboard/chromecast/starboard_cast_api" ]
+    deps = [
+      "//base:compiler_specific",
+      "//chromecast/public",
+      "//chromecast/starboard/chromecast/starboard_cast_api",
+    ]
     public_deps = [ "//chromecast/starboard/third_party/starboard/public" ]
   }
 }

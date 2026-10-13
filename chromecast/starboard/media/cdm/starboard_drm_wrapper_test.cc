@@ -760,6 +760,22 @@ TEST_F(StarboardDrmWrapperTest,
   EXPECT_TRUE(drm_system_destroyed);
 }
 
+TEST_F(StarboardDrmWrapperTest,
+       HandlesNullDrmSystemGracefullyWhenDrmUnsupported) {
+  EXPECT_CALL(starboard_, CreateDrmSystem("com.widevine.alpha", _))
+      .WillOnce(Return(nullptr));
+  EXPECT_CALL(starboard_, DrmDestroySystem(_)).Times(0);
+  StarboardDrmWrapper::SetSingletonForTesting(&starboard_);
+
+  EXPECT_FALSE(StarboardDrmWrapper::GetInstance().HasClients());
+  EXPECT_EQ(StarboardDrmWrapper::GetInstance().GetDrmSystem(), nullptr);
+  EXPECT_FALSE(
+      StarboardDrmWrapper::GetInstance().IsServerCertificateUpdatable());
+
+  // Destroying should be a safe no-op when drm_system_ is null.
+  StarboardDrmWrapperTestPeer::AttemptDestroySbDrmSystem();
+}
+
 }  // namespace
 }  // namespace media
 }  // namespace chromecast

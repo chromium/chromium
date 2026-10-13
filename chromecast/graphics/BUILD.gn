@@ -57,8 +57,10 @@ cast_source_set("graphics") {
 
     # These deps provide an implementation of UiEventSource::Create().
     if (enable_starboard_graphics && !remove_starboard_headers) {
-      deps +=
-          [ "//chromecast/starboard/chromecast/events:starboard_event_source" ]
+      deps += [
+        "//chromecast/starboard/chromecast/events:starboard_event_source",
+        "//chromecast/starboard/chromecast/starboard_adapter",
+      ]
     } else {
       deps +=
           [ "//chromecast/starboard/chromecast/events:dummy_ui_event_source" ]

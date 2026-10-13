@@ -4,6 +4,16 @@
 
 // Defines APIs that are specific to Starboard 14. GetStarboardApiWrapper() is
 // the public API; everything else is an implementation detail.
+// Note: We explicitly define the preprocessor macro SB_API_VERSION=14 before
+// including Starboard headers because Starboard's vendor C headers (e.g.,
+// <starboard/player.h>, <starboard/drm.h>) use `#if SB_API_VERSION >= 15`
+// preprocessor checks to select struct layouts and function signatures (such as
+// SbPlayerSeek2 vs SbPlayerSeek). A C++ constexpr cannot control preprocessor
+// branching inside external vendor headers.
+#if !defined(SB_API_VERSION) || SB_API_VERSION != 14
+#error "starboard_api_wrapper_14.cc must be compiled with SB_API_VERSION=14"
+#endif
+
 #include <starboard/drm.h>
 #include <starboard/media.h>
 #include <starboard/player.h>
@@ -167,6 +177,7 @@ class StarboardApiWrapper14 : public StarboardApiWrapperBase {
 
 // Note: declared in starboard_api_wrapper.h.
 std::unique_ptr<StarboardApiWrapper> GetStarboardApiWrapper() {
+  LOG(INFO) << "Created StarboardApiWrapper for SB_API_VERSION 14";
   return std::make_unique<StarboardApiWrapper14>();
 }
 

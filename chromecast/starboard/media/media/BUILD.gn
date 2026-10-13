@@ -87,37 +87,76 @@ source_set("mock_starboard_api_wrapper") {
   ]
 }
 
+cast_source_set("starboard_api_wrapper_headers") {
+  sources = [
+    "starboard_api_wrapper.cc",
+    "starboard_api_wrapper.h",
+  ]
+  public_deps = [ "//base" ]
+}
+
 cast_source_set("starboard_api_wrapper") {
   sources = []
-  deps = []
-  public_deps = [ "//base" ]
+  deps = [ ":starboard_api_wrapper_headers" ]
+  public_deps = [
+    ":starboard_api_wrapper_headers",
+    "//base",
+  ]
 
   # TODO(b/333131992): remove this case.
   if (remove_starboard_headers) {
-    sources += [
-      "starboard_api_wrapper.cc",
-      "starboard_api_wrapper.h",
-      "starboard_api_wrapper_dummy.cc",
-    ]
+    sources += [ "starboard_api_wrapper_dummy.cc" ]
   } else {
-    sources += [
-      "starboard_api_wrapper.cc",
-      "starboard_api_wrapper.h",
-      "starboard_api_wrapper_base.cc",
-      "starboard_api_wrapper_base.h",
-    ]
-    if (sb_api_version == 15 || sb_api_version == 16) {
-      sources += [ "starboard_api_wrapper_15.cc" ]
+    sources += [ "starboard_api_wrapper_proxy.cc" ]
+    deps += [ "//chromecast/starboard:starboard_adapter_loader" ]
+  }
+}
+
+if (!remove_starboard_headers) {
+  template("starboard_api_wrapper_versioned_impl") {
+    version = invoker.version
+    if (version >= 15) {
+      wrapper_source = "starboard_api_wrapper_15.cc"
     } else {
-      assert(sb_api_version == 13 || sb_api_version == 14,
-             "Only SB 13 and 14 are supported by starboard_api_wrapper_14.cc")
-      sources += [ "starboard_api_wrapper_14.cc" ]
+      wrapper_source = "starboard_api_wrapper_14.cc"
     }
-    deps += [
-      "//chromecast/common:timing_tracker",
-      "//chromecast/starboard/chromecast/starboard_adapter",
-      "//chromecast/starboard/chromecast/starboard_cast_dummy:cast_starboard_api",
-    ]
+
+    cast_source_set(target_name) {
+      sources = [
+        "starboard_api_wrapper_base.cc",
+        "starboard_api_wrapper_base.h",
+        wrapper_source,
+      ]
+      deps = [
+        "//chromecast/common:timing_tracker",
+        "//chromecast/starboard/chromecast/starboard_adapter:starboard_adapter_public",
+      ]
+      public_deps = [
+        ":starboard_api_wrapper_headers",
+        "//base",
+        "//chromecast/starboard/third_party/starboard/public",
+      ]
+      cflags = [
+        "-USB_API_VERSION",
+        "-DSB_API_VERSION=$version",
+      ]
+    }
+  }
+
+  starboard_api_wrapper_versioned_impl("starboard_api_wrapper_impl_14") {
+    version = 14
+  }
+
+  starboard_api_wrapper_versioned_impl("starboard_api_wrapper_impl_15") {
+    version = 15
+  }
+
+  starboard_api_wrapper_versioned_impl("starboard_api_wrapper_impl_16") {
+    version = 16
+  }
+
+  starboard_api_wrapper_versioned_impl("starboard_api_wrapper_impl_17") {
+    version = 17
   }
 }
 

@@ -1,0 +1,43 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chromecast/starboard/starboard.gni")
+
+template("starboard_adapter_library") {
+  version = invoker.version
+
+  shared_library(target_name) {
+    if (version >= 15) {
+      output_name = "cast_starboard_adapter.so.$version"
+      output_extension = ""
+    } else {
+      output_name = "cast_starboard_adapter"
+    }
+
+    sources = [
+      "//chromecast/starboard/chromecast/starboard_adapter/src/cast_starboard_api_adapter_impl.cc",
+      "//chromecast/starboard/chromecast/starboard_adapter/src/cast_starboard_api_adapter_impl.h",
+      "//chromecast/starboard/chromecast/starboard_cast_dummy/cast_starboard_api_dummy.cc",
+      "//chromecast/starboard/starboard_adapter_factory.h",
+      "//chromecast/starboard/starboard_adapter_factory_impl.cc",
+    ]
+
+    deps = [
+      "//base",
+      "//chromecast/common:timing_tracker",
+      "//chromecast/public",
+      "//chromecast/starboard/chromecast/starboard_adapter:starboard_adapter_public",
+      "//chromecast/starboard/chromecast/starboard_cast_api",
+    ]
+
+    # Add version-specific wrapper impl compiled with matching SB_API_VERSION
+    deps += [ "//chromecast/starboard/media/media:starboard_api_wrapper_impl_${version}" ]
+
+    defines = [ "SB_IS_EVERGREEN" ]
+    cflags = [
+      "-USB_API_VERSION",
+      "-DSB_API_VERSION=$version",
+    ]
+  }
+}

@@ -135,13 +135,35 @@ EGLint Sb_eglGetError(void) {
 
 __eglMustCastToProperFunctionPointerType Sb_eglGetProcAddress(
     const char* procname) {
-  // First, look up an "Sb_" prefixed function that has been loaded. If that
-  // fails, perform an un-prefixed lookup via starboard.
+  if (!procname) {
+    return nullptr;
+  }
+  // First, look up an "Sb_" prefixed function in this shared library (which may
+  // be opened with RTLD_LOCAL) or the global scope. If that fails, perform an
+  // un-prefixed lookup via Starboard's EGL interface.
   const std::string prefixed_name = std::string("Sb_") + procname;
-  auto* addr = reinterpret_cast<__eglMustCastToProperFunctionPointerType>(
-      dlsym(RTLD_DEFAULT, prefixed_name.c_str()));
+  static void* const self_handle = []() -> void* {
+    Dl_info info = {};
+    if (dladdr(reinterpret_cast<const void*>(&Sb_eglGetProcAddress), &info) &&
+        info.dli_fname) {
+      return dlopen(info.dli_fname, RTLD_NOLOAD | RTLD_LAZY);
+    }
+    return nullptr;
+  }();
+  __eglMustCastToProperFunctionPointerType addr = nullptr;
+  if (self_handle) {
+    addr = reinterpret_cast<__eglMustCastToProperFunctionPointerType>(
+        dlsym(self_handle, prefixed_name.c_str()));
+  }
   if (!addr) {
-    addr = SbGetEglInterface()->eglGetProcAddress(procname);
+    addr = reinterpret_cast<__eglMustCastToProperFunctionPointerType>(
+        dlsym(RTLD_DEFAULT, prefixed_name.c_str()));
+  }
+  if (!addr) {
+    if (const SbEglInterface* egl = SbGetEglInterface();
+        egl && egl->eglGetProcAddress) {
+      addr = egl->eglGetProcAddress(procname);
+    }
   }
 
   return addr;
