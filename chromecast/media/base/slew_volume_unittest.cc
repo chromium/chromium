@@ -4,6 +4,7 @@
 
 #include "chromecast/media/base/slew_volume.h"
 
+#include <array>
 #include <cmath>
 #include <cstdint>
 #include <limits>
@@ -11,7 +12,7 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_sample_types.h"
 #include "media/base/vector_math.h"
@@ -44,26 +45,29 @@ std::unique_ptr<::media::AudioBus> GetSineData(size_t frames, float frequency) {
 
 // Gets pointers to the data in an audiobus.
 // If |swapped| is true, the channel order will be swapped.
-std::vector<float*> GetDataChannels(::media::AudioBus* audio,
-                                    bool swapped = false) {
-  std::vector<float*> data(kNumChannels);
+std::array<base::span<float>, kNumChannels> GetDataChannels(
+    ::media::AudioBus* audio,
+    bool swapped = false) {
+  std::array<base::span<float>, kNumChannels> data;
   for (int i = 0; i < kNumChannels; ++i) {
     int source_channel = swapped ? (i + 1) % kNumChannels : i;
-    data[i] = audio->channel(source_channel).data();
+    data[i] = audio->channel(source_channel);
   }
   return data;
 }
 
-void ScaleData(const std::vector<float*>& data, int frames, float scale) {
+void ScaleData(base::span<const base::span<float>> data,
+               int frames,
+               float scale) {
   for (size_t ch = 0; ch < data.size(); ++ch) {
     for (int f = 0; f < frames; ++f) {
-      UNSAFE_TODO(data[ch][f]) *= scale;
+      data[ch][f] *= scale;
     }
   }
 }
 
-void CompareDataPartial(const std::vector<float*>& expected,
-                        const std::vector<float*>& actual,
+void CompareDataPartial(base::span<const base::span<float>> expected,
+                        base::span<const base::span<float>> actual,
                         int start,
                         int end) {
   ASSERT_GE(start, 0);
@@ -72,7 +76,7 @@ void CompareDataPartial(const std::vector<float*>& expected,
 
   for (size_t ch = 0; ch < expected.size(); ++ch) {
     for (int f = start; f < end; ++f) {
-      EXPECT_FLOAT_EQ(UNSAFE_TODO(expected[ch][f]), UNSAFE_TODO(actual[ch][f]))
+      EXPECT_FLOAT_EQ(expected[ch][f], actual[ch][f])
           << "ch: " << ch << " f: " << f;
     }
   }
@@ -128,9 +132,9 @@ class SlewVolumeBaseTest : public ::testing::Test {
   std::unique_ptr<::media::AudioBus> data_bus_;
   std::unique_ptr<::media::AudioBus> data_bus_2_;
   std::unique_ptr<::media::AudioBus> expected_bus_;
-  std::vector<float*> data_;
-  std::vector<float*> data_2_;
-  std::vector<float*> expected_;
+  std::array<base::span<float>, kNumChannels> data_ = {};
+  std::array<base::span<float>, kNumChannels> data_2_ = {};
+  std::array<base::span<float>, kNumChannels> expected_ = {};
 };
 
 // ASSERT_DEATH isn't implemented on Fuchsia.
@@ -163,7 +167,8 @@ TEST_F(SlewVolumeBaseTest, InstantVolumeDecreasing) {
   // LastVolume lags, so 101 steps are needed.
   for (int i = 0; i < 101; i += kFramesPerTransaction) {
     for (size_t ch = 0; ch < data_.size(); ++ch) {
-      slew_volume_->ProcessFMAC(ch != 0, data_[ch], 10, 1, data_2_[ch]);
+      slew_volume_->ProcessFMAC(ch != 0, data_[ch].data(), 10, 1,
+                                data_2_[ch].data());
     }
     ASSERT_FLOAT_EQ(1.0 - (0.01 * i), slew_volume_->LastBufferMaxMultiplier());
   }
@@ -181,7 +186,8 @@ TEST_F(SlewVolumeBaseTest, InstantVolumeIncreasing) {
   // LastVolume leads, so 100 steps are needed.
   for (int i = 0; i < 100; i += kFramesPerTransaction) {
     for (size_t ch = 0; ch < data_.size(); ++ch) {
-      slew_volume_->ProcessFMAC(ch != 0, data_[ch], 10, 1, data_2_[ch]);
+      slew_volume_->ProcessFMAC(ch != 0, data_[ch].data(), 10, 1,
+                                data_2_[ch].data());
     }
     ASSERT_FLOAT_EQ(0.01 * (i + kFramesPerTransaction),
                     slew_volume_->LastBufferMaxMultiplier());
@@ -207,33 +213,33 @@ class SlewVolumeSteadyStateTest : public SlewVolumeBaseTest {
 TEST_F(SlewVolumeSteadyStateTest, FMULNoOp) {
   slew_volume_->SetVolume(1.0f);
 
-  slew_volume_->ProcessFMUL(false /* repeat transition */, data_[0],
-                            num_frames_, 1, data_[0]);
-  slew_volume_->ProcessFMUL(true /* repeat transition */, data_[1], num_frames_,
-                            1, data_[1]);
+  slew_volume_->ProcessFMUL(false /* repeat transition */, data_[0].data(),
+                            num_frames_, 1, data_[0].data());
+  slew_volume_->ProcessFMUL(true /* repeat transition */, data_[1].data(),
+                            num_frames_, 1, data_[1].data());
   CompareBuffers();
 }
 
 TEST_F(SlewVolumeSteadyStateTest, FMULCopy) {
   slew_volume_->SetVolume(1.0f);
 
-  slew_volume_->ProcessFMUL(false /* repeat transition */, data_2_[0],
-                            num_frames_, 1, data_[0]);
-  slew_volume_->ProcessFMUL(true /* repeat transition */, data_2_[1],
-                            num_frames_, 1, data_[1]);
+  slew_volume_->ProcessFMUL(false /* repeat transition */, data_2_[0].data(),
+                            num_frames_, 1, data_[0].data());
+  slew_volume_->ProcessFMUL(true /* repeat transition */, data_2_[1].data(),
+                            num_frames_, 1, data_[1].data());
   CompareDataPartial(data_2_, data_, 0, num_frames_);
 }
 
 TEST_F(SlewVolumeSteadyStateTest, FMULZero) {
   slew_volume_->SetVolume(0.0f);
   slew_volume_->ProcessFMUL(false, /* repeat transition */
-                            data_[0], num_frames_, 1, data_[0]);
-  slew_volume_->ProcessFMUL(true, data_[1], num_frames_, 1, data_[1]);
+                            data_[0].data(), num_frames_, 1, data_[0].data());
+  slew_volume_->ProcessFMUL(true, data_[1].data(), num_frames_, 1,
+                            data_[1].data());
 
   for (size_t ch = 0; ch < data_.size(); ++ch) {
     for (int f = 0; f < num_frames_; ++f) {
-      EXPECT_EQ(0.0f, UNSAFE_TODO(data_[ch][f]))
-          << "at ch " << ch << "frame " << f;
+      EXPECT_EQ(0.0f, data_[ch][f]) << "at ch " << ch << "frame " << f;
     }
   }
 }
@@ -242,16 +248,20 @@ TEST_F(SlewVolumeSteadyStateTest, FMULInterrupted) {
   float volume = 0.6f;
   slew_volume_->SetVolume(volume);
 
-  slew_volume_->ProcessFMUL(false, data_[0], num_frames_, 1, data_[0]);
-  slew_volume_->ProcessFMUL(true, data_[1], num_frames_, 1, data_[1]);
+  slew_volume_->ProcessFMUL(false, data_[0].data(), num_frames_, 1,
+                            data_[0].data());
+  slew_volume_->ProcessFMUL(true, data_[1].data(), num_frames_, 1,
+                            data_[1].data());
   ScaleData(expected_, num_frames_, volume);
   CompareBuffers();
 }
 
 TEST_F(SlewVolumeSteadyStateTest, FMACNoOp) {
   slew_volume_->SetVolume(0.0f);
-  slew_volume_->ProcessFMAC(false, data_2_[0], num_frames_, 1, data_[0]);
-  slew_volume_->ProcessFMAC(false, data_2_[1], num_frames_, 1, data_[1]);
+  slew_volume_->ProcessFMAC(false, data_2_[0].data(), num_frames_, 1,
+                            data_[0].data());
+  slew_volume_->ProcessFMAC(false, data_2_[1].data(), num_frames_, 1,
+                            data_[1].data());
   CompareBuffers();
 }
 
@@ -333,16 +343,14 @@ class SlewVolumeDynamicTest
   }
 
   // Data accessors. Override to change access method of CheckSlewM[AC/UL].
-  virtual float Data(int channel, int frame) {
-    return UNSAFE_TODO(data_[channel][frame]);
-  }
+  virtual float Data(int channel, int frame) { return data_[channel][frame]; }
 
   virtual float Data2(int channel, int frame) {
-    return UNSAFE_TODO(data_2_[channel][frame]);
+    return data_2_[channel][frame];
   }
 
   virtual float Expected(int channel, int frame) {
-    return UNSAFE_TODO(expected_[channel][frame]);
+    return expected_[channel][frame];
   }
 
   int sample_rate_;
@@ -359,8 +367,10 @@ TEST_P(SlewVolumeDynamicTest, FMULRampUp) {
   ClearInterrupted();
 
   slew_volume_->SetVolume(end);
-  slew_volume_->ProcessFMUL(false, data_[0], num_frames_, 1, data_[0]);
-  slew_volume_->ProcessFMUL(true, data_[1], num_frames_, 1, data_[1]);
+  slew_volume_->ProcessFMUL(false, data_[0].data(), num_frames_, 1,
+                            data_[0].data());
+  slew_volume_->ProcessFMUL(true, data_[1].data(), num_frames_, 1,
+                            data_[1].data());
   CheckSlewMUL(start, end);
 }
 
@@ -371,8 +381,10 @@ TEST_P(SlewVolumeDynamicTest, FMULRampDown) {
   ClearInterrupted();
 
   slew_volume_->SetVolume(end);
-  slew_volume_->ProcessFMUL(false, data_[0], num_frames_, 1, data_[0]);
-  slew_volume_->ProcessFMUL(true, data_[1], num_frames_, 1, data_[1]);
+  slew_volume_->ProcessFMUL(false, data_[0].data(), num_frames_, 1,
+                            data_[0].data());
+  slew_volume_->ProcessFMUL(true, data_[1].data(), num_frames_, 1,
+                            data_[1].data());
   CheckSlewMUL(start, end);
 }
 
@@ -391,10 +403,12 @@ TEST_P(SlewVolumeDynamicTest, FMULRampDownByParts) {
     if (num_frames_ - f < frame_step * 2) {
       frame_step = num_frames_ - f;
     }
-    slew_volume_->ProcessFMUL(false, UNSAFE_TODO(expected_[0] + f), frame_step,
-                              1, UNSAFE_TODO(data_[0] + f));
-    slew_volume_->ProcessFMUL(true, UNSAFE_TODO(expected_[1] + f), frame_step,
-                              1, UNSAFE_TODO(data_[1] + f));
+    slew_volume_->ProcessFMUL(
+        false, expected_[0].subspan(static_cast<size_t>(f)).data(), frame_step,
+        1, data_[0].subspan(static_cast<size_t>(f)).data());
+    slew_volume_->ProcessFMUL(
+        true, expected_[1].subspan(static_cast<size_t>(f)).data(), frame_step,
+        1, data_[1].subspan(static_cast<size_t>(f)).data());
   }
   ASSERT_EQ(num_frames_, f);
   CheckSlewMUL(start, end);
@@ -407,8 +421,10 @@ TEST_P(SlewVolumeDynamicTest, FMACRampUp) {
   ClearInterrupted();
 
   slew_volume_->SetVolume(end);
-  slew_volume_->ProcessFMAC(false, data_2_[0], num_frames_, 1, data_[0]);
-  slew_volume_->ProcessFMAC(true, data_2_[1], num_frames_, 1, data_[1]);
+  slew_volume_->ProcessFMAC(false, data_2_[0].data(), num_frames_, 1,
+                            data_[0].data());
+  slew_volume_->ProcessFMAC(true, data_2_[1].data(), num_frames_, 1,
+                            data_[1].data());
   CheckSlewMAC(start, end);
 }
 
@@ -419,8 +435,10 @@ TEST_P(SlewVolumeDynamicTest, FMACRampDown) {
   ClearInterrupted();
 
   slew_volume_->SetVolume(end);
-  slew_volume_->ProcessFMAC(false, data_2_[0], num_frames_, 1, data_[0]);
-  slew_volume_->ProcessFMAC(true, data_2_[1], num_frames_, 1, data_[1]);
+  slew_volume_->ProcessFMAC(false, data_2_[0].data(), num_frames_, 1,
+                            data_[0].data());
+  slew_volume_->ProcessFMAC(true, data_2_[1].data(), num_frames_, 1,
+                            data_[1].data());
   CheckSlewMAC(start, end);
 }
 
@@ -439,10 +457,12 @@ TEST_P(SlewVolumeDynamicTest, FMACRampUpByParts) {
     if (num_frames_ - f < frame_step * 2) {
       frame_step = num_frames_ - f;
     }
-    slew_volume_->ProcessFMAC(false, UNSAFE_TODO(data_2_[0] + f), frame_step, 1,
-                              UNSAFE_TODO(data_[0] + f));
-    slew_volume_->ProcessFMAC(true, UNSAFE_TODO(data_2_[1] + f), frame_step, 1,
-                              UNSAFE_TODO(data_[1] + f));
+    slew_volume_->ProcessFMAC(
+        false, data_2_[0].subspan(static_cast<size_t>(f)).data(), frame_step, 1,
+        data_[0].subspan(static_cast<size_t>(f)).data());
+    slew_volume_->ProcessFMAC(
+        true, data_2_[1].subspan(static_cast<size_t>(f)).data(), frame_step, 1,
+        data_[1].subspan(static_cast<size_t>(f)).data());
   }
   ASSERT_EQ(num_frames_, f);
   CheckSlewMAC(start, end);
@@ -479,15 +499,15 @@ class SlewVolumeInterleavedTest : public SlewVolumeDynamicTest {
   }
 
   float Data(int channel, int frame) override {
-    return UNSAFE_TODO(data_[0][channels_ * frame + channel]);
+    return data_[0][channels_ * frame + channel];
   }
 
   float Data2(int channel, int frame) override {
-    return UNSAFE_TODO(data_2_[0][channels_ * frame + channel]);
+    return data_2_[0][channels_ * frame + channel];
   }
 
   float Expected(int channel, int frame) override {
-    return UNSAFE_TODO(expected_[0][channels_ * frame + channel]);
+    return expected_[0][channels_ * frame + channel];
   }
 };
 
@@ -498,8 +518,8 @@ TEST_P(SlewVolumeInterleavedTest, FMACRampDown) {
   ClearInterrupted();
 
   slew_volume_->SetVolume(end);
-  slew_volume_->ProcessFMAC(false, data_2_[0], num_frames_ / channels_,
-                            channels_, data_[0]);
+  slew_volume_->ProcessFMAC(false, data_2_[0].data(), num_frames_ / channels_,
+                            channels_, data_[0].data());
   CheckSlewMAC(start, end);
 }
 
@@ -510,8 +530,8 @@ TEST_P(SlewVolumeInterleavedTest, FMACRampUp) {
   ClearInterrupted();
 
   slew_volume_->SetVolume(end);
-  slew_volume_->ProcessFMAC(false, data_2_[0], num_frames_ / channels_,
-                            channels_, data_[0]);
+  slew_volume_->ProcessFMAC(false, data_2_[0].data(), num_frames_ / channels_,
+                            channels_, data_[0].data());
   CheckSlewMAC(start, end);
 }
 
@@ -522,8 +542,8 @@ TEST_P(SlewVolumeInterleavedTest, FMULRampDown) {
   ClearInterrupted();
 
   slew_volume_->SetVolume(end);
-  slew_volume_->ProcessFMUL(false, data_[0], num_frames_ / channels_, channels_,
-                            data_[0]);
+  slew_volume_->ProcessFMUL(false, data_[0].data(), num_frames_ / channels_,
+                            channels_, data_[0].data());
 
   CheckSlewMUL(start, end);
 }
@@ -535,8 +555,8 @@ TEST_P(SlewVolumeInterleavedTest, FMULRampUp) {
   ClearInterrupted();
 
   slew_volume_->SetVolume(end);
-  slew_volume_->ProcessFMUL(false, data_[0], num_frames_ / channels_, channels_,
-                            data_[0]);
+  slew_volume_->ProcessFMUL(false, data_[0].data(), num_frames_ / channels_,
+                            channels_, data_[0].data());
   CheckSlewMUL(start, end);
 }
 

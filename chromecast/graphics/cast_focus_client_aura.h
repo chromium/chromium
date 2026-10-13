@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/aura/client/focus_client.h"
@@ -71,11 +72,11 @@ class CastFocusClientAura : public aura::WindowObserver,
 
   // Track the currently focused window, which isn't necessarily a top-level
   // window.
-  aura::Window* focused_window_;
+  raw_ptr<aura::Window> focused_window_;
   // Track the windows that we've focused in the past, so that we can restore
   // focus to them.  We assume that this is a small list so that we can perform
   // linear ops on it.
-  std::vector<aura::Window*> focusable_windows_;
+  std::vector<raw_ptr<aura::Window>> focusable_windows_;
 };
 
 }  // namespace chromecast
