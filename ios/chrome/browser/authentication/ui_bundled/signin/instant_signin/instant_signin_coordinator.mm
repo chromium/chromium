@@ -217,8 +217,8 @@
   [self stopIdentityChooserCoordinator];
   if (!identity) {
     // If no identity was selected, the coordinator can be closed.
-    [self runCompletionWithSigninResult:SigninCoordinatorResultCanceledByUser
-                     completionIdentity:nil];
+    [self runCompletionWithSigninResult:
+              base::unexpected(SigninCoordinatorResultCanceledByUser)];
     return;
   }
   _identity = identity;
@@ -236,23 +236,22 @@
     case signin_ui::CancelationReason::kNotCanceled: {
       signin_metrics::RecordConsistencyPromoUserAction(_actionToRecordOnSuccess,
                                                        self.accessPoint);
-      [self runCompletionWithSigninResult:SigninCoordinatorResultSuccess
-                       completionIdentity:_identity];
+      [self runCompletionWithSigninResult:_identity];
       break;
     }
     case signin_ui::CancelationReason::kUserCanceled:
     case signin_ui::CancelationReason::kAgeMismatchCanceled:
     case signin_ui::CancelationReason::kAgeMismatchCanceledStaySignedOut:
-      [self runCompletionWithSigninResult:SigninCoordinatorResultCanceledByUser
-                       completionIdentity:nil];
+      [self runCompletionWithSigninResult:
+                base::unexpected(SigninCoordinatorResultCanceledByUser)];
       break;
     case signin_ui::CancelationReason::kFailed:
-      [self runCompletionWithSigninResult:SigninCoordinatorResultInterrupted
-                       completionIdentity:nil];
+      [self runCompletionWithSigninResult:
+                base::unexpected(SigninCoordinatorResultInterrupted)];
       break;
     case signin_ui::CancelationReason::kSignInNotAllowed:
-      [self runCompletionWithSigninResult:SigninCoordinatorResultDisabled
-                       completionIdentity:nil];
+      [self runCompletionWithSigninResult:base::unexpected(
+                                              SigninCoordinatorResultDisabled)];
       break;
   }
 }
@@ -264,19 +263,15 @@
   _mediator.delegate = nil;
   _mediator = nil;
   [self removeActivityOverlay];
-  // The identity is nil because the completion callback does not need the
-  // identity. The scene is going to be closed to prepare for a profile
-  // switch. The callback only needs to ensure every views are closed, and
-  // potentially do some logging.
-  [self runCompletionWithSigninResult:SigninCoordinatorProfileSwitch
-                   completionIdentity:nil];
+  [self runCompletionWithSigninResult:base::unexpected(
+                                          SigninCoordinatorProfileSwitch)];
 }
 
 - (void)instantSigninMediatorSigninIsImpossible:
     (InstantSigninMediator*)mediator {
   CHECK_EQ(mediator, _mediator);
-  [self runCompletionWithSigninResult:SigninCoordinatorResultInterrupted
-                   completionIdentity:nil];
+  [self runCompletionWithSigninResult:base::unexpected(
+                                          SigninCoordinatorResultInterrupted)];
 }
 
 #pragma mark - Private
@@ -326,43 +321,36 @@
                                    prefilledEmail:nil
                              continuationProvider:_continuationProvider];
   __weak __typeof(self) weakSelf = self;
-  _addAccountSigninCoordinator.signinCompletion = ^(
-      SigninCoordinator* coordinator,
-      SigninCoordinatorResultOrIdentity result) {
-    SigninCoordinatorResult signinResult =
-        signin::SigninCoordinatorResultFromSigninCoordinatorResultOrIdentity(
-            result);
-    [weakSelf addAccountDoneWithCoordinator:coordinator
-                                     result:signinResult
-                             resultIdentity:result.value_or(nil)];
-  };
+  _addAccountSigninCoordinator.signinCompletion =
+      ^(SigninCoordinator* coordinator,
+        SigninCoordinatorResultOrIdentity result) {
+        [weakSelf addAccountDoneWithCoordinator:coordinator result:result];
+      };
   [_addAccountSigninCoordinator start];
 }
 
 // Starts the sign-in flow if the identity has been selected, otherwise, it
 // ends this coordinator.
 - (void)addAccountDoneWithCoordinator:(SigninCoordinator*)coordinator
-                               result:(SigninCoordinatorResult)result
-                       resultIdentity:(id<SystemIdentity>)resultIdentity {
+                               result:
+                                   (SigninCoordinatorResultOrIdentity)result {
   CHECK_EQ(_addAccountSigninCoordinator, coordinator);
   CHECK(_addAccountSigninCoordinator)
       << base::SysNSStringToUTF8([self description]);
   [self stopAddAccountSigninCoordinator];
-  switch (result) {
-    case SigninCoordinatorResultSuccess:
-      _identity = resultIdentity;
-      [self startSignInOnlyFlow];
-      break;
+  if (result.has_value()) {
+    _identity = result.value();
+    [self startSignInOnlyFlow];
+    return;
+  }
+  switch (result.error()) {
     case SigninCoordinatorResultDisabled:
     case SigninCoordinatorResultInterrupted:
     case SigninCoordinatorResultCanceledByUser:
     case SigninCoordinatorProfileSwitch:
-      // The identity is nil because the completion callback does not need the
-      // identity. The scene is going to be closed to prepare for a profile
-      // switch. The callback only needs to ensure every views are closed, and
-      // potentially do some logging.
-      [self runCompletionWithSigninResult:result completionIdentity:nil];
+      [self runCompletionWithSigninResult:result];
       break;
+    case SigninCoordinatorResultSuccess:
     case SigninCoordinatorUINotAvailable:
       // InstantSigninCoordinator presents its child coordinators directly and
       // does not use `ShowSigninCommand`.
