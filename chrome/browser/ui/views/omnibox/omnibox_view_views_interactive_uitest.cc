@@ -46,7 +46,6 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_placeholder_util.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_views.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -67,7 +66,6 @@
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/security_interstitials/core/omnibox_https_upgrade_metrics.h"
-#include "components/strings/grit/components_strings.h"
 #include "components/unified_consent/pref_names.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
@@ -92,7 +90,6 @@
 #include "ui/base/ime/mock_input_method.h"
 #include "ui/base/ime/text_edit_commands.h"
 #include "ui/base/ime/text_input_client.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
@@ -103,7 +100,6 @@
 #include "ui/views/accessibility/atomic_view_ax_tree_manager.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/textfield/textfield_test_api.h"
-#include "ui/views/controls/webview/webview.h"
 #include "ui/views/views_features.h"
 
 #if BUILDFLAG(IS_OZONE)
@@ -2043,17 +2039,6 @@ IN_PROC_BROWSER_TEST_P(OmniboxViewViewsDumpAccessibilityEventsTest,
 
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
   chrome::FocusLocationBar(browser());
-  ui_test_utils::WaitForViewFocus(browser(), VIEW_ID_OMNIBOX, true);
-  if (features::IsWebUILocationBarEnabled()) {
-    if (auto* toolbar_webview = BrowserView::GetBrowserViewForBrowser(browser())
-                                    ->toolbar()
-                                    ->GetWebUIToolbarViewForTesting()) {
-      content::WaitForAccessibilityTreeToContainNodeWithName(
-          toolbar_webview->GetWebViewForTesting()->GetWebContents(),
-          l10n_util::GetStringUTF8(IDS_ACCNAME_LOCATION));
-    }
-  }
-  WaitForPendingSerialization();
 
   EXPECT_FALSE(omnibox_controller()->IsPopupOpen());
 

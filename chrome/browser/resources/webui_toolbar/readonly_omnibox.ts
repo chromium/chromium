@@ -400,7 +400,6 @@ export class ReadonlyOmniboxElement extends CrLitElement {
 
     this.trackedElementManager_.startTracking(
         this.$.textInput, 'kOmniboxElementId');
-    textInput.role = 'textbox';
     textInput.ariaLabel = this.getAriaLabel_();
     textInput.ariaAutoComplete = 'both';
     textInput.ariaKeyShortcuts = this.getAriaKeyShortcut_();

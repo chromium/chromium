@@ -187,7 +187,6 @@ class WebUILocationBar : public LocationBar,
   void OnMovedOrShown(ui::TrackedElement* element);
   void OnPopupStateChanged(OmniboxPopupState old_state,
                            OmniboxPopupState new_state);
-  void NotifyPopupControlsChanged();
   void ClearInPopupStateTransition();
 
   // Creates `omnibox_popup_aim_presenter_` if it doesn't exist yet and the
