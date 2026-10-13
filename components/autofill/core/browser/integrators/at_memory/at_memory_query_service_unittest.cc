@@ -421,6 +421,7 @@ TEST_F(AtMemoryQueryServiceTest, Query_LocalResultsPrecedeRemoteResults) {
 
   MemorySearchResult local_name(MemoryDataType::kNameFull, u"Name",
                                 u"Local Name");
+  local_name.sources.emplace_back(MemoryEntrySourceType::kAutofill);
   fake_data_provider->SetResults({local_name});
 
   TestFuture<MemorySearchResults> future;
@@ -1328,8 +1329,10 @@ TEST_F(AtMemoryQueryServiceTest,
 
   MemorySearchResult local_b(MemoryDataType::kNameFull, u"Name",
                              u"Local Name B", /*confidence_score=*/0.5);
+  local_b.sources.emplace_back(MemoryEntrySourceType::kAutofill);
   MemorySearchResult local_a(MemoryDataType::kNameFull, u"Name",
                              u"Local Name A", /*confidence_score=*/0.9);
+  local_a.sources.emplace_back(MemoryEntrySourceType::kAutofill);
   fake_data_provider->SetResults({local_b, local_a});
 
   std::unique_ptr<AtMemoryQueryService> service =
@@ -1347,6 +1350,63 @@ TEST_F(AtMemoryQueryServiceTest,
                           Field(&MemorySearchResult::value, u"Local Name B"),
                           Field(&MemorySearchResult::value, u"Remote Name A"),
                           Field(&MemorySearchResult::value, u"Remote Name B")));
+}
+
+// Tests that local Autofill results precede remote results even when a remote
+// duplicate replaces an earlier Autofill result during deduplication.
+TEST_F(AtMemoryQueryServiceTest,
+       Query_Ranking_AutofillPrioritizedAfterDeduplication) {
+  AtMemoryQueryResponse response = CreateQueryResponse();
+  response.mutable_autofill_fetch_plan()
+      ->add_fetch_specifications()
+      ->set_data_type(personal_context::proto::MEMORY_DATA_TYPE_NAME_FULL);
+
+  AtMemorySearchResult* remote_result = response.add_results();
+  remote_result->set_relevance_score(0.95);
+  Attribute* primary = remote_result->mutable_primary_attribute();
+  primary->set_schemaful_key(
+      personal_context::proto::MEMORY_DATA_TYPE_NAME_FULL);
+  primary->set_value("Alice");
+  Attribute* meta1 = remote_result->add_secondary_attributes();
+  meta1->set_schemaful_key(
+      personal_context::proto::MEMORY_DATA_TYPE_ADDRESS_CITY);
+  meta1->set_value("San Diego");
+  Attribute* meta2 = remote_result->add_secondary_attributes();
+  meta2->set_schemaful_key(
+      personal_context::proto::MEMORY_DATA_TYPE_ADDRESS_STATE);
+  meta2->set_value("California");
+
+  StubFetchContextResponse(std::move(response));
+
+  MemorySearchResult local_alice(MemoryDataType::kNameFull, u"Name", u"Alice",
+                                 /*confidence_score=*/0.9);
+  local_alice.sources.emplace_back(MemoryEntrySourceType::kAutofill);
+  local_alice.metadata_list.emplace_back(MemoryDataType::kAddressCity, u"City",
+                                         u"San Diego");
+
+  MemorySearchResult local_bob(MemoryDataType::kNameFull, u"Name", u"Bob",
+                               /*confidence_score=*/0.8);
+  local_bob.sources.emplace_back(MemoryEntrySourceType::kAutofill);
+  local_bob.metadata_list.emplace_back(MemoryDataType::kAddressCity, u"City",
+                                       u"New York");
+
+  auto data_provider = std::make_unique<FakeMemoryDataProvider>();
+  FakeMemoryDataProvider* fake_data_provider = data_provider.get();
+  fake_data_provider->SetResults({local_alice, local_bob});
+
+  std::unique_ptr<AtMemoryQueryService> service =
+      CreateQueryService(std::move(data_provider));
+
+  TestFuture<MemorySearchResults> future;
+  service->Query(u"what is my name", GURL("https://example.com"), u"Page Title",
+                 future.GetRepeatingCallback());
+
+  ASSERT_TRUE(future.Wait());
+  const MemorySearchResults& result = future.Get();
+  EXPECT_EQ(result.status, MemorySearchStatus::kFinalResponseSuccess);
+  EXPECT_THAT(result.entries,
+              ElementsAre(Field(&MemorySearchResult::value, u"Bob"),
+                          Field(&MemorySearchResult::value, u"Alice")));
 }
 
 struct QueryClassificationTestCase {
