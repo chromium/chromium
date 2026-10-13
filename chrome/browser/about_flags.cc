@@ -8391,6 +8391,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAccessibilityGoogleTtsAutomaticReconnectDescription,
      kOsCrOS,
      FEATURE_VALUE_TYPE(features::kAccessibilityGoogleTtsAutomaticReconnect)},
+
+    {"enable-accessibility-hover-text",
+     flag_descriptions::kAccessibilityHoverTextName,
+     flag_descriptions::kAccessibilityHoverTextDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kAccessibilityHoverText)},
+
     {"enable-accessibility-shake-to-locate",
      flag_descriptions::kAccessibilityShakeToLocateName,
      flag_descriptions::kAccessibilityShakeToLocateDescription, kOsCrOS,

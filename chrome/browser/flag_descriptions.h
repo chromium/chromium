@@ -2313,6 +2313,11 @@ inline constexpr char kAccessibilityGoogleTtsAutomaticReconnectDescription[] =
     "Automatically attempt to reconnect the Google TTS engine if it "
     "disconnects.";
 
+inline constexpr char kAccessibilityHoverTextName[] = "Hover Text";
+inline constexpr char kAccessibilityHoverTextDescription[] =
+    "Enables the Hover Text accessibility feature, which displays a "
+    "large-print floating text bubble for hovered or focused UI elements.";
+
 inline constexpr char kAccessibilityShakeToLocateName[] =
     "Adds shake cursor to locate feature";
 inline constexpr char kAccessibilityShakeToLocateDescription[] =

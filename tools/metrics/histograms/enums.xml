@@ -9189,6 +9189,7 @@ from previous Chrome versions.
   <int value="-1745174236"
       label="GlicContextualCueV2ActiveUserBackoff:disabled"/>
   <int value="-1744440138" label="CapabilityElementIconOnlyMode:enabled"/>
+  <int value="-1744316906" label="AccessibilityHoverText:disabled"/>
   <int value="-1744231895" label="CCTEphemeralMode:enabled"/>
   <int value="-1743234830" label="SubmenusTabContextMenuLffTabStrip:disabled"/>
   <int value="-1743214399" label="TrustSafetySentimentSurveyV2:disabled"/>
@@ -11133,6 +11134,7 @@ from previous Chrome versions.
       label="BluetoothAggressiveAppearanceFilter:disabled"/>
   <int value="-1166715563" label="ChromeOSAssistant:disabled"/>
   <int value="-1166067121" label="PermissionsAIv4:enabled"/>
+  <int value="-1165895058" label="AccessibilityHoverText:enabled"/>
   <int value="-1165284756" label="WindowsSystemTracing:disabled"/>
   <int value="-1165271479"
       label="UnifiedPasswordManagerErrorMessages:disabled"/>
