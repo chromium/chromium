@@ -76,7 +76,6 @@ void EmailVerificationController::HidePopup() {
     case PromptState::kClosed:
       return;
     case PromptState::kShowing:
-      prompt_state_ = PromptState::kClosed;
       DismissPopup();
       return;
     case PromptState::kLoading: {
@@ -91,7 +90,6 @@ void EmailVerificationController::HidePopup() {
         return;
       }
       hide_popup_timer_.Stop();
-      prompt_state_ = PromptState::kClosed;
       loading_start_time_.reset();
       DismissPopup();
       return;
@@ -109,7 +107,6 @@ void EmailVerificationController::ShowLoadingToast() {
   hide_popup_timer_.Stop();
   toast_timer_.Stop();
   loading_start_time_.reset();
-  prompt_state_ = PromptState::kClosed;
   DismissPopup();
   StartLoadingTimer();
   if (ToastController* toast_controller = GetToastController()) {
@@ -188,7 +185,8 @@ void EmailVerificationController::ShowVerifiedToastImpl(const GURL& url) {
 
 void EmailVerificationController::DismissPopup() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const bool was_loading = popup_controller_.is_loading();
+  const bool was_loading = prompt_state_ == PromptState::kLoading;
+  prompt_state_ = PromptState::kClosed;
   popup_controller_.Dismiss();
   if (was_loading && IsWebContentsVisible()) {
     // The popup is activatable and took focus when the user clicked "Verify".
