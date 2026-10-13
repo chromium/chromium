@@ -101,7 +101,7 @@ def _generate_include_row(
     else filename
   )
 
-  if resource_path_prefix != None:
+  if resource_path_prefix != None:  # noqa: E711
     resource_path = resource_path_prefix + '/' + resource_path
   assert '\\' not in resource_path
 
@@ -141,19 +141,19 @@ def main(argv):
       )
     )
 
-    if args.grdp_files != None:
+    if args.grdp_files != None:  # noqa: E711
       out_grd_dir = os.path.dirname(args.out_grd)
       for grdp_file in args.grdp_files:
         grdp_path = os.path.relpath(grdp_file, out_grd_dir).replace('\\', '/')
         grd_file.write(_generate_part_row(grdp_path))
 
     resource_path_rewrites = {}
-    if args.resource_path_rewrites != None:
+    if args.resource_path_rewrites != None:  # noqa: E711
       for r in args.resource_path_rewrites:
         [original, rewrite] = r.split("|")
         resource_path_rewrites[original] = rewrite
 
-    if args.input_files != None:
+    if args.input_files != None:  # noqa: E711
       assert args.input_files_base_dir
       args.input_files_base_dir = args.input_files_base_dir.replace('\\', '/')
       args.root_gen_dir = args.root_gen_dir.replace('\\', '/')
@@ -187,7 +187,7 @@ def main(argv):
           )
         )
 
-    if args.manifest_files != None:
+    if args.manifest_files != None:  # noqa: E711
       for manifest_file in args.manifest_files:
         manifest_path = os.path.normpath(os.path.join(_CWD, manifest_file))
         with open(manifest_path, 'r', encoding='utf-8') as f:

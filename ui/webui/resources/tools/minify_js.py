@@ -13,7 +13,7 @@ _SRC_PATH = os.path.normpath(os.path.join(_HERE_PATH, '..', '..', '..', '..'))
 _CWD = os.getcwd()
 
 sys.path.append(os.path.join(_SRC_PATH, 'third_party', 'node'))
-import node
+import node  # noqa: E402
 
 
 def main(argv):

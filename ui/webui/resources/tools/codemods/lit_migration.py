@@ -13,7 +13,7 @@ _SRC_PATH = os.path.normpath(
 )
 
 sys.path.append(os.path.join(_SRC_PATH, 'third_party', 'node'))
-import node
+import node  # noqa: E402
 
 """
  Instructions to run this script locally.
@@ -68,7 +68,7 @@ def main(argv):
       ]
     )
   else:
-    out = node.RunNode(
+    out = node.RunNode(  # noqa: F841
       [
         os.path.join(_HERE_PATH, 'lit_migration_templates.mjs'),
         '--file=' + args.file,

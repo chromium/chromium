@@ -12,8 +12,8 @@ _SRC_PATH = os.path.normpath(os.path.join(_HERE_PATH, '..', '..', '..', '..'))
 
 _NODE_PATH = os.path.join(_SRC_PATH, 'third_party', 'node')
 sys.path.append(_NODE_PATH)
-import node
-import node_modules
+import node  # noqa: E402
+import node_modules  # noqa: E402
 
 
 def main(argv):

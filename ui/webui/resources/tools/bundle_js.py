@@ -4,13 +4,13 @@
 # found in the LICENSE file.
 
 import argparse
-import itertools
+import itertools  # noqa: F401
 import json
 import os
-import glob
-import platform
-import re
-import shutil
+import glob  # noqa: F401
+import platform  # noqa: F401
+import re  # noqa: F401
+import shutil  # noqa: F401
 import sys
 
 _HERE_PATH = os.path.dirname(__file__)
@@ -18,8 +18,8 @@ _SRC_PATH = os.path.normpath(os.path.join(_HERE_PATH, '..', '..', '..', '..'))
 _CWD = os.getcwd()  # NOTE(dbeam): this is typically out/<gn_name>/.
 
 sys.path.append(os.path.join(_SRC_PATH, 'third_party', 'node'))
-import node
-import node_modules
+import node  # noqa: E402
+import node_modules  # noqa: E402
 
 
 def _request_list_path(out_folder, target_name):
@@ -40,7 +40,7 @@ def _get_dep_path(dep, host_url, out_folder):
 # Get a list of all files that were bundled with rollup and update the
 # depfile accordingly such that Ninja knows when to re-trigger.
 def _update_dep_file(in_folder, args, out_file_path, manifest):
-  in_path = os.path.join(_CWD, in_folder)
+  in_path = os.path.join(_CWD, in_folder)  # noqa: F841
 
   # Gather the dependencies of all bundled root files.
   request_list = []
@@ -120,7 +120,7 @@ def _generate_manifest_file(
     sourcemap_file = bundled_path + '.map'
     with open(sourcemap_file, 'r', encoding='utf-8') as f:
       sourcemap = json.loads(f.read())
-      if not 'sources' in sourcemap:
+      if 'sources' not in sourcemap:
         raise Exception('rollup could not construct source map')
       sources = sourcemap['sources']
       replaced_sources = []

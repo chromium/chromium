@@ -123,7 +123,7 @@ class BundleJsTest(unittest.TestCase):
     )
 
   def testBundleWithResources(self):
-    resources_path = './tests/bundle_js/resources'
+    resources_path = './tests/bundle_js/resources'  # noqa: F841
     args = [
       '--host',
       'fake-host',
@@ -206,7 +206,7 @@ class BundleJsTest(unittest.TestCase):
     ]
     self._run_bundle(args)
 
-    output_js = self._read_out_file('foo_ui.rollup.js')
+    output_js = self._read_out_file('foo_ui.rollup.js')  # noqa: F841
     self._check_bundle_output(
       'foo_ui_excludes_resources.rollup.js', 'foo_ui.rollup.js'
     )

@@ -12,22 +12,25 @@ def _CheckNoDirectLitImport(input_api, output_api):
     the imports from the TS/JS files to make sure only xf_base can import from
     Lit directly.
     """
+
     def _isLitDisallowed(file_path):
-        xf_base_file_path = input_api.os_path.join('ui', 'file_manager',
-                                                   'file_manager', 'widgets',
-                                                   'xf_base.ts')
-        selector_path = input_api.os_path.join('ui', 'file_manager',
-                                               'file_manager', 'lib',
-                                               'selector.ts')
+        xf_base_file_path = input_api.os_path.join(
+            'ui', 'file_manager', 'file_manager', 'widgets', 'xf_base.ts'
+        )
+        selector_path = input_api.os_path.join(
+            'ui', 'file_manager', 'file_manager', 'lib', 'selector.ts'
+        )
 
         allowed_paths = {xf_base_file_path, selector_path}
         local_path = file_path.LocalPath()
-        return Path(local_path).suffix in {
-            '.ts', '.js'
-        } and local_path not in allowed_paths
+        return (
+            Path(local_path).suffix in {'.ts', '.js'}
+            and local_path not in allowed_paths
+        )
 
-    ts_files = input_api.AffectedFiles(include_deletes=False,
-                                       file_filter=_isLitDisallowed)
+    ts_files = input_api.AffectedFiles(
+        include_deletes=False, file_filter=_isLitDisallowed
+    )
     if not ts_files:
         return []
 
@@ -42,23 +45,27 @@ def _CheckNoDirectLitImport(input_api, output_api):
                         "Direct import from lit is not allowed. All lit "
                         "related dependencies should be limited in file "
                         "ui/file_manager/file_manager/widgets/xf_base.ts and "
-                        "all other files should import xf_base instead." %
-                        (f.LocalPath(), line_num, line.strip())))
+                        "all other files should import xf_base instead."
+                        % (f.LocalPath(), line_num, line.strip())
+                    )
+                )
                 break
 
     return results
 
 
 def _IsComment(line):
-    l = line.lstrip()
+    l = line.lstrip()  # noqa: E741
     return l.startswith(('//', '/*', '* '))
 
 
 def _CheckBannedTsTags(input_api, output_api):
     # It allow @ts-ignore in test files
-    is_test = lambda fname: '_unittest' in fname or 'mock_' in fname
-    ts_only = lambda f: (f.LocalPath().endswith('.ts') and
-                         not is_test(f.LocalPath()))
+    is_test = lambda fname: '_unittest' in fname or 'mock_' in fname  # noqa: E731
+    ts_only = lambda f: (  # noqa: E731
+        f.LocalPath().endswith('.ts')  # noqa: E731
+        and not is_test(f.LocalPath())
+    )
     results = []
     offending_files = []
     for f in input_api.AffectedFiles(file_filter=ts_only):
@@ -70,7 +77,9 @@ def _CheckBannedTsTags(input_api, output_api):
 
     if offending_files:
         results.append(
-            output_api.PresubmitError('@ts-ignore is banned in TS files.',
-                                      offending_files))
+            output_api.PresubmitError(
+                '@ts-ignore is banned in TS files.', offending_files
+            )
+        )
 
     return results

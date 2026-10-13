@@ -6,7 +6,7 @@
 import generate_grd
 import os
 import shutil
-import sys
+import sys  # noqa: F401
 import tempfile
 import unittest
 
@@ -75,12 +75,12 @@ class GenerateGrdTest(unittest.TestCase):
       os.path.join(_CWD, pathToHere, 'tests'),
     ]
 
-    if manifest_files != None:
+    if manifest_files != None:  # noqa: E711
       args += [
         '--manifest-files',
       ] + manifest_files
 
-    if grdp_files != None:
+    if grdp_files != None:  # noqa: E711
       args += [
         '--grdp-files',
       ] + grdp_files

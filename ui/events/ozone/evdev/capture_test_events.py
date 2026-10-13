@@ -6,14 +6,15 @@
 
 import argparse
 import evdev
-import os
+import os  # noqa: F401
 import sys
 
 # Fix keys with multiple names.
 try:
   import explain_proc_bus_input_devices
+
   KEY_NAMES = explain_proc_bus_input_devices.KEY_NAMES
-except:
+except:  # noqa: E722
   KEY_NAMES = evdev.ecodes.bytype[evdev.ecodes.EV_KEY].copy()
 
 
@@ -28,14 +29,16 @@ def dump_events(out, dev):
         CODE_NAMES = evdev.ecodes.bytype[event.type]
 
       out.write(
-          '    {{%(sec)d, %(usec)d}, %(type)s, %(code)s, %(value)d},\n' % {
-              'sec': event.sec,
-              'usec': event.usec,
-              'type': evdev.ecodes.EV[event.type],
-              'code': CODE_NAMES[event.code],
-              'value': event.value
-          })
-  except KeyboardInterrupt as e:
+        '    {{%(sec)d, %(usec)d}, %(type)s, %(code)s, %(value)d},\n'
+        % {
+          'sec': event.sec,
+          'usec': event.usec,
+          'type': evdev.ecodes.EV[event.type],
+          'code': CODE_NAMES[event.code],
+          'value': event.value,
+        }
+      )
+  except KeyboardInterrupt:
     pass
 
   out.write('};\n')

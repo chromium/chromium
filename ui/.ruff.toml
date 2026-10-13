@@ -1,0 +1,17 @@
+line-length = 80
+indent-width = 2
+extend-exclude = [
+  "*_pb2.py",
+  "third_party/*",
+  "accessibility/extensions/tools/publish_webstore_extension.py",
+  "accessibility/extensions/tools/webstore_extension_util.py",
+  "events/ozone/evdev/explain_proc_bus_input_devices.py",
+  "ozone/generate_constructor_list.py",
+  "ozone/generate_ozone_platform_list.py",
+]
+
+[lint]
+unfixable = ["F401"]
+
+[format]
+quote-style = "preserve"

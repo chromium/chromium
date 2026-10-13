@@ -15,7 +15,7 @@ import xml.etree.ElementTree as ET
 current_dir = os.path.dirname(__file__)
 src_dir = os.path.join(current_dir, '../../../..')
 sys.path.insert(1, os.path.join(src_dir, 'third_party'))
-import jinja2
+import jinja2  # noqa: E402
 
 root = ET.parse(os.path.join(src_dir, 'tools/metrics/histograms/enums.xml'))
 e = root.find('.//enum[@name="ViewFileType"]')

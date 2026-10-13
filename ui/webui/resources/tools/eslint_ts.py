@@ -14,8 +14,8 @@ _CWD = os.getcwd()
 
 _NODE_PATH = os.path.join(_SRC_PATH, 'third_party', 'node')
 sys.path.append(_NODE_PATH)
-import node
-import node_modules
+import node  # noqa: E402
+import node_modules  # noqa: E402
 
 _ESLINT_CONFIG_TEMPLATE = """import {defaultConfig, %(extraConfigs)s} from '%(config_base)s';
 

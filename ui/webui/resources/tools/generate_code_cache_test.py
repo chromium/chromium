@@ -7,7 +7,7 @@ import generate_code_cache
 import json
 import os
 import shutil
-import sys
+import sys  # noqa: F401
 import tempfile
 import unittest
 
@@ -28,7 +28,7 @@ class GenerateCodeCacheTest(unittest.TestCase):
 
   def _run_test(self, in_files):
     manifest_path = os.path.join(self._out_dir, "manifest.json")
-    util_path = os.path.join(
+    util_path = os.path.join(  # noqa: F841
       _HERE_DIR,
       "tests",
       "generate_code_cache",

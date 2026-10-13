@@ -17,7 +17,7 @@ _SRC_PATH = os.path.normpath(
 )
 
 sys.path.append(os.path.join(_SRC_PATH, 'third_party', 'node'))
-import node
+import node  # noqa: E402
 
 """
  Instructions to run this script locally.
@@ -46,7 +46,7 @@ def main(argv):
 
   if not os.path.exists(args.transform):
     print(
-      f'Error: jscodeshift.py: Could not file transform file \'args.transform\'',
+      'Error: jscodeshift.py: Could not file transform file \'args.transform\'',
       file=sys.stderr,
     )
     sys.exit(1)

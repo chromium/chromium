@@ -447,7 +447,7 @@ class GenXproto(FileWriter):
                 safe_name(expr.lenfield_name),
             )
 
-        assert expr.op == None
+        assert expr.op == None  # noqa: E711
         if expr.nmemb:
             return str(expr.nmemb)
 
@@ -1296,7 +1296,7 @@ class GenXproto(FileWriter):
                 del self.enum_types[enum]
 
         for t in self.types:
-            l = self.types[t]
+            l = self.types[t]  # noqa: E741
             if len(l) == 1:
                 continue
 

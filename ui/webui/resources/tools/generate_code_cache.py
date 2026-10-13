@@ -8,7 +8,7 @@ import json
 import os
 import subprocess
 import sys
-from pathlib import Path
+from pathlib import Path  # noqa: F401
 
 _CWD = os.getcwd()
 

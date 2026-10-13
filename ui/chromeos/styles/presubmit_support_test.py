@@ -4,7 +4,7 @@
 # found in the LICENSE file.
 
 import os.path
-import subprocess
+import subprocess  # noqa: F401
 import unittest
 import sys
 from presubmit_support import _CheckSemanticColors
@@ -20,7 +20,8 @@ class CSSVariablePresubmitBase(unittest.TestCase):
     def setUp(self):
         self.mock_input_api = MockInputApi()
         self.mock_input_api.change.RepositoryRoot = lambda: os.path.join(
-            os.path.dirname(__file__), '..', '..', '..')
+            os.path.dirname(__file__), '..', '..', '..'
+        )
 
         self.mock_output_api = MockOutputApi()
 
@@ -32,18 +33,18 @@ class CSSVariablePresubmitBase(unittest.TestCase):
 class CSSVariableContext(CSSVariablePresubmitBase):
     def testUnknownCSSContext(self):
         lines = [
-            'selector {', '\tcolor: var(--unknown-should-be-ignored);', '}'
+            'selector {',
+            '\tcolor: var(--unknown-should-be-ignored);',
+            '}',
         ]
         self.mockFileWithLines('some/path/file.css', lines)
-        errors = _CheckSemanticColors(self.mock_input_api,
-                                      self.mock_output_api)
+        errors = _CheckSemanticColors(self.mock_input_api, self.mock_output_api)
         self.assertEqual(0, len(errors))
 
     def testKnownCSSContext(self):
         lines = ['selector {', '\tcolor: var(--cros-should-be-flagged);', '}']
         self.mockFileWithLines('some/path/file.css', lines)
-        errors = _CheckSemanticColors(self.mock_input_api,
-                                      self.mock_output_api)
+        errors = _CheckSemanticColors(self.mock_input_api, self.mock_output_api)
         self.assertEqual(1, len(errors))
         self.assertEqual(1, len(errors[0].items))
 
@@ -51,48 +52,44 @@ class CSSVariableContext(CSSVariablePresubmitBase):
 class CSSVariableValidity(CSSVariablePresubmitBase):
     def testMultipleUnknownVariables(self):
         lines = [
-            'selector {'
-            '\tcolor: var(--cros-unknown-1);',
+            'selector {\tcolor: var(--cros-unknown-1);',
             '\tbackground-color: var(--cros-unknown-2);',
-            '\tborder: 1px solid var(--cros-unknown-3);', '}'
+            '\tborder: 1px solid var(--cros-unknown-3);',
+            '}',
         ]
         self.mockFileWithLines('some/path/file.css', lines)
-        errors = _CheckSemanticColors(self.mock_input_api,
-                                      self.mock_output_api)
+        errors = _CheckSemanticColors(self.mock_input_api, self.mock_output_api)
         self.assertEqual(1, len(errors))
         self.assertEqual(3, len(errors[0].items))
 
     def testMixKnownUnkownVariables(self):
         lines = [
-            'selector {'
-            '\tcolor: var(' + _CANONICAL_VALID_VARIABLE + ');',
+            'selector {\tcolor: var(' + _CANONICAL_VALID_VARIABLE + ');',
             '\tbackground-color: var(--cros-unknown-2);',
-            '\tborder: 1px solid var(--cros-unknown-3);', '}'
+            '\tborder: 1px solid var(--cros-unknown-3);',
+            '}',
         ]
         self.mockFileWithLines('some/path/file.css', lines)
-        errors = _CheckSemanticColors(self.mock_input_api,
-                                      self.mock_output_api)
+        errors = _CheckSemanticColors(self.mock_input_api, self.mock_output_api)
         self.assertEqual(1, len(errors))
         self.assertEqual(2, len(errors[0].items))
 
     def testMultipleValidatedFilesInvalidVariable(self):
-        lines = ['selector {' '\tcolor: var(--cros-invalid-variable);', '}']
+        lines = ['selector {\tcolor: var(--cros-invalid-variable);', '}']
         self.mockFileWithLines('some/path/file.css', lines)
         self.mockFileWithLines('some/path/file.html', lines)
         self.mockFileWithLines('some/path/file.js', lines)
-        errors = _CheckSemanticColors(self.mock_input_api,
-                                      self.mock_output_api)
+        errors = _CheckSemanticColors(self.mock_input_api, self.mock_output_api)
         self.assertEqual(1, len(errors))
         self.assertEqual(3, len(errors[0].items))
 
     def testCLWithOtherFilesAreIgnored(self):
-        lines = ['selector {' '\tcolor: var(--cros-invalid-variable);', '}']
+        lines = ['selector {\tcolor: var(--cros-invalid-variable);', '}']
         self.mockFileWithLines('some/path/file.css', lines)
         self.mockFileWithLines('some/path/file.cc', lines)
         self.mockFileWithLines('some/path/file.h', lines)
         self.mockFileWithLines('some/path/file.py', lines)
-        errors = _CheckSemanticColors(self.mock_input_api,
-                                      self.mock_output_api)
+        errors = _CheckSemanticColors(self.mock_input_api, self.mock_output_api)
         self.assertEqual(1, len(errors))
         self.assertEqual(1, len(errors[0].items))
         self.assertTrue('file.css' in errors[0].items[0])

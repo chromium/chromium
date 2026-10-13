@@ -147,7 +147,7 @@ def CheckFileTypesJSONSchema(input_api, output_api):
     try:
         data = _load_json_data(input_api, file_name)
         results.extend(_validate_json_schema(data, file_path, output_api))
-    except ValueError as err:
+    except ValueError:
         results.append(
             output_api.PresubmitError(f'{file_path}: must be a valid json.')
         )
