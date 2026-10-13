@@ -928,7 +928,7 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
 
         String deviceName =
                 ApplicationProvider.getApplicationContext()
-                        .getString(R.string.signin_device_type_laptop);
+                        .getString(R.string.signin_device_type_computer);
         String expectedSubtitle =
                 ApplicationProvider.getApplicationContext()
                         .getString(

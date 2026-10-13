@@ -27,7 +27,7 @@ public class AccountPreviewPreferenceStringUtilsUnitTest {
     private final Context mContext = ApplicationProvider.getApplicationContext();
     private final String mPhoneStr = mContext.getString(R.string.signin_device_type_phone);
     private final String mTabletStr = mContext.getString(R.string.signin_device_type_tablet);
-    private final String mLaptopStr = mContext.getString(R.string.signin_device_type_laptop);
+    private final String mComputerStr = mContext.getString(R.string.signin_device_type_computer);
 
     @Test
     public void testGetSubtitleForDefaultFlow_emptyPreferredDataTypes_returnsNull() {
@@ -83,7 +83,7 @@ public class AccountPreviewPreferenceStringUtilsUnitTest {
                 mContext.getString(
                         R.string
                                 .signin_account_picker_bottom_sheet_subtitle_for_device_type_bookmarks,
-                        mLaptopStr),
+                        mComputerStr),
                 AccountPreviewPreferenceStringUtils.getSubtitleForDefaultFlow(
                         mContext,
                         createPref(
@@ -234,7 +234,7 @@ public class AccountPreviewPreferenceStringUtilsUnitTest {
                 mContext.getString(
                         R.string
                                 .signin_account_picker_bottom_sheet_subtitle_for_web_signin_device_type_bookmarks,
-                        mLaptopStr),
+                        mComputerStr),
                 AccountPreviewPreferenceStringUtils.getSubtitleForWebSignin(
                         mContext,
                         createPref(

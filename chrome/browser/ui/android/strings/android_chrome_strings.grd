@@ -3824,8 +3824,8 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_SIGNIN_DEVICE_TYPE_TABLET" desc="Device type string to be inserted as a placeholder into sign-in promo and web sign-in subtitle messages.">
         your tablet
       </message>
-      <message name="IDS_SIGNIN_DEVICE_TYPE_LAPTOP" desc="Device type string to be inserted as a placeholder into sign-in promo and web sign-in subtitle messages.">
-        your laptop
+      <message name="IDS_SIGNIN_DEVICE_TYPE_COMPUTER" desc="Device type string to be inserted as a placeholder into sign-in promo and web sign-in subtitle messages.">
+        your computer
       </message>
       <message name="IDS_SIGNIN_ACCOUNT_PICKER_BOTTOM_SHEET_SUBTITLE_ON_ALL_DEVICES_SAVED_INFO" desc="This string is the subtitle of a promotional bottom sheet about signing in to Chrome with the user's Google Account. It explains the user benefit of signing in to get data on all devices.">
         Sign in to get your saved info and more on all your devices

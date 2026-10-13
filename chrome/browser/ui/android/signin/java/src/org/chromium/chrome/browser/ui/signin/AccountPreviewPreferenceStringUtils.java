@@ -133,7 +133,7 @@ public final class AccountPreviewPreferenceStringUtils {
             case DEVICE_FORM_FACTOR_PHONE -> context.getString(R.string.signin_device_type_phone);
             case DEVICE_FORM_FACTOR_TABLET -> context.getString(R.string.signin_device_type_tablet);
             case DEVICE_FORM_FACTOR_DESKTOP ->
-                    context.getString(R.string.signin_device_type_laptop);
+                    context.getString(R.string.signin_device_type_computer);
             default -> null;
         };
     }
