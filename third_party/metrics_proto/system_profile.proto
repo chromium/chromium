@@ -1175,7 +1175,7 @@ message SystemProfileProto {
 
   repeated AntiVirusProduct antivirus_product = 23;
 
-  // Next Tag: 72
+  // Next Tag: 75
   enum ComponentId {
     option features.enum_type = CLOSED;
 
@@ -1264,6 +1264,9 @@ message SystemProfileProto {
     DYNAMIC_RENDERER_PATCH_WINDOWS = 69;
     MODEL_MANIFEST = 70;
     GEOLOCATION_PERMISSION_PREDICTIONS_MODEL = 71;
+    CLIENT_SIDE_PHISHING_MODEL = 72;
+    NOTIFICATION_PERMISSION_PREDICTIONS_MODEL = 73;
+    PHISHING_IMAGE_EMBEDDER_MODEL = 74;
   }
 
   // Information about what Chrome components are registered and at which
