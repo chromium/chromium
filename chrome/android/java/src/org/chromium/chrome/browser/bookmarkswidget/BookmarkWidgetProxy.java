@@ -23,11 +23,27 @@ import org.chromium.components.webapps.ShortcutSource;
 import org.chromium.content_public.common.ContentUrlConstants;
 
 import java.util.Locale;
+import java.util.Set;
 
 /** Proxy that responds to tapping on the Bookmarks widget. */
 @NullMarked
 public class BookmarkWidgetProxy extends Activity {
     private static final String TAG = "BookmarkWidgetProxy";
+
+    // Widget taps are stamped with trusted intent extras, so IntentHandler skips the checks it
+    // applies to untrusted senders and any host reachable from here runs with Chrome's own
+    // authority. The allowlist is therefore limited to hosts that never treat a path or query
+    // parameter as a nested URL to navigate to; they may still carry a payload (a bookmarks
+    // folder path, a history search term), but none of it becomes a navigation. The "pdf" host
+    // is excluded because its "link?url=" parameter does exactly that, and would smuggle
+    // file://, content:// and cookie-bearing http(s) loads past those checks.
+    private static final Set<String> ALLOWED_CHROME_NATIVE_HOSTS =
+            Set.of(
+                    UrlConstants.BOOKMARKS_HOST,
+                    UrlConstants.RECENT_TABS_HOST,
+                    UrlConstants.DOWNLOADS_HOST,
+                    UrlConstants.HISTORY_HOST,
+                    UrlConstants.NTP_HOST);
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -39,6 +55,11 @@ public class BookmarkWidgetProxy extends Activity {
         } else {
             Uri data = intent.getData();
             if (isSafeBookmarkUrl(data)) {
+                // The outbound intent is built from scratch rather than by reusing or forwarding
+                // the incoming one. The incoming intent is attacker-reachable, and its extras
+                // include URL sources that IntentHandler consults at a higher priority than the
+                // data URI, which would bypass the validation above. Only the fields explicitly
+                // copied below cross this boundary.
                 Intent view;
                 if (data == null || Uri.EMPTY.equals(data)) {
                     view = new Intent(this, ChromeLauncherActivity.class);
@@ -80,17 +101,36 @@ public class BookmarkWidgetProxy extends Activity {
             return false;
         }
         String lowerScheme = scheme.toLowerCase(Locale.US);
+
         if (UrlConstants.HTTP_SCHEME.equals(lowerScheme)
-                || UrlConstants.HTTPS_SCHEME.equals(lowerScheme)
-                || UrlConstants.CHROME_NATIVE_SCHEME.equals(lowerScheme)) {
-            return true;
+                || UrlConstants.HTTPS_SCHEME.equals(lowerScheme)) {
+            String host = data.getHost();
+            return host != null && !host.isEmpty();
         }
+
+        if (UrlConstants.CHROME_NATIVE_SCHEME.equals(lowerScheme)) {
+            return isSafeChromeNativeUri(data);
+        }
+
         if (UrlConstants.ABOUT_SCHEME.equals(lowerScheme)) {
             String uriString = data.toString();
             return ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL.equals(uriString)
                     || ContentUrlConstants.ABOUT_BLANK_URL.equals(uriString);
         }
         return false;
+    }
+
+    private static boolean isSafeChromeNativeUri(Uri data) {
+        // Uri percent-decodes getHost() but not getEncodedAuthority(), so requiring them to be
+        // equal forces the authority to be a bare literal host: no credentials, no port, no
+        // escapes, nothing else that could make Uri and GURL disagree on the effective host.
+        String host = data.getHost();
+        if (host == null || !host.equals(data.getEncodedAuthority())) {
+            return false;
+        }
+        // Locale.US, not the default locale: under tr-TR "HISTORY".toLowerCase() yields a dotless
+        // i and would miss the allowlist.
+        return ALLOWED_CHROME_NATIVE_HOSTS.contains(host.toLowerCase(Locale.US));
     }
 
     void startActivity(Context context, Intent intent) {

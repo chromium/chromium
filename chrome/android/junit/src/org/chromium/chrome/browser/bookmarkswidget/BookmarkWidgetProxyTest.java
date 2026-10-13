@@ -293,4 +293,121 @@ public class BookmarkWidgetProxyTest {
         assertNull("Non-blank about: URLs should not trigger ChromeLauncherActivity.", nextIntent);
         assertTrue(activity.isFinishing());
     }
+
+    @Test
+    public void testOnCreate_AllowedUrls_Launched() {
+        assertUrlLaunchesTrusted(
+                "chrome-native://newtab/",
+                "chrome-native newtab URL should launch a trusted ChromeLauncherActivity intent.");
+
+        // Accepting this is deliberate: chrome-native is a registered standard scheme, so GURL
+        // canonicalizes the host to lower case and the navigation resolves to the same native
+        // page. Matching the allowlist case-insensitively keeps this validation and GURL in
+        // agreement.
+        assertUrlLaunchesTrusted(
+                "CHROME-NATIVE://BOOKMARKS/",
+                "Upper case chrome-native bookmarks URL is intentionally accepted, because the"
+                        + " host is canonicalized to lower case.");
+    }
+
+    @Test
+    public void testOnCreate_DisallowedUrls_NotLaunched() {
+        // The pdf host, whose "link?url=" parameter smuggles a nested navigation.
+        assertUrlIgnored(
+                "chrome-native://pdf/link?url=file%3A%2F%2F%2Fdata%2Fdata"
+                        + "%2Forg.chromium.chrome%2Ffiles%2Fprivate_canary.pdf",
+                "chrome-native pdf host smuggling a file:// URL should not trigger"
+                        + " ChromeLauncherActivity.");
+        assertUrlIgnored(
+                "chrome-native://pdf/link?url=http%3A%2F%2Fevil.test%2Fsecret.pdf",
+                "chrome-native pdf host smuggling an http:// URL should not trigger"
+                        + " ChromeLauncherActivity.");
+
+        // Real chrome-native hosts that the widget never links to.
+        assertUrlIgnored(
+                "chrome-native://settings/",
+                "chrome-native settings URL should not trigger ChromeLauncherActivity.");
+        assertUrlIgnored(
+                "chrome-native://explore/",
+                "chrome-native explore URL should not trigger ChromeLauncherActivity.");
+        assertUrlIgnored(
+                "chrome-native://unknown-host/",
+                "Unknown chrome-native host should not trigger ChromeLauncherActivity.");
+
+        // Authority spoofing: credentials, ports and escapes that make the authority something
+        // other than a bare literal host.
+        assertUrlIgnored(
+                "chrome-native://user:pass@bookmarks/",
+                "chrome-native URL carrying credentials should not trigger"
+                        + " ChromeLauncherActivity.");
+        assertUrlIgnored(
+                "chrome-native://bookmarks@pdf/",
+                "chrome-native URL whose real host is pdf should not trigger"
+                        + " ChromeLauncherActivity.");
+        assertUrlIgnored(
+                "chrome-native://pdf@bookmarks/",
+                "chrome-native URL whose real host is the allowed bookmarks host should still not"
+                        + " trigger ChromeLauncherActivity, because its authority is not a bare"
+                        + " host.");
+        assertUrlIgnored(
+                "chrome-native://bookmarks:8080/",
+                "chrome-native URL specifying a port should not trigger ChromeLauncherActivity.");
+        assertUrlIgnored(
+                "chrome-native://bookmarks:/",
+                "chrome-native URL with a trailing empty port should not trigger"
+                        + " ChromeLauncherActivity.");
+        assertUrlIgnored(
+                "chrome-native://bookmarks:abc/",
+                "chrome-native URL with a non-numeric port should not trigger"
+                        + " ChromeLauncherActivity.");
+        // Uri decodes the host, so the allowlist check alone would match "bookmarks" here. Only
+        // comparing against the encoded authority rejects it.
+        assertUrlIgnored(
+                "chrome-native://%62ookmarks/",
+                "chrome-native URL with a percent-encoded host should not trigger"
+                        + " ChromeLauncherActivity.");
+
+        // Malformed or opaque URIs, which have no host at all.
+        assertUrlIgnored(
+                "chrome-native:/\\bookmarks",
+                "chrome-native URL using a backslash instead of a second slash should not trigger"
+                        + " ChromeLauncherActivity.");
+        assertUrlIgnored(
+                "chrome-native:bookmarks",
+                "Opaque chrome-native URL should not trigger ChromeLauncherActivity.");
+        assertUrlIgnored(
+                "chrome-native:///",
+                "chrome-native URL without a host should not trigger ChromeLauncherActivity.");
+        assertUrlIgnored(
+                "https:www.google.com",
+                "Opaque https URL should not trigger ChromeLauncherActivity.");
+        assertUrlIgnored(
+                "http:///path",
+                "http URL without a host should not trigger ChromeLauncherActivity.");
+    }
+
+    private void assertUrlLaunchesTrusted(String url, String message) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        BookmarkWidgetProxy activity =
+                Robolectric.buildActivity(BookmarkWidgetProxy.class, intent).setup().get();
+
+        Intent nextIntent = Shadows.shadowOf(activity).getNextStartedActivity();
+        assertNotNull(message, nextIntent);
+        assertEquals(
+                message,
+                ChromeLauncherActivity.class.getName(),
+                nextIntent.getComponent().getClassName());
+        assertTrue(message, IntentUtils.isTrustedIntentFromSelf(nextIntent));
+        assertTrue(activity.isFinishing());
+    }
+
+    private void assertUrlIgnored(String url, String message) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        BookmarkWidgetProxy activity =
+                Robolectric.buildActivity(BookmarkWidgetProxy.class, intent).setup().get();
+
+        Intent nextIntent = Shadows.shadowOf(activity).getNextStartedActivity();
+        assertNull(message, nextIntent);
+        assertTrue(activity.isFinishing());
+    }
 }
