@@ -14,7 +14,8 @@ export function getHtml(this: FontSizeMenuElement) {
           accessibility-label="$i18n{fontSizeTitle}"
           role-description="$i18n{menu}">
         <cr-icon-button class="font-size" role="menuitem"
-            id="font-size-decrease" aria-label="$i18n{decreaseFontSizeLabel}"
+            id="font-size-decrease" ?disabled="${this.isFontSizeMin_()}"
+            aria-label="$i18n{decreaseFontSizeLabel}"
             title="$i18n{decreaseFontSizeLabel}"
             iron-icon="${this.webuiRoundedIconsEnabled_ ?
                 'read-anything:remove' :
@@ -22,7 +23,8 @@ export function getHtml(this: FontSizeMenuElement) {
             @click="${this.onDecreaseClick_}">
         </cr-icon-button>
         <cr-icon-button class="font-size" role="menuitem"
-            id="font-size-increase" aria-label="$i18n{increaseFontSizeLabel}"
+            id="font-size-increase" ?disabled="${this.isFontSizeMax_()}"
+            aria-label="$i18n{increaseFontSizeLabel}"
             title="$i18n{increaseFontSizeLabel}" iron-icon="cr:add"
             @click="${this.onIncreaseClick_}">
         </cr-icon-button>

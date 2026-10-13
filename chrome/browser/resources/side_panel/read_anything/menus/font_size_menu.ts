@@ -75,6 +75,12 @@ export class FontSizeMenuElement extends FontSizeMenuElementBase implements
   private visualBrowserProxy_: VisualBrowserProxy =
       VisualBrowserProxyImpl.getInstance();
 
+  override connectedCallback() {
+    super.connectedCallback();
+    this.visualBrowserProxy_.restoreSettingsFromPrefs.addListener(
+        () => this.requestUpdate());
+  }
+
   open(anchor: HTMLElement, showAtConfig?: ShowAtConfigPrefs) {
     openMenu(this.$.lazyMenu.get(), anchor, showAtConfig);
   }
@@ -92,6 +98,16 @@ export class FontSizeMenuElement extends FontSizeMenuElementBase implements
         this.visualBrowserProxy_.getDefaultFontSize();
   }
 
+  protected isFontSizeMin_(): boolean {
+    return this.visualBrowserProxy_.getFontSize() <=
+        this.visualBrowserProxy_.getMinFontSize();
+  }
+
+  protected isFontSizeMax_(): boolean {
+    return this.visualBrowserProxy_.getFontSize() >=
+        this.visualBrowserProxy_.getMaxFontSize();
+  }
+
   protected onDecreaseClick_() {
     this.updateFontSize_(false);
   }
@@ -105,6 +121,8 @@ export class FontSizeMenuElement extends FontSizeMenuElementBase implements
         ReadAnythingSettingsChange.FONT_SIZE_CHANGE);
     this.visualBrowserProxy_.onFontSizeReset();
     this.fire(ToolbarEvent.FONT_SIZE);
+    // TODO(crbug.com/441561417): Keep focus on the button when it becomes
+    // disabled.
     this.requestUpdate();
   }
 
@@ -117,6 +135,8 @@ export class FontSizeMenuElement extends FontSizeMenuElementBase implements
     if (startingSize !== this.visualBrowserProxy_.getFontSize()) {
       this.announceSizeChange_(increase);
     }
+    // TODO(crbug.com/441561417): Keep focus on the button when it becomes
+    // disabled.
     this.requestUpdate();
   }
 

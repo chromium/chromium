@@ -11,7 +11,7 @@ import type {ReadAnythingToolbarElement} from 'chrome-untrusted://read-anything-
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {setupTestEnvironment} from './common.js';
+import {setupTestEnvironment, stubAnimationFrame} from './common.js';
 import type {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
 
 suite('FontSize', () => {
@@ -153,6 +153,7 @@ suite('FontSize', () => {
         await microtasksFinished();
 
         // Open the font size settings drop-down menu
+        stubAnimationFrame();
         menuButton!.click();
         await microtasksFinished();
 
@@ -184,4 +185,44 @@ suite('FontSize', () => {
             resetButton.disabled,
             'Reset button should become disabled after resetting font size');
       });
+
+  test('decrease button disabled at min font size', async () => {
+    stubAnimationFrame();
+    menuButton!.click();
+    await microtasksFinished();
+
+    const decreaseButton =
+        toolbar.$.fontSizeMenu.get().querySelector<CrIconButtonElement>(
+            '#font-size-decrease')!;
+    assertFalse(decreaseButton.disabled);
+
+    visualBrowserProxy.fontSize = visualBrowserProxy.minFontSize + 1;
+    clickDecrease();
+    await microtasksFinished();
+    assertTrue(decreaseButton.disabled);
+
+    clickIncrease();
+    await microtasksFinished();
+    assertFalse(decreaseButton.disabled);
+  });
+
+  test('increase button disabled at max font size', async () => {
+    stubAnimationFrame();
+    menuButton!.click();
+    await microtasksFinished();
+
+    const increaseButton =
+        toolbar.$.fontSizeMenu.get().querySelector<CrIconButtonElement>(
+            '#font-size-increase')!;
+    assertFalse(increaseButton.disabled);
+
+    visualBrowserProxy.fontSize = visualBrowserProxy.maxFontSize - 1;
+    clickIncrease();
+    await microtasksFinished();
+    assertTrue(increaseButton.disabled);
+
+    clickDecrease();
+    await microtasksFinished();
+    assertFalse(increaseButton.disabled);
+  });
 });

@@ -17,8 +17,10 @@
 namespace {
 
 // All values are in em.
+// LINT.IfChange(FontScale)
 constexpr double kMinScale = 0.5;
 constexpr double kMaxScale = 4.5;
+// LINT.ThenChange(/chrome/browser/resources/side_panel/read_anything/app/visual_browser_proxy.ts:FontScale)
 constexpr double kScaleStepSize = 0.25;
 
 int AsSteps(double font_scale) {

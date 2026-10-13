@@ -43,6 +43,8 @@ export interface VisualBrowserProxy {
   getVeryLooseLineSpacing(): number;
   getLineSpacing(): number;
   getLineSpacingValue(lineSpacing: number): number;
+  getMinFontSize(): number;
+  getMaxFontSize(): number;
   getDefaultFontSize(): number;
   getFontSize(): number;
 
@@ -191,6 +193,16 @@ export class VisualBrowserProxyImpl implements VisualBrowserProxy {
   getLineSpacingValue(lineSpacing: number): number {
     return chrome.readingMode.getLineSpacingValue(lineSpacing);
   }
+
+  // LINT.IfChange(FontScale)
+  getMinFontSize(): number {
+    return 0.5;
+  }
+
+  getMaxFontSize(): number {
+    return 4.5;
+  }
+  // LINT.ThenChange(/chrome/common/read_anything/read_anything_util.cc:FontScale)
 
   getDefaultFontSize(): number {
     return 2.0;

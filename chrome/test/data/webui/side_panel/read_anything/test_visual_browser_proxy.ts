@@ -32,6 +32,8 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
   highContrastTheme: number = 5;
   lowContrastLightTheme: number = 6;
   lowContrastDarkTheme: number = 7;
+  minFontSize: number = 1;
+  maxFontSize: number = 20;
   defaultFontSize: number = 10;
   fontSize: number = 10;
   lineSpacing: number = 0;
@@ -83,6 +85,8 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
       'getVeryLooseLineSpacing',
       'getLineSpacing',
       'getLineSpacingValue',
+      'getMinFontSize',
+      'getMaxFontSize',
       'getDefaultFontSize',
       'getFontSize',
       'getStandardLetterSpacing',
@@ -183,6 +187,16 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
   getLineSpacingValue(lineSpacing: number): number {
     this.methodCalled('getLineSpacingValue', lineSpacing);
     return lineSpacing + 1;
+  }
+
+  getMinFontSize(): number {
+    this.methodCalled('getMinFontSize');
+    return this.minFontSize;
+  }
+
+  getMaxFontSize(): number {
+    this.methodCalled('getMaxFontSize');
+    return this.maxFontSize;
   }
 
   getDefaultFontSize(): number {
