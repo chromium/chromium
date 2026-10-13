@@ -186,6 +186,12 @@ _ALLOWED_CREATE_FOR_CALLS = (
   # WebUIContentsWrapper, SimpleWebViewDialog, and DevToolsWindowViews), so
   # the WebContents must own it.
   'web_modal::WebContentsModalDialogManager::CreateForWebContents',
+  # ZoomController lives in //components/zoom and is also attached to non-tab
+  # WebContents in ChromeAppDelegate, DevToolsWindow,
+  # ConstrainedWebDialogDelegateViews, DocumentPipHost, SkillsDialogView,
+  # TopChromeWebUIController, ContextualTasksUI, and CoBrowseViewsBridge, so
+  # the WebContents must own it.
+  'zoom::ZoomController::CreateForWebContents',
 )
 
 

@@ -730,6 +730,7 @@ if (!is_android) {
       "//components/wallet/core/common:features",
       "//components/web_modal",
       "//components/webapps/browser",
+      "//components/zoom",
       "//net",
       "//printing/buildflags",
       "//ui/base/unowned_user_data",

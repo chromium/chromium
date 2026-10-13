@@ -275,6 +275,7 @@ source_set("tabs_impl") {
     "//components/tabs:public",
     "//components/ukm/content",
     "//components/webapps/browser",
+    "//components/zoom",
     "//content/public/browser",
     "//extensions/buildflags",
     "//media",

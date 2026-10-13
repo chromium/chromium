@@ -35,7 +35,6 @@
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/tracing/common/tracing_switches.h"
-#include "components/zoom/zoom_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/buildflags.h"
 #include "extensions/buildflags/buildflags.h"
@@ -82,10 +81,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   // SessionTabHelper comes first because it sets up the tab ID, and other
   // helpers may rely on that.
   CreateSessionServiceTabHelper(web_contents);
-
-  // ZoomController comes before common tab helpers since ChromeAutofillClient
-  // may want to register as a ZoomObserver with it.
-  zoom::ZoomController::CreateForWebContents(web_contents);
 
   // --- Section 1: Common tab helpers ---
   // NO! Do not just add your tab helper here. This is a large alphabetized

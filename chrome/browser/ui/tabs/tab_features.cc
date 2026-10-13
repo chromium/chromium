@@ -209,6 +209,7 @@
 #include "components/site_engagement/content/site_engagement_helper.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/skills/features.h"
+#include "components/zoom/zoom_controller.h"
 #include "content/public/browser/navigation_controller.h"
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_observer.h"
@@ -424,6 +425,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
       tab.RegisterWillDiscardContents(base::BindRepeating(
           &TabFeatures::WillDiscardContents, weak_factory_.GetWeakPtr())));
   tab_subscriptions_.push_back(webui::InitEmbeddingContext(&tab));
+
+  zoom::ZoomController::CreateForWebContents(tab.GetContents());
 
   infobars::ContentInfoBarManager::CreateForWebContents(tab.GetContents());
 
@@ -1467,6 +1470,8 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   DCHECK_EQ(old_contents, tab->GetContents());
 
   Profile* profile = tab->GetBrowserWindowInterface()->GetProfile();
+
+  zoom::ZoomController::CreateForWebContents(new_contents);
 
   infobars::ContentInfoBarManager::CreateForWebContents(new_contents);
 
