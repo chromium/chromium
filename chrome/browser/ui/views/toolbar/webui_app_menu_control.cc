@@ -199,6 +199,8 @@ void WebUIAppMenuControl::RunMenu(const gfx::Rect& anchor_bounds,
   menu_model_ = std::make_unique<AppMenuModel>(
       toolbar_view, browser, toolbar_view->app_menu_icon_controller(),
       AppMenuModel::GetAlertItemForRunningTutorial(browser));
+  highlighter_.MaybeHighlight(browser, kToolbarAppMenuButtonElementId,
+                              menu_model_.get());
   menu_model_->Init();
 
   menu_ = std::make_unique<AppMenu>(

@@ -24,9 +24,10 @@
 #include "chrome/browser/ui/startup/infobar_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
-#include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/infobars/confirm_infobar.h"
+#include "chrome/browser/ui/views/toolbar/test_support/app_menu_test_accessor.h"
+#include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/browser/ui/webui/test_support/webui_interactive_test_mixin.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -70,15 +71,17 @@ class DefaultBrowserPromptInteractiveTest
     InteractiveBrowserTest::SetUp();
   }
 
+  void SetUpOnMainThread() override {
+    WebUiInteractiveTestMixin<InteractiveBrowserTest>::SetUpOnMainThread();
+    WaitForInitialWebUIToolbar(browser());
+  }
+
   InteractiveTestApi::MultiStep DoesAppMenuItemExist(bool exists) {
     return Steps(
         PressButton(kToolbarAppMenuButtonElementId),
         exists ? EnsurePresent(AppMenuModel::kSetBrowserAsDefaultMenuItem)
                : EnsureNotPresent(AppMenuModel::kSetBrowserAsDefaultMenuItem),
-        WithView(kToolbarAppMenuButtonElementId,
-                 [](AppMenuButton* app_menu_button) {
-                   app_menu_button->CloseMenu();
-                 }));
+        Do([this]() { AppMenuTestAccessor(browser()).CloseMenu(); }));
   }
 
   InteractiveTestApi::MultiStep RemovesAllBrowserDefaultPromptsWhen(

@@ -12,6 +12,7 @@
 #include "base/observer_list.h"
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
 #include "chrome/browser/ui/views/toolbar/app_menu_control.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_button_menu_highlighter.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/gfx/geometry/rect.h"
@@ -79,6 +80,7 @@ class WebUIAppMenuControl : public AppMenuControl {
   // Caches the focus state of the button within the WebUI.
   bool focused_ = false;
   base::ObserverList<AppMenuButtonObserver>::Unchecked observer_list_;
+  ToolbarButtonMenuHighlighter highlighter_;
   std::unique_ptr<AppMenuModel> menu_model_;
   std::unique_ptr<AppMenu> menu_;
 

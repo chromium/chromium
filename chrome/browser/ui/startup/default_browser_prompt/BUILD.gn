@@ -185,6 +185,7 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/ui/startup",
     "//chrome/browser/ui/toolbar",
     "//chrome/browser/ui/views/infobars",
+    "//chrome/browser/ui/views/toolbar:test_support",
     "//chrome/browser/ui/webui/default_browser:default_browser_modal",
     "//chrome/common",
     "//chrome/common:constants",

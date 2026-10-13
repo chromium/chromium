@@ -15,12 +15,20 @@ void ToolbarButtonMenuHighlighter::MaybeHighlight(
     BrowserWindowInterface* browser,
     ToolbarButton* button,
     user_education::HighlightingSimpleMenuModelDelegate* menu_model) {
+  MaybeHighlight(browser, button->GetProperty(views::kElementIdentifierKey),
+                 menu_model);
+}
+
+void ToolbarButtonMenuHighlighter::MaybeHighlight(
+    BrowserWindowInterface* browser,
+    ui::ElementIdentifier button_element_id,
+    user_education::HighlightingSimpleMenuModelDelegate* menu_model) {
   if (auto* const service = UserEducationServiceFactory::GetForBrowserContext(
           browser->GetProfile())) {
     HighlightingMenuButtonHelper::MaybeHighlight(
         service->GetFeaturePromoController(
             base::PassKey<ToolbarButtonMenuHighlighter>()),
-        button->GetProperty(views::kElementIdentifierKey), menu_model);
+        button_element_id, menu_model);
   }
 }
 

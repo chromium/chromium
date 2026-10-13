@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/test_support/app_menu_test_accessor.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/grit/generated_resources.h"
@@ -70,6 +71,7 @@ class BrowserAppMenuButtonInteractiveTest : public InteractiveFeaturePromoTest {
 
   void SetUpOnMainThread() override {
     InteractiveFeaturePromoTest::SetUpOnMainThread();
+    WaitForInitialWebUIToolbar(browser());
 
     // Register test features.
     registry()->RegisterFeature(std::move(
@@ -122,6 +124,10 @@ IN_PROC_BROWSER_TEST_F(BrowserAppMenuButtonInteractiveTest,
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserAppMenuButtonInteractiveTest, AnimationDisabled) {
+  if (features::IsWebUIAppMenuButtonEnabled()) {
+    GTEST_SKIP() << "GetAnimateOnStateChange() is specific to the Views "
+                    "BrowserAppMenuButton.";
+  }
   RunTestSequence(CheckView(kToolbarAppMenuButtonElementId,
                             [](BrowserAppMenuButton* button) {
                               return !button->GetAnimateOnStateChange();

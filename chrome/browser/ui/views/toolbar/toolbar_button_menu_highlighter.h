@@ -39,6 +39,13 @@ class ToolbarButtonMenuHighlighter
       ToolbarButton* button,
       user_education::HighlightingSimpleMenuModelDelegate* menu_model);
 
+  // Overload for toolbar controls not backed by a `ToolbarButton` view (e.g.
+  // WebUI toolbar buttons) that are identified by `button_element_id`.
+  void MaybeHighlight(
+      BrowserWindowInterface* browser,
+      ui::ElementIdentifier button_element_id,
+      user_education::HighlightingSimpleMenuModelDelegate* menu_model);
+
   // Version for action-based menus (such as `ActionAppMenu`) that do not use
   // `ui::SimpleMenuModel`. If an IPH is anchored to `button_element_id`, closes
   // the bubble and continues the promo, returning the highlighted menu item ID
