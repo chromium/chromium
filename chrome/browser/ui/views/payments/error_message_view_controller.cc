@@ -19,7 +19,6 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
-#include "ui/color/color_provider.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -40,23 +39,16 @@ class PaymentsErrorLabel : public views::Label {
   explicit PaymentsErrorLabel(const std::u16string& text) : Label(text) {
     SetMultiLine(true);
     SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    if (base::FeatureList::IsEnabled(
-            payments::features::kPaymentRequestMandatoryPaymentAppUi)) {
+    const bool mandatory_ui = base::FeatureList::IsEnabled(
+        payments::features::kPaymentRequestMandatoryPaymentAppUi);
+    SetEnabledColor(mandatory_ui ? ui::kColorSysOnSurfaceSubtle
+                                 : ui::kColorAlertHighSeverity);
+    if (mandatory_ui) {
       SetTextStyle(views::style::STYLE_BODY_3);
       SetAllowCharacterBreak(true);
     }
   }
   ~PaymentsErrorLabel() override = default;
-
-  // views::Label:
-  void OnThemeChanged() override {
-    Label::OnThemeChanged();
-    SetEnabledColor(
-        base::FeatureList::IsEnabled(
-            payments::features::kPaymentRequestMandatoryPaymentAppUi)
-            ? GetColorProvider()->GetColor(ui::kColorSysOnSurfaceSubtle)
-            : GetColorProvider()->GetColor(ui::kColorAlertHighSeverity));
-  }
 };
 
 BEGIN_METADATA(PaymentsErrorLabel)
