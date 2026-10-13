@@ -35,15 +35,6 @@ WebUIToolbarExtensionsContainerWrapper::WebUIToolbarExtensionsContainerWrapper(
 WebUIToolbarExtensionsContainerWrapper::
     ~WebUIToolbarExtensionsContainerWrapper() = default;
 
-struct WebUIToolbarExtensionsContainerWrapper::PendingAnchorRequest {
-  PendingAnchorRequest(base::OnceClosure cb,
-                       ui::ElementTracker::Subscription sub)
-      : callback(std::move(cb)), subscription(std::move(sub)) {}
-  ~PendingAnchorRequest() = default;
-  base::OnceClosure callback;
-  const ui::ElementTracker::Subscription subscription;
-};
-
 void WebUIToolbarExtensionsContainerWrapper::Init(
     content::WebContents* web_contents) {
   BrowserWindowInterface* browser = delegate_->GetBrowser();
@@ -196,8 +187,7 @@ void WebUIToolbarExtensionsContainerWrapper::OnActionRemoved(
 }
 
 void WebUIToolbarExtensionsContainerWrapper::OnActionPoppedOut(
-    base::OnceClosure callback,
-    bool is_iph) {
+    base::OnceClosure callback) {
   if (!extensions_container_) {
     std::move(callback).Run();
     return;
@@ -205,7 +195,7 @@ void WebUIToolbarExtensionsContainerWrapper::OnActionPoppedOut(
 
   // The container cancels any pending pop out request before starting another,
   // so there should be at most one at a time.
-  CHECK(is_iph || !pending_pop_out_callback_);
+  CHECK(!pending_pop_out_callback_);
 
   // Be as conservative as possible and wait for any animations that might be in
   // progress to complete before running `callback`, that way none of the
@@ -231,13 +221,8 @@ void WebUIToolbarExtensionsContainerWrapper::OnActionPoppedOut(
               base::BindRepeating(
                   &WebUIToolbarExtensionsContainerWrapper::OnElementShown,
                   base::Unretained(this)));
-      if (is_iph) {
-        pending_anchor_requests_.emplace_back(std::move(callback),
-                                              std::move(subscription));
-      } else {
-        pending_pop_out_callback_ = std::move(callback);
-        pending_pop_out_subscription_ = std::move(subscription);
-      }
+      pending_pop_out_callback_ = std::move(callback);
+      pending_pop_out_subscription_ = std::move(subscription);
       return;
     }
   }
@@ -254,26 +239,12 @@ void WebUIToolbarExtensionsContainerWrapper::OnPopOutCancelled() {
 
 void WebUIToolbarExtensionsContainerWrapper::OnElementShown(
     ui::TrackedElement* element) {
-  std::vector<base::OnceClosure> callbacks_to_run;
-  for (auto& request : pending_anchor_requests_) {
-    callbacks_to_run.push_back(std::move(request.callback));
-  }
-  pending_anchor_requests_.clear();
-
-  // Re-dispatch the pending pop out request, if any, before running anything
-  // else, as other callbacks may re-entrantly cancel it or start a new one.
+  // Re-dispatch the pending pop out request, which will either run it or wait
+  // for another element to be shown.
+  CHECK(pending_pop_out_callback_);
   pending_pop_out_subscription_ = {};
-  if (pending_pop_out_callback_) {
-    OnActionPoppedOut(
-        std::exchange(pending_pop_out_callback_, base::OnceClosure()),
-        /*is_iph=*/false);
-  }
-
-  for (auto& callback : callbacks_to_run) {
-    if (callback) {
-      OnActionPoppedOut(std::move(callback), /*is_iph=*/true);
-    }
-  }
+  OnActionPoppedOut(
+      std::exchange(pending_pop_out_callback_, base::OnceClosure()));
 }
 
 void WebUIToolbarExtensionsContainerWrapper::SendExtensionsState() {

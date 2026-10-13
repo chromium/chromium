@@ -304,8 +304,20 @@ void WebUIToolbarExtensionsContainer::ShowPinnedByDefaultIPH(
     return;
   }
 
-  // Only one extension can be the anchor at a time.
-  ClearPinnedByDefaultIphAnchor();
+  // Don't interrupt a popped out action (which may be waiting to show a popup,
+  // or already showing one) to show the IPH.
+  if (popped_out_action_) {
+    return;
+  }
+
+  // Only one extension can be the anchor at a time. If there's already an IPH
+  // request, whether it's waiting for its anchor, queued, or showing, keep it
+  // and ignore this one. Replacing it would require aborting the earlier promo,
+  // and the IPH system only allows one instance of a promo to be queued or
+  // shown at a time.
+  if (pinned_by_default_iph_extension_id_) {
+    return;
+  }
 
   // This causes the WebUI button to register
   // kExtensionsPinnedByDefaultElementId.
@@ -315,11 +327,9 @@ void WebUIToolbarExtensionsContainer::ShowPinnedByDefaultIPH(
   // Wait for the button to register kExtensionsPinnedByDefaultElementId and,
   // like views, for any animations to finish so that the button is in its
   // final location.
-  NotifyActionPoppedOut(
-      base::BindOnce(
-          &WebUIToolbarExtensionsContainer::ShowPinnedByDefaultIPHNow,
-          weak_ptr_factory_.GetWeakPtr(), extension_id),
-      /*is_iph=*/true);
+  NotifyActionPoppedOut(base::BindOnce(
+      &WebUIToolbarExtensionsContainer::ShowPinnedByDefaultIPHNow,
+      weak_ptr_factory_.GetWeakPtr(), extension_id));
 }
 
 void WebUIToolbarExtensionsContainer::ShowPinnedByDefaultIPHNow(
@@ -358,8 +368,41 @@ void WebUIToolbarExtensionsContainer::ShowPinnedByDefaultIPHNow(
 void WebUIToolbarExtensionsContainer::ClearPinnedByDefaultIphAnchor() {
   std::optional<std::string> old_extension_id =
       std::exchange(pinned_by_default_iph_extension_id_, std::nullopt);
-  if (old_extension_id && actions_.contains(*old_extension_id)) {
+  if (!old_extension_id) {
+    return;
+  }
+  if (actions_.contains(*old_extension_id)) {
     NotifyOfOneAction(*old_extension_id);
+  }
+  // Inform `observer_` of the cancellation. The IPH pop out callback, if any,
+  // is run. If there is a callback, that means ShowPinnedByDefaultIPHNow() will
+  // be called, which does nothing, since `pinned_by_default_iph_extension_id_`
+  // has been cleared.
+  //
+  // The callback is run rather than destroyed because the wrapper treats IPH
+  // and PopOutAction() callbacks the same, and the latter must always be run.
+  //
+  // If there's no pending IPH callback, this is a no-op, since there can't be a
+  // pending PopOutAction() callback while `pinned_by_default_iph_extension_id_`
+  // is set.
+  if (observer_) {
+    observer_->OnPopOutCancelled();
+  }
+}
+
+void WebUIToolbarExtensionsContainer::CancelPinnedByDefaultIph() {
+  if (!pinned_by_default_iph_extension_id_) {
+    return;
+  }
+  // Clear the anchor first, so the promo's callbacks, which may be run
+  // synchronously when it's aborted, do nothing.
+  ClearPinnedByDefaultIphAnchor();
+  // If the promo has already been requested, remove it from the queue, or close
+  // it if it's showing. Otherwise, this does nothing.
+  if (BrowserUserEducationInterface* user_education =
+          BrowserUserEducationInterface::From(&browser_.get())) {
+    user_education->AbortFeaturePromo(
+        feature_engagement::kIPHExtensionsPinnedByDefaultFeature);
   }
 }
 
@@ -422,9 +465,11 @@ void WebUIToolbarExtensionsContainer::PopOutAction(
     const extensions::ExtensionId& action_id,
     base::OnceClosure closure) {
   DCHECK(!popped_out_action_.has_value());
+  // Cancel any IPH, since popped out actions take priority over it.
+  CancelPinnedByDefaultIph();
   popped_out_action_ = action_id;
   NotifyOfOneAction(action_id);
-  NotifyActionPoppedOut(std::move(closure), /*is_iph=*/false);
+  NotifyActionPoppedOut(std::move(closure));
 }
 
 void WebUIToolbarExtensionsContainer::ShowContextMenuAsFallback(
@@ -645,12 +690,11 @@ views::Widget* WebUIToolbarExtensionsContainer::GetWidget() const {
 }
 
 void WebUIToolbarExtensionsContainer::NotifyActionPoppedOut(
-    base::OnceClosure closure,
-    bool is_iph) {
+    base::OnceClosure closure) {
   if (page_) {
     page_->ActionPoppedOut(std::move(closure));
   } else if (observer_) {
-    observer_->OnActionPoppedOut(std::move(closure), is_iph);
+    observer_->OnActionPoppedOut(std::move(closure));
   } else {
     std::move(closure).Run();
   }

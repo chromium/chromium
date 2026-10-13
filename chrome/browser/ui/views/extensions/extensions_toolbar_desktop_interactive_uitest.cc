@@ -15,6 +15,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/run_until.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/blocked_action_waiter.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
@@ -32,16 +34,19 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/extension_install_ui.h"
 #include "chrome/browser/ui/extensions/extension_post_install_dialog.h"
+#include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_interactive_uitest.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_extensions_container.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -1967,6 +1972,50 @@ class ExtensionsPinnedByDefaultWebUIInteractiveTest
         {features::kInitialWebUI, features::kWebUIToolbar}, {});
   }
 
+  WebUIToolbarExtensionsContainer* GetContainer() {
+    return static_cast<WebUIToolbarExtensionsContainer*>(
+        ExtensionsContainer::From(*browser()));
+  }
+
+  // Returns whether the IPH system has the promo queued or showing.
+  bool IsFeaturePromoQueuedOrActive() {
+    BrowserUserEducationInterface* user_education =
+        BrowserUserEducationInterface::From(browser());
+    return user_education->IsFeaturePromoActive(
+               feature_engagement::kIPHExtensionsPinnedByDefaultFeature) ||
+           user_education->IsFeaturePromoQueued(
+               feature_engagement::kIPHExtensionsPinnedByDefaultFeature);
+  }
+
+  // Returns whether the IPH has been requested and not yet cancelled or
+  // closed. This includes the container waiting for the IPH anchor to be shown
+  // before requesting the promo, as well as the promo being queued or shown.
+  bool IsIphPendingOrShowing() {
+    return GetContainer()
+               ->pinned_by_default_iph_extension_id_for_testing()
+               .has_value() ||
+           IsFeaturePromoQueuedOrActive();
+  }
+
+  // Installs an extension (which pins it, since pinned-by-default is enabled),
+  // then unpins it and waits for its button to be removed.
+  scoped_refptr<const extensions::Extension> InstallUnpinnedExtension(
+      const std::string& name) {
+    scoped_refptr<const extensions::Extension> extension =
+        InstallExtensionWithHostPermissions(name, "<all_urls>");
+    if (!extension) {
+      return nullptr;
+    }
+    ToolbarActionsModel::Get(browser()->GetProfile())
+        ->SetActionVisibility(extension->id(), false);
+    if (!base::test::RunUntil([&]() {
+          return !GetContainer()->GetExtensionAnchor(extension->id());
+        })) {
+      return nullptr;
+    }
+    return extension;
+  }
+
  private:
   base::test::ScopedFeatureList webui_feature_list_;
 };
@@ -1997,4 +2046,177 @@ IN_PROC_BROWSER_TEST_F(ExtensionsPinnedByDefaultWebUIInteractiveTest,
       PressClosePromoButton(),
       // Closing the promo removes the temporary anchor.
       WaitForHide(kExtensionsPinnedByDefaultElementId));
+}
+
+// Tests that requesting the IPH for an extension while a previous IPH request
+// is still waiting for its anchor is ignored, and the bubble for the first
+// request is shown.
+IN_PROC_BROWSER_TEST_F(ExtensionsPinnedByDefaultWebUIInteractiveTest,
+                       PromoIgnoredWhilePromoPending) {
+  scoped_refptr<const extensions::Extension> extension1 =
+      InstallExtensionWithHostPermissions("Extension 1", "<all_urls>");
+  ASSERT_TRUE(extension1);
+  scoped_refptr<const extensions::Extension> extension2 =
+      InstallExtensionWithHostPermissions("Extension 2", "<all_urls>");
+  ASSERT_TRUE(extension2);
+  WebUIToolbarExtensionsContainer* container = GetContainer();
+  ASSERT_TRUE(container);
+
+  RunTestSequence(
+      Do([&]() {
+        // The IPH anchor is registered asynchronously by the WebUI renderer,
+        // so the first request is still pending when the second is made.
+        container->ShowPinnedByDefaultIPH(extension1->id());
+        EXPECT_EQ(container->pinned_by_default_iph_extension_id_for_testing(),
+                  extension1->id());
+        EXPECT_FALSE(IsFeaturePromoQueuedOrActive());
+        container->ShowPinnedByDefaultIPH(extension2->id());
+        EXPECT_EQ(container->pinned_by_default_iph_extension_id_for_testing(),
+                  extension1->id());
+      }),
+      WaitForPromo(feature_engagement::kIPHExtensionsPinnedByDefaultFeature),
+      // The IPH anchor should be on the first extension's button.
+      Check([&]() {
+        return container->GetExtensionElement(
+                   kExtensionsPinnedByDefaultElementId, extension1->id()) !=
+               nullptr;
+      }),
+      Check([&]() {
+        return container->GetExtensionElement(
+                   kExtensionsPinnedByDefaultElementId, extension2->id()) ==
+               nullptr;
+      }),
+      PressClosePromoButton(),
+      WaitForHide(kExtensionsPinnedByDefaultElementId));
+}
+
+// Tests that requesting the IPH for an extension while the IPH is showing for
+// another extension is ignored.
+IN_PROC_BROWSER_TEST_F(ExtensionsPinnedByDefaultWebUIInteractiveTest,
+                       PromoIgnoredWhilePromoShowing) {
+  scoped_refptr<const extensions::Extension> extension1 =
+      InstallExtensionWithHostPermissions("Extension 1", "<all_urls>");
+  ASSERT_TRUE(extension1);
+  scoped_refptr<const extensions::Extension> extension2 =
+      InstallExtensionWithHostPermissions("Extension 2", "<all_urls>");
+  ASSERT_TRUE(extension2);
+  WebUIToolbarExtensionsContainer* container = GetContainer();
+  ASSERT_TRUE(container);
+
+  RunTestSequence(
+      Do([&]() { container->ShowPinnedByDefaultIPH(extension1->id()); }),
+      WaitForPromo(feature_engagement::kIPHExtensionsPinnedByDefaultFeature),
+      Do([&]() {
+        container->ShowPinnedByDefaultIPH(extension2->id());
+        // The anchor is still the first extension, and the promo is still
+        // showing.
+        EXPECT_EQ(container->pinned_by_default_iph_extension_id_for_testing(),
+                  extension1->id());
+        EXPECT_TRUE(IsFeaturePromoQueuedOrActive());
+      }),
+      Check([&]() {
+        return container->GetExtensionElement(
+                   kExtensionsPinnedByDefaultElementId, extension1->id()) !=
+               nullptr;
+      }),
+      PressClosePromoButton(),
+      WaitForHide(kExtensionsPinnedByDefaultElementId));
+}
+
+// Tests that the IPH is not shown if requested while an action is popped out.
+IN_PROC_BROWSER_TEST_F(ExtensionsPinnedByDefaultWebUIInteractiveTest,
+                       PromoIgnoredWhileActionPoppedOut) {
+  // The IPH is only shown for extensions that are visible on the toolbar, so
+  // it's requested for a pinned extension. The pop out is for an unpinned
+  // extension, so that it waits for that extension's button to be shown,
+  // rather than completing immediately.
+  scoped_refptr<const extensions::Extension> pinned_extension =
+      InstallExtensionWithHostPermissions("Pinned Extension", "<all_urls>");
+  ASSERT_TRUE(pinned_extension);
+  scoped_refptr<const extensions::Extension> unpinned_extension =
+      InstallUnpinnedExtension("Unpinned Extension");
+  ASSERT_TRUE(unpinned_extension);
+  WebUIToolbarExtensionsContainer* container = GetContainer();
+  ASSERT_TRUE(container);
+
+  base::test::TestFuture<void> pop_out_future;
+  container->PopOutAction(unpinned_extension->id(),
+                          pop_out_future.GetCallback());
+  // The popped out extension's button is shown asynchronously by the WebUI
+  // renderer, so the callback shouldn't have been run yet.
+  EXPECT_FALSE(pop_out_future.IsReady());
+
+  // This should be ignored, rather than cancelling the pending pop out. If it
+  // weren't, either the wrapper would CHECK on receiving a second pending pop
+  // out, or the pending pop out's callback would be run early.
+  container->ShowPinnedByDefaultIPH(pinned_extension->id());
+  EXPECT_FALSE(IsIphPendingOrShowing());
+  EXPECT_FALSE(pop_out_future.IsReady());
+
+  EXPECT_TRUE(pop_out_future.Wait());
+  EXPECT_FALSE(IsIphPendingOrShowing());
+
+  container->UndoPopOut();
+}
+
+// Tests that popping out an action while an IPH request is waiting for its
+// anchor cancels the IPH request, and that the IPH can be shown afterwards.
+IN_PROC_BROWSER_TEST_F(ExtensionsPinnedByDefaultWebUIInteractiveTest,
+                       PromoCancelledByPopOut) {
+  scoped_refptr<const extensions::Extension> extension =
+      InstallExtensionWithHostPermissions("Extension", "<all_urls>");
+  ASSERT_TRUE(extension);
+  WebUIToolbarExtensionsContainer* container = GetContainer();
+  ASSERT_TRUE(container);
+
+  // The IPH anchor is registered asynchronously by the WebUI renderer, so the
+  // IPH request does not complete immediately.
+  container->ShowPinnedByDefaultIPH(extension->id());
+  EXPECT_TRUE(IsIphPendingOrShowing());
+  // Calling PopOutAction() should cancel the pending IPH callback silently.
+  base::test::TestFuture<void> pop_out_future;
+  container->PopOutAction(extension->id(), pop_out_future.GetCallback());
+  EXPECT_FALSE(IsIphPendingOrShowing());
+  // Wait until `pop_out_future` has completed. Whether this completes
+  // synchronously doesn't matter for this test.
+  EXPECT_TRUE(pop_out_future.Wait());
+  EXPECT_FALSE(IsIphPendingOrShowing());
+
+  // The IPH should work once nothing is popped out.
+  container->UndoPopOut();
+  RunTestSequence(
+      Do([&]() { container->ShowPinnedByDefaultIPH(extension->id()); }),
+      WaitForPromo(feature_engagement::kIPHExtensionsPinnedByDefaultFeature),
+      PressClosePromoButton(),
+      WaitForHide(kExtensionsPinnedByDefaultElementId));
+}
+
+// Tests that popping out an action while the IPH is showing closes the IPH.
+IN_PROC_BROWSER_TEST_F(ExtensionsPinnedByDefaultWebUIInteractiveTest,
+                       ShowingPromoClosedByPopOut) {
+  scoped_refptr<const extensions::Extension> pinned_extension =
+      InstallExtensionWithHostPermissions("Pinned Extension", "<all_urls>");
+  ASSERT_TRUE(pinned_extension);
+  scoped_refptr<const extensions::Extension> unpinned_extension =
+      InstallUnpinnedExtension("Unpinned Extension");
+  ASSERT_TRUE(unpinned_extension);
+  WebUIToolbarExtensionsContainer* container = GetContainer();
+  ASSERT_TRUE(container);
+
+  base::test::TestFuture<void> pop_out_future;
+  RunTestSequence(
+      Do([&]() { container->ShowPinnedByDefaultIPH(pinned_extension->id()); }),
+      WaitForPromo(feature_engagement::kIPHExtensionsPinnedByDefaultFeature),
+      Do([&]() {
+        container->PopOutAction(unpinned_extension->id(),
+                                pop_out_future.GetCallback());
+        // The promo should be aborted synchronously, rather than waiting for
+        // its anchor to be hidden by the renderer.
+        EXPECT_FALSE(IsIphPendingOrShowing());
+      }),
+      WaitForHide(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
+      WaitForHide(kExtensionsPinnedByDefaultElementId));
+  EXPECT_TRUE(pop_out_future.Wait());
+  container->UndoPopOut();
 }

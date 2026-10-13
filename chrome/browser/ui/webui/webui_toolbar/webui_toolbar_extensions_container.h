@@ -135,6 +135,15 @@ class WebUIToolbarExtensionsContainer
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
 
+  // Returns the extension that's the pinned-by-default IPH anchor, if any. It's
+  // set when ShowPinnedByDefaultIPH() accepts a request (which it doesn't do
+  // while an action is popped out or there's already an IPH anchor), and
+  // cleared when the IPH is closed, fails to show, or is cancelled.
+  const std::optional<std::string>&
+  pinned_by_default_iph_extension_id_for_testing() const {
+    return pinned_by_default_iph_extension_id_;
+  }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewInteractiveUiTest,
                            ExtensionUserActionsPlumbing);
@@ -162,9 +171,7 @@ class WebUIToolbarExtensionsContainer
   views::Widget* GetWidget() const;
   ui::TrackedElement* GetExtensionsMenuButtonAnchor() const;
 
-  // `is_iph` should be true if the notification is for in-product help (IPH),
-  // as opposed to a PopOutAction() call.
-  void NotifyActionPoppedOut(base::OnceClosure closure, bool is_iph);
+  void NotifyActionPoppedOut(base::OnceClosure closure);
 
   void CreateActions();
   void CreateActionForId(const ToolbarActionsModel::ActionId& action_id);
@@ -211,8 +218,23 @@ class WebUIToolbarExtensionsContainer
   //     animations to finish.
   //  2. ShowPinnedByDefaultIPHNow() requests the promo.
   //  3. When the promo closes (or fails to show) the anchor is cleared.
+  //
+  // IPH and PopOutAction() requests share the observer's single pending pop
+  // out callback. PopOutAction() takes priority: it cancels any IPH, and
+  // ShowPinnedByDefaultIPH() does nothing while an action is popped out. The
+  // first IPH request also takes priority over later ones, which are ignored
+  // until it's closed, fails to show, or is cancelled.
   void ShowPinnedByDefaultIPHNow(const std::string& extension_id);
+
+  // If there's an IPH anchor, clears it and tells the observer to cancel the
+  // IPH's pending NotifyActionPoppedOut() callback, if it hasn't been run yet.
+  // Does nothing if there's no IPH anchor. Doesn't affect the promo itself, if
+  // it's already been requested.
   void ClearPinnedByDefaultIphAnchor();
+
+  // Same as ClearPinnedByDefaultIphAnchor(), but also aborts the promo if it's
+  // already been requested, whether it's queued or showing.
+  void CancelPinnedByDefaultIph();
 
   // The extension currently designated as the pinned-by-default IPH anchor.
   std::optional<std::string> pinned_by_default_iph_extension_id_;

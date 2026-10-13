@@ -31,20 +31,21 @@ class WebUIToolbarExtensionsContainerObserver {
       std::vector<toolbar_ui_api::mojom::IconUpdatePtr> icons,
       const std::string& id) = 0;
 
-  // Called when an action has been popped out. `callback` is expected to
-  // be called when it's safe to anchor things to the newly-visible button.
-  // `is_iph` is true when the notification is for showing an IPH, rather than
-  // for a call to PopOutAction(). A new non-IPH notification is only sent once
-  // the previous one's `callback` has been run, or it has been cancelled via
+  // Called when an action is popped out, either by PopOutAction() or to show
+  // the pinned-by-default IPH. `callback` is expected to be called when it's
+  // safe to anchor things to the newly-visible button, or on cancellation via
+  // OnPopOutCancelled(). A new notification is only sent once the previous
+  // one's `callback` has been run, or it has been cancelled via
   // OnPopOutCancelled().
   //
   // There will also be an ActionsAddedOrUpdated before this message.
-  virtual void OnActionPoppedOut(base::OnceClosure callback, bool is_iph) = 0;
+  virtual void OnActionPoppedOut(base::OnceClosure callback) = 0;
 
-  // Called when a popped out action is no longer popped out, either due to
-  // UndoPopOut() or due to the action being removed. If there's a pending
-  // callback that was passed to OnActionPoppedOut() with a false `is_iph`
-  // value, it is invoked synchronously.
+  // Called when a pending pop out should be cancelled: on UndoPopOut(), on
+  // removal of the popped out action, or when the IPH is cancelled or
+  // finishes. If there's a pending callback that was passed to
+  // OnActionPoppedOut(), it is invoked synchronously. May be called when there
+  // is no pending callback, in which case it should do nothing.
   virtual void OnPopOutCancelled() = 0;
 };
 
