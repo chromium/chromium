@@ -69,9 +69,9 @@ void SodaInstallerImplChromeOS::InitLanguages(PrefService* profile_prefs,
   }
 }
 
-base::flat_map<std::string, SodaInstallerImplChromeOS::LanguageInfo>
+base::flat_map<std::string_view, SodaInstallerImplChromeOS::LanguageInfo>
 SodaInstallerImplChromeOS::ConstructAvailableLanguages() const {
-  base::flat_map<std::string, LanguageInfo> available_languages;
+  base::flat_map<std::string_view, LanguageInfo> available_languages;
   // Defaults checked in.
   available_languages.insert(
       {kUsEnglishLocale, {"libsoda-model-en-us-df24d2", LanguageCode::kEnUs}});
@@ -313,7 +313,7 @@ void SodaInstallerImplChromeOS::UninstallLanguage(std::string_view language,
                 << " as it is not in the list of available languages.";
     return;
   }
-  const auto& dlc_name = language_info->second.dlc_name;
+  const std::string dlc_name(language_info->second.dlc_name);
   installed_languages_.erase(language_info->second.language_code);
   installed_language_paths_.erase(language_info->second.language_code);
   language_pack_progress_.erase(language_info->second.language_code);
@@ -327,7 +327,7 @@ std::vector<std::string> SodaInstallerImplChromeOS::GetAvailableLanguages()
     const {
   std::vector<std::string> languages;
   for (const auto& it : available_languages_) {
-    languages.push_back(it.first);
+    languages.emplace_back(it.first);
   }
   return languages;
 }
@@ -354,7 +354,7 @@ std::string SodaInstallerImplChromeOS::GetLanguageDlcNameForLocale(
     return std::string();
   }
 
-  return language_info->second.dlc_name;
+  return std::string(language_info->second.dlc_name);
 }
 
 void SodaInstallerImplChromeOS::UninstallSoda(PrefService* global_prefs) {
@@ -370,7 +370,7 @@ void SodaInstallerImplChromeOS::UninstallSoda(PrefService* global_prefs) {
   for (const auto& it : available_languages_) {
     const auto path = GetLanguagePath(it.first);
     if (!path.empty()) {
-      const auto dlc_name = it.second.dlc_name;
+      const std::string dlc_name(it.second.dlc_name);
       LOG(ERROR) << "Removing dlc " << dlc_name << " for " << it.first;
       ash::DlcserviceClient::Get()->Uninstall(
           dlc_name, base::BindOnce(&SodaInstallerImplChromeOS::OnDlcUninstalled,
