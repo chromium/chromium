@@ -54,7 +54,7 @@ class ProjectorOAuthTokenFetcherTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   MockAppClient mock_app_client_;
   ProjectorOAuthTokenFetcher access_token_fetcher_{
-      mock_app_client_.GetIdentityManager()};
+      mock_app_client_.identity_manager()};
 };
 
 TEST_F(ProjectorOAuthTokenFetcherTest, GetAccessTokenFirstRequest) {

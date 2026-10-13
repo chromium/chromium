@@ -34,12 +34,14 @@
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/login/user_adding_screen.h"
 #include "chrome/browser/ui/ash/projector/projector_app_client_impl.h"
 #include "chrome/browser/ui/ash/projector/projector_drivefs_provider.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
+#include "chromeos/ash/components/signin/identity_manager_provider.h"
 #include "content/public/test/browser_test.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -806,7 +808,8 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
                     url);
                 run_loop.Quit();
               }),
-          ProjectorAppClient::Get()->GetIdentityManager(),
+          ash::IdentityManagerProvider::Get().Find(
+              pending_screencast_manager()->account_id()),
           &test_url_loader_factory));
 
   // Mocks a metadata file finishes upload:

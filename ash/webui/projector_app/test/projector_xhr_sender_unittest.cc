@@ -65,7 +65,7 @@ class ProjectorXhrSenderTest : public testing::Test {
   // testing::Test:
   void SetUp() override {
     sender_ = std::make_unique<ProjectorXhrSender>(
-        mock_app_client_.GetIdentityManager(),
+        mock_app_client_.identity_manager(),
         mock_app_client_.GetUrlLoaderFactory());
     mock_app_client_.AddSecondaryAccount(kTestUserSecondaryEmail);
   }
@@ -223,7 +223,7 @@ TEST_F(ProjectorXhrSenderTest, TokenFetchFailure) {
 
 TEST_F(ProjectorXhrSenderTest, UnauthorizedToken) {
   testing::NiceMock<MockIdentityDiagnosticsObserver> identity_observer;
-  mock_app_client().GetIdentityManager()->AddDiagnosticsObserver(
+  mock_app_client().identity_manager()->AddDiagnosticsObserver(
       &identity_observer);
   EXPECT_CALL(identity_observer,
               OnAccessTokenRemovedFromCache(testing::_, testing::_));
@@ -244,7 +244,7 @@ TEST_F(ProjectorXhrSenderTest, UnauthorizedToken) {
   VerifySendRequestFuture(future, "",
                           projector::mojom::XhrResponseCode::kXhrFetchFailure);
 
-  mock_app_client().GetIdentityManager()->RemoveDiagnosticsObserver(
+  mock_app_client().identity_manager()->RemoveDiagnosticsObserver(
       &identity_observer);
 }
 

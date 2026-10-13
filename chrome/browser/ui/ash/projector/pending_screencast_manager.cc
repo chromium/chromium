@@ -12,6 +12,7 @@
 #include "ash/projector/projector_metrics.h"
 #include "ash/webui/projector_app/public/mojom/projector_types.mojom-forward.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -24,9 +25,12 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/projector/projector_utils.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
+#include "chromeos/ash/components/signin/identity_manager_provider.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/url_util.h"
@@ -344,6 +348,16 @@ ash::PendingScreencastContainerSet ProcessAndGenerateNewScreencasts(
   return screencasts;
 }
 
+// Returns the profile that owns `account_id`'s DriveFS, or null if it has no
+// browser context. Notification suppression is per-user, so this follows the
+// DriveFS being observed rather than whichever user happens to be active.
+Profile* GetProfileForAccount(const AccountId& account_id) {
+  content::BrowserContext* const context =
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          account_id);
+  return context ? Profile::FromBrowserContext(context) : nullptr;
+}
+
 }  // namespace
 
 // Using base::Unretained for callback is safe since the
@@ -484,8 +498,15 @@ void PendingScreencastManager::MaybeSwitchDriveFsObservation(
     return;
   }
 
+  // Past the guard above, `host` is a DriveFS that was not being observed, so
+  // the screencasts now belong to a different user than everything tracked so
+  // far. That state is all per-user, so drop it.
   pending_screencast_cache_.clear();
   error_syncing_files_.clear();
+  // `xhr_sender_` is created once and holds the previous user's
+  // IdentityManager; the next request rebuilds it from `account_id_`.
+  xhr_sender_.reset();
+
   // Every provider call below is keyed on it, so remember whose DriveFS this
   // is.
   account_id_ = account_id;
@@ -502,7 +523,11 @@ void PendingScreencastManager::ToggleFileSyncingNotificationForPaths(
     return;
   }
 
-  Profile* profile = ProfileManager::GetActiveUserProfile();
+  Profile* const profile = GetProfileForAccount(account_id_);
+  if (!profile) {
+    return;
+  }
+
   for (const auto& path : paths) {
     base::FilePath drive_path;
     drivefs_integration->GetRelativeDrivePath(path, &drive_path);
@@ -517,7 +542,11 @@ void PendingScreencastManager::ToggleFileSyncingNotificationForPaths(
 }
 
 void PendingScreencastManager::OnAppActiveStatusChanged(bool is_active) {
-  Profile* profile = ProfileManager::GetActiveUserProfile();
+  Profile* const profile = GetProfileForAccount(account_id_);
+  if (!profile) {
+    return;
+  }
+
   for (auto& [path, suppressor] : paths_notifications_suppressors_) {
     if (is_active) {
       if (!suppressor) {
@@ -614,7 +643,7 @@ void PendingScreencastManager::SendDrivePatchRequest(
 
   if (!xhr_sender_) {
     xhr_sender_ = std::make_unique<ash::ProjectorXhrSender>(
-        ash::ProjectorAppClient::Get()->GetIdentityManager(),
+        ash::IdentityManagerProvider::Get().Find(account_id_),
         ash::ProjectorAppClient::Get()->GetUrlLoaderFactory());
   }
 

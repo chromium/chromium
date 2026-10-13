@@ -17,14 +17,12 @@
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/account_manager/account_manager_dialog_coordinator.h"
 #include "chrome/browser/ui/ash/account_manager/account_manager_dialog_coordinator_factory.h"
 #include "chrome/browser/ui/ash/projector/projector_soda_installation_controller.h"
 #include "components/account_manager_core/account_manager_metrics.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/pref_registry/pref_registry_syncable.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/soda/constants.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -95,11 +93,6 @@ void ProjectorAppClientImpl::AddObserver(Observer* observer) {
 
 void ProjectorAppClientImpl::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
-}
-
-signin::IdentityManager* ProjectorAppClientImpl::GetIdentityManager() {
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  return IdentityManagerFactory::GetForProfile(profile);
 }
 
 network::mojom::URLLoaderFactory*

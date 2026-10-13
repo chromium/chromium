@@ -14,7 +14,6 @@ include_rules = [
   "+chrome/browser/notifications",
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
-  "+chrome/browser/signin",
   "+chrome/browser/speech",
   "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/ash/system_web_apps",
@@ -35,6 +34,7 @@ specific_include_rules = {
     "+chrome/browser/ui/navigator/browser_navigator.h",
     "+chrome/browser/ui/navigator/browser_navigator_params.h",
     "+chrome/browser/ui/tabs/tab_strip_model.h",
+    "+chrome/browser/signin",
     "+chrome/test",
   ],
 }

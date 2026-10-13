@@ -43,7 +43,6 @@ class ProjectorAppClientImpl : public ash::ProjectorAppClient {
   // ash::ProjectorAppClient:
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
-  signin::IdentityManager* GetIdentityManager() override;
   network::mojom::URLLoaderFactory* GetUrlLoaderFactory() override;
   void OnNewScreencastPreconditionChanged(
       const ash::NewScreencastPrecondition& precondition) override;

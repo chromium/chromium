@@ -36,8 +36,9 @@ class MockAppClient : public ProjectorAppClient {
     return test_url_loader_factory_;
   }
 
+  signin::IdentityManager* identity_manager();
+
   // ProjectorAppClient:
-  signin::IdentityManager* GetIdentityManager() override;
   network::mojom::URLLoaderFactory* GetUrlLoaderFactory() override;
 
   MOCK_METHOD1(AddObserver, void(Observer*));

@@ -104,7 +104,7 @@ class UntrustedProjectorPageHandlerImplUnitTest : public testing::Test {
     handler_impl_ = std::make_unique<UntrustedProjectorPageHandlerImpl>(
         page().page_handler().BindNewPipeAndPassReceiver(),
         page().receiver().BindNewPipeAndPassRemote(), &pref_service_,
-        mock_app_client_.GetIdentityManager(),
+        mock_app_client_.identity_manager(),
         mock_app_client_.GetUrlLoaderFactory());
   }
 

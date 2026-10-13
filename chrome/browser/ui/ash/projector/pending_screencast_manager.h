@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/extensions/file_manager/scoped_suppress_drive_notifications_for_path.h"
 #include "chrome/browser/ui/ash/projector/projector_drivefs_provider.h"
 #include "chromeos/ash/components/drivefs/drivefs_host.h"
+#include "components/account_id/account_id.h"
 
 namespace drivefs {
 namespace mojom {
@@ -115,8 +116,8 @@ class PendingScreencastManager : drivefs::DriveFsHost::Observer {
   // TODO(b/221902328): Fix the case that user might delete files through file
   // app.
 
-  // The account whose DriveFS is currently observed; empty before the first
-  // observation starts.
+  // The account the observed DriveFS belongs to, recorded by
+  // MaybeSwitchDriveFsObservation(). Empty until the first observation.
   AccountId account_id_;
 
   // A set that caches current pending screencast.
