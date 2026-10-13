@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_SELECTION_SUGGESTION_TOOL_H_
 
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "chrome/browser/selection/suggestion.h"
 
@@ -24,6 +26,10 @@ class SuggestionTool {
   virtual ~SuggestionTool() = default;
 
   virtual ToolId GetToolId() const = 0;
+
+  // Returns the capabilities that this tool supports (e.g., tools that Glic
+  // can invoke).
+  virtual std::vector<std::string> GetCapabilities() const;
 
   // Turns the `server_suggestion` into a `Suggestion`. That is, it acts as a
   // factory function for suggestions that used this tool.

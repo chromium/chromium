@@ -56,6 +56,10 @@ base::flat_set<std::string> GetGlicSelectionDefaultBlockedSites() {
 BASE_FEATURE(kGlicSelectionOverlayPrompt, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicSelectionOverlayPromptBox, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicSelectionSuggestions, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(std::string,
+                   kGlicSelectionSuggestionsCapabilities,
+                   &kGlicSelectionSuggestions,
+                   "no_override");
 
 BASE_FEATURE(kGlicSelectionSmallChip, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<bool> kGlicSelectionSmallChipOnTop{

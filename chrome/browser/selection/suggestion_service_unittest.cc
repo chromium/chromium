@@ -44,6 +44,7 @@ namespace {
 using ::base::test::RunOnceCallback;
 using ::base::test::TestFuture;
 using ::testing::_;
+using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::IsEmpty;
@@ -52,6 +53,21 @@ using ::testing::Property;
 
 auto SuggestionWithLabel(std::u16string_view label) {
   return Pointee(Property(&Suggestion::GetLabel, label));
+}
+
+auto ToolWithCapabilities(
+    optimization_guide::proto::SmartSelectionToolId tool_id,
+    auto capabilities_matcher) {
+  using ProtoTool =
+      optimization_guide::proto::SmartSelectionToolWithCapabilities;
+  // `capabilities` is overloaded - this picks the overload that we want.
+  using CapabilitiesGetter =
+      const google::protobuf::RepeatedPtrField<std::string>& (ProtoTool::*)()
+          const;
+  return AllOf(
+      Property(&ProtoTool::tool, tool_id),
+      Property(static_cast<CapabilitiesGetter>(&ProtoTool::capabilities),
+               std::move(capabilities_matcher)));
 }
 
 class TestSuggestion : public Suggestion {
@@ -78,11 +94,16 @@ class CustomTestTool : public SuggestionTool {
  public:
   explicit CustomTestTool(
       ToolId tool_id =
-          optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME)
-      : tool_id_(tool_id) {}
+          optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME,
+      std::vector<std::string> capabilities = {})
+      : tool_id_(tool_id), capabilities_(std::move(capabilities)) {}
   ~CustomTestTool() override = default;
 
   ToolId GetToolId() const override { return tool_id_; }
+
+  std::vector<std::string> GetCapabilities() const override {
+    return capabilities_;
+  }
 
   std::unique_ptr<Suggestion> CreateSuggestion(
       const AreaOfInterest& processed_area,
@@ -97,6 +118,7 @@ class CustomTestTool : public SuggestionTool {
 
  private:
   const ToolId tool_id_;
+  const std::vector<std::string> capabilities_;
 };
 
 class SuggestionServiceUnitTest : public testing::Test {
@@ -264,7 +286,8 @@ TEST_F(SuggestionServiceUnitTest, RequestSuggestionsWithServerSuggestions) {
   base::test::ScopedFeatureList feature_list{kSmartSelectionServerSuggestions};
 
   CustomTestTool gemini_tool(
-      optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
+      optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME,
+      /*capabilities=*/{"youtube_tool", "workspace_tool"});
   service().RegisterTool(&gemini_tool);
 
   optimization_guide::proto::SmartSelectionSuggestionsResponse response;
@@ -300,11 +323,10 @@ TEST_F(SuggestionServiceUnitTest, RequestSuggestionsWithServerSuggestions) {
                                 SmartSelectionSuggestionsRequest&>(
                     request_metadata);
             EXPECT_THAT(request.client_capabilities().available_tools(),
-                        ElementsAre(Property(
-                            &optimization_guide::proto::
-                                SmartSelectionToolWithCapabilities::tool,
+                        ElementsAre(ToolWithCapabilities(
                             optimization_guide::proto::
-                                SMART_SELECTION_TOOL_GEMINI_IN_CHROME)));
+                                SMART_SELECTION_TOOL_GEMINI_IN_CHROME,
+                            ElementsAre("youtube_tool", "workspace_tool"))));
             ASSERT_EQ(request.areas_of_interest().size(), 1);
             const optimization_guide::proto::AreaOfInterest& proto_aoi =
                 request.areas_of_interest(0);

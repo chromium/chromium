@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_GLIC_SELECTION_SELECTION_SUGGESTION_TOOL_H_
 #define CHROME_BROWSER_GLIC_SELECTION_SELECTION_SUGGESTION_TOOL_H_
 
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/selection/suggestion_tool.h"
 
@@ -21,6 +25,7 @@ class SelectionSuggestionTool : public ::selection::SuggestionTool {
 
   // ::selection::SuggestionTool:
   ToolId GetToolId() const override;
+  std::vector<std::string> GetCapabilities() const override;
   std::unique_ptr<::selection::Suggestion> CreateSuggestion(
       const ::selection::AreaOfInterest& processed_area,
       const optimization_guide::proto::SmartSelectionSuggestion&

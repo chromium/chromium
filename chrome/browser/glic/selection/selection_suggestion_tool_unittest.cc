@@ -9,11 +9,18 @@
 #include <utility>
 #include <vector>
 
+#include "base/test/scoped_feature_list.h"
+#include "base/values.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/selection/selection_suggestion.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_prefs.h"
 #include "chrome/browser/selection/suggestion.h"
 #include "chrome/browser/selection/suggestion_service.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/optimization_guide/proto/features/smart_selection_suggestions.pb.h"
+#include "components/prefs/pref_service.h"
 #include "components/tabs/public/mock_tab_interface.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
@@ -21,22 +28,29 @@
 namespace glic {
 namespace {
 
+using ::testing::ElementsAre;
+using ::testing::IsEmpty;
+using ::testing::Return;
 using ::testing::ReturnRef;
 
 class SelectionSuggestionToolTest : public testing::Test {
  public:
   SelectionSuggestionToolTest() {
+    ON_CALL(mock_tab_, GetProfile()).WillByDefault(Return(&profile_));
     ON_CALL(mock_tab_, GetUnownedUserDataHost())
         .WillByDefault(ReturnRef(user_data_host_));
   }
   ~SelectionSuggestionToolTest() override = default;
 
  protected:
+  TestingProfile& profile() { return profile_; }
   tabs::MockTabInterface& mock_tab() { return mock_tab_; }
   ::selection::SuggestionService& service() { return service_; }
   SelectionSuggestionTool& tool() { return tool_; }
 
  private:
+  content::BrowserTaskEnvironment task_environment_;
+  TestingProfile profile_;
   ui::UnownedUserDataHost user_data_host_;
   tabs::MockTabInterface mock_tab_;
   ::selection::SuggestionService service_{&mock_tab_,
@@ -49,6 +63,66 @@ class SelectionSuggestionToolTest : public testing::Test {
 TEST_F(SelectionSuggestionToolTest, GetToolId) {
   EXPECT_EQ(tool().GetToolId(),
             optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
+}
+
+// Tests that GetCapabilities returns empty when no supported tools are cached.
+TEST_F(SelectionSuggestionToolTest, GetCapabilitiesDefaultEmpty) {
+  EXPECT_THAT(tool().GetCapabilities(), IsEmpty());
+}
+
+// Tests that GetCapabilities returns the supported tools from profile prefs.
+TEST_F(SelectionSuggestionToolTest,
+       GetCapabilitiesReturnsSupportedToolsFromPrefs) {
+  profile().GetPrefs()->SetList(
+      contextual_cueing::prefs::kZeroStateSuggestionsSupportedTools,
+      base::ListValue().Append("youtube_tool").Append("workspace_tool"));
+
+  EXPECT_THAT(tool().GetCapabilities(),
+              ElementsAre("youtube_tool", "workspace_tool"));
+}
+
+// Tests that GetCapabilities falls back to profile prefs when the feature is
+// enabled without setting the capabilities parameter.
+TEST_F(SelectionSuggestionToolTest,
+       GetCapabilitiesFeatureEnabledWithoutParamUsesPrefs) {
+  base::test::ScopedFeatureList feature_list{
+      features::kGlicSelectionSuggestions};
+  profile().GetPrefs()->SetList(
+      contextual_cueing::prefs::kZeroStateSuggestionsSupportedTools,
+      base::ListValue().Append("youtube_tool"));
+
+  EXPECT_THAT(tool().GetCapabilities(), ElementsAre("youtube_tool"));
+}
+
+// Tests that GetCapabilities returns the tools from the feature parameter when
+// set, overriding profile prefs.
+TEST_F(SelectionSuggestionToolTest, GetCapabilitiesFeatureParamOverridesPrefs) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kGlicSelectionSuggestions,
+      {{features::kGlicSelectionSuggestionsCapabilities.name,
+        "youtube_tool, workspace_tool"}});
+  profile().GetPrefs()->SetList(
+      contextual_cueing::prefs::kZeroStateSuggestionsSupportedTools,
+      base::ListValue().Append("other_tool"));
+
+  EXPECT_THAT(tool().GetCapabilities(),
+              ElementsAre("youtube_tool", "workspace_tool"));
+}
+
+// Tests that GetCapabilities returns empty when the feature parameter is
+// explicitly set to empty, overriding non-empty profile prefs.
+TEST_F(SelectionSuggestionToolTest,
+       GetCapabilitiesEmptyFeatureParamOverridesPrefs) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kGlicSelectionSuggestions,
+      {{features::kGlicSelectionSuggestionsCapabilities.name, ""}});
+  profile().GetPrefs()->SetList(
+      contextual_cueing::prefs::kZeroStateSuggestionsSupportedTools,
+      base::ListValue().Append("youtube_tool"));
+
+  EXPECT_THAT(tool().GetCapabilities(), IsEmpty());
 }
 
 // Tests that SelectionSuggestionTool registers itself on construction and

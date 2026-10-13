@@ -5,6 +5,7 @@
 #include "chrome/browser/selection/suggestion_service.h"
 
 #include <algorithm>
+#include <iterator>
 #include <optional>
 #include <string>
 #include <utility>
@@ -66,7 +67,10 @@ proto::SmartSelectionSuggestionsRequest BuildServerSuggestionsRequest(
     proto::SmartSelectionToolWithCapabilities& tool_cap =
         *capabilities.add_available_tools();
     tool_cap.set_tool(tool_id);
-    // TODO(crbug.com/561489586): Populate tool capabilities.
+    std::vector<std::string> tool_capabilities = tool->GetCapabilities();
+    *tool_cap.mutable_capabilities() = {
+        std::make_move_iterator(tool_capabilities.begin()),
+        std::make_move_iterator(tool_capabilities.end())};
   }
 
   if (g_browser_process) {
