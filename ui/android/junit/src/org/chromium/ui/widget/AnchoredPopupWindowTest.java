@@ -30,6 +30,7 @@ import android.widget.FrameLayout;
 import android.widget.PopupWindow;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -41,6 +42,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowView;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.R;
 import org.chromium.ui.theme.FillInContextThemeWrapper;
@@ -412,6 +414,45 @@ public final class AnchoredPopupWindowTest {
 
         popup.show();
         assertEquals(2, buildCount.get());
+        assertNotNull(popup.getContentView());
+    }
+
+    @Test
+    public void testViewBuilderIncompatibleActivityContextAsserts() {
+        Activity otherActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        try {
+            RectProvider anchorRectProvider = new RectProvider(new Rect(0, 0, 100, 100));
+            AnchoredPopupWindow popup =
+                    new AnchoredPopupWindow.Builder(
+                                    mActivity,
+                                    mView,
+                                    mDrawable,
+                                    (unused) -> new FrameLayout(otherActivity),
+                                    anchorRectProvider)
+                            .build();
+
+            AssertionError error = Assert.assertThrows(AssertionError.class, popup::show);
+            assertTrue(
+                    error.getMessage()
+                            .contains("Popup contentView context is not from the same Activity"));
+        } finally {
+            otherActivity.finish();
+        }
+    }
+
+    @Test
+    public void testViewBuilderNonActivityContextDoesNotAssert() {
+        RectProvider anchorRectProvider = new RectProvider(new Rect(0, 0, 100, 100));
+        AnchoredPopupWindow popup =
+                new AnchoredPopupWindow.Builder(
+                                mActivity,
+                                mView,
+                                mDrawable,
+                                (unused) -> new FrameLayout(ContextUtils.getApplicationContext()),
+                                anchorRectProvider)
+                        .build();
+
+        popup.show();
         assertNotNull(popup.getContentView());
     }
 

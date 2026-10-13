@@ -24,6 +24,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordUserAction;
@@ -1226,6 +1227,10 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
     private View getOrCreateContentView() {
         if (mContentView == null) {
             mContentView = mViewBuilder.build(mContext);
+            assert ContextUtils.activityFromContext(mContext) == null
+                            || ContextUtils.activityFromContext(mContentView.getContext()) == null
+                            || ContextUtils.isSameActivity(mContentView.getContext(), mContext)
+                    : "Popup contentView context is not from the same Activity as popup context.";
         }
         return mContentView;
     }
