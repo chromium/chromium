@@ -975,11 +975,15 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage() {
     }
     gpu::raster::RasterInterface* raster_interface =
         shared_context_wrapper->ContextProvider().RasterInterface();
-    gpu::SyncToken sync_token;
-    auto client_si = resource_provider->BeginExternalOverwrite(sync_token);
-    if (!client_si) {
-      return nullptr;
-    }
+    auto client_si = resource_provider->resource()->GetSharedImage();
+    auto access = client_si->BeginRasterAccess(
+        raster_interface, resource_provider->resource()->acquire_sync_token(),
+        /*readonly=*/false);
+    gpu::SyncToken sync_token =
+        gpu::RasterScopedAccess::EndAccess(std::move(access));
+    resource_provider->resource()->SetReleaseSyncToken(sync_token);
+    client_si->UpdateDestructionSyncToken(sync_token);
+    sync_token = resource_provider->resource()->sync_token();
 
     // TODO(xlai): Flush should not be necessary if the synchronization in
     // CopyToPlatformTexture is done correctly. See crbug.com/794706.
