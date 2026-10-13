@@ -34,7 +34,7 @@ JavaScriptDialogTest.*
 JavaScriptDialogOriginTest.*
 JavaScriptDialogForPrerenderTest.*
 BrowserNavigatorTest.*
-MAYBE_BrowserNavigatorTestWithMockScreen.*
+*BrowserNavigatorTestWithMockScreen.*
 OmniboxViewTest.*
 
 # Browser web UI

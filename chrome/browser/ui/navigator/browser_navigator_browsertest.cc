@@ -96,6 +96,12 @@
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include "components/viz/common/resources/shared_image_format.h"
+#include "ui/gfx/color_space.h"
+#include "ui/gfx/display_color_spaces.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 using content::WebContents;
 
 namespace {
@@ -2378,16 +2384,7 @@ class MockScreen : public display::ScreenBase {
 };
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-// Windows has assumptions that the screen is a ScreenWin, which causes a crash
-// when we inject the MockScreen.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_BrowserNavigatorTestWithMockScreen \
-  DISABLED_BrowserNavigatorTestWithMockScreen
-#else
-#define MAYBE_BrowserNavigatorTestWithMockScreen \
-  BrowserNavigatorTestWithMockScreen
-#endif
-class MAYBE_BrowserNavigatorTestWithMockScreen
+class BrowserNavigatorTestWithMockScreen
     : public BrowserNavigatorPictureInPictureTest {
  public:
   void SetScreenInstance() override {
@@ -2396,11 +2393,22 @@ class MAYBE_BrowserNavigatorTestWithMockScreen
     BrowserNavigatorTest::SetScreenInstance();
 #else
     mock_screen_.Init();
-    mock_screen_.display_list().AddDisplay({1, gfx::Rect(0, 0, 800, 700)},
+    display::Display display1(1, gfx::Rect(0, 0, 800, 700));
+    display::Display display2(2, gfx::Rect(800, 0, 800, 700));
+#if BUILDFLAG(IS_WIN)
+    // Windows swap chains are BGRA, which is what ScreenWin reports for real
+    // displays. With the default RGBA output format the GPU process crashes
+    // and restarts, so the test times out or runs very slowly.
+    gfx::DisplayColorSpaces color_spaces(gfx::ColorSpace::CreateSRGB());
+    color_spaces.SetOutputFormats(viz::SinglePlaneFormat::kBGRA_8888,
+                                  viz::SinglePlaneFormat::kBGRA_8888);
+    display1.SetColorSpaces(color_spaces);
+    display2.SetColorSpaces(color_spaces);
+#endif  // BUILDFLAG(IS_WIN)
+    mock_screen_.display_list().AddDisplay(display1,
                                            display::DisplayList::Type::PRIMARY);
     mock_screen_.display_list().AddDisplay(
-        {2, gfx::Rect(800, 0, 800, 700)},
-        display::DisplayList::Type::NOT_PRIMARY);
+        display2, display::DisplayList::Type::NOT_PRIMARY);
     ASSERT_EQ(2, display::Screen::Get()->GetNumDisplays());
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
@@ -2425,13 +2433,13 @@ class MAYBE_BrowserNavigatorTestWithMockScreen
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         MAYBE_BrowserNavigatorTestWithMockScreen,
+                         BrowserNavigatorTestWithMockScreen,
                          testing::Bool(),
                          [](const testing::TestParamInfo<bool>& info) {
                            return info.param ? "Standalone" : "BrowserBacked";
                          });
 
-IN_PROC_BROWSER_TEST_P(MAYBE_BrowserNavigatorTestWithMockScreen,
+IN_PROC_BROWSER_TEST_P(BrowserNavigatorTestWithMockScreen,
                        Disposition_PictureInPicture_OpensInSameDisplay) {
   // Create the params for the PiP request.
   auto pip_options = blink::mojom::PictureInPictureWindowOptions::New();

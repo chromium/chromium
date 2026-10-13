@@ -186,5 +186,12 @@ if (!is_android) {
     if (use_ozone) {
       deps += [ "//ui/ozone" ]
     }
+
+    if (is_win) {
+      deps += [
+        "//components/viz/common",
+        "//ui/gfx",
+      ]
+    }
   }
 }
