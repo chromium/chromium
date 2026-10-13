@@ -4221,17 +4221,17 @@ bool AXObject::IsBlockedByAriaModalDialog(
     return false;
   }
 
-  if ((!GetNode() || GetNode()->IsPseudoElement()) && ParentObject()) {
-    return ParentObject()->IsBlockedByAriaModalDialog();
-  }
-
-  if (FlatTreeTraversal::Contains(*active_aria_modal_dialog, *GetNode())) {
-    return false;
+  AXObject* dialog_object = AXObjectCache().Get(active_aria_modal_dialog);
+  for (const AXObject* ancestor = this; ancestor;
+       ancestor = ancestor->ParentObject()) {
+    if (ancestor == dialog_object) {
+      return false;
+    }
   }
 
   if (ignored_reasons) {
-    ignored_reasons->push_back(IgnoredReason(
-        kAXAriaModalDialog, AXObjectCache().Get(active_aria_modal_dialog)));
+    ignored_reasons->push_back(
+        IgnoredReason(kAXAriaModalDialog, dialog_object));
   }
   return true;
 }

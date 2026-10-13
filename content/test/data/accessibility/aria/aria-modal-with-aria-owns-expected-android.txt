@@ -1,0 +1,7 @@
+android.webkit.WebView focusable
+++android.app.AlertDialog name='modal dialog'
+++++android.widget.TextView interesting name='Modal'
+++++android.widget.Button clickable focusable focused interesting name='Focus Me'
+++++android.view.View
+++++++android.widget.TextView interesting name='Content in the modal...'
+++++++android.widget.TextView interesting name='and content from outside the modal'

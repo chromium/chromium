@@ -1,0 +1,10 @@
+Document
+++Window Window.IsModal=false
+++++Text Name='Nonmodal'
+++Window Name='modal dialog' Window.IsModal=true
+++++Text Name='Modal'
+++++Button Name='Focus Me'
+++++Group
+++++++Text Name='Content in the modal...'
+++++++Group IsControlElement=false
+++++++++Text Name='and content from outside the modal'

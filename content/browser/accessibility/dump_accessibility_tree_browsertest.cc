@@ -1660,6 +1660,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaModal) {
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaModalWithAriaOwns) {
+  RunAriaTest(FILE_PATH_LITERAL("aria-modal-with-aria-owns.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityAriaModalFocusableDialog) {
   RunAriaTest(FILE_PATH_LITERAL("aria-modal-focusable-dialog.html"));
 }

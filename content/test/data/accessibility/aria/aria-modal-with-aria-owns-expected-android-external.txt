@@ -1,0 +1,7 @@
+WebView focusable actions:[FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++AlertDialog supplementalDescription:"modal dialog" actions:[AX_FOCUS] bundle:[chromeRole="dialog"]
+++++TextView text:"Modal" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
+++++Button text:"Focus Me" viewIdResName:"focusMe" clickable focusable focused actions:[CLEAR_FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button", clickableScore="300"]
+++++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
+++++++TextView text:"Content in the modal..." actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
+++++++TextView text:"and content from outside the modal" viewIdResName:"contentOutsideModal" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer"]

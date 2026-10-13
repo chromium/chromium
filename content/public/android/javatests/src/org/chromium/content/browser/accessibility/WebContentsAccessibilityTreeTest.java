@@ -798,6 +798,12 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_ariaModalWithAriaOwns() {
+        performAriaTest("aria-modal-with-aria-owns.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_ariaMultiline() {
         performAriaTest("aria-multiline.html");
     }

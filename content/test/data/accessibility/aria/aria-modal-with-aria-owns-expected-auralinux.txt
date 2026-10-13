@@ -1,0 +1,10 @@
+[document web]
+++[dialog]
+++++[static] name='Nonmodal'
+++[dialog] name='modal dialog' modal
+++++[static] name='Modal'
+++++[push button] name='Focus Me'
+++++[section]
+++++++[static] name='Content in the modal...'
+++++++[section]
+++++++++[static] name='and content from outside the modal'

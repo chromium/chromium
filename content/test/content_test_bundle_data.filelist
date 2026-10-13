@@ -2123,6 +2123,13 @@ data/accessibility/aria/aria-modal-remove-parent-container.html
 data/accessibility/aria/aria-modal-unhidden-expected-auralinux.txt
 data/accessibility/aria/aria-modal-unhidden-expected-mac.txt
 data/accessibility/aria/aria-modal-unhidden.html
+data/accessibility/aria/aria-modal-with-aria-owns-expected-android-external.txt
+data/accessibility/aria/aria-modal-with-aria-owns-expected-android.txt
+data/accessibility/aria/aria-modal-with-aria-owns-expected-auralinux.txt
+data/accessibility/aria/aria-modal-with-aria-owns-expected-mac.txt
+data/accessibility/aria/aria-modal-with-aria-owns-expected-uia-win.txt
+data/accessibility/aria/aria-modal-with-aria-owns-expected-win.txt
+data/accessibility/aria/aria-modal-with-aria-owns.html
 data/accessibility/aria/aria-modal.html
 data/accessibility/aria/aria-multiline-expected-android-assist-data.txt
 data/accessibility/aria/aria-multiline-expected-android-external.txt
