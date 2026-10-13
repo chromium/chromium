@@ -73,6 +73,25 @@ class ProcessSelectionTestData
 
 PROCESS_SELECTION_USER_DATA_KEY_IMPL(ProcessSelectionTestData);
 
+#if BUILDFLAG(IS_ANDROID)
+class MockShouldOverrideUrlLoadingBrowserClient : public ContentBrowserClient {
+ public:
+  MOCK_METHOD(bool,
+              ShouldOverrideUrlLoading,
+              (FrameTreeNodeId frame_tree_node_id,
+               bool browser_initiated,
+               const GURL& url,
+               const std::string& request_method,
+               bool has_user_gesture,
+               bool is_redirect,
+               bool is_outermost_main_frame,
+               bool is_prerendering,
+               ui::PageTransition transition,
+               bool* ignore_navigation),
+              (override));
+};
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace
 
 class NavigationRequestTest : public RenderViewHostImplTestHarness {
@@ -298,6 +317,85 @@ class NavigationRequestTest : public RenderViewHostImplTestHarness {
   bool was_callback_called_ = false;
   NavigationThrottle::ThrottleCheckResult callback_result_;
 };
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(NavigationRequestTest,
+       ShouldOverrideUrlLoadingDestroysNavigationRequest) {
+  // The fixture's browser-initiated navigation would take precedence over a
+  // renderer-initiated navigation without a user gesture.
+  contents()->Stop();
+  ASSERT_FALSE(main_test_rfh()->frame_tree_node()->navigation_request());
+
+  MockShouldOverrideUrlLoadingBrowserClient browser_client;
+  ScopedContentBrowserClientSetting setting(&browser_client);
+
+  for (bool success : {false, true}) {
+    SCOPED_TRACE(success);
+    EXPECT_CALL(browser_client, ShouldOverrideUrlLoading)
+        .WillOnce(testing::InvokeWithoutArgs([&]() {
+          auto* frame_tree_node = main_test_rfh()->frame_tree_node();
+          auto request = frame_tree_node->navigation_request()->GetWeakPtr();
+          EXPECT_EQ(NavigationRequest::WILL_START_NAVIGATION, request->state());
+          contents()->Stop();
+          EXPECT_FALSE(request);
+          // A false return models an exception thrown after stopping the load.
+          return success;
+        }));
+
+    main_test_rfh()->SendRendererInitiatedNavigationRequest(
+        GURL("https://example.com/"), /*has_user_gesture=*/false);
+    EXPECT_FALSE(main_test_rfh()->frame_tree_node()->navigation_request());
+  }
+}
+
+TEST_F(NavigationRequestTest, ShouldOverrideUrlLoadingException) {
+  // Clear the fixture's browser-initiated navigation before issuing a
+  // renderer-initiated navigation without a user gesture.
+  contents()->Stop();
+  ASSERT_FALSE(main_test_rfh()->frame_tree_node()->navigation_request());
+
+  MockShouldOverrideUrlLoadingBrowserClient browser_client;
+  ScopedContentBrowserClientSetting setting(&browser_client);
+  testing::NiceMock<MockWebContentsObserver> observer(contents());
+  EXPECT_CALL(observer, DidStartNavigation).Times(0);
+  EXPECT_CALL(browser_client, ShouldOverrideUrlLoading)
+      .WillOnce(testing::Return(false));
+
+  main_test_rfh()->SendRendererInitiatedNavigationRequest(
+      GURL("https://example.com/"), /*has_user_gesture=*/false);
+
+  auto* request = main_test_rfh()->frame_tree_node()->navigation_request();
+  ASSERT_TRUE(request);
+  EXPECT_EQ(NavigationRequest::WILL_START_NAVIGATION, request->state());
+}
+
+TEST_F(NavigationRequestTest, ShouldOverrideUrlLoadingResult) {
+  MockShouldOverrideUrlLoadingBrowserClient browser_client;
+  ScopedContentBrowserClientSetting setting(&browser_client);
+
+  for (bool ignore_navigation : {false, true}) {
+    SCOPED_TRACE(ignore_navigation);
+    EXPECT_CALL(browser_client, ShouldOverrideUrlLoading)
+        .WillOnce(testing::DoAll(testing::SetArgPointee<9>(ignore_navigation),
+                                 testing::Return(true)));
+
+    auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
+        GURL("https://example.com/"), main_rfh());
+    navigation->Start();
+    if (ignore_navigation) {
+      EXPECT_FALSE(main_test_rfh()->frame_tree_node()->navigation_request());
+    } else {
+      ASSERT_TRUE(main_test_rfh()->frame_tree_node()->navigation_request());
+      EXPECT_EQ(
+          NavigationRequest::WILL_START_REQUEST,
+          main_test_rfh()->frame_tree_node()->navigation_request()->state());
+      navigation->Commit();
+      EXPECT_EQ(GURL("https://example.com/"),
+                contents()->GetLastCommittedURL());
+    }
+  }
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Checks that the request_context_type is properly set.
 // Note: can be extended to cover more internal members.
