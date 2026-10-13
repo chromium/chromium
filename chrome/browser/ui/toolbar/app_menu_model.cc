@@ -83,6 +83,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_manager.h"
 #include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/tabs/other_device_tabs_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/recent_tabs_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_metrics.h"
@@ -142,6 +143,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/skills/features.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/vector_icons/vector_icons.h"
@@ -204,6 +206,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kBookmarksMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kTabGroupsMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kDownloadsMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kHistoryMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kOtherDeviceTabsMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kExtensionsMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel,
                                       kSkillsAndExtensionsMenuItem);
@@ -2052,6 +2055,8 @@ bool AppMenuModel::IsCommandIdEnabled(int command_id) const {
       return IncognitoModePrefs::IsIncognitoTypeAllowed(
           browser_->GetProfile(),
           IncognitoModePrefs::IncognitoModeType::kStandard);
+    case kOtherDeviceTabsMenuPlaceholder:
+      return base::FeatureList::IsEnabled(syncer::kCrossDeviceTabsInAppMenu);
     default:
       return chrome::IsCommandEnabled(browser_, command_id);
   }
@@ -2218,6 +2223,18 @@ void AppMenuModel::Build() {
     SetElementIdentifierAt(
         GetIndexOfCommandId(kRecentTabsMenuPlaceholder).value(),
         kHistoryMenuItem);
+
+    if (base::FeatureList::IsEnabled(syncer::kCrossDeviceTabsInAppMenu)) {
+      sub_menus_.push_back(std::make_unique<OtherDeviceTabsSubMenuModel>());
+      AddSubMenuWithStringIdAndVectorIcon(
+          this, kOtherDeviceTabsMenuPlaceholder, IDS_OTHER_DEVICE_TABS_MENU,
+          sub_menus_.back().get(),
+          features::IsRoundedIconsEnabled() ? vector_icons::kDevicesIcon
+                                            : vector_icons::kDevicesOldIcon);
+      SetElementIdentifierAt(
+          GetIndexOfCommandId(kOtherDeviceTabsMenuPlaceholder).value(),
+          kOtherDeviceTabsMenuItem);
+    }
   }
   AddItemWithStringIdAndVectorIcon(
       this, IDC_SHOW_DOWNLOADS, IDS_SHOW_DOWNLOADS,

@@ -259,6 +259,7 @@ if (!is_android) {
       "existing_base_sub_menu_model.h",
       "existing_tab_group_sub_menu_model.h",
       "existing_window_sub_menu_model.h",
+      "other_device_tabs_sub_menu_model.h",
       "recent_tabs_builder.h",
       "recent_tabs_sub_menu_model.h",
       "remote_tabs_menu_util.h",
@@ -496,6 +497,7 @@ if (!is_android) {
     sources = [
       "horizontal_tab_strip_metrics.cc",
       "hover_tab_selector.cc",
+      "other_device_tabs_sub_menu_model.cc",
       "pinned_tab_codec.cc",
       "pinned_tab_service.cc",
       "pinned_tab_service_factory.cc",
@@ -914,6 +916,7 @@ if (!is_android) {
       "existing_base_sub_menu_model_browsertest.cc",
       "existing_window_sub_menu_model_browsertest.cc",
       "glic_tab_sub_menu_model_browsertest.cc",
+      "other_device_tabs_sub_menu_model_browsertest.cc",
       "pinned_tab_codec_browsertest.cc",
       "pinned_tab_service_browsertest.cc",
       "recent_tabs_builder_test_helper.cc",

@@ -15512,6 +15512,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_HISTORY_MENU" desc="The text label of the History (and recent tabs) sub-menu in the wrench menu.">
         &amp;History
       </message>
+      <message name="IDS_OTHER_DEVICE_TABS_MENU" desc="The text label of the 'Other device tabs' sub-menu in the wrench menu that lists the tabs currently open on the user's other devices.">
+        Other device tabs
+      </message>
       <message name="IDS_DEFAULT_DOWNLOAD_FILENAME" desc="Default name for downloaded files when we have no idea what they could be.">
         download
       </message>
