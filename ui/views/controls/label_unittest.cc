@@ -1859,6 +1859,31 @@ TEST_F(LabelSelectionTest, KeyboardActions) {
   EXPECT_EQ(std::u16string(), GetSelectedText());
 }
 
+// Labels do not register Ctrl+C with the FocusManager, but the focused
+// selectable label still copies when the accelerator is delivered to it
+// directly, as BrowserView::CutCopyPaste() does for the Chrome menu's Copy.
+TEST_F(LabelSelectionTest, CopyAcceleratorNotRegistered) {
+  const std::u16string text = u"Label copy accelerator";
+  label()->SetText(text);
+  label()->SizeToPreferredSize();
+  const ui::Accelerator copy_accelerator(ui::VKEY_C, ui::EF_CONTROL_DOWN);
+  EXPECT_FALSE(
+      widget()->GetFocusManager()->IsAcceleratorRegistered(copy_accelerator));
+
+  ASSERT_TRUE(label()->SetSelectable(true));
+  EXPECT_FALSE(
+      widget()->GetFocusManager()->IsAcceleratorRegistered(copy_accelerator));
+
+  PerformClick(gfx::Point());
+  EXPECT_EQ(label(), GetFocusedView());
+  label()->SelectAll();
+  // BrowserView::CutCopyPaste() calls these through View.
+  View* focused_view = label();
+  ASSERT_TRUE(focused_view->CanHandleAccelerators());
+  EXPECT_TRUE(focused_view->AcceleratorPressed(copy_accelerator));
+  EXPECT_EQ(text, GetClipboardText(ui::ClipboardBuffer::kCopyPaste));
+}
+
 // Verify the context menu options are enabled and disabled appropriately.
 TEST_F(LabelSelectionTest, ContextMenuContents) {
   label()->SetText(u"Label context menu");

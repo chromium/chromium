@@ -1099,7 +1099,10 @@ bool Label::OnKeyPressed(const ui::KeyEvent& event) {
 bool Label::AcceleratorPressed(const ui::Accelerator& accelerator) {
   // Allow the "Copy" action from the Chrome menu to be invoked. E.g., if a user
   // selects a Label on a web modal dialog. "Select All" doesn't appear in the
-  // Chrome menu so isn't handled here.
+  // Chrome menu so isn't handled here. The Label does not register this
+  // accelerator with the FocusManager: BrowserView::CutCopyPaste() calls this
+  // on the focused view directly, and the Ctrl+C key itself is handled in
+  // OnKeyPressed().
   if (accelerator.key_code() == ui::VKEY_C && accelerator.IsCtrlDown()) {
     CopyToClipboard();
     return true;
@@ -1365,10 +1368,6 @@ void Label::Init(std::u16string_view text,
   BuildContextMenuContents();
   set_context_menu_controller(this);
   GetViewAccessibility().set_needs_ax_tree_manager(true);
-
-  // This allows the BrowserView to pass the copy command from the Chrome menu
-  // to the Label.
-  AddAccelerator(ui::Accelerator(ui::VKEY_C, ui::EF_CONTROL_DOWN));
 
   UpdateTooltipText();
 }
