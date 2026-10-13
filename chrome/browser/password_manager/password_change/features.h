@@ -30,10 +30,6 @@ BASE_DECLARE_FEATURE(kRecordDiscardedFormsToModelQualityLogs);
 // exponentially.
 BASE_DECLARE_FEATURE(kRecheckFormsExponentiallyInChangePasswordFormWaiter);
 
-// Controls whether ChromePasswordChangeService::GetGeneralAvailability skips
-// the check for ShouldModelExecutionBeAllowedForUser.
-BASE_DECLARE_FEATURE(kSkipModelExecutionAllowedCheckForPasswordChange);
-
 // Controls whether ChangePasswordFormWaiter stops waiting for local ML model to
 // finish downloading after timeout.
 BASE_DECLARE_FEATURE(kTimeoutLocalMLModelDownloadInChangePasswordFormWaiter);

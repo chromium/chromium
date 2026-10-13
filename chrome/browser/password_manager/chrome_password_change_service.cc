@@ -333,12 +333,7 @@ PasswordChangeAvailability ChromePasswordChangeService::GetGeneralAvailability()
   }
 
   // User is not eligible.
-  const bool skip_check = base::FeatureList::IsEnabled(
-      password_change::features::
-          kSkipModelExecutionAllowedCheckForPasswordChange);
-  if (!optimization_keyed_service_ ||
-      (!skip_check &&
-       !optimization_keyed_service_->ShouldModelExecutionBeAllowedForUser())) {
+  if (!optimization_keyed_service_) {
     if (logger) {
       logger->LogMessage(
           Logger::STRING_PASSWORD_CHANGE_MODEL_EXECUTION_NOT_ALLOWED);
