@@ -1181,6 +1181,20 @@ void OutOfFlowLayoutPart::LayoutCandidates(
           result->TallestUnbreakableBlockSize());
     }
 
+    if (container_builder_.RequiresContentBeforeBreaking() &&
+        RuntimeEnabledFeatures::FragmentedOofInCbEnabled()) {
+      LayoutUnit space_left =
+          FragmentainerSpaceLeft(container_builder_, /*is_for_children=*/true);
+      LayoutUnit block_size = BlockSizeForFragmentation(
+          *result, container_builder_.GetWritingDirection());
+      if (block_size > space_left) {
+        // The OOF fragment overflows the fragmentainer, but this container has
+        // a non-auto block-size which fits in the fragmentainer, which means
+        // that the OOF fragment needs to stay here as well.
+        container_builder_.SetIsBlockSizeForFragmentationClamped();
+      }
+    }
+
     const auto& fragment =
         To<PhysicalBoxFragment>(result->GetPhysicalFragment());
     if (const BlockBreakToken* outgoing_break_token =

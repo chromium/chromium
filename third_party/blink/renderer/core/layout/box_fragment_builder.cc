@@ -373,9 +373,6 @@ void BoxFragmentBuilder::AddChild(
   PropagateFromFragment(child, child_offset, *relative_offset,
                         inline_container);
   AddChildInternal(&child, child_offset + *relative_offset);
-
-  // We have got some content, so follow normal breaking rules from now on.
-  SetRequiresContentBeforeBreaking(false);
 }
 
 void BoxFragmentBuilder::AddBreakToken(const BreakToken* token,
@@ -587,6 +584,11 @@ void BoxFragmentBuilder::PropagateBreakInfo(
     SetHasForcedBreak();
   } else if (!GetConstraintSpace().IsInitialColumnBalancingPass()) {
     PropagateSpaceShortage(child_layout_result.MinimalSpaceShortage());
+  }
+
+  if (!child_fragment.IsOutOfFlowPositioned()) {
+    // We have got some content, so follow normal breaking rules from now on.
+    SetRequiresContentBeforeBreaking(false);
   }
 
   if (!child_box_fragment) {
