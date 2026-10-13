@@ -23,9 +23,11 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/mock_contextual_search_service.h"
 #include "components/contextual_search/mock_contextual_search_session_handle.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/lens/lens_overlay_invocation_source.h"
 #include "components/optimization_guide/proto/features/contextual_cueing.pb.h"
 #include "components/page_content_annotations/core/page_content_annotations_common.h"
 #include "components/page_content_annotations/core/test_page_content_annotations_service.h"
@@ -436,11 +438,19 @@ TEST_F(ContextualSearchCueTargetTest,
               base::OnceCallback<void(GURL)> callback) {
             ASSERT_TRUE(request_info);
             EXPECT_EQ(request_info->query_text, "compare headphones");
+            EXPECT_EQ(
+                request_info->aim_entry_point,
+                omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_CONTEXTUAL_CUE);
+            EXPECT_EQ(request_info->invocation_source,
+                      lens::LensOverlayInvocationSource::kContextualCue);
             std::move(callback).Run(expected_url);
           });
 
-  EXPECT_CALL(*contextual_search_service,
-              CreateSession(testing::_, testing::_, testing::_))
+  EXPECT_CALL(
+      *contextual_search_service,
+      CreateSession(testing::_, ContextualSearchSource::kContextualCue,
+                    std::optional<lens::LensOverlayInvocationSource>(
+                        lens::LensOverlayInvocationSource::kContextualCue)))
       .WillOnce(testing::Return(std::move(session_handle)));
 
   EXPECT_CALL(
@@ -500,8 +510,11 @@ TEST_F(ContextualSearchCueTargetTest,
             std::move(callback).Run(expected_url);
           });
 
-  EXPECT_CALL(*contextual_search_service,
-              CreateSession(testing::_, testing::_, testing::_))
+  EXPECT_CALL(
+      *contextual_search_service,
+      CreateSession(testing::_, ContextualSearchSource::kContextualCue,
+                    std::optional<lens::LensOverlayInvocationSource>(
+                        lens::LensOverlayInvocationSource::kContextualCue)))
       .WillOnce(testing::Return(std::move(session_handle)));
 
   EXPECT_CALL(*mock_lens_search_controller_,
@@ -514,7 +527,6 @@ TEST_F(ContextualSearchCueTargetTest,
   target_->OnAnchoredMessageClicked(cs_data);
 }
 #endif
-
 }  // namespace
 
 // ---------------------------------------------------------------------------

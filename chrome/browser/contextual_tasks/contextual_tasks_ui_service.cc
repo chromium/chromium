@@ -240,6 +240,7 @@ EntrypointSource ConvertContextualSearchSourceToEntrypointSource(
       return EntrypointSource::kFromNewTabPage;
     case contextual_search::ContextualSearchSource::kLens:
       return EntrypointSource::kFromLens;
+    case contextual_search::ContextualSearchSource::kContextualCue:
     case contextual_search::ContextualSearchSource::kContextualTasks:
       // This shouldn't happen but is it does - just fall through to say it's
       // from web.

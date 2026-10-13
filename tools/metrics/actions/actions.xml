@@ -160,6 +160,7 @@ should be able to be added at any place in this file.
 </variants>
 
 <variants name="ContextualSearchSource">
+  <variant name="ContextualCue" summary="Contextual cue"/>
   <variant name="ContextualTasks" summary="Contextual tasks"/>
   <variant name="Lens" summary="Lens"/>
   <variant name="NewTabPage" summary="New tab page"/>

@@ -260,8 +260,8 @@ void ContextualSearchCueTarget::OnAnchoredMessageClicked(
   auto config_params =
       std::make_unique<ContextualSearchContextController::ConfigParams>();
   session_handle_ = service->CreateSession(
-      std::move(config_params), ContextualSearchSource::kContextualTasks,
-      lens::LensOverlayInvocationSource::kAppMenu);
+      std::move(config_params), ContextualSearchSource::kContextualCue,
+      lens::LensOverlayInvocationSource::kContextualCue);
   if (!session_handle_) {
     return;
   }
@@ -343,7 +343,10 @@ void ContextualSearchCueTarget::OnContextualizationComplete(
   request_info->query_start_time = base::Time::Now();
   request_info->search_url_type =
       ContextualSearchContextController::SearchUrlType::kAim;
-  request_info->invocation_source = lens::LensOverlayInvocationSource::kAppMenu;
+  request_info->aim_entry_point =
+      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_CONTEXTUAL_CUE;
+  request_info->invocation_source =
+      lens::LensOverlayInvocationSource::kContextualCue;
 
   active_session_handle->CreateSearchUrl(
       std::move(request_info),

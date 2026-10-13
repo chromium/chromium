@@ -631,6 +631,8 @@ std::string ContextualSearchMetricsRecorder::ContextualSearchSourceToString(
       return "OmniboxEverywhere";
     case ContextualSearchSource::kNewTabPage:
       return "NewTabPage";
+    case ContextualSearchSource::kContextualCue:
+      return "ContextualCue";
     case ContextualSearchSource::kUnknown:
       return "Unknown";
   }

@@ -104,6 +104,8 @@ GetLensInvocationSourceForAimZeroState(
     case omnibox::ChromeAimEntryPoint::
         DESKTOP_CHROME_CHROMNIENT_HOMEWORK_ACTION_CHIP:
       return lens::LensOverlayInvocationSource::kHomeworkActionChip;
+    case omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_CONTEXTUAL_CUE:
+      return lens::LensOverlayInvocationSource::kContextualCue;
     case omnibox::ChromeAimEntryPoint::IOS_CHROME_APP_BAR_ENTRY_POINT:
       return lens::LensOverlayInvocationSource::kAppBarAimButton;
     default:
