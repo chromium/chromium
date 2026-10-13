@@ -449,8 +449,6 @@ class ClipPathPaintDefinitionTest : public PageTestBase {
   void SetUp() override {
     scoped_composite_clip_path_animation =
         std::make_unique<ScopedCompositeClipPathAnimationForTest>(true);
-    scoped_composite_bgcolor_animation =
-        std::make_unique<ScopedCompositeBGColorAnimationForTest>(false);
 
     layer_tree_ = std::make_unique<LayerTreeHostEmbedder>();
     chrome_client_ = MakeGarbageCollected<MockChromeClientWithAnimationHost>();
@@ -467,8 +465,6 @@ class ClipPathPaintDefinitionTest : public PageTestBase {
  private:
   std::unique_ptr<ScopedCompositeClipPathAnimationForTest>
       scoped_composite_clip_path_animation;
-  std::unique_ptr<ScopedCompositeBGColorAnimationForTest>
-      scoped_composite_bgcolor_animation;
 
   Persistent<MockChromeClientWithAnimationHost> chrome_client_;
   std::unique_ptr<LayerTreeHostEmbedder> layer_tree_;

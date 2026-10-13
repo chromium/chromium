@@ -107,7 +107,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kChildProcessSecurityPolicyRustProcessState);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kClearCrossSiteCrossBrowsingContextGroupWindowName);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kCompositeBGColorAnimation);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDeferSessionStorageScavengingOnStartup);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDeferSpeculativeRFHCreation);
 CONTENT_EXPORT extern const base::FeatureParam<bool>

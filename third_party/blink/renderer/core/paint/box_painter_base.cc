@@ -97,9 +97,6 @@ void ApplySpreadToShadowShape(ContouredRect& shadow_shape, float spread) {
 
 BackgroundColorPaintImageGenerator* GetBackgroundColorPaintImageGenerator(
     const Document& document) {
-  if (!RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled())
-    return nullptr;
-
   return document.GetFrame()->GetBackgroundColorPaintImageGenerator();
 }
 
@@ -676,7 +673,6 @@ BoxPainterBase::FillLayerInfo::FillLayerInfo(
   }
 
   bool composite_bgcolor_animation =
-      RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() &&
       style.HasCurrentBackgroundColorAnimation() &&
       layer.GetType() == EFillLayerType::kBackground &&
       !(paint_flags & PaintFlag::kOmitCompositingInfo);

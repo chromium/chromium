@@ -2806,8 +2806,7 @@ Animation::NativePaintWorkletReasons Animation::GetNativePaintWorkletReasons()
     // TODO(kevers): There is room to optimize here as if in forced color mode
     // and forced colors are active for the element, we can optimize out the
     // animation as having no visual effect.
-    if (RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() &&
-        GetDocument() && !GetDocument()->InForcedColorsMode() &&
+    if (GetDocument() && !GetDocument()->InForcedColorsMode() &&
         keyframe_effect->Affects(
             PropertyHandle(GetCSSPropertyBackgroundColor()))) {
       reasons |= kBackgroundColorPaintWorklet;

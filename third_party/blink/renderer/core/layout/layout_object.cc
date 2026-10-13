@@ -231,9 +231,6 @@ inline bool CalculateCanTraversePhysicalFragments(const LayoutObject& obj) {
 }
 
 bool HasNativeBackgroundPainter(Node* node) {
-  if (!RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled())
-    return false;
-
   Element* element = DynamicTo<Element>(node);
   if (!element)
     return false;

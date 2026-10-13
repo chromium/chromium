@@ -669,8 +669,6 @@ TEST_P(CSSAnimationsTest, AllAnimationFlags_JSAnimations_Compositor) {
 }
 
 TEST_P(CSSAnimationsTest, CompositedAnimationUpdateCausesPaintInvalidation) {
-  ScopedCompositeBGColorAnimationForTest scoped_feature(true);
-
   SetBodyInnerHTML(R"HTML(
     <style>
       @keyframes anim {

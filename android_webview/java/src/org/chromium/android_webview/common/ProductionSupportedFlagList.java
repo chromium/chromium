@@ -360,9 +360,6 @@ public final class ProductionSupportedFlagList {
                 "Enables GetUserMedia API will only resolve when the document calling it has"
                         + " focus"),
         Flag.baseFeature(
-                ContentFeatures.COMPOSITE_BG_COLOR_ANIMATION,
-                "When enabled, the background-color animation runs on the compositor thread."),
-        Flag.baseFeature(
                 BlinkFeatures.COMPOSITE_CLIP_PATH_ANIMATION,
                 "When enabled, clip-path animations run on the compositor thread."),
         Flag.baseFeature(

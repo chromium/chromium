@@ -350,7 +350,6 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
           if (HasNativePaintWorketReason(
                   npw_reasons, Animation::NativePaintWorkletProperties::
                                    kBackgroundColorPaintWorklet)) {
-            DCHECK(RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled());
             generator = target_element.GetDocument()
                             .GetFrame()
                             ->GetBackgroundColorPaintImageGenerator();

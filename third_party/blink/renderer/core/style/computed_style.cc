@@ -2495,8 +2495,7 @@ bool ComputedStyle::HasBackground() const {
   // When background color animation is running on the compositor thread, we
   // need to trigger repaint even if the background is transparent to collect
   // artifacts in order to run the animation on the compositor.
-  if (RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() &&
-      HasCurrentBackgroundColorAnimation()) {
+  if (HasCurrentBackgroundColorAnimation()) {
     return true;
   }
   return HasBackgroundImage();

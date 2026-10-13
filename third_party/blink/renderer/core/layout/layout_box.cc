@@ -2059,8 +2059,7 @@ bool LayoutBox::ForegroundIsKnownToBeOpaqueInRect(
         child_local_rect.Right() > child_box->StitchedSize().width) {
       continue;
     }
-    if (RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() &&
-        child->Style().HasCurrentBackgroundColorAnimation()) {
+    if (child->Style().HasCurrentBackgroundColorAnimation()) {
       return false;
     }
     if (child_box->BackgroundIsKnownToBeOpaqueInRect(child_local_rect))

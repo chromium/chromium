@@ -33,7 +33,6 @@
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/platform_paint_worklet_layer_painter.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -136,7 +135,6 @@ class BackgroundColorPaintDefinitionTest : public RenderingTest {
 // Test the case where there is a background-color animation with two simple
 // keyframes that will not fall back to main.
 TEST_F(BackgroundColorPaintDefinitionTest, SimpleBGColorAnimationNotFallback) {
-  ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
   SetBodyInnerHTML(R"HTML(
     <div id ="target" style="width: 100px; height: 100px">
     </div>
@@ -183,7 +181,6 @@ TEST_F(BackgroundColorPaintDefinitionTest, SimpleBGColorAnimationNotFallback) {
 }
 
 TEST_F(BackgroundColorPaintDefinitionTest, FallbackWithPixelMovingFilter) {
-  ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
   SetBodyInnerHTML(R"HTML(
     <div id="grandparent">
       <div id="parent">
@@ -310,7 +307,6 @@ TEST_F(BackgroundColorPaintDefinitionTest, FallbackWithPixelMovingFilter) {
 
 // Test the case when there is no animation attached to the element.
 TEST_F(BackgroundColorPaintDefinitionTest, FallbackToMainNoAnimation) {
-  ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
   SetBodyInnerHTML(R"HTML(
     <div id ="target" style="width: 100px; height: 100px">
     </div>
@@ -321,7 +317,6 @@ TEST_F(BackgroundColorPaintDefinitionTest, FallbackToMainNoAnimation) {
 
 // Test the case where the composite mode is not replace.
 TEST_F(BackgroundColorPaintDefinitionTest, FallbackToMainCompositeAccumulate) {
-  ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
   SetBodyInnerHTML(R"HTML(
     <div id ="target" style="width: 100px; height: 100px">
     </div>
@@ -367,7 +362,6 @@ TEST_F(BackgroundColorPaintDefinitionTest, FallbackToMainCompositeAccumulate) {
 }
 
 TEST_F(BackgroundColorPaintDefinitionTest, MultipleAnimationsFallback) {
-  ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
   SetBodyInnerHTML(R"HTML(
     <div id ="target" style="width: 100px; height: 100px">
     </div>
@@ -617,7 +611,6 @@ TEST_F(BackgroundColorPaintDefinitionTest, UnresolvedColorMix) {
 // animation is added.
 TEST_F(BackgroundColorPaintDefinitionTest,
        TriggerRepaintCompositedToNonComposited) {
-  ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
   SetBodyInnerHTML(R"HTML(
     <div id ="target" style="width: 100px; height: 100px">
     </div>
@@ -687,7 +680,6 @@ TEST_F(BackgroundColorPaintDefinitionTest,
 
 // Test that paint is invalidated when an animation's keyframe is changed
 TEST_F(BackgroundColorPaintDefinitionTest, TriggerRepaintChangedKeyframe) {
-  ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
   SetBodyInnerHTML(R"HTML(
     <div id ="target" style="width: 100px; height: 100px">
     </div>
@@ -753,7 +745,6 @@ TEST_F(BackgroundColorPaintDefinitionTest, TriggerRepaintChangedKeyframe) {
 // Test that an animation can be properly recovered as compositable after
 // previously been non-composited and then cancelled.
 TEST_F(BackgroundColorPaintDefinitionTest, NotStuckOnKNotComposited) {
-  ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
   SetBodyInnerHTML(R"HTML(
     <div id ="target" style="width: 100px; height: 100px">
     </div>
@@ -880,7 +871,6 @@ TEST_F(BackgroundColorPaintDefinitionTest, NotStuckOnKNotComposited) {
 // Test that an animation has its status properly set after updating the
 // animation keyframes to a non-compositable property.
 TEST_F(BackgroundColorPaintDefinitionTest, Rep) {
-  ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
   SetBodyInnerHTML(R"HTML(
     <div id ="target" style="width: 100px; height: 100px">
     </div>
@@ -993,7 +983,6 @@ TEST_F(BackgroundColorPaintDefinitionTest, Rep) {
 }
 
 TEST_F(BackgroundColorPaintDefinitionTest, TriggerRepaintNewStartTime) {
-  ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
   SetBodyInnerHTML("<div id=target></div>");
 
   Element* element = GetElementById("target");
@@ -1047,7 +1036,6 @@ TEST_F(BackgroundColorPaintDefinitionTest, TriggerRepaintNewStartTime) {
 // This condition occurs when when animation has not had a chance to tick
 // on the compositor thread.
 TEST_F(BackgroundColorPaintDefinitionTest, SampleWithNoPropertyValue) {
-  ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
   Vector<Color> animated_colors = {Color(0, 255, 0), Color(255, 0, 0)};
   Color main_thread_value = Color::kBlack;
   Vector<double> offsets = {0, 1};
@@ -1061,7 +1049,6 @@ TEST_F(BackgroundColorPaintDefinitionTest, SampleWithNoPropertyValue) {
 // condition occurs when the animation is not in effect. In this case,
 // the main thread value is correct.
 TEST_F(BackgroundColorPaintDefinitionTest, SampleWithEmptyPropertyValue) {
-  ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
   Vector<Color> animated_colors = {Color(0, 255, 0), Color(255, 0, 0)};
   Color main_thread_value = Color::kBlack;
   Vector<double> offsets = {0, 1};
@@ -1078,7 +1065,6 @@ TEST_F(BackgroundColorPaintDefinitionTest, SampleWithEmptyPropertyValue) {
 
 // Sample with negative progress.
 TEST_F(BackgroundColorPaintDefinitionTest, SampleWithNegativeProgress) {
-  ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
   Vector<Color> animated_colors = {Color(0, 128, 0), Color(255, 0, 0)};
   Vector<double> offsets = {0, 1};
   Color main_thread_value = Color::kBlack;
@@ -1102,7 +1088,6 @@ TEST_F(BackgroundColorPaintDefinitionTest, SampleWithNegativeProgress) {
 
 // Sample when the progress of the animation is > 1.
 TEST_F(BackgroundColorPaintDefinitionTest, SampleWithLargerThanOneProgress) {
-  ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
   Vector<Color> animated_colors = {Color(0, 255, 0), Color(128, 0, 0)};
   Vector<double> offsets = {0, 1};
   Color main_thread_value = Color::kBlack;
@@ -1127,7 +1112,6 @@ TEST_F(BackgroundColorPaintDefinitionTest, SampleWithLargerThanOneProgress) {
 
 // Sample when largest offset < 1.
 TEST_F(BackgroundColorPaintDefinitionTest, SamplewithCloseToOneOffset) {
-  ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
   Vector<Color> animated_colors = {Color(0, 255, 0), Color(0, 255, 255),
                                    Color(255, 0, 0)};
   Vector<double> offsets = {0, 0.6, 0.99999};
@@ -1146,7 +1130,6 @@ TEST_F(BackgroundColorPaintDefinitionTest, SamplewithCloseToOneOffset) {
 
 // Sample when keyframes have different color spaces.
 TEST_F(BackgroundColorPaintDefinitionTest, SampleWithDifferingColorSpaces) {
-  ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
   Vector<Color> animated_colors = {
       Color::FromColorSpace(Color::ColorSpace::kSRGBLegacy, 255, 0, 0, 1),
       Color::FromColorSpace(Color::ColorSpace::kSRGB, 0, 0.5, 0, 1),

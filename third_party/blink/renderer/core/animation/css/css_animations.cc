@@ -73,7 +73,6 @@
 #include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/media_values.h"
-#include "third_party/blink/renderer/core/css/native_paint_image_generator.h"
 #include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
 #include "third_party/blink/renderer/core/css/post_style_update_scope.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
@@ -1868,7 +1867,6 @@ void CSSAnimations::CalculateCompositorAnimationUpdate(
   }
 
   if (npw_reasons != Animation::NativePaintWorkletProperties::kNoPaintWorklet) {
-    CHECK(NativePaintImageGenerator::NativePaintWorkletAnimationsEnabled());
     element_animations->RecalcCompositedStatusForKeyframeChange(
         animating_element, style, npw_reasons, force_update);
   }

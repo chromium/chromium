@@ -138,8 +138,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {wf::EnableBackgroundFetch, features::kBackgroundFetch},
           {wf::EnableBoundaryEventDispatchTracksNodeRemoval,
            blink::features::kBoundaryEventDispatchTracksNodeRemoval},
-          {wf::EnableCompositeBGColorAnimation,
-           features::kCompositeBGColorAnimation},
           {wf::EnableDigitalGoods, features::kDigitalGoodsApi,
            kSetOnlyIfOverridden},
           {wf::EnableDocumentPolicyNegotiation,

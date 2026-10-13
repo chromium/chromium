@@ -3070,9 +3070,6 @@ TEST_P(AnimationCompositorAnimationsTest, NativePaintWorkletProperties) {
   std::unique_ptr<ScopedCompositeClipPathAnimationForTest>
       scoped_composite_clip_path_animation =
           std::make_unique<ScopedCompositeClipPathAnimationForTest>(true);
-  std::unique_ptr<ScopedCompositeBGColorAnimationForTest>
-      scoped_composite_bgcolor_animation =
-          std::make_unique<ScopedCompositeBGColorAnimationForTest>(true);
 
   // Normally, we don't get image generators set up in a testing environment.
   // Construct fake ones to allow us to test that we are making the correct
@@ -3212,9 +3209,6 @@ TEST_P(AnimationCompositorAnimationsTest, NativePaintWorkletForcedColorsMode) {
   color_scheme_helper.SetInForcedColors(GetDocument(),
                                         /*in_forced_colors=*/true);
 
-  std::unique_ptr<ScopedCompositeBGColorAnimationForTest>
-      scoped_composite_bgcolor_animation =
-          std::make_unique<ScopedCompositeBGColorAnimationForTest>(true);
 
   // Normally, we don't get image generators set up in a testing environment.
   // Construct fake ones to allow us to test that we are making the correct
@@ -3260,9 +3254,6 @@ TEST_P(AnimationCompositorAnimationsTest, NativePaintWorkletForcedColorsMode) {
 }
 
 TEST_P(AnimationCompositorAnimationsTest, BackgroundShorthand) {
-  std::unique_ptr<ScopedCompositeBGColorAnimationForTest>
-      scoped_composite_bgcolor_animation =
-          std::make_unique<ScopedCompositeBGColorAnimationForTest>(true);
 
   // Normally, we don't get image generators set up in a testing environment.
   // Construct a fake one to allow us to test that we are making the correct
@@ -3395,9 +3386,6 @@ TEST_P(AnimationCompositorAnimationsTest,
   std::unique_ptr<ScopedCompositeClipPathAnimationForTest>
       scoped_composite_clip_path_animation =
           std::make_unique<ScopedCompositeClipPathAnimationForTest>(true);
-  std::unique_ptr<ScopedCompositeBGColorAnimationForTest>
-      scoped_composite_background_color_animation =
-          std::make_unique<ScopedCompositeBGColorAnimationForTest>(true);
   ScopedClipPathPaintImageGenerator clip_image_generator(
       GetDocument().GetFrame());
   ScopedBackgroundColorPaintImageGenerator background_image_generator(
@@ -3524,9 +3512,6 @@ TEST_P(AnimationCompositorAnimationsTest,
   std::unique_ptr<ScopedCompositeClipPathAnimationForTest>
       scoped_composite_clip_path_animation =
           std::make_unique<ScopedCompositeClipPathAnimationForTest>(true);
-  std::unique_ptr<ScopedCompositeBGColorAnimationForTest>
-      scoped_composite_background_color_animation =
-          std::make_unique<ScopedCompositeBGColorAnimationForTest>(true);
   ScopedClipPathPaintImageGenerator clip_image_generator(
       GetDocument().GetFrame());
   ScopedBackgroundColorPaintImageGenerator background_image_generator(

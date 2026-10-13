@@ -254,8 +254,6 @@ BASE_FEATURE(kChildProcessSecurityPolicyRustProcessState,
 BASE_FEATURE(kClearCrossSiteCrossBrowsingContextGroupWindowName,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCompositeBGColorAnimation, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Defer Session Storage scavenging to avoid LevelDB initialization blocking
 // the critical path of startup.
 BASE_FEATURE(kDeferSessionStorageScavengingOnStartup,

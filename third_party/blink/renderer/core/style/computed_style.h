@@ -2071,8 +2071,7 @@ class ComputedStyle final : public ComputedStyleBase {
            HasCurrentFilterAnimation() || HasCurrentBackdropFilterAnimation() ||
            (RuntimeEnabledFeatures::CompositeClipPathAnimationEnabled() &&
             HasCurrentClipPathAnimation()) ||
-           (RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() &&
-            HasCurrentBackgroundColorAnimation());
+           HasCurrentBackgroundColorAnimation();
   }
   bool ShouldCompositeForCurrentAnimations() const {
     return HasCurrentOpacityAnimation() ||
