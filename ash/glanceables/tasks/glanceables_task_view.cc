@@ -20,8 +20,9 @@
 #include "ash/style/system_textfield_controller.h"
 #include "ash/style/typography.h"
 #include "ash/system/time/calendar_utils.h"
-#include "ash/system/time/date_helper.h"
 #include "base/functional/bind.h"
+#include "base/i18n/icubridge/date_time_formatter.h"
+#include "base/i18n/icubridge/icu_bridge.h"
 #include "base/location.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -55,8 +56,6 @@
 
 namespace ash {
 namespace {
-
-constexpr char kFormatterPattern[] = "EEE, MMM d";  // "Wed, Feb 28"
 
 // Margins between icons and labels in `tasks_details_view_`.
 constexpr auto kDetailItemsMargin = gfx::Insets::TLBR(0, 0, 0, 4);
@@ -102,11 +101,9 @@ std::u16string GetFormattedDueDate(const base::Time& due) {
     return l10n_util::GetStringUTF16(IDS_GLANCEABLES_DUE_TODAY);
   }
 
-  auto* const date_helper = DateHelper::GetInstance();
-  CHECK(date_helper);
-  const auto formatter =
-      date_helper->CreateSimpleDateFormatter(kFormatterPattern);
-  return date_helper->GetFormattedTime(&formatter, adjusted_due);
+  // e.g. "Wed, Feb 28".
+  return base::i18n::IcuBridge::GetInstance().date_time_formatter().Format(
+      adjusted_due, base::i18n::datetime_options::MDE::Medium());
 }
 
 std::unique_ptr<views::ImageView> CreateSecondRowIcon(

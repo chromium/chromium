@@ -19,7 +19,6 @@
 #include "base/time/time.h"
 #include "third_party/icu/source/common/unicode/dtintrv.h"
 #include "third_party/icu/source/i18n/unicode/dtitvfmt.h"
-#include "third_party/icu/source/i18n/unicode/dtptngen.h"
 #include "third_party/icu/source/i18n/unicode/fieldpos.h"
 #include "third_party/icu/source/i18n/unicode/gregocal.h"
 
@@ -35,67 +34,11 @@ UDate TimeToUDate(const base::Time& time) {
                             base::Time::kMillisecondsPerSecond);
 }
 
-// Receives an input `unicode_pattern` in the "Hm" format (HH:mm, aK:mm, h:mm a,
-// a hh:mm, etc.) and extracts the hours part of the pattern.
-icu::UnicodeString getHoursPattern(const icu::UnicodeString& unicode_pattern) {
-  std::string pattern;
-  unicode_pattern.toUTF8String(pattern);
-
-  if (pattern.contains("hh")) {
-    return icu::UnicodeString("hh");
-  }
-  if (pattern.contains("h")) {
-    return icu::UnicodeString("h");
-  }
-  if (pattern.contains("HH")) {
-    return icu::UnicodeString("HH");
-  }
-  if (pattern.contains("H")) {
-    return icu::UnicodeString("H");
-  }
-  if (pattern.contains("KK")) {
-    return icu::UnicodeString("KK");
-  }
-  if (pattern.contains("K")) {
-    return icu::UnicodeString("K");
-  }
-  if (pattern.contains("kk")) {
-    return icu::UnicodeString("kk");
-  }
-  if (pattern.contains("k")) {
-    return icu::UnicodeString("k");
-  }
-
-  NOTREACHED() << "Hours pattern not found.";
-}
-
 }  // namespace
 
 // static
 DateHelper* DateHelper::GetInstance() {
   return base::Singleton<DateHelper>::get();
-}
-
-icu::SimpleDateFormat DateHelper::CreateSimpleDateFormatter(
-    const char* pattern) {
-  // Generate a locale-dependent format pattern. The generator will take
-  // care of locale-dependent formatting issues like which separator to
-  // use (some locales use '.' instead of ':'), and where to put the am/pm
-  // marker.
-  UErrorCode status = U_ZERO_ERROR;
-  DCHECK(U_SUCCESS(status));
-  std::unique_ptr<icu::DateTimePatternGenerator> generator(
-      icu::DateTimePatternGenerator::createInstance(status));
-  DCHECK(U_SUCCESS(status));
-  icu::UnicodeString generated_pattern =
-      generator->getBestPattern(icu::UnicodeString(pattern), status);
-  DCHECK(U_SUCCESS(status));
-
-  // Then, create a formatter object using the generated pattern.
-  icu::SimpleDateFormat formatter(generated_pattern, status);
-  DCHECK(U_SUCCESS(status));
-
-  return formatter;
 }
 
 std::unique_ptr<icu::DateIntervalFormat>
@@ -105,42 +48,6 @@ DateHelper::CreateDateIntervalFormatter(const char* pattern) {
       icu::DateIntervalFormat::createInstance(pattern, status);
   DCHECK(U_SUCCESS(status));
   return base::WrapUnique(formatter);
-}
-
-icu::SimpleDateFormat DateHelper::CreateHoursFormatter(const char* pattern) {
-  UErrorCode status = U_ZERO_ERROR;
-  DCHECK(U_SUCCESS(status));
-  std::unique_ptr<icu::DateTimePatternGenerator> generator(
-      icu::DateTimePatternGenerator::createInstance(status));
-  DCHECK(U_SUCCESS(status));
-  icu::UnicodeString generated_pattern =
-      generator->getBestPattern(icu::UnicodeString(pattern), status);
-  DCHECK(U_SUCCESS(status));
-  // Since ICU 74, getBestPattern can return a gibberish pattern ""H
-  // ├'Minute': m┤ ├'Dayperiod': a┤"" if the locale resource is missing. Instead
-  // of using the gibberish pattern, this should fallback to the proposed
-  // pattern.
-  std::string gen_string;
-  generated_pattern.toUTF8String(gen_string);
-  if (gen_string.contains("├")) {
-    // Fallback to the suggested pattern.
-    generated_pattern = icu::UnicodeString(pattern);
-  }
-  // Extract the hours from the generated pattern.
-  icu::UnicodeString hours_pattern = getHoursPattern(generated_pattern);
-  icu::SimpleDateFormat formatter(hours_pattern, status);
-  DCHECK(U_SUCCESS(status));
-
-  return formatter;
-}
-
-std::u16string DateHelper::GetFormattedTime(const icu::DateFormat* formatter,
-                                            const base::Time& time) {
-  DCHECK(formatter);
-  icu::UnicodeString date_string;
-
-  formatter->format(TimeToUDate(time), date_string);
-  return base::i18n::UnicodeStringToString16(date_string);
 }
 
 std::u16string DateHelper::GetFormattedInterval(

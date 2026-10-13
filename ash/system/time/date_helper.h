@@ -31,13 +31,6 @@ class DateHelper : public LocaleChangeObserver,
   // Returns the singleton instance.
   ASH_EXPORT static DateHelper* GetInstance();
 
-  // Creates a formatter object used to format dates from the given `pattern`.
-  icu::SimpleDateFormat CreateSimpleDateFormatter(const char* pattern);
-
-  // Creates a formatter object that extracts the hours field from a given date.
-  // Uses `pattern` to differentiate between 12 and 24 hour clock formats.
-  icu::SimpleDateFormat CreateHoursFormatter(const char* pattern);
-
   // Creates a date interval formatter object that formats a `DateInterval` into
   // text as compactly as possible.
   // Note that even if a pattern does not request a certain date part, it will
@@ -48,10 +41,6 @@ class DateHelper : public LocaleChangeObserver,
   // "11/18/2021, 8:30 AM – 11/19/2021, 7:20 AM").
   std::unique_ptr<icu::DateIntervalFormat> CreateDateIntervalFormatter(
       const char* pattern);
-
-  // Returns a formatted string of a `time` using the given `formatter`.
-  std::u16string GetFormattedTime(const icu::DateFormat* formatter,
-                                  const base::Time& time);
 
   // Returns a formatted interval string using the given `formatter`.
   ASH_EXPORT std::u16string GetFormattedInterval(

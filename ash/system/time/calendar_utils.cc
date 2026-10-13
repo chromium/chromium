@@ -86,11 +86,6 @@ base::Time::Exploded GetExplodedUTC(const base::Time& date) {
   return exploded;
 }
 
-std::u16string FormatDate(const icu::SimpleDateFormat& formatter,
-                          const base::Time date) {
-  return DateHelper::GetInstance()->GetFormattedTime(&formatter, date);
-}
-
 std::u16string FormatInterval(const icu::DateIntervalFormat* formatter,
                               const base::Time& start_time,
                               const base::Time& end_time) {

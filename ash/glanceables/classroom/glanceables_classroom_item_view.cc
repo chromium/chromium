@@ -20,8 +20,9 @@
 #include "ash/system/model/clock_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/calendar_utils.h"
-#include "ash/system/time/date_helper.h"
 #include "base/check.h"
+#include "base/i18n/icubridge/date_time_formatter.h"
+#include "base/i18n/icubridge/icu_bridge.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -74,9 +75,6 @@ constexpr auto kAssignmentCourseTypography = TypographyToken::kCrosAnnotation1;
 constexpr auto kDueLabelsMargin = gfx::Insets::TLBR(2, 0, 0, 4);
 constexpr auto kDueLabelsTypography = TypographyToken::kCrosAnnotation1;
 
-constexpr char kDayOfWeekFormatterPattern[] = "EEE";      // "Wed"
-constexpr char kMonthAndDayFormatterPattern[] = "MMM d";  // "Feb 28"
-
 std::u16string GetFormattedDueDate(const base::Time& due) {
   const auto midnight_today = base::Time::Now().LocalMidnight();
   const auto midnight_tomorrow = midnight_today + base::Days(1);
@@ -86,14 +84,14 @@ std::u16string GetFormattedDueDate(const base::Time& due) {
   }
 
   const auto midnight_in_7_days_from_today = midnight_today + base::Days(7);
-  auto* const date_helper = DateHelper::GetInstance();
-  CHECK(date_helper);
-
-  const auto formatter = date_helper->CreateSimpleDateFormatter(
-      midnight_tomorrow <= due && due < midnight_in_7_days_from_today
-          ? kDayOfWeekFormatterPattern
-          : kMonthAndDayFormatterPattern);
-  return date_helper->GetFormattedTime(&formatter, due);
+  const auto& formatter =
+      base::i18n::IcuBridge::GetInstance().date_time_formatter();
+  if (midnight_tomorrow <= due && due < midnight_in_7_days_from_today) {
+    // e.g. "Wed".
+    return formatter.Format(due, base::i18n::datetime_options::E::Medium());
+  }
+  // e.g. "Feb 28".
+  return formatter.Format(due, base::i18n::datetime_options::MD::Medium());
 }
 
 std::u16string GetFormattedDueTime(const base::Time& due) {
