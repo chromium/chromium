@@ -697,6 +697,7 @@ if (!is_android) {
       "//components/history/core/browser",
       "//components/history/core/common",
       "//components/image_fetcher/core",
+      "//components/infobars/content",
       "//components/javascript_dialogs",
       "//components/lens",
       "//components/metrics:content",

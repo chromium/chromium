@@ -92,6 +92,11 @@ _ALLOWED_CREATE_FOR_CALLS = (
   # WebContentsDestroyed() after TabFeatures is destroyed, so the WebContents
   # must continue to own it.
   'HttpsOnlyModeTabHelper::CreateForWebContents',
+  # ContentInfoBarManager lives in //components/infobars/content, is also
+  # attached to non-tab WebContents in PresentationReceiverWindowView and
+  # ProfilePolicyConnector, and is looked up on WebContents across //chrome and
+  # //components, so the WebContents must own it.
+  'infobars::ContentInfoBarManager::CreateForWebContents',
   # TabModalDialogManager lives in //components/javascript_dialogs and is also
   # attached to non-tab Document Picture-in-Picture WebContents in
   # DocumentPipHost, so the WebContents must own it.

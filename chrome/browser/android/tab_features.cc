@@ -253,6 +253,7 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
   CHECK(tab);
   tab_subscription_ = webui::InitEmbeddingContext(tab);
 
+  infobars::ContentInfoBarManager::CreateForWebContents(web_contents);
   autofill::AutofillClientProvider& autofill_client_provider =
       autofill::AutofillClientProviderFactory::GetForProfile(profile);
   autofill_client_provider.CreateClientForWebContents(web_contents);

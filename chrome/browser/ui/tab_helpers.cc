@@ -28,7 +28,6 @@
 #include "chrome/common/chrome_switches.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/enterprise/buildflags/buildflags.h"
-#include "components/infobars/content/content_infobar_manager.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/page_info/core/features.h"
 #include "components/search/ntp_features.h"
@@ -87,10 +86,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   // ZoomController comes before common tab helpers since ChromeAutofillClient
   // may want to register as a ZoomObserver with it.
   zoom::ZoomController::CreateForWebContents(web_contents);
-
-  // infobars::ContentInfoBarManager comes before common tab helpers since
-  // ChromeSubresourceFilterClient has it as a dependency.
-  infobars::ContentInfoBarManager::CreateForWebContents(web_contents);
 
   // --- Section 1: Common tab helpers ---
   // NO! Do not just add your tab helper here. This is a large alphabetized
