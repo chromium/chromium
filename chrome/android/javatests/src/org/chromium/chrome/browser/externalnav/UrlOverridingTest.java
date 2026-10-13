@@ -656,12 +656,12 @@ public class UrlOverridingTest {
                 () -> {
                     tab.loadUrl(loadParams);
                 });
-        ChromeTabUtils.waitForInteractable(tab);
 
         int preClickFinishTarget = params.willLoadSubframe ? 2 : 1;
         if (finishCallback.getCallCount() < preClickFinishTarget) {
             finishCallback.waitForCallback(0, preClickFinishTarget, 20, TimeUnit.SECONDS);
         }
+        ChromeTabUtils.waitForInteractable(tab);
 
         if (params.needClick) {
             int loadCount = loadCallback.getCallCount();
@@ -688,7 +688,6 @@ public class UrlOverridingTest {
         }
 
         if (params.createsNewTab && !params.shouldLaunchExternalIntent) {
-            ChromeTabUtils.waitForInteractable(tab);
             // The new tab URL is sometimes empty and not strictly linked to the interactable state.
             CriteriaHelper.pollUiThread(
                     () -> {
@@ -696,6 +695,7 @@ public class UrlOverridingTest {
                                 GURL.isEmptyOrInvalid(latestTabHolder.value.getUrl()),
                                 Matchers.is(false));
                     });
+            ChromeTabUtils.waitForInteractable(latestTabHolder.value);
         }
 
         if (params.shouldFailNavigation) {
