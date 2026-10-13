@@ -9,6 +9,7 @@ import org.jni_zero.CalledByNative;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.content_settings.ContentSetting;
+import org.chromium.components.content_settings.ContentSettingSource;
 
 /**
  * A class to represent a permission setting.
@@ -20,16 +21,19 @@ public final class PermissionSetting {
     private final @Nullable GeolocationSetting mGeolocationSetting;
     private final @Nullable @ContentSetting Integer mContentSetting;
     private final boolean mIsOneTime;
+    private final @ContentSettingSource int mSource;
 
     @CalledByNative
     public PermissionSetting(
             @Nullable GeolocationSetting geolocationSetting,
             @Nullable @ContentSetting Integer contentSetting,
-            boolean isOneTime) {
+            boolean isOneTime,
+            @ContentSettingSource int source) {
         assert (geolocationSetting != null) == (contentSetting == null);
         mGeolocationSetting = geolocationSetting;
         mContentSetting = contentSetting;
         mIsOneTime = isOneTime;
+        mSource = source;
     }
 
     public @Nullable GeolocationSetting getGeolocationSetting() {
@@ -42,5 +46,13 @@ public final class PermissionSetting {
 
     public boolean isOneTime() {
         return mIsOneTime;
+    }
+
+    public boolean isManagedByPolicy() {
+        return mSource == ContentSettingSource.POLICY;
+    }
+
+    public boolean isManagedByCustodian() {
+        return mSource == ContentSettingSource.SUPERVISED;
     }
 }

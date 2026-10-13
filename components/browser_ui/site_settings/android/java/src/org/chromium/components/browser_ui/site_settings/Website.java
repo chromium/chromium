@@ -16,6 +16,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge.StorageInfoClearedCallback;
 import org.chromium.components.content_settings.ContentSetting;
+import org.chromium.components.content_settings.ContentSettingSource;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.ProviderType;
 import org.chromium.components.embedder_support.util.ExtensionUrlUtil;
@@ -274,15 +275,22 @@ public final class Website implements WebsiteEntry {
             // If multiple embedded permissions have been merged into one website like for
             // SingleWebsiteSettings, this function may only be used if all permission exceptions
             // have been grouped by content setting.
-            return new PermissionSetting(null, getContentSetting(exceptions), /* isOneTime= */ false);
+            @ContentSettingSource
+            int source =
+                    WebsitePreferenceBridge.getSettingSourceFromProviderType(
+                            exceptions.get(0).getSource());
+            return new PermissionSetting(
+                    null, getContentSetting(exceptions), /* isOneTime= */ false, source);
         } else if (getPermissionInfo(type) != null) {
             return assumeNonNull(getPermissionInfo(type))
                     .getPermissionSetting(browserContextHandle);
         } else if (getContentSettingException(type) != null) {
+            ContentSettingException exception = assumeNonNull(getContentSettingException(type));
+            @ContentSettingSource
+            int source =
+                    WebsitePreferenceBridge.getSettingSourceFromProviderType(exception.getSource());
             return new PermissionSetting(
-                    null,
-                    assumeNonNull(getContentSettingException(type)).getContentSetting(),
-                    false);
+                    null, exception.getContentSetting(), /* isOneTime= */ false, source);
         }
 
         return null;

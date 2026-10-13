@@ -51,6 +51,7 @@ import org.chromium.components.browser_ui.site_settings.PermissionSetting;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.content_settings.ContentSetting;
+import org.chromium.components.content_settings.ContentSettingSource;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.permissions.PermissionsAndroidFeatureList;
@@ -128,7 +129,8 @@ public class GeolocationHeaderUnitTest {
                         new PermissionSetting(
                                 new GeolocationSetting(ContentSetting.ALLOW, ContentSetting.ALLOW),
                                 null,
-                                false));
+                                false,
+                                ContentSettingSource.NONE));
         lenient()
                 .when(
                         mWebsitePreferenceBridgeJniMock.isDseOrigin(
@@ -247,7 +249,8 @@ public class GeolocationHeaderUnitTest {
                         new PermissionSetting(
                                 new GeolocationSetting(ContentSetting.ALLOW, ContentSetting.ALLOW),
                                 null,
-                                /* isOneTime= */ true));
+                                /* isOneTime= */ true,
+                                ContentSettingSource.NONE));
 
         String header =
                 GeolocationHeader.getGeoHeader(SEARCH_URL, mProfileMock, mTemplateUrlServiceMock);
@@ -510,7 +513,8 @@ public class GeolocationHeaderUnitTest {
                         new PermissionSetting(
                                 new GeolocationSetting(approximate, precise),
                                 null,
-                                /* isOneTime= */ false));
+                                /* isOneTime= */ false,
+                                ContentSettingSource.NONE));
     }
 
     private void checkOldLocation(String expectedHeader) {

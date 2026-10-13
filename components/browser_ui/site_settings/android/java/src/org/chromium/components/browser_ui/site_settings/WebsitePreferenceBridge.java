@@ -295,7 +295,7 @@ public class WebsitePreferenceBridge {
      * Return the ContentSettingSource for the default content-setting for the passed-in
      * content-setting type.
      */
-    private static @ContentSettingSource int getDefaultContentSettingProviderSource(
+    public static @ContentSettingSource int getDefaultContentSettingProviderSource(
             BrowserContextHandle browserContextHandle,
             @ContentSettingsType.EnumType int contentSettingsType) {
         return WebsitePreferenceBridgeJni.get()
@@ -573,6 +573,12 @@ public class WebsitePreferenceBridge {
         return WebsitePreferenceBridgeJni.get().toHostOnlyPattern(pattern);
     }
 
+    /** Return the ContentSettingSource for the given ProviderType. */
+    public static @ContentSettingSource int getSettingSourceFromProviderType(
+            @ProviderType.EnumType int providerType) {
+        return WebsitePreferenceBridgeJni.get().getSettingSourceFromProviderType(providerType);
+    }
+
     public static boolean hasHeuristicDataForTesting(
             BrowserContextHandle browserContextHandle, String origin, int type) {
         return WebsitePreferenceBridgeJni.get()
@@ -752,6 +758,9 @@ public class WebsitePreferenceBridge {
         @ContentSettingSource
         int getDefaultContentSettingProviderSource(
                 BrowserContextHandle browserContextHandle, int contentSettingType);
+
+        @ContentSettingSource
+        int getSettingSourceFromProviderType(@ProviderType.EnumType int providerType);
 
         boolean getLocationAllowedByPolicy(BrowserContextHandle browserContextHandle);
 

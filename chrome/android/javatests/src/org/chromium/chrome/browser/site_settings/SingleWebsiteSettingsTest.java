@@ -25,9 +25,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import androidx.preference.Preference;
+import androidx.preference.PreferenceScreen;
 import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
@@ -59,12 +63,15 @@ import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
 import org.chromium.components.browser_ui.settings.ChromeButtonPreference;
+import org.chromium.components.browser_ui.settings.ChromeImageViewPreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.site_settings.ChosenObjectInfo;
 import org.chromium.components.browser_ui.site_settings.ContentSettingException;
 import org.chromium.components.browser_ui.site_settings.FileEditingInfo;
 import org.chromium.components.browser_ui.site_settings.GeolocationSetting;
 import org.chromium.components.browser_ui.site_settings.PermissionInfo;
+import org.chromium.components.browser_ui.site_settings.PermissionSetting;
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsDelegate;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsUtil;
@@ -73,6 +80,7 @@ import org.chromium.components.browser_ui.site_settings.WebsiteAddress;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.content_settings.ContentSetting;
+import org.chromium.components.content_settings.ContentSettingSource;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.ProviderType;
 import org.chromium.components.permissions.PermissionsAndroidFeatureList;
@@ -792,6 +800,472 @@ public class SingleWebsiteSettingsTest {
         return result[0];
     }
 
+    @Test
+    @SmallTest
+    public void testContentSettingException_ManagedByPolicy() {
+        SettingsActivity settingsActivity =
+                SiteSettingsTestUtils.startSingleWebsitePreferences(
+                        createWebsiteWithContentSettingException(
+                                ContentSettingsType.JAVASCRIPT,
+                                ContentSetting.ALLOW,
+                                ProviderType.POLICY_PROVIDER));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SingleWebsiteSettings websitePreferences =
+                            (SingleWebsiteSettings) settingsActivity.getMainFragment();
+                    ChromeSwitchPreference preference =
+                            websitePreferences.findPreference(
+                                    SingleWebsiteSettings.getPreferenceKey(
+                                            ContentSettingsType.JAVASCRIPT));
+                    assertNotNull("Preference not found.", preference);
+                    ManagedPreferenceDelegate delegate = preference.getManagedPreferenceDelegate();
+                    assertNotNull("ManagedPreferenceDelegate not found.", delegate);
+                    assertTrue(
+                            "Preference should be controlled by policy.",
+                            delegate.isPreferenceControlledByPolicy(preference));
+                    assertFalse(
+                            "Preference should not be controlled by custodian.",
+                            delegate.isPreferenceControlledByCustodian(preference));
+                    assertTrue(
+                            "Preference clicks should be disabled.",
+                            delegate.isPreferenceClickDisabled(preference));
+                    assertFalse("Preference should be disabled.", preference.isEnabled());
+                });
+        settingsActivity.finish();
+    }
+
+    @Test
+    @SmallTest
+    public void testContentSettingException_ManagedByCustodian() {
+        SettingsActivity settingsActivity =
+                SiteSettingsTestUtils.startSingleWebsitePreferences(
+                        createWebsiteWithContentSettingException(
+                                ContentSettingsType.JAVASCRIPT,
+                                ContentSetting.ALLOW,
+                                ProviderType.SUPERVISED_PROVIDER));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SingleWebsiteSettings websitePreferences =
+                            (SingleWebsiteSettings) settingsActivity.getMainFragment();
+                    ChromeSwitchPreference preference =
+                            websitePreferences.findPreference(
+                                    SingleWebsiteSettings.getPreferenceKey(
+                                            ContentSettingsType.JAVASCRIPT));
+                    assertNotNull("Preference not found.", preference);
+                    ManagedPreferenceDelegate delegate = preference.getManagedPreferenceDelegate();
+                    assertNotNull("ManagedPreferenceDelegate not found.", delegate);
+                    assertFalse(
+                            "Preference should not be controlled by policy.",
+                            delegate.isPreferenceControlledByPolicy(preference));
+                    assertTrue(
+                            "Preference should be controlled by custodian.",
+                            delegate.isPreferenceControlledByCustodian(preference));
+                    assertTrue(
+                            "Preference clicks should be disabled.",
+                            delegate.isPreferenceClickDisabled(preference));
+                    assertFalse("Preference should be disabled.", preference.isEnabled());
+                });
+        settingsActivity.finish();
+    }
+
+    @Test
+    @SmallTest
+    public void testContentSettingException_NotManaged() {
+        SettingsActivity settingsActivity =
+                SiteSettingsTestUtils.startSingleWebsitePreferences(
+                        createWebsiteWithContentSettingException(
+                                ContentSettingsType.JAVASCRIPT,
+                                ContentSetting.ALLOW,
+                                ProviderType.PREF_PROVIDER));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SingleWebsiteSettings websitePreferences =
+                            (SingleWebsiteSettings) settingsActivity.getMainFragment();
+                    ChromeSwitchPreference preference =
+                            websitePreferences.findPreference(
+                                    SingleWebsiteSettings.getPreferenceKey(
+                                            ContentSettingsType.JAVASCRIPT));
+                    assertNotNull("Preference not found.", preference);
+                    ManagedPreferenceDelegate delegate = preference.getManagedPreferenceDelegate();
+                    assertNotNull("ManagedPreferenceDelegate not found.", delegate);
+                    assertFalse(
+                            "Preference should not be controlled by policy.",
+                            delegate.isPreferenceControlledByPolicy(preference));
+                    assertFalse(
+                            "Preference should not be controlled by custodian.",
+                            delegate.isPreferenceControlledByCustodian(preference));
+                    assertFalse(
+                            "Preference clicks should not be disabled.",
+                            delegate.isPreferenceClickDisabled(preference));
+                    assertTrue("Preference should be enabled.", preference.isEnabled());
+                });
+        settingsActivity.finish();
+    }
+
+    @Test
+    @SmallTest
+    public void testNotificationPermission_ManagedByPolicy() {
+        WebsitePreferenceBridge.Natives originalJni = WebsitePreferenceBridgeJni.get();
+        WebsitePreferenceBridge.Natives mockJni = mock(WebsitePreferenceBridge.Natives.class);
+        WebsitePreferenceBridgeJni.setInstanceForTesting(mockJni);
+        try {
+            when(mockJni.getPermissionSettingWithEmbargo(
+                            any(), eq(ContentSettingsType.NOTIFICATIONS), any(), any()))
+                    .thenReturn(
+                            new PermissionSetting(
+                                    null,
+                                    ContentSetting.BLOCK,
+                                    /* isOneTime= */ false,
+                                    ContentSettingSource.POLICY));
+            Website website = createWebsiteWithNotificationPermission(ContentSetting.BLOCK);
+            SettingsActivity settingsActivity =
+                    SiteSettingsTestUtils.startSingleWebsitePreferences(website);
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        SingleWebsiteSettings websitePreferences =
+                                (SingleWebsiteSettings) settingsActivity.getMainFragment();
+                        Preference preference =
+                                websitePreferences.findPreference(
+                                        SingleWebsiteSettings.getPreferenceKey(
+                                                ContentSettingsType.NOTIFICATIONS));
+                        assertNotNull("Notification preference not found.", preference);
+                        assertTrue(
+                                "Preference should be ChromeImageViewPreference",
+                                preference instanceof ChromeImageViewPreference);
+                        assertNull(
+                                "There should be no ContentSettingException for notifications.",
+                                website.getContentSettingException(
+                                        ContentSettingsType.NOTIFICATIONS));
+                        assertFalse("Preference should be disabled.", preference.isEnabled());
+                    });
+            settingsActivity.finish();
+        } finally {
+            WebsitePreferenceBridgeJni.setInstanceForTesting(originalJni);
+        }
+    }
+
+    @Test
+    @SmallTest
+    public void testDefaultSetting_ManagedByPolicy() {
+        WebsitePreferenceBridge.Natives originalJni = WebsitePreferenceBridgeJni.get();
+        WebsitePreferenceBridge.Natives mockJni = mock(WebsitePreferenceBridge.Natives.class);
+        WebsitePreferenceBridgeJni.setInstanceForTesting(mockJni);
+        try {
+            when(mockJni.isContentSettingEnabled(any(), eq(ContentSettingsType.JAVASCRIPT)))
+                    .thenReturn(false);
+            when(mockJni.getDefaultContentSettingProviderSource(
+                            any(), eq(ContentSettingsType.JAVASCRIPT)))
+                    .thenReturn(ContentSettingSource.POLICY);
+            WebsiteAddress address = WebsiteAddress.create(EXAMPLE_ADDRESS);
+            Website website = new Website(address, address);
+            SettingsActivity settingsActivity =
+                    SiteSettingsTestUtils.startSingleWebsitePreferences(website);
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        SingleWebsiteSettings websitePreferences =
+                                (SingleWebsiteSettings) settingsActivity.getMainFragment();
+                        ChromeSwitchPreference preference =
+                                websitePreferences.findPreference(
+                                        SingleWebsiteSettings.getPreferenceKey(
+                                                ContentSettingsType.JAVASCRIPT));
+                        assertNotNull("JavaScript preference not found.", preference);
+                        assertNull(
+                                "There should be no ContentSettingException for JavaScript.",
+                                website.getContentSettingException(ContentSettingsType.JAVASCRIPT));
+                        ManagedPreferenceDelegate delegate =
+                                preference.getManagedPreferenceDelegate();
+                        assertNotNull("ManagedPreferenceDelegate not found.", delegate);
+                        assertTrue(
+                                "Preference should be controlled by policy.",
+                                delegate.isPreferenceControlledByPolicy(preference));
+                        assertFalse(
+                                "Preference should not be controlled by custodian.",
+                                delegate.isPreferenceControlledByCustodian(preference));
+                        assertTrue(
+                                "Preference clicks should be disabled.",
+                                delegate.isPreferenceClickDisabled(preference));
+                        assertFalse("Preference should be disabled.", preference.isEnabled());
+                    });
+            settingsActivity.finish();
+        } finally {
+            WebsitePreferenceBridgeJni.setInstanceForTesting(originalJni);
+        }
+    }
+
+    @Test
+    @SmallTest
+    public void testEmbeddedPermission_ManagedByPolicy() {
+        Website website =
+                createWebsiteWithStorageAccessPermission(
+                        "https://[*.]embedded.com",
+                        "https://[*.]example.com",
+                        ContentSetting.ALLOW,
+                        ProviderType.POLICY_PROVIDER);
+        Website merged =
+                SingleWebsiteSettings.mergePermissionAndStorageInfoForTopLevelOrigin(
+                        WebsiteAddress.create(EXAMPLE_ADDRESS), List.of(website));
+        SettingsActivity settingsActivity =
+                SiteSettingsTestUtils.startSingleWebsitePreferences(merged);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SingleWebsiteSettings websitePreferences =
+                            (SingleWebsiteSettings) settingsActivity.getMainFragment();
+                    PreferenceScreen screen = websitePreferences.getPreferenceScreen();
+                    ChromeSwitchPreference preference = null;
+                    for (int i = 0; i < screen.getPreferenceCount(); i++) {
+                        Preference pref = screen.getPreference(i);
+                        if (pref instanceof ChromeSwitchPreference switchPref
+                                && pref.getSummary() != null
+                                && pref.getSummary().toString().contains("embedded.com")) {
+                            preference = switchPref;
+                            break;
+                        }
+                    }
+                    assertNotNull("Embedded permission preference not found.", preference);
+                    ManagedPreferenceDelegate delegate = preference.getManagedPreferenceDelegate();
+                    assertNotNull("ManagedPreferenceDelegate not found.", delegate);
+                    assertTrue(
+                            "Preference should be controlled by policy.",
+                            delegate.isPreferenceControlledByPolicy(preference));
+                    assertFalse(
+                            "Preference should not be controlled by custodian.",
+                            delegate.isPreferenceControlledByCustodian(preference));
+                    assertTrue(
+                            "Preference clicks should be disabled.",
+                            delegate.isPreferenceClickDisabled(preference));
+                    assertFalse("Preference should be disabled.", preference.isEnabled());
+                });
+        settingsActivity.finish();
+    }
+
+    @Test
+    @SmallTest
+    public void testEmbeddedPermission_ManagedByCustodian() {
+        Website website =
+                createWebsiteWithStorageAccessPermission(
+                        "https://[*.]embedded.com",
+                        "https://[*.]example.com",
+                        ContentSetting.ALLOW,
+                        ProviderType.SUPERVISED_PROVIDER);
+        Website merged =
+                SingleWebsiteSettings.mergePermissionAndStorageInfoForTopLevelOrigin(
+                        WebsiteAddress.create(EXAMPLE_ADDRESS), List.of(website));
+        SettingsActivity settingsActivity =
+                SiteSettingsTestUtils.startSingleWebsitePreferences(merged);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SingleWebsiteSettings websitePreferences =
+                            (SingleWebsiteSettings) settingsActivity.getMainFragment();
+                    PreferenceScreen screen = websitePreferences.getPreferenceScreen();
+                    ChromeSwitchPreference preference = null;
+                    for (int i = 0; i < screen.getPreferenceCount(); i++) {
+                        Preference pref = screen.getPreference(i);
+                        if (pref instanceof ChromeSwitchPreference switchPref
+                                && pref.getSummary() != null
+                                && pref.getSummary().toString().contains("embedded.com")) {
+                            preference = switchPref;
+                            break;
+                        }
+                    }
+                    assertNotNull("Embedded permission preference not found.", preference);
+                    ManagedPreferenceDelegate delegate = preference.getManagedPreferenceDelegate();
+                    assertNotNull("ManagedPreferenceDelegate not found.", delegate);
+                    assertFalse(
+                            "Preference should not be controlled by policy.",
+                            delegate.isPreferenceControlledByPolicy(preference));
+                    assertTrue(
+                            "Preference should be controlled by custodian.",
+                            delegate.isPreferenceControlledByCustodian(preference));
+                    assertTrue(
+                            "Preference clicks should be disabled.",
+                            delegate.isPreferenceClickDisabled(preference));
+                    assertFalse("Preference should be disabled.", preference.isEnabled());
+                });
+        settingsActivity.finish();
+    }
+
+    @Test
+    @SmallTest
+    public void testEmbeddedPermission_NotManaged() {
+        Website website =
+                createWebsiteWithStorageAccessPermission(
+                        "https://[*.]embedded.com",
+                        "https://[*.]example.com",
+                        ContentSetting.ALLOW,
+                        ProviderType.PREF_PROVIDER);
+        Website merged =
+                SingleWebsiteSettings.mergePermissionAndStorageInfoForTopLevelOrigin(
+                        WebsiteAddress.create(EXAMPLE_ADDRESS), List.of(website));
+        SettingsActivity settingsActivity =
+                SiteSettingsTestUtils.startSingleWebsitePreferences(merged);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SingleWebsiteSettings websitePreferences =
+                            (SingleWebsiteSettings) settingsActivity.getMainFragment();
+                    PreferenceScreen screen = websitePreferences.getPreferenceScreen();
+                    ChromeSwitchPreference preference = null;
+                    for (int i = 0; i < screen.getPreferenceCount(); i++) {
+                        Preference pref = screen.getPreference(i);
+                        if (pref instanceof ChromeSwitchPreference switchPref
+                                && pref.getSummary() != null
+                                && pref.getSummary().toString().contains("embedded.com")) {
+                            preference = switchPref;
+                            break;
+                        }
+                    }
+                    assertNotNull("Embedded permission preference not found.", preference);
+                    ManagedPreferenceDelegate delegate = preference.getManagedPreferenceDelegate();
+                    assertNotNull("ManagedPreferenceDelegate not found.", delegate);
+                    assertFalse(
+                            "Preference should not be controlled by policy.",
+                            delegate.isPreferenceControlledByPolicy(preference));
+                    assertFalse(
+                            "Preference should not be controlled by custodian.",
+                            delegate.isPreferenceControlledByCustodian(preference));
+                    assertFalse(
+                            "Preference clicks should not be disabled.",
+                            delegate.isPreferenceClickDisabled(preference));
+                    assertTrue("Preference should be enabled.", preference.isEnabled());
+                });
+        settingsActivity.finish();
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION)
+    public void testPermissionWithoutException_ManagedByPolicy() {
+        WebsitePreferenceBridge.Natives originalJni = WebsitePreferenceBridgeJni.get();
+        WebsitePreferenceBridge.Natives mockJni = mock(WebsitePreferenceBridge.Natives.class);
+        WebsitePreferenceBridgeJni.setInstanceForTesting(mockJni);
+        try {
+            when(mockJni.getPermissionSettingWithEmbargo(
+                            any(), eq(ContentSettingsType.GEOLOCATION), any(), any()))
+                    .thenReturn(
+                            new PermissionSetting(
+                                    null,
+                                    ContentSetting.ALLOW,
+                                    /* isOneTime= */ false,
+                                    ContentSettingSource.POLICY));
+            Website website =
+                    createWebsiteWithGeolocationPermission(
+                            ContentSetting.ALLOW, /* isOneTime= */ false);
+            SettingsActivity settingsActivity =
+                    SiteSettingsTestUtils.startSingleWebsitePreferences(website);
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        SingleWebsiteSettings websitePreferences =
+                                (SingleWebsiteSettings) settingsActivity.getMainFragment();
+                        ChromeSwitchPreference preference =
+                                websitePreferences.findPreference(
+                                        SingleWebsiteSettings.getPreferenceKey(
+                                                ContentSettingsType.GEOLOCATION));
+                        assertNotNull("Preference not found.", preference);
+                        assertNull(
+                                "There should be no ContentSettingException for geolocation.",
+                                website.getContentSettingException(
+                                        ContentSettingsType.GEOLOCATION));
+                        ManagedPreferenceDelegate delegate =
+                                preference.getManagedPreferenceDelegate();
+                        assertNotNull("ManagedPreferenceDelegate not found.", delegate);
+                        assertTrue(
+                                "Should be controlled by policy.",
+                                delegate.isPreferenceControlledByPolicy(preference));
+                        assertFalse(
+                                "Should not be controlled by custodian.",
+                                delegate.isPreferenceControlledByCustodian(preference));
+                        assertFalse("Preference should be disabled.", preference.isEnabled());
+                    });
+            settingsActivity.finish();
+        } finally {
+            WebsitePreferenceBridgeJni.setInstanceForTesting(originalJni);
+        }
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION)
+    public void testPermissionWithoutException_ManagedByCustodian() {
+        WebsitePreferenceBridge.Natives originalJni = WebsitePreferenceBridgeJni.get();
+        WebsitePreferenceBridge.Natives mockJni = mock(WebsitePreferenceBridge.Natives.class);
+        WebsitePreferenceBridgeJni.setInstanceForTesting(mockJni);
+        try {
+            when(mockJni.getPermissionSettingWithEmbargo(
+                            any(), eq(ContentSettingsType.GEOLOCATION), any(), any()))
+                    .thenReturn(
+                            new PermissionSetting(
+                                    null,
+                                    ContentSetting.ALLOW,
+                                    /* isOneTime= */ false,
+                                    ContentSettingSource.SUPERVISED));
+            Website website =
+                    createWebsiteWithGeolocationPermission(
+                            ContentSetting.ALLOW, /* isOneTime= */ false);
+            SettingsActivity settingsActivity =
+                    SiteSettingsTestUtils.startSingleWebsitePreferences(website);
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        SingleWebsiteSettings websitePreferences =
+                                (SingleWebsiteSettings) settingsActivity.getMainFragment();
+                        ChromeSwitchPreference preference =
+                                websitePreferences.findPreference(
+                                        SingleWebsiteSettings.getPreferenceKey(
+                                                ContentSettingsType.GEOLOCATION));
+                        assertNotNull("Preference not found.", preference);
+                        assertNull(
+                                "There should be no ContentSettingException for geolocation.",
+                                website.getContentSettingException(
+                                        ContentSettingsType.GEOLOCATION));
+                        ManagedPreferenceDelegate delegate =
+                                preference.getManagedPreferenceDelegate();
+                        assertNotNull("ManagedPreferenceDelegate not found.", delegate);
+                        assertFalse(
+                                "Should not be controlled by policy.",
+                                delegate.isPreferenceControlledByPolicy(preference));
+                        assertTrue(
+                                "Should be controlled by custodian.",
+                                delegate.isPreferenceControlledByCustodian(preference));
+                        assertFalse("Preference should be disabled.", preference.isEnabled());
+                    });
+            settingsActivity.finish();
+        } finally {
+            WebsitePreferenceBridgeJni.setInstanceForTesting(originalJni);
+        }
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION)
+    public void testPermissionWithoutException_NotManaged() {
+        Website website =
+                createWebsiteWithGeolocationPermission(
+                        ContentSetting.ALLOW, /* isOneTime= */ false);
+        SettingsActivity settingsActivity =
+                SiteSettingsTestUtils.startSingleWebsitePreferences(website);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SingleWebsiteSettings websitePreferences =
+                            (SingleWebsiteSettings) settingsActivity.getMainFragment();
+                    ChromeSwitchPreference preference =
+                            websitePreferences.findPreference(
+                                    SingleWebsiteSettings.getPreferenceKey(
+                                            ContentSettingsType.GEOLOCATION));
+                    assertNotNull("Preference not found.", preference);
+                    assertNull(
+                            "There should be no ContentSettingException for geolocation.",
+                            website.getContentSettingException(ContentSettingsType.GEOLOCATION));
+                    ManagedPreferenceDelegate delegate = preference.getManagedPreferenceDelegate();
+                    assertNotNull("ManagedPreferenceDelegate not found.", delegate);
+                    assertFalse(
+                            "Should not be controlled by policy.",
+                            delegate.isPreferenceControlledByPolicy(preference));
+                    assertFalse(
+                            "Should not be controlled by custodian.",
+                            delegate.isPreferenceControlledByCustodian(preference));
+                    assertTrue("Preference should be enabled.", preference.isEnabled());
+                });
+        settingsActivity.finish();
+    }
+
     /**
      * Helper function for creating a {@link ParameterSet} for {@link SingleWebsiteSettingsParams}.
      */
@@ -864,24 +1338,37 @@ public class SingleWebsiteSettingsTest {
     private static Website createWebsiteWithContentSettingException(
             @ContentSettingsType.EnumType int type,
             @ContentSetting int value,
+            @ProviderType.EnumType int source,
             boolean isEmbargoed) {
         WebsiteAddress address = WebsiteAddress.create(EXAMPLE_ADDRESS);
         Website website = new Website(address, address);
         website.setContentSettingException(
                 type,
                 new ContentSettingException(
-                        type,
-                        website.getAddress().getOrigin(),
-                        value,
-                        ProviderType.PREF_PROVIDER,
-                        isEmbargoed));
+                        type, website.getAddress().getOrigin(), value, source, isEmbargoed));
 
         return website;
     }
 
     private static Website createWebsiteWithContentSettingException(
+            @ContentSettingsType.EnumType int type,
+            @ContentSetting int value,
+            boolean isEmbargoed) {
+        return createWebsiteWithContentSettingException(
+                type, value, ProviderType.PREF_PROVIDER, isEmbargoed);
+    }
+
+    private static Website createWebsiteWithContentSettingException(
+            @ContentSettingsType.EnumType int type,
+            @ContentSetting int value,
+            @ProviderType.EnumType int source) {
+        return createWebsiteWithContentSettingException(type, value, source, false);
+    }
+
+    private static Website createWebsiteWithContentSettingException(
             @ContentSettingsType.EnumType int type, @ContentSetting int value) {
-        return createWebsiteWithContentSettingException(type, value, false);
+        return createWebsiteWithContentSettingException(
+                type, value, ProviderType.PREF_PROVIDER, false);
     }
 
     private static Website createWebsiteWithGeolocationPermission(
@@ -940,8 +1427,28 @@ public class SingleWebsiteSettingsTest {
         return website;
     }
 
+    private static Website createWebsiteWithNotificationPermission(@ContentSetting int setting) {
+        WebsiteAddress address = WebsiteAddress.create(EXAMPLE_ADDRESS);
+        Website website = new Website(address, address);
+        PermissionInfo info =
+                new PermissionInfo(
+                        ContentSettingsType.NOTIFICATIONS,
+                        website.getAddress().getOrigin(),
+                        website.getAddress().getOrigin(),
+                        /* isEmbargoed= */ false);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    info.setContentSetting(ProfileManager.getLastUsedRegularProfile(), setting);
+                });
+        website.setPermissionInfo(info);
+        return website;
+    }
+
     private static Website createWebsiteWithStorageAccessPermission(
-            String origin, String embedder, @ContentSetting int setting) {
+            String origin,
+            String embedder,
+            @ContentSetting int setting,
+            @ProviderType.EnumType int source) {
         Website website =
                 new Website(WebsiteAddress.create(origin), WebsiteAddress.create(embedder));
         ContentSettingException info =
@@ -950,7 +1457,7 @@ public class SingleWebsiteSettingsTest {
                         origin,
                         embedder,
                         ContentSetting.ASK,
-                        ProviderType.NONE,
+                        source,
                         /* expirationInDays= */ 0,
                         /* isEmbargoed= */ false);
         // Set setting explicitly to write it to prefs.
@@ -961,5 +1468,11 @@ public class SingleWebsiteSettingsTest {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         website.addEmbeddedPermission(info);
         return website;
+    }
+
+    private static Website createWebsiteWithStorageAccessPermission(
+            String origin, String embedder, @ContentSetting int setting) {
+        return createWebsiteWithStorageAccessPermission(
+                origin, embedder, setting, ProviderType.NONE);
     }
 }
