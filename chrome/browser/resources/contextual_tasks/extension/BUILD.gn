@@ -45,6 +45,16 @@ ts_library("build_background_ts") {
   root_dir = "."
   out_dir = "$target_gen_dir/background"
   in_files = [ "background.ts" ]
+  composite = true
+  deps = [
+    "//chrome/browser/resources/contextual_tasks:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+  path_mappings =
+      [ "chrome://contextual-tasks/*|" +
+        rebase_path(
+            "$root_gen_dir/chrome/browser/resources/contextual_tasks/tsc/*",
+            target_gen_dir) ]
   definitions = [
     "contextual_tasks_private.d.ts",
     "//tools/typescript/definitions/runtime.d.ts",
@@ -53,12 +63,44 @@ ts_library("build_background_ts") {
   ]
 }
 
+bundle_js("bundle_background") {
+  host = "chrome-extension://glbjnfimcajjenihimblfaponejbkoph"
+  input = rebase_path("$target_gen_dir/background", root_build_dir)
+  js_module_in_files = [ "background.js" ]
+  out_folder = "$target_gen_dir/background_bundled"
+  deps = [
+    ":build_background_ts",
+    "//chrome/browser/resources/contextual_tasks:build_ts",
+    "//mojo/public/js:bindings_module",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+  external_paths = [
+    "chrome://resources/mojo/mojo/public/js/|" +
+        rebase_path("$root_gen_dir/mojo/public/js", root_build_dir),
+    "//resources/mojo/mojo/public/js/|" +
+        rebase_path("$root_gen_dir/mojo/public/js", root_build_dir),
+    "chrome://resources/mojo/|" +
+        rebase_path("$root_gen_dir/ui/webui/resources/tsc/mojo",
+                    root_build_dir),
+    "//resources/mojo/|" +
+        rebase_path("$root_gen_dir/ui/webui/resources/tsc/mojo",
+                    root_build_dir),
+    "chrome://contextual-tasks/|" +
+        rebase_path(
+            "$root_gen_dir/chrome/browser/resources/contextual_tasks/tsc",
+            root_build_dir),
+  ]
+}
+
 generate_grd("build_background_grdp") {
   grd_prefix = "contextual_tasks_extension"
   out_grd = "$target_gen_dir/background_resources.grdp"
-  manifest_files = [ "$target_gen_dir/build_background_ts_manifest.json" ]
   resource_path_prefix = "contextual_tasks_extension"
-  deps = [ ":build_background_ts" ]
+  input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
+  input_files = [ "background_bundled/background.rollup.js" ]
+  resource_path_rewrites =
+      [ "background_bundled/background.rollup.js|background.js" ]
+  deps = [ ":bundle_background" ]
 }
 
 ts_library("build_post_message_handler_ts") {
