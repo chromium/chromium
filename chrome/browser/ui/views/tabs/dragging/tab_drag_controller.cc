@@ -1269,7 +1269,9 @@ void TabDragController::RequestTabThumbnail() {
     // Passing an empty source rect means copying the whole surface, an
     // empty target size means no scaling (as we don't know the surface
     // size, it's easier to scale the bitmap to the correct size later).
-    rwhv->CopyFromSurface(
+    // Use CopyFromSurfaceSecure() because the tab drag image is a trusted
+    // internal browser UI feature.
+    rwhv->CopyFromSurfaceSecure(
         gfx::Rect(), gfx::Size(), base::TimeDelta(),
         base::BindOnce(&TabDragController::OnTabThumbnailAvailable,
                        weak_factory_.GetWeakPtr(), scale));
@@ -1284,8 +1286,8 @@ void TabDragController::OnTabThumbnailAvailable(
   constexpr size_t kTargetHeightDip = 200;
   constexpr int kRoundedCornerRadius = 4;
 
-  // Exit early if CopyFromSurface() failed, e.g. because the tab was deleted
-  // after the drag started.
+  // Exit early if CopyFromSurfaceSecure() failed, e.g. because the tab was
+  // deleted after the drag started.
   if (thumbnail.drawsNothing()) {
     return;
   }

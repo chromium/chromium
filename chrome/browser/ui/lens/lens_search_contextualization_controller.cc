@@ -879,8 +879,10 @@ void LensSearchContextualizationController::StartScreenshotFlow(
     return;
   }
 
-  // Side panel is now fully closed, take screenshot and open overlay.
-  view->CopyFromSurface(
+  // Side panel is now fully closed, take screenshot and open overlay. Use
+  // CopyFromSurfaceSecure() because Lens Overlay is a trusted internal browser
+  // feature.
+  view->CopyFromSurfaceSecure(
       /*src_rect=*/gfx::Rect(), /*output_size=*/gfx::Size(), base::TimeDelta(),
       base::BindPostTask(
           base::SequencedTaskRunner::GetCurrentDefault(),
@@ -911,7 +913,9 @@ void LensSearchContextualizationController::CaptureScreenshot(
     return;
   }
 
-  view->CopyFromSurface(
+  // Use CopyFromSurfaceSecure() because Lens Overlay is a trusted internal
+  // browser feature.
+  view->CopyFromSurfaceSecure(
       /*src_rect=*/gfx::Rect(), /*output_size=*/gfx::Size(), base::TimeDelta(),
       base::BindPostTask(
           base::SequencedTaskRunner::GetCurrentDefault(),

@@ -70,6 +70,9 @@ void BackgroundThumbnailVideoCapturer::Start(
 
   constexpr int kMaxFrameRate = 2;
   video_capturer_ = source_view->CreateVideoCapturer();
+  // Mark the capture as secure because tab hover card thumbnail previews are a
+  // trusted internal browser UI feature.
+  video_capturer_->SetIsSecure(true);
   video_capturer_->SetResolutionConstraints(capture_info_.target_size,
                                             capture_info_.target_size, false);
   video_capturer_->SetAutoThrottlingEnabled(false);

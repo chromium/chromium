@@ -140,7 +140,9 @@ void ThumbnailTabHelper::CaptureThumbnailOnTabBackgrounded() {
   ThumbnailCaptureInfo copy_info = GetInitialCaptureInfo(
       source_size, scale_factor, /* include_scrollbars_in_capture */ false);
 
-  source_view->CopyFromSurface(
+  // Use CopyFromSurfaceSecure() because tab thumbnail previews are a trusted
+  // internal browser UI feature.
+  source_view->CopyFromSurfaceSecure(
       copy_info.copy_rect, copy_info.target_size, base::TimeDelta(),
       base::BindOnce(&ThumbnailTabHelper::StoreThumbnailForTabSwitch,
                      weak_factory_for_thumbnail_on_tab_hidden_.GetWeakPtr(),

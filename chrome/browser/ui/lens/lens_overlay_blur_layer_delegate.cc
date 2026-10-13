@@ -133,7 +133,9 @@ void LensOverlayBlurLayerDelegate::FetchBackgroundImage() {
   auto* view = background_view_host_->GetView();
   auto size = view->GetViewBounds().size();
   auto quality = lens::features::GetLensOverlayCustomBlurQuality();
-  view->CopyFromSurface(
+  // Use CopyFromSurfaceSecure() because the Lens Overlay background blur layer
+  // is a trusted internal browser UI feature.
+  view->CopyFromSurfaceSecure(
       /*src_rect=*/gfx::Rect(),
       /*output_size=*/
       gfx::Size(size.width() * quality, size.height() * quality),

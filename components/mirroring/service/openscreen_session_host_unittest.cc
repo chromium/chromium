@@ -439,6 +439,10 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
 
   void StopSession() {
     if (video_host_) {
+      // All sessions with a host should be marked as secure.
+      EXPECT_TRUE(video_host_->GetVideoCaptureParams().is_secure);
+
+      // All sessions with a host should notify it that we are stopped.
       EXPECT_CALL(*video_host_, OnStopped());
     }
     EXPECT_CALL(*this, DidStop());

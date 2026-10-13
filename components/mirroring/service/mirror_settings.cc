@@ -184,6 +184,9 @@ media::VideoCaptureParams MirrorSettings::GetVideoCaptureParams() const {
   }
   params.is_high_dpi_enabled =
       base::FeatureList::IsEnabled(features::kCastEnableStreamingWithHiDPI);
+  // Cast mirroring is a trusted browser-initiated flow over an encrypted
+  // channel, so mark the capture as secure.
+  params.is_secure = true;
 
   DCHECK(params.IsValid());
   return params;

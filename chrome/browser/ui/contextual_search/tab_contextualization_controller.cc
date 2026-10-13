@@ -671,7 +671,9 @@ void TabContextualizationController::CaptureScreenshot(
       std::move(decrement_capturer_count_runner), std::move(image_options),
       std::move(callback));
 
-  view->CopyFromSurface(
+  // Use CopyFromSurfaceSecure() because Lens / Contextual Search is a trusted
+  // internal browser feature.
+  view->CopyFromSurfaceSecure(
       /*src_rect=*/gfx::Rect(), /*output_size=*/gfx::Size(), base::TimeDelta(),
       base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
                          std::move(callback_wrapper)));
