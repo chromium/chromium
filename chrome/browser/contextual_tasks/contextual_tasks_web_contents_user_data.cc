@@ -770,10 +770,10 @@ void ContextualTasksWebContentsUserData::HandleOnSubmitQueryRequest() {
   std::optional<lens::AddedContext> lens_added_context = GetLensAddedContext();
 
   QueryContextualizer::ContextualizeParams params;
-  // TODO(crbug.com/572869062): Nothing calls `SetTaskId()` in the extension
-  // flow yet, so `task_id_` is unset and `query_contextualizer_` only uploads
-  // the delayed tabs (no recontextualization). Resolve the task id in Chrome.
-  params.task_id = task_id_;
+  // TODO(crbug.com/572869062): Full-tab AI Mode has no task, so there
+  // `query_contextualizer_` only uploads the delayed tabs (no
+  // recontextualization).
+  params.task_id = GetEffectiveTaskId();
   params.tabs_to_recontextualize =
       GetTabsToRecontextualize(*session_handle, overlay_token);
   params.auto_suggested_chip_tabs = GetPendingDelayedTabs(*session_handle);
@@ -874,14 +874,7 @@ void ContextualTasksWebContentsUserData::HandleOpenLinkInSidePanelMode(
       tabs::TabInterface::MaybeGetFromContents(web_contents);
   BrowserWindowInterface* browser = GetBrowserWindowInterface();
 
-  base::Uuid task_id = task_id_.value_or(base::Uuid());
-  if (!task_id.is_valid()) {
-    if (auto* helper =
-            ContextualSearchWebContentsHelper::FromWebContents(web_contents);
-        helper && helper->task_id().has_value()) {
-      task_id = *helper->task_id();
-    }
-  }
+  base::Uuid task_id = GetEffectiveTaskId().value_or(base::Uuid());
 
   ui_service->OnThreadLinkClicked(
       target_url, task_id, tab ? tab->GetWeakPtr() : nullptr,
@@ -897,7 +890,8 @@ void ContextualTasksWebContentsUserData::
           contextual_tasks::kContextualTasksContextLibrary)) {
     return;
   }
-  if (!task_id_.has_value()) {
+  std::optional<base::Uuid> task_id = GetEffectiveTaskId();
+  if (!task_id) {
     return;
   }
 
@@ -948,7 +942,7 @@ void ContextualTasksWebContentsUserData::
   // session). This notifies `ActiveTaskContextProvider`, which recomputes tab
   // strip underlines from the task's context (these underlines are in addition
   // to any underlines placed by other handlers).
-  service->SetUrlResourcesFromServer(*task_id_, std::move(committed_context));
+  service->SetUrlResourcesFromServer(*task_id, std::move(committed_context));
 }
 
 void ContextualTasksWebContentsUserData::OnLensThumbnailCreated(
@@ -1273,15 +1267,8 @@ void ContextualTasksWebContentsUserData::AssociateTabWithTask(
   if (!tab_session_id.is_valid()) {
     return;
   }
-  base::Uuid task_id = task_id_.value_or(base::Uuid());
-  if (!task_id.is_valid()) {
-    if (auto* helper = ContextualSearchWebContentsHelper::FromWebContents(
-            &GetWebContents());
-        helper && helper->task_id().has_value()) {
-      task_id = *helper->task_id();
-    }
-  }
-  if (!task_id.is_valid()) {
+  std::optional<base::Uuid> task_id = GetEffectiveTaskId();
+  if (!task_id) {
     return;
   }
   Profile* profile =
@@ -1289,8 +1276,21 @@ void ContextualTasksWebContentsUserData::AssociateTabWithTask(
   if (auto* service =
           contextual_tasks::ContextualTasksServiceFactory::GetForProfile(
               profile)) {
-    service->AssociateTabWithTask(task_id, tab_session_id);
+    service->AssociateTabWithTask(*task_id, tab_session_id);
   }
+}
+
+std::optional<base::Uuid>
+ContextualTasksWebContentsUserData::GetEffectiveTaskId() const {
+  if (task_id_ && task_id_->is_valid()) {
+    return task_id_;
+  }
+  auto* helper = ContextualSearchWebContentsHelper::FromWebContents(
+      &const_cast<content::WebContents&>(GetWebContents()));
+  if (helper && helper->task_id() && helper->task_id()->is_valid()) {
+    return helper->task_id();
+  }
+  return std::nullopt;
 }
 
 void ContextualTasksWebContentsUserData::RefreshActiveTaskContext() {
