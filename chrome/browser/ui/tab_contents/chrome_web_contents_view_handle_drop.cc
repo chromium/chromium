@@ -249,7 +249,7 @@ void HandleOnPerformingDrop(
     // scanning) here. This is intended because we will run DLP scanning for
     // the payload as part of the Glic invocation, and if that fails the user
     // won't see the content anyway.
-    if (glic::IsGlicWebDrag(drop_data)) {
+    if (glic::IsChromeWebDrag(drop_data)) {
       glic::StartDragAndDropInvoke(web_contents, drop_data);
       // Do not forward the DOM drop to the guest renderer (`std::nullopt`
       // triggers `DragTargetDragLeave` to dismiss the guest drop-target

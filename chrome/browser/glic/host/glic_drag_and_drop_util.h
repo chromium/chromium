@@ -14,8 +14,8 @@ struct DropData;
 
 namespace glic {
 
-// Returns true if `drop_data` contains the custom GLIC drag ID.
-bool IsGlicWebDrag(const content::DropData& drop_data);
+// Returns true if `drop_data` has a Chrome drag ID (`DropData::drag_id`).
+bool IsChromeWebDrag(const content::DropData& drop_data);
 
 // Validates the drag source, fetches the TabContext, and triggers the GLIC
 // Invoke API for a drop.

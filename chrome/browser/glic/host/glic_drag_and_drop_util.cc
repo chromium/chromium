@@ -239,7 +239,7 @@ GlicDragAndDropContentType GetDragAndDropContentType(
 
 }  // namespace
 
-bool IsGlicWebDrag(const content::DropData& drop_data) {
+bool IsChromeWebDrag(const content::DropData& drop_data) {
   return drop_data.drag_id.has_value();
 }
 
@@ -263,7 +263,7 @@ void StartDragAndDropInvoke(content::WebContents* target_web_contents,
                             const content::DropData& drop_data) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
-  if (!IsGlicWebDrag(drop_data)) {
+  if (!IsChromeWebDrag(drop_data)) {
     return;
   }
 
