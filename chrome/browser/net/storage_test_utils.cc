@@ -33,9 +33,6 @@ constexpr std::string_view kRequestStorageAccessBeyondCookies =
     "document.requestStorageAccess({estimate: true})"
     ".then((handle) => handle.estimate())";
 
-constexpr std::string_view kRequestStorageAccessFor =
-    "document.requestStorageAccessFor($1)";
-
 constexpr std::string_view kHasStorageAccess = "document.hasStorageAccess()";
 
 std::vector<std::string> GetStorageTypesForFrame(bool include_cookies) {
@@ -167,17 +164,6 @@ bool RequestAndCheckStorageAccessForFrame(content::RenderFrameHost* frame,
 bool RequestAndCheckStorageAccessBeyondCookiesForFrame(
     content::RenderFrameHost* frame) {
   return content::ExecJs(frame, kRequestStorageAccessBeyondCookies);
-}
-
-bool RequestStorageAccessForOrigin(content::RenderFrameHost* frame,
-                                   const std::string& origin,
-                                   bool omit_user_gesture) {
-  int options = content::EXECUTE_SCRIPT_DEFAULT_OPTIONS;
-  if (omit_user_gesture) {
-    options |= content::EXECUTE_SCRIPT_NO_USER_GESTURE;
-  }
-  return content::ExecJs(
-      frame, content::JsReplace(kRequestStorageAccessFor, origin), options);
 }
 
 bool HasStorageAccessForFrame(content::RenderFrameHost* frame) {

@@ -113,8 +113,6 @@ GetWebFeatureToWebDXFeatureMap() {
            WebDXFeature::kStorageAccess},
           {WebFeature::kStorageAccessAPI_requestStorageAccess_Method,
            WebDXFeature::kStorageAccess},
-          {WebFeature::kStorageAccessAPI_requestStorageAccessFor_Method,
-           WebDXFeature::kStorageAccess},
           {WebFeature::kStorageAccessAPI_requestStorageAccess_BeyondCookies,
            WebDXFeature::kNonCookieStorageAccess},
           {WebFeature::kStorageAccessAPI_hasUnpartitionedCookieAccess,

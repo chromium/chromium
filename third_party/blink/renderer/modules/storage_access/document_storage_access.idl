@@ -24,10 +24,4 @@ partial interface Document {
         NewObject,
         MeasureAs=StorageAccessAPI_hasUnpartitionedCookieAccess
     ] Promise<boolean> hasUnpartitionedCookieAccess();
-    [
-        CallWith=ScriptState,
-        NewObject,
-        RuntimeEnabled=RequestStorageAccessFor,
-        DeprecateAs=StorageAccessAPI_requestStorageAccessFor_Method
-    ] Promise<undefined> requestStorageAccessFor(USVString requestedOrigin);
 };

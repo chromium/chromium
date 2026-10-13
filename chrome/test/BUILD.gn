@@ -1485,7 +1485,6 @@ if (!is_android) {
       "//chrome/browser/sync_tab_context:browser_tests",
       "//chrome/browser/tab_contents:browser_tests",
       "//chrome/browser/themes:browser_tests",
-      "//chrome/browser/top_level_storage_access_api:browser_tests",
       "//chrome/browser/tracing:browser_tests",
       "//chrome/browser/translate:browser_tests",
       "//chrome/browser/trusted_vault:browser_tests",

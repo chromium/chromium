@@ -215,11 +215,6 @@ public class AwPermissionQueryApiTest extends AwParameterizedTest {
                 "denied",
                 "{\"name\": \"fullscreen\", \"allowWithoutGesture\": true}");
         runTestCase("storage-access", "denied");
-        runTestCase(
-                "top-level-storage-access",
-                "denied",
-                "{\"name\": \"top-level-storage-access\", \"requestedOrigin\":"
-                        + " \"https://example.com\"}");
     }
 
     @Test

@@ -5458,10 +5458,6 @@
       status: "stable",
     },
     {
-      name: "RequestStorageAccessFor",
-      base_feature: "none",
-    },
-    {
       name: "ResourceTimingInitiator",
       status: "experimental",
     },

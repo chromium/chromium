@@ -21,7 +21,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_permission_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_permission_name.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_push_permission_descriptor.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_top_level_storage_access_permission_descriptor.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
@@ -204,21 +203,6 @@ PermissionDescriptorPtr CreateVideoCapturePermissionDescriptor(
   descriptor->extension =
       mojom::blink::PermissionDescriptorExtension::NewCameraDevice(
           std::move(camera_device_extension));
-  return descriptor;
-}
-
-PermissionDescriptorPtr CreateTopLevelStorageAccessPermissionDescriptor(
-    const KURL& origin_as_kurl) {
-  auto descriptor =
-      CreatePermissionDescriptor(PermissionName::TOP_LEVEL_STORAGE_ACCESS);
-  scoped_refptr<SecurityOrigin> supplied_origin =
-      SecurityOrigin::Create(origin_as_kurl);
-  auto top_level_storage_access_extension =
-      mojom::blink::TopLevelStorageAccessPermissionDescriptor::New();
-  top_level_storage_access_extension->requestedOrigin = supplied_origin;
-  descriptor->extension =
-      mojom::blink::PermissionDescriptorExtension::NewTopLevelStorageAccess(
-          std::move(top_level_storage_access_extension));
   return descriptor;
 }
 
@@ -421,25 +405,6 @@ PermissionDescriptorPtr ParsePermissionDescriptor(
         return nullptr;
       }
       return CreatePermissionDescriptor(PermissionName::LOCAL_FONTS);
-    }
-
-    case V8PermissionName::Enum::kTopLevelStorageAccess: {
-      TopLevelStorageAccessPermissionDescriptor*
-          top_level_storage_access_permission =
-              NativeValueTraits<TopLevelStorageAccessPermissionDescriptor>::
-                  NativeValue(script_state->GetIsolate(),
-                              raw_descriptor.V8Value(), exception_state);
-      if (exception_state.HadException()) {
-        return nullptr;
-      }
-      KURL origin_as_kurl{
-          top_level_storage_access_permission->requestedOrigin()};
-      if (!origin_as_kurl.IsValid()) {
-        exception_state.ThrowTypeError("The requested origin is invalid.");
-        return nullptr;
-      }
-
-      return CreateTopLevelStorageAccessPermissionDescriptor(origin_as_kurl);
     }
 
     case V8PermissionName::Enum::kCapturedSurfaceControl: {

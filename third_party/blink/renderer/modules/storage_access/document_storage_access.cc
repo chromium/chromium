@@ -4,9 +4,7 @@
 
 #include "third_party/blink/renderer/modules/storage_access/document_storage_access.h"
 
-#include "base/metrics/histogram_functions.h"
 #include "net/storage_access_api/status.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink-forward.h"
@@ -22,48 +20,6 @@
 #include "third_party/blink/renderer/modules/storage_access/storage_access_handle.h"
 
 namespace blink {
-
-namespace {
-
-// This enum must match the numbering for RequestStorageResult in
-// histograms/enums.xml. Do not reorder or remove items, only add new items
-// at the end.
-//
-// This enum is used by both requestStorageAccess and requestStorageAccessFor
-// for but there is no guarantee that every enum value is used by each method.
-enum class RequestStorageResult {
-  APPROVED_EXISTING_ACCESS = 0,
-  // APPROVED_NEW_GRANT = 1,
-  REJECTED_NO_USER_GESTURE = 2,
-  REJECTED_NO_ORIGIN = 3,
-  REJECTED_OPAQUE_ORIGIN = 4,
-  REJECTED_EXISTING_DENIAL = 5,
-  REJECTED_SANDBOXED = 6,
-  REJECTED_GRANT_DENIED = 7,
-  REJECTED_INCORRECT_FRAME = 8,
-  REJECTED_INSECURE_CONTEXT = 9,
-  APPROVED_PRIMARY_FRAME = 10,
-  REJECTED_CREDENTIALLESS_IFRAME = 11,
-  APPROVED_NEW_OR_EXISTING_GRANT = 12,
-  REJECTED_FENCED_FRAME = 13,
-  REJECTED_INVALID_ORIGIN = 14,
-  kMaxValue = REJECTED_INVALID_ORIGIN,
-};
-
-void FireRequestStorageAccessForMetrics(RequestStorageResult result,
-                                        ExecutionContext* context) {
-  base::UmaHistogramEnumeration(
-      "API.TopLevelStorageAccess.RequestStorageAccessFor2", result);
-
-  CHECK(context);
-
-  ukm::builders::RequestStorageAccessFor_RequestStorageResult(
-      context->UkmSourceID())
-      .SetRequestStorageResult(static_cast<int64_t>(result))
-      .Record(context->UkmRecorder());
-}
-
-}  // namespace
 
 // static
 const char DocumentStorageAccess::kNoAccessRequested[] =
@@ -111,14 +67,6 @@ ScriptPromise<IDLBoolean> DocumentStorageAccess::hasUnpartitionedCookieAccess(
     ScriptState* script_state,
     Document& document) {
   return From(document).hasUnpartitionedCookieAccess(script_state);
-}
-
-// static
-ScriptPromise<IDLUndefined> DocumentStorageAccess::requestStorageAccessFor(
-    ScriptState* script_state,
-    Document& document,
-    const AtomicString& site) {
-  return From(document).requestStorageAccessFor(script_state, site);
 }
 
 DocumentStorageAccess::DocumentStorageAccess(Document& document)
@@ -385,167 +333,6 @@ void DocumentStorageAccess::ProcessStorageAccessPermissionState(
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
         "requestStorageAccess not allowed"));
-  }
-}
-
-ScriptPromise<IDLUndefined> DocumentStorageAccess::requestStorageAccessFor(
-    ScriptState* script_state,
-    const AtomicString& origin) {
-  if (!GetSupplementable()->GetFrame()) {
-    FireRequestStorageAccessForMetrics(RequestStorageResult::REJECTED_NO_ORIGIN,
-                                       ExecutionContext::From(script_state));
-    // Note that in detached frames, resolvers are not able to return a promise.
-    return ScriptPromise<IDLUndefined>::RejectWithDOMException(
-        script_state, MakeGarbageCollected<DOMException>(
-                          DOMExceptionCode::kInvalidStateError,
-                          "requestStorageAccessFor: Cannot be used unless "
-                          "the document is fully active."));
-  }
-
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
-
-  // Access the promise first to ensure it is created so that the proper state
-  // can be changed when it is resolved or rejected.
-  auto promise = resolver->Promise();
-
-  if (!GetSupplementable()->IsInOutermostMainFrame()) {
-    GetSupplementable()->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        ConsoleMessage::Source::kSecurity, ConsoleMessage::Level::kError,
-        "requestStorageAccessFor: Only supported in primary top-level "
-        "browsing contexts."));
-    // RequestStorageResult values that only make sense from within an iframe
-    // are recorded as REJECTED_INCORRECT_FRAME.
-    FireRequestStorageAccessForMetrics(
-        RequestStorageResult::REJECTED_INCORRECT_FRAME,
-        ExecutionContext::From(script_state));
-    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-        script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
-        "requestStorageAccessFor not allowed"));
-    return promise;
-  }
-
-  if (GetSupplementable()->dom_window_->GetSecurityOrigin()->IsOpaque()) {
-    GetSupplementable()->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        ConsoleMessage::Source::kSecurity, ConsoleMessage::Level::kError,
-        "requestStorageAccessFor: Cannot be used by opaque origins."));
-
-    FireRequestStorageAccessForMetrics(
-        RequestStorageResult::REJECTED_OPAQUE_ORIGIN,
-        ExecutionContext::From(script_state));
-    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-        script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
-        "requestStorageAccessFor not allowed"));
-    return promise;
-  }
-
-  // `requestStorageAccessFor` must be rejected for any given iframe. In
-  // particular, it must have been rejected by credentialless iframes:
-  CHECK(!GetSupplementable()->dom_window_->credentialless());
-
-  if (!GetSupplementable()->dom_window_->IsSecureContext()) {
-    GetSupplementable()->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        ConsoleMessage::Source::kSecurity, ConsoleMessage::Level::kError,
-        "requestStorageAccessFor: May not be used in an insecure "
-        "context."));
-    FireRequestStorageAccessForMetrics(
-        RequestStorageResult::REJECTED_INSECURE_CONTEXT,
-        ExecutionContext::From(script_state));
-
-    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-        script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
-        "requestStorageAccessFor not allowed"));
-    return promise;
-  }
-
-  KURL origin_as_kurl{origin};
-  if (!origin_as_kurl.IsValid()) {
-    GetSupplementable()->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        ConsoleMessage::Source::kSecurity, ConsoleMessage::Level::kError,
-        "requestStorageAccessFor: Invalid origin."));
-    FireRequestStorageAccessForMetrics(
-        RequestStorageResult::REJECTED_INVALID_ORIGIN,
-        ExecutionContext::From(script_state));
-    resolver->Reject(V8ThrowException::CreateTypeError(
-        script_state->GetIsolate(), "Invalid origin"));
-    return promise;
-  }
-
-  scoped_refptr<SecurityOrigin> supplied_origin =
-      SecurityOrigin::Create(origin_as_kurl);
-  if (supplied_origin->IsOpaque()) {
-    GetSupplementable()->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        ConsoleMessage::Source::kSecurity, ConsoleMessage::Level::kError,
-        "requestStorageAccessFor: Invalid origin parameter."));
-    FireRequestStorageAccessForMetrics(
-        RequestStorageResult::REJECTED_OPAQUE_ORIGIN,
-        ExecutionContext::From(script_state));
-    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-        script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
-        "requestStorageAccessFor not allowed"));
-    return promise;
-  }
-
-  if (GetSupplementable()->dom_window_->GetSecurityOrigin()->IsSameSiteWith(
-          supplied_origin.get())) {
-    // Access is not actually disabled, so accept the request.
-    resolver->Resolve();
-    FireRequestStorageAccessForMetrics(
-        RequestStorageResult::APPROVED_EXISTING_ACCESS,
-        ExecutionContext::From(script_state));
-    return promise;
-  }
-
-  auto descriptor = mojom::blink::PermissionDescriptor::New();
-  descriptor->name = mojom::blink::PermissionName::TOP_LEVEL_STORAGE_ACCESS;
-  auto top_level_storage_access_extension =
-      mojom::blink::TopLevelStorageAccessPermissionDescriptor::New();
-  top_level_storage_access_extension->requestedOrigin = supplied_origin;
-  descriptor->extension =
-      mojom::blink::PermissionDescriptorExtension::NewTopLevelStorageAccess(
-          std::move(top_level_storage_access_extension));
-
-  GetSupplementable()
-      ->GetPermissionService(ExecutionContext::From(script_state))
-      ->RequestPermission(
-          std::move(descriptor),
-          BindOnce(&DocumentStorageAccess::
-                       ProcessTopLevelStorageAccessPermissionState,
-                   WrapPersistent(this), WrapPersistent(resolver)));
-
-  return promise;
-}
-
-void DocumentStorageAccess::ProcessTopLevelStorageAccessPermissionState(
-    ScriptPromiseResolver<IDLUndefined>* resolver,
-    mojom::blink::PermissionStatusWithDetailsPtr status) {
-  DCHECK(resolver);
-  DCHECK(GetSupplementable()->GetFrame());
-  ScriptState* script_state = resolver->GetScriptState();
-  DCHECK(script_state);
-  ScriptState::Scope scope(script_state);
-
-  if (status->status == mojom::blink::PermissionStatus::GRANTED) {
-    FireRequestStorageAccessForMetrics(
-        RequestStorageResult::APPROVED_NEW_OR_EXISTING_GRANT,
-        ExecutionContext::From(script_state));
-
-    UseCounter::Count(
-        GetSupplementable(),
-        mojom::blink::WebFeature::
-            kStorageAccessAPI_requestStorageAccessFor_Method_AsyncSuccess);
-    resolver->Resolve();
-  } else {
-    LocalFrame::ConsumeTransientUserActivation(GetSupplementable()->GetFrame());
-    FireRequestStorageAccessForMetrics(
-        RequestStorageResult::REJECTED_GRANT_DENIED,
-        ExecutionContext::From(script_state));
-    GetSupplementable()->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        ConsoleMessage::Source::kSecurity, ConsoleMessage::Level::kError,
-        "requestStorageAccessFor: Permission denied."));
-    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-        script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
-        "requestStorageAccessFor not allowed"));
   }
 }
 

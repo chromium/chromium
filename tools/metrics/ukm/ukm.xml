@@ -21598,21 +21598,6 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="RequestStorageAccessFor.RequestStorageResult">
-  <owner>selya@google.com</owner>
-  <owner>cfredric@chromium.org</owner>
-  <summary>
-    Records invocations of document.requestStorageAccessFor and reasons the
-    request was approved or rejected. Recorded for every call to the function,
-    regardless of outcome.
-  </summary>
-  <metric name="RequestStorageResult" enum="RequestStorageResult">
-    <summary>
-      The result of the requestStorageAccessFor call.
-    </summary>
-  </metric>
-</event>
-
 <event name="RequestStorageAccessFor.TopLevelStorageIsExemptionReason">
   <owner>selya@google.com</owner>
   <owner>cfredric@chromium.org</owner>

@@ -53,12 +53,6 @@ bool RequestAndCheckStorageAccessForFrame(content::RenderFrameHost* frame,
 // functionality of the handle.
 bool RequestAndCheckStorageAccessBeyondCookiesForFrame(
     content::RenderFrameHost* frame);
-// Helper to request storage access with a site override for a frame using
-// document.requestStorageAccessFor(origin). Returns true if the promise
-// resolves; false if it rejects.
-bool RequestStorageAccessForOrigin(content::RenderFrameHost* frame,
-                                   const std::string& origin,
-                                   bool omit_user_gesture = false);
 // Helper to see if a frame currently has storage access using
 // document.hasStorageAccess(). Returns true if the promise resolves with a
 // value of true; false otherwise.

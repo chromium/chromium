@@ -302,8 +302,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"ExperimentalMachineLearningNeuralNetwork",
            webnn::mojom::features::kExperimentalWebMachineLearningNeuralNetwork,
            kSetOnlyIfOverridden},
-          {"RequestStorageAccessFor",
-           content_settings::features::kStorageAccessAPIRelatedWebsiteSets},
           {"LocalNetworkAccessPermissionPolicy",
            network::features::kLocalNetworkAccessChecks}};
   for (const auto& mapping : runtime_feature_name_to_chromium_feature_mapping) {

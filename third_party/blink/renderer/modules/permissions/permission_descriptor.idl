@@ -35,7 +35,6 @@ enum PermissionName {
     "storage-access",
     "window-management",
     "local-fonts",
-    "top-level-storage-access",
     "captured-surface-control",
     "speaker-selection",
     "keyboard-lock",

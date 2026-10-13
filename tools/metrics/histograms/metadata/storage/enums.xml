@@ -485,25 +485,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//content/browser/interest_group/interest_group_storage.cc:InterestGroupStorageVacuumResult) -->
 
-<enum name="RequestStorageResult">
-  <int value="0" label="Approved due to existing storage access"/>
-  <int value="1" label="Approved with new grant"/>
-  <int value="2" label="Rejected with missing user gesture"/>
-  <int value="3" label="Rejected due to missing origin"/>
-  <int value="4" label="Rejected due to opaque origin"/>
-  <int value="5" label="Rejected due to existing denial"/>
-  <int value="6" label="Rejected due to missing sandbox token"/>
-  <int value="7" label="Rejected due to denied prompt"/>
-  <int value="8"
-      label="Rejected due to a call being made from an invalid context"/>
-  <int value="9" label="Rejected due to insecure context"/>
-  <int value="10" label="Approved due to being called from top-level frame"/>
-  <int value="11" label="Rejected due to credentialless iframe"/>
-  <int value="12" label="Approved with a new or existing grant"/>
-  <int value="13" label="Rejected due to fenced frame"/>
-  <int value="14" label="Rejected due to invalid origin"/>
-</enum>
-
 <enum name="SqliteResultCode">
   <summary>
     Result codes as reported by the sqlite library. See also
