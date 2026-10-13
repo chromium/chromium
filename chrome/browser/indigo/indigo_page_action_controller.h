@@ -166,17 +166,18 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
     explicit TestApi(IndigoPageActionController* controller)
         : controller_(controller) {}
 
-    void CheckEligibilityForOnboarding(base::TimeTicks start_time,
-                                       bool skip_glic_invoke,
-                                       const CombinedEligibility& eligibility) {
-      controller_->CheckEligibilityForOnboarding(start_time, skip_glic_invoke,
+    void CheckEligibilityForOnboarding(
+        base::TimeTicks start_time,
+        IndigoTransformationTriggerSource trigger_source,
+        const CombinedEligibility& eligibility) {
+      controller_->CheckEligibilityForOnboarding(start_time, trigger_source,
                                                  eligibility);
     }
 
     void CheckOnboardingResult(OnboardingDisposition disposition,
-                               bool skip_glic_invoke,
+                               IndigoTransformationTriggerSource trigger_source,
                                const OnboardingResult& result) {
-      controller_->OnOnboardingDialogClosed(disposition, skip_glic_invoke,
+      controller_->OnOnboardingDialogClosed(disposition, trigger_source,
                                             result);
     }
 
@@ -217,17 +218,19 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
   // Evaluates the current trigger state.
   TriggerEvaluation EvaluateTriggerState() const;
 
-  // Shows the onboarding dialog with the appropriate URL based on disposition.
+  // Shows the onboarding dialog with the appropriate URL based on disposition,
+  // and invokes `trigger_source` upon completion.
   void ShowOnboardingDialog(OnboardingDisposition disposition,
-                            bool skip_glic_invoke);
+                            IndigoTransformationTriggerSource trigger_source);
 
   // Called when the eligibility has been fetched.
-  void CheckEligibilityForOnboarding(base::TimeTicks start_time,
-                                     bool skip_glic_invoke,
-                                     const CombinedEligibility& eligibility);
+  void CheckEligibilityForOnboarding(
+      base::TimeTicks start_time,
+      IndigoTransformationTriggerSource trigger_source,
+      const CombinedEligibility& eligibility);
 
   // Called when eligibility is known and onboarding is completed (if needed).
-  void ContinueInvoke(bool skip_glic_invoke,
+  void ContinueInvoke(IndigoTransformationTriggerSource trigger_source,
                       const CombinedEligibility& eligibility);
 
   // Checks whether we should skip Indigo invocation and invoke Glic instead.
@@ -244,9 +247,10 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
   void TriggerRegeneration(IndigoTransformationTriggerSource source);
 
   // Updates state and handles preference changes when the dialog closes.
-  void OnOnboardingDialogClosed(OnboardingDisposition disposition,
-                                bool skip_glic_invoke,
-                                const OnboardingResult& result);
+  void OnOnboardingDialogClosed(
+      OnboardingDisposition disposition,
+      IndigoTransformationTriggerSource trigger_source,
+      const OnboardingResult& result);
 
   // Called when the delete request completes.
   void OnDeleteOriginalPhotoComplete(base::expected<void, DeleteError> result);

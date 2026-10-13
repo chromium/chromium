@@ -788,8 +788,9 @@ TEST_F(IndigoPageActionControllerTest, OnboardingSuccessTriggersContinuation) {
           }));
 
   IndigoPageActionController::TestApi(controller_.get())
-      .CheckEligibilityForOnboarding(base::TimeTicks::Now(),
-                                     /*skip_glic_invoke=*/false, eligibility);
+      .CheckEligibilityForOnboarding(
+          base::TimeTicks::Now(),
+          IndigoTransformationTriggerSource::kPageAction, eligibility);
 
   ASSERT_TRUE(!captured_callback.is_null());
   EXPECT_EQ(user_action_tester.GetActionCount("Indigo.Onboarding.Trigger"), 1);
@@ -801,6 +802,83 @@ TEST_F(IndigoPageActionControllerTest, OnboardingSuccessTriggersContinuation) {
   EXPECT_TRUE(profile_->GetPrefs()->GetBoolean(prefs::kIndigoHasOnboarded));
   EXPECT_TRUE(fetcher_called.Wait());
   EXPECT_EQ(user_action_tester.GetActionCount("Indigo.Onboarding.Complete"), 1);
+}
+
+TEST_F(IndigoPageActionControllerTest,
+       OnboardingSuccessWithToastRetryDoesNotOpenGlic) {
+  CreateController();
+
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeatureWithParameters(
+      features::kIndigoOpenGlic, {{"indigo_glic_prompt", "test prompt"}});
+
+  // Set up an active page so IndigoAgentHost can be invoked upon continuation.
+  GURL url("https://example.com");
+  ExpectOptimizationGuideDecision(url, OptimizationGuideDecision::kTrue);
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      url, tab_interface_->GetContents());
+  navigation->Commit();
+
+  // Glic should NOT be invoked for non-page-action triggers.
+  EXPECT_CALL(*mock_glic_keyed_service_, InvokeWithAutoSubmit(_, _)).Times(0);
+
+  // Explicitly set the initial state for onboarding preference.
+  profile_->GetPrefs()->SetBoolean(prefs::kIndigoHasOnboarded, false);
+
+  base::UserActionTester user_action_tester;
+  base::HistogramTester histogram_tester;
+
+  OnboardingResult result;
+  result.acknowledge_chrome_disclaimer = true;
+
+  base::test::TestFuture<void> fetcher_called;
+  IndigoServiceFactory::GetForProfile(profile_.get())
+      ->SetRemoteEligibilityFetcherForTesting(base::BindLambdaForTesting(
+          [&](IndigoService::RemoteEligibilityCallback callback) {
+            fetcher_called.SetValue();
+            std::move(callback).Run(RemoteEligibility{
+                .is_service_supported_for_account = true,
+                .has_user_image = true,
+            });
+          }));
+
+  // Initial state: eligible but needs onboarding. This should show the dialog.
+  CombinedEligibility eligibility;
+  eligibility.local_eligibility = LocalEligibility::kEligible;
+  eligibility.remote_eligibility = RemoteEligibility{
+      .is_service_supported_for_account = true, .has_user_image = false};
+  eligibility.has_onboarded_pref = false;
+
+  base::OnceCallback<void(const OnboardingResult&)> captured_callback;
+  IndigoPageActionController::TestApi(controller_.get())
+      .SetOnboardingDialogFactory(base::BindLambdaForTesting(
+          [&](tabs::TabInterface& tab, const GURL& url,
+              base::OnceCallback<void(const OnboardingResult&)> callback)
+              -> std::unique_ptr<IndigoOnboardingDialog> {
+            captured_callback = std::move(callback);
+            return nullptr;
+          }));
+
+  IndigoPageActionController::TestApi(controller_.get())
+      .CheckEligibilityForOnboarding(
+          base::TimeTicks::Now(),
+          IndigoTransformationTriggerSource::kErrorToastRetry, eligibility);
+
+  ASSERT_TRUE(!captured_callback.is_null());
+  EXPECT_EQ(user_action_tester.GetActionCount("Indigo.Onboarding.Trigger"), 1);
+
+  // Now simulate the dialog closing with success.
+  std::move(captured_callback).Run(result);
+
+  // Closing with success should set the pref and trigger a re-fetch for
+  // continuation.
+  EXPECT_TRUE(profile_->GetPrefs()->GetBoolean(prefs::kIndigoHasOnboarded));
+  EXPECT_TRUE(fetcher_called.Wait());
+  EXPECT_EQ(user_action_tester.GetActionCount("Indigo.Onboarding.Complete"), 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Indigo.Transformation.TriggerSource",
+      IndigoTransformationTriggerSource::kErrorToastRetry, 1);
 }
 
 TEST_F(IndigoPageActionControllerTest, OnboardingCancelledDoesNotTrigger) {
@@ -824,7 +902,8 @@ TEST_F(IndigoPageActionControllerTest, OnboardingCancelledDoesNotTrigger) {
 
   IndigoPageActionController::TestApi(controller_.get())
       .CheckOnboardingResult(OnboardingDisposition::kDefault,
-                             /*skip_glic_invoke=*/false, result);
+                             IndigoTransformationTriggerSource::kPageAction,
+                             result);
 
   EXPECT_FALSE(fetcher_called.IsReady());
   EXPECT_FALSE(profile_->GetPrefs()->GetBoolean(prefs::kIndigoHasOnboarded));
