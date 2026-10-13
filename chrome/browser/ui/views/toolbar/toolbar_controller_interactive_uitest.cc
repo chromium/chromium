@@ -1032,6 +1032,33 @@ IN_PROC_BROWSER_TEST_P(ToolbarControllerUiTest, ActivateActionElementFromMenu) {
                 "ResponsiveToolbar.OverflowMenuItemActivated.ForwardButton"));
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_P(ToolbarControllerUiTest, ActivateAvatarElementFromMenu) {
+  base::UserActionTester user_action_tester;
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "ResponsiveToolbar.OverflowButtonActivated"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "ResponsiveToolbar.OverflowMenuItemActivated.AvatarButton"));
+  RunTestSequence(
+      WaitForElementVisibility(kToolbarAvatarButtonElementId, true),
+      AddDummyButtonsToToolbarTillElementOverflowsWithoutResizing(
+          kToolbarAvatarButtonElementId),
+      PressButton(kToolbarOverflowButtonElementId),
+      ActivateMenuItemWithElementId(kToolbarAvatarButtonElementId),
+      WaitForShow(kToolbarAvatarBubbleElementId),
+      WaitForElementVisibility(kToolbarAvatarButtonElementId, true),
+      WithView(kToolbarAvatarBubbleElementId,
+               [](views::View* view) { view->GetWidget()->Close(); }),
+      WaitForHide(kToolbarAvatarBubbleElementId),
+      WaitForElementVisibility(kToolbarAvatarButtonElementId, false),
+      CheckIfOverflowed(kToolbarAvatarButtonElementId, true));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "ResponsiveToolbar.OverflowButtonActivated"));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "ResponsiveToolbar.OverflowMenuItemActivated.AvatarButton"));
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
 // TODO(crbug.com/361296257): ActionItemsOverflowAndReappear is flaky on
 // linux64-rel-ready.
 #if BUILDFLAG(IS_LINUX)
