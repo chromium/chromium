@@ -306,7 +306,9 @@ void AppShimHost::NotificationPermissionStatusChanged(
 
 base::FilePath AppShimHost::GetProfilePath() const {
   // This should only be used by single-profile-app paths.
-  CHECK(!profile_path_.empty(), base::NotFatalUntil::M161);
+  // TODO(crbug.com/572515497): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!profile_path_.empty());
   return profile_path_;
 }
 
