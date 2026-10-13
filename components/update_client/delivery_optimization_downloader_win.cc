@@ -9,6 +9,7 @@
 #include <windows.h>
 
 #include <deliveryoptimization.h>
+#include <deliveryoptimizationerrors.h>
 #include <oleauto.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -181,7 +182,10 @@ int GetDownloadHttpStatus(const Microsoft::WRL::ComPtr<IDODownload>& download,
 HRESULT SetDownloadProperty(const Microsoft::WRL::ComPtr<IDODownload>& download,
                             DODownloadProperty property,
                             const base::win::ScopedVariant& value) {
-  return download->SetProperty(property, value.ptr());
+  const HRESULT hr = download->SetProperty(property, value.ptr());
+  VLOG_IF(1, FAILED(hr)) << "Failed to set DO download property " << property
+                         << ": 0x" << std::hex << hr;
+  return hr;
 }
 
 // Returns a string property of the download, such as its uri or local path.
@@ -243,6 +247,12 @@ HRESULT FindDownloadsIf(
 
   Microsoft::WRL::ComPtr<IEnumUnknown> enum_downloads;
   HRESULT hr = do_manager->EnumDownloads(&category, &enum_downloads);
+  // DO reports an empty queue as an error instead of returning an empty
+  // enumerator, which is the common case on a machine where this module has
+  // never downloaded anything.
+  if (hr == DO_E_NO_DOWNLOADS) {
+    return S_FALSE;
+  }
   if (FAILED(hr)) {
     return hr;
   }
@@ -329,6 +339,22 @@ bool DownloadOlderThanDaysPredicate(
   return info.creation_time + base::Days(num_days) < base::Time::Now();
 }
 
+// Allows the DO service to impersonate the caller on calls made through
+// `proxy`. DO creates and writes the download file on behalf of the caller,
+// which requires an impersonation level of at least RPC_C_IMP_LEVEL_IMPERSONATE
+// on the proxy. The process-wide default established by COM when the process
+// does not call CoInitializeSecurity, as the browser does not, is
+// RPC_C_IMP_LEVEL_IDENTIFY, with which IDODownload::Start fails with
+// HRESULT_FROM_WIN32(ERROR_DIRECTORY).
+HRESULT SetImpersonateProxyBlanket(IUnknown* proxy) {
+  const HRESULT hr = ::CoSetProxyBlanket(
+      proxy, RPC_C_AUTHN_DEFAULT, RPC_C_AUTHZ_DEFAULT, COLE_DEFAULT_PRINCIPAL,
+      RPC_C_AUTHN_LEVEL_DEFAULT, RPC_C_IMP_LEVEL_IMPERSONATE, nullptr,
+      EOAC_DYNAMIC_CLOAKING);
+  VLOG_IF(1, FAILED(hr)) << "CoSetProxyBlanket failed: 0x" << std::hex << hr;
+  return hr;
+}
+
 // Creates an instance of the DO manager. Fails with REGDB_E_CLASSNOTREG on
 // hosts where Delivery Optimization is not available.
 HRESULT CreateDeliveryOptimizationManager(
@@ -349,6 +375,10 @@ HRESULT CreateDeliveryOptimizationManager(
 
   if (FAILED(hr)) {
     VLOG(1) << "Delivery Optimization is not available: " << std::hex << hr;
+    return hr;
+  }
+  hr = SetImpersonateProxyBlanket(local_do_manager.Get());
+  if (FAILED(hr)) {
     return hr;
   }
   *do_manager = local_do_manager;
@@ -541,9 +571,14 @@ void DeliveryOptimizationDownloader::OnDownloading() {
   DO_DOWNLOAD_STATUS status = {};
   HRESULT hr = GetDownloadStatus(download_, &status);
   if (FAILED(hr)) {
+    VLOG(1) << "GetStatus failed: 0x" << std::hex << hr;
     EndDownload(hr);
     return;
   }
+  VLOG(2) << "DO download status: State=" << status.State
+          << ", BytesTransferred=" << status.BytesTransferred
+          << ", BytesTotal=" << status.BytesTotal << ", Error=0x" << std::hex
+          << status.Error << ", ExtendedError=0x" << status.ExtendedError;
   RecordStatus(status);
 
   bool is_handled = false;
@@ -788,8 +823,12 @@ HRESULT DeliveryOptimizationDownloader::QueueDownload(
 
   size_t num_downloads = std::numeric_limits<size_t>::max();
   HRESULT hr = GetDownloaderDownloadCount(&num_downloads);
-
-  if (FAILED(hr) || num_downloads >= kMaxQueuedDownloads) {
+  if (FAILED(hr)) {
+    // Report the actual enumeration error rather than folding it into the
+    // queue-full error, so that the cause is visible in telemetry.
+    return hr;
+  }
+  if (num_downloads >= kMaxQueuedDownloads) {
     return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF,
                         CrxDownloaderError::DO_TOO_MANY_DOWNLOADS);
   }
@@ -841,6 +880,7 @@ HRESULT DeliveryOptimizationDownloader::QueueDownload(
     }
   }
   if (FAILED(hr)) {
+    VLOG(1) << "Failed to start DO download: 0x" << std::hex << hr;
     CleanupDownload(local_download);
     return hr;
   }
@@ -880,6 +920,10 @@ HRESULT DeliveryOptimizationDownloader::CreateOrOpenDownload(
           status.State == DODownloadState_Finalized) {
         continue;
       }
+      hr = SetImpersonateProxyBlanket(existing.Get());
+      if (FAILED(hr)) {
+        return hr;
+      }
       *download = existing;
       return S_FALSE;
     }
@@ -887,6 +931,15 @@ HRESULT DeliveryOptimizationDownloader::CreateOrOpenDownload(
 
   Microsoft::WRL::ComPtr<IDODownload> local_download;
   hr = do_manager_->CreateDownload(&local_download);
+  if (FAILED(hr)) {
+    VLOG(1) << "Failed to create DO download: 0x" << std::hex << hr;
+    CleanupDownload(local_download);
+    return hr;
+  }
+
+  // The download object is a distinct proxy from the manager and needs its
+  // own security blanket.
+  hr = SetImpersonateProxyBlanket(local_download.Get());
   if (FAILED(hr)) {
     CleanupDownload(local_download);
     return hr;
@@ -922,6 +975,7 @@ HRESULT DeliveryOptimizationDownloader::InitializeNewDownload(
     filename = kDefaultDownloadFilename;
   }
   const base::FilePath local_path = tempdir.Append(filename);
+  VLOG(2) << "DO download local path: " << local_path;
 
   // The local path is set first: once it is set, |CleanupDownload| is able to
   // find and remove the temporary directory if initializing or starting the
@@ -969,9 +1023,11 @@ HRESULT DeliveryOptimizationDownloader::InitializeNewDownload(
   // Ask DO to persist the download so that it survives restarts of the DO
   // service and of the machine, similar to a BITS job. The property is not
   // available on older versions of DO, in which case the failure is ignored
-  // and the download is merely not persisted.
-  SetDownloadProperty(download, DODownloadProperty_NonVolatile,
-                      base::win::ScopedVariant(true));
+  // and the download is merely not persisted. The property is set directly
+  // rather than through |SetDownloadProperty| so that the expected failure is
+  // not logged.
+  download->SetProperty(DODownloadProperty_NonVolatile,
+                        base::win::ScopedVariant(true).ptr());
 
   return S_OK;
 }
@@ -1001,8 +1057,8 @@ HRESULT DeliveryOptimizationDownloader::CompleteDownload() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(com_sequence_checker_);
   CheckIsMta();
 
-  // Check the post-conditions of a successful download before finalizing it,
-  // so that an incomplete or empty download is never finalized, and so that a
+  // Check the byte counts of the transferred download before finalizing it, so
+  // that an incomplete or empty download is never finalized, and so that a
   // failure here leaves the download in a state which can still be aborted and
   // cleaned up. |last_status_| was recorded by |OnDownloading| just before
   // this call and is used instead of querying DO again; this also preserves
@@ -1012,21 +1068,33 @@ HRESULT DeliveryOptimizationDownloader::CompleteDownload() {
   // The byte counts must match since the entire file was requested.
   if (last_status_.BytesTotal == 0 ||
       last_status_.BytesTotal != last_status_.BytesTransferred) {
+    VLOG(1) << "Transferred download has inconsistent byte counts: "
+            << last_status_.BytesTransferred << "/" << last_status_.BytesTotal;
     return E_UNEXPECTED;
   }
 
   base::FilePath local_path;
   HRESULT hr = GetDownloadLocalPath(download_, &local_path);
   if (FAILED(hr)) {
+    VLOG(1) << "Failed to get DO download local path: 0x" << std::hex << hr;
     return hr;
   }
-  if (local_path.empty() || !base::PathExists(local_path)) {
+  if (local_path.empty()) {
+    VLOG(1) << "DO download has no local path";
     return E_UNEXPECTED;
   }
 
+  // A transferred download holds its content in the DO cache. The file at the
+  // local path is only written when the download is finalized, so the file
+  // can't be checked for before this call.
   hr = download_->Finalize();
   if (FAILED(hr)) {
+    VLOG(1) << "Failed to finalize DO download: 0x" << std::hex << hr;
     return hr;
+  }
+  if (!base::PathExists(local_path)) {
+    VLOG(1) << "DO download file is missing after finalizing: " << local_path;
+    return E_UNEXPECTED;
   }
 
   response_ = local_path;
