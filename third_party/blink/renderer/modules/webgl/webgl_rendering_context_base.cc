@@ -957,23 +957,18 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage() {
                              gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
                              gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
 
-  std::unique_ptr<CanvasNon2DResourceProvider> resource_provider;
   if (SharedGpuContext::IsGpuCompositingEnabled()) {
-    // Create an accelerated CRP in order to produce an accelerated snapshot.
-    resource_provider = CanvasNon2DResourceProvider::Create(
-        size, GetSharedImageFormat(), GetAlphaType(), GetColorSpace(),
-        drawing_buffer_tone_mapping_hdr_metadata_,
-        SharedGpuContext::ContextProviderWrapper(), shared_image_usages);
-
-    if (!resource_provider || !resource_provider->IsValid()) {
-      return nullptr;
-    }
-
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> shared_context_wrapper =
         SharedGpuContext::ContextProviderWrapper();
-    if (!shared_context_wrapper) {
+    // Create an accelerated CRP in order to produce an accelerated snapshot.
+    auto resource_provider = CanvasNon2DResourceProvider::Create(
+        size, GetSharedImageFormat(), GetAlphaType(), GetColorSpace(),
+        drawing_buffer_tone_mapping_hdr_metadata_, shared_context_wrapper,
+        shared_image_usages);
+    if (!resource_provider) {
       return nullptr;
     }
+
     gpu::raster::RasterInterface* raster_interface =
         shared_context_wrapper->ContextProvider().RasterInterface();
     auto client_si = resource_provider->resource()->GetSharedImage();
@@ -995,14 +990,14 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage() {
       return nullptr;
     }
     sync_token = external_sync_token.value();
-    if (resource_provider->IsValid()) {
+    if (!shared_context_wrapper->ContextProvider().IsContextLost()) {
       auto post_write_access = client_si->BeginRasterAccess(
           raster_interface, sync_token, /*readonly=*/true);
       sync_token =
           gpu::RasterScopedAccess::EndAccess(std::move(post_write_access));
       client_si->UpdateDestructionSyncToken(sync_token);
     }
-    if (!resource_provider->IsValid()) {
+    if (shared_context_wrapper->ContextProvider().IsContextLost()) {
       return nullptr;
     }
 
