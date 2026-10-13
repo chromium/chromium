@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/path_service.h"
 #include "base/sequence_checker.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -15,11 +16,24 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/child_module/child_module_watcher.h"
 #include "chrome/common/child_module/child_module_helper.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
 namespace child_module {
+
+namespace {
+
+// Returns the directory in which child module versions are staged, or an empty
+// path if it was not set.
+base::FilePath GetChildModuleRoot() {
+  base::FilePath modules_dir;
+  base::PathService::Get(chrome::DIR_CHILD_MODULE_ROOT, &modules_dir);
+  return modules_dir;
+}
+
+}  // namespace
 
 // static
 void ChildModuleManager::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
@@ -27,12 +41,13 @@ void ChildModuleManager::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 }
 
 ChildModuleManager::ChildModuleManager(PrefService& local_state)
-    : local_state_(local_state) {
+    : local_state_(local_state), modules_dir_(GetChildModuleRoot()) {
   auto background_task_runner = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
 
-  watcher_.emplace(std::move(background_task_runner), GetModulesDir(),
+  // The watcher does nothing if `modules_dir_` is empty.
+  watcher_.emplace(std::move(background_task_runner), modules_dir_,
                    base::BindPostTaskToCurrentDefault(base::BindRepeating(
                        &ChildModuleManager::OnVersionSetChanged,
                        weak_factory_.GetWeakPtr())));
@@ -49,8 +64,9 @@ std::optional<ChildModuleManager::Module> ChildModuleManager::GetLatestModule()
     return std::nullopt;
   }
   const base::Version& version = *available_versions_.begin();
-  return Module{.version = version,
-                .renderer_binary_path = GetRendererBinaryPath(version)};
+  return Module{
+      .version = version,
+      .renderer_binary_path = GetRendererBinaryPath(modules_dir_, version)};
 }
 
 const VersionSet& ChildModuleManager::GetAvailableVersionsForTesting() const {

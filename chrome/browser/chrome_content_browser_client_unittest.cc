@@ -152,6 +152,7 @@
 #include "base/files/file_util.h"
 #include "base/version.h"
 #include "chrome/browser/child_module/child_module_manager.h"
+#include "chrome/browser/child_module/child_module_paths.h"
 #include "chrome/browser/child_module/features.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -3078,7 +3079,9 @@ class ChromeContentBrowserClientDynamicPatchTest : public testing::Test {
     scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
         switches::kNoZygote);
 #endif
-    ASSERT_TRUE(base::CreateDirectory(child_module::GetModulesDir()));
+    // Set chrome::DIR_CHILD_MODULE_ROOT as the browser does at startup.
+    ASSERT_TRUE(child_module::InitializeChildModuleRoot());
+    modules_dir_ = base::PathService::CheckedGet(chrome::DIR_CHILD_MODULE_ROOT);
     TestingBrowserProcess::GetGlobal()->GetFeatures()->PreMainMessageLoopRun();
     auto* manager = TestingBrowserProcess::GetGlobal()
                         ->GetFeatures()
@@ -3092,10 +3095,9 @@ class ChromeContentBrowserClientDynamicPatchTest : public testing::Test {
   }
 
   // Writes the directory and manifest sentinel file for `version` under
-  // `GetModulesDir()`.
+  // `modules_dir_`.
   void WritePatchFiles(const base::Version& version) {
-    base::FilePath version_dir =
-        child_module::GetModulesDir().AppendASCII(version.GetString());
+    base::FilePath version_dir = modules_dir_.AppendASCII(version.GetString());
     EXPECT_TRUE(base::CreateDirectory(version_dir));
     EXPECT_TRUE(
         base::WriteFile(child_module::GetManifestPath(version_dir), ""));
@@ -3108,7 +3110,8 @@ class ChromeContentBrowserClientDynamicPatchTest : public testing::Test {
   base::FilePath StagePatch(const base::Version& version) {
     const child_module::ChildModuleManager::Module expected = {
         .version = version,
-        .renderer_binary_path = child_module::GetRendererBinaryPath(version)};
+        .renderer_binary_path =
+            child_module::GetRendererBinaryPath(modules_dir_, version)};
     auto* features = TestingBrowserProcess::GetGlobal()->GetFeatures();
     features->PostMainMessageLoopRun();
     WritePatchFiles(version);
@@ -3138,17 +3141,18 @@ class ChromeContentBrowserClientDynamicPatchTest : public testing::Test {
 #endif  // BUILDFLAG(IS_LINUX)
 
  protected:
-  base::ScopedPathOverride path_override_{
 #if BUILDFLAG(IS_WIN)
-      base::DIR_EXE
-#else
-      chrome::DIR_USER_DATA
+  base::ScopedPathOverride path_override_{base::DIR_EXE};
 #endif
-  };
+  base::ScopedPathOverride user_data_dir_override_{chrome::DIR_USER_DATA};
+  base::ScopedPathOverride child_module_root_override_{
+      chrome::DIR_CHILD_MODULE_ROOT};
   base::test::ScopedCommandLine scoped_command_line_;
   base::test::ScopedFeatureList scoped_feature_list_{
       child_module::features::kDynamicPatching};
   content::BrowserTaskEnvironment task_environment_;
+  // The directory in which the manager looks for patches.
+  base::FilePath modules_dir_;
 };
 
 // TODO(crbug.com/558598893): Enable GetChildProcessPath tests on macOS once
@@ -3207,14 +3211,23 @@ TEST_F(ChromeContentBrowserClientDynamicPatchTest,
 
   client.AppendExtraCommandLineSwitches(&cmd, /*child_process_id=*/1);
   EXPECT_FALSE(cmd.HasSwitch(switches::kChildModuleVersion));
+  EXPECT_FALSE(cmd.HasSwitch(switches::kChildModuleUserPathComponent));
 
-  StagePatch(base::Version("9999.0.0.1"));
+  const base::FilePath patched_binary = StagePatch(base::Version("9999.0.0.1"));
   base::CommandLine patched_cmd(base::CommandLine::NO_PROGRAM);
   patched_cmd.AppendSwitchASCII(switches::kProcessType,
                                 switches::kRendererProcess);
   client.AppendExtraCommandLineSwitches(&patched_cmd, /*child_process_id=*/1);
   EXPECT_EQ(patched_cmd.GetSwitchValueASCII(switches::kChildModuleVersion),
             "9999.0.0.1");
+  // The renderer loads the patched binary that the browser allows it to load.
+  EXPECT_EQ(
+      child_module::GetRendererBinaryPath(
+          child_module::GetModulesDirForUser(patched_cmd.GetSwitchValuePath(
+              switches::kChildModuleUserPathComponent)),
+          base::Version(
+              patched_cmd.GetSwitchValueASCII(switches::kChildModuleVersion))),
+      patched_binary);
 }
 
 TEST_F(ChromeContentBrowserClientDynamicPatchTest,
@@ -3226,6 +3239,7 @@ TEST_F(ChromeContentBrowserClientDynamicPatchTest,
   cmd.AppendSwitchASCII(switches::kProcessType, switches::kUtilityProcess);
   client.AppendExtraCommandLineSwitches(&cmd, /*child_process_id=*/1);
   EXPECT_FALSE(cmd.HasSwitch(switches::kChildModuleVersion));
+  EXPECT_FALSE(cmd.HasSwitch(switches::kChildModuleUserPathComponent));
 }
 
 TEST_F(ChromeContentBrowserClientDynamicPatchTest, GetChildModule) {

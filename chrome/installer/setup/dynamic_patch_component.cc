@@ -149,13 +149,13 @@ DynamicPatchComponent::DetermineDestinationRoot(
 
   const base::FilePath user_path_component =
       child_module::ComputeUserPathComponent(sid_, user_data_dir_);
-  if (user_path_component.empty()) {
+  base::FilePath modules_dir =
+      child_module::GetModulesDirForUser(base_version_dir, user_path_component);
+  if (modules_dir.empty()) {
     LOG(ERROR) << "Failed to compute user path component.";
     return base::unexpected(INSTALL_COMPONENT_FAILED_INTERNAL);
   }
-
-  return base_version_dir.Append(child_module::kModulesDirName)
-      .Append(user_path_component);
+  return modules_dir;
 }
 
 bool DynamicPatchComponent::InitializeDestinationRoot(

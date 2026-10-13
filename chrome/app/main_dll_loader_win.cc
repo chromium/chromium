@@ -102,13 +102,18 @@ struct ModuleProperties {
   std::optional<ProfileProcessType> profile_type;
 };
 
-// Returns the path to the patched renderer DLL if a valid version string is
-// specified on the command line, or an empty FilePath otherwise. Does not
-// validate whether the binary exists or is readable on disk.
+// Returns the path to the patched renderer DLL if a valid version string and
+// user path component are specified on the command line, or an empty FilePath
+// otherwise. Does not validate whether the binary exists or is readable on
+// disk.
 base::FilePath GetPatchedRendererPath() {
+  const base::CommandLine& command_line =
+      *base::CommandLine::ForCurrentProcess();
   return child_module::GetRendererBinaryPath(
-      base::Version(base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kChildModuleVersion)));
+      child_module::GetModulesDirForUser(command_line.GetSwitchValuePath(
+          switches::kChildModuleUserPathComponent)),
+      base::Version(
+          command_line.GetSwitchValueASCII(switches::kChildModuleVersion)));
 }
 
 // Returns the properties for the module to be loaded in `process_type`.

@@ -28,20 +28,38 @@ inline constexpr base::FilePath::CharType kModulesDirName[] =
 inline constexpr base::FilePath::CharType kManifestFilename[] =
     FILE_PATH_LITERAL("manifest.json");
 
-// Resolves the default directory where child module versions are staged for the
-// currently running browser base version:
-//   - Windows: <InstallDir>/<BaseVersion>/ChildModules/
-//   - Non-Windows: <DIR_USER_DATA>/ChildModules/<BaseVersion>/
-base::FilePath GetModulesDir();
-
 // Resolves the path to the sentinel manifest file directly under `version_dir`.
 base::FilePath GetManifestPath(const base::FilePath& version_dir);
 
-// Resolves the path to the renderer binary for `version` under the default
-// child modules directory.
-base::FilePath GetRendererBinaryPath(const base::Version& version);
+// Resolves the path to the renderer binary for `version` within `modules_dir`,
+// or returns an empty path if `modules_dir` is empty or `version` is invalid.
+base::FilePath GetRendererBinaryPath(const base::FilePath& modules_dir,
+                                     const base::Version& version);
 
 #if BUILDFLAG(IS_WIN)
+// Returns the directory within `base_version_dir` (the directory of a specific
+// version of Chrome; e.g., <InstallDir>/<BaseVersion>) where child module
+// versions for the user and User Data directory identified by
+// `user_path_component` are staged, or an empty path if `base_version_dir` is
+// empty or `user_path_component` is not a well-formed user path component.
+// This is where the installer places dynamic patches. This does not access the
+// filesystem.
+base::FilePath GetModulesDirForUser(const base::FilePath& base_version_dir,
+                                    const base::FilePath& user_path_component);
+
+// As above, for the currently running browser base version. This does not
+// access the filesystem, and is suitable for use by child processes that have
+// been given the user path component by the browser.
+base::FilePath GetModulesDirForUser(const base::FilePath& user_path_component);
+
+// Returns the user path component identifying the directory that holds
+// `renderer_binary_path`, as produced by `GetRendererBinaryPath()` for a
+// directory produced by `GetModulesDirForUser()`, or an empty path if it does
+// not contain a well-formed user path component. This does not access the
+// filesystem.
+base::FilePath GetUserPathComponentFromRendererBinaryPath(
+    const base::FilePath& renderer_binary_path);
+
 // Derives a distinct path component from `sid` and `canonical_user_data_dir`,
 // which must have been produced by the browser's `CanonicalizeUserDataDir()`
 // (see chrome/browser/child_module/child_module_paths.h). Returns an empty

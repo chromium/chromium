@@ -11,7 +11,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "base/base_paths.h"
+#include "base/path_service.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/scoped_path_override.h"
 #include "base/win/sid.h"
 #endif
 
@@ -39,37 +42,88 @@ base::win::Sid GetSid() {
 }  // namespace
 #endif
 
-TEST(ChildModuleHelperTest, GetModulesDirNotEmpty) {
-  base::FilePath dir = GetModulesDir();
-  EXPECT_NE(dir, base::FilePath());
-#if BUILDFLAG(IS_WIN)
-  EXPECT_EQ(dir.BaseName(), base::FilePath(kModulesDirName));
-#else
-  EXPECT_EQ(dir.DirName().BaseName(), base::FilePath(kModulesDirName));
-#endif
-}
-
 TEST(ChildModuleHelperTest, GetManifestPath) {
-  base::FilePath version_dir = GetModulesDir().AppendASCII("147.0.7727.51");
+  const base::FilePath version_dir =
+      base::FilePath(FILE_PATH_LITERAL("modules")).AppendASCII("147.0.7727.51");
   EXPECT_EQ(GetManifestPath(version_dir),
             version_dir.Append(kManifestFilename));
   EXPECT_EQ(GetManifestPath(base::FilePath()), base::FilePath());
 }
 
 TEST(ChildModuleHelperTest, GetRendererBinaryPath) {
-  base::Version version("147.0.7727.51");
-  base::FilePath expected_path = GetModulesDir().AppendASCII("147.0.7727.51");
+  const base::FilePath modules_dir(FILE_PATH_LITERAL("modules"));
+  const base::Version version("147.0.7727.51");
+  base::FilePath expected_path = modules_dir.AppendASCII("147.0.7727.51");
 #if BUILDFLAG(IS_WIN)
   expected_path = expected_path.Append(chrome::kRendererDll);
 #else
   expected_path = expected_path.Append(chrome::kRendererProcessExecutableName);
 #endif
-  EXPECT_EQ(GetRendererBinaryPath(version), expected_path);
+  EXPECT_EQ(GetRendererBinaryPath(modules_dir, version), expected_path);
 
-  EXPECT_EQ(GetRendererBinaryPath(base::Version()), base::FilePath());
+  EXPECT_EQ(GetRendererBinaryPath(modules_dir, base::Version()),
+            base::FilePath());
+  EXPECT_EQ(GetRendererBinaryPath(base::FilePath(), version), base::FilePath());
 }
 
 #if BUILDFLAG(IS_WIN)
+TEST(ChildModuleHelperTest, GetModulesDirForUser) {
+  const base::FilePath user_path_component(kUserPathComponent);
+  const base::FilePath base_version_dir(FILE_PATH_LITERAL(
+      "C:\\Program Files\\Google\\Chrome\\Application\\147.0.7727.51"));
+  EXPECT_EQ(
+      GetModulesDirForUser(base_version_dir, user_path_component),
+      base_version_dir.Append(kModulesDirName).Append(user_path_component));
+  EXPECT_EQ(GetModulesDirForUser(base::FilePath(), user_path_component),
+            base::FilePath());
+
+  // Malformed components are rejected.
+  for (base::FilePath::StringViewType component : {
+           FILE_PATH_LITERAL(""),
+           FILE_PATH_LITERAL("o5av4ww5iyu66tv"),        // Too short.
+           FILE_PATH_LITERAL("o5av4ww5iyu66tvqq"),      // Too long.
+           FILE_PATH_LITERAL("O5AV4WW5IYU66TVQ"),       // Uppercase.
+           FILE_PATH_LITERAL("o5av4ww5iyu66tv1"),       // Not Base32.
+           FILE_PATH_LITERAL("o5av4ww5iyu66tv8"),       // Not Base32.
+           FILE_PATH_LITERAL("o5av4ww5iyu6\\tvq"),      // Path separator.
+           FILE_PATH_LITERAL("..\\..\\..\\..\\..\\."),  // Parent references.
+       }) {
+    EXPECT_EQ(GetModulesDirForUser(base_version_dir, base::FilePath(component)),
+              base::FilePath())
+        << base::FilePath(component);
+  }
+
+  // The single-argument overload uses the running browser's base version.
+  base::ScopedPathOverride exe_dir_override(base::DIR_EXE);
+  const base::FilePath exe_dir = base::PathService::CheckedGet(base::DIR_EXE);
+  EXPECT_EQ(GetModulesDirForUser(user_path_component),
+            GetModulesDirForUser(exe_dir.AppendASCII(chrome::kChromeVersion),
+                                 user_path_component));
+  EXPECT_EQ(GetModulesDirForUser(base::FilePath()), base::FilePath());
+}
+
+TEST(ChildModuleHelperTest, GetUserPathComponentFromRendererBinaryPath) {
+  const base::FilePath user_path_component(kUserPathComponent);
+  const base::FilePath base_version_dir(FILE_PATH_LITERAL(
+      "C:\\Program Files\\Google\\Chrome\\Application\\147.0.7727.51"));
+  const base::Version version("147.0.7727.52");
+
+  EXPECT_EQ(GetUserPathComponentFromRendererBinaryPath(GetRendererBinaryPath(
+                GetModulesDirForUser(base_version_dir, user_path_component),
+                version)),
+            user_path_component);
+
+  // Paths that do not contain a well-formed component are rejected.
+  EXPECT_EQ(GetUserPathComponentFromRendererBinaryPath(GetRendererBinaryPath(
+                base_version_dir.Append(kModulesDirName), version)),
+            base::FilePath());
+  EXPECT_EQ(GetUserPathComponentFromRendererBinaryPath(
+                base::FilePath(chrome::kRendererDll)),
+            base::FilePath());
+  EXPECT_EQ(GetUserPathComponentFromRendererBinaryPath(base::FilePath()),
+            base::FilePath());
+}
+
 // The component is persisted on disk by the installer and computed
 // independently by the browser, so it must never change.
 TEST(ComputeUserPathComponentTest, IsStable) {

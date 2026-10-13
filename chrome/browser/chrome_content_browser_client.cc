@@ -478,6 +478,7 @@
 #include "chrome/browser/performance_manager/public/dll_pre_read_policy_win.h"
 #include "chrome/browser/tracing/tracing_features.h"
 #include "chrome/browser/tracing/windows_system_tracing_client_win.h"
+#include "chrome/common/child_module/child_module_helper.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/util/isolation_support.h"
 #include "chrome/services/util_win/public/mojom/util_win.mojom.h"
@@ -3172,6 +3173,12 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
     if (auto child_module = GetChildModule()) {
       command_line->AppendSwitchASCII(switches::kChildModuleVersion,
                                       child_module->version.GetString());
+      // The renderer cannot compute the user path component identifying the
+      // directory that holds the patch, so provide it.
+      command_line->AppendSwitchPath(
+          switches::kChildModuleUserPathComponent,
+          child_module::GetUserPathComponentFromRendererBinaryPath(
+              child_module->path));
     }
 #endif
 
@@ -5560,6 +5567,13 @@ bool ChromeContentBrowserClient::PreSpawnChild(
       child_module.has_value();
 #endif
   const auto& extra_dlls = use_renderer_dll ? kRendererDlls : kChildDlls;
+  // TODO(crbug.com/558598893): The configuration for renderers using each
+  // distinct child module version is cached by the broker for the lifetime of
+  // the browser, and it holds an image section for the patched DLL (see
+  // SignedPolicy::GenerateRules()). This prevents the installer from deleting a
+  // superseded patch until the browser exits, even after all renderers using it
+  // have exited. Consider evicting a patch's configuration from the broker's
+  // cache once a newer patch is in use.
   for (const auto* dll : extra_dlls) {
     result = config->AllowExtraDll(GetModulePath(dll, child_module).value());
     if (result != sandbox::SBOX_ALL_OK) {

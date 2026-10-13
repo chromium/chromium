@@ -161,6 +161,8 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/publishers/publisher_host_factory_impl.h"
+#include "chrome/browser/child_module/child_module_paths.h"
+#include "chrome/browser/child_module/features.h"
 #include "chrome/browser/headless/chrome_browser_main_extra_parts_headless.h"
 #include "chrome/browser/profiles/delete_profile_helper.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
@@ -1273,6 +1275,14 @@ int ChromeBrowserMainParts::PreCreateThreadsImpl() {
 #endif
 
   DCHECK(!user_data_dir_.empty());
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Set chrome::DIR_CHILD_MODULE_ROOT before its consumers (e.g.,
+  // ChildModuleManager) are created in PreMainMessageLoopRunImpl().
+  if (base::FeatureList::IsEnabled(child_module::features::kDynamicPatching)) {
+    child_module::InitializeChildModuleRoot();
+  }
+#endif
 
   // Force MediaCaptureDevicesDispatcher to be created on UI thread.
   MediaCaptureDevicesDispatcher::GetInstance();

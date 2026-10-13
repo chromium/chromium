@@ -42,8 +42,9 @@ class ChildModuleManager {
   // Registers local-state preferences used by ChildModuleManager.
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
-  // Constructs the manager and starts monitoring the default child modules
-  // directory (`GetModulesDir()`). Staged modules are served when
+  // Constructs the manager and starts monitoring the directory in which child
+  // module versions for the running browser are staged. No versions are
+  // available if the directory was not set. Staged modules are served when
   // `DynamicPatchingEnabled` is enabled in `local_state`. `local_state` must
   // outlive this instance.
   explicit ChildModuleManager(PrefService& local_state);
@@ -69,6 +70,10 @@ class ChildModuleManager {
   void OnVersionSetChanged(VersionSet versions);
 
   const raw_ref<PrefService> local_state_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // The directory holding the available versions; empty if it was not set.
+  const base::FilePath modules_dir_;
+
   VersionSet available_versions_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::SequenceBound<ChildModuleWatcher> watcher_

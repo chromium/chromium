@@ -9,6 +9,17 @@
 
 namespace child_module {
 
+// Determines the directory in which child module versions for the running
+// browser are staged and sets `chrome::DIR_CHILD_MODULE_ROOT` to it. Returns
+// false, leaving the key unchanged, on failure. The directory is:
+//   - Windows: <InstallDir>/<BaseVersion>/ChildModules/<UserPathComponent>,
+//     where UserPathComponent identifies the current user and the browser's
+//     User Data directory (see `ComputeUserPathComponent()`).
+//   - Other platforms: <DIR_USER_DATA>/ChildModules/<BaseVersion>
+// The directory need not exist. This accesses the filesystem, and is called
+// once by the browser process during startup.
+bool InitializeChildModuleRoot();
+
 // Returns the canonical form of `user_data_dir` for use with
 // `ComputeUserPathComponent()`, or an empty path if it cannot be determined
 // (e.g., the directory does not exist or its canonical path is too long). This
