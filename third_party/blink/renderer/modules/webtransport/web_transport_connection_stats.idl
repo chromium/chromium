@@ -7,6 +7,6 @@ dictionary WebTransportConnectionStats {
   DOMHighResTimeStamp smoothedRtt;
   DOMHighResTimeStamp rttVariation;
   DOMHighResTimeStamp minRtt;
-  WebTransportDatagramStats datagrams;
-  unsigned long long? estimatedSendRate;
+  required WebTransportDatagramStats datagrams;
+  unsigned long long? estimatedSendRate = null;
 };

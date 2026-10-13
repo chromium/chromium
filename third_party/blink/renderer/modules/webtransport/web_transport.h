@@ -53,6 +53,7 @@ class ReadableStream;
 class ScriptState;
 class V8UnionArrayBufferOrArrayBufferView;
 class WebTransportCloseInfo;
+class WebTransportDatagramStats;
 class WebTransportDatagramsWritable;
 class WebTransportOptions;
 class WebTransportSendGroup;
@@ -340,6 +341,7 @@ class MODULES_EXPORT WebTransport final
 
   WebTransportConnectionStats* ConvertStatsFromMojom(
       network::mojom::blink::WebTransportStatsPtr in);
+  void UpdateIncomingDatagramStats(WebTransportDatagramStats*);
 
   Member<DatagramDuplexStream> datagrams_;
 

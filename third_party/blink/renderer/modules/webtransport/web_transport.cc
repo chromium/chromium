@@ -688,8 +688,7 @@ class WebTransport::DatagramQueue final
     // incomingMaxBufferedDatagrams and incomingMaxAge can change at any time,
     // and the expiry timer only fires when it is scheduled, so both limits are
     // re-applied on every read.
-    DiscardExcessDatagrams();
-    MaybeExpireDatagrams();
+    ApplyLimits(base::TimeTicks::Now());
 
     if (queue_.empty()) {
       return nullptr;
@@ -704,7 +703,8 @@ class WebTransport::DatagramQueue final
   }
 
   void Push(base::span<const uint8_t> data) {
-    DiscardExcessDatagrams();
+    auto now = base::TimeTicks::Now();
+    ApplyLimits(now);
 
     const wtf_size_t max_buffered_datagrams = MaxBufferedDatagrams();
     // A maximum of zero means datagrams are never buffered: they are only
@@ -720,7 +720,6 @@ class WebTransport::DatagramQueue final
       ++dropped_datagram_count_;
     }
 
-    auto now = base::TimeTicks::Now();
     queue_.push_back(
         MakeGarbageCollected<QueueEntry>(DOMUint8Array::Create(data), now));
     MaybeExpireDatagrams(now);
@@ -733,7 +732,14 @@ class WebTransport::DatagramQueue final
     expiry_timer_.Stop();
   }
 
+  void ApplyLimits(base::TimeTicks now) {
+    // Expire first so aged datagrams aren't counted as buffer-limit drops.
+    MaybeExpireDatagrams(now);
+    DiscardExcessDatagrams();
+  }
+
   uint64_t dropped_datagram_count() const { return dropped_datagram_count_; }
+  uint64_t expired_datagram_count() const { return expired_datagram_count_; }
 
   void Trace(Visitor* visitor) const {
     visitor->Trace(script_state_);
@@ -799,6 +805,7 @@ class WebTransport::DatagramQueue final
     while (!queue_.empty() && queue_.front()->received_time < older_than) {
       discarded = true;
       queue_.pop_front();
+      ++expired_datagram_count_;
     }
 
     if (discarded && max_age_is_default) {
@@ -849,6 +856,7 @@ class WebTransport::DatagramQueue final
   const Member<DatagramDuplexStream> datagram_duplex_stream_;
   HeapTaskRunnerTimer<DatagramQueue> expiry_timer_;
   uint64_t dropped_datagram_count_ = 0;
+  uint64_t expired_datagram_count_ = 0;
 };
 
 // Owns the receive state machine shared by the default and byte
@@ -2468,6 +2476,9 @@ void WebTransport::Cleanup(WebTransportCloseInfo* info,
                            bool abruptly) {
   CHECK_EQ(!info, abruptly);
   cleanup_started_ = true;
+  if (latest_stats_) {
+    UpdateIncomingDatagramStats(latest_stats_->datagrams());
+  }
   v8::Isolate* isolate = script_state_->GetIsolate();
 
   v8::Local<v8::Value> stream_error = V8ThrowDOMException::CreateOrEmpty(
@@ -2799,9 +2810,12 @@ void WebTransport::OnGetStatsResponse(
 WebTransportConnectionStats* WebTransport::ConvertStatsFromMojom(
     network::mojom::blink::WebTransportStatsPtr in) {
   auto* out = MakeGarbageCollected<WebTransportConnectionStats>();
-  out->setMinRtt(in->min_rtt.InMillisecondsF());
-  out->setSmoothedRtt(in->smoothed_rtt.InMillisecondsF());
-  out->setRttVariation(in->rtt_variation.InMillisecondsF());
+  // QUIC initializes min_rtt to zero until it has a valid RTT sample.
+  if (in->min_rtt.is_positive()) {
+    out->setMinRtt(in->min_rtt.InMillisecondsF());
+    out->setSmoothedRtt(in->smoothed_rtt.InMillisecondsF());
+    out->setRttVariation(in->rtt_variation.InMillisecondsF());
+  }
   if (in->estimated_send_rate_bps > 0) {
     out->setEstimatedSendRate(in->estimated_send_rate_bps);
   } else {
@@ -2810,12 +2824,18 @@ WebTransportConnectionStats* WebTransport::ConvertStatsFromMojom(
   auto* datagram_stats = MakeGarbageCollected<WebTransportDatagramStats>();
   datagram_stats->setExpiredOutgoing(in->datagrams_expired_outgoing);
   datagram_stats->setLostOutgoing(in->datagrams_lost_outgoing);
-  if (datagram_queue_) {
-    datagram_stats->setDroppedIncoming(
-        datagram_queue_->dropped_datagram_count());
-  }
+  UpdateIncomingDatagramStats(datagram_stats);
   out->setDatagrams(datagram_stats);
   return out;
+}
+
+void WebTransport::UpdateIncomingDatagramStats(
+    WebTransportDatagramStats* stats) {
+  if (datagram_queue_) {
+    datagram_queue_->ApplyLimits(base::TimeTicks::Now());
+    stats->setDroppedIncoming(datagram_queue_->dropped_datagram_count());
+    stats->setExpiredIncoming(datagram_queue_->expired_datagram_count());
+  }
 }
 
 const String& WebTransport::protocol() {

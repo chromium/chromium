@@ -47,6 +47,8 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_bidirectional_stream.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_close_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_congestion_control.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_connection_stats.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_datagram_stats.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_error.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_hash.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_options.h"
@@ -614,6 +616,35 @@ class WebTransportTest : public ::testing::Test {
     ASSERT_TRUE(stats);
     EXPECT_EQ(stats->bytesReceived(), expected_bytes_received);
     EXPECT_EQ(stats->bytesRead(), expected_bytes_read);
+  }
+
+  void ExpectIncomingDatagramStats(const V8TestingScope& scope,
+                                   WebTransport* web_transport,
+                                   uint64_t dropped,
+                                   uint64_t expired) {
+    EXPECT_CALL(*mock_web_transport_, GetStats(_))
+        .WillOnce([](MockWebTransport::GetStatsCallback callback) {
+          std::move(callback).Run(
+              network::mojom::blink::WebTransportStats::New());
+        });
+    CheckIncomingDatagramStats(scope, web_transport, dropped, expired);
+  }
+
+  void CheckIncomingDatagramStats(const V8TestingScope& scope,
+                                  WebTransport* web_transport,
+                                  uint64_t dropped,
+                                  uint64_t expired) {
+    auto* script_state = scope.GetScriptState();
+    ScriptPromiseTester tester(script_state,
+                               web_transport->getStats(script_state));
+    tester.WaitUntilSettled();
+    ASSERT_TRUE(tester.IsFulfilled());
+    auto* stats = NativeValueTraits<WebTransportConnectionStats>::NativeValue(
+        scope.GetIsolate(), tester.Value().V8Value(), ASSERT_NO_EXCEPTION);
+    ASSERT_TRUE(stats);
+    ASSERT_TRUE(stats->hasDatagrams());
+    EXPECT_EQ(stats->datagrams()->droppedIncoming(), dropped);
+    EXPECT_EQ(stats->datagrams()->expiredIncoming(), expired);
   }
 
   void BindConnector(mojo::ScopedMessagePipeHandle handle) {
@@ -2579,6 +2610,7 @@ void RunCancelDiscardsDatagramsTest(WebTransportTest& fixture,
   fixture.client_remote_->OnDatagramReceived(chunk2);
 
   test::RunPendingTasks();
+  fixture.ExpectIncomingDatagramStats(scope, web_transport, 0, 0);
 }
 
 void RunCloseErrorsDatagramsTest(WebTransportTest& fixture,
@@ -2586,12 +2618,21 @@ void RunCloseErrorsDatagramsTest(WebTransportTest& fixture,
   V8TestingScope scope;
   auto* web_transport =
       CreateAndConnectWithDatagramReadableType(fixture, scope, readable_type);
+  web_transport->datagrams()->setIncomingMaxBufferedDatagrams(1);
   EXPECT_CALL(*fixture.mock_web_transport_, Close());
 
   const std::array<uint8_t, 1> chunk1 = {'A'};
   fixture.client_remote_->OnDatagramReceived(chunk1);
 
+  const std::array<uint8_t, 1> chunk2 = {'B'};
+  fixture.client_remote_->OnDatagramReceived(chunk2);
+
   test::RunPendingTasks();
+
+  constexpr base::TimeDelta kMaxAge = base::Microseconds(1);
+  web_transport->datagrams()->setIncomingMaxAge(kMaxAge.InMillisecondsF(),
+                                                ASSERT_NO_EXCEPTION);
+  test::RunDelayedTasks(kMaxAge);
 
   web_transport->close(nullptr);
 
@@ -2603,6 +2644,7 @@ void RunCloseErrorsDatagramsTest(WebTransportTest& fixture,
                              reader->read(script_state, ASSERT_NO_EXCEPTION));
   tester.WaitUntilSettled();
   EXPECT_TRUE(tester.IsRejected());
+  fixture.CheckIncomingDatagramStats(scope, web_transport, 1, 1);
 }
 
 void RunMaxBufferedDatagramsTest(WebTransportTest& fixture,
@@ -2638,6 +2680,30 @@ void RunMaxBufferedDatagramsTest(WebTransportTest& fixture,
     EXPECT_THAT(GetValueAsVector(script_state, tester.Value()),
                 ElementsAre('0' + i + 1));
   }
+
+  web_transport->datagrams()->setIncomingMaxBufferedDatagrams(1);
+  const std::array<uint8_t, 1> expired_chunk = {'X'};
+  fixture.client_remote_->OnDatagramReceived(expired_chunk);
+  test::RunPendingTasks();
+
+  constexpr base::TimeDelta kMaxAge = base::Microseconds(1);
+  web_transport->datagrams()->setIncomingMaxAge(kMaxAge.InMillisecondsF(),
+                                                ASSERT_NO_EXCEPTION);
+  test::RunDelayedTasks(kMaxAge);
+
+  const std::array<uint8_t, 1> fresh_chunk = {'Y'};
+  fixture.client_remote_->OnDatagramReceived(fresh_chunk);
+  test::RunPendingTasks();
+  web_transport->datagrams()->setIncomingMaxAge(std::nullopt,
+                                                ASSERT_NO_EXCEPTION);
+
+  fixture.ExpectIncomingDatagramStats(scope, web_transport, 1, 1);
+
+  // Check that getStats() expires the retained datagram without a read.
+  web_transport->datagrams()->setIncomingMaxAge(kMaxAge.InMillisecondsF(),
+                                                ASSERT_NO_EXCEPTION);
+  test::RunDelayedTasks(kMaxAge);
+  fixture.ExpectIncomingDatagramStats(scope, web_transport, 1, 2);
 }
 
 // We only do an extremely basic test for incomingMaxAge as overriding
@@ -2667,6 +2733,9 @@ void RunIncomingMaxAgeTest(WebTransportTest& fixture,
 
   test::RunDelayedTasks(kMaxAge);
 
+  // Reads must count aged entries as expired, not buffer-limit drops.
+  web_transport->datagrams()->setIncomingMaxBufferedDatagrams(1);
+
   auto* readable = web_transport->datagrams()->readable();
   auto* script_state = scope.GetScriptState();
   auto* reader =
@@ -2680,6 +2749,11 @@ void RunIncomingMaxAgeTest(WebTransportTest& fixture,
 
   EXPECT_FALSE(tester.IsFulfilled());
   EXPECT_FALSE(tester.IsRejected());
+  fixture.ExpectIncomingDatagramStats(scope, web_transport, 0, 2);
+
+  web_transport->OnClosed(nullptr,
+                          network::mojom::blink::WebTransportStats::New());
+  fixture.CheckIncomingDatagramStats(scope, web_transport, 0, 2);
 }
 
 // This is a regression test for https://crbug.com/1246335
@@ -2866,6 +2940,7 @@ TEST_F(WebTransportTest, DefaultDatagramReadableDropsOldestDatagram) {
 
   EXPECT_THAT(GetValueAsVector(script_state, tester2.Value()),
               ElementsAre('C'));
+  ExpectIncomingDatagramStats(scope, web_transport, 1, 0);
 }
 
 TEST_F(WebTransportTest, ResettingMaxBufferedDatagramsClearsQueue) {
@@ -2886,12 +2961,16 @@ TEST_F(WebTransportTest, ResettingMaxBufferedDatagramsClearsQueue) {
   // Process the receive tasks so the datagrams are buffered before the limit
   // changes.
   test::RunPendingTasks();
+  ExpectIncomingDatagramStats(scope, web_transport, 0, 0);
 
   constexpr uint32_t kNoBufferedDatagrams = 0;
   // The page asks for a zero-sized queue. The setter clamps that to 1, so the
   // queue is trimmed to one datagram instead of being emptied.
   web_transport->datagrams()->setIncomingMaxBufferedDatagrams(
       kNoBufferedDatagrams);
+
+  ExpectIncomingDatagramStats(scope, web_transport, kMaxBufferedDatagrams - 1,
+                              0);
 
   auto* readable = web_transport->datagrams()->readable();
   auto* script_state = scope.GetScriptState();
@@ -2942,6 +3021,7 @@ TEST_F(WebTransportTest,
   EXPECT_TRUE(tester.IsFulfilled());
 
   EXPECT_THAT(GetValueAsVector(script_state, tester.Value()), ElementsAre('A'));
+  ExpectIncomingDatagramStats(scope, web_transport, 0, 0);
 }
 
 bool ValidProducerHandle(const mojo::ScopedDataPipeProducerHandle& handle) {
@@ -3779,6 +3859,69 @@ TEST_F(WebTransportTest, SetOutgoingMaxAgeToZeroBeforeConnectComplete) {
   EXPECT_FALSE(web_transport->datagrams()->outgoingMaxAge().has_value());
 
   ConnectSuccessfully(web_transport);
+}
+
+TEST_F(WebTransportTest, GetStatsBeforeAndAfterConnection) {
+  V8TestingScope scope;
+  auto* web_transport = Create(scope, "https://example.com", EmptyOptions());
+  auto* script_state = scope.GetScriptState();
+  ScriptPromiseTester tester(script_state,
+                             web_transport->getStats(script_state));
+  ConnectSuccessfully(web_transport);
+  tester.WaitUntilSettled();
+  ASSERT_TRUE(tester.IsFulfilled());
+  ASSERT_TRUE(tester.Value().IsObject());
+
+  auto object = tester.Value().V8Value().As<v8::Object>();
+  for (const char* name : {"minRtt", "smoothedRtt", "rttVariation"}) {
+    EXPECT_FALSE(object
+                     ->HasOwnProperty(script_state->GetContext(),
+                                      V8AtomicString(scope.GetIsolate(), name))
+                     .ToChecked())
+        << name;
+  }
+
+  auto* stats = NativeValueTraits<WebTransportConnectionStats>::NativeValue(
+      scope.GetIsolate(), tester.Value().V8Value(), ASSERT_NO_EXCEPTION);
+  ASSERT_TRUE(stats);
+  ASSERT_TRUE(stats->hasDatagrams());
+  EXPECT_EQ(stats->datagrams()->droppedIncoming(), 0u);
+  EXPECT_EQ(stats->datagrams()->expiredIncoming(), 0u);
+  EXPECT_EQ(stats->datagrams()->expiredOutgoing(), 0u);
+  EXPECT_EQ(stats->datagrams()->lostOutgoing(), 0u);
+  EXPECT_TRUE(stats->hasEstimatedSendRate());
+  EXPECT_FALSE(stats->estimatedSendRate().has_value());
+
+  EXPECT_CALL(*mock_web_transport_, GetStats(_))
+      .WillOnce([](MockWebTransport::GetStatsCallback callback) {
+        auto stats = network::mojom::blink::WebTransportStats::New();
+        stats->min_rtt = base::Milliseconds(5);
+        stats->smoothed_rtt = base::Milliseconds(8);
+        stats->rtt_variation = base::Milliseconds(2);
+        stats->estimated_send_rate_bps = 12345;
+        stats->datagrams_expired_outgoing = 3;
+        stats->datagrams_lost_outgoing = 7;
+        std::move(callback).Run(std::move(stats));
+      });
+
+  ScriptPromiseTester measured_tester(script_state,
+                                      web_transport->getStats(script_state));
+  measured_tester.WaitUntilSettled();
+  ASSERT_TRUE(measured_tester.IsFulfilled());
+  auto* measured_stats =
+      NativeValueTraits<WebTransportConnectionStats>::NativeValue(
+          scope.GetIsolate(), measured_tester.Value().V8Value(),
+          ASSERT_NO_EXCEPTION);
+  ASSERT_TRUE(measured_stats);
+  EXPECT_TRUE(measured_stats->hasMinRtt());
+  EXPECT_TRUE(measured_stats->hasSmoothedRtt());
+  EXPECT_TRUE(measured_stats->hasRttVariation());
+  EXPECT_EQ(measured_stats->minRtt(), 5);
+  EXPECT_EQ(measured_stats->smoothedRtt(), 8);
+  EXPECT_EQ(measured_stats->rttVariation(), 2);
+  EXPECT_EQ(measured_stats->estimatedSendRate(), 12345u);
+  EXPECT_EQ(measured_stats->datagrams()->expiredOutgoing(), 3u);
+  EXPECT_EQ(measured_stats->datagrams()->lostOutgoing(), 7u);
 }
 
 TEST_F(WebTransportTest, OnClosed) {

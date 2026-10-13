@@ -6,5 +6,6 @@
 dictionary WebTransportDatagramStats {
   unsigned long long expiredOutgoing;
   unsigned long long droppedIncoming;
+  unsigned long long expiredIncoming;
   unsigned long long lostOutgoing;
 };
