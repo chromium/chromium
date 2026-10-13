@@ -82,6 +82,13 @@ public class CustomTabNavigationBarController {
                     /* supportsDarkButtons= */ true,
                     needsDarkButtons,
                     systemBarColorHelper);
+            // A divider applied while fitted (e.g. the implicit light-bar divider) must not
+            // survive into edge-to-edge, where there is no bar to divide from.
+            if (systemBarColorHelper != null) {
+                systemBarColorHelper.setNavigationBarDividerColor(Color.TRANSPARENT);
+            } else {
+                window.setNavigationBarDividerColor(Color.TRANSPARENT);
+            }
             return;
         }
 
@@ -133,10 +140,7 @@ public class CustomTabNavigationBarController {
             @Nullable EdgeToEdgeSystemBarColorHelper systemBarColorHelper) {
         if (navigationBarColor == null) return;
 
-        if (supportsDarkButtons) {
-            UiUtils.setNavigationBarIconColor(
-                    window.getDecorView().getRootView(), needsDarkButtons);
-        } else if (needsDarkButtons) {
+        if (!supportsDarkButtons && needsDarkButtons) {
             // Can't make the buttons dark, darken the background instead with the same algorithm
             // as for the status bar.
             navigationBarColor = ColorUtils.getDarkenedColorForStatusBar(navigationBarColor);
@@ -146,6 +150,13 @@ public class CustomTabNavigationBarController {
             systemBarColorHelper.setNavigationBarColor(navigationBarColor);
         } else {
             window.setNavigationBarColor(navigationBarColor);
+        }
+
+        // The icon color must be applied after the bar color: EdgeToEdgeSystemBarColorHelper
+        // derives it from the bar color, which is transparent while drawing edge-to-edge.
+        if (supportsDarkButtons) {
+            UiUtils.setNavigationBarIconColor(
+                    window.getDecorView().getRootView(), needsDarkButtons);
         }
     }
 

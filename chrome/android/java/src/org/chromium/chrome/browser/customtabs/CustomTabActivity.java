@@ -27,6 +27,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.browser.customtabs.TrustedWebUtils;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
@@ -44,6 +45,7 @@ import org.chromium.chrome.browser.app.tab_activity_glue.PopupCreatorImpl;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchController;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchControllerFactory;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchMetrics;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason;
@@ -64,6 +66,7 @@ import org.chromium.chrome.browser.page_load_metrics.PageLoadMetrics;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
 import org.chromium.chrome.browser.toolbar.extensions.ExtensionsToolbarCoordinator;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarCoordinator;
 import org.chromium.chrome.browser.ui.web_app_header.WebAppHeaderUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -82,6 +85,11 @@ import org.chromium.ui.util.ColorUtils;
 public class CustomTabActivity extends BaseCustomTabActivity {
     private static final String TAG = "CustomTab";
     private @Nullable SessionHolder mSession;
+
+    // Reuse the provider parsed before pre-inflation startup when the same TWA intent is handled.
+    private @Nullable BrowserServicesIntentDataProvider mStartupIntentDataProvider;
+    private @Nullable Intent mStartupIntent;
+    private boolean mBuiltStartupIntentDataProvider;
 
     private final CustomTabsConnection mConnection = CustomTabsConnection.getInstance();
 
@@ -126,6 +134,53 @@ public class CustomTabActivity extends BaseCustomTabActivity {
             var webContents = assertNonNull(tab.getWebContents());
             HistoryTabHelper.from(tab).setAppId(appId, webContents);
         }
+    }
+
+    @Override
+    protected @Nullable BrowserServicesIntentDataProvider buildIntentDataProvider(
+            Intent intent, @CustomTabsIntent.ColorScheme int colorScheme) {
+        if (mBuiltStartupIntentDataProvider && intent == mStartupIntent) {
+            BrowserServicesIntentDataProvider provider = assumeNonNull(mStartupIntentDataProvider);
+            mStartupIntentDataProvider = null;
+            mStartupIntent = null;
+            mBuiltStartupIntentDataProvider = false;
+            return provider;
+        }
+        return super.buildIntentDataProvider(intent, colorScheme);
+    }
+
+    private boolean isShortEdgesCutoutModeEnabledForTwa() {
+        BrowserServicesIntentDataProvider provider = getIntentDataProvider();
+        if (provider == null) {
+            if (!ChromeFeatureList.sWebAppShortEdgesCutoutMode.isEnabled()) return false;
+            if (!ChromeFeatureList.sWebAppShortEdgesCutoutModeTwa.getValue()) return false;
+            // Without edge-to-edge everywhere the coordinated paths never apply; bail before
+            // eagerly parsing the intent during super.onCreate().
+            if (!EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()) return false;
+            Intent intent = getIntent();
+            if (intent == null
+                    || !IntentUtils.safeGetBooleanExtra(
+                            intent, TrustedWebUtils.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY, false)) {
+                return false;
+            }
+            if (!mBuiltStartupIntentDataProvider) {
+                mStartupIntent = intent;
+                mStartupIntentDataProvider = buildIntentDataProvider(intent, getColorScheme());
+                mBuiltStartupIntentDataProvider = true;
+            }
+            provider = mStartupIntentDataProvider;
+        }
+        return provider != null && isShortEdgesCutoutModeEnabledForApp(provider);
+    }
+
+    @Override
+    protected boolean shouldDrawEdgeToEdgeOnCreate() {
+        return !isShortEdgesCutoutModeEnabledForTwa() && super.shouldDrawEdgeToEdgeOnCreate();
+    }
+
+    @Override
+    protected boolean canSetTransparentStatusBarWithoutDelegate() {
+        return isShortEdgesCutoutModeEnabledForTwa();
     }
 
     @Override

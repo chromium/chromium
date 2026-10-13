@@ -6226,8 +6226,10 @@ inline constexpr char kWebAppShortEdgesCutoutModeDescription[] =
     "When enabled, installed fullscreen PWAs can draw into display cutouts "
     "on Android. Standalone PWAs only opt in to edge-to-edge with "
     "viewport-fit=cover with the \"Enabled (Standalone also enabled)\" "
-    "option, which sets the enable_standalone feature parameter. This flag "
-    "and its parameter are cached, so changes apply after restarting "
+    "option, which sets the enable_standalone feature parameter. Trusted "
+    "Web Activities additionally require the \"Enabled (TWA also "
+    "enabled)\" options, which set the enable_twa feature parameter. This "
+    "flag and its parameters are cached, so changes apply after restarting "
     "Chrome twice.";
 
 inline constexpr char kEnableAccessibilityLabeledByName[] =

@@ -2384,6 +2384,9 @@ public abstract class ChromeFeatureList {
             newBooleanCachedFeatureParam(
                     WEB_APP_SHORT_EDGES_CUTOUT_MODE, "enable_standalone", false);
 
+    public static final BooleanCachedFeatureParam sWebAppShortEdgesCutoutModeTwa =
+            newBooleanCachedFeatureParam(WEB_APP_SHORT_EDGES_CUTOUT_MODE, "enable_twa", false);
+
     /** All {@link CachedFeatureParam}s of features in this FeatureList */
     public static final List<CachedFeatureParam<?>> sParamsCached =
             List.of(
@@ -2480,7 +2483,8 @@ public abstract class ChromeFeatureList {
                     sTouchToSearchCalloutSnippetAsSubtitle,
                     sUseChimeAndroidSdkAlwaysRegister,
                     sWebApkMinShellApkVersionValue,
-                    sWebAppShortEdgesCutoutModeStandalone
+                    sWebAppShortEdgesCutoutModeStandalone,
+                    sWebAppShortEdgesCutoutModeTwa
                     // keep-sorted end
                     );
 

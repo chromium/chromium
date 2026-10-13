@@ -796,10 +796,17 @@ const FeatureEntry::FeatureVariation kAndroidSidePanelDevFeatureVariations[] = {
 
 const FeatureEntry::FeatureParam kWebAppShortEdgesCutoutModeStandalone[] = {
     {"enable_standalone", "true"}};
+const FeatureEntry::FeatureParam kWebAppShortEdgesCutoutModeTwa[] = {
+    {"enable_twa", "true"}};
+const FeatureEntry::FeatureParam kWebAppShortEdgesCutoutModeStandaloneAndTwa[] =
+    {{"enable_standalone", "true"}, {"enable_twa", "true"}};
 
 const FeatureEntry::FeatureVariation kWebAppShortEdgesCutoutModeVariations[] = {
     {"(Standalone also enabled)", kWebAppShortEdgesCutoutModeStandalone,
-     nullptr}};
+     nullptr},
+    {"(TWA also enabled)", kWebAppShortEdgesCutoutModeTwa, nullptr},
+    {"(Standalone and TWA also enabled)",
+     kWebAppShortEdgesCutoutModeStandaloneAndTwa, nullptr}};
 
 const FeatureEntry::FeatureParam
     kEnableSwipeToSwitchPaneEmphasizedMaxDuration250ms[] = {

@@ -150,10 +150,8 @@ public class DisplayCutoutTabHelper implements UserData {
         public boolean isShortEdgesCutoutModeEnabled() {
             Activity activity = getAttachedActivity();
             if (!(activity instanceof BaseCustomTabActivity baseCustomTabActivity)) return false;
-            return assumeNonNull(baseCustomTabActivity.getIntentDataProvider())
-                            .isWebappOrWebApkActivity()
-                    && BaseCustomTabActivity.isShortEdgesCutoutModeEnabledForDisplayMode(
-                            getDisplayMode());
+            return BaseCustomTabActivity.isShortEdgesCutoutModeEnabledForApp(
+                    assumeNonNull(baseCustomTabActivity.getIntentDataProvider()));
         }
 
         /**

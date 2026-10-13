@@ -461,16 +461,26 @@ There are two paths that enable drawing into the cutout area:
     synthesized for `display: fullscreen` webapps uses sticky immersive and
     `LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES`, so fullscreen webapps draw into
     the cutout immediately at activity creation, without waiting for the page's
-    `viewport-fit` value.
+    `viewport-fit` value. For TWAs in `ImmersiveMode` (gated behind the
+    default-off `enable_twa` parameter), a client-supplied
+    `LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER` is honored: `WebappInsetsConsumer`
+    withholds display cutout insets only while the window's cutout mode allows
+    drawing into the cutout (`WindowInsetsUtils#shouldPadDisplayCutout`), so the
+    edge-to-edge layout keeps padding the cutout.
+    `LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT` expresses no preference, so
+    `DisplayCutoutController` still upgrades it to `SHORT_EDGES` once the page
+    declares `viewport-fit=cover`.
 
 - **Non-immersive edge-to-edge, deferred to `DisplayCutoutController`** (behind
   the `WebAppShortEdgesCutoutMode` feature and its default-off
-  `enable_standalone` parameter):
+  `enable_standalone` and `enable_twa` parameters):
 
-  - With the feature and parameter enabled, `display: standalone` webapps no
-    longer draw edge-to-edge unconditionally at activity creation:
-    `WebappActivity#shouldDrawEdgeToEdgeOnCreate` returns false, so the activity
-    starts with the default (non-edge-to-edge) window layout.
+  - With the feature and parameters enabled, standalone webapps and TWAs in
+    `DefaultMode` no longer draw edge-to-edge unconditionally at activity
+    creation; TWAs additionally require `enable_twa`, so they can be rolled out
+    independently of WebAPKs. `WebappActivity` and `CustomTabActivity` defer the
+    window token to the cutout controller, so the activity starts with the
+    default layout.
   - Instead, `DisplayCutoutController` takes over once the page's `viewport-fit`
     value is known. Only pages declaring `viewport-fit=cover` get
     `LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES` together with the matching
@@ -479,9 +489,13 @@ There are two paths that enable drawing into the cutout area:
   - The controller also reacts to dynamic changes: if a page updates its
     `viewport-fit` meta tag via JavaScript after load, the window layout is
     updated accordingly.
-  - With the feature disabled or `enable_standalone` false, standalone webapps
-    keep the legacy behavior of drawing edge-to-edge on creation regardless of
-    `viewport-fit` when edge-to-edge everywhere is enabled.
+  - `BaseCustomTabActivity` registers the inset consumer for both installed
+    webapps and eligible TWAs, while ordinary Custom Tabs keep their existing
+    inset behavior. TWAs also update navigation-bar coloring as the window's
+    edge-to-edge state and page theme color change.
+  - With the feature disabled, or `enable_standalone` / `enable_twa` false,
+    standalone webapps and TWAs keep their legacy activity-level edge-to-edge
+    behavior when edge-to-edge everywhere is enabled.
 
 ### TWA Launch Parameters
 

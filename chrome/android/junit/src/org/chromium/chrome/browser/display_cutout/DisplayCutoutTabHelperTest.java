@@ -169,7 +169,7 @@ public class DisplayCutoutTabHelperTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE)
-    public void testTwaFullscreenDoesNotUseShortEdges() {
+    public void testTwaFullscreenRequiresTwaParam() {
         when(mTab.getWindowAndroid()).thenReturn(mWindowAndroidA);
         when(mIntentDataProvider.getActivityType()).thenReturn(ActivityType.TRUSTED_WEB_ACTIVITY);
         when(mIntentDataProvider.getResolvedDisplayMode()).thenReturn(DisplayMode.FULLSCREEN);
@@ -178,12 +178,15 @@ public class DisplayCutoutTabHelperTest {
 
         assertEquals(DisplayMode.FULLSCREEN, delegate.getDisplayMode());
         assertFalse(delegate.isShortEdgesCutoutModeEnabled());
+        ChromeFeatureList.sWebAppShortEdgesCutoutModeTwa.setForTesting(true);
+        assertTrue(delegate.isShortEdgesCutoutModeEnabled());
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE)
-    public void testTwaStandaloneDoesNotUseShortEdgesWithParam() {
+    public void testTwaStandaloneUsesShortEdgesWithParam() {
         ChromeFeatureList.sWebAppShortEdgesCutoutModeStandalone.setForTesting(true);
+        ChromeFeatureList.sWebAppShortEdgesCutoutModeTwa.setForTesting(true);
         when(mTab.getWindowAndroid()).thenReturn(mWindowAndroidA);
         when(mIntentDataProvider.getActivityType()).thenReturn(ActivityType.TRUSTED_WEB_ACTIVITY);
         when(mIntentDataProvider.getResolvedDisplayMode()).thenReturn(DisplayMode.STANDALONE);
@@ -191,7 +194,7 @@ public class DisplayCutoutTabHelperTest {
                 new DisplayCutoutTabHelper.ChromeDisplayCutoutDelegate(mTab);
 
         assertEquals(DisplayMode.STANDALONE, delegate.getDisplayMode());
-        assertFalse(delegate.isShortEdgesCutoutModeEnabled());
+        assertTrue(delegate.isShortEdgesCutoutModeEnabled());
     }
 
     @Test

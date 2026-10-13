@@ -654,6 +654,7 @@ android_library(
     "src/org/chromium/chrome/browser/browserservices/TrustedWebActivityClientContactsDelegationTest.java",
     "src/org/chromium/chrome/browser/browserservices/TrustedWebActivityClientLocationDelegationTest.java",
     "src/org/chromium/chrome/browser/browserservices/TrustedWebActivityClientTest.java",
+    "src/org/chromium/chrome/browser/browserservices/TrustedWebActivityEdgeToEdgeTest.java",
     "src/org/chromium/chrome/browser/browserservices/TrustedWebActivityOrientationTest.java",
     "src/org/chromium/chrome/browser/browserservices/TrustedWebActivityShareTargetTest.java",
     "src/org/chromium/chrome/browser/browserservices/TrustedWebActivityTest.java",

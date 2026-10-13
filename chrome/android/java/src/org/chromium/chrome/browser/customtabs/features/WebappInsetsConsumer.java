@@ -12,10 +12,13 @@ import androidx.core.view.WindowInsetsCompat;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.insets.InsetObserver.WindowInsetsConsumer;
+import org.chromium.ui.insets.WindowInsetsUtils;
 
 /**
  * Consumes system bar and display cutout insets while an installed web app draws edge-to-edge, so
  * the edge-to-edge root layout below draws zero-height system bars instead of padding the content.
+ * Display cutout insets are only withheld while the window's cutout mode allows drawing into the
+ * cutout, e.g. a TWA requesting {@code LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER} keeps them.
  *
  * <p>Safe area computations are unaffected: they read the raw window insets via {@link
  * InsetObserver#getLastRawWindowInsets()}. IME insets are never consumed, so keyboard-driven layout
@@ -51,8 +54,25 @@ public class WebappInsetsConsumer implements WindowInsetsConsumer {
     public WindowInsetsCompat onApplyWindowInsets(View view, WindowInsetsCompat insets) {
         if (!mDrawEdgeToEdge) return insets;
 
-        return new WindowInsetsCompat.Builder(insets)
-                .setInsets(WindowInsetsCompat.Type.systemBars(), Insets.NONE)
+        WindowInsetsCompat insetsWithoutSystemBars =
+                new WindowInsetsCompat.Builder(insets)
+                        .setInsets(WindowInsetsCompat.Type.systemBars(), Insets.NONE)
+                        // EdgeToEdgeLayoutCoordinator falls back to these when the navigation
+                        // bar insets equal their ignoring-visibility counterpart (OEM bugs,
+                        // immersive mode); they must not re-introduce bottom padding while
+                        // system bars are withheld.
+                        .setInsets(WindowInsetsCompat.Type.tappableElement(), Insets.NONE)
+                        .setInsets(WindowInsetsCompat.Type.mandatorySystemGestures(), Insets.NONE)
+                        .build();
+        // The window's cutout mode decides whether the layout below pads the content away from
+        // the cutout, e.g. a TWA whose client requested LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER
+        // keeps its cutout insets. Evaluated on the stripped insets: the layout pads system
+        // bars from the insets it receives, so a cutout contained in a still-visible status bar
+        // must not be consumed, otherwise the layout jumps when the bars hide.
+        if (WindowInsetsUtils.shouldPadDisplayCutout(insetsWithoutSystemBars, view.getContext())) {
+            return insetsWithoutSystemBars;
+        }
+        return new WindowInsetsCompat.Builder(insetsWithoutSystemBars)
                 .setInsets(WindowInsetsCompat.Type.displayCutout(), Insets.NONE)
                 .build();
     }

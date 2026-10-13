@@ -28,6 +28,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
@@ -35,6 +37,7 @@ import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
 import org.chromium.chrome.browser.customtabs.features.CustomTabNavigationBarController;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeSystemBarColorHelper;
+import org.chromium.ui.edge_to_edge.SystemBarColorHelper;
 
 /** Tests for {@link CustomTabNavigationBarController}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -158,6 +161,8 @@ public class CustomTabNavigationBarControllerTest {
                 /* isEdgeToEdge= */ true,
                 mSystemBarColorHelper);
         verify(mSystemBarColorHelper).setNavigationBarColor(Color.TRANSPARENT);
+        // A divider applied while fitted must not survive into edge-to-edge.
+        verify(mSystemBarColorHelper).setNavigationBarDividerColor(Color.TRANSPARENT);
     }
 
     @Test
@@ -189,6 +194,32 @@ public class CustomTabNavigationBarControllerTest {
         verify(mSystemBarColorHelper).setNavigationBarColor(Color.TRANSPARENT);
         assertFalse(
                 "Buttons over a black page must stay light.", hasLightNavigationBarAppearance());
+    }
+
+    @Test
+    public void edgeToEdgeLightContentUsesDarkButtonsWithColorHelper() {
+        // The window bar color differs from transparent, so the helper applies the transparent
+        // color and derives the icon color from it.
+        mWindow.setNavigationBarColor(Color.WHITE);
+        EdgeToEdgeSystemBarColorHelper colorHelper =
+                new EdgeToEdgeSystemBarColorHelper(
+                        mWindow,
+                        ObservableSuppliers.createNonNull(false),
+                        new OneshotSupplierImpl<SystemBarColorHelper>(),
+                        /* canColorStatusBarColor= */ true);
+
+        CustomTabNavigationBarController.update(
+                mWindow,
+                mCustomTabIntentDataProvider,
+                mContext,
+                /* isEdgeToEdge= */ true,
+                colorHelper,
+                /* edgeToEdgeContentColor= */ Color.WHITE);
+
+        assertTrue(
+                "Buttons over a white page must be dark to stay visible.",
+                hasLightNavigationBarAppearance());
+        colorHelper.destroy();
     }
 
     private boolean hasLightNavigationBarAppearance() {
