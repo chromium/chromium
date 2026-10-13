@@ -467,7 +467,7 @@ std::string Encode(base::span<const uint8_t, kQRKeySize> qr_key,
   qr_contents.emplace(5, RequestTypeToString(request_type));
 
   const std::optional<std::vector<uint8_t>> qr_data =
-      cbor::Writer::Write(cbor::Value(std::move(qr_contents)));
+      cbor::Writer::Write(qr_contents);
   return std::string(kPrefix) + BytesToDigits(*qr_data);
 }
 
@@ -658,7 +658,7 @@ bssl::UniquePtr<EC_KEY> ECKeyFromSeed(
 }
 
 std::optional<std::vector<uint8_t>> EncodePaddedCBORMap(
-    cbor::Value::MapValue map) {
+    const cbor::Value::MapValue& map) {
   // The number of padding bytes is a uint16_t, so the granularity cannot be
   // larger than that.
   static_assert(kPostHandshakeMsgPaddingGranularity > 0, "");
@@ -668,8 +668,7 @@ std::optional<std::vector<uint8_t>> EncodePaddedCBORMap(
   static_assert((kPostHandshakeMsgPaddingGranularity &
                  (kPostHandshakeMsgPaddingGranularity - 1)) == 0);
 
-  std::optional<std::vector<uint8_t>> cbor_bytes =
-      cbor::Writer::Write(cbor::Value(std::move(map)));
+  std::optional<std::vector<uint8_t>> cbor_bytes = cbor::Writer::Write(map);
   if (!cbor_bytes) {
     return std::nullopt;
   }

@@ -3035,8 +3035,7 @@ class EnclaveManager::StateMachine {
                        .subspan<1>());
     map.emplace(6, vault_details.cert_xml_serial_number);
     map.emplace(7, vault_details.cohort_public_key);
-    const std::vector<uint8_t> cbor_bytes =
-        cbor::Writer::Write(cbor::Value(std::move(map))).value();
+    const std::vector<uint8_t> cbor_bytes = cbor::Writer::Write(map).value();
     return VecToString(EncryptWrappedPIN(security_domain_secret, cbor_bytes));
   }
 
@@ -4311,8 +4310,7 @@ std::string EnclaveManager::MakeWrappedPINForTesting(
   map.emplace(5, base::span<const uint8_t>(kFakeVaultHandle));
   map.emplace(6, base::span<const uint8_t>(kFakeCohortPublicKey));
   map.emplace(7, kFakeSerialNumber);
-  const std::vector<uint8_t> cbor_bytes =
-      cbor::Writer::Write(cbor::Value(std::move(map))).value();
+  const std::vector<uint8_t> cbor_bytes = cbor::Writer::Write(map).value();
   wrapped_pin->set_wrapped_pin(
       VecToString(EncryptWrappedPIN(security_domain_secret, cbor_bytes)));
   return wrapped_pin->SerializeAsString();

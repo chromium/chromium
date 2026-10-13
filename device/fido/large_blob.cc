@@ -286,8 +286,8 @@ std::optional<cbor::Value::ArrayValue> LargeBlobArrayReader::Materialize() {
 }
 
 LargeBlobArrayWriter::LargeBlobArrayWriter(
-    cbor::Value::ArrayValue large_blob_array) {
-  bytes_ = *cbor::Writer::Write(cbor::Value(std::move(large_blob_array)));
+    const cbor::Value::ArrayValue& large_blob_array) {
+  bytes_ = *cbor::Writer::Write(large_blob_array);
   std::array<uint8_t, crypto::hash::kSha256Size> large_blob_hash =
       crypto::hash::Sha256(bytes_);
   bytes_.insert(bytes_.end(), large_blob_hash.begin(),

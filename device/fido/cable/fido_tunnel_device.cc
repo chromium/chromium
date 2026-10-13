@@ -192,7 +192,7 @@ FidoTunnelDevice::FidoTunnelDevice(
   client_payload.emplace(2, base::span<const uint8_t>(client_nonce));
   client_payload.emplace(3, RequestTypeToString(request_type));
   const std::optional<std::vector<uint8_t>> client_payload_bytes =
-      cbor::Writer::Write(cbor::Value(std::move(client_payload)));
+      cbor::Writer::Write(client_payload);
   CHECK(client_payload_bytes.has_value());
   const std::string client_payload_hex = base::HexEncode(*client_payload_bytes);
 

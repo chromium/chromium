@@ -183,7 +183,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) LargeBlobArrayReader {
 // to divide a blob into chunks.
 class COMPONENT_EXPORT(DEVICE_FIDO) LargeBlobArrayWriter {
  public:
-  explicit LargeBlobArrayWriter(cbor::Value::ArrayValue large_blob_array);
+  explicit LargeBlobArrayWriter(
+      const cbor::Value::ArrayValue& large_blob_array);
   LargeBlobArrayWriter(const LargeBlobArrayWriter&) = delete;
   LargeBlobArrayWriter& operator=(const LargeBlobArrayWriter&) = delete;
   LargeBlobArrayWriter(LargeBlobArrayWriter&&);

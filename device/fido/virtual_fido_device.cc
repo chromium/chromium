@@ -180,8 +180,7 @@ std::unique_ptr<PublicKey> VirtualFidoDevice::PrivateKey::GetPublicKey() const {
     map.emplace(static_cast<int64_t>(CoseKeyKey::kKty),
                 static_cast<int64_t>(CoseKeyTypes::kInvalidForTesting));
 
-    std::optional<std::vector<uint8_t>> cbor_bytes(
-        cbor::Writer::Write(cbor::Value(std::move(map))));
+    std::optional<std::vector<uint8_t>> cbor_bytes(cbor::Writer::Write(map));
     return std::make_unique<PublicKey>(
         static_cast<int32_t>(CoseAlgorithmIdentifier::kInvalidForTesting),
         *cbor_bytes, std::nullopt);

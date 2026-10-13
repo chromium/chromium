@@ -750,8 +750,7 @@ void BuildCommandRequestBody(
                            cbor::Value(std::move(*serialized_requests)));
 
   if (signing_callback.is_null()) {
-    std::move(complete_callback)
-        .Run(*cbor::Writer::Write(cbor::Value(std::move(request_body_map))));
+    std::move(complete_callback).Run(*cbor::Writer::Write(request_body_map));
     return;
   }
 
@@ -781,7 +780,7 @@ void BuildCommandRequestBody(
             cbor::Value(kCommandSigKey),
             cbor::Value(std::move(client_signature->signature)));
         std::optional<std::vector<uint8_t>> serialized_request =
-            cbor::Writer::Write(cbor::Value(std::move(request_body_map)));
+            cbor::Writer::Write(request_body_map);
         std::move(complete_callback).Run(*std::move(serialized_request));
       };
 

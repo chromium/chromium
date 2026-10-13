@@ -156,8 +156,7 @@ std::vector<uint8_t> AuthenticatorGetInfoResponse::EncodeToCBOR(
                                       *response.options.max_cred_blob_length));
   }
 
-  auto encoded_bytes =
-      cbor::Writer::Write(cbor::Value(std::move(device_info_map)));
+  auto encoded_bytes = cbor::Writer::Write(device_info_map);
   DCHECK(encoded_bytes);
   return *std::move(encoded_bytes);
 }

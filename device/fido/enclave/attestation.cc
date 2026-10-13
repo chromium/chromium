@@ -286,7 +286,7 @@ base::expected<bssl::UniquePtr<EC_KEY>, const char*> ProcessCWT(
   signed_array.emplace_back(body.Clone());
 
   std::optional<std::vector<uint8_t>> signed_message =
-      cbor::Writer::Write(cbor::Value(std::move(signed_array)));
+      cbor::Writer::Write(signed_array);
   if (!signed_message) {
     return base::unexpected("failed to serialize signed message");
   }

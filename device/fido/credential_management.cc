@@ -71,8 +71,7 @@ CredentialManagementRequest::ForEnumerateCredentialsBegin(
   params_map.emplace(
       static_cast<int>(CredentialManagementRequestParamKey::kRPIDHash),
       std::move(rp_id_hash));
-  std::vector<uint8_t> pin_auth_bytes =
-      *cbor::Writer::Write(cbor::Value(params_map));
+  std::vector<uint8_t> pin_auth_bytes = *cbor::Writer::Write(params_map);
   CredentialManagementRequest request(
       version, CredentialManagementSubCommand::kEnumerateCredentialsBegin,
       std::move(params_map));
@@ -103,8 +102,7 @@ CredentialManagementRequest CredentialManagementRequest::ForDeleteCredential(
   params_map.emplace(
       static_cast<int>(CredentialManagementRequestParamKey::kCredentialID),
       AsCBOR(credential_id));
-  std::vector<uint8_t> pin_auth_bytes =
-      *cbor::Writer::Write(cbor::Value(params_map));
+  std::vector<uint8_t> pin_auth_bytes = *cbor::Writer::Write(params_map);
   CredentialManagementRequest request(
       version, CredentialManagementSubCommand::kDeleteCredential,
       std::move(params_map));
@@ -131,8 +129,7 @@ CredentialManagementRequest::ForUpdateUserInformation(
       static_cast<int>(CredentialManagementRequestParamKey::kUser),
       AsCBOR(updated_user));
 
-  std::vector<uint8_t> pin_auth_bytes =
-      *cbor::Writer::Write(cbor::Value(params_map));
+  std::vector<uint8_t> pin_auth_bytes = *cbor::Writer::Write(params_map);
   CredentialManagementRequest request(
       version, CredentialManagementSubCommand::kUpdateUserInformation,
       std::move(params_map));

@@ -303,7 +303,7 @@ std::vector<uint8_t> CBORFromPaaskInfo(
   map.emplace(2, base::byte_span_from_ref(pairing_id));
   map.emplace(3, paask_info.secret);
   map.emplace(4, paask_info.peer_public_key_x962);
-  return cbor::Writer::Write(cbor::Value(std::move(map))).value();
+  return cbor::Writer::Write(map).value();
 }
 
 syncer::DeviceInfo::PhoneAsASecurityKeyInfo::StatusOrInfo CacheResult(

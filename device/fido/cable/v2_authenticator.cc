@@ -105,7 +105,7 @@ std::vector<uint8_t> BuildGetInfoResponse() {
   response_map.emplace(4, std::move(options));
   response_map.emplace(9, std::move(transports));
 
-  return cbor::Writer::Write(cbor::Value(std::move(response_map))).value();
+  return cbor::Writer::Write(response_map).value();
 }
 
 std::array<uint8_t, device::cablev2::kNonceSize> RandomNonce() {
@@ -336,8 +336,7 @@ class TunnelTransport : public Transport {
         }
 
         std::optional<std::vector<uint8_t>> post_handshake_msg_bytes;
-        post_handshake_msg_bytes =
-            cbor::Writer::Write(cbor::Value(std::move(post_handshake_msg)));
+        post_handshake_msg_bytes = cbor::Writer::Write(post_handshake_msg);
         if (!post_handshake_msg_bytes) {
           FIDO_LOG(ERROR) << "failed to encode post-handshake message";
           return;
@@ -374,8 +373,7 @@ class TunnelTransport : public Transport {
             cbor::Value::MapValue update_msg_for_measurement;
             update_msg_for_measurement.emplace(1, pairing_data->Clone());
             std::optional<std::vector<uint8_t>> cbor_bytes =
-                cbor::Writer::Write(
-                    cbor::Value(std::move(update_msg_for_measurement)));
+                cbor::Writer::Write(update_msg_for_measurement);
 
             if (cbor_bytes && cbor_bytes->size() < padding_length) {
               padding_length -= cbor_bytes->size();
@@ -391,7 +389,7 @@ class TunnelTransport : public Transport {
           }
 
           std::optional<std::vector<uint8_t>> update_msg_bytes =
-              cbor::Writer::Write(cbor::Value(std::move(update_msg)));
+              cbor::Writer::Write(update_msg);
           if (!update_msg_bytes) {
             FIDO_LOG(ERROR) << "failed to encode update message";
             return;

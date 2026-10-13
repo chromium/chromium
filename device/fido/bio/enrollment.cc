@@ -16,7 +16,7 @@ static void SetPinAuth(BioEnrollmentRequest* request,
 
   std::vector<uint8_t> pin_auth;
   if (request->params)
-    pin_auth = *cbor::Writer::Write(cbor::Value(request->params.value()));
+    pin_auth = *cbor::Writer::Write(request->params.value());
 
   if (request->subcommand)
     pin_auth.insert(pin_auth.begin(), static_cast<int>(*request->subcommand));

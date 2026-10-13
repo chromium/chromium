@@ -227,7 +227,7 @@ bssl::UniquePtr<EC_KEY> ECKeyFromSeed(
 // somehow, the size overflows.
 COMPONENT_EXPORT(DEVICE_FIDO)
 std::optional<std::vector<uint8_t>> EncodePaddedCBORMap(
-    cbor::Value::MapValue map);
+    const cbor::Value::MapValue& map);
 
 // DecodePaddedCBORMap unpads and decodes a CBOR map as produced by
 // |EncodePaddedCBORMap|.

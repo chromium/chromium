@@ -217,8 +217,7 @@ std::vector<uint8_t> SealCredentialMetadata(
       MaybeTruncateWithTrailingEllipsis(metadata.user_display_name)));
   cbor_metadata.emplace_back(metadata.is_resident);
   cbor_metadata.emplace_back(static_cast<uint8_t>(metadata.sign_counter_type));
-  std::optional<std::vector<uint8_t>> pt =
-      cbor::Writer::Write(cbor::Value(std::move(cbor_metadata)));
+  std::optional<std::vector<uint8_t>> pt = cbor::Writer::Write(cbor_metadata);
   DCHECK(pt);
 
   std::vector<uint8_t> nonce(kNonceLength);
@@ -466,8 +465,7 @@ std::vector<uint8_t> SealLegacyCredentialIdForTestingOnly(
   if (version > CredentialMetadata::Version::kV0) {
     cbor_metadata.emplace_back(is_resident);
   }
-  std::optional<std::vector<uint8_t>> pt =
-      cbor::Writer::Write(cbor::Value(std::move(cbor_metadata)));
+  std::optional<std::vector<uint8_t>> pt = cbor::Writer::Write(cbor_metadata);
   DCHECK(pt);
 
   std::vector<uint8_t> aad;

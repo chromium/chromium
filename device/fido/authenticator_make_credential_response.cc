@@ -138,7 +138,7 @@ std::vector<uint8_t> AsCTAPStyleCBORBytes(
   if (!unsigned_extension_outputs.empty()) {
     map.emplace(6, std::move(unsigned_extension_outputs));
   }
-  auto encoded_bytes = cbor::Writer::Write(cbor::Value(std::move(map)));
+  auto encoded_bytes = cbor::Writer::Write(map);
   DCHECK(encoded_bytes);
   return std::move(*encoded_bytes);
 }
