@@ -14,6 +14,7 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/browser/state_store.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -154,21 +155,17 @@ void RulesCacheDelegate::ReadRulesForInstalledExtensions() {
   if (is_ready) {
     const ExtensionSet& extensions =
         ExtensionRegistry::Get(browser_context_)->enabled_extensions();
-    const ExtensionPrefs* extension_prefs =
-        ExtensionPrefs::Get(browser_context_);
-    for (ExtensionSet::const_iterator i = extensions.begin();
-         i != extensions.end();
-         ++i) {
+    for (const auto& extension : extensions) {
       bool needs_apis_storing_rules =
-          (*i)->permissions_data()->HasAPIPermission(
+          extension->permissions_data()->HasAPIPermission(
               mojom::APIPermissionID::kDeclarativeContent) ||
-          (*i)->permissions_data()->HasAPIPermission(
+          extension->permissions_data()->HasAPIPermission(
               mojom::APIPermissionID::kDeclarativeWebRequest);
       bool respects_off_the_record =
           !(browser_context_->IsOffTheRecord()) ||
-          extension_prefs->IsIncognitoEnabled((*i)->id());
+          util::IsIncognitoEnabled(extension.get(), browser_context_);
       if (needs_apis_storing_rules && respects_off_the_record)
-        ReadFromStorage((*i)->id());
+        ReadFromStorage(extension->id());
     }
   }
 }
