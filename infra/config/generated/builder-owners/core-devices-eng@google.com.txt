@@ -1,2 +1,0 @@
-ci/linux-cfm-rel
-try/linux-cfm-rel

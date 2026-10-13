@@ -1,2 +1,0 @@
-ci/linux-multiscreen-fyi-rel
-try/linux-multiscreen-fyi-rel
