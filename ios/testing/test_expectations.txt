@@ -158,11 +158,7 @@ crbug.com/565776423 [ Device ] DownloadManagerTestCase/testDownloadWarnProceedWh
 crbug.com/565777195 [ iPad ] TabGroupsTestCase/testCreateGroupFromTabInAnotherWindow [ Pass Failure ]
 crbug.com/565792499 PasswordControllerEGTest/testLoginEventReported [ Pass Failure Skip Crash ]
 crbug.com/565748739 GeminiFirstRunTestCase/testVisualRichFRECarouselNavigation [ Pass Failure ]
-# Deterministic on iPad Pro (12.9-inch) devices (`ipad-device`), passing on
-# iPad 9th Gen (`ios27-beta-device`); on simulators only iPad Pro (12.9-inch)
-# (6th generation) (`iPad14`) is affected.
-crbug.com/565749273 [ iPad Device ] GeminiAppSwitchingTestCase/testAppSwitchingAISummarizationFloatyNotInvoked [ Pass Failure ]
-crbug.com/565749273 [ iPad14 Simulator ] GeminiAppSwitchingTestCase/testAppSwitchingAISummarizationFloatyNotInvoked [ Pass Failure ]
+crbug.com/565749273 GeminiAppSwitchingTestCase/testAppSwitchingAISummarizationFloatyNotInvoked [ Pass Failure ]
 crbug.com/565749273 [ iPad Device ] GeminiCopresenceTestCase/testConversationPersistenceOnBackgrounding [ Pass Failure ]
 crbug.com/565749273 [ iPad14 Simulator ] GeminiCopresenceTestCase/testConversationPersistenceOnBackgrounding [ Pass Failure ]
 crbug.com/565749273 [ iPad Device ] GeminiCopresenceTestCase/testConversationPersistenceOnSignOut [ Pass Failure ]
@@ -188,7 +184,7 @@ crbug.com/567174858 PageInfoTestCase/testOpeningURLFromFullHistoryDismissesPageI
 crbug.com/567174858 PageInfoTestCase/testOpeningURLFromLastVisitedDismissesPageInfo [ Pass Failure ]
 
 # Gardening suppression 2026-09-29
-crbug.com/565749273 [ iPad ] GeminiAppSwitchingTestCase/testAppSwitchingAISummarizationIncognitoToNormalMode [ Pass Failure ]
+crbug.com/565749273 GeminiAppSwitchingTestCase/testAppSwitchingAISummarizationIncognitoToNormalMode [ Pass Failure ]
 crbug.com/565749273 GeminiAppSwitchingTestCase/testAppSwitchingAISummarizationPageLoadingSnackbar [ Pass Failure ]
 crbug.com/567546565 [ Device ] WindowOpenByDOMTestCase/testLinkWithBlankTargetMultipleTimes [ Pass Failure ]
 
@@ -243,3 +239,6 @@ crbug.com/572663884 [ Device ] FullscreenNoBroadcasterTestCase/testShowHeaderWhe
 crbug.com/572663468 [ Device ] PopupMenuTestCase/testTabHistoryMenu [ Pass Failure ]
 crbug.com/572664294 [ Simulator ] AutofillCreditCardSettingsTestCase/testDisableReauthToggle [ Pass Failure ]
 crbug.com/572663823 [ Simulator ] BubblePresenterTestCase/testSendTabToSelfOmniboxIPH [ Pass Failure ]
+
+# Gardening suppression 2026-10-13
+crbug.com/565749273 GeminiAppSwitchingTestCase/testAppSwitchingAISummarizationFloatyInvoked [ Pass Failure ]
