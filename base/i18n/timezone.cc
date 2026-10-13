@@ -208,8 +208,8 @@ bool TimeZone::operator==(const TimeZone& other) const {
   return *impl_->icu_timezone == *other.impl_->icu_timezone;
 }
 
-bool TimeZone::operator!=(const TimeZone& other) const {
-  return !(*this == other);
+std::strong_ordering TimeZone::operator<=>(const TimeZone& other) const {
+  return impl_->id <=> other.impl_->id;
 }
 
 TimeZone::TimeZone(std::unique_ptr<Impl> impl) : impl_(std::move(impl)) {

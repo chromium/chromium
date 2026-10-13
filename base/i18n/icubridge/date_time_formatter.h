@@ -5,79 +5,26 @@
 #ifndef BASE_I18N_ICUBRIDGE_DATE_TIME_FORMATTER_H_
 #define BASE_I18N_ICUBRIDGE_DATE_TIME_FORMATTER_H_
 
+#include <compare>
+#include <optional>
 #include <string>
 #include <string_view>
 
+#include "base/containers/flat_map.h"
 #include "base/i18n/base_i18n_export.h"
 #include "base/i18n/icubridge/icu_bridge.h"
 #include "base/i18n/language_tag.h"
 #include "base/i18n/time_formatting_types.h"
 #include "base/i18n/timezone.h"
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
+#include "third_party/icu/source/common/unicode/unistr.h"
 
 namespace base::i18n {
 
 class IcuBridge;
-struct DateTimeFormatterOptions;
-
-// DateTimeFormatter provides a set of helper functions for formatting dates and
-// times using ICU. It handles locale-specific formatting and provides
-// common patterns used across the codebase.
-//
-// Each instance is bound to the locale it was created with. Instances are owned
-// by `IcuBridge` and are obtained via `IcuBridge::date_time_formatter()`, which
-// returns the formatter for the default ICU locale, or via
-// `IcuBridge::date_time_formatter(locale)` for a specific locale.
-//
-// Usage example:
-//
-// #include "base/i18n/icubridge/icu_bridge.h"
-// #include "base/i18n/icubridge/date_time_formatter.h"
-// #include "base/i18n/language_tag.h"
-//
-// // Simple usage with predefined shorthands:
-// std::u16string simple = base::i18n::IcuBridge::GetInstance()
-//     .date_time_formatter()
-//     .Format(base::Time::Now(), base::i18n::datetime_options::YMDT::Short());
-//
-// // Advanced usage with fluent builder:
-// std::u16string advanced = base::i18n::IcuBridge::GetInstance()
-//    .date_time_formatter()
-//    .Format(base::Time::Now(),
-//            base::i18n::datetime_options::YMDT::Medium()
-//               .with_year_style(DateTimeFormatterOptions::YearStyle::kNoEra)
-//               .with_time_precision(
-//                   DateTimeFormatterOptions::TimePrecision::kSecond)
-//               .with_time_zone(base::i18n::TimeZone::FromString("Asia/Tokyo"))
-//               .with_time_zone_style(
-//                   DateTimeFormatterOptions::TimeZoneStyle::kShortSpecific));
-//
-// // Usage with a specific locale:
-// auto locale = base::i18n::LanguageTagConverter::GetInstance()
-//     .FromString("ja-JP");
-// std::u16string localized = base::i18n::IcuBridge::GetInstance()
-//     .date_time_formatter(*locale)
-//     .Format(base::Time::Now(),
-//             base::i18n::datetime_options::YMDT::Short());
-class BASE_I18N_EXPORT IcuBridge::DateTimeFormatter {
- public:
-  // Formats date and time according to the provided options.
-  // The formatting is locale-aware and uses the locale this formatter was
-  // created with.
-  std::u16string Format(base::Time time,
-                        const DateTimeFormatterOptions& options) const;
-
-  // Returns the hour clock type for the default locale.
-  base::HourClockType GetHourClockType() const;
-
-  DateTimeFormatter(base::PassKey<IcuBridge>, const LanguageTag& locale)
-      : locale_(locale) {}
-
- private:
-  // The locale used by this formatter.
-  const LanguageTag locale_;
-};
 
 // Options for date and time formatting.
 //
@@ -135,12 +82,12 @@ struct BASE_I18N_EXPORT DateTimeFormatterOptions {
   // Time precision options.
   enum class TimePrecision {
     kNone,
-    kHour,            // e.g., "10 AM"
-    kMinute,          // e.g., "10:30 AM"
-    kSecond,          // e.g., "10:30:00 AM"
-    kSubsecond_2,     // e.g., "10:30:00.00 AM"
-    kSubsecond_3,     // e.g., "10:30:00.000 AM"
-    kSubsecond_4,     // e.g., "10:30:00.0000 AM"
+    kHour,         // e.g., "10 AM"
+    kMinute,       // e.g., "10:30 AM"
+    kSecond,       // e.g., "10:30:00 AM"
+    kSubsecond_2,  // e.g., "10:30:00.00 AM"
+    kSubsecond_3,  // e.g., "10:30:00.000 AM"
+    kSubsecond_4,  // e.g., "10:30:00.0000 AM"
   };
 
   // Timezone style options.
@@ -161,6 +108,8 @@ struct BASE_I18N_EXPORT DateTimeFormatterOptions {
   std::optional<base::HourClockType> hour_clock_type;
   std::optional<base::AmPmClockType> am_pm_clock_type;
 
+  auto operator<=>(const DateTimeFormatterOptions&) const = default;
+
   // Internal builder class for creating DateTimeFormatterOptions.
   //
   // Use the predefined shorthand functions in `base::i18n::datetime_options`
@@ -169,6 +118,7 @@ struct BASE_I18N_EXPORT DateTimeFormatterOptions {
             ItemLength length = ItemLength::kNone>
   class BASE_I18N_EXPORT Builder;
 };
+
 template <DateTimeFormatterOptions::FormatIdentifier component_type_value,
           DateTimeFormatterOptions::ItemLength length>
 class BASE_I18N_EXPORT DateTimeFormatterOptions::Builder {
@@ -317,6 +267,72 @@ using YMDT = DateTimeFormatterOptions::Builder<
     DateTimeFormatterOptions::FormatIdentifier::kYMDT>;
 
 }  // namespace datetime_options
+
+// DateTimeFormatter provides a set of helper functions for formatting dates and
+// times using ICU. It handles locale-specific formatting and provides
+// common patterns used across the codebase.
+//
+// Each instance is bound to the locale it was created with. Instances are owned
+// by `IcuBridge` and are obtained via `IcuBridge::date_time_formatter()`, which
+// returns the formatter for the default ICU locale, or via
+// `IcuBridge::date_time_formatter(locale)` for a specific locale.
+//
+// Usage example:
+//
+// #include "base/i18n/icubridge/icu_bridge.h"
+// #include "base/i18n/icubridge/date_time_formatter.h"
+// #include "base/i18n/language_tag.h"
+//
+// // Simple usage with predefined shorthands:
+// std::u16string simple = base::i18n::IcuBridge::GetInstance()
+//     .date_time_formatter()
+//     .Format(base::Time::Now(), base::i18n::datetime_options::YMDT::Short());
+//
+// // Advanced usage with fluent builder:
+// std::u16string advanced = base::i18n::IcuBridge::GetInstance()
+//    .date_time_formatter()
+//    .Format(base::Time::Now(),
+//            base::i18n::datetime_options::YMDT::Medium()
+//               .with_year_style(DateTimeFormatterOptions::YearStyle::kNoEra)
+//               .with_time_precision(
+//                   DateTimeFormatterOptions::TimePrecision::kSecond)
+//               .with_time_zone(base::i18n::TimeZone::FromString("Asia/Tokyo"))
+//               .with_time_zone_style(
+//                   DateTimeFormatterOptions::TimeZoneStyle::kShortSpecific));
+//
+// // Usage with a specific locale:
+// auto locale = base::i18n::LanguageTagConverter::GetInstance()
+//     .FromString("ja-JP");
+// std::u16string localized = base::i18n::IcuBridge::GetInstance()
+//     .date_time_formatter(*locale)
+//     .Format(base::Time::Now(),
+//             base::i18n::datetime_options::YMDT::Short());
+class BASE_I18N_EXPORT IcuBridge::DateTimeFormatter {
+ public:
+  DateTimeFormatter(base::PassKey<IcuBridge>, const LanguageTag& locale);
+  ~DateTimeFormatter();
+
+  // Formats date and time according to the provided options.
+  // The formatting is locale-aware and uses the locale this formatter was
+  // created with.
+  std::u16string Format(base::Time time,
+                        const DateTimeFormatterOptions& options) const;
+
+  // Returns the hour clock type for the default locale.
+  base::HourClockType GetHourClockType() const;
+
+ private:
+  icu::UnicodeString GetCachedBestPattern(
+      const DateTimeFormatterOptions& options) const;
+
+  const LanguageTag locale_;
+
+  // GetBestPattern() is pretty slow. Cache the results by
+  // DateTimeFormatterOptions to speed up repeated calls to the same format.
+  mutable base::Lock lock_;
+  mutable base::flat_map<DateTimeFormatterOptions, icu::UnicodeString>
+      pattern_cache_ GUARDED_BY(lock_);
+};
 
 }  // namespace base::i18n
 

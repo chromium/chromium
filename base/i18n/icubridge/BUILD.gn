@@ -32,12 +32,10 @@ source_set("icubridge") {
     "//base/i18n:time_formatting_types",
     "//base/i18n:timezone",
     "//third_party/abseil-cpp:absl",
+    "//third_party/icu",
   ]
 
-  deps = [
-    "//third_party/icu",
-    "//third_party/rust/icu_capi/v2:lib",
-  ]
+  deps = [ "//third_party/rust/icu_capi/v2:lib" ]
 
   visibility = [
     ":*",

@@ -8,9 +8,12 @@
 
 #include <algorithm>
 #include <string>
+#include <string_view>
+#include <utility>
 
 #include "base/check.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/flat_map.h"
 #include "base/i18n/bcp47_extensions.h"
 #include "base/i18n/icu4c_tag_converter.h"  // nogncheck
 #include "base/i18n/icubridge/icu_bridge.h"
@@ -21,6 +24,8 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "build/build_config.h"
 #include "third_party/icu/source/common/unicode/locid.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
@@ -68,20 +73,15 @@ icu::SimpleDateFormat CreateSimpleDateFormatter(
     const icu::UnicodeString& pattern,
     const LanguageTag& locale) {
   UErrorCode status = U_ZERO_ERROR;
-  // Then, format the time using the desired pattern.
   icu::SimpleDateFormat formatter(
       pattern, IcuLocaleConverter::GetInstance().FromLanguageTag(locale),
       status);
-  if (U_SUCCESS(status)) {
-    return formatter;
+  if (U_FAILURE(status)) {
+    // Fallback if the generated pattern failed (e.g. due to unsupported fields
+    // in some locales on limited ICU data platforms).
+    formatter.applyPattern(icu::UnicodeString("yyyy-MM-dd HH:mm:ss"));
   }
-
-  // Fallback if the generated pattern failed (e.g. due to unsupported fields
-  // in some locales on limited ICU data platforms).
-  status = U_ZERO_ERROR;
-  return icu::SimpleDateFormat(
-      icu::UnicodeString("yyyy-MM-dd HH:mm:ss"),
-      IcuLocaleConverter::GetInstance().FromLanguageTag(locale), status);
+  return formatter;
 }
 
 icu::DateFormat::EStyle ToIcuStyle(DateTimeFormatterOptions::ItemLength length,
@@ -570,34 +570,46 @@ LanguageTag GetLocaleWithHourClockType(
   return locale.WithExtension(*u_ext);
 }
 
-std::u16string FormatWithLocale(base::Time time,
-                                const DateTimeFormatterOptions& options,
-                                const LanguageTag& locale_arg) {
-  LanguageTag locale =
-      GetLocaleWithHourClockType(locale_arg, options.hour_clock_type);
-
-  if (options.format_identifier ==
-      DateTimeFormatterOptions::FormatIdentifier::kNone) {
-    return FormatWithLocale(time, datetime_options::YMD::Medium(), locale);
-  }
-
-  icu::UnicodeString best_pattern = GetBestPattern(locale, options);
-  auto formatter = CreateSimpleDateFormatter(best_pattern, locale);
-  if (options.time_zone) {
-    std::unique_ptr<icu::TimeZone> icu_tz(icu::TimeZone::createTimeZone(
-        icu::UnicodeString::fromUTF8(options.time_zone->GetID())));
-    formatter.setTimeZone(*icu_tz);
-  }
-  return DateTimeFormat(formatter, time, options.am_pm_clock_type);
-}
-
 }  // namespace
 
-// DateTime Formatting
+IcuBridge::DateTimeFormatter::DateTimeFormatter(base::PassKey<IcuBridge>,
+                                                const LanguageTag& locale)
+    : locale_(locale) {}
+
+IcuBridge::DateTimeFormatter::~DateTimeFormatter() = default;
+
+icu::UnicodeString IcuBridge::DateTimeFormatter::GetCachedBestPattern(
+    const DateTimeFormatterOptions& options) const {
+  {
+    base::AutoLock auto_lock(lock_);
+    auto it = pattern_cache_.find(options);
+    if (it != pattern_cache_.end()) {
+      return it->second;
+    }
+  }
+
+  LanguageTag locale =
+      GetLocaleWithHourClockType(locale_, options.hour_clock_type);
+  icu::UnicodeString best_pattern = GetBestPattern(locale, options);
+  base::AutoLock auto_lock(lock_);
+  return pattern_cache_.emplace(options, std::move(best_pattern)).first->second;
+}
+
 std::u16string IcuBridge::DateTimeFormatter::Format(
     base::Time time,
     const DateTimeFormatterOptions& options) const {
-  return FormatWithLocale(time, options, locale_);
+  if (options.format_identifier ==
+      DateTimeFormatterOptions::FormatIdentifier::kNone) {
+    return Format(time, datetime_options::YMD::Medium());
+  }
+
+  icu::UnicodeString best_pattern = GetCachedBestPattern(options);
+  auto formatter = CreateSimpleDateFormatter(best_pattern, locale_);
+  if (options.time_zone) {
+    formatter.adoptTimeZone(icu::TimeZone::createTimeZone(
+        icu::UnicodeString::fromUTF8(options.time_zone->GetID())));
+  }
+  return DateTimeFormat(formatter, time, options.am_pm_clock_type);
 }
 
 base::HourClockType IcuBridge::DateTimeFormatter::GetHourClockType() const {
