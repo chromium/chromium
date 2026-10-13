@@ -16,8 +16,6 @@ source_set("feedback_private") {
     "feedback_service.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [
     "//base",
     "//build:chromeos_buildflags",

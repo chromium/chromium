@@ -9,8 +9,6 @@ assert(enable_extensions_core)
 source_set("settings_observer") {
   sources = [ "settings_observer.h" ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [
     "//base",
     "//extensions/common/api",
@@ -22,8 +20,6 @@ source_set("settings_namespace") {
     "settings_namespace.cc",
     "settings_namespace.h",
   ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [ "//base" ]
 }
@@ -53,8 +49,6 @@ source_set("storage") {
     "weak_unlimited_settings_storage.cc",
     "weak_unlimited_settings_storage.h",
   ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
     ":settings_namespace",

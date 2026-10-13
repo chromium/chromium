@@ -65,8 +65,6 @@ source_set("constants_impl") {
   ]
 
   deps = [ "//build:chromecast_buildflags" ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("extension_features") {
@@ -578,10 +576,7 @@ static_library("common") {
     "webstore_override.h",
   ]
 
-  configs += [
-    "//build/config:precompiled_headers",
-    "//build/config/compiler:wexit_time_destructors",
-  ]
+  configs += [ "//build/config:precompiled_headers" ]
 
   public_deps = [
     ":common_constants",
@@ -651,7 +646,6 @@ source_set("core_api_provider") {
     "core_extensions_api_provider.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   deps = [
     ":common",
     "//extensions:extensions_resources",

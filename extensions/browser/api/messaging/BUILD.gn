@@ -24,8 +24,6 @@ source_set("messaging") {
     "native_message_port.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [
     ":native_messaging",
     "//base",
@@ -55,8 +53,6 @@ source_set("native_messaging") {
     "native_message_port_dispatcher.h",
     "native_messaging_channel.h",
   ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
     "//base",

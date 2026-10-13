@@ -20,8 +20,6 @@ source_set("audio") {
     "pref_names.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [
     "//base",
     "//extensions/browser:browser_sources",

@@ -13,8 +13,6 @@ source_set("virtual_keyboard_private") {
     "virtual_keyboard_private_api.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [
     "//base",
     "//build:chromeos_buildflags",
@@ -40,8 +38,6 @@ source_set("virtual_keyboard_private") {
 
 source_set("virtual_keyboard_delegate") {
   sources = [ "virtual_keyboard_delegate.h" ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
     "//base",

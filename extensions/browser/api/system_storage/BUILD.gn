@@ -15,8 +15,6 @@ source_set("system_storage") {
     "system_storage_api.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [
     "//base",
     "//components/storage_monitor",

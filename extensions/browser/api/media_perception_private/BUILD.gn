@@ -20,8 +20,6 @@ source_set("media_perception_private") {
     "media_perception_private_api.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [
     "//base",
     "//chromeos/ash/components/dbus/media_analytics",

@@ -19,8 +19,6 @@ source_set("permissions") {
     "permissions_event_router_factory.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [
     "//base",
     "//components/keyed_service/content",

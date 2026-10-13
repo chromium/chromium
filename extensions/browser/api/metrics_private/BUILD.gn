@@ -14,8 +14,6 @@ source_set("metrics_private") {
     "metrics_private_delegate.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [
     "//base",
     "//extensions/browser:browser_sources",

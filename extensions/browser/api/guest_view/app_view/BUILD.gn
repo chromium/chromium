@@ -16,8 +16,6 @@ source_set("app_view") {
     "app_view_guest_internal_api.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [ "//extensions/browser:browser_sources" ]
 
   deps = [

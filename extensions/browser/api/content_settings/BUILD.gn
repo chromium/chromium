@@ -18,8 +18,6 @@ source_set("content_settings") {
     "content_settings_store.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [
     "//base",
     "//components/content_settings/core/browser",

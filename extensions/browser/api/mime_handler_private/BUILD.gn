@@ -13,8 +13,6 @@ source_set("mime_handler_private") {
     "mime_handler_private.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [
     "//base",
     "//extensions/common/api:mojom",

@@ -13,8 +13,6 @@ source_set("user_scripts") {
     "user_scripts_api.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [
     "//extensions/browser:browser_sources",
     "//extensions/common/api",

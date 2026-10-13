@@ -25,8 +25,6 @@ source_set("networking_private") {
     "networking_private_event_router_factory.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   deps = [
     "//build:chromeos_buildflags",
     "//components/keyed_service/content",

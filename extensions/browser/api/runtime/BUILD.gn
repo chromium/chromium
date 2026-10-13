@@ -15,8 +15,6 @@ source_set("runtime") {
     "runtime_api_delegate.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [
     "//base",
     "//extensions/browser:browser_sources",

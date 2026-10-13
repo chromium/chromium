@@ -73,8 +73,6 @@ source_set("core_keyed_service_factories") {
     "core_browser_context_keyed_service_factories.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   deps = [
     "//components/guest_view/buildflags",
     "//extensions/browser:browser_sources",
@@ -879,10 +877,7 @@ source_set("browser_sources") {
     deps += [ "//components/resources:components_resources_grit" ]
   }
 
-  configs += [
-    "//build/config:precompiled_headers",
-    "//build/config/compiler:wexit_time_destructors",
-  ]
+  configs += [ "//build/config:precompiled_headers" ]
 }
 
 source_set("keepalive") {

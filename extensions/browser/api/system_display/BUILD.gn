@@ -18,8 +18,6 @@ source_set("system_display") {
     "//extensions/common/api",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   deps = [
     ":display_info_provider",
     "//base",
@@ -35,8 +33,6 @@ source_set("display_info_provider") {
     "display_info_provider.cc",
     "display_info_provider.h",
   ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
     "//base",

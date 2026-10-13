@@ -13,8 +13,6 @@ source_set("protocol_handlers") {
     "protocol_handlers_manager.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [
     "//base",
     "//extensions/common",

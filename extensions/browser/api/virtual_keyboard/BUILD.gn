@@ -14,8 +14,6 @@ source_set("virtual_keyboard") {
     "virtual_keyboard_api.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [
     "//extensions/browser:browser_sources",
     "//extensions/common/api",

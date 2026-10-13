@@ -13,8 +13,6 @@ source_set("power") {
     "power_api.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [
     "//base",
     "//build:chromeos_buildflags",

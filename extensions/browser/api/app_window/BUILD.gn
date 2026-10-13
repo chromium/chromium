@@ -13,8 +13,6 @@ source_set("app_window") {
     "app_window_api.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [ "//extensions/browser:browser_sources" ]
 
   deps = [

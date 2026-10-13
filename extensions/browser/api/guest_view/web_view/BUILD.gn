@@ -16,8 +16,6 @@ source_set("web_view") {
     "web_view_internal_api.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [
     "//base",
     "//extensions/browser:browser_sources",
