@@ -5,36 +5,20 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<RelativeLayout
+<ScrollView
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/scroll_view"
     android:layout_height="wrap_content"
     android:layout_width="match_parent">
 
-  <!-- Drag handlebar -->
-  <ImageView
-      android:id="@+id/handlebar"
-      android:layout_width="wrap_content"
+  <RelativeLayout
       android:layout_height="wrap_content"
-      android:layout_gravity="center_horizontal"
-      android:paddingVertical="@dimen/secure_payment_confirmation_ui_drag_handle_spacing"
-      android:importantForAccessibility="no"
-      android:layout_centerHorizontal="true"
-      android:src="@drawable/drag_handlebar" />
-
-  <ScrollView
-      android:id="@+id/scroll_view"
-      android:layout_below="@id/handlebar"
-      android:layout_height="wrap_content"
-      android:layout_width="match_parent">
-
-    <RelativeLayout
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:textDirection="locale"
-        android:paddingHorizontal="@dimen/secure_payment_confirmation_ui_large_padding"
-        android:paddingTop="@dimen/secure_payment_confirmation_ui_small_padding"
-        android:paddingBottom="@dimen/secure_payment_confirmation_ui_large_padding">
+      android:layout_width="match_parent"
+      android:textDirection="locale"
+      android:paddingHorizontal="@dimen/secure_payment_confirmation_ui_large_padding"
+      android:paddingTop="@dimen/secure_payment_confirmation_ui_small_padding"
+      android:paddingBottom="@dimen/secure_payment_confirmation_ui_large_padding">
 
       <!-- Default header image -->
       <ImageView
@@ -133,5 +117,4 @@ found in the LICENSE file.
           tools:text="Verify"
           style="@style/FilledButton"/>
     </RelativeLayout>
-  </ScrollView>
-</RelativeLayout>
+</ScrollView>

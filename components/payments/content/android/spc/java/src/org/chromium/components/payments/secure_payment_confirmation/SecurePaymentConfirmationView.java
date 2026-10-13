@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -41,7 +40,7 @@ import org.chromium.ui.widget.TextViewWithClickableSpans;
                 .inflate(R.layout.payments_instrument, parent, false);
     }
 
-    /* package */ final RelativeLayout mContentView;
+    /* package */ final ScrollView mContentView;
     /* package */ final ScrollView mScrollView;
     /* package */ final ImageView mHeaderIllustration;
     /* package */ final LinearLayout mHeaderLogosRow;
@@ -56,10 +55,10 @@ import org.chromium.ui.widget.TextViewWithClickableSpans;
 
     /* package */ SecurePaymentConfirmationView(Context context) {
         mContentView =
-                (RelativeLayout)
+                (ScrollView)
                         LayoutInflater.from(context)
                                 .inflate(R.layout.secure_payment_confirmation, null);
-        mScrollView = mContentView.findViewById(R.id.scroll_view);
+        mScrollView = mContentView;
         mHeaderIllustration =
                 mContentView.findViewById(R.id.secure_payment_confirmation_header_illustration);
         mHeaderLogosRow = mContentView.findViewById(R.id.header_logos_row);

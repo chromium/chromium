@@ -25,7 +25,6 @@ found in the LICENSE file.
     <dimen name="payments_ui_max_dialog_width">0dp</dimen>
     <dimen name="payments_ui_translation">100dp</dimen>
     <!-- Secure Payment Confirmation UI spacing -->
-    <dimen name="secure_payment_confirmation_ui_drag_handle_spacing">6dp</dimen>
     <dimen name="secure_payment_confirmation_ui_header_logo_height">24dp</dimen>
     <dimen name="secure_payment_confirmation_ui_header_logo_width">104dp</dimen>
     <dimen name="secure_payment_confirmation_ui_large_padding">24dp</dimen>

@@ -34,7 +34,7 @@ public class SecurePaymentConfirmationBottomSheetContentTest {
         mActivity = Robolectric.buildActivity(Activity.class).create().get();
         mContentView =
                 mActivity.getLayoutInflater().inflate(R.layout.secure_payment_confirmation, null);
-        mScrollView = mContentView.findViewById(R.id.scroll_view);
+        mScrollView = (ScrollView) mContentView;
         mContent = new SecurePaymentConfirmationBottomSheetContent(mContentView, mScrollView);
     }
 

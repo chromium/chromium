@@ -107,4 +107,9 @@ import org.chromium.components.browser_ui.bottomsheet.UserCriticalFeature;
     public @StringRes int getSheetClosedAccessibilityStringId() {
         return R.string.secure_payment_confirmation_authentication_sheet_closed;
     }
+
+    @Override
+    public boolean showHandlebar() {
+        return true;
+    }
 }
