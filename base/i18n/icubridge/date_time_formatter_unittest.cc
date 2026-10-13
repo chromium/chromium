@@ -1602,29 +1602,34 @@ TEST_F(DateTimeFormatterTest, MD_AllChromiumPlatformLocales) {
 }
 
 TEST_F(DateTimeFormatterTest, GetHourClockType) {
-  const IcuBridge::DateTimeFormatter& formatter =
-      IcuBridge::GetInstance().date_time_formatter();
-
   // Test zero-argument version (which checks default locale) under different
   // default locales.
   {
     ScopedDefaultIcuLocale scoped_locale(GetKnownLanguageTag("en-US"));
-    EXPECT_EQ(base::k12HourClock, formatter.GetHourClockType());
+    EXPECT_EQ(
+        base::k12HourClock,
+        IcuBridge::GetInstance().date_time_formatter().GetHourClockType());
   }
 
   {
     ScopedDefaultIcuLocale scoped_locale(GetKnownLanguageTag("en-GB"));
-    EXPECT_EQ(base::k24HourClock, formatter.GetHourClockType());
+    EXPECT_EQ(
+        base::k24HourClock,
+        IcuBridge::GetInstance().date_time_formatter().GetHourClockType());
   }
 
   {
     ScopedDefaultIcuLocale scoped_locale(GetKnownLanguageTag("ar-EG"));
-    EXPECT_EQ(base::k12HourClock, formatter.GetHourClockType());
+    EXPECT_EQ(
+        base::k12HourClock,
+        IcuBridge::GetInstance().date_time_formatter().GetHourClockType());
   }
 
   {
     ScopedDefaultIcuLocale scoped_locale(GetKnownLanguageTag("fa-IR"));
-    EXPECT_EQ(base::k24HourClock, formatter.GetHourClockType());
+    EXPECT_EQ(
+        base::k24HourClock,
+        IcuBridge::GetInstance().date_time_formatter().GetHourClockType());
   }
 }
 

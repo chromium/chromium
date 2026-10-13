@@ -570,11 +570,23 @@ LanguageTag GetLocaleWithHourClockType(
   return locale.WithExtension(*u_ext);
 }
 
+base::HourClockType GetHourClockTypeForLocale(const LanguageTag& locale) {
+  UErrorCode status = U_ZERO_ERROR;
+  std::unique_ptr<icu::DateTimePatternGenerator> generator(
+      icu::DateTimePatternGenerator::createInstance(
+          IcuLocaleConverter::GetInstance().FromLanguageTag(locale), status));
+  DCHECK(U_SUCCESS(status));
+  icu::UnicodeString pattern =
+      generator->getBestPattern(icu::UnicodeString("j"), status);
+  DCHECK(U_SUCCESS(status));
+  return pattern.indexOf('a') == -1 ? base::k24HourClock : base::k12HourClock;
+}
+
 }  // namespace
 
 IcuBridge::DateTimeFormatter::DateTimeFormatter(base::PassKey<IcuBridge>,
                                                 const LanguageTag& locale)
-    : locale_(locale) {}
+    : locale_(locale), hour_clock_type_(GetHourClockTypeForLocale(locale)) {}
 
 IcuBridge::DateTimeFormatter::~DateTimeFormatter() = default;
 
@@ -610,17 +622,6 @@ std::u16string IcuBridge::DateTimeFormatter::Format(
         icu::UnicodeString::fromUTF8(options.time_zone->GetID())));
   }
   return DateTimeFormat(formatter, time, options.am_pm_clock_type);
-}
-
-base::HourClockType IcuBridge::DateTimeFormatter::GetHourClockType() const {
-  UErrorCode status = U_ZERO_ERROR;
-  std::unique_ptr<icu::DateTimePatternGenerator> generator(
-      icu::DateTimePatternGenerator::createInstance(status));
-  DCHECK(U_SUCCESS(status));
-  icu::UnicodeString pattern =
-      generator->getBestPattern(icu::UnicodeString("j"), status);
-  DCHECK(U_SUCCESS(status));
-  return pattern.indexOf('a') == -1 ? base::k24HourClock : base::k12HourClock;
 }
 
 }  // namespace base::i18n

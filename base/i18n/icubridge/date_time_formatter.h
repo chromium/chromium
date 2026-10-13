@@ -318,14 +318,15 @@ class BASE_I18N_EXPORT IcuBridge::DateTimeFormatter {
   std::u16string Format(base::Time time,
                         const DateTimeFormatterOptions& options) const;
 
-  // Returns the hour clock type for the default locale.
-  base::HourClockType GetHourClockType() const;
+  // Returns the hour clock type for this formatter's locale.
+  base::HourClockType GetHourClockType() const { return hour_clock_type_; }
 
  private:
   icu::UnicodeString GetCachedBestPattern(
       const DateTimeFormatterOptions& options) const;
 
   const LanguageTag locale_;
+  const base::HourClockType hour_clock_type_;
 
   // GetBestPattern() is pretty slow. Cache the results by
   // DateTimeFormatterOptions to speed up repeated calls to the same format.
