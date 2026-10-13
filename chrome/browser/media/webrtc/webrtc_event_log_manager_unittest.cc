@@ -3870,6 +3870,36 @@ TEST_F(WebRtcEventLogManagerTest, RemoteLoggingCancelledDeletesFile) {
   EXPECT_FALSE(base::PathExists(*file_path));
 }
 
+// FinishLogging() and CancelLogging() only stop the logs of a render process.
+// Its peer connections remain known to both the local and the remote manager
+// until they are removed.
+TEST_F(WebRtcEventLogManagerTest, PeerConnectionKnownAfterFinishLogging) {
+  const auto key = GetPeerConnectionKey(rph_.get(), kLid);
+  ASSERT_TRUE(EnableLocalLogging());
+  ASSERT_TRUE(OnPeerConnectionAdded(key));
+
+  base::test::TestFuture<void> future;
+  event_log_manager_->FinishLogging(key.render_process_id,
+                                    future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  EXPECT_TRUE(OnPeerConnectionRemoved(key));
+}
+
+TEST_F(WebRtcEventLogManagerTest, PeerConnectionKnownAfterCancelLogging) {
+  const auto key = GetPeerConnectionKey(rph_.get(), kLid);
+  ASSERT_TRUE(EnableLocalLogging());
+  ASSERT_TRUE(OnPeerConnectionAdded(key));
+
+  const std::string kDiagnosticUuid = "123e4567-e89b-12d3-a456-426614174000";
+  base::test::TestFuture<void> future;
+  event_log_manager_->CancelLogging(key.render_process_id, kDiagnosticUuid,
+                                    future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  EXPECT_TRUE(OnPeerConnectionRemoved(key));
+}
+
 // Once a RenderProcessHost exits/crashes, its PeerConnections are removed,
 // which means that they can no longer suppress an upload.
 TEST_F(WebRtcEventLogManagerTest,

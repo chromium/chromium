@@ -1056,9 +1056,7 @@ void WebRtcEventLogManager::OnPeerConnectionRemovedInternal(
 
   const bool local_result = local_logs_manager_.OnPeerConnectionRemoved(key);
   const bool remote_result = remote_logs_manager_.OnPeerConnectionRemoved(key);
-  // TODO(crbug.com/570195877): CHECK-exclusion: Convert to a CHECK once we are
-  // confident it won't be triggered.
-  DCHECK_EQ(local_result, remote_result);
+  CHECK_EQ(local_result, remote_result, base::NotFatalUntil::M161);
 
   MaybeReply(FROM_HERE, std::move(reply), local_result);
 }

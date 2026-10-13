@@ -51,6 +51,10 @@ class WebRtcLocalEventLogManager final {
 
   void RenderProcessHostExitedDestroyed(int render_process_id);
 
+  // Stops the log files of all peer connections associated with the render
+  // process. If `action` is kDelete, the event log files are also deleted.
+  // The peer connections remain known until OnPeerConnectionRemoved() or
+  // RenderProcessHostExitedDestroyed() removes them.
   void StopLogging(int render_process_id,
                    StopLoggingAction action,
                    base::OnceClosure callback);
