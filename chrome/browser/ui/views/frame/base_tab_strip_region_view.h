@@ -99,6 +99,8 @@ class BaseTabStripRegionView : public TabStripRegionView,
 
   // views::WidgetObserver:
   void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
+  void OnWidgetUserResizeStarted(views::Widget* widget) override;
+  void OnWidgetUserResizeEnded(views::Widget* widget) override;
 
   void DisableTabStripEditingForTesting() override;
   gfx::Rect GetLinkDropBoundsForTesting(
