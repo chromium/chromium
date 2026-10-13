@@ -3968,8 +3968,10 @@ TEST_F(ContextualTasksUiTest, ProfileIndicator_WebSignedInWithExtendedInfo) {
                                     page_handler.BindNewPipeAndPassReceiver());
 
   GURL avatar_url = future.Take();
-  EXPECT_TRUE(avatar_url.is_valid());
-  EXPECT_TRUE(avatar_url.spec().starts_with("data:image/png;base64,"));
+  EXPECT_EQ(avatar_url,
+            GURL(base::StrCat({"chrome://contextual-tasks/profile-avatar.png"
+                               "?gaia_id=",
+                               account_info.GetGaiaId().ToString()})));
 }
 
 TEST_F(ContextualTasksUiTest,
@@ -4010,8 +4012,10 @@ TEST_F(ContextualTasksUiTest,
   controller.UpdateProfileIndicator(GURL("https://google.com/search"));
 
   GURL updated_avatar_url = future.Take();
-  EXPECT_TRUE(updated_avatar_url.is_valid());
-  EXPECT_TRUE(updated_avatar_url.spec().starts_with("data:image/png;base64,"));
+  EXPECT_EQ(updated_avatar_url,
+            GURL(base::StrCat({"chrome://contextual-tasks/profile-avatar.png"
+                               "?gaia_id=",
+                               account_info.GetGaiaId().ToString()})));
 
   // Add a second signed-in account with a different avatar and verify
   // authuser=1 selects the second account's avatar.
@@ -4039,8 +4043,10 @@ TEST_F(ContextualTasksUiTest,
   controller.UpdateProfileIndicator(
       GURL("https://google.com/search?authuser=1"));
   GURL second_avatar_url = future.Take();
-  EXPECT_TRUE(second_avatar_url.is_valid());
-  EXPECT_TRUE(second_avatar_url.spec().starts_with("data:image/png;base64,"));
+  EXPECT_EQ(second_avatar_url,
+            GURL(base::StrCat({"chrome://contextual-tasks/profile-avatar.png"
+                               "?gaia_id=",
+                               second_account.GetGaiaId().ToString()})));
   EXPECT_NE(second_avatar_url, updated_avatar_url);
 }
 
@@ -4070,6 +4076,9 @@ TEST_F(ContextualTasksUiTest, ProfileIndicator_LoadTimeDataPopulated) {
   const std::string* signed_in_avatar_url =
       signed_in_dict.FindString("profileAvatarUrl");
   ASSERT_TRUE(signed_in_avatar_url);
-  EXPECT_TRUE(signed_in_avatar_url->starts_with("data:image/png;base64,"));
+  EXPECT_EQ(*signed_in_avatar_url,
+            base::StrCat({"chrome://contextual-tasks/profile-avatar.png"
+                          "?gaia_id=",
+                          account_info.GetGaiaId().ToString()}));
 }
 }  // namespace contextual_tasks
