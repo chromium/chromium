@@ -1437,19 +1437,6 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
-<histogram name="Extensions.DidCreateScriptContext_LockScreenExtension"
-    units="units" expires_after="2026-11-15">
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    Part of the suite of Extensions.DidCreateScriptContext_* metrics. Records
-    the time taken to install Extension JavaScript bindings per content script
-    context. This histogram measures the time to install Extension Javascript
-    bindings in a context for a platform app enabled on the Chrome OS lock
-    screen.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.DidCreateScriptContext_Unblessed" units="ms"
     expires_after="2027-03-28">
   <owner>rdevlin.cronin@chromium.org</owner>
