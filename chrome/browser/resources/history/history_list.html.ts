@@ -109,7 +109,7 @@ export function getHtml(this: HistoryListElement) {
 </cr-lazy-render-lit>
 
 <cr-toast id="errorToast" duration="5000">
-  $i18n{goToGeminiChatError}
+  <span>$i18n{goToGeminiChatError}</span>
 </cr-toast>
 <!--_html_template_end_-->`;
   // clang-format on
