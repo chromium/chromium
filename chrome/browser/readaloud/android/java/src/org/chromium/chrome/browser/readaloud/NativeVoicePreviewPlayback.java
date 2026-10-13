@@ -128,7 +128,7 @@ class NativeVoicePreviewPlayback implements Playback {
     @Override
     public void pause() {
         ThreadUtils.assertOnUiThread();
-        mNativeBridge.stopVoicePreview();
+        mNativeBridge.pauseVoicePreview();
     }
 
     @Override

@@ -172,11 +172,19 @@ class ReadAloudNativeBridge {
         }
     }
 
-    /** Plays a short audio sample of the specified voice. */
+    /** Plays or resumes a short audio sample of the specified voice. */
     public void previewVoice(String voiceId) {
         ThreadUtils.assertOnUiThread();
         if (mNativeReadAloudBridge != 0) {
             ReadAloudNativeBridgeJni.get().previewVoice(mNativeReadAloudBridge, voiceId);
+        }
+    }
+
+    /** Pauses the active voice preview playback. */
+    public void pauseVoicePreview() {
+        ThreadUtils.assertOnUiThread();
+        if (mNativeReadAloudBridge != 0) {
+            ReadAloudNativeBridgeJni.get().pauseVoicePreview(mNativeReadAloudBridge);
         }
     }
 
@@ -376,8 +384,11 @@ class ReadAloudNativeBridge {
         void setLanguageCode(
                 long nativeReadAloudBridge, @JniType("std::string") String languageCode);
 
-        // Plays a short audio sample of the specified voice.
+        // Plays or resumes a short audio sample of the specified voice.
         void previewVoice(long nativeReadAloudBridge, @JniType("std::string") String voiceId);
+
+        // Pauses the active voice preview playback.
+        void pauseVoicePreview(long nativeReadAloudBridge);
 
         // Stops the active voice preview playback.
         void stopVoicePreview(long nativeReadAloudBridge);

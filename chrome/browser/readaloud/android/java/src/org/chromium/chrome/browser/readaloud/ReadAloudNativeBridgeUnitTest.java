@@ -135,6 +135,9 @@ public class ReadAloudNativeBridgeUnitTest {
         mBridge.previewVoice("voice_1");
         verify(mNativeBridgeNatives).previewVoice(eq(NATIVE_PTR), eq("voice_1"));
 
+        mBridge.pauseVoicePreview();
+        verify(mNativeBridgeNatives).pauseVoicePreview(eq(NATIVE_PTR));
+
         mBridge.stopVoicePreview();
         verify(mNativeBridgeNatives).stopVoicePreview(eq(NATIVE_PTR));
 
@@ -165,6 +168,7 @@ public class ReadAloudNativeBridgeUnitTest {
         mBridge.setVoice("voice_1");
         mBridge.setLanguageCode("es");
         mBridge.previewVoice("voice_1");
+        mBridge.pauseVoicePreview();
         mBridge.stopVoicePreview();
         mBridge.setPlaybackMode(1);
         mBridge.setHighlightingEnabled(true);
@@ -181,6 +185,7 @@ public class ReadAloudNativeBridgeUnitTest {
         verify(mNativeBridgeNatives, never()).setVoice(anyLong(), anyString());
         verify(mNativeBridgeNatives, never()).setLanguageCode(anyLong(), anyString());
         verify(mNativeBridgeNatives, never()).previewVoice(anyLong(), anyString());
+        verify(mNativeBridgeNatives, never()).pauseVoicePreview(anyLong());
         verify(mNativeBridgeNatives, never()).stopVoicePreview(anyLong());
         verify(mNativeBridgeNatives, never()).setPlaybackMode(anyLong(), anyInt());
         verify(mNativeBridgeNatives, never()).setHighlightingEnabled(anyLong(), anyBoolean());

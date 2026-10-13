@@ -85,7 +85,7 @@ public class NativeVoicePreviewPlaybackUnitTest {
     @Test
     public void testPause() {
         mPlayback.pause();
-        verify(mBridgeMock).stopVoicePreview();
+        verify(mBridgeMock).pauseVoicePreview();
     }
 
     @Test

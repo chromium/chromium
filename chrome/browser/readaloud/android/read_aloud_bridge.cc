@@ -324,6 +324,12 @@ void ReadAloudBridge::PreviewVoice(JNIEnv* env, const std::string& voice_id) {
   }
 }
 
+void ReadAloudBridge::PauseVoicePreview(JNIEnv* env) {
+  if (service_) {
+    service_->PauseVoicePreview();
+  }
+}
+
 void ReadAloudBridge::StopVoicePreview(JNIEnv* env) {
   if (service_) {
     service_->StopVoicePreview();
