@@ -673,6 +673,7 @@ public class KeyboardAccessoryViewTest {
 
     @Test
     @MediumTest
+    @DisableIf.Device(DeviceFormFactor.TABLET_OR_DESKTOP) // TODO(crbug.com/572882852): Re-enable.
     public void testScrollingNotResetOnItemUpdate() throws InterruptedException {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
