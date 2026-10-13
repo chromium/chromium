@@ -180,9 +180,11 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
   // deletion.
   base::OnceClosure on_deletion_scheduled_for_tests_;
 
-  // Called just before URLLoaderFactory is started. At that time, ServiceWorker
-  // interceptor (if any) is already done, and it's known whether there is a
-  // ServiceWorker controller, indicated by `ServiceWorkerState`.
+  // Called just before URLLoaderFactory is started, or just before failing a
+  // prefetch constructed from a PrePrefetch that found a ServiceWorker
+  // controller. At that time, ServiceWorker interceptor (if any) is already
+  // done, and it's known whether there is a ServiceWorker controller,
+  // indicated by `PrefetchServiceWorkerState`.
   OnServiceWorkerStateDeterminedCallback
       on_service_worker_state_determined_callback_;
 
