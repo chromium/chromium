@@ -16,7 +16,7 @@
 #include "base/values.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/tools/attempt_form_filling_tool_request.h"
-#include "chrome/browser/actor/tools/attempt_otp_filling_tool_request.h"
+#include "chrome/browser/actor/tools/one_time_token/attempt_otp_filling_tool_request.h"
 #include "chrome/browser/actor/tools/password_manager/attempt_login/attempt_login_tool_request.h"
 #include "chrome/browser/actor/tools/script_tool_request.h"
 #include "chrome/browser/actor/tools/tool_request.h"

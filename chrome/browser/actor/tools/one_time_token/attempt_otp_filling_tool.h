@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ACTOR_TOOLS_ATTEMPT_OTP_FILLING_TOOL_H_
-#define CHROME_BROWSER_ACTOR_TOOLS_ATTEMPT_OTP_FILLING_TOOL_H_
+#ifndef CHROME_BROWSER_ACTOR_TOOLS_ONE_TIME_TOKEN_ATTEMPT_OTP_FILLING_TOOL_H_
+#define CHROME_BROWSER_ACTOR_TOOLS_ONE_TIME_TOKEN_ATTEMPT_OTP_FILLING_TOOL_H_
 
 #include <memory>
 #include <optional>
@@ -14,8 +14,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
-#include "chrome/browser/actor/tools/actor_login_flow_verifier.h"
-#include "chrome/browser/actor/tools/attempt_otp_filling_tool_request.h"
+#include "chrome/browser/actor/tools/one_time_token/actor_login_flow_verifier.h"
+#include "chrome/browser/actor/tools/one_time_token/attempt_otp_filling_tool_request.h"
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_delegate.h"
 #include "chrome/common/actor.mojom-forward.h"
@@ -101,4 +101,4 @@ class AttemptOtpFillingTool : public Tool {
 
 }  // namespace actor
 
-#endif  // CHROME_BROWSER_ACTOR_TOOLS_ATTEMPT_OTP_FILLING_TOOL_H_
+#endif  // CHROME_BROWSER_ACTOR_TOOLS_ONE_TIME_TOKEN_ATTEMPT_OTP_FILLING_TOOL_H_

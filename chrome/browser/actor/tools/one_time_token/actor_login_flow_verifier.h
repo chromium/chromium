@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ACTOR_TOOLS_ACTOR_LOGIN_FLOW_VERIFIER_H_
-#define CHROME_BROWSER_ACTOR_TOOLS_ACTOR_LOGIN_FLOW_VERIFIER_H_
+#ifndef CHROME_BROWSER_ACTOR_TOOLS_ONE_TIME_TOKEN_ACTOR_LOGIN_FLOW_VERIFIER_H_
+#define CHROME_BROWSER_ACTOR_TOOLS_ONE_TIME_TOKEN_ACTOR_LOGIN_FLOW_VERIFIER_H_
 
 #include <iosfwd>
 #include <optional>
@@ -121,4 +121,4 @@ std::ostream& operator<<(std::ostream& os,
 
 }  // namespace actor
 
-#endif  // CHROME_BROWSER_ACTOR_TOOLS_ACTOR_LOGIN_FLOW_VERIFIER_H_
+#endif  // CHROME_BROWSER_ACTOR_TOOLS_ONE_TIME_TOKEN_ACTOR_LOGIN_FLOW_VERIFIER_H_

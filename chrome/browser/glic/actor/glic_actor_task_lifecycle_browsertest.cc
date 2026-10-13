@@ -4,7 +4,7 @@
 
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_test_util.h"
-#include "chrome/browser/actor/tools/attempt_otp_filling_tool_request.h"
+#include "chrome/browser/actor/tools/one_time_token/attempt_otp_filling_tool_request.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/autofill/gmail_otp_backend_factory.h"
 #include "chrome/browser/glic/actor/new_glic_actor_functional_browsertest.h"

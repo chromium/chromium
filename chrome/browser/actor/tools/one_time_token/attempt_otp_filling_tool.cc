@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/actor/tools/attempt_otp_filling_tool.h"
+#include "chrome/browser/actor/tools/one_time_token/attempt_otp_filling_tool.h"
 
 #include <algorithm>
 #include <memory>
@@ -23,8 +23,8 @@
 #include "base/time/time.h"
 #include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/actor_task.h"
-#include "chrome/browser/actor/tools/actor_login_flow_verifier.h"
-#include "chrome/browser/actor/tools/attempt_otp_filling_metrics.h"
+#include "chrome/browser/actor/tools/one_time_token/actor_login_flow_verifier.h"
+#include "chrome/browser/actor/tools/one_time_token/attempt_otp_filling_metrics.h"
 #include "chrome/browser/actor/tools/page_target_util.h"
 #include "chrome/browser/autofill/actor/one_time_tokens/actor_login_context.h"
 #include "chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service.h"

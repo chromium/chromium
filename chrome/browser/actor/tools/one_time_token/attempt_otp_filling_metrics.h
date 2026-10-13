@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ACTOR_TOOLS_ATTEMPT_OTP_FILLING_METRICS_H_
-#define CHROME_BROWSER_ACTOR_TOOLS_ATTEMPT_OTP_FILLING_METRICS_H_
+#ifndef CHROME_BROWSER_ACTOR_TOOLS_ONE_TIME_TOKEN_ATTEMPT_OTP_FILLING_METRICS_H_
+#define CHROME_BROWSER_ACTOR_TOOLS_ONE_TIME_TOKEN_ATTEMPT_OTP_FILLING_METRICS_H_
 
 #include <string_view>
 
-#include "chrome/browser/actor/tools/actor_login_flow_verifier.h"
-#include "chrome/browser/actor/tools/attempt_otp_filling_tool_request.h"
+#include "chrome/browser/actor/tools/one_time_token/actor_login_flow_verifier.h"
+#include "chrome/browser/actor/tools/one_time_token/attempt_otp_filling_tool_request.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace actor {
@@ -110,4 +110,4 @@ void RecordPredictedOtpTypeMetrics(
     ukm::SourceId ukm_source_id);
 }  // namespace actor
 
-#endif  // CHROME_BROWSER_ACTOR_TOOLS_ATTEMPT_OTP_FILLING_METRICS_H_
+#endif  // CHROME_BROWSER_ACTOR_TOOLS_ONE_TIME_TOKEN_ATTEMPT_OTP_FILLING_METRICS_H_

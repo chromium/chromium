@@ -24,7 +24,7 @@ found in the LICENSE file.
   <int value="10" label="MainFrameOriginMismatch"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/actor/tools/actor_login_flow_verifier.h:ActorLoginFlowVerificationResult) -->
+<!-- LINT.ThenChange(//chrome/browser/actor/tools/one_time_token/actor_login_flow_verifier.h:ActorLoginFlowVerificationResult) -->
 
 <!-- LINT.IfChange(ActorOneTimeTokenFillingServiceFillOtpEvent) -->
 
@@ -114,7 +114,7 @@ found in the LICENSE file.
   <int value="21" label="UnableToRetrieveGmailAndGoogleSmartFeaturesConsent"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/actor/tools/attempt_otp_filling_metrics.h:AttemptOtpFillingEvent) -->
+<!-- LINT.ThenChange(//chrome/browser/actor/tools/one_time_token/attempt_otp_filling_metrics.h:AttemptOtpFillingEvent) -->
 
 <!-- LINT.IfChange(AttemptOtpFillingPredictedOtpType) -->
 
@@ -125,7 +125,7 @@ found in the LICENSE file.
   <int value="3" label="Authenticator App"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/actor/tools/attempt_otp_filling_tool_request.h:AttemptOtpFillingPredictedOtpType) -->
+<!-- LINT.ThenChange(//chrome/browser/actor/tools/one_time_token/attempt_otp_filling_tool_request.h:AttemptOtpFillingPredictedOtpType) -->
 
 <!-- LINT.IfChange(GmailOtpConfirmationDialogInteraction) -->
 
@@ -136,7 +136,7 @@ found in the LICENSE file.
   <int value="3" label="PermissionGranted"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/actor/tools/attempt_otp_filling_metrics.h:GmailOtpConfirmationDialogInteraction) -->
+<!-- LINT.ThenChange(//chrome/browser/actor/tools/one_time_token/attempt_otp_filling_metrics.h:GmailOtpConfirmationDialogInteraction) -->
 
 <!-- LINT.IfChange(GmailOtpOptInCardInteraction) -->
 
@@ -147,7 +147,7 @@ found in the LICENSE file.
   <int value="3" label="PermissionGranted"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/actor/tools/attempt_otp_filling_metrics.h:GmailOtpOptInCardInteraction) -->
+<!-- LINT.ThenChange(//chrome/browser/actor/tools/one_time_token/attempt_otp_filling_metrics.h:GmailOtpOptInCardInteraction) -->
 
 <!-- LINT.IfChange(GmailOtpSenderDomainMatchType) -->
 
