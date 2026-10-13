@@ -196,8 +196,9 @@ fn parse_sof(data: &[u8], frame_header: &mut JpegFrameHeader) -> Result<(), Jpeg
             return Err(JpegParserError::InvalidComponentId);
         }
         let hv = read_u8(&mut cursor)?;
-        // The sampling factor is a single byte: the high 4 bits (nibble) are the
-        // horizontal factor, and the low 4 bits are the vertical factor.
+        // The sampling factor is a single byte: the high 4 bits (nibble) are
+        // the horizontal factor, and the low 4 bits are the vertical
+        // factor.
         let horizontal_sampling_factor = hv >> 4;
         let vertical_sampling_factor = hv & 0x0f;
 
@@ -335,14 +336,14 @@ fn parse_sos(
         return Err(JpegParserError::ScanComponentCountMismatch);
     }
 
-    for i in 0..scan.num_components as usize {
+    for component in frame_header.components.iter().take(scan.num_components as usize) {
         let component_selector = read_u8(&mut cursor)?;
         let dc_and_ac_selector = read_u8(&mut cursor)?;
         // DC selector is the upper nibble, AC selector is the lower nibble.
         let dc_selector = dc_and_ac_selector >> 4;
         let ac_selector = dc_and_ac_selector & 0x0f;
 
-        if component_selector != frame_header.components[i].id {
+        if component_selector != component.id {
             return Err(JpegParserError::ComponentSelectorMismatch);
         }
         if dc_selector >= K_JPEG_MAX_HUFFMAN_TABLE_NUM_BASELINE as u8 {
