@@ -82,6 +82,9 @@ class ToolbarActionsModelTestObserver : public ToolbarActionsModel::Observer {
   size_t inserted_count() const { return inserted_count_; }
   size_t removed_count() const { return removed_count_; }
   size_t initialized_count() const { return initialized_count_; }
+  size_t pinned_actions_changed_count() const {
+    return pinned_actions_changed_count_;
+  }
 
   const std::vector<ToolbarActionsModel::ActionId>& last_pinned_action_ids()
       const {
@@ -106,6 +109,7 @@ class ToolbarActionsModelTestObserver : public ToolbarActionsModel::Observer {
   void OnToolbarModelInitialized() override { ++initialized_count_; }
 
   void OnToolbarPinnedActionsChanged() override {
+    ++pinned_actions_changed_count_;
     last_pinned_action_ids_ = model_->pinned_action_ids();
   }
 
@@ -114,6 +118,7 @@ class ToolbarActionsModelTestObserver : public ToolbarActionsModel::Observer {
   size_t inserted_count_ = 0;
   size_t removed_count_ = 0;
   size_t initialized_count_ = 0;
+  size_t pinned_actions_changed_count_ = 0;
 
   std::vector<ToolbarActionsModel::ActionId> last_pinned_action_ids_;
 };
@@ -449,6 +454,67 @@ TEST_F(ToolbarActionsModelUnitTest,
 
   histogram_tester.ExpectUniqueSample("Extensions.Install.PinReason",
                                       0 /* kPinnedByDefault */, 3);
+}
+
+// Test that an extension is not pinned again if it is already pinned.
+TEST_F(ToolbarActionsModelUnitTest,
+       NewExtensionsAreNotPinnedAgainIfAlreadyPinned) {
+  base::test::ScopedFeatureList feature_list(
+      features::kExtensionsPinnedByDefault);
+  Init();
+
+  extensions::TestExtensionDir test_dir_a;
+  const extensions::Extension* extension_a =
+      InstallExtensionWithAction(test_dir_a, "a");
+  ASSERT_TRUE(extension_a);
+  EXPECT_THAT(toolbar_model()->pinned_action_ids(),
+              ::testing::ElementsAre(extension_a->id()));
+
+  // Trigger OnInstalled again for the same extension. It must not duplicate the
+  // ID.
+  extensions::ExtensionRegistry::Get(profile())->TriggerOnInstalled(
+      extension_a, /*is_update=*/false);
+  EXPECT_THAT(toolbar_model()->pinned_action_ids(),
+              ::testing::ElementsAre(extension_a->id()));
+  EXPECT_THAT(extensions::ExtensionPrefs::Get(profile())->GetPinnedExtensions(),
+              ::testing::ElementsAre(extension_a->id()));
+
+  // Disable the extension. It should no longer be in pinned_action_ids(), but
+  // remains in ExtensionPrefs.
+  registrar()->DisableExtension(
+      extension_a->id(), {extensions::disable_reason::DISABLE_USER_ACTION});
+  EXPECT_THAT(toolbar_model()->pinned_action_ids(), ::testing::IsEmpty());
+  EXPECT_THAT(extensions::ExtensionPrefs::Get(profile())->GetPinnedExtensions(),
+              ::testing::ElementsAre(extension_a->id()));
+
+  // Trigger OnInstalled again while disabled. Since its ID is already stored in
+  // prefs, it must not attempt to pin it again or crash on DCHECK.
+  extensions::ExtensionRegistry::Get(profile())->TriggerOnInstalled(
+      extension_a, /*is_update=*/false);
+  EXPECT_THAT(toolbar_model()->pinned_action_ids(), ::testing::IsEmpty());
+  EXPECT_THAT(extensions::ExtensionPrefs::Get(profile())->GetPinnedExtensions(),
+              ::testing::ElementsAre(extension_a->id()));
+
+  PrefChangeRegistrar pref_change_registrar;
+  pref_change_registrar.Init(profile()->GetPrefs());
+  bool pref_changed = false;
+  pref_change_registrar.Add(
+      extensions::pref_names::kPinnedExtensions,
+      base::BindRepeating([](bool* changed) { *changed = true; },
+                          &pref_changed));
+
+  size_t previous_pinned_actions_changed_count =
+      observer()->pinned_actions_changed_count();
+
+  // Calling SetActionVisibility when the ID is already stored in prefs should
+  // return early without modifying prefs or notifying observers.
+  toolbar_model()->SetActionVisibility(extension_a->id(), true);
+  EXPECT_FALSE(pref_changed);
+  EXPECT_EQ(previous_pinned_actions_changed_count,
+            observer()->pinned_actions_changed_count());
+  EXPECT_THAT(toolbar_model()->pinned_action_ids(), ::testing::IsEmpty());
+  EXPECT_THAT(extensions::ExtensionPrefs::Get(profile())->GetPinnedExtensions(),
+              ::testing::ElementsAre(extension_a->id()));
 }
 
 // Test that new extension actions are pinned on installation when the
@@ -1172,6 +1238,78 @@ TEST_F(ToolbarActionsModelUnitTest,
 
   // Verify that the observer is notified as well.
   EXPECT_EQ(pinned_extension_list, observer()->last_pinned_action_ids());
+}
+
+TEST_F(ToolbarActionsModelUnitTest,
+       DuplicatePinnedExtensionPreferencesNotReflectedInModel) {
+  Init();
+  ASSERT_TRUE(AddBrowserActionExtensions());
+
+  extensions::ExtensionPrefs* const extension_prefs =
+      extensions::ExtensionPrefs::Get(profile());
+
+  // No actions should be initially pinned.
+  EXPECT_THAT(toolbar_model()->pinned_action_ids(), testing::IsEmpty());
+
+  // Update preferences to include duplicate IDs for extension A.
+  extensions::ExtensionIdList duplicate_pinned_list = {
+      browser_action_a()->id(), browser_action_b()->id(),
+      browser_action_a()->id()};
+
+  extension_prefs->SetPinnedExtensions(duplicate_pinned_list);
+  EXPECT_EQ(duplicate_pinned_list, extension_prefs->GetPinnedExtensions());
+
+  // Verify that the duplicate is filtered out in the model.
+  extensions::ExtensionIdList expected_model_list = {browser_action_a()->id(),
+                                                     browser_action_b()->id()};
+  EXPECT_EQ(expected_model_list, toolbar_model()->pinned_action_ids());
+  EXPECT_EQ(expected_model_list, observer()->last_pinned_action_ids());
+
+  // Verify that unpinning removes all occurrences from preferences.
+  toolbar_model()->SetActionVisibility(browser_action_a()->id(), false);
+  EXPECT_THAT(toolbar_model()->pinned_action_ids(),
+              testing::ElementsAre(browser_action_b()->id()));
+  EXPECT_THAT(extension_prefs->GetPinnedExtensions(),
+              testing::ElementsAre(browser_action_b()->id()));
+}
+
+TEST_F(ToolbarActionsModelUnitTest,
+       DuplicatePinnedExtensionsDeduplicatedOnInitializationAndPreservesMove) {
+  Init();
+  ASSERT_TRUE(AddBrowserActionExtensions());
+
+  extensions::ExtensionPrefs* const extension_prefs =
+      extensions::ExtensionPrefs::Get(profile());
+
+  // Set up preferences with duplicate IDs, e.g. [A, B, A, C], as might occur
+  // from older versions or sync before model initialization.
+  extensions::ExtensionIdList duplicate_list = {
+      browser_action_a()->id(), browser_action_b()->id(),
+      browser_action_a()->id(), browser_action_c()->id()};
+  extension_prefs->SetPinnedExtensions(duplicate_list);
+
+  // Initialize a new model after preferences are set to simulate startup.
+  ToolbarActionsModel model_created_after_prefs_set(profile(), extension_prefs);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return model_created_after_prefs_set.actions_initialized(); }));
+
+  // Verify that duplicate IDs were pruned from preferences on initialization.
+  extensions::ExtensionIdList expected_deduped_list = {
+      browser_action_a()->id(), browser_action_b()->id(),
+      browser_action_c()->id()};
+  EXPECT_EQ(expected_deduped_list, extension_prefs->GetPinnedExtensions());
+  EXPECT_EQ(expected_deduped_list,
+            model_created_after_prefs_set.pinned_action_ids());
+
+  // Verify that moving an action works as expected and is not corrupted by
+  // duplicate IDs in prefs. Move A from index 0 to index 2 (after C).
+  model_created_after_prefs_set.MovePinnedAction(browser_action_a()->id(), 2);
+  extensions::ExtensionIdList expected_after_move = {browser_action_b()->id(),
+                                                     browser_action_c()->id(),
+                                                     browser_action_a()->id()};
+  EXPECT_EQ(expected_after_move,
+            model_created_after_prefs_set.pinned_action_ids());
+  EXPECT_EQ(expected_after_move, extension_prefs->GetPinnedExtensions());
 }
 
 TEST_F(ToolbarActionsModelUnitTest, PinnedExtensionsFilteredOnInitialization) {

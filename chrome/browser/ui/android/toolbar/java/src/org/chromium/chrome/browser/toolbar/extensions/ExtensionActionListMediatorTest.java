@@ -806,6 +806,22 @@ public class ExtensionActionListMediatorTest {
         verify(action, never()).getHoverCardState();
     }
 
+    // Tests that duplicate pinned action IDs passed from native do not create duplicate models
+    // in mModels.
+    @Test
+    public void testReconcileActionItems_DeduplicatesPinnedActionIds() {
+        when(mExtensionsToolbarBridge.getAllActionIds())
+                .thenReturn(new String[] {ACTION1_ID, ACTION2_ID});
+        when(mExtensionsToolbarBridge.getPinnedActionIds())
+                .thenReturn(new String[] {ACTION1_ID, ACTION2_ID, ACTION1_ID});
+
+        mMediator.reconcileActionItems();
+
+        assertEquals(2, mModels.size());
+        assertEquals(ACTION1_ID, mModels.get(0).model.get(ExtensionActionButtonProperties.ID));
+        assertEquals(ACTION2_ID, mModels.get(1).model.get(ExtensionActionButtonProperties.ID));
+    }
+
     private static Bitmap createSimpleIcon(int color) {
         Bitmap bitmap = Bitmap.createBitmap(12, 12, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);

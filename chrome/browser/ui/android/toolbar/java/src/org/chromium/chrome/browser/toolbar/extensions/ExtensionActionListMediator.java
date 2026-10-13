@@ -52,6 +52,7 @@ import org.chromium.ui.widget.RectProvider;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 @NullMarked
@@ -278,7 +279,7 @@ class ExtensionActionListMediator implements Destroyable {
 
         // Optimization: Remove items that are no longer present in the new list.
         // This prevents unnecessary moves if the first item is removed.
-        Set<String> pinnedActionIdsSet = new HashSet<>(Arrays.asList(pinnedActionIds));
+        Set<String> pinnedActionIdsSet = new LinkedHashSet<>(Arrays.asList(pinnedActionIds));
         for (int i = mModels.size() - 1; i >= 0; i--) {
             String id = getActionIdForIndex(i);
 
@@ -306,7 +307,7 @@ class ExtensionActionListMediator implements Destroyable {
         int currentModelIndex = 0;
 
         // Go through non-popped-out actions.
-        for (String actionId : pinnedActionIds) {
+        for (String actionId : pinnedActionIdsSet) {
             if (mPoppedOutActionId != null && mPoppedOutActionId.equals(actionId)) {
                 continue;
             }
