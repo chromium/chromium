@@ -61,7 +61,6 @@ class ResizeConfirmationDialogView : public views::BubbleDialogDelegateView,
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
   void AddedToWidget() override;
-  void OnThemeChanged() override;
 
   // views::WidgetObserver:
   void OnWidgetClosing(views::Widget* widget) override;

@@ -119,10 +119,6 @@ void ResizeConfirmationDialogView::AddedToWidget() {
   widget_observation_.Observe(GetWidget());
 }
 
-void ResizeConfirmationDialogView::OnThemeChanged() {
-  views::BubbleDialogDelegateView::OnThemeChanged();
-}
-
 void ResizeConfirmationDialogView::OnWidgetClosing(views::Widget* widget) {
   if (!callback_) {
     return;
