@@ -204,6 +204,10 @@ base::expected<base::Process, TerminalError> LaunchShellProcess(
 
   static constexpr std::pair<std::string_view, std::string_view>
       kTmuxOptions[] = {
+          // Set TERM=xterm-256color inside the pane (instead of tmux's default
+          // tmux-256color) so standard shell configs (e.g. ~/.bashrc) emit OSC
+          // title escape sequences in PS1 as if running directly in xterm.
+          {"default-terminal", "xterm-256color"},
           // Disable the alternate screen buffer (smcup/rmcup) for xterm* so
           // output flows into the outer terminal's (xterm.js) native scrollback
           // buffer.
