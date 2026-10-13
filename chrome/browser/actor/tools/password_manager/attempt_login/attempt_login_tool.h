@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ACTOR_TOOLS_ATTEMPT_LOGIN_TOOL_H_
-#define CHROME_BROWSER_ACTOR_TOOLS_ATTEMPT_LOGIN_TOOL_H_
+#ifndef CHROME_BROWSER_ACTOR_TOOLS_PASSWORD_MANAGER_ATTEMPT_LOGIN_ATTEMPT_LOGIN_TOOL_H_
+#define CHROME_BROWSER_ACTOR_TOOLS_PASSWORD_MANAGER_ATTEMPT_LOGIN_ATTEMPT_LOGIN_TOOL_H_
 
 #include <optional>
 #include <vector>
@@ -172,4 +172,4 @@ class AttemptLoginTool : public Tool
 
 }  // namespace actor
 
-#endif  // CHROME_BROWSER_ACTOR_TOOLS_ATTEMPT_LOGIN_TOOL_H_
+#endif  // CHROME_BROWSER_ACTOR_TOOLS_PASSWORD_MANAGER_ATTEMPT_LOGIN_ATTEMPT_LOGIN_TOOL_H_

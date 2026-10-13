@@ -44,7 +44,6 @@ source_set("actor") {
     "tab_observation_controller.h",
     "tab_observation_strategy.h",
     "tools/attempt_form_filling_tool_request.h",
-    "tools/attempt_login_tool_request.h",
     "tools/attempt_otp_filling_tool_request.h",
     "tools/bookmark_management_tool_request.h",
     "tools/change_password_tool_request.h",
@@ -58,6 +57,7 @@ source_set("actor") {
     "tools/navigate_tool_request.h",
     "tools/observation_delay_controller.h",
     "tools/page_tool_request.h",
+    "tools/password_manager/attempt_login/attempt_login_tool_request.h",
     "tools/perform_search_tool_request.h",
     "tools/script_tool_request.h",
     "tools/scroll_to_tool_request.h",
@@ -166,9 +166,6 @@ source_set("impl") {
     "tools/attempt_form_filling_tool_metrics.cc",
     "tools/attempt_form_filling_tool_metrics.h",
     "tools/attempt_form_filling_tool_request.cc",
-    "tools/attempt_login_tool.cc",
-    "tools/attempt_login_tool.h",
-    "tools/attempt_login_tool_request.cc",
     "tools/attempt_otp_filling_metrics.cc",
     "tools/attempt_otp_filling_metrics.h",
     "tools/attempt_otp_filling_tool.cc",
@@ -208,6 +205,9 @@ source_set("impl") {
     "tools/page_tool.cc",
     "tools/page_tool.h",
     "tools/page_tool_request.cc",
+    "tools/password_manager/attempt_login/attempt_login_tool.cc",
+    "tools/password_manager/attempt_login/attempt_login_tool.h",
+    "tools/password_manager/attempt_login/attempt_login_tool_request.cc",
     "tools/perform_search_tool_request.cc",
     "tools/script_tool_host.cc",
     "tools/script_tool_host.h",
@@ -466,7 +466,6 @@ source_set("unit_tests") {
     "tab_observation_strategy_unittest.cc",
     "tools/actor_login_flow_verifier_unittest.cc",
     "tools/attempt_form_filling_tool_request_unittest.cc",
-    "tools/attempt_login_tool_request_unittest.cc",
     "tools/attempt_otp_filling_tool_request_unittest.cc",
     "tools/attempt_otp_filling_tool_unittest.cc",
     "tools/change_password_tool_request_unittest.cc",
@@ -476,6 +475,7 @@ source_set("unit_tests") {
     "tools/file_upload_tool_unittest.cc",
     "tools/media_control_tool_request_unittest.cc",
     "tools/page_search_utils_unittest.cc",
+    "tools/password_manager/attempt_login/attempt_login_tool_request_unittest.cc",
     "tools/type_tool_request_unittest.cc",
     "transport/actor_keyed_service_adapter_unittest.cc",
   ]
@@ -573,7 +573,7 @@ source_set("browser_tests") {
     "actor_keyed_service_browsertest.cc",
     "actor_keyed_service_browsertest.h",
     "actor_util_browsertest.cc",
-    "tools/attempt_login_tool_browsertest.cc",
+    "tools/password_manager/attempt_login/attempt_login_tool_browsertest.cc",
   ]
 
   if (is_win || is_mac || is_linux || is_chromeos) {
@@ -703,8 +703,8 @@ if (!skip_android_unmigrated_actor_files) {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     sources = [
-      "tools/attempt_login_tool_interactive_ui_test.cc",
       "tools/click_tool_interactive_ui_test.cc",
+      "tools/password_manager/attempt_login/attempt_login_tool_interactive_ui_test.cc",
       "tools/select_tool_interactive_ui_test.cc",
     ]
     deps = [
