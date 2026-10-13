@@ -37,8 +37,7 @@ GetReasonsForUncacheability(const WebURLResponse& response);
 // memory cache. Note that we may still cache data longer if
 // a audio/video tag is currently using it. Returns a TimeDelta
 // which is should be added to base::Time::Now() or base::TimeTicks::Now().
-PLATFORM_EXPORT base::TimeDelta GetCacheValidUntil(
-    const WebURLResponse& response);
+base::TimeDelta GetCacheValidUntil(const WebURLResponse& response);
 
 }  // namespace blink
 

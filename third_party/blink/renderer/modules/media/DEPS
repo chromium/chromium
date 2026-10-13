@@ -1,4 +1,0 @@
-include_rules = [
-    "+media/base/media_log.h",
-    "+media/mojo/mojom",
-]

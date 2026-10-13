@@ -12,7 +12,6 @@
 #include "third_party/blink/public/platform/web_content_decryption_module_result.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/media/cdm_result_promise_helper.h"
-#include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {
 
@@ -27,8 +26,7 @@ const char kTimeToRejectUmaPrefix[] = "TimeTo.Reject.";
 // If constructed with a |uma_name|, CdmResultPromise will report the promise
 // result (success or rejection code) to UMA.
 template <typename... T>
-class PLATFORM_EXPORT CdmResultPromise
-    : public media::CdmPromiseTemplate<T...> {
+class CdmResultPromise : public media::CdmPromiseTemplate<T...> {
  public:
   CdmResultPromise(const WebContentDecryptionModuleResult& result,
                    const std::string& key_system_uma_prefix,

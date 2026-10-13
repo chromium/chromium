@@ -13,7 +13,6 @@
 #include "base/time/time.h"
 #include "media/base/cdm_promise.h"
 #include "third_party/blink/public/platform/web_content_decryption_module_result.h"
-#include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -43,7 +42,7 @@ using SessionInitializedCB =
 // SessionStatus by calling |new_session_created_cb|. The value returned by
 // |new_session_created_cb| must be in |expected_statuses| for the promise to
 // be resolved. If it's not in the list, the promise will be rejected.
-class PLATFORM_EXPORT NewSessionCdmResultPromise
+class NewSessionCdmResultPromise
     : public media::CdmPromiseTemplate<std::string> {
  public:
   NewSessionCdmResultPromise(const WebContentDecryptionModuleResult& result,

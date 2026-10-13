@@ -20,7 +20,6 @@
 #include "third_party/blink/public/platform/web_content_decryption_module_session.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/media/web_content_decryption_module_impl.h"
-#include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 
 namespace base {
@@ -41,7 +40,7 @@ class WebContentDecryptionModuleSessionImpl;
 // Forwards the session ID-based callbacks of the media::ContentDecryptionModule
 // interface to the appropriate session object. Callers should hold references
 // to this class as long as they need the CDM instance.
-class PLATFORM_EXPORT CdmSessionAdapter : public RefCounted<CdmSessionAdapter> {
+class CdmSessionAdapter : public RefCounted<CdmSessionAdapter> {
  public:
   explicit CdmSessionAdapter(media::KeySystems* key_systems);
   CdmSessionAdapter(const CdmSessionAdapter&) = delete;

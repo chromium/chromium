@@ -7,7 +7,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "third_party/blink/public/platform/web_media_source.h"
-#include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace media {
 class AudioDecoderConfig;
@@ -17,7 +16,7 @@ class VideoDecoderConfig;
 
 namespace blink {
 
-class PLATFORM_EXPORT WebMediaSourceImpl : public WebMediaSource {
+class WebMediaSourceImpl : public WebMediaSource {
  public:
   WebMediaSourceImpl(media::ChunkDemuxer* demuxer);
   WebMediaSourceImpl(const WebMediaSourceImpl&) = delete;

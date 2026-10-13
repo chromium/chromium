@@ -15,12 +15,11 @@
 #include "third_party/blink/public/platform/web_media_key_system_configuration.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {
 class WebEncryptedMediaClientImpl;
 
-class PLATFORM_EXPORT WebContentDecryptionModuleAccessImpl
+class WebContentDecryptionModuleAccessImpl
     : public WebContentDecryptionModuleAccess {
  public:
   // Allow typecasting from blink type as this is the only implementation.

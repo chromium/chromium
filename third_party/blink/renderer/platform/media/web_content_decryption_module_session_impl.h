@@ -21,13 +21,12 @@
 #include "third_party/blink/public/platform/web_content_decryption_module_session.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/media/new_session_cdm_result_promise.h"
-#include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {
 
 class CdmSessionAdapter;
 
-class PLATFORM_EXPORT WebContentDecryptionModuleSessionImpl
+class WebContentDecryptionModuleSessionImpl
     : public WebContentDecryptionModuleSession {
  public:
   WebContentDecryptionModuleSessionImpl(

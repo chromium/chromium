@@ -15,7 +15,6 @@
 #include "base/time/time.h"
 #include "media/base/stream_parser.h"
 #include "third_party/blink/public/platform/web_source_buffer.h"
-#include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace media {
 class ChunkDemuxer;
@@ -25,7 +24,7 @@ enum class SourceBufferParseWarning;
 
 namespace blink {
 
-class PLATFORM_EXPORT WebSourceBufferImpl : public WebSourceBuffer {
+class WebSourceBufferImpl : public WebSourceBuffer {
  public:
   WebSourceBufferImpl(const std::string& id, media::ChunkDemuxer* demuxer);
   WebSourceBufferImpl(const WebSourceBufferImpl&) = delete;

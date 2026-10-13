@@ -10,7 +10,6 @@
 #include "media/base/cdm_key_information.h"
 #include "media/base/cdm_promise.h"
 #include "third_party/blink/public/platform/web_content_decryption_module_result.h"
-#include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {
 
@@ -32,18 +31,18 @@ enum CdmResultForUMA {
   NUM_RESULT_CODES  // Must be last.
 };
 
-PLATFORM_EXPORT CdmResultForUMA
-ConvertCdmExceptionToResultForUMA(media::CdmPromise::Exception exception_code);
+CdmResultForUMA ConvertCdmExceptionToResultForUMA(
+    media::CdmPromise::Exception exception_code);
 
-PLATFORM_EXPORT WebContentDecryptionModuleException
-ConvertCdmException(media::CdmPromise::Exception exception_code);
+WebContentDecryptionModuleException ConvertCdmException(
+    media::CdmPromise::Exception exception_code);
 
-PLATFORM_EXPORT WebEncryptedMediaKeyInformation::KeyStatus ConvertCdmKeyStatus(
+WebEncryptedMediaKeyInformation::KeyStatus ConvertCdmKeyStatus(
     media::CdmKeyInformation::KeyStatus key_status);
 
-PLATFORM_EXPORT void ReportCdmResultUMA(const std::string& uma_name,
-                                        uint32_t system_code,
-                                        CdmResultForUMA result);
+void ReportCdmResultUMA(const std::string& uma_name,
+                        uint32_t system_code,
+                        CdmResultForUMA result);
 
 }  // namespace blink
 

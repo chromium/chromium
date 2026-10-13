@@ -259,7 +259,6 @@ allow_circular_includes_from_untriaged = [
   "//net:net",
   "//net:net_fuzzer_test_support",
   "//net:test_support",
-  "//third_party/blink/public/platform/media:media",
   "//third_party/blink/renderer/core:core",
   "//third_party/blink/renderer/core:core_generated",
   "//third_party/blink/renderer/core:core_hot",

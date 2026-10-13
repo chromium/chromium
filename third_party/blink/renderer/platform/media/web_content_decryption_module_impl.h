@@ -72,7 +72,6 @@ class PLATFORM_EXPORT WebContentDecryptionModuleImpl
 };
 
 // Allow typecasting from blink type as this is the only implementation.
-PLATFORM_EXPORT
 inline WebContentDecryptionModuleImpl* ToWebContentDecryptionModuleImpl(
     WebContentDecryptionModule* cdm) {
   return static_cast<WebContentDecryptionModuleImpl*>(cdm);

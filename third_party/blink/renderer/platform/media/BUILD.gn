@@ -2,40 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//media/media_options.gni")
 import("//third_party/blink/renderer/platform/platform.gni")
 
-# TODO(https://crbug.com/40760651): temporary workaround while the code is being
-# migrated to Blink coding conventions. Rename to "media" once the component is
-# removed.
-blink_platform_sources("media_final") {
-  visibility = [ "//third_party/blink/renderer/platform/*" ]
-  sources = [
-    "watch_time_component.cc",
-    "watch_time_component.h",
-    "watch_time_reporter.cc",
-    "watch_time_reporter.h",
-  ]
-  public_deps = [
-    "//base",
-    "//media",
-    "//media/mojo/mojom:mojom_blink",
-    "//mojo/public/cpp/bindings",
-    "//ui/gfx",
-    "//url",
-  ]
-  deps = [ "//third_party/blink/renderer/platform:allow_discouraged_type" ]
-}
-
-component("media") {
-  visibility = [
-    # Note: this is here because web_media_player_impl_unittest.cc needs core
-    # and web, and platform should not depend on either.
-    "//third_party/blink/public/platform/media",
-    "//third_party/blink/renderer/core:unit_tests",
-    "//third_party/blink/renderer/platform/*",
-  ]
-  output_name = "blink_platform_media"
+blink_platform_sources("media") {
   sources = [
     "buffered_data_source_host_impl.cc",
     "buffered_data_source_host_impl.h",
@@ -49,6 +18,9 @@ component("media") {
     "create_cdm_uma_helper.cc",
     "create_cdm_uma_helper.h",
     "key_system_config_selector.cc",
+    "media_player_client.h",
+    "media_player_util.cc",
+    "media_player_util.h",
     "multi_buffer.cc",
     "multi_buffer.h",
     "multi_buffer_data_source.cc",
@@ -57,8 +29,11 @@ component("media") {
     "multi_buffer_reader.h",
     "new_session_cdm_result_promise.cc",
     "new_session_cdm_result_promise.h",
+    "player_id_generator.cc",
+    "player_id_generator.h",
     "power_status_helper.cc",
     "power_status_helper.h",
+    "remote_playback_client.h",
     "resource_fetch_context.h",
     "resource_multi_buffer_data_provider.cc",
     "resource_multi_buffer_data_provider.h",
@@ -68,6 +43,12 @@ component("media") {
     "video_decode_stats_reporter.h",
     "video_frame_compositor.cc",
     "video_frame_compositor.h",
+    "watch_time_component.cc",
+    "watch_time_component.h",
+    "watch_time_reporter.cc",
+    "watch_time_reporter.h",
+    "web_audio_source_provider_client.h",
+    "web_audio_source_provider_impl.cc",
     "web_content_decryption_module_access_impl.cc",
     "web_content_decryption_module_access_impl.h",
     "web_content_decryption_module_impl.cc",
@@ -83,21 +64,16 @@ component("media") {
     "web_source_buffer_impl.cc",
     "web_source_buffer_impl.h",
   ]
-
-  configs += [
-    "//third_party/blink/renderer/platform:blink_platform_config",
-    "//third_party/blink/renderer/platform:blink_platform_implementation",
-  ]
   public_deps = [
     "//base",
     "//cc",
     "//media",
-    "//media/mojo/mojom",
+    "//media/mojo/mojom:mojom_blink",
     "//mojo/public/cpp/bindings",
     "//services/device/public/mojom:mojom_blink",
     "//services/media_session/public/cpp:base_cpp",
-    "//third_party/blink/public:blink",
-    "//third_party/blink/renderer/platform:platform_export",
+    "//third_party/blink/renderer/platform/heap",
+    "//ui/gfx",
     "//ui/gfx/geometry",
     "//url",
   ]
@@ -107,10 +83,9 @@ component("media") {
     "//net",
     "//services/network/public/cpp",
     "//third_party/blink/public/common",
-    "//third_party/blink/public/mojom:mojom_platform",
     "//third_party/blink/public/strings:strings_grit",
-    "//third_party/blink/renderer/platform",
     "//third_party/blink/renderer/platform:allow_discouraged_type",
+    "//third_party/blink/renderer/platform/scheduler",
   ]
 }
 
@@ -125,6 +100,7 @@ source_set("unit_tests") {
     "buffered_data_source_host_impl_unittest.cc",
     "cache_util_unittest.cc",
     "key_system_config_selector_unittest.cc",
+    "media_player_util_unittest.cc",
     "multi_buffer_data_source_unittest.cc",
     "multi_buffer_unittest.cc",
     "power_status_helper_unittest.cc",
@@ -134,15 +110,14 @@ source_set("unit_tests") {
     "video_frame_compositor_unittest.cc",
     "watch_time_component_unittest.cc",
     "watch_time_reporter_unittest.cc",
+    "web_audio_source_provider_impl_test.cc",
   ]
   deps = [
-    ":media",
     "//base",
     "//base/test:test_support",
     "//components/viz/common",
     "//media",
     "//media:test_support",
-    "//media/mojo/mojom",
     "//mojo/public/cpp/bindings",
     "//net",
     "//services/network/public/mojom",
@@ -150,7 +125,7 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/blink/public:blink",
     "//third_party/blink/public:test_headers",
-    "//third_party/blink/public/platform/media",
+    "//third_party/blink/renderer/platform",
     "//third_party/blink/renderer/platform:test_support",
   ]
 
@@ -175,10 +150,10 @@ source_set("test_support") {
     "testing/test_response_generator.h",
   ]
   public_deps = [
-    ":media",
     "//base",
     "//testing/gmock",
     "//third_party/blink/public:blink_headers",
+    "//third_party/blink/renderer/platform",
     "//url",
   ]
   deps = [ "//net" ]
