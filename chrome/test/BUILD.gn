@@ -1430,6 +1430,7 @@ if (!is_android) {
       "//chrome/browser/omnibox:browser_tests",
       "//chrome/browser/optimization_guide:browser_tests",
       "//chrome/browser/origin_trials:browser_tests",
+      "//chrome/browser/os_crypt:async_browser_tests",
       "//chrome/browser/page_content_annotations:browser_tests",
       "//chrome/browser/page_load_metrics:browser_tests",
       "//chrome/browser/page_load_metrics/integration_tests:browser_tests",
@@ -1790,10 +1791,8 @@ if (!is_android) {
       "$root_gen_dir/third_party/perfetto/protos/perfetto/config/chrome/scenario_config.descriptor",
     ]
 
-    sources = [
-      "../../components/live_caption/views/caption_bubble_browsertest.cc",
-      "../browser/os_crypt/os_crypt_async_browsertest.cc",
-    ]
+    sources =
+        [ "../../components/live_caption/views/caption_bubble_browsertest.cc" ]
     fuzztests = [ "SafeXmlParserFixture.ParseXML" ]
     fuzztest_additional_args = [
       "--single-process-tests",

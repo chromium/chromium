@@ -2,117 +2,138 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-assert(is_win)
+if (is_win) {
+  source_set("os_crypt") {
+    sources = [
+      "app_bound_encryption_provider_win.cc",
+      "app_bound_encryption_provider_win.h",
+    ]
 
-source_set("os_crypt") {
-  sources = [
-    "app_bound_encryption_provider_win.cc",
-    "app_bound_encryption_provider_win.h",
-  ]
+    deps = [
+      "//base",
+      "//chrome/common:channel_info",
+      "//chrome/install_static:install_static_util",
+      "//components/os_crypt/browser:key_provider_interface",
+      "//components/prefs",
+      "//crypto",
+    ]
 
-  deps = [
-    "//base",
-    "//chrome/common:channel_info",
-    "//chrome/install_static:install_static_util",
-    "//components/os_crypt/browser:key_provider_interface",
-    "//components/prefs",
-    "//crypto",
-  ]
+    public_deps = [ ":app_bound_api" ]
+  }
 
-  public_deps = [ ":app_bound_api" ]
+  # The API sources are separated out for the purposes of linking cleanly with
+  # the test executable, but the public 'os_crypt' target should be depended
+  # upon.
+  source_set("app_bound_api") {
+    visibility = [ ":*" ]
+    sources = [
+      "app_bound_encryption_win.cc",
+      "app_bound_encryption_win.h",
+    ]
+
+    deps = [
+      "//base",
+      "//chrome/common:constants",
+      "//chrome/elevation_service:public_headers",
+      "//chrome/install_static:install_static_util",
+      "//components/prefs",
+      "//components/sync/base",
+    ]
+  }
+
+  source_set("browser_tests") {
+    testonly = true
+    sources = [ "app_bound_encryption_win_browsertest.cc" ]
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    deps = [
+      ":os_crypt",
+      ":test_support",
+      "//base",
+      "//chrome/browser:browser_features",
+      "//chrome/browser/win/isolated_browser:isolated_browser_support",
+      "//chrome/elevation_service:public_headers",
+      "//chrome/test:test_support",
+      "//chrome/windows_services/service_program/test_support",
+      "//content/test:test_support",
+    ]
+
+    if (!is_component_build) {
+      data_deps = [ ":app_binary" ]
+    }
+  }
+
+  source_set("unit_tests") {
+    testonly = true
+    sources = [
+      "app_bound_encryption_provider_win_unittest.cc",
+      "app_bound_encryption_win_unittest.cc",
+    ]
+
+    deps = [
+      ":os_crypt",
+      ":test_support",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/common:constants",
+      "//chrome/elevation_service:public_headers",
+      "//chrome/install_static/test:test_support",
+      "//components/prefs",
+      "//components/prefs:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
+
+  source_set("test_support") {
+    testonly = true
+    sources = [
+      "test_support.cc",
+      "test_support.h",
+    ]
+    deps = [
+      "//base",
+      "//chrome/elevation_service:public_headers",
+      "//chrome/install_static:install_static_util",
+      "//chrome/install_static/test:test_support",
+    ]
+  }
+
+  # This binary is launched by the browser tests and makes calls to the
+  # app-bound service to test the functionality for various executable callers.
+  # It cannot be used in a component build because it needs to function from any
+  # directory on the system as part of the test.
+  if (!is_component_build) {
+    executable("app_binary") {
+      testonly = true
+      sources = [ "app_bound_encryption_test_main.cc" ]
+      deps = [
+        ":app_bound_api",
+        ":test_support",
+        "//base",
+        "//chrome/install_static/test:test_support",
+      ]
+    }
+  }
 }
 
-# The API sources are separated out for the purposes of linking cleanly with the
-# test executable, but the public 'os_crypt' target should be depended upon.
-source_set("app_bound_api") {
-  visibility = [ ":*" ]
-  sources = [
-    "app_bound_encryption_win.cc",
-    "app_bound_encryption_win.h",
-  ]
-
-  deps = [
-    "//base",
-    "//chrome/common:constants",
-    "//chrome/elevation_service:public_headers",
-    "//chrome/install_static:install_static_util",
-    "//components/prefs",
-    "//components/sync/base",
-  ]
-}
-
-source_set("browser_tests") {
+source_set("async_browser_tests") {
   testonly = true
-  sources = [ "app_bound_encryption_win_browsertest.cc" ]
+  sources = [ "os_crypt_async_browsertest.cc" ]
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   deps = [
-    ":os_crypt",
-    ":test_support",
-    "//base",
-    "//chrome/browser:browser_features",
-    "//chrome/browser/win/isolated_browser:isolated_browser_support",
-    "//chrome/elevation_service:public_headers",
-    "//chrome/test:test_support",
-    "//chrome/windows_services/service_program/test_support",
-    "//content/test:test_support",
-  ]
-
-  if (!is_component_build) {
-    data_deps = [ ":app_binary" ]
-  }
-}
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [
-    "app_bound_encryption_provider_win_unittest.cc",
-    "app_bound_encryption_win_unittest.cc",
-  ]
-
-  deps = [
-    ":os_crypt",
-    ":test_support",
     "//base",
     "//base/test:test_support",
-    "//chrome/common:constants",
-    "//chrome/elevation_service:public_headers",
-    "//chrome/install_static/test:test_support",
-    "//components/prefs",
-    "//components/prefs:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
+    "//chrome/browser:browser_process",
+    "//chrome/test:test_support",
+    "//components/os_crypt/async/browser",
+    "//components/os_crypt/async/browser:test_support",
+    "//components/os_crypt/async/common",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//services/test/echo/public/mojom",
   ]
-}
-
-source_set("test_support") {
-  testonly = true
-  sources = [
-    "test_support.cc",
-    "test_support.h",
-  ]
-  deps = [
-    "//base",
-    "//chrome/elevation_service:public_headers",
-    "//chrome/install_static:install_static_util",
-    "//chrome/install_static/test:test_support",
-  ]
-}
-
-# This binary is launched by the browser tests and makes calls to the app-bound
-# service to test the functionality for various executable callers. It cannot
-# be used in a component build because it needs to function from any directory
-# on the system as part of the test.
-if (!is_component_build) {
-  executable("app_binary") {
-    testonly = true
-    sources = [ "app_bound_encryption_test_main.cc" ]
-    deps = [
-      ":app_bound_api",
-      ":test_support",
-      "//base",
-      "//chrome/install_static/test:test_support",
-    ]
-  }
 }
