@@ -60,6 +60,7 @@ source_set("impl") {
     "//chrome/browser/password_manager",
     "//chrome/browser/ui/browser_window",
     "//components/device_reauth",
+    "//components/password_manager/core/browser/features:password_features",
     "//content/public/browser",
   ]
 
@@ -105,10 +106,7 @@ source_set("impl") {
       "mac/device_auth_availability_checker_mac.mm",
       "mac/device_authenticator_mac.mm",
     ]
-    deps += [
-      "//components/password_manager/core/browser/features:password_features",
-      "//device/fido",
-    ]
+    deps += [ "//device/fido" ]
   }
 
   if (is_win) {
@@ -137,6 +135,7 @@ source_set("unit_tests") {
     "//chrome/test/base:testing_browser_process",
     "//components/device_reauth",
     "//components/device_reauth:test_support",
+    "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/common",
     "//components/prefs:test_support",
     "//content/test:test_support",

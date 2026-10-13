@@ -22,6 +22,13 @@ class DeviceAuthAvailabilityCheckerChromeOS
       std::unique_ptr<AuthenticatorChromeOSInterface> authenticator);
   ~DeviceAuthAvailabilityCheckerChromeOS() override;
 
+  // Asynchronously checks if a PIN authentication factor is configured for the
+  // current active user and stores the response in a local state pref for
+  // future usage, as that check is expensive. Prefer using the cached value
+  // over calling this for every auth attempt.
+  static void CacheIfPinIsAvailable(
+      std::unique_ptr<AuthenticatorChromeOSInterface> authenticator);
+
   // Returns whether biometrics are available for a given device.
   bool CanAuthenticateWithBiometrics() override;
 

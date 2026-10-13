@@ -4,13 +4,36 @@
 
 #include "chrome/browser/device_reauth/win/device_auth_availability_checker_win.h"
 
+#include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/device_reauth/win/authenticator_win.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 
+namespace {
+
+void SaveAvailability(BiometricAuthenticationStatusWin availability) {
+  CHECK(g_browser_process);
+  CHECK(g_browser_process->local_state());
+
+  bool is_available =
+      availability == BiometricAuthenticationStatusWin::kAvailable;
+  g_browser_process->local_state()->SetBoolean(
+      password_manager::prefs::kIsBiometricAvailable, is_available);
+  if (is_available) {
+    g_browser_process->local_state()->SetBoolean(
+        password_manager::prefs::kHadBiometricsAvailable, is_available);
+  }
+  base::UmaHistogramEnumeration("PasswordManager.BiometricAvailabilityWin",
+                                availability);
+}
+
+}  // namespace
+
 DeviceAuthAvailabilityCheckerWin::DeviceAuthAvailabilityCheckerWin()
-    : authenticator_(std::make_unique<AuthenticatorWin>()) {}
+    : DeviceAuthAvailabilityCheckerWin(std::make_unique<AuthenticatorWin>()) {}
 
 DeviceAuthAvailabilityCheckerWin::DeviceAuthAvailabilityCheckerWin(
     std::unique_ptr<AuthenticatorWinInterface> authenticator)
@@ -18,12 +41,16 @@ DeviceAuthAvailabilityCheckerWin::DeviceAuthAvailabilityCheckerWin(
 
 DeviceAuthAvailabilityCheckerWin::~DeviceAuthAvailabilityCheckerWin() = default;
 
+// static
+void DeviceAuthAvailabilityCheckerWin::CacheIfBiometricsAvailable(
+    std::unique_ptr<AuthenticatorWinInterface> authenticator) {
+  CHECK(authenticator);
+  authenticator->CheckIfBiometricsAvailable(base::BindOnce(&SaveAvailability));
+}
+
 bool DeviceAuthAvailabilityCheckerWin::CanAuthenticateWithBiometrics() {
   CHECK(g_browser_process);
   CHECK(g_browser_process->local_state());
-  // Setting that pref happens once when the `ChromeDeviceAuthenticatorFactory`
-  // is created and it is async so it can technically happen that this pref
-  // doesn't have the latest value when you check it.
   return g_browser_process->local_state()->GetBoolean(
       password_manager::prefs::kIsBiometricAvailable);
 }

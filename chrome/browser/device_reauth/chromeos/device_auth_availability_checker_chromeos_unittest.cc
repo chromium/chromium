@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/device_reauth/chromeos/authenticator_chromeos.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -148,6 +149,18 @@ TEST_F(DeviceAuthAvailabilityCheckerChromeOSTest, NeitherAvailable) {
       password_manager::prefs::kPinAuthenticationAvailableOnChromeOS, false);
 
   EXPECT_FALSE(checker()->CanAuthenticateWithBiometricOrScreenLock());
+}
+
+TEST_F(DeviceAuthAvailabilityCheckerChromeOSTest, CacheIfPinIsAvailable) {
+  auto authenticator = std::make_unique<MockSystemAuthenticator>();
+  EXPECT_CALL(*authenticator, CheckIfPinIsAvailable)
+      .WillOnce(base::test::RunOnceCallback<0>(true));
+
+  DeviceAuthAvailabilityCheckerChromeOS::CacheIfPinIsAvailable(
+      std::move(authenticator));
+
+  EXPECT_TRUE(local_state()->GetBoolean(
+      password_manager::prefs::kPinAuthenticationAvailableOnChromeOS));
 }
 
 }  // namespace

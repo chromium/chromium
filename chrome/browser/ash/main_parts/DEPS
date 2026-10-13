@@ -58,6 +58,7 @@ include_rules = [
   "+chrome/browser/component_updater",
   "+chrome/browser/defaults.h",
   "+chrome/browser/device_identity",
+  "+chrome/browser/device_reauth",
   "+chrome/browser/first_run",
   "+chrome/browser/global_features.h",
   "+chrome/browser/memory",

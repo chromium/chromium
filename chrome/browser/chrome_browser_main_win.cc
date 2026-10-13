@@ -58,6 +58,8 @@
 #include "chrome/browser/active_use_util.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/device_reauth/win/authenticator_win.h"
+#include "chrome/browser/device_reauth/win/device_auth_availability_checker_win.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/first_run/upgrade_util.h"
 #include "chrome/browser/first_run/upgrade_util_win.h"
@@ -108,6 +110,7 @@
 #include "components/crash/core/app/dump_hung_process_with_ptype.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/os_crypt/async/browser/os_crypt_win.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/hashing.h"
 #include "components/version_info/channel.h"
@@ -138,6 +141,8 @@
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace {
+
+constexpr base::TimeDelta kCacheBiometricsAvailabilityDelay = base::Seconds(30);
 
 typedef HRESULT (STDAPICALLTYPE* RegisterApplicationRestartProc)(
     const wchar_t* command_line,
@@ -873,6 +878,17 @@ void ChromeBrowserMainPartsWin::PostBrowserStart() {
   content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
       ->PostTask(FROM_HERE,
                  base::BindOnce(&MaybeUpdateIsolationStateFromFieldTrial));
+
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kDeviceReauthRefactor)) {
+    content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
+        ->PostDelayedTask(
+            FROM_HERE,
+            base::BindOnce(
+                &DeviceAuthAvailabilityCheckerWin::CacheIfBiometricsAvailable,
+                std::make_unique<AuthenticatorWin>()),
+            kCacheBiometricsAvailabilityDelay);
+  }
 
   base::ImportantFileWriterCleaner::GetInstance().Start();
 }

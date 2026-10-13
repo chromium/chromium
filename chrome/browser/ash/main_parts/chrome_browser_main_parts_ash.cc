@@ -185,6 +185,8 @@
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
+#include "chrome/browser/device_reauth/chromeos/authenticator_chromeos.h"
+#include "chrome/browser/device_reauth/chromeos/device_auth_availability_checker_chromeos.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
@@ -276,6 +278,7 @@
 #include "components/language/core/browser/pref_names.h"
 #include "components/metrics/metrics_service.h"
 #include "components/ownership/owner_key_util.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/quirks/quirks_manager.h"
@@ -334,6 +337,8 @@
 namespace ash {
 
 namespace {
+
+constexpr base::TimeDelta kCachePinAvailabilityDelay = base::Seconds(30);
 
 void ChromeOSVersionCallback(const std::optional<std::string>& version) {
   base::SetLinuxDistro("CrOS " + version.value_or("0.0.0.0"));
@@ -1481,6 +1486,19 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
         base::DoNothing(),
         base::BindOnce(ShillSetPropertyErrorCallback,
                        shill::kEnableDHCPQoSProperty));
+  }
+
+  // Cache PIN availability 30 seconds after user profile initialization.
+  if (BrowserContextHelper::Get()->GetUserByBrowserContext(profile) &&
+      base::FeatureList::IsEnabled(
+          password_manager::features::kDeviceReauthRefactor)) {
+    content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
+        ->PostDelayedTask(
+            FROM_HERE,
+            base::BindOnce(
+                &DeviceAuthAvailabilityCheckerChromeOS::CacheIfPinIsAvailable,
+                std::make_unique<AuthenticatorChromeOS>()),
+            kCachePinAvailabilityDelay);
   }
 
   ChromeBrowserMainPartsLinux::PostProfileInit(profile, is_initial_profile);

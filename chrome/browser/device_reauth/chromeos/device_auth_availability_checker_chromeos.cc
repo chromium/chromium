@@ -4,6 +4,8 @@
 
 #include "chrome/browser/device_reauth/chromeos/device_auth_availability_checker_chromeos.h"
 
+#include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/device_reauth/chromeos/authenticator_chromeos.h"
@@ -11,7 +13,8 @@
 #include "components/prefs/pref_service.h"
 
 DeviceAuthAvailabilityCheckerChromeOS::DeviceAuthAvailabilityCheckerChromeOS()
-    : authenticator_(std::make_unique<AuthenticatorChromeOS>()) {}
+    : DeviceAuthAvailabilityCheckerChromeOS(
+          std::make_unique<AuthenticatorChromeOS>()) {}
 
 DeviceAuthAvailabilityCheckerChromeOS::DeviceAuthAvailabilityCheckerChromeOS(
     std::unique_ptr<AuthenticatorChromeOSInterface> authenticator)
@@ -19,6 +22,19 @@ DeviceAuthAvailabilityCheckerChromeOS::DeviceAuthAvailabilityCheckerChromeOS(
 
 DeviceAuthAvailabilityCheckerChromeOS::
     ~DeviceAuthAvailabilityCheckerChromeOS() = default;
+
+// static
+void DeviceAuthAvailabilityCheckerChromeOS::CacheIfPinIsAvailable(
+    std::unique_ptr<AuthenticatorChromeOSInterface> authenticator) {
+  CHECK(authenticator);
+  authenticator->CheckIfPinIsAvailable(base::BindOnce([](bool has_pin) {
+    CHECK(g_browser_process);
+    CHECK(g_browser_process->local_state());
+    g_browser_process->local_state()->SetBoolean(
+        password_manager::prefs::kPinAuthenticationAvailableOnChromeOS,
+        has_pin);
+  }));
+}
 
 bool DeviceAuthAvailabilityCheckerChromeOS::CanAuthenticateWithBiometrics() {
   BiometricsStatusChromeOS status =
@@ -30,9 +46,9 @@ bool DeviceAuthAvailabilityCheckerChromeOS::CanAuthenticateWithBiometrics() {
 
   if (is_available) {
     // If biometrics is available, we should record that at one point in time
-    // biometrics was available on this device. This will never be set to false
-    // after setting to true here as we only record this when biometrics is
-    // available.
+    // biometrics was available on this device. This will never be set to
+    // `false` after setting to `true` here as we only record this when
+    // biometrics is available.
     g_browser_process->local_state()->SetBoolean(
         password_manager::prefs::kHadBiometricsAvailable, /*value=*/true);
   }

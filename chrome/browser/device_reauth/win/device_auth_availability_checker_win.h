@@ -22,6 +22,13 @@ class DeviceAuthAvailabilityCheckerWin
       std::unique_ptr<AuthenticatorWinInterface> authenticator);
   ~DeviceAuthAvailabilityCheckerWin() override;
 
+  // Asks Windows if user has configured and enabled biometrics on
+  // their machine. Stores the response in a local state pref for future usage,
+  // as that check is very expensive. Prefer using the cached value over calling
+  // this for every auth attempt.
+  static void CacheIfBiometricsAvailable(
+      std::unique_ptr<AuthenticatorWinInterface> authenticator);
+
   // Returns true, when biometrics are available.
   bool CanAuthenticateWithBiometrics() override;
 

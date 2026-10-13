@@ -9,6 +9,8 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/device_reauth/win/authenticator_win.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -18,6 +20,7 @@
 
 namespace {
 
+using base::test::RunOnceCallback;
 using testing::Return;
 
 class MockSystemAuthenticator : public AuthenticatorWinInterface {
@@ -84,5 +87,81 @@ TEST_F(DeviceAuthAvailabilityCheckerWinTest, NeitherAvailable) {
   EXPECT_FALSE(checker()->CanAuthenticateWithBiometrics());
   EXPECT_FALSE(checker()->CanAuthenticateWithBiometricOrScreenLock());
 }
+
+struct TestCase {
+  const char* description;
+  BiometricAuthenticationStatusWin availability;
+  bool expected_result;
+  int expected_bucket;
+};
+
+class DeviceAuthAvailabilityCheckerWinTestAvailability
+    : public DeviceAuthAvailabilityCheckerWinTest,
+      public testing::WithParamInterface<TestCase> {};
+
+TEST_P(DeviceAuthAvailabilityCheckerWinTestAvailability, AvailabilityCheck) {
+  TestCase test_case = GetParam();
+  SCOPED_TRACE(test_case.description);
+  base::HistogramTester histogram_tester;
+  auto authenticator = std::make_unique<MockSystemAuthenticator>();
+  EXPECT_CALL(*authenticator, CheckIfBiometricsAvailable)
+      .WillOnce(testing::WithArg<0>([&test_case](auto callback) {
+        std::move(callback).Run(test_case.availability);
+      }));
+
+  DeviceAuthAvailabilityCheckerWin::CacheIfBiometricsAvailable(
+      std::move(authenticator));
+
+  EXPECT_EQ(test_case.expected_result,
+            local_state()->GetBoolean(
+                password_manager::prefs::kIsBiometricAvailable));
+  EXPECT_EQ(test_case.expected_result,
+            local_state()->GetBoolean(
+                password_manager::prefs::kHadBiometricsAvailable));
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.BiometricAvailabilityWin", test_case.expected_bucket, 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DeviceAuthAvailabilityCheckerWinTestAvailability,
+    ::testing::Values(
+        TestCase{
+            .description = "kUnknown",
+            .availability = BiometricAuthenticationStatusWin::kUnknown,
+            .expected_result = false,
+            .expected_bucket = 0,
+        },
+        TestCase{
+            .description = "kAvailable",
+            .availability = BiometricAuthenticationStatusWin::kAvailable,
+            .expected_result = true,
+            .expected_bucket = 1,
+        },
+        TestCase{
+            .description = "kDeviceBusy",
+            .availability = BiometricAuthenticationStatusWin::kDeviceBusy,
+            .expected_result = false,
+            .expected_bucket = 2,
+        },
+        TestCase{
+            .description = "kDisabledByPolicy",
+            .availability = BiometricAuthenticationStatusWin::kDisabledByPolicy,
+            .expected_result = false,
+            .expected_bucket = 3,
+        },
+        TestCase{
+            .description = "kDeviceNotPresent",
+            .availability = BiometricAuthenticationStatusWin::kDeviceNotPresent,
+            .expected_result = false,
+            .expected_bucket = 4,
+        },
+        TestCase{
+            .description = "kNotConfiguredForUser",
+            .availability =
+                BiometricAuthenticationStatusWin::kNotConfiguredForUser,
+            .expected_result = false,
+            .expected_bucket = 5,
+        }));
 
 }  // namespace

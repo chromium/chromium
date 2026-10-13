@@ -1643,6 +1643,7 @@ source_set("core") {
       ":fullscreen",
       "//chrome/app:chrome_exe_main_exports",
       "//chrome/app/theme:chrome_unscaled_resources_grit",
+      "//chrome/browser/device_reauth",
       "//chrome/browser/install_verification:impl",
       "//chrome/browser/os_crypt",
       "//chrome/browser/platform_experience:prefs",
