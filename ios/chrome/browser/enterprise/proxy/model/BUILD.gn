@@ -12,6 +12,8 @@ source_set("model") {
     "enterprise_proxy_error_service_factory_ios.mm",
     "enterprise_proxy_service_factory_ios.h",
     "enterprise_proxy_service_factory_ios.mm",
+    "enterprise_proxy_tab_helper.h",
+    "enterprise_proxy_tab_helper.mm",
     "proxy_service_controller.h",
     "proxy_service_controller.mm",
     "proxy_service_controller_factory.h",
@@ -58,6 +60,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "enterprise_proxy_blocking_page_unittest.mm",
+    "enterprise_proxy_tab_helper_unittest.mm",
     "proxy_auth_challenge_util_unittest.mm",
     "proxy_service_controller_unittest.mm",
   ]
