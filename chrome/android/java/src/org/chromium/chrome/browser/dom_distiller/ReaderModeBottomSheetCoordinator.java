@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
 import org.chromium.components.dom_distiller.core.DomDistillerService;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -138,6 +139,9 @@ public class ReaderModeBottomSheetCoordinator {
     }
 
     private class ReaderModeBottomSheetContent implements BottomSheetContent {
+        private static final BottomSheetType SHEET_TYPE =
+                new BottomSheetType.Builder().setSuppressible(true).build();
+
         private final View mContentView;
 
         ReaderModeBottomSheetContent(View contentView) {
@@ -165,6 +169,11 @@ public class ReaderModeBottomSheetCoordinator {
         @Override
         public int getPriority() {
             return BottomSheetContent.ContentPriority.LOW;
+        }
+
+        @Override
+        public BottomSheetType getSheetType() {
+            return SHEET_TYPE;
         }
 
         @Override
