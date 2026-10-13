@@ -16,8 +16,6 @@ source_set("coordinator") {
     "at_memory_search_coordinator.mm",
     "at_memory_search_mediator.h",
     "at_memory_search_mediator.mm",
-    "scoped_at_memory_search_provider_override.h",
-    "scoped_at_memory_search_provider_override.mm",
   ]
   deps = [
     "//base",
@@ -33,7 +31,6 @@ source_set("coordinator") {
     "//ios/chrome/browser/autofill/atmemory/ui",
     "//ios/chrome/browser/autofill/atmemory/ui:item",
     "//ios/chrome/browser/autofill/atmemory/utils",
-    "//ios/chrome/browser/autofill/manual_fill/public",
     "//ios/chrome/browser/autofill/model",
     "//ios/chrome/browser/personal_context/model",
     "//ios/chrome/browser/settings/ui_bundled:settings_root",
@@ -76,7 +73,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/autofill/atmemory/public",
     "//ios/chrome/browser/autofill/atmemory/ui",
     "//ios/chrome/browser/autofill/atmemory/ui:item",
-    "//ios/chrome/browser/autofill/manual_fill/public",
     "//ios/chrome/browser/autofill/public",
     "//ios/chrome/browser/shared/public/features",
     "//ios/web/public/test",

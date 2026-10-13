@@ -12,7 +12,6 @@
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_granular_fill_mutator.h"
 #import "ios/chrome/browser/autofill/atmemory/utils/atmemory_ui_util.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"

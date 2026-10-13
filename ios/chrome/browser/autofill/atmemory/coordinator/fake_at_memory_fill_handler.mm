@@ -6,11 +6,6 @@
 
 @implementation FakeAtMemoryFillHandler
 
-- (void)fillWithContent:(NSString*)content {
-  self.fillWithContentCalled = YES;
-  self.filledContent = content;
-}
-
 - (void)fillWithSuggestion:(const autofill::Suggestion&)suggestion {
   self.fillWithSuggestionCalled = YES;
 }

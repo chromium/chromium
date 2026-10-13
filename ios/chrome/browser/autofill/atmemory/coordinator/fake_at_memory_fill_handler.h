@@ -15,12 +15,6 @@
 // Whether `fillWithSuggestion:` was called.
 @property(nonatomic, assign) BOOL fillWithSuggestionCalled;
 
-// Whether `fillWithContent:` was called.
-@property(nonatomic, assign) BOOL fillWithContentCalled;
-
-// The last content passed to `fillWithContent:`.
-@property(nonatomic, copy) NSString* filledContent;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_ATMEMORY_COORDINATOR_FAKE_AT_MEMORY_FILL_HANDLER_H_

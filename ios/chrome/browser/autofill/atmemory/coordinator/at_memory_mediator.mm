@@ -11,7 +11,6 @@
 #import "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #import "components/autofill/core/browser/suggestions/suggestion.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_commands.h"
-#import "ios/chrome/browser/autofill/manual_fill/public/manual_fill_content_injector.h"
 
 using autofill::AtMemoryManager;
 using autofill::BrowserAutofillManager;
@@ -26,16 +25,12 @@ using autofill::Suggestion;
   raw_ptr<AtMemoryManager> _atMemoryManager;
   // Manager for Browser Autofill operations.
   raw_ptr<BrowserAutofillManager> _autofillManager;
-  // Injector for manual fill data.
-  __weak id<ManualFillContentInjector> _contentInjector;
   // Field ID that initiated AtMemory.
   FieldGlobalId _fieldId;
 }
 
 - (instancetype)initWithAtMemoryManager:(AtMemoryManager*)atMemoryManager
                         autofillManager:(BrowserAutofillManager*)autofillManager
-                        contentInjector:
-                            (id<ManualFillContentInjector>)contentInjector
                                 fieldId:(FieldGlobalId)fieldId {
   self = [super init];
   if (self) {
@@ -43,7 +38,6 @@ using autofill::Suggestion;
     CHECK(autofillManager);
     _atMemoryManager = atMemoryManager;
     _autofillManager = autofillManager;
-    _contentInjector = contentInjector;
     _fieldId = fieldId;
   }
   return self;
@@ -56,20 +50,9 @@ using autofill::Suggestion;
 - (void)disconnect {
   _atMemoryManager = nullptr;
   _autofillManager = nullptr;
-  _contentInjector = nil;
 }
 
 #pragma mark - AtMemoryFillCommands
-
-- (void)fillWithContent:(NSString*)content {
-  [_contentInjector userDidPickContent:content
-                         passwordField:NO
-                         requiresHTTPS:YES
-                       jumpToNextField:NO
-                            actionType:autofill::mojom::FieldActionType::
-                                           kReplaceSelectionForAtMemory];
-  [self.atMemoryHandler dismissAtMemory];
-}
 
 - (void)fillWithSuggestion:(const Suggestion&)suggestion {
   if (!_atMemoryManager || !_autofillManager) {

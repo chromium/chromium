@@ -14,9 +14,6 @@ struct Suggestion;
 // Commands handler for AtMemory fill actions.
 @protocol AtMemoryFillCommands <NSObject>
 
-// Fills the active form field with the given `content`.
-- (void)fillWithContent:(NSString*)content;
-
 // Fills the active form field with the given `suggestion`.
 - (void)fillWithSuggestion:(const autofill::Suggestion&)suggestion;
 

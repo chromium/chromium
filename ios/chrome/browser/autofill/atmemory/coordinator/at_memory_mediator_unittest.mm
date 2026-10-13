@@ -16,7 +16,6 @@
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/test_autofill_client_ios.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_commands.h"
-#import "ios/chrome/browser/autofill/manual_fill/public/manual_fill_content_injector.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -96,7 +95,6 @@ class AtMemoryMediatorTest : public PlatformTest {
     at_memory_manager_ = std::make_unique<AtMemoryManager>(
         autofill_client_.get(), /*history_service=*/nullptr);
 
-    mock_injector_ = OCMProtocolMock(@protocol(ManualFillContentInjector));
     mock_at_memory_handler_ = OCMProtocolMock(@protocol(AtMemoryCommands));
 
     mediator_ = CreateMediatorWithFieldId(FieldGlobalId());
@@ -105,7 +103,6 @@ class AtMemoryMediatorTest : public PlatformTest {
   void TearDown() override {
     [mediator_ disconnect];
     mediator_ = nil;
-    mock_injector_ = nil;
     at_memory_manager_.reset();
     autofill_client_.reset();
     PlatformTest::TearDown();
@@ -119,39 +116,13 @@ class AtMemoryMediatorTest : public PlatformTest {
     AtMemoryMediator* mediator = [[AtMemoryMediator alloc]
         initWithAtMemoryManager:at_memory_manager_.get()
                 autofillManager:autofill_manager
-                contentInjector:mock_injector_
                         fieldId:field_id];
     mediator.atMemoryHandler = mock_at_memory_handler_;
     return mediator;
   }
 
-  // Sets OCMock expectations for filling `content` and dismissing AtMemory.
-  void ExpectSuccessfulFillAndDismiss(NSString* content) {
-    OCMExpect([mock_injector_
-        userDidPickContent:content
-             passwordField:NO
-             requiresHTTPS:YES
-           jumpToNextField:NO
-                actionType:autofill::mojom::FieldActionType::
-                               kReplaceSelectionForAtMemory]);
-    OCMExpect([mock_at_memory_handler_ dismissAtMemory]);
-  }
-
-  // Asserts that no content is injected, i.e. that the fill is performed
-  // exclusively through `AtMemoryManager`.
-  void RejectContentInjection() {
-    [[mock_injector_ reject]
-        userDidPickContent:[OCMArg any]
-             passwordField:NO
-             requiresHTTPS:YES
-           jumpToNextField:NO
-                actionType:autofill::mojom::FieldActionType::
-                               kReplaceSelectionForAtMemory];
-  }
-
-  // Verifies all OCMock expectations for injector and AtMemory handler.
+  // Verifies all OCMock expectations for AtMemory handler.
   void VerifyMocks() {
-    EXPECT_OCMOCK_VERIFY(mock_injector_);
     EXPECT_OCMOCK_VERIFY(mock_at_memory_handler_);
   }
 
@@ -160,25 +131,13 @@ class AtMemoryMediatorTest : public PlatformTest {
   web::FakeWebState web_state_;
   std::unique_ptr<TestAutofillClientIOS> autofill_client_;
   std::unique_ptr<AtMemoryManager> at_memory_manager_;
-  id mock_injector_;
   id mock_at_memory_handler_;
   AtMemoryMediator* mediator_;
 };
 
-// Tests that fillWithContent: forwards to the content injector and dismisses
-// AtMemory.
-TEST_F(AtMemoryMediatorTest, FillWithContentCallsInjectorAndDismisses) {
-  ExpectSuccessfulFillAndDismiss(kTestContent);
-
-  [mediator_ fillWithContent:kTestContent];
-
-  VerifyMocks();
-}
-
 // Tests that fillWithSuggestion: with a non-obfuscated suggestion fills via
-// AtMemoryManager only, without also injecting the value a second time.
+// AtMemoryManager and dismisses AtMemory.
 TEST_F(AtMemoryMediatorTest, FillWithSuggestionNonObfuscatedFillsValue) {
-  RejectContentInjection();
   OCMExpect([mock_at_memory_handler_ dismissAtMemory]);
 
   [mediator_ fillWithSuggestion:CreateTestSuggestion()];
@@ -187,9 +146,8 @@ TEST_F(AtMemoryMediatorTest, FillWithSuggestionNonObfuscatedFillsValue) {
 }
 
 // Tests that fillWithSuggestion: with an obfuscated suggestion delegates to
-// AtMemoryManager and dismisses AtMemory directly without simple injection.
+// AtMemoryManager and dismisses AtMemory.
 TEST_F(AtMemoryMediatorTest, FillWithSuggestionObfuscatedFillsAndDismisses) {
-  RejectContentInjection();
   OCMExpect([mock_at_memory_handler_ dismissAtMemory]);
 
   [mediator_ fillWithSuggestion:CreateObfuscatedSuggestion()];
@@ -203,11 +161,11 @@ TEST_F(AtMemoryMediatorTest, FillWithSuggestionObfuscatedWithValidFieldId) {
   AtMemoryMediator* mediator =
       CreateMediatorWithFieldId(CreateTestFieldGlobalId());
 
-  RejectContentInjection();
+  OCMExpect([mock_at_memory_handler_ dismissAtMemory]);
 
   [mediator fillWithSuggestion:CreateObfuscatedSuggestion()];
 
-  EXPECT_OCMOCK_VERIFY(mock_injector_);
+  VerifyMocks();
   [mediator disconnect];
 }
 
@@ -224,7 +182,6 @@ TEST_F(AtMemoryMediatorTest, FillWithSuggestionRecordsInAtMemoryManager) {
   FieldGlobalId field_id = CreateTestFieldGlobalId();
   AtMemoryMediator* mediator = CreateMediatorWithFieldId(field_id);
 
-  RejectContentInjection();
   OCMExpect([mock_at_memory_handler_ dismissAtMemory]);
 
   at_memory_manager_->GetStateForField(field_id, url::Origin());

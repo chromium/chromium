@@ -18,7 +18,6 @@
 #import "ios/chrome/browser/autofill/atmemory/coordinator/at_memory_search_coordinator.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_commands.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_search_result_commands.h"
-#import "ios/chrome/browser/autofill/manual_fill/public/manual_fill_content_injector.h"
 #import "ios/chrome/browser/autofill/model/autofill_ai_util.h"
 #import "ios/chrome/browser/autofill/public/autofill_settings_navigator.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
@@ -45,8 +44,6 @@ using autofill::autofill_metrics::AutofillSettingsReferrer;
   UINavigationController* _atMemoryNavigationController;
   // NavigationController for Settings.
   SettingsNavigationController* _settingsNavigationController;
-  // Injector for manual fill data.
-  id<ManualFillContentInjector> _contentInjector;
   // Coordinator for AtMemory search.
   AtMemorySearchCoordinator* _atMemorySearchCoordinator;
   // Coordinator for AtMemory granular fill.
@@ -59,12 +56,9 @@ using autofill::autofill_metrics::AutofillSettingsReferrer;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
-                           contentInjector:
-                               (id<ManualFillContentInjector>)contentInjector
                                    fieldId:(FieldGlobalId)fieldId {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
-    _contentInjector = contentInjector;
     _fieldId = fieldId;
   }
   return self;
@@ -92,7 +86,6 @@ using autofill::autofill_metrics::AutofillSettingsReferrer;
 
   _mediator = [[AtMemoryMediator alloc] initWithAtMemoryManager:atMemoryManager
                                                 autofillManager:autofillManager
-                                                contentInjector:_contentInjector
                                                         fieldId:_fieldId];
   _mediator.atMemoryHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), AtMemoryCommands);

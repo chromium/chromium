@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_fill_commands.h"
 
 @protocol AtMemoryCommands;
-@protocol ManualFillContentInjector;
 
 namespace autofill {
 class AtMemoryManager;
@@ -26,12 +25,11 @@ class BrowserAutofillManager;
 
 // The designated initializer. `atMemoryManager` provides access to the
 // AtMemory manager. `autofillManager` provides the primary main frame autofill
-// manager. `contentInjector` is used to inject content into the web page.
-// `fieldId` is the identifier of the field that initiated the AtMemory flow.
+// manager. `fieldId` is the identifier of the field that initiated the AtMemory
+// flow.
 - (instancetype)
     initWithAtMemoryManager:(autofill::AtMemoryManager*)atMemoryManager
             autofillManager:(autofill::BrowserAutofillManager*)autofillManager
-            contentInjector:(id<ManualFillContentInjector>)contentInjector
                     fieldId:(autofill::FieldGlobalId)fieldId
     NS_DESIGNATED_INITIALIZER;
 

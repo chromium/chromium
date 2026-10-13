@@ -66,7 +66,6 @@
 
   _atMemorySearchViewController = [[AtMemorySearchViewController alloc]
       initWithStyle:ChromeTableViewStyle()];
-  _atMemorySearchViewController.searchResultHandler = self.searchResultHandler;
   _atMemorySearchViewController.atMemoryHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), AtMemoryCommands);
   _atMemorySearchViewController.geminiHandler =

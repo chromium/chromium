@@ -10,7 +10,6 @@
 
 @protocol AtMemorySearchMutator;
 @protocol AtMemoryCommands;
-@protocol AtMemorySearchResultCommands;
 @protocol GeminiCommands;
 
 // View controller for AtMemory search.
@@ -19,9 +18,6 @@
 
 // Mutator for actions in the AtMemory search UI.
 @property(nonatomic, weak) id<AtMemorySearchMutator> mutator;
-
-// Handler for actions related to the AtMemory search results.
-@property(nonatomic, weak) id<AtMemorySearchResultCommands> searchResultHandler;
 
 // Handler for AtMemory commands.
 @property(nonatomic, weak) id<AtMemoryCommands> atMemoryHandler;

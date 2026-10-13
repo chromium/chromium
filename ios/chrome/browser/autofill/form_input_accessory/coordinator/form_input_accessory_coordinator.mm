@@ -938,7 +938,6 @@ void UndoInSessionSuppressedEntity(
   _atMemoryCoordinator = [[AtMemoryCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
-                 contentInjector:self.injectionHandler
                          fieldId:fieldId];
 
   [self.childCoordinators addObject:_atMemoryCoordinator];
