@@ -83,6 +83,26 @@ class ShapeResultTest : public FontTestBase {
     return result.character_position_.size();
   }
 
+  static ShapeResultRun* InsertConstantAdvanceRun(ShapeResult* result,
+                                                  unsigned start_index,
+                                                  unsigned num_characters,
+                                                  TextRunLayoutUnit advance,
+                                                  bool compact) {
+    ShapeResultRun* run = result->InsertRunForTesting(
+        start_index, num_characters, result->Direction());
+    for (HarfBuzzRunGlyphData& glyph : run->glyph_data_.MutableGlyphs()) {
+      glyph.SetAdvance(advance);
+      glyph.SetSafeToBreakBefore(SafeToBreak::kSafe);
+    }
+    run->width_ = InlineLayoutUnit::FromRawValue(int64_t{advance.RawValue()} *
+                                                 num_characters)
+                      .ToFloat();
+    if (compact) {
+      EXPECT_TRUE(run->glyph_data_.TryMakeCompact());
+    }
+    return run;
+  }
+
   ShapeResult* CreateShapeResult(TextDirection direction) const {
     return MakeGarbageCollected<ShapeResult>(0, 0, direction);
   }
@@ -407,6 +427,25 @@ TEST_F(ShapeResultTest, CompactPositionDataRebuildsFullTable) {
     EXPECT_TRUE(data.is_cluster_base);
     EXPECT_TRUE(data.safe_to_break_before);
   }
+}
+
+TEST_F(ShapeResultTest, CompactRunsForceFullPositionData) {
+  constexpr unsigned kNumCharacters = 16;
+  ShapeResult* result =
+      MakeGarbageCollected<ShapeResult>(0, kNumCharacters, TextDirection::kLtr);
+  ShapeResultRun* run = InsertConstantAdvanceRun(
+      result, 0, kNumCharacters, TextRunLayoutUnit(10), /*compact=*/true);
+  result->EnsurePositionData(/*allow_compaction=*/false);
+  ASSERT_EQ(kNumCharacters, PositionDataSize(*result));
+  EXPECT_TRUE(run->GetGlyphDataRange().IsCompactSource());
+  for (unsigned offset = 0; offset < kNumCharacters; ++offset) {
+    const ShapeResultCharacterData& data = result->CharacterData(offset);
+    EXPECT_EQ(LayoutUnit(offset * 10), data.x_position);
+    EXPECT_TRUE(data.is_cluster_base);
+    EXPECT_TRUE(data.safe_to_break_before);
+  }
+  result->EnsurePositionData();
+  EXPECT_EQ(kNumCharacters, PositionDataSize(*result));
 }
 
 TEST_F(ShapeResultTest, ComputeInkBoundsWithZeroOffset) {

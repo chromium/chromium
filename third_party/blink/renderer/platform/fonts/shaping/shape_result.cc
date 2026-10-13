@@ -553,18 +553,26 @@ bool ShapeResult::IsStartSafeToBreak() const {
   if (runs_.empty()) [[unlikely]] {
     return false;
   }
-  const ShapeResultRun* run = nullptr;
-  const HarfBuzzRunGlyphData* glyph_data = nullptr;
+  // TODO(crbug.com/523940241): Handle RTL compact runs.
   if (IsLtr()) {
-    run = runs_.front().Get();
-    glyph_data = &run->glyph_data_.NonCompactGlyphs().front();
-  } else {
-    run = runs_.back().Get();
-    glyph_data = &run->glyph_data_.NonCompactGlyphs().back();
+    const ShapeResultRun* const run = runs_.front().Get();
+    if (run->glyph_data_.IsCompact()) [[unlikely]] {
+      return StartIndex() == run->start_index_;
+    }
+    const HarfBuzzRunGlyphData& glyph_data =
+        run->glyph_data_.NonCompactGlyphs().front();
+    return glyph_data.IsSafeToBreakBefore() &&
+           // If the glyph for the first character is missing, consider not
+           // safe.
+           StartIndex() == run->start_index_ + glyph_data.character_index;
   }
-  return glyph_data->IsSafeToBreakBefore() &&
+
+  const ShapeResultRun* const run = runs_.back().Get();
+  const HarfBuzzRunGlyphData& glyph_data =
+      run->glyph_data_.NonCompactGlyphs().back();
+  return glyph_data.IsSafeToBreakBefore() &&
          // If the glyph for the first character is missing, consider not safe.
-         StartIndex() == run->start_index_ + glyph_data->character_index;
+         StartIndex() == run->start_index_ + glyph_data.character_index;
 }
 
 wtf_size_t ShapeResult::NextSafeToBreakOffset(wtf_size_t index) const {
@@ -1324,7 +1332,7 @@ void ShapeResult::ApplyTextAutoSpacingCore(Iterator offset_begin,
         if (offset_in_run == run->num_characters_) {
           // Except when adding to the end of the run. In that case, add to the
           // last glyph.
-          should_add_spacing = i == glyphs.size() - 1;
+          should_add_spacing = i == run->NumGlyphs() - 1;
         } else {
           should_add_spacing = next_character_index < offset_in_run;
         }
@@ -2200,7 +2208,47 @@ void ShapeResult::ComputePositionData(bool allow_compaction) const {
     // |x_position| is in ascending order.
     DCHECK_EQ(IsRtl(), run.IsRtl());
 
-    for (const auto& glyph_data : run.glyph_data_.NonCompactGlyphs()) {
+    // TODO(523940241): Handle RTL compact runs.
+    if constexpr (!kIsRtl) {
+      if (run.glyph_data_.IsCompact()) [[unlikely]] {
+        const TextRunLayoutUnit advance = run.glyph_data_.CompactAdvance();
+        const unsigned num_glyphs = run.glyph_data_.size();
+        CHECK_GE(run.start_index_, start_index_);
+
+        const unsigned first_character_index = run.start_index_ - start_index_;
+        CHECK_LE(first_character_index, num_characters_);
+        CHECK_LE(num_glyphs, num_characters_ - first_character_index);
+
+        if (advance_type != AdvanceType::kVariable) {
+          if (first_character_index != mono_glyph_count ||
+              (advance_type == AdvanceType::kMono && mono_advance != advance)) {
+            advance_type = AdvanceType::kVariable;
+          } else {
+            mono_advance = advance;
+            advance_type = AdvanceType::kMono;
+            mono_glyph_count += num_glyphs;
+          }
+        }
+
+        CHECK_GE(first_character_index, next_character_index);
+        for (unsigned i = next_character_index; i < first_character_index;
+             ++i) {
+          character_position_[i].SetCachedData(last_x_position, false, false);
+        }
+
+        for (unsigned glyph_i = 0; glyph_i < num_glyphs; ++glyph_i) {
+          last_x_position = total_advance.ToCeil<LayoutUnit>();
+          character_position_[first_character_index + glyph_i].SetCachedData(
+              last_x_position, true, true);
+          total_advance += advance;
+        }
+        next_character_index = first_character_index + num_glyphs;
+        continue;
+      }
+    }
+
+    for (const HarfBuzzRunGlyphData& glyph_data :
+         run.glyph_data_.NonCompactGlyphs()) {
       DCHECK_GE(run.start_index_, start_index_);
       const wtf_size_t logical_index =
           run.start_index_ + glyph_data.character_index - start_index_;
@@ -2503,17 +2551,27 @@ void ShapeResult::AddRunInfoRanges(const ShapeResultRun& run_info,
                                    float offset,
                                    Vector<CharacterRange>* ranges) {
   Vector<float> character_widths(run_info.num_characters_);
-  for (const auto& glyph : run_info.glyph_data_.NonCompactGlyphs()) {
-    // TODO(crbug.com/1147011): This should not happen, but crash logs indicate
-    // that this is happening.
-    if (glyph.character_index >= character_widths.size()) [[unlikely]] {
-      NOTREACHED();
-    }
-    character_widths[glyph.character_index] += glyph.advance.ToFloat();
+  if (run_info.glyph_data_.IsCompact()) [[unlikely]] {
+    const float advance = run_info.glyph_data_.CompactAdvance().ToFloat();
+    const unsigned num_glyphs =
+        std::min(run_info.glyph_data_.size(), run_info.num_characters_);
+    std::fill_n(character_widths.begin(), num_glyphs, advance);
+  } else {
+    const auto& glyphs = run_info.glyph_data_.NonCompactGlyphs();
+    std::for_each(
+        glyphs.data(), base::to_address(glyphs.end()), [&](const auto& glyph) {
+          // TODO(crbug.com/40156449): This should not happen, but crash logs
+          // indicate that this is happening.
+          if (glyph.character_index >= character_widths.size()) [[unlikely]] {
+            NOTREACHED();
+          }
+          character_widths[glyph.character_index] += glyph.advance.ToFloat();
+        });
   }
 
-  if (run_info.IsRtl())
+  if (run_info.IsRtl()) {
     offset += run_info.width_;
+  }
 
   for (float character_width : character_widths) {
     float start = offset;

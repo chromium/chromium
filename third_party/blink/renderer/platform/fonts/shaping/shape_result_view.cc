@@ -268,12 +268,19 @@ void ShapeResultView::PopulateRunInfoParts(const ShapeResultType& other,
       part_width = run->width_;
     } else {
       range = run->FindGlyphDataRange(range_start, range_end);
-      const auto [begin, end] = range.NonCompactGlyphPointers();
-      part_width = std::accumulate(
-          begin, end, InlineLayoutUnit(),
-          [](InlineLayoutUnit sum, const auto& glyph) {
-            return sum + glyph.advance.template To<InlineLayoutUnit>();
-          });
+      if (range.IsCompactSource()) [[unlikely]] {
+        part_width =
+            InlineLayoutUnit::FromRawValue(
+                int64_t{range.CompactSourceAdvance().RawValue()} * range.size())
+                .ToFloat();
+      } else {
+        const auto [begin, end] = range.NonCompactGlyphPointers();
+        part_width = std::accumulate(
+            begin, end, InlineLayoutUnit(),
+            [](InlineLayoutUnit sum, const auto& glyph) {
+              return sum + glyph.advance.template To<InlineLayoutUnit>();
+            });
+      }
     }
 
     width_ += part_width;
