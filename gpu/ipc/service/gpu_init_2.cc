@@ -549,20 +549,6 @@ bool GpuInit2::InitializeAndStartSandbox(
       }
     }
   }
-#if BUILDFLAG(IS_LINUX) || \
-    (BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_CHROMEOS_DEVICE))
-  if (!state.gl_disabled && !gl_use_swiftshader_ &&
-      std::getenv("RUNNING_UNDER_RR")) {
-    // https://rr-project.org/ is a Linux-only record-and-replay debugger that
-    // is unhappy when things like GPU drivers write directly into the
-    // process's address space.  Using swiftshader helps ensure that doesn't
-    // happen and keeps Chrome and linux-chromeos usable with rr.
-    gl_use_swiftshader_ = true;
-    if (state.watchdog.get()) {
-      recreate_watchdog = true;
-    }
-  }
-#endif  // IS_LINUX || (IS_CHROMEOS && !IS_CHROMEOS_DEVICE)
   gpu_info_.gl_implementation_parts = gl::GetGLImplementationParts();
   bool software_rendering = false;
   if (gl_use_swiftshader_ ||
@@ -741,16 +727,6 @@ void GpuInit2::InitializeInProcess(base::CommandLine* command_line,
   }
   bool gl_disabled = gl::GetGLImplementation() == gl::kGLImplementationDisabled;
 
-#if BUILDFLAG(IS_LINUX) || \
-    (BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_CHROMEOS_DEVICE))
-  if (!gl_disabled && !gl_use_swiftshader_ && std::getenv("RUNNING_UNDER_RR")) {
-    // https://rr-project.org/ is a Linux-only record-and-replay debugger that
-    // is unhappy when things like GPU drivers write directly into the
-    // process's address space.  Using swiftshader helps ensure that doesn't
-    // happen and keeps Chrome and linux-chromeos usable with rr.
-    gl_use_swiftshader_ = true;
-  }
-#endif  // IS_LINUX || (IS_CHROMEOS && !IS_CHROMEOS_DEVICE)
   gpu_info_.gl_implementation_parts = gl::GetGLImplementationParts();
 
   if (!gl_disabled && !gl_use_swiftshader_) {
