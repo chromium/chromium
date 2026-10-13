@@ -10,7 +10,6 @@
 
 class BrowserWindowInterface;
 class Profile;
-class SidePanelRegistry;
 class TabStripModel;
 
 // ReadingListSidePanelCoordinator handles the creation and registration of the
@@ -30,8 +29,6 @@ class ReadingListSidePanelCoordinator {
 
   static ReadingListSidePanelCoordinator* From(
       BrowserWindowInterface* interface);
-
-  void CreateAndRegisterEntry(SidePanelRegistry* global_registry);
 
  private:
   const raw_ref<Profile> profile_;

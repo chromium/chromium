@@ -40,15 +40,12 @@ ReadingListSidePanelCoordinator::ReadingListSidePanelCoordinator(
     TabStripModel* tab_strip_model)
     : profile_(CHECK_DEREF(profile)),
       tab_strip_model_(CHECK_DEREF(tab_strip_model)),
-      scoped_unowned_user_data_(interface->GetUnownedUserDataHost(), *this) {}
-
-ReadingListSidePanelCoordinator::~ReadingListSidePanelCoordinator() = default;
-
-void ReadingListSidePanelCoordinator::CreateAndRegisterEntry(
-    SidePanelRegistry* global_registry) {
-  global_registry->Register(std::make_unique<SidePanelEntry>(
+      scoped_unowned_user_data_(interface->GetUnownedUserDataHost(), *this) {
+  SidePanelRegistry::From(interface)->Register(std::make_unique<SidePanelEntry>(
       SidePanelEntry::Key(SidePanelEntry::Id::kReadingList),
       base::BindRepeating(&CreateReadingListWebView, &profile_.get(),
                           &tab_strip_model_.get()),
       /*default_content_width_callback=*/base::NullCallback()));
 }
+
+ReadingListSidePanelCoordinator::~ReadingListSidePanelCoordinator() = default;

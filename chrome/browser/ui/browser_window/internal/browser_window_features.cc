@@ -510,10 +510,6 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
               *browser, browser);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-  reading_list_side_panel_coordinator_ =
-      GetUserDataFactory().CreateInstance<ReadingListSidePanelCoordinator>(
-          *browser, browser, profile, browser->GetTabStripModel());
-
   searchbox_context_data_ =
       GetUserDataFactory().CreateInstance<SearchboxContextData>(
           *browser, browser->GetUnownedUserDataHost());
@@ -915,6 +911,10 @@ void BrowserWindowFeatures::InitPostWindowConstruction(
       GetUserDataFactory().CreateInstance<BookmarksSidePanelCoordinator>(
           *browser, browser->GetUnownedUserDataHost(), *side_panel_registry_);
 
+  reading_list_side_panel_coordinator_ =
+      GetUserDataFactory().CreateInstance<ReadingListSidePanelCoordinator>(
+          *browser, browser, profile, browser->GetTabStripModel());
+
   if (browser_view) {
     skills_ui_window_controller_ =
         std::make_unique<skills::SkillsUiWindowController>(browser_);
@@ -1189,6 +1189,7 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   toast_service_.reset();
   synced_window_delegate_.reset();
   skills_ui_window_controller_.reset();
+  reading_list_side_panel_coordinator_.reset();
   bookmarks_side_panel_coordinator_.reset();
   // TODO(crbug.com/346148093): This logic should not be gated behind a
   // conditional.
