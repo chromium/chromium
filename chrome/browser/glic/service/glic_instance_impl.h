@@ -191,7 +191,7 @@ class GlicInstanceImpl : public GlicInstance,
   bool IsDetached();
   bool IsActuating() const override;
   bool IsInvoking() const override;
-  bool IsLiveMode();
+  bool IsLiveMode() const override;
 
   glic::mojom::ConversationInfoPtr GetConversationInfo() const;
 

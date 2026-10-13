@@ -17,6 +17,7 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_service_factory.h"
+#include "chrome/browser/glic/test_support/mock_glic_instance.h"
 #include "chrome/browser/glic/test_support/mock_glic_keyed_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -1223,8 +1224,11 @@ class GlicSelectionObserverPromptTest : public GlicSelectionObserverTest {
   raw_ptr<MockGlicKeyedService> mock_service_ = nullptr;
 };
 
+// Without an instance for the tab, the selection is delivered by an invocation
+// that opts out of live mode rather than pulling a live conversation into the
+// tab's side panel.
 TEST_F(GlicSelectionObserverPromptTest,
-       SendAdditionalContextToPanelOptsOutOfLiveMode) {
+       SendAdditionalContextToPanelInvokesWithoutInstance) {
   tabs::MockTabInterface mock_tab;
   MockBrowserWindowInterface mock_bwi;
   tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
@@ -1233,11 +1237,115 @@ TEST_F(GlicSelectionObserverPromptTest,
       .WillRepeatedly(testing::Return(&mock_bwi));
   SetMockEligibility(true);
 
+  EXPECT_CALL(*mock_glic_service(), GetInstanceForTab(&mock_tab))
+      .WillRepeatedly(testing::Return(nullptr));
   EXPECT_CALL(*mock_glic_service(),
               Invoke(testing::Field(&GlicInvokeOptions::target,
                                     testing::Field(&Target::live_mode_behavior,
                                                    LiveModeBehavior::kFail))))
       .Times(1);
+
+  GetObserver()->BaseSendAdditionalContextToPanel(&mock_tab,
+                                                  u"Sample selected text");
+}
+
+// An instance that exists but isn't showing also goes through an invocation,
+// so the surface is resolved and shown.
+TEST_F(GlicSelectionObserverPromptTest,
+       SendAdditionalContextToPanelInvokesWhenInstanceHidden) {
+  tabs::MockTabInterface mock_tab;
+  MockBrowserWindowInterface mock_bwi;
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
+                                                       &mock_tab);
+  EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
+      .WillRepeatedly(testing::Return(&mock_bwi));
+  SetMockEligibility(true);
+
+  testing::NiceMock<MockGlicInstance> instance;
+  EXPECT_CALL(instance, IsShowing()).WillRepeatedly(testing::Return(false));
+  EXPECT_CALL(*mock_glic_service(), GetInstanceForTab(&mock_tab))
+      .WillRepeatedly(testing::Return(&instance));
+
+  EXPECT_CALL(instance, SendAdditionalContext).Times(0);
+  EXPECT_CALL(*mock_glic_service(),
+              Invoke(testing::Field(&GlicInvokeOptions::target,
+                                    testing::Field(&Target::live_mode_behavior,
+                                                   LiveModeBehavior::kFail))))
+      .Times(1);
+
+  GetObserver()->BaseSendAdditionalContextToPanel(&mock_tab,
+                                                  u"Sample selected text");
+}
+
+// The common case: the panel is already showing for the tab. The selection is
+// a background context update, so it goes straight to the instance and no
+// invocation is started (an invocation would be rejected with
+// kInvokeInProgress whenever another one is in flight, and would be recorded
+// as a user journey).
+TEST_F(GlicSelectionObserverPromptTest,
+       SendAdditionalContextToPanelUsesInstanceWhenShowing) {
+  tabs::MockTabInterface mock_tab;
+  MockBrowserWindowInterface mock_bwi;
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
+                                                       &mock_tab);
+  EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
+      .WillRepeatedly(testing::Return(&mock_bwi));
+  SetMockEligibility(true);
+
+  testing::NiceMock<MockGlicInstance> instance;
+  EXPECT_CALL(instance, IsShowing()).WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(instance, IsLiveMode()).WillRepeatedly(testing::Return(false));
+  EXPECT_CALL(*mock_glic_service(), GetInstanceForTab(&mock_tab))
+      .WillRepeatedly(testing::Return(&instance));
+
+  EXPECT_CALL(*mock_glic_service(), Invoke).Times(0);
+  mojom::AdditionalContextPtr sent;
+  EXPECT_CALL(instance, SendAdditionalContext)
+      .WillOnce([&](mojom::AdditionalContextPtr context) {
+        sent = std::move(context);
+      });
+
+  GetObserver()->BaseSendAdditionalContextToPanel(&mock_tab,
+                                                  u"Sample selected text");
+
+  ASSERT_TRUE(sent);
+  EXPECT_EQ(sent->source, mojom::AdditionalContextSource::kTextSelection);
+  ASSERT_EQ(sent->parts.size(), 1u);
+  ASSERT_TRUE(sent->parts[0]->is_data());
+  EXPECT_EQ(sent->parts[0]->get_data()->mime_type,
+            "application/x-glic-selection");
+
+  // Clearing the selection takes the same path, with no parts.
+  EXPECT_CALL(instance, SendAdditionalContext)
+      .WillOnce([&](mojom::AdditionalContextPtr context) {
+        sent = std::move(context);
+      });
+  GetObserver()->BaseSendAdditionalContextToPanel(&mock_tab, u"");
+  ASSERT_TRUE(sent);
+  EXPECT_EQ(sent->source, mojom::AdditionalContextSource::kTextSelection);
+  EXPECT_TRUE(sent->parts.empty());
+}
+
+// A showing live-mode conversation is left alone, matching what
+// LiveModeBehavior::kFail does on the invoke path.
+TEST_F(GlicSelectionObserverPromptTest,
+       SendAdditionalContextToPanelSkipsShowingLiveModeInstance) {
+  tabs::MockTabInterface mock_tab;
+  MockBrowserWindowInterface mock_bwi;
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
+                                                       &mock_tab);
+  EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
+      .WillRepeatedly(testing::Return(&mock_bwi));
+  SetMockEligibility(true);
+
+  testing::NiceMock<MockGlicInstance> instance;
+  EXPECT_CALL(instance, IsShowing()).WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(instance, IsLiveMode()).WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(*mock_glic_service(), GetInstanceForTab(&mock_tab))
+      .WillRepeatedly(testing::Return(&instance));
+
+  EXPECT_CALL(instance, SendAdditionalContext).Times(0);
+  EXPECT_CALL(*mock_glic_service(), Invoke).Times(0);
 
   GetObserver()->BaseSendAdditionalContextToPanel(&mock_tab,
                                                   u"Sample selected text");

@@ -61,13 +61,27 @@ class GlicInstance {
   virtual base::CallbackListSubscription RegisterWillBeDestroyed(
       DestructionCallback callback) = 0;
 
-  // Sends additional context to the instance.
-  // DEPRECATED: Use the invoke API instead.
+  // Delivers additional context to the web client of an instance that already
+  // exists, without starting an invocation. If the client isn't connected yet
+  // the context is queued, keeping only the latest value per
+  // `AdditionalContextSource`.
+  //
+  // Use this for passive context updates to an instance that is already
+  // showing (e.g. keeping the panel's selection chip in sync with the page).
+  // Anything that needs to show or target a surface, resolve a conversation,
+  // or carry a prompt must go through the invoke API instead; invoke also
+  // records the invocation as a user journey in metrics, which a background
+  // context update is not.
   virtual void SendAdditionalContext(mojom::AdditionalContextPtr context) = 0;
 
   // Focuses the instance if it is active.
   // More specifically, it will focus the active embedder.
   virtual void FocusIfActive() = 0;
+
+  // Returns true if the web client last reported audio (live) mode. The mode
+  // is sticky once reported, so combine with IsShowing() to decide whether a
+  // live conversation is actually in front of the user.
+  virtual bool IsLiveMode() const = 0;
 
   // Notifies the instance that a row in the actor task list bubble was clicked.
   // TODO(b/512866173): Look into migrating this usage to the invoke API.

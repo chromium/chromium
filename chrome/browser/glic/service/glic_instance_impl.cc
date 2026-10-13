@@ -433,7 +433,7 @@ bool GlicInstanceImpl::IsActuating() const {
   return actor_task_manager_ && actor_task_manager_->IsActuating();
 }
 
-bool GlicInstanceImpl::IsLiveMode() {
+bool GlicInstanceImpl::IsLiveMode() const {
   return interaction_mode_ == mojom::WebClientMode::kAudio;
 }
 
