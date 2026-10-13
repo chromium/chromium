@@ -26,11 +26,16 @@ public interface IdentityManager {
      *
      * <p>TODO(crbug.com/572579970): Move refresh tokens loading state to native IdentityManager. *
      */
-    @IntDef({RefreshTokensLoadingState.IN_PROGRESS, RefreshTokensLoadingState.SUCCEEDED})
+    @IntDef({
+        RefreshTokensLoadingState.IN_PROGRESS,
+        RefreshTokensLoadingState.SUCCEEDED,
+        RefreshTokensLoadingState.FAILED
+    })
     @Retention(RetentionPolicy.SOURCE)
     @interface RefreshTokensLoadingState {
         int IN_PROGRESS = 0;
         int SUCCEEDED = 1;
+        int FAILED = 2;
     }
 
     /**
