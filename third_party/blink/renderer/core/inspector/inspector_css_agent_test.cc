@@ -71,7 +71,8 @@ class InspectorCSSAgentTest : public PageTestBase {
             GetDocument().GetExecutionContext()->GetIsolate(),
             inspected_frames),
         inspected_frames,
-        MakeGarbageCollected<InspectorNetworkAgent>(inspected_frames, nullptr),
+        MakeGarbageCollected<InspectorNetworkAgent>(inspected_frames, nullptr,
+                                                    /*client_is_trusted=*/true),
         MakeGarbageCollected<InspectorResourceContentLoader>(
             GetDocument().GetFrame()),
         MakeGarbageCollected<InspectorResourceContainer>(inspected_frames));

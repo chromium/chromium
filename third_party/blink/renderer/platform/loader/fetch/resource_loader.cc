@@ -548,6 +548,21 @@ bool ResourceLoader::WillFollowRedirect(
     }
     FindClientHintsToRemove(Context().GetPermissionsPolicy(),
                             GURL(new_url.GetString().Utf8()), removed_headers);
+    // Strip untrusted DevTools headers once a no-cors request leaves the
+    // requestor's origin.
+    const ResourceRequestHead& original_request =
+        resource_->GetResourceRequest();
+    const SecurityOrigin* requestor_origin =
+        original_request.RequestorOrigin().get();
+    if (!original_request.GetUntrustedDevToolsHeaders().empty() &&
+        requestor_origin &&
+        !requestor_origin->IsSameOriginWith(
+            SecurityOrigin::Create(new_url).get())) {
+      for (const String& header :
+           original_request.GetUntrustedDevToolsHeaders()) {
+        removed_headers->push_back(header.Latin1());
+      }
+    }
   }
 
   if (is_cache_aware_loading_activated_) {

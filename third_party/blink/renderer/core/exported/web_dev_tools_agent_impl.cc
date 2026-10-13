@@ -341,8 +341,8 @@ void WebDevToolsAgentImpl::AttachSession(DevToolsSession* session,
   session->CreateAndAppend<InspectorLayerTreeAgent>(inspected_frames, this);
 
   InspectorNetworkAgent* network_agent =
-      session->CreateAndAppend<InspectorNetworkAgent>(inspected_frames,
-                                                      nullptr);
+      session->CreateAndAppend<InspectorNetworkAgent>(
+          inspected_frames, nullptr, session->client_is_trusted());
 
   session->CreateAndAppend<InspectorCrashReportContextAgent>(inspected_frames);
   auto* css_agent = session->CreateAndAppend<InspectorCSSAgent>(

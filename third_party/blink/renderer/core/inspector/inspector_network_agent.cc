@@ -86,6 +86,7 @@
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
+#include "third_party/blink/renderer/platform/loader/cors/cors.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_info.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
@@ -113,7 +114,6 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
-#include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
 #include "third_party/inspector_protocol/crdtp/json.h"
 
 using crdtp::SpanFrom;
@@ -164,6 +164,12 @@ bool LoadsFromCacheOnly(const ResourceRequest& request) {
       return true;
   }
   NOTREACHED();
+}
+
+bool IsSameOriginRequest(const ResourceRequest& request) {
+  const SecurityOrigin* requestor_origin = request.RequestorOrigin().get();
+  return requestor_origin && requestor_origin->IsSameOriginWith(
+                                 SecurityOrigin::Create(request.Url()).get());
 }
 
 protocol::Network::CertificateTransparencyCompliance
@@ -1555,10 +1561,28 @@ void InspectorNetworkAgent::PrepareRequest(DocumentLoader* loader,
       // TODO: Should we store the referrer header somewhere other than
       // |extra_request_headers_|?
       if (EqualIgnoringAsciiCase(header_name, http_names::kReferer)) {
+        // Untrusted clients may not spoof the Referer to other origins.
+        if (!client_is_trusted_) {
+          continue;
+        }
         request.SetReferrerString(value);
         request.SetReferrerPolicy(network::mojom::ReferrerPolicy::kAlways);
       } else {
+        // No-cors requests skip the CORS preflight that would let the target
+        // origin reject headers from untrusted clients.
+        if (!client_is_trusted_ &&
+            ((!IsSameOriginRequest(request) &&
+              request.GetMode() == network::mojom::RequestMode::kNoCors) ||
+             cors::IsForbiddenRequestHeader(key, value))) {
+          continue;
+        }
         request.SetHttpHeaderField(header_name, AtomicString(value));
+        // Untrusted no-cors requests reaching here are same-origin; record the
+        // header so ResourceLoader removes it on a cross-origin redirect.
+        if (!client_is_trusted_ &&
+            request.GetMode() == network::mojom::RequestMode::kNoCors) {
+          request.AddUntrustedDevToolsHeader(key);
+        }
       }
     }
   }
@@ -2841,7 +2865,8 @@ String InspectorNetworkAgent::NavigationInitiatorInfo(LocalFrame* frame) {
 
 InspectorNetworkAgent::InspectorNetworkAgent(
     InspectedFrames* inspected_frames,
-    WorkerOrWorkletGlobalScope* worker_or_worklet_global_scope)
+    WorkerOrWorkletGlobalScope* worker_or_worklet_global_scope,
+    bool client_is_trusted)
     : inspected_frames_(inspected_frames),
       worker_or_worklet_global_scope_(worker_or_worklet_global_scope),
       resources_data_(MakeGarbageCollected<NetworkResourcesData>(
@@ -2851,6 +2876,7 @@ InspectorNetworkAgent::InspectorNetworkAgent(
           worker_or_worklet_global_scope_
               ? worker_or_worklet_global_scope_->GetParentDevToolsToken()
               : inspected_frames->Root()->GetDevToolsFrameToken()),
+      client_is_trusted_(client_is_trusted),
       enabled_(&agent_state_, /*default_value=*/false),
       cache_disabled_(&agent_state_, /*default_value=*/false),
       bypass_service_worker_(&agent_state_, /*default_value=*/false),

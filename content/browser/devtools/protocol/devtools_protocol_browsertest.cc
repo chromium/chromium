@@ -2260,14 +2260,20 @@ class DevToolsNetworkOverridesPolicyTest : public DevToolsProtocolTest {
   // Attaches a session that may not attach to disallowed.test and makes it
   // inject `X-Test: 1` and a `Referer` of `referrer` into requests.
   void AttachRestrictedSessionWithExtraHeaders(const GURL& referrer) {
+    base::DictValue headers;
+    headers.Set("X-Test", "1");
+    headers.Set("Referer", referrer.spec());
+    AttachRestrictedSessionWithExtraHeaders(std::move(headers));
+  }
+
+  // Attaches a session that may not attach to disallowed.test and makes it
+  // inject `headers` into requests.
+  void AttachRestrictedSessionWithExtraHeaders(base::DictValue headers) {
     set_agent_host_can_close();
     SetNotAttachableHosts({"disallowed.test"});
     Attach();
     SendCommandSync("Network.enable");
     ASSERT_FALSE(error());
-    base::DictValue headers;
-    headers.Set("X-Test", "1");
-    headers.Set("Referer", referrer.spec());
     base::DictValue params;
     params.Set("headers", std::move(headers));
     SendCommandSync("Network.setExtraHTTPHeaders", std::move(params));
@@ -2399,6 +2405,191 @@ IN_PROC_BROWSER_TEST_F(DevToolsNetworkOverridesPolicyTest,
   headers = GetRequestHeaders("/echo-request-headers?disallowed");
   ASSERT_TRUE(headers);
   EXPECT_FALSE(headers->contains("X-Test"));
+}
+
+constexpr char kFetchScript[] = R"(
+  fetch($1, {mode: $2, credentials: 'include'}).then(() => 'done',
+                                                     () => 'error');
+)";
+
+IN_PROC_BROWSER_TEST_F(DevToolsNetworkOverridesPolicyTest,
+                       UntrustedClientExtraHeadersAppliedToSameOriginFetch) {
+  const GURL start_url =
+      embedded_test_server()->GetURL("a.test", "/title1.html");
+  const GURL injected_referrer =
+      embedded_test_server()->GetURL("a.test", "/injected-referrer");
+  const GURL fetch_url =
+      embedded_test_server()->GetURL("a.test", "/echoall?same-origin");
+  ASSERT_TRUE(NavigateToURL(shell(), start_url));
+  SetIsTrusted(false);
+  AttachRestrictedSessionWithExtraHeaders(injected_referrer);
+
+  EXPECT_EQ("done", EvalJs(shell()->web_contents(),
+                           JsReplace(kFetchScript, fetch_url, "no-cors")));
+  std::optional<net::test_server::HttpRequest::HeaderMap> headers =
+      GetRequestHeaders("/echoall?same-origin");
+  ASSERT_TRUE(headers);
+  ASSERT_TRUE(headers->contains("X-Test"));
+  EXPECT_EQ("1", headers->at("X-Test"));
+  if (headers->contains("Referer")) {
+    EXPECT_NE(injected_referrer.spec(), headers->at("Referer"));
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(
+    DevToolsNetworkOverridesPolicyTest,
+    UntrustedClientExtraHeadersNotAppliedToCrossOriginNoCorsFetch) {
+  const GURL start_url =
+      embedded_test_server()->GetURL("a.test", "/title1.html");
+  const GURL injected_referrer =
+      embedded_test_server()->GetURL("a.test", "/injected-referrer");
+  const GURL fetch_url =
+      embedded_test_server()->GetURL("b.test", "/echoall?no-cors");
+  ASSERT_TRUE(NavigateToURL(shell(), start_url));
+  SetIsTrusted(false);
+  AttachRestrictedSessionWithExtraHeaders(injected_referrer);
+
+  EXPECT_EQ("done", EvalJs(shell()->web_contents(),
+                           JsReplace(kFetchScript, fetch_url, "no-cors")));
+  std::optional<net::test_server::HttpRequest::HeaderMap> headers =
+      GetRequestHeaders("/echoall?no-cors");
+  ASSERT_TRUE(headers);
+  EXPECT_FALSE(headers->contains("X-Test"));
+  if (headers->contains("Referer")) {
+    EXPECT_NE(injected_referrer.spec(), headers->at("Referer"));
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(
+    DevToolsNetworkOverridesPolicyTest,
+    UntrustedClientExtraHeadersOnCrossOriginCorsFetchRequirePreflight) {
+  const GURL start_url =
+      embedded_test_server()->GetURL("a.test", "/title1.html");
+  const GURL injected_referrer =
+      embedded_test_server()->GetURL("a.test", "/injected-referrer");
+  const GURL fetch_url =
+      embedded_test_server()->GetURL("b.test", "/echoall?cors");
+  ASSERT_TRUE(NavigateToURL(shell(), start_url));
+  SetIsTrusted(false);
+  AttachRestrictedSessionWithExtraHeaders(injected_referrer);
+
+  EXPECT_EQ("error", EvalJs(shell()->web_contents(),
+                            JsReplace(kFetchScript, fetch_url, "cors")));
+  std::optional<net::test_server::HttpRequest::HeaderMap> headers =
+      GetRequestHeaders("/echoall?cors");
+  ASSERT_TRUE(headers);
+  EXPECT_FALSE(headers->contains("X-Test"));
+  ASSERT_TRUE(headers->contains("Access-Control-Request-Headers"));
+  EXPECT_EQ("x-test", headers->at("Access-Control-Request-Headers"));
+  if (headers->contains("Referer")) {
+    EXPECT_NE(injected_referrer.spec(), headers->at("Referer"));
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(
+    DevToolsNetworkOverridesPolicyTest,
+    TrustedClientExtraHeadersAppliedToCrossOriginNoCorsFetch) {
+  const GURL start_url =
+      embedded_test_server()->GetURL("a.test", "/title1.html");
+  const GURL injected_referrer =
+      embedded_test_server()->GetURL("a.test", "/injected-referrer");
+  const GURL fetch_url =
+      embedded_test_server()->GetURL("b.test", "/echoall?no-cors");
+  ASSERT_TRUE(NavigateToURL(shell(), start_url));
+  AttachRestrictedSessionWithExtraHeaders(injected_referrer);
+
+  EXPECT_EQ("done", EvalJs(shell()->web_contents(),
+                           JsReplace(kFetchScript, fetch_url, "no-cors")));
+  std::optional<net::test_server::HttpRequest::HeaderMap> headers =
+      GetRequestHeaders("/echoall?no-cors");
+  ASSERT_TRUE(headers);
+  ASSERT_TRUE(headers->contains("X-Test"));
+  EXPECT_EQ("1", headers->at("X-Test"));
+  ASSERT_TRUE(headers->contains("Referer"));
+  EXPECT_EQ(injected_referrer.spec(), headers->at("Referer"));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    DevToolsNetworkOverridesPolicyTest,
+    UntrustedClientExtraHeadersStrippedOnCrossOriginRedirect) {
+  const GURL start_url =
+      embedded_test_server()->GetURL("a.test", "/title1.html");
+  const GURL injected_referrer =
+      embedded_test_server()->GetURL("a.test", "/injected-referrer");
+  const GURL cross_origin_url =
+      embedded_test_server()->GetURL("b.test", "/echoall");
+  const GURL fetch_url = embedded_test_server()->GetURL(
+      "a.test", "/server-redirect-307?" + cross_origin_url.spec());
+  ASSERT_TRUE(NavigateToURL(shell(), start_url));
+  SetIsTrusted(false);
+  AttachRestrictedSessionWithExtraHeaders(injected_referrer);
+
+  EXPECT_EQ("done", EvalJs(shell()->web_contents(),
+                           JsReplace(kFetchScript, fetch_url, "no-cors")));
+  std::optional<net::test_server::HttpRequest::HeaderMap> headers =
+      GetRequestHeaders("/echoall");
+  ASSERT_TRUE(headers);
+  EXPECT_FALSE(headers->contains("X-Test"));
+  if (headers->contains("Referer")) {
+    EXPECT_NE(injected_referrer.spec(), headers->at("Referer"));
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsNetworkOverridesPolicyTest,
+                       UntrustedClientForbiddenExtraHeadersDoNotFailRedirect) {
+  const GURL start_url =
+      embedded_test_server()->GetURL("a.test", "/title1.html");
+  const GURL cross_origin_url =
+      embedded_test_server()->GetURL("b.test", "/echoall?forbidden");
+  const GURL fetch_url = embedded_test_server()->GetURL(
+      "a.test", "/server-redirect-307?" + cross_origin_url.spec());
+  ASSERT_TRUE(NavigateToURL(shell(), start_url));
+  SetIsTrusted(false);
+  base::DictValue extra_headers;
+  extra_headers.Set("Origin", "https://evil.test");
+  extra_headers.Set("Sec-Fetch-Mode", "navigate");
+  AttachRestrictedSessionWithExtraHeaders(std::move(extra_headers));
+
+  EXPECT_EQ("done", EvalJs(shell()->web_contents(),
+                           JsReplace(kFetchScript, fetch_url, "no-cors")));
+  EXPECT_EQ(2, EvalJs(shell()->web_contents(), "1 + 1"));
+  std::optional<net::test_server::HttpRequest::HeaderMap> headers =
+      GetRequestHeaders("/echoall?forbidden");
+  ASSERT_TRUE(headers);
+  if (headers->contains("Origin")) {
+    EXPECT_NE("https://evil.test", headers->at("Origin"));
+  }
+  if (headers->contains("Sec-Fetch-Mode")) {
+    EXPECT_NE("navigate", headers->at("Sec-Fetch-Mode"));
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsNetworkOverridesPolicyTest,
+                       UntrustedClientDoesNotStripPageHeadersOnRedirect) {
+  constexpr char kFetchWithHeaderScript[] = R"(
+    fetch($1, {mode: 'no-cors', credentials: 'include',
+               headers: {'Content-Language': 'page'}})
+        .then(() => 'done', () => 'error');
+  )";
+  const GURL start_url =
+      embedded_test_server()->GetURL("a.test", "/title1.html");
+  const GURL final_url =
+      embedded_test_server()->GetURL("c.test", "/echoall?page-header");
+  const GURL fetch_url = embedded_test_server()->GetURL(
+      "b.test", "/server-redirect-307?" + final_url.spec());
+  ASSERT_TRUE(NavigateToURL(shell(), start_url));
+  SetIsTrusted(false);
+  base::DictValue extra_headers;
+  extra_headers.Set("Content-Language", "devtools");
+  AttachRestrictedSessionWithExtraHeaders(std::move(extra_headers));
+
+  EXPECT_EQ("done", EvalJs(shell()->web_contents(),
+                           JsReplace(kFetchWithHeaderScript, fetch_url)));
+  std::optional<net::test_server::HttpRequest::HeaderMap> headers =
+      GetRequestHeaders("/echoall?page-header");
+  ASSERT_TRUE(headers);
+  ASSERT_TRUE(headers->contains("Content-Language"));
+  EXPECT_EQ("page", headers->at("Content-Language"));
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,

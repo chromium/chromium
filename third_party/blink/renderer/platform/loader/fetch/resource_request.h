@@ -172,6 +172,15 @@ class PLATFORM_EXPORT ResourceRequestHead {
     navigation_redirect_chain_ = value;
   }
 
+  // Names of headers an untrusted DevTools client added to this no-cors
+  // request; removed if it redirects cross-origin.
+  const Vector<String>& GetUntrustedDevToolsHeaders() const {
+    return untrusted_devtools_headers_;
+  }
+  void AddUntrustedDevToolsHeader(const String& header) {
+    untrusted_devtools_headers_.push_back(header);
+  }
+
   // The origin of the isolated world - set if this is a fetch/XHR initiated by
   // an isolated world.
   const scoped_refptr<const SecurityOrigin>& IsolatedWorldOrigin() const {
@@ -660,6 +669,8 @@ class PLATFORM_EXPORT ResourceRequestHead {
 
   scoped_refptr<const SecurityOrigin> requestor_origin_;
   Vector<KURL> navigation_redirect_chain_;
+  Vector<String> untrusted_devtools_headers_;
+
   scoped_refptr<const SecurityOrigin> isolated_world_origin_;
 
   AtomicString http_method_;

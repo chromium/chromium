@@ -112,6 +112,8 @@ class CORE_EXPORT DevToolsSession
     return injected_script_manager_.Get();
   }
 
+  bool client_is_trusted() const { return client_is_trusted_; }
+
  private:
   class IOSession;
 

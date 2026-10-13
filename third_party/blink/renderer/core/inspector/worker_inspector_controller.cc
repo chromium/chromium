@@ -126,7 +126,8 @@ void WorkerInspectorController::AttachSession(DevToolsSession* session,
   CHECK(worker_or_worklet_global_scope);
 
   auto* network_agent = session->CreateAndAppend<InspectorNetworkAgent>(
-      inspected_frames_.Get(), worker_or_worklet_global_scope);
+      inspected_frames_.Get(), worker_or_worklet_global_scope,
+      session->client_is_trusted());
   session->CreateAndAppend<InspectorAuditsAgent>(
       network_agent, thread_->GetInspectorIssueStorage(),
       /*inspected_frames=*/nullptr, /*web_autofill_client=*/nullptr);
