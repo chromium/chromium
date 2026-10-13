@@ -462,7 +462,12 @@ void HTMLConstructionSite::InsertHTMLHtmlStartTagBeforeHTML(
     AtomicHTMLToken* token) {
   DCHECK(document_);
   HTMLHtmlElement* element;
-  if (const auto* is_attribute = token->GetAttributeItem(html_names::kIsAttr)) {
+  const auto* is_attribute = token->GetAttributeItem(html_names::kIsAttr);
+  const auto* active_sanitizer = ActiveSanitizer();
+  bool sanitizer_allows_is_attribute =
+      is_attribute && (!active_sanitizer || active_sanitizer->AllowIsAttribute(
+                                                html_names::kHTMLTag));
+  if (is_attribute && sanitizer_allows_is_attribute) {
     element = To<HTMLHtmlElement>(document_->CreateElement(
         html_names::kHTMLTag, GetCreateElementFlags(), is_attribute->Value(),
         CustomElementRegistry::DefaultRegistry(*document_)));
