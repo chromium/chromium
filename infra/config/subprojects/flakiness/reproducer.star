@@ -34,6 +34,7 @@ luci.bucket(
 builders.builder(
     name = "runner",
     bucket = "flaky-reproducer",
+    description_html = "Runs Flaky Reproducer strategies to find reliable reproducing steps for flaky tests.",
     executable = "recipe:flakiness/reproducer",
     pool = "luci.chromium.try",
     os = os.LINUX_DEFAULT,
@@ -43,6 +44,7 @@ builders.builder(
         short_name = "reproducer",
     ),
     build_numbers = False,
+    contact_team_email = "chrome-flakiness@google.com",
     execution_timeout = 2 * time.hour,
     service_account = "flaky-reproducer-builder@chops-service-accounts.iam.gserviceaccount.com",
 )

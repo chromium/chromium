@@ -73,6 +73,7 @@ luci.bucket(
 builders.builder(
     name = "autosharder",
     bucket = "infra",
+    description_html = "Queries test suite runtimes and automatically updates shard counts to maintain target shard durations.",
     executable = "recipe:chromium/autosharder",
     # Run once daily at 2 AM Pacific/9 AM UTC (with DST)
     schedule = "0 9 * * *",
@@ -85,6 +86,7 @@ builders.builder(
         category = "autosharder",
         short_name = "auto",
     ),
+    contact_team_email = "chrome-dev-infra-team@google.com",
     notifies = [
         luci.notifier(
             name = "chromium-autosharder-notifier",

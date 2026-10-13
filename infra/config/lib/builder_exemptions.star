@@ -12,39 +12,7 @@ builders listed here should not grow, and should *only* decrease.
 
 """
 
-exempted_from_description_builders = {
-    "codesearch": set([
-        "gen-android-try",
-        "gen-chromiumos-try",
-        "gen-fuchsia-try",
-        "gen-ios-try",
-        "gen-linux-try",
-        "gen-mac-try",
-        "gen-webview-try",
-        "gen-win-try",
-    ]),
-    "findit": set([
-        "gofindit-culprit-verification",
-        "test-single-revision",
-    ]),
-    "flaky-reproducer": set([
-        "runner",
-    ]),
-    "infra": set([
-        "autosharder",
-    ]),
-    "reviver": set([
-        "android-coverage-launcher",
-        "android-device-launcher",
-        "android-launcher",
-        "coverage-runner",
-        "fuchsia-coordinator",
-        "linux-launcher",
-        "mac-launcher",
-        "runner",
-        "win-launcher",
-    ]),
-}
+exempted_from_description_builders = {}
 
 # This dict should NOT be added to. It contains a list of builders that are
 # exempted from needing a contact_team_email field.
@@ -206,37 +174,6 @@ exempted_from_contact_builders = {
         "win10-code-coverage",
         "win_upload_clang",
         "win_upload_rust",
-    ],
-    "infra": [
-        "autosharder",
-    ],
-    "codesearch": [
-        "gen-android-try",
-        "gen-chromiumos-try",
-        "gen-fuchsia-try",
-        "gen-ios-try",
-        "gen-linux-try",
-        "gen-mac-try",
-        "gen-webview-try",
-        "gen-win-try",
-    ],
-    "findit": [
-        "gofindit-culprit-verification",
-        "test-single-revision",
-    ],
-    "flaky-reproducer": [
-        "runner",
-    ],
-    "reviver": [
-        "android-coverage-launcher",
-        "android-device-launcher",
-        "android-launcher",
-        "coverage-runner",
-        "fuchsia-coordinator",
-        "linux-launcher",
-        "mac-launcher",
-        "runner",
-        "win-launcher",
     ],
 }
 

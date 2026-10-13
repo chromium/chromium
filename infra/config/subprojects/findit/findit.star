@@ -65,6 +65,7 @@ defaults.set(
     list_view = "findit",
     auto_builder_dimension = False,
     build_numbers = True,
+    contact_team_email = "chops-luci-test@google.com",
     execution_timeout = 8 * time.hour,
     experiments = {
         "chromium_tests.resultdb_module": 100,
@@ -77,6 +78,7 @@ defaults.set(
 # LUCI Bisection builder to verify a culprit (go/luci-bisection-design-doc).
 builder(
     name = "gofindit-culprit-verification",
+    description_html = "LUCI Bisection builder to verify a culprit revision.",
     executable = "recipe:gofindit/chromium/single_revision",
     siso_project = siso.project.DEFAULT_TRUSTED,
     siso_remote_jobs = siso.remote_jobs.DEFAULT,
@@ -85,6 +87,7 @@ builder(
 # Builder to run a test for a single revision.
 builder(
     name = "test-single-revision",
+    description_html = "LUCI Bisection builder to run a test for a single revision.",
     executable = "recipe:gofindit/chromium/test_single_revision",
     siso_project = siso.project.DEFAULT_TRUSTED,
     siso_remote_jobs = siso.remote_jobs.DEFAULT,

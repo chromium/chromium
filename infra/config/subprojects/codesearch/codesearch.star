@@ -32,6 +32,7 @@ try_.defaults.set(
     os = os.LINUX_DEFAULT,
     cpu = cpu.X86_64,
     build_numbers = True,
+    contact_team_email = "chops-source-team@google.com",
     cq_group = "cq",
     execution_timeout = 9 * time.hour,
     expiration_timeout = 2 * time.hour,
@@ -46,6 +47,7 @@ consoles.list_view(
 
 try_.builder(
     name = "gen-android-try",
+    description_html = "Trybuilder for generating Code Search Kythe index packs and generated files for Android.",
     gn_args = gn_args.config(
         configs = [
             "codesearch_builder",
@@ -69,6 +71,7 @@ try_.builder(
 
 try_.builder(
     name = "gen-chromiumos-try",
+    description_html = "Trybuilder for generating Code Search Kythe index packs and generated files for ChromiumOS.",
     gn_args = gn_args.config(
         configs = [
             "codesearch_builder",
@@ -91,6 +94,7 @@ try_.builder(
 
 try_.builder(
     name = "gen-fuchsia-try",
+    description_html = "Trybuilder for generating Code Search Kythe index packs and generated files for Fuchsia.",
     gn_args = gn_args.config(
         configs = [
             "codesearch_builder",
@@ -111,6 +115,7 @@ try_.builder(
 
 try_.builder(
     name = "gen-ios-try",
+    description_html = "Trybuilder for generating Code Search Kythe index packs and generated files for iOS.",
     gn_args = gn_args.config(
         configs = [
             "codesearch_builder",
@@ -137,6 +142,7 @@ try_.builder(
 
 try_.builder(
     name = "gen-linux-try",
+    description_html = "Trybuilder for generating Code Search Kythe index packs and generated files for Linux.",
     gn_args = gn_args.config(
         configs = [
             "codesearch_builder",
@@ -152,6 +158,7 @@ try_.builder(
 
 try_.builder(
     name = "gen-mac-try",
+    description_html = "Trybuilder for generating Code Search Kythe index packs and generated files for Mac.",
     gn_args = gn_args.config(
         configs = [
             "codesearch_builder",
@@ -176,6 +183,7 @@ try_.builder(
 
 try_.builder(
     name = "gen-webview-try",
+    description_html = "Trybuilder for generating Code Search Kythe index packs and generated files for Android WebView.",
     gn_args = gn_args.config(
         configs = [
             "codesearch_builder",
@@ -198,6 +206,7 @@ try_.builder(
 
 try_.builder(
     name = "gen-win-try",
+    description_html = "Trybuilder for generating Code Search Kythe index packs and generated files for Windows.",
     gn_args = gn_args.config(
         configs = [
             "codesearch_builder",
