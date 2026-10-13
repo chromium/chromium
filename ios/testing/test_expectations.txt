@@ -244,3 +244,4 @@ crbug.com/572663823 [ Simulator ] BubblePresenterTestCase/testSendTabToSelfOmnib
 crbug.com/565749273 GeminiAppSwitchingTestCase/testAppSwitchingAISummarizationFloatyInvoked [ Pass Failure ]
 crbug.com/573145552 [ Simulator ] AutofillEditCreditCardCvcMetricTestCase/testMetricCvcLeftBlank [ Pass Failure ]
 crbug.com/573145112 [ Simulator ] AutofillCreditCardSettingsTestCase/testToolbarDeleteButtonWithAddPaymentMethodFeatureEnabled [ Pass Failure ]
+crbug.com/573174179 [ Device ] FindInPageTestCase/testFindInPageHistory [ Pass Failure ]
