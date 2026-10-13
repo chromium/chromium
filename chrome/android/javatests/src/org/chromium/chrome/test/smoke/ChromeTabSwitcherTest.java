@@ -26,6 +26,7 @@ import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.CommandLine;
+import org.chromium.base.CommandLineInitUtil;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
@@ -85,7 +86,11 @@ public class ChromeTabSwitcherTest {
     public void setUp() throws Exception {
         ContextUtils.initApplicationContext(ApplicationProvider.getApplicationContext());
         if (!CommandLine.isInitialized()) {
-            CommandLine.init(null);
+            // Smoke tests pass --use-apk-under-test-flags-file, which writes flags such as
+            // --force-desktop-android to chrome-command-line. Initialize from that file
+            // (falling back to empty args if absent) so DeviceInfo.isDesktop() matches the
+            // Chrome instance under test.
+            CommandLineInitUtil.initCommandLine("chrome-command-line", () -> true);
         }
         mPackageName =
                 InstrumentationRegistry.getArguments()
