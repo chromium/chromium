@@ -1,7 +1,7 @@
 timestamp: {
-  seconds: 1791482400
+  seconds: 1791840600
 }
-version: "2.0.9"
+version: "2.0.10"
 compatibility_version: 1
 operators: {
   name: "mtcs.dev Test CA Operator"
@@ -43,6 +43,7 @@ issuers: {
   key_sha256: "2bd288b3912f358a79a5adeaf96b5df984edcf02e01b21613efd0f1864cfc72d"
   min_log_number: 1
   signature_algorithm: SIGNATURE_ALGORITHM_ML_DSA44
+  spec_version: SPEC_VERSION_DRAFT05
 }
 issuers: {
   friendly_name: "TrustAsia Test CA 1"
@@ -69,6 +70,7 @@ issuers: {
   crs_root_id: 110
   min_log_number: 1
   signature_algorithm: SIGNATURE_ALGORITHM_ML_DSA44
+  spec_version: SPEC_VERSION_DRAFT05
 }
 issuers: {
   friendly_name: "TrustAsia Test CA 2"
@@ -95,6 +97,7 @@ issuers: {
   crs_root_id: 111
   min_log_number: 1
   signature_algorithm: SIGNATURE_ALGORITHM_ML_DSA44
+  spec_version: SPEC_VERSION_DRAFT05
 }
 mirrors: {
   friendly_name: "mtcs.dev Test Mirror 1"
