@@ -267,6 +267,13 @@ class VideoFrameSubmitterTest : public testing::Test {
 
   gfx::Size frame_size() const { return submitter_->frame_size_; }
 
+  size_t PendingFramesSize() const {
+    return submitter_->pending_frames_.size();
+  }
+
+  static constexpr size_t kMaxPendingFrames =
+      VideoFrameSubmitter::kMaxPendingFrames;
+
   // Replacement for RunUntilIdle().  Post a quit closure to the end of the main
   // thread queue and wait for it.
   void DrainMainThread() {
@@ -1359,6 +1366,66 @@ TEST_F(VideoFrameSubmitterTest, OpaqueFramesNotifyEmbedder) {
   EXPECT_CALL(*surface_embedder_, OnOpacityChanged(false)).Times(0);
   submitter_->DidReceiveFrame();
   DrainMainThread();
+}
+
+TEST_F(VideoFrameSubmitterTest, PendingFramesBoundedAndDrainedOnBeginFrame) {
+  constexpr size_t kFramesToSubmit = kMaxPendingFrames * 2;
+  HashMap<uint32_t, viz::FrameTimingDetails> timing_details;
+
+  EXPECT_CALL(*sink_, SetNeedsBeginFrame(true));
+  submitter_->StartRendering();
+  DrainMainThread();
+
+  EXPECT_CALL(*video_frame_provider_, PutCurrentFrame()).Times(kFramesToSubmit);
+  EXPECT_CALL(*resource_provider_, AppendQuads(_, _, _, _))
+      .Times(kFramesToSubmit);
+  EXPECT_CALL(*resource_provider_, PrepareSendToParent(_))
+      .Times(kFramesToSubmit);
+  EXPECT_CALL(*resource_provider_, ReleaseFrameResources())
+      .Times(kFramesToSubmit);
+  EXPECT_CALL(*sink_, DoSubmitCompositorFrame(_, _))
+      .WillRepeatedly([&](const viz::LocalSurfaceId&,
+                          viz::CompositorFrame* frame) {
+        viz::FrameTimingDetails details;
+        details.received_compositor_frame_timestamp =
+            base::TimeTicks() + base::Milliseconds(100);
+        details.presentation_feedback = gfx::PresentationFeedback::Failure();
+        timing_details.Set(frame->metadata.frame_token, details);
+      });
+
+  // Simulate background rendering submitting manual frames while OnBeginFrame
+  // is not firing.
+  for (size_t i = 0; i < kFramesToSubmit; ++i) {
+    EXPECT_CALL(*video_frame_provider_, GetCurrentFrame())
+        .WillOnce(Return(media::VideoFrame::CreateFrame(
+            media::PIXEL_FORMAT_YV12, gfx::Size(8, 8),
+            gfx::Rect(gfx::Size(8, 8)), gfx::Size(8, 8),
+            base::Milliseconds(i))));
+    submitter_->DidReceiveFrame();
+    DrainMainThread();
+    AckSubmittedFrame();
+    EXPECT_LE(PendingFramesSize(), kMaxPendingFrames);
+  }
+
+  EXPECT_EQ(PendingFramesSize(), kMaxPendingFrames);
+  EXPECT_EQ(timing_details.size(), kFramesToSubmit);
+
+  // When OnBeginFrame finally fires with all accumulated timing details,
+  // pending_frames_ should be drained and evicted manual frames must not
+  // pollute the expected display time EMA.
+  EXPECT_CALL(*video_frame_provider_, OnFramePresented(_, _, _))
+      .Times(AnyNumber());
+  EXPECT_CALL(*video_frame_provider_, UpdateCurrentFrame(_, _))
+      .WillOnce(Return(false));
+  EXPECT_CALL(*sink_, DidNotProduceFrame(_));
+
+  viz::BeginFrameArgs args = begin_frame_source_->CreateBeginFrameArgs(
+      BEGINFRAME_FROM_HERE, now_src_.get());
+  OnBeginFrame(args, timing_details, Vector<viz::ReturnedResource>());
+  DrainMainThread();
+
+  EXPECT_EQ(PendingFramesSize(), 0u);
+  EXPECT_EQ(submitter_->GetExpectedDisplayTime(), std::nullopt);
 }
 
 // Uses MOCK_TIME so base::TimeTicks::Now() is controlled for display-time and

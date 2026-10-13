@@ -260,7 +260,11 @@ class PLATFORM_EXPORT VideoFrameSubmitter
   // `pending_frames_`, and denote their completion directly to `frame_sorter_`.
   //
   // Contains metadata of all submitted video frames, including those that
-  // `pending_frames_` does not store (manual source video frames)
+  // `frame_sorter_` does not store (manual source video frames). Capped at
+  // `kMaxPendingFrames` (chosen to match the 25-entry limit on
+  // `viz::CompositorFrameSinkSupport::pending_received_frame_times_`) so manual
+  // submissions while BeginFrame is inactive do not grow unboundedly.
+  static constexpr size_t kMaxPendingFrames = 25u;
   base::flat_map<uint32_t, PendingFrameInfo> pending_frames_;
   cc::FrameSequenceTrackerCollection frame_trackers_;
   cc::FrameSorter frame_sorter_;
