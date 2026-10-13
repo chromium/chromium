@@ -35,7 +35,7 @@
 #import "ios/chrome/browser/signin/model/test_constants.h"
 #import "ios/chrome/browser/signin/model/test_constants_utils.h"
 #import "ios/chrome/common/string_util.h"
-#import "ios/chrome/common/ui/promo_style/constants.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -92,7 +92,7 @@ void VerifyForcedSigninFullyDismissed() {
 // screen.
 void ScrollToElementAndAssertVisibility(id<GREYMatcher> elementMatcher) {
   id<GREYMatcher> scrollView =
-      grey_accessibilityID(kPromoStyleScrollViewAccessibilityIdentifier);
+      grey_accessibilityID(kButtonStackScrollViewAccessibilityIdentifier);
 
   [[[EarlGrey
       selectElementWithMatcher:grey_allOf(elementMatcher,

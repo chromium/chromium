@@ -18,8 +18,6 @@ NSString* const kPromoStyleLearnMoreActionAccessibilityIdentifier =
     @"PromoStyleLearnMoreActionAccessibilityIdentifier";
 NSString* const kPromoStyleDisclaimerViewAccessibilityIdentifier =
     @"PromoStyleDisclaimerViewAccessibilityIdentifier";
-NSString* const kPromoStyleScrollViewAccessibilityIdentifier =
-    @"PromoStyleScrollViewAccessibilityIdentifier";
 
 const CGFloat kActionsBottomMarginWithSafeArea = 10.;
 const CGFloat kActionsBottomMarginWithoutSafeArea =

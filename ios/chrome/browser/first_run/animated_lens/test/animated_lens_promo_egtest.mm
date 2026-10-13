@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
 #import "ios/chrome/browser/first_run/public/first_run_constants.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
-#import "ios/chrome/common/ui/promo_style/constants.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_constants.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
@@ -40,7 +40,7 @@
 // Taps a promo button.
 - (void)tapPromoButton:(id<GREYMatcher>)buttonMatcher {
   id<GREYMatcher> scrollViewMatcher =
-      grey_accessibilityID(kPromoStyleScrollViewAccessibilityIdentifier);
+      grey_accessibilityID(kButtonStackScrollViewAccessibilityIdentifier);
   id<GREYAction> searchAction = grey_scrollInDirection(kGREYDirectionDown, 200);
   GREYElementInteraction* element =
       [[EarlGrey selectElementWithMatcher:buttonMatcher]

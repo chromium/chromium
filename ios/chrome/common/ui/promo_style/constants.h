@@ -25,9 +25,6 @@ extern NSString* const kPromoStyleLearnMoreActionAccessibilityIdentifier;
 // A11y Identifier for the disclaimer.
 extern NSString* const kPromoStyleDisclaimerViewAccessibilityIdentifier;
 
-// A11y Identifier for the scroll view that contains all the labels and buttons.
-extern NSString* const kPromoStyleScrollViewAccessibilityIdentifier;
-
 // Margin below action buttons in the FRE, when the screen has a safe area.
 extern const CGFloat kActionsBottomMarginWithSafeArea;
 // Margin below action buttons in the FRE, when the screen has no a safe area.
