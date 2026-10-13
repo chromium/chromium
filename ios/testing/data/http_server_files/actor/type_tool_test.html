@@ -8,6 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <script>
     window.capturedEvents = [];
+    window.formSubmitted = false;
     function recordEvent(e) {
       window.capturedEvents.push({
         type: e.type,
@@ -21,6 +22,7 @@
     }
     window.onload = function() {
       const inputs = [document.querySelector("input"),
+                      document.querySelector("form > input"),
                       document.querySelector("textArea"),
                       document.querySelector("div[contenteditable='true']")];
       inputs.forEach(input => {
@@ -31,6 +33,10 @@
         input.addEventListener('keypress', recordEvent);
         input.addEventListener('keyup', recordEvent);
       });
+      document.querySelector("form").addEventListener('submit', (e) => {
+        e.preventDefault();
+        window.formSubmitted = true;
+      });
     }
   </script>
   </head>
@@ -38,5 +44,8 @@
     <input style="width: 100px; height: 50px;">
     <textarea style="width: 100px; height: 50px;"></textarea>
     <div contenteditable="true" style="width: 100px; height: 50px;"></div>
+    <form>
+      <input style="width: 100px; height: 50px;">
+    </form>
   </body>
 </html>

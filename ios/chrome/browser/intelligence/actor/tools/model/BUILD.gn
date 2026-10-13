@@ -323,6 +323,7 @@ optimize_ts("type_tool_ts") {
     ":actor_tool_utils_ts",
     "//ios/chrome/browser/intelligence/proto_wrappers:dom_node_ids_ts",
     "//ios/web/public/js_messaging:gcrweb",
+    "//ios/web/public/js_messaging:util_scripts",
   ]
 }
 

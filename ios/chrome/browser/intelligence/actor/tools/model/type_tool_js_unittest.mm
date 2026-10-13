@@ -229,6 +229,14 @@ class TypeToolJavaScriptTestBase : public web::JavascriptTest {
     return events;
   }
 
+  // Returns whether the `<form>` in `type_tool_test.html` was submitted.
+  bool IsFormSubmitted() {
+    NSNumber* form_submitted = base::apple::ObjCCast<NSNumber>(
+        web::test::ExecuteJavaScript(web_view(), @"window.formSubmitted;"));
+    EXPECT_NE(form_submitted, nil);
+    return [form_submitted boolValue];
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -262,6 +270,7 @@ TEST_P(TypeToolJavaScriptTest, TypeByCoordinate_Success) {
             static_cast<int>(TypeToolResultCode::kOk));
   EXPECT_EQ(GetInputText(), "hello");
   EXPECT_EQ(GetCapturedEvents(), ExpectedEvents());
+  EXPECT_FALSE(IsFormSubmitted());
 }
 
 TEST_P(TypeToolJavaScriptTest, TypeByNodeId_Success) {
@@ -281,6 +290,7 @@ TEST_P(TypeToolJavaScriptTest, TypeByNodeId_Success) {
             static_cast<int>(TypeToolResultCode::kOk));
   EXPECT_EQ(GetInputText(), "world");
   EXPECT_EQ(GetCapturedEvents(), ExpectedEvents());
+  EXPECT_FALSE(IsFormSubmitted());
 }
 
 TEST_P(TypeToolJavaScriptTest, TypeMode_Append) {
@@ -335,6 +345,7 @@ TEST_P(TypeToolJavaScriptTest, FollowByEnter) {
   EXPECT_EQ([result[@"resultCode"] intValue],
             static_cast<int>(TypeToolResultCode::kOk));
   EXPECT_EQ(GetCapturedEvents(), ExpectedEvents(/*followByEnter=*/true));
+  EXPECT_EQ(IsFormSubmitted(), std::string_view(GetParam()) == "form > input");
 }
 
 TEST_P(TypeToolJavaScriptTest, TargetedElementDisabled_Fails) {
@@ -379,13 +390,19 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     TypeToolJavaScriptTest,
     // These are used by document.querySelector to get the target element.
-    ::testing::Values("input", "textarea", "div[contenteditable]"),
+    ::testing::Values("input",
+                      "form > input",
+                      "textarea",
+                      "div[contenteditable]"),
     // Output the selector for context when debugging.
     [](const ::testing::TestParamInfo<TypeToolJavaScriptTest::ParamType>&
            info) {
       std::string name = info.param;
       if (name == "div[contenteditable]") {
         return std::string("div_contenteditable");
+      }
+      if (name == "form > input") {
+        return std::string("form_input");
       }
       return name;
     });
@@ -636,13 +653,66 @@ TEST_F(TypeToolJavaScriptTestBase,
   EXPECT_TRUE(GetCapturedEvents().empty());
 }
 
+// Tests that typing into a non-text `<input>` (e.g., `type="checkbox"`) inside
+// a `<form>` when `followByEnter` is `true` does not submit the form.
+TEST_F(TypeToolJavaScriptTestBase,
+       FollowByEnter_NonTextInputInForm_DoesNotTriggerSubmit) {
+  (void)web::test::ExecuteJavaScript(
+      web_view(), @"document.querySelector('form > input').type = 'checkbox';");
+
+  NSDictionary<NSString*, id>* result = TypeByCoordinate(
+      /*selector=*/"form > input", /*pixelType=*/1, /*text=*/"submit",
+      /*typeMode=*/3, /*followByEnter=*/true);
+
+  ASSERT_NE(result, nil);
+  NSNumber* result_code =
+      base::apple::ObjCCast<NSNumber>(result[@"resultCode"]);
+  ASSERT_NE(result_code, nil);
+  EXPECT_EQ(static_cast<TypeToolResultCode>([result_code intValue]),
+            TypeToolResultCode::kOk);
+  EXPECT_EQ(GetCapturedEvents(), ExpectedEvents(/*followByEnter=*/true));
+  EXPECT_FALSE(IsFormSubmitted());
+}
+
+// Tests that if `form.requestSubmit()` throws an exception, the exception is
+// caught and the tool still returns `kOk`.
+TEST_F(TypeToolJavaScriptTestBase,
+       FollowByEnter_RequestSubmitThrows_ReturnsOk) {
+  (void)web::test::ExecuteJavaScript(
+      web_view(), @"(function() {"
+                  @"  window.requestSubmitInvoked = false;"
+                  @"  document.querySelector('form').requestSubmit = () => {"
+                  @"    window.requestSubmitInvoked = true;"
+                  @"    throw new DOMException('Failed', 'InvalidStateError');"
+                  @"  };"
+                  @"})();");
+
+  NSDictionary<NSString*, id>* result = TypeByCoordinate(
+      /*selector=*/"form > input", /*pixelType=*/1, /*text=*/"submit",
+      /*typeMode=*/3, /*followByEnter=*/true);
+
+  ASSERT_NE(result, nil);
+  NSNumber* result_code =
+      base::apple::ObjCCast<NSNumber>(result[@"resultCode"]);
+  ASSERT_NE(result_code, nil);
+  EXPECT_EQ(static_cast<TypeToolResultCode>([result_code intValue]),
+            TypeToolResultCode::kOk);
+  EXPECT_EQ(GetCapturedEvents(), ExpectedEvents(/*followByEnter=*/true));
+  NSNumber* request_submit_invoked =
+      base::apple::ObjCCast<NSNumber>(web::test::ExecuteJavaScript(
+          web_view(), @"window.requestSubmitInvoked;"));
+  ASSERT_NE(request_submit_invoked, nil);
+  EXPECT_TRUE([request_submit_invoked boolValue]);
+  EXPECT_FALSE(IsFormSubmitted());
+}
+
 // Parameterized by the canceled event name ("keydown", "keypress", or
 // "beforeinput") to verify that the tool still succeeds on `<input>`.
 class TypeToolPreventDefaultTest
     : public TypeToolJavaScriptTestBase,
       public ::testing::WithParamInterface<const char*> {
  protected:
-  static constexpr char kInputSelector[] = "input";
+  static constexpr char kInputSelector[] = "form > input";
 
   const char* canceled_event() const { return GetParam(); }
 
@@ -676,7 +746,7 @@ class TypeToolPreventDefaultTest
   }
 };
 
-// Test that when an event listener calls `preventDefault()` on a cancelable
+// Tests that when an event listener calls `preventDefault()` on a cancelable
 // typing event, the tool returns `kOk`, leaves the value untouched, and
 // suppresses subsequent events.
 TEST_P(TypeToolPreventDefaultTest, Type_PreventDefaultCalled_ReturnsOk) {
@@ -697,11 +767,12 @@ TEST_P(TypeToolPreventDefaultTest, Type_PreventDefaultCalled_ReturnsOk) {
             ExpectedEventsForCanceledSequence(canceled_event(),
                                               /*is_enter=*/false));
   EXPECT_TRUE(PreventDefaultInvoked());
+  EXPECT_FALSE(IsFormSubmitted());
 }
 
-// Test that when an event listener calls `preventDefault()` on a cancelable
-// Enter event, the tool returns `kOk`, keeps the typed text, and suppresses
-// subsequent Enter events per W3C UI Events.
+// Tests that when an event listener calls `preventDefault()` on a cancelable
+// Enter event, the tool returns `kOk`, keeps the typed text, suppresses
+// subsequent Enter events per W3C UI Events, and does not submit the form.
 TEST_P(TypeToolPreventDefaultTest,
        FollowByEnter_PreventDefaultCalled_ReturnsOk) {
   CancelNextEvent(/*after_change=*/true);
@@ -726,6 +797,7 @@ TEST_P(TypeToolPreventDefaultTest,
   EXPECT_EQ(GetCapturedEvents(), expected);
 
   EXPECT_TRUE(PreventDefaultInvoked());
+  EXPECT_FALSE(IsFormSubmitted());
 }
 
 INSTANTIATE_TEST_SUITE_P(

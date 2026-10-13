@@ -10,6 +10,7 @@ import type {ActionTarget, Coordinate} from '//ios/chrome/browser/intelligence/a
 import {getElementFromPoint, isCoordinateTarget, isNodeIdTarget} from '//ios/chrome/browser/intelligence/actor/tools/model/resources/actor_tool_utils.js';
 import {getNodeById} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/dom_node_ids.js';
 import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {isTextField} from '//ios/web/public/js_messaging/resources/utils.js';
 
 // LINT.IfChange(TypeToolResultCode)
 enum TypeToolResultCode {
@@ -71,10 +72,12 @@ function commitValue(element: HTMLElement, text: string): void {
  * @param keyEventInit Initialization options for the keyboard events.
  * @param newValue The value to write into `element` once `beforeinput` is
  *     accepted, or null to dispatch the events without mutating `element`.
+ * @return True if the pre-input cancelable events (`keydown`, `keypress`, and
+ *     `beforeinput`) were accepted (not `defaultPrevented`).
  */
 function simulateEventsAndCommitValue(
     element: HTMLElement, keyEventInit: KeyboardEventInit,
-    newValue: string|null): void {
+    newValue: string|null): boolean {
   let inputDispatched = false;
   if (element.dispatchEvent(new KeyboardEvent('keydown', keyEventInit)) &&
       element.dispatchEvent(new KeyboardEvent('keypress', keyEventInit)) &&
@@ -90,6 +93,7 @@ function simulateEventsAndCommitValue(
   if (inputDispatched) {
     element.dispatchEvent(new Event('change', {bubbles: true}));
   }
+  return inputDispatched;
 }
 
 /**
@@ -237,7 +241,7 @@ function updateElementAndDispatchTypeEvents(
       leafElement, {bubbles: true, cancelable: true}, newText);
 
   if (followByEnter) {
-    simulateEventsAndCommitValue(
+    const enterAccepted = simulateEventsAndCommitValue(
         leafElement, {
           bubbles: true,
           cancelable: true,
@@ -247,6 +251,20 @@ function updateElementAndDispatchTypeEvents(
           which: 13,
         },
         /*newValue=*/ null);
+    // Synthetic `Enter` key events are untrusted and do not trigger the
+    // browser's default implicit form submission on text-field `<input>`
+    // elements:
+    // https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#implicit-submission
+    // Submit only if `Enter` was not canceled via `preventDefault()`.
+    if (enterAccepted && leafElement instanceof HTMLInputElement &&
+        isTextField(leafElement) && leafElement.form) {
+      try {
+        leafElement.form.requestSubmit();
+      } catch (e) {
+        // Fail open for any `requestSubmit()` errors (e.g. form detached from
+        // the page before we submit it).
+      }
+    }
   }
 
   return {
