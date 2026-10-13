@@ -5,22 +5,24 @@
 #ifndef CHROME_BROWSER_ANDROID_OMNIBOX_CHROME_OMNIBOX_NAVIGATION_OBSERVER_ANDROID_H_
 #define CHROME_BROWSER_ANDROID_OMNIBOX_CHROME_OMNIBOX_NAVIGATION_OBSERVER_ANDROID_H_
 
-#include <memory>
 #include <string>
 
-#include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "chrome/browser/omnibox/chrome_omnibox_navigation_observer_base.h"
 #include "components/omnibox/browser/autocomplete_match.h"
-#include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/web_contents_observer.h"
 
 class Profile;
 
-// Monitors omnibox navigations in order to trigger behaviors on Android.
+namespace content {
+class NavigationHandle;
+}  // namespace content
+
+// Android subclass of ChromeOmniboxNavigationObserverBase. Does not run the
+// alternative-navigation probe yet.
+//
+// Please see the class comment on the base class for important information
+// about the memory management of this object.
 class ChromeOmniboxNavigationObserverAndroid
-    : public base::RefCounted<ChromeOmniboxNavigationObserverAndroid>,
-      public content::WebContentsObserver {
+    : public ChromeOmniboxNavigationObserverBase {
  public:
   // Create ChromeOmniboxNavigationObserverAndroid.
   static void Create(content::NavigationHandle* navigation_handle,
@@ -28,32 +30,16 @@ class ChromeOmniboxNavigationObserverAndroid
                      const std::u16string& omnibox_user_input,
                      const AutocompleteMatch& selected_match);
 
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
-
  private:
-  friend class base::RefCounted<ChromeOmniboxNavigationObserverAndroid>;
   friend class ChromeOmniboxNavigationObserverAndroidTest;
-  FRIEND_TEST_ALL_PREFIXES(ChromeOmniboxNavigationObserverAndroidTest,
-                           NotCommitted);
-  FRIEND_TEST_ALL_PREFIXES(ChromeOmniboxNavigationObserverAndroidTest,
-                           NoHeaders);
-  FRIEND_TEST_ALL_PREFIXES(ChromeOmniboxNavigationObserverAndroidTest,
-                           AllHttp200AreFine);
-  FRIEND_TEST_ALL_PREFIXES(ChromeOmniboxNavigationObserverAndroidTest,
-                           SelectNonHttp200CodesAreFine);
 
   ChromeOmniboxNavigationObserverAndroid(
-      content::NavigationHandle* navigation_handle,
+      content::NavigationHandle& navigation_handle,
       Profile* profile,
       const std::u16string& omnibox_user_input,
       const AutocompleteMatch& selected_match);
-  ~ChromeOmniboxNavigationObserverAndroid() override;
-  bool NavigationEligible(content::NavigationHandle* navigation_handle);
 
-  const raw_ptr<Profile> profile_;
-  const std::u16string omnibox_user_input_;
-  const AutocompleteMatch selected_match_;
+  ~ChromeOmniboxNavigationObserverAndroid() override;
 };
 
 #endif  // CHROME_BROWSER_ANDROID_OMNIBOX_CHROME_OMNIBOX_NAVIGATION_OBSERVER_ANDROID_H_
