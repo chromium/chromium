@@ -32,31 +32,33 @@ export function getHtml(this: SettingsAddressEditDialogElement) {
         </div>
         ${this.components_.map((row, rowIndex) => html`
           <div class="address-row">
-            ${row.map((item, columnIndex) => item.isTextarea ? html`
-              <cr-textarea label="${item.label}"
-                  .value="${item.value}"
-                  @value-changed="${this.onValueChanged_}"
-                  data-row="${rowIndex}"
-                  data-column="${columnIndex}"
-                  class="address-column ${item.additionalClassName}"
-                  spellcheck="false" maxlength="1000"
-                  ?required="${item.isRequired}"
-                  ?invalid="${this.isVisuallyInvalid_(item.isValidatable,
-                                                      item.isValid)}">
-              </cr-textarea>
-            ` : html`
-              <cr-input type="text" label="${item.label}"
-                  .value="${item.value}"
-                  @value-changed="${this.onValueChanged_}"
-                  data-row="${rowIndex}"
-                  data-column="${columnIndex}"
-                  spellcheck="false" maxlength="1000"
-                  class="address-column ${item.additionalClassName}
-                      ${this.getPhoneNumberInputClass_(item.fieldType)}"
-                  ?required="${item.isRequired}"
-                  ?invalid="${this.isVisuallyInvalid_(item.isValidatable,
-                                                      item.isValid)}">
-              </cr-input>
+            ${row.map((item, columnIndex) => html`
+              ${item.isTextarea ? html`
+                <cr-textarea label="${item.label}"
+                    .value="${item.value}"
+                    @value-changed="${this.onValueChanged_}"
+                    data-row="${rowIndex}"
+                    data-column="${columnIndex}"
+                    class="address-column ${item.additionalClassName}"
+                    spellcheck="false" maxlength="1000"
+                    ?required="${item.isRequired}"
+                    ?invalid="${this.isVisuallyInvalid_(item.isValidatable,
+                                                        item.isValid)}">
+                </cr-textarea>
+              ` : html`
+                <cr-input type="text" label="${item.label}"
+                    .value="${item.value}"
+                    @value-changed="${this.onValueChanged_}"
+                    data-row="${rowIndex}"
+                    data-column="${columnIndex}"
+                    spellcheck="false" maxlength="1000"
+                    class="address-column ${item.additionalClassName}
+                        ${this.getPhoneNumberInputClass_(item.fieldType)}"
+                    ?required="${item.isRequired}"
+                    ?invalid="${this.isVisuallyInvalid_(item.isValidatable,
+                                                        item.isValid)}">
+                </cr-input>
+              `}
             `)}
           </div>
         `)}

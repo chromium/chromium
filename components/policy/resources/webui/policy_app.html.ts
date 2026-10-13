@@ -86,10 +86,11 @@ export function getHtml(this: PolicyAppElement) {
           ?hidden="${!this.hasStatus_()}">
         <h2>$i18n{status}</h2>
         <div id="status-box-container">
-          ${Object.entries(this.status_).map(([scope, boxStatus]) =>
-            boxStatus.policyDescriptionKey ? html`
+          ${Object.entries(this.status_).map(([scope, boxStatus]) => html`
+            ${boxStatus.policyDescriptionKey ? html`
               <status-box .scope="${scope}" .status="${boxStatus}"></status-box>
-            ` : '')}
+            ` : ''}
+          `)}
         </div>
       </section>
       <section id="main-section"

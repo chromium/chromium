@@ -79,27 +79,7 @@ export function getHtml(this: ContextHubAppElement) {
     </aside>
 
     <!-- CONTENT AREA -->
-    <div class="content-area">
-      ${(() => {
-    switch (this.currentView_) {
-      case 'launchpad':
-        return html`<ai-taskbox></ai-taskbox>`;
-      case 'memory-banks':
-        return html`<memory-banks></memory-banks>`;
-      case 'memory-bank-chat':
-        return html`<memory-bank-chat></memory-bank-chat>`;
-      case 'tab-groups':
-        return html`<tab-groups></tab-groups>`;
-      case 'topics':
-        return html`<topics-view></topics-view>`;
-      case 'jumpstart':
-        return html`<smart-search></smart-search>`;
-      case 'record-replay':
-        return html`<record-replay></record-replay>`;
-      default:
-        return '';
-    }
-  })()}
+    <div class="content-area" .innerHTML="${this.getCurrentViewElement_()}">
     </div>
   `;
 }

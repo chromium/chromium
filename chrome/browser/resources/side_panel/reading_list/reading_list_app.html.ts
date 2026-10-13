@@ -32,24 +32,26 @@ export function getHtml(this: ReadingListAppElement) {
         ?hidden="${!this.shouldShowList_()}" @keydown="${this.onItemKeydown_}"
         @viewport-filled="${this.onViewportFilled_}"
         .restoreFocusElement="${this.focusedItem_}"
-        .template="${(item: ReadLaterEntry, index: number) => !item.url ? html`
-          <sp-heading compact hide-back-button>
-            <h2 slot="heading">${item.title}</h2>
-            <cr-icon-button slot="buttons"
-                aria-label="${this.getExpandButtonAriaLabel_(item.title)}"
-                title="${this.getExpandButtonAriaLabel_(item.title)}"
-                data-title="${item.title}"
-                iron-icon="${this.getExpandButtonIcon_(item.title)}"
-                @click="${this.onExpandButtonClick_}">
-            </cr-icon-button>
-          </sp-heading>
-        ` :
-      html`
-      <reading-list-item data-url="${item.url}" data-index="${index}"
-          @focus="${this.onItemFocus_}"
-          aria-label="${this.ariaLabel_(item)}" class="unread-item"
-          .data="${item}" ?button-ripples="${this.buttonRipples}">
-      </reading-list-item>`}">
+        .template="${(item: ReadLaterEntry, index: number) => html`
+          ${!item.url ? html`
+            <sp-heading compact hide-back-button>
+              <h2 slot="heading">${item.title}</h2>
+              <cr-icon-button slot="buttons"
+                  aria-label="${this.getExpandButtonAriaLabel_(item.title)}"
+                  title="${this.getExpandButtonAriaLabel_(item.title)}"
+                  data-title="${item.title}"
+                  iron-icon="${this.getExpandButtonIcon_(item.title)}"
+                  @click="${this.onExpandButtonClick_}">
+              </cr-icon-button>
+            </sp-heading>
+          ` : html`
+            <reading-list-item data-url="${item.url}" data-index="${index}"
+                @focus="${this.onItemFocus_}"
+                aria-label="${this.ariaLabel_(item)}" class="unread-item"
+                .data="${item}" ?button-ripples="${this.buttonRipples}">
+            </reading-list-item>
+          `}
+        `}">
     </cr-lazy-list>
   </div>
 

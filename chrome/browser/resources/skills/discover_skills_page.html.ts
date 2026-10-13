@@ -15,8 +15,8 @@ export function getHtml(this: DiscoverSkillsPageElement) {
 ${this.shouldShowNoSearchResults_() ? html`
   <error-page error-type="${ErrorType.NO_SEARCH_RESULTS}"></error-page>
 ` : html`
-${Array.from(this.topicHeaders_).map(({ categoryName, displayName }) =>
-  this.skillsByTopic_(categoryName).length > 0 ? html`
+${Array.from(this.topicHeaders_).map(({ categoryName, displayName }) => html`
+  ${this.skillsByTopic_(categoryName).length > 0 ? html`
 <h2 class="page-title">${displayName}</h2>
 <skills-carousel>
   ${this.skillsByTopic_(categoryName).map(skill => html`
@@ -26,7 +26,8 @@ ${Array.from(this.topicHeaders_).map(({ categoryName, displayName }) =>
         .saveDisabled="${this.shouldDisableSave_(skill)}"
         .hideTooltip="${true}">
     </skill-card>`)}
-</skills-carousel>` : '')}
+</skills-carousel>` : ''}
+`)}
 ${this.getOtherCategories_().length > 0 ? html`
 <h2 class="page-title" id="browseSkillsTitle">$i18n{browseSkillsTitle}</h2>
 <div id="discoverCategories">

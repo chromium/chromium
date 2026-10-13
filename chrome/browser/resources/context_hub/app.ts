@@ -14,6 +14,7 @@ import './tab_groups/tab_groups.js';
 import './taskbox/ai_taskbox.js';
 import './topics/topics_view.js';
 
+import {getTrustedHTML} from '//resources/js/static_types.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './app.css.js';
@@ -106,6 +107,27 @@ export class ContextHubAppElement extends CrLitElement {
 
   protected onSelectorClick_(e: MouseEvent) {
     e.preventDefault();
+  }
+
+  protected getCurrentViewElement_() {
+    switch (this.currentView_) {
+      case 'launchpad':
+        return getTrustedHTML`<ai-taskbox></ai-taskbox>`;
+      case 'memory-banks':
+        return getTrustedHTML`<memory-banks></memory-banks>`;
+      case 'memory-bank-chat':
+        return getTrustedHTML`<memory-bank-chat></memory-bank-chat>`;
+      case 'tab-groups':
+        return getTrustedHTML`<tab-groups></tab-groups>`;
+      case 'topics':
+        return getTrustedHTML`<topics-view></topics-view>`;
+      case 'jumpstart':
+        return getTrustedHTML`<smart-search></smart-search>`;
+      case 'record-replay':
+        return getTrustedHTML`<record-replay></record-replay>`;
+      default:
+        return '';
+    }
   }
 }
 

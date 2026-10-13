@@ -180,9 +180,9 @@ ${this.showingReadingList_ ? html`
 
                     <cr-collapse ?opened="${this.isDismissedExpanded_ && (this.dismissedTodos?.length || 0) > 0}">
                         <div class="todo-list dismissed-todo-list">
-                            ${
-      this.dismissedTodos &&
-      this.dismissedTodos.length > 0 ? repeat(this.dismissedTodos, todo => todo.id, todo => html`
+                          ${this.dismissedTodos &&
+                                  this.dismissedTodos.length > 0 ? html`
+                            ${repeat(this.dismissedTodos, todo => todo.id, todo => html`
                               <todo-item
                                   .id="${todo.id}"
                                   .heading="${todo.title}"
@@ -196,7 +196,8 @@ ${this.showingReadingList_ ? html`
                                   .liked="${this.feedbacks_.get(todo.id) ?? null}"
                                   .disable_state_mgmt="${this.isGeneratingGmailTodos_}">
                               </todo-item>
-                            `) : ''}
+                            `)}
+                          ` : ''}
                         </div>
                     </cr-collapse>
                 </div>
@@ -384,9 +385,9 @@ ${this.showingReadingList_ ? html`
 
                     <cr-collapse ?opened="${this.isDismissedTabExpanded_ && (this.dismissedTabTodos?.length || 0) > 0}">
                         <div class="todo-list dismissed-todo-list">
-                            ${
-      this.dismissedTabTodos &&
-      this.dismissedTabTodos.length > 0 ? repeat(this.dismissedTabTodos, todo => todo.id, todo => html`
+                          ${this.dismissedTabTodos &&
+                                  this.dismissedTabTodos.length > 0 ? html`
+                            ${repeat(this.dismissedTabTodos, todo => todo.id, todo => html`
                               <todo-item
                                   .id="${todo.id}"
                                   .heading="${todo.title}"
@@ -400,7 +401,8 @@ ${this.showingReadingList_ ? html`
                                   .liked="${this.feedbacks_.get(todo.id) ?? null}"
                                   .disable_state_mgmt="${this.isGeneratingTabTodos_}">
                               </todo-item>
-                            `) : ''}
+                            `)}
+                          ` : ''}
                         </div>
                     </cr-collapse>
                 </div>

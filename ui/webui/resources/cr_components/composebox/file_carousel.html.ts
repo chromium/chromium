@@ -10,13 +10,11 @@ export function getHtml(this: ComposeboxFileCarouselElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <div class="file-carousel-container">
-  ${this.files.map((item) => {
-    return html`
-      <cr-composebox-file-thumbnail .file="${item}"
-          class="file-thumbnail"
-          exportparts="thumbnail, thumbnail-title">
-      </cr-composebox-file-thumbnail>`;
-  })}
+  ${this.files.map(item => html`
+    <cr-composebox-file-thumbnail .file="${item}"
+        class="file-thumbnail"
+        exportparts="thumbnail, thumbnail-title">
+    </cr-composebox-file-thumbnail>`)}
 </div>
 <!--_html_template_end_-->`;
   // clang-format on

@@ -1109,28 +1109,25 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
         undefined;
   }
 
-  protected assertIsTitleItem_(
-      item: TitleItem|TabData|TabGroupData|
-      SplitViewData): asserts item is TitleItem {
-    assert(item instanceof TitleItem);
+  protected isTitleItem_(item: TitleItem|TabData|TabGroupData|SplitViewData):
+      item is TitleItem {
+    return item instanceof TitleItem;
   }
 
-  protected assertIsTabData_(
-      item: TitleItem|TabData|TabGroupData|
-      SplitViewData): asserts item is TabData {
-    assert(item instanceof TabData);
+  protected isTabData_(item: TitleItem|TabData|TabGroupData|SplitViewData):
+      item is TabData {
+    return item instanceof TabData;
   }
 
-  protected assertIsTabGroupData_(
-      item: TitleItem|TabData|TabGroupData|
-      SplitViewData): asserts item is TabGroupData {
-    assert(item instanceof TabGroupData);
+  protected isTabGroupData_(item: TitleItem|TabData|TabGroupData|SplitViewData):
+      item is TabGroupData {
+    return item instanceof TabGroupData;
   }
 
-  protected assertIsSplitViewData_(
+  protected isSplitViewData_(
       item: TitleItem|TabData|TabGroupData|
-      SplitViewData): asserts item is SplitViewData {
-    assert(item instanceof SplitViewData);
+      SplitViewData): item is SplitViewData {
+    return item instanceof SplitViewData;
   }
 }
 

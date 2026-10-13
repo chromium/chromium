@@ -135,8 +135,7 @@ export function getHtml(this: ContextualActionMenuElement) {
             <h4 id="toolHeader" aria-hidden="true">
               ${this.getToolHeader_()}</h4>` : ''}` : ''}
 
-      ${this.inputState?.allowedTools.map(mode => {
-        return html`
+      ${this.inputState?.allowedTools.map(mode => html`
         <button class="dropdown-item" data-mode="${mode}"
             role="menuitemradio"
             aria-checked="${this.isToolActive_(mode)}"
@@ -154,8 +153,7 @@ export function getHtml(this: ContextualActionMenuElement) {
             <cr-icon class="multi-tab-icon"
                 icon="cr:check"></cr-icon>
           ` : ''}
-        </button>`;
-      })}
+        </button>`)}
 
       <!-- Show separator if models AND something above is visible -->
       ${(this.inputState?.allowedModels.length ?? 0) > 0 &&
@@ -169,8 +167,7 @@ export function getHtml(this: ContextualActionMenuElement) {
             <h4 id="modelHeader" aria-hidden="true">
               ${this.getModelHeader_()}</h4>` : ''}` : ''}
 
-      ${this.inputState?.allowedModels.map(mode => {
-        return html`
+      ${this.inputState?.allowedModels.map(mode => html`
         <button class="dropdown-item"
             role="menuitemradio"
             aria-checked="${this.isModelActive_(mode)}"
@@ -188,8 +185,7 @@ export function getHtml(this: ContextualActionMenuElement) {
           ${this.isModelActive_(mode) ? html`
             <cr-icon class="multi-tab-icon"
                 icon="cr:check" id="model-check"></cr-icon>` : ''}
-        </button>`;
-      })}
+        </button>`)}
       </div>
 
       ${this.contextManagementInComposeboxEnabled &&

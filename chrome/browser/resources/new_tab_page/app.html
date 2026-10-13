@@ -10,26 +10,23 @@ import {SubmitButtonIconType} from '//resources/cr_components/composebox/compose
       ${this.lazyRender_ && this.microsoftModuleEnabled_ ? html`
         <iframe id="microsoftAuth" src="${this.microsoftAuthIframePath_}"></iframe>
       ` : ''}
-      ${this.lazyRender_ && this.oneGoogleBarEnabled_ ?
-        (
-          this.ntpRealboxNextEnabled_ ?
-            html`
-            <div id="oneGoogleBarStackingContext">
-              <div id="oneGoogleBarScrim" ?hidden="${!this.showBackgroundImage_}"
-                  ?fixed="${this.scrolledToTop_}"></div>
-              <ntp-iframe id="oneGoogleBar" src="${this.oneGoogleBarIframePath_}"
-                  ?hidden="${!this.oneGoogleBarLoaded_}">
-              </ntp-iframe>
-            </div>
-            ` :
-            html`
+      ${this.lazyRender_ && this.oneGoogleBarEnabled_ ? html`
+        ${this.ntpRealboxNextEnabled_ ? html`
+          <div id="oneGoogleBarStackingContext">
             <div id="oneGoogleBarScrim" ?hidden="${!this.showBackgroundImage_}"
                 ?fixed="${this.scrolledToTop_}"></div>
             <ntp-iframe id="oneGoogleBar" src="${this.oneGoogleBarIframePath_}"
                 ?hidden="${!this.oneGoogleBarLoaded_}">
             </ntp-iframe>
-            `
-        ) : ''}
+          </div>
+        ` : html`
+          <div id="oneGoogleBarScrim" ?hidden="${!this.showBackgroundImage_}"
+              ?fixed="${this.scrolledToTop_}"></div>
+          <ntp-iframe id="oneGoogleBar" src="${this.oneGoogleBarIframePath_}"
+              ?hidden="${!this.oneGoogleBarLoaded_}">
+          </ntp-iframe>
+        `}
+      ` : ''}
       <!-- TODO(crbug.com/40743294): Instead of ?hidden="\${!this.logoEnabled_}" it would
           be nicer to use Lit's conditional rendering. However, that breaks
           StartupBrowserCreatorPickerNoParamsTest.ShowPickerWhenAlreadyLaunched on
@@ -129,16 +126,14 @@ import {SubmitButtonIconType} from '//resources/cr_components/composebox/compose
           </cr-most-visited>
         ` : ''}
         ${this.modulesEnabled_ ? html`
-          ${html`
-            <ntp-modules id="modules"
-                ?modules-shown-to-user="${this.modulesShownToUser}"
-                @modules-shown-to-user-changed="${this.onModulesShownToUserChanged_}"
-                @customize-module="${this.onCustomizeModule_}"
-                @modules-loaded="${this.onModulesLoaded_}"
-                @modules-auto-removed="${this.onModulesAutoRemoved_}"
-                ?hidden="${!this.modulesLoaded_}">
-            </ntp-modules>
-          `}
+          <ntp-modules id="modules"
+              ?modules-shown-to-user="${this.modulesShownToUser}"
+              @modules-shown-to-user-changed="${this.onModulesShownToUserChanged_}"
+              @customize-module="${this.onCustomizeModule_}"
+              @modules-loaded="${this.onModulesLoaded_}"
+              @modules-auto-removed="${this.onModulesAutoRemoved_}"
+              ?hidden="${!this.modulesLoaded_}">
+          </ntp-modules>
         ` : ''}
         ${this.shortcutsEnabled_ || this.modulesEnabled_ ||
           this.ntpNextFeaturesEnabled_ ? html`

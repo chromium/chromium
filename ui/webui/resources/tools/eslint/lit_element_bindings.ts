@@ -116,7 +116,8 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs<
       // Exception 1: Allow TrustedHTML to be assigned to string
       // properties (e.g. innerHTML) for compatibility with Chromium's
       // patch.
-      if (checker.typeToString(expressionType) === 'TrustedHTML' &&
+      if ((expressionTypeStr === 'TrustedHTML' ||
+           expressionTypeStr === 'string | TrustedHTML') &&
           checker.typeToString(expectedType) === 'string') {
         return;
       }

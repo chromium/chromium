@@ -8,7 +8,6 @@ import type {ManagedUserProfileNoticeAppElement} from './managed_user_profile_no
 export function getHtml(this: ManagedUserProfileNoticeAppElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-${html`
   <div class="main-container tangible-sync-style"
     id="${this.showTimeout_ ? 'timeout-main-container' : ''}">
     <img class="tangible-sync-style-left-banner" alt="">
@@ -86,7 +85,6 @@ ${html`
       ${this.cancelLabel_}
     </cr-button>
   </div>
-`}
 <!--_html_template_end_-->`;
   // clang-format on
 }

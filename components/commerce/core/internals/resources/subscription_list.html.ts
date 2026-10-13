@@ -21,8 +21,8 @@ ${this.subscriptions_.length > 0 ? html`
       </tr>
     </thead>
     <tbody>
-      ${this.subscriptions_.map(subscription =>
-        subscription.productInfos.length === 0 ? html`
+      ${this.subscriptions_.map(subscription => html`
+        ${subscription.productInfos.length === 0 ? html`
           <tr>
             <td>${subscription.clusterId}</td>
           </tr>
@@ -38,14 +38,15 @@ ${this.subscriptions_.length > 0 ? html`
                   <a href="${productInfo.info.productUrl}" target="_blank">
                     ${productInfo.info.title}
                   </a>` : html`${productInfo.info.title}`}
-                ${productInfo.info.imageUrl && html`
+                ${productInfo.info.imageUrl ? html`
                   <a href="${productInfo.info.imageUrl}" target="_blank">
                     (image)
-                  </a>`}
+                  </a>` : ''}
               </td>
             </tr>
           `)}
-        `)}
+        `}
+      `)}
     </tbody>
   </table>
 ` : html`<div>No subscriptions found.</div>`}`;

@@ -51,76 +51,64 @@ export function getHtml(this: TabSearchPageElement) {
         }}"
         .template="${
             (item: TitleItem|TabData|TabGroupData|SplitViewData,
-             index: number) => {
-      switch (item.constructor.name) {
-       case 'TitleItem':
-        this.assertIsTitleItem_(item);
-        return html`
-          <div class="list-section-title">
-            <div>${item.title}</div>
-            ${item.expandable ? html`<cr-expand-button
-                  aria-label="$i18n{recentlyClosedExpandA11yLabel}"
-                  data-title="${item.title}"
-                  data-index="${index}"
-                  expand-icon="cr:keyboard-arrow-down"
-                  collapse-icon="cr:keyboard-arrow-up"
-                  ?expanded="${item.expanded}"
-                  expand-title="$i18n{expandRecentlyClosed}"
-                  collapse-title="$i18n{collapseRecentlyClosed}"
-                  @expanded-changed="${this.onTitleExpandedChanged_}"
-                  no-hover>
-              </cr-expand-button>` : ''}
-          </div>`;
-       case 'TabData':
-        this.assertIsTabData_(item);
-        return html`<tab-search-item id="${item.tab.tabId}"
-            aria-label="${this.ariaLabel_(item)}"
-            class="mwb-list-item selectable" .data="${item}"
-            data-index="${index}"
-            @click="${this.onItemClick_}"
-            @close="${this.onItemClose_}"
-            @focus="${this.onItemFocus_}"
-            @keydown="${this.onItemKeydown_}"
-            aria-setsize="${this.selectableItemCount_()}"
-            aria-posinset="${this.itemIndexToTabIndex_(index) + 1}"
-            role="option"
-            tabindex="0">
-        </tab-search-item>`;
-       case 'TabGroupData':
-        this.assertIsTabGroupData_(item);
-        return html`<tab-search-group-item
-            id="${tokenToString(item.tabGroup.id)}"
-            class="mwb-list-item selectable"
-            .data="${item}"
-            data-index="${index}"
-            aria-label="${this.ariaLabel_(item)}"
-            @click="${this.onItemClick_}"
-            @focus="${this.onItemFocus_}"
-            @keydown="${this.onItemKeydown_}"
-            aria-setsize="${this.selectableItemCount_()}"
-            aria-posinset="${this.itemIndexToTabIndex_(index) + 1}"
-            role="option" tabindex="0">
-        </tab-search-group-item>`;
-       case 'SplitViewData':
-        this.assertIsSplitViewData_(item);
-        return html`<tab-search-split-item
-            id="${item.sessionId}"
-            class="mwb-list-item selectable"
-            .data="${item}"
-            data-index="${index}"
-            aria-label="${this.ariaLabel_(item)}"
-            @click="${this.onItemClick_}"
-            @close="${this.onItemClose_}"
-            @focus="${this.onItemFocus_}"
-            @keydown="${this.onItemKeydown_}"
-            aria-setsize="${this.selectableItemCount_()}"
-            aria-posinset="${this.itemIndexToTabIndex_(index) + 1}"
-            role="option" tabindex="0">
-        </tab-search-split-item>`;
-       default:
-        return html``;
-      }
-    }}">
+             index: number) => html`
+          ${this.isTitleItem_(item) ? html`
+            <div class="list-section-title">
+              <div>${item.title}</div>
+              ${item.expandable ? html`<cr-expand-button
+                    aria-label="$i18n{recentlyClosedExpandA11yLabel}"
+                    data-title="${item.title}"
+                    data-index="${index}"
+                    expand-icon="cr:keyboard-arrow-down"
+                    collapse-icon="cr:keyboard-arrow-up"
+                    ?expanded="${item.expanded}"
+                    expand-title="$i18n{expandRecentlyClosed}"
+                    collapse-title="$i18n{collapseRecentlyClosed}"
+                    @expanded-changed="${this.onTitleExpandedChanged_}"
+                    no-hover>
+                </cr-expand-button>` : ''}
+            </div>` : ''}
+          ${this.isTabData_(item) ? html`<tab-search-item id="${item.tab.tabId}"
+              aria-label="${this.ariaLabel_(item)}"
+              class="mwb-list-item selectable" .data="${item}"
+              data-index="${index}"
+              @click="${this.onItemClick_}"
+              @close="${this.onItemClose_}"
+              @focus="${this.onItemFocus_}"
+              @keydown="${this.onItemKeydown_}"
+              aria-setsize="${this.selectableItemCount_()}"
+              aria-posinset="${this.itemIndexToTabIndex_(index) + 1}"
+              role="option"
+              tabindex="0">
+          </tab-search-item>` : ''}
+          ${this.isTabGroupData_(item) ? html`<tab-search-group-item
+              id="${tokenToString(item.tabGroup.id)}"
+              class="mwb-list-item selectable"
+              .data="${item}"
+              data-index="${index}"
+              aria-label="${this.ariaLabel_(item)}"
+              @click="${this.onItemClick_}"
+              @focus="${this.onItemFocus_}"
+              @keydown="${this.onItemKeydown_}"
+              aria-setsize="${this.selectableItemCount_()}"
+              aria-posinset="${this.itemIndexToTabIndex_(index) + 1}"
+              role="option" tabindex="0">
+          </tab-search-group-item>` : ''}
+          ${this.isSplitViewData_(item) ? html`<tab-search-split-item
+              id="${item.sessionId}"
+              class="mwb-list-item selectable"
+              .data="${item}"
+              data-index="${index}"
+              aria-label="${this.ariaLabel_(item)}"
+              @click="${this.onItemClick_}"
+              @close="${this.onItemClose_}"
+              @focus="${this.onItemFocus_}"
+              @keydown="${this.onItemKeydown_}"
+              aria-setsize="${this.selectableItemCount_()}"
+              aria-posinset="${this.itemIndexToTabIndex_(index) + 1}"
+              role="option" tabindex="0">
+          </tab-search-split-item>` : ''}
+        `}">
     </selectable-lazy-list>
   </div>
   <div id="no-results" ?hidden="${this.filteredItems_.length > 0}">
