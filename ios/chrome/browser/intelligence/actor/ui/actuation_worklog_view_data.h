@@ -202,6 +202,41 @@ enum class ActuationInterventionAction {
 
 @end
 
+// View data object describing the text displayed in the actuation header.
+@interface ActuationHeaderContent : NSObject
+
+// Main title text.
+@property(nonatomic, copy, readonly) NSString* title;
+
+// Optional subtitle text displayed below `title`.
+@property(nonatomic, copy, readonly) NSString* subtitle;
+
+// Designated initializer.
+- (instancetype)initWithTitle:(NSString*)title
+                     subtitle:(NSString*)subtitle NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
+
+@end
+
+// View data object describing the header content to display in each
+// `ActuationWorklogDisplayMode`.
+@interface ActuationHeaderContentVariants : NSObject
+
+// Designated initializer.
+- (instancetype)initWithMinimizedContent:(ActuationHeaderContent*)minimized
+                          compactContent:(ActuationHeaderContent*)compact
+                         expandedContent:(ActuationHeaderContent*)expanded
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
+
+// Returns the content to display in `mode`.
+- (ActuationHeaderContent*)contentForDisplayMode:
+    (ActuationWorklogDisplayMode)mode;
+
+@end
+
 // Visual style of an `ActuationHeaderItem`.
 typedef NS_ENUM(NSInteger, ActuationHeaderItemStyle) {
   // Icon-only button. `title` is used as the accessibility label.

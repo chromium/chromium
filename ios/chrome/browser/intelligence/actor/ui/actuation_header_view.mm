@@ -178,6 +178,7 @@ bool ShouldGroupItems(NSArray<ActuationHeaderItem*>* items) {
   self = [super initWithFrame:frame];
   if (self) {
     _actuating = NO;
+    _density = ActuationHeaderDensityRegular;
 
     [self setupSubviews];
     [self setupConstraints];
@@ -218,6 +219,14 @@ bool ShouldGroupItems(NSArray<ActuationHeaderItem*>* items) {
   } else {
     [_activityIndicator stopAnimating];
   }
+}
+
+- (void)setDensity:(ActuationHeaderDensity)density {
+  if (_density == density) {
+    return;
+  }
+  _density = density;
+  [self updateContentMargins];
 }
 
 - (void)setPrimaryItem:(ActuationHeaderItem*)primaryItem {
@@ -285,11 +294,10 @@ bool ShouldGroupItems(NSArray<ActuationHeaderItem*>* items) {
   _contentStackView.alignment = UIStackViewAlignmentCenter;
   _contentStackView.spacing = 0.0;
   [_contentStackView setCustomSpacing:kSpacingSmall afterView:_textStackView];
-  _contentStackView.directionalLayoutMargins = NSDirectionalEdgeInsetsMake(
-      kSpacingSmall, 0.0, kSpacingSmall, kSpacingLarge);
   _contentStackView.layoutMarginsRelativeArrangement = YES;
   _contentStackView.translatesAutoresizingMaskIntoConstraints = NO;
   [self addSubview:_contentStackView];
+  [self updateContentMargins];
 }
 
 // Configures layout constraints.
@@ -303,6 +311,15 @@ bool ShouldGroupItems(NSArray<ActuationHeaderItem*>* items) {
   AddSquareConstraints(_imageView, kLogoSize);
   AddSameCenterConstraints(_activityIndicator, _imageView);
   AddSquareConstraints(_activityIndicator, kSpinnerSize);
+}
+
+// Applies the content margins matching `density`. The vertical margins are
+// kept equal so that the content stays vertically centered.
+- (void)updateContentMargins {
+  CGFloat vertical =
+      _density == ActuationHeaderDensityRegular ? kSpacingSmall : kSpacingTiny;
+  _contentStackView.directionalLayoutMargins =
+      NSDirectionalEdgeInsetsMake(vertical, 0.0, vertical, kSpacingLarge);
 }
 
 // Rebuilds the accessory buttons stack in deterministic order:

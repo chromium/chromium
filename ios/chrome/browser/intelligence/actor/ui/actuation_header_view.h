@@ -9,6 +9,14 @@
 
 @class ActuationHeaderItem;
 
+// Vertical padding density of an `ActuationHeaderView`.
+typedef NS_ENUM(NSInteger, ActuationHeaderDensity) {
+  // Standard padding.
+  ActuationHeaderDensityRegular,
+  // Reduced padding, for space-constrained presentations.
+  ActuationHeaderDensityCondensed,
+};
+
 // Header view anchored above the actuation worklog.
 //
 // One secondary item:
@@ -40,6 +48,10 @@
 
 // Whether actuation is currently in progress. Default is NO (static logo).
 @property(nonatomic, assign, getter=isActuating) BOOL actuating;
+
+// Vertical padding around the content. Default is
+// `ActuationHeaderDensityRegular`. Not affected by `reset`.
+@property(nonatomic, assign) ActuationHeaderDensity density;
 
 // Primary accessory button, rendered according to its `style`. Setting nil
 // removes the button from the header.

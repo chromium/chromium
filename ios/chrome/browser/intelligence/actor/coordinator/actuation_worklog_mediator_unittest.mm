@@ -6,6 +6,7 @@
 
 #import <memory>
 #import <optional>
+#import <utility>
 
 #import "base/memory/raw_ptr.h"
 #import "base/test/scoped_feature_list.h"
@@ -41,7 +42,8 @@ actor::TaskSourceInfo TestSource() {
 }  // namespace
 
 @interface FakeActuationWorklogConsumer : NSObject <ActuationWorklogConsumer>
-@property(nonatomic, copy) NSString* taskTitle;
+@property(nonatomic, strong)
+    ActuationHeaderContentVariants* headerContentVariants;
 @property(nonatomic, assign) BOOL actuationActive;
 @property(nonatomic, strong) NSMutableArray<ActuationWorklogItem*>* items;
 @property(nonatomic, strong) NSMutableArray<ActuationWorklogChip*>* chips;
@@ -76,7 +78,7 @@ actor::TaskSourceInfo TestSource() {
 - (void)reset {
   [_items removeAllObjects];
   [_chips removeAllObjects];
-  _taskTitle = nil;
+  _headerContentVariants = nil;
   _intervention = nil;
 }
 
@@ -200,6 +202,11 @@ class ActuationWorklogMediatorTest : public PlatformTest {
     return task_id;
   }
 
+  // Returns the header content last pushed to the consumer for `mode`.
+  ActuationHeaderContent* HeaderContent(ActuationWorklogDisplayMode mode) {
+    return [fake_consumer_.headerContentVariants contentForDisplayMode:mode];
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
@@ -213,7 +220,8 @@ class ActuationWorklogMediatorTest : public PlatformTest {
 TEST_F(ActuationWorklogMediatorTest, TestRegisterObserverEmitsInitialStep) {
   StartObservingTask(task_id_);
 
-  EXPECT_NSEQ(fake_consumer_.taskTitle, @(kTaskTitle));
+  EXPECT_NSEQ(HeaderContent(ActuationWorklogDisplayModeCompact).title,
+              @(kTaskTitle));
   EXPECT_TRUE(fake_consumer_.actuationActive);
   ASSERT_EQ(fake_consumer_.items.count, 1u);
   EXPECT_GT(fake_consumer_.items[0].title.length, 0u);
@@ -282,7 +290,7 @@ TEST_F(ActuationWorklogMediatorTest, TestTaskLifecycleTransitionsAndReset) {
   StartObservingTask(task_id_);
   EXPECT_TRUE(fake_consumer_.actuationActive);
   ASSERT_EQ(fake_consumer_.items.count, 1u);
-  ASSERT_NE(fake_consumer_.taskTitle, nil);
+  ASSERT_NE(fake_consumer_.headerContentVariants, nil);
 
   ChangeState(kReflecting);
   EXPECT_TRUE(fake_consumer_.actuationActive);
@@ -290,18 +298,18 @@ TEST_F(ActuationWorklogMediatorTest, TestTaskLifecycleTransitionsAndReset) {
   EndActuation();
   EXPECT_FALSE(fake_consumer_.actuationActive);
   EXPECT_EQ(fake_consumer_.items.count, 0u);
-  EXPECT_EQ(fake_consumer_.taskTitle, nil);
+  EXPECT_EQ(fake_consumer_.headerContentVariants, nil);
 }
 
 // Tests that disconnecting the mediator resets the consumer.
 TEST_F(ActuationWorklogMediatorTest, TestDisconnectResetsConsumer) {
   StartObservingTask(task_id_);
   ASSERT_EQ(fake_consumer_.items.count, 1u);
-  ASSERT_NE(fake_consumer_.taskTitle, nil);
+  ASSERT_NE(fake_consumer_.headerContentVariants, nil);
 
   [mediator_ disconnect];
   EXPECT_EQ(fake_consumer_.items.count, 0u);
-  EXPECT_EQ(fake_consumer_.taskTitle, nil);
+  EXPECT_EQ(fake_consumer_.headerContentVariants, nil);
 }
 
 // Tests the user intervention flow.
@@ -387,7 +395,8 @@ TEST_F(ActuationWorklogMediatorTest, TestStartObservingDeliversRegistration) {
   EXPECT_EQ(fake_consumer_.items.count, 0u);
 
   actor::FlushCurrentSequence();
-  EXPECT_NSEQ(fake_consumer_.taskTitle, @(kTaskTitle));
+  EXPECT_NSEQ(HeaderContent(ActuationWorklogDisplayModeCompact).title,
+              @(kTaskTitle));
   EXPECT_TRUE(fake_consumer_.actuationActive);
   EXPECT_EQ(fake_consumer_.items.count, 1u);
 }
@@ -400,7 +409,7 @@ TEST_F(ActuationWorklogMediatorTest,
   EndActuation();
 
   actor::FlushCurrentSequence();
-  EXPECT_EQ(fake_consumer_.taskTitle, nil);
+  EXPECT_EQ(fake_consumer_.headerContentVariants, nil);
   EXPECT_FALSE(fake_consumer_.actuationActive);
   EXPECT_EQ(fake_consumer_.items.count, 0u);
 }
@@ -490,4 +499,59 @@ TEST_F(ActuationWorklogMediatorTest, TestSelectFromSuggestions) {
   // impelemented.
   EXPECT_EQ(selected, suggestion1);
   EXPECT_FALSE(stored);
+}
+
+// Tests that while the task runs, the minimized header shows the task title
+// above the current step, and the other modes only show the task title.
+TEST_F(ActuationWorklogMediatorTest, TestHeaderContentWhileRunning) {
+  StartObservingTask(task_id_);
+
+  ActuationHeaderContent* minimized =
+      HeaderContent(ActuationWorklogDisplayModeMinimized);
+  EXPECT_NSEQ(minimized.title, @(kTaskTitle));
+  EXPECT_EQ(minimized.subtitle, nil);
+
+  ExecuteTool(kClick, @"Clicking button");
+  minimized = HeaderContent(ActuationWorklogDisplayModeMinimized);
+  EXPECT_NSEQ(minimized.title, @(kTaskTitle));
+  EXPECT_NSEQ(minimized.subtitle, @"Clicking button");
+
+  for (ActuationWorklogDisplayMode mode :
+       {ActuationWorklogDisplayModeCompact,
+        ActuationWorklogDisplayModeExpanded}) {
+    SCOPED_TRACE(mode);
+    ActuationHeaderContent* content = HeaderContent(mode);
+    EXPECT_NSEQ(content.title, @(kTaskTitle));
+    EXPECT_EQ(content.subtitle, nil);
+  }
+}
+
+// Tests that the minimized header shows the status above the task title for
+// states with a status, and shows the current step again once the task runs.
+TEST_F(ActuationWorklogMediatorTest, TestMinimizedHeaderContentShowsStatus) {
+  StartObservingTask(task_id_);
+  ExecuteTool(kClick, @"Clicking button");
+
+  const std::pair<actor::ActorTaskState, int> kStatuses[] = {
+      {kWaitingOnUser, IDS_IOS_ACTOR_HEADER_INPUT_NEEDED},
+      {kFinished, IDS_IOS_ACTOR_HEADER_TASK_DONE},
+      {kCancelled, IDS_IOS_ACTOR_HEADER_TASK_STOPPED},
+      {kFailed, IDS_IOS_ACTOR_HEADER_TASK_FAILED},
+  };
+  for (const auto& [state, message_id] : kStatuses) {
+    SCOPED_TRACE(static_cast<int>(state));
+    ChangeState(state);
+    ActuationHeaderContent* minimized =
+        HeaderContent(ActuationWorklogDisplayModeMinimized);
+    EXPECT_NSEQ(minimized.title, l10n_util::GetNSString(message_id));
+    EXPECT_NSEQ(minimized.subtitle, @(kTaskTitle));
+    EXPECT_NSEQ(HeaderContent(ActuationWorklogDisplayModeCompact).title,
+                @(kTaskTitle));
+  }
+
+  ChangeState(kActing);
+  ActuationHeaderContent* minimized =
+      HeaderContent(ActuationWorklogDisplayModeMinimized);
+  EXPECT_NSEQ(minimized.title, @(kTaskTitle));
+  EXPECT_NSEQ(minimized.subtitle, @"Clicking button");
 }

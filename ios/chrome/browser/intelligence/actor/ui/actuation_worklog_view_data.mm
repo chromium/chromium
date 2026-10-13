@@ -219,6 +219,51 @@
 
 @end
 
+@implementation ActuationHeaderContent
+
+- (instancetype)initWithTitle:(NSString*)title subtitle:(NSString*)subtitle {
+  self = [super init];
+  if (self) {
+    _title = [title copy];
+    _subtitle = [subtitle copy];
+  }
+  return self;
+}
+
+@end
+
+@implementation ActuationHeaderContentVariants {
+  ActuationHeaderContent* _minimizedContent;
+  ActuationHeaderContent* _compactContent;
+  ActuationHeaderContent* _expandedContent;
+}
+
+- (instancetype)initWithMinimizedContent:(ActuationHeaderContent*)minimized
+                          compactContent:(ActuationHeaderContent*)compact
+                         expandedContent:(ActuationHeaderContent*)expanded {
+  self = [super init];
+  if (self) {
+    _minimizedContent = minimized;
+    _compactContent = compact;
+    _expandedContent = expanded;
+  }
+  return self;
+}
+
+- (ActuationHeaderContent*)contentForDisplayMode:
+    (ActuationWorklogDisplayMode)mode {
+  switch (mode) {
+    case ActuationWorklogDisplayModeMinimized:
+      return _minimizedContent;
+    case ActuationWorklogDisplayModeCompact:
+      return _compactContent;
+    case ActuationWorklogDisplayModeExpanded:
+      return _expandedContent;
+  }
+}
+
+@end
+
 @interface ActuationHeaderItem ()
 
 - (instancetype)initWithStyle:(ActuationHeaderItemStyle)style

@@ -323,6 +323,18 @@
       <message name="IDS_IOS_ACCOUNT_VIEW_ACCESSIBILITY_LABEL_NAME_MANAGED_STATUS_AI_TIER" is_accessibility_with_no_ui="true" desc="The accessibility label for the cell containing user’s name, email, managed status and AI tier. [iOS only]">
         <ph name="USER_NAME">$1<ex>Jessica</ex></ph>, <ph name="EMAIL">$2<ex>jessica@gmail.com</ex></ph>. <ph name="MANAGED_STATUS">$3<ex>Your account is managed</ex></ph>. <ph name="AI_TIER">$4<ex>Google AI Foo membership</ex></ph>.
       </message>
+      <message name="IDS_IOS_ACTOR_HEADER_INPUT_NEEDED" desc="Title of the minimized actuation header when the actor is waiting for input or confirmation from the user. The task title is displayed below it. [iOS only]">
+        Input needed
+      </message>
+      <message name="IDS_IOS_ACTOR_HEADER_TASK_DONE" desc="Title of the minimized actuation header when the actor successfully completed the task. The task title is displayed below it. [iOS only]">
+        Task done
+      </message>
+      <message name="IDS_IOS_ACTOR_HEADER_TASK_FAILED" desc="Title of the minimized actuation header when the task failed. The task title is displayed below it. [iOS only]">
+        Task failed
+      </message>
+      <message name="IDS_IOS_ACTOR_HEADER_TASK_STOPPED" desc="Title of the minimized actuation header when the user stopped the task. The task title is displayed below it. [iOS only]">
+        Task stopped
+      </message>
       <message name="IDS_IOS_ACTOR_WORKLOG_CHIP_CLICKING" desc="Worklog chip label indicating the actor is clicking an element on the page. [iOS only]">
         Clicking
       </message>
