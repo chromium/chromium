@@ -257,6 +257,27 @@ AXEventRecorderWinUia::Thread::EventHandler::EventHandler(
       (base::win::GetVersion() >= base::win::Version::WIN10_19H1)
           ? L"UIAutomationCore.dll"
           : L"RPCRT4.dll");
+
+  // Seed `last_focused_runtime_id_` with the element in `root_` that already
+  // has focus before subscribing to focus events, so that initial or duplicate
+  // focus notifications for an already-focused element (e.g., across multiple
+  // `go()` passes in a test) are debounced.
+  Microsoft::WRL::ComPtr<IUIAutomationCondition> condition;
+  owner_->uia_->CreatePropertyCondition(UIA_HasKeyboardFocusPropertyId,
+                                        base::win::ScopedVariant(true),
+                                        &condition);
+  CHECK(condition);
+  Microsoft::WRL::ComPtr<IUIAutomationElement> focused_element;
+  root_->FindFirst(TreeScope::TreeScope_Subtree, condition.Get(),
+                   &focused_element);
+  if (focused_element) {
+    base::win::ScopedSafearray id;
+    if (SUCCEEDED(focused_element->GetRuntimeId(id.Receive()))) {
+      if (auto lock_scope = id.CreateLockScope<VT_I4>()) {
+        last_focused_runtime_id_.assign_range(*lock_scope);
+      }
+    }
+  }
 }
 
 AXEventRecorderWinUia::Thread::EventHandler::~EventHandler() = default;
@@ -313,7 +334,7 @@ AXEventRecorderWinUia::Thread::EventHandler::HandleFocusChangedEvent(
       return S_OK;
     }
 
-    last_focused_runtime_id_ = {lock_scope->begin(), lock_scope->end()};
+    last_focused_runtime_id_.assign_range(*lock_scope);
   }
 
   std::string log = base::StringPrintf("AutomationFocusChanged %s",
