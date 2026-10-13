@@ -285,6 +285,14 @@ NSString* const kStopTestAudioButtonText = @"Stop Test Audio";
   _statusLabel.textColor = [UIColor colorNamed:kRedColor];
 }
 
+- (void)setJournalLines:(NSArray<NSString*>*)lines {
+  // Implemented in follow-up UI CL.
+}
+
+- (void)appendJournalLine:(NSString*)line {
+  // Implemented in follow-up UI CL.
+}
+
 #pragma mark - Actions
 
 - (void)micButtonTapped:(UIButton*)sender {

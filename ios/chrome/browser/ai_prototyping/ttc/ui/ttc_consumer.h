@@ -42,6 +42,13 @@ enum class TTCSessionUIState {
 // Displays an error message in the status label.
 - (void)didEncounterError:(NSString*)errorMessage;
 
+// Replaces the displayed session journal log lines (used on initial hydration,
+// filter change, or clear).
+- (void)setJournalLines:(NSArray<NSString*>*)lines;
+
+// Appends a single formatted line to the displayed session journal.
+- (void)appendJournalLine:(NSString*)line;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AI_PROTOTYPING_TTC_UI_TTC_CONSUMER_H_

@@ -8,6 +8,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/test/scoped_feature_list.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_journal.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_keyed_service.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_keyed_service_factory.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_session_controller.h"
@@ -272,6 +273,45 @@ TEST_F(TTCMediatorTest, TestViewWillAppearHydratesConsumer) {
 
   [mediator_ viewWillAppear];
 
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
+}
+
+// Tests journal hydration, live append, component filtering, and clearing.
+TEST_F(TTCMediatorTest, TestJournalHydrationFilteringAndClear) {
+  ttc_service_->journal().Log(TTCJournalComponent::kSession,
+                              "TtcSessionLifecycle");
+  ttc_service_->journal().Log(TTCJournalComponent::kBackend, "ClockSync");
+
+  OCMExpect([mock_consumer_
+      setJournalLines:[OCMArg checkWithBlock:^BOOL(NSArray<NSString*>* lines) {
+        return lines.count == 2u &&
+               [lines[0] containsString:@"TtcSessionLifecycle"] &&
+               [lines[1] containsString:@"ClockSync"];
+      }]]);
+  mediator_.consumer = mock_consumer_;
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
+
+  // Live append.
+  OCMExpect([mock_consumer_
+      appendJournalLine:[OCMArg checkWithBlock:^BOOL(NSString* line) {
+        return [line containsString:@"TtcInputTranscription"];
+      }]]);
+  ttc_service_->journal().Log(TTCJournalComponent::kConversation,
+                              "TtcInputTranscription");
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
+
+  // Filter to Session only, then clear.
+  OCMExpect([mock_consumer_
+      setJournalLines:[OCMArg checkWithBlock:^BOOL(NSArray<NSString*>* lines) {
+        return lines.count == 1u &&
+               [lines[0] containsString:@"TtcSessionLifecycle"];
+      }]]);
+  [mediator_ setJournalComponentFilter:TTCJournalFilter::kSession];
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
+
+  OCMExpect([mock_consumer_ setJournalLines:@[]]);
+  [mediator_ clearJournal];
+  EXPECT_TRUE(ttc_service_->journal().entries().empty());
   EXPECT_OCMOCK_VERIFY(mock_consumer_);
 }
 

@@ -4,9 +4,13 @@
 
 #import "ios/chrome/browser/ai_prototyping/ttc/coordinator/ttc_mediator.h"
 
+#import <optional>
+
 #import "base/callback_list.h"
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
+#import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_journal.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_keyed_service.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_session_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_session_controller_observer.h"
@@ -34,6 +38,25 @@ TTCSessionUIState SessionUIStateForLifecycle(TTCSessionLifecycle lifecycle) {
   }
 }
 
+// Converts a `TTCJournalFilter` to an optional `TTCJournalComponent`.
+std::optional<TTCJournalComponent> JournalComponentForFilter(
+    TTCJournalFilter filter) {
+  switch (filter) {
+    case TTCJournalFilter::kAll:
+      return std::nullopt;
+    case TTCJournalFilter::kSession:
+      return TTCJournalComponent::kSession;
+    case TTCJournalFilter::kConversation:
+      return TTCJournalComponent::kConversation;
+    case TTCJournalFilter::kBackend:
+      return TTCJournalComponent::kBackend;
+    case TTCJournalFilter::kAudio:
+      return TTCJournalComponent::kAudio;
+    case TTCJournalFilter::kActuation:
+      return TTCJournalComponent::kActuation;
+  }
+}
+
 }  // namespace
 
 @interface TTCMediator () <TTCSessionControllerObserver>
@@ -48,6 +71,15 @@ TTCSessionUIState SessionUIStateForLifecycle(TTCSessionLifecycle lifecycle) {
 
   // Subscription observing state changes in TTCKeyedService.
   base::CallbackListSubscription _stateChangeSubscription;
+
+  // Subscription observing entries added to TTCJournal.
+  base::CallbackListSubscription _journalEntryAddedSubscription;
+
+  // Subscription observing when TTCJournal is cleared.
+  base::CallbackListSubscription _journalClearedSubscription;
+
+  // Optional component filter applied to displayed journal lines.
+  std::optional<TTCJournalComponent> _journalComponentFilter;
 
   // Weak reference to the currently observed session controller.
   __weak TTCSessionController* _observedSessionController;
@@ -65,6 +97,15 @@ TTCSessionUIState SessionUIStateForLifecycle(TTCSessionLifecycle lifecycle) {
       _stateChangeSubscription = _ttcService->RegisterStateChangedCallback(
           base::BindRepeating(^(TTCServiceState state) {
             [weakSelf handleServiceStateChanged:state];
+          }));
+      _journalEntryAddedSubscription =
+          _ttcService->journal().AddEntryAddedListener(
+              base::BindRepeating(^(const TTCJournalEntry& entry) {
+                [weakSelf handleJournalEntryAdded:entry];
+              }));
+      _journalClearedSubscription =
+          _ttcService->journal().AddClearedListener(base::BindRepeating(^{
+            [weakSelf handleJournalCleared];
           }));
       [self startObservingSessionControllerIfNeeded];
     }
@@ -121,6 +162,17 @@ TTCSessionUIState SessionUIStateForLifecycle(TTCSessionLifecycle lifecycle) {
   [self hydrateConsumer];
 }
 
+- (void)clearJournal {
+  if (_ttcService) {
+    _ttcService->journal().Clear();
+  }
+}
+
+- (void)setJournalComponentFilter:(TTCJournalFilter)filter {
+  _journalComponentFilter = JournalComponentForFilter(filter);
+  [self.consumer setJournalLines:[self formattedJournalLines]];
+}
+
 #pragma mark - TTCSessionControllerObserver
 
 - (void)sessionController:(TTCSessionController*)controller
@@ -149,6 +201,8 @@ TTCSessionUIState SessionUIStateForLifecycle(TTCSessionLifecycle lifecycle) {
 - (void)disconnect {
   [self stopObservingSessionControllerIfNeeded];
   _stateChangeSubscription = {};
+  _journalEntryAddedSubscription = {};
+  _journalClearedSubscription = {};
   _ttcService = nullptr;
   _consumer = nil;
 }
@@ -199,15 +253,46 @@ TTCSessionUIState SessionUIStateForLifecycle(TTCSessionLifecycle lifecycle) {
   }
 }
 
-// Hydrates the consumer with current state and resets audio energy.
-- (void)hydrateConsumer {
-  if (!_consumer) {
+// Handles a new entry appended to `TTCJournal`.
+- (void)handleJournalEntryAdded:(const TTCJournalEntry&)entry {
+  if (_journalComponentFilter.has_value() &&
+      entry.component != *_journalComponentFilter) {
     return;
   }
-  [_consumer setSessionState:_currentState];
-  [_consumer setMicEnergyLevel:0.0f];
-  [_consumer setLoopbackEnabled:NO];
-  [_consumer setTestAudioPlaying:NO];
+  [self.consumer appendJournalLine:base::SysUTF8ToNSString(entry.FormatLine())];
+}
+
+// Handles `TTCJournal::Clear()` notifications.
+- (void)handleJournalCleared {
+  [self.consumer setJournalLines:@[]];
+}
+
+// Returns buffered journal lines matching `_journalComponentFilter`.
+- (NSArray<NSString*>*)formattedJournalLines {
+  if (!_ttcService) {
+    return @[];
+  }
+  NSMutableArray<NSString*>* lines = [[NSMutableArray alloc] init];
+  for (const TTCJournalEntry& entry : _ttcService->journal().entries()) {
+    if (_journalComponentFilter.has_value() &&
+        entry.component != *_journalComponentFilter) {
+      continue;
+    }
+    [lines addObject:base::SysUTF8ToNSString(entry.FormatLine())];
+  }
+  return lines;
+}
+
+// Hydrates the consumer with current state and resets audio energy.
+- (void)hydrateConsumer {
+  if (!self.consumer) {
+    return;
+  }
+  [self.consumer setSessionState:_currentState];
+  [self.consumer setMicEnergyLevel:0.0f];
+  [self.consumer setLoopbackEnabled:NO];
+  [self.consumer setTestAudioPlaying:NO];
+  [self.consumer setJournalLines:[self formattedJournalLines]];
 }
 
 @end
