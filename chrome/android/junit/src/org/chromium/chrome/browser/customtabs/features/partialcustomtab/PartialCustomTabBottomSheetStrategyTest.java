@@ -14,11 +14,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -33,15 +31,17 @@ import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.P
 import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.NAVBAR_HEIGHT;
 import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.STATUS_BAR_HEIGHT;
 
-import android.animation.Animator.AnimatorListener;
 import android.graphics.Insets;
 import android.graphics.Rect;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowInsets;
 import android.view.WindowManager;
 import android.view.WindowMetrics;
@@ -53,11 +53,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
@@ -79,7 +79,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
 
     private static final int INITIAL_HEIGHT = DEVICE_HEIGHT / 2 - NAVBAR_HEIGHT;
 
-    private static final int FIND_TOOLBAR_COLOR = 3755;
     private static final int PCCT_TOOLBAR_COLOR = 12111;
 
     private boolean mFullscreen;
@@ -160,7 +159,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
         createPcctAtHeight(500);
         mPCCTTestRule.verifyWindowFlagsSet();
 
-        assertEquals(2, mPCCTTestRule.mAttributeResults.size());
         assertTabIsAtInitialPos(mPCCTTestRule.getWindowAttributes());
     }
 
@@ -169,7 +167,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
         createPcctAtHeight(5000);
         mPCCTTestRule.verifyWindowFlagsSet();
 
-        assertEquals(2, mPCCTTestRule.mAttributeResults.size());
         assertTabIsFullHeight(mPCCTTestRule.getWindowAttributes());
     }
 
@@ -178,16 +175,13 @@ public class PartialCustomTabBottomSheetStrategyTest {
         createPcctAtHeight(DEVICE_HEIGHT + 100);
         mPCCTTestRule.verifyWindowFlagsSet();
 
-        assertEquals(2, mPCCTTestRule.mAttributeResults.size());
         assertTabIsFullHeight(mPCCTTestRule.getWindowAttributes());
     }
 
     private void doTestHeightWithStatusBar() {
-        when(mPCCTTestRule.mContentFrame.getHeight())
-                .thenReturn(DEVICE_HEIGHT - NAVBAR_HEIGHT - STATUS_BAR_HEIGHT);
+        mPCCTTestRule.setContentFrameHeight(DEVICE_HEIGHT - NAVBAR_HEIGHT - STATUS_BAR_HEIGHT);
         createPcctAtHeight(DEVICE_HEIGHT + 100);
         mPCCTTestRule.verifyWindowFlagsSet();
-        assertEquals(2, mPCCTTestRule.mAttributeResults.size());
     }
 
     @Test
@@ -195,14 +189,15 @@ public class PartialCustomTabBottomSheetStrategyTest {
     public void create_maxHeightWithStatusBar_R() {
         configureStatusBarHeightForR();
         doTestHeightWithStatusBar();
-        assertTabBelowStatusBar(mPCCTTestRule.mAttributeResults.get(0));
+        assertTabBelowStatusBar(mPCCTTestRule.getWindowAttributes());
     }
 
     @Test
+    @Config(sdk = BaseRobolectricTestRunner.MIN_SDK)
     public void create_maxHeightWithStatusBar_Q() {
-        configureStatusBarHeightForQ();
+        mPCCTTestRule.configureStatusBarHeightForQ();
         doTestHeightWithStatusBar();
-        assertTabBelowStatusBar(mPCCTTestRule.mAttributeResults.get(0));
+        assertTabBelowStatusBar(mPCCTTestRule.getWindowAttributes());
     }
 
     @Test
@@ -213,18 +208,18 @@ public class PartialCustomTabBottomSheetStrategyTest {
         doTestHeightWithStatusBar();
         assertEquals(
                 DEVICE_HEIGHT - NAVBAR_HEIGHT - STATUS_BAR_HEIGHT,
-                mPCCTTestRule.mAttributeResults.get(0).height);
+                mPCCTTestRule.getWindowAttributes().height);
     }
 
     @Test
     @Config(sdk = BaseRobolectricTestRunner.MIN_SDK)
     public void create_maxHeightWithStatusBar_landscape_Q() {
-        configureStatusBarHeightForQ();
+        mPCCTTestRule.configureStatusBarHeightForQ();
         mPCCTTestRule.configLandscapeMode();
         doTestHeightWithStatusBar();
         assertEquals(
                 DEVICE_HEIGHT - NAVBAR_HEIGHT - STATUS_BAR_HEIGHT,
-                mPCCTTestRule.mAttributeResults.get(0).height);
+                mPCCTTestRule.getWindowAttributes().height);
     }
 
     @Test
@@ -235,16 +230,19 @@ public class PartialCustomTabBottomSheetStrategyTest {
         mPCCTTestRule.verifyWindowFlagsSet();
 
         // Full height when in landscape mode.
-        assertEquals(2, mPCCTTestRule.mAttributeResults.size());
         assertEquals(pcctHeight, mPCCTTestRule.getWindowAttributes().height);
     }
 
     @Test
     public void create_backgroundAppDisabledPortrait() {
+        // Start with the opposite flags so that the asserts below are meaningful.
+        Window window = mPCCTTestRule.mActivity.getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
+        window.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
         createPcctBackgroundDisabled();
 
-        verify(mPCCTTestRule.mWindow).addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-        verify(mPCCTTestRule.mWindow).clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
+        assertTrue(mPCCTTestRule.hasWindowFlag(WindowManager.LayoutParams.FLAG_DIM_BEHIND));
+        assertFalse(mPCCTTestRule.hasWindowFlag(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL));
     }
 
     private static MotionEvent event(long ts, int action, int ypos) {
@@ -281,12 +279,8 @@ public class PartialCustomTabBottomSheetStrategyTest {
         actionUp(handleStrategy, timestamp, ypos[npos - 1]);
 
         // Wait animation to finish.
-        shadowOf(Looper.getMainLooper()).idle();
-
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        int length = mPCCTTestRule.mAttributeResults.size();
-        assertTrue(length > 1);
-        return mPCCTTestRule.mAttributeResults.get(length - 1);
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+        return mPCCTTestRule.getWindowAttributes();
     }
 
     private void assertMotionEventIgnored(HandleStrategy handleStrategy) {
@@ -307,78 +301,55 @@ public class PartialCustomTabBottomSheetStrategyTest {
         assertEquals(FULL_HEIGHT - STATUS_BAR_HEIGHT, attrs.height);
     }
 
-    private void disableSpinnerAnimation() {
-        // Disable animation for the mock spinner view.
-        doAnswer(
-                        invocation -> {
-                            AnimatorListener listener = invocation.getArgument(0);
-                            listener.onAnimationEnd(null);
-                            return mPCCTTestRule.mViewAnimator;
-                        })
-                .when(mPCCTTestRule.mViewAnimator)
-                .setListener(any(AnimatorListener.class));
-    }
-
     private WindowManager.LayoutParams getWindowAttributes() {
-        return mPCCTTestRule.mAttributeResults.get(mPCCTTestRule.mAttributeResults.size() - 1);
+        return mPCCTTestRule.getWindowAttributes();
     }
 
     private void configureStatusBarHeightForR() {
         // Setup for R+
-        WindowMetrics windowMetric = Mockito.mock(WindowMetrics.class);
-        WindowInsets windowInsets = Mockito.mock(WindowInsets.class);
-
+        WindowInsets windowInsets =
+                new WindowInsets.Builder()
+                        .setInsets(
+                                WindowInsets.Type.statusBars(),
+                                Insets.of(0, STATUS_BAR_HEIGHT, 0, 0))
+                        .setInsets(
+                                WindowInsets.Type.navigationBars(),
+                                Insets.of(0, 0, 0, NAVBAR_HEIGHT))
+                        .build();
+        WindowMetrics windowMetric =
+                new WindowMetrics(new Rect(0, 0, DEVICE_WIDTH, DEVICE_HEIGHT), windowInsets);
         doReturn(windowMetric).when(mPCCTTestRule.mWindowManager).getCurrentWindowMetrics();
-        doReturn(windowInsets).when(windowMetric).getWindowInsets();
-        doReturn(
-                        new Rect(
-                                0,
-                                0,
-                                mPCCTTestRule.mRealMetrics.widthPixels,
-                                mPCCTTestRule.mRealMetrics.heightPixels))
-                .when(windowMetric)
-                .getBounds();
-        doReturn(Insets.of(0, STATUS_BAR_HEIGHT, 0, 0))
-                .when(windowInsets)
-                .getInsets(eq(WindowInsets.Type.statusBars()));
-        doReturn(Insets.of(0, 0, 0, NAVBAR_HEIGHT))
-                .when(windowInsets)
-                .getInsets(eq(WindowInsets.Type.navigationBars()));
-        doReturn(Insets.of(0, 0, 0, NAVBAR_HEIGHT))
-                .when(windowInsets)
-                .getInsets(
-                        eq(WindowInsets.Type.navigationBars() | WindowInsets.Type.displayCutout()));
-    }
-
-    private void configureStatusBarHeightForQ() {
-        // Setup for Q-
-        int statusBarId = 54321;
-        doReturn(statusBarId)
-                .when(mPCCTTestRule.mResources)
-                .getIdentifier(eq("status_bar_height"), any(), any());
-        doReturn(STATUS_BAR_HEIGHT)
-                .when(mPCCTTestRule.mResources)
-                .getDimensionPixelSize(eq(statusBarId));
     }
 
     @Test
     public void setTitleWhenLaunched() {
-        final String title = "BottomSheet";
+        var activity = mPCCTTestRule.mActivity;
+        final String title =
+                activity.getString(R.string.accessibility_partial_custom_tab_bottom_sheet);
         var coordinator = mPCCTTestRule.mCoordinatorLayout;
-        doReturn(false).when(coordinator).isAttachedToWindow();
-        doReturn(title).when(mPCCTTestRule.mResources).getString(anyInt());
+        assertFalse(coordinator.isAttachedToWindow());
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(500);
-        var listener = mPCCTTestRule.mAttachStateChangeListener;
-        verify(coordinator).addOnAttachStateChangeListener(listener.capture());
-        listener.getValue().onViewAttachedToWindow(null);
-        verify(mPCCTTestRule.mWindow).setTitle(eq(title));
-        verify(coordinator).removeOnAttachStateChangeListener(listener.getValue());
-        clearInvocations(coordinator);
+        Window window = activity.getWindow();
+        var shadowWindow = shadowOf(window);
+        assertNotEquals(title, shadowWindow.getTitle());
+
+        // Attach the window. Uses the WindowManager service since getWindowManager() is mocked.
+        View decorView = window.getDecorView();
+        WindowManager windowManager = activity.getSystemService(WindowManager.class);
+        windowManager.addView(decorView, new WindowManager.LayoutParams());
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertTrue(coordinator.isAttachedToWindow());
+        assertEquals(title, shadowWindow.getTitle());
 
         // Once attached, the title is not set again.
-        doReturn(true).when(coordinator).isAttachedToWindow();
+        window.setTitle("Other");
         strategy.onPostInflationStartup();
-        verify(coordinator, never()).addOnAttachStateChangeListener(any());
+        ViewGroup parent = (ViewGroup) coordinator.getParent();
+        parent.removeView(coordinator);
+        parent.addView(coordinator);
+        assertEquals("Other", shadowWindow.getTitle());
+
+        windowManager.removeViewImmediate(decorView);
     }
 
     @Test
@@ -387,7 +358,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(500);
         mPCCTTestRule.verifyWindowFlagsSet();
 
-        assertEquals(2, mPCCTTestRule.mAttributeResults.size());
         assertTabIsAtInitialPos(mPCCTTestRule.getWindowAttributes());
 
         HandleStrategy handleStrategy = strategy.createHandleStrategyForTesting();
@@ -407,8 +377,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(500);
         mPCCTTestRule.verifyWindowFlagsSet();
 
-        assertEquals(2, mPCCTTestRule.mAttributeResults.size());
-
         assertTabIsAtInitialPos(mPCCTTestRule.getWindowAttributes());
 
         HandleStrategy handleStrategy = strategy.createHandleStrategyForTesting();
@@ -424,10 +392,8 @@ public class PartialCustomTabBottomSheetStrategyTest {
     public void moveUpThenDown() {
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(500);
 
-        verify(mPCCTTestRule.mWindow).addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
-        verify(mPCCTTestRule.mWindow).clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+        mPCCTTestRule.verifyWindowFlagsSet();
 
-        assertEquals(2, mPCCTTestRule.mAttributeResults.size());
         assertTabIsAtInitialPos(mPCCTTestRule.getWindowAttributes());
 
         HandleStrategy handleStrategy = strategy.createHandleStrategyForTesting();
@@ -457,7 +423,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(500);
         mPCCTTestRule.verifyWindowFlagsSet();
 
-        assertEquals(2, mPCCTTestRule.mAttributeResults.size());
         assertTabIsAtInitialPos(mPCCTTestRule.getWindowAttributes());
 
         final boolean[] finishRunnable = {false};
@@ -471,13 +436,9 @@ public class PartialCustomTabBottomSheetStrategyTest {
     public void showSpinnerOnDragUpOnly() {
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(500);
 
-        verify(mPCCTTestRule.mWindow).addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
-        verify(mPCCTTestRule.mWindow).clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+        mPCCTTestRule.verifyWindowFlagsSet();
 
-        assertEquals(2, mPCCTTestRule.mAttributeResults.size());
         assertTabIsAtInitialPos(mPCCTTestRule.getWindowAttributes());
-
-        when(mPCCTTestRule.mSpinnerView.getVisibility()).thenReturn(View.GONE);
 
         HandleStrategy handleStrategy = strategy.createHandleStrategyForTesting();
 
@@ -486,36 +447,29 @@ public class PartialCustomTabBottomSheetStrategyTest {
         actionMove(handleStrategy, timestamp, 1450);
 
         // Verify the spinner is visible.
-        verify(mPCCTTestRule.mSpinnerView).setVisibility(View.VISIBLE);
-        when(mPCCTTestRule.mSpinnerView.getVisibility()).thenReturn(View.VISIBLE);
-        clearInvocations(mPCCTTestRule.mSpinnerView);
+        assertEquals(View.VISIBLE, mPCCTTestRule.mSpinnerView.getVisibility());
 
         actionUp(handleStrategy, timestamp, 1450);
 
         // Wait animation to finish.
-        shadowOf(Looper.getMainLooper()).idle();
-        when(mPCCTTestRule.mSpinnerView.getVisibility()).thenReturn(View.GONE);
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+        assertEquals(View.GONE, mPCCTTestRule.mSpinnerView.getVisibility());
 
         // Now the tab is full-height. Start dragging down.
         actionDown(handleStrategy, timestamp, 500);
         actionMove(handleStrategy, timestamp, 650);
 
         // Verify the spinner remained invisible.
-        verify(mPCCTTestRule.mSpinnerView, never()).setVisibility(anyInt());
+        assertEquals(View.GONE, mPCCTTestRule.mSpinnerView.getVisibility());
     }
 
     @Test
     public void hideSpinnerWhenReachingFullHeight() {
-        disableSpinnerAnimation();
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(500);
 
-        verify(mPCCTTestRule.mWindow).addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
-        verify(mPCCTTestRule.mWindow).clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+        mPCCTTestRule.verifyWindowFlagsSet();
 
-        assertEquals(2, mPCCTTestRule.mAttributeResults.size());
         assertTabIsAtInitialPos(mPCCTTestRule.getWindowAttributes());
-
-        when(mPCCTTestRule.mSpinnerView.getVisibility()).thenReturn(View.GONE);
 
         HandleStrategy handleStrategy = strategy.createHandleStrategyForTesting();
 
@@ -524,32 +478,25 @@ public class PartialCustomTabBottomSheetStrategyTest {
         actionMove(handleStrategy, timestamp, 1450);
 
         // Verify the spinner is visible.
-        verify(mPCCTTestRule.mSpinnerView).setVisibility(View.VISIBLE);
-        when(mPCCTTestRule.mSpinnerView.getVisibility()).thenReturn(View.VISIBLE);
-        clearInvocations(mPCCTTestRule.mSpinnerView);
+        assertEquals(View.VISIBLE, mPCCTTestRule.mSpinnerView.getVisibility());
 
         // Verify the spinner remains invisible after the tab reaches the top.
         int topY = strategy.getFullyExpandedY();
         actionMove(handleStrategy, timestamp, topY);
-        verify(mPCCTTestRule.mSpinnerView).setVisibility(View.GONE);
-        clearInvocations(mPCCTTestRule.mSpinnerView);
+        idleUntilJustBeforeSpinnerTimeout();
+        assertEquals(View.GONE, mPCCTTestRule.mSpinnerView.getVisibility());
 
         actionMove(handleStrategy, timestamp, topY + 200);
-        verify(mPCCTTestRule.mSpinnerView, never()).setVisibility(anyInt());
+        assertEquals(View.GONE, mPCCTTestRule.mSpinnerView.getVisibility());
     }
 
     @Test
     public void hideSpinnerWhenDraggingDown() {
-        disableSpinnerAnimation();
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(500);
 
-        verify(mPCCTTestRule.mWindow).addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
-        verify(mPCCTTestRule.mWindow).clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+        mPCCTTestRule.verifyWindowFlagsSet();
 
-        assertEquals(2, mPCCTTestRule.mAttributeResults.size());
         assertTabIsAtInitialPos(mPCCTTestRule.getWindowAttributes());
-
-        when(mPCCTTestRule.mSpinnerView.getVisibility()).thenReturn(View.GONE);
 
         HandleStrategy handleStrategy = strategy.createHandleStrategyForTesting();
 
@@ -558,24 +505,21 @@ public class PartialCustomTabBottomSheetStrategyTest {
         actionMove(handleStrategy, timestamp, INITIAL_HEIGHT - 150);
 
         // Verify the spinner is visible.
-        verify(mPCCTTestRule.mSpinnerView).setVisibility(View.VISIBLE);
-        when(mPCCTTestRule.mSpinnerView.getVisibility()).thenReturn(View.VISIBLE);
-        clearInvocations(mPCCTTestRule.mSpinnerView);
+        assertEquals(View.VISIBLE, mPCCTTestRule.mSpinnerView.getVisibility());
 
         // Drag below the initial height.
         actionMove(handleStrategy, timestamp, INITIAL_HEIGHT + 100);
 
         // Verify the spinner goes invisible.
-        verify(mPCCTTestRule.mSpinnerView).setVisibility(View.GONE);
+        idleUntilJustBeforeSpinnerTimeout();
+        assertEquals(View.GONE, mPCCTTestRule.mSpinnerView.getVisibility());
     }
 
     @Test
     public void hideSpinnerEarly() {
         // Test hiding spinner early (500ms after showing) when there is no glitch at
         // the end of draggin action.
-        disableSpinnerAnimation();
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(500);
-        when(mPCCTTestRule.mSpinnerView.getVisibility()).thenReturn(View.GONE);
 
         HandleStrategy handleStrategy = strategy.createHandleStrategyForTesting();
 
@@ -584,15 +528,13 @@ public class PartialCustomTabBottomSheetStrategyTest {
         actionMove(handleStrategy, timestamp, INITIAL_HEIGHT - 150);
 
         // Verify the spinner is visible.
-        verify(mPCCTTestRule.mSpinnerView).setVisibility(View.VISIBLE);
-        when(mPCCTTestRule.mSpinnerView.getVisibility()).thenReturn(View.VISIBLE);
-        clearInvocations(mPCCTTestRule.mSpinnerView);
+        assertEquals(View.VISIBLE, mPCCTTestRule.mSpinnerView.getVisibility());
 
-        long timeOut = PartialCustomTabBottomSheetStrategy.SPINNER_TIMEOUT_MS;
-        shadowOf(Looper.getMainLooper()).idleFor(timeOut, TimeUnit.MILLISECONDS);
-
-        // Verify the spinner goes invisible after the specified timeout.
-        verify(mPCCTTestRule.mSpinnerView).setVisibility(View.GONE);
+        // Verify the spinner goes invisible after the specified timeout, but not before.
+        idleUntilJustBeforeSpinnerTimeout();
+        assertEquals(View.VISIBLE, mPCCTTestRule.mSpinnerView.getVisibility());
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+        assertEquals(View.GONE, mPCCTTestRule.mSpinnerView.getVisibility());
     }
 
     @Test
@@ -607,18 +549,13 @@ public class PartialCustomTabBottomSheetStrategyTest {
                         eq(ACTIVITY_LAYOUT_STATE_BOTTOM_SHEET));
         clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
 
-        assertTabIsAtInitialPos(mPCCTTestRule.mAttributeResults.get(0));
+        assertTabIsAtInitialPos(mPCCTTestRule.getWindowAttributes());
 
         strategy.onShowSoftInput(CallbackUtils.emptyRunnable());
-        shadowOf(Looper.getMainLooper()).idle();
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-
-        final int length = mPCCTTestRule.mAttributeResults.size();
-        assertTrue(length > 1);
+        PartialCustomTabTestRule.waitForAnimationToFinish();
 
         // Verify that the tab expands to full height.
-        assertTabIsFullHeight(mPCCTTestRule.mAttributeResults.get(length - 1));
-        PartialCustomTabTestRule.waitForAnimationToFinish();
+        assertTabIsFullHeight(mPCCTTestRule.getWindowAttributes());
         verify(mPCCTTestRule.mOnResizedCallback).onResized(eq(FULL_HEIGHT), anyInt());
         clearInvocations(mPCCTTestRule.mOnResizedCallback);
         verify(mPCCTTestRule.mOnActivityLayoutCallback)
@@ -677,7 +614,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(500, true);
         mPCCTTestRule.verifyWindowFlagsSet();
 
-        assertEquals(2, mPCCTTestRule.mAttributeResults.size());
         assertTabIsAtInitialPos(mPCCTTestRule.getWindowAttributes());
 
         HandleStrategy handleStrategy = strategy.createHandleStrategyForTesting();
@@ -695,7 +631,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(500, true);
         mPCCTTestRule.verifyWindowFlagsSet();
 
-        assertEquals(2, mPCCTTestRule.mAttributeResults.size());
         assertTabIsAtInitialPos(mPCCTTestRule.getWindowAttributes());
 
         HandleStrategy handleStrategy = strategy.createHandleStrategyForTesting();
@@ -713,7 +648,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(500, true);
         mPCCTTestRule.verifyWindowFlagsSet();
 
-        assertEquals(2, mPCCTTestRule.mAttributeResults.size());
         assertTabIsAtInitialPos(mPCCTTestRule.getWindowAttributes());
 
         HandleStrategy handleStrategy = strategy.createHandleStrategyForTesting();
@@ -727,10 +661,9 @@ public class PartialCustomTabBottomSheetStrategyTest {
         createPcctAtHeight(500, true);
         mPCCTTestRule.verifyWindowFlagsSet();
 
-        assertEquals(2, mPCCTTestRule.mAttributeResults.size());
         assertTabIsAtInitialPos(mPCCTTestRule.getWindowAttributes());
 
-        verify(mPCCTTestRule.mDragHandlebar).setVisibility(View.GONE);
+        assertEquals(View.GONE, mPCCTTestRule.mDragHandlebar.getVisibility());
     }
 
     @Test
@@ -738,11 +671,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(500);
         mPCCTTestRule.verifyWindowFlagsSet();
 
-        assertEquals(
-                "mPCCTTestRule.mAttributeResults should have exactly 2 elements, one for "
-                        + "setting the height and one for setting the width.",
-                2,
-                mPCCTTestRule.mAttributeResults.size());
         assertTabIsAtInitialPos(mPCCTTestRule.getWindowAttributes());
 
         HandleStrategy handleStrategy = strategy.createHandleStrategyForTesting();
@@ -758,11 +686,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(500);
         mPCCTTestRule.verifyWindowFlagsSet();
 
-        assertEquals(
-                "mPCCTTestRule.mAttributeResults should have exactly 2 elements, one for "
-                        + "setting the height and one for setting the width.",
-                2,
-                mPCCTTestRule.mAttributeResults.size());
         assertTabIsAtInitialPos(mPCCTTestRule.getWindowAttributes());
 
         HandleStrategy handleStrategy = strategy.createHandleStrategyForTesting();
@@ -779,7 +702,7 @@ public class PartialCustomTabBottomSheetStrategyTest {
     @Test
     public void callbackWhenHeightResized() {
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(500);
-        assertTabIsAtInitialPos(mPCCTTestRule.mAttributeResults.get(0));
+        assertTabIsAtInitialPos(mPCCTTestRule.getWindowAttributes());
         HandleStrategy handleStrategy = strategy.createHandleStrategyForTesting();
 
         // Slide back to the initial height -> no resize happens.
@@ -823,9 +746,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
 
         assertFalse(getWindowAttributes().isFullscreen());
         int height = getWindowAttributes().height;
-        doReturn(47)
-                .when(mPCCTTestRule.mResources)
-                .getDimensionPixelSize(eq(R.dimen.custom_tabs_shadow_offset));
 
         strategy.setFullscreenSupplierForTesting(() -> mFullscreen);
 
@@ -833,7 +753,7 @@ public class PartialCustomTabBottomSheetStrategyTest {
         strategy.onEnterFullscreen(null, null);
         PartialCustomTabTestRule.waitForAnimationToFinish();
         assertTrue(getWindowAttributes().isFullscreen());
-        assertEquals("Shadow should be removed.", 0, strategy.getShadowOffsetForTesting());
+        assertEquals("Shadow should be removed.", 0, strategy.getTopMarginForTesting());
         verify(mPCCTTestRule.mOnResizedCallback).onResized(eq(DEVICE_HEIGHT), eq(DEVICE_WIDTH));
         clearInvocations(mPCCTTestRule.mOnResizedCallback);
         verify(mPCCTTestRule.mOnActivityLayoutCallback)
@@ -850,7 +770,7 @@ public class PartialCustomTabBottomSheetStrategyTest {
         PartialCustomTabTestRule.waitForAnimationToFinish();
         assertFalse(getWindowAttributes().isFullscreen());
         assertEquals(height, getWindowAttributes().height);
-        assertNotEquals("Shadow should be restored.", 0, strategy.getShadowOffsetForTesting());
+        assertNotEquals("Shadow should be restored.", 0, strategy.getTopMarginForTesting());
         verify(mPCCTTestRule.mOnResizedCallback).onResized(eq(height), anyInt());
         clearInvocations(mPCCTTestRule.mOnResizedCallback);
         verify(mPCCTTestRule.mOnActivityLayoutCallback)
@@ -868,12 +788,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(500);
         mPCCTTestRule.verifyWindowFlagsSet();
 
-        assertEquals(
-                "mPCCTTestRule.mAttributeResults should have exactly 2 elements, one for "
-                        + "setting the height and one for setting the width.",
-                2,
-                mPCCTTestRule.mAttributeResults.size());
-
         assertTabIsAtInitialPos(mPCCTTestRule.getWindowAttributes());
 
         HandleStrategy handleStrategy = strategy.createHandleStrategyForTesting();
@@ -887,46 +801,38 @@ public class PartialCustomTabBottomSheetStrategyTest {
     public void dragBarMatchesFindToolbarInColor() {
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(500);
         strategy.setToolbarColorForTesting(PCCT_TOOLBAR_COLOR);
-        doReturn(FIND_TOOLBAR_COLOR)
-                .when(mPCCTTestRule.mActivity)
-                .getColor(eq(R.color.find_in_page_background_color));
-        doReturn(mPCCTTestRule.mDragBarBackground).when(mPCCTTestRule.mDragBar).getBackground();
+        int findToolbarColor =
+                mPCCTTestRule.mActivity.getColor(R.color.find_in_page_background_color);
 
         strategy.onFindToolbarShown();
-        verify(mPCCTTestRule.mDragBarBackground).setColor(FIND_TOOLBAR_COLOR);
+        assertEquals(findToolbarColor, getDragBarColor());
 
         strategy.onFindToolbarHidden();
-        verify(mPCCTTestRule.mDragBarBackground).setColor(PCCT_TOOLBAR_COLOR);
+        assertEquals(PCCT_TOOLBAR_COLOR, getDragBarColor());
     }
 
     @Test
     public void noTopShadowAtFullHeight() {
-        doReturn(47)
-                .when(mPCCTTestRule.mResources)
-                .getDimensionPixelSize(eq(R.dimen.custom_tabs_shadow_offset));
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(800);
         HandleStrategy handleStrategy = strategy.createHandleStrategyForTesting();
         assertNotEquals(
-                "Top margin should be non-zero for the shadow",
+                "Top shadow offset should be non-zero for the shadow",
                 0,
-                mPCCTTestRule.mLayoutParams.topMargin);
+                strategy.getShadowOffsetForTesting());
 
         dragTab(handleStrategy, 1500, 1000, 500);
         assertEquals(
                 "There should be no top shadow at full height",
                 0,
-                mPCCTTestRule.mLayoutParams.topMargin);
+                strategy.getShadowOffsetForTesting());
     }
 
     @Test
     public void sideShadowsWith900dpBottomSheet() {
-        doReturn(8)
-                .when(mPCCTTestRule.mResources)
-                .getDimensionPixelSize(eq(R.dimen.custom_tabs_shadow_offset));
-
         mPCCTTestRule.configPortraitMode();
-        mPCCTTestRule.mRealMetrics.widthPixels = 700;
-        mPCCTTestRule.mDisplaySize.x = 700;
+        var shadowDisplay = mPCCTTestRule.mShadowDisplay;
+        shadowDisplay.setRealWidth(700);
+        shadowDisplay.setWidth(700);
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(800);
         HandleStrategy handleStrategy = strategy.createHandleStrategyForTesting();
         assertEquals(
@@ -966,37 +872,31 @@ public class PartialCustomTabBottomSheetStrategyTest {
 
     @Test
     public void noTopShadowFullHeightBottomSheet() {
-        doReturn(8)
-                .when(mPCCTTestRule.mResources)
-                .getDimensionPixelSize(eq(R.dimen.custom_tabs_shadow_offset));
-
         mPCCTTestRule.configPortraitMode();
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(3000);
         strategy.createHandleStrategyForTesting();
         assertEquals(
-                "Top margin should be zero because there is no shadow",
+                "Top shadow offset should be zero because there is no shadow",
                 0,
-                mPCCTTestRule.mLayoutParams.topMargin);
+                strategy.getShadowOffsetForTesting());
 
         mPCCTTestRule.configLandscapeMode();
         strategy = createPcctAtHeight(3000);
         strategy.createHandleStrategyForTesting();
         assertEquals(
-                "Top margin should be zero because there is no shadow",
+                "Top shadow offset should be zero because there is no shadow",
                 0,
-                mPCCTTestRule.mLayoutParams.topMargin);
+                strategy.getShadowOffsetForTesting());
     }
 
     @Test
     public void largeDeviceInPortrait_screenWidth() {
-        doReturn(8)
-                .when(mPCCTTestRule.mResources)
-                .getDimensionPixelSize(eq(R.dimen.custom_tabs_shadow_offset));
         mPCCTTestRule.configPortraitMode();
-        mPCCTTestRule.mRealMetrics.widthPixels = 6000;
-        mPCCTTestRule.mRealMetrics.heightPixels = 9500;
-        mPCCTTestRule.mDisplaySize.x = 6000;
-        mPCCTTestRule.mDisplaySize.y = 9500;
+        var shadowDisplay = mPCCTTestRule.mShadowDisplay;
+        shadowDisplay.setRealWidth(6000);
+        shadowDisplay.setRealHeight(9500);
+        shadowDisplay.setWidth(6000);
+        shadowDisplay.setHeight(9500);
         createPcctAtHeight(5000);
         assertEquals(
                 "Left margin should be zero because there is no shadow",
@@ -1012,14 +912,12 @@ public class PartialCustomTabBottomSheetStrategyTest {
 
     @Test
     public void largeDeviceInLandscape_900dpWidth() {
-        doReturn(8)
-                .when(mPCCTTestRule.mResources)
-                .getDimensionPixelSize(eq(R.dimen.custom_tabs_shadow_offset));
         mPCCTTestRule.configLandscapeMode();
-        mPCCTTestRule.mRealMetrics.widthPixels = 9500;
-        mPCCTTestRule.mRealMetrics.heightPixels = 6000;
-        mPCCTTestRule.mDisplaySize.x = 6000;
-        mPCCTTestRule.mDisplaySize.y = 9500;
+        var shadowDisplay = mPCCTTestRule.mShadowDisplay;
+        shadowDisplay.setRealWidth(9500);
+        shadowDisplay.setRealHeight(6000);
+        shadowDisplay.setWidth(6000);
+        shadowDisplay.setHeight(9500);
         createPcctAtHeight(5000);
         assertNotEquals(
                 "Left margin should not be zero because there is a shadow",
@@ -1039,16 +937,13 @@ public class PartialCustomTabBottomSheetStrategyTest {
     @CommandLineFlags.Add({BaseSwitches.ENABLE_LOW_END_DEVICE_MODE})
     @Test
     public void useDividerLine_LowEndDevice() {
-        doReturn(8)
-                .when(mPCCTTestRule.mResources)
-                .getDimensionPixelSize(eq(R.dimen.custom_tabs_shadow_offset));
         mPCCTTestRule.configPortraitMode();
-        createPcctAtHeight(1500);
+        PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(1500);
 
         assertEquals(
-                "Top margin should be zero because there is no shadow",
+                "Top shadow offset should be zero because there is no shadow",
                 0,
-                mPCCTTestRule.mLayoutParams.topMargin);
+                strategy.getShadowOffsetForTesting());
 
         // 900 dp landscape bottom sheet
         mPCCTTestRule.configLandscapeMode();
@@ -1075,7 +970,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
                         anyInt(),
                         eq(ACTIVITY_LAYOUT_STATE_BOTTOM_SHEET));
         clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
-        doReturn(mPCCTTestRule.mDragBarBackground).when(mPCCTTestRule.mDragBar).getBackground();
         strategy.onFindToolbarShown();
         PartialCustomTabTestRule.waitForAnimationToFinish();
 
@@ -1237,5 +1131,21 @@ public class PartialCustomTabBottomSheetStrategyTest {
                 "Window y-position should be clamped by the default 50% minimum when feature is"
                         + " disabled.",
                 expectedY, mPCCTTestRule.getWindowAttributes().y);
+    }
+
+    /**
+     * Advances time enough for the spinner to fade out, but not enough to reach the spinner timeout
+     * (which also hides it).
+     */
+    private static void idleUntilJustBeforeSpinnerTimeout() {
+        shadowOf(Looper.getMainLooper())
+                .idleFor(
+                        PartialCustomTabBottomSheetStrategy.SPINNER_TIMEOUT_MS - 1,
+                        TimeUnit.MILLISECONDS);
+    }
+
+    private int getDragBarColor() {
+        var background = (GradientDrawable) mPCCTTestRule.mDragBar.getBackground();
+        return background.getColor().getDefaultColor();
     }
 }

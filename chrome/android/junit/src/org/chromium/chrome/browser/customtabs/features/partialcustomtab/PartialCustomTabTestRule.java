@@ -4,56 +4,50 @@
 
 package org.chromium.chrome.browser.customtabs.features.partialcustomtab;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
-import android.app.ActivityManager;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Insets;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.InsetDrawable;
 import android.os.Build;
-import android.os.Looper;
-import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewPropertyAnimator;
-import android.view.ViewStub;
-import android.view.Window;
 import android.view.WindowInsets;
-import android.view.WindowInsetsController;
 import android.view.WindowManager;
 import android.view.WindowMetrics;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 
+import androidx.annotation.RequiresApi;
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.Robolectric;
+import org.robolectric.android.controller.ActivityController;
+import org.robolectric.shadows.ShadowDisplay;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.RobolectricUtil;
@@ -61,6 +55,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsCoordinator;
+import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarTestUtils;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -68,16 +63,51 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.TouchEventProvider;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.BooleanSupplier;
 
 /**
  * A TestRule that sets up the mocks and contains helper methods for JUnit/Robolectric tests scoped
  * to the Partial Custom Tabs logic.
  */
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class PartialCustomTabTestRule implements TestRule {
+    /**
+     * Hands out a mocked WindowManager, since Robolectric can't report arbitrary window metrics or
+     * system bar insets. Falls back to the real one until the mock is set, so that the window and
+     * views can be inflated.
+     */
+    private static class TestActivity extends Activity {
+        private WindowManager mMockWindowManager;
+        private boolean mHasStatusBar;
+        private Resources mResources;
+
+        @Override
+        public WindowManager getWindowManager() {
+            return mMockWindowManager != null ? mMockWindowManager : super.getWindowManager();
+        }
+
+        @Override
+        public Resources getResources() {
+            if (mResources == null) {
+                Resources base = super.getResources();
+                mResources =
+                        new Resources(
+                                base.getAssets(),
+                                base.getDisplayMetrics(),
+                                base.getConfiguration()) {
+                            @Override
+                            public int getIdentifier(
+                                    String name, String defType, String defPackage) {
+                                if (!mHasStatusBar && "status_bar_height".equals(name)) {
+                                    return 0;
+                                }
+                                return super.getIdentifier(name, defType, defPackage);
+                            }
+                        };
+            }
+            return mResources;
+        }
+    }
+
     // Pixel 3 XL metrics
     static final float DENSITY = 1.25f;
     static final int DEVICE_HEIGHT = 2960;
@@ -85,7 +115,7 @@ public class PartialCustomTabTestRule implements TestRule {
     static final int DEVICE_HEIGHT_LANDSCAPE = DEVICE_WIDTH;
     static final int DEVICE_WIDTH_LANDSCAPE = DEVICE_HEIGHT;
     static final int NAVBAR_HEIGHT = 160;
-    static final int STATUS_BAR_HEIGHT = 68;
+    static final int STATUS_BAR_HEIGHT = 30;
     static final int FULL_HEIGHT = DEVICE_HEIGHT - NAVBAR_HEIGHT;
     static final int MULTIWINDOW_HEIGHT = FULL_HEIGHT / 2;
 
@@ -97,188 +127,140 @@ public class PartialCustomTabTestRule implements TestRule {
 
     private static final int DEFAULT_BG_COLOR = Color.LTGRAY;
 
-    @Mock Activity mActivity;
-    @Mock Window mWindow;
     @Mock WindowManager mWindowManager;
-    @Mock WindowMetrics mWindowMetrics;
-    @Mock WindowInsetsController mWindowInsetsController;
-    @Mock WindowInsets mWindowInsets;
-    @Mock Resources mResources;
-    Configuration mConfiguration = new Configuration();
-    WindowManager.LayoutParams mAttributes;
     @Mock TouchEventProvider mTouchEventProvider;
     @Mock Tab mTab;
-    @Mock View mDecorView;
-    @Mock View mRootView;
-    @Mock Display mDisplay;
     @Mock BrowserServicesIntentDataProvider mIntentData;
     @Mock CustomTabHeightStrategy.OnResizedCallback mOnResizedCallback;
     @Mock CustomTabHeightStrategy.OnActivityLayoutCallback mOnActivityLayoutCallback;
-    @Mock ViewGroup mCoordinatorLayout;
-    @Mock ViewGroup mContentFrame;
     @Mock FullscreenManager mFullscreenManager;
-    @Mock ViewStub mHandleViewStub;
-    @Mock ImageView mHandleView;
-    @Mock FrameLayout mContentBackground;
     @Mock ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
-    @Mock LinearLayout mNavbar;
-    @Mock ViewPropertyAnimator mViewAnimator;
-    @Mock ImageView mSpinnerView;
     @Mock CircularProgressDrawable mSpinner;
-    @Mock CustomTabToolbar mToolbarView;
-    @Mock View mToolbarCoordinator;
-    @Mock CustomTabDragBar mDragBar;
-    @Mock View mDragHandlebar;
-    @Mock GradientDrawable mDragBarBackground;
-    @Mock InsetDrawable mInsetDragBarBackground;
-    @Mock ColorDrawable mColorDrawable;
     @Mock PartialCustomTabHandleStrategyFactory mHandleStrategyFactory;
-    @Mock DisplayMetrics mMetrics;
-    @Mock ViewGroup mCompositorViewHolder;
-    @Mock PackageManager mPackageManager;
-    @Mock ActivityManager mActivityManager;
     @Mock CustomTabToolbarButtonsCoordinator mToolbarButtonsCoordinator;
-    @Captor ArgumentCaptor<View.OnAttachStateChangeListener> mAttachStateChangeListener;
+
+    Display mDisplay;
+    ShadowDisplay mShadowDisplay;
+    Configuration mConfiguration;
+    Activity mActivity;
+    ViewGroup mContentFrame;
+    ViewGroup mCoordinatorLayout;
+    View mHandleView;
+    CustomTabDragBar mDragBar;
+    View mDragHandlebar;
+    ImageView mSpinnerView;
+    CustomTabToolbar mToolbarView;
+    View mToolbarCoordinator;
 
     Context mContext;
-    List<WindowManager.LayoutParams> mAttributeResults;
-    DisplayMetrics mRealMetrics;
-    Point mDisplaySize;
 
+    // The layout params of |mToolbarCoordinator|.
     FrameLayout.LayoutParams mLayoutParams =
             new FrameLayout.LayoutParams(
                     FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
-    FrameLayout.LayoutParams mCoordinatorLayoutParams =
-            new FrameLayout.LayoutParams(
-                    FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
-    ViewGroup.LayoutParams mDragBarLayoutParams =
-            new ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 
-    @SuppressWarnings("DirectInvocationOnMock")
+    private FrameLayout mSpinnerHost;
+
     private void setUp() {
         // MockitoRule is not processed recursively in JUnit 4, and these are
         // TestRule or TestWatcher implementations. Manual initialization is
         // required.
         MockitoAnnotations.initMocks(this);
-        mConfiguration.orientation = Configuration.ORIENTATION_PORTRAIT;
         SemanticColorUtils.setDividerLineBgColorForTesting(Color.LTGRAY);
         SemanticColorUtils.setDefaultBgColorForTesting(DEFAULT_BG_COLOR);
 
-        setUpActivityAndWindowMocks();
+        mContext = ApplicationProvider.getApplicationContext();
+        ContextUtils.initApplicationContextForTests(mContext);
+
+        TestActivity activity = setUpActivity();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             setUpModernAndroidMocks();
         }
 
-        setUpViewMocks();
         setUpHandleStrategyFactory();
-        setUpWindowAttributesMocks();
+
+        activity.mMockWindowManager = mWindowManager;
+    }
+
+    private TestActivity setUpActivity() {
+        ActivityController<TestActivity> controller = Robolectric.buildActivity(TestActivity.class);
+        TestActivity activity = controller.get();
+        mActivity = activity;
+        activity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        controller.create();
+        setUpResources();
         setUpDisplayMocks();
 
-        mContext = ApplicationProvider.getApplicationContext();
-        ContextUtils.initApplicationContextForTests(mContext);
-        when(mActivity.getSystemService(Context.ACTIVITY_SERVICE)).thenReturn(mActivityManager);
-        when(mActivity.getSystemService(Context.WINDOW_SERVICE)).thenReturn(mWindowManager);
-        // ViewConfiguration looks up the WindowManager by class on SDK 30 and 31.
-        when(mActivity.getSystemService(WindowManager.class)).thenReturn(mWindowManager);
-        when(mActivity.getPackageManager()).thenReturn(mPackageManager);
+        // Mirrors the bottom-sheet layout, with the handle view already inflated.
+        activity.setContentView(R.layout.custom_tabs_handle_view);
+        mCoordinatorLayout = new FrameLayout(activity);
+        mCoordinatorLayout.setId(R.id.coordinator);
+        FrameLayout compositorViewHolder = new FrameLayout(activity);
+        compositorViewHolder.setId(R.id.compositor_view_holder);
+        mCoordinatorLayout.addView(compositorViewHolder);
+        activity.addContentView(
+                mCoordinatorLayout, new FrameLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT));
+        mContentFrame = activity.findViewById(android.R.id.content);
+        setContentFrameHeight(DEVICE_HEIGHT - NAVBAR_HEIGHT);
+        mHandleView = activity.findViewById(R.id.custom_tabs_handle_view);
+        mDragBar = activity.findViewById(R.id.drag_bar);
+        mDragHandlebar = activity.findViewById(R.id.drag_handle);
+
+        // Start with dimming enabled so that verifyWindowFlagsSet() can check that it is cleared.
+        activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+
+        mToolbarView = CustomTabToolbarTestUtils.inflateToolbar(activity);
+        mToolbarCoordinator = new View(activity);
+        mToolbarCoordinator.setLayoutParams(mLayoutParams);
+
+        // The spinner is attached to its own window so that its fade animations run.
+        mSpinnerView = new ImageView(mContext);
+        mSpinnerView.setVisibility(View.GONE);
+        mSpinnerHost = new FrameLayout(mContext);
+        mSpinnerHost.addView(
+                mSpinnerView, new FrameLayout.LayoutParams(MATCH_PARENT, /* height= */ 0));
+        mContext.getSystemService(WindowManager.class)
+                .addView(mSpinnerHost, new WindowManager.LayoutParams());
+        RobolectricUtil.runAllBackgroundAndUi();
+        return activity;
     }
 
-    private void setUpActivityAndWindowMocks() {
-        when(mActivity.getWindow()).thenReturn(mWindow);
-        when(mActivity.getResources()).thenReturn(mResources);
-        when(mActivity.getWindowManager()).thenReturn(mWindowManager);
-        when(mActivity.findViewById(R.id.coordinator)).thenReturn(mCoordinatorLayout);
-        when(mActivity.findViewById(R.id.compositor_view_holder)).thenReturn(mCompositorViewHolder);
-        when(mActivity.findViewById(android.R.id.content)).thenReturn(mContentFrame);
-        when(mActivity.findViewById(R.id.custom_tabs_handle_view_stub)).thenReturn(mHandleViewStub);
-        when(mActivity.findViewById(R.id.custom_tabs_handle_view)).thenReturn(mHandleView);
-        when(mActivity.findViewById(R.id.custom_tabs_content_background))
-                .thenReturn(mContentBackground);
-        when(mActivity.findViewById(R.id.drag_bar)).thenReturn(mDragBar);
-        when(mActivity.findViewById(R.id.drag_handle)).thenReturn(mDragHandlebar);
-
-        mAttributes = new WindowManager.LayoutParams();
-        when(mWindow.getAttributes()).thenReturn(mAttributes);
-        when(mWindow.getDecorView()).thenReturn(mDecorView);
-        when(mWindow.getContext()).thenReturn(mActivity);
-        when(mDecorView.getRootView()).thenReturn(mRootView);
-        when(mRootView.getLayoutParams()).thenReturn(mAttributes);
-        when(mWindowManager.getDefaultDisplay()).thenReturn(mDisplay);
-    }
-
-    @SuppressWarnings("DirectInvocationOnMock")
+    @RequiresApi(Build.VERSION_CODES.R)
     private void setUpModernAndroidMocks() {
-        when(mWindow.getInsetsController()).thenReturn(mWindowInsetsController);
-        when(mDecorView.getWindowInsetsController()).thenReturn(mWindowInsetsController);
-        when(mWindowManager.getCurrentWindowMetrics()).thenReturn(mWindowMetrics);
-        when(mWindowManager.getMaximumWindowMetrics()).thenReturn(mWindowMetrics);
-        doAnswer(
-                        invocation -> {
-                            return new Rect(
-                                    0, 0, mRealMetrics.widthPixels, mRealMetrics.heightPixels);
-                        })
-                .when(mWindowMetrics)
-                .getBounds();
-        when(mWindowMetrics.getWindowInsets()).thenReturn(mWindowInsets);
-        doAnswer(
-                        invocation -> {
-                            int type = invocation.getArgument(0);
-                            int top =
-                                    (type & WindowInsets.Type.statusBars()) != 0
-                                            ? getStatusBarHeight()
-                                            : 0;
-                            int bottom = getNavigationBarHeight(type);
-                            return Insets.of(0, top, 0, bottom);
-                        })
-                .when(mWindowInsets)
-                .getInsets(anyInt());
+        doAnswer(invocation -> getCurrentWindowMetrics())
+                .when(mWindowManager)
+                .getCurrentWindowMetrics();
+        doAnswer(invocation -> getCurrentWindowMetrics())
+                .when(mWindowManager)
+                .getMaximumWindowMetrics();
     }
 
-    @SuppressWarnings("DirectInvocationOnMock")
-    private int getStatusBarHeight() {
-        int statusBarHeightResourceId =
-                mResources.getIdentifier("status_bar_height", "dimen", "android");
-        if (statusBarHeightResourceId > 0) {
-            return mResources.getDimensionPixelSize(statusBarHeightResourceId);
-        }
-        return 0;
+    @RequiresApi(Build.VERSION_CODES.R)
+    private WindowMetrics getCurrentWindowMetrics() {
+        Point realSize = new Point();
+        mDisplay.getRealSize(realSize);
+        WindowInsets windowInsets =
+                new WindowInsets.Builder()
+                        .setInsets(
+                                WindowInsets.Type.navigationBars(),
+                                Insets.of(0, 0, 0, getNavigationBarHeight()))
+                        .build();
+        return new WindowMetrics(new Rect(0, 0, realSize.x, realSize.y), windowInsets);
     }
 
-    private int getNavigationBarHeight(int type) {
+    private int getNavigationBarHeight() {
         boolean isMultiWindow = MultiWindowUtils.getInstance().isInMultiWindowMode(mActivity);
-        if ((type & WindowInsets.Type.navigationBars()) != 0
-                && mConfiguration.orientation == Configuration.ORIENTATION_PORTRAIT
-                && !isMultiWindow) {
+        if (mConfiguration.orientation == Configuration.ORIENTATION_PORTRAIT && !isMultiWindow) {
             return NAVBAR_HEIGHT;
         }
         return 0;
     }
 
-    private void setUpViewMocks() {
-        when(mResources.getConfiguration()).thenReturn(mConfiguration);
-        mMetrics.density = DENSITY;
-        when(mResources.getDisplayMetrics()).thenReturn(mMetrics);
-        when(mContentFrame.getLayoutParams()).thenReturn(mLayoutParams);
-        when(mContentFrame.getHeight()).thenReturn(DEVICE_HEIGHT - NAVBAR_HEIGHT);
-        when(mCoordinatorLayout.getLayoutParams()).thenReturn(mCoordinatorLayoutParams);
-        when(mCoordinatorLayout.getBackground()).thenReturn(mDragBarBackground);
-        when(mHandleView.getLayoutParams()).thenReturn(mLayoutParams);
-        when(mHandleView.getBackground()).thenReturn(mDragBarBackground);
-        when(mHandleView.findViewById(R.id.drag_bar)).thenReturn(mDragBar);
-        when(mToolbarCoordinator.getLayoutParams()).thenReturn(mLayoutParams);
-        when(mNavbar.animate()).thenReturn(mViewAnimator);
-        when(mViewAnimator.alpha(anyFloat())).thenReturn(mViewAnimator);
-        when(mViewAnimator.setDuration(anyLong())).thenReturn(mViewAnimator);
-        when(mViewAnimator.setListener(any())).thenReturn(mViewAnimator);
-        when(mSpinnerView.getLayoutParams()).thenReturn(mLayoutParams);
-        when(mSpinnerView.getParent()).thenReturn(mContentFrame);
-        when(mSpinnerView.animate()).thenReturn(mViewAnimator);
-        when(mToolbarView.getBackground()).thenReturn(mColorDrawable);
-        when(mToolbarView.getLayoutParams()).thenReturn(mLayoutParams);
-        when(mColorDrawable.getColor()).thenReturn(2);
-        when(mDragBar.getBackground()).thenReturn(mDragBarBackground);
-        when(mDragBar.getLayoutParams()).thenReturn(mDragBarLayoutParams);
+    private void setUpResources() {
+        Resources resources = mActivity.getResources();
+        mConfiguration = resources.getConfiguration();
+        mConfiguration.orientation = Configuration.ORIENTATION_PORTRAIT;
+        resources.getDisplayMetrics().density = DENSITY;
     }
 
     private void setUpHandleStrategyFactory() {
@@ -291,70 +273,36 @@ public class PartialCustomTabTestRule implements TestRule {
                 .thenReturn(null);
     }
 
-    private void setUpWindowAttributesMocks() {
-        mAttributeResults = new ArrayList<>();
-        doAnswer(
-                        invocation -> {
-                            WindowManager.LayoutParams attributes =
-                                    new WindowManager.LayoutParams();
-                            attributes.copyFrom(
-                                    (WindowManager.LayoutParams) invocation.getArgument(0));
-                            mAttributes.copyFrom(attributes);
-                            mAttributeResults.add(attributes);
-                            return null;
-                        })
-                .when(mWindow)
-                .setAttributes(any(WindowManager.LayoutParams.class));
-    }
-
     private void setUpDisplayMocks() {
-        mRealMetrics = new DisplayMetrics();
-        mRealMetrics.widthPixels = DEVICE_WIDTH;
-        mRealMetrics.heightPixels = DEVICE_HEIGHT;
-        mRealMetrics.density = DENSITY;
-        doAnswer(
-                        invocation -> {
-                            DisplayMetrics displayMetrics = invocation.getArgument(0);
-                            displayMetrics.setTo(mRealMetrics);
-                            return null;
-                        })
-                .when(mDisplay)
-                .getRealMetrics(any(DisplayMetrics.class));
-
-        mDisplaySize = new Point(DEVICE_WIDTH, DEVICE_HEIGHT - NAVBAR_HEIGHT);
-        doAnswer(
-                        invocation -> {
-                            Point size = invocation.getArgument(0);
-                            size.set(mDisplaySize.x, mDisplaySize.y);
-                            return null;
-                        })
-                .when(mDisplay)
-                .getSize(any(Point.class));
+        mDisplay = ShadowDisplay.getDefaultDisplay();
+        mShadowDisplay = shadowOf(mDisplay);
+        when(mWindowManager.getDefaultDisplay()).thenReturn(mDisplay);
+        mShadowDisplay.setRealWidth(DEVICE_WIDTH);
+        mShadowDisplay.setRealHeight(DEVICE_HEIGHT);
+        mShadowDisplay.setDensity(DENSITY);
+        mShadowDisplay.setWidth(DEVICE_WIDTH);
+        mShadowDisplay.setHeight(DEVICE_HEIGHT - NAVBAR_HEIGHT);
     }
 
     private void commonTearDown() {
         // Reset the multi-window mode.
         MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(false);
+        mContext.getSystemService(WindowManager.class).removeViewImmediate(mSpinnerHost);
     }
 
     public static void waitForAnimationToFinish() {
-        shadowOf(Looper.getMainLooper()).idle();
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
     }
 
     public void configPortraitMode() {
         mConfiguration.orientation = Configuration.ORIENTATION_PORTRAIT;
-        mRealMetrics.widthPixels = DEVICE_WIDTH;
-        mRealMetrics.heightPixels = DEVICE_HEIGHT;
-        mRealMetrics.density = DENSITY;
-        mDisplaySize.set(DEVICE_WIDTH, DEVICE_HEIGHT - NAVBAR_HEIGHT);
-        when(mContentFrame.getHeight()).thenReturn(DEVICE_HEIGHT - NAVBAR_HEIGHT);
-        when(mDisplay.getRotation()).thenReturn(Surface.ROTATION_90);
-    }
-
-    public void configInsetDrawableBg() {
-        when(mDragBar.getBackground()).thenReturn(mInsetDragBarBackground);
-        when(mInsetDragBarBackground.getDrawable()).thenReturn(mDragBarBackground);
+        mShadowDisplay.setRealWidth(DEVICE_WIDTH);
+        mShadowDisplay.setRealHeight(DEVICE_HEIGHT);
+        mShadowDisplay.setDensity(DENSITY);
+        mShadowDisplay.setWidth(DEVICE_WIDTH);
+        mShadowDisplay.setHeight(DEVICE_HEIGHT - NAVBAR_HEIGHT);
+        setContentFrameHeight(DEVICE_HEIGHT - NAVBAR_HEIGHT);
+        mShadowDisplay.setRotation(Surface.ROTATION_90);
     }
 
     public void configLandscapeMode() {
@@ -363,64 +311,76 @@ public class PartialCustomTabTestRule implements TestRule {
 
     public void configLandscapeMode(int direction) {
         mConfiguration.orientation = Configuration.ORIENTATION_LANDSCAPE;
-        mRealMetrics.widthPixels = DEVICE_HEIGHT;
-        mRealMetrics.heightPixels = DEVICE_WIDTH;
-        mRealMetrics.density = DENSITY;
-        mDisplaySize.set(DEVICE_HEIGHT, DEVICE_WIDTH);
-        when(mContentFrame.getHeight()).thenReturn(DEVICE_WIDTH);
-        when(mDisplay.getRotation()).thenReturn(direction);
+        mShadowDisplay.setRealWidth(DEVICE_HEIGHT);
+        mShadowDisplay.setRealHeight(DEVICE_WIDTH);
+        mShadowDisplay.setDensity(DENSITY);
+        mShadowDisplay.setWidth(DEVICE_HEIGHT);
+        mShadowDisplay.setHeight(DEVICE_WIDTH);
+        setContentFrameHeight(DEVICE_WIDTH);
+        mShadowDisplay.setRotation(direction);
     }
 
     public void configDeviceWidthMedium() {
-        mRealMetrics.widthPixels = DEVICE_WIDTH_MEDIUM;
-        mDisplaySize.set(DEVICE_WIDTH_MEDIUM, DEVICE_HEIGHT - NAVBAR_HEIGHT);
+        mShadowDisplay.setRealWidth(DEVICE_WIDTH_MEDIUM);
+        mShadowDisplay.setWidth(DEVICE_WIDTH_MEDIUM);
+        mShadowDisplay.setHeight(DEVICE_HEIGHT - NAVBAR_HEIGHT);
     }
 
     public void configCompactDevice() {
         mConfiguration.orientation = Configuration.ORIENTATION_LANDSCAPE;
-        mRealMetrics.widthPixels = DEVICE_WIDTH_COMPACT;
-        mRealMetrics.heightPixels = DEVICE_HEIGHT_COMPACT;
-        mDisplaySize.set(DEVICE_WIDTH_COMPACT, DEVICE_HEIGHT_COMPACT);
-        when(mContentFrame.getHeight()).thenReturn(DEVICE_WIDTH_COMPACT);
+        mShadowDisplay.setRealWidth(DEVICE_WIDTH_COMPACT);
+        mShadowDisplay.setRealHeight(DEVICE_HEIGHT_COMPACT);
+        mShadowDisplay.setWidth(DEVICE_WIDTH_COMPACT);
+        mShadowDisplay.setHeight(DEVICE_HEIGHT_COMPACT);
+        setContentFrameHeight(DEVICE_WIDTH_COMPACT);
     }
 
     public void configCompactDevice_Portrait() {
         mConfiguration.orientation = Configuration.ORIENTATION_PORTRAIT;
-        mRealMetrics.widthPixels = DEVICE_WIDTH_COMPACT_PORTRAIT;
-        mRealMetrics.heightPixels = DEVICE_HEIGHT_COMPACT_PORTRAIT;
-        mDisplaySize.set(DEVICE_WIDTH_COMPACT_PORTRAIT, DEVICE_HEIGHT_COMPACT_PORTRAIT);
-        when(mContentFrame.getHeight()).thenReturn(DEVICE_HEIGHT_COMPACT_PORTRAIT);
+        mShadowDisplay.setRealWidth(DEVICE_WIDTH_COMPACT_PORTRAIT);
+        mShadowDisplay.setRealHeight(DEVICE_HEIGHT_COMPACT_PORTRAIT);
+        mShadowDisplay.setWidth(DEVICE_WIDTH_COMPACT_PORTRAIT);
+        mShadowDisplay.setHeight(DEVICE_HEIGHT_COMPACT_PORTRAIT);
+        setContentFrameHeight(DEVICE_HEIGHT_COMPACT_PORTRAIT);
     }
 
     public void verifyWindowFlagsSet() {
-        verify(mWindow).addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
-        verify(mWindow).clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+        assertTrue(hasWindowFlag(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL));
+        assertFalse(hasWindowFlag(WindowManager.LayoutParams.FLAG_DIM_BEHIND));
     }
 
+    public boolean hasWindowFlag(int flag) {
+        return (getWindowAttributes().flags & flag) != 0;
+    }
+
+    /** Returns the window's live attributes (not a snapshot). */
     public WindowManager.LayoutParams getWindowAttributes() {
-        return mAttributeResults.get(mAttributeResults.size() - 1);
+        return mActivity.getWindow().getAttributes();
     }
 
-    @SuppressWarnings("DirectInvocationOnMock")
     public float getDisplayDensity() {
         return mActivity.getResources().getDisplayMetrics().density;
     }
 
     public void setupDisplayMetricsInMultiWindowMode() {
-        mMetrics = new DisplayMetrics();
-        mRealMetrics.heightPixels = MULTIWINDOW_HEIGHT;
-        mMetrics.widthPixels = DEVICE_WIDTH;
-        mMetrics.heightPixels = MULTIWINDOW_HEIGHT;
-        doAnswer(
-                        invocation -> {
-                            DisplayMetrics displayMetrics = invocation.getArgument(0);
-                            displayMetrics.setTo(mMetrics);
-                            return null;
-                        })
-                .when(mDisplay)
-                .getMetrics(any(DisplayMetrics.class));
-        mDisplaySize.y = MULTIWINDOW_HEIGHT;
-        when(mContentFrame.getHeight()).thenReturn(MULTIWINDOW_HEIGHT);
+        mShadowDisplay.setRealHeight(MULTIWINDOW_HEIGHT);
+        mShadowDisplay.setHeight(MULTIWINDOW_HEIGHT);
+        setContentFrameHeight(MULTIWINDOW_HEIGHT);
+    }
+
+    public void configureStatusBarHeightForQ() {
+        ((TestActivity) mActivity).mHasStatusBar = true;
+    }
+
+    /** Asserts that the coordinator background was wrapped to reset the divider line insets. */
+    public void assertCoordinatorInsetsReset(Drawable previousBackground) {
+        var background = (InsetDrawable) mCoordinatorLayout.getBackground();
+        assertSame(previousBackground, background.getDrawable());
+    }
+
+    /** Sets the height of the (never laid out) content frame, read by pre-R display logic. */
+    public void setContentFrameHeight(int height) {
+        mContentFrame.setBottom(mContentFrame.getTop() + height);
     }
 
     @Override

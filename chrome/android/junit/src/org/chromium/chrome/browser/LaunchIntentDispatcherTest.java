@@ -15,10 +15,10 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -53,6 +53,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.shadow.api.Shadow;
+import org.robolectric.shadows.ShadowContextImpl;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -98,6 +100,8 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /** Unit tests for {@link LaunchIntentDispatcher}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -107,8 +111,28 @@ import java.util.Arrays;
     ChromeFeatureList.GLIC_BACKGROUND_ACTUATION,
     ChromeFeatureList.ACTOR_NOTIFICATION_INTENT_ROUTING
 })
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class LaunchIntentDispatcherTest {
+    /** Robolectric can't grant URI permissions to the client, or set the initial caller. */
+    private static class TestActivity extends Activity {
+        // URI permission mode flags granted to the client (TEST_PID / TEST_UID).
+        private final Map<Uri, Integer> mClientUriPermissions = new HashMap<>();
+        private ComponentCaller mMockInitialCaller;
+
+        @Override
+        public int checkUriPermission(Uri uri, int pid, int uid, int modeFlags) {
+            boolean isClient = pid == TEST_PID && uid == TEST_UID;
+            int grantedFlags = isClient ? mClientUriPermissions.getOrDefault(uri, 0) : 0;
+            return (grantedFlags & modeFlags) == modeFlags
+                    ? PackageManager.PERMISSION_GRANTED
+                    : PackageManager.PERMISSION_DENIED;
+        }
+
+        @Override
+        public ComponentCaller getInitialCaller() {
+            return mMockInitialCaller != null ? mMockInitialCaller : super.getInitialCaller();
+        }
+    }
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private CustomTabsConnection mCustomTabsConnection;
@@ -123,7 +147,7 @@ public class LaunchIntentDispatcherTest {
     @Mock private Profile mProfile;
     @Mock private GlicEnabling.Natives mGlicEnablingJniMock;
 
-    private Activity mActivity;
+    private TestActivity mActivity;
 
     @Before
     public void setUp() {
@@ -137,8 +161,10 @@ public class LaunchIntentDispatcherTest {
         ProfileManager.setLastUsedProfileForTesting(mProfile);
         GlicEnablingJni.setInstanceForTesting(mGlicEnablingJniMock);
 
-        mActivity = Robolectric.buildActivity(Activity.class).get();
+        mActivity = Robolectric.buildActivity(TestActivity.class).get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        // Differs from both RESULT_OK and RESULT_CANCELED, so that asserting either is meaningful.
+        mActivity.setResult(Activity.RESULT_FIRST_USER);
 
         CustomTabsConnection.setInstanceForTesting(mCustomTabsConnection);
         SessionDataHolder.setInstanceForTesting(mSessionDataHolder);
@@ -166,10 +192,9 @@ public class LaunchIntentDispatcherTest {
         int taskId = 123;
         doReturn(taskId).when(mSessionHandler).getTaskId();
 
-        Activity spyActivity = spy(mActivity);
-        doReturn(mActivityManager).when(spyActivity).getSystemService(Context.ACTIVITY_SERVICE);
+        useMockActivityManager();
 
-        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(mActivity, intent);
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
         verify(mSessionHandler).handleIntent(intent);
@@ -183,12 +208,10 @@ public class LaunchIntentDispatcherTest {
 
         doReturn(null).when(mSessionDataHolder).getActiveHandlerForIntent(any());
 
-        Activity spyActivity = spy(mActivity);
-
-        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(mActivity, intent);
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
-        verify(spyActivity).startActivity(any(), any());
+        assertNotNull(shadowOf(mActivity).getNextStartedActivity());
         verifyNoInteractions(mSessionHandler);
     }
 
@@ -206,17 +229,16 @@ public class LaunchIntentDispatcherTest {
         int taskId = 456;
         doReturn(taskId).when(mSessionHandler).getTaskId();
 
-        Activity spyActivity = spy(mActivity);
-        doReturn(mActivityManager).when(spyActivity).getSystemService(Context.ACTIVITY_SERVICE);
+        useMockActivityManager();
         Uri referrer = Uri.parse("android-app://com.example.referrer");
-        doReturn(referrer).when(spyActivity).getReferrer();
-        doReturn("com.example.caller").when(spyActivity).getCallingPackage();
+        mActivity.setIntent(new Intent().putExtra(Intent.EXTRA_REFERRER, referrer));
+        shadowOf(mActivity).setCallingPackage("com.example.caller");
 
-        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(mActivity, intent);
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
         verify(mActivityManager).moveTaskToFront(eq(taskId), anyInt());
-        verify(spyActivity, never()).startActivity(any(), any());
+        assertNull(shadowOf(mActivity).getNextStartedActivity());
 
         ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
         verify(mSessionHandler).handleIntent(intentCaptor.capture());
@@ -242,12 +264,10 @@ public class LaunchIntentDispatcherTest {
         doReturn(null).when(mSessionDataHolder).getActiveHandlerClassInCurrentTask(any(), any());
         doReturn(null).when(mSessionDataHolder).getHandlerForIntent(any());
 
-        Activity spyActivity = spy(mActivity);
-
-        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(mActivity, intent);
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
-        verify(spyActivity).startActivity(any(), any());
+        assertNotNull(shadowOf(mActivity).getNextStartedActivity());
         verifyNoInteractions(mSessionHandler);
     }
 
@@ -262,15 +282,14 @@ public class LaunchIntentDispatcherTest {
         doReturn(mSessionHandler).when(mSessionDataHolder).getHandlerForIntent(any());
         doReturn(false).when(mSessionHandler).handleIntent(any());
 
-        Activity spyActivity = spy(mActivity);
-        doReturn(mActivityManager).when(spyActivity).getSystemService(Context.ACTIVITY_SERVICE);
+        useMockActivityManager();
 
-        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(mActivity, intent);
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
         verify(mSessionHandler).handleIntent(any());
         verify(mActivityManager, never()).moveTaskToFront(anyInt(), anyInt());
-        verify(spyActivity).startActivity(any(), any());
+        assertNotNull(shadowOf(mActivity).getNextStartedActivity());
     }
 
     @Test
@@ -280,14 +299,12 @@ public class LaunchIntentDispatcherTest {
 
         doReturn(null).when(mSessionDataHolder).getActiveHandlerForIntent(any());
 
-        Activity spyActivity = spy(mActivity);
-
-        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(mActivity, intent);
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
         verify(mSessionDataHolder, never()).getActiveHandlerClassInCurrentTask(any(), any());
         verify(mSessionDataHolder, never()).getHandlerForIntent(any());
-        verify(spyActivity).startActivity(any(), any());
+        assertNotNull(shadowOf(mActivity).getNextStartedActivity());
         verifyNoInteractions(mSessionHandler);
     }
 
@@ -301,17 +318,13 @@ public class LaunchIntentDispatcherTest {
                 .when(mSessionDataHolder)
                 .getActiveHandlerClassInCurrentTask(any(), any());
 
-        Activity spyActivity = spy(mActivity);
-
-        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(mActivity, intent);
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
         verify(mSessionDataHolder, never()).getHandlerForIntent(any());
         verifyNoInteractions(mSessionHandler);
 
-        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(intentCaptor.capture(), any());
-        Intent launchedIntent = intentCaptor.getValue();
+        Intent launchedIntent = shadowOf(mActivity).getNextStartedActivity();
         assertEquals(
                 CustomTabActivity.class.getName(), launchedIntent.getComponent().getClassName());
         assertTrue((launchedIntent.getFlags() & Intent.FLAG_ACTIVITY_CLEAR_TOP) != 0);
@@ -339,7 +352,6 @@ public class LaunchIntentDispatcherTest {
 
         doReturn(null).when(mSessionDataHolder).getActiveHandlerForIntent(any());
 
-        Activity spyActivity = spy(mActivity);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
             ComponentCaller mockCaller = mock(ComponentCaller.class);
             doReturn(Process.myUid() + 1).when(mockCaller).getUid();
@@ -351,33 +363,20 @@ public class LaunchIntentDispatcherTest {
                     .when(mockCaller)
                     .checkContentUriPermission(
                             eq(fileUri), eq(Intent.FLAG_GRANT_WRITE_URI_PERMISSION));
-            doReturn(mockCaller).when(spyActivity).getInitialCaller();
+            mActivity.mMockInitialCaller = mockCaller;
         } else {
             mockSessionUid();
             // Grant read and write permissions
-            doReturn(PackageManager.PERMISSION_GRANTED)
-                    .when(spyActivity)
-                    .checkUriPermission(
-                            eq(fileUri),
-                            eq(TEST_PID),
-                            eq(TEST_UID),
-                            eq(Intent.FLAG_GRANT_READ_URI_PERMISSION));
-            doReturn(PackageManager.PERMISSION_GRANTED)
-                    .when(spyActivity)
-                    .checkUriPermission(
-                            eq(fileUri),
-                            eq(TEST_PID),
-                            eq(TEST_UID),
-                            eq(Intent.FLAG_GRANT_WRITE_URI_PERMISSION));
+            mActivity.mClientUriPermissions.put(
+                    fileUri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
         }
 
-        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(mActivity, intent);
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
 
-        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(intentCaptor.capture(), any());
-        Intent launchedIntent = intentCaptor.getValue();
+        Intent launchedIntent = shadowOf(mActivity).getNextStartedActivity();
 
         // Verify stashed data
         Bundle stashedBundle =
@@ -407,7 +406,6 @@ public class LaunchIntentDispatcherTest {
 
         doReturn(null).when(mSessionDataHolder).getActiveHandlerForIntent(any());
 
-        Activity spyActivity = spy(mActivity);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
             ComponentCaller mockCaller = mock(ComponentCaller.class);
             doReturn(Process.myUid() + 1).when(mockCaller).getUid();
@@ -419,31 +417,16 @@ public class LaunchIntentDispatcherTest {
                     .when(mockCaller)
                     .checkContentUriPermission(
                             eq(fileUri), eq(Intent.FLAG_GRANT_WRITE_URI_PERMISSION));
-            doReturn(mockCaller).when(spyActivity).getInitialCaller();
+            mActivity.mMockInitialCaller = mockCaller;
         } else {
             mockSessionUid();
             // Grant read but deny write
-            doReturn(PackageManager.PERMISSION_GRANTED)
-                    .when(spyActivity)
-                    .checkUriPermission(
-                            eq(fileUri),
-                            eq(TEST_PID),
-                            eq(TEST_UID),
-                            eq(Intent.FLAG_GRANT_READ_URI_PERMISSION));
-            doReturn(PackageManager.PERMISSION_DENIED)
-                    .when(spyActivity)
-                    .checkUriPermission(
-                            eq(fileUri),
-                            eq(TEST_PID),
-                            eq(TEST_UID),
-                            eq(Intent.FLAG_GRANT_WRITE_URI_PERMISSION));
+            mActivity.mClientUriPermissions.put(fileUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
         }
 
-        LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+        LaunchIntentDispatcher.dispatchToCustomTabActivity(mActivity, intent);
 
-        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(intentCaptor.capture(), any());
-        Intent launchedIntent = intentCaptor.getValue();
+        Intent launchedIntent = shadowOf(mActivity).getNextStartedActivity();
 
         Bundle stashedBundle =
                 launchedIntent.getBundleExtra(
@@ -472,7 +455,6 @@ public class LaunchIntentDispatcherTest {
 
         doReturn(null).when(mSessionDataHolder).getActiveHandlerForIntent(any());
 
-        Activity spyActivity = spy(mActivity);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
             ComponentCaller mockCaller = mock(ComponentCaller.class);
             doReturn(Process.myUid() + 1).when(mockCaller).getUid();
@@ -480,24 +462,15 @@ public class LaunchIntentDispatcherTest {
                     .when(mockCaller)
                     .checkContentUriPermission(
                             eq(fileUri), eq(Intent.FLAG_GRANT_READ_URI_PERMISSION));
-            doReturn(mockCaller).when(spyActivity).getInitialCaller();
+            mActivity.mMockInitialCaller = mockCaller;
         } else {
             mockSessionUid();
-            // Deny read
-            doReturn(PackageManager.PERMISSION_DENIED)
-                    .when(spyActivity)
-                    .checkUriPermission(
-                            eq(fileUri),
-                            eq(TEST_PID),
-                            eq(TEST_UID),
-                            eq(Intent.FLAG_GRANT_READ_URI_PERMISSION));
+            // Deny read, by not granting anything.
         }
 
-        LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+        LaunchIntentDispatcher.dispatchToCustomTabActivity(mActivity, intent);
 
-        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(intentCaptor.capture(), any());
-        Intent launchedIntent = intentCaptor.getValue();
+        Intent launchedIntent = shadowOf(mActivity).getNextStartedActivity();
 
         Bundle stashedBundle =
                 launchedIntent.getBundleExtra(
@@ -518,13 +491,9 @@ public class LaunchIntentDispatcherTest {
 
         doReturn(null).when(mSessionDataHolder).getActiveHandlerForIntent(any());
 
-        Activity spyActivity = spy(mActivity);
+        LaunchIntentDispatcher.dispatchToCustomTabActivity(mActivity, intent);
 
-        LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
-
-        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(intentCaptor.capture(), any());
-        Intent launchedIntent = intentCaptor.getValue();
+        Intent launchedIntent = shadowOf(mActivity).getNextStartedActivity();
 
         assertEquals(
                 false,
@@ -549,13 +518,9 @@ public class LaunchIntentDispatcherTest {
 
         doReturn(null).when(mSessionDataHolder).getActiveHandlerForIntent(any());
 
-        Activity spyActivity = spy(mActivity);
+        LaunchIntentDispatcher.dispatchToCustomTabActivity(mActivity, intent);
 
-        LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
-
-        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(intentCaptor.capture(), any());
-        Intent launchedIntent = intentCaptor.getValue();
+        Intent launchedIntent = shadowOf(mActivity).getNextStartedActivity();
 
         assertEquals(
                 false,
@@ -586,10 +551,9 @@ public class LaunchIntentDispatcherTest {
         doReturn(true).when(mSessionHandler).handleIntent(any());
         doReturn(123).when(mSessionHandler).getTaskId();
 
-        Activity spyActivity = spy(mActivity);
-        doReturn(mActivityManager).when(spyActivity).getSystemService(Context.ACTIVITY_SERVICE);
+        useMockActivityManager();
 
-        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(mActivity, intent);
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
 
@@ -618,7 +582,6 @@ public class LaunchIntentDispatcherTest {
 
         doReturn(null).when(mSessionDataHolder).getActiveHandlerForIntent(any());
 
-        Activity spyActivity = spy(mActivity);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
             ComponentCaller mockCaller = mock(ComponentCaller.class);
             doReturn(Process.myUid() + 1).when(mockCaller).getUid();
@@ -626,23 +589,15 @@ public class LaunchIntentDispatcherTest {
                     .when(mockCaller)
                     .checkContentUriPermission(
                             eq(fileUri), eq(Intent.FLAG_GRANT_READ_URI_PERMISSION));
-            doReturn(mockCaller).when(spyActivity).getInitialCaller();
+            mActivity.mMockInitialCaller = mockCaller;
         } else {
             mockSessionUid();
-            doReturn(PackageManager.PERMISSION_GRANTED)
-                    .when(spyActivity)
-                    .checkUriPermission(
-                            eq(fileUri),
-                            eq(TEST_PID),
-                            eq(TEST_UID),
-                            eq(Intent.FLAG_GRANT_READ_URI_PERMISSION));
+            mActivity.mClientUriPermissions.put(fileUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
         }
 
-        LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+        LaunchIntentDispatcher.dispatchToCustomTabActivity(mActivity, intent);
 
-        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(intentCaptor.capture(), any());
-        Intent launchedIntent = intentCaptor.getValue();
+        Intent launchedIntent = shadowOf(mActivity).getNextStartedActivity();
 
         Bundle stashedBundle =
                 launchedIntent.getBundleExtra(
@@ -665,7 +620,6 @@ public class LaunchIntentDispatcherTest {
 
         doReturn(null).when(mSessionDataHolder).getActiveHandlerForIntent(any());
 
-        Activity spyActivity = spy(mActivity);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
             ComponentCaller mockCaller = mock(ComponentCaller.class);
             doReturn(Process.myUid() + 1).when(mockCaller).getUid();
@@ -673,23 +627,15 @@ public class LaunchIntentDispatcherTest {
                     .when(mockCaller)
                     .checkContentUriPermission(
                             eq(fileUri), eq(Intent.FLAG_GRANT_READ_URI_PERMISSION));
-            doReturn(mockCaller).when(spyActivity).getInitialCaller();
+            mActivity.mMockInitialCaller = mockCaller;
         } else {
             mockSessionUid();
-            doReturn(PackageManager.PERMISSION_DENIED)
-                    .when(spyActivity)
-                    .checkUriPermission(
-                            eq(fileUri),
-                            eq(TEST_PID),
-                            eq(TEST_UID),
-                            eq(Intent.FLAG_GRANT_READ_URI_PERMISSION));
+            // Deny read, by not granting anything.
         }
 
-        LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+        LaunchIntentDispatcher.dispatchToCustomTabActivity(mActivity, intent);
 
-        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(intentCaptor.capture(), any());
-        Intent launchedIntent = intentCaptor.getValue();
+        Intent launchedIntent = shadowOf(mActivity).getNextStartedActivity();
 
         Bundle stashedBundle =
                 launchedIntent.getBundleExtra(
@@ -707,13 +653,9 @@ public class LaunchIntentDispatcherTest {
 
         doReturn(null).when(mSessionDataHolder).getActiveHandlerForIntent(any());
 
-        Activity spyActivity = spy(mActivity);
+        LaunchIntentDispatcher.dispatchToCustomTabActivity(mActivity, intent);
 
-        LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
-
-        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(intentCaptor.capture(), any());
-        Intent launchedIntent = intentCaptor.getValue();
+        Intent launchedIntent = shadowOf(mActivity).getNextStartedActivity();
 
         assertEquals(
                 false,
@@ -731,13 +673,9 @@ public class LaunchIntentDispatcherTest {
 
         doReturn(null).when(mSessionDataHolder).getActiveHandlerForIntent(any());
 
-        Activity spyActivity = spy(mActivity);
+        LaunchIntentDispatcher.dispatchToCustomTabActivity(mActivity, intent);
 
-        LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
-
-        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(intentCaptor.capture(), any());
-        Intent launchedIntent = intentCaptor.getValue();
+        Intent launchedIntent = shadowOf(mActivity).getNextStartedActivity();
 
         assertEquals(
                 false,
@@ -760,10 +698,9 @@ public class LaunchIntentDispatcherTest {
         doReturn(true).when(mSessionHandler).handleIntent(any());
         doReturn(123).when(mSessionHandler).getTaskId();
 
-        Activity spyActivity = spy(mActivity);
-        doReturn(mActivityManager).when(spyActivity).getSystemService(Context.ACTIVITY_SERVICE);
+        useMockActivityManager();
 
-        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(mActivity, intent);
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
 
@@ -789,7 +726,6 @@ public class LaunchIntentDispatcherTest {
 
         doReturn(null).when(mSessionDataHolder).getActiveHandlerForIntent(any());
 
-        Activity spyActivity = spy(mActivity);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
             ComponentCaller mockCaller = mock(ComponentCaller.class);
             doReturn(Process.myUid() + 1).when(mockCaller).getUid();
@@ -801,30 +737,16 @@ public class LaunchIntentDispatcherTest {
                     .when(mockCaller)
                     .checkContentUriPermission(
                             eq(deniedUri), eq(Intent.FLAG_GRANT_READ_URI_PERMISSION));
-            doReturn(mockCaller).when(spyActivity).getInitialCaller();
+            mActivity.mMockInitialCaller = mockCaller;
         } else {
             mockSessionUid();
-            doReturn(PackageManager.PERMISSION_GRANTED)
-                    .when(spyActivity)
-                    .checkUriPermission(
-                            eq(grantedUri),
-                            eq(TEST_PID),
-                            eq(TEST_UID),
-                            eq(Intent.FLAG_GRANT_READ_URI_PERMISSION));
-            doReturn(PackageManager.PERMISSION_DENIED)
-                    .when(spyActivity)
-                    .checkUriPermission(
-                            eq(deniedUri),
-                            eq(TEST_PID),
-                            eq(TEST_UID),
-                            eq(Intent.FLAG_GRANT_READ_URI_PERMISSION));
+            // Grant read for only one of the URIs.
+            mActivity.mClientUriPermissions.put(grantedUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
         }
 
-        LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+        LaunchIntentDispatcher.dispatchToCustomTabActivity(mActivity, intent);
 
-        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(intentCaptor.capture(), any());
-        Intent launchedIntent = intentCaptor.getValue();
+        Intent launchedIntent = shadowOf(mActivity).getNextStartedActivity();
 
         Bundle stashedBundle =
                 launchedIntent.getBundleExtra(
@@ -852,7 +774,7 @@ public class LaunchIntentDispatcherTest {
         providerInfo.authority = authority;
 
         packageInfo.providers = new ProviderInfo[] {providerInfo};
-        org.robolectric.Shadows.shadowOf(pm).installPackage(packageInfo);
+        shadowOf(pm).installPackage(packageInfo);
 
         ShareData shareData =
                 new ShareData("share_title", "share_text", Arrays.asList(fileUri, internalUri));
@@ -863,27 +785,22 @@ public class LaunchIntentDispatcherTest {
 
         doReturn(null).when(mSessionDataHolder).getActiveHandlerForIntent(any());
 
-        Activity spyActivity = spy(mActivity);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
             ComponentCaller mockCaller = mock(ComponentCaller.class);
             doReturn(Process.myUid() + 1).when(mockCaller).getUid();
             doReturn(PackageManager.PERMISSION_GRANTED)
                     .when(mockCaller)
                     .checkContentUriPermission(any(), eq(Intent.FLAG_GRANT_READ_URI_PERMISSION));
-            doReturn(mockCaller).when(spyActivity).getInitialCaller();
+            mActivity.mMockInitialCaller = mockCaller;
         } else {
             mockSessionUid();
-            doReturn(PackageManager.PERMISSION_GRANTED)
-                    .when(spyActivity)
-                    .checkUriPermission(
-                            any(), anyInt(), anyInt(), eq(Intent.FLAG_GRANT_READ_URI_PERMISSION));
+            mActivity.mClientUriPermissions.put(fileUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            mActivity.mClientUriPermissions.put(internalUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
         }
 
-        LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+        LaunchIntentDispatcher.dispatchToCustomTabActivity(mActivity, intent);
 
-        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(intentCaptor.capture(), any());
-        Intent launchedIntent = intentCaptor.getValue();
+        Intent launchedIntent = shadowOf(mActivity).getNextStartedActivity();
 
         Bundle stashedBundle =
                 launchedIntent.getBundleExtra(
@@ -902,9 +819,8 @@ public class LaunchIntentDispatcherTest {
     @Test
     public void testDispatchGlicExternalTrigger_WrongAction() {
         Intent intent = new Intent(Intent.ACTION_VIEW);
-        Activity spyActivity = spy(mActivity);
 
-        int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(spyActivity, intent);
+        int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(mActivity, intent);
 
         assertEquals(LaunchIntentDispatcher.Action.CONTINUE, result);
         verifyNoInteractions(mExternalAuthUtils);
@@ -914,58 +830,49 @@ public class LaunchIntentDispatcherTest {
     @Test
     public void testDispatchGlicExternalTrigger_NotGoogleSigned() {
         Intent intent = new Intent(GLIC_EXTERNAL_TRIGGERING_ACTION);
-        Activity spyActivity = spy(mActivity);
-        doReturn("com.untrusted.app").when(spyActivity).getCallingPackage();
+        shadowOf(mActivity).setCallingPackage("com.untrusted.app");
         doReturn(false).when(mExternalAuthUtils).isGoogleSigned("com.untrusted.app");
 
-        int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(spyActivity, intent);
+        int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(mActivity, intent);
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
-        verify(spyActivity).setResult(Activity.RESULT_CANCELED);
+        assertEquals(Activity.RESULT_CANCELED, shadowOf(mActivity).getResultCode());
         verifyNoInteractions(mForegroundServiceUtils);
     }
 
     @Test
     public void testDispatchGlicExternalTrigger_GlicDisabledForProfile() {
         Intent intent = new Intent(GLIC_EXTERNAL_TRIGGERING_ACTION);
-        Activity spyActivity = spy(mActivity);
-        doReturn("com.google.android.apps.googlequicksearchbox")
-                .when(spyActivity)
-                .getCallingPackage();
+        shadowOf(mActivity).setCallingPackage("com.google.android.apps.googlequicksearchbox");
         doReturn(true)
                 .when(mExternalAuthUtils)
                 .isGoogleSigned("com.google.android.apps.googlequicksearchbox");
         doReturn(false).when(mGlicEnablingJniMock).isEnabledForProfile(mProfile);
 
-        int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(spyActivity, intent);
+        int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(mActivity, intent);
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
-        verify(spyActivity).setResult(Activity.RESULT_CANCELED);
+        assertEquals(Activity.RESULT_CANCELED, shadowOf(mActivity).getResultCode());
         verifyNoInteractions(mForegroundServiceUtils);
     }
 
     @Test
     public void testDispatchGlicExternalTrigger_ConsentRequired() {
         Intent intent = new Intent(GLIC_EXTERNAL_TRIGGERING_ACTION);
-        Activity spyActivity = spy(mActivity);
-        doReturn("com.google.android.apps.googlequicksearchbox")
-                .when(spyActivity)
-                .getCallingPackage();
+        shadowOf(mActivity).setCallingPackage("com.google.android.apps.googlequicksearchbox");
         doReturn(true)
                 .when(mExternalAuthUtils)
                 .isGoogleSigned("com.google.android.apps.googlequicksearchbox");
         doReturn(true).when(mGlicEnablingJniMock).isEnabledForProfile(mProfile);
         doReturn(true).when(mGlicEnablingJniMock).experimentalOptInIsNeeded(mProfile);
 
-        int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(spyActivity, intent);
+        int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(mActivity, intent);
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
-        verify(spyActivity).setResult(Activity.RESULT_OK);
+        assertEquals(Activity.RESULT_OK, shadowOf(mActivity).getResultCode());
         verifyNoInteractions(mForegroundServiceUtils);
 
-        ArgumentCaptor<Intent> launchedIntentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(launchedIntentCaptor.capture(), any());
-        Intent launchedIntent = launchedIntentCaptor.getValue();
+        Intent launchedIntent = shadowOf(mActivity).getNextStartedActivity();
         assertNotNull(launchedIntent);
         assertEquals(Intent.ACTION_VIEW, launchedIntent.getAction());
         assertEquals(UrlConstants.NTP_URL, launchedIntent.getDataString());
@@ -980,20 +887,17 @@ public class LaunchIntentDispatcherTest {
     public void testDispatchGlicExternalTrigger_ConsentNotRequired_StartsService() {
         NotificationProxyUtils.setNotificationEnabledForTest(true);
         Intent intent = new Intent(GLIC_EXTERNAL_TRIGGERING_ACTION);
-        Activity spyActivity = spy(mActivity);
-        doReturn("com.google.android.apps.googlequicksearchbox")
-                .when(spyActivity)
-                .getCallingPackage();
+        shadowOf(mActivity).setCallingPackage("com.google.android.apps.googlequicksearchbox");
         doReturn(true)
                 .when(mExternalAuthUtils)
                 .isGoogleSigned("com.google.android.apps.googlequicksearchbox");
         doReturn(true).when(mGlicEnablingJniMock).isEnabledForProfile(mProfile);
         doReturn(false).when(mGlicEnablingJniMock).experimentalOptInIsNeeded(mProfile);
 
-        int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(spyActivity, intent);
+        int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(mActivity, intent);
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
-        verify(spyActivity).setResult(Activity.RESULT_OK);
+        assertEquals(Activity.RESULT_OK, shadowOf(mActivity).getResultCode());
 
         ArgumentCaptor<Intent> serviceIntentCaptor = ArgumentCaptor.forClass(Intent.class);
         verify(mForegroundServiceUtils).startForegroundService(serviceIntentCaptor.capture());
@@ -1008,25 +912,20 @@ public class LaunchIntentDispatcherTest {
     public void testDispatchGlicExternalTrigger_NotificationsDisabled_OpensNewTab() {
         NotificationProxyUtils.setNotificationEnabledForTest(false);
         Intent intent = new Intent(GLIC_EXTERNAL_TRIGGERING_ACTION);
-        Activity spyActivity = spy(mActivity);
-        doReturn("com.google.android.apps.googlequicksearchbox")
-                .when(spyActivity)
-                .getCallingPackage();
+        shadowOf(mActivity).setCallingPackage("com.google.android.apps.googlequicksearchbox");
         doReturn(true)
                 .when(mExternalAuthUtils)
                 .isGoogleSigned("com.google.android.apps.googlequicksearchbox");
         doReturn(true).when(mGlicEnablingJniMock).isEnabledForProfile(mProfile);
         doReturn(false).when(mGlicEnablingJniMock).experimentalOptInIsNeeded(mProfile);
 
-        int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(spyActivity, intent);
+        int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(mActivity, intent);
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
-        verify(spyActivity).setResult(Activity.RESULT_OK);
+        assertEquals(Activity.RESULT_OK, shadowOf(mActivity).getResultCode());
         verifyNoInteractions(mForegroundServiceUtils);
 
-        ArgumentCaptor<Intent> launchedIntentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(launchedIntentCaptor.capture(), any());
-        Intent launchedIntent = launchedIntentCaptor.getValue();
+        Intent launchedIntent = shadowOf(mActivity).getNextStartedActivity();
         assertNotNull(launchedIntent);
         assertEquals(Intent.ACTION_VIEW, launchedIntent.getAction());
         assertEquals(UrlConstants.NTP_URL, launchedIntent.getDataString());
@@ -1041,17 +940,14 @@ public class LaunchIntentDispatcherTest {
     @DisableFeatures(ChromeFeatureList.GLIC_BACKGROUND_TRIGGERING)
     public void testDispatchGlicExternalTrigger_FeatureDisabled() {
         Intent intent = new Intent(GLIC_EXTERNAL_TRIGGERING_ACTION);
-        Activity spyActivity = spy(mActivity);
-        doReturn("com.google.android.apps.googlequicksearchbox")
-                .when(spyActivity)
-                .getCallingPackage();
+        shadowOf(mActivity).setCallingPackage("com.google.android.apps.googlequicksearchbox");
         doReturn(true)
                 .when(mExternalAuthUtils)
                 .isGoogleSigned("com.google.android.apps.googlequicksearchbox");
         doReturn(true).when(mGlicEnablingJniMock).isEnabledForProfile(mProfile);
         doReturn(false).when(mGlicEnablingJniMock).experimentalOptInIsNeeded(mProfile);
 
-        int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(spyActivity, intent);
+        int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(mActivity, intent);
 
         assertEquals(LaunchIntentDispatcher.Action.CONTINUE, result);
         verifyNoInteractions(mForegroundServiceUtils);
@@ -1063,10 +959,8 @@ public class LaunchIntentDispatcherTest {
         return intent;
     }
 
-    private void setUpTrustedGlicCaller(Activity spyActivity) {
-        doReturn("com.google.android.apps.googlequicksearchbox")
-                .when(spyActivity)
-                .getCallingPackage();
+    private void setUpTrustedGlicCaller() {
+        shadowOf(mActivity).setCallingPackage("com.google.android.apps.googlequicksearchbox");
         doReturn(true)
                 .when(mExternalAuthUtils)
                 .isGoogleSigned("com.google.android.apps.googlequicksearchbox");
@@ -1074,8 +968,8 @@ public class LaunchIntentDispatcherTest {
     }
 
     private ActorTask setUpGlicInterrupt(
-            Activity spyActivity, String conversationId, int taskId, @TabId int targetTabId) {
-        setUpTrustedGlicCaller(spyActivity);
+            String conversationId, int taskId, @TabId int targetTabId) {
+        setUpTrustedGlicCaller();
 
         ActorKeyedService actorKeyedService = mock(ActorKeyedService.class);
         ActorKeyedServiceFactory.setForTesting(actorKeyedService);
@@ -1106,20 +1000,17 @@ public class LaunchIntentDispatcherTest {
     @Test
     public void testDispatchGlicExternalTrigger_WithConversationId_RoutesToTabbedActivity() {
         Intent intent = createGlicInterruptIntent("conv_123");
-        Activity spyActivity = spy(mActivity);
-        ActorTask task = setUpGlicInterrupt(spyActivity, "conv_123", /* taskId= */ 456, 789);
+        ActorTask task = setUpGlicInterrupt("conv_123", /* taskId= */ 456, 789);
         ActorForegroundServiceController controller = setUpInterruptController(task);
 
-        int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(spyActivity, intent);
+        int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(mActivity, intent);
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
-        verify(spyActivity).setResult(Activity.RESULT_OK);
+        assertEquals(Activity.RESULT_OK, shadowOf(mActivity).getResultCode());
         verify(controller).createTrustedBringTabToFrontIntent(task);
         verifyNoInteractions(mForegroundServiceUtils);
 
-        ArgumentCaptor<Intent> launchedIntentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(launchedIntentCaptor.capture());
-        Intent launchedIntent = launchedIntentCaptor.getValue();
+        Intent launchedIntent = shadowOf(mActivity).getNextStartedActivity();
         assertTrue(IntentHandler.wasIntentSenderChrome(launchedIntent));
         assertEquals("conv_123", IntentHandler.getGlicConversationId(launchedIntent));
         assertEquals(789, IntentHandler.getBringTabToFrontId(launchedIntent));
@@ -1139,18 +1030,17 @@ public class LaunchIntentDispatcherTest {
     public void
             testDispatchGlicExternalTrigger_WithConversationId_TaskNotFound_FallsBackGracefully() {
         Intent intent = createGlicInterruptIntent("conv_123");
-        Activity spyActivity = spy(mActivity);
-        setUpTrustedGlicCaller(spyActivity);
+        setUpTrustedGlicCaller();
 
         ActorKeyedService actorKeyedService = mock(ActorKeyedService.class);
         ActorKeyedServiceFactory.setForTesting(actorKeyedService);
         when(actorKeyedService.getTaskByConversationId("conv_123")).thenReturn(null);
 
-        int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(spyActivity, intent);
+        int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(mActivity, intent);
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
-        verify(spyActivity).setResult(Activity.RESULT_CANCELED);
-        verify(spyActivity, never()).startActivity(any());
+        assertEquals(Activity.RESULT_CANCELED, shadowOf(mActivity).getResultCode());
+        assertNull(shadowOf(mActivity).getNextStartedActivity());
         verifyNoInteractions(mForegroundServiceUtils);
     }
 
@@ -1159,34 +1049,30 @@ public class LaunchIntentDispatcherTest {
     public void testDispatchGlicExternalTrigger_WithConversationId_RoutingDisabled_StartsService() {
         NotificationProxyUtils.setNotificationEnabledForTest(true);
         Intent intent = createGlicInterruptIntent("conv_123");
-        Activity spyActivity = spy(mActivity);
-        setUpTrustedGlicCaller(spyActivity);
+        setUpTrustedGlicCaller();
         doReturn(false).when(mGlicEnablingJniMock).experimentalOptInIsNeeded(mProfile);
 
-        int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(spyActivity, intent);
+        int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(mActivity, intent);
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
-        verify(spyActivity).setResult(Activity.RESULT_OK);
-        verify(spyActivity, never()).startActivity(any());
+        assertEquals(Activity.RESULT_OK, shadowOf(mActivity).getResultCode());
+        assertNull(shadowOf(mActivity).getNextStartedActivity());
         verify(mForegroundServiceUtils).startForegroundService(any());
     }
 
     @Test
     public void testDispatchGlicExternalTrigger_WithConversationId_ConsentRequired_OpensNewTab() {
         Intent intent = createGlicInterruptIntent("conv_123");
-        Activity spyActivity = spy(mActivity);
-        setUpTrustedGlicCaller(spyActivity);
+        setUpTrustedGlicCaller();
         doReturn(true).when(mGlicEnablingJniMock).experimentalOptInIsNeeded(mProfile);
 
-        int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(spyActivity, intent);
+        int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(mActivity, intent);
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
-        verify(spyActivity).setResult(Activity.RESULT_OK);
+        assertEquals(Activity.RESULT_OK, shadowOf(mActivity).getResultCode());
         verifyNoInteractions(mForegroundServiceUtils);
 
-        ArgumentCaptor<Intent> launchedIntentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(launchedIntentCaptor.capture(), any());
-        Intent launchedIntent = launchedIntentCaptor.getValue();
+        Intent launchedIntent = shadowOf(mActivity).getNextStartedActivity();
         assertNotNull(launchedIntent);
         assertEquals(Intent.ACTION_VIEW, launchedIntent.getAction());
         assertEquals(UrlConstants.NTP_URL, launchedIntent.getDataString());
@@ -1207,8 +1093,7 @@ public class LaunchIntentDispatcherTest {
                 /* taskId= */ 57);
 
         Intent intent = createGlicInterruptIntent("conv_123");
-        Activity spyActivity = spy(mActivity);
-        ActorTask task = setUpGlicInterrupt(spyActivity, "conv_123", /* taskId= */ 456, 789);
+        ActorTask task = setUpGlicInterrupt("conv_123", /* taskId= */ 456, 789);
         setUpInterruptController(task);
 
         TabModel tabModel = mock(TabModel.class);
@@ -1220,17 +1105,16 @@ public class LaunchIntentDispatcherTest {
         when(tabWindowManager.getTabWindowInfoById(789)).thenReturn(tabWindowInfo);
         TabWindowManagerSingleton.setTabWindowManagerForTesting(tabWindowManager);
 
-        int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(spyActivity, intent);
+        int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(mActivity, intent);
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
-        verify(spyActivity).setResult(Activity.RESULT_OK);
-        ArgumentCaptor<Intent> launchedIntentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(launchedIntentCaptor.capture());
+        assertEquals(Activity.RESULT_OK, shadowOf(mActivity).getResultCode());
+        Intent launchedIntent = shadowOf(mActivity).getNextStartedActivity();
         assertEquals(
                 "The window hosting the tab should be reused.",
                 5,
                 IntentUtils.safeGetIntExtra(
-                        launchedIntentCaptor.getValue(),
+                        launchedIntent,
                         IntentHandler.EXTRA_WINDOW_ID,
                         TabWindowManager.INVALID_WINDOW_ID));
     }
@@ -1246,8 +1130,7 @@ public class LaunchIntentDispatcherTest {
                 /* taskId= */ -1);
 
         Intent intent = createGlicInterruptIntent("conv_123");
-        Activity spyActivity = spy(mActivity);
-        ActorTask task = setUpGlicInterrupt(spyActivity, "conv_123", /* taskId= */ 456, 789);
+        ActorTask task = setUpGlicInterrupt("conv_123", /* taskId= */ 456, 789);
         setUpInterruptController(task);
 
         TabModel tabModel = mock(TabModel.class);
@@ -1259,15 +1142,14 @@ public class LaunchIntentDispatcherTest {
         when(tabWindowManager.getTabWindowInfoById(789)).thenReturn(tabWindowInfo);
         TabWindowManagerSingleton.setTabWindowManagerForTesting(tabWindowManager);
 
-        int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(spyActivity, intent);
+        int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(mActivity, intent);
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
-        verify(spyActivity).setResult(Activity.RESULT_OK);
-        ArgumentCaptor<Intent> launchedIntentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(launchedIntentCaptor.capture());
+        assertEquals(Activity.RESULT_OK, shadowOf(mActivity).getResultCode());
+        Intent launchedIntent = shadowOf(mActivity).getNextStartedActivity();
         assertFalse(
                 "A window with no live task should not be resurrected.",
-                launchedIntentCaptor.getValue().hasExtra(IntentHandler.EXTRA_WINDOW_ID));
+                launchedIntent.hasExtra(IntentHandler.EXTRA_WINDOW_ID));
     }
 
     @Test
@@ -1280,23 +1162,20 @@ public class LaunchIntentDispatcherTest {
                 /* taskId= */ 57);
 
         Intent intent = createGlicInterruptIntent("conv_123");
-        Activity spyActivity = spy(mActivity);
-        ActorTask task =
-                setUpGlicInterrupt(spyActivity, "conv_123", /* taskId= */ 456, Tab.INVALID_TAB_ID);
+        ActorTask task = setUpGlicInterrupt("conv_123", /* taskId= */ 456, Tab.INVALID_TAB_ID);
         ActorForegroundServiceController controller = setUpInterruptController(task);
         when(controller.getWindowIdForTask(456)).thenReturn(3);
 
-        int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(spyActivity, intent);
+        int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(mActivity, intent);
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
-        verify(spyActivity).setResult(Activity.RESULT_OK);
-        ArgumentCaptor<Intent> launchedIntentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(launchedIntentCaptor.capture());
+        assertEquals(Activity.RESULT_OK, shadowOf(mActivity).getResultCode());
+        Intent launchedIntent = shadowOf(mActivity).getNextStartedActivity();
         assertEquals(
                 "The window recorded for the background task should be reused.",
                 3,
                 IntentUtils.safeGetIntExtra(
-                        launchedIntentCaptor.getValue(),
+                        launchedIntent,
                         IntentHandler.EXTRA_WINDOW_ID,
                         TabWindowManager.INVALID_WINDOW_ID));
     }
@@ -1306,22 +1185,19 @@ public class LaunchIntentDispatcherTest {
         MultiWindowTestUtils.enableMultiInstance();
 
         Intent intent = createGlicInterruptIntent("conv_123");
-        Activity spyActivity = spy(mActivity);
-        ActorTask task =
-                setUpGlicInterrupt(spyActivity, "conv_123", /* taskId= */ 456, Tab.INVALID_TAB_ID);
+        ActorTask task = setUpGlicInterrupt("conv_123", /* taskId= */ 456, Tab.INVALID_TAB_ID);
         ActorForegroundServiceController controller = setUpInterruptController(task);
         // The window was closed after the task was handed off to background actuation.
         when(controller.getWindowIdForTask(456)).thenReturn(3);
 
-        int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(spyActivity, intent);
+        int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(mActivity, intent);
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
-        verify(spyActivity).setResult(Activity.RESULT_OK);
-        ArgumentCaptor<Intent> launchedIntentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(launchedIntentCaptor.capture());
+        assertEquals(Activity.RESULT_OK, shadowOf(mActivity).getResultCode());
+        Intent launchedIntent = shadowOf(mActivity).getNextStartedActivity();
         assertFalse(
                 "A closed window should not be resurrected.",
-                launchedIntentCaptor.getValue().hasExtra(IntentHandler.EXTRA_WINDOW_ID));
+                launchedIntent.hasExtra(IntentHandler.EXTRA_WINDOW_ID));
     }
 
     @Test
@@ -1335,21 +1211,18 @@ public class LaunchIntentDispatcherTest {
                 /* taskId= */ -1);
 
         Intent intent = createGlicInterruptIntent("conv_123");
-        Activity spyActivity = spy(mActivity);
-        ActorTask task =
-                setUpGlicInterrupt(spyActivity, "conv_123", /* taskId= */ 456, Tab.INVALID_TAB_ID);
+        ActorTask task = setUpGlicInterrupt("conv_123", /* taskId= */ 456, Tab.INVALID_TAB_ID);
         ActorForegroundServiceController controller = setUpInterruptController(task);
         when(controller.getWindowIdForTask(456)).thenReturn(3);
 
-        int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(spyActivity, intent);
+        int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(mActivity, intent);
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
-        verify(spyActivity).setResult(Activity.RESULT_OK);
-        ArgumentCaptor<Intent> launchedIntentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(launchedIntentCaptor.capture());
+        assertEquals(Activity.RESULT_OK, shadowOf(mActivity).getResultCode());
+        Intent launchedIntent = shadowOf(mActivity).getNextStartedActivity();
         assertFalse(
                 "A window with no live task should not be resurrected.",
-                launchedIntentCaptor.getValue().hasExtra(IntentHandler.EXTRA_WINDOW_ID));
+                launchedIntent.hasExtra(IntentHandler.EXTRA_WINDOW_ID));
     }
 
     @Test
@@ -1360,21 +1233,20 @@ public class LaunchIntentDispatcherTest {
                 /* url= */ "https://www.example.com",
                 /* tabCount= */ 1,
                 /* taskId= */ 57);
-        MultiWindowUtils.setActivityByWindowIdForTesting(3, mock(ChromeTabbedActivity.class));
+        MultiWindowUtils.setActivityByWindowIdForTesting(
+                3, Robolectric.buildActivity(ChromeTabbedActivity.class).get());
         AndroidTaskUtils.setAppTaskForTesting(mock(AppTask.class));
 
         Intent intent = createGlicInterruptIntent("conv_123");
-        Activity spyActivity = spy(mActivity);
-        ActorTask task =
-                setUpGlicInterrupt(spyActivity, "conv_123", /* taskId= */ 456, Tab.INVALID_TAB_ID);
+        ActorTask task = setUpGlicInterrupt("conv_123", /* taskId= */ 456, Tab.INVALID_TAB_ID);
         ActorForegroundServiceController controller = setUpInterruptController(task);
         when(controller.getWindowIdForTask(456)).thenReturn(3);
 
-        int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(spyActivity, intent);
+        int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(mActivity, intent);
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
-        verify(spyActivity).setResult(Activity.RESULT_OK);
-        verify(spyActivity, never()).startActivity(any());
+        assertEquals(Activity.RESULT_OK, shadowOf(mActivity).getResultCode());
+        assertNull(shadowOf(mActivity).getNextStartedActivity());
     }
 
     @Test
@@ -1386,16 +1258,13 @@ public class LaunchIntentDispatcherTest {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"));
         intent.putExtra(CustomTabsIntent.EXTRA_SESSION, (IBinder) null);
 
-        Activity spyActivity = spy(mActivity);
         UserActionTester userActionTester = new UserActionTester();
-        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(mActivity, intent);
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
-        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(captor.capture());
+        Intent launchedIntent = shadowOf(mActivity).getNextStartedActivity();
         assertEquals(
-                ChromeTabbedActivity.class.getName(),
-                captor.getValue().getComponent().getClassName());
+                ChromeTabbedActivity.class.getName(), launchedIntent.getComponent().getClassName());
         assertEquals(1, userActionTester.getActionCount("CustomTabs.AlwaysOpenInBrowserOverride"));
         userActionTester.tearDown();
     }
@@ -1409,14 +1278,12 @@ public class LaunchIntentDispatcherTest {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"));
         intent.putExtra(CustomTabsIntent.EXTRA_SESSION, (IBinder) null);
 
-        Activity spyActivity = spy(mActivity);
-        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(mActivity, intent);
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
-        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(captor.capture(), any());
+        Intent launchedIntent = shadowOf(mActivity).getNextStartedActivity();
         assertEquals(
-                CustomTabActivity.class.getName(), captor.getValue().getComponent().getClassName());
+                CustomTabActivity.class.getName(), launchedIntent.getComponent().getClassName());
     }
 
     @Test
@@ -1428,14 +1295,12 @@ public class LaunchIntentDispatcherTest {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"));
         intent.putExtra(CustomTabsIntent.EXTRA_SESSION, (IBinder) null);
 
-        Activity spyActivity = spy(mActivity);
-        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(mActivity, intent);
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
-        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(captor.capture(), any());
+        Intent launchedIntent = shadowOf(mActivity).getNextStartedActivity();
         assertEquals(
-                CustomTabActivity.class.getName(), captor.getValue().getComponent().getClassName());
+                CustomTabActivity.class.getName(), launchedIntent.getComponent().getClassName());
     }
 
     @Test
@@ -1449,14 +1314,12 @@ public class LaunchIntentDispatcherTest {
         intent.setPackage(mActivity.getPackageName());
         IntentUtils.addTrustedIntentExtras(intent);
 
-        Activity spyActivity = spy(mActivity);
-        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(mActivity, intent);
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
-        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(captor.capture(), any());
+        Intent launchedIntent = shadowOf(mActivity).getNextStartedActivity();
         assertEquals(
-                CustomTabActivity.class.getName(), captor.getValue().getComponent().getClassName());
+                CustomTabActivity.class.getName(), launchedIntent.getComponent().getClassName());
     }
 
     @Test
@@ -1468,14 +1331,12 @@ public class LaunchIntentDispatcherTest {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"));
         intent.putExtra(AuthTabIntent.EXTRA_LAUNCH_AUTH_TAB, true);
 
-        Activity spyActivity = spy(mActivity);
-        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(mActivity, intent);
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
-        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(captor.capture(), any());
+        Intent launchedIntent = shadowOf(mActivity).getNextStartedActivity();
         assertEquals(
-                CustomTabActivity.class.getName(), captor.getValue().getComponent().getClassName());
+                CustomTabActivity.class.getName(), launchedIntent.getComponent().getClassName());
     }
 
     @Test
@@ -1488,14 +1349,12 @@ public class LaunchIntentDispatcherTest {
         intent.putExtra(CustomTabsIntent.EXTRA_SESSION, (IBinder) null);
         intent.putExtra(TrustedWebUtils.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY, true);
 
-        Activity spyActivity = spy(mActivity);
-        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(mActivity, intent);
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
-        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(captor.capture(), any());
+        Intent launchedIntent = shadowOf(mActivity).getNextStartedActivity();
         assertEquals(
-                CustomTabActivity.class.getName(), captor.getValue().getComponent().getClassName());
+                CustomTabActivity.class.getName(), launchedIntent.getComponent().getClassName());
     }
 
     @Test
@@ -1512,14 +1371,12 @@ public class LaunchIntentDispatcherTest {
         intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, true);
         intent.putExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE, "com.example");
 
-        Activity spyActivity = spy(mActivity);
-        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(mActivity, intent);
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
-        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(captor.capture(), any());
+        Intent launchedIntent = shadowOf(mActivity).getNextStartedActivity();
         assertEquals(
-                CustomTabActivity.class.getName(), captor.getValue().getComponent().getClassName());
+                CustomTabActivity.class.getName(), launchedIntent.getComponent().getClassName());
     }
 
     @Test
@@ -1532,14 +1389,12 @@ public class LaunchIntentDispatcherTest {
         intent.putExtra(CustomTabsIntent.EXTRA_SESSION, (IBinder) null);
         intent.putExtra(CustomTabIntentDataProvider.EXTRA_UI_TYPE, CustomTabsUiType.MEDIA_VIEWER);
 
-        Activity spyActivity = spy(mActivity);
-        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(mActivity, intent);
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
-        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(captor.capture(), any());
+        Intent launchedIntent = shadowOf(mActivity).getNextStartedActivity();
         assertEquals(
-                CustomTabActivity.class.getName(), captor.getValue().getComponent().getClassName());
+                CustomTabActivity.class.getName(), launchedIntent.getComponent().getClassName());
     }
 
     @Test
@@ -1553,14 +1408,12 @@ public class LaunchIntentDispatcherTest {
         android.net.Network mockNetwork = mock(android.net.Network.class);
         doReturn(mockNetwork).when(mCustomTabsConnection).extractTargetNetwork(any(), any());
 
-        Activity spyActivity = spy(mActivity);
-        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(mActivity, intent);
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
-        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(captor.capture(), any());
+        Intent launchedIntent = shadowOf(mActivity).getNextStartedActivity();
         assertEquals(
-                CustomTabActivity.class.getName(), captor.getValue().getComponent().getClassName());
+                CustomTabActivity.class.getName(), launchedIntent.getComponent().getClassName());
     }
 
     @Test
@@ -1568,25 +1421,20 @@ public class LaunchIntentDispatcherTest {
     public void testDispatchGlicExternalTrigger_BackgroundActuationDisabled_OpensNewTab() {
         NotificationProxyUtils.setNotificationEnabledForTest(true);
         Intent intent = new Intent(GLIC_EXTERNAL_TRIGGERING_ACTION);
-        Activity spyActivity = spy(mActivity);
-        doReturn("com.google.android.apps.googlequicksearchbox")
-                .when(spyActivity)
-                .getCallingPackage();
+        shadowOf(mActivity).setCallingPackage("com.google.android.apps.googlequicksearchbox");
         doReturn(true)
                 .when(mExternalAuthUtils)
                 .isGoogleSigned("com.google.android.apps.googlequicksearchbox");
         doReturn(true).when(mGlicEnablingJniMock).isEnabledForProfile(mProfile);
         doReturn(false).when(mGlicEnablingJniMock).experimentalOptInIsNeeded(mProfile);
 
-        int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(spyActivity, intent);
+        int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(mActivity, intent);
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
-        verify(spyActivity).setResult(Activity.RESULT_OK);
+        assertEquals(Activity.RESULT_OK, shadowOf(mActivity).getResultCode());
         verifyNoInteractions(mForegroundServiceUtils);
 
-        ArgumentCaptor<Intent> launchedIntentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(launchedIntentCaptor.capture(), any());
-        Intent launchedIntent = launchedIntentCaptor.getValue();
+        Intent launchedIntent = shadowOf(mActivity).getNextStartedActivity();
         assertNotNull(launchedIntent);
         assertEquals(Intent.ACTION_VIEW, launchedIntent.getAction());
         assertEquals(UrlConstants.NTP_URL, launchedIntent.getDataString());
@@ -1601,12 +1449,11 @@ public class LaunchIntentDispatcherTest {
     public void testDispatchToCustomTabActivity_DoesNotLaunchJavaScriptUrls() {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("javascript: alert('Hello');"));
         intent.putExtra(CustomTabsIntent.EXTRA_SESSION, (IBinder) null);
-        Activity spyActivity = spy(mActivity);
 
-        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(mActivity, intent);
 
         assertEquals(LaunchIntentDispatcher.Action.CONTINUE, result);
-        verify(spyActivity, never()).startActivity(any(), any());
+        assertNull(shadowOf(mActivity).getNextStartedActivity());
     }
 
     @Test
@@ -1614,16 +1461,14 @@ public class LaunchIntentDispatcherTest {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"));
         intent.putExtra(CustomTabsIntent.EXTRA_SESSION, (IBinder) null);
         intent.putExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE, "spoofed");
-        Activity spyActivity = spy(mActivity);
-        doReturn("com.foo.bar").when(spyActivity).getCallingPackage();
+        shadowOf(mActivity).setCallingPackage("com.foo.bar");
 
-        LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+        LaunchIntentDispatcher.dispatchToCustomTabActivity(mActivity, intent);
 
-        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(captor.capture(), any());
+        Intent launchedIntent = shadowOf(mActivity).getNextStartedActivity();
         assertEquals(
                 "com.foo.bar",
-                captor.getValue().getStringExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE));
+                launchedIntent.getStringExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE));
     }
 
     @Test
@@ -1631,13 +1476,16 @@ public class LaunchIntentDispatcherTest {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"));
         intent.putExtra(CustomTabsIntent.EXTRA_SESSION, (IBinder) null);
         intent.putExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE, "spoofed");
-        Activity spyActivity = spy(mActivity);
-        doReturn(null).when(spyActivity).getCallingPackage();
+        assertNull(mActivity.getCallingPackage());
 
-        LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+        LaunchIntentDispatcher.dispatchToCustomTabActivity(mActivity, intent);
 
-        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(captor.capture(), any());
-        assertNull(captor.getValue().getStringExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE));
+        Intent launchedIntent = shadowOf(mActivity).getNextStartedActivity();
+        assertNull(launchedIntent.getStringExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE));
+    }
+
+    private void useMockActivityManager() {
+        ShadowContextImpl shadowContext = Shadow.extract(mActivity.getBaseContext());
+        shadowContext.setSystemService(Context.ACTIVITY_SERVICE, mActivityManager);
     }
 }
