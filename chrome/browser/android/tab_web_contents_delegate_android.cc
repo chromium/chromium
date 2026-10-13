@@ -52,6 +52,7 @@
 #include "chrome/browser/safe_browsing/chrome_password_reuse_detection_manager_client.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#include "chrome/browser/sessions/session_tab_helper_factory.h"
 #include "chrome/browser/subresource_filter/chrome_content_subresource_filter_web_contents_helper_factory.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/blocked_content/chrome_popup_navigation_delegate.h"
@@ -694,6 +695,7 @@ WebContents* TabWebContentsDelegateAndroid::AddNewContents(
   }
 
   TabHelpers::AttachTabHelpers(new_contents.get());
+  CreateSessionServiceTabHelper(new_contents.get());
   CreateSubresourceFilterWebContentsHelper(new_contents.get());
   content_settings::PageSpecificContentSettings::CreateForWebContents(
       new_contents.get(), std::make_unique<PageSpecificContentSettingsDelegate>(

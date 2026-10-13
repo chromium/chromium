@@ -89,6 +89,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/resource_coordinator/tab_helper.h"
+#include "chrome/browser/sessions/session_tab_helper_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/site_protection/site_protection_metrics_observer.h"
 #include "chrome/browser/ssl/ask_before_http_dialog_controller.h"
@@ -425,6 +426,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
       tab.RegisterWillDiscardContents(base::BindRepeating(
           &TabFeatures::WillDiscardContents, weak_factory_.GetWeakPtr())));
   tab_subscriptions_.push_back(webui::InitEmbeddingContext(&tab));
+
+  CreateSessionServiceTabHelper(tab.GetContents());
 
   zoom::ZoomController::CreateForWebContents(tab.GetContents());
 
@@ -1470,6 +1473,8 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   DCHECK_EQ(old_contents, tab->GetContents());
 
   Profile* profile = tab->GetBrowserWindowInterface()->GetProfile();
+
+  CreateSessionServiceTabHelper(new_contents);
 
   zoom::ZoomController::CreateForWebContents(new_contents);
 

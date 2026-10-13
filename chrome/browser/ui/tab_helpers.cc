@@ -20,7 +20,6 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/browser/sessions/session_tab_helper_factory.h"
 #include "chrome/browser/sync/sessions/sync_sessions_router_tab_helper.h"
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router_factory.h"
 #include "chrome/common/buildflags.h"
@@ -77,10 +76,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
                             std::make_unique<base::SupportsUserData::Data>());
 
   // Create all the tab helpers.
-
-  // SessionTabHelper comes first because it sets up the tab ID, and other
-  // helpers may rely on that.
-  CreateSessionServiceTabHelper(web_contents);
 
   // --- Section 1: Common tab helpers ---
   // NO! Do not just add your tab helper here. This is a large alphabetized

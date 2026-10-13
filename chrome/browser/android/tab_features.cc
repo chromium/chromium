@@ -93,6 +93,7 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/resource_coordinator/tab_helper.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/sessions/session_tab_helper_factory.h"
 #include "chrome/browser/site_protection/site_protection_metrics_observer.h"
 #include "chrome/browser/ssl/ask_before_http_dialog_controller.h"
 #include "chrome/browser/ssl/connection_help_tab_helper.h"
@@ -254,6 +255,7 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
   CHECK(tab);
   tab_subscription_ = webui::InitEmbeddingContext(tab);
 
+  CreateSessionServiceTabHelper(web_contents);
   zoom::ZoomController::CreateForWebContents(web_contents);
   infobars::ContentInfoBarManager::CreateForWebContents(web_contents);
   autofill::AutofillClientProvider& autofill_client_provider =

@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sessions/session_tab_helper_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tab_helpers.h"
@@ -59,6 +60,7 @@ TabModel::TabModel(std::unique_ptr<content::WebContents> contents,
   // TODO(https://crbug.com/362038317): Tab-helpers should be created in exactly
   // one place, which is here.
   TabHelpers::AttachTabHelpers(contents_);
+  CreateSessionServiceTabHelper(contents_);
   tab_features_ = std::make_unique<TabFeatures>();
   const SessionID session_id = sessions::SessionTabHelper::IdForTab(contents_);
   CHECK(session_id.is_valid());
@@ -444,6 +446,7 @@ void TabModel::WriteIntoTrace(perfetto::TracedValue context) const {
 std::unique_ptr<content::WebContents> TabModel::DiscardContents(
     std::unique_ptr<content::WebContents> contents) {
   CHECK_EQ(contents_->GetBrowserContext(), contents->GetBrowserContext());
+  CreateSessionServiceTabHelper(contents.get());
   will_discard_contents_callback_list_.Notify(this, contents_, contents.get());
   contents_->RemoveUserData(tabs::TabLookupFromWebContents::UserDataKey());
   std::unique_ptr<content::WebContents> old_contents =
