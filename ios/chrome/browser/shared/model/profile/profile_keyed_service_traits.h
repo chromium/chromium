@@ -28,8 +28,4 @@ enum class TestingCreation {
   kDefault = kCreateService,
 };
 
-// Controls whether a KeyedService factory uses ServiceAccessType for
-// its GetForProfile(...) and GetForProfileIfExists(...) methods.
-struct UseServiceAccess {};
-
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_PROFILE_KEYED_SERVICE_TRAITS_H_

@@ -21,7 +21,7 @@ class IOSChromeAccountPasswordStoreFactory
     : public TypedRefcountedProfileKeyedServiceFactoryIOS<
           IOSChromeAccountPasswordStoreFactory,
           password_manager::PasswordStoreInterface,
-          UseServiceAccess> {
+          RejectImplicitAccessIfIncognito> {
  public:
   IOSChromeAccountPasswordStoreFactory(PassKey key);
 

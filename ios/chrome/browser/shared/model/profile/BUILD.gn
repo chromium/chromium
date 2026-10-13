@@ -56,6 +56,7 @@ source_set("profile_keyed_service_factory") {
   sources = [
     "profile_dependency_manager_ios.cc",
     "profile_dependency_manager_ios.h",
+    "profile_keyed_service_access.h",
     "profile_keyed_service_factory_ios.cc",
     "profile_keyed_service_factory_ios.h",
     "profile_keyed_service_traits.h",

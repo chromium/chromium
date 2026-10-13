@@ -15,6 +15,7 @@
 #include "base/types/pass_key.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#include "ios/chrome/browser/shared/model/profile/profile_keyed_service_access.h"
 #include "ios/chrome/browser/shared/model/profile/profile_keyed_service_traits.h"
 #include "ios/chrome/browser/shared/model/profile/refcounted_profile_keyed_service_factory_ios.h"
 
@@ -54,7 +55,7 @@
 // of type `PassKey` (only TypedRefcountedProfileKeyedServiceFactoryIOS<...>
 // can create such a parameter). This constructor can only be called from
 // GetInstance().
-template <typename Factory, typename Service, typename... FactoryTraits>
+template <typename Factory, typename Service, typename... AccessTraits>
   requires std::convertible_to<Service*, RefcountedKeyedService*>
 class TypedRefcountedProfileKeyedServiceFactoryIOS
     : public RefcountedProfileKeyedServiceFactoryIOS {
@@ -62,12 +63,7 @@ class TypedRefcountedProfileKeyedServiceFactoryIOS
   using PassKey = base::PassKey<
       TypedRefcountedProfileKeyedServiceFactoryIOS<Factory,
                                                    Service,
-                                                   FactoryTraits...>>;
-
-  // Whether `UseServiceAccess` is in `AccessTraits...`
-  static constexpr bool GetForProfileUseServiceAccess =
-      base::trait_helpers::HasTypeInVariadicPack<UseServiceAccess,
-                                                 FactoryTraits...>;
+                                                   AccessTraits...>>;
 
   // Returns the instance of `Service` associated with `profile` attempting
   // to create one if no value is cached yet. May return null if the factory
@@ -97,7 +93,7 @@ class TypedRefcountedProfileKeyedServiceFactoryIOS
   // the service should only work when the profile is managed, then it can fail
   // all request if the profile is currently not managed).
   static scoped_refptr<Service> GetForProfile(ProfileIOS* profile)
-    requires(!GetForProfileUseServiceAccess)
+    requires(sizeof...(AccessTraits) == 0)
   {
     CHECK(profile);
     return GetInstance()->template GetServiceForProfileAs<Service>(
@@ -105,13 +101,23 @@ class TypedRefcountedProfileKeyedServiceFactoryIOS
         /*create=*/true);
   }
 
+  // If AccessTraits is non-empty, then GetForProfile(ProfileIOS*) is replaced
+  // by this variant that accept a ServiceAccessType in addition to the profile.
+  //
+  // If called with EXPLICIT_ACCESS, then the function unconditionally access
+  // the service from the cache, creating it if missing. If IMPLICIT_ACCESS,
+  // the AccessTrait classes are used to confirm whether the service can be
+  // accessed for this profile (e.g. check that the profile is not incognito).
+  //
+  // As the AccessTrait classes may test "transient" state of the profile, the
+  // value returned must not be cached if using IMPLICIT_ACCESS as access_type.
   static scoped_refptr<Service> GetForProfile(ProfileIOS* profile,
                                               ServiceAccessType access_type)
-    requires(GetForProfileUseServiceAccess)
+    requires(sizeof...(AccessTraits) != 0)
   {
     CHECK(profile);
     if (access_type == ServiceAccessType::IMPLICIT_ACCESS) {
-      if (profile->IsOffTheRecord()) {
+      if (ServiceAccessChecker<AccessTraits...>::Reject(*profile)) {
         return nullptr;
       }
     }
@@ -124,7 +130,7 @@ class TypedRefcountedProfileKeyedServiceFactoryIOS
   // Returns the instance of `Service` associated with `profile` or null
   // if no value is cached by the factory.
   static scoped_refptr<Service> GetForProfileIfExists(ProfileIOS* profile)
-    requires(!GetForProfileUseServiceAccess)
+    requires(sizeof...(AccessTraits) == 0)
   {
     CHECK(profile);
     return GetInstance()->template GetServiceForProfileAs<Service>(
@@ -132,14 +138,22 @@ class TypedRefcountedProfileKeyedServiceFactoryIOS
         /*create=*/false);
   }
 
+  // If AccessTraits is non-empty, then GetForProfileIfExists(ProfileIOS*) is
+  // replaced by this variant that accept a ServiceAccessType in addition to
+  // the profile.
+  //
+  // If called with EXPLICIT_ACCESS, then the function unconditionally access
+  // the service from the cache, creating it if missing. If IMPLICIT_ACCESS,
+  // the AccessTrait classes are used to confirm whether the service can be
+  // accessed for this profile (e.g. check that the profile is not incognito).
   static scoped_refptr<Service> GetForProfileIfExists(
       ProfileIOS* profile,
       ServiceAccessType access_type)
-    requires(GetForProfileUseServiceAccess)
+    requires(sizeof...(AccessTraits) != 0)
   {
     CHECK(profile);
     if (access_type == ServiceAccessType::IMPLICIT_ACCESS) {
-      if (profile->IsOffTheRecord()) {
+      if (ServiceAccessChecker<AccessTraits...>::Reject(*profile)) {
         return nullptr;
       }
     }
