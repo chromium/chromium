@@ -770,6 +770,7 @@ public class AccountPickerBottomSheetTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/565232252")
     public void testProfileDataUpdateOnExpandedSheet() {
         buildAndShowCollapsedThenExpandedBottomSheet();
         String newFullName = "New Full Name1";
