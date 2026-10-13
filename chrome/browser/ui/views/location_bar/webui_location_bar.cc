@@ -267,6 +267,9 @@ void WebUILocationBar::OnThemeChanged() {
   // Location icon cares about color scheme.
   UpdateLhsChipsState();
   UpdatePageActions(/*contents=*/nullptr);
+  // `UpdatePageActions()` is a no-op when the active tab and URL are unchanged,
+  // so explicitly re-resolve page action colors.
+  page_action_control_.OnThemeChanged();
 }
 
 void WebUILocationBar::HandleContextMenu(

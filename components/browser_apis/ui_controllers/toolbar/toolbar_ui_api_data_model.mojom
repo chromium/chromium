@@ -556,6 +556,9 @@ struct PageActionState {
   // Overrides background color from its usual behavior.
   skia.mojom.SkColor? background_color_override;
 
+  // Overrides foreground (icon and text) color from its usual behavior.
+  skia.mojom.SkColor? foreground_color_override;
+
   // The TrackedElement id to use for the page action icon button. Used for
   // element tracking.
   tracked_element.mojom.TrackedElementIdentifier identifier;

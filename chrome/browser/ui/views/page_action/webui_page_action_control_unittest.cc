@@ -552,6 +552,29 @@ TEST_F(WebUIPageActionControlTest, UpdateControllerToNullResetsState) {
   EXPECT_FALSE(control_->IsAnchoredMessageShowing(target_action_id));
 }
 
+// Only exercises the "state unchanged -> no notify" path: this harness has no
+// ColorProvider (the mock delegate's GetView() returns null), so GetState()
+// resolves no colors. Verifying that colors actually re-resolve on theme change
+// would require a real Widget.
+TEST_F(WebUIPageActionControlTest, OnThemeChangedOnlyNotifiesWhenStateChanges) {
+  control_->UpdateController(web_contents());
+
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents());
+  page_actions::PageActionController* controller =
+      page_actions::PageActionController::From(tab);
+
+  controller->Show(kActionAiMode);
+  ASSERT_EQ(1u, control_->GetPageActionStates().size());
+  testing::Mock::VerifyAndClearExpectations(&webui_delegate_);
+
+  // Without a ColorProvider in this harness, re-resolving yields an identical
+  // state, so the WebUI must not be notified.
+  EXPECT_CALL(webui_delegate_, OnPageActionChanged(_)).Times(0);
+  control_->OnThemeChanged();
+  ASSERT_EQ(1u, control_->GetPageActionStates().size());
+}
+
 TEST_F(WebUIPageActionControlTest, GetPageActionViewInterfaceAndMethods) {
   control_->UpdateController(web_contents());
 

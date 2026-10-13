@@ -40,6 +40,7 @@ suite('PageActionIconTest', function() {
       shouldAnimateChipIn: false,
       shouldAnimateChipOut: false,
       backgroundColorOverride: null,
+      foregroundColorOverride: null,
       identifier: {
         nativeIdentifier: '',
         secondaryIdentifier: '',
@@ -169,6 +170,61 @@ suite('PageActionIconTest', function() {
     await microtasksFinished();
 
     assertEquals('rgb(255, 0, 0)', style.get('background-color')?.toString());
+  });
+
+  test('Foreground color', async function() {
+    const button = icon.$.button;
+    const actualButton = button.$.button;
+    icon.style.setProperty(
+        '--color-omnibox-icon-foreground-tonal', 'rgb(255, 0, 0)');
+    icon.style.setProperty('--color-toolbar-button-icon', 'rgb(1, 2, 3)');
+
+    // Default: toolbar button icon color.
+    const style = actualButton.computedStyleMap();
+    assertEquals('rgb(1, 2, 3)', style.get('color')?.toString());
+
+    // Show a text chip, should now use --color-omnibox-icon-foreground-tonal.
+    icon.state = {
+      ...createBaseState(),
+      text: 'Inexplicably expanded bookmark chip',
+      shouldShowChip: true,
+    };
+    await microtasksFinished();
+
+    assertEquals('rgb(255, 0, 0)', style.get('color')?.toString());
+
+    // Custom color, no chip.
+    icon.state = {
+      ...createBaseState(),
+      foregroundColorOverride: hexColorToSkColor('#00ff00'),
+    };
+    await microtasksFinished();
+
+    assertEquals('rgb(0, 255, 0)', style.get('color')?.toString());
+
+    // Custom color, with chip -- still using custom color. Also verify that
+    // both overrides can be applied at the same time.
+    icon.state = {
+      ...createBaseState(),
+      text: 'Inexplicably expanded bookmark chip',
+      shouldShowChip: true,
+      backgroundColorOverride: hexColorToSkColor('#ff00ff'),
+      foregroundColorOverride: hexColorToSkColor('#0000ff'),
+    };
+    await microtasksFinished();
+
+    assertEquals('rgb(0, 0, 255)', style.get('color')?.toString());
+    assertEquals('rgb(255, 0, 255)', style.get('background-color')?.toString());
+
+    // And back to no custom color again.
+    icon.state = {
+      ...createBaseState(),
+      text: 'Inexplicably expanded bookmark chip',
+      shouldShowChip: true,
+    };
+    await microtasksFinished();
+
+    assertEquals('rgb(255, 0, 0)', style.get('color')?.toString());
   });
 
   test('Render without accessible name', async function() {
@@ -869,6 +925,7 @@ suite('PageActionIconsTest', function() {
       shouldAnimateChipIn: false,
       shouldAnimateChipOut: false,
       backgroundColorOverride: null,
+      foregroundColorOverride: null,
       identifier: {
         nativeIdentifier: '',
         secondaryIdentifier: '',

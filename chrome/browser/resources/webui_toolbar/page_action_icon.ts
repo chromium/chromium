@@ -42,6 +42,7 @@ const initialState: PageActionState = {
   shouldAnimateChipIn: false,
   shouldAnimateChipOut: false,
   backgroundColorOverride: null,
+  foregroundColorOverride: null,
   identifier: {
     nativeIdentifier: '',
     secondaryIdentifier: '',
@@ -138,12 +139,17 @@ export class PageActionIconElement extends PageActionIconElementBase {
         this.cleanupAnimationListener_();
         this.activeIconAnimation_ = 'none';
       }
+      const styleOverrides: string[] = [];
       if (this.state.backgroundColorOverride) {
-        this.chipStyleOverride_ = `--toolbar-chip-bg-color: ${
-            skColorToRgba(this.state.backgroundColorOverride)};`;
-      } else {
-        this.chipStyleOverride_ = null;
+        styleOverrides.push(`--toolbar-chip-bg-color: ${
+            skColorToRgba(this.state.backgroundColorOverride)};`);
       }
+      if (this.state.foregroundColorOverride) {
+        styleOverrides.push(`--toolbar-chip-fg-color: ${
+            skColorToRgba(this.state.foregroundColorOverride)};`);
+      }
+      this.chipStyleOverride_ =
+          styleOverrides.length > 0 ? styleOverrides.join(' ') : null;
 
       this.updateIconAnimationState_(isTabSwitch);
     }

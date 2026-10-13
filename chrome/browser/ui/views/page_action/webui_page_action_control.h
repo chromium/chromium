@@ -58,6 +58,12 @@ class WebUIPageActionControl {
   // Asks the active controller to update visibility of page actions.
   void SetShouldHidePageActions(bool should_hide_page_actions);
 
+  // Re-resolves and pushes the state of all page actions. Needed because
+  // `PageActionState` carries resolved `SkColor`s (the color overrides and the
+  // blended `kCascadingAccent` icon color), which otherwise go stale on a
+  // same-tab theme change. Mirrors `PageActionView::OnThemeChanged()`.
+  void OnThemeChanged();
+
   // Returns the current state of all visible page actions for WebUI.
   std::vector<toolbar_ui_api::mojom::PageActionStatePtr> GetPageActionStates();
 

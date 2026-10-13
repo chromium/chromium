@@ -40,6 +40,7 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_variant.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget.h"
@@ -52,6 +53,73 @@ namespace {
 
 using Code = mojo_base::mojom::Code;
 using Error = mojo_base::mojom::Error;
+
+// Applies `icon_color` to `image` if it is a vector icon; non-vector images
+// (or a null `icon_color`, which only happens when no ColorProvider is
+// available) are returned untouched.
+ui::ImageModel ApplyIconColor(ui::ImageModel image,
+                              std::optional<ui::ColorVariant> icon_color) {
+  if (!icon_color.has_value() || !image.IsVectorIcon()) {
+    return image;
+  }
+  const auto& vector_icon_model = image.GetVectorIcon();
+  return ui::ImageModel::FromVectorIcon(
+      *vector_icon_model.vector_icon(), *icon_color,
+      vector_icon_model.icon_size(), vector_icon_model.badge_icon());
+}
+
+// Resolves the color applied to the page action's vector icons. Mirrors
+// `PageActionView::UpdateIconImage()`, which always recolors vector icons
+// (ignoring any color baked into the ActionItem's image) and uses the same
+// color for both the primary icon and the trailing icon.
+//
+// Returns a logical `ui::ColorId` wherever possible so that the registered
+// `ImageModel` is re-resolved against the current theme when
+// `IconTable::OnThemeChanged()` re-rasterizes it; `GetState()` is not re-run
+// on a same-tab theme change, so a baked-in `SkColor` would otherwise go stale.
+// Only the blended `kCascadingAccent` color is physical, since it is derived
+// from two theme colors.
+ui::ColorVariant ResolveIconColor(
+    const page_actions::PageActionModelInterface& model,
+    const ui::ColorProvider& color_provider) {
+  switch (model.GetColorSource()) {
+    case page_actions::PageActionColorSource::kCascadingAccent: {
+      const SkColor default_color =
+          color_provider.GetColor(ui::kColorFocusableBorderFocused);
+      // Page actions are displayed on the toolbar, so `kColorToolbar` is used
+      // as the background color for contrast calculations (matching what
+      // `views::GetCascadingBackgroundColor()` resolves in native Views via
+      // `ToolbarView`).
+      const SkColor background_color = color_provider.GetColor(kColorToolbar);
+      return color_utils::BlendForMinContrast(
+                 default_color, background_color,
+                 /*high_contrast_foreground=*/std::nullopt,
+                 color_utils::kMinimumVisibleContrastRatio)
+          .color;
+    }
+    case page_actions::PageActionColorSource::kForeground:
+      // Mirrors `PageActionView::GetForegroundColor()`: an explicit foreground
+      // color override takes precedence.
+      if (const std::optional<ui::ColorId> override_fg_color_id =
+              model.GetOverrideForegroundColorId();
+          override_fg_color_id.has_value()) {
+        return *override_fg_color_id;
+      }
+      // Otherwise, `IconLabelBubbleView::GetForegroundColor()` uses the tonal
+      // color while painted on a solid background, which for `PageActionView`
+      // (`PaintedOnSolidBackground()`) means the suggestion chip is showing.
+      // TODO(crbug.com/572793227): Match Views' tonal styling while the
+      // anchored message is visible: render the tonal pill background in the
+      // WebUI, use the tonal icon color, and re-notify from
+      // OnAnchoredMessageWidgetClose().
+      if (model.ShouldShowSuggestionChip()) {
+        return kColorOmniboxIconForegroundTonal;
+      }
+      // Finally, fall back to the surrounding location bar foreground color
+      // (`LocationBarView::GetIconLabelBubbleSurroundingForegroundColor()`).
+      return kColorOmniboxActionIcon;
+  }
+}
 
 }  // namespace
 
@@ -328,7 +396,7 @@ void WebUIPageActionControl::WebUIPageActionDelegate::OnPageActionModelChanged(
     element_shown_subscription_ = {};
 
     // Then, close the active bubble widget if it is currently open.
-    // TODO(b/571160141): Animate out like PageActionView.
+    // TODO(crbug.com/571160141): Animate out like PageActionView.
     if (anchored_message_widget_ && !anchored_message_widget_->IsClosed()) {
       anchored_message_widget_->CloseWithReason(
           views::Widget::ClosedReason::kUnspecified);
@@ -375,36 +443,13 @@ WebUIPageActionControl::WebUIPageActionDelegate::GetState() {
   auto* view = owner_->webui_delegate_->GetView();
   const ui::ColorProvider* color_provider =
       view ? view->GetColorProvider() : nullptr;
-  if (color_provider && image_model.IsVectorIcon()) {
-    if (model->GetColorSource() ==
-        page_actions::PageActionColorSource::kCascadingAccent) {
-      const auto& vector_icon_model = image_model.GetVectorIcon();
-      const SkColor default_color =
-          color_provider->GetColor(ui::kColorFocusableBorderFocused);
-      // Page actions are displayed on the toolbar, so `kColorToolbar` is used
-      // as the background color for contrast calculations (matching what
-      // `views::GetCascadingBackgroundColor()` resolves in native Views via
-      // `ToolbarView`).
-      const SkColor background_color = color_provider->GetColor(kColorToolbar);
-      const SkColor blended_color =
-          color_utils::BlendForMinContrast(
-              default_color, background_color, std::nullopt,
-              color_utils::kMinimumVisibleContrastRatio)
-              .color;
-      image_model = ui::ImageModel::FromVectorIcon(
-          *vector_icon_model.vector_icon(), blended_color,
-          vector_icon_model.icon_size(), vector_icon_model.badge_icon());
-    } else if (model->GetColorSource() ==
-                   page_actions::PageActionColorSource::kForeground &&
-               model->ShouldShowSuggestionChip()) {
-      const auto& vector_icon_model = image_model.GetVectorIcon();
-      const SkColor tonal_color =
-          color_provider->GetColor(kColorOmniboxIconForegroundTonal);
-      image_model = ui::ImageModel::FromVectorIcon(
-          *vector_icon_model.vector_icon(), tonal_color,
-          vector_icon_model.icon_size(), vector_icon_model.badge_icon());
-    }
+
+  std::optional<ui::ColorVariant> icon_color;
+  if (color_provider) {
+    icon_color = ResolveIconColor(*model, *color_provider);
   }
+
+  image_model = ApplyIconColor(std::move(image_model), icon_color);
   state->icon = cached_icon_ =
       owner_->webui_delegate_->GetIconTable().RegisterImageModelTryReuse(
           image_model, cached_icon_);
@@ -413,11 +458,19 @@ WebUIPageActionControl::WebUIPageActionDelegate::GetState() {
   state->should_animate_chip_in = model->GetShouldAnimateChipIn();
   state->should_animate_chip_out = model->GetShouldAnimateChipOut();
 
-  std::optional<ui::ColorId> override_color_id =
-      model->GetOverrideBackgroundColorId();
-  if (override_color_id.has_value()) {
-    state->background_color_override =
-        color_provider->GetColor(*override_color_id);
+  if (color_provider) {
+    if (const std::optional<ui::ColorId> override_bg_color_id =
+            model->GetOverrideBackgroundColorId();
+        override_bg_color_id.has_value()) {
+      state->background_color_override =
+          color_provider->GetColor(*override_bg_color_id);
+    }
+    if (const std::optional<ui::ColorId> override_fg_color_id =
+            model->GetOverrideForegroundColorId();
+        override_fg_color_id.has_value()) {
+      state->foreground_color_override =
+          color_provider->GetColor(*override_fg_color_id);
+    }
   }
   std::string identifier_name;
   page_actions::PageActionPropertiesProvider provider;
@@ -453,7 +506,8 @@ WebUIPageActionControl::WebUIPageActionDelegate::GetState() {
   if (model->GetTrailingImage().has_value()) {
     state->trailing_icon = cached_trailing_icon_ =
         owner_->webui_delegate_->GetIconTable().RegisterImageModelTryReuse(
-            *model->GetTrailingImage(), cached_trailing_icon_);
+            ApplyIconColor(*model->GetTrailingImage(), icon_color),
+            cached_trailing_icon_);
   } else {
     state->trailing_icon = std::nullopt;
     cached_trailing_icon_ = {};
@@ -746,6 +800,14 @@ void WebUIPageActionControl::SetShouldHidePageActions(
     bool should_hide_page_actions) {
   if (active_controller_) {
     active_controller_->SetShouldHidePageActions(should_hide_page_actions);
+  }
+}
+
+void WebUIPageActionControl::OnThemeChanged() {
+  // `UpdateStateAndNotify()` diffs against the last pushed state, so only page
+  // actions whose resolved colors actually changed notify the WebUI.
+  for (auto& [action_id, delegate] : delegates_) {
+    delegate->UpdateStateAndNotify();
   }
 }
 
