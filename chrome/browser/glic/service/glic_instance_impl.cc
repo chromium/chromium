@@ -56,6 +56,7 @@
 #include "chrome/browser/glic/suggestions/contextual_cueing_service.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_service_factory.h"
 #include "chrome/browser/metrics/profile_metrics_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -1254,8 +1255,11 @@ void GlicInstanceImpl::ClearActiveEmbedderAndNotifyVisibilityChange() {
     NotifyVisibilityChange();
     host().PanelWasClosed();
 #if !BUILDFLAG(IS_ANDROID)
-    MaybeShowShortcutSnoozePromo();
-    MaybeShowCriticalActionFeaturePromo();
+    // KeyedService lookups are illegal once profile destruction has started.
+    if (!profile_->ShutdownStarted()) {
+      MaybeShowShortcutSnoozePromo();
+      MaybeShowCriticalActionFeaturePromo();
+    }
 #endif  // !BUILDFLAG(IS_ANDROID)
   }
   return;

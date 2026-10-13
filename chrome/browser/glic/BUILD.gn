@@ -1037,6 +1037,7 @@ source_set("browser_tests") {
     "//components/actor/core",
     "//components/actor/public/mojom:mojo_bindings",
     "//components/contextual_tasks/public:feature_list",
+    "//components/critical_actions/core/browser",
     "//components/enterprise/buildflags",
     "//components/enterprise/connectors/core",
     "//components/favicon/content",
