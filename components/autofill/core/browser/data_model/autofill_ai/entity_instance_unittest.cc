@@ -454,7 +454,7 @@ TEST_F(
     GetEntityMergeability_NewEntityEmptyStringAttribute_NoMergeablesAttribute_IsASubset) {
   EntityInstance::EntityMergeability result =
       test::GetPassportEntityInstance().GetEntityMergeability(
-          test::GetPassportEntityInstance({.expiry_date = nullptr}));
+          test::GetPassportEntityInstance({.expiry_date = u""}));
 
   EXPECT_THAT(result.mergeable_attributes, IsEmpty());
   EXPECT_TRUE(result.is_subset);

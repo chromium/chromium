@@ -604,23 +604,7 @@ EntityInstance::EntityMergeability EntityInstance::GetEntityMergeability(
   // value of `this`.
   const bool is_same_entity = MatchesMergeConstraintsOf(newer);
 
-  const bool is_subset = [&]() {
-    return std::ranges::all_of(type_.attributes(), [&](AttributeType type) {
-      base::optional_ref<const AttributeInstance> attribute_1 = attribute(type);
-      base::optional_ref<const AttributeInstance> attribute_2 =
-          newer.attribute(type);
-      if (!attribute_2) {
-        return true;
-      }
-      if (!attribute_1) {
-        return false;
-      }
-      const std::optional<size_t> suffix_length =
-          DetermineSuffixLength(*attribute_1, *attribute_2);
-      return NormalizeAttributeValue(*attribute_1, suffix_length) ==
-             NormalizeAttributeValue(*attribute_2, suffix_length);
-    });
-  }();
+  const bool is_subset = newer.IsSubsetOf(*this);
 
   if (!is_same_entity) {
     return {{}, is_subset};
