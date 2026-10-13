@@ -24,7 +24,6 @@ static_library("wallpaper") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/profiles:profile",
-    "//chrome/common:constants",
     "//chrome/common/extensions",
     "//components/user_manager",
     "//content/public/browser",

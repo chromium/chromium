@@ -16,7 +16,6 @@ static_library("file_system_watcher") {
     "//base",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/profiles:profile",
-    "//chrome/common",
     "//chromeos/ash/experiences/arc",
     "//content/public/browser",
   ]
