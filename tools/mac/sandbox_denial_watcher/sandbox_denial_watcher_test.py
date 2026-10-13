@@ -6,9 +6,11 @@
 
 """Unit tests for sandbox_denial_watcher.py.
 
-Log lines are fed through the same parse and report steps that watch_logs()
-uses, with the `log stream` process mocked out.
+Log lines are fed through the same parse, filter, and report steps that
+watch_logs() uses, with the `log stream` process mocked out.
 """
+
+from __future__ import annotations
 
 import io
 import json
@@ -20,8 +22,10 @@ from unittest.mock import MagicMock, patch
 
 from log_events import SandboxDenial
 from sandbox_denial_watcher import (
-    SandboxDenialWatcher,
+    _HOME_DIR,
     _INTERESTING_PROCS,
+    DenialFilter,
+    SandboxDenialWatcher,
     _validate_process_name,
     main,
 )
@@ -38,8 +42,8 @@ def _denial_line(
     ).encode("utf-8")
 
 
-def _denial(pattern: str, process: str = "Chromium") -> SandboxDenial:
-    denial = SandboxDenial.from_json(_denial_line(pattern, process))
+def _denial(pattern: str) -> SandboxDenial:
+    denial = SandboxDenial.from_json(_denial_line(pattern))
     assert denial is not None
     return denial
 
@@ -104,22 +108,26 @@ class FilteringTest(WatcherTestCase):
     def test_non_denial_or_malformed_log_line_is_not_reported(
         self, mock_report
     ):
-        self.feed(b"")
-        self.feed(b"{not json")
-        self.feed(
-            json.dumps({"eventMessage": 12345, "processID": 1234}).encode(
-                "utf-8"
+        with self.assertLogs("sandbox_denial_watcher", level="DEBUG") as cm:
+            self.feed(b"")
+            self.feed(b"{not json")
+            self.feed(
+                json.dumps({"eventMessage": 12345, "processID": 1234}).encode(
+                    "utf-8"
+                )
             )
-        )
-        self.feed(
-            json.dumps(
-                {
-                    "eventMessage": "kernel: normal message without denial",
-                    "processID": 1234,
-                }
-            ).encode("utf-8")
-        )
+            self.feed(
+                json.dumps(
+                    {
+                        "eventMessage": "kernel: normal message without denial",
+                        "processID": 1234,
+                    }
+                ).encode("utf-8")
+            )
         mock_report.assert_not_called()
+        self.assertIn(
+            "Skipping unparsable line: b'{not json'", "\n".join(cm.output)
+        )
 
     @patch.object(SandboxDenialWatcher, "_report_denial")
     def test_non_target_process_denial_is_not_reported(self, mock_report):
@@ -133,7 +141,46 @@ class FilteringTest(WatcherTestCase):
         mock_report.assert_not_called()
 
     @patch.object(SandboxDenialWatcher, "_report_denial")
-    def test_target_process_denial_is_reported(self, mock_report):
+    def test_known_denials_exact_and_subpath_matching(self, mock_report):
+        self.feed(
+            _denial_line(
+                "mach-lookup com.apple.diagnosticd", process="Google Chrome"
+            )
+        )
+        self.feed(_denial_line("file-read-data /"))
+        self.feed(
+            _denial_line(
+                "file-read-data "
+                "/Library/Managed Preferences/com.apple.foo.plist"
+            )
+        )
+        mock_report.assert_not_called()
+
+        # Subpaths of exact rules and sibling directories of subpath
+        # rules are still reported.
+        self.feed(_denial_line("file-read-data /unexpected/path/to/file"))
+        self.feed(
+            _denial_line(
+                "file-read-data "
+                "/Library/Managed PreferencesBackup/com.apple.foo.plist"
+            )
+        )
+        self.assertEqual(mock_report.call_count, 2)
+
+    @patch.object(SandboxDenialWatcher, "_report_denial")
+    def test_home_dir_denials_are_filtered(self, mock_report):
+        self.feed(_denial_line(f"file-read-data {_HOME_DIR}/Desktop"))
+        self.feed(_denial_line(f"file-read-data {_HOME_DIR}/Desktop/"))
+        self.feed(
+            _denial_line(
+                f"file-read-data {_HOME_DIR}/Library/Preferences/"
+                "com.apple.foo.plist"
+            )
+        )
+        mock_report.assert_not_called()
+
+    @patch.object(SandboxDenialWatcher, "_report_denial")
+    def test_unexpected_denial_is_reported(self, mock_report):
         self.feed(
             _denial_line(
                 "mach-lookup org.chromium.Chromium.MachPortRendezvousServer.1",
@@ -161,6 +208,110 @@ class FilteringTest(WatcherTestCase):
                 "INFO:sandbox_denial_watcher:[DENIAL] "
                 "Sandbox: Chromium(100) deny(1) mach-lookup com.apple.foo"
             ],
+        )
+
+
+class DenialFilterTest(unittest.TestCase):
+    """Verifies DenialFilter's known-denial matching."""
+
+    def setUp(self) -> None:
+        super().setUp()
+        self.denial_filter = DenialFilter()
+
+    def test_known_denial_match_is_logged(self):
+        with self.assertLogs("sandbox_denial_watcher", level="DEBUG") as cm:
+            self.assertTrue(
+                self.denial_filter.should_ignore(
+                    _denial("mach-lookup com.apple.diagnosticd")
+                )
+            )
+        self.assertIn(
+            "Filtered known denial matching "
+            "'mach-lookup com.apple.diagnosticd'",
+            "\n".join(cm.output),
+        )
+
+    def test_exact_match(self):
+        self.assertTrue(
+            self.denial_filter.should_ignore(
+                _denial("mach-lookup com.apple.diagnosticd")
+            )
+        )
+        self.assertFalse(
+            self.denial_filter.should_ignore(
+                _denial("mach-lookup com.apple.other")
+            )
+        )
+
+    def test_exact_match_root_path(self):
+        self.assertTrue(
+            self.denial_filter.should_ignore(_denial("file-read-data /"))
+        )
+        self.assertFalse(
+            self.denial_filter.should_ignore(_denial("file-read-data /tmp"))
+        )
+
+    def test_exact_match_directory_with_trailing_slash(self):
+        self.assertTrue(
+            self.denial_filter.should_ignore(
+                _denial(f"file-read-data {_HOME_DIR}/Desktop/")
+            )
+        )
+
+    def test_subpaths_matching(self):
+        self.assertTrue(
+            self.denial_filter.should_ignore(
+                _denial("file-read-data /Library/Managed Preferences")
+            )
+        )
+        self.assertTrue(
+            self.denial_filter.should_ignore(
+                _denial("file-read-data /Library/Managed Preferences/")
+            )
+        )
+        self.assertTrue(
+            self.denial_filter.should_ignore(
+                _denial(
+                    "file-read-data "
+                    "/Library/Managed Preferences/com.apple.foo.plist"
+                )
+            )
+        )
+        self.assertFalse(
+            self.denial_filter.should_ignore(
+                _denial(
+                    "file-read-data "
+                    "/Library/Managed PreferencesBackup/com.apple.foo.plist"
+                )
+            )
+        )
+
+    @patch.dict(
+        "sandbox_denial_watcher._KNOWN_SUBPATH_DENIALS",
+        {"file-read-data": ("/Library/Managed Preferences",)},
+        clear=True,
+    )
+    def test_subpaths_matching_without_trailing_slash_in_rule(self):
+        self.assertTrue(
+            self.denial_filter.should_ignore(
+                _denial("file-read-data /Library/Managed Preferences")
+            )
+        )
+        self.assertTrue(
+            self.denial_filter.should_ignore(
+                _denial(
+                    "file-read-data "
+                    "/Library/Managed Preferences/com.apple.foo.plist"
+                )
+            )
+        )
+        self.assertFalse(
+            self.denial_filter.should_ignore(
+                _denial(
+                    "file-read-data "
+                    "/Library/Managed PreferencesBackup/com.apple.foo.plist"
+                )
+            )
         )
 
 

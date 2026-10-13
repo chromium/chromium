@@ -4,9 +4,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-"""Watches macOS system logs for Chrome/Chromium sandbox denials.
+"""Watches macOS system logs for unexpected Chrome/Chromium sandbox denials.
 
-Prints each sandbox denial reported by a Chrome or Chromium process.
+Prints each unexpected denial reported by a Chrome/Chromium or related process.
+
+This tool MUST remain compatible with the default macOS Python interpreter
+(`/usr/bin/python3`), which is Python 3.9.6 at the time of writing. Do not use
+syntax or standard library features introduced in Python 3.10 or later.
 
 Ensure Chrome sandbox denials are being reported by either
     1. Enabling "Mac Sandbox Logging" at chrome://flags/#mac-sandbox-logging
@@ -16,17 +20,21 @@ Usage (from the Chromium src directory):
     tools/mac/sandbox_denial_watcher/sandbox_denial_watcher.py [-v]
 """
 
+from __future__ import annotations
+
 import argparse
 import logging
+from pathlib import Path
 import shlex
 import subprocess
 import sys
-
-from typing import Optional, Sequence
+from typing import Sequence
 
 from log_events import SandboxDenial
 
 _LOG_PATH = "/usr/bin/log"
+
+_HOME_DIR = Path.home()
 
 # Prefixes of the process names whose denials are reported.
 _INTERESTING_PROCS = (
@@ -40,6 +48,107 @@ _INTERESTING_PROCS = (
     "MTLCompilerService",
 )
 
+# Known expected denials grouped by action. Targets are matched exactly.
+_KNOWN_EXACT_DENIALS: dict[str, frozenset[str]] = {
+    "sysctl-read": frozenset(
+        (
+            "kern.bootargs",
+            "kern.willshutdown",
+            "machdep.cpu.brand_string",
+            "net.inet.ip.portrange.first",
+            "sysctl.proc_translated",
+        )
+    ),
+    "file-read-data": frozenset(
+        (
+            "/",
+            "/Library/Preferences/Logging/com.apple.diagnosticd.filter.plist",
+            "/Library/Preferences/com.apple.networkd.plist",
+            "/Library/Preferences/com.apple.security.plist",
+            "/System/Library/xpc/extensions.plist",
+            f"{_HOME_DIR}/Desktop",
+        )
+    ),
+    "mach-lookup": frozenset(
+        (
+            "com.apple.CoreServices.coreservicesd",
+            "com.apple.DiskArbitration.diskarbitrationd",
+            "com.apple.analyticsd",
+            "com.apple.audioanalyticsd",
+            "com.apple.backupd.sandbox.xpc",
+            "com.apple.bsd.dirhelper",
+            "com.apple.cmio.registerassistantservice.system-extensions",
+            "com.apple.ctkd.token-client",
+            "com.apple.diagnosticd",
+            "com.apple.distributed_notifications@Uv3",
+            "com.apple.lsd.mapdb",
+            "com.apple.lsd.modifydb",
+            "com.apple.system.notification_center",
+            "com.apple.system.opendirectoryd.membership",
+            "com.apple.tccd",
+            "com.apple.tccd.system",
+            "com.apple.trustd.agent",
+        )
+    ),
+    "system-info": frozenset(
+        (
+            "net.link.addr",
+            "vfs.disk-space",
+        )
+    ),
+}
+
+# Directory prefixes for operations that allow subpaths (e.g. file reads).
+_KNOWN_SUBPATH_DENIALS: dict[str, tuple[str, ...]] = {
+    "file-read-data": (
+        "/Library/Managed Preferences/",
+        "/System/Library/CoreServices/RawCamera.bundle/",
+        "/System/Library/ExtensionKit/ExtensionPoints/",
+        "/System/iOSSupport/System/Library/ExtensionKit/ExtensionPoints/",
+        f"{_HOME_DIR}/Library/Preferences/",
+    ),
+}
+
+
+class DenialFilter:
+    """Filters out known and expected sandbox denials."""
+
+    def __init__(self) -> None:
+        self._logger = logging.getLogger("sandbox_denial_watcher")
+
+    def should_ignore(self, denial_event: SandboxDenial) -> bool:
+        """Returns True if the denial is a known expected denial."""
+        action = denial_event.action
+        target = (
+            denial_event.target.rstrip("/")
+            if denial_event.target != "/"
+            else "/"
+        )
+
+        if target in _KNOWN_EXACT_DENIALS.get(action, ()):
+            self._logger.debug(
+                "Filtered known denial matching '%s %s': %s",
+                action,
+                target,
+                denial_event.event_message,
+            )
+            return True
+
+        for prefix in _KNOWN_SUBPATH_DENIALS.get(action, ()):
+            normalized_prefix = prefix if prefix.endswith("/") else f"{prefix}/"
+            if target == normalized_prefix.rstrip(
+                "/"
+            ) or denial_event.target.startswith(normalized_prefix):
+                self._logger.debug(
+                    "Filtered known denial matching '%s %s': %s",
+                    action,
+                    normalized_prefix,
+                    denial_event.event_message,
+                )
+                return True
+
+        return False
+
 
 def _validate_process_name(proc: str) -> None:
     if not proc.isascii() or '"' in proc or "\\" in proc:
@@ -47,24 +156,21 @@ def _validate_process_name(proc: str) -> None:
 
 
 class SandboxDenialWatcher:
-    """Watches macOS system logs for Chrome/Chromium sandbox denials."""
+    """Watches macOS system logs for unexpected sandbox denials."""
 
-    def __init__(
-        self,
-        logger: Optional[logging.Logger] = None,
-        interesting_procs: tuple[str, ...] = _INTERESTING_PROCS,
-    ) -> None:
-        self._logger = logger or logging.getLogger("sandbox_denial_watcher")
-        for proc in interesting_procs:
+    def __init__(self) -> None:
+        self._logger = logging.getLogger("sandbox_denial_watcher")
+        for proc in _INTERESTING_PROCS:
             _validate_process_name(proc)
-        self._interesting_procs = interesting_procs
+        self._interesting_procs = _INTERESTING_PROCS
+        self._denial_filter = DenialFilter()
 
     def _report_denial(self, denial_event: SandboxDenial) -> None:
         """Prints a denial to the terminal."""
         self._logger.info("[DENIAL] %s", denial_event.event_message)
 
     def _handle_log_line(self, line: bytes) -> None:
-        """Parses a log line and reports it if it is a Chrome sandbox denial."""
+        """Parses a log line and reports it if it is an unexpected denial."""
         denial_event = SandboxDenial.from_json(line)
         if not denial_event:
             self._logger.debug("Skipping unparsable line: %r", line)
@@ -75,6 +181,9 @@ class SandboxDenialWatcher:
                 "Skipping denial for non-target process: %s",
                 denial_event.process_name,
             )
+            return
+
+        if self._denial_filter.should_ignore(denial_event):
             return
 
         self._report_denial(denial_event)
@@ -99,7 +208,7 @@ class SandboxDenialWatcher:
         ]
 
     def watch_logs(self) -> int:
-        """Watches macOS system logs for sandbox denials.
+        """Watches macOS system logs for unexpected sandbox denials.
 
         Returns 1 if `log stream` exits unexpectedly with an error, otherwise 0.
         """
@@ -111,7 +220,7 @@ class SandboxDenialWatcher:
             stdout=subprocess.PIPE,
         ) as proc:
             try:
-                self._logger.info("Watching for sandbox denials...")
+                self._logger.info("Watching for unexpected sandbox denials...")
                 self._logger.info(
                     'Ensure "Mac Sandbox Logging" is enabled at '
                     "chrome://flags/#mac-sandbox-logging."
@@ -169,7 +278,7 @@ def main(args: Sequence[str]) -> int:
     if sys.platform != "darwin":
         logger.error("This tool only runs on macOS.")
         return 1
-    watcher = SandboxDenialWatcher(logger=logger)
+    watcher = SandboxDenialWatcher()
     return watcher.watch_logs()
 
 
