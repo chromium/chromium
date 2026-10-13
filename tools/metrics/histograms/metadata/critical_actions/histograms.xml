@@ -58,6 +58,18 @@ chromium-metrics-reviews@google.com.
   <token key="ActionSource" variants="ActionSource"/>
 </histogram>
 
+<histogram name="CriticalActions.Database.MigrationVacuumResult"
+    enum="BooleanSuccess" expires_after="2027-03-18">
+  <owner>horwathleszek@google.com</owner>
+  <owner>kjarosz@google.com</owner>
+  <summary>
+    Records whether the SQLite VACUUM operation succeeded after migrating the
+    CriticalActions database from schema V2 to V3 (which drops the url column).
+    Emitted once per database migration at the end of
+    CriticalActionDatabase::Init().
+  </summary>
+</histogram>
+
 <histogram name="CriticalActions.Database.SqliteError"
     enum="SqliteLoggedResultCode" expires_after="2026-11-01">
   <owner>kalinino@google.com</owner>
