@@ -20,23 +20,17 @@ chromium-third-party@google.com
 
 thakis@chromium.org
 
-# For approving third-party metadata clean-ups.
-per-file ...README.chromium=jsca@google.com
-per-file ...README.chromium=renewitt@google.com
-per-file ...README.chromium=qjw@chromium.org
-per-file ...README.chromium=rop@google.com
-per-file ...restrictive_license_approval.textproto=jsca@google.com
-per-file ...restrictive_license_approval.textproto=renewitt@google.com
-per-file ...restrictive_license_approval.textproto=rop@google.com
+# Third-party metadata, license approvals and import configs can be approved by
+# software supply chain integrity team.
+per-file SSCI_OWNERS=file:SSCI_OWNERS
+per-file ...copy.bara.sky=file:SSCI_OWNERS
+per-file ...crowbar.txtpb=file:SSCI_OWNERS
+per-file ...README.chromium=file:SSCI_OWNERS
+per-file ...restrictive_license_approval.textproto=file:SSCI_OWNERS
 
 # The autorollers will update `README.chromium` files' revision information:
 per-file ...README.chromium=chromium-autoroll@skia-public.iam.gserviceaccount.com
 per-file ...README.chromium=chromium-internal-autoroll@skia-corp.google.com.iam.gserviceaccount.com
-
-# For testing Copybara workflows from GoB
-per-file ...copy.bara.sky=jsca@google.com
-per-file ...copy.bara.sky=renewitt@google.com
-per-file ...copy.bara.sky=qjw@chromium.org
 
 per-file .gitignore=*
 
