@@ -61,7 +61,6 @@ TEST_F(TTCKeyedServiceTest, TestServiceCreatedForRegularProfileWhenEnabled) {
       TTCKeyedServiceFactory::GetForProfile(profile_.get());
   ASSERT_TRUE(service != nullptr);
   EXPECT_TRUE(service->IsEnabled());
-  EXPECT_EQ(service->profile(), profile_.get());
 }
 
 // Test that `TTCKeyedService` returns nullptr when feature flag is disabled.

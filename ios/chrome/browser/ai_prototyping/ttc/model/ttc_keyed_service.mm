@@ -13,14 +13,11 @@
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_session_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_websocket_backend.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
-#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/public/provider/chrome/browser/intelligence/ttc_api.h"
 
-TTCKeyedService::TTCKeyedService(ProfileIOS* profile) : profile_(profile) {
-  CHECK(profile_);
-}
+TTCKeyedService::TTCKeyedService(OptimizationGuideService* optimization_guide)
+    : optimization_guide_(optimization_guide) {}
 
 TTCKeyedService::~TTCKeyedService() = default;
 
@@ -77,8 +74,7 @@ void TTCKeyedService::StartSession() {
   if (config.is_valid() && !config.api_key.empty()) {
     backend = std::make_unique<TtcWebSocketBackend>();
   } else {
-    backend = std::make_unique<ttc::TtcMesClient>(
-        OptimizationGuideServiceFactory::GetForProfile(profile_));
+    backend = std::make_unique<ttc::TtcMesClient>(optimization_guide_.get());
   }
 
   session_controller_ =

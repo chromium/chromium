@@ -16,14 +16,14 @@
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_journal.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_states.h"
 
-class ProfileIOS;
+class OptimizationGuideService;
 @class TTCSessionController;
 
 // Profile-keyed service that manages the active TTC voice session
 // lifecycle, state transitions, and coordination for a Profile.
 class TTCKeyedService : public KeyedService {
  public:
-  explicit TTCKeyedService(ProfileIOS* profile);
+  explicit TTCKeyedService(OptimizationGuideService* optimization_guide);
   TTCKeyedService(const TTCKeyedService&) = delete;
   TTCKeyedService& operator=(const TTCKeyedService&) = delete;
   ~TTCKeyedService() override;
@@ -64,17 +64,14 @@ class TTCKeyedService : public KeyedService {
   base::CallbackListSubscription RegisterStateChangedCallback(
       base::RepeatingCallback<void(TTCServiceState)> callback);
 
-  // Returns the `ProfileIOS` associated with this service.
-  ProfileIOS* profile() const { return profile_; }
-
   // Returns a weak pointer to this service instance.
   base::WeakPtr<TTCKeyedService> GetWeakPtr();
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
-  // The profile this service belongs to.
-  raw_ptr<ProfileIOS> profile_ = nullptr;
+  // The OptimizationGuideService this service is using.
+  raw_ptr<OptimizationGuideService> optimization_guide_ = nullptr;
 
   // Active session coordinator, or nil when no session is in progress.
   TTCSessionController* session_controller_ = nil;

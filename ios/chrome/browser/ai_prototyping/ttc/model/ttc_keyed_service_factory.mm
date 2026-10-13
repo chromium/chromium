@@ -39,5 +39,6 @@ std::unique_ptr<KeyedService> TTCKeyedServiceFactory::BuildServiceInstanceFor(
   if (!IsTTCEnabled()) {
     return nullptr;
   }
-  return std::make_unique<TTCKeyedService>(profile);
+  return std::make_unique<TTCKeyedService>(
+      OptimizationGuideServiceFactory::GetForProfile(profile));
 }
