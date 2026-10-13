@@ -24,7 +24,6 @@
 #include "chrome/browser/ash/login/test/scoped_policy_update.h"
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
 #include "chrome/browser/ash/policy/core/user_policy_test_helper.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/ash/experiences/arc/mojom/app.mojom.h"
@@ -32,8 +31,6 @@
 #include "chromeos/ash/experiences/arc/test/connection_holder_util.h"
 #include "chromeos/ash/experiences/arc/test/fake_app_instance.h"
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -106,7 +103,9 @@ class AppTimeTest : public MixinBasedInProcessBrowserTest {
     arc_app_list_prefs_->app_connection_holder()->CloseInstance(
         arc_app_instance_.get());
     arc_app_instance_.reset();
+    arc_app_list_prefs_ = nullptr;
     arc::ArcSessionManager::Get()->Shutdown();
+    MixinBasedInProcessBrowserTest::TearDownOnMainThread();
   }
 
   void UpdatePerAppTimeLimitsPolicy(const base::DictValue& policy) {
@@ -119,14 +118,14 @@ class AppTimeTest : public MixinBasedInProcessBrowserTest {
         ->set_value(policy_value);
 
     logged_in_user_mixin_.GetUserPolicyTestHelper()->RefreshPolicyAndWait(
-        GetCurrentProfile());
+        browser()->GetProfile());
 
     base::RunLoop().RunUntilIdle();
   }
 
   AppActivityRegistry* GetAppRegistry() {
     auto child_user_service = ChildUserService::TestApi(
-        ChildUserServiceFactory::GetForBrowserContext(GetCurrentProfile()));
+        ChildUserServiceFactory::GetForBrowserContext(browser()->GetProfile()));
     EXPECT_TRUE(child_user_service.app_time_controller());
     auto app_time_controller =
         AppTimeController::TestApi(child_user_service.app_time_controller());
@@ -157,21 +156,11 @@ class AppTimeTest : public MixinBasedInProcessBrowserTest {
   }
 
  private:
-  Profile* GetCurrentProfile() {
-    const user_manager::UserManager* const user_manager =
-        user_manager::UserManager::Get();
-    Profile* profile =
-        ProfileHelper::Get()->GetProfileByUser(user_manager->GetActiveUser());
-    EXPECT_TRUE(profile);
-
-    return profile;
-  }
-
   LoggedInUserMixin logged_in_user_mixin_{&mixin_host_, /*test_base=*/this,
                                           embedded_test_server(),
                                           LoggedInUserMixin::LogInType::kChild};
 
-  raw_ptr<ArcAppListPrefs, DanglingUntriaged> arc_app_list_prefs_ = nullptr;
+  raw_ptr<ArcAppListPrefs> arc_app_list_prefs_ = nullptr;
   std::unique_ptr<arc::FakeAppInstance> arc_app_instance_;
 };
 
