@@ -18,7 +18,7 @@ sys.path.append(
         REPOSITORY_ROOT, 'third_party', 'catapult', 'third_party', 'typ'
     )
 )
-import typ
+import typ  # noqa: E402
 
 if __name__ == '__main__':
     sys.exit(

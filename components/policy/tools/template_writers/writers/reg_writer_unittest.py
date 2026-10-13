@@ -276,8 +276,8 @@ class RegWriterUnittest(writer_unittest_common.WriterUnittestCommon):
           "placeholders": [],
           "messages": {},
         }'''
-    output = self.GetOutput(policy_json, {'_chromium': '1'}, 'reg')
-    expected_output = self.NEWLINE.join(
+    output = self.GetOutput(policy_json, {'_chromium': '1'}, 'reg')  # noqa: F841
+    expected_output = self.NEWLINE.join(  # noqa: F841
       [
         'Windows Registry Editor Version 5.00',
         '',
@@ -309,8 +309,8 @@ class RegWriterUnittest(writer_unittest_common.WriterUnittestCommon):
           "placeholders": [],
           "messages": {},
         }'''
-    output = self.GetOutput(policy_json, {'_chromium': '1'}, 'reg')
-    expected_output = self.NEWLINE.join(
+    output = self.GetOutput(policy_json, {'_chromium': '1'}, 'reg')  # noqa: F841
+    expected_output = self.NEWLINE.join(  # noqa: F841
       [
         'Windows Registry Editor Version 5.00',
         '',

@@ -24,7 +24,7 @@ proto_generator_path = os.path.normpath(
     )
 )
 sys.path.insert(0, proto_generator_path)
-from binary_proto_generator import BinaryProtoGenerator
+from binary_proto_generator import BinaryProtoGenerator  # noqa: E402
 
 
 def MakeSubDirs(outfile):
@@ -41,7 +41,7 @@ class SSLErrorAssistantProtoGenerator(BinaryProtoGenerator):
         globals()['ssl_error_assistant_pb2'] = ssl_error_assistant_pb2
 
     def EmptyProtoInstance(self):
-        return ssl_error_assistant_pb2.SSLErrorAssistantConfig()
+        return ssl_error_assistant_pb2.SSLErrorAssistantConfig()  # noqa: F821
 
     def ValidatePb(self, opts, pb):
         assert pb.version_id > 0

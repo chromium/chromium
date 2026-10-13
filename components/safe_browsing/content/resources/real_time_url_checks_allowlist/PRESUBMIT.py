@@ -104,7 +104,7 @@ def CheckChangeOnUpload(input_api, output_api):
         return [
             output_api.PresubmitError(
                 'The asciipb file located at '
-                + allowlist_ascii_file.LocalPath()
+                + allowlist_ascii_file.LocalPath()  # noqa: F821
                 + ' should have '
                 'three fields: version_id, scheme_id, and url_hashes, '
                 + 'each on its own line within the file.'

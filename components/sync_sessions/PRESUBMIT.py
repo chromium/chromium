@@ -8,13 +8,13 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details about the presubmit API built into depot_tools.
 """
 
-import re
+import re  # noqa: F401
 
 SYNC_SESSIONS_SOURCE_FILES = (r'^components[\\/]sync_sessions[\\/].*\.(cc|h)$',)
 
 
 def CheckChangeLintsClean(input_api, output_api):
-    source_filter = lambda x: input_api.FilterSourceFile(
+    source_filter = lambda x: input_api.FilterSourceFile(  # noqa: E731
         x, files_to_check=SYNC_SESSIONS_SOURCE_FILES, files_to_skip=None
     )
     return input_api.canned_checks.CheckChangeLintsClean(

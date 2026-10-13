@@ -10,10 +10,10 @@ for more details on the presubmit API built into depot_tools.
 
 PRESUBMIT_VERSION = '2.0.0'
 
-import filecmp
-import os
-import re
-import subprocess
+import filecmp  # noqa: E402
+import os  # noqa: E402
+import re  # noqa: E402
+import subprocess  # noqa: E402
 
 
 def IsComponentsAutofillFile(f, name_suffix):
@@ -63,13 +63,13 @@ have no corresponding enum constant or are deprecated. Use
 ToSafe{enum}() instead.
 Add "// nocheck" to the end of the line to suppress this error."""
     errors = []
-    file_filter = lambda f: (
+    file_filter = lambda f: (  # noqa: E731
         f.LocalPath().startswith('components/autofill/')
         and f.LocalPath().endswith(('.h', '.cc', '.mm'))
     )
     # There may be a line break in the cast, so we test multiple patterns.
     pattern_full = input_api.re.compile(rf'_cast<\s*{enum}\b')
-    pattern_prefix = input_api.re.compile(rf'_cast<\s*$')
+    pattern_prefix = input_api.re.compile(r'_cast<\s*$')
     pattern_postfix = input_api.re.compile(rf'^\s*{enum}\b')
     for f in input_api.AffectedSourceFiles(file_filter):
         contents = f.ChangedContents()
@@ -125,7 +125,7 @@ def CheckFieldTypeSets(input_api, output_api):
         ),
     ]
     warnings = []
-    file_filter = lambda f: (
+    file_filter = lambda f: (  # noqa: E731
         f.LocalPath().startswith('components/autofill/')
         and f.LocalPath().endswith(('.h', '.cc', '.mm'))
     )
@@ -190,8 +190,8 @@ def CheckWebViewExposedExperiments(input_api, output_api):
         and not AnyAffectedFileMatches(
             input_api, lambda f: f.LocalPath() == _PRODUCTION_SUPPORT_FILE
         )
-        and not 'Bypass-Webview-Feature-Check'
-        in input_api.change.GitFootersFromDescription()
+        and 'Bypass-Webview-Feature-Check'
+        not in input_api.change.GitFootersFromDescription()
     ):
         warnings += [
             output_api.PresubmitPromptWarning(
@@ -362,7 +362,7 @@ def CheckUtilityFileNaming(input_api, output_api):
     ) or IsComponentsAutofillFileAffected(input_api, '_utils.cc'):
         warnings += [
             output_api.PresubmitPromptWarning(
-                f'All utility files in //components/autofill/ should have the suffix "_util".'
+                'All utility files in //components/autofill/ should have the suffix "_util".'
             )
         ]
 

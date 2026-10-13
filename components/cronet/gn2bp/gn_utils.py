@@ -9,7 +9,7 @@ import copy
 import json
 import logging as log
 import os
-import pathlib
+import pathlib  # noqa: F401
 import re
 import sys
 import shlex
@@ -18,8 +18,8 @@ REPOSITORY_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir)
 )
 sys.path.insert(0, REPOSITORY_ROOT)
-import components.cronet.gn2bp.common as gn2bp_common  # pylint: disable=wrong-import-position
-from components.cronet.gn2bp.arguments import CommandLineUtility
+import components.cronet.gn2bp.common as gn2bp_common  # noqa: E402
+from components.cronet.gn2bp.arguments import CommandLineUtility  # noqa: E402
 
 TOOLCHAIN_SUFFIX = "__toolchain_"
 HOST_TOOLCHAIN_TO_SUFFIX = {

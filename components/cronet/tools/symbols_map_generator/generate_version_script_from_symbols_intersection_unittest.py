@@ -4,7 +4,7 @@
 
 import unittest
 import os
-import re
+import re  # noqa: F401
 import sys
 
 REPOSITORY_ROOT = os.path.abspath(
@@ -15,8 +15,8 @@ REPOSITORY_ROOT = os.path.abspath(
 
 sys.path.insert(0, REPOSITORY_ROOT)
 
-import components.cronet.tools.symbols_map_generator.generate_version_script_from_symbols_intersection as intersection_generator  # pylint: disable=wrong-import-position
-import components.cronet.tools.utils as cronet_utils  # pylint: disable=wrong-import-position
+import components.cronet.tools.symbols_map_generator.generate_version_script_from_symbols_intersection as intersection_generator  # noqa: E402
+import components.cronet.tools.utils as cronet_utils  # noqa: E402
 
 SYMBOLS_OBJDUMP = os.path.join(
     REPOSITORY_ROOT,

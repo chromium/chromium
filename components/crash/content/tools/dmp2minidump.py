@@ -23,11 +23,11 @@ def ProcessDump(dump_file, minidump_file):
     dump = open(dump_file, 'rb')
     boundary = dump.readline().strip()[2:]
     data = parse_multipart(dump, {'boundary': boundary})
-  except:
+  except:  # noqa: E722
     print('Failed to read dmp file %s' % dump_file)
     return
 
-  if not 'upload_file_minidump' in data:
+  if 'upload_file_minidump' not in data:
     print('Could not find minidump file in dump.')
     return
 

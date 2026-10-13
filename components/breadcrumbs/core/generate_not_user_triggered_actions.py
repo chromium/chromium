@@ -6,7 +6,7 @@
 
 import argparse
 import sys
-import os
+import os  # noqa: F401
 
 from xml.etree import ElementTree
 

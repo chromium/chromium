@@ -2,12 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import copy
+import copy  # noqa: F401
 import enum
 import hashlib
-import os
+import os  # noqa: F401
 import re
-from typing import List, Dict, Set, Union
+from typing import List, Dict, Set, Union  # noqa: F401
 
 import gn_utils
 import targets as gn2bp_targets

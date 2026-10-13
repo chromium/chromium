@@ -122,7 +122,7 @@ def _CheckEventConstantsFile(input_api, output_api, affected_file):
 
 
 def _CheckKeepSortedBlock(input_api, output_api, lines, file_path):
-    in_block = False
+    in_block = False  # noqa: F841
     block_lines = []
     for line in lines:
         stripped = line.strip()

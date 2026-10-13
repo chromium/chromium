@@ -17,20 +17,20 @@ import writer_configuration
 import policy_template_generator
 
 from writers import (
-  adm_writer,
-  adml_writer,
-  admx_writer,
-  google_admx_writer,
-  google_adml_writer,
-  android_policy_writer,
-  reg_writer,
-  doc_writer,
-  doc_atomic_groups_writer,
-  json_writer,
-  plist_writer,
-  plist_strings_writer,
-  ios_app_config_writer,
-  jamf_writer,
+  adm_writer,  # noqa: F401
+  adml_writer,  # noqa: F401
+  admx_writer,  # noqa: F401
+  google_admx_writer,  # noqa: F401
+  google_adml_writer,  # noqa: F401
+  android_policy_writer,  # noqa: F401
+  reg_writer,  # noqa: F401
+  doc_writer,  # noqa: F401
+  doc_atomic_groups_writer,  # noqa: F401
+  json_writer,  # noqa: F401
+  plist_writer,  # noqa: F401
+  plist_strings_writer,  # noqa: F401
+  ios_app_config_writer,  # noqa: F401
+  jamf_writer,  # noqa: F401
 )
 
 
@@ -218,7 +218,7 @@ def main():
   config = _GetWriterConfiguration(args.grit_defines)
 
   version = _ParseVersionFile(args.version_path)
-  if version != None:
+  if version != None:  # noqa: E711
     config['major_version'] = int(version['major'])
     config['version'] = '.'.join(
       [version['major'], version['minor'], version['build'], version['patch']]

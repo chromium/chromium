@@ -123,7 +123,7 @@ def GetDocumentation(element):
         return [summary] if summary is not None else []
     ret = [doc.get('summary')]
     if doc.text:
-        ret += [l.strip() for l in doc.text.split('\n')]
+        ret += [l.strip() for l in doc.text.split('\n')]  # noqa: E741
         # Remove blank lines from the tail only.
         while not ret[-1]:
             ret.pop()

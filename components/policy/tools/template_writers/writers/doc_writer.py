@@ -87,7 +87,7 @@ class DocWriter(xml_formatted_writer.XMLFormattedWriter):
       attrs: Dictionary of attributes for the element.
       text: Text content for the element.
     '''
-    if attrs == None:
+    if attrs == None:  # noqa: E711
       attrs = {}
 
     style = ''.join([self._STYLE[x] for x in style_ids])
@@ -287,19 +287,19 @@ class DocWriter(xml_formatted_writer.XMLFormattedWriter):
 
     Returns a list of lines.'''
     obj_type = type(obj)
-    if obj_type == bool:
+    if obj_type == bool:  # noqa: E721
       return ['%s<%s/>' % (indent, 'true' if obj else 'false')]
-    elif obj_type == int:
+    elif obj_type == int:  # noqa: E721
       return ['%s<integer>%s</integer>' % (indent, obj)]
-    elif obj_type == str:
+    elif obj_type == str:  # noqa: E721
       return ['%s<string>%s</string>' % (indent, escape(obj))]
-    elif obj_type == list:
+    elif obj_type == list:  # noqa: E721
       result = ['%s<array>' % indent]
       for item in obj:
         result += self._PythonObjectToPlist(item, indent + '  ')
       result.append('%s</array>' % indent)
       return result
-    elif obj_type == dict:
+    elif obj_type == dict:  # noqa: E721
       result = ['%s<dict>' % indent]
       for key in sorted(obj.keys()):
         result.append('%s<key>%s</key>' % (indent + '  ', key))
@@ -537,7 +537,7 @@ class DocWriter(xml_formatted_writer.XMLFormattedWriter):
       The DOM node representing the definition <dd> element.
     '''
     # Avoid modifying the default value of definition_style.
-    if definition_style == None:
+    if definition_style == None:  # noqa: E711
       definition_style = []
     term = self.GetLocalizedMessage(term_id)
     self._AddStyledElement(dl, 'dt', ['dt'], {}, term)
@@ -749,7 +749,7 @@ class DocWriter(xml_formatted_writer.XMLFormattedWriter):
     if policy['type'] != 'group':
       # Normal policies get a full description.
       policy_name_text = policy['name']
-      if 'deprecated' in policy and policy['deprecated'] == True:
+      if 'deprecated' in policy and policy['deprecated'] == True:  # noqa: E712
         policy_name_text += " ("
         policy_name_text += self.GetLocalizedMessage('deprecated') + ")"
       self.AddText(h2, policy_name_text)

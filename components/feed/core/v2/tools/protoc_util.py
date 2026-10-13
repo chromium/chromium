@@ -74,6 +74,6 @@ def protoc_path(root_dir):
                 "Can't find a suitable build output directory",
                 "(it should have protoc)",
             )
-            sys.exit(1)
+            sys.exit(1)  # noqa: F821
         _protoc_path = protoc_list[0]
     return _protoc_path

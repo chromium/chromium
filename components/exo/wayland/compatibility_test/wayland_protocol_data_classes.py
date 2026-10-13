@@ -5,7 +5,7 @@
 import dataclasses
 import enum
 import os.path
-from typing import Any, Dict, Iterable, List, Mapping, Optional, Tuple
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Tuple  # noqa: F401
 import xml.etree.ElementTree
 
 # Short aliases for typing

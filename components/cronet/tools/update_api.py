@@ -18,7 +18,7 @@ REPOSITORY_ROOT = os.path.abspath(
 )
 
 sys.path.insert(0, REPOSITORY_ROOT)
-from components.cronet.tools import utils  # pylint: disable=wrong-import-position
+from components.cronet.tools import utils  # noqa: E402
 
 # Filename of dump of current API.
 API_FILENAME = os.path.abspath(

@@ -24,7 +24,7 @@ def _CheckPrepopulatedEnginesVersion(input_api, output_api):
         None,
     )
 
-    if file != None and not any(
+    if file != None and not any(  # noqa: E711
         line
         for line in file.ChangedContents()
         if "kCurrentDataVersion" in line[1]

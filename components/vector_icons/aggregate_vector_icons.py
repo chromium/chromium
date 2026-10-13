@@ -2,14 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import fileinput
-import glob
+import fileinput  # noqa: F401
+import glob  # noqa: F401
 import optparse
 import os
 import re
 import shlex
 import sys
-import textwrap
+import textwrap  # noqa: F401
 
 CANVAS_DIMENSIONS = "CANVAS_DIMENSIONS"
 CPP_COMMENT_DELIMITER = "//"
@@ -29,7 +29,7 @@ def CamelCase(name, suffix):
 
 
 def GetPathName(name, size=None):
-    return CamelCase(name, "{}Path".format(size) if size != None else "Path")
+    return CamelCase(name, "{}Path".format(size) if size != None else "Path")  # noqa: E711
 
 
 def GetRepListName(name):
@@ -167,7 +167,7 @@ def AggregateVectorIcons(
 
     output_header = open(output_h, "w")
     for line in header_template_contents:
-        if not TEMPLATE_PLACEHOLDER in line:
+        if TEMPLATE_PLACEHOLDER not in line:
             output_header.write(line)
             continue
 
@@ -191,7 +191,7 @@ def AggregateVectorIcons(
 
     output_cc = open(output_cc, "w")
     for line in cc_template_contents:
-        if not TEMPLATE_PLACEHOLDER in line:
+        if TEMPLATE_PLACEHOLDER not in line:
             output_cc.write(line)
             continue
         for icon in path_map:
@@ -241,7 +241,7 @@ def AggregateVectorIcons(
         # Write the vector icon unittests.
         output_test_h = open(output_test_h, "w")
         for line in cc_test_template_contents:
-            if not TEMPLATE_PLACEHOLDER in line:
+            if TEMPLATE_PLACEHOLDER not in line:
                 output_test_h.write(line)
                 continue
             for icon in path_map:

@@ -16,10 +16,10 @@ Usage example:
 """
 
 import base64
-import glob
-import os
+import glob  # noqa: F401
+import os  # noqa: F401
 import protoc_util
-import subprocess
+import subprocess  # noqa: F401
 import sys
 import urllib.parse
 

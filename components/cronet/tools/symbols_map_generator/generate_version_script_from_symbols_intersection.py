@@ -12,7 +12,7 @@ REPOSITORY_ROOT = os.path.abspath(
 )
 
 sys.path.insert(0, REPOSITORY_ROOT)
-import components.cronet.tools.utils as cronet_utils  # pylint: disable=wrong-import-position
+import components.cronet.tools.utils as cronet_utils  # noqa: E402
 
 
 def filter_undefined_only(line):

@@ -11,7 +11,7 @@ if __name__ == '__main__':
   sys.path.append(os.path.join(os.path.dirname(__file__), '../../../..'))
 
 import unittest
-from xml.dom import minidom
+from xml.dom import minidom  # noqa: F401
 
 from writers import writer_unittest_common
 from writers import android_policy_writer

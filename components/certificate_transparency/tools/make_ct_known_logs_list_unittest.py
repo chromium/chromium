@@ -4,8 +4,8 @@
 # found in the LICENSE file.
 
 import base64
-import hashlib
-import json
+import hashlib  # noqa: F401
+import json  # noqa: F401
 import make_ct_known_logs_list
 import os
 import sys

@@ -16,13 +16,13 @@ _SRC_PATH = os.path.abspath(
 if _SRC_PATH not in sys.path:
     sys.path.insert(0, _SRC_PATH)
 
-from unittest import mock
+from unittest import mock  # noqa: E402
 
-from components.actor.tools.parse_actor_trace import (
+from components.actor.tools.parse_actor_trace import (  # noqa: E402
     extract_raw_payload,
     extract_trace_to_dir,
     find_or_build_protoc,
-    parse_actor_trace,
+    parse_actor_trace,  # noqa: F401
 )
 
 

@@ -27,7 +27,7 @@ def _RunHistogramChecks(input_api, output_api, histogram_name):
         return presubmit_bad_message_reasons.PrecheckBadMessage(
             input_api, output_api, histogram_name
         )
-    except:
+    except:  # noqa: E722
         return [output_api.PresubmitError('Could not verify histogram!')]
     finally:
         sys.path = original_sys_path

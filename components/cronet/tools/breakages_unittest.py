@@ -14,8 +14,8 @@ REPOSITORY_ROOT = os.path.abspath(
 
 sys.path.insert(0, REPOSITORY_ROOT)
 
-import components.cronet.tools.breakages_constants as breakages_constants  # pylint: disable=wrong-import-position
-import components.cronet.tools.utils as cronet_utils  # pylint: disable=wrong-import-position
+import components.cronet.tools.breakages_constants as breakages_constants  # noqa: E402
+import components.cronet.tools.utils as cronet_utils  # noqa: E402
 
 FILE_PATH = os.path.join(
     REPOSITORY_ROOT, 'components', 'cronet', 'android', 'breakages.json'

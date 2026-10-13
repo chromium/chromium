@@ -318,7 +318,7 @@ class PolicyTemplateGeneratorUnittest(unittest.TestCase):
 
     self.do_test(policy_data_mock, LocalMockWriter())
 
-  def testStringEnumTexts(self):
+  def testStringEnumTexts(self):  # noqa: F811
     # Test that GUI messages are assigned correctly to string-enums
     # (aka dropdown menus).
     policy_data_mock = {

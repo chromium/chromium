@@ -9,7 +9,7 @@ cr_cronet.py - cr - like helper tool for cronet developers
 import argparse
 import sys
 import os
-import shlex
+import shlex  # noqa: F401
 from datetime import datetime
 
 REPOSITORY_ROOT = os.path.abspath(
@@ -17,7 +17,7 @@ REPOSITORY_ROOT = os.path.abspath(
 )
 
 sys.path.insert(0, REPOSITORY_ROOT)
-from components.cronet.tools.utils import run, android_gn_gen, build  # pylint: disable=wrong-import-position
+from components.cronet.tools.utils import run, android_gn_gen, build  # noqa: E402
 
 
 def install(out_dir):
@@ -164,7 +164,7 @@ def main():
             or test(out_dir, extra_options)
         )
     if options.command == 'stack':
-        return stack(out_dir)
+        return stack(out_dir)  # noqa: F821
     if options.command == 'debug':
         return install(out_dir) or debug(extra_options)
     if options.command == 'build-debug':

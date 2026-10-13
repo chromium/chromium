@@ -14,7 +14,6 @@ import struct
 import sys
 
 # Disable lint check for finding modules:
-# pylint: disable=F0401
 
 
 def _GetDirAbove(dirname):
@@ -40,16 +39,13 @@ sys.path.insert(
     ),
 )
 
-# pylint: disable=wrong-import-position
-from mojom.error import Error
-import mojom.fileutil as fileutil
-from mojom.generate import translate
-from mojom.generate import template_expander
-from mojom.generate.generator import AddComputedData
-from mojom.parse.parser import Parse
-# pylint: enable=wrong-import-position
+from mojom.error import Error  # noqa: E402
+import mojom.fileutil as fileutil  # noqa: E402
+from mojom.generate import translate  # noqa: E402
+from mojom.generate import template_expander  # noqa: E402
+from mojom.generate.generator import AddComputedData  # noqa: E402
+from mojom.parse.parser import Parse  # noqa: E402
 
-# pylint: disable=useless-object-inheritance
 
 _BUILTIN_GENERATORS = {
     "c": "cronet_c_generator.py",
@@ -185,7 +181,7 @@ class MojomProcessor(object):
         for filename in typemaps:
             with open(filename) as f:
                 typemaps = json.loads(
-                    "".join([l for l in f.readlines() if no_comments(l)])
+                    "".join([l for l in f.readlines() if no_comments(l)])  # noqa: E741
                 )
                 for language, typemap in typemaps.items():
                     language_map = self._typemap.get(language, {})

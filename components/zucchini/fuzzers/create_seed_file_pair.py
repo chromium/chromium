@@ -14,7 +14,6 @@ format is changed.
 """
 
 # Keep the existing two-space indentation to limit the scope of this change.
-# pylint: disable=bad-indentation
 
 import argparse
 import logging
@@ -29,10 +28,8 @@ sys.path.insert(0, str(_SRC_ROOT / 'build'))
 sys.path.insert(0, str(_SRC_ROOT / 'third_party' / 'protobuf' / 'python'))
 
 # Import after adding Chromium's vendored modules to sys.path.
-# pylint: disable=wrong-import-position
 import action_helpers  # noqa: E402
 from google.protobuf import text_encoding  # noqa: E402
-# pylint: enable=wrong-import-position
 
 ABS_PATH = str(_SCRIPT_DIR)
 PROTO_DEFINITION_FILE = 'file_pair.proto'

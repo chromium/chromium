@@ -6,7 +6,7 @@
 
 import base64
 import datetime
-import hashlib
+import hashlib  # noqa: F401
 import json
 import math
 import sys
@@ -168,8 +168,8 @@ def _get_disqualified_log_definitions(logs, starting_index):
 
 def _sorted_disqualified_logs(all_logs):
     return sorted(
-        [l for l in all_logs if _is_log_disqualified(l)],
-        key=lambda l: base64.b64decode(l["log_id"]),
+        [l for l in all_logs if _is_log_disqualified(l)],  # noqa: E741
+        key=lambda l: base64.b64decode(l["log_id"]),  # noqa: E741
     )
 
 
@@ -249,7 +249,7 @@ def generate_cpp_file(input_file, f):
     # Logs with pending/rejected should not be considered by Chromium
     logs_by_operator = json_log_list["operators"]
     logs = []
-    tiled_logs = []
+    tiled_logs = []  # noqa: F841
     for operator in logs_by_operator:
         for log in operator["logs"]:
             if _is_log_once_or_currently_qualified(log):

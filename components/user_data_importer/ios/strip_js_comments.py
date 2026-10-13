@@ -5,9 +5,9 @@
 """Strip comments from a JS file."""
 
 import argparse
-import os
-import shutil
-import subprocess
+import os  # noqa: F401
+import shutil  # noqa: F401
+import subprocess  # noqa: F401
 import sys
 
 

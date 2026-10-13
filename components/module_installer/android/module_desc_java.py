@@ -82,7 +82,7 @@ def main():
 
     format_dict = {
         'MODULE': options.module,
-        'LIBRARIES': ','.join(['"%s"' % l for l in libraries]),
+        'LIBRARIES': ','.join(['"%s"' % l for l in libraries]),  # noqa: E741
         'PAKS': ','.join(['"%s"' % os.path.basename(p) for p in paks]),
         'LOAD_NATIVE_ON_GET_IMPL': (
             'true' if options.load_native_on_get_impl else 'false'

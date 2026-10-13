@@ -68,10 +68,10 @@ def generate_cpp_enums(schema):
         for entity in schema
         for attribute in entity['attributes']
     )
-    yield f'// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill.autofill_ai'
+    yield '// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill.autofill_ai'
     yield f'enum class EntityTypeName {{ {", ".join(add_kMaxValue(entities))} }};'
     yield ''
-    yield f'// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill.autofill_ai'
+    yield '// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill.autofill_ai'
     yield f'enum class AttributeTypeName {{ {", ".join(add_kMaxValue(attributes))} }};'
 
 
@@ -129,7 +129,7 @@ def generate_cpp_functions(schema):
         yield '      });'
         yield '      auto it = kMap.find(attribute_type_name);'
         yield '      return it != kMap.end() ? std::optional(it->second) : std::nullopt;'
-        yield f'    }}'
+        yield '    }'
     yield '  }'
     yield '  return std::nullopt;'
     yield '}'
@@ -157,9 +157,9 @@ def generate_cpp_functions(schema):
     for entity in schema:
         for attribute in entity["disambiguation order"]:
             yield f'    case {attribute_name(entity["name"], attribute)}:'
-            yield f'      return true;'
-    yield f'    default:'
-    yield f'      return false;'
+            yield '      return true;'
+    yield '    default:'
+    yield '      return false;'
     yield '  }'
     yield '}'
     yield ''
@@ -185,8 +185,8 @@ def generate_cpp_functions(schema):
     for entity in schema:
         yield f'    case {entity_name(entity["name"])}: {{'
         yield f'      static constexpr auto s = {attribute_dense_set(entity["name"], entity["attributes"])};'
-        yield f'      return s;'
-        yield f'    }}'
+        yield '      return s;'
+        yield '    }'
     yield '  }'
     yield '  NOTREACHED();'
     yield '}'
@@ -196,8 +196,8 @@ def generate_cpp_functions(schema):
     for entity in schema:
         yield f'    case {entity_name(entity["name"])}: {{'
         yield f'      static constexpr auto as = {attribute_dense_set_array(entity["name"], entity["import constraints"])};'
-        yield f'      return as;'
-        yield f'    }}'
+        yield '      return as;'
+        yield '    }'
     yield '  }'
     yield '  NOTREACHED();'
     yield '}'
@@ -207,8 +207,8 @@ def generate_cpp_functions(schema):
     for entity in schema:
         yield f'    case {entity_name(entity["name"])}: {{'
         yield f'      static constexpr auto as = {attribute_dense_set_array(entity["name"], entity["required fields"])};'
-        yield f'      return as;'
-        yield f'    }}'
+        yield '      return as;'
+        yield '    }'
     yield '  }'
     yield '  NOTREACHED();'
     yield '}'
@@ -218,8 +218,8 @@ def generate_cpp_functions(schema):
     for entity in schema:
         yield f'    case {entity_name(entity["name"])}: {{'
         yield f'      static constexpr auto as = {attribute_dense_set_array(entity["name"], entity["merge constraints"])};'
-        yield f'      return as;'
-        yield f'    }}'
+        yield '      return as;'
+        yield '    }'
     yield '  }'
     yield '  NOTREACHED();'
     yield '}'
@@ -228,8 +228,8 @@ def generate_cpp_functions(schema):
     for entity in schema:
         yield f'    case {entity_name(entity["name"])}: {{'
         yield f'      static constexpr auto as = {attribute_dense_set_array(entity["name"], entity["strike keys"])};'
-        yield f'      return as;'
-        yield f'    }}'
+        yield '      return as;'
+        yield '    }'
     yield '  }'
     yield '  NOTREACHED();'
     yield '}'
@@ -307,7 +307,7 @@ namespace autofill {{
 
 
 def generate_cpp_functions_header(schema, include_guard):
-    yield f"""// Copyright 2025 The Chromium Authors
+    yield """// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -327,11 +327,11 @@ def generate_cpp_functions_header(schema, include_guard):
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/dense_set.h"
 
-namespace autofill {{
+namespace autofill {
 """
     yield from generate_cpp_functions(schema)
-    yield f"""
-}}  // namespace autofill"""
+    yield """
+}  // namespace autofill"""
 
 
 if __name__ == '__main__':
@@ -373,7 +373,7 @@ if __name__ == '__main__':
                 line += '\n'
                 # unicode() exists and is necessary only in Python 2, not in Python 3.
                 if sys.version_info[0] < 3:
-                    line = unicode(s, 'utf-8')
+                    line = unicode(s, 'utf-8')  # noqa: F821
                 output_handle.write(line)
 
     write_to_handle(generate_cpp_enums_header, args.output[0])

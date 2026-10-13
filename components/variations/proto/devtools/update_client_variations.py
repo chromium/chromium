@@ -22,8 +22,8 @@ HERE_DIR = os.path.dirname(__file__)
 ROOT = os.path.normpath(os.path.join(HERE_DIR, '..', '..', '..', '..'))
 
 sys.path.append(os.path.join(ROOT, 'third_party', 'node'))
-import node
-import node_modules
+import node  # noqa: E402
+import node_modules  # noqa: E402
 
 OUTPUT_TEMPLATE = """\
 // Copyright 2020 The Chromium Authors

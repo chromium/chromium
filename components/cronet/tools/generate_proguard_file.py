@@ -22,7 +22,7 @@ REPOSITORY_ROOT = os.path.abspath(
 )
 
 sys.path.insert(0, os.path.join(REPOSITORY_ROOT, 'build'))
-import action_helpers  # pylint: disable=wrong-import-position
+import action_helpers  # noqa: E402
 
 
 def _ReadFile(path):

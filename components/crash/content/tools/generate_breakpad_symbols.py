@@ -272,7 +272,7 @@ def CreateSymbolDir(options, output_dir, relative_hash_dir):
           os.path.dirname(output_dir), '000000000000000000000000000000000'
         ),
       )
-    except:
+    except:  # noqa: E722
       pass
 
 
@@ -346,7 +346,7 @@ def GenerateSymbols(options, binaries):
         CreateSymbolDir(options, output_dir, binary_info.hash)
         with open(output_path, 'wb') as f:
           subprocess.check_call([dump_syms, '-r', binary], stdout=f)
-      except Exception as e:
+      except Exception:
         with exceptions_lock:
           exceptions.append(traceback.format_exc())
       finally:
@@ -420,7 +420,7 @@ def main():
   if args.clear:
     try:
       shutil.rmtree(args.symbols_dir)
-    except:
+    except:  # noqa: E722
       pass
 
   if not _GetDumpSymsBinary(args.dump_syms_path, args.build_dir):

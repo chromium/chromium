@@ -23,7 +23,7 @@ import json
 import os
 import shutil
 import pathlib
-import re
+import re  # noqa: F401
 import string
 import base64
 import sys
@@ -39,10 +39,10 @@ REPOSITORY_ROOT = os.path.abspath(
 )
 
 sys.path.insert(0, REPOSITORY_ROOT)
-import build.android.gyp.util.build_utils as build_utils  # pylint: disable=wrong-import-position
-import components.cronet.tools.utils as cronet_utils  # pylint: disable=wrong-import-position
-import components.cronet.tools.breakages_constants as breakages_constants  # pylint: disable=wrong-import-position
-import components.cronet.gn2bp.common as gn2bp_common  # pylint: disable=wrong-import-position
+import build.android.gyp.util.build_utils as build_utils  # noqa: E402
+import components.cronet.tools.utils as cronet_utils  # noqa: E402
+import components.cronet.tools.breakages_constants as breakages_constants  # noqa: E402
+import components.cronet.gn2bp.common as gn2bp_common  # noqa: E402
 
 _BORINGSSL_PATH = os.path.join(REPOSITORY_ROOT, 'third_party', 'boringssl')
 _BORINGSSL_SCRIPT = os.path.join('src', 'util', 'generate_build_files.py')

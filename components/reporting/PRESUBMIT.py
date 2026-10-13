@@ -9,8 +9,8 @@ for more details about the presubmit API built into depot_tools.
 
 PRESUBMIT_VERSION = '2.0.0'
 
-from pathlib import Path
-from pathlib import PurePath
+from pathlib import Path  # noqa: E402
+from pathlib import PurePath  # noqa: E402
 
 
 # Header file names that do not need to be verified.

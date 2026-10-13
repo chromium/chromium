@@ -15,8 +15,8 @@ REPOSITORY_ROOT = os.path.abspath(
 
 sys.path.insert(0, REPOSITORY_ROOT)
 
-import components.cronet.gn2bp.run_gn2bp as run_gn2bp  # pylint: disable=wrong-import-position
-import components.cronet.tools.breakages_constants as breakages_constants  # pylint: disable=wrong-import-position
+import components.cronet.gn2bp.run_gn2bp as run_gn2bp  # noqa: E402
+import components.cronet.tools.breakages_constants as breakages_constants  # noqa: E402
 
 
 class TestRunGN2BPUnitTest(unittest.TestCase):

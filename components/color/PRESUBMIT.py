@@ -8,7 +8,7 @@ INCLUDE_CPP_FILES_ONLY = (r'.*\.(cc|h)$',)
 def CheckChangeLintsClean(input_api, output_api):
     """Makes sure that the change is cpplint clean."""
     # The only valid extensions for cpplint are .cc, .h, .cpp, .cu, and .ch.
-    sources = lambda x: input_api.FilterSourceFile(
+    sources = lambda x: input_api.FilterSourceFile(  # noqa: E731
         x,
         files_to_check=INCLUDE_CPP_FILES_ONLY,
         files_to_skip=input_api.DEFAULT_FILES_TO_SKIP,

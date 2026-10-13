@@ -10,8 +10,8 @@ import sys
 
 _DIR_SOURCE_ROOT = os.path.join(os.path.dirname(__file__), '..', '..', '..')
 sys.path.append(os.path.abspath(os.path.join(_DIR_SOURCE_ROOT, 'build')))
-import action_helpers
-import zip_helpers
+import action_helpers  # noqa: E402
+import zip_helpers  # noqa: E402
 
 
 def main():

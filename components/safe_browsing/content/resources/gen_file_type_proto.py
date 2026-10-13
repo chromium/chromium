@@ -25,7 +25,7 @@ proto_generator_path = os.path.normpath(
     )
 )
 sys.path.insert(0, proto_generator_path)
-from binary_proto_generator import BinaryProtoGenerator
+from binary_proto_generator import BinaryProtoGenerator  # noqa: E402
 
 
 # Map of platforms for which we can generate binary protos.
@@ -35,11 +35,11 @@ from binary_proto_generator import BinaryProtoGenerator
 def PlatformTypes():
     return {
         # LINT.IfChange(PlatformTypes)
-        "android": download_file_types_pb2.DownloadFileType.PLATFORM_TYPE_ANDROID,
-        "chromeos": download_file_types_pb2.DownloadFileType.PLATFORM_TYPE_CHROME_OS,
-        "linux": download_file_types_pb2.DownloadFileType.PLATFORM_TYPE_LINUX,
-        "mac": download_file_types_pb2.DownloadFileType.PLATFORM_TYPE_MAC,
-        "win": download_file_types_pb2.DownloadFileType.PLATFORM_TYPE_WINDOWS,
+        "android": download_file_types_pb2.DownloadFileType.PLATFORM_TYPE_ANDROID,  # noqa: F821
+        "chromeos": download_file_types_pb2.DownloadFileType.PLATFORM_TYPE_CHROME_OS,  # noqa: F821
+        "linux": download_file_types_pb2.DownloadFileType.PLATFORM_TYPE_LINUX,  # noqa: F821
+        "mac": download_file_types_pb2.DownloadFileType.PLATFORM_TYPE_MAC,  # noqa: F821
+        "win": download_file_types_pb2.DownloadFileType.PLATFORM_TYPE_WINDOWS,  # noqa: F821
         # LINT.ThenChange(BUILD.gn:PlatformTypes)
     }
 
@@ -64,7 +64,7 @@ def PrunePlatformSettings(file_type, default_settings, platform_type):
         # Pick the most specific match.
         if (s.platform == platform_type) or (
             s.platform
-            == download_file_types_pb2.DownloadFileType.PLATFORM_TYPE_ANY
+            == download_file_types_pb2.DownloadFileType.PLATFORM_TYPE_ANY  # noqa: F821
             and setting_match is None
         ):
             setting_match = s
@@ -87,7 +87,7 @@ def FilterPbForPlatform(full_pb, platform_type):
     """Return a filtered protobuf for this platform_type"""
     assert type(platform_type) is int, "Bad platform_type type"
 
-    new_pb = download_file_types_pb2.DownloadFileTypeConfig()
+    new_pb = download_file_types_pb2.DownloadFileTypeConfig()  # noqa: F821
     new_pb.CopyFrom(full_pb)
 
     # Ensure there's only one platform_settings for the default.
@@ -150,7 +150,7 @@ class DownloadFileTypeProtoGenerator(BinaryProtoGenerator):
         globals()['download_file_types_pb2'] = download_file_types_pb2
 
     def EmptyProtoInstance(self):
-        return download_file_types_pb2.DownloadFileTypeConfig()
+        return download_file_types_pb2.DownloadFileTypeConfig()  # noqa: F821
 
     def ValidatePb(self, opts, pb):
         """Validate the basic values of the protobuf.  The

@@ -54,7 +54,7 @@ import pathlib
 import shutil
 import subprocess
 import sys
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union  # noqa: F401
 
 # Add third_party/perfetto/python and third_party/protobuf/python to sys.path
 _SCRIPT_DIR = pathlib.Path(__file__).resolve().parent
@@ -66,7 +66,7 @@ for p in [
     if p.is_dir() and str(p) not in sys.path:
         sys.path.insert(0, str(p))
 
-from perfetto.trace_processor import TraceProcessor  # pylint: disable=wrong-import-position
+from perfetto.trace_processor import TraceProcessor  # noqa: E402
 
 # Standard file signature magic bytes:
 # - JPEG begins with the Start of Image (SOI) marker (0xFF, 0xD8) followed by

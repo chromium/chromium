@@ -13,7 +13,7 @@ import argparse
 import base64
 import json
 import logging
-import os
+import os  # noqa: F401
 import sys
 
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')

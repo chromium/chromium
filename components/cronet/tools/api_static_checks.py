@@ -17,13 +17,13 @@ REPOSITORY_ROOT = os.path.abspath(
 )
 
 sys.path.insert(0, REPOSITORY_ROOT)
-from components.cronet.tools import update_api  # pylint: disable=wrong-import-position
-from components.cronet.tools import utils  # pylint: disable=wrong-import-position
-from build.android.gyp.util import build_utils  # pylint: disable=wrong-import-position
+from components.cronet.tools import update_api  # noqa: E402
+from components.cronet.tools import utils  # noqa: E402
+from build.android.gyp.util import build_utils  # noqa: E402
 
 # These regular expressions catch the beginning of lines that declare classes
 # and methods.  The first group returned by a match is the class or method name.
-from components.cronet.tools.update_api import CLASS_RE  # pylint: disable=wrong-import-position
+from components.cronet.tools.update_api import CLASS_RE  # noqa: E402
 
 METHOD_RE = re.compile(r".* ([^ ]*)\(.*\)( .+)?;")
 

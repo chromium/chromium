@@ -3,8 +3,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import os
-import sys
+import os  # noqa: F401
+import sys  # noqa: F401
 import unittest
 
 import syntax_check_policy_template_json

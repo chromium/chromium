@@ -20,7 +20,7 @@ import base64
 import json
 import logging
 import os
-import re
+import re  # noqa: F401
 import signal
 import subprocess
 import sys
@@ -41,7 +41,7 @@ try:
   from blob_generator import apply_device_policies
   import chrome_device_policy_pb2
   import chrome_settings_pb2
-  import policy_common_definitions_pb2
+  import policy_common_definitions_pb2  # noqa: F401
 except ImportError as e:
   logging.critical(f"Failed to import Chrome policy protobuf modules: {e}")
   sys.exit(1)
@@ -255,7 +255,6 @@ class Orchestrator:
       f"--startup-pipe={write_fd}",
     ]
     logging.info(f"Starting fake_dmserver: {' '.join(dmserver_args)}")
-    # pylint: disable=consider-using-with
     self.dmserver_process = subprocess.Popen(
       dmserver_args,
       pass_fds=[write_fd],
@@ -272,7 +271,7 @@ class Orchestrator:
         signal.alarm(30)
         server_info_raw = pipe_reader.read()
         signal.alarm(0)  # Disable the alarm
-    except TimeoutError:  # pylint: disable=broad-except-clause
+    except TimeoutError:
       stdout, _ = self.dmserver_process.communicate()
       raise RuntimeError(
         "Timed out waiting for fake_dmserver to start. "

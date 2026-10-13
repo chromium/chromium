@@ -216,7 +216,7 @@ class TemplateWriter(object):
     Returns: The list of policies of the policy group that are compatible
       with the writer.
     '''
-    if not 'policies' in group:
+    if 'policies' not in group:
       return []
     result = []
     for policy in group['policies']:
@@ -406,7 +406,7 @@ class TemplateWriter(object):
           new_list.append(grouped_policy)
       else:
         new_list.append(policy)
-    if sorting_key == None:
+    if sorting_key == None:  # noqa: E711
       sorting_key = self.GetPolicySortingKeyName
     new_list.sort(key=sorting_key)
     return new_list

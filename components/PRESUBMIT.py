@@ -81,6 +81,7 @@ def _CommonChecks(input_api, output_api):
     results += _CheckWebDevStyle(input_api, output_api)
     results += _CheckNotFatalUntilAdoption(input_api, output_api)
     results += input_api.canned_checks.CheckPatchFormatted(
-        input_api, output_api, check_js=True, check_python=False
+        input_api, output_api, check_js=True, check_python=True
     )
+    results += input_api.canned_checks.RunRuff(input_api, output_api)
     return results

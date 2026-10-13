@@ -41,8 +41,8 @@ def CheckWebViewExposedExperiments(input_api, output_api):
         and not AnyAffectedFileMatches(
             input_api, lambda f: f.LocalPath() == _PRODUCTION_SUPPORT_FILE
         )
-        and not 'Bypass-Webview-Feature-Check'
-        in input_api.change.GitFootersFromDescription()
+        and 'Bypass-Webview-Feature-Check'
+        not in input_api.change.GitFootersFromDescription()
     ):
         warnings += [
             output_api.PresubmitPromptWarning(

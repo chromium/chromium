@@ -252,7 +252,7 @@ class AdmxGenerator(object):
       # Instantiate referenced schema.
       referenced_schema = self._schema_map[policy_schema['$ref']]
       for key, value in referenced_schema.items():
-        if not key in policy_schema:
+        if key not in policy_schema:
           policy_schema[key] = value
 
     # For 'object' type items create a new category (folder) and add children.

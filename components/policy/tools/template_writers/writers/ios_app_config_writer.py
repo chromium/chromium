@@ -4,7 +4,7 @@
 # found in the LICENSE file.
 
 from xml.dom import minidom
-import json
+import json  # noqa: F401
 from writers import xml_formatted_writer
 
 _POLICY_TYPE_TO_XML_TAG = {
@@ -123,13 +123,13 @@ class IOSAppConfigWriter(xml_formatted_writer.XMLFormattedWriter):
       default_value = self.AddElement(parent, 'defaultValue', {})
       value = self.AddElement(default_value, 'value', {})
       if policy['type'] == 'main':
-        if policy['default'] == True:
+        if policy['default'] == True:  # noqa: E712
           self.AddText(value, 'true')
-        elif policy['default'] == False:
+        elif policy['default'] == False:  # noqa: E712
           self.AddText(value, 'false')
       elif policy['type'] in ['list', 'string-enum-list']:
         for v in policy['default']:
-          if value == None:
+          if value == None:  # noqa: E711
             value = self.AddElement(default_value, 'value', {})
           self.AddText(value, v)
         value = None

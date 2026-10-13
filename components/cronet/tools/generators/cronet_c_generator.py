@@ -7,14 +7,11 @@ import os
 
 # This is called from cronet_bindings_generator.py which does some magic to add
 # libraries to the lookup path which pylint does not
-# pylint: disable=import-error
 import mojom.generate.generator as generator
 import mojom.generate.module as mojom
 import mojom.generate.pack as pack
 from mojom.generate.template_expander import UseJinja
-# pylint: enable=import-error
 
-# pylint: disable=useless-object-inheritance,super-with-arguments
 
 _kind_to_cpp_type = {
     mojom.BOOL: "bool",
@@ -141,12 +138,9 @@ class _NameFormatter(object):
     def _ShouldIncludeNamespace(self, _):
         return self._token.module
 
-    # pylint: disable=inconsistent-return-statements
     def _GetNamespace(self):
         if self._token.module:
             return NamespaceToArray(self._token.module.namespace)
-
-    # pylint: enable=inconsistent-return-statements
 
 
 def NamespaceToArray(namespace):
@@ -718,7 +712,7 @@ class Generator(generator.Generator):
             return "mojo::ScopedMessagePipeHandle"
         if mojom.IsSharedBufferKind(kind):
             return "mojo::ScopedSharedBufferHandle"
-        if not kind in _kind_to_cpp_type:
+        if kind not in _kind_to_cpp_type:
             raise Exception("Unrecognized kind %s" % kind.spec)
         return _kind_to_cpp_type[kind]
 

@@ -23,7 +23,7 @@ def _CheckPedalsHistograms(input_api, output_api):
         ),
         None,
     )
-    if header != None:
+    if header != None:  # noqa: E711
 
         def count_id_enum_lines(contents):
             indices = list(
@@ -58,7 +58,7 @@ def _CheckPedalsHistograms(input_api, output_api):
                 ),
                 None,
             )
-            if enums == None:
+            if enums == None:  # noqa: E711
                 results.append(
                     output_api.PresubmitPromptWarning(
                         (

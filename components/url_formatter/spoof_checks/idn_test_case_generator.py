@@ -11,7 +11,7 @@ from Python shell (see make_case documentation).
 
 import argparse
 import codecs
-import doctest
+import doctest  # noqa: F401
 import sys
 
 

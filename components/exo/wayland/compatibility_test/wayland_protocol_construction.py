@@ -2,14 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import argparse
+import argparse  # noqa: F401
 import collections
 import dataclasses
 import functools
-import io
-import itertools
-import sys
-from typing import Any, Dict, Iterable, List, Mapping, Optional, Tuple
+import io  # noqa: F401
+import itertools  # noqa: F401
+import sys  # noqa: F401
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Tuple  # noqa: F401
 
 import wayland_protocol_data_classes
 import wayland_protocol_identifiers

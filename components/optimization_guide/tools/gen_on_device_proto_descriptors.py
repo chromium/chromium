@@ -17,13 +17,13 @@ mypy gen_on_device_proto_descriptors.py
 
 from __future__ import annotations
 
-from collections.abc import Callable, Iterator
+from collections.abc import Callable, Iterator  # noqa: F401
 import dataclasses
 import functools
 from io import StringIO
 import optparse
 import os
-import collections
+import collections  # noqa: F401
 import re
 import sys
 from typing import IO
@@ -32,7 +32,7 @@ _HERE_PATH = os.path.dirname(__file__)
 _SRC_PATH = os.path.normpath(os.path.join(_HERE_PATH, '..', '..', '..'))
 sys.path.insert(0, os.path.join(_SRC_PATH, 'third_party', 'protobuf', 'python'))
 
-from google.protobuf import descriptor_pb2
+from google.protobuf import descriptor_pb2  # noqa: E402
 
 
 # Enum types to be supported by PARSER_KIND_FIELDWISE. Supporting all possible
@@ -253,7 +253,7 @@ class DescriptorDb:
     _known_messages: dict[str, Message] = dataclasses.field(
         default_factory=dict
     )
-    _known_enums: dict[str, Enum] = dataclasses.field(default_factory=dict)
+    _known_enums: dict[str, Enum] = dataclasses.field(default_factory=dict)  # noqa: F821
 
     def _AddEnumType(self, enum_type: EnumType):
         self._known_enums['.' + enum_type.type_name] = enum_type
@@ -295,8 +295,9 @@ class DescriptorDb:
         return [self._known_messages[t] for t in sorted(message_types)]
 
     def GetEnumDescriptors(
-        self, enum_types: Iterable[str]
-    ) -> Iterable[EnumType]:
+        self,
+        enum_types: Iterable[str],  # noqa: F821
+    ) -> Iterable[EnumType]:  # noqa: F821
         return [self._known_enums[t] for t in sorted(enum_types)]
 
     def GetAllTransitiveDeps(self, message_types: set[str]) -> list[Message]:
@@ -336,8 +337,8 @@ class DescriptorDb:
 
 
 def GetReferencedEnumTypeNames(
-    writable_messages: Iterable[Message],
-) -> Iterable[str]:
+    writable_messages: Iterable[Message],  # noqa: F821
+) -> Iterable[str]:  # noqa: F821
     for message in writable_messages:
         for field in message.fields:
             if field.type == Type.ENUM:
@@ -360,7 +361,7 @@ def GenerateEnumDescriptors(
     )
     out.write('\n')
 
-    out.write(f'#include <string_view>\n')
+    out.write('#include <string_view>\n')
     out.write('\n')
 
     for include in sorted(descriptors.GetIncludes()):
@@ -810,7 +811,7 @@ class _SetProtoFieldString:
     def FieldCase(self, out, msg: Message, field: Field):
         out.write(f'case {field.tag_number}: {{\n')
         out.write(f'typed_msg->set_{field.name}(value);\n')
-        out.write(f'return ProtoStatus::kOk;\n')
+        out.write('return ProtoStatus::kOk;\n')
         out.write('}\n')  # End case
 
 
@@ -926,9 +927,9 @@ class _ConvertValue:
 
     @classmethod
     def GenPublic(cls, out: IO[str], messages: list[Message]):
-        out.write(f"""
+        out.write("""
           std::optional<proto::Any> ConvertToAnyWrappedProto(
-              const base::Value& object, const std::string& type_name) {{
+              const base::Value& object, const std::string& type_name) {
             proto::Any any;
             any.set_type_url("type.googleapis.com/" + type_name);
         """)
@@ -943,9 +944,9 @@ class _ConvertValue:
             }}
           """)
 
-        out.write(f"""
+        out.write("""
             return std::nullopt;
-          }}
+          }
         """)
 
     @classmethod
@@ -976,21 +977,21 @@ class _ConvertValue:
             out.write('if (const base::Value* field_value =\n')
             out.write(f'     asdict->Find("{field.desc.json_name}")) {{')
             cls._FieldCase(out, msg, field)
-            out.write(f'}}')
-        out.write(f"""
+            out.write('}')
+        out.write("""
             return true;
-          }}
+          }
         """)
 
     @classmethod
     def _FieldCase(cls, out: IO[str], msg: Message, field: Field):
         if field.is_repeated:
-            out.write(f"""
+            out.write("""
               const auto* lst = field_value->GetIfList();
-              if (!lst) {{
+              if (!lst) {
                 return false;
-              }}
-              for (const base::Value& entry_value : *lst) {{
+              }
+              for (const base::Value& entry_value : *lst) {
             """)
             if field.type == Type.MESSAGE:
                 out.write(f"""

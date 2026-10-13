@@ -18,12 +18,12 @@ gen_android_bp.py#create_modules_from_target.
 """
 
 import argparse
-from typing import Set, List, Dict
-import glob
+from typing import Set, List, Dict  # noqa: F401
+import glob  # noqa: F401
 import json
 import tempfile
 import re
-import subprocess
+import subprocess  # noqa: F401
 import os
 import sys
 import shutil
@@ -33,10 +33,10 @@ REPOSITORY_ROOT = os.path.abspath(
 )
 sys.path.insert(0, REPOSITORY_ROOT)
 
-import components.cronet.tools.utils as cronet_utils  # pylint: disable=wrong-import-position
-import components.cronet.gn2bp.common as gn2bp_common  # pylint: disable=wrong-import-position
-import components.cronet.gn2bp.gen_android_bp as cronet_gn2bp  # pylint: disable=wrong-import-position
-from components.cronet.gn2bp.arguments import CommandLineUtility
+import components.cronet.tools.utils as cronet_utils  # noqa: E402
+import components.cronet.gn2bp.common as gn2bp_common  # noqa: E402
+import components.cronet.gn2bp.gen_android_bp as cronet_gn2bp  # noqa: E402, F401
+from components.cronet.gn2bp.arguments import CommandLineUtility  # noqa: E402
 
 
 def _extract_crate_path(args: List[str]) -> str:

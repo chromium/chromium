@@ -4,8 +4,8 @@
 """This presubmit ensures that all known test suites in the current component
 are included in the launcher filter file."""
 
-import re
-from typing import Dict, List
+import re  # noqa: F401
+from typing import Dict, List  # noqa: F401
 
 TOOL_PATH = 'tools/testing/launcher_filter_file.py'
 
@@ -40,20 +40,6 @@ def FetchLauncherFilterFileData(input_api, cwd: str) -> Dict[str, str]:
     ret['expected'] = lff.GetExpectedLauncherFilterFileContent()
     ret['actual'] = lff.GetActualLauncherFilterFileContent()
     return ret
-
-
-def GetPylintConfiguration(input_api, output_api) -> List:
-    if not input_api.HasAffectedFiles(extensions='.py'):
-        return []
-    disabled_warnings = [
-        'C0415',  # import-outside-toplevel
-    ]
-    return input_api.canned_checks.RunPylint(
-        input_api,
-        output_api,
-        version='2.7',
-        disabled_warnings=disabled_warnings,
-    )
 
 
 def _CheckUmaMetrics(input_api, output_api):
@@ -120,7 +106,7 @@ def _CheckUmaMetrics(input_api, output_api):
 
 
 def _CommonChecks(input_api, output_api):
-    output = GetPylintConfiguration(input_api, output_api)
+    output = []
     cwd = input_api.PresubmitLocalPath()
     tool_help_path = GetToolPathRelativeToRepositoryRoot(input_api)
 

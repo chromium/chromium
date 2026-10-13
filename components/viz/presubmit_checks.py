@@ -8,7 +8,7 @@ import re
 
 
 def CheckChangeLintsClean(input_api, output_api, allowlist, denylist=None):
-    source_filter = lambda x: input_api.FilterSourceFile(x, allowlist, denylist)
+    source_filter = lambda x: input_api.FilterSourceFile(x, allowlist, denylist)  # noqa: E731
 
     return input_api.canned_checks.CheckChangeLintsClean(
         input_api, output_api, source_filter, lint_filters=[], verbose_level=1
@@ -17,7 +17,7 @@ def CheckChangeLintsClean(input_api, output_api, allowlist, denylist=None):
 
 def CheckAsserts(input_api, output_api, allowlist, denylist=None):
     denylist = tuple(denylist or input_api.DEFAULT_FILES_TO_SKIP)
-    source_file_filter = lambda x: input_api.FilterSourceFile(
+    source_file_filter = lambda x: input_api.FilterSourceFile(  # noqa: E731
         x, allowlist, denylist
     )
 
@@ -41,7 +41,7 @@ def CheckAsserts(input_api, output_api, allowlist, denylist=None):
 
 def CheckStdAbs(input_api, output_api, allowlist, denylist=None):
     denylist = tuple(denylist or input_api.DEFAULT_FILES_TO_SKIP)
-    source_file_filter = lambda x: input_api.FilterSourceFile(
+    source_file_filter = lambda x: input_api.FilterSourceFile(  # noqa: E731
         x, allowlist, denylist
     )
 
@@ -97,7 +97,7 @@ def CheckStdAbs(input_api, output_api, allowlist, denylist=None):
 
 def CheckPassByValue(input_api, output_api, allowlist, denylist=None):
     denylist = tuple(denylist or input_api.DEFAULT_FILES_TO_SKIP)
-    source_file_filter = lambda x: input_api.FilterSourceFile(
+    source_file_filter = lambda x: input_api.FilterSourceFile(  # noqa: E731
         x, allowlist, denylist
     )
 
@@ -128,7 +128,7 @@ def CheckPassByValue(input_api, output_api, allowlist, denylist=None):
 def CheckTodos(input_api, output_api):
     errors = []
 
-    source_file_filter = lambda x: x
+    source_file_filter = lambda x: x  # noqa: E731
     for f in input_api.AffectedSourceFiles(source_file_filter):
         contents = input_api.ReadFile(f, 'rb')
         if ('FIX' + 'ME') in contents:
@@ -149,7 +149,7 @@ def CheckTodos(input_api, output_api):
 def CheckDoubleAngles(input_api, output_api, allowlist, denylist=None):
     errors = []
 
-    source_file_filter = lambda x: input_api.FilterSourceFile(
+    source_file_filter = lambda x: input_api.FilterSourceFile(  # noqa: E731
         x, allowlist, denylist
     )
     for f in input_api.AffectedSourceFiles(source_file_filter):
@@ -171,7 +171,7 @@ def FindUnquotedQuote(contents, pos):
 
 def FindUselessIfdefs(input_api, output_api):
     errors = []
-    source_file_filter = lambda x: x
+    source_file_filter = lambda x: x  # noqa: E731
     for f in input_api.AffectedSourceFiles(source_file_filter):
         contents = input_api.ReadFile(f, 'rb')
         if re.search(r'#if\s*0\s', contents):
@@ -236,7 +236,7 @@ def FindNamespaceInBlock(pos, namespace, contents, allowlist=[]):
 def CheckNamespace(input_api, output_api):
     errors = []
 
-    source_file_filter = lambda x: x
+    source_file_filter = lambda x: x  # noqa: E731
     for f in input_api.AffectedSourceFiles(source_file_filter):
         contents = input_api.ReadFile(f, 'rb')
         match = re.search(r'namespace\s*viz\s*{', contents)
@@ -259,7 +259,7 @@ def CheckNamespace(input_api, output_api):
 # Verifies that we use the right module name (viz.mojom) in mojom files and we
 # don't specify module name viz.mojom when referring to types in viz.mojom.
 def CheckMojoms(input_api, output_api):
-    source_file_filter = lambda x: input_api.FilterSourceFile(
+    source_file_filter = lambda x: input_api.FilterSourceFile(  # noqa: E731
         x, ['.*\.mojom$'], []
     )
     wrong_module_name = []
@@ -293,7 +293,7 @@ def CheckMojoms(input_api, output_api):
 def CheckForUseOfWrongClock(input_api, output_api, allowlist, denylist=None):
     """Make sure new lines of code don't use a clock susceptible to skew."""
     denylist = tuple(denylist or input_api.DEFAULT_FILES_TO_SKIP)
-    source_file_filter = lambda x: input_api.FilterSourceFile(
+    source_file_filter = lambda x: input_api.FilterSourceFile(  # noqa: E731
         x, allowlist, denylist
     )
     # Regular expression that should detect any explicit references to the

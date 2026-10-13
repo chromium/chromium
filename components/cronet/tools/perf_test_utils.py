@@ -13,7 +13,6 @@ from time import sleep
 
 from cronet.tools import android_rndis_forwarder
 
-# pylint: disable=useless-object-inheritance
 
 REPOSITORY_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..', '..', '..')
@@ -66,7 +65,6 @@ globals().update(DEFAULT_BENCHMARK_CONFIG)
 # Pylint doesn't really interpret the file, so it won't find the definitions
 # added from DEFAULT_BENCHMARK_CONFIG, so suppress the undefined variable and
 # bad string format type warnings.
-# pylint: disable=undefined-variable,bad-string-format-type
 
 
 class NativeDevice(object):
@@ -123,7 +121,7 @@ class QuicServer(object):
             '--quic_response_cache_dir=%s' % self._quic_server_doc_root,
             '--certificate_file=%s' % QUIC_CERT,
             '--key_file=%s' % QUIC_KEY,
-            '--port=%d' % QUIC_PORT,
+            '--port=%d' % QUIC_PORT,  # noqa: F821
         ]
         logging.info("Starting Quic Server: %s", cmd)
         self._process = subprocess.Popen(cmd)
@@ -135,7 +133,7 @@ class QuicServer(object):
                 [
                     'lsof',
                     '-i',
-                    'udp:%d' % QUIC_PORT,
+                    'udp:%d' % QUIC_PORT,  # noqa: F821
                     '-p',
                     '%d' % self._process.pid,
                 ],
@@ -168,20 +166,20 @@ class QuicServer(object):
 def GenerateHttpTestResources():
     http_server_doc_root = tempfile.mkdtemp()
     # Create a small test file to serve.
-    small_file_name = os.path.join(http_server_doc_root, SMALL_RESOURCE)
+    small_file_name = os.path.join(http_server_doc_root, SMALL_RESOURCE)  # noqa: F821
     small_file = open(small_file_name, 'wb')
     small_file.write('<html><body></body></html>')
     small_file.close()
-    assert SMALL_RESOURCE_SIZE == os.path.getsize(small_file_name)
+    assert SMALL_RESOURCE_SIZE == os.path.getsize(small_file_name)  # noqa: F821
     # Create a large (10MB) test file to serve.
-    large_file_name = os.path.join(http_server_doc_root, LARGE_RESOURCE)
+    large_file_name = os.path.join(http_server_doc_root, LARGE_RESOURCE)  # noqa: F821
     large_file = open(large_file_name, 'wb')
     large_file.write('<html><body>')
     for _ in range(0, 1000000):
         large_file.write('1234567890')
     large_file.write('</body></html>')
     large_file.close()
-    assert LARGE_RESOURCE_SIZE == os.path.getsize(large_file_name)
+    assert LARGE_RESOURCE_SIZE == os.path.getsize(large_file_name)  # noqa: F821
     return http_server_doc_root
 
 
@@ -189,7 +187,7 @@ def GenerateQuicTestResources(device):
     quic_server_doc_root = tempfile.mkdtemp()
     # Use wget to build up fake QUIC in-memory cache dir for serving.
     # quic_server expects the dir/file layout that wget produces.
-    for resource in [SMALL_RESOURCE, LARGE_RESOURCE]:
+    for resource in [SMALL_RESOURCE, LARGE_RESOURCE]:  # noqa: F821
         assert (
             subprocess.Popen(
                 [
@@ -209,7 +207,8 @@ def GenerateQuicTestResources(device):
             quic_server_doc_root, "%s:%d" % (GetServersHost(device), HTTP_PORT)
         ),
         os.path.join(
-            quic_server_doc_root, "%s:%d" % (QUIC_CERT_HOST, QUIC_PORT)
+            quic_server_doc_root,
+            "%s:%d" % (QUIC_CERT_HOST, QUIC_PORT),  # noqa: F821
         ),
     )
     return quic_server_doc_root

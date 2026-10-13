@@ -8,10 +8,10 @@ import copy
 import shlex
 import hashlib
 from pathlib import Path
-from typing import List, Dict, Set, Union, Iterable
+from typing import List, Dict, Set, Union, Iterable  # noqa: F401
 
 import gn_utils
-import targets as gn2bp_targets
+import targets as gn2bp_targets  # noqa: F401
 import build.gn_helpers
 import components.cronet.tools.utils as cronet_utils
 import soong_ast

@@ -14,7 +14,7 @@ PRESUBMIT_VERSION = '2.0.0'
 def CheckNoBannedFunctions(input_api, output_api):
     """Makes sure that banned functions are not used."""
     errors = []
-    file_filter = lambda f: (
+    file_filter = lambda f: (  # noqa: E731
         f.LocalPath().startswith('components/autofill/content/renderer/')
         and f.LocalPath().endswith(('.h', '.cc'))
     )

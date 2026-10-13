@@ -86,7 +86,7 @@ def main():
     for f in expected_files:
         print('   ', f)
 
-    shall = raw_input('\nAre you sure (y/N) ').lower() == 'y'
+    shall = raw_input('\nAre you sure (y/N) ').lower() == 'y'  # noqa: F821
     if not shall:
         print('aborting')
         return 1

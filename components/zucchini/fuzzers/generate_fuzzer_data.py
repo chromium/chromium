@@ -10,7 +10,6 @@ zucchini.fuzzers.FilePair.
 """
 
 # Keep the existing two-space indentation to limit the scope of this change.
-# pylint: disable=bad-indentation
 
 import argparse
 import logging
@@ -57,9 +56,7 @@ def generate_seed(
         zuc_cmd.append('-raw')
     # Avoid a with statement so cleanup errors do not replace child return
     # codes.
-    temp_dir = tempfile.TemporaryDirectory(  # pylint: disable=consider-using-with
-        prefix='zucchini-seed-'
-    )
+    temp_dir = tempfile.TemporaryDirectory(prefix='zucchini-seed-')
     patch_file = os.path.join(temp_dir.name, 'patch.zuc')
     returncode = 1
     try:

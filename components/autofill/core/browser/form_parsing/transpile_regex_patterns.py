@@ -24,7 +24,7 @@ _JSON5_PATH = os.path.join(
     'src',
 )
 sys.path.append(_JSON5_PATH)
-import json5
+import json5  # noqa: E402
 
 
 # Generates a set of C++ constexpr constants to facilitate lookup of a set of
@@ -100,9 +100,7 @@ def generate_cpp_constants(id_to_name_to_lang_to_patterns):
         cpp_enum_values = [
             json_to_cpp_constant_symbol(c) for c in json_enum_values
         ]
-        return (
-            f'DenseSet<{cpp_enum_type}>{{' + ','.join(cpp_enum_values) + f'}}'
-        )
+        return f'DenseSet<{cpp_enum_type}>{{' + ','.join(cpp_enum_values) + '}'
 
     # Maps a list of strings to a DenseSet<MatchAttribute> expression.
     # The strings must be the names of MatchAttribute constants, e.g., NAME.
@@ -253,7 +251,7 @@ def generate_cpp_constants(id_to_name_to_lang_to_patterns):
         for name, lang_to_patterns in sorted(name_to_lang_to_patterns.items()):
             for lang, patterns in sorted(lang_to_patterns.items()):
                 patternrefs = name_to_lang_to_id_to_patternrefs[name][lang][id]
-                sort_key = lambda p: (-p['positive_score'], p['lang'])
+                sort_key = lambda p: (-p['positive_score'], p['lang'])  # noqa: E731
                 for pattern in sorted(patterns, key=sort_key):
                     is_supplementary = (
                         'supplementary' in pattern and pattern['supplementary']
@@ -302,12 +300,12 @@ def generate_cpp_constants(id_to_name_to_lang_to_patterns):
                 else:
                     yield (
                         f'constexpr MatchPatternRef {kPatterns(id, name, lang)}[] {{'
-                        + f', '.join(
-                            f'MakeMatchPatternRef('
+                        + ', '.join(
+                            'MakeMatchPatternRef('
                             + f'{python_bool_to_cpp(is_supplementary)}, {index})'
                             for is_supplementary, index in patternrefs
                         )
-                        + f'}};'
+                        + '};'
                     )
     yield ''
 
@@ -459,7 +457,7 @@ def build_cpp_file(id_to_name_to_lang_to_patterns, output_handle):
         line += '\n'
         # unicode() exists and is necessary only in Python 2, not in Python 3.
         if sys.version_info[0] < 3:
-            line = unicode(s, 'utf-8')
+            line = unicode(s, 'utf-8')  # noqa: F821
         output_handle.write(line)
 
 

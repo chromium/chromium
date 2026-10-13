@@ -97,7 +97,7 @@ def _SubstituteSchemaRefNames(
 
     if (
         not isinstance(node, dict)
-        or not child_key in node
+        or child_key not in node
         or not isinstance(node[child_key], dict)
     ):
         return
@@ -168,7 +168,7 @@ def _AppendSensitivePolicyNotices(policy):
         policy.get('supported_on', []) + policy.get('future_on', [])
     )
 
-    is_supported = lambda platform: (
+    is_supported = lambda platform: (  # noqa: E731
         'chrome.*' in supported_platforms or platform in supported_platforms
     )
 

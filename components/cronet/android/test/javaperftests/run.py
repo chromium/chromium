@@ -56,22 +56,18 @@ sys.path.append(os.path.join(REPOSITORY_ROOT, 'tools', 'perf'))
 sys.path.append(os.path.join(REPOSITORY_ROOT, 'build', 'android'))
 sys.path.append(os.path.join(REPOSITORY_ROOT, 'components'))
 
-# pylint: disable=wrong-import-position
-from chrome_telemetry_build import chromium_config
-from devil.android import device_utils
-from devil.android.sdk import intent
-from core import benchmark_runner
-from cronet.tools import android_rndis_forwarder
-from cronet.tools import perf_test_utils
-import lighttpd_server
-from pylib import constants
-from telemetry import android
-from telemetry import benchmark
-from telemetry import story as story_module
-from telemetry.web_perf import timeline_based_measurement
-# pylint: enable=wrong-import-position
-
-# pylint: disable=super-with-arguments
+from chrome_telemetry_build import chromium_config  # noqa: E402
+from devil.android import device_utils  # noqa: E402
+from devil.android.sdk import intent  # noqa: E402
+from core import benchmark_runner  # noqa: E402
+from cronet.tools import android_rndis_forwarder  # noqa: E402
+from cronet.tools import perf_test_utils  # noqa: E402
+import lighttpd_server  # noqa: E402
+from pylib import constants  # noqa: E402
+from telemetry import android  # noqa: E402
+from telemetry import benchmark  # noqa: E402
+from telemetry import story as story_module  # noqa: E402
+from telemetry.web_perf import timeline_based_measurement  # noqa: E402
 
 
 def GetDevice():

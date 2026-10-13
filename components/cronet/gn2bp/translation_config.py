@@ -4,7 +4,7 @@
 
 import gn_utils
 
-import build.gn_helpers
+import build.gn_helpers  # noqa: F401
 
 CRONET_LICENSE_NAME = "external_cronet_license"
 
@@ -14,7 +14,6 @@ LIBCRYPTO_STRIPPED = "libcrypto"
 LIBCRYPTO_UNSTRIPPED = "libcrypto_unstripped"
 
 
-# pylint: disable=unused-argument
 def always_disable(module, arch, context):
     return None
 
@@ -25,9 +24,6 @@ def enable_zlib(module, arch, context):
         module.shared_libs.add('libz')
     else:
         module.target[arch].shared_libs.add('libz')
-
-
-# pylint: enable=unused-argument
 
 
 def enable_boringssl(module, arch, context):
@@ -53,7 +49,6 @@ def enable_boringssl(module, arch, context):
         static_libs.add(f'{context.module_prefix}ssl_and_pki')
 
 
-# pylint: disable=unused-argument
 def add_androidx_experimental_java_deps(module, arch, context):
     module.libs.add("androidx.annotation_annotation-experimental")
 
@@ -160,8 +155,6 @@ def add_androidx_fragment_fragment(module, arch, context):
 def add_rustversion_deps(module, arch, context):
     module.proc_macros.add("librustversion")
 
-
-# pylint: enable=unused-argument
 
 _builtin_deps = {
     '//buildtools/third_party/libunwind:libunwind': always_disable,

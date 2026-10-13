@@ -13,7 +13,7 @@ REPOSITORY_ROOT = os.path.abspath(
 )
 
 sys.path.insert(0, os.path.join(REPOSITORY_ROOT, 'build/android/gyp'))
-from util import build_utils  # pylint: disable=wrong-import-position
+from util import build_utils  # noqa: E402
 
 
 def main(args):

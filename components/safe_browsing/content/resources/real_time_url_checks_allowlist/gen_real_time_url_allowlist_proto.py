@@ -7,7 +7,7 @@ Convert the ASCII real_time_url_allowlist.asciipb proto into a binary resource.
 """
 
 import os
-import re
+import re  # noqa: F401
 import sys
 
 from validation_utils import CheckHashPrefixesAreValid
@@ -22,7 +22,7 @@ proto_generator_path = os.path.normpath(
     )
 )
 sys.path.insert(0, proto_generator_path)
-from binary_proto_generator import BinaryProtoGenerator
+from binary_proto_generator import BinaryProtoGenerator  # noqa: E402
 
 
 def WritePbFile(full_pb, outfile):
@@ -47,7 +47,7 @@ class RealTimeUrlAllowlistProtoGenerator(BinaryProtoGenerator):
         globals()['realtimeallowlist_pb2'] = realtimeallowlist_pb2
 
     def EmptyProtoInstance(self):
-        return realtimeallowlist_pb2.HighConfidenceAllowlist()
+        return realtimeallowlist_pb2.HighConfidenceAllowlist()  # noqa: F821
 
     def ValidatePb(self, opts, pb):
         """Validate the basic url_hashes value of the protobuf.  The

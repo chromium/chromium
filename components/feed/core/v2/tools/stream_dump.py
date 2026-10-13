@@ -15,13 +15,13 @@
 # device.
 # > stream_dump.py --device=FA77D0303076 --apk='com.chrome.canary' --reverse
 import argparse
-import glob
+import glob  # noqa: F401
 import os
 import plyvel
 import protoc_util
-import re
+import re  # noqa: F401
 import subprocess
-import sys
+import sys  # noqa: F401
 
 from os.path import join, dirname, realpath
 

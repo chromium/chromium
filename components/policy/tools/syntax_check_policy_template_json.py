@@ -6,8 +6,8 @@
 Checks a policy_templates.json file for conformity to its syntax specification.
 '''
 
-import argparse
-import ast
+import argparse  # noqa: F401
+import ast  # noqa: F401
 import json
 import os
 import re
@@ -18,7 +18,7 @@ _SRC_PATH = os.path.abspath(
   os.path.join(os.path.dirname(__file__), '..', '..', '..')
 )
 sys.path.append(os.path.join(_SRC_PATH, 'third_party'))
-import pyyaml
+import pyyaml  # noqa: E402
 
 # Matches all non-empty strings that contain no whitespaces.
 NO_WHITESPACE = re.compile('[^\s]+$')
@@ -379,7 +379,7 @@ class PolicyTypeProvider:
       )
 
     if '$ref' in schema:
-      if not schema['$ref'] in schemas_by_id:
+      if schema['$ref'] not in schemas_by_id:
         raise NotImplementedError(
           'Policy %s uses unknown $ref %s in schema. If you are '
           'removing a $ref that is no longer used, please remove it in a '
@@ -524,7 +524,7 @@ class PolicyTemplateChecker(object):
     if identifier is None:
       try:
         identifier = container.get('name')
-      except:
+      except:  # noqa: E722
         self._Error('Cannot access container name of "%s".' % container_name)
         return None
     if container_name is None:
@@ -683,7 +683,7 @@ class PolicyTemplateChecker(object):
       and policy.get('name') not in LEGACY_NEGATIVE_MINIMUM_ALLOWED
     ):
       self._PolicyError(
-        f'Integer policy allows negative values.\n'
+        'Integer policy allows negative values.\n'
         '  Negative values are forbidden and could silently be replaced with '
         'zeros when using them. See also https://crbug.com/1115976',
         policy,
@@ -735,7 +735,7 @@ class PolicyTemplateChecker(object):
       if not isinstance(default, int):
         self._PolicyError('Default value it not an integer.', policy, 'default')
       elif default < 0:
-        self._PolicyError(f'Default value less than zero.', policy, 'default')
+        self._PolicyError('Default value less than zero.', policy, 'default')
       return
 
     if policy_type == 'main':
@@ -804,7 +804,7 @@ class PolicyTemplateChecker(object):
 
       # The unset item can only appear if the default is None, since
       # there is no other way for it to be set.
-      if 'default' in policy and policy['default'] == None:
+      if 'default' in policy and policy['default'] == None:  # noqa: E711
         required_values.append(None)
 
       # Since the item captions don't appear everywhere the description does,
@@ -1167,9 +1167,9 @@ class PolicyTemplateChecker(object):
       # All the features must have a documenting message.
       if features:
         for feature in features:
-          if not feature in self.features:
+          if feature not in self.features:
             self._PolicyError(
-              f'Unknown feature. Known features must have a '
+              'Unknown feature. Known features must have a '
               'documentation string in the messages dictionary.',
               policy,
               'features',
@@ -1205,7 +1205,7 @@ class PolicyTemplateChecker(object):
       if (
         not policy.get('device_only', False)
         and not policy.get('deprecated', False)
-        and not 'chrome_frame' in supported_platforms
+        and 'chrome_frame' not in supported_platforms
       ):
         self._CheckContains(
           features,
@@ -1374,7 +1374,7 @@ class PolicyTemplateChecker(object):
       )
 
       # 'internal_only' feature must be an optional boolean flag.
-      internal_only = self._CheckContains(
+      internal_only = self._CheckContains(  # noqa: F841
         features,
         'internal_only',
         bool,
@@ -1515,9 +1515,9 @@ class PolicyTemplateChecker(object):
     |custom_value_validation| if any or do a normal equality comparison.
     '''
     return (
-      custom_value_validation == None and old_schema_value == new_schema_value
+      custom_value_validation == None and old_schema_value == new_schema_value  # noqa: E711
     ) or (
-      custom_value_validation != None
+      custom_value_validation != None  # noqa: E711
       and custom_value_validation(old_schema_value, new_schema_value)
     )
 
@@ -1555,7 +1555,7 @@ class PolicyTemplateChecker(object):
     # If there is no new value but an old one exists, generally this is
     # considered an incompatibility and should be reported unless removals are
     # allowed for this value.
-    if new_schema_value == None:
+    if new_schema_value == None:  # noqa: E711
       if not only_removals_allowed:
         self._SchemaCompatibleError(
           'Value in policy schema path \'%s\' was removed in new schema '
@@ -1564,7 +1564,7 @@ class PolicyTemplateChecker(object):
       return
 
     # Both old and new values must be of the same type.
-    if type(old_schema_value) != type(new_schema_value):
+    if type(old_schema_value) != type(new_schema_value):  # noqa: E721
       self._SchemaCompatibleError(
         'Value in policy schema path \'%s\' is of type \'%s\' but value in '
         'schema is of type \'%s\'.'
@@ -1699,18 +1699,18 @@ class PolicyTemplateChecker(object):
     # to expand the '$ref' and see if the before and after are still compatible.
     if ('type' in old_schema) != ('type' in new_schema):
       if '$ref' in old_schema:
-        if not old_schema['$ref'] in schemas_by_id:
+        if old_schema['$ref'] not in schemas_by_id:
           raise NotImplementedError(
             'Policy %s uses unknown $ref %s in old_schema'
-            % (policy['name'], old_schema['$ref'])
+            % (policy['name'], old_schema['$ref'])  # noqa: F821
           )
         old_schema = schemas_by_id[old_schema['$ref']]
 
       if '$ref' in new_schema:
-        if not new_schema['$ref'] in schemas_by_id:
+        if new_schema['$ref'] not in schemas_by_id:
           raise NotImplementedError(
             'Policy %s uses unknown $ref %s in new_schema'
-            % (policy['name'], new_schema['$ref'])
+            % (policy['name'], new_schema['$ref'])  # noqa: F821
           )
         new_schema = schemas_by_id[new_schema['$ref']]
 
@@ -1764,7 +1764,7 @@ class PolicyTemplateChecker(object):
       ):
         if type(old_value) is not dict:
           self._SchemaCompatibleError(
-            'Unexpected type \'%s\' at policy schema path \'%s\'. It must be '
+            'Unexpected type \'%s\' at policy schema path \'%s\'. It must be '  # noqa: F507
             'dict' % (type(old_value).__name__,)
           )
           continue
@@ -1813,7 +1813,7 @@ class PolicyTemplateChecker(object):
     for new_key in (
       old_key
       for old_key in new_schema.keys()
-      if not old_key in old_schema.keys()
+      if old_key not in old_schema.keys()
     ):
       self._SchemaCompatibleError(
         'Key \'%s\' was added to policy schema path \'%s\' in new schema.'

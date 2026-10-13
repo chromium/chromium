@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import os.path
-from typing import List, Callable
+from typing import List, Callable  # noqa: F401
 import re
 
 import constants
@@ -132,7 +132,7 @@ def parse_chromium_readme_file(
         raise Exception(f"Failed to post-process {readme_path}") from e
 
     for license_name in metadata.get_licenses():
-        if not license_name in constants.RAW_LICENSE_TO_FORMATTED_DETAILS:
+        if license_name not in constants.RAW_LICENSE_TO_FORMATTED_DETAILS:
             raise InvalidMetadata(
                 f"\"{readme_path}\" contains unidentified license \"{license_name}\""
             )

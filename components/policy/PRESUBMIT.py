@@ -7,22 +7,22 @@
 
 PRESUBMIT_VERSION = '2.0.0'
 
-import glob
-import os
-import re
-import sys
-from xml.dom import minidom
-from xml.parsers import expat
+import glob  # noqa: E402
+import os  # noqa: E402
+import re  # noqa: E402
+import sys  # noqa: E402
+from xml.dom import minidom  # noqa: E402
+from xml.parsers import expat  # noqa: E402
 
 sys.path.append(os.path.abspath('./resources'))
-from policy_templates import (
+from policy_templates import (  # noqa: E402
     GetPolicyTemplates,
     SENSITIVE_POLICY_NOTICES,
     SENSITIVE_POLICIES_WITH_MANUAL_NOTICE_PATTERN,
 )
 
 sys.path.append(os.path.join('..', '..', 'third_party'))
-import pyyaml
+import pyyaml  # noqa: E402
 
 
 _CACHED_FILES = {}
@@ -137,7 +137,7 @@ def _GetCurrentVersion(input_api):
         version_path = input_api.os_path.join(root, 'chrome', 'VERSION')
         with open(version_path, "rb") as f:
             _CACHED_FILES['version'] = int(f.readline().split(b"=")[1])
-    except:
+    except:  # noqa: E722
         pass
     return _CACHED_FILES['version']
 
@@ -270,11 +270,11 @@ def _GetPolicyChangeList(input_api):
         if policy_name in policy_changes_map:
             # We previously found the policy at the new location, update old_policy
             # with the value from the old location.
-            if policy_changes_map[policy_name]['old_policy'] == None:
+            if policy_changes_map[policy_name]['old_policy'] == None:  # noqa: E711
                 policy_changes_map[policy_name]['old_policy'] = old_policy
             # We previously found the policy at the old location, update new_policy
             # with the value from the new location.
-            if policy_changes_map[policy_name]['new_policy'] == None:
+            if policy_changes_map[policy_name]['new_policy'] == None:  # noqa: E711
                 policy_changes_map[policy_name]['new_policy'] = new_policy
         else:
             policy_changes_map[policy_name] = {
@@ -525,7 +525,7 @@ def CheckMissingPlaceholders(input_api, output_api):
         for key in ['desc', 'text']:
             if item is None:
                 continue
-            if not key in item:
+            if key not in item:
                 continue
             try:
                 node = minidom.parseString(
@@ -800,7 +800,7 @@ def CheckPoliciesYamlOrdering(input_api, output_api):
             if not error_msg_template:
                 results.append(
                     output_api.PresubmitError(
-                        f'Invalid syntax, missing either policies, or atomic_groups key.'
+                        'Invalid syntax, missing either policies, or atomic_groups key.'
                     )
                 )
                 continue
@@ -951,7 +951,7 @@ def CheckDevicePolicies(input_api, output_api):
         policy_change['new_policy'].get('device_only', False)
         or policy_change['new_policy']['type'] == 'external'
         for policy_change in policy_changelist
-        if policy_change['new_policy'] != None
+        if policy_change['new_policy'] != None  # noqa: E711
     ):
         return results
 

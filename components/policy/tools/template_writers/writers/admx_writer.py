@@ -300,8 +300,8 @@ class ADMXWriter(
         min = schema['minimum']
       if 'maximum' in schema and schema['maximum'] >= 0:
         max = schema['maximum']
-    assert type(min) == int
-    assert type(max) == int
+    assert type(min) == int  # noqa: E721
+    assert type(max) == int  # noqa: E721
     attributes = {
       'id': policy['name'],
       'valueName': policy['name'],

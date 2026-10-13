@@ -4,7 +4,7 @@
 # found in the LICENSE file.
 '''Unit tests for writers.doc_writer'''
 
-import json
+import json  # noqa: F401
 import os
 import sys
 

@@ -106,7 +106,7 @@ class JamfWriter(template_writer.TemplateWriter):
       if policy['id'] in self.POLICY_ID_TO_INPUT:
         policy_output['type'] = self.POLICY_ID_TO_INPUT[policy['id']]
 
-      policy_type = policy_output['type']
+      policy_type = policy_output['type']  # noqa: F841
       if policy['type'] == 'int-enum' or policy['type'] == 'string-enum':
         policy_output['options'] = {
           'enum_titles': [item['name'] for item in policy['items']]
@@ -237,7 +237,7 @@ class JamfWriter(template_writer.TemplateWriter):
           # Create nested '$ref' objects with |last_obj| as the last object.
           for count in range(1, self.MAX_RECURSIVE_FIELDS_DEPTH):
             obj[key] = copy.deepcopy(known_ids[id])
-          obj_grandparent_ref = path_to_obj_parent[len(path_to_obj_parent) - 1]
+          obj_grandparent_ref = path_to_obj_parent[len(path_to_obj_parent) - 1]  # noqa: F841
         else:
           # If no nested field, simply assign the '$ref'.
           obj[key] = dict(known_ids[value['$ref']])

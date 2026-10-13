@@ -17,11 +17,11 @@ If any of the file already exists then prints a log and does not touch the
 file, but still creates the remaining files.
 """
 
-import argparse
-import datetime
-import logging
-import os
-import sys
+import argparse  # noqa: E402
+import datetime  # noqa: E402
+import logging  # noqa: E402
+import os  # noqa: E402
+import sys  # noqa: E402
 
 _HEADER_TEMPLATE = """// Copyright {year} The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be

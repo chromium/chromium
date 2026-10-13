@@ -27,7 +27,7 @@ _JSON5_PATH = os.path.join(
     'src',
 )
 sys.path.append(_JSON5_PATH)
-import json5
+import json5  # noqa: E402
 
 _REQUIRED_KEYS = {
     'name',
@@ -112,7 +112,7 @@ def _validate_attributes(entity, attributes, allow_empty):
     if not isinstance(attributes, list):
         yield 'is not a list'
     if not attributes and not allow_empty:
-        yield f'is an empty list'
+        yield 'is an empty list'
 
     duplicate_attributes = {
         attribute
@@ -218,7 +218,7 @@ def _validate_schema(schema):
         raise (
             errors[0]
             if len(errors) == 1
-            else ExceptionGroup('Multiple parsing errors', errors)
+            else ExceptionGroup('Multiple parsing errors', errors)  # noqa: F821
         )
 
 

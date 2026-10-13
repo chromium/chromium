@@ -4,9 +4,9 @@
 # found in the LICENSE file.
 
 import copy
-import os
+import os  # noqa: F401
 import re
-import sys
+import sys  # noqa: F401
 
 
 def IsGroupOrAtomicGroup(policy):
@@ -201,7 +201,7 @@ class PolicyTemplateGenerator:
         if 'supported_on' in item:
           item['supported_on'] = self._ProcessSupportedOn(item['supported_on'])
     if not IsGroupOrAtomicGroup(policy):
-      if not 'label' in policy:
+      if 'label' not in policy:
         # If 'label' is not specified, then it defaults to 'caption':
         policy['label'] = policy['caption']
       policy['supported_on'] = self._ProcessSupportedOn(

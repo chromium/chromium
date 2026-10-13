@@ -41,12 +41,4 @@ def CheckPython(input_api, output_api):
                 files_to_check=[r'.+_test\.py$'],
             )
         )
-    checks.extend(
-        input_api.canned_checks.GetPylint(
-            input_api,
-            output_api,
-            files_to_check=[r'.+\.py$'],
-            version='3.2',
-        )
-    )
     return input_api.RunTests(checks)

@@ -90,7 +90,7 @@ def ClangFormat(source, filename):
     stdout_output, stderr_output = proc.communicate(input=source.encode('utf8'))
     retcode = proc.wait()
     if retcode != 0:
-        raise CalledProcessError(
+        raise CalledProcessError(  # noqa: F821
             retcode, 'clang-format error: ' + stderr_output
         )
     return stdout_output.decode()

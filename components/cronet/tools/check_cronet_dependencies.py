@@ -17,8 +17,8 @@ REPOSITORY_ROOT = os.path.abspath(
 )
 
 sys.path.insert(0, REPOSITORY_ROOT)
-import build.android.gyp.util.build_utils as build_utils  # pylint: disable=wrong-import-position
-import components.cronet.tools.utils as cronet_utils  # pylint: disable=wrong-import-position
+import build.android.gyp.util.build_utils as build_utils  # noqa: E402
+import components.cronet.tools.utils as cronet_utils  # noqa: E402
 
 _THIRD_PARTY_STR = 'third_party/'
 _THIRD_PARTY_RUST_STR = _THIRD_PARTY_STR + 'rust/'

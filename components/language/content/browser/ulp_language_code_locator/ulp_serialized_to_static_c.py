@@ -20,7 +20,7 @@ sys.path.insert(
         "third_party",
     ),
 )
-import jinja2  # pylint: disable=F0401
+import jinja2
 
 
 def ReadSerializedData(input_path):

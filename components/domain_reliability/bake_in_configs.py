@@ -12,7 +12,7 @@ from __future__ import print_function
 
 import json
 import optparse
-import os
+import os  # noqa: F401
 import shlex
 import sys
 

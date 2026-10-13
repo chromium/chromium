@@ -4,13 +4,13 @@
 # found in the LICENSE file.
 
 import unittest
-from unittest.mock import patch, mock_open, call
+from unittest.mock import patch, mock_open, call  # noqa: F401
 from typing import NamedTuple
 
 import generate_policy_source
 import generate_policy_source_test_data as test_data
 
-from generate_policy_source import PolicyDetails
+from generate_policy_source import PolicyDetails  # noqa: F401
 
 
 class PolicyData(NamedTuple):
@@ -327,7 +327,7 @@ class PolicyGenerationTest(unittest.TestCase):
     # fetch the positional args, which are an n-tuple, and with call[0][0]
     # we get the first positional argument, which is the string that is
     # written into the file.
-    actual_output = ''.join(call[0][0] for call in call_args_list)
+    actual_output = ''.join(call[0][0] for call in call_args_list)  # noqa: F811
 
     # Strip whitespace from the beginning and end of expected and actual
     # output and verify that they are equal.

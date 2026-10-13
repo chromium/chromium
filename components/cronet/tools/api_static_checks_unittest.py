@@ -19,11 +19,10 @@ REPOSITORY_ROOT = os.path.abspath(
 )
 sys.path.insert(0, REPOSITORY_ROOT)
 
-from components.cronet.tools import api_static_checks  # pylint: disable=wrong-import-position
-from components.cronet.tools import update_api  # pylint: disable=wrong-import-position
-from components.cronet.tools import utils  # pylint: disable=wrong-import-position
+from components.cronet.tools import api_static_checks  # noqa: E402
+from components.cronet.tools import update_api  # noqa: E402
+from components.cronet.tools import utils  # noqa: E402
 
-# pylint: disable=useless-object-inheritance
 
 ERROR_PREFIX_CHECK_API_CALLS = """ERROR: Found the following calls from implementation classes through
        API classes.  These could fail if older API is used that

@@ -12,7 +12,7 @@ import tempfile
 from typing import Dict, Callable, List, Set
 from pathlib import Path
 
-from license_type import LicenseType
+from license_type import LicenseType  # noqa: F401
 import license_utils
 
 REPOSITORY_ROOT = os.path.abspath(
@@ -20,8 +20,8 @@ REPOSITORY_ROOT = os.path.abspath(
 )
 
 sys.path.insert(0, REPOSITORY_ROOT)
-import components.cronet.gn2bp.targets as gn2bp_targets  # pylint: disable=wrong-import-position
-import components.cronet.tools.utils as cronet_utils  # pylint: disable=wrong-import-position
+import components.cronet.gn2bp.targets as gn2bp_targets  # noqa: E402
+import components.cronet.tools.utils as cronet_utils  # noqa: E402
 
 _OUT_DIR = os.path.join(REPOSITORY_ROOT, "out")
 
@@ -162,7 +162,7 @@ def _map_rust_license_path_to_directory(license_file_path: str) -> str:
 
 def get_all_readme(repo_path: str):
     """Fetches all README.chromium files under |repo_path|."""
-    return glob.glob("**/README.chromium", root_dir=repo_path, recursive=True)  # pylint: disable=unexpected-keyword-arg
+    return glob.glob("**/README.chromium", root_dir=repo_path, recursive=True)
 
 
 def get_all_readme_through_gn(repo_path: str, targets: Set[str]):

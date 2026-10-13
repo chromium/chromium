@@ -8,7 +8,7 @@
 def CheckChangeOnUpload(input_api, output_api):
     import sys
 
-    original_sys_path = sys.path
+    original_sys_path = sys.path  # noqa: F841
     sys.path = sys.path + [
         input_api.os_path.join(
             input_api.change.RepositoryRoot(), 'components', 'viz'

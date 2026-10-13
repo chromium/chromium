@@ -24,7 +24,7 @@ class XMLFormattedWriter(template_writer.TemplateWriter):
     Returns:
       The created new element.
     '''
-    if attrs == None:
+    if attrs == None:  # noqa: E711
       attrs = {}
 
     doc = parent.ownerDocument
@@ -71,7 +71,7 @@ class XMLFormattedWriter(template_writer.TemplateWriter):
     # Determine where the line breaks will be. (They will only be between tags.)
     lines = xml[1 : len(xml) - 1].split('><')
     indent = ''
-    res = ''
+    res = ''  # noqa: F841
     # Determine indent for each line.
     for i, line in enumerate(lines):
       if line[0] == '/':

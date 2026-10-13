@@ -4,7 +4,7 @@
 # found in the LICENSE file.
 '''Unit test suite that collects template_writer tests.'''
 
-import os
+import os  # noqa: F401
 import sys
 import unittest
 
@@ -13,7 +13,6 @@ class TestSuiteAll(unittest.TestSuite):
   def __init__(self):
     super(TestSuiteAll, self).__init__()
     # Imports placed here to prevent circular imports.
-    # pylint: disable-msg=C6204
     import policy_template_generator_unittest
     import writers.adm_writer_unittest
     import writers.adml_writer_unittest

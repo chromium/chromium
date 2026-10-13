@@ -13,7 +13,7 @@ import abc
 from importlib import util as imp_util
 import optparse
 import os
-import re
+import re  # noqa: F401
 import subprocess
 import sys
 import traceback
@@ -118,7 +118,7 @@ class BinaryProtoGenerator:
 
         # Parse it into a structured PB
         full_pb = self.EmptyProtoInstance()
-        text_format.Merge(ascii_pb_str, full_pb)
+        text_format.Merge(ascii_pb_str, full_pb)  # noqa: F821
 
         self.ValidatePb(opts, full_pb)
         self.ProcessPb(opts, full_pb)

@@ -13,14 +13,10 @@ REPOSITORY_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir)
 )
 
-# pylint: disable=wrong-import-position
-# pylint: disable=import-error
 sys.path.insert(0, os.path.join(REPOSITORY_ROOT, 'build/android/gyp'))
-from util import build_utils
-import action_helpers  # build_utils adds //build to sys.path.
-import zip_helpers
-# pylint: enable=import-error
-# pylint: enable=wrong-import-position
+from util import build_utils  # noqa: E402
+import action_helpers  # build_utils adds //build to sys.path.  # noqa: E402
+import zip_helpers  # noqa: E402
 
 JAVA_PACKAGE_PREFIX = 'org/chromium/'
 JNI_ZERO_PACKAGE_PREFIX = 'org/jni_zero/'
@@ -91,7 +87,7 @@ def main():
 
     predicate = None
     if excluded_classes:
-        predicate = lambda f: not build_utils.MatchesGlob(f, excluded_classes)
+        predicate = lambda f: not build_utils.MatchesGlob(f, excluded_classes)  # noqa: E731
 
     # Create a dictionary that maps every source directory
     # to source files that it contains.

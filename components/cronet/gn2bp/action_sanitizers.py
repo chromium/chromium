@@ -5,9 +5,9 @@
 import os
 import re
 import copy
-import operator
+import operator  # noqa: F401
 import shlex
-from typing import List, Dict, Set, Union
+from typing import List, Dict, Set, Union  # noqa: F401
 
 import gn_utils
 import soong_ast

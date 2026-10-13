@@ -4,19 +4,19 @@
 # found in the LICENSE file.
 
 import argparse
-import enum
+import enum  # noqa: F401
 import json
 import logging as log
-import operator
+import operator  # noqa: F401
 import os
 import re
 import sys
 import copy
-from typing import List, Dict, Iterable, Set, Union
+from typing import List, Dict, Iterable, Set, Union  # noqa: F401
 from pathlib import Path
-import hashlib
-import shlex
-import collections
+import hashlib  # noqa: F401
+import shlex  # noqa: F401
+import collections  # noqa: F401
 import gn_utils
 import targets as gn2bp_targets
 import soong_ast
@@ -30,15 +30,15 @@ PARENT_ROOT = os.path.abspath(
 )
 
 sys.path.insert(0, os.path.join(PARENT_ROOT, "license"))
-import license_utils
-import constants as license_constants
+import license_utils  # noqa: E402
+import constants as license_constants  # noqa: E402
 
 REPOSITORY_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir)
 )
 sys.path.insert(0, REPOSITORY_ROOT)
 
-import components.cronet.tools.utils as cronet_utils
+import components.cronet.tools.utils as cronet_utils  # noqa: E402
 
 
 # Android equivalents for third-party libraries that the upstream project
