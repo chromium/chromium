@@ -434,7 +434,6 @@ void ServiceWorkerTaskQueue::ActivateExtension(const Extension* extension) {
     return;
   }
 
-  worker_state->SetRegistrationState(RegistrationState::kRegistering);
   RegisterServiceWorker(RegistrationReason::REGISTER_ON_EXTENSION_LOAD,
                         context_id, *extension);
 }
@@ -510,6 +509,15 @@ void ServiceWorkerTaskQueue::OnWorkerStartFail(
     DCHECK(!pending_storage_registrations_.contains(context_id.extension_id));
     // We expect `DeactivateExtension` to have cleaned up the start attempts.
     DCHECK(!worker_start_retries_.contains(context_id.token));
+    return;
+  }
+
+  ServiceWorkerState* worker_state = GetWorkerState(context_id);
+  CHECK(worker_state);
+  if (!worker_state->IsRegistered()) {
+    // This start was requested before `DidVerifyRegistration()` found the
+    // registration missing. Leave the tasks queued for the worker to start
+    // once it's registered again.
     return;
   }
 
@@ -598,6 +606,16 @@ void ServiceWorkerTaskQueue::RegisterServiceWorker(
     RegistrationReason reason,
     const SequencedContextId& context_id,
     const Extension& extension) {
+  // Tasks wait for the registration instead of starting the worker. Starts are
+  // only retried for registered workers, so also cancel any start retry.
+  ServiceWorkerState* worker_state = GetWorkerState(context_id);
+  CHECK(worker_state);
+  worker_state->SetRegistrationState(RegistrationState::kRegistering);
+  worker_start_retries_.erase(context_id.token);
+  if (g_test_observer) {
+    g_test_observer->OnWorkerRegistrationStarted(context_id.extension_id);
+  }
+
   // If there is a pending unregistration for this extension, the registration
   // may get aborted by the unregistration and fail with
   // blink::ServiceWorkerStatusCode::kErrorAbort. Avoid this by retrying the
@@ -792,8 +810,9 @@ void ServiceWorkerTaskQueue::RetryStartWorker(
     return;
   }
 
-  // Starts are only requested for registered workers, and
-  // `OnStorageWipedSync()` cancels retries when it deletes the registration.
+  // `OnWorkerStartFail()` only retries starts of registered workers, and
+  // `RegisterServiceWorker()` cancels the retries when the worker is
+  // registered again.
   CHECK(worker_state->IsRegistered());
 
   // If there are no pending tasks, there is no reason to start the worker.
@@ -1043,11 +1062,10 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
       // despite it not being considered an internal failure.
       status_code ==
           blink::ServiceWorkerStatusCode::kErrorScriptEvaluateFailed) {
-    // A worker re-registered after a verification mismatch stays `kRegistered`
-    // (see the TODO in `DidVerifyRegistration()`).
-    if (worker_state->registration_state() == RegistrationState::kRegistering) {
-      worker_state->SetRegistrationState(RegistrationState::kNotRegistered);
-    }
+    // TODO(crbug.com/529976577): Fail the queued tasks, and register the worker
+    // again when the next task is added, instead of leaving them queued until
+    // the extension is deactivated.
+    worker_state->SetRegistrationState(RegistrationState::kNotRegistered);
 
     std::string msg = base::StringPrintf(
         "Service worker registration failed. Status code: %d",
@@ -1315,10 +1333,9 @@ void ServiceWorkerTaskQueue::OnStorageWipedSync(
     pending_storage_registrations_.erase(extension_id);
     RemoveRegisteredServiceWorkerInfo(extension_id);
 
-    // Cancel any pending retry timers for this activation.
+    // Cancel any pending registration retries for this activation.
     worker_registration_retries_.erase(activation_token);
     worker_unregistration_wait_retries_.erase(activation_token);
-    worker_start_retries_.erase(activation_token);
 
     // Reset the worker's state and drop callbacks for any in-flight pre-wipe
     // start request.
@@ -1326,7 +1343,6 @@ void ServiceWorkerTaskQueue::OnStorageWipedSync(
     CHECK(worker_state);
     worker_state->ResetForStorageWipe();
 
-    worker_state->SetRegistrationState(RegistrationState::kRegistering);
     RegisterServiceWorker(RegistrationReason::RE_REGISTER_ON_STORAGE_WIPE,
                           context_id, *extension);
   }
@@ -1480,12 +1496,6 @@ void ServiceWorkerTaskQueue::DidVerifyRegistration(
       "Extensions.ServiceWorkerBackground.RegistrationMismatchLocation",
       extension->location());
 
-  // TODO(crbug.com/529976577): Set `kRegistering` here, so that tasks wait for
-  // this registration instead of starting a worker that //content can't find.
-  // Those starts fail with `kErrorNotFound` until the registration succeeds,
-  // or, if it fails, until the extension is activated again. Prerequisite:
-  // failed starts must wait for a pending registration, or a start already in
-  // flight could schedule a retry that hits the CHECK in `RetryStartWorker()`.
   RegisterServiceWorker(RegistrationReason::RE_REGISTER_ON_STATE_MISMATCH,
                         context_id, *extension);
 }

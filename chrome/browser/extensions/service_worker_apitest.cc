@@ -3439,6 +3439,75 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
   }));
 }
 
+// Tests that when prefs record a registration that //content doesn't have,
+// tasks added both before and after the mismatch is found wait for the worker
+// to be registered again.
+// Regression test for crbug.com/529976577.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
+                       TasksWaitForReRegistrationOnMismatch) {
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(
+      R"({
+           "name": "Test Extension",
+           "manifest_version": 3,
+           "version": "0.1",
+           "background": {"service_worker": "worker.js"}
+         })");
+  test_dir.WriteFile(FILE_PATH_LITERAL("worker.js"), "");
+  const Extension* extension = LoadExtension(
+      test_dir.UnpackedPath(), {.wait_for_registration_stored = true});
+  ASSERT_TRUE(extension);
+  const ExtensionId extension_id = extension->id();
+
+  // Disable the extension to unregister its worker in //content. Then restore
+  // the stored registration, so that the next activation expects a
+  // registration that //content doesn't have.
+  base::HistogramTester histogram_tester;
+  TestServiceWorkerTaskQueueObserver task_queue_observer;
+  ServiceWorkerTaskQueue* task_queue = ServiceWorkerTaskQueue::Get(profile());
+  extension_registrar()->DisableExtension(
+      extension_id, {disable_reason::DISABLE_USER_ACTION});
+  task_queue_observer.WaitForWorkerUnregistered(extension_id);
+  task_queue->SetRegisteredServiceWorkerInfoForTesting(extension_id,
+                                                       extension->version());
+
+  // Enabling the extension marks the worker as registered, and verifies the
+  // registration with //content asynchronously.
+  extension_registrar()->EnableExtension(extension_id);
+
+  // Add a task before the verification finishes. Since the worker is marked as
+  // registered, this requests a worker start, which fails.
+  const LazyContextId lazy_context_id =
+      LazyContextId::ForExtension(profile(), extension);
+  base::test::TestFuture<std::unique_ptr<LazyContextTaskQueue::ContextInfo>>
+      task_before_verification;
+  task_queue->AddPendingTask(lazy_context_id,
+                             task_before_verification.GetCallback());
+  EXPECT_EQ(task_queue_observer.GetRequestedWorkerStartedCount(extension_id),
+            1);
+
+  // Wait for the verification to find the registration missing, and to start
+  // registering the worker again.
+  task_queue_observer.WaitForWorkerRegistrationStarted(extension_id);
+
+  // A task added during the re-registration waits for it, without requesting
+  // another worker start.
+  base::test::TestFuture<std::unique_ptr<LazyContextTaskQueue::ContextInfo>>
+      task_during_reregistration;
+  task_queue->AddPendingTask(lazy_context_id,
+                             task_during_reregistration.GetCallback());
+  EXPECT_EQ(task_queue_observer.GetRequestedWorkerStartedCount(extension_id),
+            1);
+
+  // Both tasks run once the new registration starts the worker, and the failed
+  // start isn't retried.
+  EXPECT_NE(nullptr, task_before_verification.Get());
+  EXPECT_NE(nullptr, task_during_reregistration.Get());
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
+                  "Extensions.ServiceWorkerBackground.StartWorkerRetry."),
+              testing::IsEmpty());
+}
+
 // Tests that an extension's service worker can't be used to relax the extension
 // CSP.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,

@@ -209,6 +209,8 @@ class TestServiceWorkerTaskQueueObserver
   void WaitForOnActivateExtension(const ExtensionId& extension_id);
   bool WaitForRegistrationMismatchMitigation(const ExtensionId& extension_id);
   void WaitForUntrackServiceWorkerState(const GURL& scope);
+  void WaitForWorkerUnregistered(const ExtensionId& extension_id);
+  void WaitForWorkerRegistrationStarted(const ExtensionId& extension_id);
 
   std::optional<bool> WillRegisterServiceWorker(
       const ExtensionId& extension_id) const;
@@ -230,6 +232,8 @@ class TestServiceWorkerTaskQueueObserver
   void RendererDidStopServiceWorkerContext(
       const ExtensionId& extension_id) override;
   void UntrackServiceWorkerState(const GURL& scope) override;
+  void WorkerUnregistered(const ExtensionId& extension_id) override;
+  void OnWorkerRegistrationStarted(const ExtensionId& extension_id) override;
 
  private:
   std::map<ExtensionId, bool> activated_map_;
@@ -248,11 +252,19 @@ class TestServiceWorkerTaskQueueObserver
 
   std::set<GURL> untracked_set_;
 
+  std::set<ExtensionId> unregistered_set_;
+
+  std::set<ExtensionId> registration_started_set_;
+
   base::OnceClosure quit_closure_;
 
   base::OnceClosure started_quit_closure_;
 
   base::OnceClosure untrack_quit_closure_;
+
+  base::OnceClosure unregistered_quit_closure_;
+
+  base::OnceClosure registration_started_quit_closure_;
 };
 
 }  // namespace service_worker_test_utils

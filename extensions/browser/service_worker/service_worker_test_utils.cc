@@ -323,6 +323,24 @@ void TestServiceWorkerTaskQueueObserver::WaitForUntrackServiceWorkerState(
   run_loop.Run();
 }
 
+void TestServiceWorkerTaskQueueObserver::WaitForWorkerUnregistered(
+    const ExtensionId& extension_id) {
+  while (!unregistered_set_.contains(extension_id)) {
+    base::RunLoop run_loop;
+    unregistered_quit_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+}
+
+void TestServiceWorkerTaskQueueObserver::WaitForWorkerRegistrationStarted(
+    const ExtensionId& extension_id) {
+  while (!registration_started_set_.contains(extension_id)) {
+    base::RunLoop run_loop;
+    registration_started_quit_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+}
+
 void TestServiceWorkerTaskQueueObserver::WaitForWorkerContextInitialized(
     const ExtensionId& extension_id) {
   if (inited_set_.count(extension_id) != 0) {
@@ -456,6 +474,22 @@ void TestServiceWorkerTaskQueueObserver::UntrackServiceWorkerState(
   untracked_set_.insert(scope);
   if (untrack_quit_closure_) {
     std::move(untrack_quit_closure_).Run();
+  }
+}
+
+void TestServiceWorkerTaskQueueObserver::WorkerUnregistered(
+    const ExtensionId& extension_id) {
+  unregistered_set_.insert(extension_id);
+  if (unregistered_quit_closure_) {
+    std::move(unregistered_quit_closure_).Run();
+  }
+}
+
+void TestServiceWorkerTaskQueueObserver::OnWorkerRegistrationStarted(
+    const ExtensionId& extension_id) {
+  registration_started_set_.insert(extension_id);
+  if (registration_started_quit_closure_) {
+    std::move(registration_started_quit_closure_).Run();
   }
 }
 

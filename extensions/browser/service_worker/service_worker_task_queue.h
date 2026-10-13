@@ -352,6 +352,11 @@ class ServiceWorkerTaskQueue
     // `extension_id` has been unregistered in the //content layer.
     virtual void WorkerUnregistered(const ExtensionId& extension_id) {}
 
+    // Called when the service worker for the extension with the `extension_id`
+    // is marked as `kRegistering`, before it is registered in the //content
+    // layer.
+    virtual void OnWorkerRegistrationStarted(const ExtensionId& extension_id) {}
+
     // Called when a service worker registered for the extension with the
     // `extension_id` has been registered in the //content layer. It is always
     // called, even if the registration request fails.
@@ -397,6 +402,8 @@ class ServiceWorkerTaskQueue
       int64_t version_id,
       const content::ServiceWorkerRunningInfo& worker_info);
 
+  // Registers the worker in //content. The worker is `kRegistering` until
+  // `DidRegisterServiceWorker()` gets the result.
   void RegisterServiceWorker(RegistrationReason reason,
                              const SequencedContextId& context_id,
                              const Extension& extension);
