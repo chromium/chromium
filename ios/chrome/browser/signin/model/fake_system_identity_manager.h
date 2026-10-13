@@ -15,6 +15,7 @@
 #include "base/sequence_checker.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "ios/chrome/browser/signin/model/fake_system_identity_details.h"
 #include "ios/chrome/browser/signin/model/system_identity_interaction_manager.h"
 #include "ios/chrome/browser/signin/model/system_identity_manager.h"
@@ -32,6 +33,10 @@ class FakeSystemIdentityManager final : public SystemIdentityManager {
   // `CreateRefreshAccessTokenFailure()`.
   using HandleMDMNotificationCallback =
       base::RepeatingCallback<void(HandleMDMCallback)>;
+
+  // Callback used to intercept `GetHostedDomain()` calls.
+  using GetHostedDomainCallback =
+      base::RepeatingCallback<void(id<SystemIdentity>, HostedDomainCallback)>;
 
   FakeSystemIdentityManager();
   explicit FakeSystemIdentityManager(
@@ -80,19 +85,11 @@ class FakeSystemIdentityManager final : public SystemIdentityManager {
   // Returns the list of account capabilities associated with the identity.
   AccountCapabilities GetVisibleCapabilities(id<SystemIdentity> identity);
 
-  // Sets whether the hosted domain for each identity will be automatically and
-  // immediately available via GetCachedHostedDomainForIdentity(). If false, the
-  // hosted domain must first be queried (asynchronously) via GetHostedDomain().
-  // True by default.
-  void SetInstantlyFillHostedDomainCache(bool instantly_fill);
-
-  // Sets the error to be returned from all GetHostedDomain() calls. If nil, the
-  // calls will succeed.
-  void SetGetHostedDomainError(NSError* error);
-
-  // Returns the number of hosted domain requests that have been answered with
-  // an error (as set by SetGetHostedDomainError()).
-  size_t GetNumHostedDomainErrorsReturned() const;
+  // Sets a callback to intercept `GetHostedDomain()` calls. When a non-null
+  // callback is set, `GetCachedHostedDomainForIdentity()` returns nil until
+  // `GetHostedDomain()` completes for that identity.
+  void OverrideGetHostedDomainImplementation(
+      GetHostedDomainCallback custom_implementation);
 
   // Simulates reloading the identities from the keychain.
   void FireSystemIdentityReloaded();
@@ -230,9 +227,16 @@ class FakeSystemIdentityManager final : public SystemIdentityManager {
   // Helper used to implement the asynchronous part of `FetchAvatarForIdentity`.
   void FetchAvatarForIdentityAsync(id<SystemIdentity> identity);
 
-  // Helper used to implement the asynchronous part of `GetHostedDomain`.
-  void GetHostedDomainAsync(id<SystemIdentity> identity,
-                            HostedDomainCallback callback);
+  // Default implementation of `GetHostedDomain`.
+  void GetHostedDomainDefault(id<SystemIdentity> identity,
+                              HostedDomainCallback callback);
+
+  // Helper used to update `cachedHostedDomain` and forward the result to
+  // `callback`.
+  void OnHostedDomainFetched(id<SystemIdentity> identity,
+                             HostedDomainCallback callback,
+                             NSString* hosted_domain,
+                             NSError* error);
 
   // Helper used to implement the asynchronous part of `FetchCapabilities`.
   void FetchCapabilitiesAsync(id<SystemIdentity> identity,
@@ -249,11 +253,8 @@ class FakeSystemIdentityManager final : public SystemIdentityManager {
   // reaches 0.
   void ExecuteClosure(base::OnceClosure closure);
 
-  bool instantly_fill_hosted_domain_cache_ = true;
+  GetHostedDomainCallback get_hosted_domain_callback_;
   bool was_mdm_notification_displayed_ = false;
-  NSMutableSet<id<SystemIdentity>>* hosted_domain_cache_ = [NSMutableSet set];
-  NSError* get_hosted_domain_error_ = nil;
-  size_t num_hosted_domain_errors_returned_ = 0;
 
   // Counter of pending callback and closure used to resume the execution
   // of `WaitForServiceCallbacksToComplete()` when the counter reaches 0.

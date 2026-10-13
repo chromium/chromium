@@ -175,17 +175,23 @@ AccountCapabilities FakeSystemIdentityManager::GetVisibleCapabilities(
   return AccountCapabilities(details.visibleCapabilities);
 }
 
-void FakeSystemIdentityManager::SetInstantlyFillHostedDomainCache(
-    bool instantly_fill) {
-  instantly_fill_hosted_domain_cache_ = instantly_fill;
-}
-
-void FakeSystemIdentityManager::SetGetHostedDomainError(NSError* error) {
-  get_hosted_domain_error_ = error;
-}
-
-size_t FakeSystemIdentityManager::GetNumHostedDomainErrorsReturned() const {
-  return num_hosted_domain_errors_returned_;
+void FakeSystemIdentityManager::OverrideGetHostedDomainImplementation(
+    GetHostedDomainCallback custom_implementation) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!custom_implementation) {
+    get_hosted_domain_callback_.Reset();
+    return;
+  }
+  get_hosted_domain_callback_ = base::BindRepeating(
+      [](base::WeakPtr<FakeSystemIdentityManager> weak_this,
+         GetHostedDomainCallback custom_implementation,
+         id<SystemIdentity> identity, HostedDomainCallback callback) {
+        auto wrapped_callback =
+            base::BindOnce(&FakeSystemIdentityManager::OnHostedDomainFetched,
+                           weak_this, identity, std::move(callback));
+        custom_implementation.Run(identity, std::move(wrapped_callback));
+      },
+      GetWeakPtr(), std::move(custom_implementation));
 }
 
 void FakeSystemIdentityManager::FireSystemIdentityReloaded() {
@@ -498,20 +504,25 @@ UIImage* FakeSystemIdentityManager::GetCachedAvatarForIdentity(
 void FakeSystemIdentityManager::GetHostedDomain(id<SystemIdentity> identity,
                                                 HostedDomainCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK([storage_ containsIdentityWithGaiaID:identity.gaiaId]);
-  // Fetching the hosted domain is an asynchronous operation (as it requires
-  // some network calls).
-  PostClosure(FROM_HERE,
-              base::BindOnce(&FakeSystemIdentityManager::GetHostedDomainAsync,
-                             GetWeakPtr(), identity, std::move(callback)));
+  CHECK([storage_ containsIdentityWithGaiaID:identity.gaiaId]);
+  if (get_hosted_domain_callback_) {
+    get_hosted_domain_callback_.Run(identity, std::move(callback));
+    return;
+  }
+  GetHostedDomainDefault(identity, std::move(callback));
 }
 
 NSString* FakeSystemIdentityManager::GetCachedHostedDomainForIdentity(
     id<SystemIdentity> identity) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(identity);
-  if (instantly_fill_hosted_domain_cache_ ||
-      [hosted_domain_cache_ containsObject:identity]) {
+  FakeSystemIdentityDetails* details =
+      [storage_ detailsForGaiaID:identity.gaiaId];
+  if (details.cachedHostedDomain) {
+    return details.cachedHostedDomain;
+  }
+  if (!get_hosted_domain_callback_) {
+    // Using the default implementation, cache should be always populated.
     return FakeGetHostedDomainForIdentity(identity);
   }
   return nil;
@@ -706,25 +717,29 @@ void FakeSystemIdentityManager::FetchAvatarForIdentityAsync(
   FireIdentityUpdated(identity);
 }
 
-void FakeSystemIdentityManager::GetHostedDomainAsync(
+void FakeSystemIdentityManager::GetHostedDomainDefault(
     id<SystemIdentity> identity,
     HostedDomainCallback callback) {
+  OnHostedDomainFetched(identity, std::move(callback),
+                        FakeGetHostedDomainForIdentity(identity), nil);
+}
+
+void FakeSystemIdentityManager::OnHostedDomainFetched(
+    id<SystemIdentity> identity,
+    HostedDomainCallback callback,
+    NSString* hosted_domain,
+    NSError* error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (![storage_ containsIdentityWithGaiaID:identity.gaiaId]) {
-    // The identity was removed before the async method was called. There is
-    // nothing to do.
-    return;
+  CHECK_EQ(hosted_domain == nil, error != nil);
+  if (hosted_domain && [storage_ containsIdentityWithGaiaID:identity.gaiaId]) {
+    // The hosted domain is now also available via
+    // GetCachedHostedDomainForIdentity().
+    [storage_ detailsForGaiaID:identity.gaiaId].cachedHostedDomain =
+        hosted_domain;
   }
-  // If a GetHostedDomain error has been set up, return that.
-  if (get_hosted_domain_error_) {
-    ++num_hosted_domain_errors_returned_;
-    std::move(callback).Run(nil, get_hosted_domain_error_);
-    return;
-  }
-  // No error -> success! The hosted domain is now also available via
-  // GetCachedHostedDomainForIdentity().
-  [hosted_domain_cache_ addObject:identity];
-  std::move(callback).Run(FakeGetHostedDomainForIdentity(identity), nil);
+  // Post the callback to guarantee that GetHostedDomain is always asynchronous.
+  PostClosure(FROM_HERE,
+              base::BindOnce(std::move(callback), hosted_domain, error));
 }
 
 void FakeSystemIdentityManager::FetchCapabilitiesAsync(
