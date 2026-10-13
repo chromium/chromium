@@ -8,12 +8,10 @@
 
 #include <utility>
 
-#include "ash/constants/ash_extension_constants.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/values.h"
-#include "chrome/browser/ash/file_system_provider/content_cache/cache_manager_impl.h"
 #include "chrome/browser/ash/file_system_provider/mount_path_util.h"
 #include "chrome/browser/ash/file_system_provider/observer.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system.h"
@@ -22,7 +20,6 @@
 #include "chrome/browser/ash/file_system_provider/registry_interface.h"
 #include "chrome/browser/ash/file_system_provider/service_factory.h"
 #include "chrome/browser/ash/file_system_provider/throttled_file_system.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "extensions/browser/extension_registry.h"
@@ -49,10 +46,6 @@ Service::Service(Profile* profile,
       extension_registry_(extension_registry),
       registry_(new Registry(profile->GetPrefs())) {
   extension_registry_->AddObserver(this);
-  if (chromeos::features::IsFileSystemProviderContentCacheEnabled()) {
-    CHECK(profile, base::NotFatalUntil::M160);
-    cache_manager_ = CacheManagerImpl::Create(profile->GetPath());
-  }
 }
 
 Service::~Service() = default;
@@ -131,14 +124,6 @@ base::File::Error Service::MountFileSystemInternal(
       util::GetMountPath(profile_, provider_id, options.file_system_id);
   const std::string mount_point_name = mount_path.BaseName().AsUTF8Unsafe();
 
-  // The content cache is an experimentation on ODFS behind two feature flags,
-  // only pass it through if those conditions are met.
-  // TODO(b/317137739): This logic should be moved to a capability in the
-  // manifest.json.
-  const bool is_content_cache_enabled_and_odfs =
-      chromeos::features::IsFileSystemProviderContentCacheEnabled() &&
-      provider_id.GetExtensionId() == extension_misc::kODFSExtensionId;
-
   Capabilities capabilities = provider->GetCapabilities();
   // Store the file system descriptor. Use the mount point name as the file
   // system provider file system id.
@@ -153,8 +138,7 @@ base::File::Error Service::MountFileSystemInternal(
   //   source = SOURCE_FILE
   ProvidedFileSystemInfo file_system_info(
       provider_id, options, mount_path, capabilities.configurable,
-      capabilities.watchable, capabilities.source, provider->GetIconSet(),
-      is_content_cache_enabled_and_odfs ? CacheType::LRU : CacheType::NONE);
+      capabilities.watchable, capabilities.source, provider->GetIconSet());
 
   // If already exists a file system provided by the same extension with this
   // id, then abort.
@@ -194,8 +178,7 @@ base::File::Error Service::MountFileSystemInternal(
   }
 
   std::unique_ptr<ProvidedFileSystemInterface> file_system =
-      provider->CreateProvidedFileSystem(profile_, file_system_info,
-                                         cache_manager_.get());
+      provider->CreateProvidedFileSystem(profile_, file_system_info);
   CHECK(file_system, base::NotFatalUntil::M160);
   ProvidedFileSystemInterface* file_system_ptr = file_system.get();
   file_system_map_[FileSystemKey(
@@ -262,10 +245,6 @@ base::File::Error Service::UnmountFileSystem(const ProviderId& provider_id,
         file_system_info.mount_path().value(), /*by_user=*/false);
     registry_->ForgetFileSystem(file_system_info.provider_id(),
                                 file_system_info.file_system_id());
-    if (cache_manager_ &&
-        cache_manager_->IsProviderInitialized(file_system_info)) {
-      cache_manager_->UninitializeForProvider(file_system_info);
-    }
   }
 
   file_system_map_.erase(file_system_it);

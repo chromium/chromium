@@ -90,8 +90,7 @@ std::unique_ptr<ProviderInterface> ExtensionProvider::Create(
 std::unique_ptr<ProvidedFileSystemInterface>
 ExtensionProvider::CreateProvidedFileSystem(
     Profile* profile,
-    const ProvidedFileSystemInfo& file_system_info,
-    CacheManager* cache_manager) {
+    const ProvidedFileSystemInfo& file_system_info) {
   CHECK(profile, base::NotFatalUntil::M160);
   return std::make_unique<ThrottledFileSystem>(
       std::make_unique<ProvidedFileSystem>(profile, file_system_info));

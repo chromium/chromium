@@ -31,8 +31,7 @@ SmbProvider::~SmbProvider() = default;
 std::unique_ptr<file_system_provider::ProvidedFileSystemInterface>
 SmbProvider::CreateProvidedFileSystem(
     Profile* profile,
-    const file_system_provider::ProvidedFileSystemInfo& file_system_info,
-    file_system_provider::CacheManager* cache_manager) {
+    const file_system_provider::ProvidedFileSystemInfo& file_system_info) {
   CHECK(profile, base::NotFatalUntil::M160);
   return std::make_unique<SmbFileSystem>(file_system_info);
 }

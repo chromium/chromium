@@ -58,9 +58,6 @@ class ProviderId {
   ProviderType type_;
 };
 
-// The type of content cache that is used for the individual provider.
-enum class CacheType { LRU, NONE };
-
 // Contains information about the provided file system instance.
 class ProvidedFileSystemInfo {
  public:
@@ -72,8 +69,7 @@ class ProvidedFileSystemInfo {
                          bool configurable,
                          bool watchable,
                          extensions::FileSystemProviderSource source,
-                         const IconSet& icon_set,
-                         CacheType cache_type = CacheType::NONE);
+                         const IconSet& icon_set);
 
   // TODO(mtomasz): Remove this constructor. Callers should be using
   // provider id, not extension id.
@@ -83,8 +79,7 @@ class ProvidedFileSystemInfo {
                          bool configurable,
                          bool watchable,
                          extensions::FileSystemProviderSource source,
-                         const IconSet& icon_set,
-                         CacheType cache_type = CacheType::NONE);
+                         const IconSet& icon_set);
 
   ProvidedFileSystemInfo(const ProvidedFileSystemInfo& other);
 
@@ -101,7 +96,6 @@ class ProvidedFileSystemInfo {
   bool watchable() const { return watchable_; }
   extensions::FileSystemProviderSource source() const { return source_; }
   const IconSet& icon_set() const { return icon_set_; }
-  CacheType cache_type() const { return cache_type_; }
 
   bool operator==(const ProvidedFileSystemInfo& other) const;
 
@@ -143,9 +137,6 @@ class ProvidedFileSystemInfo {
 
   // Icon set for the file system.
   IconSet icon_set_;
-
-  // The type of content cache that this file system leverages for eviction.
-  CacheType cache_type_;
 };
 
 }  // namespace ash::file_system_provider

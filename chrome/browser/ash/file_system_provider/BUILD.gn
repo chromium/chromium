@@ -23,8 +23,6 @@ static_library("file_system_provider") {
     "observer.h",
     "odfs_metrics.cc",
     "odfs_metrics.h",
-    "opened_cloud_file.cc",
-    "opened_cloud_file.h",
     "operation_request_manager.cc",
     "operation_request_manager.h",
     "provided_file_system.cc",
@@ -70,7 +68,6 @@ static_library("file_system_provider") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/file_manager",
-    "//chrome/browser/ash/file_system_provider/content_cache",
     "//chrome/browser/ash/file_system_provider/operations",
     "//chrome/browser/ash/guest_os",
     "//chrome/browser/ash/policy/dlp",
@@ -101,7 +98,6 @@ static_library("file_system_provider") {
 
   allow_circular_includes_from = [
     "//chrome/browser/ash/file_manager",
-    "//chrome/browser/ash/file_system_provider/content_cache",
     "//chrome/browser/ash/file_system_provider/operations",
     "//chrome/browser/ash/policy/dlp",
     "//chrome/browser/ash/smb_client",
@@ -155,7 +151,6 @@ source_set("unit_tests") {
     ":file_system_provider",
     ":test_support",
     "//base/test:test_support",
-    "//chrome/browser/ash/file_system_provider/content_cache",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
@@ -174,7 +169,6 @@ source_set("unit_tests") {
     "//url",
 
     # Gather unit tests from subdirectories.
-    "//chrome/browser/ash/file_system_provider/content_cache:unit_tests",
     "//chrome/browser/ash/file_system_provider/fileapi:unit_tests",
     "//chrome/browser/ash/file_system_provider/operations:unit_tests",
     "//chrome/test/base:testing_browser_process",
