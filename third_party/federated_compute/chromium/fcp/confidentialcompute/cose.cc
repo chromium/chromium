@@ -119,7 +119,7 @@ std::vector<uint8_t> BuildProtectedHeader(
     map.emplace(CoseHeaderParameter::kDstState, base::as_byte_span(*dst_state));
   }
   std::optional<std::vector<uint8_t>> encoded_protected_header =
-      cbor::Writer::Write(cbor::Value(std::move(map)));
+      cbor::Writer::Write(map);
   if (!encoded_protected_header) {
     return {};
   }
@@ -173,7 +173,7 @@ absl::StatusOr<std::vector<uint8_t>> BuildCwtPayload(
   }
 
   std::optional<std::vector<uint8_t>> encoded_cwt_payload =
-      cbor::Writer::Write(cbor::Value(std::move(map)));
+      cbor::Writer::Write(map);
   if (!encoded_cwt_payload) {
     return absl::InternalError("failed to build cwt payload");
   }
@@ -369,7 +369,7 @@ std::string BuildSigStructure(
   sig_structure.emplace_back(std::move(payload));
 
   std::optional<std::vector<uint8_t>> encoded_sig_structure =
-      cbor::Writer::Write(cbor::Value(std::move(sig_structure)));
+      cbor::Writer::Write(sig_structure);
   if (!encoded_sig_structure) {
     return {};
   }
@@ -446,7 +446,7 @@ std::vector<uint8_t> BuildReleaseTokenPayload(const ReleaseToken& token) {
   array_value.emplace_back(std::move(unprotected_header));
   array_value.emplace_back(base::as_byte_span(token.encrypted_payload));
   std::optional<std::vector<uint8_t>> encoded_array =
-      cbor::Writer::Write(cbor::Value(std::move(array_value)));
+      cbor::Writer::Write(array_value);
   if (!encoded_array) {
     return {};
   }
@@ -461,7 +461,7 @@ std::string BuildEncStructure(std::vector<uint8_t> protected_header,
   enc_structure.emplace_back("Encrypt0");
   enc_structure.emplace_back(std::move(protected_header));
   enc_structure.emplace_back(base::as_byte_span(aad));
-  auto result = cbor::Writer::Write(cbor::Value(std::move(enc_structure)));
+  auto result = cbor::Writer::Write(enc_structure);
   if (!result) {
     return {};
   }
@@ -611,7 +611,7 @@ absl::StatusOr<std::string> OkpKey::Encode() const {
     map.emplace(CoseKeyParameter::kOkpD, base::as_byte_span(d));
   }
   std::optional<std::vector<uint8_t>> encoded_key =
-      cbor::Writer::Write(cbor::Value(std::move(map)));
+      cbor::Writer::Write(map);
   if (!encoded_key) {
     return absl::InternalError("failed to encode OkpKey");
   }
@@ -745,7 +745,7 @@ absl::StatusOr<std::string> Ec2Key::Encode() const {
   }
 
   std::optional<std::vector<uint8_t>> encoded_key =
-      cbor::Writer::Write(cbor::Value(std::move(map)));
+      cbor::Writer::Write(map);
   if (!encoded_key) {
     return absl::InternalError("failed to encode Ec2Key");
   }
@@ -873,7 +873,7 @@ absl::StatusOr<std::string> cose_internal::BaseCwt<T>::Encode() const {
   array.emplace_back(std::move(payload));
   array.emplace_back(base::as_byte_span(signature));
   std::optional<std::vector<uint8_t>> encoded_array =
-      cbor::Writer::Write(cbor::Value(std::move(array)));
+      cbor::Writer::Write(array);
   if (!encoded_array) {
     return absl::InternalError("failed to encode OkpCwt");
   }
@@ -989,7 +989,7 @@ absl::StatusOr<std::string> ReleaseToken::Encode() const {
   array.emplace_back(BuildReleaseTokenPayload(*this));
   array.emplace_back(base::as_byte_span(signature));
   std::optional<std::vector<uint8_t>> encoded_array =
-      cbor::Writer::Write(cbor::Value(std::move(array)));
+      cbor::Writer::Write(array);
   if (!encoded_array) {
     return absl::InternalError("failed to build release token");
   }
@@ -1016,7 +1016,7 @@ absl::StatusOr<std::string> SymmetricKey::Encode() const {
     map.emplace(CoseKeyParameter::kSymmetricK, base::as_byte_span(k));
   }
   std::optional<std::vector<uint8_t>> encoded_key =
-      cbor::Writer::Write(cbor::Value(std::move(map)));
+      cbor::Writer::Write(map);
   if (!encoded_key) {
     return absl::InternalError("failed to encode SymmetricKey");
   }
