@@ -8,6 +8,8 @@
 #include <string>
 #include <utility>
 
+#include "base/check.h"
+#include "base/check_deref.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -24,7 +26,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
 #include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_manager.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_fetch_support_packet_job_test_util.h"
 #include "chrome/browser/ash/policy/remote_commands/user_session_type_test_util.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
@@ -33,17 +35,20 @@
 #include "chrome/browser/policy/messaging_layer/public/report_client_test_util.h"
 #include "chrome/browser/support_tool/data_collection_module.pb.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
+#include "components/account_id/account_id_literal.h"
 #include "components/feedback/redaction_tool/pii_types.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/reporting/storage/storage_module_interface.h"
 #include "components/reporting/storage/test_storage_module.h"
 #include "components/reporting/util/status.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "record.pb.h"
 #include "record_constants.pb.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -65,6 +70,15 @@ namespace {
 constexpr RemoteCommandJob::UniqueIDType kUniqueID = 123456;
 // The age of command in milliseconds.
 constexpr int64 kCommandAge = 60000;
+constexpr AccountId::Literal kTestAccountId =
+    AccountId::Literal::FromUserEmailGaiaId("test.email@example.com",
+                                            GaiaId::Literal("12345"));
+constexpr char kTestWebKioskUserId[] =
+    "test@web-kiosk-apps.device-local.localhost";
+constexpr char kTestChromeAppKioskUserId[] =
+    "test@kiosk-apps.device-local.localhost";
+constexpr char kTestPublicAccountUserId[] =
+    "test@public-accounts.device-local.localhost";
 
 em::RemoteCommand GenerateCommandProto(std::string payload) {
   em::RemoteCommand command_proto;
@@ -87,8 +101,13 @@ class DeviceCommandFetchSupportPacketTest : public ash::DeviceSettingsTestBase {
       const DeviceCommandFetchSupportPacketTest&) = delete;
 
   void SetUp() override {
+    auto* browser_process = TestingBrowserProcess::GetGlobal();
+    user_session_test_environment_ = std::make_unique<
+        ash::test::UserSessionTestEnvironment>(
+        browser_process->local_state(),
+        std::make_unique<ash::test::ChromeUserSessionTestEnvironmentDelegate>(
+            browser_process));
     DeviceSettingsTestBase::SetUp();
-    ASSERT_TRUE(profile_manager_.SetUp());
 
     reporting_test_storage_ =
         base::MakeRefCounted<reporting::test::TestStorageModule>();
@@ -103,12 +122,12 @@ class DeviceCommandFetchSupportPacketTest : public ash::DeviceSettingsTestBase {
     cros_settings_helper_.ReplaceDeviceSettingsProviderWithStub();
 
     kiosk_web_app_manager_ = std::make_unique<ash::KioskWebAppManager>(
-        TestingBrowserProcess::GetGlobal()->local_state(),
-        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory(),
+        browser_process->local_state(),
+        browser_process->shared_url_loader_factory(),
         &kiosk_cryptohome_remover_);
     kiosk_chrome_app_manager_ = std::make_unique<ash::KioskChromeAppManager>(
-        TestingBrowserProcess::GetGlobal()->local_state(),
-        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory(),
+        browser_process->local_state(),
+        browser_process->shared_url_loader_factory(),
         &kiosk_cryptohome_remover_);
 
     {
@@ -128,6 +147,7 @@ class DeviceCommandFetchSupportPacketTest : public ash::DeviceSettingsTestBase {
 
     ash::DebugDaemonClient::Shutdown();
     DeviceSettingsTestBase::TearDown();
+    user_session_test_environment_.reset();
   }
 
   void SetLogUploadEnabledPolicy(bool enabled) {
@@ -135,9 +155,56 @@ class DeviceCommandFetchSupportPacketTest : public ash::DeviceSettingsTestBase {
   }
 
   void StartSessionOfType(TestSessionType session_type) {
-    // `user_manager_` is inherited from ash::DeviceSettingsTestBase.
-    StartSessionOfTypeWithProfile(session_type, *user_manager_,
-                                  profile_manager_);
+    user_manager::User* user = nullptr;
+    switch (session_type) {
+      case TestSessionType::kNoSession:
+        return;
+      case TestSessionType::kManuallyLaunchedWebKioskSession:
+        CHECK_DEREF(ash::KioskWebAppManager::Get())
+            .set_current_app_was_auto_launched_with_zero_delay_for_testing(
+                false);
+        user = user_session_test_environment_->AddKioskWebAppUser(
+            kTestWebKioskUserId);
+        break;
+      case TestSessionType::kManuallyLaunchedKioskSession:
+        CHECK_DEREF(ash::KioskChromeAppManager::Get())
+            .set_current_app_was_auto_launched_with_zero_delay_for_testing(
+                false);
+        user = user_session_test_environment_->AddKioskChromeAppUser(
+            kTestChromeAppKioskUserId);
+        break;
+      case TestSessionType::kAutoLaunchedWebKioskSession:
+        CHECK_DEREF(ash::KioskWebAppManager::Get())
+            .set_current_app_was_auto_launched_with_zero_delay_for_testing(
+                true);
+        user = user_session_test_environment_->AddKioskWebAppUser(
+            kTestWebKioskUserId);
+        break;
+      case TestSessionType::kAutoLaunchedKioskSession:
+        CHECK_DEREF(ash::KioskChromeAppManager::Get())
+            .set_current_app_was_auto_launched_with_zero_delay_for_testing(
+                true);
+        user = user_session_test_environment_->AddKioskChromeAppUser(
+            kTestChromeAppKioskUserId);
+        break;
+      case TestSessionType::kManagedGuestSession:
+        user = user_session_test_environment_->AddPublicAccountUser(
+            kTestPublicAccountUserId);
+        break;
+      case TestSessionType::kGuestSession:
+        user = user_session_test_environment_->AddGuestUser();
+        break;
+      case TestSessionType::kAffiliatedUserSession:
+      case TestSessionType::kUnaffiliatedUserSession:
+        user = user_session_test_environment_->AddRegularUser(kTestAccountId);
+        break;
+    }
+    CHECK(user);
+    user_session_test_environment_->LogIn(user->GetAccountId());
+    if (session_type == TestSessionType::kAffiliatedUserSession) {
+      user_manager::UserManager::Get()->SetUserPolicyStatus(
+          user->GetAccountId(), /*is_managed=*/true, /*is_affiliated=*/true);
+    }
   }
 
   void InitAndRunCommandJob(DeviceCommandFetchSupportPacketJob& in_job,
@@ -152,6 +219,9 @@ class DeviceCommandFetchSupportPacketTest : public ash::DeviceSettingsTestBase {
   }
 
  protected:
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
+
   ash::KioskCryptohomeRemover kiosk_cryptohome_remover_{
       TestingBrowserProcess::GetGlobal()->local_state()};
 
@@ -165,10 +235,7 @@ class DeviceCommandFetchSupportPacketTest : public ash::DeviceSettingsTestBase {
 
   ash::system::FakeStatisticsProvider statistics_provider_;
   ash::ScopedCrosSettingsTestHelper cros_settings_helper_;
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
   base::HistogramTester histogram_tester_;
-  TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
   base::FilePath target_dir_;
   base::ScopedTempDir temp_dir_;
 };

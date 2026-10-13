@@ -26,10 +26,11 @@
 #include "chrome/browser/support_tool/data_collector.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
+#include "components/account_id/account_id.h"
 #include "components/feedback/redaction_tool/pii_types.h"
 #include "components/feedback/redaction_tool/redaction_tool.h"
-#include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "third_party/cros_system_api/dbus/debugd/dbus-constants.h"
 
 namespace {
@@ -113,10 +114,17 @@ void SystemStateDataCollector::CollectDataAndDetectPII(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   data_collector_done_callback_ = std::move(on_data_collected_callback);
 
+  // TODO(crbug.com/278643115): Take the account_id from the callers.
+  // Null on the login screen, e.g. for a FetchSupportPacket remote command.
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  const AccountId account_id =
+      active_session ? active_session->account_id() : EmptyAccountId();
+
   base::RepeatingClosure get_log_barrier_closure = base::BarrierClosure(
       GetExtraLogNames().size(),
       base::BindOnce(&SystemStateDataCollector::OnGotAllExtraLogs,
-                     weak_ptr_factory_.GetWeakPtr(),
+                     weak_ptr_factory_.GetWeakPtr(), account_id,
                      task_runner_for_redaction_tool, redaction_tool_container));
 
   ash::DebugDaemonClient* debugd_client = ash::DebugDaemonClient::Get();
@@ -146,14 +154,12 @@ void SystemStateDataCollector::OnGetLog(base::RepeatingClosure barrier_closure,
 }
 
 void SystemStateDataCollector::OnGotAllExtraLogs(
+    const AccountId& account_id,
     scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
     scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ash::DebugDaemonClient* debugd_client = ash::DebugDaemonClient::Get();
-
-  const user_manager::User* user =
-      user_manager::UserManager::Get()->GetActiveUser();
 
   // The list of log types that we request from debugd.
   const std::vector<debugd::FeedbackLogType> included_log_types = {
@@ -172,8 +178,7 @@ void SystemStateDataCollector::OnGotAllExtraLogs(
   // `debugd_client` will run the callback on original thread (see
   // dbus/object_proxy.h for more details).
   debugd_client->GetFeedbackLogs(
-      cryptohome::CreateAccountIdentifierFromAccountId(
-          user ? user->GetAccountId() : EmptyAccountId()),
+      cryptohome::CreateAccountIdentifierFromAccountId(account_id),
       included_log_types,
       base::BindOnce(&SystemStateDataCollector::OnGetFeedbackLogs,
                      weak_ptr_factory_.GetWeakPtr(),

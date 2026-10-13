@@ -23,13 +23,12 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/support_tool/data_collector.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/dbus/debug_daemon/fake_debug_daemon_client.h"
 #include "components/feedback/redaction_tool/pii_types.h"
 #include "components/feedback/redaction_tool/redaction_tool.h"
-#include "components/user_manager/fake_user_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
-#include "components/user_manager/user_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -42,9 +41,26 @@ namespace {
 
 class SystemStateDataCollectorTest : public ::testing::Test {
  public:
-  SystemStateDataCollectorTest() {
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::make_unique<user_manager::FakeUserManager>());
+  SystemStateDataCollectorTest() = default;
+  SystemStateDataCollectorTest(const SystemStateDataCollectorTest&) = delete;
+  SystemStateDataCollectorTest& operator=(const SystemStateDataCollectorTest&) =
+      delete;
+  ~SystemStateDataCollectorTest() override = default;
+
+  void SetUp() override {
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    ash::DebugDaemonClient::InitializeFake();
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(
+            TestingBrowserProcess::GetGlobal()->local_state());
+
+    auto* fake_debugd_client =
+        static_cast<ash::FakeDebugDaemonClient*>(ash::DebugDaemonClient::Get());
+    for (const auto& extra_log : SystemStateDataCollector::GetExtraLogNames()) {
+      fake_debugd_client->SetLog(
+          extra_log, base::StrCat({extra_log, ": response from GetLog"}));
+    }
+
     // Set up task runner and container for RedactionTool. We will use when
     // calling CollectDataAndDetectPII() and ExportCollectedDataWithPII()
     // functions on SystemStateDataCollectorTest for testing.
@@ -55,28 +71,14 @@ class SystemStateDataCollectorTest : public ::testing::Test {
             task_runner_for_redaction_tool_);
   }
 
-  SystemStateDataCollectorTest(const SystemStateDataCollectorTest&) = delete;
-  SystemStateDataCollectorTest& operator=(const SystemStateDataCollectorTest&) =
-      delete;
-
-  void SetUp() override {
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    ash::DebugDaemonClient::InitializeFake();
-
-    auto* fake_debugd_client =
-        static_cast<ash::FakeDebugDaemonClient*>(ash::DebugDaemonClient::Get());
-    for (const auto& extra_log : SystemStateDataCollector::GetExtraLogNames()) {
-      fake_debugd_client->SetLog(
-          extra_log, base::StrCat({extra_log, ": response from GetLog"}));
-    }
-  }
-
   void TearDown() override {
+    redaction_tool_container_.reset();
+    task_runner_for_redaction_tool_.reset();
+    user_session_test_environment_.reset();
+    ash::DebugDaemonClient::Shutdown();
     if (!temp_dir_.IsValid())
       return;
     EXPECT_TRUE(temp_dir_.Delete());
-
-    ash::DebugDaemonClient::Shutdown();
   }
 
  protected:
@@ -98,9 +100,10 @@ class SystemStateDataCollectorTest : public ::testing::Test {
     return contents;
   }
 
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool_;
   scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container_;
 };

@@ -26,8 +26,8 @@
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "components/feedback/redaction_tool/pii_types.h"
 #include "components/feedback/redaction_tool/redaction_tool.h"
-#include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "third_party/cros_system_api/dbus/debugd/dbus-constants.h"
 
 namespace {
@@ -159,8 +159,10 @@ void SystemLogsDataCollector::CollectDataAndDetectPII(
 
   ash::DebugDaemonClient* debugd_client = ash::DebugDaemonClient::Get();
 
-  const user_manager::User* user =
-      user_manager::UserManager::Get()->GetActiveUser();
+  // TODO(crbug.com/278643115): Take the account_id from the callers.
+  // Null on the login screen, e.g. for a FetchSupportPacket remote command.
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
 
   // We will only request /var/log files.
   const std::vector<debugd::FeedbackLogType> included_log_types = {
@@ -170,7 +172,7 @@ void SystemLogsDataCollector::CollectDataAndDetectPII(
   // dbus/object_proxy.h for more details).
   debugd_client->GetFeedbackLogs(
       cryptohome::CreateAccountIdentifierFromAccountId(
-          user ? user->GetAccountId() : EmptyAccountId()),
+          active_session ? active_session->account_id() : EmptyAccountId()),
       included_log_types,
       base::BindOnce(&SystemLogsDataCollector::OnGetFeedbackLogs,
                      weak_ptr_factory_.GetWeakPtr(),

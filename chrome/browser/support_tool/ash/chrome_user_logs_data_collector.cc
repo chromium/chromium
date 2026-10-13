@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/barrier_closure.h"
+#include "base/check_deref.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -29,8 +30,11 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/support_tool/data_collector.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/account_id/account_id.h"
 #include "components/feedback/redaction_tool/pii_types.h"
 #include "components/feedback/redaction_tool/redaction_tool.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 
@@ -187,7 +191,10 @@ void ChromeUserLogsDataCollector::CollectDataAndDetectPII(
     scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!user_manager::UserManager::Get()->IsUserLoggedIn()) {
+  // TODO(crbug.com/278643115): Take the account_id from the callers.
+  const session_manager::Session* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  if (!primary_session) {
     SupportToolError error = {SupportToolErrorCode::kDataCollectorError,
                               "A user must have logged in for "
                               "ChromeUserLogsDataCollector."};
@@ -202,10 +209,12 @@ void ChromeUserLogsDataCollector::CollectDataAndDetectPII(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()}, base::BindOnce(&CreateTempDir),
       base::BindOnce(&ChromeUserLogsDataCollector::OnTempDirCreated,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     primary_session->account_id()));
 }
 
 void ChromeUserLogsDataCollector::OnTempDirCreated(
+    const AccountId& account_id,
     std::optional<base::FilePath> temp_dir) {
   if (!temp_dir) {
     SupportToolError error = {SupportToolErrorCode::kDataCollectorError,
@@ -217,11 +226,10 @@ void ChromeUserLogsDataCollector::OnTempDirCreated(
   temp_dir_ = temp_dir.value();
 
   // Get primary user's profile path.
-  const user_manager::User* user =
-      user_manager::UserManager::Get()->GetPrimaryUser();
-  DCHECK(user);
-  std::string user_hash = user->username_hash();
-  DCHECK(!user_hash.empty());
+  const user_manager::User& user =
+      CHECK_DEREF(user_manager::UserManager::Get()->FindUser(account_id));
+  std::string user_hash = user.username_hash();
+  CHECK(!user_hash.empty());
   base::FilePath profile_dir =
       ash::BrowserContextHelper::Get()->GetBrowserContextPathByUserIdHash(
           user_hash);

@@ -20,6 +20,8 @@
 #include "components/feedback/redaction_tool/pii_types.h"
 #include "components/feedback/redaction_tool/redaction_tool.h"
 
+class AccountId;
+
 // Collects logs in primary user's profile directory. Please note that
 // `ChromeUserLogsDataCollector` won't work on sign-in screen.
 class ChromeUserLogsDataCollector : public DataCollector {
@@ -50,7 +52,8 @@ class ChromeUserLogsDataCollector : public DataCollector {
  private:
   void CleanUp();
 
-  void OnTempDirCreated(std::optional<base::FilePath> temp_dir);
+  void OnTempDirCreated(const AccountId& account_id,
+                        std::optional<base::FilePath> temp_dir);
 
   void OnGetUserLogPaths(std::vector<base::FilePath> user_logs_paths);
 

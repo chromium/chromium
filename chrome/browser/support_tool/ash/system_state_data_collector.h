@@ -18,6 +18,8 @@
 #include "components/feedback/redaction_tool/pii_types.h"
 #include "components/feedback/redaction_tool/redaction_tool.h"
 
+class AccountId;
+
 class SystemStateDataCollector : public DataCollector {
  public:
   SystemStateDataCollector();
@@ -73,6 +75,7 @@ class SystemStateDataCollector : public DataCollector {
                 std::optional<std::string> log);
 
   void OnGotAllExtraLogs(
+      const AccountId& account_id,
       scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
       scoped_refptr<redaction::RedactionToolContainer> redaction_tool_containe);
 
