@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tab_modal_confirm_dialog_views.h"
@@ -30,6 +32,8 @@
 #include "content/public/test/browser_test_utils.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/test/ui_controls.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/test/widget_activation_waiter.h"
@@ -80,7 +84,7 @@ class ConstrainedWindowViewTest : public InProcessBrowserTest {
   ~ConstrainedWindowViewTest() override = default;
 
   void CreateNewTabAndLayout(BrowserWindowInterface* browser) {
-    chrome::NewTab(browser, NewTabTypes::kNoUserAction);
+    chrome::NewTab(browser, NewTabTypes::kNewTabButton);
     // Layout can trigger changes in web content visibility which in turn
     // affects the visibility of tab modal dialogs.
     RunScheduledLayouts();
@@ -94,6 +98,19 @@ class ConstrainedWindowViewTest : public InProcessBrowserTest {
   }
 };
 
+class ConstrainedWindowViewDesktopWidgetTest
+    : public ConstrainedWindowViewTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  ConstrainedWindowViewDesktopWidgetTest() {
+    feature_list_.InitWithFeatureState(features::kTabModalUsesDesktopWidget,
+                                       GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 }  // namespace
 
 #if BUILDFLAG(IS_MAC)
@@ -102,62 +119,72 @@ class ConstrainedWindowViewTest : public InProcessBrowserTest {
 #else
 #define MAYBE_FocusTest FocusTest
 #endif
-// Tests the intial focus of tab-modal dialogs, the restoration of focus to the
+
+// Tests the initial focus of tab-modal dialogs, the restoration of focus to the
 // browser when they close, and that queued dialogs don't register themselves as
 // accelerator targets until they are displayed.
-IN_PROC_BROWSER_TEST_F(ConstrainedWindowViewTest, MAYBE_FocusTest) {
+IN_PROC_BROWSER_TEST_P(ConstrainedWindowViewDesktopWidgetTest,
+                       MAYBE_FocusTest) {
   content::WebContents* web_contents =
       browser()->GetTabStripModel()->GetActiveWebContents();
   EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
   ConstrainedWindowTestDialog* const dialog1 = ShowModalDialog(web_contents);
-  views::ViewTracker tracker1(dialog1);
-  EXPECT_EQ(dialog1, tracker1.view());
 
   // |dialog1| should be active and focused.
   EXPECT_TRUE(dialog1->GetWidget()->IsVisible());
-  views::FocusManager* focus_manager = dialog1->GetWidget()->GetFocusManager();
-  EXPECT_EQ(dialog1->GetContentsView(), focus_manager->GetFocusedView());
+  ui_test_utils::WaitForViewFocus(browser(), dialog1, true);
+  EXPECT_TRUE(dialog1->HasFocus());
 
   // Create a second dialog. This will also be modal to |web_contents|, but will
   // remain hidden since the |dialog1| is still showing.
   ConstrainedWindowTestDialog* const dialog2 = ShowModalDialog(web_contents);
-  views::ViewTracker tracker2(dialog2);
-  EXPECT_EQ(dialog2, tracker2.view());
   EXPECT_FALSE(dialog2->GetWidget()->IsVisible());
   EXPECT_TRUE(dialog1->GetWidget()->IsVisible());
-  EXPECT_EQ(focus_manager, dialog2->GetWidget()->GetFocusManager());
-  EXPECT_FALSE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
-  EXPECT_EQ(dialog1->GetContentsView(), focus_manager->GetFocusedView());
+  EXPECT_FALSE(dialog2->HasFocus());
+  EXPECT_TRUE(dialog1->HasFocus());
 
   // Pressing return should close |dialog1|.
-  EXPECT_TRUE(focus_manager->ProcessAccelerator(
-      ui::Accelerator(ui::VKEY_RETURN, ui::EF_NONE)));
-  content::RunAllPendingInMessageLoop();
-  EXPECT_EQ(nullptr, tracker1.view());
+  {
+    views::test::WidgetDestroyedWaiter destroyed_waiter(dialog1->GetWidget());
+    EXPECT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
+        dialog1->GetWidget()->GetNativeWindow(), ui::VKEY_RETURN, false, false,
+        false, false, ui_controls::kKeyPress));
+    destroyed_waiter.Wait();
+  }
 
   // |dialog2| should be visible and focused.
   EXPECT_TRUE(dialog2->GetWidget()->IsVisible());
-  EXPECT_FALSE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
-  EXPECT_EQ(dialog2->GetContentsView(), focus_manager->GetFocusedView());
+  ui_test_utils::WaitForViewFocus(browser(), dialog2, true);
+  EXPECT_TRUE(dialog2->HasFocus());
 
-  // Creating a new tab should take focus away from the other tab's dialog.
-  const int tab_with_dialog = browser()->GetTabStripModel()->active_index();
+  // Creating a new tab should take focus away from the original tab's dialog.
+  const int original_tab_index = browser()->GetTabStripModel()->active_index();
   CreateNewTabAndLayout(browser());
+  ui_test_utils::WaitForViewFocus(browser(), VIEW_ID_OMNIBOX, true);
+  ui_test_utils::WaitForViewFocus(browser(), dialog2, false);
   EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
-  EXPECT_NE(dialog2->GetContentsView(), focus_manager->GetFocusedView());
+  EXPECT_FALSE(dialog2->HasFocus());
 
   // Activating the previous tab should bring focus to the dialog.
-  browser()->GetTabStripModel()->ActivateTabAt(tab_with_dialog);
+  browser()->GetTabStripModel()->ActivateTabAt(original_tab_index);
+  ui_test_utils::WaitForViewFocus(browser(), dialog2, true);
+  ui_test_utils::WaitForViewFocus(browser(), VIEW_ID_OMNIBOX, false);
   EXPECT_FALSE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
-  EXPECT_EQ(dialog2->GetContentsView(), focus_manager->GetFocusedView());
+  EXPECT_TRUE(dialog2->HasFocus());
 
-  // Pressing enter again should close |dialog2|.
-  EXPECT_TRUE(focus_manager->ProcessAccelerator(
-      ui::Accelerator(ui::VKEY_RETURN, ui::EF_NONE)));
-  content::RunAllPendingInMessageLoop();
-  EXPECT_EQ(nullptr, tracker2.view());
-  EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
+  // Pressing return again should close |dialog2|.
+  {
+    views::test::WidgetDestroyedWaiter destroyed_waiter(dialog2->GetWidget());
+    EXPECT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
+        dialog2->GetWidget()->GetNativeWindow(), ui::VKEY_RETURN, false, false,
+        false, false, ui_controls::kKeyPress));
+    destroyed_waiter.Wait();
+  }
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ConstrainedWindowViewDesktopWidgetTest,
+                         testing::Bool());
 
 // Tests that the tab-modal window is closed properly when its tab is closed.
 IN_PROC_BROWSER_TEST_F(ConstrainedWindowViewTest, TabCloseTest) {
