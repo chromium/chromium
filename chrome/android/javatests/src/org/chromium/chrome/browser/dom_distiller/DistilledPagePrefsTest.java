@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.dom_distiller;
 
+import android.os.Build;
+
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
 
@@ -18,6 +20,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.dom_distiller.core.DistilledPagePrefs;
@@ -34,6 +37,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 /** Test class for {@link DistilledPagePrefs}. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
+@DisableIf.Build(
+        sdk_is_greater_than = Build.VERSION_CODES.R,
+        message = "https://crbug.com/572733615")
 public class DistilledPagePrefsTest {
     private DistilledPagePrefs mDistilledPagePrefs;
 
