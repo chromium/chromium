@@ -61,6 +61,11 @@ export function getHtml(this: MemoryBanksElement) {
                 </div>
               ` :
           ''}
+              <input id="fileInput" type="file" accept=".md" multiple hidden
+                  @change="${this.onFileUploadChange_}">
+              <cr-button id="upload-button" @click="${this.onUploadClick_}">
+                Upload
+              </cr-button>
             </div>
 
             ${

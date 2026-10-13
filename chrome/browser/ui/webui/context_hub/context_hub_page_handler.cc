@@ -5,14 +5,17 @@
 #include "chrome/browser/ui/webui/context_hub/context_hub_page_handler.h"
 
 #include <algorithm>
+#include <functional>
 #include <memory>
 #include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "base/barrier_callback.h"
 #include "base/barrier_closure.h"
 #include "base/check.h"
+#include "base/containers/adapters.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/to_vector.h"
@@ -683,6 +686,52 @@ void ContextHubPageHandler::UpdateMemoryBankEntryAnnotations(
   service->UpdateMemoryBankEntryAnnotations(
       id, std::move(tags), std::move(annotations->note),
       std::move(annotations->collection), std::move(callback));
+}
+
+void ContextHubPageHandler::UploadMemoryBankEntries(
+    const std::vector<context_hub::MemoryBankEntry>& entries,
+    UploadMemoryBankEntriesCallback callback) {
+  auto* service = ContextHubServiceFactory::GetForProfile(profile_);
+  if (!service || entries.empty()) {
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+
+  std::vector<context_hub::MemoryBankEntry> valid_entries;
+  valid_entries.reserve(entries.size());
+  for (const auto& entry : entries) {
+    if (!entry.url.is_valid() || !entry.url.SchemeIsHTTPOrHTTPS()) {
+      continue;
+    }
+
+    context_hub::MemoryBankEntry valid_entry = entry;
+    // Reset `id` to 0 so the storage backend treats the uploaded entry as a
+    // new entry (generating a fresh ID and enforcing capacity limits) rather
+    // than overwriting an existing entry.
+    valid_entry.id = 0;
+    valid_entries.push_back(std::move(valid_entry));
+  }
+
+  if (valid_entries.empty()) {
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+
+  // TODO(crbug.com/57261012): Surface partial or complete upload failures to
+  // the user when any of the uploaded entries fail to save or are invalid.
+  auto barrier_callback = base::BarrierCallback<bool>(
+      valid_entries.size(), base::BindOnce(
+                                [](UploadMemoryBankEntriesCallback callback,
+                                   const std::vector<bool>& results) {
+                                  bool any_succeeded = std::ranges::any_of(
+                                      results, std::identity{});
+                                  std::move(callback).Run(any_succeeded);
+                                },
+                                std::move(callback)));
+
+  for (auto& entry : base::Reversed(valid_entries)) {
+    service->SaveMemoryBankEntry(std::move(entry), barrier_callback);
+  }
 }
 
 namespace {

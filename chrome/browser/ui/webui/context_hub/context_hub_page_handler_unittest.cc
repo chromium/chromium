@@ -2833,6 +2833,74 @@ TEST_F(ContextHubPageHandlerTest, UpdateMemoryBankEntryAnnotations_NotFound) {
   EXPECT_FALSE(replace_future.Get());
 }
 
+TEST_F(ContextHubPageHandlerTest, UploadMemoryBankEntries_Empty) {
+  base::test::TestFuture<bool> upload_future;
+  handler_->UploadMemoryBankEntries({}, upload_future.GetCallback());
+  EXPECT_FALSE(upload_future.Get());
+}
+
+TEST_F(ContextHubPageHandlerTest, UploadMemoryBankEntries_InvalidUrl) {
+  MemoryBankEntry invalid_entry(MemoryBankType::kTab, GURL(),
+                                "Invalid URL Tab");
+
+  base::test::TestFuture<bool> upload_future;
+  handler_->UploadMemoryBankEntries({std::move(invalid_entry)},
+                                    upload_future.GetCallback());
+  EXPECT_FALSE(upload_future.Get());
+}
+
+TEST_F(ContextHubPageHandlerTest,
+       UploadMemoryBankEntries_UnsafeSchemeRejected) {
+  MemoryBankEntry js_entry(MemoryBankType::kTab, GURL("javascript:alert(1)"),
+                           "JS Injection Tab");
+
+  base::test::TestFuture<bool> upload_future;
+  handler_->UploadMemoryBankEntries({std::move(js_entry)},
+                                    upload_future.GetCallback());
+  EXPECT_FALSE(upload_future.Get());
+}
+
+TEST_F(ContextHubPageHandlerTest, UploadMemoryBankEntries_Success) {
+  auto* service = ContextHubServiceFactory::GetForProfile(&profile_);
+  ASSERT_TRUE(service);
+
+  MemoryBankEntry entry1(MemoryBankType::kTextSelection,
+                         GURL("https://example.com/first"), "First Entry",
+                         "Selected snippet");
+  entry1.id = 123;
+  entry1.tags = {"tag1", "tag2"};
+  entry1.note = "Note 1";
+  entry1.collection = "Work";
+
+  MemoryBankEntry entry2(MemoryBankType::kTab,
+                         GURL("https://example.com/second"), "Second Entry");
+  entry2.id = 456;
+
+  base::test::TestFuture<bool> upload_future;
+  handler_->UploadMemoryBankEntries({std::move(entry1), std::move(entry2)},
+                                    upload_future.GetCallback());
+  EXPECT_TRUE(upload_future.Get());
+
+  base::test::TestFuture<std::vector<MemoryBankEntry>> entries_future;
+  service->GetAllEntries(entries_future.GetCallback());
+  auto saved_entries = entries_future.Take();
+  ASSERT_EQ(saved_entries.size(), 2u);
+
+  EXPECT_EQ(saved_entries[0].type, MemoryBankType::kTextSelection);
+  EXPECT_EQ(saved_entries[0].url, GURL("https://example.com/first"));
+  EXPECT_EQ(saved_entries[0].tab_title, "First Entry");
+  EXPECT_EQ(saved_entries[0].selected_text, "Selected snippet");
+  EXPECT_THAT(saved_entries[0].tags, testing::ElementsAre("tag1", "tag2"));
+  EXPECT_EQ(saved_entries[0].note, "Note 1");
+  EXPECT_EQ(saved_entries[0].collection, "Work");
+  EXPECT_NE(saved_entries[0].id, 123);
+
+  EXPECT_EQ(saved_entries[1].type, MemoryBankType::kTab);
+  EXPECT_EQ(saved_entries[1].url, GURL("https://example.com/second"));
+  EXPECT_EQ(saved_entries[1].tab_title, "Second Entry");
+  EXPECT_NE(saved_entries[1].id, 456);
+}
+
 TEST_F(ContextHubPageHandlerTest, ExecuteSmartSearch_Success) {
   personal_context::proto::SmartSearchResponse expected_response;
 

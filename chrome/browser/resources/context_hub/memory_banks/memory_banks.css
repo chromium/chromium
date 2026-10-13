@@ -702,7 +702,7 @@ h2 {
 
 .search-container {
   left: 50%;
-  max-width: calc(100% - 240px);
+  max-width: calc(100% - 360px);
   position: absolute;
   transform: translateX(-50%);
   width: 680px;

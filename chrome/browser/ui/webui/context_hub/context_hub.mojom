@@ -558,6 +558,9 @@ interface PageHandler {
                                    MemoryBankEntryAnnotations annotations)
       => (bool success);
 
+  // Saves uploaded memory bank entries to the memory bank.
+  UploadMemoryBankEntries(array<MemoryBankEntry> entries) => (bool success);
+
   // Returns the list of open ungrouped tabs in the current window.
   [RuntimeFeature=kAutoTabGroups]
   GetTabs() => (array<TabInfo> tabs);
