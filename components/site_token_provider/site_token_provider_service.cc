@@ -8,7 +8,9 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/logging.h"
+#include "base/time/time.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
 #include "components/site_token_provider/features.h"
 #include "components/site_token_provider/site_token_provider.h"
@@ -25,27 +27,36 @@ SiteTokenProviderService::SiteTokenProviderService(
   CHECK(identity_manager_);
   CHECK(provider_);
 
-  identity_manager_->AddObserver(this);
+  identity_manager_observation_.Observe(identity_manager_);
 
   provider_->SetTokenUpdateCallback(
       base::BindRepeating(&SiteTokenProviderService::OnTokensUpdated,
                           weak_ptr_factory_.GetWeakPtr()));
 
-  // Trigger update on startup if already signed in.
-  if (identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    UpdateState();
-  }
+  UpdateState();
 }
 
 SiteTokenProviderService::~SiteTokenProviderService() = default;
 
 void SiteTokenProviderService::Shutdown() {
-  identity_manager_->RemoveObserver(this);
+  identity_manager_observation_.Reset();
   identity_manager_ = nullptr;
+  refresh_timer_.Stop();
+  token_cache_.clear();
+  weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void SiteTokenProviderService::UpdateState() {
+  refresh_timer_.Stop();
+
+  if (!identity_manager_ ||
+      !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    token_cache_.clear();
+    return;
+  }
+
   provider_->UpdateState();
+  ScheduleNextRefresh();
 }
 
 std::string SiteTokenProviderService::GetTokenForDomain(
@@ -73,10 +84,13 @@ void SiteTokenProviderService::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
   switch (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
     case signin::PrimaryAccountChangeEvent::Type::kSet:
+      // Don't serve the old account's tokens while the new ones are fetched.
+      token_cache_.clear();
       UpdateState();
       break;
     case signin::PrimaryAccountChangeEvent::Type::kCleared:
-      token_cache_.clear();
+      // Stops the refresh timer and clears the cache.
+      UpdateState();
       break;
     case signin::PrimaryAccountChangeEvent::Type::kNone:
       break;
@@ -84,11 +98,26 @@ void SiteTokenProviderService::OnPrimaryAccountChanged(
 }
 
 void SiteTokenProviderService::OnTokensUpdated(
-    std::map<std::string, std::string> tokens) {
+    std::optional<std::map<std::string, std::string>> tokens) {
+  if (!tokens || !identity_manager_ ||
+      !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    return;
+  }
+
   token_cache_.clear();
-  for (auto const& [domain, token] : tokens) {
+  for (const auto& [domain, token] : *tokens) {
     token_cache_[NormalizeDomain(domain)] = token;
   }
+}
+
+void SiteTokenProviderService::ScheduleNextRefresh() {
+  base::TimeDelta interval = features::kSiteTokenRefreshInterval.Get();
+  if (!interval.is_positive()) {
+    return;
+  }
+  refresh_timer_.Start(FROM_HERE, base::Time::Now() + interval,
+                       base::BindOnce(&SiteTokenProviderService::UpdateState,
+                                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 }  // namespace site_token_provider

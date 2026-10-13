@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -35,8 +36,10 @@ base::flat_set<std::string> ParseAllowlistedDomains(std::string_view allowlist);
 // Interface for the core logic of managing site-specific tokens.
 class SiteTokenProvider {
  public:
-  using TokenUpdateCallback =
-      base::RepeatingCallback<void(std::map<std::string, std::string>)>;
+  // Called with the fetched tokens (possibly empty), or nullopt if the fetch
+  // failed and previously cached tokens should be kept.
+  using TokenUpdateCallback = base::RepeatingCallback<void(
+      std::optional<std::map<std::string, std::string>>)>;
 
   static std::unique_ptr<SiteTokenProvider> Create(
       signin::IdentityManager* identity_manager,
@@ -47,7 +50,7 @@ class SiteTokenProvider {
   // Registers the callback to receive site token updates.
   virtual void SetTokenUpdateCallback(TokenUpdateCallback callback) = 0;
 
-  // Triggers local state synchronization updates.
+  // Fetches fresh tokens and reports the result through the callback.
   virtual void UpdateState() = 0;
 };
 
