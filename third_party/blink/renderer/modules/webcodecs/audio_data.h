@@ -57,13 +57,13 @@ class MODULES_EXPORT AudioData final : public ScriptWrappable {
   void Trace(Visitor*) const override;
 
  private:
+  // These methods expect `dest` to have the exact byte size calculated by
+  // `allocationSize()`.
   void CopyConvert(base::span<uint8_t> dest,
                    AudioDataCopyToOptions* copy_to_options);
-
   void CopyToInterleaved(base::span<uint8_t> dest,
                          AudioDataCopyToOptions* copy_to_options,
                          ExceptionState& exception_state);
-
   void CopyToPlanar(base::span<uint8_t> dest,
                     AudioDataCopyToOptions* copy_to_options,
                     ExceptionState& exception_state);

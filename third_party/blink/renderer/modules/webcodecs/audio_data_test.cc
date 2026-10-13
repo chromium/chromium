@@ -759,10 +759,22 @@ class AudioDataConversionTest : public testing::Test {
     return frames_to_copy;
   }
 
+  AllowSharedBufferSource* CreateUnalignedDestination(size_t dest_size_bytes) {
+    constexpr size_t kMisalignmentOffset = 1;
+    auto* buffer =
+        DOMArrayBuffer::Create(dest_size_bytes + kMisalignmentOffset, 1);
+    auto* view =
+        DOMDataView::Create(buffer, kMisalignmentOffset, dest_size_bytes);
+    return MakeGarbageCollected<AllowSharedBufferSource>(
+        MaybeShared<DOMArrayBufferView>(view));
+  }
+
   void TestConversionToPlanar(bool source_is_planar,
                               bool use_offset,
-                              bool use_frame_count) {
+                              bool use_frame_count,
+                              bool unaligned_dest = false) {
     using Config = TestConfig;
+    using TargetType = Config::To::Traits::ValueType;
     using TargetBufferType = Config::To::BufferType;
     constexpr int kChannelToCopy = 1;
 
@@ -785,13 +797,20 @@ class AudioDataConversionTest : public testing::Test {
     const size_t frames_to_copy = GetFramesToCopy(use_offset, use_frame_count);
     MaybeShared data_copy(TargetBufferType::Create(frames_to_copy));
     AllowSharedBufferSource* dest =
-        MakeGarbageCollected<AllowSharedBufferSource>(data_copy);
+        unaligned_dest
+            ? CreateUnalignedDestination(frames_to_copy * sizeof(TargetType))
+            : MakeGarbageCollected<AllowSharedBufferSource>(data_copy);
 
     // Copy frames, potentially excluding the first and last frame if
     // `use_offset` or `use_frame_count` are set, respectively.
     audio_data->copyTo(dest, copy_to_options, scope.GetExceptionState());
     EXPECT_FALSE(scope.GetExceptionState().HadException())
         << scope.GetExceptionState().Message();
+
+    if (unaligned_dest) {
+      data_copy->ByteSpan().copy_from_nonoverlapping(
+          AsSpan<SharedBufferPolicy::kAllow>(*dest));
+    }
 
     // `kChannelToCopy` should only contain kMaxValue
     auto copied_data = data_copy->AsSpan();
@@ -802,8 +821,10 @@ class AudioDataConversionTest : public testing::Test {
 
   void TestConversionToInterleaved(bool source_is_planar,
                                    bool use_offset,
-                                   bool use_frame_count) {
+                                   bool use_frame_count,
+                                   bool unaligned_dest = false) {
     using Config = TestConfig;
+    using TargetType = Config::To::Traits::ValueType;
     using TargetBufferType = Config::To::BufferType;
 
     V8AudioSampleFormat::Enum source_format =
@@ -826,13 +847,20 @@ class AudioDataConversionTest : public testing::Test {
         GetFramesToCopy(use_offset, use_frame_count) * kChannels;
     MaybeShared data_copy(TargetBufferType::Create(total_frames));
     AllowSharedBufferSource* dest =
-        MakeGarbageCollected<AllowSharedBufferSource>(data_copy);
+        unaligned_dest
+            ? CreateUnalignedDestination(total_frames * sizeof(TargetType))
+            : MakeGarbageCollected<AllowSharedBufferSource>(data_copy);
 
     // Copy frames, potentially excluding the first and last frame if
     // `use_offset` or `use_frame_count` are set, respectively.
     audio_data->copyTo(dest, copy_to_options, scope.GetExceptionState());
     EXPECT_FALSE(scope.GetExceptionState().HadException())
         << scope.GetExceptionState().Message();
+
+    if (unaligned_dest) {
+      data_copy->ByteSpan().copy_from_nonoverlapping(
+          AsSpan<SharedBufferPolicy::kAllow>(*dest));
+    }
 
     // The interleaved data should have kMinValue in
     // channel 0 and kMaxValue in channel 1.
@@ -854,6 +882,12 @@ TYPED_TEST_P(AudioDataConversionTest, PlanarToPlanar) {
   {
     SCOPED_TRACE(TypeParam::config_name() + "_all_frames");
     this->TestConversionToPlanar(source_is_planar, false, false);
+  }
+
+  {
+    SCOPED_TRACE(TypeParam::config_name() + "_unaligned");
+    this->TestConversionToPlanar(source_is_planar, false, false,
+                                 /*unaligned_dest=*/true);
   }
 
   {
@@ -881,6 +915,12 @@ TYPED_TEST_P(AudioDataConversionTest, InterleavedToPlanar) {
   }
 
   {
+    SCOPED_TRACE(TypeParam::config_name() + "_unaligned");
+    this->TestConversionToPlanar(source_is_planar, false, false,
+                                 /*unaligned_dest=*/true);
+  }
+
+  {
     SCOPED_TRACE(TypeParam::config_name() + "_with_offset");
     this->TestConversionToPlanar(source_is_planar, true, false);
   }
@@ -905,6 +945,12 @@ TYPED_TEST_P(AudioDataConversionTest, PlanarToInterleaved) {
   }
 
   {
+    SCOPED_TRACE(TypeParam::config_name() + "_unaligned");
+    this->TestConversionToInterleaved(source_is_planar, false, false,
+                                      /*unaligned_dest=*/true);
+  }
+
+  {
     SCOPED_TRACE(TypeParam::config_name() + "_with_offset");
     this->TestConversionToInterleaved(source_is_planar, true, false);
   }
@@ -926,6 +972,12 @@ TYPED_TEST_P(AudioDataConversionTest, InterleavedToInterleaved) {
   {
     SCOPED_TRACE(TypeParam::config_name() + "_all_frames");
     this->TestConversionToInterleaved(source_is_planar, false, false);
+  }
+
+  {
+    SCOPED_TRACE(TypeParam::config_name() + "_unaligned");
+    this->TestConversionToInterleaved(source_is_planar, false, false,
+                                      /*unaligned_dest=*/true);
   }
 
   {
