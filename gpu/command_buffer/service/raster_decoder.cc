@@ -2657,6 +2657,7 @@ void RasterDecoderImpl::DoReadbackYUVImagePixelsINTERNAL(
   // While this function indicates it's asynchronous, the DoFinish() call below
   // ensures it completes synchronously.
   YUVReadbackResult yuv_result;
+  bool is_context_lost = false;
   if (graphite_shared_context()) {
     // SkImage/SkSurface asyncRescaleAndReadPixels methods won't be implemented
     // for Graphite. Instead the equivalent methods will be on Graphite Context.
@@ -2665,6 +2666,8 @@ void RasterDecoderImpl::DoReadbackYUVImagePixelsINTERNAL(
         src_rect, dst_size, SkImage::RescaleGamma::kSrc,
         SkImage::RescaleMode::kRepeatedLinear,
         base::BindOnce(&OnReadYUVImagePixelsDone), &yuv_result);
+    is_context_lost =
+        !yuv_result.finished && graphite_shared_context()->IsContextLost();
   } else {
     CHECK(gr_context());
     sk_image->asyncRescaleAndReadPixelsYUV420(
@@ -2688,9 +2691,10 @@ void RasterDecoderImpl::DoReadbackYUVImagePixelsINTERNAL(
   }
 
   // The call above will sync up gpu and CPU, resulting in callback being run
-  // during DoFinish(). To prevent UAF make sure it indeed happened.
-  CHECK(yuv_result.finished);
-  if (!yuv_result.async_result) {
+  // during DoFinish(). To prevent UAF make sure it indeed happened or context
+  // was lost.
+  CHECK(yuv_result.finished || is_context_lost);
+  if (!yuv_result.async_result || is_context_lost) {
     LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glReadbackYUVImagePixels",
                        "Failed to read pixels from SkImage");
     return;
