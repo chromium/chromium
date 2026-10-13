@@ -239,7 +239,9 @@ bool EqualsExcludingTimestamps(const base::DictValue& left,
 
 void InstallIconFromFileThread(const base::FilePath& icon_path,
                                const std::string& content) {
-  CHECK(!content.empty(), base::NotFatalUntil::M160);
+  // TODO(crbug.com/571847721): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!content.empty());
 
   base::CreateDirectory(icon_path.DirName());
 
