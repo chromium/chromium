@@ -26,7 +26,10 @@
 // https://xhr.spec.whatwg.org/#interface-progressevent
 
 [
-    Exposed=(Window, DedicatedWorker, SharedWorker)
+    Exposed(Window StableBlinkFeatures,
+            DedicatedWorker StableBlinkFeatures,
+            SharedWorker StableBlinkFeatures,
+            ServiceWorker ProgressEventInServiceWorker)
 ] interface ProgressEvent : Event {
     constructor(DOMString type, optional ProgressEventInit eventInitDict = {});
     readonly attribute boolean lengthComputable;

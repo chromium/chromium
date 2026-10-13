@@ -5212,6 +5212,13 @@
       status: "stable",
     },
     {
+      // Expose `ProgressEvent` in service workers.
+      // https://xhr.spec.whatwg.org/#interface-progressevent
+      // https://crbug.com/332663431
+      name: "ProgressEventInServiceWorker",
+      status: "stable",
+    },
+    {
       // Propagate overscroll-behavior from the root element rather than the
       // body element. crbug.com/41453796
       name: "PropagateOverscrollBehaviorFromRoot",

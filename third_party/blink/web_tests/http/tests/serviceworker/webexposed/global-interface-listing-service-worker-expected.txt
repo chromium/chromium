@@ -1768,6 +1768,12 @@ interface Permissions
     method request
     method requestAll
     method revoke
+interface ProgressEvent : Event
+    attribute @@toStringTag
+    getter lengthComputable
+    getter loaded
+    getter total
+    method constructor
 interface PromiseRejectionEvent : Event
     attribute @@toStringTag
     getter promise

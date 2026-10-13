@@ -1626,6 +1626,12 @@ interface Permissions
     attribute @@toStringTag
     method constructor
     method query
+interface ProgressEvent : Event
+    attribute @@toStringTag
+    getter lengthComputable
+    getter loaded
+    getter total
+    method constructor
 interface PromiseRejectionEvent : Event
     attribute @@toStringTag
     getter promise
