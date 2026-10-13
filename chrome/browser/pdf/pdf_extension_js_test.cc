@@ -29,6 +29,7 @@
 #include "chrome/test/base/devtools_agent_coverage_observer.h"
 #include "chrome/test/base/test_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "chrome/test/base/web_ui_test_data_source.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "content/public/browser/render_process_host.h"
@@ -37,6 +38,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/file_system_chooser_test_helpers.h"
 #include "content/public/test/scoped_time_zone.h"
+#include "extensions/common/constants.h"
 #include "extensions/test/result_catcher.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "pdf/buildflags.h"
@@ -215,12 +217,44 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, DownloadControls) {
   RunTestsInJsModule("download_controls_test.js", "test.pdf");
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Title) {
-  RunTestsInJsModule("title_test.js", "test-title.pdf");
+// TODO(crbug.com/572671898): Rename back to `PDFExtensionJSTest` once all tests
+// have been migrated to Mocha.
+class PDFExtensionJSMochaTest : public WebUIMochaBrowserTest {
+ protected:
+  PDFExtensionJSMochaTest() {
+    set_test_loader_host(extension_misc::kPdfExtensionId);
+  }
+
+  void SetUpOnMainThread() override {
+    WebUIMochaBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+    embedded_test_server()->StartAcceptingConnections();
+  }
+
+  void RunMochaTest(const std::string& filename,
+                    const std::string& pdf_filename) {
+    GURL url(embedded_test_server()->GetURL("/pdf/" + pdf_filename));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    ASSERT_TRUE(web_contents);
+    ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_contents));
+
+    content::RenderFrameHost* extension_host =
+        pdf_extension_test_util::GetOnlyPdfExtensionHost(web_contents);
+    ASSERT_TRUE(extension_host);
+
+    ASSERT_TRUE(RunTestOnRenderFrameHost(extension_host, "pdf/" + filename,
+                                         "mocha.run()"));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PDFExtensionJSMochaTest, Title) {
+  RunMochaTest("title_test.js", "test-title.pdf");
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, WhitespaceTitle) {
-  RunTestsInJsModule("whitespace_title_test.js", "test-whitespace-title.pdf");
+IN_PROC_BROWSER_TEST_F(PDFExtensionJSMochaTest, WhitespaceTitle) {
+  RunMochaTest("whitespace_title_test.js", "test-whitespace-title.pdf");
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, PageChange) {
