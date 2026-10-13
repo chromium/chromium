@@ -92,7 +92,16 @@ export class OrganizerListSectionElement extends CrLitElement implements
               },
               {
                 name: 'description',
-                getter: item => item.description?.map(d => d.text),
+                // Map non-matchable parts to empty strings instead of filtering
+                // them out so highlight range indices stay aligned with
+                // `item.description`.
+                getter: item => item.description?.map(
+                    d => (d.matchable ?? true) ? d.text : ''),
+                weight: 1,
+              },
+              {
+                name: 'extraSearchTerms',
+                getter: item => item.extraSearchTerms,
                 weight: 1,
               },
             ],

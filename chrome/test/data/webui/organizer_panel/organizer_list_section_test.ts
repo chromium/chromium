@@ -478,6 +478,83 @@ suite('OrganizerListSectionTest', () => {
     assertFalse(listSection.hidden);
   });
 
+  test('matches items based on extraSearchTerms', async () => {
+    const delegateItems: Array<OrganizerListSectionItem<unknown>> = [
+      {
+        title: ['Google'],
+        description: [{text: 'Search engine'}],
+        extraSearchTerms: ['www.google.com'],
+      },
+      {
+        title: ['Split View'],
+        description: [{text: 'Docs'}, {text: 'Sheets'}],
+        extraSearchTerms: ['docs.google.com', 'sheets.google.com'],
+      },
+    ];
+    listSection.delegate = new TestSectionDelegate('Open Tabs', delegateItems);
+    await microtasksFinished();
+
+    listSection.searchQuery = 'sheets.google.com';
+    await microtasksFinished();
+
+    let listItems =
+        listSection.shadowRoot.querySelectorAll('organizer-list-section-item');
+    assertEquals(1, listItems.length);
+    assertDeepEquals(['Split View'], listItems[0]!.item.title);
+    assertDeepEquals([[]], listItems[0]!.$.title.highlightRanges);
+    assertDeepEquals([[], []], listItems[0]!.$.description.highlightRanges);
+
+    listSection.searchQuery = 'www.google.com';
+    await microtasksFinished();
+
+    listItems =
+        listSection.shadowRoot.querySelectorAll('organizer-list-section-item');
+    assertEquals(1, listItems.length);
+    assertDeepEquals(['Google'], listItems[0]!.item.title);
+    assertDeepEquals([[]], listItems[0]!.$.title.highlightRanges);
+    assertDeepEquals([[]], listItems[0]!.$.description.highlightRanges);
+  });
+
+  test('ignores description parts with matchable set to false', async () => {
+    const delegateItems: Array<OrganizerListSectionItem<unknown>> = [
+      {
+        title: ['Google'],
+        description: [
+          {text: '10m ago', matchable: false},
+          {text: 'Work Group'},
+        ],
+      },
+      {
+        title: ['YouTube'],
+        description: [
+          {text: '5m ago', matchable: false},
+          {text: 'Media', matchable: true},
+        ],
+      },
+    ];
+    listSection.delegate = new TestSectionDelegate('Open Tabs', delegateItems);
+    await microtasksFinished();
+
+    listSection.searchQuery = 'ago';
+    await microtasksFinished();
+
+    let listItems =
+        listSection.shadowRoot.querySelectorAll('organizer-list-section-item');
+    assertEquals(0, listItems.length);
+    assertTrue(listSection.hidden);
+
+    listSection.searchQuery = 'm';
+    await microtasksFinished();
+
+    listItems =
+        listSection.shadowRoot.querySelectorAll('organizer-list-section-item');
+    assertEquals(1, listItems.length);
+    assertDeepEquals(['YouTube'], listItems[0]!.item.title);
+    assertDeepEquals(
+        [[], [{start: 0, length: 1}]],
+        listItems[0]!.$.description.highlightRanges);
+  });
+
   test(
       'ignores item updates while searching until searchQuery changes',
       async () => {

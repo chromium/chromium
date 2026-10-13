@@ -21,6 +21,10 @@ export interface OrganizerListSectionItemDescriptionPart {
 
   // Optional: Element shown before the text part.
   prefixElement?: TemplateResult;
+
+  // Optional: Whether the text should be matched when searching. Defaults to
+  // true.
+  matchable?: boolean;
 }
 
 export interface OrganizerListSectionItemDescriptionElement {

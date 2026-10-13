@@ -61,6 +61,10 @@ export interface OrganizerListSectionItem<T> {
   // Description (secondary line) of the item.
   description?: OrganizerListSectionItemDescriptionPart[];
 
+  // Optional: Terms that should match on search, but shouldn't be shown in the
+  // UI.
+  extraSearchTerms?: string[];
+
   // Icon displayed at the beginning of the item.
   prefixIcon?: OrganizerListSectionItemIcon;
 
