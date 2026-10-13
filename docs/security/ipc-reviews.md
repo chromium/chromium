@@ -121,12 +121,6 @@ an IPC reviewer only after receiving all other LGTMs can sometimes be
 frustrating for everyone involved, especially if significant revisions are
 requested.
 
-## Is it OK to TBR a simple change in IPC?
-
-Avoid TBRing CLs with IPC changes. If the change is simple, ping an IPC reviewer
-directly and ask them for a quick LGTM. Erring on the side of safety is
-preferred for security-critical changes.
-
 ## IPC review is slow!
 
 Please reach out to <ipc-security-reviewers@chromium.org> (for public issues)

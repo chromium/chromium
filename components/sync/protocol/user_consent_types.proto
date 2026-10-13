@@ -33,8 +33,8 @@ message UserConsentTypes {
   // ===========================================================================
   // Keep sorted alphabetically.
   // Don't forget to update proto_visitors.h and potentially
-  // proto_enum_conversions.{h, cc}. Never TBR proto changes, because they need
-  // to be manually imported on the Sync server.
+  // proto_enum_conversions.{h, cc}. Proto changes need to be manually
+  // imported on the Sync server.
   // ===========================================================================
 
   // The user consent for the ARC Backup And Restore feature. The consent

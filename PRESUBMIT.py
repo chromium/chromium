@@ -4460,12 +4460,6 @@ def CheckAddedDepsHaveTargetApprovals(input_api, output_api):
         return []
 
     if input_api.is_committing:
-        if input_api.tbr:
-            return [
-                output_api.PresubmitNotifyResult(
-                    '--tbr was specified, skipping OWNERS check for DEPS additions'
-                )
-            ]
         # TODO(dcheng): Make this generate an error on dry runs if the reviewer
         # is not added, to prevent review serialization.
         if input_api.dry_run:

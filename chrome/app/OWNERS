@@ -1,7 +1,6 @@
 #
-# For .grd and .grdp changes, TBR an OWNER below. If you are not
-# a google employee then you also need to file a bug in which the
-# proposed strings have been approved.
+# For .grd and .grdp changes, if you are not a Google employee then you
+# also need to file a bug in which the proposed strings have been approved.
 
 cpu@chromium.org
 grt@chromium.org
