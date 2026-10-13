@@ -255,6 +255,7 @@ bindings_unittest_files = get_path_info(
           "core/v8/serialization/trailer_reader_test.cc",
           "core/v8/serialization/trailer_writer_test.cc",
           "core/v8/serialization/v8_script_value_serializer_test.cc",
+          "core/v8/shadow_realm_context_test.cc",
           "core/v8/to_v8_traits_test.cc",
           "core/v8/trace_wrapper_v8_reference_test.cc",
           "core/v8/v8_binding_for_testing.cc",

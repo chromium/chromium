@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SHADOW_REALM_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SHADOW_REALM_CONTEXT_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "v8/include/v8-forward.h"
 
 namespace blink {
@@ -13,7 +14,7 @@ namespace blink {
 // v8::Isolate::SetHostCreateShadowRealmContextCallback. This callback function
 // is called at each time when JS code runs "new ShadowRealm()".
 // `initiator_context` is the v8::Context which runs "new ShadowRealm()".
-v8::MaybeLocal<v8::Context> OnCreateShadowRealmV8Context(
+CORE_EXPORT v8::MaybeLocal<v8::Context> OnCreateShadowRealmV8Context(
     v8::Local<v8::Context> initiator_context);
 
 }  // namespace blink

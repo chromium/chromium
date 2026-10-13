@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/bindings/v8_dom_wrapper.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_context_data.h"
 #include "third_party/blink/renderer/platform/context_lifecycle_observer.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 #include "v8/include/v8-context.h"
 
 namespace blink {
@@ -22,13 +23,17 @@ namespace {
 // too.
 class ShadowRealmLifetimeController
     : public GarbageCollected<ShadowRealmLifetimeController>,
+      public Supplement<ExecutionContext>,
       public ContextLifecycleObserver {
  public:
+  static const char kSupplementName[];
+
   explicit ShadowRealmLifetimeController(
       ExecutionContext* initiator_execution_context,
       ShadowRealmGlobalScope* shadow_realm_global_scope,
       ScriptState* shadow_realm_script_state)
-      : is_initiator_worker_or_worklet_(
+      : Supplement<ExecutionContext>(*shadow_realm_global_scope),
+        is_initiator_worker_or_worklet_(
             initiator_execution_context->IsWorkerOrWorkletGlobalScope()),
         shadow_realm_global_scope_(shadow_realm_global_scope),
         shadow_realm_script_state_(shadow_realm_script_state) {
@@ -38,6 +43,7 @@ class ShadowRealmLifetimeController
   void Trace(Visitor* visitor) const override {
     visitor->Trace(shadow_realm_global_scope_);
     visitor->Trace(shadow_realm_script_state_);
+    Supplement<ExecutionContext>::Trace(visitor);
     ContextLifecycleObserver::Trace(visitor);
   }
 
@@ -57,6 +63,9 @@ class ShadowRealmLifetimeController
   Member<ShadowRealmGlobalScope> shadow_realm_global_scope_;
   Member<ScriptState> shadow_realm_script_state_;
 };
+
+const char ShadowRealmLifetimeController::kSupplementName[] =
+    "ShadowRealmLifetimeController";
 
 }  // namespace
 
@@ -101,10 +110,14 @@ v8::MaybeLocal<v8::Context> OnCreateShadowRealmV8Context(
   std::ignore =
       script_state->PerContextData()->ConstructorForType(wrapper_type_info);
 
-  // Make the initiator execution context the owner of the
-  // ShadowRealmGlobalScope and the ScriptState.
-  MakeGarbageCollected<ShadowRealmLifetimeController>(
-      initiator_execution_context, shadow_realm_global_scope, script_state);
+  // Lifecycle observers are weak. Retain the controller on the global scope so
+  // it survives GC and disposes the ScriptState when the initiator is
+  // destroyed.
+  Supplement<ExecutionContext>::ProvideTo(
+      *shadow_realm_global_scope,
+      MakeGarbageCollected<ShadowRealmLifetimeController>(
+          initiator_execution_context, shadow_realm_global_scope,
+          script_state));
 
   return context;
 }
