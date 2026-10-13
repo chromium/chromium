@@ -17,6 +17,7 @@
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/apps/app_service/publishers/arc_apps_factory.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_list_prefs_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_package_syncable_service_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_usb_host_permission_manager.h"
 #include "chrome/browser/ash/app_list/arc/arc_usb_host_permission_manager_factory.h"
@@ -254,8 +255,12 @@ void ArcServiceLauncher::MaybeSetProfile(Profile* profile) {
   // allowed for ARC.
   // TODO(hidehiko): DCHECK(!arc_session_manager_->IsAllowed()) here, and
   // get rid of Shutdown().
-  if (arc_session_manager_->profile())
+  if (arc_session_manager_->profile()) {
+    // The handler is bound to the previous profile and must be destroyed before
+    // shutting down the session manager (matching the order in Shutdown()).
+    arc_play_store_enabled_preference_handler_.reset();
     arc_session_manager_->Shutdown();
+  }
 
   arc_session_manager_->SetProfile(profile);
   arc_service_manager_->set_browser_context(profile);
@@ -412,12 +417,18 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(
   }
 
   arc_session_manager_->Initialize(consent_auditor);
-  // Shutdown() resets this before the profiles -- and so their keyed services
-  // -- are destroyed, so holding the ConsentAuditor is safe.
-  arc_play_store_enabled_preference_handler_ =
-      std::make_unique<ArcPlayStoreEnabledPreferenceHandler>(
-          profile, arc_session_manager_.get(), consent_auditor);
-  arc_play_store_enabled_preference_handler_->Start();
+  // In SyncTest, SyncArcPackageHelper drives `prefs::kArcEnabled` and calls
+  // `NotifyArcPlayStoreEnabledChanged()` directly, so the handler must not
+  // call `RequestEnable()` or `RequestDisable()`.
+  if (!ArcAppListPrefsFactory::IsFactorySetForSyncTest()) {
+    // Shutdown() and MaybeSetProfile() reset this before the profiles -- and so
+    // their keyed services -- are destroyed, so holding the ConsentAuditor is
+    // safe.
+    arc_play_store_enabled_preference_handler_ =
+        std::make_unique<ArcPlayStoreEnabledPreferenceHandler>(
+            profile, arc_session_manager_.get(), consent_auditor);
+    arc_play_store_enabled_preference_handler_->Start();
+  }
 }
 
 void ArcServiceLauncher::Shutdown() {
