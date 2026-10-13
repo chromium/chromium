@@ -355,6 +355,8 @@ class FakeDataProtectionNavigationController
 };
 
 TEST_F(DataProtectionNavigationObserverTest, MatchedAuditRuleHasEvent) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kEnterpriseTabTitleReporting);
   enterprise_connectors::test::EventReportValidator validator(client_.get());
   base::RunLoop run_loop;
   validator.SetDoneClosure(run_loop.QuitClosure());
@@ -569,6 +571,8 @@ TEST_F(DataProtectionNavigationObserverTest,
 // original URL, not the chrome-distiller:// URL that was committed.
 TEST_F(DataProtectionNavigationObserverTest,
        CommittedNavigation_DistillerUrl_ReportsOriginalUrl) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kEnterpriseTabTitleReporting);
   const GURL original_url("https://example.com/article");
   const GURL distilled_url =
       dom_distiller::url_utils::GetDistillerViewUrlFromUrl(
@@ -1608,8 +1612,9 @@ class OrderedDataProtectionNavigationObserverTest
       public testing::WithParamInterface<bool> {
  public:
   OrderedDataProtectionNavigationObserverTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        kEnableWatermarkTimestampTimezone);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{kEnableWatermarkTimestampTimezone},
+        /*disabled_features=*/{kEnterpriseTabTitleReporting});
   }
   bool IsNavigationFinishedAfterVerdictReceived() const { return GetParam(); }
 
