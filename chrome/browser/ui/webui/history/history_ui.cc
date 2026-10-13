@@ -139,6 +139,9 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
   source->AddBoolean(
+      "isBrowsingHistoryFilterByActorEnabled",
+      base::FeatureList::IsEnabled(history::kBrowsingHistoryFilterByActor));
+  source->AddBoolean(
       "isBrowsingHistoryFilterByDeviceEnabled",
       base::FeatureList::IsEnabled(history::kBrowsingHistoryFilterByDevice));
   source->AddBoolean("isCriticalActionsEnabled", is_critical_actions_enabled);

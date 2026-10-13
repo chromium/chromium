@@ -108,6 +108,10 @@ export class HistoryFilterChipsElement extends CrLitElement {
     // </if>
   }
 
+  protected showActorFilterDropDownVersion_(): boolean {
+    return loadTimeData.getBoolean('isBrowsingHistoryFilterByActorEnabled');
+  }
+
   private isCriticalActionsEnabled_(): boolean {
     return loadTimeData.valueExists('isCriticalActionsEnabled') &&
         loadTimeData.getBoolean('isCriticalActionsEnabled');

@@ -30,209 +30,262 @@ suite('HistoryFilterChipsTest', function() {
     browserService.resetResolver('recordAction');
   });
 
-  test('ActorFilterVisibilityAndInitialState', async () => {
-    // If the parent does not pass `showActorFilter`, do not show the filter by
-    // default.
-    assertFalse(!!element.shadowRoot.querySelector('#userVisitsChip'));
-    assertFalse(!!element.shadowRoot.querySelector('#actorVisitsChip'));
-
-    element.showActorFilter = true;
-    await microtasksFinished();
-    const userChip =
-        element.shadowRoot.querySelector<HTMLElement>('#userVisitsChip');
-    const actorChip =
-        element.shadowRoot.querySelector<HTMLElement>('#actorVisitsChip');
-    assertTrue(!!userChip);
-    assertTrue(!!actorChip);
-    assertFalse(userChip.hasAttribute('selected'));
-    assertFalse(actorChip.hasAttribute('selected'));
-
-    element.showActorFilter = false;
-    await microtasksFinished();
-    assertFalse(!!element.shadowRoot.querySelector('#userVisitsChip'));
-    assertFalse(!!element.shadowRoot.querySelector('#actorVisitsChip'));
-  });
-
-  test('ToggleUserChip', async () => {
-    element.showActorFilter = true;
-    await microtasksFinished();
-    const userChip =
-        element.shadowRoot.querySelector<HTMLElement>('#userVisitsChip');
-    assertTrue(!!userChip);
-    const userIcon = userChip.querySelector('cr-icon');
-    assertTrue(!!userIcon);
-
-    let eventDetail: {userVisits: boolean, actorVisits: boolean}|undefined;
-    element.addEventListener('filter-changed', ((e: CustomEvent) => {
-                                                 eventDetail = e.detail;
-                                               }) as EventListener);
-
-    // Show user visits only.
-    userChip.click();
-    await microtasksFinished();
-    const action1 = await browserService.whenCalled('recordAction');
-    assertEquals('HistoryPage_ShowUserOnlyEnabled', action1);
-    browserService.resetResolver('recordAction');
-
-    assertTrue(!!eventDetail);
-    assertTrue(eventDetail.userVisits);
-    assertFalse(eventDetail.actorVisits);
-    assertTrue(userChip.hasAttribute('selected'));
-    assertEquals('cr:check', userIcon.icon);
-
-    // Show all visits by a second click on the user chip.
-    userChip.click();
-    await microtasksFinished();
-    const action2 = await browserService.whenCalled('recordAction');
-    assertEquals('HistoryPage_ShowAllEnabled', action2);
-
-    assertTrue(!!eventDetail);
-    assertTrue(eventDetail.userVisits);
-    assertTrue(eventDetail.actorVisits);
-    assertFalse(userChip.hasAttribute('selected'));
-    assertEquals('cr:person-filled', userIcon.icon);
-  });
-
-  test('ToggleActorChip', async () => {
-    element.showActorFilter = true;
-    await microtasksFinished();
-    const actorChip =
-        element.shadowRoot.querySelector<HTMLElement>('#actorVisitsChip');
-    assertTrue(!!actorChip);
-    const actorIcon = actorChip.querySelector('cr-icon');
-    assertTrue(!!actorIcon);
-
-    let eventDetail: {userVisits: boolean, actorVisits: boolean}|undefined;
-    element.addEventListener('filter-changed', ((e: CustomEvent) => {
-                                                 eventDetail = e.detail;
-                                               }) as EventListener);
-
-    // Show actor visits only.
-    actorChip.click();
-    const action1 = await browserService.whenCalled('recordAction');
-    assertEquals('HistoryPage_ShowActorOnlyEnabled', action1);
-    await microtasksFinished();
-    browserService.resetResolver('recordAction');
-
-    assertTrue(!!eventDetail);
-    assertFalse(eventDetail.userVisits);
-    assertTrue(eventDetail.actorVisits);
-    assertTrue(actorChip.hasAttribute('selected'));
-    assertEquals('cr:check', actorIcon.icon);
-
-    // Show all visits by a second click on the actor chip.
-    actorChip.click();
-    const action2 = await browserService.whenCalled('recordAction');
-    assertEquals('HistoryPage_ShowAllEnabled', action2);
-    await microtasksFinished();
-
-    assertTrue(!!eventDetail);
-    assertTrue(eventDetail.userVisits);
-    assertTrue(eventDetail.actorVisits);
-    assertFalse(actorChip.hasAttribute('selected'));
-    // <if expr="_google_chrome">
-    assertEquals('history-internal:screensaver-auto', actorIcon.icon);
-    // </if>
-    // <if expr="not _google_chrome">
-    assertEquals('', actorIcon.icon);
-    // </if>
-  });
-
-  test('ToggleBothChips', async () => {
-    element.showActorFilter = true;
-    await microtasksFinished();
-    const userChip =
-        element.shadowRoot.querySelector<HTMLElement>('#userVisitsChip');
-    const actorChip =
-        element.shadowRoot.querySelector<HTMLElement>('#actorVisitsChip');
-    assertTrue(!!userChip && !!actorChip);
-
-    let eventDetail: {userVisits: boolean, actorVisits: boolean}|undefined;
-    element.addEventListener('filter-changed', ((e: CustomEvent) => {
-                                                 eventDetail = e.detail;
-                                               }) as EventListener);
-
-    // Start at 'User Only' by clicking the user chip.
-    userChip.click();
-    const action1 = await browserService.whenCalled('recordAction');
-    assertEquals('HistoryPage_ShowUserOnlyEnabled', action1);
-    await microtasksFinished();
-    browserService.resetResolver('recordAction');
-
-    assertTrue(!!eventDetail);
-    assertTrue(eventDetail.userVisits);
-    assertFalse(eventDetail.actorVisits);
-    assertTrue(userChip.hasAttribute('selected'));
-    assertFalse(actorChip.hasAttribute('selected'));
-
-    // Clicking Actor Chip while 'User Only' is active should
-    // switch directly to 'Actor Only'.
-    actorChip.click();
-    const action2 = await browserService.whenCalled('recordAction');
-    assertEquals('HistoryPage_ShowActorOnlyEnabled', action2);
-    await microtasksFinished();
-    browserService.resetResolver('recordAction');
-
-    assertTrue(!!eventDetail);
-    assertFalse(eventDetail.userVisits);
-    assertTrue(eventDetail.actorVisits);
-    assertFalse(userChip.hasAttribute('selected'));
-    assertTrue(actorChip.hasAttribute('selected'));
-
-    // Clicking User Chip while 'Actor Only' is active should
-    // switch back to 'User Only'.
-    userChip.click();
-    const action3 = await browserService.whenCalled('recordAction');
-    assertEquals('HistoryPage_ShowUserOnlyEnabled', action3);
-    await microtasksFinished();
-    browserService.resetResolver('recordAction');
-
-    assertTrue(!!eventDetail);
-    assertTrue(eventDetail.userVisits);
-    assertFalse(eventDetail.actorVisits);
-    assertTrue(userChip.hasAttribute('selected'));
-    assertFalse(actorChip.hasAttribute('selected'));
-
-    // Clicking User Chip again while 'User Only' is active
-    // should return to 'Show All'.
-    userChip.click();
-    const action4 = await browserService.whenCalled('recordAction');
-    assertEquals('HistoryPage_ShowAllEnabled', action4);
-    await microtasksFinished();
-
-    assertTrue(!!eventDetail);
-    assertTrue(eventDetail.userVisits);
-    assertTrue(eventDetail.actorVisits);
-    assertFalse(userChip.hasAttribute('selected'));
-    assertFalse(actorChip.hasAttribute('selected'));
-  });
-
-  test('CriticalActionsIcons', async () => {
-    element.showActorFilter = true;
-    loadTimeData.overrideValues({
-      isCriticalActionsEnabled: true,
+  suite('ActorFilter', function() {
+    setup(() => {
+      loadTimeData.overrideValues({
+        isBrowsingHistoryFilterByActorEnabled: true,
+      });
     });
-    element.requestUpdate();
-    await element.updateComplete;
 
-    const userChip =
-        element.shadowRoot.querySelector<HTMLElement>('#userVisitsChip');
-    const actorChip =
-        element.shadowRoot.querySelector<HTMLElement>('#actorVisitsChip');
-    assertTrue(!!userChip && !!actorChip);
+    test('VisibilityAndInitialState', async () => {
+      // If the parent does not pass `showActorFilter`, do not show the filter
+      // by default.
+      assertFalse(!!element.shadowRoot.querySelector('#userVisitsChip'));
+      assertFalse(!!element.shadowRoot.querySelector('#actorVisitsChip'));
+      assertFalse(!!element.shadowRoot.querySelector('#actorSelect'));
 
-    const userIcon = userChip.querySelector('cr-icon');
-    const actorIcon = actorChip.querySelector('cr-icon');
-    assertTrue(!!userIcon && !!actorIcon);
+      element.showActorFilter = true;
+      await microtasksFinished();
+      const actorSelect =
+          element.shadowRoot.querySelector<HTMLSelectElement>('#actorSelect');
+      assertTrue(!!actorSelect);
+      assertFalse(!!element.shadowRoot.querySelector('#userVisitsChip'));
+      assertFalse(!!element.shadowRoot.querySelector('#actorVisitsChip'));
+      assertEquals(3, actorSelect.options.length);
+      // TODO(b/561606724): Replace hardcoded string with a localized string ID.
+      assertEquals('All sources', actorSelect.options[0]!.textContent.trim());
+      assertTrue(actorSelect.options[0]!.selected);
+      assertEquals(
+          loadTimeData.getString('sourceFilterChipUser'),
+          actorSelect.options[1]!.textContent.trim());
+      assertFalse(actorSelect.options[1]!.selected);
+      assertEquals(
+          loadTimeData.getString('sourceFilterChipActor'),
+          actorSelect.options[2]!.textContent.trim());
+      assertFalse(actorSelect.options[2]!.selected);
 
-    assertEquals('cr:person', userIcon.icon);
+      element.showActorFilter = false;
+      await microtasksFinished();
+      assertFalse(!!element.shadowRoot.querySelector('#userVisitsChip'));
+      assertFalse(!!element.shadowRoot.querySelector('#actorVisitsChip'));
+      assertFalse(!!element.shadowRoot.querySelector('#actorSelect'));
+    });
+  });
 
-    // <if expr="_google_chrome">
-    assertEquals('history-internal:arrow-selector-spark-new', actorIcon.icon);
-    // </if>
-    // <if expr="not _google_chrome">
-    assertEquals('', actorIcon.icon);
-    // </if>
+  suite('ActorFilterAsChips', function() {
+    setup(() => {
+      loadTimeData.overrideValues({
+        isBrowsingHistoryFilterByActorEnabled: false,
+      });
+    });
+
+    test('VisibilityAndInitialState', async () => {
+      // If the parent does not pass `showActorFilter`, do not show the filter
+      // by default.
+      assertFalse(!!element.shadowRoot.querySelector('#userVisitsChip'));
+      assertFalse(!!element.shadowRoot.querySelector('#actorVisitsChip'));
+      assertFalse(!!element.shadowRoot.querySelector('#actorSelect'));
+
+      element.showActorFilter = true;
+      await microtasksFinished();
+      const userChip =
+          element.shadowRoot.querySelector<HTMLElement>('#userVisitsChip');
+      const actorChip =
+          element.shadowRoot.querySelector<HTMLElement>('#actorVisitsChip');
+      assertTrue(!!userChip);
+      assertTrue(!!actorChip);
+      assertFalse(!!element.shadowRoot.querySelector('#actorSelect'));
+      assertFalse(userChip.hasAttribute('selected'));
+      assertFalse(actorChip.hasAttribute('selected'));
+
+      element.showActorFilter = false;
+      await microtasksFinished();
+      assertFalse(!!element.shadowRoot.querySelector('#userVisitsChip'));
+      assertFalse(!!element.shadowRoot.querySelector('#actorVisitsChip'));
+      assertFalse(!!element.shadowRoot.querySelector('#actorSelect'));
+    });
+
+    test('ToggleUserChip', async () => {
+      element.showActorFilter = true;
+      await microtasksFinished();
+      const userChip =
+          element.shadowRoot.querySelector<HTMLElement>('#userVisitsChip');
+      assertTrue(!!userChip);
+      const userIcon = userChip.querySelector('cr-icon');
+      assertTrue(!!userIcon);
+
+      let eventDetail: {userVisits: boolean, actorVisits: boolean}|undefined;
+      element.addEventListener('filter-changed', ((e: CustomEvent) => {
+                                                   eventDetail = e.detail;
+                                                 }) as EventListener);
+
+      // Show user visits only.
+      userChip.click();
+      await microtasksFinished();
+      const action1 = await browserService.whenCalled('recordAction');
+      assertEquals('HistoryPage_ShowUserOnlyEnabled', action1);
+      browserService.resetResolver('recordAction');
+
+      assertTrue(!!eventDetail);
+      assertTrue(eventDetail.userVisits);
+      assertFalse(eventDetail.actorVisits);
+      assertTrue(userChip.hasAttribute('selected'));
+      assertEquals('cr:check', userIcon.icon);
+
+      // Show all visits by a second click on the user chip.
+      userChip.click();
+      await microtasksFinished();
+      const action2 = await browserService.whenCalled('recordAction');
+      assertEquals('HistoryPage_ShowAllEnabled', action2);
+
+      assertTrue(!!eventDetail);
+      assertTrue(eventDetail.userVisits);
+      assertTrue(eventDetail.actorVisits);
+      assertFalse(userChip.hasAttribute('selected'));
+      assertEquals('cr:person-filled', userIcon.icon);
+    });
+
+    test('ToggleActorChip', async () => {
+      element.showActorFilter = true;
+      await microtasksFinished();
+      const actorChip =
+          element.shadowRoot.querySelector<HTMLElement>('#actorVisitsChip');
+      assertTrue(!!actorChip);
+      const actorIcon = actorChip.querySelector('cr-icon');
+      assertTrue(!!actorIcon);
+
+      let eventDetail: {userVisits: boolean, actorVisits: boolean}|undefined;
+      element.addEventListener('filter-changed', ((e: CustomEvent) => {
+                                                   eventDetail = e.detail;
+                                                 }) as EventListener);
+
+      // Show actor visits only.
+      actorChip.click();
+      const action1 = await browserService.whenCalled('recordAction');
+      assertEquals('HistoryPage_ShowActorOnlyEnabled', action1);
+      await microtasksFinished();
+      browserService.resetResolver('recordAction');
+
+      assertTrue(!!eventDetail);
+      assertFalse(eventDetail.userVisits);
+      assertTrue(eventDetail.actorVisits);
+      assertTrue(actorChip.hasAttribute('selected'));
+      assertEquals('cr:check', actorIcon.icon);
+
+      // Show all visits by a second click on the actor chip.
+      actorChip.click();
+      const action2 = await browserService.whenCalled('recordAction');
+      assertEquals('HistoryPage_ShowAllEnabled', action2);
+      await microtasksFinished();
+
+      assertTrue(!!eventDetail);
+      assertTrue(eventDetail.userVisits);
+      assertTrue(eventDetail.actorVisits);
+      assertFalse(actorChip.hasAttribute('selected'));
+      // <if expr="_google_chrome">
+      assertEquals('history-internal:screensaver-auto', actorIcon.icon);
+      // </if>
+      // <if expr="not _google_chrome">
+      assertEquals('', actorIcon.icon);
+      // </if>
+    });
+
+    test('ToggleBothChips', async () => {
+      element.showActorFilter = true;
+      await microtasksFinished();
+      const userChip =
+          element.shadowRoot.querySelector<HTMLElement>('#userVisitsChip');
+      const actorChip =
+          element.shadowRoot.querySelector<HTMLElement>('#actorVisitsChip');
+      assertTrue(!!userChip && !!actorChip);
+
+      let eventDetail: {userVisits: boolean, actorVisits: boolean}|undefined;
+      element.addEventListener('filter-changed', ((e: CustomEvent) => {
+                                                   eventDetail = e.detail;
+                                                 }) as EventListener);
+
+      // Start at 'User Only' by clicking the user chip.
+      userChip.click();
+      const action1 = await browserService.whenCalled('recordAction');
+      assertEquals('HistoryPage_ShowUserOnlyEnabled', action1);
+      await microtasksFinished();
+      browserService.resetResolver('recordAction');
+
+      assertTrue(!!eventDetail);
+      assertTrue(eventDetail.userVisits);
+      assertFalse(eventDetail.actorVisits);
+      assertTrue(userChip.hasAttribute('selected'));
+      assertFalse(actorChip.hasAttribute('selected'));
+
+      // Clicking Actor Chip while 'User Only' is active should
+      // switch directly to 'Actor Only'.
+      actorChip.click();
+      const action2 = await browserService.whenCalled('recordAction');
+      assertEquals('HistoryPage_ShowActorOnlyEnabled', action2);
+      await microtasksFinished();
+      browserService.resetResolver('recordAction');
+
+      assertTrue(!!eventDetail);
+      assertFalse(eventDetail.userVisits);
+      assertTrue(eventDetail.actorVisits);
+      assertFalse(userChip.hasAttribute('selected'));
+      assertTrue(actorChip.hasAttribute('selected'));
+
+      // Clicking User Chip while 'Actor Only' is active should
+      // switch back to 'User Only'.
+      userChip.click();
+      const action3 = await browserService.whenCalled('recordAction');
+      assertEquals('HistoryPage_ShowUserOnlyEnabled', action3);
+      await microtasksFinished();
+      browserService.resetResolver('recordAction');
+
+      assertTrue(!!eventDetail);
+      assertTrue(eventDetail.userVisits);
+      assertFalse(eventDetail.actorVisits);
+      assertTrue(userChip.hasAttribute('selected'));
+      assertFalse(actorChip.hasAttribute('selected'));
+
+      // Clicking User Chip again while 'User Only' is active
+      // should return to 'Show All'.
+      userChip.click();
+      const action4 = await browserService.whenCalled('recordAction');
+      assertEquals('HistoryPage_ShowAllEnabled', action4);
+      await microtasksFinished();
+
+      assertTrue(!!eventDetail);
+      assertTrue(eventDetail.userVisits);
+      assertTrue(eventDetail.actorVisits);
+      assertFalse(userChip.hasAttribute('selected'));
+      assertFalse(actorChip.hasAttribute('selected'));
+    });
+
+    test('CriticalActionsIcons', async () => {
+      element.showActorFilter = true;
+      loadTimeData.overrideValues({
+        isCriticalActionsEnabled: true,
+      });
+      element.requestUpdate();
+      await element.updateComplete;
+
+      const userChip =
+          element.shadowRoot.querySelector<HTMLElement>('#userVisitsChip');
+      const actorChip =
+          element.shadowRoot.querySelector<HTMLElement>('#actorVisitsChip');
+      assertTrue(!!userChip && !!actorChip);
+
+      const userIcon = userChip.querySelector('cr-icon');
+      const actorIcon = actorChip.querySelector('cr-icon');
+      assertTrue(!!userIcon && !!actorIcon);
+
+      assertEquals('cr:person', userIcon.icon);
+
+      // <if expr="_google_chrome">
+      assertEquals('history-internal:arrow-selector-spark-new', actorIcon.icon);
+      // </if>
+      // <if expr="not _google_chrome">
+      assertEquals('', actorIcon.icon);
+      // </if>
+    });
   });
 
   test('DeviceFilterVisibilityAndInitialState', async () => {

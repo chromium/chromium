@@ -13,16 +13,25 @@ export function getHtml(this: HistoryFilterChipsElement) {
   <div class="filter-chip-container" role="group"
       aria-label="$i18n{sourceFilterChipsAriaLabel}">
     ${this.showActorFilter ? html`
-      <cr-chip id="userVisitsChip" ?selected="${this.isUserSelected()}"
-          @click="${this.onUserVisitsClick_}">
-        <cr-icon icon="${this.getUserVisitsIcon_()}"></cr-icon>
-        $i18n{sourceFilterChipUser}
-      </cr-chip>
-      <cr-chip id="actorVisitsChip" ?selected="${this.isActorSelected()}"
-          @click="${this.onActorVisitsClick_}">
-        <cr-icon icon="${this.getActorVisitsIcon_()}"></cr-icon>
-        $i18n{sourceFilterChipActor}
-      </cr-chip>
+      ${this.showActorFilterDropDownVersion_() ? html`
+        <select id="actorSelect" class="md-select">
+          <!-- TODO(b/561606724): Replace hardcoded string with a localized string. -->
+          <option>All sources</option>
+          <option>$i18n{sourceFilterChipUser}</option>
+          <option>$i18n{sourceFilterChipActor}</option>
+        </select>
+      ` : html`
+        <cr-chip id="userVisitsChip" ?selected="${this.isUserSelected()}"
+            @click="${this.onUserVisitsClick_}">
+          <cr-icon icon="${this.getUserVisitsIcon_()}"></cr-icon>
+          $i18n{sourceFilterChipUser}
+        </cr-chip>
+        <cr-chip id="actorVisitsChip" ?selected="${this.isActorSelected()}"
+            @click="${this.onActorVisitsClick_}">
+          <cr-icon icon="${this.getActorVisitsIcon_()}"></cr-icon>
+          $i18n{sourceFilterChipActor}
+        </cr-chip>
+      `}
     ` : ''}
     ${this.showDeviceFilter ? html`
       <select id="deviceSelect" class="md-select">
