@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertNotReached} from '//resources/js/assert.js';
-import type {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {dedupingMixin} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {FindShortcutManager} from './find_shortcut_manager.js';
-import type {FindShortcutListener} from './find_shortcut_manager.js';
+import {FindShortcutManager} from 'chrome://resources/cr_elements/find_shortcut_manager.js';
+import type {FindShortcutListener} from 'chrome://resources/cr_elements/find_shortcut_manager.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import type {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 type Constructor<T> = new (...args: any[]) => T;
 

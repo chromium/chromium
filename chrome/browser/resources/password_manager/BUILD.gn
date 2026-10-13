@@ -97,6 +97,7 @@ build_webui("build") {
   ]
 
   ts_files = [
+    "find_shortcut_mixin.ts",
     "focus_config.ts",
     "passkeys_browser_proxy.ts",
     "password_manager.ts",
@@ -112,6 +113,11 @@ build_webui("build") {
 
   # Files that are passed as input to css_to_wrapper().
   css_files = [
+    "cr_input_style.css",
+    "cr_nav_menu_item_style.css",
+    "cr_page_host_style.css",
+    "cr_scrollable.css",
+    "cr_spinner_style.css",
     "credential_details/credential_details_card.css",
     "shared_style.css",
     "shared_vars.css",

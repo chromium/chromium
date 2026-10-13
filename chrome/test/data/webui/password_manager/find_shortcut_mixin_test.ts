@@ -2,20 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://password-manager/password_manager.js';
 
-import {FindShortcutManager} from 'chrome://resources/cr_elements/find_shortcut_manager.js';
-import {FindShortcutMixin} from 'chrome://resources/cr_elements/find_shortcut_mixin.js';
+import {FindShortcutManager, FindShortcutMixin} from 'chrome://password-manager/password_manager.js';
 import {isMac} from 'chrome://resources/js/platform.js';
-import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
-import {pressAndReleaseKeyOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {pressAndReleaseKeyOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
-
-// clang-format on
 
 suite('find-shortcut', () => {
   let wait: PromiseResolver<{modalContextOpen: boolean, self: HTMLElement}>;
@@ -192,10 +187,10 @@ suite('find-shortcut', () => {
   });
 
   test('throw exception when try to become active already a listener', () => {
-    document.body.innerHTML = getTrustedHTML`
-        <find-shortcut-element>
-          <find-shortcut-element></find-shortcut-element>
-        </find-shortcut-element>`;
+    const parent = document.createElement('find-shortcut-element');
+    const child = document.createElement('find-shortcut-element');
+    parent.appendChild(child);
+    document.body.appendChild(parent);
     const testElements = document.body.querySelectorAll<FindShortcutElement>(
         'find-shortcut-element');
     assertThrows(() => testElements[0]!.becomeActiveFindShortcutListener());
@@ -226,10 +221,10 @@ suite('find-shortcut', () => {
   });
 
   test('inner listener is active when listening on attach', async () => {
-    document.body.innerHTML = getTrustedHTML`
-        <find-shortcut-element>
-          <find-shortcut-element></find-shortcut-element>
-        </find-shortcut-element>`;
+    const parent = document.createElement('find-shortcut-element');
+    const child = document.createElement('find-shortcut-element');
+    parent.appendChild(child);
+    document.body.appendChild(parent);
     const testElements = document.body.querySelectorAll<FindShortcutElement>(
         'find-shortcut-element');
     assertEquals(2, FindShortcutManager.listeners.length);

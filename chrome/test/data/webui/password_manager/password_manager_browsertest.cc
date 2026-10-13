@@ -68,6 +68,10 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerUITest, EditPasswordDialog) {
   RunTest("password_manager/edit_password_dialog_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(PasswordManagerUITest, FindShortcutMixin) {
+  RunTest("password_manager/find_shortcut_mixin_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(PasswordManagerUITest, FullDataReset) {
   RunTest("password_manager/full_data_reset_test.js", "mocha.run()");
 }

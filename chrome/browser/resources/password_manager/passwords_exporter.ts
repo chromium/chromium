@@ -6,8 +6,8 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/cr_elements/cr_spinner_style.css.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
+import './cr_spinner_style.css.js';
 import './shared_style.css.js';
 
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';

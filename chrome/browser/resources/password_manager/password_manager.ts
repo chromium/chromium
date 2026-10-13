@@ -10,6 +10,7 @@ export {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_butto
 export {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 export {CrExpandButtonElement} from 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 export {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+export {FindShortcutManager} from 'chrome://resources/cr_elements/find_shortcut_manager.js';
 export {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 export type {PluralStringProxy} from 'chrome://resources/js/plural_string_proxy.js';
 export {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
@@ -28,6 +29,7 @@ export {EditPasswordDialogElement} from './dialogs/edit_password_dialog.js';
 export {MovePasswordsDialogElement} from './dialogs/move_passwords_dialog.js';
 export {RemoveActorLoginPermissionDialogElement} from './dialogs/remove_actor_login_permission_dialog.js';
 export {TrustedVaultErrorDialogElement} from './dialogs/trusted_vault_error_dialog.js';
+export {FindShortcutMixin} from './find_shortcut_mixin.js';
 export {FullDataResetElement} from './full_data_reset.js';
 export {NotificationCardId} from './notification_cards/notification_card.js';
 export type {NotificationCard, NotificationCardsProxy} from './notification_cards/notification_cards_browser_proxy.js';
