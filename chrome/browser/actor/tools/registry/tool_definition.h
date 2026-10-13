@@ -61,7 +61,9 @@ enum class ToolId {
   kFileUpload = 20,
   // Creates a new tab.
   kCreateTab = 21,
-  kMaxValue = kCreateTab,
+  // Activates an open tab by its ID.
+  kActivateTab = 22,
+  kMaxValue = kActivateTab,
 };
 
 // In-memory metadata and parameter schema for a shared browser tool. Prefer

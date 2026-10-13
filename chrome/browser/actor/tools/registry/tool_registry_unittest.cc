@@ -269,6 +269,17 @@ TEST(ToolRegistryTest, CreateTabToolDefinition) {
               base::test::DictionaryHasValue("properties",
                                              base::Value(base::DictValue())));
 }
+
+TEST(ToolRegistryTest, ActivateTabToolDefinition) {
+  const std::optional<ToolDefinition> definition =
+      ActivateTabToolRequest::GetToolDefinition();
+  ASSERT_TRUE(definition.has_value());
+  EXPECT_EQ(definition->id, ToolId::kActivateTab);
+  EXPECT_EQ(definition->name, ActivateTabToolRequest::kModelFacingName);
+  EXPECT_THAT(*definition,
+              HasParamOfType(ActivateTabToolRequest::kTabIdParam, "integer"));
+  EXPECT_THAT(*definition, RequiresParam(ActivateTabToolRequest::kTabIdParam));
+}
 #endif
 
 TEST(ToolRegistryTest, FindAndHighlightToolDefinition) {
@@ -553,6 +564,17 @@ TEST(ToolRegistryTest, GetAllToolsContainsCreateTabTool) {
 
   EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
                                     ToolId::kCreateTab, &ToolDefinition::id));
+}
+
+TEST(ToolRegistryTest, GetAllToolsContainsActivateTabTool) {
+  base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  ActorKeyedService* service = ActorKeyedService::Get(&profile);
+  CHECK(service);
+
+  EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
+                                    ToolId::kActivateTab, &ToolDefinition::id));
 }
 #endif
 

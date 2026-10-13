@@ -45,9 +45,14 @@ class CreateTabToolRequest : public ToolRequest {
 class ActivateTabToolRequest : public TabToolRequest {
  public:
   static constexpr char kName[] = "ActivateTab";
+  static constexpr std::string_view kModelFacingName = "activate_tab";
+  static constexpr std::string_view kTabIdParam = "tab_id";
 
   explicit ActivateTabToolRequest(tabs::TabHandle tab);
   ~ActivateTabToolRequest() override;
+
+  // Returns the `ToolId::kActivateTab` tool schema definition.
+  static std::optional<ToolDefinition> GetToolDefinition();
   CreateToolResult CreateTool(TaskId task_id,
                               ToolDelegate& tool_delegate) const override;
   void Apply(ToolRequestVisitorFunctor& f) const override;

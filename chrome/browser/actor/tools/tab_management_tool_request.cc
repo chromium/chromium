@@ -10,6 +10,7 @@
 
 #include "chrome/browser/actor/tools/registry/tool_definition.h"
 #include "chrome/browser/actor/tools/registry/tool_definition_builder.h"
+#include "chrome/browser/actor/tools/registry/tool_schema_builder.h"
 #include "chrome/browser/actor/tools/tab_management_tool.h"
 #include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
 #include "chrome/common/actor/action_result.h"
@@ -27,6 +28,14 @@ constexpr std::string_view kCloseTabToolDescription =
 // Default description for the `create_tab` tool.
 constexpr std::string_view kCreateTabToolDescription =
     "Opens a new tab in the browser.";
+
+// Default description for the `activate_tab` tool.
+constexpr std::string_view kActivateTabToolDescription =
+    "Switches to an open tab by its ID.";
+
+// Description for the `tab_id` parameter of the `activate_tab` tool.
+constexpr std::string_view kTabIdParamDescription =
+    "The ID of the tab to activate.";
 
 }  // namespace
 using tabs::TabInterface;
@@ -68,6 +77,15 @@ ActivateTabToolRequest::ActivateTabToolRequest(tabs::TabHandle tab_handle)
     : TabToolRequest(tab_handle) {}
 
 ActivateTabToolRequest::~ActivateTabToolRequest() = default;
+
+// static
+std::optional<ToolDefinition> ActivateTabToolRequest::GetToolDefinition() {
+  return ToolDefinitionBuilder(ToolId::kActivateTab, kModelFacingName,
+                               kActivateTabToolDescription)
+      .SetToolParameterSchema(ToolSchemaBuilder().AddIntegerProperty(
+          kTabIdParam, kTabIdParamDescription))
+      .Build();
+}
 
 ToolRequest::CreateToolResult ActivateTabToolRequest::CreateTool(
     TaskId task_id,
