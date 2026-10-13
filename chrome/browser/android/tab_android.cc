@@ -52,7 +52,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/startup/bad_flags_prompt.h"
-#include "chrome/browser/ui/tab_helpers.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "components/android_autofill/browser/android_autofill_client.h"
 #include "components/android_autofill/browser/android_autofill_manager.h"
@@ -151,12 +150,6 @@ TabAndroid* TabAndroid::FromTabHandle(tabs::TabHandle handle) {
 // static
 TabAndroid* TabAndroid::GetNativeTab(JNIEnv* env, const JavaRef<jobject>& obj) {
   return reinterpret_cast<TabAndroid*>(Java_TabImpl_getNativePtr(env, obj));
-}
-
-// static
-void TabAndroid::AttachTabHelpers(content::WebContents* web_contents) {
-  CHECK(web_contents, base::NotFatalUntil::M161);
-  TabHelpers::AttachTabHelpers(web_contents);
 }
 
 TabAndroid::TabAndroid(JNIEnv* env,
@@ -440,7 +433,6 @@ void TabAndroid::InitWebContents(
   web_contents_->SetSelectionPopupDelegate(
       std::make_unique<android::ChromeSelectionDropdownMenuDelegate>());
 
-  AttachTabHelpers(web_contents_.get());
   tab_features_ =
       std::make_unique<tabs::TabFeatures>(web_contents_.get(), profile());
   // When restoring a frame that was unloaded we re-create the TabAndroid and

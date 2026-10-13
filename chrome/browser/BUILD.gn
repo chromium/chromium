@@ -2899,7 +2899,6 @@ source_set("browser") {
       "//chrome/browser/privacy:secure_dns_bridge",
       "//chrome/browser/translate/android:android_impl",
       "//chrome/browser/ui:screen_capture_notification_ui_stub",
-      "//chrome/browser/ui:tab_helpers_impl",
       "//chrome/browser/ui/android",
       "//chrome/browser/ui/android:context_menu_helper",
 
@@ -3035,8 +3034,6 @@ source_set("browser") {
       "//chrome/browser/ui:layout_constants",
       "//chrome/browser/ui:scoped_tabbed_browser_displayer",
       "//chrome/browser/ui:singleton_tabs",
-      "//chrome/browser/ui:tab_helpers",
-      "//chrome/browser/ui:tab_helpers_impl",
       "//chrome/browser/ui:tab_ui_helper",
       "//chrome/browser/ui:ui_controller_factory",
       "//chrome/browser/ui:uma_browsing_activity_observer",

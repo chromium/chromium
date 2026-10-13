@@ -29,7 +29,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
-#include "chrome/browser/ui/tab_helpers.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -162,9 +161,7 @@ BrowserWindowInterface* BrowserTabStripModelDelegate::CreateNewStripWithTabs(
 }
 
 void BrowserTabStripModelDelegate::WillAddWebContents(
-    content::WebContents* contents) {
-  TabHelpers::AttachTabHelpers(contents);
-}
+    content::WebContents* contents) {}
 
 int BrowserTabStripModelDelegate::GetDragActions() const {
   return TabStripModelDelegate::TAB_TEAROFF_ACTION |

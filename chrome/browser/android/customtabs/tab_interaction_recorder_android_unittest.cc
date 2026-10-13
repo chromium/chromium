@@ -10,7 +10,6 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/mock_callback.h"
-#include "chrome/browser/ui/tab_helpers.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"

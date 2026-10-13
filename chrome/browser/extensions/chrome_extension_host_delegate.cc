@@ -27,7 +27,6 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/content_settings/request_desktop_site_web_contents_observer_android.h"
 #include "chrome/browser/extensions/tab_helper.h"
@@ -78,14 +77,11 @@ void ChromeExtensionHostDelegate::CreateTab(
   CHECK(profile);
 #if BUILDFLAG(IS_ANDROID)
   // On Android, tab creation is asynchronous, but `CreateNewWindow()`
-  // immediately starts navigation. Attach `TabHelpers` synchronously so
+  // immediately starts navigation. Attach early helpers synchronously so
   // observers like `RequestDesktopSiteWebContentsObserverAndroid` are present
   // for the initial load. This matches
-  // `TabWebContentsDelegateAndroid::AddNewContents()`. It is safe to
-  // attach `TabHelpers` multiple times since `AttachTabHelpers()` is
-  // idempotent.
+  // `TabWebContentsDelegateAndroid::AddNewContents()`.
   // TODO(crbug.com/499200457): Add instrumentation test.
-  TabAndroid::AttachTabHelpers(web_contents.get());
   CreateSubresourceFilterWebContentsHelper(web_contents.get());
   content_settings::PageSpecificContentSettings::CreateForWebContents(
       web_contents.get(), std::make_unique<PageSpecificContentSettingsDelegate>(

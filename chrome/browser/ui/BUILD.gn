@@ -1332,145 +1332,6 @@ source_set("download_close_type") {
   public = [ "download_close_type.h" ]
 }
 
-source_set("tab_helpers") {
-  public = [ "tab_helpers.h" ]
-}
-
-source_set("tab_helpers_impl") {
-  sources = [ "tab_helpers.cc" ]
-
-  public_deps = [ ":tab_helpers" ]
-
-  deps = [
-    ":recently_audible_helper",
-    ":ui_features",
-    "//base",
-    "//chrome/browser:browser_process",
-    "//chrome/browser:buildflags",
-    "//chrome/browser:chained_back_navigation_tracker",
-    "//chrome/browser:chrome_content_browser_client",
-    "//chrome/browser/bookmarks",
-    "//chrome/browser/breadcrumbs",
-    "//chrome/browser/commerce",
-    "//chrome/browser/complex_tasks",
-    "//chrome/browser/content_settings",
-    "//chrome/browser/content_settings:content_settings_factory",
-    "//chrome/browser/facilitated_payments",
-    "//chrome/browser/favicon",
-    "//chrome/browser/file_system_access",
-    "//chrome/browser/glic:impl",
-    "//chrome/browser/glic/public:features",
-    "//chrome/browser/history",
-    "//chrome/browser/history_clusters",
-    "//chrome/browser/history_embeddings",
-    "//chrome/browser/image_fetcher",
-    "//chrome/browser/login_detection",
-    "//chrome/browser/lookalikes",
-    "//chrome/browser/net",
-    "//chrome/browser/optimization_guide",
-    "//chrome/browser/page_content_annotations",
-    "//chrome/browser/page_content_annotations:extraction_service",
-    "//chrome/browser/page_content_annotations:fetcher",
-    "//chrome/browser/page_info",
-    "//chrome/browser/page_load_metrics",
-    "//chrome/browser/password_manager",
-    "//chrome/browser/picture_in_picture",
-    "//chrome/browser/predictors",
-    "//chrome/browser/preloading/prefetch/no_state_prefetch",
-    "//chrome/browser/profiles",
-    "//chrome/browser/profiles:profile",
-    "//chrome/browser/search_engines",
-    "//chrome/browser/sessions",
-    "//chrome/browser/ssl",
-    "//chrome/browser/storage_access_api",
-    "//chrome/browser/subresource_filter",
-    "//chrome/browser/supervised_user",
-    "//chrome/browser/sync",
-    "//chrome/browser/sync_tab_context",
-    "//chrome/browser/task_manager",
-    "//chrome/browser/translate",
-    "//chrome/browser/trusted_vault",
-    "//chrome/browser/ui/autofill",
-    "//chrome/browser/ui/find_bar",
-    "//chrome/browser/ui/prefs",
-    "//chrome/browser/ui/safety_hub",
-    "//chrome/browser/ui/search_engines",
-    "//chrome/browser/ui/tab_contents",
-    "//chrome/browser/v8_compile_hints",
-    "//chrome/browser/vr",
-    "//chrome/common",
-    "//chrome/common:buildflags",
-    "//chrome/common:chrome_features",
-    "//chrome/common:non_code_constants",
-    "//components/breadcrumbs/core:status",
-    "//components/captive_portal/core:buildflags",
-    "//components/client_hints/browser",
-    "//components/commerce/content/browser",
-    "//components/commerce/core:feature_list",
-    "//components/content_settings/browser",
-    "//components/dom_distiller/core:dom_distiller_features",
-    "//components/download/content/factory",
-    "//components/download/content/public",
-    "//components/enterprise/buildflags",
-    "//components/facilitated_payments/core/features",
-    "//components/history/content/browser",
-    "//components/history/core/browser",
-    "//components/infobars/content",
-    "//components/metrics:content",
-    "//components/metrics_services_manager",
-    "//components/offline_pages/buildflags",
-    "//components/omnibox/common",
-    "//components/optimization_guide/core:features",
-    "//components/page_content_annotations/content",
-    "//components/page_content_annotations/core",
-    "//components/page_info/core",
-    "//components/password_manager/core/browser",
-    "//components/permissions:permissions_common",
-    "//components/search",
-    "//components/sessions",
-    "//components/sessions:session_id",
-    "//components/site_engagement/content",
-    "//components/tabs:public",
-    "//components/tracing:tracing_config",
-    "//components/webapps/browser",
-    "//components/zoom",
-    "//content/public/browser",
-    "//content/public/common:buildflags",
-    "//extensions/buildflags",
-    "//media",
-    "//pdf:buildflags",
-    "//ui/accessibility:ax_base",
-    "//ui/webui:buildflags",
-  ]
-
-  if (is_android) {
-    deps += [
-      "//chrome/browser/android",
-      "//chrome/browser/android:tabs_public",
-      "//chrome/browser/banners",
-      "//chrome/browser/flags:flags_android",
-      "//chrome/browser/plugins",
-      "//components/sensitive_content",
-      "//components/sensitive_content:features",
-      "//content/public/common",
-    ]
-  } else {
-    deps += [
-      "//chrome/browser/ui/read_anything",
-      "//components/image_fetcher/core",
-      "//components/omnibox/browser",
-    ]
-  }
-
-  if (enable_webui_ntp) {
-    deps += [ "//chrome/browser/ui/search" ]
-  }
-
-  if (enable_offline_pages) {
-    deps += [ "//chrome/browser/offline_pages" ]
-  }
-}
-
 # Browser is the desktop implementation of BrowserWindowInterface. It is
 # deliberately kept out of reach of new code: features must go through
 # BrowserWindowInterface instead. The visibility list below is intentionally
@@ -1522,7 +1383,6 @@ if (!is_android) {
       ":singleton_tabs",
       ":status_bubble",
       ":tab_dialogs",
-      ":tab_helpers",
       ":tab_ui_helper",
       ":ui_features",
       ":unload_controller",
@@ -1784,7 +1644,6 @@ if (!is_android) {
       ":browser_tab_menu_model_delegate",
       ":browser_tabstrip",
       ":browser_window_header",
-      ":tab_helpers",
       ":ui_features",
       ":unload_controller",
       "//base",

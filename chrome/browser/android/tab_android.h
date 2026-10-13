@@ -102,10 +102,6 @@ class TabAndroid : public tabs::TabInterface,
   static TabAndroid* GetNativeTab(JNIEnv* env,
                                   const base::android::JavaRef<jobject>& obj);
 
-
-  // Function to attach helpers to the `web_contents`.
-  static void AttachTabHelpers(content::WebContents* web_contents);
-
   TabAndroid(JNIEnv* env,
              const base::android::JavaRef<jobject>& obj,
              Profile* profile,

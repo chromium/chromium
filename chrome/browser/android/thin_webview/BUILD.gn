@@ -43,7 +43,6 @@ source_set("initializer") {
     "//chrome/browser/password_manager",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/subresource_filter",
-    "//chrome/browser/ui:tab_helpers",
     "//chrome/browser/ui/android:context_menu_helper",
     "//chrome/browser/ui/autofill",
     "//components/content_settings/browser",

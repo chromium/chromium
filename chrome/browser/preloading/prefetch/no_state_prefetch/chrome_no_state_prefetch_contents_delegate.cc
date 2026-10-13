@@ -8,7 +8,6 @@
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
-#include "chrome/browser/ui/tab_helpers.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "content/public/browser/web_contents.h"
@@ -40,7 +39,6 @@ NoStatePrefetchContents* ChromeNoStatePrefetchContentsDelegate::FromWebContents(
 void ChromeNoStatePrefetchContentsDelegate::OnNoStatePrefetchContentsCreated(
     content::WebContents* web_contents) {
   DCHECK(web_contents);
-  TabHelpers::AttachTabHelpers(web_contents);
   InitializePageLoadMetricsForWebContents(web_contents);
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (extensions::GetViewType(web_contents) ==

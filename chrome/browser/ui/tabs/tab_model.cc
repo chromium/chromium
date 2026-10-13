@@ -13,7 +13,6 @@
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tab_helpers.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -57,9 +56,6 @@ TabModel::TabModel(std::unique_ptr<content::WebContents> contents,
       soon_to_be_owning_model_(soon_to_be_owning_model) {
   tabs::TabLookupFromWebContents::CreateForWebContents(contents_, this);
 
-  // TODO(https://crbug.com/362038317): Tab-helpers should be created in exactly
-  // one place, which is here.
-  TabHelpers::AttachTabHelpers(contents_);
   CreateSessionServiceTabHelper(contents_);
   tab_features_ = std::make_unique<TabFeatures>();
   const SessionID session_id = sessions::SessionTabHelper::IdForTab(contents_);

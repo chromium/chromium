@@ -10,7 +10,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "cc/input/browser_controls_state.h"
-#include "chrome/browser/android/tab_android.h"
 #include "components/embedder_support/android/delegate/web_contents_delegate_android.h"
 #include "components/navigation_interception/intercept_navigation_delegate.h"
 #include "content/public/browser/render_frame_host.h"
@@ -61,9 +60,6 @@ void OverlayPanelContent::SetWebContents(
   web_contents_->SetOwnerLocationForDebug(FROM_HERE);
 
   web_contents_->SetIsOverlayContent(true);
-  // TODO(pedrosimonetti): confirm if we need this after promoting it
-  // to a real tab.
-  TabAndroid::AttachTabHelpers(web_contents_.get());
   web_contents_delegate_ = std::make_unique<
       web_contents_delegate_android::WebContentsDelegateAndroid>(
       env, jweb_contents_delegate);

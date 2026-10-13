@@ -58,7 +58,6 @@
 #include "chrome/browser/ui/blocked_content/chrome_popup_navigation_delegate.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
-#include "chrome/browser/ui/tab_helpers.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/browser/webapps/installable/installed_webapp_bridge.h"
 #include "chrome/browser/webapps/installable/installed_webapp_geolocation_context.h"
@@ -694,7 +693,6 @@ WebContents* TabWebContentsDelegateAndroid::AddNewContents(
     }
   }
 
-  TabHelpers::AttachTabHelpers(new_contents.get());
   CreateSessionServiceTabHelper(new_contents.get());
   CreateSubresourceFilterWebContentsHelper(new_contents.get());
   content_settings::PageSpecificContentSettings::CreateForWebContents(
