@@ -753,29 +753,41 @@ ScrollTranslationAction ConversionContext<Result>::StartEffect(
   bool has_filter = !!effect.Filter();
   bool has_backdrop_filter = !!effect.BackdropFilter();
   bool has_opacity = effect.Opacity() != 1.f;
-  bool has_other_effects = effect.BlendMode() != SkBlendMode::kSrcOver;
+  bool has_mask = effect.BlendMode() == SkBlendMode::kDstIn;
+  bool has_other_effects =
+      (effect.BlendMode() != SkBlendMode::kSrcOver && !has_mask);
   // We always create separate effect nodes for normal effects and filter
   // effects, so we can handle them separately.
-  DCHECK(!has_filter ||
-         !(has_opacity || has_other_effects || has_backdrop_filter));
+  DCHECK(!has_filter || !(has_opacity || has_mask || has_other_effects ||
+                          has_backdrop_filter));
 
   // Apply effects.
   size_t save_layer_id = kNotFound;
   result_.StartPaint();
   if (!has_filter) {
-    if (has_other_effects) {
+    // Do not save an additional layer for blending mixed with backdrop filter
+    // if the blend mode represents a mask, because the mask will be implemented
+    // with a clip on the layer associated with the backdrop filter.
+    if (has_backdrop_filter) {
+      cc::PaintFlags flags;
+      flags.setAlphaf(effect.Opacity());
+      if (has_mask) {
+        // Masking relies on the blend mode being present on the backdrop layer.
+        flags.setBlendMode(effect.BlendMode());
+      }
+      save_layer_id = EmitBackdropFilter(effect, flags);
+      if (has_other_effects) {
+        // Skia does not apply the backdrop filter when a blend mode is also
+        // present in the flags, so save another layer for the blend.
+        cc::PaintFlags blend_flags;
+        blend_flags.setBlendMode(effect.BlendMode());
+        save_layer_id = push<cc::SaveLayerOp>(blend_flags);
+      }
+    } else if (has_other_effects || has_mask) {
       cc::PaintFlags flags;
       flags.setBlendMode(effect.BlendMode());
       flags.setAlphaf(effect.Opacity());
-      if (has_backdrop_filter) {
-        save_layer_id = EmitBackdropFilter(effect, flags);
-      } else {
-        save_layer_id = push<cc::SaveLayerOp>(flags);
-      }
-    } else if (has_backdrop_filter) {
-      cc::PaintFlags flags;
-      flags.setAlphaf(effect.Opacity());
-      save_layer_id = EmitBackdropFilter(effect, flags);
+      save_layer_id = push<cc::SaveLayerOp>(flags);
     } else {
       save_layer_id = push<cc::SaveLayerAlphaOp>(effect.Opacity());
     }
