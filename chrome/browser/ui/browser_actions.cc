@@ -4858,6 +4858,26 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           .SetVisible(false)
           .Build());
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // Required so IDC_SCHEDULED_RESTART_DIALOG is supported when browser
+  // commands are routed through actions.
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                chrome::OpenScheduledRestartDialog(bwi);
+              },
+              bwi))
+          .SetActionId(kActionScheduledRestartDialog)
+          .SetText(l10n_util::GetStringUTF16(IDS_SCHEDULED_RESTART_MENU_ITEM))
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              kScheduleIcon, ui::kColorMenuIcon,
+              ui::SimpleMenuModel::kDefaultIconSize))
+          .SetVisible(false)
+          .Build());
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
   root_action_item_->AddChild(
       actions::ActionItem::Builder(
           base::BindRepeating(

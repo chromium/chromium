@@ -45,10 +45,19 @@ class ScheduledRestartBubbleView {
       delete;
 
   // Shows the bubble anchored to the browser's App Menu. `on_close` is invoked
-  // when the bubble widget closes.
+  // when the bubble widget closes. When `show_active` is false (default for
+  // passive New Tab Page nudges), the bubble is shown inactive so it does not
+  // steal focus; when true (explicit App Menu action), it is shown active.
   static std::unique_ptr<views::Widget> ShowBubble(
       BrowserWindowInterface* browser,
-      views::Widget::ClosedCallback on_close = base::NullCallback());
+      views::Widget::ClosedCallback on_close = base::NullCallback(),
+      bool show_active = false);
+
+  // Destroys `widget`, a bubble previously returned by ShowBubble(), without
+  // recording Session.ScheduledRestart.DialogChoice. Used when the bubble is
+  // replaced by a new one rather than dismissed by the user, so that the
+  // replacement does not inflate the dismissal count.
+  static void DestroyReplacedBubble(std::unique_ptr<views::Widget> widget);
 
   // Sets a testing callback to be executed instead of chrome::AttemptRelaunch()
   // when the user clicks "Restart now".

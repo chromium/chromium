@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ui/views/scheduled_restart/scheduled_restart_bubble_controller.h"
 
-#include "base/command_line.h"
+#include <utility>
+
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/scheduled_restart_manager.h"
@@ -20,28 +20,11 @@
 #include "chrome/browser/ui/views/scheduled_restart/scheduled_restart_bubble_view.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
-#include "chrome/common/chrome_features.h"
-#include "chrome/common/chrome_switches.h"
-#include "components/policy/core/common/management/management_service.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/restore_type.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
-
-namespace {
-
-bool AreScheduledRestartsEnabled() {
-  const base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
-  if (!cmd_line->HasSwitch(switches::kSimulateUpgrade) &&
-      !cmd_line->HasSwitch(switches::kSimulateOutdated) &&
-      policy::ManagementServiceFactory::GetForPlatform()->IsManaged()) {
-    return false;
-  }
-  return base::FeatureList::IsEnabled(features::kScheduledRestart);
-}
-
-}  // namespace
 
 namespace scheduled_restart {
 
@@ -109,7 +92,7 @@ void ScheduledRestartBubbleController::MaybeShowNudgeForWebContents(
   }
 
   // 2. Feature & Policy Checks:
-  if (!AreScheduledRestartsEnabled()) {
+  if (!ScheduledRestartManager::AreScheduledRestartsEnabled()) {
     return;
   }
 
@@ -133,9 +116,45 @@ void ScheduledRestartBubbleController::MaybeShowNudgeForWebContents(
     return;
   }
 
+  ShowAndRecordBubble(browser, srm, /*show_active=*/false);
+}
+
+void ScheduledRestartBubbleController::ShowBubbleFromAppMenu(
+    BrowserWindowInterface* browser) {
+  if (!browser || !ScheduledRestartManager::IsAppMenuItemEnabled()) {
+    return;
+  }
+
+  auto* srm = GetScheduledRestartManager();
+  if (!srm || !srm->IsUpgradeAvailableForScheduling()) {
+    return;
+  }
+
+  // Because passive New Tab Page nudge bubbles are shown inactive, opening the
+  // App Menu does not automatically deactivate and close an existing bubble.
+  // Synchronously destroy any existing bubble before showing the active dialog
+  // for `browser`. The user did not dismiss it, so it is destroyed without
+  // recording a dismissal.
+  if (bubble_widget_) {
+    ScheduledRestartBubbleView::DestroyReplacedBubble(
+        std::move(bubble_widget_));
+  }
+
+  // ShowAndRecordBubble() records the nudge time, which restarts the passive
+  // nudge cooldown so that dismissing this dialog without scheduling a restart
+  // does not immediately re-prompt on the next New Tab Page.
+  ShowAndRecordBubble(browser, srm, /*show_active=*/true);
+}
+
+void ScheduledRestartBubbleController::ShowAndRecordBubble(
+    BrowserWindowInterface* browser,
+    ScheduledRestartManager* srm,
+    bool show_active) {
   bubble_widget_ = ShowBubble(
-      browser, base::BindOnce(&ScheduledRestartBubbleController::OnBubbleClosed,
-                              base::Unretained(this)));
+      browser,
+      base::BindOnce(&ScheduledRestartBubbleController::OnBubbleClosed,
+                     base::Unretained(this)),
+      show_active);
   if (bubble_widget_) {
     srm->RecordNudgeShown();
   }
@@ -144,11 +163,13 @@ void ScheduledRestartBubbleController::MaybeShowNudgeForWebContents(
 // Shows the restart nudge bubble anchored to the browser's App Menu.
 std::unique_ptr<views::Widget> ScheduledRestartBubbleController::ShowBubble(
     BrowserWindowInterface* browser,
-    views::Widget::ClosedCallback on_close) {
+    views::Widget::ClosedCallback on_close,
+    bool show_active) {
   if (!browser) {
     return nullptr;
   }
-  return ScheduledRestartBubbleView::ShowBubble(browser, std::move(on_close));
+  return ScheduledRestartBubbleView::ShowBubble(browser, std::move(on_close),
+                                                show_active);
 }
 
 void ScheduledRestartBubbleController::OnBubbleClosed(

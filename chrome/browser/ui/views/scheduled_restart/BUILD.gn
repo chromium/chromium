@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/features.gni")
+
 if (is_win || is_mac || is_linux) {
   source_set("scheduled_restart") {
     public = [
@@ -31,7 +33,6 @@ if (is_win || is_mac || is_linux) {
       "//chrome/app:generated_resources",
       "//chrome/browser:browser_process",
       "//chrome/browser:global_features",
-      "//chrome/browser/enterprise",
       "//chrome/browser/lifetime",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/toasts",
@@ -42,8 +43,6 @@ if (is_win || is_mac || is_linux) {
       "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/ui/webui",
       "//chrome/browser/upgrade_detector",
-      "//chrome/common:constants",
-      "//components/policy/core/common",
       "//content/public/browser",
       "//ui/base",
     ]
@@ -58,6 +57,7 @@ if (is_win || is_mac || is_linux) {
       ":scheduled_restart",
       "//base",
       "//base/test:test_support",
+      "//build/config/linux/dbus:buildflags",
       "//chrome/browser",
       "//chrome/browser/lifetime:test_support",
       "//chrome/browser/search",
@@ -73,6 +73,10 @@ if (is_win || is_mac || is_linux) {
       "//testing/gtest",
       "//ui/views:test_support",
     ]
+
+    if (is_linux && use_dbus) {
+      deps += [ "//components/dbus" ]
+    }
   }
 
   source_set("browser_tests") {

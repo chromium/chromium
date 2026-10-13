@@ -191,7 +191,9 @@ source_set("impl") {
   if (is_win || is_mac || is_linux) {
     sources += [ "scheduled_restart_manager.cc" ]
     deps += [
+      "//chrome/browser/enterprise",
       "//chrome/common:constants",
+      "//components/policy/core/common",
       "//components/prefs",
     ]
   }
@@ -256,6 +258,9 @@ if (!is_android) {
       deps += [
         ":test_support",
         "//build/config/linux/dbus:buildflags",
+        "//chrome/browser/enterprise",
+        "//components/policy/core/common",
+        "//components/policy/core/common:test_support",
       ]
     }
     if (is_linux && use_dbus) {

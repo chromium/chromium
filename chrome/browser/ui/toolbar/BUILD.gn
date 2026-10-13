@@ -482,7 +482,11 @@ if (!is_android) {
       ]
     }
     if (is_win || is_mac || is_linux) {
-      deps += [ "//chrome/browser/ui/startup/default_browser_prompt" ]
+      deps += [
+        "//chrome/browser:global_features",
+        "//chrome/browser/lifetime",
+        "//chrome/browser/ui/startup/default_browser_prompt",
+      ]
     }
   }
 

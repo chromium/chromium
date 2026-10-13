@@ -8,8 +8,12 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/functional/callback_helpers.h"
+#include "base/memory/weak_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
+#include "build/config/linux/dbus/buildflags.h"
 #include "chrome/browser/lifetime/scheduled_restart_manager.h"
 #include "chrome/browser/lifetime/scheduled_restart_test_utils.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -33,6 +37,10 @@
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
+#include "components/dbus/thread_linux/dbus_thread_linux.h"
+#endif
+
 namespace scheduled_restart {
 
 namespace {
@@ -54,6 +62,7 @@ class TestScheduledRestartBubbleController
   }
 
   int bubble_shown_count() const { return bubble_shown_count_; }
+  bool last_show_active() const { return last_show_active_; }
   void set_should_fail_show_bubble(bool fail) {
     should_fail_show_bubble_ = fail;
   }
@@ -65,8 +74,10 @@ class TestScheduledRestartBubbleController
  protected:
   std::unique_ptr<views::Widget> ShowBubble(
       BrowserWindowInterface* browser,
-      views::Widget::ClosedCallback on_close) override {
+      views::Widget::ClosedCallback on_close,
+      bool show_active) override {
     ++bubble_shown_count_;
+    last_show_active_ = show_active;
     if (should_fail_show_bubble_) {
       return nullptr;
     }
@@ -78,6 +89,7 @@ class TestScheduledRestartBubbleController
 
  private:
   int bubble_shown_count_ = 0;
+  bool last_show_active_ = false;
   bool should_fail_show_bubble_ = false;
   std::unique_ptr<views::Widget> widget_;
 };
@@ -91,7 +103,9 @@ class ScheduledRestartBubbleControllerTest : public ChromeViewsTestBase {
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
     profile_ = std::make_unique<TestingProfile>();
-    feature_list_.InitAndEnableFeature(features::kScheduledRestart);
+    feature_list_.InitWithFeatures(
+        {features::kScheduledRestart, features::kScheduledRestartAppMenuItem},
+        {});
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kSimulateUpgrade);
 
@@ -109,6 +123,12 @@ class ScheduledRestartBubbleControllerTest : public ChromeViewsTestBase {
   void TearDown() override {
     scheduled_restart_manager_.reset();
     profile_.reset();
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
+    // Scheduling a restart starts idle monitoring, which subscribes to screen
+    // lock changes over D-Bus. Stop the D-Bus thread so it cannot post replies
+    // to the main thread after the task environment checks that it is idle.
+    dbus_thread_linux::Shutdown();
+#endif
     ChromeViewsTestBase::TearDown();
   }
 
@@ -158,6 +178,7 @@ TEST_F(ScheduledRestartBubbleControllerTest, TriggerOnForegroundNTP) {
   controller.MaybeShowNudgeForWebContents(web_contents.get());
 
   EXPECT_EQ(controller.bubble_shown_count(), 1);
+  EXPECT_FALSE(controller.last_show_active());
   EXPECT_TRUE(controller.is_bubble_showing());
   EXPECT_FALSE(
       local_state()->GetTime(prefs::kScheduledRestartLastNudgeTime).is_null());
@@ -271,6 +292,141 @@ TEST_F(ScheduledRestartBubbleControllerTest,
   auto web_contents = CreateNtpWebContents();
   controller.MaybeShowNudgeForWebContents(web_contents.get());
 
+  EXPECT_EQ(controller.bubble_shown_count(), 0);
+}
+
+TEST_F(ScheduledRestartBubbleControllerTest,
+       AppMenuTriggerShowsBubbleBypassesNudgeDelay) {
+  TestScheduledRestartBubbleController controller(scheduled_restart_manager());
+  controller.SetWidget(CreateBubbleWidget());
+
+  // Set upgrade detected time to now so the passive NTP nudge delay (30s under
+  // --simulate-upgrade) is not yet met.
+  upgrade_detector().set_upgrade_detected_time(base::Time::Now());
+  EXPECT_FALSE(scheduled_restart_manager()->ShouldShowNudge());
+
+  controller.ShowBubbleFromAppMenu(browser_window());
+
+  EXPECT_EQ(controller.bubble_shown_count(), 1);
+  EXPECT_TRUE(controller.last_show_active());
+  EXPECT_FALSE(
+      local_state()->GetTime(prefs::kScheduledRestartLastNudgeTime).is_null());
+}
+
+TEST_F(ScheduledRestartBubbleControllerTest,
+       AppMenuTriggerBypassesNudgeCooldown) {
+  TestScheduledRestartBubbleController controller(scheduled_restart_manager());
+  controller.SetWidget(CreateBubbleWidget());
+
+  // A nudge shown recently puts the passive nudge in its cooldown (30s under
+  // --simulate-upgrade), which the explicit App Menu action ignores.
+  const base::Time last_nudge_time = base::Time::Now() - base::Seconds(10);
+  local_state()->SetTime(prefs::kScheduledRestartLastNudgeTime,
+                         last_nudge_time);
+  EXPECT_FALSE(scheduled_restart_manager()->ShouldShowNudge());
+
+  controller.ShowBubbleFromAppMenu(browser_window());
+
+  EXPECT_EQ(controller.bubble_shown_count(), 1);
+  EXPECT_TRUE(controller.is_bubble_showing());
+  EXPECT_GT(local_state()->GetTime(prefs::kScheduledRestartLastNudgeTime),
+            last_nudge_time);
+}
+
+TEST_F(ScheduledRestartBubbleControllerTest,
+       AppMenuTriggerRestartsPassiveNudgeCooldown) {
+  TestScheduledRestartBubbleController controller(scheduled_restart_manager());
+  std::unique_ptr<views::Widget> widget = CreateBubbleWidget();
+  views::Widget* widget_ptr = widget.get();
+  controller.SetWidget(std::move(widget));
+
+  controller.ShowBubbleFromAppMenu(browser_window());
+  ASSERT_EQ(controller.bubble_shown_count(), 1);
+
+  // Dismissing the dialog opened from the App Menu must not lead to an
+  // immediate passive nudge on the next New Tab Page.
+  widget_ptr->CloseWithReason(views::Widget::ClosedReason::kCloseButtonClicked);
+  EXPECT_FALSE(controller.is_bubble_showing());
+
+  controller.SetWidget(CreateBubbleWidget());
+  auto web_contents = CreateNtpWebContents();
+  controller.MaybeShowNudgeForWebContents(web_contents.get());
+  EXPECT_EQ(controller.bubble_shown_count(), 1);
+}
+
+TEST_F(ScheduledRestartBubbleControllerTest,
+       AppMenuTriggerReplacesExistingPassiveBubble) {
+  TestScheduledRestartBubbleController controller(scheduled_restart_manager());
+  std::unique_ptr<views::Widget> passive_widget = CreateBubbleWidget();
+  base::WeakPtr<views::Widget> passive_widget_weak =
+      passive_widget->GetWeakPtr();
+  controller.SetWidget(std::move(passive_widget));
+
+  // First, show a passive (inactive) bubble via an NTP creation.
+  auto web_contents = CreateNtpWebContents();
+  controller.MaybeShowNudgeForWebContents(web_contents.get());
+  EXPECT_EQ(controller.bubble_shown_count(), 1);
+  EXPECT_FALSE(controller.last_show_active());
+  EXPECT_TRUE(controller.is_bubble_showing());
+
+  // Invoking the App Menu item while the passive bubble is still showing
+  // destroys the existing bubble and replaces it with an active bubble.
+  controller.SetWidget(CreateBubbleWidget());
+  controller.ShowBubbleFromAppMenu(browser_window());
+  EXPECT_FALSE(passive_widget_weak);
+  EXPECT_EQ(controller.bubble_shown_count(), 2);
+  EXPECT_TRUE(controller.last_show_active());
+  EXPECT_TRUE(controller.is_bubble_showing());
+}
+
+TEST_F(ScheduledRestartBubbleControllerTest,
+       AppMenuTriggerSuppressedWhenAppMenuFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kScheduledRestartAppMenuItem);
+
+  TestScheduledRestartBubbleController controller(scheduled_restart_manager());
+  controller.ShowBubbleFromAppMenu(browser_window());
+
+  EXPECT_EQ(controller.bubble_shown_count(), 0);
+}
+
+TEST_F(ScheduledRestartBubbleControllerTest,
+       AppMenuTriggerSuppressedWhenAlreadyScheduled) {
+  TestScheduledRestartBubbleController controller(scheduled_restart_manager());
+
+  // Defensive: stub out the relaunch so that a real relaunch cannot happen if
+  // this test later adds waits while idle polling is active.
+  scheduled_restart_manager()->set_relaunch_callback_for_testing(
+      base::DoNothing());
+  scheduled_restart_manager()->ScheduleRestartOnIdle();
+  controller.ShowBubbleFromAppMenu(browser_window());
+
+  EXPECT_EQ(controller.bubble_shown_count(), 0);
+}
+
+TEST_F(ScheduledRestartBubbleControllerTest,
+       AppMenuTriggerSuppressedWhenNoUpgradeAvailable) {
+  TestScheduledRestartBubbleController controller(scheduled_restart_manager());
+
+  upgrade_detector().set_upgrade_available(
+      FakeUpgradeDetector::UPGRADE_AVAILABLE_NONE);
+  controller.ShowBubbleFromAppMenu(browser_window());
+
+  EXPECT_EQ(controller.bubble_shown_count(), 0);
+}
+
+TEST_F(ScheduledRestartBubbleControllerTest,
+       AppMenuTriggerSuppressedWhenOutdatedInstall) {
+  TestScheduledRestartBubbleController controller(scheduled_restart_manager());
+
+  upgrade_detector().set_upgrade_available(
+      FakeUpgradeDetector::UPGRADE_NEEDED_OUTDATED_INSTALL);
+  controller.ShowBubbleFromAppMenu(browser_window());
+  EXPECT_EQ(controller.bubble_shown_count(), 0);
+
+  upgrade_detector().set_upgrade_available(
+      FakeUpgradeDetector::UPGRADE_NEEDED_OUTDATED_INSTALL_NO_AU);
+  controller.ShowBubbleFromAppMenu(browser_window());
   EXPECT_EQ(controller.bubble_shown_count(), 0);
 }
 

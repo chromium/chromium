@@ -1368,6 +1368,11 @@ void BrowserCommandController::HandleCommandWithDisposition(
     case IDC_UPGRADE_DIALOG:
       OpenUpdateChromeDialog(browser_);
       break;
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    case IDC_SCHEDULED_RESTART_DIALOG:
+      OpenScheduledRestartDialog(browser_);
+      break;
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     case IDC_OPEN_SAFETY_HUB:
       ShowSettingsSubPage(webui::GetBrowserForOpeningWebUi(browser_),
                           chrome::kSafetyHubSubPage);
@@ -2039,6 +2044,9 @@ void BrowserCommandController::InitCommandState() {
 
   // These are always enabled; the menu determines their menu item visibility.
   command_updater_->UpdateCommandEnabled(IDC_UPGRADE_DIALOG, true);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  command_updater_->UpdateCommandEnabled(IDC_SCHEDULED_RESTART_DIALOG, true);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   command_updater_->UpdateCommandEnabled(IDC_SET_BROWSER_AS_DEFAULT, true);
 
   // Safety Hub commands.

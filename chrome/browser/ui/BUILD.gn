@@ -981,6 +981,9 @@ if (!is_android) {
       "//ui/gfx",
       "//ui/gfx/geometry",
     ]
+    if (is_win || is_mac || is_linux) {
+      deps += [ "//chrome/browser/ui/views/scheduled_restart" ]
+    }
   }
 }
 if (is_mac) {

@@ -10,10 +10,12 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
+#include "base/version.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -45,6 +47,7 @@
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/upgrade_detector/build_state.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -80,6 +83,12 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/global_features.h"
+#include "chrome/browser/lifetime/scheduled_restart_manager.h"
+#include "chrome/browser/upgrade_detector/upgrade_detector_impl.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 using ::testing::_;
 
@@ -1684,5 +1693,146 @@ IN_PROC_BROWSER_TEST_F(AppMenuModelSendTabToSelfSigninPromosTest,
   EXPECT_NE(nullptr, save_and_share_menu->GetSubmenuModelAt(send_tab_index));
 }
 #endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// Simulates a pending normal update on an unmanaged browser so that the
+// "Relaunch later..." item is eligible to appear. Subclasses choose which
+// features are enabled.
+class AppMenuModelScheduledRestartTestBase : public AppMenuModelTest {
+ public:
+  void SetUpOnMainThread() override {
+    AppMenuModelTest::SetUpOnMainThread();
+    // UpgradeDetectorImpl only observes g_browser_process->GetBuildState() in
+    // builds with ENABLE_UPDATE_NOTIFICATIONS enabled. Invoke OnUpdate()
+    // directly so is_upgrade_available() is also set on unbranded builds.
+    BuildState build_state;
+    build_state.SetUpdate(BuildState::UpdateType::kNormalUpdate,
+                          base::Version("999.0.0.0"), std::nullopt);
+    UpgradeDetectorImpl* detector = UpgradeDetectorImpl::GetInstance();
+    detector->OnUpdate(&build_state);
+    detector->set_upgrade_notification_stage_for_testing(
+        UpgradeDetector::UPGRADE_ANNOYANCE_LOW);
+    detector->NotifyUpgradeForTesting();
+  }
+
+ private:
+  policy::ScopedManagementServiceOverrideForTesting platform_management_{
+      policy::ManagementServiceFactory::GetForPlatform(),
+      policy::EnterpriseManagementAuthority::NONE};
+};
+
+class AppMenuModelScheduledRestartTest
+    : public AppMenuModelScheduledRestartTestBase {
+ public:
+  AppMenuModelScheduledRestartTest() {
+    feature_list_.InitWithFeatures(
+        {features::kScheduledRestart, features::kScheduledRestartAppMenuItem},
+        {});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(AppMenuModelScheduledRestartTest,
+                       ScheduledRestartItemVisibleAndOrdered) {
+  FakeIconDelegate fake_delegate;
+  AppMenuIconController app_menu_icon_controller(browser()->GetProfile(),
+                                                 &fake_delegate);
+  TestAppMenuModel model(this, browser(), &app_menu_icon_controller);
+  model.Init();
+
+  const std::optional<size_t> upgrade_idx =
+      model.GetIndexOfCommandId(IDC_UPGRADE_DIALOG);
+  ASSERT_TRUE(upgrade_idx.has_value());
+
+  const std::optional<size_t> sched_idx =
+      model.GetIndexOfCommandId(IDC_SCHEDULED_RESTART_DIALOG);
+  ASSERT_TRUE(sched_idx.has_value());
+  EXPECT_EQ(sched_idx.value(), upgrade_idx.value() + 2);
+  EXPECT_EQ(model.GetTypeAt(upgrade_idx.value() + 1),
+            ui::MenuModel::TYPE_SEPARATOR);
+  EXPECT_EQ(model.GetTypeAt(sched_idx.value() + 1),
+            ui::MenuModel::TYPE_SEPARATOR);
+  EXPECT_TRUE(model.IsEnabledAt(sched_idx.value()));
+  EXPECT_FALSE(model.GetIconAt(sched_idx.value()).IsEmpty());
+  EXPECT_EQ(model.GetElementIdentifierAt(sched_idx.value()),
+            AppMenuModel::kScheduledRestartMenuItem);
+}
+
+IN_PROC_BROWSER_TEST_F(AppMenuModelScheduledRestartTest,
+                       ScheduledRestartItemLogsMetrics) {
+  base::HistogramTester histogram_tester;
+  TestLogMetricsAppMenuModel model(this, browser());
+  model.Init();
+  model.ExecuteCommand(IDC_SCHEDULED_RESTART_DIALOG, 0);
+  EXPECT_EQ(model.log_metrics_count_, 1);
+  histogram_tester.ExpectTotalCount(
+      "WrenchMenu.TimeToAction.ScheduledRestartDialog", 1);
+}
+
+IN_PROC_BROWSER_TEST_F(AppMenuModelScheduledRestartTest,
+                       ScheduledRestartItemSuppressedWhenAlreadyScheduled) {
+  auto* srm = g_browser_process->GetFeatures()->scheduled_restart_manager();
+  ASSERT_TRUE(srm);
+  // Scheduling starts idle polling, which could otherwise relaunch the browser
+  // if the bot stays idle long enough during the test.
+  srm->set_relaunch_callback_for_testing(base::DoNothing());
+  srm->ScheduleRestartOnIdle();
+
+  FakeIconDelegate fake_delegate;
+  AppMenuIconController app_menu_icon_controller(browser()->GetProfile(),
+                                                 &fake_delegate);
+  TestAppMenuModel model(this, browser(), &app_menu_icon_controller);
+  model.Init();
+
+  EXPECT_TRUE(model.GetIndexOfCommandId(IDC_UPGRADE_DIALOG).has_value());
+  EXPECT_FALSE(
+      model.GetIndexOfCommandId(IDC_SCHEDULED_RESTART_DIALOG).has_value());
+
+  // The manager is a browser-process global; cancel to stop the idle
+  // monitoring started by the schedule before the test tears down.
+  srm->CancelSchedule();
+}
+
+IN_PROC_BROWSER_TEST_F(AppMenuModelScheduledRestartTest,
+                       ScheduledRestartItemSuppressedWhenManaged) {
+  policy::ScopedManagementServiceOverrideForTesting managed_override(
+      policy::ManagementServiceFactory::GetForPlatform(),
+      policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
+
+  FakeIconDelegate fake_delegate;
+  AppMenuIconController app_menu_icon_controller(browser()->GetProfile(),
+                                                 &fake_delegate);
+  TestAppMenuModel model(this, browser(), &app_menu_icon_controller);
+  model.Init();
+
+  EXPECT_TRUE(model.GetIndexOfCommandId(IDC_UPGRADE_DIALOG).has_value());
+  EXPECT_FALSE(
+      model.GetIndexOfCommandId(IDC_SCHEDULED_RESTART_DIALOG).has_value());
+}
+
+class AppMenuModelScheduledRestartDisabledTest
+    : public AppMenuModelScheduledRestartTestBase {
+ public:
+  AppMenuModelScheduledRestartDisabledTest() {
+    // Enable ScheduledRestart alone while leaving ScheduledRestartAppMenuItem
+    // disabled to verify the menu item is gated behind its dedicated flag.
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kScheduledRestart},
+        /*disabled_features=*/{features::kScheduledRestartAppMenuItem});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(AppMenuModelScheduledRestartDisabledTest,
+                       ScheduledRestartItemAbsent) {
+  FakeIconDelegate fake_delegate;
+  AppMenuIconController app_menu_icon_controller(browser()->GetProfile(),
+                                                 &fake_delegate);
+  TestAppMenuModel model(this, browser(), &app_menu_icon_controller);
+  model.Init();
+
+  EXPECT_TRUE(model.GetIndexOfCommandId(IDC_UPGRADE_DIALOG).has_value());
+  EXPECT_FALSE(
+      model.GetIndexOfCommandId(IDC_SCHEDULED_RESTART_DIALOG).has_value());
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 }  // namespace

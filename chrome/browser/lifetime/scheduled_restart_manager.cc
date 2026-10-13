@@ -22,12 +22,14 @@
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/lifetime/restartability_monitor.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
+#include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
@@ -35,6 +37,10 @@ namespace features {
 
 // Controls the Scheduled Restart feature on Desktop platforms.
 BASE_FEATURE(kScheduledRestart, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls whether the "Relaunch later..." item is shown in the 3-dot App Menu
+// when the Scheduled Restart feature is enabled and an update is available.
+BASE_FEATURE(kScheduledRestartAppMenuItem, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<base::TimeDelta> kScheduledRestartFirstNudgeDelay{
     &kScheduledRestart, "first_nudge_delay", base::Days(14)};
@@ -231,8 +237,29 @@ base::TimeDelta ScheduledRestartManager::GetNudgeCooldown() {
   return param;
 }
 
+// static
+bool ScheduledRestartManager::AreScheduledRestartsEnabled() {
+  const base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
+  if (!cmd_line->HasSwitch(switches::kSimulateUpgrade) &&
+      !cmd_line->HasSwitch(switches::kSimulateOutdated) &&
+      policy::ManagementServiceFactory::GetForPlatform()->IsManaged()) {
+    return false;
+  }
+  return base::FeatureList::IsEnabled(features::kScheduledRestart);
+}
+
+// static
+bool ScheduledRestartManager::IsAppMenuItemEnabled() {
+  return AreScheduledRestartsEnabled() &&
+         base::FeatureList::IsEnabled(features::kScheduledRestartAppMenuItem);
+}
+
+bool ScheduledRestartManager::IsUpgradeAvailableForScheduling() const {
+  return !is_scheduled() && upgrade_detector_->is_upgrade_available();
+}
+
 bool ScheduledRestartManager::ShouldShowNudge() const {
-  if (is_scheduled() || !upgrade_detector_->is_upgrade_available()) {
+  if (!IsUpgradeAvailableForScheduling()) {
     return false;
   }
 

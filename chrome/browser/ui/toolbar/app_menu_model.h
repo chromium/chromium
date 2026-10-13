@@ -145,6 +145,7 @@ enum AppMenuAction {
   MENU_ACTION_CHROME_ENTERPRISE_RELEASE_NOTES = 123,
   MENU_ACTION_MANAGE_SKILLS = 124,
   MENU_ACTION_SHOW_SKILLS_AND_EXTENSIONS = 125,
+  MENU_ACTION_SCHEDULED_RESTART_DIALOG = 126,
   LIMIT_MENU_ACTION
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ui/enums.xml:WrenchMenuAction)
@@ -258,6 +259,7 @@ class AppMenuModel : public ui::SimpleMenuModel,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kInstallAppItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCreateShortcutItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSetBrowserAsDefaultMenuItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kScheduledRestartMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kHelpMenuItem);
 
   // Internal placeholder container command IDs.
@@ -380,6 +382,10 @@ class AppMenuModel : public ui::SimpleMenuModel,
                                       int event_flags);
 
  private:
+  // Adds the "Relaunch later..." menu item if a pending update is eligible for
+  // scheduled restart. Returns whether the menu item was added.
+  bool AddScheduledRestartMenuItem();
+
   // Adds actionable global error menu items to the menu.
   // Examples: Extension permissions and sign in errors.
   // Returns a boolean indicating whether any menu items were added.

@@ -1551,6 +1551,9 @@ are declared in tools/grit/grit_args.gni.
           <message name="IDS_RELAUNCH_TO_UPDATE_ALT_MINOR_TEXT" desc="Minor text for the alternate text label of the relaunch to update Chrome menu item">
             Your tabs will reopen
           </message>
+          <message name="IDS_SCHEDULED_RESTART_MENU_ITEM" desc="The text label of the relaunch later menu item in the 3-dot app menu. Selecting it opens a dialog where the user can schedule Chrome to relaunch later to apply a pending update. &quot;Relaunch&quot; is an imperative verb.">
+            Relaunch later...
+          </message>
         </if>
         <if expr="not use_titlecase">
           <message name="IDS_SHOW_AS_TAB" desc="The text label for the Show As tab menu item">

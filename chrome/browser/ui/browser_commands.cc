@@ -278,6 +278,10 @@
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_close_button_controller.h"
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/ui/views/scheduled_restart/scheduled_restart_bubble_controller.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
 namespace {
 
 const char kOsOverrideForTabletSite[] = "Linux; Android 9; Chrome tablet";
@@ -2874,6 +2878,16 @@ void OpenUpdateChromeDialog(BrowserWindowInterface* browser) {
     BrowserWindow::FromBrowser(browser)->ShowUpdateChromeDialog();
   }
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+void OpenScheduledRestartDialog(BrowserWindowInterface* browser) {
+  if (auto* controller =
+          scheduled_restart::ScheduledRestartBubbleController::From(
+              g_browser_process)) {
+    controller->ShowBubbleFromAppMenu(browser);
+  }
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 bool CanRequestTabletSite(WebContents* current_tab) {
   return current_tab &&

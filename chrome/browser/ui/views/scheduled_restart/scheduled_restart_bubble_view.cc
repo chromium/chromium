@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
@@ -50,6 +51,11 @@ DEFINE_ELEMENT_IDENTIFIER_VALUE(kRestartWhenIdleButtonId);
 
 namespace {
 
+// Set while a bubble is destroyed because a new bubble is replacing it. The
+// user did not dismiss it, so the destruction must not be recorded as a
+// dismissal.
+bool g_is_replacing_bubble = false;
+
 base::RepeatingClosure& GetRelaunchCallbackForTesting() {
   static base::NoDestructor<base::RepeatingClosure> callback;
   return *callback;
@@ -65,7 +71,7 @@ class ScheduledRestartDialogDelegate : public ui::DialogModelDelegate {
  public:
   ScheduledRestartDialogDelegate() = default;
   ~ScheduledRestartDialogDelegate() override {
-    if (!action_taken_) {
+    if (!action_taken_ && !g_is_replacing_bubble) {
       action_taken_ = true;
       RecordDialogChoice(
           ScheduledRestartBubbleView::ScheduledRestartDialogChoice::kDismissed);
@@ -113,7 +119,7 @@ class ScheduledRestartDialogDelegate : public ui::DialogModelDelegate {
   }
 
   void OnClose() {
-    if (!action_taken_) {
+    if (!action_taken_ && !g_is_replacing_bubble) {
       action_taken_ = true;
       RecordDialogChoice(
           ScheduledRestartBubbleView::ScheduledRestartDialogChoice::kDismissed);
@@ -130,7 +136,8 @@ class ScheduledRestartDialogDelegate : public ui::DialogModelDelegate {
 // static
 std::unique_ptr<views::Widget> ScheduledRestartBubbleView::ShowBubble(
     BrowserWindowInterface* browser,
-    views::Widget::ClosedCallback on_close) {
+    views::Widget::ClosedCallback on_close,
+    bool show_active) {
   CHECK(browser);
 
   auto* toolbar_button_provider = ToolbarButtonProvider::From(browser);
@@ -150,7 +157,6 @@ std::unique_ptr<views::Widget> ScheduledRestartBubbleView::ShowBubble(
   builder
       .SetTitle(
           l10n_util::GetStringUTF16(IDS_RELAUNCH_RECOMMENDED_SCHEDULED_TITLE))
-      .SetIsAlertDialog()
       .OverrideShowCloseButton(true)
       .SetElementIdentifier(kScheduledRestartDialogId)
       .AddParagraph(
@@ -194,6 +200,9 @@ std::unique_ptr<views::Widget> ScheduledRestartBubbleView::ShowBubble(
       .SetCloseActionCallback(
           base::BindOnce(&ScheduledRestartDialogDelegate::OnClose,
                          base::Unretained(delegate_ptr)));
+  if (!show_active) {
+    builder.SetIsAlertDialog();
+  }
 
   auto bubble = std::make_unique<views::BubbleDialogModelHost>(
       builder.Build(), control->GetAnchor(), views::BubbleBorder::TOP_RIGHT);
@@ -206,15 +215,28 @@ std::unique_ptr<views::Widget> ScheduledRestartBubbleView::ShowBubble(
       views::BubbleDialogDelegate::CreateBubble(std::move(bubble).release(),
                                                 std::move(on_close));
   if (widget) {
-    // Show as inactive so the bubble does not steal focus (e.g. from the
-    // Omnibox when opening a New Tab Page), and add an accessible description
-    // explaining how to focus the bubble.
-    widget->GetRootView()->GetViewAccessibility().SetDescription(
-        l10n_util::GetStringUTF16(IDS_SHOW_BUBBLE_INACTIVE_DESCRIPTION));
-    widget->ShowInactive();
+    if (show_active) {
+      widget->Show();
+    } else {
+      // Show as inactive so the bubble does not steal focus (e.g. from the
+      // Omnibox when opening a New Tab Page), and add an accessible description
+      // explaining how to focus the bubble.
+      widget->GetRootView()->GetViewAccessibility().SetDescription(
+          l10n_util::GetStringUTF16(IDS_SHOW_BUBBLE_INACTIVE_DESCRIPTION));
+      widget->ShowInactive();
+    }
     base::RecordAction(base::UserMetricsAction("ScheduledRestart_BubbleShown"));
   }
   return widget;
+}
+
+// static
+void ScheduledRestartBubbleView::DestroyReplacedBubble(
+    std::unique_ptr<views::Widget> widget) {
+  // Widget destruction synchronously destroys the dialog delegate, so the flag
+  // only needs to be held for the duration of the reset.
+  base::AutoReset<bool> replacing(&g_is_replacing_bubble, true);
+  widget.reset();
 }
 
 // static

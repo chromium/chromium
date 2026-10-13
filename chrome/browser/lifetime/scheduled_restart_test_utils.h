@@ -36,6 +36,10 @@ class FakeUpgradeDetector : public UpgradeDetector {
   using UpgradeDetector::set_upgrade_available;
   using UpgradeDetector::set_upgrade_detected_time;
   using UpgradeDetector::set_upgrade_notification_stage;
+  using UpgradeDetector::UPGRADE_AVAILABLE_NONE;
+  using UpgradeDetector::UPGRADE_NEEDED_OUTDATED_INSTALL;
+  using UpgradeDetector::UPGRADE_NEEDED_OUTDATED_INSTALL_NO_AU;
+  using UpgradeDetector::UpgradeAvailable;
 
   // Convenience helper that marks an upgrade as available with low annoyance
   // level and immediately notifies observers.

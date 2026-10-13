@@ -17,11 +17,14 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/config/linux/dbus/buildflags.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/lifetime/restartability_monitor.h"
 #include "chrome/browser/lifetime/scheduled_restart_test_utils.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "components/policy/core/common/management/management_service.h"
+#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -429,6 +432,74 @@ TEST_F(ScheduledRestartManagerTest,
       ScheduledRestartExecutionOutcome::kCanceledBeforeExecution, 1);
   histogram_tester.ExpectTotalCount(
       "Session.ScheduledRestart.BlockerEncountered", 0);
+}
+
+TEST_F(ScheduledRestartManagerTest, IsUpgradeAvailableForScheduling) {
+  ScheduledRestartManager manager(fake_upgrade_detector_);
+
+  // Initially no upgrade available.
+  EXPECT_FALSE(manager.IsUpgradeAvailableForScheduling());
+
+  // Regular upgrade available -> eligible.
+  fake_upgrade_detector_.SetUpgradeAvailable();
+  EXPECT_TRUE(manager.IsUpgradeAvailableForScheduling());
+
+  // Already scheduled -> ineligible.
+  manager.ScheduleRestartOnIdle();
+  EXPECT_FALSE(manager.IsUpgradeAvailableForScheduling());
+  manager.CancelSchedule();
+  EXPECT_TRUE(manager.IsUpgradeAvailableForScheduling());
+
+  // Outdated install -> ineligible.
+  fake_upgrade_detector_.set_upgrade_available(
+      FakeUpgradeDetector::UPGRADE_NEEDED_OUTDATED_INSTALL);
+  EXPECT_FALSE(manager.IsUpgradeAvailableForScheduling());
+  fake_upgrade_detector_.set_upgrade_available(
+      FakeUpgradeDetector::UPGRADE_NEEDED_OUTDATED_INSTALL_NO_AU);
+  EXPECT_FALSE(manager.IsUpgradeAvailableForScheduling());
+}
+
+TEST_F(ScheduledRestartManagerTest, IsAppMenuItemEnabled) {
+  // Force an unmanaged platform so the test exercises the real management
+  // check rather than depending on the state of the test machine.
+  policy::ScopedManagementServiceOverrideForTesting platform_management(
+      policy::ManagementServiceFactory::GetForPlatform(),
+      policy::EnterpriseManagementAuthority::NONE);
+
+  // Only kScheduledRestart enabled (default in fixture) -> app menu item is
+  // disabled.
+  EXPECT_TRUE(ScheduledRestartManager::AreScheduledRestartsEnabled());
+  EXPECT_FALSE(ScheduledRestartManager::IsAppMenuItemEnabled());
+
+  // Only kScheduledRestartAppMenuItem enabled (kScheduledRestart disabled) ->
+  // app menu item is disabled because it requires ScheduledRestart.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        /*enabled_features=*/{features::kScheduledRestartAppMenuItem},
+        /*disabled_features=*/{features::kScheduledRestart});
+    EXPECT_FALSE(ScheduledRestartManager::AreScheduledRestartsEnabled());
+    EXPECT_FALSE(ScheduledRestartManager::IsAppMenuItemEnabled());
+  }
+
+  // Both features enabled -> app menu item is enabled.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        /*enabled_features=*/{features::kScheduledRestart,
+                              features::kScheduledRestartAppMenuItem},
+        /*disabled_features=*/{});
+    EXPECT_TRUE(ScheduledRestartManager::AreScheduledRestartsEnabled());
+    EXPECT_TRUE(ScheduledRestartManager::IsAppMenuItemEnabled());
+
+    // Scheduled restarts, and therefore the app menu item, are limited to
+    // unmanaged browsers.
+    policy::ScopedManagementServiceOverrideForTesting managed_override(
+        policy::ManagementServiceFactory::GetForPlatform(),
+        policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
+    EXPECT_FALSE(ScheduledRestartManager::AreScheduledRestartsEnabled());
+    EXPECT_FALSE(ScheduledRestartManager::IsAppMenuItemEnabled());
+  }
 }
 
 }  // namespace scheduled_restart

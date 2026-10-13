@@ -1544,6 +1544,7 @@ features through Chrome Labs. -->
     <variant name=".SavedTabGroupOpenInNewWindow"/>
     <variant name=".SavedTabGroupPin"/>
     <variant name=".SavePage"/>
+    <variant name=".ScheduledRestartDialog"/>
     <variant name=".SeeDeviceTabs"/>
     <variant name=".SendToDevices"/>
     <variant name=".SetBrowserAsDefault"/>

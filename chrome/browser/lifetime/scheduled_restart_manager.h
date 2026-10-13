@@ -33,6 +33,7 @@ class UpgradeDetector;
 namespace features {
 
 BASE_DECLARE_FEATURE(kScheduledRestart);
+BASE_DECLARE_FEATURE(kScheduledRestartAppMenuItem);
 
 extern const base::FeatureParam<base::TimeDelta>
     kScheduledRestartFirstNudgeDelay;
@@ -121,6 +122,19 @@ class ScheduledRestartManager : public UpgradeObserver,
   using ScheduleChangedCallback = base::RepeatingClosure;
   [[nodiscard]] base::CallbackListSubscription AddScheduleChangedCallback(
       ScheduleChangedCallback callback);
+
+  // Returns true if the Scheduled Restart feature is enabled and the browser
+  // is not enterprise-managed (unless an upgrade simulation switch is active).
+  static bool AreScheduledRestartsEnabled();
+
+  // Returns true if both the Scheduled Restart feature (on an unmanaged
+  // browser) and the Scheduled Restart App Menu item feature are enabled.
+  static bool IsAppMenuItemEnabled();
+
+  // Returns true if a valid pending upgrade is available for scheduling a
+  // restart (i.e. an upgrade is available, not an outdated install, and a
+  // restart is not already scheduled).
+  bool IsUpgradeAvailableForScheduling() const;
 
   // Evaluates whether an update reminder nudge should be presented based on
   // unpatched delay, nudge cooldown, and daily lull hours.

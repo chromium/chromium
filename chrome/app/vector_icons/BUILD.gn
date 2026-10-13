@@ -287,6 +287,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "safety_check_old.icon",
     "save_page_old.icon",
     "saved_tab_group_bar_everything_old.icon",
+    "schedule.icon",
     "screensaver_auto.icon",
     "screensaver_auto_old.icon",
     "screenshot_region.icon",
