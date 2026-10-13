@@ -24,6 +24,12 @@ class LayoutObject;
 
 enum class OffsetMappingUnitType { kIdentity, kCollapsed, kVariable };
 
+// Type aliases for documentation purposes. Though both types are `wtf_size_t`
+// in implementation, we may use them instead of `wtf_size_t` to clarify the
+// intent.
+using DomOffset = wtf_size_t;
+using IfcOffset = wtf_size_t;
+
 // An OffsetMappingUnit indicates a "simple" offset mapping between dom offset
 // range [dom_start, dom_end] on node |owner| and text content offset range
 // [text_content_start, text_content_end]. The mapping between them falls in one
@@ -48,10 +54,10 @@ class CORE_EXPORT OffsetMappingUnit {
  public:
   OffsetMappingUnit(OffsetMappingUnitType,
                     const LayoutObject&,
-                    unsigned dom_start,
-                    unsigned dom_end,
-                    unsigned text_content_start,
-                    unsigned text_content_end);
+                    DomOffset dom_start,
+                    DomOffset dom_end,
+                    IfcOffset text_content_start,
+                    IfcOffset text_content_end);
 
   // Returns associated node for this unit or null if this unit is associated
   // to generated content.
@@ -68,19 +74,19 @@ class CORE_EXPORT OffsetMappingUnit {
   // content, we can't use this function.
   // TODO(yosin): We should rename |GetOwner()| to |NonPseudoNode()|.
   const Node& GetOwner() const;
-  unsigned DOMStart() const { return dom_start_; }
-  unsigned DOMEnd() const { return dom_end_; }
-  unsigned TextContentStart() const { return text_content_start_; }
-  unsigned TextContentEnd() const { return text_content_end_; }
+  DomOffset DOMStart() const { return dom_start_; }
+  DomOffset DOMEnd() const { return dom_end_; }
+  IfcOffset TextContentStart() const { return text_content_start_; }
+  IfcOffset TextContentEnd() const { return text_content_end_; }
 
   // If the passed unit can be concatenated to |this| to create a bigger unit,
   // replaces |this| by the result and returns true; Returns false otherwise.
   bool Concatenate(const OffsetMappingUnit&);
 
-  unsigned ConvertDOMOffsetToTextContent(unsigned) const;
+  IfcOffset ConvertDOMOffsetToTextContent(DomOffset) const;
 
-  unsigned ConvertTextContentToFirstDOMOffset(unsigned) const;
-  unsigned ConvertTextContentToLastDOMOffset(unsigned) const;
+  DomOffset ConvertTextContentToFirstDOMOffset(IfcOffset) const;
+  DomOffset ConvertTextContentToLastDOMOffset(IfcOffset) const;
 
   void AssertValid() const;
 
@@ -93,14 +99,14 @@ class CORE_EXPORT OffsetMappingUnit {
   // TODO(yosin): We should rename |dom_start_| and |dom_end_| to appropriate
   // names since |layout_object_| is for generated text, these offsets are
   // offset in |LayoutText::text_| instead of DOM node.
-  unsigned dom_start_;
-  unsigned dom_end_;
+  DomOffset dom_start_;
+  DomOffset dom_end_;
 
   // |text_content_start_| and |text_content_end_| are offsets in
   // |OffsetMapping::text_|. These values are in [0, |text_.length()] to
   // represent collapsed spaces at the end of block.
-  unsigned text_content_start_;
-  unsigned text_content_end_;
+  IfcOffset text_content_start_;
+  IfcOffset text_content_end_;
 
   friend class OffsetMappingBuilder;
 };
@@ -113,7 +119,7 @@ class CORE_EXPORT OffsetMapping final : public GarbageCollected<OffsetMapping> {
  public:
   using UnitVector = HeapVector<OffsetMappingUnit>;
   using RangeMap =
-      HeapHashMap<Member<const Node>, std::pair<unsigned, unsigned>>;
+      HeapHashMap<Member<const Node>, std::pair<wtf_size_t, wtf_size_t>>;
 
   OffsetMapping(UnitVector&&, RangeMap&&, String);
   OffsetMapping(const OffsetMapping&) = delete;
@@ -136,14 +142,14 @@ class CORE_EXPORT OffsetMapping final : public GarbageCollected<OffsetMapping> {
         : units_(offset_mapping->GetMappingUnitsForLayoutObject(layout_object)),
           last_unit_(units_.begin()) {}
 
-    unsigned TextContentOffset(unsigned offset) const;
+    IfcOffset TextContentOffset(DomOffset offset) const;
 
    private:
     const base::span<const OffsetMappingUnit> units_;
     // These are the cache of the last used `offset` and the result, to make
     // the next search faster when `offset` increases.
     mutable base::span<const OffsetMappingUnit>::iterator last_unit_;
-    mutable unsigned last_offset_ = 0;
+    mutable DomOffset last_offset_ = 0;
   };
 
   // ------ Static getters for offset mapping objects  ------
@@ -212,7 +218,7 @@ class CORE_EXPORT OffsetMapping final : public GarbageCollected<OffsetMapping> {
 
   // Returns the text content offset corresponding to the given position.
   // Returns nullopt when the position is not laid out in this context.
-  std::optional<unsigned> GetTextContentOffset(const Position&) const;
+  std::optional<IfcOffset> GetTextContentOffset(const Position&) const;
 
   // Starting from the given position, searches for non-collapsed content in
   // the anchor node in forward/backward direction and returns the position
@@ -245,30 +251,30 @@ class CORE_EXPORT OffsetMapping final : public GarbageCollected<OffsetMapping> {
   // nodes in the flat tree, so that they are not laid out in the same order as
   // in the DOM tree. In this case, "first" and "last" position are defined on
   // the layout order, aka the flat tree order.
-  Position GetFirstPosition(unsigned) const;
-  Position GetLastPosition(unsigned) const;
+  Position GetFirstPosition(IfcOffset) const;
+  Position GetLastPosition(IfcOffset) const;
 
   // Returns all OffsetMappingUnits whose text content ranges has non-empty
   // (but possibly collapsed) intersection with (start, end). Note that units
   // that only "touch" |start| or |end| are excluded.
   // Note: Returned range may include units for generated content.
   base::span<const OffsetMappingUnit> GetMappingUnitsForTextContentOffsetRange(
-      unsigned start,
-      unsigned end) const;
+      IfcOffset start,
+      IfcOffset end) const;
 
   // Returns the first |OffsetMappingUnit| where |TextContentStart() >=
   // offset| including unit for generated content.
-  const OffsetMappingUnit* GetFirstMappingUnit(unsigned offset) const;
+  const OffsetMappingUnit* GetFirstMappingUnit(IfcOffset offset) const;
 
   // Returns the last |OffsetMappingUnit| where |TextContentStart() >= offset|
   // including unit for generated content.
-  const OffsetMappingUnit* GetLastMappingUnit(unsigned offset) const;
+  const OffsetMappingUnit* GetLastMappingUnit(IfcOffset offset) const;
 
   // ------ APIs inspecting the text content string ------
 
   // Returns false if all characters in [start, end) of |text_| are bidi
   // control characters. Returns true otherwise.
-  bool HasBidiControlCharactersOnly(unsigned start, unsigned end) const;
+  bool HasBidiControlCharactersOnly(IfcOffset start, IfcOffset end) const;
 
   void Trace(Visitor* visitor) const {
     visitor->Trace(units_);
