@@ -67,9 +67,8 @@
 
 namespace {
 
-// TODO(b/537182192): Replace with a P-link.
 constexpr char kSignalsDisclaimerLearnMoreURL[] =
-    "https://support.google.com/chrome/a/answer/16191236";
+    "https://support.google.com/chrome/a?p=managed_profile_signals";
 
 bool CanTryPolicyRegistration(std::optional<base::Time> last_failure_time) {
   if (!last_failure_time) {

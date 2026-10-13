@@ -31,8 +31,8 @@ import org.chromium.ui.text.SpanApplier.SpanInfo;
  */
 @NullMarked
 class EnterpriseSignalsDisclaimerMediator implements ProfileDataCache.Observer {
-    // TODO(b/537182192): Replace with a p-link.
-    static final String LEARN_MORE_LINK = "https://support.google.com/chrome/a/answer/16191236";
+    static final String LEARN_MORE_LINK =
+            "https://support.google.com/chrome/a?p=managed_profile_signals";
 
     /** Delegate for the enterprise signals disclaimer mediator. */
     public interface Delegate {
