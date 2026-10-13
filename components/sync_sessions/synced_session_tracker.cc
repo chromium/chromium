@@ -14,7 +14,6 @@
 #include "components/sync/protocol/session_specifics.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info_proto_enum_util.h"
-#include "components/sync_sessions/features.h"
 #include "components/sync_sessions/sync_sessions_client.h"
 
 namespace sync_sessions {
@@ -766,9 +765,7 @@ void UpdateTrackerWithSpecifics(const sync_pb::SessionSpecifics& specifics,
 
     PopulateSyncedSessionFromSpecifics(session_tag, header, modification_time,
                                        session, tracker);
-    if (base::FeatureList::IsEnabled(kSyncSessionsUsePreferredDisplayName)) {
-      tracker->TryUpdateSessionNameFromDeviceInfo(session_tag);
-    }
+    tracker->TryUpdateSessionNameFromDeviceInfo(session_tag);
 
     // Delete any closed windows and unused tabs as necessary. We exclude the
     // local session here because it should be cleaned up explicitly with

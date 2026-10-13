@@ -7,10 +7,8 @@
 #include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
 #include "components/sync/protocol/sync_enums.pb.h"
-#include "components/sync_sessions/features.h"
 #include "components/sync_sessions/mock_sync_sessions_client.h"
 #include "components/sync_sessions/test_matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -840,16 +838,14 @@ TEST_F(SyncedSessionTrackerTest, UpdateTrackerWithHeader) {
   EXPECT_THAT(tracker_.LookupSessionTab(kTag, kTab2), NotNull());
 }
 
+// Verifies that `UpdateTrackerWithSpecifics()` overrides the raw session client
+// name with the preferred display name from `DeviceInfo` when available.
 TEST_F(SyncedSessionTrackerTest, UpdateTrackerWithHeader_PreferredDeviceName) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      kSyncSessionsUsePreferredDisplayName);
-
   constexpr char kOriginalClientName[] = "XPS 13";
   constexpr char kDeviceInfoClientName[] = "Dell Computer";
 
-  // By default (no device info name available), it should use the raw client
-  // name.
+  // By default (no `DeviceInfo` name available), `UpdateTrackerWithSpecifics()`
+  // should use the raw `client_name`.
   sync_pb::SessionSpecifics header;
   header.set_session_tag(kTag);
   header.mutable_header()->set_client_name(kOriginalClientName);
@@ -858,11 +854,11 @@ TEST_F(SyncedSessionTrackerTest, UpdateTrackerWithHeader_PreferredDeviceName) {
   EXPECT_THAT(tracker_.LookupSession(kTag),
               MatchesSyncedSession(kTag, kOriginalClientName, _));
 
-  // Now set up the mock to return a preferred name.
+  // Configure the client to return a preferred display name from `DeviceInfo`.
   ON_CALL(sessions_client_, GetSessionDisplayNameFromDeviceInfo(kTag))
       .WillByDefault(Return(kDeviceInfoClientName));
 
-  // Trigger the update again. It should now use the preferred name.
+  // Trigger the update again. The session should now use the preferred name.
   UpdateTrackerWithSpecifics(header, base::Time::Now(), &tracker_);
   EXPECT_THAT(tracker_.LookupSession(kTag),
               MatchesSyncedSession(kTag, kDeviceInfoClientName, _));
