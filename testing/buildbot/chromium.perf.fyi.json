@@ -183,7 +183,8 @@
           "--benchmark-name=bling",
           "--xcode-build-version=27a266a",
           "--out-dir=${ISOLATED_OUTDIR}",
-          "--xcodebuild-device-runner"
+          "--xcodebuild-device-runner",
+          "--xctest"
         ],
         "merge": {
           "args": [
@@ -205,7 +206,9 @@
             }
           ],
           "dimensions": {
+            "cpu": null,
             "device": "iPhone16,1",
+            "device_status": "available",
             "os": "iOS-26",
             "pool": "chrome.tests"
           },
@@ -221,15 +224,7 @@
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 1
         },
-        "test": "ios_chrome_perf_benchmarks_eg2tests_module",
-        "trigger_script": {
-          "args": [
-            "--multiple-dimension-script-verbose",
-            "True"
-          ],
-          "requires_simultaneous_shard_dispatch": true,
-          "script": "//testing/trigger_scripts/perf_device_trigger.py"
-        }
+        "test": "ios_chrome_perf_benchmarks_eg2tests_module"
       }
     ]
   },

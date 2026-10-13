@@ -286,12 +286,18 @@ FYI_BUILDERS = {
           '--xcode-build-version=27a266a',
           '--out-dir=${ISOLATED_OUTDIR}',
           '--xcodebuild-device-runner',
+          '--xctest',
         ],
       }
     ],
+    # TODO(crbug.com/570775933): Re-enable once on a dedicated
+    # chrome.tests.perf pool.
+    'perf_trigger': False,
     'platform': 'ios',
     'dimension': {
+      'cpu': None,
       'device': 'iPhone16,1',
+      'device_status': 'available',
       'os': 'iOS-26',
       'pool': 'chrome.tests',
     },
