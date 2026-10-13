@@ -27,6 +27,8 @@
 #include "ios/chrome/browser/optimization_guide/model/prediction_model_download_client.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
+namespace {
+
 // The root directory for background download system, under browser state
 // directory.
 const base::FilePath::CharType kDownloadServiceStorageDir[] =
@@ -38,6 +40,8 @@ const base::FilePath::CharType kEntryDBStorageDir[] =
 
 // The directory for downloaded files.
 const base::FilePath::CharType kFilesStorageDir[] = FILE_PATH_LITERAL("Files");
+
+}  // anonymous namespace
 
 // static
 download::BackgroundDownloadService*
