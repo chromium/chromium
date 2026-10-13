@@ -138,4 +138,10 @@ found in the LICENSE file.
     <!-- TODO(crbug.com/555648510): Remove these dimens after error cards are implemented. -->
     <dimen name="account_menu_icon_badge_size">8dp</dimen>
     <dimen name="account_menu_icon_badge_border_size">2dp</dimen>
+
+    <!-- Download Toolbar Button Progress Ring dimensions -->
+    <dimen name="download_progress_ring_radius">12dp</dimen>
+    <dimen name="download_progress_ring_stroke_width">2.5dp</dimen>
+    <dimen name="download_progress_ring_badge_radius">7dp</dimen>
+    <dimen name="download_progress_ring_badge_text_size">9dp</dimen>
 </resources>
