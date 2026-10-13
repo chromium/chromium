@@ -41,9 +41,12 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
+#import "ios/chrome/browser/web_extension/model/extension_service_factory.h"
+#import "ios/chrome/browser/web_extension/model/fake_extension_service.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -51,6 +54,7 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
 #import "ui/base/l10n/l10n_util.h"
 
 using ::testing::Return;
@@ -87,6 +91,12 @@ class PrivacyTableViewControllerTest
     builder.AddTestingFactory(
         feature_engagement::TrackerFactory::GetInstance(),
         base::BindOnce(&BuildFeatureEngagementMockTracker));
+    builder.AddTestingFactory(
+        ExtensionServiceFactory::GetInstance(),
+        base::BindRepeating(
+            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
+              return std::make_unique<FakeExtensionService>();
+            }));
     profile_ = std::move(builder).Build();
 
     test_sync_service()->SetSignedOut();
@@ -172,6 +182,23 @@ class PrivacyTableViewControllerTest
       }
     }
     return false;
+  }
+
+  TableViewDetailIconItem* GetUniversalOptOutItem() {
+    TableViewModel* model = [controller() tableViewModel];
+    for (NSInteger section = 0; section < [model numberOfSections]; ++section) {
+      for (NSInteger item = 0; item < [model numberOfItemsInSection:section];
+           ++item) {
+        TableViewItem* table_item =
+            [model itemAtIndexPath:[NSIndexPath indexPathForItem:item
+                                                       inSection:section]];
+        if ([table_item.accessibilityIdentifier
+                isEqualToString:kSettingsUniversalOptOutCellId]) {
+          return base::apple::ObjCCast<TableViewDetailIconItem>(table_item);
+        }
+      }
+    }
+    return nil;
   }
 
   web::WebTaskEnvironment task_environment_;
@@ -485,6 +512,57 @@ TEST_P(PrivacyTableViewControllerTest, TestUniversalOptOutVisibility) {
     [[NSUserDefaults standardUserDefaults]
         removeObjectForKey:@"UniversalOptOutEligibilityOverride"];
   }
+}
+
+// Tests that the Universal Opt-Out item displays an error badge when
+// ExtensionService reports a load error.
+TEST_P(PrivacyTableViewControllerTest, TestUniversalOptOutErrorBadge) {
+  if (!base::ios::IsRunningOnOrLater(18, 4, 0)) {
+    return;
+  }
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {universal_optout::features::kUniversalOptOut,
+       universal_optout::features::kUniversalOptOutExtension,
+       universal_optout::features::kUniversalOptOutSettings},
+      /*disabled_features=*/{});
+
+  profile_->GetPrefs()->SetBoolean(
+      universal_optout::prefs::kUniversalOptOutEligible, true);
+  profile_->GetPrefs()->SetBoolean(
+      universal_optout::prefs::kUniversalOptOutEnabled, true);
+
+  CreateController();
+  CheckController();
+
+  FakeExtensionService* fake_service = static_cast<FakeExtensionService*>(
+      ExtensionServiceFactory::GetForProfile(profile_.get()));
+  ASSERT_TRUE(fake_service != nullptr);
+
+  TableViewDetailIconItem* item = GetUniversalOptOutItem();
+  ASSERT_TRUE(item != nil);
+  EXPECT_TRUE(item.badgeType == BadgeType::kNone);
+  EXPECT_NSEQ(item.detailText, l10n_util::GetNSString(IDS_IOS_SETTING_ON));
+
+  // Simulate load error.
+  fake_service->SetHasLoadError(true);
+  EXPECT_TRUE(item.badgeType == BadgeType::kWarning);
+  EXPECT_TRUE(item.badgeLayout == BadgeLayout::kTrailing);
+  EXPECT_EQ(item.detailText, nil);
+
+  // Simulate load success / resolved error.
+  fake_service->SetHasLoadError(false);
+  EXPECT_TRUE(item.badgeType == BadgeType::kNone);
+  EXPECT_NSEQ(item.detailText, l10n_util::GetNSString(IDS_IOS_SETTING_ON));
+
+  // Pref change to disabled when there is no error updates detail text to
+  // "Off".
+  profile_->GetPrefs()->SetBoolean(
+      universal_optout::prefs::kUniversalOptOutEnabled, false);
+  EXPECT_TRUE(item.badgeType == BadgeType::kNone);
+  EXPECT_NSEQ(item.detailText, l10n_util::GetNSString(IDS_IOS_SETTING_OFF));
 }
 
 INSTANTIATE_TEST_SUITE_P(

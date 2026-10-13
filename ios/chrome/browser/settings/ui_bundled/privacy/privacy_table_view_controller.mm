@@ -63,6 +63,9 @@
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/universal_optout/model/eligibility_utils.h"
+#import "ios/chrome/browser/web_extension/model/extension_service.h"
+#import "ios/chrome/browser/web_extension/model/extension_service_factory.h"
+#import "ios/chrome/browser/web_extension/model/extension_service_observer_bridge.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
@@ -120,6 +123,7 @@ bool ShouldShowUniversalOptOutSettings(PrefService* prefs) {
 
 @interface PrivacyTableViewController () <BooleanObserver,
                                           BrowserObserving,
+                                          ExtensionServiceObserving,
                                           PopoverLabelViewControllerDelegate,
                                           PrefObserverDelegate,
                                           SyncObserverModelBridge> {
@@ -131,6 +135,9 @@ bool ShouldShowUniversalOptOutSettings(PrefService* prefs) {
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
   // Registrar for pref changes notifications.
   PrefChangeRegistrar _prefChangeRegistrar;
+  // Extension service observer bridge.
+  std::unique_ptr<ExtensionServiceObserverBridge>
+      _extensionServiceObserverBridge;
   // Sync Observer.
   std::unique_ptr<SyncObserverBridge> _syncObserver;
 
@@ -212,6 +219,13 @@ bool ShouldShowUniversalOptOutSettings(PrefService* prefs) {
       _prefObserverBridge->ObserveChangesForPreference(
           universal_optout::prefs::kUniversalOptOutEnabled,
           &_prefChangeRegistrar);
+      ExtensionService* extensionService =
+          ExtensionServiceFactory::GetForProfile(_profile);
+      if (extensionService) {
+        _extensionServiceObserverBridge =
+            std::make_unique<ExtensionServiceObserverBridge>(extensionService,
+                                                             self);
+      }
     }
     _prefObserverBridge->ObserveChangesForPreference(
         prefs::kIosHandoffToOtherDevices, &_prefChangeRegistrar);
@@ -307,6 +321,7 @@ bool ShouldShowUniversalOptOutSettings(PrefService* prefs) {
   // Remove observer bridges.
   _prefObserverBridge.reset();
   _browserObserverBridge.reset();
+  _extensionServiceObserverBridge.reset();
 
   // Remove sync observer.
   _syncObserver.reset();
@@ -491,17 +506,34 @@ bool ShouldShowUniversalOptOutSettings(PrefService* prefs) {
 }
 
 - (TableViewItem*)universalOptOutDetailItem {
-  NSString* detailText = _profile->GetPrefs()->GetBoolean(
-                             universal_optout::prefs::kUniversalOptOutEnabled)
-                             ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
-                             : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
   _universalOptOutDetailItem =
       [self detailItemWithType:ItemTypeUniversalOptOut
                           titleId:IDS_IOS_OPTIONS_ENABLE_UNIVERSAL_OPT_OUT
-                       detailText:detailText
+                       detailText:nil
           accessibilityIdentifier:kSettingsUniversalOptOutCellId];
-
+  [self updateUniversalOptOutDetailItem];
   return _universalOptOutDetailItem;
+}
+
+- (void)updateUniversalOptOutDetailItem {
+  if (!_universalOptOutDetailItem || !_profile) {
+    return;
+  }
+  ExtensionService* extensionService =
+      ExtensionServiceFactory::GetForProfile(_profile);
+  const bool hasError = extensionService && extensionService->HasLoadError();
+  if (hasError) {
+    _universalOptOutDetailItem.detailText = nil;
+    _universalOptOutDetailItem.badgeType = BadgeType::kWarning;
+    _universalOptOutDetailItem.badgeLayout = BadgeLayout::kTrailing;
+  } else {
+    _universalOptOutDetailItem.badgeType = BadgeType::kNone;
+    _universalOptOutDetailItem.detailText =
+        _profile->GetPrefs()->GetBoolean(
+            universal_optout::prefs::kUniversalOptOutEnabled)
+            ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
+            : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
+  }
 }
 
 // Creates TableViewHeaderFooterItem instance to show a link to open the Sync
@@ -743,12 +775,19 @@ bool ShouldShowUniversalOptOutSettings(PrefService* prefs) {
   }
 
   if (preferenceName == universal_optout::prefs::kUniversalOptOutEnabled) {
-    NSString* detailText = _profile->GetPrefs()->GetBoolean(preferenceName)
-                               ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
-                               : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
-    _universalOptOutDetailItem.detailText = detailText;
+    [self updateUniversalOptOutDetailItem];
     [self reconfigureCellsForItems:@[ _universalOptOutDetailItem ]];
     return;
+  }
+}
+
+#pragma mark - ExtensionServiceObserving
+
+- (void)extensionService:(ExtensionService*)service
+    didChangeExtensionLoadError:(bool)hasLoadError {
+  [self updateUniversalOptOutDetailItem];
+  if ([self.tableViewModel hasItem:_universalOptOutDetailItem]) {
+    [self reconfigureCellsForItems:@[ _universalOptOutDetailItem ]];
   }
 }
 
