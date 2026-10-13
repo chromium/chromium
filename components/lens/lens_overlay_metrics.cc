@@ -71,6 +71,8 @@ std::string InvocationSourceToString(
       return "OmniboxEverywhereComposebox";
     case LensOverlayInvocationSource::kOmniboxPopupButton:
       return "OmniboxPopupButton";
+    case LensOverlayInvocationSource::kContextualCue:
+      return "ContextualCue";
   }
 }
 
@@ -513,6 +515,7 @@ void RecordTimeToFirstInteraction(
     case lens::LensOverlayInvocationSource::kCobrowseToolbarButton:
     case lens::LensOverlayInvocationSource::kCobrowsePinnedToolbarButton:
     case lens::LensOverlayInvocationSource::kAppBarAimButton:
+    case lens::LensOverlayInvocationSource::kContextualCue:
       // Not recorded since the ntp and omnibox contextual query flows and the
       // cobrowse toolbar button flow do not use the Lens Overlay Controller.
       break;

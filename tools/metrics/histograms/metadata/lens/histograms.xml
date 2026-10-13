@@ -50,6 +50,7 @@ chromium-metrics-reviews@google.com.
   <variant name="ContentAreaContextMenuText"/>
   <variant name="ContentAreaContextMenuVideo"/>
   <variant name="ContextMenu"/>
+  <variant name="ContextualCue"/>
   <variant name="ContextualTasksComposebox"/>
   <variant name="FindInPage"/>
   <variant name="FREPromo"/>

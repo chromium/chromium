@@ -123,6 +123,8 @@ INSTANTIATE_TEST_SUITE_P(
             lens::LensOverlayInvocationSource::kOmniboxEverywhereComposebox,
             "oecb"},
         InvocationSourceParamTestCase{
-            lens::LensOverlayInvocationSource::kOmniboxPopupButton, "obpb"}));
+            lens::LensOverlayInvocationSource::kOmniboxPopupButton, "obpb"},
+        InvocationSourceParamTestCase{
+            lens::LensOverlayInvocationSource::kContextualCue, "ccue"}));
 
 }  // namespace lens
