@@ -284,6 +284,14 @@ void AtMemoryPersistedStateManager::OnEligibilityStateChanged(
   }
 }
 
+void AtMemoryPersistedStateManager::OnContextSourceDisabled() {
+  // Cached search results and previously filled suggestions may contain data
+  // from the disabled source. Clear everything (instead of filtering by source)
+  // so that in-flight queries, which may still return data from that source,
+  // are cancelled as well.
+  Reset();
+}
+
 void AtMemoryPersistedStateManager::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
   if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) !=

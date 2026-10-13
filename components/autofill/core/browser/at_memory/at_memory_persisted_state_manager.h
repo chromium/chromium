@@ -134,6 +134,7 @@ class AtMemoryPersistedStateManager
   // personal_context::PersonalContextEligibilityService::Observer:
   void OnEligibilityStateChanged(
       personal_context::PersonalContextEligibilityState new_state) override;
+  void OnContextSourceDisabled() override;
 
   // signin::IdentityManager::Observer:
   void OnPrimaryAccountChanged(
@@ -194,7 +195,8 @@ class AtMemoryPersistedStateManager
       eligibility_service_observation_{this};
   ScopedAutofillManagersObservation autofill_managers_observation_{this};
   // Callback invoked whenever persisted state is reset (e.g. due to TTL expiry,
-  // history deletion, settings toggle being turned off, or eligibility loss).
+  // history deletion, settings toggle being turned off, a Personal Context
+  // source being disabled, or eligibility loss).
   // Used by `AtMemoryManager` to cancel in-flight queries and dismiss any
   // active suggestion popup.
   // TODO(crbug.com/535486238): Consider extracting history/pref/eligibility

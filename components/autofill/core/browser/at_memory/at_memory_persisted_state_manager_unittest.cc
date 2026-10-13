@@ -103,6 +103,12 @@ class FakePersonalContextEligibilityService
     }
   }
 
+  void DisableContextSource() {
+    for (Observer& observer : observers_) {
+      observer.OnContextSourceDisabled();
+    }
+  }
+
  private:
   personal_context::PersonalContextEligibilityState state_ =
       personal_context::PersonalContextEligibilityState::kEligible;
@@ -873,20 +879,41 @@ TEST_F(AtMemoryPersistedStateManagerTest,
   EXPECT_FALSE(state_manager().previously_filled_suggestions().empty());
 }
 
+// Tests that disabling a Personal Context source clears the search state and
+// previously filled suggestions, even if the user remains eligible.
+TEST_F(AtMemoryPersistedStateManagerTest, ContextSourceDisabledClearsState) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAtMemoryPreviouslyFilled};
+  state_manager().OnSuggestionAccepted(
+      Suggestion(u"123 Main St", SuggestionType::kAddressEntry));
+  state_manager().GetStateForField(field_id(), FieldOrigin());
+  state_manager().OnFilterSubmitted(u"address");
+  ASSERT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              Not(IsZeroState()));
+  ASSERT_FALSE(state_manager().previously_filled_suggestions().empty());
+
+  eligibility_service().DisableContextSource();
+
+  EXPECT_THAT(state_manager().GetStateForField(field_id(), FieldOrigin()),
+              IsZeroState());
+  EXPECT_TRUE(state_manager().previously_filled_suggestions().empty());
+}
+
 // Tests that the `on_reset_callback` passed to the constructor is called when
 // the state is reset (e.g. by history deletion, settings change, account
-// change, or search state TTL expiration).
+// change, context source being disabled, or search state TTL expiration).
 TEST_F(AtMemoryPersistedStateManagerTest, OnResetCallbackInvokedOnReset) {
   base::MockRepeatingClosure reset_callback;
   AtMemoryPersistedStateManager custom_state_manager(
       &autofill_client(), /*history_service=*/nullptr, reset_callback.Get());
 
-  EXPECT_CALL(reset_callback, Run).Times(3);
+  EXPECT_CALL(reset_callback, Run).Times(4);
   pref_service().SetBoolean(
       personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
       false);
   identity_test_env().MakePrimaryAccountAvailable(
       "user@example.com", signin::ConsentLevel::kSignin);
+  eligibility_service().DisableContextSource();
 
   // Expiring without suggestions does not invoke `on_reset_callback`.
   custom_state_manager.GetStateForField(field_id(), FieldOrigin());
