@@ -12362,6 +12362,17 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_TAB_CXMENU_ADD_TAB_TO_NEW_COMPARISON_TABLE" desc="The label for the tab context menu item to add the current tab to a new comparison table">
           Add tab to new comparison table
         </message>
+        <message name="IDS_TAB_CXMENU_AI_MODE_SHARE" desc="The label of the tab context menu submenu for sharing the selected tab or tabs with AI Mode. [ICU Syntax]" translateable="false">
+          {NUM_TABS, plural,
+            =1 {Share tab with AI Mode}
+            other {Share # tabs with AI Mode}}
+        </message>
+        <message name="IDS_TAB_CXMENU_AI_MODE_START_NEW_THREAD" desc="The label of the 'Start new thread with AI Mode' item in the AI Mode tab context submenu." translateable="false">
+          Start new thread with AI Mode
+        </message>
+        <message name="IDS_TAB_CXMENU_AI_MODE_UNSHARE" desc="The label of the tab context menu item for unsharing the selected tab or tabs with AI Mode." translateable="false">
+          Unshare with AI Mode
+        </message>
         <if expr="is_chromeos">
           <message name="IDS_TAB_CXMENU_GROUPED_BY_DESK_MENU_ITEM_A11Y" desc="The a11y message for menu items in 'Move tabs to another window' when grouped by desk.">
             <ph name="TAB_TITLE">$1<ex>Google News</ex></ph> belongs to desk <ph name="DESK_TITLE">$2<ex>School</ex></ph>
@@ -12489,6 +12500,17 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         </message>
         <message name="IDS_TAB_CXMENU_ADD_TAB_TO_NEW_COMPARISON_TABLE" desc="In Title Case: The label for the tab context menu item to add the current tab to a new comparison table">
           Add Tab to New Comparison Table
+        </message>
+        <message name="IDS_TAB_CXMENU_AI_MODE_SHARE" desc="In Title Case: The label of the tab context menu submenu for sharing the selected tab or tabs with AI Mode. [ICU Syntax]" translateable="false">
+          {NUM_TABS, plural,
+            =1 {Share Tab with AI Mode}
+            other {Share # Tabs with AI Mode}}
+        </message>
+        <message name="IDS_TAB_CXMENU_AI_MODE_START_NEW_THREAD" desc="In Title Case: The label of the 'Start New Thread with AI Mode' item in the AI Mode tab context submenu." translateable="false">
+          Start New Thread with AI Mode
+        </message>
+        <message name="IDS_TAB_CXMENU_AI_MODE_UNSHARE" desc="In Title Case: The label of the tab context menu item for unsharing the selected tab or tabs with AI Mode." translateable="false">
+          Unshare with AI Mode
         </message>
       </if>
 
