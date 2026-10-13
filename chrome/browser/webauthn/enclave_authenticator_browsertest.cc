@@ -223,6 +223,23 @@ static constexpr char kMakeCredentialUvDiscouraged[] = R"((() => {
            e => window.domAutomationController.send('error ' + e));
 })())";
 
+// A create() request that only allows RS256, which the enclave does not
+// support.
+static constexpr char kMakeCredentialUnsupportedAlgorithm[] = R"((() => {
+  return navigator.credentials.create({ publicKey: {
+    rp: { name: "www.example.com" },
+    user: { id: new Uint8Array([0]), name: "foo", displayName: "" },
+    pubKeyCredParams: [{type: "public-key", alg: -257}],
+    challenge: new Uint8Array([0]),
+    timeout: 10000,
+    authenticatorSelection: {
+      userVerification: 'discouraged',
+      requireResidentKey: true,
+    },
+  }}).then(c => window.domAutomationController.send('webauthn: OK'),
+           e => window.domAutomationController.send('error ' + e));
+})())";
+
 static constexpr char kMakeCredentialReturnId[] = R"((() => {
   return navigator.credentials.create({ publicKey: {
     rp: { name: "www.example.com" },
@@ -1136,6 +1153,40 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
 
   // Verify the secret was redacted when being sent for wrapping.
   EXPECT_THAT(GetDeviceLog(), testing::HasSubstr("\"key\": \"[redacted]\""));
+}
+
+// Regression test for https://crbug.com/571594985.
+// The enclave only supports ES256. A request for any other algorithm is
+// rejected by the enclave, which should result in an error rather than the
+// request hanging forever.
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
+                       MakeCredentialUnsupportedAlgorithm) {
+  SetTrustedVaultEmpty();
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents,
+                              kMakeCredentialUnsupportedAlgorithm);
+  delegate_observer()->WaitForUI();
+
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
+  model_observer()->WaitForStep();
+  dialog_model()->OnGPMCreationConfirmed();
+  ASSERT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
+
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kMissingCapability);
+  dialog_model()->OnGPMPinEntered(u"123456");
+  model_observer()->WaitForStep();
+
+  // The request is resolved once the user dismisses the error sheet.
+  dialog_model()->CancelAuthenticatorRequest();
+  std::string script_result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  EXPECT_THAT(script_result, testing::HasSubstr("\"error NotAllowedError"));
 }
 
 // Regression test for https://crbug.com/451876194.

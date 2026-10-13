@@ -824,8 +824,17 @@ void MakeCredentialRequestHandler::HandleResponse(
 
   if (status == MakeCredentialStatus::kNoCommonAlgorithms) {
     // The authenticator didn't support any of the requested public-key
-    // algorithms. This status will have been returned immediately.
-    // Collect a touch and tell the user that it's unsupported.
+    // algorithms.
+    if (authenticator->Options().is_platform_device !=
+        AuthenticatorSupportedOptions::PlatformDevice::kNo) {
+      // Platform authenticators, like the enclave, cannot collect a touch. Fail
+      // the request immediately rather than waiting forever.
+      HandleInapplicableAuthenticator(
+          authenticator, MakeCredentialStatus::kNoCommonAlgorithms);
+      return;
+    }
+    // This status will have been returned immediately. Collect a touch and
+    // tell the user that it's unsupported.
     authenticator->GetTouch(base::BindOnce(
         &MakeCredentialRequestHandler::HandleInapplicableAuthenticator,
         weak_factory_.GetWeakPtr(), authenticator,
