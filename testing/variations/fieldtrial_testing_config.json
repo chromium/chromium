@@ -5311,6 +5311,24 @@
             ]
         }
     ],
+    "CriticalActionsHistory": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20261009",
+                    "enable_features": [
+                        "CriticalActionHistory"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrosBatterySaver": [
         {
             "platforms": [
