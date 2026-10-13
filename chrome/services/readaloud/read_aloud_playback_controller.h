@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
@@ -158,6 +159,21 @@ class ReadAloudPlaybackController
   // stream, stops the decoder pump and reports `state`.
   void HaltPlayback(read_aloud::mojom::PlaybackState state);
 
+  // Starts or stops progress reporting when entering or exiting active playback
+  // states (kPlaying or kBuffering), and reports final progress upon exit.
+  void MaybeToggleProgressReporting(
+      std::optional<read_aloud::mojom::PlaybackState> previous_state);
+
+  // Returns true for the states in which audio is meant to advance (kPlaying
+  // and kBuffering).
+  static bool IsActivePlaybackState(
+      std::optional<read_aloud::mojom::PlaybackState> state);
+
+  // Sends OnPlaybackProgressChanged() with the current position and the
+  // estimated total duration, both in 1.0x content time. Skipped if both
+  // values are unchanged since the last report.
+  void ReportProgress();
+
   mojo::Receiver<read_aloud::mojom::ReadAloudPlaybackControllerFactory>
       receiver_;
   mojo::Receiver<read_aloud::mojom::ReadAloudPlaybackController>
@@ -184,6 +200,22 @@ class ReadAloudPlaybackController
   bool play_on_ready_ = false;
   // Timer tracking maximum wait duration for pending play_on_ready_ state.
   base::OneShotTimer play_on_ready_timer_;
+
+  // Interval between progress reports while playback is active.
+  static constexpr base::TimeDelta kProgressReportInterval =
+      base::Milliseconds(250);
+  // Periodically calls ReportProgress() while playback is active.
+  base::RepeatingTimer progress_timer_;
+  // 1.0x content time at which the renderer's media time restarted at zero:
+  // the target of the last seek, or zero after new text or a flush. The
+  // renderer only counts the audio played since its last Flush(), so this is
+  // added to its media time to get the overall elapsed audio playback time
+  // along the timeline (reported to the UI progress bar).
+  base::TimeDelta seek_base_;
+  // Last (elapsed, duration) sent by ReportProgress(), used to suppress
+  // duplicate reports. Empty until the first report of a session.
+  std::optional<std::pair<base::TimeDelta, base::TimeDelta>>
+      last_reported_progress_;
 
   // Manages document-bound speech synthesis caching and prefetch scheduling.
   PrefetchManager prefetch_manager_{&timeline_};

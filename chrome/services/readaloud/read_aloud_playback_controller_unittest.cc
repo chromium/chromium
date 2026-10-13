@@ -24,6 +24,7 @@
 #include "base/test/test_future.h"
 #include "chrome/common/readaloud/read_aloud.mojom.h"
 #include "chrome/services/readaloud/audio_renderer/read_aloud_audio_renderer.h"
+#include "chrome/services/readaloud/timeline/playback_timeline.h"
 #include "components/optimization_guide/proto/features/read_aloud_generate_text.pb.h"
 #include "components/optimization_guide/proto/features/read_aloud_synthesize.pb.h"
 #include "media/base/audio_parameters.h"
@@ -83,8 +84,9 @@ class MockReadAloudPlaybackControllerClient
     }
   }
 
-  void OnPlaybackDurationChanged(base::TimeDelta /*duration*/) override {
-    // No-op for testing.
+  void OnPlaybackProgressChanged(base::TimeDelta elapsed,
+                                 base::TimeDelta duration) override {
+    progress_history_.emplace_back(elapsed, duration);
   }
 
   void OnWordBoundaryReached(uint32_t /*segment_index*/,
@@ -130,6 +132,14 @@ class MockReadAloudPlaybackControllerClient
 
   const std::vector<read_aloud::mojom::PlaybackState>& state_history() const {
     return state_history_;
+  }
+
+  void ClearProgressHistory() { progress_history_.clear(); }
+
+  // Every (elapsed, duration) received through OnPlaybackProgressChanged().
+  const std::vector<std::pair<base::TimeDelta, base::TimeDelta>>&
+  progress_history() const {
+    return progress_history_;
   }
 
   void WaitForStateChange(read_aloud::mojom::PlaybackState expected_state) {
@@ -187,6 +197,7 @@ class MockReadAloudPlaybackControllerClient
   base::OnceClosure chunks_closure_;
   SpeechSynthesisHandler synthesis_handler_;
   uint32_t synthesis_request_count_ = 0;
+  std::vector<std::pair<base::TimeDelta, base::TimeDelta>> progress_history_;
 };
 
 // Records the commands the controller issues on its audio output stream.
@@ -222,17 +233,38 @@ class MockReadAloudAudioRenderer : public ReadAloudAudioRenderer {
   ~MockReadAloudAudioRenderer() override = default;
 
   MOCK_METHOD(void, Flush, (), (override));
+
+  // No audio thread renders in these tests, so tests set the media time the
+  // renderer would report.
+  base::TimeDelta GetMediaTime() const override { return media_time_; }
+  void set_media_time(base::TimeDelta media_time) { media_time_ = media_time; }
+
+ private:
+  base::TimeDelta media_time_;
 };
+
+// One sentence of `kSentenceLength` characters. The chunker splits each copy
+// into its own chunk.
+constexpr char16_t kSentence[] = u"One two three four five six seven. ";
+constexpr size_t kSentenceLength = 34;
+
+// Returns `count` copies of `kSentence`. The document is estimated to last
+// `count * kSentenceLength * PlaybackTimeline::kEstimatedDurationPerChar`.
+std::u16string RepeatedSentences(size_t count) {
+  std::u16string text;
+  for (size_t i = 0; i < count; ++i) {
+    text += kSentence;
+  }
+  return text;
+}
 
 }  // namespace
 
 class ReadAloudPlaybackControllerTest : public testing::Test {
  public:
   ReadAloudPlaybackControllerTest()
-      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    scoped_feature_list_.InitAndEnableFeature(
-        ax::mojom::features::kReadAloudNative);
-  }
+      : scoped_feature_list_(ax::mojom::features::kReadAloudNative),
+        task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   void SetUp() override {
     testing::FLAGS_gtest_death_test_style = "threadsafe";
@@ -349,7 +381,8 @@ class ReadAloudPlaybackControllerTest : public testing::Test {
             [](raw_ptr<MockReadAloudAudioRenderer>* out_mock)
                 -> std::unique_ptr<ReadAloudAudioRenderer> {
               std::unique_ptr<MockReadAloudAudioRenderer> mock =
-                  std::make_unique<MockReadAloudAudioRenderer>();
+                  std::make_unique<
+                      testing::NiceMock<MockReadAloudAudioRenderer>>();
               *out_mock = mock.get();
               return mock;
             },
@@ -1930,6 +1963,192 @@ TEST_F(ReadAloudPlaybackControllerTest,
   FlushAll();
 
   EXPECT_THAT(requested_chunks, testing::Contains(u"Short six."));
+}
+
+TEST_F(ReadAloudPlaybackControllerTest,
+       SetTextContentReportsZeroElapsedAndEstimatedDuration) {
+  CreateSession();
+
+  SetSingleTextSegment(RepeatedSentences(2));
+  FlushAll();
+
+  EXPECT_THAT(
+      mock_client_->progress_history(),
+      testing::ElementsAre(testing::Pair(
+          base::TimeDelta(),
+          2 * kSentenceLength * PlaybackTimeline::kEstimatedDurationPerChar)));
+}
+
+TEST_F(ReadAloudPlaybackControllerTest,
+       ReportsProgressPeriodicallyWhilePlaying) {
+  raw_ptr<MockReadAloudAudioRenderer> mock_renderer = nullptr;
+  ASSERT_NO_FATAL_FAILURE(CreateSessionWithMockRenderer(&mock_renderer));
+  HoldSynthesisResponses();
+  SetSingleTextSegment(RepeatedSentences(5));
+  controller_remote_->Play();
+  FlushAll();
+  EXPECT_EQ(mock_client_->last_state(),
+            read_aloud::mojom::PlaybackState::kBuffering);
+  mock_client_->ClearProgressHistory();
+
+  mock_renderer->set_media_time(base::Seconds(1));
+  FastForwardAndFlush(base::Milliseconds(250));
+  mock_renderer->set_media_time(base::Seconds(2));
+  FastForwardAndFlush(base::Milliseconds(250));
+
+  EXPECT_THAT(
+      mock_client_->progress_history(),
+      testing::ElementsAre(testing::Pair(base::Seconds(1), testing::_),
+                           testing::Pair(base::Seconds(2), testing::_)));
+  mock_renderer = nullptr;
+}
+
+TEST_F(ReadAloudPlaybackControllerTest, ReportsPositionWhenPaused) {
+  raw_ptr<MockReadAloudAudioRenderer> mock_renderer = nullptr;
+  ASSERT_NO_FATAL_FAILURE(CreateSessionWithMockRenderer(&mock_renderer));
+  HoldSynthesisResponses();
+  SetSingleTextSegment(RepeatedSentences(5));
+  controller_remote_->Play();
+  FlushAll();
+  mock_renderer->set_media_time(base::Milliseconds(1500));
+  mock_client_->ClearProgressHistory();
+
+  controller_remote_->Pause();
+  FlushAll();
+
+  EXPECT_THAT(mock_client_->progress_history(),
+              testing::ElementsAre(
+                  testing::Pair(base::Milliseconds(1500), testing::_)));
+  mock_renderer = nullptr;
+}
+
+TEST_F(ReadAloudPlaybackControllerTest, StopsReportingProgressWhilePaused) {
+  raw_ptr<MockReadAloudAudioRenderer> mock_renderer = nullptr;
+  ASSERT_NO_FATAL_FAILURE(CreateSessionWithMockRenderer(&mock_renderer));
+  HoldSynthesisResponses();
+  SetSingleTextSegment(RepeatedSentences(5));
+  controller_remote_->Play();
+  FlushAll();
+  controller_remote_->Pause();
+  FlushAll();
+  mock_client_->ClearProgressHistory();
+
+  mock_renderer->set_media_time(base::Seconds(2));
+  FastForwardAndFlush(base::Seconds(1));
+
+  EXPECT_THAT(mock_client_->progress_history(), testing::IsEmpty());
+  mock_renderer = nullptr;
+}
+
+TEST_F(ReadAloudPlaybackControllerTest,
+       ReportsContentTimeAtDoublePlaybackRate) {
+  raw_ptr<MockReadAloudAudioRenderer> mock_renderer = nullptr;
+  ASSERT_NO_FATAL_FAILURE(CreateSessionWithMockRenderer(&mock_renderer));
+  HoldSynthesisResponses();
+  SetSingleTextSegment(RepeatedSentences(5));
+  controller_remote_->SetPlaybackRate(/*rate=*/2.0f);
+  controller_remote_->Play();
+  FlushAll();
+  mock_client_->ClearProgressHistory();
+
+  // At 2x, one second of wall time plays two seconds of content. The renderer's
+  // media time already counts content, so it is reported unscaled.
+  mock_renderer->set_media_time(base::Seconds(2));
+  FastForwardAndFlush(base::Seconds(1));
+
+  EXPECT_THAT(
+      mock_client_->progress_history(),
+      testing::ElementsAre(testing::Pair(base::Seconds(2), testing::_)));
+  mock_renderer = nullptr;
+}
+
+TEST_F(ReadAloudPlaybackControllerTest, ProgressContinuesFromSeekToTimeTarget) {
+  raw_ptr<MockReadAloudAudioRenderer> mock_renderer = nullptr;
+  ASSERT_NO_FATAL_FAILURE(CreateSessionWithMockRenderer(&mock_renderer));
+  HoldSynthesisResponses();
+  // About 33 seconds long.
+  SetSingleTextSegment(RepeatedSentences(15));
+  controller_remote_->Play();
+  FlushAll();
+  mock_client_->ClearProgressHistory();
+
+  // The seek flushes the renderer, whose media time restarts at zero.
+  controller_remote_->SeekToTime(base::Seconds(30));
+  FlushAll();
+  mock_renderer->set_media_time(base::Seconds(1));
+  FastForwardAndFlush(base::Milliseconds(250));
+
+  EXPECT_THAT(
+      mock_client_->progress_history(),
+      testing::ElementsAre(testing::Pair(base::Seconds(30), testing::_),
+                           testing::Pair(base::Seconds(31), testing::_)));
+  mock_renderer = nullptr;
+}
+
+TEST_F(ReadAloudPlaybackControllerTest,
+       SeekToWordMidChunkReportsTimeOfTargetWord) {
+  raw_ptr<MockReadAloudAudioRenderer> mock_renderer = nullptr;
+  ASSERT_NO_FATAL_FAILURE(CreateSessionWithMockRenderer(&mock_renderer));
+  SetSingleTextSegment(RepeatedSentences(5));
+  FlushAll();
+  mock_client_->ClearProgressHistory();
+
+  // "two" in chunk 2. Without word timings its time is estimated per
+  // character: two full chunks plus four characters.
+  controller_remote_->SeekToWord(/*segment_index=*/2, /*character_offset=*/4);
+  FlushAll();
+
+  EXPECT_THAT(mock_client_->progress_history(),
+              testing::ElementsAre(
+                  testing::Pair((2 * kSentenceLength + 4) *
+                                    PlaybackTimeline::kEstimatedDurationPerChar,
+                                testing::_)));
+  mock_renderer = nullptr;
+}
+
+TEST_F(ReadAloudPlaybackControllerTest,
+       ReportsDurationRefinedBySynthesisWhileNotPlaying) {
+  CreateSession();
+  ASSERT_NO_FATAL_FAILURE(InitializeAudioForTesting());
+  mock_client_->set_synthesis_handler(base::BindLambdaForTesting(
+      [&](const std::u16string& text_chunk, read_aloud::mojom::Speaker,
+          uint64_t,
+          MockReadAloudPlaybackControllerClient::RequestSpeechSynthesisCallback
+              callback) {
+        if (text_chunk != u"Short zero.") {
+          held_synthesis_callbacks_.push_back(std::move(callback));
+          return;
+        }
+        // "Short zero." is estimated at 11 * 65ms = 715ms, but synthesizes to
+        // 30 seconds.
+        optimization_guide::proto::ReadAloudSynthesizeResponse response;
+        response.set_audio_bytes("OggS_fake_opus_audio_data");
+        optimization_guide::proto::WordTiming* timing0 = response.add_timings();
+        timing0->set_start_offset(0);
+        timing0->set_end_offset(5);
+        timing0->set_time_offset_ms(0);
+        optimization_guide::proto::WordTiming* timing1 = response.add_timings();
+        timing1->set_start_offset(6);
+        timing1->set_end_offset(11);
+        timing1->set_time_offset_ms(30000);
+        std::string serialized;
+        response.SerializeToString(&serialized);
+        std::move(callback).Run(
+            mojo_base::BigBuffer(base::as_byte_span(serialized)),
+            /*success=*/true);
+      }));
+  SetSingleTextSegment(u"Short zero. Short one.");
+  FlushAll();
+  mock_client_->ClearProgressHistory();
+
+  // Seeking while paused prefetches chunk 0, whose response refines the
+  // duration.
+  controller_remote_->SeekToTime(base::Seconds(0));
+  FlushAll();
+
+  EXPECT_THAT(mock_client_->progress_history(),
+              testing::ElementsAre(testing::Pair(
+                  base::TimeDelta(), testing::Gt(base::Seconds(30)))));
 }
 
 }  // namespace readaloud

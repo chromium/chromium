@@ -28,8 +28,8 @@ class MockClient : public read_aloud::mojom::ReadAloudPlaybackControllerClient {
               (read_aloud::mojom::PlaybackState state),
               (override));
   MOCK_METHOD(void,
-              OnPlaybackDurationChanged,
-              (base::TimeDelta duration),
+              OnPlaybackProgressChanged,
+              (base::TimeDelta elapsed, base::TimeDelta duration),
               (override));
   MOCK_METHOD(void,
               OnWordBoundaryReached,
@@ -58,10 +58,8 @@ class MockClient : public read_aloud::mojom::ReadAloudPlaybackControllerClient {
 
 class MockPlaybackControllerTest : public ::testing::Test {
  public:
-  MockPlaybackControllerTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        ax::mojom::features::kReadAloudNative);
-  }
+  MockPlaybackControllerTest()
+      : scoped_feature_list_(ax::mojom::features::kReadAloudNative) {}
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -100,26 +98,38 @@ TEST_F(MockPlaybackControllerTest, PlaybackSequence) {
           controller_.BindNewPipeAndPassReceiver());
   controller_impl_->InitializeClient(std::move(client_remote));
 
-  // Step 1: Verify initial duration callback upon setting text content.
+  // Step 1: Verify initial progress callbacks upon binding the client and
+  // setting text content.
   EXPECT_CALL(*client_,
               OnPlaybackStateChanged(read_aloud::mojom::PlaybackState::kPaused))
       .Times(1);
-  EXPECT_CALL(*client_, OnPlaybackDurationChanged(base::TimeDelta())).Times(1);
-  EXPECT_CALL(*client_, OnPlaybackDurationChanged(base::Milliseconds(500)))
+  EXPECT_CALL(*client_,
+              OnPlaybackProgressChanged(/*elapsed=*/base::TimeDelta(),
+                                        /*duration=*/base::TimeDelta()))
+      .Times(1);
+  EXPECT_CALL(*client_,
+              OnPlaybackProgressChanged(/*elapsed=*/base::TimeDelta(),
+                                        /*duration=*/base::Milliseconds(500)))
       .Times(1);
 
   controller_->SetTextContent(CreateSingleSegment(0, u"Hello World"));
   controller_.FlushForTesting();
   ::testing::Mock::VerifyAndClearExpectations(client_.get());
 
-  // Step 2: Playback starts, fires boundaries at 0ms and 250ms, then signals
-  // end of stream.
+  // Step 2: Playback starts, fires boundaries and progress at 0ms and 250ms,
+  // then signals end of stream.
   {
     ::testing::InSequence seq;
     EXPECT_CALL(*client_, OnPlaybackStateChanged(
                               read_aloud::mojom::PlaybackState::kPlaying));
     EXPECT_CALL(*client_, OnWordBoundaryReached(0, 0, base::TimeDelta()));
+    EXPECT_CALL(*client_, OnPlaybackProgressChanged(
+                              /*elapsed=*/base::TimeDelta(),
+                              /*duration=*/base::Milliseconds(500)));
     EXPECT_CALL(*client_, OnWordBoundaryReached(0, 6, base::Milliseconds(250)));
+    EXPECT_CALL(*client_, OnPlaybackProgressChanged(
+                              /*elapsed=*/base::Milliseconds(250),
+                              /*duration=*/base::Milliseconds(500)));
     EXPECT_CALL(*client_, OnPlaybackStateChanged(
                               read_aloud::mojom::PlaybackState::kEndOfStream));
   }

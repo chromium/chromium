@@ -95,7 +95,7 @@ class ReadAloudAudioRenderer : public media::AudioRendererSink::RenderCallback {
   // that is audible now. Only advances when Render() is called, so it holds
   // still while playback is paused. Returns zero before Initialize().
   // Must be called on the owning sequence.
-  base::TimeDelta GetMediaTime() const;
+  virtual base::TimeDelta GetMediaTime() const;
 
  private:
   // Dispatches every word boundary that has become audible, then reschedules

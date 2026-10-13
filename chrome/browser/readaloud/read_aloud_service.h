@@ -56,6 +56,10 @@ class ReadAloudService
       public read_aloud::mojom::ReadAloudPlaybackControllerClient,
       public content::WebContentsObserver {
  public:
+  // Maximum plausible duration for article playback, used to reject invalid or
+  // overflowing progress reports from the utility process.
+  static constexpr base::TimeDelta kMaxPlaybackDuration = base::Hours(24);
+
   enum class PlaybackMode {
     // Unspecified playback mode.
     kUnspecified = 0,
@@ -224,7 +228,8 @@ class ReadAloudService
 
   // read_aloud::mojom::ReadAloudPlaybackControllerClient (called by Utility):
   void OnPlaybackStateChanged(read_aloud::mojom::PlaybackState state) override;
-  void OnPlaybackDurationChanged(base::TimeDelta duration) override;
+  void OnPlaybackProgressChanged(base::TimeDelta elapsed,
+                                 base::TimeDelta duration) override;
   void OnWordBoundaryReached(uint32_t segment_index,
                              uint32_t character_offset,
                              base::TimeDelta audio_timestamp) override;
@@ -287,7 +292,6 @@ class ReadAloudService
   base::TimeTicks distillation_start_time_;
   std::string article_title_;
   std::string current_publisher_;
-  base::TimeDelta current_duration_;
 
   // Connection to the Utility process Factory.
   mojo::Remote<read_aloud::mojom::ReadAloudPlaybackControllerFactory>

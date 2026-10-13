@@ -104,7 +104,17 @@ interface ReadAloudPlaybackController {
 [RuntimeFeature=ax.mojom.features.kReadAloudNative]
 interface ReadAloudPlaybackControllerClient {
   OnPlaybackStateChanged(PlaybackState state);
-  OnPlaybackDurationChanged(mojo_base.mojom.TimeDelta duration);
+  // Reports the playback position and the estimated total length of the
+  // document. Both are 1.0x content time from the start of the document, so
+  // they do not depend on the playback rate. Sent periodically while playing,
+  // and once whenever either value changes while not playing (new text, pause,
+  // seek, refined duration).
+  //
+  // Security constraints: both values must be non-negative and `elapsed` must
+  // not exceed `duration`. A max limit of 24 hours is enforced to prevent
+  // overflow. Violations trigger a bad message error.
+  OnPlaybackProgressChanged(mojo_base.mojom.TimeDelta elapsed,
+                            mojo_base.mojom.TimeDelta duration);
   OnWordBoundaryReached(uint32 segment_index,
                         uint32 character_offset,
                         mojo_base.mojom.TimeDelta audio_timestamp);

@@ -177,7 +177,6 @@ void ReadAloudService::ResetPlayback() {
   distillation_start_time_ = base::TimeTicks();
   article_title_.clear();
   current_publisher_.clear();
-  current_duration_ = base::Seconds(0);
 
   // Stopping the Utility Process and any of their connections.
   ResetUtilityConnection();
@@ -463,13 +462,11 @@ void ReadAloudService::Initialize(content::WebContents* new_web_contents) {
   media_session_ =
       std::make_unique<ReadAloudPlaybackSession>(new_web_contents, this);
 
-  current_duration_ = base::Seconds(0);
-
   ProvideInitialMetadata();
   NotifyPlaybackStateChanged(
       read_aloud::mojom::PlaybackState::kPlaybackCreation);
   if (delegate_) {
-    delegate_->OnPlaybackProgressUpdated(base::Seconds(0), current_duration_);
+    delegate_->OnPlaybackProgressUpdated(base::TimeDelta(), base::TimeDelta());
   }
 
   DistillPage(new_web_contents);
@@ -628,19 +625,25 @@ void ReadAloudService::OnPlaybackStateChanged(
   }
 }
 
-void ReadAloudService::OnPlaybackDurationChanged(base::TimeDelta duration) {
-  current_duration_ = std::max(base::Seconds(0), duration);
-}
-
-void ReadAloudService::OnWordBoundaryReached(uint32_t segment_index,
-                                             uint32_t character_offset,
-                                             base::TimeDelta audio_timestamp) {
-  if (!current_duration_.is_positive() || !delegate_) {
+void ReadAloudService::OnPlaybackProgressChanged(base::TimeDelta elapsed,
+                                                 base::TimeDelta duration) {
+  if (elapsed.is_negative() || duration.is_negative() ||
+      duration > kMaxPlaybackDuration || elapsed > duration) {
+    utility_observer_receiver_.ReportBadMessage(
+        "ReadAloudService: invalid playback progress received from utility");
     return;
   }
-  base::TimeDelta clamped_elapsed =
-      std::clamp(audio_timestamp, base::Seconds(0), current_duration_);
-  delegate_->OnPlaybackProgressUpdated(clamped_elapsed, current_duration_);
+  if (delegate_) {
+    delegate_->OnPlaybackProgressUpdated(elapsed, duration);
+  }
+}
+
+void ReadAloudService::OnWordBoundaryReached(
+    uint32_t /*segment_index*/,
+    uint32_t /*character_offset*/,
+    base::TimeDelta /*audio_timestamp*/) {
+  // Playback progress is reported by OnPlaybackProgressChanged().
+  // TODO(b/524283143): Forward the word range to the UI for highlighting.
 }
 
 void ReadAloudService::OnTextChunked(

@@ -93,7 +93,8 @@ class VoicePreviewController
 
   // read_aloud::mojom::ReadAloudPlaybackControllerClient:
   void OnPlaybackStateChanged(read_aloud::mojom::PlaybackState state) override;
-  void OnPlaybackDurationChanged(base::TimeDelta duration) override {}
+  void OnPlaybackProgressChanged(base::TimeDelta elapsed,
+                                 base::TimeDelta duration) override {}
   void OnWordBoundaryReached(uint32_t segment_index,
                              uint32_t character_offset,
                              base::TimeDelta audio_timestamp) override {}

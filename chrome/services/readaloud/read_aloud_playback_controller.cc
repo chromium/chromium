@@ -230,6 +230,8 @@ void ReadAloudPlaybackController::SetTextContent(
     }
     client_->OnTextChunked(std::move(chunk_strings));
   }
+  // Lets the UI show the estimated length before playback starts.
+  ReportProgress();
 
   MaybePlayOnReady();
 }
@@ -327,10 +329,39 @@ void ReadAloudPlaybackController::SetPlaybackState(
   if (playback_state_ == state) {
     return;
   }
+  const auto previous_state = playback_state_;
   playback_state_ = state;
   if (client_.is_bound()) {
     client_->OnPlaybackStateChanged(state);
   }
+  MaybeToggleProgressReporting(previous_state);
+}
+
+void ReadAloudPlaybackController::MaybeToggleProgressReporting(
+    std::optional<read_aloud::mojom::PlaybackState> previous_state) {
+  // Progress is reported periodically only while playback is active.
+  const bool was_active = IsActivePlaybackState(previous_state);
+  const bool is_active = IsActivePlaybackState(playback_state_);
+  // Nothing to update if playback remains active or remains inactive.
+  if (is_active == was_active) {
+    return;
+  }
+  if (is_active) {
+    progress_timer_.Start(FROM_HERE, kProgressReportInterval, this,
+                          &ReadAloudPlaybackController::ReportProgress);
+  } else {
+    progress_timer_.Stop();
+    // The last tick can be up to `kProgressReportInterval` old, so report
+    // where playback halted (pause, end of document or error).
+    ReportProgress();
+  }
+}
+
+// static
+bool ReadAloudPlaybackController::IsActivePlaybackState(
+    std::optional<read_aloud::mojom::PlaybackState> state) {
+  return state == read_aloud::mojom::PlaybackState::kPlaying ||
+         state == read_aloud::mojom::PlaybackState::kBuffering;
 }
 
 void ReadAloudPlaybackController::OnPumpStatusChanged(
@@ -384,6 +415,31 @@ void ReadAloudPlaybackController::HaltPlayback(
   // playback.
   decoder_sequencer_.StopPumping();
   SetPlaybackState(state);
+}
+
+void ReadAloudPlaybackController::ReportProgress() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!client_.is_bound()) {
+    return;
+  }
+  // Both values are 1.0x content time: `AudioClock` media time already counts
+  // content rather than wall time, so nothing is scaled by the playback rate.
+  const base::TimeDelta duration = timeline_.GetTotalDuration();
+  base::TimeDelta media_time;
+  if (audio_resources_ && audio_resources_->audio_renderer) {
+    media_time = audio_resources_->audio_renderer->GetMediaTime();
+  }
+  // The duration is an estimate until every chunk is synthesized, so the
+  // played audio can briefly run past it. Clamp to keep the
+  // `elapsed <= duration` contract the browser enforces.
+  const base::TimeDelta elapsed = std::min(seek_base_ + media_time, duration);
+
+  const std::pair<base::TimeDelta, base::TimeDelta> progress(elapsed, duration);
+  if (last_reported_progress_ == progress) {
+    return;
+  }
+  last_reported_progress_ = progress;
+  client_->OnPlaybackProgressChanged(elapsed, duration);
 }
 
 void ReadAloudPlaybackController::Pause() {
@@ -451,6 +507,13 @@ void ReadAloudPlaybackController::ExecuteSeek(const TimelinePosition& target) {
     }
   }
 
+  // The renderer's media time restarted at zero, and the first audio decoded
+  // for the new position is the first word kept at `target`, which
+  // ResolveSegmentOffset() and ResolveTimeOffset() both align with
+  // `target.time.start_time`.
+  seek_base_ = target.time.start_time;
+  ReportProgress();
+
   // If the resolved position is at the exact end of `target.chunk`, advance
   // to the start of the next chunk rather than synthesizing and decoding
   // `target.chunk` only to skip every word in it.
@@ -494,6 +557,9 @@ void ReadAloudPlaybackController::FlushBuffers() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   prefetch_manager_.ClearCache();
   decoder_sequencer_.Reset();
+  // The decoder restarts at the beginning of the document, and the renderer's
+  // media time restarts at zero below.
+  seek_base_ = base::TimeDelta();
 
   if (!audio_resources_) {
     return;
@@ -540,6 +606,9 @@ void ReadAloudPlaybackController::ResetSession() {
   playback_state_.reset();
   play_on_ready_ = false;
   play_on_ready_timer_.Stop();
+  progress_timer_.Stop();
+  seek_base_ = base::TimeDelta();
+  last_reported_progress_.reset();
   session_weak_factory_.InvalidateWeakPtrs();
 }
 
@@ -596,6 +665,10 @@ void ReadAloudPlaybackController::OnSpeechSynthesisResponse(
   if (!result.timings.empty()) {
     timeline_.UpdateSentenceDuration(
         chunk_index, result.timings.back().end_time, result.timings);
+    // While playing, the next tick carries the refined duration.
+    if (!IsActivePlaybackState(playback_state_)) {
+      ReportProgress();
+    }
   }
 
   prefetch_manager_.OnSynthesisResponse(sequence_id, chunk_index,

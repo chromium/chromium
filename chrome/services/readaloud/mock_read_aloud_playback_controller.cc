@@ -55,7 +55,8 @@ void MockReadAloudPlaybackController::InitializeClient(
 
   if (client_.is_connected()) {
     client_->OnPlaybackStateChanged(state_);
-    client_->OnPlaybackDurationChanged(CalculateTotalDuration());
+    client_->OnPlaybackProgressChanged(base::TimeDelta(),
+                                       CalculateTotalDuration());
   }
 }
 
@@ -99,7 +100,8 @@ void MockReadAloudPlaybackController::DefaultSetTextContent(
   }
 
   if (client_.is_connected()) {
-    client_->OnPlaybackDurationChanged(CalculateTotalDuration());
+    client_->OnPlaybackProgressChanged(base::TimeDelta(),
+                                       CalculateTotalDuration());
   }
 }
 
@@ -259,6 +261,8 @@ void MockReadAloudPlaybackController::TriggerWordBoundary() {
   client_->OnWordBoundaryReached(boundary.segment_index,
                                  boundary.character_offset,
                                  boundary.audio_timestamp);
+  client_->OnPlaybackProgressChanged(boundary.audio_timestamp,
+                                     CalculateTotalDuration());
 }
 
 void MockReadAloudPlaybackController::UpdatePlaybackState(

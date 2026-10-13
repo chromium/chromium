@@ -879,7 +879,7 @@ TEST_F(ReadAloudServiceTest,
   EXPECT_CALL(*delegate_ptr, OnNativeDestroyed()).Times(1);
 }
 
-TEST_F(ReadAloudServiceTest, OnPlaybackDurationChangedUpdatesDurationState) {
+TEST_F(ReadAloudServiceTest, OnPlaybackProgressChangedForwardsToDelegate) {
   NavigateAndCommit(GURL("https://www.example.com/article"));
 
   auto delegate = std::make_unique<testing::StrictMock<MockDelegate>>();
@@ -891,62 +891,88 @@ TEST_F(ReadAloudServiceTest, OnPlaybackDurationChangedUpdatesDurationState) {
   ExpectInitializeCallbacks(delegate_ptr);
   service()->Initialize(web_contents());
 
-  // OnPlaybackDurationChanged updates duration state without triggering a UI
-  // scrubber jump.
-  service()->OnPlaybackDurationChanged(base::Seconds(120));
-
-  // Word boundary updates deliver the updated duration alongside clamped elapsed
-  // progress.
-  EXPECT_CALL(
-      *delegate_ptr,
-      OnPlaybackProgressUpdated(/*elapsed=*/base::Seconds(10),
-                                /*duration=*/base::Seconds(120)))
+  EXPECT_CALL(*delegate_ptr,
+              OnPlaybackProgressUpdated(/*elapsed=*/base::Seconds(10),
+                                        /*duration=*/base::Seconds(120)))
       .Times(1);
-  service()->OnWordBoundaryReached(0, 0, base::Seconds(10));
+  fake_controller()->client()->OnPlaybackProgressChanged(
+      /*elapsed=*/base::Seconds(10), /*duration=*/base::Seconds(120));
+  fake_controller()->FlushForTesting();
 
   EXPECT_CALL(*delegate_ptr, OnNativeDestroyed()).Times(1);
 }
 
-TEST_F(ReadAloudServiceTest, OnWordBoundaryReachedClampsElapsedWithinDuration) {
+TEST_F(ReadAloudServiceTest, OnPlaybackProgressChangedRejectsNegativeElapsed) {
   NavigateAndCommit(GURL("https://www.example.com/article"));
-
-  auto delegate = std::make_unique<testing::StrictMock<MockDelegate>>();
-  MockDelegate* delegate_ptr = delegate.get();
-  service()->SetDelegate(std::move(delegate));
-
   SetFakeController(std::make_unique<FakePlaybackController>());
-
-  ExpectInitializeCallbacks(delegate_ptr);
   service()->Initialize(web_contents());
 
-  // Set total duration to 100 seconds.
-  service()->OnPlaybackDurationChanged(base::Seconds(100));
+  mojo::test::BadMessageObserver bad_message_observer;
+  fake_controller()->client()->OnPlaybackProgressChanged(
+      /*elapsed=*/base::Seconds(-1), /*duration=*/base::Seconds(120));
 
-  // Test normal progress timestamp within bounds (15s).
-  EXPECT_CALL(
-      *delegate_ptr,
-      OnPlaybackProgressUpdated(/*elapsed=*/base::Seconds(15),
-                                /*duration=*/base::Seconds(100)))
-      .Times(1);
-  service()->OnWordBoundaryReached(0, 0, base::Seconds(15));
+  EXPECT_EQ(
+      bad_message_observer.WaitForBadMessage(),
+      "ReadAloudService: invalid playback progress received from utility");
+}
 
-  // Test negative timestamp is clamped to 0s.
-  EXPECT_CALL(
-      *delegate_ptr,
-      OnPlaybackProgressUpdated(/*elapsed=*/base::Seconds(0),
-                                /*duration=*/base::Seconds(100)))
-      .Times(1);
-  service()->OnWordBoundaryReached(0, 0, base::Seconds(-10));
+TEST_F(ReadAloudServiceTest, OnPlaybackProgressChangedRejectsNegativeDuration) {
+  NavigateAndCommit(GURL("https://www.example.com/article"));
+  SetFakeController(std::make_unique<FakePlaybackController>());
+  service()->Initialize(web_contents());
 
-  // Test overflow timestamp is clamped to total duration (100s).
-  EXPECT_CALL(
-      *delegate_ptr,
-      OnPlaybackProgressUpdated(/*elapsed=*/base::Seconds(100),
-                                /*duration=*/base::Seconds(100)))
-      .Times(1);
-  service()->OnWordBoundaryReached(0, 0, base::Seconds(150));
+  mojo::test::BadMessageObserver bad_message_observer;
+  fake_controller()->client()->OnPlaybackProgressChanged(
+      /*elapsed=*/base::Seconds(0), /*duration=*/base::Seconds(-1));
 
-  EXPECT_CALL(*delegate_ptr, OnNativeDestroyed()).Times(1);
+  EXPECT_EQ(
+      bad_message_observer.WaitForBadMessage(),
+      "ReadAloudService: invalid playback progress received from utility");
+}
+
+TEST_F(ReadAloudServiceTest,
+       OnPlaybackProgressChangedRejectsDurationExceedingMax) {
+  NavigateAndCommit(GURL("https://www.example.com/article"));
+  SetFakeController(std::make_unique<FakePlaybackController>());
+  service()->Initialize(web_contents());
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  fake_controller()->client()->OnPlaybackProgressChanged(
+      /*elapsed=*/base::Seconds(0),
+      /*duration=*/ReadAloudService::kMaxPlaybackDuration + base::Seconds(1));
+
+  EXPECT_EQ(
+      bad_message_observer.WaitForBadMessage(),
+      "ReadAloudService: invalid playback progress received from utility");
+}
+
+TEST_F(ReadAloudServiceTest, OnPlaybackProgressChangedRejectsMaxDuration) {
+  NavigateAndCommit(GURL("https://www.example.com/article"));
+  SetFakeController(std::make_unique<FakePlaybackController>());
+  service()->Initialize(web_contents());
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  fake_controller()->client()->OnPlaybackProgressChanged(
+      /*elapsed=*/base::Seconds(0), /*duration=*/base::TimeDelta::Max());
+
+  EXPECT_EQ(
+      bad_message_observer.WaitForBadMessage(),
+      "ReadAloudService: invalid playback progress received from utility");
+}
+
+TEST_F(ReadAloudServiceTest,
+       OnPlaybackProgressChangedRejectsElapsedPastDuration) {
+  NavigateAndCommit(GURL("https://www.example.com/article"));
+  SetFakeController(std::make_unique<FakePlaybackController>());
+  service()->Initialize(web_contents());
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  fake_controller()->client()->OnPlaybackProgressChanged(
+      /*elapsed=*/base::Seconds(121), /*duration=*/base::Seconds(120));
+
+  EXPECT_EQ(
+      bad_message_observer.WaitForBadMessage(),
+      "ReadAloudService: invalid playback progress received from utility");
 }
 
 TEST_F(ReadAloudServiceTest,
