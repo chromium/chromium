@@ -1,9 +1,11 @@
 line-length = 80
 indent-width = 2
-
 extend-exclude = [
-    "*pb2.py",
+  "*pb2.py",
 ]
+
+[lint]
+unfixable = ["F401"]
 
 [format]
 quote-style = "preserve"

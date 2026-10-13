@@ -621,7 +621,7 @@ def parse(
   # into ast-like types that store comments
   try:
     ast.literal_eval(source)
-  except:
+  except:  # noqa: E722
     raise ValueError(f'{file} does not contain exactly one literal')
 
   token_stream = _TokenStream.create(file, source)

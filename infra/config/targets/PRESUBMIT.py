@@ -4,9 +4,9 @@
 
 PRESUBMIT_VERSION = '2.0.0'
 
-import os
-import re
-import difflib
+import os  # noqa: E402
+import re  # noqa: E402
+import difflib  # noqa: E402
 
 
 def CheckBundlesOrder(input_api, output_api):

@@ -7,7 +7,7 @@
 import argparse
 import os
 import sys
-import tempfile
+import tempfile  # noqa: F401
 import textwrap
 import unittest
 
@@ -15,7 +15,7 @@ INFRA_CONFIG_DIR = os.path.abspath(os.path.join(__file__, '..', '..', '..'))
 
 sys.path.append(os.path.join(INFRA_CONFIG_DIR, 'scripts'))
 
-import milestones
+import milestones  # noqa: E402
 
 
 class ParseError(Exception):

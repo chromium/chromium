@@ -208,3 +208,7 @@ def CheckOutagesConfigOnCommit(input_api, output_api):
       ]
 
   return []
+
+
+def CheckRuff(input_api, output_api):
+  return input_api.canned_checks.RunRuff(input_api, output_api)

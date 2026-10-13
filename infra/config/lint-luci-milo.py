@@ -14,8 +14,8 @@ THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 SRC_ROOT = os.path.join(THIS_DIR, '..', '..')
 sys.path.insert(1, os.path.join(SRC_ROOT, "third_party", "protobuf", "python"))
 
-import google.protobuf.text_format
-import project_pb2
+import google.protobuf.text_format  # noqa: E402
+import project_pb2  # noqa: E402
 
 
 def compare_builders(name, main_builders, sub_builders):

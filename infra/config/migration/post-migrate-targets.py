@@ -73,7 +73,7 @@ def _update_suites(
   if sorted(bundles) != bundles:
     import difflib
 
-    for l in difflib.unified_diff(sorted(bundles), bundles):
+    for l in difflib.unified_diff(sorted(bundles), bundles):  # noqa: E741
       print(l)
     raise Exception("rules in bundles.star aren't sorted")
 
