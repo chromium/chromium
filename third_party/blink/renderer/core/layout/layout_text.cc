@@ -242,17 +242,6 @@ void LayoutText::StyleDidChange(
   SetIsHorizontalWritingMode(new_style.IsHorizontalWritingMode());
 }
 
-void LayoutText::RemoveAndDestroyTextBoxes() {
-  NOT_DESTROYED();
-
-  if (FirstInlineFragmentItemIndex()) {
-    ClearAccessibilityCacheIfNeeded();
-    FragmentItems::LayoutObjectWillBeDestroyed(*this);
-    ClearFirstInlineFragmentItemIndex();
-  }
-  DeleteTextBoxes();
-}
-
 void LayoutText::WillBeDestroyed(const ComputedStyle* style) {
   NOT_DESTROYED();
 
@@ -265,7 +254,10 @@ void LayoutText::WillBeDestroyed(const ComputedStyle* style) {
     node_id_ = kInvalidDOMNodeId;
   }
 
-  RemoveAndDestroyTextBoxes();
+  if (FirstInlineFragmentItemIndex()) {
+    FragmentItems::LayoutObjectWillBeDestroyed(*this);
+    ClearFirstInlineFragmentItemIndex();
+  }
 
   valid_ng_items_ = false;
 
@@ -279,13 +271,10 @@ void LayoutText::WillBeDestroyed(const ComputedStyle* style) {
 #endif
 }
 
-void LayoutText::DeleteTextBoxes() {
+void LayoutText::ClearAccessibilityCacheIfNeeded() {
   NOT_DESTROYED();
-  ClearAccessibilityCacheIfNeeded();
-}
+  DCHECK(IsInLayoutNGInlineFormattingContext());
 
-void LayoutText::ClearBlockFlowCachedData() {
-  NOT_DESTROYED();
   if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
     cache->ClearBlockFlowCachedData(this);
     cache->InlineTextBoxesUpdated(this);
@@ -317,10 +306,9 @@ void LayoutText::SetFirstInlineFragmentItemIndex(wtf_size_t index) {
 
 void LayoutText::InLayoutNGInlineFormattingContextWillChange(bool new_value) {
   NOT_DESTROYED();
-  if (IsInLayoutNGInlineFormattingContext())
+  if (IsInLayoutNGInlineFormattingContext()) {
     ClearFirstInlineFragmentItemIndex();
-  else
-    DeleteTextBoxes();
+  }
 }
 
 Vector<LayoutText::TextBoxInfo> LayoutText::GetTextBoxInfo() const {

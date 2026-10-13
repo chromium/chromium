@@ -249,8 +249,6 @@ class CORE_EXPORT LayoutText : public LayoutObject {
 
   bool IsAllCollapsibleWhitespace() const;
 
-  void RemoveAndDestroyTextBoxes();
-
   PhysicalRect DebugRect() const override;
 
   void AutosizingMultiplerChanged() {
@@ -412,8 +410,6 @@ class CORE_EXPORT LayoutText : public LayoutObject {
     NOTREACHED();
   }
 
-  void DeleteTextBoxes();
-
   std::pair<String, TextOffsetMap> SecureText(const String& plain,
                                               UChar mask) const;
   void SetVariableLengthTransformResult(wtf_size_t original_length,
@@ -444,7 +440,6 @@ class CORE_EXPORT LayoutText : public LayoutObject {
 
  private:
   ContentCaptureManager* GetOrResetContentCaptureManager();
-  void ClearBlockFlowCachedData();
 
   virtual unsigned NonCollapsedCaretMaxOffset() const;
 
@@ -478,15 +473,6 @@ inline wtf_size_t LayoutText::FirstInlineFragmentItemIndex() const {
   if (!IsInLayoutNGInlineFormattingContext())
     return 0u;
   return first_fragment_item_index_;
-}
-
-inline void LayoutText::ClearAccessibilityCacheIfNeeded() {
-  NOT_DESTROYED();
-  if (!IsInLayoutNGInlineFormattingContext()) {
-    return;
-  }
-
-  ClearBlockFlowCachedData();
 }
 
 template <>
