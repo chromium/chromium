@@ -10,7 +10,7 @@ import {createAutocompleteResultForTesting, createMatchKeywordModelForTesting, c
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {KeywordType, RenderType, SelectionDirection, SelectionLineState, SelectionStep, SideType} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {$$, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -4710,6 +4710,173 @@ suite('OmniboxPopupSearchboxTest', function() {
        assertEquals(0, input.selectionStart);
        assertEquals(elidedText.length, input.selectionEnd);
      });
+
+ suite('SecondClickOnAllSelectedElidedUrl', () => {
+   const elidedText = 'example.com/path';
+   const fullUrl = 'https://www.example.com/path';
+   const prefixLength = 'https://www.'.length;
+
+   let input: HTMLInputElement|HTMLTextAreaElement;
+
+   setup(async () => {
+     callbackRouter.setInputState(createDefaultOmniboxInputState({
+       text: elidedText,
+       fullUrl: fullUrl,
+       isFocused: true,
+       selection: {start: 0, end: elidedText.length},
+     }));
+     await microtasksFinished();
+     input = searchbox.getInputElement().inputElement;
+     input.focus();
+     assertEquals(elidedText, input.value);
+     assertEquals(0, input.selectionStart);
+     assertEquals(elidedText.length, input.selectionEnd);
+   });
+
+   function dispatchMouseEvent(
+       target: EventTarget, type: string, clientX: number) {
+     const rect = input.getBoundingClientRect();
+     target.dispatchEvent(new MouseEvent(type, {
+       button: 0,
+       buttons: type === 'mousedown' ? 1 : 0,
+       clientX,
+       clientY: rect.top + rect.height / 2,
+       detail: 1,
+       bubbles: true,
+       composed: true,
+     }));
+   }
+
+   // Returns a client X coordinate over the input at which a click places the
+   // caret at `offset` of the current input text.
+   function clientXForOffset(offset: number): number {
+     const rect = input.getBoundingClientRect();
+     const y = rect.top + rect.height / 2;
+     for (let x = Math.ceil(rect.left); x < rect.right; x++) {
+       const position = document.caretPositionFromPoint(
+           x, y, {shadowRoots: [input.getRootNode() as ShadowRoot]});
+       if (position?.offsetNode === input && position.offset === offset) {
+         return x;
+       }
+     }
+     assertNotReached(`No client X found for offset ${offset}`);
+   }
+
+   test('UnelidesOnMouseUpPlacingCaretOnClickedCharacter', async () => {
+     // Click between 'exam' and 'ple' of the elided URL.
+     const clientX = clientXForOffset(4);
+     dispatchMouseEvent(input, 'mousedown', clientX);
+     // Like Views, the press neither unelides nor changes the selection, so
+     // that it can still start a drag-and-drop of the selected URL.
+     assertEquals(elidedText, input.value);
+     assertEquals(0, input.selectionStart);
+     assertEquals(elidedText.length, input.selectionEnd);
+
+     dispatchMouseEvent(document, 'mouseup', clientX);
+     await microtasksFinished();
+
+     // On release, the caret is placed at the clicked character and the URL is
+     // unelided, keeping the caret on the same characters.
+     assertEquals(fullUrl, input.value);
+     assertEquals(prefixLength + 4, input.selectionStart);
+     assertEquals(prefixLength + 4, input.selectionEnd);
+     assertEquals(
+         'https://www.exam', input.value.substring(0, prefixLength + 4));
+   });
+
+   test('UnelidesOnMouseUpOutsideInputPlacingCaretAtEnd', async () => {
+     dispatchMouseEvent(input, 'mousedown', clientXForOffset(4));
+     // Release to the right of the input, which is clamped to the input, past
+     // the end of the elided URL.
+     dispatchMouseEvent(
+         document, 'mouseup', input.getBoundingClientRect().right + 50);
+     await microtasksFinished();
+
+     assertEquals(fullUrl, input.value);
+     assertEquals(prefixLength + elidedText.length, input.selectionStart);
+     assertEquals(prefixLength + elidedText.length, input.selectionEnd);
+   });
+
+   test('UnelidesOnMouseUpShiftingChangedSelection', async () => {
+     dispatchMouseEvent(input, 'mousedown', clientXForOffset(4));
+     // Simulate the selection having changed to 'example.com' by release.
+     input.setSelectionRange(0, 'example.com'.length);
+     dispatchMouseEvent(document, 'mouseup', clientXForOffset(4));
+     await microtasksFinished();
+
+     // The selection stays on the same characters of the unelided URL, without
+     // being extended over the elided prefix.
+     assertEquals(fullUrl, input.value);
+     assertEquals(prefixLength, input.selectionStart);
+     assertEquals(prefixLength + 'example.com'.length, input.selectionEnd);
+   });
+
+   test('DoesNotUnelideWhenDraggingSelectedUrl', async () => {
+     const clientX = clientXForOffset(4);
+     dispatchMouseEvent(input, 'mousedown', clientX);
+     // Dragging from inside the selection starts a drag-and-drop of the whole
+     // selected URL, rather than a new drag selection.
+     input.dispatchEvent(
+         new DragEvent('dragstart', {bubbles: true, composed: true}));
+     // No `mouseup` follows a real drag (Blink only dispatches `dragend`).
+     // Simulate a later, unrelated `mouseup` (e.g. from clicking a suggestion)
+     // to verify that the drag cancelled the pending unelision.
+     dispatchMouseEvent(document, 'mouseup', clientX);
+     await microtasksFinished();
+
+     // Like Views, the URL stays elided and fully selected.
+     assertEquals(elidedText, input.value);
+     assertEquals(0, input.selectionStart);
+     assertEquals(elidedText.length, input.selectionEnd);
+   });
+
+   test('KeydownDuringMouseDown_CancelsUnelide', async () => {
+     const clientX = clientXForOffset(4);
+     dispatchMouseEvent(input, 'mousedown', clientX);
+     // Cmd/Ctrl+L while the button is held selects all.
+     searchbox.$.inputWrapper.dispatchEvent(new KeyboardEvent('keydown', {
+       key: 'l',
+       ctrlKey: !isMac,
+       metaKey: isMac,
+       bubbles: true,
+       composed: true,
+     }));
+     dispatchMouseEvent(document, 'mouseup', clientX);
+     await microtasksFinished();
+
+     // The release neither collapses the selection nor unelides.
+     assertEquals(elidedText, input.value);
+     assertEquals(0, input.selectionStart);
+     assertEquals(elidedText.length, input.selectionEnd);
+   });
+
+   test('UnelidesIntranetUrlWithTrailingSlashElided', async () => {
+     // "https://foobar" is elided to "foobar/", which is not a substring of
+     // the full URL.
+     const intranetElidedText = 'foobar/';
+     const intranetFullUrl = 'https://foobar';
+     callbackRouter.setInputState(createDefaultOmniboxInputState({
+       text: intranetElidedText,
+       fullUrl: intranetFullUrl,
+       isFocused: true,
+       selection: {start: 0, end: intranetElidedText.length},
+     }));
+     await microtasksFinished();
+     input.focus();
+     assertEquals(intranetElidedText, input.value);
+
+     // Click between 'foo' and 'bar'.
+     const clientX = clientXForOffset(3);
+     dispatchMouseEvent(input, 'mousedown', clientX);
+     dispatchMouseEvent(document, 'mouseup', clientX);
+     await microtasksFinished();
+
+     // The caret stays between 'foo' and 'bar' of the unelided URL.
+     assertEquals(intranetFullUrl, input.value);
+     assertEquals('https://foo'.length, input.selectionStart);
+     assertEquals('https://foo'.length, input.selectionEnd);
+   });
+ });
 
  test('KeydownDuringMouseDown_CancelsSelectAll', async () => {
    callbackRouter.setInputState(createDefaultOmniboxInputState({
