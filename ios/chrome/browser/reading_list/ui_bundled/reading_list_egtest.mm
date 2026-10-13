@@ -748,7 +748,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleImageQueryOrCloseSocket(
   [ChromeEarlGrey
       waitForUIElementToDisappearWithMatcher:
           grey_accessibilityID(kReadingListToolbarDeleteAllReadButtonID)];
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
                       grey_accessibilityID(kReadingListToolbarDeleteButtonID)];
 
   TapToolbarButtonWithID(kReadingListToolbarDeleteButtonID);
