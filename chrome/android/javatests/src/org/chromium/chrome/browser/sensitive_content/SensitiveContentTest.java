@@ -38,6 +38,7 @@ import org.chromium.base.TriState;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
@@ -128,6 +129,7 @@ public class SensitiveContentTest {
     @Test
     @MediumTest
     @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511287319
+    @DisabledTest(message = "https://crbug.com/572882982")
     public void testSensitiveContentClientObserver() {
         assertNotSensitive(mPage);
 
