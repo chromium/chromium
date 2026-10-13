@@ -491,6 +491,7 @@ MutableCSSPropertyValueSet* CSSParser::ParseFont(
   CSSParserLocalContext local_context(CSSPropertyName(CSSPropertyID::kFont),
                                       CSSPropertyID::kFont);
   CSSParserTokenStream stream(string);
+  stream.ConsumeWhitespace();
   HeapVector<CSSPropertyValue, 64> parsed_properties;
 
   if (GetCSSPropertyFont().ParseShorthand(/*important=*/true, stream,
