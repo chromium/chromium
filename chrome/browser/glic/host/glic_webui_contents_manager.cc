@@ -75,10 +75,6 @@ GlicWebUIContentsManager::GlicWebUIContentsManager(Profile* profile,
 #if !BUILDFLAG(IS_ANDROID)
   web_modal::WebContentsModalDialogManager::CreateForWebContents(
       web_contents_.get());
-#else
-  if (base::FeatureList::IsEnabled(features::kGlicAndroidOffscreenRendering)) {
-    actor::StartOffscreenRenderingForWebContents(web_contents_.get());
-  }
 #endif
 
 #if BUILDFLAG(ENABLE_PRINTING)

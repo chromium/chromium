@@ -251,6 +251,7 @@ void MaybeInitializeHiddenClientTask::Start(base::OnceClosure done_callback) {
     instance_->host().SetWebContentsVisibilityOverride(
         content::Visibility::VISIBLE);
     forced_shown_ = true;
+    instance_->SetHiddenInitializing(true);
   }
   std::move(done_callback).Run();
 }
@@ -258,6 +259,7 @@ void MaybeInitializeHiddenClientTask::Start(base::OnceClosure done_callback) {
 void MaybeInitializeHiddenClientTask::OnSequenceCompleted(bool success) {
   if (forced_shown_) {
     instance_->host().SetWebContentsVisibilityOverride(std::nullopt);
+    instance_->SetHiddenInitializing(false);
   }
 }
 

@@ -75,9 +75,10 @@ class GlicExperimentalTriggeringCoordinator {
 
  protected:
   // Virtual for testing/delegation purposes to allow querying or overriding
-  // active tab/window.
+  // active tab/window or background state.
   virtual BrowserWindowInterface* GetBrowserWindow() const;
   virtual tabs::TabInterface* GetActiveTab() const;
+  virtual bool IsChromeInBackground() const;
 
  private:
   friend class ExperimentalTriggeringUpdatesHandler;
