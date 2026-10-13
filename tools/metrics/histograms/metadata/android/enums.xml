@@ -330,6 +330,16 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<!-- LINT.IfChange(AndroidPdfFrozenStateWhenDisplayed) -->
+
+<enum name="AndroidPdfFrozenStateWhenDisplayed">
+  <int value="0" label="Not frozen"/>
+  <int value="1" label="Frozen (no unsaved changes)"/>
+  <int value="2" label="Frozen (with unsaved changes)"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/android/pdf/java/src/org/chromium/chrome/browser/pdf/PdfUtils.java:AndroidPdfFrozenStateWhenDisplayed) -->
+
 <!-- LINT.IfChange(AndroidPdfHyperlinkClickResult) -->
 
 <enum name="AndroidPdfHyperlinkClickResult">

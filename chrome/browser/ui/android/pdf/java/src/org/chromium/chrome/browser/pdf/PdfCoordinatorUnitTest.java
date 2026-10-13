@@ -3270,6 +3270,7 @@ public class PdfCoordinatorUnitTest {
         ShadowLooper.idleMainLooper();
         assertTrue(onDoneCalled.get());
         assertTrue(mPdfCoordinator.hasChanges());
+        assertFalse(mPdfCoordinator.hasUnsavedChanges());
         assertEquals(
                 mActivity.getString(R.string.pdf_downloading), ShadowToast.getTextOfLatestToast());
     }
@@ -3524,6 +3525,7 @@ public class PdfCoordinatorUnitTest {
         ShadowLooper.idleMainLooper();
         assertTrue(onDoneCalled.get());
         assertTrue(mPdfCoordinator.hasChanges());
+        assertFalse(mPdfCoordinator.hasUnsavedChanges());
         assertNotNull(mPdfCoordinator.getUri());
         assertTrue(mPdfCoordinator.getUri().getAuthority().endsWith(".PdfContentProvider"));
         assertEquals(

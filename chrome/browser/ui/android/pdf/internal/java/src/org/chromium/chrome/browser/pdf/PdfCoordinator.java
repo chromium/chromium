@@ -2086,16 +2086,16 @@ public class PdfCoordinator
         mChromePdfViewerFragment.scrollToPage(currentPageIndex);
     }
 
-    @VisibleForTesting
-    boolean hasUnsavedChanges() {
-        if (mChromePdfViewerFragment != null && mChromePdfViewerFragment.isAdded()) {
-            try {
-                return mChromePdfViewerFragment.hasUnsavedChanges();
-            } catch (IllegalStateException e) {
-                return false;
-            }
+    @Override
+    public boolean hasUnsavedChanges() {
+        if (mChromePdfViewerFragment == null || !mChromePdfViewerFragment.isAdded()) {
+            return false;
         }
-        return false;
+        try {
+            return mChromePdfViewerFragment.hasUnsavedChanges();
+        } catch (IllegalStateException e) {
+            return false;
+        }
     }
 
     private boolean isEditModeActive() {

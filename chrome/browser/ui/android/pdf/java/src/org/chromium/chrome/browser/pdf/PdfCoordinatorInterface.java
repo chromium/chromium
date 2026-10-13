@@ -25,8 +25,20 @@ public interface PdfCoordinatorInterface {
     /** Reloads the pdf document. */
     void reload();
 
-    /** Returns whether there are any unsaved or applied changes. */
+    /**
+     * Returns whether the document has any changes at all, i.e. edits that have already been
+     * applied to the file, edits that are still unsaved, or an active edit session. Used to decide
+     * whether the original document can be reused (e.g. on reload or download).
+     */
     boolean hasChanges();
+
+    /**
+     * Returns whether the document holds edits that have not been written to the file yet and would
+     * be lost if the page were destroyed or frozen.
+     *
+     * <p>Unlike {@link #hasChanges()} this excludes edits that were already applied to the file.
+     */
+    boolean hasUnsavedChanges();
 
     /** Shows the reload confirmation dialog and runs onConfirm if confirmed. */
     void showReloadConfirmationDialog(Runnable onConfirm);

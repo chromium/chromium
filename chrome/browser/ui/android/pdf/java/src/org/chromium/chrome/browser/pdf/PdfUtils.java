@@ -158,6 +158,26 @@ public class PdfUtils {
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidPdfHyperlinkClickResult)
 
+    // LINT.IfChange(AndroidPdfFrozenStateWhenDisplayed)
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    @IntDef({
+        AndroidPdfFrozenStateWhenDisplayed.NOT_FROZEN,
+        AndroidPdfFrozenStateWhenDisplayed.FROZEN_NO_UNSAVED_CHANGES,
+        AndroidPdfFrozenStateWhenDisplayed.FROZEN_WITH_UNSAVED_CHANGES,
+        AndroidPdfFrozenStateWhenDisplayed.NUM_ENTRIES
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface AndroidPdfFrozenStateWhenDisplayed {
+        int NOT_FROZEN = 0;
+        int FROZEN_NO_UNSAVED_CHANGES = 1;
+        int FROZEN_WITH_UNSAVED_CHANGES = 2;
+
+        int NUM_ENTRIES = 3;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidPdfFrozenStateWhenDisplayed)
+
     private static final String TAG = "PdfUtils";
     private static final String PDF_LAUNCHER_ACTIVITY_ALIAS =
             "org.chromium.chrome.browser.document.PdfLauncherActivityAlias";
@@ -413,20 +433,31 @@ public class PdfUtils {
     }
 
     /**
-     * Record boolean histogram Android.Pdf.IsFrozenWhenDisplayed.
+     * Records the enumerated histogram Android.Pdf.FrozenStateWhenDisplayed for a native page that
+     * is about to be displayed, e.g. when its tab is selected from the tab switcher or tab strip.
      *
-     * @param nativePage When the native page is a pdf page, record whether it is frozen before the
-     *     tab is displayed.
+     * <p>Nothing is recorded for pages that are not PDF pages. For a frozen PDF page the unsaved
+     * changes state is the one captured when the page was frozen.
+     *
+     * @param nativePage The native page being displayed, or null if the tab has none.
      */
-    public static void recordIsPdfFrozen(@Nullable NativePage nativePage) {
-        if (nativePage == null) {
+    public static void recordPdfFrozenStateWhenDisplayed(@Nullable NativePage nativePage) {
+        if (nativePage == null || !nativePage.isPdf()) {
             return;
         }
-        if (!nativePage.isPdf()) {
-            return;
+        @AndroidPdfFrozenStateWhenDisplayed int state;
+        if (!nativePage.isFrozen()) {
+            state = AndroidPdfFrozenStateWhenDisplayed.NOT_FROZEN;
+        } else {
+            state =
+                    nativePage.hasUnsavedChanges()
+                            ? AndroidPdfFrozenStateWhenDisplayed.FROZEN_WITH_UNSAVED_CHANGES
+                            : AndroidPdfFrozenStateWhenDisplayed.FROZEN_NO_UNSAVED_CHANGES;
         }
-        RecordHistogram.recordBooleanHistogram(
-                "Android.Pdf.IsFrozenWhenDisplayed", nativePage.isFrozen());
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.Pdf.FrozenStateWhenDisplayed",
+                state,
+                AndroidPdfFrozenStateWhenDisplayed.NUM_ENTRIES);
     }
 
     /**

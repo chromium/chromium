@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.pdf;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalHistoryUrl;
@@ -205,52 +207,70 @@ public class PdfUtilsUnitTest {
     }
 
     @Test
-    public void testRecordIsPdfFrozen_NativePageNull() {
+    public void testRecordPdfFrozenStateWhenDisplayed_NativePageNull() {
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newBuilder()
-                        .expectNoRecords("Android.Pdf.IsFrozenWhenDisplayed")
+                        .expectNoRecords("Android.Pdf.FrozenStateWhenDisplayed")
                         .build();
-        PdfUtils.recordIsPdfFrozen(null);
+        PdfUtils.recordPdfFrozenStateWhenDisplayed(null);
         histogramExpectation.assertExpected(
                 "The histogram should not be recorded when the native page is null.");
     }
 
     @Test
-    public void testRecordIsPdfFrozen_NativePageIsNotPdf() {
+    public void testRecordPdfFrozenStateWhenDisplayed_NativePageIsNotPdf() {
         doReturn(false).when(mNativePage).isPdf();
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newBuilder()
-                        .expectNoRecords("Android.Pdf.IsFrozenWhenDisplayed")
+                        .expectNoRecords("Android.Pdf.FrozenStateWhenDisplayed")
                         .build();
-        PdfUtils.recordIsPdfFrozen(mNativePage);
+        PdfUtils.recordPdfFrozenStateWhenDisplayed(mNativePage);
         histogramExpectation.assertExpected(
                 "The histogram should not be recorded when the native page is not pdf page.");
     }
 
     @Test
-    public void testRecordIsPdfFrozen_PdfIsFrozen() {
-        doReturn(true).when(mNativePage).isPdf();
-        doReturn(true).when(mNativePage).isFrozen();
-        HistogramWatcher histogramExpectation =
-                HistogramWatcher.newBuilder()
-                        .expectBooleanRecord("Android.Pdf.IsFrozenWhenDisplayed", true)
-                        .build();
-        PdfUtils.recordIsPdfFrozen(mNativePage);
-        histogramExpectation.assertExpected(
-                "The recorded value should be true when the pdf page is frozen.");
-    }
-
-    @Test
-    public void testRecordIsPdfFrozen_PdfIsNotFrozen() {
+    public void testRecordPdfFrozenStateWhenDisplayed_NotFrozen() {
         doReturn(true).when(mNativePage).isPdf();
         doReturn(false).when(mNativePage).isFrozen();
         HistogramWatcher histogramExpectation =
-                HistogramWatcher.newBuilder()
-                        .expectBooleanRecord("Android.Pdf.IsFrozenWhenDisplayed", false)
-                        .build();
-        PdfUtils.recordIsPdfFrozen(mNativePage);
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Pdf.FrozenStateWhenDisplayed",
+                        PdfUtils.AndroidPdfFrozenStateWhenDisplayed.NOT_FROZEN);
+        PdfUtils.recordPdfFrozenStateWhenDisplayed(mNativePage);
         histogramExpectation.assertExpected(
-                "The recorded value should be false when the pdf page is not frozen.");
+                "The recorded value should be NOT_FROZEN when the pdf page is not frozen.");
+        verify(mNativePage, never()).hasUnsavedChanges();
+    }
+
+    @Test
+    public void testRecordPdfFrozenStateWhenDisplayed_FrozenNoUnsavedChanges() {
+        doReturn(true).when(mNativePage).isPdf();
+        doReturn(true).when(mNativePage).isFrozen();
+        doReturn(false).when(mNativePage).hasUnsavedChanges();
+        HistogramWatcher histogramExpectation =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Pdf.FrozenStateWhenDisplayed",
+                        PdfUtils.AndroidPdfFrozenStateWhenDisplayed.FROZEN_NO_UNSAVED_CHANGES);
+        PdfUtils.recordPdfFrozenStateWhenDisplayed(mNativePage);
+        histogramExpectation.assertExpected(
+                "The recorded value should be FROZEN_NO_UNSAVED_CHANGES when the frozen pdf has no"
+                        + " unsaved changes.");
+    }
+
+    @Test
+    public void testRecordPdfFrozenStateWhenDisplayed_FrozenWithUnsavedChanges() {
+        doReturn(true).when(mNativePage).isPdf();
+        doReturn(true).when(mNativePage).isFrozen();
+        doReturn(true).when(mNativePage).hasUnsavedChanges();
+        HistogramWatcher histogramExpectation =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Pdf.FrozenStateWhenDisplayed",
+                        PdfUtils.AndroidPdfFrozenStateWhenDisplayed.FROZEN_WITH_UNSAVED_CHANGES);
+        PdfUtils.recordPdfFrozenStateWhenDisplayed(mNativePage);
+        histogramExpectation.assertExpected(
+                "The recorded value should be FROZEN_WITH_UNSAVED_CHANGES when the frozen pdf has"
+                        + " unsaved changes.");
     }
 
     @Test

@@ -28,6 +28,11 @@ public class FrozenNativePage implements NativePage {
     private final @Nullable String mCanonicalFilepath;
     private final boolean mIsDownloadSafe;
 
+    // Snapshot of the replaced page's unsaved-changes state, taken at freeze time. The underlying
+    // page is destroyed immediately after this object is constructed, so this state cannot be
+    // re-queried later.
+    private final boolean mHasUnsavedChanges;
+
     /** Creates a FrozenNativePage to replace the given NativePage and destroys the NativePage. */
     public static FrozenNativePage freeze(NativePage nativePage) {
         // TODO(crbug.com/553143700): Evaluate persisting annotations on frozen PDF tabs. Currently,
@@ -46,6 +51,7 @@ public class FrozenNativePage implements NativePage {
         mIsPdf = nativePage.isPdf();
         mCanonicalFilepath = nativePage.getCanonicalFilepath();
         mIsDownloadSafe = nativePage.isDownloadSafe();
+        mHasUnsavedChanges = nativePage.hasUnsavedChanges();
     }
 
     @Override
@@ -105,6 +111,11 @@ public class FrozenNativePage implements NativePage {
     @Override
     public boolean isDownloadSafe() {
         return mIsDownloadSafe;
+    }
+
+    @Override
+    public boolean hasUnsavedChanges() {
+        return mHasUnsavedChanges;
     }
 
     @Override

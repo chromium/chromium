@@ -5213,6 +5213,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Pdf.FrozenStateWhenDisplayed"
+    enum="AndroidPdfFrozenStateWhenDisplayed" expires_after="2027-08-01">
+  <owner>rathomas@google.com</owner>
+  <owner>shuyng@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records whether the PDF native page is frozen before the tab is displayed,
+    such as being selected from tab switcher or tab strip, and whether it had
+    unsaved edits/changes when frozen. Recorded in TabImpl#show, before the
+    native page is unfrozen, so it is emitted on every display of a PDF tab and
+    not only on the first one. Used to determine how often the PDF native page
+    is frozen and how often state is lost due to tab freezing.
+
+    The unsaved-edit buckets only apply to frozen pages: the state is captured
+    when the page is frozen and the page is destroyed right after, so it cannot
+    be recomputed later, and it is not recorded for pages that are not frozen.
+    Unsaved edits are only possible when inline PDF editing is available, so the
+    &quot;with unsaved changes&quot; bucket should be interpreted relative to
+    the population that has editing enabled.
+  </summary>
+</histogram>
+
 <histogram name="Android.Pdf.Hyperlink.ClickResult"
     enum="AndroidPdfHyperlinkClickResult" expires_after="2027-03-14">
   <owner>rathomas@google.com</owner>
@@ -5220,17 +5242,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the outcome when a user clicks on an embedded hyperlink in a PDF.
     Recorded in PdfCoordinator#onLinkClicked.
-  </summary>
-</histogram>
-
-<histogram name="Android.Pdf.IsFrozenWhenDisplayed" enum="Boolean"
-    expires_after="2027-03-28">
-  <owner>shuyng@google.com</owner>
-  <owner>clank-large-form-factors@google.com</owner>
-  <summary>
-    Records whether the pdf native page is frozen before the tab is displayed,
-    such as being selected from tab switcher or tab strip. Used to determine how
-    often the pdf native page is frozen.
   </summary>
 </histogram>
 

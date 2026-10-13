@@ -148,6 +148,21 @@ public interface NativePage {
     }
 
     /**
+     * Returns whether this page holds user changes that have not been persisted yet, and that would
+     * therefore be lost if the page were destroyed or frozen.
+     *
+     * <p>Pages without user-editable state return {@code false}, which is the default.
+     *
+     * <p>A frozen page reports the value captured at the time it was frozen, since the underlying
+     * page is destroyed by {@link FrozenNativePage#freeze(NativePage)}.
+     *
+     * @return {@code true} if there are unsaved changes, {@code false} otherwise.
+     */
+    default boolean hasUnsavedChanges() {
+        return false;
+    }
+
+    /**
      * @return {@code true} if the native page is a pdf page.
      */
     default boolean isPdf() {

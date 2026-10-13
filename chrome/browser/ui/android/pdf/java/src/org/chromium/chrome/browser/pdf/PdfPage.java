@@ -164,6 +164,11 @@ public class PdfPage extends BasicNativePage {
     }
 
     @Override
+    public boolean hasUnsavedChanges() {
+        return mPdfCoordinator.hasUnsavedChanges();
+    }
+
+    @Override
     public void destroy() {
         super.destroy();
         if (PdfUtils.isInlinePdfV2Enabled()) {
