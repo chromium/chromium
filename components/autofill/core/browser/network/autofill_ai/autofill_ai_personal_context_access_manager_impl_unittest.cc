@@ -2479,5 +2479,82 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   histogram_tester().ExpectTotalCount(base::StrCat({kBaseMetric, ".Order"}), 4);
 }
 
+TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
+       Prefetch_RecordsEntitySourceCountMetrics) {
+  SetClockToDate("2025-06-01 12:00:00");
+
+  personal_context::proto::ContextMemoryAmbientAutofillResponse response;
+
+  // 1. Valid Order with 2 valid sources (Gmail + Photos) and 1 invalid source
+  // (Drive).
+  personal_context::proto::Entity order_with_two_sources = CreateOrderProto(
+      {.id = u"ORDER_1", .date = u"2025-06-01", .merchant_name = u"Store"});
+  personal_context::proto::GmailReference* gmail =
+      order_with_two_sources.add_source_references()->mutable_gmail();
+  gmail->mutable_message_urls()->set_desktop_web_url(
+      "https://mail.google.com/mail/#inbox/123");
+  gmail->mutable_message_urls()->set_mobile_web_url(
+      "https://mail.google.com/mail/mu/mp/#cv/Inbox/123");
+  gmail->set_subject("Order Confirmation");
+
+  personal_context::proto::PhotosReference* photos =
+      order_with_two_sources.add_source_references()->mutable_photos();
+  photos->set_photos_url("https://photos.google.com/photo/abc");
+  photos->mutable_timestamp()->set_year(2025);
+  photos->mutable_timestamp()->set_month(6);
+  photos->mutable_timestamp()->set_day(1);
+  photos->mutable_timestamp()->set_hours(12);
+
+  order_with_two_sources.add_source_references()->mutable_drive();
+  *response.add_entities() = std::move(order_with_two_sources);
+
+  // 2. Expired (invalid) Order with 1 valid source -> should not be recorded.
+  personal_context::proto::Entity expired_order = CreateOrderProto(
+      {.id = u"EXPIRED", .date = u"2025-01-01", .merchant_name = u"Store"});
+  personal_context::proto::GmailReference* expired_gmail =
+      expired_order.add_source_references()->mutable_gmail();
+  expired_gmail->mutable_message_urls()->set_desktop_web_url(
+      "https://mail.google.com/mail/#inbox/456");
+  expired_gmail->mutable_message_urls()->set_mobile_web_url(
+      "https://mail.google.com/mail/mu/mp/#cv/Inbox/456");
+  expired_gmail->set_subject("Old Order");
+  *response.add_entities() = std::move(expired_order);
+
+  // 3. Suppressed Order with 1 valid source -> should not be recorded.
+  personal_context::proto::Entity suppressed_order = CreateOrderProto(
+      {.id = u"SUPPRESSED", .date = u"2025-06-01", .merchant_name = u"Store"});
+  personal_context::proto::GmailReference* suppressed_gmail =
+      suppressed_order.add_source_references()->mutable_gmail();
+  suppressed_gmail->mutable_message_urls()->set_desktop_web_url(
+      "https://mail.google.com/mail/#inbox/789");
+  suppressed_gmail->mutable_message_urls()->set_mobile_web_url(
+      "https://mail.google.com/mail/mu/mp/#cv/Inbox/789");
+  suppressed_gmail->set_subject("Suppressed Order");
+  suppression_manager().SuppressEntity(
+      *PersonalContextEntityToEntityInstance(suppressed_order));
+  *response.add_entities() = std::move(suppressed_order);
+
+  // 4. Valid Vehicle with 0 sources.
+  *response.add_entities() =
+      CreateVehicleProto({.plate = u"VALID", .number = nullptr});
+
+  EXPECT_CALL(mock_observer(),
+              OnPrefetchContextComplete(_, Optional(Not(IsEmpty()))));
+
+  PrefetchContextSync({kOrderType, kVehicleType}, /*expected_spii_types=*/{},
+                      response);
+
+  static constexpr std::string_view kSourceCountMetric =
+      "Autofill.Ai.PersonalContext.Prefetch.EntitySourceCount";
+  histogram_tester().ExpectBucketCount(kSourceCountMetric, 0, 1);
+  histogram_tester().ExpectBucketCount(kSourceCountMetric, 2, 1);
+  histogram_tester().ExpectTotalCount(kSourceCountMetric, 2);
+
+  histogram_tester().ExpectUniqueSample(
+      base::StrCat({kSourceCountMetric, ".Order"}), 2, 1);
+  histogram_tester().ExpectUniqueSample(
+      base::StrCat({kSourceCountMetric, ".Vehicle"}), 0, 1);
+}
+
 }  // namespace
 }  // namespace autofill
