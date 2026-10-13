@@ -4488,7 +4488,8 @@ void Element::VerifySubtreeIsInCanvas(bool value) {
   } else if (auto* slot = ToHTMLSlotElementIfSupportsAssignmentOrNull(*this);
              slot && !slot->AssignedNodesNoRecalc().empty()) {
     for (Node* node : slot->AssignedNodesNoRecalc()) {
-      if (auto* child = DynamicTo<Element>(node)) {
+      if (auto* child = DynamicTo<Element>(node);
+          child && child->AssignedSlotWithoutRecalc() == slot) {
         child->VerifySubtreeIsInCanvas(value);
       }
     }
@@ -4542,8 +4543,11 @@ void Element::SetIsInCanvasSubtree(bool value) {
       child.SetIsInCanvasSubtree(value);
     }
   } else if (auto* slot = ToHTMLSlotElementIfSupportsAssignmentOrNull(*this)) {
-    for (Node* node : slot->AssignedNodesNoRecalc()) {
-      if (auto* child = DynamicTo<Element>(node)) {
+    const HeapVector<Member<Node>> assigned_nodes =
+        slot->AssignedNodesNoRecalc();
+    for (Node* node : assigned_nodes) {
+      if (auto* child = DynamicTo<Element>(node);
+          child && child->AssignedSlotWithoutRecalc() == slot) {
         child->SetIsInCanvasSubtree(value);
       }
     }

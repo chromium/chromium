@@ -15,15 +15,20 @@
 #include "third_party/abseil-cpp/absl/status/status.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
+#include "third_party/blink/renderer/core/dom/focused_element_change_observer.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/recording_test_utils.h"
+#include "third_party/blink/renderer/core/html/forms/html_input_element.h"
+#include "third_party/blink/renderer/core/html/html_slot_element.h"
+#include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_compositing_test_platform.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 
 using ::blink_testing::ClearRectFlags;
@@ -719,13 +724,14 @@ TEST_P(HTMLCanvasElementTest, HTMLInCanvasUseCounter) {
 }
 
 TEST_P(HTMLCanvasElementTest, StaleSlotAssignmentDoesNotCorruptMovedChild) {
-  SetBodyInnerHTML(R"HTML(
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
     <canvas id="c1">
       <div id="host">
         <template shadowrootmode="open">
           <slot id="slot"></slot>
         </template>
         <div id="child">Child</div>
+        <div id="child2">Child 2</div>
       </div>
     </canvas>
     <canvas id="c2"></canvas>
@@ -821,6 +827,71 @@ TEST_P(HTMLCanvasElementTest, PseudoElementChildOfShadowHost) {
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(host->IsInCanvasSubtree());
   EXPECT_TRUE(host->GetPseudoElement(kPseudoIdAfter)->IsInCanvasSubtree());
+}
+
+TEST_P(HTMLCanvasElementTest, SlotAssignmentDuringSetIsInCanvasSubtree) {
+  class GCOnFocusChangeObserver final
+      : public GarbageCollected<GCOnFocusChangeObserver>,
+        public FocusedElementChangeObserver {
+   public:
+    void DidChangeFocus() override {
+      invoked_ = true;
+      ThreadState::Current()->CollectAllGarbageForTesting(
+          ThreadState::StackState::kMayContainHeapPointers);
+    }
+    bool Invoked() const { return invoked_; }
+    void Trace(Visitor* visitor) const override {
+      FocusedElementChangeObserver::Trace(visitor);
+    }
+
+   private:
+    bool invoked_ = false;
+  };
+
+  ScopedCanvasDrawElementForTest forced_canvas_draw_element_feature(true);
+  GetDocument().GetSettings()->SetScriptEnabled(true);
+  GetPage().GetFocusController().SetActive(true);
+  GetPage().GetFocusController().SetFocused(true);
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
+    <canvas id="cv" content="drawable">
+      <div id="h2">
+        <template shadowrootmode="open">
+          <slot id="s2"></slot>
+        </template>
+        <span></span>
+        <span></span>
+        <span></span>
+        <input id="d" type="date" value="2001-02-03">
+        <span id="y"></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </canvas>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* h2 = GetDocument().getElementById(AtomicString("h2"));
+  auto* d =
+      To<HTMLInputElement>(GetDocument().getElementById(AtomicString("d")));
+  auto* y = GetDocument().getElementById(AtomicString("y"));
+  auto* s2 = To<HTMLSlotElement>(
+      h2->GetShadowRoot()->getElementById(AtomicString("s2")));
+
+  s2->AssignedNodes();
+  d->SetValue("2001-02-04");
+  d->Focus();
+  h2->SetIsInCanvasSubtree(false);
+  d->setAttribute(html_names::kValueAttr, AtomicString("2003-04-05"));
+  y->setAttribute(html_names::kSlotAttr, AtomicString("away"));
+
+  auto* observer = MakeGarbageCollected<GCOnFocusChangeObserver>();
+  GetDocument().AddFocusedElementChangeObserver(observer);
+
+  h2->SetIsInCanvasSubtree(true);
+  EXPECT_TRUE(observer->Invoked());
+  EXPECT_FALSE(y->IsInCanvasSubtree());
 }
 
 }  // namespace blink
