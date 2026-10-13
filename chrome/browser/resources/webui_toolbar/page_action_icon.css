@@ -221,7 +221,13 @@
 }
 
 :host([slide-and-crossfade]:not([show-trailing-icon])) #text {
-  transform: translateX(0);
+  /* The resting state must match the out-of-mode computed value ('none', the
+   * default for #text) so that turning slide-and-crossfade on is not a
+   * computed value change and does not start a spurious no-op transition.
+   * 'none' still interpolates smoothly to translateX(): per CSS Transforms
+   * (https://www.w3.org/TR/css-transforms-1/#transform-interpolation-length-fixup)
+   * 'none' is substituted with identity functions matching the other side. */
+  transform: none;
   transition: transform var(--slide-crossfade-duration-collapse)
       var(--slide-crossfade-easing);
 }

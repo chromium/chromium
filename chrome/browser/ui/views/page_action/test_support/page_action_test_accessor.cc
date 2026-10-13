@@ -570,7 +570,12 @@ double PageActionTestAccessor::GetSlideAnimationValue() const {
         };
         const anims = getAllAnims(el);
         const running = anims.find(a => a.playState === 'running');
-        const isExpandedTarget = el.hasAttribute('slide-and-crossfade')
+        // For slide-and-crossfade chips, the native slide animation tracks
+        // the leading/trailing icon crossfade (see
+        // PageActionView::HandleSlideAndCrossfadeTransition()), so the
+        // expanded state is `showTrailingIcon` rather than `shouldShowChip`.
+        const isSlideAndCrossfade = el.hasAttribute('slide-and-crossfade');
+        const isExpandedTarget = isSlideAndCrossfade
             ? Boolean(el.state?.showTrailingIcon)
             : Boolean(el.state?.shouldShowChip);
         if (running) {
