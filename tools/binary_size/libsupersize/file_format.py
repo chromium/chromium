@@ -395,7 +395,8 @@ def _LoadSizeInfoFromFile(file_obj, size_path, is_sparse):
     is_sparse: Whether the size file is a sparse, e.g., created from diff.
   """
   # Split lines on '\n', since '\r' can appear in some lines!
-  lines = io.TextIOWrapper(file_obj, newline='\n')
+  # Use latin-1 so that lines.read() counts bytes rather than code points.
+  lines = io.TextIOWrapper(file_obj, encoding='latin-1', newline='\n')
   header_line = _ReadLine(lines).encode('ascii')
   assert header_line == _COMMON_HEADER[:-1], 'was ' + str(header_line)
   header_line = _ReadLine(lines).encode('ascii')
@@ -609,7 +610,11 @@ def _LoadSizeInfoFromFile(file_obj, size_path, is_sparse):
       for elem in idx_disassembly:
         elem = int(elem)
         diss_len = int(_ReadLine(lines))
-        diss_text = lines.read(diss_len)
+        diss_text = (
+          lines.read(diss_len)
+          .encode('latin-1')
+          .decode('utf-8', errors='surrogatepass')
+        )
         raw_symbols[elem].disassembly = diss_text
   return models.SizeInfo(
     build_config,

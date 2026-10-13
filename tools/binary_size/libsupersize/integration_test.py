@@ -542,6 +542,8 @@ class IntegrationTest(unittest.TestCase):
     orig_info2 = copy.deepcopy(orig_info1)
     # Remove the last 5 symbols to ensure a small but non-empty diff.
     orig_info2.raw_symbols._symbols[-5:] = []
+    orig_info1.raw_symbols[-2].disassembly = 'foo · bar \ud83d\n'
+    orig_info1.raw_symbols[-1].disassembly = 'baz\n'
     orig_delta = diff.Diff(orig_info1, orig_info2)
 
     with tempfile.NamedTemporaryFile(suffix='.sizediff') as sizediff_file:
@@ -554,6 +556,14 @@ class IntegrationTest(unittest.TestCase):
     self.assertEqual(
       list(describe.GenerateLines(orig_delta, verbose=True)),
       list(describe.GenerateLines(new_delta, verbose=True)),
+    )
+    self.assertEqual(
+      orig_info1.raw_symbols[-2].disassembly,
+      new_info1.raw_symbols[-2].disassembly,
+    )
+    self.assertEqual(
+      orig_info1.raw_symbols[-1].disassembly,
+      new_info1.raw_symbols[-1].disassembly,
     )
 
   @_CompareWithGolden()
