@@ -230,7 +230,13 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, FetchEndToEndThirdParty) {
   EXPECT_EQ(3, access_count_);
 }
 
-IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, XhrEndToEnd) {
+// TODO(crbug.com/512796428): Re-enable this test.
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
+#define MAYBE_XhrEndToEnd DISABLED_XhrEndToEnd
+#else
+#define MAYBE_XhrEndToEnd XhrEndToEnd
+#endif
+IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, MAYBE_XhrEndToEnd) {
   ProvideRequestHandlerKeyCommitmentsToNetworkService({"a.test"});
 
   GURL start_url = server_.GetURL("a.test", "/title1.html");
