@@ -126,4 +126,8 @@ enum ChromeAimEntryPoint {
 
   // AIM is entered from a contextual cue in Desktop Chrome.
   DESKTOP_CHROME_CONTEXTUAL_CUE = 227;
+
+  // AIM is entered from the Chrome A->B->A onramp IPH or promo bubble (e.g.
+  // Copy-Text Journeys).
+  DESKTOP_CHROME_ABA_ONRAMP_IPH = 228;
 }
