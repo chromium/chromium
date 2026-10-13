@@ -1041,5 +1041,24 @@ suite('AppReceivesToolbarChanges', () => {
 
       assertEquals(1, visualBrowserProxy.getCallCount('togglePresentation'));
     });
+
+    test('pin', () => {
+      const pinRequests =
+          visualBrowserProxy.getCallCount('sendPinStateRequest');
+      emitEvent(app, ToolbarEvent.PIN);
+
+      assertEquals(1, visualBrowserProxy.getCallCount('togglePinState'));
+      assertEquals(
+          pinRequests + 1,
+          visualBrowserProxy.getCallCount('sendPinStateRequest'));
+    });
+
+    test('translation requested', () => {
+      visualBrowserProxy.translateEntryPointEnabled = true;
+      emitEvent(app, ToolbarEvent.TRANSLATION_REQUESTED);
+
+      assertEquals(
+          1, visualBrowserProxy.getCallCount('onTranslationRequested'));
+    });
   });
 });

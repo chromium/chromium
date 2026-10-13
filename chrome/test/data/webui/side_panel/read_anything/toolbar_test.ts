@@ -643,13 +643,5 @@ suite('Toolbar', () => {
           assertTrue(actionMenu.open);
           assertTrue(fontSubmenu.$.menu.$.lazyMenu.get().open);
         });
-
-    test('invokes visualBrowserProxy on translation requested event', () => {
-      visualBrowserProxy.translateEntryPointEnabled = true;
-      settingsMenu.dispatchEvent(
-          new CustomEvent(ToolbarEvent.TRANSLATION_REQUESTED));
-      assertEquals(
-          1, visualBrowserProxy.getCallCount('onTranslationRequested'));
-    });
   });
 });

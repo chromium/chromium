@@ -433,13 +433,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     this.closeSubmenu_(event.detail.previousId);
   }
 
-  protected onTranslationRequested_() {
-    if (!this.visualBrowserProxy_.isReadAnythingTranslateEntryPointEnabled()) {
-      return;
-    }
-    this.visualBrowserProxy_.onTranslationRequested();
-  }
-
   protected onOpenSettingsSubmenu_(event: CustomEvent<{
     id: SettingsOption,
     previousId: SettingsOption|null,

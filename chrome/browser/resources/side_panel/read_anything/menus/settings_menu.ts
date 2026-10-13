@@ -478,8 +478,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     } else if (item.id === SettingsOption.IMAGES) {
       this.fire(ToolbarEvent.IMAGES);
     } else if (item.id === SettingsOption.PINNED_TO_TOOLBAR) {
-      this.visualBrowserProxy_.togglePinState();
-      this.visualBrowserProxy_.sendPinStateRequest();
+      this.fire(ToolbarEvent.PIN);
     }
   }
 

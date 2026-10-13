@@ -152,6 +152,7 @@ export enum ToolbarEvent {
   PREVIOUS_GRANULARITY = 'previous-granularity-click',
   LINKS = 'links-toggle',
   IMAGES = 'images-toggle',
+  PIN = 'pin-toggle',
   VOICE = 'select-voice',
   LANGUAGE_TOGGLE = 'voice-language-toggle',
   LANGUAGE_SELECTED = 'voice-language-selected',

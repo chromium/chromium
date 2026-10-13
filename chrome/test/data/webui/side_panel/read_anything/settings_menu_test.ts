@@ -163,6 +163,23 @@ suite('SettingsMenuElement', () => {
     await whenFired;
   });
 
+  test('pin event is fired when pin item is clicked', async () => {
+    settingsMenu.isImmersiveMode = true;
+    await microtasksFinished();
+
+    const actionMenu = settingsMenu.$.lazyMenu.get();
+    const menuItems =
+        Array.from(actionMenu.querySelectorAll<HTMLButtonElement>('.menu-row'));
+    const targetItem =
+        menuItems.find(item => item.id === SettingsOption.PINNED_TO_TOOLBAR);
+    assertTrue(!!targetItem);
+
+    const whenFired = eventToPromise(ToolbarEvent.PIN, settingsMenu);
+    targetItem.click();
+    await whenFired;
+    assertEquals(0, visualBrowserProxy.getCallCount('togglePinState'));
+  });
+
   test('images toggle is disabled when speech is active', async () => {
     const actionMenu = settingsMenu.$.lazyMenu.get();
     const menuItems =

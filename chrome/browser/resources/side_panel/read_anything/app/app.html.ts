@@ -54,6 +54,8 @@ export function getHtml(this: AppElement) {
         @previous-granularity-click="${this.onPreviousGranularityClick_}"
         @links-toggle="${this.onLinksToggle_}"
         @images-toggle="${this.onImagesToggle_}"
+        @pin-toggle="${this.onPinToggle_}"
+        @translation-requested="${this.onTranslationRequested_}"
         @letter-spacing-change="${this.onLetterSpacingChange_}"
         @theme-change="${this.onThemeChange_}"
         @presentation-change="${this.onPresentationChange_}"
