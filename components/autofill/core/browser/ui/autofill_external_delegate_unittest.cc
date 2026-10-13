@@ -56,6 +56,7 @@
 #include "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
 #include "components/autofill/core/browser/integrators/at_memory/mock_at_memory_query_service.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/metrics/personal_context_metrics.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/mock_autofill_ai_manager.h"
 #include "components/autofill/core/browser/integrators/compose/autofill_compose_delegate.h"
 #include "components/autofill/core/browser/integrators/compose/mock_autofill_compose_delegate.h"
@@ -4100,9 +4101,13 @@ TEST_F(AutofillExternalDelegateWithAmbientAutofillTest,
   ASSERT_FALSE(dialog_callback.is_null());
 
   EXPECT_CALL(autofill_client(), ShowAutofillAiSuggestionRemovedNotification);
+  base::HistogramTester histogram_tester;
   std::move(dialog_callback).Run(/*confirmed=*/true);
   EXPECT_TRUE(
       autofill_client().GetEntitySuppressionManager()->IsSuppressed(passport));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.Suppression.ConfirmationDialogResult",
+      EntitySuppressionConfirmationDialogResult::kAccepted, 1);
 }
 
 // Tests that cancelling the dialog does not suppress the entity.
@@ -4116,10 +4121,14 @@ TEST_F(AutofillExternalDelegateWithAmbientAutofillTest,
   EXPECT_CALL(autofill_client(), ShowAutofillAiSuggestionRemovedNotification)
       .Times(0);
 
+  base::HistogramTester histogram_tester;
   external_delegate().DidAcceptSuggestion(remove_suggestion,
                                           {.multi_index = {0}});
   EXPECT_FALSE(
       autofill_client().GetEntitySuppressionManager()->IsSuppressed(passport));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.Suppression.ConfirmationDialogResult",
+      EntitySuppressionConfirmationDialogResult::kCancelled, 1);
 }
 
 // Tests that removing a `kFillAutofillAi` suggestion (e.g. via Shift+Delete)

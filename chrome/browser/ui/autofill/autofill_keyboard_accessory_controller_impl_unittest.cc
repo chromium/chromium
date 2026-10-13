@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile_test_api.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_labels.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/metrics/personal_context_metrics.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/test_utils/entity_data_test_util.h"
@@ -545,8 +546,12 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
   EXPECT_CALL(manager().external_delegate(), RemoveSuggestion(suggestion))
       .WillOnce(Return(true));
 
+  base::HistogramTester histogram_tester;
   EXPECT_TRUE(suggestion_controller().ShowAutofillAiSuggestionDetails(0));
   EXPECT_TRUE(suggestion_controller().GetSuggestions().empty());
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.Suppression.ConfirmationDialogResult",
+      EntitySuppressionConfirmationDialogResult::kAccepted, 1);
 }
 
 TEST_F(AutofillKeyboardAccessoryControllerImplTest,
@@ -689,7 +694,11 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
       .WillOnce(RunOnceCallback<5>(/*confirmed=*/false));
   EXPECT_CALL(manager().external_delegate(), RemoveSuggestion).Times(0);
 
+  base::HistogramTester histogram_tester;
   EXPECT_TRUE(suggestion_controller().ShowAutofillAiSuggestionDetails(0));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.Suppression.ConfirmationDialogResult",
+      EntitySuppressionConfirmationDialogResult::kCancelled, 1);
 }
 
 TEST_F(AutofillKeyboardAccessoryControllerImplTest,

@@ -91,6 +91,18 @@ enum class EntitySuppressionLoadDropReason {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:AutofillAiEntitySuppressionLoadDropReason)
 
+// LINT.IfChange(AutofillAiEntitySuppressionConfirmationDialogResult)
+// How the user closed the dialog asking to confirm the suppression of an
+// entity. Logged to UMA.
+enum class EntitySuppressionConfirmationDialogResult {
+  // The user confirmed the suppression.
+  kAccepted = 0,
+  // The user cancelled or dismissed the dialog.
+  kCancelled = 1,
+  kMaxValue = kCancelled,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:AutofillAiEntitySuppressionConfirmationDialogResult)
+
 // Returns the readiness state of the prefetch cache for `entity_type` when the
 // user first interacts with an Ambient Autofill supported field of that type.
 PersonalContextCacheReadinessOnFirstInteraction GetCacheReadinessState(
@@ -135,6 +147,9 @@ void LogEntitySuppressionLoadDroppedRecordCount(size_t count);
 // Logs why a stored suppression record was dropped while loading suppressions
 // from disk.
 void LogEntitySuppressionLoadDropReason(EntitySuppressionLoadDropReason reason);
+
+// Logs whether the user `accepted` the suppression confirmation dialog.
+void LogEntitySuppressionConfirmationDialogResult(bool accepted);
 
 }  // namespace autofill
 

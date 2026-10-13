@@ -120,4 +120,11 @@ void LogEntitySuppressionLoadDropReason(
                                 reason);
 }
 
+void LogEntitySuppressionConfirmationDialogResult(bool accepted) {
+  base::UmaHistogramEnumeration(
+      "Autofill.Ai.Suppression.ConfirmationDialogResult",
+      accepted ? EntitySuppressionConfirmationDialogResult::kAccepted
+               : EntitySuppressionConfirmationDialogResult::kCancelled);
+}
+
 }  // namespace autofill

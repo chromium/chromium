@@ -2307,6 +2307,32 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </token>
 </histogram>
 
+<histogram name="Autofill.Ai.Suppression.ConfirmationDialogResult"
+    enum="AutofillAiEntitySuppressionConfirmationDialogResult"
+    expires_after="2027-01-01">
+  <owner>tobson@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records whether the user removed an Autofill AI Personal Context suggestion
+    in the dialog that offers to remove it. Emitted when the dialog is closed.
+    The dialog differs by platform, so rates are not comparable across
+    platforms.
+
+    Desktop: shown after the user chooses to remove the suggestion. The default
+    button, 'Remove', records Accepted; 'Cancel' or closing the dialog records
+    Cancelled.
+
+    Android: shown when the user long-presses the suggestion. It shows where the
+    suggestion comes from and offers to remove it. The primary button, 'Got it',
+    closes the dialog without removing the suggestion and records Cancelled, as
+    does dismissing the dialog. 'Remove from Chrome' records Accepted.
+
+    iOS: shown after the user chooses to remove the suggestion. The preferred
+    button, 'Remove', records Accepted and 'Cancel' records Cancelled. Only
+    emitted when the user taps one of the buttons.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Ai.Suppression.EntitiesFilteredPerPrefetch"
     units="entities" expires_after="2027-01-01">
   <owner>tobson@google.com</owner>
