@@ -745,6 +745,56 @@ TEST_F(EventHandlerTest, CursorForLayoutlessArea) {
                 .type());
 }
 
+TEST_F(EventHandlerTest, CursorForLayoutlessAreaWithImageCursor) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>area { cursor: url(nonexistent.png), help }</style>
+    <img usemap="#m" width="100" height="100" style="cursor:auto">
+    <map name="m"><area id="area" shape="rect" coords="0,0,100,100"></map>
+  )HTML");
+
+  HitTestLocation location((gfx::Point(50, 50)));
+  HitTestResult result =
+      GetDocument().GetFrame()->GetEventHandler().HitTestResultAtLocation(
+          location);
+  ASSERT_EQ(GetDocument().getElementById(AtomicString("area")),
+            result.InnerPossiblyPseudoNode());
+  EXPECT_EQ(ui::mojom::blink::CursorType::kHelp,
+            GetDocument()
+                .GetFrame()
+                ->GetEventHandler()
+                .SelectCursor(location, result)
+                .value()
+                .type());
+}
+
+TEST_F(EventHandlerTest, CursorForAreaInDisplayNoneMap) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>area { cursor: url(nonexistent.png), help }</style>
+    <img usemap="#m" width="100" height="100" style="cursor:auto">
+    <div style="display:none">
+      <map name="m"><area id="area" shape="rect" coords="0,0,100,100"></map>
+    </div>
+  )HTML");
+
+  // Style ensured inside a display:none subtree still holds unloaded
+  // resources, so the <area> falls back to the auto cursor.
+  Element* area = GetDocument().getElementById(AtomicString("area"));
+  ASSERT_TRUE(area->EnsureComputedStyle());
+
+  HitTestLocation location((gfx::Point(50, 50)));
+  HitTestResult result =
+      GetDocument().GetFrame()->GetEventHandler().HitTestResultAtLocation(
+          location);
+  ASSERT_EQ(area, result.InnerPossiblyPseudoNode());
+  EXPECT_EQ(ui::mojom::blink::CursorType::kPointer,
+            GetDocument()
+                .GetFrame()
+                ->GetEventHandler()
+                .SelectCursor(location, result)
+                .value()
+                .type());
+}
+
 TEST_F(EventHandlerTest, CursorForVerticalResizableTextArea) {
   SetHtmlInnerHTML("<textarea style='resize:vertical'>vertical</textarea>");
   Node* const element = GetDocument().body()->firstChild();

@@ -80,6 +80,7 @@ class ElementStyleResources {
   }
 
   void LoadPendingResources(ComputedStyleBuilder&, const CSSLengthResolver&);
+  void LoadPendingCursorImages(ComputedStyleBuilder&, const CSSLengthResolver&);
 
   void UpdateLengthConversionData(const CSSToLengthConversionData*);
 

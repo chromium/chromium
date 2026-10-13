@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
+#include "third_party/blink/renderer/core/html/html_area_element.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
 namespace blink {
@@ -304,6 +305,14 @@ void StyleResolverState::LoadPendingResources() {
     Element* animating_element = GetAnimatingElement();
     if (!animating_element || !CSSAnimations::IsAnimatingDisplayProperty(
                                   animating_element->GetElementAnimations())) {
+      // A default-styled <area> has no box, but its cursor applies while
+      // hovering the region of the <img> that uses its <map>. Its other
+      // resources are never rendered.
+      if (IsA<HTMLAreaElement>(GetStyledElement()) &&
+          RuntimeEnabledFeatures::HTMLAreaElementDisplayNoneEnabled()) {
+        element_style_resources_.LoadPendingCursorImages(
+            StyleBuilder(), CssToLengthConversionData());
+      }
       return;
     }
   }

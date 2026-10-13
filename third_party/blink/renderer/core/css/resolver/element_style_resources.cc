@@ -406,6 +406,20 @@ static CSSValue* PendingCssValue(StyleImage* style_image) {
   return nullptr;
 }
 
+static void LoadCursorImages(StyleImageLoader& loader,
+                             ComputedStyleBuilder& builder,
+                             const CSSLengthResolver& length_resolver) {
+  CursorList* cursor_list = builder.Cursors();
+  if (!cursor_list) {
+    return;
+  }
+  for (CursorData& cursor : *cursor_list) {
+    if (auto* pending_value = PendingCssValue(cursor.GetImage())) {
+      cursor.SetImage(loader.Load(*pending_value, length_resolver));
+    }
+  }
+}
+
 StyleImage* ElementStyleResources::LoadMaskSource(CSSValue& pending_value) {
   auto* image_value = DynamicTo<CSSImageValue>(pending_value);
   if (!image_value) {
@@ -477,16 +491,9 @@ void ElementStyleResources::LoadPendingImages(
         }
         break;
       }
-      case CSSPropertyID::kCursor: {
-        if (CursorList* cursor_list = builder.Cursors()) {
-          for (CursorData& cursor : *cursor_list) {
-            if (auto* pending_value = PendingCssValue(cursor.GetImage())) {
-              cursor.SetImage(loader.Load(*pending_value, length_resolver));
-            }
-          }
-        }
+      case CSSPropertyID::kCursor:
+        LoadCursorImages(loader, builder, length_resolver);
         break;
-      }
       case CSSPropertyID::kListStyleImage: {
         if (auto* pending_value = PendingCssValue(builder.ListStyleImage())) {
           builder.SetListStyleImage(
@@ -558,6 +565,17 @@ void ElementStyleResources::LoadPendingResources(
     const CSSLengthResolver& length_resolver) {
   LoadPendingImages(builder, length_resolver);
   LoadPendingSVGResources(builder);
+}
+
+void ElementStyleResources::LoadPendingCursorImages(
+    ComputedStyleBuilder& builder,
+    const CSSLengthResolver& length_resolver) {
+  if (!pending_image_properties_.Contains(CSSPropertyID::kCursor)) {
+    return;
+  }
+  StyleImageLoader loader(element_.GetDocument(), builder, conversion_data_,
+                          pre_cached_container_sizes_, device_scale_factor_);
+  LoadCursorImages(loader, builder, length_resolver);
 }
 
 void ElementStyleResources::UpdateLengthConversionData(

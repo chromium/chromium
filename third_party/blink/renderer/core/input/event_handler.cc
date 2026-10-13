@@ -601,7 +601,7 @@ std::optional<ui::Cursor> EventHandler::SelectCursor(
   if (auto* area = DynamicTo<HTMLAreaElement>(node);
       area && !hit_layout_object &&
       RuntimeEnabledFeatures::HTMLAreaElementDisplayNoneEnabled()) {
-    area_style = area->GetComputedStyle();
+    area_style = ComputedStyle::NullifyEnsured(area->GetComputedStyle());
     if (area_style) {
       HTMLImageElement* image = area->ImageElement();
       hit_layout_object = image ? image->GetLayoutObject() : nullptr;
