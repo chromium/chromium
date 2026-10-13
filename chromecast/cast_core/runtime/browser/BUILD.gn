@@ -57,6 +57,7 @@ cast_source_set("runtime_service_impl") {
     "//chromecast/cast_core:cast_core_switches",
     "//chromecast/cast_core/runtime/browser/url_rewrite",
     "//chromecast/common:feature_constants",
+    "//chromecast/graphics",
     "//chromecast/metrics:cast_event_builder_impl",
     "//chromecast/shared:platform_info_serializer",
     "//components/cast/message_port",

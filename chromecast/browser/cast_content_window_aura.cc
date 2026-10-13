@@ -94,7 +94,9 @@ CastContentWindowAura::CastContentWindowAura(mojom::CastWebViewParamsPtr params,
           std::make_unique<CastContentGestureHandler>(gesture_router())),
       window_(nullptr),
       has_screen_access_(false),
-      resize_window_when_navigation_starts_(true) {}
+      resize_window_when_navigation_starts_(true) {
+  display_observer_.emplace(this);
+}
 
 CastContentWindowAura::~CastContentWindowAura() {
   content::WebContentsObserver::Observe(nullptr);
@@ -181,6 +183,15 @@ void CastContentWindowAura::DidStartNavigation(
   }
   resize_window_when_navigation_starts_ = false;
   SetFullWindowBounds();
+}
+
+void CastContentWindowAura::OnDisplayMetricsChanged(
+    const display::Display& display,
+    uint32_t changed_metrics) {
+  if (has_screen_access_ && window_ &&
+      (changed_metrics & display::DisplayObserver::DISPLAY_METRIC_BOUNDS)) {
+    SetFullWindowBounds();
+  }
 }
 
 void CastContentWindowAura::SetFullWindowBounds() {

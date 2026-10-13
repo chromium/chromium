@@ -64,6 +64,7 @@ class CastWebService : public mojom::CastWebService {
       mojom::CastWebViewParamsPtr params);
 
   content::BrowserContext* browser_context() { return browser_context_; }
+  CastWindowManager* window_manager() { return window_manager_; }
   LRURendererCache* overlay_renderer_cache() {
     return overlay_renderer_cache_.get();
   }

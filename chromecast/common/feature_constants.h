@@ -18,6 +18,7 @@ extern const char kEnablePlayready[];
 
 extern const char kKeyAppId[];
 extern const char kExtendedInputSupported[];
+extern const char kRotationSupported[];
 
 // If dev mode is enabled, kDevModeOrigin will be set with origin url
 extern const char kEnableDevMode[];

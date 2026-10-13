@@ -5,6 +5,7 @@ include_rules = [
   "+chromecast/cast_core/common",
   "+chromecast/chromecast_buildflags.h",
   "+chromecast/common",
+  "+chromecast/graphics",
   "+chromecast/media",
   "+chromecast/metrics",
   "+chromecast/service",

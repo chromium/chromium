@@ -89,9 +89,11 @@ void GLOzoneEglCast::TerminateDisplay() {
 scoped_refptr<gl::GLSurface> GLOzoneEglCast::CreateViewGLSurface(
     gl::GLDisplay* display,
     gfx::AcceleratedWidget widget) {
-  // Verify requested widget dimensions match our current display size.
-  DCHECK_EQ(static_cast<int>(widget >> 16), display_size_.width());
-  DCHECK_EQ(static_cast<int>(widget & 0xffff), display_size_.height());
+  // Verify requested widget dimensions are valid. Note that `display_size_`
+  // may be updated dynamically by `ResizeDisplay()` when the screen rotates or
+  // resizes, while `widget` encodes the initial window dimensions.
+  DCHECK_GT(static_cast<int>(widget >> 16), 0);
+  DCHECK_GT(static_cast<int>(widget & 0xffff), 0);
 
   return gl::InitializeGLSurface(
       new GLSurfaceCast(display->GetAs<gl::GLDisplayEGL>(), widget, this));
@@ -131,8 +133,7 @@ intptr_t GLOzoneEglCast::GetNativeWindow() {
 }
 
 bool GLOzoneEglCast::ResizeDisplay(gfx::Size size) {
-  DCHECK_EQ(size.width(), display_size_.width());
-  DCHECK_EQ(size.height(), display_size_.height());
+  display_size_ = size;
   return true;
 }
 

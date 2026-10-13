@@ -26,7 +26,9 @@ class DummyUiEventSource : public UiEventSource {
 
 // Declared in starboard_event_source.h.
 std::unique_ptr<UiEventSource> UiEventSource::Create(
-    ui::PlatformWindowDelegate* delegate) {
+    ui::PlatformWindowDelegate* delegate,
+    BoundsChangedCallback bounds_changed_callback,
+    TransformChangedCallback transform_changed_callback) {
   return std::make_unique<DummyUiEventSource>();
 }
 

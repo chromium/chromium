@@ -12,6 +12,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/aura/window_observer.h"
+#include "ui/display/display_observer.h"
 
 namespace aura {
 class Window;
@@ -25,7 +26,8 @@ class TouchBlocker;
 class CastContentWindowAura : public CastContentWindow,
                               public CastWebContentsObserver,
                               public content::WebContentsObserver,
-                              public aura::WindowObserver {
+                              public aura::WindowObserver,
+                              public display::DisplayObserver {
  public:
   CastContentWindowAura(mojom::CastWebViewParamsPtr params,
                         CastWindowManager* window_manager);
@@ -51,6 +53,10 @@ class CastContentWindowAura : public CastContentWindow,
   void OnWindowVisibilityChanged(aura::Window* window, bool visible) override;
   void OnWindowDestroyed(aura::Window* window) override;
 
+  // display::DisplayObserver implementation:
+  void OnDisplayMetricsChanged(const display::Display& display,
+                               uint32_t changed_metrics) override;
+
  private:
   void SetFullWindowBounds();
   void SetHiddenWindowBounds();
@@ -64,6 +70,7 @@ class CastContentWindowAura : public CastContentWindow,
   aura::Window* window_;
   bool has_screen_access_;
   bool resize_window_when_navigation_starts_;
+  std::optional<display::ScopedOptionalDisplayObserver> display_observer_;
 };
 
 }  // namespace chromecast

@@ -7,7 +7,10 @@
 
 #include <memory>
 
+#include "base/functional/callback.h"
 #include "ui/events/event.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/platform_window/platform_window_delegate.h"
 
 namespace chromecast {
@@ -19,9 +22,15 @@ namespace chromecast {
 // Platforms must define this function.
 class UiEventSource {
  public:
+  using BoundsChangedCallback = base::RepeatingCallback<void(const gfx::Size&)>;
+  using TransformChangedCallback =
+      base::RepeatingCallback<void(const gfx::Transform&)>;
+
   // Creates a UiEventSource that dispatches events to |delegate|.
   static std::unique_ptr<UiEventSource> Create(
-      ui::PlatformWindowDelegate* delegate);
+      ui::PlatformWindowDelegate* delegate,
+      BoundsChangedCallback bounds_changed_callback,
+      TransformChangedCallback transform_changed_callback);
 
   virtual ~UiEventSource();
 

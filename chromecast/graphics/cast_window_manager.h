@@ -93,6 +93,9 @@ class CastWindowManager {
   // Enable/disable the handling of all touch events.
   virtual void SetTouchInputDisabled(bool disabled) = 0;
 
+  // Enable/disable screen rotation transforms.
+  virtual void SetRotationSupported(bool supported) {}
+
   // Add an observer for when input events occur while touch input is disabled.
   virtual void AddTouchActivityObserver(
       CastTouchActivityObserver* observer) = 0;

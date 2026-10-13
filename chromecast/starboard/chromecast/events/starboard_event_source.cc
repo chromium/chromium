@@ -28,6 +28,34 @@ namespace chromecast {
 
 namespace {
 
+// Starboard's CobaltExtensionGraphicsApi returns a 3x3 2D affine/projective
+// transformation matrix:
+//   [ m00  m01  m02 ]   [ scale_x/rot   skew_x/rot    trans_x ]
+//   [ m10  m11  m12 ] = [ skew_y/rot    scale_y/rot   trans_y ]
+//   [ m20  m21  m22 ]   [ persp_x       persp_y       persp_w ]
+struct StarboardMatrix3x3 {
+  float m00 = 1.0f;
+  float m01 = 0.0f;
+  float m02 = 0.0f;
+  float m10 = 0.0f;
+  float m11 = 1.0f;
+  float m12 = 0.0f;
+  float m20 = 0.0f;
+  float m21 = 0.0f;
+  float m22 = 1.0f;
+
+  gfx::Transform ToGfxTransform() const {
+    // clang-format off
+    return gfx::Transform::RowMajor(
+        m00,  m01,  0.0f, m02,   // Row 0: X axis scale/rotation & translation
+        m10,  m11,  0.0f, m12,   // Row 1: Y axis scale/rotation & translation
+        0.0f, 0.0f, 1.0f, 0.0f,  // Row 2: Z axis identity
+        m20,  m21,  0.0f, m22    // Row 3: 2D perspective & projective scale
+    );
+    // clang-format on
+  }
+};
+
 constexpr char kPropertyFromStarboard[] = "from_sb";
 constexpr size_t kPropertyFromStarboardSize = 1;
 
@@ -380,7 +408,62 @@ void StarboardEventSource::SbEventHandle(void* context, const SbEvent* event) {
       event);
 }
 
+void StarboardEventSource::CheckRenderRootTransform() {
+  if (task_runner_ && !task_runner_->RunsTasksInCurrentSequence()) {
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&StarboardEventSource::CheckRenderRootTransform,
+                       weak_this_));
+    return;
+  }
+
+  if (!graphics_extension_ || !graphics_extension_->GetRenderRootTransform) {
+    return;
+  }
+
+  StarboardMatrix3x3 m;
+  gfx::Transform new_transform;
+  if (graphics_extension_->GetRenderRootTransform(&m.m00, &m.m01, &m.m02,
+                                                  &m.m10, &m.m11, &m.m12,
+                                                  &m.m20, &m.m21, &m.m22)) {
+    new_transform = m.ToGfxTransform();
+  }
+
+  if (new_transform != current_transform_) {
+    current_transform_ = new_transform;
+    if (transform_changed_callback_) {
+      transform_changed_callback_.Run(current_transform_);
+    }
+  }
+}
+
+void StarboardEventSource::OnWindowSizeChangedOnTaskRunner(
+    const gfx::Size& new_size) {
+  CheckRenderRootTransform();
+  if (bounds_changed_callback_) {
+    bounds_changed_callback_.Run(new_size);
+  }
+}
+
 void StarboardEventSource::SbEventHandleInternal(const SbEvent* event) {
+  if (event->type == kSbEventTypeWindowSizeChanged) {
+    if (event->data != nullptr) {
+      const auto* size_data =
+          static_cast<const SbEventWindowSizeChangedData*>(event->data);
+      gfx::Size new_size(size_data->size.width, size_data->size.height);
+      if (task_runner_ && !task_runner_->RunsTasksInCurrentSequence()) {
+        task_runner_->PostTask(
+            FROM_HERE,
+            base::BindOnce(
+                &StarboardEventSource::OnWindowSizeChangedOnTaskRunner,
+                weak_this_, new_size));
+      } else {
+        OnWindowSizeChangedOnTaskRunner(new_size);
+      }
+    }
+    return;
+  }
+
   if (event->type != kSbEventTypeInput || event->data == nullptr) {
     return;
   }
@@ -420,21 +503,35 @@ void StarboardEventSource::SbEventHandleInternal(const SbEvent* event) {
 void StarboardEventSource::DispatchUiEvent(std::unique_ptr<ui::Event> event) {
   if (!task_runner_->RunsTasksInCurrentSequence()) {
     task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&StarboardEventSource::DispatchUiEvent,
-                       weak_factory_.GetWeakPtr(), std::move(event)));
+        FROM_HERE, base::BindOnce(&StarboardEventSource::DispatchUiEvent,
+                                  weak_this_, std::move(event)));
     return;
   }
 
   delegate_->DispatchEvent(event.get());
 }
 
-StarboardEventSource::StarboardEventSource(ui::PlatformWindowDelegate* delegate)
-    : task_runner_(GetCurrentSequencedTaskRunner()), delegate_(delegate) {
+StarboardEventSource::StarboardEventSource(
+    ui::PlatformWindowDelegate* delegate,
+    BoundsChangedCallback bounds_changed_callback,
+    TransformChangedCallback transform_changed_callback)
+    : task_runner_(GetCurrentSequencedTaskRunner()),
+      delegate_(delegate),
+      bounds_changed_callback_(std::move(bounds_changed_callback)),
+      transform_changed_callback_(std::move(transform_changed_callback)) {
   DCHECK(delegate_);
+  weak_this_ = weak_factory_.GetWeakPtr();
+
+  auto* adapter = CastStarboardApiAdapter::GetInstance();
+  graphics_extension_ = static_cast<const CobaltExtensionGraphicsApi*>(
+      adapter->GetExtension(kCobaltExtensionGraphicsName));
+
+  // Query initial transform once on startup. Subsequent updates arrive via
+  // kSbEventTypeWindowSizeChanged.
+  CheckRenderRootTransform();
+
   LOG(INFO) << "Subscribing to CastStarboardApiAdapter. this=" << this;
-  CastStarboardApiAdapter::GetInstance()->Subscribe(
-      this, &StarboardEventSource::SbEventHandle);
+  adapter->Subscribe(this, &StarboardEventSource::SbEventHandle);
 }
 
 StarboardEventSource::~StarboardEventSource() {
@@ -450,8 +547,12 @@ bool StarboardEventSource::ShouldDispatchEvent(const ui::Event& event) {
 
 // Declared in starboard_event_source.h.
 std::unique_ptr<UiEventSource> UiEventSource::Create(
-    ui::PlatformWindowDelegate* delegate) {
-  return std::make_unique<StarboardEventSource>(delegate);
+    ui::PlatformWindowDelegate* delegate,
+    BoundsChangedCallback bounds_changed_callback,
+    TransformChangedCallback transform_changed_callback) {
+  return std::make_unique<StarboardEventSource>(
+      delegate, std::move(bounds_changed_callback),
+      std::move(transform_changed_callback));
 }
 
 }  // namespace chromecast

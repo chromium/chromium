@@ -23,6 +23,7 @@ const char kEnableDemoStandaloneMode[] = "enable_demo_standalone_mode";
 
 const char kKeyAppId[] = "app_id";
 const char kExtendedInputSupported[] = "extended_input_supported";
+const char kRotationSupported[] = "rotation_supported";
 
 const char kCastCoreRendererFeatures[] = "cast_core_renderer_features";
 const char kCastCoreEnforceFeaturePermissions[] =

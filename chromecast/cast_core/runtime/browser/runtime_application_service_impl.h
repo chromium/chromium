@@ -156,6 +156,9 @@ class RuntimeApplicationServiceImpl : public cast_receiver::EmbedderApplication,
   // Returns if touch input is allowed.
   bool IsTouchInputAllowed() const;
 
+  // Returns if screen rotation is supported.
+  bool IsRotationSupported() const;
+
   // Returns renderer features.
   base::DictValue GetRendererFeatures() const;
 

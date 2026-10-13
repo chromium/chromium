@@ -22,6 +22,7 @@
 #include "chromecast/cast_core/runtime/browser/message_port_service_grpc.h"
 #include "chromecast/cast_core/runtime/browser/url_rewrite/url_request_rewrite_type_converters.h"
 #include "chromecast/common/feature_constants.h"
+#include "chromecast/graphics/cast_window_manager.h"
 #include "components/cast_receiver/browser/public/content_window_controls.h"
 #include "components/cast_receiver/browser/public/runtime_application.h"
 
@@ -411,6 +412,9 @@ CastWebView::Scoped RuntimeApplicationServiceImpl::CreateCastWebView() {
                    /*default_value=*/false);
   params->activity_id =
       params->is_remote_control_mode ? params->session_id : config_.app_id();
+  if (web_service_->window_manager()) {
+    web_service_->window_manager()->SetRotationSupported(IsRotationSupported());
+  }
   return web_service_->CreateWebViewInternal(std::move(params));
 }
 
@@ -434,6 +438,10 @@ void RuntimeApplicationServiceImpl::SetVisibility(
     cast::common::Visibility::Type state) {
   switch (state) {
     case cast::common::Visibility::FULL_SCREEN:
+      if (web_service_->window_manager()) {
+        web_service_->window_manager()->SetRotationSupported(
+            IsRotationSupported());
+      }
       runtime_application_->SetVisibility(true);
       break;
     case cast::common::Visibility::HIDDEN:
@@ -799,6 +807,18 @@ bool RuntimeApplicationServiceImpl::IsTouchInputAllowed() const {
   const auto* enable_window_controls_entry =
       FindEntry(feature::kEnableWindowControls, entry->value().dictionary());
   return enable_window_controls_entry != nullptr;
+}
+
+bool RuntimeApplicationServiceImpl::IsRotationSupported() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const auto* entry =
+      FindEntry(feature::kCastCoreRendererFeatures, config_.extra_features());
+  if (!entry) {
+    return false;
+  }
+  CHECK(entry->value().has_dictionary());
+  return FindEntry(feature::kRotationSupported, entry->value().dictionary()) !=
+         nullptr;
 }
 
 bool RuntimeApplicationServiceImpl::IsFeaturePermissionsEnforced() const {

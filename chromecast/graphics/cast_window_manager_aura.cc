@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chromecast/base/cast_features.h"
 #include "chromecast/chromecast_buildflags.h"
@@ -84,11 +85,15 @@ class CastLayoutManager : public aura::LayoutManager {
   void SetChildBounds(aura::Window* child,
                       const gfx::Rect& requested_bounds) override;
 
+  bool IsHiddenWindowBounds(const gfx::Rect& bounds) const {
+    return bounds.width() == 1 && bounds.height() == 1;
+  }
+
   // Reorder child windows of the root window tree to reflect changes in layout.
   void ReorderChildWindows(aura::Window* changed_window);
 
-  CastWindowManagerAura* const window_manager_;
-  aura::Window* const parent_;
+  const raw_ptr<CastWindowManagerAura> window_manager_;
+  const raw_ptr<aura::Window> parent_;
 };
 
 CastLayoutManager::CastLayoutManager(CastWindowManagerAura* window_manager,
@@ -101,10 +106,21 @@ CastLayoutManager::CastLayoutManager(CastWindowManagerAura* window_manager,
 CastLayoutManager::~CastLayoutManager() {}
 
 void CastLayoutManager::OnWindowResized() {
-  // Invoked when the root window of the window tree host has been resized.
+  gfx::Rect new_bounds(parent_->bounds().size());
+  for (aura::Window* child : parent_->children()) {
+    // CastContentWindowAura uses a 1x1 size to signify that it is hidden.
+    // We should not interfere with that memory optimization.
+    if (IsHiddenWindowBounds(child->bounds())) {
+      continue;
+    }
+    SetChildBoundsDirect(child, new_bounds);
+  }
 }
 
 void CastLayoutManager::OnWindowAddedToLayout(aura::Window* child) {
+  if (!IsHiddenWindowBounds(child->bounds())) {
+    SetChildBoundsDirect(child, gfx::Rect(parent_->bounds().size()));
+  }
   ReorderChildWindows(child);
 }
 
@@ -185,6 +201,7 @@ void CastWindowManagerAura::Setup() {
   ui::InitializeInputMethodForTesting();
 
   gfx::Rect host_bounds = GetPrimaryDisplayHostBounds();
+  gfx::Transform primary_rotation = GetPrimaryDisplayRotationTransform();
   ui::PlatformWindowInitProperties properties(host_bounds);
 
   LOG(INFO) << "Starting window manager, bounds: " << host_bounds.ToString();
@@ -195,7 +212,12 @@ void CastWindowManagerAura::Setup() {
   aura::Window* root_window = window_tree_host_->window();
   root_window->SetLayoutManager(
       std::make_unique<CastLayoutManager>(this, root_window));
-  window_tree_host_->SetRootTransform(GetPrimaryDisplayRotationTransform());
+  window_tree_host_->SetDefaultRootTransform(primary_rotation);
+  if (rotation_supported_) {
+    window_tree_host_->SetRotationSupported(true);
+  } else {
+    window_tree_host_->SetRootTransform(gfx::Transform());
+  }
 
   // Allow seeing through to the hardware video plane:
   window_tree_host_->compositor()->SetBackgroundColor(SK_ColorTRANSPARENT);
@@ -327,6 +349,13 @@ CastGestureHandler* CastWindowManagerAura::GetGestureHandler() const {
 
 void CastWindowManagerAura::SetTouchInputDisabled(bool disabled) {
   event_gate_->SetEnabled(disabled);
+}
+
+void CastWindowManagerAura::SetRotationSupported(bool supported) {
+  rotation_supported_ = supported;
+  if (window_tree_host_) {
+    window_tree_host_->SetRotationSupported(supported);
+  }
 }
 
 void CastWindowManagerAura::AddTouchActivityObserver(

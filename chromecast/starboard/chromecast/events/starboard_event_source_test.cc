@@ -200,10 +200,24 @@ void EmulateTouch(SbInputEventType type,
 // lifetime of the SingleThreadTaskEnvironment.
 class StarboardEventSourceTest : public ::testing::Test {
  protected:
-  StarboardEventSourceTest() : source_(&delegate_) {
+  StarboardEventSourceTest()
+      : source_(
+            &delegate_,
+            base::BindRepeating(&StarboardEventSourceTest::OnWindowSizeChanged,
+                                base::Unretained(this)),
+            base::BindRepeating(&StarboardEventSourceTest::OnTransformChanged,
+                                base::Unretained(this))) {
     ON_CALL(delegate_, DispatchEvent(_))
         .WillByDefault(
             [this](ui::Event* event) { last_ui_event_ = event->Clone(); });
+  }
+
+  virtual void OnWindowSizeChanged(const gfx::Size& size) {
+    last_window_size_ = size;
+  }
+
+  virtual void OnTransformChanged(const gfx::Transform& transform) {
+    last_transform_ = transform;
   }
 
   ~StarboardEventSourceTest() override = default;
@@ -211,6 +225,8 @@ class StarboardEventSourceTest : public ::testing::Test {
   // This should be destructed last.
   base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<ui::Event> last_ui_event_;
+  std::optional<gfx::Size> last_window_size_;
+  std::optional<gfx::Transform> last_transform_;
   MockPlatformWindowDelegate delegate_;
   StarboardEventSource source_;
 };
@@ -415,6 +431,25 @@ TEST_F(StarboardEventSourceTest, TouchMove) {
   EXPECT_EQ(last_ui_event_->AsTouchEvent()->location_f().x(), kDeltaX);
   EXPECT_EQ(last_ui_event_->AsTouchEvent()->location_f().y(), kDeltaY);
   EXPECT_EQ(last_ui_event_->AsTouchEvent()->pointer_details().id, 0);
+}
+
+TEST_F(StarboardEventSourceTest, WindowSizeChanged) {
+  SbEventWindowSizeChangedData size_data;
+  size_data.window = reinterpret_cast<SbWindow>(1);
+  size_data.size.width = 1080;
+  size_data.size.height = 1920;
+  size_data.size.video_pixel_ratio = 1.0f;
+
+  SbEvent event;
+  event.type = kSbEventTypeWindowSizeChanged;
+  event.data = &size_data;
+  event.timestamp = 0;
+
+  DispatchSbEvent(&event);
+
+  ASSERT_TRUE(last_window_size_.has_value());
+  EXPECT_EQ(last_window_size_->width(), 1080);
+  EXPECT_EQ(last_window_size_->height(), 1920);
 }
 
 }  // namespace
