@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/login/debug/debug_overlay_handler.h"
 
+#include "ash/constants/ash_paths.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
@@ -19,7 +20,6 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "chrome/common/chrome_paths.h"
 #include "ui/display/display_switches.h"
 #include "ui/snapshot/snapshot.h"
 
@@ -80,7 +80,7 @@ DebugOverlayHandler::DebugOverlayHandler() {
       }
     } else {
       // use user-data-dir as base directory when running chromeos-on-linux.
-      if (!base::PathService::Get(chrome::DIR_USER_DATA, &base_dir)) {
+      if (!base::PathService::Get(ash::DIR_USER_DATA, &base_dir)) {
         LOG(ERROR) << "User Data Directory not found";
       }
     }

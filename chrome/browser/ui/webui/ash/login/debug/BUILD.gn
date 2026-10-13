@@ -17,7 +17,6 @@ static_library("debug") {
     "//ash/constants",
     "//ash/public/cpp",
     "//base:i18n",
-    "//chrome/common:constants",
     "//ui/display",
     "//ui/snapshot",
   ]
