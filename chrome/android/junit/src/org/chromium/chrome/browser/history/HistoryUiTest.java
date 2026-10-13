@@ -760,6 +760,33 @@ public class HistoryUiTest {
         assertEquals(2, mUserActionTester.getActionCount("Android.HistoryPage.AppFilterSelected"));
     }
 
+    @EnableFeatures(ChromeFeatureList.APP_SPECIFIC_HISTORY)
+    @Config(sdk = VERSION_CODES.UPSIDE_DOWN_CAKE)
+    @Test
+    public void testSearch_AppFilterChipText() {
+        // When only the app filter is enabled, the chip shows the full "Filter by app" label.
+        assertEquals(
+                mActivity.getString(R.string.history_filter_by_app),
+                mContentManager
+                        .getAppFilterForTesting()
+                        .getChipViewForTesting()
+                        .getPrimaryTextView()
+                        .getText()
+                        .toString());
+
+        // When another filter is also enabled, the chip uses the shorter "App" label.
+        FeatureOverrides.enable(ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_DOMAIN);
+        HistoryContentManager contentManager = createHistoryManager().getContentManagerForTests();
+        assertEquals(
+                mActivity.getString(R.string.history_app_filter_chip_text),
+                contentManager
+                        .getAppFilterForTesting()
+                        .getChipViewForTesting()
+                        .getPrimaryTextView()
+                        .getText()
+                        .toString());
+    }
+
     @EnableFeatures(ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_DOMAIN)
     @Test
     public void testSearch_HostFilterSheet() {

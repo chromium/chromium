@@ -457,24 +457,31 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
                         mHistorySyncPromoCoordinator,
                         shouldClusterByDomain);
 
+        int appFilterChipText =
+                (showHostFilter() || showClientFilter() || showActorFilter())
+                        ? R.string.history_app_filter_chip_text
+                        : R.string.history_filter_by_app;
         mAppFilter =
                 new HistoryFilterChip<>(
                         R.id.app_history_filter_chip,
-                        R.string.history_filter_by_app,
+                        /* chipTextResId= */ appFilterChipText,
+                        /* sheetHeaderResId= */ R.string.history_filter_by_app,
                         showAppFilter(),
                         this::onAppFilterUpdated,
                         mUmaRecorder::recordAppFilterSheetOpened);
         mHostFilter =
                 new HistoryFilterChip<>(
                         R.id.host_history_filter_chip,
-                        R.string.history_filter_by_host,
+                        /* chipTextResId= */ R.string.history_host_filter_chip_text,
+                        /* sheetHeaderResId= */ R.string.history_filter_by_host,
                         showHostFilter(),
                         this::onHostFilterUpdated,
                         mUmaRecorder::recordHostFilterSheetOpened);
         mClientFilter =
                 new HistoryFilterChip<>(
                         R.id.client_history_filter_chip,
-                        R.string.history_filter_by_client,
+                        /* chipTextResId= */ R.string.history_client_filter_chip_text,
+                        /* sheetHeaderResId= */ R.string.history_filter_by_client,
                         showClientFilter(),
                         this::onClientFilterUpdated,
                         mUmaRecorder::recordDeviceFilterSheetOpened);

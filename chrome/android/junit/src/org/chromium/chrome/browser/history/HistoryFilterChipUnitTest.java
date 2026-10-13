@@ -69,7 +69,8 @@ public class HistoryFilterChipUnitTest {
         mChip =
                 new HistoryFilterChip<>(
                         R.id.app_history_filter_chip,
-                        R.string.history_filter_by_app,
+                        /* chipTextResId= */ R.string.history_app_filter_chip_text,
+                        /* sheetHeaderResId= */ R.string.history_filter_by_app,
                         /* canShow= */ true,
                         mOnSelectionChanged,
                         mOnSheetOpened);
@@ -84,7 +85,7 @@ public class HistoryFilterChipUnitTest {
         assertEquals(View.GONE, chipView.getVisibility());
         assertFalse(chipView.isSelected());
         assertEquals(
-                mActivity.getString(R.string.history_filter_by_app),
+                mActivity.getString(R.string.history_app_filter_chip_text),
                 chipView.getPrimaryTextView().getText().toString());
         assertNull(mChip.getSelectedItemForTesting());
         assertTrue(mChip.getItemsForTesting().isEmpty());
@@ -119,7 +120,8 @@ public class HistoryFilterChipUnitTest {
         var disabledChip =
                 new HistoryFilterChip<>(
                         R.id.host_history_filter_chip,
-                        R.string.history_filter_by_host,
+                        /* chipTextResId= */ R.string.history_host_filter_chip_text,
+                        /* sheetHeaderResId= */ R.string.history_filter_by_host,
                         /* canShow= */ false,
                         mOnSelectionChanged,
                         /* onSheetOpened= */ null);
@@ -161,7 +163,7 @@ public class HistoryFilterChipUnitTest {
         assertNull(mChip.getSelectedItemForTesting());
         assertFalse(chipView.isSelected());
         assertEquals(
-                mActivity.getString(R.string.history_filter_by_app),
+                mActivity.getString(R.string.history_app_filter_chip_text),
                 chipView.getPrimaryTextView().getText().toString());
         verify(mOnSelectionChanged).onResult(null);
     }
@@ -178,7 +180,7 @@ public class HistoryFilterChipUnitTest {
         assertNull(mChip.getSelectedItemForTesting());
         assertFalse(chipView.isSelected());
         assertEquals(
-                mActivity.getString(R.string.history_filter_by_app),
+                mActivity.getString(R.string.history_app_filter_chip_text),
                 chipView.getPrimaryTextView().getText().toString());
         assertFalse(mChip.isVisible());
         assertEquals(View.GONE, chipView.getVisibility());
@@ -234,7 +236,8 @@ public class HistoryFilterChipUnitTest {
         var unboundChip =
                 new HistoryFilterChip<>(
                         R.id.host_history_filter_chip,
-                        R.string.history_filter_by_host,
+                        /* chipTextResId= */ R.string.history_host_filter_chip_text,
+                        /* sheetHeaderResId= */ R.string.history_filter_by_host,
                         /* canShow= */ true,
                         mOnSelectionChanged,
                         /* onSheetOpened= */ null);

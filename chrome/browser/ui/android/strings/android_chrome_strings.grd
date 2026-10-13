@@ -1836,11 +1836,20 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_HISTORY_FILTER_BY_APP" desc="Text used in the app filter button and in the header of app filter sheet.">
         Filter by app
       </message>
-      <message name="IDS_HISTORY_FILTER_BY_HOST" desc="Text used in the host filter button and in the header of host filter sheet." translateable="false">
+      <message name="IDS_HISTORY_APP_FILTER_CHIP_TEXT" desc="Text used in the app filter chip when no option is selected.">
+        App
+      </message>
+      <message name="IDS_HISTORY_FILTER_BY_HOST" desc="Text used in the header of host filter sheet.">
         Filter by host
       </message>
-      <message name="IDS_HISTORY_FILTER_BY_CLIENT" desc="Text used in the client filter button and in the header of client filter sheet." translateable="false">
+      <message name="IDS_HISTORY_HOST_FILTER_CHIP_TEXT" desc="Text used in the host filter chip when no option is selected.">
+        Host
+      </message>
+      <message name="IDS_HISTORY_FILTER_BY_CLIENT" desc="Text used in the header of client filter sheet.">
         Filter by device
+      </message>
+      <message name="IDS_HISTORY_CLIENT_FILTER_CHIP_TEXT" desc="Text used in the client filter chip when no option is selected.">
+        Device
       </message>
       <message name="IDS_HISTORY_ACTOR_FILTER_CHIP_TEXT" desc="Text used in the actor filter chip when no option is selected." translateable="false">
         Who browsed
@@ -1854,7 +1863,7 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_HISTORY_ACTOR_FILTER_ACTOR" desc="Label of the item in the actor filter sheet, when selected restricts the history results to entries in Chrome history that are the result of Gemini in Chrome browsing while performing an auto browse task for the user." translateable="false">
         Gemini
       </message>
-      <message name="IDS_HISTORY_RESET_FILTERS" desc="Text used in the button to reset all applied history filters." translateable="false">
+      <message name="IDS_HISTORY_RESET_FILTERS" desc="Text used in the button to reset all applied history filters.">
         Clear all
       </message>
       <message name="IDS_HISTORY_IPH_BUBBLE_TEXT" desc="The message on the text bubble shown to educate users about the app history filter.">

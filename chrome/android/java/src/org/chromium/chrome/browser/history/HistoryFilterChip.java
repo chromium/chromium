@@ -53,21 +53,6 @@ class HistoryFilterChip<T> {
     HistoryFilterChip(
             @IdRes int chipViewId,
             @StringRes int chipTextResId,
-            boolean canShow,
-            Callback<@Nullable T> onSelectionChanged,
-            @Nullable Runnable onSheetOpened) {
-        this(
-                chipViewId,
-                /* chipTextResId= */ chipTextResId,
-                /* sheetHeaderResId= */ chipTextResId,
-                canShow,
-                onSelectionChanged,
-                onSheetOpened);
-    }
-
-    HistoryFilterChip(
-            @IdRes int chipViewId,
-            @StringRes int chipTextResId,
             @StringRes int sheetHeaderResId,
             boolean canShow,
             Callback<@Nullable T> onSelectionChanged,
