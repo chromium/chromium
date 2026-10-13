@@ -15,6 +15,7 @@
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/web/web_document.h"
+#include "third_party/blink/public/web/web_form_control_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_node.h"
 
@@ -64,9 +65,10 @@ bool IsPossibleAnchorElement(blink::WebFormControlElement element) {
 }
 
 // Returns true if `target_node` represents a plausible custom JS-autofill
-// dropdown suggestion. Custom dropdown items are rendered using non-form DOM
-// elements (e.g., <div>, <li>, <span>).This is simply a heuristic ruling out
-// common cases and is not exhaustive.
+// dropdown suggestion. Custom dropdown items are typically rendered using
+// non-form DOM elements (e.g., <div>, <li>, <span>) or <button type="button"
+// role="option">. This is simply a heuristic ruling out common cases and is not
+// exhaustive.
 bool IsPossibleMouseClickTargetElement(blink::WebNode target_node) {
   // If `target_node` is a non-element node (e.g. text inside a <button> or
   // <div>), walk up to its parent element to determine the actual DOM control
@@ -74,10 +76,22 @@ bool IsPossibleMouseClickTargetElement(blink::WebNode target_node) {
   while (target_node && !target_node.IsElementNode()) {
     target_node = target_node.ParentNode();
   }
-  // Custom JS dropdown options (e.g. <div>, <li>, <span>) are non-form
-  // elements. Clicking any form control element (buttons, checkboxes, radio
-  // buttons, etc.) should not start the custom JS autofill detection timer.
-  return !target_node.DynamicTo<blink::WebFormControlElement>();
+  // Custom JS dropdown options (e.g. <div>, <li>, <span>) are generally
+  // non-form elements. Clicking form control elements (inputs, checkboxes,
+  // radio buttons, submit/reset buttons, etc.) should not start the custom JS
+  // autofill detection timer.
+  auto control_element = target_node.DynamicTo<blink::WebFormControlElement>();
+  if (!control_element) {
+    return true;
+  }
+  // Some autocomplete frameworks render dropdown suggestions as
+  // `<button type="button" role="option"/>` for built-in click and
+  // accessibility semantics. Allow such buttons while still rejecting general
+  // form buttons (e.g. submit or reset buttons).
+  return control_element.FormControlTypeForAutofill() ==
+             blink::mojom::FormControlType::kButtonButton &&
+         base::EqualsCaseInsensitiveASCII(
+             control_element.GetAttribute("role").Utf16(), u"option");
 }
 
 mojom::JavaScriptModificationType GetJavaScriptModificationType(
@@ -118,7 +132,7 @@ void JavaScriptAutofillTracker::Reset() {
   timer_.Stop();
 }
 
-void JavaScriptAutofillTracker::HandleMousedown(
+void JavaScriptAutofillTracker::HandlePointerdown(
     const blink::WebNode& target_node) {
   // In order to start recording logs to `js_logs_`, the following conditions
   // must be satisfied:
@@ -130,7 +144,7 @@ void JavaScriptAutofillTracker::HandleMousedown(
     return;
   }
 
-  // (2) The target of the mousedown event should be a possible target element
+  // (2) The target of the pointerdown event should be a possible target element
   // (e.g. not a checkbox, radio button, button element, etc.). This is to
   // exclude common cases where the user clicks away from an input element, but
   // not on a dropdown option.
@@ -175,7 +189,7 @@ void JavaScriptAutofillTracker::OnJavaScriptSetValue(
   // In order to add a log record to `js_logs_`, the following conditions must
   // be satisfied:
 
-  // (1) A mousedown event must have started the timer not earlier than
+  // (1) A pointerdown event must have started the timer not earlier than
   // `kMaxTimeGap` milliseconds ago. This is to increase the likelihood of the
   // JS change being caused by the click itself.
   if (!timer_.IsRunning()) {

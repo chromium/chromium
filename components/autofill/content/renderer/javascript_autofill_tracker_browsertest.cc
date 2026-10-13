@@ -445,6 +445,43 @@ TEST_F(JavaScriptAutofillTrackerTest, IgnoreResetButtonClearingFields) {
   task_environment_.FastForwardBy(base::Milliseconds(1000));
 }
 
+// Test that clicking a dropdown option rendered as `<button type="button"
+// role="option">` triggers JS autofill detection.
+TEST_F(JavaScriptAutofillTrackerTest, DetectButtonWithOptionRole) {
+  LoadHTML(R"(
+      <form id="form_id">
+        <input id="street">
+        <input id="city">
+        <input id="state">
+        <ul role="listbox">
+          <li>
+            <button id="option_btn" type="button" role="option">
+              1600 Amphitheatre Pkwy, Mountain View, CA
+            </button>
+          </li>
+        </ul>
+      </form>)");
+
+  ExecuteJavaScriptForTests(R"(
+    document.getElementById('option_btn').addEventListener('click', () => {
+      document.getElementById('street').value = '1600 Amphitheatre Pkwy';
+      document.getElementById('city').value = 'Mountain View';
+      document.getElementById('state').value = 'CA';
+    });
+  )");
+
+  EXPECT_CALL(autofill_driver(),
+              DidDetectJavaScriptAutofill(
+                  _, form_util::GetFieldRendererId(GetWebElementById("street")),
+                  ElementsAre(HasFieldId("street"), HasFieldId("city"),
+                              HasFieldId("state")),
+                  _));
+
+  SelectDropdownOption("street", "option_btn");
+
+  task_environment_.FastForwardBy(base::Milliseconds(1000));
+}
+
 }  // namespace
 
 }  // namespace autofill
