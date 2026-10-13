@@ -939,7 +939,7 @@ def _get_all_target_details(args):
         )
       else:  # libfuzzer
         cmd = CmdRunner(
-          [fuzzer_target_binpath, '-runs=0', '-rss_limit_mb=8192']
+          [fuzzer_target_binpath, '-runs=0', '-rss_limit_mb=0']
         )
       all_target_details.append(
         {
@@ -948,8 +948,6 @@ def _get_all_target_details(args):
             REPORT_DIR, fuzzer_target + ".profdata"
           ),
           'env': env,
-          # RSS limit 8GB. Some of our fuzzers which involve running significant
-          # chunks of Chromium code require more than the 2GB default.
           'cmd_runner': cmd,
           'corpus': fuzzer_target_corporadir,
           'files': '*',
