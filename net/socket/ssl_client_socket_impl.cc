@@ -208,9 +208,9 @@ class SSLClientSocketImpl::SSLContext {
     SSL_CTX_set_timeout(ssl_ctx_.get(), 1 * 60 * 60 /* one hour */);
 
     SSL_CTX_set_grease_enabled(ssl_ctx_.get(), 1);
-    if (base::FeatureList::IsEnabled(features::kTlsGreaseSigalgs)) {
-      SSL_CTX_set_grease_sigalgs_enabled(ssl_ctx_.get(), 1);
-    }
+#if BORINGSSL_API_VERSION <= 43
+    SSL_CTX_set_grease_sigalgs_enabled(ssl_ctx_.get(), 1);
+#endif
 
     // Deduplicate all certificates minted from the SSL_CTX in memory.
     SSL_CTX_set0_buffer_pool(ssl_ctx_.get(), x509_util::GetBufferPool());

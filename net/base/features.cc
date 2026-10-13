@@ -1040,8 +1040,6 @@ BASE_FEATURE_PARAM(int,
                    &kCacheCertVerification,
                    1800);
 
-BASE_FEATURE(kTlsGreaseSigalgs, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableBackendCleanupTrackerOnHttpCache,
 #if BUILDFLAG(CRONET_BUILD)
              // Disable for Cronet because when a CronetContext is shut down,
