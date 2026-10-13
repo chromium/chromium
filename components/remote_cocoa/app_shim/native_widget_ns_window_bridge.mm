@@ -1059,14 +1059,21 @@ void NativeWidgetNSWindowBridge::SetVisibilityState(
     parent_->OrderChildren();
 
   if (new_state == WindowVisibilityState::kShowAndActivateWindow) {
-    // Activate the app before `makeKeyAndOrderFront:`. If the order is
-    // reversed while the app is inactive, AppKit will not send
-    // NSWindowDidBecomeKeyNotification, causing Widget::IsActive() to
-    // incorrectly return false.
-    if (![window_ activationIndependence]) {
-      [NSApp activateIgnoringOtherApps:YES];
+    // Avoid ordering a child window to the front before it has been attached to
+    // its parent (e.g. when OrderChildren() deferred attachment because the
+    // parent is not on the active space). Ordering an unattached child window
+    // with NSWindowCollectionBehaviorTransient onto the screen causes it to
+    // appear detached on the currently active space.
+    if (!parent_ || [window_ parentWindow]) {
+      // Activate the app before `makeKeyAndOrderFront:`. If the order is
+      // reversed while the app is inactive, AppKit will not send
+      // NSWindowDidBecomeKeyNotification, causing Widget::IsActive() to
+      // incorrectly return false.
+      if (![window_ activationIndependence]) {
+        [NSApp activateIgnoringOtherApps:YES];
+      }
+      [window_ makeKeyAndOrderFront:nil];
     }
-    [window_ makeKeyAndOrderFront:nil];
   } else if (new_state == WindowVisibilityState::kShowInactive && !parent_ &&
              ![window_ isMiniaturized]) {
     if ([[NSApp mainWindow] screen] == [window_ screen] ||
@@ -1560,6 +1567,14 @@ void NativeWidgetNSWindowBridge::OnVisibilityChanged() {
 }
 
 void NativeWidgetNSWindowBridge::OnSpaceActivationMayHaveChanged() {
+  // Attach any children whose attachment was deferred by OrderChildren() while
+  // this window was not on the active space. A window returning to the active
+  // space is already visible and may not become the key window (e.g. the
+  // immersive fullscreen overlay window), so OnVisibilityChanged() and
+  // OnWindowKeyStatusChangedTo() will not be called to order its children.
+  if (window_.onActiveSpace) {
+    OrderChildren();
+  }
   bool is_visible_on_screen = window_.onActiveSpace;
   if (base::FeatureList::IsEnabled(features::kDetectSpaceChangeViaOcclusion)) {
     is_visible_on_screen =
@@ -1971,6 +1986,7 @@ void NativeWidgetNSWindowBridge::SetCanAppearInExistingFullscreenSpaces(
 void NativeWidgetNSWindowBridge::SetMiniaturized(bool miniaturized) {
 
   if (miniaturized) {
+    wants_to_be_visible_ = false;
     // Calling performMiniaturize: will momentarily highlight the button, but
     // AppKit will reject it if there is no miniaturize button.
     if ([window_ styleMask] & NSWindowStyleMaskMiniaturizable)
