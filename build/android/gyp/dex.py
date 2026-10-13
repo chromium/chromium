@@ -657,56 +657,54 @@ def _OnStaleMd5(changes, options, final_dex_inputs, service_jars, dex_cmd):
 
 def MergeDexAndServices(
     src_jars,
-    dest_zip,
+    zip_builder,
     apk_root_dir='',
     apk_dex_dir='',
     uncompress_dex=False,
     compress_level=1,
 ):
-    """Merges dex files and services from src_jars into dest_zip.
+    """Adds dex files and services from src_jars to zip_builder.
 
     Args:
       src_jars: List of input jar paths.
-      dest_zip: An open zipfile.ZipFile object to write to.
+      zip_builder: A zipbuilder.ZipBuilder to add entries to.
       apk_root_dir: Prefix for service paths in the zip.
       apk_dex_dir: Prefix for dex paths in the zip.
       uncompress_dex: Whether to store dex files uncompressed.
-      compress_level: Compression level for zip entries.
+      compress_level: Compression level for compressed dex entries.
     """
     services_map = _CreateServicesMap(src_jars)
     for path, data in sorted(services_map.items()):
-        zip_helpers.add_to_zip_hermetic(
-            dest_zip,
-            apk_root_dir + path,
-            data=data.encode('utf8'),
-            compress=False,
-            alignment=4,
+        zip_builder.add_data(
+            apk_root_dir + path, data, compress_level=0, alignment=4
         )
 
     dex_idx = 0
     for jar_path in src_jars:
         with zipfile.ZipFile(jar_path, 'r') as z:
             dex_names = sorted([n for n in z.namelist() if n.endswith('.dex')])
-            for name in dex_names:
-                data = z.read(name)
-                if len(src_jars) == 1:
-                    dest_name = name
-                else:
-                    dest_name = 'classes{}.dex'.format(
-                        dex_idx + 1 if dex_idx > 0 else ''
-                    )
-
-                compress = not uncompress_dex
-                alignment = None if compress else 4
-                zip_helpers.add_to_zip_hermetic(
-                    dest_zip,
-                    apk_dex_dir + dest_name,
-                    data=data,
-                    compress=compress,
-                    compress_level=compress_level,
-                    alignment=alignment,
+        for name in dex_names:
+            if len(src_jars) == 1:
+                dest_name = name
+            else:
+                dest_name = 'classes{}.dex'.format(
+                    dex_idx + 1 if dex_idx > 0 else ''
                 )
-                dex_idx += 1
+
+            if uncompress_dex:
+                level = 0
+                alignment = 4
+            else:
+                level = compress_level
+                alignment = None
+            zip_builder.add_from_zip(
+                apk_dex_dir + dest_name,
+                jar_path,
+                name,
+                compress_level=level,
+                alignment=alignment,
+            )
+            dex_idx += 1
 
 
 def main(args):

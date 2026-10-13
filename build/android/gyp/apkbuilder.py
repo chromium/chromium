@@ -16,9 +16,9 @@ import zipfile
 
 from util import build_utils
 from util import diff_utils
+from util import zipbuilder
 import action_helpers  # build_utils adds //build to sys.path.
 import dex
-import zip_helpers
 
 
 # Taken from aapt's Package.cpp:
@@ -57,17 +57,15 @@ _NO_COMPRESS_EXTENSIONS = (
 
 # Taken from https://developer.android.com/tools/zipalign.
 _DEFAULT_ZIP_ALIGNMENT = 4
-_64_BIT_PAGE_ALIGNMENT = 0x4000
+# Uncompressed native libraries must be page aligned so that they can be
+# mmap'ed directly from the APK (android:extractNativeLibs="false"). 16KiB is
+# required for 64-bit ABIs and is a harmless superset for 32-bit ones (this
+# matches what apksigner does by default).
+_LIB_PAGE_ALIGNMENT = 0x4000
 
-
-def _Requires64BitAlignment(android_abi: str | None) -> bool:
-    """Returns whether the given Android ABI needs 64-bit page aligned libs."""
-    return android_abi and '64' in android_abi
-
-
-def _ContainsWrapSh(native_libs: list[str]) -> bool:
-    """Returns whether the given list of native libs contains the wrap.sh script."""
-    return any(lib.endswith('wrap.sh') for lib in native_libs)
+# Optimize for speed rather than size. Shipped artifacts are built from app
+# bundles, where bundletool handles compression.
+_COMPRESS_LEVEL = 1
 
 
 def _ParseArgs(args):
@@ -159,18 +157,10 @@ def _ParseArgs(args):
         help='Whether to uncompress native shared libraries. Argument must be '
         'a boolean value.',
     )
-    parser.add_argument(
-        '--apksigner-jar', help='Path to the apksigner executable.'
-    )
     parser.add_argument('--key-path', help='Path to keystore for signing.')
     parser.add_argument('--key-passwd', help='Keystore password')
     parser.add_argument('--key-name', help='Keystore name')
     parser.add_argument('--min-sdk-version', type=int, required=True)
-    parser.add_argument(
-        '--best-compression',
-        action='store_true',
-        help='Use zip -9 rather than zip -1',
-    )
     parser.add_argument(
         '--library-always-compress',
         action='append',
@@ -223,63 +213,6 @@ def _ParseArgs(args):
             'and --secondary-android-abi.'
         )
     return options
-
-
-def _AlignAndSign(
-    apksigner_path,
-    android_abi,
-    apk_path,
-    key_path,
-    key_passwd,
-    key_name,
-    min_sdk_version,
-    warnings_as_errors=False,
-    should_preserve_alignment=False,
-):
-
-    sign_cmd = build_utils.JavaCmd() + [
-        '-jar',
-        apksigner_path,
-        'sign',
-        '--in',
-        apk_path,
-        '--out',
-        apk_path,
-        '--ks',
-        key_path,
-        '--ks-key-alias',
-        key_name,
-        '--ks-pass',
-        'pass:' + key_passwd,
-    ]
-    # V3 signing adds security niceties, which are irrelevant for local builds.
-    sign_cmd += ['--v3-signing-enabled', 'false']
-
-    if min_sdk_version >= 24:
-        # Disable v1 signatures when v2 signing can be used (it's much faster).
-        sign_cmd += ['--v1-signing-enabled', 'false']
-        # Passing minSdkVersion avoids ApkSigner having to parse it from the APK.
-        sign_cmd += ['--min-sdk-version', str(min_sdk_version)]
-    else:
-        # Force SHA-1 (makes signing faster; insecure is fine for local builds).
-        # Leave v2 signing enabled since it verifies faster on device when
-        # supported.
-        sign_cmd += ['--min-sdk-version', '1']
-
-    # v4 signatures (.idsig files) require a v2 or v3 signature at the same time.
-    # These are enabled by default.
-
-    if _Requires64BitAlignment(android_abi):
-        sign_cmd += ['--lib-page-alignment', str(_64_BIT_PAGE_ALIGNMENT)]
-
-    if should_preserve_alignment:
-        # Required so that the 'wrap.sh' script is not relocated in memory, which
-        # would cause the APK to fail to run.
-        sign_cmd += ['--alignment-preserved', 'true']
-
-    build_utils.CheckOutput(
-        sign_cmd, print_stdout=True, fail_on_output=warnings_as_errors
-    )
 
 
 def _SplitAssetPath(path):
@@ -346,25 +279,16 @@ def _GetAssetsToAdd(path_tuples, disable_compression=False, apk_root_dir=''):
     return assets_to_add
 
 
-def _AddFiles(apk, details, compress_level):
+def _AddFiles(zip_builder, details):
     for apk_path, src_path, compress, alignment in details:
-        # This check is only relevant for assets, but it should not matter if it is
-        # checked for the whole list of files.
-        try:
-            apk.getinfo(apk_path)
-            # Should never happen since write_build_config.py handles merging.
-            raise Exception(
-                'Multiple targets specified the asset path: %s' % apk_path
-            )
-        except KeyError:
-            zip_helpers.add_to_zip_hermetic(
-                apk,
-                apk_path,
-                src_path=src_path,
-                compress=compress,
-                compress_level=compress_level,
-                alignment=alignment,
-            )
+        # Duplicate asset paths should never happen since write_build_config.py
+        # handles merging. ZipBuilder raises if one is added twice.
+        zip_builder.add_file(
+            apk_path,
+            src_path,
+            compress_level=_COMPRESS_LEVEL if compress else 0,
+            alignment=alignment,
+        )
 
 
 def _GetNativeLibrariesToAdd(native_libs, android_abi, lib_always_compress):
@@ -375,13 +299,10 @@ def _GetNativeLibrariesToAdd(native_libs, android_abi, lib_always_compress):
     """
     libraries_to_add = []
 
-    alignment = _DEFAULT_ZIP_ALIGNMENT
-    if _Requires64BitAlignment(android_abi):
-        alignment = _64_BIT_PAGE_ALIGNMENT
-
     for path in native_libs:
         basename = os.path.basename(path)
         compress = any(lib_name in basename for lib_name in lib_always_compress)
+        alignment = None if compress else _LIB_PAGE_ALIGNMENT
         lib_android_abi = android_abi
         if path.startswith('android_clang_arm64_hwasan/'):
             lib_android_abi = 'arm64-v8a-hwasan'
@@ -408,9 +329,6 @@ def main(args):
     args = build_utils.ExpandFileArgs(args)
     options = _ParseArgs(args)
     native_libs = sorted(options.native_libs)
-
-    # Optimize either for size or speed.
-    compress_level = 9 if options.best_compression else 1
 
     # Include native libs in the depfile_deps since GN doesn't know about the
     # dependencies when is_component_build=true.
@@ -507,138 +425,126 @@ def main(args):
     assets_to_add = _GetAssetDetails(assets, uncompressed_assets)
 
     # Targets generally do not depend on apks, so no need for only_if_changed.
-    with action_helpers.atomic_output(
-        options.output_apk, only_if_changed=False
-    ) as f:
-        with (
-            zipfile.ZipFile(options.resource_apk) as resource_apk,
-            zipfile.ZipFile(f, 'w') as out_apk,
-        ):
+    with (
+        action_helpers.atomic_output(
+            options.output_apk, only_if_changed=False
+        ) as f,
+        zipbuilder.ZipBuilder() as zip_builder,
+    ):
+        # 1. AndroidManifest.xml
+        logging.debug('Adding AndroidManifest.xml')
+        zip_builder.add_from_zip(
+            apk_manifest_dir + 'AndroidManifest.xml',
+            options.resource_apk,
+            'AndroidManifest.xml',
+            alignment=_DEFAULT_ZIP_ALIGNMENT,
+        )
 
-            def add_to_zip(zip_path, data, compress=True):
-                alignment = None if compress else _DEFAULT_ZIP_ALIGNMENT
-                zip_helpers.add_to_zip_hermetic(
-                    out_apk,
-                    zip_path,
-                    data=data,
-                    compress=compress,
-                    compress_level=compress_level,
-                    alignment=alignment,
-                )
+        # 2. Assets
+        # Make assets come before resources in order to maintain the same file
+        # ordering as GYP / aapt. http://crbug.com/561862
+        logging.debug('Adding assets/')
+        _AddFiles(zip_builder, assets_to_add)
 
-            def copy_resource(zipinfo, out_dir=''):
-                add_to_zip(
-                    out_dir + zipinfo.filename,
-                    resource_apk.read(zipinfo.filename),
-                    compress=zipinfo.compress_type != zipfile.ZIP_STORED,
-                )
-
-            # Make assets come before resources in order to maintain the same file
-            # ordering as GYP / aapt. http://crbug.com/561862
-            resource_infos = resource_apk.infolist()
-
-            # 1. AndroidManifest.xml
-            logging.debug('Adding AndroidManifest.xml')
-            copy_resource(
-                resource_apk.getinfo('AndroidManifest.xml'),
-                out_dir=apk_manifest_dir,
+        # 3. DEX and META-INF/services/
+        logging.debug('Adding classes.dex')
+        if options.dex_files:
+            dex.MergeDexAndServices(
+                options.dex_files,
+                zip_builder,
+                apk_root_dir=apk_root_dir,
+                apk_dex_dir=apk_dex_dir,
+                uncompress_dex=options.uncompress_dex,
             )
 
-            # 2. Assets
-            logging.debug('Adding assets/')
-            _AddFiles(out_apk, assets_to_add, compress_level)
+        # 4. Native libraries.
+        logging.debug('Adding lib/')
+        _AddFiles(zip_builder, libs_to_add)
 
-            # 3. DEX and META-INF/services/
-            logging.debug('Adding classes.dex')
-            if options.dex_files:
-                dex.MergeDexAndServices(
-                    options.dex_files,
-                    out_apk,
-                    apk_root_dir=apk_root_dir,
-                    apk_dex_dir=apk_dex_dir,
-                    uncompress_dex=options.uncompress_dex,
-                    compress_level=compress_level,
+        # Add a placeholder lib if the APK should be multi ABI but is missing
+        # libs for one of the ABIs.
+        native_lib_placeholders = options.native_lib_placeholders
+        secondary_native_lib_placeholders = (
+            options.secondary_native_lib_placeholders
+        )
+        if options.is_multi_abi:
+            if (
+                (secondary_native_libs or secondary_native_lib_placeholders)
+                and not native_libs
+                and not native_lib_placeholders
+            ):
+                native_lib_placeholders += ['libplaceholder.so']
+            if (
+                (native_libs or native_lib_placeholders)
+                and not secondary_native_libs
+                and not secondary_native_lib_placeholders
+            ):
+                secondary_native_lib_placeholders += ['libplaceholder.so']
+
+        # Add placeholder libs.
+        placeholder_paths = [
+            'lib/%s/%s' % (options.android_abi, name)
+            for name in sorted(native_lib_placeholders)
+        ] + [
+            'lib/%s/%s' % (options.secondary_android_abi, name)
+            for name in sorted(secondary_native_lib_placeholders)
+        ]
+        for apk_path in placeholder_paths:
+            # Note: Empty libs files are ignored by md5check (can cause issues
+            # with stale builds when the only change is adding/removing
+            # placeholders).
+            # Store & align like real libs so that the APK remains valid with
+            # android:extractNativeLibs="false".
+            zip_builder.add_data(
+                apk_path, b'', compress_level=0, alignment=_LIB_PAGE_ALIGNMENT
+            )
+
+        # 5. Resources (all entries except AndroidManifest.xml, which was
+        # already added in step 1).
+        logging.debug('Adding res/')
+        zip_builder.add_all_from_zip(
+            options.resource_apk,
+            alignment=_DEFAULT_ZIP_ALIGNMENT,
+        )
+
+        # 6. Java resources that should be accessible via
+        # Class.getResourceAsStream(), in particular parts of Emma jar.
+        # Prebuilt jars may contain class files which we shouldn't include.
+        logging.debug('Adding Java resources')
+        for java_resource in options.java_resources:
+            with zipfile.ZipFile(java_resource, 'r') as java_resource_jar:
+                names = sorted(java_resource_jar.namelist())
+            for apk_path in names:
+                apk_path_lower = apk_path.lower()
+
+                if apk_path_lower.startswith('meta-inf/'):
+                    continue
+                if apk_path_lower.endswith('/'):
+                    continue
+                if apk_path_lower.endswith('.class'):
+                    continue
+
+                zip_builder.add_from_zip(
+                    apk_root_dir + apk_path,
+                    java_resource,
+                    apk_path,
+                    compress_level=_COMPRESS_LEVEL,
                 )
 
-            # 4. Native libraries.
-            logging.debug('Adding lib/')
-            _AddFiles(out_apk, libs_to_add, compress_level)
-
-            # Add a placeholder lib if the APK should be multi ABI but is missing libs
-            # for one of the ABIs.
-            native_lib_placeholders = options.native_lib_placeholders
-            secondary_native_lib_placeholders = (
-                options.secondary_native_lib_placeholders
-            )
-            if options.is_multi_abi:
-                if (
-                    (secondary_native_libs or secondary_native_lib_placeholders)
-                    and not native_libs
-                    and not native_lib_placeholders
-                ):
-                    native_lib_placeholders += ['libplaceholder.so']
-                if (
-                    (native_libs or native_lib_placeholders)
-                    and not secondary_native_libs
-                    and not secondary_native_lib_placeholders
-                ):
-                    secondary_native_lib_placeholders += ['libplaceholder.so']
-
-            # Add placeholder libs.
-            for name in sorted(native_lib_placeholders):
-                # Note: Empty libs files are ignored by md5check (can cause issues
-                # with stale builds when the only change is adding/removing
-                # placeholders).
-                apk_path = 'lib/%s/%s' % (options.android_abi, name)
-                add_to_zip(apk_path, '')
-
-            for name in sorted(secondary_native_lib_placeholders):
-                # Note: Empty libs files are ignored by md5check (can cause issues
-                # with stale builds when the only change is adding/removing
-                # placeholders).
-                apk_path = 'lib/%s/%s' % (options.secondary_android_abi, name)
-                add_to_zip(apk_path, '')
-
-            # 5. Resources
-            logging.debug('Adding res/')
-            for info in sorted(resource_infos, key=lambda i: i.filename):
-                if info.filename != 'AndroidManifest.xml':
-                    copy_resource(info)
-
-            # 6. Java resources that should be accessible via
-            # Class.getResourceAsStream(), in particular parts of Emma jar.
-            # Prebuilt jars may contain class files which we shouldn't include.
-            logging.debug('Adding Java resources')
-            for java_resource in options.java_resources:
-                with zipfile.ZipFile(java_resource, 'r') as java_resource_jar:
-                    for apk_path in sorted(java_resource_jar.namelist()):
-                        apk_path_lower = apk_path.lower()
-
-                        if apk_path_lower.startswith('meta-inf/'):
-                            continue
-                        if apk_path_lower.endswith('/'):
-                            continue
-                        if apk_path_lower.endswith('.class'):
-                            continue
-
-                        add_to_zip(
-                            apk_root_dir + apk_path,
-                            java_resource_jar.read(apk_path),
-                        )
-
-        if options.format == 'apk' and options.key_path:
-            should_preserve_alignment = _ContainsWrapSh(native_libs)
-            _AlignAndSign(
-                options.apksigner_jar,
-                options.android_abi,
-                f.name,
-                options.key_path,
-                options.key_passwd,
-                options.key_name,
-                options.min_sdk_version,
-                warnings_as_errors=options.warnings_as_errors,
-                should_preserve_alignment=should_preserve_alignment,
-            )
+        logging.debug('Writing zip')
+        if options.key_path:
+            assert options.format == 'apk', 'Bundle modules are not signed.'
+        # ZipBuilder deletes and recreates f.name (only the temp path is used),
+        # and atomic_output then moves it into place.
+        zip_builder.write(
+            f.name,
+            key_path=options.key_path,
+            key_passwd=options.key_passwd,
+            key_name=options.key_name,
+            min_sdk_version=options.min_sdk_version,
+            warnings_as_errors=options.warnings_as_errors,
+        )
+        if options.key_path:
             shutil.move(f'{f.name}.idsig', f'{options.output_apk}.idsig')
         logging.debug('Moving file into place')
 

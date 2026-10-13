@@ -97,6 +97,10 @@ _r8_path = "//third_party/r8/cipd/lib/r8.jar"
 _custom_r8_path = "//third_party/r8/custom_r8.jar"
 _custom_d8_path = "//third_party/r8/custom_d8.jar"
 _custom_d8_binary_path = "//third_party/r8/cipd/bin/custom_d8"
+_signflinger_jar_path =
+    "//third_party/android_build_tools/signflinger/cipd/signflinger.jar"
+_signflinger_binary_path =
+    "//third_party/android_build_tools/signflinger/cipd/signflinger"
 _default_lint_jar_path = "//third_party/android_build_tools/lint/cipd/lint.jar"
 _manifest_merger_jar_path =
     "//third_party/android_build_tools/manifest_merger/cipd/manifest-merger.jar"
@@ -2684,7 +2688,11 @@ if (enable_java_templates) {
 
     _script = "//build/android/gyp/apkbuilder.py"
 
-    _inputs = [ invoker.packaged_resources_path ]
+    _inputs = [
+      invoker.packaged_resources_path,
+      _signflinger_jar_path,
+      _signflinger_binary_path,
+    ]
 
     _outputs = [ invoker.output_apk_path ]
     _data = [ invoker.output_apk_path ]
@@ -2715,7 +2723,6 @@ if (enable_java_templates) {
       _args += [ "--assets=${invoker.extra_assets}" ]
     }
     if (!_is_robolectric_apk) {
-      _apksigner = "$android_sdk_build_tools/lib/apksigner.jar"
       _keystore_path = android_keystore_path
       _keystore_name = android_keystore_name
       _keystore_password = android_keystore_password
@@ -2726,14 +2733,9 @@ if (enable_java_templates) {
         _keystore_password = invoker.keystore_password
       }
 
-      _inputs += [
-        _apksigner,
-        _keystore_path,
-      ]
+      _inputs += [ _keystore_path ]
       _outputs += [ invoker.output_apk_path + ".idsig" ]
       _args += [
-        "--apksigner-jar",
-        rebase_path(_apksigner, root_build_dir),
         "--key-path",
         rebase_path(_keystore_path, root_build_dir),
         "--key-name",
@@ -2741,9 +2743,6 @@ if (enable_java_templates) {
         "--key-passwd",
         _keystore_password,
       ]
-      if (is_official_build) {
-        _args += [ "--best-compression" ]
-      }
     }
     if (defined(invoker.uncompress_dex)) {
       _uncompress_dex = invoker.uncompress_dex
@@ -4635,14 +4634,16 @@ template("create_android_app_bundle_module") {
   _script = "//build/android/gyp/apkbuilder.py"
 
   # NOTE: Compared to the inputs of the "package_apk" template action,
-  #       this list is much smaller, since ApkSigner is never called
-  #       by apkbuilder.py --format=bundle-module. Other dependencies like
+  #       this list is much smaller, since signing is never done by
+  #       apkbuilder.py --format=bundle-module. Other dependencies like
   #       extra native libraries are all pulled from the .build_config.json
   #       through @FileArg() references (see below) and will be listed in the
   #       generated depfile instead.
   _inputs = [
     invoker.build_config,
     invoker.app_bundle_build_config,
+    _signflinger_jar_path,
+    _signflinger_binary_path,
   ]
   _outputs = [ invoker.module_zip_path ]
   _args = [
@@ -4746,7 +4747,7 @@ template("create_android_app_bundle_module") {
 
   action_with_pydeps(target_name) {
     deps = _deps
-    inputs = _inputs
+    inputs = java_paths_for_inputs + _inputs
     outputs = _outputs
     script = _script
     depfile = "$target_gen_dir/$target_name.d"
