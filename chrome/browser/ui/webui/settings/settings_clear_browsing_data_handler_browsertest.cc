@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/search_test_utils.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/browsing_data/core/counters/browsing_data_counter.h"
 #include "components/browsing_data/core/pref_names.h"
@@ -114,6 +115,7 @@ class ClearBrowsingDataHandlerBrowserTest : public InProcessBrowserTest {
 
     template_url_service_ =
         TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
+    search_test_utils::WaitForTemplateURLServiceToLoad(template_url_service_);
 
     handler_ = std::make_unique<TestingClearBrowsingDataHandler>(
         &test_web_ui_, browser()->GetProfile());
