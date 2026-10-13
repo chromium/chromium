@@ -27,19 +27,14 @@ namespace ios {
 favicon::FaviconService* FaviconServiceFactory::GetForProfile(
     ProfileIOS* profile,
     ServiceAccessType access_type) {
-  if (!profile->IsOffTheRecord()) {
-    return GetInstance()->GetServiceForProfileAs<favicon::FaviconService>(
-        profile, /*create=*/true);
+  if (profile->IsOffTheRecord()) {
+    if (access_type == ServiceAccessType::IMPLICIT_ACCESS) {
+      return nullptr;
+    }
   }
 
-  if (access_type == ServiceAccessType::EXPLICIT_ACCESS) {
-    return GetInstance()->GetServiceForProfileAs<favicon::FaviconService>(
-        profile->GetOriginalProfile(),
-        /*create=*/true);
-  }
-
-  // ProfileIOS is OffTheRecord without access.
-  NOTREACHED() << "ProfileIOS is OffTheRecord";
+  return GetInstance()->GetServiceForProfileAs<favicon::FaviconService>(
+      profile, /*create=*/true);
 }
 
 // static
@@ -56,7 +51,8 @@ FaviconServiceFactory::GetDefaultFactory() {
 
 FaviconServiceFactory::FaviconServiceFactory()
     : ProfileKeyedServiceFactoryIOS("FaviconService",
-                                    TestingCreation::kNoServiceForTests) {
+                                    TestingCreation::kNoServiceForTests,
+                                    ProfileSelection::kRedirectedInIncognito) {
   DependsOn(ios::HistoryServiceFactory::GetInstance());
 }
 
