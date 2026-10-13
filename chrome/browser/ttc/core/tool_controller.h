@@ -45,7 +45,8 @@ class ToolController {
  private:
   Profile* GetProfile();
 
-  void OpenUrl(const base::DictValue& arguments, ToolResponseCallback callback);
+  void Navigate(const base::DictValue& arguments,
+                ToolResponseCallback callback);
   void PerformSearch(const base::DictValue& arguments,
                      ToolResponseCallback callback);
   void GoBack(ToolResponseCallback callback);

@@ -115,77 +115,60 @@ void ToolController::ProcessToolCall(const ToolRequest& tool_request,
               .Build()),
       std::move(callback));
 
-  if (tool_request.name == "open_url") {
-    OpenUrl(tool_request.arguments, std::move(callback));
-    return;
-  }
-  if (tool_request.name == "perform_search") {
-    PerformSearch(tool_request.arguments, std::move(callback));
-    return;
-  }
+  if (std::optional<actor::ToolId> tool_id =
+          actor::ToolRegistry::NameToToolId(tool_request.name)) {
+    switch (*tool_id) {
+      case actor::ToolId::kNavigate:
+        Navigate(tool_request.arguments, std::move(callback));
+        return;
+      case actor::ToolId::kPerformSearch:
+        PerformSearch(tool_request.arguments, std::move(callback));
+        return;
+      case actor::ToolId::kGoBack:
+        GoBack(std::move(callback));
+        return;
+      case actor::ToolId::kGoForward:
+        GoForward(std::move(callback));
+        return;
+      case actor::ToolId::kReloadPage:
+        ReloadPage(std::move(callback));
+        return;
+      case actor::ToolId::kFindAndHighlight:
+        FindAndHighlight(tool_request.arguments, std::move(callback));
+        return;
+      case actor::ToolId::kPlayVideo:
+        PlayVideo(std::move(callback));
+        return;
+      case actor::ToolId::kPauseVideo:
+        PauseVideo(std::move(callback));
+        return;
+      case actor::ToolId::kSeekToTimestamp:
+        SeekToTimestamp(tool_request.arguments, std::move(callback));
+        return;
+      case actor::ToolId::kTranslatePage:
+        TranslatePage(tool_request.arguments, std::move(callback));
+        return;
 #if !BUILDFLAG(IS_ANDROID)
-  if (tool_request.name == "close_current_tab") {
-    CloseCurrentTab(std::move(callback));
-    return;
-  }
+      case actor::ToolId::kCloseTab:
+        CloseCurrentTab(std::move(callback));
+        return;
+      case actor::ToolId::kSwitchTab:
+        SwitchTab(tool_request.arguments, std::move(callback));
+        return;
+      case actor::ToolId::kOpenKnownPage:
+        OpenKnownPage(tool_request.arguments, std::move(callback));
+        return;
+      case actor::ToolId::kEnterFullscreen:
+        SetFullscreen(/*fullscreen=*/true, std::move(callback));
+        return;
+      case actor::ToolId::kExitFullscreen:
+        SetFullscreen(/*fullscreen=*/false, std::move(callback));
+        return;
 #endif
-  if (tool_request.name == "go_back") {
-    GoBack(std::move(callback));
-    return;
+      default:
+        break;
+    }
   }
-  if (tool_request.name == "go_forward") {
-    GoForward(std::move(callback));
-    return;
-  }
-  if (tool_request.name == "reload_page") {
-    ReloadPage(std::move(callback));
-    return;
-  }
-#if !BUILDFLAG(IS_ANDROID)
-  if (tool_request.name == "switch_tab") {
-    SwitchTab(tool_request.arguments, std::move(callback));
-    return;
-  }
-  if (tool_request.name == "open_known_page") {
-    OpenKnownPage(tool_request.arguments, std::move(callback));
-    return;
-  }
-#endif
-  if (tool_request.name == "find_and_highlight") {
-    FindAndHighlight(tool_request.arguments, std::move(callback));
-    return;
-  }
-
-  if (tool_request.name == "play_video") {
-    PlayVideo(std::move(callback));
-    return;
-  }
-
-  if (tool_request.name == "pause_video") {
-    PauseVideo(std::move(callback));
-    return;
-  }
-
-  if (tool_request.name == "seek_to_timestamp") {
-    SeekToTimestamp(tool_request.arguments, std::move(callback));
-    return;
-  }
-
-  if (tool_request.name == "translate_page") {
-    TranslatePage(tool_request.arguments, std::move(callback));
-    return;
-  }
-
-#if !BUILDFLAG(IS_ANDROID)
-  if (tool_request.name == "enter_fullscreen") {
-    SetFullscreen(/*fullscreen=*/true, std::move(callback));
-    return;
-  }
-  if (tool_request.name == "exit_fullscreen") {
-    SetFullscreen(/*fullscreen=*/false, std::move(callback));
-    return;
-  }
-#endif
 
   // TODO(b/573150754): Migrate click_element, set_text, and
   // select_option to kClick, kType, and kSelectOption once MES supports
@@ -214,12 +197,11 @@ std::vector<ToolDefinition> ToolController::GetToolDefinitions() {
       actor::ActorKeyedService::Get(GetProfile());
   CHECK(actor_service);
 
-  // TODO(b/573158576): Add a dedicated open_url tool to ToolRegistry and
-  // include its ToolId here.
   // TODO(b/573150754): Add kClick, kType, and kSelectOption once MES supports
   // rewriting dom_node_id for TOCTOU checks and ProcessToolCall() dispatches
   // their registry names.
   static const base::NoDestructor<std::set<actor::ToolId>> kSupportedToolIds({
+      actor::ToolId::kNavigate,
       actor::ToolId::kPerformSearch,
       actor::ToolId::kGoBack,
       actor::ToolId::kGoForward,
@@ -241,9 +223,8 @@ std::vector<ToolDefinition> ToolController::GetToolDefinitions() {
   std::vector<const actor::ToolDefinition*> actor_tools =
       actor_service->tool_registry().GetToolsByIds(*kSupportedToolIds);
 
-  // Legacy tools defined below: open_url, click_element, set_text, and
-  // select_option.
-  constexpr size_t kNumLegacyTools = 4;
+  // Legacy tools defined below: click_element, set_text, and select_option.
+  constexpr size_t kNumLegacyTools = 3;
   std::vector<ToolDefinition> tools;
   tools.reserve(actor_tools.size() + kNumLegacyTools);
   for (const actor::ToolDefinition* actor_tool : actor_tools) {
@@ -255,33 +236,6 @@ std::vector<ToolDefinition> ToolController::GetToolDefinitions() {
     tool.verbalization = ToolDefinition::Verbalization::kSilentAction;
     tools.push_back(std::move(tool));
   }
-
-  // TODO(b/573158576): Remove legacy open_url definition once a dedicated
-  // open_url tool is registered in ToolRegistry and dispatched in
-  // ProcessToolCall().
-  ToolDefinition open_url;
-  open_url.name = "open_url";
-  open_url.description = "Opens a URL in the browser.";
-  open_url.parameters_json_schema =
-      base::DictValue()
-          .Set("type", "object")
-          .Set("properties",
-               base::DictValue()
-                   .Set("url", base::DictValue()
-                                   .Set("type", "string")
-                                   .Set("description",
-                                        "The complete URL to open (e.g. "
-                                        "\"https://example.com\")."))
-                   .Set("new_tab",
-                        base::DictValue()
-                            .Set("type", "boolean")
-                            .Set("description",
-                                 "If true, opens the URL in a new tab; "
-                                 "otherwise, navigates the current tab.")))
-          .Set("required", base::ListValue().Append("url").Append("new_tab"));
-  open_url.behavior = ToolDefinition::Behavior::kBlocking;
-  open_url.verbalization = ToolDefinition::Verbalization::kSilentAction;
-  tools.push_back(std::move(open_url));
 
   // TODO(b/570042394): Remove legacy click_element, set_text, and
   // select_option definitions once MES supports rewriting dom_node_id for
@@ -367,23 +321,14 @@ Profile* ToolController::GetProfile() {
   return session_controller_->GetProfile();
 }
 
-void ToolController::OpenUrl(const base::DictValue& arguments,
-                             ToolResponseCallback callback) {
-  const std::string* url = arguments.FindString("url");
+void ToolController::Navigate(const base::DictValue& arguments,
+                              ToolResponseCallback callback) {
+  const std::string* url =
+      arguments.FindString(actor::NavigateToolRequest::kUrlParam);
   if (!url) {
     std::move(callback).Run(
         ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
                             "Missing url argument"));
-    return;
-  }
-
-  bool new_tab = arguments.FindBool("new_tab").value_or(false);
-
-  // TODO(b/561651267): Add support for opening in a new tab.
-  if (new_tab) {
-    std::move(callback).Run(
-        ToolResponse::Error(actor::mojom::ActionResultCode::kNotImplemented,
-                            "New tab not supported yet"));
     return;
   }
 
@@ -398,21 +343,12 @@ void ToolController::OpenUrl(const base::DictValue& arguments,
 
 void ToolController::PerformSearch(const base::DictValue& arguments,
                                    ToolResponseCallback callback) {
-  const std::string* query = arguments.FindString("query");
+  const std::string* query =
+      arguments.FindString(actor::PerformSearchToolRequest::kQueryParam);
   if (!query) {
     std::move(callback).Run(
         ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
                             "Missing query argument"));
-    return;
-  }
-
-  bool new_tab = arguments.FindBool("new_tab").value_or(false);
-
-  // TODO(b/561651267): Add support for searching in a new tab.
-  if (new_tab) {
-    std::move(callback).Run(
-        ToolResponse::Error(actor::mojom::ActionResultCode::kNotImplemented,
-                            "New tab not supported yet"));
     return;
   }
 
@@ -462,7 +398,8 @@ void ToolController::ReloadPage(ToolResponseCallback callback) {
 #if !BUILDFLAG(IS_ANDROID)
 void ToolController::SwitchTab(const base::DictValue& arguments,
                                ToolResponseCallback callback) {
-  const std::string* query = arguments.FindString("query");
+  const std::string* query =
+      arguments.FindString(actor::SwitchTabToolRequest::kQueryParam);
   if (!query || query->empty()) {
     std::move(callback).Run(
         ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
@@ -476,7 +413,8 @@ void ToolController::SwitchTab(const base::DictValue& arguments,
 
 void ToolController::OpenKnownPage(const base::DictValue& arguments,
                                    ToolResponseCallback callback) {
-  const std::string* query = arguments.FindString("query");
+  const std::string* query =
+      arguments.FindString(actor::OpenKnownPageToolRequest::kQueryParam);
   if (!query || query->empty()) {
     std::move(callback).Run(
         ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
@@ -491,7 +429,8 @@ void ToolController::OpenKnownPage(const base::DictValue& arguments,
 
 void ToolController::FindAndHighlight(const base::DictValue& arguments,
                                       ToolResponseCallback callback) {
-  const std::string* query = arguments.FindString("query");
+  const std::string* query =
+      arguments.FindString(actor::FindAndHighlightToolRequest::kQueryParam);
   if (!query) {
     std::move(callback).Run(
         ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
@@ -526,7 +465,8 @@ void ToolController::PauseVideo(ToolResponseCallback callback) {
 
 void ToolController::SeekToTimestamp(const base::DictValue& arguments,
                                      ToolResponseCallback callback) {
-  const std::string* timecode = arguments.FindString("timecode");
+  const std::string* timecode =
+      arguments.FindString(actor::SeekMediaToolRequest::kTimecodeParam);
   if (!timecode) {
     std::move(callback).Run(
         ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
@@ -555,7 +495,8 @@ void ToolController::TranslatePage(const base::DictValue& arguments,
                                    ToolResponseCallback callback) {
   // If `target_language` is empty, the page is translated to the user's
   // preferred language.
-  const std::string* target_language = arguments.FindString("target_language");
+  const std::string* target_language = arguments.FindString(
+      actor::TranslatePageToolRequest::kTargetLanguageParam);
   if (!target_language) {
     std::move(callback).Run(
         ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
@@ -604,7 +545,8 @@ void ToolController::SetText(const base::DictValue& arguments,
     return;
   }
 
-  const std::string* text = arguments.FindString("text");
+  const std::string* text =
+      arguments.FindString(actor::TypeToolRequest::kTextParam);
   if (!text) {
     std::move(callback).Run(
         ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
