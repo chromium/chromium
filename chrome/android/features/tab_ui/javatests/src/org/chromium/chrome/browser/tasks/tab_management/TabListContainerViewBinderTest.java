@@ -153,7 +153,10 @@ public class TabListContainerViewBinderTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/376527109
+    @DisableIf.Device({
+        DeviceFormFactor.DESKTOP, // crbug.com/376527109
+        DeviceFormFactor.AUTOMOTIVE // crbug.com/572803367
+    })
     @UiThreadTest
     public void testSetInitialScrollIndex_Grid() {
         setUpGridLayoutManager();
