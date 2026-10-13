@@ -1125,32 +1125,25 @@ Node* Range::CheckNodeWOffset(Node* n,
   NOTREACHED();
 }
 
-void Range::CheckNodeBA(Node* n, ExceptionState& exception_state) const {
-  if (!n) {
-    // FIXME: Generated bindings code never calls with null, and neither should
-    // other callers!
-    exception_state.ThrowTypeError("The node provided is null.");
-    return;
-  }
-
+void Range::CheckNodeBA(Node& n, ExceptionState& exception_state) const {
   // InvalidNodeTypeError: Raised if the root container of refNode is not an
   // Attr, Document, DocumentFragment or ShadowRoot node, or part of a SVG
   // shadow DOM tree, or if refNode is a Document, DocumentFragment, ShadowRoot,
   // Attr, Entity, or Notation node.
 
-  if (!n->parentNode()) {
+  if (!n.parentNode()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidNodeTypeError,
                                       "the given Node has no parent.");
     return;
   }
 
-  switch (n->getNodeType()) {
+  switch (n.getNodeType()) {
     case Node::kAttributeNode:
     case Node::kDocumentFragmentNode:
     case Node::kDocumentNode:
       exception_state.ThrowDOMException(
           DOMExceptionCode::kInvalidNodeTypeError,
-          StrCat({"The node provided is of type '", n->nodeName(), "'."}));
+          StrCat({"The node provided is of type '", n.nodeName(), "'."}));
       return;
     case Node::kCdataSectionNode:
     case Node::kCommentNode:
@@ -1161,7 +1154,7 @@ void Range::CheckNodeBA(Node* n, ExceptionState& exception_state) const {
       break;
   }
 
-  Node* root = n;
+  Node* root = &n;
   while (ContainerNode* parent = root->parentNode())
     root = parent;
 
@@ -1178,7 +1171,7 @@ void Range::CheckNodeBA(Node* n, ExceptionState& exception_state) const {
     case Node::kTextNode:
       exception_state.ThrowDOMException(
           DOMExceptionCode::kInvalidNodeTypeError,
-          StrCat({"The node provided is of type '", n->nodeName(), "'."}));
+          StrCat({"The node provided is of type '", n.nodeName(), "'."}));
       return;
   }
 }
@@ -1190,7 +1183,7 @@ Range* Range::cloneRange() const {
 }
 
 void Range::setStartAfter(Node* ref_node, ExceptionState& exception_state) {
-  CheckNodeBA(ref_node, exception_state);
+  CheckNodeBA(*ref_node, exception_state);
   if (exception_state.HadException())
     return;
 
@@ -1198,7 +1191,7 @@ void Range::setStartAfter(Node* ref_node, ExceptionState& exception_state) {
 }
 
 void Range::setEndBefore(Node* ref_node, ExceptionState& exception_state) {
-  CheckNodeBA(ref_node, exception_state);
+  CheckNodeBA(*ref_node, exception_state);
   if (exception_state.HadException())
     return;
 
@@ -1206,7 +1199,7 @@ void Range::setEndBefore(Node* ref_node, ExceptionState& exception_state) {
 }
 
 void Range::setEndAfter(Node* ref_node, ExceptionState& exception_state) {
-  CheckNodeBA(ref_node, exception_state);
+  CheckNodeBA(*ref_node, exception_state);
   if (exception_state.HadException())
     return;
 
@@ -1408,7 +1401,7 @@ void Range::surroundContents(Node* new_parent,
 }
 
 void Range::setStartBefore(Node* ref_node, ExceptionState& exception_state) {
-  CheckNodeBA(ref_node, exception_state);
+  CheckNodeBA(*ref_node, exception_state);
   if (exception_state.HadException())
     return;
 
