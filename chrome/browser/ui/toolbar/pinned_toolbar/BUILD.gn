@@ -4,7 +4,7 @@
 
 source_set("pinned_toolbar") {
   sources = []
-  public_deps = []
+  public_deps = [ "//ui/base/interaction" ]
 
   if (!is_android) {
     sources += [
@@ -29,7 +29,6 @@ source_set("pinned_toolbar") {
 
 source_set("impl") {
   sources = []
-  public_deps = []
 
   if (!is_android) {
     sources += [
@@ -52,7 +51,6 @@ source_set("impl") {
       "//chrome/browser/ui/views/page_action",
       "//chrome/browser/ui/views/toolbar",
     ]
-    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   }
 }
 

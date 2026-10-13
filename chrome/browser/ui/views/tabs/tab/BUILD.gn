@@ -27,6 +27,7 @@ source_set("tab") {
     "//components/tabs:public",
     "//ui/base",
     "//ui/gfx",
+    "//ui/lottie",
     "//ui/views",
   ]
 }

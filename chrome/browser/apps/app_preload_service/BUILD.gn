@@ -16,13 +16,16 @@ source_set("app_preload_service") {
     "preload_app_definition.h",
   ]
 
+  public_deps = [
+    "//chrome/browser/apps/almanac_api_client/proto",
+    "//chrome/browser/apps/app_preload_service/proto",
+  ]
+
   deps = [
     "//ash/constants",
     "//base",
     "//chrome/browser/apps:user_type_filter",
     "//chrome/browser/apps/almanac_api_client",
-    "//chrome/browser/apps/almanac_api_client/proto",
-    "//chrome/browser/apps/app_preload_service/proto",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service/app_install",
     "//chrome/browser/profiles:profile",

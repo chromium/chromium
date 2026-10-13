@@ -89,6 +89,7 @@ static_library("core") {
     "//chrome/browser/policy/messaging_layer/proto:user_session_activity_proto",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/signin",
+    "//chrome/browser/support_tool:support_tool_proto",
     "//chrome/common",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",

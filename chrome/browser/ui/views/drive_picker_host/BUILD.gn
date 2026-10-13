@@ -27,7 +27,6 @@ source_set("drive_picker_host") {
     "//ui/views",
   ]
   deps = [
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser:primitives",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:browser_tabstrip",
@@ -38,6 +37,7 @@ source_set("drive_picker_host") {
     "//chrome/browser/ui/webui/drive_picker_host:mojo_bindings",
     "//chrome/common",
     "//components/constrained_window",
+    "//components/input",
     "//components/web_modal",
     "//content/public/browser",
     "//net",

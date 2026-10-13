@@ -45,6 +45,8 @@ static_library("extensions") {
   ]
 
   public_deps = [
+    "//chrome/browser/apps/almanac_api_client/proto",
+    "//chrome/browser/apps/app_preload_service/proto",
     "//chrome/browser/extensions/api/input_ime",
     "//chromeos/ash/experiences/extensions/common/api",
   ]

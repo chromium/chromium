@@ -20,8 +20,9 @@ static_library("fusebox") {
     "fusebox_server.h",
   ]
 
+  public_deps = [ ":fusebox_proto" ]
+
   deps = [
-    ":fusebox_proto",
     "//base",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/file_manager/virtual_tasks",

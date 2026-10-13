@@ -12,6 +12,8 @@ static_library("capture_mode") {
     "search_results_view.h",
   ]
 
+  public_deps = [ "//chrome/browser/lens/core/mojom:mojo_bindings" ]
+
   deps = [
     "//ash/constants",
     "//ash/public/cpp",
@@ -24,7 +26,6 @@ static_library("capture_mode") {
     "//chrome/browser/ash/policy/skyvault",
     "//chrome/browser/ash/video_conference",
     "//chrome/browser/download",
-    "//chrome/browser/lens/core/mojom:mojo_bindings",
     "//chrome/browser/policy:system_features_disable_list",
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/screen_ai/public:optical_character_recognizer",

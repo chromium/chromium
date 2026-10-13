@@ -214,6 +214,7 @@ if (!is_android) {
       "//ui/base/mojom:ui_base_types",
     ]
     deps = [
+      "//chrome/browser:buildflags",
       "//chrome/browser:defaults",
       "//chrome/browser/sessions",
       "//chrome/browser/ui:browser_init_state",
@@ -661,6 +662,7 @@ if (!is_android) {
       "//build:buildflag_header_h",
       "//chrome/browser:command_updater_impl",
       "//chrome/browser:primitives",
+      "//chrome/browser/profiles:profile_util",
       "//chrome/browser/ttc/core",
       "//chrome/browser/ui/side_panel",
       "//chrome/browser/ui/tabs:tab_strip_model_observer",

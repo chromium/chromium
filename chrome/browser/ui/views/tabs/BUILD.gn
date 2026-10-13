@@ -50,8 +50,6 @@ source_set("base_impl") {
     "//ui/gfx/animation",
     "//ui/gfx/geometry",
   ]
-
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("tab_group") {
@@ -125,8 +123,6 @@ source_set("tab_group_impl") {
     "//ui/gfx/geometry",
     "//ui/views",
   ]
-
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("tab_style_views") {
@@ -171,8 +167,6 @@ source_set("tab_style_views_impl") {
     "//ui/gfx/geometry",
     "//ui/views",
   ]
-
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("tab_container") {
@@ -234,8 +228,6 @@ source_set("tab_container_impl") {
     "//ui/gfx/range",
     "//ui/views",
   ]
-
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("tab") {
@@ -317,7 +309,6 @@ source_set("tab_impl") {
   # tab.cc, never by tab.h -- so this :tab_impl target is the one that
   # carries the real dependency and the corresponding
   # allow_circular_includes_from grant on ui:ui, not the public :tab target.
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("tab_strip_button") {
@@ -363,8 +354,6 @@ source_set("tab_strip_button_impl") {
     "//ui/gfx/geometry",
     "//ui/views",
   ]
-
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("tab_strip") {
@@ -506,8 +495,6 @@ source_set("tab_strip_impl") {
   if (use_aura) {
     deps += [ "//ui/aura" ]
   }
-
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("new_tab_button") {

@@ -14,6 +14,8 @@ static_library("event_based_logs") {
     "event_observer_base.h",
   ]
 
+  public_deps = [ "//chrome/browser/support_tool:support_tool_proto" ]
+
   deps = [
     ":utils",
     "//ash/constants",
@@ -25,7 +27,6 @@ static_library("event_based_logs") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/support_tool",
-    "//chrome/browser/support_tool:support_tool_proto",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/settings",
     "//components/prefs",
