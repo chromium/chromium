@@ -68,7 +68,8 @@ void PaymentsAccessTokenFetcher::AccessTokenFetchFinished(
   if (error.state() != GoogleServiceAuthError::NONE) {
     std::move(callback_).Run(error);
   } else {
-    std::move(callback_).Run(access_token_info.token);
+    access_token_ = access_token_info.token;
+    std::move(callback_).Run(access_token_);
   }
 }
 

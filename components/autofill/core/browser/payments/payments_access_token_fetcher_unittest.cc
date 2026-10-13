@@ -73,13 +73,17 @@ TEST_F(PaymentsAccessTokenFetcherTest, AbortIfRequestPending) {
 
 // Tests that if an access token is prefetched, it is returned immediately.
 TEST_F(PaymentsAccessTokenFetcherTest, ReusedToken) {
-  token_fetcher_->set_access_token_for_testing(kTestAccessToken);
   EXPECT_CALL(
       callback_,
       Run(std::variant<GoogleServiceAuthError, std::string>(kTestAccessToken)))
-      .Times(1);
+      .Times(2);
 
   token_fetcher_->GetAccessToken(/*invalidate_old=*/false, callback_.Get());
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      kTestAccessToken, base::Time::Now() + base::Days(10));
+
+  token_fetcher_->GetAccessToken(/*invalidate_old=*/false, callback_.Get());
+  EXPECT_FALSE(token_removed_from_cache_);
 }
 
 // Tests that the access token fetching succeeded.
@@ -97,7 +101,15 @@ TEST_F(PaymentsAccessTokenFetcherTest, FetchTokenSucceeded) {
 // Tests that the access token fetching succeeded when old token needs to be
 // invalidated.
 TEST_F(PaymentsAccessTokenFetcherTest, FetchTokenSucceededInvalidateOld) {
-  token_fetcher_->set_access_token_for_testing("Some other token");
+  EXPECT_CALL(callback_, Run(std::variant<GoogleServiceAuthError, std::string>(
+                             "Some other token")))
+      .Times(1);
+
+  token_fetcher_->GetAccessToken(/*invalidate_old=*/false, callback_.Get());
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "Some other token", base::Time::Now() + base::Days(10));
+  EXPECT_FALSE(token_removed_from_cache_);
+
   EXPECT_CALL(
       callback_,
       Run(std::variant<GoogleServiceAuthError, std::string>(kTestAccessToken)))
