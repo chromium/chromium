@@ -1036,6 +1036,11 @@ void GlicNoWebviewContentsManager::TransitionTo(DisplayState next_state) {
       ScheduleOverlayDeletion(base::Milliseconds(0));
       break;
   }
+
+  // The guest is mounted only while it's the WebContents shown in the panel.
+  // Unlike <webview> mode, a visible panel can be showing the loading/error
+  // overlay WebContents instead, so visibility alone isn't enough here.
+  web_client_manager_.SetGuestMounted(state_ == DisplayState::kShowingGuest);
 }
 
 void GlicNoWebviewContentsManager::SetErrorState(
@@ -1104,6 +1109,13 @@ void GlicNoWebviewContentsManager::OnProfileReadyStateChanged() {
 void GlicNoWebviewContentsManager::SetVisibility(
     content::Visibility visibility) {
   is_visible_ = (visibility == content::Visibility::VISIBLE);
+  // Update the guest WebContents visibility before `UpdateDisplayState()` so
+  // that if transitioning to `kShowingGuest` requests a visual state callback
+  // (`InsertVisualStateCallback`) on an already-warmed guest, its
+  // `RenderWidgetHost` is already visible and ready to produce a frame.
+  if (guest_contents()) {
+    guest_contents()->UpdateWebContentsVisibility(visibility);
+  }
   // Re-evaluate display state on visibility change (swaps to guest/overlay
   // when visible, or tears down/debounces overlay when hidden).
   UpdateDisplayState();
@@ -1117,9 +1129,6 @@ void GlicNoWebviewContentsManager::SetVisibility(
       cached_overlay_size_ = size;
       ApplySizeToGuest();
     }
-  }
-  if (guest_contents()) {
-    guest_contents()->UpdateWebContentsVisibility(visibility);
   }
 }
 

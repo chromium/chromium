@@ -439,6 +439,8 @@ source_set("impl") {
     "host/glic_annotation_manager.cc",
     "host/glic_cookie_synchronizer.cc",
     "host/glic_cookie_synchronizer.h",
+    "host/glic_guest_actionable_mark_observer.cc",
+    "host/glic_guest_actionable_mark_observer.h",
     "host/glic_guest_navigation_throttle.cc",
     "host/glic_guest_observer.cc",
     "host/glic_guest_observer.h",
@@ -604,6 +606,7 @@ source_set("impl") {
     "//components/metrics/structured:structured_events",
     "//components/metrics_services_manager",
     "//components/origin_matcher",
+    "//components/page_load_metrics/browser",
     "//components/pdf/common:constants",
     "//components/pref_registry",
     "//components/prefs",
@@ -931,12 +934,15 @@ source_set("unit_tests") {
       "//chrome/test/base:scoped_metrics_service",
       "//components/live_caption",
       "//components/live_caption:constants",
+      "//components/metrics",
       "//components/metrics/structured:structured_events",
       "//components/metrics/structured/buildflags",
       "//components/skills:features",
       "//components/skills/public",
       "//components/skills/public:metrics",
       "//components/web_modal:test_support",
+      "//content/test:test_support",
+      "//ui/base",
     ]
   } else {
     sources += [

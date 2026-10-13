@@ -352,6 +352,4 @@ BASE_FEATURE(kGlicColdWarmingUsePerformanceManager,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicSsr, base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<std::string> kGlicActionableMarkName{
-    &kGlicSsr, "actionable_mark_name", "gemini.interactive"};
 }  // namespace features

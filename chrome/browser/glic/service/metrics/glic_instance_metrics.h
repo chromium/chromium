@@ -13,6 +13,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_webui.mojom.h"
@@ -213,6 +214,27 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   // Called when the client is ready to show.
   void OnClientReady();
 
+  // Guest actionability milestones for Glic.Instance.TimeToActionable, reported
+  // by GlicWebClientManager.
+
+  // Called when the guest web client records its actionability performance
+  // mark.
+  void OnGuestActionableMarkObserved(base::TimeTicks mark_time);
+
+  // Called when a mounted, actionable guest has submitted a compositor frame
+  // reflecting its actionable state. If the panel is hidden at that point (e.g.
+  // during the hide debounce), the sample is recorded when the panel becomes
+  // visible again within the same invocation.
+  void OnGuestFrameSubmitted();
+
+  // Called when a guest is attached to the Host, or when the attached guest
+  // crashes or commits a new primary main-frame navigation.
+  void OnGuestReset();
+
+  // Returns whether the current guest document is still waiting to record its
+  // initial TimeToActionable metric.
+  bool IsWaitingForActionable() const;
+
   void OnUserResizeStarted(const gfx::Size& start_size);
   void OnUserResizeEnded(const gfx::Size& end_size);
 
@@ -248,6 +270,10 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
 
   std::optional<mojom::InvocationSource> initial_invocation_source() const {
     return initial_invocation_source_;
+  }
+
+  base::WeakPtr<GlicInstanceMetrics> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
   }
 
  private:
@@ -300,6 +326,8 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   // while the client was still loading.
   void MaybeRecordTimeToDismissWhileLoading();
 
+  void RecordTimeToActionable(base::TimeTicks end_time);
+
   base::flat_map<GlicInstanceEvent, int> event_counts_;
   EmbedderType current_ui_mode_ = EmbedderType::kUnknown;
 
@@ -321,6 +349,20 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
     bool has_logged_dismiss_while_loading = false;
   };
 
+  // Stores actionability state for the currently loaded guest document. Reset
+  // on guest replacement, navigation commit, crash, or hibernate.
+  struct GuestActionableState {
+    // Whether TimeToActionable has been recorded for this guest document.
+    // Reloads while the panel is open aren't timed, but still set this so that
+    // reopening the reloaded guest doesn't log a bogus sample.
+    // TODO(b/571994634): Track reload presentation time.
+    bool recorded = false;
+    // Whether a frame was submitted while an invocation was being timed but the
+    // panel was hidden. Recorded when the panel is shown again.
+    bool frame_submitted_while_hidden = false;
+    std::optional<base::TimeTicks> actionable_mark_time;
+  };
+
   // The last web ui state received.
   mojom::WebUiState last_web_ui_state_ = mojom::WebUiState::kUninitialized;
   // The last invocation source that was used to show the panel.
@@ -334,6 +376,7 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
       std::nullopt;
   bool did_open_ = false;
   InvocationLoadState invocation_load_state_;
+  InvocationLoadState actionable_invocation_state_;
   base::TimeTicks web_ui_load_start_time_;
 
   base::TimeTicks last_active_time_;
@@ -356,6 +399,7 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   std::map<tabs::TabHandle, int> tab_depths_;
 
   bool is_client_ready_ = false;
+  GuestActionableState guest_actionable_;
   bool is_opt_in_pending_ = false;
   bool has_consented_ = false;
   OptInShownCallback opt_in_shown_callback_;
@@ -391,6 +435,8 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   // Incremented on user input when current_ui_mode_ is kSidePanel, and logged
   // when the side panel is closed or tab is switched for the first time.
   size_t side_panel_prompt_count_ = 0;
+
+  base::WeakPtrFactory<GlicInstanceMetrics> weak_ptr_factory_{this};
 };
 
 }  // namespace glic

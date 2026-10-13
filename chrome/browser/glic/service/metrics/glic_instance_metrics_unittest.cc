@@ -1313,6 +1313,216 @@ TEST_F(GlicInstanceMetricsTest,
       1);
 }
 
+TEST_F(GlicInstanceMetricsTest,
+       TimeToActionable_WarmedGuest_WaitsForPresentedFrame) {
+  // Guest emits actionability mark while warming in the background before any
+  // panel open. Must not mark the guest as presented yet.
+  metrics_.OnGuestActionableMarkObserved(base::TimeTicks::Now());
+  task_environment_.FastForwardBy(base::Seconds(2));
+
+  ShowOptions show_options{SidePanelShowOptions(mock_tab_)};
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnVisibilityChanged(true);
+  histogram_tester_.ExpectTotalCount("Glic.Instance.TimeToActionable.SidePanel",
+                                     0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.TimeToActionable.Inactive.SidePanel", 0);
+
+  // Rendered frame is presented 25ms after open.
+  task_environment_.FastForwardBy(base::Milliseconds(25));
+  metrics_.OnGuestFrameSubmitted();
+
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Instance.TimeToActionable.SidePanel", base::Milliseconds(25), 1);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       TimeToActionable_ActiveFlow_WaitsForPresentedFrame) {
+  ShowOptions show_options{SidePanelShowOptions(mock_tab_)};
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnVisibilityChanged(true);
+
+  // Actionability mark and client ready arrive while visible. Legacy
+  // PanelPresentationTime records on OnClientReady(), while TimeToActionable
+  // waits for the submitted frame (OnGuestFrameSubmitted).
+  task_environment_.FastForwardBy(base::Milliseconds(300));
+  metrics_.OnGuestActionableMarkObserved(base::TimeTicks::Now());
+  metrics_.OnClientReady();
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Instance.PanelPresentationTime.SidePanel", base::Milliseconds(300),
+      1);
+  histogram_tester_.ExpectTotalCount("Glic.Instance.TimeToActionable.SidePanel",
+                                     0);
+
+  // Visual frame callback completes 20ms later (total 320ms).
+  task_environment_.FastForwardBy(base::Milliseconds(20));
+  metrics_.OnGuestFrameSubmitted();
+
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Instance.TimeToActionable.SidePanel", base::Milliseconds(320), 1);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       TimeToActionable_OnlyRecordedOncePerGuestUntilReset) {
+  ShowOptions show_options{SidePanelShowOptions(mock_tab_)};
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnVisibilityChanged(true);
+  task_environment_.FastForwardBy(base::Milliseconds(200));
+  metrics_.OnGuestActionableMarkObserved(base::TimeTicks::Now());
+  metrics_.OnGuestFrameSubmitted();
+
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Instance.TimeToActionable.SidePanel", base::Milliseconds(200), 1);
+
+  // Closing and reopening the same guest must not record a second sample.
+  metrics_.OnVisibilityChanged(false);
+  metrics_.OnClose();
+  task_environment_.FastForwardBy(base::Seconds(1));
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnVisibilityChanged(true);
+  metrics_.OnGuestFrameSubmitted();
+
+  histogram_tester_.ExpectTotalCount("Glic.Instance.TimeToActionable.SidePanel",
+                                     1);
+
+  // In-place guest reload while the panel is already open marks the reloaded
+  // guest as presented without emitting a histogram sample, so closing and
+  // reopening later does not record a stale sample.
+  metrics_.OnGuestReset();
+  metrics_.OnGuestActionableMarkObserved(base::TimeTicks::Now());
+  metrics_.OnGuestFrameSubmitted();
+  metrics_.OnVisibilityChanged(false);
+  metrics_.OnClose();
+  task_environment_.FastForwardBy(base::Minutes(5));
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnVisibilityChanged(true);
+  metrics_.OnGuestFrameSubmitted();
+  histogram_tester_.ExpectTotalCount("Glic.Instance.TimeToActionable.SidePanel",
+                                     1);
+
+  // After a guest reset while closed (e.g. hibernate), the next open records
+  // once upon presentation.
+  metrics_.OnVisibilityChanged(false);
+  metrics_.OnClose();
+  metrics_.OnGuestReset();
+
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnVisibilityChanged(true);
+  task_environment_.FastForwardBy(base::Milliseconds(120));
+  metrics_.OnGuestActionableMarkObserved(base::TimeTicks::Now());
+  metrics_.OnGuestFrameSubmitted();
+
+  histogram_tester_.ExpectTotalCount("Glic.Instance.TimeToActionable.SidePanel",
+                                     2);
+  histogram_tester_.ExpectTimeBucketCount(
+      "Glic.Instance.TimeToActionable.SidePanel", base::Milliseconds(120), 1);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       TimeToActionable_ClosedBeforePresentationLogsOnNextOpen) {
+  ShowOptions show_options{SidePanelShowOptions(mock_tab_)};
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnVisibilityChanged(true);
+  task_environment_.FastForwardBy(base::Milliseconds(100));
+
+  // Closing before client readiness records TimeToDismissWhileLoading.
+  metrics_.OnClose();
+  metrics_.OnVisibilityChanged(false);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Instance.TimeToDismissWhileLoading.SidePanel",
+      base::Milliseconds(100), 1);
+
+  // Mark, client readiness, or a late visual callback arriving while
+  // closed/hidden must not log TimeToActionable or latch `recorded`.
+  task_environment_.FastForwardBy(base::Milliseconds(100));
+  metrics_.OnGuestActionableMarkObserved(base::TimeTicks::Now());
+  metrics_.OnClientReady();
+  metrics_.OnGuestFrameSubmitted();
+  histogram_tester_.ExpectTotalCount("Glic.Instance.TimeToActionable.SidePanel",
+                                     0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.TimeToActionable.Inactive.SidePanel", 0);
+
+  // Reopening presents the already-actionable guest and logs once when the
+  // rendered frame is presented while visible.
+  task_environment_.FastForwardBy(base::Milliseconds(300));
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnVisibilityChanged(true);
+  task_environment_.FastForwardBy(base::Milliseconds(10));
+  metrics_.OnGuestFrameSubmitted();
+
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Instance.TimeToActionable.SidePanel", base::Milliseconds(10), 1);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       TimeToActionable_InactiveFlow_HiddenDuringLoad) {
+  ShowOptions show_options{SidePanelShowOptions(mock_tab_)};
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnVisibilityChanged(true);
+  task_environment_.FastForwardBy(base::Milliseconds(100));
+
+  // User switches tabs while guest is still loading.
+  metrics_.OnVisibilityChanged(false);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Instance.TimeToDismissWhileLoading.SidePanel",
+      base::Milliseconds(100), 1);
+
+  // Guest emits actionability mark 250ms later (total 350ms) while hidden.
+  task_environment_.FastForwardBy(base::Milliseconds(250));
+  metrics_.OnGuestActionableMarkObserved(base::TimeTicks::Now());
+
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Instance.TimeToActionable.Inactive.SidePanel",
+      base::Milliseconds(350), 1);
+  histogram_tester_.ExpectTotalCount("Glic.Instance.TimeToActionable.SidePanel",
+                                     0);
+
+  // Returning 10 minutes later must not record an additional/inflated sample.
+  task_environment_.FastForwardBy(base::Minutes(10));
+  metrics_.OnVisibilityChanged(true);
+  metrics_.OnGuestFrameSubmitted();
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.TimeToActionable.Inactive.SidePanel", 1);
+  histogram_tester_.ExpectTotalCount("Glic.Instance.TimeToActionable.SidePanel",
+                                     0);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       TimeToActionable_WarmedGuest_HiddenBeforeFrameRecordsWhenShown) {
+  // Guest emits actionability mark while warming in the background 2s before
+  // open.
+  metrics_.OnGuestActionableMarkObserved(base::TimeTicks::Now());
+  task_environment_.FastForwardBy(base::Seconds(2));
+
+  ShowOptions show_options{SidePanelShowOptions(mock_tab_)};
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnVisibilityChanged(true);
+  task_environment_.FastForwardBy(base::Milliseconds(5));
+
+  // User hides panel before InsertVisualStateCallback completes, and the frame
+  // callback fires during the hide debounce window while hidden. Must not
+  // record an Inactive sample, and remembers that the frame was submitted so
+  // showing the panel again records the active metric.
+  metrics_.OnVisibilityChanged(false);
+  metrics_.OnGuestFrameSubmitted();
+
+  histogram_tester_.ExpectTotalCount("Glic.Instance.TimeToActionable.SidePanel",
+                                     0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.TimeToActionable.Inactive.SidePanel", 0);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Instance.TimeToDismissWhileLoading.SidePanel",
+      base::Milliseconds(5), 1);
+
+  // Switching back to the tab records the active metric as soon as the panel is
+  // shown again.
+  task_environment_.FastForwardBy(base::Milliseconds(20));
+  metrics_.OnVisibilityChanged(true);
+
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Instance.TimeToActionable.SidePanel", base::Milliseconds(25), 1);
+}
 TEST_F(GlicInstanceMetricsTest, OnUserInputSubmitted_RecordsPromptType) {
   metrics_.OnVisibilityChanged(true);
   metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText,

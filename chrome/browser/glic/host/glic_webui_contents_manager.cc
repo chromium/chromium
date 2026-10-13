@@ -189,6 +189,13 @@ void GlicWebUIContentsManager::PrimaryMainFrameRenderProcessGone(
 
 void GlicWebUIContentsManager::SetVisibility(content::Visibility visibility) {
   web_contents()->UpdateWebContentsVisibility(visibility);
+  // Unlike NoWebview mode, there's no separate overlay WebContents to swap in,
+  // so the <webview> guest is treated as mounted whenever the WebUI is visible.
+  // This is an approximation: chrome://glic can draw its own loading UI over
+  // the guest. Its error UI destroys the <webview>, which detaches the tracker
+  // from the Host.
+  web_client_manager_.SetGuestMounted(visibility ==
+                                      content::Visibility::VISIBLE);
 }
 
 content::WebContents* GlicWebUIContentsManager::active_web_contents() const {

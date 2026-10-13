@@ -1519,8 +1519,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Measures the time from when a user toggles the Glic panel to be shown until
     the web client signals that it is ready, for panels that were backgrounded
-    or closed before the client finished loading. Recorded each time an inactive
-    {EmbedderType} panel finishes loading.
+    or closed before the client finished loading. Recorded at most once per
+    instance when an inactive {EmbedderType} panel first finishes loading.
   </summary>
   <token key="EmbedderType" variants="EmbedderType"/>
 </histogram>
@@ -1531,8 +1531,8 @@ chromium-metrics-reviews@google.com.
   <owner>perrier@google.com</owner>
   <summary>
     Measures the time from when a user toggles the Glic panel to be shown until
-    the web client signals that it is ready. Recorded each time a {EmbedderType}
-    panel is shown.
+    the web client signals that it is ready. Recorded at most once per instance
+    when a {EmbedderType} panel first finishes loading while visible.
   </summary>
   <token key="EmbedderType" variants="EmbedderType"/>
 </histogram>
@@ -1806,6 +1806,36 @@ chromium-metrics-reviews@google.com.
     Records the time elapsed since the last active Glic instance was active.
     Recorded when Glic is opened and a previous active instance exists.
   </summary>
+</histogram>
+
+<histogram name="Glic.Instance.TimeToActionable.Inactive.{EmbedderType}"
+    units="ms" expires_after="2027-08-11">
+  <owner>birnie@google.com</owner>
+  <owner>bryantchandler@chromium.org</owner>
+  <summary>
+    Measures the time from when a user toggles the Glic panel to be shown until
+    the guest web client emits its actionability performance.mark()
+    (&quot;gemini.interactive&quot;), for panels that were backgrounded before
+    that happened. Recorded at most once per guest document when an inactive
+    {EmbedderType} panel becomes actionable.
+  </summary>
+  <token key="EmbedderType" variants="EmbedderType"/>
+</histogram>
+
+<histogram name="Glic.Instance.TimeToActionable.{EmbedderType}" units="ms"
+    expires_after="2027-08-11">
+  <owner>birnie@google.com</owner>
+  <owner>bryantchandler@chromium.org</owner>
+  <summary>
+    Measures the time from when a user toggles the Glic panel to be shown until
+    the renderer submits a compositor frame after the guest WebContents is shown
+    in the panel and has emitted its actionability performance.mark()
+    (&quot;gemini.interactive&quot;). If that frame is submitted while the panel
+    is briefly hidden, the end time is when the panel is shown again. Recorded
+    at most once per guest document when a {EmbedderType} panel first presents
+    its actionable state.
+  </summary>
+  <token key="EmbedderType" variants="EmbedderType"/>
 </histogram>
 
 <histogram name="Glic.Instance.TimeToDismissWhileLoading.{EmbedderType}"

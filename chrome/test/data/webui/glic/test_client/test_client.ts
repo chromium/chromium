@@ -319,3 +319,5 @@ async function releaseScreenWakeLock(): Promise<void> {
     $.screenWakeLockStatus.setAttribute('lockStatus', 'released');
   }
 }
+
+performance.mark('gemini.interactive');

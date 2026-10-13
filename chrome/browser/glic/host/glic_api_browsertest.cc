@@ -5300,6 +5300,47 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testUserInputSubmittedPromptType) {
       "Glic.Turn.PromptType", mojom::PromptType::kTypedText, 1));
 }
 
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testTimeToActionable) {
+  GlicHistogramTester histogram_tester;
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  PreventDeletionOnClose(instance);
+  ASSERT_OK(WaitForGlicClient(instance));
+
+  // `test.html` emits `performance.mark('gemini.interactive')` once its input
+  // box is in the DOM, which triggers TimeToActionable once a frame is
+  // presented.
+  ASSERT_OK(histogram_tester.WaitForTotalCount(
+      "Glic.Instance.TimeToActionable.SidePanel", 1));
+
+  // Emitting the mark again or closing and reopening the same guest does not
+  // record a duplicate sample.
+  content::WebContents* guest_contents = instance->host().web_client_contents();
+  ASSERT_TRUE(guest_contents);
+  ASSERT_TRUE(content::ExecJs(guest_contents,
+                              "performance.mark('gemini.interactive');"));
+  ASSERT_OK(CloseGlicForTabAndWait(GetTabListInterface()->GetActiveTab()));
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * reopened_instance,
+                       OpenGlicForActiveTab());
+  EXPECT_EQ(instance, reopened_instance);
+
+  // Reloading the host resets presentation state so the next open records a
+  // new sample.
+  ASSERT_OK(CloseGlicForTabAndWait(GetTabListInterface()->GetActiveTab()));
+  GlicClientConnectionObserver connection_observer(instance);
+  instance->host().Reload();
+  ASSERT_OK(connection_observer.WaitForDisconnected());
+  // Custom user timings are batched by the renderer, so this is checked after
+  // the old document is gone rather than right after the duplicate mark.
+  histogram_tester.ExpectTotalCount("Glic.Instance.TimeToActionable.SidePanel",
+                                    1);
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * post_reload_instance,
+                       OpenGlicForActiveTab());
+  EXPECT_EQ(instance, post_reload_instance);
+  ASSERT_OK(WaitForGlicClient(instance));
+  ASSERT_OK(histogram_tester.WaitForTotalCount(
+      "Glic.Instance.TimeToActionable.SidePanel", 2));
+}
+
 // TODO(crbug.com/441588906): Flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testFetchInactiveTabScreenshot) {
   tabs::TabInterface* tab0 = GetTabListInterface()->GetActiveTab();

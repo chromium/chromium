@@ -7,6 +7,7 @@ import type {GlicBrowserHost, GlicWebClient, OpenPanelInfo, PanelOpeningData, Pa
 import {createGlicHostRegistryOnLoad} from '../api_boot.js';
 
 performance.mark('glic-client-main-script-start');
+performance.mark('gemini.interactive');
 
 // Type-only imports above keep glic_api.js / glic_api_generated.js /
 // geic_api.js out of the runtime module graph. The production client bundles

@@ -394,10 +394,18 @@ void GlicInstanceMetrics::OnActivationChanged(bool is_active) {
 
 void GlicInstanceMetrics::OnVisibilityChanged(bool is_visible) {
   session_manager_.OnVisibilityChanged(is_visible);
-  if (visibility_tracker_->state() && !is_visible) {
+  const bool was_visible = visibility_tracker_->state();
+  visibility_tracker_->OnStateChanged(is_visible);
+  if (was_visible && !is_visible) {
     OnInstanceHidden();
   }
-  visibility_tracker_->OnStateChanged(is_visible);
+  if (!was_visible && is_visible &&
+      guest_actionable_.frame_submitted_while_hidden &&
+      !actionable_invocation_state_.start_time.is_null()) {
+    // The guest's frame was ready while the panel was briefly hidden; it's on
+    // screen as soon as the panel is shown again.
+    RecordTimeToActionable(base::TimeTicks::Now());
+  }
   MaybeRecordOptInImpression();
 }
 
@@ -776,6 +784,9 @@ void GlicInstanceMetrics::OnClose() {
   }
   MaybeRecordTimeToDismissWhileLoading();
   invocation_load_state_ = {};
+  actionable_invocation_state_ = {};
+  // A frame submitted during this invocation is stale for the next one.
+  guest_actionable_.frame_submitted_while_hidden = false;
 }
 
 bool GlicInstanceMetrics::MarkShownAndCheckIfFirstTime(EmbedderKey key) {
@@ -790,13 +801,20 @@ void GlicInstanceMetrics::ResetShownState(EmbedderKey key) {
 
 void GlicInstanceMetrics::OnOpen(glic::mojom::InvocationSource source,
                                  const ShowOptions& options) {
+  const base::TimeTicks now = base::TimeTicks::Now();
+  const EmbedderType embedder_type = GetEmbedderTypeFromShowOptions(options);
   if (!is_client_ready_) {
     if (invocation_load_state_.start_time.is_null()) {
-      invocation_load_state_.start_time = base::TimeTicks::Now();
+      invocation_load_state_.start_time = now;
       invocation_load_state_.has_logged_dismiss_while_loading = false;
     }
-    invocation_load_state_.embedder_type =
-        GetEmbedderTypeFromShowOptions(options);
+    invocation_load_state_.embedder_type = embedder_type;
+  }
+  if (IsWaitingForActionable()) {
+    if (actionable_invocation_state_.start_time.is_null()) {
+      actionable_invocation_state_.start_time = now;
+    }
+    actionable_invocation_state_.embedder_type = embedder_type;
   }
   last_invocation_source_ = source;
 
@@ -1077,6 +1095,72 @@ void GlicInstanceMetrics::OnClientReady() {
                                   base::Milliseconds(1), base::Seconds(60), 50);
   }
   invocation_load_state_ = {};
+}
+
+void GlicInstanceMetrics::OnGuestActionableMarkObserved(
+    base::TimeTicks mark_time) {
+  if (guest_actionable_.actionable_mark_time.has_value()) {
+    return;
+  }
+  guest_actionable_.actionable_mark_time = mark_time;
+  const bool is_visible =
+      visibility_tracker_ ? visibility_tracker_->state() : false;
+  // When the panel is visible, active TimeToActionable waits for
+  // OnGuestFrameSubmitted() so it includes the compositor frame that renders
+  // the actionable state. When the panel was hidden before the mark arrived
+  // (but not yet closed), no visible frame will be produced, so record the
+  // Inactive variant immediately using the mark's timestamp.
+  if (!is_visible && !actionable_invocation_state_.start_time.is_null() &&
+      mark_time >= actionable_invocation_state_.start_time) {
+    RecordTimeToActionable(mark_time);
+  }
+}
+
+void GlicInstanceMetrics::OnGuestFrameSubmitted() {
+  const bool is_visible =
+      visibility_tracker_ ? visibility_tracker_->state() : false;
+  if (is_visible) {
+    RecordTimeToActionable(base::TimeTicks::Now());
+  } else if (!actionable_invocation_state_.start_time.is_null()) {
+    // `InsertVisualStateCallback` is requested while the guest is mounted and
+    // visible, but the renderer's compositor frame can arrive after the panel
+    // was hidden (during the 500ms hide-to-close debounce, while the guest is
+    // still mounted). Remember it so if the user shows the panel again before
+    // OnClose(), we still record when it appears on screen.
+    guest_actionable_.frame_submitted_while_hidden = true;
+  }
+}
+
+void GlicInstanceMetrics::OnGuestReset() {
+  guest_actionable_ = {};
+}
+
+bool GlicInstanceMetrics::IsWaitingForActionable() const {
+  return !guest_actionable_.recorded;
+}
+
+void GlicInstanceMetrics::RecordTimeToActionable(base::TimeTicks end_time) {
+  if (guest_actionable_.recorded) {
+    return;
+  }
+  guest_actionable_.recorded = true;
+  if (actionable_invocation_state_.start_time.is_null()) {
+    return;
+  }
+
+  base::TimeDelta actionable_time =
+      end_time - actionable_invocation_state_.start_time;
+  if (actionable_invocation_state_.embedder_type != EmbedderType::kUnknown) {
+    bool is_visible =
+        visibility_tracker_ ? visibility_tracker_->state() : false;
+    std::string_view inactive_str = is_visible ? "" : "Inactive.";
+    std::string histogram_name = base::StrCat(
+        {"Glic.Instance.TimeToActionable.", inactive_str,
+         GetEmbedderTypeString(actionable_invocation_state_.embedder_type)});
+    base::UmaHistogramCustomTimes(histogram_name, actionable_time,
+                                  base::Milliseconds(1), base::Seconds(60), 50);
+  }
+  actionable_invocation_state_ = {};
 }
 
 void GlicInstanceMetrics::LogEvent(GlicInstanceEvent event) {
