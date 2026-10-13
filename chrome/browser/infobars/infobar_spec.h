@@ -239,6 +239,9 @@ struct InfoBarShowParams {
   // active-tab change.
   std::optional<InfoBarScope> scope;
 
+  // Overrides the spec's icon when non-null.
+  raw_ptr<const gfx::VectorIcon> icon = nullptr;
+
   InfoBarButtonParams ok_button;
   InfoBarButtonParams cancel_button;
   InfoBarButtonParams extra_button;

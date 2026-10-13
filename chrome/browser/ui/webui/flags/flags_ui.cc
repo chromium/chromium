@@ -47,6 +47,9 @@
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/infobars/browser_infobar_manager.h"
+#include "chrome/browser/infobars/infobar_features.h"
+#include "chrome/browser/infobars/infobar_spec.h"
 #include "chrome/browser/infobars/simple_alert_infobar_creator.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
@@ -54,6 +57,7 @@
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/simple_alert_infobar_delegate.h"
 #include "components/pref_registry/pref_registry_syncable.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/user_manager/user_manager.h"
 #include "components/vector_icons/vector_icons.h"
 #endif
@@ -99,6 +103,39 @@ content::WebUIDataSource* CreateAndAddFlagsUIHTMLSource(Profile* profile) {
   return source;
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+void ShowFlagsWarningInfoBar(content::WebContents* web_contents,
+                             int message_id) {
+  const gfx::VectorIcon& icon = features::IsRoundedIconsEnabled()
+                                    ? vector_icons::kWarningFilledIcon
+                                    : vector_icons::kWarningOldIcon;
+  if (infobars::IsInfoBarMigrated(
+          infobars::InfoBarDelegate::BAD_FLAGS_INFOBAR_DELEGATE)) {
+    auto* manager = infobars::BrowserInfoBarManager::From(g_browser_process);
+    CHECK(manager);
+    tabs::TabInterface* tab =
+        tabs::TabInterface::MaybeGetFromContents(web_contents);
+    if (!tab) {
+      return;
+    }
+    infobars::InfoBarShowParams params;
+    params.message_text = l10n_util::GetStringUTF16(message_id);
+    params.icon = &icon;
+    manager->Show(tab, infobars::InfoBarDelegate::BAD_FLAGS_INFOBAR_DELEGATE,
+                  std::move(params));
+    return;
+  }
+
+  CreateSimpleAlertInfoBar(
+      infobars::ContentInfoBarManager::FromWebContents(web_contents),
+      infobars::InfoBarDelegate::BAD_FLAGS_INFOBAR_DELEGATE, &icon,
+      l10n_util::GetStringUTF16(message_id),
+      /*auto_expire=*/false, /*should_animate=*/true, /*closeable=*/true,
+      /*infobar_priority=*/
+      infobars::InfoBarDelegate::InfobarPriority::kDefault);
+}
+#endif
+
 // On ChromeOS verifying if the owner is signed in is async operation and only
 // after finishing it the UI can be properly populated. This function is the
 // callback for whether the owner is signed in. It will respectively pick the
@@ -121,30 +158,14 @@ void FinishInitialization(base::WeakPtr<FlagsUI> flags_ui,
   // Show a warning info bar when kSafeMode switch is present.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           ash::switches::kSafeMode)) {
-    CreateSimpleAlertInfoBar(
-        infobars::ContentInfoBarManager::FromWebContents(
-            flags_ui->web_ui()->GetWebContents()),
-        infobars::InfoBarDelegate::BAD_FLAGS_INFOBAR_DELEGATE,
-        &(features::IsRoundedIconsEnabled() ? vector_icons::kWarningFilledIcon
-                                            : vector_icons::kWarningOldIcon),
-        l10n_util::GetStringUTF16(IDS_FLAGS_IGNORED_DUE_TO_CRASHY_CHROME),
-        /*auto_expire=*/false, /*should_animate=*/true, /*closeable=*/true,
-        /*infobar_priority=*/
-        infobars::InfoBarDelegate::InfobarPriority::kDefault);
+    ShowFlagsWarningInfoBar(flags_ui->web_ui()->GetWebContents(),
+                            IDS_FLAGS_IGNORED_DUE_TO_CRASHY_CHROME);
   }
 
   // Show a warning info bar for secondary users.
   if (!ash::ProfileHelper::IsPrimaryProfile(profile)) {
-    CreateSimpleAlertInfoBar(
-        infobars::ContentInfoBarManager::FromWebContents(
-            flags_ui->web_ui()->GetWebContents()),
-        infobars::InfoBarDelegate::BAD_FLAGS_INFOBAR_DELEGATE,
-        &(features::IsRoundedIconsEnabled() ? vector_icons::kWarningFilledIcon
-                                            : vector_icons::kWarningOldIcon),
-        l10n_util::GetStringUTF16(IDS_FLAGS_IGNORED_SECONDARY_USERS),
-        /*auto_expire=*/false, /*should_animate=*/true, /*closeable=*/true,
-        /*infobar_priority=*/
-        infobars::InfoBarDelegate::InfobarPriority::kDefault);
+    ShowFlagsWarningInfoBar(flags_ui->web_ui()->GetWebContents(),
+                            IDS_FLAGS_IGNORED_SECONDARY_USERS);
   }
 #endif
 }

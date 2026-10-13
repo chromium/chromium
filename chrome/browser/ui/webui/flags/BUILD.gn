@@ -43,6 +43,7 @@ source_set("flags") {
       "//chrome/browser/ash/settings",
       "//chromeos/ash/components/settings",
       "//components/account_id",
+      "//components/tabs:public",
       "//components/user_manager",
     ]
   }

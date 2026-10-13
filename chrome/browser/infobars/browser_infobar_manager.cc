@@ -153,6 +153,9 @@ class RegistryInfoBarDelegate final : public ConfirmInfoBarDelegate,
   int GetIconId() const override { return spec_.icon_id(); }
 
   const gfx::VectorIcon& GetVectorIcon() const override {
+    if (params_.icon) {
+      return *params_.icon;
+    }
     if (dark_mode() && spec_.dark_mode_icon()) {
       return *spec_.dark_mode_icon();
     }

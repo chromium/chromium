@@ -3535,6 +3535,7 @@
                 {
                     "name": "Enabled",
                     "params": {
+                        "MigratedAlternateNav": "true",
                         "MigratedAutomation": "true",
                         "MigratedBadFlags": "true",
                         "MigratedChromeForTesting": "true",
@@ -3543,11 +3544,14 @@
                         "MigratedDevToolsConfirm": "true",
                         "MigratedDevToolsRemoteDebugging": "true",
                         "MigratedDevToolsSharedProcess": "true",
+                        "MigratedExtensionDevTools": "true",
                         "MigratedFileAccessDisabled": "true",
                         "MigratedGoogleApiKeys": "true",
+                        "MigratedIncognitoConnectability": "true",
                         "MigratedInstallationError": "true",
                         "MigratedInstallerDownloader": "true",
                         "MigratedJsOptimizations": "true",
+                        "MigratedKeystonePromotion": "true",
                         "MigratedKnownInterceptionDisclosure": "true",
                         "MigratedLinkCapturing": "true",
                         "MigratedLocalTestPolicies": "true",
