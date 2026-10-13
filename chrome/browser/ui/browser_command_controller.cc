@@ -1457,9 +1457,6 @@ void BrowserCommandController::HandleCommandWithDisposition(
     case IDC_ADD_NEW_TAB_RECENT_GROUP:
       AddNewTabToRecentGroup(browser_);
       break;
-    case IDC_UNFOCUS_TAB_GROUP:
-      ExitFocusMode(browser_, TabGroupFocusExitReason::kTabStripButton);
-      break;
     case IDC_WINDOW_CLOSE_TABS_TO_RIGHT:
       CloseTabsToRight(browser_);
       break;
@@ -1718,12 +1715,6 @@ void BrowserCommandController::OnTabPinnedStateChanged(tabs::TabInterface* tab,
   UpdateCommandsForTabStripStateChanged();
 }
 
-void BrowserCommandController::OnTabGroupFocusChanged(
-    std::optional<tab_groups::TabGroupId> new_focused_group,
-    std::optional<tab_groups::TabGroupId> old_focused_group) {
-  UpdateCommandsForTabGroupFocusChanged();
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // BrowserCommandController, TabRestoreServiceObserver implementation:
 
@@ -1805,7 +1796,6 @@ void BrowserCommandController::InitCommandState() {
   command_updater_->UpdateCommandEnabled(IDC_CLOSE_TAB_GROUP, true);
   command_updater_->UpdateCommandEnabled(IDC_GROUP_UNGROUPED_TABS, true);
   command_updater_->UpdateCommandEnabled(IDC_ADD_NEW_TAB_RECENT_GROUP, true);
-  command_updater_->UpdateCommandEnabled(IDC_UNFOCUS_TAB_GROUP, true);
 
   // Omnibox commands
   command_updater_->UpdateCommandEnabled(IDC_SHOW_FULL_URLS, true);
@@ -2113,7 +2103,6 @@ void BrowserCommandController::InitCommandState() {
   UpdateCommandsForExtensionsMenu();
   UpdateCommandsForTabKeyboardFocus(GetKeyboardFocusedTabIndex(browser_));
   UpdateCommandsForWebContentsFocus();
-  UpdateCommandsForTabGroupFocusChanged();
   UpdateCommandsForProfile();
 }
 
@@ -2876,22 +2865,6 @@ void BrowserCommandController::UpdateCommandsForEnableGlicChanged() {
   }
   if (auto* const action = FindAction(kActionFindExtensions, browser_)) {
     action->SetVisible(!show_skills_and_extensions);
-  }
-}
-
-void BrowserCommandController::UpdateCommandsForTabGroupFocusChanged() {
-  if (IsInLockedFullscreenMode(/*allow_ontask=*/false)) {
-    return;
-  }
-
-  if (base::FeatureList::IsEnabled(features::kTabGroupsFocusing)) {
-    if (auto* const action = FindAction(kActionUnfocusTabGroup, browser_)) {
-      action->SetVisible(false);
-    }
-    if (auto* const action =
-            FindAction(kActionToggleCollapseVertical, browser_)) {
-      action->SetVisible(true);
-    }
   }
 }
 

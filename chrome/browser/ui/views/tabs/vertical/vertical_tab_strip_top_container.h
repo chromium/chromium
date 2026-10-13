@@ -63,7 +63,6 @@ class VerticalTabStripTopContainer : public views::View,
   TabStripComboButton* GetComboButton();
   VerticalTabStripSegmentedControl* GetSegmentedControl();
   views::LabelButton* GetCollapseButton() { return collapse_button_; }
-  views::LabelButton* GetUnfocusButton() { return unfocus_button_; }
 
   void UpdateControlsVisibility();
 
@@ -107,7 +106,6 @@ class VerticalTabStripTopContainer : public views::View,
   raw_ptr<TabStripComboButton> combo_button_ = nullptr;
   raw_ptr<VerticalTabStripSegmentedControl> segmented_control_ = nullptr;
   raw_ptr<views::LabelButton> collapse_button_ = nullptr;
-  raw_ptr<views::LabelButton> unfocus_button_ = nullptr;
 
   PrefChangeRegistrar pref_registrar_;
   base::CallbackListSubscription collapse_subscription_;

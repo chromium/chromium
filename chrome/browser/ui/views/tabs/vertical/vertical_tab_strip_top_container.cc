@@ -56,11 +56,6 @@ VerticalTabStripTopContainer::VerticalTabStripTopContainer(
   collapse_button_->SetProperty(views::kElementIdentifierKey,
                                 kVerticalTabStripCollapseButtonElementId);
 
-  if (base::FeatureList::IsEnabled(features::kTabGroupsFocusing)) {
-    unfocus_button_ = AddChildButtonFor(kActionUnfocusTabGroup);
-    unfocus_button_->SetVisible(false);
-  }
-
   combo_button_ = AddChildView(std::make_unique<TabStripComboButton>(
       browser_, TabStripComboButton::Context::kVerticalTabStrip));
   combo_button_->SetOrientation(
@@ -156,9 +151,7 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
     // Find height of the first visible button to calculate the matching
     // baseline offset.
     int first_button_height = 0;
-    if (unfocus_button_ && unfocus_button_->GetVisible()) {
-      first_button_height = unfocus_button_->GetPreferredSize().height();
-    } else if (collapse_button_ && collapse_button_->GetVisible()) {
+    if (collapse_button_ && collapse_button_->GetVisible()) {
       first_button_height = collapse_button_->GetPreferredSize().height();
     }
 
@@ -172,19 +165,6 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
     // caption buttons when they are leading.
     if (caption_button_width_ > 0) {
       current_y = std::max(current_y, toolbar_height_);
-    }
-
-    if (unfocus_button_ && unfocus_button_->GetVisible()) {
-      const gfx::Size pref_size = unfocus_button_->GetPreferredSize();
-      int x = is_collapsed
-                  ? 0
-                  : std::max(0, (host_size.width() - pref_size.width()) / 2);
-      gfx::Rect bounds(x, current_y, pref_size.width(), pref_size.height());
-      layout.child_layouts.emplace_back(unfocus_button_.get(),
-                                        unfocus_button_->GetVisible(), bounds);
-      host_size.SetToMax(gfx::Size(bounds.right(), 0));
-
-      current_y += pref_size.height();
     }
 
     if (collapse_button_ && collapse_button_->GetVisible()) {
@@ -283,19 +263,6 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
     }
 
     int current_y = 0;
-    if (unfocus_button_ && unfocus_button_->GetVisible()) {
-      const gfx::Size pref_size = unfocus_button_->GetPreferredSize();
-      gfx::Rect bounds(left_alignment,
-                       std::max(0, y_baseline - pref_size.height() / 2),
-                       pref_size.width(), pref_size.height());
-      layout.child_layouts.emplace_back(unfocus_button_.get(),
-                                        unfocus_button_->GetVisible(), bounds);
-      current_y =
-          bounds.bottom() +
-          GetLayoutConstant(
-              LayoutConstant::kVerticalTabStripCollapsedVerticalPadding);
-    }
-
     if (collapse_button_ && collapse_button_->GetVisible()) {
       const gfx::Size pref_size = collapse_button_->GetPreferredSize();
       gfx::Rect bounds(left_alignment,
@@ -392,11 +359,6 @@ bool VerticalTabStripTopContainer::IsPositionInWindowCaption(
 
   if (collapse_button_ && collapse_button_->GetVisible() &&
       IsHitInView(collapse_button_, point)) {
-    return false;
-  }
-
-  if (unfocus_button_ && unfocus_button_->GetVisible() &&
-      IsHitInView(unfocus_button_, point)) {
     return false;
   }
 
@@ -530,20 +492,11 @@ int VerticalTabStripTopContainer::GetPreferredWidth() const {
     total_width += collapse_button_->GetPreferredSize().width() + padding;
   }
 
-  // Unfocus Button
-  if (unfocus_button_ && unfocus_button_->GetVisible()) {
-    total_width += unfocus_button_->GetPreferredSize().width() + padding;
-  }
-
   return total_width;
 }
 
 int VerticalTabStripTopContainer::GetBaselineMinHeight() const {
   int min_height = 0;
-  if (unfocus_button_ && unfocus_button_->GetVisible()) {
-    min_height =
-        std::max(min_height, unfocus_button_->GetPreferredSize().height());
-  }
   if (collapse_button_ && collapse_button_->GetVisible()) {
     min_height =
         std::max(min_height, collapse_button_->GetPreferredSize().height());

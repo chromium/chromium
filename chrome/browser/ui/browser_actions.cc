@@ -2355,29 +2355,6 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           .SetActionId(kActionSidePanelShowCustomizeChromeFooter)
           .Build());
 
-  if (base::FeatureList::IsEnabled(features::kTabGroupsFocusing)) {
-    root_action_item_->AddChild(
-        actions::ActionItem::Builder(
-            base::BindRepeating(
-                [](BrowserWindowInterface* bwi, actions::ActionItem* item,
-                   actions::ActionInvocationContext context) {
-                  chrome::ExitFocusMode(
-                      bwi, TabGroupFocusExitReason::kTabStripButton);
-                },
-                bwi))
-            .SetActionId(kActionUnfocusTabGroup)
-            .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
-                l10n_util::GetStringUTF16(
-                    IDS_TAB_GROUP_HEADER_CXMENU_UNFOCUS_GROUP)))
-            .SetImage(ui::ImageModel::FromVectorIcon(
-                features::IsRoundedIconsEnabled()
-                    ? vector_icons::kArrowBackIcon
-                    : vector_icons::kArrowBackOldIcon,
-                ui::kColorIcon))
-            .SetVisible(false)
-            .Build());
-  }
-
   if (glic::GlicEnabling::IsProfileEligible(profile) &&
       base::FeatureList::IsEnabled(features::kAiOverlayDialog)) {
     std::unique_ptr<actions::ActionItem> item =

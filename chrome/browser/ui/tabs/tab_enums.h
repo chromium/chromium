@@ -138,7 +138,7 @@ enum class TabGroupFocusEntryPoint {
 // LINT.IfChange(TabGroupFocusExitReason)
 enum class TabGroupFocusExitReason {
   kEditorBubble = 0,
-  kTabStripButton = 1,
+  // kTabStripButton = 1,  // Deprecated, replaced by kHeaderUnfocusButton.
   kGroupClosed = 2,
   kGroupUngrouped = 3,
   kLastTabClosed = 4,

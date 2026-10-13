@@ -41,6 +41,8 @@ class Label;
 class View;
 }  // namespace views
 
+class TabGroupUnfocusButton;
+
 // View for tab group headers in the tab strip, which are markers of group
 // boundaries. There is one header for each group, which is included in the tab
 // strip flow and positioned left of the leftmost tab in the group.
@@ -140,6 +142,8 @@ class TabGroupHeader : public TabSlotView,
   void UpdateAccessibleName();
 
   void OnTabGroupDataChanged();
+  void ExitFocusMode();
+  int GetUnfocusChipWidthWithGap() const;
 
   const raw_ref<TabSlotController> tab_slot_controller_;
 
@@ -159,6 +163,10 @@ class TabGroupHeader : public TabSlotView,
   // The circle indicator rendered after the title when a tab group has
   // needs_attention_ set to true.
   const raw_ptr<views::ImageView> attention_indicator_;
+
+  // The button rendered before the title chip when a tab group is focused to
+  // exit focus mode.
+  const raw_ptr<TabGroupUnfocusButton> unfocus_chip_;
 
   const raw_ref<const TabGroupStyleViews> group_style_;
   const raw_ptr<const TabStyle> tab_style_;
@@ -180,6 +188,7 @@ class TabGroupHeader : public TabSlotView,
   // Determines whether the header UI should show the attention indicator needed
   // for collaboration messaging.
   bool needs_attention_ = false;
+  bool is_ephemeral_ = false;
 
   TabGroupEditorBubbleTracker editor_bubble_tracker_;
   base::CallbackListSubscription editor_bubble_opened_subscription_;

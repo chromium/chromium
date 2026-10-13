@@ -29,10 +29,12 @@
 #include "chrome/browser/ui/tabs/tab_group_attention_indicator.h"
 #include "chrome/browser/ui/tabs/tab_group_data.h"
 #include "chrome/browser/ui/tabs/tab_group_features.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_style.h"
+#include "chrome/browser/ui/views/tabs/common/tab_group_unfocus_button.h"
 #include "chrome/browser/ui/views/tabs/groups/tab_group_accessibility.h"
 #include "chrome/browser/ui/views/tabs/groups/tab_group_editor_bubble_tracker.h"
 #include "chrome/browser/ui/views/tabs/groups/tab_group_editor_bubble_view.h"
@@ -183,6 +185,10 @@ TabGroupHeader::TabGroupHeader(TabSlotController& tab_slot_controller,
           title_chip_->AddChildView(std::make_unique<views::ImageView>())),
       attention_indicator_(
           title_chip_->AddChildView(std::make_unique<views::ImageView>())),
+      unfocus_chip_(AddChildView(std::make_unique<TabGroupUnfocusButton>(
+          TabStripOrientation::kHorizontal,
+          base::BindRepeating(&TabGroupHeader::ExitFocusMode,
+                              base::Unretained(this))))),
       group_style_(style),
       tab_style_(TabStyle::Get()),
       group_title_(u""),
@@ -519,7 +525,8 @@ void TabGroupHeader::VisualsChanged() {
   // changes to cut down on the number of times we recalculate the view.
   const tab_groups::TabGroupId tab_group_id = group().value();
   TabGroup* tab_group = tab_slot_controller_->GetTabGroup(tab_group_id);
-  if (tab_group && tab_group->is_ephemeral()) {
+  is_ephemeral_ = tab_group && tab_group->is_ephemeral();
+  if (is_ephemeral_) {
     const int tab_count = tab_group->tab_count();
     group_title_ = l10n_util::GetPluralStringFUTF16(
         IDS_TAB_GROUP_HEADER_EPHEMERAL_TAB_COUNT, tab_count);
@@ -549,6 +556,23 @@ void TabGroupHeader::VisualsChanged() {
 
   // Update collapsed state before changing any UI.
   SetCollapsedState();
+
+  const bool is_focused =
+      is_ephemeral_ || tab_slot_controller_->GetFocusedGroup() == tab_group_id;
+  if (unfocus_chip_) {
+    unfocus_chip_->SetVisible(is_focused);
+    unfocus_chip_->SetGroupColorData(
+        tab_slot_controller_->GetGroupColorId(tab_group_id), is_ephemeral_);
+    if (is_focused) {
+      const gfx::Point origin = TabGroupStyle::GetTitleChipOffset(std::nullopt);
+      const int chip_height = GetChipHeight();
+      const int unfocus_width =
+          unfocus_chip_->GetPreferredSize(views::SizeBounds({}, chip_height))
+              .width();
+      unfocus_chip_->SetBounds(origin.x(), GetChipY(), unfocus_width,
+                               chip_height);
+    }
+  }
 
   UpdateTitleView();
   UpdateSyncIconView();
@@ -598,15 +622,19 @@ std::u16string_view TabGroupHeader::GetTitleTextForTesting() const {
 
 int TabGroupHeader::GetDesiredWidth() const {
   const int overlap_margin = group_style_->GetTabGroupViewOverlap() * 2;
-  return overlap_margin + title_chip_->width();
+  return overlap_margin + GetUnfocusChipWidthWithGap() + title_chip_->width();
 }
 
 int TabGroupHeader::GetChipHeight() const {
-  return TabGroupStyle::GetEmptyChipSize();
+  const bool is_focused =
+      is_ephemeral_ ||
+      tab_slot_controller_->GetFocusedGroup() == group().value();
+  return is_focused ? TabGroupStyle::GetFocusedChipHeight()
+                    : TabGroupStyle::GetEmptyChipSize();
 }
 
 int TabGroupHeader::GetChipY() const {
-  return TabGroupStyle::GetTitleChipOffset(std::nullopt).y();
+  return TabGroupStyle::GetTitleChipOffset(GetChipHeight()).y();
 }
 
 bool TabGroupHeader::ShouldShowHeaderIcon() const {
@@ -651,8 +679,7 @@ void TabGroupHeader::UpdateTitleView() {
   title_->SetText(group_title_);
 
   if (!group_title_.empty()) {
-    TabGroup* tab_group = tab_slot_controller_->GetTabGroup(group().value());
-    if (tab_group && tab_group->is_ephemeral() && GetColorProvider()) {
+    if (is_ephemeral_ && GetColorProvider()) {
       const bool frame_active =
           GetWidget() && GetWidget()->ShouldPaintAsActive();
       title_->SetEnabledColor(GetColorProvider()->GetColor(
@@ -706,12 +733,23 @@ void TabGroupHeader::UpdateIsCollapsed() {
 void TabGroupHeader::CreateHeaderWithoutTitle() {
   const int chip_height = GetChipHeight();
   const int chip_y = GetChipY();
-  const int empty_width = TabGroupStyle::GetEmptyChipSize();
+  const int empty_width = chip_height;
   const gfx::Point empty_origin =
       TabGroupStyle::GetTitleChipOffset(std::nullopt);
 
-  title_chip_->SetBounds(empty_origin.x(), chip_y, empty_width, chip_height);
-  title_chip_->SetBackground(group_style_->GetEmptyTitleChipBackground(color_));
+  const bool is_focused =
+      is_ephemeral_ ||
+      tab_slot_controller_->GetFocusedGroup() == group().value();
+  const float radius = TabGroupStyle::GetChipCornerRadius();
+  const gfx::RoundedCornersF radii =
+      is_focused ? gfx::RoundedCornersF(2.0f, radius, radius, 2.0f)
+                 : gfx::RoundedCornersF(radius);
+
+  title_chip_->SetBounds(empty_origin.x() + GetUnfocusChipWidthWithGap(),
+                         chip_y, empty_width, chip_height);
+  title_chip_->SetBackground(
+      is_focused ? views::CreateRoundedRectBackground(color_, radii)
+                 : group_style_->GetEmptyTitleChipBackground(color_));
 
   const int sync_icon_width = group_style_->GetSyncIconWidth();
 
@@ -719,7 +757,8 @@ void TabGroupHeader::CreateHeaderWithoutTitle() {
     const bool should_show_attention_indicator = ShouldShowAttentionIndicator();
     if (should_show_attention_indicator) {
       const gfx::Insets title_chip_insets =
-          TabGroupStyle::GetInsetsForHeaderChip();
+          is_focused ? TabGroupStyle::GetInsetsForFocusedHeaderChip()
+                     : TabGroupStyle::GetInsetsForHeaderChip();
       const int title_chip_vertical_inset = 0;
       gfx::Rect title_chip_bounds = title_chip_->GetLocalBounds();
       const int attention_indicator_width =
@@ -788,21 +827,28 @@ void TabGroupHeader::CreateHeaderWithTitle() {
   const int total_content_width =
       sync_icon_width + padding_between_label_sync_icon + text_width +
       attention_indicator_width + attention_indicator_padding;
-  const gfx::Insets title_chip_insets = TabGroupStyle::GetInsetsForHeaderChip();
-  const int title_chip_width =
-      std::max(TabGroupStyle::GetEmptyChipSize(),
-               total_content_width + title_chip_insets.width());
-
+  const bool is_focused =
+      is_ephemeral_ ||
+      tab_slot_controller_->GetFocusedGroup() == group().value();
+  const gfx::Insets title_chip_insets =
+      is_focused ? TabGroupStyle::GetInsetsForFocusedHeaderChip()
+                 : TabGroupStyle::GetInsetsForHeaderChip();
   const int chip_height = GetChipHeight();
+  const int title_chip_width =
+      std::max(chip_height, total_content_width + title_chip_insets.width());
+
   const int chip_y = GetChipY();
   const gfx::Point named_origin =
       TabGroupStyle::GetTitleChipOffset(std::nullopt);
 
   const int corner_radius = TabGroupStyle::GetChipCornerRadius();
-  title_chip_->SetBounds(named_origin.x(), chip_y, title_chip_width,
-                         chip_height);
-  title_chip_->SetBackground(
-      views::CreateRoundedRectBackground(color_, corner_radius));
+  const gfx::RoundedCornersF radii =
+      is_focused
+          ? gfx::RoundedCornersF(2.0f, corner_radius, corner_radius, 2.0f)
+          : gfx::RoundedCornersF(corner_radius);
+  title_chip_->SetBounds(named_origin.x() + GetUnfocusChipWidthWithGap(),
+                         chip_y, title_chip_width, chip_height);
+  title_chip_->SetBackground(views::CreateRoundedRectBackground(color_, radii));
 
   // Set the bounds of the sync icon first, followed by the title.
   const int start_of_sync_icon = title_chip_insets.left();
@@ -845,6 +891,24 @@ void TabGroupHeader::OnTabGroupDataChanged() {
   SetHoverCardDataFrom(tab_group_data);
   UpdateAttentionIndicatorView();
   UpdateAccessibleName();
+}
+
+void TabGroupHeader::ExitFocusMode() {
+  if (BrowserWindowInterface* bwi =
+          tab_slot_controller_->GetBrowserWindowInterface()) {
+    bwi->GetTabStripModel()->ExitFocusMode(
+        TabGroupFocusExitReason::kHeaderUnfocusButton);
+  }
+}
+
+int TabGroupHeader::GetUnfocusChipWidthWithGap() const {
+  if (!unfocus_chip_ || !unfocus_chip_->GetVisible()) {
+    return 0;
+  }
+  constexpr int kFocusedHeadersGap = 2;
+  return unfocus_chip_->GetPreferredSize(views::SizeBounds({}, GetChipHeight()))
+             .width() +
+         kFocusedHeadersGap;
 }
 
 BEGIN_METADATA(TabGroupHeader)

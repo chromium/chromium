@@ -362,20 +362,17 @@ void VerticalTabStripRegionView::SetIsExitingExpandOnHoverForLayout(
 }
 
 void VerticalTabStripRegionView::SetTransitionButtonOpacity(float opacity) {
-  for (views::LabelButton* label_button :
-       {top_button_container_->GetCollapseButton(),
-        top_button_container_->GetUnfocusButton()}) {
-    if (label_button) {
-      auto* button = static_cast<TopContainerButton*>(label_button);
-      button->layer()->SetOpacity(opacity);
+  if (views::LabelButton* label_button =
+          top_button_container_->GetCollapseButton()) {
+    auto* button = static_cast<TopContainerButton*>(label_button);
+    button->layer()->SetOpacity(opacity);
 
-      if (opacity == 0.0f) {
-        button->ApplyPendingIcon();
-      }
-      if (opacity == 1.0f) {
-        button->SetDelayIconUpdates(false);
-        button->ApplyPendingIcon();
-      }
+    if (opacity == 0.0f) {
+      button->ApplyPendingIcon();
+    }
+    if (opacity == 1.0f) {
+      button->SetDelayIconUpdates(false);
+      button->ApplyPendingIcon();
     }
   }
 }
@@ -925,13 +922,10 @@ void VerticalTabStripRegionView::OnCollapseStateChanged(
                 LayoutConstant::kVerticalTabStripHorizontalPadding));
 
     if (!will_wrap) {
-      for (views::LabelButton* label_button :
-           {top_button_container_->GetCollapseButton(),
-            top_button_container_->GetUnfocusButton()}) {
-        if (label_button) {
-          static_cast<TopContainerButton*>(label_button)
-              ->SetDelayIconUpdates(true);
-        }
+      if (views::LabelButton* label_button =
+              top_button_container_->GetCollapseButton()) {
+        static_cast<TopContainerButton*>(label_button)
+            ->SetDelayIconUpdates(true);
       }
     }
   }

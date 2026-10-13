@@ -30,7 +30,6 @@ class TabStripActionContainer;
 class TabStripComboButton;
 class TabStrip;
 class TabStripScrollContainer;
-class TabStripControlButton;
 
 // Container for the tabstrip and the other views sharing space with it -
 // with the exception of the caption buttons.
@@ -117,8 +116,6 @@ class HorizontalTabStripRegionViewOld : public TabStripRegionView {
   // Updates the left and right margins for the tab strip.
   void UpdateTabStripMargin();
 
-  void OnUnfocusButtonVisibilityChanged();
-
   // Gets called on `Layout` and adjusts the x-axis position of the `view` based
   // on `offset`. This should only used for views that show before tab strip.
   void AdjustViewBoundsRect(View* view, int offset);
@@ -133,10 +130,8 @@ class HorizontalTabStripRegionViewOld : public TabStripRegionView {
   raw_ptr<TabStripScrollContainer> tab_strip_scroll_container_ = nullptr;
   raw_ptr<TabStripComboButton> combo_button_ = nullptr;
   raw_ptr<views::Button> new_tab_button_ = nullptr;
-  raw_ptr<TabStripControlButton> unfocus_button_ = nullptr;
 
   std::unique_ptr<views::ActionViewController> action_view_controller_;
-  base::CallbackListSubscription unfocus_button_subscription_;
 
   const base::CallbackListSubscription subscription_ =
       ui::TouchUiController::Get()->RegisterCallback(base::BindRepeating(

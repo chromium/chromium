@@ -153,9 +153,6 @@ class BrowserCommandController : public CommandUpdater,
                               int index) override;
   void OnTabBlockedStateChanged(tabs::TabInterface* tab) override;
   void OnTabPinnedStateChanged(tabs::TabInterface* tab, int index) override;
-  void OnTabGroupFocusChanged(
-      std::optional<tab_groups::TabGroupId> new_focused_group,
-      std::optional<tab_groups::TabGroupId> old_focused_group) override;
 
   // Overridden from TabRestoreServiceObserver:
   void TabRestoreServiceChanged(sessions::TabRestoreService* service) override;
@@ -272,9 +269,6 @@ class BrowserCommandController : public CommandUpdater,
 
   // Updates commands that depend on the enabled state of glic.
   void UpdateCommandsForEnableGlicChanged();
-
-  // Updates commands and actions that depend on tab group focus state.
-  void UpdateCommandsForTabGroupFocusChanged();
 
   // Updates commands and actions for profiling.
   void UpdateCommandsForProfiling();
