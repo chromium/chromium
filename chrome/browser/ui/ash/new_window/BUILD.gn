@@ -45,7 +45,6 @@ static_library("new_window") {
     "//chrome/browser/ui/browser_web_contents_delegate",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/extensions",
-    "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/webui:chrome_web_contents_handler",
     "//chrome/browser/web_applications",
     "//chrome/common",
