@@ -20,15 +20,6 @@ std::string GetSigninScopedDeviceIdForProfile(Profile* profile);
 
 #if BUILDFLAG(IS_CHROMEOS)
 
-// Helper method. The device ID should generally be obtained through
-// GetSigninScopedDeviceIdForProfile().
-// If `for_ephemeral` is true, special kind of device ID for ephemeral users is
-// generated.
-// If `for_ephemeral` is false, this function will cache (in-memory) its return
-// value and keep returning it - if `switches::kStableDeviceId` feature is
-// enabled.
-std::string GenerateSigninScopedDeviceId(bool for_ephemeral);
-
 // Moves any existing device ID out of the pref service into the UserManager,
 // and creates a new ID if it is empty.
 void MigrateSigninScopedDeviceId(Profile* profile);

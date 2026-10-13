@@ -33,6 +33,18 @@ std::string RecreateSigninScopedDeviceId(PrefService* prefs);
 COMPONENT_EXPORT(SIGNIN_DEVICE_ID_HELPER)
 std::string GenerateSigninScopedDeviceId();
 
+#else
+
+// Returns a signin-scoped device ID for a ChromeOS user session.
+//
+// For ephemeral users a fresh identifier is generated on every call, prefixed
+// so that it can be recognized as ephemeral. Otherwise the identifier is
+// generated once and cached for the lifetime of the process, so that every
+// caller in a session observes the same value -- which is why this lives in a
+// component rather than being linked into each consumer.
+COMPONENT_EXPORT(SIGNIN_DEVICE_ID_HELPER)
+std::string GenerateSigninScopedDeviceId(bool for_ephemeral);
+
 #endif
 
 }  // namespace signin

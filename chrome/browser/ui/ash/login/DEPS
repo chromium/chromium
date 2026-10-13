@@ -30,7 +30,6 @@ include_rules = [
   "+chrome/browser/renderer_preferences_util.h",
   "+chrome/browser/safe_browsing",
   "+chrome/browser/sessions",
-  "+chrome/browser/signin",
   "+chrome/browser/themes",
   "+chrome/browser/ui/ash/keyboard",
   "+chrome/browser/ui/ash/system",

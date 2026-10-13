@@ -63,7 +63,6 @@
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/policy/networking/device_network_configuration_updater_ash.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/chrome_device_id_helper.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/ash/login/login_display_host_webui.h"
 #include "chrome/browser/ui/ash/login/signin_ui.h"
@@ -105,6 +104,7 @@
 #include "components/login/localized_values_builder.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/device_id_helper.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/features.h"
 #include "components/user_manager/known_user.h"
@@ -283,7 +283,7 @@ std::string GenerateDeviceId() {
   // structure for ephemeral and non-ephemeral users. Clients that read device
   // id should not care about this anyways. Also remove this function
   // `GenerateDeviceId()`.
-  return GenerateSigninScopedDeviceId(/*for_ephemeral=*/false);
+  return signin::GenerateSigninScopedDeviceId(/*for_ephemeral=*/false);
 }
 
 // Gets (or generates) device id associated with `email`.

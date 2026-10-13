@@ -58,7 +58,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/signin/chrome_device_id_helper.h"
 #include "chrome/browser/ui/ash/login/login_feedback.h"
 #include "chrome/browser/ui/ash/login/signin_ui.h"
 #include "chrome/browser/ui/ash/system/system_tray_client_impl.h"
@@ -85,6 +84,7 @@
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
+#include "components/signin/public/base/device_id_helper.h"
 #include "components/strings/grit/components_strings.h"
 #include "extensions/common/features/feature_session_type.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -221,7 +221,7 @@ CreateSecondDeviceAuthBroker() {
 
   // TODO(b:286850431) - Fix device id generation.
   const std::string device_id =
-      GenerateSigninScopedDeviceId(/*for_ephemeral=*/false);
+      signin::GenerateSigninScopedDeviceId(/*for_ephemeral=*/false);
   auto* signin_profile = ProfileHelper::GetSigninProfile();
   return std::make_unique<quick_start::SecondDeviceAuthBroker>(
       device_id, signin_profile->GetURLLoaderFactory(),

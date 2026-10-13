@@ -118,7 +118,6 @@
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/signin/chrome_device_id_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
 #include "chrome/browser/ui/ash/login/input_events_blocker.h"
@@ -170,6 +169,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/device_id_helper.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
@@ -1747,7 +1747,8 @@ void UserSessionManager::InitializeDeviceId(
 
   // We do not have any device id - neither stored on disk, nor cached in
   // memory. Generate and persist a new one.
-  const std::string device_id = GenerateSigninScopedDeviceId(is_ephemeral_user);
+  const std::string device_id =
+      signin::GenerateSigninScopedDeviceId(is_ephemeral_user);
   user_context.SetDeviceId(device_id);
   known_user.SetDeviceId(account_id, device_id);
 }

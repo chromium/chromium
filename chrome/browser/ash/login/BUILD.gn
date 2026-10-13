@@ -111,6 +111,7 @@ static_library("login") {
     "//components/policy/core/common",
     "//components/prefs",
     "//components/session_manager/core",
+    "//components/signin/public/base:device_id_helper",
     "//components/signin/public/identity_manager",
     "//components/user_manager",
     "//components/user_manager:common",

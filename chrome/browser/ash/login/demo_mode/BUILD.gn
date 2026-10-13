@@ -105,6 +105,7 @@ static_library("demo_mode_login") {
     "//chromeos/ash/components/demo_mode",
     "//chromeos/ash/components/growth",
     "//chromeos/ash/components/system/",
+    "//components/signin/public/base:device_id_helper",
   ]
 
   allow_circular_includes_from = [ "//chrome/browser/ash/login" ]

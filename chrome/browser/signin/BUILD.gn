@@ -378,6 +378,7 @@ source_set("impl") {
       "//chromeos/ash/components/account_manager",
       "//chromeos/ash/components/install_attributes",
       "//chromeos/ash/components/network",
+      "//components/signin/public/base:device_id_helper",
     ]
   } else {
     sources += [
@@ -593,7 +594,6 @@ source_set("unit_tests") {
     "account_consistency_mode_manager_unittest.cc",
     "account_id_from_account_info_unittest.cc",
     "account_preview_data_service_factory_unittest.cc",
-    "chrome_device_id_helper_unittest.cc",
     "chrome_signin_client_unittest.cc",
     "chrome_signin_helper_unittest.cc",
     "chrome_signin_proxying_url_loader_factory_unittest.cc",

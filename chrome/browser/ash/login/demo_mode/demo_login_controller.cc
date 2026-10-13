@@ -36,6 +36,7 @@
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/device_id_helper.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -51,7 +52,6 @@ namespace ash {
 
 namespace {
 
-constexpr char kEphemeralUserDeviceIDPrefix[] = "t_";
 
 // Demo account Json key in set up demo account response.
 constexpr char kDemoAccountEmail[] = "username";
@@ -187,16 +187,6 @@ GURL GetDemoAccountUrl(const std::string& endpoint) {
           ? command_line->GetSwitchValueASCII(switches::kDemoModeServerAPIKey)
           : google_apis::GetAPIKey();
   return net::AppendQueryParameter(setup_url, kApiKeyParam, api_key);
-}
-
-// TODO(crbug.com/372928818): Should use the same function in
-// c/b/signin/chrome_device_id_helper.h for consistent. However there is
-// circular deps issue with /c/b:browser. Temporary use this one before
-// completion of modularization (crbug.com/364667553) of c/b/signin. Remove the
-// prefix if device is not in ephemeral mode configured by policy.
-std::string GenerateSigninScopedDeviceId() {
-  return kEphemeralUserDeviceIDPrefix +
-         base::Uuid::GenerateRandomV4().AsLowercaseString();
 }
 
 // ChromeOS does not allow empty password for non-ephemeral account. Generate a
@@ -452,7 +442,10 @@ void DemoLoginController::SetDeviceCloudPolicyManagerForTesting(
 void DemoLoginController::SendSetupDemoAccountRequest() {
   CHECK(!url_loader_);
 
-  const auto sign_in_scoped_device_id = GenerateSigninScopedDeviceId();
+  // Demo sessions are always ephemeral, so this gets the prefixed,
+  // freshly-generated form.
+  const auto sign_in_scoped_device_id =
+      signin::GenerateSigninScopedDeviceId(/*for_ephemeral=*/true);
   std::optional<base::DictValue> device_identifier =
       GetDeviceIdentifier(sign_in_scoped_device_id);
   if (!device_identifier) {

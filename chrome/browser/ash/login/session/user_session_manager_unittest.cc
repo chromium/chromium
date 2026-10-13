@@ -18,7 +18,6 @@
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/prefs/browser_prefs.h"
-#include "chrome/browser/signin/chrome_device_id_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -30,6 +29,7 @@
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/device_id_helper.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -353,7 +353,7 @@ TEST_F(UserSessionManagerTest, InitializeDeviceIdForExistingUsers) {
   user_session_manager_->mutable_user_context_for_testing()->SetAccountId(
       test_user_->GetAccountId());
   const std::string device_id =
-      GenerateSigninScopedDeviceId(/*for_ephemeral=*/false);
+      signin::GenerateSigninScopedDeviceId(/*for_ephemeral=*/false);
   // For an existing user, we should already have a device id on disk.
   known_user.SetDeviceId(test_user_->GetAccountId(), device_id);
   ASSERT_THAT(user_session_manager_->user_context().GetDeviceId(), IsEmpty());

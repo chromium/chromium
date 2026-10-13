@@ -218,6 +218,7 @@ static_library("login") {
     "//chromeos/services/network_config/public/mojom",
     "//components/account_id",
     "//components/login",
+    "//components/signin/public/base:device_id_helper",
     "//components/sync/protocol",
     "//components/user_manager",
     "//components/user_manager:common",

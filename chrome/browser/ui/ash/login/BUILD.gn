@@ -66,6 +66,7 @@ static_library("login") {
     "//components/login",
     "//components/prefs",
     "//components/session_manager/core",
+    "//components/signin/public/base:device_id_helper",
     "//components/user_manager",
     "//components/user_manager:common",
     "//components/web_modal",
