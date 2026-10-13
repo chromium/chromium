@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/containers/heap_array.h"
@@ -117,9 +118,9 @@ scoped_refptr<DecoderBuffer> DecryptCencBuffer(const DecoderBuffer& input,
 
   crypto::aes_ctr::Decrypt(key, *iv, encrypted, decrypted);
 
-  scoped_refptr<DecoderBuffer> output = DecoderBuffer::CopyFrom(sample);
-  CopySubsamples(subsamples, kDstContainsClearBytes, decrypted,
-                 output->writable_span());
+  auto output_data = base::HeapArray<uint8_t>::CopiedFrom(sample);
+  CopySubsamples(subsamples, kDstContainsClearBytes, decrypted, output_data);
+  auto output = DecoderBuffer::FromArray(std::move(output_data));
   output->CopyMetadataClearBufferFrom(input);
   return output;
 }

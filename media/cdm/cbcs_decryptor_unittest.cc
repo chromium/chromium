@@ -132,27 +132,41 @@ TEST(CbcsDecryptorTest, AdditionalData) {
   auto encrypted_block = Encrypt(kOneBlock, kKey, kIv);
   DCHECK_EQ(kBlockSize, encrypted_block.size());
 
-  // Only 1 subsample, all encrypted data.
-  std::vector<SubsampleEntry> subsamples = {
-      {0, static_cast<uint32_t>(encrypted_block.size())}};
+  for (bool use_subsamples : {false, true}) {
+    SCOPED_TRACE(use_subsamples);
+    std::vector<SubsampleEntry> subsamples;
+    if (use_subsamples) {
+      // Only 1 subsample, all encrypted data.
+      subsamples.emplace_back(0, static_cast<uint32_t>(encrypted_block.size()));
+    }
 
-  auto encrypted_buffer = CreateEncryptedBuffer(
-      encrypted_block, kIv, subsamples, EncryptionPattern::Create(1, 9));
-  encrypted_buffer->set_timestamp(base::Days(2));
-  encrypted_buffer->set_duration(base::Minutes(5));
-  encrypted_buffer->set_is_key_frame(true);
-  encrypted_buffer->WritableSideData().alpha_data =
-      base::HeapArray<uint8_t>::CopiedFrom(encrypted_block);
+    auto encrypted_buffer = CreateEncryptedBuffer(
+        encrypted_block, kIv, subsamples, EncryptionPattern::Create(1, 9));
+    encrypted_buffer->set_timestamp(base::Days(2));
+    encrypted_buffer->set_duration(base::Minutes(5));
+    encrypted_buffer->set_is_key_frame(true);
+    encrypted_buffer->WritableSideData().alpha_data =
+        base::HeapArray<uint8_t>::CopiedFrom(encrypted_block);
+    encrypted_buffer->WritableSideData().discard_padding = {
+        base::Milliseconds(2), base::Milliseconds(3)};
 
-  auto decrypted_buffer = DecryptCbcsBuffer(*encrypted_buffer, kKey);
-  EXPECT_EQ(encrypted_buffer->timestamp(), decrypted_buffer->timestamp());
-  EXPECT_EQ(encrypted_buffer->duration(), decrypted_buffer->duration());
-  EXPECT_EQ(encrypted_buffer->end_of_stream(),
-            decrypted_buffer->end_of_stream());
-  EXPECT_EQ(encrypted_buffer->is_key_frame(), decrypted_buffer->is_key_frame());
-  EXPECT_TRUE(decrypted_buffer->side_data());
-  EXPECT_TRUE(
-      encrypted_buffer->side_data()->Matches(*decrypted_buffer->side_data()));
+    auto decrypted_buffer = DecryptCbcsBuffer(*encrypted_buffer, kKey);
+    ASSERT_TRUE(decrypted_buffer);
+    EXPECT_EQ(kOneBlock, base::span(*decrypted_buffer));
+    EXPECT_FALSE(decrypted_buffer->decrypt_config());
+    EXPECT_EQ(encrypted_buffer->timestamp(), decrypted_buffer->timestamp());
+    EXPECT_EQ(encrypted_buffer->duration(), decrypted_buffer->duration());
+    EXPECT_EQ(encrypted_buffer->end_of_stream(),
+              decrypted_buffer->end_of_stream());
+    EXPECT_EQ(encrypted_buffer->is_key_frame(),
+              decrypted_buffer->is_key_frame());
+    ASSERT_TRUE(decrypted_buffer->side_data());
+    EXPECT_NE(encrypted_buffer->side_data(), decrypted_buffer->side_data());
+    EXPECT_TRUE(
+        encrypted_buffer->side_data()->Matches(*decrypted_buffer->side_data()));
+    EXPECT_EQ(encrypted_block, base::span(*encrypted_buffer));
+    EXPECT_TRUE(encrypted_buffer->decrypt_config());
+  }
 }
 
 TEST(CbcsDecryptorTest, DifferentPattern) {

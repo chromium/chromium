@@ -9,8 +9,10 @@
 
 #include <algorithm>
 #include <string>
+#include <utility>
 #include <vector>
 
+#include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
@@ -135,52 +137,52 @@ scoped_refptr<DecoderBuffer> DecryptCbcsBuffer(const DecoderBuffer& input,
       decrypt_config->encryption_pattern().value();
 
   // Decrypted data will be the same size as |input| size.
-  auto buffer = base::MakeRefCounted<DecoderBuffer>(sample_size);
-  base::span<uint8_t> output_data = buffer->writable_span();
-  buffer->CopyMetadataClearBufferFrom(input);
+  auto output_data = base::HeapArray<uint8_t>::Uninit(sample_size);
 
   const std::vector<SubsampleEntry>& subsamples = decrypt_config->subsamples();
   if (subsamples.empty()) {
     // Assume the whole buffer is encrypted.
-    return DecryptWithPattern(key, base::as_byte_span(decrypt_config->iv()),
-                              pattern, base::span(input), output_data)
-               ? buffer
-               : nullptr;
-  }
-
-  if (!VerifySubsamplesMatchSize(subsamples, sample_size)) {
-    DVLOG(1) << "Subsample sizes do not equal input size";
-    return nullptr;
-  }
-
-  auto src = base::span(input);
-  auto dest = output_data;
-  for (const auto& subsample : subsamples) {
-    if (subsample.clear_bytes) {
-      DVLOG(4) << "Copying clear_bytes: " << subsample.clear_bytes;
-      auto [src_copy, src_rem] = src.split_at(subsample.clear_bytes);
-      auto [dest_copy, dest_rem] = dest.split_at(subsample.clear_bytes);
-      src = src_rem;
-      dest = dest_rem;
-      dest_copy.copy_from(src_copy);
+    if (!DecryptWithPattern(key, base::as_byte_span(decrypt_config->iv()),
+                            pattern, base::span(input), output_data)) {
+      return nullptr;
+    }
+  } else {
+    if (!VerifySubsamplesMatchSize(subsamples, sample_size)) {
+      DVLOG(1) << "Subsample sizes do not equal input size";
+      return nullptr;
     }
 
-    if (subsample.cypher_bytes) {
-      DVLOG(4) << "Processing cypher_bytes: " << subsample.cypher_bytes
-               << ", pattern(" << pattern.crypt_byte_block() << ","
-               << pattern.skip_byte_block() << ")";
-      auto [src_cypher, src_rem] = src.split_at(subsample.cypher_bytes);
-      auto [dest_cypher, dest_rem] = dest.split_at(subsample.cypher_bytes);
-      src = src_rem;
-      dest = dest_rem;
-      if (!DecryptWithPattern(key, base::as_byte_span(decrypt_config->iv()),
-                              pattern, src_cypher, dest_cypher)) {
-        return nullptr;
+    auto src = base::span(input);
+    auto dest = output_data.as_span();
+    for (const auto& subsample : subsamples) {
+      if (subsample.clear_bytes) {
+        DVLOG(4) << "Copying clear_bytes: " << subsample.clear_bytes;
+        auto [src_copy, src_rem] = src.split_at(subsample.clear_bytes);
+        auto [dest_copy, dest_rem] = dest.split_at(subsample.clear_bytes);
+        src = src_rem;
+        dest = dest_rem;
+        dest_copy.copy_from(src_copy);
+      }
+
+      if (subsample.cypher_bytes) {
+        DVLOG(4) << "Processing cypher_bytes: " << subsample.cypher_bytes
+                 << ", pattern(" << pattern.crypt_byte_block() << ","
+                 << pattern.skip_byte_block() << ")";
+        auto [src_cypher, src_rem] = src.split_at(subsample.cypher_bytes);
+        auto [dest_cypher, dest_rem] = dest.split_at(subsample.cypher_bytes);
+        src = src_rem;
+        dest = dest_rem;
+        if (!DecryptWithPattern(key, base::as_byte_span(decrypt_config->iv()),
+                                pattern, src_cypher, dest_cypher)) {
+          return nullptr;
+        }
       }
     }
   }
 
-  return buffer;
+  auto output = DecoderBuffer::FromArray(std::move(output_data));
+  output->CopyMetadataClearBufferFrom(input);
+  return output;
 }
 
 }  // namespace media
