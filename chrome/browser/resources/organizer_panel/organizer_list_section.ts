@@ -46,7 +46,7 @@ export class OrganizerListSectionElement extends CrLitElement implements
     return {
       delegate: {type: Object},
       items: {type: Array},
-      expanded_: {type: Boolean},
+      expanded: {type: Boolean},
       noAnimation_: {type: Boolean},
       showAll_: {type: Boolean},
       searchQuery: {type: String},
@@ -64,7 +64,7 @@ export class OrganizerListSectionElement extends CrLitElement implements
   private sectionStateChangedListenerId_: number|null = null;
   accessor delegate: OrganizerListSectionDelegate<unknown>|null = null;
   accessor items: Array<OrganizerListSectionItem<unknown>> = [];
-  protected accessor expanded_: boolean = true;
+  accessor expanded: boolean = true;
   protected accessor noAnimation_: boolean = false;
   protected accessor showAll_: boolean = false;
   accessor searchQuery: string = '';
@@ -177,7 +177,7 @@ export class OrganizerListSectionElement extends CrLitElement implements
     }
     // Disable the transition when the expanded state is loaded from prefs.
     this.noAnimation_ = true;
-    this.expanded_ = state.expanded;
+    this.expanded = state.expanded;
     this.showAll_ = state.showAll;
     await this.updateComplete;
     this.noAnimation_ = false;
@@ -187,7 +187,7 @@ export class OrganizerListSectionElement extends CrLitElement implements
     assert(this.delegate);
     const state = sectionsState[this.delegate.getId()];
     assert(state);
-    this.expanded_ = state.expanded;
+    this.expanded = state.expanded;
     this.showAll_ = state.showAll;
   }
 
@@ -207,13 +207,14 @@ export class OrganizerListSectionElement extends CrLitElement implements
     }
   }
 
-  expand() {
-    if (this.expanded_) {
+  setExpanded(expanded: boolean) {
+    if (this.expanded === expanded) {
       return;
     }
-    this.expanded_ = true;
+    this.expanded = expanded;
     assert(this.delegate);
-    this.browserProxy_.handler.setSectionExpanded(this.delegate.getId(), true);
+    this.browserProxy_.handler.setSectionExpanded(
+        this.delegate.getId(), this.expanded);
   }
 
   protected hasContextMenu_(): boolean {
@@ -225,7 +226,7 @@ export class OrganizerListSectionElement extends CrLitElement implements
   }
 
   protected isExpanded_(): boolean {
-    return this.expanded_ || this.isSearching_();
+    return this.expanded || this.isSearching_();
   }
 
   private hasNoSearchResults_(): boolean {
@@ -233,13 +234,10 @@ export class OrganizerListSectionElement extends CrLitElement implements
   }
 
   protected onExpandedChanged_(e: CustomEvent<{value: boolean}>) {
-    if (this.isSearching_() || this.expanded_ === e.detail.value) {
+    if (this.isSearching_()) {
       return;
     }
-    this.expanded_ = e.detail.value;
-    assert(this.delegate);
-    this.browserProxy_.handler.setSectionExpanded(
-        this.delegate.getId(), this.expanded_);
+    this.setExpanded(e.detail.value);
   }
 
   protected hasZeroState_(): boolean {

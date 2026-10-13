@@ -47,6 +47,7 @@ export class OrganizerPanelAppElement extends CrLitElement {
 
   static override get properties() {
     return {
+      allSectionsExpanded_: {type: Boolean},
       shortcut_: {type: String},
       sectionDelegates_: {type: Array},
       searchQuery_: {type: String},
@@ -56,6 +57,7 @@ export class OrganizerPanelAppElement extends CrLitElement {
   private browserProxy_: BrowserProxy = browserProxyFactory.getInstance();
   private boundOnContextMenu_ = this.onContextMenu_.bind(this);
 
+  protected accessor allSectionsExpanded_: boolean = false;
   protected accessor shortcut_: string = loadTimeData.getString('shortcutText');
   protected accessor searchQuery_: string = '';
   protected accessor sectionDelegates_:
@@ -98,8 +100,13 @@ export class OrganizerPanelAppElement extends CrLitElement {
     this.searchQuery_ = e.detail;
   }
 
+  protected isSearching_(): boolean {
+    return this.searchQuery_.length > 0;
+  }
+
   private onContextMenu_(e: MouseEvent) {
     e.preventDefault();
+    this.allSectionsExpanded_ = this.$.list.areAllSectionsExpanded();
     this.$.menu.showAtPosition({
       top: e.clientY,
       left: e.clientX,
@@ -109,6 +116,11 @@ export class OrganizerPanelAppElement extends CrLitElement {
   protected onExpandAllClick_() {
     this.$.menu.close();
     this.$.list.expandAll();
+  }
+
+  protected onCollapseAllClick_() {
+    this.$.menu.close();
+    this.$.list.collapseAll();
   }
 
   protected onCloseTabSearchClick_() {

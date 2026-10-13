@@ -5,8 +5,9 @@
 import 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 
 import type {OrganizerListElement} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
-import {SearchApiProxyImpl} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
+import {organizerPanelBrowserProxyFactory, OrganizerPanelPageHandlerRemote, SearchApiProxyImpl} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestSearchApiProxy} from './test_search_api_proxy.js';
@@ -17,6 +18,12 @@ suite('OrganizerListTest', () => {
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    const mockHandler = TestMock.fromClass(OrganizerPanelPageHandlerRemote);
+    mockHandler.setPromiseResolveFor(
+        'getSectionState', {state: {expanded: true, showAll: false}});
+    const {instance} =
+        organizerPanelBrowserProxyFactory.createForTest(mockHandler);
+    organizerPanelBrowserProxyFactory.setInstance(instance);
     SearchApiProxyImpl.setInstance(new TestSearchApiProxy());
     list = document.createElement('organizer-list');
     document.body.appendChild(list);
@@ -126,24 +133,38 @@ suite('OrganizerListTest', () => {
         assertTrue(isVisible(dividers[1]!));
       });
 
-  test('expandAll expands all sections in list', async () => {
-    list.sectionDelegates = [
-      new TestSectionDelegate('Section 1'),
-      new TestSectionDelegate('Section 2'),
-    ];
-    await microtasksFinished();
+  test(
+      'expandAll, collapseAll, and areAllSectionsExpanded update section states',
+      async () => {
+        list.sectionDelegates = [
+          new TestSectionDelegate('Section 1'),
+          new TestSectionDelegate('Section 2'),
+        ];
+        await microtasksFinished();
 
-    const sections = list.shadowRoot.querySelectorAll('organizer-list-section');
-    assertEquals(2, sections.length);
+        const sections =
+            list.shadowRoot.querySelectorAll('organizer-list-section');
+        assertEquals(2, sections.length);
+        assertTrue(sections[0]!.expanded);
+        assertTrue(sections[1]!.expanded);
+        assertTrue(list.areAllSectionsExpanded());
 
-    let expandCalls = 0;
-    for (const section of sections) {
-      section.expand = () => {
-        expandCalls++;
-      };
-    }
+        sections[0]!.setExpanded(false);
+        await microtasksFinished();
+        assertFalse(sections[0]!.expanded);
+        assertTrue(sections[1]!.expanded);
+        assertFalse(list.areAllSectionsExpanded());
 
-    list.expandAll();
-    assertEquals(2, expandCalls);
-  });
+        list.expandAll();
+        await microtasksFinished();
+        assertTrue(sections[0]!.expanded);
+        assertTrue(sections[1]!.expanded);
+        assertTrue(list.areAllSectionsExpanded());
+
+        list.collapseAll();
+        await microtasksFinished();
+        assertFalse(sections[0]!.expanded);
+        assertFalse(sections[1]!.expanded);
+        assertFalse(list.areAllSectionsExpanded());
+      });
 });

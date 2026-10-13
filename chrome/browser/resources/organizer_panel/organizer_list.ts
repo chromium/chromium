@@ -8,6 +8,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './organizer_list.css.js';
 import {getHtml} from './organizer_list.html.js';
+import type {OrganizerListSectionElement} from './organizer_list_section.js';
 import type {OrganizerListSectionDelegate} from './organizer_list_section_delegate.js';
 
 export interface OrganizerListElement {
@@ -41,16 +42,31 @@ export class OrganizerListElement extends CrLitElement {
   accessor searchQuery: string = '';
   protected accessor allSectionsHidden_: boolean = false;
 
+  private getSections_(): OrganizerListSectionElement[] {
+    return Array.from(
+        this.shadowRoot.querySelectorAll('organizer-list-section'));
+  }
+
   protected onSectionHiddenChanged_() {
-    const sections = this.shadowRoot.querySelectorAll('organizer-list-section');
+    const sections = this.getSections_();
     this.allSectionsHidden_ =
-        sections.length > 0 && Array.from(sections).every(s => s.hidden);
+        sections.length > 0 && sections.every(s => s.hidden);
+  }
+
+  areAllSectionsExpanded(): boolean {
+    const sections = this.getSections_();
+    return sections.length > 0 && sections.every(s => s.expanded);
   }
 
   expandAll() {
-    const sections = this.shadowRoot.querySelectorAll('organizer-list-section');
-    for (const section of sections) {
-      section.expand();
+    for (const section of this.getSections_()) {
+      section.setExpanded(true);
+    }
+  }
+
+  collapseAll() {
+    for (const section of this.getSections_()) {
+      section.setExpanded(false);
     }
   }
 }

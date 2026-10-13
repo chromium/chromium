@@ -29,6 +29,7 @@ suite('OrganizerPanelAppTest', () => {
       clearSearch: 'Clear search',
       closeTab: 'Close tab',
       closeTabSearch: isMac ? 'Close Tab Search' : 'Close tab search',
+      collapseAll: isMac ? 'Collapse All' : 'Collapse all',
       createTabGroup: 'Create tab group',
       expandAll: isMac ? 'Expand All' : 'Expand all',
       foreignTabsEnabled: false,
@@ -72,6 +73,8 @@ suite('OrganizerPanelAppTest', () => {
 
     mockOrganizerPanelHandler =
         TestMock.fromClass(OrganizerPanelPageHandlerRemote);
+    mockOrganizerPanelHandler.setPromiseResolveFor(
+        'getSectionState', {state: {expanded: false, showAll: false}});
     const {instance: organizerPanelInstance} =
         organizerPanelBrowserProxyFactory.createForTest(
             mockOrganizerPanelHandler);
@@ -218,6 +221,81 @@ suite('OrganizerPanelAppTest', () => {
 
         assertTrue(expandAllCalled);
         assertFalse(app.$.menu.open);
+      });
+
+  test(
+      'shows collapse all in context menu when all sections are expanded and ' +
+          'clicking it calls collapseAll on list',
+      async () => {
+        app.$.list.expandAll();
+        await microtasksFinished();
+
+        let collapseAllCalled = false;
+        app.$.list.collapseAll = () => {
+          collapseAllCalled = true;
+        };
+
+        app.dispatchEvent(new MouseEvent('contextmenu', {
+          bubbles: true,
+          cancelable: true,
+          clientX: 50,
+          clientY: 100,
+        }));
+        await microtasksFinished();
+        assertTrue(app.$.menu.open);
+
+        assertEquals(
+            null,
+            app.$.menu.querySelector<HTMLButtonElement>('#expandAllButton'));
+        const collapseAllButton =
+            app.$.menu.querySelector<HTMLButtonElement>('#collapseAllButton');
+        assertTrue(!!collapseAllButton);
+        assertEquals(
+            isMac ? 'Collapse All' : 'Collapse all',
+            collapseAllButton.textContent.trim());
+
+        collapseAllButton.click();
+        await microtasksFinished();
+
+        assertTrue(collapseAllCalled);
+        assertFalse(app.$.menu.open);
+      });
+
+  test(
+      'disables expand and collapse all in context menu when search is active',
+      async () => {
+        const expandAllButton =
+            app.$.menu.querySelector<HTMLButtonElement>('#expandAllButton')!;
+        assertFalse(expandAllButton.disabled);
+
+        app.$.searchField.setValue('test search');
+        await microtasksFinished();
+        assertTrue(expandAllButton.disabled);
+
+        app.$.searchField.setValue('');
+        await microtasksFinished();
+        assertFalse(expandAllButton.disabled);
+
+        app.$.list.expandAll();
+        app.dispatchEvent(new MouseEvent('contextmenu', {
+          bubbles: true,
+          cancelable: true,
+          clientX: 50,
+          clientY: 100,
+        }));
+        await microtasksFinished();
+
+        const collapseAllButton =
+            app.$.menu.querySelector<HTMLButtonElement>('#collapseAllButton')!;
+        assertFalse(collapseAllButton.disabled);
+
+        app.$.searchField.setValue('test search');
+        await microtasksFinished();
+        assertTrue(collapseAllButton.disabled);
+
+        app.$.searchField.setValue('');
+        await microtasksFinished();
+        assertFalse(collapseAllButton.disabled);
       });
 
   test(
