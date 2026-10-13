@@ -13,6 +13,8 @@
 #include "base/strings/strcat.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/printing/browser_printing_context_factory_for_test.h"
 #include "chrome/browser/printing/print_error_dialog.h"
@@ -34,9 +36,12 @@
 #include "chrome/common/read_anything/read_anything.mojom.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -46,13 +51,18 @@
 #include "printing/backend/print_backend.h"
 #include "printing/backend/test_print_backend.h"
 #include "printing/printing_context.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/platform/browser_accessibility.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/events/keycodes/dom/dom_key.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/test/mock_activation_controller.h"
 #include "ui/views/view.h"
 
 namespace {
@@ -542,6 +552,65 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingPrintingBrowserTest,
   content::WaitForAccessibilityTreeToContainNodeWithName(
       preview_dialog, LineNodeName(kBottomSentinel));
 }
+
+// On Mac, Cmd+P goes through the main menu, not the browser's shortcuts.
+#if !BUILDFLAG(IS_MAC)
+class ReadAnythingPrintingShortcutBrowserTest
+    : public ReadAnythingPrintingBrowserTest {
+ public:
+  void SetUp() override {
+#if defined(USE_MOCK_ACTIVATION_CONTROLLER)
+    activation_controller_ =
+        std::make_unique<views::test::MockActivationController>();
+#endif
+    ReadAnythingPrintingBrowserTest::SetUp();
+  }
+
+  void TearDownOnMainThread() override {
+#if defined(USE_MOCK_ACTIVATION_CONTROLLER)
+    activation_controller_.reset();
+#endif
+    ReadAnythingPrintingBrowserTest::TearDownOnMainThread();
+  }
+
+ private:
+#if defined(USE_MOCK_ACTIVATION_CONTROLLER)
+  // Browser shortcuts only run in the active window. This emulates activation
+  // so that tests running in parallel can't deactivate this test's window.
+  std::unique_ptr<views::test::MockActivationController> activation_controller_;
+#endif
+};
+
+// Ctrl+P in IRM prints IRM.
+IN_PROC_BROWSER_TEST_F(ReadAnythingPrintingShortcutBrowserTest,
+                       CtrlPPrintsIrm) {
+  NavigateToArticle();
+  content::WebContents* irm_contents = OpenIRM();
+  ASSERT_TRUE(irm_contents);
+  WaitForDistillation(irm_contents);
+
+  input::NativeWebKeyboardEvent ctrl_p(blink::WebInputEvent::Type::kRawKeyDown,
+                                       blink::WebInputEvent::kControlKey,
+                                       base::TimeTicks::Now());
+  ctrl_p.windows_key_code = ui::VKEY_P;
+  ctrl_p.dom_code = static_cast<int>(ui::DomCode::US_P);
+  ctrl_p.dom_key = ui::DomKey::FromCharacter('p');
+  printing::TestPrintPreviewObserver observer(/*wait_for_loaded=*/false);
+  // Send the key to the IRM page, as a key press does. If the page doesn't
+  // handle it, it goes on to the browser's shortcuts.
+  irm_contents->GetPrimaryMainFrame()
+      ->GetRenderWidgetHost()
+      ->ForwardKeyboardEvent(ctrl_p);
+  observer.WaitUntilPreviewIsReady();
+
+  auto* dialog_controller =
+      printing::PrintPreviewDialogController::GetInstance();
+  ASSERT_TRUE(dialog_controller);
+  EXPECT_TRUE(dialog_controller->GetPrintPreviewForContents(irm_contents));
+  EXPECT_FALSE(dialog_controller->GetPrintPreviewForContents(
+      GetActiveTab()->GetContents()));
+}
+#endif  // !BUILDFLAG(IS_MAC)
 
 class ReadAnythingPrintingDisabledBrowserTest
     : public ReadAnythingPrintingTestBase {

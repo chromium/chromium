@@ -209,6 +209,7 @@ source_set("browser_tests") {
       "//components/web_modal",
       "//printing",
       "//printing/backend:test_support",
+      "//ui/views:test_support",
     ]
   }
 }
