@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/autofill/one_time_tokens/gmail_otp_opt_in_bubble_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -78,10 +79,13 @@ class GmailOtpOptInBubbleViewBrowsertest
   }
 
   void ShowUi(const std::string& name) override {
+    tabs::TabInterface* tab = browser()->GetActiveTabInterface();
+    GmailOtpOptInBubbleController* controller =
+        GmailOtpOptInBubbleController::From(*tab);
+    controller->SetAccountEmailForTesting(u"elisa.g.beckett@gmail.com");
     auto bubble = std::make_unique<GmailOtpOptInBubbleView>(
         views::BubbleAnchor(BrowserView::GetBrowserViewForBrowser(browser())),
-        browser()->GetActiveTabInterface()->GetContents(),
-        u"elisa.g.beckett@gmail.com");
+        tab->GetContents(), controller);
     bubble_ = bubble.get();
     views::BubbleDialogDelegateView::CreateBubble(std::move(bubble))->Show();
   }

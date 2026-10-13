@@ -38,7 +38,7 @@ AutofillBubbleBase* CreateGmailOtpOptInBubbleView(
   views::BubbleAnchor anchor =
       toolbar_button_provider->GetBubbleAnchor(std::nullopt);
   auto bubble_view = std::make_unique<GmailOtpOptInBubbleView>(
-      anchor, web_contents, controller->account_email());
+      anchor, web_contents, controller);
   GmailOtpOptInBubbleView* const ptr = bubble_view.get();
   views::BubbleDialogDelegateView::CreateBubble(std::move(bubble_view));
   ptr->ShowForReason(LocationBarBubbleDelegateView::AUTOMATIC);
@@ -88,9 +88,35 @@ void GmailOtpOptInBubbleController::SetUpAndShowBubble(
   manager->RequestShowController(*this, /*force_show=*/false);
 }
 
+void GmailOtpOptInBubbleController::OnBubbleClosed(GmailOtpOptInResult result) {
+  ResetBubbleViewAndInformBubbleManager(/*initiated_by_bubble_manager=*/false);
+
+  // If the bubble is going to be reshown (e.g., because the user is switching
+  // tabs or a higher-priority bubble preempted it), do not run the callback
+  // yet.
+  if (BubbleManager* manager = BubbleManager::GetForTab(&tab_.get());
+      manager && manager->HasPendingBubbleOfSameType(GetBubbleType())) {
+    return;
+  }
+
+  if (callback_) {
+    std::move(callback_).Run(result);
+  }
+}
+
 void GmailOtpOptInBubbleController::SetBubbleViewFactoryForTesting(
     BubbleViewFactory factory) {
   bubble_view_factory_ = std::move(factory);
+}
+
+void GmailOtpOptInBubbleController::SetAccountEmailForTesting(
+    const std::u16string& account_email) {
+  account_email_ = account_email;
+}
+
+base::WeakPtr<GmailOtpOptInBubbleController>
+GmailOtpOptInBubbleController::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void GmailOtpOptInBubbleController::ShowBubble() {

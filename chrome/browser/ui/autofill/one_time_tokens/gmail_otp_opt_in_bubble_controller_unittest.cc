@@ -283,6 +283,35 @@ TEST_F(GmailOtpOptInBubbleControllerTest, IsMouseHovered) {
 }
 
 TEST_F(GmailOtpOptInBubbleControllerTest,
+       OnBubbleClosed_RunsCallbackWithResult) {
+  base::test::TestFuture<GmailOtpOptInResult> future;
+  controller()->SetUpAndShowBubble(u"user@gmail.com", future.GetCallback());
+  ASSERT_TRUE(controller()->IsShowingBubble());
+
+  controller()->OnBubbleClosed(GmailOtpOptInResult::kDeclined);
+
+  EXPECT_FALSE(controller()->IsShowingBubble());
+  EXPECT_EQ(future.Get(), GmailOtpOptInResult::kDeclined);
+}
+
+TEST_F(GmailOtpOptInBubbleControllerTest,
+       OnBubbleClosed_WhenPendingInQueue_DoesNotRunCallback) {
+  base::test::TestFuture<GmailOtpOptInResult> future;
+  controller()->SetUpAndShowBubble(u"user@gmail.com", future.GetCallback());
+  ASSERT_TRUE(controller()->IsShowingBubble());
+
+  // Deactivating the tab re-queues the bubble in BubbleManager and hides it.
+  EXPECT_CALL(mock_bubble_, Hide());
+  tab_interface()->Deactivate();
+  ASSERT_FALSE(controller()->IsShowingBubble());
+
+  // When the widget finishes closing asynchronously, OnBubbleClosed should not
+  // run the callback while the bubble is queued.
+  controller()->OnBubbleClosed(GmailOtpOptInResult::kUnknown);
+  EXPECT_FALSE(future.IsReady());
+}
+
+TEST_F(GmailOtpOptInBubbleControllerTest,
        Destructor_WhenQueued_RunsCallbackWithDiscarded) {
   // Show a higher-priority password bubble so the Gmail OTP opt-in bubble is
   // queued in BubbleManager.

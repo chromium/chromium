@@ -54,12 +54,18 @@ class GmailOtpOptInBubbleController : public BubbleControllerBase {
   void SetUpAndShowBubble(const std::u16string& account_email,
                           ResultCallback callback);
 
+  // Called by the bubble view when its widget is closing.
+  void OnBubbleClosed(GmailOtpOptInResult result);
+
   const std::u16string& account_email() const { return account_email_; }
   tabs::TabInterface& tab() const { return *tab_; }
 
   // Overrides the factory used to create and show the bubble view in tests so
   // the controller can be unit-tested without instantiating `views` widgets.
   void SetBubbleViewFactoryForTesting(BubbleViewFactory factory);
+  void SetAccountEmailForTesting(const std::u16string& account_email);
+
+  base::WeakPtr<GmailOtpOptInBubbleController> GetWeakPtr();
 
   // BubbleControllerBase:
   void ShowBubble() override;

@@ -5,10 +5,9 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_ONE_TIME_TOKENS_GMAIL_OTP_OPT_IN_BUBBLE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_ONE_TIME_TOKENS_GMAIL_OTP_OPT_IN_BUBBLE_VIEW_H_
 
-#include <string>
-
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/autofill/autofill_location_bar_bubble.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -23,6 +22,8 @@ class StyledLabel;
 
 namespace autofill {
 
+class GmailOtpOptInBubbleController;
+
 // Bubble view asking the user to opt in to fetching one-time verification codes
 // from Gmail.
 class GmailOtpOptInBubbleView : public AutofillLocationBarBubble {
@@ -35,7 +36,7 @@ class GmailOtpOptInBubbleView : public AutofillLocationBarBubble {
 
   GmailOtpOptInBubbleView(views::BubbleAnchor anchor,
                           content::WebContents* web_contents,
-                          const std::u16string& account_email);
+                          GmailOtpOptInBubbleController* controller);
   GmailOtpOptInBubbleView(const GmailOtpOptInBubbleView&) = delete;
   GmailOtpOptInBubbleView& operator=(const GmailOtpOptInBubbleView&) = delete;
   ~GmailOtpOptInBubbleView() override;
@@ -45,6 +46,7 @@ class GmailOtpOptInBubbleView : public AutofillLocationBarBubble {
 
   // views::WidgetDelegate:
   void OnWidgetInitialized() override;
+  void WindowClosing() override;
 
   views::StyledLabel* GetDescriptionLabelForTesting() const {
     return description_label_;
@@ -54,6 +56,7 @@ class GmailOtpOptInBubbleView : public AutofillLocationBarBubble {
   void OnLearnMoreLinkClicked();
 
   raw_ptr<views::StyledLabel> description_label_ = nullptr;
+  base::WeakPtr<GmailOtpOptInBubbleController> controller_;
 };
 
 }  // namespace autofill

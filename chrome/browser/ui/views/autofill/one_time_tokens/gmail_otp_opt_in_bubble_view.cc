@@ -9,10 +9,14 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
+#include "base/notreached.h"
+#include "chrome/browser/ui/autofill/one_time_tokens/gmail_otp_opt_in_bubble_controller.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
+#include "components/autofill/core/browser/integrators/one_time_tokens/gmail_otp_opt_in_result.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
@@ -35,11 +39,37 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/widget/widget.h"
 
 namespace autofill {
 
 namespace {
+
 constexpr int kBubbleWidth = 320;
+
+GmailOtpOptInResult GetGmailOtpOptInResultFromWidget(
+    const views::Widget* widget) {
+  using enum GmailOtpOptInResult;
+  if (!widget || !widget->IsClosed()) {
+    return kUnknown;
+  }
+
+  switch (widget->closed_reason()) {
+    case views::Widget::ClosedReason::kUnspecified:
+      return kUnknown;
+    case views::Widget::ClosedReason::kLostFocus:
+      return kLostFocus;
+    case views::Widget::ClosedReason::kEscKeyPressed:
+    case views::Widget::ClosedReason::kCloseButtonClicked:
+      return kClosed;
+    case views::Widget::ClosedReason::kAcceptButtonClicked:
+      return kAccepted;
+    case views::Widget::ClosedReason::kCancelButtonClicked:
+      return kDeclined;
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(GmailOtpOptInBubbleView, kTurnOnButtonId);
@@ -50,8 +80,9 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(GmailOtpOptInBubbleView, kCloseButtonId);
 GmailOtpOptInBubbleView::GmailOtpOptInBubbleView(
     views::BubbleAnchor anchor,
     content::WebContents* web_contents,
-    const std::u16string& account_email)
-    : AutofillLocationBarBubble(anchor, web_contents) {
+    GmailOtpOptInBubbleController* controller)
+    : AutofillLocationBarBubble(anchor, web_contents),
+      controller_(CHECK_DEREF(controller).GetWeakPtr()) {
   set_fixed_width(kBubbleWidth);
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
@@ -70,9 +101,9 @@ GmailOtpOptInBubbleView::GmailOtpOptInBubbleView(
   const std::u16string link_text =
       l10n_util::GetStringUTF16(IDS_AUTOFILL_GMAIL_OTP_OPT_IN_LEARN_MORE_LINK);
   std::vector<size_t> offsets;
-  const std::u16string description_text =
-      l10n_util::GetStringFUTF16(IDS_AUTOFILL_GMAIL_OTP_OPT_IN_DESCRIPTION,
-                                 account_email, link_text, &offsets);
+  const std::u16string description_text = l10n_util::GetStringFUTF16(
+      IDS_AUTOFILL_GMAIL_OTP_OPT_IN_DESCRIPTION, controller_->account_email(),
+      link_text, &offsets);
 
   views::StyledLabel::RangeStyleInfo link_style =
       views::StyledLabel::RangeStyleInfo::CreateForLink(
@@ -127,6 +158,13 @@ void GmailOtpOptInBubbleView::OnWidgetInitialized() {
   }
   if (views::Button* close_button = GetBubbleFrameView()->close_button()) {
     close_button->SetProperty(views::kElementIdentifierKey, kCloseButtonId);
+  }
+}
+
+void GmailOtpOptInBubbleView::WindowClosing() {
+  if (controller_) {
+    controller_->OnBubbleClosed(GetGmailOtpOptInResultFromWidget(GetWidget()));
+    controller_ = nullptr;
   }
 }
 

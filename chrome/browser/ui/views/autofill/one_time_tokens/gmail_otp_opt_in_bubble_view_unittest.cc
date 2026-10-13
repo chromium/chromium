@@ -8,11 +8,13 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "chrome/browser/ui/autofill/one_time_tokens/gmail_otp_opt_in_bubble_controller.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -21,6 +23,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/events/test/test_event.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -42,6 +45,8 @@ using ::testing::_;
 using ::testing::AllOf;
 using ::testing::Field;
 using ::testing::NiceMock;
+using ::testing::Return;
+using ::testing::ReturnRef;
 
 constexpr std::u16string_view kTestEmail = u"elisa.g.beckett@gmail.com";
 
@@ -65,6 +70,11 @@ class GmailOtpOptInBubbleViewTest : public ChromeViewsTestBase {
     web_contents_ =
         content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
     web_contents_->SetDelegate(&web_contents_delegate_);
+    ON_CALL(mock_tab_, GetUnownedUserDataHost())
+        .WillByDefault(ReturnRef(user_data_host_));
+    ON_CALL(mock_tab_, GetContents())
+        .WillByDefault(Return(web_contents_.get()));
+    controller_ = std::make_unique<GmailOtpOptInBubbleController>(mock_tab_);
 
     views::Widget::InitParams params =
         CreateParams(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
@@ -77,13 +87,15 @@ class GmailOtpOptInBubbleViewTest : public ChromeViewsTestBase {
   void TearDown() override {
     bubble_ = nullptr;
     anchor_widget_.reset();
+    controller_.reset();
     ChromeViewsTestBase::TearDown();
   }
 
   void CreateAndShowBubble() {
+    controller_->SetAccountEmailForTesting(std::u16string(kTestEmail));
     auto bubble = std::make_unique<GmailOtpOptInBubbleView>(
         views::BubbleAnchor(anchor_widget_->GetContentsView()),
-        web_contents_.get(), std::u16string(kTestEmail));
+        web_contents_.get(), controller_.get());
     bubble_ = bubble.get();
     views::BubbleDialogDelegateView::CreateBubble(std::move(bubble))->Show();
   }
@@ -99,6 +111,9 @@ class GmailOtpOptInBubbleViewTest : public ChromeViewsTestBase {
   TestingProfile profile_;
   NiceMock<MockWebContentsDelegate> web_contents_delegate_;
   std::unique_ptr<content::WebContents> web_contents_;
+  ui::UnownedUserDataHost user_data_host_;
+  tabs::MockTabInterface mock_tab_;
+  std::unique_ptr<GmailOtpOptInBubbleController> controller_;
   std::unique_ptr<views::Widget> anchor_widget_;
   raw_ptr<GmailOtpOptInBubbleView> bubble_ = nullptr;
 };

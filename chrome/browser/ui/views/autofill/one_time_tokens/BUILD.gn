@@ -19,7 +19,9 @@ source_set("one_time_tokens") {
   deps = [
     "//chrome/browser:resources",
     "//chrome/browser/ui:chrome_pages",
+    "//chrome/browser/ui/autofill",
     "//chrome/common",
+    "//components/autofill/core/browser",
     "//components/strings",
     "//content/public/browser",
     "//ui/color",
@@ -36,6 +38,7 @@ source_set("browser_tests") {
 
   deps = [
     ":one_time_tokens",
+    "//chrome/browser/ui/autofill",
     "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/test:test_support_ui",
   ]
@@ -48,7 +51,10 @@ source_set("unit_tests") {
 
   deps = [
     ":one_time_tokens",
+    "//chrome/browser/ui/autofill",
     "//chrome/test:test_support",
+    "//components/tabs:test_support",
+    "//ui/base/unowned_user_data",
     "//ui/events:test_support",
   ]
 }
