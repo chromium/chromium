@@ -74,8 +74,9 @@ class PictureInPictureWindowManager {
   //
   // This mode is triggered through WebContentsDelegate::EnterPictureInPicture,
   // and the default implementation of that fails with a kNotSupported
-  // result. For compatibility, this method must also return a
-  // content::PictureInPictureResult even though it doesn't fail.
+  // result. This method also returns kNotSupported if `web_contents` is a
+  // Document Picture-in-Picture child WebContents or is destroyed while closing
+  // an existing Picture-in-Picture window.
   content::PictureInPictureResult EnterVideoPictureInPicture(
       content::WebContents*);
 

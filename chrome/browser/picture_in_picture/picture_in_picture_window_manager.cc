@@ -193,6 +193,13 @@ void PictureInPictureWindowManager::EnterDocumentPictureInPicture(
 content::PictureInPictureResult
 PictureInPictureWindowManager::EnterVideoPictureInPicture(
     content::WebContents* web_contents) {
+  // A Document Picture-in-Picture child WebContents cannot enter video
+  // Picture-in-Picture. Reject the request before closing the existing
+  // window, which would close `web_contents` itself.
+  if (web_contents && GetChildWebContents() == web_contents) {
+    return content::PictureInPictureResult::kNotSupported;
+  }
+
   // Create or update |pip_window_controller_| for the current WebContents, if
   // it is a WebContents based video PIP.
   if (!pip_window_controller_ ||
@@ -200,8 +207,14 @@ PictureInPictureWindowManager::EnterVideoPictureInPicture(
       !pip_window_controller_->GetWebContents()->HasPictureInPictureVideo()) {
     // If there was already a video PiP controller, close the existing window
     // before creating the next one.
-    if (pip_window_controller_)
+    if (pip_window_controller_) {
+      base::WeakPtr<content::WebContents> weak_web_contents =
+          web_contents->GetWeakPtr();
       CloseWindowInternal();
+      if (!weak_web_contents) {
+        return content::PictureInPictureResult::kNotSupported;
+      }
+    }
 
     CreateWindowInternal(web_contents);
   }
