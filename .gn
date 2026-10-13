@@ -89,8 +89,10 @@ no_check_targets = [
   # violations are resolved.
   "//base/logging/rust_logger:rust_logger_cxx_generated",
   "//base/tracing/protos:chrome_track_event_zero",
+  "//build/rust/tests/bindgen_static_fns_test:c_lib_bindgen_generator_static_fns",
   "//chrome/app/theme:theme_resources",
   "//chrome/app/theme:webui_theme_resources",
+  "//chrome/browser/apps/platform_apps/api:api_registration",
   "//chrome/browser/controlled_frame/api:api_registration",
   "//chrome/browser/extensions/api:api_registration",
   "//chrome/browser/indigo/resources:grit",
