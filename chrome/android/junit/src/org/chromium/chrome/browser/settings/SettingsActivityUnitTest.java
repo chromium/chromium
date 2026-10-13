@@ -43,7 +43,6 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
@@ -137,10 +136,6 @@ public class SettingsActivityUnitTest {
     }
 
     @Test
-    @DisabledTest(
-            message =
-                    "TODO(crbug.com/404074032): Re-enable after fixing SlidingPaneLayout state in"
-                            + " Robolectric.")
     public void testUpdateTitle() {
         startSettingsActivity(TestEmbeddableFragment.class.getName());
         mActivityScenario.moveToState(State.RESUMED);
@@ -149,10 +144,6 @@ public class SettingsActivityUnitTest {
     }
 
     @Test
-    @DisabledTest(
-            message =
-                    "TODO(crbug.com/404074032): Re-enable after fixing SlidingPaneLayout state in"
-                            + " Robolectric.")
     public void testUpdateTitleSingleActivity() {
         startSettingsActivity(TestEmbeddableFragment.class.getName());
         mActivityScenario.moveToState(State.RESUMED);
