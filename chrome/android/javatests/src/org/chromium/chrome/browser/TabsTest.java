@@ -427,6 +427,7 @@ public class TabsTest {
      */
     @Test
     @SmallTest
+    @DisableIf.Device(DeviceFormFactor.AUTOMOTIVE) // crbug.com/572964289
     public void testNewTabSetsContentViewSize() throws TimeoutException {
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());

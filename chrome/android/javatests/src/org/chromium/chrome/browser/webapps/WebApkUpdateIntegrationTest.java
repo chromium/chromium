@@ -189,7 +189,10 @@ public class WebApkUpdateIntegrationTest {
     @Test
     @LargeTest
     @Feature({"Webapps"})
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288857
+    @DisableIf.Device({
+        DeviceFormFactor.DESKTOP_FREEFORM, // crbug.com/511288857
+        DeviceFormFactor.AUTOMOTIVE // crbug.com/572962865
+    })
     public void testStoreUpdateRequestToFile() throws Exception {
         String pageUrl = mTestServer.getURL(WEBAPK_START_URL);
         HistogramWatcher histogramWatcher =
