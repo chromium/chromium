@@ -28,3 +28,24 @@ source_set("test_support") {
     "//base",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+  sources = [ "record_replay_agent_browsertest.cc" ]
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  deps = [
+    ":renderer",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//components/record_replay/core/common",
+    "//components/record_replay/core/common:mojom",
+    "//content/public/renderer",
+    "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/blink/public:blink",
+    "//third_party/blink/public/common",
+  ]
+}

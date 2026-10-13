@@ -1640,8 +1640,7 @@ if (!is_android) {
       "//components/privacy_sandbox/privacy_sandbox_attestations:metrics",
       "//components/privacy_sandbox/privacy_sandbox_attestations/proto",
       "//components/private_ai:testing",
-      "//components/record_replay/content/renderer",
-      "//components/record_replay/content/renderer:test_support",
+      "//components/record_replay/content/renderer:browser_tests",
       "//components/resources",
       "//components/safe_browsing:buildflags",
       "//components/safe_browsing/core/browser/db:test_database_manager",
@@ -1793,7 +1792,6 @@ if (!is_android) {
 
     sources = [
       "../../components/live_caption/views/caption_bubble_browsertest.cc",
-      "../../components/record_replay/content/renderer/record_replay_agent_browsertest.cc",
       "../browser/os_crypt/os_crypt_async_browsertest.cc",
     ]
     fuzztests = [ "SafeXmlParserFixture.ParseXML" ]
