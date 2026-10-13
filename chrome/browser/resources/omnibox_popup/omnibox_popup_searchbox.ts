@@ -1616,18 +1616,57 @@ export class OmniboxPopupSearchboxElement extends
     const isLogicallyFocused = this.shadowRoot?.activeElement === this.$.input;
     if (isFullSelection && isLogicallyFocused) {
       this.getInputElement().select();
+      // `select()` doesn't scroll either, so the input would keep its old
+      // offset. Show the start, as the native omnibox does after a select-all.
+      this.getInputElement().inputElement.scrollLeft = 0;
     } else {
+      // `selection` mirrors a native `gfx::Range`, whose `end` is the caret, so
+      // a right-to-left native selection arrives with `start > end`. Keep it
+      // backward so the caret stays on the end the user was dragging.
       const selStart = Math.min(start, end);
       const selEnd = Math.max(start, end);
-      this.$.input.setSelectionRange(selStart, selEnd);
+      this.$.input.setSelectionRange(
+          selStart, selEnd, start > end ? 'backward' : 'none');
       const inputEl = this.getInputElement().inputElement;
       if (selStart === inputEl.value.length &&
           selEnd === inputEl.value.length) {
         inputEl.scrollLeft = inputEl.scrollWidth;
       } else if (selStart === 0 && selEnd === 0) {
         inputEl.scrollLeft = 0;
+      } else if (!isFullSelection) {
+        this.scrollSelectionStartIntoView_(selStart);
       }
     }
+  }
+
+  /**
+   * Scrolls the single-line input to the start of the text, or only as far past
+   * it as needed to show the selection start at `selStart`. In Full WebUI mode
+   * the native textfield never takes focus, so it doesn't scroll while the user
+   * drags. It shows the start of the text with the end elided, so a range
+   * handed off from it starts where the user saw it. Blink doesn't scroll a
+   * text field for `setSelectionRange()`, so without this the input keeps its
+   * old scroll offset.
+   */
+  private scrollSelectionStartIntoView_(selStart: number) {
+    if (this.multiLineEnabled) {
+      return;
+    }
+    const inputEl = this.getInputElement().inputElement;
+    const style = window.getComputedStyle(inputEl);
+    // The width of the text before an offset is only its position in LTR text.
+    if (style.direction !== 'ltr') {
+      return;
+    }
+    const visibleWidth = inputEl.clientWidth - parseFloat(style.paddingLeft) -
+        parseFloat(style.paddingRight);
+    if (visibleWidth <= 0) {
+      return;
+    }
+    const startLeft =
+        this.getTextWidth_(inputEl.value.substring(0, selStart), inputEl);
+    // Leave room for the 1px caret at the selection start.
+    inputEl.scrollLeft = Math.max(0, startLeft + 1 - visibleWidth);
   }
 
   private maybeShowFullUrl_() {
