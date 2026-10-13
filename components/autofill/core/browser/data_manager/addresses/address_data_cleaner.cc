@@ -171,7 +171,9 @@ void DeduplicateProfiles(const std::string& app_locale,
         continue;
       }
 
-      ++removed_profiles_count;
+      if (profile_action != ProfileAction::kRemove) {
+        ++removed_profiles_count;
+      }
       profile_action = ProfileAction::kRemove;
       superset_action = ProfileAction::kUpdate;
       superset.usage_history().MergeUsageHistories(profile.usage_history());
