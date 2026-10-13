@@ -35,6 +35,7 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
@@ -55,6 +56,7 @@ import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.test.util.TestAccounts;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.MockitoHelper;
 
 /** Test the lifecycle of sign-in and sign-out. */
@@ -119,6 +121,7 @@ public class SigninSignoutIntegrationTest {
 
     @Test
     @LargeTest
+    @DisableIf.Device(DeviceFormFactor.AUTOMOTIVE) // crbug.com/572800472
     public void testSignIn() {
         var signinHistogram =
                 HistogramWatcher.newSingleRecordWatcher(
