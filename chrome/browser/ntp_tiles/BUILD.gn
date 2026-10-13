@@ -25,6 +25,7 @@ source_set("impl") {
     "//chrome/browser/favicon",
     "//chrome/browser/history",
     "//chrome/browser/image_fetcher",
+    "//chrome/browser/search",
     "//chrome/browser/search_engines",
     "//chrome/browser/signin",
     "//chrome/browser/supervised_user",
@@ -56,5 +57,25 @@ if (!is_android) {
       "//testing/gmock",
       "//testing/gtest",
     ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "chrome_most_visited_sites_factory_unittest.cc" ]
+  deps = [
+    ":impl",
+    ":ntp_tiles",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/search_engines",
+    "//chrome/test:test_support",
+    "//components/ntp_tiles",
+    "//components/search_engines",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+  if (is_android) {
+    deps += [ "//chrome/browser/flags:flags_android" ]
   }
 }

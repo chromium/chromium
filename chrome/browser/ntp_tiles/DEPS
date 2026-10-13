@@ -13,6 +13,7 @@ include_rules = [
   "+chrome/browser/image_fetcher/image_decoder_impl.h",
   "+chrome/browser/ntp_tiles",
   "+chrome/browser/profiles/profile.h",
+  "+chrome/browser/search/search.h",
   "+chrome/browser/search_engines/template_url_service_factory.h",
   "+chrome/browser/signin/identity_manager_factory.h",
   "+chrome/browser/supervised_user/supervised_user_service_factory.h",
@@ -20,6 +21,9 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  "chrome_most_visited_sites_factory_unittest\\.cc": [
+    "+chrome/browser/search_engines/template_url_service_test_util.h",
+  ],
   "ntp_tiles_browsertest\\.cc": [
     "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
     "+chrome/test/base/in_process_browser_test.h",

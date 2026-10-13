@@ -2829,6 +2829,7 @@ test("unit_tests") {
     "//chrome/browser/navigation_predictor:unit_tests",
     "//chrome/browser/net:unit_tests",
     "//chrome/browser/notifications:unit_tests",
+    "//chrome/browser/ntp_tiles:unit_tests",
     "//chrome/browser/optimization_guide:unit_tests",
     "//chrome/browser/origin_gating:unit_tests",
     "//chrome/browser/page_content_annotations:unit_tests",

@@ -31,9 +31,23 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/feature_list.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/browser/search/search.h"
 #endif
 
 namespace {
+
+bool ShouldCreatePopularSites(Profile* profile) {
+#if BUILDFLAG(IS_ANDROID)
+  if (search::IsWebUiNtpEnabledForDesktopAndroid() &&
+      base::FeatureList::IsEnabled(chrome::android::kUseWebUiNtp3PDSE)) {
+    // TODO(crbug.com/572038495): Remove Popular Sites for 1P NTPs.
+    return search::DefaultSearchProviderIsGoogle(profile);
+  }
+  return true;
+#else
+  return false;
+#endif
+}
 
 bool ShouldCreateCustomLinksManager() {
 #if BUILDFLAG(ENABLE_WEBUI_NTP)
@@ -83,11 +97,9 @@ ChromeMostVisitedSitesFactory::NewForProfile(Profile* profile) {
       supervised_user::SupervisedUserUrlFilteringServiceFactory::GetForProfile(
           profile),
       TopSitesFactory::GetForProfile(profile),
-#if BUILDFLAG(IS_ANDROID)
-      ChromePopularSitesFactory::NewForProfile(profile),
-#else
-      nullptr,
-#endif
+      ShouldCreatePopularSites(profile)
+          ? ChromePopularSitesFactory::NewForProfile(profile)
+          : nullptr,
       ShouldCreateCustomLinksManager()
           ? ChromeCustomLinksManagerFactory::NewForProfile(profile)
           : nullptr,
