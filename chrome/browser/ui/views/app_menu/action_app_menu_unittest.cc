@@ -1800,6 +1800,205 @@ TEST_F(ActionAppMenuWithSearchTest, ClearItemsBelowSearchBarKeepsNotification) {
   menu.CloseMenu();
 }
 
+TEST_F(ActionAppMenuWithSearchTest, ShortSearchQueryKeepsNormalMenu) {
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
+  ASSERT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  AppMenuSearchBarView* search_bar = menu.search_bar_for_testing();
+  ASSERT_NE(search_bar, nullptr);
+  const size_t row_count = root->GetSubmenu()->children().size();
+
+  // One character is too short to search, so the menu is left as it is.
+  search_bar->SetText(u"P");
+
+  EXPECT_EQ(root->GetSubmenu()->children().size(), row_count);
+  EXPECT_TRUE(search_bar->search_icon_for_testing()->GetVisible());
+  EXPECT_FALSE(search_bar->back_button_for_testing()->GetVisible());
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+
+TEST_F(ActionAppMenuWithSearchTest, SearchQueryShowsOnlyResults) {
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
+  ASSERT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  views::SubmenuView* submenu = root->GetSubmenu();
+  AppMenuSearchBarView* search_bar = menu.search_bar_for_testing();
+  ASSERT_NE(search_bar, nullptr);
+  const std::optional<size_t> search_row_index =
+      submenu->GetIndexOf(search_bar->parent());
+  ASSERT_TRUE(search_row_index.has_value());
+  ASSERT_NE(root->GetMenuItemByID(kActionPrint), nullptr);
+
+  search_bar->SetText(u"Downloads");
+
+  EXPECT_EQ(menu.search_bar_for_testing(), search_bar);
+  EXPECT_EQ(submenu->GetIndexOf(search_bar->parent()), search_row_index);
+  EXPECT_NE(root->GetMenuItemByID(kActionShowDownloadsPage), nullptr);
+  EXPECT_EQ(root->GetMenuItemByID(kActionPrint), nullptr);
+  EXPECT_TRUE(search_bar->back_button_for_testing()->GetVisible());
+  EXPECT_FALSE(search_bar->search_icon_for_testing()->GetVisible());
+  EXPECT_TRUE(search_bar->is_active_for_testing());
+
+  // Clicking a result runs its action.
+  EXPECT_CALL(mock_action_invoked_,
+              Call(kActionShowDownloadsPage, testing::_, testing::_))
+      .Times(1);
+  menu.ExecuteCommand(kActionShowDownloadsPage, /*mouse_event_flags=*/0);
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+
+TEST_F(ActionAppMenuWithSearchTest, SearchQueryWithoutMatchesShowsBackButton) {
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
+  ASSERT_TRUE(menu.IsShowing());
+
+  views::SubmenuView* submenu = menu.root_menu_item_for_testing()->GetSubmenu();
+  AppMenuSearchBarView* search_bar = menu.search_bar_for_testing();
+  ASSERT_NE(search_bar, nullptr);
+  const std::optional<size_t> search_row_index =
+      submenu->GetIndexOf(search_bar->parent());
+  ASSERT_TRUE(search_row_index.has_value());
+
+  search_bar->SetText(u"qzxjqzxj");
+
+  // A single "No results" row follows the search bar, and back is offered.
+  EXPECT_EQ(submenu->GetIndexOf(search_bar->parent()), search_row_index);
+  EXPECT_EQ(submenu->children().size(), *search_row_index + 2);
+  EXPECT_TRUE(search_bar->back_button_for_testing()->GetVisible());
+  EXPECT_FALSE(search_bar->search_icon_for_testing()->GetVisible());
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+
+TEST_F(ActionAppMenuWithSearchTest, ChangingSearchQueryReplacesResults) {
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
+  ASSERT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  views::SubmenuView* submenu = root->GetSubmenu();
+  AppMenuSearchBarView* search_bar = menu.search_bar_for_testing();
+  ASSERT_NE(search_bar, nullptr);
+  const std::optional<size_t> search_row_index =
+      submenu->GetIndexOf(search_bar->parent());
+  ASSERT_TRUE(search_row_index.has_value());
+
+  search_bar->SetText(u"Print");
+  ASSERT_NE(root->GetMenuItemByID(kActionPrint), nullptr);
+  ASSERT_EQ(root->GetMenuItemByID(kActionShowDownloadsPage), nullptr);
+
+  search_bar->SetText(u"Downloads");
+  EXPECT_EQ(root->GetMenuItemByID(kActionPrint), nullptr);
+  EXPECT_NE(root->GetMenuItemByID(kActionShowDownloadsPage), nullptr);
+  EXPECT_EQ(submenu->GetIndexOf(search_bar->parent()), search_row_index);
+  EXPECT_TRUE(search_bar->back_button_for_testing()->GetVisible());
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+
+TEST_F(ActionAppMenuWithSearchTest, BackButtonRestoresNormalMenu) {
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
+  ASSERT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  views::SubmenuView* submenu = root->GetSubmenu();
+  AppMenuSearchBarView* search_bar = menu.search_bar_for_testing();
+  ASSERT_NE(search_bar, nullptr);
+  const size_t row_count_at_open = submenu->children().size();
+
+  search_bar->SetText(u"Downloads");
+  ASSERT_TRUE(search_bar->back_button_for_testing()->GetVisible());
+  ASSERT_FALSE(search_bar->GetText().empty());
+  ASSERT_TRUE(search_bar->GetCursorEnabled());
+  ASSERT_EQ(root->GetMenuItemByID(kActionPrint), nullptr);
+
+  views::test::ButtonTestApi(search_bar->back_button_for_testing())
+      .NotifyDefaultMouseClick();
+
+  EXPECT_FALSE(search_bar->back_button_for_testing()->GetVisible());
+  EXPECT_TRUE(search_bar->search_icon_for_testing()->GetVisible());
+  EXPECT_TRUE(search_bar->GetText().empty());
+  EXPECT_TRUE(search_bar->GetCursorEnabled());
+  EXPECT_EQ(submenu->children().size(), row_count_at_open);
+  EXPECT_NE(root->GetMenuItemByID(kActionPrint), nullptr);
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+
+TEST_F(ActionAppMenuWithSearchTest,
+       NotificationStaysAboveSearchBarDuringSearch) {
+  if (!browser_defaults::kShowUpgradeMenuItem) {
+    GTEST_SKIP() << "Upgrade menu item is not supported on this platform.";
+  }
+
+  actions::ActionItem* upgrade_action =
+      actions::ActionManager::Get().FindAction(
+          kActionUpgradeDialog, browser_actions_->root_action_item());
+  ASSERT_NE(upgrade_action, nullptr);
+  upgrade_action->SetVisible(true);
+
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
+  ASSERT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  views::SubmenuView* submenu = root->GetSubmenu();
+  AppMenuSearchBarView* search_bar = menu.search_bar_for_testing();
+  ASSERT_NE(search_bar, nullptr);
+  views::MenuItemView* upgrade_item =
+      root->GetMenuItemByID(kActionUpgradeDialog);
+  ASSERT_NE(upgrade_item, nullptr);
+  const std::optional<size_t> search_row_index_at_open =
+      submenu->GetIndexOf(search_bar->parent());
+  ASSERT_GT(search_row_index_at_open, 0u);
+  const size_t row_count_at_open = submenu->children().size();
+
+  // The same notification row stays above the search bar while the results
+  // are shown.
+  search_bar->SetText(u"Downloads");
+  ASSERT_TRUE(search_bar->back_button_for_testing()->GetVisible());
+  EXPECT_EQ(root->GetMenuItemByID(kActionUpgradeDialog), upgrade_item);
+  EXPECT_EQ(submenu->GetIndexOf(search_bar->parent()),
+            search_row_index_at_open);
+
+  views::test::ButtonTestApi(search_bar->back_button_for_testing())
+      .NotifyDefaultMouseClick();
+
+  // Back adds the normal rows below the search bar again, but not the
+  // notification.
+  EXPECT_EQ(root->GetMenuItemByID(kActionUpgradeDialog), upgrade_item);
+  EXPECT_EQ(submenu->GetIndexOf(search_bar->parent()),
+            search_row_index_at_open);
+  EXPECT_EQ(submenu->children().size(), row_count_at_open);
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+
 TEST_F(ActionAppMenuTest, PopupAndComponentLayoutInsets) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
 

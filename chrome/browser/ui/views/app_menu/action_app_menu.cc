@@ -156,6 +156,7 @@ ActionAppMenu::ActionAppMenu(BrowserWindowInterface* browser_window_interface,
 }
 
 ActionAppMenu::~ActionAppMenu() {
+  search_text_changed_subscription_ = {};
   search_bar_ = nullptr;
   command_to_action_map_.clear();
   search_controller_.reset();
@@ -176,9 +177,14 @@ void ActionAppMenu::RunMenu(views::MenuButtonController* host, int run_types) {
   root_->CreateSubmenu();
   PopulateMenu(root_, menu_manager_->GetAppMenuRoot());
 
-  if (const std::string query = features::kChroMenuSearchQuery.Get();
-      !query.empty()) {
-    UpdateSearchQuery(base::UTF8ToUTF16(query));
+  // Temporary code to test search functionality while the key event routing
+  // design is aligned on. Prefills the search bar with the query from the
+  // `kChroMenuSearchQuery` feature param.
+  if (search_bar_) {
+    const std::string query = features::kChroMenuSearchQuery.Get();
+    if (!query.empty()) {
+      search_bar_->SetText(base::UTF8ToUTF16(query));
+    }
   }
 
   int32_t types = views::MenuRunner::HAS_MNEMONICS;
@@ -315,8 +321,10 @@ void ActionAppMenu::OnMenuClosed(views::MenuItemView* menu) {
     action_context = std::move(action_to_execute_on_close_->context);
   }
 
+  search_text_changed_subscription_ = {};
   search_bar_ = nullptr;
   has_notification_header_ = false;
+  is_showing_search_results_ = false;
   action_to_execute_on_close_.reset();
   command_to_action_map_.clear();
   section_header_count_ = 0;
@@ -574,13 +582,48 @@ void ActionAppMenu::ClearItemsBelowSearchBar() {
   section_header_count_ = 0;
 }
 
+void ActionAppMenu::OnSearchQueryChanged() {
+  actions::ActionItem* results = nullptr;
+  if (is_showing_search_results_) {
+    // Search() frees the results tree shown in the menu, so remove its rows
+    // and command mappings first.
+    ClearItemsBelowSearchBar();
+    results = search_controller_->Search(search_bar_->GetText());
+  } else {
+    results = search_controller_->Search(search_bar_->GetText());
+    if (!results) {
+      return;
+    }
+    ClearItemsBelowSearchBar();
+  }
+
+  is_showing_search_results_ = results != nullptr;
+  if (results) {
+    PopulateMenu(root_, results);
+  } else {
+    PopulateItemsBelowSearchBar();
+  }
+  search_bar_->SetLeadingIcon(results
+                                  ? AppMenuSearchBarView::LeadingIcon::kBack
+                                  : AppMenuSearchBarView::LeadingIcon::kSearch);
+  root_->ChildrenChanged();
+}
+
 void ActionAppMenu::PopulateMenu(views::MenuItemView* view_parent,
                                  actions::BaseAction* base_action_item) {
+  PopulateMenuStartingAt(view_parent, base_action_item,
+                         /*starting_index=*/0);
+}
+
+void ActionAppMenu::PopulateMenuStartingAt(
+    views::MenuItemView* view_parent,
+    actions::BaseAction* base_action_item,
+    size_t starting_index) {
   const auto& children_action_items =
       base_action_item->GetChildren().children();
   const size_t child_count = children_action_items.size();
 
-  for (size_t i = 0; i < child_count; ++i) {
+  for (size_t i = starting_index; i < child_count; ++i) {
     actions::BaseAction* const child_base = children_action_items[i].get();
     actions::ActionItem* const child_ptr = child_base->GetActionItem();
 
@@ -623,6 +666,20 @@ void ActionAppMenu::PopulateMenu(views::MenuItemView* view_parent,
       }
     }
   }
+}
+
+void ActionAppMenu::PopulateItemsBelowSearchBar() {
+  actions::ActionItem* const app_menu_root = menu_manager_->GetAppMenuRoot();
+  const auto& children = app_menu_root->GetChildren().children();
+  for (size_t i = 0; i < children.size(); ++i) {
+    const auto display_type = children[i]->GetProperty(
+        AppMenuActionItem::kDisplayTypeKey);
+    if (display_type == AppMenuActionItem::DisplayType::kSearch) {
+      PopulateMenuStartingAt(root_, app_menu_root, i + 1);
+      return;
+    }
+  }
+  NOTREACHED();
 }
 
 views::MenuItemView* ActionAppMenu::AppendMenuItem(
@@ -753,23 +810,6 @@ void ActionAppMenu::ConfigureMenuItem(views::MenuItemView* menu_item,
   }
 }
 
-void ActionAppMenu::UpdateSearchQuery(const std::u16string& query) {
-  if (!search_bar_) {
-    return;
-  }
-  search_bar_->SetText(query);
-  if (!search_controller_) {
-    search_controller_ = std::make_unique<AppMenuSearchController>(
-        menu_manager_->GetAppMenuRoot());
-    search_controller_->InitializeSearchIndex();
-  }
-  if (actions::ActionItem* results = search_controller_->Search(query)) {
-    ClearItemsBelowSearchBar();
-    PopulateMenu(root_, results);
-    root_->ChildrenChanged();
-  }
-}
-
 void ActionAppMenu::PopulateSearchBar(views::MenuItemView* view_parent,
                                       actions::ActionItem* search_action_item) {
   auto* search_item = view_parent->AppendMenuItem(0);
@@ -789,6 +829,13 @@ void ActionAppMenu::PopulateSearchBar(views::MenuItemView* view_parent,
   auto search_bar = std::make_unique<AppMenuSearchBarView>();
   search_bar->SetProperty(views::kMarginsKey, margins);
   search_bar_ = search_item->AddChildView(std::move(search_bar));
+
+  search_controller_ = std::make_unique<AppMenuSearchController>(
+      menu_manager_->GetAppMenuRoot());
+  search_controller_->InitializeSearchIndex();
+  search_text_changed_subscription_ =
+      search_bar_->AddTextChangedCallback(base::BindRepeating(
+          &ActionAppMenu::OnSearchQueryChanged, base::Unretained(this)));
 }
 
 void ActionAppMenu::PopulateFooter(views::MenuItemView* view_parent,

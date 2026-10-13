@@ -10,6 +10,7 @@
 #include <set>
 #include <utility>
 
+#include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
@@ -103,12 +104,24 @@ class ActionAppMenu : public views::MenuDelegate,
   void CancelAndEvaluate(actions::ActionId action_id, int mouse_event_flags);
 
   void ClearItemsBelowSearchBar();
-  void UpdateSearchQuery(const std::u16string& query);
+
+  // Shows the search results for the search bar's text, or the normal menu
+  // when the text is too short to search.
+  void OnSearchQueryChanged();
 
   // Recursively populates the menu item with the `base_action_item`'s
   // children.
   void PopulateMenu(views::MenuItemView* view_parent,
                     actions::BaseAction* base_action_item);
+
+  // Populates `view_parent` with `base_action_item`'s children from
+  // `starting_index` onward.
+  void PopulateMenuStartingAt(views::MenuItemView* view_parent,
+                              actions::BaseAction* base_action_item,
+                              size_t starting_index);
+
+  // Adds the normal menu rows that go below the search bar.
+  void PopulateItemsBelowSearchBar();
 
   // Appends (or inserts at `index`) and returns a menu item to the
   // `parent_menu_item` and adds the `base_action_item` to the command to action
@@ -162,8 +175,13 @@ class ActionAppMenu : public views::MenuDelegate,
   // The search bar view in the menu, if kChroMenuSearch is enabled.
   raw_ptr<AppMenuSearchBarView> search_bar_ = nullptr;
 
+  // Runs the searches for search_bar_. Created along with the search bar.
+  std::unique_ptr<AppMenuSearchController> search_controller_;
+  base::CallbackListSubscription search_text_changed_subscription_;
+
   // The states associated with the populated app menu.
   bool has_notification_header_ = false;
+  bool is_showing_search_results_ = false;
   size_t section_header_count_ = 0;
 
   struct ActionExecutionParams {
@@ -176,9 +194,6 @@ class ActionAppMenu : public views::MenuDelegate,
 
   // Manages the ActionItem hierarchy and dynamic submenus.
   std::unique_ptr<ActionAppMenuManager> menu_manager_;
-
-  // Search controller used when testing search or when search query is active.
-  std::unique_ptr<AppMenuSearchController> search_controller_;
 
   // Records UMA histograms and user actions for menu interactions.
   ActionAppMenuMetrics metrics_;
