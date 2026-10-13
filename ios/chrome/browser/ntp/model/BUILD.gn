@@ -29,6 +29,7 @@ source_set("model") {
     "//ios/components/webui:url_constants",
     "//ios/web/common:features",
     "//ios/web/public",
+    "//net",
     "//ui/base",
   ]
 }
@@ -175,6 +176,7 @@ source_set("unit_tests") {
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
+    "//net",
     "//services/network:test_support",
     "//testing/gtest",
     "//third_party/ocmock",

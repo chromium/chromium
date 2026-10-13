@@ -9,6 +9,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/task_environment.h"
+#import "base/test/test_future.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper_delegate.h"
@@ -23,6 +24,7 @@
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "net/base/apple/url_conversions.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -174,4 +176,110 @@ TEST_F(NewTabPageTabHelperTest, TestMismatchedPendingItem) {
   fake_navigation_manager_->SetLastCommittedItem(pending_item_.get());
   fake_web_state_.OnNavigationFinished(&context);
   EXPECT_EQ(GURL(kTestURL), pending_item_->GetVirtualURL());
+}
+
+// Tests that main-frame requests for `about://newtab/` are allowed when a
+// pending `NavigationItem` for `about://newtab/` exists (browser-initiated
+// navigation).
+TEST_F(NewTabPageTabHelperTest,
+       ShouldAllowRequestAllowsBrowserInitiatedNTPNavigation) {
+  CreateTabHelper();
+  NSURLRequest* request = [NSURLRequest
+      requestWithURL:net::NSURLWithGURL(GURL(kChromeUIAboutNewTabURL))];
+  web::WebStatePolicyDecider::RequestInfo request_info(
+      ui::PAGE_TRANSITION_TYPED, /*target_frame_is_main=*/true,
+      /*target_frame_is_cross_origin=*/false,
+      /*target_window_is_cross_origin=*/false,
+      /*is_user_initiated=*/true, /*user_tapped_recently=*/false);
+
+  base::test::TestFuture<web::WebStatePolicyDecider::PolicyDecision> future;
+  fake_web_state_.ShouldAllowRequest(request, request_info,
+                                     future.GetCallback());
+  EXPECT_TRUE(future.Get().ShouldAllowNavigation());
+}
+
+// Tests that main-frame requests for `about://newtab/` are allowed when the
+// last committed `NavigationItem` is `about://newtab/` (e.g. reload,
+// back/forward navigation, or session restoration).
+TEST_F(NewTabPageTabHelperTest,
+       ShouldAllowRequestAllowsCommittedNTPNavigation) {
+  CreateTabHelper();
+  fake_navigation_manager_->SetPendingItem(nullptr);
+  fake_navigation_manager_->SetLastCommittedItem(pending_item_.get());
+
+  NSURLRequest* request = [NSURLRequest
+      requestWithURL:net::NSURLWithGURL(GURL(kChromeUIAboutNewTabURL))];
+  web::WebStatePolicyDecider::RequestInfo request_info(
+      ui::PAGE_TRANSITION_RELOAD, /*target_frame_is_main=*/true,
+      /*target_frame_is_cross_origin=*/false,
+      /*target_window_is_cross_origin=*/false,
+      /*is_user_initiated=*/false, /*user_tapped_recently=*/false);
+
+  base::test::TestFuture<web::WebStatePolicyDecider::PolicyDecision> future;
+  fake_web_state_.ShouldAllowRequest(request, request_info,
+                                     future.GetCallback());
+  EXPECT_TRUE(future.Get().ShouldAllowNavigation());
+}
+
+// Tests that main-frame requests for `about://newtab/` are canceled when
+// neither the pending nor the last committed `NavigationItem` is
+// `about://newtab/` (e.g. renderer-initiated navigation from a web page).
+TEST_F(NewTabPageTabHelperTest,
+       ShouldAllowRequestCancelsRendererInitiatedNTPNavigation) {
+  CreateTabHelper();
+  fake_navigation_manager_->SetPendingItem(nullptr);
+  std::unique_ptr<web::NavigationItem> committed_item =
+      web::NavigationItem::Create();
+  committed_item->SetURL(GURL(kTestURL));
+  fake_navigation_manager_->SetLastCommittedItem(committed_item.get());
+
+  NSURLRequest* request = [NSURLRequest
+      requestWithURL:net::NSURLWithGURL(GURL(kChromeUIAboutNewTabURL))];
+  web::WebStatePolicyDecider::RequestInfo request_info(
+      ui::PAGE_TRANSITION_LINK, /*target_frame_is_main=*/true,
+      /*target_frame_is_cross_origin=*/false,
+      /*target_window_is_cross_origin=*/false,
+      /*is_user_initiated=*/true, /*user_tapped_recently=*/true);
+
+  base::test::TestFuture<web::WebStatePolicyDecider::PolicyDecision> future;
+  fake_web_state_.ShouldAllowRequest(request, request_info,
+                                     future.GetCallback());
+  EXPECT_TRUE(future.Get().ShouldCancelNavigation());
+}
+
+// Tests that subframe requests for `about://newtab/` are canceled even when a
+// pending `NavigationItem` for `about://newtab/` exists.
+TEST_F(NewTabPageTabHelperTest,
+       ShouldAllowRequestCancelsSubframeNTPNavigation) {
+  CreateTabHelper();
+  NSURLRequest* request = [NSURLRequest
+      requestWithURL:net::NSURLWithGURL(GURL(kChromeUIAboutNewTabURL))];
+  web::WebStatePolicyDecider::RequestInfo request_info(
+      ui::PAGE_TRANSITION_AUTO_SUBFRAME, /*target_frame_is_main=*/false,
+      /*target_frame_is_cross_origin=*/false,
+      /*target_window_is_cross_origin=*/false,
+      /*is_user_initiated=*/false, /*user_tapped_recently=*/false);
+
+  base::test::TestFuture<web::WebStatePolicyDecider::PolicyDecision> future;
+  fake_web_state_.ShouldAllowRequest(request, request_info,
+                                     future.GetCallback());
+  EXPECT_TRUE(future.Get().ShouldCancelNavigation());
+}
+
+// Tests that requests for non-NTP URLs are allowed.
+TEST_F(NewTabPageTabHelperTest, ShouldAllowRequestAllowsNonNTPNavigation) {
+  CreateTabHelper();
+  fake_navigation_manager_->SetPendingItem(nullptr);
+  NSURLRequest* request =
+      [NSURLRequest requestWithURL:net::NSURLWithGURL(GURL(kTestURL))];
+  web::WebStatePolicyDecider::RequestInfo request_info(
+      ui::PAGE_TRANSITION_LINK, /*target_frame_is_main=*/true,
+      /*target_frame_is_cross_origin=*/false,
+      /*target_window_is_cross_origin=*/false,
+      /*is_user_initiated=*/true, /*user_tapped_recently=*/true);
+
+  base::test::TestFuture<web::WebStatePolicyDecider::PolicyDecision> future;
+  fake_web_state_.ShouldAllowRequest(request, request_info,
+                                     future.GetCallback());
+  EXPECT_TRUE(future.Get().ShouldAllowNavigation());
 }

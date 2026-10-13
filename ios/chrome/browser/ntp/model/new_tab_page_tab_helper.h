@@ -10,6 +10,7 @@
 #import "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "ios/chrome/browser/discover_feed/model/feed_constants.h"
+#import "ios/web/public/navigation/web_state_policy_decider.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
@@ -21,6 +22,7 @@ class NavigationItem;
 
 // NewTabPageTabHelper which manages a single NTP per tab.
 class NewTabPageTabHelper : public web::WebStateObserver,
+                            public web::WebStatePolicyDecider,
                             public web::WebStateUserData<NewTabPageTabHelper> {
  public:
   NewTabPageTabHelper(const NewTabPageTabHelper&) = delete;
@@ -58,6 +60,13 @@ class NewTabPageTabHelper : public web::WebStateObserver,
   void PageLoaded(
       web::WebState* web_state,
       web::PageLoadCompletionStatus load_completion_status) override;
+
+  // web::WebStatePolicyDecider overrides:
+  void ShouldAllowRequest(
+      NSURLRequest* request,
+      web::WebStatePolicyDecider::RequestInfo request_info,
+      web::WebStatePolicyDecider::PolicyDecisionCallback callback) override;
+  using web::WebStatePolicyDecider::WebStateDestroyed;
 
  private:
   // For access to IsActive(...) method.

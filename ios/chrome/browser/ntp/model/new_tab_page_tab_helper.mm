@@ -22,12 +22,13 @@
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
+#import "net/base/apple/url_conversions.h"
 #import "ui/base/l10n/l10n_util.h"
 
 NewTabPageTabHelper::~NewTabPageTabHelper() = default;
 
 NewTabPageTabHelper::NewTabPageTabHelper(web::WebState* web_state)
-    : web_state_(web_state) {
+    : web::WebStatePolicyDecider(web_state), web_state_(web_state) {
   web_state->AddObserver(this);
   active_ = IsUrlNtp(web_state_->GetVisibleURL());
 }
@@ -119,6 +120,54 @@ void NewTabPageTabHelper::PageLoaded(
       SetActive(true);
     }
   }
+}
+
+#pragma mark - WebStatePolicyDecider
+
+void NewTabPageTabHelper::ShouldAllowRequest(
+    NSURLRequest* request,
+    web::WebStatePolicyDecider::RequestInfo request_info,
+    web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
+  const GURL request_url = net::GURLWithNSURL(request.URL);
+  if (!IsUrlNtp(request_url)) {
+    std::move(callback).Run(
+        web::WebStatePolicyDecider::PolicyDecision::Allow());
+    return;
+  }
+
+  // `about://newtab/` is an internal implementation URL used by the NTP and
+  // must never be loaded in subframes.
+  if (!request_info.target_frame_is_main) {
+    std::move(callback).Run(
+        web::WebStatePolicyDecider::PolicyDecision::Cancel());
+    return;
+  }
+
+  web::NavigationManager* navigation_manager =
+      web_state_->GetNavigationManager();
+
+  // Allow main-frame requests when a browser navigation created a pending NTP
+  // item.
+  web::NavigationItem* pending_item = navigation_manager->GetPendingItem();
+  if (pending_item && IsUrlNtp(pending_item->GetURL())) {
+    std::move(callback).Run(
+        web::WebStatePolicyDecider::PolicyDecision::Allow());
+    return;
+  }
+
+  // Allow main-frame requests when reloading, navigating back/forward to, or
+  // restoring an already committed NTP item.
+  web::NavigationItem* last_committed_item =
+      navigation_manager->GetLastCommittedItem();
+  if (last_committed_item && IsUrlNtp(last_committed_item->GetURL())) {
+    std::move(callback).Run(
+        web::WebStatePolicyDecider::PolicyDecision::Allow());
+    return;
+  }
+
+  // Block untrusted renderer-initiated navigations to the NTP URL so
+  // `UpdateItem` cannot rewrite the item's virtual URL to `chrome://newtab/`.
+  std::move(callback).Run(web::WebStatePolicyDecider::PolicyDecision::Cancel());
 }
 
 #pragma mark - Private
