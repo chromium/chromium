@@ -250,7 +250,7 @@ BASE_FEATURE(kDevToolsInstrumentationBreakpoints,
 
 // Whether source map scopes are enabled in the DevTools Sources panel.
 BASE_FEATURE(kDevToolsSourceMapScopesInSourcesPanel,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Whether the A11y Announcements recording subpane is enabled in DevTools.
 BASE_FEATURE(kDevToolsAriaLiveRecording, base::FEATURE_DISABLED_BY_DEFAULT);

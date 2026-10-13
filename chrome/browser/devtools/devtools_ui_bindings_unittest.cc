@@ -1486,8 +1486,7 @@ TEST_F(DevToolsUIBindingsHostConfigTest, GetHostConfigWithFeatures) {
   const base::DictValue* initial_source_map_scopes =
       initial_config.FindDict("devToolsSourceMapScopesInSourcesPanel");
   ASSERT_TRUE(initial_source_map_scopes);
-  EXPECT_FALSE(
-      initial_source_map_scopes->FindBool("enabled").value_or(true));
+  EXPECT_TRUE(initial_source_map_scopes->FindBool("enabled").value_or(false));
 
   const base::DictValue* initial_nli =
       initial_config.FindDict("devToolsAiNaturalLanguageInterface");
