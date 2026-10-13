@@ -115,7 +115,6 @@ export function getHtml(this: OmniboxEverywhereComposeboxElement) {
                         .smartTabSharingActive="${this.smartTabSharingActive}"
                         .energyEffectAnimationEnabled="${
                             this.energyEffectAnimationEnabled}"
-                        ?upload-button-disabled="${this.uploadButtonDisabled}"
                         ?show-context-menu-description="${
                             this.showContextMenuDescription}"
                         @context-menu-entrypoint-click="${

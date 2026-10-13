@@ -19,7 +19,6 @@ export function getHtml(this: ContextualEntrypointAndMenuElement) {
           .smartTabSharingActive="${this.smartTabSharingActive}"
           @context-menu-entrypoint-click="${this.onContextMenuEntrypointClick_}"
           @context-menu-entrypoint-hover="${this.onContextMenuEntrypointHover_}"
-          ?upload-button-disabled="${this.uploadButtonDisabled}"
           ?show-context-menu-description="${this.showContextMenuDescription}"
           .glifAnimationState="${this.glifAnimationState}"
           .energyEffectAnimationEnabled="${this.energyEffectAnimationEnabled}"
@@ -41,7 +40,6 @@ export function getHtml(this: ContextualEntrypointAndMenuElement) {
         .contextMenuTooltipsEnabled="${
             this.composeboxContextMenuTooltipsEnabled}"
         .disableAutoReposition="${this.disableAutoReposition}"
-        .uploadButtonDisabled="${this.uploadButtonDisabled}"
         .shareTabsFlyoutOpen="${this.shareTabsFlyoutOpen}"
         .unboundedMenuEnabled="${this.unboundedMenuEnabled}"
         @close="${this.onMenuClose_}">

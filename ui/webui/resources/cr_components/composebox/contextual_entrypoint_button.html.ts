@@ -17,8 +17,7 @@ export function getHtml(this: ContextualEntrypointButtonElement) {
           class="ai-mode-button"
           part="entrypoint-button"
           @click="${this.onEntrypointClick_}"
-          title="${this.getEntrypointAriaLabel_()}"
-          ?disabled="${this.uploadButtonDisabled}" noink
+          title="${this.getEntrypointAriaLabel_()}" noink
           aria-label="${this.getEntrypointAriaLabel_()}">
         <cr-icon id="entrypointIcon" icon="cr:add" slot="prefix-icon"
             aria-hidden="true"
@@ -51,8 +50,7 @@ export function getHtml(this: ContextualEntrypointButtonElement) {
             class="ai-mode-button pill-button"
             part="entrypoint-button"
             @click="${this.onEntrypointClick_}"
-            title="${this.getEntrypointAriaLabel_()}"
-            ?disabled="${this.uploadButtonDisabled}" noink
+            title="${this.getEntrypointAriaLabel_()}" noink
             aria-label="${this.getEntrypointAriaLabel_()}">
           <cr-icon id="entrypointIcon" icon="cr:add" slot="prefix-icon"
               aria-hidden="true"
@@ -75,8 +73,7 @@ export function getHtml(this: ContextualEntrypointButtonElement) {
             part="context-menu-entrypoint-icon entrypoint-button"
             iron-icon="cr:add"
             @click="${this.onEntrypointClick_}"
-            title="${this.getEntrypointAriaLabel_()}"
-            ?disabled="${this.uploadButtonDisabled}" noink
+            title="${this.getEntrypointAriaLabel_()}" noink
             aria-label="${this.getEntrypointAriaLabel_()}"
             @animationend="${this.onIconAnimationend_}">
         </cr-icon-button>

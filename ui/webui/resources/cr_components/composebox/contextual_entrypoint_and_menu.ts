@@ -69,7 +69,6 @@ export class ContextualEntrypointAndMenuElement extends
       tabSuggestionsState: {type: Number},
       glifAnimationState: {type: String},
       searchboxLayoutMode: {type: String},
-      uploadButtonDisabled: {type: Boolean},
       disableAutoReposition: {type: Boolean},
       isSidePanel: {type: Boolean},
       usePecApi: {type: Boolean},
@@ -108,7 +107,6 @@ export class ContextualEntrypointAndMenuElement extends
   accessor inputState: InputState|null = null;
   accessor glifAnimationState: GlifAnimationState =
       GlifAnimationState.INELIGIBLE;
-  accessor uploadButtonDisabled: boolean = false;
   accessor sharedTabs: TabInfo[] = [];
   accessor recentTabId: number|null = null;
   accessor shareTabsFlyoutOpen: boolean = false;

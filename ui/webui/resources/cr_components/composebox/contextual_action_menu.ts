@@ -136,7 +136,6 @@ export class ContextualActionMenuElement extends
       },
       shareTabsFlyoutPosition_: {type: String},
       sharingTabsText_: {type: String},
-      uploadButtonDisabled: {type: Boolean},
       isSidePanel: {type: Boolean},
       recentTabId: {type: Number},
       unboundedMenuEnabled: {
@@ -162,7 +161,6 @@ export class ContextualActionMenuElement extends
   accessor contextMenuTooltipsEnabled: boolean =
       getLoadTimeBoolean('composeboxContextMenuTooltipsEnabled', false);
   accessor disableAutoReposition: boolean = false;
-  accessor uploadButtonDisabled: boolean = false;
   accessor isSidePanel: boolean = false;
   accessor shareTabsFlyoutOpen: boolean = false;
   accessor unboundedMenuEnabled: boolean = false;
@@ -596,9 +594,6 @@ export class ContextualActionMenuElement extends
   }
 
   private isItemDisabled_<T>(item: T, disabledItems: T[]|undefined): boolean {
-    if (this.uploadButtonDisabled) {
-      return true;
-    }
     if (!this.inputState || !disabledItems) {
       return true;
     }
@@ -610,9 +605,6 @@ export class ContextualActionMenuElement extends
   }
 
   protected isToolDisabled_(tool: ToolMode): boolean {
-    if (this.uploadButtonDisabled) {
-      return true;
-    }
     if (this.isToolActive_(tool)) {
       return false;
     }
@@ -781,9 +773,6 @@ export class ContextualActionMenuElement extends
   }
 
   protected isInputTypeDisabled_(inputType: InputType): boolean {
-    if (this.uploadButtonDisabled) {
-      return true;
-    }
     const limitReached = this.fileNum >= this.maxFileCount_;
     if (this.inputState) {
       return limitReached ||

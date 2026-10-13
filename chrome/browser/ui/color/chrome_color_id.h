@@ -370,7 +370,6 @@
   E_CPONLY(kColorComposeboxTypeAhead) \
   E_CPONLY(kColorComposeboxTypeAheadChip) \
   E_CPONLY(kColorComposeboxUploadButton) \
-  E_CPONLY(kColorComposeboxUploadButtonDisabled) \
   E_CPONLY(kColorComposeboxFileChipBackground) \
   E_CPONLY(kColorComposeboxFileChipFaviconBackground) \
   E_CPONLY(kColorComposeboxFileChipText) \

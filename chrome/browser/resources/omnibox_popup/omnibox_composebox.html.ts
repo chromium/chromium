@@ -139,7 +139,6 @@ export function getHtml(this: OmniboxComposeboxElement) {
                     .inputState="${this.inputState}"
                     .applyContextButtonBackground="${this.applyContextButtonBackground}"
                     .isOblongShape="${this.isOblongShape}"
-                    ?upload-button-disabled="${this.uploadButtonDisabled}"
                     .sharedTabs="${this.getSharedTabs()}"
                     .restoredTabs="${this.aimThreadRestoredTabs}"
                     ?show-context-menu-description="${this.showContextMenuDescription}"

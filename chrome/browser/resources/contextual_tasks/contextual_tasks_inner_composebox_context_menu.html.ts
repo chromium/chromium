@@ -55,7 +55,6 @@ export function getHtml(this: ContextualTasksInnerComposeboxElement) {
       .nonTabFileNum="${this.getNonTabFileNum()}"
       .sharedTabs="${this.getSharedTabs()}"
       .isSidePanel="${this.isSidePanel}"
-      ?upload-button-disabled="${this.uploadButtonDisabled}"
       ?show-context-menu-description="${this.showContextMenuDescription}"
       .glifAnimationState="${this.glifAnimationState}"
       .energyEffectAnimationEnabled="${this.energyEffectAnimationEnabled}"
