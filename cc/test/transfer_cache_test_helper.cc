@@ -58,7 +58,7 @@ void TransferCacheTestHelper::CreateEntryDirect(const EntryKey& key,
 }
 
 void TransferCacheTestHelper::CreateLocalEntry(
-    uint32_t id,
+    uint64_t id,
     std::unique_ptr<ServiceTransferCacheEntry> entry) {
   auto key = std::make_pair(entry->Type(), id);
 
@@ -77,7 +77,7 @@ void TransferCacheTestHelper::UnlockEntriesDirect(
   EnforceLimits();
 }
 
-void TransferCacheTestHelper::DeleteEntryDirect(const EntryKey& key) {
+void TransferCacheTestHelper::DeleteEntryDirect(const ServiceEntryKey& key) {
   locked_entries_.erase(key);
   local_entries_.erase(key);
   entries_.erase(key);
@@ -90,7 +90,7 @@ void TransferCacheTestHelper::SetCachedItemsLimit(size_t limit) {
 
 ServiceTransferCacheEntry* TransferCacheTestHelper::GetEntryInternal(
     TransferCacheEntryType type,
-    uint32_t id) {
+    uint64_t id) {
   auto key = std::make_pair(type, id);
   if (locked_entries_.count(key) + local_entries_.count(key) == 0) {
     return nullptr;

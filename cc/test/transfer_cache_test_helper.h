@@ -9,6 +9,7 @@
 #include <map>
 #include <memory>
 #include <set>
+#include <utility>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -22,6 +23,11 @@ namespace cc {
 class TransferCacheTestHelper : public TransferCacheDeserializeHelper,
                                 public TransferCacheSerializeHelper {
  public:
+  // Entries created locally by the service side during deserialization (e.g.
+  // record shader entries) are keyed by 64-bit ids, while client entries use
+  // 32-bit ids.
+  using ServiceEntryKey = std::pair<TransferCacheEntryType, uint64_t>;
+
   TransferCacheTestHelper();
   ~TransferCacheTestHelper() override;
 
@@ -32,16 +38,16 @@ class TransferCacheTestHelper : public TransferCacheDeserializeHelper,
 
   void CreateEntryDirect(const EntryKey& key, base::span<uint8_t> data);
   void UnlockEntriesDirect(const std::vector<EntryKey>& keys);
-  void DeleteEntryDirect(const EntryKey& key);
+  void DeleteEntryDirect(const ServiceEntryKey& key);
 
   // Deserialization helpers.
   ServiceTransferCacheEntry* GetEntryInternal(TransferCacheEntryType type,
-                                              uint32_t id) override;
+                                              uint64_t id) override;
 
-  const EntryKey& GetLastAddedEntry() const { return last_added_entry_; }
+  const ServiceEntryKey& GetLastAddedEntry() const { return last_added_entry_; }
 
   void CreateLocalEntry(
-      uint32_t id,
+      uint64_t id,
       std::unique_ptr<ServiceTransferCacheEntry> entry) override;
 
   size_t num_of_entries() const { return entries_.size(); }
@@ -61,10 +67,11 @@ class TransferCacheTestHelper : public TransferCacheDeserializeHelper,
 
   // entries_ may reference owned_context_ so must be destroyed before the
   // context to avoid dangling ptrs.
-  std::map<EntryKey, std::unique_ptr<ServiceTransferCacheEntry>> entries_;
-  std::set<EntryKey> local_entries_;
-  std::set<EntryKey> locked_entries_;
-  EntryKey last_added_entry_ = {TransferCacheEntryType::kRawMemory, ~0};
+  std::map<ServiceEntryKey, std::unique_ptr<ServiceTransferCacheEntry>>
+      entries_;
+  std::set<ServiceEntryKey> local_entries_;
+  std::set<ServiceEntryKey> locked_entries_;
+  ServiceEntryKey last_added_entry_ = {TransferCacheEntryType::kRawMemory, ~0};
 
   size_t cached_items_limit_ = std::numeric_limits<size_t>::max();
 };

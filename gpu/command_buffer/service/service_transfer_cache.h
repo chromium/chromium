@@ -48,10 +48,10 @@ class GPU_GLES2_EXPORT ServiceTransferCache
   struct GPU_GLES2_EXPORT EntryKey {
     EntryKey(int decoder_id,
              cc::TransferCacheEntryType entry_type,
-             uint32_t entry_id);
+             uint64_t entry_id);
     int decoder_id;
     cc::TransferCacheEntryType entry_type;
-    uint32_t entry_id;
+    uint64_t entry_id;
   };
 
   ServiceTransferCache(const GpuPreferences& preferences,
