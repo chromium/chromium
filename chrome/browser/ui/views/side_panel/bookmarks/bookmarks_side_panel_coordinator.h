@@ -14,6 +14,10 @@ class BrowserWindowInterface;
 class SidePanelEntryScope;
 class SidePanelRegistry;
 
+namespace ui {
+class UnownedUserDataHost;
+}  // namespace ui
+
 namespace views {
 class View;
 }  // namespace views
@@ -22,15 +26,13 @@ class View;
 // bookmarks SidePanelEntry.
 class BookmarksSidePanelCoordinator {
  public:
-  explicit BookmarksSidePanelCoordinator(
-      BrowserWindowInterface& browser_window_interface);
+  BookmarksSidePanelCoordinator(ui::UnownedUserDataHost& unowned_user_data_host,
+                                SidePanelRegistry& global_registry);
   ~BookmarksSidePanelCoordinator();
 
   static BookmarksSidePanelCoordinator* From(BrowserWindowInterface* browser);
 
   DECLARE_USER_DATA(BookmarksSidePanelCoordinator);
-
-  void CreateAndRegisterEntry(SidePanelRegistry* global_registry);
 
  private:
   std::unique_ptr<views::View> CreateBookmarksWebView(

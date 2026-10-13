@@ -296,10 +296,6 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
     }
   }
 
-  bookmarks_side_panel_coordinator_ =
-      GetUserDataFactory().CreateInstance<BookmarksSidePanelCoordinator>(
-          *browser, *browser);
-
   if (breadcrumbs::IsEnabled(g_browser_process->local_state())) {
     breadcrumb_manager_browser_agent_ =
         std::make_unique<BreadcrumbManagerBrowserAgent>(
@@ -915,6 +911,10 @@ void BrowserWindowFeatures::InitPostWindowConstruction(
         std::make_unique<WebUIBrowserSidePanelUI>(browser);
   }
 
+  bookmarks_side_panel_coordinator_ =
+      GetUserDataFactory().CreateInstance<BookmarksSidePanelCoordinator>(
+          *browser, browser->GetUnownedUserDataHost(), *side_panel_registry_);
+
   if (browser_view) {
     skills_ui_window_controller_ =
         std::make_unique<skills::SkillsUiWindowController>(browser_);
@@ -1189,6 +1189,7 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   toast_service_.reset();
   synced_window_delegate_.reset();
   skills_ui_window_controller_.reset();
+  bookmarks_side_panel_coordinator_.reset();
   // TODO(crbug.com/346148093): This logic should not be gated behind a
   // conditional.
   if (side_panel_coordinator_) {
