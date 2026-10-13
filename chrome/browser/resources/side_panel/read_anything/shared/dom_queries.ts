@@ -61,6 +61,18 @@ export function getRectsForSegments(segments: Segment[]): DOMRect[] {
   return Array.from(new Set(rects)).sort((a, b) => a.bottom - b.bottom);
 }
 
+// Returns whether the selection's focus comes before its anchor in document
+// order, i.e. the user dragged backward.
+export function isBackwardSelection(
+    anchorNode: Node, anchorOffset: number, focusNode: Node,
+    focusOffset: number): boolean {
+  const position = anchorNode.compareDocumentPosition(focusNode);
+  if (position === Node.DOCUMENT_POSITION_PRECEDING) {
+    return true;
+  }
+  // If the focus and anchor are the same node, compare the offsets.
+  return position === 0 && focusOffset < anchorOffset;
+}
 
 // Normalizes a raw DOM selection boundary point (node, offset) into a clean,
 // visual leaf Text node and character offset representation.
@@ -92,18 +104,17 @@ export function getNearestTextBoundaryPoint(
 
   // If the endpoint is an Element (block container), traverse to find its
   // nearest matching leaf Text node.
-  if (node.nodeType === Node.ELEMENT_NODE) {
-    const element = node as Element;
+  if (node instanceof Element) {
     // - If offset < length, the boundary point is located BEFORE
-    // element.childNodes[offset].
+    // node.childNodes[offset].
     // - If offset >= length, the boundary point has wrapped AFTER the last
     // child node of the element.
-    if (offset < element.childNodes.length) {
-      const result = getTextNodeByForwardSearch(element, offset, container);
+    if (offset < node.childNodes.length) {
+      const result = getTextNodeByForwardSearch(node, offset, container);
       targetNode = result.node;
       targetOffset = result.offset;
     } else {
-      const result = getTextNodeByBackwardSearch(element, container);
+      const result = getTextNodeByBackwardSearch(node, container);
       targetNode = result.node;
       targetOffset = result.offset;
     }
@@ -117,16 +128,10 @@ export function getNearestTextBoundaryPoint(
   // composition dividers).
   if (!isStart && targetNode.nodeType === Node.TEXT_NODE &&
       targetOffset === 0) {
-    const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
-    walker.currentNode = targetNode;
-    let prevText = walker.previousNode();
-    while (prevText && isValidTarget && !isValidTarget(prevText)) {
-      prevText = walker.previousNode();
-    }
-
+    const prevText = getPreviousTextNode(targetNode, container, isValidTarget);
     if (prevText) {
       targetNode = prevText;
-      targetOffset = prevText.textContent?.length ?? 0;
+      targetOffset = prevText.length;
     }
   }
 
@@ -137,13 +142,7 @@ export function getNearestTextBoundaryPoint(
   // element boundaries in the main pane.
   if (isStart && targetNode.nodeType === Node.TEXT_NODE &&
       targetOffset === (targetNode.textContent?.length ?? 0)) {
-    const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
-    walker.currentNode = targetNode;
-    let nextText = walker.nextNode();
-    while (nextText && isValidTarget && !isValidTarget(nextText)) {
-      nextText = walker.nextNode();
-    }
-
+    const nextText = getNextTextNode(targetNode, container, isValidTarget);
     if (nextText) {
       targetNode = nextText;
       targetOffset = 0;
@@ -153,30 +152,103 @@ export function getNearestTextBoundaryPoint(
   return {node: targetNode, offset: targetOffset};
 }
 
+// Returns the first text node in the container at or after the boundary point
+// (node, offset), in document order, or null if there is none. If the point is
+// inside a text node (offset < length), that text node is returned.
+export function getFirstTextNodeAtOrAfter(
+    node: Node, offset: number, container: Node): Text|null {
+  if (node instanceof Text) {
+    return offset < node.length ? node : getNextTextNode(node, container);
+  }
+
+  if (offset < node.childNodes.length) {
+    // The point is before the child at the offset, so the result is the first
+    // text node in the child's subtree, or the first one after it.
+    const child = node.childNodes[offset]!;
+    return child instanceof Text ? child : getNextTextNode(child, container);
+  }
+
+  // The point is after all of the node's children, so the result is the first
+  // text node after the node's subtree.
+  return getNextTextNode(getLastDescendant(node), container);
+}
+
+// Returns the last text node in the container before the boundary point
+// (node, offset), in document order, or null if there is none. If the point is
+// inside a text node (offset > 0), that text node is returned.
+export function getLastTextNodeBefore(
+    node: Node, offset: number, container: Node): Text|null {
+  if (node instanceof Text) {
+    return offset > 0 ? node : getPreviousTextNode(node, container);
+  }
+
+  const index = Math.min(offset, node.childNodes.length);
+  if (index > 0) {
+    // The point is after the child before the offset, so the result is the
+    // last text node in the child's subtree, or the last one before it.
+    const last = getLastDescendant(node.childNodes[index - 1]!);
+    return last instanceof Text ? last : getPreviousTextNode(last, container);
+  }
+
+  // The point is before all of the node's children, so the result is the last
+  // text node before the node.
+  return getPreviousTextNode(node, container);
+}
+
+// Returns the last node in document order within the given node's subtree,
+// which is the node itself if it has no children.
+function getLastDescendant(node: Node): Node {
+  let last = node;
+  while (last.lastChild) {
+    last = last.lastChild;
+  }
+  return last;
+}
+
+// Returns the next text node in the container after the given node, in
+// document order, skipping text nodes that don't satisfy isValidTarget. Returns
+// null if there is none.
+export function getNextTextNode(
+    node: Node, container: Node,
+    isValidTarget?: (node: Node) => boolean): Text|null {
+  const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
+  walker.currentNode = node;
+  let next = walker.nextNode();
+  while (next && isValidTarget && !isValidTarget(next)) {
+    next = walker.nextNode();
+  }
+  return textNodeOrNull(next);
+}
+
+// Returns the previous text node in the container before the given node, in
+// document order, skipping text nodes that don't satisfy isValidTarget. Returns
+// null if there is none.
+export function getPreviousTextNode(
+    node: Node, container: Node,
+    isValidTarget?: (node: Node) => boolean): Text|null {
+  const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
+  walker.currentNode = node;
+  let prev = walker.previousNode();
+  while (prev && isValidTarget && !isValidTarget(prev)) {
+    prev = walker.previousNode();
+  }
+  return textNodeOrNull(prev);
+}
+
+// Narrows a TreeWalker result to Text. The walkers above only show text nodes,
+// but TreeWalker's methods are typed as returning Node.
+function textNodeOrNull(node: Node|null): Text|null {
+  return node instanceof Text ? node : null;
+}
+
 // Locates the target text node and offset by inspecting the child at the
 // given offset or traversing its subtree.
 function getTextNodeByForwardSearch(
     element: Element, offset: number,
     container: Node): {node: Node, offset: number} {
-  const child = element.childNodes[offset]!;
-  if (child.nodeType === Node.TEXT_NODE) {
-    return {node: child, offset: 0};
-  }
-
-  // Locate the first text node in the child's subtree.
-  const walker = document.createTreeWalker(child, NodeFilter.SHOW_TEXT);
-  const firstText = walker.nextNode();
-  if (firstText) {
-    return {node: firstText, offset: 0};
-  }
-
-  // Fallback: Walk forward to find the next text node in the document.
-  const documentWalker =
-      document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
-  documentWalker.currentNode = child;
-  const nextText = documentWalker.nextNode();
-  if (nextText) {
-    return {node: nextText, offset: 0};
+  const text = getFirstTextNodeAtOrAfter(element, offset, container);
+  if (text) {
+    return {node: text, offset: 0};
   }
 
   // Fallback: Clamp to the last text node in the container.
@@ -226,7 +298,7 @@ function getLastTextNode(container: Node): Text|null {
   const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
   let lastText: Text|null = null;
   while (walker.nextNode()) {
-    lastText = walker.currentNode as Text;
+    lastText = textNodeOrNull(walker.currentNode);
   }
   return lastText;
 }

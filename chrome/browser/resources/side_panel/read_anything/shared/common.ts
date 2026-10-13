@@ -83,3 +83,8 @@ export function isDistilledByReadability(): boolean {
   return ContentBrowserProxyImpl.getInstance().getActiveDistillationMethod() ===
       ContentBrowserProxyImpl.getInstance().getDistillationTypeReadability();
 }
+
+// Returns true if the TranslatePdf feature is enabled.
+export function isTranslatePdfEnabled(): boolean {
+  return ContentBrowserProxyImpl.getInstance().isTranslatePdfEnabled();
+}

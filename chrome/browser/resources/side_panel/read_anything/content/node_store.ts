@@ -9,13 +9,11 @@ import {VisualBrowserProxyImpl} from '../app/visual_browser_proxy.js';
 import type {AudioBrowserProxy} from '../read_aloud/audio_browser_proxy.js';
 import {AudioBrowserProxyImpl} from '../read_aloud/audio_browser_proxy.js';
 import type {AncestorNode, ReadAloudNode} from '../read_aloud/read_aloud_types.js';
-import {getWordCount, isDistilledByReadability} from '../shared/common.js';
+import {getWordCount, isDistilledByReadability, isTranslatePdfEnabled} from '../shared/common.js';
 import type {MetricsBrowserProxy} from '../shared/metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl} from '../shared/metrics_browser_proxy.js';
 import {isRectMostlyVisible} from '../shared/rect_calculations.js';
 
-import type {ContentBrowserProxy} from './content_browser_proxy.js';
-import {ContentBrowserProxyImpl} from './content_browser_proxy.js';
 import type {SelectionWithIds} from './read_anything_types.js';
 
 // A two-way map where each key is unique and each value is unique. The keys are
@@ -122,6 +120,9 @@ export class NodeStore {
   // translated content, whose text nodes are not in the node store, to be
   // mapped to and from the AX tree at block granularity.
   //
+  // The block map is only used for TranslatePdf, so its methods do nothing
+  // when the feature is disabled.
+  //
   // The registered text nodes, in document order.
   private textsInOrder_: BlockText[] = [];
 
@@ -136,18 +137,10 @@ export class NodeStore {
 
   private audioBrowserProxy_: AudioBrowserProxy =
       AudioBrowserProxyImpl.getInstance();
-  private contentBrowserProxy_: ContentBrowserProxy =
-      ContentBrowserProxyImpl.getInstance();
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
   private visualBrowserProxy_: VisualBrowserProxy =
       VisualBrowserProxyImpl.getInstance();
-
-  // The block map is only used for TranslatePdf, so its methods do nothing
-  // when the feature is disabled.
-  private isTranslatePdfEnabled_(): boolean {
-    return this.contentBrowserProxy_.isTranslatePdfEnabled();
-  }
 
   clear() {
     this.hiddenImageNodesIds_.clear();
@@ -333,7 +326,7 @@ export class NodeStore {
   // when its text is rewritten, e.g. by translation. Text nodes must be
   // registered in document order. Does nothing if TranslatePdf is disabled.
   registerTextInBlock(textId: number, blockId: number, length: number): void {
-    if (!this.isTranslatePdfEnabled_() || this.textIdToOrder_.has(textId)) {
+    if (!isTranslatePdfEnabled() || this.textIdToOrder_.has(textId)) {
       return;
     }
     const order = this.textsInOrder_.length;
@@ -350,7 +343,7 @@ export class NodeStore {
   // Returns whether the node with the given AXNodeID is a block with at least
   // one registered text node. Always false if TranslatePdf is disabled.
   isBlock(axNodeId: number): boolean {
-    if (!this.isTranslatePdfEnabled_()) {
+    if (!isTranslatePdfEnabled()) {
       return false;
     }
     return this.blockIdToTextOrders_.has(axNodeId);
@@ -360,7 +353,7 @@ export class NodeStore {
   // undefined if the text node isn't in a block or if TranslatePdf is
   // disabled.
   getBlockIdForText(textId: number): number|undefined {
-    if (!this.isTranslatePdfEnabled_()) {
+    if (!isTranslatePdfEnabled()) {
       return undefined;
     }
     const order = this.textIdToOrder_.get(textId);
@@ -377,7 +370,7 @@ export class NodeStore {
   getBlockRangeForAxSelection(
       startId: number, startOffset: number, endId: number,
       endOffset: number): BlockRange|null {
-    if (!this.isTranslatePdfEnabled_()) {
+    if (!isTranslatePdfEnabled()) {
       return null;
     }
     let startOrder = this.textIdToOrder_.get(startId);
@@ -431,7 +424,7 @@ export class NodeStore {
   // doesn't come before the end block's, or if TranslatePdf is disabled.
   getAxSelectionForBlockRange(startBlockId: number, endBlockId: number):
       SelectionWithIds|null {
-    if (!this.isTranslatePdfEnabled_()) {
+    if (!isTranslatePdfEnabled()) {
       return null;
     }
     const startOrders = this.blockIdToTextOrders_.get(startBlockId);
