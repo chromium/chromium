@@ -8,11 +8,9 @@
 
 #include "base/containers/fixed_flat_map.h"
 #include "build/build_config.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/browser/web_contents.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/native_theme/native_theme.h"
 
@@ -98,18 +96,13 @@ void PageColorsController::PageColorsSettingsChanged() {
 
 // static
 PageColorsController::EffectivePageColors
-PageColorsController::GetEffectivePageColors(
-    content::WebContents* web_contents) {
+PageColorsController::GetEffectivePageColors(const PrefService& profile_prefs) {
 #if BUILDFLAG(IS_ANDROID)
   const ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForWeb();
   return {.forced_colors = native_theme->forced_colors(),
           .preferred_color_scheme = native_theme->preferred_color_scheme(),
           .preferred_contrast = native_theme->preferred_contrast()};
 #else
-  const PrefService* profile_prefs =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext())
-          ->GetPrefs();
-
   // Get the current color/contrast values from the native UI theme.
   const auto* const native_theme = ui::NativeTheme::GetInstanceForNativeUi();
   ui::ColorProviderKey::ForcedColors forced_colors =
@@ -120,13 +113,13 @@ PageColorsController::GetEffectivePageColors(
       native_theme->preferred_contrast();
 
   // Get the requested page colors.
-  const int pref_value = profile_prefs->GetInteger(prefs::kRequestedPageColors);
+  const int pref_value = profile_prefs.GetInteger(prefs::kRequestedPageColors);
   PageColors page_colors =
       (pref_value < 0 || pref_value > std::to_underlying(PageColors::kMaxValue))
           ? PageColors::kNoPreference
           : static_cast<PageColors>(pref_value);
   if (preferred_contrast != ui::NativeTheme::PreferredContrast::kMore &&
-      profile_prefs->GetBoolean(
+      profile_prefs.GetBoolean(
           prefs::kApplyPageColorsOnlyOnIncreasedContrast)) {
     page_colors = PageColors::kNoPreference;
   }

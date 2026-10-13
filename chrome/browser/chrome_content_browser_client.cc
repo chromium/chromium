@@ -4043,14 +4043,19 @@ blink::mojom::PreferredContrast GetPreferredContrast(
                                       {NC::kLess, BC::kLess},
                                       {NC::kCustom, BC::kCustom}});
   const NC preferred_contrast =
-      PageColorsController::GetEffectivePageColors(web_contents)
+      PageColorsController::GetEffectivePageColors(
+          *Profile::FromBrowserContext(web_contents->GetBrowserContext())
+               ->GetPrefs())
           .preferred_contrast;
   return kContrastMap.at(preferred_contrast);
 }
 
 std::tuple<bool, bool> GetForcedColorsForWebContent(WebContents* web_contents) {
   const auto forced_colors =
-      PageColorsController::GetEffectivePageColors(web_contents).forced_colors;
+      PageColorsController::GetEffectivePageColors(
+          *Profile::FromBrowserContext(web_contents->GetBrowserContext())
+               ->GetPrefs())
+          .forced_colors;
   const bool in_forced_colors =
       forced_colors != ui::ColorProviderKey::ForcedColors::kNone;
   const bool is_forced_colors_disabled =
@@ -4108,7 +4113,7 @@ GetPreferredColorScheme(const WebPreferences& web_prefs,
                                    : blink::mojom::PreferredColorScheme::kDark;
     }
     const auto effective_page_colors =
-        PageColorsController::GetEffectivePageColors(web_contents);
+        PageColorsController::GetEffectivePageColors(*profile->GetPrefs());
     if (effective_page_colors.forced_colors !=
         ui::ColorProviderKey::ForcedColors::kNone) {
       preferred_color_scheme = ToBlinkPreferredColorScheme(
@@ -5159,7 +5164,9 @@ bool ChromeContentBrowserClient::
 ui::ColorProviderKey::ForcedColors
 ChromeContentBrowserClient::GetForcedColorsForWebContents(
     WebContents& web_contents) const {
-  return PageColorsController::GetEffectivePageColors(&web_contents)
+  return PageColorsController::GetEffectivePageColors(
+             *Profile::FromBrowserContext(web_contents.GetBrowserContext())
+                  ->GetPrefs())
       .forced_colors;
 }
 

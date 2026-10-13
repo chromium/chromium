@@ -14,10 +14,6 @@
 class PrefRegistrySimple;
 class PrefService;
 
-namespace content {
-class WebContents;
-}
-
 // Values in this enum are stored in prefs, so if you change them you may need
 // to add migration code.
 enum class PageColors {
@@ -57,7 +53,7 @@ class PageColorsController : public KeyedService {
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
   static void MigrateObsoleteProfilePrefs(PrefService* profile_prefs);
   static EffectivePageColors GetEffectivePageColors(
-      content::WebContents* web_contents);
+      const PrefService& profile_prefs);
 
   // Sets the profile's requested Page Colors value. The effective value is
   // resolved when each owning WebContents computes its web preferences.
