@@ -930,11 +930,11 @@ TEST_F(DocumentPipFrameViewTest, ShowPageInfoOpensBubble) {
   widget->SetBounds(gfx::Rect(0, 0, 400, 300));
   widget->Show();
 
-  ASSERT_FALSE(PageInfoBubbleViewBase::GetPageInfoBubbleForTesting());
+  ASSERT_FALSE(PageInfoBubbleViewBase::IsShowing(opener()));
   EXPECT_TRUE(ShowPageInfo(frame_view));
 
   views::BubbleDialogDelegateView* bubble =
-      PageInfoBubbleViewBase::GetPageInfoBubbleForTesting();
+      PageInfoBubbleViewBase::GetPageInfoBubbleForTesting(opener());
   ASSERT_TRUE(bubble);
   EXPECT_EQ(GetOriginChip(frame_view), bubble->GetAnchorView());
 

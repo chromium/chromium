@@ -61,7 +61,8 @@ const char kSecondPermissionRow[] = "SecondPermissionRow";
 void OpenPageInfoBubble(BrowserWindowInterface* browser) {
   LocationIconTestAccessor(browser).ShowBubble();
   views::BubbleDialogDelegateView* page_info =
-      PageInfoBubbleView::GetPageInfoBubbleForTesting();
+      PageInfoBubbleView::GetPageInfoBubbleForTesting(
+          browser->GetTabStripModel()->GetActiveWebContents());
   EXPECT_NE(nullptr, page_info);
   page_info->set_close_on_deactivate(false);
 }
@@ -193,9 +194,11 @@ class PageInfoBubbleViewFocusInteractiveUiTest : public InProcessBrowserTest {
     permission.default_setting = ContentSetting::CONTENT_SETTING_ASK;
     permission.source = content_settings::SettingSource::kUser;
 
-    PageInfo* presenter = static_cast<PageInfoBubbleView*>(
-                              PageInfoBubbleView::GetPageInfoBubbleForTesting())
-                              ->presenter_for_testing();
+    PageInfo* presenter =
+        static_cast<PageInfoBubbleView*>(
+            PageInfoBubbleView::GetPageInfoBubbleForTesting(
+                browser()->GetTabStripModel()->GetActiveWebContents()))
+            ->presenter_for_testing();
     presenter->OnSitePermissionChanged(permission.type, permission.setting,
                                        permission.requesting_origin,
                                        permission.is_one_time);
@@ -221,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewFocusInteractiveUiTest,
   base::RunLoop().RunUntilIdle();
 
   auto* page_info_bubble_view =
-      PageInfoBubbleView::GetPageInfoBubbleForTesting();
+      PageInfoBubbleView::GetPageInfoBubbleForTesting(web_contents());
   EXPECT_FALSE(web_contents_focus_tracker.focused());
 
   page_info_bubble_view->GetWidget()->CloseWithReason(
@@ -255,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewFocusInteractiveUiTest,
   base::RunLoop().RunUntilIdle();
 
   auto* page_info_bubble_view =
-      PageInfoBubbleView::GetPageInfoBubbleForTesting();
+      PageInfoBubbleView::GetPageInfoBubbleForTesting(web_contents());
   EXPECT_FALSE(web_contents_focus_tracker.focused());
 
   TriggerReloadPromptOnClose();
@@ -310,21 +313,19 @@ class PageInfoBubbleViewInteractiveUiTest : public InteractiveBrowserTest {
   }
 
   auto TogglePermission(ElementSpecifier row) {
-    return WithElement(
-        row, [this](ui::TrackedElement* el) {
-          views::test::InteractionTestUtilSimulatorViews::PressButton(
-              static_cast<views::Button*>(AsView<PermissionToggleRowView>(el)
-                                              ->toggle_button_for_testing()));
-        });
+    return WithElement(row, [this](ui::TrackedElement* el) {
+      views::test::InteractionTestUtilSimulatorViews::PressButton(
+          static_cast<views::Button*>(AsView<PermissionToggleRowView>(el)
+                                          ->toggle_button_for_testing()));
+    });
   }
 
   auto DeleteGrant(ElementSpecifier row) {
-    return WithElement(
-        row, [this](ui::TrackedElement* el) {
-          views::test::InteractionTestUtilSimulatorViews::PressButton(
-              static_cast<views::Button*>(
-                  AsView<ChosenObjectView>(el)->GetDeleteButtonForTesting()));
-        });
+    return WithElement(row, [this](ui::TrackedElement* el) {
+      views::test::InteractionTestUtilSimulatorViews::PressButton(
+          static_cast<views::Button*>(
+              AsView<ChosenObjectView>(el)->GetDeleteButtonForTesting()));
+    });
   }
 
 #if BUILDFLAG(IS_CHROMEOS)

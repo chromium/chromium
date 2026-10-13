@@ -58,14 +58,6 @@ class PageInfoBubbleTracker
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PageInfoBubbleTracker);
 
-// TODO(olesiamarukhno): Remove g_shown_bubble_type and g_page_info_bubble.
-// The following two process-wide variables are legacy fallbacks kept for tests
-// that do not pass a WebContents. Production code and new tests track Page Info
-// bubbles per-WebContents via PageInfoBubbleTracker.
-PageInfoBubbleViewBase::BubbleType g_shown_bubble_type =
-    PageInfoBubbleViewBase::BUBBLE_NONE;
-PageInfoBubbleViewBase* g_page_info_bubble = nullptr;
-
 }  // namespace
 
 // static
@@ -75,22 +67,11 @@ bool PageInfoBubbleViewBase::IsShowing(content::WebContents* web_contents) {
 
 // static
 PageInfoBubbleViewBase::BubbleType
-PageInfoBubbleViewBase::GetShownBubbleType() {
-  return g_shown_bubble_type;
-}
-
-// static
-PageInfoBubbleViewBase::BubbleType PageInfoBubbleViewBase::GetShownBubbleType(
+PageInfoBubbleViewBase::GetShownBubbleTypeForTesting(
     content::WebContents* web_contents) {
   PageInfoBubbleViewBase* const bubble =
       PageInfoBubbleTracker::GetBubble(web_contents);
   return bubble ? bubble->type() : BUBBLE_NONE;
-}
-
-// static
-views::BubbleDialogDelegateView*
-PageInfoBubbleViewBase::GetPageInfoBubbleForTesting() {
-  return g_page_info_bubble;
 }
 
 // static
@@ -114,9 +95,6 @@ PageInfoBubbleViewBase::PageInfoBubbleViewBase(
                                /*autosize=*/false),
       content::WebContentsObserver(web_contents),
       type_(type) {
-  g_shown_bubble_type = type;
-  g_page_info_bubble = this;
-
   if (web_contents) {
     PageInfoBubbleTracker::CreateForWebContents(web_contents);
     PageInfoBubbleTracker::FromWebContents(web_contents)->SetBubble(this);
@@ -138,10 +116,6 @@ PageInfoBubbleViewBase::PageInfoBubbleViewBase(
 
 void PageInfoBubbleViewBase::OnWidgetDestroying(views::Widget* widget) {
   BubbleDialogDelegateView::OnWidgetDestroying(widget);
-  if (g_page_info_bubble == this) {
-    g_shown_bubble_type = BUBBLE_NONE;
-    g_page_info_bubble = nullptr;
-  }
   if (PageInfoBubbleTracker::GetBubble(web_contents()) == this) {
     PageInfoBubbleTracker::FromWebContents(web_contents())->SetBubble(nullptr);
   }

@@ -444,7 +444,6 @@ IN_PROC_BROWSER_TEST_F(ConfirmationChipEnabledInteractiveTest,
   EXPECT_FALSE(GetChip()->GetVisible());
 }
 
-
 class PageInfoChangedWithin1mUmaTest : public PermissionChipInteractiveUITest {
  public:
   PageInfoChangedWithin1mUmaTest() = default;
@@ -475,7 +474,8 @@ class PageInfoChangedWithin1mUmaTest : public PermissionChipInteractiveUITest {
     OpenPageInfoBubble(browser());
     run_loop.Run();
     auto* bubble_view = static_cast<PageInfoBubbleView*>(
-        PageInfoBubbleView::GetPageInfoBubbleForTesting());
+        PageInfoBubbleView::GetPageInfoBubbleForTesting(
+            browser()->GetTabStripModel()->GetActiveWebContents()));
     EXPECT_TRUE(bubble_view);
 
     return bubble_view;
@@ -509,7 +509,8 @@ class PageInfoChangedWithin1mUmaTest : public PermissionChipInteractiveUITest {
   void OpenPageInfoBubble(BrowserWindowInterface* browser) {
     LocationIconTestAccessor(browser).ShowBubble();
     views::BubbleDialogDelegateView* page_info =
-        PageInfoBubbleView::GetPageInfoBubbleForTesting();
+        PageInfoBubbleView::GetPageInfoBubbleForTesting(
+            browser->GetTabStripModel()->GetActiveWebContents());
     EXPECT_NE(nullptr, page_info);
     page_info->set_close_on_deactivate(false);
   }

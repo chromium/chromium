@@ -1292,10 +1292,12 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraTest,
                                   ui::EF_LEFT_MOUSE_BUTTON));
 
   views::BubbleDialogDelegateView* bubble =
-      PageInfoBubbleViewBase::GetPageInfoBubbleForTesting();
+      PageInfoBubbleViewBase::GetPageInfoBubbleForTesting(
+          web_flow_controller->web_contents());
   ASSERT_NE(nullptr, bubble);
   EXPECT_EQ(PageInfoBubbleViewBase::BUBBLE_PAGE_INFO,
-            PageInfoBubbleViewBase::GetShownBubbleType());
+            PageInfoBubbleViewBase::GetShownBubbleTypeForTesting(
+                web_flow_controller->web_contents()));
 
   auto* page_info_bubble = static_cast<PageInfoBubbleView*>(bubble);
   // Verify navigating to security sub-page and cookies sub-page does not
@@ -1327,7 +1329,8 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraTest,
 
   // Because the button release was suppressed, no new bubble was created and
   // the bubble remains closed.
-  EXPECT_EQ(nullptr, PageInfoBubbleViewBase::GetPageInfoBubbleForTesting());
+  EXPECT_FALSE(
+      PageInfoBubbleViewBase::IsShowing(web_flow_controller->web_contents()));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -2120,7 +2123,8 @@ IN_PROC_BROWSER_TEST_F(
                                   ui::EF_LEFT_MOUSE_BUTTON, 0));
 
   views::BubbleDialogDelegateView* page_info =
-      PageInfoBubbleViewBase::GetPageInfoBubbleForTesting();
+      PageInfoBubbleViewBase::GetPageInfoBubbleForTesting(
+          payment_handler_contents);
   ASSERT_NE(nullptr, page_info);
   page_info->set_close_on_deactivate(false);
 
@@ -2839,10 +2843,12 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraTest,
   views::test::ButtonTestApi(indicator_chip).NotifyClick(mouse_event);
 
   views::BubbleDialogDelegateView* bubble =
-      PageInfoBubbleViewBase::GetPageInfoBubbleForTesting();
+      PageInfoBubbleViewBase::GetPageInfoBubbleForTesting(
+          payment_handler_contents);
   ASSERT_NE(nullptr, bubble);
   EXPECT_EQ(PageInfoBubbleViewBase::BUBBLE_PAGE_INFO,
-            PageInfoBubbleViewBase::GetShownBubbleType());
+            PageInfoBubbleViewBase::GetShownBubbleTypeForTesting(
+                payment_handler_contents));
 
   // Second click while PageInfo is showing: toggles PageInfo closed.
   views::Widget* bubble_widget = bubble->GetWidget();
@@ -2853,7 +2859,7 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraTest,
   views::test::ButtonTestApi(indicator_chip).NotifyClick(mouse_event);
 
   destroyed_waiter.Wait();
-  EXPECT_EQ(nullptr, PageInfoBubbleViewBase::GetPageInfoBubbleForTesting());
+  EXPECT_FALSE(PageInfoBubbleViewBase::IsShowing(payment_handler_contents));
 
   dialog_view()->CloseDialog();
 }

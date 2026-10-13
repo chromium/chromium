@@ -102,6 +102,8 @@ IN_PROC_BROWSER_TEST_F(LocationIconViewTest, HideOnSecondClick) {
   views::View* location_icon_view =
       browser_view->toolbar()->location_bar_view()->location_icon_view();
   ASSERT_TRUE(location_icon_view);
+  content::WebContents* contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   // Verify that clicking once shows the location icon bubble.
   scoped_refptr<content::MessageLoopRunner> runner1 =
@@ -111,8 +113,7 @@ IN_PROC_BROWSER_TEST_F(LocationIconViewTest, HideOnSecondClick) {
       ui_controls::DOWN | ui_controls::UP, runner1->QuitClosure());
   runner1->Run();
 
-  EXPECT_EQ(PageInfoBubbleView::BUBBLE_PAGE_INFO,
-            PageInfoBubbleView::GetShownBubbleType());
+  EXPECT_TRUE(PageInfoBubbleView::IsShowing(contents));
 
   // Verify that clicking again doesn't reshow it.
   scoped_refptr<content::MessageLoopRunner> runner2 =
@@ -122,8 +123,7 @@ IN_PROC_BROWSER_TEST_F(LocationIconViewTest, HideOnSecondClick) {
       ui_controls::DOWN | ui_controls::UP, runner2->QuitClosure());
   runner2->Run();
 
-  EXPECT_EQ(PageInfoBubbleView::BUBBLE_NONE,
-            PageInfoBubbleView::GetShownBubbleType());
+  EXPECT_FALSE(PageInfoBubbleView::IsShowing(contents));
 }
 
 #if BUILDFLAG(IS_MAC)

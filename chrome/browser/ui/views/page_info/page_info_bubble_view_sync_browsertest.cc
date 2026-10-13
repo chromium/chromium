@@ -53,7 +53,8 @@ void PerformMouseClickOnView(views::View* view) {
 void OpenPageInfoBubble(BrowserWindowInterface* browser) {
   LocationIconTestAccessor(browser).ShowBubble();
   views::BubbleDialogDelegateView* page_info =
-      PageInfoBubbleView::GetPageInfoBubbleForTesting();
+      PageInfoBubbleView::GetPageInfoBubbleForTesting(
+          browser->GetTabStripModel()->GetActiveWebContents());
   EXPECT_NE(nullptr, page_info);
   page_info->set_close_on_deactivate(false);
 }
@@ -62,7 +63,9 @@ void OpenPageInfoBubble(BrowserWindowInterface* browser) {
 // |view_id|.
 views::View* GetView(BrowserWindowInterface* browser, int view_id) {
   views::Widget* page_info_bubble =
-      PageInfoBubbleView::GetPageInfoBubbleForTesting()->GetWidget();
+      PageInfoBubbleView::GetPageInfoBubbleForTesting(
+          browser->GetTabStripModel()->GetActiveWebContents())
+          ->GetWidget();
   EXPECT_TRUE(page_info_bubble);
 
   views::View* view = page_info_bubble->GetRootView()->GetViewByID(view_id);
@@ -104,8 +107,10 @@ class PageInfoBubbleViewSyncBrowserTest : public SyncTest {
 
   const std::u16string GetPageInfoBubbleViewDetailText() {
     auto* label =
-        PageInfoBubbleView::GetPageInfoBubbleForTesting()->GetViewByID(
-            PageInfoViewFactory::VIEW_ID_PAGE_INFO_SECURITY_DETAILS_LABEL);
+        PageInfoBubbleView::GetPageInfoBubbleForTesting(
+            GetBrowser(0)->GetTabStripModel()->GetActiveWebContents())
+            ->GetViewByID(
+                PageInfoViewFactory::VIEW_ID_PAGE_INFO_SECURITY_DETAILS_LABEL);
     return static_cast<views::StyledLabel*>(label)->GetText();
   }
 };

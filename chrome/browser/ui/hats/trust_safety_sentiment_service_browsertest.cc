@@ -60,14 +60,17 @@ class TrustSafetySentimentServiceBrowserTest : public InProcessBrowserTest {
 
   void TearDownOnMainThread() override { mock_hats_service_ = nullptr; }
 
+  content::WebContents* web_contents() {
+    return browser()->GetTabStripModel()->GetActiveWebContents();
+  }
+
   void OpenPageInfo() {
-    ShowPageInfoDialog(browser()->tab_strip_model()->GetActiveWebContents(),
-                       base::DoNothing(),
+    ShowPageInfoDialog(web_contents(), base::DoNothing(),
                        bubble_anchor_util::Anchor::kLocationBar);
   }
 
   void ClosePageInfo() {
-    PageInfoBubbleView::GetPageInfoBubbleForTesting()
+    PageInfoBubbleView::GetPageInfoBubbleForTesting(web_contents())
         ->GetWidget()
         ->CloseWithReason(views::Widget::ClosedReason::kCloseButtonClicked);
     base::RunLoop().RunUntilIdle();
@@ -80,7 +83,7 @@ class TrustSafetySentimentServiceBrowserTest : public InProcessBrowserTest {
     permission.default_setting = ContentSetting::CONTENT_SETTING_ASK;
 
     auto* bubble = static_cast<PageInfoBubbleView*>(
-        PageInfoBubbleView::GetPageInfoBubbleForTesting());
+        PageInfoBubbleView::GetPageInfoBubbleForTesting(web_contents()));
     bubble->presenter_for_testing()->OnSitePermissionChanged(
         permission.type, permission.setting, permission.requesting_origin,
         permission.is_one_time);

@@ -98,7 +98,8 @@ class SuspiciousSiteBubbleViewTest : public testing::Test {
 };
 
 TEST_F(SuspiciousSiteBubbleViewTest, BubbleTypeAndElements) {
-  EXPECT_EQ(PageInfoBubbleViewBase::GetShownBubbleType(),
+  EXPECT_EQ(PageInfoBubbleViewBase::GetShownBubbleTypeForTesting(
+                web_contents_helper_.web_contents()),
             PageInfoBubbleViewBase::BUBBLE_SUSPICIOUS_SITE);
   EXPECT_NE(bubble_->back_to_safety_button_for_testing(), nullptr);
   EXPECT_NE(bubble_->mark_as_safe_button_for_testing(), nullptr);

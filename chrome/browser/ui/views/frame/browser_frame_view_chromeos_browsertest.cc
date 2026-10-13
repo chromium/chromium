@@ -640,7 +640,8 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest, PageInfoBubblePosition) {
   // Check the bubble anchors inside the main app window even if there's space
   // available outside the main app window.
   gfx::Rect page_info_bounds =
-      PageInfoBubbleViewBase::GetPageInfoBubbleForTesting()
+      PageInfoBubbleViewBase::GetPageInfoBubbleForTesting(
+          app_browser_->GetTabStripModel()->GetActiveWebContents())
           ->GetWidget()
           ->GetWindowBoundsInScreen();
   EXPECT_TRUE(widget->GetWindowBoundsInScreen().Contains(page_info_bounds));

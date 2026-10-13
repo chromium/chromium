@@ -225,7 +225,8 @@ IN_PROC_BROWSER_TEST_F(GenericMimeHandlerChipBrowserTest,
   ASSERT_TRUE(icon.ShowBubble());
 
   EXPECT_EQ(PageInfoBubbleViewBase::BUBBLE_INTERNAL_PAGE,
-            PageInfoBubbleViewBase::GetShownBubbleType());
+            PageInfoBubbleViewBase::GetShownBubbleTypeForTesting(
+                GetActiveWebContents()));
 }
 
 }  // namespace extensions

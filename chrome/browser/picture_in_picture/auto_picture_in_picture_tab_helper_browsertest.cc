@@ -337,11 +337,12 @@ class AutoPipInfoDevToolsWaiter : public content::DevToolsInspectorLogWatcher::
 
 // Simulates clicking on the location icon to open the page info bubble.
 void OpenPageInfoBubble(BrowserWindowInterface* browser) {
-  ShowPageInfoDialog(browser->tab_strip_model()->GetActiveWebContents(),
-                     base::DoNothing(),
+  content::WebContents* web_contents =
+      browser->GetTabStripModel()->GetActiveWebContents();
+  ShowPageInfoDialog(web_contents, base::DoNothing(),
                      bubble_anchor_util::Anchor::kLocationBar);
   views::BubbleDialogDelegateView* page_info =
-      PageInfoBubbleViewBase::GetPageInfoBubbleForTesting();
+      PageInfoBubbleViewBase::GetPageInfoBubbleForTesting(web_contents);
   ASSERT_NE(nullptr, page_info);
   page_info->set_close_on_deactivate(false);
 }
@@ -363,9 +364,10 @@ bool FindLabelWithText(const views::View* view, const std::u16string& text) {
   return false;
 }
 
-bool IsPermissionPresentInPageInfo(ContentSettingsType type) {
+bool IsPermissionPresentInPageInfo(content::WebContents* web_contents,
+                                   ContentSettingsType type) {
   auto* bubble = views::AsViewClass<PageInfoBubbleView>(
-      PageInfoBubbleViewBase::GetPageInfoBubbleForTesting());
+      PageInfoBubbleViewBase::GetPageInfoBubbleForTesting(web_contents));
   if (!bubble) {
     return false;
   }
@@ -1766,7 +1768,6 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Bool(),
                          &DocumentPipBackendTestName);
 
-
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_OverlaySettingViewIsShownForDocumentPip \
   DISABLED_OverlaySettingViewIsShownForDocumentPip
@@ -2096,12 +2097,13 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
 
   // Initially, the permission should not be shown.
   EXPECT_FALSE(IsPermissionPresentInPageInfo(
-      ContentSettingsType::AUTO_PICTURE_IN_PICTURE));
+      web_contents, ContentSettingsType::AUTO_PICTURE_IN_PICTURE));
 
   // Simulate the page registering for auto-pip, and wait for the page info
   // widget to resize.
   views::Widget* page_info_widget =
-      PageInfoBubbleViewBase::GetPageInfoBubbleForTesting()->GetWidget();
+      PageInfoBubbleViewBase::GetPageInfoBubbleForTesting(web_contents)
+          ->GetWidget();
   ASSERT_TRUE(page_info_widget);
 
   const gfx::Rect bounds_before_register =
@@ -2115,7 +2117,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
 
   // Now the permission should be shown.
   EXPECT_TRUE(IsPermissionPresentInPageInfo(
-      ContentSettingsType::AUTO_PICTURE_IN_PICTURE));
+      web_contents, ContentSettingsType::AUTO_PICTURE_IN_PICTURE));
 
   // After unregistering, the permission should still be shown.
   web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
@@ -2123,7 +2125,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
   WaitForMediaSessionActionUnregistered(web_contents);
 
   EXPECT_TRUE(IsPermissionPresentInPageInfo(
-      ContentSettingsType::AUTO_PICTURE_IN_PICTURE));
+      web_contents, ContentSettingsType::AUTO_PICTURE_IN_PICTURE));
 }
 
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,

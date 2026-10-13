@@ -51,12 +51,13 @@ class PageInfoBubbleViewBase : public views::BubbleDialogDelegateView,
   // Returns true if a page info bubble is showing for the given WebContents.
   static bool IsShowing(content::WebContents* web_contents);
 
-  // Returns the type of the bubble being shown. For testing only.
-  static BubbleType GetShownBubbleType();
-  static BubbleType GetShownBubbleType(content::WebContents* web_contents);
+  // Returns the type of the bubble being shown for the given WebContents.
+  // For testing only.
+  static BubbleType GetShownBubbleTypeForTesting(
+      content::WebContents* web_contents);
 
-  // Returns the page info bubble being shown.
-  static views::BubbleDialogDelegateView* GetPageInfoBubbleForTesting();
+  // Returns the bubble instance being shown for the given WebContents. For
+  // testing only.
   static views::BubbleDialogDelegateView* GetPageInfoBubbleForTesting(
       content::WebContents* web_contents);
 

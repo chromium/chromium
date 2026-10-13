@@ -8,6 +8,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
@@ -105,7 +106,8 @@ class DashboardKombuchaInteractiveUITest : public InteractiveBrowserTest {
   // Set static site name to prevent flakes caused by changing port.
   void SetStaticSiteName(std::u16string site_name) {
     auto* bubble_view = static_cast<PageInfoBubbleView*>(
-        PageInfoBubbleView::GetPageInfoBubbleForTesting());
+        PageInfoBubbleView::GetPageInfoBubbleForTesting(
+            browser()->GetTabStripModel()->GetActiveWebContents()));
     bubble_view->presenter_for_testing()->SetSiteNameForTesting(site_name);
     ASSERT_EQ(bubble_view->presenter_for_testing()->GetSubjectNameForDisplay(),
               site_name);

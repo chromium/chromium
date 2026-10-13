@@ -2219,7 +2219,9 @@ void WebAppIntegrationTestDriver::OpenAppSettingsFromAppMenu(Site site) {
 
   // Click settings from page info bubble.
   views::Widget* page_info_bubble =
-      PageInfoBubbleView::GetPageInfoBubbleForTesting()->GetWidget();
+      PageInfoBubbleView::GetPageInfoBubbleForTesting(
+          app_browser->GetTabStripModel()->GetActiveWebContents())
+          ->GetWidget();
   EXPECT_TRUE(page_info_bubble);
 
   views::View* settings_button = page_info_bubble->GetRootView()->GetViewByID(

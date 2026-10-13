@@ -220,7 +220,8 @@ views::BubbleDialogDelegateView* OpenPageInfo(BrowserWindowInterface* browser) {
   ui::test::TestEvent event;
   location_icon_view->ShowBubble(event);
   views::BubbleDialogDelegateView* page_info =
-      PageInfoBubbleViewBase::GetPageInfoBubbleForTesting();
+      PageInfoBubbleViewBase::GetPageInfoBubbleForTesting(
+          browser->GetTabStripModel()->GetActiveWebContents());
   page_info->set_close_on_deactivate(false);
   return page_info;
 }
@@ -2267,7 +2268,8 @@ class SafeBrowsingBlockingPageDelayedWarningBrowserTest
   }
 
   std::u16string GetSecuritySummaryTextFromPageInfo() {
-    auto* page_info = PageInfoBubbleView::GetPageInfoBubbleForTesting();
+    auto* page_info = PageInfoBubbleView::GetPageInfoBubbleForTesting(
+        browser()->GetTabStripModel()->GetActiveWebContents());
     auto* summary_label = page_info->GetViewByID(
         PageInfoViewFactory::VIEW_ID_PAGE_INFO_SECURITY_SUMMARY_LABEL);
     return static_cast<views::StyledLabel*>(summary_label)->GetText();

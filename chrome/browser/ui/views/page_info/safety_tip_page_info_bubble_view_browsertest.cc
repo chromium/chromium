@@ -161,17 +161,19 @@ void PerformMouseClickOnView(views::View* view) {
   view->HandleAccessibleAction(data);
 }
 
-bool IsUIShowing() {
+bool IsUIShowing(content::WebContents* web_contents) {
   return PageInfoBubbleViewBase::BUBBLE_SAFETY_TIP ==
-         PageInfoBubbleViewBase::GetShownBubbleType();
+         PageInfoBubbleViewBase::GetShownBubbleTypeForTesting(web_contents);
 }
 
-void CloseWarningIgnore(views::Widget::ClosedReason reason) {
-  if (!PageInfoBubbleViewBase::GetPageInfoBubbleForTesting()) {
+void CloseWarningIgnore(content::WebContents* web_contents,
+                        views::Widget::ClosedReason reason) {
+  if (!PageInfoBubbleViewBase::GetPageInfoBubbleForTesting(web_contents)) {
     return;
   }
   auto* widget =
-      PageInfoBubbleViewBase::GetPageInfoBubbleForTesting()->GetWidget();
+      PageInfoBubbleViewBase::GetPageInfoBubbleForTesting(web_contents)
+          ->GetWidget();
   views::test::WidgetDestroyedWaiter waiter(widget);
   widget->CloseWithReason(reason);
   waiter.Wait();
@@ -195,7 +197,8 @@ void SetEngagementScore(BrowserWindowInterface* browser,
 void OpenPageInfoBubble(BrowserWindowInterface* browser) {
   LocationIconTestAccessor(browser).ShowBubble();
   views::BubbleDialogDelegateView* page_info =
-      PageInfoBubbleViewBase::GetPageInfoBubbleForTesting();
+      PageInfoBubbleViewBase::GetPageInfoBubbleForTesting(
+          browser->GetTabStripModel()->GetActiveWebContents());
   EXPECT_NE(nullptr, page_info);
   page_info->set_close_on_deactivate(false);
 }
@@ -295,39 +298,62 @@ class SafetyTipPageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
     return GetURL(hostname).GetWithEmptyPath();
   }
 
-  void ClickLeaveButton() {
+  content::WebContents* web_contents() {
+    return browser()->GetTabStripModel()->GetActiveWebContents();
+  }
+
+  bool IsUIShowing(content::WebContents* contents = nullptr) {
+    return ::IsUIShowing(contents ? contents : web_contents());
+  }
+
+  void CloseWarningIgnore(views::Widget::ClosedReason reason) {
+    ::CloseWarningIgnore(web_contents(), reason);
+  }
+
+  void ClickLeaveButton(content::WebContents* contents = nullptr) {
     // This class is a friend to SafetyTipPageInfoBubbleView.
     auto* bubble = static_cast<SafetyTipPageInfoBubbleView*>(
-        PageInfoBubbleViewBase::GetPageInfoBubbleForTesting());
+        PageInfoBubbleViewBase::GetPageInfoBubbleForTesting(
+            contents ? contents : web_contents()));
     PerformMouseClickOnView(bubble->GetLeaveButtonForTesting());
   }
 
-  void ClickLearnMoreLink() {
+  void ClickLearnMoreLink(content::WebContents* contents = nullptr) {
     // This class is a friend to SafetyTipPageInfoBubbleView.
     auto* bubble = static_cast<SafetyTipPageInfoBubbleView*>(
-        PageInfoBubbleViewBase::GetPageInfoBubbleForTesting());
+        PageInfoBubbleViewBase::GetPageInfoBubbleForTesting(
+            contents ? contents : web_contents()));
     bubble->OpenHelpCenter();
   }
 
   void CheckNoButtons() {
     auto* bubble = static_cast<SafetyTipPageInfoBubbleView*>(
-        PageInfoBubbleViewBase::GetPageInfoBubbleForTesting());
+        PageInfoBubbleViewBase::GetPageInfoBubbleForTesting(web_contents()));
     EXPECT_FALSE(bubble->info_link_);
     EXPECT_FALSE(bubble->leave_button_);
   }
 
-  void CloseWarningLeaveSite(BrowserWindowInterface* browser) {
+  void CloseWarningLeaveSite(content::WebContents* contents = nullptr) {
     // Wait for a Safety Tip bubble to be destroyed. Navigating away from a page
     // with a safety tip destroys the safety tip, but waiting for the navigation
     // to complete is racy.
+    auto* target_contents = contents ? contents : web_contents();
     views::test::WidgetDestroyedWaiter waiter(
-        PageInfoBubbleViewBase::GetPageInfoBubbleForTesting()->GetWidget());
-    ClickLeaveButton();
+        PageInfoBubbleViewBase::GetPageInfoBubbleForTesting(target_contents)
+            ->GetWidget());
+    ClickLeaveButton(target_contents);
     waiter.Wait();
   }
 
-  std::u16string GetSafetyTipSummaryText() {
-    auto* page_info = PageInfoBubbleView::GetPageInfoBubbleForTesting();
+  void CloseWarningLeaveSite(BrowserWindowInterface* browser) {
+    CloseWarningLeaveSite(browser->GetTabStripModel()->GetActiveWebContents());
+  }
+
+  std::u16string GetSafetyTipSummaryText(
+      BrowserWindowInterface* browser = nullptr) {
+    auto* target_browser = browser ? browser : this->browser();
+    auto* page_info = PageInfoBubbleView::GetPageInfoBubbleForTesting(
+        target_browser->GetTabStripModel()->GetActiveWebContents());
     auto* summary_label = page_info->GetViewByID(
         PageInfoViewFactory::VIEW_ID_PAGE_INFO_SECURITY_SUMMARY_LABEL);
     return static_cast<views::StyledLabel*>(summary_label)->GetText();
@@ -338,15 +364,17 @@ class SafetyTipPageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
       security_state::SafetyTipStatus expected_safety_tip_status,
       const GURL& expected_safe_url) {
     OpenPageInfoBubble(browser);
-    ASSERT_EQ(PageInfoBubbleViewBase::GetShownBubbleType(),
+    ASSERT_EQ(PageInfoBubbleViewBase::GetShownBubbleTypeForTesting(
+                  browser->GetTabStripModel()->GetActiveWebContents()),
               PageInfoBubbleViewBase::BubbleType::BUBBLE_PAGE_INFO);
-    auto* page_info = PageInfoBubbleViewBase::GetPageInfoBubbleForTesting();
+    auto* page_info = PageInfoBubbleViewBase::GetPageInfoBubbleForTesting(
+        browser->GetTabStripModel()->GetActiveWebContents());
     ASSERT_TRUE(page_info);
 
     switch (expected_safety_tip_status) {
       case security_state::SafetyTipStatus::kLookalike:
       case security_state::SafetyTipStatus::kLookalikeIgnored:
-        EXPECT_EQ(GetSafetyTipSummaryText(),
+        EXPECT_EQ(GetSafetyTipSummaryText(browser),
                   l10n_util::GetStringFUTF16(
                       IDS_PAGE_INFO_SAFETY_TIP_LOOKALIKE_TITLE,
                       security_interstitials::common_string_util::
@@ -369,14 +397,16 @@ class SafetyTipPageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
   void CheckPageInfoDoesNotShowSafetyTipInfo(BrowserWindowInterface* browser) {
     OpenPageInfoBubble(browser);
     auto* page_info = static_cast<PageInfoBubbleViewBase*>(
-        PageInfoBubbleViewBase::GetPageInfoBubbleForTesting());
+        PageInfoBubbleViewBase::GetPageInfoBubbleForTesting(
+            browser->GetTabStripModel()->GetActiveWebContents()));
     ASSERT_TRUE(page_info);
     EXPECT_TRUE(
-        GetSafetyTipSummaryText() ==
+        GetSafetyTipSummaryText(browser) ==
             l10n_util::GetStringUTF16(IDS_PAGE_INFO_NOT_SECURE_SUMMARY) ||
-        GetSafetyTipSummaryText() ==
+        GetSafetyTipSummaryText(browser) ==
             l10n_util::GetStringUTF16(IDS_PAGE_INFO_INTERNAL_PAGE));
-    if (PageInfoBubbleViewBase::GetShownBubbleType() ==
+    if (PageInfoBubbleViewBase::GetShownBubbleTypeForTesting(
+            browser->GetTabStripModel()->GetActiveWebContents()) ==
         PageInfoBubbleViewBase::BubbleType::BUBBLE_PAGE_INFO) {
       content::WebContentsAddedObserver new_tab_observer;
       static_cast<views::StyledLabel*>(
@@ -445,7 +475,8 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   SetEngagementScore(incognito_browser, kNavigatedUrl, kLowEngagement);
   NavigateToURL(incognito_browser, kNavigatedUrl,
                 WindowOpenDisposition::CURRENT_TAB);
-  EXPECT_FALSE(IsUIShowing());
+  EXPECT_FALSE(IsUIShowing(
+      incognito_browser->GetTabStripModel()->GetActiveWebContents()));
 
   ASSERT_NO_FATAL_FAILURE(
       CheckPageInfoDoesNotShowSafetyTipInfo(incognito_browser));
@@ -476,7 +507,8 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   SetEngagementScore(incognito_browser, kNavigatedUrl, kHighEngagement);
   NavigateToURL(incognito_browser, kNavigatedUrl,
                 WindowOpenDisposition::CURRENT_TAB);
-  EXPECT_FALSE(IsUIShowing());
+  EXPECT_FALSE(IsUIShowing(
+      incognito_browser->GetTabStripModel()->GetActiveWebContents()));
 
   ASSERT_NO_FATAL_FAILURE(
       CheckPageInfoDoesNotShowSafetyTipInfo(incognito_browser));
@@ -526,7 +558,8 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
                                 /*from_user_gesture=*/true));
   NavigateToURL(incognito_browser, kNavigatedUrl,
                 WindowOpenDisposition::CURRENT_TAB);
-  EXPECT_TRUE(IsUIShowing());
+  EXPECT_TRUE(IsUIShowing(
+      incognito_browser->GetTabStripModel()->GetActiveWebContents()));
 
   ASSERT_NO_FATAL_FAILURE(CheckPageInfoShowsSafetyTipInfo(
       incognito_browser, security_state::SafetyTipStatus::kLookalike,
@@ -535,7 +568,8 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   // Navigate away to record UKM. Incognito doesn't record UKM.
   NavigateToURL(incognito_browser, GURL("about:blank"),
                 WindowOpenDisposition::CURRENT_TAB);
-  EXPECT_FALSE(IsUIShowing());
+  EXPECT_FALSE(IsUIShowing(
+      incognito_browser->GetTabStripModel()->GetActiveWebContents()));
   test_helper()->CheckNoLookalikeUkm();
 }
 
@@ -617,13 +651,14 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
   ASSERT_TRUE(IsUIShowing());
 
+  content::WebContents* initial_contents = web_contents();
   content::WebContentsAddedObserver new_tab_observer;
   ClickLearnMoreLink();
   EXPECT_NE(kNavigatedUrl,
             new_tab_observer.GetWebContents()->GetLastCommittedURL());
 
-  CloseWarningLeaveSite(browser());
-  EXPECT_FALSE(IsUIShowing());
+  CloseWarningLeaveSite(initial_contents);
+  EXPECT_FALSE(IsUIShowing(initial_contents));
   test_helper()->CheckSafetyTipUkmCount(1);
   test_helper()->CheckInterstitialUkmCount(0);
 }
@@ -815,7 +850,8 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
 
   // ...but suppressed by the allowlist.
   views::test::WidgetDestroyedWaiter waiter(
-      PageInfoBubbleViewBase::GetPageInfoBubbleForTesting()->GetWidget());
+      PageInfoBubbleViewBase::GetPageInfoBubbleForTesting(web_contents())
+          ->GetWidget());
   lookalikes::SetSafetyTipAllowlistPatterns({"accounts-google.com/"}, {}, {});
   SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
   NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
@@ -1138,8 +1174,7 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   NavigateToURL(browser(), GURL("about:blank"),
                 WindowOpenDisposition::NEW_FOREGROUND_TAB);
   SafetyTipWebContentsObserver* safety_tip_observer =
-      SafetyTipWebContentsObserver::FromWebContents(
-          browser()->GetTabStripModel()->GetActiveWebContents());
+      SafetyTipWebContentsObserver::FromWebContents(web_contents());
 
   // Trigger the warning in the prepped web contents.
   auto kNavigatedUrl = GetURL("accounts3-google.com");
@@ -1170,8 +1205,7 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
 
   // Prep the web contents for later observing.
   SafetyTipWebContentsObserver* safety_tip_observer =
-      SafetyTipWebContentsObserver::FromWebContents(
-          browser()->GetTabStripModel()->GetActiveWebContents());
+      SafetyTipWebContentsObserver::FromWebContents(web_contents());
   base::RunLoop loop;
   safety_tip_observer->RegisterSafetyTipCloseCallbackForTesting(
       loop.QuitClosure());
@@ -1201,8 +1235,7 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
 
   // Prep the web contents for later observing.
   SafetyTipWebContentsObserver* safety_tip_observer =
-      SafetyTipWebContentsObserver::FromWebContents(
-          browser()->GetTabStripModel()->GetActiveWebContents());
+      SafetyTipWebContentsObserver::FromWebContents(web_contents());
   base::RunLoop loop;
   safety_tip_observer->RegisterSafetyTipCloseCallbackForTesting(
       loop.QuitClosure());
@@ -1653,6 +1686,8 @@ class SafetyTipPageInfoBubbleViewPrerenderBrowserTest
   content::WebContents* web_contents() {
     return browser()->GetTabStripModel()->GetActiveWebContents();
   }
+
+  bool IsUIShowing() { return ::IsUIShowing(web_contents()); }
 
   content::test::PrerenderTestHelper* prerender_helper() {
     return &prerender_helper_;

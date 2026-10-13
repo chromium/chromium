@@ -5761,7 +5761,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPermissionBrowserTest,
   run_loop.Run();
 
   // The Page Info Bubble should NOT have reopened!
-  EXPECT_EQ(nullptr, PageInfoBubbleViewBase::GetPageInfoBubbleForTesting());
+  EXPECT_FALSE(PageInfoBubbleViewBase::IsShowing(web_contents));
 }
 
 INSTANTIATE_TEST_SUITE_P(

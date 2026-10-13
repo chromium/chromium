@@ -87,6 +87,11 @@ class SuspiciousSiteDesktopBrowserTest : public InProcessBrowserTest {
     return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
+  views::BubbleDialogDelegateView* GetPageInfoBubbleForTesting() {
+    return PageInfoBubbleViewBase::GetPageInfoBubbleForTesting(
+        GetActiveWebContents());
+  }
+
   void RunCheckWarningWithProtectionLevelTest(
       safe_browsing::SafeBrowsingState state,
       bool expect_warning) {
@@ -109,8 +114,7 @@ class SuspiciousSiteDesktopBrowserTest : public InProcessBrowserTest {
           safe_browsing::SuspiciousSiteControllerDesktop::FromWebContents(
               GetActiveWebContents()));
 
-      views::BubbleDialogDelegateView* bubble =
-          PageInfoBubbleViewBase::GetPageInfoBubbleForTesting();
+      views::BubbleDialogDelegateView* bubble = GetPageInfoBubbleForTesting();
       ASSERT_TRUE(bubble);
       ASSERT_TRUE(bubble->GetWidget());
       EXPECT_TRUE(bubble->GetWidget()->IsVisible());
@@ -129,7 +133,7 @@ class SuspiciousSiteDesktopBrowserTest : public InProcessBrowserTest {
       EXPECT_FALSE(
           safe_browsing::SuspiciousSiteControllerDesktop::FromWebContents(
               GetActiveWebContents()));
-      EXPECT_FALSE(PageInfoBubbleViewBase::GetPageInfoBubbleForTesting());
+      EXPECT_FALSE(GetPageInfoBubbleForTesting());
 
       auto security_state = chrome_security_state::GetVisibleSecurityState(
           GetActiveWebContents());
@@ -165,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(SuspiciousSiteDesktopBrowserTest, MarkAsSafeAllowsHost) {
   EXPECT_TRUE(shown_future.Wait());
 
   auto* bubble_view = static_cast<SuspiciousSiteBubbleView*>(
-      PageInfoBubbleViewBase::GetPageInfoBubbleForTesting());
+      GetPageInfoBubbleForTesting());
   ASSERT_TRUE(bubble_view);
   ASSERT_TRUE(bubble_view->GetWidget());
   EXPECT_TRUE(bubble_view->GetWidget()->IsVisible());
@@ -212,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(SuspiciousSiteDesktopBrowserTest,
   EXPECT_TRUE(shown_future.Wait());
 
   auto* bubble_view = static_cast<SuspiciousSiteBubbleView*>(
-      PageInfoBubbleViewBase::GetPageInfoBubbleForTesting());
+      GetPageInfoBubbleForTesting());
   ASSERT_TRUE(bubble_view);
   ASSERT_TRUE(bubble_view->GetWidget());
   EXPECT_TRUE(bubble_view->GetWidget()->IsVisible());
@@ -266,8 +270,7 @@ IN_PROC_BROWSER_TEST_F(SuspiciousSiteDesktopBrowserTest,
   // Trigger OnAsyncSafeBrowsingCheckCompleted callback.
   controller->OnAsyncSafeBrowsingCheckCompleted();
 
-  views::BubbleDialogDelegateView* bubble =
-      PageInfoBubbleViewBase::GetPageInfoBubbleForTesting();
+  views::BubbleDialogDelegateView* bubble = GetPageInfoBubbleForTesting();
   ASSERT_TRUE(bubble);
   ASSERT_TRUE(bubble->GetWidget());
   EXPECT_TRUE(bubble->GetWidget()->IsVisible());
@@ -288,10 +291,10 @@ IN_PROC_BROWSER_TEST_F(SuspiciousSiteDesktopBrowserTest,
 
   // Dismiss the initial warning bubble.
   auto* bubble_view = static_cast<SuspiciousSiteBubbleView*>(
-      PageInfoBubbleViewBase::GetPageInfoBubbleForTesting());
+      GetPageInfoBubbleForTesting());
   ASSERT_TRUE(bubble_view);
   bubble_view->GetWidget()->CloseNow();
-  EXPECT_FALSE(PageInfoBubbleViewBase::GetPageInfoBubbleForTesting());
+  EXPECT_FALSE(GetPageInfoBubbleForTesting());
 
   // Suspicious security state and controller should still be active.
   EXPECT_TRUE(safe_browsing::SuspiciousSiteControllerDesktop::FromWebContents(
@@ -304,8 +307,7 @@ IN_PROC_BROWSER_TEST_F(SuspiciousSiteDesktopBrowserTest,
 
   // Open Page Info bubble via location icon.
   LocationIconTestAccessor(browser()).ShowBubble();
-  views::BubbleDialogDelegateView* page_info =
-      PageInfoBubbleViewBase::GetPageInfoBubbleForTesting();
+  views::BubbleDialogDelegateView* page_info = GetPageInfoBubbleForTesting();
   ASSERT_TRUE(page_info);
 
   views::View* mark_as_safe_btn =
@@ -353,8 +355,7 @@ IN_PROC_BROWSER_TEST_F(SuspiciousSiteDesktopBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), malicious_url));
   EXPECT_TRUE(shown_future.Wait());
 
-  views::BubbleDialogDelegateView* bubble =
-      PageInfoBubbleViewBase::GetPageInfoBubbleForTesting();
+  views::BubbleDialogDelegateView* bubble = GetPageInfoBubbleForTesting();
   ASSERT_TRUE(bubble);
   EXPECT_TRUE(bubble->GetWidget()->IsVisible());
   EXPECT_TRUE(GetActiveWebContents()->ShouldIgnoreInputEventsForTesting());
@@ -374,7 +375,7 @@ IN_PROC_BROWSER_TEST_F(SuspiciousSiteDesktopBrowserTest,
 
   // Warning bubble should reappear and web contents should be blocked again.
   EXPECT_TRUE(second_shown_future.Wait());
-  bubble = PageInfoBubbleViewBase::GetPageInfoBubbleForTesting();
+  bubble = GetPageInfoBubbleForTesting();
   ASSERT_TRUE(bubble);
   EXPECT_TRUE(bubble->GetWidget()->IsVisible());
   EXPECT_TRUE(GetActiveWebContents()->ShouldIgnoreInputEventsForTesting());
@@ -395,7 +396,7 @@ IN_PROC_BROWSER_TEST_F(SuspiciousSiteDesktopBrowserTest,
   EXPECT_TRUE(shown_future.Wait());
 
   auto* bubble_view = static_cast<SuspiciousSiteBubbleView*>(
-      PageInfoBubbleViewBase::GetPageInfoBubbleForTesting());
+      GetPageInfoBubbleForTesting());
   ASSERT_TRUE(bubble_view);
   EXPECT_TRUE(bubble_view->GetWidget()->IsVisible());
 
@@ -421,7 +422,7 @@ IN_PROC_BROWSER_TEST_F(SuspiciousSiteDesktopBrowserTest,
   // Warning bubble should reappear.
   EXPECT_TRUE(second_shown_future.Wait());
   bubble_view = static_cast<SuspiciousSiteBubbleView*>(
-      PageInfoBubbleViewBase::GetPageInfoBubbleForTesting());
+      GetPageInfoBubbleForTesting());
   ASSERT_TRUE(bubble_view);
   EXPECT_TRUE(bubble_view->GetWidget()->IsVisible());
   EXPECT_TRUE(GetActiveWebContents()->ShouldIgnoreInputEventsForTesting());
@@ -442,7 +443,7 @@ IN_PROC_BROWSER_TEST_F(SuspiciousSiteDesktopBrowserTest,
   EXPECT_TRUE(shown_future.Wait());
 
   auto* bubble_view = static_cast<SuspiciousSiteBubbleView*>(
-      PageInfoBubbleViewBase::GetPageInfoBubbleForTesting());
+      GetPageInfoBubbleForTesting());
   ASSERT_TRUE(bubble_view);
 
   // Explicitly close the bubble using close button.
@@ -450,7 +451,7 @@ IN_PROC_BROWSER_TEST_F(SuspiciousSiteDesktopBrowserTest,
   bubble_view->GetWidget()->CloseWithReason(
       views::Widget::ClosedReason::kCloseButtonClicked);
   waiter.Wait();
-  EXPECT_FALSE(PageInfoBubbleViewBase::GetPageInfoBubbleForTesting());
+  EXPECT_FALSE(GetPageInfoBubbleForTesting());
 
   // Input events should no longer be ignored and tab is not blocked.
   EXPECT_FALSE(GetActiveWebContents()->ShouldIgnoreInputEventsForTesting());
@@ -469,7 +470,7 @@ IN_PROC_BROWSER_TEST_F(SuspiciousSiteDesktopBrowserTest,
 
   // Bubble should NOT reappear.
   EXPECT_FALSE(unexpected_shown_future.IsReady());
-  EXPECT_FALSE(PageInfoBubbleViewBase::GetPageInfoBubbleForTesting());
+  EXPECT_FALSE(GetPageInfoBubbleForTesting());
   EXPECT_FALSE(GetActiveWebContents()->ShouldIgnoreInputEventsForTesting());
   EXPECT_FALSE(browser()->GetTabStripModel()->IsTabBlocked(0));
 

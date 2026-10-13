@@ -82,7 +82,8 @@ constexpr char kMerchantTrustUrlWithoutSummary[] = "c.test";
 void OpenPageInfoBubble(BrowserWindowInterface* browser) {
   LocationIconTestAccessor(browser).ShowBubble();
   views::BubbleDialogDelegateView* page_info =
-      PageInfoBubbleView::GetPageInfoBubbleForTesting();
+      PageInfoBubbleView::GetPageInfoBubbleForTesting(
+          browser->GetTabStripModel()->GetActiveWebContents());
   EXPECT_NE(nullptr, page_info);
   page_info->set_close_on_deactivate(false);
 }
@@ -91,7 +92,9 @@ void OpenPageInfoBubble(BrowserWindowInterface* browser) {
 // |view_id|.
 views::View* GetView(BrowserWindowInterface* browser, int view_id) {
   views::Widget* page_info_bubble =
-      PageInfoBubbleView::GetPageInfoBubbleForTesting()->GetWidget();
+      PageInfoBubbleView::GetPageInfoBubbleForTesting(
+          browser->GetTabStripModel()->GetActiveWebContents())
+          ->GetWidget();
   EXPECT_TRUE(page_info_bubble);
 
   views::View* view = page_info_bubble->GetRootView()->GetViewByID(view_id);
@@ -100,9 +103,11 @@ views::View* GetView(BrowserWindowInterface* browser, int view_id) {
 }
 
 // Set static site name to prevent flakes caused by changing port.
-void SetStaticSiteName(std::u16string site_name) {
+void SetStaticSiteName(BrowserWindowInterface* browser,
+                       std::u16string site_name) {
   auto* bubble_view = static_cast<PageInfoBubbleView*>(
-      PageInfoBubbleView::GetPageInfoBubbleForTesting());
+      PageInfoBubbleView::GetPageInfoBubbleForTesting(
+          browser->GetTabStripModel()->GetActiveWebContents()));
   bubble_view->presenter_for_testing()->SetSiteNameForTesting(site_name);
   ASSERT_EQ(bubble_view->presenter_for_testing()->GetSubjectNameForDisplay(),
             site_name);
@@ -374,7 +379,8 @@ class PageInfoBubbleViewDialogBrowserTest : public DialogBrowserTest {
       EXPECT_TRUE(presenter->ui_for_testing());
       auto* current_ui = presenter->ui_for_testing();
       views::View* bubble_view =
-          PageInfoBubbleView::GetPageInfoBubbleForTesting();
+          PageInfoBubbleView::GetPageInfoBubbleForTesting(
+              browser()->GetTabStripModel()->GetActiveWebContents());
       // Normally |PageInfoBubbleView| doesn't update the permissions already
       // shown if they change while it's still open. For this test, manually
       // force an update by clearing the existing permission views here.
@@ -404,7 +410,8 @@ class PageInfoBubbleViewDialogBrowserTest : public DialogBrowserTest {
 
     if (name == kSecureSubpage || name == kEvSecureSubpage) {
       PageInfoBubbleView* bubble_view = static_cast<PageInfoBubbleView*>(
-          PageInfoBubbleView::GetPageInfoBubbleForTesting());
+          PageInfoBubbleView::GetPageInfoBubbleForTesting(
+              browser()->GetTabStripModel()->GetActiveWebContents()));
       bubble_view->OpenSecurityPage();
     }
 
@@ -420,15 +427,19 @@ class PageInfoBubbleViewDialogBrowserTest : public DialogBrowserTest {
     }
   }
 
+  virtual BrowserWindowInterface* GetBrowser() { return browser(); }
+
   bool VerifyUi() override {
     if (!DialogBrowserTest::VerifyUi()) {
       return false;
     }
     // Check that each expected View is present in the Page Info bubble.
     views::View* page_info_bubble_view =
-        PageInfoBubbleView::GetPageInfoBubbleForTesting()->GetContentsView();
+        PageInfoBubbleView::GetPageInfoBubbleForTesting(
+            GetBrowser()->GetTabStripModel()->GetActiveWebContents())
+            ->GetContentsView();
     for (auto id : expected_identifiers_) {
-      views::View* view = GetView(browser(), id);
+      views::View* view = GetView(GetBrowser(), id);
       if (!page_info_bubble_view->Contains(view)) {
         return false;
       }
@@ -438,7 +449,8 @@ class PageInfoBubbleViewDialogBrowserTest : public DialogBrowserTest {
 
   PageInfo* GetPresenter() {
     return static_cast<PageInfoBubbleView*>(
-               PageInfoBubbleView::GetPageInfoBubbleForTesting())
+               PageInfoBubbleView::GetPageInfoBubbleForTesting(
+                   browser()->GetTabStripModel()->GetActiveWebContents()))
         ->presenter_for_testing();
   }
 
@@ -636,7 +648,7 @@ class PageInfoBubbleViewAboutThisSiteDialogBrowserTest
     OpenPageInfoBubble(browser());
 
     // Set static site name to prevent flakes caused by changing port.
-    SetStaticSiteName(u"Example site");
+    SetStaticSiteName(browser(), u"Example site");
 
     const std::string& name =
         name_with_param_suffix.substr(0, name_with_param_suffix.find("/"));
@@ -696,7 +708,8 @@ class PageInfoBubbleViewCookiesSubpageBrowserTest : public DialogBrowserTest {
     run_loop.Run();
 
     auto* bubble_view = static_cast<PageInfoBubbleView*>(
-        PageInfoBubbleView::GetPageInfoBubbleForTesting());
+        PageInfoBubbleView::GetPageInfoBubbleForTesting(
+            browser()->GetTabStripModel()->GetActiveWebContents()));
     auto* presenter = bubble_view->presenter_for_testing();
     EXPECT_TRUE(presenter);
     EXPECT_TRUE(presenter->ui_for_testing());
@@ -799,7 +812,8 @@ class PageInfoBubbleViewIsolatedWebAppBrowserTest : public DialogBrowserTest {
     OpenPageInfoBubble(iwa_browser);
 
     auto* bubble_view = static_cast<PageInfoBubbleView*>(
-        PageInfoBubbleView::GetPageInfoBubbleForTesting());
+        PageInfoBubbleView::GetPageInfoBubbleForTesting(
+            iwa_browser->GetTabStripModel()->GetActiveWebContents()));
     bubble_view->presenter_for_testing()->UpdateSecurityState();
 
     // For Isolated Web Apps, normal site name gets overridden by app name.
@@ -881,10 +895,15 @@ class PageInfoBubbleViewWebAppBrowserTest
   }
 
   void TearDownOnMainThread() override {
+    app_browser_ = nullptr;
     web_app::test::UninstallAllWebApps(browser()->GetProfile());
     override_registration_.reset();
 
     PageInfoBubbleViewDialogBrowserTest::TearDownOnMainThread();
+  }
+
+  BrowserWindowInterface* GetBrowser() override {
+    return app_browser_ ? app_browser_.get() : browser();
   }
 
   // DialogBrowserTest:
@@ -908,18 +927,18 @@ class PageInfoBubbleViewWebAppBrowserTest
     }
 #endif
 
-    BrowserWindowInterface* app_browser = browser();
+    app_browser_ = browser();
     switch (GetParam()) {
       case WebAppWindowMode::kBrowserTab:
         ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), start_url_));
         break;
       case WebAppWindowMode::kAppWindow:
-        app_browser = web_app::LaunchWebAppBrowserAndWait(
+        app_browser_ = web_app::LaunchWebAppBrowserAndWait(
             browser()->GetProfile(), app_id_);
-        ASSERT_TRUE(app_browser);
+        ASSERT_TRUE(app_browser_);
         break;
     }
-    OpenPageInfoBubble(app_browser);
+    OpenPageInfoBubble(app_browser_);
   }
 
  private:
@@ -927,6 +946,7 @@ class PageInfoBubbleViewWebAppBrowserTest
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   GURL start_url_;
   webapps::AppId app_id_;
+  raw_ptr<BrowserWindowInterface> app_browser_ = nullptr;
 
   std::unique_ptr<
       ::web_app::OsIntegrationTestOverrideImpl::BlockingRegistration>
@@ -1008,11 +1028,12 @@ class PageInfoBubbleViewMerchantTrustDialogBrowserTest
 
     OpenPageInfoBubble(browser());
     // Set static site name to prevent flakes caused by changing port.
-    SetStaticSiteName(u"Example site");
+    SetStaticSiteName(browser(), u"Example site");
 
     if (name == "MerchantTrustSubpage") {
       PageInfoBubbleView* bubble_view = static_cast<PageInfoBubbleView*>(
-          PageInfoBubbleView::GetPageInfoBubbleForTesting());
+          PageInfoBubbleView::GetPageInfoBubbleForTesting(
+              browser()->GetTabStripModel()->GetActiveWebContents()));
       bubble_view->OpenMerchantTrustPage();
     }
   }
