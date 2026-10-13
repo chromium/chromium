@@ -23,6 +23,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
 
 import java.util.function.Supplier;
 
@@ -32,6 +33,8 @@ public class NtpCustomizationBottomSheetContent implements BottomSheetContent {
 
     public static final float MAX_HEIGHT_RATIO = (float) (2.0 / 3);
     public static final int RECYCLER_VIEW_INVALID_HEIGHT = -1;
+    private static final BottomSheetType SHEET_TYPE =
+            new BottomSheetType.Builder().setUserInitiated(true).build();
     private final View mContentView;
     private final BottomSheetController mBottomSheetController;
     private final Runnable mBackPressRunnable;
@@ -91,6 +94,11 @@ public class NtpCustomizationBottomSheetContent implements BottomSheetContent {
     @Override
     public void destroy() {
         mOnDestroyRunnable.run();
+    }
+
+    @Override
+    public BottomSheetType getSheetType() {
+        return SHEET_TYPE;
     }
 
     @Override
