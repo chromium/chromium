@@ -68,6 +68,7 @@ if (!is_android) {
       "//base",
       "//base/test:test_support",
       "//build:branding_buildflags",
+      "//chrome/browser/feedback",
       "//chrome/browser/media/router:media_router_feature",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui:ui_features",

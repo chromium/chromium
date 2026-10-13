@@ -32,7 +32,6 @@
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "chrome/browser/feedback/feedback_disabled_dialog.h"
-#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -266,32 +265,7 @@ void ShowFeedbackPageImpl(gfx::NativeWindow parent,
   }
   if (!CanSubmitFeedback(profile)) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-    if (base::FeatureList::IsEnabled(features::kFeedbackDisabledDialog)) {
-      FeedbackDisabledDialogParentStatus status =
-          FeedbackDisabledDialogParentStatus::kDirectParent;
-      // The disabled dialog is browser-modal and requires an anchoring
-      // parent window. If the caller did not supply one (e.g. when triggered
-      // from WebUI such as chrome://whats-new, contextual tasks, or
-      // extensions), fall back to the most recently active browser window for
-      // this profile.
-      if (!parent) {
-        if (auto* collection =
-                ProfileBrowserCollection::GetForProfile(profile)) {
-          BrowserWindowInterface* bwi =
-              collection->FindTabbedBrowser(/*match_original_profiles=*/true);
-          if (bwi && bwi->GetWindow()) {
-            parent = bwi->GetWindow()->GetNativeWindow();
-          }
-        }
-        status = parent ? FeedbackDisabledDialogParentStatus::kFoundByFallback
-                        : FeedbackDisabledDialogParentStatus::kNotFound;
-      }
-      base::UmaHistogramEnumeration("Feedback.DisabledDialog.ParentStatus",
-                                    status);
-      if (parent) {
-        ShowFeedbackDisabledDialog(parent, profile);
-      }
-    }
+    ShowFeedbackDisabledDialog(parent, profile);
 #endif
     base::UmaHistogramEnumeration("Feedback.NotAllowed.RequestSource", source,
                                   feedback::kFeedbackSourceCount);

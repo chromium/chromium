@@ -12,9 +12,10 @@ class Profile;
 namespace chrome {
 
 // Shows a browser-modal dialog explaining that feedback cannot be submitted
-// for `profile`. `parent` and `profile` must not be null.
-void ShowFeedbackDisabledDialog(gfx::NativeWindow parent,
-                                const Profile* profile);
+// for `profile` when `features::kFeedbackDisabledDialog` is enabled. If
+// `parent` is null, falls back to the most recently active tabbed browser
+// window for `profile`. `profile` must not be null.
+void ShowFeedbackDisabledDialog(gfx::NativeWindow parent, Profile* profile);
 
 }  // namespace chrome
 

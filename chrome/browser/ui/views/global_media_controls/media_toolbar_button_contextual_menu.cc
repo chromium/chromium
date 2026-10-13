@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/strings/strcat.h"
+#include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/profiles/profile.h"
@@ -18,6 +19,10 @@
 #include "components/global_media_controls/public/media_item_manager.h"
 #include "components/media_router/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/feedback/feedback_disabled_dialog.h"
+#endif
 
 namespace {
 global_media_controls::MediaItemManager* GetItemManagerFromProfile(
@@ -115,6 +120,16 @@ void MediaToolbarButtonContextualMenu::ToggleShowOtherSessions() {
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 void MediaToolbarButtonContextualMenu::ReportIssue() {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // Cast uses its own feedback page (chrome://cast-feedback) instead of the
+  // standard feedback dialog. However, when feedback submission is disabled,
+  // chrome://cast-feedback is not available; display the FeedbackDisabledDialog
+  // instead.
+  if (!chrome::CanSubmitFeedback(profile_)) {
+    chrome::ShowFeedbackDisabledDialog(gfx::NativeWindow(), profile_);
+    return;
+  }
+#endif
   ShowSingletonTab(
       profile_,
       GURL(base::StrCat({"chrome://", chrome::kChromeUICastFeedbackHost})));

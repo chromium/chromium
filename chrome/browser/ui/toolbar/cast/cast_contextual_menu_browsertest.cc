@@ -8,12 +8,19 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/with_feature_override.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
+#include "build/build_config.h"
+#include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button_menu_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/media_router/common/pref_names.h"
@@ -21,6 +28,7 @@
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "ui/actions/actions.h"
 
@@ -77,6 +85,88 @@ IN_PROC_BROWSER_TEST_F(CastContextualMenuBrowserTest, Basic) {
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+class CastContextualMenuFeedbackBrowserTest
+    : public base::test::WithFeatureOverride,
+      public CastContextualMenuBrowserTest {
+ public:
+  CastContextualMenuFeedbackBrowserTest()
+      : base::test::WithFeatureOverride(features::kFeedbackDisabledDialog) {}
+};
+
+// "Report an issue" should be present when feedback is allowed (normal and
+// incognito profiles) and only present when feedback is disabled by policy if
+// `kFeedbackDisabledDialog` is enabled.
+IN_PROC_BROWSER_TEST_P(CastContextualMenuFeedbackBrowserTest,
+                       EnableAndDisableReportIssue) {
+  {
+    PinnedActionToolbarButtonMenuModel model(browser(), kActionRouteMedia);
+    std::vector<actions::ActionId> model_actions;
+    for (size_t index = 0; index < model.GetItemCount(); index++) {
+      model_actions.push_back(model.GetActionIdAtForTesting(index));
+    }
+    EXPECT_TRUE(std::ranges::contains(
+        model_actions, kActionMediaToolbarContextReportCastIssue));
+  }
+
+  {
+    BrowserWindowInterface* incognito_browser =
+        CreateIncognitoBrowser(browser()->GetProfile());
+
+    PinnedActionToolbarButtonMenuModel incognito_menu(incognito_browser,
+                                                      kActionRouteMedia);
+    std::vector<actions::ActionId> incognito_model_actions;
+    for (size_t index = 0; index < incognito_menu.GetItemCount(); index++) {
+      incognito_model_actions.push_back(
+          incognito_menu.GetActionIdAtForTesting(index));
+    }
+    EXPECT_TRUE(std::ranges::contains(
+        incognito_model_actions, kActionMediaToolbarContextReportCastIssue));
+  }
+
+  {
+    policy::PolicyMap policy_map;
+    policy_map.Set(policy::key::kUserFeedbackAllowed,
+                   policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                   policy::POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
+    provider()->UpdateChromePolicy(policy_map);
+
+    BrowserWindowInterface* disabled_browser =
+        CreateBrowser(browser()->GetProfile());
+
+    PinnedActionToolbarButtonMenuModel disabled_model(disabled_browser,
+                                                      kActionRouteMedia);
+    std::vector<actions::ActionId> disabled_actions;
+    int report_issue_index = -1;
+    for (size_t index = 0; index < disabled_model.GetItemCount(); index++) {
+      actions::ActionId action_id =
+          disabled_model.GetActionIdAtForTesting(index);
+      disabled_actions.push_back(action_id);
+      if (action_id == kActionMediaToolbarContextReportCastIssue) {
+        report_issue_index = index;
+      }
+    }
+    EXPECT_EQ(IsParamFeatureEnabled(),
+              std::ranges::contains(disabled_actions,
+                                    kActionMediaToolbarContextReportCastIssue));
+
+    if (IsParamFeatureEnabled()) {
+      ASSERT_NE(report_issue_index, -1);
+      base::HistogramTester histogram_tester;
+      disabled_model.ActivatedAt(report_issue_index);
+      EXPECT_NE(disabled_browser->GetTabStripModel()
+                    ->GetActiveWebContents()
+                    ->GetURL(),
+                GURL("chrome://cast-feedback"));
+      histogram_tester.ExpectUniqueSample(
+          "Feedback.DisabledDialog.ParentStatus",
+          chrome::FeedbackDisabledDialogParentStatus::kDirectParent, 1);
+    }
+  }
+}
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(CastContextualMenuFeedbackBrowserTest);
+#else
 // "Report an issue" should be present when feedback is allowed (normal and
 // incognito profiles) and absent when feedback is disabled by policy.
 IN_PROC_BROWSER_TEST_F(CastContextualMenuBrowserTest,
@@ -126,6 +216,7 @@ IN_PROC_BROWSER_TEST_F(CastContextualMenuBrowserTest,
         disabled_actions, kActionMediaToolbarContextReportCastIssue));
   }
 }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 IN_PROC_BROWSER_TEST_F(CastContextualMenuBrowserTest, ToggleMediaRemotingItem) {
