@@ -4486,10 +4486,6 @@ if (!is_android && !is_chromeos_device) {
       deps += [ "//ui/linux:display_server_utils" ]
     }
 
-    if (is_win) {
-      deps += [ "//chrome/browser/ui/webui/default_browser:pixel_tests" ]
-    }
-
     if (!is_chrome_for_testing) {
       deps += [ "//chrome/browser/search_engine_choice:interactive_ui_tests" ]
     }
@@ -4535,13 +4531,12 @@ if (!is_android && !is_chromeos_device) {
 
     if (is_win || is_mac || is_linux) {
       deps += [
+        "//chrome/browser/enterprise/idle:interactive_ui_tests",
         "//chrome/browser/ui/startup/default_browser_prompt:interactive_ui_tests",
         "//chrome/browser/ui/views/media_preview:interactive_ui_tests",
+        "//chrome/browser/ui/views/profiles:interactive_ui_tests",
+        "//chrome/browser/ui/views/session_restore_infobar:interactive_ui_tests",
       ]
-    }
-
-    if (is_mac) {
-      deps += [ "//chrome/installer/mac:interactive_ui_tests" ]
     }
 
     if (use_ozone) {
@@ -4563,10 +4558,6 @@ if (!is_android && !is_chromeos_device) {
     if (is_win && is_chrome_branded) {
       deps +=
           [ "//chrome/browser/win/installer_downloader:interactive_ui_tests" ]
-    }
-
-    if (is_win || is_mac || is_linux) {
-      deps += [ "//chrome/browser/ui/views/session_restore_infobar:interactive_ui_tests" ]
     }
 
     if (toolkit_views) {
@@ -4666,6 +4657,7 @@ if (!is_android && !is_chromeos_device) {
       deps += [
         "//chrome/browser/os_crypt:browser_tests",
         "//chrome/browser/ui/views/autofill:interactive_ui_tests",
+        "//chrome/browser/ui/webui/default_browser:pixel_tests",
       ]
 
       data_deps += [ "//chrome/elevation_service" ]
@@ -4686,6 +4678,7 @@ if (!is_android && !is_chromeos_device) {
       deps += [
         "//chrome/browser/spellchecker:interactive_ui_tests",
         "//chrome/browser/ui/cocoa:interactive_ui_tests",
+        "//chrome/installer/mac:interactive_ui_tests",
         "//chrome/test/base:interactive_ui_tests",
       ]
     }
@@ -4696,13 +4689,6 @@ if (!is_android && !is_chromeos_device) {
 
     if (!is_android) {
       deps += [ "//chrome/browser/metrics/desktop_session_duration:interactive_ui_tests" ]
-    }
-
-    if (is_win || is_mac || is_linux) {
-      deps += [
-        "//chrome/browser/enterprise/idle:interactive_ui_tests",
-        "//chrome/browser/ui/views/profiles:interactive_ui_tests",
-      ]
     }
 
     if (enable_print_preview) {
