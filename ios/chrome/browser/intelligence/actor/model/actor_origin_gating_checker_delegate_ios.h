@@ -6,7 +6,9 @@
 #define IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_MODEL_ACTOR_ORIGIN_GATING_CHECKER_DELEGATE_IOS_H_
 
 #import "base/memory/weak_ptr.h"
+#import "components/origin_gating/core/client_tool.h"
 #import "components/origin_gating/core/origin_gating_checker.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 
 namespace actor {
 
@@ -51,5 +53,9 @@ class ActorOriginGatingCheckerDelegateIOS
 template <>
 inline const origin_gating::CustomPredicateDomain origin_gating::
     CustomPredicateDomain::kInstance<actor::ActorCustomPredicate> = {};
+
+template <>
+inline const origin_gating::ToolDomain
+    origin_gating::ToolDomain::kInstance<actor::ToolType> = {};
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_MODEL_ACTOR_ORIGIN_GATING_CHECKER_DELEGATE_IOS_H_

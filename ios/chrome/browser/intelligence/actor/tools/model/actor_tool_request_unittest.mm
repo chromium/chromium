@@ -20,6 +20,7 @@ constexpr int kTabId = 42;
 struct ToolRequestTestCase {
   optimization_guide::proto::Action action;
   ToolType expected_type;
+  bool expected_requires_url_check;
 };
 
 std::vector<ToolRequestTestCase> GetTestCases() {
@@ -27,57 +28,57 @@ std::vector<ToolRequestTestCase> GetTestCases() {
   {
     optimization_guide::proto::Action action;
     action.mutable_click()->set_tab_id(kTabId);
-    test_cases.push_back({action, ToolType::kClick});
+    test_cases.push_back({action, ToolType::kClick, true});
   }
   {
     optimization_guide::proto::Action action;
     action.mutable_type()->set_tab_id(kTabId);
-    test_cases.push_back({action, ToolType::kType});
+    test_cases.push_back({action, ToolType::kType, true});
   }
   {
     optimization_guide::proto::Action action;
     action.mutable_scroll()->set_tab_id(kTabId);
-    test_cases.push_back({action, ToolType::kScroll});
+    test_cases.push_back({action, ToolType::kScroll, true});
   }
   {
     optimization_guide::proto::Action action;
     action.mutable_select()->set_tab_id(kTabId);
-    test_cases.push_back({action, ToolType::kSelect});
+    test_cases.push_back({action, ToolType::kSelect, true});
   }
   {
     optimization_guide::proto::Action action;
     action.mutable_drag_and_release()->set_tab_id(kTabId);
-    test_cases.push_back({action, ToolType::kDragAndRelease});
+    test_cases.push_back({action, ToolType::kDragAndRelease, true});
   }
   {
     optimization_guide::proto::Action action;
     action.mutable_navigate()->set_tab_id(kTabId);
-    test_cases.push_back({action, ToolType::kNavigate});
+    test_cases.push_back({action, ToolType::kNavigate, false});
   }
   {
     optimization_guide::proto::Action action;
     action.mutable_back()->set_tab_id(kTabId);
-    test_cases.push_back({action, ToolType::kBack});
+    test_cases.push_back({action, ToolType::kBack, false});
   }
   {
     optimization_guide::proto::Action action;
     action.mutable_forward()->set_tab_id(kTabId);
-    test_cases.push_back({action, ToolType::kForward});
+    test_cases.push_back({action, ToolType::kForward, false});
   }
   {
     optimization_guide::proto::Action action;
     action.mutable_wait()->set_observe_tab_id(kTabId);
-    test_cases.push_back({action, ToolType::kWait});
+    test_cases.push_back({action, ToolType::kWait, false});
   }
   {
     optimization_guide::proto::Action action;
     action.mutable_scroll_to()->set_tab_id(kTabId);
-    test_cases.push_back({action, ToolType::kScrollTo});
+    test_cases.push_back({action, ToolType::kScrollTo, true});
   }
   {
     optimization_guide::proto::Action action;
     action.mutable_activate_tab()->set_tab_id(kTabId);
-    test_cases.push_back({action, ToolType::kActivateTab});
+    test_cases.push_back({action, ToolType::kActivateTab, true});
   }
   return test_cases;
 }
@@ -93,6 +94,8 @@ TEST_P(ActorToolRequestTest, VerifyToolRequestProperties) {
   EXPECT_EQ(request.GetToolType(), test_case.expected_type);
   EXPECT_TRUE(request.GetTargetWebStateId().valid());
   EXPECT_EQ(request.GetTargetWebStateId().identifier(), kTabId);
+  EXPECT_EQ(request.RequiresUrlCheckInCurrentTab(),
+            test_case.expected_requires_url_check);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -108,6 +111,7 @@ TEST_F(ActorToolRequestSimpleTest, UnknownAction) {
 
   EXPECT_EQ(request.GetToolType(), ToolType::kUnknown);
   EXPECT_FALSE(request.GetTargetWebStateId().valid());
+  EXPECT_FALSE(request.RequiresUrlCheckInCurrentTab());
 }
 
 // Tests the behavior of the create tab action.
@@ -118,6 +122,7 @@ TEST_F(ActorToolRequestSimpleTest, CreateTabAction) {
 
   EXPECT_EQ(request.GetToolType(), ToolType::kCreateTab);
   EXPECT_FALSE(request.GetTargetWebStateId().valid());
+  EXPECT_FALSE(request.RequiresUrlCheckInCurrentTab());
 }
 
 // Verifies the behavior when an action that requires a tab_id doesn't have it
@@ -129,6 +134,7 @@ TEST_F(ActorToolRequestSimpleTest, MissingTabId) {
 
   EXPECT_EQ(request.GetToolType(), ToolType::kClick);
   EXPECT_FALSE(request.GetTargetWebStateId().valid());
+  EXPECT_FALSE(request.RequiresUrlCheckInCurrentTab());
 }
 
 }  // namespace

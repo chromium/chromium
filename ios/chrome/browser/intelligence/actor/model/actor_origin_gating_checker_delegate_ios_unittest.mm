@@ -46,6 +46,21 @@ TEST_F(
   EXPECT_FALSE(future.Get());
 }
 
+// Test that in-page actions never requires user confirmation.
+TEST_F(
+    ActorOriginGatingCheckerDelegateIOSTest,
+    DoesOriginRequireUserConfirmation_PageActions_NeverRequiresConfirmation) {
+  base::test::TestFuture<bool> future;
+  delegate_.DoesOriginRequireUserConfirmation(
+      /*context=*/nullptr,
+      origin_gating::GateableEvent(origin_gating::PageActionEvent{
+          .destination = GURL(kCrossOriginUrl),
+          .tool = origin_gating::ClientTool(ToolType::kClick)}),
+      future.GetCallback());
+
+  EXPECT_FALSE(future.Get());
+}
+
 // Test that same-origin transitions do not require user confirmation.
 TEST_F(
     ActorOriginGatingCheckerDelegateIOSTest,

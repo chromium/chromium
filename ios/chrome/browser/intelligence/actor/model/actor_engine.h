@@ -37,6 +37,16 @@ class ActorToolFactory;
 class ActorToolRequest;
 class ToolController;
 
+// Context passed to `OriginGatingChecker::ComputeGatingDecision` for
+// `GateableEvent::kPageAction` checks so tab-specific predicates can inspect
+// the target `WebState`.
+struct PageActionGatingContext : public origin_gating::GatingDecisionContext {
+  explicit PageActionGatingContext(base::WeakPtr<web::WebState> web_state);
+  ~PageActionGatingContext() override;
+
+  base::WeakPtr<web::WebState> web_state;
+};
+
 // Executes a sequence of actions moving through the state machine.
 //
 // Note on terminology: A "tool" (represented by `ActorTool`) is the capability
@@ -189,6 +199,16 @@ class ActorEngine : public ToolDelegate {
 
   // Returns the index of the action currently in progress.
   size_t InProgressActionIndex() const;
+
+  // Callback invoked when the pre-execution origin gating check completes.
+  void OnPreExecutionGatingDecision(
+      base::WeakPtr<web::WebState> web_state,
+      std::unique_ptr<origin_gating::GatingDecisionContext> context,
+      origin_gating::GatingDecision decision);
+
+  // Proceeds to tool verification and UI pre-invoke after pre-execution checks
+  // pass.
+  void OnPreExecutionChecksComplete();
 
   // The current state of the execution engine.
   State state_;

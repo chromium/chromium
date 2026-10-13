@@ -42,6 +42,10 @@ class ActorToolRequest {
   // Note that this does not validate that the ID points to an active WebState.
   web::WebStateID GetTargetWebStateId() const;
 
+  // Returns true if the current tab's URL should be checked against origin
+  // gating before executing this tool.
+  bool RequiresUrlCheckInCurrentTab() const;
+
  private:
   // An owned copy of the action proto.
   optimization_guide::proto::Action action_;

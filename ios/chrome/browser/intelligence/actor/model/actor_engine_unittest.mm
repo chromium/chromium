@@ -1205,4 +1205,120 @@ TEST_F(ActorEngineOriginGatingTest, IsAcceptableNavigationDestination_Blocked) {
   EXPECT_EQ(mojom::ActionResultCode::kTriggeredNavigationBlocked,
             result.code());
 }
+
+// Tests that `PageActionGatingContext` carries the target `WebState` through
+// `ComputeGatingDecision`.
+TEST_F(ActorEngineOriginGatingTest,
+       PageActionGatingContext_CarriesTargetWebState) {
+  web::FakeWebState fake_web_state;
+  base::test::TestFuture<std::unique_ptr<origin_gating::GatingDecisionContext>,
+                         origin_gating::GatingDecision>
+      future;
+  checker_->ComputeGatingDecision(
+      std::make_unique<PageActionGatingContext>(fake_web_state.GetWeakPtr()),
+      origin_gating::GateableEvent(origin_gating::PageActionEvent{
+          .destination = GURL("https://safe.com"),
+          .tool = origin_gating::ClientTool(ToolType::kClick)}),
+      future.GetCallback());
+
+  const std::unique_ptr<origin_gating::GatingDecisionContext>& context =
+      future.Get<0>();
+  ASSERT_NE(context, nullptr);
+  const PageActionGatingContext* page_action_context =
+      static_cast<const PageActionGatingContext*>(context.get());
+  EXPECT_EQ(page_action_context->web_state.get(), &fake_web_state);
+  EXPECT_TRUE(future.Get<1>().is_allowed);
+}
+
+// Tests that a tab-scoped non-navigation tool fails in `kPreExecutionChecks`
+// with `kUrlBlocked` when the target tab's last committed URL is blocked by
+// origin gating, without invoking the tool.
+TEST_F(ActorEngineOriginGatingTest, Act_PageActionBlockedByOriginGating) {
+  const std::string mock_rules_json = R"json({
+    "navigation_blocked": [
+      {"from": "https://malicious.com", "to": "https://malicious.com"}
+    ]
+  })json";
+  actor::SetSafetyListsForTesting(actor::SafetyListManager::GetInstance(),
+                                  mock_rules_json);
+
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_.get());
+  auto test_browser = std::make_unique<TestBrowser>(profile_.get());
+  browser_list->AddBrowser(test_browser.get());
+
+  auto fake_web_state = std::make_unique<web::FakeWebState>();
+  fake_web_state->SetBrowserState(profile_.get());
+  fake_web_state->SetCurrentURL(GURL("https://malicious.com"));
+  int tab_id = fake_web_state->GetUniqueIdentifier().identifier();
+  test_browser->GetWebStateList()->InsertWebState(
+      std::move(fake_web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+
+  optimization_guide::proto::Action action;
+  action.mutable_activate_tab()->set_tab_id(tab_id);
+
+  std::vector<std::unique_ptr<ActorToolRequest>> actions;
+  actions.push_back(std::make_unique<ActorToolRequest>(action));
+
+  base::test::TestFuture<std::vector<ActionResult>> future;
+  engine_->Act(std::move(actions), future.GetCallback());
+  const std::vector<ActionResult>& results = future.Get();
+
+  ASSERT_EQ(1u, results.size());
+  EXPECT_FALSE(results[0].tool_result.IsOk());
+  EXPECT_EQ(mojom::ActionResultCode::kUrlBlocked,
+            results[0].tool_result.code());
+  EXPECT_EQ(GetState(), ActorEngine::State::kFailed);
+}
+
+// Tests that a tab-scoped non-navigation tool passes `kPreExecutionChecks`
+// and executes when the target tab's last committed URL is allowed by origin
+// gating.
+TEST_F(ActorEngineOriginGatingTest, Act_PageActionAllowedByOriginGating) {
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_.get());
+  auto test_browser = std::make_unique<TestBrowser>(profile_.get());
+  browser_list->AddBrowser(test_browser.get());
+
+  auto fake_web_state = std::make_unique<web::FakeWebState>();
+  fake_web_state->SetBrowserState(profile_.get());
+  fake_web_state->SetCurrentURL(GURL("https://safe.com"));
+  int tab_id = fake_web_state->GetUniqueIdentifier().identifier();
+  test_browser->GetWebStateList()->InsertWebState(
+      std::move(fake_web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+
+  optimization_guide::proto::Action action;
+  action.mutable_activate_tab()->set_tab_id(tab_id);
+
+  std::vector<std::unique_ptr<ActorToolRequest>> actions;
+  actions.push_back(std::make_unique<ActorToolRequest>(action));
+
+  base::test::TestFuture<std::vector<ActionResult>> future;
+  engine_->Act(std::move(actions), future.GetCallback());
+  const std::vector<ActionResult>& results = future.Get();
+
+  ASSERT_EQ(1u, results.size());
+  EXPECT_TRUE(results[0].tool_result.IsOk());
+  EXPECT_EQ(GetState(), ActorEngine::State::kCompleted);
+}
+
+// Tests that a tab-scoped non-navigation tool fails in `kPreExecutionChecks`
+// with `kTabWentAway` when the target `tab_id` cannot be resolved.
+TEST_F(ActorEngineOriginGatingTest, Act_PageActionMissingTabFails) {
+  optimization_guide::proto::Action action;
+  action.mutable_click()->set_tab_id(9999);
+
+  std::vector<std::unique_ptr<ActorToolRequest>> actions;
+  actions.push_back(std::make_unique<ActorToolRequest>(action));
+
+  base::test::TestFuture<std::vector<ActionResult>> future;
+  engine_->Act(std::move(actions), future.GetCallback());
+  const std::vector<ActionResult>& results = future.Get();
+
+  ASSERT_EQ(1u, results.size());
+  EXPECT_FALSE(results[0].tool_result.IsOk());
+  EXPECT_EQ(mojom::ActionResultCode::kTabWentAway,
+            results[0].tool_result.code());
+  EXPECT_EQ(GetState(), ActorEngine::State::kFailed);
+}
 }  // namespace actor

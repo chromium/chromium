@@ -137,4 +137,31 @@ web::WebStateID ActorToolRequest::GetTargetWebStateId() const {
   // LINT.ThenChange(//ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.mm:CreateTool)
 }
 
+bool ActorToolRequest::RequiresUrlCheckInCurrentTab() const {
+  if (!GetTargetWebStateId().valid()) {
+    return false;
+  }
+
+  switch (GetToolType()) {
+    case ToolType::kNavigate:
+    case ToolType::kBack:
+    case ToolType::kForward:
+    case ToolType::kWait:
+    case ToolType::kWaitZeroDuration:
+    case ToolType::kCreateTab:
+    case ToolType::kUnknown:
+      return false;
+    case ToolType::kClick:
+    case ToolType::kType:
+    case ToolType::kScroll:
+    case ToolType::kSelect:
+    case ToolType::kDragAndRelease:
+    case ToolType::kScrollTo:
+    case ToolType::kAttemptLogin:
+    case ToolType::kAttemptFormFilling:
+    case ToolType::kCloseTab:
+    case ToolType::kActivateTab:
+      return true;
+  }
+}
 }  // namespace actor

@@ -30,9 +30,10 @@ void ActorOriginGatingCheckerDelegateIOS::DoesOriginRequireUserConfirmation(
     origin_gating::GatingDecisionContext* context,
     const origin_gating::GateableEvent& event,
     DoesOriginRequireUserConfirmationCallback callback) const {
-  // Parity with Desktop: Navigation requests never prompt the user.
+  // Parity with Desktop: Navigation requests and in-page actions never prompt
+  // the user.
   // (https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/actor/execution_engine.cc;l=982;drc=5302cb43248b6963cf081a371207f808e73c3d77)
-  if (event.is_navigation_request()) {
+  if (event.is_navigation_request() || event.is_page_action()) {
     std::move(callback).Run(/*requires_user_confirmation=*/false);
     return;
   }
