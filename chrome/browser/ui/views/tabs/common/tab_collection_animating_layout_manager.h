@@ -106,6 +106,7 @@ class TabCollectionAnimatingLayoutManager : public views::LayoutManagerBase {
     virtual std::optional<views::SizeBound> GetAvailableMainAxisSpaceOverride()
         const;
     virtual void OnAnimationEnded();
+    virtual bool IsAnimationAllowed();
 
    protected:
     virtual ~Delegate() = default;

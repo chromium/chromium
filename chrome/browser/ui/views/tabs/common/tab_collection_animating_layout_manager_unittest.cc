@@ -31,8 +31,12 @@ namespace {
 class MockAnimatingLayoutManagerDelegate
     : public TabCollectionAnimatingLayoutManager::Delegate {
  public:
+  MockAnimatingLayoutManagerDelegate() {
+    ON_CALL(*this, IsAnimationAllowed).WillByDefault(testing::Return(true));
+  }
   MOCK_METHOD(bool, IsViewDragging, (const views::View&), (const, override));
   MOCK_METHOD(void, OnAnimationEnded, (), (override));
+  MOCK_METHOD(bool, IsAnimationAllowed, (), (override));
 };
 
 class TestLayoutManager : public views::LayoutManagerBase {
@@ -676,6 +680,35 @@ TEST_P(TabCollectionAnimatingLayoutManagerTest,
 
   EXPECT_GT(step, 20);
   EXPECT_EQ(prev_pos_in_host, 20);
+}
+
+TEST_P(TabCollectionAnimatingLayoutManagerTest, IsAnimationAllowed) {
+  if (!IsAnimationDurationEnabled()) {
+    GTEST_SKIP();
+  }
+  ON_CALL(*layout_manager_delegate(), IsAnimationAllowed)
+      .WillByDefault(testing::Return(false));
+
+  widget()->SetBounds(gfx::Rect(0, 0, 100, 100));
+  widget()->LayoutRootViewIfNecessary();
+
+  // When `IsAnimationAllowed()` is false, new layouts snap immediately to
+  // target without animating.
+  host_view()->AddChildView(std::make_unique<views::View>());
+  host_view()->InvalidateLayout();
+  widget()->LayoutRootViewIfNecessary();
+
+  EXPECT_FALSE(layout_manager()->is_animating());
+
+  // Once `IsAnimationAllowed()` is true, a new layout starts an animation.
+  ON_CALL(*layout_manager_delegate(), IsAnimationAllowed)
+      .WillByDefault(testing::Return(true));
+
+  host_view()->AddChildView(std::make_unique<views::View>());
+  host_view()->InvalidateLayout();
+  widget()->LayoutRootViewIfNecessary();
+
+  EXPECT_TRUE(layout_manager()->is_animating());
 }
 
 INSTANTIATE_TEST_SUITE_P(

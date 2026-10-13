@@ -44,6 +44,7 @@ class UnpinnedTabContainerView
       const views::View& child_view) const override;
   std::optional<views::SizeBound> GetAvailableMainAxisSpaceOverride()
       const override;
+  bool IsAnimationAllowed() override;
 
   // DraggedTabsContainer:
   DraggedTabsContainer& GetTabDragTarget(

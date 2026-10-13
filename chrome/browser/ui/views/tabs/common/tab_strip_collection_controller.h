@@ -143,6 +143,9 @@ class TabStripCollectionController : public TabContextMenuController::Delegate {
   bool IsLockedForOnTask() const;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+  void SetTabStripInitialized() { has_tab_strip_initialized_ = true; }
+  bool IsAnimationAllowed() const;
+
  private:
   // TabContextMenuController::Delegate:
   bool IsContextMenuCommandChecked(
@@ -180,6 +183,8 @@ class TabStripCollectionController : public TabContextMenuController::Delegate {
 
   TabCollectionAnimatingLayoutManager::AnimationCoordinator
       animation_coordinator_;
+
+  bool has_tab_strip_initialized_ = false;
 
   std::unique_ptr<HorizontalTabClosingHelper> tab_closing_helper_;
 
