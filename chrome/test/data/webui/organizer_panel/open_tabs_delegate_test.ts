@@ -189,6 +189,7 @@ suite('OpenTabsDelegateTest', () => {
     assertDeepEquals(
         {text: youtubeTab.lastActiveElapsedText, matchable: false},
         items[0]!.description?.[0]);
+    assertDeepEquals(['www.youtube.com'], items[0]!.extraSearchTerms);
     assertEquals(youtubeTab.url, items[0]!.prefixIcon?.url);
     assertEquals('cr:close', items[0]!.hoveredActionButton?.icon);
     assertEquals('Close tab', items[0]!.hoveredActionButton?.ariaLabel);
@@ -201,6 +202,7 @@ suite('OpenTabsDelegateTest', () => {
     assertDeepEquals(
         {text: chromiumTab.lastActiveElapsedText, matchable: false},
         items[1]!.description?.[0]);
+    assertDeepEquals(['www.chromium.org'], items[1]!.extraSearchTerms);
     assertEquals(chromiumTab.url, items[1]!.prefixIcon?.url);
     assertDeepEquals(
         {type: OpenTabsItemType.TAB, tab: chromiumTab}, items[1]!.data);
@@ -211,6 +213,7 @@ suite('OpenTabsDelegateTest', () => {
     assertDeepEquals(
         {text: googleTab.lastActiveElapsedText, matchable: false},
         items[2]!.description?.[0]);
+    assertDeepEquals(['www.google.com'], items[2]!.extraSearchTerms);
     assertEquals(googleTab.url, items[2]!.prefixIcon?.url);
     assertDeepEquals(
         {type: OpenTabsItemType.TAB, tab: googleTab}, items[2]!.data);
@@ -507,6 +510,8 @@ suite('OpenTabsDelegateTest', () => {
             item.description?.[0]);
         assertDeepEquals({text: SPLIT_TAB_1_TITLE}, item.description?.[1]);
         assertDeepEquals({text: SPLIT_TAB_2_TITLE}, item.description?.[2]);
+        assertDeepEquals(
+            ['docs.google.com', 'sheets.google.com'], item.extraSearchTerms);
         assertEquals(2, item.prefixIcon?.stackedFavicons?.urls?.length);
         assertEquals(
             SPLIT_TAB_1_URL, item.prefixIcon?.stackedFavicons?.urls?.[0]);

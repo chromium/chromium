@@ -15,7 +15,7 @@ import type {BrowserProxy, ProfileData, Tab, TabGroup, TabsRemovedInfo, TabUpdat
 import {browserProxyFactory} from '../tab_search.mojom-webui.js';
 import {TabAlertState} from '../tabs.mojom-webui.js';
 
-import {compareTimeDescending, getSplitViewPrefixIcon, getTabCountText, tokenToString} from './tab_delegate_utils.js';
+import {compareTimeDescending, getHostnameOrUrl, getSplitViewPrefixIcon, getTabCountText, tokenToString} from './tab_delegate_utils.js';
 
 // Trailing icon shown for tabs that are playing or muting audio.
 const AUDIO_ICON = 'organizer-panel:volume-up';
@@ -263,14 +263,17 @@ export class OpenTabsDelegate implements
   private toSectionItem_(item: OpenTabsItem):
       OrganizerListSectionItem<OpenTabsItem> {
     let title: string[];
+    let extraSearchTerms: string[];
     let prefixIcon: OrganizerListSectionItemIcon;
 
     if (isSplitTab(item)) {
       title = [loadTimeData.getString('splitView')];
+      extraSearchTerms = item.tabs.map(tab => getHostnameOrUrl(tab.url));
       prefixIcon = getSplitViewPrefixIcon(
           [item.tabs[0].url, item.tabs[1].url], item.tabs[0].splitLayout);
     } else {
       title = [item.tab.title];
+      extraSearchTerms = [getHostnameOrUrl(item.tab.url)];
       prefixIcon = {url: item.tab.url};
     }
 
@@ -296,6 +299,7 @@ export class OpenTabsDelegate implements
     return {
       title,
       description,
+      extraSearchTerms,
       prefixIcon,
       trailingIcon: hasAudioAlert(item) ? AUDIO_ICON : undefined,
       hoveredActionButton: {

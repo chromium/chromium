@@ -67,16 +67,19 @@ suite('ForeignTabsDelegateTest', () => {
             title: 'Google',
             elapsed: '5 mins ago',
             device: 'Pixel 8',
+            hostname: 'www.google.com',
           },
           {
             title: 'YouTube',
             elapsed: '1 hour ago',
             device: 'Chromebook',
+            hostname: 'www.youtube.com',
           },
           {
             title: 'GitHub',
             elapsed: 'Yesterday',
             device: 'MacBook Pro',
+            hostname: 'www.github.com',
           },
         ];
 
@@ -89,6 +92,7 @@ suite('ForeignTabsDelegateTest', () => {
           assertDeepEquals(
               {text: expected.elapsed, matchable: false}, item.description[0]);
           assertDeepEquals({text: expected.device}, item.description[1]);
+          assertDeepEquals([expected.hostname], item.extraSearchTerms);
           assertEquals(sampleTabs[i]!.url, item.prefixIcon?.url);
         }
         assertEquals(1, mockHandler.getCallCount('getForeignTabs'));

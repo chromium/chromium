@@ -145,6 +145,7 @@ suite('RecentTabsDelegateTest', () => {
     assertDeepEquals(
         {text: youtubeTab.lastActiveElapsedText, matchable: false},
         items[0]!.description?.[0]);
+    assertDeepEquals(['www.youtube.com'], items[0]!.extraSearchTerms);
     assertEquals(youtubeTab.url, items[0]!.prefixIcon?.url);
 
     // Second most recent tab.
@@ -153,6 +154,7 @@ suite('RecentTabsDelegateTest', () => {
     assertDeepEquals(
         {text: chromiumTab.lastActiveElapsedText, matchable: false},
         items[1]!.description?.[0]);
+    assertDeepEquals(['www.chromium.org'], items[1]!.extraSearchTerms);
     assertEquals(chromiumTab.url, items[1]!.prefixIcon?.url);
 
     // Least recent tab.
@@ -161,6 +163,7 @@ suite('RecentTabsDelegateTest', () => {
     assertDeepEquals(
         {text: googleTab.lastActiveElapsedText, matchable: false},
         items[2]!.description?.[0]);
+    assertDeepEquals(['www.google.com'], items[2]!.extraSearchTerms);
     assertEquals(googleTab.url, items[2]!.prefixIcon?.url);
   });
 
@@ -194,6 +197,7 @@ suite('RecentTabsDelegateTest', () => {
     assertDeepEquals(
         {text: tabGroup.lastActiveElapsedText, matchable: false},
         items[1]!.description?.[0]);
+    assertEquals(undefined, items[1]!.extraSearchTerms);
     assertEquals(undefined, items[1]!.prefixIcon);
     assertEquals(tabGroup, items[1]!.data);
 
@@ -507,6 +511,8 @@ suite('RecentTabsDelegateTest', () => {
             {text: '3m ago', matchable: false}, item.description?.[0]);
         assertDeepEquals({text: 'Docs'}, item.description?.[1]);
         assertDeepEquals({text: 'Sheets'}, item.description?.[2]);
+        assertDeepEquals(
+            ['docs.google.com', 'sheets.google.com'], item.extraSearchTerms);
         assertDeepEquals(
             ['https://docs.google.com', 'https://sheets.google.com'],
             item.prefixIcon?.stackedFavicons?.urls);

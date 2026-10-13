@@ -12,6 +12,14 @@ export function tokenToString(token: Token): string {
   return `${token.high.toString()}#${token.low.toString()}`;
 }
 
+export function getHostnameOrUrl(url: string): string {
+  try {
+    return new URL(url).hostname || url;
+  } catch {
+    return url;
+  }
+}
+
 export function compareTimeDescending(
     timeA: {internalValue: bigint}|null|undefined,
     timeB: {internalValue: bigint}|null|undefined): number {

@@ -12,7 +12,7 @@ import type {OrganizerListSectionItem, OrganizerListSectionItemDescriptionPart} 
 import type {BrowserProxy, ProfileData, RecentlyClosedSplitView, RecentlyClosedTab, RecentlyClosedTabGroup, TabsRemovedInfo} from '../tab_search.mojom-webui.js';
 import {browserProxyFactory} from '../tab_search.mojom-webui.js';
 
-import {compareTimeDescending, getSplitViewPrefixIcon, getTabCountText, tokenToString} from './tab_delegate_utils.js';
+import {compareTimeDescending, getHostnameOrUrl, getSplitViewPrefixIcon, getTabCountText, tokenToString} from './tab_delegate_utils.js';
 
 // Union type to represent all possible recently closed items (tabs, tab groups,
 // split views).
@@ -155,6 +155,7 @@ export class RecentTabsDelegate implements
       description: tab.lastActiveElapsedText ?
           [{text: tab.lastActiveElapsedText, matchable: false}] :
           [],
+      extraSearchTerms: [getHostnameOrUrl(tab.url)],
       prefixIcon: {
         url: tab.url,
       },
@@ -177,6 +178,7 @@ export class RecentTabsDelegate implements
     return {
       title: [loadTimeData.getString('splitView')],
       description,
+      extraSearchTerms: splitView.tabUrls.map(url => getHostnameOrUrl(url)),
       prefixIcon: getSplitViewPrefixIcon(
           [splitView.tabUrls[0]!, splitView.tabUrls[1]!], splitView.layout),
       data: splitView,
