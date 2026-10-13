@@ -57,6 +57,7 @@ using ToolRequestVariant = std::variant<
     ScrollToToolRequest,
     SeekMediaToolRequest,
     SelectToolRequest,
+    SiteBasedSearchToolRequest,
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
     SwitchTabToolRequest,
 #endif

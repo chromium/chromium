@@ -106,6 +106,7 @@ constexpr absl::Overload PreToolEventsFn{
     NoUiEvents<ScrollToolRequest>,
     NoUiEvents<SeekMediaToolRequest>,
     NoUiEvents<SelectToolRequest>,
+    NoUiEvents<SiteBasedSearchToolRequest>,
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
     NoUiEvents<SwitchTabToolRequest>,
 #endif
@@ -157,6 +158,7 @@ constexpr absl::Overload PostToolEventsFn{
     NoUiEvents<ScrollToolRequest>,
     NoUiEvents<SeekMediaToolRequest>,
     NoUiEvents<SelectToolRequest>,
+    NoUiEvents<SiteBasedSearchToolRequest>,
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
     NoUiEvents<SwitchTabToolRequest>,
 #endif

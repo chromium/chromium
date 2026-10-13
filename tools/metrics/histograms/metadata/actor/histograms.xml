@@ -101,6 +101,7 @@ chromium-metrics-reviews@google.com.
   <variant name="ScrollTo" summary="Scroll To"/>
   <variant name="SeekMedia" summary="Seek Media"/>
   <variant name="Select" summary="Select"/>
+  <variant name="SiteBasedSearch" summary="SiteBasedSearch tool"/>
   <variant name="SwitchTab" summary="Switch Tab"/>
   <variant name="TranslatePage" summary="Translate Page"/>
   <variant name="Type" summary="Type"/>

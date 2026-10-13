@@ -34,6 +34,7 @@
 #include "chrome/browser/actor/tools/scroll_to_tool_request.h"
 #include "chrome/browser/actor/tools/scroll_tool_request.h"
 #include "chrome/browser/actor/tools/select_tool_request.h"
+#include "chrome/browser/actor/tools/site_based_search_tool_request.h"
 #include "chrome/browser/actor/tools/tab_management_tool_request.h"
 #include "chrome/browser/actor/tools/translate_page_tool_request.h"
 #include "chrome/browser/actor/tools/type_tool_request.h"
@@ -646,6 +647,12 @@ std::unique_ptr<ToolRequest> MakePerformSearchRequest(TabInterface& tab,
                                                       std::string_view query) {
   return std::make_unique<PerformSearchToolRequest>(tab.GetHandle(),
                                                     std::string(query));
+}
+std::unique_ptr<ToolRequest> MakeSiteBasedSearchRequest(
+    TabInterface& tab,
+    std::string_view query) {
+  return std::make_unique<SiteBasedSearchToolRequest>(tab.GetHandle(),
+                                                      std::string(query));
 }
 std::unique_ptr<ToolRequest> MakeTypeRequest(content::RenderFrameHost& rfh,
                                              int content_node_id,

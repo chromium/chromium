@@ -48,6 +48,7 @@
 #include "chrome/browser/actor/tools/scroll_to_tool_request.h"
 #include "chrome/browser/actor/tools/scroll_tool_request.h"
 #include "chrome/browser/actor/tools/select_tool_request.h"
+#include "chrome/browser/actor/tools/site_based_search_tool_request.h"
 #include "chrome/browser/actor/tools/tab_management_tool_request.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/translate_page_tool_request.h"
@@ -1060,6 +1061,7 @@ constexpr absl::Overload kGetCapabilityFn{
     ToUnknown<PerformSearchToolRequest>,
     ToUnknown<ReloadPageToolRequest>,
     ToUnknown<RemoveBookmarkToolRequest>,
+    ToUnknown<SiteBasedSearchToolRequest>,
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
     ToUnknown<EnterFullscreenToolRequest>,
     ToUnknown<ExitFullscreenToolRequest>,

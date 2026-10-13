@@ -24,6 +24,7 @@
 #include "chrome/browser/actor/tools/scroll_to_tool_request.h"
 #include "chrome/browser/actor/tools/scroll_tool_request.h"
 #include "chrome/browser/actor/tools/select_tool_request.h"
+#include "chrome/browser/actor/tools/site_based_search_tool_request.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/translate_page_tool_request.h"
 #include "chrome/browser/actor/tools/type_tool_request.h"
@@ -82,6 +83,7 @@ class ToolRequestVisitorFunctor {
   virtual void Apply(const ScrollToToolRequest&) = 0;
   virtual void Apply(const SeekMediaToolRequest&) = 0;
   virtual void Apply(const SelectToolRequest&) = 0;
+  virtual void Apply(const SiteBasedSearchToolRequest&) = 0;
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
   virtual void Apply(const SwitchTabToolRequest&) = 0;
 #endif
