@@ -39,7 +39,6 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
-#include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/web_dialog_view.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/metadata/type_conversion.h"
@@ -127,13 +126,6 @@ class OobeWebDialogView : public views::WebDialogView {
     return true;
   }
 
-  bool HandleKeyboardEvent(
-      content::WebContents* source,
-      const input::NativeWebKeyboardEvent& event) override {
-    return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
-        event, GetFocusManager());
-  }
-
   OobeUI* GetOobeUI() const {
     content::WebContents* web_contents =
         const_cast<OobeWebDialogView*>(this)->web_contents();
@@ -151,9 +143,6 @@ class OobeWebDialogView : public views::WebDialogView {
     GetWidget()->Activate();
     web_contents()->Focus();
   }
-
- private:
-  views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
 };
 
 BEGIN_METADATA(OobeWebDialogView)
