@@ -619,7 +619,6 @@ WebUIToolbarUI::GetKnownElementIdentifiers() {
             kPinnedToolbarActionShowSidePanelBookmarksElementId,
             kPinnedToolbarActionShowSidePanelContextualTasksElementId,
             kPinnedToolbarActionSendTabToSelfElementId,
-            kPinnedToolbarActionTtcElementId,
             kToolbarAvatarButtonElementId,
             kGlicButtonElementId,
             kToolbarPerformanceInterventionButtonElementId,

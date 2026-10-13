@@ -686,13 +686,6 @@ void WebUIToolbarWebView::HandleContextMenu(
         kPinnedActionSendSharedTabGroupFeedback:
     case toolbar_ui_api::mojom::ContextMenuType::
         kPinnedActionSidePanelShowComments:
-    case toolbar_ui_api::mojom::ContextMenuType::
-        kPinnedActionShowAiOverlayDialog:
-    case toolbar_ui_api::mojom::ContextMenuType::kPinnedActionTtcToolbar:
-    case toolbar_ui_api::mojom::ContextMenuType::
-        kPinnedActionSidePanelShowHistory:
-    case toolbar_ui_api::mojom::ContextMenuType::kPinnedActionShowChromeLabs:
-    case toolbar_ui_api::mojom::ContextMenuType::kPinnedActionSidePanelShowGlic:
       pinned_toolbar_actions_.HandleContextMenu(menu_type, screen_rect, source);
       break;
     case toolbar_ui_api::mojom::ContextMenuType::kAppMenu:

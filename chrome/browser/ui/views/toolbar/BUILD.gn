@@ -560,7 +560,6 @@ if (!is_android) {
         "//chrome/browser/ash/settings",
         "//chromeos/ash/components/cryptohome",
         "//chromeos/ash/components/dbus/session_manager",
-        "//chromeos/constants",
         "//components/user_manager",
       ]
     }

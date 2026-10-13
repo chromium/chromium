@@ -691,23 +691,6 @@ void WebUIPinnedToolbarActions::HandleContextMenu(
         kPinnedActionSidePanelShowComments:
       action_id = kActionSidePanelShowComments;
       break;
-    case toolbar_ui_api::mojom::ContextMenuType::
-        kPinnedActionShowAiOverlayDialog:
-      action_id = kActionShowAiOverlayDialog;
-      break;
-    case toolbar_ui_api::mojom::ContextMenuType::kPinnedActionTtcToolbar:
-      action_id = kActionTtcToolbar;
-      break;
-    case toolbar_ui_api::mojom::ContextMenuType::
-        kPinnedActionSidePanelShowHistory:
-      action_id = kActionSidePanelShowHistory;
-      break;
-    case toolbar_ui_api::mojom::ContextMenuType::kPinnedActionShowChromeLabs:
-      action_id = kActionShowChromeLabs;
-      break;
-    case toolbar_ui_api::mojom::ContextMenuType::kPinnedActionSidePanelShowGlic:
-      action_id = kActionSidePanelShowGlic;
-      break;
     default:
       NOTREACHED();
   }

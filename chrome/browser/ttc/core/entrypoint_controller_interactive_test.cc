@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -41,15 +42,10 @@ class EntrypointControllerInteractiveTest
     });
   }
 
-  StepBuilder CheckToolbarButtonHighlighted(
-      BrowserWindowInterface* target_browser,
-      bool expected_highlighted) {
-    return CheckResult(
-        [target_browser]() {
-          return CHECK_DEREF(BrowserWindow::FromBrowser(target_browser)
-                                 ->GetPinnedToolbarActions())
-              .IsActionHighlighted(kActionTtcToolbar);
-        },
+  StepBuilder CheckToolbarButtonHighlighted(bool expected_highlighted) {
+    return CheckView(
+        kPinnedToolbarActionTtcElementId,
+        [](PinnedActionToolbarButton* button) { return button->IsActive(); },
         expected_highlighted);
   }
 
@@ -136,15 +132,15 @@ IN_PROC_BROWSER_TEST_F(EntrypointControllerInteractiveTest,
 
     SetToolbarButtonPinned(true),
     WaitForShow(kPinnedToolbarActionTtcElementId),
-    CheckToolbarButtonHighlighted(browser(), false),
+    CheckToolbarButtonHighlighted(false),
 
     PressButton(kPinnedToolbarActionTtcElementId),
     CheckHasSession(true),
-    CheckToolbarButtonHighlighted(browser(), true),
+    CheckToolbarButtonHighlighted(true),
 
     PressButton(kPinnedToolbarActionTtcElementId),
     CheckHasSession(false),
-    CheckToolbarButtonHighlighted(browser(), false)
+    CheckToolbarButtonHighlighted(false)
   );
   // clang-format on
 }
@@ -162,19 +158,19 @@ IN_PROC_BROWSER_TEST_F(EntrypointControllerInteractiveTest,
 
     SetToolbarButtonPinned(true),
     WaitForShow(kPinnedToolbarActionTtcElementId),
-    CheckToolbarButtonHighlighted(browser(), false),
+    CheckToolbarButtonHighlighted(false),
     InContext(
       second_context,
       WaitForShow(kPinnedToolbarActionTtcElementId),
-      CheckToolbarButtonHighlighted(second_browser, false)
+      CheckToolbarButtonHighlighted(false)
     ),
 
     PressButton(kPinnedToolbarActionTtcElementId),
     CheckHasSession(true),
-    CheckToolbarButtonHighlighted(browser(), true),
+    CheckToolbarButtonHighlighted(true),
     InContext(
       second_context,
-      CheckToolbarButtonHighlighted(second_browser, true)
+      CheckToolbarButtonHighlighted(true)
     ),
 
     InContext(
@@ -182,10 +178,10 @@ IN_PROC_BROWSER_TEST_F(EntrypointControllerInteractiveTest,
       PressButton(kPinnedToolbarActionTtcElementId)
     ),
     CheckHasSession(false),
-    CheckToolbarButtonHighlighted(browser(), false),
+    CheckToolbarButtonHighlighted(false),
     InContext(
       second_context,
-      CheckToolbarButtonHighlighted(second_browser, false)
+      CheckToolbarButtonHighlighted(false)
     )
   );
   // clang-format on
@@ -206,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(EntrypointControllerInteractiveTest,
 
     WaitForShow(kPinnedToolbarActionTtcElementId),
     CheckToolbarButtonPoppedOut(browser(), true),
-    CheckToolbarButtonHighlighted(browser(), true),
+    CheckToolbarButtonHighlighted(true),
 
     Do([this]() { ttc_service().EndSession(); }),
     CheckHasSession(false),
@@ -227,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(EntrypointControllerInteractiveTest,
 
     PressButton(kPinnedToolbarActionTtcElementId),
     CheckHasSession(true),
-    CheckToolbarButtonHighlighted(browser(), true)
+    CheckToolbarButtonHighlighted(true)
   );
   // clang-format on
 
@@ -239,7 +235,7 @@ IN_PROC_BROWSER_TEST_F(EntrypointControllerInteractiveTest,
     BrowserElements::From(second_browser)->GetContext(),
 
     WaitForShow(kPinnedToolbarActionTtcElementId),
-    CheckToolbarButtonHighlighted(second_browser, true),
+    CheckToolbarButtonHighlighted(true),
     CheckHasSession(true)
   );
   // clang-format on

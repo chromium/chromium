@@ -58,11 +58,6 @@ enum ContextMenuType {
   kPinnedActionSidePanelShowMerchantTrust,
   kPinnedActionSendSharedTabGroupFeedback,
   kPinnedActionSidePanelShowComments,
-  kPinnedActionShowAiOverlayDialog,
-  kPinnedActionTtcToolbar,
-  kPinnedActionSidePanelShowHistory,
-  kPinnedActionShowChromeLabs,
-  kPinnedActionSidePanelShowGlic,
   // App Menu Button
   kAppMenu,
   // Glic Button
@@ -712,11 +707,6 @@ enum PinnedToolbarAction {
  kSidePanelShowMerchantTrust,
  kSendSharedTabGroupFeedback,
  kSidePanelShowComments,
- kShowAiOverlayDialog,
- kTtcToolbar,
- kSidePanelShowHistory,
- kShowChromeLabs,
- kSidePanelShowGlic,
  kDivider, // A divider; not a clickable action.
 };
 
