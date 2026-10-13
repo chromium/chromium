@@ -53,8 +53,6 @@ TEST(BucketClientInfoMojomTraitsTest, FailUnexpectedContextTokenType) {
                                        base::UnguessableToken::Create())},
       BucketClientInfo{process_id, blink::PaintWorkletToken(
                                        base::UnguessableToken::Create())},
-      BucketClientInfo{process_id, blink::SharedStorageWorkletToken(
-                                       base::UnguessableToken::Create())},
       BucketClientInfo{process_id, blink::ShadowRealmToken(
                                        base::UnguessableToken::Create())},
   };
