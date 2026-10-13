@@ -124,15 +124,20 @@ TEST_F(FontCacheTest, FallbackForEmojis) {
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 TEST_F(FontCacheTest, FallbackForArabicNastaliq) {
   ScopedNastaliqScriptForTest scoped_feature(true);
   FontCache& font_cache = FontCache::Get();
   FontDescription font_description;
   font_description.SetGenericFamily(FontDescription::kStandardFamily);
-  if (!font_cache.GetFontData(font_description,
-                              AtomicString("Noto Nastaliq Urdu"))) {
-    GTEST_SKIP() << "Noto Nastaliq Urdu is not available on this system.";
+#if BUILDFLAG(IS_WIN)
+  const AtomicString nastaliq_family(FontCache::FirstAvailableOrFirst(
+      "Noto Nastaliq Urdu, Aldhabi, Urdu Typesetting"));
+#else
+  const AtomicString nastaliq_family("Noto Nastaliq Urdu");
+#endif
+  if (!font_cache.GetFontData(font_description, nastaliq_family)) {
+    GTEST_SKIP() << nastaliq_family << " is not available on this system.";
   }
   const SimpleFontData* primary_font =
       font_cache.GetLastResortFallbackFont(font_description);
@@ -145,7 +150,7 @@ TEST_F(FontCacheTest, FallbackForArabicNastaliq) {
     const SimpleFontData* font_data = font_cache.FallbackFontForCharacter(
         font_description, 0x0627, primary_font);
     ASSERT_TRUE(font_data) << locale;
-    EXPECT_EQ("Noto Nastaliq Urdu", font_data->PlatformData().FontFamilyName())
+    EXPECT_EQ(nastaliq_family, font_data->PlatformData().FontFamilyName())
         << locale;
   }
 
@@ -155,10 +160,9 @@ TEST_F(FontCacheTest, FallbackForArabicNastaliq) {
   const SimpleFontData* ar_font_data = font_cache.FallbackFontForCharacter(
       font_description, 0x0627, primary_font);
   ASSERT_TRUE(ar_font_data);
-  EXPECT_NE("Noto Nastaliq Urdu",
-            ar_font_data->PlatformData().FontFamilyName());
+  EXPECT_NE(nastaliq_family, ar_font_data->PlatformData().FontFamilyName());
 }
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 TEST_F(FontCacheTest, firstAvailableOrFirst) {
   EXPECT_TRUE(FontCache::FirstAvailableOrFirst("").empty());

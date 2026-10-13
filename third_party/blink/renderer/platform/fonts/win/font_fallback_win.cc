@@ -40,6 +40,7 @@
 #include "base/no_destructor.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_fallback_priority.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/icu_error.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
@@ -112,7 +113,8 @@ class ScriptToFontMap {
 };
 
 const AtomicString& FindMonospaceFontForScript(UScriptCode script) {
-  if (script == USCRIPT_ARABIC || script == USCRIPT_HEBREW) {
+  if (script == USCRIPT_ARABIC || script == USCRIPT_ARABIC_NASTALIQ ||
+      script == USCRIPT_HEBREW) {
     DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, kCourierNew, ("courier new"));
     return kCourierNew;
   }
@@ -131,6 +133,9 @@ void InitializeScriptFontMap(ScriptToFontMap& script_font_map) {
   // with overrides and additional fallbacks as needed.
   // 1: https://msdn.microsoft.com/en-us/goglobal/bb688099.aspx
   static const char* const kArabicFonts[] = {"Tahoma", "Segoe UI"};
+  static const char* const kArabicNastaliqFonts[] = {
+      "Noto Nastaliq Urdu", "Aldhabi", "Urdu Typesetting", "Tahoma",
+      "Segoe UI"};
   static const char* const kArmenianFonts[] = {"Segoe UI", "Sylfaen"};
   static const char* const kBengaliFonts[] = {"Nirmala UI", "Vrinda"};
   static const char* const kBrahmiFonts[] = {"Segoe UI Historic"};
@@ -237,6 +242,7 @@ void InitializeScriptFontMap(ScriptToFontMap& script_font_map) {
 
   static const ScriptToFontFamilies kScriptToFontFamilies[] = {
       {USCRIPT_ARABIC, kArabicFonts},
+      {USCRIPT_ARABIC_NASTALIQ, kArabicNastaliqFonts},
       {USCRIPT_ARMENIAN, kArmenianFonts},
       {USCRIPT_BENGALI, kBengaliFonts},
       {USCRIPT_BRAHMI, kBrahmiFonts},
@@ -550,6 +556,10 @@ const AtomicString& GetFallbackFamily(
       script = locale_for_han->GetScriptForHan();
     // If still unknown, USCRIPT_HAN uses UI locale.
     // See initializeScriptFontMap().
+  } else if (script == USCRIPT_ARABIC && content_locale &&
+             content_locale->GetScriptForFont() == USCRIPT_ARABIC_NASTALIQ &&
+             RuntimeEnabledFeatures::NastaliqScriptEnabled()) [[unlikely]] {
+    script = USCRIPT_ARABIC_NASTALIQ;
   }
 
   script_out = script;
