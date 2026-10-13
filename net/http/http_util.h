@@ -280,12 +280,12 @@ class NET_EXPORT HttpUtil {
       std::optional<std::string_view> etag_header,
       std::optional<std::string_view> last_modified_header);
 
-  // Gets a vector of common HTTP status codes for histograms of status
+  // Gets a span of common HTTP status codes for histograms of status
   // codes.  Currently returns everything in the range [100, 600), plus 0
   // (for invalid responses/status codes).
-  static std::vector<int> GetStatusCodesForHistogram();
+  static base::span<const int> GetStatusCodesForHistogram();
 
-  // Maps an HTTP status code to one of the status codes in the vector
+  // Maps an HTTP status code to one of the status codes in the span
   // returned by GetStatusCodesForHistogram.
   static int MapStatusCodeForHistogram(int code);
 

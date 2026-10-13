@@ -556,7 +556,8 @@ DownloadConnectionSecurity CheckDownloadConnectionSecurity(
 void RecordDownloadHttpResponseCode(int response_code,
                                     bool is_background_mode) {
   int status_code = net::HttpUtil::MapStatusCodeForHistogram(response_code);
-  std::vector<int> status_codes = net::HttpUtil::GetStatusCodesForHistogram();
+  base::span<const int> status_codes =
+      net::HttpUtil::GetStatusCodesForHistogram();
   UMA_HISTOGRAM_CUSTOM_ENUMERATION("Download.HttpResponseCode", status_code,
                                    status_codes);
   if (is_background_mode) {

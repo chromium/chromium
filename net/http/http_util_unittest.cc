@@ -2160,4 +2160,18 @@ TEST(HttpUtilTest, ExpandLanguageList) {
   EXPECT_EQ("i-klingon", HttpUtil::ExpandLanguageList("i-klingon"));
 }
 
+TEST(HttpUtilTest, StatusCodesForHistogram) {
+  base::span<const int> codes = HttpUtil::GetStatusCodesForHistogram();
+  ASSERT_EQ(501u, codes.size());
+  EXPECT_EQ(0, codes[0]);
+  for (int i = 100; i <= 599; ++i) {
+    EXPECT_EQ(i, codes[i - 100 + 1]);
+    EXPECT_EQ(i, HttpUtil::MapStatusCodeForHistogram(i));
+  }
+  EXPECT_EQ(0, HttpUtil::MapStatusCodeForHistogram(-1));
+  EXPECT_EQ(0, HttpUtil::MapStatusCodeForHistogram(0));
+  EXPECT_EQ(0, HttpUtil::MapStatusCodeForHistogram(99));
+  EXPECT_EQ(0, HttpUtil::MapStatusCodeForHistogram(600));
+}
+
 }  // namespace net

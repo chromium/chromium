@@ -980,15 +980,19 @@ enum {
 };
 
 // static
-std::vector<int> HttpUtil::GetStatusCodesForHistogram() {
-  std::vector<int> codes;
-  codes.reserve(
-      HISTOGRAM_MAX_HTTP_STATUS_CODE - HISTOGRAM_MIN_HTTP_STATUS_CODE + 2);
-  codes.push_back(0);
-  for (int i = HISTOGRAM_MIN_HTTP_STATUS_CODE;
-       i <= HISTOGRAM_MAX_HTTP_STATUS_CODE; ++i)
-    codes.push_back(i);
-  return codes;
+base::span<const int> HttpUtil::GetStatusCodesForHistogram() {
+  static constexpr auto kCodes = []() {
+    std::array<int, HISTOGRAM_MAX_HTTP_STATUS_CODE -
+                        HISTOGRAM_MIN_HTTP_STATUS_CODE + 2>
+        codes;
+    codes[0] = 0;
+    for (int i = HISTOGRAM_MIN_HTTP_STATUS_CODE;
+         i <= HISTOGRAM_MAX_HTTP_STATUS_CODE; ++i) {
+      codes[i - HISTOGRAM_MIN_HTTP_STATUS_CODE + 1] = i;
+    }
+    return codes;
+  }();
+  return kCodes;
 }
 
 // static
