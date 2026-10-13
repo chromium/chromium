@@ -8302,6 +8302,7 @@ void WebContentsImpl::DidFinishNavigation(NavigationHandle* navigation_handle) {
   // If we didn't end up on about:blank after setting this in DidStartNavigation
   // then don't focus the location bar.
   if (should_focus_location_bar_by_default_ &&
+      navigation_handle->IsInPrimaryMainFrame() &&
       navigation_handle->GetURL() != url::kAboutBlankURL) {
     should_focus_location_bar_by_default_ = false;
   }
@@ -10554,7 +10555,10 @@ void WebContentsImpl::DidStartLoading(FrameTreeNode* frame_tree_node) {
 
   // Reset the focus state from DidStartNavigation to false if a new load starts
   // afterward, in case loading logic triggers a FocusLocationBarByDefault call.
-  should_focus_location_bar_by_default_ = false;
+  if (frame_tree_node->IsMainFrame() &&
+      frame_tree_node->frame_tree().is_primary()) {
+    should_focus_location_bar_by_default_ = false;
+  }
 
   // Notify accessibility that the user is navigating away from the
   // current document.

@@ -278,22 +278,20 @@ class WebUILocationBarInteractiveUiTest
       public testing::WithParamInterface<Mode> {
  public:
   WebUILocationBarInteractiveUiTest() {
-    // TODO(crbug.com/539786691): Re-enable kPrewarm once the feature is
-    // compatible with the test.
     if (mode() == Mode::kCutout) {
       feature_list_.InitWithFeatures(
           {features::kInitialWebUI, features::kWebUIReloadButton,
            features::kWebUILocationBar,
-           omnibox::internal::kWebUIOmniboxAimPopup},
-          {omnibox::kAimServerEligibilityEnabled, features::kPrewarm,
+           omnibox::internal::kWebUIOmniboxAimPopup, features::kPrewarm},
+          {omnibox::kAimServerEligibilityEnabled,
            omnibox::internal::kWebUIOmniboxFullPopup});
     } else {
       feature_list_.InitWithFeatures(
           {features::kInitialWebUI, features::kWebUIReloadButton,
            features::kWebUILocationBar,
            omnibox::internal::kWebUIOmniboxFullPopup,
-           omnibox::internal::kWebUIOmniboxAimPopup},
-          {omnibox::kAimServerEligibilityEnabled, features::kPrewarm});
+           omnibox::internal::kWebUIOmniboxAimPopup, features::kPrewarm},
+          {omnibox::kAimServerEligibilityEnabled});
     }
   }
   ~WebUILocationBarInteractiveUiTest() override = default;
