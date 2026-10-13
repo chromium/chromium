@@ -156,11 +156,6 @@ public class AdaptiveToolbarSettingsFragment extends ChromeBaseSettingsFragment 
         return AnimationType.PROPERTY;
     }
 
-    @Override
-    public @Nullable String getMainMenuKey() {
-        return "toolbar_shortcut";
-    }
-
     public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
             new ChromeBaseSearchIndexProvider(
                     AdaptiveToolbarSettingsFragment.class.getName(),
