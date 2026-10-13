@@ -114,8 +114,28 @@ void V8ObjectToPropertyDescriptor(v8::Isolate* isolate,
   if (!get_value("get", desc.has_get, desc.get))
     return;
 
+  // https://tc39.es/ecma262/#sec-topropertydescriptor
+  // Step 12.b: If IsCallable(getter) is false and getter is not undefined,
+  // throw a TypeError exception.
+  // Validate that any present getter attribute is either undefined or a
+  // callable function to prevent type confusion in V8.
+  if (desc.has_get && !desc.get->IsUndefined() && !desc.get->IsFunction()) {
+    V8ThrowException::ThrowTypeError(isolate, "Getter must be a function.");
+    return;
+  }
+
   if (!get_value("set", desc.has_set, desc.set))
     return;
+
+  // https://tc39.es/ecma262/#sec-topropertydescriptor
+  // Step 14.b: If IsCallable(setter) is false and setter is not undefined,
+  // throw a TypeError exception.
+  // Validate that any present setter attribute is either undefined or a
+  // callable function to prevent type confusion in V8.
+  if (desc.has_set && !desc.set->IsUndefined() && !desc.set->IsFunction()) {
+    V8ThrowException::ThrowTypeError(isolate, "Setter must be a function.");
+    return;
+  }
 
   if ((desc.has_get || desc.has_set) && (desc.has_value || desc.has_writable)) {
     V8ThrowException::ThrowTypeError(
