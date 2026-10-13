@@ -73,7 +73,6 @@ class DawnBufferRepresentation;
 class LegacyOverlayImageRepresentation;
 class OverlayImageRepresentation;
 class MemoryImageRepresentation;
-class RasterImageRepresentation;
 class MemoryTracker;
 class VideoImageRepresentation;
 class MemoryTypeTracker;
@@ -113,7 +112,7 @@ enum class SharedImageBackingType {
   // kGLImage = 6, // no longer used after GLImage removal
   kGLTexture = 7,
   kOzone = 8,
-  kRawDraw = 9,
+  // kRawDraw = 9, // no longer used after RawDraw removal
   kSharedMemory = 10,
   kVideo = 11,
   kWrappedSkImage = 12,
@@ -338,9 +337,6 @@ class GPU_GLES2_EXPORT SharedImageBacking {
       SharedImageManager* manager,
       MemoryTypeTracker* tracker);
   virtual std::unique_ptr<MemoryImageRepresentation> ProduceMemory(
-      SharedImageManager* manager,
-      MemoryTypeTracker* tracker);
-  virtual std::unique_ptr<RasterImageRepresentation> ProduceRaster(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker);
   // Take void* device for resource generated from different devices. E.g  video

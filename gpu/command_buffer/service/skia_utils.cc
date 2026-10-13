@@ -31,7 +31,6 @@
 #include "third_party/skia/include/gpu/graphite/Context.h"
 #include "third_party/skia/include/gpu/graphite/GraphiteTypes.h"
 #include "third_party/skia/include/gpu/graphite/Recorder.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/gl_bindings.h"
@@ -121,9 +120,6 @@ GrContextOptions GetDefaultGrContextOptions() {
   options.fSuppressMipmapSupport =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableMipmapGeneration);
-
-  // fSupportBilerpFromGlyphAtlas is needed for Raw Draw.
-  options.fSupportBilerpFromGlyphAtlas = features::IsUsingRawDraw();
 
   return options;
 }

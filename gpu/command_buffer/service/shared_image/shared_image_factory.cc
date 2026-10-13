@@ -28,7 +28,6 @@
 #include "gpu/command_buffer/service/shared_image/cpu_readback_upload_copy_strategy.h"
 #include "gpu/command_buffer/service/shared_image/egl_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/gl_texture_image_backing_factory.h"
-#include "gpu/command_buffer/service/shared_image/raw_draw_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_copy_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
@@ -44,7 +43,6 @@
 #endif
 #include "gpu/config/gpu_preferences.h"
 #include "ui/base/ozone_buildflags.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/gfx/gpu_memory_buffer_handle.h"
 #include "ui/gl/gl_display.h"
 #include "ui/gl/gl_implementation.h"
@@ -298,11 +296,6 @@ SharedImageFactory::SharedImageFactory(
     auto wrapped_sk_image_factory =
         std::make_unique<WrappedSkImageBackingFactory>(context_state_);
     factories_.push_back(std::move(wrapped_sk_image_factory));
-
-    if (features::IsUsingRawDraw()) {
-      auto factory = std::make_unique<RawDrawImageBackingFactory>();
-      factories_.push_back(std::move(factory));
-    }
   }
 
   bool use_gl =
@@ -994,12 +987,6 @@ bool SharedImageFactory::IsSharedBetweenThreads(
   // Ignore for mipmap usage.
   usage.RemoveAll(SHARED_IMAGE_USAGE_MIPMAP);
 
-  // Raw Draw backings will be write accessed on the GPU main thread, and
-  // be read accessed on the compositor thread.
-  if (usage.Has(SHARED_IMAGE_USAGE_RAW_DRAW)) {
-    return true;
-  }
-
   // WebNN shared tensors will be accessed on both the GPU main thread and the
   // sequence owning the WebNN tensor. Synchronization is done via SyncTokens.
   if (usage.Has(SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR)) {
@@ -1274,11 +1261,6 @@ SharedImageRepresentationFactory::ProduceOverlay(const gpu::Mailbox& mailbox) {
 std::unique_ptr<MemoryImageRepresentation>
 SharedImageRepresentationFactory::ProduceMemory(const gpu::Mailbox& mailbox) {
   return manager_->ProduceMemory(mailbox, memory_type_tracker_.get());
-}
-
-std::unique_ptr<RasterImageRepresentation>
-SharedImageRepresentationFactory::ProduceRaster(const Mailbox& mailbox) {
-  return manager_->ProduceRaster(mailbox, memory_type_tracker_.get());
 }
 
 #if BUILDFLAG(IS_ANDROID)

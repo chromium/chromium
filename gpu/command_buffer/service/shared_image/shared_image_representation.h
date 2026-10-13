@@ -66,10 +66,6 @@ namespace skgpu {
 class MutableTextureState;
 }
 
-namespace cc {
-class PaintOpBuffer;
-}  // namespace cc
-
 namespace gfx {
 class NativePixmap;
 }  // namespace gfx
@@ -1105,85 +1101,6 @@ class GPU_GLES2_EXPORT MemoryImageRepresentation
   friend class WrappedMemoryCompoundImageRepresentation;
 
   virtual SkPixmap BeginReadAccess() = 0;
-};
-
-///////////////////////////////////////////////////////////////////////////////
-// RasterImageRepresentation
-
-// Representation of a SharedImageBacking for raster work.
-// This representation is used for raster work and compositor. The raster work
-// will be converted to a cc::PaintOpBuffer and stored in the
-// SharedImageBacking. And then the the compositor will access the stored
-// cc::PaintOpBuffer and execute paint ops in it.
-class GPU_GLES2_EXPORT RasterImageRepresentation
-    : public SharedImageRepresentation {
- public:
-  class GPU_GLES2_EXPORT ScopedReadAccess
-      : public ScopedAccessBase<RasterImageRepresentation> {
-   public:
-    ScopedReadAccess(base::PassKey<RasterImageRepresentation> pass_key,
-                     RasterImageRepresentation* representation,
-                     const cc::PaintOpBuffer* paint_op_buffer,
-                     const std::optional<SkColor4f>& clear_color);
-    ~ScopedReadAccess();
-
-    const cc::PaintOpBuffer* paint_op_buffer() const {
-      return paint_op_buffer_;
-    }
-    const std::optional<SkColor4f>& clear_color() const { return clear_color_; }
-
-   private:
-    const raw_ptr<const cc::PaintOpBuffer> paint_op_buffer_;
-    std::optional<SkColor4f> clear_color_;
-  };
-
-  class GPU_GLES2_EXPORT ScopedWriteAccess
-      : public ScopedAccessBase<RasterImageRepresentation> {
-   public:
-    ScopedWriteAccess(base::PassKey<RasterImageRepresentation> pass_key,
-                      RasterImageRepresentation* representation,
-                      cc::PaintOpBuffer* paint_op_buffer);
-    ~ScopedWriteAccess();
-
-    cc::PaintOpBuffer* paint_op_buffer() { return paint_op_buffer_; }
-    // An optional callback which will be called when the all paint ops in the
-    // |paint_op_buffer_| are released.
-    void set_callback(base::OnceClosure callback) {
-      DCHECK(!callback_);
-      DCHECK(callback);
-      callback_ = std::move(callback);
-    }
-
-   private:
-    const raw_ptr<cc::PaintOpBuffer> paint_op_buffer_;
-    base::OnceClosure callback_;
-  };
-
-  RasterImageRepresentation(SharedImageManager* manager,
-                            SharedImageBacking* backing,
-                            MemoryTypeTracker* tracker)
-      : SharedImageRepresentation(manager, backing, tracker) {}
-
-  std::unique_ptr<ScopedReadAccess> BeginScopedReadAccess();
-
-  std::unique_ptr<ScopedWriteAccess> BeginScopedWriteAccess(
-      scoped_refptr<SharedContextState> context_state,
-      int final_msaa_count,
-      const SkSurfaceProps& surface_props,
-      const std::optional<SkColor4f>& clear_color,
-      bool visible);
-
- protected:
-  virtual cc::PaintOpBuffer* BeginReadAccess(
-      std::optional<SkColor4f>& clear_color) = 0;
-  virtual void EndReadAccess() = 0;
-  virtual cc::PaintOpBuffer* BeginWriteAccess(
-      scoped_refptr<SharedContextState> context_state,
-      int final_msaa_count,
-      const SkSurfaceProps& surface_props,
-      const std::optional<SkColor4f>& clear_color,
-      bool visible) = 0;
-  virtual void EndWriteAccess(base::OnceClosure callback) = 0;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

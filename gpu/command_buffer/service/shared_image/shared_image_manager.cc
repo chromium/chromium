@@ -408,27 +408,6 @@ std::unique_ptr<MemoryImageRepresentation> SharedImageManager::ProduceMemory(
   return backing->ProduceMemory(this, tracker);
 }
 
-std::unique_ptr<RasterImageRepresentation> SharedImageManager::ProduceRaster(
-    const Mailbox& mailbox,
-    MemoryTypeTracker* tracker) {
-  CALLED_ON_VALID_THREAD();
-
-  AutoLock autolock(this);
-  auto* backing = GetBacking(mailbox);
-  if (!backing) {
-    LOG(ERROR) << "SharedImageManager::ProduceRaster: Trying to Produce a "
-                  "Raster representation from a non-existent mailbox.";
-    return nullptr;
-  }
-
-  // TODO(b/349290188): Add back this enforcement when we plan on shipping
-  // RawDraw.
-  // EnforceSharedImageUsage(backing, {SHARED_IMAGE_USAGE_RAW_DRAW});
-  // This is expected to fail based on the SharedImageBacking type, so don't log
-  // error here. Caller is expected to handle nullptr.
-  return backing->ProduceRaster(this, tracker);
-}
-
 std::unique_ptr<VideoImageRepresentation> SharedImageManager::ProduceVideo(
     VideoDevice device,
     const Mailbox& mailbox,

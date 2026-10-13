@@ -1119,62 +1119,6 @@ MemoryImageRepresentation::BeginScopedReadAccess() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// RasterImageRepresentation
-
-RasterImageRepresentation::ScopedReadAccess::ScopedReadAccess(
-    base::PassKey<RasterImageRepresentation> pass_key,
-    RasterImageRepresentation* representation,
-    const cc::PaintOpBuffer* paint_op_buffer,
-    const std::optional<SkColor4f>& clear_color)
-    : ScopedAccessBase(representation, AccessMode::kRead),
-      paint_op_buffer_(paint_op_buffer),
-      clear_color_(clear_color) {}
-
-RasterImageRepresentation::ScopedReadAccess::~ScopedReadAccess() {
-  representation()->EndReadAccess();
-}
-
-RasterImageRepresentation::ScopedWriteAccess::ScopedWriteAccess(
-    base::PassKey<RasterImageRepresentation> pass_key,
-    RasterImageRepresentation* representation,
-    cc::PaintOpBuffer* paint_op_buffer)
-    : ScopedAccessBase(representation, AccessMode::kWrite),
-      paint_op_buffer_(paint_op_buffer) {}
-
-RasterImageRepresentation::ScopedWriteAccess::~ScopedWriteAccess() {
-  representation()->EndWriteAccess(std::move(callback_));
-}
-
-std::unique_ptr<RasterImageRepresentation::ScopedReadAccess>
-RasterImageRepresentation::BeginScopedReadAccess() {
-  std::optional<SkColor4f> clear_color;
-  auto* paint_op_buffer = BeginReadAccess(clear_color);
-  if (!paint_op_buffer) {
-    return nullptr;
-  }
-  return std::make_unique<ScopedReadAccess>(
-      base::PassKey<RasterImageRepresentation>(), this, paint_op_buffer,
-      clear_color);
-}
-
-std::unique_ptr<RasterImageRepresentation::ScopedWriteAccess>
-RasterImageRepresentation::BeginScopedWriteAccess(
-    scoped_refptr<SharedContextState> context_state,
-    int final_msaa_count,
-    const SkSurfaceProps& surface_props,
-    const std::optional<SkColor4f>& clear_color,
-    bool visible) {
-  auto* paint_op_buffer =
-      BeginWriteAccess(std::move(context_state), final_msaa_count,
-                       surface_props, clear_color, visible);
-  if (!paint_op_buffer) {
-    return nullptr;
-  }
-  return std::make_unique<ScopedWriteAccess>(
-      base::PassKey<RasterImageRepresentation>(), this, paint_op_buffer);
-}
-
-///////////////////////////////////////////////////////////////////////////////
 // VideoImageRepresentation
 
 #if BUILDFLAG(IS_WIN)

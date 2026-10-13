@@ -49,8 +49,6 @@ const char* BackingTypeToString(SharedImageBackingType type) {
       return "GLTextureImageBacking";
     case SharedImageBackingType::kOzone:
       return "OzoneImageBacking";
-    case SharedImageBackingType::kRawDraw:
-      return "RawDrawImageBacking";
     case SharedImageBackingType::kSharedMemory:
       return "SharedMemoryImageBacking";
     case SharedImageBackingType::kVideo:
@@ -266,12 +264,6 @@ std::unique_ptr<OverlayImageRepresentation> SharedImageBacking::ProduceOverlay(
 }
 
 std::unique_ptr<MemoryImageRepresentation> SharedImageBacking::ProduceMemory(
-    SharedImageManager* manager,
-    MemoryTypeTracker* tracker) {
-  return nullptr;
-}
-
-std::unique_ptr<RasterImageRepresentation> SharedImageBacking::ProduceRaster(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker) {
   return nullptr;
