@@ -17,7 +17,6 @@
 #include "ash/system/focus_mode/sounds/focus_mode_sounds_controller.h"
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 #include "ash/webui/help_app_ui/help_app_prefs.h"
-#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -54,7 +53,6 @@
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
-#include "components/sessions/core/serialized_navigation_entry_test_helper.h"
 #include "components/sessions/core/session_id.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/test/fake_data_type_controller_delegate.h"
@@ -62,7 +60,7 @@
 #include "components/sync_device_info/device_info_util.h"
 #include "components/sync_device_info/remote_device_info.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "components/sync_sessions/mock_open_tabs_ui_delegate.h"
+#include "components/sync_sessions/fake_open_tabs_ui_delegate.h"
 #include "components/sync_sessions/mock_session_sync_service.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
@@ -102,24 +100,6 @@ constexpr char16_t kSessionMetadataSourceTitleFull[] =
 constexpr char kMediaAppUrl[] = "https://meet.google.com";
 constexpr char16_t kMediaAppTitle[] = u"Google Meet";
 
-std::unique_ptr<sync_sessions::SyncedSession> CreateNewSession(
-    const std::string& session_name,
-    const std::string& session_tag,
-    syncer::DeviceInfo::FormFactor form_factor) {
-  auto session = std::make_unique<sync_sessions::SyncedSession>();
-  auto window = std::make_unique<sync_sessions::SyncedSessionWindow>();
-  auto tab = std::make_unique<sessions::SessionTab>();
-
-  session->SetSessionName(session_name);
-  session->SetDeviceTypeAndFormFactor(syncer::DeviceInfo::DeviceType::kUnset,
-                                      form_factor);
-
-  window->wrapped_window.tabs.push_back(std::move(tab));
-  session->windows[SessionID::NewUnique()] = std::move(window);
-  session->SetSessionTag(session_tag);
-  return session;
-}
-
 class MockSessionSyncService : public sync_sessions::MockSessionSyncService {
  public:
   MockSessionSyncService() {
@@ -136,85 +116,6 @@ class MockSessionSyncService : public sync_sessions::MockSessionSyncService {
 
  private:
   base::RepeatingClosureList subscriber_list_;
-};
-
-class MockOpenTabsUIDelegate : public sync_sessions::MockOpenTabsUIDelegate {
- public:
-  MockOpenTabsUIDelegate() {
-    foreign_sessions_owned_.push_back(CreateNewSession(
-        kSessionName1, kSessionTag1, syncer::DeviceInfo::FormFactor::kDesktop));
-    foreign_sessions_.push_back(foreign_sessions_owned_.back().get());
-    foreign_sessions_owned_.push_back(CreateNewSession(
-        kSessionName2, kSessionTag2, syncer::DeviceInfo::FormFactor::kPhone));
-    foreign_sessions_.push_back(foreign_sessions_owned_.back().get());
-
-    std::vector<std::unique_ptr<sessions::SessionTab>> session_tabs_one;
-    auto tab = std::make_unique<sessions::SessionTab>();
-    tab->timestamp = base::Time::Now();
-    tab->navigations.push_back(sessions::SerializedNavigationEntryTestHelper::
-                                   CreateNavigationForTest());
-    tab->navigations[0].set_timestamp(base::Time::Now());
-    tab->navigations[0].set_title(kTabTitle1);
-    tab->navigations[0].set_virtual_url(GURL(kExampleURL1));
-    session_tabs_one.push_back(std::move(tab));
-
-    std::vector<std::unique_ptr<sessions::SessionTab>> session_tabs_two;
-    tab = std::make_unique<sessions::SessionTab>();
-    tab->timestamp = base::Time::Now();
-    tab->navigations.push_back(sessions::SerializedNavigationEntryTestHelper::
-                                   CreateNavigationForTest());
-    tab->navigations[0].set_timestamp(base::Time::Now() + base::Minutes(5));
-    tab->navigations[0].set_title(kTabTitle2);
-    tab->navigations[0].set_virtual_url(GURL(kExampleURL2));
-    session_tabs_two.push_back(std::move(tab));
-
-    session_tabs_.emplace(kSessionTag1, std::move(session_tabs_one));
-    session_tabs_.emplace(kSessionTag2, std::move(session_tabs_two));
-  }
-
-  bool GetAllForeignSessions(
-      std::vector<raw_ptr<const sync_sessions::SyncedSession,
-                          VectorExperimental>>* sessions) override {
-    *sessions = foreign_sessions_;
-    std::ranges::sort(*sessions, std::greater(),
-                      [](const sync_sessions::SyncedSession* session) {
-                        return session->GetModifiedTime();
-                      });
-
-    return !sessions->empty();
-  }
-
-  base::flat_map<std::string, base::Time>
-  GetAllForeignSessionLastModifiedTimes() const override {
-    std::vector<std::pair<std::string, base::Time>> timestamps;
-    timestamps.reserve(foreign_sessions_.size());
-    for (const auto& session : foreign_sessions_) {
-      timestamps.emplace_back(session->GetSessionTag(),
-                              session->GetModifiedTime());
-    }
-    return base::flat_map<std::string, base::Time>(std::move(timestamps));
-  }
-
-  bool GetForeignSessionTabs(
-      const std::string& tag,
-      std::vector<const sessions::SessionTab*>* tabs) override {
-    auto it = session_tabs_.find(tag);
-    if (it != session_tabs_.end()) {
-      for (auto& tab : it->second) {
-        tabs->push_back(tab.get());
-      }
-    }
-
-    return true;
-  }
-
- private:
-  std::vector<std::unique_ptr<sync_sessions::SyncedSession>>
-      foreign_sessions_owned_;
-  std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
-      foreign_sessions_;
-  std::map<std::string, std::vector<std::unique_ptr<sessions::SessionTab>>>
-      session_tabs_;
 };
 
 std::unique_ptr<KeyedService> BuildMockSessionSyncService(
@@ -326,6 +227,7 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
     sync_service_ = static_cast<syncer::TestSyncService*>(
         SyncServiceFactory::GetForProfile(profile()));
 
+    SetUpOpenTabsUIDelegate();
     SetSessionServiceToReturnOpenTabsDelegate(true);
 
     send_tab_to_self_model_ =
@@ -347,6 +249,32 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
 
     GetLostMediaProvider()->set_fake_video_conference_controller_for_testing(
         vc_controller_.get());
+  }
+
+  void SetUpOpenTabsUIDelegate() {
+    sync_sessions::SyncedSession* session1 =
+        open_tabs_delegate_.AddForeignSession(kSessionTag1, base::Time::Now());
+    session1->SetSessionName(kSessionName1);
+    session1->SetDeviceTypeAndFormFactor(
+        syncer::DeviceInfo::DeviceType::kUnset,
+        syncer::DeviceInfo::FormFactor::kDesktop);
+    sessions::SessionTab* tab1 = open_tabs_delegate_.AddTabToForeignSession(
+        kSessionTag1, GURL(kExampleURL1));
+    tab1->timestamp = base::Time::Now();
+    tab1->navigations[0].set_timestamp(base::Time::Now());
+    tab1->navigations[0].set_title(kTabTitle1);
+
+    sync_sessions::SyncedSession* session2 =
+        open_tabs_delegate_.AddForeignSession(kSessionTag2, base::Time::Now());
+    session2->SetSessionName(kSessionName2);
+    session2->SetDeviceTypeAndFormFactor(
+        syncer::DeviceInfo::DeviceType::kUnset,
+        syncer::DeviceInfo::FormFactor::kPhone);
+    sessions::SessionTab* tab2 = open_tabs_delegate_.AddTabToForeignSession(
+        kSessionTag2, GURL(kExampleURL2));
+    tab2->timestamp = base::Time::Now();
+    tab2->navigations[0].set_timestamp(base::Time::Now() + base::Minutes(5));
+    tab2->navigations[0].set_title(kTabTitle2);
   }
 
   void SetSessionServiceToReturnOpenTabsDelegate(bool return_delegate) {
@@ -563,7 +491,7 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
 
   std::unique_ptr<FakeVideoConferenceTrayController> vc_controller_;
 
-  MockOpenTabsUIDelegate open_tabs_delegate_;
+  sync_sessions::FakeOpenTabsUIDelegate open_tabs_delegate_;
 
   std::unique_ptr<ReleaseNotesStorage> release_notes_storage_;
 

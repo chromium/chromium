@@ -6,7 +6,6 @@
 
 #import <numeric>
 
-#import "base/containers/flat_map.h"
 #import "base/i18n/number_formatting.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -19,8 +18,6 @@
 #import "components/segmentation_platform/public/result.h"
 #import "components/segmentation_platform/public/segmentation_platform_service.h"
 #import "components/segmentation_platform/public/testing/mock_segmentation_platform_service.h"
-#import "components/sessions/core/serialized_navigation_entry_test_helper.h"
-#import "components/sessions/core/session_id.h"
 #import "components/sessions/core/session_types.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service.h"
@@ -28,8 +25,8 @@
 #import "components/sync/test/test_sync_service.h"
 #import "components/sync_device_info/device_info.h"
 #import "components/sync_device_info/fake_device_info_tracker.h"
+#import "components/sync_sessions/fake_open_tabs_ui_delegate.h"
 #import "components/sync_sessions/mock_session_sync_service.h"
-#import "components/sync_sessions/open_tabs_ui_delegate.h"
 #import "components/sync_sessions/session_sync_service.h"
 #import "components/sync_sessions/session_sync_test_helper.h"
 #import "components/sync_sessions/synced_session.h"
@@ -109,128 +106,6 @@ class FakeDeviceSwitcherResultDispatcher
   const char* classification_label_;
 };
 
-// Mock OpenTabsUIDelegate that takes the time the SyncedSession was last
-// modified as input and creates a fake open tab. OpenTabsUIDelegate is a
-// dependency of SessionSyncService.
-class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
- public:
-  MockOpenTabsUIDelegate(int tab_per_session, base::Time modified_time)
-      : sync_sessions::OpenTabsUIDelegate(),
-        tab_per_session_(tab_per_session),
-        modified_time_(modified_time) {
-    tab_index_ = 0;
-    create_duplicates_ = false;
-  }
-
-  MOCK_METHOD(bool,
-              GetAllForeignSessions,
-              ((std::vector<raw_ptr<const sync_sessions::SyncedSession,
-                                    VectorExperimental>>*)),
-              (override));
-
-  MOCK_METHOD((base::flat_map<std::string, base::Time>),
-              GetAllForeignSessionLastModifiedTimes,
-              (),
-              (const, override));
-
-  MOCK_METHOD(bool,
-              GetForeignSessionTabs,
-              (const std::string&, std::vector<const sessions::SessionTab*>*),
-              (override));
-
-  MOCK_METHOD(bool,
-              GetForeignTab,
-              (const std::string&, SessionID, const sessions::SessionTab**));
-
-  MOCK_METHOD(void, DeleteForeignSession, (const std::string&));
-  MOCK_METHOD(std::vector<const sessions::SessionWindow*>,
-              GetForeignSession,
-              (const std::string&));
-  MOCK_METHOD(bool, GetLocalSession, (const sync_sessions::SyncedSession**));
-
-  // Returns a fake tab with timestamp `modified_time_`.
-  sessions::SessionTab* Tab(int index) {
-    sessions::SerializedNavigationEntry entry = sessions::
-        SerializedNavigationEntryTestHelper::CreateNavigationForTest();
-    entry.set_virtual_url(GURL(GetTestURLSpec(index)));
-    entry.set_title(GetTestTitle(index));
-
-    sessions::SessionTab* tab = new sessions::SessionTab();
-    SessionID session_id = SessionID::FromSerializedValue(100 * index + 1);
-    tab->window_id = session_id;
-    tab->tab_id = session_id;
-    tab->tab_visual_index = 100;
-    tab->current_navigation_index = 1000;
-    tab->pinned = false;
-    tab->extension_app_id = "fake";
-    tab->user_agent_override.ua_string_override = "fake";
-    tab->timestamp = modified_time_;
-    tab->navigations = std::vector<sessions::SerializedNavigationEntry>{entry};
-    tab->session_storage_persistent_id = "fake";
-    return tab;
-  }
-
-  // Returns a fake session with modified time `modified_time_` and form factor
-  // type `device_form_factor`.
-  sync_sessions::SyncedSession* Session(
-      syncer::DeviceInfo::DeviceType device_type,
-      syncer::DeviceInfo::FormFactor device_form_factor) {
-    sync_sessions::SyncedSession* session = new sync_sessions::SyncedSession();
-    session->SetDeviceTypeAndFormFactor(device_type, device_form_factor);
-    session->SetModifiedTime(modified_time_);
-    return session;
-  }
-
-  // Mocks foreign sessions for GetAllForeignSessions() and
-  // GetForeignSessionTabs(). Three sessions will be created, with two phone
-  // sessions and one tablet session. There will be `tab_per_session_` tabs in
-  // each session.
-  void MockForeignSessions() {
-    ON_CALL(*this, GetAllForeignSessions)
-        .WillByDefault(
-            [this](std::vector<raw_ptr<const sync_sessions::SyncedSession,
-                                       VectorExperimental>>* sessions) {
-              for (size_t i = 0; i < kPhoneSessionCount; i++) {
-                sessions->push_back(
-                    Session(syncer::DeviceInfo::DeviceType::kPhone,
-                            syncer::DeviceInfo::FormFactor::kPhone));
-              }
-              for (size_t i = 0; i < kTabletSessionCount; i++) {
-                sessions->push_back(
-                    Session(syncer::DeviceInfo::DeviceType::kTablet,
-                            syncer::DeviceInfo::FormFactor::kTablet));
-              }
-              return true;
-            });
-    ON_CALL(*this, GetForeignSessionTabs)
-        .WillByDefault([this](const std::string& tag,
-                              std::vector<const sessions::SessionTab*>* tabs) {
-          // Use tab_index_ to not have duplicate tab titles/URLs.
-          for (int i = 0; i < tab_per_session_; i++) {
-            tabs->push_back(Tab(tab_index_++));
-          }
-
-          if (create_duplicates_) {
-            for (int i = 0; i < kNumberOfDuplicatesToCreatePerSession; i++) {
-              tabs->push_back(Tab(i));
-            }
-          }
-
-          return true;
-        });
-  }
-
-  void SetCreateDuplicates(bool create_duplicates) {
-    create_duplicates_ = create_duplicates;
-  }
-
- private:
-  int tab_per_session_;
-  int tab_index_;
-  bool create_duplicates_;
-  base::Time modified_time_;
-};
-
 }  // namespace bring_android_tabs
 
 // Test fixture for BringAndroidTabsToIOSService.
@@ -253,30 +128,64 @@ class BringAndroidTabsToIOSServiceTest : public PlatformTest {
     FakeUrlLoadingBrowserAgent::InjectForBrowser(browser_.get());
   }
 
-  // Helper method that creates a fake OpenTabsUIDelegate for testing purpose.
-  void SetUpOpenTabsUIDelegate(int tab_per_session, bool tabs_recently_active) {
-    // Create the fake tab.
+  // Helper method that adds a fake tab at `index` to `session_tag`.
+  void AddTabToSession(const std::string& session_tag,
+                       int index,
+                       base::Time modified_time) {
+    sessions::SessionTab* tab = open_ui_delegate_->AddTabToForeignSession(
+        session_tag, GURL(GetTestURLSpec(index)));
+    tab->timestamp = modified_time;
+    tab->navigations[0].set_title(GetTestTitle(index));
+  }
+
+  // Helper method that configures `open_ui_delegate_` for testing purposes.
+  void SetUpOpenTabsUIDelegate(int tab_per_session,
+                               bool tabs_recently_active,
+                               bool create_duplicates = false) {
     base::Time session_time = tabs_recently_active
                                   ? base::Time::Now()
                                   : base::Time::Now() - base::Days(14);
     open_ui_delegate_ =
-        std::make_unique<bring_android_tabs::MockOpenTabsUIDelegate>(
-            tab_per_session, session_time);
-    open_ui_delegate_->MockForeignSessions();
+        std::make_unique<sync_sessions::FakeOpenTabsUIDelegate>();
+    int tab_index = 0;
+    auto add_tabs_to_session = [&](const std::string& session_tag) {
+      for (int i = 0; i < tab_per_session; i++) {
+        AddTabToSession(session_tag, tab_index++, session_time);
+      }
+      if (create_duplicates) {
+        for (int i = 0; i < kNumberOfDuplicatesToCreatePerSession; i++) {
+          AddTabToSession(session_tag, i, session_time);
+        }
+      }
+    };
+    for (size_t i = 0; i < kPhoneSessionCount; i++) {
+      std::string tag =
+          "phone_session_" + base::UTF16ToUTF8(base::FormatNumber(i));
+      sync_sessions::SyncedSession* session =
+          open_ui_delegate_->AddForeignSession(tag, session_time);
+      session->SetDeviceTypeAndFormFactor(
+          syncer::DeviceInfo::DeviceType::kPhone,
+          syncer::DeviceInfo::FormFactor::kPhone);
+      add_tabs_to_session(tag);
+    }
+    for (size_t i = 0; i < kTabletSessionCount; i++) {
+      std::string tag =
+          "tablet_session_" + base::UTF16ToUTF8(base::FormatNumber(i));
+      sync_sessions::SyncedSession* session =
+          open_ui_delegate_->AddForeignSession(tag, session_time);
+      session->SetDeviceTypeAndFormFactor(
+          syncer::DeviceInfo::DeviceType::kTablet,
+          syncer::DeviceInfo::FormFactor::kTablet);
+      add_tabs_to_session(tag);
+    }
   }
 
-  // Helper method that creates a fake OpenTabsUIDelegate with duplicate foreign
+  // Helper method that configures `open_ui_delegate_` with duplicate foreign
   // tabs for testing purposes.
   void SetUpOpenTabsUIDelegateWithDuplicates(int tab_per_session,
                                              bool tabs_recently_active) {
-    base::Time session_time = tabs_recently_active
-                                  ? base::Time::Now()
-                                  : base::Time::Now() - base::Days(14);
-    open_ui_delegate_ =
-        std::make_unique<bring_android_tabs::MockOpenTabsUIDelegate>(
-            tab_per_session, session_time);
-    open_ui_delegate_->SetCreateDuplicates(true);
-    open_ui_delegate_->MockForeignSessions();
+    SetUpOpenTabsUIDelegate(tab_per_session, tabs_recently_active,
+                            /*create_duplicates=*/true);
   }
 
   // Helper method that creates an instance of BringAndroidTabsToIOSService and
@@ -347,7 +256,7 @@ class BringAndroidTabsToIOSServiceTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
-  std::unique_ptr<bring_android_tabs::MockOpenTabsUIDelegate> open_ui_delegate_;
+  std::unique_ptr<sync_sessions::FakeOpenTabsUIDelegate> open_ui_delegate_;
   std::unique_ptr<BringAndroidTabsToIOSService> bring_android_tabs_service_;
   // Service dependencies.
   testing::NiceMock<segmentation_platform::MockSegmentationPlatformService>

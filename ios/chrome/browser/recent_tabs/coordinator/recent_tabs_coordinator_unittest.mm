@@ -12,7 +12,6 @@
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
 #import "base/test/ios/wait_util.h"
-#import "components/sessions/core/serialized_navigation_entry_test_helper.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
@@ -22,8 +21,8 @@
 #import "components/sync/test/fake_data_type_controller_delegate.h"
 #import "components/sync/test/test_sync_service.h"
 #import "components/sync/test/test_sync_user_settings.h"
+#import "components/sync_sessions/fake_open_tabs_ui_delegate.h"
 #import "components/sync_sessions/mock_session_sync_service.h"
-#import "components/sync_sessions/open_tabs_ui_delegate.h"
 #import "components/sync_sessions/session_sync_service.h"
 #import "components/sync_sessions/synced_session.h"
 #import "components/sync_user_events/global_id_mapper.h"
@@ -62,11 +61,9 @@
 #import "third_party/ocmock/gtest_support.h"
 #import "url/gurl.h"
 
-using testing::_;
-using testing::DoAll;
 using testing::Return;
-using testing::SetArgPointee;
 
+using FakeOpenTabsUIDelegate = sync_sessions::FakeOpenTabsUIDelegate;
 using MockSessionSyncService = sync_sessions::MockSessionSyncService;
 
 namespace {
@@ -74,31 +71,6 @@ namespace {
 std::unique_ptr<KeyedService> BuildMockSessionSyncService(ProfileIOS* profile) {
   return std::make_unique<testing::NiceMock<MockSessionSyncService>>();
 }
-
-class OpenTabsUIDelegateMock : public sync_sessions::OpenTabsUIDelegate {
- public:
-  OpenTabsUIDelegateMock() {}
-  ~OpenTabsUIDelegateMock() override {}
-
-  MOCK_METHOD1(GetAllForeignSessions,
-               bool(std::vector<raw_ptr<const sync_sessions::SyncedSession,
-                                        VectorExperimental>>* sessions));
-  MOCK_CONST_METHOD0(GetAllForeignSessionLastModifiedTimes,
-                     base::flat_map<std::string, base::Time>());
-  MOCK_METHOD3(GetForeignTab,
-               bool(const std::string& tag,
-                    const SessionID tab_id,
-                    const sessions::SessionTab** tab));
-  MOCK_METHOD1(DeleteForeignSession, void(const std::string& tag));
-  MOCK_METHOD1(
-      GetForeignSession,
-      std::vector<const sessions::SessionWindow*>(const std::string& tag));
-  MOCK_METHOD2(GetForeignSessionTabs,
-               bool(const std::string& tag,
-                    std::vector<const sessions::SessionTab*>* tabs));
-  MOCK_METHOD1(GetLocalSession,
-               bool(const sync_sessions::SyncedSession** local));
-};
 
 class GlobalIdMapperMock : public syncer::GlobalIdMapper {
  public:
@@ -204,19 +176,9 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
     ON_CALL(*session_sync_service, GetOpenTabsUIDelegate())
         .WillByDefault(Return(&open_tabs_ui_delegate_));
     if (has_foreign_sessions) {
-      sessions_.push_back(&sync_session_);
-
-      open_tab_.navigations.push_back(
-          sessions::SerializedNavigationEntryTestHelper::
-              CreateNavigationForTest());
-      open_tabs_.push_back(&open_tab_);
-
-      ON_CALL(open_tabs_ui_delegate_, GetForeignSessionTabs(_, _))
-          .WillByDefault(DoAll(SetArgPointee<1>(open_tabs_), Return(true)));
+      open_tabs_ui_delegate_.AddTabToForeignSession(
+          "foreign_session_tag", GURL("http://www.example.com/"));
     }
-    ON_CALL(open_tabs_ui_delegate_, GetAllForeignSessions(_))
-        .WillByDefault(
-            DoAll(SetArgPointee<0>(sessions_), Return(has_foreign_sessions)));
   }
 
   void CreateController() {
@@ -254,7 +216,7 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
   raw_ptr<TestProfileIOS> profile_ = nullptr;
 
   syncer::FakeDataTypeControllerDelegate fake_controller_delegate_;
-  testing::NiceMock<OpenTabsUIDelegateMock> open_tabs_ui_delegate_;
+  FakeOpenTabsUIDelegate open_tabs_ui_delegate_;
   testing::NiceMock<GlobalIdMapperMock> global_id_mapper_;
   std::unique_ptr<Browser> browser_;
   SceneState* scene_state_ = nil;
@@ -263,12 +225,6 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
   UIViewController* base_view_controller_ = nil;
 
   raw_ptr<syncer::TestSyncService> sync_service_ = nullptr;
-  sync_sessions::SyncedSession sync_session_;
-  std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
-      sessions_;
-
-  sessions::SessionTab open_tab_;
-  std::vector<const sessions::SessionTab*> open_tabs_;
 
   RecentTabsCoordinator* coordinator_ = nil;
   id<SceneCommands> mock_scene_handler_ = nil;
