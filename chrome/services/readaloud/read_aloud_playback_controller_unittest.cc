@@ -89,9 +89,8 @@ class MockReadAloudPlaybackControllerClient
     progress_history_.emplace_back(elapsed, duration);
   }
 
-  void OnWordBoundaryReached(uint32_t /*segment_index*/,
-                             uint32_t /*character_offset*/,
-                             base::TimeDelta /*audio_timestamp*/) override {
+  void OnWordBoundaryReached(uint32_t /*start_character_offset*/,
+                             uint32_t /*end_character_offset*/) override {
     // No-op for testing.
   }
 

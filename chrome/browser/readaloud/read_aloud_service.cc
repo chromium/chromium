@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/unguessable_token.h"
@@ -177,6 +178,7 @@ void ReadAloudService::ResetPlayback() {
   distillation_start_time_ = base::TimeTicks();
   article_title_.clear();
   current_publisher_.clear();
+  highlight_text_length_ = 0;
 
   // Stopping the Utility Process and any of their connections.
   ResetUtilityConnection();
@@ -638,12 +640,26 @@ void ReadAloudService::OnPlaybackProgressChanged(base::TimeDelta elapsed,
   }
 }
 
-void ReadAloudService::OnWordBoundaryReached(
-    uint32_t /*segment_index*/,
-    uint32_t /*character_offset*/,
-    base::TimeDelta /*audio_timestamp*/) {
-  // Playback progress is reported by OnPlaybackProgressChanged().
-  // TODO(b/524283143): Forward the word range to the UI for highlighting.
+void ReadAloudService::OnWordBoundaryReached(uint32_t start_character_offset,
+                                             uint32_t end_character_offset) {
+  if (start_character_offset > end_character_offset) {
+    utility_observer_receiver_.ReportBadMessage(
+        "ReadAloudService: word boundary start exceeds end");
+    return;
+  }
+  if (!delegate_) {
+    return;
+  }
+
+  // The offsets are already in the highlighter's coordinate space, so they are
+  // forwarded unchanged. Empty words and words past the forwarded chunks (e.g.
+  // beyond `kMaxTextChunks`, which the UI has no text for) are dropped.
+  if (start_character_offset < end_character_offset &&
+      end_character_offset <= highlight_text_length_) {
+    delegate_->OnWordHighlightUpdated(
+        base::saturated_cast<int>(start_character_offset),
+        base::saturated_cast<int>(end_character_offset));
+  }
 }
 
 void ReadAloudService::OnTextChunked(
@@ -651,6 +667,17 @@ void ReadAloudService::OnTextChunked(
   if (chunks.size() > readaloud::kMaxTextChunks) {
     mojo::ReportBadMessage("Received invalid chunk payload");
     return;
+  }
+
+  // Must match the word offsets set by `PlaybackTimeline::SetTextContent()` in
+  // the utility process: one separator between chunks. No word can end in the
+  // separator after the last chunk, so the bound stops at the last chunk's end.
+  highlight_text_length_ = 0;
+  for (const std::u16string& chunk : chunks) {
+    highlight_text_length_ += chunk.size();
+  }
+  if (!chunks.empty()) {
+    highlight_text_length_ += chunks.size() - 1;
   }
 
   if (delegate_) {

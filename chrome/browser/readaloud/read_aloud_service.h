@@ -230,9 +230,8 @@ class ReadAloudService
   void OnPlaybackStateChanged(read_aloud::mojom::PlaybackState state) override;
   void OnPlaybackProgressChanged(base::TimeDelta elapsed,
                                  base::TimeDelta duration) override;
-  void OnWordBoundaryReached(uint32_t segment_index,
-                             uint32_t character_offset,
-                             base::TimeDelta audio_timestamp) override;
+  void OnWordBoundaryReached(uint32_t start_character_offset,
+                             uint32_t end_character_offset) override;
   void OnTextChunked(const std::vector<std::u16string>& chunks) override;
   void RequestSpeechSynthesis(
       const std::u16string& text_chunk,
@@ -292,6 +291,10 @@ class ReadAloudService
   base::TimeTicks distillation_start_time_;
   std::string article_title_;
   std::string current_publisher_;
+  // Length of the highlighter coordinate space for the current document: the
+  // sum of (chunk.size() + 1) over the chunks forwarded by `OnTextChunked()`.
+  // Used to bounds-check the word offsets reported by the utility process.
+  size_t highlight_text_length_ = 0;
 
   // Connection to the Utility process Factory.
   mojo::Remote<read_aloud::mojom::ReadAloudPlaybackControllerFactory>

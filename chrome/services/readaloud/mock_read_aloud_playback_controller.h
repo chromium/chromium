@@ -102,6 +102,8 @@ class MockReadAloudPlaybackController
   struct WordBoundary {
     uint32_t segment_index;
     uint32_t character_offset;
+    // Exclusive end of the word.
+    uint32_t end_character_offset;
     base::TimeDelta audio_timestamp;
   };
 

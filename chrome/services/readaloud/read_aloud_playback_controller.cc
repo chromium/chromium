@@ -681,15 +681,15 @@ void ReadAloudPlaybackController::OnSpeechSynthesisResponse(
 void ReadAloudPlaybackController::OnWordBoundaryReached(
     uint32_t start_character_offset,
     uint32_t end_character_offset,
-    base::TimeDelta audio_timestamp) {
+    base::TimeDelta /*audio_timestamp*/) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!client_.is_bound()) {
     return;
   }
-  // TODO(b/524283143): Send (start, end) once OnWordBoundaryReached's
-  // signature changes. Until then the browser only reads `audio_timestamp`.
-  client_->OnWordBoundaryReached(/*segment_index=*/0, start_character_offset,
-                                 audio_timestamp);
+  // Progress is reported by ReportProgress(), so only the word range is sent.
+  // TODO(b/524283143): Drop `audio_timestamp` from the renderer's
+  // WordBoundaryCallback and WordBoundaryQueue.
+  client_->OnWordBoundaryReached(start_character_offset, end_character_offset);
 }
 
 }  // namespace readaloud

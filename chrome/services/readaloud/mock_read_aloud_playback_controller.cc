@@ -8,6 +8,7 @@
 #include <limits>
 #include <utility>
 
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "chrome/services/readaloud/overview_response_parser.h"
 
@@ -87,15 +88,26 @@ void MockReadAloudPlaybackController::DefaultSetTextContent(
     for (size_t i = 0; i < text.length(); ++i) {
       char16_t c = text[i];
       if (base::IsUnicodeWhitespace(c)) {
+        if (in_word) {
+          word_boundaries_.back().end_character_offset =
+              base::checked_cast<uint32_t>(i);
+        }
         in_word = false;
       } else {
         if (!in_word) {
           word_boundaries_.push_back(
-              {seg_idx, static_cast<uint32_t>(i), current_time});
+              {.segment_index = seg_idx,
+               .character_offset = base::checked_cast<uint32_t>(i),
+               .end_character_offset = base::checked_cast<uint32_t>(i),
+               .audio_timestamp = current_time});
           current_time += kDefaultWordDuration;
           in_word = true;
         }
       }
+    }
+    if (in_word) {
+      word_boundaries_.back().end_character_offset =
+          base::checked_cast<uint32_t>(text.length());
     }
   }
 
@@ -258,9 +270,8 @@ void MockReadAloudPlaybackController::TriggerWordBoundary() {
     return;
   }
   const WordBoundary& boundary = word_boundaries_[current_boundary_index_];
-  client_->OnWordBoundaryReached(boundary.segment_index,
-                                 boundary.character_offset,
-                                 boundary.audio_timestamp);
+  client_->OnWordBoundaryReached(boundary.character_offset,
+                                 boundary.end_character_offset);
   client_->OnPlaybackProgressChanged(boundary.audio_timestamp,
                                      CalculateTotalDuration());
 }

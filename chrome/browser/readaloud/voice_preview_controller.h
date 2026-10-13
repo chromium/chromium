@@ -95,9 +95,8 @@ class VoicePreviewController
   void OnPlaybackStateChanged(read_aloud::mojom::PlaybackState state) override;
   void OnPlaybackProgressChanged(base::TimeDelta elapsed,
                                  base::TimeDelta duration) override {}
-  void OnWordBoundaryReached(uint32_t segment_index,
-                             uint32_t character_offset,
-                             base::TimeDelta audio_timestamp) override {}
+  void OnWordBoundaryReached(uint32_t start_character_offset,
+                             uint32_t end_character_offset) override {}
   void OnTextChunked(const std::vector<std::u16string>& chunks) override {}
   void RequestSpeechSynthesis(const std::u16string& text_chunk,
                               read_aloud::mojom::Speaker speaker,

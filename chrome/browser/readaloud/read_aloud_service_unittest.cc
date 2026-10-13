@@ -2081,6 +2081,86 @@ TEST_F(ReadAloudServiceTest, OnTextChunkedForwardsToDelegate) {
   service()->OnTextChunked(chunks);
 }
 
+TEST_F(ReadAloudServiceTest, OnWordBoundaryReachedForwardsHighlightInBounds) {
+  auto delegate = std::make_unique<testing::NiceMock<MockDelegate>>();
+  MockDelegate* delegate_ptr = delegate.get();
+  service()->SetDelegate(std::move(delegate));
+  // Highlight space: "First chunk." (12) + 1 + "Second chunk!" (13) = 26.
+  service()->OnTextChunked({u"First chunk.", u"Second chunk!"});
+
+  // "Second" starts right after "First chunk." plus one separator.
+  EXPECT_CALL(*delegate_ptr, OnWordHighlightUpdated(/*absolute_start_index=*/13,
+                                                    /*absolute_end_index=*/19));
+
+  service()->OnWordBoundaryReached(/*start_character_offset=*/13,
+                                   /*end_character_offset=*/19);
+}
+
+TEST_F(ReadAloudServiceTest,
+       OnWordBoundaryReachedForwardsHighlightEndingAtTextLength) {
+  auto delegate = std::make_unique<testing::NiceMock<MockDelegate>>();
+  MockDelegate* delegate_ptr = delegate.get();
+  service()->SetDelegate(std::move(delegate));
+  service()->OnTextChunked({u"Hello."});  // Highlight space length 6.
+
+  EXPECT_CALL(*delegate_ptr, OnWordHighlightUpdated(/*absolute_start_index=*/0,
+                                                    /*absolute_end_index=*/6));
+
+  service()->OnWordBoundaryReached(/*start_character_offset=*/0,
+                                   /*end_character_offset=*/6);
+}
+
+TEST_F(ReadAloudServiceTest,
+       OnWordBoundaryReachedDropsHighlightEndingAfterLastChunk) {
+  auto delegate = std::make_unique<testing::NiceMock<MockDelegate>>();
+  MockDelegate* delegate_ptr = delegate.get();
+  service()->SetDelegate(std::move(delegate));
+  service()->OnTextChunked({u"Hello."});  // Highlight space length 6.
+
+  // No word can end in the trailing separator, so 7 is out of range.
+  EXPECT_CALL(*delegate_ptr, OnWordHighlightUpdated).Times(0);
+
+  service()->OnWordBoundaryReached(/*start_character_offset=*/0,
+                                   /*end_character_offset=*/7);
+}
+
+TEST_F(ReadAloudServiceTest, OnWordBoundaryReachedDropsOutOfBoundsHighlight) {
+  auto delegate = std::make_unique<testing::NiceMock<MockDelegate>>();
+  MockDelegate* delegate_ptr = delegate.get();
+  service()->SetDelegate(std::move(delegate));
+  service()->OnTextChunked({u"Hello."});  // Highlight space length 6.
+
+  EXPECT_CALL(*delegate_ptr, OnWordHighlightUpdated).Times(0);
+
+  service()->OnWordBoundaryReached(/*start_character_offset=*/3,
+                                   /*end_character_offset=*/8);
+}
+
+TEST_F(ReadAloudServiceTest, OnWordBoundaryReachedDropsEmptyHighlight) {
+  auto delegate = std::make_unique<testing::NiceMock<MockDelegate>>();
+  MockDelegate* delegate_ptr = delegate.get();
+  service()->SetDelegate(std::move(delegate));
+  service()->OnTextChunked({u"Hello."});
+
+  EXPECT_CALL(*delegate_ptr, OnWordHighlightUpdated).Times(0);
+
+  service()->OnWordBoundaryReached(/*start_character_offset=*/2,
+                                   /*end_character_offset=*/2);
+}
+
+TEST_F(ReadAloudServiceTest, OnWordBoundaryReachedDropsHighlightAfterStop) {
+  auto delegate = std::make_unique<testing::NiceMock<MockDelegate>>();
+  MockDelegate* delegate_ptr = delegate.get();
+  service()->SetDelegate(std::move(delegate));
+  service()->OnTextChunked({u"Hello."});
+  service()->Stop();
+
+  EXPECT_CALL(*delegate_ptr, OnWordHighlightUpdated).Times(0);
+
+  service()->OnWordBoundaryReached(/*start_character_offset=*/0,
+                                   /*end_character_offset=*/5);
+}
+
 TEST_F(ReadAloudServiceTest, OnTextChunkedExceedsLimit) {
   NavigateAndCommit(GURL("https://www.example.com/article"));
   SetFakeController(std::make_unique<FakePlaybackController>());
@@ -2352,6 +2432,19 @@ TEST_F(ReadAloudServiceTest, OnPlaybackStateChangedRejectsPlaybackCreation) {
   EXPECT_EQ(
       bad_message_observer.WaitForBadMessage(),
       "ReadAloudService: browser-only PlaybackState received from utility");
+}
+
+TEST_F(ReadAloudServiceTest, OnWordBoundaryReachedRejectsStartAfterEnd) {
+  NavigateAndCommit(GURL("https://www.example.com/article"));
+  SetFakeController(std::make_unique<FakePlaybackController>());
+  service()->Initialize(web_contents());
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  fake_controller()->client()->OnWordBoundaryReached(
+      /*start_character_offset=*/5, /*end_character_offset=*/4);
+
+  EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+            "ReadAloudService: word boundary start exceeds end");
 }
 
 }  // namespace readaloud
