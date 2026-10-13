@@ -218,8 +218,10 @@ void MessagePortHandler::OnPortMessagePosted(
   if (!response_or.ok() ||
       response_or->status() != cast::web::MessagePortStatus_Status_OK) {
     DLOG_CHANNEL(WARNING) << "Send failed (" << response_or.ToString() << ", "
-                          << cast::web::MessagePortStatus_Status_Name(
-                                 response_or->status())
+                          << (response_or.ok()
+                                  ? cast::web::MessagePortStatus_Status_Name(
+                                        response_or->status())
+                                  : "GRPC_ERROR")
                           << ")";
     CloseAndRemove();
     return;

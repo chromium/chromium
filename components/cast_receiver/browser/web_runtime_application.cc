@@ -48,6 +48,16 @@ void WebRuntimeApplication::Launch(StatusCallback callback) {
   std::move(callback).Run(OkStatus());
 }
 
+void WebRuntimeApplication::StopApplication(
+    EmbedderApplication::ApplicationStopReason stop_reason,
+    net::Error net_error_code) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  content::WebContentsObserver::Observe(nullptr);
+  PageStateObserver::Observe(nullptr);
+  bindings_manager_.reset();
+  RuntimeApplicationBase::StopApplication(stop_reason, net_error_code);
+}
+
 bool WebRuntimeApplication::IsStreamingApplication() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return false;

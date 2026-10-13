@@ -69,6 +69,15 @@ class CastContentWindow : public mojom::CastContentWindow,
   // TODO(seantopping): Make this private to the window manager.
   virtual void NotifyVisibilityChange(VisibilityType visibility_type);
 
+  // Notifies observers that the window has been destroyed. Idempotent.
+  void NotifyWindowDestroyed();
+
+  // Returns true if the platform window handles the user's Back press itself
+  // (Android: CastWebContentsActivity via OnBackPressedDispatcher). When false,
+  // CastWebView intercepts Back key events and closes the page unless the web
+  // content consumes them; see CastWebViewDefault::PreHandleKeyboardEvent.
+  virtual bool HandlesBackPress() const;
+
   // Registers this as a delegate to BackGestureRouter.
   virtual void RegisterBackGestureRouter(
       ::chromecast::BackGestureRouter* gesture_router) {}
@@ -93,6 +102,7 @@ class CastContentWindow : public mojom::CastContentWindow,
   mojo::Receiver<mojom::ActivityWindow> activity_window_receiver_{this};
   mojo::RemoteSet<mojom::CastContentWindowObserver> observers_;
   base::ObserverList<Observer> sync_observers_;
+  bool window_destroyed_notified_ = false;
   base::WeakPtrFactory<CastContentWindow> weak_factory_{this};
 };
 

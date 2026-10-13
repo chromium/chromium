@@ -42,6 +42,8 @@ class WebRuntimeApplication final : public RuntimeApplicationBase,
 
   // RuntimeApplicationBase implementation:
   void Launch(StatusCallback callback) override;
+  void StopApplication(EmbedderApplication::ApplicationStopReason stop_reason,
+                       net::Error net_error_code) override;
   bool IsStreamingApplication() const override;
 
   // PageStateObserver implementation:

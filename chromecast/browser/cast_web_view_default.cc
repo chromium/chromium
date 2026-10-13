@@ -11,6 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromecast/app/grit/shell_resources.h"
 #include "chromecast/base/cast_features.h"
 #include "chromecast/base/chromecast_switches.h"
 #include "chromecast/base/metrics/cast_metrics_helper.h"
@@ -20,6 +21,7 @@
 #include "chromecast/browser/renderer_prelauncher.h"
 #include "chromecast/chromecast_buildflags.h"
 #include "chromecast/graphics/cast_screen.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/media_capture_devices.h"
 #include "content/public/browser/media_session.h"
@@ -29,12 +31,16 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/site_instance.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "net/base/net_errors.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "url/gurl.h"
 
 #if defined(USE_AURA)
@@ -44,6 +50,21 @@
 namespace chromecast {
 
 namespace {
+
+bool IsBackKey(int windows_key_code) {
+  return windows_key_code == ui::VKEY_BROWSER_BACK ||
+         windows_key_code == ui::VKEY_ESCAPE ||
+         windows_key_code == ui::VKEY_BACK;
+}
+
+std::u16string GetBackPressedScript() {
+  if (!ui::ResourceBundle::HasSharedInstance()) {
+    return std::u16string();
+  }
+  return base::UTF8ToUTF16(
+      ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+          IDR_CAST_SHELL_BACK_PRESSED_JS));
+}
 
 std::unique_ptr<content::WebContents> CreateWebContents(
     content::BrowserContext* browser_context,
@@ -105,6 +126,7 @@ CastWebViewDefault::CastWebViewDefault(
                   : web_service->CreateWindow(params_->Clone())) {
   DCHECK(web_service_);
   DCHECK(window_);
+  content::RenderFrameHost::AllowInjectingJavaScript();
   window_->SetCastWebContents(&cast_web_contents_);
   web_contents_->SetDelegate(this);
 #if defined(USE_AURA)
@@ -324,6 +346,99 @@ bool CastWebViewDefault::ShouldAllowRunningInsecureContent(
       params_->activity_id, params_->session_id, params_->sdk_version,
       "Cast.Platform.AppRunningInsecureContent");
   return allowed_per_prefs;
+}
+
+content::KeyboardEventProcessingResult
+CastWebViewDefault::PreHandleKeyboardEvent(
+    content::WebContents* source,
+    const input::NativeWebKeyboardEvent& event) {
+  // |window_| is reset once the page is closing; see CloseContents().
+  if (!window_ || window_->HandlesBackPress() ||
+      !IsBackKey(event.windows_key_code)) {
+    return content::KeyboardEventProcessingResult::NOT_HANDLED;
+  }
+
+  if (event.GetType() != blink::WebInputEvent::Type::kRawKeyDown &&
+      event.GetType() != blink::WebInputEvent::Type::kKeyDown) {
+    return content::KeyboardEventProcessingResult::HANDLED;
+  }
+
+  if ((event.GetModifiers() & blink::WebInputEvent::kIsAutoRepeat) != 0 ||
+      back_press_in_flight_) {
+    return content::KeyboardEventProcessingResult::HANDLED;
+  }
+
+  content::RenderFrameHost* rfh =
+      source ? source->GetPrimaryMainFrame()
+             : (web_contents_ ? web_contents_->GetPrimaryMainFrame() : nullptr);
+  if (!rfh || !rfh->IsRenderFrameLive() ||
+      rfh->GetLastCommittedURL().is_empty()) {
+    CloseForUnhandledBackPress();
+    return content::KeyboardEventProcessingResult::HANDLED;
+  }
+
+  std::u16string script = GetBackPressedScript();
+  if (script.empty()) {
+    CloseForUnhandledBackPress();
+    return content::KeyboardEventProcessingResult::HANDLED;
+  }
+
+  back_press_in_flight_ = true;
+  const uint64_t sequence_id = ++back_press_sequence_id_;
+  const content::GlobalRenderFrameHostId rfh_id = rfh->GetGlobalId();
+  back_press_timeout_timer_.Start(
+      FROM_HERE, base::Milliseconds(500),
+      base::BindOnce(&CastWebViewDefault::OnBackPressedTimeout,
+                     weak_factory_.GetWeakPtr(), sequence_id, rfh_id));
+  rfh->ExecuteJavaScript(
+      script,
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          base::BindOnce(&CastWebViewDefault::OnBackPressedResult,
+                         weak_factory_.GetWeakPtr(), sequence_id, rfh_id),
+          base::Value(false)));
+  return content::KeyboardEventProcessingResult::HANDLED;
+}
+
+void CastWebViewDefault::OnBackPressedResult(
+    uint64_t sequence_id,
+    content::GlobalRenderFrameHostId rfh_id,
+    base::Value result) {
+  if (!back_press_in_flight_ || sequence_id != back_press_sequence_id_) {
+    return;
+  }
+  back_press_in_flight_ = false;
+  back_press_timeout_timer_.Stop();
+  if (result.is_bool() && result.GetBool()) {
+    return;
+  }
+  if (web_contents_ && web_contents_->GetPrimaryMainFrame() &&
+      web_contents_->GetPrimaryMainFrame()->GetGlobalId() != rfh_id &&
+      web_contents_->GetPrimaryMainFrame()->IsRenderFrameLive()) {
+    return;
+  }
+  CloseForUnhandledBackPress();
+}
+
+void CastWebViewDefault::OnBackPressedTimeout(
+    uint64_t sequence_id,
+    content::GlobalRenderFrameHostId rfh_id) {
+  if (!back_press_in_flight_ || sequence_id != back_press_sequence_id_) {
+    return;
+  }
+  back_press_in_flight_ = false;
+  if (web_contents_ && web_contents_->GetPrimaryMainFrame() &&
+      web_contents_->GetPrimaryMainFrame()->GetGlobalId() != rfh_id &&
+      web_contents_->GetPrimaryMainFrame()->IsRenderFrameLive()) {
+    return;
+  }
+  CloseForUnhandledBackPress();
+}
+
+void CastWebViewDefault::CloseForUnhandledBackPress() {
+  if (!web_contents_ || !window_) {
+    return;
+  }
+  CloseContents(web_contents_.get());
 }
 
 }  // namespace chromecast

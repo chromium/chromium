@@ -7,6 +7,7 @@ include_rules = [
   "+chromecast/common/mojom",
   "+chromecast/graphics",
   "+chromecast/app/grit/chromecast_settings.h",
+  "+chromecast/app/grit/shell_resources.h",
   "+chromecast/app/resources/grit/shell_resources.h",
   "+chromecast/external_mojo",
   "+chromecast/media",

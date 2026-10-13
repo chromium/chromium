@@ -11,7 +11,9 @@ CastContentWindow::CastContentWindow(mojom::CastWebViewParamsPtr params)
   RegisterBackGestureRouter(gesture_router());
 }
 
-CastContentWindow::~CastContentWindow() = default;
+CastContentWindow::~CastContentWindow() {
+  NotifyWindowDestroyed();
+}
 
 void CastContentWindow::SetCastWebContents(CastWebContents* cast_web_contents) {
   cast_web_contents_ = cast_web_contents;
@@ -63,6 +65,23 @@ void CastContentWindow::NotifyVisibilityChange(VisibilityType visibility_type) {
   for (Observer& observer : sync_observers_) {
     observer.OnVisibilityChange(visibility_type);
   }
+}
+
+void CastContentWindow::NotifyWindowDestroyed() {
+  if (window_destroyed_notified_) {
+    return;
+  }
+  window_destroyed_notified_ = true;
+  for (auto& observer : observers_) {
+    observer->OnWindowDestroyed();
+  }
+  for (Observer& observer : sync_observers_) {
+    observer.OnWindowDestroyed();
+  }
+}
+
+bool CastContentWindow::HandlesBackPress() const {
+  return false;
 }
 
 }  // namespace chromecast

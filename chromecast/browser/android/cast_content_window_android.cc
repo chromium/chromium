@@ -96,16 +96,18 @@ void CastContentWindowAndroid::EnableTouchInput(bool enabled) {
 }
 
 void CastContentWindowAndroid::OnActivityStopped(JNIEnv* env) {
-  for (auto& observer : observers_) {
-    observer->OnWindowDestroyed();
-  }
-  for (auto& observer : sync_observers_) {
-    observer.OnWindowDestroyed();
-  }
+  NotifyWindowDestroyed();
 }
 
 void CastContentWindowAndroid::RequestVisibility(
     VisibilityPriority visibility_priority) {}
+
+bool CastContentWindowAndroid::HandlesBackPress() const {
+  // KEYCODE_BACK is never delivered to the WebContents on Android
+  // (ContentUiEventHandler.shouldPropagateKeyEvent()); CastWebContentsActivity
+  // receives it from OnBackPressedDispatcher and runs back_pressed.js itself.
+  return true;
+}
 
 void CastContentWindowAndroid::OnVisibilityChange(JNIEnv* env,
                                                   int visibility_type) {

@@ -9,6 +9,8 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
+#include "base/files/file_path.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -20,8 +22,11 @@
 #include "chromecast/base/metrics/cast_metrics_helper.h"
 #include "chromecast/browser/cast_browser_context.h"
 #include "chromecast/browser/cast_browser_process.h"
+#include "chromecast/browser/cast_content_window.h"
 #include "chromecast/browser/cast_web_contents_impl.h"
 #include "chromecast/browser/cast_web_contents_observer.h"
+#include "chromecast/browser/cast_web_service.h"
+#include "chromecast/browser/cast_web_view_default.h"
 #include "chromecast/browser/mojom/cast_web_service.mojom.h"
 #include "chromecast/browser/test/cast_browser_test.h"
 #include "chromecast/browser/test_interfaces.test-mojom.h"
@@ -31,6 +36,7 @@
 #include "chromecast/common/mojom/gesture.mojom.h"
 #include "chromecast/common/mojom/settings_ui.mojom.h"
 #include "chromecast/mojo/interface_bundle.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -51,6 +57,8 @@
 #include "services/service_manager/public/mojom/interface_provider.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "url/gurl.h"
 
 using ::testing::_;
@@ -234,6 +242,12 @@ class CastWebContentsBrowserTest : public shell::CastBrowserTest,
   void SetUpCommandLine(base::CommandLine* command_line) override {
     CastBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures, "MojoJS");
+    // Give each test process its own external Mojo broker socket so parallel
+    // test processes do not collide on the default path.
+    ASSERT_TRUE(mojo_broker_dir_.CreateUniqueTempDir());
+    command_line->AppendSwitchPath(
+        switches::kCastMojoBrokerPath,
+        mojo_broker_dir_.GetPath().AppendASCII("cast_mojo_broker"));
   }
 
   void PreRunTestOnMainThread() override {
@@ -288,6 +302,7 @@ class CastWebContentsBrowserTest : public shell::CastBrowserTest,
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<CastWebContentsImpl> cast_web_contents_;
   std::unique_ptr<base::RunLoop> run_loop_;
+  base::ScopedTempDir mojo_broker_dir_;
 
   base::flat_set<content::RenderFrameHost*> render_frames_;
 };
@@ -1378,6 +1393,215 @@ IN_PROC_BROWSER_TEST_F(CastWebContentsBrowserTest,
   EXPECT_EQ(1, num_gesture_source);
   EXPECT_EQ(1, num_settings_platform);
   EXPECT_EQ(1, num_cast_demo);
+}
+
+namespace {
+
+class BrowserTestCastContentWindow : public CastContentWindow {
+ public:
+  explicit BrowserTestCastContentWindow(mojom::CastWebViewParamsPtr params)
+      : CastContentWindow(std::move(params)) {}
+  ~BrowserTestCastContentWindow() override = default;
+
+  void CreateWindow(mojom::ZOrder z_order,
+                    VisibilityPriority visibility_priority) override {}
+  void GrantScreenAccess() override {}
+  void RevokeScreenAccess() override {}
+  void RequestVisibility(VisibilityPriority visibility_priority) override {}
+  void EnableTouchInput(bool enabled) override {}
+};
+
+class WindowDestroyWaiter : public CastContentWindow::Observer {
+ public:
+  explicit WindowDestroyWaiter(CastContentWindow* window) : window_(window) {
+    window_->AddObserver(this);
+  }
+
+  ~WindowDestroyWaiter() override {
+    if (window_) {
+      window_->RemoveObserver(this);
+    }
+  }
+
+  void OnVisibilityChange(VisibilityType visibility_type) override {}
+
+  void OnWindowDestroyed() override {
+    destroyed_ = true;
+    if (window_) {
+      window_->RemoveObserver(this);
+      window_ = nullptr;
+    }
+    run_loop_.Quit();
+  }
+
+  void Wait() {
+    if (!destroyed_) {
+      run_loop_.Run();
+    }
+  }
+
+  bool destroyed() const { return destroyed_; }
+
+ private:
+  raw_ptr<CastContentWindow> window_;
+  bool destroyed_ = false;
+  base::RunLoop run_loop_;
+};
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(CastWebContentsBrowserTest,
+                       BackPressConsumedByActiveShadowElementThenExits) {
+  content::BrowserContext* browser_context =
+      shell::CastBrowserProcess::GetInstance()->browser_context();
+  auto web_service = std::make_unique<CastWebService>(browser_context, nullptr);
+  mojom::CastWebViewParamsPtr params = mojom::CastWebViewParams::New();
+  auto window = std::make_unique<BrowserTestCastContentWindow>(params->Clone());
+  auto web_view = std::make_unique<CastWebViewDefault>(
+      std::move(params), web_service.get(), browser_context, std::move(window));
+
+  WindowDestroyWaiter destroy_waiter(web_view->window());
+  MockCastWebContentsObserver observer;
+  observer.Observe(web_view->cast_web_contents());
+
+  auto load_loop = std::make_unique<base::RunLoop>();
+  EXPECT_CALL(observer, PageStateChanged(PageState::LOADING));
+  EXPECT_CALL(observer, PageStateChanged(PageState::LOADED))
+      .WillOnce(InvokeWithoutArgs([&]() { load_loop->Quit(); }));
+
+  web_view->cast_web_contents()->LoadUrl(GURL(url::kAboutBlankURL));
+  load_loop->Run();
+
+  // Set up an element with an open shadowRoot whose host unconditionally calls
+  // preventDefault() (matching CAF's <touch-controls> KeyEventHandler) and a
+  // focused inner element whose keydown listener consumes BrowserBack only
+  // while controlsActive is true.
+  ASSERT_TRUE(content::ExecJs(web_view->web_contents(), R"(
+    window.controlsActive = true;
+    window.hideCount = 0;
+    const host = document.createElement('div');
+    host.tabIndex = 0;
+    host.addEventListener('keydown', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    });
+    const sr = host.attachShadow({mode: 'open'});
+    const layer = document.createElement('div');
+    layer.tabIndex = 0;
+    layer.addEventListener('keydown', (e) => {
+      if (e.key === 'BrowserBack' && window.controlsActive) {
+        window.controlsActive = false;
+        window.hideCount++;
+        e.preventDefault();
+      }
+    });
+    sr.appendChild(layer);
+    document.body.appendChild(host);
+    host.focus();
+    layer.focus();
+  )"));
+
+  content::WebContentsDelegate* delegate =
+      web_view->web_contents()->GetDelegate();
+  input::NativeWebKeyboardEvent back_event(
+      blink::WebInputEvent::Type::kRawKeyDown,
+      blink::WebInputEvent::kNoModifiers, base::TimeTicks::Now());
+  back_event.windows_key_code = ui::VKEY_ESCAPE;
+
+  // First Back press while controlsActive is true: consumed by the shadow DOM
+  // listener without closing the window.
+  EXPECT_EQ(
+      delegate->PreHandleKeyboardEvent(web_view->web_contents(), back_event),
+      content::KeyboardEventProcessingResult::HANDLED);
+  EXPECT_EQ(true, content::EvalJs(web_view->web_contents(),
+                                  "window.controlsActive === false && "
+                                  "window.hideCount === 1"));
+  EXPECT_FALSE(destroy_waiter.destroyed());
+  EXPECT_NE(web_view->window(), nullptr);
+
+  // Second Back press while controlsActive is false: defaultPrevented is false,
+  // closing the window.
+  auto stop_loop = std::make_unique<base::RunLoop>();
+  EXPECT_CALL(observer, PageStopped(PageState::CLOSED, net::OK))
+      .WillOnce(InvokeWithoutArgs([&]() { stop_loop->Quit(); }));
+  EXPECT_EQ(
+      delegate->PreHandleKeyboardEvent(web_view->web_contents(), back_event),
+      content::KeyboardEventProcessingResult::HANDLED);
+  destroy_waiter.Wait();
+  stop_loop->Run();
+  EXPECT_TRUE(destroy_waiter.destroyed());
+  EXPECT_EQ(web_view->window(), nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(CastWebContentsBrowserTest,
+                       BackPressHandledByWindowListenerThenExits) {
+  content::BrowserContext* browser_context =
+      shell::CastBrowserProcess::GetInstance()->browser_context();
+  auto web_service = std::make_unique<CastWebService>(browser_context, nullptr);
+  mojom::CastWebViewParamsPtr params = mojom::CastWebViewParams::New();
+  auto window = std::make_unique<BrowserTestCastContentWindow>(params->Clone());
+  auto web_view = std::make_unique<CastWebViewDefault>(
+      std::move(params), web_service.get(), browser_context, std::move(window));
+
+  WindowDestroyWaiter destroy_waiter(web_view->window());
+  MockCastWebContentsObserver observer;
+  observer.Observe(web_view->cast_web_contents());
+
+  auto load_loop = std::make_unique<base::RunLoop>();
+  EXPECT_CALL(observer, PageStateChanged(PageState::LOADING));
+  EXPECT_CALL(observer, PageStateChanged(PageState::LOADED))
+      .WillOnce(InvokeWithoutArgs([&]() { load_loop->Quit(); }));
+
+  web_view->cast_web_contents()->LoadUrl(GURL(url::kAboutBlankURL));
+  load_loop->Run();
+
+  ASSERT_TRUE(content::ExecJs(web_view->web_contents(), R"(
+    window.shouldConsumeBack = true;
+    window.backEventsReceived = 0;
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'BrowserBack') {
+        window.backEventsReceived++;
+        if (window.shouldConsumeBack) {
+          window.shouldConsumeBack = false;
+          e.preventDefault();
+        }
+      }
+    });
+  )"));
+
+  content::WebContentsDelegate* delegate =
+      web_view->web_contents()->GetDelegate();
+  input::NativeWebKeyboardEvent browser_back_event(
+      blink::WebInputEvent::Type::kRawKeyDown,
+      blink::WebInputEvent::kNoModifiers, base::TimeTicks::Now());
+  browser_back_event.windows_key_code = ui::VKEY_BROWSER_BACK;
+
+  // First Back press (VKEY_BROWSER_BACK): bubbles to window listener, which
+  // calls preventDefault() and keeps the window open.
+  EXPECT_EQ(delegate->PreHandleKeyboardEvent(web_view->web_contents(),
+                                             browser_back_event),
+            content::KeyboardEventProcessingResult::HANDLED);
+  EXPECT_EQ(1, content::EvalJs(web_view->web_contents(),
+                               "window.backEventsReceived"));
+  EXPECT_FALSE(destroy_waiter.destroyed());
+
+  // Second Back press (VKEY_BACK): window listener does not call
+  // preventDefault(), closing the window cleanly.
+  input::NativeWebKeyboardEvent back_key_event(
+      blink::WebInputEvent::Type::kRawKeyDown,
+      blink::WebInputEvent::kNoModifiers, base::TimeTicks::Now());
+  back_key_event.windows_key_code = ui::VKEY_BACK;
+
+  auto stop_loop = std::make_unique<base::RunLoop>();
+  EXPECT_CALL(observer, PageStopped(PageState::CLOSED, net::OK))
+      .WillOnce(InvokeWithoutArgs([&]() { stop_loop->Quit(); }));
+  EXPECT_EQ(delegate->PreHandleKeyboardEvent(web_view->web_contents(),
+                                             back_key_event),
+            content::KeyboardEventProcessingResult::HANDLED);
+  destroy_waiter.Wait();
+  stop_loop->Run();
+  EXPECT_TRUE(destroy_waiter.destroyed());
+  EXPECT_EQ(web_view->window(), nullptr);
 }
 
 }  // namespace chromecast

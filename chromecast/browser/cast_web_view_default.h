@@ -5,16 +5,22 @@
 #ifndef CHROMECAST_BROWSER_CAST_WEB_VIEW_DEFAULT_H_
 #define CHROMECAST_BROWSER_CAST_WEB_VIEW_DEFAULT_H_
 
+#include <cstdint>
 #include <memory>
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chromecast/browser/cast_content_window.h"
 #include "chromecast/browser/cast_web_contents_impl.h"
 #include "chromecast/browser/cast_web_view.h"
 #include "chromecast/browser/mojom/cast_web_service.mojom.h"
+#include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "url/gurl.h"
@@ -77,6 +83,16 @@ class CastWebViewDefault : public CastWebView,
                                          bool allowed_per_prefs,
                                          const url::Origin& origin,
                                          const GURL& resource_url) override;
+  content::KeyboardEventProcessingResult PreHandleKeyboardEvent(
+      content::WebContents* source,
+      const input::NativeWebKeyboardEvent& event) override;
+
+  void OnBackPressedResult(uint64_t sequence_id,
+                           content::GlobalRenderFrameHostId rfh_id,
+                           base::Value result);
+  void OnBackPressedTimeout(uint64_t sequence_id,
+                            content::GlobalRenderFrameHostId rfh_id);
+  void CloseForUnhandledBackPress();
 
   mojom::CastWebViewParamsPtr params_;
   CastWebService* const web_service_;
@@ -86,6 +102,10 @@ class CastWebViewDefault : public CastWebView,
   std::unique_ptr<content::WebContents> web_contents_;
   CastWebContentsImpl cast_web_contents_;
   std::unique_ptr<CastContentWindow> window_;
+  bool back_press_in_flight_ = false;
+  uint64_t back_press_sequence_id_ = 0;
+  base::OneShotTimer back_press_timeout_timer_;
+  base::WeakPtrFactory<CastWebViewDefault> weak_factory_{this};
 };
 
 }  // namespace chromecast

@@ -1,4 +1,4 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,20 @@
     }
     return activeElement;
   };
-  let backPressEvent = new KeyboardEvent(
-      'keydown',
-      {bubbles: true, key: 'BrowserBack', cancelable: true, composed: true});
+  let createBackPressEvent = function() {
+    return new KeyboardEvent(
+        'keydown',
+        {bubbles: true, key: 'BrowserBack', cancelable: true, composed: false});
+  };
+  let backPressEvent = createBackPressEvent();
   let activeElement = getActiveElement();
   if (activeElement) {
     activeElement.dispatchEvent(backPressEvent);
+    if (!backPressEvent.defaultPrevented &&
+        activeElement !== document.activeElement) {
+      backPressEvent = createBackPressEvent();
+      document.dispatchEvent(backPressEvent);
+    }
   } else {
     document.dispatchEvent(backPressEvent);
   }

@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/functional/callback_helpers.h"
 #include "base/immediate_crash.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
@@ -36,17 +37,22 @@ class CastContentWindowControls : public cast_receiver::ContentWindowControls,
   explicit CastContentWindowControls(
       CastContentWindow& content_window,
       cast_receiver::RuntimeApplication& runtime_application)
-      : content_window_(content_window),
+      : content_window_(&content_window),
         runtime_application_(runtime_application) {
     content_window_->AddObserver(this);
   }
 
   ~CastContentWindowControls() override {
-    content_window_->RemoveObserver(this);
+    if (content_window_) {
+      content_window_->RemoveObserver(this);
+    }
   }
 
   // cast_receiver::ContentWindowControls implementation.
   void ShowWindow() override {
+    if (!content_window_) {
+      return;
+    }
     if (!was_window_created_) {
       content_window_->GrantScreenAccess();
       content_window_->CreateWindow(mojom::ZOrder::APP,
@@ -60,6 +66,9 @@ class CastContentWindowControls : public cast_receiver::ContentWindowControls,
   }
 
   void HideWindow() override {
+    if (!content_window_) {
+      return;
+    }
     if (!was_window_created_) {
       content_window_->CreateWindow(mojom::ZOrder::APP,
                                     VisibilityPriority::HIDDEN);
@@ -71,10 +80,16 @@ class CastContentWindowControls : public cast_receiver::ContentWindowControls,
     content_window_->RevokeScreenAccess();
   }
 
-  void EnableTouchInput() override { content_window_->EnableTouchInput(true); }
+  void EnableTouchInput() override {
+    if (content_window_) {
+      content_window_->EnableTouchInput(true);
+    }
+  }
 
   void DisableTouchInput() override {
-    content_window_->EnableTouchInput(false);
+    if (content_window_) {
+      content_window_->EnableTouchInput(false);
+    }
   }
 
  private:
@@ -93,6 +108,10 @@ class CastContentWindowControls : public cast_receiver::ContentWindowControls,
   }
 
   void OnWindowDestroyed() override {
+    if (content_window_) {
+      content_window_->RemoveObserver(this);
+      content_window_ = nullptr;
+    }
     LOG(INFO) << "Application window closed by system.";
     runtime_application_->Stop(base::BindOnce([](cast_receiver::Status status) {
       VLOG(1) << "Application stopped with status: " << status;
@@ -101,7 +120,7 @@ class CastContentWindowControls : public cast_receiver::ContentWindowControls,
 
   bool was_window_created_ = false;
 
-  raw_ref<CastContentWindow> content_window_;
+  raw_ptr<CastContentWindow> content_window_;
   raw_ref<cast_receiver::RuntimeApplication> runtime_application_;
 };
 
@@ -165,7 +184,11 @@ RuntimeApplicationServiceImpl::RuntimeApplicationServiceImpl(
   DCHECK(task_runner_);
 }
 
-RuntimeApplicationServiceImpl::~RuntimeApplicationServiceImpl() = default;
+RuntimeApplicationServiceImpl::~RuntimeApplicationServiceImpl() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  content_window_controls_.reset();
+  cast_web_view_.reset();
+}
 
 void RuntimeApplicationServiceImpl::Load(
     const cast::runtime::LoadApplicationRequest& request,
@@ -268,6 +291,13 @@ void RuntimeApplicationServiceImpl::Launch(
     StatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (!cast_web_view_ || !cast_web_view_->cast_web_contents()) {
+    std::move(callback).Run(
+        cast_receiver::Status(cast_receiver::StatusCode::kFailedPrecondition,
+                              "Application web view is already closed"));
+    return;
+  }
+
   if (request.core_application_service_info().grpc_endpoint().empty()) {
     std::move(callback).Run(
         cast_receiver::Status(cast_receiver::StatusCode::kInvalidArgument,
@@ -303,6 +333,9 @@ void RuntimeApplicationServiceImpl::Launch(
 
 void RuntimeApplicationServiceImpl::NavigateToPage(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!runtime_application_->IsApplicationRunning() || !cast_web_view_) {
+    return;
+  }
 
   auto* cast_web_contents = cast_web_view_->cast_web_contents();
   DCHECK(cast_web_contents);
@@ -518,7 +551,7 @@ void RuntimeApplicationServiceImpl::OnStreamingApplicationError(
     cast_receiver::Status status) {
   LOG(ERROR) << "Error while running streaming application: " << status
              << ". Exiting application...";
-  runtime_application_->Stop(StatusCallback{});
+  runtime_application_->Stop(base::DoNothing());
 }
 
 void RuntimeApplicationServiceImpl::HandleSetUrlRewriteRules(
@@ -595,27 +628,45 @@ void RuntimeApplicationServiceImpl::NotifyApplicationStopped(
     ApplicationStopReason stop_reason,
     int32_t net_error_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(core_app_stub_);
 
   LOG(INFO) << "Application is stopped: stop_reason=" << stop_reason << ", "
             << *runtime_application_;
 
-  auto proto_stop_reason = ToProtoType(stop_reason);
-  auto call = core_app_stub_->CreateCall<
-      cast::v2::CoreApplicationServiceStub::ApplicationStopped>();
-  call.request().set_cast_session_id(runtime_application_->GetCastSessionId());
-  call.request().set_stop_reason(proto_stop_reason);
-  call.request().set_error_code(net_error_code);
-  std::move(call).InvokeAsync(base::BindOnce(
-      [](cast::utils::GrpcStatusOr<cast::v2::ApplicationStoppedResponse>
-             response_or) {
-        LOG_IF(ERROR, !response_or.ok())
-            << "Failed to report that application stopped: "
-            << response_or.ToString();
-      }));
+  if (core_app_stub_) {
+    auto proto_stop_reason = ToProtoType(stop_reason);
+    auto call = core_app_stub_->CreateCall<
+        cast::v2::CoreApplicationServiceStub::ApplicationStopped>();
+    call.request().set_cast_session_id(
+        runtime_application_->GetCastSessionId());
+    call.request().set_stop_reason(proto_stop_reason);
+    call.request().set_error_code(net_error_code);
+    std::move(call).InvokeAsync(base::BindOnce(
+        [](cast::utils::GrpcStatusOr<cast::v2::ApplicationStoppedResponse>
+               response_or) {
+          LOG_IF(ERROR, !response_or.ok())
+              << "Failed to report that application stopped: "
+              << response_or.ToString();
+        }));
+  }
 
-  grpc_server_->Stop();
-  grpc_server_.reset();
+  if (grpc_server_) {
+    grpc_server_->Stop();
+    grpc_server_.reset();
+  }
+  streaming_config_manager_.reset();
+  message_port_service_.reset();
+  core_message_port_app_stub_.reset();
+
+  task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](base::WeakPtr<RuntimeApplicationServiceImpl> self) {
+                       if (!self) {
+                         return;
+                       }
+                       self->content_window_controls_.reset();
+                       self->cast_web_view_.reset();
+                     },
+                     weak_factory_.GetWeakPtr()));
 }
 
 void RuntimeApplicationServiceImpl::NotifyMediaPlaybackChanged(bool playing) {
@@ -682,14 +733,16 @@ content::WebContents* RuntimeApplicationServiceImpl::GetWebContents() {
 
 cast_receiver::ContentWindowControls*
 RuntimeApplicationServiceImpl::GetContentWindowControls() {
-  if (!cast_web_view_ || !cast_web_view_->window()) {
+  if (content_window_controls_) {
+    return content_window_controls_.get();
+  }
+  if (!runtime_application_->IsApplicationRunning() || !cast_web_view_ ||
+      !cast_web_view_->window()) {
     return nullptr;
   }
 
-  if (!content_window_controls_) {
-    content_window_controls_ = std::make_unique<CastContentWindowControls>(
-        *cast_web_view_->window(), *runtime_application_);
-  }
+  content_window_controls_ = std::make_unique<CastContentWindowControls>(
+      *cast_web_view_->window(), *runtime_application_);
 
   return content_window_controls_.get();
 }
@@ -719,6 +772,9 @@ void RuntimeApplicationServiceImpl::OnAllBindingsReceived(
     GetAllBindingsCallback callback,
     cast::utils::GrpcStatusOr<cast::bindings::GetAllResponse> response_or) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!runtime_application_->IsApplicationRunning() || !cast_web_view_) {
+    return;
+  }
   if (!response_or.ok()) {
     std::move(callback).Run(
         cast_receiver::Status(cast_receiver::StatusCode::kCancelled,

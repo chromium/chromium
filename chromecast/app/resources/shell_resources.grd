@@ -9,6 +9,7 @@
   <translations />
   <release seq="1">
     <includes>
+      <include name="IDR_CAST_SHELL_BACK_PRESSED_JS" file="../../browser/resources/raw/back_pressed.js" type="BINDATA" />
       <include name="IDR_CAST_SHELL_DEVTOOLS_DISCOVERY_PAGE" file="shell_devtools_discovery_page.html" type="BINDATA" />
       <include name="IDR_CAST_SHELL_SPEAKER_ICON" file="shell_speaker_icon.png" type="BINDATA" />
     </includes>

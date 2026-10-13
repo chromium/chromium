@@ -31,6 +31,7 @@ class CastContentWindowAndroid : public CastContentWindow {
   void RevokeScreenAccess() override;
   void EnableTouchInput(bool enabled) override;
   void RequestVisibility(VisibilityPriority visibility_priority) override;
+  bool HandlesBackPress() const override;
 
   // Called through JNI.
   void OnActivityStopped(JNIEnv* env);

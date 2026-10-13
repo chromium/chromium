@@ -150,6 +150,7 @@ cast_source_set("unit_tests") {
     "cast_runtime_metrics_test_helpers.cc",
     "cast_runtime_metrics_test_helpers.h",
     "core_streaming_config_manager_unittest.cc",
+    "runtime_application_service_impl_unittest.cc",
   ]
 
   deps = [
