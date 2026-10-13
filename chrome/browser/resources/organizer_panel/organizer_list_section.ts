@@ -198,6 +198,19 @@ export class OrganizerListSectionElement extends CrLitElement implements
     }
   }
 
+  expand() {
+    if (this.expanded_) {
+      return;
+    }
+    this.expanded_ = true;
+    assert(this.delegate);
+    this.browserProxy_.handler.setSectionExpanded(this.delegate.getId(), true);
+  }
+
+  protected hasContextMenu_(): boolean {
+    return !!this.delegate?.onItemContextMenuClicked;
+  }
+
   protected isSearching_(): boolean {
     return this.filteredSearchQuery_.length > 0;
   }

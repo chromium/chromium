@@ -253,6 +253,7 @@ suite('OrganizerListSectionItemTest', () => {
       title: ['Tab Group'],
     };
     listItem.item = item;
+    listItem.hasContextMenu = true;
     await microtasksFinished();
 
     const contextMenuClickPromise =
@@ -275,6 +276,33 @@ suite('OrganizerListSectionItemTest', () => {
     assertEquals(15, contextMenuEvent.detail.x);
     assertEquals(25, contextMenuEvent.detail.y);
   });
+
+  test(
+      'right clicking item does not dispatch context-menu-click event ' +
+          'when hasContextMenu is false',
+      async () => {
+        const item = {
+          title: ['Open Tab'],
+        };
+        listItem.item = item;
+        listItem.hasContextMenu = false;
+        await microtasksFinished();
+
+        let eventFired = false;
+        listItem.addEventListener('context-menu-click', () => {
+          eventFired = true;
+        });
+        const event = new MouseEvent('contextmenu', {
+          bubbles: true,
+          cancelable: true,
+          clientX: 15,
+          clientY: 25,
+        });
+        listItem.$.crUrlListItem.dispatchEvent(event);
+
+        assertFalse(event.defaultPrevented);
+        assertFalse(eventFired);
+      });
 
   test(
       'resetActionButtonStateIfNeeded hides action button when not hovered',

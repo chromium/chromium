@@ -5,15 +5,18 @@
 import 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 
 import type {OrganizerPanelAppElement} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
-import {browserProxyFactory, foreignTabsBrowserProxyFactory, ForeignTabsPageHandlerRemote, PageHandlerRemote, RecentTabsDelegate, tabGroupsBrowserProxyFactory, TabGroupsOrganizerPageHandlerRemote} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
+import {browserProxyFactory, foreignTabsBrowserProxyFactory, ForeignTabsPageHandlerRemote, organizerPanelBrowserProxyFactory, OrganizerPanelPageHandlerRemote, PageHandlerRemote, RecentTabsDelegate, tabGroupsBrowserProxyFactory, TabGroupsOrganizerPageHandlerRemote} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {isMac} from 'chrome://resources/js/platform.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('OrganizerPanelAppTest', () => {
   let app: OrganizerPanelAppElement;
   let mockPageHandler: PageHandlerRemote&TestMock<PageHandlerRemote>;
+  let mockOrganizerPanelHandler: TestMock<OrganizerPanelPageHandlerRemote>&
+      OrganizerPanelPageHandlerRemote;
   let mockTabGroupsHandler: TestMock<TabGroupsOrganizerPageHandlerRemote>&
       TabGroupsOrganizerPageHandlerRemote;
   let mockForeignTabsHandler: TestMock<ForeignTabsPageHandlerRemote>&
@@ -25,7 +28,9 @@ suite('OrganizerPanelAppTest', () => {
       cjkWordBoundaryEnabled: false,
       clearSearch: 'Clear search',
       closeTab: 'Close tab',
+      closeTabSearch: isMac ? 'Close Tab Search' : 'Close tab search',
       createTabGroup: 'Create tab group',
+      expandAll: isMac ? 'Expand All' : 'Expand all',
       foreignTabsEnabled: false,
       isIncognitoMode: false,
       noRecentlyClosedTabs: 'No recently closed tabs',
@@ -64,6 +69,13 @@ suite('OrganizerPanelAppTest', () => {
         'getForeignTabs', Promise.resolve({tabs: []}));
     foreignTabsBrowserProxyFactory.setInstance(
         {handler: mockForeignTabsHandler});
+
+    mockOrganizerPanelHandler =
+        TestMock.fromClass(OrganizerPanelPageHandlerRemote);
+    const {instance: organizerPanelInstance} =
+        organizerPanelBrowserProxyFactory.createForTest(
+            mockOrganizerPanelHandler);
+    organizerPanelBrowserProxyFactory.setInstance(organizerPanelInstance);
 
     app = document.createElement('organizer-panel-app');
     document.body.appendChild(app);
@@ -151,4 +163,101 @@ suite('OrganizerPanelAppTest', () => {
         const searchFieldRectAfter = app.$.searchField.getBoundingClientRect();
         assertEquals(searchFieldRectBefore.top, searchFieldRectAfter.top);
       });
+
+  test('right clicking app shows context menu', async () => {
+    assertFalse(app.$.menu.open);
+
+    const event = new MouseEvent('contextmenu', {
+      bubbles: true,
+      cancelable: true,
+      clientX: 50,
+      clientY: 100,
+    });
+    app.dispatchEvent(event);
+    await microtasksFinished();
+
+    assertTrue(event.defaultPrevented);
+    assertTrue(app.$.menu.open);
+
+    const expandAllButton =
+        app.$.menu.querySelector<HTMLButtonElement>('#expandAllButton');
+    assertTrue(!!expandAllButton);
+    assertEquals(
+        isMac ? 'Expand All' : 'Expand all',
+        expandAllButton.textContent.trim());
+
+    const closeButton =
+        app.$.menu.querySelector<HTMLButtonElement>('#closeTabSearchButton');
+    assertTrue(!!closeButton);
+    assertEquals(
+        isMac ? 'Close Tab Search' : 'Close tab search',
+        closeButton.textContent.trim());
+  });
+
+  test(
+      'clicking expand all in context menu calls expandAll on list',
+      async () => {
+        let expandAllCalled = false;
+        app.$.list.expandAll = () => {
+          expandAllCalled = true;
+        };
+
+        app.dispatchEvent(new MouseEvent('contextmenu', {
+          bubbles: true,
+          cancelable: true,
+          clientX: 50,
+          clientY: 100,
+        }));
+        await microtasksFinished();
+        assertTrue(app.$.menu.open);
+
+        const expandAllButton =
+            app.$.menu.querySelector<HTMLButtonElement>('#expandAllButton')!;
+        expandAllButton.click();
+        await microtasksFinished();
+
+        assertTrue(expandAllCalled);
+        assertFalse(app.$.menu.open);
+      });
+
+  test(
+      'clicking close tab search in context menu calls closePanel',
+      async () => {
+        app.dispatchEvent(new MouseEvent('contextmenu', {
+          bubbles: true,
+          cancelable: true,
+          clientX: 50,
+          clientY: 100,
+        }));
+        await microtasksFinished();
+        assertTrue(app.$.menu.open);
+
+        const closeButton = app.$.menu.querySelector<HTMLButtonElement>(
+            '#closeTabSearchButton')!;
+        closeButton.click();
+        await microtasksFinished();
+
+        assertEquals(1, mockOrganizerPanelHandler.getCallCount('closePanel'));
+        assertFalse(app.$.menu.open);
+      });
+
+  test('captured contextmenu does not show app context menu', async () => {
+    assertFalse(app.$.menu.open);
+
+    const child = document.createElement('div');
+    app.appendChild(child);
+    child.addEventListener('contextmenu', (e) => {
+      e.stopPropagation();
+    });
+
+    child.dispatchEvent(new MouseEvent('contextmenu', {
+      bubbles: true,
+      cancelable: true,
+      clientX: 50,
+      clientY: 100,
+    }));
+    await microtasksFinished();
+
+    assertFalse(app.$.menu.open);
+  });
 });

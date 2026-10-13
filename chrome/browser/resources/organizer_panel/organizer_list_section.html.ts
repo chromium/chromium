@@ -20,6 +20,7 @@ export function getHtml(this: OrganizerListSectionElement) {
   ${this.hasZeroState_() ? this.getZeroState_() : ''}
   ${this.getFilteredItems_().map(item => html`
     <organizer-list-section-item .item="${item}" role="listitem"
+        ?has-context-menu="${this.hasContextMenu_()}"
         @click="${this.onItemClick_}"
         @action-button-click="${this.onItemActionButtonClick_}"
         @context-menu-click="${this.onItemContextMenuClick_}">

@@ -125,4 +125,25 @@ suite('OrganizerListTest', () => {
         assertTrue(isVisible(dividers[0]!));
         assertTrue(isVisible(dividers[1]!));
       });
+
+  test('expandAll expands all sections in list', async () => {
+    list.sectionDelegates = [
+      new TestSectionDelegate('Section 1'),
+      new TestSectionDelegate('Section 2'),
+    ];
+    await microtasksFinished();
+
+    const sections = list.shadowRoot.querySelectorAll('organizer-list-section');
+    assertEquals(2, sections.length);
+
+    let expandCalls = 0;
+    for (const section of sections) {
+      section.expand = () => {
+        expandCalls++;
+      };
+    }
+
+    list.expandAll();
+    assertEquals(2, expandCalls);
+  });
 });

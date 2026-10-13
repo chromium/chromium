@@ -117,10 +117,15 @@ export class OrganizerListSectionItemElement extends
 
   static override get properties() {
     return {
+      hasContextMenu: {
+        type: Boolean,
+        reflect: true,
+      },
       item: {type: Object},
     };
   }
 
+  accessor hasContextMenu: boolean = false;
   accessor item: HighlightableOrganizerListSectionItem<unknown> = {
     title: [],
   };
@@ -128,17 +133,6 @@ export class OrganizerListSectionItemElement extends
   private listFormatter_ = new Intl.ListFormat(
       document.documentElement.lang || undefined,
       {style: 'narrow', type: 'conjunction'});
-  private boundOnContextmenu_ = this.onContextmenu_.bind(this);
-
-  override connectedCallback() {
-    super.connectedCallback();
-    this.addEventListener('contextmenu', this.boundOnContextmenu_);
-  }
-
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-    this.removeEventListener('contextmenu', this.boundOnContextmenu_);
-  }
 
   protected getAriaLabel_(): string {
     return this.listFormatter_.format(this.item.title);
@@ -171,6 +165,9 @@ export class OrganizerListSectionItemElement extends
   }
 
   protected onContextmenu_(e: MouseEvent) {
+    if (!this.hasContextMenu) {
+      return;
+    }
     e.preventDefault();
     e.stopPropagation();
     this.fire('context-menu-click', {

@@ -46,6 +46,13 @@ export class OrganizerListElement extends CrLitElement {
     this.allSectionsHidden_ =
         sections.length > 0 && Array.from(sections).every(s => s.hidden);
   }
+
+  expandAll() {
+    const sections = this.shadowRoot.querySelectorAll('organizer-list-section');
+    for (const section of sections) {
+      section.expand();
+    }
+  }
 }
 
 declare global {

@@ -152,6 +152,38 @@ suite('OrganizerListSectionTest', () => {
         assertEquals(0, mockHandler.getCallCount('setSectionExpanded'));
       });
 
+  test('expand() expands collapsed section and notifies handler', async () => {
+    mockHandler.setPromiseResolveFor(
+        'getSectionState', {state: {expanded: false, showAll: false}});
+    const items: Array<OrganizerListSectionItem<unknown>> = [
+      {title: ['Tab 1'], description: [{text: 'tab1.com'}]},
+    ];
+    listSection.delegate =
+        new TestSectionDelegate('Open Tabs', items, undefined, 'open-tabs');
+    await microtasksFinished();
+
+    const header = listSection.$.header;
+    const itemsContainer =
+        listSection.shadowRoot.querySelector<CrCollapseElement>('#items')!;
+    assertFalse(header.expanded);
+    assertFalse(itemsContainer.opened);
+    assertEquals(0, mockHandler.getCallCount('setSectionExpanded'));
+
+    listSection.expand();
+    await microtasksFinished();
+
+    assertTrue(header.expanded);
+    assertTrue(itemsContainer.opened);
+    assertEquals(1, mockHandler.getCallCount('setSectionExpanded'));
+    assertDeepEquals(
+        ['open-tabs', true], mockHandler.getArgs('setSectionExpanded')[0]);
+
+    // Calling expand() again when already expanded is a no-op.
+    listSection.expand();
+    await microtasksFinished();
+    assertEquals(1, mockHandler.getCallCount('setSectionExpanded'));
+  });
+
   test(
       'updates expanded state when onSectionsStateChanged is called',
       async () => {

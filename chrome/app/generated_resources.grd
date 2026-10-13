@@ -10697,6 +10697,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
           <message name="IDS_TAB_GROUP_MORE_OPTIONS" desc="In Title Case: The tooltip for the button in a tab group item that opens the options menu.">
             More options
           </message>
+          <message name="IDS_ORGANIZER_PANEL_CLOSE_TAB_SEARCH" desc="In Title Case: The label for the context menu item in the organizer panel to close tab search.">
+            Close Tab Search
+          </message>
+          <message name="IDS_ORGANIZER_PANEL_EXPAND_ALL" desc="In Title Case: The label for the context menu item in the organizer panel that expands all sections.">
+            Expand All
+          </message>
         </then>
         <else>
           <message name="IDS_VIEW_ORGANIZER_PANEL" desc="The tooltip for the button in the top container that shows the organizer panel.">
@@ -10707,6 +10713,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
           </message>
           <message name="IDS_TAB_GROUP_MORE_OPTIONS" desc="The tooltip for the button in a tab group item that opens the options menu.">
             More options
+          </message>
+          <message name="IDS_ORGANIZER_PANEL_CLOSE_TAB_SEARCH" desc="The label for the context menu item in the organizer panel to close tab search.">
+            Close tab search
+          </message>
+          <message name="IDS_ORGANIZER_PANEL_EXPAND_ALL" desc="The label for the context menu item in the organizer panel that expands all sections.">
+            Expand all
           </message>
         </else>
       </if>
