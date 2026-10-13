@@ -2933,7 +2933,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HistoryPage.CriticalAction.Click" enum="CriticalActionType"
-    expires_after="2026-11-01">
+    expires_after="2027-11-01">
   <owner>kalinino@google.com</owner>
   <owner>polonium@google.com</owner>
   <summary>
@@ -2945,7 +2945,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HistoryPage.CriticalActionsPerVisitCount" units="actions"
-    expires_after="2026-11-01">
+    expires_after="2027-11-01">
   <owner>kalinino@google.com</owner>
   <owner>polonium@google.com</owner>
   <summary>
@@ -2958,7 +2958,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HistoryPage.CriticalActionsQueryTime" units="ms"
-    expires_after="2026-11-01">
+    expires_after="2027-11-01">
   <owner>kalinino@google.com</owner>
   <owner>polonium@google.com</owner>
   <summary>
@@ -2998,7 +2998,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HistoryPage.QueryHistoryTotalTime.{HasCriticalActions}"
-    units="ms" expires_after="2026-11-01">
+    units="ms" expires_after="2027-11-01">
   <owner>kalinino@google.com</owner>
   <owner>polonium@google.com</owner>
   <summary>
