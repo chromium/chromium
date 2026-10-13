@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_PAYMENTS_PAYMENTS_SYNC_BRIDGE_UTIL_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_PAYMENTS_PAYMENTS_SYNC_BRIDGE_UTIL_H_
 
-#include <memory>
 #include <string>
 #include <vector>
 
@@ -139,30 +138,6 @@ void PopulateWalletTypesFromSyncData(
     std::vector<sync_pb::PaymentInstrument>& payment_instruments,
     std::vector<sync_pb::PaymentInstrumentCreationOption>&
         payment_instrument_creation_options);
-
-// A helper function to compare two sets of data. Returns true if there is
-// any difference. It uses the Compare() of the Item class instead of comparison
-// operators and does not care about the order of items in the dataset.
-template <class Item>
-bool AreAnyItemsDifferent(const std::vector<std::unique_ptr<Item>>& old_data,
-                          const std::vector<Item>& new_data);
-
-// A helper function to compare two sets of data. Returns true if there is any
-// difference. It uses the comparison operators of the Item class, and does
-// not care about the order of items in the dataset.
-template <class Item>
-bool AreAnyItemsDifferent(const std::vector<Item>& old_data,
-                          const std::vector<Item>& new_data);
-
-bool AreAnyItemsDifferent(
-    const std::vector<sync_pb::PaymentInstrument>& old_instruments,
-    const std::vector<sync_pb::PaymentInstrument>& new_instruments);
-
-bool AreAnyItemsDifferent(
-    const std::vector<sync_pb::PaymentInstrumentCreationOption>&
-        old_creation_options,
-    const std::vector<sync_pb::PaymentInstrumentCreationOption>&
-        new_creation_options);
 
 // Returns whether the Virtual Card Usage Data |specifics| is valid data.
 bool IsVirtualCardUsageDataSpecificsValid(

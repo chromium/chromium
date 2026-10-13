@@ -32,10 +32,10 @@
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_sync_util.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
+#include "components/autofill/core/browser/webdata/autofill_sync_bridge_util.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
-#include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_util.h"
 #include "components/autofill/core/browser/webdata/valuables/valuables_sync_util.h"
 #include "components/autofill/core/browser/webdata/valuables/valuables_table.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -754,7 +754,13 @@ ValuableDatabaseOperationResult ValuableSyncBridge::SetWalletDirectOffers(
   std::vector<std::unique_ptr<AutofillOfferData>> existing_offers;
   table->GetAutofillOffers(&existing_offers);
 
-  if (!AreAnyItemsDifferent(existing_offers, wallet_direct_offers)) {
+  if (!AreAnyItemsDifferent(
+          existing_offers, wallet_direct_offers,
+          [](const AutofillOfferData& a, const AutofillOfferData& b) {
+            return a.Compare(b) < 0;
+          },
+          [](const std::unique_ptr<AutofillOfferData>& offer)
+              -> const AutofillOfferData& { return *offer; })) {
     return ValuableDatabaseOperationResult::kNoChange;
   }
 

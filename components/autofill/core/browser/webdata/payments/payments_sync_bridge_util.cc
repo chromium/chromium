@@ -6,7 +6,6 @@
 
 #include <stdint.h>
 
-#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -26,7 +25,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/payments/autofill_wallet_usage_data.h"
 #include "components/autofill/core/browser/data_model/payments/bank_account.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
@@ -34,7 +32,6 @@
 #include "components/autofill/core/browser/data_model/payments/credit_card_cloud_token_data.h"
 #include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/browser/data_model/payments/payment_instrument.h"
-#include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/payments/constants.h"
@@ -1001,113 +998,6 @@ void PopulateWalletTypesFromSyncData(
         break;
     }
   }
-}
-
-template <class Item>
-bool AreAnyItemsDifferent(const std::vector<std::unique_ptr<Item>>& old_data,
-                          const std::vector<Item>& new_data) {
-  if (old_data.size() != new_data.size())
-    return true;
-
-  std::vector<const Item*> old_ptrs;
-  old_ptrs.reserve(old_data.size());
-  for (const std::unique_ptr<Item>& old_item : old_data)
-    old_ptrs.push_back(old_item.get());
-  std::vector<const Item*> new_ptrs;
-  new_ptrs.reserve(new_data.size());
-  for (const Item& new_item : new_data)
-    new_ptrs.push_back(&new_item);
-
-  // Sort our vectors.
-  auto compare_less = [](const Item* lhs, const Item* rhs) {
-    return lhs->Compare(*rhs) < 0;
-  };
-  std::sort(old_ptrs.begin(), old_ptrs.end(), compare_less);
-  std::sort(new_ptrs.begin(), new_ptrs.end(), compare_less);
-
-  auto compare_equal = [](const Item* lhs, const Item* rhs) {
-    return lhs->Compare(*rhs) == 0;
-  };
-  return !std::ranges::equal(old_ptrs, new_ptrs, compare_equal);
-}
-
-template bool AreAnyItemsDifferent<>(
-    const std::vector<std::unique_ptr<AutofillOfferData>>&,
-    const std::vector<AutofillOfferData>&);
-
-template bool AreAnyItemsDifferent<>(
-    const std::vector<std::unique_ptr<CreditCardCloudTokenData>>&,
-    const std::vector<CreditCardCloudTokenData>&);
-
-template bool AreAnyItemsDifferent<>(const std::vector<BankAccount>&,
-                                     const std::vector<BankAccount>&);
-
-template <class Item>
-bool AreAnyItemsDifferent(const std::vector<Item>& old_data,
-                          const std::vector<Item>& new_data) {
-  if (old_data.size() != new_data.size()) {
-    return true;
-  }
-
-  return base::MakeFlatSet<Item>(old_data) != base::MakeFlatSet<Item>(new_data);
-}
-
-template bool AreAnyItemsDifferent<>(const std::vector<CreditCardBenefit>&,
-                                     const std::vector<CreditCardBenefit>&);
-
-template bool AreAnyItemsDifferent<>(const std::vector<std::string>&,
-                                     const std::vector<std::string>&);
-
-// TODO(crbug.com/546252995): `LoyaltyCard` is not a payments type and is
-// instead used by `ValuableSyncBridge`. Move `AreAnyItemsDifferent()` to a
-// shared header under `components/autofill/core/browser/webdata/` to be
-// available for all sync bridges.
-template bool AreAnyItemsDifferent<>(const std::vector<LoyaltyCard>&,
-                                     const std::vector<LoyaltyCard>&);
-
-bool AreAnyItemsDifferent(
-    const std::vector<sync_pb::PaymentInstrument>& old_instruments,
-    const std::vector<sync_pb::PaymentInstrument>& new_instruments) {
-  if (old_instruments.size() != new_instruments.size()) {
-    return true;
-  }
-
-  std::vector<std::string> old_instrument_strings, new_instrument_strings;
-  for (const auto& instrument : old_instruments) {
-    old_instrument_strings.push_back(instrument.SerializeAsString());
-  }
-  for (const auto& instrument : new_instruments) {
-    new_instrument_strings.push_back(instrument.SerializeAsString());
-  }
-
-  return AreAnyItemsDifferent(old_instrument_strings, new_instrument_strings);
-}
-
-bool AreAnyItemsDifferent(
-    const std::vector<sync_pb::PaymentInstrumentCreationOption>&
-        old_creation_options,
-    const std::vector<sync_pb::PaymentInstrumentCreationOption>&
-        new_creation_options) {
-  int old_creation_options_size = old_creation_options.size();
-  int new_creation_options_size = new_creation_options.size();
-  if (old_creation_options_size != new_creation_options_size) {
-    return true;
-  }
-
-  std::vector<std::string> old_creation_option_strings,
-      new_creation_option_strings;
-  old_creation_option_strings.reserve(old_creation_options_size);
-  new_creation_option_strings.reserve(new_creation_options_size);
-
-  for (const auto& creation_option : old_creation_options) {
-    old_creation_option_strings.push_back(creation_option.SerializeAsString());
-  }
-  for (const auto& creation_option : new_creation_options) {
-    new_creation_option_strings.push_back(creation_option.SerializeAsString());
-  }
-
-  return AreAnyItemsDifferent(old_creation_option_strings,
-                              new_creation_option_strings);
 }
 
 bool IsVirtualCardUsageDataSpecificsValid(

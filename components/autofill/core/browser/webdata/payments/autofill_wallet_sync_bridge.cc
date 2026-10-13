@@ -31,6 +31,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
+#include "components/autofill/core/browser/webdata/autofill_sync_bridge_util.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -675,7 +676,12 @@ bool AutofillWalletSyncBridge::SetCreditCardCloudTokenData(
   std::vector<std::unique_ptr<CreditCardCloudTokenData>> existing_data;
   table->GetCreditCardCloudTokenData(existing_data);
 
-  if (AreAnyItemsDifferent(existing_data, cloud_token_data)) {
+  if (AreAnyItemsDifferent(
+          existing_data, cloud_token_data,
+          [](const CreditCardCloudTokenData& a,
+             const CreditCardCloudTokenData& b) { return a.Compare(b) < 0; },
+          [](const std::unique_ptr<CreditCardCloudTokenData>& data)
+              -> const CreditCardCloudTokenData& { return *data; })) {
     table->SetCreditCardCloudTokenData(cloud_token_data);
     return true;
   }
@@ -698,7 +704,11 @@ bool AutofillWalletSyncBridge::SetPaymentInstrumentsData(
   PaymentsAutofillTable* table = GetAutofillTable();
   std::vector<sync_pb::PaymentInstrument> existing_data;
   table->GetPaymentInstruments(existing_data);
-  if (AreAnyItemsDifferent(existing_data, payment_instruments)) {
+  auto serialize = [](const sync_pb::PaymentInstrument& item) {
+    return item.SerializeAsString();
+  };
+  if (AreAnyItemsDifferent(existing_data, payment_instruments, {}, serialize,
+                           serialize)) {
     return table->SetPaymentInstruments(payment_instruments);
   }
   return false;
@@ -710,8 +720,11 @@ bool AutofillWalletSyncBridge::SetPaymentInstrumentCreationOptionsData(
   PaymentsAutofillTable* table = GetAutofillTable();
   std::vector<sync_pb::PaymentInstrumentCreationOption> existing_data;
   table->GetPaymentInstrumentCreationOptions(existing_data);
-  if (AreAnyItemsDifferent(existing_data,
-                           payment_instrument_creation_options)) {
+  auto serialize = [](const sync_pb::PaymentInstrumentCreationOption& item) {
+    return item.SerializeAsString();
+  };
+  if (AreAnyItemsDifferent(existing_data, payment_instrument_creation_options,
+                           {}, serialize, serialize)) {
     return table->SetPaymentInstrumentCreationOptions(
         payment_instrument_creation_options);
   }
