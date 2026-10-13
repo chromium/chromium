@@ -30,6 +30,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
@@ -169,6 +170,7 @@ public class SettingsSearchCoordinatorTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/572623849")
     public void testHistograms_clickedResult() throws Exception {
         mSettingsTestRule.startSettingsActivity();
         SettingsActivityInterface activity = waitForSettingsActivity();
