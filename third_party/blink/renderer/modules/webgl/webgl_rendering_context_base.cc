@@ -977,14 +977,12 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage() {
     gpu::raster::RasterInterface* raster_interface =
         shared_context_wrapper->ContextProvider().RasterInterface();
     auto client_si = resource_provider->resource()->GetSharedImage();
-    auto access = client_si->BeginRasterAccess(
-        raster_interface, resource_provider->resource()->acquire_sync_token(),
-        /*readonly=*/false);
     gpu::SyncToken sync_token =
-        gpu::RasterScopedAccess::EndAccess(std::move(access));
-    resource_provider->resource()->SetReleaseSyncToken(sync_token);
+        resource_provider->resource()->acquire_sync_token();
+    auto access = client_si->BeginRasterAccess(raster_interface, sync_token,
+                                               /*readonly=*/false);
+    sync_token = gpu::RasterScopedAccess::EndAccess(std::move(access));
     client_si->UpdateDestructionSyncToken(sync_token);
-    sync_token = resource_provider->resource()->sync_token();
 
     // TODO(xlai): Flush should not be necessary if the synchronization in
     // CopyToPlatformTexture is done correctly. See crbug.com/794706.
@@ -996,15 +994,12 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage() {
     if (!external_sync_token) {
       return nullptr;
     }
+    sync_token = external_sync_token.value();
     if (resource_provider->IsValid()) {
-      resource_provider->resource()->WaitSyncToken(external_sync_token.value());
       auto post_write_access = client_si->BeginRasterAccess(
-          raster_interface,
-          resource_provider->resource()->acquire_sync_token(),
-          /*readonly=*/true);
+          raster_interface, sync_token, /*readonly=*/true);
       sync_token =
           gpu::RasterScopedAccess::EndAccess(std::move(post_write_access));
-      resource_provider->resource()->SetReleaseSyncToken(sync_token);
       client_si->UpdateDestructionSyncToken(sync_token);
     }
     if (!resource_provider->IsValid()) {
@@ -1021,8 +1016,8 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage() {
         client_si);
 
     return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
-        std::move(client_si), resource_provider->resource()->sync_token(),
-        GetAlphaType(), drawing_buffer_tone_mapping_hdr_metadata_,
+        std::move(client_si), sync_token, GetAlphaType(),
+        drawing_buffer_tone_mapping_hdr_metadata_,
         std::move(shared_context_wrapper), base::PlatformThread::CurrentRef(),
         ThreadScheduler::Current()->CleanupTaskRunner(),
         std::move(release_callback));
