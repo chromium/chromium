@@ -1006,7 +1006,10 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage() {
       resource_provider->resource()->SetReleaseSyncToken(sync_token);
       client_si->UpdateDestructionSyncToken(sync_token);
     }
-    return resource_provider->Snapshot();
+    if (!resource_provider->IsValid()) {
+      return nullptr;
+    }
+    return resource_provider->resource()->Bitmap();
   } else {
     // Match the SBI configuration to that produced when using GPU compositing:
     // N32 and premul (as set by
