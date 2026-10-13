@@ -5692,6 +5692,58 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    public void testExpandGroupOnGtsExit_Autoscrolls() {
+        // Initialize strip with multiple tabs so strip is scrollable.
+        initializeTest(/* tabIndex= */ 0, /* numTabs= */ 10);
+        mStripLayoutHelper.onSizeChanged(
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+        mStripLayoutHelper.finishAnimationsAndPushTabUpdates();
+
+        // Group tabs near the end (tabs 7, 8, 9) and collapse the group.
+        groupTabs(7, 10, TAB_GROUP_ID_1);
+        StripLayoutGroupTitle groupTitle = mStripLayoutHelper.findGroupTitle(TAB_GROUP_ID_1);
+        assertNotNull(groupTitle);
+        mStripLayoutHelper.collapseTabGroupForTesting(groupTitle, true);
+        when(mModel.getTabGroupCollapsed(TAB_GROUP_ID_1)).thenReturn(true);
+        doAnswer(
+                        invocation -> {
+                            when(mModel.getTabGroupCollapsed(TAB_GROUP_ID_1)).thenReturn(false);
+                            mStripLayoutHelper.collapseTabGroupForTesting(groupTitle, false);
+                            return null;
+                        })
+                .when(mModel)
+                .deleteTabGroupCollapsed(TAB_GROUP_ID_1);
+
+        // Scroll strip to start so the collapsed group is towards or past the right edge.
+        mStripLayoutHelper.setScrollOffsetForTesting(0f);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+        mStripLayoutHelper.finishAnimationsAndPushTabUpdates();
+
+        int targetTabId = mModel.getTabAt(9).getId();
+        mModel.setIndex(9);
+        float scrollOffsetBefore = mStripLayoutHelper.getScrollOffset();
+
+        // Trigger expand on GTS exit.
+        mStripLayoutHelper.expandGroupOnGtsExit();
+
+        mStripLayoutHelper.finishAnimationsAndPushTabUpdates();
+        mStripLayoutHelper.finishScrollForTesting();
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        // Verify the strip auto-scrolled to reveal the selected tab in the expanded group.
+        StripLayoutTab selectedStripTab = mStripLayoutHelper.findTabById(targetTabId);
+        assertNotNull(selectedStripTab);
+        assertNotEquals(
+                "Scroll offset should change to bring the selected tab in the group into view.",
+                scrollOffsetBefore,
+                mStripLayoutHelper.getScrollOffset(),
+                EPSILON);
+        assertTrue(
+                "Selected tab in expanded group should be visible.", selectedStripTab.isVisible());
+    }
+
+    @Test
     @EnableFeatures({ChromeFeatureList.DATA_SHARING})
     public void testTabGroupSyncIph_GroupTitleBubbleIph_ShowSequentially() {
         // Setup tab strip and group the first tab group.

@@ -4073,6 +4073,8 @@ public class StripLayoutHelper
             if (isCollapsed) {
                 groupTitle.setBottomIndicatorWidth(0.f);
             }
+            updateScrollOffsetLimits();
+            computeIdealViewPositions();
         }
 
         // Select an adjacent expanded tab if the current selected tab is being collapsed, If all
@@ -4117,6 +4119,7 @@ public class StripLayoutHelper
         Token tabGroupId = tab != null ? tab.getTabGroupId() : null;
         if (tabGroupId != null && mModel.getTabGroupCollapsed(tabGroupId)) {
             mModel.deleteTabGroupCollapsed(tabGroupId);
+            bringSelectedTabToVisibleArea(LayoutManagerImpl.time(), true);
         }
     }
 
@@ -4247,8 +4250,9 @@ public class StripLayoutHelper
         }
     }
 
+    @VisibleForTesting
     @Contract("!null -> !null")
-    private @Nullable StripLayoutGroupTitle findGroupTitle(@Nullable Token tabGroupId) {
+    @Nullable StripLayoutGroupTitle findGroupTitle(@Nullable Token tabGroupId) {
         return StripLayoutUtils.findGroupTitle(mStripGroupTitles, tabGroupId);
     }
 
