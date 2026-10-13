@@ -161,7 +161,8 @@ struct BrowserWindowCreateParams {
   // fullscreen.
   bool can_fullscreen = true;
 
-  // Document Picture in Picture options, specific to TYPE_PICTURE_IN_PICTURE.
+  // Document Picture in Picture options, specific to TYPE_FLOATING when used
+  // for Document Picture-in-Picture.
   std::optional<blink::mojom::PictureInPictureWindowOptions> pip_options;
 
   // Specifies the collapsed state for the Vertical Tab Strip. True if the

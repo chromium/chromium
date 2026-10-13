@@ -59,8 +59,7 @@ enum class KioskType { kChromeApp = 0, kWebApp = 1, kIwa = 2 };
 BrowserWindowInterface* CreateBrowserWithParams(
     BrowserWindowCreateParams params) {
   BrowserWindowInterface* browser = CreateBrowserWindow(std::move(params));
-  if (browser->GetType() !=
-      BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE) {
+  if (browser->GetType() != BrowserWindowInterface::Type::TYPE_FLOATING) {
     ash::BrowserController::GetInstance()->GetDelegate(browser)->AddTab(
         GURL(url::kAboutBlankURL), /*index=*/std::nullopt,
         ash::BrowserDelegate::TabDisposition::kForeground,
@@ -426,7 +425,7 @@ IN_PROC_BROWSER_TEST_F(KioskBrowserSessionBrowserTest,
           BrowserWindowInterface::Type::TYPE_POPUP,
           BrowserWindowInterface::Type::TYPE_APP,
           BrowserWindowInterface::Type::TYPE_DEVTOOLS,
-          BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE,
+          BrowserWindowInterface::Type::TYPE_FLOATING,
       };
 
   GetPrefs()->SetBoolean(ash::prefs::kNewWindowsInKioskAllowed, true);
@@ -672,7 +671,7 @@ IN_PROC_BROWSER_TEST_P(
           BrowserWindowInterface::Type::TYPE_POPUP,
           BrowserWindowInterface::Type::TYPE_APP,
           BrowserWindowInterface::Type::TYPE_APP_POPUP,
-          BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE,
+          BrowserWindowInterface::Type::TYPE_FLOATING,
       };
   SetUpKioskSession();
   UpdateTroubleshootingToolsPolicy(/*enable=*/true);

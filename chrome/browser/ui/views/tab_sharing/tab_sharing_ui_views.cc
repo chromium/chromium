@@ -490,8 +490,8 @@ void TabSharingUIViews::CreateInfobarForWebContents(WebContents* contents) {
   // typically fit anyway.
   BrowserWindowInterface* browser =
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(contents);
-  if (browser && browser->GetType() ==
-                     BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE) {
+  if (browser &&
+      browser->GetType() == BrowserWindowInterface::Type::TYPE_FLOATING) {
     return;
   }
 

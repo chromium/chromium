@@ -4495,8 +4495,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
                        CannotDuplicatePictureInPictureWindows) {
   // Create picture-in-picture browser.
-  BrowserWindowInterface* pip_browser = CreateBrowserWindowWithType(
-      BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE);
+  BrowserWindowInterface* pip_browser =
+      CreateBrowserWindowWithType(BrowserWindowInterface::Type::TYPE_FLOATING);
   TabListInterface* pip_tab_list = TabListInterface::From(pip_browser);
 
   // Ensure we have a tab.
@@ -4524,8 +4524,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
 // Verifies that tabs.move() into a picture-in-picture window fails.
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
                        CannotMoveTabToPictureInPictureWindow) {
-  BrowserWindowInterface* pip_browser = CreateBrowserWindowWithType(
-      BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE);
+  BrowserWindowInterface* pip_browser =
+      CreateBrowserWindowWithType(BrowserWindowInterface::Type::TYPE_FLOATING);
   int pip_window_id = ExtensionTabUtil::GetWindowId(pip_browser);
 
   content::WebContents* web_contents =

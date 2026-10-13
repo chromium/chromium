@@ -61,7 +61,7 @@ void BrowserWindowPropertyManager::UpdateWindowProperties() {
               browser->GetType() ==
                   BrowserWindowInterface::Type::TYPE_DEVTOOLS ||
               (browser->GetType() ==
-                   BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE &&
+                   BrowserWindowInterface::Type::TYPE_FLOATING &&
                !BrowserInitState::From(browser)
                     ->create_params()
                     .app_name.empty())

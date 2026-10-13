@@ -69,10 +69,10 @@ void UpdateLocationBarUiForWebContents(content::WebContents* web_contents) {
   if (location_bar)
     location_bar->UpdateContentSettingsIcons();
 
-  // The document PiP window does not have a location bar, but has some content
-  // setting views that need to be updated too.
-  if (browser->GetType() ==
-      BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE) {
+  // Floating windows (such as document PiP and always-on-top popups) do not
+  // have a location bar, but have some content setting views that need to be
+  // updated too.
+  if (browser->GetType() == BrowserWindowInterface::Type::TYPE_FLOATING) {
     BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
     auto* frame_view = static_cast<PictureInPictureBrowserFrameView*>(
         browser_view->browser_widget()->GetFrameView());

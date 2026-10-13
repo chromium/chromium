@@ -77,8 +77,7 @@ AnchorConfiguration GetPageInfoAnchorConfiguration(
     }
   }
 
-  if (anchor == Anchor::kLocationBar &&
-      browser_view->GetIsPictureInPictureType()) {
+  if (anchor == Anchor::kLocationBar && browser_view->GetIsFloatingType()) {
     auto* frame_view = static_cast<PictureInPictureBrowserFrameView*>(
         browser_view->browser_widget()->GetFrameView());
     return {views::BubbleAnchor(frame_view->GetLocationIconView()),

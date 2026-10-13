@@ -12,7 +12,7 @@ std::unique_ptr<BrowserFrameView> CreateBrowserFrameView(
     BrowserWidget* widget,
     BrowserView* browser_view) {
   if (browser_view->browser()->GetType() ==
-      BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE) {
+      BrowserWindowInterface::Type::TYPE_FLOATING) {
     return std::make_unique<PictureInPictureBrowserFrameViewAsh>(widget,
                                                                  browser_view);
   }

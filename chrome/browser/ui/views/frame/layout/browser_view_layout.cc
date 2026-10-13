@@ -159,7 +159,7 @@ std::unique_ptr<BrowserViewLayout> BrowserViewLayout::CreateLayout(
       }
       case BrowserWindowInterface::Type::TYPE_POPUP:
       case BrowserWindowInterface::Type::TYPE_DEVTOOLS:
-      case BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE:
+      case BrowserWindowInterface::Type::TYPE_FLOATING:
         return std::make_unique<BrowserViewPopupLayoutImpl>(std::move(delegate),
                                                             std::move(views));
     }

@@ -448,7 +448,7 @@ class PictureInPictureBrowserFrameViewTestBase : public WebRtcTestBase {
               child_web_contents));
       ASSERT_TRUE(browser_view);
       ASSERT_EQ(browser_view->browser()->GetType(),
-                BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE);
+                BrowserWindowInterface::Type::TYPE_FLOATING);
 
       pip_frame_view_ = static_cast<PictureInPictureBrowserFrameView*>(
           browser_view->browser_widget()->GetFrameView());

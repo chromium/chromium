@@ -101,8 +101,7 @@ AutoPictureInPictureWindowOcclusionHelperWidget::GetOcclusionState() const {
         // occlusion, since if only the picture-in-picture window is occluding
         // the observed window, then we'll want to trigger an exit
         // picture-in-picture action.
-        if (browser->GetType() ==
-            BrowserWindowInterface::TYPE_PICTURE_IN_PICTURE) {
+        if (browser->GetType() == BrowserWindowInterface::TYPE_FLOATING) {
           return true;  // Continue iterating
         }
 

@@ -1820,8 +1820,7 @@ void BrowserCommandController::InitCommandState() {
   command_updater_->UpdateCommandEnabled(IDC_CLOSE_TAB, true);
   command_updater_->UpdateCommandEnabled(
       IDC_DUPLICATE_TAB,
-      browser_->GetType() !=
-          BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE);
+      browser_->GetType() != BrowserWindowInterface::Type::TYPE_FLOATING);
   UpdateTabRestoreCommandState();
   command_updater_->UpdateCommandEnabled(IDC_EXIT, true);
   command_updater_->UpdateCommandEnabled(IDC_NAME_WINDOW, true);
@@ -2438,8 +2437,7 @@ void BrowserCommandController::UpdateCommandsForFullscreenMode() {
       browser_->GetType() != BrowserWindowInterface::Type::TYPE_NORMAL &&
           !is_fullscreen &&
           browser_->GetType() != BrowserWindowInterface::Type::TYPE_DEVTOOLS &&
-          browser_->GetType() !=
-              BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE);
+          browser_->GetType() != BrowserWindowInterface::Type::TYPE_FLOATING);
 
   // Focus various bits of UI
   command_updater_->UpdateCommandEnabled(IDC_FOCUS_TOOLBAR, show_main_ui);

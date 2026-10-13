@@ -78,9 +78,8 @@ class WindowFeatureController {
                                             bool check_can_support) const;
   bool AppBrowserSupportsWindowFeature(WindowFeature feature,
                                        bool check_can_support) const;
-  bool PictureInPictureBrowserSupportsWindowFeature(
-      WindowFeature feature,
-      bool check_can_support) const;
+  bool FloatingBrowserSupportsWindowFeature(WindowFeature feature,
+                                            bool check_can_support) const;
   bool SupportsWindowFeatureImpl(WindowFeature feature,
                                  bool check_can_support) const;
   bool IsFullscreen() const;

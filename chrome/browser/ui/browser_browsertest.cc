@@ -1697,7 +1697,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, StartMaximized) {
       "app_name", /*trusted_source=*/true, gfx::Rect(), browser()->GetProfile(),
       /*user_gesture=*/true));
   params.push_back(BrowserWindowCreateParams(
-      BrowserWindowInterface::TYPE_PICTURE_IN_PICTURE, browser()->GetProfile(),
+      BrowserWindowInterface::TYPE_FLOATING, browser()->GetProfile(),
       /*from_user_gesture=*/true));
   for (auto& param : params) {
     param.initial_show_state = ui::mojom::WindowShowState::kMaximized;
@@ -1724,7 +1724,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, StartMinimized) {
       "app_name", /*trusted_source=*/true, gfx::Rect(), browser()->GetProfile(),
       /*user_gesture=*/true));
   params.push_back(BrowserWindowCreateParams(
-      BrowserWindowInterface::TYPE_PICTURE_IN_PICTURE, browser()->GetProfile(),
+      BrowserWindowInterface::TYPE_FLOATING, browser()->GetProfile(),
       /*from_user_gesture=*/true));
   for (auto& param : params) {
     param.initial_show_state = ui::mojom::WindowShowState::kMinimized;
@@ -3379,12 +3379,12 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserTest, CreatePictureInPicture) {
-  BrowserWindowInterface* popup_browser = CreateBrowserWindow(
-      BrowserWindowCreateParams(BrowserWindowInterface::TYPE_PICTURE_IN_PICTURE,
-                                browser()->GetProfile(),
-                                /*from_user_gesture=*/true));
+  BrowserWindowInterface* popup_browser =
+      CreateBrowserWindow(BrowserWindowCreateParams(
+          BrowserWindowInterface::TYPE_FLOATING, browser()->GetProfile(),
+          /*from_user_gesture=*/true));
   ASSERT_EQ(popup_browser->GetType(),
-            BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE);
+            BrowserWindowInterface::Type::TYPE_FLOATING);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

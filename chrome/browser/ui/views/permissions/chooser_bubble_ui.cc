@@ -378,8 +378,7 @@ base::OnceClosure ShowDeviceChooserDialog(
   // then our widget is also always-on-top and needs to be tracked by the
   // PictureInPictureOcclusionTracker so it can handle our widget occluding
   // other widgets.
-  if (browser->GetType() ==
-      BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE) {
+  if (browser->GetType() == BrowserWindowInterface::Type::TYPE_FLOATING) {
     PictureInPictureOcclusionTracker* tracker =
         PictureInPictureWindowManager::GetInstance()->GetOcclusionTracker();
     if (tracker) {

@@ -2104,7 +2104,7 @@ IN_PROC_BROWSER_TEST_P(BrowserNavigatorPictureInPictureTest,
   // Should not reuse the browser.
   EXPECT_NE(browser(), params.browser);
   EXPECT_EQ(params.browser->GetType(),
-            BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE);
+            BrowserWindowInterface::Type::TYPE_FLOATING);
   EXPECT_EQ(BrowserInitState::From(params.browser)->create_params().app_name,
             std::string());
 
@@ -2166,7 +2166,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   // Make sure that attempting to open a picture in picture window from a
   // picture in picture window fails.
   BrowserWindowInterface* pip = CreateEmptyBrowserForType(
-      BrowserWindowInterface::TYPE_PICTURE_IN_PICTURE, browser()->GetProfile());
+      BrowserWindowInterface::TYPE_FLOATING, browser()->GetProfile());
   NavigateParams params = MakeNavigateParams(pip);
   params.disposition = WindowOpenDisposition::NEW_PICTURE_IN_PICTURE;
 
@@ -2188,7 +2188,7 @@ IN_PROC_BROWSER_TEST_F(
     Disposition_PictureInPicture_CantWithoutASourceContents) {
   // Opening a picture-in-picture window without a source contents should fail.
   BrowserWindowInterface* pip = CreateEmptyBrowserForType(
-      BrowserWindowInterface::TYPE_PICTURE_IN_PICTURE, browser()->GetProfile());
+      BrowserWindowInterface::TYPE_FLOATING, browser()->GetProfile());
   NavigateParams params = MakeNavigateParams(pip);
   params.disposition = WindowOpenDisposition::NEW_PICTURE_IN_PICTURE;
   params.source_contents = nullptr;
@@ -2201,7 +2201,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   // Disallow document PiP windows from opening from a window with about:blank
   // in the omnibox
   BrowserWindowInterface* pip = CreateEmptyBrowserForType(
-      BrowserWindowInterface::TYPE_PICTURE_IN_PICTURE, browser()->GetProfile());
+      BrowserWindowInterface::TYPE_FLOATING, browser()->GetProfile());
   NavigateParams params = MakeNavigateParams(pip);
   params.disposition = WindowOpenDisposition::NEW_PICTURE_IN_PICTURE;
 
@@ -2348,7 +2348,7 @@ IN_PROC_BROWSER_TEST_P(BrowserNavigatorPictureInPictureTest,
   EXPECT_EQ(browser_count + 1,
             GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_EQ(params.browser->GetType(),
-            BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE);
+            BrowserWindowInterface::Type::TYPE_FLOATING);
   EXPECT_NE(BrowserInitState::From(params.browser)->create_params().app_name,
             std::string());
 }
@@ -2492,7 +2492,7 @@ IN_PROC_BROWSER_TEST_P(BrowserNavigatorTestWithMockScreen,
     } else {
       ASSERT_NE(nullptr, params.browser);
       EXPECT_EQ(params.browser->GetType(),
-                BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE);
+                BrowserWindowInterface::Type::TYPE_FLOATING);
     }
 
     // The PiP window should also be on display 1.
@@ -2539,7 +2539,7 @@ IN_PROC_BROWSER_TEST_P(BrowserNavigatorTestWithMockScreen,
     } else {
       ASSERT_NE(nullptr, params.browser);
       EXPECT_EQ(params.browser->GetType(),
-                BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE);
+                BrowserWindowInterface::Type::TYPE_FLOATING);
     }
 
     // The PiP window should also be on display 2.

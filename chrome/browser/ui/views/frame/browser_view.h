@@ -389,6 +389,10 @@ class BrowserView : public BrowserWindow,
   // for an installed web app.
   bool GetIsWebAppType() const;
 
+  // Returns true if the Browser object associated with this BrowserView is a
+  // floating window (e.g. Document Picture-in-Picture or always-on-top popup).
+  bool GetIsFloatingType() const;
+
   // Returns true if the Browser object associated with this BrowserView is for
   // a Picture in Picture window.
   bool GetIsPictureInPictureType() const;

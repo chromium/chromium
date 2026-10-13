@@ -913,8 +913,7 @@ void AppBrowserController::OnReceivedInitialURL() {
 
   // Browsers of picture in picture type already take care of setting the proper
   // window bounds.
-  if (browser()->GetType() ==
-      BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE) {
+  if (browser()->GetType() == BrowserWindowInterface::Type::TYPE_FLOATING) {
     return;
   }
 

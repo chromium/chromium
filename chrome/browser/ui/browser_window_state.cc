@@ -50,7 +50,7 @@ std::string GetWindowName(const BrowserWindowInterface* browser) {
     case BrowserWindowInterface::Type::TYPE_NORMAL:
       return prefs::kBrowserWindowPlacement;
     case BrowserWindowInterface::Type::TYPE_POPUP:
-    case BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE:
+    case BrowserWindowInterface::Type::TYPE_FLOATING:
       return prefs::kBrowserWindowPlacementPopup;
     case BrowserWindowInterface::Type::TYPE_APP:
     case BrowserWindowInterface::Type::TYPE_DEVTOOLS:

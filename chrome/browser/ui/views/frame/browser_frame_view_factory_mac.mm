@@ -11,7 +11,7 @@ namespace chrome {
 std::unique_ptr<BrowserFrameView> CreateBrowserFrameView(
     BrowserWidget* frame,
     BrowserView* browser_view) {
-  if (browser_view->GetIsPictureInPictureType()) {
+  if (browser_view->GetIsFloatingType()) {
     return std::make_unique<PictureInPictureBrowserFrameView>(frame,
                                                               browser_view);
   }

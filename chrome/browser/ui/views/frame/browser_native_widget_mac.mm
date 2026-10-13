@@ -726,10 +726,11 @@ void BrowserNativeWidgetMac::PopulateCreateWindowParams(
                        NSWindowStyleMaskMiniaturizable |
                        NSWindowStyleMaskResizable;
   CHECK(browser_view_);
-  if (browser_view_->GetIsPictureInPictureType()) {
-    // Picture in Picture windows, even if they are part of a web app, draw
-    // their own title bar and decorations.  Note that `GetIsWebAppType()` might
-    // also be true here, so it's important that this check is first.
+  if (browser_view_->GetIsFloatingType()) {
+    // Picture in Picture and floating windows, even if they are part of a web
+    // app, draw their own title bar and decorations.  Note that
+    // `GetIsWebAppType()` might also be true here, so it's important that this
+    // check is first.
     params->window_class = remote_cocoa::mojom::WindowClass::kFrameless;
     params->style_mask = NSWindowStyleMaskFullSizeContentView |
                          NSWindowStyleMaskTitled | NSWindowStyleMaskResizable;
@@ -858,7 +859,7 @@ views::Widget::InitParams BrowserNativeWidgetMac::GetWidgetParams(
 }
 
 bool BrowserNativeWidgetMac::UseCustomFrame() const {
-  return browser_view_ && browser_view_->GetIsPictureInPictureType();
+  return browser_view_ && browser_view_->GetIsFloatingType();
 }
 
 bool BrowserNativeWidgetMac::UsesNativeSystemMenu() const {

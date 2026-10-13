@@ -304,8 +304,7 @@ void PermissionPromptBaseView::HostPaintAsActiveChanged() {
 
 bool PermissionPromptBaseView::IsForPictureInPictureWindow() const {
   if (const BrowserWindowInterface* browser = GetBrowser()) {
-    return browser->GetType() ==
-           BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE;
+    return browser->GetType() == BrowserWindowInterface::Type::TYPE_FLOATING;
   }
   return !!DocumentPipHost::FromChildWebContents(web_contents());
 }

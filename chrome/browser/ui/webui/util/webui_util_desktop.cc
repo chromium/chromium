@@ -76,8 +76,7 @@ BrowserWindowInterface* GetBrowserForOpeningWebUi(
     return nullptr;
   }
 
-  if (browser->GetType() !=
-      BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE) {
+  if (browser->GetType() != BrowserWindowInterface::Type::TYPE_FLOATING) {
     return browser;
   }
 

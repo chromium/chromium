@@ -300,8 +300,8 @@ std::string InteractiveBrowserTestPrivate::DebugDescribeContext(
       case BrowserWindowInterface::Type::TYPE_DEVTOOLS:
         type = "Devtools window";
         break;
-      case BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE:
-        type = "Picture-in-picture window";
+      case BrowserWindowInterface::Type::TYPE_FLOATING:
+        type = "Floating window";
         break;
       default:
         type = "Other browser window";

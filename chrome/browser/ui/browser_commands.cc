@@ -1189,7 +1189,7 @@ void ReloadBypassingCache(BrowserWindowInterface* browser,
 bool CanReload(const BrowserWindowInterface* browser) {
   return browser &&
          browser->GetType() != BrowserWindowInterface::TYPE_DEVTOOLS &&
-         browser->GetType() != BrowserWindowInterface::TYPE_PICTURE_IN_PICTURE;
+         browser->GetType() != BrowserWindowInterface::TYPE_FLOATING;
 }
 
 void Home(BrowserWindowInterface* browser, WindowOpenDisposition disposition) {
@@ -1785,7 +1785,7 @@ void DuplicateSplit(BrowserWindowInterface* browser,
 }
 
 bool CanDuplicateTabAt(const BrowserWindowInterface* browser, int index) {
-  if (browser->GetType() == BrowserWindowInterface::TYPE_PICTURE_IN_PICTURE ||
+  if (browser->GetType() == BrowserWindowInterface::TYPE_FLOATING ||
       browser->GetType() == BrowserWindowInterface::TYPE_APP_POPUP ||
       browser->GetType() == BrowserWindowInterface::TYPE_DEVTOOLS) {
     return false;

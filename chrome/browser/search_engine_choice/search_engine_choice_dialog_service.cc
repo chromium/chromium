@@ -58,7 +58,7 @@ bool IsBrowserTypeSupported(const BrowserWindowInterface& browser) {
     case BrowserWindowInterface::Type::TYPE_POPUP:
       return true;
     case BrowserWindowInterface::Type::TYPE_APP_POPUP:
-    case BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE:
+    case BrowserWindowInterface::Type::TYPE_FLOATING:
     case BrowserWindowInterface::Type::TYPE_APP:
     case BrowserWindowInterface::Type::TYPE_DEVTOOLS:
       return false;

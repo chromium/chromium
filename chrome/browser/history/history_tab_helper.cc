@@ -186,7 +186,7 @@ history::VisitContextAnnotations::BrowserType GetBrowserType(
     case BrowserWindowInterface::Type::TYPE_POPUP:
     case BrowserWindowInterface::Type::TYPE_APP:
     case BrowserWindowInterface::Type::TYPE_APP_POPUP:
-    case BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE:
+    case BrowserWindowInterface::Type::TYPE_FLOATING:
       return history::VisitContextAnnotations::BrowserType::kPopup;
     case BrowserWindowInterface::Type::TYPE_DEVTOOLS:
       return history::VisitContextAnnotations::BrowserType::kUnknown;

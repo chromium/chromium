@@ -93,8 +93,8 @@ BrowserWindowCreateParams BrowserWindowCreateParams::CreateForPictureInPicture(
     bool trusted_source,
     Profile* profile,
     bool user_gesture) {
-  BrowserWindowCreateParams params(
-      BrowserWindowInterface::TYPE_PICTURE_IN_PICTURE, profile, user_gesture);
+  BrowserWindowCreateParams params(BrowserWindowInterface::TYPE_FLOATING,
+                                   profile, user_gesture);
   params.app_name = app_name;
   params.is_trusted_source = trusted_source;
   return params;

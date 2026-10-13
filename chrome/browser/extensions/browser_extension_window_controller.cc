@@ -101,7 +101,7 @@ api::tabs::WindowType GetTabsWindowType(const BrowserWindowInterface* browser) {
     // reach this point).
     case BrowserWindowInterface::TYPE_NORMAL:
 #if !BUILDFLAG(IS_ANDROID)
-    case BrowserWindowInterface::TYPE_PICTURE_IN_PICTURE:
+    case BrowserWindowInterface::TYPE_FLOATING:
 #endif
       return api::tabs::WindowType::kNormal;
   }

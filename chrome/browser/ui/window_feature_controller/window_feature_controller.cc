@@ -138,8 +138,7 @@ bool WindowFeatureController::AppBrowserSupportsWindowFeature(
       return check_can_support || !IsFullscreen();
     case WindowFeature::kFeatureTabStrip:
       // Even when the app has a tab strip, it should be hidden in
-      // fullscreen. This is consistent with the behavior of
-      // NormalBrowserSupportsWindowFeature().
+      // fullscreen.
       return app_controller_->has_tab_strip() &&
              (check_can_support || !IsFullscreen());
     case WindowFeature::kFeatureBookmarkBar:
@@ -148,7 +147,7 @@ bool WindowFeatureController::AppBrowserSupportsWindowFeature(
   }
 }
 
-bool WindowFeatureController::PictureInPictureBrowserSupportsWindowFeature(
+bool WindowFeatureController::FloatingBrowserSupportsWindowFeature(
     WindowFeature feature,
     bool check_can_support) const {
   switch (feature) {
@@ -180,9 +179,8 @@ bool WindowFeatureController::SupportsWindowFeatureImpl(
     case BrowserWindowInterface::Type::TYPE_DEVTOOLS:
     case BrowserWindowInterface::Type::TYPE_APP_POPUP:
       return AppPopupBrowserSupportsWindowFeature(feature, check_can_support);
-    case BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE:
-      return PictureInPictureBrowserSupportsWindowFeature(feature,
-                                                          check_can_support);
+    case BrowserWindowInterface::Type::TYPE_FLOATING:
+      return FloatingBrowserSupportsWindowFeature(feature, check_can_support);
   }
 }
 

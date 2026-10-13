@@ -96,9 +96,9 @@ bool BrowserNativeWidgetAuraLinux::UseCustomFrame() const {
   }
 
   // Hosted app windows get a custom frame (if the desktop PWA experimental
-  // feature is enabled), or if the window is picture in picture.
+  // feature is enabled), or if the window is a floating window.
   return browser_view()->GetIsWebAppType() ||
-         browser_view()->GetIsPictureInPictureType();
+         browser_view()->GetIsFloatingType();
 }
 
 void BrowserNativeWidgetAuraLinux::TabDraggingKindChanged(

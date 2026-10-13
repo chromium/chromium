@@ -366,7 +366,7 @@ void DocumentPipHost::SetContentsBounds(content::WebContents* source,
                                         const gfx::Rect& bounds) {
   // Record feature usage for window.moveTo()/resizeTo() calls, aligned with
   // Browser::SetContentsBounds which records the same metrics for all
-  // non-normal browser types including TYPE_PICTURE_IN_PICTURE.
+  // non-normal browser types including TYPE_FLOATING.
   std::vector<blink::mojom::WebFeature> features = {
       blink::mojom::WebFeature::kMovedOrResizedPopup};
   if (creation_timer_.Elapsed() > base::Seconds(2)) {

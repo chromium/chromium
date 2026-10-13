@@ -176,12 +176,12 @@ TEST_F(WindowFeatureControllerTest, PopupBrowserFeatures_Trusted) {
       controller->CanSupportWindowFeature(WindowFeature::kFeatureLocationBar));
 }
 
-// Tests for TYPE_PICTURE_IN_PICTURE browser.
-TEST_F(WindowFeatureControllerTest, PictureInPictureBrowserFeatures) {
+// Tests for TYPE_FLOATING browser.
+TEST_F(WindowFeatureControllerTest, FloatingBrowserFeatures) {
   BrowserWindowFullscreenController fullscreen_controller(
       mock_browser_window_interface_);
   auto controller =
-      CreateController(BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE,
+      CreateController(BrowserWindowInterface::Type::TYPE_FLOATING,
                        /*is_trusted_source=*/false, &fullscreen_controller);
 
   fullscreen_controller.set_should_hide_ui_for_fullscreen_for_testing(false);

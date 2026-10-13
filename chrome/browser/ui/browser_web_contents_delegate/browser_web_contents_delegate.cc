@@ -1220,7 +1220,7 @@ blink::mojom::DisplayMode BrowserWebContentsDelegate::GetDisplayMode(
   }
 
   const BrowserWindowInterface::Type type = browser_->GetType();
-  if ((type == BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE)) {
+  if ((type == BrowserWindowInterface::Type::TYPE_FLOATING)) {
     return blink::mojom::DisplayMode::kPictureInPicture;
   }
 

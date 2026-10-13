@@ -84,8 +84,7 @@ std::u16string WindowMetadataController::GetWindowTitleForCurrentTab(
   // For document picture-in-picture windows, we use the title from the opener
   // WebContents instead of the picture-in-picture WebContents itself.
   content::WebContents* web_contents_for_title =
-      browser_->GetType() ==
-              BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE
+      browser_->GetType() == BrowserWindowInterface::Type::TYPE_FLOATING
           ? PictureInPictureWindowManager::GetInstance()->GetWebContents()
           : browser_->tab_strip_model()->GetActiveWebContents();
 
@@ -99,8 +98,7 @@ std::u16string WindowMetadataController::GetWindowTitleForTab(
 
   if (title.empty()) {
     title = tab.Get()->GetContents()->GetTitle();
-    if (browser_->GetType() ==
-        BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE) {
+    if (browser_->GetType() == BrowserWindowInterface::Type::TYPE_FLOATING) {
       content::WebContents* pip_web_contents =
           PictureInPictureWindowManager::GetInstance()->GetWebContents();
       if (pip_web_contents) {

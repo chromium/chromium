@@ -129,9 +129,9 @@ IN_PROC_BROWSER_TEST_F(PermissionPromptBaseViewBrowserTest,
       BrowserView::GetBrowserViewForBrowser(browser())->GetWidget();
 
   // Create a picture-in-picture browser window to request the permission.
-  BrowserWindowCreateParams params(
-      BrowserWindowInterface::TYPE_PICTURE_IN_PICTURE, GetProfile(),
-      /*from_user_gesture=*/true);
+  BrowserWindowCreateParams params(BrowserWindowInterface::TYPE_FLOATING,
+                                   GetProfile(),
+                                   /*from_user_gesture=*/true);
   BrowserWindowInterface* pip_browser = CreateBrowserWindow(std::move(params));
   chrome::AddTabAt(pip_browser, GURL(), -1, true);
   pip_browser->GetWindow()->Show();

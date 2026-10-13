@@ -914,9 +914,10 @@ BrowserView::BrowserView(BrowserWindowInterface* browser)
   // `create_params` to enable/disable specific size controls.
   if (IsRunningInForcedAppMode()) {
     SetHasWindowSizeControls(false);
-  } else if (GetIsPictureInPictureType()) {
-    // Picture in picture windows must always have a title, can never minimize,
-    // and can never maximize regardless of what the params say.
+  } else if (GetIsFloatingType()) {
+    // Picture in picture and always-on-top popup windows must always have a
+    // title, can never minimize, and can never maximize regardless of what the
+    // params say.
     SetShowTitle(true);
     SetCanMinimize(false);
     SetCanMaximize(false);
@@ -1550,9 +1551,12 @@ bool BrowserView::GetIsWebAppType() const {
   return web_app::AppBrowserController::IsWebApp(browser_.get());
 }
 
+bool BrowserView::GetIsFloatingType() const {
+  return browser_->GetType() == BrowserWindowInterface::Type::TYPE_FLOATING;
+}
+
 bool BrowserView::GetIsPictureInPictureType() const {
-  return browser_->GetType() ==
-         BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE;
+  return browser_->GetType() == BrowserWindowInterface::Type::TYPE_FLOATING;
 }
 
 std::optional<blink::mojom::PictureInPictureWindowOptions>

@@ -659,8 +659,8 @@ std::string BrowserTypeToString(BrowserWindowInterface::Type type) {
       return "TYPE_DEVTOOLS";
     case BrowserWindowInterface::Type::TYPE_APP_POPUP:
       return "TYPE_APP_POPUP";
-    case BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE:
-      return "TYPE_PICTURE_IN_PICTURE";
+    case BrowserWindowInterface::Type::TYPE_FLOATING:
+      return "TYPE_FLOATING";
   }
   NOTREACHED() << "Unknown browser type: " + base::NumberToString(type);
 }
@@ -1947,8 +1947,8 @@ class NavCaptureParameterizedBrowserTest
     if (type == "TYPE_APP_POPUP") {
       return BrowserWindowInterface::Type::TYPE_APP_POPUP;
     }
-    if (type == "TYPE_PICTURE_IN_PICTURE") {
-      return BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE;
+    if (type == "TYPE_FLOATING") {
+      return BrowserWindowInterface::Type::TYPE_FLOATING;
     }
 
     NOTREACHED() << "Unknown browser type: " + type;
