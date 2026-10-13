@@ -813,6 +813,151 @@ class PerfArtifactsCollectionTest(unittest.TestCase):
       self.assertEqual(histograms[0]['unit'], 'ms_smallerIsBetter')
       self.assertEqual(histograms[0]['sampleValues'], [210.5, 198.2])
       self.assertIn('running', histograms[0])
+      diagnostics = histograms[0]['diagnostics']
+      self.assertEqual(diagnostics['benchmarks']['values'], ['bling.startup'])
+      self.assertEqual(
+        diagnostics['stories']['values'], ['Startup.ColdStartFromMain']
+      )
+
+  def test_convert_samples_without_benchmark_still_has_story(self):
+    with tempfile.TemporaryDirectory() as tmpdir:
+      samples_path = os.path.join(tmpdir, 'perf_samples.json')
+      with open(samples_path, 'w') as f:
+        json.dump(
+          [
+            {
+              'name': 'Memory.Footprint',
+              'unit': 'sizeInBytes_smallerIsBetter',
+              'samples': [1024],
+              'story': 'about_blank',
+            }
+          ],
+          f,
+        )
+
+      runner_class = xcodebuild_runner.SimulatorParallelTestRunner
+      runner_class._convert_samples_to_histogram_sets(samples_path, tmpdir)
+
+      with open(os.path.join(tmpdir, 'perf_results.json'), 'r') as f:
+        histograms = json.load(f)
+      self.assertEqual(len(histograms), 1)
+      diagnostics = histograms[0]['diagnostics']
+      self.assertNotIn('benchmarks', diagnostics)
+      self.assertEqual(diagnostics['stories']['values'], ['about_blank'])
+
+  def test_merge_perf_samples_appends_matching_metrics(self):
+    saved = [
+      {'benchmark': 'bling.startup', 'name': 'A', 'unit': 'ms', 'samples': [1]},
+      {'name': 'B', 'unit': 'ms', 'samples': [2]},
+    ]
+    new = [
+      {'benchmark': 'bling.startup', 'name': 'A', 'unit': 'ms', 'samples': [3]},
+      {'benchmark': 'bling.memory', 'name': 'A', 'unit': 'ms', 'samples': [4]},
+      {'benchmark': '', 'name': 'B', 'unit': 'ms', 'samples': [5]},
+    ]
+    merged = xcodebuild_runner.SimulatorParallelTestRunner._merge_perf_samples(
+      saved, new
+    )
+    self.assertEqual(
+      [(e.get('benchmark'), e['name'], e['samples']) for e in merged],
+      [
+        ('bling.startup', 'A', [1, 3]),
+        (None, 'B', [2, 5]),
+        ('bling.memory', 'A', [4]),
+      ],
+    )
+    # Inputs are not modified.
+    self.assertEqual(saved[0]['samples'], [1])
+
+  def test_launch_command_saves_perf_samples_only_for_benchmarks(self):
+    runner = mock.Mock()
+    launch_command = object.__new__(xcodebuild_runner.LaunchCommand)
+    launch_command.test_runner = runner
+
+    runner.benchmark_name = None
+    launch_command._save_perf_samples_before_reset()
+    runner.save_perf_samples.assert_not_called()
+
+    runner.benchmark_name = 'bling'
+    launch_command._save_perf_samples_before_reset()
+    runner.save_perf_samples.assert_called_once_with()
+
+  @mock.patch.object(xcodebuild_runner.DeviceXcodeTestRunner, 'set_up')
+  @mock.patch(
+    'test_runner.get_current_xcode_info',
+    return_value={'version': '27.0', 'build': '27A266A', 'path': '/Xcode.app'},
+  )
+  @mock.patch('test_apps.get_bundle_id', return_value='org.chromium.gtest')
+  @mock.patch.object(
+    test_runner.subprocess, 'check_output', return_value=b'device-UUID'
+  )
+  def test_collect_perf_artifacts_keeps_samples_from_wiped_attempts(
+    self,
+    mock_udid,
+    mock_bundle_id,
+    mock_xcode_info,
+    mock_set_up,
+  ):
+    """Samples saved before a retry's reinstall survive to the final output."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+      host_app = os.path.join(tmpdir, 'ios_chrome_eg2tests.app')
+      os.makedirs(os.path.join(host_app, 'PlugIns', 'module.xctest'))
+      out_dir = os.path.join(tmpdir, 'out')
+      # What the app container holds at each pull: attempt 1 before the
+      # reinstall, then the retry's fresh install, then nothing on failure.
+      container_states = [
+        [
+          {
+            'benchmark': 'bling.startup',
+            'name': 'Startup',
+            'unit': 'ms_smallerIsBetter',
+            'samples': [200.0],
+          }
+        ],
+        [
+          {
+            'benchmark': 'bling.memory',
+            'name': 'Memory',
+            'unit': 'sizeInBytes_smallerIsBetter',
+            'samples': [1024.0],
+          }
+        ],
+        None,
+      ]
+
+      def fake_device_extract(runner_self, bundle_id=None):
+        state = container_states.pop(0)
+        if state is None:
+          return
+        docs_dir = os.path.join(runner_self.out_dir, 'Documents')
+        os.makedirs(docs_dir, exist_ok=True)
+        with open(os.path.join(docs_dir, 'perf_samples.json'), 'w') as f:
+          json.dump(state, f)
+
+      tr = xcodebuild_runner.DeviceXcodeTestRunner(
+        host_app,
+        host_app,
+        out_dir,
+        skip_enumerate_tests=True,
+      )
+      with mock.patch.object(
+        xcodebuild_runner.test_runner.DeviceTestRunner,
+        'extract_test_data',
+        new=fake_device_extract,
+      ):
+        tr.save_perf_samples()  # Before the retry's reinstall.
+        tr._collect_perf_artifacts()  # After the last attempt.
+        # A failed pull must not resurrect the previous pull's file.
+        tr.save_perf_samples()
+
+      for benchmark, name in (
+        ('bling.startup', 'Startup'),
+        ('bling.memory', 'Memory'),
+      ):
+        with open(os.path.join(out_dir, benchmark, 'perf_results.json')) as f:
+          histograms = json.load(f)
+        self.assertEqual([h['name'] for h in histograms], [name])
+      self.assertEqual(len(tr._saved_perf_samples), 2)
 
   @mock.patch.object(xcodebuild_runner.DeviceXcodeTestRunner, 'set_up')
   @mock.patch(
@@ -883,7 +1028,7 @@ class PerfArtifactsCollectionTest(unittest.TestCase):
   )
   @mock.patch('test_apps.get_bundle_id', return_value='org.chromium.gtest')
   @mock.patch('iossim_util.get_simulator', return_value='sim-UUID')
-  def test_collect_perf_artifacts_from_extracted_documents(
+  def test_collect_perf_artifacts_ignores_stale_documents(
     self,
     mock_udid,
     mock_bundle_id,
@@ -891,7 +1036,10 @@ class PerfArtifactsCollectionTest(unittest.TestCase):
     mock_xcode_info,
     mock_set_up,
   ):
-    """Tests reusing Documents/perf_samples.json already under out_dir."""
+    """A leftover Documents/perf_samples.json isn't reused if the pull fails.
+
+    Reusing it would double-count samples already saved by an earlier pull.
+    """
     with tempfile.TemporaryDirectory() as tmpdir:
       host_app = os.path.join(tmpdir, 'ios_chrome_eg2tests.app')
       os.makedirs(host_app)
@@ -921,8 +1069,11 @@ class PerfArtifactsCollectionTest(unittest.TestCase):
       )
       tr._collect_perf_artifacts()
 
-      self.assertTrue(
+      self.assertFalse(
         os.path.exists(os.path.join(out_dir, 'perf_results.json'))
+      )
+      self.assertFalse(
+        os.path.exists(os.path.join(docs_dir, 'perf_samples.json'))
       )
 
 

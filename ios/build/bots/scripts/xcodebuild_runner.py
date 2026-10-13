@@ -10,7 +10,6 @@ import json
 import logging
 import os
 import plistlib
-import shutil
 import subprocess
 import sys
 import time
@@ -152,6 +151,15 @@ class LaunchCommand(object):
       exception_checker=self.exception_checker,
     )
 
+  def _save_perf_samples_before_reset(self):
+    """Saves the previous attempt's perf samples before the app is wiped.
+
+    Retries reinstall the app (or erase the simulator), which deletes the
+    perf_samples.json written by earlier attempts.
+    """
+    if getattr(self.test_runner, 'benchmark_name', None):
+      self.test_runner.save_perf_samples()
+
   def launch(self):
     """Launches tests using xcodebuild."""
     overall_launch_command_result = ResultCollection()
@@ -167,6 +175,7 @@ class LaunchCommand(object):
       # Erase all simulators per each attempt
       if iossim_util.is_device_with_udid_simulator(self.udid):
         if self.ensure_fresh_simulators and attempt > 0:
+          self._save_perf_samples_before_reset()
           self.udid = self.test_runner.ensure_fresh_simulator_state()
           # kill all running simulators to prevent possible memory leaks
           test_runner.SimulatorTestRunner.kill_simulators()
@@ -188,6 +197,7 @@ class LaunchCommand(object):
         # Uninstall apps on physical devices before retrying to terminate any
         # orphaned runner or host app processes left behind by a previous hung
         # xcodebuild attempt.
+        self._save_perf_samples_before_reset()
         self.test_runner.uninstall_apps()
 
       outdir_attempt = os.path.join(self.out_dir, 'attempt_%d' % attempt)
@@ -655,6 +665,8 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
     tracing_project.UpdateSysPathIfNeeded()
     from tracing.value import histogram as catapult_histogram
     from tracing.value import histogram_set as catapult_histogram_set
+    from tracing.value.diagnostics import generic_set
+    from tracing.value.diagnostics import reserved_infos
 
     with open(samples_json_path, 'r') as f:
       raw_entries = json.load(f)
@@ -672,6 +684,15 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
       for value in samples:
         hist.AddSample(float(value))
       benchmark = entry.get('benchmark') or ''
+      # The perf dashboard's JSON converter skips histograms without
+      # diagnostics, so always attach the benchmark and story.
+      if benchmark:
+        hist.diagnostics[reserved_infos.BENCHMARKS.name] = (
+          generic_set.GenericSet([benchmark])
+        )
+      hist.diagnostics[reserved_infos.STORIES.name] = generic_set.GenericSet(
+        [entry.get('story') or name]
+      )
       grouped_histograms[benchmark].AddHistogram(hist)
 
     for benchmark, histograms in grouped_histograms.items():
@@ -684,29 +705,79 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
       with open(perf_results_path, 'w') as f:
         json.dump(histograms.AsDicts(), f, indent=2)
 
-  def _collect_perf_artifacts(self):
-    """Pulls perf_samples.json and converts it to HistogramSet JSON."""
+  @staticmethod
+  def _merge_perf_samples(saved_entries, new_entries):
+    """Merges perf sample entries, appending samples for matching metrics.
+
+    Entries match on (benchmark, name, unit), the same key PerfAppInterface
+    uses when it appends to perf_samples.json.
+    """
+    merged = [dict(entry) for entry in saved_entries]
+    index = {
+      (e.get('benchmark') or '', e.get('name'), e.get('unit')): e
+      for e in merged
+    }
+    for entry in new_entries:
+      key = (entry.get('benchmark') or '', entry.get('name'), entry.get('unit'))
+      if key in index:
+        index[key]['samples'] = list(index[key].get('samples') or []) + list(
+          entry.get('samples') or []
+        )
+      else:
+        copy = dict(entry)
+        merged.append(copy)
+        index[key] = copy
+    return merged
+
+  def _pull_perf_samples(self):
+    """Pulls perf_samples.json from the app container.
+
+    Returns:
+      The list of sample entries, or [] if none could be pulled.
+    """
     os.makedirs(self.out_dir, exist_ok=True)
     extracted_samples = os.path.join(
       self.out_dir, 'Documents', 'perf_samples.json'
     )
-    if not os.path.isfile(extracted_samples):
-      target_app_path = self.host_app_path or self.app_path
-      if target_app_path and os.path.exists(target_app_path):
-        try:
-          bundle_id = test_apps.get_bundle_id(target_app_path)
-          if bundle_id:
-            self.extract_test_data(bundle_id=bundle_id)
-        except Exception as err:  # pylint: disable=broad-except
-          LOGGER.warning('Perf artifact collection failed: %s', err)
-
+    # Remove any earlier copy so a failed pull isn't mistaken for new data.
     if os.path.isfile(extracted_samples):
-      raw_samples_dest = os.path.join(self.out_dir, 'perf_samples.json')
-      shutil.copyfile(extracted_samples, raw_samples_dest)
+      os.remove(extracted_samples)
+    target_app_path = self.host_app_path or self.app_path
+    if target_app_path and os.path.exists(target_app_path):
       try:
-        self._convert_samples_to_histogram_sets(raw_samples_dest, self.out_dir)
+        bundle_id = test_apps.get_bundle_id(target_app_path)
+        if bundle_id:
+          self.extract_test_data(bundle_id=bundle_id)
       except Exception as err:  # pylint: disable=broad-except
-        LOGGER.warning('Perf artifact conversion failed: %s', err)
+        LOGGER.warning('Perf artifact collection failed: %s', err)
+    if not os.path.isfile(extracted_samples):
+      return []
+    try:
+      with open(extracted_samples, 'r') as f:
+        return json.load(f)
+    except ValueError as err:
+      LOGGER.warning('Failed to parse %s: %s', extracted_samples, err)
+      return []
+
+  def save_perf_samples(self):
+    """Saves perf samples from the current app install before it's wiped."""
+    self._saved_perf_samples = self._merge_perf_samples(
+      getattr(self, '_saved_perf_samples', []), self._pull_perf_samples()
+    )
+
+  def _collect_perf_artifacts(self):
+    """Pulls perf_samples.json and converts it to HistogramSet JSON."""
+    self.save_perf_samples()
+    entries = self._saved_perf_samples
+    if not entries:
+      return
+    raw_samples_dest = os.path.join(self.out_dir, 'perf_samples.json')
+    with open(raw_samples_dest, 'w') as f:
+      json.dump(entries, f, indent=2)
+    try:
+      self._convert_samples_to_histogram_sets(raw_samples_dest, self.out_dir)
+    except Exception as err:  # pylint: disable=broad-except
+      LOGGER.warning('Perf artifact conversion failed: %s', err)
 
   def ensure_fresh_simulator_state(self) -> str:
     """Ensures that the simulator is in a fresh state.

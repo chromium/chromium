@@ -68,6 +68,21 @@ def use_xcodebuild_runner(args):
   return args.xcodebuild_sim_runner or args.xcodebuild_device_runner
 
 
+def _benchmark_test_results(test_results, benchmark):
+  """Returns |test_results| with its tests nested under |benchmark|.
+
+  process_perf_results.py merges the test_results.json of every benchmark
+  folder, and fails on tests that appear in more than one. The suite's
+  results can't be attributed to individual benchmarks, so each folder
+  gets a copy namespaced by its benchmark name.
+  """
+  results = dict(test_results)
+  tests = test_results.get('tests')
+  if tests:
+    results['tests'] = {benchmark: tests}
+  return results
+
+
 def write_perf_json_results(
   out_dir, test_results, benchmark_name, perf_output_path
 ):
@@ -78,7 +93,10 @@ def write_perf_json_results(
     for entry_perf in sorted(glob.glob(sub_perf_pattern)):
       entry_dir = os.path.dirname(entry_perf)
       with open(os.path.join(entry_dir, 'test_results.json'), 'w') as f:
-        json.dump(test_results, f)
+        json.dump(
+          _benchmark_test_results(test_results, os.path.basename(entry_dir)),
+          f,
+        )
       perf_json_paths.append(entry_perf)
 
   src_perf_json = os.path.join(out_dir, 'perf_results.json')
@@ -88,7 +106,7 @@ def write_perf_json_results(
       benchmark_dir = os.path.join(out_dir, benchmark_name)
       os.makedirs(benchmark_dir, exist_ok=True)
       with open(os.path.join(benchmark_dir, 'test_results.json'), 'w') as f:
-        json.dump(test_results, f)
+        json.dump(_benchmark_test_results(test_results, benchmark_name), f)
       shutil.copyfile(
         src_perf_json, os.path.join(benchmark_dir, 'perf_results.json')
       )

@@ -1212,6 +1212,59 @@ class RunnerInstallXcodeTest(test_runner_test.TestCase):
         )
       )
 
+  def test_write_perf_json_results_namespaces_tests_per_benchmark(self):
+    test_results = {
+      'version': 3,
+      'path_delimiter': '/',
+      'tests': {'PerfTestCase/testStartup': {'actual': 'PASS'}},
+    }
+    with tempfile.TemporaryDirectory() as tmpdir:
+      for benchmark in ('bling.memory', 'bling.startup'):
+        os.makedirs(os.path.join(tmpdir, benchmark))
+        with open(
+          os.path.join(tmpdir, benchmark, 'perf_results.json'), 'w'
+        ) as f:
+          json.dump([], f)
+
+      run.write_perf_json_results(tmpdir, test_results, None, None)
+
+      for benchmark in ('bling.memory', 'bling.startup'):
+        with open(os.path.join(tmpdir, benchmark, 'test_results.json')) as f:
+          written = json.load(f)
+        self.assertEqual(written['version'], 3)
+        self.assertEqual(written['path_delimiter'], '/')
+        self.assertEqual(written['tests'], {benchmark: test_results['tests']})
+      # The caller's results are not modified.
+      self.assertIn('PerfTestCase/testStartup', test_results['tests'])
+
+  def test_write_perf_json_results_fallback_benchmark_namespaced(self):
+    test_results = {'version': 3, 'tests': {'A/testB': {'actual': 'PASS'}}}
+    with tempfile.TemporaryDirectory() as tmpdir:
+      with open(os.path.join(tmpdir, 'perf_results.json'), 'w') as f:
+        json.dump([], f)
+
+      run.write_perf_json_results(tmpdir, test_results, 'bling', None)
+
+      with open(os.path.join(tmpdir, 'bling', 'test_results.json')) as f:
+        written = json.load(f)
+      self.assertEqual(written['tests'], {'bling': test_results['tests']})
+
+  def test_write_perf_json_results_empty_tests_unchanged(self):
+    test_results = {'version': 3, 'tests': {}}
+    with tempfile.TemporaryDirectory() as tmpdir:
+      os.makedirs(os.path.join(tmpdir, 'bling.startup'))
+      with open(
+        os.path.join(tmpdir, 'bling.startup', 'perf_results.json'), 'w'
+      ) as f:
+        json.dump([], f)
+
+      run.write_perf_json_results(tmpdir, test_results, None, None)
+
+      with open(
+        os.path.join(tmpdir, 'bling.startup', 'test_results.json')
+      ) as f:
+        self.assertEqual(json.load(f), test_results)
+
   @mock.patch('test_runner.defaults_delete')
   @mock.patch('xcode_util.select', autospec=True)
   @mock.patch('xcodebuild_runner.SimulatorParallelTestRunner')
