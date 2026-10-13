@@ -349,17 +349,18 @@ D3D11VideoDecoderBackend::CreateAndInitPictureBuffer(
 
   auto picture_buffer = base::MakeRefCounted<D3DPictureBuffer>(
       std::move(decoder_task_runner), std::move(texture), array_slice,
-      std::move(texture_wrapper), picture_index);
+      std::move(texture_wrapper), size, picture_index);
 
   // Keep the decoder idle until GPU-side shared-image initialization finishes.
-  // `add_client_use()` must precede Init(). If Init() fails after the texture
-  // wrapper posted its GPU-thread work, the init-done callback still runs and
-  // calls remove_client_use(); adding the ref later would underflow it.
+  // `add_client_use()` must precede InitD3D11(). If InitD3D11() fails after the
+  // texture wrapper posted its GPU-thread work, the init-done callback still
+  // runs and calls remove_client_use(); adding the ref later would underflow
+  // it.
   picture_buffer->add_client_use();
-  D3DStatus result =
-      picture_buffer->Init(std::move(gpu_task_runner), std::move(get_helper_cb),
-                           video_device_, decoder_configurator->DecoderGuid(),
-                           media_log->Clone(), std::move(init_done_cb));
+  D3DStatus result = picture_buffer->InitD3D11(
+      std::move(gpu_task_runner), std::move(get_helper_cb), video_device_,
+      decoder_configurator->DecoderGuid(), media_log->Clone(),
+      std::move(init_done_cb));
   if (!result.is_ok()) {
     return std::move(result).AddHere();
   }

@@ -6,6 +6,8 @@
 
 #include <windows.h>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -22,17 +24,38 @@ D3DPictureBuffer::D3DPictureBuffer(
     ComD3D11Texture2D texture,
     size_t array_slice,
     std::unique_ptr<Texture2DWrapper> texture_wrapper,
+    const gfx::Size& size,
     size_t picture_index)
     : RefCountedDeleteOnSequence<D3DPictureBuffer>(
           std::move(delete_task_runner)),
-      texture_(std::move(texture)),
+      d3d11_texture_(std::move(texture)),
       array_slice_(array_slice),
+      size_(size),
       texture_wrapper_(std::move(texture_wrapper)),
-      picture_index_(picture_index) {}
+      picture_index_(picture_index) {
+  CHECK(d3d11_texture_);
+}
+
+D3DPictureBuffer::D3DPictureBuffer(
+    scoped_refptr<base::SequencedTaskRunner> delete_task_runner,
+    ComD3D12Resource resource,
+    uint32_t array_slice,
+    std::unique_ptr<Texture2DWrapper> texture_wrapper,
+    const gfx::Size& size,
+    size_t picture_index)
+    : RefCountedDeleteOnSequence<D3DPictureBuffer>(
+          std::move(delete_task_runner)),
+      array_slice_(array_slice),
+      size_(size),
+      texture_wrapper_(std::move(texture_wrapper)),
+      picture_index_(picture_index),
+      d3d12_resource_(std::move(resource)) {
+  CHECK(d3d12_resource_);
+}
 
 D3DPictureBuffer::~D3DPictureBuffer() = default;
 
-D3DStatus D3DPictureBuffer::Init(
+D3DStatus D3DPictureBuffer::InitD3D11(
     scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
     GetCommandBufferHelperCB get_helper_cb,
     ComD3D11VideoDevice1 video_device,
@@ -40,6 +63,8 @@ D3DStatus D3DPictureBuffer::Init(
     std::unique_ptr<MediaLog> media_log,
     PictureBufferGPUResourceInitDoneCB
         picture_buffer_gpu_resource_init_done_cb) {
+  CHECK(d3d11_texture_);
+
   D3D11_VIDEO_DECODER_OUTPUT_VIEW_DESC view_desc = {};
   view_desc.DecodeProfile = decoder_guid;
   view_desc.ViewDimension = D3D11_VDOV_DIMENSION_TEXTURE2D;
@@ -47,7 +72,7 @@ D3DStatus D3DPictureBuffer::Init(
 
   media_log_ = std::move(media_log);
   D3DStatus result = texture_wrapper_->Init(
-      std::move(gpu_task_runner), std::move(get_helper_cb), texture_,
+      std::move(gpu_task_runner), std::move(get_helper_cb), d3d11_texture_,
       array_slice_, this, std::move(picture_buffer_gpu_resource_init_done_cb));
   if (!result.is_ok()) {
     MEDIA_LOG(ERROR, media_log_) << "Failed to Initialize the wrapper";
@@ -55,9 +80,8 @@ D3DStatus D3DPictureBuffer::Init(
   }
 
   HRESULT hr = video_device->CreateVideoDecoderOutputView(
-      Texture().Get(), &view_desc, &output_view_);
-
-  if (!SUCCEEDED(hr)) {
+      d3d11_texture_.Get(), &view_desc, &output_view_);
+  if (FAILED(hr)) {
     MEDIA_LOG(ERROR, media_log_) << "Failed to CreateVideoDecoderOutputView";
     return {D3DStatus::Codes::kCreateDecoderOutputViewFailed, hr};
   }
@@ -69,10 +93,6 @@ D3DStatus D3DPictureBuffer::ProcessTexture(
     scoped_refptr<gpu::ClientSharedImage>& shared_image_dest) {
   return texture_wrapper_->ProcessTexture(shared_image_dest,
                                           shared_decode_fence_);
-}
-
-ComD3D11Texture2D D3DPictureBuffer::Texture() const {
-  return texture_;
 }
 
 D3DStatus::Or<ID3D11VideoDecoderOutputView*>
@@ -89,16 +109,22 @@ D3DPictureBuffer::AcquireOutputView() const {
   return output_view_.Get();
 }
 
-D3DStatus::Or<ID3D12Resource*> D3DPictureBuffer::ToD3D12Resource(
+D3DStatus::Or<ID3D12Resource*> D3DPictureBuffer::GetOrCreateD3D12Resource(
     ID3D12Device* device) {
-  HRESULT hr;
   if (!d3d12_resource_) {
+    CHECK(d3d11_texture_);
+    D3D11_TEXTURE2D_DESC desc;
+    d3d11_texture_->GetDesc(&desc);
+    CHECK(desc.MiscFlags & D3D11_RESOURCE_MISC_SHARED_NTHANDLE)
+        << "Cannot create shared handle for d3d11 texture2d without "
+           "D3D11_RESOURCE_MISC_SHARED_NTHANDLE flag.";
+
     ComDXGIResource1 dxgi_resource;
-    CHECK_EQ(texture_.As(&dxgi_resource), S_OK);
+    CHECK_EQ(d3d11_texture_.As(&dxgi_resource), S_OK);
 
     HANDLE handle;
-    hr = dxgi_resource->CreateSharedHandle(nullptr, GENERIC_ALL, nullptr,
-                                           &handle);
+    HRESULT hr = dxgi_resource->CreateSharedHandle(nullptr, GENERIC_ALL,
+                                                   nullptr, &handle);
     if (FAILED(hr)) {
       MEDIA_LOG(ERROR, media_log_) << "Cannot create shared handle";
       return {D3DStatusCode::kCreateSharedHandleFailed, hr};

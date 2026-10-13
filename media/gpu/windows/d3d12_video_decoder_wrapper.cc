@@ -84,7 +84,7 @@ class D3D12VideoDecoderWrapperImpl : public D3D12VideoDecoderWrapper {
       base::span<scoped_refptr<D3DPictureBuffer>> picture_buffers) override {
     reference_frame_list_.SetPictureBuffers(picture_buffers);
     for (size_t i = 0; i < picture_buffers.size(); ++i) {
-      auto result = picture_buffers[i]->ToD3D12Resource(device_.Get());
+      auto result = picture_buffers[i]->GetOrCreateD3D12Resource(device_.Get());
       if (!result.has_value()) {
         return std::move(result).error();
       }
@@ -104,20 +104,13 @@ class D3D12VideoDecoderWrapperImpl : public D3D12VideoDecoderWrapper {
       return false;
     }
 
-    ComD3D11Texture2D d3d11_texture2d = output_picture->Texture();
-    D3D11_TEXTURE2D_DESC desc;
-    d3d11_texture2d->GetDesc(&desc);
-    CHECK(desc.MiscFlags & D3D11_RESOURCE_MISC_SHARED_NTHANDLE)
-        << "Cannot create shared handle for d3d11 texture2d without "
-           "D3D11_RESOURCE_MISC_SHARED_NTHANDLE flag.";
-
-    auto d3d12_resource_or_error =
-        output_picture->ToD3D12Resource(device_.Get());
-    if (!d3d12_resource_or_error.has_value()) {
+    auto d3d12_resource =
+        output_picture->GetOrCreateD3D12Resource(device_.Get());
+    if (!d3d12_resource.has_value()) {
       return false;
     }
     output_stream_arguments_ = {
-        .pOutputTexture2D = std::move(d3d12_resource_or_error).value(),
+        .pOutputTexture2D = std::move(d3d12_resource).value(),
         .OutputSubresource = output_picture->array_slice(),
     };
 

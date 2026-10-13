@@ -8,8 +8,11 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/task_environment.h"
+#include "media/base/win/d3d11_mocks.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using ::testing::NiceMock;
 
 namespace media {
 
@@ -21,9 +24,10 @@ class D3DPictureBufferTest : public ::testing::Test {
     auto wrapper = std::make_unique<DefaultTexture2DWrapper>(
         size_, gfx::ColorSpace::CreateREC709(), viz::MultiPlaneFormat::kNV12,
         /*device=*/nullptr, gpu::GpuDriverBugWorkarounds());
+    auto texture = MakeComPtr<NiceMock<D3D11Texture2DMock>>();
     picture_buffer_ = base::MakeRefCounted<D3DPictureBuffer>(
-        task_environment_.GetMainThreadTaskRunner(), nullptr, 0,
-        std::move(wrapper), 0);
+        task_environment_.GetMainThreadTaskRunner(), std::move(texture), 0,
+        std::move(wrapper), size_, 0);
   }
 
   base::test::TaskEnvironment task_environment_;

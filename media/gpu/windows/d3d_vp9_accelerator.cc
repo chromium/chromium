@@ -91,8 +91,7 @@ void D3DVP9Accelerator::CopyReferenceFrames(
     const D3D11VP9Picture& pic,
     DXVA_PicParams_VP9* pic_params,
     const Vp9ReferenceFrameVector& ref_frames) {
-  D3D11_TEXTURE2D_DESC texture_descriptor;
-  pic.picture_buffer()->Texture()->GetDesc(&texture_descriptor);
+  const gfx::Size& coded_size = pic.picture_buffer()->size();
 
   for (size_t i = 0; i < std::size(pic_params->ref_frame_map); i++) {
     auto ref_pic = ref_frames.GetFrame(i);
@@ -101,10 +100,8 @@ void D3DVP9Accelerator::CopyReferenceFrames(
           static_cast<D3D11VP9Picture*>(ref_pic.get()));
       UNSAFE_TODO(pic_params->ref_frame_map[i]).Index7Bits =
           our_ref_pic->picture_index();
-      UNSAFE_TODO(pic_params->ref_frame_coded_width[i]) =
-          texture_descriptor.Width;
-      UNSAFE_TODO(pic_params->ref_frame_coded_height[i]) =
-          texture_descriptor.Height;
+      UNSAFE_TODO(pic_params->ref_frame_coded_width[i]) = coded_size.width();
+      UNSAFE_TODO(pic_params->ref_frame_coded_height[i]) = coded_size.height();
     } else {
       UNSAFE_TODO(pic_params->ref_frame_map[i]).bPicEntry = 0xff;
       UNSAFE_TODO(pic_params->ref_frame_coded_width[i]) = 0;

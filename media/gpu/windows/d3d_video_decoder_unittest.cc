@@ -422,9 +422,12 @@ TEST_F(D3DVideoDecoderTest, OutputResultSendsDecodeFenceToTextureWrapper) {
 
   auto wrapper = std::make_unique<FakeTexture2DWrapper>();
   FakeTexture2DWrapper* wrapper_ptr = wrapper.get();
+  const gfx::Size size = wrapper->GetSize();
+  auto resource = MakeComPtr<NiceMock<D3D12ResourceMock>>();
   auto picture_buffer = base::MakeRefCounted<D3DPictureBuffer>(
-      task_environment_.GetMainThreadTaskRunner(), /*texture=*/nullptr,
-      /*array_slice=*/0, std::move(wrapper), /*picture_index=*/0);
+      task_environment_.GetMainThreadTaskRunner(), std::move(resource),
+      /*array_slice=*/0, std::move(wrapper), size, /*picture_index=*/0);
+
   constexpr uint64_t kFenceValue = 7;
   ID3D12Fence* fence_ptr = fence_impl.Get();
   auto decode_fence = base::MakeRefCounted<D3D12Fence>(std::move(fence_impl));

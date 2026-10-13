@@ -24,6 +24,7 @@
 #include "media/gpu/windows/d3d12_fence.h"
 #include "media/gpu/windows/d3d_com_defs.h"
 #include "media/gpu/windows/d3d_status.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace media {
 
@@ -31,8 +32,8 @@ class Texture2DWrapper;
 using PictureBufferGPUResourceInitDoneCB =
     base::OnceCallback<void(scoped_refptr<media::D3DPictureBuffer>)>;
 
-// PictureBuffer that owns Chrome Textures to display it, and keep a reference
-// to the D3D texture that backs the image.
+// PictureBuffer that owns Chrome Textures to display it, and keeps a reference
+// to the D3D11 texture or D3D12 resource that backs the image.
 //
 // This is created and owned on the decoder thread.  While currently that's the
 // gpu main thread, we still keep the decoder parts separate from the chrome GL
@@ -58,15 +59,25 @@ class MEDIA_GPU_EXPORT D3DPictureBuffer
                    ComD3D11Texture2D texture,
                    size_t array_slice,
                    std::unique_ptr<Texture2DWrapper> texture_wrapper,
+                   const gfx::Size& size,
                    size_t picture_index);
 
-  D3DStatus Init(scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
-                 GetCommandBufferHelperCB get_helper_cb,
-                 ComD3D11VideoDevice1 video_device,
-                 const GUID& decoder_guid,
-                 std::unique_ptr<MediaLog> media_log,
-                 PictureBufferGPUResourceInitDoneCB
-                     picture_buffer_gpu_resource_init_done_cb);
+  // Creates a picture buffer backed by a D3D12 resource.
+  D3DPictureBuffer(scoped_refptr<base::SequencedTaskRunner> delete_task_runner,
+                   ComD3D12Resource resource,
+                   uint32_t array_slice,
+                   std::unique_ptr<Texture2DWrapper> texture_wrapper,
+                   const gfx::Size& size,
+                   size_t picture_index);
+
+  D3DStatus InitD3D11(
+      scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
+      GetCommandBufferHelperCB get_helper_cb,
+      ComD3D11VideoDevice1 video_device,
+      const GUID& decoder_guid,
+      std::unique_ptr<MediaLog> media_log,
+      PictureBufferGPUResourceInitDoneCB
+          picture_buffer_gpu_resource_init_done_cb);
 
   D3DPictureBuffer(const D3DPictureBuffer&) = delete;
   D3DPictureBuffer& operator=(const D3DPictureBuffer&) = delete;
@@ -74,11 +85,12 @@ class MEDIA_GPU_EXPORT D3DPictureBuffer
   // Initialize |shared_image_dest|.
   D3DStatus ProcessTexture(
       scoped_refptr<gpu::ClientSharedImage>& shared_image_dest);
-  ComD3D11Texture2D Texture() const;
+
   D3DStatus::Or<ID3D11VideoDecoderOutputView*> AcquireOutputView() const;
 
-  // Get the D3D12Resource by device->OpenSharedHandle or return the opened one.
-  D3DStatus::Or<ID3D12Resource*> ToD3D12Resource(ID3D12Device* device);
+  // Opens the D3D11 texture as a D3D12 resource, or returns the cached
+  // resource.
+  D3DStatus::Or<ID3D12Resource*> GetOrCreateD3D12Resource(ID3D12Device* device);
 
   void SetFenceAndValue(scoped_refptr<D3D12Fence> fence, uint64_t value);
 
@@ -101,6 +113,7 @@ class MEDIA_GPU_EXPORT D3DPictureBuffer
   void set_in_picture_use(bool use) { in_picture_use_ = use; }
 
   uint32_t array_slice() const { return array_slice_; }
+  const gfx::Size& size() const { return size_; }
 
   Texture2DWrapper* texture_wrapper() const { return texture_wrapper_.get(); }
 
@@ -112,8 +125,9 @@ class MEDIA_GPU_EXPORT D3DPictureBuffer
   friend class base::RefCountedDeleteOnSequence<D3DPictureBuffer>;
   friend class base::DeleteHelper<D3DPictureBuffer>;
 
-  ComD3D11Texture2D texture_;
+  ComD3D11Texture2D d3d11_texture_;
   uint32_t array_slice_;
+  const gfx::Size size_;
 
   std::unique_ptr<MediaLog> media_log_;
   std::unique_ptr<Texture2DWrapper> texture_wrapper_;
@@ -124,8 +138,8 @@ class MEDIA_GPU_EXPORT D3DPictureBuffer
 
   ComD3D11VideoDecoderOutputView output_view_;
 
-  // The cached pointer of D3D12 version of texture, if ToD3D12Resource() has
-  // been called.
+  // The native D3D12 resource, or the cached D3D12 version of texture if
+  // GetOrCreateD3D12Resource() has been called.
   ComD3D12Resource d3d12_resource_;
 
   // Reused across submissions for this picture buffer. The buffer is not
