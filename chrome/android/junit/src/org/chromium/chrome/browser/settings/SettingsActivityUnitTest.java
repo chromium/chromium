@@ -413,6 +413,41 @@ public class SettingsActivityUnitTest {
                 startedIntent.getComponent().getClassName());
     }
 
+    @Test
+    @Config(qualifiers = "w1024dp-h1024dp")
+    public void testFinishCurrentSettings_LaunchedFromMainSettings_DoesNotFinishActivity() {
+        startSettingsActivity(/* fragmentName= */ null);
+        mActivityScenario.moveToState(State.RESUMED);
+
+        MultiColumnSettings multiColumnSettings = mSettingsActivity.getMultiColumnSettings();
+        assertNotNull(multiColumnSettings);
+        TestEmbeddableFragment detailFragment = new TestEmbeddableFragment();
+        multiColumnSettings.showDetailFragment(
+                detailFragment, /* addToBackStack= */ false, /* tag= */ null);
+        assertEquals(detailFragment, mSettingsActivity.getMainFragment());
+        assertTrue(multiColumnSettings.canBeBackToMain());
+
+        mSettingsActivity.finishCurrentSettings(detailFragment);
+
+        assertFalse(
+                "Finishing a detail fragment opened from MainSettings should not finish the"
+                        + " activity.",
+                mSettingsActivity.isFinishing());
+    }
+
+    @Test
+    public void testFinishCurrentSettings_LaunchedDirectlyIntoSubpage_FinishesActivity() {
+        startSettingsActivity(TestEmbeddableFragment.class.getName());
+        mActivityScenario.moveToState(State.RESUMED);
+
+        assertTrue(mSettingsActivity.getMainFragment() instanceof TestEmbeddableFragment);
+        mSettingsActivity.finishCurrentSettings(mSettingsActivity.getMainFragment());
+
+        assertTrue(
+                "Finishing a subpage launched directly via Intent should finish the activity.",
+                mSettingsActivity.isFinishing());
+    }
+
     private void startSettingsActivity(String fragmentName) {
         assertWithMessage("Should be called once per test.").that(mActivityScenario).isNull();
         Intent intent =

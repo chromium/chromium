@@ -647,7 +647,11 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                             ? getSupportFragmentManager()
                             : mMultiColumnSettings.getChildFragmentManager();
             if (fragmentManager.getBackStackEntryCount() <= mPendingPopBackCount) {
-                finish();
+                if (mMultiColumnSettings != null && mMultiColumnSettings.canBeBackToMain()) {
+                    mMultiColumnSettings.showMainSettings();
+                } else {
+                    finish();
+                }
             } else {
                 var entry =
                         fragmentManager.getBackStackEntryAt(
@@ -1008,7 +1012,15 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                         ? getSupportFragmentManager()
                         : mMultiColumnSettings.getChildFragmentManager();
         if (fragmentManager.getBackStackEntryCount() == 0) {
-            finish();
+            if (mMultiColumnSettings != null && mMultiColumnSettings.canBeBackToMain()) {
+                if (fragmentManager.isStateSaved()) {
+                    ++mPendingPopBackCount;
+                } else {
+                    mMultiColumnSettings.showMainSettings();
+                }
+            } else {
+                finish();
+            }
         } else {
             if (fragmentManager.isStateSaved()) {
                 ++mPendingPopBackCount;

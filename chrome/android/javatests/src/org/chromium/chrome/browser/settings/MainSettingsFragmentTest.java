@@ -338,10 +338,6 @@ public class MainSettingsFragmentTest {
         SigninFeatures.SIGN_OUT_OF_CHROME,
         SigninFeatures.SIGN_OUT_DELETES_BROWSING_DATA
     })
-    @DisabledTest(
-            message =
-                    "TODO(crbug.com/404074032): Re-enable after fixing finishCurrentSettings()"
-                            + " for MultiColumnSettings.")
     public void testPressingSignOut() {
         CoreAccountInfo accountInfo = mSyncTestRule.setUpAccountAndSignInForTesting();
 
@@ -381,10 +377,6 @@ public class MainSettingsFragmentTest {
         SigninFeatures.SIGN_OUT_DELETES_BROWSING_DATA
     })
     @Restriction(DeviceFormFactor.DESKTOP)
-    @DisabledTest(
-            message =
-                    "TODO(crbug.com/404074032): Re-enable after fixing finishCurrentSettings()"
-                            + " for MultiColumnSettings.")
     public void testPressingSignOut_desktopSignOut() {
         CoreAccountInfo accountInfo = mSyncTestRule.setUpAccountAndSignInForTesting();
 
@@ -425,10 +417,6 @@ public class MainSettingsFragmentTest {
         SigninFeatures.SIGN_OUT_OF_CHROME,
         SigninFeatures.SIGN_OUT_DELETES_BROWSING_DATA
     })
-    @DisabledTest(
-            message =
-                    "TODO(crbug.com/404074032): Re-enable after fixing finishCurrentSettings()"
-                            + " for MultiColumnSettings.")
     public void testPressingSignOutSyncDisabled() {
         CoreAccountInfo accountInfo = mSyncTestRule.setUpAccountAndSignInWithoutWaitingForTesting();
 
@@ -470,10 +458,6 @@ public class MainSettingsFragmentTest {
         SigninFeatures.SIGN_OUT_DELETES_BROWSING_DATA
     })
     @Restriction(DeviceFormFactor.DESKTOP)
-    @DisabledTest(
-            message =
-                    "TODO(crbug.com/404074032): Re-enable after fixing finishCurrentSettings()"
-                            + " for MultiColumnSettings.")
     public void testPressingSignOutSyncDisabled_desktopSignOut() {
         CoreAccountInfo accountInfo = mSyncTestRule.setUpAccountAndSignInWithoutWaitingForTesting();
 
