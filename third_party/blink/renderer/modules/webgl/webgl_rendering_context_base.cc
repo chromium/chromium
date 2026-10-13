@@ -968,11 +968,30 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage() {
       return nullptr;
     }
 
-    bool copy_succeeded = CopyRenderingResultsFromDrawingBufferAccelerated(
-        resource_provider.get(), kBackBuffer);
-    if (!copy_succeeded) {
+    base::WeakPtr<WebGraphicsContext3DProviderWrapper> shared_context_wrapper =
+        SharedGpuContext::ContextProviderWrapper();
+    if (!shared_context_wrapper) {
       return nullptr;
     }
+    gpu::raster::RasterInterface* raster_interface =
+        shared_context_wrapper->ContextProvider().RasterInterface();
+    gpu::SyncToken sync_token;
+    auto client_si = resource_provider->BeginExternalOverwrite(sync_token);
+    if (!client_si) {
+      return nullptr;
+    }
+
+    // TODO(xlai): Flush should not be necessary if the synchronization in
+    // CopyToPlatformTexture is done correctly. See crbug.com/794706.
+    raster_interface->Flush();
+
+    std::optional<gpu::SyncToken> external_sync_token =
+        GetDrawingBuffer()->CopyToPlatformSharedImage(
+            raster_interface, client_si, sync_token, kBackBuffer);
+    if (!external_sync_token) {
+      return nullptr;
+    }
+    resource_provider->EndExternalWrite(external_sync_token.value());
     return resource_provider->Snapshot();
   } else {
     // Match the SBI configuration to that produced when using GPU compositing:
