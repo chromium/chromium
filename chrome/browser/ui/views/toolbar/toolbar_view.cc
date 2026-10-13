@@ -316,14 +316,11 @@ ToolbarView::~ToolbarView() {
   }
 }
 
-// Forwards the early teardown request to both the embedded and detached WebUI
-// toolbar web views to stop renderer script execution before IPC disconnection.
+// Forwards the early teardown request to the WebUI toolbar web view to stop
+// renderer script execution before IPC disconnection.
 void ToolbarView::DestroyWebUIToolbarWebContents() {
   if (toolbar_webview_) {
     toolbar_webview_->DestroyWebContents();
-  }
-  if (detached_toolbar_webview_) {
-    detached_toolbar_webview_->DestroyWebContents();
   }
 }
 
@@ -438,20 +435,13 @@ void ToolbarView::Init() {
         base::BindRepeating(callback, browser_, IDC_FORWARD), browser_));
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kWebUIToolbarProcessOverheadExperiment)) {
-    detached_toolbar_webview_ = std::make_unique<WebUIToolbarWebView>(
-        browser_, chrome::BrowserCommandController::From(browser_),
-        /*location_bar=*/nullptr);
-  } else if (features::IsWebUIToolbarEnabled()) {
+  if (features::IsWebUIToolbarEnabled()) {
     toolbar_webview_ = AddChildView(std::make_unique<WebUIToolbarWebView>(
         browser_, chrome::BrowserCommandController::From(browser_),
         std::move(webui_location_bar)));
   }
 
-  if (!features::IsWebUIReloadButtonEnabled() ||
-      base::FeatureList::IsEnabled(
-          features::kWebUIToolbarProcessOverheadExperiment)) {
+  if (!features::IsWebUIReloadButtonEnabled()) {
     reload_ = AddChildView(std::make_unique<ReloadButton>(
         browser_->GetProfile(),
         chrome::BrowserCommandController::From(browser_),
@@ -712,13 +702,10 @@ void ToolbarView::Init() {
     glic_split_button_controller_->SetVerticalTabsDelegate(this);
   }
 
-  // Notify the WebUI toolbar views last, once every toolbar component they
-  // depend on (e.g. the location bar) has finished initializing.
+  // Notify the WebUI toolbar view last, once every toolbar component it
+  // depends on (e.g. the location bar) has finished initializing.
   if (toolbar_webview_) {
     toolbar_webview_->ToolbarInitialized();
-  }
-  if (detached_toolbar_webview_) {
-    detached_toolbar_webview_->ToolbarInitialized();
   }
 
   initialized_ = true;

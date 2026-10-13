@@ -17,17 +17,6 @@
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/ui_base_features.h"
 
-#if !BUILDFLAG(IS_ANDROID)
-namespace {
-
-bool IsProcessOverheadExperimentActive() {
-  return base::FeatureList::IsEnabled(
-      features::kWebUIToolbarProcessOverheadExperiment);
-}
-
-}  // namespace
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 namespace features {
 
 // Enables the migration of browser commands to Action API.
@@ -411,103 +400,88 @@ BASE_FEATURE(kWebUIMediaButton, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kWebUIGlicButton, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsWebUIReloadButtonEnabled() {
-  return !IsProcessOverheadExperimentActive() &&
-         base::FeatureList::IsEnabled(features::kInitialWebUI) &&
+  return base::FeatureList::IsEnabled(features::kInitialWebUI) &&
          (base::FeatureList::IsEnabled(features::kWebUIToolbar) ||
           base::FeatureList::IsEnabled(features::kWebUIReloadButton));
 }
 
 bool IsWebUIHomeButtonEnabled() {
-  return !IsProcessOverheadExperimentActive() &&
-         base::FeatureList::IsEnabled(features::kInitialWebUI) &&
+  return base::FeatureList::IsEnabled(features::kInitialWebUI) &&
          (base::FeatureList::IsEnabled(features::kWebUIToolbar) ||
           base::FeatureList::IsEnabled(features::kWebUIHomeButton));
 }
 
 bool IsWebUIBatterySaverButtonEnabled() {
-  return !IsProcessOverheadExperimentActive() &&
-         base::FeatureList::IsEnabled(features::kInitialWebUI) &&
+  return base::FeatureList::IsEnabled(features::kInitialWebUI) &&
          (base::FeatureList::IsEnabled(features::kWebUIToolbar) ||
           base::FeatureList::IsEnabled(features::kWebUIBatterySaverButton));
 }
 
 bool IsWebUIAppMenuButtonEnabled() {
-  return !IsProcessOverheadExperimentActive() &&
-         base::FeatureList::IsEnabled(features::kInitialWebUI) &&
+  return base::FeatureList::IsEnabled(features::kInitialWebUI) &&
          (base::FeatureList::IsEnabled(features::kWebUIToolbar) ||
           base::FeatureList::IsEnabled(features::kWebUIAppMenuButton));
 }
 
 bool IsWebUIBackForwardButtonEnabled() {
-  return !IsProcessOverheadExperimentActive() &&
-         base::FeatureList::IsEnabled(features::kInitialWebUI) &&
+  return base::FeatureList::IsEnabled(features::kInitialWebUI) &&
          (base::FeatureList::IsEnabled(features::kWebUIToolbar) ||
           base::FeatureList::IsEnabled(features::kWebUIBackForwardButton));
 }
 
 bool IsWebUIPinnedToolbarActionsEnabled() {
-  return !IsProcessOverheadExperimentActive() &&
-         base::FeatureList::IsEnabled(features::kInitialWebUI) &&
+  return base::FeatureList::IsEnabled(features::kInitialWebUI) &&
          (base::FeatureList::IsEnabled(features::kWebUIToolbar) ||
           base::FeatureList::IsEnabled(features::kWebUIPinnedToolbarActions));
 }
 
 bool IsWebUIExtensionsContainerEnabled() {
-  return !IsProcessOverheadExperimentActive() &&
-         base::FeatureList::IsEnabled(features::kInitialWebUI) &&
+  return base::FeatureList::IsEnabled(features::kInitialWebUI) &&
          (base::FeatureList::IsEnabled(features::kWebUIToolbar) ||
           base::FeatureList::IsEnabled(features::kWebUIExtensionsContainer));
 }
 
 bool IsWebUISplitTabsButtonEnabled() {
-  return !IsProcessOverheadExperimentActive() &&
-         base::FeatureList::IsEnabled(features::kInitialWebUI) &&
+  return base::FeatureList::IsEnabled(features::kInitialWebUI) &&
          (base::FeatureList::IsEnabled(features::kWebUIToolbar) ||
           base::FeatureList::IsEnabled(features::kWebUISplitTabsButton));
 }
 
 bool IsWebUIAvatarButtonEnabled() {
-  return !IsProcessOverheadExperimentActive() &&
-         base::FeatureList::IsEnabled(features::kInitialWebUI) &&
+  return base::FeatureList::IsEnabled(features::kInitialWebUI) &&
          (base::FeatureList::IsEnabled(features::kWebUIToolbar) ||
           base::FeatureList::IsEnabled(features::kWebUIAvatarButton));
 }
 
 bool IsWebUIMediaButtonEnabled() {
-  return !IsProcessOverheadExperimentActive() &&
-         base::FeatureList::IsEnabled(features::kInitialWebUI) &&
+  return base::FeatureList::IsEnabled(features::kInitialWebUI) &&
          (base::FeatureList::IsEnabled(features::kWebUIToolbar) ||
           base::FeatureList::IsEnabled(features::kWebUIMediaButton));
 }
 
 bool IsWebUIGlicButtonEnabled() {
-  return !IsProcessOverheadExperimentActive() &&
-         base::FeatureList::IsEnabled(features::kInitialWebUI) &&
+  return base::FeatureList::IsEnabled(features::kInitialWebUI) &&
          (base::FeatureList::IsEnabled(features::kWebUIToolbar) ||
           base::FeatureList::IsEnabled(features::kWebUIGlicButton));
 }
 
 bool IsWebUIPerformanceInterventionButtonEnabled() {
-  return !IsProcessOverheadExperimentActive() &&
-         base::FeatureList::IsEnabled(features::kInitialWebUI) &&
+  return base::FeatureList::IsEnabled(features::kInitialWebUI) &&
          (base::FeatureList::IsEnabled(features::kWebUIToolbar) ||
           base::FeatureList::IsEnabled(
               features::kWebUIPerformanceInterventionButton));
 }
 
 bool IsWebUILocationBarEnabled() {
-  return !IsProcessOverheadExperimentActive() &&
-         base::FeatureList::IsEnabled(features::kInitialWebUI) &&
+  return base::FeatureList::IsEnabled(features::kInitialWebUI) &&
          (base::FeatureList::IsEnabled(features::kWebUIToolbar) ||
           base::FeatureList::IsEnabled(features::kWebUILocationBar));
 }
 
 bool IsWebUIToolbarEnabled() {
-  // Checking IsProcessOverheadExperimentActive() and features::kInitialWebUI
-  // first is a minor optimization, since all other methods return false, if the
-  // first is enabled or the second is disabled.
-  return !IsProcessOverheadExperimentActive() &&
-         base::FeatureList::IsEnabled(features::kInitialWebUI) &&
+  // Checking features::kInitialWebUI first is a minor optimization, since all
+  // other methods return false if it is disabled.
+  return base::FeatureList::IsEnabled(features::kInitialWebUI) &&
          (IsWebUIReloadButtonEnabled() || IsWebUISplitTabsButtonEnabled() ||
           IsWebUIHomeButtonEnabled() || IsWebUILocationBarEnabled() ||
           IsWebUIBackForwardButtonEnabled() ||
@@ -522,7 +496,6 @@ bool IsWebUIToolbarEnabled() {
 bool IsWebUIToolbarFullyEnabled() {
   // The first block is an optimization, and is not needed for correctness.
   return (base::FeatureList::IsEnabled(features::kWebUIToolbar) &&
-          !IsProcessOverheadExperimentActive() &&
           base::FeatureList::IsEnabled(features::kInitialWebUI)) ||
          (IsWebUIReloadButtonEnabled() && IsWebUISplitTabsButtonEnabled() &&
           IsWebUIHomeButtonEnabled() && IsWebUILocationBarEnabled() &&

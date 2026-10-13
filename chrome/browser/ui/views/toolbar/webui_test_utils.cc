@@ -30,7 +30,6 @@
 #include "chrome/browser/ui/waap/initial_web_ui_manager.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_ui.h"
 #include "chrome/browser/ui/window_feature_controller/window_feature_controller.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
@@ -117,9 +116,7 @@ void WaitUntilInitialWebUIPaintAndFlushMetricsForTesting(
   if (headless::ShouldProcessHeadlessCommands()) {
     return;
   }
-  if (!browser || (!features::IsWebUIToolbarEnabled() &&
-                   !base::FeatureList::IsEnabled(
-                       features::kWebUIToolbarProcessOverheadExperiment))) {
+  if (!browser || !features::IsWebUIToolbarEnabled()) {
     return;
   }
 

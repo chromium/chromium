@@ -216,13 +216,9 @@ class ToolbarView : public views::AccessiblePaneView,
     return toolbar_controller_.get();
   }
 
-  WebUIToolbarWebView* detached_toolbar_webview_for_testing() {
-    return detached_toolbar_webview_.get();
-  }
-
   // Forwards an early teardown request to any child WebUIToolbarWebView
-  // instances (both embedded and detached) to destroy their hosted
-  // WebContents before browser-side IPC services disconnect.
+  // instance to destroy its hosted WebContents before browser-side IPC
+  // services disconnect.
   void DestroyWebUIToolbarWebContents();
 
   glic::ToolbarGlicActorTaskIcon* glic_actor_task_icon() {
@@ -414,7 +410,6 @@ class ToolbarView : public views::AccessiblePaneView,
   raw_ptr<ToolbarButton> forward_ = nullptr;
   raw_ptr<ReloadButton> reload_ = nullptr;
   raw_ptr<WebUIToolbarWebView> toolbar_webview_ = nullptr;
-  std::unique_ptr<WebUIToolbarWebView> detached_toolbar_webview_;
   raw_ptr<HomeButton> home_ = nullptr;
   raw_ptr<SplitTabsToolbarButton> split_tabs_ = nullptr;
   raw_ptr<CustomTabBarView> custom_tab_bar_ = nullptr;

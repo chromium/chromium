@@ -420,9 +420,7 @@ WebUIToolbarWebView::WebUIToolbarWebView(
   if (pre_created_contents) {
     is_preloaded_ = true;
     const bool pre_navigate =
-        features::kWebUIReloadButtonPrewarmWebUIPreNavigate.Get() ||
-        base::FeatureList::IsEnabled(
-            features::kWebUIToolbarProcessOverheadExperiment);
+        features::kWebUIReloadButtonPrewarmWebUIPreNavigate.Get();
     if (pre_navigate) {
       // Only set to `kPending` when the navigation is already done. Otherwise
       // the state remains `kUninitialized` and the navigation will happen in

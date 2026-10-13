@@ -20,16 +20,11 @@
 DEFINE_USER_DATA(InitialWebUIManager);
 
 InitialWebUIManager::InitialWebUIManager(BrowserWindowInterface* browser)
-    : is_initial_web_ui_pending_(
-          features::IsWebUIToolbarEnabled() ||
-          base::FeatureList::IsEnabled(
-              features::kWebUIToolbarProcessOverheadExperiment)),
+    : is_initial_web_ui_pending_(features::IsWebUIToolbarEnabled()),
       scoped_data_holder_(browser->GetUnownedUserDataHost(), *this),
       metrics_manager_(InitialWebUIWindowMetricsManager::From(browser)) {
-  if ((features::IsWebUIToolbarEnabled() &&
-       features::kWebUIReloadButtonPrewarmWebUI.Get()) ||
-      base::FeatureList::IsEnabled(
-          features::kWebUIToolbarProcessOverheadExperiment)) {
+  if (features::IsWebUIToolbarEnabled() &&
+      features::kWebUIReloadButtonPrewarmWebUI.Get()) {
     Profile* profile = browser->GetProfile();
 
     if (features::kWebUIReloadButtonProfilePrewarming.Get()) {
@@ -50,9 +45,7 @@ InitialWebUIManager::InitialWebUIManager(BrowserWindowInterface* browser)
     }
 
     const bool pre_navigate =
-        features::kWebUIReloadButtonPrewarmWebUIPreNavigate.Get() ||
-        base::FeatureList::IsEnabled(
-            features::kWebUIToolbarProcessOverheadExperiment);
+        features::kWebUIReloadButtonPrewarmWebUIPreNavigate.Get();
     toolbar_web_contents_ =
         waap::PrewarmHelper::PrewarmWebUIContents(profile, pre_navigate);
     webui::SetBrowserWindowInterface(toolbar_web_contents_.get(), browser);

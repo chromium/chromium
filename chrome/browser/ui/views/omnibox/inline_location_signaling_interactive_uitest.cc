@@ -129,8 +129,7 @@ class InlineLocationSignalingE2EInteractiveUiTest
           {{"display_order", GetParam().display_order},
            {"wording", GetParam().wording}}},
          {omnibox::kPlatformAgnosticXGeo, {}}},
-        {::features::kInitialWebUI,
-         ::features::kWebUIToolbarProcessOverheadExperiment});
+        {::features::kInitialWebUI});
 
     // Architectural Fix: Initialize the mock environment early so startup WebUI
     // toolbar autocomplete requests are intercepted immediately instead of

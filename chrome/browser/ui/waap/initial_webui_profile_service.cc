@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/waap/initial_webui_profile_service.h"
 
-#include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/waap/waap_utils.h"
@@ -30,14 +29,10 @@ InitialWebUIProfileService::TakeToolbarContents() {
 }
 
 void InitialWebUIProfileService::PrewarmWebUI() {
-  if ((features::IsWebUIToolbarEnabled() &&
-       features::kWebUIReloadButtonPrewarmWebUI.Get()) ||
-      base::FeatureList::IsEnabled(
-          features::kWebUIToolbarProcessOverheadExperiment)) {
+  if (features::IsWebUIToolbarEnabled() &&
+      features::kWebUIReloadButtonPrewarmWebUI.Get()) {
     const bool pre_navigate =
-        features::kWebUIReloadButtonPrewarmWebUIPreNavigate.Get() ||
-        base::FeatureList::IsEnabled(
-            features::kWebUIToolbarProcessOverheadExperiment);
+        features::kWebUIReloadButtonPrewarmWebUIPreNavigate.Get();
     toolbar_web_contents_ =
         waap::PrewarmHelper::PrewarmWebUIContents(profile_, pre_navigate);
   }

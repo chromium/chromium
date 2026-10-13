@@ -1593,7 +1593,6 @@ class WebUIToolbarLifecycleBrowserTest : public InProcessBrowserTest {
  protected:
   void SetUpFeatureList(
       bool prewarm,
-      bool overhead_experiment,
       std::optional<bool> prewarm_pre_navigate = std::nullopt) {
     std::vector<base::test::FeatureRefAndParams> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
@@ -1604,23 +1603,14 @@ class WebUIToolbarLifecycleBrowserTest : public InProcessBrowserTest {
     enabled_features.push_back(
         {features::kSkipIPCChannelPausingForNonGuests, {}});
 
-    // Overhead experiment state
-    if (overhead_experiment) {
-      enabled_features.push_back(
-          {features::kWebUIToolbarProcessOverheadExperiment, {}});
-      disabled_features.push_back(features::kInitialWebUI);
-    } else {
-      enabled_features.push_back({features::kInitialWebUI, {}});
-      enabled_features.push_back({features::kWebUIAvatarButton, {}});
-      enabled_features.push_back({features::kWebUIBackForwardButton, {}});
-      // Prewarm state
-      bool should_pre_navigate = prewarm_pre_navigate.value_or(prewarm);
-      enabled_features.push_back(
-          {features::kWebUIReloadButton,
-           {{"WebUIReloadButtonPrewarmWebUI", prewarm ? "true" : "false"},
-            {"WebUIReloadButtonPrewarmWebUIPreNavigate",
-             should_pre_navigate ? "true" : "false"}}});
-    }
+    enabled_features.push_back({features::kInitialWebUI, {}});
+    enabled_features.push_back({features::kWebUIAvatarButton, {}});
+    enabled_features.push_back({features::kWebUIBackForwardButton, {}});
+    enabled_features.push_back(
+        {features::kWebUIReloadButton,
+         {{"WebUIReloadButtonPrewarmWebUI", prewarm ? "true" : "false"},
+          {"WebUIReloadButtonPrewarmWebUIPreNavigate",
+           prewarm_pre_navigate.value_or(prewarm) ? "true" : "false"}}});
 
     // Disable standard PreloadTopChromeWebUI for the default window to prevent
     // startup crashes.
@@ -1800,7 +1790,7 @@ class WebUIToolbarPrewarmSandboxBrowserTest
     : public WebUIToolbarLifecycleBrowserTest {
  public:
   WebUIToolbarPrewarmSandboxBrowserTest() {
-    SetUpFeatureList(/*prewarm=*/true, /*overhead_experiment=*/false);
+    SetUpFeatureList(/*prewarm=*/true);
   }
 };
 
@@ -1834,7 +1824,7 @@ class WebUIToolbarLifecyclePrewarmedBrowserTest
     : public WebUIToolbarLifecycleBrowserTest {
  public:
   WebUIToolbarLifecyclePrewarmedBrowserTest() {
-    SetUpFeatureList(/*prewarm=*/true, /*overhead_experiment=*/false);
+    SetUpFeatureList(/*prewarm=*/true);
   }
 };
 
@@ -1842,8 +1832,7 @@ class WebUIToolbarLifecycleRendererOnlyPrewarmedBrowserTest
     : public WebUIToolbarLifecycleBrowserTest {
  public:
   WebUIToolbarLifecycleRendererOnlyPrewarmedBrowserTest() {
-    SetUpFeatureList(/*prewarm=*/true, /*overhead_experiment=*/false,
-                     /*prewarm_pre_navigate=*/false);
+    SetUpFeatureList(/*prewarm=*/true, /*prewarm_pre_navigate=*/false);
   }
 
   void SetUpOnMainThread() override {
@@ -1863,56 +1852,9 @@ class WebUIToolbarLifecycleNonPrewarmedBrowserTest
     : public WebUIToolbarLifecycleBrowserTest {
  public:
   WebUIToolbarLifecycleNonPrewarmedBrowserTest() {
-    SetUpFeatureList(/*prewarm=*/false, /*overhead_experiment=*/false);
+    SetUpFeatureList(/*prewarm=*/false);
   }
 };
-
-class WebUIToolbarLifecycleOverheadBrowserTest
-    : public WebUIToolbarLifecycleBrowserTest {
- public:
-  WebUIToolbarLifecycleOverheadBrowserTest() {
-    SetUpFeatureList(/*prewarm=*/true, /*overhead_experiment=*/true);
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(WebUIToolbarLifecycleOverheadBrowserTest,
-                       ContentsDestroyedWithoutView) {
-  EXPECT_FALSE(features::IsWebUIReloadButtonEnabled());
-  EXPECT_FALSE(features::IsWebUIAvatarButtonEnabled());
-  EXPECT_FALSE(features::IsWebUIToolbarEnabled());
-
-  LifecycleTestSetup setup(browser());
-
-  content::TestNavigationObserver observer(
-      (GURL(chrome::kChromeUIWebUIToolbarURL)));
-  observer.StartWatchingNewWebContents();
-
-  auto manager = std::make_unique<InitialWebUIManager>(&setup.mock_browser);
-  observer.Wait();
-
-  manager.reset();
-}
-
-IN_PROC_BROWSER_TEST_F(WebUIToolbarLifecycleOverheadBrowserTest,
-                       ViewDestroyedBeforeWidget) {
-  EXPECT_FALSE(features::IsWebUIReloadButtonEnabled());
-  EXPECT_FALSE(features::IsWebUIAvatarButtonEnabled());
-  EXPECT_FALSE(features::IsWebUIToolbarEnabled());
-
-  LifecycleTestSetup setup(browser());
-
-  content::TestNavigationObserver observer(
-      (GURL(chrome::kChromeUIWebUIToolbarURL)));
-  observer.StartWatchingNewWebContents();
-
-  auto manager = std::make_unique<InitialWebUIManager>(&setup.mock_browser);
-  observer.Wait();
-
-  auto toolbar_view = std::make_unique<WebUIToolbarWebView>(
-      &setup.mock_browser, chrome::BrowserCommandController::From(browser()),
-      /*location_bar=*/nullptr);
-  toolbar_view.reset();
-}
 
 IN_PROC_BROWSER_TEST_F(WebUIToolbarLifecyclePrewarmedBrowserTest,
                        EarlyLoadRace) {
@@ -5286,37 +5228,6 @@ INSTANTIATE_TEST_SUITE_P(
     [](const testing::TestParamInfo<DragTestParam>& info) {
       return info.param.test_name;
     });
-
-class WebUIToolbarProcessOverheadExperimentBrowserTest
-    : public InProcessBrowserTest {
- public:
-  WebUIToolbarProcessOverheadExperimentBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {features::kWebUIToolbarProcessOverheadExperiment},
-        {features::kWebUIReloadButton});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(WebUIToolbarProcessOverheadExperimentBrowserTest,
-                       Basic) {
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  ToolbarView* toolbar_view = browser_view->toolbar();
-
-  // Verify that the C++ reload button is visible.
-  views::View* reload_button = toolbar_view->reload_button();
-  ASSERT_TRUE(reload_button);
-  EXPECT_TRUE(reload_button->GetVisible());
-
-  // Verify that the WebUIToolbarWebView is NOT in the view hierarchy.
-  ToolbarButtonProvider* provider = toolbar_view;
-  EXPECT_EQ(provider->GetWebUIToolbarViewForTesting(), nullptr);
-
-  // Verify that the detached WebUIToolbarWebView IS created.
-  EXPECT_NE(toolbar_view->detached_toolbar_webview_for_testing(), nullptr);
-}
 
 class WebUIToolbarAlreadyExistsForTheSameProfileOnInitTest
     : public WebUIToolbarWebViewBrowserTest,
