@@ -8371,6 +8371,7 @@ from previous Chrome versions.
       label="OmniboxGroupSuggestionsBySearchVsUrl:enabled"/>
   <int value="-1996087238" label="kAutofillEnableOffersInDownstream:enabled"/>
   <int value="-1995534832" label="DownloadProgressMessage:disabled"/>
+  <int value="-1995483968" label="GlicActorIncrementalTyping:disabled"/>
   <int value="-1995434464"
       label="ContextualTasksSidePanelRearchitecture:disabled"/>
   <int value="-1993967111" label="EnableRuntimeCountersTelemetry:enabled"/>
@@ -16426,6 +16427,7 @@ from previous Chrome versions.
       label="AutofillEnableCardInfoRuntimeRetrieval:enabled"/>
   <int value="437686060"
       label="AndroidForceTextInputStateUpdateUponFocus:disabled"/>
+  <int value="438039763" label="GlicActorIncrementalTyping:enabled"/>
   <int value="438220199"
       label="ReduceUserAgentDataLinuxPlatformVersion:enabled"/>
   <int value="438307192" label="FirstPartySets:disabled"/>

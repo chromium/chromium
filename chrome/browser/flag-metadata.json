@@ -5713,6 +5713,16 @@
     "expiry_milestone": 160
   },
   {
+    "name": "glic-actor-incremental-typing",
+    "owners": [
+      "yuhengh@google.com",
+      "ndestin@google.com",
+      "weiguo@google.com",
+      "//chrome/browser/actor/OWNERS"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "glic-actor-localhost-is-sensitive",
     "owners": [
       "mfoltz@chromium.org",

@@ -1810,6 +1810,12 @@ inline constexpr char kGlicActorEnableScriptToolsName[] =
     "Glic actor script tools";
 inline constexpr char kGlicActorEnableScriptToolsDescription[] =
     "Enables script tools for the Glic actor.";
+inline constexpr char kGlicActorIncrementalTypingName[] =
+    "Glic actor incremental typing";
+inline constexpr char kGlicActorIncrementalTypingDescription[] =
+    "When enabled, the Glic actor types text one key at a time with a short "
+    "delay between keystrokes. When disabled, it dispatches all keystrokes at "
+    "once.";
 inline constexpr char kGlicActorLocalhostIsSensitiveName[] =
     "Treat localhost URLs as sensitive";
 inline constexpr char kGlicActorLocalhostIsSensitiveDescription[] =
