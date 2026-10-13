@@ -549,6 +549,7 @@ ntp-lens-upload-dialog {
   height: 100%;
   inset-inline-start: 0;
   position: fixed;
+  z-index: 2;
 }
 
 /* The query container for the @container rules above. This can't be
