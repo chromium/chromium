@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.dom_distiller;
 
-import android.os.Build;
-
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
 
@@ -14,15 +12,15 @@ import com.google.common.util.concurrent.AtomicDouble;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.dom_distiller.core.DistilledPagePrefs;
 import org.chromium.components.dom_distiller.core.DomDistillerService;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
@@ -35,11 +33,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /** Test class for {@link DistilledPagePrefs}. */
-@RunWith(BaseJUnit4ClassRunner.class)
+@RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@DisableIf.Build(
-        sdk_is_greater_than = Build.VERSION_CODES.R,
-        message = "https://crbug.com/572733615")
 public class DistilledPagePrefsTest {
     private DistilledPagePrefs mDistilledPagePrefs;
 
@@ -48,16 +43,25 @@ public class DistilledPagePrefsTest {
     private static final TimeUnit SEMAPHORE_TIMEOUT_UNIT = TimeUnit.SECONDS;
     private static final long SEMAPHORE_TIMEOUT_VALUE = 5;
 
+    @BeforeClass
+    public static void setUpClass() {
+        NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
+    }
+
     @Before
     public void setUp() {
-        NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
         getDistilledPagePrefs();
     }
 
     @After
     public void tearDown() {
-        // Set back to default theme
-        setUserPrefTheme(Theme.LIGHT);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mDistilledPagePrefs.setUserPrefTheme(Theme.LIGHT);
+                    mDistilledPagePrefs.setFontFamily(FontFamily.SANS_SERIF);
+                    mDistilledPagePrefs.setFontScaling(/* scaling= */ 1.0f);
+                    mDistilledPagePrefs.setLinksEnabled(/* enabled= */ true);
+                });
     }
 
     private void getDistilledPagePrefs() {
