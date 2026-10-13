@@ -4,9 +4,16 @@
 
 #include "chrome/browser/ui/views/file_system_access/file_system_access_restore_permission_bubble_view.h"
 
+#include <optional>
+
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/time/time.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
@@ -25,11 +32,18 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/metrics.h"
+#include "ui/views/test/button_test_api.h"
+#include "ui/views/view_utils.h"
+#include "ui/views/window/dialog_client_view.h"
 
 using AccessType = FileSystemAccessPermissionRequestManager::Access;
 using HandleType = content::FileSystemAccessPermissionContext::HandleType;
 using RequestData = FileSystemAccessPermissionRequestManager::RequestData;
 using RequestType = FileSystemAccessPermissionRequestManager::RequestType;
+using RestorePermissionButton =
+    FileSystemAccessRestorePermissionBubbleView::RestorePermissionButton;
 
 class FileSystemAccessRestorePermissionBubbleViewTest
     : public InProcessBrowserTest {
@@ -49,6 +63,30 @@ class FileSystemAccessRestorePermissionBubbleViewTest
   }
 
  protected:
+  FileSystemAccessRestorePermissionBubbleView* ShowRestoreBubble(
+      std::optional<permissions::PermissionAction>& callback_result) {
+    return GetFileSystemAccessRestorePermissionDialogForTesting(
+        kRequestData,
+        base::BindLambdaForTesting(
+            [&callback_result](permissions::PermissionAction result) {
+              callback_result = result;
+            }),
+        GetWebContents());
+  }
+
+  void ClickButton(FileSystemAccessRestorePermissionBubbleView* bubble,
+                   RestorePermissionButton choice) {
+    views::View* buttons = bubble->GetExtraView();
+    ASSERT_NE(buttons, nullptr);
+    size_t index = static_cast<size_t>(choice);
+    ASSERT_LT(index, buttons->children().size());
+    auto* button =
+        views::AsViewClass<views::MdTextButton>(buttons->children()[index]);
+    ASSERT_NE(button, nullptr);
+
+    views::test::ButtonTestApi(button).NotifyDefaultMouseClick();
+  }
+
   const RequestData kRequestData =
       RequestData(RequestType::kRestorePermissions,
                   url::Origin::Create(GURL("https://example.com")),
@@ -58,45 +96,88 @@ class FileSystemAccessRestorePermissionBubbleViewTest
 
 IN_PROC_BROWSER_TEST_F(FileSystemAccessRestorePermissionBubbleViewTest,
                        AllowOnceButtonPressed) {
-  permissions::PermissionAction callback_result;
-  auto* bubble = GetFileSystemAccessRestorePermissionDialogForTesting(
-      kRequestData,
-      base::BindLambdaForTesting([&](permissions::PermissionAction result) {
-        callback_result = result;
-      }),
-      GetWebContents());
-  bubble->OnButtonPressed(FileSystemAccessRestorePermissionBubbleView::
-                              RestorePermissionButton::kAllowOnce);
+  std::optional<permissions::PermissionAction> callback_result;
+  auto* bubble = ShowRestoreBubble(callback_result);
+  ASSERT_NE(bubble, nullptr);
+  // Disable early-click protection to test a deliberate button press.
+  bubble->GetDialogClientView()->ResetViewShownTimeStampForTesting();
+  ASSERT_NO_FATAL_FAILURE(
+      ClickButton(bubble, RestorePermissionButton::kAllowOnce));
 
   EXPECT_EQ(callback_result, permissions::PermissionAction::GRANTED_ONCE);
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemAccessRestorePermissionBubbleViewTest,
                        AllowAlwaysButtonPressed) {
-  permissions::PermissionAction callback_result;
-  auto* bubble = GetFileSystemAccessRestorePermissionDialogForTesting(
-      kRequestData,
-      base::BindLambdaForTesting([&](permissions::PermissionAction result) {
-        callback_result = result;
-      }),
-      GetWebContents());
-  bubble->OnButtonPressed(FileSystemAccessRestorePermissionBubbleView::
-                              RestorePermissionButton::kAllowAlways);
+  std::optional<permissions::PermissionAction> callback_result;
+  auto* bubble = ShowRestoreBubble(callback_result);
+  ASSERT_NE(bubble, nullptr);
+  bubble->GetDialogClientView()->ResetViewShownTimeStampForTesting();
+  ASSERT_NO_FATAL_FAILURE(
+      ClickButton(bubble, RestorePermissionButton::kAllowAlways));
 
   EXPECT_EQ(callback_result, permissions::PermissionAction::GRANTED);
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemAccessRestorePermissionBubbleViewTest,
+                       IgnoresEarlyButtonPress) {
+  std::optional<permissions::PermissionAction> callback_result;
+  auto* bubble = ShowRestoreBubble(callback_result);
+  ASSERT_NE(bubble, nullptr);
+
+  bubble->TriggerInputProtection(/*force_early=*/true);
+  ASSERT_NO_FATAL_FAILURE(
+      ClickButton(bubble, RestorePermissionButton::kAllowAlways));
+  ASSERT_FALSE(callback_result.has_value());
+
+  // Disable early-click protection to verify a normal click still succeeds.
+  bubble->GetDialogClientView()->ResetViewShownTimeStampForTesting();
+  ASSERT_NO_FATAL_FAILURE(
+      ClickButton(bubble, RestorePermissionButton::kAllowAlways));
+  EXPECT_EQ(callback_result, permissions::PermissionAction::GRANTED);
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemAccessRestorePermissionBubbleViewTest,
+                       IgnoresButtonPressDuringAndAfterOcclusion) {
+  std::optional<permissions::PermissionAction> callback_result;
+  auto* bubble = ShowRestoreBubble(callback_result);
+  ASSERT_NE(bubble, nullptr);
+  auto* tracker =
+      PictureInPictureWindowManager::GetInstance()->GetOcclusionTracker();
+  ASSERT_NE(tracker, nullptr);
+
+  tracker->SetWidgetOcclusionStateForTesting(bubble->GetWidget(), true);
+  bubble->GetDialogClientView()->ResetViewShownTimeStampForTesting();
+  ASSERT_NO_FATAL_FAILURE(
+      ClickButton(bubble, RestorePermissionButton::kAllowAlways));
+  ASSERT_FALSE(callback_result.has_value());
+
+  // Let the previous protection window expire before uncovering the bubble.
+  bubble->TriggerInputProtection(/*force_early=*/true);
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(),
+      views::GetDoubleClickInterval() + base::Milliseconds(50));
+  run_loop.Run();
+
+  tracker->SetWidgetOcclusionStateForTesting(bubble->GetWidget(), false);
+  ASSERT_NO_FATAL_FAILURE(
+      ClickButton(bubble, RestorePermissionButton::kAllowAlways));
+  ASSERT_FALSE(callback_result.has_value());
+
+  bubble->GetDialogClientView()->ResetViewShownTimeStampForTesting();
+  ASSERT_NO_FATAL_FAILURE(
+      ClickButton(bubble, RestorePermissionButton::kAllowAlways));
+  EXPECT_EQ(callback_result, permissions::PermissionAction::GRANTED);
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemAccessRestorePermissionBubbleViewTest,
                        DenyButtonPressed) {
-  permissions::PermissionAction callback_result;
-  auto* bubble = GetFileSystemAccessRestorePermissionDialogForTesting(
-      kRequestData,
-      base::BindLambdaForTesting([&](permissions::PermissionAction result) {
-        callback_result = result;
-      }),
-      GetWebContents());
-  bubble->OnButtonPressed(FileSystemAccessRestorePermissionBubbleView::
-                              RestorePermissionButton::kDeny);
+  std::optional<permissions::PermissionAction> callback_result;
+  auto* bubble = ShowRestoreBubble(callback_result);
+  ASSERT_NE(bubble, nullptr);
+  bubble->GetDialogClientView()->ResetViewShownTimeStampForTesting();
+  ASSERT_NO_FATAL_FAILURE(ClickButton(bubble, RestorePermissionButton::kDeny));
 
   EXPECT_EQ(callback_result, permissions::PermissionAction::DENIED);
 }

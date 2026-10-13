@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_RESTORE_PERMISSION_BUBBLE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_RESTORE_PERMISSION_BUBBLE_VIEW_H_
 
+#include <memory>
+
 #include "base/callback_list.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
@@ -14,6 +16,11 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 
 class BrowserWindowInterface;
+class PictureInPictureInputProtector;
+
+namespace ui {
+class Event;
+}
 
 // TODO(crbug.com/40101962): Re-define this temporary value in layout provider
 // once the spec is ready. Make the style GM3-compatible.
@@ -64,14 +71,18 @@ class FileSystemAccessRestorePermissionBubbleView
     kDeny = 2,
     kNum = kDeny,
   };
-  void OnButtonPressed(RestorePermissionButton button_type);
   void OnPromptDismissed();
   void UpdateAnchor(BrowserWindowInterface* browser);
 
  private:
+  void OnButtonPressed(RestorePermissionButton button_type,
+                       const ui::Event& event);
+
   const std::u16string window_title_;
   base::OnceCallback<void(permissions::PermissionAction)> callback_;
   base::CallbackListSubscription tab_deactivation_subscription_;
+  std::unique_ptr<PictureInPictureInputProtector>
+      picture_in_picture_input_protector_;
 };
 
 void ShowFileSystemAccessRestorePermissionDialog(
