@@ -702,7 +702,7 @@ builder.
 * [linux-crossbench](https://ci.chromium.org/p/chromium/builders/try/linux-crossbench) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-crossbench""))
 
   Location filters:
-  * [`//third_party/crossbench/.+`](https://cs.chromium.org/chromium/src/third_party/crossbench/)
+  * [`//third_party/crossbench`](https://cs.chromium.org/chromium/src/third_party/crossbench)
   * [`//third_party/speedometer/.+`](https://cs.chromium.org/chromium/src/third_party/speedometer/)
 
 * [linux-enterprise-companion-try-builder-dbg](https://ci.chromium.org/p/chromium/builders/try/linux-enterprise-companion-try-builder-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-enterprise-companion-try-builder-dbg""))

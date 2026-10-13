@@ -45,7 +45,7 @@ try_.builder(
     cq_settings = try_.cq_settings(
         location_filters = [
             # Inclusion filters.
-            cq.location_filter(path_regexp = "third_party/crossbench/.+"),
+            cq.location_filter(path_regexp = "third_party/crossbench"),
             cq.location_filter(path_regexp = "third_party/speedometer/.+"),
         ],
     ),
