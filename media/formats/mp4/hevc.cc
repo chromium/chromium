@@ -38,7 +38,9 @@ HEVCDecoderConfigurationRecord::HEVCDecoderConfigurationRecord(
     const HEVCDecoderConfigurationRecord& other) = default;
 HEVCDecoderConfigurationRecord::~HEVCDecoderConfigurationRecord() = default;
 
-FourCC HEVCDecoderConfigurationRecord::BoxType() const { return FOURCC_HVCC; }
+FourCC HEVCDecoderConfigurationRecord::BoxType() const {
+  return FOURCC_HVCC;
+}
 
 bool HEVCDecoderConfigurationRecord::Parse(BoxReader* reader) {
   return ParseInternal(reader, reader->media_log());
@@ -345,7 +347,6 @@ bool HEVC::InsertParamSetsAnnexB(
     std::vector<uint8_t>* buffer,
     std::vector<SubsampleEntry>* subsamples) {
   std::unique_ptr<H265NaluParser> parser(new H265NaluParser());
-  const uint8_t* start = buffer->data();
   parser->SetEncryptedStream(*buffer, *subsamples);
 
   H265NALU nalu;
@@ -353,34 +354,24 @@ bool HEVC::InsertParamSetsAnnexB(
     return false;
   }
 
-  std::vector<uint8_t>::iterator config_insert_point = buffer->begin();
-
+  size_t config_insert_offset = 0;
   if (nalu.nal_unit_type == H265NALU::AUD_NUT) {
     // Move insert point to just after the AUD.
-    config_insert_point += base::to_address(nalu.data.end()) - start;
+    config_insert_offset = base::to_address(nalu.data.end()) - buffer->data();
   }
 
-  // Clear |parser| and |start| since they aren't needed anymore and
-  // will hold stale pointers once the insert happens.
+  // Clear |parser| since it isn't needed anymore and will hold stale pointers
+  // once the insert happens.
   parser.reset();
-  start = nullptr;
 
   std::vector<uint8_t> param_sets;
   HEVC::ConvertConfigToAnnexB(hevc_config, &param_sets);
   DVLOG(4) << __func__ << " converted hvcC to AnnexB "
            << " size=" << param_sets.size() << " inserted at "
-           << static_cast<int>(config_insert_point - buffer->begin());
+           << config_insert_offset;
 
-  if (subsamples && !subsamples->empty()) {
-    int subsample_index =
-        AVC::FindSubsampleIndex(*buffer, *subsamples, &(*config_insert_point));
-    // Update the size of the subsample where VPS/SPS/PPS and SEI messages are
-    // to be inserted.
-    (*subsamples)[subsample_index].clear_bytes += param_sets.size();
-  }
-
-  buffer->insert(config_insert_point,
-                 param_sets.begin(), param_sets.end());
+  AVC::InsertParamSetsIntoBuffer(buffer, subsamples, param_sets,
+                                 config_insert_offset);
   return true;
 }
 
@@ -586,8 +577,9 @@ BitstreamConverter::AnalysisResult HEVC::AnalyzeAnnexB(
           had_unexpected_nalu = true;
         }
 
-        if (!result.is_keyframe.has_value())
+        if (!result.is_keyframe.has_value()) {
           result.is_keyframe = false;
+        }
 
         if (order_state < kAfterFirstVCL) {
           order_state = kAfterFirstVCL;
@@ -608,8 +600,9 @@ BitstreamConverter::AnalysisResult HEVC::AnalyzeAnnexB(
           had_unexpected_nalu = true;
         }
 
-        if (!result.is_keyframe.has_value())
+        if (!result.is_keyframe.has_value()) {
           result.is_keyframe = true;
+        }
 
         if (order_state < kAfterFirstVCL) {
           order_state = kAfterFirstVCL;

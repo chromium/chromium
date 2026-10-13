@@ -42,17 +42,12 @@ bool AVC::ConvertAVCToAnnexBInPlaceForLengthSize4(std::vector<uint8_t>* buf) {
   return pos == buf->size();
 }
 
-// static
-int AVC::FindSubsampleIndex(const std::vector<uint8_t>& buffer,
-                            base::span<const SubsampleEntry> subsamples,
-                            const uint8_t* ptr) {
-  DCHECK(ptr >= buffer.data());
-  DCHECK(ptr <= &buffer.back());
+int FindSubsampleIndex(base::span<const SubsampleEntry> subsamples,
+                       size_t byte_offset) {
   if (subsamples.empty()) {
     return 0;
   }
 
-  size_t byte_offset = std::distance(buffer.data(), ptr);
   size_t index = 0;
   size_t total_bytes = 0;
   for (const auto& subsample : subsamples) {
@@ -63,6 +58,13 @@ int AVC::FindSubsampleIndex(const std::vector<uint8_t>& buffer,
     ++index;
   }
   NOTREACHED();
+}
+
+// static
+int AVC::FindSubsampleIndexForTesting(
+    base::span<const SubsampleEntry> subsamples,
+    size_t byte_offset) {
+  return FindSubsampleIndex(subsamples, byte_offset);
 }
 
 bool ShouldSkipDummyNALU(VideoCodec codec, base::span<const uint8_t> nalu) {
@@ -105,10 +107,11 @@ bool IsRangeClear(const std::vector<SubsampleEntry>* subsamples,
   }
   size_t cur = 0;
   for (const auto& s : *subsamples) {
-    // `SampleEncryptionEntry::GetTotalSizeOfSubsamples` is called before any of the entry
-    // points into the avc helpers here, which validates that the arithmetic below isn't able
-    // to overflow. Additionally, `ContainsSkippableNalu` and `ConvertFrameToAnnexB` both
-    // have bounds checking to ensure that `offset + size` is not able to overflow.
+    // `SampleEncryptionEntry::GetTotalSizeOfSubsamples` is called before any of
+    // the entry points into the avc helpers here, which validates that the
+    // arithmetic below isn't able to overflow. Additionally,
+    // `ContainsSkippableNalu` and `ConvertFrameToAnnexB` both have bounds
+    // checking to ensure that `offset + size` is not able to overflow.
     size_t clear_end = cur + s.clear_bytes;
     size_t cypher_end = clear_end + s.cypher_bytes;
     if (s.cypher_bytes > 0) {
@@ -214,9 +217,7 @@ bool AVC::ConvertFrameToAnnexB(size_t length_size,
     buffer->insert(buffer->end(), kAnnexBStartCode.begin(),
                    kAnnexBStartCode.end());
     if (subsamples && !subsamples->empty()) {
-      uint8_t* buffer_pos = &(*(buffer->end() - kAnnexBStartCode.size()));
-      int subsample_index =
-          FindSubsampleIndex(*buffer, *subsamples, buffer_pos);
+      int subsample_index = FindSubsampleIndex(*subsamples, output_offset);
       // We've replaced NALU size value with an AnnexB start code.
       int size_adjustment = kAnnexBStartCode.size() - length_size;
       (*subsamples)[subsample_index].clear_bytes += size_adjustment;
@@ -229,52 +230,59 @@ bool AVC::ConvertFrameToAnnexB(size_t length_size,
 }
 
 // static
-bool AVC::InsertParamSetsAnnexB(const AVCDecoderConfigurationRecord& avc_config,
-                                std::vector<uint8_t>* buffer,
-                                std::vector<SubsampleEntry>* subsamples) {
-  std::unique_ptr<H264Parser> parser = std::make_unique<H264Parser>();
-  const uint8_t* start = &(*buffer)[0];
-  parser->SetEncryptedStream(*buffer, *subsamples);
-
-  H264NALU nalu;
-  if (parser->AdvanceToNextNALU(&nalu) != H264Parser::kOk)
-    return false;
-
-  std::vector<uint8_t>::iterator config_insert_point = buffer->begin();
-
-  if (nalu.nal_unit_type == H264NALU::kAUD) {
-    // Move insert point to just after the AUD.
-    config_insert_point += base::to_address(nalu.data.end()) - start;
-  }
-
-  // Clear |parser| and |start| since they aren't needed anymore and
-  // will hold stale pointers once the insert happens.
-  parser.reset();
-  start = nullptr;
-
-  std::vector<uint8_t> param_sets;
-  RCHECK(AVC::ConvertConfigToAnnexB(avc_config, &param_sets));
-
+void AVC::InsertParamSetsIntoBuffer(std::vector<uint8_t>* buffer,
+                                    std::vector<SubsampleEntry>* subsamples,
+                                    base::span<const uint8_t> param_sets,
+                                    size_t byte_offset) {
+  DCHECK_LE(byte_offset, buffer->size());
   if (subsamples && !subsamples->empty()) {
-    if (config_insert_point != buffer->end()) {
-      int subsample_index =
-          FindSubsampleIndex(*buffer, *subsamples, &(*config_insert_point));
-      // Update the size of the subsample where SPS/PPS is to be inserted.
+    if (byte_offset < buffer->size()) {
+      int subsample_index = FindSubsampleIndex(*subsamples, byte_offset);
+      // Update the size of the subsample where param sets are to be inserted.
       (*subsamples)[subsample_index].clear_bytes += param_sets.size();
     } else {
-      int subsample_index = (*subsamples).size() - 1;
+      int subsample_index = subsamples->size() - 1;
       if ((*subsamples)[subsample_index].cypher_bytes == 0) {
-        // Extend the last clear range to include the inserted data.
+        // Extend the last clear range to include the inserted param sets.
         (*subsamples)[subsample_index].clear_bytes += param_sets.size();
       } else {
-        // Append a new subsample to cover the inserted data.
-        (*subsamples).emplace_back(param_sets.size(), 0);
+        // Append a new subsample to cover the inserted param sets.
+        subsamples->emplace_back(param_sets.size(), 0);
       }
     }
   }
 
-  buffer->insert(config_insert_point,
-                 param_sets.begin(), param_sets.end());
+  buffer->insert(buffer->begin() + byte_offset, param_sets.begin(),
+                 param_sets.end());
+}
+
+// static
+bool AVC::InsertParamSetsAnnexB(const AVCDecoderConfigurationRecord& avc_config,
+                                std::vector<uint8_t>* buffer,
+                                std::vector<SubsampleEntry>* subsamples) {
+  std::unique_ptr<H264Parser> parser = std::make_unique<H264Parser>();
+  parser->SetEncryptedStream(*buffer, *subsamples);
+
+  H264NALU nalu;
+  if (parser->AdvanceToNextNALU(&nalu) != H264Parser::kOk) {
+    return false;
+  }
+
+  size_t config_insert_offset = 0;
+  if (nalu.nal_unit_type == H264NALU::kAUD) {
+    // Move insert point to just after the AUD.
+    config_insert_offset = base::to_address(nalu.data.end()) - buffer->data();
+  }
+
+  // Clear |parser| since it isn't needed anymore and will hold stale pointers
+  // once the insert happens.
+  parser.reset();
+
+  std::vector<uint8_t> param_sets;
+  RCHECK(AVC::ConvertConfigToAnnexB(avc_config, &param_sets));
+
+  InsertParamSetsIntoBuffer(buffer, subsamples, param_sets,
+                            config_insert_offset);
   return true;
 }
 

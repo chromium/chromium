@@ -119,8 +119,8 @@ static std::string AnnexBToString(
   bool first = true;
   size_t current_subsample_index = 0;
   while (parser.AdvanceToNextNALU(&nalu) == H264Parser::kOk) {
-    size_t subsample_index =
-        AVC::FindSubsampleIndex(buffer, subsamples, nalu.data.data());
+    size_t subsample_index = AVC::FindSubsampleIndexForTesting(
+        subsamples, nalu.data.data() - buffer.data());
     if (!first) {
       ss << (subsample_index == current_subsample_index ? "," : " ");
     } else {
@@ -140,8 +140,9 @@ class AVCConversionTest : public testing::TestWithParam<int> {
     DCHECK_GE(length, 0);
     DCHECK_LE(length, 255);
 
-    for (int i = 1; i < length_size; i++)
+    for (int i = 1; i < length_size; i++) {
       buf->push_back(0);
+    }
     buf->push_back(length);
   }
 
@@ -228,7 +229,7 @@ TEST_P(AVCConversionTest, SubsampleSizesUpdatedAfterAnnexBConversion) {
   WriteLength(GetParam(), sizeof(kNALU2), &buf);
   buf.insert(buf.end(), kNALU2.begin(), kNALU2.end());
 
-  subsample.clear_bytes = 2*GetParam() + sizeof(kNALU1) + sizeof(kNALU2);
+  subsample.clear_bytes = 2 * GetParam() + sizeof(kNALU1) + sizeof(kNALU2);
   subsample.cypher_bytes = 0;
   subsamples.push_back(subsample);
 
@@ -687,18 +688,18 @@ typedef struct {
 
 TEST_F(AVCConversionTest, InsertParamSetsAnnexB) {
   static const InsertTestCases test_cases[] = {
-    { "I", "SPS,SPS,PPS,I" },
-    { "AUD I", "AUD SPS,SPS,PPS,I" },
+      {"I", "SPS,SPS,PPS,I"},
+      {"AUD I", "AUD SPS,SPS,PPS,I"},
 
-    // Cases where param sets in |avc_config| are placed before
-    // the existing ones.
-    { "SPS,PPS,I", "SPS,SPS,PPS,SPS,PPS,I" },
-    { "AUD,SPS,PPS,I", "AUD,SPS,SPS,PPS,SPS,PPS,I" },  // Note: params placed
+      // Cases where param sets in |avc_config| are placed before
+      // the existing ones.
+      {"SPS,PPS,I", "SPS,SPS,PPS,SPS,PPS,I"},
+      {"AUD,SPS,PPS,I", "AUD,SPS,SPS,PPS,SPS,PPS,I"},  // Note: params placed
                                                        // after AUD.
 
-    // One or more NALUs might follow AUD in the first subsample, we need to
-    // handle this correctly. Params should be inserted right after AUD.
-    { "AUD,SEI I", "AUD,SPS,SPS,PPS,SEI I" },
+      // One or more NALUs might follow AUD in the first subsample, we need to
+      // handle this correctly. Params should be inserted right after AUD.
+      {"AUD,SEI I", "AUD,SPS,SPS,PPS,SEI I"},
   };
 
   AVCDecoderConfigurationRecord avc_config;

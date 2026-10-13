@@ -66,11 +66,21 @@ class MEDIA_EXPORT AVC {
       const std::vector<SubsampleEntry>& subsamples,
       bool allow_bare_idr = true);
 
-  // Given a `buffer` and `subsamples` information and `pts` pointer into the
-  // `buffer` finds the index of the subsample `ptr` is pointing into.
-  static int FindSubsampleIndex(const std::vector<uint8_t>& buffer,
-                                base::span<const SubsampleEntry> subsamples,
-                                const uint8_t* ptr);
+  // Returns the index of the entry in `subsamples` that contains `byte_offset`
+  // (a 0-based byte offset from the start of the frame buffer), determined by
+  // summing `clear_bytes + cypher_bytes` across entries until the cumulative
+  // size exceeds `byte_offset`. `byte_offset` must be less than the total byte
+  // count covered by `subsamples`. Returns 0 if `subsamples` is empty.
+  static int FindSubsampleIndexForTesting(
+      base::span<const SubsampleEntry> subsamples,
+      size_t byte_offset);
+
+  // Inserts `param_sets` into `buffer` at `byte_offset`, updating `subsamples`
+  // (if non-empty) to account for the newly inserted clear bytes.
+  static void InsertParamSetsIntoBuffer(std::vector<uint8_t>* buffer,
+                                        std::vector<SubsampleEntry>* subsamples,
+                                        base::span<const uint8_t> param_sets,
+                                        size_t byte_offset);
 
   // Convert a `buffer` from AVC bitstream to Annex-B bitstream by replacing
   // 4-byte NALU length to 4-byte NALU start code.
