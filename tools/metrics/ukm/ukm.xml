@@ -3549,6 +3549,13 @@ be describing additional metrics about the same event.
       kAfterFieldDetection and kBeforeFieldDetection, where an OTP form was
       detected and the URL can be reliably established.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="Tickle.FormOutcome" enum="OneTimeTokensTickleFormOutcome">
     <summary>
@@ -3557,6 +3564,13 @@ be describing additional metrics about the same event.
       before user interaction, after user interaction, or no tickle received
       within timeout).
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
