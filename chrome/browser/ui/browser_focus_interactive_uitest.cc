@@ -74,6 +74,7 @@
 #include "ui/base/test/ui_controls.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/views/controls/webview/webview.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/interaction/view_focus_observer.h"
 #include "ui/views/test/widget_activation_waiter.h"
@@ -251,10 +252,7 @@ class BrowserFocusTest : public InteractiveBrowserTest {
     std::vector<content::WebContents*> web_contents = {
         browser()->tab_strip_model()->GetActiveWebContents()};
 
-    WebUIToolbarWebView* webui_toolbar =
-        BrowserView::GetBrowserViewForBrowser(browser())
-            ->toolbar_button_provider()
-            ->GetWebUIToolbarViewForTesting();
+    WebUIToolbarWebView* webui_toolbar = GetWebUIToolbarWebView(browser());
     if (webui_toolbar) {
       web_contents.push_back(
           webui_toolbar->GetWebViewForTesting()->web_contents());
@@ -271,6 +269,27 @@ class BrowserFocusTest : public InteractiveBrowserTest {
     // ToolbarUIService pipe. Settle the toolbar pipes so callers observe the
     // state that corresponds to the focus change they just waited for.
     if (webui_toolbar) {
+      // Flushing the pipes is only sufficient once the toolbar page has sent
+      // its omnibox focus notification. The page sends it from the omnibox
+      // input's `focus`/`blur` handler, and Blink only dispatches those events
+      // on the active element once the page itself is focused. That page-level
+      // focus state (RenderWidgetHostImpl::SetPageFocus()) travels over the
+      // widget input pipe, which is not ordered with respect to the frame
+      // interface used by SetInitialFocus() and by the flush below. So when
+      // tab traversal moves Views focus onto the toolbar WebView, the omnibox
+      // element may already be document.activeElement while the page is not
+      // yet focused, and a flush at that point would complete without the
+      // focus notification. Wait for the page's focus state to agree with the
+      // Views focused view first.
+      views::WebView* toolbar_web_view = webui_toolbar->GetWebViewForTesting();
+      const bool toolbar_page_focused =
+          toolbar_web_view->Contains(GetFocusManager()->GetFocusedView());
+      ASSERT_TRUE(base::test::RunUntil([&]() {
+        return content::EvalJs(toolbar_web_view->web_contents(),
+                               "document.hasFocus()")
+                   .ExtractBool() == toolbar_page_focused;
+      })) << "Toolbar page focus did not settle to "
+          << toolbar_page_focused;
       ASSERT_TRUE(FlushWebUIToolbarPipes(browser()));
     }
   }
@@ -696,10 +715,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, FocusTraversal) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   std::vector<content::WebContents*> web_contents = {
       browser()->tab_strip_model()->GetActiveWebContents()};
-  WebUIToolbarWebView* webui_toolbar =
-      BrowserView::GetBrowserViewForBrowser(browser())
-          ->toolbar_button_provider()
-          ->GetWebUIToolbarViewForTesting();
+  WebUIToolbarWebView* webui_toolbar = GetWebUIToolbarWebView(browser());
   if (webui_toolbar) {
     web_contents.push_back(
         webui_toolbar->GetWebViewForTesting()->web_contents());

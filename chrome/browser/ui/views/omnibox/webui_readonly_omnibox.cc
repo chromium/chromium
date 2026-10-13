@@ -640,7 +640,7 @@ bool WebUIReadOnlyOmnibox::IsWebViewFocused() {
   return web_view && web_view->HasFocus();
 }
 
-bool WebUIReadOnlyOmnibox::IsToolbarViewOrDescendant(
+bool WebUIReadOnlyOmnibox::IsWebUIToolbarViewOrDescendant(
     const views::View* view) const {
   if (!view || !toolbar_delegate_) {
     return false;
@@ -720,7 +720,7 @@ WebUIReadOnlyOmnibox::OnFocusChange(
       views::FocusManager* focus_manager =
           widget ? widget->GetFocusManager() : nullptr;
       if (focus_manager &&
-          !IsToolbarViewOrDescendant(focus_manager->GetFocusedView())) {
+          !IsWebUIToolbarViewOrDescendant(focus_manager->GetFocusedView())) {
         return base::ok(std::monostate());
       }
     }

@@ -186,10 +186,11 @@ class WebUIReadOnlyOmnibox
   // element inside the WebUI has reported itself as focused.
   bool IsWebViewFocused();
 
-  // Returns whether `view` is the toolbar's View (as returned by
-  // `toolbar_delegate_->GetView()`) or one of its descendants. Returns false
-  // if `view` is null or if there is no toolbar delegate/view.
-  bool IsToolbarViewOrDescendant(const views::View* view) const;
+  // Returns whether `view` is the WebUI toolbar's View (i.e. the
+  // WebUIToolbarWebView returned by `toolbar_delegate_->GetView()`) or one of
+  // its descendants. Returns false if `view` is null or if there is no toolbar
+  // delegate/view.
+  bool IsWebUIToolbarViewOrDescendant(const views::View* view) const;
 
   base::expected<std::monostate, mojo_base::mojom::ErrorPtr> OnFocusChange(
       const toolbar_ui_api::mojom::OmniboxActionFocusChange& focus_change);

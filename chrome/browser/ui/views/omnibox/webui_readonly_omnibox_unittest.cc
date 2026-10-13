@@ -71,6 +71,7 @@ class TestUpdatePropagator : public WebUIReadOnlyOmnibox::UpdatePropagator {
   // focuses the toolbar's WebView.
   void PropagateFocusRequest(
       toolbar_ui_api::mojom::FocusRequestTarget target) override {
+    last_focus_request_target_ = target;
     if (toolbar_delegate_) {
       toolbar_delegate_->OnFocusRequested(target);
     }
@@ -82,9 +83,16 @@ class TestUpdatePropagator : public WebUIReadOnlyOmnibox::UpdatePropagator {
     return std::move(state_);
   }
 
+  std::optional<toolbar_ui_api::mojom::FocusRequestTarget>
+  TakeLastFocusRequestTarget() {
+    return std::exchange(last_focus_request_target_, std::nullopt);
+  }
+
  private:
   raw_ptr<WebUIToolbarControlDelegate> toolbar_delegate_ = nullptr;
   toolbar_ui_api::mojom::OmniboxViewStatePtr state_;
+  std::optional<toolbar_ui_api::mojom::FocusRequestTarget>
+      last_focus_request_target_;
 };
 
 class WebUIReadOnlyOmniboxTest : public ChromeViewsTestBase {
@@ -785,6 +793,68 @@ TEST_F(WebUIReadOnlyOmniboxTest, SetFocusRestoresCaretVisibility) {
   omnibox_view_->SetFocus(/*is_user_initiated=*/false);
   EXPECT_EQ(OMNIBOX_FOCUS_VISIBLE,
             omnibox_controller_->edit_model()->focus_state());
+}
+
+TEST_F(WebUIReadOnlyOmniboxTest, OnTabChangedFocusState) {
+  // SetFocusWithTarget() only updates the edit model's focus state
+  // synchronously when the full WebUI popup is disabled.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(omnibox::internal::kWebUIOmniboxFullPopup);
+
+  // Ensure the internal web view is not focused initially.
+  widget_->GetFocusManager()->ClearFocus();
+
+  // Save invisible focus state to wc1_.
+  omnibox_controller_->edit_model()->OnSetFocus(/*control_down=*/false);
+  omnibox_controller_->edit_model()->SetCaretVisibility(false);
+  EXPECT_EQ(OMNIBOX_FOCUS_INVISIBLE,
+            omnibox_controller_->edit_model()->focus_state());
+  omnibox_view_->SaveStateToTab(wc1_);
+
+  // Make focus state visible on current model.
+  omnibox_controller_->edit_model()->SetCaretVisibility(true);
+  EXPECT_EQ(OMNIBOX_FOCUS_VISIBLE,
+            omnibox_controller_->edit_model()->focus_state());
+
+  // Switching to wc1_ when the web view is not focused should restore
+  // OMNIBOX_FOCUS_INVISIBLE via edit_model_->RestoreState() without
+  // requesting focus.
+  omnibox_view_->OnTabChanged(wc1_);
+  EXPECT_EQ(OMNIBOX_FOCUS_INVISIBLE,
+            omnibox_controller_->edit_model()->focus_state());
+  EXPECT_EQ(std::nullopt, update_propagator_.TakeLastFocusRequestTarget());
+
+  // Blur / kill focus on the current tab.
+  omnibox_controller_->edit_model()->OnKillFocus();
+  EXPECT_EQ(OMNIBOX_FOCUS_NONE,
+            omnibox_controller_->edit_model()->focus_state());
+
+  // Switching to a tab with no saved state (null) when the web view is not
+  // focused keeps focus state as OMNIBOX_FOCUS_NONE and does not request
+  // focus.
+  omnibox_view_->OnTabChanged(wc2_);
+  EXPECT_EQ(OMNIBOX_FOCUS_NONE,
+            omnibox_controller_->edit_model()->focus_state());
+  EXPECT_EQ(std::nullopt, update_propagator_.TakeLastFocusRequestTarget());
+
+  // If the web view has focus (e.g. restored by
+  // ChromeWebContentsViewFocusHelper), OnTabChanged should restore
+  // OMNIBOX_FOCUS_VISIBLE and request location bar focus.
+  widget_->GetContentsView()->RequestFocus();
+  omnibox_view_->OnTabChanged(wc2_);
+  EXPECT_EQ(OMNIBOX_FOCUS_VISIBLE,
+            omnibox_controller_->edit_model()->focus_state());
+  EXPECT_EQ(toolbar_ui_api::mojom::FocusRequestTarget::kLocationBar,
+            update_propagator_.TakeLastFocusRequestTarget());
+
+  // Switching back to wc1_ when the web view is not focused restores
+  // OMNIBOX_FOCUS_INVISIBLE without requesting focus.
+  widget_->GetFocusManager()->ClearFocus();
+  omnibox_controller_->edit_model()->OnKillFocus();
+  omnibox_view_->OnTabChanged(wc1_);
+  EXPECT_EQ(OMNIBOX_FOCUS_INVISIBLE,
+            omnibox_controller_->edit_model()->focus_state());
+  EXPECT_EQ(std::nullopt, update_propagator_.TakeLastFocusRequestTarget());
 }
 
 }  // namespace
