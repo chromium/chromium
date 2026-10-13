@@ -90,6 +90,20 @@ cr-button[is-activated] {
       var(--google-blue-600));
 }
 
+/* While an IPH is anchored to the button, paint the icon in the feature promo
+ * highlight color, matching native ToolbarButton::GetForegroundColor().
+ * Engaged buttons keep the engaged color, as native SplitTabsToolbarButton and
+ * PinnedActionToolbarButton do. Buttons that pick their own icon color in
+ * native (e.g. the performance intervention button) keep it through their
+ * more specific #button rules. cr-button (extensions) is not included:
+ * native extension action buttons (ToolbarActionView) are not ToolbarButtons,
+ * and the extensions menu button draws its icon through icon-from-table, whose
+ * color is set inline from the icon table, so CSS cannot recolor it. */
+:host(.help-anchor-highlight)
+    cr-icon-button.iph-visual-target:not([is-activated]) {
+  --cr-icon-button-fill-color: var(--color-toolbar-feature-promo-highlight);
+}
+
 icon-from-table {
   width: var(--toolbar-button-icon-size);
   height: var(--toolbar-button-icon-size);

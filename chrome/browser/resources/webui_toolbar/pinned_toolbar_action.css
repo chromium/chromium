@@ -10,6 +10,15 @@
  * #include=cr-hidden-style-lit toolbar-button
  * #css_wrapper_metadata_end */
 
+/* getIconStyle_() may set the icon color inline from the icon table, which
+ * would beat the IPH icon color from toolbar_button.css. Native
+ * PinnedActionToolbarButton::UpdateIcon() ignores the image color and uses
+ * ToolbarButton::GetForegroundColor(), so let the IPH color win here too. */
+:host(.help-anchor-highlight) #button:not([is-activated]) {
+  --cr-icon-button-fill-color:
+      var(--color-toolbar-feature-promo-highlight) !important;
+}
+
 /* The progress ring drawn around the button's icon. This mirrors the ring the
  * Views toolbar paints; see DownloadProgressRing in
  * //chrome/browser/ui/views/download/bubble/download_toolbar_ui_controller.cc.

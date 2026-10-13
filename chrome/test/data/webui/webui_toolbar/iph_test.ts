@@ -2,12 +2,48 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
-import {AppMenuIconType, AppMenuSeverity} from 'chrome://webui-toolbar.top-chrome/app.js';
+import {AppMenuIconType, AppMenuSeverity, IconTable, IconType} from 'chrome://webui-toolbar.top-chrome/app.js';
 
 suite('IPH', function() {
-  async function testIPH(tagName: string, setNormalState: (el: any) => void) {
+  // Distinct fake colors so that the normal and IPH icon colors can be told
+  // apart.
+  const ICON_COLOR = 'rgb(4, 5, 6)';
+  const PROMO_COLOR = 'rgb(1, 2, 3)';
+
+  setup(() => {
+    document.documentElement.style.setProperty(
+        '--color-toolbar-button-icon', ICON_COLOR);
+    document.documentElement.style.setProperty(
+        '--color-toolbar-feature-promo-highlight', PROMO_COLOR);
+  });
+
+  teardown(() => {
+    document.documentElement.style.removeProperty(
+        '--color-toolbar-button-icon');
+    document.documentElement.style.removeProperty(
+        '--color-toolbar-feature-promo-highlight');
+  });
+
+  function getIconColor(visualTarget: HTMLElement): string {
+    if (visualTarget.tagName === 'CR-ICON-BUTTON') {
+      return window.getComputedStyle(visualTarget)
+          .getPropertyValue('--cr-icon-button-fill-color')
+          .trim();
+    }
+    // toolbar-chip-button icons use currentColor.
+    return window.getComputedStyle(visualTarget).color;
+  }
+
+  /**
+   * @param expectIconRecolor Whether the icon is expected to be painted in the
+   *     feature promo highlight color during the IPH, matching native
+   *     ToolbarButton::GetForegroundColor() and its overrides.
+   */
+  async function testIPH(
+      tagName: string, setNormalState: (el: any) => void,
+      expectIconRecolor: boolean = true) {
     const el = document.createElement(tagName) as any;
     setNormalState(el);
     document.body.appendChild(el);
@@ -47,6 +83,9 @@ suite('IPH', function() {
     assertEquals(
         'none', window.getComputedStyle(visualTarget, '::before').animationName,
         `Button ${tagName} should not pulse when highlight is inactive`);
+    assertNotEquals(
+        PROMO_COLOR, getIconColor(visualTarget),
+        `Button ${tagName} icon should not use the IPH color without an IPH`);
 
     hostWithHighlight.classList.add('help-anchor-highlight');
     await microtasksFinished();
@@ -58,6 +97,22 @@ suite('IPH', function() {
     assertEquals(
         '1', window.getComputedStyle(visualTarget, '::before').opacity,
         `Button ${tagName} pulse layer should have opacity: 1`);
+    if (expectIconRecolor) {
+      assertEquals(
+          PROMO_COLOR, getIconColor(visualTarget),
+          `Button ${tagName} icon should use the IPH color during the IPH`);
+    } else {
+      assertNotEquals(
+          PROMO_COLOR, getIconColor(visualTarget),
+          `Button ${tagName} icon should keep its color during the IPH`);
+    }
+
+    hostWithHighlight.classList.remove('help-anchor-highlight');
+    await microtasksFinished();
+
+    assertNotEquals(
+        PROMO_COLOR, getIconColor(visualTarget),
+        `Button ${tagName} icon should restore its color after the IPH`);
 
     el.remove();
   }
@@ -87,6 +142,9 @@ suite('IPH', function() {
   });
 
   test('AvatarButton', async () => {
+    // The avatar icon comes from the browser through the icon table, so CSS
+    // must not change it. Native only recolors the incognito vector icon for
+    // the IPH; profile pictures ignore the IPH color.
     await testIPH('avatar-button', (el) => {
       el.state = {
         isVisible: true,
@@ -94,24 +152,54 @@ suite('IPH', function() {
         tooltip: 'Avatar',
         icon: {handleId: 0n},
       };
-    });
+    }, /*expectIconRecolor=*/ false);
   });
 
   test('SplitTabsButton', async () => {
     await testIPH('split-tabs-button', (el) => {
-      el.state = {isCurrentTabSplit: false, isPinned: true};
+      el.state = {isCurrentTabSplit: false};
     });
   });
 
+  test('SplitTabsButtonEngaged', async () => {
+    // Native SplitTabsToolbarButton keeps the engaged color during the IPH.
+    await testIPH('split-tabs-button', (el) => {
+      el.state = {isCurrentTabSplit: true};
+    }, /*expectIconRecolor=*/ false);
+  });
+
   test('PinnedToolbarAction', async () => {
+    // Register an icon with an explicit color, so that the pinned toolbar
+    // action sets the icon color inline (see
+    // PinnedToolbarActionElement.getIconStyle_()).
+    IconTable.getInstance().applyUpdates([{
+      handleId: 1n,
+      iconUrlOrName: 'cr:schedule',
+      iconType: IconType.kIconSet,
+      color: {value: 0xFF123456},
+    }]);
+
     await testIPH('pinned-toolbar-action', (el) => {
       el.state = {
         action: 1,
         enabled: true,
         tooltip: 'Pinned Action',
-        icon: {handleId: 0n},
+        icon: {handleId: 1n},
       };
     });
+  });
+
+  test('PinnedToolbarActionEngaged', async () => {
+    // Native PinnedActionToolbarButton keeps the engaged color during the IPH.
+    await testIPH('pinned-toolbar-action', (el) => {
+      el.state = {
+        action: 1,
+        enabled: true,
+        activated: true,
+        tooltip: 'Pinned Action',
+        icon: {handleId: 0n},
+      };
+    }, /*expectIconRecolor=*/ false);
   });
 
   test('AppMenuButton', async () => {
@@ -123,8 +211,24 @@ suite('IPH', function() {
         accessibilityText: '',
         tooltip: 'App Menu',
         isContextMenuVisible: false,
-        trailingMargin: 0,
+        windowIsMaximizedOrFullscreen: false,
       };
     });
+  });
+
+  test('AppMenuButtonWithLabel', async () => {
+    // Native BrowserAppMenuButton keeps the label colors while the label is
+    // visible.
+    await testIPH('app-menu-button', (el) => {
+      el.state = {
+        iconType: AppMenuIconType.kNone,
+        severity: AppMenuSeverity.kNone,
+        labelText: 'Update',
+        accessibilityText: '',
+        tooltip: 'App Menu',
+        isContextMenuVisible: false,
+        windowIsMaximizedOrFullscreen: false,
+      };
+    }, /*expectIconRecolor=*/ false);
   });
 });

@@ -66,6 +66,15 @@ toolbar-chip-button.has-severity {
   --toolbar-chip-highlight-opacity: 1;
 }
 
+/* While an IPH is anchored to the icon-only button, paint the icon in the
+ * feature promo highlight color. This matches native
+ * BrowserAppMenuButton::GetForegroundColor(), which keeps the expanded label
+ * colors while the label is visible and otherwise falls back to
+ * ToolbarButton::GetForegroundColor(). */
+toolbar-chip-button.help-anchor-highlight:not([has-label]) {
+  --toolbar-chip-fg-color: var(--color-toolbar-feature-promo-highlight);
+}
+
 toolbar-chip-button[has-label] {
   --toolbar-chip-ink-drop-hover-color: var(--color-app-menu-chip-ink-drop-hover);
   --toolbar-chip-ink-drop-ripple-color: var(--color-app-menu-chip-ink-drop-ripple);
