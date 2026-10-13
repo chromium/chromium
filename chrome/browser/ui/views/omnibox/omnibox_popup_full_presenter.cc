@@ -634,15 +634,13 @@ void OmniboxPopupFullPresenter::OnDidChangeFocus(views::View* focused_before,
 
   // The popup holds activation, so the browser widget is inactive and
   // focusing `focused_now` usually activated it first (see
-  // `FocusManager::SetFocusedViewWithReason()`). On Aura this runs while that
+  // `FocusManager::SetFocusedViewWithReason()`). This runs while that
   // activation is handled, and `BrowserView::OnWidgetActivationChanged()`
   // runs right after. If a tab was switched while the widget was inactive,
   // `BrowserView::OnActiveTabChanged()` deferred restoring the new tab's
   // focus to this activation, so `BrowserView` is about to focus the view that
   // tab last stored (e.g. the omnibox), taking focus back from `focused_now`.
   // Store `focused_now` as the tab's focus so that the restore is a no-op.
-  // On macOS, `BrowserView` restores before `focused_now` is focused, so this
-  // never runs for it (b/571201192).
   if (content::WebContents* web_contents = location_bar()->GetWebContents()) {
     if (auto* focus_helper =
             ChromeWebContentsViewFocusHelper::FromWebContents(web_contents)) {
