@@ -43,6 +43,7 @@ class LoadAndExtractContentTool : public Tool {
   // actor::Tool:
   void Validate(ToolCallback callback) override;
   void Invoke(ToolCallback callback) override;
+  void Cancel() override;
   void UpdateTaskAfterInvoke(ActorTask& task,
                              mojom::ActionResultPtr result,
                              ToolCallback callback) const override;
@@ -62,6 +63,11 @@ class LoadAndExtractContentTool : public Tool {
   // Should be called once we no longer need to keep the tab open, i.e. it has
   // navigated and we've extracted the content (or encountered an error).
   void OnTabReadyToClose(size_t index, PerTabResultCode result_code);
+
+  // Removes the tab opened for `state` from the task, whether or not the tab
+  // still exists, then closes it if it does. The tab is added with
+  // stop_task_on_detach=false, so the task otherwise keeps it after it closes.
+  void RemoveAndCloseTab(PerTabState& state);
 
   void OnTabObservationDelayComplete(size_t index,
                                      PerTabResultCode result_code);

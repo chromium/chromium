@@ -333,12 +333,21 @@ LoadAndExtractContentTool::LoadAndExtractContentTool(
 }
 
 LoadAndExtractContentTool::~LoadAndExtractContentTool() {
-  // In the case of a tool being destroyed before completion, ensure we close
-  // any remaining opened tabs.
+  // In the case of a tool being destroyed before completion without Cancel()
+  // (e.g. the task itself is going away), ensure we close any remaining opened
+  // tabs.
   for (auto& per_tab_state : per_tab_state_) {
     if (tabs::TabInterface* tab = per_tab_state.tab_handle.Get()) {
       tab->Close();
     }
+  }
+}
+
+void LoadAndExtractContentTool::Cancel() {
+  // The task may continue after this (e.g. it was paused, or the user took
+  // over), so remove the tabs from it as well as closing them.
+  for (auto& per_tab_state : per_tab_state_) {
+    RemoveAndCloseTab(per_tab_state);
   }
 }
 
@@ -531,19 +540,32 @@ void LoadAndExtractContentTool::OnTabReadyToClose(
   }
 
   PerTabState& state = per_tab_state_.at(index);
-  if (tabs::TabInterface* tab = state.tab_handle.Get()) {
-    // Remove the tab from the set of controlled tabs before closing it, to
-    // avoid tests thinking that something went wrong.
-    tool_delegate().RemoveTab(state.tab_handle);
-    tab->Close();
-  } else if (!state.tab_observation->has_annotated_page_content()) {
+  if (!state.tab_handle.Get() &&
+      !state.tab_observation->has_annotated_page_content()) {
     // Record an error code if the tab was closed before we could extract the
     // APC.
     result_code = PerTabResultCode::kTabWentAway;
   }
+  RemoveAndCloseTab(state);
 
   state.result_code = result_code;
   per_url_completion_closure_.Run();
+}
+
+void LoadAndExtractContentTool::RemoveAndCloseTab(PerTabState& state) {
+  if (state.tab_handle == tabs::TabHandle::Null()) {
+    // The tab was never opened, or has already been removed.
+    return;
+  }
+  // Remove the tab from the set of controlled tabs before closing it, to
+  // avoid tests thinking that something went wrong. Do this even if the tab is
+  // already gone (e.g. the user closed it): it was added with
+  // stop_task_on_detach=false, so the task would otherwise keep it.
+  tool_delegate().RemoveTab(state.tab_handle);
+  if (tabs::TabInterface* tab = state.tab_handle.Get()) {
+    tab->Close();
+  }
+  state.tab_handle = tabs::TabHandle::Null();
 }
 
 void LoadAndExtractContentTool::OnAllUrlsCompleted() {
