@@ -5151,6 +5151,7 @@
     "prefix": "subresource-link-preload-enabled",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
+      "external/wpt/preload/preload-referrer-policy-subresource-header.tentative.html",
       "http/tests/linkHeader/link-preload-in-js.html"
     ],
     "exclusive_tests": "ALL",
