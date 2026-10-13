@@ -76,12 +76,53 @@ def _ParseArgs(args):
     return options
 
 
-def _CheckAllFilesListed(resource_files, resource_dirs):
+def _CollectFilesByDirectory(resource_dirs):
+    """Walks each resource directory once.
+
+    Returns:
+      Dict mapping each resource_dir to a list of (path, archive_path) tuples.
+    """
+    files_by_dir = {}
+    for resource_dir in resource_dirs:
+        entries = []
+        for root, _, files in os.walk(resource_dir):
+            parent_dir = os.path.relpath(root, resource_dir)
+            for f in files:
+                archive_path = (
+                    f if parent_dir == '.' else os.path.join(parent_dir, f)
+                )
+                entries.append((os.path.join(root, f), archive_path))
+        files_by_dir[resource_dir] = entries
+    return files_by_dir
+
+
+def _FilterFilesByDirectory(files_by_dir, ignore_pattern):
+    globs = resource_utils.GenerateGlobs(ignore_pattern)
+    ret = {}
+    for resource_dir, entries in files_by_dir.items():
+        active_entries = [
+            (path, archive_path)
+            for path, archive_path in entries
+            if not (
+                build_utils.MatchesGlob(archive_path, globs)
+                or build_utils.MatchesGlob(
+                    os.path.basename(archive_path), globs
+                )
+            )
+        ]
+        if active_entries:
+            ret[resource_dir] = active_entries
+    return ret
+
+
+def _CheckAllFilesListed(resource_files, active_files_by_dir):
     resource_files = set(resource_files)
-    missing_files = []
-    for path, _ in resource_utils.IterResourceFilesInDirectories(resource_dirs):
-        if path not in resource_files:
-            missing_files.append(path)
+    missing_files = [
+        path
+        for entries in active_files_by_dir.values()
+        for path, _ in entries
+        if path not in resource_files
+    ]
 
     if missing_files:
         sys.stderr.write(
@@ -155,13 +196,13 @@ def _TransformArchivePath(archive_path, existing_dirs, renamed_dirs):
     return archive_path
 
 
-def _ZipResources(resource_dirs, zip_path, ignore_pattern):
-    # ignore_pattern is a string of ':' delimited list of globs used to ignore
-    # files that should not be part of the final resource zip.
+def _ZipResources(active_files_by_dir, zip_path):
     files_to_zip = []
     seen_archive_paths = set()
     path_info = resource_utils.ResourceInfoFile()
-    for index, resource_dir in enumerate(resource_dirs):
+    for index, (resource_dir, entries) in enumerate(
+        active_files_by_dir.items()
+    ):
         attributed_aar = None
         if not resource_dir.startswith('..'):
             aar_source_info_path = os.path.join(
@@ -172,15 +213,15 @@ def _ZipResources(resource_dirs, zip_path, ignore_pattern):
                     aar_source_info_path
                 )
 
-        existing_dirs = set(os.listdir(resource_dir))
+        existing_dirs = {
+            os.path.dirname(archive_path) for _, archive_path in entries
+        }
         renamed_dirs = {}
-        for path, archive_path in resource_utils.IterResourceFilesInDirectories(
-            [resource_dir], ignore_pattern
-        ):
+        for path, archive_path in entries:
             attributed_path = path
             if attributed_aar:
                 attributed_path = os.path.join(
-                    attributed_aar, 'res', path[len(resource_dir) + 1 :]
+                    attributed_aar, 'res', archive_path
                 )
             archive_path = _TransformArchivePath(
                 archive_path, existing_dirs, renamed_dirs
@@ -201,42 +242,28 @@ def _ZipResources(resource_dirs, zip_path, ignore_pattern):
     zip_helpers.add_files_to_zip(files_to_zip, zip_path)
 
 
-def _GenerateRTxt(options, r_txt_path):
-    """Generate R.txt file.
-
-    Args:
-      options: The command-line options tuple.
-      r_txt_path: Locates where the R.txt file goes.
-    """
+def _OnStaleMd5(options, files_by_dir):
     ignore_pattern = resource_utils.AAPT_IGNORE_PATTERN
+    active_files_by_dir = _FilterFilesByDirectory(files_by_dir, ignore_pattern)
+    if options.sources and not options.allow_missing_resources:
+        _CheckAllFilesListed(options.sources, active_files_by_dir)
+
     if options.strip_drawables:
         ignore_pattern += ':*drawable*'
+        active_files_by_dir = _FilterFilesByDirectory(
+            active_files_by_dir, ignore_pattern
+        )
 
-    resources_parser.RTxtGenerator(
-        options.resource_dirs, ignore_pattern
-    ).WriteRTxtFile(r_txt_path)
-
-
-def _OnStaleMd5(options):
-    with resource_utils.BuildContext() as build:
-        if options.sources and not options.allow_missing_resources:
-            _CheckAllFilesListed(options.sources, options.resource_dirs)
+    if options.r_text_out:
         if options.r_text_in:
-            r_txt_path = options.r_text_in
+            shutil.copyfile(options.r_text_in, options.r_text_out)
         else:
-            _GenerateRTxt(options, build.r_txt_path)
-            r_txt_path = build.r_txt_path
+            resources_parser.RTxtGenerator(
+                active_files_by_dir.keys(), ignore_pattern
+            ).WriteRTxtFile(options.r_text_out)
 
-        if options.r_text_out:
-            shutil.copyfile(r_txt_path, options.r_text_out)
-
-        if options.resource_zip_out:
-            ignore_pattern = resource_utils.AAPT_IGNORE_PATTERN
-            if options.strip_drawables:
-                ignore_pattern += ':*drawable*'
-            _ZipResources(
-                options.resource_dirs, options.resource_zip_out, ignore_pattern
-            )
+    if options.resource_zip_out:
+        _ZipResources(active_files_by_dir, options.resource_zip_out)
 
 
 def main(args):
@@ -259,15 +286,16 @@ def main(args):
     # ensures the target will be marked stale when resource files are removed.
     depfile_deps = []
     resource_names = []
-    for resource_dir in options.resource_dirs:
-        for resource_file in build_utils.FindInDirectory(resource_dir, '*'):
+    files_by_dir = _CollectFilesByDirectory(options.resource_dirs)
+    for entries in files_by_dir.values():
+        for resource_file, archive_path in entries:
             # Don't list the empty .keep file in depfile. Since it doesn't end up
             # included in the .zip, it can lead to -w 'dupbuild=err' ninja errors
             # if ever moved.
-            if not resource_file.endswith(os.path.join('empty', '.keep')):
+            if archive_path != os.path.join('empty', '.keep'):
                 input_paths.append(resource_file)
                 depfile_deps.append(resource_file)
-            resource_names.append(os.path.relpath(resource_file, resource_dir))
+            resource_names.append(archive_path)
 
     # Resource filenames matter to the output, so add them to strings as well.
     # This matters if a file is renamed but not changed (http://crbug.com/597126).
@@ -280,7 +308,7 @@ def main(args):
     # resource targets that those java targets depend on), md5_check is used to
     # prevent outputs from being re-written when real inputs have not changed.
     md5_check.CallAndWriteDepfileIfStale(
-        lambda: _OnStaleMd5(options),
+        lambda: _OnStaleMd5(options, files_by_dir),
         options,
         input_paths=input_paths,
         input_strings=input_strings,

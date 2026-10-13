@@ -251,23 +251,6 @@ All resource files must follow a structure of "$ROOT/$SUBDIR/$FILE"."""
     return list(resource_dirs)
 
 
-def IterResourceFilesInDirectories(
-    directories, ignore_pattern=AAPT_IGNORE_PATTERN
-):
-    globs = GenerateGlobs(ignore_pattern)
-    for d in directories:
-        for root, _, files in os.walk(d):
-            for f in files:
-                archive_path = f
-                parent_dir = os.path.relpath(root, d)
-                if parent_dir != '.':
-                    archive_path = os.path.join(parent_dir, f)
-                path = os.path.join(root, f)
-                if build_utils.MatchesGlob(archive_path, globs):
-                    continue
-                yield path, archive_path
-
-
 class ResourceInfoFile:
     """Helper for building up .res.info files."""
 
