@@ -5134,6 +5134,26 @@ const FeatureEntry::FeatureVariation kEnterpriseProxyErrorHandlingVariations[] =
 };
 #endif  // BUILDFLAG(ENTERPRISE_PROXY)
 
+#if !BUILDFLAG(IS_ANDROID)
+// Testing-only variation for GWS.
+// Note: In production, each remote actor must have its own dedicated origin
+// policy, OAuth client ID, task namespace ID, and UI strings rather than
+// overriding them globally via testing feature parameters.
+const FeatureEntry::FeatureParam
+    kRemoteActorCredentialSharingGwsForTesting[] = {
+        {"allowed_host_for_testing", "gws-prod.corp.google.com"},
+        {"actor_name_for_testing", "Search Agent"},
+        {"oauth_client_id",
+         "320695880279-gnq6the97ga85scn208u5jctnk82qelk.apps."
+         "googleusercontent.com"},
+};
+
+const FeatureEntry::FeatureVariation
+    kRemoteActorCredentialSharingVariations[] = {
+        {"for GWS", kRemoteActorCredentialSharingGwsForTesting, nullptr},
+};
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -13903,7 +13923,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"remote-actor-credential-sharing",
      flag_descriptions::kRemoteActorCredentialSharingName,
      flag_descriptions::kRemoteActorCredentialSharingDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kRemoteActorCredentialSharing)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kRemoteActorCredentialSharing,
+                                    kRemoteActorCredentialSharingVariations,
+                                    "RemoteActorCredentialSharing")},
 
     {"autofill-gmail-otp",
      flag_descriptions::kAutofillGmailOtpPreLaunchMetricsName,

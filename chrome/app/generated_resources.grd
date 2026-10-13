@@ -6892,13 +6892,13 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
 
       <!-- Remote Actor Credential Sharing Dialog -->
-      <message name="IDS_REMOTE_ACTOR_SHARING_DIALOG_TITLE" desc="Title of the dialog asking the user to share credentials with Gemini.">
-        Allow Gemini to sign in to <ph name="DOMAIN">$1<ex>example.com</ex></ph> for you?
+      <message name="IDS_REMOTE_ACTOR_SHARING_DIALOG_TITLE" desc="Title of the dialog asking the user to share credentials with a remote actor.">
+        Allow <ph name="ACTOR_NAME">$1<ex>Gemini</ex></ph> to sign in to <ph name="DOMAIN">$2<ex>example.com</ex></ph> for you?
       </message>
-      <message name="IDS_REMOTE_ACTOR_SHARING_DIALOG_SUBTITLE" desc="Subtitle of the dialog asking the user to share credentials with Gemini.">
-        Gemini can use Google Password Manager to sign in for you. <ph name="BEGIN_LINK">$1</ph>Learn how Gemini handles your data<ph name="END_LINK">$2</ph>
+      <message name="IDS_REMOTE_ACTOR_SHARING_DIALOG_SUBTITLE" desc="Subtitle of the dialog asking the user to share credentials with a remote actor.">
+        <ph name="ACTOR_NAME">$3<ex>Gemini</ex></ph> can use Google Password Manager to sign in for you. <ph name="BEGIN_LINK">$1</ph>Learn how <ph name="ACTOR_NAME">$3<ex>Gemini</ex></ph> handles your data<ph name="END_LINK">$2</ph>
       </message>
-      <message name="IDS_REMOTE_ACTOR_SHARING_DIALOG_ALLOW_BUTTON" desc="Button label to allow password sharing for Gemini this time.">
+      <message name="IDS_REMOTE_ACTOR_SHARING_DIALOG_ALLOW_BUTTON" desc="Button label to allow password sharing for the remote actor this time.">
         Allow this time
       </message>
 

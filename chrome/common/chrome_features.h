@@ -142,6 +142,13 @@ BASE_DECLARE_FEATURE(kDocumentPipStandaloneWindow);
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kRemoteActorCredentialSharing);
 
+// This parameter is for testing purposes only and must not be used in
+// production. It overrides the actor name displayed in the credential
+// selection dialog.
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<std::string>
+    kRemoteActorCredentialSharingActorNameForTesting;
+
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<std::string>
     kRemoteActorCredentialSharingAllowedHostForTesting;

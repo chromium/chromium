@@ -163,6 +163,12 @@ BASE_FEATURE(kPreinstalledWebAppAlwaysMigrateForTesting,
 #if !BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kRemoteActorCredentialSharing, base::FEATURE_DISABLED_BY_DEFAULT);
 // This parameter is for testing purposes only and must not be used in
+// production. It overrides the actor name displayed in the credential
+// selection dialog.
+const base::FeatureParam<std::string>
+    kRemoteActorCredentialSharingActorNameForTesting{
+        &kRemoteActorCredentialSharing, "actor_name_for_testing", "Gemini"};
+// This parameter is for testing purposes only and must not be used in
 // production. It overrides the whitelisted origins with the specified host.
 const base::FeatureParam<std::string>
     kRemoteActorCredentialSharingAllowedHostForTesting{
