@@ -2198,7 +2198,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Blink.FedCm.IdpSigninStatus.IdpClosePopupToBrowserShowAccountsDuration"
-    units="ms" expires_after="2026-10-25">
+    units="ms" expires_after="2027-04-25">
   <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
