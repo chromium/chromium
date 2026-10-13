@@ -14128,6 +14128,8 @@ from previous Chrome versions.
   <int value="-262368430" label="PersistShareHubOnAppSwitch:enabled"/>
   <int value="-262180853" label="AccessibilityAccelerator:disabled"/>
   <int value="-262122630" label="ArcEnableDocumentsProviderInFilesApp:enabled"/>
+  <int value="-261656381"
+      label="AutofillDisableWalletDirectOffersLocaleCountryCheckForTesting:disabled"/>
   <int value="-261444685" label="GlicUseToolbarHeightSidePanel:disabled"/>
   <int value="-261398170" label="ChromeLabs:enabled"/>
   <int value="-261089705" label="ViewTransitionLayeredCapture:disabled"/>
@@ -19859,6 +19861,8 @@ from previous Chrome versions.
   <int value="1467956567" label="GlicWarming:disabled"/>
   <int value="1469407485" label="disable-accelerated-2d-canvas"/>
   <int value="1470134259" label="NtpTabResumptionModule:disabled"/>
+  <int value="1470925301"
+      label="AutofillDisableWalletDirectOffersLocaleCountryCheckForTesting:enabled"/>
   <int value="1471169381" label="kWebSQLAccess:enabled"/>
   <int value="1471491886"
       label="AutofillOfferToSaveCardWithSameLastFour:enabled"/>

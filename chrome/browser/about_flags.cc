@@ -12602,6 +12602,16 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillDisableBnplCountryCheckForTesting)},
 
+    {"autofill-disable-wallet-direct-offers-locale-country-check-for-testing",
+     flag_descriptions::
+         kAutofillDisableWalletDirectOffersLocaleCountryCheckForTestingName,
+     flag_descriptions::
+         kAutofillDisableWalletDirectOffersLocaleCountryCheckForTestingDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         autofill::features::
+             kAutofillDisableWalletDirectOffersLocaleCountryCheckForTesting)},
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
     {"lens-overlay-non-blocking-privacy-notice",

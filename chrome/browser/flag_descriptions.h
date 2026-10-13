@@ -919,6 +919,15 @@ inline constexpr char kAutofillDisableBnplCountryCheckForTestingName[] =
 inline constexpr char kAutofillDisableBnplCountryCheckForTestingDescription[] =
     "Enables testing BNPL in countries where it would otherwise be disabled.";
 
+inline constexpr char
+    kAutofillDisableWalletDirectOffersLocaleCountryCheckForTestingName[] =
+        "Disable the locale and country check for Wallet direct offers testing";
+inline constexpr char
+    kAutofillDisableWalletDirectOffersLocaleCountryCheckForTestingDescription
+        [] = "Enables testing Wallet direct offers with locales and in "
+             "countries where they would otherwise be disabled. Requires "
+             "#autofill-enable-wallet-direct-offers.";
+
 inline constexpr char kAutofillEnableAiBasedAmountExtractionName[] =
     "Enable AI-based checkout amount extraction on Chrome";
 inline constexpr char kAutofillEnableAiBasedAmountExtractionDescription[] =

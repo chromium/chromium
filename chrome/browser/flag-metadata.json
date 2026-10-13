@@ -1082,6 +1082,15 @@
     "expiry_milestone": 155
   },
   {
+    "name": "autofill-disable-wallet-direct-offers-locale-country-check-for-testing",
+    "owners": [
+      "wilsonlow@google.com",
+      "vinnypersky@google.com",
+      "payments-autofill-team@google.com"
+    ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "autofill-enable-ai-based-amount-extraction",
     "owners": [ "jamessun@google.com", "viplavkadam@google.com", "payments-autofill-team@google.com" ],
     "expiry_milestone": 155

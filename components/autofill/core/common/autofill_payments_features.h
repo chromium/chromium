@@ -24,6 +24,9 @@ BASE_DECLARE_FEATURE(kAutofillCardScanningBugfixes);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillDisableBnplCountryCheckForTesting);
 COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(
+    kAutofillDisableWalletDirectOffersLocaleCountryCheckForTesting);
+COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableAiBasedAmountExtraction);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableAiCardRecommendation);

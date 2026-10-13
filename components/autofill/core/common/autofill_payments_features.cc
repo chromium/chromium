@@ -28,6 +28,12 @@ BASE_FEATURE(kAutofillCardScanningBugfixes, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAutofillDisableBnplCountryCheckForTesting,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables testing Wallet direct offers with locales and in countries where they
+// would otherwise be disabled. This is a testing flag that should never be
+// enabled.
+BASE_FEATURE(kAutofillDisableWalletDirectOffersLocaleCountryCheckForTesting,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, Chrome will extract the checkout amount from the checkout
 // page using server-side AI.
 BASE_FEATURE(kAutofillEnableAiBasedAmountExtraction,

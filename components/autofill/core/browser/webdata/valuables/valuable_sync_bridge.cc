@@ -192,10 +192,17 @@ bool IsSyncWalletShoppingEnabled() {
 }
 
 bool IsSyncWalletDirectOffersEnabled(std::string_view app_locale) {
-  return (app_locale == "en-US" || app_locale == "en-CA" ||
-          app_locale == "en-GB") &&
-         base::FeatureList::IsEnabled(
-             features::kAutofillEnableWalletDirectOffers);
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillEnableWalletDirectOffers)) {
+    return false;
+  }
+  if (base::FeatureList::IsEnabled(
+          features::
+              kAutofillDisableWalletDirectOffersLocaleCountryCheckForTesting)) {
+    return true;
+  }
+  return app_locale == "en-US" || app_locale == "en-CA" ||
+         app_locale == "en-GB";
 }
 
 // Returns if the entity `change` should be uploaded to AUTOFILL_VALUABLE.

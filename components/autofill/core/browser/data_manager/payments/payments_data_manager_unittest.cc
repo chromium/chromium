@@ -1181,6 +1181,23 @@ TEST_P(PaymentsDataManagerServerTest,
                   .empty());
 }
 
+// Tests that GetActiveAutofillPromoCodeOffersForOrigin does not return any
+// promo code offers if the locale and country are not supported.
+TEST_P(PaymentsDataManagerServerTest,
+       GetActiveAutofillPromoCodeOffersForOrigin_LocaleAndCountryNotSupported) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableWalletDirectOffers);
+  ResetPaymentsDataManager(UseSyncTransportMode(), "fr-FR", "FR");
+
+  AddOfferDataForTest(test::GetPromoCodeOfferData(
+      /*origin=*/GURL("http://www.example.com")));
+
+  EXPECT_TRUE(payments_data_manager()
+                  .GetActiveAutofillPromoCodeOffersForOrigin(
+                      GURL("http://www.example.com"))
+                  .empty());
+}
+
 // Tests that GetActiveAutofillPromoCodeOffersForOrigin returns only active
 // and site-relevant wallet direct offers.
 TEST_P(PaymentsDataManagerServerTest,

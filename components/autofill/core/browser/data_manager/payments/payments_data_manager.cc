@@ -969,9 +969,12 @@ PaymentsDataManager::GetActiveAutofillPromoCodeOffersForOrigin(
           features::kAutofillEnableWalletDirectOffers)) {
     return {};
   }
-  if ((app_locale_ != "en-US" && app_locale_ != "en-CA" &&
-       app_locale_ != "en-GB") ||
-      GetCountryCodeForExperimentGroup() != "US") {
+  const bool skip_locale_and_country_check = base::FeatureList::IsEnabled(
+      features::kAutofillDisableWalletDirectOffersLocaleCountryCheckForTesting);
+  if (!skip_locale_and_country_check &&
+      ((app_locale_ != "en-US" && app_locale_ != "en-CA" &&
+        app_locale_ != "en-GB") ||
+       GetCountryCodeForExperimentGroup() != "US")) {
     return {};
   }
   std::vector<const AutofillOfferData*> promo_code_offers_for_origin;
