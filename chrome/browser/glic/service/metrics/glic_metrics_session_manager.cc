@@ -10,6 +10,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/service/glic_state_tracker.h"
 #include "chrome/browser/glic/service/glic_ui_types.h"
@@ -301,7 +302,7 @@ void GlicMetricsSessionManager::FinishSession(
     if (owner_->current_ui_mode_ != EmbedderType::kUnknown) {
       base::UmaHistogramBoolean(
           base::StrCat(
-              {"Glic.Session.WasTurnSubmitted.",
+              {"Glic.Instance.Session.WasTurnSubmitted.",
                GetEmbedderTypeString(owner_->current_ui_mode_), ".",
                GetInvocationSourceString(owner_->last_invocation_source_)}),
           !active_session_->inputs_modes_used().empty());

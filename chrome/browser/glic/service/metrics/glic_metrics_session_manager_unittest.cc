@@ -544,7 +544,7 @@ TEST_F(GlicMetricsSessionManagerTest, WasTurnSubmitted_Floaty_True) {
   metrics_.reset();
 
   histogram_tester_.ExpectUniqueSample(
-      "Glic.Session.WasTurnSubmitted.Floaty.OsButton", true, 1);
+      "Glic.Instance.Session.WasTurnSubmitted.Floaty.OsButton", true, 1);
 }
 
 TEST_F(GlicMetricsSessionManagerTest, WasTurnSubmitted_Floaty_False) {
@@ -558,7 +558,7 @@ TEST_F(GlicMetricsSessionManagerTest, WasTurnSubmitted_Floaty_False) {
   metrics_.reset();
 
   histogram_tester_.ExpectUniqueSample(
-      "Glic.Session.WasTurnSubmitted.Floaty.OsButton", false, 1);
+      "Glic.Instance.Session.WasTurnSubmitted.Floaty.OsButton", false, 1);
 }
 
 TEST_F(GlicMetricsSessionManagerTest, WasTurnSubmitted_SidePanel_True) {
@@ -578,7 +578,8 @@ TEST_F(GlicMetricsSessionManagerTest, WasTurnSubmitted_SidePanel_True) {
   metrics_.reset();
 
   histogram_tester_.ExpectUniqueSample(
-      "Glic.Session.WasTurnSubmitted.SidePanel.TopChromeButton", true, 1);
+      "Glic.Instance.Session.WasTurnSubmitted.SidePanel.TopChromeButton", true,
+      1);
 }
 
 }  // namespace glic
