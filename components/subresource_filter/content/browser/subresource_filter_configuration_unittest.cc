@@ -64,7 +64,6 @@ INSTANTIATE_TEST_SUITE_P(
                           ActivationScope::ALL_SITES,
                           ActivationScope::ACTIVATION_LIST),
         ::testing::Values(ActivationList::NONE,
-                          ActivationList::SOCIAL_ENG_ADS_INTERSTITIAL,
                           ActivationList::PHISHING_INTERSTITIAL,
                           ActivationList::BETTER_ADS),
         ::testing::Values(ActivationLevel::kEnabled,

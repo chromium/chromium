@@ -211,7 +211,6 @@ extern const char kActivationScopeActivationList[];
 extern const char kActivationScopeNoSites[];
 
 extern const char kActivationListsParameterName[];
-extern const char kActivationListSocialEngineeringAdsInterstitial[];
 extern const char kActivationListPhishingInterstitial[];
 extern const char kActivationListBetterAds[];
 

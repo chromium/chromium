@@ -360,12 +360,6 @@ bool SafeBrowsingPageActivationThrottle::
         return true;
       }
 
-      if (conditions.activation_list == ActivationList::PHISHING_INTERSTITIAL &&
-          matched_list == ActivationList::SOCIAL_ENG_ADS_INTERSTITIAL) {
-        // Handling special case, where activation on the phishing sites also
-        // mean the activation on the sites with social engineering metadata.
-        return true;
-      }
       if (conditions.activation_list == ActivationList::BETTER_ADS &&
           matched_list == ActivationList::ABUSIVE &&
           base::FeatureList::IsEnabled(kFilterAdsOnAbusiveSites)) {

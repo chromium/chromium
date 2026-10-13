@@ -15,9 +15,6 @@ std::ostream& operator<<(std::ostream& os, const ActivationList& type) {
     case ActivationList::NONE:
       os << "NONE";
       break;
-    case ActivationList::SOCIAL_ENG_ADS_INTERSTITIAL:
-      os << "SOCIAL_ENG_ADS_INTERSTITIAL";
-      break;
     case ActivationList::PHISHING_INTERSTITIAL:
       os << "PHISHING_INTERSTITIAL";
       break;

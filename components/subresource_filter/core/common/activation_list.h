@@ -15,8 +15,9 @@ namespace subresource_filter {
 // LINT.IfChange(ActivationList)
 enum class ActivationList : int {
   NONE = 0,
-  SOCIAL_ENG_ADS_INTERSTITIAL = 1,
+  // SOCIAL_ENG_ADS_INTERSTITIAL = 1, (deprecated)
   PHISHING_INTERSTITIAL = 2,
+  // SUBRESOURCE_FILTER = 3, (deprecated)
 
   // Site violates the better ads standard.
   BETTER_ADS = 4,

@@ -284,16 +284,16 @@ TEST_F(SubresourceFilterFeaturesTest, ActivationLevelAndScope) {
 }
 
 TEST_F(SubresourceFilterFeaturesTest, ActivationList) {
-  const std::string activation_soc_eng(
-      kActivationListSocialEngineeringAdsInterstitial);
+  const std::string activation_better_ads(kActivationListBetterAds);
   const std::string activation_phishing(kActivationListPhishingInterstitial);
-  const std::string socEngPhising = activation_soc_eng + activation_phishing;
-  const std::string socEngCommaPhising =
-      activation_soc_eng + "," + activation_phishing;
-  const std::string phishingCommaSocEng =
-      activation_phishing + "," + activation_soc_eng;
-  const std::string socEngCommaPhisingCommaGarbage =
-      socEngCommaPhising + "," + "Garbage";
+  const std::string betterAdsPhishing =
+      activation_better_ads + activation_phishing;
+  const std::string betterAdsCommaPhishing =
+      activation_better_ads + "," + activation_phishing;
+  const std::string phishingCommaBetterAds =
+      activation_phishing + "," + activation_better_ads;
+  const std::string betterAdsCommaPhishingCommaGarbage =
+      betterAdsCommaPhishing + "," + "Garbage";
   const struct {
     bool feature_enabled;
     const char* activation_list_param;
@@ -307,16 +307,15 @@ TEST_F(SubresourceFilterFeaturesTest, ActivationList) {
       {true, "social eng ads intertitial", ActivationList::NONE},
       {true, "phishing interstitial", ActivationList::NONE},
       {true, "%$ garbage !%", ActivationList::NONE},
-      {true, kActivationListSocialEngineeringAdsInterstitial,
-       ActivationList::SOCIAL_ENG_ADS_INTERSTITIAL},
       {true, kActivationListBetterAds, ActivationList::BETTER_ADS},
       {true, kActivationListPhishingInterstitial,
        ActivationList::PHISHING_INTERSTITIAL},
-      {true, socEngPhising.c_str(), ActivationList::NONE},
-      {true, socEngCommaPhising.c_str(), ActivationList::PHISHING_INTERSTITIAL},
-      {true, phishingCommaSocEng.c_str(),
+      {true, betterAdsPhishing.c_str(), ActivationList::NONE},
+      {true, betterAdsCommaPhishing.c_str(),
        ActivationList::PHISHING_INTERSTITIAL},
-      {true, socEngCommaPhisingCommaGarbage.c_str(),
+      {true, phishingCommaBetterAds.c_str(),
+       ActivationList::PHISHING_INTERSTITIAL},
+      {true, betterAdsCommaPhishingCommaGarbage.c_str(),
        ActivationList::PHISHING_INTERSTITIAL},
       {true, "List1, List2", ActivationList::NONE}};
 
@@ -641,14 +640,13 @@ TEST_F(SubresourceFilterFeaturesTest,
       {{kEnablePresetsParameterName, kPhishing + "," + kPerfTest + "," + kBAS},
        {kActivationLevelParameterName, kActivationLevelDryRun},
        {kActivationScopeParameterName, kActivationScopeActivationList},
-       {kActivationListsParameterName,
-        kActivationListSocialEngineeringAdsInterstitial},
+       {kActivationListsParameterName, kActivationListBetterAds},
        {kActivationPriorityParameterName, "750"},
        {kRulesetFlavorParameterName, kTestRulesetFlavor}});
 
-  Configuration experimental_config(
-      mojom::ActivationLevel::kDryRun, ActivationScope::ACTIVATION_LIST,
-      ActivationList::SOCIAL_ENG_ADS_INTERSTITIAL);
+  Configuration experimental_config(mojom::ActivationLevel::kDryRun,
+                                    ActivationScope::ACTIVATION_LIST,
+                                    ActivationList::BETTER_ADS);
   experimental_config.activation_conditions.priority = 750;
   experimental_config.general_settings.ruleset_flavor = kTestRulesetFlavor;
 

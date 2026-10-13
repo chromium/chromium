@@ -149,7 +149,7 @@ uploading your change for review.  These are checked by presubmit scripts.
 
 <enum name="ActivationList">
   <int value="0" label="No match"/>
-  <int value="1" label="Social Eng Ads Interstitial"/>
+  <int value="1" label="(Deprecated) Social Eng Ads Interstitial"/>
   <int value="2" label="Phishing Interstitial"/>
   <int value="3" label="(Deprecated) Subresource Filter"/>
   <int value="4" label="Better Ads Standard"/>
