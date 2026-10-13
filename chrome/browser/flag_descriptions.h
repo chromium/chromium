@@ -6682,6 +6682,12 @@ inline constexpr char kTabClosureMethodRefactorDescription[] =
     "Enables the refactored changes for tab closure methods where existing "
     "methods usages are switched off and newly introduced are made active.";
 
+inline constexpr char kTabGroupActionsSubmenusName[] =
+    "Tab Group Actions Submenus";
+inline constexpr char kTabGroupActionsSubmenusDescription[] =
+    "Enables action items and section header in tab group submenus in the "
+    "app menu.";
+
 inline constexpr char kTabOpenerTrackingName[] = "Tab Opener Tracking";
 inline constexpr char kTabOpenerTrackingDescription[] =
     "Enables tracking opener and sibling relationships between tabs to select "

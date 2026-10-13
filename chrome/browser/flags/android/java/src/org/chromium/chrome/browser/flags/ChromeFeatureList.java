@@ -847,6 +847,7 @@ public abstract class ChromeFeatureList {
     public static final String TAB_CLOSURE_COMMITTED_METHOD_REFACTOR =
             "TabClosureCommittedMethodRefactor";
     public static final String TAB_CLOSURE_METHOD_REFACTOR = "TabClosureMethodRefactor";
+    public static final String TAB_GROUP_ACTIONS_SUBMENUS = "TabGroupActionsSubmenus";
     public static final String TAB_OPENER_TRACKING = "TabOpenerTracking";
     public static final String TAB_SEARCH_FOR_DESKTOP = "TabSearchForDesktop";
     public static final String TAB_SHARING_TOOLBAR_ANDROID = "TabSharingToolbarAndroid";
@@ -1405,6 +1406,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(TAB_CLOSURE_COMMITTED_METHOD_REFACTOR, false);
     public static final CachedFlag sTabClosureMethodRefactor =
             newCachedFlag(TAB_CLOSURE_METHOD_REFACTOR, true);
+    public static final CachedFlag sTabGroupActionsSubmenus =
+            newCachedFlag(TAB_GROUP_ACTIONS_SUBMENUS, false);
     public static final CachedFlag sTabSharingToolbarAndroid =
             newCachedFlag(
                     TAB_SHARING_TOOLBAR_ANDROID,
@@ -1663,6 +1666,7 @@ public abstract class ChromeFeatureList {
                     sSyncRestoreOnStartupPref,
                     sTabClosureCommittedMethodRefactor,
                     sTabClosureMethodRefactor,
+                    sTabGroupActionsSubmenus,
                     sTabSharingToolbarAndroid,
                     sTabStorageSqlitePrototype,
                     sTabStripHeightTransitionGlitchFix,
