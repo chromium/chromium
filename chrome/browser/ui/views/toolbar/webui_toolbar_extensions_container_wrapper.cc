@@ -173,7 +173,9 @@ void WebUIToolbarExtensionsContainerWrapper::OnActionsAddedOrUpdated(
       changed = true;
     }
   }
-  if (changed || UpdateExtensionsButtonState()) {
+
+  const bool button_changed = UpdateExtensionsButtonState();
+  if (changed || button_changed) {
     SendExtensionsState();
   }
 }
@@ -181,7 +183,9 @@ void WebUIToolbarExtensionsContainerWrapper::OnActionsAddedOrUpdated(
 void WebUIToolbarExtensionsContainerWrapper::OnActionRemoved(
     std::vector<toolbar_ui_api::mojom::IconUpdatePtr> icons,
     const std::string& id) {
-  if (cached_actions_.erase(id) > 0 || UpdateExtensionsButtonState()) {
+  const bool action_removed = cached_actions_.erase(id) > 0;
+  const bool button_changed = UpdateExtensionsButtonState();
+  if (action_removed || button_changed) {
     SendExtensionsState();
   }
 }

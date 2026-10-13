@@ -4233,6 +4233,30 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarDropBrowserTest,
 #endif
 }
 
+namespace {
+
+// JavaScript to retrieve the extensions button tooltip from the WebUI toolbar.
+constexpr char kGetExtensionsButtonTooltipScript[] = R"(
+(() => {
+  const app = document.querySelector('toolbar-app');
+  if (!app) return null;
+  const extensionsContainer = app.shadowRoot.querySelector('#extensions');
+  if (!extensionsContainer) return null;
+  // Verify that the divider separating extensions from the rest of the toolbar
+  // is present.
+  const divider =
+      extensionsContainer.shadowRoot.querySelector('toolbar-divider');
+  if (!divider) return null;
+  const extensionElements = extensionsContainer.shadowRoot
+      .querySelectorAll('webui-toolbar-extension');
+  const button = Array.from(extensionElements).find(el => el.state.id === '');
+  if (!button) return null;
+  return button.state.tooltip;
+})();
+)";
+
+}  // namespace
+
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, LoadExtension) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -4262,50 +4286,25 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, LoadExtension) {
 
   std::string extension_id = extension->id();
 
+  auto wait_for_extensions_button_tooltip =
+      [&](std::string_view expected_tooltip) {
+        return base::test::RunUntil([&]() {
+          return content::EvalJs(web_contents,
+                                 kGetExtensionsButtonTooltipScript) ==
+                 expected_tooltip;
+        });
+      };
+
   // Verify extensions button (puzzle piece) is present and has "has access"
   // tooltip. Also verify divider is present.
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return content::EvalJs(web_contents, R"(
-      (() => {
-        const app = document.querySelector('toolbar-app');
-        if (!app) return false;
-        const extensionsContainer = app.shadowRoot.querySelector('#extensions');
-        if (!extensionsContainer) return false;
-        const divider = extensionsContainer.shadowRoot
-            .querySelector('toolbar-divider');
-        if (!divider) return false;
-        const extensionElements = extensionsContainer.shadowRoot
-            .querySelectorAll('webui-toolbar-extension');
-        const button = Array.from(extensionElements)
-            .find(el => el.state.id === '');
-        if (!button) return false;
-        return button.state.tooltip === "Extensions allowed on this site";
-      })();
-    )")
-        .ExtractBool();
-  }));
+  EXPECT_TRUE(
+      wait_for_extensions_button_tooltip("Extensions allowed on this site"));
 
   // Navigate to default.com (extension has no host permissions for it).
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), default_url));
 
   // Verify extensions button tooltip changes to "Extensions" (kDefault).
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return content::EvalJs(web_contents, R"(
-      (() => {
-        const app = document.querySelector('toolbar-app');
-        if (!app) return false;
-        const extensionsContainer = app.shadowRoot.querySelector('#extensions');
-        if (!extensionsContainer) return false;
-        const extensionElements = extensionsContainer.shadowRoot
-            .querySelectorAll('webui-toolbar-extension');
-        const button = Array.from(extensionElements)
-            .find(el => el.state.id === '');
-        if (!button) return false;
-        return button.state.tooltip === "Extensions";
-      })();
-    )")
-        .ExtractBool();
-  }));
+  EXPECT_TRUE(wait_for_extensions_button_tooltip("Extensions"));
 
   // Navigate to chrome://version (restricted site).
   ASSERT_TRUE(
@@ -4313,23 +4312,33 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, LoadExtension) {
 
   // Verify extensions button tooltip changes to "Extensions not allowed on this
   // site" (kAllExtensionsBlocked).
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return content::EvalJs(web_contents, R"(
-      (() => {
-        const app = document.querySelector('toolbar-app');
-        if (!app) return false;
-        const extensionsContainer = app.shadowRoot.querySelector('#extensions');
-        if (!extensionsContainer) return false;
-        const extensionElements = extensionsContainer.shadowRoot
-            .querySelectorAll('webui-toolbar-extension');
-        const button = Array.from(extensionElements)
-            .find(el => el.state.id === '');
-        if (!button) return false;
-        return button.state.tooltip === "Extensions not allowed on this site";
-      })();
-    )")
-        .ExtractBool();
-  }));
+  EXPECT_TRUE(wait_for_extensions_button_tooltip(
+      "Extensions not allowed on this site"));
+
+  // Navigate to chrome://newtab (NTP).
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUINewTabURL)));
+
+  // Verify extensions button tooltip changes to "Extensions not allowed on this
+  // site" (kAllExtensionsBlocked).
+  EXPECT_TRUE(wait_for_extensions_button_tooltip(
+      "Extensions not allowed on this site"));
+
+  // Navigate to default.com where extensions are allowed, but no extension has
+  // host permissions for it.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), default_url));
+
+  // Verify extensions button tooltip changes from "Extensions not allowed on
+  // this site" to "Extensions" (kDefault).
+  EXPECT_TRUE(wait_for_extensions_button_tooltip("Extensions"));
+
+  // Navigate back to allowed.com.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), allowed_url));
+
+  // Verify extensions button tooltip changes back to "Extensions allowed on
+  // this site" (kAnyExtensionHasAccess).
+  EXPECT_TRUE(
+      wait_for_extensions_button_tooltip("Extensions allowed on this site"));
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, ExtensionAnchoring) {
