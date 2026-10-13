@@ -213,7 +213,13 @@ __eglMustCastToProperFunctionPointerType Sb_eglGetProcAddress(
     Dl_info info = {};
     if (dladdr(reinterpret_cast<const void*>(&Sb_eglGetProcAddress), &info) &&
         info.dli_fname) {
-      return dlopen(info.dli_fname, RTLD_NOLOAD | RTLD_LAZY);
+      void* handle = dlopen(info.dli_fname, RTLD_NOLOAD | RTLD_LAZY);
+      if (handle) {
+        // RTLD_NOLOAD increments the DSO reference count; decrement it so
+        // callers that later dlclose() this library can still unload it.
+        dlclose(handle);
+      }
+      return handle;
     }
     return nullptr;
   }();

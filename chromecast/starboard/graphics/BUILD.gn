@@ -2,48 +2,36 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chromecast/starboard/graphics/starboard_graphics.gni")
 import("//chromecast/starboard/starboard.gni")
 
-if (!remove_starboard_headers) {
-  starboard_graphics_library("GL_starboard") {
-    version = 14
-  }
+shared_library("GL_starboard") {
+  sources = [
+    "egl_starboard.h",
+    "gles2_starboard.h",
+  ]
+  deps = [ "//third_party/angle:includes" ]
 
-  starboard_graphics_library("starboard_graphics_15") {
-    version = 15
-  }
-
-  starboard_graphics_library("starboard_graphics_16") {
-    version = 16
-  }
-
-  starboard_graphics_library("starboard_graphics_17") {
-    version = 17
-  }
-
-  group("starboard_graphics_libraries") {
-    deps = [
-      ":GL_starboard",
-      ":starboard_graphics_15",
-      ":starboard_graphics_16",
-      ":starboard_graphics_17",
-    ]
-  }
-} else {
   # TODO(b/333131992): remove this, using the real impls instead of dummies.
-  shared_library("GL_starboard") {
-    sources = [
-      "egl_starboard.h",
+  if (remove_starboard_headers) {
+    sources += [
       "egl_starboard_dummy.cc",
-      "gles2_starboard.h",
       "gles2_starboard_dummy.cc",
     ]
-    deps = [ "//third_party/angle:includes" ]
-  }
-
-  group("starboard_graphics_libraries") {
-    deps = [ ":GL_starboard" ]
+  } else {
+    sources += [
+      "//chromecast/starboard/chromecast/starboard_cast_dummy/cast_starboard_api_dummy.cc",
+      "egl_starboard.cc",
+      "gles2_starboard.cc",
+    ]
+    configs += [
+      "//chromecast/starboard/third_party/starboard/sabi",
+      "//third_party/khronos:khronos_headers",
+    ]
+    deps += [
+      "//base:compiler_specific",
+      "//chromecast/public",
+      "//chromecast/starboard/third_party/starboard/public",
+    ]
   }
 }
 
@@ -58,7 +46,7 @@ source_set("graphics") {
     "//chromecast/starboard:starboard_buildflags",
     "//chromecast/starboard/chromecast/starboard_adapter",
   ]
-  data_deps = [ ":starboard_graphics_libraries" ]
+  data_deps = [ ":GL_starboard" ]
   if (!remove_starboard_headers) {
     configs += [ "//chromecast/starboard/third_party/starboard/sabi" ]
     deps += [

@@ -74,6 +74,8 @@ __attribute__((visibility("default"))) EGLSurface Sb_eglGetCurrentSurface(
 __attribute__((visibility("default"))) EGLDisplay Sb_eglGetDisplay(
     EGLNativeDisplayType display_id);
 
+__attribute__((visibility("default"))) EGLint Sb_eglGetError(void);
+
 __attribute__((visibility("default"))) __eglMustCastToProperFunctionPointerType
 Sb_eglGetProcAddress(const char* procname);
 

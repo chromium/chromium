@@ -81,7 +81,7 @@ if (!remove_starboard_headers) {
       ":starboard_adapter_15",
       ":starboard_adapter_16",
       ":starboard_adapter_17",
-      "//chromecast/starboard/graphics:starboard_graphics_libraries",
+      "//chromecast/starboard/graphics:GL_starboard",
     ]
   }
 } else {

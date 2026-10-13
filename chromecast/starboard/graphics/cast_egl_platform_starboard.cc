@@ -7,7 +7,6 @@
 
 #include "base/check.h"
 #include "base/logging.h"
-#include "base/strings/stringprintf.h"
 #include "chromecast/public/cast_egl_platform.h"
 #include "chromecast/public/cast_egl_platform_shlib.h"
 #include "chromecast/public/graphics_types.h"
@@ -36,65 +35,45 @@ class CastEglPlatformStarboard : public CastEglPlatform {
     return desired;
   }
 
-  ~CastEglPlatformStarboard() override = default;
+  ~CastEglPlatformStarboard() override {
+#if !BUILDFLAG(REMOVE_STARBOARD_HEADERS)
+    if (graphics_lib_) {
+      dlclose(graphics_lib_);
+    }
+#endif
+  }
 
   bool InitializeHardware() override {
 #if BUILDFLAG(REMOVE_STARBOARD_HEADERS)
     LOG(FATAL) << "Cannot initialize hardware for Starboard as "
                   "REMOVE_STARBOARD_HEADERS is set.";
-    return false;
 #else
-    int version = StarboardAdapterLoader::GetInstance()->GetVersion();
-    // Version suffixes (.so.15+) were introduced in Starboard 15. Starboard 14
-    // and earlier use the unversioned libGL_starboard.so library.
-    std::string primary_name =
-        version >= 15
-            ? base::StringPrintf("%s.%d", kGraphicsLibraryName, version)
-            : std::string(kGraphicsLibraryName);
-    std::vector<std::string> lib_names = {primary_name};
-    auto append_unique = [&lib_names](std::string candidate) {
-      for (const auto& existing : lib_names) {
-        if (existing == candidate) {
-          return;
-        }
-      }
-      lib_names.push_back(std::move(candidate));
-    };
-    if (version >= 0 && version < 15) {
-      append_unique(std::string(kGraphicsLibraryName) + ".14");
-    }
-    append_unique(std::string(kGraphicsLibraryName) + ".17");
-    append_unique(std::string(kGraphicsLibraryName) + ".16");
-    append_unique(std::string(kGraphicsLibraryName) + ".15");
-    append_unique(kGraphicsLibraryName);
-    append_unique(std::string(kGraphicsLibraryName) + ".14");
-
-    std::string primary_err;
-    for (const auto& name : lib_names) {
-      graphics_lib_ = dlopen(name.c_str(), RTLD_LAZY | RTLD_LOCAL);
-      if (graphics_lib_) {
-        LOG(INFO) << "Successfully dlopened " << name;
-        break;
-      } else {
-        const char* err = dlerror();
-        if (primary_err.empty() && err) {
-          primary_err = err;
-        }
-        VLOG(1) << "Failed to dlopen " << name << ": " << (err ? err : "");
-      }
-    }
-
-    if (!graphics_lib_) {
-      LOG(ERROR) << "Failed to dlopen graphics library " << primary_name
-                 << (!primary_err.empty() ? ": " + primary_err : "!");
+    // Ensure the Starboard partner library (libcast_starboard_api.so*) is
+    // loaded with RTLD_GLOBAL before dlopening libGL_starboard.so so that
+    // SbGetEglInterface and SbGetGlesInterface resolve to the partner's
+    // implementation rather than the weak link-time stubs.
+    if (!StarboardAdapterLoader::GetInstance()->GetAdapter()) {
+      LOG(ERROR) << "Failed to load Starboard adapter before initializing "
+                    "graphics hardware.";
       return false;
     }
+
+    graphics_lib_ = dlopen(kGraphicsLibraryName, RTLD_LAZY | RTLD_LOCAL);
+    if (!graphics_lib_) {
+      const char* err = dlerror();
+      LOG(ERROR) << "Failed to dlopen graphics library " << kGraphicsLibraryName
+                 << (err ? ": " : "!") << (err ? err : "");
+      return false;
+    }
+    LOG(INFO) << "Successfully dlopened " << kGraphicsLibraryName;
 
     get_proc_address_ = reinterpret_cast<GLGetProcAddressProc>(
         dlsym(graphics_lib_, "Sb_eglGetProcAddress"));
 
     if (!get_proc_address_) {
       LOG(ERROR) << "Failed to dlsym Sb_eglGetProcAddress: " << dlerror();
+      dlclose(graphics_lib_);
+      graphics_lib_ = nullptr;
       return false;
     }
     return true;

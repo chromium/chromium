@@ -571,18 +571,29 @@ TEST(StarboardAdapterLoaderTest,
     dlclose(handle);
   }
 
-  // Verify that unversioned libGL_starboard.so (SB14) and versioned
-  // libGL_starboard.so.{15,16,17} load cleanly and export Sb_eglGetProcAddress.
-  for (const char* gl_lib_name :
-       {"libGL_starboard.so", "libGL_starboard.so.15", "libGL_starboard.so.16",
-        "libGL_starboard.so.17"}) {
-    base::FilePath gl_path = exe_dir.AppendASCII(gl_lib_name);
-    void* gl_handle = dlopen(gl_path.value().c_str(), RTLD_LAZY | RTLD_LOCAL);
-    ASSERT_NE(gl_handle, nullptr)
-        << "Failed to load " << gl_path.value() << ": " << dlerror();
-    EXPECT_NE(dlsym(gl_handle, "Sb_eglGetProcAddress"), nullptr)
-        << "Missing Sb_eglGetProcAddress in " << gl_lib_name;
-    dlclose(gl_handle);
+  // Verify that the single version-agnostic libGL_starboard.so loads cleanly
+  // with RTLD_LOCAL, exports Sb_eglGetProcAddress, and resolves Sb_egl* and
+  // Sb_gl* wrappers against its own DSO handle.
+  base::FilePath gl_path = exe_dir.AppendASCII("libGL_starboard.so");
+  void* gl_handle = dlopen(gl_path.value().c_str(), RTLD_LAZY | RTLD_LOCAL);
+  ASSERT_NE(gl_handle, nullptr)
+      << "Failed to load " << gl_path.value() << ": " << dlerror();
+  using GetProcAddressFn = void* (*)(const char*);
+  auto get_proc_address = reinterpret_cast<GetProcAddressFn>(
+      dlsym(gl_handle, "Sb_eglGetProcAddress"));
+  ASSERT_NE(get_proc_address, nullptr)
+      << "Missing Sb_eglGetProcAddress in libGL_starboard.so";
+  EXPECT_NE(get_proc_address("eglGetDisplay"), nullptr);
+  EXPECT_NE(get_proc_address("eglGetError"), nullptr);
+  EXPECT_NE(get_proc_address("glClearColor"), nullptr);
+  EXPECT_EQ(dlclose(gl_handle), 0);
+  void* noload_handle =
+      dlopen(gl_path.value().c_str(), RTLD_NOLOAD | RTLD_LAZY);
+  EXPECT_EQ(noload_handle, nullptr)
+      << "libGL_starboard.so remained loaded after dlclose(); "
+         "Sb_eglGetProcAddress may have leaked an RTLD_NOLOAD reference count.";
+  if (noload_handle) {
+    dlclose(noload_handle);
   }
 #endif  // BUILDFLAG(REMOVE_STARBOARD_HEADERS)
 }

@@ -7,6 +7,11 @@
 
 #include <GLES2/gl2.h>
 
+// Ensure Sb_gl* functions are exported in the dynamic symbol table of
+// libGL_starboard.so so that Sb_eglGetProcAddress can resolve them via dlsym.
+#undef GL_APICALL
+#define GL_APICALL __attribute__((visibility("default")))
+
 extern "C" {
 
 // gl2.h
