@@ -20,7 +20,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -54,7 +53,6 @@ public class DevToolsActivityTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/568491008
     public void testOpenDevTools() {
         TabModel tabModel = mTestRule.getActivity().getCurrentTabModel();
         Tab inspectedTab = tabModel.getCurrentTabSupplier().get();
@@ -76,6 +74,9 @@ public class DevToolsActivityTest {
                                         () ->
                                                 DevToolsWindowAndroid.openDevTools(
                                                         inspectedContents)));
+        CriteriaHelper.pollUiThread(
+                activity::didFinishNativeInitialization,
+                "DevToolsActivity did not finish native initialization.");
 
         // DevToolsActivity gets closed when the inspected tab closes.
         runOnUiThreadBlocking(
@@ -85,9 +86,9 @@ public class DevToolsActivityTest {
                     tabModel.commitAllTabClosures();
                 });
         CriteriaHelper.pollUiThread(
-                () -> {
-                    return activity.isDestroyed();
-                },
-                "DevToolsActivity wasn't closed.");
+                activity::isDestroyed,
+                "DevToolsActivity wasn't closed.",
+                CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL_LONG,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 }
