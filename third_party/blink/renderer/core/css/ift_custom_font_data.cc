@@ -18,7 +18,6 @@
 #include "third_party/blink/renderer/core/loader/resource/font_resource.h"
 #include "third_party/blink/renderer/platform/fonts/ift/ift_patcher.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
-#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
@@ -29,6 +28,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/code_point_iterator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -40,9 +40,14 @@ class IftCustomFontData::PatchLoader final
     : public GarbageCollected<PatchLoader>,
       public RawResourceClient {
  public:
-  explicit PatchLoader(const IftCustomFontData* owner) : owner_(owner) {
+  PatchLoader(const IftCustomFontData* owner, String patch_url)
+      : owner_(owner), patch_url_(std::move(patch_url)) {
     CHECK(owner_);
   }
+
+  // The patch URL as returned by `IftPatcher::RequestPatches()`, before being
+  // resolved against the font URL.
+  const String& PatchUrl() const { return patch_url_; }
 
   void Detach() { ClearResource(); }
 
@@ -59,6 +64,7 @@ class IftCustomFontData::PatchLoader final
 
  private:
   Member<const IftCustomFontData> owner_;
+  const String patch_url_;
 };
 
 IftCustomFontData* IftCustomFontData::MaybeCreate(
@@ -108,6 +114,10 @@ bool IftCustomFontData::IftRequireSubset(const StringView& text) const {
   return state_ == State::kIdle;
 }
 
+base::span<const uint8_t> IftCustomFontData::GetFontDataForTesting() const {
+  return patcher_->GetFontData();
+}
+
 void IftCustomFontData::BeginCollecting() const {
   if (state_ != State::kIdle) {
     return;
@@ -147,39 +157,42 @@ void IftCustomFontData::BeginFetching() const {
 
   // Register every loader before starting any fetch so that a fetch finishing
   // synchronously does not observe an incomplete `patch_loaders_`.
-  HeapVector<Member<PatchLoader>> loaders;
-  loaders.ReserveInitialCapacity(patch_urls.size());
-  for (wtf_size_t i = 0; i < patch_urls.size(); ++i) {
-    PatchLoader* loader = MakeGarbageCollected<PatchLoader>(this);
+  for (const String& patch_url : patch_urls) {
+    PatchLoader* loader = MakeGarbageCollected<PatchLoader>(this, patch_url);
     patch_loaders_.insert(loader);
-    loaders.push_back(loader);
-  }
-  for (wtf_size_t i = 0; i < patch_urls.size(); ++i) {
-    // A fetch may fail synchronously, failing the font.
-    if (state_ != State::kFetching) {
-      for (wtf_size_t j = i; j < loaders.size(); ++j) {
-        patch_loaders_.erase(loaders[j]);
-      }
-      return;
-    }
     // TODO(wmedrano): Follow the spec for the request settings. See
     // https://www.w3.org/TR/IFT/#abstract-opdef-load-patch-file.
-    ResourceRequest resource_request(KURL(font_url_, patch_urls[i]));
+    ResourceRequest resource_request(KURL(font_url_, patch_url));
     resource_request.SetRequestContext(mojom::blink::RequestContextType::FONT);
     resource_request.SetRequestDestination(
         network::mojom::RequestDestination::kFont);
     FetchParameters params(
         std::move(resource_request),
         ResourceLoaderOptions(execution_context->GetCurrentWorld()));
-    RawResource::Fetch(params, fetcher, loaders[i]);
+    RawResource::Fetch(params, fetcher, loader);
   }
 }
 
-void IftCustomFontData::BeginFetched() const {
+void IftCustomFontData::ApplyPatches() const {
   if (state_ != State::kFetching) {
     return;
   }
-  state_ = State::kFetched;
+  // TODO(wmedrano): Perform font invalidation on successful patching.
+  switch (patcher_->ApplyPatches(*fetched_subset_)) {
+    case IftPatcher::ApplyStatus::kSuccess:
+    case IftPatcher::ApplyStatus::kMissingPatches:
+      // Attempt to refetch in case applying an invalidating patch revealed
+      // additional patches needed for `fetched_subset_`, or in case
+      // `requested_subset_` was extended while fetching.
+      state_ = State::kCollecting;
+      BeginFetching();
+      return;
+    case IftPatcher::ApplyStatus::kInvalidFont:
+    case IftPatcher::ApplyStatus::kPatchGroupError:
+    case IftPatcher::ApplyStatus::kPatchError:
+      BeginFailed();
+      return;
+  }
 }
 
 void IftCustomFontData::BeginFailed() const {
@@ -203,9 +216,12 @@ void IftCustomFontData::OnPatchLoaded(PatchLoader* loader,
     BeginFailed();
     return;
   }
-  // TODO(wmedrano): Pass the patch data to `IftPatcher::AddPatchData()`.
+  scoped_refptr<const SharedBuffer> data = resource->ResourceBuffer();
+  patcher_->AddPatchData(
+      loader->PatchUrl(),
+      data ? data->CopyAs<Vector<uint8_t>>() : Vector<uint8_t>());
   if (patch_loaders_.empty()) {
-    BeginFetched();
+    ApplyPatches();
   }
 }
 

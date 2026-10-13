@@ -1722,6 +1722,8 @@ group("unit_tests_data") {
     "//third_party/blink/renderer/platform/testing/data/roboto-ift.woff2",
 
     # Used by core/css/ift_custom_font_data_test.cc.
+    "//third_party/blink/renderer/platform/testing/data/00.1.ift_gk",
+    "//third_party/blink/renderer/platform/testing/data/04.1.ift_gk",
     "//third_party/blink/renderer/platform/testing/data/roboto-ift.ttf",
     "//third_party/blink/web_tests/svg/animations/path-animation.svg",
     "//third_party/blink/web_tests/svg/stroke/zero-length-path-linecap-rendering.svg",

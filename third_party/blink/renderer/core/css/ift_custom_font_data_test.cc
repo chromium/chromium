@@ -36,6 +36,23 @@ namespace {
 constexpr char kPatchBUrl[] = "https://example.com/fonts/00.1.ift_gk";
 constexpr char kPatchCUrl[] = "https://example.com/fonts/04.1.ift_gk";
 
+Vector<char> LoadTestData(const String& file_name) {
+  std::optional<Vector<char>> data =
+      test::ReadFromFile(test::PlatformTestDataPath(file_name));
+  CHECK(data.has_value());
+  return *data;
+}
+
+// Glyph-keyed patch for codepoint 'b'.
+Vector<char> PatchBPayload() {
+  return LoadTestData("00.1.ift_gk");
+}
+
+// Glyph-keyed patch for codepoint 'c'.
+Vector<char> PatchCPayload() {
+  return LoadTestData("04.1.ift_gk");
+}
+
 class IftCustomFontDataTest : public SimTest {
  protected:
   void SetUp() override {
@@ -144,10 +161,12 @@ TEST_F(IftCustomFontDataTest, CoveredCodepointsTransitionToIdle) {
             IftCustomFontData::State::kIdle);
 }
 
-TEST_F(IftCustomFontDataTest, MissingCodepointsFetchPatch) {
+TEST_F(IftCustomFontDataTest, MissingCodepointsAppliesPatch) {
   SimSubresourceRequest patch_b(kPatchBUrl, "application/octet-stream");
   const IftCustomFontData* custom_font_data = LoadCustomFontData("b");
   ASSERT_NE(custom_font_data, nullptr);
+  const Vector<uint8_t> original_font(
+      custom_font_data->GetFontDataForTesting());
 
   Compositor().BeginFrame();
   EXPECT_EQ(custom_font_data->GetStateForTesting(),
@@ -157,16 +176,84 @@ TEST_F(IftCustomFontDataTest, MissingCodepointsFetchPatch) {
   EXPECT_EQ(custom_font_data->GetStateForTesting(),
             IftCustomFontData::State::kFetching);
 
-  patch_b.Complete("patch-b");
+  patch_b.Complete(PatchBPayload());
   test::RunPendingTasks();
   EXPECT_EQ(custom_font_data->GetStateForTesting(),
-            IftCustomFontData::State::kFetched);
+            IftCustomFontData::State::kIdle);
+  EXPECT_NE(custom_font_data->GetFontDataForTesting(),
+            base::span(original_font));
+  EXPECT_TRUE(custom_font_data->IftRequireSubset("b"));
 }
 
-TEST_F(IftCustomFontDataTest, FetchedAfterAllPatchesFetched) {
+TEST_F(IftCustomFontDataTest, AppliesPatchesAfterAllPatchesFetched) {
   SimSubresourceRequest patch_b(kPatchBUrl, "application/octet-stream");
   SimSubresourceRequest patch_c(kPatchCUrl, "application/octet-stream");
+
+  // Load with text that requires both "b" and "c" patch.
   const IftCustomFontData* custom_font_data = LoadCustomFontData("bc");
+  ASSERT_NE(custom_font_data, nullptr);
+  const Vector<uint8_t> original_font(
+      custom_font_data->GetFontDataForTesting());
+
+  // Completing "b" patch will still wait on "c" patch.
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  patch_b.Complete(PatchBPayload());
+  test::RunPendingTasks();
+  EXPECT_EQ(custom_font_data->GetStateForTesting(),
+            IftCustomFontData::State::kFetching);
+  EXPECT_EQ(custom_font_data->GetFontDataForTesting(),
+            base::span(original_font));
+
+  // Completing "c" patch applies patch and goes back to idle.
+  patch_c.Complete(PatchCPayload());
+  test::RunPendingTasks();
+  EXPECT_EQ(custom_font_data->GetStateForTesting(),
+            IftCustomFontData::State::kIdle);
+  EXPECT_NE(custom_font_data->GetFontDataForTesting(),
+            base::span(original_font));
+  EXPECT_TRUE(custom_font_data->IftRequireSubset("bc"));
+}
+
+TEST_F(IftCustomFontDataTest, CodepointsRequestedWhileFetchingAreFetched) {
+  SimSubresourceRequest patch_b(kPatchBUrl, "application/octet-stream");
+  SimSubresourceRequest patch_c(kPatchCUrl, "application/octet-stream");
+
+  // Start initial fetch for patch "b".
+  const IftCustomFontData* custom_font_data = LoadCustomFontData("b");
+  ASSERT_NE(custom_font_data, nullptr);
+  const Vector<uint8_t> original_font(
+      custom_font_data->GetFontDataForTesting());
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_EQ(custom_font_data->GetStateForTesting(),
+            IftCustomFontData::State::kFetching);
+
+  // Request support for "c".
+  EXPECT_FALSE(custom_font_data->IftRequireSubset("c"));
+  EXPECT_EQ(custom_font_data->GetStateForTesting(),
+            IftCustomFontData::State::kFetching);
+
+  // Patch for "b" is applied even though we still need to wait for "c".
+  patch_b.Complete(PatchBPayload());
+  test::RunPendingTasks();
+  const Vector<uint8_t> font_data_b(custom_font_data->GetFontDataForTesting());
+  EXPECT_EQ(custom_font_data->GetStateForTesting(),
+            IftCustomFontData::State::kFetching);
+  EXPECT_NE(font_data_b, original_font);
+
+  // Patch "c" is applied.
+  patch_c.Complete(PatchCPayload());
+  test::RunPendingTasks();
+  EXPECT_EQ(custom_font_data->GetStateForTesting(),
+            IftCustomFontData::State::kIdle);
+  EXPECT_NE(custom_font_data->GetFontDataForTesting(), base::span(font_data_b));
+  EXPECT_TRUE(custom_font_data->IftRequireSubset("bc"));
+}
+
+TEST_F(IftCustomFontDataTest, InvalidPatchDataFails) {
+  SimSubresourceRequest patch_b(kPatchBUrl, "application/octet-stream");
+  const IftCustomFontData* custom_font_data = LoadCustomFontData("b");
   ASSERT_NE(custom_font_data, nullptr);
 
   Compositor().BeginFrame();
@@ -174,15 +261,10 @@ TEST_F(IftCustomFontDataTest, FetchedAfterAllPatchesFetched) {
   EXPECT_EQ(custom_font_data->GetStateForTesting(),
             IftCustomFontData::State::kFetching);
 
-  patch_b.Complete("patch-b");
+  patch_b.Complete("not-a-patch");
   test::RunPendingTasks();
   EXPECT_EQ(custom_font_data->GetStateForTesting(),
-            IftCustomFontData::State::kFetching);
-
-  patch_c.Complete("patch-c");
-  test::RunPendingTasks();
-  EXPECT_EQ(custom_font_data->GetStateForTesting(),
-            IftCustomFontData::State::kFetched);
+            IftCustomFontData::State::kFailed);
 }
 
 TEST_F(IftCustomFontDataTest, PatchFetchFailureFails) {
@@ -204,7 +286,7 @@ TEST_F(IftCustomFontDataTest, PatchFetchFailureFails) {
   EXPECT_EQ(custom_font_data->GetStateForTesting(),
             IftCustomFontData::State::kFailed);
 
-  patch_c.Complete("patch-c");
+  patch_c.Complete(PatchCPayload());
   test::RunPendingTasks();
   EXPECT_EQ(custom_font_data->GetStateForTesting(),
             IftCustomFontData::State::kFailed);

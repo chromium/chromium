@@ -5,8 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_IFT_CUSTOM_FONT_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_IFT_CUSTOM_FONT_DATA_H_
 
+#include <stdint.h>
+
 #include <memory>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/fonts/custom_font_data.h"
@@ -52,13 +56,14 @@ class CORE_EXPORT IftCustomFontData final : public CustomFontData {
     kCollecting,
     // The font is fetching the patches required for `fetched_subset_`.
     kFetching,
-    // All patches required for `fetched_subset_` have been fetched.
-    kFetched,
     // The font has failed in some way and is no longer usable.
     kFailed,
   };
 
   State GetStateForTesting() const { return state_; }
+  // Returns the font data with all patches applied so far. The returned span is
+  // invalidated when more patches are applied.
+  base::span<const uint8_t> GetFontDataForTesting() const LIFETIME_BOUND;
 
  private:
   // Fetches a single patch and notifies its owner when done.
@@ -66,8 +71,9 @@ class CORE_EXPORT IftCustomFontData final : public CustomFontData {
 
   void BeginCollecting() const;
   void BeginFetching() const;
-  void BeginFetched() const;
   void BeginFailed() const;
+  // Applies the fetched patches. Called once all patch fetches have finished.
+  void ApplyPatches() const;
   // Called by `loader` when its fetch of `resource` has finished.
   void OnPatchLoaded(PatchLoader* loader, const Resource* resource) const;
 
