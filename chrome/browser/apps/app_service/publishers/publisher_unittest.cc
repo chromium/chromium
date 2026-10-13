@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
@@ -407,7 +408,13 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
   }
 };
 
-TEST_F(PublisherTest, ExtensionAppsOnApps) {
+// TODO(crbug.com/572330901): Hangs on process teardown on ChromeOS ASan.
+#if BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER)
+#define MAYBE_ExtensionAppsOnApps DISABLED_ExtensionAppsOnApps
+#else
+#define MAYBE_ExtensionAppsOnApps ExtensionAppsOnApps
+#endif
+TEST_F(PublisherTest, MAYBE_ExtensionAppsOnApps) {
   // Re-init AppService to verify the init process.
   AppServiceTest app_service_test;
   app_service_test.SetUp(profile());
