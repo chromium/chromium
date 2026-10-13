@@ -1686,6 +1686,15 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(web_contents->HasPictureInPictureDocument());
 }
 
+namespace {
+
+std::string DocumentPipBackendTestName(
+    const testing::TestParamInfo<bool>& info) {
+  return info.param ? "Standalone" : "BrowserBacked";
+}
+
+}  // namespace
+
 // Runs Document PiP tests from `Base` with either the Browser-backed or the
 // standalone PiP window.
 template <typename Base>
@@ -1732,9 +1741,7 @@ class AutoPictureInPictureDocumentPipBackendBrowserTest
 INSTANTIATE_TEST_SUITE_P(All,
                          AutoPictureInPictureDocumentPipBackendBrowserTest,
                          testing::Bool(),
-                         [](const testing::TestParamInfo<bool>& info) {
-                           return info.param ? "Standalone" : "BrowserBacked";
-                         });
+                         &DocumentPipBackendTestName);
 
 
 #if BUILDFLAG(IS_LINUX)
@@ -1777,7 +1784,7 @@ IN_PROC_BROWSER_TEST_P(AutoPictureInPictureDocumentPipBackendBrowserTest,
   CheckIfEventsAreForwarded(pip_contents, /*expect_events=*/true);
 }
 
-IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
+IN_PROC_BROWSER_TEST_P(AutoPictureInPictureDocumentPipBackendBrowserTest,
                        PromptResultRecorded_VideoConferencingAllowOnce) {
   // Load a page that registers for autopip and start video playback.
   LoadCameraMicrophonePage(browser(), "a.com");
@@ -1793,8 +1800,13 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
     enter_pip_observer.Wait();
   }
   EXPECT_TRUE(web_contents->HasPictureInPictureDocument());
+  auto* pip_contents =
+      PictureInPictureWindowManager::GetInstance()->GetChildWebContents();
+  ASSERT_TRUE(pip_contents);
+  ExpectPipBackend(pip_contents);
 
   auto* const overlay_view = GetOverlayViewFromDocumentPipWindow();
+  ASSERT_TRUE(overlay_view);
   overlay_view->get_view_for_testing()->simulate_button_press_for_testing(
       AutoPipSettingView::UiResult::kAllowOnce);
 
@@ -3127,8 +3139,19 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   SwitchBackToOpenerAndWaitForPipToClose();
 }
 
-IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
-                       PromptResultRecorded_VideoPlaybackAllowOnce) {
+class AutoPictureInPictureWithVideoPlaybackDocumentPipBackendBrowserTest
+    : public DocumentPipBackendBrowserTest<
+          AutoPictureInPictureWithVideoPlaybackBrowserTest> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AutoPictureInPictureWithVideoPlaybackDocumentPipBackendBrowserTest,
+    testing::Bool(),
+    &DocumentPipBackendTestName);
+
+IN_PROC_BROWSER_TEST_P(
+    AutoPictureInPictureWithVideoPlaybackDocumentPipBackendBrowserTest,
+    PromptResultRecorded_VideoPlaybackAllowOnce) {
   // Load a page that registers for autopip and start video playback.
   LoadAutoDocumentPipPage(browser(), "a.com");
   auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
@@ -3153,8 +3176,13 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
     enter_pip_observer.Wait();
   }
   EXPECT_TRUE(web_contents->HasPictureInPictureDocument());
+  auto* pip_contents =
+      PictureInPictureWindowManager::GetInstance()->GetChildWebContents();
+  ASSERT_TRUE(pip_contents);
+  ExpectPipBackend(pip_contents);
 
   auto* const overlay_view = GetOverlayViewFromDocumentPipWindow();
+  ASSERT_TRUE(overlay_view);
   overlay_view->get_view_for_testing()->simulate_button_press_for_testing(
       AutoPipSettingView::UiResult::kAllowOnce);
 
@@ -3201,8 +3229,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(1, samples->GetCount(6));  // Not shown blocked
 }
 
-IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
-                       PromptResultRecorded_VideoConferencingTakesPrecedence) {
+IN_PROC_BROWSER_TEST_P(
+    AutoPictureInPictureWithVideoPlaybackDocumentPipBackendBrowserTest,
+    PromptResultRecorded_VideoConferencingTakesPrecedence) {
   // Load a page that registers for autopip and start video playback.
   LoadAutoDocumentPipPage(browser(), "a.com");
   auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
@@ -3224,8 +3253,13 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
     enter_pip_observer.Wait();
   }
   EXPECT_TRUE(web_contents->HasPictureInPictureDocument());
+  auto* pip_contents =
+      PictureInPictureWindowManager::GetInstance()->GetChildWebContents();
+  ASSERT_TRUE(pip_contents);
+  ExpectPipBackend(pip_contents);
 
   auto* const overlay_view = GetOverlayViewFromDocumentPipWindow();
+  ASSERT_TRUE(overlay_view);
   overlay_view->get_view_for_testing()->simulate_button_press_for_testing(
       AutoPipSettingView::UiResult::kAllowOnce);
 
