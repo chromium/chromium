@@ -104,32 +104,24 @@ bool OidcAuthenticationSigninInterceptor::MaybeInterceptOidcAuthentication(
   RecordOidcInterceptionFunnelStep(
       OidcInterceptionFunnelStep::kEnrollmentStarted);
 
-  const bool async_mode = base::FeatureList::IsEnabled(
-      profile_management::features::kOidcNavigationThrottleAsyncMode);
-
   if (interception_in_progress_) {
     RecordOidcInterceptionResult(
         OidcInterceptionResult::kInterceptionInProgress);
     VLOG_POLICY(1, OIDC_ENROLLMENT) << "OIDC Interception already in progress";
-    return !async_mode;
-  }
-
-  if (!async_mode) {
-    interception_in_progress_ = true;
-    oidc_callback_ = std::move(oidc_callback);
+    return false;
   }
 
   if (!IsValidOidcToken(oidc_tokens)) {
     LOG_POLICY(ERROR, OIDC_ENROLLMENT) << "Invalid tokens in the OIDC response";
     Reset();
-    return !async_mode;
+    return false;
   }
 
   if (!intercepted_contents) {
     LOG_POLICY(ERROR, OIDC_ENROLLMENT)
         << "Web contents no longer available, aborting interception";
     Reset();
-    return !async_mode;
+    return false;
   }
 
   web_contents_ = intercepted_contents->GetWeakPtr();
@@ -164,13 +156,11 @@ bool OidcAuthenticationSigninInterceptor::MaybeInterceptOidcAuthentication(
     VLOG_POLICY(1, OIDC_ENROLLMENT)
         << "Intercepted info is already in the right profile";
     Reset();
-    return !async_mode;
+    return false;
   }
 
-  if (async_mode) {
-    interception_in_progress_ = true;
-    oidc_callback_ = std::move(oidc_callback);
-  }
+  interception_in_progress_ = true;
+  oidc_callback_ = std::move(oidc_callback);
 
   switch_to_entry_
       ? VLOG_POLICY(2, OIDC_ENROLLMENT)
@@ -664,10 +654,7 @@ void OidcAuthenticationSigninInterceptor::FinalizeSigninInterception() {
     if (web_contents_) {
       web_contents_->Close();
     }
-    if (base::FeatureList::IsEnabled(
-            profile_management::features::kOidcNavigationThrottleAsyncMode)) {
-      oidc_callback_.Reset();
-    }
+    oidc_callback_.Reset();
   }
   Reset();
 }

@@ -225,20 +225,14 @@ ThrottleCheckResult OidcAuthResponseCaptureNavigationThrottle::
     RecordOidcInterceptionFunnelStep(
         OidcInterceptionFunnelStep::kSuccessfulInfoParsed);
 
-    const bool async_mode = base::FeatureList::IsEnabled(
-        profile_management::features::kOidcNavigationThrottleAsyncMode);
-
-    bool interception_started = !async_mode;
-    interception_started |= interceptor->MaybeInterceptOidcAuthentication(
-        navigation_handle()->GetWebContents(),
-        ProfileManagementOidcTokens(
-            registration_payload.encrypted_user_information()),
-        registration_payload.issuer(), registration_payload.subject(),
-        registration_payload.email(),
-        base::BindOnce(&OidcAuthResponseCaptureNavigationThrottle::Resume,
-                       weak_ptr_factory_.GetWeakPtr()));
-
-    if (async_mode && !interception_started) {
+    if (!interceptor->MaybeInterceptOidcAuthentication(
+            navigation_handle()->GetWebContents(),
+            ProfileManagementOidcTokens(
+                registration_payload.encrypted_user_information()),
+            registration_payload.issuer(), registration_payload.subject(),
+            registration_payload.email(),
+            base::BindOnce(&OidcAuthResponseCaptureNavigationThrottle::Resume,
+                           weak_ptr_factory_.GetWeakPtr()))) {
       return PROCEED;
     }
 

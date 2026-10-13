@@ -945,10 +945,6 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 IN_PROC_BROWSER_TEST_P(OidcAuthenticationSigninInterceptorTest,
                        InterceptionAlreadyInProgress) {
-  if (!base::FeatureList::IsEnabled(
-          profile_management::features::kOidcNavigationThrottleAsyncMode)) {
-    GTEST_SKIP() << "Test only relevant when async mode is enabled.";
-  }
   base::HistogramTester histogram_tester;
   AddTabToCurrentBrowser(GURL("about:blank"));
 
@@ -967,10 +963,6 @@ IN_PROC_BROWSER_TEST_P(OidcAuthenticationSigninInterceptorTest,
 
 IN_PROC_BROWSER_TEST_P(OidcAuthenticationSigninInterceptorTest,
                        OidcCallbackResetOnSuccess) {
-  if (!base::FeatureList::IsEnabled(
-          profile_management::features::kOidcNavigationThrottleAsyncMode)) {
-    GTEST_SKIP() << "Test only relevant when async mode is enabled.";
-  }
   number_of_windows_ = 1;
   AddTabToCurrentBrowser(GURL("about:blank"));
   AddTabToCurrentBrowser(GURL("about:blank"));
@@ -997,10 +989,6 @@ IN_PROC_BROWSER_TEST_P(OidcAuthenticationSigninInterceptorTest,
 
 IN_PROC_BROWSER_TEST_P(OidcAuthenticationSigninInterceptorTest,
                        OidcCallbackRunOnFailure) {
-  if (!base::FeatureList::IsEnabled(
-          profile_management::features::kOidcNavigationThrottleAsyncMode)) {
-    GTEST_SKIP() << "Test only relevant when async mode is enabled.";
-  }
   AddTabToCurrentBrowser(GURL("about:blank"));
   bool callback_called = false;
 
