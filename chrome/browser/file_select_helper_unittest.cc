@@ -99,7 +99,7 @@ class TestWindowBoundsDelegate : public content::WebContentsDelegate {
 
 }  // namespace
 
-#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
 namespace {
 
 // Fill in the arguments to be passed to the ContentAnalysisCompletionCallback()
@@ -128,7 +128,7 @@ void PrepareContentAnalysisCompletionCallbackArgs(
 }
 
 }  // namespace
-#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
 
 class FileSelectHelperTest : public testing::Test {
  public:
@@ -410,7 +410,7 @@ TEST_F(FileSelectHelperTest, LastSelectedDirectory) {
 
 // The following tests depend on the enterprise cloud content analysis feature
 // set.
-#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
 
 TEST_F(FileSelectHelperTest, ContentAnalysisCompletionCallback_NoFiles) {
   content::BrowserTaskEnvironment task_environment;
@@ -663,7 +663,38 @@ TEST_F(FileSelectHelperTest, WebContentsDestroyedDuringAsyncFileProcessing) {
   task_environment.RunUntilIdle();
   EXPECT_FALSE(weak_ptr);
 }
-#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(FileSelectHelperTest, ContentAnalysisCompletionCallback_ContentUriFile) {
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  scoped_refptr<FileSelectHelper> file_select_helper =
+      new FileSelectHelper(&profile);
+
+  std::vector<blink::mojom::FileChooserFileInfoPtr> files;
+  auto listener = base::MakeRefCounted<TestFileSelectListener>(&files);
+  file_select_helper->SetFileSelectListenerForTesting(std::move(listener));
+  file_select_helper->DontAbortOnMissingWebContentsForTesting();
+
+  std::vector<blink::mojom::FileChooserFileInfoPtr> orig_files;
+  enterprise_connectors::ContentAnalysisDelegate::Data data;
+  enterprise_connectors::ContentAnalysisDelegate::Result result;
+  base::FilePath content_uri_1(
+      FILE_PATH_LITERAL("content://media/external/file/101"));
+  base::FilePath content_uri_2(
+      FILE_PATH_LITERAL("content://media/external/file/102"));
+  PrepareContentAnalysisCompletionCallbackArgs({content_uri_1, content_uri_2},
+                                               {false, true}, &orig_files,
+                                               &data, &result);
+
+  file_select_helper->ContentAnalysisCompletionCallback(std::move(orig_files),
+                                                        data, result);
+
+  ASSERT_EQ(1u, files.size());
+  EXPECT_EQ(content_uri_2, files[0]->get_native_file()->file_path);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
 
 TEST_F(FileSelectHelperTest, EnumerateDirectory_TabDeactivated) {
   content::BrowserTaskEnvironment task_environment;
