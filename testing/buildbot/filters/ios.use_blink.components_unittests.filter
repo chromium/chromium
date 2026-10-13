@@ -31,7 +31,6 @@
 -AutofillAgentTest.DidSelectSuggestion_ClearFormEntry
 -AutofillAgentTest.FillData_UnknowFieldIdInResults
 -AutofillAgentTest.FillData_UpdateWithResults
--SharedPasswordControllerTest.DidFillField
 
 # TODO(crbug.com/332933545): Test currently fails on iOS Blink.
 -LanguageDetectionJavascriptTest.DetectLanguageWithNoTranslateMeta
@@ -158,34 +157,8 @@
 -PasswordFormHelperTest.FillUsernameAndPassword_TriggerSubmission
 
 # TODO(crbug.com/40281649): Test currently fails on iOS blink.
--SharedPasswordControllerTest.PasswordManagerIsNotNotifiedAboutHeuristicsPredictions
--SharedPasswordControllerTest.CheckIfSuggestionsAvailableForFormCrossOriginIframe
--SharedPasswordControllerTest.CheckNoSuggestionsAreAvailableForNonPasswordForm
--SharedPasswordControllerTest.DeclinePasswordGenerationDialog
--SharedPasswordControllerTest.DidRegisterFormActivityForFormCrossOriginIframe
--SharedPasswordControllerTest.DidRegisterFormRemovalForFormCrossOriginIframe
--SharedPasswordControllerTest.DoesntInterpretElementAdditionsAsFormSubmission
--SharedPasswordControllerTest.FormHelperDidSubmitFormForFormCrossOriginIframe
--SharedPasswordControllerTest.FormHelperSetsUpUniqueIDsForNewFrame
--SharedPasswordControllerTest.FormsArePropagatedOnHTMLPageLoad
--SharedPasswordControllerTest.FrameDidBecomeAvailableCrossOriginIframe
--SharedPasswordControllerTest.FrameWillBecomeUnavailableCrossOriginIframe
--SharedPasswordControllerTest.LastFocusedFieldData
--SharedPasswordControllerTest.NoFormsArePropagatedOnNonHTMLPageLoad
--SharedPasswordControllerTest.PasswordManagerDidNavigationMainFrameOnNavigationFinished
--SharedPasswordControllerTest.PresavesGeneratedPassword
--SharedPasswordControllerTest.RetrieveSuggestionsForFormCrossOriginIframe
--SharedPasswordControllerTest.ReturnsGenerateSuggestionIfFormIsEligibleForGeneration
--SharedPasswordControllerTest.ReturnsNoSuggestionsIfFrameDestroyed
--SharedPasswordControllerTest.ReturnsNoSuggestionsIfNoneAreAvailable
--SharedPasswordControllerTest.ReturnsSuggestionsIfAvailable
--SharedPasswordControllerTest.SuggestsGeneratedPassword
--SharedPasswordControllerTest.TriggerPasswordGeneration
 -SharedPasswordControllerTest.FillField
--SharedPasswordControllerTest.ReturnsPasskeyAndPasswordSuggestionsWhenAvailable
 -SharedPasswordControllerTest.ScrollAndCheckViewAreaVisible
--SharedPasswordControllerTest.SelectPasskeySuggestion
--SharedPasswordControllerTest.SelectPasswordSuggestionWithAutoSubmission
 
 # TODO(crbug.com/571624237): SharedPasswordControllerTest.ActorLoginToolRescansFormsFoo
 # tests below added by https://crrev.com/c/8337068 have been failing on iOS Blink.
@@ -241,8 +214,6 @@
 -AutofillAgentTestFrameInitializationOrderFrames.MainFrameAvailableThenPageLoadedThenIframeAvailable
 -AutofillAgentTestFrameInitializationOrderFrames.PageLoadedThenIframeThenMainFrame
 -AutofillAgentTestFrameInitializationOrderFrames.PageLoadedThenMainFrameThenIframe
--SharedPasswordControllerTest.PasswordManagerIsNotifiedAboutServerPredictions_AcrossFrames
--SharedPasswordControllerTest.PasswordManagerIsNotifiedAboutServerPredictions_SingleFrame
 
 # TODO(crbug.com/364348914): These tests have been failing since
 # https://crrev.com/c/5774002.
@@ -272,19 +243,10 @@
 -RemoteFrameTokenRegistrationTest.MainFrameRegistersItself
 -RemoteFrameTokenRegistrationTest.ParentFrameIgnoresChildRegistration
 
-# TODO(crbug.com/371838042): These tests have been failing since
-# https://crrev.com/c/5888544.
--SharedPasswordControllerTest.PresavesGeneratedPassword_Empty
--SharedPasswordControllerTest.TriggerPasswordGeneration_Proactively
-
 # TODO(crbug.com/380309588): These tests have been failing since
 # https://crrev.com/c/6000833.
 -FormSubmittedHookTest.TestFormSubmittedHook
 -FormSubmittedHookTest.TestFormSubmittedHookAcrossIframes
-
-# TODO(crbug.com/381917887): This test has been failing since
-# https://crrev.com/c/6038336.
--SharedPasswordControllerTest.PasswordManagerIsNotifiedAboutModelPredictions
 
 # TODO(crbug.com/388135869): This test has been failing since
 # https://crrev.com/c/6143155.

@@ -60,14 +60,15 @@ class TestAutofillManagerInjectorBase {
 //     ...
 //   };
 //
-//   TestAutofillManagerInjector<MockAutofillManager> injector(web_state());
+//   TestAutofillManagerInjectorIOS<MockAutofillManager> injector(web_state());
 //   NavigateToURL(...);
 template <typename T>
   requires(std::derived_from<T, AutofillManager>)
-class TestAutofillManagerInjector : public AutofillDriverIOSFactory::Observer,
-                                    public TestAutofillManagerInjectorBase {
+class TestAutofillManagerInjectorIOS
+    : public AutofillDriverIOSFactory::Observer,
+      public TestAutofillManagerInjectorBase {
  public:
-  explicit TestAutofillManagerInjector(web::WebState* web_state)
+  explicit TestAutofillManagerInjectorIOS(web::WebState* web_state)
       : web_state_(web_state) {
     AutofillClientIOS& client =
         CHECK_DEREF(AutofillClientIOS::FromWebState(web_state));
@@ -82,7 +83,7 @@ class TestAutofillManagerInjector : public AutofillDriverIOSFactory::Observer,
     }
   }
 
-  ~TestAutofillManagerInjector() override {
+  ~TestAutofillManagerInjectorIOS() override {
     if (factory_) {
       factory_->RemoveObserver(this);
     }

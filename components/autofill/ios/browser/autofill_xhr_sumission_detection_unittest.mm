@@ -81,9 +81,8 @@ class AutofillXHRSubmissionDetectionTest : public PlatformTest {
         std::make_unique<TestAutofillClientIOS>(&web_state_, /*bridge=*/nil);
 
     // Replace AutofillManager with the test implementation.
-    autofill_manager_injector_ =
-        std::make_unique<TestAutofillManagerInjector<TestingAutofillManager>>(
-            &web_state_);
+    autofill_manager_injector_ = std::make_unique<
+        TestAutofillManagerInjectorIOS<TestingAutofillManager>>(&web_state_);
 
     // Inject a fake main frame.
     auto main_frame =
@@ -108,7 +107,7 @@ class AutofillXHRSubmissionDetectionTest : public PlatformTest {
   std::unique_ptr<TestAutofillClientIOS> autofill_client_;
   web::FakeWebState web_state_;
   raw_ptr<web::FakeWebFramesManager> web_frames_manager_;
-  std::unique_ptr<TestAutofillManagerInjector<TestingAutofillManager>>
+  std::unique_ptr<TestAutofillManagerInjectorIOS<TestingAutofillManager>>
       autofill_manager_injector_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 };

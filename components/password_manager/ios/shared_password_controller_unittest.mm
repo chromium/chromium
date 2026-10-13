@@ -124,7 +124,7 @@ using autofill::FormData;
 using autofill::LocalFrameToken;
 using autofill::PasswordFormFillData;
 using autofill::RemoteFrameToken;
-using autofill::TestAutofillManagerInjector;
+using autofill::TestAutofillManagerInjectorIOS;
 using autofill::TestBrowserAutofillManager;
 using autofill::password_generation::PasswordGenerationType;
 using autofill::test::CreateTestFormField;
@@ -257,8 +257,10 @@ class SharedPasswordControllerTest : public PlatformTest {
     // The manager injector must be created before creating the controller to
     // make sure it can exchange the manager before the controller starts
     // observing it.
-    autofill_manager_injector_ = std::make_unique<
-        TestAutofillManagerInjector<TestBrowserAutofillManager>>(&web_state_);
+    autofill_manager_injector_ =
+        std::make_unique<
+            TestAutofillManagerInjectorIOS<TestBrowserAutofillManager>>(
+            &web_state_);
 
     controller_ =
         [[SharedPasswordController alloc] initWithWebState:&web_state_
@@ -349,12 +351,9 @@ class SharedPasswordControllerTest : public PlatformTest {
   web::ScopedTestingWebClient web_client_;
   web::WebTaskEnvironment task_environment_;
   autofill::test::AutofillUnitTestEnvironment autofill_test_environment_;
-  std::unique_ptr<autofill::TestAutofillClientIOS> autofill_client_;
-  std::unique_ptr<TestAutofillManagerInjector<TestBrowserAutofillManager>>
-      autofill_manager_injector_;
+  web::FakeBrowserState browser_state_;
   std::unique_ptr<webauthn::TestPasskeyModel> passkey_model_;
   web::FakeWebState web_state_;
-  web::FakeBrowserState browser_state_;
   raw_ptr<web::FakeWebFramesManager> web_frames_manager_;
   testing::StrictMock<MockPasswordManager> password_manager_;
   testing::StrictMock<MockPasswordGenerationFrameHelper>
@@ -367,6 +366,9 @@ class SharedPasswordControllerTest : public PlatformTest {
   scoped_refptr<IOSPasswordManagerDriver> dummy_driver_;
   id delegate_;
   SharedPasswordController* controller_;
+  std::unique_ptr<autofill::TestAutofillClientIOS> autofill_client_;
+  std::unique_ptr<TestAutofillManagerInjectorIOS<TestBrowserAutofillManager>>
+      autofill_manager_injector_;
 };
 
 // TODO(crbug.com/566740556): Refactor to avoid invoking completion handlers

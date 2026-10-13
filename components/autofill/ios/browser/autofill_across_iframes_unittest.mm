@@ -443,7 +443,7 @@ class AutofillAcrossIframesTest : public AutofillTestWithWebState {
     PasswordAutofillAgent::CreateForWebState(web_state(), &delegate_mock_);
 
     autofill_manager_injector_ =
-        std::make_unique<TestAutofillManagerInjector<TestAutofillManager>>(
+        std::make_unique<TestAutofillManagerInjectorIOS<TestAutofillManager>>(
             web_state());
   }
 
@@ -680,7 +680,7 @@ class AutofillAcrossIframesTest : public AutofillTestWithWebState {
     main_frame_manager().ResetTestState();
   }
 
-  std::unique_ptr<TestAutofillManagerInjector<TestAutofillManager>>
+  std::unique_ptr<TestAutofillManagerInjectorIOS<TestAutofillManager>>
       autofill_manager_injector_;
   std::unique_ptr<PrefService> prefs_;
   std::unique_ptr<TestAutofillClientIOS> autofill_client_;

@@ -355,7 +355,7 @@ class PageContextWrapperTest : public PlatformTest,
         web_state_.get(), autofill_agent_);
 
     autofill_manager_injector_ = std::make_unique<
-        autofill::TestAutofillManagerInjector<TestAutofillManager>>(
+        autofill::TestAutofillManagerInjectorIOS<TestAutofillManager>>(
         web_state_.get());
 
     // Set the fake env used for testing errors.
@@ -475,7 +475,7 @@ class PageContextWrapperTest : public PlatformTest,
   std::unique_ptr<PrefService> prefs_;
   std::unique_ptr<autofill::TestAutofillClientIOS> autofill_client_;
   AutofillAgent* autofill_agent_;
-  std::unique_ptr<autofill::TestAutofillManagerInjector<TestAutofillManager>>
+  std::unique_ptr<autofill::TestAutofillManagerInjectorIOS<TestAutofillManager>>
       autofill_manager_injector_;
 };
 
@@ -1677,7 +1677,7 @@ TEST_P(PageContextWrapperTest,
         base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE,
             base::BindOnce(
-                [](std::unique_ptr<autofill::TestAutofillManagerInjector<
+                [](std::unique_ptr<autofill::TestAutofillManagerInjectorIOS<
                        TestAutofillManager>>* injector,
                    std::unique_ptr<web::WebState>* web_state) {
                   injector->reset();

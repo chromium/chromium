@@ -171,7 +171,7 @@ class ChromeAutofillClientIOSTest : public PlatformTest {
             profile_.get(), web_state_.get(),
             InfoBarManagerImpl::FromWebState(web_state_.get()), autofill_agent);
     autofill_manager_injector_ =
-        std::make_unique<TestAutofillManagerInjector<TestAutofillManager>>(
+        std::make_unique<TestAutofillManagerInjectorIOS<TestAutofillManager>>(
             web_state_.get());
     autofill_agent_ = autofill_agent;
   }
@@ -237,7 +237,7 @@ class ChromeAutofillClientIOSTest : public PlatformTest {
   // profile's `PrefService`, is released before the profile goes away.
   AutofillAgent* autofill_agent_;
   std::unique_ptr<ChromeAutofillClientIOS> autofill_client_;
-  std::unique_ptr<TestAutofillManagerInjector<TestAutofillManager>>
+  std::unique_ptr<TestAutofillManagerInjectorIOS<TestAutofillManager>>
       autofill_manager_injector_;
   std::unique_ptr<TestBrowser> browser_;
   SceneState* scene_state_;

@@ -193,7 +193,7 @@ class FormStructureBrowserTest : public PlatformTest,
   std::unique_ptr<web::WebState> web_state_;
   std::unique_ptr<AutofillClient> autofill_client_;
   AutofillAgent* autofill_agent_;
-  std::unique_ptr<TestAutofillManagerInjector<TestAutofillManager>>
+  std::unique_ptr<TestAutofillManagerInjectorIOS<TestAutofillManager>>
       autofill_manager_injector_;
   FormSuggestionController* suggestion_controller_;
 
@@ -282,7 +282,7 @@ void FormStructureBrowserTest::SetUp() {
       std::make_unique<TestAutofillClientIOS>(web_state(), autofill_agent_);
 
   autofill_manager_injector_ =
-      std::make_unique<TestAutofillManagerInjector<TestAutofillManager>>(
+      std::make_unique<TestAutofillManagerInjectorIOS<TestAutofillManager>>(
           web_state());
 }
 

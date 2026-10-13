@@ -225,7 +225,7 @@ TEST_F(AutofillDataExtractionUtilsTest, GetAutofillFieldData_Valid) {
 
   autofill::TestAutofillClientIOS autofill_client(&web_state, nil);
 
-  autofill::TestAutofillManagerInjector<autofill::TestBrowserAutofillManager>
+  autofill::TestAutofillManagerInjectorIOS<autofill::TestBrowserAutofillManager>
       injector(&web_state);
 
   autofill::LocalFrameToken frame_token;
