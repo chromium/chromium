@@ -20,11 +20,14 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/message_loop/message_pump_for_io.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/process/process_handle.h"
+#include "base/rand_util.h"
 #include "base/synchronization/lock.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
+#include "base/time/time.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/win_util.h"
 
@@ -38,22 +41,33 @@ class ChannelWinMessageQueue {
   ChannelWinMessageQueue() = default;
   ~ChannelWinMessageQueue() = default;
 
-  void Append(Channel::MessagePtr message) {
-    queue_.emplace_back(std::move(message));
+  void Append(Channel::MessagePtr message, base::TimeTicks creation_time) {
+    queue_.emplace_back(std::move(message), creation_time);
   }
 
-  Channel::Message* GetFirst() const { return queue_.front().get(); }
+  Channel::Message* GetFirst() const { return queue_.front().message.get(); }
 
   Channel::MessagePtr TakeFirst() {
-    Channel::MessagePtr message = std::move(queue_.front());
+    QueuedMessage entry = std::move(queue_.front());
     queue_.pop_front();
-    return message;
+    if (!entry.creation_time.is_null()) {
+      base::TimeDelta latency = base::TimeTicks::Now() - entry.creation_time;
+      UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES("Mojo.Channel.WriteLatencyUs",
+                                              latency, base::Microseconds(1),
+                                              base::Seconds(1), 100);
+    }
+    return std::move(entry.message);
   }
 
   bool IsEmpty() const { return queue_.empty(); }
 
  private:
-  base::circular_deque<Channel::MessagePtr> queue_;
+  struct QueuedMessage {
+    Channel::MessagePtr message;
+    base::TimeTicks creation_time;
+  };
+
+  base::circular_deque<QueuedMessage> queue_;
 };
 
 class ChannelWin : public Channel,
@@ -91,6 +105,12 @@ class ChannelWin : public Channel,
   void Write(MessagePtr message) override {
     RecordSentMessageMetricsSubsampled(message->data_num_bytes());
 
+    base::TimeTicks creation_time;
+    if (base::ShouldRecordSubsampledMetric(
+            Channel::kMetricSubsamplingProbability)) {
+      creation_time = base::TimeTicks::Now();
+    }
+
     if (remote_process().IsValid()) {
       // If we know the remote process handle, we transfer all outgoing handles
       // to the process now rewriting them in the message.
@@ -114,7 +134,7 @@ class ChannelWin : public Channel,
       }
 
       bool write_now = !delay_writes_ && outgoing_messages_.IsEmpty();
-      outgoing_messages_.Append(std::move(message));
+      outgoing_messages_.Append(std::move(message), creation_time);
       if (write_now && !WriteNoLock(outgoing_messages_.GetFirst())) {
         reject_writes_ = write_error = true;
       }
