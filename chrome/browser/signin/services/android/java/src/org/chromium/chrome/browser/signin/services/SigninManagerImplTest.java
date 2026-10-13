@@ -18,6 +18,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import androidx.test.filters.MediumTest;
@@ -53,6 +54,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.SigninFeatures;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.IdentityManagerImpl;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
@@ -83,6 +85,7 @@ public class SigninManagerImplTest {
     @Mock private ExternalAuthUtils mExternalAuthUtils;
     @Mock private SigninManager.SignInStateObserver mSignInStateObserver;
     @Mock private SigninManagerImpl.Natives mNativeMock;
+    @Mock private IdentityManager.Observer mIdentityManagerObserver;
 
     private SigninManager mSigninManager;
     private IdentityManagerImpl mIdentityManager;
@@ -436,6 +439,73 @@ public class SigninManagerImplTest {
 
         mSigninTestRule.setAccountFetchFailed();
         assertFalse(mSigninManager.didAccountsFetchSucceed());
+    }
+
+    @Test
+    @MediumTest
+    @SigninTestRule.BlockGetAccounts
+    @EnableFeatures(SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS)
+    public void testAccountFetchFailedSetsRefreshTokensLoadingFailed() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mIdentityManager.addObserver(mIdentityManagerObserver);
+                    assertEquals(
+                            IdentityManager.RefreshTokensLoadingState.IN_PROGRESS,
+                            mIdentityManager.getRefreshTokensLoadingState());
+                });
+
+        mSigninTestRule.setAccountFetchFailed();
+        mSigninTestRule.unblockGetAccounts();
+
+        verify(mIdentityManagerObserver)
+                .onRefreshTokensLoaded(IdentityManager.RefreshTokensLoadingState.FAILED);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertEquals(
+                            IdentityManager.RefreshTokensLoadingState.FAILED,
+                            mIdentityManager.getRefreshTokensLoadingState());
+                });
+
+        // Subsequent account seeding should reset the failed state.
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
+
+        verify(mIdentityManagerObserver)
+                .onRefreshTokensLoaded(IdentityManager.RefreshTokensLoadingState.SUCCEEDED);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertEquals(
+                            IdentityManager.RefreshTokensLoadingState.SUCCEEDED,
+                            mIdentityManager.getRefreshTokensLoadingState());
+                    mIdentityManager.removeObserver(mIdentityManagerObserver);
+                });
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS)
+    public void
+            testAccountFetchFailedAfterRefreshTokensLoadedDoesNotSetRefreshTokensLoadingFailed() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mIdentityManager.addObserver(mIdentityManagerObserver);
+                    assertEquals(
+                            IdentityManager.RefreshTokensLoadingState.SUCCEEDED,
+                            mIdentityManager.getRefreshTokensLoadingState());
+                });
+
+        var blocker = mSigninTestRule.blockGetAccountsUpdate();
+        mSigninTestRule.setAccountFetchFailed();
+        blocker.close();
+
+        assertFalse(mSigninManager.didAccountsFetchSucceed());
+        verifyNoInteractions(mIdentityManagerObserver);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertEquals(
+                            IdentityManager.RefreshTokensLoadingState.SUCCEEDED,
+                            mIdentityManager.getRefreshTokensLoadingState());
+                    mIdentityManager.removeObserver(mIdentityManagerObserver);
+                });
     }
 
     private void verifyDataNotWipedOnSignout() {

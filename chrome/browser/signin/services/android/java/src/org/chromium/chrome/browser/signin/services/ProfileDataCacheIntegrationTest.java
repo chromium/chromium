@@ -356,9 +356,43 @@ public class ProfileDataCacheIntegrationTest {
     @Test
     @MediumTest
     @SigninTestRule.BlockGetAccounts
+    @EnableFeatures(SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS)
+    public void
+            testAccountFetchFailsBeforeInitializationShouldFulfillAccountsPromise_withIdentityManagerSourceOfTruth() {
+        mSigninTestRule.setAccountFetchFailed();
+        mSigninTestRule.unblockGetAccounts();
+
+        createProfileDataCache();
+
+        waitForCachedAccounts(List.of());
+        assertAccountsUpdatedCount(0);
+        assertProfileDataUpdatedCount(0);
+    }
+
+    @Test
+    @MediumTest
+    @SigninTestRule.BlockGetAccounts
     @DisableFeatures(SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS)
     public void
             testAccountFetchFailsAfterInitializationShouldNotifyEmptyAccountsList_withAmfSourceOfTruth() {
+        createProfileDataCache();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> assertFalse(mProfileDataCache.getAccounts().isFulfilled()));
+
+        mSigninTestRule.setAccountFetchFailed();
+        mSigninTestRule.unblockGetAccounts();
+
+        waitForCachedAccounts(List.of());
+        assertAccountsUpdatedCount(1);
+        assertProfileDataUpdatedCount(0);
+    }
+
+    @Test
+    @MediumTest
+    @SigninTestRule.BlockGetAccounts
+    @EnableFeatures(SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS)
+    public void
+            testAccountFetchFailsAfterInitializationShouldNotifyEmptyAccountsList_withIdentityManagerSourceOfTruth() {
         createProfileDataCache();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> assertFalse(mProfileDataCache.getAccounts().isFulfilled()));
