@@ -412,7 +412,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private boolean mPromosEvaluatedForCurrentForeground;
     private final OneshotSupplier<ChromeInactivityTracker> mInactivityTrackerSupplier;
     private final InactivityObserver mInactivityObserver;
-    private @Nullable NtpSyncedThemeManager mNtpSyncedThemeManager;
     private final @Nullable CrossDeviceSettingImporter mCrossDeviceSettingImporter;
     private @Nullable SideUiCoordinator mSideUiCoordinator;
     private @Nullable WebContentHairlineCoordinator mWebContentHairlineCoordinator;
@@ -1053,10 +1052,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mInactivityTrackerSupplier.get().removeObserver(mInactivityObserver);
         }
 
-        if (mNtpSyncedThemeManager != null) {
-            mNtpSyncedThemeManager.destroy();
-        }
-
         if (mTabBottomSheetReadAloudControllerCallback != null) {
             mReadAloudControllerSupplier.removeObserver(mTabBottomSheetReadAloudControllerCallback);
             mTabBottomSheetReadAloudControllerCallback = null;
@@ -1607,7 +1602,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         || NtpCustomizationUtils.supportsEnableEdgeToEdgeOnTop(
                                 mWindowAndroid, isTablet);
         if (isNewTabPageCustomizationV2Enabled) {
-            mNtpSyncedThemeManager = new NtpSyncedThemeManager(mActivity, originalProfile);
+            NtpSyncedThemeManager.getInstance().onFinishNativeInitialization(originalProfile);
             NtpCustomizationPolicyManager.getInstance()
                     .onFinishNativeInitialization(currentlySelectedProfile);
             if (NtpCustomizationUtils.isNTPCustomizationSyncEnabled()) {
@@ -3418,9 +3413,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      * the next image for the theme collection to be used for the following day's refresh.
      */
     public void onDailyRefreshThemeCollectionApplied() {
-        if (mNtpSyncedThemeManager != null) {
-            mNtpSyncedThemeManager.fetchNextThemeCollectionImageAfterDailyRefreshApplied();
-        }
+        NtpSyncedThemeManager.getInstance().fetchNextThemeCollectionImageAfterDailyRefreshApplied();
     }
 
     private void waitForTrackerInit(Profile profile) {

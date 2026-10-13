@@ -13,7 +13,9 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
@@ -33,12 +35,35 @@ import org.chromium.components.image_fetcher.ImageFetcher;
 
 /** Manages the lifecycle of NtpSyncedThemeBridge and observes committed theme changes. */
 @NullMarked
-public class NtpSyncedThemeManager
-        implements NtpSyncedThemeBridge.Observer, NtpCustomizationConfigManager.ThemeSyncObserver {
+public class NtpSyncedThemeManager implements NtpSyncedThemeBridge.Observer {
+    private static @Nullable NtpSyncedThemeManager sInstanceForTesting;
+
+    /** Static class that implements the initialization-on-demand holder idiom. */
+    private static class LazyHolder {
+        static final NtpSyncedThemeManager INSTANCE = new NtpSyncedThemeManager();
+    }
+
+    /** Returns the singleton instance of {@link NtpSyncedThemeManager}. */
+    public static NtpSyncedThemeManager getInstance() {
+        if (sInstanceForTesting != null) {
+            return sInstanceForTesting;
+        }
+        return LazyHolder.INSTANCE;
+    }
+
+    // The application context. Sync callbacks can arrive while no Activity exists, so this is the
+    // only context available. It must not be used to derive a color from the theme, e.g. via
+    // NtpThemeColorUtils#getDefaultBackgroundColor(). Building synced background data with it is
+    // fine for now: an NtpBackgroundDataColor is only consumed by its color id and
+    // primaryColorResId, and an NtpBackgroundDataCustomizedColor arrives from sync with all four
+    // colors already generated natively (see CrossDeviceThemeTracker#createCustomizedColorData).
+    // TODO(crbug.com/488439751): Build the synced background data with the Activity context it
+    // is applied with, so that this doesn't depend on how the data is consumed.
     private final Context mContext;
-    private final Profile mProfile;
     private final NtpCustomizationConfigManager mNtpCustomizationConfigManager;
-    private final @Nullable ImageFetcher mImageFetcher;
+    // The profile this manager is attached to. Only used to skip re-attaching to the same profile.
+    private @Nullable Profile mProfile;
+    private @Nullable ImageFetcher mImageFetcher;
     private @Nullable NtpSyncedThemeBridge mNtpSyncedThemeBridge;
     // Tracks the URL of the most recently requested synced background image to prevent race
     // conditions (e.g. if a newer Chrome color or default reset arrives while the image download is
@@ -53,36 +78,57 @@ public class NtpSyncedThemeManager
     private final ObserverList<Callback<@Nullable NtpBackgroundDataThemeCollection>>
             mDownloadCallbacks = new ObserverList<>();
 
+    private NtpSyncedThemeManager() {
+        this(NtpCustomizationConfigManager.getInstance());
+    }
+
     /**
-     * Constructs a new NtpSyncedThemeManager.
+     * Creates a manager that isn't attached to any profile yet; see {@link
+     * #onFinishNativeInitialization(Profile)}.
      *
-     * @param context The application context.
-     * @param profile The profile for which the {@link NtpSyncedThemeBridge} is created.
+     * @param ntpCustomizationConfigManager The config manager which receives the synced themes and
+     *     reports the locally committed ones. Injected so tests can pass a spy or a mock.
      */
-    public NtpSyncedThemeManager(Context context, Profile profile) {
-        this(context, profile, NtpCustomizationConfigManager.getInstance());
-    }
-
     @VisibleForTesting
-    NtpSyncedThemeManager(
-            Context context,
-            Profile profile,
-            NtpCustomizationConfigManager ntpCustomizationConfigManager) {
-        mContext = context.getApplicationContext();
-        mProfile = profile;
+    NtpSyncedThemeManager(NtpCustomizationConfigManager ntpCustomizationConfigManager) {
+        mContext = ContextUtils.getApplicationContext();
         mNtpCustomizationConfigManager = ntpCustomizationConfigManager;
-        mImageFetcher = NtpCustomizationUtils.createImageFetcher(profile);
-        mNtpSyncedThemeBridge = new NtpSyncedThemeBridge(mProfile, this);
-        mNtpCustomizationConfigManager.addThemeSyncObserver(this);
     }
 
-    /** Cleans up the C++ side of {@link NtpSyncedThemeBridge}. */
+    /**
+     * Attaches the manager to the given profile: creates the {@link NtpSyncedThemeBridge} and the
+     * {@link ImageFetcher}. Calling this again with the same profile is a no-op; calling it with a
+     * different profile releases the previous profile's state first.
+     *
+     * @param profile The original (non-incognito) profile.
+     */
+    public void onFinishNativeInitialization(Profile profile) {
+        if (mProfile == profile) return;
+
+        destroy();
+        mProfile = profile;
+        mImageFetcher = NtpCustomizationUtils.createImageFetcher(profile);
+        mNtpSyncedThemeBridge = new NtpSyncedThemeBridge(profile, this);
+        // The singleton outlives a test, so detach it between tests. Otherwise the next test's
+        // activity would skip the attach above and keep the previous test's bridge.
+        ResettersForTesting.register(this::destroy);
+    }
+
+    /**
+     * Releases the profile-dependent state: the C++ side of {@link NtpSyncedThemeBridge}, the
+     * {@link ImageFetcher}, and any in-flight download bookkeeping.
+     */
     public void destroy() {
-        mNtpCustomizationConfigManager.removeThemeSyncObserver(this);
         if (mNtpSyncedThemeBridge != null) {
             mNtpSyncedThemeBridge.destroy();
             mNtpSyncedThemeBridge = null;
         }
+        if (mImageFetcher != null) {
+            mImageFetcher.destroy();
+            mImageFetcher = null;
+        }
+        mProfile = null;
+        mLatestSyncedBackgroundUrl = null;
         mDownloadCallbacks.clear();
         mIsImageDownloading = false;
     }
@@ -166,7 +212,12 @@ public class NtpSyncedThemeManager
         mNtpCustomizationConfigManager.onSyncedDefaultThemeReset(mContext);
     }
 
-    @Override
+    /**
+     * Called by {@link NtpCustomizationConfigManager} when an NTP theme change is committed
+     * locally, to write it to native for outbound sync.
+     *
+     * @param data The newly chosen background data, or {@code null} for a reset to default.
+     */
     public void onThemeCommitted(@Nullable NtpBackgroundDataBase data) {
         if (mNtpSyncedThemeBridge == null) {
             return;
@@ -324,6 +375,11 @@ public class NtpSyncedThemeManager
     /** Returns whether a theme image is currently downloading. */
     public boolean isImageDownloading() {
         return mIsImageDownloading;
+    }
+
+    public static void setInstanceForTesting(@Nullable NtpSyncedThemeManager instance) {
+        sInstanceForTesting = instance;
+        ResettersForTesting.register(() -> sInstanceForTesting = null);
     }
 
     public void setImageDownloadingForTesting(boolean isDownloading) {

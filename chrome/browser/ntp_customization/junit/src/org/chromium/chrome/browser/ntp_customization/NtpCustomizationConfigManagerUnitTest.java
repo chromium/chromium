@@ -65,6 +65,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager.HomepageStateListener;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
+import org.chromium.chrome.browser.ntp_customization.theme.NtpSyncedThemeManager;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeStateProvider;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorFromHexInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
@@ -96,6 +97,7 @@ public class NtpCustomizationConfigManagerUnitTest {
     @Mock private NtpThemeDailyRefreshManager mNtpThemeDailyRefreshManager;
     @Mock private NtpBackgroundDataManager mNtpBackgroundDataManager;
     @Mock private NtpThemeStateProvider mNtpThemeStateProvider;
+    @Mock private NtpSyncedThemeManager mNtpSyncedThemeManager;
     @Captor private ArgumentCaptor<Bitmap> mBitmapCaptor;
     @Captor private ArgumentCaptor<BackgroundImageInfo> mBackgroundImageInfoCaptor;
     @Captor private ArgumentCaptor<Callback<Bitmap>> mBitmapCallbackCaptor;
@@ -120,6 +122,7 @@ public class NtpCustomizationConfigManagerUnitTest {
                         R.style.Theme_BrowserUI_DayNight);
         NtpThemeDailyRefreshManager.setInstanceForTesting(mNtpThemeDailyRefreshManager);
         NtpThemeStateProvider.setInstanceForTesting(mNtpThemeStateProvider);
+        NtpSyncedThemeManager.setInstanceForTesting(mNtpSyncedThemeManager);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mNtpCustomizationConfigManager = new NtpCustomizationConfigManager());
         mNtpCustomizationConfigManager.setNtpBackgroundDataManagerForTesting(
@@ -1495,14 +1498,12 @@ public class NtpCustomizationConfigManagerUnitTest {
             NtpBackgroundDataImageBase imageData) {
         NtpCustomizationConfigManager manager = createConfigManagerWithListener();
         manager.onBackgroundDataChanged(mContext, createTestColorData());
-        NtpCustomizationConfigManager.ThemeSyncObserver observer =
-                mock(NtpCustomizationConfigManager.ThemeSyncObserver.class);
-        manager.addThemeSyncObserver(observer);
+        clearInvocations(mNtpSyncedThemeManager);
 
         manager.onBackgroundDataChanged(mContext, imageData);
 
         // Verifies that it resets to the default background, both locally and for the
-        // ThemeSyncObservers.
+        // NtpSyncedThemeManager.
         assertEquals(NtpBackgroundType.DEFAULT, manager.getBackgroundType());
         assertNull(manager.getNtpBackgroundData());
         assertPersistedBackgroundType(NtpBackgroundType.DEFAULT);
@@ -1511,15 +1512,12 @@ public class NtpCustomizationConfigManagerUnitTest {
                 NTP_CUSTOMIZATION_BACKGROUND_IMAGE_FILE_PATH,
                 NTP_CUSTOMIZATION_PRIMARY_COLOR);
         verify(mListener).onBackgroundReset(eq(NtpBackgroundType.CHROME_COLOR));
-        verify(observer).onThemeCommitted(null);
+        verify(mNtpSyncedThemeManager).onThemeCommitted(null);
     }
 
     @Test
-    public void testThemeSyncObserver_defaultChromeColor_notifiesNull() {
+    public void testOnBackgroundDataChanged_defaultChromeColor_commitsNull() {
         NtpCustomizationConfigManager manager = createConfigManagerWithListener();
-        NtpCustomizationConfigManager.ThemeSyncObserver observer =
-                mock(NtpCustomizationConfigManager.ThemeSyncObserver.class);
-        manager.addThemeSyncObserver(observer);
 
         manager.onBackgroundDataChanged(
                 mContext,
@@ -1530,7 +1528,7 @@ public class NtpCustomizationConfigManagerUnitTest {
                                 mContext, NtpThemeColorInfo.NtpThemeColorId.DEFAULT)));
 
         assertEquals(NtpBackgroundType.DEFAULT, manager.getBackgroundType());
-        verify(observer).onThemeCommitted(null);
+        verify(mNtpSyncedThemeManager).onThemeCommitted(null);
     }
 
     @Test
@@ -1769,13 +1767,10 @@ public class NtpCustomizationConfigManagerUnitTest {
     }
 
     @Test
-    public void testThemeSyncObserver_localAndSyncCommit() {
+    public void testOnBackgroundDataChanged_commitsToSyncedThemeManager() {
         NtpCustomizationConfigManager manager =
                 ThreadUtils.runOnUiThreadBlocking(NtpCustomizationConfigManager::new);
         manager.setNtpBackgroundDataManagerForTesting(mNtpBackgroundDataManager);
-        NtpCustomizationConfigManager.ThemeSyncObserver observer =
-                mock(NtpCustomizationConfigManager.ThemeSyncObserver.class);
-        manager.addThemeSyncObserver(observer);
 
         int colorInfoId = NtpThemeColorInfo.NtpThemeColorId.NTP_COLORS_BLUE;
         NtpThemeColorInfo colorInfo =
@@ -1786,22 +1781,15 @@ public class NtpCustomizationConfigManagerUnitTest {
                         /* isChromeColorDailyRefreshEnabled= */ false,
                         colorInfo);
         manager.onBackgroundDataChanged(
-                mContext, colorData, /* shouldNotifyThemeSyncObserver= */ true);
+                mContext, colorData, /* shouldNotifySyncedThemeManager= */ true);
         RobolectricUtil.runAllBackgroundAndUi();
-        verify(observer).onThemeCommitted(eq(colorData));
+        verify(mNtpSyncedThemeManager).onThemeCommitted(eq(colorData));
 
-        clearInvocations(observer);
+        clearInvocations(mNtpSyncedThemeManager);
         manager.onBackgroundDataChanged(
-                mContext, /* backgroundData= */ null, /* shouldNotifyThemeSyncObserver= */ false);
+                mContext, /* backgroundData= */ null, /* shouldNotifySyncedThemeManager= */ false);
         RobolectricUtil.runAllBackgroundAndUi();
-        verify(observer, never()).onThemeCommitted(any());
-
-        clearInvocations(observer);
-        manager.removeThemeSyncObserver(observer);
-        manager.onBackgroundDataChanged(
-                mContext, colorData, /* shouldNotifyThemeSyncObserver= */ true);
-        RobolectricUtil.runAllBackgroundAndUi();
-        verify(observer, never()).onThemeCommitted(any());
+        verify(mNtpSyncedThemeManager, never()).onThemeCommitted(any());
     }
 
     private NtpCustomizationConfigManager createConfigManagerWithListener() {

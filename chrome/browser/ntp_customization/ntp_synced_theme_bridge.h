@@ -10,11 +10,11 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/themes/ntp_custom_background_service_observer.h"
 
 class GURL;
 class NtpAndroidCustomBackgroundService;
+class Profile;
 
 using base::android::JavaRef;
 
@@ -86,7 +86,6 @@ class NtpSyncedThemeBridge : public NtpCustomBackgroundServiceObserver {
   ~NtpSyncedThemeBridge() override;
 
  private:
-  raw_ptr<Profile> profile_;
   raw_ptr<NtpAndroidCustomBackgroundService> ntp_custom_background_service_;
   base::android::ScopedJavaGlobalRef<jobject> j_java_obj_;
 };

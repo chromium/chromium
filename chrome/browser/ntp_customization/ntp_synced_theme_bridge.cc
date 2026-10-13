@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "chrome/browser/ntp_customization/ntp_android_custom_background_service.h"
 #include "chrome/browser/ntp_customization/ntp_android_custom_background_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
@@ -31,8 +32,7 @@ static int64_t JNI_NtpSyncedThemeBridge_Init(
 NtpSyncedThemeBridge::NtpSyncedThemeBridge(JNIEnv* env,
                                            Profile* profile,
                                            const JavaRef<jobject>& j_java_obj)
-    : profile_(profile),
-      ntp_custom_background_service_(
+    : ntp_custom_background_service_(
           NtpAndroidCustomBackgroundServiceFactory::GetForProfile(profile)),
       j_java_obj_(env, j_java_obj) {
   CHECK(ntp_custom_background_service_);
@@ -40,9 +40,6 @@ NtpSyncedThemeBridge::NtpSyncedThemeBridge(JNIEnv* env,
 }
 
 void NtpSyncedThemeBridge::Destroy(JNIEnv* env) {
-  if (ntp_custom_background_service_) {
-    ntp_custom_background_service_->SetSyncedThemeBridge(nullptr);
-  }
   delete this;
 }
 
@@ -51,7 +48,15 @@ void NtpSyncedThemeBridge::DisconnectCustomBackgroundService() {
 }
 
 NtpSyncedThemeBridge::NtpSyncedThemeBridge() = default;
-NtpSyncedThemeBridge::~NtpSyncedThemeBridge() = default;
+
+NtpSyncedThemeBridge::~NtpSyncedThemeBridge() {
+  // Detaches from the service however this bridge is deleted. The service
+  // nulls `ntp_custom_background_service_` first if it is destroyed before
+  // the bridge, see DisconnectCustomBackgroundService().
+  if (ntp_custom_background_service_) {
+    ntp_custom_background_service_->SetSyncedThemeBridge(nullptr);
+  }
+}
 
 void NtpSyncedThemeBridge::FetchNextThemeCollectionImage(JNIEnv* env) {
   if (!ntp_custom_background_service_) {
