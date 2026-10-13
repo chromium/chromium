@@ -685,6 +685,7 @@ void GCMClientImpl::ResetCache() {
 
   weak_ptr_factory_.InvalidateWeakPtrs();
   periodic_checkin_ptr_factory_.InvalidateWeakPtrs();
+  destroying_gcm_store_ptr_factory_.InvalidateWeakPtrs();
   device_checkin_info_.Reset();
   connection_factory_.reset();
   delegate_->OnDisconnected();
