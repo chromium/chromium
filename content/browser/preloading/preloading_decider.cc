@@ -326,58 +326,6 @@ void PreloadingDecider::OnEagerViewportHeuristicTriggered(
                                /*fallback_to_preconnect=*/false);
 }
 
-void PreloadingDecider::MaybeEnactCandidate(
-    const GURL& url,
-    const PreloadingPredictor& enacting_predictor,
-    PreloadingConfidence confidence,
-    bool fallback_to_preconnect,
-    EagernessSet eagerness_to_exclude) {
-  if (const auto [found, added_prediction] = MaybePrerenderForAction(
-          url, blink::mojom::SpeculationAction::kPrerender, enacting_predictor,
-          confidence, eagerness_to_exclude);
-      found) {
-    // If the prediction is associated with another WebContents, don't duplicate
-    // it here.
-    if (!added_prediction) {
-      AddPreloadingPrediction(url, enacting_predictor, confidence);
-    }
-    // Here it does not trigger prerender-until-script for the same URL. It is
-    // intended because only the most aggressive attempt matters.
-    return;
-  }
-
-  if (const auto [found, added_prediction] = MaybePrerenderForAction(
-          url, blink::mojom::SpeculationAction::kPrerenderUntilScript,
-          enacting_predictor, confidence, eagerness_to_exclude);
-      found) {
-    // If the prediction is associated with another WebContents, don't duplicate
-    // it here.
-    if (!added_prediction) {
-      AddPreloadingPrediction(url, enacting_predictor, confidence);
-    }
-    return;
-  }
-
-  AddPreloadingPrediction(url, enacting_predictor, confidence);
-
-  if (ShouldWaitForPrerenderResult(url)) {
-    // If there is a prerender in progress already, don't attempt a prefetch.
-    return;
-  }
-
-  if (MaybePrefetch(url, enacting_predictor, confidence,
-                    eagerness_to_exclude)) {
-    return;
-  }
-  // Ideally it is preferred to fallback to preconnect asynchronously if a
-  // prefetch attempt fails. We should revisit it later perhaps after having
-  // data showing it is worth doing so.
-  if (!fallback_to_preconnect || ShouldWaitForPrefetchResult(url)) {
-    return;
-  }
-  preconnector_.MaybePreconnect(url);
-}
-
 void PreloadingDecider::AddStandbyCandidate(
     const blink::mojom::SpeculationCandidatePtr& candidate) {
   SpeculationCandidateKey key{candidate->url, candidate->action};
@@ -598,9 +546,9 @@ void PreloadingDecider::EnactRendererSelectedCandidate(
     return;
   }
 
-  // Merge tags from every suitable on-standby candidate for this key, matching
-  // the browser-driven path (MaybePrefetch), so the enacted preload carries
-  // all applicable Sec-Speculation-Tags rather than just this candidate's.
+  // Merge tags from every suitable on-standby candidate for this key, so the
+  // enacted preload carries all applicable Sec-Speculation-Tags rather than
+  // just this candidate's.
   std::vector<std::optional<std::string>> merged_tags =
       GetMergedSpeculationTagsFromSuitableCandidates(
           key, enacting_predictor, confidence, eagerness_to_exclude);
@@ -610,10 +558,9 @@ void PreloadingDecider::EnactRendererSelectedCandidate(
   // The renderer picks candidates using its own mirror of the browser's
   // eagerness sets, so the two normally agree, but the mirrors can drift. That
   // is not a reason to crash, so treat "nothing suitable" as a first-class
-  // outcome and decline, as the browser-driven path does when
-  // GetMatchedPreloadingCandidate() returns nullopt. Enacting anyway would
-  // leave `candidate->tags` empty, which violates the non-empty invariant
-  // documented on blink.mojom.SpeculationCandidate and trips a CHECK() in the
+  // outcome and decline. Enacting anyway would leave `candidate->tags` empty,
+  // which violates the non-empty invariant documented on
+  // blink.mojom.SpeculationCandidate and trips a CHECK() in the
   // SpeculationRulesTags constructor.
   const bool suitable_candidate_found = !merged_tags.empty();
 
@@ -627,7 +574,7 @@ void PreloadingDecider::EnactRendererSelectedCandidate(
     // that it enacted, so HandleRendererOwnedHeuristic() -- which records the
     // prediction on the "renderer did not enact" path -- never runs. Dropping
     // it would lose the prediction entirely and undercount this predictor
-    // relative to both the browser-driven and not-enacted paths.
+    // relative to the not-enacted path.
     AddPreloadingPrediction(url, enacting_predictor, confidence);
   } else {
     candidate->tags = std::move(merged_tags);
@@ -656,8 +603,8 @@ void PreloadingDecider::EnactRendererSelectedCandidate(
   }
 
   // If nothing more aggressive started (e.g. blocked by eligibility or resource
-  // limits), fall back to a preconnect, matching MaybeEnactCandidate. Only the
-  // pointerdown predictor requests this fallback.
+  // limits), fall back to a preconnect. Only the pointerdown predictor requests
+  // this fallback.
   if (!enacted &&
       enacting_predictor == preloading_predictor::kUrlPointerDownOnAnchor &&
       !ShouldWaitForPrefetchResult(url)) {
@@ -667,8 +614,7 @@ void PreloadingDecider::EnactRendererSelectedCandidate(
   // Mark as processed so other heuristics don't re-enact it. If the browser
   // found nothing suitable, leave the candidate on standby instead, so a later
   // heuristic can still enact it: a heuristic the browser declined must not
-  // consume the candidate on its way out. Both MaybePrerenderForAction() and
-  // MaybePrefetch() skip the mark the same way.
+  // consume the candidate on its way out.
   if (suitable_candidate_found) {
     MarkCandidateAsProcessed(key);
   }
@@ -697,51 +643,6 @@ PreloadingDecider::GetMergedSpeculationTagsFromSuitableCandidates(
   }
 
   return merged_tags;
-}
-
-bool PreloadingDecider::MaybePrefetch(
-    const GURL& url,
-    const PreloadingPredictor& enacting_predictor,
-    PreloadingConfidence confidence,
-    EagernessSet eagerness_to_exclude) {
-  SpeculationCandidateKey key{url, blink::mojom::SpeculationAction::kPrefetch};
-  std::vector<std::optional<std::string>> merged_tags =
-      GetMergedSpeculationTagsFromSuitableCandidates(
-          key, enacting_predictor, confidence, eagerness_to_exclude);
-  std::optional<std::pair<PreloadingDecider::SpeculationCandidateKey,
-                          blink::mojom::SpeculationCandidatePtr>>
-      matched_candidate_pair = GetMatchedPreloadingCandidate(
-          key, enacting_predictor, confidence, eagerness_to_exclude);
-  if (!matched_candidate_pair.has_value()) {
-    return false;
-  }
-
-  key = matched_candidate_pair.value().first;
-  matched_candidate_pair.value().second->tags = std::move(merged_tags);
-  bool result = prefetcher_.MaybePrefetch(
-      std::move(matched_candidate_pair.value().second), enacting_predictor);
-
-  MarkCandidateAsProcessed(key);
-  return result;
-}
-
-std::optional<std::pair<PreloadingDecider::SpeculationCandidateKey,
-                        blink::mojom::SpeculationCandidatePtr>>
-PreloadingDecider::GetMatchedPreloadingCandidate(
-    const PreloadingDecider::SpeculationCandidateKey& lookup_key,
-    const PreloadingPredictor& enacting_predictor,
-    PreloadingConfidence confidence,
-    EagernessSet eagerness_to_exclude) const {
-  // Find all suitable candidates.
-  auto suitable_candidates = FindSuitableCandidates(
-      lookup_key, enacting_predictor, confidence, eagerness_to_exclude);
-
-  if (suitable_candidates.empty()) {
-    return std::nullopt;
-  }
-
-  // Return the first suitable candidate if any are found.
-  return std::move(suitable_candidates[0]);
 }
 
 // Enumerates all NVS-matched candidates and invokes the visitor for each match.
@@ -840,39 +741,6 @@ bool PreloadingDecider::ShouldWaitForPrefetchResult(const GURL& url) {
   return !prefetcher_.IsPrefetchAttemptFailedOrDiscarded(url);
 }
 
-std::pair<bool, bool> PreloadingDecider::MaybePrerenderForAction(
-    const GURL& url,
-    blink::mojom::SpeculationAction action,
-    const PreloadingPredictor& enacting_predictor,
-    PreloadingConfidence confidence,
-    EagernessSet eagerness_to_exclude) {
-  std::pair<bool, bool> result{false, false};
-  SpeculationCandidateKey key{url, action};
-  std::vector<std::optional<std::string>> merged_tags =
-      GetMergedSpeculationTagsFromSuitableCandidates(
-          key, enacting_predictor, confidence, eagerness_to_exclude);
-  std::optional<std::pair<PreloadingDecider::SpeculationCandidateKey,
-                          blink::mojom::SpeculationCandidatePtr>>
-      matched_candidate_pair = GetMatchedPreloadingCandidate(
-          key, enacting_predictor, confidence, eagerness_to_exclude);
-  if (!matched_candidate_pair.has_value()) {
-    return result;
-  }
-
-  key = matched_candidate_pair.value().first;
-  matched_candidate_pair.value().second->tags = std::move(merged_tags);
-  blink::mojom::SpeculationCandidatePtr candidate =
-      std::move(matched_candidate_pair.value().second);
-  result.first =
-      prerenderer_->MaybePrerender(candidate, enacting_predictor, confidence);
-
-  result.second =
-      result.first && PredictionOccursInOtherWebContents(*candidate);
-
-  MarkCandidateAsProcessed(key);
-  return result;
-}
-
 bool PreloadingDecider::ShouldWaitForPrerenderResult(const GURL& url) {
   auto it = std::find_if(
       processed_candidates_.begin(), processed_candidates_.end(),
@@ -926,8 +794,7 @@ void PreloadingDecider::HandleRendererOwnedHeuristic(
     bool fallback_to_preconnect) {
   // Only reached when the renderer reported that it did not enact a candidate
   // for this interaction. These signals don't depend on speculation rules, so
-  // the browser still owns them; this mirrors the tail of MaybeEnactCandidate
-  // for the case where nothing was enacted.
+  // the browser still owns them.
   AddPreloadingPrediction(url, enacting_predictor, PreloadingConfidence{100});
   if (!fallback_to_preconnect || ShouldWaitForPrerenderResult(url) ||
       ShouldWaitForPrefetchResult(url)) {
