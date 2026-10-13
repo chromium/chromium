@@ -31,11 +31,6 @@ extern const char kForceSearchEngineChoiceScreen[];
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 extern const char kQuickenSiteSearchExpiryForTesting[];
 
-// When enabled, a custom search engine's last_visited time is updated when it
-// is unset as the default search engine.
-COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
-BASE_DECLARE_FEATURE(kVisitCustomSearchOnUndefaulting);
-
 // When enabled, prefs-based search provider overrides are ignored and
 // prepopulated engines will always be the regional built-in ones. If a user
 // previously had an overridden search engine as DSE, this flag will cause that

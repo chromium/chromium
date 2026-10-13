@@ -19,7 +19,6 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "base/test/with_feature_override.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/search_engines/choice_made_location.h"
 #include "components/search_engines/default_search_manager.h"
@@ -259,16 +258,7 @@ TEST_F(TemplateURLServiceUnitTest, SwitchDefaultFromRecommendedPolicyEngine) {
             template_url_service().GetDefaultSearchProvider());
 }
 
-class TemplateURLServiceUpdateLastVisitedTest
-    : public base::test::WithFeatureOverride,
-      public TemplateURLServiceUnitTest {
- public:
-  TemplateURLServiceUpdateLastVisitedTest()
-      : base::test::WithFeatureOverride(
-            switches::kVisitCustomSearchOnUndefaulting) {}
-};
-
-TEST_P(TemplateURLServiceUpdateLastVisitedTest,
+TEST_F(TemplateURLServiceUnitTest,
        UpdateLastVisitedOnDefaultSearchProviderChange) {
   template_url_service().Load();
   TemplateURLServiceLoadWaiter().WaitForLoadComplete(template_url_service());
@@ -319,13 +309,9 @@ TEST_P(TemplateURLServiceUpdateLastVisitedTest,
   template_url_service().SetUserSelectedDefaultSearchProvider(
       custom_turl2, search_engines::ChoiceMadeLocation::kOther);
 
-  // custom_turl1 was replaced. If the feature is enabled, since it's a custom
-  // engine, its last_visited should have been updated.
-  if (IsParamFeatureEnabled()) {
-    EXPECT_NE(custom_turl1->last_visited(), kOldTime);
-  } else {
-    EXPECT_EQ(custom_turl1->last_visited(), kOldTime);
-  }
+  // custom_turl1 was replaced. Since it's a custom engine, its last_visited
+  // should have been updated.
+  EXPECT_NE(custom_turl1->last_visited(), kOldTime);
 
   // Overriding custom_turl2 with an extension should NOT update custom_turl2's
   // last_visited time, nor should removing the extension update the extension
@@ -351,9 +337,6 @@ TEST_P(TemplateURLServiceUpdateLastVisitedTest,
       &custom_turl2->data(), DefaultSearchManager::FROM_USER);
   EXPECT_EQ(ext_turl->last_visited(), kOldTime);
 }
-
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    TemplateURLServiceUpdateLastVisitedTest);
 
 TEST_F(TemplateURLServiceUnitTest, GenerateSearchURL) {
   // Set the default search provider to a custom one.

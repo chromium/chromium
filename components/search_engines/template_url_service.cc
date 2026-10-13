@@ -57,7 +57,6 @@
 #include "components/search_engines/search_engine_split_metrics.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_pref_names.h"
-#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
@@ -3176,9 +3175,7 @@ bool TemplateURLService::ApplyDefaultSearchChangeNoMetrics(
           ? nullptr
           : GetTemplateURLForGUID(previous_default_search_engine_guid);
   if (previous_turl && !ShowInDefaultList(previous_turl) &&
-      CanMakeDefault(previous_turl) &&
-      base::FeatureList::IsEnabled(
-          switches::kVisitCustomSearchOnUndefaulting)) {
+      CanMakeDefault(previous_turl)) {
     UpdateTemplateURLVisitTime(previous_turl);
   }
 
