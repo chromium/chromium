@@ -637,4 +637,8 @@ LoadAndExtractContentTool::GetObservationDelayer(
   return nullptr;
 }
 
+ActorSurfaceHandle LoadAndExtractContentTool::GetTargetActorSurface() const {
+  return ActorSurfaceHandle::Null();
+}
+
 }  // namespace actor

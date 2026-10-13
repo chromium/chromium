@@ -21,10 +21,10 @@ bool WaitTool::no_delay_for_testing_ = false;
 WaitTool::WaitTool(TaskId task_id,
                    ToolDelegate& tool_delegate,
                    base::TimeDelta wait_duration,
-                   tabs::TabHandle observe_tab_handle)
+                   ActorSurfaceHandle observe_actor_surface_handle)
     : Tool(task_id, tool_delegate),
       wait_duration_(wait_duration),
-      observe_tab_handle_(observe_tab_handle) {}
+      observe_actor_surface_handle_(observe_actor_surface_handle) {}
 
 WaitTool::~WaitTool() = default;
 
@@ -56,15 +56,18 @@ std::unique_ptr<ObservationDelayController> WaitTool::GetObservationDelayer(
 
 void WaitTool::UpdateTaskBeforeInvoke(ActorTask& task,
                                       ToolCallback callback) const {
-  if (observe_tab_handle_ != tabs::TabHandle::Null()) {
-    task.ObserveTabOnce(observe_tab_handle_);
+  // TODO(b/567721071): Observe the surface once ActorTask tracks surfaces.
+  if (tabs::TabHandle observe_tab_handle =
+          observe_actor_surface_handle_.GetTabHandle();
+      observe_tab_handle != tabs::TabHandle::Null()) {
+    task.ObserveTabOnce(observe_tab_handle);
   }
 
   std::move(callback).Run(MakeOkResult());
 }
 
-tabs::TabHandle WaitTool::GetTargetTab() const {
-  return observe_tab_handle_;
+ActorSurfaceHandle WaitTool::GetTargetActorSurface() const {
+  return observe_actor_surface_handle_;
 }
 
 void WaitTool::OnDelayFinished(ToolCallback callback) {

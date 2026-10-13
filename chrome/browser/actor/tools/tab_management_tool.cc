@@ -172,8 +172,9 @@ void TabManagementTool::UpdateTaskAfterInvoke(ActorTask& task,
   }
 }
 
-tabs::TabHandle TabManagementTool::GetTargetTab() const {
-  return target_tab_.value_or(tabs::TabHandle::Null());
+ActorSurfaceHandle TabManagementTool::GetTargetActorSurface() const {
+  return target_tab_.has_value() ? ActorSurfaceHandle::From(*target_tab_)
+                                 : ActorSurfaceHandle::Null();
 }
 
 void TabManagementTool::OnTabStripModelChanged(

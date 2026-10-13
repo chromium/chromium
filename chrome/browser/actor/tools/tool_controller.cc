@@ -23,7 +23,6 @@
 #include "chrome/common/chrome_features.h"
 #include "components/actor/core/aggregated_journal.h"
 #include "components/actor/core/journal_details_builder.h"
-#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "url/gurl.h"
@@ -349,26 +348,7 @@ void ToolController::CompleteToolRequest(mojom::ActionResultPtr result) {
 mojom::ActionResultPtr ToolController::ValidateTarget(const Tool& tool) const {
   ActorSurfaceHandle actor_surface_handle = tool.GetTargetActorSurface();
   if (actor_surface_handle.is_null()) {
-    // TODO(b/567721071): Remove once all tools override
-    // GetTargetActorSurface(). Unmigrated tools look their surface up from
-    // GetTargetTab(), which yields a null handle if the tab is gone or has no
-    // surface (e.g. it belongs to a profile without an ActorKeyedService), so
-    // validate the tab directly.
-    tabs::TabHandle tab_handle = tool.GetTargetTab();
-    if (tab_handle == tabs::TabHandle::Null()) {
-      return MakeOkResult();
-    }
-    tabs::TabInterface* tab = tab_handle.Get();
-    if (!tab) {
-      return MakeResult(mojom::ActionResultCode::kTabWentAway,
-                        /*requires_page_stabilization=*/false,
-                        "The target tab is no longer present.");
-    }
-    if (tab->GetProfile() != &tool_delegate_->GetProfile()) {
-      return MakeResult(mojom::ActionResultCode::kActionTargetCrossProfile,
-                        /*requires_page_stabilization=*/false,
-                        "The target tab belongs to a different profile.");
-    }
+    // Not all tools target a surface.
     return MakeOkResult();
   }
 

@@ -8,18 +8,19 @@
 #include <memory>
 #include <string>
 
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
-#include "components/tabs/public/tab_interface.h"
-
 namespace actor {
+
+class ActorSurface;
 
 class ChangePasswordTool : public Tool {
  public:
   ChangePasswordTool(TaskId task_id,
                      ToolDelegate& tool_delegate,
-                     tabs::TabInterface& tab);
+                     ActorSurface& actor_surface);
   ~ChangePasswordTool() override;
 
   void Validate(ToolCallback callback) override;
@@ -31,10 +32,10 @@ class ChangePasswordTool : public Tool {
       override;
   void UpdateTaskBeforeInvoke(ActorTask& task,
                               ToolCallback callback) const override;
-  tabs::TabHandle GetTargetTab() const override;
+  ActorSurfaceHandle GetTargetActorSurface() const override;
 
  private:
-  tabs::TabHandle tab_handle_;
+  ActorSurfaceHandle actor_surface_handle_;
 };
 
 }  // namespace actor

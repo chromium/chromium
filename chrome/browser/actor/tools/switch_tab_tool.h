@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/actor/tools/page_search_utils.h"
 #include "chrome/browser/actor/tools/tool.h"
@@ -58,7 +59,7 @@ class SwitchTabTool : public Tool {
   std::unique_ptr<ObservationDelayController> GetObservationDelayer(
       ObservationDelayController::PageStabilityConfig page_stability_config)
       override;
-  tabs::TabHandle GetTargetTab() const override;
+  ActorSurfaceHandle GetTargetActorSurface() const override;
 
  private:
   // The window `query_` is searched in, and the only window this tool will

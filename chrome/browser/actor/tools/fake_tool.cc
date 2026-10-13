@@ -45,4 +45,8 @@ std::unique_ptr<ObservationDelayController> FakeTool::GetObservationDelayer(
   return nullptr;
 }
 
+ActorSurfaceHandle FakeTool::GetTargetActorSurface() const {
+  return ActorSurfaceHandle::Null();
+}
+
 }  // namespace actor

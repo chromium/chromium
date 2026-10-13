@@ -6,12 +6,12 @@
 #define CHROME_BROWSER_ACTOR_TOOLS_WAIT_TOOL_H_
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/wait_tool_request.h"
-#include "components/tabs/public/tab_interface.h"
 
 namespace actor {
 
@@ -21,7 +21,7 @@ class WaitTool : public Tool {
   explicit WaitTool(TaskId task_id,
                     ToolDelegate& tool_delegate,
                     base::TimeDelta wait_duration,
-                    tabs::TabHandle observe_tab_handle);
+                    ActorSurfaceHandle observe_actor_surface_handle);
   ~WaitTool() override;
 
   // actor::Tool
@@ -34,7 +34,7 @@ class WaitTool : public Tool {
       override;
   void UpdateTaskBeforeInvoke(ActorTask& task,
                               ToolCallback callback) const override;
-  tabs::TabHandle GetTargetTab() const override;
+  ActorSurfaceHandle GetTargetActorSurface() const override;
 
   static void SetNoDelayForTesting();
 
@@ -47,7 +47,8 @@ class WaitTool : public Tool {
 
   base::TimeDelta wait_duration_;
 
-  tabs::TabHandle observe_tab_handle_;
+  // The surface to observe after waiting, or a null handle if none.
+  ActorSurfaceHandle observe_actor_surface_handle_;
 
   base::WeakPtrFactory<WaitTool> weak_ptr_factory_{this};
 };

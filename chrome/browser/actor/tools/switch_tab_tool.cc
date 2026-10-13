@@ -144,9 +144,10 @@ SwitchTabTool::GetObservationDelayer(
   return nullptr;
 }
 
-tabs::TabHandle SwitchTabTool::GetTargetTab() const {
+ActorSurfaceHandle SwitchTabTool::GetTargetActorSurface() const {
   // Null until Validate() resolves the query.
-  return match_.has_value() ? match_->handle : tabs::TabHandle::Null();
+  return match_.has_value() ? ActorSurfaceHandle::From(match_->handle)
+                            : ActorSurfaceHandle::Null();
 }
 
 BrowserWindowInterface* SwitchTabTool::GetBrowser() const {

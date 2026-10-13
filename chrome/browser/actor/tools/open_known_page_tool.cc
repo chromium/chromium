@@ -310,14 +310,14 @@ void OpenKnownPageTool::UpdateTaskBeforeInvoke(ActorTask& task,
   Tool::UpdateTaskBeforeInvoke(task, std::move(callback));
 }
 
-tabs::TabHandle OpenKnownPageTool::GetTargetTab() const {
+ActorSurfaceHandle OpenKnownPageTool::GetTargetActorSurface() const {
   if (matched_tab_.has_value()) {
-    return matched_tab_->handle;
+    return ActorSurfaceHandle::From(matched_tab_->handle);
   }
   if (navigation_target_.has_value()) {
-    return navigation_target_->handle;
+    return ActorSurfaceHandle::From(navigation_target_->handle);
   }
-  return tabs::TabHandle::Null();
+  return ActorSurfaceHandle::Null();
 }
 
 BrowserWindowInterface* OpenKnownPageTool::GetBrowser() const {

@@ -12,6 +12,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/actor/tools/page_search_utils.h"
 #include "chrome/browser/actor/tools/tool.h"
@@ -68,7 +69,7 @@ class OpenKnownPageTool : public Tool {
       override;
   void UpdateTaskBeforeInvoke(ActorTask& task,
                               ToolCallback callback) const override;
-  tabs::TabHandle GetTargetTab() const override;
+  ActorSurfaceHandle GetTargetActorSurface() const override;
 
  private:
   BrowserWindowInterface* GetBrowser() const;

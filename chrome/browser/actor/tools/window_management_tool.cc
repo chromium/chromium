@@ -261,4 +261,8 @@ void WindowManagementTool::OnInvokeFinished(mojom::ActionResultPtr result) {
   browser_did_become_active_subscription_ = {};
 }
 
+ActorSurfaceHandle WindowManagementTool::GetTargetActorSurface() const {
+  return ActorSurfaceHandle::Null();
+}
+
 }  // namespace actor

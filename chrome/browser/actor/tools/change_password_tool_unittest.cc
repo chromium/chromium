@@ -6,6 +6,8 @@
 
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
+#include "chrome/browser/actor/actor_surface_impl.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
 #include "chrome/common/actor.mojom.h"
@@ -22,16 +24,18 @@ class ChangePasswordToolTest : public testing::Test {
   ~ChangePasswordToolTest() override = default;
 
   MockToolDelegate& delegate() { return delegate_; }
-  tabs::MockTabInterface& mock_tab() { return mock_tab_; }
+  ActorSurface& actor_surface() { return actor_surface_; }
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
   MockToolDelegate delegate_;
   tabs::MockTabInterface mock_tab_;
+  ActorSurfaceImpl actor_surface_{ActorSurfaceHandle::CreateForTesting(),
+                                  mock_tab_.GetHandle()};
 };
 
 TEST_F(ChangePasswordToolTest, Validate_Succeeds) {
-  ChangePasswordTool tool(TaskId(1), delegate(), mock_tab());
+  ChangePasswordTool tool(TaskId(1), delegate(), actor_surface());
 
   base::test::TestFuture<mojom::ActionResultPtr> future;
   tool.Validate(future.GetCallback());
@@ -39,7 +43,7 @@ TEST_F(ChangePasswordToolTest, Validate_Succeeds) {
 }
 
 TEST_F(ChangePasswordToolTest, Invoke_Succeeds) {
-  ChangePasswordTool tool(TaskId(1), delegate(), mock_tab());
+  ChangePasswordTool tool(TaskId(1), delegate(), actor_surface());
 
   base::test::TestFuture<mojom::ActionResultPtr> future;
   tool.Invoke(future.GetCallback());
@@ -47,11 +51,11 @@ TEST_F(ChangePasswordToolTest, Invoke_Succeeds) {
 }
 
 TEST_F(ChangePasswordToolTest, Properties) {
-  ChangePasswordTool tool(TaskId(1), delegate(), mock_tab());
+  ChangePasswordTool tool(TaskId(1), delegate(), actor_surface());
 
   EXPECT_EQ(tool.DebugString(), "ChangePasswordTool");
   EXPECT_EQ(tool.JournalEvent(), "ChangePassword");
-  EXPECT_EQ(tool.GetTargetTab(), mock_tab().GetHandle());
+  EXPECT_EQ(tool.GetTargetActorSurface(), actor_surface().GetHandle());
 }
 
 }  // namespace

@@ -38,6 +38,7 @@ class BookmarkManagementTool : public Tool {
   void Invoke(ToolCallback callback) override;
   std::string DebugString() const override;
   std::string JournalEvent() const override;
+  ActorSurfaceHandle GetTargetActorSurface() const override;
   std::unique_ptr<ObservationDelayController> GetObservationDelayer(
       ObservationDelayController::PageStabilityConfig page_stability_config)
       override;

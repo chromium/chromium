@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
@@ -20,8 +21,9 @@ namespace actor {
 
 ChangePasswordTool::ChangePasswordTool(TaskId task_id,
                                        ToolDelegate& tool_delegate,
-                                       tabs::TabInterface& tab)
-    : Tool(task_id, tool_delegate), tab_handle_(tab.GetHandle()) {}
+                                       ActorSurface& actor_surface)
+    : Tool(task_id, tool_delegate),
+      actor_surface_handle_(actor_surface.GetHandle()) {}
 
 ChangePasswordTool::~ChangePasswordTool() = default;
 
@@ -44,12 +46,13 @@ std::string ChangePasswordTool::JournalEvent() const {
 std::unique_ptr<ObservationDelayController>
 ChangePasswordTool::GetObservationDelayer(
     ObservationDelayController::PageStabilityConfig page_stability_config) {
-  tabs::TabInterface* tab = tab_handle_.Get();
-  if (!tab || !tab->GetContents()) {
+  ActorSurface* actor_surface = actor_surface_handle_.Get();
+  if (!actor_surface || !actor_surface->GetWebContents()) {
     return nullptr;
   }
 
-  content::RenderFrameHost* rfh = tab->GetContents()->GetPrimaryMainFrame();
+  content::RenderFrameHost* rfh =
+      actor_surface->GetWebContents()->GetPrimaryMainFrame();
   if (!rfh) {
     return nullptr;
   }
@@ -60,11 +63,12 @@ ChangePasswordTool::GetObservationDelayer(
 
 void ChangePasswordTool::UpdateTaskBeforeInvoke(ActorTask& task,
                                                 ToolCallback callback) const {
-  task.AddTab(tab_handle_, /*stop_task_on_detach=*/true, std::move(callback));
+  task.AddActorSurface(actor_surface_handle_, /*stop_task_on_detach=*/true,
+                       std::move(callback));
 }
 
-tabs::TabHandle ChangePasswordTool::GetTargetTab() const {
-  return tab_handle_;
+ActorSurfaceHandle ChangePasswordTool::GetTargetActorSurface() const {
+  return actor_surface_handle_;
 }
 
 }  // namespace actor

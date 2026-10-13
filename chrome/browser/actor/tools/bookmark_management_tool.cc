@@ -120,4 +120,8 @@ BookmarkManagementTool::GetObservationDelayer(
   return nullptr;
 }
 
+ActorSurfaceHandle BookmarkManagementTool::GetTargetActorSurface() const {
+  return ActorSurfaceHandle::Null();
+}
+
 }  // namespace actor

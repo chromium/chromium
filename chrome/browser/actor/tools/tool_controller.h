@@ -77,9 +77,9 @@ class ToolController {
       mojom::ActionResultPtr action_result,
       ObservationDelayController::Result observation_result);
 
-  // Validates the target of `tool`: its surface, or for unmigrated tools, its
-  // tab. Returns OK if the tool has no target, kTabWentAway if the target is
-  // gone, and kActionTargetCrossProfile if it belongs to another profile.
+  // Validates the target surface of `tool`. Returns OK if the tool has no
+  // target, kTabWentAway if the surface is gone, and kActionTargetCrossProfile
+  // if it belongs to another profile.
   mojom::ActionResultPtr ValidateTarget(const Tool& tool) const;
 
   AggregatedJournal& journal() { return tool_delegate_->GetJournal(); }
