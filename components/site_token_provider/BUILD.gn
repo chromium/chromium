@@ -15,6 +15,8 @@ source_set("site_token_provider") {
     "site_token_constants.h",
     "site_token_provider.cc",
     "site_token_provider.h",
+    "site_token_provider_metrics_provider.cc",
+    "site_token_provider_metrics_provider.h",
     "site_token_provider_prefs.cc",
     "site_token_provider_prefs.h",
     "site_token_provider_service.cc",
@@ -25,18 +27,24 @@ source_set("site_token_provider") {
     "//base",
     "//components/endpoint_fetcher",
     "//components/keyed_service/core",
+    "//components/metrics",
     "//components/pref_registry",
+    "//components/prefs",
     "//components/signin/public/identity_manager",
     "//mojo/public/cpp/bindings",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
+    "//third_party/metrics_proto",
     "//url",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "site_token_provider_unittest.cc" ]
+  sources = [
+    "site_token_provider_metrics_provider_unittest.cc",
+    "site_token_provider_unittest.cc",
+  ]
   deps = [
     ":proto",
     ":site_token_provider",
@@ -46,9 +54,11 @@ source_set("unit_tests") {
     "//components/pref_registry",
     "//components/prefs",
     "//components/signin/public/identity_manager:test_support",
+    "//components/sync_preferences:test_support",
     "//services/network:test_support",
     "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/metrics_proto",
   ]
 }

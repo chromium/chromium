@@ -115,6 +115,8 @@
 #include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/site_token_provider/features.h"
+#include "components/site_token_provider/site_token_provider_metrics_provider.h"
 #include "components/sync/service/passphrase_type_metrics_provider.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync_device_info/device_count_metrics_provider.h"
@@ -520,6 +522,23 @@ GetEnterpriseManagementProfileStates() {
     }
   }
   return states;
+}
+
+// Returns the prefs of all loaded regular profiles, excluding Guest, System,
+// and off-the-record profiles.
+std::vector<const PrefService*> GetSiteTokenProviderProfilePrefs() {
+  std::vector<const PrefService*> profile_prefs;
+  if (g_browser_process && g_browser_process->profile_manager()) {
+    ProfileSelections selections = ProfileSelections::BuildForRegularProfile();
+    for (Profile* profile :
+         g_browser_process->profile_manager()->GetLoadedProfiles()) {
+      if (Profile* regular_profile =
+              selections.ApplyProfileSelection(profile)) {
+        profile_prefs.push_back(regular_profile->GetPrefs());
+      }
+    }
+  }
+  return profile_prefs;
 }
 
 }  // namespace
@@ -1075,6 +1094,13 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
       std::make_unique<policy::EnterpriseManagementMetricsProvider>(
           policy::ManagementServiceFactory::GetForPlatform(),
           base::BindRepeating(&GetEnterpriseManagementProfileStates)));
+
+  if (base::FeatureList::IsEnabled(
+          site_token_provider::features::kSiteTokenProviderEnabled)) {
+    metrics_service_->RegisterMetricsProvider(
+        std::make_unique<site_token_provider::SiteTokenProviderMetricsProvider>(
+            base::BindRepeating(&GetSiteTokenProviderProfilePrefs)));
+  }
 }
 
 void ChromeMetricsServiceClient::RegisterUKMProviders() {
@@ -1126,6 +1152,13 @@ void ChromeMetricsServiceClient::RegisterUKMProviders() {
   ukm_service_->RegisterMetricsProvider(
       std::make_unique<ChromeAndroidMetricsProvider>(local_state));
 #endif  // BUILDFLAG(IS_ANDROID)
+
+  if (base::FeatureList::IsEnabled(
+          site_token_provider::features::kSiteTokenProviderEnabled)) {
+    ukm_service_->RegisterMetricsProvider(
+        std::make_unique<site_token_provider::SiteTokenProviderMetricsProvider>(
+            base::BindRepeating(&GetSiteTokenProviderProfilePrefs)));
+  }
 
   // LINT.ThenChange(/ios/chrome/browser/metrics/model/ios_chrome_metrics_service_client.mm:UkmProviders)
 }

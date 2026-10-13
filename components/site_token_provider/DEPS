@@ -1,7 +1,9 @@
 include_rules = [
   "+components/endpoint_fetcher",
   "+components/keyed_service/core",
+  "+components/metrics",
   "+components/pref_registry",
+  "+components/prefs",
   "+components/signin/public/base",
   "+components/signin/public/identity_manager",
   "+mojo/public/cpp/bindings",
@@ -9,11 +11,12 @@ include_rules = [
   "+net/traffic_annotation",
   "+services/network/public/cpp",
   "+services/network/public/mojom",
+  "+third_party/metrics_proto",
 ]
 
 specific_include_rules = {
   ".*unittest\\.cc": [
-    "+components/prefs",
+    "+components/sync_preferences/testing_pref_service_syncable.h",
     "+services/network/test",
   ],
 }

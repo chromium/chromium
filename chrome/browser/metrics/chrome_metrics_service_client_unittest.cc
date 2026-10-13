@@ -32,6 +32,7 @@
 #include "components/metrics/unsent_log_store.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
+#include "components/site_token_provider/features.h"
 #include "components/ukm/ukm_service.h"
 #include "components/ukm/ukm_test_helper.h"
 
@@ -137,7 +138,8 @@ class ChromeMetricsServiceClientTest : public testing::Test {
     scoped_feature_list_.InitWithFeatures(
         {features::kUmaStorageDimensions,
          features::kClassManagementEnabledMetricsProvider,
-         metrics::dwa::kDwaFeature, switches::kDynamicProfileCountry},
+         metrics::dwa::kDwaFeature, switches::kDynamicProfileCountry,
+         site_token_provider::features::kSiteTokenProviderEnabled},
         {});
 
     // ChromeOs Metrics Provider require g_login_state and power manager client
@@ -147,13 +149,19 @@ class ChromeMetricsServiceClientTest : public testing::Test {
 #elif BUILDFLAG(IS_WIN)
     scoped_feature_list_.InitWithFeatures(
         {metrics::dwa::kDwaFeature, switches::kDynamicProfileCountry,
-         features::kSystemPdhMetrics},
+         features::kSystemPdhMetrics,
+         site_token_provider::features::kSiteTokenProviderEnabled},
         {});
 #elif BUILDFLAG(IS_ANDROID)
-    scoped_feature_list_.InitWithFeatures({metrics::dwa::kDwaFeature}, {});
+    scoped_feature_list_.InitWithFeatures(
+        {metrics::dwa::kDwaFeature,
+         site_token_provider::features::kSiteTokenProviderEnabled},
+        {});
 #else
     scoped_feature_list_.InitWithFeatures(
-        {metrics::dwa::kDwaFeature, switches::kDynamicProfileCountry}, {});
+        {metrics::dwa::kDwaFeature, switches::kDynamicProfileCountry,
+         site_token_provider::features::kSiteTokenProviderEnabled},
+        {});
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -242,7 +250,7 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterUKMProviders) {
   // Test that UKM service has initialized all its metrics providers listed in
   // ChromeMetricsServiceClient::RegisterUKMProviders, for all platform with one
   // exception on ChromeOS.
-  size_t expected_providers = 10;
+  size_t expected_providers = 11;
 #if BUILDFLAG(IS_CHROMEOS)
   // ChromeOSMetricsProvider
   expected_providers++;
@@ -365,6 +373,9 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterMetricsServiceProviders) {
 #endif
 
   // GlicMetricsProvider
+  expected_providers += 1;
+
+  // SiteTokenProviderMetricsProvider
   expected_providers += 1;
 
   std::unique_ptr<TestChromeMetricsServiceClient>
