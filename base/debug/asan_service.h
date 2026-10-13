@@ -14,6 +14,13 @@
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_WIN)
+#include <atomic>
+
+#include "base/win/windows_types.h"
+#endif
 
 namespace base {
 namespace debug {
@@ -94,6 +101,12 @@ class BASE_EXPORT AsanService {
   // Ensure that we don't try and register callbacks before calling
   // Initialize.
   bool is_initialized_ GUARDED_BY(lock_) = false;
+
+#if BUILDFLAG(IS_WIN)
+  // Custom report HANDLE configured via `__sanitizer_set_report_fd`. This is
+  // atomic because `Log()` is called both with and without `lock_` held.
+  std::atomic<HANDLE> report_fd_{nullptr};
+#endif
 
   // The list of currently registered error callbacks.
   std::vector<ErrorCallback> error_callbacks_ GUARDED_BY(lock_);

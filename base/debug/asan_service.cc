@@ -23,17 +23,19 @@
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
 #include "base/logging.h"
-#include "base/win/windows_types.h"
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#include <unistd.h>
+
+#include "base/files/file_util.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 #if defined(COMPONENT_BUILD) && BUILDFLAG(IS_WIN)
 // In component builds on Windows, weak function exported by ASan have the
 // `__dll` suffix. ASan itself uses the `alternatename` directive to account for
 // that.
-#pragma comment(linker,                                            \
-                "/alternatename:__sanitizer_report_error_summary=" \
-                "__sanitizer_report_error_summary__dll")
 #pragma comment(linker,                                     \
                 "/alternatename:__sanitizer_set_report_fd=" \
                 "__sanitizer_set_report_fd__dll")
@@ -153,6 +155,10 @@ void AsanService::Initialize() {
       if (log_handle) {
         // Sanitizer APIs need a HANDLE cast to void*.
         __sanitizer_set_report_fd(reinterpret_cast<void*>(log_handle));
+        // `std::memory_order_relaxed` is sufficient because this is written
+        // once under `lock_` and no other memory accesses depend on
+        // `report_fd_` for ordering.
+        report_fd_.store(log_handle, std::memory_order_relaxed);
       }
     }
 #endif  // BUILDFLAG(IS_WIN)
@@ -184,9 +190,27 @@ void AsanService::Log(const char* format, ...) {
   auto formatted_message = UNSAFE_TODO(StringPrintV(format, ap));
   va_end(ap);
 
-  // Despite its name, the function just prints the input to the destination
-  // configured by ASan.
-  __sanitizer_report_error_summary(formatted_message.c_str());
+  formatted_message.push_back('\n');
+
+  // Sanitizers do not expose a public API to write to their internal report
+  // fd, and `__sanitizer_report_error_summary` is a client-overridable
+  // error summary callback rather than a logging API. Write directly to
+  // stderr (or the custom report handle on Windows).
+#if BUILDFLAG(IS_WIN)
+  // `std::memory_order_relaxed` is sufficient because we only need the
+  // `HANDLE` value itself, without any ordering dependencies on other memory
+  // accesses.
+  HANDLE report_fd = report_fd_.load(std::memory_order_relaxed);
+  HANDLE handle = report_fd ? report_fd : ::GetStdHandle(STD_ERROR_HANDLE);
+  if (handle && handle != INVALID_HANDLE_VALUE) {
+    DWORD bytes_written = 0;
+    ::WriteFile(handle, formatted_message.data(),
+                static_cast<DWORD>(formatted_message.size()), &bytes_written,
+                nullptr);
+  }
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+  WriteFileDescriptor(STDERR_FILENO, formatted_message);
+#endif
 }
 
 void AsanService::Abort() {
