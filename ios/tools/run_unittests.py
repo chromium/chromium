@@ -5,158 +5,181 @@
 """Builds and runs selected unit tests."""
 
 import argparse
-import json
+import json  # noqa: F401
 import os
 import plistlib
-import re
+import re  # noqa: F401
 import subprocess
 import sys
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple  # noqa: F401
 
 import shared_test_utils
-from shared_test_utils import Colors, Simulator, print_header, print_command
-
+from shared_test_utils import Colors, Simulator, print_header, print_command  # noqa: F401
 
 
 def _build_tests(out_dir: str, test_target: str) -> bool:
-  """Builds the unit test target.
+    """Builds the unit test target.
 
-  Args:
-    out_dir: The output directory for the build.
-    test_target: The target to build.
+    Args:
+      out_dir: The output directory for the build.
+      test_target: The target to build.
 
-  Returns:
-    True if the build was successful, False otherwise.
-  """
-  build_command = ['autoninja', '-C', out_dir, test_target]
-  print_header("--- Building Tests ---")
-  print_command(build_command)
-  try:
-    subprocess.check_call(build_command)
-    return True
-  except subprocess.CalledProcessError as e:
-    print(f"Build failed with exit code {e.returncode}")
-    return False
+    Returns:
+      True if the build was successful, False otherwise.
+    """
+    build_command = ['autoninja', '-C', out_dir, test_target]
+    print_header("--- Building Tests ---")
+    print_command(build_command)
+    try:
+        subprocess.check_call(build_command)
+        return True
+    except subprocess.CalledProcessError as e:
+        print(f"Build failed with exit code {e.returncode}")
+        return False
 
 
-def _run_tests(out_dir: str, simulator_udid: str,
-               gtest_filter: Optional[str], test_target: str,
-               gtest_repeat: Optional[str] = None) -> int:
-  """Installs and runs the tests on the specified simulator.
+def _run_tests(
+    out_dir: str,
+    simulator_udid: str,
+    gtest_filter: Optional[str],
+    test_target: str,
+    gtest_repeat: Optional[str] = None,
+) -> int:
+    """Installs and runs the tests on the specified simulator.
 
-  Args:
-    out_dir: The output directory for the build.
-    simulator_udid: The UDID of the simulator to use.
-    gtest_filter: The gtest filter to apply.
-    test_target: The target to run.
+    Args:
+      out_dir: The output directory for the build.
+      simulator_udid: The UDID of the simulator to use.
+      gtest_filter: The gtest filter to apply.
+      test_target: The target to run.
 
-  Returns:
-    The exit code of the test runner (0 for success, non-zero for failure).
-  """
-  app_path = os.path.join(out_dir, f'{test_target}.app')
-  info_plist_path = os.path.join(app_path, 'Info.plist')
-  with open(info_plist_path, 'rb') as f:
-    info_plist = plistlib.load(f)
-  bundle_id = info_plist['CFBundleIdentifier']
+    Returns:
+      The exit code of the test runner (0 for success, non-zero for failure).
+    """
+    app_path = os.path.join(out_dir, f'{test_target}.app')
+    info_plist_path = os.path.join(app_path, 'Info.plist')
+    with open(info_plist_path, 'rb') as f:
+        info_plist = plistlib.load(f)
+    bundle_id = info_plist['CFBundleIdentifier']
 
-  install_command = ['xcrun', 'simctl', 'install', simulator_udid, app_path]
-  print_header("--- Installing App ---")
-  print_command(install_command)
-  subprocess.check_call(install_command)
+    install_command = ['xcrun', 'simctl', 'install', simulator_udid, app_path]
+    print_header("--- Installing App ---")
+    print_command(install_command)
+    subprocess.check_call(install_command)
 
-  launch_command = [
-      'xcrun', 'simctl', 'launch', '--console-pty', simulator_udid, bundle_id
-  ]
-  if gtest_filter:
-    launch_command.append('--gtest_filter=' + gtest_filter)
-  if gtest_repeat:
-    launch_command.append('--gtest_repeat=' + gtest_repeat)
-  print_header("--- Running Tests ---")
-  print_command(launch_command)
+    launch_command = [
+        'xcrun',
+        'simctl',
+        'launch',
+        '--console-pty',
+        simulator_udid,
+        bundle_id,
+    ]
+    if gtest_filter:
+        launch_command.append('--gtest_filter=' + gtest_filter)
+    if gtest_repeat:
+        launch_command.append('--gtest_repeat=' + gtest_repeat)
+    print_header("--- Running Tests ---")
+    print_command(launch_command)
 
-  process = subprocess.Popen(launch_command,
-                             stdout=subprocess.PIPE,
-                             stderr=subprocess.STDOUT,
-                             text=True,
-                             errors='replace')
+    process = subprocess.Popen(
+        launch_command,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        errors='replace',
+    )
 
-  test_failed = False
-  test_completed = False
-  while True:
-    line = process.stdout.readline()
-    if not line:
-      break
-    sys.stdout.write(line)
-    if '[  PASSED  ]' in line or '[  FAILED  ]' in line:
-      test_completed = True
-    if '[  FAILED  ]' in line:
-      test_failed = True
+    test_failed = False
+    test_completed = False
+    while True:
+        line = process.stdout.readline()
+        if not line:
+            break
+        sys.stdout.write(line)
+        if '[  PASSED  ]' in line or '[  FAILED  ]' in line:
+            test_completed = True
+        if '[  FAILED  ]' in line:
+            test_failed = True
 
-  process.wait()
+    process.wait()
 
-  # If the test completed and there were failures, return 1.
-  if test_completed and test_failed:
-    return 1
+    # If the test completed and there were failures, return 1.
+    if test_completed and test_failed:
+        return 1
 
-  # If the test did not complete (i.e. crashed), return 1.
-  if not test_completed:
-    print(f'\n{Colors.FAIL}{Colors.BOLD}'
-          'ERROR: Test runner did not complete. Assuming crash.'
-          f'{Colors.RESET}')
-    return 1
+    # If the test did not complete (i.e. crashed), return 1.
+    if not test_completed:
+        print(
+            f'\n{Colors.FAIL}{Colors.BOLD}'
+            'ERROR: Test runner did not complete. Assuming crash.'
+            f'{Colors.RESET}'
+        )
+        return 1
 
-  # If the test completed and there were no failures, return 0.
-  return 0
+    # If the test completed and there were no failures, return 0.
+    return 0
 
 
 def main() -> int:
-  """Main function for the script.
+    """Main function for the script.
 
-  Parses arguments, finds a simulator, builds, and runs the tests.
+    Parses arguments, finds a simulator, builds, and runs the tests.
 
-  Returns:
-    The exit code of the test run.
-  """
-  print_header("=== Run Unit Tests ===")
-  parser = argparse.ArgumentParser()
-  parser.add_argument(
-      '--out-dir',
-      default='out/Debug-iphonesimulator',
-      help='The output directory to use for the build (default: %(default)s).')
-  parser.add_argument('--gtest_filter',
-                      help='The gtest_filter to use for running the tests.')
-  parser.add_argument('--gtest_repeat',
-                      help='The gtest_repeat to use for running the tests.')
-  parser.add_argument(
-      '--device',
-      help='The device type or UDID to use for the test '
-           '(can also be set via IOS_SIMULATOR_DEFAULT_DEVICE).')
-  parser.add_argument(
-      '--os',
-      help='The OS version to use for the test (e.g., 17.5) '
-           '(can also be set via IOS_SIMULATOR_DEFAULT_OS).')
-  parser.add_argument(
-      '--test-target',
-      default='ios_chrome_unittests',
-      help='The test target to run (default: %(default)s).')
-  parser.add_argument(
-      '--no-build',
-      action='store_true',
-      help='Skip compiling/building the tests and only run them.')
-  args = parser.parse_args()
+    Returns:
+      The exit code of the test run.
+    """
+    print_header("=== Run Unit Tests ===")
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '--out-dir',
+        default='out/Debug-iphonesimulator',
+        help='The output directory to use for the build (default: %(default)s).',
+    )
+    parser.add_argument(
+        '--gtest_filter', help='The gtest_filter to use for running the tests.'
+    )
+    parser.add_argument(
+        '--gtest_repeat', help='The gtest_repeat to use for running the tests.'
+    )
+    parser.add_argument(
+        '--device',
+        help='The device type or UDID to use for the test '
+        '(can also be set via IOS_SIMULATOR_DEFAULT_DEVICE).',
+    )
+    parser.add_argument(
+        '--os',
+        help='The OS version to use for the test (e.g., 17.5) '
+        '(can also be set via IOS_SIMULATOR_DEFAULT_OS).',
+    )
+    parser.add_argument(
+        '--test-target',
+        default='ios_chrome_unittests',
+        help='The test target to run (default: %(default)s).',
+    )
+    parser.add_argument(
+        '--no-build',
+        action='store_true',
+        help='Skip compiling/building the tests and only run them.',
+    )
+    args = parser.parse_args()
 
-  simulator = shared_test_utils.find_and_boot_simulator(
-      args.device, args.os)
-  if not simulator:
-    return 1
+    simulator = shared_test_utils.find_and_boot_simulator(args.device, args.os)
+    if not simulator:
+        return 1
 
-  if not args.no_build:
-    if not _build_tests(args.out_dir, args.test_target):
-      return 1
+    if not args.no_build:
+        if not _build_tests(args.out_dir, args.test_target):
+            return 1
 
-  return _run_tests(args.out_dir, simulator.udid, args.gtest_filter,
-                    args.test_target, args.gtest_repeat)
+    return _run_tests(
+        args.out_dir,
+        simulator.udid,
+        args.gtest_filter,
+        args.test_target,
+        args.gtest_repeat,
+    )
 
 
 if __name__ == '__main__':
-  sys.exit(main())
+    sys.exit(main())

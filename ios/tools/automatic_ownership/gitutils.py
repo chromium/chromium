@@ -7,9 +7,7 @@ import datetime
 import subprocess
 
 
-import datetime
 import re
-import subprocess
 
 
 def split_log_into_commits(log_output: str) -> list[str]:

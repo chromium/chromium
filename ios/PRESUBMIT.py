@@ -24,7 +24,8 @@ UMBRELLA_HEADER_PATTERN = r'#import\s+<([\w]+)\/(?!\1\.h)[^>]+>'
 UNITTEST_FILE_PATTERN = r'_unittests?\.(mm|cc)$'
 SYSTEM_COLORS_PATTERN = (
     r'\[UIColor (?!white|black|clear)[a-z][a-zA-Z]*Color\]|'
-    r'UIColor\.(?!white|black|clear)[a-z][a-zA-Z]*Color')
+    r'UIColor\.(?!white|black|clear)[a-z][a-zA-Z]*Color'
+)
 
 # Color management constants
 COLOR_SHARED_DIR = 'ios/chrome/common/ui/colors/'
@@ -37,17 +38,18 @@ def FormatMessageWithFiles(message, errors):
         return message
     return '\n'.join([message + '\n\nAffected file(s):'] + errors) + '\n'
 
+
 def IsSubListOf(needle, hay):
     """Returns whether there is a slice of |hay| equal to |needle|."""
     for i, line in enumerate(hay):
         if line == needle[0]:
-            if needle == hay[i:i + len(needle)]:
+            if needle == hay[i : i + len(needle)]:
                 return True
     return False
 
 
 def _CheckNullabilityAnnotations(input_api, output_api):
-    """ Checks whether there are nullability annotations in ios code.
+    """Checks whether there are nullability annotations in ios code.
 
     They are accepted in ios/web_view/public since it tries to mimic
     the platform library but not anywhere else.
@@ -56,8 +58,9 @@ def _CheckNullabilityAnnotations(input_api, output_api):
 
     errors = []
     for f in input_api.AffectedFiles():
-        if (f.LocalPath().startswith('ios/web_view/public/') or
-            f.LocalPath().startswith('ios/third_party/')):
+        if f.LocalPath().startswith(
+            'ios/web_view/public/'
+        ) or f.LocalPath().startswith('ios/third_party/'):
             # ios/web_view/public tries to mimic an existing API that
             # might have nullability in it and that is acceptable.
             continue
@@ -68,16 +71,17 @@ def _CheckNullabilityAnnotations(input_api, output_api):
         return []
 
     plural_suffix = '' if len(errors) == 1 else 's'
-    warning_message = ('Found Nullability annotation%(plural)s. '
-                     'Prefer DCHECKs in ios code to check for nullness:' % {
-                         'plural': plural_suffix
-                     })
+    warning_message = (
+        'Found Nullability annotation%(plural)s. '
+        'Prefer DCHECKs in ios code to check for nullness:'
+        % {'plural': plural_suffix}
+    )
 
     return [output_api.PresubmitPromptWarning(warning_message, items=errors)]
 
 
 def _CheckBugInToDo(input_api, output_api):
-    """ Checks whether TODOs in ios code are identified by a bug number."""
+    """Checks whether TODOs in ios code are identified by a bug number."""
     errors = []
     warnings = []
     for f in input_api.AffectedFiles():
@@ -93,35 +97,43 @@ def _CheckBugInToDo(input_api, output_api):
     if errors:
         singular_article = 'a ' if len(errors) == 1 else ''
         plural_suffix = '' if len(errors) == 1 else 's'
-        error_message = '\n'.join([
-            'Found TO'
-            'DO%(plural)s without %(a)sbug number%(plural)s (expected format '
-            'is \"TO'
-            'DO(crbug.com/######)\"):' % {
-                'plural': plural_suffix,
-                'a' : singular_article
-            }
-        ] + errors) + '\n'
+        error_message = (
+            '\n'.join(
+                [
+                    'Found TO'
+                    'DO%(plural)s without %(a)sbug number%(plural)s (expected format '
+                    'is "TO'
+                    'DO(crbug.com/######)"):'
+                    % {'plural': plural_suffix, 'a': singular_article}
+                ]
+                + errors
+            )
+            + '\n'
+        )
         output.append(output_api.PresubmitError(error_message))
 
     if warnings:
         singular_article = 'a ' if len(warnings) == 1 else ''
         plural_suffix = '' if len(warnings) == 1 else 's'
-        warning_message = '\n'.join([
-            'Found TO'
-            'DO%(plural)s with %(a)sdeprecated bug link%(plural)s (found '
-            '"b/#####\", expected format is \"crbug.com/######"):' % {
-                'plural': plural_suffix,
-                'a' : singular_article
-            }
-        ] + warnings) + '\n'
+        warning_message = (
+            '\n'.join(
+                [
+                    'Found TO'
+                    'DO%(plural)s with %(a)sdeprecated bug link%(plural)s (found '
+                    '"b/#####", expected format is "crbug.com/######"):'
+                    % {'plural': plural_suffix, 'a': singular_article}
+                ]
+                + warnings
+            )
+            + '\n'
+        )
         output.append(output_api.PresubmitPromptWarning(warning_message))
 
     return output
 
 
 def _CheckHasNoIncludeDirectives(input_api, output_api):
-    """ Checks that #include preprocessor directives are not present."""
+    """Checks that #include preprocessor directives are not present."""
     errors = []
     for f in input_api.AffectedFiles():
         if not _IsInIosPackage(input_api, f.LocalPath()):
@@ -137,26 +149,30 @@ def _CheckHasNoIncludeDirectives(input_api, output_api):
 
     singular_plural = 'it' if len(errors) == 1 else 'them'
     plural_suffix = '' if len(errors) == 1 else 's'
-    error_message = '\n'.join([
-        'Found usage of `#include` preprocessor directive%(plural)s! Please, '
-        'replace %(singular_plural)s with `#import` preprocessor '
-        'directive%(plural)s instead. '
-        'Consider replacing all existing `#include` with `#import` (if any) in '
-        'this file for the code clean up. See '
-        'https://chromium.googlesource.com/chromium/src.git/+/refs/heads/main'
-        '/styleguide/objective-c/objective-c.md'
-        '#import-and-include-in-the-directory for more details. '
-        '\n\nAffected file%(plural)s:' % {
-            'plural': plural_suffix,
-            'singular_plural': singular_plural
-        }
-    ] + errors) + '\n'
+    error_message = (
+        '\n'.join(
+            [
+                'Found usage of `#include` preprocessor directive%(plural)s! Please, '
+                'replace %(singular_plural)s with `#import` preprocessor '
+                'directive%(plural)s instead. '
+                'Consider replacing all existing `#include` with `#import` (if any) in '
+                'this file for the code clean up. See '
+                'https://chromium.googlesource.com/chromium/src.git/+/refs/heads/main'
+                '/styleguide/objective-c/objective-c.md'
+                '#import-and-include-in-the-directory for more details. '
+                '\n\nAffected file%(plural)s:'
+                % {'plural': plural_suffix, 'singular_plural': singular_plural}
+            ]
+            + errors
+        )
+        + '\n'
+    )
 
     return [output_api.PresubmitError(error_message)]
 
 
 def _CheckHasNoPipeInComment(input_api, output_api):
-    """ Checks that comments don't contain pipes."""
+    """Checks that comments don't contain pipes."""
     pipe_regex = input_api.re.compile(PIPE_IN_COMMENT_PATTERN)
 
     errors = []
@@ -170,22 +186,29 @@ def _CheckHasNoPipeInComment(input_api, output_api):
                 errors.append('%s:%s' % (f.LocalPath(), line_num))
     if not errors:
         return []
-    warning_message = '\n'.join([
-        'Please use backticks "`" instead of pipes "|" if you need to quote'
-        ' variable names and symbols in comments.\n'
-        'Found potential uses of pipes in:'
-    ] + errors) + '\n'
+    warning_message = (
+        '\n'.join(
+            [
+                'Please use backticks "`" instead of pipes "|" if you need to quote'
+                ' variable names and symbols in comments.\n'
+                'Found potential uses of pipes in:'
+            ]
+            + errors
+        )
+        + '\n'
+    )
 
     return [output_api.PresubmitPromptWarning(warning_message)]
 
+
 def _CheckCanImproveTestUsingExpectNSEQ(input_api, output_api):
-    """ Checks that test files use EXPECT_NSEQ when possible."""
+    """Checks that test files use EXPECT_NSEQ when possible."""
     errors = []
     # Substrings that should not be used together with EXPECT_TRUE or
     # EXPECT_FALSE in tests.
     wrong_patterns = ["isEqualToString:", "isEqualToData:", "isEqualToArray:"]
     for f in input_api.AffectedFiles():
-        if not '_unittest.' in f.LocalPath():
+        if '_unittest.' not in f.LocalPath():
             continue
         for line_num, line in f.ChangedContents():
             if line.startswith(("EXPECT_TRUE", "EXPECT_FALSE")):
@@ -204,32 +227,40 @@ def _CheckCanImproveTestUsingExpectNSEQ(input_api, output_api):
         return []
 
     plural_suffix = '' if len(errors) == 1 else 's'
-    warning_message = '\n'.join([
-         'Found possible improvement in unittest. Prefer using'
-         ' EXPECT_NSEQ() or EXPECT_NSNE() when possible.'
-         '\n\nAffected file%(plural)s:' % {
-            'plural': plural_suffix,
-          }
-    ] + errors) + '\n'
+    warning_message = (
+        '\n'.join(
+            [
+                'Found possible improvement in unittest. Prefer using'
+                ' EXPECT_NSEQ() or EXPECT_NSNE() when possible.'
+                '\n\nAffected file%(plural)s:'
+                % {
+                    'plural': plural_suffix,
+                }
+            ]
+            + errors
+        )
+        + '\n'
+    )
 
     return [output_api.PresubmitPromptWarning(warning_message)]
 
+
 def _IsInIosPackage(input_api, path):
-    """ Returns True if path is within ios package"""
+    """Returns True if path is within ios package"""
     ios_package_regex = input_api.re.compile(IOS_PACKAGE_PATTERN)
 
     return ios_package_regex.search(path)
 
 
 def _HasIncludeDirective(input_api, line):
-    """ Returns True if #include is found in the line"""
+    """Returns True if #include is found in the line"""
     include_regex = input_api.re.compile(INCLUDE_PATTERN)
 
     return include_regex.search(line)
 
 
 def _HasToDoWithNoBug(input_api, line):
-    """ Returns True if TODO is not identified by a bug number."""
+    """Returns True if TODO is not identified by a bug number."""
     todo_regex = input_api.re.compile(TODO_PATTERN)
     bug_regex = input_api.re.compile(BUG_PATTERN)
 
@@ -239,8 +270,9 @@ def _HasToDoWithNoBug(input_api, line):
 
     return not bug_regex.match(todo_match.group(1))
 
+
 def _HasToDoWithDeprecatedBug(input_api, line):
-    """ Returns True if TODO is identified by a deprecated bug number format."""
+    """Returns True if TODO is identified by a deprecated bug number format."""
     todo_regex = input_api.re.compile(TODO_PATTERN)
     deprecated_bug_regex = input_api.re.compile(DEPRECATED_BUG_PATTERN)
 
@@ -249,8 +281,9 @@ def _HasToDoWithDeprecatedBug(input_api, line):
         return False
     return deprecated_bug_regex.match(todo_match.group(1))
 
+
 def _CheckHasNoBoxedBOOL(input_api, output_api):
-    """ Checks that there are no @(YES) or @(NO)."""
+    """Checks that there are no @(YES) or @(NO)."""
     boxed_BOOL_regex = input_api.re.compile(BOXED_BOOL_PATTERN)
 
     errors = []
@@ -262,18 +295,19 @@ def _CheckHasNoBoxedBOOL(input_api, output_api):
         return []
 
     plural_suffix = '' if len(errors) == 1 else 's'
-    warning_message = ('Found boxed BOOL%(plural)s. '
-                     'Prefer @YES or @NO in ios code:' % {
-                         'plural': plural_suffix
-                     })
+    warning_message = (
+        'Found boxed BOOL%(plural)s. '
+        'Prefer @YES or @NO in ios code:' % {'plural': plural_suffix}
+    )
 
     return [output_api.PresubmitPromptWarning(warning_message, items=errors)]
 
+
 def _CheckNoTearDownEGTest(input_api, output_api):
-    """ Checks that `- (void)tearDown {` is not present in an egtest.mm"""
+    """Checks that `- (void)tearDown {` is not present in an egtest.mm"""
     errors = []
     for f in input_api.AffectedFiles():
-        if not '_egtest.' in f.LocalPath():
+        if '_egtest.' not in f.LocalPath():
             continue
         for line_num, line in f.ChangedContents():
             if line.startswith("- (void)tearDown {"):
@@ -281,19 +315,26 @@ def _CheckNoTearDownEGTest(input_api, output_api):
 
     if not errors:
         return []
-    warning_message = '\n'.join([
-        'To support hermetic EarlGrey test cases, tearDown has been renamed '
-        'to tearDownHelper, and will soon be removed. If tearDown is really '
-        'necessary for this test, please use addTeardownBlock'
-    ] + errors) + '\n'
+    warning_message = (
+        '\n'.join(
+            [
+                'To support hermetic EarlGrey test cases, tearDown has been renamed '
+                'to tearDownHelper, and will soon be removed. If tearDown is really '
+                'necessary for this test, please use addTeardownBlock'
+            ]
+            + errors
+        )
+        + '\n'
+    )
 
     return [output_api.PresubmitError(warning_message)]
 
 
 def _IsAlphabeticallySortedXML(file):
     """Check that the `file` is alphabetically sorted"""
-    parser = ElementTree.XMLParser(target=ElementTree.TreeBuilder(
-        insert_comments=True))
+    parser = ElementTree.XMLParser(
+        target=ElementTree.TreeBuilder(insert_comments=True)
+    )
     with open(file, 'r', encoding='utf8') as xml_file:
         tree = ElementTree.parse(xml_file, parser)
     root = tree.getroot()
@@ -312,25 +353,28 @@ def _IsAlphabeticallySortedXML(file):
 
 
 def _CheckOrderedStringFile(input_api, output_api):
-    """ Checks that the string files are alphabetically ordered"""
+    """Checks that the string files are alphabetically ordered"""
     errors = []
     for f in input_api.AffectedFiles(include_deletes=False):
         if not f.LocalPath().endswith("_strings.grd"):
             continue
         if not _IsAlphabeticallySortedXML(f.AbsoluteLocalPath()):
-            errors.append('  python3 ios/tools/order_string_file.py ' +
-                          f.LocalPath())
+            errors.append(
+                '  python3 ios/tools/order_string_file.py ' + f.LocalPath()
+            )
 
     if not errors:
         return []
-    warning_message = '\n'.join(
-        ['Files not alphabetically sorted, try running:'] + errors) + '\n'
+    warning_message = (
+        '\n'.join(['Files not alphabetically sorted, try running:'] + errors)
+        + '\n'
+    )
 
     return [output_api.PresubmitPromptWarning(warning_message)]
 
 
 def _CheckOrderedFlagsFile(input_api, output_api):
-    """ Checks that the flag description files are alphabetically ordered"""
+    """Checks that the flag description files are alphabetically ordered"""
     # The order_flags.py script calls `gclient root` which is not available
     # on Windows CI bots, causing all CLs that touch
     # ios_chrome_flag_descriptions.{h,cc} to fail presubmit on Windows.
@@ -344,7 +388,9 @@ def _CheckOrderedFlagsFile(input_api, output_api):
     if h_file:
         try:
             command = [
-                input_api.python3_executable, 'tools/order_flags.py', '--check'
+                input_api.python3_executable,
+                'tools/order_flags.py',
+                '--check',
             ]
             if h_file:
                 command.extend(['--h-file', h_file])
@@ -359,12 +405,12 @@ def _CheckOrderedFlagsFile(input_api, output_api):
 
 
 def _CheckNotUsingNSUserDefaults(input_api, output_api):
-    """ Checks the added code to limit new usage of NSUserDefaults """
+    """Checks the added code to limit new usage of NSUserDefaults"""
     user_defaults_regex = input_api.re.compile(USER_DEFAULTS_PATTERN)
 
     errors = []
     for f in input_api.AffectedFiles():
-        if (not f.LocalPath().endswith('.mm')):
+        if not f.LocalPath().endswith('.mm'):
             continue
         for line_num, line in f.ChangedContents():
             if user_defaults_regex.search(line):
@@ -372,10 +418,16 @@ def _CheckNotUsingNSUserDefaults(input_api, output_api):
 
     if not errors:
         return []
-    warning_message = '\n'.join([
-        'A new use of NSUserDefaults was added. If this is a newly added key '
-        'consider storing it to PrefService instead.'
-    ] + errors) + '\n'
+    warning_message = (
+        '\n'.join(
+            [
+                'A new use of NSUserDefaults was added. If this is a newly added key '
+                'consider storing it to PrefService instead.'
+            ]
+            + errors
+        )
+        + '\n'
+    )
 
     return [output_api.PresubmitPromptWarning(warning_message)]
 
@@ -385,18 +437,15 @@ def _CheckNewColorIntroduction(input_api, output_api):
 
     Ensures colors are properly added to the shared directory.
     """
-    results = []
+    results = []  # noqa: F841
 
     affected_files = [
-        f for f in input_api.AffectedFiles()
+        f
+        for f in input_api.AffectedFiles()
         if f.LocalPath().endswith(COLOR_FILE_PATTERN)
     ]
 
-    warnings = {
-        'shared_added': [],
-        'shared_modified': [],
-        'other_modified': []
-    }
+    warnings = {'shared_added': [], 'shared_modified': [], 'other_modified': []}
     errors = []
 
     for affected_file in affected_files:
@@ -418,64 +467,87 @@ def _CheckNewColorIntroduction(input_api, output_api):
     output = []
 
     if errors:
-        error_message = ('New color(s) must be added to the %s directory.' %
-                         COLOR_SHARED_DIR)
+        error_message = (
+            'New color(s) must be added to the %s directory.' % COLOR_SHARED_DIR
+        )
         output.append(
             output_api.PresubmitError(
-                FormatMessageWithFiles(error_message, errors)))
+                FormatMessageWithFiles(error_message, errors)
+            )
+        )
 
-    warning_message = ('Please ensure the color does not already exist in the '
-                       'shared %s directory.' % COLOR_SHARED_DIR)
+    warning_message = (
+        'Please ensure the color does not already exist in the '
+        'shared %s directory.' % COLOR_SHARED_DIR
+    )
 
     if warnings['shared_added']:
-        shared_added_message = ('New color(s) added in %s. %s' %
-                                (COLOR_SHARED_DIR, warning_message))
+        shared_added_message = 'New color(s) added in %s. %s' % (
+            COLOR_SHARED_DIR,
+            warning_message,
+        )
         output.append(
             output_api.PresubmitPromptWarning(
-                FormatMessageWithFiles(shared_added_message,
-                                       warnings['shared_added'])))
+                FormatMessageWithFiles(
+                    shared_added_message, warnings['shared_added']
+                )
+            )
+        )
 
     if warnings['shared_modified']:
-        shared_modified_message = ('Color(s) modified in %s. %s' %
-                                   (COLOR_SHARED_DIR, warning_message))
+        shared_modified_message = 'Color(s) modified in %s. %s' % (
+            COLOR_SHARED_DIR,
+            warning_message,
+        )
         output.append(
             output_api.PresubmitPromptWarning(
-                FormatMessageWithFiles(shared_modified_message,
-                                       warnings['shared_modified'])))
+                FormatMessageWithFiles(
+                    shared_modified_message, warnings['shared_modified']
+                )
+            )
+        )
 
     if warnings['other_modified']:
-        modified_message = ('Color(s) modified. %s' % warning_message)
+        modified_message = 'Color(s) modified. %s' % warning_message
         output.append(
             output_api.PresubmitPromptWarning(
-                FormatMessageWithFiles(modified_message,
-                                       warnings['other_modified'])))
+                FormatMessageWithFiles(
+                    modified_message, warnings['other_modified']
+                )
+            )
+        )
 
     return output
+
 
 def _CheckStyleESLint(input_api, output_api):
     results = []
 
     try:
         import sys
+
         old_sys_path = sys.path[:]
         cwd = input_api.PresubmitLocalPath()
         sys.path += [input_api.os_path.join(cwd, '..', 'tools')]
         from web_dev_style import presubmit_support
+
         results += presubmit_support.CheckStyleESLint(input_api, output_api)
     finally:
         sys.path = old_sys_path
 
     return results
 
+
 def _CheckUIGraphicsBeginImageContextWithOptions(input_api, output_api):
-    """ Checks that UIGraphicsBeginImageContext and
+    """Checks that UIGraphicsBeginImageContext and
     UIGraphicsBeginImageContextWithOptions are not used"""
     deprecated_regex = input_api.re.compile(
-        r'UIGraphicsBeginImageContext(WithOptions)?\(')
+        r'UIGraphicsBeginImageContext(WithOptions)?\('
+    )
 
     errors = []
     for f in input_api.AffectedFiles():
-        if (not f.LocalPath().endswith('.mm')):
+        if not f.LocalPath().endswith('.mm'):
             continue
         for line_num, line in f.ChangedContents():
             if deprecated_regex.search(line):
@@ -483,18 +555,23 @@ def _CheckUIGraphicsBeginImageContextWithOptions(input_api, output_api):
 
     if not errors:
         return []
-    error_message = '\n'.join([
-        'UIGraphicsBeginImageContext and '
-        'UIGraphicsBeginImageContextWithOptions are deprecated, use '
-        'UIGraphicsImageRenderer instead.'
-    ] + errors) + '\n'
+    error_message = (
+        '\n'.join(
+            [
+                'UIGraphicsBeginImageContext and '
+                'UIGraphicsBeginImageContextWithOptions are deprecated, use '
+                'UIGraphicsImageRenderer instead.'
+            ]
+            + errors
+        )
+        + '\n'
+    )
 
     return [output_api.PresubmitError(error_message)]
 
 
 def _CheckOmniboxTextInEgtest(input_api, output_api):
-    """Checks use of OmniboxText or chrome_test_util::OmniboxText in egtests.
-    """
+    """Checks use of OmniboxText or chrome_test_util::OmniboxText in egtests."""
     pattern = input_api.re.compile(r'(OmniboxText)')
 
     errors = []
@@ -507,29 +584,42 @@ def _CheckOmniboxTextInEgtest(input_api, output_api):
 
     if not errors:
         return []
-    warning_message = '\n'.join([
-        'Please use [ChromeEarlGrey waitForWebStateVisibleURL:] to check for '
-        'URL load in the browser'
-    ] + errors) + '\n'
+    warning_message = (
+        '\n'.join(
+            [
+                'Please use [ChromeEarlGrey waitForWebStateVisibleURL:] to check for '
+                'URL load in the browser'
+            ]
+            + errors
+        )
+        + '\n'
+    )
 
     return [output_api.PresubmitPromptWarning(warning_message)]
 
+
 def _CheckUmbrellaHeaderUsage(input_api, output_api):
-    """Checks for individual system header imports instead of umbrella headers.
-    """
+    """Checks for individual system header imports instead of umbrella headers."""
     umbrella_regex = input_api.re.compile(UMBRELLA_HEADER_PATTERN)
 
     errors = []
-    file_filter = lambda f: f.LocalPath().endswith(('.mm', '.h'))
+    file_filter = lambda f: f.LocalPath().endswith(('.mm', '.h'))  # noqa: E731
 
     for f in input_api.AffectedSourceFiles(file_filter):
         for line_num, line in f.ChangedContents():
             match = umbrella_regex.search(line)
             if match:
                 framework_name = match.group(1)
-                errors.append('%s:%s (Found: %s. Use <%s/%s.h> instead)' %
-                              (f.LocalPath(), line_num, line.strip(),
-                               framework_name, framework_name))
+                errors.append(
+                    '%s:%s (Found: %s. Use <%s/%s.h> instead)'
+                    % (
+                        f.LocalPath(),
+                        line_num,
+                        line.strip(),
+                        framework_name,
+                        framework_name,
+                    )
+                )
     if not errors:
         return []
 
@@ -539,12 +629,11 @@ def _CheckUmbrellaHeaderUsage(input_api, output_api):
         'optimization.'
     )
 
-    return [
-        output_api.PresubmitPromptWarning(warning_message, items=errors)
-    ]
+    return [output_api.PresubmitPromptWarning(warning_message, items=errors)]
+
 
 def _CheckNoFlakyUnitTest(input_api, output_api):
-    """ Checks that there are no tests with FLAKY_ prefix."""
+    """Checks that there are no tests with FLAKY_ prefix."""
     flaky_specifier_pattern = input_api.re.compile(r'\bFLAKY_')
 
     unittest_regex = input_api.re.compile(UNITTEST_FILE_PATTERN)
@@ -560,22 +649,29 @@ def _CheckNoFlakyUnitTest(input_api, output_api):
 
     if not errors:
         return []
-    error_message = '\n'.join([
-        'Unit tests must not be marked as FLAKY_. If a test is flaky, use '
-        'DISABLED_ instead.'
-    ] + errors) + '\n'
+    error_message = (
+        '\n'.join(
+            [
+                'Unit tests must not be marked as FLAKY_. If a test is flaky, use '
+                'DISABLED_ instead.'
+            ]
+            + errors
+        )
+        + '\n'
+    )
 
     return [output_api.PresubmitError(error_message)]
 
+
 def _CheckUsageOfSystemColors(input_api, output_api):
-    """ Checks whether there are forbidden system color used in ios code.
+    """Checks whether there are forbidden system color used in ios code.
 
     Only white, black and clear colors are accepted.
     """
     system_colors_regex = input_api.re.compile(SYSTEM_COLORS_PATTERN)
 
     errors = []
-    file_filter = lambda f: f.LocalPath().endswith(('.mm', '.h'))
+    file_filter = lambda f: f.LocalPath().endswith(('.mm', '.h'))  # noqa: E731
     for f in input_api.AffectedSourceFiles(file_filter):
         for line_num, line in f.ChangedContents():
             if system_colors_regex.search(line):
@@ -599,6 +695,7 @@ def _CheckLargeImagesets(input_api, output_api):
     def get_svg_dimensions(file_contents):
         try:
             import xml.etree.ElementTree as ET
+
             if isinstance(file_contents, bytes):
                 text = file_contents.decode('utf-8', errors='ignore')
             else:
@@ -607,8 +704,9 @@ def _CheckLargeImagesets(input_api, output_api):
             root = ET.fromstring(text)
             w_str = root.attrib.get('width', '')
             h_str = root.attrib.get('height', '')
-            viewbox_str = (root.attrib.get('viewBox', '') or
-                           root.attrib.get('viewbox', ''))
+            viewbox_str = root.attrib.get('viewBox', '') or root.attrib.get(
+                'viewbox', ''
+            )
 
             def parse_val(v):
                 if not v:
@@ -637,7 +735,8 @@ def _CheckLargeImagesets(input_api, output_api):
             # newlines.
             pattern = re.compile(
                 rb'/MediaBox\s*\[\s*(-?[\d.]+)\s+(-?[\d.]+)\s+'
-                rb'(-?[\d.]+)\s+(-?[\d.]+)\s*\]')
+                rb'(-?[\d.]+)\s+(-?[\d.]+)\s*\]'
+            )
             match = pattern.search(file_bytes)
             if match:
                 llx = float(match.group(1))
@@ -669,8 +768,7 @@ def _CheckLargeImagesets(input_api, output_api):
             with open(f.AbsoluteLocalPath(), 'rb') as fp:
                 file_contents = fp.read()
         except (IOError, OSError):
-            file_contents = input_api.ReadFile(
-                f.AbsoluteLocalPath(), mode='rb')
+            file_contents = input_api.ReadFile(f.AbsoluteLocalPath(), mode='rb')
 
         if is_svg:
             w, h = get_svg_dimensions(file_contents)
@@ -709,16 +807,28 @@ def CheckChange(input_api, output_api):
     results.extend(_CheckNewColorIntroduction(input_api, output_api))
     results.extend(_CheckStyleESLint(input_api, output_api))
     results.extend(
-        _CheckUIGraphicsBeginImageContextWithOptions(input_api, output_api))
+        _CheckUIGraphicsBeginImageContextWithOptions(input_api, output_api)
+    )
     results.extend(_CheckOmniboxTextInEgtest(input_api, output_api))
     results.extend(_CheckUmbrellaHeaderUsage(input_api, output_api))
     results.extend(_CheckNoFlakyUnitTest(input_api, output_api))
     results.extend(_CheckUsageOfSystemColors(input_api, output_api))
     results.extend(_CheckLargeImagesets(input_api, output_api))
+    results.extend(input_api.canned_checks.RunRuff(input_api, output_api))
+    results.extend(
+        input_api.canned_checks.CheckPatchFormatted(
+            input_api,
+            output_api,
+            result_factory=output_api.PresubmitError,
+            bypass_warnings=False,
+        )
+    )
     return results
+
 
 def CheckChangeOnUpload(input_api, output_api):
     return CheckChange(input_api, output_api)
+
 
 def CheckChangeOnCommit(input_api, output_api):
     return CheckChange(input_api, output_api)

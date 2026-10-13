@@ -3,10 +3,10 @@
 # found in the LICENSE file.
 
 import distutils.version
-import json
+import json  # noqa: F401
 import logging
 import subprocess
-from typing import Union, Tuple
+from typing import Union, Tuple  # noqa: F401
 
 LOGGER = logging.getLogger(__name__)
 

@@ -8,9 +8,9 @@
 import json
 import mock
 import os
-import re
-import shutil
-import subprocess
+import re  # noqa: F401
+import shutil  # noqa: F401
+import subprocess  # noqa: F401
 import unittest
 
 from test_result_util import ResultCollection, TestResult, TestStatus
@@ -956,7 +956,7 @@ class XcodeLogParserTest(test_runner_test.TestCase):
     results = xcode_log_parser.XcodeLogParser().collect_test_results(
       OUTPUT_PATH, []
     )
-    self.assertTrue(results.crashed != True)
+    self.assertTrue(results.crashed != True)  # noqa: E712
     self.assertNotEqual(results.crash_message, '0 tests executed!')
 
   @mock.patch('os.path.exists', autospec=True)
@@ -1087,7 +1087,7 @@ class XcodeLogParserTest(test_runner_test.TestCase):
   ):
     mock_xcode_version.return_value = False
     output_path_in_test = 'test_data/attempt_0'
-    xcresult_path_in_test = 'test_data/attempt_0.xcresult'
+    xcresult_path_in_test = 'test_data/attempt_0.xcresult'  # noqa: F841
     mock_path_exists.return_value = True
     mock_xcresulttool_get.side_effect = _xcresulttool_get_side_effect
     xcode_log_parser.XcodeLogParser.export_diagnostic_data(output_path_in_test)
@@ -1447,7 +1447,7 @@ class Xcode16LogParserTest(test_runner_test.TestCase):
       os.path.join(
         output_path,
         os.pardir,
-        f"some_output_path_simulator#0_StandardOutputAndStandardError.txt",
+        "some_output_path_simulator#0_StandardOutputAndStandardError.txt",
       ),
     )
 
@@ -1464,7 +1464,7 @@ class Xcode16LogParserTest(test_runner_test.TestCase):
     self, mock_makedirs, mock_path_exists, mock_process, mock_copy, _
   ):
     output_path_in_test = 'test_data/attempt_0'
-    xcresult_path_in_test = 'test_data/attempt_0.xcresult'
+    xcresult_path_in_test = 'test_data/attempt_0.xcresult'  # noqa: F841
     mock_path_exists.return_value = True
     xcode_log_parser.Xcode16LogParser.export_diagnostic_data(
       output_path_in_test
@@ -1600,7 +1600,7 @@ class Xcode16LogParserTest(test_runner_test.TestCase):
       test_name, xcresult_path, attachments
     )
 
-    expected_attachments = {
+    expected_attachments = {  # noqa: F841
       'My Screenshot': os.path.join(attachment_folder, 'screenshot.png'),
       'My Video': os.path.join(attachment_folder, 'video.mp4'),
     }

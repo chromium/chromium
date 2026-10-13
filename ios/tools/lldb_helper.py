@@ -15,12 +15,9 @@ from typing import Optional
 
 def _run_cmd(cmd: list[str]) -> str:
     try:
-        return subprocess.check_output(cmd,
-                                       text=True,
-                                       stderr=subprocess.STDOUT)
+        return subprocess.check_output(cmd, text=True, stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as e:
         return e.output
-
 
 
 def get_repo_root() -> str:
@@ -33,7 +30,8 @@ def get_process_cwd(pid: int) -> Optional[str]:
             ['lsof', '-p', str(pid), '-a', '-d', 'cwd', '-F', 'n'],
             capture_output=True,
             text=True,
-            check=True)
+            check=True,
+        )
         for line in res.stdout.splitlines():
             if line.startswith('n'):
                 return line[1:]
@@ -63,20 +61,37 @@ def cleanup(session: str, app: Optional[str]) -> int:
     # If the session exists, gracefully detach LLDB and wait for the pane to
     # exit so ptrace-attached simulator processes do not become un-reapable
     # <defunct> zombies in launchd_sim.
-    if subprocess.run(['tmux', 'has-session', '-t', session],
-                      capture_output=True).returncode == 0:
-        subprocess.run(['tmux', 'send-keys', '-t', session, 'C-c'],
-                       capture_output=True)
+    if (
+        subprocess.run(
+            ['tmux', 'has-session', '-t', session], capture_output=True
+        ).returncode
+        == 0
+    ):
+        subprocess.run(
+            ['tmux', 'send-keys', '-t', session, 'C-c'], capture_output=True
+        )
         time.sleep(0.2)
-        subprocess.run([
-            'tmux', 'send-keys', '-t', session, 'process detach', 'Enter',
-            'quit', 'Enter'
-        ],
-                       capture_output=True)
+        subprocess.run(
+            [
+                'tmux',
+                'send-keys',
+                '-t',
+                session,
+                'process detach',
+                'Enter',
+                'quit',
+                'Enter',
+            ],
+            capture_output=True,
+        )
         deadline = time.time() + 5.0
         while time.time() < deadline:
-            if subprocess.run(['tmux', 'has-session', '-t', session],
-                              capture_output=True).returncode != 0:
+            if (
+                subprocess.run(
+                    ['tmux', 'has-session', '-t', session], capture_output=True
+                ).returncode
+                != 0
+            ):
                 break
             time.sleep(0.1)
 
@@ -86,7 +101,8 @@ def cleanup(session: str, app: Optional[str]) -> int:
         out = subprocess.check_output(
             ['tmux', 'list-panes', '-t', session, '-F', '#{pane_pid}'],
             text=True,
-            stderr=subprocess.DEVNULL)
+            stderr=subprocess.DEVNULL,
+        )
         pane_pids = [int(p.strip()) for p in out.splitlines() if p.strip()]
     except Exception:
         pass
@@ -102,15 +118,14 @@ def cleanup(session: str, app: Optional[str]) -> int:
             pass
 
     # 2. Kill the tmux session itself
-    subprocess.run(['tmux', 'kill-session', '-t', session],
-                   capture_output=True)
+    subprocess.run(['tmux', 'kill-session', '-t', session], capture_output=True)
 
     # 3. Clean up other workspace-scoped processes
     if app:
         repo_root = get_repo_root()
-        res = subprocess.run(['ps', '-x', '-o', 'pid,command'],
-                             capture_output=True,
-                             text=True)
+        res = subprocess.run(
+            ['ps', '-x', '-o', 'pid,command'], capture_output=True, text=True
+        )
         if res.returncode == 0:
             for line in res.stdout.splitlines()[1:]:
                 line = line.strip()
@@ -140,43 +155,49 @@ def cleanup(session: str, app: Optional[str]) -> int:
                         belongs_to_workspace = True
                     else:
                         cwd = get_process_cwd(pid)
-                        if cwd and (cwd == repo_root or
-                                    cwd.startswith(repo_root + '/')):
+                        if cwd and (
+                            cwd == repo_root or cwd.startswith(repo_root + '/')
+                        ):
                             belongs_to_workspace = True
 
                     if belongs_to_workspace:
                         try:
-                            subprocess.run(['kill', '-9', str(pid)],
-                                           capture_output=True)
+                            subprocess.run(
+                                ['kill', '-9', str(pid)], capture_output=True
+                            )
                         except Exception:
                             pass
 
     return 0
 
 
-def start(session: str,
-          target: Optional[str],
-          app: Optional[str],
-          breakpoints: Optional[str],
-          pid: Optional[int] = None) -> int:
+def start(
+    session: str,
+    target: Optional[str],
+    app: Optional[str],
+    breakpoints: Optional[str],
+    pid: Optional[int] = None,
+) -> int:
     cleanup(session, app)
     if pid:
-        print(
-            f"Starting tmux session '{session}' "
-            f"attaching to pid {pid}..."
-        )
+        print(f"Starting tmux session '{session}' attaching to pid {pid}...")
         cmd = [
-            'tmux', 'new-session', '-d', '-s', session,
-            f'lldb -p {pid} -O "settings set auto-confirm true"'
+            'tmux',
+            'new-session',
+            '-d',
+            '-s',
+            session,
+            f'lldb -p {pid} -O "settings set auto-confirm true"',
         ]
     elif target:
-        print(
-            f"Starting tmux session '{session}' "
-            f"waiting for '{target}'..."
-        )
+        print(f"Starting tmux session '{session}' waiting for '{target}'...")
         cmd = [
-            'tmux', 'new-session', '-d', '-s', session,
-            f'lldb -n {target} --wait-for -O "settings set auto-confirm true"'
+            'tmux',
+            'new-session',
+            '-d',
+            '-s',
+            session,
+            f'lldb -n {target} --wait-for -O "settings set auto-confirm true"',
         ]
     else:
         print("Error: Either --target or --pid must be specified.")
@@ -217,8 +238,9 @@ def evaluate(session: str, expr: str, timeout: int) -> int:
     start_time = time.time()
     while True:
         out = _run_cmd(
-            ['tmux', 'capture-pane', '-p', '-t', session, '-S', '-100'])
-        lines = [l.strip() for l in out.splitlines() if l.strip()]
+            ['tmux', 'capture-pane', '-p', '-t', session, '-S', '-100']
+        )
+        lines = [l.strip() for l in out.splitlines() if l.strip()]  # noqa: E741
 
         if len(lines) >= 2:
             end_idx = -1
@@ -232,31 +254,36 @@ def evaluate(session: str, expr: str, timeout: int) -> int:
                 return 0
 
         if time.time() - start_time > timeout:
-            print(f"Timeout ({timeout}s) waiting for evaluation.\n"
-                  f"Last output:\n{out}")
+            print(
+                f"Timeout ({timeout}s) waiting for evaluation.\n"
+                f"Last output:\n{out}"
+            )
             return 1
 
         time.sleep(1)
 
 
-def capture(session: str, lines: int, wait_for_stop: bool,
-            timeout: int) -> int:
+def capture(session: str, lines: int, wait_for_stop: bool, timeout: int) -> int:
     start_time = time.time()
     while True:
         out = _run_cmd(
-            ['tmux', 'capture-pane', '-p', '-t', session, '-S', f'-{lines}'])
+            ['tmux', 'capture-pane', '-p', '-t', session, '-S', f'-{lines}']
+        )
         if not wait_for_stop:
             print(out)
             return 0
 
-        if re.search(r'stop reason =|exited with status|Process \d+ exited',
-                     out):
+        if re.search(
+            r'stop reason =|exited with status|Process \d+ exited', out
+        ):
             print(out)
             return 0
 
         if time.time() - start_time > timeout:
-            print(f"Timeout ({timeout}s) waiting for stop reason.\n"
-                  f"Last output:\n{out}")
+            print(
+                f"Timeout ({timeout}s) waiting for stop reason.\n"
+                f"Last output:\n{out}"
+            )
             return 1
 
         time.sleep(2)
@@ -316,40 +343,44 @@ DETAILED SUBCOMMAND USAGE:
     parser = argparse.ArgumentParser(
         description="Helper for LLDB tmux debugging.",
         epilog=epilog_text,
-        formatter_class=argparse.RawTextHelpFormatter)
+        formatter_class=argparse.RawTextHelpFormatter,
+    )
     subparsers = parser.add_subparsers(dest='command', required=True)
 
     # start
-    parser_start = subparsers.add_parser('start',
-                                         help="Start a new lldb tmux session.")
-    parser_start.add_argument('--session',
-                              required=True,
-                              help="Name of tmux session.")
+    parser_start = subparsers.add_parser(
+        'start', help="Start a new lldb tmux session."
+    )
+    parser_start.add_argument(
+        '--session', required=True, help="Name of tmux session."
+    )
     group = parser_start.add_mutually_exclusive_group(required=True)
-    group.add_argument('--target',
-                       help="Executable name for lldb to wait for.")
+    group.add_argument('--target', help="Executable name for lldb to wait for.")
     group.add_argument(
-        '--pid',
-        type=int,
-        help="PID of already running process to attach to.")
+        '--pid', type=int, help="PID of already running process to attach to."
+    )
     parser_start.add_argument('--app', help="App bundle name for cleanup.")
     parser_start.add_argument(
         '--breakpoints',
         help="Comma-separated list of initial symbolic breakpoints (e.g. "
-        "'UIViewAlertForUnsatisfiableConstraints,objc_exception_throw').")
+        "'UIViewAlertForUnsatisfiableConstraints,objc_exception_throw').",
+    )
 
     # send
     parser_send = subparsers.add_parser(
-        'send', help="Send an lldb command to the session.")
-    parser_send.add_argument('--session',
-                             required=True,
-                             help="Name of tmux session.")
-    parser_send.add_argument('--cmd',
-                             required=True,
-                             help="Command string to send.")
-    parser_send.add_argument('--clear',
-                             action='store_true',
-                             help="Clear screen and history before sending.")
+        'send', help="Send an lldb command to the session."
+    )
+    parser_send.add_argument(
+        '--session', required=True, help="Name of tmux session."
+    )
+    parser_send.add_argument(
+        '--cmd', required=True, help="Command string to send."
+    )
+    parser_send.add_argument(
+        '--clear',
+        action='store_true',
+        help="Clear screen and history before sending.",
+    )
 
     # eval
     parser_eval = subparsers.add_parser(
@@ -358,58 +389,71 @@ DETAILED SUBCOMMAND USAGE:
         "clean output.",
         description="Sends an LLDB expression evaluation command to the tmux "
         "session, waits for evaluation to complete, and returns pristine "
-        "output stripped of LLDB prompt boilerplate.")
-    parser_eval.add_argument('--session',
-                             required=True,
-                             help="Name of tmux session.")
+        "output stripped of LLDB prompt boilerplate.",
+    )
+    parser_eval.add_argument(
+        '--session', required=True, help="Name of tmux session."
+    )
     parser_eval.add_argument(
         '--expr',
         required=True,
-        help="Expression command to evaluate (e.g. 'po self').")
-    parser_eval.add_argument('--timeout',
-                             type=int,
-                             default=15,
-                             help="Timeout in seconds (default: 15).")
+        help="Expression command to evaluate (e.g. 'po self').",
+    )
+    parser_eval.add_argument(
+        '--timeout',
+        type=int,
+        default=15,
+        help="Timeout in seconds (default: 15).",
+    )
 
     # capture
     parser_capture = subparsers.add_parser(
-        'capture', help="Capture pane output from session.")
-    parser_capture.add_argument('--session',
-                                required=True,
-                                help="Name of tmux session.")
+        'capture', help="Capture pane output from session."
+    )
+    parser_capture.add_argument(
+        '--session', required=True, help="Name of tmux session."
+    )
     parser_capture.add_argument(
         '--lines',
         type=int,
         default=100,
-        help="Number of scrollback lines (default: 100).")
-    parser_capture.add_argument('--wait-for-stop',
-                                action='store_true',
-                                help="Wait until process stops or exits.")
-    parser_capture.add_argument('--timeout',
-                                type=int,
-                                default=30,
-                                help="Timeout in seconds (default: 30).")
+        help="Number of scrollback lines (default: 100).",
+    )
+    parser_capture.add_argument(
+        '--wait-for-stop',
+        action='store_true',
+        help="Wait until process stops or exits.",
+    )
+    parser_capture.add_argument(
+        '--timeout',
+        type=int,
+        default=30,
+        help="Timeout in seconds (default: 30).",
+    )
 
     # cleanup
-    parser_cleanup = subparsers.add_parser('cleanup',
-                                           help="Cleanup session and apps.")
-    parser_cleanup.add_argument('--session',
-                                required=True,
-                                help="Name of tmux session.")
+    parser_cleanup = subparsers.add_parser(
+        'cleanup', help="Cleanup session and apps."
+    )
+    parser_cleanup.add_argument(
+        '--session', required=True, help="Name of tmux session."
+    )
     parser_cleanup.add_argument('--app', help="App bundle name for cleanup.")
 
     args = parser.parse_args()
 
     if args.command == 'start':
-        return start(args.session, args.target, args.app, args.breakpoints,
-                     args.pid)
+        return start(
+            args.session, args.target, args.app, args.breakpoints, args.pid
+        )
     elif args.command == 'send':
         return send(args.session, args.cmd, args.clear)
     elif args.command == 'eval':
         return evaluate(args.session, args.expr, args.timeout)
     elif args.command == 'capture':
-        return capture(args.session, args.lines, args.wait_for_stop,
-                       args.timeout)
+        return capture(
+            args.session, args.lines, args.wait_for_stop, args.timeout
+        )
     elif args.command == 'cleanup':
         return cleanup(args.session, args.app)
 

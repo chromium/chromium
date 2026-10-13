@@ -14,7 +14,7 @@ import time
 from typing import List, Optional
 
 import shared_test_utils
-from shared_test_utils import Colors, Simulator, print_header, print_command
+from shared_test_utils import Colors, Simulator, print_header, print_command  # noqa: F401
 
 
 def _build_app(out_dir: str, target: str) -> bool:
@@ -38,14 +38,16 @@ def _build_app(out_dir: str, target: str) -> bool:
         return False
 
 
-def _run_app(out_dir: str,
-             simulator_udid: str,
-             target: str,
-             app_name: Optional[str],
-             enable_features: Optional[str] = None,
-             disable_features: Optional[str] = None,
-             app_args: Optional[List[str]] = None,
-             wipe: bool = False) -> int:
+def _run_app(
+    out_dir: str,
+    simulator_udid: str,
+    target: str,
+    app_name: Optional[str],
+    enable_features: Optional[str] = None,
+    disable_features: Optional[str] = None,
+    app_args: Optional[List[str]] = None,
+    wipe: bool = False,
+) -> int:
     """Installs and runs the app on the specified simulator.
 
     Args:
@@ -65,8 +67,10 @@ def _run_app(out_dir: str,
 
     app_path = os.path.join(out_dir, app_name)
     if not os.path.exists(app_path):
-        print(f"\n{Colors.FAIL}{Colors.BOLD}ERROR: App bundle not "
-              f"found at {app_path}{Colors.RESET}")
+        print(
+            f"\n{Colors.FAIL}{Colors.BOLD}ERROR: App bundle not "
+            f"found at {app_path}{Colors.RESET}"
+        )
         return 1
 
     info_plist_path = os.path.join(app_path, 'Info.plist')
@@ -76,7 +80,11 @@ def _run_app(out_dir: str,
 
     if wipe:
         uninstall_command = [
-            'xcrun', 'simctl', 'uninstall', simulator_udid, bundle_id
+            'xcrun',
+            'simctl',
+            'uninstall',
+            simulator_udid,
+            bundle_id,
         ]
         print_header("--- Uninstalling App (Wiping Data) ---")
         print_command(uninstall_command)
@@ -88,7 +96,12 @@ def _run_app(out_dir: str,
     subprocess.check_call(install_command)
 
     launch_command = [
-        'xcrun', 'simctl', 'launch', '--console-pty', simulator_udid, bundle_id
+        'xcrun',
+        'simctl',
+        'launch',
+        '--console-pty',
+        simulator_udid,
+        bundle_id,
     ]
     if enable_features:
         launch_command.append(f'--enable-features={enable_features}')
@@ -100,11 +113,13 @@ def _run_app(out_dir: str,
     print_header("--- Running App ---")
     print_command(launch_command)
 
-    process = subprocess.Popen(launch_command,
-                               stdout=subprocess.PIPE,
-                               stderr=subprocess.STDOUT,
-                               text=True,
-                               errors='replace')
+    process = subprocess.Popen(
+        launch_command,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        errors='replace',
+    )
 
     print(f"{Colors.BLUE}Runner Process PID: {process.pid}{Colors.RESET}")
     time.sleep(1)
@@ -114,14 +129,19 @@ def _run_app(out_dir: str,
             rf'{simulator_udid}.*/{re.escape(app_name)}/'
             rf'{re.escape(exec_name)}(\s|$)'
         )
-        pgrep_out = subprocess.check_output(['pgrep', '-f', pgrep_pattern],
-                                            text=True).strip()
+        pgrep_out = subprocess.check_output(
+            ['pgrep', '-f', pgrep_pattern], text=True
+        ).strip()
         if pgrep_out:
             app_pid = pgrep_out.splitlines()[0]
-            print(f"{Colors.BLUE}{Colors.BOLD}App Process PID (in simulator): "
-                  f"{app_pid}{Colors.RESET}")
-            print(f"{Colors.CYAN}To stop the app, run: xcrun simctl terminate "
-                  f"{simulator_udid} {bundle_id}{Colors.RESET}\n")
+            print(
+                f"{Colors.BLUE}{Colors.BOLD}App Process PID (in simulator): "
+                f"{app_pid}{Colors.RESET}"
+            )
+            print(
+                f"{Colors.CYAN}To stop the app, run: xcrun simctl terminate "
+                f"{simulator_udid} {bundle_id}{Colors.RESET}\n"
+            )
     except subprocess.CalledProcessError:
         pass
 
@@ -140,7 +160,8 @@ def _run_app(out_dir: str,
         print(f"\n{Colors.CYAN}Terminating app in simulator...{Colors.RESET}")
         subprocess.run(
             ['xcrun', 'simctl', 'terminate', simulator_udid, bundle_id],
-            capture_output=True)
+            capture_output=True,
+        )
         process.terminate()
         process.wait()
 
@@ -160,40 +181,50 @@ def main() -> int:
     parser.add_argument(
         '--out-dir',
         default='out/Debug-iphonesimulator',
-        help='The output directory to use for the build (default: %(default)s).'
+        help='The output directory to use for the build (default: %(default)s).',
     )
     parser.add_argument(
         '--target',
         default='chrome',
-        help='The build target to build (default: %(default)s).')
+        help='The build target to build (default: %(default)s).',
+    )
     parser.add_argument(
         '--app',
         help="The name of the app bundle to run (default: Chromium.app if "
-        "target is chrome, else <target>.app).")
-    parser.add_argument('--build',
-                        action='store_true',
-                        help='Build the app target before running.')
+        "target is chrome, else <target>.app).",
+    )
+    parser.add_argument(
+        '--build',
+        action='store_true',
+        help='Build the app target before running.',
+    )
     parser.add_argument(
         '--device',
         help='The device type or UDID to use for running the app '
-             '(can also be set via IOS_SIMULATOR_DEFAULT_DEVICE).')
+        '(can also be set via IOS_SIMULATOR_DEFAULT_DEVICE).',
+    )
     parser.add_argument(
         '--os',
         help='The OS version to use for running the app (e.g., 17.5) '
-             '(can also be set via IOS_SIMULATOR_DEFAULT_OS).')
-    parser.add_argument('--enable-features',
-                        help='Comma-separated list of feature flags to enable.')
+        '(can also be set via IOS_SIMULATOR_DEFAULT_OS).',
+    )
+    parser.add_argument(
+        '--enable-features',
+        help='Comma-separated list of feature flags to enable.',
+    )
     parser.add_argument(
         '--disable-features',
-        help='Comma-separated list of feature flags to disable.')
-    parser.add_argument('--args',
-                        nargs='+',
-                        help='Additional arguments to pass to the app.')
+        help='Comma-separated list of feature flags to disable.',
+    )
+    parser.add_argument(
+        '--args', nargs='+', help='Additional arguments to pass to the app.'
+    )
     parser.add_argument(
         '--wipe',
         action='store_true',
         help='Uninstall the app before installing to wipe stale '
-        'container data/preferences.')
+        'container data/preferences.',
+    )
     args = parser.parse_args()
 
     simulator = shared_test_utils.find_and_boot_simulator(args.device, args.os)
@@ -204,9 +235,16 @@ def main() -> int:
         if not _build_app(args.out_dir, args.target):
             return 1
 
-    return _run_app(args.out_dir, simulator.udid, args.target, args.app,
-                    args.enable_features, args.disable_features, args.args,
-                    args.wipe)
+    return _run_app(
+        args.out_dir,
+        simulator.udid,
+        args.target,
+        args.app,
+        args.enable_features,
+        args.disable_features,
+        args.args,
+        args.wipe,
+    )
 
 
 if __name__ == '__main__':

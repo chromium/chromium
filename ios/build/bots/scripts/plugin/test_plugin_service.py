@@ -6,7 +6,7 @@ from concurrent import futures
 import grpc
 import logging
 import os
-import subprocess
+import subprocess  # noqa: F401
 import sys
 
 # if the current directory is in scripts (pwd), then we need to
@@ -19,8 +19,8 @@ from plugin_constants import (
   PLUGIN_PROTOS_PATH,
   PLUGIN_SERVICE_WORKER_COUNT,
   PLUGIN_SERVICE_ADDRESS,
-  PLUGIN_PROXY_SERVICE_PORT,
-  REMOTE_PLUGIN_PROXY_PORT,
+  PLUGIN_PROXY_SERVICE_PORT,  # noqa: F401
+  REMOTE_PLUGIN_PROXY_PORT,  # noqa: F401
 )
 
 sys.path.append(PLUGIN_PROTOS_PATH)

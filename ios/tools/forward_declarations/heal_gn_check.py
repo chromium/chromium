@@ -6,7 +6,7 @@
 """CLI tool to automatically fix missing GN dependencies from gn check failures."""
 
 import argparse
-from pathlib import Path
+from pathlib import Path  # noqa: F401
 import re
 import subprocess
 import sys
@@ -33,7 +33,9 @@ def heal_gn_check(src_root, out_dir):
 
     matches = re.finditer(
         r'ERROR at (//[^:]+):\d+:\d+:\s+Can\'t include this header[^\n]+The target:\s+([^ ]+)\s+is including a file from the target:\s+([^ ]+)',
-        gn_res.stderr, re.MULTILINE)
+        gn_res.stderr,
+        re.MULTILINE,
+    )
 
     healed = False
     for m in matches:
@@ -61,15 +63,19 @@ def heal_gn_check(src_root, out_dir):
 
         # We search for the source_set or target containing target_name, and inject the dependency
         # A precise target finder matching target_name
-        target_pattern = r'(\b\w+\(\s*"' + re.escape(
-            target_name) + r'"\s*\)\s*\{[^}]*?deps\s*=\s*\[)'
+        target_pattern = (
+            r'(\b\w+\(\s*"'
+            + re.escape(target_name)
+            + r'"\s*\)\s*\{[^}]*?deps\s*=\s*\[)'
+        )
 
         if re.search(target_pattern, content):
             # Inject the allowlisted target into deps block
             # We strip :dest_name suffix if it is redundant with directory name (standard Chromium style)
             dep_dir, dep_name = dest_target.split(":")
-            clean_dep = dep_dir if dep_dir.endswith(
-                "/" + dep_name) else dest_target
+            clean_dep = (
+                dep_dir if dep_dir.endswith("/" + dep_name) else dest_target
+            )
 
             print(
                 f"  🎯 Injecting dependency target \"{clean_dep}\" into: {build_gn_path.relative_to(src_root)}"
@@ -83,8 +89,8 @@ def heal_gn_check(src_root, out_dir):
             # Scan lines to locate the correct target's deps block
             for idx, line in enumerate(lines):
                 if re.search(
-                        r'\b\w+\(\s*"' + re.escape(target_name) + r'"\s*\)',
-                        line):
+                    r'\b\w+\(\s*"' + re.escape(target_name) + r'"\s*\)', line
+                ):
                     target_idx = idx
                 if target_idx != -1 and "deps = [" in line:
                     deps_start_idx = idx
@@ -94,10 +100,11 @@ def heal_gn_check(src_root, out_dir):
                 # Check if it is a single-line empty deps, e.g., "deps = []"
                 if "deps = []" in lines[deps_start_idx]:
                     lines[deps_start_idx] = lines[deps_start_idx].replace(
-                        "deps = []", f'deps = [\n    "{clean_dep}",\n  ]')
+                        "deps = []", f'deps = [\n    "{clean_dep}",\n  ]'
+                    )
                     content = "\n".join(lines)
                     build_gn_path.write_text(content)
-                    print(f"  ✨ Successfully healed BUILD.gn dependencies!")
+                    print("  ✨ Successfully healed BUILD.gn dependencies!")
                     healed = True
                 else:
                     # Alphabetically inject
@@ -117,7 +124,7 @@ def heal_gn_check(src_root, out_dir):
                     if inserted:
                         content = "\n".join(lines)
                         build_gn_path.write_text(content)
-                        print(f"  ✨ Successfully healed BUILD.gn dependencies!")
+                        print("  ✨ Successfully healed BUILD.gn dependencies!")
                         healed = True
 
     return healed
@@ -131,8 +138,10 @@ def main():
     parser = argparse.ArgumentParser(
         description="Runs gn check and automatically adds missing dependencies to BUILD.gn files."
     )
-    parser.add_argument("out_dir",
-                        help="Path to the build output directory (e.g., out/Debug-iphonesimulator).")
+    parser.add_argument(
+        "out_dir",
+        help="Path to the build output directory (e.g., out/Debug-iphonesimulator).",
+    )
     args = parser.parse_args()
 
     try:

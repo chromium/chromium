@@ -394,7 +394,7 @@ class EgtestsAppTest(test_runner_test.TestCase):
       repeat_count=2,
     )
     with self.assertRaises(test_runner_errors.XcodeUnsupportedFeatureError):
-      cmd = egtests_app.command('outdir', 'id=UUID', 1)
+      cmd = egtests_app.command('outdir', 'id=UUID', 1)  # noqa: F841
 
   def test_not_found_egtests_app(self):
     self.mock(os.path, 'exists', lambda _: False)
@@ -420,7 +420,7 @@ class EgtestsAppTest(test_runner_test.TestCase):
   @mock.patch('os.listdir', autospec=True)
   def test_not_found_xctest(self, mock_listdir):
     mock_listdir.return_value = ['random_file']
-    egtest = test_apps.EgtestsApp(
+    egtest = test_apps.EgtestsApp(  # noqa: F841
       _TEST_APP_PATH, _ALL_EG_TEST_NAMES, constants.IOSPlatformType.IPHONEOS
     )
     with self.assertRaises(test_runner.XCTestPlugInNotFoundError):

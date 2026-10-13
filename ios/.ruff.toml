@@ -1,0 +1,15 @@
+line-length = 80
+indent-width = 4
+extend-exclude = [
+  "*_pb2.py",
+  "third_party/*",
+  "build/bots/scripts/xcode_log_parser.py",
+  "tools/documents_statistics_viewer/cleanSandboxFileStats.py",
+  "web_view/tools/build.py",
+]
+
+[lint]
+unfixable = ["F401"]
+
+[format]
+quote-style = "preserve"

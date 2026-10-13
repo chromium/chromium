@@ -9,7 +9,7 @@ import signal
 import sys
 
 import collections
-import json
+import json  # noqa: F401
 import logging
 import os
 import psutil
@@ -17,7 +17,7 @@ import shutil
 import subprocess
 import threading
 import time
-from typing import List, Optional
+from typing import List, Optional  # noqa: F401
 
 import constants
 import exception_utils
@@ -25,7 +25,7 @@ import file_util
 import gtest_utils
 import mac_util
 import iossim_util
-import shard_util
+import shard_util  # noqa: F401
 import test_apps
 from test_result_util import ResultCollection, TestResult, TestStatus
 import test_runner_errors
@@ -38,7 +38,7 @@ CHROMIUM_SRC_DIR = os.path.abspath(os.path.join(THIS_DIR, '../../../..'))
 sys.path.append(
   os.path.abspath(os.path.join(CHROMIUM_SRC_DIR, 'build/util/lib/proto'))
 )
-import measures
+import measures  # noqa: E402
 
 LOGGER = logging.getLogger(__name__)
 DERIVED_DATA = os.path.expanduser('~/Library/Developer/Xcode/DerivedData')
@@ -677,7 +677,7 @@ class TestRunner(object):
       )
     elif isinstance(self, DeviceTestRunner):
       # Pull the file from device first before parsing.
-      if parser.compiled_tests_file_path != None:
+      if parser.compiled_tests_file_path != None:  # noqa: E711
         LOGGER.info('Pulling test location file from iOS device Documents...')
         file_name = os.path.split(parser.compiled_tests_file_path)[1]
         pull_cmd = [

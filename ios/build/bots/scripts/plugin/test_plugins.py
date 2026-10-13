@@ -10,7 +10,7 @@ import shutil
 import subprocess
 import signal
 import sys
-from typing import List, Tuple, Optional
+from typing import List, Tuple, Optional  # noqa: F401
 
 # if the current directory is in scripts (pwd), then we need to
 # add plugin in order to import from that directory
@@ -196,7 +196,7 @@ class VideoRecorderPlugin(BasePlugin):
     recording_process = self.recording_process_for_device_name(
       request.device_info.name
     )
-    if recording_process.process != None:
+    if recording_process.process != None:  # noqa: E711
       LOGGER.warning(
         'Previous recording for test case %s is still ongoing, '
         'terminating before starting new recording...',
@@ -328,7 +328,7 @@ class VideoRecorderPlugin(BasePlugin):
     """
     LOGGER.info('Clearing any running processes...')
     for recording_process in self.device_recording_process_map.values():
-      if recording_process.process != None:
+      if recording_process.process != None:  # noqa: E711
         self.stop_recording(False, recording_process)
 
   def get_video_file_name(self, test_case_name, attempt_count):

@@ -7,7 +7,7 @@ import os
 # if the current directory is in scripts (pwd), then we need to
 # add plugin in order to import from that directory
 if os.path.split(os.path.dirname(__file__))[1] != 'plugin':
-  sys.path.append(
+  sys.path.append(  # noqa: F821
     os.path.join(os.path.abspath(os.path.dirname(__file__)), 'plugin')
   )
 from plugin_constants import VIDEO_RECORDER_PLUGIN_OPTIONS

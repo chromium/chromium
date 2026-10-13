@@ -14,7 +14,7 @@ import shutil
 import subprocess
 import sys
 import time
-from typing import Tuple, List, Optional
+from typing import Tuple, List, Optional  # noqa: F401
 import weakref
 
 import constants
@@ -22,8 +22,7 @@ import iossim_util
 import test_apps
 import test_runner_errors
 import shard_util
-import test_runner_errors
-from test_result_util import ResultCollection, TestResult, TestStatus
+from test_result_util import ResultCollection, TestResult, TestStatus  # noqa: F401
 import test_runner
 from xcode_log_parser import XcodeLogParser, Xcode16LogParser
 import xcode_util
@@ -42,7 +41,7 @@ CHROMIUM_SRC_DIR = os.path.abspath(os.path.join(THIS_DIR, '../../../..'))
 sys.path.append(
   os.path.abspath(os.path.join(CHROMIUM_SRC_DIR, 'build/util/lib/proto'))
 )
-import measures
+import measures  # noqa: E402
 
 LOGGER = logging.getLogger(__name__)
 MAXIMUM_TESTS_PER_SHARD_FOR_RERUN = 20

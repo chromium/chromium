@@ -15,7 +15,9 @@ BASE_FILENAME = "generated_localized_strings"
 HEADER_FILENAME = BASE_FILENAME + ".h"
 SOURCE_FILENAME = BASE_FILENAME + ".mm"
 
-HEADER_GUARD = "IOS_CHROME_CREDENTIAL_PROVIDER_EXTENSION_GENERATED_LOCALIZED_STRINGS_H_"
+HEADER_GUARD = (
+    "IOS_CHROME_CREDENTIAL_PROVIDER_EXTENSION_GENERATED_LOCALIZED_STRINGS_H_"
+)
 LICENSE_HEADER = """// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -38,13 +40,14 @@ Here's how to add new strings to the Credential Provider Extension:
 
 # --- Utility Functions ---
 
+
 def snake_to_camel(snake_str):
     """
     Converts snake_case to CamelCase, removes prefix, and ensures
     the function name ends with "String".
     """
     if snake_str.startswith(PREFIX_TO_REMOVE):
-        cleaned_str = snake_str[len(PREFIX_TO_REMOVE):]
+        cleaned_str = snake_str[len(PREFIX_TO_REMOVE) :]
     else:
         cleaned_str = snake_str
 
@@ -81,10 +84,7 @@ def generate_plist_file(strings_array, plist_filepath):
         "headers": [
             "ios/credential_provider_extension/grit/ios_credential_provider_extension_strings.h"
         ],
-        "outputs": [{
-            "name": "Localizable.strings",
-            "strings": strings_array
-        }]
+        "outputs": [{"name": "Localizable.strings", "strings": strings_array}],
     }
     try:
         os.makedirs(os.path.dirname(plist_filepath) or '.', exist_ok=True)
@@ -103,7 +103,7 @@ def generate_accessor_files(plist_filepath):
     try:
         with open(plist_filepath, 'rb') as fp:
             data = plistlib.load(fp)
-    except Exception as e:
+    except Exception:
         return
 
     localized_strings = data.get("outputs", [{}])[0].get("strings", [])
@@ -131,7 +131,8 @@ def generate_accessor_files(plist_filepath):
 
         source_content.append(f"NSString* {func_name}() {{\n")
         source_content.append(
-            f"  return NSLocalizedString(@\"{original_string}\", @\"\");\n")
+            f"  return NSLocalizedString(@\"{original_string}\", @\"\");\n"
+        )
         source_content.append("}\n\n")
 
     header_content.append("// clang-format on\n")
@@ -151,7 +152,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Generates C++ accessor functions for localized strings.",
         formatter_class=argparse.RawTextHelpFormatter,
-        add_help=False)
+        add_help=False,
+    )
     parser.add_argument('--help', action='store_true')
     args = parser.parse_args()
 

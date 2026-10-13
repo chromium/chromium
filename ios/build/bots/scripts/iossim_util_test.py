@@ -11,7 +11,7 @@ import unittest
 
 import constants
 import iossim_util
-import mac_util
+import mac_util  # noqa: F401
 import os
 import subprocess
 import test_runner
@@ -895,7 +895,7 @@ class GetiOSSimUtil(test_runner_test.TestCase):
     ) as mock_delete_simulator_runtime:
       iossim_util.delete_stale_simulator_runtimes()
 
-      calls = [
+      calls = [  # noqa: F841
         mock.call('GGGGGG', True),
       ]
 

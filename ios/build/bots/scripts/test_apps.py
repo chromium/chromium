@@ -9,11 +9,11 @@ import plistlib
 import struct
 import subprocess
 import time
-import logging
+import logging  # noqa: F401
 from typing import Tuple, List, Set
 
 import constants
-import shard_util
+import shard_util  # noqa: F401
 import test_runner
 import test_runner_errors
 import xcode_util

@@ -27,7 +27,7 @@ sys.path.extend(
     os.path.abspath(os.path.join(CHROMIUM_SRC_DIR, 'build/util/')),
   ]
 )
-import measures
+import measures  # noqa: E402
 
 LOGGER = logging.getLogger(__name__)
 XcodeIOSSimulatorRuntimeRelPath = (
@@ -737,7 +737,7 @@ def install_xcode(
           iossim_util.get_platform_type_by_platform(device_type),
           platform_version,
         )
-      except test_runner_errors.RuntimeBuildNotFoundError as e:
+      except test_runner_errors.RuntimeBuildNotFoundError:
         # If we hit this exception, a runtime was not found in CIPD. This can
         # happen when users do not have access to infra_internal, for example.
         LOGGER.warning(

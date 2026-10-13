@@ -282,7 +282,7 @@ class InstallTest(XcodeUtilTest):
           with mock.patch(
             'iossim_util.override_default_iphonesim_runtime'
           ) as mock_override_default_iphonesim_runtime:
-            result = xcode_util.install_runtime_dmg(
+            result = xcode_util.install_runtime_dmg(  # noqa: F841
               mac_toolchain='mac_toolchain',
               runtime_cache_folder='/path/to/runtime_cache_folder',
               platform_type=constants.IOSPlatformType.IPHONEOS,
@@ -303,7 +303,7 @@ class InstallTest(XcodeUtilTest):
       ) as mock_delete_least_recently_used_simulator_runtimes:
         with mock.patch(
           'xcode_util.get_latest_runtime_build_cipd', return_value='20C52'
-        ) as mock_get_latest_runtime_build_cipd:
+        ) as mock_get_latest_runtime_build_cipd:  # noqa: F841
           with mock.patch(
             'iossim_util.get_simulator_runtime_info_by_build', return_value=None
           ) as mock_get_simulator_runtime_info_by_build:
@@ -325,7 +325,7 @@ class InstallTest(XcodeUtilTest):
                       with mock.patch(
                         'iossim_util.delete_stale_simulator_runtimes'
                       ) as mock_delete_stale_simulator_runtimes:
-                        result = xcode_util.install_runtime_dmg(
+                        result = xcode_util.install_runtime_dmg(  # noqa: F841
                           mac_toolchain='mac_toolchain',
                           runtime_cache_folder='/path/to/runtime_cache_folder',
                           platform_type=constants.IOSPlatformType.IPHONEOS,
@@ -358,7 +358,7 @@ class InstallTest(XcodeUtilTest):
       ) as mock_delete_least_recently_used_simulator_runtimes:
         with mock.patch(
           'xcode_util.get_latest_runtime_build_cipd', return_value='20C52'
-        ) as mock_get_latest_runtime_build_cipd:
+        ) as mock_get_latest_runtime_build_cipd:  # noqa: F841
           with mock.patch(
             'iossim_util.get_simulator_runtime_info_by_build', return_value=None
           ) as mock_get_simulator_runtime_info_by_build:
@@ -389,7 +389,7 @@ class InstallTest(XcodeUtilTest):
                             mock_get_simulator_runtime_info.return_value = (
                               RUNTIME_15_0
                             )
-                            result = xcode_util.install_runtime_dmg(
+                            result = xcode_util.install_runtime_dmg(  # noqa: F841
                               mac_toolchain='mac_toolchain',
                               runtime_cache_folder='/path/to/runtime_cache_folder',
                               platform_type=constants.IOSPlatformType.IPHONEOS,
@@ -428,7 +428,7 @@ class InstallTest(XcodeUtilTest):
       ) as mock_delete_least_recently_used_simulator_runtimes:
         with mock.patch(
           'xcode_util.get_latest_runtime_build_cipd', return_value='20C52'
-        ) as mock_get_latest_runtime_build_cipd:
+        ) as mock_get_latest_runtime_build_cipd:  # noqa: F841
           with mock.patch(
             'iossim_util.get_simulator_runtime_info_by_build',
             return_value=RUNTIME_15_0,
@@ -437,7 +437,7 @@ class InstallTest(XcodeUtilTest):
               'xcode_util._install_runtime_dmg'
             ) as mock__install_runtime_dmg:
               with mock.patch('os.environ.get', return_value=True):
-                result = xcode_util.install_runtime_dmg(
+                result = xcode_util.install_runtime_dmg(  # noqa: F841
                   mac_toolchain='mac_toolchain',
                   runtime_cache_folder='/path/to/runtime_cache_folder',
                   platform_type=constants.IOSPlatformType.IPHONEOS,

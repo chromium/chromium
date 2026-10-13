@@ -9,7 +9,7 @@ import json
 import logging
 import mock
 import os
-import subprocess
+import subprocess  # noqa: F401
 import sys
 import tempfile
 import unittest
@@ -22,7 +22,7 @@ import test_apps
 from test_result_util import ResultCollection, TestResult, TestStatus
 import test_runner
 import test_runner_test
-import xcode_log_parser
+import xcode_log_parser  # noqa: F401
 import xcode_util
 import xcodebuild_runner
 
@@ -32,7 +32,7 @@ if os.path.split(os.path.dirname(__file__))[1] != 'plugin':
   sys.path.append(
     os.path.join(os.path.abspath(os.path.dirname(__file__)), 'plugin')
   )
-import test_plugin_service
+import test_plugin_service  # noqa: F401
 
 _ROOT_FOLDER_PATH = 'root/folder'
 _XCODE_BUILD_VERSION = '10B61'
@@ -687,7 +687,7 @@ class SimulatorParallelTestRunnerTest(test_runner_test.SimulatorTestRunnerTest):
       "fake-out-dir",
       video_plugin_option='failed_only',
     )
-    self.assertTrue(tr.test_plugin_service != None)
+    self.assertTrue(tr.test_plugin_service != None)  # noqa: E711
     tr.test_plugin_service = mock_plugin_service
     mock_result.return_value = ResultCollection(
       test_results=[

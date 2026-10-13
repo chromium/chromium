@@ -315,7 +315,7 @@ class ResultCollectionTest(test_runner_test.TestCase):
   def test_tests_by_expression(self):
     """Tests tests_by_expression."""
     collection = self.full_collection
-    exp = lambda result: result.status == TestStatus.SKIP
+    exp = lambda result: result.status == TestStatus.SKIP  # noqa: E731
     skipped_tests = collection.tests_by_expression(exp)
     self.assertEqual(
       skipped_tests, set(['unexpected/skipped_test', 'disabled/test'])

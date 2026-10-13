@@ -12,7 +12,7 @@ import os
 import re
 import subprocess
 import threading
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple  # noqa: F401
 import shlex
 
 
@@ -43,8 +43,9 @@ def _load_env() -> None:
                     key, val = line.split('=', 1)
                     key = key.strip()
                     val = val.strip()
-                    if ((val.startswith('"') and val.endswith('"')) or
-                            (val.startswith("'") and val.endswith("'"))):
+                    if (val.startswith('"') and val.endswith('"')) or (
+                        val.startswith("'") and val.endswith("'")
+                    ):
                         val = val[1:-1]
                     if key not in os.environ:
                         os.environ[key] = val
@@ -59,6 +60,7 @@ _load_env()
 @dataclasses.dataclass
 class Simulator:
     """Dataclass for simulator information."""
+
     name: str
     udid: str
     os_version: str
@@ -78,14 +80,18 @@ class Simulator:
     @property
     def display_string(self) -> str:
         """Returns a formatted string for displaying simulator details."""
-        booted_status = (f"({Colors.GREEN}Booted{Colors.RESET})"
-                         if self.booted else "")
-        return (f"{self.name} (OS: {self.os_version}, UDID: {self.udid}) "
-                f"{booted_status}")
+        booted_status = (
+            f"({Colors.GREEN}Booted{Colors.RESET})" if self.booted else ""
+        )
+        return (
+            f"{self.name} (OS: {self.os_version}, UDID: {self.udid}) "
+            f"{booted_status}"
+        )
 
 
 class Colors:
     """ANSI color codes for terminal output."""
+
     HEADER = '\033[35m'  # Magenta
     BLUE = '\033[34m'
     CYAN = '\033[36m'
@@ -116,7 +122,8 @@ class SimulatorManager:
         try:
             output = subprocess.check_output(
                 ['xcrun', 'simctl', 'list', 'devices', '--json'],
-                encoding='utf-8')
+                encoding='utf-8',
+            )
             all_devices = json.loads(output).get('devices', {})
             for runtime, devices in all_devices.items():
                 # Only process iOS runtimes.
@@ -127,12 +134,14 @@ class SimulatorManager:
                 os_version = '.'.join(os_version_full.split('.')[:2])
                 for device in devices:
                     self.simulators.append(
-                        Simulator(name=device.get('name', ''),
-                                  udid=device.get('udid', ''),
-                                  os_version=os_version,
-                                  state=device.get('state', ''),
-                                  is_available=device.get(
-                                      'isAvailable', False)))
+                        Simulator(
+                            name=device.get('name', ''),
+                            udid=device.get('udid', ''),
+                            os_version=os_version,
+                            state=device.get('state', ''),
+                            is_available=device.get('isAvailable', False),
+                        )
+                    )
         except (subprocess.CalledProcessError, json.JSONDecodeError) as e:
             print(f"Error fetching simulator list: {e}")
 
@@ -146,15 +155,14 @@ class SimulatorManager:
     def find_specific_device(self, identifier: str) -> Optional[Simulator]:
         """Finds a specific device by name or UDID."""
         for sim in self.simulators:
-            if sim.name.lower() == identifier.lower(
-            ) or sim.udid == identifier:
+            if sim.name.lower() == identifier.lower() or sim.udid == identifier:
                 return sim
         return None
 
     def find_best_available_device(self) -> Optional[Simulator]:
         """Finds the best available iPhone simulator to use as a default."""
         best_candidate = None
-        best_sdk_version = (0, )
+        best_sdk_version = (0,)
         best_iphone_version = 0
 
         for sim in self.simulators:
@@ -176,12 +184,11 @@ class SimulatorManager:
         return best_candidate
 
     def find_device_by_type_and_version(
-            self,
-            device_type: str,
-            os_version: Optional[str] = None) -> Optional[Simulator]:
+        self, device_type: str, os_version: Optional[str] = None
+    ) -> Optional[Simulator]:
         """Finds a device that matches a specific type and OS version."""
         best_candidate = None
-        best_sdk_version = (0, )
+        best_sdk_version = (0,)
 
         for sim in self.simulators:
             if not sim.is_available or sim.name.lower() != device_type.lower():
@@ -200,8 +207,9 @@ class SimulatorManager:
         return best_candidate
 
 
-def find_and_boot_simulator(device_type: Optional[str],
-                            os_version: Optional[str]) -> Optional[Simulator]:
+def find_and_boot_simulator(
+    device_type: Optional[str], os_version: Optional[str]
+) -> Optional[Simulator]:
     """Finds the requested simulator, booting it if necessary.
 
     Args:
@@ -247,10 +255,13 @@ def find_and_boot_simulator(device_type: Optional[str],
                 return None
         else:
             simulator_to_use = sim_manager.find_device_by_type_and_version(
-                device_type, os_version)
+                device_type, os_version
+            )
             if not simulator_to_use:
-                print(f"Could not find a simulator for device '{device_type}' "
-                      f"and OS '{os_version}'.")
+                print(
+                    f"Could not find a simulator for device '{device_type}' "
+                    f"and OS '{os_version}'."
+                )
                 sim_manager.list_available_simulators()
                 return None
 
@@ -263,8 +274,10 @@ def find_and_boot_simulator(device_type: Optional[str],
 
     # 3. If still no device, find the best available default.
     if not simulator_to_use:
-        print(f"{Colors.BLUE}No simulator booted. "
-              f"Finding the newest available iPhone...{Colors.RESET}")
+        print(
+            f"{Colors.BLUE}No simulator booted. "
+            f"Finding the newest available iPhone...{Colors.RESET}"
+        )
         simulator_to_use = sim_manager.find_best_available_device()
         if not simulator_to_use:
             print("Could not find a suitable default iPhone simulator.")
@@ -279,10 +292,12 @@ def find_and_boot_simulator(device_type: Optional[str],
     if not simulator_to_use.booted:
         print(
             f"\n{Colors.CYAN}Simulator '{simulator_to_use.display_string}' is "
-            f"not booted. Booting...{Colors.RESET}")
+            f"not booted. Booting...{Colors.RESET}"
+        )
         try:
             subprocess.check_call(
-                ['xcrun', 'simctl', 'boot', simulator_to_use.udid])
+                ['xcrun', 'simctl', 'boot', simulator_to_use.udid]
+            )
         except subprocess.CalledProcessError as e:
             print(f"Error booting simulator: {e}")
             return None
@@ -292,12 +307,14 @@ def find_and_boot_simulator(device_type: Optional[str],
 class SimulatorLogStreamer:
     """Streams logs from the simulator in the background."""
 
-    def __init__(self,
-                 simulator_udid: str,
-                 out_dir: str,
-                 scheme: str,
-                 predicate: str,
-                 show_in_stdout: bool = False):
+    def __init__(
+        self,
+        simulator_udid: str,
+        out_dir: str,
+        scheme: str,
+        predicate: str,
+        show_in_stdout: bool = False,
+    ):
         self.simulator_udid = simulator_udid
         self.out_dir = out_dir
         self.scheme = scheme
@@ -306,7 +323,8 @@ class SimulatorLogStreamer:
         self.proc = None
         self.safe_scheme = re.sub(r'[^a-zA-Z0-9_]', '_', scheme)
         self.log_file_path = os.path.join(
-            out_dir, f'app_logs_{self.safe_scheme}_{os.getpid()}.log')
+            out_dir, f'app_logs_{self.safe_scheme}_{os.getpid()}.log'
+        )
         self.thread = None
         self.log_file = None
 
@@ -316,8 +334,9 @@ class SimulatorLogStreamer:
         # Keep only the 5 most recent log files for this scheme to limit
         # disk usage.
         try:
-            pattern = os.path.join(self.out_dir,
-                                   f'app_logs_{self.safe_scheme}_*.log')
+            pattern = os.path.join(
+                self.out_dir, f'app_logs_{self.safe_scheme}_*.log'
+            )
             existing_logs = glob.glob(pattern)
             if len(existing_logs) >= 5:
                 existing_logs.sort(key=os.path.getmtime)
@@ -327,21 +346,31 @@ class SimulatorLogStreamer:
             pass
 
         cmd = [
-            'xcrun', 'simctl', 'spawn', self.simulator_udid, 'log', 'stream',
-            '--level', 'debug', '--style', 'syslog', '--predicate',
-            self.predicate
+            'xcrun',
+            'simctl',
+            'spawn',
+            self.simulator_udid,
+            'log',
+            'stream',
+            '--level',
+            'debug',
+            '--style',
+            'syslog',
+            '--predicate',
+            self.predicate,
         ]
 
-        self.log_file = open(self.log_file_path,
-                             'w',
-                             encoding='utf-8',
-                             errors='replace')
+        self.log_file = open(
+            self.log_file_path, 'w', encoding='utf-8', errors='replace'
+        )
 
-        self.proc = subprocess.Popen(cmd,
-                                     stdout=subprocess.PIPE,
-                                     stderr=subprocess.STDOUT,
-                                     encoding='utf-8',
-                                     errors='replace')
+        self.proc = subprocess.Popen(
+            cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            encoding='utf-8',
+            errors='replace',
+        )
 
         def read_loop():
             for line in self.proc.stdout:

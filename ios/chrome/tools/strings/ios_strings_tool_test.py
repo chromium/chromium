@@ -14,12 +14,11 @@ _THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 _SRC_ROOT = os.path.abspath(os.path.join(_THIS_DIR, '..', '..', '..', '..'))
 sys.path.insert(0, os.path.join(_SRC_ROOT, 'tools', 'grit'))
 
-from grit.format import data_pack
-import ios_strings_tool
+from grit.format import data_pack  # noqa: E402
+import ios_strings_tool  # noqa: E402
 
 
 class IosStringsToolTest(unittest.TestCase):
-
     def test_generate_localizable_strings_utf8_and_utf16(self):
         """Test generating binary `.strings` from UTF-8 and UTF-16 paks."""
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -69,19 +68,21 @@ class IosStringsToolTest(unittest.TestCase):
                 data_pack.UTF16,
             )
 
-            rc = ios_strings_tool.main([
-                'generate_localizable_strings',
-                '-c',
-                config_path,
-                '-I',
-                gen_dir,
-                '-p',
-                pak_dir,
-                '-o',
-                out_dir,
-                'en-US',
-                'pt-PT',
-            ])
+            rc = ios_strings_tool.main(
+                [
+                    'generate_localizable_strings',
+                    '-c',
+                    config_path,
+                    '-I',
+                    gen_dir,
+                    '-p',
+                    pak_dir,
+                    '-o',
+                    out_dir,
+                    'en-US',
+                    'pt-PT',
+                ]
+            )
             self.assertEqual(rc, 0)
 
             with open(
@@ -122,17 +123,19 @@ class IosStringsToolTest(unittest.TestCase):
                     f,
                 )
 
-            rc = ios_strings_tool.main([
-                'substitute_strings_identifier',
-                '-I',
-                hdr1,
-                '-I',
-                hdr2,
-                '-i',
-                src_plist_path,
-                '-o',
-                out_plist_path,
-            ])
+            rc = ios_strings_tool.main(
+                [
+                    'substitute_strings_identifier',
+                    '-I',
+                    hdr1,
+                    '-I',
+                    hdr2,
+                    '-i',
+                    src_plist_path,
+                    '-o',
+                    out_plist_path,
+                ]
+            )
             self.assertEqual(rc, 0)
 
             with open(out_plist_path, 'rb') as f:
@@ -149,15 +152,17 @@ class IosStringsToolTest(unittest.TestCase):
             bad_plist_path = os.path.join(tmp_dir, 'bad.plist')
             with open(bad_plist_path, 'wb') as f:
                 plistlib.dump({'Missing': 'IDS_UNKNOWN'}, f)
-            rc_bad = ios_strings_tool.main([
-                'substitute_strings_identifier',
-                '-I',
-                hdr1,
-                '-i',
-                bad_plist_path,
-                '-o',
-                out_plist_path,
-            ])
+            rc_bad = ios_strings_tool.main(
+                [
+                    'substitute_strings_identifier',
+                    '-I',
+                    hdr1,
+                    '-i',
+                    bad_plist_path,
+                    '-o',
+                    out_plist_path,
+                ]
+            )
             self.assertEqual(rc_bad, 1)
 
     def test_duplicate_header_entry_fails(self):

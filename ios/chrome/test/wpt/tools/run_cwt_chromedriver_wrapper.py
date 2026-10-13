@@ -6,4 +6,4 @@
 # This is a wrapper that invokes run_cwt_chromedriver but uses vpython3
 # rather than python3. This wrapper is needed by WPT scripts, which work
 # inside a vpython3 environment.
-import run_cwt_chromedriver
+import run_cwt_chromedriver  # noqa: F401

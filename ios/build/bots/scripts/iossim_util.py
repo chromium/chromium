@@ -9,21 +9,21 @@ import os
 import plistlib
 import subprocess
 import time
-import typing
+import typing  # noqa: F401
 import functools
 import sys
 
 import constants
 import test_runner
 import test_runner_errors
-import mac_util
+import mac_util  # noqa: F401
 
 THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 CHROMIUM_SRC_DIR = os.path.abspath(os.path.join(THIS_DIR, '../../../..'))
 sys.path.append(
   os.path.abspath(os.path.join(CHROMIUM_SRC_DIR, 'build/util/lib/proto'))
 )
-import measures
+import measures  # noqa: E402
 
 
 LOGGER = logging.getLogger(__name__)
@@ -109,7 +109,7 @@ def get_simulator_device_type_by_platform(simulators, platform):
 
 
 def debug_missing_simulator(checked_runtimes, out_dir=None):
-  if out_dir == None:
+  if out_dir == None:  # noqa: E711
     return
   # where we looked and didn't find the given version
   checked_runtimes_path = os.path.join(
@@ -569,8 +569,8 @@ def ensure_simulator_fully_booted(sim_udid: str, path=None, num_attempts=1):
       update_dyld_shared_cache(runtime)
       subprocess.check_call(cmd, timeout=120)
       return True
-    except subprocess.TimeoutExpired as e:
-      msg = f"Manually booting simulator timed out after 120 seconds."
+    except subprocess.TimeoutExpired:
+      msg = "Manually booting simulator timed out after 120 seconds."
       LOGGER.info(msg)
       msg_again = " again" if boot_attempt > 0 else ""
       msg_action = (

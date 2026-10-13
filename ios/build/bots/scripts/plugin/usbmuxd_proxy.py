@@ -2,10 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import grpc
+import grpc  # noqa: F401
 import logging
 import os
-import select
+import select  # noqa: F401
 import signal
 import socket
 import subprocess
@@ -28,8 +28,8 @@ from plugin_constants import (
 from test_plugin_client import TestPluginClient
 
 sys.path.append(PLUGIN_PROTOS_PATH)
-import test_plugin_service_pb2
-import test_plugin_service_pb2_grpc
+import test_plugin_service_pb2  # noqa: F401
+import test_plugin_service_pb2_grpc  # noqa: F401
 
 LOGGER = logging.getLogger(__name__)
 
@@ -74,20 +74,20 @@ class PluginServiceProxyWrapper:
 
   def tear_down(self):
     LOGGER.info('terminating proxy process...')
-    if self.proxy_process != None:
+    if self.proxy_process != None:  # noqa: E711
       self.proxy_process_stop_flag.set()
       self.proxy_process.join()
       self.proxy_process_stop_flag.clear()
 
     LOGGER.info('terminating iproxy process...')
-    if self.iproxy_process != None:
+    if self.iproxy_process != None:  # noqa: E711
       os.kill(self.iproxy_process.pid, signal.SIGTERM)
 
   def reset(self):
     # re-establish remote connection with the test app. This is usually called
     # during test retries, when the remote proxy service re-launched and we
     # need to re-establish the connection.
-    if self.proxy_process != None:
+    if self.proxy_process != None:  # noqa: E711
       self.proxy_process_stop_flag.set()
       self.proxy_process.join()
       self.proxy_process_stop_flag.clear()
@@ -167,7 +167,7 @@ class PluginServiceProxyWrapper:
       except Exception as e:
         LOGGER.error('Proxy service unexpectedly exited due to error ', e)
       finally:
-        if sock != None:
+        if sock != None:  # noqa: E711
           sock.close()
 
     def receiveRequests(self):

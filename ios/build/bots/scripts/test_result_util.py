@@ -45,7 +45,7 @@ def _validate_kwargs(kwargs, valid_args_set):
 
 def _validate_test_status(status):
   """Raises if input isn't valid."""
-  if not status in _VALID_TEST_STATUSES:
+  if status not in _VALID_TEST_STATUSES:
     raise TypeError(
       f'Invalid test status: {status}. Should be one of {_VALID_TEST_STATUSES}.'
     )
@@ -172,7 +172,7 @@ class ResultCollection(object):
   @crashed.setter
   def crashed(self, value):
     """Sets crash value."""
-    assert type(value) == bool
+    assert type(value) == bool  # noqa: E721
     self._crashed = value
 
   @property
@@ -196,7 +196,7 @@ class ResultCollection(object):
   @spawning_test_launcher.setter
   def spawning_test_launcher(self, value):
     """Sets spawning_test_launcher value."""
-    assert type(value) == bool
+    assert type(value) == bool  # noqa: E721
     self._spawning_test_launcher = value
 
   def add_test_result(self, test_result):

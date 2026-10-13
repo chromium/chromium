@@ -12,15 +12,14 @@ from data_collector import get_existing_owners
 from automatic_ownership import (
     is_high_level_owner,
     extract_commits_informations,
-    determine_owners_from_zscore
+    determine_owners_from_zscore,
 )
-from commit import Commit
+from commit import Commit  # noqa: F401
 from test_data import FAKE_GIT_LOG
 from gitutils import split_log_into_commits
 
 
 class AutomaticOwnershipTest(unittest.TestCase):
-
     def setUp(self):
         """Creates a temporary directory with mock OWNERS files."""
         self.temp_dir = tempfile.mkdtemp()
@@ -65,25 +64,29 @@ class AutomaticOwnershipTest(unittest.TestCase):
         browser_rel_path = os.path.relpath(self.browser_dir, self.temp_dir)
         ios_rel_path = os.path.relpath(self.ios_dir, self.temp_dir)
         self.assertTrue(
-            is_high_level_owner('user_x', browser_rel_path, owners_map))
+            is_high_level_owner('user_x', browser_rel_path, owners_map)
+        )
         self.assertTrue(
-            is_high_level_owner('user_y', browser_rel_path, owners_map))
+            is_high_level_owner('user_y', browser_rel_path, owners_map)
+        )
         self.assertFalse(
-            is_high_level_owner('user_a', browser_rel_path, owners_map))
+            is_high_level_owner('user_a', browser_rel_path, owners_map)
+        )
         self.assertTrue(is_high_level_owner('user_x', ios_rel_path, owners_map))
         self.assertFalse(
-            is_high_level_owner('user_y', ios_rel_path, owners_map))
+            is_high_level_owner('user_y', ios_rel_path, owners_map)
+        )
         self.assertFalse(
-            is_high_level_owner('user_ios_dev', ios_rel_path, owners_map))
+            is_high_level_owner('user_ios_dev', ios_rel_path, owners_map)
+        )
 
     def test_extract_commits_informations_with_owner_filter(self):
         """Tests that high-level owners are excluded from review stats."""
         owners_map = get_existing_owners(self.temp_dir)
         commits = split_log_into_commits(FAKE_GIT_LOG)
-        stats = extract_commits_informations(commits,
-                                             owners_map,
-                                             owner_exclusion=True,
-                                             quiet=True)
+        stats = extract_commits_informations(
+            commits, owners_map, owner_exclusion=True, quiet=True
+        )
 
         # In FAKE_GIT_LOG, user_b reviews 8 commits in
         # 'ios/chrome/browser/feature'. Since user_b is an owner of
@@ -107,10 +110,9 @@ class AutomaticOwnershipTest(unittest.TestCase):
         """Tests that the owner exclusion can be disabled."""
         owners_map = get_existing_owners(self.temp_dir)
         commits = split_log_into_commits(FAKE_GIT_LOG)
-        stats = extract_commits_informations(commits,
-                                             owners_map,
-                                             owner_exclusion=False,
-                                             quiet=True)
+        stats = extract_commits_informations(
+            commits, owners_map, owner_exclusion=False, quiet=True
+        )
 
         # In FAKE_GIT_LOG, user_b reviews 8 commits in
         # 'ios/chrome/browser/feature'. With exclusion disabled, their
@@ -142,7 +144,7 @@ class AutomaticOwnershipTest(unittest.TestCase):
                 'user_f': {'commit_count': 1, 'review_count': 1},
                 'user_g': {'commit_count': 1, 'review_count': 1},
                 'user_h': {'commit_count': 1, 'review_count': 1},
-            }
+            },
         }
         owners = determine_owners_from_zscore(stats)
         self.assertIn('user_a', owners)
@@ -156,7 +158,8 @@ class AutomaticOwnershipTest(unittest.TestCase):
         owners_map = get_existing_owners(self.temp_dir)
         commits = split_log_into_commits(FAKE_GIT_LOG)
         stats_per_folder = extract_commits_informations(
-            commits, owners_map, owner_exclusion=True, quiet=True)
+            commits, owners_map, owner_exclusion=True, quiet=True
+        )
 
         feature_stats = stats_per_folder.get('ios/chrome/browser/feature')
         self.assertIsNotNone(feature_stats)
@@ -172,10 +175,9 @@ class AutomaticOwnershipTest(unittest.TestCase):
         """Tests that commit stats are aggregated into parent directories."""
         owners_map = get_existing_owners(self.temp_dir)
         commits = split_log_into_commits(FAKE_GIT_LOG)
-        stats = extract_commits_informations(commits,
-                                             owners_map,
-                                             owner_exclusion=False,
-                                             quiet=True)
+        stats = extract_commits_informations(
+            commits, owners_map, owner_exclusion=False, quiet=True
+        )
 
         # Stats for the deepest directory.
         feature_stats = stats.get('ios/chrome/browser/feature')
@@ -183,9 +185,11 @@ class AutomaticOwnershipTest(unittest.TestCase):
         self.assertEqual(feature_stats['total_commit'], 11)
         self.assertEqual(feature_stats['total_review'], 11)
         self.assertEqual(
-            feature_stats['individual_stats']['user_a']['commit_count'], 8)
+            feature_stats['individual_stats']['user_a']['commit_count'], 8
+        )
         self.assertEqual(
-            feature_stats['individual_stats']['user_b']['review_count'], 7)
+            feature_stats['individual_stats']['user_b']['review_count'], 7
+        )
 
         # Stats for the parent directory should be identical.
         browser_stats = stats.get('ios/chrome/browser')
@@ -193,9 +197,11 @@ class AutomaticOwnershipTest(unittest.TestCase):
         self.assertEqual(browser_stats['total_commit'], 11)
         self.assertEqual(browser_stats['total_review'], 11)
         self.assertEqual(
-            browser_stats['individual_stats']['user_a']['commit_count'], 8)
+            browser_stats['individual_stats']['user_a']['commit_count'], 8
+        )
         self.assertEqual(
-            browser_stats['individual_stats']['user_b']['review_count'], 7)
+            browser_stats['individual_stats']['user_b']['review_count'], 7
+        )
 
         # Stats for the grandparent directory should also be identical.
         chrome_stats = stats.get('ios/chrome')
@@ -213,10 +219,9 @@ class AutomaticOwnershipTest(unittest.TestCase):
         """Tests owner exclusion works correctly with stat aggregation."""
         owners_map = get_existing_owners(self.temp_dir)
         commits = split_log_into_commits(FAKE_GIT_LOG)
-        stats = extract_commits_informations(commits,
-                                             owners_map,
-                                             owner_exclusion=True,
-                                             quiet=True)
+        stats = extract_commits_informations(
+            commits, owners_map, owner_exclusion=True, quiet=True
+        )
 
         # In the parent directory 'ios/chrome/browser', user_b is an owner.
         # Their reviews should be excluded from this directory and its parents.

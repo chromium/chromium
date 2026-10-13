@@ -4,8 +4,8 @@
 # found in the LICENSE file.
 
 import collections
-from mock import patch
-import os
+from mock import patch  # noqa: F401
+import os  # noqa: F401
 import unittest
 
 import shard_util

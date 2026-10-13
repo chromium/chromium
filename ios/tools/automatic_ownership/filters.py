@@ -21,9 +21,13 @@ def avoid_file(file: str) -> bool:
     """
     if 'test' in file:
         return False
-    return not (file.endswith('.h') or file.endswith('.mm')
-                or file.endswith('.cc') or file.endswith('.swift')
-                or file.endswith('.ts'))
+    return not (
+        file.endswith('.h')
+        or file.endswith('.mm')
+        or file.endswith('.cc')
+        or file.endswith('.swift')
+        or file.endswith('.ts')
+    )
 
 
 def avoid_directory(directory: str) -> bool:
@@ -76,7 +80,7 @@ def avoid_commit(commit: str) -> bool:
     Returns:
         True if the commit should be avoided (skipped), False otherwise.
     """
-    if not 'Author' in commit:
+    if 'Author' not in commit:
         return True
 
     keyword_to_ignore = [
@@ -119,7 +123,8 @@ def avoid_commit(commit: str) -> bool:
     stats_regex = re.search('[0-9]+ file.? changed', commit)
     if stats_regex:
         modified_files_count = int(
-            commit[stats_regex.start():stats_regex.end()].split()[0])
+            commit[stats_regex.start() : stats_regex.end()].split()[0]
+        )
         if modified_files_count >= 20:
             return True
     return False

@@ -12,7 +12,7 @@ import argparse
 import datetime
 import json
 import os
-import sys
+import sys  # noqa: F401
 
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from filters import avoid_owner_line
@@ -63,8 +63,7 @@ def get_existing_owners(root_directory: str) -> dict[str, set[str]]:
                     if '@' in line:
                         owners.add(line.split('@')[0])
                 if owners:
-                    owners_map[os.path.relpath(
-                        root, root_directory)] = owners
+                    owners_map[os.path.relpath(root, root_directory)] = owners
     return owners_map
 
 
@@ -110,26 +109,31 @@ def get_all_commits_of_folder(path: str, quiet: bool = False) -> str:
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-        description='Data Collector for Automatic Ownership.')
+        description='Data Collector for Automatic Ownership.'
+    )
     parser.add_argument(
         '-q',
         '--quiet',
         action='store_true',
-        help='Enable quiet mode, suppresses progress indicators.')
+        help='Enable quiet mode, suppresses progress indicators.',
+    )
     parser.add_argument(
         '--root-directory',
         default='ios',
-        help="The root directory to start the analysis from. Default: 'ios'.")
+        help="The root directory to start the analysis from. Default: 'ios'.",
+    )
     parser.add_argument(
         '--commits-output-file',
         default='commits.log',
         help="The path to the output file for commit logs. "
-        "Defaults to 'commits.log'.")
+        "Defaults to 'commits.log'.",
+    )
     parser.add_argument(
         '--owners-output-file',
         default='owners.json',
         help="The path to the output file for the OWNERS map. "
-        "Defaults to 'owners.json'.")
+        "Defaults to 'owners.json'.",
+    )
     args = parser.parse_args()
 
     root_folder = args.root_directory
@@ -140,10 +144,7 @@ if __name__ == '__main__':
     # 1. Collect and save OWNERS data.
     owners_map = get_existing_owners(root_folder)
     # Convert sets to lists for JSON serialization.
-    serializable_owners_map = {
-        k: list(v)
-        for k, v in owners_map.items()
-    }
+    serializable_owners_map = {k: list(v) for k, v in owners_map.items()}
     with open(owners_output_file, 'w') as f:
         json.dump(serializable_owners_map, f, indent=4)
     if not quiet_mode:

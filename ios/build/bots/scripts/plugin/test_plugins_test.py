@@ -6,10 +6,10 @@
 import unittest.mock as mock
 import sys
 import unittest
-import subprocess
+import subprocess  # noqa: F401
 import os
 import signal
-import glob
+import glob  # noqa: F401
 import copy
 
 # if the current directory is in scripts (pwd), then we need to
@@ -26,11 +26,11 @@ else:
   )
 from plugin_constants import PLUGIN_PROTOS_PATH, MAX_RECORDED_COUNT
 from test_plugins import VideoRecorderPlugin, BasePlugin, FileCopyPlugin
-import iossim_util
+import iossim_util  # noqa: F401
 
 sys.path.append(PLUGIN_PROTOS_PATH)
 import test_plugin_service_pb2
-import test_plugin_service_pb2_grpc
+import test_plugin_service_pb2_grpc  # noqa: F401
 
 TEST_DEVICE_ID = '123'
 TEST_DEVICE_NAME = 'simulator_x_y'
@@ -185,13 +185,13 @@ class VideoRecorderPluginTest(unittest.TestCase):
       video_recorder_plugin.recording_process_for_device_name(
         TEST_DEVICE_NAME
       ).process
-      == None
+      == None  # noqa: E711
     )
     self.assertTrue(
       video_recorder_plugin.recording_process_for_device_name(
         TEST_DEVICE_NAME
       ).test_case_name
-      == None
+      == None  # noqa: E711
     )
     self.assertTrue(
       video_recorder_plugin.testcase_recorded_count[TEST_CASE_NAME] == 1
@@ -240,13 +240,13 @@ class VideoRecorderPluginTest(unittest.TestCase):
       video_recorder_plugin.recording_process_for_device_name(
         TEST_DEVICE_NAME
       ).process
-      == None
+      == None  # noqa: E711
     )
     self.assertTrue(
       video_recorder_plugin.recording_process_for_device_name(
         TEST_DEVICE_NAME
       ).test_case_name
-      == None
+      == None  # noqa: E711
     )
     self.assertTrue(
       TEST_CASE_NAME not in video_recorder_plugin.testcase_recorded_count
@@ -282,13 +282,13 @@ class VideoRecorderPluginTest(unittest.TestCase):
       video_recorder_plugin.recording_process_for_device_name(
         TEST_DEVICE_NAME
       ).process
-      == None
+      == None  # noqa: E711
     )
     self.assertTrue(
       video_recorder_plugin.recording_process_for_device_name(
         TEST_DEVICE_NAME
       ).test_case_name
-      == None
+      == None  # noqa: E711
     )
     self.assertTrue(
       TEST_CASE_NAME not in video_recorder_plugin.testcase_recorded_count
@@ -332,13 +332,13 @@ class VideoRecorderPluginTest(unittest.TestCase):
       video_recorder_plugin.recording_process_for_device_name(
         TEST_DEVICE_NAME
       ).process
-      == None
+      == None  # noqa: E711
     )
     self.assertTrue(
       video_recorder_plugin.recording_process_for_device_name(
         TEST_DEVICE_NAME
       ).test_case_name
-      == None
+      == None  # noqa: E711
     )
 
     # reset again to make sure no exception is thrown

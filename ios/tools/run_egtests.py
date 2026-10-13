@@ -6,18 +6,24 @@
 
 import argparse
 import glob
-import json
+import json  # noqa: F401
 import os
 import platform
-import plistlib
+import plistlib  # noqa: F401
 import re
 import subprocess
 import sys
-from typing import Any, Dict, List, Optional, Tuple
-import shlex
+from typing import Any, Dict, List, Optional, Tuple  # noqa: F401
+import shlex  # noqa: F401
 
 import shared_test_utils
-from shared_test_utils import Colors, Simulator, print_header, print_command, SimulatorLogStreamer
+from shared_test_utils import (
+    Colors,
+    Simulator,  # noqa: F401
+    print_header,
+    print_command,
+    SimulatorLogStreamer,
+)  # noqa: F401
 
 _EG2TESTS_MODULE_SUFFIX = '_eg2tests_module'
 _TEST_CASE_SUFFIX = 'TestCase'
@@ -44,7 +50,7 @@ def _find_test_file(test_case: str) -> Optional[str]:
     """
     # Convert TestCase to test_case
     if test_case.endswith(_TEST_CASE_SUFFIX):
-        test_case = test_case[:-len(_TEST_CASE_SUFFIX)]
+        test_case = test_case[: -len(_TEST_CASE_SUFFIX)]
     snake_case_name = _camel_to_snake(test_case)
 
     # Find the test file.
@@ -66,8 +72,9 @@ def _find_test_file(test_case: str) -> Optional[str]:
     return test_file
 
 
-def _find_gn_modules_for_file(test_file: str,
-                              out_dir: str) -> Optional[List[str]]:
+def _find_gn_modules_for_file(
+    test_file: str, out_dir: str
+) -> Optional[List[str]]:
     """Finds all eg2tests_module GN targets that depend on a test file.
 
     Args:
@@ -80,10 +87,16 @@ def _find_gn_modules_for_file(test_file: str,
     try:
         # Find all test-only targets that depend on the test file.
         gn_refs_cmd = [
-            'gn', 'refs', out_dir, f'//{test_file}', '--all', '--testonly=true'
+            'gn',
+            'refs',
+            out_dir,
+            f'//{test_file}',
+            '--all',
+            '--testonly=true',
         ]
-        refs_output = subprocess.check_output(gn_refs_cmd,
-                                              encoding='utf-8').strip()
+        refs_output = subprocess.check_output(
+            gn_refs_cmd, encoding='utf-8'
+        ).strip()
 
         # Find all targets that end with _eg2tests_module.
         eg2tests_modules = []
@@ -173,8 +186,14 @@ def _build_tests(out_dir: str, scheme: str) -> bool:
         return False
 
 
-def _run_tests(out_dir: str, simulator_udid: str, arch: str, scheme: str,
-               test_filters: List[str], args: argparse.Namespace) -> int:
+def _run_tests(
+    out_dir: str,
+    simulator_udid: str,
+    arch: str,
+    scheme: str,
+    test_filters: List[str],
+    args: argparse.Namespace,
+) -> int:
     """Runs the EG tests on the specified simulator.
 
     Args:
@@ -213,10 +232,12 @@ def _run_tests(out_dir: str, simulator_udid: str, arch: str, scheme: str,
     if args.run_tests_until_failure:
         launch_command.append('-run-tests-until-failure')
     if args.test_repetition_relaunch_enabled:
-        launch_command.extend([
-            '-test-repetition-relaunch-enabled',
-            args.test_repetition_relaunch_enabled
-        ])
+        launch_command.extend(
+            [
+                '-test-repetition-relaunch-enabled',
+                args.test_repetition_relaunch_enabled,
+            ]
+        )
 
     print_header("--- Running Tests ---")
     print_command(launch_command)
@@ -229,8 +250,9 @@ def _run_tests(out_dir: str, simulator_udid: str, arch: str, scheme: str,
         'process CONTAINS[c] "eg2tests") AND NOT subsystem '
         'BEGINSWITH "com.apple"'
     )
-    log_streamer = SimulatorLogStreamer(simulator_udid, out_dir, scheme,
-                                        predicate, show_app_logs)
+    log_streamer = SimulatorLogStreamer(
+        simulator_udid, out_dir, scheme, predicate, show_app_logs
+    )
     log_streamer.start()
 
     try:
@@ -269,21 +291,26 @@ def _build_and_run_eg_tests(args: argparse.Namespace) -> int:
         print_header("--- Selecting Scheme ---")
         print(
             f"{Colors.CYAN}Scheme not provided. Inferring from test filter..."
-            f"{Colors.RESET}")
+            f"{Colors.RESET}"
+        )
         for test in test_filters:
             scheme = _find_scheme_for_tests(test, args.out_dir)
             if not scheme:
-                print(f"\n{Colors.FAIL}Could not determine the scheme for "
-                      f"test filter '{test}'. Please specify it with --scheme."
-                      f"{Colors.RESET}")
+                print(
+                    f"\n{Colors.FAIL}Could not determine the scheme for "
+                    f"test filter '{test}'. Please specify it with --scheme."
+                    f"{Colors.RESET}"
+                )
                 return 1
             if scheme not in tests_by_scheme:
                 tests_by_scheme[scheme] = []
             tests_by_scheme[scheme].append(test)
 
     for scheme, tests in tests_by_scheme.items():
-        print(f"{Colors.GREEN}Found scheme '{scheme}' for tests: "
-              f"{', '.join(tests)}{Colors.RESET}")
+        print(
+            f"{Colors.GREEN}Found scheme '{scheme}' for tests: "
+            f"{', '.join(tests)}{Colors.RESET}"
+        )
 
     simulator = shared_test_utils.find_and_boot_simulator(args.device, args.os)
     if not simulator:
@@ -326,50 +353,62 @@ def main() -> int:
     parser.add_argument(
         '--out-dir',
         default='out/Debug-iphonesimulator',
-        help='The output directory to use for the build (default: %(default)s).'
+        help='The output directory to use for the build (default: %(default)s).',
     )
-    parser.add_argument('--tests',
-                        help='Comma-separated list of tests to run (e.g., '
-                        "'TestCase1/testMethodA,TestCase2/testMethodB'"
-                        '). '
-                        'Does not support wildcards.')
+    parser.add_argument(
+        '--tests',
+        help='Comma-separated list of tests to run (e.g., '
+        "'TestCase1/testMethodA,TestCase2/testMethodB'"
+        '). '
+        'Does not support wildcards.',
+    )
     parser.add_argument(
         '--scheme',
         help='The EG test scheme to build and run. If not provided, it will be '
-        'inferred from --tests.')
+        'inferred from --tests.',
+    )
     parser.add_argument(
         '--device',
         help='The device type or UDID to use for the test '
-             '(can also be set via IOS_SIMULATOR_DEFAULT_DEVICE).')
+        '(can also be set via IOS_SIMULATOR_DEFAULT_DEVICE).',
+    )
     parser.add_argument(
         '--os',
         help='The OS version to use for the test (e.g., 17.5) '
-             '(can also be set via IOS_SIMULATOR_DEFAULT_OS).')
-    parser.add_argument('--test-iterations',
-                        type=int,
-                        help='If specified, tests will run <number> times.')
-    parser.add_argument('--retry-tests-on-failure',
-                        action='store_true',
-                        help='If specified, tests will retry on failure.')
-    parser.add_argument('--run-tests-until-failure',
-                        action='store_true',
-                        help='If specified, tests will run until they fail.')
+        '(can also be set via IOS_SIMULATOR_DEFAULT_OS).',
+    )
+    parser.add_argument(
+        '--test-iterations',
+        type=int,
+        help='If specified, tests will run <number> times.',
+    )
+    parser.add_argument(
+        '--retry-tests-on-failure',
+        action='store_true',
+        help='If specified, tests will retry on failure.',
+    )
+    parser.add_argument(
+        '--run-tests-until-failure',
+        action='store_true',
+        help='If specified, tests will run until they fail.',
+    )
     parser.add_argument(
         '--test-repetition-relaunch-enabled',
         action='store_true',
-        help=
-        'Enable or disable tests repeating in a new process for '
-        'each repetition.'
+        help='Enable or disable tests repeating in a new process for '
+        'each repetition.',
     )
-    parser.add_argument('--show-app-logs',
-                        action='store_true',
-                        help='Stream app logs to stdout in real-time.')
+    parser.add_argument(
+        '--show-app-logs',
+        action='store_true',
+        help='Stream app logs to stdout in real-time.',
+    )
     parser.add_argument(
         '--log-predicate',
         help=(
             'Custom predicate to filter simulator logs (e.g., '
             '\'composedMessage CONTAINS "my-tag"\').'
-        )
+        ),
     )
     args = parser.parse_args()
 

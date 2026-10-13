@@ -63,16 +63,19 @@ OBJC_TYPE_START_RE = re.compile(r"^@(?:interface|protocol)\s+")
 OBJC_TYPE_RE = re.compile(
     r"^@(interface|protocol)\s+([A-Za-z0-9_]+)[\s\n]+"
     r"(:[\s\n]*([A-Za-z0-9_]+))?[\s\n]*"
-    r"(<[\s\n]*(,?[\s\n]*[A-Za-z0-9_]+[\s\n]*)+>)?[\s\n]*$")
+    r"(<[\s\n]*(,?[\s\n]*[A-Za-z0-9_]+[\s\n]*)+>)?[\s\n]*$"
+)
 END_RE = re.compile(r"^@end$")
 PROPERTY_START_RE = re.compile(r"^@property\s*\(")
 PROPERTY_RE = re.compile(
-    r"^@property\s*(\([^\)]+\))[\s\n]*([a-zA-Z<>_,]+)[\s\n]*([a-zA-Z0-9_]+);$")
+    r"^@property\s*(\([^\)]+\))[\s\n]*([a-zA-Z<>_,]+)[\s\n]*([a-zA-Z0-9_]+);$"
+)
 METHOD_START_RE = re.compile(r"^[-+]\s\(")
 METHOD_H_END_RE = re.compile(r";$")
 METHOD_HEAD_MM_RE = re.compile(r"^([-+]\s*[^{]+)")
 IMPLEMENTATION_HEAD_RE = re.compile(
-    r"^@implementation\s+([A-Za-z0-9_]+)\s*([{])?$")
+    r"^@implementation\s+([A-Za-z0-9_]+)\s*([{])?$"
+)
 IMPLEMENTATION_BLOCK_END_RE = re.compile(r"^}$")
 PRAGMA_MARK_RE = re.compile(r"^#pragma\smark\s(-\s+)?(.+)$")
 IVARS_RE = re.compile(r"^\s+(.+)\s+(.+);$")
@@ -80,7 +83,8 @@ IVARS_RE = re.compile(r"^\s+(.+)\s+(.+);$")
 GN_SOURCE_SET_START_RE = re.compile(r'^source_set\(\"([^\"]+)\"\)\s+{$')
 GN_SOURCE_SET_END_RE = re.compile(r'^}$')
 GN_BLOCK_ONE_LINE_RE = re.compile(
-    r'^  (sources|deps|frameworks)\s*=\s*\[\s*\"([^\"]+)\"\s*\]$')
+    r'^  (sources|deps|frameworks)\s*=\s*\[\s*\"([^\"]+)\"\s*\]$'
+)
 GN_BLOCK_START_RE = re.compile(r'^  (sources|deps|frameworks)\s*=\s*\[$')
 GN_ITEM_RE = re.compile(r'^    \"([^\"]+)\",$')
 GN_BLOCK_END_RE = re.compile(r'  \]$')
@@ -99,8 +103,9 @@ def adapted_color_for_output(color_start, color_end):
 
 def print_error(error_message, error_info=""):
     """Print the `error_message` with additional `error_info`"""
-    color_start, color_end = adapted_color_for_output(TERMINAL_ERROR_COLOR,
-                                                      TERMINAL_RESET_COLOR)
+    color_start, color_end = adapted_color_for_output(
+        TERMINAL_ERROR_COLOR, TERMINAL_RESET_COLOR
+    )
 
     error_message = color_start + "ERROR: " + error_message + color_end
     if len(error_info) > 0:
@@ -110,8 +115,9 @@ def print_error(error_message, error_info=""):
 
 def print_info(info_message):
     """Print the `warning_message` with additional `warning_info`"""
-    color_start, color_end = adapted_color_for_output(TERMINAL_INFO_COLOR,
-                                                      TERMINAL_RESET_COLOR)
+    color_start, color_end = adapted_color_for_output(
+        TERMINAL_INFO_COLOR, TERMINAL_RESET_COLOR
+    )
 
     info_message = color_start + "INFO: " + info_message + color_end
     print(info_message)
@@ -124,40 +130,57 @@ def print_debug(debug_message):
 
 
 def to_variable_name(class_name):
-    return "".join(c.lower() if i == 0 else c
-                   for i, c in enumerate(class_name))
+    return "".join(c.lower() if i == 0 else c for i, c in enumerate(class_name))
 
 
 def main(args):
     parser = argparse.ArgumentParser(
-        description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
+        description=__doc__, formatter_class=argparse.RawTextHelpFormatter
+    )
     parser.add_argument(
         'parts',
         nargs='+',
         help='list parts to generate: all [c]oordinator [m]ediator '
         '[mu]tator [pres]entation_delegate [conf]iguration '
-        'coordinator_[d]elegate [cons]umer [v]iew_controller')
+        'coordinator_[d]elegate [cons]umer [v]iew_controller',
+    )
     parser.add_argument("--cm", help="Coordinator/Mediator prefix", default="")
     parser.add_argument("--vc", help="ViewController prefix", default="")
     parser.add_argument("--out", help="The destination dir", default=".")
     args = parser.parse_args()
 
-    coordinator = ("all" in args.parts or "c" in args.parts
-                   or "coordinator" in args.parts)
-    mediator = ("all" in args.parts or "m" in args.parts
-                or "mediator" in args.parts)
-    mutator = ("all" in args.parts or "mu" in args.parts
-               or "mutator" in args.parts)
-    presentation_delegate = ("all" in args.parts or "pres" in args.parts
-                             or "presentation_delegate" in args.parts)
-    configuration = ("all" in args.parts or "conf" in args.parts
-                     or "configuration" in args.parts)
-    coordinator_delegate = ("all" in args.parts or "d" in args.parts
-                            or "coordinator_delegate" in args.parts)
-    consumer = ("all" in args.parts or "cons" in args.parts
-                or "consumer" in args.parts)
-    view_controller = ("all" in args.parts or "v" in args.parts
-                       or "view_controller" in args.parts)
+    coordinator = (
+        "all" in args.parts or "c" in args.parts or "coordinator" in args.parts
+    )
+    mediator = (
+        "all" in args.parts or "m" in args.parts or "mediator" in args.parts
+    )
+    mutator = (
+        "all" in args.parts or "mu" in args.parts or "mutator" in args.parts
+    )
+    presentation_delegate = (
+        "all" in args.parts
+        or "pres" in args.parts
+        or "presentation_delegate" in args.parts
+    )
+    configuration = (
+        "all" in args.parts
+        or "conf" in args.parts
+        or "configuration" in args.parts
+    )
+    coordinator_delegate = (
+        "all" in args.parts
+        or "d" in args.parts
+        or "coordinator_delegate" in args.parts
+    )
+    consumer = (
+        "all" in args.parts or "cons" in args.parts or "consumer" in args.parts
+    )
+    view_controller = (
+        "all" in args.parts
+        or "v" in args.parts
+        or "view_controller" in args.parts
+    )
 
     out_path = args.out
     coordinator_prefix = args.cm
@@ -182,24 +205,31 @@ def main(args):
     coordinator_snake_name = SNAKE_CASE_RE.sub("_", coordinator_prefix).lower()
     vc_snake_name = SNAKE_CASE_RE.sub("_", vc_prefix).lower()
 
-    coordinator_h = os.path.join(out_path,
-                                 f"{coordinator_snake_name}_coordinator.h")
-    coordinator_mm = os.path.join(out_path,
-                                  f"{coordinator_snake_name}_coordinator.mm")
+    coordinator_h = os.path.join(
+        out_path, f"{coordinator_snake_name}_coordinator.h"
+    )
+    coordinator_mm = os.path.join(
+        out_path, f"{coordinator_snake_name}_coordinator.mm"
+    )
     coordinator_delegate_h = os.path.join(
-        out_path, f"{coordinator_snake_name}_coordinator_delegate.h")
+        out_path, f"{coordinator_snake_name}_coordinator_delegate.h"
+    )
     configuration_h = os.path.join(
-        out_path, f"{coordinator_snake_name}_configuration.h")
+        out_path, f"{coordinator_snake_name}_configuration.h"
+    )
     configuration_mm = os.path.join(
-        out_path, f"{coordinator_snake_name}_configuration.mm")
+        out_path, f"{coordinator_snake_name}_configuration.mm"
+    )
     mediator_h = os.path.join(out_path, f"{coordinator_snake_name}_mediator.h")
-    mediator_mm = os.path.join(out_path,
-                               f"{coordinator_snake_name}_mediator.mm")
+    mediator_mm = os.path.join(
+        out_path, f"{coordinator_snake_name}_mediator.mm"
+    )
 
     vc_h = os.path.join(out_path, f"{vc_snake_name}_view_controller.h")
     vc_mm = os.path.join(out_path, f"{vc_snake_name}_view_controller.mm")
     vc_presentation_delegate_h = os.path.join(
-        out_path, f"{vc_snake_name}_presentation_delegate.h")
+        out_path, f"{vc_snake_name}_presentation_delegate.h"
+    )
     vc_consumer_h = os.path.join(out_path, f"{vc_snake_name}_consumer.h")
     vc_mutator_h = os.path.join(out_path, f"{vc_snake_name}_mutator.h")
 
@@ -211,10 +241,15 @@ def main(args):
     build_gn = os.path.join(out_path, "BUILD.gn")
 
     # Coordinator h and mm files
-    if (coordinator or presentation_delegate or configuration
-            or coordinator_delegate):
-        cm_source_set_deps.append("//ios/chrome/browser/shared/coordinator/"
-                                  "chrome_coordinator")
+    if (
+        coordinator
+        or presentation_delegate
+        or configuration
+        or coordinator_delegate
+    ):
+        cm_source_set_deps.append(
+            "//ios/chrome/browser/shared/coordinator/chrome_coordinator"
+        )
         cm_source_set_files.append(f"{coordinator_snake_name}_coordinator.h")
         cm_source_set_files.append(f"{coordinator_snake_name}_coordinator.mm")
 
@@ -293,8 +328,7 @@ def main(args):
             wanted_methods["-"] = {
                 f"- (instancetype)initWithBaseViewController:"
                 f"(UIViewController*)viewController browser:(Browser*)browser "
-                f"configuration:({configuration_name}*)configuration":
-                "self = [super initWithBaseViewController:viewController "
+                f"configuration:({configuration_name}*)configuration": "self = [super initWithBaseViewController:viewController "
                 "browser:browser];\n"
                 "if (self) {\n"
                 "    _configuration = configuration;\n"
@@ -303,9 +337,8 @@ def main(args):
             }
         else:
             wanted_methods["-"] = {
-                f"- (instancetype)initWithBaseViewController:"
-                f"(UIViewController*)viewController browser:(Browser*)browser":
-                "self = [super initWithBaseViewController:viewController "
+                "- (instancetype)initWithBaseViewController:"
+                "(UIViewController*)viewController browser:(Browser*)browser": "self = [super initWithBaseViewController:viewController "
                 "browser:browser];\n"
                 "if (self) {\n"
                 "}\n"
@@ -313,26 +346,31 @@ def main(args):
             }
         start_parts = []
         if mediator:
-            start_parts.append(f"_mediator = [[{mediator_name} alloc] "
-                               "initWithSomething:@\"something\"];")
+            start_parts.append(
+                f"_mediator = [[{mediator_name} alloc] "
+                "initWithSomething:@\"something\"];"
+            )
         if view_controller:
             start_parts.append(f"_viewController = [[{vc_name} alloc] init];")
         if view_controller and mutator and mediator:
-            start_parts.append(f"_viewController.mutator = _mediator;")
+            start_parts.append("_viewController.mutator = _mediator;")
         if view_controller and presentation_delegate:
             start_parts.append(
                 f"_mediator.{to_variable_name(vc_consumer_name)}"
-                f" = _viewController;")
+                f" = _viewController;"
+            )
         stop_parts = []
         if mediator:
-            stop_parts.append(f"[_mediator disconnect];")
-            stop_parts.append(f"_mediator = nil;")
+            stop_parts.append("[_mediator disconnect];")
+            stop_parts.append("_mediator = nil;")
         if view_controller:
-            stop_parts.append(f"[_viewController "
-                              "willMoveToParentViewController:nil];")
-            stop_parts.append(f"[_viewController "
-                              "removeFromParentViewController];")
-            stop_parts.append(f"_viewController = nil;")
+            stop_parts.append(
+                "[_viewController willMoveToParentViewController:nil];"
+            )
+            stop_parts.append(
+                "[_viewController removeFromParentViewController];"
+            )
+            stop_parts.append("_viewController = nil;")
 
         wanted_methods["ChromeCoordinator"] = {
             "- (void)start": "\n".join(start_parts),
@@ -342,8 +380,7 @@ def main(args):
         if presentation_delegate:
             wanted_methods[f"{vc_presentation_delegate_name}"] = {
                 f"- (void){to_variable_name(vc_name)}:({vc_name}*)"
-                f"viewController dismissedAnimated:(BOOL)animated":
-                "// TODO(crbug"
+                f"viewController dismissedAnimated:(BOOL)animated": "// TODO(crbug"
                 ".com/_BUG_): do dismiss animated or remove."
             }
 
@@ -384,8 +421,7 @@ def main(args):
     # Coordinator configuration h and mm files
     if configuration:
         cm_source_set_files.append(f"{coordinator_snake_name}_configuration.h")
-        cm_source_set_files.append(
-            f"{coordinator_snake_name}_configuration.mm")
+        cm_source_set_files.append(f"{coordinator_snake_name}_configuration.mm")
 
         wanted_imports = set()
         wanted_imports.add("#import <Foundation/Foundation.h>")
@@ -422,8 +458,9 @@ def main(args):
 
     # Coordinator delegate h file
     if coordinator_delegate or coordinator:
-        cm_source_set_files.append(f"{coordinator_snake_name}"
-                                   "_coordinator_delegate.h")
+        cm_source_set_files.append(
+            f"{coordinator_snake_name}_coordinator_delegate.h"
+        )
 
         wanted_imports = set()
         wanted_imports.add("#import <Foundation/Foundation.h>")
@@ -501,8 +538,7 @@ def main(args):
         wanted_methods = {}
 
         wanted_methods["-"] = {
-            f"- (instancetype)initWithSomething:(NSString*)something":
-            "self = [super init];\n"
+            "- (instancetype)initWithSomething:(NSString*)something": "self = [super init];\n"
             "if (self) {\n"
             "  _something = something;\n"
             "}\n"
@@ -512,8 +548,7 @@ def main(args):
         if consumer:
             wanted_methods["Properties getters/setters"] = {
                 f"- (void)set{vc_consumer_name}:(id<{vc_consumer_name}>)"
-                "consumer":
-                f"_{to_variable_name(vc_consumer_name)} = consumer;\n"
+                "consumer": f"_{to_variable_name(vc_consumer_name)} = consumer;\n"
                 f"[_{to_variable_name(vc_consumer_name)} "
                 f"setAnotherSomething:_something];\n",
             }
@@ -643,16 +678,14 @@ def main(args):
         wanted_methods = {}
 
         wanted_methods["-"] = {
-            "- (instancetype)init":
-            "self = [super initWithNibName:nil bundle:nil];\n"
+            "- (instancetype)init": "self = [super initWithNibName:nil bundle:nil];\n"
             "if (self) {\n"
             "}\n"
             "return self;\n",
         }
 
         wanted_methods["UIViewController"] = {
-            "- (void)viewDidLoad":
-            "[super viewDidLoad];\n"
+            "- (void)viewDidLoad": "[super viewDidLoad];\n"
             "// TODO(crbug"
             ".com/_BUG_): setup;\n",
         }
@@ -741,8 +774,11 @@ def update_build_file(filename, wanted_source_sets):
                     currently_in.append(block)
                 continue
 
-            if currently_in[-1] == "sources" or currently_in[
-                    -1] == "deps" or currently_in[-1] == "frameworks":
+            if (
+                currently_in[-1] == "sources"
+                or currently_in[-1] == "deps"
+                or currently_in[-1] == "frameworks"
+            ):
                 block = currently_in[-1]
                 if GN_BLOCK_END_RE.search(line):
                     source_set[f"{block}_last_line"] = line_index + 1
@@ -768,7 +804,7 @@ def update_build_file(filename, wanted_source_sets):
                     "frameworks": [],
                     "frameworks_first_line": len(all_lines),
                     "frameworks_last_line": -1,
-                    "block_order": []
+                    "block_order": [],
                 }
                 found_source_sets.append(source_set)
                 currently_in.append("source_set")
@@ -818,8 +854,10 @@ def update_build_file(filename, wanted_source_sets):
         for source_set in found_source_sets:
             name = source_set["name"]
             # Copy until first line inside source_set start.
-            while (cursor < len(all_lines) and
-                   cursor < source_set["first_line"] + 1):
+            while (
+                cursor < len(all_lines)
+                and cursor < source_set["first_line"] + 1
+            ):
                 content += [all_lines[cursor]]
                 cursor += 1
             if name in wanted_source_sets:
@@ -838,10 +876,11 @@ def update_build_file(filename, wanted_source_sets):
                     # rewrite
                     content += [f"  {block} = [\n"]
                     items = set(source_set[block]).union(
-                        wanted_source_set[block])
+                        wanted_source_set[block]
+                    )
                     for item in items:
                         content += [f'    "{item}",\n']
-                    content += [f"  ]\n"]
+                    content += ["  ]\n"]
                     # Skip lines until end of block
                     cursor = last_line
                     changed = True
@@ -852,7 +891,7 @@ def update_build_file(filename, wanted_source_sets):
                         content += [f"  {block} = [\n"]
                         for item in items:
                             content += [f'    "{item}",\n']
-                        content += [f"  ]\n"]
+                        content += ["  ]\n"]
                         changed = True
                 del wanted_source_sets[name]
 
@@ -872,7 +911,7 @@ def update_build_file(filename, wanted_source_sets):
                 content += [f"  {block} = [\n"]
                 for item in items:
                     content += [f'    "{item}",\n']
-                content += [f"  ]\n"]
+                content += ["  ]\n"]
             content += ["}\n\n"]
             changed = True
 
@@ -1035,24 +1074,25 @@ def update_mm_file(
                     new_methods[section] = new_section
 
         print_debug(f"surface: {surface_first_line + 1}")
-        print_debug(f"import: {import_first_line + 1} -"
-                    f" {import_last_line + 1}")
+        print_debug(f"import: {import_first_line + 1} - {import_last_line + 1}")
         if len(new_imports):
             print_debug(f"  new_imports: {new_imports}")
         print_debug(
             f"implementation head: {implementation_head_first_line + 1}"
-            f" - {implementation_head_last_line + 1}")
+            f" - {implementation_head_last_line + 1}"
+        )
         print_debug(f"implementation: - {implementation_last_line + 1}")
-        print_debug(f"ivars: {ivars_first_line + 1} -"
-                    f" {ivars_last_line + 1}")
+        print_debug(f"ivars: {ivars_first_line + 1} - {ivars_last_line + 1}")
         if len(found_ivars):
             print_debug(f"  {found_ivars}")
         if len(new_ivars):
             print_debug(f"  new_ivars: {new_ivars}")
         print_debug("sections:")
         for section, value in found_sections.items():
-            print_debug(f"  '{section}': {value['first_line'] + 1} - "
-                        f"{value['last_line'] + 1}")
+            print_debug(
+                f"  '{section}': {value['first_line'] + 1} - "
+                f"{value['last_line'] + 1}"
+            )
         print_debug("methods:")
         for signature, value in found_methods.items():
             print_debug(f"  '{signature}': {value}")
@@ -1111,7 +1151,7 @@ def update_mm_file(
                 content += all_lines[cursor]
                 cursor += 1
 
-            print_info(f" adding implementation/ivars/methods sections")
+            print_info(" adding implementation/ivars/methods sections")
             # Add Implementation header.
             content += ["\n"]
             content += [f"@implementation {type_name}"]
@@ -1135,8 +1175,10 @@ def update_mm_file(
             changed = True
         else:
             # Copy until implementation_head_first_line.
-            while (cursor < len(all_lines)
-                   and cursor < implementation_head_first_line):
+            while (
+                cursor < len(all_lines)
+                and cursor < implementation_head_first_line
+            ):
                 content += all_lines[cursor]
                 cursor += 1
 
@@ -1153,8 +1195,10 @@ def update_mm_file(
                     changed = True
                 else:
                     # Copy until implementation_head_last_line.
-                    while (cursor < len(all_lines)
-                           and cursor < implementation_head_last_line):
+                    while (
+                        cursor < len(all_lines)
+                        and cursor < implementation_head_last_line
+                    ):
                         content += all_lines[cursor]
                         cursor += 1
                     # Add new ivars.
@@ -1168,8 +1212,9 @@ def update_mm_file(
             if len(new_methods):
                 for section, range in found_sections.items():
                     # Copy lines until end of section.
-                    while (cursor < len(all_lines)
-                           and cursor < range['last_line']):
+                    while (
+                        cursor < len(all_lines) and cursor < range['last_line']
+                    ):
                         content += all_lines[cursor]
                         cursor += 1
                     for method_section, methods in new_methods.items():
@@ -1180,8 +1225,10 @@ def update_mm_file(
                         changed = True
 
                 # Copy until implementation_last_line.
-                while (cursor < len(all_lines)
-                       and cursor < implementation_last_line):
+                while (
+                    cursor < len(all_lines)
+                    and cursor < implementation_last_line
+                ):
                     content += all_lines[cursor]
                     cursor += 1
                 # Add remaining sections, if any.
@@ -1284,8 +1331,7 @@ def update_h_file(
                 if METHOD_START_RE.search(line):
                     method_first_line = min(line_index, method_first_line)
                     if METHOD_H_END_RE.search(line):
-                        method_last_line = max(line_index + 1,
-                                               method_last_line)
+                        method_last_line = max(line_index + 1, method_last_line)
                     else:
                         currently_in.append("method")
                     continue
@@ -1294,8 +1340,10 @@ def update_h_file(
                     index = 0
                     next_line = all_lines[line_index + 1]
                     multiline = current_line
-                    while (len(next_line.strip()) > 0
-                           and not current_line.strip()[-1] == ";"):
+                    while (
+                        len(next_line.strip()) > 0
+                        and not current_line.strip()[-1] == ";"
+                    ):
                         multiline = multiline + next_line
                         index = index + 1
                         current_line = next_line
@@ -1304,10 +1352,12 @@ def update_h_file(
                     match = PROPERTY_RE.match(multiline)
                     if match:
                         wanted_properties.pop(match.groups()[1], None)
-                        properties_first_line = min(line_index,
-                                                    properties_first_line)
-                        properties_last_line = max(line_index + 1,
-                                                   properties_last_line)
+                        properties_first_line = min(
+                            line_index, properties_first_line
+                        )
+                        properties_last_line = max(
+                            line_index + 1, properties_last_line
+                        )
                 continue
 
             if currently_in[-1] == "method":
@@ -1323,8 +1373,10 @@ def update_h_file(
             if guard_end_re.search(line):
                 surface_last_line = line_index
                 if currently_in.pop() != "guard":
-                    print_error("found unexpected h file guard:",
-                                f"{line_index}: {line}")
+                    print_error(
+                        "found unexpected h file guard:",
+                        f"{line_index}: {line}",
+                    )
                 continue
 
             if IMPORT_RE.search(line):
@@ -1345,16 +1397,20 @@ def update_h_file(
                 next_line = all_lines[line_index + 1]
                 multiline = current_line
                 while len(next_line.strip()) > 0 and (
-                        next_line.strip()[0] in ":<,"
-                        or current_line.strip()[-1] in ":<,"):
+                    next_line.strip()[0] in ":<,"
+                    or current_line.strip()[-1] in ":<,"
+                ):
                     multiline = multiline + next_line
                     index = index + 1
                     current_line = next_line
                     next_line = all_lines[line_index + index + 1]
                 skip_lines = index
                 match = OBJC_TYPE_RE.match(multiline)
-                if (match and match.groups()[0] == type
-                        and match.groups()[1] == type_name):
+                if (
+                    match
+                    and match.groups()[0] == type
+                    and match.groups()[1] == type_name
+                ):
                     obj_type_head_first_line = line_index
                     obj_type_head_last_line = line_index + index + 1
                     obj_type_first_line = obj_type_head_last_line
@@ -1363,7 +1419,8 @@ def update_h_file(
                             map(
                                 lambda s: s.strip(),
                                 match.groups()[4].strip("<>").split(","),
-                            ))
+                            )
+                        )
                     currently_in.append("interface")
                 else:
                     currently_in.append("objc_block_ignore")
@@ -1372,20 +1429,27 @@ def update_h_file(
         if surface_first_line >= surface_last_line:
             print_error("h file surface not found:")
 
-        print_debug(f"surface: {surface_first_line + 1} -"
-                    f" {surface_last_line + 1}")
-        print_debug(f"import: {import_first_line + 1} -"
-                    f" {import_last_line + 1}")
-        print_debug(f"forward: {forward_first_line + 1} -"
-                    f" {forward_last_line + 1}")
-        print_debug(f"{type} head: {obj_type_head_first_line + 1} -"
-                    f" {obj_type_head_last_line + 1}")
-        print_debug(f"{type} body: {obj_type_first_line + 1} -"
-                    f" {obj_type_last_line + 1}")
-        print_debug(f"properties: {properties_first_line + 1} -"
-                    f" {properties_last_line + 1}")
-        print_debug(f"methods: {method_first_line + 1} -"
-                    f" {method_last_line + 1}")
+        print_debug(
+            f"surface: {surface_first_line + 1} - {surface_last_line + 1}"
+        )
+        print_debug(f"import: {import_first_line + 1} - {import_last_line + 1}")
+        print_debug(
+            f"forward: {forward_first_line + 1} - {forward_last_line + 1}"
+        )
+        print_debug(
+            f"{type} head: {obj_type_head_first_line + 1} -"
+            f" {obj_type_head_last_line + 1}"
+        )
+        print_debug(
+            f"{type} body: {obj_type_first_line + 1} - {obj_type_last_line + 1}"
+        )
+        print_debug(
+            f"properties: {properties_first_line + 1} -"
+            f" {properties_last_line + 1}"
+        )
+        print_debug(
+            f"methods: {method_first_line + 1} - {method_last_line + 1}"
+        )
 
         # TODO: assert that if sections exist they are in the order expected.
 
@@ -1397,7 +1461,8 @@ def update_h_file(
         new_imports = wanted_imports.difference(found_imports)
         new_forwards = wanted_forwards.difference(found_forwards)
         obj_type_protocols = wanted_obj_type_protocols.union(
-            found_obj_type_protocols)
+            found_obj_type_protocols
+        )
 
         if len(obj_type_protocols) != len(found_obj_type_protocols):
             changed = True
@@ -1499,8 +1564,7 @@ def update_h_file(
                 lst.sort()
                 protocols_string = f"<{', '.join(lst)}>"
             content += [
-                f"@{type} {type_name}{type_super} {protocols_string}"
-                "\n\n"
+                f"@{type} {type_name}{type_super} {protocols_string}\n\n"
             ]
             # Add properties.
             if len(wanted_properties):
@@ -1516,8 +1580,7 @@ def update_h_file(
             changed = True
         else:
             # Copy until type head start.
-            while cursor < len(
-                    all_lines) and cursor < obj_type_head_first_line:
+            while cursor < len(all_lines) and cursor < obj_type_head_first_line:
                 content += all_lines[cursor]
                 cursor += 1
 
@@ -1531,8 +1594,7 @@ def update_h_file(
                 lst.sort()
                 protocols_string = f"<{', '.join(lst)}>"
             content += [
-                f"@{type} {type_name}{type_super} {protocols_string}"
-                "\n\n"
+                f"@{type} {type_name}{type_super} {protocols_string}\n\n"
             ]
 
             # Skip existing head data
@@ -1541,8 +1603,7 @@ def update_h_file(
 
             # Copy existing properties
             if properties_first_line < properties_last_line:
-                while cursor < len(
-                        all_lines) and cursor < properties_last_line:
+                while cursor < len(all_lines) and cursor < properties_last_line:
                     content += all_lines[cursor]
                     cursor += 1
 

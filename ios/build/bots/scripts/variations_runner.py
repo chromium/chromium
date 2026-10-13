@@ -25,7 +25,7 @@ _SRC_DIR = os.path.join(
 _VARIATIONS_SMOKE_TEST_DIR = os.path.join(_SRC_DIR, 'testing', 'scripts')
 sys.path.insert(0, _VARIATIONS_SMOKE_TEST_DIR)
 
-import variations_seed_access_helper as seed_helper
+import variations_seed_access_helper as seed_helper  # noqa: E402
 
 
 # Constants around the variation keys.

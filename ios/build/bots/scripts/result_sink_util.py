@@ -4,7 +4,7 @@
 
 import atexit
 import base64
-import cgi
+import cgi  # noqa: F401
 import json
 import logging
 import os
@@ -24,11 +24,11 @@ sys.path.extend(
     os.path.abspath(os.path.join(CHROMIUM_SRC_DIR, 'build/util/')),
   ]
 )
-import measures
-import exception_recorder
+import measures  # noqa: E402
+import exception_recorder  # noqa: E402
 
-from google.protobuf import json_format
-from google.protobuf import any_pb2
+from google.protobuf import json_format  # noqa: E402, F401
+from google.protobuf import any_pb2  # noqa: E402, F401
 
 LOGGER = logging.getLogger(__name__)
 # VALID_STATUSES is a list of valid status values for test_result['status'].

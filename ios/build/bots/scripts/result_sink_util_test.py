@@ -19,11 +19,11 @@ CHROMIUM_SRC_DIR = os.path.abspath(os.path.join(THIS_DIR, '../../../..'))
 sys.path.append(
   os.path.abspath(os.path.join(CHROMIUM_SRC_DIR, 'build/util/lib/proto'))
 )
-import measures
-import exception_recorder
+import measures  # noqa: E402
+import exception_recorder  # noqa: E402
 
-from google.protobuf import json_format
-from google.protobuf import any_pb2
+from google.protobuf import json_format  # noqa: E402, F401
+from google.protobuf import any_pb2  # noqa: E402, F401
 
 
 SINK_ADDRESS = 'sink/address'
@@ -202,7 +202,7 @@ class UnitTest(unittest.TestCase):
       )
 
     with self.assertRaises(AssertionError):
-      test_result = result_sink_util._compose_test_result(
+      test_result = result_sink_util._compose_test_result(  # noqa: F841
         _TEST_ID, 'PASS', True, tags=[('a', 'b'), ('c', 3)]
       )
 
@@ -340,7 +340,7 @@ class UnitTest(unittest.TestCase):
                 {
                   "name": "test_runner.XcodeVersionNotFoundError",
                   "stacktrace": [
-                    f"test_runner.XcodeVersionNotFoundError: Xcode version not found: 15abcd\n"
+                    "test_runner.XcodeVersionNotFoundError: Xcode version not found: 15abcd\n"
                   ],
                 }
               ],

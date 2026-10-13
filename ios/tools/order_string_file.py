@@ -13,13 +13,15 @@ import sys
 import io
 import re
 
+
 # Sorts the "messages" tags in the file in the given `file_path` in
 # alphabetical order of their "name" attribute.
 # This method preserve the HTML entities to avoid replacing $ in strings
 # to avoid seeing it as a placeholder. See crbug.com/424146226.
 def SortFile(file_path):
-    parser = ElementTree.XMLParser(target=ElementTree.TreeBuilder(
-        insert_comments=True))
+    parser = ElementTree.XMLParser(
+        target=ElementTree.TreeBuilder(insert_comments=True)
+    )
     with open(file_path, 'r', encoding='utf-8') as f:
         raw_xml = f.read()
 
@@ -44,11 +46,12 @@ def SortFile(file_path):
     try:
         # --- XML Parsing and Sorting ---
         # 3. Use io.StringIO to treat the modified string as a file for parse()
-        parser = ElementTree.XMLParser(target=ElementTree.TreeBuilder(
-            insert_comments=True))
+        parser = ElementTree.XMLParser(
+            target=ElementTree.TreeBuilder(insert_comments=True)
+        )
         xml_stream = io.StringIO(xml_to_parse)
         tree = ElementTree.parse(xml_stream, parser=parser)
-        root = tree.getroot()
+        root = tree.getroot()  # noqa: F841
     except ElementTree.ParseError:
         print("ERROR while parsing (wrongly formatted file?):\n" + file_path)
         return -1
@@ -80,6 +83,7 @@ def SortFile(file_path):
     with open(file_path, 'wb') as f:
         f.write(final_xml_bytes)
         f.write(b'\n')
+
 
 def main(args):
     if len(args) == 0:

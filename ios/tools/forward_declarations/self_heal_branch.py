@@ -13,13 +13,13 @@ from pathlib import Path
 import re
 import subprocess
 import sys
-import time
+import time  # noqa: F401
 
 # Dynamic sys.path configuration based on script location
 script_dir = Path(__file__).resolve().parent
 sys.path.append(str(script_dir))
-import forward_declarations_lib
-import heal_gn_check
+import forward_declarations_lib  # noqa: E402
+import heal_gn_check  # noqa: E402
 
 
 def run_cmd(args):
@@ -46,8 +46,10 @@ def find_header_for_type(src_root, type_name):
         return _SYMBOL_CACHE[type_name]
 
     # 2. Check standard system mappings ledger
-    for mapped_type, path in forward_declarations_lib.CORE_HEADER_MAPPING.items(
-    ):
+    for (
+        mapped_type,
+        path,
+    ) in forward_declarations_lib.CORE_HEADER_MAPPING.items():
         if type_name == mapped_type or type_name.endswith("::" + mapped_type):
             _SYMBOL_CACHE[type_name] = path
             return path
@@ -64,28 +66,37 @@ def find_header_for_type(src_root, type_name):
         re.compile(r'@protocol\s+' + re.escape(clean_type) + r'\b(?!\s*;)'),
         re.compile(
             r'\b(?:class|struct|enum)\s+(?:[A-Z0-9_]+_EXPORT\b\s+|COMPONENT_EXPORT\([^)]+\)\s+)?'
-            + re.escape(clean_type) + r'\b(?!\s*;)')
+            + re.escape(clean_type)
+            + r'\b(?!\s*;)'
+        ),
     ]
 
     # 3. Fast path: leverage git grep index execution to identify
     # candidate declaring source files instantly
     try:
-        grep_res = subprocess.run([
-            "git", "grep", "-l", "--extended-regexp",
-            f"(@interface|@protocol|class|struct|enum)[[:space:]]+[A-Z0-9_]*[[:space:]]*{re.escape(clean_type)}\\b",
-            "--", "*.h"
-        ],
-                                  cwd=src_root,
-                                  capture_output=True,
-                                  text=True)
+        grep_res = subprocess.run(
+            [
+                "git",
+                "grep",
+                "-l",
+                "--extended-regexp",
+                f"(@interface|@protocol|class|struct|enum)[[:space:]]+[A-Z0-9_]*[[:space:]]*{re.escape(clean_type)}\\b",
+                "--",
+                "*.h",
+            ],
+            cwd=src_root,
+            capture_output=True,
+            text=True,
+        )
         if grep_res.returncode == 0 and grep_res.stdout.strip():
             candidate_files = grep_res.stdout.strip().splitlines()
             for f_path in candidate_files:
                 # Filter out temporary bridging files and restrict validation
                 # to targeted shipping paths
                 if f_path.endswith("_swift_bridge.h") or not any(
-                        f_path.startswith(d)
-                        for d in ("ios/", "components/", "base/", "ui/")):
+                    f_path.startswith(d)
+                    for d in ("ios/", "components/", "base/", "ui/")
+                ):
                     continue
                 full_path = src_root / f_path
                 try:
@@ -105,17 +116,17 @@ def find_header_for_type(src_root, type_name):
         src_root / "ios",
         src_root / "components",
         src_root / "base",
-        src_root / "ui"
+        src_root / "ui",
     ]
 
     import os  # Keep local import for walk compatibility if needed, but os.walk works with Path objects
+
     for directory in target_dirs:
         if not directory.exists():
             continue
         for root, _, files in os.walk(directory):
             for file in files:
-                if file.endswith(
-                        '.h') and not file.endswith('_swift_bridge.h'):
+                if file.endswith('.h') and not file.endswith('_swift_bridge.h'):
                     full_path = Path(root) / file
                     try:
                         content = full_path.read_text(errors='ignore')
@@ -150,8 +161,9 @@ def parse_clang_errors(stderr):
         # Matches: file_path:line:col: error: ... incomplete type 'type_name' ...
         # Matches: file_path:line:col: error: ... 'type_name' named in nested name specifier ...
         if ": error: " in clean_line:
-            file_path_match = re.match(r'^([a-zA-Z0-9_/\.\-]+):\d+:\d+:',
-                                       clean_line)
+            file_path_match = re.match(
+                r'^([a-zA-Z0-9_/\.\-]+):\d+:\d+:', clean_line
+            )
             if file_path_match:
                 current_error_file = file_path_match.group(1)
 
@@ -166,17 +178,21 @@ def parse_clang_errors(stderr):
                         if len(type_matches) > 1:
                             type_name = type_matches[1]
 
-                    if any(pat in clean_line
-                           for pat in ("incomplete type",
-                                       "nested name specifier",
-                                       "undeclared identifier",
-                                       "no template named",
-                                       "unknown type name", "no type named",
-                                       "no member named")):
-                        errors.append({
-                            "file": current_error_file,
-                            "type": type_name
-                        })
+                    if any(
+                        pat in clean_line
+                        for pat in (
+                            "incomplete type",
+                            "nested name specifier",
+                            "undeclared identifier",
+                            "no template named",
+                            "unknown type name",
+                            "no type named",
+                            "no member named",
+                        )
+                    ):
+                        errors.append(
+                            {"file": current_error_file, "type": type_name}
+                        )
         elif ": note: " in clean_line and current_error_file:
             # Check if the note mentions an incomplete type passed to a constructor/function
             # E.g., cannot convert argument of incomplete type 'ConnectorsService *'
@@ -185,12 +201,18 @@ def parse_clang_errors(stderr):
             if not note_match:
                 note_match = re.search(
                     r"'([^']+)' is not defined, but forward declared",
-                    clean_line)
+                    clean_line,
+                )
             if note_match:
                 type_name = note_match.group(1)
                 # Strip any pointer stars, references or spaces
-                type_name = type_name.replace(" *", "").replace(
-                    "*", "").replace(" &", "").replace("&", "").strip()
+                type_name = (
+                    type_name.replace(" *", "")
+                    .replace("*", "")
+                    .replace(" &", "")
+                    .replace("&", "")
+                    .strip()
+                )
 
                 errors.append({"file": current_error_file, "type": type_name})
     return errors
@@ -205,10 +227,11 @@ def heal_checkdeps(src_root):
     print("🔍 Running Chromium checkdeps validation...")
     # Run checkdeps tool on modified files compared to origin/main
     modified_files = subprocess.check_output(
-        ["git", "diff", "--name-only", "origin/main...HEAD"],
-        text=True).split("\n")
+        ["git", "diff", "--name-only", "origin/main...HEAD"], text=True
+    ).split("\n")
     modified_files = [
-        f for f in modified_files
+        f
+        for f in modified_files
         if f and (f.endswith('.mm') or f.endswith('.cc') or f.endswith('.h'))
     ]
 
@@ -219,7 +242,8 @@ def heal_checkdeps(src_root):
             continue
 
         checkdeps_res = run_cmd(
-            ["python3", "buildtools/checkdeps/checkdeps.py", f_path])
+            ["python3", "buildtools/checkdeps/checkdeps.py", f_path]
+        )
         checkdeps_output = checkdeps_res.stdout + "\n" + checkdeps_res.stderr
         if "Illegal include" not in checkdeps_output:
             continue
@@ -230,8 +254,7 @@ def heal_checkdeps(src_root):
         matches = re.findall(pattern, checkdeps_output)
 
         for illegal_include in matches:
-            print(
-                f"⚠️ DEPS Include Boundary Violation found in file: {f_path}")
+            print(f"⚠️ DEPS Include Boundary Violation found in file: {f_path}")
             print(f"  - Illegal include: {illegal_include}")
 
             # Locate the nearest DEPS file by climbing up the folder tree
@@ -287,7 +310,7 @@ def heal_checkdeps(src_root):
                 if inserted:
                     content = "\n".join(lines)
                     deps_file.write_text(content)
-                    print(f"  ✨ Successfully healed DEPS allowlists!")
+                    print("  ✨ Successfully healed DEPS allowlists!")
                     healed = True
 
     return healed
@@ -296,21 +319,21 @@ def heal_checkdeps(src_root):
 def main():
     """Automated self-healing compiler loop entry point."""
     parser = argparse.ArgumentParser(
-        description=
-        "Compiler-driven automated self-healing loop for forward declarations."
+        description="Compiler-driven automated self-healing loop for forward declarations."
     )
-    parser.add_argument("branch_name",
-                        help="Name of the active optimization branch.")
+    parser.add_argument(
+        "branch_name", help="Name of the active optimization branch."
+    )
     parser.add_argument(
         "out_dir",
-        help=
-        "Path to the build output directory (e.g., out/Debug-iphonesimulator)."
+        help="Path to the build output directory (e.g., out/Debug-iphonesimulator).",
     )
     parser.add_argument(
         "--targets",
         nargs="+",
         default=["chrome", "ios_chrome_unittests"],
-        help="List of Ninja build targets to compile and validate.")
+        help="List of Ninja build targets to compile and validate.",
+    )
     args = parser.parse_args()
 
     branch = args.branch_name
@@ -320,8 +343,7 @@ def main():
     # Verify we are on the correct branch
     try:
         active_branch = subprocess.check_output(
-            ["git", "rev-parse", "--abbrev-ref", "HEAD"],
-            text=True
+            ["git", "rev-parse", "--abbrev-ref", "HEAD"], text=True
         ).strip()
         if active_branch != branch:
             print(
@@ -376,7 +398,7 @@ def main():
         # --- Phase 2: Native Compilation Lifecycle ---
         # 3. Compile shipping and test targets using continuous Ninja builds
         print(
-            f"\n🔨 [Iteration {iteration+1}/{max_iterations}] Compiling targets: {' '.join(targets)}..."
+            f"\n🔨 [Iteration {iteration + 1}/{max_iterations}] Compiling targets: {' '.join(targets)}..."
         )
         build_res = run_cmd(["autoninja", "-C", out_dir] + targets)
 
@@ -423,26 +445,35 @@ def main():
                 continue
 
             print(
-                f"  🎯 Located required declaration header: {required_header}")
+                f"  🎯 Located required declaration header: {required_header}"
+            )
 
             content = src_file.read_text(errors='ignore')
 
             # Determine runtime syntax directives enforcing Objective-C imports
-            is_objc = src_file.suffix in ('.mm', '.m') or '/ios/' in str(src_file)
+            is_objc = src_file.suffix in ('.mm', '.m') or '/ios/' in str(
+                src_file
+            )
             healed_content = forward_declarations_lib.insert_sorted_import(
-                content, required_header, is_objc=is_objc)
+                content, required_header, is_objc=is_objc
+            )
 
             if is_objc:
-                healed_content = forward_declarations_lib.heal_includes_to_imports(
-                    healed_content)
+                healed_content = (
+                    forward_declarations_lib.heal_includes_to_imports(
+                        healed_content
+                    )
+                )
 
             src_file.write_text(healed_content)
 
             # Enforce physical code style standard formatting directly
             # on the repaired source node
-            subprocess.run(["git", "cl", "format", str(src_file)],
-                           stdout=subprocess.DEVNULL,
-                           stderr=subprocess.DEVNULL)
+            subprocess.run(
+                ["git", "cl", "format", str(src_file)],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
             print(
                 f"  ✨ Successfully auto-healed and formatted {src_file.name}!"
             )

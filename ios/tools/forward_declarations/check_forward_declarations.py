@@ -20,22 +20,21 @@ def main():
         return 1
 
     parser = argparse.ArgumentParser(
-        description=
-        "Check if imported classes in a .h file can be forward-declared.")
-    parser.add_argument('paths',
-                        nargs='*',
-                        help="Paths to header files or directories to scan.")
+        description="Check if imported classes in a .h file can be forward-declared."
+    )
+    parser.add_argument(
+        'paths', nargs='*', help="Paths to header files or directories to scan."
+    )
     parser.add_argument(
         '--git',
         action='store_true',
-        help="Automatically scan files modified in the active git branch."
+        help="Automatically scan files modified in the active git branch.",
     )
     parser.add_argument(
         '--exit-zero',
         action='store_true',
-        help=
-        "Always exit with status 0 even if optimization opportunities "
-        "are found."
+        help="Always exit with status 0 even if optimization opportunities "
+        "are found.",
     )
     args = parser.parse_args()
 
@@ -50,7 +49,9 @@ def main():
         files_to_scan = forward_declarations_lib.collect_git_files(src_root)
     else:
         if not args.paths:
-            parser.error("Please specify at least one path or use the --git option.")
+            parser.error(
+                "Please specify at least one path or use the --git option."
+            )
         files_to_scan = forward_declarations_lib.collect_files(args.paths)
 
     if not files_to_scan:
@@ -100,9 +101,10 @@ def main():
 
     # Output final aggregated statistics summary
     print("-" * 60)
-    print(f"Scan complete.")
+    print("Scan complete.")
     print(
-        f"Files with issues: {total_files_with_issues} / {len(files_to_scan)}")
+        f"Files with issues: {total_files_with_issues} / {len(files_to_scan)}"
+    )
     print(f"Imports that can be forward declared: {total_forward_declarable}")
     print(f"Imports that are completely unused: {total_unused}")
 
@@ -110,7 +112,7 @@ def main():
     if total_files_with_issues > 0:
         print("\nTo automatically apply forward declarations, run:")
         print(
-            f"  python3 ios/tools/forward_declarations/fix_forward_declarations.py <file.h>"
+            "  python3 ios/tools/forward_declarations/fix_forward_declarations.py <file.h>"
         )
         return 0 if args.exit_zero else 1
     return 0

@@ -20,9 +20,9 @@ from pyfakefs.fake_filesystem_unittest import TestCase
 import constants
 import iossim_util
 import run
-import result_sink_util
-from test_runner import SimulatorNotFoundError, TestRunner
-from xcodebuild_runner import SimulatorParallelTestRunner
+import result_sink_util  # noqa: F401
+from test_runner import SimulatorNotFoundError, TestRunner  # noqa: F401
+from xcodebuild_runner import SimulatorParallelTestRunner  # noqa: F401
 import xcode_util
 import test_runner_errors
 import test_runner_test
@@ -35,7 +35,7 @@ sys.path.extend(
     os.path.abspath(os.path.join(CHROMIUM_SRC_DIR, 'build/util/')),
   ]
 )
-import exception_recorder
+import exception_recorder  # noqa: E402
 
 
 @mock.patch(
@@ -98,7 +98,7 @@ class ParseArgsUnitTest(unittest.TestCase):
     self.assertTrue(runner.args.runtime_cache_prefix == 'some/dir')
     self.assertTrue(runner.args.xcode_path == 'some/Xcode.app')
     self.assertTrue(runner.args.repeat == 2)
-    self.assertTrue(runner.args.record_video == None)
+    self.assertTrue(runner.args.record_video == None)  # noqa: E711
     self.assertFalse(runner.args.output_disabled_tests)
 
   def test_isolated_repeat_ok(self):
@@ -1024,7 +1024,7 @@ class RunnerInstallXcodeTest(test_runner_test.TestCase):
     _3,
     _4,
   ):
-    mock_check_xcode_exists_in_apps = True
+    mock_check_xcode_exists_in_apps = True  # noqa: F841
     mock_macos_13_or_higher.return_value = False
     mock_construct_runtime_cache_folder.side_effect = lambda a, b: a + b
     test_runner = mock_tr.return_value

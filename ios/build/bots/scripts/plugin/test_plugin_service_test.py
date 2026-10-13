@@ -19,7 +19,7 @@ from plugin_constants import PLUGIN_PROTOS_PATH, PLUGIN_SERVICE_ADDRESS
 
 sys.path.append(PLUGIN_PROTOS_PATH)
 import test_plugin_service_pb2
-import test_plugin_service_pb2_grpc
+import test_plugin_service_pb2_grpc  # noqa: F401
 
 VIDEO_RECORDER_PLUGIN_NAME = 'VideoRecorderPlugin'
 

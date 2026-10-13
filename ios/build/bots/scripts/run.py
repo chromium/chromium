@@ -30,7 +30,7 @@ import traceback
 
 import constants
 import iossim_util
-import mac_util
+import mac_util  # noqa: F401
 import shard_util
 import test_runner
 import test_runner_errors
@@ -46,10 +46,10 @@ sys.path.extend(
     os.path.abspath(os.path.join(CHROMIUM_SRC_DIR, 'build/util/')),
   ]
 )
-import measures
-import exception_recorder
+import measures  # noqa: E402
+import exception_recorder  # noqa: E402
 
-from result_sink_util import ResultSinkClient
+from result_sink_util import ResultSinkClient  # noqa: E402
 
 # if the current directory is in scripts, then we need to add plugin
 # path in order to import from that directory
@@ -57,7 +57,7 @@ if os.path.split(os.path.dirname(__file__))[1] != 'plugin':
   sys.path.append(
     os.path.join(os.path.abspath(os.path.dirname(__file__)), 'plugin')
   )
-from plugin_constants import VIDEO_RECORDER_PLUGIN_OPTIONS
+from plugin_constants import VIDEO_RECORDER_PLUGIN_OPTIONS  # noqa: E402
 
 
 def format_exception_step_text(e: Exception) -> str:

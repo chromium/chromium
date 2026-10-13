@@ -3,10 +3,10 @@
 # found in the LICENSE file.
 
 import os
-import platform
-import shutil
-import stat
-import sys
+import platform  # noqa: F401
+import shutil  # noqa: F401
+import stat  # noqa: F401
+import sys  # noqa: F401
 
 from enum import Enum
 
