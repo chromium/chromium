@@ -1601,7 +1601,7 @@ TEST_F(GeminiContainerMediatorTest,
 
   AppendActiveWebState();
   [mediator_ connect];
-  EXPECT_EQ(1, fake_container_handler.setMediumDetentHeightCallCount);
+  EXPECT_EQ(2, fake_container_handler.setMediumDetentHeightCallCount);
   EXPECT_EQ(std::optional<NSInteger>(kExpectedMediumDetentHeight),
             fake_container_handler.mediumDetentHeight);
 
@@ -1611,7 +1611,7 @@ TEST_F(GeminiContainerMediatorTest,
       didUpdateProcessingStatus:ios::provider::GeminiClientMode::kResponding
                       sessionID:nil
                  conversationID:nil];
-  EXPECT_EQ(2, fake_container_handler.setMediumDetentHeightCallCount);
+  EXPECT_EQ(3, fake_container_handler.setMediumDetentHeightCallCount);
   EXPECT_EQ(std::nullopt, fake_container_handler.mediumDetentHeight);
 }
 
