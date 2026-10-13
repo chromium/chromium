@@ -402,25 +402,22 @@ public class GeolocationHeader {
                         .build();
 
         // Populate a LocationDescriptor with the LatLng.
-        PartnerLocationDescriptor.LocationDescriptor.Builder locationDescriptorBuilder =
+        PartnerLocationDescriptor.LocationDescriptor locationDescriptor =
                 PartnerLocationDescriptor.LocationDescriptor.newBuilder()
                         .setLatlng(latlng)
-                        // Include role, producer, timestamp and radius.
+                        // Include role, producer, timestamp, radius, and permission granularity.
                         .setRole(PartnerLocationDescriptor.LocationRole.CURRENT_LOCATION)
                         .setProducer(PartnerLocationDescriptor.LocationProducer.DEVICE_LOCATION)
                         .setTimestamp(timestamp)
-                        .setRadius((float) radius);
-
-        if (OmniboxFeatures.sOmniboxXGeoPermissionGranularity.isEnabled()) {
-            locationDescriptorBuilder.setPermissionGranularity(
-                    isPreciseLocation
-                            ? PartnerLocationDescriptor.PermissionGranularity
-                                    .PERMISSION_GRANULARITY_FINE
-                            : PartnerLocationDescriptor.PermissionGranularity
-                                    .PERMISSION_GRANULARITY_COARSE);
-        }
-
-        return encodeLocationDescriptor(locationDescriptorBuilder.build());
+                        .setRadius((float) radius)
+                        .setPermissionGranularity(
+                                isPreciseLocation
+                                        ? PartnerLocationDescriptor.PermissionGranularity
+                                                .PERMISSION_GRANULARITY_FINE
+                                        : PartnerLocationDescriptor.PermissionGranularity
+                                                .PERMISSION_GRANULARITY_COARSE)
+                        .build();
+        return encodeLocationDescriptor(locationDescriptor);
     }
 
     /** Encodes the given proto location descriptor into a BASE64 URL_SAFE encoding. */

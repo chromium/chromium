@@ -73,12 +73,9 @@ std::optional<std::string> SerializeXGeoHeader(
   latlng->set_longitude_e7(static_cast<int32_t>(position.longitude * 1e7));
   descriptor.set_radius(position.accuracy * 1000);
 
-  if (base::FeatureList::IsEnabled(
-          omnibox::kOmniboxXGeoPermissionGranularity)) {
-    descriptor.set_permission_granularity(
-        position.is_precise ? omnibox::PERMISSION_GRANULARITY_FINE
-                            : omnibox::PERMISSION_GRANULARITY_COARSE);
-  }
+  descriptor.set_permission_granularity(
+      position.is_precise ? omnibox::PERMISSION_GRANULARITY_FINE
+                          : omnibox::PERMISSION_GRANULARITY_COARSE);
 
   std::string serialized_proto;
   if (!descriptor.SerializeToString(&serialized_proto)) {

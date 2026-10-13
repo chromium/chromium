@@ -64,7 +64,6 @@ class GeolocationHeaderServiceTest : public testing::Test {
   GeolocationHeaderServiceTest() {
     scoped_feature_list_.InitWithFeatures(
         {omnibox::kPlatformAgnosticXGeo,
-         omnibox::kOmniboxXGeoPermissionGranularity,
          content_settings::features::kApproximateGeolocationPermission},
         {});
   }
@@ -698,9 +697,7 @@ class GeolocationHeaderServiceInlineLocationTest
  public:
   GeolocationHeaderServiceInlineLocationTest() {
     feature_list_.InitWithFeatures(
-        {omnibox::kPlatformAgnosticXGeo,
-         omnibox::kOmniboxXGeoPermissionGranularity,
-         omnibox::kInlineLocationSignaling,
+        {omnibox::kPlatformAgnosticXGeo, omnibox::kInlineLocationSignaling,
          content_settings::features::kApproximateGeolocationPermission},
         {});
   }

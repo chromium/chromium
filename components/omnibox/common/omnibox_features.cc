@@ -465,9 +465,6 @@ BASE_FEATURE(kOmniboxMobileParityUpdate, ENABLED);
 // Android and iOS, V2.
 BASE_FEATURE(kOmniboxMobileParityUpdateV2, ENABLED);
 
-// If enabled, the X-Geo header will include permission granularity.
-BASE_FEATURE(kOmniboxXGeoPermissionGranularity, ENABLED);
-
 // When the first suggestion is a url, the favicon is shown in the status view.
 BASE_FEATURE(kExactMatchFavicons, ENABLED);
 
@@ -674,7 +671,6 @@ static int64_t JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
       &kJumpStartOmnibox,
       &kPostDelayedTaskFocusTab,
       &kOmniboxMobileParityUpdateV2,
-      &kOmniboxXGeoPermissionGranularity,
       &kPlatformAgnosticXGeo,
       &kInlineLocationSignaling,
       &kOmniboxSiteSearch,
