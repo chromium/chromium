@@ -1690,13 +1690,11 @@ void WebTransport::OnConnectionEstablished(
 
   DCHECK(!transport_remote_.is_bound());
   transport_remote_.Bind(std::move(web_transport), task_runner);
-  // Connection errors are handled by `client_receiver_`'s disconnect handler,
-  // which keeps the ordering of a clean close intact. All this handler has to
-  // do is complete receive-stream stats requests whose responses can no longer
+  // Connection errors are handled by `client_receiver_`'s disconnect handler.
+  // This handler only completes stats requests whose responses can no longer
   // arrive.
-  transport_remote_.set_disconnect_handler(
-      BindOnce(&WebTransport::RunPendingReceiveStreamStatsCallbacks,
-               WrapWeakPersistent(this)));
+  transport_remote_.set_disconnect_handler(BindOnce(
+      &WebTransport::OnTransportRemoteDisconnected, WrapWeakPersistent(this)));
 
   if (outgoing_datagram_expiration_duration_ != base::TimeDelta()) {
     transport_remote_->SetOutgoingDatagramExpirationDuration(
@@ -1875,22 +1873,26 @@ void WebTransport::OnReceivedResetStream(uint32_t stream_id,
   stream->Error(ScriptValue(script_state_->GetIsolate(), error));
 }
 
-void WebTransport::OnReceivedStopSending(uint32_t stream_id,
-                                         uint32_t stream_error_code) {
+void WebTransport::OnReceivedStopSending(
+    uint32_t stream_id,
+    uint32_t stream_error_code,
+    network::mojom::blink::WebTransportSendStreamStatsPtr final_stats) {
   DVLOG(1) << "WebTransport::OnReceivedStopSending(" << stream_id << ", "
            << stream_error_code << ") this=" << this;
 
-  auto it = outgoing_stream_map_.find(stream_id);
-  if (it == outgoing_stream_map_.end()) {
-    return;
+  const bool has_final_stats = !!final_stats;
+  OutgoingStream* stream =
+      ApplyFinalSendStreamStats(stream_id, std::move(final_stats));
+  if (stream) {
+    ScriptState::Scope scope(script_state_);
+    v8::Local<v8::Value> error = WebTransportError::Create(
+        script_state_->GetIsolate(), stream_error_code,
+        "Received STOP_SENDING.", V8WebTransportErrorSource::Enum::kStream);
+    stream->Error(ScriptValue(script_state_->GetIsolate(), error));
   }
-  OutgoingStream* stream = it->value;
-
-  ScriptState::Scope scope(script_state_);
-  v8::Local<v8::Value> error = WebTransportError::Create(
-      script_state_->GetIsolate(), stream_error_code, "Received STOP_SENDING.",
-      V8WebTransportErrorSource::Enum::kStream);
-  stream->Error(ScriptValue(script_state_->GetIsolate(), error));
+  if (stream || has_final_stats) {
+    RunPendingSendStreamStatsCallbacksForStream(stream_id);
+  }
 }
 
 void WebTransport::OnClosed(
@@ -1921,25 +1923,24 @@ void WebTransport::OnDraining() {
   }
 }
 
-void WebTransport::OnOutgoingStreamClosed(uint32_t stream_id) {
+void WebTransport::OnOutgoingStreamClosed(
+    uint32_t stream_id,
+    network::mojom::blink::WebTransportSendStreamStatsPtr final_stats) {
   DVLOG(1) << "WebTransport::OnOutgoingStreamClosed(" << stream_id
            << ") this=" << this;
-  auto it = outgoing_stream_map_.find(stream_id);
-
-  // If a close is aborted, we may get the close response on a stream we've
-  // already erased.
-  if (it == outgoing_stream_map_.end())
-    return;
-
-  OutgoingStream* stream = it->value;
-  DCHECK(stream);
-
-  // We do this deletion first because OnOutgoingStreamClosed may run JavaScript
-  // and so modify |outgoing_stream_map_|. |stream| is kept alive by being on
-  // the stack.
-  outgoing_stream_map_.erase(it);
-
-  stream->OnOutgoingStreamClosed();
+  const bool has_final_stats = !!final_stats;
+  OutgoingStream* stream =
+      ApplyFinalSendStreamStats(stream_id, std::move(final_stats));
+  if (stream) {
+    // We do this deletion first because OnOutgoingStreamClosed may run
+    // JavaScript and so modify |outgoing_stream_map_|. |stream| is kept alive
+    // by being on the stack.
+    outgoing_stream_map_.erase(stream_id);
+    stream->OnOutgoingStreamClosed();
+  }
+  if (stream || has_final_stats) {
+    RunPendingSendStreamStatsCallbacksForStream(stream_id);
+  }
 }
 
 void WebTransport::ContextDestroyed() {
@@ -2006,7 +2007,9 @@ void WebTransport::SendFin(uint32_t stream_id) {
 void WebTransport::ResetStream(uint32_t stream_id, uint32_t code) {
   VLOG(0) << "WebTransport::ResetStream(" << stream_id << ", "
           << static_cast<uint32_t>(code) << ") this = " << this;
-  transport_remote_->AbortStream(stream_id, code);
+  transport_remote_->AbortStream(stream_id, code,
+                                 BindOnce(&WebTransport::OnAbortStreamResponse,
+                                          WrapWeakPersistent(this), stream_id));
 }
 
 void WebTransport::StopSending(uint32_t stream_id, uint32_t code) {
@@ -2030,6 +2033,39 @@ void WebTransport::SetStreamPriority(
   transport_remote_->SetStreamPriority(stream_id, std::move(priority));
 }
 
+void WebTransport::GetSendStreamStats(uint32_t stream_id,
+                                      SendStreamStatsCallback callback) {
+  if (!transport_remote_.is_bound() || !transport_remote_.is_connected() ||
+      cleanup_started_) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  auto result = pending_send_stream_stats_callbacks_.insert(
+      stream_id, Vector<SendStreamStatsCallback>());
+  result.stored_value->value.push_back(std::move(callback));
+  if (!result.is_new_entry) {
+    return;
+  }
+
+  transport_remote_->GetSendStreamStats(
+      stream_id, BindOnce(&WebTransport::OnSendStreamStatsResponse,
+                          WrapWeakPersistent(this), stream_id));
+}
+
+void WebTransport::OnSendStreamStatsResponse(
+    uint32_t stream_id,
+    network::mojom::blink::WebTransportSendStreamStatsPtr stats) {
+  if (!stats) {
+    // Tracker removal and the final stream notification use separate Mojo
+    // pipes. The terminal handler completes this request after installing the
+    // final stats.
+    return;
+  }
+
+  RunPendingSendStreamStatsCallbacksForStream(stream_id, std::move(stats));
+}
+
 void WebTransport::ForgetIncomingStream(uint32_t stream_id,
                                         bool has_received_close) {
   DVLOG(1) << "WebTransport::ForgetIncomingStream() this=" << this
@@ -2047,7 +2083,17 @@ void WebTransport::ForgetIncomingStream(uint32_t stream_id,
 void WebTransport::ForgetOutgoingStream(uint32_t stream_id) {
   DVLOG(1) << "WebTransport::ForgetOutgoingStream() this=" << this
            << ", stream_id=" << stream_id;
-  outgoing_stream_map_.erase(stream_id);
+  auto it = outgoing_stream_map_.find(stream_id);
+  if (it == outgoing_stream_map_.end()) {
+    return;
+  }
+  if (!it->value->AreSendStatsFinalized()) {
+    // Stream shutdown and its final stats can arrive on different Mojo pipes.
+    // Retain a weak lookup until ApplyFinalSendStreamStats() consumes the late
+    // stats without keeping the stream alive.
+    recently_forgotten_outgoing_streams_.Set(stream_id, it->value);
+  }
+  outgoing_stream_map_.erase(it);
 }
 
 void WebTransport::MaybeGetReceiveStreamStats(uint32_t stream_id) {
@@ -2113,6 +2159,7 @@ void WebTransport::Trace(Visitor* visitor) const {
   visitor->Trace(pending_get_stats_resolvers_);
   visitor->Trace(incoming_stream_map_);
   visitor->Trace(outgoing_stream_map_);
+  visitor->Trace(recently_forgotten_outgoing_streams_);
   visitor->Trace(received_streams_);
   visitor->Trace(received_streams_underlying_source_);
   visitor->Trace(received_bidirectional_streams_);
@@ -2397,11 +2444,13 @@ void WebTransport::Dispose() {
   probe::WebTransportClosed(GetExecutionContext(), inspector_transport_id_);
   incoming_stream_map_.clear();
   outgoing_stream_map_.clear();
+  recently_forgotten_outgoing_streams_.clear();
   // Note: recently_forgotten_incoming_stream_ids_ is not cleared explicitly;
   // let the garbage collector free the memory.
   // Clear pending close notifications.
   closed_potentially_pending_streams_.clear();
   pending_receive_stream_stats_callbacks_.clear();
+  pending_send_stream_stats_callbacks_.clear();
   pending_stream_creations_.clear();
   pending_export_keying_material_requests_.clear();
   send_groups_.clear();
@@ -2428,6 +2477,7 @@ void WebTransport::Cleanup(WebTransportCloseInfo* info,
   HandlePendingGetStatsResolvers(error);
   RunPendingReceiveStreamStatsCallbacks();
   RejectPendingExportKeyingMaterialRequests();
+  RunPendingSendStreamStatsCallbacks();
   ScriptValue error_value(isolate, error);
   datagram_source_->Error(error);
   // Error() enters V8 and may trigger GC. Keep strong references so every sink
@@ -2462,6 +2512,7 @@ void WebTransport::Cleanup(WebTransportCloseInfo* info,
     kv.value->Error(error_value);
   }
   for (const auto& kv : outgoing_stream_map) {
+    kv.value->SetFinalSendStats(nullptr);
     kv.value->Error(error_value);
   }
 
@@ -2518,6 +2569,38 @@ void WebTransport::RunPendingReceiveStreamStatsCallbacks() {
   callbacks.swap(pending_receive_stream_stats_callbacks_);
   for (auto& entry : callbacks) {
     std::move(entry.value).Run(nullptr);
+  }
+}
+
+void WebTransport::OnTransportRemoteDisconnected() {
+  RunPendingReceiveStreamStatsCallbacks();
+  RunPendingSendStreamStatsCallbacks();
+}
+
+void WebTransport::RunPendingSendStreamStatsCallbacksForStream(
+    uint32_t stream_id,
+    network::mojom::blink::WebTransportSendStreamStatsPtr stats) {
+  auto it = pending_send_stream_stats_callbacks_.find(stream_id);
+  if (it == pending_send_stream_stats_callbacks_.end()) {
+    return;
+  }
+
+  Vector<SendStreamStatsCallback> callbacks = std::move(it->value);
+  pending_send_stream_stats_callbacks_.erase(it);
+  for (auto& callback : callbacks) {
+    std::move(callback).Run(stats ? stats.Clone() : nullptr);
+  }
+}
+
+void WebTransport::RunPendingSendStreamStatsCallbacks() {
+  HashMap<uint32_t, Vector<SendStreamStatsCallback>,
+          IntWithZeroKeyHashTraits<uint32_t>>
+      requests;
+  requests.swap(pending_send_stream_stats_callbacks_);
+  for (auto& entry : requests) {
+    for (auto& callback : entry.value) {
+      std::move(callback).Run(nullptr);
+    }
   }
 }
 
@@ -2670,6 +2753,35 @@ void WebTransport::OnCreateBidirectionalStreamResponse(
                               bidirectional_stream->GetOutgoingStream());
 
   resolver->Resolve(bidirectional_stream);
+}
+
+OutgoingStream* WebTransport::ApplyFinalSendStreamStats(
+    uint32_t stream_id,
+    network::mojom::blink::WebTransportSendStreamStatsPtr final_stats) {
+  auto active_it = outgoing_stream_map_.find(stream_id);
+  if (active_it != outgoing_stream_map_.end()) {
+    active_it->value->SetFinalSendStats(std::move(final_stats));
+    return active_it->value;
+  }
+
+  if (!final_stats) {
+    return nullptr;
+  }
+  if (OutgoingStream* stream =
+          recently_forgotten_outgoing_streams_.Take(stream_id)) {
+    stream->SetFinalSendStats(std::move(final_stats));
+  }
+  return nullptr;
+}
+
+void WebTransport::OnAbortStreamResponse(
+    uint32_t stream_id,
+    network::mojom::blink::WebTransportSendStreamStatsPtr final_stats) {
+  if (!final_stats) {
+    return;
+  }
+  ApplyFinalSendStreamStats(stream_id, std::move(final_stats));
+  RunPendingSendStreamStatsCallbacksForStream(stream_id);
 }
 
 void WebTransport::OnGetStatsResponse(

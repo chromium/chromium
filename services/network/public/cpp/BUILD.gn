@@ -696,6 +696,8 @@ component("cpp_base") {
     "web_transport_http_request_headers_mojom_traits.h",
     "web_transport_keying_material_params_mojom_traits.cc",
     "web_transport_keying_material_params_mojom_traits.h",
+    "web_transport_send_stream_stats_mojom_traits.cc",
+    "web_transport_send_stream_stats_mojom_traits.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]

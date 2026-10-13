@@ -97,7 +97,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebTransport final
   void AcceptUnidirectionalStream(
       UnidirectionalStreamAcceptanceCallback callback) override;
   void SendFin(uint32_t stream_id) override;
-  void AbortStream(uint32_t stream_id, uint8_t code) override;
+  void AbortStream(uint32_t stream_id,
+                   uint8_t code,
+                   AbortStreamCallback callback) override;
   void StopSending(uint32_t stream_id, uint8_t code) override;
   void SetStreamPriority(
       uint32_t stream_id,
@@ -175,6 +177,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebTransport final
 
   void RegisterSendStream(uint32_t stream_id);
   void UnregisterSendStream(uint32_t stream_id);
+  std::optional<net::WebTransportSendStreamStats> TakeSendStreamStats(
+      uint32_t stream_id);
 
   void TearDown();
   void Dispose();

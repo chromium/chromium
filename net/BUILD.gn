@@ -992,6 +992,7 @@ component("net") {
     "quic/web_transport_error.h",
     "quic/web_transport_send_stats_tracker.cc",
     "quic/web_transport_send_stats_tracker.h",
+    "quic/web_transport_send_stream_stats.h",
     "shared_dictionary/shared_dictionary.h",
     "shared_dictionary/shared_dictionary_constants.h",
     "shared_dictionary/shared_dictionary_getter.h",

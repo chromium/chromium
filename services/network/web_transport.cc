@@ -240,16 +240,17 @@ class WebTransport::Stream final {
     }
   }
 
-  void Abort(uint8_t code) {
+  std::optional<net::WebTransportSendStreamStats> Abort(uint8_t code) {
     if (!outgoing_) {
-      return;
+      return std::nullopt;
     }
-    transport_->UnregisterSendStream(id_);
+    auto stats = transport_->TakeSendStreamStats(id_);
     outgoing_->ResetWithUserCode(code);
     outgoing_ = nullptr;
     readable_watcher_.Cancel();
     readable_.reset();
     MayDisposeLater();
+    return stats;
   }
 
   void StopSending(uint8_t code) {
@@ -426,9 +427,9 @@ class WebTransport::Stream final {
   }
 
   void OnStopSendingReceived(quic::WebTransportStreamError error) {
-    transport_->UnregisterSendStream(id_);
+    auto stats = transport_->TakeSendStreamStats(id_);
     if (transport_->client_) {
-      transport_->client_->OnReceivedStopSending(id_, error);
+      transport_->client_->OnReceivedStopSending(id_, error, std::move(stats));
     }
     outgoing_ = nullptr;
     readable_watcher_.Cancel();
@@ -437,9 +438,9 @@ class WebTransport::Stream final {
   }
 
   void OnWriteSideInDataRecvdState() {
-    transport_->UnregisterSendStream(id_);
+    auto stats = transport_->TakeSendStreamStats(id_);
     if (transport_->client_) {
-      transport_->client_->OnOutgoingStreamClosed(id_);
+      transport_->client_->OnOutgoingStreamClosed(id_, std::move(stats));
     }
 
     outgoing_ = nullptr;
@@ -1096,12 +1097,15 @@ void WebTransport::SendFin(uint32_t stream) {
   it->second->NotifyFinFromClient();
 }
 
-void WebTransport::AbortStream(uint32_t stream, uint8_t code) {
+void WebTransport::AbortStream(uint32_t stream,
+                               uint8_t code,
+                               AbortStreamCallback callback) {
   auto it = streams_.find(stream);
   if (it == streams_.end()) {
+    std::move(callback).Run(std::nullopt);
     return;
   }
-  it->second->Abort(code);
+  std::move(callback).Run(it->second->Abort(code));
 }
 
 void WebTransport::StopSending(uint32_t stream, uint8_t code) {
@@ -1547,20 +1551,25 @@ void WebTransport::GetReceiveStreamStats(
 void WebTransport::GetSendStreamStats(uint32_t stream_id,
                                       GetSendStreamStatsCallback callback) {
   if (torn_down_) {
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
   const std::optional<net::WebTransportSendStreamStats> stats =
       transport_->GetSendStreamStats(stream_id);
-  std::move(callback).Run(
-      stats ? mojom::WebTransportSendStreamStats::New(stats->bytes_sent,
-                                                      stats->bytes_acknowledged)
-            : nullptr);
+  std::move(callback).Run(stats);
 }
 
 void WebTransport::RegisterSendStream(uint32_t stream_id) {
   transport_->RegisterSendStream(stream_id);
+}
+
+std::optional<net::WebTransportSendStreamStats>
+WebTransport::TakeSendStreamStats(uint32_t stream_id) {
+  std::optional<net::WebTransportSendStreamStats> stats =
+      transport_->GetSendStreamStats(stream_id);
+  transport_->UnregisterSendStream(stream_id);
+  return stats;
 }
 
 void WebTransport::UnregisterSendStream(uint32_t stream_id) {

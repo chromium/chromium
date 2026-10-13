@@ -149,12 +149,18 @@ class MODULES_EXPORT WebTransport final
   void OnIncomingStreamClosed(uint32_t stream_id,
                               bool fin_received,
                               uint64_t bytes_received) override;
-  void OnOutgoingStreamClosed(uint32_t stream_id) override;
+  void OnOutgoingStreamClosed(
+      uint32_t stream_id,
+      network::mojom::blink::WebTransportSendStreamStatsPtr final_stats)
+      override;
   void OnReceivedResetStream(uint32_t stream_id,
                              uint32_t stream_error_code,
                              uint64_t bytes_received) override;
-  void OnReceivedStopSending(uint32_t stream_id,
-                             uint32_t stream_error_code) override;
+  void OnReceivedStopSending(
+      uint32_t stream_id,
+      uint32_t stream_error_code,
+      network::mojom::blink::WebTransportSendStreamStatsPtr final_stats)
+      override;
   void OnClosed(
       network::mojom::blink::WebTransportCloseInfoPtr close_info,
       network::mojom::blink::WebTransportStatsPtr final_stats) override;
@@ -181,6 +187,9 @@ class MODULES_EXPORT WebTransport final
   void SetStreamPriority(
       uint32_t stream_id,
       network::mojom::blink::WebTransportStreamPriorityPtr priority);
+  using SendStreamStatsCallback =
+      network::mojom::blink::WebTransport::GetSendStreamStatsCallback;
+  void GetSendStreamStats(uint32_t stream_id, SendStreamStatsCallback callback);
 
   // Removes the reference to a stream. |has_received_close| indicates whether
   // OnIncomingStreamClosed() was called for this stream before it was
@@ -259,6 +268,7 @@ class MODULES_EXPORT WebTransport final
   void RejectPendingStreamCreations(v8::Local<v8::Value> error);
   void RejectPendingStreamResolvers(v8::Local<v8::Value> error);
   void HandlePendingGetStatsResolvers(v8::Local<v8::Value> error);
+  void OnTransportRemoteDisconnected();
   void RunPendingReceiveStreamStatsCallbacks();
   void OnReceiveStreamStatsResponse(
       uint64_t request_id,
@@ -309,6 +319,21 @@ class MODULES_EXPORT WebTransport final
       int64_t send_order,
       bool succeeded,
       uint32_t stream_id);
+  // Applies final stats to the active or recently forgotten stream. Returns
+  // the active stream when terminal handling still needs to close or error it.
+  OutgoingStream* ApplyFinalSendStreamStats(
+      uint32_t stream_id,
+      network::mojom::blink::WebTransportSendStreamStatsPtr final_stats);
+  void OnAbortStreamResponse(
+      uint32_t stream_id,
+      network::mojom::blink::WebTransportSendStreamStatsPtr final_stats);
+  void OnSendStreamStatsResponse(
+      uint32_t stream_id,
+      network::mojom::blink::WebTransportSendStreamStatsPtr stats);
+  void RunPendingSendStreamStatsCallbacksForStream(
+      uint32_t stream_id,
+      network::mojom::blink::WebTransportSendStreamStatsPtr stats = nullptr);
+  void RunPendingSendStreamStatsCallbacks();
   void OnGetStatsResponse(network::mojom::blink::WebTransportStatsPtr);
 
   bool DoesSubresourceFilterBlockConnection(const KURL& url);
@@ -379,6 +404,14 @@ class MODULES_EXPORT WebTransport final
               IntWithZeroKeyHashTraits<uint32_t>>
       outgoing_stream_map_;
 
+  // Weakly tracks streams removed by ForgetOutgoingStream() while awaiting
+  // final stats from graceful close, local abort, or STOP_SENDING.
+  // A non-null final snapshot removes the entry; otherwise Dispose() clears it.
+  HeapHashMap<uint32_t,
+              WeakMember<OutgoingStream>,
+              IntWithZeroKeyHashTraits<uint32_t>>
+      recently_forgotten_outgoing_streams_;
+
   // Final close information for streams whose close notification arrived
   // before the corresponding renderer stream was created.
   HashMap<uint32_t,
@@ -414,6 +447,14 @@ class MODULES_EXPORT WebTransport final
           IntWithZeroKeyHashTraits<uint64_t>>
       pending_receive_stream_stats_callbacks_;
   uint64_t next_receive_stream_stats_request_id_ = 0;
+
+  // Coalesces concurrent requests for a stream until a live response, a final
+  // stream notification, or WebTransport Mojo disconnection completes them.
+  HashMap<uint32_t,
+          Vector<SendStreamStatsCallback>,
+          IntWithZeroKeyHashTraits<uint32_t>>
+      pending_send_stream_stats_callbacks_;
+
   bool cleanup_started_ = false;
 
   HeapLinkedHashSet<Member<PendingExportKeyingMaterialRequest>>

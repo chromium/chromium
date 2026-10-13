@@ -1093,6 +1093,17 @@ mojom("url_loader_base") {
     {
       types = [
         {
+          mojom = "network.mojom.WebTransportSendStreamStats"
+          cpp = "::net::WebTransportSendStreamStats"
+          copyable_pass_by_value = true
+        },
+      ]
+      traits_headers = [ "//services/network/public/cpp/web_transport_send_stream_stats_mojom_traits.h" ]
+      traits_public_deps = [ "//net" ]
+    },
+    {
+      types = [
+        {
           mojom = "network.mojom.WebTransportError"
           cpp = "::net::WebTransportError"
         },

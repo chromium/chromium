@@ -19,6 +19,7 @@
 #include "net/http/http_request_headers.h"
 #include "net/log/net_log_with_source.h"
 #include "net/quic/web_transport_error.h"
+#include "net/quic/web_transport_send_stream_stats.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/web_transport_fingerprint_proof_verifier.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_types.h"
 #include "net/third_party/quiche/src/quiche/quic/core/web_transport_interface.h"
@@ -71,16 +72,6 @@ struct NET_EXPORT WebTransportCloseInfo final {
 
   bool operator==(const WebTransportCloseInfo& other) const;
 };
-
-struct NET_EXPORT WebTransportSendStreamStats final {
-  uint64_t bytes_sent = 0;
-  uint64_t bytes_acknowledged = 0;
-
-  bool operator==(const WebTransportSendStreamStats&) const = default;
-};
-
-NET_EXPORT std::ostream& operator<<(std::ostream& os,
-                                    const WebTransportSendStreamStats& stats);
 
 // Returns the string representation of `state`.
 const char* WebTransportStateString(WebTransportState state);

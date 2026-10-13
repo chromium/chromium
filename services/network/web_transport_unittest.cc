@@ -33,8 +33,10 @@
 #include "net/log/net_log_event_type.h"
 #include "net/log/test_net_log.h"
 #include "net/quic/quic_context.h"
+#include "net/quic/web_transport_client.h"
 #include "net/test/test_data_directory.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/proof_source_x509.h"
+#include "net/third_party/quiche/src/quiche/quic/core/web_transport_interface.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/crypto_test_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/quic_test_backend.h"
 #include "net/tools/quic/quic_simple_server.h"
@@ -182,10 +184,11 @@ AcceptedBidirectionalStream AcceptBidirectionalStream(
           std::move(writable_for_outgoing)};
 }
 
-mojom::WebTransportSendStreamStatsPtr GetSendStreamStats(
+std::optional<net::WebTransportSendStreamStats> GetSendStreamStats(
     mojo::Remote<mojom::WebTransport>& transport_remote,
     uint32_t stream_id) {
-  base::test::TestFuture<mojom::WebTransportSendStreamStatsPtr> stats_future;
+  base::test::TestFuture<std::optional<net::WebTransportSendStreamStats>>
+      stats_future;
   transport_remote->GetSendStreamStats(stream_id, stats_future.GetCallback());
   return stats_future.Take();
 }
@@ -301,14 +304,22 @@ class TestClient final : public mojom::WebTransportClient {
       std::move(quit_closure_for_incoming_stream_closure_).Run();
     }
   }
-  void OnOutgoingStreamClosed(uint32_t stream_id) override {
+  void OnOutgoingStreamClosed(
+      uint32_t stream_id,
+      std::optional<net::WebTransportSendStreamStats> final_stats) override {
     closed_outgoing_streams_.insert(stream_id);
+    final_send_stream_stats_.insert_or_assign(stream_id, final_stats);
     if (quit_closure_for_outgoing_stream_closure_) {
       std::move(quit_closure_for_outgoing_stream_closure_).Run();
     }
   }
   void OnReceivedResetStream(uint32_t stream_id, uint32_t, uint64_t) override {}
-  void OnReceivedStopSending(uint32_t stream_id, uint32_t) override {}
+  void OnReceivedStopSending(
+      uint32_t stream_id,
+      uint32_t,
+      std::optional<net::WebTransportSendStreamStats> final_stats) override {
+    final_send_stream_stats_.insert_or_assign(stream_id, final_stats);
+  }
   void OnDraining() override {
     has_seen_draining_ = true;
     if (quit_closure_for_draining_) {
@@ -365,6 +376,13 @@ class TestClient final : public mojom::WebTransportClient {
     return closed_outgoing_streams_.find(stream_id) !=
            closed_outgoing_streams_.end();
   }
+  const std::optional<net::WebTransportSendStreamStats>&
+  final_send_stream_stats_for(uint32_t stream_id) const {
+    return final_send_stream_stats_.at(stream_id);
+  }
+  bool has_final_send_stream_stats_for(uint32_t stream_id) const {
+    return final_send_stream_stats_.contains(stream_id);
+  }
   bool has_seen_mojo_connection_error() const {
     return has_seen_mojo_connection_error_;
   }
@@ -401,6 +419,8 @@ class TestClient final : public mojom::WebTransportClient {
   std::map<uint32_t, bool> closed_incoming_streams_;
   absl::flat_hash_map<uint32_t, uint64_t> final_bytes_received_;
   std::set<uint32_t> closed_outgoing_streams_;
+  absl::flat_hash_map<uint32_t, std::optional<net::WebTransportSendStreamStats>>
+      final_send_stream_stats_;
   bool has_seen_mojo_connection_error_ = false;
   bool has_seen_draining_ = false;
   bool has_seen_closed_ = false;
@@ -471,6 +491,17 @@ class WebTransportTestPeer {
   // order.
   static void ExpireNextDatagram(WebTransport* transport, size_t index) {
     transport->ExpireNextDatagramForTesting(index);
+  }
+
+  static void ReceiveStopSending(WebTransport* transport,
+                                 uint32_t stream_id,
+                                 quic::WebTransportStreamError error) {
+    quic::WebTransportSession* session = transport->transport_->session();
+    CHECK(session);
+    quic::WebTransportStream* stream = session->GetStreamById(stream_id);
+    CHECK(stream);
+    CHECK(stream->visitor());
+    stream->visitor()->OnStopSendingReceived(error);
   }
 };
 
@@ -1618,7 +1649,10 @@ TEST_F(WebTransportTest, EchoOnUnidirectionalStreams) {
 
   client.WaitUntilOutgoingStreamIsClosed(stream_id);
 
-  EXPECT_TRUE(GetSendStreamStats(transport_remote, stream_id).is_null());
+  EXPECT_EQ(client.final_send_stream_stats_for(stream_id),
+            (net::WebTransportSendStreamStats{.bytes_sent = 5,
+                                              .bytes_acknowledged = 5}));
+  EXPECT_FALSE(GetSendStreamStats(transport_remote, stream_id).has_value());
 
   mojo::ScopedDataPipeConsumerHandle readable_for_incoming;
   uint32_t incoming_stream_id = stream_id;
@@ -1680,7 +1714,7 @@ TEST_F(WebTransportTest, SendStreamStatsUnavailableAfterLocalAbort) {
   constexpr std::string_view kData = "hello";
   ASSERT_EQ(MOJO_RESULT_OK, writable->WriteAllData(base::as_byte_span(kData)));
 
-  mojom::WebTransportSendStreamStatsPtr stats;
+  std::optional<net::WebTransportSendStreamStats> stats;
   ASSERT_TRUE(base::test::RunUntil([&] {
     stats = GetSendStreamStats(transport_remote, stream_id);
     return stats && stats->bytes_sent == kData.size() &&
@@ -1689,9 +1723,66 @@ TEST_F(WebTransportTest, SendStreamStatsUnavailableAfterLocalAbort) {
   EXPECT_EQ(stats->bytes_sent, kData.size());
   EXPECT_EQ(stats->bytes_acknowledged, kData.size());
 
-  transport_remote->AbortStream(stream_id, /*code=*/0);
+  base::test::TestFuture<std::optional<net::WebTransportSendStreamStats>>
+      abort_future;
+  transport_remote->AbortStream(stream_id, /*code=*/0,
+                                abort_future.GetCallback());
+  auto final_stats = abort_future.Take();
+  ASSERT_TRUE(final_stats);
+  EXPECT_EQ(final_stats->bytes_sent, kData.size());
+  EXPECT_EQ(final_stats->bytes_acknowledged, kData.size());
 
-  EXPECT_TRUE(GetSendStreamStats(transport_remote, stream_id).is_null());
+  EXPECT_FALSE(GetSendStreamStats(transport_remote, stream_id).has_value());
+
+  base::test::TestFuture<std::optional<net::WebTransportSendStreamStats>>
+      second_abort_future;
+  transport_remote->AbortStream(stream_id, /*code=*/0,
+                                second_abort_future.GetCallback());
+  EXPECT_FALSE(second_abort_future.Take().has_value());
+}
+
+TEST_F(WebTransportTest, StopSendingDeliversFinalSendStreamStats) {
+  base::test::TestFuture<void> handshake_future;
+  mojo::PendingRemote<mojom::WebTransportHandshakeClient> handshake_client;
+  TestHandshakeClient test_handshake_client(
+      handshake_client.InitWithNewPipeAndPassReceiver(),
+      handshake_future.GetCallback());
+
+  CreateWebTransport(GetURL("/echo"), origin(), std::move(handshake_client));
+  ASSERT_TRUE(handshake_future.Wait());
+
+  TestClient client(test_handshake_client.PassClientReceiver());
+  mojo::Remote<mojom::WebTransport> transport_remote(
+      test_handshake_client.PassTransport());
+
+  mojo::ScopedDataPipeConsumerHandle readable;
+  mojo::ScopedDataPipeProducerHandle writable;
+  ASSERT_EQ(MOJO_RESULT_OK,
+            mojo::CreateDataPipe(/*options=*/nullptr, writable, readable));
+
+  base::test::TestFuture<bool, uint32_t> stream_creation_future;
+  transport_remote->CreateStream(std::move(readable), /*writable=*/{},
+                                 /*priority=*/nullptr,
+                                 stream_creation_future.GetCallback());
+  auto [stream_created, stream_id] = stream_creation_future.Take();
+  ASSERT_TRUE(stream_created);
+
+  constexpr std::string_view kData = "hello";
+  ASSERT_EQ(MOJO_RESULT_OK, writable->WriteAllData(base::as_byte_span(kData)));
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    auto stats = GetSendStreamStats(transport_remote, stream_id);
+    return stats && stats->bytes_sent == kData.size() &&
+           stats->bytes_acknowledged == kData.size();
+  }));
+  WebTransportTestPeer::ReceiveStopSending(
+      mutable_network_context().GetWebTransportForTesting(), stream_id,
+      /*error=*/0);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return client.has_final_send_stream_stats_for(stream_id); }));
+  const auto& final_stats = client.final_send_stream_stats_for(stream_id);
+  ASSERT_TRUE(final_stats);
+  EXPECT_EQ(final_stats->bytes_sent, kData.size());
+  EXPECT_EQ(final_stats->bytes_acknowledged, kData.size());
 }
 
 TEST_F(WebTransportTest, SetStreamPriority) {

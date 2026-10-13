@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "mojo/public/cpp/system/data_pipe.h"
+#include "services/network/public/mojom/web_transport.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -21,6 +22,8 @@ namespace blink {
 
 class ExceptionState;
 class ScriptState;
+template <typename IDLType>
+class ScriptPromiseResolver;
 class WebTransport;
 class WebTransportSendGroup;
 class WebTransportSendStreamStats;
@@ -72,6 +75,11 @@ class MODULES_EXPORT WebTransportSendStream final : public WritableStream {
 
  private:
   void SendPriorityUpdate();
+  void OnGetStatsResponse(
+      ScriptPromiseResolver<WebTransportSendStreamStats>*,
+      network::mojom::blink::WebTransportSendStreamStatsPtr);
+  void ResolveGetStats(
+      ScriptPromiseResolver<WebTransportSendStreamStats>*) const;
 
   const Member<WebTransport> transport_;
   const uint32_t stream_id_;

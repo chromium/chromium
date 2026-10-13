@@ -12,6 +12,7 @@
 #include "base/types/strong_alias.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
+#include "services/network/public/mojom/web_transport.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
@@ -86,6 +87,15 @@ class MODULES_EXPORT OutgoingStream final
   void Error(ScriptValue reason);
 
   State GetState() const { return state_; }
+
+  uint64_t BytesWritten() const { return bytes_written_; }
+  uint64_t BytesSent() const { return bytes_sent_; }
+  uint64_t BytesAcknowledged() const { return bytes_acknowledged_; }
+  bool AreSendStatsFinalized() const { return send_stats_finalized_; }
+  void UpdateSendStats(
+      network::mojom::blink::WebTransportSendStreamStatsPtr stats);
+  void SetFinalSendStats(
+      network::mojom::blink::WebTransportSendStreamStatsPtr stats);
 
   // Called from WebTransport rather than using
   // ExecutionContextLifecycleObserver to ensure correct destruction order.
@@ -164,6 +174,20 @@ class MODULES_EXPORT OutgoingStream final
   // The offset into |cached_data_| of the first byte that still needs to be
   // written.
   size_t offset_ = 0;
+
+  // Number of application bytes successfully written to the Mojo data pipe.
+  // WebTransportSendStream::getStats() combines this locally tracked value
+  // with the network-service counters below.
+  uint64_t bytes_written_ = 0;
+
+  // Latest network-service counters.
+  uint64_t bytes_sent_ = 0;
+  uint64_t bytes_acknowledged_ = 0;
+
+  // Once stats are finalized, getStats() can resolve locally without querying
+  // the inactive network-service stream, even if no final snapshot was
+  // available.
+  bool send_stats_finalized_ = false;
 
   Member<WritableStream> writable_;
   Member<AbortSignal::AlgorithmHandle> send_stream_abort_handle_;

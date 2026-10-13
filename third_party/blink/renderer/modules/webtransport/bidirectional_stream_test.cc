@@ -167,9 +167,12 @@ class StubWebTransport : public network::mojom::blink::WebTransport {
     was_send_fin_called_ = true;
   }
 
-  void AbortStream(uint32_t stream_id, uint8_t code) override {
+  void AbortStream(uint32_t stream_id,
+                   uint8_t code,
+                   AbortStreamCallback callback) override {
     EXPECT_EQ(stream_id, kDefaultStreamId);
     was_abort_stream_called_ = true;
+    std::move(callback).Run(nullptr);
   }
 
   void StopSending(uint32_t stream_id, uint8_t code) override {
@@ -418,7 +421,8 @@ TEST(BidirectionalStreamTest, OutgoingStreamCleanClose) {
       script_state, ASSERT_NO_EXCEPTION);
 
   scoped_web_transport.GetWebTransport()->OnOutgoingStreamClosed(
-      kDefaultStreamId);
+      kDefaultStreamId,
+      network::mojom::blink::WebTransportSendStreamStats::New());
 
   ScriptPromiseTester close_tester(script_state, close_promise);
   close_tester.WaitUntilSettled();
@@ -518,7 +522,8 @@ TEST(BidirectionalStreamTest, ReadAfterClosingOutgoing) {
       script_state, ASSERT_NO_EXCEPTION);
 
   scoped_web_transport.GetWebTransport()->OnOutgoingStreamClosed(
-      kDefaultStreamId);
+      kDefaultStreamId,
+      network::mojom::blink::WebTransportSendStreamStats::New());
 
   ScriptPromiseTester close_tester(script_state, close_promise);
   close_tester.WaitUntilSettled();

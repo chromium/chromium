@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/containers/span.h"
+#include "services/network/public/mojom/web_transport.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -141,6 +142,7 @@ TEST(OutgoingStreamTest, WriteArrayBuffer) {
   ScriptPromiseTester tester(scope.GetScriptState(), result);
   tester.WaitUntilSettled();
   EXPECT_TRUE(tester.IsFulfilled());
+  EXPECT_EQ(outgoing_stream->BytesWritten(), 1u);
   EXPECT_THAT(stream_creator.ReadAllPendingData(), ElementsAre('A'));
 
   EXPECT_CALL(stream_creator.GetMockClient(), ForgetStream());
@@ -199,10 +201,13 @@ TEST(OutgoingStreamTest, AsyncWrite) {
   // Let microtasks run just in case write() returns prematurely.
   scope.PerformMicrotaskCheckpoint();
   EXPECT_FALSE(tester.IsFulfilled());
+  EXPECT_GT(outgoing_stream->BytesWritten(), 0u);
+  EXPECT_LT(outgoing_stream->BytesWritten(), kChunkSize);
 
   // Read the first part of the data.
   auto data1 = stream_creator.ReadAllPendingData();
   EXPECT_LT(data1.size(), kChunkSize);
+  EXPECT_EQ(outgoing_stream->BytesWritten(), data1.size());
 
   // Verify the data wasn't corrupted.
   EXPECT_TRUE(IsAllNulls(data1));
@@ -213,6 +218,7 @@ TEST(OutgoingStreamTest, AsyncWrite) {
   // Read the second part of the data.
   auto data2 = stream_creator.ReadAllPendingData();
   EXPECT_TRUE(IsAllNulls(data2));
+  EXPECT_EQ(outgoing_stream->BytesWritten(), data1.size() + data2.size());
 
   test::RunPendingTasks();
 
@@ -224,6 +230,7 @@ TEST(OutgoingStreamTest, AsyncWrite) {
   // Now the write() should settle.
   tester.WaitUntilSettled();
   EXPECT_TRUE(tester.IsFulfilled());
+  EXPECT_EQ(outgoing_stream->BytesWritten(), kChunkSize);
 
   // Nothing should be left to read.
   EXPECT_THAT(stream_creator.ReadAllPendingData(), ElementsAre());
@@ -338,6 +345,11 @@ TEST(OutgoingStreamTest, DataPipeClosedDuringAsyncWrite) {
   auto closed = writer->closed(script_state);
   ScriptPromiseTester closed_tester(script_state, closed);
 
+  test::RunPendingTasks();
+  const uint64_t bytes_written = outgoing_stream->BytesWritten();
+  EXPECT_GT(bytes_written, 0u);
+  EXPECT_LT(bytes_written, kChunkSize);
+
   EXPECT_CALL(stream_creator.GetMockClient(), ForgetStream());
 
   // Close the other end of the pipe.
@@ -364,6 +376,7 @@ TEST(OutgoingStreamTest, DataPipeClosedDuringAsyncWrite) {
   EXPECT_EQ(closed_exception->name(), "NetworkError");
   EXPECT_EQ(closed_exception->message(),
             "The stream was aborted by the remote server");
+  EXPECT_EQ(outgoing_stream->BytesWritten(), bytes_written);
 }
 
 TEST(OutgoingStreamTest, Abort) {

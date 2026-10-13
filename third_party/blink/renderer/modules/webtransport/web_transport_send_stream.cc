@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "services/network/public/mojom/web_transport.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_send_stream_stats.h"
 #include "third_party/blink/renderer/modules/webtransport/outgoing_stream_client.h"
 #include "third_party/blink/renderer/modules/webtransport/web_transport.h"
@@ -77,14 +78,37 @@ ScriptPromise<WebTransportSendStreamStats> WebTransportSendStream::getStats(
   if (!script_state->ContextIsValid()) {
     return ScriptPromise<WebTransportSendStreamStats>();
   }
-  // TODO(crbug.com/487117768): Implement actual stats collection from the
-  // network service via Mojo. Currently returns zeroed stats regardless of
-  // stream state — this is a stub, matching WebTransportSendGroup::getStats().
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<WebTransportSendStreamStats>>(
+          script_state);
+  auto promise = resolver->Promise();
+  if (outgoing_stream_->AreSendStatsFinalized()) {
+    ResolveGetStats(resolver);
+    return promise;
+  }
+  transport_->GetSendStreamStats(
+      stream_id_, BindOnce(&WebTransportSendStream::OnGetStatsResponse,
+                           WrapPersistent(this), WrapPersistent(resolver)));
+  return promise;
+}
+
+void WebTransportSendStream::OnGetStatsResponse(
+    ScriptPromiseResolver<WebTransportSendStreamStats>* resolver,
+    network::mojom::blink::WebTransportSendStreamStatsPtr stats) {
+  outgoing_stream_->UpdateSendStats(std::move(stats));
+  ResolveGetStats(resolver);
+}
+
+void WebTransportSendStream::ResolveGetStats(
+    ScriptPromiseResolver<WebTransportSendStreamStats>* resolver) const {
+  if (!resolver->GetExecutionContext()) {
+    return;
+  }
   auto* stats = MakeGarbageCollected<WebTransportSendStreamStats>();
-  stats->setBytesWritten(0);
-  stats->setBytesSent(0);
-  stats->setBytesAcknowledged(0);
-  return ToResolvedPromise<WebTransportSendStreamStats>(script_state, stats);
+  stats->setBytesWritten(outgoing_stream_->BytesWritten());
+  stats->setBytesSent(outgoing_stream_->BytesSent());
+  stats->setBytesAcknowledged(outgoing_stream_->BytesAcknowledged());
+  resolver->Resolve(stats);
 }
 
 void WebTransportSendStream::Trace(Visitor* visitor) const {
