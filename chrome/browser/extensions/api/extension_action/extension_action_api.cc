@@ -538,24 +538,28 @@ ExtensionFunction::ResponseAction ActionOpenPopupFunction::Run() {
 
   BrowserWindowInterface* browser = nullptr;
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  std::string error;
   if (window_id == extension_misc::kCurrentWindowId) {
     browser =
         FindActiveBrowserWindow(*profile, include_incognito_information());
     if (!browser) {
-      error = kNoActiveWindowFound;
+      return RespondNow(Error(kNoActiveWindowFound));
     }
   } else {
-    if (WindowController* controller =
-            ExtensionTabUtil::GetControllerInProfileWithId(
-                profile, window_id, include_incognito_information(), &error)) {
-      browser = controller->GetBrowserWindowInterface();
+    std::string error;
+    WindowController* controller =
+        ExtensionTabUtil::GetControllerInProfileWithId(
+            profile, window_id, include_incognito_information(), &error);
+    if (!controller) {
+      return RespondNow(Error(std::move(error)));
     }
-  }
-
-  if (!browser) {
-    CHECK(!error.empty(), base::NotFatalUntil::M161);
-    return RespondNow(Error(std::move(error)));
+    browser = controller->GetBrowserWindowInterface();
+    if (!browser) {
+      // The window exists but isn't a browser window, so it can't host a popup.
+      // TODO(crbug.com/571684513): Update this error to be more specific on
+      // the actual nature of the failure condition, a window was found but it
+      // does not support this operation.
+      return RespondNow(Error(kNoActiveWindowFound));
+    }
   }
 
   if (!browser->GetWindow()->IsActive()) {
@@ -566,6 +570,7 @@ ExtensionFunction::ResponseAction ActionOpenPopupFunction::Run() {
     return RespondNow(Error(kNoActivePopup));
   }
 
+  std::string error;
   if (!OpenPopupInBrowser(
           *browser, *extension(), &error,
           base::BindOnce(&ActionOpenPopupFunction::OnShowPopupComplete,

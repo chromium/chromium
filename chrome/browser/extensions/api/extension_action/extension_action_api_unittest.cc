@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
+
 #include <memory>
 
 #include "base/files/file_util.h"
@@ -9,13 +11,18 @@
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
+#include "chrome/browser/extensions/test_standalone_window_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/extension_test_util.h"
+#include "components/sessions/core/session_id.h"
+#include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/api/extension_action/action_info_test_util.h"
+#include "extensions/common/extension_builder.h"
 #include "extensions/test/test_extension_dir.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -140,6 +147,31 @@ INSTANTIATE_TEST_SUITE_P(All,
                                          ActionInfo::Type::kPage,
                                          ActionInfo::Type::kAction));
 #endif  // BUILDFLAG(IS_ANDROID)
+
+// Verifies that ActionOpenPopupFunction populates a non-empty error rather than
+// hitting DCHECK(!error.empty()) when given the windowId of a standalone
+// WindowController with no BrowserWindowInterface.
+TEST_F(ExtensionServiceTestWithInstall,
+       ActionOpenPopup_StandaloneWindowRejected) {
+  InitializeEmptyExtensionService();
+
+  const SessionID standalone_window_id = SessionID::NewUnique();
+  TestStandaloneWindowController standalone_controller(
+      /*base_window=*/nullptr, profile(), standalone_window_id,
+      /*web_contents=*/nullptr);
+
+  auto extension = ExtensionBuilder("action_ext")
+                       .SetManifestKey("action", base::DictValue())
+                       .Build();
+  ExtensionRegistrar::Get(profile())->AddExtension(extension);
+  auto popup_func = base::MakeRefCounted<ActionOpenPopupFunction>();
+  popup_func->set_extension(extension);
+  std::string args =
+      base::StringPrintf("[{\"windowId\": %d}]", standalone_window_id.id());
+  std::string error = api_test_utils::RunFunctionAndReturnError(
+      popup_func.get(), args, profile());
+  EXPECT_EQ("Could not find an active browser window.", error);
+}
 
 }  // namespace
 }  // namespace extensions
