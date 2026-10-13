@@ -23,6 +23,11 @@
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_test_helper.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace extensions {
 namespace {
 
@@ -199,5 +204,56 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogBrowserTest,
   EXPECT_EQ(kUninstallUrl,
             GetWebContentsAt(1)->GetLastCommittedURL().spec());
 }
+
+#if BUILDFLAG(IS_ANDROID)
+// Verify that uninstalling an extension with an uninstall URL does not crash
+// when a headless or non-standard TabModel for the same Profile precedes the
+// active standard TabModel in TabModelList.
+IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogBrowserTest,
+                       UninstallURLSkipsNonStandardTabModels) {
+  ASSERT_EQ(1u, TabModelList::models().size());
+  TabModel* standard_tab_model = TabModelList::models()[0];
+
+  TestTabModel headless_tab_model(profile(),
+                                  chrome::android::ActivityType::kTabbed,
+                                  TabModel::TabModelType::kHeadless);
+  TabModelList::AddTabModel(&headless_tab_model);
+  base::ScopedClosureRunner cleanup_guard(base::BindOnce(
+      [](TabModel* model) { TabModelList::RemoveTabModel(model); },
+      &headless_tab_model));
+
+  // Move the standard tab model to the end of the list.
+  TabModelList::RemoveTabModel(standard_tab_model);
+  TabModelList::AddTabModel(standard_tab_model);
+  ASSERT_EQ(
+      (TabModelList::TabModelVector{&headless_tab_model, standard_tab_model}),
+      TabModelList::models());
+
+  scoped_refptr<const Extension> extension = LoadExtensionWithUninstallUrl();
+  ASSERT_TRUE(extension);
+
+  ScopedTestDialogAutoConfirm auto_confirm(ScopedTestDialogAutoConfirm::ACCEPT);
+  base::RunLoop run_loop;
+  TestExtensionUninstallDialogDelegate delegate(run_loop.QuitClosure());
+  std::unique_ptr<ExtensionUninstallDialog> dialog(
+      ExtensionUninstallDialog::Create(
+          profile(), GetActiveWebContents()->GetTopLevelNativeWindow(),
+          &delegate));
+
+  const GURL uninstall_url(kUninstallUrl);
+  content::TestNavigationObserver navigation_observer(uninstall_url);
+  navigation_observer.StartWatchingNewWebContents();
+
+  dialog->ConfirmUninstall(extension, UNINSTALL_REASON_USER_INITIATED,
+                           UNINSTALL_SOURCE_FOR_TESTING);
+  run_loop.Run();
+  EXPECT_FALSE(delegate.canceled());
+
+  navigation_observer.Wait();
+  EXPECT_EQ(2, GetTabCount());
+  EXPECT_EQ(kUninstallUrl,
+            GetActiveWebContents()->GetLastCommittedURL().spec());
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace extensions
