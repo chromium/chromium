@@ -37,6 +37,16 @@
         =1 {Your Incognito window won't open after you relaunch}
         other {Your {COUNT} Incognito windows won't reopen after you relaunch}}
       </message>
+      <message name="IDS_RELAUNCH_CONFIRMATION_DIALOG_BODY_ISOLATED" desc="The body of the modal dialog variant that we show when users click on relaunch and they have open Isolated windows. The dialog serves to warn the users about losing their Isolated windows if they proceed with the relaunch.">
+        {COUNT, plural,
+        =1 {Your Isolated window won't open after you relaunch}
+        other {Your {COUNT} Isolated windows won't reopen after you relaunch}}
+      </message>
+      <message name="IDS_RELAUNCH_CONFIRMATION_DIALOG_BODY_INCOGNITO_AND_ISOLATED" desc="The body of the modal dialog variant that we show when users click on relaunch and they have open Incognito and Isolated windows. The dialog serves to warn the users about losing their Incognito and Isolated windows if they proceed with the relaunch.">
+        {COUNT, plural,
+        =1 {There is {COUNT} Incognito or Isolated window open. It won't reopen after you relaunch}
+        other {There are {COUNT} Incognito and Isolated windows open across profiles. They won't reopen after you relaunch}}
+      </message>
     </if>
 
     <!-- About Page -->

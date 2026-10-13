@@ -54,13 +54,17 @@ UpdateRecommendedMessageBox::UpdateRecommendedMessageBox() {
   update_message = l10n_util::GetStringUTF16(IDS_UPDATE_RECOMMENDED);
 #elif BUILDFLAG(GOOGLE_CHROME_BRANDING) && \
     (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
-  update_message = l10n_util::GetPluralStringFUTF16(
-      IDS_UPDATE_RECOMMENDED_ALT,
-      GlobalBrowserCollection::GetInstance()->GetIncognitoBrowserCount());
+  update_message =
+      GlobalBrowserCollection::GetInstance()
+          ->GetDialogWithIncognitoAndIsolatedVariants(
+              IDS_UPDATE_RECOMMENDED_ALT, IDS_UPDATE_RECOMMENDED_ALT_ISOLATED,
+              IDS_UPDATE_RECOMMENDED_ALT_INCOGNITO_AND_ISOLATED);
 #else
-  update_message = l10n_util::GetPluralStringFUTF16(
-      IDS_UPDATE_RECOMMENDED,
-      GlobalBrowserCollection::GetInstance()->GetIncognitoBrowserCount());
+  update_message =
+      GlobalBrowserCollection::GetInstance()
+          ->GetDialogWithIncognitoAndIsolatedVariants(
+              IDS_UPDATE_RECOMMENDED, IDS_UPDATE_RECOMMENDED_ISOLATED,
+              IDS_UPDATE_RECOMMENDED_INCOGNITO_AND_ISOLATED);
 #endif
 
   // Also deleted when the window closes.

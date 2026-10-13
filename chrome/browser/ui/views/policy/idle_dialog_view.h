@@ -66,10 +66,6 @@ class IdleDialogView : public views::DialogDelegateView {
   const base::TimeDelta idle_threshold_;
   const IdleDialog::ActionSet actions_;
   const base::TimeTicks deadline_;
-
-  // Number of Incognito windows open when the dialog was shown. Cached to avoid
-  // iterating through BrowserList every 1s.
-  int incognito_count_;
 };
 
 }  // namespace policy

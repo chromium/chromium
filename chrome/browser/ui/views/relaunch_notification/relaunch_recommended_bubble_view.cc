@@ -91,9 +91,11 @@ ui::ImageModel RelaunchRecommendedBubbleView::GetWindowIcon() {
 void RelaunchRecommendedBubbleView::Init() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
   auto label = std::make_unique<views::Label>(
-      l10n_util::GetPluralStringFUTF16(
-          IDS_RELAUNCH_RECOMMENDED_BODY,
-          GlobalBrowserCollection::GetInstance()->GetIncognitoBrowserCount()),
+      GlobalBrowserCollection::GetInstance()
+          ->GetDialogWithIncognitoAndIsolatedVariants(
+              IDS_RELAUNCH_RECOMMENDED_BODY,
+              IDS_RELAUNCH_RECOMMENDED_BODY_ISOLATED,
+              IDS_RELAUNCH_RECOMMENDED_BODY_INCOGNITO_AND_ISOLATED),
       views::style::CONTEXT_DIALOG_BODY_TEXT);
 
   label->SetMultiLine(true);

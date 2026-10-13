@@ -18230,6 +18230,16 @@ Please help our engineers fix this problem. Tell us what happened right before y
           =1 {Your Incognito window won't reopen.}
           other {Your # Incognito windows won't reopen.}}
       </message>
+      <message name="IDS_IDLE_TIMEOUT_ISOLATED" desc="The text in the Idle Timeout dialog variant when there are Isolated windows open. This warns the user that Isolated windows will close automatically, and their content will be lost.">
+        {COUNT, plural,
+          =1 {Your Isolated window won't reopen.}
+          other {Your # Isolated windows won't reopen.}}
+      </message>
+      <message name="IDS_IDLE_TIMEOUT_INCOGNITO_AND_ISOLATED" desc="The text in the Idle Timeout dialog variant when there are Incognito and Isolated windows open. This warns the user that Incognito and Isolated windows will close automatically, and their content will be lost.">
+        {COUNT, plural,
+          =1 {There is Incognito or Isolated window open. It won't reopen.}
+          other {There are # Incognito and Isolated windows open across profiles. They won't reopen.}}
+      </message>
       <message name="IDS_IDLE_TIMEOUT_CLOSE_COUNTDOWN" desc="In the Idle Timeout dialog, a countdown that ticks every second. When it reaches zero, Chrome closes all browsers.">
         {0, plural,
           =0 {Closing now.}

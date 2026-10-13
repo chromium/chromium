@@ -1871,6 +1871,16 @@ Chromium is unable to recover your settings.
           =1 {A new update for Chromium is available and will be applied as soon as you relaunch. Your Incognito window won't reopen.}
           other {A new update for Chromium is available and will be applied as soon as you relaunch. Your # Incognito windows won't reopen.}}
         </message>
+        <message name="IDS_UPDATE_RECOMMENDED_ISOLATED" desc="The main text of the Update Recommended dialog variant with a count of open Isolated windows.">
+          {COUNT, plural,
+          =1 {A new update for Chromium is available and will be applied as soon as you relaunch. Your Isolated window won't reopen.}
+          other {A new update for Chromium is available and will be applied as soon as you relaunch. Your # Isolated windows won't reopen.}}
+        </message>
+        <message name="IDS_UPDATE_RECOMMENDED_INCOGNITO_AND_ISOLATED" desc="The main text of the Update Recommended dialog variant with a count of open Incognito and Isolated windows.">
+          {COUNT, plural,
+          =1 {A new update for Chromium is available and will be applied as soon as you relaunch. There is Incognito or Isolated window open. It won't reopen after you relaunch.}
+          other {A new update for Chromium is available and will be applied as soon as you relaunch. There are # Incognito and Isolated windows open across profiles. They won't reopen after you relaunch.}}
+        </message>
         <message name="IDS_RELAUNCH_AND_UPDATE" desc="The button in the Update Recommended dialog which updates and relaunches Chrome.">
           Relaunch
         </message>
@@ -1892,6 +1902,12 @@ Chromium is unable to recover your settings.
           Not used in Chromium. Placeholder to keep resource maps in sync.
         </message>
         <message name="IDS_UPDATE_RECOMMENDED_ALT" desc="Alternate main text of the Update Recommended dialog with a count of open Incognito windows." translateable="false">
+          Not used in Chromium. Placeholder to keep resource maps in sync.
+        </message>
+        <message name="IDS_UPDATE_RECOMMENDED_ALT_ISOLATED" desc="Alternate main text of the Update Recommended dialog variant with a count of open Isolated windows." translateable="false">
+          Not used in Chromium. Placeholder to keep resource maps in sync.
+        </message>
+        <message name="IDS_UPDATE_RECOMMENDED_ALT_INCOGNITO_AND_ISOLATED" desc="Alternate main text of the Update Recommended dialog variant with a count of open Incognito and Isolated windows." translateable="false">
           Not used in Chromium. Placeholder to keep resource maps in sync.
         </message>
       </if>
@@ -2527,6 +2543,16 @@ Chromium is unable to recover your settings.
               =1 {Your administrator asks that you relaunch Chromium to apply this update. Your Incognito window won't reopen.}
               other {Your administrator asks that you relaunch Chromium to apply this update. Your # Incognito windows won't reopen.}}
           </message>
+          <message name="IDS_RELAUNCH_RECOMMENDED_BODY_ISOLATED" desc="The body text of a dialog variant that tells users that a browser relaunch is recommended for an update with Isolated counter.">
+             {COUNT, plural,
+              =1 {Your administrator asks that you relaunch Chromium to apply this update. Your Isolated window won't reopen.}
+              other {Your administrator asks that you relaunch Chromium to apply this update. Your # Isolated windows won't reopen.}}
+          </message>
+          <message name="IDS_RELAUNCH_RECOMMENDED_BODY_INCOGNITO_AND_ISOLATED" desc="The body text of a dialog variant that tells users that a browser relaunch is recommended for an update with Incognito and Isolated counter.">
+             {COUNT, plural,
+              =1 {Your administrator asks that you relaunch Chromium to apply this update. There is Incognito or Isolated window open. It won't reopen after you relaunch.}
+              other {Your administrator asks that you relaunch Chromium to apply this update. There are # Incognito and Isolated windows open across profiles. They won't reopen after you relaunch.}}
+          </message>
           <message name="IDS_RELAUNCH_RECOMMENDED_SCHEDULED_IDLE_TOAST" desc="Toast notification message shown after scheduling an idle restart.">
             Chromium will update when you're away
           </message>
@@ -2563,11 +2589,31 @@ Chromium is unable to recover your settings.
               =1 {Your administrator requires that you relaunch Chromium to apply an update. Your Incognito window won't reopen.}
               other {Your administrator requires that you relaunch Chromium to apply an update. Your # Incognito windows won't reopen.}}
           </message>
-             <message name="IDS_ADVANCED_PROTECTION_RELAUNCH_REQUIRED_BODY" desc="The body text of a dialog that tells Advanced Protection users the browser must be relaunched with Incognito counter">
+          <message name="IDS_RELAUNCH_REQUIRED_BODY_ISOLATED" desc="The body text of a dialog variant that tells users the browser must be relaunched with Isolated counter.">
+             {COUNT, plural,
+              =1 {Your administrator requires that you relaunch Chromium to apply an update. Your Isolated window won't reopen.}
+              other {Your administrator requires that you relaunch Chromium to apply an update. Your # Isolated windows won't reopen.}}
+          </message>
+          <message name="IDS_RELAUNCH_REQUIRED_BODY_INCOGNITO_AND_ISOLATED" desc="The body text of a dialog variant that tells users the browser must be relaunched with Incognito and Isolated counter.">
+             {COUNT, plural,
+              =1 {Your administrator requires that you relaunch Chromium to apply an update. There is Incognito or Isolated window open. It won't reopen after you relaunch.}
+              other {Your administrator requires that you relaunch Chromium to apply an update. There are # Incognito and Isolated windows open across profiles. They won't reopen after you relaunch.}}
+          </message>
+          <message name="IDS_ADVANCED_PROTECTION_RELAUNCH_REQUIRED_BODY" desc="The body text of a dialog that tells Advanced Protection users the browser must be relaunched with Incognito counter">
              {COUNT, plural,
               =0 {Advanced Protection requires that you relaunch Chromium to apply an update}
               =1 {Advanced Protection requires that you relaunch Chromium to apply an update. Your Incognito window won't reopen.}
               other {Advanced Protection requires that you relaunch Chromium to apply an update. Your # Incognito windows won't reopen.}}
+          </message>
+          <message name="IDS_ADVANCED_PROTECTION_RELAUNCH_REQUIRED_BODY_ISOLATED" desc="The body text of a dialog variant that tells Advanced Protection users the browser must be relaunched with Isolated counter">
+             {COUNT, plural,
+              =1 {Advanced Protection requires that you relaunch Chromium to apply an update. Your Isolated window won't reopen.}
+              other {Advanced Protection requires that you relaunch Chromium to apply an update. Your # Isolated windows won't reopen.}}
+          </message>
+          <message name="IDS_ADVANCED_PROTECTION_RELAUNCH_REQUIRED_BODY_INCOGNITO_AND_ISOLATED" desc="The body text of a dialog variant that tells Advanced Protection users the browser must be relaunched with Incognito and Isolated counter">
+             {COUNT, plural,
+              =1 {Advanced Protection requires that you relaunch Chromium to apply an update. There is Incognito or Isolated window open. It won't reopen after you relaunch.}
+              other {Advanced Protection requires that you relaunch Chromium to apply an update. There are # Incognito and Isolated windows open across profiles. They won't reopen after you relaunch.}}
           </message>
         </if>
       </if>

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_GLOBAL_BROWSER_COLLECTION_H_
 #define CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_GLOBAL_BROWSER_COLLECTION_H_
 
+#include <string>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -51,6 +52,23 @@ class GlobalBrowserCollection : public BrowserCollection {
   // Returns the number of browser windows whose profile is a Guest session,
   // excluding DevTools windows.
   size_t GetGuestBrowserCount();
+
+  // Returns the number of isolated browsers across all profiles, excluding
+  // DevTools windows.
+  size_t GetIsolatedBrowserCount();
+
+  // Returns a localized string with the number of incognito and isolated
+  // browsers.
+  // - If there are no isolated browsers, returns the string with the
+  //   incognito message id and the number of incognito browsers.
+  // - If there are no incognito browsers, returns the string with the isolated
+  //   message id and the number of isolated browsers.
+  // - Otherwise, returns the string with the combined message id and the
+  //   number of combined incognito and isolated browsers.
+  std::u16string GetDialogWithIncognitoAndIsolatedVariants(
+      int incognito_message_id,
+      int isolated_message_id,
+      int combined_message_id);
 
  protected:
   // BrowserCollection:

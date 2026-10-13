@@ -150,8 +150,9 @@ void BrowserLifetimeHandler::HandleGetRelaunchConfirmationDialogDescription(
   CHECK(args[1].is_bool());
   const bool is_version_update = args[1].GetBool();
 
-  size_t incognito_count =
-      GlobalBrowserCollection::GetInstance()->GetIncognitoBrowserCount();
+  size_t incognito_and_isolated_count =
+      GlobalBrowserCollection::GetInstance()->GetIncognitoBrowserCount() +
+      GlobalBrowserCollection::GetInstance()->GetIsolatedBrowserCount();
   base::Value description;
 
   // The caller can specify if this is a confirmation dialog for browser version
@@ -159,13 +160,20 @@ void BrowserLifetimeHandler::HandleGetRelaunchConfirmationDialogDescription(
   if (is_version_update) {
     // The dialog description informs about a browser update after relaunch and
     // warns about incognito windows closure if any is open.
-    description = base::Value(l10n_util::GetPluralStringFUTF16(
-        IDS_UPDATE_RECOMMENDED, incognito_count));
-  } else if (incognito_count > 0) {
+    description = base::Value(
+        GlobalBrowserCollection::GetInstance()
+            ->GetDialogWithIncognitoAndIsolatedVariants(
+                IDS_UPDATE_RECOMMENDED, IDS_UPDATE_RECOMMENDED_ISOLATED,
+                IDS_UPDATE_RECOMMENDED_INCOGNITO_AND_ISOLATED));
+  } else if (incognito_and_isolated_count > 0) {
     // The dialog description warns about incognito windows being closed after
     // relaunch.
-    description = base::Value(l10n_util::GetPluralStringFUTF16(
-        IDS_RELAUNCH_CONFIRMATION_DIALOG_BODY, incognito_count));
+    description = base::Value(
+        GlobalBrowserCollection::GetInstance()
+            ->GetDialogWithIncognitoAndIsolatedVariants(
+                IDS_RELAUNCH_CONFIRMATION_DIALOG_BODY,
+                IDS_RELAUNCH_CONFIRMATION_DIALOG_BODY_ISOLATED,
+                IDS_RELAUNCH_CONFIRMATION_DIALOG_BODY_INCOGNITO_AND_ISOLATED));
   }
 
   ResolveJavascriptCallback(callback_id, description);
@@ -186,9 +194,11 @@ void BrowserLifetimeHandler::HandleShouldShowRelaunchConfirmationDialog(
     ResolveJavascriptCallback(callback_id, true);
   } else {
     // Show a confirmation dialog before the restart if there is an incognito
-    // window open.
-    base::Value result = base::Value(
-        GlobalBrowserCollection::GetInstance()->GetIncognitoBrowserCount() > 0);
+    // and isolated window open.
+    size_t incognito_and_isolated_count =
+        GlobalBrowserCollection::GetInstance()->GetIncognitoBrowserCount() +
+        GlobalBrowserCollection::GetInstance()->GetIsolatedBrowserCount();
+    base::Value result = base::Value(incognito_and_isolated_count > 0);
     ResolveJavascriptCallback(callback_id, result);
   }
 }

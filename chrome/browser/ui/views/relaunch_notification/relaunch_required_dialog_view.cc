@@ -144,10 +144,17 @@ RelaunchRequiredDialogView::RelaunchRequiredDialogView(
       views::DialogContentType::kText, views::DialogContentType::kText));
 
   auto label = std::make_unique<views::Label>(
-      l10n_util::GetPluralStringFUTF16(
-          ap_style_ ? IDS_ADVANCED_PROTECTION_RELAUNCH_REQUIRED_BODY
-                    : IDS_RELAUNCH_REQUIRED_BODY,
-          GlobalBrowserCollection::GetInstance()->GetIncognitoBrowserCount()),
+      ap_style_
+          ? GlobalBrowserCollection::GetInstance()
+                ->GetDialogWithIncognitoAndIsolatedVariants(
+                    IDS_ADVANCED_PROTECTION_RELAUNCH_REQUIRED_BODY,
+                    IDS_ADVANCED_PROTECTION_RELAUNCH_REQUIRED_BODY_ISOLATED,
+                    IDS_ADVANCED_PROTECTION_RELAUNCH_REQUIRED_BODY_INCOGNITO_AND_ISOLATED)
+          : GlobalBrowserCollection::GetInstance()
+                ->GetDialogWithIncognitoAndIsolatedVariants(
+                    IDS_RELAUNCH_REQUIRED_BODY,
+                    IDS_RELAUNCH_REQUIRED_BODY_ISOLATED,
+                    IDS_RELAUNCH_REQUIRED_BODY_INCOGNITO_AND_ISOLATED),
       views::style::CONTEXT_DIALOG_BODY_TEXT);
   label->SetMultiLine(true);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
