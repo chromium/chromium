@@ -3068,8 +3068,8 @@ bool LocalFrame::HasTransientUserActivation(const LocalFrame* frame) {
 // static
 bool LocalFrame::ConsumeTransientUserActivation(
     LocalFrame* frame,
-    UserActivationUpdateSource update_source) {
-  return frame && frame->ConsumeTransientUserActivation(update_source);
+    UserActivationUpdateScope update_scope) {
+  return frame && frame->ConsumeTransientUserActivation(update_scope);
 }
 
 void LocalFrame::NotifyUserActivation(
@@ -3082,8 +3082,8 @@ void LocalFrame::NotifyUserActivation(
 }
 
 bool LocalFrame::ConsumeTransientUserActivation(
-    UserActivationUpdateSource update_source) {
-  if (update_source == UserActivationUpdateSource::kRenderer) {
+    UserActivationUpdateScope update_scope) {
+  if (update_scope == UserActivationUpdateScope::kDefault) {
     GetLocalFrameHostRemote().UpdateUserActivationState(
         mojom::blink::UserActivationUpdateType::kConsumeTransientActivation,
         mojom::blink::UserActivationNotificationType::kNone);

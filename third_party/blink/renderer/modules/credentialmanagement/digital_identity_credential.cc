@@ -237,8 +237,7 @@ bool CheckUserActivationOrReject(
   LocalFrame* local_frame = window->GetFrame();
 
   bool has_transient_user_activation =
-      LocalFrame::ConsumeTransientUserActivation(
-          local_frame, UserActivationUpdateSource::kRenderer);
+      LocalFrame::ConsumeTransientUserActivation(local_frame);
   bool is_delegated = false;
   bool allowed = has_transient_user_activation;
 

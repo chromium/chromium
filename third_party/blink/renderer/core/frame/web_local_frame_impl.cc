@@ -754,8 +754,8 @@ bool WebLocalFrameImpl::HasTransientUserActivation() {
 }
 
 bool WebLocalFrameImpl::ConsumeTransientUserActivation(
-    UserActivationUpdateSource update_source) {
-  return LocalFrame::ConsumeTransientUserActivation(GetFrame(), update_source);
+    UserActivationUpdateScope update_scope) {
+  return LocalFrame::ConsumeTransientUserActivation(GetFrame(), update_scope);
 }
 
 bool WebLocalFrameImpl::LastActivationWasRestricted() const {

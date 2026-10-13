@@ -1985,8 +1985,7 @@ AuthenticationCredentialsContainer::create(
   if (!IsSameSecurityOriginWithAncestors(
           To<LocalDOMWindow>(context)->GetFrame())) {
     bool has_user_activation = LocalFrame::ConsumeTransientUserActivation(
-        To<LocalDOMWindow>(context)->GetFrame(),
-        UserActivationUpdateSource::kRenderer);
+        To<LocalDOMWindow>(context)->GetFrame());
     if (!has_user_activation) {
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotAllowedError,

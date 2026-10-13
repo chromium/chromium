@@ -372,7 +372,7 @@ class CORE_EXPORT WebLocalFrameImpl final
       mojom::blink::UserActivationNotificationType notification_type) override;
   bool HasStickyUserActivation() override;
   bool HasTransientUserActivation() override;
-  bool ConsumeTransientUserActivation(UserActivationUpdateSource) override;
+  bool ConsumeTransientUserActivation(UserActivationUpdateScope) override;
   bool LastActivationWasRestricted() const override;
 #if BUILDFLAG(IS_WIN)
   WebFontFamilyNames GetWebFontFamilyNames() const override;

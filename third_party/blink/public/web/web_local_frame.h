@@ -24,7 +24,7 @@
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/blink/public/common/context_menu_data/untrustworthy_context_menu_params.h"
 #include "third_party/blink/public/common/frame/frame_ad_evidence.h"
-#include "third_party/blink/public/common/frame/user_activation_update_source.h"
+#include "third_party/blink/public/common/frame/user_activation_update_scope.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom-forward.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-shared.h"
@@ -944,8 +944,8 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
 
   // See |blink::LocalFrame::ConsumeTransientUserActivation()|.
   virtual bool ConsumeTransientUserActivation(
-      UserActivationUpdateSource update_source =
-          UserActivationUpdateSource::kRenderer) = 0;
+      UserActivationUpdateScope update_scope =
+          UserActivationUpdateScope::kDefault) = 0;
 
   // See |blink::Frame::LastActivationWasRestricted()|.
   virtual bool LastActivationWasRestricted() const = 0;

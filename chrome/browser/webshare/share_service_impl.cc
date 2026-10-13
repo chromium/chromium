@@ -224,8 +224,8 @@ void ShareServiceImpl::Share(const std::string& title,
   // NavigatorShare::share(), so the browser enforces user activation itself.
   // Consume rather than test, so that a single gesture cannot be replayed into
   // repeated share sheets. NavigatorShare::share() consumes its own copy with
-  // UserActivationUpdateSource::kBrowser, which leaves the browser-side state
-  // intact for this check.
+  // UserActivationUpdateScope::kCurrentRenderer, which leaves the browser-side
+  // state intact for this check.
   if (!render_frame_host().ConsumeTransientUserActivation()) {
     VLOG(1) << "Share without transient user activation";
     std::move(callback).Run(blink::mojom::ShareError::PERMISSION_DENIED);

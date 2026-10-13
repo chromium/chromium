@@ -7206,7 +7206,7 @@ WebView* RenderFrameImpl::CreateNewWindow(
 
   // Consume the transient user activation in the current renderer.
   consumed_user_gesture = GetWebFrame()->ConsumeTransientUserActivation(
-      blink::UserActivationUpdateSource::kBrowser);
+      blink::UserActivationUpdateScope::kCurrentRenderer);
 
   // If we should ignore the new window (e.g. because of `noopener`), return
   // now that user activation was consumed.

@@ -359,8 +359,8 @@ class CORE_EXPORT LocalFrame final
   // activation.  Returns |true| if successfully consumed the state.
   static bool ConsumeTransientUserActivation(
       LocalFrame*,
-      UserActivationUpdateSource update_source =
-          UserActivationUpdateSource::kRenderer);
+      UserActivationUpdateScope update_scope =
+          UserActivationUpdateScope::kDefault);
 
   bool IsHistoryUserActivationActive() const {
     return history_user_activation_state_.IsActive();
@@ -1071,7 +1071,7 @@ class CORE_EXPORT LocalFrame final
 
   // Consumes and returns the transient user activation state this frame, after
   // updating all other frames in the frame tree.
-  bool ConsumeTransientUserActivation(UserActivationUpdateSource update_source);
+  bool ConsumeTransientUserActivation(UserActivationUpdateScope update_scope);
 
   void DidFreeze();
   void DidResume();

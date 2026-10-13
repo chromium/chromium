@@ -1056,7 +1056,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener {
   // Prefer this over HasTransientUserActivation() when gating a privileged
   // operation on a user gesture, so that a single gesture cannot be replayed
   // into several such operations. Renderer code that also consumes the
-  // activation locally must pass UserActivationUpdateSource::kBrowser,
+  // activation locally must pass UserActivationUpdateScope::kCurrentRenderer,
   // otherwise the browser-side state is cleared before this is called.
   [[nodiscard]] virtual bool ConsumeTransientUserActivation() = 0;
 
