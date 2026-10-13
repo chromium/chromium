@@ -327,11 +327,14 @@ def CompileAssetCatalog(
         temporary_file = tempfile.NamedTemporaryFile(suffix='.plist')
         partial_info_plist = temporary_file.name
 
-    command.extend(['--output-partial-info-plist', partial_info_plist])
+    absolute_partial_info_plist = os.path.abspath(partial_info_plist)
+    command.extend(['--output-partial-info-plist', absolute_partial_info_plist])
 
     # Dictionary used to convert absolute paths back to their relative form
     # in the output of actool.
-    relative_paths = {}
+    relative_paths = {
+        absolute_partial_info_plist: partial_info_plist,
+    }
 
     # actool crashes if paths are relative, so convert input and output paths
     # to absolute paths, and record the relative paths to fix them back when
