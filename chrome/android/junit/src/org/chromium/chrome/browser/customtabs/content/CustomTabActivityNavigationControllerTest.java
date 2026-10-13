@@ -24,7 +24,6 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Build;
-import android.window.OnBackInvokedDispatcher;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -85,7 +84,6 @@ public class CustomTabActivityNavigationControllerTest {
 
     @Mock CustomTabActivityTabController mTabController;
     @Mock FinishHandler mFinishHandler;
-    @Mock OnBackInvokedDispatcher mDispatcher;
 
     @Before
     public void setUp() {
@@ -104,10 +102,6 @@ public class CustomTabActivityNavigationControllerTest {
                         .addCategory(Intent.CATEGORY_BROWSABLE);
         Shadows.shadowOf(ContextUtils.getApplicationContext().getPackageManager())
                 .addResolveInfoForIntent(browserIntent, browserResolveInfo);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            when(env.activity.getOnBackInvokedDispatcher()).thenReturn(mDispatcher);
-        }
 
         mNavigationController = env.createNavigationController(mTabController);
         mNavigationController.setFinishHandler(mFinishHandler);
@@ -250,7 +244,7 @@ public class CustomTabActivityNavigationControllerTest {
     public void startsReparenting_WhenOpenInBrowserCalled_AndChromeCanHandleIntent() {
         ExternalNavigationDelegateImpl.setWillChromeHandleIntentHookForTesting(intent -> true);
         mNavigationController.openCurrentUrlInBrowser();
-        verify(env.activity, never()).startActivity(any());
+        assertNull(Shadows.shadowOf(env.activity).getNextStartedActivity());
         ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
         verify(mTabController).detachAndStartReparenting(intentCaptor.capture(), any(), any());
         Intent intent = intentCaptor.getValue();
@@ -292,9 +286,8 @@ public class CustomTabActivityNavigationControllerTest {
         ExternalNavigationDelegateImpl.setWillChromeHandleIntentHookForTesting(intent -> false);
         mNavigationController.openCurrentUrlInBrowser();
         verify(mTabController, never()).detachAndStartReparenting(any(), any(), any());
-        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(env.activity).startActivity(intentCaptor.capture(), any());
-        Intent intent = intentCaptor.getValue();
+        Intent intent = Shadows.shadowOf(env.activity).getNextStartedActivity();
+        assertNotNull(intent);
         assertTrue(intent.hasCategory(Intent.CATEGORY_BROWSABLE));
         verify(mFinishHandler).onFinish(FinishReason.OPEN_IN_BROWSER, true);
     }
@@ -307,7 +300,7 @@ public class CustomTabActivityNavigationControllerTest {
 
         mNavigationController.openCurrentUrlInBrowser();
         verify(mTabController, never()).detachAndStartReparenting(any(), any(), any());
-        verify(env.activity).startActivity(any(), any());
+        assertNotNull(Shadows.shadowOf(env.activity).getNextStartedActivity());
         // The TWA client app must be kept alive, so the activity must not be finished.
         verify(mFinishHandler, never()).onFinish(anyInt(), anyBoolean());
     }
@@ -323,7 +316,7 @@ public class CustomTabActivityNavigationControllerTest {
         mNavigationController.openCurrentUrlInBrowser();
 
         verify(mTabController, never()).detachAndStartReparenting(any(), any(), any());
-        verify(env.activity).startActivity(any(), any());
+        assertNotNull(Shadows.shadowOf(env.activity).getNextStartedActivity());
         verify(mFinishHandler, never()).onFinish(anyInt(), anyBoolean());
     }
 
@@ -337,7 +330,7 @@ public class CustomTabActivityNavigationControllerTest {
         mNavigationController.openCurrentUrlInBrowser();
 
         verify(mTabController, never()).detachAndStartReparenting(any(), any(), any());
-        verify(env.activity).startActivity(any(), any());
+        assertNotNull(Shadows.shadowOf(env.activity).getNextStartedActivity());
         verify(mFinishHandler, never()).onFinish(anyInt(), anyBoolean());
     }
 
@@ -357,7 +350,7 @@ public class CustomTabActivityNavigationControllerTest {
 
         mNavigationController.openCurrentUrlInBrowser();
 
-        verify(env.activity, never()).startActivity(any(), any());
+        assertNull(Shadows.shadowOf(env.activity).getNextStartedActivity());
         verify(mTabController).detachAndStartReparenting(any(), any(), any());
         // The webapp must stay alive, even once reparenting completes.
         callbackCaptor.getValue().run();
@@ -376,7 +369,7 @@ public class CustomTabActivityNavigationControllerTest {
 
         mNavigationController.openCurrentUrlInBrowser();
 
-        verify(env.activity, never()).startActivity(any(), any());
+        assertNull(Shadows.shadowOf(env.activity).getNextStartedActivity());
         verify(mTabController).detachAndStartReparenting(any(), any(), any());
         callbackCaptor.getValue().run();
         verify(mFinishHandler, never()).onFinish(anyInt(), anyBoolean());
@@ -395,7 +388,7 @@ public class CustomTabActivityNavigationControllerTest {
 
         mNavigationController.openCurrentUrlInBrowser();
 
-        verify(env.activity, never()).startActivity(any(), any());
+        assertNull(Shadows.shadowOf(env.activity).getNextStartedActivity());
         verify(mTabController).detachAndStartReparenting(any(), any(), any());
         callbackCaptor.getValue().run();
         verify(mFinishHandler, never()).onFinish(anyInt(), anyBoolean());
