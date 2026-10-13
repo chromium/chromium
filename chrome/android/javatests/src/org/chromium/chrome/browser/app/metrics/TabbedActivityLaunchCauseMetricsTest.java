@@ -272,6 +272,7 @@ public final class TabbedActivityLaunchCauseMetricsTest {
     @MediumTest
     @RequiresRestart("crbug.com/40774438")
     @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/537353093
+    @DisabledTest(message = "https://crbug.com/573081777")
     public void testExternalSearchIntentNoResolvers() throws Throwable {
         final int count =
                 1
