@@ -40,6 +40,7 @@
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom-forward.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-shared.h"
+#include "third_party/jni_zero/jni_raw_ptr.h"
 
 class GURL;
 class PrefService;
@@ -258,6 +259,15 @@ class AwBrowserContext : public content::BrowserContext,
   const std::vector<scoped_refptr<AwOriginMatchedHeader>>&
   GetOriginMatchedHeaders();
 
+  // Returns the `AwHeaderInterceptorStore` associated to this BrowserContext.
+  // This reference is valid for as long as this AwBrowserContext instance is
+  // alive.
+  AwHeaderInterceptorStore& GetHeaderInterceptorStore() {
+    return header_interceptor_store_;
+  }
+  jni_zero::JniRawPtr<AwHeaderInterceptorStore>
+  GetHeaderInterceptorStoreFromJava(JNIEnv* env);
+
   // Adds QUIC hints for the given origins, wildcard suffixes, or enables QUIC
   // by default.
   void AddQuicHints(JNIEnv* env,
@@ -363,6 +373,7 @@ class AwBrowserContext : public content::BrowserContext,
   bool enable_stale_dns_ = false;
 
   std::vector<scoped_refptr<AwOriginMatchedHeader>> origin_matched_headers_;
+  AwHeaderInterceptorStore header_interceptor_store_;
 
   std::unique_ptr<origin_matcher::OriginMatcher>
       cross_origin_allow_list_matcher_;

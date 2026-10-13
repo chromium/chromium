@@ -114,7 +114,8 @@ TEST_F(AwHeaderInterceptorStoreTest, RemoveInterceptor_NonExistentId_NoOp) {
   EXPECT_EQ(id0, store.GetInterceptors()[0]->id);
 }
 
-TEST_F(AwHeaderInterceptorStoreTest, RegistersMatcherAndInterceptorCorrectly) {
+TEST_F(AwHeaderInterceptorStoreTest,
+       AddInterceptor_RegistersMatcherAndInterceptorCorrectly) {
   AwHeaderInterceptorStore store;
 
   auto matcher = CreateMatcher("https://example.com/foo");

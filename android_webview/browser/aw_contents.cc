@@ -493,6 +493,11 @@ base::android::ScopedJavaLocalRef<jobject> AwContents::GetBrowserContext(
       ->GetJavaBrowserContext();
 }
 
+jni_zero::JniRawPtr<AwHeaderInterceptorStore>
+AwContents::GetHeaderInterceptorStoreFromJava(JNIEnv* env) {
+  return jni_zero::MakeRaw(&header_interceptor_store_);
+}
+
 void AwContents::SetCompositorFrameConsumer(JNIEnv* env,
                                             int64_t compositor_frame_consumer) {
   browser_view_renderer_.SetCurrentCompositorFrameConsumer(

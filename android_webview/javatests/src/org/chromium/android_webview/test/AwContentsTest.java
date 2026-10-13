@@ -55,6 +55,7 @@ import org.chromium.android_webview.AwDarkMode;
 import org.chromium.android_webview.AwRenderProcess;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.AwViewAndroidDelegate;
+import org.chromium.android_webview.http_headers.AwHeaderInterceptorStore;
 import org.chromium.android_webview.renderer_priority.RendererPriority;
 import org.chromium.android_webview.test.AwActivityTestRule.TestDependencyFactory;
 import org.chromium.android_webview.test.TestAwContentsClient.OnDownloadStartHelper;
@@ -150,6 +151,31 @@ public class AwContentsTest extends AwParameterizedTest {
         mActivityTestRule.destroyAwContentsOnMainSync(awTestContainerView.getAwContents());
         // It should be safe to call destroy multiple times.
         mActivityTestRule.destroyAwContentsOnMainSync(awTestContainerView.getAwContents());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testHeaderInterceptorStoreThrowsIllegalStateExceptionAfterContentsDestroyed() {
+        mActivityTestRule.startBrowserProcess();
+        AwTestContainerView testContainerView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
+        AwContents awContents = testContainerView.getAwContents();
+        AwHeaderInterceptorStore store = awContents.getHeaderInterceptorStore();
+
+        mActivityTestRule.destroyAwContentsOnMainSync(awContents);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    List<String> urlPatterns = List.of("https://*/*");
+                    Assert.assertThrows(
+                            IllegalStateException.class,
+                            () -> store.addInterceptor(request -> null, urlPatterns));
+                    Assert.assertThrows(
+                            IllegalStateException.class, () -> store.removeInterceptor(1));
+                    Assert.assertThrows(
+                            IllegalStateException.class, () -> store.clearInterceptors());
+                });
     }
 
     @Test

@@ -15,12 +15,14 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.android_webview.common.MediaIntegrityApiStatus;
 import org.chromium.android_webview.common.MediaIntegrityProvider;
+import org.chromium.android_webview.http_headers.AwHeaderInterceptorStore;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
@@ -101,6 +103,7 @@ public class AwBrowserContext implements BrowserContextHandle {
 
     private final AwPrefetchManager mPrefetchManager;
     private final AwPreconnector mPreconnector;
+    @NonNull private final AwHeaderInterceptorStore mHeaderInterceptorStore;
 
     /**
      * Cache key for MediaIntegrityProviders. Ensures that values are keyed by
@@ -175,6 +178,8 @@ public class AwBrowserContext implements BrowserContextHandle {
         mHttpCacheManager = httpCacheManager;
         mPrefetchManager = prefetchManager;
         mPreconnector = preconnector;
+        mHeaderInterceptorStore =
+                new AwHeaderInterceptorStore(this::supplyNativeHeaderInterceptorStore);
         mIsDefault = isDefault;
 
         try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
@@ -305,6 +310,19 @@ public class AwBrowserContext implements BrowserContextHandle {
     @NonNull
     public AwPreconnector getPreconnector() {
         return mPreconnector;
+    }
+
+    @NonNull
+    public AwHeaderInterceptorStore getHeaderInterceptorStore() {
+        return mHeaderInterceptorStore;
+    }
+
+    private @Nullable JniRawPtr<AwHeaderInterceptorStore.Native>
+            supplyNativeHeaderInterceptorStore() {
+        return mNativeAwBrowserContext == 0
+                ? null
+                : AwBrowserContextJni.get()
+                        .getHeaderInterceptorStoreFromJava(mNativeAwBrowserContext);
     }
 
     public void setOriginMatchedHeader(
@@ -597,5 +615,8 @@ public class AwBrowserContext implements BrowserContextHandle {
 
         @JniType("std::vector<std::string>")
         List<String> getCrossOriginIsolatedAllowList(long nativeAwBrowserContext);
+
+        JniRawPtr<AwHeaderInterceptorStore.Native> getHeaderInterceptorStoreFromJava(
+                long nativeAwBrowserContext);
     }
 }

@@ -14,9 +14,11 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwBrowserContext;
+import org.chromium.android_webview.http_headers.AwHeaderInterceptorStore;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Feature;
 
+import java.util.List;
 import java.util.Set;
 
 /** AwBrowserContext tests. */
@@ -76,6 +78,25 @@ public class AwBrowserContextTest extends AwParameterizedTest {
                 IllegalArgumentException.class,
                 () -> {
                     context.setCrossOriginIsolatedAllowList(sample);
+                });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testHeaderInterceptorStoreThrowsIllegalStateExceptionForNullBrowserContext() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AwBrowserContext context = new AwBrowserContext(0);
+                    AwHeaderInterceptorStore store = context.getHeaderInterceptorStore();
+                    List<String> urlPatterns = List.of("https://*/*");
+                    Assert.assertThrows(
+                            IllegalStateException.class,
+                            () -> store.addInterceptor(request -> null, urlPatterns));
+                    Assert.assertThrows(
+                            IllegalStateException.class, () -> store.removeInterceptor(1));
+                    Assert.assertThrows(
+                            IllegalStateException.class, () -> store.clearInterceptors());
                 });
     }
 }

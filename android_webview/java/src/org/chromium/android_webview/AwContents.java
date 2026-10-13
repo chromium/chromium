@@ -60,6 +60,7 @@ import androidx.core.graphics.Insets;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.CalledByNativeUnchecked;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
@@ -72,6 +73,7 @@ import org.chromium.android_webview.common.SafeModeActionIds;
 import org.chromium.android_webview.common.SafeModeController;
 import org.chromium.android_webview.gfx.AwDrawFnImpl;
 import org.chromium.android_webview.gfx.AwPicture;
+import org.chromium.android_webview.http_headers.AwHeaderInterceptorStore;
 import org.chromium.android_webview.metrics.AwOriginVisitLogger;
 import org.chromium.android_webview.metrics.BackForwardCacheNotRestoredReason;
 import org.chromium.android_webview.permission.AwGeolocationCallback;
@@ -420,6 +422,8 @@ public class AwContents implements SmartClipProvider {
     private AwViewAndroidDelegate mViewAndroidDelegate;
     private WindowAndroidWrapper mWindowAndroid;
     private WebContents mWebContents;
+    private final AwHeaderInterceptorStore mHeaderInterceptorStore =
+            new AwHeaderInterceptorStore(this::supplyNativeHeaderInterceptorStore);
     private ViewEventSink mViewEventSink;
     private WebContentsInternalsHolder mWebContentsInternalsHolder;
     private NavigationController mNavigationController;
@@ -2139,6 +2143,17 @@ public class AwContents implements SmartClipProvider {
     @VisibleForTesting
     public WebContents getWebContents() {
         return mWebContents;
+    }
+
+    public AwHeaderInterceptorStore getHeaderInterceptorStore() {
+        return mHeaderInterceptorStore;
+    }
+
+    private @Nullable JniRawPtr<AwHeaderInterceptorStore.Native>
+            supplyNativeHeaderInterceptorStore() {
+        return mNativeAwContents == 0
+                ? null
+                : AwContentsJni.get().getHeaderInterceptorStoreFromJava(mNativeAwContents);
     }
 
     public AwWebContentsObserver getWebContentsObserverForTesting() {
@@ -5279,6 +5294,9 @@ public class AwContents implements SmartClipProvider {
         WebContents getWebContents(long nativeAwContents);
 
         AwBrowserContext getBrowserContext(long nativeAwContents);
+
+        JniRawPtr<AwHeaderInterceptorStore.Native> getHeaderInterceptorStoreFromJava(
+                long nativeAwContents);
 
         void setCompositorFrameConsumer(long nativeAwContents, long nativeCompositorFrameConsumer);
 

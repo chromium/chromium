@@ -76,8 +76,17 @@ class AwHeaderInterceptorStore {
   // Adds an interceptor with its associated request matcher. Returns a
   // monotonically increasing ID for the registered interceptor.
   // This method can only be called from the UI thread.
-  int AddInterceptor(base::android::ScopedJavaGlobalRef<jobject> interceptor,
-                     std::unique_ptr<AwRequestMatcher> request_matcher);
+  int32_t AddInterceptor(
+      base::android::ScopedJavaGlobalRef<jobject> interceptor,
+      std::unique_ptr<AwRequestMatcher> request_matcher);
+
+  // Variant of `AddInterceptor()` to be called via JNI. C++ usages should
+  // prefer `AddInterceptor(ScopedJavaGlobalRef<jobject>,
+  // unique_ptr<AwRequestMatcher>)`.
+  int32_t AddInterceptorFromJava(
+      JNIEnv* env,
+      const base::android::JavaRef<jobject>& interceptor,
+      const std::vector<std::string>& url_patterns);
 
   // Removes the interceptor and request matcher associated with the given ID.
   // This method can only be called from the UI thread.
@@ -92,6 +101,9 @@ class AwHeaderInterceptorStore {
   // be copied and passed to other threads (see the documentation of
   // InterceptorEntry).
   const std::vector<scoped_refptr<InterceptorEntry>>& GetInterceptors() const;
+
+  // Returns the number of registered interceptors.
+  int32_t GetInterceptorCountForTesting() const;
 
  private:
   int32_t next_id_ = 0;

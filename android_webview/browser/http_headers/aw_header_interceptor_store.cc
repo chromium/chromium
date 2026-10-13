@@ -8,8 +8,15 @@
 #include <utility>
 #include <vector>
 
+#include "android_webview/browser/request_matcher/aw_request_matcher.h"
+#include "base/android/jni_android.h"
+#include "base/android/jni_string.h"
+#include "base/check.h"
 #include "base/memory/scoped_refptr.h"
 #include "content/public/browser/browser_thread.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "android_webview/browser_jni_headers/AwHeaderInterceptorStore_jni.h"
 
 namespace android_webview {
 
@@ -45,6 +52,24 @@ int32_t AwHeaderInterceptorStore::AddInterceptor(
   return id;
 }
 
+int32_t AwHeaderInterceptorStore::AddInterceptorFromJava(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& interceptor,
+    const std::vector<std::string>& url_patterns) {
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  auto matcher = AwRequestMatcher::Create(url_patterns);
+  if (!matcher.has_value()) {
+    env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"),
+                  matcher.error().c_str());
+    return -1;
+  }
+
+  return AddInterceptor(
+      base::android::ScopedJavaGlobalRef<jobject>(interceptor),
+      std::move(matcher.value()));
+}
+
 void AwHeaderInterceptorStore::RemoveInterceptor(int32_t id) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI);
   std::erase_if(interceptors_,
@@ -64,4 +89,11 @@ AwHeaderInterceptorStore::GetInterceptors() const {
   return interceptors_;
 }
 
+int32_t AwHeaderInterceptorStore::GetInterceptorCountForTesting() const {
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  return static_cast<int32_t>(interceptors_.size());
+}
+
 }  // namespace android_webview
+
+DEFINE_JNI(AwHeaderInterceptorStore)

@@ -28,6 +28,7 @@
 #include "android_webview/browser/content_restriction/aw_content_restriction_blocked_navigation_tracker.h"
 #include "android_webview/browser/content_restriction/aw_content_restriction_manager_client.h"
 #include "android_webview/browser/cookie_manager.h"
+#include "android_webview/browser/http_headers/aw_header_interceptor_store.h"
 #include "android_webview/browser/http_headers/aw_origin_matched_header.h"
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
 #include "android_webview/browser/prefetch/aw_prefetch_prefs.h"
@@ -104,6 +105,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
@@ -193,8 +195,7 @@ AwBrowserContext::AwBrowserContext(std::string name,
   {
     SCOPED_UMA_HISTOGRAM_TIMER(
         "Android.WebView.AwBrowserContext.CreateAwPrefetchManager.Duration");
-    TRACE_EVENT("android_webview",
-                "AwBrowserContext::CreateAwPrefetchManager");
+    TRACE_EVENT("android_webview", "AwBrowserContext::CreateAwPrefetchManager");
     prefetch_manager_ = std::make_unique<AwPrefetchManager>(this);
   }
 
@@ -691,6 +692,11 @@ AwBrowserContext::GetJavaBrowserContext() {
         preconnector_->GetJavaAwPreconnector(), IsDefaultBrowserContext());
   }
   return base::android::ScopedJavaLocalRef<jobject>(obj_);
+}
+
+jni_zero::JniRawPtr<AwHeaderInterceptorStore>
+AwBrowserContext::GetHeaderInterceptorStoreFromJava(JNIEnv* env) {
+  return jni_zero::MakeRaw(&header_interceptor_store_);
 }
 
 int64_t AwBrowserContext::GetQuotaManagerBridge(JNIEnv* env) {
